@@ -104,7 +104,14 @@ export const FRONTIER_1_V7: MissionDefinitionV7 = {
       faction: "ORIGINAL",
       coins: 8,
       technologies: ["DRILL", "FORTIFICATION"],
-      cities: [{ at: { x: 2, y: 6 }, level: 3, rewards: ["SURVEY", "WALLS"] }],
+      cities: [
+        {
+          name: "Fort Hollow",
+          at: { x: 2, y: 6 },
+          level: 3,
+          rewards: ["SURVEY", "WALLS"],
+        },
+      ],
       units: [
         { role: "GUARD", at: { x: 2, y: 6 } },
         { role: "GUARD", at: { x: 3, y: 6 } },
@@ -120,7 +127,9 @@ export const FRONTIER_1_V7: MissionDefinitionV7 = {
       coins: 0,
       // One known technology: no free opening research for the Goblins.
       technologies: ["GATHERING"],
-      cities: [{ at: { x: 8, y: 4 }, level: 1, rewards: [] }],
+      cities: [
+        { name: "Drum Camp", at: { x: 8, y: 4 }, level: 1, rewards: [] },
+      ],
       // The war band is already out of the hills.
       units: [
         { role: "FIGHTER", at: { x: 8, y: 4 } },

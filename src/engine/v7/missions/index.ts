@@ -1,6 +1,7 @@
 import { deepFreeze } from "../../model/freeze";
 import {
   RULESET_7_ID,
+  type CoordV7,
   type FactionIdV7,
   type MatchSetupV7,
   type MissionRefV7,
@@ -30,7 +31,12 @@ import { LAB_ICE_FOLK_MID_V7 } from "./lab-ice-folk";
 import { LAB_MARTIAN_MID_V7 } from "./lab-martian";
 import { LAB_UNDEAD_MID_V7 } from "./lab-undead";
 import { TEST_GROUNDS_V7 } from "./test-grounds";
-import { TEST_GUARD_V7, TEST_HOLD_V7, TEST_RUSH_V7 } from "./test-directives";
+import {
+  TEST_ASSAULT_V7,
+  TEST_GUARD_V7,
+  TEST_HOLD_V7,
+  TEST_RUSH_V7,
+} from "./test-directives";
 import { TEST_NECK_V7 } from "./test-neck";
 import {
   TEST_CAPTURE_V7,
@@ -59,6 +65,8 @@ export const MISSION_REGISTRY_V7: readonly MissionDefinitionV7[] = deepFreeze([
   TEST_RUSH_V7,
   TEST_HOLD_V7,
   TEST_GUARD_V7,
+  // The ASSAULT fixture (`pulp_wars-v642.5`).
+  TEST_ASSAULT_V7,
   // The siege fixture of the Normal AI (`pulp_wars-68k.6`).
   TEST_NECK_V7,
   // The objective fixtures (`pulp_wars-v642.1`): one per objective kind.
@@ -135,6 +143,24 @@ export function missionDefinitionV7(
 ): MissionDefinitionV7 | null {
   const mission = missionByIdV7(ref.id);
   return mission !== null && mission.revision === ref.revision ? mission : null;
+}
+
+/**
+ * The story names of a mission's places (`pulp_wars-v642.5`, CAMPAIGN.md
+ * section 10.5): every named city, then every named village landmark, by
+ * tile. Presentation reads it; the engine never does.
+ */
+export function missionPlaceNamesV7(
+  mission: MissionDefinitionV7,
+): readonly { readonly at: CoordV7; readonly name: string }[] {
+  const named: { at: CoordV7; name: string }[] = [];
+  for (const seat of mission.seats)
+    for (const city of seat.cities)
+      if (city.name !== undefined) named.push({ at: city.at, name: city.name });
+  for (const landmark of mission.landmarks ?? [])
+    if (landmark.name !== undefined)
+      named.push({ at: landmark.at, name: landmark.name });
+  return named;
 }
 
 /** The factions a seat may play: its fixed faction, or its choice list. */

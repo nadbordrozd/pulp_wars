@@ -760,11 +760,14 @@ function withMissionResultV7(
 
 /**
  * The reinforcements of the active seat's Start Turn in the current round
- * (`MissionReinforcementV7`): each unit on its tile, or on the nearest free
- * tile it may stand on within two steps (rings outward, `(y, x)` order); a
- * unit with no such tile does not come. The units are homeless (they count
- * for no city's unit limit), start at full HP and Shield, and may act this
- * turn.
+ * (`MissionReinforcementV7`): each unit on the nearest free tile it may
+ * stand on that is not next to a unit of a seat hostile to it: its written
+ * tile when that one is, otherwise rings outward (`(y, x)` order within a
+ * ring) to the edge of the board; a unit with no such tile does not come.
+ * The units are homeless (they count for no city's unit limit), start at
+ * full HP and Shield, and arrive with their turn spent
+ * (`pulp_wars-v642.5`, `pulp-wars-poc-7r83`: before it a wave could act
+ * the turn it came and arrive up to two tiles off, into the player's line).
  */
 function resolveMissionReinforcementsV7(
   state: GameStateV7,
@@ -800,7 +803,7 @@ function resolveMissionReinforcementsV7(
         kills: 0,
         veteran: false,
         captureEligible: false,
-        activation: freshActivationV7(),
+        activation: exhaustedActivation(),
       };
       current = {
         ...current,
@@ -877,12 +880,23 @@ function missionArrivalTileV7(
           ice: false,
         });
   };
-  for (let ring = 0; ring <= 2; ring += 1)
+  // Never beside a hostile unit (`pulp_wars-v642.5`): a wave written onto
+  // ground the other side has reached comes in out of its reach.
+  const hostiles = state.units.filter(
+    (unit) => unit.hp > 0 && arePlayersHostileV7(state, playerId, unit.ownerId),
+  );
+  const calm = (at: CoordV7): boolean =>
+    !hostiles.some(
+      (unit) =>
+        Math.max(Math.abs(unit.at.x - at.x), Math.abs(unit.at.y - at.y)) <= 1,
+    );
+  const rings = Math.max(state.board.width, state.board.height);
+  for (let ring = 0; ring <= rings; ring += 1)
     for (let dy = -ring; dy <= ring; dy += 1)
       for (let dx = -ring; dx <= ring; dx += 1) {
         if (Math.max(Math.abs(dx), Math.abs(dy)) !== ring) continue;
         const at = { x: written.at.x + dx, y: written.at.y + dy };
-        if (free(at)) return at;
+        if (free(at) && calm(at)) return at;
       }
   return null;
 }

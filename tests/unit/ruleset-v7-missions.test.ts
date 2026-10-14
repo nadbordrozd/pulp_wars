@@ -73,6 +73,9 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
     "63f8feb4d5d7e1cb313b1c2bf4a09bee259ef73727773fdce351671ac4ed5925",
   "TEST_GUARD@1:ORIGINAL":
     "75569e71228d50c8bdf4977e655316676c8f0b626a657b8c6c00bf5cefc31a50",
+  // The ASSAULT fixture (`pulp_wars-v642.5`).
+  "TEST_ASSAULT@1:ORIGINAL":
+    "b3ee5f70ccfbf71026f2b3be6ffd8949dc31326671618f3fa7f44ecafc7ad433",
   // Chapter One (`pulp_wars-68k.4`).
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 2.
   // Natural maps and objectives (`pulp_wars-v642.1`): revision 3.
@@ -345,6 +348,9 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
     "ab9625959c3cea281c1a8628bea232302513cc0a5d928e416fad71419e6a4670",
   "TEST_GUARD@1:ORIGINAL":
     "493749a981bcc06da8f1346adedfef54c1dd0d6a491e7167376f4a8cceb5432a",
+  // The ASSAULT fixture (`pulp_wars-v642.5`), added after the curiosities.
+  "TEST_ASSAULT@1:ORIGINAL":
+    "31126e9c3cc9d0bd3c2ac28e8f92eda52c55b987f669895002f15886385ab13f",
   // Chapter One (`pulp_wars-68k.4`), added after the curiosities: the same
   // states with the two curiosities keys left out.
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 2.

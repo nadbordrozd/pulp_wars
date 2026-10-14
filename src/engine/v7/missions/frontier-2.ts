@@ -131,8 +131,18 @@ export const FRONTIER_2_V7: MissionDefinitionV7 = {
         "FORTIFICATION",
       ],
       cities: [
-        { at: { x: 4, y: 10 }, level: 3, rewards: ["SURVEY", "WALLS"] },
-        { at: { x: 8, y: 11 }, level: 2, rewards: ["SURVEY"] },
+        {
+          name: "Fort Ashby",
+          at: { x: 4, y: 10 },
+          level: 3,
+          rewards: ["SURVEY", "WALLS"],
+        },
+        {
+          name: "Millbrook",
+          at: { x: 8, y: 11 },
+          level: 2,
+          rewards: ["SURVEY"],
+        },
       ],
       units: [
         { role: "GUARD", at: { x: 4, y: 10 } },
@@ -157,9 +167,14 @@ export const FRONTIER_2_V7: MissionDefinitionV7 = {
         // A small capital (hand play, CAMPAIGN.md section 11.2): at level 3
         // with Lumber Camps it reached level 5 by round 10 and its two
         // Trolls held the Warrens against everything.
-        { at: { x: 11, y: 2 }, level: 2, rewards: ["STOCKPILE"] },
-        { at: { x: 5, y: 2 }, level: 1, rewards: [] },
-        { at: { x: 11, y: 8 }, level: 1, rewards: [] },
+        {
+          name: "The Warrens",
+          at: { x: 11, y: 2 },
+          level: 2,
+          rewards: ["STOCKPILE"],
+        },
+        { name: "Stinkwell", at: { x: 5, y: 2 }, level: 1, rewards: [] },
+        { name: "Muckgate", at: { x: 11, y: 8 }, level: 1, rewards: [] },
       ],
       units: [
         { role: "GUARD", at: { x: 11, y: 2 } },

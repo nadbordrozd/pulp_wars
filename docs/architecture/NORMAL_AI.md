@@ -6408,7 +6408,10 @@ before the fix.
 
 A mission's AI seat may carry one directive
 ([campaign design](../product/CAMPAIGN.md) section 2.5): `NORMAL`, `RUSH`,
-`HOLD(zone)`, or `GUARD(zone, garrison)`, each optionally `untilRound`.
+`HOLD(zone)`, `GUARD(zone, garrison)`, or `ASSAULT(target)`
+(`pulp_wars-v642.5`: as `RUSH` on the target city alone, and the
+position that holds it is assaulted whatever it weighs), each optionally
+`untilRound`.
 `src/ai/v7-directives.ts` resolves it from the public view
 (`view.setup.mission` names the mission, `view.viewer.seat` the seat) and
 plays it while `view.round < untilRound`; from that round on, and for seat 0,

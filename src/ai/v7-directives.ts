@@ -20,8 +20,9 @@ import { RouteFieldV7, type CampaignDirectiveV7 } from "./v7-campaign";
  * docs/product/CAMPAIGN.md section 2.5).
  *
  * A mission's AI seat may carry one directive (plain data on the seat
- * definition): `NORMAL`, `RUSH`, `HOLD(zone)`, or `GUARD(zone, garrison)`,
- * each optionally `untilRound`. The policy finds its directive from its own
+ * definition): `NORMAL`, `RUSH`, `HOLD(zone)`, `GUARD(zone, garrison)`,
+ * or `ASSAULT(target)` (`pulp_wars-v642.5`), each optionally
+ * `untilRound`. The policy finds its directive from its own
  * public view (`view.setup.mission` names the mission, `view.viewer.seat`
  * the seat) and plays it while `view.round < untilRound` (always without
  * `untilRound`); after that, and in every non-mission match, it plays
@@ -33,7 +34,8 @@ import { RouteFieldV7, type CampaignDirectiveV7 } from "./v7-campaign";
  * 1. **The plan.** `CampaignFactsV7.directive` (`src/ai/v7-campaign.ts`)
  *    changes the unit jobs: `RUSH` drops the village, chest, exploration, and
  *    (for free units) defence jobs once a hostile city is known and lets
- *    every wave set out at once; `HOLD` gives no job whose target lies
+ *    every wave set out at once; `ASSAULT` does the same on its target city
+ *    alone; `HOLD` gives no job whose target lies
  *    outside the zone; a leashed unit outside the zone gets the `RETURN`
  *    job, and a `GUARD` garrison unit inside it stays.
  * 2. **The leash.** `leashReadyCommandsV7` removes from the ready commands
@@ -41,6 +43,11 @@ import { RouteFieldV7, type CampaignDirectiveV7 } from "./v7-campaign";
  *    zone. Attacks, `END_TURN`, research, training, construction, and every
  *    city command are never filtered, so a directive never leaves the policy
  *    without a legal command.
+ * 3. **The assault** (`ASSAULT` only, `pulp_wars-v642.5`). The army rules
+ *    weigh each position of visible hostile units (`armyAssaultV7` in
+ *    `src/ai/v7.ts`) and go in only where the army outweighs it; a
+ *    position that holds the target (`assaultHoldsTargetV7`) is weighed as
+ *    outweighed, so the army masses and then commits against it.
  *
  * With `NORMAL` (and in every non-mission match) `directivePlanForViewV7`
  * is null: the ready commands are passed through unchanged and the plan
@@ -55,7 +62,7 @@ export interface DirectivePlanV7 {
   readonly campaign: CampaignDirectiveV7;
   /**
    * The units the leash confines to the zone: every own land unit for
-   * `HOLD`, the garrison for `GUARD`, none for `RUSH`.
+   * `HOLD`, the garrison for `GUARD`, none for `RUSH` and `ASSAULT`.
    */
   readonly leashed: ReadonlySet<UnitId>;
   /** `GUARD`: the garrison in choice order; empty otherwise. */
@@ -84,6 +91,27 @@ export function activeMissionDirectiveV7(
   );
   if (directive === undefined || directive.kind === "NORMAL") return null;
   return directive;
+}
+
+/**
+ * `ASSAULT` (`pulp_wars-v642.5`): a hostile unit this close to the target
+ * holds it, and the position it belongs to is assaulted.
+ */
+export const ASSAULT_HOLD_RADIUS_V7 = 3;
+
+/**
+ * Whether a hostile unit at `at` holds the target of the seat's `ASSAULT`
+ * directive (false for every other directive and without one).
+ */
+export function assaultHoldsTargetV7(
+  plan: DirectivePlanV7 | null,
+  at: CoordV7,
+): boolean {
+  return (
+    plan !== null &&
+    plan.campaign.kind === "ASSAULT" &&
+    chebyshev(plan.campaign.target, at) <= ASSAULT_HOLD_RADIUS_V7
+  );
 }
 
 /** A tile lies in a zone: a union of inclusive rectangles. */
@@ -282,6 +310,14 @@ export function directivePlanForViewV7(
       leashed: new Set(),
       garrison: [],
     };
+  // `pulp_wars-v642.5`: the assault on one place (no leash, no zone).
+  if (directive.kind === "ASSAULT")
+    return {
+      directive,
+      campaign: { kind: "ASSAULT", target: directive.target },
+      leashed: new Set(),
+      garrison: [],
+    };
   const zone = directive.zone;
   const zoneField = zoneFieldsV7(view, zone);
   const garrison =
@@ -355,8 +391,8 @@ export function leashReadyCommandsV7<T extends { readonly command: CommandV7 }>(
 ) {
   if (plan === null || plan.leashed.size === 0) return ready;
   const campaign = plan.campaign;
-  if (campaign.kind === "RUSH") return ready;
-  const zone = plan.directive.kind === "RUSH" ? [] : plan.directive.zone;
+  if (campaign.kind === "RUSH" || campaign.kind === "ASSAULT") return ready;
+  const zone = "zone" in plan.directive ? plan.directive.zone : [];
   const unitsById = new Map(view.units.map((unit) => [unit.id, unit]));
   const closer = (unit: PublicUnitV7, to: CoordV7): boolean => {
     const from = unit.at;
@@ -420,6 +456,19 @@ function validateDirective(
         `${where}: fromRound must be an integer >= 2 and below untilRound`,
       );
     if (directive.kind === "NORMAL" || directive.kind === "RUSH") return;
+    if (directive.kind === "ASSAULT") {
+      const target = directive.target;
+      if (
+        !Number.isSafeInteger(target.x) ||
+        !Number.isSafeInteger(target.y) ||
+        target.x < 0 ||
+        target.y < 0 ||
+        target.x >= mission.size ||
+        target.y >= mission.size
+      )
+        throw new RangeError(`${where}: the assault target is off the board`);
+      return;
+    }
     if (directive.zone.length === 0)
       throw new RangeError(`${where}: the zone is empty`);
     for (const rect of directive.zone)

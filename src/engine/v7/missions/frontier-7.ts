@@ -143,8 +143,13 @@ export const FRONTIER_7_V7: MissionDefinitionV7 = {
         // A small capital (hand play, CAMPAIGN.md section 11.8): at level
         // 3 with a land grant the Fish of its home waters made a Frost
         // Giant in round 1.
-        { at: { x: 4, y: 3 }, level: 2, rewards: ["SURVEY"] },
-        { at: { x: 1, y: 4 }, level: 2, rewards: ["SURVEY"] },
+        {
+          name: "Coldharbour",
+          at: { x: 4, y: 3 },
+          level: 2,
+          rewards: ["SURVEY"],
+        },
+        { name: "Skerry", at: { x: 1, y: 4 }, level: 2, rewards: ["SURVEY"] },
       ],
       units: [
         { role: "CAPTAIN", at: { x: 4, y: 4 } },
@@ -171,9 +176,19 @@ export const FRONTIER_7_V7: MissionDefinitionV7 = {
       coins: 3,
       technologies: ["GATHERING", "HUNTING", "MARKSMANSHIP", "SCOUTING"],
       cities: [
-        { at: { x: 8, y: 13 }, level: 2, rewards: ["STOCKPILE"] },
+        {
+          name: "Fernmaw",
+          at: { x: 8, y: 13 },
+          level: 2,
+          rewards: ["STOCKPILE"],
+        },
         // The town on the Crater, on the shore that faces your island.
-        { at: { x: 5, y: 11 }, level: 2, rewards: ["STOCKPILE"] },
+        {
+          name: "The Crater",
+          at: { x: 5, y: 11 },
+          level: 2,
+          rewards: ["STOCKPILE"],
+        },
       ],
       units: [
         { role: "FIGHTER", at: { x: 8, y: 13 } },
@@ -220,7 +235,14 @@ export const FRONTIER_7_V7: MissionDefinitionV7 = {
         "SHORECRAFT",
         "NAVIGATION",
       ],
-      cities: [{ at: { x: 12, y: 2 }, level: 2, rewards: ["STOCKPILE"] }],
+      cities: [
+        {
+          name: "Port Kessler",
+          at: { x: 12, y: 2 },
+          level: 2,
+          rewards: ["STOCKPILE"],
+        },
+      ],
       units: [
         { role: "GUARD", at: { x: 12, y: 2 } },
         { role: "FIGHTER", at: { x: 13, y: 2 } },

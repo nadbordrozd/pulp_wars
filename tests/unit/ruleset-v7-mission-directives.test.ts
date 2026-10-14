@@ -1,11 +1,15 @@
 import { describe, expect, it } from "vitest";
 import {
+  chooseNormalCommandV7,
+  inspectNormalArmyV7,
   inspectNormalNavalPlanV7,
   type NormalAiDecisionV7,
   type ScoredAiCandidateV7,
 } from "../../src/ai/v7";
 import {
+  ASSAULT_HOLD_RADIUS_V7,
   activeMissionDirectiveV7,
+  assaultHoldsTargetV7,
   commandRelocationsV7,
   directivePlanForViewV7,
   guardGarrisonV7,
@@ -287,6 +291,117 @@ describe("the plan hook", () => {
   });
 });
 
+// The ASSAULT directive (`pulp_wars-v642.5`): a seat commits its army to
+// one place even against a prepared line. TEST_ASSAULT: a Goblin war band
+// of five, massed three tiles from a walled Human capital with four
+// defenders; an undefended Human town lies nearer the Goblins.
+describe("ASSAULT", () => {
+  const target = { x: 2, y: 8 };
+
+  it("resolves, validates its target, and holds no unit on a leash", () => {
+    const { view } = aiTurn("TEST_ASSAULT");
+    expect(activeMissionDirectiveV7(view)).toEqual({
+      kind: "ASSAULT",
+      target,
+    });
+    const plan = directivePlanForViewV7(view);
+    expect(plan?.campaign).toEqual({ kind: "ASSAULT", target });
+    expect(plan?.leashed.size).toBe(0);
+    const ready = queryAiReadyCommandsV7(view);
+    expect(leashReadyCommandsV7(view, plan ?? null, ready)).toBe(ready);
+    // A hostile unit holds the target within the radius, not beyond.
+    expect(assaultHoldsTargetV7(plan ?? null, { x: 5, y: 8 })).toBe(true);
+    expect(
+      assaultHoldsTargetV7(plan ?? null, {
+        x: 2 + ASSAULT_HOLD_RADIUS_V7 + 1,
+        y: 8,
+      }),
+    ).toBe(false);
+    expect(assaultHoldsTargetV7(null, target)).toBe(false);
+    const base = mission("TEST_ASSAULT");
+    expect(() =>
+      validateMissionDirectivesV7({
+        ...base,
+        seats: base.seats.map((item, index) =>
+          index === 1
+            ? {
+                ...item,
+                directive: { kind: "ASSAULT", target: { x: 11, y: 0 } },
+              }
+            : item,
+        ),
+      }),
+    ).toThrow(/off the board/);
+  });
+
+  it("marches every free unit on the target alone: no scout, no village, no raid", () => {
+    const { view } = aiTurn("TEST_ASSAULT");
+    const normal = jobs(asSkirmish(view));
+    // NORMAL scouts, and marches on the undefended town.
+    expect(normal.assignments.some((item) => item.job === "EXPLORE")).toBe(
+      true,
+    );
+    expect(
+      normal.assignments.some(
+        (item) => item.job === "ATTACK" && item.at.x === 8 && item.at.y === 8,
+      ),
+    ).toBe(true);
+    const assault = jobs(view);
+    expect(assault.assignments).toHaveLength(ownLand(view).length);
+    for (const item of assault.assignments)
+      expect(item).toMatchObject({ job: "ATTACK", at: target });
+  });
+
+  it("goes in against the line that holds the target, which NORMAL leaves alone", () => {
+    const { view } = aiTurn("TEST_ASSAULT");
+    const normal = inspectNormalArmyV7(asSkirmish(view)).positions;
+    const assault = inspectNormalArmyV7(view).positions;
+    expect(normal).toHaveLength(1);
+    expect(assault).toHaveLength(1);
+    // The defenders outweigh the war band behind their Walls: NORMAL does
+    // not commit; the assault does.
+    expect(normal[0]?.hostile).toBeGreaterThan(normal[0]?.near ?? 0);
+    expect(normal[0]?.mode).toBe("NONE");
+    expect(assault[0]?.mode).toBe("COMMIT");
+    // The best unit command walks into the defenders' reach only under the
+    // assault.
+    const defenders = view.units.filter(
+      (unit) => unit.ownerId !== view.viewer.id,
+    );
+    const beside = (at: CoordV7): boolean =>
+      defenders.some(
+        (unit) =>
+          Math.max(Math.abs(unit.at.x - at.x), Math.abs(unit.at.y - at.y)) <= 1,
+      );
+    const firstStep = (decision: NormalAiDecisionV7) => {
+      const move = decision.candidates.find(
+        (candidate) => candidate.command.kind === "MOVE",
+      )?.command;
+      return move?.kind === "MOVE" ? move.path.at(-1) : undefined;
+    };
+    const assaultStep = firstStep(chooseNormalCommandV7(view));
+    const normalStep = firstStep(chooseNormalCommandV7(asSkirmish(view)));
+    expect(assaultStep !== undefined && beside(assaultStep)).toBe(true);
+    expect(normalStep !== undefined && beside(normalStep)).toBe(false);
+  });
+
+  it("attacks the walled defenders in its own turn", () => {
+    const { state, aiId } = aiTurn("TEST_ASSAULT");
+    let current = state;
+    const attacks: CommandV7[] = [];
+    for (let step = 0; step < 60; step += 1) {
+      const command = chooseNormalCommandV7(viewForV7(current, aiId)).command;
+      if (command === null) throw new Error("no command");
+      const applied = applyCommandV7(current, aiId, command);
+      if (!applied.accepted) throw new Error(applied.error.code);
+      if (command.kind === "ATTACK") attacks.push(command);
+      current = applied.state;
+      if (command.kind === "END_TURN") break;
+    }
+    expect(attacks.length).toBeGreaterThanOrEqual(2);
+  });
+});
+
 describe("the leash", () => {
   it("lists the units a command relocates", () => {
     const at = { x: 1, y: 1 };
@@ -380,7 +495,11 @@ describe("the leash", () => {
     // Every own unit stands outside a one-tile zone it cannot reach.
     const { view } = aiTurn("TEST_HOLD", exploredAll);
     const plan = directivePlanForViewV7(view);
-    if (plan === null || plan.campaign.kind === "RUSH")
+    if (
+      plan === null ||
+      plan.campaign.kind === "RUSH" ||
+      plan.campaign.kind === "ASSAULT"
+    )
       throw new Error("no HOLD plan");
     const ready = queryAiReadyCommandsV7(view);
     const boxed = leashReadyCommandsV7(

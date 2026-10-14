@@ -9,6 +9,8 @@ import {
   type GameStateV7,
   type MatchSetupV7,
   type PlayerEventV7,
+  missionByIdV7,
+  missionMatchSetupV7,
 } from "../../src/engine/index";
 import {
   CITY_NAME_LISTS_V7,
@@ -23,7 +25,9 @@ import {
   cityNameEntryV7,
   cityNameSitesV7,
   cityNameV7,
+  missionStoryNamesV7,
   shuffledCityNamesV7,
+  villageStoryNameV7,
 } from "../../src/render/city-names-presentation-v7";
 import {
   CITY_NAME_HIDDEN_CELL_PX_V7,
@@ -502,5 +506,68 @@ describe("the city name plate", () => {
         "Aldmere",
       ),
     ).toBeNull();
+  });
+});
+
+// Story names (`pulp_wars-v642.5`, docs/product/CAMPAIGN.md section 10.5):
+// a campaign mission names its places, and its board shows those names.
+describe("story names on a mission board", () => {
+  const definition = missionByIdV7("FRONTIER_9");
+  if (definition === null) throw new Error("FRONTIER_9 is not registered");
+  const missionSetup = missionMatchSetupV7(definition);
+  if (missionSetup === null) throw new Error("FRONTIER_9 has no setup");
+  const created = match(missionSetup);
+  // The whole board in sight, so that every village is on the plan.
+  const state: GameStateV7 = {
+    ...created,
+    players: created.players.map((player) => ({
+      ...player,
+      explored: created.board.tiles.map((tile) => tile.at),
+    })),
+  };
+  const view = viewForV7(state, state.humanPlayerId);
+
+  it("names every city of the mission by its story name", () => {
+    const byTile = new Map(
+      definition.seats.flatMap((seat) =>
+        seat.cities.map((city) => [`${city.at.x},${city.at.y}`, city.name]),
+      ),
+    );
+    for (const city of state.cities)
+      expect(cityNameV7(view, city)).toBe(
+        byTile.get(`${city.at.x},${city.at.y}`),
+      );
+    const sugarcrest = state.cities.find(
+      (city) => city.at.x === 7 && city.at.y === 8,
+    );
+    if (sugarcrest === undefined) throw new Error("no Sugarcrest");
+    expect(cityNameV7(view, sugarcrest)).toBe("Sugarcrest");
+    expect(cityAccessibleNameV7(view, sugarcrest)).toBe("Capital Sugarcrest");
+  });
+
+  it("labels a named village on the board before anyone takes it", () => {
+    expect(villageStoryNameV7(view, { x: 5, y: 14 })).toBe("Riftwatch");
+    expect(villageStoryNameV7(view, { x: 2, y: 5 })).toBeNull();
+    const plan = buildBoardRenderPlanV7(view, [], {
+      selection: null,
+      selectedUnitId: null,
+      selectedAchievement: null,
+    });
+    const riftwatch = plan.entries.find((entry) => entry.key === "site:5,14");
+    expect(riftwatch?.cityName).toBe("Riftwatch");
+    expect(riftwatch?.label).toBe("Village Riftwatch");
+    const unnamed = plan.entries.find((entry) => entry.key === "site:2,5");
+    expect(unnamed?.label).toBe("Village");
+    expect(unnamed?.cityName).toBeUndefined();
+  });
+
+  it("keeps the dealt names on any other board and on a stale revision", () => {
+    expect(missionStoryNamesV7(setup(3)).size).toBe(0);
+    const stale: MatchSetupV7 = {
+      ...missionSetup,
+      mission: { id: definition.id, revision: definition.revision + 1 },
+    };
+    expect(missionStoryNamesV7(stale).size).toBe(0);
+    expect(missionStoryNamesV7(missionSetup).size).toBe(9);
   });
 });

@@ -193,13 +193,19 @@ export const FRONTIER_10_V7: MissionDefinitionV7 = {
       ],
       cities: [
         {
+          name: "Fort Steele",
           at: { x: 3, y: 13 },
           level: 5,
           rewards: ["STOCKPILE", "WALLS", "BOOM", "TREASURY"],
           landGrant: true,
         },
-        { at: { x: 4, y: 8 }, level: 2, rewards: ["STOCKPILE"] },
-        { at: { x: 7, y: 14 }, level: 1, rewards: [] },
+        {
+          name: "Northwatch",
+          at: { x: 4, y: 8 },
+          level: 2,
+          rewards: ["STOCKPILE"],
+        },
+        { name: "Millford", at: { x: 7, y: 14 }, level: 1, rewards: [] },
       ],
       units: [
         { role: "GUARD", at: { x: 3, y: 13 } },
@@ -229,6 +235,7 @@ export const FRONTIER_10_V7: MissionDefinitionV7 = {
       ],
       cities: [
         {
+          name: "Grubnak's Hall",
           at: { x: 16, y: 14 },
           level: 3,
           rewards: ["STOCKPILE", "SURVEY"],
@@ -271,13 +278,14 @@ export const FRONTIER_10_V7: MissionDefinitionV7 = {
       ],
       cities: [
         {
+          name: "The Lodge",
           at: { x: 10, y: 2 },
           level: 3,
           rewards: ["STOCKPILE", "WALLS"],
           landGrant: true,
         },
-        { at: { x: 7, y: 2 }, level: 1, rewards: [] },
-        { at: { x: 13, y: 1 }, level: 1, rewards: [] },
+        { name: "Candlewick", at: { x: 7, y: 2 }, level: 1, rewards: [] },
+        { name: "Greyhood", at: { x: 13, y: 1 }, level: 1, rewards: [] },
       ],
       units: [
         { role: "JUGGERNAUT", at: { x: 10, y: 2 } },
@@ -334,8 +342,18 @@ export const FRONTIER_10_V7: MissionDefinitionV7 = {
         "FORTIFICATION",
       ],
       cities: [
-        { at: { x: 7, y: 5 }, level: 2, rewards: ["STOCKPILE"] },
-        { at: { x: 13, y: 8 }, level: 2, rewards: ["STOCKPILE"] },
+        {
+          name: "Hollow Barrow",
+          at: { x: 7, y: 5 },
+          level: 2,
+          rewards: ["STOCKPILE"],
+        },
+        {
+          name: "Bonefield",
+          at: { x: 13, y: 8 },
+          level: 2,
+          rewards: ["STOCKPILE"],
+        },
       ],
       units: [
         { role: "FIGHTER", at: { x: 7, y: 5 } },

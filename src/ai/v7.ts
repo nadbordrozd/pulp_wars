@@ -732,6 +732,7 @@ import {
   type CultAgainstMoveValueV7,
 } from "./v7-cult-against";
 import {
+  assaultHoldsTargetV7,
   directivePlanForViewV7,
   leashReadyCommandsV7,
   type DirectivePlanV7,
@@ -8433,7 +8434,14 @@ function armyAssaultV7(context: PolicyContextV7): ArmyAssaultV7 {
         nearUnits: upUnits,
         comingUnits: upUnits,
       }) === "COMMIT";
-    const weighed = armyAssaultModeV7({ ...total, contact: joined });
+    // `pulp_wars-v642.5`: a mission seat's ASSAULT goes in against the
+    // position that holds its target whatever that position weighs (it
+    // still masses first).
+    const weighed = group.some((unit) =>
+      assaultHoldsTargetV7(context.directive, unit.at),
+    )
+      ? "COMMIT"
+      : armyAssaultModeV7({ ...total, contact: joined });
     const position: ArmyPositionV7 = {
       hostiles: group,
       mode: weighed === "COMMIT" && !massed ? "STAGE" : weighed,
@@ -18672,6 +18680,13 @@ function endgameMoveValueV7(
  */
 function chokepointAssaultOnV7(context: PolicyContextV7): boolean {
   if (chokepointAssaultV7(context.view)) return true;
+  // `pulp_wars-v642.5`: a mission seat's ASSAULT on the front's city.
+  const front = context.chokepoint;
+  if (
+    front !== null &&
+    assaultHoldsTargetV7(context.directive, front.target.at)
+  )
+    return true;
   return chokepointNumbersV7(context);
 }
 

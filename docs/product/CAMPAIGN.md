@@ -60,21 +60,21 @@ the **map** is now the generator's output with recorded edits
 ([section 10.1](#101-objectives-are-data)), and there are **triggers** of
 one kind, reinforcement waves ([section 10.3](#103-reinforcements)).
 
-| Question               | Decision                                                                                                                                                                                                                                                                              |
-| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Map                    | Hand-authored ASCII layouts on the existing square sizes (11, 14, 16), built into an ordinary `GameStateV7` by a deterministic builder, like the [Showcase](RULESET_7_CURRENT.md#25-showcase-setup). No seeded generation, no overrides.                                              |
-| Where a mission lives  | Engine data: `src/engine/v7/missions/<id>.ts`, one object per mission. Story, briefing, hints, and chapter order: `src/campaign/`.                                                                                                                                                    |
-| How a match knows it   | New map type `MISSION` plus a setup field `mission: { id, revision }`. The state is an ordinary state; no new state field.                                                                                                                                                            |
-| Objective              | `DOMINATION` only, which is the existing victory rule. The objective is a one-member typed union so later kinds are additive.                                                                                                                                                         |
-| Forbidden technologies | Rule-level, generalizing the existing Dry Land Naval rule: refused by the reducer, never offered, shown "Unavailable" in the tree.                                                                                                                                                    |
-| AI tweaks              | Per-seat **directive**: `NORMAL`, `RUSH`, `HOLD(zone)`, `GUARD(zone, garrison)`, each optionally `untilRound`. A leash filter on the Normal AI's ready commands plus parameters to its existing unit-job plan. No fork; `NORMAL` and every non-mission match decide byte-identically. |
-| Triggers               | None. `untilRound` is the only time switch, and it is AI-only (a pure function of the public round).                                                                                                                                                                                  |
-| Saves and replays      | The setup carries `mission.id` and `mission.revision`; replays rebuild the mission from the bundled definition. A changed initial state bumps the mission revision, never the ruleset; old saves of that mission are refused with a clear message.                                    |
-| Progress               | Separate localStorage key `pulpWars.campaign.v1`, holding only completed missions. Unlocks are derived, never stored. It survives ruleset identity changes.                                                                                                                           |
-| Skirmish               | Stays fully unlocked. Unlocks gate which factions you may lead in campaign missions that offer a choice ([section 4.3](#43-what-unlocks-gate)).                                                                                                                                       |
-| Mid-mission resume     | The one existing autosave slot holds whichever match is current, mission or skirmish.                                                                                                                                                                                                 |
-| UI                     | A Skirmish / Campaign switch on the front screen, a mission list, a briefing, mission-aware Victory and Defeat dialogs, an unlock notice. No new production art: faction emblems reuse the existing portraits.                                                                        |
-| Teaser                 | Four missions: Humans vs Goblins (rush), Humans vs a three-city Goblin realm, Goblins vs a turtling Undead, Humans-or-Goblins vs the Undead isthmus fortress with naval technology forbidden.                                                                                         |
+| Question               | Decision                                                                                                                                                                                                                                                                                                                      |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Map                    | Hand-authored ASCII layouts on the existing square sizes (11, 14, 16), built into an ordinary `GameStateV7` by a deterministic builder, like the [Showcase](RULESET_7_CURRENT.md#25-showcase-setup). No seeded generation, no overrides.                                                                                      |
+| Where a mission lives  | Engine data: `src/engine/v7/missions/<id>.ts`, one object per mission. Story, briefing, hints, and chapter order: `src/campaign/`.                                                                                                                                                                                            |
+| How a match knows it   | New map type `MISSION` plus a setup field `mission: { id, revision }`. The state is an ordinary state; no new state field.                                                                                                                                                                                                    |
+| Objective              | `DOMINATION` only, which is the existing victory rule. The objective is a one-member typed union so later kinds are additive.                                                                                                                                                                                                 |
+| Forbidden technologies | Rule-level, generalizing the existing Dry Land Naval rule: refused by the reducer, never offered, shown "Unavailable" in the tree.                                                                                                                                                                                            |
+| AI tweaks              | Per-seat **directive**: `NORMAL`, `RUSH`, `HOLD(zone)`, `GUARD(zone, garrison)`, `ASSAULT(target)` (`pulp_wars-v642.5`), each optionally `untilRound`. A leash filter on the Normal AI's ready commands plus parameters to its existing unit-job plan. No fork; `NORMAL` and every non-mission match decide byte-identically. |
+| Triggers               | None. `untilRound` is the only time switch, and it is AI-only (a pure function of the public round).                                                                                                                                                                                                                          |
+| Saves and replays      | The setup carries `mission.id` and `mission.revision`; replays rebuild the mission from the bundled definition. A changed initial state bumps the mission revision, never the ruleset; old saves of that mission are refused with a clear message.                                                                            |
+| Progress               | Separate localStorage key `pulpWars.campaign.v1`, holding only completed missions. Unlocks are derived, never stored. It survives ruleset identity changes.                                                                                                                                                                   |
+| Skirmish               | Stays fully unlocked. Unlocks gate which factions you may lead in campaign missions that offer a choice ([section 4.3](#43-what-unlocks-gate)).                                                                                                                                                                               |
+| Mid-mission resume     | The one existing autosave slot holds whichever match is current, mission or skirmish.                                                                                                                                                                                                                                         |
+| UI                     | A Skirmish / Campaign switch on the front screen, a mission list, a briefing, mission-aware Victory and Defeat dialogs, an unlock notice. No new production art: faction emblems reuse the existing portraits.                                                                                                                |
+| Teaser                 | Four missions: Humans vs Goblins (rush), Humans vs a three-city Goblin realm, Goblins vs a turtling Undead, Humans-or-Goblins vs the Undead isthmus fortress with naval technology forbidden.                                                                                                                                 |
 
 ## 2. Architecture
 
@@ -329,6 +329,12 @@ export type MissionDirectiveV7 =
       readonly zone: readonly RectV7[];
       readonly garrison: number;
       readonly untilRound?: number;
+    }
+  // pulp_wars-v642.5
+  | {
+      readonly kind: "ASSAULT";
+      readonly target: CoordV7;
+      readonly untilRound?: number;
     };
 ```
 
@@ -343,6 +349,7 @@ plays `NORMAL`. Nothing reads hidden state, the clock, or the PRNG.
 | `RUSH`                    | while a hostile city is known: no village, chest, or exploration jobs; every free land unit takes the `ATTACK` job; waves set out at once (wave size 1). With no hostile city known it plays `NORMAL` until one is. | none                             | "they attack straight away", in a stream            |
 | `HOLD(zone)`              | no `ATTACK`, `VILLAGE`, `CHEST`, or `EXPLORE` job whose target lies outside the zone; a unit outside the zone gets a new `RETURN` job to the nearest zone tile                                                      | every own land unit              | "never leaves home, never attacks first"            |
 | `GUARD(zone, garrison n)` | the `n` garrison units get the `RETURN` job until inside, then stay; every other unit plays `NORMAL`                                                                                                                | the garrison only                | "protects a place" while the rest of the army roams |
+| `ASSAULT(target)`         | as `RUSH`, but while the city on `target` is a known hostile city it is the only city marched on; and the position of hostile units that holds it (any of them within 3 tiles) is assaulted whatever it weighs      | none                             | "they storm that place, even against a wall"        |
 
 - **The leash.** For a leashed unit, the filter removes from the policy's
   ready commands every command that would end the unit's move outside the
@@ -367,6 +374,18 @@ plays `NORMAL`. Nothing reads hidden state, the clock, or the PRNG.
   production are untouched. With `NORMAL`, and in every non-mission match,
   the filter is the identity and the plan facts are unchanged, so decisions
   are byte-identical (checked by the release corpus and the golden replay).
+- **`ASSAULT`** (`pulp_wars-v642.5`). Hand play of missions 6 and 8 found
+  the Normal AI's sound rule, go in only where the army outweighs the
+  enemy's position, turning a siege into quiet rounds: the attackers stood
+  outside a prepared line and sniped, and a player who stayed home was
+  never attacked at all ([section 11.5](#115-what-the-hand-play-taught)).
+  `ASSAULT` keeps every other rule of the army (it masses before it goes
+  in, it still takes the kill and the safe shot first) and changes one
+  weight: the position that holds its target counts as outweighed. It is a
+  third hook into the policy, inside the army's weighing of positions
+  (`armyAssaultV7`) and the siege of a single-file front
+  (`chokepointAssaultOnV7`), and like the other two it is the identity
+  for every other directive and every non-mission match.
 - **Revealing the target is data, not cheating.** A `RUSH` seat knows where
   to go because the mission's `reveal` rectangles include the human's
   capital, exactly as if its scouts had been there; the AI still reads only
@@ -1334,7 +1353,11 @@ Catapult in round 12); your relief of three (a Steam Tank among them) in
 round 9. Land Grants and Farming are forbidden to everybody: the enemy
 camps field no giant of their own, and yours comes only from a Monument.
 Objective `SURVIVE { rounds: 14, protect: [DEEP_GATE] }`, stars
-`KEEP_CITIES` and `UNIT_ALIVE THANE`.
+`KEEP_CITIES` and `UNIT_ALIVE THANE`. Since `pulp_wars-v642.5` both
+enemies `ASSAULT` the Deep Gate in the middle rounds (the Ice Folk from
+round 5, the Baron's men from round 6, both until round 10), which the
+first build's quiet middle rounds asked for
+([section 11.12](#1112-campaign-follow-ups-pulp_wars-v6425)).
 
 **7, The Island That Time Forgot** (built, `pulp_wars-v642.3`; the record
 is [section 11.8](#118-the-island-that-time-forgot)). Archipelago 16, seed
@@ -1372,7 +1395,9 @@ Grunts, a Ray Gunner and two Saucers hunt; forbidden the Mothership's
 technology and everything that grows the capital into a second Colossus
 (Farming, Forestry, Engineering, Explosives, Roads, Land Grants and what
 follows them). Seat 2, Humans (thralls, a camp in the south): a level 2
-town, `RUSH`, with waves of three in rounds 5, 9 and 13. Objective
+town, `RUSH` until round 9 and then `ASSAULT` on your town of Egg Rock
+(`pulp_wars-v642.5`: a player who stayed home was never attacked), with
+waves of three in rounds 5, 9 and 13. Objective
 `KILL { units: [OVERMIND], byRound: 20 }`, stars `WITHIN_ROUNDS 15` and
 `UNIT_ALIVE OLD_QUEEN`. There are three ways in: the Rim (along the north;
 the peaks north of the crater are two tiles from the Overmind), the Pass
@@ -1534,18 +1559,31 @@ Events: `MATCH_ENDED` as for every end (the cause is on the outcome), and
 ### 10.3 Reinforcements
 
 `reinforcements: [{ seat, round, units: [{ role, at }] }]`: a wave arrives
-at its seat's Start Turn of that round, on or beside the written tile, with
-no home city. Waves are the scripted events of the framework: a relief
+at its seat's Start Turn of that round, on the written tile or the nearest
+free one, with no home city. Waves are the scripted events of the framework: a relief
 column, a landing party, the next assault of a siege. They are
 deterministic and unconditional (a wave does not depend on what happened),
 which keeps replays and the AI's view simple.
+
+**A wave arrives calmly** (`pulp_wars-v642.5`, `7r83`). It arrives with
+its turn spent: nothing in it moves or attacks until its seat's next
+turn. And it never arrives next to a unit of a seat hostile to it: when
+the written tile is taken, cannot hold the unit, or is next to such a
+unit, the unit comes on the nearest free tile that is not, searched ring
+by ring to the edge of the board (`(y, x)` order within a ring). Before,
+a wave could appear up to two tiles from its tile, in the player's line,
+and attack at once (a Summoner did in mission 10, a wave of five killed a
+squad in mission 9's fourth configuration). Standing on a wave's tiles
+does not cancel it: it comes in further out. A wave is announced by the hints or musters out of sight, and the turn it
+arrives is the player's to answer it.
 
 ### 10.4 Directive schedules
 
 A seat's `directive` may be a list; each entry may carry `fromRound` and
 `untilRound`, and the first entry whose rounds hold the current round is
-played (`HOLD` until round 6, then `RUSH`). The kinds are the four of
-[section 2.5](#25-ai-directives); nothing else about the Normal AI changed.
+played (`HOLD` until round 6, then `RUSH`). The kinds are those of
+[section 2.5](#25-ai-directives): the first four, and `ASSAULT` since
+`pulp_wars-v642.5`, used by missions 6 and 8.
 An allied AI seat needs no directive of its own: with `teams` it treats the
 human as an ally in every rule and plays its ordinary game against the
 rest.
@@ -1626,6 +1664,27 @@ board.
   crosshair (this one must die). No tile coordinate is shown anywhere; a
   distance is a count of steps. The marks do not move, so the Motion
   setting does not concern them.
+- **Story names** (`pulp_wars-v642.5`): a mission names its cities
+  (`MissionCityV7.name`) and may name a landmark that is a neutral village
+  (`MissionLandmarkV7.name`). On a mission board those names replace the
+  ones dealt from the factions' lists (`src/render/city-names-presentation-v7.ts`)
+  everywhere a city is named: its plate on the board, the city panel, the
+  log and toasts, and the text harness (`c12 Sugarcrest`); a named village
+  wears its plate before anyone takes it, and the city founded there keeps
+  the name. The names are presentation, not state: they change no hash
+  and need no revision bump. Every city of the ten missions is named, and a
+  landmark's name in the chapter ("the Lodge") is its board name ("The
+  Lodge") in a sentence, which the chapter test holds. The places of part
+  one: Fort Hollow and Drum Camp (1); Fort Ashby, Millbrook, the Warrens,
+  Stinkwell and Muckgate (2); Wolfden, Mudpot, the Barrow and Gravesend (3);
+  Camp Concord, Ferry Rest, the Ashen Tower, the Bone Gate and Cinderfield
+  (4); Lantern Hill, Gallows Cross, Kessler's Toll, Whitefang and the
+  Ironbraid Gate (5); the Deep Gate, Copperstep, Rime Camp and Fort Bullion
+  (6); Coldharbour, Skerry, Fernmaw, the Crater and Port Kessler (7);
+  Thunder Nest, Egg Rock, the Glass Ship and Kessler's Camp (8); Saucer
+  Field, Red Dust, Sugarcrest, Gumdrop, Wormwood, Coffin Hill, Spitewood,
+  Sourmash and Riftwatch (9); Fort Steele, Northwatch, Millford, Grubnak's
+  Hall, the Lodge, Candlewick, Greyhood, Hollow Barrow and Bonefield (10).
 - **Debrief**: "Mission complete" or "Mission failed", one line that says
   why ("The Warrens is yours.", "Out of time.", "Doctor Crane was killed."),
   on a win the stars with each goal marked earned or missed, the closing
@@ -1653,7 +1712,9 @@ recorded with `1 + the secondary goals that hold at the victory`.
 
 ### 10.8 Identity
 
-The ruleset identity is `pulp-wars-poc-7r82`. [Section 3](#3-objectives)
+The ruleset identity was `pulp-wars-poc-7r82` for the framework, and is
+`pulp-wars-poc-7r83` since waves arrive calmly ([section 10.3](#103-reinforcements),
+`pulp_wars-v642.5`; a match that is not a mission plays as at `7r82`). [Section 3](#3-objectives)
 already said that an objective kind is a rules change with an identity
 bump, because the objective decides the outcome and the outcome is state a
 replay must reproduce; the outcome also gained a field (`cause`), the event
@@ -1761,7 +1822,8 @@ Raider; they are the only two of the mission.
 - Keep a seat's starting reveal under half the board, or it starts with
   the Explorer Monument.
 - A `RUSH` seat does not throw itself at a prepared line; give the player a
-  reason to come out.
+  reason to come out, or (since `pulp_wars-v642.5`) give the seat an
+  `ASSAULT` on the place it must take.
 - Do not start the player far over capacity: nothing can be replaced.
 - (Missions 5 and 6.) The Normal AI attacks what it can reach from where it
   is safe and does not march on a strong position: a siege needs waves that
@@ -1814,8 +1876,8 @@ transcripts are in `scratchpad/pulp_wars-v642.2/transcripts/`.
 **What nearly went wrong:** a lone scout dies on round 1 on either road;
 the Doctor dies in one enemy turn on any tile next to two enemies, so every
 step is counted against what can reach it. The pass on the final
-configuration (the Ice camp one tile further off and no Explosives for the
-AI) was not replayed: both changes take pressure off that road.
+configuration was replayed by `pulp_wars-v642.5` and won in round 13
+([section 11.12](#1112-campaign-follow-ups-pulp_wars-v6425)).
 
 ### 11.7 The Deep Gate
 
@@ -2098,10 +2160,100 @@ Two things about the framework rather than the Cult:
   unit whose tile is taken appears up to two tiles away, which can be in
   the player's line (a Summoner did). Missions write their waves where the
   player is not expected and say when they come; a rule that a wave
-  arrives with its turn spent would be fairer.
+  arrives with its turn spent would be fairer. (Done by
+  `pulp_wars-v642.5`, [section 10.3](#103-reinforcements).)
 - **The Normal AI keeps a unit on a center only while it sees a hostile
   unit near.** An allied or guarding seat needs a starting reveal that
   covers its approaches ([section 10.4](#104-directive-schedules)).
+
+### 11.12 Campaign follow-ups (`pulp_wars-v642.5`)
+
+Story names on every board, waves that arrive with their turn spent and
+never beside a hostile unit (`7r83`), and the `ASSAULT` directive for
+missions 6 and 8. Every mission whose play those changed was played again
+by hand through the text harness; the transcripts are in
+`scratchpad/pulp_wars-v642.5/transcripts/`. Missions 1 to 4 have no waves
+and no new directive and were not replayed. The star thresholds are kept:
+no replay was a walkover, and every win came within or just inside the
+target rounds of [section 9.2](#92-the-ten-missions) by a player who knew
+the missions, as before.
+
+- **Mission 5, the pass** (the replay [section 11.6](#116-dead-mens-road)
+  asked for). **Won in round 13, three stars, one unit lost** (a Ghoul,
+  caught at the Ice camp by a Sled's Bolas, a Snow Hunter and a Yeti).
+  Two Liches with Pestilence shot the toll fort from three tiles (the
+  plague splash wore down the whole garrison), the Zombies' and Skeletons'
+  Breach ignored the Walls, and the bitten Guard on the center rose as a
+  Zombie of yours: the fort fell in round 7 and the Human seat with it.
+  Roads from Gallows Cross through the fort carried the Doctor two steps
+  a turn; the round 9 wave (two Yetis and a Sled) arrived at its own tiles
+  in the north-east and was shot by the Liches from the fort before it
+  reached the road. **What nearly went wrong:** in round 11 the Doctor
+  could have stepped to two tiles from the gate, and the second Yeti of
+  the wave stood unseen in the fog one step from that tile; scouting first
+  and waiting a round on the road was the difference.
+- **Mission 6 with `ASSAULT`.** **Won when round 14 ended, two stars**
+  (the Thane lost): the middle rounds are no longer quiet. The Ice Folk
+  went in at once (the peak Mole died in round 5 to three Yetis), the
+  Baron's men killed the south door's Hammerer in round 7, and their
+  Raider took the Gunner on Copperstep's center in round 8 and stood on it
+  (shot off the next turn). A Brass Titan came from the Explorer's
+  Monument in round 4 and a second from the Muster's in round 9, as in the
+  first build; two Blast Mountains on the northern peaks killed four
+  Yetis. **What went wrong:** a Titan sent onto the peaks was frozen by the
+  Ice Witch and killed (as section 11.7 warned), and in round 12 a Human
+  Knight's Overrun killed a Hammerer, the Thane and a Gunner in one charge
+  through the opened east door. **Played passively** (ending every turn
+  without a command) the Deep Gate fell in round 9 to the Ice Folk ("a
+  place you had to hold fell"); the first build's passive run had to
+  disband the garrison to lose.
+- **Mission 7.** **Won in round 12 by capturing the Crater, three
+  stars**, one unit lost. Rounds 1 to 7 replayed the first build's winning
+  line move for move (nothing before the first wave changed); the Baron's
+  landing party of round 8 now arrived away from the Frost Giant and the
+  Sleds beside the Crater, spent, instead of on the shore beside them, and
+  never reached the Crater. A round was lost to the Crater's center: the
+  giant killed the Caveman on it but cannot advance after a kill, and no
+  other unit could reach the center that turn (the second unit has to be
+  placed beforehand).
+- **Mission 8 with `ASSAULT`.** **Won in round 11, three stars** (the Old
+  Queen on 21 of 45), four units lost: the Queen on the Rim struck the
+  Overmind through its Shield (8 to 4) and a Spitter finished it with Acid,
+  as in the first build. **Played passively**, the thralls massed at their
+  camp, marched from round 9, attacked from round 13, took Egg Rock in
+  round 15 and killed eight of the nine dinosaurs by round 20; the first
+  build's passive run ended with nine units intact. The clock still ends a
+  passive game first.
+- **Mission 9.** **Won when round 16 ended, two stars** (Queen Praline
+  died in round 8, Riftwatch held): the waves still muster in their camps
+  out of sight, so the spent-on-arrival rule changed little here, and its
+  besiegers got no `ASSAULT`: they already storm the kingdom every round
+  (the first build's record has no quiet round to fix). The
+  kingdom's own Sugar Crashes and the first besiegers had taken Praline to
+  half her Hit Points by round 4; the block of Ray Gunners and a Shield
+  Projector at Riftwatch held the Goblins' southern road, and a Saucer's
+  charge on a Rocket Cart set off a chain of death blasts in round 14.
+  **What nearly went wrong:** Sugarcrest was down to one Toffee Trooper on
+  its center in round 15 with the Undead massed north of it, and every
+  city of the player stood at its unit limit from round 6, so the Coins
+  piled up (92 at the end) with nothing to train: grow Red Dust and
+  Riftwatch early for slots.
+- **Mission 10.** **Won in round 15, three stars**, six units lost. The
+  barrow fell in round 7 as before (the round 6 Undead wave rose two tiles
+  off and could not act on arrival); the Conqueror's Monument and a Farm
+  made it a level 5 city with a third Juggernaut that round, and the
+  Goblins eliminated the thralls in round 8. The Cult's Star-fall hit the
+  barrow three rounds running (a Juggernaut and two Catapults lost), and a
+  Horror and the wave killed the pushed-off Juggernaut. The win came from
+  two Knights: one Overrun chain cleared Candlewick, two Idol Bearers and a
+  Hexer in round 13, and in round 14 a Knight with Breach killed the
+  Summoner standing on the Lodge's center and advanced onto it (Favour 23,
+  no Summoner left to begin the rite). That is the Cult seat's weakness of
+  [section 11.11](#1111-the-stars-are-right) (its center held by whoever
+  is nearest). The Cult AI corrections of `pulp_wars-mch9.27` (a sturdy
+  garrison kept on a watched center, a Summoner that no longer advances
+  into the enemy line) landed after this replay; the round-20 star is kept
+  until the mission is played again on them.
 
 ## 12. The mission builder's guide
 
@@ -2124,7 +2276,9 @@ How to add a mission.
 4. **Seat it.** For each seat: faction (seat 0 may offer a choice), Coins,
    technologies, cities with levels and rewards, units by role, a reveal.
    Put every landmark of the objective inside seat 0's reveal. Name
-   landmarks and tag units in capitals (`GATE`, `ARCHIVIST`).
+   landmarks and tag units in capitals (`GATE`, `ARCHIVIST`), and give
+   every city its story name (`name: "Fort Hollow"`; a village landmark
+   too, when the story names it).
 5. **Set the objective**, the stars, the teams, the waves, and each AI
    seat's directive (a schedule when it changes with the round) and its own
    forbidden technologies.

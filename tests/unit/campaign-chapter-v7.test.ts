@@ -97,6 +97,11 @@ function playerText(): { readonly where: string; readonly text: string }[] {
         text,
       })),
     );
+    const definition = missionByIdV7(entry.missionId);
+    for (const item of definition?.seats ?? [])
+      for (const city of item.cities)
+        if (city.name !== undefined)
+          texts.push({ where: `${entry.missionId} city`, text: city.name });
   }
   return texts;
 }
@@ -190,7 +195,7 @@ describe("Chapter One data", () => {
       { role: "CAPTAIN", at: { x: 5, y: 11 }, home: 1, tag: "ARCHIVIST" },
     ]);
     expect(road.landmarks).toEqual([
-      { tag: "IRONBRAID_GATE", at: { x: 14, y: 2 } },
+      { tag: "IRONBRAID_GATE", at: { x: 14, y: 2 }, name: "Ironbraid Gate" },
     ]);
     expect(road.villages).toContainEqual({ x: 14, y: 2 });
     // The whole fort guards the pass; the raiders hold their camp until
@@ -252,6 +257,7 @@ describe("Chapter One data", () => {
     });
     expect(gate.landmarks).toEqual([{ tag: "DEEP_GATE", at: { x: 5, y: 6 } }]);
     expect(seat(gate, 0).cities[0]).toEqual({
+      name: "The Deep Gate",
       at: { x: 5, y: 6 },
       level: 4,
       rewards: ["STOCKPILE", "WALLS", "BOOM"],
@@ -259,16 +265,23 @@ describe("Chapter One data", () => {
     expect(
       seat(gate, 0).units.filter((unit) => unit.tag !== undefined),
     ).toEqual([{ role: "CAPTAIN", at: { x: 5, y: 6 }, tag: "THANE" }]);
-    // The Ice Folk rush from the start; the Baron holds until round 6.
-    expect(missionSeatDirectivesV7(seat(gate, 1))).toEqual([{ kind: "RUSH" }]);
-    expect(
-      missionSeatDirectivesV7(seat(gate, 2)).map((directive) => [
+    // The Ice Folk rush from the start; the Baron holds until round 6;
+    // both assault the Deep Gate in rounds 5 (6) to 10 (`pulp_wars-v642.5`).
+    const schedule = (index: number) =>
+      missionSeatDirectivesV7(seat(gate, index)).map((directive) => [
         directive.kind,
         directive.untilRound,
-      ]),
-    ).toEqual([
-      ["HOLD", 6],
-      ["RUSH", undefined],
+        directive.kind === "ASSAULT" ? directive.target : undefined,
+      ]);
+    expect(schedule(1)).toEqual([
+      ["RUSH", 5, undefined],
+      ["ASSAULT", 11, { x: 5, y: 6 }],
+      ["RUSH", undefined, undefined],
+    ]);
+    expect(schedule(2)).toEqual([
+      ["HOLD", 6, undefined],
+      ["ASSAULT", 11, { x: 5, y: 6 }],
+      ["RUSH", undefined, undefined],
     ]);
     // Three waves a side that escalate to a giant, from two directions (the
     // peaks north of the gate, the valley east of it), and the relief.
@@ -587,7 +600,11 @@ describe("Chapter One data", () => {
     ] as const)
       expect(martians.forbiddenTechnologies).toContain(technology);
     // The thralls rush, and three waves of three follow them.
-    expect(seat(hunt, 2).directive).toEqual({ kind: "RUSH" });
+    // `pulp_wars-v642.5`: from round 9 the thralls assault Egg Rock.
+    expect(seat(hunt, 2).directive).toEqual([
+      { kind: "RUSH", untilRound: 9 },
+      { kind: "ASSAULT", target: { x: 4, y: 7 } },
+    ]);
     expect(
       hunt.reinforcements?.map((wave) => [
         wave.seat,
@@ -752,6 +769,51 @@ describe("Chapter One data", () => {
           "string",
         );
     }
+  });
+
+  // Story names (`pulp_wars-v642.5`): the board says what the story says.
+  it("gives every city a story name that the briefing's places agree with", () => {
+    const bare = (name: string): string =>
+      name.replace(/^the\s+/i, "").toLowerCase();
+    for (const entry of CHAPTER_ONE_V7.missions) {
+      const definition = mission(entry.missionId);
+      const boardNames = new Map<string, string>();
+      for (const item of definition.seats)
+        for (const city of item.cities) {
+          expect(city.name, `${entry.missionId} city`).toBeTypeOf("string");
+          boardNames.set(`${city.at.x},${city.at.y}`, city.name as string);
+        }
+      for (const landmark of definition.landmarks ?? []) {
+        const key = `${landmark.at.x},${landmark.at.y}`;
+        const onBoard = boardNames.get(key) ?? landmark.name;
+        expect(onBoard, `${entry.missionId} ${landmark.tag}`).toBeTypeOf(
+          "string",
+        );
+        // "the Lodge" in a sentence is "The Lodge" on the board.
+        expect(bare(onBoard as string)).toBe(
+          bare(entry.names?.[landmark.tag] ?? ""),
+        );
+      }
+      for (const name of boardNames.values()) {
+        expect(name, entry.missionId).not.toMatch(/\d/);
+        expect(name.length, name).toBeLessThanOrEqual(16);
+      }
+    }
+    // The places the briefings and hints name are cities on the board.
+    const named = (id: string, ...places: string[]): void => {
+      const all = mission(id).seats.flatMap((item) =>
+        item.cities.map((city) => city.name),
+      );
+      for (const place of places) expect(all, id).toContain(place);
+    };
+    named("FRONTIER_1", "Fort Hollow");
+    named("FRONTIER_2", "Muckgate", "Stinkwell", "The Warrens");
+    named("FRONTIER_4", "Bone Gate");
+    named("FRONTIER_5", "Kessler's Toll");
+    named("FRONTIER_6", "The Deep Gate");
+    named("FRONTIER_8", "The Glass Ship");
+    named("FRONTIER_9", "Sugarcrest");
+    named("FRONTIER_10", "The Lodge", "Hollow Barrow", "Grubnak's Hall");
   });
 
   it("joins the Bone Neck shores only by the two tiles of the neck", () => {

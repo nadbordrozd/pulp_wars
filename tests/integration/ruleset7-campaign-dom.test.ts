@@ -264,7 +264,7 @@ describe("Ruleset 7 campaign front screen", () => {
     const objective = required(
       briefing.querySelector<HTMLElement>(".v7-briefing-objective"),
     );
-    expect(objective.textContent).toBe("ObjectiveCapture the Goblin camp.");
+    expect(objective.textContent).toBe("ObjectiveCapture Drum Camp.");
     expect(objective.dataset.objective).toBe("domination");
     expect(objective.querySelector("svg")?.dataset.icon).toBe("attack");
     // What the three stars are for.
@@ -394,9 +394,9 @@ describe("Ruleset 7 campaign front screen", () => {
       ),
     );
     expect(tracker.dataset.missionId).toBe("FRONTIER_1");
-    expect(tracker.textContent).toBe("Capture the Goblin camp.");
+    expect(tracker.textContent).toBe("Capture Drum Camp.");
     expect(tracker.getAttribute("aria-label")).toBe(
-      "Objective: Capture the Goblin camp.",
+      "Objective: Capture Drum Camp.",
     );
     requiredButton('[data-action="compact-menu"]').click();
     requiredButton('[data-action="settings"]').click();
@@ -404,7 +404,7 @@ describe("Ruleset 7 campaign front screen", () => {
       "Mission: Goblins at the Gate",
     );
     expect(document.querySelector(".v7-mission-objective")?.textContent).toBe(
-      "Objective: Capture the Goblin camp.",
+      "Objective: Capture Drum Camp.",
     );
     expect(document.querySelector(".v7-map-seed")).toBeNull();
     requiredButton('[data-action="close-overlay"]').click();
@@ -904,7 +904,7 @@ describe("Ruleset 7 mission objective in a match", () => {
     expect(roadShown.said).not.toMatch(/\d\s*,\s*\d/);
     // A flag on the gate, a star on the Doctor.
     expect(roadShown.marks).toEqual([
-      "GOAL:TILE:the Ironbraid gate@14,2",
+      "GOAL:TILE:the Ironbraid Gate@14,2",
       "ESCORT:UNIT:Doctor Crane@5,11",
     ]);
     expect(

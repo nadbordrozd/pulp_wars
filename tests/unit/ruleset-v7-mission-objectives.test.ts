@@ -144,15 +144,23 @@ describe("the identity", () => {
   // Objectives decide a match's outcome, an outcome carries its cause, a
   // seat may be forbidden technologies of its own, a mission may bring
   // reinforcements (a new event kind) and name teams: 7r82.
-  it("is 7r82 after 7r81, whose save key is obsolete", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r82");
-    expect(PRIOR_RULESET_7_IDS.at(-1)).toBe("pulp-wars-poc-7r81");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r82.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
+  it("was 7r82 after 7r81, both save keys obsolete now", () => {
+    expect(PRIOR_RULESET_7_IDS.slice(-2)).toEqual([
+      "pulp-wars-poc-7r81",
+      "pulp-wars-poc-7r82",
+    ]);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-2)).toEqual([
       "pulpWars.save.v7r81.current",
-    );
+      "pulpWars.save.v7r82.current",
+    ]);
     expect(DOMAIN_EVENT_KIND_ORDER_V7.at(-2)).toBe("REINFORCEMENT_ARRIVED");
     expect(DOMAIN_EVENT_KIND_ORDER_V7.at(-1)).toBe("MATCH_ENDED");
+  });
+  // A wave arrives with its turn spent and never beside a hostile unit
+  // (`pulp_wars-v642.5`): 7r83.
+  it("is 7r83 after 7r82", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r83");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r83.current");
   });
 });
 
@@ -360,6 +368,81 @@ describe("reinforcements", () => {
     const run = (): string =>
       canonicalHash(endTurns(start("TEST_SURVIVE"), 3).state);
     expect(run()).toBe(run());
+  });
+
+  // `pulp_wars-v642.5` (7r83): a wave arrives with its turn spent, and
+  // never beside a unit of a seat hostile to it.
+  it("arrive with their turn spent: no move and no attack until their next turn", () => {
+    const two = endTurns(start("TEST_SURVIVE"), 1).state;
+    const before = new Set(two.units.map((unit) => unit.id));
+    const mine = applyCommandV7(two, two.humanPlayerId, { kind: "END_TURN" });
+    if (!mine.accepted) throw new Error(mine.error.code);
+    const goblin = seatId(two, 1);
+    const fresh = mine.state.units.filter((unit) => !before.has(unit.id));
+    expect(fresh).toHaveLength(2);
+    for (const unit of fresh) {
+      expect(unit.activation).toMatchObject({
+        moved: true,
+        attacked: true,
+        handled: true,
+      });
+      const step = applyCommandV7(mine.state, goblin, {
+        kind: "MOVE",
+        unitId: unit.id,
+        to: at(unit.at.x, unit.at.y + 1),
+      } as never);
+      expect(step.accepted).toBe(false);
+    }
+    // At the seat's next Start Turn they act like any other unit.
+    const next = endTurns(mine.state, 1).state;
+    const goblinTurn = applyCommandV7(next, next.humanPlayerId, {
+      kind: "END_TURN",
+    });
+    if (!goblinTurn.accepted) throw new Error(goblinTurn.error.code);
+    for (const unit of goblinTurn.state.units.filter((item) =>
+      fresh.some((arrived) => arrived.id === item.id),
+    ))
+      expect(unit.activation.moved).toBe(false);
+  });
+
+  it("arrive on the nearest free tile that is not beside a hostile unit", () => {
+    const two = endTurns(start("TEST_SURVIVE"), 1).state;
+    const human = two.humanPlayerId;
+    const first = two.units.find((unit) => unit.ownerId === human);
+    if (first === undefined) throw new Error("TEST_SURVIVE has no human unit");
+    // Two human units stand on the written tile's ring: (5, 6) and (6, 4).
+    const placed: GameStateV7 = {
+      ...two,
+      nextEntityId: two.nextEntityId + 1,
+      units: [
+        ...two.units.map((unit) =>
+          unit.id === first.id ? { ...unit, at: at(5, 6) } : unit,
+        ),
+        { ...first, id: two.nextEntityId as UnitId, at: at(6, 4) },
+      ],
+    };
+    const mine = applyCommandV7(placed, human, { kind: "END_TURN" });
+    if (!mine.accepted) throw new Error(mine.error.code);
+    const tiles = mine.events.flatMap((event) =>
+      event.kind === "REINFORCEMENT_ARRIVED" ? [event.at] : [],
+    );
+    expect(tiles).toHaveLength(2);
+    const hostiles = mine.state.units.filter(
+      (unit) => unit.ownerId === human && unit.hp > 0,
+    );
+    const steps = (a: CoordV7, b: CoordV7): number =>
+      Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y));
+    for (const tile of tiles)
+      for (const unit of hostiles)
+        expect(steps(tile, unit.at)).toBeGreaterThan(1);
+    // The written tile is beside (5, 6); of its ring only the corner (4, 4)
+    // is beside neither, and the second Fighter goes a ring further out,
+    // (y, x) order: the corner (3, 3).
+    expect(tiles).toEqual([at(4, 4), at(3, 3)]);
+    // The same walk on a replay.
+    const again = applyCommandV7(placed, human, { kind: "END_TURN" });
+    if (!again.accepted) throw new Error(again.error.code);
+    expect(canonicalHash(again.state)).toBe(canonicalHash(mine.state));
   });
 });
 
@@ -826,6 +909,38 @@ describe("definition validity", () => {
         "a landmark off the board",
         edited("TEST_ESCORT", () => ({
           landmarks: [{ tag: "GATE", at: at(40, 2) }],
+        })),
+      ],
+      // Story names (`pulp_wars-v642.5`).
+      [
+        "a story name used twice",
+        edited("TEST_CAPTURE", (mission) => ({
+          seats: mission.seats.map((seat) => ({
+            ...seat,
+            cities: seat.cities.map((city) => ({ ...city, name: "Twinford" })),
+          })),
+        })),
+      ],
+      [
+        "a blank story name",
+        edited("TEST_CAPTURE", (mission) => ({
+          seats: mission.seats.map((seat, index) =>
+            index === 0
+              ? {
+                  ...seat,
+                  cities: seat.cities.map((city) => ({ ...city, name: " " })),
+                }
+              : seat,
+          ),
+        })),
+      ],
+      [
+        "a named landmark on a city",
+        edited("TEST_CAPTURE", (mission) => ({
+          landmarks: (mission.landmarks ?? []).map((landmark) => ({
+            ...landmark,
+            name: `${landmark.tag.charAt(0)}${landmark.tag.slice(1).toLowerCase()}`,
+          })),
         })),
       ],
       [

@@ -465,6 +465,7 @@ import { drawSettlementShadowV7 } from "./settlement-shadow-v7";
 import {
   cityAccessibleNameV7,
   cityNameV7,
+  villageStoryNameV7,
 } from "../city-names-presentation-v7";
 import {
   drawFogEdgeV7,
@@ -1560,7 +1561,9 @@ export function buildBoardRenderPlanV7(
           title(tile.improvement),
       });
     }
-    if (tile.site === "VILLAGE")
+    if (tile.site === "VILLAGE") {
+      // A mission's named village (`pulp_wars-v642.5`) wears its name.
+      const storyName = villageStoryNameV7(view, tile.at);
       entries.push({
         key: `site:${tile.at.x},${tile.at.y}`,
         kind: "SITE",
@@ -1568,8 +1571,10 @@ export function buildBoardRenderPlanV7(
         at: tile.at,
         assetId: "building-village",
         artSubject: "SITE:VILLAGE",
-        label: "Village",
+        label: storyName === null ? "Village" : `Village ${storyName}`,
+        ...(storyName === null ? {} : { cityName: storyName }),
       });
+    }
     if (
       (tile.fortificationLevel ?? 0) > 0 ||
       (tile.fieldDefense && tile.fortificationLevel === null)
@@ -4719,12 +4724,16 @@ export function drawBoardV7(input: {
           });
           context.restore();
         }
-        if (entry.kind === "CITY" && entry.cityName !== undefined) {
+        if (
+          (entry.kind === "CITY" || entry.kind === "SITE") &&
+          entry.cityName !== undefined
+        ) {
           const cityName = entry.cityName;
           const ownerColor = entry.ownerColor;
-          // Bead pulp_wars-2yc.29: the plate hops with its city.
+          // Bead pulp_wars-2yc.29: the plate hops with its city (a named
+          // village, `pulp_wars-v642.5`, has no hop).
           const hopY =
-            feedback === null
+            feedback === null || entry.kind !== "CITY"
               ? 0
               : feedback.cityHopCssPx(Number(entry.key.slice(5))) * camera.zoom;
           deferredCityNames.push(() =>

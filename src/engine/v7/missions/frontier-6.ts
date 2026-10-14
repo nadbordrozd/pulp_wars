@@ -146,11 +146,17 @@ export const FRONTIER_6_V7: MissionDefinitionV7 = {
       ],
       cities: [
         {
+          name: "The Deep Gate",
           at: { x: 5, y: 6 },
           level: 4,
           rewards: ["STOCKPILE", "WALLS", "BOOM"],
         },
-        { at: { x: 5, y: 9 }, level: 2, rewards: ["STOCKPILE"] },
+        {
+          name: "Copperstep",
+          at: { x: 5, y: 9 },
+          level: 2,
+          rewards: ["STOCKPILE"],
+        },
       ],
       units: [
         // Thane Brunhild Ironbraid.
@@ -188,7 +194,12 @@ export const FRONTIER_6_V7: MissionDefinitionV7 = {
       // the gate could be taken in round 4): taking it ends the Ice Folk and
       // their waves, and it is meant to cost more than holding out.
       cities: [
-        { at: { x: 11, y: 3 }, level: 3, rewards: ["STOCKPILE", "WALLS"] },
+        {
+          name: "Rime Camp",
+          at: { x: 11, y: 3 },
+          level: 3,
+          rewards: ["STOCKPILE", "WALLS"],
+        },
       ],
       units: [
         { role: "GUARD", at: { x: 11, y: 3 } },
@@ -200,7 +211,14 @@ export const FRONTIER_6_V7: MissionDefinitionV7 = {
         { role: "MARKSMAN", at: { x: 3, y: 2 } },
       ],
       reveal: { radius: 2, rects: [{ x0: 3, y0: 1, x1: 7, y1: 8 }] },
-      directive: { kind: "RUSH" },
+      // `pulp_wars-v642.5`: the middle rounds were quiet (a RUSH seat does
+      // not storm a prepared line), so from round 5 to round 10 the Ice
+      // Folk assault the Deep Gate itself.
+      directive: [
+        { kind: "RUSH", untilRound: 5 },
+        { kind: "ASSAULT", target: { x: 5, y: 6 }, untilRound: 11 },
+        { kind: "RUSH" },
+      ],
     },
     {
       // Baron Kessler's hired guns, in the valley to the south-east.
@@ -215,7 +233,12 @@ export const FRONTIER_6_V7: MissionDefinitionV7 = {
         "FORTIFICATION",
       ],
       cities: [
-        { at: { x: 11, y: 11 }, level: 3, rewards: ["STOCKPILE", "WALLS"] },
+        {
+          name: "Fort Bullion",
+          at: { x: 11, y: 11 },
+          level: 3,
+          rewards: ["STOCKPILE", "WALLS"],
+        },
       ],
       units: [
         { role: "GUARD", at: { x: 11, y: 11 } },
@@ -233,6 +256,8 @@ export const FRONTIER_6_V7: MissionDefinitionV7 = {
           zone: [{ x0: 8, y0: 8, x1: 13, y1: 13 }],
           untilRound: 6,
         },
+        // `pulp_wars-v642.5`: and so do the Baron's men, rounds 6 to 10.
+        { kind: "ASSAULT", target: { x: 5, y: 6 }, untilRound: 11 },
         { kind: "RUSH" },
       ],
     },

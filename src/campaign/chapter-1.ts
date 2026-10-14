@@ -9,9 +9,14 @@ import type { FactionIdV7 } from "../engine/v7/types";
  * objective, and directives live in its engine definition
  * (`src/engine/v7/missions/frontier-*.ts`), which `missionId` names.
  *
- * All ten missions are built (missions 9 and 10 by `pulp_wars-v642.4`).
- * An entry with `planned` would be a mission that is designed and listed
- * but not yet registered: it carries what its card shows until then.
+ * All ten missions are built (`pulp_wars-v642.1` to `pulp_wars-v642.4`),
+ * so no entry of this chapter has `planned`. The field stays for the next
+ * part (`pulp_wars-v642.5` decided to keep it): a mission that is designed
+ * and listed before it is registered carries in `planned` what its card
+ * shows ("Coming soon"), as missions 5 to 10 did until they were built.
+ * The places a mission names are on its engine definition
+ * (`MissionCityV7.name`, CAMPAIGN.md section 10.6); the `names` here are
+ * how a sentence calls a landmark or a tagged unit.
  *
  * Player-facing text follows the simplified interface overlay
  * (docs/ui/SCREEN_FLOW.md): short and plain, the pulp flavour confined to
@@ -56,7 +61,9 @@ export interface CampaignMissionEntryV7 {
   readonly names?: Readonly<Record<string, string>>;
   /**
    * A mission that is designed but not built yet: who leads, against whom,
-   * and on what size of board, for its card. Absent once it is registered.
+   * and on what size of board, for its card ("Coming soon"). Absent once it
+   * is registered; no entry of Chapter One has it any more, the next part
+   * will.
    */
   readonly planned?: {
     readonly leads: readonly FactionIdV7[];
@@ -94,7 +101,7 @@ export const CHAPTER_ONE_V7: CampaignChapterV7 = Object.freeze({
       format: "CONQUEST",
       briefing:
         "Fort Hollow was meant to be a quiet posting. Then the drums started. Grubnak's goblins are pouring out of the eastern hills, and they are not here to trade. Hold the fort, Captain Steele, then show them the way home.",
-      objective: "Capture the Goblin camp.",
+      objective: "Capture Drum Camp.",
       hints: Object.freeze([
         "Keep your Guards on the walls.",
         "Goblins hit hard together: don't stand alone in the open.",
@@ -110,11 +117,11 @@ export const CHAPTER_ONE_V7: CampaignChapterV7 = Object.freeze({
       name: "The Warrens",
       format: "CAPTURE",
       briefing:
-        "Grubnak has three strongholds and a grudge. The villages in the valley will answer to whoever gets there first. Be first, then dig him out of the Warrens.",
+        "Grubnak has three strongholds and a grudge: Muckgate on the road, Stinkwell in the hills, and the Warrens. The villages in the valley will answer to whoever gets there first. Be first, then dig him out.",
       objective: "Capture the Warrens.",
       hints: Object.freeze([
         "Villages become cities: take them early.",
-        "The outpost on the road falls first.",
+        "Muckgate, the outpost on the road, falls first.",
         "A giant alone gets mobbed: keep your army together.",
       ]),
       closing:
@@ -146,8 +153,8 @@ export const CHAPTER_ONE_V7: CampaignChapterV7 = Object.freeze({
       name: "Bone Neck",
       format: "CAPTURE",
       briefing:
-        "The Ashen Marquis waits beyond Bone Neck, a strip of land one cart wide. No boat will cross that water. Break his gate. Who leads the charge: Steele's Rangers or Grubnak's horde?",
-      objective: "Capture the gate.",
+        "The Ashen Marquis waits beyond Bone Neck, a strip of land one cart wide. No boat will cross that water. Break the Bone Gate. Who leads the charge: Steele's Rangers or Grubnak's horde?",
+      objective: "Capture the Bone Gate.",
       hints: Object.freeze([
         "One way in: the Neck.",
         "Catapults and Rocket Carts outrange the gate.",
@@ -157,8 +164,8 @@ export const CHAPTER_ONE_V7: CampaignChapterV7 = Object.freeze({
         "The gate falls, and a dry voice offers terms. 'I did not choose to wake, Captain. Someone is ringing a bell under the mountains. Find the bell-ringer, and my soldiers are yours. They never tire.'",
       unlocks: Object.freeze(["UNDEAD"] as const),
       names: Object.freeze({
-        GATE: "the gate",
-        TOWER: "the Marquis's tower",
+        GATE: "the Bone Gate",
+        TOWER: "the Ashen Tower",
       }),
     }),
     Object.freeze({
@@ -171,7 +178,7 @@ export const CHAPTER_ONE_V7: CampaignChapterV7 = Object.freeze({
       objective: "Get Doctor Crane to the gate by turn 20.",
       hints: Object.freeze([
         "If the Doctor dies, the mission is lost.",
-        "The toll fort guards the pass: go round or go through.",
+        "Kessler's Toll guards the pass: go round or go through.",
         "A Lich outranges the fort. The Doctor can raise the dead.",
       ]),
       closing:
@@ -179,7 +186,7 @@ export const CHAPTER_ONE_V7: CampaignChapterV7 = Object.freeze({
       unlocks: Object.freeze(["DWARF"] as const),
       names: Object.freeze({
         ARCHIVIST: "Doctor Crane",
-        IRONBRAID_GATE: "the Ironbraid gate",
+        IRONBRAID_GATE: "the Ironbraid Gate",
       }),
     }),
     Object.freeze({
@@ -230,7 +237,7 @@ export const CHAPTER_ONE_V7: CampaignChapterV7 = Object.freeze({
         "The thing in the glass ship is awake. It calls itself the Overmind, and it has the Baron's men marching in step. The beasts of the island want it dead. So do you. Kill it before it finishes its signal.",
       objective: "Kill the Overmind by turn 20.",
       hints: Object.freeze([
-        "The Overmind never leaves the crater.",
+        "The Overmind never leaves the Glass Ship's crater.",
         "A wounded beast near the Overmind changes sides.",
         "Spitter acid ignores walls: shoot it from the peaks.",
       ]),
@@ -275,7 +282,7 @@ export const CHAPTER_ONE_V7: CampaignChapterV7 = Object.freeze({
       hints: Object.freeze([
         "The Lodge's Favour is the countdown: at 20, the Herald.",
         "No Summoner, no summoning: shoot the candle-bearers.",
-        "The dead rise at the barrow every six turns.",
+        "The dead rise at Hollow Barrow every six turns.",
       ]),
       closing:
         "The Lodge falls one toll short, and the hooded ones kneel to the winning side, as they always have. But far below, in the shaft where the bell hung, something that was called has opened one eye.",

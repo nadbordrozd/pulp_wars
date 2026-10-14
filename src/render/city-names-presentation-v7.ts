@@ -8,6 +8,10 @@ import type {
 } from "../engine/index";
 import { createInitialMapStateV7 } from "../engine/v7/map";
 import {
+  missionDefinitionV7,
+  missionPlaceNamesV7,
+} from "../engine/v7/missions/index";
+import {
   CITY_NAME_LISTS_V7,
   CITY_NAMES_PER_FACTION_V7,
 } from "./city-name-lists-v7";
@@ -30,6 +34,11 @@ import {
  * site's tile, which never changes, so a captured city keeps its name.
  *
  * A neutral village shows no name: it is "Village" until someone takes it.
+ *
+ * Story names (`pulp_wars-v642.5`, docs/product/CAMPAIGN.md section 10.5):
+ * a campaign mission names its places ("Fort Hollow", "The Lodge"), and on
+ * its board those names replace the dealt ones, a named village shows its
+ * name before anyone takes it, and the city founded there keeps it.
  *
  * The engine does not record who first owned a captured village. If it ever
  * does (a founding faction on the city, in the public view), the faction
@@ -187,6 +196,38 @@ export function cityNameSitesV7(
   return sites;
 }
 
+const storyNamesOfSetup = new WeakMap<
+  MatchSetupV7,
+  ReadonlyMap<string, string>
+>();
+
+/**
+ * The story names of a `MISSION` setup's places, by tile; empty for any
+ * other setup, or a mission whose revision is not the registered one.
+ */
+export function missionStoryNamesV7(
+  setup: MatchSetupV7,
+): ReadonlyMap<string, string> {
+  const remembered = storyNamesOfSetup.get(setup);
+  if (remembered !== undefined) return remembered;
+  const mission =
+    setup.mission === undefined ? null : missionDefinitionV7(setup.mission);
+  const names = new Map<string, string>();
+  if (mission !== null)
+    for (const place of missionPlaceNamesV7(mission))
+      names.set(key(place.at), place.name);
+  storyNamesOfSetup.set(setup, names);
+  return names;
+}
+
+/** A neutral village's story name on a mission board; null when unnamed. */
+export function villageStoryNameV7(
+  view: Pick<PlayerViewV7, "setup">,
+  at: CoordV7,
+): string | null {
+  return missionStoryNamesV7(view.setup).get(key(at)) ?? null;
+}
+
 const GAZETTEER_LIMIT = 6;
 const gazetteers = new Map<string, ReadonlyMap<string, CityNameEntryV7>>();
 /** The same setup object asked again (every frame) skips the text key. */
@@ -204,7 +245,19 @@ export function cityGazetteerV7(
   const id = JSON.stringify(setup);
   let built = gazetteers.get(id);
   if (built === undefined) {
-    built = assignCityNamesV7(setup.seed, cityNameSitesV7(setup));
+    const sites = cityNameSitesV7(setup);
+    const dealt = assignCityNamesV7(setup.seed, sites);
+    const story = missionStoryNamesV7(setup);
+    if (story.size === 0) built = dealt;
+    else {
+      const named = new Map(dealt);
+      for (const [at, name] of story)
+        named.set(at, {
+          name,
+          faction: dealt.get(at)?.faction ?? setup.factions[0] ?? "ORIGINAL",
+        });
+      built = named;
+    }
     if (gazetteers.size >= GAZETTEER_LIMIT) {
       const oldest = gazetteers.keys().next();
       if (oldest.done !== true) gazetteers.delete(oldest.value);

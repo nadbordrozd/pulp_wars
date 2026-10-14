@@ -151,8 +151,18 @@ export const FRONTIER_8_V7: MissionDefinitionV7 = {
         "ENGINEERING",
       ],
       cities: [
-        { at: { x: 4, y: 3 }, level: 3, rewards: ["STOCKPILE", "MILITIA"] },
-        { at: { x: 4, y: 7 }, level: 2, rewards: ["STOCKPILE"] },
+        {
+          name: "Thunder Nest",
+          at: { x: 4, y: 3 },
+          level: 3,
+          rewards: ["STOCKPILE", "MILITIA"],
+        },
+        {
+          name: "Egg Rock",
+          at: { x: 4, y: 7 },
+          level: 2,
+          rewards: ["STOCKPILE"],
+        },
       ],
       units: [
         // The Old Queen, a Brontosaurus.
@@ -183,6 +193,7 @@ export const FRONTIER_8_V7: MissionDefinitionV7 = {
       ],
       cities: [
         {
+          name: "The Glass Ship",
           at: { x: 12, y: 4 },
           level: 3,
           rewards: ["STOCKPILE", "WALLS"],
@@ -237,7 +248,14 @@ export const FRONTIER_8_V7: MissionDefinitionV7 = {
       faction: "ORIGINAL",
       coins: 6,
       technologies: ["HUNTING", "MARKSMANSHIP", "DRILL", "FORTIFICATION"],
-      cities: [{ at: { x: 6, y: 13 }, level: 2, rewards: ["STOCKPILE"] }],
+      cities: [
+        {
+          name: "Kessler's Camp",
+          at: { x: 6, y: 13 },
+          level: 2,
+          rewards: ["STOCKPILE"],
+        },
+      ],
       units: [
         { role: "GUARD", at: { x: 6, y: 13 } },
         { role: "FIGHTER", at: { x: 7, y: 12 } },
@@ -246,7 +264,14 @@ export const FRONTIER_8_V7: MissionDefinitionV7 = {
       ],
       // The Overmind shows its puppets where to go.
       reveal: { radius: 2, rects: [{ x0: 2, y0: 2, x1: 6, y1: 8 }] },
-      directive: { kind: "RUSH" },
+      // `pulp_wars-v642.5`: a RUSH seat does not storm a player who stays
+      // home (the deliberate loss of the first build: nine units intact
+      // at the end). From round 9, with the second wave in, the thralls
+      // assault Egg Rock, the town nearest their camp.
+      directive: [
+        { kind: "RUSH", untilRound: 9 },
+        { kind: "ASSAULT", target: { x: 4, y: 7 } },
+      ],
     },
   ],
   // No ships: the hunt is on land.

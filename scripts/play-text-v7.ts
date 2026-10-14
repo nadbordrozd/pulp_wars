@@ -232,7 +232,10 @@ import {
   OVERRUN_BUDGET_TEXT_V7,
 } from "../src/render/technology-unlock-text-v7";
 import { MARKET_PLACEMENT_TEXT_V7 } from "../src/render/economy-presentation-v7";
-import { cityNameByIdV7 } from "../src/render/city-names-presentation-v7";
+import {
+  cityNameByIdV7,
+  villageStoryNameV7,
+} from "../src/render/city-names-presentation-v7";
 import { WIGHT_GRAVE_LABEL_V7 } from "../src/render/ninth-unit-presentation-v7";
 import {
   CHARGE_DESCRIPTION_V7,
@@ -825,6 +828,12 @@ function cityBesiegedV7(view: PlayerViewV7, city: PublicCityV7): boolean {
 function cityTagV7(view: PlayerViewV7, cityId: number): string {
   const name = cityNameByIdV7(view, cityId);
   return name === null ? `c${cityId}` : `c${cityId} ${name}`;
+}
+
+/** " Riftwatch": a mission village's story name, or nothing. */
+function villageNameSuffixV7(view: PlayerViewV7, at: CoordV7): string {
+  const name = villageStoryNameV7(view, at);
+  return name === null ? "" : ` ${name}`;
 }
 
 function ownCitiesV7(view: PlayerViewV7): readonly PublicCityV7[] {
@@ -1891,7 +1900,7 @@ function describeCommandV7(
           : view.cities.find((candidate) => sameV7(candidate.at, unit.at));
       const where = unit === undefined ? "" : ` @${xyV7(unit.at)}`;
       return city === undefined
-        ? `capture the settlement${where} (a neutral village becomes your level-1 city)`
+        ? `capture the settlement${where}${unit === undefined ? "" : villageNameSuffixV7(view, unit.at)} (a neutral village becomes your level-1 city)`
         : `capture city ${cityTagV7(view, city.id)}${where} from ${seatNameV7(view, city.ownerId)} (L${city.level}${city.isCapital ? ", its capital" : ""})`;
     }
     case "RECOVER": {
@@ -4294,7 +4303,12 @@ function viewLinesV7(session: SessionV7, full: boolean): string[] {
   );
   if (villages.length > 0)
     specials.push(
-      `neutral villages: ${villages.map((tile) => xyV7(tile.at)).join(" ")}`,
+      `neutral villages: ${villages
+        .map((tile) => {
+          const name = villageStoryNameV7(view, tile.at);
+          return name === null ? xyV7(tile.at) : `${xyV7(tile.at)} ${name}`;
+        })
+        .join(" ")}`,
     );
   if (view.treasureChests.length > 0)
     specials.push(

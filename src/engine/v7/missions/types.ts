@@ -136,6 +136,14 @@ export interface MissionCityV7 {
    * territory is the centered 5 x 5 footprint, and the grant is spent.
    */
   readonly landGrant?: true;
+  /**
+   * The city's story name (`pulp_wars-v642.5`, CAMPAIGN.md section 10.5):
+   * what the board, the city panel, the log and the text harness call it
+   * ("Fort Hollow", "The Lodge") instead of a name dealt from the faction's
+   * list. Presentation only: not in the state, so it is outside the pinned
+   * initial-state hash and needs no revision bump.
+   */
+  readonly name?: string;
 }
 
 export interface MissionUnitV7 {
@@ -169,12 +177,20 @@ export interface MissionLandmarkV7 {
   /** Unique in the mission, SCREAMING_SNAKE. */
   readonly tag: string;
   readonly at: CoordV7;
+  /**
+   * The story name of a landmark on a neutral village (`pulp_wars-v642.5`):
+   * the board labels the village with it and the city founded there keeps
+   * it. A landmark on a city takes the city's own `name` instead.
+   */
+  readonly name?: string;
 }
 
 /**
  * Units that arrive at `seat`'s Start Turn of `round` (2 or later), each
- * on its tile or the nearest free tile it may stand on within two steps
- * (rings outward, `(y, x)` order); a unit with no such tile does not come.
+ * on its tile or the nearest free tile it may stand on that is not next to
+ * a unit of a seat hostile to it (rings outward to the board's edge,
+ * `(y, x)` order), with their turn spent (`pulp_wars-v642.5`, 7r83); a
+ * unit with no such tile does not come.
  * Nothing arrives for an eliminated seat. They are homed to the seat's
  * capital while it holds it, otherwise to its city with the lowest ID, and
  * may stand above the unit limit.
@@ -314,6 +330,15 @@ export type MissionDirectiveV7 = MissionDirectiveWindowV7 &
         readonly zone: readonly RectV7[];
         readonly garrison: number;
       }
+    /**
+     * `pulp_wars-v642.5`: the seat commits its army to the city on
+     * `target` while it is a known hostile city: every free unit marches on
+     * it at once (as `RUSH`, but on that city alone), and the hostile units
+     * that hold it are assaulted even when they outweigh the attackers,
+     * instead of being shot at from outside their reach. Without a known
+     * hostile city there it plays `RUSH`.
+     */
+    | { readonly kind: "ASSAULT"; readonly target: CoordV7 }
   );
 
 /**

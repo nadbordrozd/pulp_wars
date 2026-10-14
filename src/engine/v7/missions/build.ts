@@ -983,6 +983,23 @@ function validateMissionGoalsV7(
       fail(`the landmark ${landmark.tag} is not on ground seat 0 has explored`);
     landmarks.set(landmark.tag, landmark.at);
   }
+  // Story names (`pulp_wars-v642.5`): short, unique, on a city or on a
+  // landmark that is a village (a landmark on a city uses the city's name).
+  const names = new Set<string>();
+  const storyName = (name: string): void => {
+    if (!/^\S(.{0,22}\S)?$/.test(name) || names.has(name))
+      fail(`the story name ${name} is malformed or repeated`);
+    names.add(name);
+  };
+  for (const seat of mission.seats)
+    for (const city of seat.cities)
+      if (city.name !== undefined) storyName(city.name);
+  for (const landmark of mission.landmarks ?? []) {
+    if (landmark.name === undefined) continue;
+    storyName(landmark.name);
+    if (!mission.villages.some((village) => sameCoord(village, landmark.at)))
+      fail(`the named landmark ${landmark.tag} is not a village`);
+  }
   // Unit tags: unique, with the seat that owns each.
   const units = new Map<string, number>();
   mission.seats.forEach((seat, index) => {

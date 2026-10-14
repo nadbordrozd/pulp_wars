@@ -370,12 +370,19 @@ export const CAMPAIGN_SCOUTS_HOME_V7 = 3;
  * The plan side of a mission directive (docs/product/CAMPAIGN.md section
  * 2.5). `RUSH`: once a hostile city is known, no village, chest, or
  * exploration job, no defence job for a free unit, and every wave sets out
- * at once. `HOLD`: no job whose target lies outside the zone. `HOLD` and
+ * at once. `ASSAULT`: the same, with its target city the only one marched
+ * on while it is a known hostile city. `HOLD`: no job whose target lies outside the zone. `HOLD` and
  * `GUARD`: a leashed unit outside the zone takes the `RETURN` job to it;
  * a leashed `GUARD` (garrison) unit inside it stays.
  */
 export type CampaignDirectiveV7 =
   | { readonly kind: "RUSH" }
+  /**
+   * `pulp_wars-v642.5`: `RUSH` on one city. While the city on `target` is
+   * a known hostile city it is the only city marched on, and every free
+   * unit goes; otherwise the seat plays `RUSH`.
+   */
+  | { readonly kind: "ASSAULT"; readonly target: CoordV7 }
   | {
       readonly kind: "HOLD" | "GUARD";
       readonly inZone: (at: CoordV7) => boolean;
@@ -510,7 +517,10 @@ export function campaignPlanForPolicyV7(
   // unit inside the zone stays; neither takes another job.
   const directive = facts.directive;
   const zoned =
-    directive !== undefined && directive.kind !== "RUSH" ? directive : null;
+    directive !== undefined &&
+    (directive.kind === "HOLD" || directive.kind === "GUARD")
+      ? directive
+      : null;
   if (zoned !== null)
     for (const unit of [...free, ...reserve]) {
       if (!zoned.leashed(unit)) continue;
@@ -567,7 +577,19 @@ export function campaignPlanForPolicyV7(
     if (edge && (confine === null || confine(tile.at))) frontier.push(index);
   }
   // pulp_wars-68k.3: a RUSH seat that knows a hostile city only attacks.
-  const rush = directive?.kind === "RUSH" && targets.length > 0;
+  // pulp_wars-v642.5: so does an ASSAULT seat, on its target alone while
+  // that is a known hostile city.
+  const rush =
+    (directive?.kind === "RUSH" || directive?.kind === "ASSAULT") &&
+    targets.length > 0;
+  const assaulted =
+    directive?.kind === "ASSAULT"
+      ? (targets.find(
+          (city) =>
+            city.at.x === directive.target.x &&
+            city.at.y === directive.target.y,
+        ) ?? null)
+      : null;
   // A visible hostile unit is a lead too while no enemy city is known: its
   // city is somewhere behind it.
   if (targets.length === 0) for (const unit of hostileLand) leads.push(unit.at);
@@ -1072,7 +1094,11 @@ export function campaignPlanForPolicyV7(
     .map((errand) => errand.field);
   // A HOLD seat marches on no city outside its zone.
   const marchTargets =
-    confine === null ? targets : targets.filter((city) => confine(city.at));
+    assaulted !== null
+      ? [assaulted]
+      : confine === null
+        ? targets
+        : targets.filter((city) => confine(city.at));
   const raided = new Set<CityId>();
   if (marchTargets.length > 0) {
     const fields = marchTargets.map((city) => field([indexOf(city.at)]));

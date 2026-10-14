@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r82`, for all nine offered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r83`, for all nine offered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), Candy (`CANDY`), and
 the Cultists (`CULT`). The ninth faction, the Cultists of the Ancient Ones,
@@ -436,7 +436,16 @@ links to another, by Road or by Port. A sea link needs only **Shorecraft**
 the Roads technology, and unexplored water no longer breaks a link. A save,
 replay, or setup of `7r75` is rejected, and the browser autosave has a new
 key.
-`pulp-wars-poc-7r82` (`pulp_wars-v642.1`, the campaign framework) is
+`pulp-wars-poc-7r83` (`pulp_wars-v642.5`, the campaign follow-ups) is
+**waves that arrive calmly** ([section 2.6](#26-mission-setup)): a mission's
+reinforcement arrives with its turn spent (it neither moves nor attacks
+until its seat's next turn), and on the nearest free tile it may enter
+that is not next to a unit of a seat hostile to it, searched outward to
+the edge of the board instead of within two tiles. Nothing changes in a
+match that is not a mission, and nothing in a mission without waves. A
+save, replay, or setup of `7r82` is rejected, and the browser autosave
+has a new key.
+`pulp-wars-poc-7r82` (`pulp_wars-v642.1`, the campaign framework) was
 **mission objectives** ([section 2.6](#26-mission-setup)): a mission's
 objective may be an escort, a number of rounds to survive, places to
 capture, or units to kill, with a deadline, protected places and units, and
@@ -973,7 +982,7 @@ the build differs (its sections 20 to 24 list them);
 the values here are current. Where a document and the code disagreed, the
 code's behavior is the rule and is stated below;
 [Known discrepancies](#25-known-discrepancies) lists the open items and the
-resolved ones as of `pulp-wars-poc-7r82`.
+resolved ones as of `pulp-wars-poc-7r83`.
 
 **Terms.** "On the board" means a unit that currently exists (HP above 0).
 **Living** has the narrower revision-13 meaning used by Wail, Plague,
@@ -1076,10 +1085,10 @@ sections here cite.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r82`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Ruleset                                    | `pulp-wars-poc-7r83`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r82.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Browser autosave                           | `pulpWars.save.v7r83.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, `CULT`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`, `CULT_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -2756,14 +2765,19 @@ seat is on another team. A mission without teams keeps the mode's rule.
 **Reinforcements.** A mission may list waves: a seat, a round (2 or more),
 and units by role with a tile. At that seat's Start Turn of that round,
 after every other step of the command that started the turn, each unit of
-the wave appears, in order, on its tile or, when that tile is taken or
-cannot hold it, on the first free tile it may enter within 2 tiles (rings
-of growing distance, `(y, x)` order within a ring); with no such tile it
-does not come. A tile with a settlement, a dock, a unit, a treasure chest,
-a curiosity, or a Barricade is never free, so a unit written on a city
-arrives beside it. A reinforcement is the seat's own unit at full HP (a Martian
-at full Shield) with a fresh activation and **no home city** (it takes no
-unit slot). Each arrival is the event `REINFORCEMENT_ARRIVED { playerId,
+the wave appears, in order, on its tile or, when that tile is taken,
+cannot hold it, or is next to a unit of a seat hostile to the wave's seat
+(one of the eight tiles around it), on the first free tile it may enter
+that is next to no such unit (rings of growing distance out to the edge
+of the board, `(y, x)` order within a ring); with no such tile it does
+not come. A tile with a settlement, a dock, a unit, a treasure chest, a
+curiosity, or a Barricade is never free, so a unit written on a city
+arrives beside it. A reinforcement is the seat's own unit at full HP (a
+Martian at full Shield) with **its turn spent** (an exhausted activation:
+it neither moves, attacks, nor acts until its seat's next Start Turn) and
+**no home city** (it takes no unit slot). (`7r83`, `pulp_wars-v642.5`;
+at `7r82` a wave acted the turn it arrived and searched only 2 tiles
+out, so it could arrive in the player's line and attack at once.) Each arrival is the event `REINFORCEMENT_ARRIVED { playerId,
 unitId, role, at }` (projected to a viewer who sees the tile, like a
 hatching Egg), and the tiles it reveals follow in `TILES_REVEALED`. A wave
 for an eliminated seat brings nothing.
@@ -11846,8 +11860,10 @@ approximation; [section 25](#25-known-discrepancies)). Glacier also grants Harbo
   Shipyard upgrade (+2, 3 with Harbours). An enemy ship can still blockade
   an Ice Folk dock it can reach.
 - **Sea Dog** for an Ice Folk seat counts its land-form units standing on
-  ice instead of its ships: 3 at once (`ICE_SEA_DOG_UNITS_V7`;
-  [section 5](#5-achievements-and-monuments)).
+  ice instead of its ships: 5 at once (`ICE_SEA_DOG_UNITS_V7`;
+  [section 5](#5-achievements-and-monuments); 3 when the frozen sea came
+  at `7r44`, raised with every other achievement by the economy rejig,
+  `7r54`).
 - **The Sunken Wreck:** on an ice tile, the first land-form unit (of any
   faction) that ends a `MOVE` on it, having moved onto it (a slide's end
   included), salvages it; afloat units cannot reach it while it is ice
@@ -11911,7 +11927,7 @@ own, and a ship frozen there stays until crushed.
   capabilities `freezeWater`, `icebound`, `blackIce`, `iceTurns`, and
   `iceCover`; constants `ICE_TURNS_V7` 3, `GLACIER_ICE_TURNS_V7` 5,
   `FREEZE_LINE_V7` 2, `WITCH_FREEZE_RADIUS_V7` 1, `ICE_CRUSH_DAMAGE_V7` 3,
-  and `ICE_SEA_DOG_UNITS_V7` 3; the five display names of
+  and `ICE_SEA_DOG_UNITS_V7` 5 (3 until the economy rejig, `7r54`); the five display names of
   [section 6.2](#62-technology-tree).
 - **Shared rules** extended, never paralleled: `canEnterTerrainV7` (ice for
   land form, never for afloat), `terrainStopsMoveV7` (the slip), the one
@@ -13686,6 +13702,7 @@ first guesses.
 | Siege rules        | `pulp-wars-poc-7r80` | `pulp_wars-0pgd` the siege rules (the user, 2026-10-12; a save, replay, or setup of `7r79` is rejected): a besieged city builds (a siege blocks no tile command; it still stops income, training, hiring, Egg laying, Land Grant, and Offering); no tile command but Blast Mountain targets a tile a hostile unit stands on (`TILE_ENEMY_OCCUPIED`); a level-up reward unit takes the center and the unit standing there, the garrison or a besieger, steps to a tile beside it (own territory first for the owner's unit, then `(y, x)` order) or dies with the cause `DISPLACED` when it has none (no credit, Plunder, Grave, Martyr, or score), a unit that nothing moves (a Jawbreaker) holding the center while the reward unit appears beside it. The Normal AI builds under siege, takes the reward unit that shoves a besieger off, and avoids one that would kill its own garrison.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | Technology cost    | `pulp-wars-poc-7r81` | `pulp_wars-w49.40` flatter technology prices (the user, 2026-10-13, to see how it plays; a save, replay, or setup of `7r80` is rejected): the tier bases are 5 / 6 / 7 Coins (5 / 7 / 9 before) in every faction's tree, so tier 2 costs 1 Coin less and tier 3 costs 2 Coins less at every city count; the per-city steps (1 / 2 / 3), the free first technology, and every other rule unchanged; the Normal AI reads the price from the public technology tree and needed no change                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | [section 6.1](#61-research-cost)                                                                                                      |
 | Mission objectives | `pulp-wars-poc-7r82` | `pulp_wars-v642.1` the campaign framework (a save, replay, or setup of `7r81` is rejected): a mission objective may be `ESCORT`, `SURVIVE`, `CAPTURE`, or `KILL` besides `DOMINATION`, with a deadline (`byRound`), protected places and units, and up to two secondary goals for stars; it is evaluated after every accepted command, the win before the loss, and writes only the outcome, which carries a `cause`; the public mission status is in every mission view; a mission may name teams (an AI seat allied to the human), bring reinforcements at a seat's Start Turn (`REINFORCEMENT_ARRIVED`, 155 event kinds), forbid a seat technologies of its own, schedule a seat's AI directive by round, and record the generator source of its board (size 20 is allowed); missions 1 to 4 are rebuilt on generated maps with capture objectives for 2 to 4 (revisions 3, 3, 3, 4); a match that is not a mission is unchanged                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| Calm waves         | `pulp-wars-poc-7r83` | `pulp_wars-v642.5` the campaign follow-ups (a save, replay, or setup of `7r82` is rejected): a mission's reinforcement arrives with its turn spent and on the nearest free tile not next to a hostile unit, searched to the edge of the board; a match that is not a mission is unchanged                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 
 **Documentation parity (2026-09-28, no ruleset or identity change):** where
 older documents disagreed with the code, the code's behavior was adopted as

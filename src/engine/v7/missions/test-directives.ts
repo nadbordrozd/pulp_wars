@@ -291,3 +291,99 @@ export const TEST_GUARD_V7: MissionDefinitionV7 = {
   forbiddenTechnologies: [...DRY_NAVAL_V7],
   objective: { kind: "DOMINATION" },
 };
+
+/**
+ * `TEST_ASSAULT` (`pulp_wars-v642.5`): a Goblin `ASSAULT` seat against a
+ * prepared Human capital. The capital has Walls and four defenders; the
+ * Goblin war band of five stands massed three tiles off, outside their
+ * reach; an undefended Human town lies nearer the Goblins (a `RUSH` or
+ * `NORMAL` seat would raid it), and a village beside them. The assault's
+ * target is the capital.
+ *
+ * ```text
+ *      x 0123456789A
+ * y  0   ^^ff...ff^^
+ *    1   ^f.......^^
+ *    2   f..v....G.f      G: the Goblin capital; v: a village
+ *    3   f.........f
+ *    4   ..^^......f
+ *    5   ...^.ww....      w: the war band (five)
+ *    6   f....ww^^..
+ *    7   f.........f
+ *    8   f.H.....t.f      H: the walled Human capital; t: a Human town
+ *    9   ^..ff....f^
+ *   10   ^^f...ff^^^
+ * ```
+ */
+export const TEST_ASSAULT_V7: MissionDefinitionV7 = {
+  id: "TEST_ASSAULT",
+  revision: 1,
+  hidden: true,
+  size: 11,
+  seed: 20261014,
+  terrain: [
+    "^^ff...ff^^",
+    "^f.......^^",
+    "f.........f",
+    "f.........f",
+    "..^^......f",
+    "...^.......",
+    "f......^^..",
+    "f.........f",
+    "f.........f",
+    "^..ff....f^",
+    "^^f...ff^^^",
+  ],
+  resources: [
+    "...........",
+    "...........",
+    "...........",
+    "...........",
+    "...........",
+    "...........",
+    "...........",
+    "...........",
+    "...........",
+    "...........",
+    "...........",
+  ],
+  biome: "PLAINS",
+  villages: [{ x: 3, y: 2 }],
+  aiMode: "RIVAL",
+  seats: [
+    {
+      faction: "ORIGINAL",
+      coins: 5,
+      technologies: [],
+      cities: [
+        { at: { x: 2, y: 8 }, level: 3, rewards: ["SURVEY", "WALLS"] },
+        { at: { x: 8, y: 8 }, level: 1, rewards: [] },
+      ],
+      units: [
+        { role: "GUARD", at: { x: 2, y: 8 } },
+        { role: "GUARD", at: { x: 3, y: 7 } },
+        { role: "MARKSMAN", at: { x: 2, y: 7 } },
+        { role: "MARKSMAN", at: { x: 3, y: 8 } },
+      ],
+      reveal: { radius: 2 },
+    },
+    {
+      faction: "GOBLIN",
+      coins: 0,
+      technologies: [],
+      cities: [{ at: { x: 8, y: 2 }, level: 2, rewards: ["STOCKPILE"] }],
+      units: [
+        { role: "FIGHTER", at: { x: 8, y: 2 } },
+        { role: "FIGHTER", at: { x: 5, y: 5 } },
+        { role: "FIGHTER", at: { x: 6, y: 5 } },
+        { role: "FIGHTER", at: { x: 5, y: 6 } },
+        { role: "FIGHTER", at: { x: 6, y: 6 } },
+        { role: "RAIDER", at: { x: 6, y: 4 } },
+      ],
+      reveal: { radius: 2, rects: [{ x0: 0, y0: 3, x1: 10, y1: 10 }] },
+      directive: { kind: "ASSAULT", target: { x: 2, y: 8 } },
+    },
+  ],
+  forbiddenTechnologies: [...DRY_NAVAL_V7],
+  objective: { kind: "DOMINATION" },
+};

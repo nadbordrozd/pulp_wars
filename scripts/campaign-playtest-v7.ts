@@ -11,8 +11,9 @@
  * seat's directive against the section 7.1 bands:
  *
  * - `RUSH`: a hostile land unit stands in the human's territory by round 5.
- * - `NORMAL`: the AI captures or besieges a city of the human's (the
- *   mission must not be a walkover; the band asks for at least 20% of runs).
+ * - `NORMAL` and `ASSAULT` (`pulp_wars-v642.5`): the AI captures or
+ *   besieges a city of the human's (the mission must not be a walkover; the
+ *   band asks for at least 20% of runs).
  * - `HOLD` (with `untilRound` R): before round R, no AI land unit ends an
  *   AI turn more than one tile outside the zone; from round R on, an AI land
  *   unit ends an AI turn outside the zone in at least 50% of the runs where
@@ -28,6 +29,12 @@
  *   a failure of the directive (`pulp_wars-68k.6`: the proxy now breaches);
  *   of the other End Turns at most 2% may fall short (a replacement on its
  *   way in).
+ *
+ * All ten missions of Chapter One are played (`pulp_wars-v642.5`); the
+ * directive check reads seat 1's first scheduled directive only (missions 5
+ * to 10 have two or three AI seats and schedules, which it does not judge).
+ * The script plays AI against AI and is run only when the user authorises
+ * simulations.
  *
  * Every run is independent and deterministic, so the results do not depend
  * on `--jobs`; wall-clock time goes to stderr only.
@@ -94,6 +101,16 @@ const BANDS_V7: Readonly<Record<string, BandV7>> = {
   FRONTIER_2: { winRate: [0.35, 0.9], medianWinningRoundAtLeast: 15 },
   FRONTIER_3: { winRate: [0.3, 0.9], medianWinningRoundAtLeast: 15 },
   FRONTIER_4: { winRate: [0.2, 0.8], medianWinningRoundAtLeast: 20 },
+  // Missions 5 to 10 (`pulp_wars-v642.5`): wide provisional bands from the
+  // target lengths of CAMPAIGN.md section 9.2 (the lower end of each, less
+  // a little for the proxy). They were set without a run (the standing
+  // no-simulation rule): the first authorised run should replace them.
+  FRONTIER_5: { winRate: [0.05, 0.9], medianWinningRoundAtLeast: 12 },
+  FRONTIER_6: { winRate: [0.05, 0.9], medianWinningRoundAtLeast: 14 },
+  FRONTIER_7: { winRate: [0.05, 0.9], medianWinningRoundAtLeast: 10 },
+  FRONTIER_8: { winRate: [0.05, 0.9], medianWinningRoundAtLeast: 10 },
+  FRONTIER_9: { winRate: [0.05, 0.9], medianWinningRoundAtLeast: 16 },
+  FRONTIER_10: { winRate: [0, 0.9], medianWinningRoundAtLeast: 18 },
 };
 
 /** `RUSH`: a hostile land unit in the human's territory by this round. */
@@ -346,8 +363,8 @@ function runCell(cell: PlaytestCell): PlaytestEntry {
   const check: DirectiveRunCheck =
     directive.kind === "RUSH"
       ? { kind: "RUSH", firstIncursionRound }
-      : directive.kind === "NORMAL"
-        ? { kind: "NORMAL", pressured }
+      : directive.kind === "NORMAL" || directive.kind === "ASSAULT"
+        ? { kind: directive.kind, pressured }
         : directive.kind === "HOLD"
           ? {
               kind: "HOLD",
@@ -497,7 +514,7 @@ function directiveSummary(group: readonly PlaytestEntry[]): {
       ok: onTime === group.length,
     };
   }
-  if (kind === "NORMAL") {
+  if (kind === "NORMAL" || kind === "ASSAULT") {
     const pressured = checks.filter((item) => item.pressured === true).length;
     return {
       check: {
@@ -615,6 +632,7 @@ function directiveText(item: MissionSummary): string {
     case "RUSH":
       return `incursion by round ${String(RUSH_ARRIVAL_ROUND_V7)} in ${String(check.runsOnTime)}/${String(item.runs)} runs (latest first incursion: round ${String(check.latestFirstIncursionRound)})`;
     case "NORMAL":
+    case "ASSAULT":
       return `captured or besieged a city of yours in ${String(check.runsPressured)}/${String(item.runs)} runs`;
     case "HOLD":
       return `no hold violation in ${String(check.runsWithoutViolation)}/${String(item.runs)} runs (worst distance ${String(check.worstDistance)}; ${String(check.endTurnsWithRisenOutside)} End Turns with a Zombie just risen further out); left the zone after release in ${String(check.runsLeftAfterRelease)}/${String(check.runsWithUnitsAfterRelease)} runs with units (median round ${String(check.medianFirstLeaveRound)})`;

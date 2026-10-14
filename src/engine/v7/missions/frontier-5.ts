@@ -176,8 +176,18 @@ export const FRONTIER_5_V7: MissionDefinitionV7 = {
       // escort, not a siege: a giant here costs rounds the clock does not
       // have.
       cities: [
-        { at: { x: 2, y: 8 }, level: 2, rewards: ["STOCKPILE"] },
-        { at: { x: 5, y: 11 }, level: 2, rewards: ["STOCKPILE"] },
+        {
+          name: "Lantern Hill",
+          at: { x: 2, y: 8 },
+          level: 2,
+          rewards: ["STOCKPILE"],
+        },
+        {
+          name: "Gallows Cross",
+          at: { x: 5, y: 11 },
+          level: 2,
+          rewards: ["STOCKPILE"],
+        },
       ],
       units: [
         // Doctor Crane: the escorted unit.
@@ -215,6 +225,7 @@ export const FRONTIER_5_V7: MissionDefinitionV7 = {
       ],
       cities: [
         {
+          name: "Kessler's Toll",
           at: { x: 10, y: 8 },
           level: 3,
           rewards: ["STOCKPILE", "WALLS"],
@@ -265,7 +276,12 @@ export const FRONTIER_5_V7: MissionDefinitionV7 = {
       // the raiders and their waves: it is the south road's fight, and the
       // column that wins it walks the rest of the way.
       cities: [
-        { at: { x: 14, y: 14 }, level: 3, rewards: ["STOCKPILE", "WALLS"] },
+        {
+          name: "Whitefang",
+          at: { x: 14, y: 14 },
+          level: 3,
+          rewards: ["STOCKPILE", "WALLS"],
+        },
       ],
       units: [
         { role: "GUARD", at: { x: 14, y: 14 } },
@@ -330,7 +346,9 @@ export const FRONTIER_5_V7: MissionDefinitionV7 = {
     "ENGINEERING",
     "METALLURGY",
   ],
-  landmarks: [{ tag: "IRONBRAID_GATE", at: { x: 14, y: 2 } }],
+  landmarks: [
+    { tag: "IRONBRAID_GATE", at: { x: 14, y: 2 }, name: "Ironbraid Gate" },
+  ],
   // The Doctor stands next to the gate: the Dwarves open it. He must get
   // there by round 20; the stars are for round 16 and for losing no city.
   objective: {

@@ -2255,7 +2255,7 @@ describe("text play: missions and their objectives (pulp_wars-v642.1)", () => {
     expect(started).toContain('MISSION FRONTIER_4 | mission 4, "Bone Neck"');
     expect(started).toContain("BRIEFING: The Ashen Marquis waits");
     expect(started).toContain(
-      "OBJECTIVE (as the game words it): Capture the gate.",
+      "OBJECTIVE (as the game words it): Capture the Bone Gate.",
     );
     expect(started).toContain("you are S0 Goblin");
     expect(started).toContain(

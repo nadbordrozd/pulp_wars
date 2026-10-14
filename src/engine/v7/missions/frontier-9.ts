@@ -162,12 +162,13 @@ export const FRONTIER_9_V7: MissionDefinitionV7 = {
       ],
       cities: [
         {
+          name: "Saucer Field",
           at: { x: 2, y: 13 },
           level: 4,
           rewards: ["SURVEY", "WALLS", "BOOM"],
           landGrant: true,
         },
-        { at: { x: 2, y: 8 }, level: 1, rewards: [] },
+        { name: "Red Dust", at: { x: 2, y: 8 }, level: 1, rewards: [] },
       ],
       units: [
         { role: "FIGHTER", at: { x: 2, y: 13 } },
@@ -201,12 +202,13 @@ export const FRONTIER_9_V7: MissionDefinitionV7 = {
       ],
       cities: [
         {
+          name: "Sugarcrest",
           at: { x: 7, y: 8 },
           level: 3,
           rewards: ["STOCKPILE", "WALLS"],
           landGrant: true,
         },
-        { at: { x: 8, y: 5 }, level: 1, rewards: [] },
+        { name: "Gumdrop", at: { x: 8, y: 5 }, level: 1, rewards: [] },
       ],
       units: [
         { role: "GUARD", at: { x: 7, y: 8 } },
@@ -252,8 +254,18 @@ export const FRONTIER_9_V7: MissionDefinitionV7 = {
         "SCOUTING",
       ],
       cities: [
-        { at: { x: 14, y: 1 }, level: 3, rewards: ["STOCKPILE", "SURVEY"] },
-        { at: { x: 14, y: 5 }, level: 2, rewards: ["STOCKPILE"] },
+        {
+          name: "Wormwood",
+          at: { x: 14, y: 1 },
+          level: 3,
+          rewards: ["STOCKPILE", "SURVEY"],
+        },
+        {
+          name: "Coffin Hill",
+          at: { x: 14, y: 5 },
+          level: 2,
+          rewards: ["STOCKPILE"],
+        },
       ],
       units: [
         { role: "FIGHTER", at: { x: 14, y: 1 } },
@@ -281,8 +293,13 @@ export const FRONTIER_9_V7: MissionDefinitionV7 = {
         "MARKSMANSHIP",
       ],
       cities: [
-        { at: { x: 14, y: 14 }, level: 2, rewards: ["STOCKPILE"] },
-        { at: { x: 11, y: 14 }, level: 1, rewards: [] },
+        {
+          name: "Spitewood",
+          at: { x: 14, y: 14 },
+          level: 2,
+          rewards: ["STOCKPILE"],
+        },
+        { name: "Sourmash", at: { x: 11, y: 14 }, level: 1, rewards: [] },
       ],
       units: [
         { role: "FIGHTER", at: { x: 14, y: 14 } },
@@ -389,7 +406,7 @@ export const FRONTIER_9_V7: MissionDefinitionV7 = {
   ],
   landmarks: [
     { tag: "SUGARCREST", at: { x: 7, y: 8 } },
-    { tag: "RIFTWATCH", at: { x: 5, y: 14 } },
+    { tag: "RIFTWATCH", at: { x: 5, y: 14 }, name: "Riftwatch" },
   ],
   // Sixteen rounds, and Sugarcrest must not fall. The stars: the Queen
   // lives, and Riftwatch is yours (or the kingdom's) at the end.

@@ -146,8 +146,18 @@ export const FRONTIER_4_V7: MissionDefinitionV7 = {
         "MARKSMANSHIP",
       ],
       cities: [
-        { at: { x: 2, y: 9 }, level: 3, rewards: ["SURVEY", "WALLS"] },
-        { at: { x: 5, y: 7 }, level: 2, rewards: ["SURVEY"] },
+        {
+          name: "Camp Concord",
+          at: { x: 2, y: 9 },
+          level: 3,
+          rewards: ["SURVEY", "WALLS"],
+        },
+        {
+          name: "Ferry Rest",
+          at: { x: 5, y: 7 },
+          level: 2,
+          rewards: ["SURVEY"],
+        },
       ],
       units: [
         { role: "FIGHTER", at: { x: 2, y: 9 } },
@@ -181,9 +191,19 @@ export const FRONTIER_4_V7: MissionDefinitionV7 = {
         "FORTIFICATION",
       ],
       cities: [
-        { at: { x: 11, y: 10 }, level: 3, rewards: ["SURVEY", "WALLS"] },
-        { at: { x: 10, y: 6 }, level: 2, rewards: ["STOCKPILE"] },
-        { at: { x: 13, y: 5 }, level: 1, rewards: [] },
+        {
+          name: "Ashen Tower",
+          at: { x: 11, y: 10 },
+          level: 3,
+          rewards: ["SURVEY", "WALLS"],
+        },
+        {
+          name: "Bone Gate",
+          at: { x: 10, y: 6 },
+          level: 2,
+          rewards: ["STOCKPILE"],
+        },
+        { name: "Cinderfield", at: { x: 13, y: 5 }, level: 1, rewards: [] },
       ],
       units: [
         { role: "FIGHTER", at: { x: 11, y: 10 } },

@@ -138,13 +138,14 @@ export const FRONTIER_3_V7: MissionDefinitionV7 = {
       ],
       cities: [
         {
+          name: "Wolfden",
           at: { x: 10, y: 9 },
           level: 4,
           rewards: ["SURVEY", "WALLS", "BOOM"],
           // The hills leave little open ground: the capital has its grant.
           landGrant: true,
         },
-        { at: { x: 11, y: 12 }, level: 1, rewards: [] },
+        { name: "Mudpot", at: { x: 11, y: 12 }, level: 1, rewards: [] },
       ],
       units: [
         { role: "FIGHTER", at: { x: 10, y: 9 } },
@@ -171,8 +172,13 @@ export const FRONTIER_3_V7: MissionDefinitionV7 = {
       coins: 5,
       technologies: ["GATHERING", "DRILL", "FORTIFICATION", "ADMINISTRATION"],
       cities: [
-        { at: { x: 7, y: 2 }, level: 2, rewards: ["STOCKPILE"] },
-        { at: { x: 11, y: 2 }, level: 1, rewards: [] },
+        {
+          name: "The Barrow",
+          at: { x: 7, y: 2 },
+          level: 2,
+          rewards: ["STOCKPILE"],
+        },
+        { name: "Gravesend", at: { x: 11, y: 2 }, level: 1, rewards: [] },
       ],
       units: [
         { role: "FIGHTER", at: { x: 7, y: 2 } },
