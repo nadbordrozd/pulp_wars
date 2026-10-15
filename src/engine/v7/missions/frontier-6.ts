@@ -24,6 +24,15 @@ import type { MissionDefinitionV7 } from "./types";
  * with six kinds of unit), and the enemy camps field no giant of their
  * own. Hand play (CAMPAIGN.md section 11, mission 6) set these.
  *
+ * Revision 2 (`pulp_wars-v642.8`, the campaign difficulty pass,
+ * CAMPAIGN.md section 11.16): less is given. You start without Hunting and
+ * Clockwork (more Gunners, which fire twice when they hold still, are two
+ * technologies away) and research Blasting Charges yourself: Blast
+ * Mountain brings a peak down on the Yetis on it and beside it. A garrison
+ * that marches out to meet the waves is shelled from the peaks and the
+ * Deep Gate falls by round 6; one that holds the doors and blasts the
+ * peaks lasts the fourteen rounds.
+ *
  * ```text
  *      x 01234567890123
  * y  0   .^ff^f^f..f...
@@ -44,7 +53,7 @@ import type { MissionDefinitionV7 } from "./types";
  */
 export const FRONTIER_6_V7: MissionDefinitionV7 = {
   id: "FRONTIER_6",
-  revision: 1,
+  revision: 2,
   seed: 20261106,
   // <map>
   size: 14,
@@ -135,11 +144,11 @@ export const FRONTIER_6_V7: MissionDefinitionV7 = {
     {
       faction: "DWARF",
       coins: 10,
+      // What the opening needs (revision 2): Mining for the peaks and the
+      // Mines, Dig In and the Steam Mole, and the Thane's Leadership.
       technologies: [
         "GATHERING",
         "ADMINISTRATION",
-        "HUNTING",
-        "MARKSMANSHIP",
         "DRILL",
         "ENGINEERING",
         "FORTIFICATION",

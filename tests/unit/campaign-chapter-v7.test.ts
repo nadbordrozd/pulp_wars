@@ -200,11 +200,38 @@ describe("Chapter One data", () => {
     expect(road.villages).toContainEqual({ x: 14, y: 2 });
     // The whole fort guards the pass; the raiders hold their camp until
     // round 6 and then rush; their waves come in rounds 9 and 13.
+    // Revision 2 (`pulp_wars-v642.8`): the fort is the problem, a garrison
+    // of seven that cannot grow (no Fruit), and the Undead research their
+    // way to the Lich's range and Pestilence instead of starting with nine
+    // technologies.
+    expect(road.revision).toBe(2);
     expect(seat(road, 1).directive).toEqual({
       kind: "GUARD",
       zone: [{ x0: 9, y0: 7, x1: 11, y1: 9 }],
-      garrison: 6,
+      garrison: 7,
     });
+    expect(
+      seat(road, 1)
+        .units.map((unit) => unit.role)
+        .sort(),
+    ).toEqual(
+      [
+        "GUARD",
+        "GUARD",
+        "MARKSMAN",
+        "MARKSMAN",
+        "FIGHTER",
+        "FIGHTER",
+        "FIGHTER",
+      ].sort(),
+    );
+    expect(seat(road, 1).technologies).not.toContain("GATHERING");
+    expect(seat(road, 1).forbiddenTechnologies).toEqual(
+      expect.arrayContaining(["GATHERING", "ADMINISTRATION", "PLANNING"]),
+    );
+    expect([...seat(road, 0).technologies].sort()).toEqual(
+      ["ADMINISTRATION", "GATHERING", "HUNTING", "SCOUTING"].sort(),
+    );
     expect(missionSeatDirectivesV7(seat(road, 2))).toEqual([
       {
         kind: "HOLD",
@@ -220,7 +247,7 @@ describe("Chapter One data", () => {
         wave.units.length,
       ]),
     ).toEqual([
-      [2, 9, 3],
+      [2, 9, 4],
       [2, 13, 4],
     ]);
     // Nobody climbs (the Yetis are Mountain-born), and neither enemy city
@@ -307,6 +334,18 @@ describe("Chapter One data", () => {
     // The Humans come through a door: the Dwarves alone walk the peaks
     // (the Yetis are Mountain-born). Nobody has land to grant or to farm.
     expect(seat(gate, 0).technologies).toContain("ENGINEERING");
+    // Revision 2 (`pulp_wars-v642.8`): no Hunting and no Clockwork to
+    // start; Blasting Charges are researched, never given.
+    expect(gate.revision).toBe(2);
+    expect([...seat(gate, 0).technologies].sort()).toEqual(
+      [
+        "ADMINISTRATION",
+        "DRILL",
+        "ENGINEERING",
+        "FORTIFICATION",
+        "GATHERING",
+      ].sort(),
+    );
     expect(seat(gate, 2).forbiddenTechnologies).toEqual([
       "ENGINEERING",
       "METALLURGY",
@@ -519,10 +558,16 @@ describe("Chapter One data", () => {
   });
 
   it("builds missions 7 and 8 as designed: the frozen sea against a clock, and a hunt", () => {
-    // Mission 7: the Ice Folk cross the strait on ice to the Crater.
+    // Mission 7: the Ice Folk cross the strait on ice to the Crater. It is
+    // the build-up mission of the campaign difficulty pass
+    // (`pulp_wars-v642.8`, revision 2): one town and no technology against
+    // three native cities and the Baron's port, on a bigger board with a
+    // longer clock.
     const island = mission("FRONTIER_7");
-    expect(island.size).toBe(16);
+    expect(island.revision).toBe(2);
+    expect(island.size).toBe(20);
     expect(island.source?.mapType).toBe("ARCHIPELAGO");
+    expect(island.source?.seed).toBe(2);
     expect(island.seats.map((item) => item.faction)).toEqual([
       "ICE_FOLK",
       "DINOSAUR",
@@ -533,55 +578,60 @@ describe("Chapter One data", () => {
     expect(island.objective).toEqual({
       kind: "CAPTURE",
       places: ["CRATER"],
-      byRound: 18,
-      bonus: [{ kind: "WITHIN_ROUNDS", rounds: 14 }, { kind: "KEEP_CITIES" }],
+      byRound: 30,
+      bonus: [{ kind: "WITHIN_ROUNDS", rounds: 24 }, { kind: "KEEP_CITIES" }],
     });
-    // You own the frozen sea but Icebound, and no seat is forbidden it
-    // mission-wide: the Baron sails, and the natives alone may not.
+    expect(seat(island, 0).cities).toHaveLength(1);
+    expect(seat(island, 0).technologies).toEqual([]);
+    expect(seat(island, 1).cities).toHaveLength(3);
+    // You discover the frozen sea yourself, and no seat is forbidden it
+    // mission-wide: the Baron sails, and the natives alone may not. The
+    // natives cannot grow either (no Fruit, no Lumber Camp, no Mines).
     expect(island.forbiddenTechnologies).toEqual([]);
     expect(seat(island, 0).forbiddenTechnologies).toBeUndefined();
-    for (const technology of [
-      "SHORECRAFT",
-      "NAVIGATION",
-      "SEAMANSHIP",
-      "SUBMERSIBLES",
-    ] as const)
-      expect(seat(island, 0).technologies).toContain(technology);
-    expect(seat(island, 0).technologies).not.toContain("NAVAL_ENGINEERING");
-    for (const technology of NAVAL)
+    for (const technology of [...NAVAL, "GATHERING", "FORESTRY", "DRILL"])
       expect(seat(island, 1).forbiddenTechnologies).toContain(technology);
     expect(seat(island, 2).technologies).toContain("NAVIGATION");
-    expect(seat(island, 2).forbiddenTechnologies).toEqual([
+    expect(seat(island, 2).forbiddenTechnologies).toContain(
       "NAVAL_ENGINEERING",
-    ]);
-    // The Baron has a Port and a ship, and the landing of round 8 brings
-    // another.
-    expect(island.improvements).toEqual([
-      { at: { x: 11, y: 2 }, improvement: "PORT" },
-    ]);
+    );
+    // The Baron has a Port and a ship, holds his island until round 16 and
+    // then makes for the Crater; his landing of round 14 brings another.
+    expect(island.improvements).toContainEqual({
+      at: { x: 15, y: 6 },
+      improvement: "PORT",
+    });
     expect(seat(island, 2).units.map((unit) => unit.role)).toContain(
       "PATROL_BOAT",
     );
+    expect(missionSeatDirectivesV7(seat(island, 2))).toEqual([
+      {
+        kind: "HOLD",
+        zone: [{ x0: 12, y0: 0, x1: 19, y1: 7 }],
+        untilRound: 16,
+      },
+      { kind: "ASSAULT", target: { x: 7, y: 15 } },
+    ]);
     expect(island.reinforcements).toHaveLength(1);
     expect(island.reinforcements?.[0]?.seat).toBe(2);
-    expect(island.reinforcements?.[0]?.round).toBe(8);
+    expect(island.reinforcements?.[0]?.round).toBe(14);
     expect(
       island.reinforcements?.[0]?.units.map((unit) => unit.role),
     ).toContain("PATROL_BOAT");
-    // The Crater is the Dinosaur town across the strait, kept by a
-    // garrison of three, and the strait is water on every column.
+    // The Crater is the Dinosaur town on the shore that faces you, kept by
+    // a garrison of three, and the strait is water on every column.
     const crater = island.landmarks?.find((mark) => mark.tag === "CRATER");
-    expect(crater?.at).toEqual({ x: 5, y: 11 });
+    expect(crater?.at).toEqual({ x: 7, y: 15 });
     expect(seat(island, 1).cities.map((city) => city.at)).toContainEqual(
       crater?.at,
     );
     expect(seat(island, 1).directive).toEqual({
       kind: "GUARD",
-      zone: [{ x0: 4, y0: 10, x1: 6, y1: 12 }],
+      zone: [{ x0: 6, y0: 14, x1: 8, y1: 16 }],
       garrison: 3,
     });
-    expect(island.terrain[7]).toBe("~".repeat(16));
-    expect(island.terrain[8]).toBe("~".repeat(16));
+    for (const row of [9, 10, 11])
+      expect(island.terrain[row]).toBe("~".repeat(20));
     expect(() => validateMissionDirectivesV7(island)).not.toThrow();
 
     // Mission 8: the Dinosaurs hunt the Overmind in its crater.

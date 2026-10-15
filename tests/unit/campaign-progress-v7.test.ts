@@ -366,7 +366,7 @@ describe("derived campaign state", () => {
         leads: ["ICE_FOLK"],
         opponents: ["DINOSAUR", "ORIGINAL"],
         allies: [],
-        size: 16,
+        size: 20,
       },
       {
         id: "FRONTIER_8",

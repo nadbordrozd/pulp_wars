@@ -178,8 +178,8 @@ export const CHAPTER_ONE_V7: CampaignChapterV7 = Object.freeze({
       objective: "Get Doctor Crane to the gate by turn 20.",
       hints: Object.freeze([
         "If the Doctor dies, the mission is lost.",
-        "Kessler's Toll guards the pass: go round or go through.",
-        "A Lich outranges the fort. The Doctor can raise the dead.",
+        "A Lich outranges Kessler's Toll. Pestilence rots it.",
+        "Keep the Doctor behind the dead. He can raise more.",
       ]),
       closing:
         "Thane Brunhild Ironbraid reads the score twice and bars her doors. 'That bell is ours, Captain. It hangs in the Deep Gate. And nobody is ringing it.'",
@@ -199,8 +199,8 @@ export const CHAPTER_ONE_V7: CampaignChapterV7 = Object.freeze({
       objective: "Hold the Deep Gate for 14 turns.",
       hints: Object.freeze([
         "Ice Folk: turn 3, then 7 and 11. Baron: 6, then 9 and 12.",
-        "Yetis throw rocks from the peaks. Keep the Thane back.",
-        "A level 5 city sends a giant. Help arrives on turn 9.",
+        "Blasting Charges bring the peaks down on the Yetis.",
+        "Gunners that stand still fire twice. Keep the Thane back.",
       ]),
       closing:
         "The bell falls silent, and the Ice Folk stop where they stand. Mother Rime lowers her spear. 'It was not your bell we came for. It was calling a star down. It fell in the sea, where the old beasts live.'",
@@ -216,12 +216,12 @@ export const CHAPTER_ONE_V7: CampaignChapterV7 = Object.freeze({
       name: "The Island That Time Forgot",
       format: "CAPTURE",
       briefing:
-        "A star fell on an island no chart admits to, and the Baron's ships are already under sail. The Ice Folk need no ships: they walk on the sea they freeze. Reach the crater before the Baron does. Mind the natives. They have teeth.",
-      objective: "Capture the Crater by turn 18.",
+        "A star fell on an island no chart admits to, and the Baron's ships are already under sail. The Ice Folk have one cold town and no ships, but they walk on the sea they freeze. Grow, cross, and take the crater before the Baron does. Mind the natives. They have teeth.",
+      objective: "Capture the Crater by turn 30.",
       hints: Object.freeze([
-        "Freeze a road across the strait.",
-        "Whoever steps on your ice freezes. Then break them.",
-        "The Baron lands on turn 8.",
+        "Rime freezes the shallows; Pack Ice the deep water.",
+        "Whoever steps on your ice freezes. Giants shatter them.",
+        "Level 5 cities send Frost Giants. The Baron lands turn 14.",
       ]),
       closing:
         "In the crater lies a ship of glass and brass, and around it the great beasts keep watch like dogs at a door. They let you pass. Whatever is inside, they hate it more than they hate you.",

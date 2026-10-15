@@ -104,13 +104,16 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
   "FRONTIER_4@5:GOBLIN":
     "65e303d06ef43154780f820ea31bfa7e3c0222e7ea8ed83c0a8e8dc34a051363",
   // Missions 5 and 6 (`pulp_wars-v642.2`).
-  "FRONTIER_5@1:UNDEAD":
-    "283973129144392407f31f188a284006ae937403512ee2d7e176b337fd321574",
-  "FRONTIER_6@1:DWARF":
-    "441ef76a743519ff8cfe388364442c85715c55eefb01656e79e821510fcbde9c",
+  // Campaign difficulty pass B (`pulp_wars-v642.8`): revision 2.
+  "FRONTIER_5@2:UNDEAD":
+    "29e71ef8fb693721057f21d4efee94bfe0ac22864df2562baa04f3a0cf6d0bcb",
+  // Campaign difficulty pass B (`pulp_wars-v642.8`): revision 2.
+  "FRONTIER_6@2:DWARF":
+    "068ff4950c6d5135c522b9702a9bd7a38205b8d0bc7519cdcbd7b1389d6975e2",
   // Missions 7 and 8 (`pulp_wars-v642.3`).
-  "FRONTIER_7@1:ICE_FOLK":
-    "fd877e75e45aa80ba394499860eed7419c2efbfbf7f12a22ddca71ce9712bec7",
+  // Campaign difficulty pass B (`pulp_wars-v642.8`): revision 2.
+  "FRONTIER_7@2:ICE_FOLK":
+    "9d95e75fe45953164c434238f317d24329aea8d7648b72c17383d8b51a37bccf",
   // Mission 8 as a build-up (`pulp_wars-v642.9`): revision 2.
   "FRONTIER_8@2:DINOSAUR":
     "ffac8c79a235a46a3f6d08f748929a36f51d1d355e8bb45438f0a472f7b1cfb4",
@@ -385,13 +388,16 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
   "FRONTIER_4@5:GOBLIN":
     "8295da4abdfbee9d838484861d9252fa776f16c9f7370e0b4eff90e9b596a5a9",
   // Missions 5 and 6 (`pulp_wars-v642.2`).
-  "FRONTIER_5@1:UNDEAD":
-    "9dd66709874221dc012d48dcb0b118eb3560583925e0f6f7b91254aaee4e662e",
-  "FRONTIER_6@1:DWARF":
-    "e164e6e6753a7b820ec2ac5a178df25e2e9c925792eb508464981ab71d8beb86",
+  // Campaign difficulty pass B (`pulp_wars-v642.8`): revision 2.
+  "FRONTIER_5@2:UNDEAD":
+    "563287f5800ffdd3643d1c3877f5032a0c5fe43effb7a835f8474f5b7f085240",
+  // Campaign difficulty pass B (`pulp_wars-v642.8`): revision 2.
+  "FRONTIER_6@2:DWARF":
+    "d7ec6a39b5209bfcb5e2c6afa1ad440af61a939f8dfe1f8b049f3d7643ed02b4",
   // Missions 7 and 8 (`pulp_wars-v642.3`).
-  "FRONTIER_7@1:ICE_FOLK":
-    "756596ca5574f77c4d1f6719d102a2d29a671f5a531a7c353614afcb380358b2",
+  // Campaign difficulty pass B (`pulp_wars-v642.8`): revision 2.
+  "FRONTIER_7@2:ICE_FOLK":
+    "77c8587644ad72da15b43b0f3f0b18cc539e707830266c0a94d113f660600903",
   // Mission 8 as a build-up (`pulp_wars-v642.9`): revision 2.
   "FRONTIER_8@2:DINOSAUR":
     "753db292217b431598e51169f082a5edc4dfba57db2ddf629c6370d022687c75",

@@ -35,6 +35,17 @@ import type { MissionDefinitionV7 } from "./types";
  * Undead cities and no giant, a fort and a camp that cannot grow, no
  * roaming toll-men, and villages only in the far north-west.
  *
+ * Revision 2 (`pulp_wars-v642.8`, the campaign difficulty pass,
+ * CAMPAIGN.md section 11.16): the problem is the fort. Its garrison of
+ * seven (two Guards, two Marksmen, three Fighters) breaks a column that
+ * walks into the pass, and the Doctor dies to its Marksmen on the way; a
+ * Lich outranges them, and with Pestilence (researched, not given: the
+ * Undead start with four technologies, not nine) its plague rots the
+ * whole garrison, the Ghouls' Carrion finishes the sick, and the Zombies'
+ * bites raise the dead toll-men on your side. The fort no longer harvests
+ * itself to level 5 (no Gathering), so taking it no longer hands you a
+ * giant, and the round 9 raiders bring a Musk Ox.
+ *
  * ```text
  *      x 0123456789012345
  * y  0   f.^.^.^^ff^.....
@@ -57,7 +68,7 @@ import type { MissionDefinitionV7 } from "./types";
  */
 export const FRONTIER_5_V7: MissionDefinitionV7 = {
   id: "FRONTIER_5",
-  revision: 1,
+  revision: 2,
   seed: 20261105,
   // <map>
   size: 16,
@@ -158,18 +169,10 @@ export const FRONTIER_5_V7: MissionDefinitionV7 = {
   seats: [
     {
       faction: "UNDEAD",
-      coins: 10,
-      technologies: [
-        "GATHERING",
-        "ADMINISTRATION",
-        "HUNTING",
-        "FORESTRY",
-        "SAWMILLING",
-        "MARKSMANSHIP",
-        "SCOUTING",
-        "DRILL",
-        "FORTIFICATION",
-      ],
+      coins: 15,
+      // The tree to discover (revision 2): Liches are two technologies
+      // away, Pestilence three, Roads one.
+      technologies: ["GATHERING", "ADMINISTRATION", "HUNTING", "SCOUTING"],
       // Two small cities (hand play, CAMPAIGN.md section 11, mission 5): a
       // level 4 capital with a Land Grant harvested its Fruit to level 5 on
       // the first turn, and an Abomination led the column. This is an
@@ -216,7 +219,6 @@ export const FRONTIER_5_V7: MissionDefinitionV7 = {
       faction: "ORIGINAL",
       coins: 5,
       technologies: [
-        "GATHERING",
         "HUNTING",
         "MARKSMANSHIP",
         "SCOUTING",
@@ -234,18 +236,25 @@ export const FRONTIER_5_V7: MissionDefinitionV7 = {
       ],
       units: [
         { role: "GUARD", at: { x: 10, y: 8 } },
+        { role: "GUARD", at: { x: 9, y: 8 } },
         { role: "MARKSMAN", at: { x: 11, y: 8 } },
+        { role: "MARKSMAN", at: { x: 11, y: 7 } },
         { role: "FIGHTER", at: { x: 10, y: 7 } },
-        { role: "FIGHTER", at: { x: 9, y: 8 } },
+        { role: "FIGHTER", at: { x: 9, y: 9 } },
         { role: "FIGHTER", at: { x: 10, y: 9 } },
       ],
       reveal: { radius: 2 },
-      // No Knights and no siege; and no Lumber Camp, Farm, or Blast Mountain
+      // No Knights and no siege; no Fruit (revision 2: the fort harvested
+      // itself to level 4 on round 1 and handed its captor a giant); and no
+      // Lumber Camp, Farm, or Blast Mountain
       // (hand play, CAMPAIGN.md section 11, mission 5): the fort grew to
       // level 5 by round 5 and a Juggernaut stood in the pass, and with
       // Explosives it blasted its own mountains for population (a Juggernaut
       // in round 14) and opened the block that keeps the two roads apart.
       forbiddenTechnologies: [
+        "GATHERING",
+        "ADMINISTRATION",
+        "PLANNING",
         "CHIVALRY",
         "FORESTRY",
         "SAWMILLING",
@@ -258,7 +267,7 @@ export const FRONTIER_5_V7: MissionDefinitionV7 = {
       directive: {
         kind: "GUARD",
         zone: [{ x0: 9, y0: 7, x1: 11, y1: 9 }],
-        garrison: 6,
+        garrison: 7,
       },
     },
     {
@@ -322,6 +331,7 @@ export const FRONTIER_5_V7: MissionDefinitionV7 = {
         { role: "FIGHTER", at: { x: 15, y: 7 } },
         { role: "FIGHTER", at: { x: 15, y: 8 } },
         { role: "RAIDER", at: { x: 14, y: 8 } },
+        { role: "GUARD", at: { x: 15, y: 6 } },
       ],
     },
     {

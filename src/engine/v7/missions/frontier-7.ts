@@ -3,228 +3,277 @@ import type { MissionDefinitionV7 } from "./types";
 /**
  * `FRONTIER_7` "The Island That Time Forgot" (docs/product/CAMPAIGN.md
  * section 9, mission 7). You lead the Ice Folk against the Dinosaurs and
- * the Humans on a 16 x 16 archipelago, Rival. Hard. The lesson is the
- * frozen sea: the Ice Folk have no ships, so you freeze a road across the
- * strait (you start with Rime and Pack Ice), slide your army over it, and
- * land on the island of the Dinosaurs, whose town on the Crater is the
- * objective. It is a race: the mission is lost when round 18 ends, and the
- * Baron's expedition, which does have ships, lands beside the Crater in
- * round 8 and keeps coming by sea.
+ * the Humans on a 20 x 20 archipelago, Rival. Hard. The Ice Folk have no
+ * ships, so you freeze a road across the strait, slide your army over it,
+ * and land on the island of the Dinosaurs, whose town on the Crater, on
+ * the shore that faces you, is the objective. The mission is lost when
+ * round 30 ends.
  *
- * The board is the map generator's (Archipelago, seed 9): your island in
+ * Revision 2 (`pulp_wars-v642.8`, the campaign difficulty pass,
+ * CAMPAIGN.md section 11.16) makes it a build-up mission: you start with
+ * one town, three units, and no technology at all, against natives who
+ * already hold three cities and the Baron's port, on a bigger board with a
+ * longer clock. The frozen sea is yours to discover (Rime freezes the
+ * shallows, Pack Ice the deep water in the middle of the strait, Black Ice
+ * freezes whoever steps on your ice, Glacier makes the road last), the
+ * island in the north-west is yours to settle first, and the Crater falls
+ * to Frost Giants: a city of yours at level 5 sends one, its Cold Aura
+ * freezes whatever it stands next to, and its Glacial Smash shatters what
+ * is frozen. The Baron holds his island until round 16 and then races you
+ * for the Crater; his landing party comes ashore beside it in round 14.
+ *
+ * The board is the map generator's (Archipelago 20, seed 2): your island in
  * the north-west, the Baron's in the north-east, and the island of the
- * Dinosaurs in the south, two rows of sea away. Four villages are removed:
- * your town, the Crater, and the three that would hand an AI seat a free
- * city.
+ * Dinosaurs in the south. A spur of your island runs down to the strait;
+ * column 7 is the road: four tiles of water (two of them deep), the
+ * natives' northern tip, two more tiles of water, and the Crater. Seven
+ * villages are removed: the two native towns, one beside a native town,
+ * and the four of the Baron's island (with four cities his expedition
+ * shipped Juggernauts to your island every round).
  *
  * ```text
- *      x 0123456789012345
- * y  0   .f.....~~.^^.f^^
- *    1   .v....~~~~f.^.^.      v: a village
- *    2   .....f~~~~~PB..f      B: the Baron's port town; P: its Port
- *    3   ^f..I.f~~~~.^f^^      I: your capital
- *    4   .i~~.~.~~~.f^^~~      i: your town
- *    5   ..~~~~^~~~..^.~.
- *    6   ~.~~~.~~~~.~~f^~
- *    7   ~~~~~~~~~~~~~~~~      the strait
- *    8   ~~~~~~~~~~~~~~~~
- *    9   ~~~~~~~f~~~~~~~~
- *   10   ~~~~~.f~~~~~~~~~
- *   11   ~~~~~C.ff~~f~~~~      C: the Crater
- *   12   ~~~~~..f.ff..~~~
- *   13   ~~~~~~ffDff^~~~~      D: the Dinosaur capital
- *   14   ~~~~~~ff..^^~~~~
- *   15   ~~~~~~f.^ff^~~~~
+ *      x 01234567890123456789
+ * y  0   .fffff~~~~~~f^..^..^
+ *    1   fffff^~.~~~~^^..^f.^
+ *    2   ff..ffvf~~~~.....^^.      v: villages of your island
+ *    3   fv..fff~~~~~~ff.^..f
+ *    4   ff..^fff~~~~~f^^fff^
+ *    5   .ff.Hfv.~~~~~.K^.f..      H: Coldharbour; K: Port Kessler
+ *    6   ^v~.~^.~~~~~~^.~^^.~
+ *    7   ~~~~~~~.f~~~~~~^^~~.      the spur
+ *    8   ~~.~~~~~^~~~~~~~~~~~
+ *    9   ~~~~~~~~~~~~~~~~~~~~      the strait
+ *   10   ~~~~~~~~~~~~~~~~~~~~
+ *   11   ~~~~~~~~~~~~~~~~~~~~
+ *   12   ~~~~~f~f~~~~.~~~~~~~      the natives' northern tip at (7, 12)
+ *   13   ~~~~~..~~~.~~~f~~~~~
+ *   14   ~~~~~~f~~~.^.f.f~~~~
+ *   15   ~~~~~~~C..^fF.~~~~~~      C: the Crater; F: Fernmaw
+ *   16   ~~~~~~.~...ff^~f~~~~
+ *   17   ~~~~~~~.....f^f.~~~~
+ *   18   ~~~~~^f~...T.^v~~~~~      T: Tarpit
+ *   19   ~~~~~~~..f.f^f~~~~~~
  * ```
  */
 export const FRONTIER_7_V7: MissionDefinitionV7 = {
   id: "FRONTIER_7",
-  revision: 1,
+  revision: 2,
   seed: 20261107,
   // <map>
-  size: 16,
+  size: 20,
   source: {
     mapType: "ARCHIPELAGO",
-    size: 16,
+    size: 20,
     seats: 3,
-    seed: 9,
+    seed: 2,
     edits: [
-      { kind: "VILLAGE", at: { x: 1, y: 4 }, present: false },
-      { kind: "VILLAGE", at: { x: 5, y: 11 }, present: false },
-      { kind: "VILLAGE", at: { x: 10, y: 5 }, present: false },
-      { kind: "VILLAGE", at: { x: 13, y: 5 }, present: false },
-      { kind: "VILLAGE", at: { x: 11, y: 12 }, present: false },
+      { kind: "VILLAGE", at: { x: 7, y: 15 }, present: false },
+      { kind: "VILLAGE", at: { x: 11, y: 18 }, present: false },
+      { kind: "VILLAGE", at: { x: 8, y: 18 }, present: false },
+      { kind: "VILLAGE", at: { x: 12, y: 2 }, present: false },
+      { kind: "VILLAGE", at: { x: 15, y: 2 }, present: false },
+      { kind: "VILLAGE", at: { x: 18, y: 3 }, present: false },
+      { kind: "VILLAGE", at: { x: 18, y: 6 }, present: false },
     ],
   },
   terrain: [
-    ".f.....~~.^^.f^^",
-    "......~~~~f.^.^.",
-    ".....f~~~~~~...f",
-    "^f...f~~~~~.^f^^",
-    "..~~.~.~~~.f^^~~",
-    "..~~~~^~~~..^.~.",
-    "~.~~~.~~~~.~~f^~",
-    "~~~~~~~~~~~~~~~~",
-    "~~~~~~~~~~~~~~~~",
-    "~~~~~~~f~~~~~~~~",
-    "~~~~~.f~~~~~~~~~",
-    "~~~~~..ff~~f~~~~",
-    "~~~~~..f.ff..~~~",
-    "~~~~~~ff.ff^~~~~",
-    "~~~~~~ff..^^~~~~",
-    "~~~~~~f.^ff^~~~~",
+    ".fffff~~~~~~f^..^..^",
+    "fffff^~.~~~~^^..^f.^",
+    "ff..ff.f~~~~.....^^.",
+    "f...fff~~~~~~ff.^..f",
+    "ff..^fff~~~~~f^^fff^",
+    ".ff..f..~~~~~..^.f..",
+    "^.~.~^.~~~~~~^.~^^.~",
+    "~~~~~~~.f~~~~~~^^~~.",
+    "~~.~~~~~^~~~~~~~~~~~",
+    "~~~~~~~~~~~~~~~~~~~~",
+    "~~~~~~~~~~~~~~~~~~~~",
+    "~~~~~~~~~~~~~~~~~~~~",
+    "~~~~~f~f~~~~.~~~~~~~",
+    "~~~~~..~~~.~~~f~~~~~",
+    "~~~~~~f~~~.^.f.f~~~~",
+    "~~~~~~~...^f.f~~~~~~",
+    "~~~~~~.~...ff^~f~~~~",
+    "~~~~~~~.....f^f.~~~~",
+    "~~~~~^f~.....^.~~~~~",
+    "~~~~~~~..f.f^f~~~~~~",
   ],
   resources: [
-    "..eee....eoo.goo",
-    "r..r.rsp.s.eoro.",
-    "r.eer.s...ps.rrg",
-    "o.e...s...s.og..",
-    "...ses...s.....s",
-    ".e....os...ro...",
-    "s..p.e.pppe...op",
-    "...p.p........s.",
-    ".p...p.s.p......",
-    ".....ss.s.......",
-    "......gs..p.....",
-    "..p.s...gs......",
-    "p...sreg....r.p.",
-    "p.....g.....p...",
-    "......gg.e.os...",
-    "..p....e..gos.p.",
+    ".gg....s.p......o..o",
+    "gggggo.es..sooe.o..o",
+    "ggr.g..gp.p..rr...oe",
+    "g..rg.gs.pp.....o...",
+    "g..eogg......goo...o",
+    "e.g..g...p...r.o..ee",
+    "o.s...e......orp.o.s",
+    ".....ss..........p..",
+    ".........s.p..p....s",
+    "...p..........p.....",
+    ".....p....p.pp.p.pp.",
+    ".pp.ps.p....s.......",
+    "pppp.g.g......s....p",
+    "..........e..s.sp..p",
+    ".pp....s.pe.r..gs...",
+    "......p......g.p....",
+    ".p....e.e..g....p...",
+    "...p..ser.....ges..p",
+    ".............o.s.p..",
+    ".p.p.s..r.eg.g...p..",
   ],
   biome: "PLAINS",
   biomes: [
-    "PPPPPPPPPPHHHHHH",
-    "PPPPPPPPPPHHHHHH",
-    "PPPPPPPPPPPPHHHH",
-    "PPPPPPPPPPPHHHHH",
-    "PPPPPPPPPPPHHHPP",
-    "PPPPPPPPPPPPHHPH",
-    "PPPPPPPPPPPPPHHP",
-    "PPPPPPPPPPPPPPPP",
-    "PPPPPPPPPPPPPPPP",
-    "PPPPPPPPPPPPPPPP",
-    "PPPPPPPPPPPPPPPP",
-    "PPPPPPPPWPPWPPPP",
-    "PPPPPPPWWWWWWPPP",
-    "PPPPPPWWWWWWPPPP",
-    "PPPPPPWWWWWWPPPP",
-    "PPPPPPWWWWWWPPPP",
+    "WWWWWWPPPPPPHHHHHHHH",
+    "WWWWWWPWPPPPHHHHHHHH",
+    "WWWWWWWWPPPPHHHHHHHH",
+    "WWWWWWWPPPPPPHHHHHHH",
+    "WWWWWWWWPPPPPHHHPPPP",
+    "WWWWWWWWPPPPPHHPPPPP",
+    "WWPWPWWPPPPPPHPPPPPP",
+    "PPPPPPPPPPPPPPPPPPPP",
+    "PPPPPPPPPPPPPPPPPPPP",
+    "PPPPPPPPPPPPPPPPPPPP",
+    "PPPPPPPPPPPPPPPPPPPP",
+    "PPPPPPPPPPPPPPPPPPPP",
+    "PPPPPPPPPPPPWPPPPPPP",
+    "PPPPPPPPPPPPPPWPPPPP",
+    "PPPPPPPPPPPWWWWWPPPP",
+    "PPPPPPPPPPPWWWPPPPPP",
+    "PPPPPPPPPPPWWWPWPPPP",
+    "PPPPPPPPPPPWWWWWPPPP",
+    "PPPPPPPPPPPWWWWPPPPP",
+    "PPPPPPPPPPPWWWPPPPPP",
   ],
-  villages: [{ x: 1, y: 1 }],
+  villages: [
+    { x: 6, y: 2 },
+    { x: 1, y: 3 },
+    { x: 7, y: 5 },
+    { x: 1, y: 6 },
+    { x: 14, y: 18 },
+  ],
   treasureChests: [
-    { x: 10, y: 4 },
-    { x: 10, y: 13 },
+    { x: 18, y: 1 },
+    { x: 8, y: 15 },
+    { x: 9, y: 15 },
+    { x: 12, y: 17 },
   ],
   // </map>
-  // The Baron's Port, on the channel between the northern islands.
-  improvements: [{ at: { x: 11, y: 2 }, improvement: "PORT" }],
+  // The Baron's Port, on the south shore of his island, and a clearing in
+  // the woods by the Crater and by Fernmaw (their land has little bare
+  // Grass for the builder's population records).
+  improvements: [
+    { at: { x: 15, y: 6 }, improvement: "PORT" },
+    { at: { x: 13, y: 14 }, improvement: "LUMBER_CAMP" },
+    { at: { x: 6, y: 14 }, improvement: "LUMBER_CAMP" },
+  ],
   aiMode: "RIVAL",
   seats: [
     {
       faction: "ICE_FOLK",
-      coins: 10,
-      // The whole frozen sea but Icebound (hand play, CAMPAIGN.md section
-      // 11.8): Rime and Pack Ice freeze Shallow and Deep Water, Black Ice
-      // freezes whoever steps onto your ice, and with Glacier the road
-      // lasts five turns and your units cross it faster.
-      technologies: [
-        "GATHERING",
-        "ADMINISTRATION",
-        "HUNTING",
-        "MARKSMANSHIP",
-        "SCOUTING",
-        "SHORECRAFT",
-        "NAVIGATION",
-        "SEAMANSHIP",
-        "SUBMERSIBLES",
-      ],
+      coins: 5,
+      // A build-up (the user, 2026-10-14: "at least some of the missions
+      // should involve building up your base and army from scratch"): no
+      // technology at all. Rime, Pack Ice, Black Ice and Glacier are the
+      // tree to discover; Pack Ice also gathers the Pearls of your waters.
+      technologies: [],
       cities: [
-        // A small capital (hand play, CAMPAIGN.md section 11.8): at level
-        // 3 with a land grant the Fish of its home waters made a Frost
-        // Giant in round 1.
         {
           name: "Coldharbour",
-          at: { x: 4, y: 3 },
+          at: { x: 4, y: 5 },
           level: 2,
           rewards: ["SURVEY"],
         },
-        { name: "Skerry", at: { x: 1, y: 4 }, level: 2, rewards: ["SURVEY"] },
       ],
       units: [
-        { role: "CAPTAIN", at: { x: 4, y: 4 } },
-        { role: "FIGHTER", at: { x: 4, y: 3 } },
-        { role: "FIGHTER", at: { x: 3, y: 3 } },
-        { role: "RAIDER", at: { x: 4, y: 2 }, home: 1 },
-        { role: "MARKSMAN", at: { x: 5, y: 3 } },
-        // The town's levy has already marched to the capital (hand play:
-        // from the town it reached the strait three turns behind).
-        { role: "FIGHTER", at: { x: 3, y: 2 }, home: 1 },
-        { role: "MARKSMAN", at: { x: 2, y: 3 }, home: 1 },
+        { role: "FIGHTER", at: { x: 4, y: 5 } },
+        { role: "FIGHTER", at: { x: 3, y: 5 } },
+        { role: "RAIDER", at: { x: 3, y: 4 } },
       ],
-      // The strait, and the island as far as its two towns.
+      // Your island's south shore and the strait, and the Crater (the
+      // objective is in sight from the first turn).
       reveal: {
         radius: 2,
         rects: [
-          { x0: 4, y0: 5, x1: 8, y1: 9 },
-          { x0: 5, y0: 10, x1: 9, y1: 14 },
+          { x0: 6, y0: 5, x1: 9, y1: 12 },
+          { x0: 6, y0: 13, x1: 8, y1: 16 },
         ],
       },
     },
     {
       faction: "DINOSAUR",
-      coins: 3,
-      technologies: ["GATHERING", "HUNTING", "MARKSMANSHIP", "SCOUTING"],
+      coins: 10,
+      technologies: ["HUNTING", "MARKSMANSHIP", "SCOUTING"],
       cities: [
+        // Fernmaw, the natives' capital, ringed by peaks on its west.
         {
           name: "Fernmaw",
-          at: { x: 8, y: 13 },
+          at: { x: 12, y: 15 },
           level: 2,
           rewards: ["STOCKPILE"],
         },
-        // The town on the Crater, on the shore that faces your island.
+        // The Crater, where the star fell: the town on the shore that
+        // faces your island.
         {
           name: "The Crater",
-          at: { x: 5, y: 11 },
+          at: { x: 7, y: 15 },
+          level: 2,
+          rewards: ["STOCKPILE"],
+        },
+        {
+          name: "Tarpit",
+          at: { x: 11, y: 18 },
           level: 2,
           rewards: ["STOCKPILE"],
         },
       ],
       units: [
-        { role: "FIGHTER", at: { x: 8, y: 13 } },
-        { role: "RAIDER", at: { x: 7, y: 12 } },
-        { role: "MARKSMAN", at: { x: 8, y: 14 } },
-        { role: "GUARD", at: { x: 8, y: 12 } },
-        // The Crater's keeper stands on it.
-        { role: "GUARD", at: { x: 5, y: 11 }, home: 1 },
-        { role: "MARKSMAN", at: { x: 5, y: 12 }, home: 1 },
-        { role: "FIGHTER", at: { x: 6, y: 11 }, home: 1 },
+        // Fernmaw.
+        { role: "GUARD", at: { x: 12, y: 15 } },
+        { role: "FIGHTER", at: { x: 11, y: 15 } },
+        { role: "FIGHTER", at: { x: 12, y: 16 } },
+        { role: "MARKSMAN", at: { x: 13, y: 15 } },
+        { role: "RAIDER", at: { x: 12, y: 14 } },
+        // The Crater's keepers.
+        { role: "GUARD", at: { x: 7, y: 15 }, home: 1 },
+        { role: "FIGHTER", at: { x: 8, y: 16 }, home: 1 },
+        { role: "MARKSMAN", at: { x: 6, y: 14 }, home: 1 },
+        // Tarpit, in the south.
+        { role: "FIGHTER", at: { x: 11, y: 18 }, home: 2 },
+        { role: "RAIDER", at: { x: 10, y: 18 }, home: 2 },
       ],
       reveal: { radius: 2 },
-      // The natives do not sail, and they lay no more Ankylosauruses (hand
-      // play, CAMPAIGN.md section 11.8): with Nesting three of them walled
-      // the Crater off behind 60 Hit Points.
+      // The natives do not sail, lay no Ankylosaurus, and do not grow: no
+      // Fruit, Farm, Lumber Camp, Workshop, Mine or Blast Mountain (hand
+      // play: with Gathering and Crafting their capital grew to level 4
+      // and laid a Raptor egg every turn).
       forbiddenTechnologies: [
         "SHORECRAFT",
         "NAVIGATION",
         "NAVAL_ENGINEERING",
         "SEAMANSHIP",
         "SUBMERSIBLES",
+        "GATHERING",
+        "FARMING",
+        "MILLING",
+        "ADMINISTRATION",
+        "PLANNING",
+        "FORESTRY",
+        "SAWMILLING",
+        "DRILL",
+        "ENGINEERING",
+        "METALLURGY",
         "FORTIFICATION",
         "EXPLOSIVES",
       ],
-      // Three of them never leave the Crater (hand play, CAMPAIGN.md
-      // section 11.8: told only to hold the island, every one of them
-      // walked off to the capital and the Crater stood empty in round 3).
-      // The rest play their ordinary game; without ships it is on their
-      // island.
+      // Three of them never leave the Crater; the rest play their ordinary
+      // game, on their island until somebody freezes them a road.
       directive: {
         kind: "GUARD",
-        zone: [{ x0: 4, y0: 10, x1: 6, y1: 12 }],
+        zone: [{ x0: 6, y0: 14, x1: 8, y1: 16 }],
         garrison: 3,
       },
     },
     {
+      // Baron Kessler's expedition, on the north-eastern island.
       faction: "ORIGINAL",
       coins: 8,
       technologies: [
@@ -238,54 +287,68 @@ export const FRONTIER_7_V7: MissionDefinitionV7 = {
       cities: [
         {
           name: "Port Kessler",
-          at: { x: 12, y: 2 },
+          at: { x: 14, y: 5 },
           level: 2,
           rewards: ["STOCKPILE"],
         },
       ],
       units: [
-        { role: "GUARD", at: { x: 12, y: 2 } },
-        { role: "FIGHTER", at: { x: 13, y: 2 } },
-        { role: "MARKSMAN", at: { x: 11, y: 3 } },
-        { role: "PATROL_BOAT", at: { x: 10, y: 3 } },
+        { role: "GUARD", at: { x: 14, y: 5 } },
+        { role: "FIGHTER", at: { x: 13, y: 5 } },
+        { role: "MARKSMAN", at: { x: 13, y: 4 } },
+        { role: "PATROL_BOAT", at: { x: 14, y: 7 } },
       ],
-      // The Baron's charts: the Crater.
-      reveal: { radius: 2, rects: [{ x0: 4, y0: 9, x1: 7, y1: 13 }] },
-      // Patrol Boats and transports, no Battleship (hand play, CAMPAIGN.md
-      // section 11.8): one shelled your home island from the open sea.
-      forbiddenTechnologies: ["NAVAL_ENGINEERING"],
+      // The Baron's charts: the Crater (an ASSAULT marches only on a city
+      // its seat knows).
+      reveal: { radius: 2, rects: [{ x0: 6, y0: 14, x1: 8, y1: 16 }] },
+      // Patrol Boats and transports, no Battleship; and no giant: no Lumber
+      // Camp, Farm, Land Grant or Blast Mountain (hand play: with four
+      // cities and Lumber Camps the expedition shipped two Juggernauts to
+      // your island in round 21).
+      forbiddenTechnologies: [
+        "NAVAL_ENGINEERING",
+        "FORESTRY",
+        "SAWMILLING",
+        "FARMING",
+        "MILLING",
+        "EXPLOSIVES",
+      ],
+      // The Baron races you for the Crater (hand play: told to RUSH, his
+      // whole expedition sailed for your island, the nearest hostile city,
+      // and blockaded your ports from round 13 on): he holds his island
+      // until round 16 and then storms the Crater.
       directive: [
         {
           kind: "HOLD",
-          zone: [{ x0: 9, y0: 0, x1: 15, y1: 6 }],
-          untilRound: 8,
+          zone: [{ x0: 12, y0: 0, x1: 19, y1: 7 }],
+          untilRound: 16,
         },
-        { kind: "RUSH" },
+        { kind: "ASSAULT", target: { x: 7, y: 15 } },
       ],
     },
   ],
   forbiddenTechnologies: [],
-  landmarks: [{ tag: "CRATER", at: { x: 5, y: 11 } }],
-  // The Baron's landing party, on the shore south of the Crater.
+  landmarks: [{ tag: "CRATER", at: { x: 7, y: 15 } }],
+  // The Baron's landing party, on the shore east of the Crater.
   reinforcements: [
     {
       seat: 2,
-      round: 8,
+      round: 14,
       units: [
-        { role: "FIGHTER", at: { x: 6, y: 12 } },
-        { role: "FIGHTER", at: { x: 6, y: 12 } },
-        { role: "MARKSMAN", at: { x: 6, y: 12 } },
-        { role: "GUARD", at: { x: 6, y: 12 } },
-        { role: "PATROL_BOAT", at: { x: 4, y: 12 } },
+        { role: "FIGHTER", at: { x: 9, y: 16 } },
+        { role: "FIGHTER", at: { x: 10, y: 16 } },
+        { role: "MARKSMAN", at: { x: 8, y: 17 } },
+        { role: "GUARD", at: { x: 9, y: 17 } },
+        { role: "PATROL_BOAT", at: { x: 7, y: 16 } },
       ],
     },
   ],
-  // Take the town on the Crater before round 18 ends. The stars are for
-  // doing it by round 14 and for losing no city of your own.
+  // Take the Crater before round 30 ends. The stars are for doing it by
+  // round 24 and for losing no city you started with.
   objective: {
     kind: "CAPTURE",
     places: ["CRATER"],
-    byRound: 18,
-    bonus: [{ kind: "WITHIN_ROUNDS", rounds: 14 }, { kind: "KEEP_CITIES" }],
+    byRound: 30,
+    bonus: [{ kind: "WITHIN_ROUNDS", rounds: 24 }, { kind: "KEEP_CITIES" }],
   },
 };
