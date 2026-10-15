@@ -339,32 +339,25 @@ describe("Ruleset 7 DOM shell", () => {
     requiredButton('[data-action="tech"]').click();
     expect(document.querySelectorAll(".v7-tech-card")).toHaveLength(25);
     expect(document.querySelectorAll(".v7-tech-edge")).toHaveLength(20);
-    expect(document.querySelectorAll(".v7-tech-children.is-unary").length).toBe(
-      10,
+    expect(
+      document.querySelectorAll('.v7-tech-card[data-branch-root="true"]'),
+    ).toHaveLength(5);
+    const graph = document.querySelector<HTMLElement>(
+      ".v7-tech-graph[role='region']",
     );
-    const branchSelect = document.querySelector<HTMLSelectElement>(
-      ".v7-tech-branch-select",
-    );
-    if (branchSelect === null) throw new Error("Branch selector missing");
-    expect(branchSelect.options).toHaveLength(5);
-    const headings = [
-      ...document.querySelectorAll<HTMLElement>(".v7-tech-branch > h3"),
-    ];
-    expect(headings).toHaveLength(5);
-    expect(new Set(headings.map((heading) => heading.textContent)).size).toBe(
-      5,
-    );
-    const lastBranch = document.querySelector<HTMLElement>(
-      '[data-tech-lane="INDUSTRY:DRILL"]',
-    );
-    if (lastBranch === null) throw new Error("Technology branch missing");
-    const scrollIntoView = vi.fn();
-    lastBranch.scrollIntoView = scrollIntoView;
-    branchSelect.focus();
-    branchSelect.value = "INDUSTRY:DRILL";
-    branchSelect.dispatchEvent(new Event("change", { bubbles: true }));
-    expect(scrollIntoView).toHaveBeenCalledWith({ block: "start" });
-    expect(document.activeElement).toBe(branchSelect);
+    if (graph === null) throw new Error("Technology graph missing");
+    expect(graph.dataset.techGraphWidth).toBe("600");
+    expect(graph.dataset.techGraphHeight).toBe("600");
+    expect(requiredButton('[data-action="tech-fit"]').textContent).toBe("Fit");
+    expect(requiredButton('[data-action="tech-zoom-in"]')).not.toBeNull();
+    expect(requiredButton('[data-action="tech-zoom-out"]')).not.toBeNull();
+    expect(
+      new Set(
+        [...document.querySelectorAll<HTMLElement>(".v7-tech-node")].map(
+          (node) => node.dataset.techBranch,
+        ),
+      ).size,
+    ).toBe(5);
     expect(document.querySelectorAll(".v7-art-frame").length).toBeGreaterThan(
       20,
     );
@@ -398,6 +391,89 @@ describe("Ruleset 7 DOM shell", () => {
     );
     expect(symbol.getAttribute("viewBox")).toBe("0 0 24 24");
     expect(symbol.textContent).toBe("");
+  });
+
+  it("keeps the compact technology camera through detail focus, Escape, and resize", async () => {
+    let graphWidth = 320;
+    const rectSpy = vi
+      .spyOn(HTMLElement.prototype, "getBoundingClientRect")
+      .mockImplementation(function (this: HTMLElement) {
+        return this.classList.contains("v7-tech-graph")
+          ? domRect(graphWidth, 470)
+          : domRect(0, 0);
+      });
+    const clientWidthSpy = vi
+      .spyOn(HTMLElement.prototype, "clientWidth", "get")
+      .mockImplementation(function (this: HTMLElement) {
+        return this.classList.contains("v7-tech-graph") ? graphWidth : 0;
+      });
+    const clientHeightSpy = vi
+      .spyOn(HTMLElement.prototype, "clientHeight", "get")
+      .mockImplementation(function (this: HTMLElement) {
+        return this.classList.contains("v7-tech-graph") ? 470 : 0;
+      });
+    const app = bootstrapRuleset7App(document, { storage: null });
+    requiredInput("v7-seed").value = "3";
+    chooseSeed();
+    requiredButton('[data-action="launch"]').click();
+    await waitUntil(() => app.controller.snapshot().phase === "ACTIVE");
+    requiredButton('[data-action="tech"]').click();
+    await flushMicrotasks();
+    const fitted = document.querySelector<HTMLElement>(".v7-tech-stage");
+    if (fitted === null) throw new Error("Technology stage missing");
+    expect(fitted.style.transform).toContain("scale(0.52)");
+    expect(
+      document.querySelector<HTMLElement>(".v7-tech-graph")?.dataset.zoom,
+    ).toBe("1");
+
+    requiredButton('[data-action="tech-zoom-in"]').click();
+    const zoomedTransform = fitted.style.transform;
+    expect(zoomedTransform).toContain("scale(0.6344)");
+    requiredButton('[data-action="tech-hunting"]').click();
+    await flushMicrotasks();
+    const detail = document.querySelector<HTMLElement>(".v7-tech-detail");
+    if (detail === null) throw new Error("Technology detail missing");
+    expect(detail.getAttribute("role")).toBe("dialog");
+    expect(document.querySelector<HTMLElement>(".v7-tech-graph")?.inert).toBe(
+      true,
+    );
+    const detailControls = [
+      ...detail.querySelectorAll<HTMLButtonElement>("button:not(:disabled)"),
+    ];
+    const first = detailControls[0];
+    const last = detailControls.at(-1);
+    if (first === undefined || last === undefined)
+      throw new Error("Technology detail controls missing");
+    first.focus();
+    document.dispatchEvent(
+      new KeyboardEvent("keydown", {
+        key: "Tab",
+        shiftKey: true,
+        bubbles: true,
+      }),
+    );
+    expect(document.activeElement).toBe(last);
+
+    graphWidth = 300;
+    document.dispatchEvent(
+      new KeyboardEvent("keydown", { key: "Escape", bubbles: true }),
+    );
+    await flushMicrotasks();
+    expect(document.querySelector(".v7-tech-detail")).toBeNull();
+    expect(document.activeElement?.getAttribute("data-action")).toBe(
+      "tech-hunting",
+    );
+    const resized = document.querySelector<HTMLElement>(".v7-tech-stage");
+    expect(resized?.dataset.zoom).toBe("1.22");
+    expect(resized?.style.transform).not.toBe(zoomedTransform);
+    requiredButton('[data-action="tech-fit"]').click();
+    expect(
+      document.querySelector<HTMLElement>(".v7-tech-graph")?.dataset.zoom,
+    ).toBe("1");
+    rectSpy.mockRestore();
+    clientWidthSpy.mockRestore();
+    clientHeightSpy.mockRestore();
+    app.destroy();
   });
 
   it("keeps settings route-scoped, exposes spoiler-safe export labels, and reports current save deletion", async () => {
@@ -1746,6 +1822,20 @@ function requiredRoot(): HTMLElement {
   const root = document.querySelector<HTMLElement>("#app");
   if (root === null) throw new Error("Missing #app");
   return root;
+}
+
+function domRect(width: number, height: number): DOMRect {
+  return {
+    x: 0,
+    y: 0,
+    top: 0,
+    right: width,
+    bottom: height,
+    left: 0,
+    width,
+    height,
+    toJSON: () => ({}),
+  };
 }
 
 function openMenuItem(action: string): void {

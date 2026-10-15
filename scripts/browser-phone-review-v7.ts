@@ -44,7 +44,7 @@ import { prepareSmokeOutput } from "./browser-smoke-output";
  * `findings.json`, and the run fails when any check fails.
  *
  * Usage: tsx scripts/browser-phone-review-v7.ts http://localhost:6173/
- *   [--output-dir=<new-dir>] [--only=menu,setup,...] [--sizes=p390,p320,l844]
+ *   [--output-dir=<new-dir>] [--only=menu,setup,...] [--sizes=p390,p360,p320,l844]
  *   [--report-only]
  * `--sizes=d1440` adds a 1440 x 900 desktop capture of the named scenes.
  */
@@ -70,7 +70,7 @@ interface Coord {
   readonly y: number;
 }
 interface Size {
-  readonly name: "p390" | "p320" | "l844" | "d1440";
+  readonly name: "p390" | "p360" | "p320" | "l844" | "d1440";
   readonly width: number;
   readonly height: number;
   /** Captured only when `--sizes` names it (the desktop comparison). */
@@ -94,6 +94,7 @@ interface Scene {
 
 const SIZES: readonly Size[] = [
   { name: "p390", width: 390, height: 844 },
+  { name: "p360", width: 360, height: 640 },
   { name: "p320", width: 320, height: 720 },
   { name: "l844", width: 844, height: 390 },
   // A desktop window, for a side-by-side look at a front screen (bead
@@ -762,6 +763,118 @@ const SCENES: readonly Scene[] = [
     },
   },
   {
+    name: "tech-interaction",
+    match: true,
+    run: async (c) => {
+      await mount(
+        c,
+        "/tests/fixtures/v7-score-ui.ts",
+        "null",
+        nineSeatFaction("ORIGINAL"),
+      );
+      await click(c, "tech");
+      await delay(300);
+      const result: Record<string, boolean> = {};
+
+      const roots = ["gathering", "hunting", "scouting", "drill", "shorecraft"];
+      for (const root of roots) {
+        await physicalTap(c, `[data-action="tech-${root}"]`);
+        result[`fitTap${root}`] = await exists(c, ".v7-tech-detail");
+        if (root === "gathering") {
+          result.researchButtonPresent = await exists(
+            c,
+            '[data-action="research-gathering"]',
+          );
+          if (result.researchButtonPresent)
+            await physicalTap(c, '[data-action="research-gathering"]');
+          await delay(600);
+          result.pointerResearchApplied = await evaluate(
+            c,
+            `document.querySelector('[data-action="tech-gathering"]')?.classList.contains('state-owned') === true`,
+          );
+        } else if (result[`fitTap${root}`]) {
+          await physicalKey(c, "Escape", "Escape", 27);
+          result[`escapeRestored${root}`] = await evaluate(
+            c,
+            `document.activeElement?.getAttribute('data-action') === 'tech-${root}' && document.querySelector('.v7-tech-detail') === null`,
+          );
+        }
+      }
+
+      const beforeDrag = await stageTransform(c);
+      await physicalDrag(c, ".v7-tech-graph", 0.08, 0.08, 0.25, 0.22);
+      result.pointerDragPanned = (await stageTransform(c)) !== beforeDrag;
+      result.pointerDragDidNotOpenDetail = !(await exists(
+        c,
+        ".v7-tech-detail",
+      ));
+      await physicalTap(c, '[data-action="tech-hunting"]');
+      result.tapAfterDragOpenedDetail = await exists(c, ".v7-tech-detail");
+      if (result.tapAfterDragOpenedDetail)
+        await physicalKey(c, "Escape", "Escape", 27);
+      await physicalTap(c, '[data-action="tech-fit"]');
+
+      const beforePinch = await zoom(c);
+      await physicalPinch(c, ".v7-tech-graph");
+      result.touchPinchZoomed =
+        (await zoom(c)) > beforePinch && !(await exists(c, ".v7-tech-detail"));
+      const beforeWheel = await zoom(c);
+      await physicalWheel(c, ".v7-tech-graph", -180);
+      result.wheelZoomed = (await zoom(c)) > beforeWheel;
+      await physicalTap(c, '[data-action="tech-fit"]');
+      result.fitButtonReset = (await zoom(c)) === 1;
+
+      await evaluate(c, `document.querySelector('.v7-tech-graph')?.focus()`);
+      const beforeKeyboard = await stageTransform(c);
+      await physicalKey(c, "ArrowRight", "ArrowRight", 39);
+      await physicalKey(c, "+", "Equal", 187);
+      result.keyboardPanZoomed =
+        (await stageTransform(c)) !== beforeKeyboard && (await zoom(c)) > 1;
+      const zoomBeforeResize = await zoom(c);
+      await rawViewport(c, 390, 844);
+      result.resizePreservedZoom = (await zoom(c)) === zoomBeforeResize;
+      await rawViewport(c, 360, 640);
+      await physicalKey(c, "f", "KeyF", 70);
+      result.keyboardFitReset = (await zoom(c)) === 1;
+      await evaluate(
+        c,
+        `${REVIEW}.techInteraction = ${JSON.stringify(result)}`,
+      );
+      const failed = Object.entries(result).filter(([, passed]) => !passed);
+      if (failed.length > 0)
+        throw new Error(
+          `Technology interaction failures: ${failed.map(([name]) => name).join(", ")} ${JSON.stringify(result)}`,
+        );
+      await delay(300);
+    },
+  },
+  ...(
+    [
+      "ORIGINAL",
+      "UNDEAD",
+      "GOBLIN",
+      "DINOSAUR",
+      "MARTIAN",
+      "ICE_FOLK",
+      "DWARF",
+      "CANDY",
+      "CULT",
+    ] as const
+  ).map((faction): Scene => ({
+    name: `tech-tree-${faction.toLowerCase().replaceAll("_", "-")}`,
+    match: true,
+    run: async (c) => {
+      await mount(
+        c,
+        "/tests/fixtures/v7-score-ui.ts",
+        "null",
+        nineSeatFaction(faction),
+      );
+      await click(c, "tech");
+      await delay(500);
+    },
+  })),
+  {
     name: "tech-detail",
     match: true,
     run: async (c) => {
@@ -1424,6 +1537,34 @@ function nineSeatCult(
 })()`;
 }
 
+/** A fresh nine-seat match with the requested faction in the human seat. */
+function nineSeatFaction(faction: string): string {
+  const roster = [
+    faction,
+    ...[
+      "ORIGINAL",
+      "UNDEAD",
+      "GOBLIN",
+      "DINOSAUR",
+      "MARTIAN",
+      "ICE_FOLK",
+      "DWARF",
+      "CANDY",
+      "CULT",
+    ].filter((entry) => entry !== faction),
+  ];
+  return `(() => {
+  const builders = globalThis.__PHONE_BUILDERS__;
+  for (let seed = 4127; seed < 4327; seed += 1) {
+    const created = engine.createPlayableGameV7({ ...builders.browserSetupV7(seed, 3), aiCount: 8, width: 25, height: 25, factions: ${JSON.stringify(roster)} });
+    if (!created.ok) throw new Error('nine-seat faction setup failed: ' + JSON.stringify(created));
+    const live = created.state;
+    if (live.turnOrder[live.activeSeatIndex] === live.humanPlayerId) return live;
+  }
+  throw new Error('no seed gives the human the first turn');
+})()`;
+}
+
 /**
  * A nine-player Domination victory as the Cult, built in the page from a
  * fresh nine-seat setup: every rival eliminated by the human (no turn is
@@ -1565,6 +1706,10 @@ async function check(
       const H = window.innerHeight;
       const problems = [];
       const add = (check, fails, detail) => problems.push({ check, fails, detail });
+      const techInteraction = globalThis.__PHONE_REVIEW__?.techInteraction;
+      if (techInteraction !== undefined)
+        for (const [interaction, passed] of Object.entries(techInteraction))
+          add('tech-interaction-' + interaction, passed !== true, passed === true ? 'passed with physical CDP input' : 'failed');
       const name = (node) => {
         let label = node.tagName.toLowerCase();
         if (node.classList.length > 0) label += '.' + Array.from(node.classList).slice(0, 2).join('.');
@@ -1662,6 +1807,9 @@ async function check(
         const box = control.getBoundingClientRect();
         for (const inner of control.querySelectorAll('*')) {
           if (!shown(inner) || !(ownText(inner) || inner.matches('img'))) continue;
+          // At readable desktop scale the compact technology name is an
+          // intentional label in the open lane below/above its icon button.
+          if (inner.matches('.v7-tech-name')) continue;
           const rect = inner.getBoundingClientRect();
           const spill = Math.max(box.left - rect.left, rect.right - box.right, box.top - rect.top, rect.bottom - box.bottom);
           if (spill > 3) add('spills-out', true, name(inner) + ' leaves ' + name(control).split(' "')[0] + ' by ' + Math.round(spill) + 'px');
@@ -1745,6 +1893,51 @@ async function check(
           const rect = action.getBoundingClientRect();
           if (rect.top > firstRow + 2) continue;
           if (rect.bottom > Math.min(box.bottom, H) + 2) add('action-hidden', true, name(action) + ' ends ' + Math.round(rect.bottom - Math.min(box.bottom, H)) + 'px below the dock');
+        }
+      }
+      // The compact technology graph has transformed, absolutely positioned
+      // targets. Generic layer checks treat each node as its own layer, so
+      // enforce its visible bounds and pairwise target separation directly.
+      const techGraph = document.querySelector('.v7-tech-graph');
+      if (techGraph !== null) {
+        const graphBox = techGraph.getBoundingClientRect();
+        const graphContent = {
+          left: graphBox.left + techGraph.clientLeft,
+          top: graphBox.top + techGraph.clientTop,
+          right: graphBox.left + techGraph.clientLeft + techGraph.clientWidth,
+          bottom: graphBox.top + techGraph.clientTop + techGraph.clientHeight,
+        };
+        const cards = Array.from(techGraph.querySelectorAll('.v7-tech-card'));
+        if (cards.length !== 25) add('tech-node-count', true, cards.length + ' technology nodes, expected 25');
+        const edges = techGraph.querySelectorAll('.v7-tech-edge');
+        if (edges.length !== 20) add('tech-edge-count', true, edges.length + ' technology edges, expected 20');
+        for (const card of cards) {
+          const rect = card.getBoundingClientRect();
+          if (rect.left < graphContent.left || rect.right > graphContent.right || rect.top < graphContent.top || rect.bottom > graphContent.bottom)
+            add('tech-node-clipped', true, name(card).split(' "')[0] + ' exceeds graph content bounds');
+          const badge = card.querySelector('.v7-tech-cost, .v7-tech-check');
+          if (badge !== null) {
+            const badgeRect = badge.getBoundingClientRect();
+            if (badgeRect.left < graphContent.left || badgeRect.right > graphContent.right || badgeRect.top < graphContent.top || badgeRect.bottom > graphContent.bottom)
+              add('tech-badge-clipped', true, name(card).split(' "')[0] + ' badge exceeds graph content bounds');
+          }
+          if (${size.name === "p390" || size.name === "p360"} && (rect.width < 44 || rect.height < 44))
+            add('tech-target-small', true, name(card).split(' "')[0] + ' is ' + Math.round(rect.width) + 'x' + Math.round(rect.height) + 'px');
+        }
+        for (let i = 0; i < cards.length; i += 1)
+          for (let j = i + 1; j < cards.length; j += 1) {
+            const a = cards[i].getBoundingClientRect(), b = cards[j].getBoundingClientRect();
+            const width = Math.min(a.right, b.right) - Math.max(a.left, b.left);
+            const height = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top);
+            if (width > 1 && height > 1)
+              add('tech-node-overlap', true, name(cards[i]).split(' "')[0] + ' and ' + name(cards[j]).split(' "')[0] + ' overlap ' + Math.round(width) + 'x' + Math.round(height) + 'px');
+          }
+        const firstName = cards[0]?.querySelector('.v7-tech-name');
+        if (firstName !== null && cards[0] !== undefined) {
+          const readable = cards[0].getBoundingClientRect().width >= 79;
+          const visibleName = getComputedStyle(firstName).display !== 'none';
+          if (readable !== visibleName)
+            add('tech-label-scale', true, 'node names are ' + (visibleName ? 'shown' : 'hidden') + ' at ' + Math.round(cards[0].getBoundingClientRect().width) + 'px');
         }
       }
       // A control on screen that something else covers (not its own parts).
@@ -1913,6 +2106,187 @@ async function click(connection: Connection, action: string): Promise<void> {
   );
   if (found !== true) throw new Error(`No control ${action}`);
   await delay(500);
+}
+
+async function pointIn(
+  connection: Connection,
+  selector: string,
+  xFraction = 0.5,
+  yFraction = 0.5,
+): Promise<Coord> {
+  return evaluate<Coord>(
+    connection,
+    `(() => { const node = document.querySelector(${JSON.stringify(selector)}); if (!(node instanceof HTMLElement)) throw new Error('Missing ${selector}'); const rect = node.getBoundingClientRect(); return { x: rect.left + rect.width * ${xFraction}, y: rect.top + rect.height * ${yFraction} }; })()`,
+  );
+}
+
+/** A real browser touch tap, rather than HTMLElement.click(). */
+async function physicalTap(
+  connection: Connection,
+  selector: string,
+): Promise<void> {
+  const point = await pointIn(connection, selector);
+  const x = Math.round(point.x);
+  const y = Math.round(point.y);
+  await connection.send("Input.emulateTouchFromMouseEvent", {
+    type: "mousePressed",
+    x,
+    y,
+    button: "left",
+    clickCount: 1,
+  });
+  await connection.send("Input.emulateTouchFromMouseEvent", {
+    type: "mouseReleased",
+    x,
+    y,
+    button: "left",
+    clickCount: 1,
+  });
+  await delay(180);
+}
+
+async function physicalDrag(
+  connection: Connection,
+  selector: string,
+  fromX: number,
+  fromY: number,
+  toX: number,
+  toY: number,
+): Promise<void> {
+  const from = await pointIn(connection, selector, fromX, fromY);
+  const to = await pointIn(connection, selector, toX, toY);
+  const start = { x: Math.round(from.x), y: Math.round(from.y) };
+  const end = { x: Math.round(to.x), y: Math.round(to.y) };
+  await connection.send("Input.emulateTouchFromMouseEvent", {
+    type: "mousePressed",
+    ...start,
+    button: "left",
+    clickCount: 1,
+  });
+  await connection.send("Input.emulateTouchFromMouseEvent", {
+    type: "mouseMoved",
+    x: Math.round((from.x + to.x) / 2),
+    y: Math.round((from.y + to.y) / 2),
+    button: "left",
+  });
+  await connection.send("Input.emulateTouchFromMouseEvent", {
+    type: "mouseMoved",
+    ...end,
+    button: "left",
+  });
+  await connection.send("Input.emulateTouchFromMouseEvent", {
+    type: "mouseReleased",
+    ...end,
+    button: "left",
+    clickCount: 1,
+  });
+  await delay(180);
+}
+
+async function physicalPinch(
+  connection: Connection,
+  selector: string,
+): Promise<void> {
+  const first = await pointIn(connection, selector, 0.43, 0.5);
+  const second = await pointIn(connection, selector, 0.57, 0.5);
+  const firstOut = await pointIn(connection, selector, 0.32, 0.5);
+  const secondOut = await pointIn(connection, selector, 0.68, 0.5);
+  await connection.send("Input.dispatchTouchEvent", {
+    type: "touchStart",
+    touchPoints: [
+      { ...first, id: 1, radiusX: 2, radiusY: 2, force: 1 },
+      { ...second, id: 2, radiusX: 2, radiusY: 2, force: 1 },
+    ],
+  });
+  await connection.send("Input.dispatchTouchEvent", {
+    type: "touchMove",
+    touchPoints: [
+      { ...firstOut, id: 1, radiusX: 2, radiusY: 2, force: 1 },
+      { ...secondOut, id: 2, radiusX: 2, radiusY: 2, force: 1 },
+    ],
+  });
+  await connection.send("Input.dispatchTouchEvent", {
+    type: "touchEnd",
+    touchPoints: [],
+  });
+  await delay(180);
+}
+
+async function physicalWheel(
+  connection: Connection,
+  selector: string,
+  deltaY: number,
+): Promise<void> {
+  const point = await pointIn(connection, selector);
+  await connection.send("Input.dispatchMouseEvent", {
+    type: "mouseWheel",
+    ...point,
+    deltaX: 0,
+    deltaY,
+  });
+  await delay(180);
+}
+
+async function physicalKey(
+  connection: Connection,
+  key: string,
+  code: string,
+  keyCode: number,
+): Promise<void> {
+  await connection.send("Input.dispatchKeyEvent", {
+    type: "rawKeyDown",
+    key,
+    code,
+    windowsVirtualKeyCode: keyCode,
+    nativeVirtualKeyCode: keyCode,
+  });
+  await connection.send("Input.dispatchKeyEvent", {
+    type: "keyUp",
+    key,
+    code,
+    windowsVirtualKeyCode: keyCode,
+    nativeVirtualKeyCode: keyCode,
+  });
+  await delay(120);
+}
+
+async function rawViewport(
+  connection: Connection,
+  width: number,
+  height: number,
+): Promise<void> {
+  await connection.send("Emulation.setDeviceMetricsOverride", {
+    width,
+    height,
+    deviceScaleFactor: 2,
+    mobile: true,
+    screenOrientation: { type: "portraitPrimary", angle: 0 },
+  });
+  await delay(220);
+}
+
+async function exists(
+  connection: Connection,
+  selector: string,
+): Promise<boolean> {
+  return evaluate<boolean>(
+    connection,
+    `document.querySelector(${JSON.stringify(selector)}) !== null`,
+  );
+}
+
+async function stageTransform(connection: Connection): Promise<string> {
+  return evaluate<string>(
+    connection,
+    `document.querySelector('.v7-tech-stage')?.style.transform ?? ''`,
+  );
+}
+
+async function zoom(connection: Connection): Promise<number> {
+  return evaluate<number>(
+    connection,
+    `Number(document.querySelector('.v7-tech-graph')?.getAttribute('data-zoom'))`,
+  );
 }
 
 function url(params: Record<string, string>): string {

@@ -247,9 +247,9 @@ its action would be.
 - **Closing** the screen (the close button, the scrim or Escape) returns
   to the same tile. The focus goes back to the prompt, or, once the
   technology is known, to the tile's action that replaced it.
-- The technology screen keeps its scroll position and the focused control
-  when it is redrawn without a focus request (interface art settling), so
-  the selected card stays in view on a phone.
+- The technology screen keeps its graph camera and the focused control when it
+  is redrawn without a focus request (interface art settling), so the selected
+  node stays in view on a phone.
 - The unlocking technology comes from the engine's public command query
   and the faction's public technology tree; the interface restates no
   rule.
@@ -2922,18 +2922,31 @@ Identical graph geometry does not permit a missing-registration fallback.
 Gathering is visibly researched at match start. Fighter is a baseline role
 beside the graph.
 
-On wide screens branches form five columns; compact/mobile uses one vertical
-branch list with a sticky branch selector and no two-dimensional page scroll.
-Every node retains the overview symbol, dynamic Coin price, state, connectors,
-and separate detail sheet pattern. Detail lists prerequisite, exact unlocks,
-spatial formula when relevant, and the faction-correct unit label. Candy
+The overview is one compact square graph at every viewport size. Five branch
+roots cross the centre; each branch's two prerequisite paths grow outward in
+its own lane.
+The whole 25-node graph fits on entry at 390 x 844 and 360 x 640 without page
+scrolling. Drag or one-finger drag pans, pinch and wheel zoom around their
+pointer, and the minus, plus and Fit controls provide exact alternatives. Fit
+is the minimum zoom and preserves at least 44 CSS-pixel node targets at the
+supported phone widths. At larger zoom only part of the graph is visible.
+Arrow keys pan the focused graph, plus/minus zoom, and `F` or `0` fits it.
+
+Every node retains its overview symbol, dynamic Coin price, redundant state,
+prerequisite connectors, and separate detail dialog pattern. A tap activates a
+node only when the pointer did not become a drag or pinch. Detail lists
+prerequisite, exact unlocks, spatial formula when relevant, and the
+faction-correct unit label. It traps focus within its controls; Escape or its
+close button returns focus to the same node without moving the graph camera.
+Closing the outer technology layer returns to the board. Camera scale and
+position survive interface-art redraws and viewport resize. Candy
 Raiding explicitly says Donut and Kamikaze Roll rather than promising baseline
 Raider Charge. Explosives says Breacher/Candy Crusher, never Catapult.
-Every technology symbol uses the same exact 112 x 130 CSS-pixel transparent
-viewport as contextual action artwork, preserving the accepted raster's aspect
-ratio and transparent padding with `object-fit: contain`. The card expands
-around that shared viewport, name, and unresearched-only Coin cost; it never
-shrinks the symbol to make the five-column graph fit.
+Every technology symbol preserves the accepted raster's aspect ratio and
+transparent padding with `object-fit: contain`. The compact overview uses the
+icon at its node size; the selected technology's identity in the detail dialog
+uses the larger established art treatment. Full names and unlock prose live in
+that dialog rather than forcing the overview to scroll.
 
 ### Units and abilities
 

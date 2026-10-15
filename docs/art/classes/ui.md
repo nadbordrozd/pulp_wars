@@ -94,8 +94,11 @@ tap.
   population icons instead of prose.
 - **Explanations on demand.** The unit `?` dialog and the training `?` dialog
   show stats as icons plus one short line per notable ability or restriction.
-  Tech detail opens as a sheet over the tree with a short unlock list and a
-  Research button that shows the cost.
+  The technology overview is a compact five-lane icon graph that fits a phone
+  on entry. Its accepted raster art is contained in small square nodes; the
+  former 112 x 130 technology-card viewport does not set overview geometry.
+  Tech detail opens as a bounded dialog over the tree with the full name, a
+  short unlock list, state, and a Research button that shows the cost.
 - **Interface glyphs.** Monochrome SVG glyphs in `src/render/dom/ui-icons-v7.ts`
   are interface chrome, not game art. They must never stand in for unit,
   terrain, building, coin, or population artwork, which stays PixelLab-made.

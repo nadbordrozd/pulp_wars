@@ -279,7 +279,12 @@ import {
 } from "../canvas/board-renderer-v7";
 import { TARGET_HIGHLIGHT_HELP_TIP_V7 } from "../canvas/target-highlight-v7";
 import { targetLegendV7 } from "./target-legend-v7";
-import { technologyTreeLayoutV7 } from "./technology-tree-layout-v7";
+import {
+  technologyTreeGraphLayoutV7,
+  technologyTreeLayoutV7,
+  type TechnologyTreeGraphNodeV7,
+} from "./technology-tree-layout-v7";
+import { TechnologyTreeViewportV7 } from "./technology-tree-viewport-v7";
 import { createTacticalSymbolV7 } from "./tactical-symbol-v7";
 import type { TacticalSymbolTheme } from "../../assets/ruleset7-tactical-ui-symbols";
 import {
@@ -1559,6 +1564,8 @@ export class Ruleset7DomAppView {
   #selection: BoardSelectionV7 | null = null;
   #screen: ScreenV7 = "MATCH";
   #selectedTech: TechnologyIdV7 | null = null;
+  /** Pan/zoom survives DOM replacement while technology art settles. */
+  readonly #technologyViewport = new TechnologyTreeViewportV7();
   #achievementNotices: AchievementIdV7[] = [];
   #achievementReturnAction: string | null = null;
   #selectedModifier: string | null = null;
@@ -1978,6 +1985,7 @@ export class Ruleset7DomAppView {
     this.#endArtWait();
     this.#gallery?.destroy();
     this.#titleScene?.destroy();
+    this.#technologyViewport.detach();
     this.#boardHost.destroy();
     this.#root.replaceChildren();
   }
@@ -2047,7 +2055,11 @@ export class Ruleset7DomAppView {
     const target = event.target;
     const modal = this.#root.querySelector<HTMLElement>('[aria-modal="true"]');
     if (modal !== null) {
-      if (event.key === "Tab") this.#trapModalFocus(event, modal);
+      const techDetail =
+        this.#screen === "TECH" && this.#selectedTech !== null
+          ? modal.querySelector<HTMLElement>(".v7-tech-detail")
+          : null;
+      if (event.key === "Tab") this.#trapModalFocus(event, techDetail ?? modal);
       else if (event.key === "Escape") {
         if (modal.dataset.v7Region === "achievement-notice") {
           event.preventDefault();
@@ -2058,6 +2070,9 @@ export class Ruleset7DomAppView {
         } else if (this.#selectedUnitHelpId !== null) {
           event.preventDefault();
           this.#closeUnitHelp();
+        } else if (this.#screen === "TECH" && this.#selectedTech !== null) {
+          event.preventDefault();
+          this.#closeTechDetail(this.#selectedTech);
         } else if (this.#screen !== "MATCH") {
           event.preventDefault();
           this.#closeOverlay();
@@ -4547,9 +4562,6 @@ export class Ruleset7DomAppView {
         ? null
         : {
             top: techBefore.scrollTop,
-            left:
-              techBefore.querySelector<HTMLElement>(".v7-tech-graph")
-                ?.scrollLeft ?? 0,
           };
     const focusedBefore = this.#document.activeElement;
     const techFocusAction =
@@ -4653,9 +4665,25 @@ export class Ruleset7DomAppView {
       dock.scrollTop = previousDockScroll.top;
     if (techScroll !== null && popup?.dataset.v7Region === "overlay-tech") {
       popup.scrollTop = techScroll.top;
-      const graph = popup.querySelector<HTMLElement>(".v7-tech-graph");
-      if (graph !== null) graph.scrollLeft = techScroll.left;
     }
+    const techGraph = popup?.querySelector<HTMLElement>(".v7-tech-graph");
+    const techStage = popup?.querySelector<HTMLElement>(".v7-tech-stage");
+    if (
+      techGraph !== null &&
+      techGraph !== undefined &&
+      techStage !== null &&
+      techStage !== undefined
+    ) {
+      this.#technologyViewport.attach(
+        techGraph,
+        techStage,
+        {
+          width: Number(techGraph.dataset.techGraphWidth),
+          height: Number(techGraph.dataset.techGraphHeight),
+        },
+        popup?.querySelector<HTMLElement>("[data-tech-zoom-label]") ?? null,
+      );
+    } else this.#technologyViewport.detach();
     shell.dataset.contrast = this.#highContrast ? "high" : "standard";
     shell.dataset.motion = this.#motion.toLowerCase();
     shell.dataset.uiScale = String(this.#uiScale);
@@ -7867,6 +7895,7 @@ export class Ruleset7DomAppView {
     this.#modalReturnAction = `research-prompt-${prompt.tech.toLowerCase()}`;
     this.#techGoal = prompt.tech;
     this.#selectedTech = prompt.select;
+    this.#technologyViewport.reset();
     this.#screen = "TECH";
     this.#render();
     const selected = prompt.select.toLowerCase();
@@ -7875,7 +7904,6 @@ export class Ruleset7DomAppView {
       const card = this.#root.querySelector<HTMLElement>(
         `[data-action="tech-${selected}"]`,
       );
-      card?.scrollIntoView?.({ block: "center", inline: "center" });
       (
         this.#root.querySelector<HTMLElement>(
           `[data-action="research-${selected}"]`,
@@ -8348,77 +8376,110 @@ export class Ruleset7DomAppView {
     section.append(header);
     const tree = queryTechnologyTreeV7(view);
     const layout = technologyTreeLayoutV7(tree.nodes);
-    const branches = el(this.#document, "nav", "v7-tech-branch-selector");
-    branches.setAttribute("aria-label", "Technology branches");
-    const branchSelect = this.#document.createElement("select");
-    branchSelect.className = "v7-tech-branch-select";
-    branchSelect.dataset.action = "tech-branch-select";
-    branchSelect.setAttribute("aria-label", "Jump to technology branch");
-    const graph = el(this.#document, "div", "v7-tech-graph");
-    graph.style.setProperty(
-      "--v7-tech-total-leaves",
-      String(layout.reduce((total, branch) => total + branch.leafCount, 0)),
+    const graphLayout = technologyTreeGraphLayoutV7(layout);
+    const graphShell = el(this.#document, "div", "v7-tech-graph-shell");
+    const controls = el(this.#document, "div", "v7-tech-graph-controls");
+    controls.setAttribute("aria-label", "Technology tree view controls");
+    const zoomOut = button(
+      this.#document,
+      "−",
+      "tech-zoom-out",
+      "v7-tech-zoom-button",
     );
-    for (const branch of layout) {
-      const column = el(this.#document, "section", "v7-tech-branch");
-      column.style.setProperty(
-        "--v7-tech-branch-span",
-        String(branch.leafCount),
+    zoomOut.setAttribute("aria-label", "Zoom technology tree out");
+    zoomOut.onclick = () => this.#technologyViewport.zoomBy(1 / 1.22);
+    const zoomLabel = text(
+      this.#document,
+      "output",
+      "100%",
+      "v7-tech-zoom-label",
+    );
+    zoomLabel.dataset.techZoomLabel = "true";
+    const zoomIn = button(
+      this.#document,
+      "+",
+      "tech-zoom-in",
+      "v7-tech-zoom-button",
+    );
+    zoomIn.setAttribute("aria-label", "Zoom technology tree in");
+    zoomIn.onclick = () => this.#technologyViewport.zoomBy(1.22);
+    const fit = button(this.#document, "Fit", "tech-fit", "v7-tech-fit-button");
+    fit.setAttribute("aria-label", "Fit the whole technology tree");
+    fit.onclick = () => this.#technologyViewport.fit();
+    controls.append(zoomOut, zoomLabel, zoomIn, fit);
+
+    const instructions = text(
+      this.#document,
+      "p",
+      "Drag to move. Pinch, wheel, plus and minus zoom. Arrow keys move the focused graph; F fits it.",
+      "sr-only",
+    );
+    instructions.id = "v7-tech-graph-instructions";
+    const viewport = el(this.#document, "div", "v7-tech-graph");
+    viewport.dataset.techGraphWidth = String(graphLayout.width);
+    viewport.dataset.techGraphHeight = String(graphLayout.height);
+    viewport.tabIndex = 0;
+    viewport.setAttribute("role", "region");
+    viewport.setAttribute("aria-label", "Technology tree");
+    viewport.setAttribute("aria-describedby", instructions.id);
+    const stage = el(this.#document, "div", "v7-tech-stage");
+    stage.style.width = `${graphLayout.width}px`;
+    stage.style.height = `${graphLayout.height}px`;
+    const edges = this.#document.createElementNS(
+      "http://www.w3.org/2000/svg",
+      "svg",
+    );
+    edges.classList.add("v7-tech-edges");
+    edges.setAttribute(
+      "viewBox",
+      `0 0 ${graphLayout.width} ${graphLayout.height}`,
+    );
+    edges.setAttribute("aria-hidden", "true");
+    for (const edge of graphLayout.edges) {
+      const line = this.#document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "line",
       );
-      const laneId = `${branch.node.branch}:${branch.node.id}`;
-      const branchId = `v7-tech-branch-${branch.node.branch.toLowerCase()}-${branch.node.id.toLowerCase()}`;
-      column.id = branchId;
-      column.dataset.techBranch = branch.node.branch;
-      column.dataset.techLane = laneId;
-      column.tabIndex = -1;
-      const branchName =
-        TECH_BRANCH_LABELS[branch.node.branch] ?? title(branch.node.branch);
-      const heading = text(this.#document, "h3", branchName);
-      heading.id = `${branchId}-heading`;
-      column.setAttribute("aria-labelledby", heading.id);
-      column.append(heading);
+      line.classList.add("v7-tech-edge");
+      line.setAttribute("x1", String(edge.x1));
+      line.setAttribute("y1", String(edge.y1));
+      line.setAttribute("x2", String(edge.x2));
+      line.setAttribute("y2", String(edge.y2));
+      line.dataset.parentTech = edge.parentId;
+      line.dataset.childTech = edge.childId;
+      edges.append(line);
+    }
+    stage.append(edges);
+    const choose = (node: PublicTechnologyNodeV7): void => {
+      this.#selectedTech = node.id;
+      this.#pendingFocusAction = `research-${node.id.toLowerCase()}`;
+      this.#render();
+      queueMicrotask(() => {
+        const detail = this.#root.querySelector<HTMLElement>(".v7-tech-detail");
+        if (detail === null) return;
+        if (this.#document.activeElement?.closest(".v7-tech-detail")) return;
+        detail
+          .querySelector<HTMLElement>(
+            '[data-action^="research-"], [data-action="close-tech-detail"]',
+          )
+          ?.focus();
+      });
+    };
+    for (const graphNode of graphLayout.nodes)
       appendTechNode(
         this.#document,
-        column,
-        branch,
-        (node) => {
-          this.#selectedTech = node.id;
-          this.#pendingFocusAction = `research-${node.id.toLowerCase()}`;
-          this.#render();
-          queueMicrotask(() => {
-            const detail =
-              this.#root.querySelector<HTMLElement>(".v7-tech-detail");
-            if (detail === null) return;
-            detail.scrollIntoView?.({ block: "nearest" });
-            if (this.#document.activeElement?.closest(".v7-tech-detail"))
-              return;
-            detail
-              .querySelector<HTMLElement>(
-                '[data-action^="research-"], [data-action="close-tech-detail"]',
-              )
-              ?.focus();
-          });
-        },
+        stage,
+        graphNode,
+        choose,
         this.#selectedTech,
         (tech) => this.#technologyChibiArt(tech)?.element ?? null,
         this.#viewerFaction(),
         (tech) => this.#technologyUnavailableText(tech),
         this.#techGoal,
       );
-      const option = this.#document.createElement("option");
-      option.value = laneId;
-      option.textContent = branchName;
-      branchSelect.append(option);
-      graph.append(column);
-    }
-    branchSelect.onchange = () => {
-      const column = graph.querySelector<HTMLElement>(
-        `[data-tech-lane="${branchSelect.value}"]`,
-      );
-      column?.scrollIntoView?.({ block: "start" });
-    };
-    branches.append(branchSelect);
-    section.append(branches, graph);
+    viewport.append(stage);
+    graphShell.append(controls, instructions, viewport);
+    section.append(graphShell);
     // The tutorial's research step: its line under the header, and the
     // technology to pick ringed like a HUD button the coach points at.
     const tutorial = this.#tutorialCue;
@@ -8437,14 +8498,18 @@ export class Ruleset7DomAppView {
         text(this.#document, "span", tutorial.line, "v7-first-step-text"),
       );
       header.after(hint);
-      const node = graph.querySelector<HTMLElement>(
+      const node = stage.querySelector<HTMLElement>(
         `[data-action="tech-${tutorial.technology.toLowerCase()}"]`,
       );
       if (node !== null && this.#selectedTech !== tutorial.technology)
         node.dataset.firstStep = tutorial.buttonMotion.toLowerCase();
     }
     const selected = tree.nodes.find((node) => node.id === this.#selectedTech);
-    if (selected !== undefined) section.append(this.#techDetail(selected));
+    if (selected !== undefined) {
+      controls.inert = true;
+      viewport.inert = true;
+      section.append(this.#techDetail(selected));
+    }
     return section;
   }
 
@@ -8453,6 +8518,8 @@ export class Ruleset7DomAppView {
     const name = technologyNameV7(node.id, faction);
     const detail = el(this.#document, "aside", "v7-tech-detail");
     detail.dataset.techState = node.state.toLowerCase();
+    detail.setAttribute("role", "dialog");
+    detail.setAttribute("aria-modal", "true");
     detail.setAttribute("aria-label", `${name} details`);
     const close = iconButton(
       this.#document,
@@ -8461,12 +8528,7 @@ export class Ruleset7DomAppView {
       "close-tech-detail",
     );
     close.classList.add("close-button");
-    close.onclick = () => {
-      const id = node.id;
-      this.#selectedTech = null;
-      this.#pendingFocusAction = `tech-${id.toLowerCase()}`;
-      this.#render();
-    };
+    close.onclick = () => this.#closeTechDetail(node.id);
     const status =
       node.state === "OWNED"
         ? text(this.#document, "p", "Researched", "v7-tech-status is-owned")
@@ -8577,6 +8639,12 @@ export class Ruleset7DomAppView {
       detail.append(research);
     }
     return detail;
+  }
+
+  #closeTechDetail(id: TechnologyIdV7): void {
+    this.#selectedTech = null;
+    this.#pendingFocusAction = `tech-${id.toLowerCase()}`;
+    this.#render();
   }
 
   #recruitHelp(role: UnitRoleIdV7): HTMLElement {
@@ -10001,7 +10069,10 @@ export class Ruleset7DomAppView {
   #open(screen: ScreenV7, returnAction: string | null = null): void {
     if (this.#snapshot.view?.pendingChoices.length) return;
     this.#modalReturnAction = returnAction;
-    if (screen === "TECH") this.#selectedTech = null;
+    if (screen === "TECH") {
+      this.#selectedTech = null;
+      this.#technologyViewport.reset();
+    }
     if (screen === "LEADERBOARD") this.#scoreBreakdownFor = null;
     this.#techGoal = null;
     this.#screen = screen;
@@ -14650,7 +14721,7 @@ function stableElementKey(element: Element): string {
 function appendTechNode(
   documentRoot: Document,
   parent: HTMLElement,
-  layout: ReturnType<typeof technologyTreeLayoutV7>[number],
+  graphNode: TechnologyTreeGraphNodeV7,
   choose: (node: PublicTechnologyNodeV7) => void,
   selected: TechnologyIdV7 | null,
   /** CHIBI art for a technology card, or null to keep the legacy art. */
@@ -14663,14 +14734,21 @@ function appendTechNode(
   /** The technology a research prompt asked for (bead pulp_wars-gl1). */
   goal: TechnologyIdV7 | null = null,
 ): void {
+  const layout = graphNode.layout;
   const name = technologyNameV7(layout.node.id, faction);
   const node = el(documentRoot, "div", "v7-tech-node");
+  node.style.left = `${graphNode.x}px`;
+  node.style.top = `${graphNode.y}px`;
+  node.dataset.techBranch = layout.node.branch;
+  node.dataset.labelSide = graphNode.y >= 500 ? "above" : "below";
   const card = button(
     documentRoot,
     "",
     `tech-${layout.node.id.toLowerCase()}`,
     `v7-tech-card state-${layout.node.state.toLowerCase()}`,
   );
+  card.dataset.graphX = String(graphNode.x);
+  card.dataset.graphY = String(graphNode.y);
   card.dataset.selected = String(layout.node.id === selected);
   if (layout.node.id === goal && layout.node.state !== "OWNED")
     card.dataset.goal = "true";
@@ -14680,6 +14758,7 @@ function appendTechNode(
   if (chibiImage !== null) artFrame.dataset.artSet = "chibi";
   artFrame.append(chibiImage ?? art(documentRoot, assetId, ""));
   card.append(artFrame, text(documentRoot, "span", name, "v7-tech-name"));
+  if (layout.parentId === null) card.dataset.branchRoot = "true";
   const achievement = techAchievementV7(layout.node.id);
   if (achievement !== null) {
     const badge = el(documentRoot, "span", "v7-tech-achievement");
@@ -14712,32 +14791,13 @@ function appendTechNode(
     card.append(text(documentRoot, "span", "✓", "v7-tech-check"));
     card.setAttribute("aria-label", `${name}, researched`);
   }
+  if (layout.parentId === null)
+    card.setAttribute(
+      "aria-label",
+      `${TECH_BRANCH_LABELS[layout.node.branch] ?? title(layout.node.branch)} branch. ${card.getAttribute("aria-label") ?? name}`,
+    );
   card.onclick = () => choose(layout.node);
   node.append(card);
-  if (layout.children.length > 0) {
-    const children = el(documentRoot, "div", "v7-tech-children");
-    children.style.setProperty("--v7-tech-leaves", String(layout.leafCount));
-    if (layout.children.length === 1) children.classList.add("is-unary");
-    for (const child of layout.children) {
-      const edge = el(documentRoot, "div", "v7-tech-edge");
-      edge.style.gridColumn = `span ${child.leafCount}`;
-      edge.dataset.parentTech = layout.node.id;
-      edge.dataset.childTech = child.node.id;
-      appendTechNode(
-        documentRoot,
-        edge,
-        child,
-        choose,
-        selected,
-        chibiArt,
-        faction,
-        unavailable,
-        goal,
-      );
-      children.append(edge);
-    }
-    node.append(children);
-  }
   parent.append(node);
 }
 function identity(
