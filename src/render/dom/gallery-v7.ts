@@ -23,8 +23,16 @@ import {
 import {
   createGalleryArtV7,
   drawGalleryTileV7,
+  type GalleryTileCellsV7,
   type GalleryTileRequestV7,
 } from "../canvas/gallery-sprite-v7";
+import {
+  buildingFadeFromSearchV7,
+  buildingFadeGroundV7,
+  type BuildingFadeV7,
+} from "../canvas/building-fade-v7";
+import { factionGrassIdV7 } from "../canvas/faction-grass-v7";
+import { createSpriteSaturationCacheV7 } from "../canvas/sprite-saturation-v7";
 import {
   CHIBI_DOM_BOXES_V7,
   browserChibiDomEnvironmentV7,
@@ -49,6 +57,7 @@ import {
   GALLERY_NO_SHIPS_TEXT_V7,
   GALLERY_UNIT_ROWS_V7,
   galleryBuildingDetailsV7,
+  galleryBuildingFadesV7,
   galleryBuildingGroundV7,
   galleryBuildingNameV7,
   galleryBuildingPerFactionV7,
@@ -344,6 +353,13 @@ export class GalleryViewV7 {
     readonly ownerColor: string | undefined;
   }[] = [];
   readonly #terrainArt: GalleryTerrainArtV7;
+  /**
+   * The cached parts of a building tile (bead pulp_wars-2yc.68): its
+   * composed ground cell and its faded copy.
+   */
+  readonly #tileCells: GalleryTileCellsV7;
+  /** The board's building fade (`?building-fade=0` turns both off). */
+  readonly #buildingFade: BuildingFadeV7 | null = buildingFadeFromSearchV7();
   #swatches: {
     readonly canvas: HTMLCanvasElement;
     readonly swatch: GalleryTerrainSwatchV7;
@@ -396,6 +412,12 @@ export class GalleryViewV7 {
       art: this.#art,
       redraw: () => this.#queueRedraw(),
     });
+    const fades = createSpriteSaturationCacheV7(rasterEnvironment);
+    const terrainArt = this.#terrainArt;
+    this.#tileCells = {
+      ground: (layers) => terrainArt.cell(layers),
+      fade: (image, tone) => fades.resolve(image, 100, tone),
+    };
     this.#domArt = createChibiDomArtV7({
       environment:
         options.domEnvironment ?? browserChibiDomEnvironmentV7(documentRoot),
@@ -1013,12 +1035,7 @@ export class GalleryViewV7 {
         : `${name}, ${factionNameV7(faction)}`,
     );
     const canvas = this.#tile(
-      {
-        subject: galleryBuildingSubjectV7(row, faction ?? "ORIGINAL"),
-        ground: galleryBuildingGroundV7(row, faction),
-        ownerColor: faction === null ? undefined : factionColourV7(faction),
-        scale: TABLE_SCALE,
-      },
+      this.#buildingTile(row, faction, TABLE_SCALE),
       node,
     );
     node.append(
@@ -1028,6 +1045,35 @@ export class GalleryViewV7 {
     node.onclick = () => this.#openDetail({ tab: "BUILDINGS", row, faction });
     td.append(node);
     return td;
+  }
+
+  /**
+   * A building's tile (bead pulp_wars-2yc.68): the faction's building on a
+   * cell of the faction's own ground, faded as the board fades it. The
+   * shared cell stands on the default Grass.
+   */
+  #buildingTile(
+    row: GalleryBuildingRowIdV7,
+    faction: FactionIdV7 | null,
+    scale: number,
+  ): GalleryTileRequestV7 {
+    const ground = galleryBuildingGroundV7(row, faction);
+    return {
+      subject: galleryBuildingSubjectV7(row, faction ?? "ORIGINAL"),
+      ground: null,
+      groundLayers: ground.layers,
+      groundId: ground.id,
+      fade:
+        this.#buildingFade === null || !galleryBuildingFadesV7(row)
+          ? null
+          : {
+              strength: this.#buildingFade,
+              // The ground of the faction's territory, as on the board.
+              ground: buildingFadeGroundV7(factionGrassIdV7(faction)),
+            },
+      ownerColor: faction === null ? undefined : factionColourV7(faction),
+      scale,
+    };
   }
 
   /**
@@ -1115,6 +1161,10 @@ export class GalleryViewV7 {
     canvas.className = "v7-gallery-tile";
     canvas.setAttribute("aria-hidden", "true");
     canvas.dataset.subject = request.subject;
+    if (request.groundId !== undefined)
+      canvas.dataset.ground = request.groundId;
+    if (request.fade !== undefined)
+      canvas.dataset.fade = String(request.fade !== null);
     this.#tiles.push({ canvas, request, cell });
     // Keep the box while rasters load (drawGalleryTileV7 sizes it).
     canvas.style.width = `${96 * request.scale}px`;
@@ -1173,6 +1223,7 @@ export class GalleryViewV7 {
         this.#art,
         tile.request,
         dpr,
+        this.#tileCells,
       );
       tile.canvas.dataset.state = state.kind.toLowerCase();
       // A faction's piece drawn with the shared stand-in art is marked.
@@ -1669,16 +1720,7 @@ export class GalleryViewV7 {
       name: details.name,
       factionName: details.factionName,
       kicker: detail.faction === null ? "Every faction" : "Building",
-      tile: {
-        subject: galleryBuildingSubjectV7(
-          detail.row,
-          detail.faction ?? "ORIGINAL",
-        ),
-        ground: galleryBuildingGroundV7(detail.row, detail.faction),
-        ownerColor:
-          detail.faction === null ? undefined : factionColourV7(detail.faction),
-        scale: DETAIL_SCALE,
-      },
+      tile: this.#buildingTile(detail.row, detail.faction, DETAIL_SCALE),
       portrait: null,
     });
     const body = el(this.#document, "div", "v7-gallery-detail-body");

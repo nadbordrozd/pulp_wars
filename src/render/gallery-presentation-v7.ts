@@ -31,11 +31,8 @@ import {
 } from "../engine/index";
 import {
   cityArtSubjectV7,
-  factionHasImprovementLookV7,
   monumentArtSubjectV7,
   navalArtSubjectV7,
-  territoryGroundV7,
-  territoryTerrainSubjectV7,
   unitArtSubjectV7,
   type ArtSubjectV7,
 } from "../assets/chibi-art-v7";
@@ -70,8 +67,15 @@ import {
 } from "./curiosity-presentation-v7";
 import {
   GALLERY_TERRAIN_ROWS_V7,
+  type GalleryTerrainLayerV7,
   type GalleryTerrainRowIdV7,
 } from "./gallery-terrain-presentation-v7";
+import {
+  NEUTRAL_GROUND_ID_V7,
+  factionGrassIdV7,
+  type GroundIdV7,
+} from "./canvas/faction-grass-v7";
+import { dockTerrainGroundV7 } from "./dock-terrain-presentation-v7";
 
 /**
  * The Gallery (bead pulp_wars-ic8, docs/ui/SCREEN_FLOW.md "Gallery"): every
@@ -620,24 +624,63 @@ export function galleryBuildingNameV7(
 }
 
 /**
- * The ground a building stands on in its cell (null: the art has its own):
- * in a faction's own cell, the ground of that faction's territory (the
- * Undead gloam Grass). A faction's own Lumber Camp carries the trees of its
- * forest and stands on Grass, as on the board (the Forest under a Lumber
- * Camp is drawn as its ground); the shared one keeps the Forest tile.
+ * What a building's cell stands on: the ground of its faction's territory
+ * (`NEUTRAL` the default Grass, `SNOW` the Ice Folk's), or the water of a
+ * Port or Shipyard.
+ */
+export type GalleryBuildingGroundIdV7 = GroundIdV7 | "SNOW" | "SHALLOW_WATER";
+
+export interface GalleryBuildingGroundV7 {
+  readonly id: GalleryBuildingGroundIdV7;
+  /** The cell's ground, bottom first (one board cell, no overflow). */
+  readonly layers: readonly GalleryTerrainLayerV7[];
+}
+
+/**
+ * The ground a building stands on in its cell (bead pulp_wars-2yc.68, the
+ * user: "show all the buildings on their respective faction terrain
+ * type"): a cell of the faction's own ground exactly as the board draws it
+ * inside that faction's territory (the textured grounds, the Cult bog and
+ * Candy frosting tiles, the Ice Folk Snow over the default Grass; the
+ * default Grass for the Humans and the shared cell), and Shallow Water
+ * under a Port or a Shipyard. A Lumber Camp stands on that ground too: the
+ * board draws the Forest under a Lumber Camp as its ground
+ * (suppressesForestCanopyV7). The layers are the tile dock's
+ * (dockTerrainGroundV7), so the Gallery, the dock and the Terrain tab show
+ * one picture of each ground.
  */
 export function galleryBuildingGroundV7(
   row: GalleryBuildingRowIdV7,
   faction: FactionIdV7 | null = null,
-): ArtSubjectV7 | null {
-  if (row === "MINE") return null;
-  if (row === "PORT" || row === "SHIPYARD") return "TERRAIN:SHALLOW_WATER";
-  return territoryTerrainSubjectV7(
-    row === "LUMBER_CAMP" &&
-      !factionHasImprovementLookV7("LUMBER_CAMP", faction)
-      ? "TERRAIN:FOREST"
-      : "TERRAIN:GRASS",
-    territoryGroundV7(faction),
+): GalleryBuildingGroundV7 {
+  if (row === "PORT" || row === "SHIPYARD")
+    return {
+      id: "SHALLOW_WATER",
+      layers: [
+        {
+          kind: "SUBJECT",
+          subject: "TERRAIN:SHALLOW_WATER",
+          at: { x: 0, y: 0 },
+        },
+      ],
+    };
+  const snow = faction === "ICE_FOLK";
+  return {
+    id: snow ? "SNOW" : (factionGrassIdV7(faction) ?? NEUTRAL_GROUND_ID_V7),
+    layers: dockTerrainGroundV7({ faction, snow, live: true }),
+  };
+}
+
+/**
+ * Whether the board draws a building row faded to the background (bead
+ * pulp_wars-2yc.61, building-fade-v7.ts): every tile improvement but the
+ * Monuments and the Mine on its mountain. Cities and the Village keep
+ * their full strength.
+ */
+export function galleryBuildingFadesV7(row: GalleryBuildingRowIdV7): boolean {
+  const improvement = galleryRowImprovement(row);
+  return (
+    improvement !== null && improvement !== "MONUMENT" && improvement !== "MINE"
   );
 }
 

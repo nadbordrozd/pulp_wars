@@ -29,6 +29,35 @@ export interface GalleryTerrainArtV7 {
     scale: number,
     devicePixelRatio: number,
   ): GalleryTerrainStateV7;
+  /**
+   * One board cell (80 x 80 master px) of ground layers composed into one
+   * surface, made once per list of layers and kept (bead pulp_wars-2yc.68:
+   * the Buildings tab stands every building on its faction's ground).
+   */
+  cell(
+    layers: readonly GalleryTerrainLayerV7[],
+  ): CanvasImageSource | "LOADING" | "MISSING";
+}
+
+/** Draws straight-alpha RGBA `top` over `under` in place (source-over). */
+export function composePixelsOverV7(
+  under: Uint8ClampedArray,
+  top: Uint8ClampedArray,
+): Uint8ClampedArray {
+  for (let index = 0; index + 3 < under.length; index += 4) {
+    const alpha = (top[index + 3] ?? 0) / 255;
+    if (alpha === 0) continue;
+    const below = ((under[index + 3] ?? 0) / 255) * (1 - alpha);
+    const out = alpha + below;
+    for (let channel = 0; channel < 3; channel += 1)
+      under[index + channel] = Math.round(
+        ((top[index + channel] ?? 0) * alpha +
+          (under[index + channel] ?? 0) * below) /
+          out,
+      );
+    under[index + 3] = Math.round(out * 255);
+  }
+  return under;
 }
 
 /** The swatch canvas in master px. */
@@ -142,7 +171,56 @@ export function createGalleryTerrainArtV7(input: {
     return image === null ? "MISSING" : { image, ...cell };
   };
 
+  const cells = new Map<string, CanvasImageSource | null>();
+  const CELL = GALLERY_TILE_BOX_V7.cell;
+  const cellX = GALLERY_TILE_BOX_V7.cellCentreX - CELL / 2;
+  const cellY = GALLERY_TILE_BOX_V7.cellCentreY - CELL / 2;
+
   return {
+    cell(layers) {
+      const key = JSON.stringify(layers);
+      const known = cells.get(key);
+      if (known !== undefined) return known ?? "MISSING";
+      // The masters (device scale 1): the cell is composed once, then
+      // scaled like every other raster of the tile.
+      const drawn = layers.map((layer) => resolve(layer, false, 1));
+      if (drawn.length === 0) return "MISSING";
+      if (drawn.includes("LOADING")) return "LOADING";
+      let pixels: Uint8ClampedArray | null = drawn.includes("MISSING")
+        ? null
+        : new Uint8ClampedArray(CELL * CELL * 4);
+      for (const layer of drawn) {
+        if (pixels === null || typeof layer === "string") break;
+        const read = environment.readPixels(
+          layer.image,
+          layer.width,
+          layer.height,
+        );
+        if (read === null) {
+          pixels = null;
+          break;
+        }
+        // The layer's part over the cell, at its place in the tile box.
+        const top = new Uint8ClampedArray(CELL * CELL * 4);
+        const offsetX = Math.round(layer.x - cellX);
+        const offsetY = Math.round(layer.y - cellY);
+        for (let y = 0; y < CELL; y += 1) {
+          const sourceY = y - offsetY;
+          if (sourceY < 0 || sourceY >= layer.height) continue;
+          for (let x = 0; x < CELL; x += 1) {
+            const sourceX = x - offsetX;
+            if (sourceX < 0 || sourceX >= layer.width) continue;
+            const from = (sourceY * layer.width + sourceX) * 4;
+            top.set(read.subarray(from, from + 4), (y * CELL + x) * 4);
+          }
+        }
+        composePixelsOverV7(pixels, top);
+      }
+      const surface =
+        pixels === null ? null : environment.createSurface(pixels, CELL, CELL);
+      cells.set(key, surface);
+      return surface ?? "MISSING";
+    },
     draw(canvas, swatch, scale, devicePixelRatio) {
       const box = galleryTerrainBoxV7(swatch);
       const dpr = devicePixelRatio > 0 ? devicePixelRatio : 1;

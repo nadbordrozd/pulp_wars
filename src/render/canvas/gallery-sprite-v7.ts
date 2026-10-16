@@ -9,6 +9,8 @@ import {
   type ChibiBoardArtV7,
   type ChibiRasterEnvironmentV7,
 } from "./chibi-art-resolver-v7";
+import type { GalleryTerrainLayerV7 } from "../gallery-terrain-presentation-v7";
+import type { BuildingFadeToneV7 } from "./building-fade-v7";
 import { LIVE_DIRECTION_ART_REGISTRY_V7 } from "./live-board-look-v7";
 import { unitShadowAnchorV7 } from "./unit-shadows-v7";
 import {
@@ -25,8 +27,9 @@ import {
  * live direction's own rasters, then the default art, toned and recoloured
  * by the live visual direction), the unit stands on its measured ground
  * shadow (unit-shadows-v7.ts), and the cell's ground is the terrain tile
- * the piece stands on in play: Grass, Shallow Water for ships, Ports and
- * Shipyards, Forest for a Lumber Camp.
+ * the piece stands on in play: Grass, Shallow Water for ships. A building
+ * stands on a composed cell of its faction's own ground, or on water for a
+ * Port or Shipyard, faded as the board fades it (bead pulp_wars-2yc.68).
  */
 
 /** The tile canvas in master px: the 80 px cell plus the art's overflow. */
@@ -60,9 +63,34 @@ export interface GalleryTileRequestV7 {
   readonly subject: ArtSubjectV7;
   /** The terrain under the piece, or null when its art has its own. */
   readonly ground: ArtSubjectV7 | null;
+  /**
+   * A composed ground cell drawn in place of `ground` (a building on its
+   * faction's ground, bead pulp_wars-2yc.68): drawn by `cells.ground`.
+   */
+  readonly groundLayers?: readonly GalleryTerrainLayerV7[] | undefined;
+  /** What the composed ground is (its tile's `data-ground`). */
+  readonly groundId?: string | undefined;
+  /**
+   * The board's building fade (bead pulp_wars-2yc.61), applied to the
+   * piece by `cells.fade`; null or absent draws it at full strength.
+   */
+  readonly fade?: BuildingFadeToneV7 | null | undefined;
   readonly ownerColor?: string | undefined;
   /** CSS px per master px. */
   readonly scale: number;
+}
+
+/**
+ * The cached parts of a building tile (bead pulp_wars-2yc.68): a ground
+ * cell composed once per ground, and a faded copy made once per sprite and
+ * ground, so a redraw of the table does no pixel work.
+ */
+export interface GalleryTileCellsV7 {
+  /** One board cell (80 x 80 master px) of the composed ground. */
+  ground(
+    layers: readonly GalleryTerrainLayerV7[],
+  ): CanvasImageSource | "LOADING" | "MISSING";
+  fade(image: CanvasImageSource, tone: BuildingFadeToneV7): CanvasImageSource;
 }
 
 export type GalleryTileStateV7 =
@@ -140,6 +168,7 @@ export function drawGalleryTileV7(
   art: ChibiBoardArtV7,
   request: GalleryTileRequestV7,
   devicePixelRatio: number,
+  cells?: GalleryTileCellsV7,
 ): GalleryTileStateV7 {
   const box = GALLERY_TILE_BOX_V7;
   const scale = request.scale;
@@ -159,9 +188,19 @@ export function drawGalleryTileV7(
       deviceScale,
     });
   const piece = resolve(request.subject, request.ownerColor);
+  const composed =
+    request.groundLayers === undefined || cells === undefined
+      ? null
+      : cells.ground(request.groundLayers);
   const ground =
-    request.ground === null ? null : resolve(request.ground).resolution;
-  if (piece.resolution.kind === "LOADING" || ground?.kind === "LOADING")
+    composed !== null || request.ground === null
+      ? null
+      : resolve(request.ground).resolution;
+  if (
+    piece.resolution.kind === "LOADING" ||
+    ground?.kind === "LOADING" ||
+    composed === "LOADING"
+  )
     return { kind: "LOADING" };
   // Ask for a context only with a piece to draw (and never in a DOM
   // without canvas support, where nothing resolves).
@@ -173,6 +212,14 @@ export function drawGalleryTileV7(
   context.setTransform(deviceScale, 0, 0, deviceScale, 0, 0);
   // Pixel art stays crisp at whole scales, as on the board.
   context.imageSmoothingEnabled = !Number.isInteger(deviceScale);
+  if (composed !== null && composed !== "MISSING")
+    context.drawImage(
+      composed,
+      box.cellCentreX - box.cell / 2,
+      box.cellCentreY - box.cell / 2,
+      box.cell,
+      box.cell,
+    );
   if (ground?.kind === "READY") {
     const at = galleryPiecePlacementV7(ground.asset);
     context.drawImage(
@@ -183,7 +230,11 @@ export function drawGalleryTileV7(
       ground.asset.height,
     );
   }
-  const { asset, image } = piece.resolution;
+  const { asset } = piece.resolution;
+  const image =
+    request.fade === null || request.fade === undefined || cells === undefined
+      ? piece.resolution.image
+      : cells.fade(piece.resolution.image, request.fade);
   const shadow = galleryUnitShadowV7(request.subject, asset);
   if (shadow !== null) {
     context.beginPath();

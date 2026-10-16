@@ -17,6 +17,7 @@ import {
   GALLERY_FACTIONS_V7,
   GALLERY_UNIT_ROWS_V7,
   galleryBuildingDetailsV7,
+  galleryBuildingFadesV7,
   galleryBuildingGroundV7,
   galleryBuildingNameV7,
   galleryBuildingPerFactionV7,
@@ -32,6 +33,10 @@ import {
   buildGalleryDemoSceneV7,
   galleryDemoCuesV7,
 } from "../../src/render/gallery-demo-v7";
+import {
+  FACTION_GRASS_TILES_V7,
+  factionGrassSwatchUrlV7,
+} from "../../src/assets/faction-grass-manifest";
 import { recruitmentRolePresentationV7 } from "../../src/render/role-presentation-v7";
 import { roleGlossaryV7 } from "../../src/render/unit-glossary-v7";
 import {
@@ -209,16 +214,106 @@ describe("Gallery presentation", () => {
     expect(galleryBuildingNameV7("SAWMILL", "DINOSAUR")).toBe("Chopping Block");
     expect(galleryBuildingNameV7("FORGE", null)).toBe("Forge");
     expect(galleryBuildingNameV7("CITY_2", "UNDEAD")).toBe("City 2");
-    // An Undead cell stands on the Undead ground.
-    expect(galleryBuildingGroundV7("FARM", "UNDEAD")).toBe(
-      "TERRAIN:UNDEAD:GRASS",
+  });
+
+  it("stands every faction's buildings on that faction's own ground", () => {
+    // Bead pulp_wars-2yc.68 (the user: "show all the buildings on their
+    // respective faction terrain type"): the board's ground of each
+    // faction's territory, Snow for the Ice Folk, the default Grass for
+    // the Humans and the shared cell.
+    expect(
+      GALLERY_FACTIONS_V7.map(
+        (faction) => galleryBuildingGroundV7("FARM", faction).id,
+      ),
+    ).toEqual([
+      "NEUTRAL",
+      "UNDEAD",
+      "GOBLIN",
+      "DINOSAUR",
+      "MARTIAN",
+      "SNOW",
+      "DWARF",
+      "CANDY",
+      "CULT",
+    ]);
+    const swatch = (id: string): string => {
+      const tile = FACTION_GRASS_TILES_V7.find(
+        (entry) => entry.id === id && entry.variant === 0,
+      );
+      if (tile === undefined) throw new Error(id);
+      return factionGrassSwatchUrlV7(tile);
+    };
+    const ground = (id: string) => ({
+      kind: "RASTER",
+      url: swatch(id),
+      width: 80,
+      height: 80,
+    });
+    // The textured grounds' first cell, the tile grounds' first tile: the
+    // picture the Terrain tab and the tile dock show of each.
+    for (const faction of [
+      "UNDEAD",
+      "GOBLIN",
+      "DINOSAUR",
+      "MARTIAN",
+      "DWARF",
+      "CANDY",
+      "CULT",
+    ] as const)
+      expect(galleryBuildingGroundV7("FARM", faction).layers).toEqual([
+        ground(faction),
+      ]);
+    expect(swatch("CULT")).toContain("chibi-cult-grass-1.png");
+    expect(swatch("CANDY")).toContain("chibi-candy-grass-1.png");
+    expect(galleryBuildingGroundV7("FARM", "ORIGINAL").layers).toEqual([
+      ground("NEUTRAL"),
+    ]);
+    expect(galleryBuildingGroundV7("FORGE").layers).toEqual([
+      ground("NEUTRAL"),
+    ]);
+    expect(galleryBuildingGroundV7("CITY_2", "ICE_FOLK").layers).toEqual([
+      ground("NEUTRAL"),
+      { kind: "SNOW", variant: 0 },
+    ]);
+    // A Lumber Camp, a city, the Mine and a Monument stand on the same
+    // ground as a Farm (the board draws the Forest under a Lumber Camp as
+    // its ground); a Port and a Shipyard on Shallow Water.
+    for (const faction of GALLERY_FACTIONS_V7) {
+      for (const row of ["LUMBER_CAMP", "CITY_1", "MINE", "MONUMENT"] as const)
+        expect(galleryBuildingGroundV7(row, faction)).toEqual(
+          galleryBuildingGroundV7("FARM", faction),
+        );
+      for (const row of ["PORT", "SHIPYARD"] as const)
+        expect(galleryBuildingGroundV7(row, faction)).toEqual({
+          id: "SHALLOW_WATER",
+          layers: [
+            {
+              kind: "SUBJECT",
+              subject: "TERRAIN:SHALLOW_WATER",
+              at: { x: 0, y: 0 },
+            },
+          ],
+        });
+    }
+  });
+
+  it("fades the tile improvements as the board does", () => {
+    // Bead pulp_wars-2yc.61: every tile improvement but the Monuments and
+    // the Mine on its mountain; cities and the Village stay bold.
+    const faded = GALLERY_BUILDING_ROWS_V7.filter((row) =>
+      galleryBuildingFadesV7(row),
     );
-    expect(galleryBuildingGroundV7("FARM", "MARTIAN")).toBe("TERRAIN:GRASS");
-    expect(galleryBuildingGroundV7("FORGE")).toBe("TERRAIN:GRASS");
-    expect(galleryBuildingGroundV7("PORT", "UNDEAD")).toBe(
-      "TERRAIN:SHALLOW_WATER",
-    );
-    expect(galleryBuildingGroundV7("MINE", "UNDEAD")).toBeNull();
+    expect(faded).toEqual([
+      "FARM",
+      "LUMBER_CAMP",
+      "WINDMILL",
+      "SAWMILL",
+      "FORGE",
+      "WORKSHOP",
+      "MARKET",
+      "PORT",
+      "SHIPYARD",
+    ]);
   });
 
   it("names a faction's own building and keeps the generic rules", () => {
@@ -304,7 +399,7 @@ describe("Gallery presentation", () => {
         // The real sprite: the live look has a raster of its own for it.
         expect(live.variants(subject), subject).toHaveLength(1);
         // On the builder's ground, under the row's name.
-        expect(galleryBuildingGroundV7(row, faction)).toBe(
+        expect(galleryBuildingGroundV7(row, faction)).toEqual(
           galleryBuildingGroundV7("FARM", faction),
         );
         expect(galleryBuildingNameV7(row, faction)).toBe(

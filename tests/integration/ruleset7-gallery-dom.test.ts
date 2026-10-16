@@ -864,6 +864,46 @@ describe("Ruleset 7 Gallery", () => {
     expect(document.querySelectorAll(".v7-gallery-cell")).toHaveLength(
       20 * 9 + 2,
     );
+    // Bead pulp_wars-2yc.68: every faction's buildings stand on that
+    // faction's own ground, as the board draws its territory; a Port and a
+    // Shipyard on the water. Tile improvements are faded as on the board,
+    // cities and Monuments are not.
+    const grounds: Readonly<Record<string, string>> = {
+      ORIGINAL: "NEUTRAL",
+      UNDEAD: "UNDEAD",
+      GOBLIN: "GOBLIN",
+      DINOSAUR: "DINOSAUR",
+      MARTIAN: "MARTIAN",
+      ICE_FOLK: "SNOW",
+      DWARF: "DWARF",
+      CANDY: "CANDY",
+      CULT: "CULT",
+    };
+    const tileOf = (row: string, faction: string): DOMStringMap =>
+      cell(row, faction).querySelector("canvas")?.dataset ?? {};
+    for (const faction of OFFERED_FACTION_IDS_V7) {
+      for (const row of [
+        "CITY_1",
+        "FARM",
+        "LUMBER_CAMP",
+        "MARKET",
+        "MONUMENT_SLAYER",
+      ])
+        expect(tileOf(row, faction).ground, `${row} ${faction}`).toBe(
+          grounds[faction],
+        );
+      expect(tileOf("PORT", faction).ground).toBe("SHALLOW_WATER");
+      expect(tileOf("SHIPYARD", faction).ground).toBe("SHALLOW_WATER");
+      expect(tileOf("FARM", faction).fade).toBe("true");
+      expect(tileOf("PORT", faction).fade).toBe("true");
+      expect(tileOf("CITY_3", faction).fade).toBe("false");
+      expect(tileOf("MONUMENT", faction).fade).toBe("false");
+    }
+    expect(tileOf("MINE", "ALL")).toMatchObject({
+      ground: "NEUTRAL",
+      fade: "false",
+    });
+    expect(tileOf("VILLAGE", "ALL").ground).toBe("NEUTRAL");
     // A Monument's detail: the faction, the name, what earns it; the
     // arrows step along the factions and down the Monument rows.
     cell("MONUMENT_EXPLORER", "DWARF").click();
@@ -875,8 +915,11 @@ describe("Ruleset 7 Gallery", () => {
       "The Monument of the Explorer achievement: Explore half the map.",
     );
     expect(
-      required(".v7-gallery-detail canvas.v7-gallery-tile").dataset.subject,
-    ).toBe("IMPROVEMENT:MONUMENT:DWARF:EXPLORER");
+      required(".v7-gallery-detail canvas.v7-gallery-tile").dataset,
+    ).toMatchObject({
+      subject: "IMPROVEMENT:MONUMENT:DWARF:EXPLORER",
+      ground: "DWARF",
+    });
     key(required(".v7-gallery-detail"), "ArrowRight");
     expect(required(".v7-gallery-detail-faction").textContent).toBe("Candy");
     expect(

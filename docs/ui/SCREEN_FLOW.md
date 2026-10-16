@@ -2363,8 +2363,14 @@ This overlay (`pulp_wars-ic8`) adds one front screen to the current Ruleset
   The Gallery never touches the save.
 - **Look.** Always the live CHIBI look, whatever the art set: each cell is
   one board tile drawn like the board draws it (Grass, or Shallow Water
-  for ships, transports, Ports and Shipyards; Forest under a Lumber Camp),
-  the unit on its measured ground shadow. A faction piece drawn with the
+  for ships and transports), the unit on its measured ground shadow. A
+  building stands on a cell of its faction's own ground as the board draws
+  that faction's territory (`pulp_wars-2yc.68`: the textured grounds, the
+  Cult bog and Candy frosting tiles, Snow for the Ice Folk, the default
+  Grass for the Humans and a shared cell; Shallow Water under Ports and
+  Shipyards), and the tile improvements are drawn with the board's
+  [building fade](../art/BUILDING_FADE.md) (cities, the Village, the Mine
+  and the Monuments stay bold); `?building-fade=0` turns it off here too. A faction piece drawn with the
   shared stand-in art is marked "Shared".
 - **Units tab.** A table with one row per mechanical role (Fighter,
   Raider, Marksman, Guard, Captain, Catapult, Knight, Juggernaut, Patrol
@@ -2381,8 +2387,8 @@ This overlay (`pulp_wars-ic8`) adds one front screen to the current Ruleset
   [faction buildings](#current-ruleset-7-faction-buildings-overlay)
   (`pulp_wars-xdh.2`) so do the Farm, the Windmill and the Sawmill: each
   cell is named as that faction has the building ("Graveyard", "Solar
-  Array"; "Farm" for a faction that keeps the shared one), and an Undead
-  cell stands on the Undead ground.
+  Array"; "Farm" for a faction that keeps the shared one), and every cell
+  stands on its faction's ground.
 - **Monuments** (`pulp_wars-2yc.44`). Eight rows of the Buildings tab:
   **Monument** (the obelisk another player sees, since a Monument's
   achievement is its owner's to know) and one per achievement, named as

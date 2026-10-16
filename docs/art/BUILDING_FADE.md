@@ -55,8 +55,13 @@ farms and mills).
 - the Mine: it is part of the Mined Mountain art, and a faded mountain no
   longer matched the mountains beside it (its snow turned green-grey);
 - the Field Defense badge: a tactical marker with a number on it;
-- the build buttons and thumbnails of the tile dock and the Gallery: they
-  are interface, not board.
+- the build buttons and thumbnails of the tile dock: they are interface,
+  not board.
+
+The Gallery's Buildings tab (bead pulp_wars-2yc.68) shows each building on
+its faction's ground as the board does, so it draws the tile improvements
+with the fade too, toward the same ground as the board (the faction's
+ground, the default Grass for the Humans, the Ice Folk and a shared cell).
 
 ## Choosing the strength
 
