@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   assetInventoryV7,
   assetPreloadUrlsV7,
@@ -110,15 +110,20 @@ const result = (total: number): AssetPreloadResultV7 => ({
   unfinished: 0,
 });
 
+/** One turn of the event loop; on a fake clock, without moving the clock. */
+async function tick(): Promise<void> {
+  if (vi.isFakeTimers()) await vi.advanceTimersByTimeAsync(0);
+  else await new Promise((resolve) => setTimeout(resolve, 0));
+}
+
 async function flush(): Promise<void> {
-  for (let index = 0; index < 5; index += 1)
-    await new Promise((resolve) => setTimeout(resolve, 0));
+  for (let index = 0; index < 5; index += 1) await tick();
 }
 
 async function waitUntil(predicate: () => boolean): Promise<void> {
   for (let index = 0; index < 200; index += 1) {
     if (predicate()) return;
-    await new Promise((resolve) => setTimeout(resolve, 0));
+    await tick();
   }
   throw new Error("Condition not reached");
 }
@@ -919,14 +924,26 @@ describe("Ruleset 7 start and the sound clips", () => {
     expect(waiting.requests[1]?.urls).toEqual(backgroundPreloadUrlsV7("LIVE"));
     waiting.app.destroy();
 
-    // Slow clips hold the art back no longer than the hold.
-    document.body.innerHTML = '<div id="app"></div>';
-    const slow = await start(20);
-    await flush();
-    expect(slow.requests).toHaveLength(1);
-    await new Promise((resolve) => setTimeout(resolve, 40));
-    await waitUntil(() => slow.requests.length === 2);
-    slow.app.destroy();
+    // Slow clips hold the art back no longer than the hold. The hold is a
+    // timer: on the machine's clock a loaded run let it pass before the
+    // first look (pulp_wars-2yc.64), so this half keeps its own clock.
+    vi.useFakeTimers();
+    try {
+      document.body.innerHTML = '<div id="app"></div>';
+      const slow = await start(20);
+      await flush();
+      expect(slow.requests).toHaveLength(1);
+      // Still held a moment before the hold is up; asked for once it is.
+      await vi.advanceTimersByTimeAsync(19);
+      await flush();
+      expect(slow.requests).toHaveLength(1);
+      await vi.advanceTimersByTimeAsync(1);
+      await waitUntil(() => slow.requests.length === 2);
+      expect(slow.requests[1]?.urls).toEqual(backgroundPreloadUrlsV7("LIVE"));
+      slow.app.destroy();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it("asks for one clip a sound: its default, or the one this browser picked", async () => {

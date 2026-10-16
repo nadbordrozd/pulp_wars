@@ -64,12 +64,38 @@ function openSounds(): HTMLElement {
   return required("[data-v7-gallery-sounds]");
 }
 
+/**
+ * The element of `className` whose `data-*` value `key` is `value`. The
+ * Sounds tab is several thousand nodes, and jsdom answers a document-wide
+ * attribute selector (`[data-sound-row="impact.hit"]`) by walking all of
+ * them, several milliseconds each time; the class narrows the walk to the
+ * cards (pulp_wars-2yc.64). The dataset comparison is the same exact match.
+ */
+function byData(className: string, key: string, value: string): HTMLElement {
+  const node = [...document.getElementsByClassName(className)].find(
+    (element): element is HTMLElement =>
+      element instanceof HTMLElement && element.dataset[key] === value,
+  );
+  if (node === undefined) throw new Error(`Missing .${className} ${value}`);
+  return node;
+}
+
 function card(id: string): HTMLButtonElement {
-  return required<HTMLButtonElement>(`[data-sound-play="${id}"]`);
+  return byData("v7-gallery-sound-play", "soundPlay", id) as HTMLButtonElement;
 }
 
 function row(id: string): HTMLElement {
-  return required(`[data-sound-row="${id}"]`);
+  return byData("v7-gallery-sound", "soundRow", id);
+}
+
+/** A control under one card, looked for within that card only. */
+function inRow<T extends Element = HTMLElement>(
+  id: string,
+  selector: string,
+): T {
+  const node = row(id).querySelector<T>(selector);
+  if (node === null) throw new Error(`Missing ${selector} under ${id}`);
+  return node;
 }
 
 function key(target: Element, value: string): KeyboardEvent {
@@ -93,6 +119,10 @@ function playing(): string[] {
 let device: FakeAudioDeviceV1;
 
 beforeEach(() => {
+  // The mixer's clock (`Date.now`) says whether a card still plays: with
+  // the machine's own clock a slow run let a short sound end between two
+  // presses (pulp_wars-2yc.64). Time passes here only when a test says so.
+  vi.useFakeTimers();
   document.body.innerHTML = '<div id="app"></div>';
   window.localStorage.clear();
   device = installFakeAudioContext(window);
@@ -210,7 +240,6 @@ describe("Gallery Sounds tab", () => {
   });
 
   it("plays a card through the mixer at the player's volume, and marks it", () => {
-    vi.useFakeTimers();
     const mounted = mount();
     openSounds();
     // The Gallery and tab buttons clicked on the way here.
@@ -407,7 +436,6 @@ describe("Gallery Sounds tab", () => {
 
   it("says so when the browser has no sound device", () => {
     uninstallFakeAudioContext(window);
-    vi.useFakeTimers();
     mount();
     openSounds();
     const notice = required(".v7-gallery-sounds-notice");
@@ -722,7 +750,7 @@ describe("Gallery Sounds tab", () => {
  */
 describe("Gallery Sounds tab: origins", () => {
   function origin(id: string): HTMLElement {
-    return required(`[data-sound-row="${id}"] .v7-gallery-sound-origin`);
+    return inRow(id, ".v7-gallery-sound-origin");
   }
 
   it("shows the take, its prompt and its length on every ElevenLabs card", () => {

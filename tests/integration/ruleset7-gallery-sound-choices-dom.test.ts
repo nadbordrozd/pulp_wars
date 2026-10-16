@@ -99,12 +99,37 @@ function openSounds(): HTMLElement {
   return required("[data-v7-gallery-sounds]");
 }
 
+/**
+ * The element of `className` whose `data-*` value `key` is `value`. The
+ * Sounds tab is several thousand nodes, and jsdom answers a document-wide
+ * attribute selector (`[data-sound-row="impact.hit"]`) by walking all of
+ * them, several milliseconds each time: the listing test asks thousands of
+ * times and used to run past its timeout on a loaded machine
+ * (pulp_wars-2yc.64). The class narrows the walk to the cards; the dataset
+ * comparison is the same exact match.
+ */
+function byData(className: string, key: string, value: string): HTMLElement {
+  const node = [...document.getElementsByClassName(className)].find(
+    (element): element is HTMLElement =>
+      element instanceof HTMLElement && element.dataset[key] === value,
+  );
+  if (node === undefined) throw new Error(`Missing .${className} ${value}`);
+  return node;
+}
+
 function row(id: string): HTMLElement {
-  return required(`[data-sound-row="${id}"]`);
+  return byData("v7-gallery-sound", "soundRow", id);
 }
 
 function card(id: string): HTMLButtonElement {
-  return required<HTMLButtonElement>(`[data-sound-play="${id}"]`);
+  return byData("v7-gallery-sound-play", "soundPlay", id) as HTMLButtonElement;
+}
+
+/** A control under one card, looked for within that card only. */
+function inRow(id: string, selector: string): HTMLButtonElement {
+  const node = row(id).querySelector<HTMLButtonElement>(selector);
+  if (node === null) throw new Error(`Missing ${selector} under ${id}`);
+  return node;
 }
 
 function choices(id: string): HTMLElement[] {
@@ -112,15 +137,11 @@ function choices(id: string): HTMLElement[] {
 }
 
 function choicePlay(id: string, n: number): HTMLButtonElement {
-  return required<HTMLButtonElement>(
-    `[data-sound-row="${id}"] .v7-gallery-sound-choice-play[data-choice="${n}"]`,
-  );
+  return inRow(id, `.v7-gallery-sound-choice-play[data-choice="${n}"]`);
 }
 
 function choiceUse(id: string, n: number): HTMLButtonElement {
-  return required<HTMLButtonElement>(
-    `[data-sound-row="${id}"] .v7-gallery-sound-choice-use[data-choice="${n}"]`,
-  );
+  return inRow(id, `.v7-gallery-sound-choice-use[data-choice="${n}"]`);
 }
 
 function chosen(id: string): string[] {
@@ -162,6 +183,10 @@ async function settle(): Promise<void> {
 }
 
 beforeEach(() => {
+  // The mixer's clock (`Date.now`) says whether a card still plays: with
+  // the machine's own clock a slow run let a short sound end between two
+  // presses. Nothing here waits for a timer, only for promises.
+  vi.useFakeTimers();
   document.body.innerHTML = '<div id="app"></div>';
   window.localStorage.clear();
   clearSoundFilesV1();
