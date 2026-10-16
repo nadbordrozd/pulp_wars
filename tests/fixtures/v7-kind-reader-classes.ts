@@ -519,6 +519,10 @@ export const KIND_READER_CLASSES_V7: Readonly<
   // The frozen sea interface (`pulp_wars-5ti.7`): Black Ice is the ice
   // owner's own capability, and the Sea Dog goal is the viewer's seat's.
   "src/render/frozen-sea-presentation-v7.ts::viewerHasBlackIceV7": "SEAT",
+  // Bead pulp_wars-2yc.70: the deed line reads the viewer's seat faction
+  // for its mill's name and the Ice Folk Sea Dog, like the goal; a unit's
+  // name goes through `unitDisplayNameV7`, which reads its kind.
+  "src/render/achievement-presentation-v7.ts::achievementDeedV7": "SEAT",
   "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#achievements": "SEAT",
   // The viewer's own Monument look (pulp_wars-eu3r.3).
   "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#achievementNotice":

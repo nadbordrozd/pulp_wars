@@ -447,6 +447,7 @@ import {
 } from "../goblin-presentation-v7";
 import {
   ACHIEVEMENT_GOALS_V7,
+  achievementDeedV7,
   achievementNameV7,
   achievementProgressCountsV7,
   listedAchievementIdsV7,
@@ -1653,7 +1654,17 @@ export class Ruleset7DomAppView {
    * pulp_wars-2yc.66); null where the browser cannot say (the tests).
    */
   #wideTreeMedia: MediaQueryList | null = null;
-  #achievementNotices: AchievementIdV7[] = [];
+  #achievementNotices: {
+    readonly achievement: AchievementIdV7;
+    /** What the player did, with its number (bead pulp_wars-2yc.70). */
+    readonly deed: string;
+  }[] = [];
+  /**
+   * The deed line of each achievement this match unlocked while this view
+   * watched, for the Achievements screen; a resumed match has none and the
+   * screen reads the live count instead.
+   */
+  readonly #achievementDeeds = new Map<AchievementIdV7, string>();
   #achievementReturnAction: string | null = null;
   #selectedModifier: string | null = null;
   #selectedRecruitHelp: UnitRoleIdV7 | null = null;
@@ -9699,6 +9710,20 @@ export class Ruleset7DomAppView {
             : ACHIEVEMENT_GOALS_V7[achievement],
           "v7-achievement-goal",
         ),
+      );
+      // Bead pulp_wars-2yc.70: a completed card says what the player did,
+      // as its popup did; after a resume, the live count while it still
+      // meets the goal.
+      const deed =
+        state === "complete" || state === "spent"
+          ? (this.#achievementDeeds.get(achievement) ??
+            (current >= required ? achievementDeedV7(achievement, view) : null))
+          : null;
+      if (deed !== null) {
+        card.dataset.deed = "true";
+        card.append(text(this.#document, "p", deed, "v7-achievement-deed"));
+      }
+      card.append(
         meter,
         text(
           this.#document,
@@ -10158,7 +10183,8 @@ export class Ruleset7DomAppView {
   }
 
   #achievementNotice(): HTMLElement {
-    const achievement = this.#achievementNotices[0];
+    const notice = this.#achievementNotices[0];
+    const achievement = notice?.achievement;
     const modal = el(this.#document, "section", "v7-achievement-notice");
     modal.dataset.v7Region = "achievement-notice";
     modal.setAttribute("role", "dialog");
@@ -10167,7 +10193,7 @@ export class Ruleset7DomAppView {
       "aria-label",
       `${achievement === undefined ? "Achievement" : achievementNameV7(achievement)} achievement complete`,
     );
-    if (achievement === undefined) return modal;
+    if (notice === undefined || achievement === undefined) return modal;
     const badge = el(this.#document, "div", "v7-achievement-badge");
     // The Monument it earns, where the look has one (pulp_wars-2yc.15), in
     // the viewer's own faction look (pulp_wars-eu3r.3).
@@ -10189,6 +10215,8 @@ export class Ruleset7DomAppView {
         "h2",
         `${achievementNameV7(achievement)} achievement complete`,
       ),
+      // Bead pulp_wars-2yc.70: what the player did, with its number.
+      text(this.#document, "p", notice.deed, "v7-achievement-deed"),
       text(
         this.#document,
         "p",
@@ -10623,6 +10651,7 @@ export class Ruleset7DomAppView {
     this.#screen = "MATCH";
     this.#compactMenuOpen = false;
     this.#achievementNotices = [];
+    this.#achievementDeeds.clear();
     this.#notice = "";
     const deleted = await this.#controller.deleteStoredSave();
     if (this.#destroyed) return;
@@ -10652,6 +10681,7 @@ export class Ruleset7DomAppView {
     this.#selection = null;
     this.#screen = "MATCH";
     this.#achievementNotices = [];
+    this.#achievementDeeds.clear();
     this.#notice = "";
     const deleted = await this.#controller.deleteStoredSave();
     if (this.#destroyed) return;
@@ -10818,6 +10848,7 @@ export class Ruleset7DomAppView {
     this.#cancelPresentations();
     this.#scoreBreakdownFor = null;
     this.#achievementNotices = [];
+    this.#achievementDeeds.clear();
     this.#error = "";
     const result = await this.#controller.launch(setup, {
       replaceStoredMatch: replace,
@@ -10867,6 +10898,7 @@ export class Ruleset7DomAppView {
   }
   async #resumeMatch(): Promise<void> {
     this.#achievementNotices = [];
+    this.#achievementDeeds.clear();
     this.#scoreBreakdownFor = null;
     const resumed = await this.#controller.resume();
     if (this.#destroyed) return;
@@ -10892,6 +10924,7 @@ export class Ruleset7DomAppView {
     }
     this.#cancelPresentations();
     this.#achievementNotices = [];
+    this.#achievementDeeds.clear();
     this.#selection = null;
     this.#screen = "MATCH";
     this.#compactMenuOpen = false;
@@ -11232,8 +11265,20 @@ export class Ruleset7DomAppView {
       if (
         event.kind === "ACHIEVEMENT_UNLOCKED" &&
         event.playerId === boundary.afterView.viewer.id
-      )
-        this.#achievementNotices.push(event.achievement);
+      ) {
+        // Bead pulp_wars-2yc.70: the deed with its number, read from the
+        // view right after the unlock.
+        const deed = achievementDeedV7(
+          event.achievement,
+          boundary.afterView,
+          boundary.playerEvents.events,
+        );
+        this.#achievementDeeds.set(event.achievement, deed);
+        this.#achievementNotices.push({
+          achievement: event.achievement,
+          deed,
+        });
+      }
     const notice = boundaryNoticeV7(
       boundary.playerEvents.events,
       boundary.beforeView,

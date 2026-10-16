@@ -2093,6 +2093,33 @@ what changed.
   name ("Land Baron", "Sea Dog"), then "You can now build a monument on one
   of your tiles." Notices queue in event order and wait for a mandatory
   city reward.
+- **The deed** (bead `pulp_wars-2yc.70`, the user 2026-10-16). Between the
+  heading and the reward line the notice says what the player did, with
+  the number that earned it, read from the view right after the unlock
+  (`achievementDeedV7`; no engine change, the counts are the viewer's own
+  progress, mills, and units):
+  - Explorer: "You explored {n} of the map's {total} tiles." ("You explored
+    every tile of the map." when they are all explored).
+  - Engineer: "Your {mill} makes {n} population.", the mill in its
+    faction's name ("Bone Mill"); "One of your mills makes {n} population."
+    when no mill reaches it in the view.
+  - Muster: "You field {n} different unit types at once."
+  - Conqueror: "You captured {city}, an enemy capital.", the city of the
+    capture in the same command; "You captured an enemy capital." without
+    one.
+  - Land Baron: "Your empire spans {n} cities."
+  - Sea Dog: "You command {n} warships at once."; Ice Folk: "You hold the
+    ice with {n} units at once."
+  - Slayer: "Your {unit} has killed {n} enemy units.", the unit with the
+    most kills; "One of your units has killed {n} enemy units." when none
+    is in the view.
+
+  A count below the requirement (a view older than the unlock) reads as the
+  requirement. A complete or spent card on the Achievements screen shows
+  the same line under its goal: the popup's line for an achievement this
+  session saw unlock, else the line from the live counts while they still
+  meet the goal, else none. No line names a tile.
+
 - **Monument.** Each unlocked, unspent entitlement offers its own "Monument"
   action on an eligible tile (`command-build_monument-{id}`). A built
   Monument's source chip reads "{Name} monument".

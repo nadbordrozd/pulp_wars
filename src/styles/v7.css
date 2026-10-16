@@ -3514,6 +3514,22 @@
   font-size: var(--pw-fs-md);
 }
 
+/* Bead pulp_wars-2yc.70: what the player did, with its number. */
+.v7-achievement[data-deed="true"] .v7-achievement-symbols {
+  grid-row: 1 / span 5;
+}
+
+.v7-achievement-deed {
+  color: var(--pw-text);
+  font-size: var(--pw-fs-md);
+  font-weight: var(--pw-fw-semi);
+}
+
+.v7-achievement-notice .v7-achievement-deed {
+  font-size: var(--pw-fs-lg);
+  font-weight: var(--pw-fw-bold);
+}
+
 .v7-achievement-meter {
   height: 10px;
   overflow: hidden;

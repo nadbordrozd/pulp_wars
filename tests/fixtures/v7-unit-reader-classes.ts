@@ -685,6 +685,10 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/render/canvas/frozen-sea-board-plan-v7.ts::moveOnIceV7": "BOARD",
     "src/render/frozen-sea-presentation-v7.ts::frozenSeaBoundaryNoticeV7":
       "BOARD",
+    // Bead pulp_wars-2yc.70: the Slayer deed names the unit on the board
+    // with the most kills, as Slayer reads it (a burrowed unit is off the
+    // board and does not count).
+    "src/render/achievement-presentation-v7.ts::achievementDeedV7": "BOARD",
     "src/render/canvas/board-host-v7.ts::<module>": "BOARD",
     "src/render/canvas/board-host-v7.ts::CanvasBoardHostV7.pinIceFolkFeedback":
       "BOARD",

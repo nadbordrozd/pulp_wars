@@ -2,11 +2,17 @@ import { describe, expect, it } from "vitest";
 import {
   ACHIEVEMENT_IDS_V7,
   REVISION_21_ACHIEVEMENT_REQUIRED_V7,
+  viewForV7,
+  type PlayerEventV7,
+  type PlayerViewV7,
 } from "../../src/engine/index";
+import { cityNameV7 } from "../../src/render/city-names-presentation-v7";
+import { initialV7 } from "../fixtures/v7-builders";
 import {
   ACHIEVEMENT_GOALS_V7,
   ACHIEVEMENT_HELP_TIP_V7,
   ACHIEVEMENT_NAMES_V7,
+  achievementDeedV7,
   achievementNameV7,
   achievementProgressCountsV7,
   listedAchievementIdsV7,
@@ -99,5 +105,204 @@ describe("ruleset-7 achievement presentation", () => {
         required: 5,
       }),
     ).toEqual({ current: 7, required: 5 });
+  });
+});
+
+// Bead pulp_wars-2yc.70: the popup says what the player did, with the
+// number that earned it, read from the view right after the unlock.
+describe("ruleset-7 achievement deeds", () => {
+  const base = (): PlayerViewV7 => {
+    const state = initialV7();
+    return viewForV7(state, state.humanPlayerId);
+  };
+  const withProgress = (
+    view: PlayerViewV7,
+    entry: PlayerViewV7["achievementProgress"][number],
+  ): PlayerViewV7 => ({
+    ...view,
+    achievementProgress: view.achievementProgress.map((current) =>
+      current.achievement === entry.achievement ? entry : current,
+    ),
+  });
+  const millValue = (
+    improvement: "WINDMILL" | "SAWMILL" | "FORGE" | "WORKSHOP" | "MARKET",
+    level: number,
+  ): PlayerViewV7["improvementValues"][number] => ({
+    at: { x: 0, y: 0 },
+    improvement,
+    level,
+    measure: improvement === "MARKET" ? "COIN_INCOME" : "POPULATION",
+    contributingTiles: [],
+  });
+
+  it("Explorer counts the tiles explored out of the map's", () => {
+    const view = base();
+    expect(view.board.width * view.board.height).toBe(121);
+    expect(
+      achievementDeedV7(
+        "EXPLORER",
+        withProgress(view, {
+          achievement: "EXPLORER",
+          currentExploredTiles: 64,
+          requiredExploredTiles: 61,
+        }),
+      ),
+    ).toBe("You explored 64 of the map's 121 tiles.");
+    expect(
+      achievementDeedV7(
+        "EXPLORER",
+        withProgress(view, {
+          achievement: "EXPLORER",
+          currentExploredTiles: 121,
+          requiredExploredTiles: 61,
+        }),
+      ),
+    ).toBe("You explored every tile of the map.");
+  });
+
+  it("Engineer names the mill and its population, in the faction's words", () => {
+    const view = withProgress(
+      {
+        ...base(),
+        improvementValues: [
+          millValue("MARKET", 8),
+          millValue("WINDMILL", 4),
+          millValue("SAWMILL", 8),
+        ],
+      },
+      {
+        achievement: "ENGINEER",
+        currentMaximumOutput: 8,
+        requiredOutput: 7,
+      },
+    );
+    expect(achievementDeedV7("ENGINEER", view)).toBe(
+      "Your Sawmill makes 8 population.",
+    );
+    // An Undead Windmill is a Bone Mill (epic pulp_wars-xdh).
+    expect(
+      achievementDeedV7("ENGINEER", {
+        ...view,
+        viewer: { ...view.viewer, faction: "UNDEAD" },
+        improvementValues: [millValue("WINDMILL", 8)],
+      }),
+    ).toBe("Your Bone Mill makes 8 population.");
+    expect(
+      achievementDeedV7("ENGINEER", { ...view, improvementValues: [] }),
+    ).toBe("One of your mills makes 8 population.");
+  });
+
+  it("Muster counts the unit types in the field", () => {
+    expect(
+      achievementDeedV7(
+        "MUSTER",
+        withProgress(base(), {
+          achievement: "MUSTER",
+          currentDistinctTrainableRoles: 7,
+          requiredDistinctTrainableRoles: 6,
+        }),
+      ),
+    ).toBe("You field 7 different unit types at once.");
+  });
+
+  it("Conqueror names the capital the same boundary captured", () => {
+    const view = base();
+    const capital = view.cities.find((city) => city.isCapital);
+    if (capital === undefined) throw new Error("capital missing");
+    const rival = view.players.find((player) => player.id !== view.viewer.id);
+    if (rival === undefined) throw new Error("rival missing");
+    const captured: Extract<PlayerEventV7, { kind: "CITY_CAPTURED" }> = {
+      kind: "CITY_CAPTURED",
+      cityId: capital.id,
+      from: rival.id,
+      to: view.viewer.id,
+    };
+    expect(achievementDeedV7("CONQUEROR", view, [captured])).toBe(
+      `You captured ${cityNameV7(view, capital)}, an enemy capital.`,
+    );
+    expect(cityNameV7(view, capital).length).toBeGreaterThan(0);
+    // Without the capture (a resumed match), the plain deed.
+    expect(achievementDeedV7("CONQUEROR", view)).toBe(
+      "You captured an enemy capital.",
+    );
+    // A neutral village taken is no enemy capital.
+    expect(
+      achievementDeedV7("CONQUEROR", view, [{ ...captured, from: null }]),
+    ).toBe("You captured an enemy capital.");
+  });
+
+  it("Land Baron counts the cities", () => {
+    expect(
+      achievementDeedV7(
+        "LAND_BARON",
+        withProgress(base(), {
+          achievement: "LAND_BARON",
+          current: 9,
+          required: 8,
+        }),
+      ),
+    ).toBe("Your empire spans 9 cities.");
+  });
+
+  it("Sea Dog counts the warships, and the Ice Folk's units on the ice", () => {
+    const view = withProgress(base(), {
+      achievement: "SEA_DOG",
+      current: 6,
+      required: 5,
+    });
+    expect(achievementDeedV7("SEA_DOG", view)).toBe(
+      "You command 6 warships at once.",
+    );
+    expect(
+      achievementDeedV7("SEA_DOG", {
+        ...view,
+        viewer: { ...view.viewer, faction: "ICE_FOLK" },
+      }),
+    ).toBe("You hold the ice with 6 units at once.");
+  });
+
+  it("Slayer names the unit and its kills", () => {
+    const view = base();
+    const own = view.units.find((unit) => unit.ownerId === view.viewer.id);
+    if (own === undefined) throw new Error("unit missing");
+    const slayerView = withProgress(
+      {
+        ...view,
+        units: view.units.map((unit) =>
+          unit.id === own.id ? { ...unit, role: "KNIGHT", kills: 8 } : unit,
+        ),
+      },
+      { achievement: "SLAYER", current: 8, required: 7 },
+    );
+    expect(achievementDeedV7("SLAYER", slayerView)).toBe(
+      "Your Knight has killed 8 enemy units.",
+    );
+    // The veteran gone from the view: the count alone.
+    expect(achievementDeedV7("SLAYER", { ...slayerView, units: [] })).toBe(
+      "One of your units has killed 8 enemy units.",
+    );
+  });
+
+  it("reads a count below the goal as the goal the unlock proves", () => {
+    const view = base();
+    expect(achievementDeedV7("LAND_BARON", view)).toBe(
+      "Your empire spans 8 cities.",
+    );
+    expect(achievementDeedV7("SEA_DOG", view)).toBe(
+      "You command 5 warships at once.",
+    );
+    expect(achievementDeedV7("MUSTER", view)).toBe(
+      "You field 6 different unit types at once.",
+    );
+    expect(achievementDeedV7("EXPLORER", view)).toBe(
+      "You explored 61 of the map's 121 tiles.",
+    );
+    for (const achievement of ACHIEVEMENT_IDS_V7) {
+      const deed = achievementDeedV7(achievement, view);
+      expect(deed).toMatch(/^(You|Your|One) .+\.$/);
+      expect(deed.length).toBeLessThanOrEqual(48);
+      // No tile coordinates.
+      expect(deed).not.toMatch(/\(\s*\d+\s*,\s*\d+\s*\)/);
+    }
   });
 });

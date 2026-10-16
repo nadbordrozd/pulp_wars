@@ -315,6 +315,15 @@ describe("Ruleset 7 revision-21 achievements UI", () => {
       now: "1",
       width: "100%",
     });
+    // Bead pulp_wars-2yc.70: a completed card says what was done (here from
+    // the live counts: no popup of this view recorded the deed).
+    expect(
+      card("CONQUEROR").querySelector(".v7-achievement-deed")?.textContent,
+    ).toBe("You captured an enemy capital.");
+    expect(
+      card("SLAYER").querySelector(".v7-achievement-deed")?.textContent,
+    ).toBe("One of your units has killed 9 enemy units.");
+    expect(card("LAND_BARON").querySelector(".v7-achievement-deed")).toBeNull();
     expect(
       card("CONQUEROR").querySelector(
         '[data-symbol-id="ui-status-achievement-entitlement-unlocked"]',
@@ -382,10 +391,18 @@ describe("Ruleset 7 revision-21 achievements UI", () => {
     expect(notice()?.textContent).toContain(
       "You can now build a monument on one of your tiles.",
     );
+    // Bead pulp_wars-2yc.70: the deed line, here from a view whose counts
+    // predate the unlock, so the goal the unlock proves.
+    expect(notice()?.querySelector(".v7-achievement-deed")?.textContent).toBe(
+      "You captured an enemy capital.",
+    );
     expect(host.model?.interactive).toBe(false);
     requiredButton('[data-action="dismiss-achievement"]').click();
     expect(notice()?.querySelector("h2")?.textContent).toBe(
       "Land Baron achievement complete",
+    );
+    expect(notice()?.querySelector(".v7-achievement-deed")?.textContent).toBe(
+      "Your empire spans 8 cities.",
     );
     requiredButton('[data-action="dismiss-achievement"]').click();
     expect(notice()).toBeNull();
@@ -416,6 +433,90 @@ describe("Ruleset 7 revision-21 achievements UI", () => {
       requiredButton('[data-action="dismiss-achievement"]').click();
     }
     expect(notice()).toBeNull();
+    app.destroy();
+    source.destroy();
+  });
+
+  // Bead pulp_wars-2yc.70: the popup says what was done, with the number,
+  // and the Achievements screen keeps that line after the count drops.
+  it("states the deed with its number in the popup and on the card", async () => {
+    const { app, source, view, boundary } = await mount(
+      pangea(2105),
+      (_snapshot, initial) => ({
+        view: {
+          ...initial,
+          // Later the veteran is gone: the live count is back to 0.
+          viewer: {
+            ...initial.viewer,
+            achievementEntitlements: initial.viewer.achievementEntitlements.map(
+              (entitlement) =>
+                entitlement.achievement === "SLAYER"
+                  ? { ...entitlement, unlocked: true }
+                  : entitlement,
+            ),
+          },
+        },
+      }),
+    );
+    const own = view.units.find((unit) => unit.ownerId === view.viewer.id);
+    if (own === undefined) throw new Error("unit missing");
+    const after: PlayerViewV7 = {
+      ...view,
+      units: view.units.map((unit) =>
+        unit.id === own.id ? { ...unit, role: "KNIGHT", kills: 7 } : unit,
+      ),
+      achievementProgress: view.achievementProgress.map((entry) =>
+        entry.achievement === "SLAYER"
+          ? { ...entry, current: 7 }
+          : entry.achievement === "EXPLORER"
+            ? { ...entry, currentExploredTiles: 70 }
+            : entry,
+      ),
+    };
+    boundary({
+      actor: "HUMAN",
+      beforeView: view,
+      afterView: after,
+      playerEvents: {
+        format: "pulp-wars-player-events",
+        version: 7,
+        viewerId: view.viewer.id,
+        commandIndex: view.commandIndex + 1,
+        events: (["EXPLORER", "SLAYER"] as const).map((achievement) => ({
+          kind: "ACHIEVEMENT_UNLOCKED" as const,
+          playerId: view.viewer.id,
+          achievement,
+        })),
+      },
+    });
+    const notice = () =>
+      document.querySelector<HTMLElement>(
+        '[data-v7-region="achievement-notice"]',
+      );
+    const tiles = view.board.width * view.board.height;
+    const lines = () =>
+      [...(notice()?.querySelectorAll("h2, p") ?? [])].map(
+        (node) => node.textContent,
+      );
+    expect(lines()).toEqual([
+      "Explorer achievement complete",
+      `You explored 70 of the map's ${tiles} tiles.`,
+      "You can now build a monument on one of your tiles.",
+    ]);
+    requiredButton('[data-action="dismiss-achievement"]').click();
+    expect(lines()).toEqual([
+      "Slayer achievement complete",
+      "Your Knight has killed 7 enemy units.",
+      "You can now build a monument on one of your tiles.",
+    ]);
+    requiredButton('[data-action="dismiss-achievement"]').click();
+    expect(notice()).toBeNull();
+    openMenuItem("achievements");
+    expect(card("SLAYER").dataset.deed).toBe("true");
+    expect(
+      card("SLAYER").querySelector(".v7-achievement-deed")?.textContent,
+    ).toBe("Your Knight has killed 7 enemy units.");
+    expect(cardFacts("SLAYER").status).toBe("Done! Build your monument.");
     app.destroy();
     source.destroy();
   });
