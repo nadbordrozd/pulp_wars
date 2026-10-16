@@ -909,66 +909,67 @@ Martyr icons were retired by the Cult redesign (bead `pulp_wars-mch9.42`,
 `npm run art:chibi -- retire`); their recipes stay in the batches as
 history.
 
-| Subject                                           | Asset                                              | Sprite         |
-| ------------------------------------------------- | -------------------------------------------------- | -------------- |
-| `PORTRAIT:CULT:FIGHTER`                           | `chibi-direction-portrait-cult-initiate`           | 43 x 42 sprite |
-| `PORTRAIT:CULT:GUARD`                             | `chibi-direction-portrait-cult-idol-bearer`        | 34 x 42 sprite |
-| `PORTRAIT:CULT:RAIDER`                            | `chibi-direction-portrait-cult-familiar`           | 48 x 44 sprite |
-| `PORTRAIT:CULT:MARKSMAN`                          | `chibi-direction-portrait-cult-hexer`              | 43 x 42 sprite |
-| `PORTRAIT:CULT:CAPTAIN`                           | `chibi-direction-portrait-cult-summoner`           | 34 x 44 sprite |
-| `PORTRAIT:CULT:CATAPULT`                          | `chibi-direction-portrait-cult-stargazer`          | 45 x 42 sprite |
-| `PORTRAIT:CULT:JUGGERNAUT`                        | `chibi-direction-portrait-cult-thing`              | 42 x 40 sprite |
-| `PORTRAIT:CULT:HORROR`                            | `chibi-direction-portrait-cult-horror`             | 39 x 36 sprite |
-| `PORTRAIT:CULT:HERALD`                            | `chibi-direction-portrait-cult-herald`             | 37 x 48 sprite |
-| `PORTRAIT:CULT:TENTACLE`                          | `chibi-direction-portrait-cult-tentacle`           | 21 x 42 sprite |
-| `PORTRAIT:CULT:FROG` (bead `pulp_wars-mch9.26`)   | `chibi-direction-portrait-cult-frog`               | 33 x 40 sprite |
-| `ICON:TECH:CULT:FORTIFICATION`                    | `chibi-direction-icon-cult-tech-warding-circles`   | 30 x 34 sprite |
-| `ICON:TECH:CULT:EXPLOSIVES`                       | `chibi-direction-icon-cult-tech-stars-are-right`   | 36 x 31 sprite |
-| `ICON:TECH:CULT:FARMING`                          | `chibi-direction-icon-cult-tech-harvest-rites`     | 39 x 41 sprite |
-| `ICON:ACTION:SACRIFICE`                           | `chibi-direction-icon-cult-action-sacrifice`       | 30 x 45 sprite |
-| `ICON:ACTION:SEIZE`                               | `chibi-direction-icon-cult-action-seize`           | 34 x 37 sprite |
-| `ICON:ACTION:OFFERING`                            | `chibi-direction-icon-cult-action-offering`        | 38 x 32 sprite |
-| `ICON:ACTION:SUMMON`                              | `chibi-direction-icon-cult-action-summon`          | 35 x 28 sprite |
-| `ICON:ACTION:CHANNEL`                             | `chibi-direction-icon-cult-action-channel`         | 15 x 44 sprite |
-| `ICON:ACTION:ANCHOR`                              | `chibi-direction-icon-cult-action-anchor`          | 32 x 42 sprite |
-| `ICON:ACTION:BOO`                                 | `chibi-direction-icon-cult-action-boo`             | 42 x 40 sprite |
-| `ICON:ACTION:PROCLAIM`                            | `chibi-direction-icon-cult-action-proclaim`        | 44 x 44 sprite |
-| `ICON:ACTION:RIBBIT`                              | `chibi-direction-icon-cult-action-ribbit`          | 40 x 40 sprite |
-| `ICON:ACTION:SWITCHEROO`                          | `chibi-direction-icon-cult-action-switcheroo`      | 37 x 35 sprite |
-| `ICON:ACTION:TENTACLE`                            | `chibi-direction-icon-cult-action-tentacle`        | 25 x 37 sprite |
-| `ICON:ACTION:STARFALL`                            | `chibi-direction-icon-cult-action-starfall`        | 39 x 43 sprite |
-| `ICON:ACTION:GREAT_SUMMONING`                     | `chibi-direction-icon-cult-action-great-summoning` | 30 x 31 sprite |
-| `ICON:ACTION:PAMPHLETS`                           | `chibi-direction-icon-cult-action-pamphlets`       | 31 x 31 sprite |
-| `ICON:ACTION:GRAB`                                | `chibi-direction-icon-cult-action-grab`            | 34 x 37 sprite |
-| `ICON:HUD:CULT:FAVOUR`                            | `chibi-direction-icon-cult-favour`                 | 16 x 30 sprite |
-| `ICON:HUD:CULT:FAVOUR_LARGE`                      | `chibi-direction-icon-cult-favour-large`           | 22 x 36 sprite |
-| `ICON:HUD:CULT:EMBLEM`                            | `chibi-direction-icon-cult-emblem`                 | 42 x 43 sprite |
-| `ICON:HUD:CULT:HUNGER` (bead `pulp_wars-mch9.42`) | `chibi-direction-icon-cult-hunger`                 | 40 x 37 sprite |
-| `ICON:STATUS:CANDLELIT`                           | `chibi-direction-icon-cult-status-candlelit`       | 22 x 37 sprite |
-| `ICON:STATUS:FROG`                                | `chibi-direction-icon-cult-status-frog`            | 36 x 37 sprite |
-| `ICON:STATUS:UNBOUND`                             | `chibi-direction-icon-cult-status-unbound`         | 37 x 34 sprite |
-| `ICON:STATUS:FURIOUS`                             | `chibi-direction-icon-cult-status-furious`         | 36 x 35 sprite |
-| `ICON:STATUS:GRABBED`                             | `chibi-direction-icon-cult-status-grabbed`         | 39 x 40 sprite |
-| `ICON:STATUS:COWED`                               | `chibi-direction-icon-cult-status-cowed`           | 40 x 36 sprite |
-| `ICON:STATUS:WARDED`                              | `chibi-direction-icon-cult-status-warded`          | 38 x 40 sprite |
-| `PORTRAIT:CULT:PATROL_BOAT`                       | `chibi-naval-cult-portrait-patrol-boat`            | 43 x 38 sprite |
-| `PORTRAIT:CULT:BATTLESHIP`                        | `chibi-naval-cult-portrait-battleship`             | 34 x 43 sprite |
-| `PORTRAIT:CULT:SUBMARINE`                         | `chibi-naval-cult-portrait-submarine`              | 41 x 35 sprite |
-| `EFFECT:SACRIFICE_PUFF`                           | `chibi-direction-effect-cult-sacrifice-puff`       | 38 x 36 sprite |
-| `EFFECT:SEIZE`                                    | `chibi-direction-effect-cult-seize`                | 19 x 32 sprite |
-| `EFFECT:SUMMON_POP`                               | `chibi-direction-effect-cult-summon-pop`           | 30 x 36 sprite |
-| `EFFECT:STRAND_SNAP`                              | `chibi-direction-effect-cult-strand-snap`          | 24 x 24 sprite |
-| `EFFECT:UNBOUND`                                  | `chibi-direction-effect-cult-unbound`              | 41 x 32 sprite |
-| `EFFECT:STARFALL_STAR`                            | `chibi-direction-effect-cult-starfall-star`        | 24 x 31 sprite |
-| `EFFECT:STARFALL_BURST`                           | `chibi-direction-effect-cult-starfall-burst`       | 30 x 32 sprite |
-| `EFFECT:BOO`                                      | `chibi-direction-effect-cult-boo`                  | 40 x 35 sprite |
-| `EFFECT:RIBBIT`                                   | `chibi-direction-effect-cult-ribbit`               | 34 x 31 sprite |
-| `EFFECT:SWITCHEROO`                               | `chibi-direction-effect-cult-switcheroo`           | 22 x 22 sprite |
-| `EFFECT:TENTACLE_SLAP`                            | `chibi-direction-effect-cult-tentacle-slap`        | 36 x 32 sprite |
-| `EFFECT:PROCLAIM`                                 | `chibi-direction-effect-cult-proclaim`             | 42 x 34 sprite |
-| `EFFECT:PAMPHLETS`                                | `chibi-direction-effect-cult-pamphlets`            | 35 x 39 sprite |
-| `EFFECT:FAVOUR`                                   | `chibi-direction-effect-cult-favour`               | 17 x 22 sprite |
-| `EFFECT:RITUAL_FIZZLE`                            | `chibi-direction-effect-cult-ritual-fizzle`        | 26 x 24 sprite |
+| Subject                                             | Asset                                              | Sprite         |
+| --------------------------------------------------- | -------------------------------------------------- | -------------- |
+| `PORTRAIT:CULT:FIGHTER`                             | `chibi-direction-portrait-cult-initiate`           | 43 x 42 sprite |
+| `PORTRAIT:CULT:GUARD`                               | `chibi-direction-portrait-cult-idol-bearer`        | 34 x 42 sprite |
+| `PORTRAIT:CULT:RAIDER`                              | `chibi-direction-portrait-cult-familiar`           | 48 x 44 sprite |
+| `PORTRAIT:CULT:MARKSMAN`                            | `chibi-direction-portrait-cult-hexer`              | 43 x 42 sprite |
+| `PORTRAIT:CULT:CAPTAIN`                             | `chibi-direction-portrait-cult-summoner`           | 34 x 44 sprite |
+| `PORTRAIT:CULT:CATAPULT`                            | `chibi-direction-portrait-cult-stargazer`          | 45 x 42 sprite |
+| `PORTRAIT:CULT:JUGGERNAUT`                          | `chibi-direction-portrait-cult-thing`              | 42 x 40 sprite |
+| `PORTRAIT:CULT:HORROR`                              | `chibi-direction-portrait-cult-horror`             | 39 x 36 sprite |
+| `PORTRAIT:CULT:HERALD`                              | `chibi-direction-portrait-cult-herald`             | 37 x 48 sprite |
+| `PORTRAIT:CULT:TENTACLE`                            | `chibi-direction-portrait-cult-tentacle`           | 21 x 42 sprite |
+| `PORTRAIT:CULT:FROG` (bead `pulp_wars-mch9.26`)     | `chibi-direction-portrait-cult-frog`               | 33 x 40 sprite |
+| `ICON:TECH:CULT:FORTIFICATION`                      | `chibi-direction-icon-cult-tech-warding-circles`   | 30 x 34 sprite |
+| `ICON:TECH:CULT:EXPLOSIVES`                         | `chibi-direction-icon-cult-tech-stars-are-right`   | 36 x 31 sprite |
+| `ICON:TECH:CULT:FARMING`                            | `chibi-direction-icon-cult-tech-harvest-rites`     | 39 x 41 sprite |
+| `ICON:ACTION:SACRIFICE`                             | `chibi-direction-icon-cult-action-sacrifice`       | 30 x 45 sprite |
+| `ICON:ACTION:SEIZE`                                 | `chibi-direction-icon-cult-action-seize`           | 34 x 37 sprite |
+| `ICON:ACTION:OFFERING`                              | `chibi-direction-icon-cult-action-offering`        | 38 x 32 sprite |
+| `ICON:ACTION:SUMMON`                                | `chibi-direction-icon-cult-action-summon`          | 35 x 28 sprite |
+| `ICON:ACTION:CHANNEL`                               | `chibi-direction-icon-cult-action-channel`         | 15 x 44 sprite |
+| `ICON:ACTION:ANCHOR`                                | `chibi-direction-icon-cult-action-anchor`          | 32 x 42 sprite |
+| `ICON:ACTION:BOO`                                   | `chibi-direction-icon-cult-action-boo`             | 42 x 40 sprite |
+| `ICON:ACTION:PROCLAIM`                              | `chibi-direction-icon-cult-action-proclaim`        | 44 x 44 sprite |
+| `ICON:ACTION:RIBBIT`                                | `chibi-direction-icon-cult-action-ribbit`          | 40 x 40 sprite |
+| `ICON:ACTION:SWITCHEROO`                            | `chibi-direction-icon-cult-action-switcheroo`      | 37 x 35 sprite |
+| `ICON:ACTION:TENTACLE`                              | `chibi-direction-icon-cult-action-tentacle`        | 25 x 37 sprite |
+| `ICON:ACTION:STARFALL`                              | `chibi-direction-icon-cult-action-starfall`        | 39 x 43 sprite |
+| `ICON:ACTION:GREAT_SUMMONING`                       | `chibi-direction-icon-cult-action-great-summoning` | 30 x 31 sprite |
+| `ICON:ACTION:PAMPHLETS`                             | `chibi-direction-icon-cult-action-pamphlets`       | 31 x 31 sprite |
+| `ICON:ACTION:GRAB`                                  | `chibi-direction-icon-cult-action-grab`            | 34 x 37 sprite |
+| `ICON:HUD:CULT:FAVOUR`                              | `chibi-direction-icon-cult-favour`                 | 16 x 30 sprite |
+| `ICON:HUD:CULT:FAVOUR_LARGE`                        | `chibi-direction-icon-cult-favour-large`           | 22 x 36 sprite |
+| `ICON:HUD:CULT:EMBLEM`                              | `chibi-direction-icon-cult-emblem`                 | 42 x 43 sprite |
+| `ICON:HUD:CULT:HUNGER` (bead `pulp_wars-mch9.42`)   | `chibi-direction-icon-cult-hunger`                 | 40 x 37 sprite |
+| `ICON:ACTION:JOIN_CHANT` (bead `pulp_wars-mch9.43`) | `chibi-direction-icon-cult-action-join-chant`      | 33 x 39 sprite |
+| `ICON:STATUS:CANDLELIT`                             | `chibi-direction-icon-cult-status-candlelit`       | 22 x 37 sprite |
+| `ICON:STATUS:FROG`                                  | `chibi-direction-icon-cult-status-frog`            | 36 x 37 sprite |
+| `ICON:STATUS:UNBOUND`                               | `chibi-direction-icon-cult-status-unbound`         | 37 x 34 sprite |
+| `ICON:STATUS:FURIOUS`                               | `chibi-direction-icon-cult-status-furious`         | 36 x 35 sprite |
+| `ICON:STATUS:GRABBED`                               | `chibi-direction-icon-cult-status-grabbed`         | 39 x 40 sprite |
+| `ICON:STATUS:COWED`                                 | `chibi-direction-icon-cult-status-cowed`           | 40 x 36 sprite |
+| `ICON:STATUS:WARDED`                                | `chibi-direction-icon-cult-status-warded`          | 38 x 40 sprite |
+| `PORTRAIT:CULT:PATROL_BOAT`                         | `chibi-naval-cult-portrait-patrol-boat`            | 43 x 38 sprite |
+| `PORTRAIT:CULT:BATTLESHIP`                          | `chibi-naval-cult-portrait-battleship`             | 34 x 43 sprite |
+| `PORTRAIT:CULT:SUBMARINE`                           | `chibi-naval-cult-portrait-submarine`              | 41 x 35 sprite |
+| `EFFECT:SACRIFICE_PUFF`                             | `chibi-direction-effect-cult-sacrifice-puff`       | 38 x 36 sprite |
+| `EFFECT:SEIZE`                                      | `chibi-direction-effect-cult-seize`                | 19 x 32 sprite |
+| `EFFECT:SUMMON_POP`                                 | `chibi-direction-effect-cult-summon-pop`           | 30 x 36 sprite |
+| `EFFECT:STRAND_SNAP`                                | `chibi-direction-effect-cult-strand-snap`          | 24 x 24 sprite |
+| `EFFECT:UNBOUND`                                    | `chibi-direction-effect-cult-unbound`              | 41 x 32 sprite |
+| `EFFECT:STARFALL_STAR`                              | `chibi-direction-effect-cult-starfall-star`        | 24 x 31 sprite |
+| `EFFECT:STARFALL_BURST`                             | `chibi-direction-effect-cult-starfall-burst`       | 30 x 32 sprite |
+| `EFFECT:BOO`                                        | `chibi-direction-effect-cult-boo`                  | 40 x 35 sprite |
+| `EFFECT:RIBBIT`                                     | `chibi-direction-effect-cult-ribbit`               | 34 x 31 sprite |
+| `EFFECT:SWITCHEROO`                                 | `chibi-direction-effect-cult-switcheroo`           | 22 x 22 sprite |
+| `EFFECT:TENTACLE_SLAP`                              | `chibi-direction-effect-cult-tentacle-slap`        | 36 x 32 sprite |
+| `EFFECT:PROCLAIM`                                   | `chibi-direction-effect-cult-proclaim`             | 42 x 34 sprite |
+| `EFFECT:PAMPHLETS`                                  | `chibi-direction-effect-cult-pamphlets`            | 35 x 39 sprite |
+| `EFFECT:FAVOUR`                                     | `chibi-direction-effect-cult-favour`               | 17 x 22 sprite |
+| `EFFECT:RITUAL_FIZZLE`                              | `chibi-direction-effect-cult-ritual-fizzle`        | 26 x 24 sprite |
 
 <!-- pulp_wars-mch9.23: end -->
 

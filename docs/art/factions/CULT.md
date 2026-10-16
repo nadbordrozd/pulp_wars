@@ -1414,9 +1414,12 @@ it heads the "Hunger 2" chip of a bound Herald's card and of the End Turn
 question. The engine beads that put the summons on the board registered
 their sprites, Unbound looks and portraits in the same manifest (and the
 unit-shadow measure): the Imp with `pulp_wars-mch9.36` (E-R6), the
-Gibbering Mass with `pulp_wars-mch9.37` (E-R7). The rest of the batch (the
-summon, Brood, Swarm, Doorstep, Drag and join icons) waits for U-R2 and
-U-R3.
+Gibbering Mass with `pulp_wars-mch9.37` (E-R7). Bead `pulp_wars-mch9.43`
+(U-R2) registered the join icon (`ICON:ACTION:JOIN_CHANT`) there too: it is
+the badge on a pending Stargazer's tile (drawn inside the badge's dark disc,
+the candle glyph only while it loads) and the dock's "Join the chant"
+button. The rest of the batch (the summon, Brood, Swarm, Doorstep and Drag
+icons) waits for U-R3.
 
 **Retired with the redesign** (bead `pulp_wars-mch9.42`, through
 `npm run art:chibi -- retire`): the Caller (`chibi-direction-cult-caller`)

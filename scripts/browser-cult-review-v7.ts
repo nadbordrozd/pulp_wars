@@ -162,6 +162,8 @@ try {
     if (wanted("frogs")) await frogs(connection, size);
     if (wanted("cap")) await favourCap(connection, size);
     if (wanted("hunger")) await hunger(connection, size);
+    if (wanted("warden")) await warden(connection, size);
+    if (wanted("join")) await join(connection, size);
   }
   await viewport(connection, "desktop");
   if (wanted("grounds")) await grounds(connection);
@@ -393,6 +395,108 @@ async function hunger(connection: Connection, size: Size): Promise<void> {
   await record(connection, `${size}HungerEndTurn`);
   await capture(connection, `hunger-end-turn-${size}.png`);
   await click(connection, "end-turn-back");
+}
+
+// ------------------ The warden, the join, Switcheroo's reach (U-R2) ---
+
+/** The warden's and the join's named tiles (tests/fixtures/v7-cult-ui.ts). */
+async function wardenTiles(
+  connection: Connection,
+): Promise<Record<string, Coord>> {
+  return (await evaluate(connection, `${REVIEW}.wardenAt`)) as Record<
+    string,
+    Coord
+  >;
+}
+
+/** Moves a mouse over a tile, as a hover previews it (no click). */
+async function hoverTile(connection: Connection, at: Coord): Promise<void> {
+  await evaluate(
+    connection,
+    `(() => { const host = ${REVIEW}.boardHost; const canvas = document.querySelector('canvas.board-canvas-v7'); const box = canvas.getBoundingClientRect(); const centre = host.cellCentreCssPx(${JSON.stringify(at)}); canvas.dispatchEvent(new PointerEvent('pointermove', { clientX: box.left + centre.x, clientY: box.top + centre.y, pointerType: 'mouse', pointerId: 7, bubbles: true })); })()`,
+  );
+  await delay(500);
+}
+
+/**
+ * The warden (bead `pulp_wars-mch9.43`): its chalk ring, the small idols
+ * of the units it shields and the Awestruck tethers at rest, a shielded
+ * unit's card, and its victim's side: the Archer's halved shot (focused by
+ * Tab, so the cursor reads its line) and the Awestruck Knight's grey marks.
+ */
+async function warden(connection: Connection, size: Size): Promise<void> {
+  await mount(connection, "cultWardenUiFixtureV7");
+  const at = await wardenTiles(connection);
+  await record(connection, `${size}WardenBoard`);
+  await capture(connection, `warden-board-${size}.png`);
+  if (size === "desktop") {
+    await zoomIn(connection);
+    await capture(connection, `warden-board-zoom-${size}.png`);
+  }
+  await mount(connection, "cultWardenUiFixtureV7");
+  await activate(connection, at.initiate as Coord);
+  await record(connection, `${size}WardenShieldedCard`);
+  await capture(connection, `warden-shielded-card-${size}.png`);
+  // A fresh board: a tap on the Knight with the Initiate selected attacks.
+  await mount(connection, "cultWardenUiFixtureV7");
+  await activate(connection, at.knight as Coord);
+  await record(connection, `${size}WardenAwestruckCard`);
+  await capture(connection, `warden-awestruck-card-${size}.png`);
+
+  await mount(connection, "cultWardenRivalUiFixtureV7");
+  await activate(connection, at.archer as Coord);
+  // The keyboard's first target (the shielded Initiate, in reading order),
+  // so the cursor reads its line; the mouse over it too.
+  await tab(connection, 1);
+  await hoverTile(connection, at.initiate as Coord);
+  await record(connection, `${size}WardenHalvedShot`);
+  await capture(connection, `warden-halved-shot-${size}.png`);
+  if (size === "desktop") {
+    await zoomIn(connection);
+    await hoverTile(connection, at.initiate as Coord);
+    await capture(connection, `warden-halved-shot-zoom-${size}.png`);
+  }
+  await mount(connection, "cultWardenRivalUiFixtureV7");
+  await activate(connection, at.knight as Coord);
+  await record(connection, `${size}WardenAwestruckGreys`);
+  await capture(connection, `warden-awestruck-greys-${size}.png`);
+  if (size === "desktop") {
+    await zoomIn(connection);
+    await capture(connection, `warden-awestruck-greys-zoom-${size}.png`);
+  }
+}
+
+/**
+ * Join the chant (bead `pulp_wars-mch9.43`): an Initiate beside a pending
+ * Stargazer, its join icon on the Stargazer's tile and its dock button, the
+ * star's new labels while the badge is hovered, and armed from the button
+ * (its only target previews at once), then joined.
+ */
+async function join(connection: Connection, size: Size): Promise<void> {
+  await mount(connection, "cultJoinUiFixtureV7");
+  const at = await trickTiles(connection);
+  await activate(connection, at.chanter as Coord);
+  await record(connection, `${size}JoinBadge`);
+  await capture(connection, `join-badge-${size}.png`);
+  // The keyboard's first stop (the Stargazer's badge), and the mouse over it.
+  await tab(connection, 1);
+  await hoverTile(connection, at.stargazer as Coord);
+  await record(connection, `${size}JoinHover`);
+  await capture(connection, `join-hover-${size}.png`);
+  if (size === "desktop") {
+    await zoomIn(connection);
+    await hoverTile(connection, at.stargazer as Coord);
+    await capture(connection, `join-hover-zoom-${size}.png`);
+  }
+  await mount(connection, "cultJoinUiFixtureV7");
+  await activate(connection, at.chanter as Coord);
+  await click(connection, "cult-join-chant");
+  await record(connection, `${size}JoinAimed`);
+  await capture(connection, `join-aimed-${size}.png`);
+  await pick(connection, at.stargazer as Coord);
+  await delay(1_200);
+  await record(connection, `${size}JoinDone`);
+  await capture(connection, `join-done-${size}.png`);
 }
 
 // ----------------------------------------------- The channel (U2) ---
@@ -1108,7 +1212,7 @@ async function mount(
       artSet: "CHIBI",
       global: "__CULT_REVIEW__",
       extras:
-        "at: fixtures.CULT_UI_V7, channelAt: fixtures.CULT_CHANNEL_UI_V7, ritualAt: fixtures.CULT_RITUAL_UI_V7, trickAt: fixtures.CULT_TRICK_UI_V7, frogAt: fixtures.CULT_FROGS_UI_V7, hungerAt: fixtures.CULT_HUNGER_UI_V7",
+        "at: fixtures.CULT_UI_V7, channelAt: fixtures.CULT_CHANNEL_UI_V7, ritualAt: fixtures.CULT_RITUAL_UI_V7, trickAt: fixtures.CULT_TRICK_UI_V7, frogAt: fixtures.CULT_FROGS_UI_V7, hungerAt: fixtures.CULT_HUNGER_UI_V7, wardenAt: fixtures.CULT_WARDEN_UI_V7",
     }),
     true,
   );

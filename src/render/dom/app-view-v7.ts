@@ -1166,6 +1166,10 @@ const NON_BUTTON_COMMANDS = new Set<CommandV7["kind"]>([
   "RIBBIT",
   "SWITCHEROO",
   "TENTACLE",
+  // The Cult redesign's join (`pulp_wars-mch9.34`): its own "Join the
+  // chant" button and the badge on the Stargazer, never a second generic
+  // button (bead pulp_wars-mch9.43).
+  "JOIN_CHANT",
 ]);
 /**
  * The Cultists' channel (bead pulp_wars-mch9.18): each action's button

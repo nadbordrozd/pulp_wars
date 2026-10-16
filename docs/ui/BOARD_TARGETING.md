@@ -146,8 +146,16 @@ arming).
   "a tap joins": its row of `TILE_ABILITIES_V7` is `oneTap` (no chooser
   with Select for it alone, as a Hatch), a chooser only when the
   Stargazer's tile has another action too. The dock shows a "Join the
-  chant" button while a join is offered. The live preview of the star's
-  nine tiles on a focused join is the interface bead's (U-R2).
+  chant" button while a join is offered (and no second, generic command
+  button). Bead `pulp_wars-mch9.43` (U-R2): the badge and the button draw
+  the join icon `ICON:ACTION:JOIN_CHANT` (a candle with a plus; a badge
+  may name a registered `raster` that it draws in its disc once loaded,
+  its glyph standing in until then), and the **live preview**: while the
+  badge's tile is hovered or has the keyboard's focus, or the join is armed
+  (one Stargazer: its only target), the star's nine tiles show what each
+  unit there would take with the joiner ("−9", red where it now dies, the
+  warning stripes on the player's own) in place of the labels the star
+  wears as it stands (`previewJoinChantV7`; the plan's `focusPreviews`).
 - **An aimed ability's badge on another own unit** opens the chooser with
   Select, unless the ability is `oneTap`.
 
@@ -553,6 +561,13 @@ and `src/render/canvas/cult-effects-v7.ts` (the cues).
   selection disarms and sends nothing; Tab steps through the targets.
 - **A strand a Boo! would break** is labelled "Strand breaks" on its cultist
   with the warning stripes of friendly fire, whoever's cultist it is.
+- **The shield wall in a shot's preview** (bead `pulp_wars-mch9.43`): an
+  Attack mark on a unit the warden's idol covers, from two or more tiles,
+  reads the halved damage ("Deal 3 · take 0") with the note "Idol: half
+  damage" (the Blizzard's form), and its cursor line adds "An Idol Bearer
+  beside the target halves this shot." The target wears the small idol
+  already; the public preview's `idolHalved` decides it. A unit's cursor
+  line also reads its "Shielded" or "Awestruck" chip in one sentence.
 - **Reasons on the button.** Without an offered command the button is shown
   disabled with the engine's first failing rule: "Already acted this turn",
   "It must be on land", "Needs 4 Favour", "A cultist that has not acted must
@@ -581,7 +596,7 @@ over all of it, as over every other status mark (bead `pulp_wars-2yc.71`):
 | Candlelit        | A lit candle on a dark disc at the unit's upper left: every channeller, and a Thing that grips one                                                                                                                                                                                                                                                                                |
 | Control          | A row of pips under the daemon, just above its HP bar, so both show (bead `pulp_wars-2yc.71`): one slot per strand it needs, lit when held, hollow and red when missing; strands past its Control are small pips after the row. Short of its Control, the row is rimmed red with a cracked collar                                                                                 |
 | Anchor           | A teal tentacle from the Thing that loops round the gripped cultist's feet                                                                                                                                                                                                                                                                                                        |
-| Behold!          | A dashed chalk ring round the Idol Bearer's nine tiles while its idol stands (always, unless a status puts it down)                                                                                                                                                                                                                                                               |
+| Behold!          | A solid chalk ring on a dark casing round the Idol Bearer's nine tiles while its idol stands (always, unless a status puts it down; bead `pulp_wars-mch9.43`), and on each own unit its shield wall covers a small idol (`ICON:STATUS:WARDED`) on a dark disc at the unit's lower left, with the chip "Shielded"                                                                  |
 | Unbound, Furious | The Unbound sprite and name ("Unbound Horror"), a broken collar at its upper right, steam over it while Furious, and an eye on the unit it goes for; the same eye for a bound daemon short of its Control ("if it broke now"), from the engine's `previewRampageV7`. While the viewer holds strands to an Unbound daemon, its pips show the binding (hollow in cream, no red rim) |
 
 The marks keep a dark casing under their colour, so the green reads on
@@ -616,7 +631,7 @@ and what is always drawn), `src/render/canvas/cult-ritual-canvas-v7.ts`
 | Great Summoning | Summoner  | (b)   | One button with its price ("−18" and the Favour candle). Armed, the tiles next to the Summoner are Place marks; a tile whose unit would be consumed is labelled with the Favour ("+18 Favour"), one whose unit would stop the Herald "Blocks"; the player's own chanters read "Chants" alone until one's tile is the chosen mark (bead `pulp_wars-mch9.24`). The first pick previews it ("4 chanters · 5 / 3 · consumes +18 Favour") with **Begin** | Place, then one confirmation                |
 | Proclaim        | Herald    | (b)   | One button. Armed, each enemy city within 3 wears the Attack mark on its center, labelled "Kneel!". A city that kneels already keeps "Cowed" in grey                                                                                                                                                                                                                                                                                                | Attack                                      |
 | Ribbit          | Hexer     | (b)   | One button. Armed, each enemy within 2 that a hex takes wears the Attack mark labelled "Frog"; one it does not take keeps "Cannot be hexed" or "A frog" in grey                                                                                                                                                                                                                                                                                     | Attack                                      |
-| Switcheroo      | Familiar  | (b)   | One button. Armed, each unit within 2 it may swap with is labelled "Swap": the Help ring on an own unit, the Attack mark on an enemy. The focused target shows both units faintly beside each other's tile and two bowed arrows between the tiles                                                                                                                                                                                                   | Help or Attack, by the target (`highlight`) |
+| Switcheroo      | Familiar  | (b)   | One button. Armed, every tile within 4 is outlined in the chalk's cream (`TRICK_RANGE`, bead `pulp_wars-mch9.43`) and each unit within 4 it may swap with is labelled "Swap": the Help ring on an own unit, the Attack mark on an enemy. The focused target shows both units faintly beside each other's tile and two bowed arrows between the tiles                                                                                                | Help or Attack, by the target (`highlight`) |
 | Tentacle        | Summoner  | (b)   | One button. Armed, each free tile within 3 is a Place mark; the focused tile marks the unit the Tentacle slaps at once ("Slapped", the warning stripes on the player's own)                                                                                                                                                                                                                                                                         | Place                                       |
 
 - **All are armed, even with one target** (Pick Me! went with the Chosen,
@@ -638,7 +653,7 @@ and what is always drawn), `src/render/canvas/cult-ritual-canvas-v7.ts`
   "Needs 18 Favour", "No tile next to it for the Herald", "No attack left
   this turn", "No enemy city within 3 tiles", "The city is Cowed already",
   "Spent: ready again next turn", "No enemy within 2 tiles it can hex",
-  "Nobody within 2 tiles to swap with", "Its Tentacle is still up", "No
+  "Nobody within 4 tiles to swap with", "Its Tentacle is still up", "No
   free tile within 3 tiles", and, for a frogged
   cultist, "A frog can only hop". A Summoner with fewer than three robed
   cultists beside it has no Great Summoning button, and a Familiar without
@@ -655,16 +670,16 @@ and what is always drawn), `src/render/canvas/cult-ritual-canvas-v7.ts`
 
 **Always on the board, for every player** (none of it is a target):
 
-| What            | Drawn as                                                                                                                                                                                                                                                     |
-| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| A ritual        | A chalk ring on the ground under the leader (double) and under each chanter, a candle over each, and the rite's badge on the leader (a star, or the lodge's eye)                                                                                             |
-| Its marked tile | A chalk sign on the ground (an eight-pointed star, or the eye, in a circle) and, at the tile's upper right, the countdown: a dark dial with its ring and the turns left (always 1)                                                                           |
-| A star's path   | Its nine tiles outlined on a warning tint, and each unit there labelled with what it takes as the board stands ("−7", red when it dies; the warning stripes on the viewer's own units)                                                                       |
-| The Herald's    | The unit on the mark labelled with the Favour it is consumed for, or "Blocks" in grey                                                                                                                                                                        |
-| Cowed           | An indigo banner over the city: two closed cream shutters with louvre slits, drawn in code, and "KNEEL!"; the city's panel adds "Status: Cowed"                                                                                                              |
-| A frog          | The unit is drawn as a frog on its own base, with a small round badge of what it was on the frog's lower left (bead `pulp_wars-mch9.26`); its card shows the frog, the badge, "Frog" over the unit's name, Defense 0.5, Move 1 and no Attack                 |
-| Awestruck       | A red dashed tether from each enemy beside a standing idol to the Idol Bearer it may only attack (the "ME!" bubble went with Pick Me!, bead `pulp_wars-mch9.42`)                                                                                             |
-| A Tentacle      | Three pips under it (just above its HP bar), lit for the neutral turns it has left, a teal arm that coils once round the unit it holds, and the daemons' eye on the unit it slaps next as the board stands (the weakest beside it; bead `pulp_wars-mch9.24`) |
+| What            | Drawn as                                                                                                                                                                                                                                                                                                                                                                                                    |
+| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| A ritual        | A chalk ring on the ground under the leader (double) and under each chanter, a candle over each, and the rite's badge on the leader (a star, or the lodge's eye)                                                                                                                                                                                                                                            |
+| Its marked tile | A chalk sign on the ground (an eight-pointed star, or the eye, in a circle) and, at the tile's upper right, the countdown: a dark dial with its ring and the turns left (always 1)                                                                                                                                                                                                                          |
+| A star's path   | Its nine tiles outlined on a warning tint, and each unit there labelled with what it takes as the board stands ("−7", red when it dies; the warning stripes on the viewer's own units)                                                                                                                                                                                                                      |
+| The Herald's    | The unit on the mark labelled with the Favour it is consumed for, or "Blocks" in grey                                                                                                                                                                                                                                                                                                                       |
+| Cowed           | An indigo banner over the city: two closed cream shutters with louvre slits, drawn in code, and "KNEEL!"; the city's panel adds "Status: Cowed"                                                                                                                                                                                                                                                             |
+| A frog          | The unit is drawn as a frog on its own base, with a small round badge of what it was on the frog's lower left (bead `pulp_wars-mch9.26`); its card shows the frog, the badge, "Frog" over the unit's name, Defense 0.5, Move 1 and no Attack                                                                                                                                                                |
+| Awestruck       | A red dashed tether from each enemy beside a standing idol to the Idol Bearer it may only attack (the "ME!" bubble went with Pick Me!, bead `pulp_wars-mch9.42`), and the chip "Awestruck" on its card (not on a frog). Bead `pulp_wars-mch9.43`: while its owner selects it, the Idol Bearer is its only Attack mark and every other unit in its reach keeps a grey mark "Awestruck: only the Idol Bearer" |
+| A Tentacle      | Three pips under it (just above its HP bar), lit for the neutral turns it has left, a teal arm that coils once round the unit it holds, and the daemons' eye on the unit it slaps next as the board stands (the weakest beside it; bead `pulp_wars-mch9.24`)                                                                                                                                                |
 
 The cursor reads each in one sentence: the mark ("Star-fall lands here at
 the start of Player 2's next turn: 7 damage to every unit on the nine

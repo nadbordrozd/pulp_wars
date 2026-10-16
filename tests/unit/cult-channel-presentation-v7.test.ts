@@ -206,8 +206,13 @@ describe("the channel on the board, for every viewer", () => {
     );
     // A candle over each channeller and over the Thing that grips one; the
     // gripped strand counts three, the Hexer's one, against a Control of 1.
+    // The channeller stands beside the Idol Bearer: its shield wall's small
+    // idol (the Cult redesign's warden, `pulp_wars-mch9.43`).
     expect(Object.fromEntries(marks)).toEqual({
-      [`${A.channeller.x},${A.channeller.y}`]: { candle: true },
+      [`${A.channeller.x},${A.channeller.y}`]: {
+        candle: true,
+        shielded: true,
+      },
       [`${A.hexer.x},${A.hexer.y}`]: { candle: true },
       [`${A.thing.x},${A.thing.y}`]: { candle: true },
       [`${A.horror.x},${A.horror.y}`]: { control: { control: 1, strands: 4 } },
@@ -850,9 +855,11 @@ describe("the card's chips", () => {
             throw new Error("no unit");
           })(),
       ).map((chip) => [chip.id, chip.label]);
+    // Beside the Idol Bearer, it is Shielded too (`pulp_wars-mch9.43`).
     expect(chips(A.channeller)).toEqual([
       ["candlelit", "Candlelit"],
       ["gripped", "Gripped"],
+      ["shielded", "Shielded"],
     ]);
     expect(chips(A.hexer)).toEqual([["candlelit", "Candlelit"]]);
     expect(chips(A.thing)).toEqual([["gripping", "Grips"]]);

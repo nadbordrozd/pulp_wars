@@ -492,7 +492,8 @@ describe("the channel on a unit's card, and plain words", () => {
     const scene = rig(cultChannelBusyUiFixtureV7());
     const expected: readonly (readonly [CoordV7, readonly string[]])[] = [
       [A.horror, ["4 / 1"]],
-      [A.channeller, ["Candlelit", "Gripped"]],
+      // Beside the Idol Bearer: Shielded (the warden, `pulp_wars-mch9.43`).
+      [A.channeller, ["Candlelit", "Gripped", "Shielded"]],
       [A.hexer, ["Candlelit"]],
       [A.thing, ["Grips"]],
       [A.bearer, ["Idol raised"]],

@@ -356,7 +356,7 @@ describe("the Cult redesign's summons art (pulp_wars-mch9.45)", () => {
     expect(box(await unit("chibi-direction-cult-mass-unbound"))).toEqual(mass);
   });
 
-  it("registers the Imp (pulp_wars-mch9.36), the Hunger bowl (pulp_wars-mch9.42) and the Gibbering Mass (pulp_wars-mch9.37) in one manifest on their records' canvases, and nothing else yet", async () => {
+  it("registers the Imp (pulp_wars-mch9.36), the Hunger bowl (pulp_wars-mch9.42), the Gibbering Mass (pulp_wars-mch9.37) and the join icon (pulp_wars-mch9.43) in one manifest on their records' canvases, and nothing else yet", async () => {
     const records = await loadRecords(productionLayout(ROOT, BATCH), BATCH);
     expect(
       CHIBI_DIRECTION_CULT_SUMMONS_ART_ASSETS_V7.map((asset) => asset.id),
@@ -369,6 +369,8 @@ describe("the Cult redesign's summons art (pulp_wars-mch9.45)", () => {
       "chibi-direction-cult-mass",
       "chibi-direction-cult-mass-unbound",
       "chibi-direction-portrait-cult-mass",
+      // The join icon (bead pulp_wars-mch9.43).
+      "chibi-direction-icon-cult-action-join-chant",
     ]);
     for (const asset of CHIBI_DIRECTION_CULT_SUMMONS_ART_ASSETS_V7) {
       const record = records.assets[asset.id];
@@ -389,6 +391,10 @@ describe("the Cult redesign's summons art (pulp_wars-mch9.45)", () => {
     expect(registry.variants("ICON:HUD:CULT:HUNGER")[0]?.id).toBe(
       "chibi-direction-icon-cult-hunger",
     );
+    // The join icon replaces the candle glyph on the badge and the button.
+    expect(
+      registry.variants("ICON:ACTION:JOIN_CHANT").map((asset) => asset.id),
+    ).toEqual(["chibi-direction-icon-cult-action-join-chant"]);
     for (const subject of [
       "UNIT:CULT:IMP",
       "UNIT:CULT:IMP_UNBOUND",

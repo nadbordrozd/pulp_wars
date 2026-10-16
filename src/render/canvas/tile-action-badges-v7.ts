@@ -4,7 +4,8 @@
  * an action other than a lone Move or Attack. Each badge is a dark disc
  * rimmed in the colour of the mark its target wears (red for a harm, green
  * for a help, cream for a place, teal for a Move) with the action's glyph
- * (the dock's own icon) in cream, in the order the tile's chooser lists
+ * (the dock's own icon) in cream, or the action's registered icon where it
+ * has one (the Cult's join icon), in the order the tile's chooser lists
  * them. On a tile with a unit or a city they stand in a column down the
  * tile's right edge from its upper right corner, so what stands there stays
  * visible; on an empty tile they sit in its middle, so a badge is never
@@ -14,6 +15,7 @@
  * They do not move or pulse: the reduced-motion still is the badge itself.
  * No badge names a tile or a coordinate.
  */
+import type { ArtSubjectV7 } from "../../assets/chibi-art-v7";
 import { uiIconShapesV7 } from "../dom/ui-icons-v7";
 import { TILE_HEIGHT, TILE_WIDTH, type CameraState } from "./geometry";
 import {
@@ -43,6 +45,8 @@ export const TILE_ACTION_BADGE_V7 = {
   /** The glyph's width in radii, and its strokes' weight over the SVG's. */
   glyph: 1.4,
   glyphWeight: 1.35,
+  /** A registered icon's square across the disc, in radii. */
+  raster: 1.75,
 } as const;
 
 /** One badge as drawn: its centre, radius, and what it shows. */
@@ -111,7 +115,14 @@ export function drawTileActionBadgesV7(
   context: CanvasRenderingContext2D,
   plan: TileActionPlanV7,
   camera: CameraState,
-  options: { readonly highContrast?: boolean } = {},
+  options: {
+    readonly highContrast?: boolean;
+    /**
+     * The loaded raster of an action's `raster` subject, or null while it
+     * loads (and in a look without it): the badge then draws its glyph.
+     */
+    readonly raster?: (subject: ArtSubjectV7) => CanvasImageSource | null;
+  } = {},
 ): void {
   const spec = TILE_ACTION_BADGE_V7;
   for (const badge of tileActionBadgeLayoutV7(plan, camera)) {
@@ -140,7 +151,18 @@ export function drawTileActionBadgesV7(
       context.textAlign = "center";
       context.textBaseline = "middle";
       context.fillText(`+${badge.more}`, x, y + radius * 0.05);
-    } else drawGlyph(context, badge.action, x, y, radius * spec.glyph);
+    } else {
+      const subject = badge.action.raster;
+      const image =
+        subject === undefined ? null : (options.raster?.(subject) ?? null);
+      // A registered icon fills the disc (the Cult's join icon, bead
+      // pulp_wars-mch9.43); pixel art keeps its hard edges.
+      if (image !== null) {
+        const size = radius * spec.raster;
+        context.imageSmoothingEnabled = false;
+        context.drawImage(image, x - size / 2, y - size / 2, size, size);
+      } else drawGlyph(context, badge.action, x, y, radius * spec.glyph);
+    }
     context.restore();
   }
 }

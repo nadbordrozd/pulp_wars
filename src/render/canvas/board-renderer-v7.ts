@@ -17,6 +17,7 @@ import type {
   FactionIdV7,
   ImprovementIdV7,
   PlayerViewV7,
+  UnitId,
   UnitRoleIdV7,
 } from "../../engine/index";
 import {
@@ -212,6 +213,7 @@ import {
 } from "./cult-board-plan-v7";
 import {
   CULT_LINK_LABEL_V7,
+  addAwestruckReasonEntriesV7,
   addCultChannelEntriesV7,
   addCultChannelPickEntriesV7,
   addCultChannelPreviewsV7,
@@ -233,6 +235,10 @@ import {
   type CultFocusPreviewV7,
   type CultMarkV7,
 } from "./cult-ritual-board-plan-v7";
+import {
+  IDOL_HALVED_SEMANTIC_V7,
+  wardenCombatNotesV7,
+} from "../cult-channel-presentation-v7";
 import {
   drawCultGrabV7,
   drawCultGroundMarkV7,
@@ -1303,6 +1309,16 @@ export interface BoardRenderPlanV7 {
    * only the explored cells' share. Never an entry: nothing draws a ghost.
    */
   readonly ghosts?: readonly TerrainGhostV7[];
+  /**
+   * Previews drawn only while their tile is hovered or focused, on a tile
+   * that is not a target of the board as it stands: the Cult redesign's
+   * join badge on a pending Stargazer (bead pulp_wars-mch9.43), whose tap
+   * joins at once, shows the star's new labels before it is tapped.
+   */
+  readonly focusPreviews?: readonly {
+    readonly at: CoordV7;
+    readonly cultFocus: CultFocusPreviewV7;
+  }[];
 }
 
 const TILE_EDGES: readonly TileEdge[] = ["NORTH", "EAST", "SOUTH", "WEST"];
@@ -1983,7 +1999,7 @@ export function buildBoardRenderPlanV7(
           ? interaction.areaSupportFocus.kind
           : null,
       );
-      // The Cultists: the ring an offered Behold! would raise.
+      // The Cultists: a lone Channel's daemon.
       addCultChannelPreviewsV7(entries, view, commands, selectedUnitId);
     }
     // The Martian revision: the Force Field of a selected Shield Projector
@@ -2062,9 +2078,13 @@ export function buildBoardRenderPlanV7(
     giantPick === null &&
     freezePick === null &&
     cultPick === null
-  )
+  ) {
     // A Submarine the selected unit cannot attack from where it stands.
     addSubmergedReasonEntriesV7(entries, view, commands, selectedUnitId);
+    // The Cult redesign (bead pulp_wars-mch9.43): the units an Awestruck
+    // unit may not attack while it stands beside a hostile idol.
+    addAwestruckReasonEntriesV7(entries, view, commands, selectedUnitId);
+  }
   // The Cultists: the grey reasons of an aimed Sacrifice or Seize.
   if (cultPick !== null) {
     if (isCultOfferingPickV7(cultPick))
@@ -2122,7 +2142,31 @@ export function buildBoardRenderPlanV7(
       a.layer - b.layer ||
       a.key.localeCompare(b.key),
   );
-  return { version: 7, entries, targets };
+  // The Cult redesign (bead pulp_wars-mch9.43): with a cultist selected and
+  // nothing aimed, each Stargazer it may join carries the join badge; its
+  // tile shows the star's new labels while hovered or focused.
+  const focusPreviews =
+    selectedUnitId !== null &&
+    cultPick === null &&
+    commands.some(
+      (command) =>
+        command.kind === "JOIN_CHANT" && command.unitId === selectedUnitId,
+    )
+      ? cultTrickPickTargetsV7(view, commands, {
+          kind: "JOIN_CHANT",
+          unitId: selectedUnitId as UnitId,
+        }).flatMap((target) =>
+          target.cultFocus === undefined
+            ? []
+            : [{ at: target.at, cultFocus: target.cultFocus }],
+        )
+      : [];
+  return {
+    version: 7,
+    entries,
+    targets,
+    ...(focusPreviews.length === 0 ? {} : { focusPreviews }),
+  };
 }
 
 /**
@@ -2864,27 +2908,22 @@ export function drawBoardV7(input: {
       });
     }
   };
+  const focusedCult = focusedCultPreviewV7(
+    input.plan,
+    input.previewFocus ?? null,
+  );
   /**
    * The Cultists (bead pulp_wars-mch9.19): what the focused (or only)
    * target of an aimed trick also shows: a Switcheroo's two units, each
    * drawn faintly on the other's tile, with the arrows between them, and
-   * the unit a Tentacle would slap at once.
+   * the unit a Tentacle would slap at once; a join's star with its new
+   * labels (bead pulp_wars-mch9.43).
    */
   const drawCultFocus = (
     placer: PreviewLabelPlacerV7,
     defer: (draw: () => void) => void,
   ): void => {
-    const focus = input.previewFocus ?? null;
-    const candidates = input.plan.targets.filter(
-      (target) => target.cultFocus !== undefined,
-    );
-    if (candidates.length === 0) return;
-    const shown =
-      (focus === null
-        ? undefined
-        : candidates.find((target) => same(target.at, focus))) ??
-      (input.plan.targets.length === 1 ? candidates[0] : undefined);
-    const preview = shown?.cultFocus;
+    const preview = focusedCult;
     if (preview === undefined) return;
     const centre = (at: CoordV7) => ({
       x: camera.offsetX + at.x * TILE_WIDTH * camera.zoom,
@@ -2943,7 +2982,7 @@ export function drawBoardV7(input: {
         camera.zoom,
         mark.friendly ? "BLAST_FRIENDLY" : "BLAST",
         mark.label,
-        false,
+        mark.lethal === true,
         placer,
         defer,
       );
@@ -5574,9 +5613,12 @@ export function drawBoardV7(input: {
   // Map curiosities round 2: every gate Move target's exit, and the tile
   // its occupant is shoved to (or the exit as blocked).
   drawGatePreviewV7(context, camera, input.plan, placer, defer);
+  const superseded = focusedCult?.supersedes;
   for (const entry of input.plan.entries) {
     if (entry.kind !== "ABILITY_TARGET" || entry.abilityStyle === undefined)
       continue;
+    // A focused join's star shows its new labels in place of these.
+    if (superseded !== undefined && entry.key.startsWith(superseded)) continue;
     if (entry.areaSupport !== undefined) {
       // Bead pulp_wars-621: a recipient of an area support is the Help
       // ring, quiet or prominent, with its amount as the label.
@@ -6095,7 +6137,7 @@ function drawCultChannelV7(
       begin();
       const { x, y } = centre(entry.at);
       const icon = (
-        name: "CANDLELIT" | "UNBOUND" | "FURIOUS",
+        name: "CANDLELIT" | "UNBOUND" | "FURIOUS" | "WARDED",
       ): CanvasImageSource | null =>
         raster === null ? null : raster(`ICON:STATUS:${name}`);
       drawCultUnitMarkersV7(context, entry.cult, x, y, camera.zoom, {
@@ -6104,6 +6146,8 @@ function drawCultChannelV7(
           candlelit: entry.cult.candle === true ? icon("CANDLELIT") : null,
           unbound: entry.cult.unbound === true ? icon("UNBOUND") : null,
           furious: entry.cult.furious === true ? icon("FURIOUS") : null,
+          // The warden's shield wall (bead pulp_wars-mch9.43).
+          warded: entry.cult.shielded === true ? icon("WARDED") : null,
         },
       });
       // Bead pulp_wars-mch9.19: the rite's badge and a
@@ -6162,6 +6206,30 @@ function drawCultChannelV7(
   if (saved) context.restore();
 }
 
+/**
+ * The Cultists' focus preview this frame shows: the focused target's (an
+ * aimed trick's), else the only target's when it has one, else (bead
+ * pulp_wars-mch9.43) the focused tile's entry of `focusPreviews`, the join
+ * badge's star on a pending Stargazer. Undefined when none applies.
+ */
+export function focusedCultPreviewV7(
+  plan: Pick<BoardRenderPlanV7, "targets" | "focusPreviews">,
+  focus: CoordV7 | null,
+): CultFocusPreviewV7 | undefined {
+  const candidates = plan.targets.filter(
+    (target) => target.cultFocus !== undefined,
+  );
+  const shown =
+    (focus === null
+      ? undefined
+      : candidates.find((target) => same(target.at, focus))) ??
+    (plan.targets.length === 1 ? candidates[0] : undefined);
+  if (shown?.cultFocus !== undefined) return shown.cultFocus;
+  return focus === null
+    ? undefined
+    : plan.focusPreviews?.find((entry) => same(entry.at, focus))?.cultFocus;
+}
+
 function drawAbilityAreasV7(
   context: CanvasRenderingContext2D,
   camera: CameraState,
@@ -6182,14 +6250,38 @@ function drawAbilityAreasV7(
       camera.zoom,
       style,
     );
+    // The warden's chalk ring is stroked below, once round.
+    if (style === "IDOL_RING") continue;
     context.strokeStyle = abilityAreaStrokeV7(style);
     context.lineWidth = 3 * camera.zoom;
     context.setLineDash([6 * camera.zoom, 4 * camera.zoom]);
     for (const edge of entry.targetEdges ?? [])
       strokeTileEdge(context, camera, entry.at, edge);
   }
+  // The warden's chalk ring (bead pulp_wars-mch9.43): always on the board
+  // while the idol stands, so a solid chalk line on a dark casing that
+  // reads on Grass and on Snow, not a preview's dashes. Every casing goes
+  // down before any chalk, so no corner of one cell covers its neighbour's.
+  const rings = areas.filter((entry) => entry.abilityStyle === "IDOL_RING");
+  if (rings.length > 0) {
+    context.setLineDash([]);
+    context.lineCap = "square";
+    for (const [stroke, width] of [
+      [IDOL_RING_CASING_V7, Math.max(3, 6 * camera.zoom)],
+      [abilityAreaStrokeV7("IDOL_RING"), Math.max(1.5, 3 * camera.zoom)],
+    ] as const) {
+      context.strokeStyle = stroke;
+      context.lineWidth = width;
+      for (const entry of rings)
+        for (const edge of entry.targetEdges ?? [])
+          strokeTileEdge(context, camera, entry.at, edge);
+    }
+  }
   context.restore();
 }
+
+/** The dark casing under the warden's chalk ring. */
+export const IDOL_RING_CASING_V7 = "rgba(16, 19, 28, 0.55)";
 
 /**
  * Revision 13 splash preview (Lich and, in Undead matches, Battleship): the
@@ -7814,6 +7906,9 @@ function commandMapTargets(
         ...(naval?.notes ?? []),
         // The frozen sea: Glacier's cover on ice, and a target frozen in.
         ...(preview === null ? [] : frozenSeaCombatNotesV7(preview)),
+        // The Cult redesign's warden (bead pulp_wars-mch9.43): a shot at a
+        // unit beside a standing idol is halved.
+        ...(preview === null ? [] : wardenCombatNotesV7(preview)),
         // Tuning 1 (7r46): Breach (Explosives) ignores fortification.
         // The giants' signatures: a Siege Hammer's own note says it.
         ...(preview === null || preview.siegeHammer
@@ -7838,6 +7933,7 @@ function commandMapTargets(
           : null,
         ...giantNotes.map((note) => `${note}.`),
         ...advanceNotes.map((note) => `Attacker ${note.toLowerCase()}.`),
+        preview?.idolHalved === true ? IDOL_HALVED_SEMANTIC_V7 : null,
       ].filter((part): part is string => part !== null);
       const semanticNote =
         semanticParts.length === 0 ? null : semanticParts.join(" ");

@@ -848,6 +848,11 @@ const ENTRIES = {
     "Idol raised",
     "Its units beside it take half from shots, and enemies beside it can attack only the Idol Bearer.",
   ],
+  // The warden's shield wall (the Cult redesign, `pulp_wars-mch9.43`).
+  STATUS_SHIELDED: [
+    "Shielded",
+    "An Idol Bearer of its side stands beside it with the idol raised, so shots from two or more tiles away do half damage.",
+  ],
   STATUS_CONTROL: [
     "Strands",
     "The strands that hold it, against the number it needs. With too few at the start of its owner's turn it is Unbound.",
@@ -1170,6 +1175,9 @@ const STATUS_IDS: Readonly<Record<string, GlossaryIdV7>> = {
   gripped: "STATUS_GRIPPED",
   gripping: "STATUS_GRIPPING",
   idol: "STATUS_IDOL_RAISED",
+  // The warden's shield wall and Awestruck (`pulp_wars-mch9.43`).
+  shielded: "STATUS_SHIELDED",
+  awestruck: "AWESTRUCK",
   control: "STATUS_CONTROL",
   // An Unbound daemon's own lines (`pulp_wars-mch9.6`).
   unbound: "UNBOUND",

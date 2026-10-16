@@ -12,10 +12,13 @@ import { chibiArtUrl } from "./chibi-art-manifest";
  *   `pulp_wars-mch9.42` (the "Hunger 2" chip of a bound Herald's card and of
  *   the End Turn question);
  * - the Gibbering Mass's sprite, its Unbound look and its portrait with
- *   engine bead `pulp_wars-mch9.37`, which put the Mass on the board.
+ *   engine bead `pulp_wars-mch9.37`, which put the Mass on the board;
+ * - the join icon (`ICON:ACTION:JOIN_CHANT`, a candle with a plus) with bead
+ *   `pulp_wars-mch9.43` (U-R2): the badge on a pending Stargazer's tile and
+ *   the dock's "Join the chant" button.
  *
- * The other icons wait for the beads that put them on the board (U-R2,
- * U-R3), which add them here.
+ * The other icons wait for the bead that puts them on the board (U-R3),
+ * which adds them here.
  */
 export const CHIBI_DIRECTION_CULT_SUMMONS_ART_ASSETS_V7: readonly ChibiArtAssetV7[] =
   [
@@ -90,5 +93,15 @@ export const CHIBI_DIRECTION_CULT_SUMMONS_ART_ASSETS_V7: readonly ChibiArtAssetV
         "assets/chibi/portraits/chibi-direction-portrait-cult-mass.png",
       ),
       fixedColours: true,
+    },
+    {
+      id: "chibi-direction-icon-cult-action-join-chant",
+      subject: "ICON:ACTION:JOIN_CHANT",
+      assetClass: "ICON",
+      width: 48,
+      height: 48,
+      url: chibiArtUrl(
+        "assets/chibi/icons/chibi-direction-icon-cult-action-join-chant.png",
+      ),
     },
   ];

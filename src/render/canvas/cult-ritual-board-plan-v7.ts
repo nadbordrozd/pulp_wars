@@ -1,6 +1,7 @@
 import {
   PROCLAIM_RANGE_V7,
   RIBBIT_RANGE_V7,
+  SWITCHEROO_RANGE_V7,
   previewBeginRitualV7,
   previewJoinChantV7,
   previewProclaimV7,
@@ -15,6 +16,7 @@ import {
   type BeginRitualPreviewV7,
   type CommandV7,
   type CoordV7,
+  type JoinChantPreviewV7,
   type PlayerViewV7,
   type RitualKindV7,
   type RitualPreviewV7,
@@ -147,12 +149,23 @@ export interface CultFocusPreviewV7 {
   }[];
   /** Switcheroo: the two tiles, joined by a two-headed arrow. */
   readonly swap?: { readonly from: CoordV7; readonly to: CoordV7 };
-  /** Tentacle: the unit it slaps at once. */
+  /**
+   * Tentacle: the unit it slaps at once. Join the chant (bead
+   * `pulp_wars-mch9.43`): each unit on the star's nine tiles with what it
+   * would take, `lethal` where it would die.
+   */
   readonly marks?: readonly {
     readonly at: CoordV7;
     readonly label: string;
     readonly friendly: boolean;
+    readonly lethal?: boolean;
   }[];
+  /**
+   * The key prefix of the always-drawn labels this preview replaces while
+   * it shows (a joined star's labels as it stands, so each unit carries
+   * one number).
+   */
+  readonly supersedes?: string;
 }
 
 const key = (at: CoordV7): string => `${at.x},${at.y}`;
@@ -321,6 +334,8 @@ export function addCultTrickEntriesV7(
         },
       },
     );
+    // Its labels' keys start `starfallForecastKeyV7(leader)`: a focused
+    // join's preview stands in for them.
     if (forecast.starfall !== null)
       addStarfallForecast(entries, view, forecast.starfall, id);
     if (forecast.summoning !== null)
@@ -552,6 +567,7 @@ export function cultTrickPickTargetsV7(
                 family: "JOIN_CHANT",
                 previewLabel: JOIN_CHANT_TARGET_LABEL_V7,
                 semanticLabel: `${joinChantTargetNameV7(preview)} ${prompt}.`,
+                cultFocus: joinChantFocusV7(view, preview),
               },
             ];
       });
@@ -559,9 +575,39 @@ export function cultTrickPickTargetsV7(
 }
 
 /**
+ * The live preview of a focused join (bead `pulp_wars-mch9.43`;
+ * RULESET_7_CULT_REDESIGN.md section 13): what each unit on the star's nine
+ * tiles would take with this cultist chanting too ("−9", red where it now
+ * dies, the warning stripes on the viewer's own), in place of the labels
+ * the star wears as it stands. From the engine's `previewJoinChantV7`.
+ */
+export function joinChantFocusV7(
+  view: PlayerViewV7,
+  preview: JoinChantPreviewV7,
+): CultFocusPreviewV7 {
+  return {
+    marks: (preview.after?.results ?? []).map((hit) => ({
+      at: hit.at,
+      label: starfallHitLabelV7(hit.damage + hit.shieldDamage),
+      friendly: hit.ownerId === view.viewer.id,
+      lethal: hit.dies,
+    })),
+    supersedes: starfallForecastKeyV7(preview.leaderUnitId),
+  };
+}
+
+/**
+ * The key prefix of the labels a pending star wears on its units (the
+ * forecast every viewer sees), by its leader.
+ */
+export function starfallForecastKeyV7(leaderUnitId: UnitId): string {
+  return `ability-target:STARFALL:${leaderUnitId}:`;
+}
+
+/**
  * Preview entries of an aimed trick that are not targets: the cultists
- * that would chant, the chosen mark with its forecast, an enemy a Ribbit
- * cannot take, and a city that kneels already.
+ * that would chant, the chosen mark with its forecast, a Switcheroo's
+ * reach, an enemy a Ribbit cannot take, and a city that kneels already.
  */
 export function addCultTrickPickEntriesV7(
   entries: BoardRenderPlanEntryV7[],
@@ -618,6 +664,25 @@ export function addCultTrickPickEntriesV7(
     return;
   }
   const taken = new Set(targets.map((target) => key(target.at)));
+  // Switcheroo's reach of 4 (the Cult redesign, `pulp_wars-mch9.34`;
+  // outlined by bead `pulp_wars-mch9.43`): every tile within 4 outlined in
+  // the chalk's cream (a Channel's reach of 3 has the lodge's green), so
+  // the swap's range is read before a unit is picked; the units it may
+  // swap with are its targets.
+  if (pick.kind === "SWITCHEROO") {
+    const reach: CoordV7[] = [];
+    for (let dy = -SWITCHEROO_RANGE_V7; dy <= SWITCHEROO_RANGE_V7; dy += 1)
+      for (let dx = -SWITCHEROO_RANGE_V7; dx <= SWITCHEROO_RANGE_V7; dx += 1)
+        reach.push({ x: actor.at.x + dx, y: actor.at.y + dy });
+    outlineEntries(
+      entries,
+      view,
+      reach,
+      "TRICK_RANGE",
+      `ability-area:SWITCHEROO_RANGE:${actor.id}`,
+    );
+    return;
+  }
   if (pick.kind === "RIBBIT") {
     for (const unit of view.units) {
       if (

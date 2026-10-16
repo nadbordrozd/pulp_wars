@@ -107,6 +107,9 @@ import {
   cultFrogsUiFixtureV7,
   cultTricksRivalUiFixtureV7,
   cultTricksUiFixtureV7,
+  cultJoinUiFixtureV7,
+  cultWardenRivalUiFixtureV7,
+  cultWardenUiFixtureV7,
 } from "../fixtures/v7-cult-ui";
 import { withFavourV7 } from "../fixtures/v7-cult";
 import { undeadShowcaseFixtureV7 } from "../fixtures/v7-undead-ui";
@@ -358,6 +361,17 @@ const FIXTURES: readonly (readonly [
   ],
   ["Cult: hexed", cultTricksDoneUiFixtureV7, []],
   ["Cult: a hexed rival", cultTricksRivalUiFixtureV7, []],
+  // The Cult redesign's U-R2 (`pulp_wars-mch9.43`): the warden's ring, the
+  // shielded units' idols and chips, the halved shot's note, Awestruck's
+  // tethers, chips and grey reasons, for both sides; Join the chant aimed
+  // with its live preview and joined.
+  ["Cult: the warden", cultWardenUiFixtureV7, []],
+  ["Cult: the warden's victim", cultWardenRivalUiFixtureV7, []],
+  [
+    "Cult: join the chant",
+    cultJoinUiFixtureV7,
+    ["cult-join-chant aimed", "cult-join-chant performed"],
+  ],
   // Bead pulp_wars-mch9.26: seven units drawn as frogs, each with its
   // badge, name and card, for the Cult player and for their owner.
   ["Cult: frogs", () => cultFrogsUiFixtureV7(), []],

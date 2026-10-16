@@ -716,3 +716,74 @@ export function cultFavourFullUiFixtureV7(): GameStateV7 {
 export function cultHungryHeraldUiFixtureV7(): GameStateV7 {
   return cultHungerUiFixtureV7(1);
 }
+
+// ------------------- The warden, the join, Switcheroo's reach (U-R2) ---
+
+/**
+ * Scenes for the Cult redesign's warden and joins (bead
+ * `pulp_wars-mch9.43`, docs/product/RULESET_7_CULT_REDESIGN.md sections 8.1,
+ * 8.2 and 13). The warden: an Idol Bearer whose idol stands, an Initiate and
+ * a Stargazer beside it (shielded), a Hexer one tile further (not), a Human
+ * Knight and Fighter beside the bearer (Awestruck), and a Human Archer two
+ * tiles from the Initiate and from the bearer (free; its shot at the
+ * Initiate is halved).
+ */
+export const CULT_WARDEN_UI_V7 = {
+  bearer: at(7, 5),
+  initiate: at(6, 5),
+  stargazer: at(8, 4),
+  hexer: at(8, 7),
+  knight: at(7, 6),
+  fighter: at(6, 4),
+  archer: at(6, 7),
+} as const satisfies Readonly<Record<string, CoordV7>>;
+
+function wardenPieces(cult: number, human: number) {
+  const A = CULT_WARDEN_UI_V7;
+  return [
+    { seat: cult, role: "GUARD" as const, at: A.bearer },
+    { seat: cult, role: "FIGHTER" as const, at: A.initiate },
+    { seat: cult, role: "CATAPULT" as const, at: A.stargazer },
+    { seat: cult, role: "MARKSMAN" as const, at: A.hexer },
+    { seat: human, role: "KNIGHT" as const, at: A.knight },
+    { seat: human, role: "FIGHTER" as const, at: A.fighter },
+    { seat: human, role: "MARKSMAN" as const, at: A.archer },
+  ];
+}
+
+/** The warden as the Cult player (seat 0) sees it. */
+export function cultWardenUiFixtureV7(): GameStateV7 {
+  return cultFieldV7(wardenPieces(0, 1));
+}
+
+/**
+ * The warden as its victim sees it: the Human player (seat 0) with the
+ * Awestruck Knight and Fighter and the free Archer, against a Cult seat.
+ */
+export function cultWardenRivalUiFixtureV7(): GameStateV7 {
+  return fieldV7(wardenPieces(1, 0), { factions: ["ORIGINAL", "CULT"] });
+}
+
+/**
+ * Join the chant: the Stargazer of the ritual scenes has begun a star alone
+ * (6) three tiles south, over a Human Fighter, a Knight at 8 HP (a join
+ * makes it 9: it dies) and an own Initiate; the two Initiates beside the
+ * Stargazer have not acted and may each join.
+ */
+export function cultJoinUiFixtureV7(): GameStateV7 {
+  const A = CULT_RITUAL_UI_V7;
+  return withRitualV7(
+    cultFieldV7([
+      { seat: 0, role: "CATAPULT", at: A.stargazer },
+      { seat: 0, role: "FIGHTER", at: A.chanter },
+      { seat: 0, role: "FIGHTER", at: A.secondChanter },
+      { seat: 0, role: "FIGHTER", at: A.starInitiate },
+      { seat: 1, role: "FIGHTER", at: A.starFighter },
+      { seat: 1, role: "KNIGHT", at: A.starKnight, hp: 8 },
+    ]),
+    "STARFALL",
+    A.stargazer,
+    [],
+    A.star,
+  );
+}

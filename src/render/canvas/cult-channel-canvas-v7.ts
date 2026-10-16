@@ -10,7 +10,9 @@ import type {
  * tentacle, a Boo!'s jump arrows, and the marks of a unit: the candle of a
  * Candlelit cultist, the Control pips under a daemon with the cracked
  * collar of one that is short, the broken collar of an Unbound daemon, the
- * steam of a Furious one, and the eye on the unit a loose daemon goes for.
+ * steam of a Furious one, the eye on the unit a loose daemon goes for, and
+ * the small idol of a unit the warden's shield wall covers (bead
+ * `pulp_wars-mch9.43`).
  *
  * Everything is drawn in code so it reads the same in the live look, the
  * Classic look and LEGACY, and nothing moves: the reduced-motion still is
@@ -74,6 +76,11 @@ export const CULT_MARKER_FRAME_V7 = {
   /** Unbound, and the eye on a target: the piece's upper right corner. */
   badge: { x: 44, y: -46, radius: 13 },
   steam: { y: -60, spread: 18 },
+  /**
+   * The warden's shield wall (bead `pulp_wars-mch9.43`): a small idol on a
+   * dark disc at the piece's lower left, clear of the pips and the HP bar.
+   */
+  shield: { x: -44, y: 22, radius: 11 },
 } as const;
 
 /** The most extra strands (past the Control) drawn as small pips. */
@@ -468,6 +475,40 @@ export interface CultMarkerArtV7 {
   readonly candlelit?: CanvasImageSource | null;
   readonly unbound?: CanvasImageSource | null;
   readonly furious?: CanvasImageSource | null;
+  /** The idol of the shield wall (`ICON:STATUS:WARDED`). */
+  readonly warded?: CanvasImageSource | null;
+}
+
+/**
+ * A small idol in code: a cream block of a head with two dark eyes and a
+ * mouth (the warden's idol, what the `ICON:STATUS:WARDED` raster shows).
+ */
+function drawCodeIdol(
+  context: CanvasRenderingContext2D,
+  cx: number,
+  cy: number,
+  radius: number,
+  highContrast: boolean,
+): void {
+  const half = radius * 0.5;
+  context.fillStyle = highContrast ? "#ffffff" : CULT_PALETTE_V7.wax;
+  context.beginPath();
+  context.roundRect(
+    cx - half,
+    cy - half * 1.1,
+    half * 2,
+    half * 2.2,
+    half * 0.45,
+  );
+  context.fill();
+  context.fillStyle = highContrast ? "#000000" : CULT_PALETTE_V7.indigo;
+  const eye = Math.max(0.8, radius * 0.13);
+  for (const side of [-1, 1]) {
+    context.beginPath();
+    context.arc(cx + side * half * 0.45, cy - half * 0.3, eye, 0, Math.PI * 2);
+    context.fill();
+  }
+  context.fillRect(cx - half * 0.45, cy + half * 0.4, half * 0.9, eye);
 }
 
 function drawRaster(
@@ -666,6 +707,25 @@ export function drawCultUnitMarkersV7(
     else if (markers.unbound === true)
       drawCrackedCollar(context, cx, cy, radius, highContrast);
     else drawEye(context, cx, cy, radius, highContrast);
+  }
+  if (markers.shielded === true) {
+    // Quiet on purpose: a dark disc with a cream rim and the idol, smaller
+    // than the candle; the chalk ring round the bearer says the rest.
+    const cx = x + frame.shield.x * zoom;
+    const cy = y + frame.shield.y * zoom;
+    const radius = Math.max(6.5, frame.shield.radius * zoom);
+    const image = options.art?.warded ?? null;
+    disc(
+      context,
+      cx,
+      cy,
+      radius,
+      zoom,
+      highContrast ? "#ffffff" : CULT_PALETTE_V7.wax,
+      highContrast,
+    );
+    if (image !== null) drawRaster(context, image, cx, cy, radius * 1.8);
+    else drawCodeIdol(context, cx, cy, radius, highContrast);
   }
   if (markers.control !== undefined)
     drawCultControlPipsV7(context, x, y, zoom, markers.control, options);

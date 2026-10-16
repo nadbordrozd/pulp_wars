@@ -923,7 +923,12 @@ export function createDirectedChibiArtV7(input: {
             request.subject === "FROG" ||
             request.subject === "ICON:STATUS:COWED" ||
             request.subject === "ICON:ACTION:STARFALL" ||
-            request.subject === "ICON:ACTION:GREAT_SUMMONING")
+            request.subject === "ICON:ACTION:GREAT_SUMMONING" ||
+            // The Cult redesign (bead pulp_wars-mch9.43): the idol of a
+            // unit the warden's shield wall covers, and the join icon on
+            // a pending Stargazer's tile badge.
+            request.subject === "ICON:STATUS:WARDED" ||
+            request.subject === "ICON:ACTION:JOIN_CHANT")
         ) {
           const sample = input.samples.resolve(request);
           if (sample.kind !== "MISSING") return sample;

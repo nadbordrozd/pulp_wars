@@ -1015,6 +1015,13 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
       "BOARD",
     "src/render/canvas/cult-channel-board-plan-v7.ts::addCultChannelPickEntriesV7":
       "BOARD",
+    // The warden on the board (the Cult redesign, `pulp_wars-mch9.43`): the
+    // units an Awestruck attacker may not take are pieces on the board in
+    // its reach, as the engine's own Awestruck rule reads them (a burrowed
+    // unit is neither bound nor attacked).
+    "src/render/canvas/cult-channel-board-plan-v7.ts::addAwestruckReasonEntriesV7":
+      "BOARD",
+    "src/render/cult-channel-presentation-v7.ts::wardenTileLinesV7": "BOARD",
     "src/render/cult-channel-presentation-v7.ts::daemonsShortV7": "BOARD",
     "src/render/cult-channel-presentation-v7.ts::cultChannelUnavailableTextV7":
       "BOARD",

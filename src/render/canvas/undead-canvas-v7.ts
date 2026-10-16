@@ -109,6 +109,13 @@ export type AbilityPreviewStyleV7 =
   | "IDOL_RING"
   | "CHANNEL_RANGE"
   /**
+   * The Cult redesign (bead pulp_wars-mch9.43): the reach of an aimed
+   * Switcheroo, four tiles round the Familiar, in the chalk's wax cream
+   * (dashed, as every preview area), which reads on Grass where the lodge's
+   * green glow of a Channel's short reach is faint.
+   */
+  | "TRICK_RANGE"
+  /**
    * The Cultists (bead pulp_wars-mch9.19): the nine tiles of a star (the
    * chalk cream on a warning red), and an enemy the warden's idol holds
    * Awestruck (the red of a tether).
@@ -632,6 +639,7 @@ const STYLE_COLORS: Readonly<
   // The Cultists: CULT_PALETTE_V7's wax cream (chalk) and green glow.
   IDOL_RING: { fill: "rgba(243, 231, 196, 0.1)", stroke: "#f3e7c4" },
   CHANNEL_RANGE: { fill: "rgba(128, 255, 188, 0.1)", stroke: "#80ffbc" },
+  TRICK_RANGE: { fill: "rgba(243, 231, 196, 0.13)", stroke: "#f3e7c4" },
   STARFALL: { fill: "rgba(255, 101, 95, 0.24)", stroke: "#f3e7c4" },
   TAUNT: { fill: "rgba(255, 101, 95, 0)", stroke: "#ff655f" },
 };

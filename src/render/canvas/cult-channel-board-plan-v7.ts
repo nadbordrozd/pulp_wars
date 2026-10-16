@@ -1,7 +1,9 @@
 import {
   CHANNEL_RANGE_V7,
   CULT_SUMMONED_ROLE_RULES_V7,
+  arePlayersHostileV7,
   awestruckBearersV7,
+  awestruckRefusingAttackV7,
   bindingStrandsV7,
   holdingStrandsV7,
   previewAnchorV7,
@@ -9,6 +11,7 @@ import {
   previewChannelV7,
   previewRampageV7,
   previewSummonV7,
+  previewWardenV7,
   unitIsUnboundV7,
   unitRoleRuleV7,
   type CommandV7,
@@ -18,6 +21,7 @@ import {
 } from "../../engine/index";
 import {
   ANCHOR_PICK_V7,
+  AWESTRUCK_REASON_V7,
   CHANNEL_PICK_V7,
   SUMMON_HELPER_BADGE_V7,
   SUMMON_PICK_TILE_V7,
@@ -93,6 +97,12 @@ export interface CultUnitMarkersV7 {
   readonly frog?: FrogLookV7;
   /** A Tentacle: the neutral turns it has left, as pips under it. */
   readonly sinks?: 1 | 2 | 3;
+  /**
+   * The warden's shield wall (the Cult redesign, `pulp_wars-mch9.43`): an
+   * own unit beside an Idol Bearer whose idol stands takes half from shots;
+   * the small idol at its lower left.
+   */
+  readonly shielded?: true;
 }
 
 /** LINK only: a line of the channel between two tiles. */
@@ -198,6 +208,11 @@ export function cultUnitMarkersV7(
     mark(strand.cultistUnitId, { candle: true });
   // Section 6.2: a Thing that grips a channeller is Candlelit too.
   for (const grip of channel.grips) mark(grip.thingUnitId, { candle: true });
+  // The Cult redesign's warden (`pulp_wars-mch9.43`, section 13): each
+  // unit a standing idol shields, from the engine's own preview.
+  for (const bearer of channel.idols)
+    for (const unitId of previewWardenV7(view, bearer)?.shieldedUnitIds ?? [])
+      mark(unitId, { shielded: true });
   // Section 6.4, "Public": the unit a daemon goes for as the board stands,
   // from the engine's rampage preview.
   const eye = (target: UnitId | null | undefined): void => {
@@ -255,7 +270,7 @@ export function outlineEntries(
   entries: BoardRenderPlanEntryV7[],
   view: PlayerViewV7,
   cells: readonly CoordV7[],
-  style: "IDOL_RING" | "CHANNEL_RANGE" | "STARFALL" | "TAUNT",
+  style: "IDOL_RING" | "CHANNEL_RANGE" | "TRICK_RANGE" | "STARFALL" | "TAUNT",
   prefix: string,
 ): void {
   const inside = cells.filter(
@@ -442,6 +457,64 @@ export function addCultChannelPreviewsV7(
         areaSupport: "QUIET",
         label: channelTargetLabelV7(preview),
       });
+  }
+}
+
+/**
+ * Awestruck (the Cult redesign, bead `pulp_wars-mch9.43`; section 13):
+ * while an own unit that a standing hostile idol binds is selected with an
+ * attack on offer, each visible hostile unit inside its range that it may
+ * not attack because of the idol keeps a grey mark with the reason "Awestruck:
+ * only the Idol Bearer" (as a Submarine out of reach keeps "Submerged: get
+ * adjacent"). The Idol Bearer itself is an ordinary Attack target, and the
+ * tether from the unit to it is always drawn. The rule is the engine's own
+ * (`awestruckRefusingAttackV7`); a unit the engine offers is never greyed.
+ */
+export function addAwestruckReasonEntriesV7(
+  entries: BoardRenderPlanEntryV7[],
+  view: PlayerViewV7,
+  commands: readonly CommandV7[],
+  selectedUnitId: number,
+): void {
+  const unit = view.units.find((candidate) => candidate.id === selectedUnitId);
+  if (
+    unit === undefined ||
+    unit.ownerId !== view.viewer.id ||
+    unit.form !== "LAND" ||
+    !commands.some(
+      (command) => command.kind === "ATTACK" && command.unitId === unit.id,
+    ) ||
+    awestruckBearersV7(view, view.units, unit).length === 0
+  )
+    return;
+  const range = Math.max(1, unitRoleRuleV7(view, unit).range);
+  const offered = new Set(
+    commands.flatMap((command) =>
+      command.kind === "ATTACK" && command.unitId === unit.id
+        ? [command.targetUnitId]
+        : [],
+    ),
+  );
+  for (const target of view.units) {
+    if (
+      target.id === unit.id ||
+      offered.has(target.id) ||
+      Math.max(
+        Math.abs(target.at.x - unit.at.x),
+        Math.abs(target.at.y - unit.at.y),
+      ) > range ||
+      !arePlayersHostileV7(view, unit.ownerId, target.ownerId) ||
+      awestruckRefusingAttackV7(view, view.units, unit, target.id) === null
+    )
+      continue;
+    entries.push({
+      key: `ability-target:AWESTRUCK:${target.id}`,
+      kind: "ABILITY_TARGET",
+      layer: 7.5,
+      at: target.at,
+      abilityStyle: "MARTIAN_BLOCKED",
+      label: AWESTRUCK_REASON_V7,
+    });
   }
 }
 

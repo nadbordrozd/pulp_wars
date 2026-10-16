@@ -140,6 +140,44 @@ describe("tile action badges", () => {
     );
   });
 
+  it("draws an action's registered icon in its disc once loaded, and its glyph until then (the join icon, pulp_wars-mch9.43)", () => {
+    const join: TileActionV7 = {
+      ...action("JOIN_CHANT", "SUPPORT"),
+      icon: "candle",
+      raster: "ICON:ACTION:JOIN_CHANT",
+    };
+    const board = plan([{ at: { x: 2, y: 2 }, actions: [join] }]);
+    const image = { width: 48, height: 48 } as unknown as CanvasImageSource;
+    const asked: string[] = [];
+    const loaded = recorder();
+    drawTileActionBadgesV7(loaded.context, board, camera, {
+      raster: (subject) => {
+        asked.push(subject);
+        return image;
+      },
+    });
+    expect(asked).toEqual(["ICON:ACTION:JOIN_CHANT"]);
+    const drawn = loaded.calls.filter((call) => call.name === "drawImage");
+    expect(drawn).toHaveLength(1);
+    const [badge] = tileActionBadgeLayoutV7(board, camera);
+    const side = (badge?.radius ?? 0) * TILE_ACTION_BADGE_V7.raster;
+    expect(drawn[0]?.args).toEqual([
+      image,
+      (badge?.x ?? 0) - side / 2,
+      (badge?.y ?? 0) - side / 2,
+      side,
+      side,
+    ]);
+    // The icon stays inside the disc and its rim.
+    expect(side / 2).toBeLessThan(badge?.radius ?? 0);
+    // Still loading: the candle glyph, no picture.
+    const loading = recorder();
+    drawTileActionBadgesV7(loading.context, board, camera, {
+      raster: () => null,
+    });
+    expect(loading.calls.some((call) => call.name === "drawImage")).toBe(false);
+  });
+
   it("rims each badge in the colour of its target's mark and writes no coordinate", () => {
     const { context, calls } = recorder();
     drawTileActionBadgesV7(

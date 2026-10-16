@@ -20,6 +20,7 @@ import type {
   PlayerViewV7,
   UnitId,
 } from "../../engine/index";
+import type { ArtSubjectV7 } from "../../assets/chibi-art-v7";
 import type { UiIconIdV7 } from "../dom/ui-icons-v7";
 import {
   boardMapTargetsV7,
@@ -189,6 +190,13 @@ export interface TileActionLookV7 {
   readonly label: string;
   /** Its glyph (the dock's own icon of the action). */
   readonly icon: UiIconIdV7;
+  /**
+   * The registered raster the badge draws in its disc in place of the
+   * glyph, once loaded (the glyph stands in while it loads, and in a look
+   * without it). The Cult redesign's join icon (`pulp_wars-mch9.43`) is the
+   * first: the dock's button draws the same `ICON:ACTION:<KIND>`.
+   */
+  readonly raster?: ArtSubjectV7;
 }
 
 /**
@@ -554,13 +562,15 @@ export const TILE_ABILITIES_V7: readonly TileAbilityV7[] = [
   // The Cult redesign (`pulp_wars-mch9.34`, RULESET_7_CULT_REDESIGN.md
   // sections 8.2 and 13): a cultist beside a Stargazer whose Star-fall is
   // pending carries the join badge (a candle, "+3") on that Stargazer, and
-  // a tap joins (`oneTap`: no chooser with Select for it alone). The
-  // badge's glyph is the dock's candle; the raster `ICON:ACTION:JOIN_CHANT`
-  // is the dock button's.
+  // a tap joins (`oneTap`: no chooser with Select for it alone). The badge
+  // and the dock's button draw the join icon `ICON:ACTION:JOIN_CHANT` (a
+  // candle with a plus, bead `pulp_wars-mch9.43`); the candle glyph stands
+  // in while it loads.
   {
     id: "JOIN_CHANT",
     label: JOIN_CHANT_LABEL_V7,
     icon: "candle",
+    raster: "ICON:ACTION:JOIN_CHANT",
     dockAction: "cult-join-chant",
     families: ["JOIN_CHANT"],
     offered: kind("JOIN_CHANT"),
@@ -651,7 +661,7 @@ export const TILE_ACTION_FULL_SIZE_TILES_V7 = 8;
 /** One ability with the targets its armed pick would show. */
 export interface TileAbilityTargetsV7 {
   readonly ability: Pick<TileAbilityV7, "id" | "label" | "icon"> &
-    Partial<Pick<TileAbilityV7, "onlyBeyondBoard" | "oneTap">>;
+    Partial<Pick<TileAbilityV7, "onlyBeyondBoard" | "oneTap" | "raster">>;
   readonly targets: readonly MapCommandTargetV7[];
 }
 
@@ -705,6 +715,7 @@ export function planTileActionsV7(input: {
         id: ability.id,
         label: ability.label,
         icon: ability.icon,
+        ...(ability.raster === undefined ? {} : { raster: ability.raster }),
         style: targetHighlightStyleV7(target.family, target.highlight),
         ability: ability.id,
         ...(ability.oneTap === true ? { oneTap: true as const } : {}),

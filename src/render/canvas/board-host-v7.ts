@@ -37,6 +37,7 @@ import {
   type CultFeedbackV7,
 } from "./cult-effects-v7";
 import { favourEntriesV7 } from "../cult-presentation-v7";
+import { wardenTileLinesV7 } from "../cult-channel-presentation-v7";
 import {
   cultTrickTileLinesV7,
   frogNameV7,
@@ -2500,10 +2501,27 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       model.tileActions !== null
     ) {
       const ratio = this.#document.defaultView?.devicePixelRatio ?? 1;
+      // A badge's registered icon (the Cult's join icon, bead
+      // pulp_wars-mch9.43), from the look's own art.
+      const art =
+        model.visualDirection === undefined
+          ? this.#chibiArt
+          : this.#directionRuntime(
+              model.visualDirection,
+              model.visualDirectionArt,
+            ).art;
       context.save();
       context.setTransform(ratio, 0, 0, ratio, 0, 0);
       drawTileActionBadgesV7(context, model.tileActions, this.#camera, {
         highContrast: model.highContrast,
+        raster: (subject) => {
+          const resolved = art.resolve({
+            subject,
+            at: { x: 0, y: 0 },
+            deviceScale: ratio,
+          });
+          return resolved.kind === "READY" ? resolved.image : null;
+        },
       });
       context.restore();
     }
@@ -3296,6 +3314,9 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       ...cultTrickTileLinesV7(model.view, at, (ritual) =>
         previewRitualV7(model.view, ritual),
       ),
+      // The Cult redesign's warden (bead pulp_wars-mch9.43): a unit its
+      // idol shields, or an enemy it holds Awestruck.
+      ...wardenTileLinesV7(model.view, at),
       // Map curiosities: the tile's curiosity and its one sentence.
       ...(() => {
         const curiosity = curiosityOverlayOnTileV7(model.view, at);
@@ -3474,17 +3495,25 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       return;
     this.#hovered = at;
     if (model === null || this.#presentedView !== null) return;
-    const splashAt = (cell: CoordV7 | null): boolean =>
-      cell !== null &&
-      this.#planFor(model.view, model.offeredCommands).targets.some(
-        (target) =>
-          // The Vampire and Banshee rework: a Bat Escape landing's flight
-          // is drawn at full weight while it is hovered.
-          (target.splash !== undefined ||
-            target.blast !== undefined ||
-            target.batEscape !== undefined) &&
-          same(target.at, cell),
+    const splashAt = (cell: CoordV7 | null): boolean => {
+      if (cell === null) return false;
+      const plan = this.#planFor(model.view, model.offeredCommands);
+      return (
+        plan.targets.some(
+          (target) =>
+            // The Vampire and Banshee rework: a Bat Escape landing's flight
+            // is drawn at full weight while it is hovered. The Cultists: a
+            // trick's focus preview (a Switcheroo's ghosts, a join's star).
+            (target.splash !== undefined ||
+              target.blast !== undefined ||
+              target.batEscape !== undefined ||
+              target.cultFocus !== undefined) &&
+            same(target.at, cell),
+        ) ||
+        // The join badge's star on a pending Stargazer (pulp_wars-mch9.43).
+        (plan.focusPreviews ?? []).some((entry) => same(entry.at, cell))
       );
+    };
     if (splashAt(prior) || splashAt(at)) this.#draw();
   }
   readonly #onPointerCancel = (event: PointerEvent): void => {

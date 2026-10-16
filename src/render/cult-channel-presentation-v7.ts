@@ -17,9 +17,12 @@ import {
   previewChannelV7,
   previewRampageV7,
   previewSummonV7,
+  previewWardenV7,
+  publicAwestruckBearersV7,
   summonHelperLegalV7,
   summonRejectionV7,
   standingIdolsV7,
+  unitIsFrogV7,
   unitIsUnboundV7,
   unitRoleRuleV7,
   type AnchorPreviewV7,
@@ -89,6 +92,56 @@ export const BIND_TOOLTIP_V7 =
  */
 export const BEHOLD_TOOLTIP_V7 =
   "The idol is always raised. Your units beside it take half from shots, and enemies beside it can attack only the Idol Bearer";
+
+// ------------------------------------------- The warden on the board ---
+// The Cult redesign's interface (bead `pulp_wars-mch9.43`, U-R2;
+// RULESET_7_CULT_REDESIGN.md sections 8.1 and 13): the shield wall in a
+// shot's preview, the grey reason on an Awestruck unit's other targets, and
+// the chips of a shielded and an Awestruck unit.
+
+/** An attack's note when the shield wall halves it (the Blizzard's form). */
+export const IDOL_HALVED_PREVIEW_V7 = "Idol: half damage";
+/** The cursor's sentence for the same. */
+export const IDOL_HALVED_SEMANTIC_V7 =
+  "An Idol Bearer beside the target halves this shot.";
+/**
+ * The grey reason on a unit an Awestruck attacker may not attack (in its
+ * reach, but not the Idol Bearer that binds it).
+ */
+export const AWESTRUCK_REASON_V7 = "Awestruck: only the Idol Bearer";
+/** The chip of a unit the shield wall covers. */
+export const SHIELDED_LABEL_V7 = "Shielded";
+export const SHIELDED_STATUS_V7 =
+  "An Idol Bearer beside it halves shots from two or more tiles away";
+/** The chip of a unit a hostile idol holds. */
+export const AWESTRUCK_LABEL_V7 = "Awestruck";
+export const AWESTRUCK_STATUS_V7 =
+  "An Idol Bearer stands beside it: it can attack only the Idol Bearer";
+
+/**
+ * What the cursor reads of the warden on a tile, for any viewer: the unit
+ * there is Shielded, or Awestruck, in one sentence each (the chips' own).
+ */
+export function wardenTileLinesV7(
+  view: PlayerViewV7,
+  at: { readonly x: number; readonly y: number },
+): readonly string[] {
+  const unit = view.units.find(
+    (candidate) => candidate.at.x === at.x && candidate.at.y === at.y,
+  );
+  return unit === undefined
+    ? []
+    : cultChannelChipsV7(view, unit)
+        .filter((chip) => chip.id === "shielded" || chip.id === "awestruck")
+        .map((chip) => `${chip.label}: ${chip.status}`);
+}
+
+/** The shield wall's notes of an attack's public preview: none or one. */
+export function wardenCombatNotesV7(preview: {
+  readonly idolHalved?: boolean;
+}): readonly string[] {
+  return preview.idolHalved === true ? [IDOL_HALVED_PREVIEW_V7] : [];
+}
 /** Section 8.4, the card text. */
 export const ANCHOR_TOOLTIP_V7 =
   "The Thing grips the cultist beside it: that cultist's strand counts three. Hit that cultist and all three go";
@@ -641,6 +694,10 @@ export interface CultChannelChipV7 {
     | "gripped"
     | "gripping"
     | "idol"
+    // The warden (bead `pulp_wars-mch9.43`): a unit its idol shields, and
+    // an enemy it holds Awestruck.
+    | "shielded"
+    | "awestruck"
     | "control"
     | "unbound"
     | "furious"
@@ -661,8 +718,8 @@ export interface CultChannelChipV7 {
 /**
  * The channel's chips on a visible unit's card, any owner's (the channel
  * is public): Candlelit and Gripped on a channeller, the Thing's grip, a
- * raised idol, a daemon's strands against its Control, Unbound and
- * Furious.
+ * raised idol, a unit its idol shields and an enemy it holds Awestruck, a
+ * daemon's strands against its Control, Unbound and Furious.
  */
 export function cultChannelChipsV7(
   view: PlayerViewV7,
@@ -700,6 +757,32 @@ export function cultChannelChipsV7(
       label: "Idol raised",
       status:
         "Its units beside it take half from shots, and enemies beside it can attack only the Idol Bearer",
+      icon: "ICON:STATUS:WARDED",
+    });
+  // The warden (bead `pulp_wars-mch9.43`): the small idol on the board
+  // says the same, and so does the tether.
+  if (
+    channel.idols.some(
+      (bearer) =>
+        previewWardenV7(view, bearer)?.shieldedUnitIds.includes(unit.id) ===
+        true,
+    )
+  )
+    chips.push({
+      id: "shielded",
+      label: SHIELDED_LABEL_V7,
+      status: SHIELDED_STATUS_V7,
+      icon: "ICON:STATUS:WARDED",
+    });
+  // (A frog attacks nobody: its Frog chip says so.)
+  if (
+    publicAwestruckBearersV7(view, unit.id).length > 0 &&
+    !unitIsFrogV7(view, unit)
+  )
+    chips.push({
+      id: "awestruck",
+      label: AWESTRUCK_LABEL_V7,
+      status: AWESTRUCK_STATUS_V7,
       icon: "ICON:STATUS:WARDED",
     });
   const daemon = channel.daemons.find((entry) => entry.unitId === unit.id);
