@@ -387,7 +387,7 @@ describe("ruleset-7 revision-20 Wallbreaker", () => {
       "Eggs have +4 HP; +1 unit slot in every city",
     ]);
     // (The ninth unit, 7r55: the Triceratops is at Metallurgy.)
-    expect(text(0, "METALLURGY")).toContain("Triceratops Egg (Charge!)");
+    expect(text(0, "METALLURGY")).toContain("Triceratops Egg (Gore)");
   });
 
   /** The attack of `role` from (7, 8) (or two tiles away) on the center. */

@@ -851,7 +851,7 @@ describe("text-mode play harness", () => {
           "| Pack Hunt: +1 Attack against a unit next to one of your dinosaurs",
         );
         expect(started).toContain(
-          "| Charge!: +1 Attack after moving this turn (with Wallbreaker +1 per tile, up to +2).",
+          "| Gore: +1 Attack after moving this turn (with Wallbreaker +1 per tile, up to +2).",
         );
         expect(started).toContain(
           "| Acid: Its attacks ignore Forest and Mountain cover, Walls, and Field Defense.",
@@ -918,7 +918,7 @@ describe("text-mode play harness", () => {
         if (charger === undefined) throw new Error("no Triceratops");
         expect(
           ok("options", "--session", session, "--unit", `u${charger.id}`),
-        ).toMatch(/run-up 1 tile: Charge! \+1 Attack/);
+        ).toMatch(/run-up 1 tile: Gore \+1 Attack/);
         // With Wallbreaker (a second session; Nesting is owned since
         // revision 3 of the lab, so Wallbreaker is bought at once) a tile
         // one step away is also offered by two tiles.
@@ -941,11 +941,11 @@ describe("text-mode play harness", () => {
           `u${runner.id}`,
         );
         const runUp =
-          /^(u\d+\.run\.\d+,\d+) {2}move to \d+,\d+ .* via \d+,\d+.*run-up 2 tiles: Charge! \+2 Attack/m.exec(
+          /^(u\d+\.run\.\d+,\d+) {2}move to \d+,\d+ .* via \d+,\d+.*run-up 2 tiles: Gore \+2 Attack/m.exec(
             all,
           );
         expect(runUp, all).not.toBeNull();
-        expect(all).toMatch(/run-up 1 tile: Charge! \+1 Attack/);
+        expect(all).toMatch(/run-up 1 tile: Gore \+1 Attack/);
         const moved = ok("do", "--session", second, runUp?.[1] ?? "");
         expect(moved).not.toContain("REJECTED");
         expect(ok("verify", "--session", second)).toContain("VERIFIED");

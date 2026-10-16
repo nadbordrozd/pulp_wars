@@ -882,7 +882,7 @@ describe("ruleset-7 Undead roster and technology registration", () => {
     expect(text(administration.effects, "UNDEAD")).toEqual(
       expect.arrayContaining([
         "Train Necromancer",
-        "Necromancers Frenzy nearby troops or Raise Dead",
+        "Necromancers Rally nearby troops or Raise Dead",
       ]),
     );
     expect(text(fieldcraft.effects, "UNDEAD")).toEqual(

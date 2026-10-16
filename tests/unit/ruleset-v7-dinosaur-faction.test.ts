@@ -1045,7 +1045,7 @@ describe("ruleset-7 Dinosaur technology", () => {
     ]);
     // The ninth unit (7r55): the Triceratops is at Metallurgy and the
     // Stegosaurus at Sawmilling.
-    expect(text(0, "METALLURGY")).toContain("Triceratops Egg (Charge!)");
+    expect(text(0, "METALLURGY")).toContain("Triceratops Egg (Gore)");
     expect(text(0, "SAWMILLING")[0]).toContain("Stegosaurus Egg");
     expect(text(1, "FORTIFICATION")).toEqual([
       "Train Guard",
@@ -1055,7 +1055,7 @@ describe("ruleset-7 Dinosaur technology", () => {
       "Train Shaman",
       "Disband",
       "Build market",
-      "Shamans beat War Drums or Tend nearby troops, and Hatch Eggs",
+      "Shamans Rally or Tend nearby troops, and Hatch Eggs",
     ]);
 
     expect(text(0, "MARKSMANSHIP")).toEqual(["Spitter Egg"]);
@@ -1071,11 +1071,11 @@ describe("ruleset-7 Dinosaur technology", () => {
     expect(text(0, "CHIVALRY")).toEqual(
       expect.arrayContaining([
         "T-Rex Egg",
-        "Rampage: T-Rexes advance after a kill and may attack again",
+        "Overrun: T-Rexes advance after a kill and may attack again",
       ]),
     );
     expect(text(0, "RAIDING")).toContain(
-      "Pounce: Raptors gain +1 Attack after moving 2+ cells",
+      "Charge: Raptors gain +1 Attack after moving 2+ cells",
     );
     expect(text(0, "FIELDCRAFT")).toEqual(
       expect.arrayContaining([
@@ -1085,10 +1085,10 @@ describe("ruleset-7 Dinosaur technology", () => {
     );
     // A Human viewer of the same match reads the Human text.
     expect(text(1, "CHIVALRY")).toContain(
-      "Knights advance after a kill and may attack again",
+      "Overrun: Knights advance after a kill and may attack again",
     );
     expect(text(1, "RAIDING")).toContain(
-      "Raiders gain +1 Attack after moving 2+ cells",
+      "Charge: Raiders gain +1 Attack after moving 2+ cells",
     );
   });
 

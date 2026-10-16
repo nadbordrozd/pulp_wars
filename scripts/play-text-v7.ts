@@ -239,6 +239,7 @@ import {
 import { WIGHT_GRAVE_LABEL_V7 } from "../src/render/ninth-unit-presentation-v7";
 import {
   CHARGE_DESCRIPTION_V7,
+  CHARGE_LABEL_V7,
   DINOSAUR_HIRE_NOTE_V7,
   HATCH_TOOLTIP_V7,
   WALLBREAKER_UNLOCK_TEXT_V7,
@@ -970,7 +971,7 @@ function roleNotesV7(
   // The Dinosaur pass (`pulp_wars-w49.15`, 7r53): the Dinosaur unit rules
   // in the sentences of the unit card (only a Dinosaur role has them).
   if (rule.abilities.includes("LINEBREAKER"))
-    notes.push(`Charge!: ${CHARGE_DESCRIPTION_V7}`);
+    notes.push(`${CHARGE_LABEL_V7}: ${CHARGE_DESCRIPTION_V7}`);
   if (rule.abilities.includes("ACID"))
     notes.push(
       `Acid: ${dinosaurAbilityDescriptionV7("ACID", "DINOSAUR") ?? ""}`,
@@ -1602,7 +1603,7 @@ function combatTextV7(
   if (preview.glacialSmash === true)
     parts.push("GLACIAL SMASH (shatters at 8 hp or less)");
   // Tuning 2 (7r47): whether the attacker takes the target's tile (after a
-  // kill, or following a Charge! push); a ranged unit never does.
+  // kill, or following a Gore push); a ranged unit never does.
   // A preview names the tile; a resolved exchange (no HP given) does not.
   const target =
     hp.defender === null ? null : context.memory.position(preview.targetUnitId);
@@ -1802,7 +1803,7 @@ function describeCommandV7(
         command.kind === "MOVE" && command.path.length > 1
           ? ` via ${command.path.slice(0, -1).map(xyV7).join(">")}`
           : "";
-      // The Dinosaur pass, correction: what a Charge! after this Move
+      // The Dinosaur pass, correction: what a Gore after this Move
       // would have (the run-up is decided by the Move, before the attack).
       const mover = view.units.find(
         (candidate) => candidate.id === command.unitId,
@@ -1824,7 +1825,7 @@ function describeCommandV7(
           command.path.length,
         );
         const bonus2 = unitRoleMechanicsV7(view, mover).runUpBonus2 * runUp;
-        charge = ` | run-up ${runUp} ${runUp === 1 ? "tile" : "tiles"}: Charge! +${bonus2 / 2} Attack${near
+        charge = ` | run-up ${runUp} ${runUp === 1 ? "tile" : "tiles"}: ${CHARGE_LABEL_V7} +${bonus2 / 2} Attack${near
           .map((other) => {
             const damage = publicProjectedDamageForPolicyV7(
               view,

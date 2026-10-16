@@ -16166,7 +16166,7 @@ function technologyRoleDescriptionsV7(
   // "Confectioner (Re-bake, Top-Up)".
   if (faction === "CANDY") return [candyRoleUnlockTextV7(roleId)];
   // Revision 19 (section 4): a Dinosaur egg-laid role is laid, not trained:
-  // "Raptor Egg", "Triceratops Egg (Charge!)" (revision 20).
+  // "Raptor Egg", "Triceratops Egg (Gore)" (revision 20; Gore since pulp_wars-2yc.63).
   if (isEggLaidRoleV7(roleId, faction))
     return [
       `${label} Egg${
