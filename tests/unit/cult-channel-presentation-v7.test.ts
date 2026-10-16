@@ -19,6 +19,7 @@ import {
 } from "../../src/render/canvas/board-renderer-v7";
 import {
   cultUnitMarkersV7,
+  browserSummonCommandV7,
   summonHelpersV7,
   type CultChannelPickV7,
 } from "../../src/render/canvas/cult-channel-board-plan-v7";
@@ -671,9 +672,11 @@ describe("why a channel button cannot be used", () => {
       (candidate) => candidate.at.x === where.x && candidate.at.y === where.y,
     );
     if (unit === undefined) throw new Error("no unit");
+    // The browser's Summon button aims a Horror (`pulp_wars-mch9.36`).
     const offered = queryPlayerCommandsV7(view).some(
       (command) =>
         command.kind === kind &&
+        (command.kind !== "SUMMON" || browserSummonCommandV7(command)) &&
         "unitId" in command &&
         command.unitId === unit.id,
     );
@@ -1063,6 +1066,7 @@ describe("what each event plays", () => {
     const state = cultChannelUiFixtureV7();
     const played = step(state, {
       kind: "SUMMON",
+      daemon: "HORROR",
       unitId: idAt(state, A.summoner),
       helperUnitId: idAt(state, A.helper),
       at: at(5, 3),

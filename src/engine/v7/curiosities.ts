@@ -214,6 +214,8 @@ export const NEUTRAL_BOUNTIES_V7: Readonly<Record<NeutralBreedV7, number>> =
     HERALD: 0,
     // A Tentacle (`pulp_wars-mch9.8`, section 9.3): no bounty, value 0.
     TENTACLE: 0,
+    // An Unbound Imp (the Cult redesign, `pulp_wars-mch9.36`): a daemon.
+    IMP: 0,
   });
 
 /** The guard breeds of a camp (section 25). */

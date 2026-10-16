@@ -1084,8 +1084,11 @@ export function textPlayCommandIdV7(command: CommandV7): string {
     case "OFFERING":
       return `c${command.cityId}.offering`;
     // The channel (`pulp_wars-mch9.5`).
+    // The Cult redesign (`pulp_wars-mch9.36`): an Imp has no helper.
     case "SUMMON":
-      return `u${command.unitId}.summon.u${command.helperUnitId}.${xyV7(command.at)}`;
+      return command.daemon === "IMP" || command.helperUnitId === undefined
+        ? `u${command.unitId}.imp.${xyV7(command.at)}`
+        : `u${command.unitId}.summon.u${command.helperUnitId}.${xyV7(command.at)}`;
     case "CHANNEL":
       return `u${command.unitId}.channel.u${command.daemonUnitId}`;
     case "ANCHOR":
@@ -2057,9 +2060,14 @@ function describeCommandV7(
       const preview = previewSummonV7(
         view,
         command.unitId,
-        command.helperUnitId,
+        command.daemon,
+        command.helperUnitId ?? null,
         command.at,
       );
+      // The Cult redesign (`pulp_wars-mch9.36`, section 7.1): the Imp, the
+      // Summoner's alone.
+      if (command.helperUnitId === undefined)
+        return `SUMMON an Imp at ${xyV7(command.at)} alone${preview === null ? "" : `: hp ${preview.hp}, it cannot act this turn | -${preview.favour} Favour (favour ${preview.favourAfter + preview.favour}->${preview.favourAfter}) | the Summoner channels it: strands ${preview.strands}/${preview.control}; Brood: its strand also holds up to 2 own Imps beside it; Swarm: a unit beside 2 of your Imps cannot strike back at them; it never captures`} | uses the Summoner's action`;
       return `SUMMON a Horror at ${xyV7(command.at)} with ${context.memory.tag(command.helperUnitId)}${preview === null ? "" : `: hp ${preview.hp}, it cannot act this turn | -${preview.favour} Favour (favour ${preview.favourAfter + preview.favour}->${preview.favourAfter}) | both channel it: strands ${preview.strands}/${preview.control}`} | uses both units' actions`;
     }
     case "CHANNEL": {
@@ -2460,7 +2468,7 @@ function eventTextV7(
       break;
     case "DAEMON_SUMMONED":
       lines.push(
-        `SUMMONED a ${event.role === "HORROR" ? "Horror" : event.role} ${context.memory.tag(event.daemonUnitId)} @${xyV7(event.at)} hp ${event.hp} by ${context.memory.tag(event.unitId)} and ${context.memory.tag(event.helperUnitId)}`,
+        `SUMMONED a${event.role === "IMP" ? "n" : ""} ${CULT_SUMMONED_ROLE_RULES_V7[event.role].label} ${context.memory.tag(event.daemonUnitId)} @${xyV7(event.at)} hp ${event.hp} by ${context.memory.tag(event.unitId)}${event.helperUnitId === null ? " alone" : ` and ${context.memory.tag(event.helperUnitId)}`}`,
       );
       if (event.playerId !== me)
         notes.push(`SAW SUMMONING ${context.memory.tag(event.daemonUnitId)}`);
@@ -3559,13 +3567,15 @@ const NINTH_UNIT_LEGEND_V7: Readonly<Partial<Record<FactionIdV7, string>>> = {
   CANDY: "  Candy heavy: Jb jawbreaker",
   // The Cultists (`pulp_wars-mch9.5`): the summoned Horror;
   // (`pulp_wars-mch9.7`) the Herald; and (`pulp_wars-mch9.8`) the Tentacle.
-  CULT: "  Cult summoned: Ho horror He herald (a daemon: its line shows strands/Control) Te tentacle (wild: seat N)",
+  CULT: "  Cult summoned: Im imp Ho horror He herald (a daemon: its line shows strands/Control) Te tentacle (wild: seat N)",
 };
 function roleCodeV7(view: PlayerViewV7, unit: PublicUnitV7): string {
   // The Cultists (`pulp_wars-mch9.5`): a summoned unit has its own code.
   if (unit.summoned === "HORROR") return "Ho";
   if (unit.summoned === "HERALD") return "He";
   if (unit.summoned === "TENTACLE") return "Te";
+  // The Cult redesign (`pulp_wars-mch9.36`): the Imp.
+  if (unit.summoned === "IMP") return "Im";
   const faction = unitFactionV7(view, unit);
   return (
     (faction === "MARTIAN"
@@ -3725,9 +3735,15 @@ function unitStatusV7(view: PlayerViewV7, unit: PublicUnitV7): string {
     rampage === null || rampage.targetUnitId === null
       ? "nobody in sight"
       : `u${rampage.targetUnitId} (${why})${rampage.attacks ? " and can attack it" : " but cannot reach it yet"}${rampage.exact ? "" : ", unless a nearer unit is hidden"}`;
+  // The Cult redesign (`pulp_wars-mch9.36`): an Imp a neighbour's Brood
+  // holds, and the Imps an Imp's strand holds.
+  const broodHeld =
+    daemon === undefined
+      ? []
+      : view.cult.daemons.filter((entry) => entry.broodOf === daemon.unitId);
   if (daemon !== undefined)
     parts.push(
-      `daemon: strands ${daemon.strands}/${daemon.control}${daemon.strands < daemon.control ? ` (UNBOUND at its turn start; it would go for ${prey})` : ""}`,
+      `daemon: strands ${daemon.strands}/${daemon.control}${daemon.broodOf !== undefined ? ` (held by the Brood of u${daemon.broodOf})` : daemon.strands < daemon.control ? ` (UNBOUND at its turn start; it would go for ${prey})` : ""}${broodHeld.length > 0 ? ` | Brood: its strand holds ${broodHeld.map((entry) => `u${entry.unitId}`).join(" ")}` : ""}`,
     );
   if (rampage?.unbound === true)
     parts.push(

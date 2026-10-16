@@ -555,11 +555,26 @@ describe("the Cultists' batches (pulp_wars-mch9.15)", () => {
       (record) => record.status === "ACCEPTED",
     );
     expect(accepted).toHaveLength(SAMPLE.length + BATCHES.length);
+    // The Cult redesign's Imp, bound and Unbound (batch `summons-cult`,
+    // bead pulp_wars-mch9.45), registered with engine bead
+    // pulp_wars-mch9.36.
+    const summons = await loadRecords(
+      productionLayout(ROOT, "summons-cult"),
+      "summons-cult",
+    );
+    for (const id of [
+      "chibi-direction-cult-imp",
+      "chibi-direction-cult-imp-unbound",
+    ]) {
+      const record = summons.assets[id];
+      expect(record?.status, id).toBe("ACCEPTED");
+      if (record !== undefined) accepted.push(record);
+    }
     expect(
       CHIBI_DIRECTION_CULT_ART_ASSETS_V7.map((asset) => asset.id).sort(),
     ).toEqual(accepted.map((record) => record.id).sort());
     for (const asset of CHIBI_DIRECTION_CULT_ART_ASSETS_V7) {
-      const record = records.assets[asset.id];
+      const record = accepted.find((entry) => entry.id === asset.id);
       if (record === undefined) throw new Error(asset.id);
       expect(asset.subject, asset.id).toBe(record.subject);
       expect([asset.width, asset.height], asset.id).toEqual([

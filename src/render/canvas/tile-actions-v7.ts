@@ -30,7 +30,10 @@ import {
   targetHighlightStyleV7,
   type TargetHighlightStyleV7,
 } from "./target-highlight-v7";
-import { summonHelpersV7 } from "./cult-channel-board-plan-v7";
+import {
+  browserSummonCommandV7,
+  summonHelpersV7,
+} from "./cult-channel-board-plan-v7";
 import { tossPassengersV7 } from "./giant-board-plan-v7";
 import { tunnelRidersV7 } from "../dwarf-tunnel-v7";
 import { freezesRingV7 } from "../frozen-sea-presentation-v7";
@@ -458,7 +461,9 @@ export const TILE_ABILITIES_V7: readonly TileAbilityV7[] = [
     icon: "summon",
     dockAction: "cult-summon",
     families: ["SUMMON_HELPER", "SUMMON"],
-    offered: kind("SUMMON"),
+    // A Horror's summoning (the Imp's chooser is U-R3's, `pulp_wars-mch9.44`).
+    offered: (command, unitId) =>
+      browserSummonCommandV7(command) && command.unitId === unitId,
     pick: (unitId, _view, commands) => {
       const helpers = summonHelpersV7(commands, unitId);
       return {

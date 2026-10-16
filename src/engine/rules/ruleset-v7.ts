@@ -482,7 +482,12 @@ export type UnitRoleAbilityV7 =
   // The Cult redesign (`pulp_wars-mch9.34`, RULESET_7_CULT_REDESIGN.md
   // section 8.2): every robed cultist's Join the chant, beside a Stargazer
   // whose Star-fall is pending.
-  | "JOIN_CHANT";
+  | "JOIN_CHANT"
+  // The Cult redesign (`pulp_wars-mch9.36`, section 7.3): the Imp's Brood
+  // (one strand holds an Imp and up to two own Imps beside it) and Swarm
+  // (a unit beside two or more of a seat's Imps cannot strike back at them).
+  | "BROOD"
+  | "SWARM";
 
 /**
  * The Martian revision (section 7): how a land-form unit moves. `STRIDE`
@@ -4281,6 +4286,24 @@ export const HORROR_FAVOUR_COST_V7 = 4 as const;
  * since the Cult redesign (`pulp_wars-mch9.32`, section 6), 20 before.
  */
 export const HERALD_FAVOUR_COST_V7 = 18 as const;
+/**
+ * The Cult redesign (`pulp_wars-mch9.36`, RULESET_7_CULT_REDESIGN.md
+ * section 7.1): what a Summon Imp costs in Favour (a Summoner alone).
+ */
+export const IMP_FAVOUR_COST_V7 = 2 as const;
+/** The Cult redesign (section 7.3): the strands an Imp needs at each check. */
+export const IMP_CONTROL_V7 = 1 as const;
+/**
+ * The Cult redesign (section 7.3), Brood: one holding strand to an Imp also
+ * holds up to this many other own bound Imps beside it at the check.
+ */
+export const IMP_BROOD_SIZE_V7 = 2 as const;
+/**
+ * The Cult redesign (section 7.3), Swarm: a unit with at least this many
+ * bound Imps of the attacker's seat beside it (the attacking Imp counted)
+ * does not strike back at an Imp's attack.
+ */
+export const IMP_SWARM_MINIMUM_V7 = 2 as const;
 /** The Cultists (section 6.2): the strands a Horror needs at each check. */
 export const HORROR_CONTROL_V7 = 1 as const;
 /** The Cultists (section 6.2): the strands the Herald needs at each check. */
@@ -4380,6 +4403,24 @@ export const CULT_SUMMONED_ROLE_RULES_V7: Readonly<
     movementMode: "GROUND",
     unstoppable: false,
   },
+  // The Cult redesign (`pulp_wars-mch9.36`, RULESET_7_CULT_REDESIGN.md
+  // sections 4.1 and 7.3): the Imp, 6 HP, Attack 2, Defense 1, Move 3,
+  // worth 2; Brood and Swarm; it never captures.
+  IMP: {
+    id: "IMP",
+    label: "Imp",
+    maxHp: 6,
+    attack2: 4,
+    defense2: 2,
+    move: 3,
+    range: 1,
+    minimumRange: 1,
+    favourCost: IMP_FAVOUR_COST_V7,
+    control: IMP_CONTROL_V7,
+    value: 2,
+    movementMode: "STRIDE",
+    unstoppable: false,
+  },
 });
 
 /** The registration of a summoned unit; an unknown ID is a `RangeError`. */
@@ -4408,10 +4449,12 @@ export function summonedRoleRuleV7(id: SummonedRoleIdV7): SummonedRoleRuleV7 {
  * here: it is a neutral unit of the breed `TENTACLE` from birth, and its
  * stored role is its neutral registration's
  * (`NEUTRAL_ROLE_RULES_V7.TENTACLE.role`, the big body's `JUGGERNAUT` too).
+ * The Imp (the Cult redesign, `pulp_wars-mch9.36`) is a `RAIDER`, the
+ * same as its Unbound breed's.
  */
 export const SUMMONED_MECHANICAL_ROLES_V7: Readonly<
   Partial<Record<SummonedRoleIdV7, UnitRoleIdV7>>
-> = deepFreeze({ HORROR: "KNIGHT", HERALD: "JUGGERNAUT" });
+> = deepFreeze({ HORROR: "KNIGHT", HERALD: "JUGGERNAUT", IMP: "RAIDER" });
 
 /**
  * The summoned roles a seat's unit on the board may carry (in the frozen
@@ -4502,6 +4545,38 @@ const SUMMONED_UNIT_ROLE_RULES_V7: Readonly<
       "STRIDE",
     ],
   },
+  // The Imp (the Cult redesign, `pulp_wars-mch9.36`, section 7.3): it
+  // attacks and advances after a kill, never captures (on a hostile center
+  // it besieges, as any unit does), and has Brood and Swarm.
+  IMP: {
+    role: "RAIDER",
+    label: CULT_SUMMONED_ROLE_RULES_V7.IMP.label,
+    tacticalRole: "SKIRMISHER",
+    cost: null,
+    maxHp: CULT_SUMMONED_ROLE_RULES_V7.IMP.maxHp,
+    attack2: CULT_SUMMONED_ROLE_RULES_V7.IMP.attack2,
+    defense2: CULT_SUMMONED_ROLE_RULES_V7.IMP.defense2,
+    move: CULT_SUMMONED_ROLE_RULES_V7.IMP.move,
+    range: CULT_SUMMONED_ROLE_RULES_V7.IMP.range,
+    minimumRange: CULT_SUMMONED_ROLE_RULES_V7.IMP.minimumRange,
+    sightRadius: 1,
+    technology: null,
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "BROOD", "SWARM", "STRIDE"],
+  },
+});
+
+/**
+ * The Cult redesign (`pulp_wars-mch9.36`, section 7.3): the Imp's
+ * mechanics, a seat's or nobody's: the ordinary land unit's (the Human
+ * Fighter's: it advances after a kill, no zone-of-control slip), a construct
+ * that strides like every daemon.
+ */
+const IMP_ROLE_MECHANICS_V7: RoleMechanicsV7 = deepFreeze({
+  ...ORIGINAL_ROLE_MECHANICS_V7.FIGHTER,
+  buildsFieldDefense: false,
+  construct: true,
+  movementMode: CULT_SUMMONED_ROLE_RULES_V7.IMP.movementMode,
 });
 
 /**
@@ -4552,6 +4627,8 @@ const SUMMONED_UNIT_ROLE_MECHANICS_V7: Readonly<
   // the target's tile, and nothing moves it. It has none of the giants'
   // signatures (it shares their mechanical role only).
   HERALD: HERALD_ROLE_MECHANICS_V7,
+  // The Imp (the Cult redesign, `pulp_wars-mch9.36`).
+  IMP: IMP_ROLE_MECHANICS_V7,
 });
 
 /** The role rule of a summoned unit on the board; `RangeError` otherwise. */
@@ -5076,6 +5153,24 @@ export const NEUTRAL_ROLE_RULES_V7: Readonly<
     mayUsePrimaryActionAfterMove: true,
     abilities: ["ATTACK", "GRAB"],
   },
+  // The Cult redesign (`pulp_wars-mch9.36`, section 7.3): an Unbound Imp
+  // attacks and strides; it has no Brood and no Swarm (a seat's rules).
+  IMP: {
+    role: "RAIDER",
+    label: `Unbound ${CULT_SUMMONED_ROLE_RULES_V7.IMP.label}`,
+    tacticalRole: "SKIRMISHER",
+    cost: null,
+    maxHp: CULT_SUMMONED_ROLE_RULES_V7.IMP.maxHp,
+    attack2: CULT_SUMMONED_ROLE_RULES_V7.IMP.attack2,
+    defense2: CULT_SUMMONED_ROLE_RULES_V7.IMP.defense2,
+    move: CULT_SUMMONED_ROLE_RULES_V7.IMP.move,
+    range: CULT_SUMMONED_ROLE_RULES_V7.IMP.range,
+    minimumRange: CULT_SUMMONED_ROLE_RULES_V7.IMP.minimumRange,
+    sightRadius: 0,
+    technology: null,
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "STRIDE"],
+  },
 });
 
 /**
@@ -5084,7 +5179,7 @@ export const NEUTRAL_ROLE_RULES_V7: Readonly<
  * two ("when Unbound, its rampage also has two attacks").
  */
 export const RAMPAGE_ATTACKS_V7: Readonly<Record<DaemonBreedV7, number>> =
-  deepFreeze({ HORROR: 1, HERALD: 2 });
+  deepFreeze({ HORROR: 1, HERALD: 2, IMP: 1 });
 
 /**
  * The Cult redesign (`pulp_wars-mch9.35`, RULESET_7_CULT_REDESIGN.md
@@ -5152,6 +5247,10 @@ export const NEUTRAL_ROLE_MECHANICS_V7: Readonly<
     construct: true,
     immovable: true,
   },
+  // The Cult redesign (`pulp_wars-mch9.36`): an Unbound Imp keeps its
+  // body's mechanics (it advances after a kill, onto a tile the rampage
+  // walk enters).
+  IMP: IMP_ROLE_MECHANICS_V7,
 });
 
 /** Section 8.1: the faction-wide rules of the neutral registration. */
@@ -5717,7 +5816,8 @@ export function neutralBreedOfV7(
   if (
     unit.summoned === "HORROR" ||
     unit.summoned === "HERALD" ||
-    unit.summoned === "TENTACLE"
+    unit.summoned === "TENTACLE" ||
+    unit.summoned === "IMP"
   )
     return unit.summoned;
   if (roster.monsters !== undefined && roster.monsters.length > 0) {
@@ -5742,7 +5842,9 @@ export function neutralBreedOfV7(
         ? "ZOMBIE"
         : "SHIELD_PROJECTOR";
     case "RAIDER":
-      return "BIGFOOT";
+      // The Cult redesign (`pulp_wars-mch9.36`): an Unbound Imp is a
+      // `RAIDER` of the Imp's 6 HP.
+      return unit.maxHp === NEUTRAL_ROLE_RULES_V7.IMP.maxHp ? "IMP" : "BIGFOOT";
     default:
       throw new RangeError(`Unknown v7 neutral role: ${String(unit.role)}`);
   }

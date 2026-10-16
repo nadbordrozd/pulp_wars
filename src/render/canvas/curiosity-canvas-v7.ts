@@ -220,6 +220,7 @@ export function selectedNeutralV7(
         // The Cultists: an Unbound daemon has no camp.
         preview.breed === "HORROR" ||
         preview.breed === "HERALD" ||
+        preview.breed === "IMP" ||
         // Nor has a Tentacle (`pulp_wars-mch9.8`).
         preview.breed === "TENTACLE"
         ? null

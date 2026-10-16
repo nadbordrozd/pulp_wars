@@ -95,6 +95,8 @@ export const NEUTRAL_BOUNTY_FOR_POLICY_V7: Readonly<
   HERALD: 0,
   // A Tentacle (`pulp_wars-mch9.8`) pays nothing either.
   TENTACLE: 0,
+  // An Unbound Imp (`pulp_wars-mch9.36`) is a daemon.
+  IMP: 0,
 });
 /**
  * Section 33, "avoid unless strong": a unit strikes a camp guard only when

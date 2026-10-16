@@ -86,7 +86,9 @@ export function unitIsUnboundV7(
 ): boolean {
   return (
     isNeutralOwnerV7(unit.ownerId) &&
-    (unit.summoned === "HORROR" || unit.summoned === "HERALD")
+    (unit.summoned === "HORROR" ||
+      unit.summoned === "HERALD" ||
+      unit.summoned === "IMP")
   );
 }
 

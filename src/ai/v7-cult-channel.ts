@@ -358,7 +358,11 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
       channelByPair.set(`${command.unitId}:${command.daemonUnitId}`, command);
     else if (command.kind === "SEIZE") seizes.push(command);
     else if (command.kind === "SACRIFICE") sacrifices.push(command);
-    else if (command.kind === "SUMMON") summons.push(command);
+    // A Horror's summoning only: the Imp (the Cult redesign,
+    // `pulp_wars-mch9.36`) is summoned by no plan until A-R3
+    // (`pulp_wars-mch9.40`) decides the summon choice.
+    else if (command.kind === "SUMMON" && command.daemon === "HORROR")
+      summons.push(command);
     else if (command.kind === "ANCHOR") anchors.push(command);
     else if (command.kind === "OFFERING") offerings.push(command);
     else if (command.kind === "TENTACLE") tentacles.push(command);
@@ -1476,7 +1480,10 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
     let bestKey: readonly number[] = [];
     for (const command of summons) {
       const summoner = unitsById.get(command.unitId);
-      const helper = unitsById.get(command.helperUnitId);
+      const helper =
+        command.helperUnitId === undefined
+          ? undefined
+          : unitsById.get(command.helperUnitId);
       if (
         summoner === undefined ||
         helper === undefined ||

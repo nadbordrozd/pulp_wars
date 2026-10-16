@@ -104,8 +104,20 @@ describe("Summon: the helper, then the tile, on the board", () => {
     expect(
       scene.controller
         .snapshot()
-        .offeredCommands.filter((command) => command.kind === "SUMMON").length,
+        .offeredCommands.filter(
+          (command) => command.kind === "SUMMON" && command.daemon === "HORROR",
+        ).length,
     ).toBe(12);
+    // The Cult redesign (`pulp_wars-mch9.36`): the six Imps of the
+    // Summoner alone are offered too; the button aims the Horror (the
+    // Imp's chooser is U-R3's).
+    expect(
+      scene.controller
+        .snapshot()
+        .offeredCommands.filter(
+          (command) => command.kind === "SUMMON" && command.daemon === "IMP",
+        ).length,
+    ).toBe(6);
     // Sacrifice (its two Initiates), Summon, and Channel (the Horror is in
     // reach); no generic button of a channel command.
     // (And the Tentacle, the Summoner's since the Cult redesign,
@@ -223,6 +235,7 @@ describe("Summon: the helper, then the tile, on the board", () => {
     await waitUntil(() => controller.accepted.length === 1);
     expect(controller.accepted[0]).toEqual({
       kind: "SUMMON",
+      daemon: "HORROR",
       unitId: summoner.id,
       helperUnitId: scene.unitAt(A.helper).id,
       at: at(5, 3),

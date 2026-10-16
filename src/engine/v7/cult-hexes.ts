@@ -512,7 +512,8 @@ export function trickRefusalV7<U extends TrickUnitFactsV7>(
     const named: UnitId[] = [];
     if ("unitId" in command && !FROG_ALLOWED_KINDS_V7.has(command.kind))
       named.push(command.unitId);
-    if (command.kind === "SUMMON") named.push(command.helperUnitId);
+    if (command.kind === "SUMMON" && command.helperUnitId !== undefined)
+      named.push(command.helperUnitId);
     for (const unitId of named)
       if (frogs.includes(unitId) && own(unitId) !== undefined)
         return { code: "UNIT_FROGGED", unitId };

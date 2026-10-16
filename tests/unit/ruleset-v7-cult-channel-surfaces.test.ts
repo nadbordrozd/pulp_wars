@@ -25,6 +25,8 @@ import { buildBoardRenderPlanV7 } from "../../src/render/canvas/board-renderer-v
 import {
   DISRUPTION_CAUSE_LABELS_V7,
   FAVOUR_PURPOSE_LABELS_V7,
+  SUMMON_IMP_LABEL_V7,
+  SUMMON_IMP_TOOLTIP_V7,
   cultChannelCommandPresentationV7,
   strandsTextV7,
 } from "../../src/render/cult-channel-presentation-v7";
@@ -218,7 +220,21 @@ describe("the Cult's channel: the words of each command (the text harness)", () 
     expect([...kinds].sort()).toEqual([...CHANNEL_KINDS].sort());
     // One line per command; of a Summoner's Summons (one per helper and
     // free tile) the first stands for all here.
-    const firstSummon = offered.find((command) => command.kind === "SUMMON");
+    const firstSummon = offered.find(
+      (command) => command.kind === "SUMMON" && command.daemon === "HORROR",
+    );
+    // The Cult redesign (`pulp_wars-mch9.36`): the Summoner alone summons
+    // an Imp too.
+    const firstImp = offered.find(
+      (command) => command.kind === "SUMMON" && command.daemon === "IMP",
+    );
+    expect(
+      firstImp === undefined ? null : cultCommandPresentationV7(view, firstImp),
+    ).toEqual({
+      label: SUMMON_IMP_LABEL_V7,
+      chip: "−2 Favour",
+      tooltip: SUMMON_IMP_TOOLTIP_V7,
+    });
     const shown = offered.filter(
       (command) =>
         CHANNEL_KINDS.includes(command.kind) &&

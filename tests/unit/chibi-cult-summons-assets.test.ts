@@ -20,7 +20,8 @@ import { opaqueBounds } from "../../scripts/art/chibi/raster";
  * Gibbering Mass, bound and Unbound, their portraits, and the redesign's
  * icons, in batch `summons-cult`. They are accepted and validated here; the
  * bead that puts them on the board (U-R3) registers them in the runtime
- * manifests.
+ * manifests. (The Imp's sprite, Unbound look, and portrait were registered
+ * early, with engine bead pulp_wars-mch9.36, which put the Imp in play.)
  */
 const ROOT = process.cwd();
 const BATCH = "summons-cult";

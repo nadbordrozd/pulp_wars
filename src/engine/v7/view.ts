@@ -33,6 +33,7 @@ import {
   daemonIsBoundV7,
   daemonRoleV7,
   holdingStrandsV7,
+  impBroodV7,
 } from "./cult-channel";
 import {
   missionStatusV7,
@@ -230,12 +231,17 @@ export interface PublicStrandV7 {
  * The Cultists (section 6.2): the channel of a daemon the viewer sees: its
  * Control and its holding strands as the board stands (what its seat's
  * Start Turn check would count now; public, like the pips under it).
+ * The Cult redesign (`pulp_wars-mch9.36`, section 7.3): `broodOf`, only on
+ * an Imp short of its Control by its own strands that a neighbour's Brood
+ * holds as the board stands, names that neighbour (the Imp whose strand
+ * holds it; public, like the strands).
  */
 export interface PublicDaemonV7 {
   readonly unitId: UnitId;
   readonly role: SummonedRoleIdV7;
   readonly control: number;
   readonly strands: number;
+  readonly broodOf?: UnitId;
 }
 
 /**
@@ -846,6 +852,16 @@ export function viewForV7(
     isUnitVisibleToPlayerV7(state, viewerId, unit),
   );
   const visibleUnitIds = new Set(visibleUnits.map((unit) => unit.id));
+  // The Cult redesign (`pulp_wars-mch9.36`): each seat's Brood, read once.
+  const broods = new Map<PlayerId, ReadonlyMap<UnitId, UnitId>>();
+  const broodOfSeat = (playerId: PlayerId): ReadonlyMap<UnitId, UnitId> => {
+    let brood = broods.get(playerId);
+    if (brood === undefined) {
+      brood = impBroodV7(state, state.units, playerId);
+      broods.set(playerId, brood);
+    }
+    return brood;
+  };
   // The Dwarf revision section 5.3: a mound is visible on an explored tile.
   const visibleBurrowed = state.burrowed.filter(
     (entry) =>
@@ -1344,16 +1360,19 @@ export function viewForV7(
       ),
       daemons: visibleUnits.flatMap((unit): PublicDaemonV7[] => {
         const role = daemonIsBoundV7(unit) ? daemonRoleV7(unit) : null;
-        return role === null
-          ? []
-          : [
-              {
-                unitId: unit.id,
-                role,
-                control: daemonControlV7(unit),
-                strands: holdingStrandsV7(state, state.units, unit),
-              },
-            ];
+        if (role === null) return [];
+        // The Cult redesign (`pulp_wars-mch9.36`): an Imp a Brood holds.
+        const broodOf =
+          role === "IMP" ? broodOfSeat(unit.ownerId).get(unit.id) : undefined;
+        return [
+          {
+            unitId: unit.id,
+            role,
+            control: daemonControlV7(unit),
+            strands: holdingStrandsV7(state, state.units, unit),
+            ...(broodOf === undefined ? {} : { broodOf }),
+          },
+        ];
       }),
       // `pulp_wars-mch9.7` (section 7.1): a ritual the viewer knows of.
       rituals: state.cult.rituals.flatMap((ritual): PublicRitualV7[] => {

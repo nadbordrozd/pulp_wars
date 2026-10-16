@@ -107,6 +107,7 @@ const summon = (
   where: CoordV7,
 ): CommandV7 => ({
   kind: "SUMMON",
+  daemon: "HORROR",
   unitId: unitAtV7(state, summoner).id,
   helperUnitId: unitAtV7(state, helper).id,
   at: where,
@@ -248,6 +249,7 @@ describe("the Cult's channel: the registration", () => {
       "SUMMON_HORROR",
       "GREAT_SUMMONING",
       "HUNGER",
+      "SUMMON_IMP",
     ]);
     expect(DISRUPTION_CAUSES_V7).toEqual([
       "HP_LOSS",
@@ -260,7 +262,13 @@ describe("the Cult's channel: the registration", () => {
 
   it("parses and orders the four commands (Behold! has none since pulp_wars-mch9.33)", () => {
     const good: CommandV7[] = [
-      { kind: "SUMMON", unitId: 31, helperUnitId: 32, at: at(4, 4) } as never,
+      {
+        kind: "SUMMON",
+        unitId: 31,
+        daemon: "HORROR",
+        helperUnitId: 32,
+        at: at(4, 4),
+      } as never,
       { kind: "CHANNEL", unitId: 31, daemonUnitId: 40 } as never,
       { kind: "ANCHOR", unitId: 31, cultistUnitId: 32 } as never,
       { kind: "BOO", unitId: 31 } as never,
@@ -271,7 +279,13 @@ describe("the Cult's channel: the registration", () => {
         value: command,
       });
     for (const bad of [
-      { kind: "SUMMON", unitId: 31, helperUnitId: 31, at: at(4, 4) },
+      {
+        kind: "SUMMON",
+        unitId: 31,
+        daemon: "HORROR",
+        helperUnitId: 31,
+        at: at(4, 4),
+      },
       { kind: "SUMMON", unitId: 31, helperUnitId: 32 },
       { kind: "SUMMON", unitId: 31, helperUnitId: 32, at: at(4, 4), x: 1 },
       { kind: "CHANNEL", unitId: 31, daemonUnitId: 31 },
@@ -287,14 +301,38 @@ describe("the Cult's channel: the registration", () => {
       Math.sign(compareCommandsV7(left as CommandV7, right as CommandV7));
     expect(
       order(
-        { kind: "SUMMON", unitId: 31, helperUnitId: 33, at: at(4, 4) },
-        { kind: "SUMMON", unitId: 31, helperUnitId: 32, at: at(5, 4) },
+        {
+          kind: "SUMMON",
+          unitId: 31,
+          daemon: "HORROR",
+          helperUnitId: 33,
+          at: at(4, 4),
+        },
+        {
+          kind: "SUMMON",
+          unitId: 31,
+          daemon: "HORROR",
+          helperUnitId: 32,
+          at: at(5, 4),
+        },
       ),
     ).toBe(-1);
     expect(
       order(
-        { kind: "SUMMON", unitId: 31, helperUnitId: 32, at: at(4, 4) },
-        { kind: "SUMMON", unitId: 31, helperUnitId: 33, at: at(4, 4) },
+        {
+          kind: "SUMMON",
+          unitId: 31,
+          daemon: "HORROR",
+          helperUnitId: 32,
+          at: at(4, 4),
+        },
+        {
+          kind: "SUMMON",
+          unitId: 31,
+          daemon: "HORROR",
+          helperUnitId: 33,
+          at: at(4, 4),
+        },
       ),
     ).toBe(-1);
     expect(
@@ -325,6 +363,7 @@ describe("the Cult's channel: Summon a Horror (section 6.1)", () => {
       previewSummonV7(
         view,
         unitAtV7(state, at(6, 2)).id,
+        "HORROR",
         unitAtV7(state, at(5, 2)).id,
         at(5, 3),
       ),
@@ -332,6 +371,7 @@ describe("the Cult's channel: Summon a Horror (section 6.1)", () => {
     const preview = previewSummonV7(
       view,
       unitAtV7(state, at(5, 2)).id,
+      "HORROR",
       unitAtV7(state, at(6, 2)).id,
       at(5, 3),
     );
@@ -428,9 +468,23 @@ describe("the Cult's channel: Summon a Horror (section 6.1)", () => {
       new Set(["SUMMON"]),
     );
     const mine = offered.filter(
-      (entry) => entry.kind === "SUMMON" && entry.unitId === summonerId,
+      (entry) =>
+        entry.kind === "SUMMON" &&
+        entry.daemon === "HORROR" &&
+        entry.unitId === summonerId,
     );
     expect(mine).toHaveLength(8);
+    // The Cult redesign (`pulp_wars-mch9.36`): an Imp on each free tile,
+    // with no helper.
+    expect(
+      offered.filter(
+        (entry) =>
+          entry.kind === "SUMMON" &&
+          entry.daemon === "IMP" &&
+          entry.unitId === summonerId &&
+          entry.helperUnitId === undefined,
+      ),
+    ).toHaveLength(4);
     expect(
       new Set(
         mine.map((entry) =>
@@ -585,7 +639,7 @@ describe("the Cult's channel: the Horror is a unit of its own (section 4.2)", ()
     const state = horrorField([SUMMONER]);
     const horror = unitAtV7(state, at(5, 4));
     // The Herald joined with `pulp_wars-mch9.7`.
-    expect(BOARD_SUMMONED_ROLE_IDS_V7).toEqual(["HORROR", "HERALD"]);
+    expect(BOARD_SUMMONED_ROLE_IDS_V7).toEqual(["HORROR", "HERALD", "IMP"]);
     expect(horror.role).toBe("KNIGHT");
     const rule = unitRoleRuleV7(state, horror);
     expect(rule).toMatchObject({
@@ -933,7 +987,13 @@ describe("the Cult's channel: a bound Horror and the other factions (sections 4.
       code: "UNIT_FROZEN",
       params: { unitId: helper.id },
     });
-    expect(offeredV7(state, "SUMMON")).toEqual([]);
+    // The Summoner alone may still summon an Imp (`pulp_wars-mch9.36`); no
+    // Horror is offered with the Frozen helper.
+    expect(
+      offeredV7(state, "SUMMON").filter(
+        (command) => command.kind === "SUMMON" && command.daemon === "HORROR",
+      ),
+    ).toEqual([]);
   });
 });
 
@@ -964,6 +1024,7 @@ describe("the Cult's channel: Channel (section 6.2)", () => {
       strandsAfter: 1,
       holds: true,
       binds: false,
+      brood: [],
     });
     const first = playV7(moved, channel(moved, at(5, 7), at(5, 4)));
     expect(first.events).toEqual([

@@ -145,14 +145,26 @@ const key = (at: CoordV7): string => `${at.x},${at.y}`;
 
 type SummonCommandV7 = Extract<CommandV7, { kind: "SUMMON" }>;
 
-/** The offered Summons of a Summoner. */
+/**
+ * Whether the browser's Summon button and board pick aim `command`: a
+ * Horror's summoning. The Cult redesign's Imp (`pulp_wars-mch9.36`) has no
+ * browser chooser yet (the summon chooser through the tile icons is bead
+ * U-R3, `pulp_wars-mch9.44`); it is summoned through the text harness.
+ */
+export function browserSummonCommandV7(
+  command: CommandV7,
+): command is SummonCommandV7 {
+  return command.kind === "SUMMON" && command.daemon === "HORROR";
+}
+
+/** The offered Summons of a Summoner that the browser aims (Horrors). */
 function summonCommandsV7(
   commands: readonly CommandV7[],
   unitId: UnitId,
 ): readonly SummonCommandV7[] {
   return commands.filter(
     (command): command is SummonCommandV7 =>
-      command.kind === "SUMMON" && command.unitId === unitId,
+      browserSummonCommandV7(command) && command.unitId === unitId,
   );
 }
 
@@ -163,7 +175,9 @@ export function summonHelpersV7(
 ): readonly UnitId[] {
   return [
     ...new Set(
-      summonCommandsV7(commands, unitId).map((command) => command.helperUnitId),
+      summonCommandsV7(commands, unitId).flatMap((command) =>
+        command.helperUnitId === undefined ? [] : [command.helperUnitId],
+      ),
     ),
   ];
 }
@@ -196,11 +210,17 @@ export function cultUnitMarkersV7(
       mark(target, { eye: true });
   };
   for (const daemon of channel.daemons) {
+    // Brood (the Cult redesign, `pulp_wars-mch9.36`, section 13): an Imp
+    // a neighbour's strand holds has its pip lit.
+    const brood = daemon.broodOf !== undefined;
     mark(daemon.unitId, {
-      control: { control: daemon.control, strands: daemon.strands },
+      control: {
+        control: daemon.control,
+        strands: brood ? daemon.control : daemon.strands,
+      },
     });
     // Section 6.4: a bound daemon that would break now shows its target.
-    if (daemon.strands < daemon.control)
+    if (daemon.strands < daemon.control && !brood)
       eye(previewRampageV7(view, daemon.unitId)?.targetUnitId);
   }
   // An Unbound daemon is a neutral unit with an entry of its own
@@ -465,7 +485,8 @@ export function cultChannelPickTargetsV7(
         const preview = previewSummonV7(
           view,
           command.unitId,
-          command.helperUnitId,
+          command.daemon,
+          command.helperUnitId ?? null,
           command.at,
         );
         return preview === null

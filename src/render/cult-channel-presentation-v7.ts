@@ -2,6 +2,7 @@ import {
   CHANNEL_RANGE_V7,
   CULT_SUMMONED_ROLE_RULES_V7,
   HORROR_FAVOUR_COST_V7,
+  IMP_FAVOUR_COST_V7,
   anchorRejectionV7,
   booRejectionV7,
   channelRejectionV7,
@@ -66,6 +67,9 @@ export const BOO_LABEL_V7 = "Boo!";
 
 /** Section 6.1, the card text. */
 export const SUMMON_TOOLTIP_V7 = `The Summoner and a cultist beside it summon a Horror for ${HORROR_FAVOUR_COST_V7} Favour. Both channel it this turn`;
+/** The Cult redesign (`pulp_wars-mch9.36`, section 7.1): the Imp's. */
+export const SUMMON_IMP_LABEL_V7 = "Summon Imp";
+export const SUMMON_IMP_TOOLTIP_V7 = `The Summoner alone summons an Imp for ${IMP_FAVOUR_COST_V7} Favour and channels it this turn`;
 /** Section 6.2, the card text. */
 export const CHANNEL_TOOLTIP_V7 =
   "A cultist channels a daemon within 3 tiles. At the start of your turn each daemon needs as many unbroken strands as its Control, or it is Unbound";
@@ -90,6 +94,7 @@ export const FAVOUR_PURPOSE_LABELS_V7: Readonly<
   Record<FavourPurposeV7, string>
 > = {
   SUMMON_HORROR: "summoning a Horror",
+  SUMMON_IMP: "summoning an Imp",
   GREAT_SUMMONING: "the Great Summoning",
   HUNGER: "the Herald's Hunger",
 };
@@ -133,15 +138,17 @@ export function cultChannelCommandPresentationV7(
       const preview = previewSummonV7(
         view,
         command.unitId,
-        command.helperUnitId,
+        command.daemon,
+        command.helperUnitId ?? null,
         command.at,
       );
+      const imp = command.daemon === "IMP";
       return preview === null
         ? null
         : {
-            label: SUMMON_LABEL_V7,
+            label: imp ? SUMMON_IMP_LABEL_V7 : SUMMON_LABEL_V7,
             chip: favourCostTextV7(preview.favour),
-            tooltip: SUMMON_TOOLTIP_V7,
+            tooltip: imp ? SUMMON_IMP_TOOLTIP_V7 : SUMMON_TOOLTIP_V7,
           };
     }
     case "CHANNEL": {
@@ -299,9 +306,11 @@ export interface ShortDaemonV7 {
 export function daemonsShortV7(view: PlayerViewV7): readonly ShortDaemonV7[] {
   return channelOfV7(view).daemons.flatMap((daemon): ShortDaemonV7[] => {
     const unit = view.units.find((candidate) => candidate.id === daemon.unitId);
+    // An Imp a neighbour's Brood holds is not short (`pulp_wars-mch9.36`).
     return unit === undefined ||
       unit.ownerId !== view.viewer.id ||
-      daemon.strands >= daemon.control
+      daemon.strands >= daemon.control ||
+      daemon.broodOf !== undefined
       ? []
       : [
           {
@@ -454,6 +463,7 @@ export function cultChannelUnavailableTextV7(
         } as unknown as Parameters<typeof summonRejectionV7>[1],
         favourOfV7(view, view.viewer.id),
         unit,
+        "HORROR",
         helper,
         unit.at,
       );
@@ -595,11 +605,13 @@ export function cultChannelChipsV7(
   const daemon = channel.daemons.find((entry) => entry.unitId === unit.id);
   const unbound = unitIsUnboundV7(unit);
   if (daemon !== undefined && !unbound) {
-    const short = daemon.strands < daemon.control;
+    // Brood (`pulp_wars-mch9.36`): an Imp held through a neighbour.
+    const brood = daemon.broodOf !== undefined;
+    const short = daemon.strands < daemon.control && !brood;
     chips.push({
       id: "control",
       label: strandsTextV7(daemon.strands, daemon.control),
-      status: `${daemon.strands} of the ${daemon.control} ${daemon.control === 1 ? "strand" : "strands"} it needs. ${short ? "It will be Unbound at the start of its owner's turn" : "It stays bound"}`,
+      status: `${daemon.strands} of the ${daemon.control} ${daemon.control === 1 ? "strand" : "strands"} it needs. ${short ? "It will be Unbound at the start of its owner's turn" : brood ? "The Imp beside it holds it (Brood): it stays bound" : "It stays bound"}`,
       icon: "ICON:ACTION:CHANNEL",
       ...(short ? { short: true as const } : {}),
     });

@@ -74,6 +74,7 @@ import {
 } from "./candy-abilities";
 import { unitIsFrogV7 } from "./cult-hexes";
 import { arePlayersAlliedV7, arePlayersHostileV7 } from "./economy";
+import { impSwarmsV7 } from "./cult-imp";
 import { idolShieldsV7 } from "./cult-warden";
 import { isUnitVisibleToPlayerV7 } from "./observation";
 import type { CombatPreviewV7, CombatSplashEntryV7 } from "./events";
@@ -758,7 +759,10 @@ export function calculateCombatPreviewV7(
   // The Vampire and Banshee rework (`pulp_wars-ty6i`): a unit a Banshee's
   // Wail terrified this turn does not strike back.
   const terrified = unitIsTerrifiedV7(state, defender.id);
-  const retaliates = wouldRetaliate && !splatted && !terrified;
+  // The Cult redesign (`pulp_wars-mch9.36`, section 7.3): Swarm, a unit
+  // beside two or more of the attacking Imp's seat's Imps.
+  const swarmed = impSwarmsV7(state.units, attacker, defender);
+  const retaliates = wouldRetaliate && !splatted && !terrified && !swarmed;
   const attackerShield = shieldOfV7(state.shields, attacker.id);
   const attackerHit = retaliates
     ? absorbHitV7(
@@ -1011,6 +1015,7 @@ export function calculateCombatPreviewV7(
       frozen: defenderFrozen,
       splatted: wouldRetaliate && splatted,
       terrified: wouldRetaliate && !splatted && terrified,
+      swarmed: wouldRetaliate && !splatted && !terrified && swarmed,
     }),
     advances,
     push,
@@ -1382,6 +1387,11 @@ export function noRetaliationReasonV7(facts: {
    * have retaliated but was terrified by a Wail this turn (Terror).
    */
   readonly terrified?: boolean;
+  /**
+   * The Cult redesign (`pulp_wars-mch9.36`, section 7.3): the defender
+   * would have retaliated but is Swarmed by the attacking Imp's seat.
+   */
+  readonly swarmed?: boolean;
 }): CombatPreviewV7["noRetaliationReason"] {
   return facts.defenderDies
     ? "DEFENDER_DIED"
@@ -1397,7 +1407,9 @@ export function noRetaliationReasonV7(facts: {
               ? "SPLATTED"
               : facts.terrified === true
                 ? "TERROR"
-                : "OUT_OF_RANGE";
+                : facts.swarmed === true
+                  ? "SWARMED"
+                  : "OUT_OF_RANGE";
 }
 
 /**

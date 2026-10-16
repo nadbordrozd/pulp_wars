@@ -124,13 +124,22 @@ describe("Unbound: the daemon on the board", () => {
     for (const breed of DAEMON_BREEDS_V7) {
       const art = neutralArtSubjectsV7(
         breed,
-        breed === "HORROR" ? "KNIGHT" : "JUGGERNAUT",
+        breed === "HORROR"
+          ? "KNIGHT"
+          : breed === "IMP"
+            ? "RAIDER"
+            : "JUGGERNAUT",
       );
       expect(art.unit).toBe(cultSummonedArtSubjectV7(breed, true));
       expect(art.portrait).toBe(art.unit);
       expect(live.variants(art.unit), art.unit).toHaveLength(1);
+      // The Cult redesign's Imp (`pulp_wars-mch9.36`).
       expect(neutralUnitLabelV7(breed)).toBe(
-        breed === "HORROR" ? "Unbound Horror" : "Unbound Herald",
+        breed === "HORROR"
+          ? "Unbound Horror"
+          : breed === "IMP"
+            ? "Unbound Imp"
+            : "Unbound Herald",
       );
     }
     // The breed is read off the unit, also without its registry entry.

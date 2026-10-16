@@ -762,6 +762,7 @@ import {
   type CultTrickPickV7,
 } from "../canvas/cult-ritual-board-plan-v7";
 import {
+  browserSummonCommandV7,
   summonHelpersV7,
   type CultChannelPickV7,
 } from "../canvas/cult-channel-board-plan-v7";
@@ -8669,7 +8670,7 @@ export class Ruleset7DomAppView {
       this.#cultPick = {
         kind: "SUMMON",
         unitId: command.unitId,
-        helperUnitId: command.helperUnitId,
+        helperUnitId: command.helperUnitId ?? null,
       };
       this.#notice = `${SUMMON_PICK_TILE_V7}.`;
       this.#render();
@@ -13677,9 +13678,11 @@ export class Ruleset7DomAppView {
     const buttons: HTMLButtonElement[] = [];
     for (const kind of CULT_CHANNEL_KINDS_V7) {
       const entry = CULT_CHANNEL_TEXT_V7[kind];
+      // The Summon button aims a Horror (the Imp's chooser is U-R3's).
       const commands = this.#snapshot.offeredCommands.filter(
         (command) =>
           command.kind === kind &&
+          (command.kind !== "SUMMON" || browserSummonCommandV7(command)) &&
           "unitId" in command &&
           command.unitId === unit.id,
       );
@@ -13822,6 +13825,7 @@ export class Ruleset7DomAppView {
     const commands = this.#snapshot.offeredCommands.filter(
       (command) =>
         command.kind === pick.kind &&
+        (command.kind !== "SUMMON" || browserSummonCommandV7(command)) &&
         "unitId" in command &&
         command.unitId === unitId,
     );
@@ -15795,7 +15799,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
     return null;
   return {
-    rulesetId: "pulp-wars-poc-7r89",
+    rulesetId: "pulp-wars-poc-7r90",
     seed,
     width: effectiveBoardSize(draft),
     height: effectiveBoardSize(draft),

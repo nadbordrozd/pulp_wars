@@ -4,6 +4,7 @@ import {
   CHANNEL_RANGE_V7,
   CULT_SUMMONED_ROLE_RULES_V7,
   HERALD_HUNGER_FAVOUR_V7,
+  IMP_BROOD_SIZE_V7,
   SUMMONER_TRICKLE_FAVOUR_V7,
   SUMMONED_MECHANICAL_ROLES_V7,
   canEnterTerrainV7,
@@ -48,6 +49,7 @@ import {
   type GameStateV7,
   type GripV7,
   type MonsterStateV7,
+  type SummonDaemonV7,
   type SummonedRoleIdV7,
   type UnitActivationV7,
   type UnitFormV7,
@@ -195,6 +197,75 @@ export function holdingChannellersV7<U extends ChannelUnitFactsV7>(
     holders.push(cultist);
   }
   return holders;
+}
+
+/**
+ * The Cult redesign (`pulp_wars-mch9.36`,
+ * docs/product/RULESET_7_CULT_REDESIGN.md section 7.3), Brood: the own
+ * bound Imp whose holding strand holds the bound Imp `imp` through its
+ * Brood, as the board stands, or undefined. A **lender** is an own bound
+ * Imp on one of the eight tiles around `imp` that is held by its own
+ * holding strands (a held Imp never lends its Brood on) and has lent to
+ * fewer than `IMP_BROOD_SIZE_V7` others (`lent`, by lender); among several,
+ * the lowest unit ID. An Imp held by its own strands needs no lender (its
+ * own strand counts first), so the caller asks only for an Imp short of its
+ * Control.
+ */
+export function broodLenderV7<U extends ChannelUnitFactsV7>(
+  lookup: FactionRosterV7 & ChannelListsV7,
+  units: readonly U[],
+  imp: ChannelUnitFactsV7,
+  lent: ReadonlyMap<UnitId, number>,
+): U | undefined {
+  if (imp.summoned !== "IMP" || !daemonIsBoundV7(imp)) return undefined;
+  return units
+    .filter(
+      (unit) =>
+        unit.id !== imp.id &&
+        unit.hp > 0 &&
+        unit.ownerId === imp.ownerId &&
+        unit.summoned === "IMP" &&
+        daemonIsBoundV7(unit) &&
+        chebyshev(unit.at, imp.at) === 1 &&
+        (lent.get(unit.id) ?? 0) < IMP_BROOD_SIZE_V7 &&
+        holdingStrandsV7(lookup, units, unit) >= daemonControlV7(unit),
+    )
+    .sort((left, right) => left.id - right.id)[0];
+}
+
+/**
+ * The Cult redesign (`pulp_wars-mch9.36`, section 7.3), Brood, as the board
+ * stands: for the seat `playerId`, each own bound Imp short of its Control
+ * by its own holding strands that a neighbour's Brood holds, mapped to that
+ * neighbour (its lender). The Imps are taken in unit-ID order, as the Start
+ * Turn check takes them, each by {@link broodLenderV7}. An Imp short of its
+ * Control and not in the map is Unbound at the check unless it is
+ * channelled first.
+ */
+export function impBroodV7<U extends ChannelUnitFactsV7>(
+  lookup: FactionRosterV7 & ChannelListsV7,
+  units: readonly U[],
+  playerId: PlayerId,
+): ReadonlyMap<UnitId, UnitId> {
+  const held = new Map<UnitId, UnitId>();
+  const lent = new Map<UnitId, number>();
+  const imps = units
+    .filter(
+      (unit) =>
+        unit.hp > 0 &&
+        unit.ownerId === playerId &&
+        unit.summoned === "IMP" &&
+        daemonIsBoundV7(unit),
+    )
+    .sort((left, right) => left.id - right.id);
+  for (const imp of imps) {
+    if (holdingStrandsV7(lookup, units, imp) >= daemonControlV7(imp)) continue;
+    const lender = broodLenderV7(lookup, units, imp, lent);
+    if (lender === undefined) continue;
+    held.set(imp.id, lender.id);
+    lent.set(lender.id, (lent.get(lender.id) ?? 0) + 1);
+  }
+  return held;
 }
 
 /**
@@ -368,16 +439,29 @@ export function summonTileLegalV7(
 }
 
 /**
+ * The Cult redesign (`pulp_wars-mch9.36`, section 7.1): whether a `SUMMON`
+ * of `daemon` needs a helper: the Horror does, the Imp does not (a
+ * Summoner alone).
+ */
+export function summonNeedsHelperV7(daemon: SummonDaemonV7): boolean {
+  return daemon !== "IMP";
+}
+
+/**
  * Section 6.1, shared by the reducer and the public command query: the
- * first reason the Summoner `summoner` may not summon a Horror on `at` with
+ * first reason the Summoner `summoner` may not summon `daemon` on `at` with
  * `helper` (the unit the command names if it is on the board, else
- * undefined), or null. `favour` is the seat's Favour.
+ * undefined), or null. `favour` is the seat's Favour. The Cult redesign
+ * (`pulp_wars-mch9.36`, section 7.1): an Imp (2 Favour) is the Summoner's
+ * alone (its command names no helper: the command parser refuses one) and
+ * `helper` is not read; a Horror (4) needs one.
  */
 export function summonRejectionV7(
   lookup: ChannelLookupV7,
   facts: GiantTileFactsV7,
   favour: number,
   summoner: ActorFactsV7,
+  daemon: SummonDaemonV7,
   helper: ActorFactsV7 | undefined,
   at: CoordV7,
 ): SummonRejectionV7 | null {
@@ -390,13 +474,16 @@ export function summonRejectionV7(
     primaryActionBlockedAfterMoveV7(lookup, summoner)
   )
     return { code: "UNIT_ALREADY_ACTED" };
-  if (!summonHelperLegalV7(lookup, summoner, helper))
+  if (
+    summonNeedsHelperV7(daemon) &&
+    !summonHelperLegalV7(lookup, summoner, helper)
+  )
     return { code: "SUMMON_NOT_LEGAL", reason: "HELPER" };
-  const cost = CULT_SUMMONED_ROLE_RULES_V7.HORROR.favourCost ?? 0;
+  const cost = CULT_SUMMONED_ROLE_RULES_V7[daemon].favourCost ?? 0;
   if (favour < cost) return { code: "INSUFFICIENT_FAVOUR", cost };
   if (
     chebyshev(summoner.at, at) !== 1 ||
-    !summonTileLegalV7(facts, summoner.ownerId, "HORROR", at)
+    !summonTileLegalV7(facts, summoner.ownerId, daemon, at)
   )
     return { code: "SUMMON_NOT_LEGAL", reason: "TILE" };
   return null;
@@ -886,8 +973,9 @@ export type RampageResolverV7 = (
  * 1. The disruptions of the command so far (the neutral turn, Black Ice,
  *    the surfacing, Plague and its chains) break their strands.
  * 2. **The check:** each bound daemon of the seat, in unit-ID order, needs
- *    holding strands ({@link holdingStrandsV7}) of at least its Control, or
- *    it is **Unbound** (`DAEMON_UNBOUND` reason `STRANDS`): it belongs to
+ *    holding strands ({@link holdingStrandsV7}) of at least its Control,
+ *    or, for an Imp (`pulp_wars-mch9.36`), a neighbour's **Brood**
+ *    ({@link broodLenderV7}), or it is **Unbound** (`DAEMON_UNBOUND` reason `STRANDS`): it belongs to
  *    the neutral owner as a neutral unit of its own breed, loses every
  *    status and the strands to it, is Furious until this seat's turn ends,
  *    and **rampages at once** (`rampage`). What the rampage disrupts breaks
@@ -977,6 +1065,8 @@ export function resolveStartTurnChannelV7(
     );
   // The trickle's ledger: the cultists whose strands held, by daemon.
   const held: { readonly daemonId: UnitId; readonly holders: UnitId[] }[] = [];
+  // Brood (`pulp_wars-mch9.36`): the Imps each lender's strand holds.
+  const lent = new Map<UnitId, number>();
   for (const candidate of daemons) {
     const daemon = ownBound(candidate.id);
     if (daemon === undefined) continue;
@@ -986,6 +1076,20 @@ export function resolveStartTurnChannelV7(
       held.push({
         daemonId: daemon.id,
         holders: holdingChannellersV7(current, current.units, daemon).map(
+          (unit) => unit.id,
+        ),
+      });
+      continue;
+    }
+    // Brood: an Imp short of its own strands is held by the strand of an
+    // own Imp beside it that its own strands hold and that has held fewer
+    // than two others; the lender's channellers' strands counted for it.
+    const lender = broodLenderV7(current, current.units, daemon, lent);
+    if (lender !== undefined) {
+      lent.set(lender.id, (lent.get(lender.id) ?? 0) + 1);
+      held.push({
+        daemonId: daemon.id,
+        holders: holdingChannellersV7(current, current.units, lender).map(
           (unit) => unit.id,
         ),
       });
@@ -1183,11 +1287,13 @@ function rejectWith(
 
 /**
  * Section 6.1: `SUMMON`, a primary action of a Summoner that may follow its
- * Move. The seat pays 4 Favour (`FAVOUR_SPENT`); a Horror of the actor
- * stands on `at` at full HP, exhausted until the next turn, with no home
- * city (`DAEMON_SUMMONED`); the Summoner and the helper have each channelled
- * it (`STRAND_FORMED`, in unit-ID order) and their primary actions are
- * spent.
+ * Move. The seat pays the daemon's price (`FAVOUR_SPENT`: an Imp 2, a Horror
+ * 4); the daemon of the actor stands on `at` at full HP, exhausted until the
+ * next turn, with no home city (`DAEMON_SUMMONED`); the Summoner and a
+ * Horror's helper have each channelled it (`STRAND_FORMED`, in unit-ID
+ * order) and their primary actions are spent. The Cult redesign
+ * (`pulp_wars-mch9.36`, section 7.1): an Imp is the Summoner's alone (one
+ * strand, no helper).
  */
 export function applySummonV7(
   kit: CultReducerKitV7,
@@ -1202,21 +1308,27 @@ export function applySummonV7(
   if (!actorCheck.ok)
     return kit.rejected(original, actorCheck.code, actorCheck.params);
   const summoner = actorCheck.unit;
-  const helper = state.units.find(
-    (unit) => unit.id === command.helperUnitId && unit.hp > 0,
-  );
+  const role: SummonDaemonV7 = command.daemon;
+  // An Imp's command names no helper (the parser refuses one).
+  const helper =
+    !summonNeedsHelperV7(role) || command.helperUnitId === undefined
+      ? undefined
+      : state.units.find(
+          (unit) => unit.id === command.helperUnitId && unit.hp > 0,
+        );
   const rejection = summonRejectionV7(
     state,
     canonicalGiantTileFactsV7(state, actor),
     favourOfV7(state, actor),
     summoner,
+    role,
     helper,
     command.at,
   );
   if (rejection !== null) return rejectWith(kit, original, summoner, rejection);
-  if (helper === undefined) return kit.rejected(original, "INVALID_STATE");
+  if (summonNeedsHelperV7(role) && helper === undefined)
+    return kit.rejected(original, "INVALID_STATE");
   try {
-    const role: SummonedRoleIdV7 = "HORROR";
     const registration = CULT_SUMMONED_ROLE_RULES_V7[role];
     const rule = summonedUnitRoleRuleV7(role);
     const mechanicalRole = SUMMONED_MECHANICAL_ROLES_V7[role];
@@ -1224,7 +1336,7 @@ export function applySummonV7(
     if (mechanicalRole === undefined || cost === null)
       throw new RangeError("INVALID_STATE");
     const allocation = allocateUnitId(state.nextEntityId);
-    const horror: UnitStateV7 = {
+    const daemon: UnitStateV7 = {
       id: allocation.id,
       ownerId: actor,
       homeCityId: null,
@@ -1239,19 +1351,19 @@ export function applySummonV7(
       activation: kit.exhaustedActivation(),
       summoned: role,
     };
-    const spent = withFavourSpentV7(state.cult, actor, cost);
-    const [first, second] =
-      summoner.id < helper.id ? [summoner, helper] : [helper, summoner];
-    const cult = withStrand(
-      withStrand(spent, summoner.id, horror.id),
-      helper.id,
-      horror.id,
-    );
+    // The summoners (the Summoner, and the helper of a Horror), in unit-ID
+    // order: each channels the daemon.
+    const summoners = (helper === undefined ? [summoner] : [summoner, helper])
+      .slice()
+      .sort((left, right) => left.id - right.id);
+    let cult = withFavourSpentV7(state.cult, actor, cost);
+    for (const channeller of summoners)
+      cult = withStrand(cult, channeller.id, daemon.id);
     const events: DomainEventV7[] = [
       {
         kind: "FAVOUR_SPENT",
         playerId: actor,
-        purpose: "SUMMON_HORROR",
+        purpose: role === "IMP" ? "SUMMON_IMP" : "SUMMON_HORROR",
         amount: cost,
         favour: favourOfV7({ cult }, actor),
       },
@@ -1259,39 +1371,33 @@ export function applySummonV7(
         kind: "DAEMON_SUMMONED",
         playerId: actor,
         unitId: summoner.id,
-        helperUnitId: helper.id,
-        daemonUnitId: horror.id,
+        helperUnitId: helper?.id ?? null,
+        daemonUnitId: daemon.id,
         role,
-        at: horror.at,
-        hp: horror.hp,
+        at: daemon.at,
+        hp: daemon.hp,
       },
-      {
+      ...summoners.map((channeller): DomainEventV7 => ({
         kind: "STRAND_FORMED",
         playerId: actor,
-        unitId: first.id,
-        daemonUnitId: horror.id,
-      },
-      {
-        kind: "STRAND_FORMED",
-        playerId: actor,
-        unitId: second.id,
-        daemonUnitId: horror.id,
-      },
+        unitId: channeller.id,
+        daemonUnitId: daemon.id,
+      })),
     ];
     const units = [
       ...state.units.map((unit) =>
-        unit.id === summoner.id || unit.id === helper.id
+        summoners.some((channeller) => channeller.id === unit.id)
           ? withPrimaryUsed(unit)
           : unit,
       ),
-      horror,
+      daemon,
     ];
     const sightState: GameStateV7 = { ...state, units };
     const reveal = kit.revealRadius(
       sightState,
       actor,
-      horror.at,
-      unitSightRadiusAtV7(sightState, horror),
+      daemon.at,
+      unitSightRadiusAtV7(sightState, daemon),
     );
     if (reveal.revealed.length > 0)
       events.push({

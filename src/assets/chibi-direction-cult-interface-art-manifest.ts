@@ -157,6 +157,19 @@ export const CHIBI_DIRECTION_CULT_INTERFACE_ART_ASSETS_V7: readonly ChibiArtAsse
       ),
       fixedColours: true,
     },
+    // The Cult redesign's Imp (art bead pulp_wars-mch9.45; registered with
+    // engine bead pulp_wars-mch9.36).
+    {
+      id: "chibi-direction-portrait-cult-imp",
+      subject: "PORTRAIT:CULT:IMP",
+      assetClass: "PORTRAIT",
+      width: 48,
+      height: 48,
+      url: chibiArtUrl(
+        "assets/chibi/portraits/chibi-direction-portrait-cult-imp.png",
+      ),
+      fixedColours: true,
+    },
     // The frog (bead pulp_wars-mch9.26): the badge of a frog at sea.
     {
       id: "chibi-direction-portrait-cult-frog",

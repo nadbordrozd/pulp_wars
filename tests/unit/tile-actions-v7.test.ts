@@ -87,7 +87,20 @@ describe("tile actions: the audit of every command kind", () => {
           { kind, ritual: "STARFALL", unitId: id(1), at: at(0, 0) },
           { kind, ritual: "GREAT_SUMMONING", unitId: id(1), at: at(0, 0) },
         ]
-      : [{ kind, unitId: id(1) } as unknown as CommandV7];
+      : kind === "SUMMON"
+        ? // The Summon button aims a Horror; the Imp's chooser (the Cult
+          // redesign, `pulp_wars-mch9.36`) is the interface bead U-R3's
+          // (`pulp_wars-mch9.44`).
+          [
+            {
+              kind,
+              unitId: id(1),
+              daemon: "HORROR",
+              helperUnitId: id(2),
+              at: at(0, 0),
+            },
+          ]
+        : [{ kind, unitId: id(1) } as unknown as CommandV7];
 
   it("maps every aimed command kind to an ability with an icon and a dock button", () => {
     const aimed = Object.entries(TILE_ACTION_COMMAND_CLASSES_V7)

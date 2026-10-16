@@ -4,6 +4,7 @@ import {
   COMMAND_KIND_ORDER_V7,
   REWARD_IDS_V7,
   RITUAL_KINDS_V7,
+  SUMMON_DAEMONS_V7,
   TECHNOLOGY_IDS_V7,
   UNIT_ROLE_IDS_V7,
   isNavalRoleV7,
@@ -13,6 +14,7 @@ import {
   type CoordV7,
   type RewardIdV7,
   type RitualKindV7,
+  type SummonDaemonV7,
   type TechnologyIdV7,
   type UnitRoleIdV7,
 } from "./types";
@@ -327,13 +329,17 @@ export type CommandV7 =
     }
   | {
       /**
-       * The Cultists (section 6.1): the Summoner `unitId` and the robed
-       * cultist `helperUnitId` beside it summon a Horror on the free tile
-       * `at` next to the Summoner, for 4 Favour. Both channel it.
+       * The Cultists (section 6.1): the Summoner `unitId` summons the
+       * daemon `daemon` on the free tile `at` next to it. The Cult redesign
+       * (`pulp_wars-mch9.36`, RULESET_7_CULT_REDESIGN.md section 7.1): an
+       * `IMP` for 2 Favour, by the Summoner alone (no `helperUnitId`); a
+       * `HORROR` for 4, with the robed cultist `helperUnitId` beside it.
+       * Each of them channels it.
        */
       readonly kind: "SUMMON";
       readonly unitId: UnitId;
-      readonly helperUnitId: UnitId;
+      readonly daemon: SummonDaemonV7;
+      readonly helperUnitId?: UnitId;
       readonly at: CoordV7;
     }
   | {
@@ -641,15 +647,37 @@ export function parseCommandV7(input: unknown): CommandParseResultV7 {
       : { ok: true, value: { kind, unitId: unit, victimUnitId: victim } };
   }
   // The Cultists (`pulp_wars-mch9.5`).
+  // The Cult redesign (`pulp_wars-mch9.36`): the daemon is named; an Imp
+  // has no helper, a Horror has one.
   if (kind === "SUMMON") {
-    if (!hasExactKeysV7(input, ["at", "helperUnitId", "kind", "unitId"]))
+    const daemon = SUMMON_DAEMONS_V7.includes(
+      candidate.daemon as SummonDaemonV7,
+    )
+      ? (candidate.daemon as SummonDaemonV7)
+      : null;
+    const helped = daemon !== "IMP";
+    if (
+      daemon === null ||
+      !hasExactKeysV7(input, [
+        "at",
+        "daemon",
+        ...(helped ? ["helperUnitId"] : []),
+        "kind",
+        "unitId",
+      ])
+    )
       return invalid(kind);
     const unit = parseUnitIdV7(candidate.unitId);
-    const helper = parseUnitIdV7(candidate.helperUnitId);
     const at = parseCoordV7(candidate.at);
-    return unit === null || helper === null || at === null || unit === helper
+    if (unit === null || at === null) return invalid(kind);
+    if (!helped) return { ok: true, value: { kind, unitId: unit, daemon, at } };
+    const helper = parseUnitIdV7(candidate.helperUnitId);
+    return helper === null || unit === helper
       ? invalid(kind)
-      : { ok: true, value: { kind, unitId: unit, helperUnitId: helper, at } };
+      : {
+          ok: true,
+          value: { kind, unitId: unit, daemon, helperUnitId: helper, at },
+        };
   }
   if (kind === "CHANNEL") {
     if (!hasExactKeysV7(input, ["daemonUnitId", "kind", "unitId"]))
@@ -1025,6 +1053,17 @@ export function compareCommandsV7(left: CommandV7, right: CommandV7): number {
     return (
       left.unitId - right.unitId || compareNullableCoords(left.at, right.at)
     );
+  // The Cult redesign (`pulp_wars-mch9.36`): `SUMMON` in tile (y, x),
+  // Summoner, daemon (`SUMMON_DAEMONS_V7` order: the Imp first), then
+  // helper order.
+  if (left.kind === "SUMMON" && right.kind === "SUMMON")
+    return (
+      compareNullableCoords(left.at, right.at) ||
+      left.unitId - right.unitId ||
+      SUMMON_DAEMONS_V7.indexOf(left.daemon) -
+        SUMMON_DAEMONS_V7.indexOf(right.daemon) ||
+      (left.helperUnitId ?? 0) - (right.helperUnitId ?? 0)
+    );
   const leftAt = targetCoord(left);
   const rightAt = targetCoord(right);
   const byTarget = compareNullableCoords(leftAt, rightAt);
@@ -1103,9 +1142,10 @@ function referencedOrdinal(command: CommandV7): number {
   // The Cultists: `SACRIFICE` and `SEIZE` in unit-ID, then victim-ID order.
   if (command.kind === "SACRIFICE" || command.kind === "SEIZE")
     return command.victimUnitId;
-  // `SUMMON` by tile, Summoner, then helper; `CHANNEL` by cultist, then
-  // daemon; `ANCHOR` by Thing, then cultist.
-  if (command.kind === "SUMMON") return command.helperUnitId;
+  // `SUMMON` by tile, Summoner, then helper (the Cult redesign: the daemon
+  // between, its own comparison); `CHANNEL` by cultist, then daemon;
+  // `ANCHOR` by Thing, then cultist.
+  if (command.kind === "SUMMON") return command.helperUnitId ?? 0;
   if (command.kind === "CHANNEL") return command.daemonUnitId;
   if (command.kind === "ANCHOR") return command.cultistUnitId;
   // `BEGIN_RITUAL` by marked tile, leader, then rite; `PROCLAIM` by Herald,

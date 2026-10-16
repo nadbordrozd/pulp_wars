@@ -255,15 +255,15 @@ describe("rituals: identity", () => {
   // The Cult redesign's Star-fall and daemons (`pulp_wars-mch9.34`,
   // `pulp_wars-mch9.35`) took 7r88 after the natural water of 7r87; its
   // Favour economy and warden (`pulp_wars-mch9.32`, `pulp_wars-mch9.33`)
-  // took 7r89 after it.
+  // took 7r89 after it, and its Imp (`pulp_wars-mch9.36`) 7r90.
   it("was 7r88 for Star-fall alone and the daemons' advance, 7r87 refused", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r89");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r89.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-2)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r90");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r90.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-3, -1)).toEqual([
       "pulp-wars-poc-7r87",
       "pulp-wars-poc-7r88",
     ]);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-2)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-3, -1)).toEqual([
       "pulpWars.save.v7r87.current",
       "pulpWars.save.v7r88.current",
     ]);
@@ -394,7 +394,7 @@ describe("rituals: the registration (sections 4.2, 7.2, and 11)", () => {
   });
 
   it("registers the Herald as a unit a seat commands, with the big body's mechanical role", () => {
-    expect(BOARD_SUMMONED_ROLE_IDS_V7).toEqual(["HORROR", "HERALD"]);
+    expect(BOARD_SUMMONED_ROLE_IDS_V7).toEqual(["HORROR", "HERALD", "IMP"]);
     expect(SUMMONED_MECHANICAL_ROLES_V7.HERALD).toBe("JUGGERNAUT");
     // The same role bound and Unbound: a daemon keeps it when it breaks.
     expect(NEUTRAL_ROLE_RULES_V7.HERALD.role).toBe("JUGGERNAUT");

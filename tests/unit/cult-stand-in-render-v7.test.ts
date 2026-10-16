@@ -396,6 +396,8 @@ describe("Cult art subjects stand in with the shared art", () => {
       ...SUMMONED_ROLE_IDS_V7.map((role) => cultSummonedArtSubjectV7(role)),
       cultSummonedArtSubjectV7("HORROR", true),
       cultSummonedArtSubjectV7("HERALD", true),
+      // The Cult redesign's Imp (`pulp_wars-mch9.36`).
+      cultSummonedArtSubjectV7("IMP", true),
       "FROG",
       // Bead pulp_wars-mch9.26: the frog a Ribbit victim is drawn as.
       "UNIT:CULT:FROG",
@@ -427,7 +429,13 @@ describe("Cult art subjects stand in with the shared art", () => {
     }
     expect(
       SUMMONED_ROLE_IDS_V7.map((role) => cultSummonedArtSubjectV7(role)),
-    ).toEqual(["UNIT:CULT:HORROR", "UNIT:CULT:HERALD", "UNIT:CULT:TENTACLE"]);
+    ).toEqual([
+      "UNIT:CULT:HORROR",
+      "UNIT:CULT:HERALD",
+      "UNIT:CULT:TENTACLE",
+      "UNIT:CULT:IMP",
+    ]);
+    expect(cultSummonedArtSubjectV7("IMP", true)).toBe("UNIT:CULT:IMP_UNBOUND");
     expect(cultSummonedArtSubjectV7("HORROR", true)).toBe(
       "UNIT:CULT:HORROR_UNBOUND",
     );
@@ -462,8 +470,9 @@ describe("Cult art subjects stand in with the shared art", () => {
     // The sprites, the terrain, and (bead pulp_wars-mch9.23) the 22
     // interface rasters whose subject names the faction: twelve unit
     // portraits and the frog's (bead pulp_wars-mch9.26), three ship
-    // portraits, three technology icons and three HUD icons.
-    expect(cultFiles).toHaveLength(expected.length - 1 + 22 + terrainFiles);
+    // portraits, three technology icons and three HUD icons; and the Imp's
+    // portrait (the Cult redesign, `pulp_wars-mch9.36`).
+    expect(cultFiles).toHaveLength(expected.length - 1 + 23 + terrainFiles);
     expect(assetInventoryForFactionsV7("LIVE", ["CULT", "ORIGINAL"])).toEqual(
       expect.arrayContaining([...cultFiles]),
     );

@@ -164,9 +164,23 @@ const ENTRIES = {
     "Offers a badly hurt enemy next to it, while another of your robed cultists stands beside that enemy. It pays double Favour.",
   ],
   // The channel (`pulp_wars-mch9.5`, sections 6 and 8).
+  // The Cult redesign (`pulp_wars-mch9.36`, section 7): the Imp alone.
   SUMMON: [
     "Summon",
-    "With a robed cultist beside it, calls a Horror onto a free tile next to it for Favour. Both of them channel it this turn.",
+    "Calls a daemon next to it for Favour and channels it this turn: an Imp alone, or a Horror with a robed cultist beside it.",
+  ],
+  // The Imp (the Cult redesign, `pulp_wars-mch9.36`, section 7.3).
+  BROOD: [
+    "Brood",
+    "One strand to an Imp also holds up to two of your Imps standing beside it at the start of your turn.",
+  ],
+  SWARM: [
+    "Swarm",
+    "An enemy beside two or more of your Imps cannot strike back when one of them attacks it.",
+  ],
+  NEVER_CAPTURES: [
+    "Never captures",
+    "It cannot take a village or a city. Standing on an enemy city, it still lays siege.",
   ],
   // The Favour economy of the Cult redesign (`pulp_wars-mch9.32`,
   // docs/product/RULESET_7_CULT_REDESIGN.md sections 6 and 7.6).
@@ -1050,6 +1064,8 @@ export function summonedGlossaryV7(
       ids.push(ability as GlossaryIdV7);
   // The Cult redesign (`pulp_wars-mch9.32`): the Herald's upkeep.
   if (summoned === "HERALD") ids.push("HUNGER");
+  // The Imp (`pulp_wars-mch9.36`): it never captures.
+  if (summoned === "IMP") ids.push("NEVER_CAPTURES");
   // What happens when its channel fails.
   ids.push("UNBOUND");
   return ids.map(glossaryEntryV7);

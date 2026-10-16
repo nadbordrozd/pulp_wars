@@ -435,6 +435,15 @@ describe("the Cultists' interface art (pulp_wars-mch9.23)", () => {
     expect(accepted).toHaveLength(
       PORTRAITS.length + ICONS.length + EFFECT_ROWS.length,
     );
+    // The Cult redesign's Imp portrait (batch `summons-cult`, bead
+    // pulp_wars-mch9.45), registered with engine bead pulp_wars-mch9.36.
+    const summons = await loadRecords(
+      productionLayout(ROOT, "summons-cult"),
+      "summons-cult",
+    );
+    const imp = summons.assets["chibi-direction-portrait-cult-imp"];
+    expect(imp?.status).toBe("ACCEPTED");
+    if (imp !== undefined) accepted.push(imp);
     expect(
       CHIBI_DIRECTION_CULT_INTERFACE_ART_ASSETS_V7.map(
         (asset) => asset.id,

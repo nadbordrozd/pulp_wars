@@ -61,6 +61,7 @@ import {
   HERALD_FAVOUR_COST_V7,
   HERALD_HUNGER_FAVOUR_V7,
   HORROR_FAVOUR_COST_V7,
+  IMP_FAVOUR_COST_V7,
   RITUAL_MINIMUM_CHANTERS_V7,
   starfallDamageV7,
 } from "../rules/ruleset-v7";
@@ -1926,22 +1927,30 @@ function validPayload(
         e.amount ===
           (e.purpose === "SUMMON_HORROR"
             ? HORROR_FAVOUR_COST_V7
-            : e.purpose === "HUNGER"
-              ? HERALD_HUNGER_FAVOUR_V7
-              : HERALD_FAVOUR_COST_V7) &&
+            : e.purpose === "SUMMON_IMP"
+              ? IMP_FAVOUR_COST_V7
+              : e.purpose === "HUNGER"
+                ? HERALD_HUNGER_FAVOUR_V7
+                : HERALD_FAVOUR_COST_V7) &&
         isNonNegativeSafeIntegerV7(e.favour)
       );
-    // Section 6.1: a Horror at full HP, next to nobody it names twice.
+    // Section 6.1: a Horror at full HP, next to nobody it names twice. The
+    // Cult redesign (`pulp_wars-mch9.36`): an Imp at full HP, with no
+    // helper.
     case "DAEMON_SUMMONED":
       return (
         id(e.playerId) &&
         id(e.unitId) &&
-        id(e.helperUnitId) &&
         id(e.daemonUnitId) &&
-        new Set([e.unitId, e.helperUnitId, e.daemonUnitId]).size === 3 &&
-        e.role === "HORROR" &&
-        parseCoordV7(e.at) !== null &&
-        e.hp === CULT_SUMMONED_ROLE_RULES_V7.HORROR.maxHp
+        e.unitId !== e.daemonUnitId &&
+        ((e.role === "HORROR" &&
+          id(e.helperUnitId) &&
+          new Set([e.unitId, e.helperUnitId, e.daemonUnitId]).size === 3 &&
+          e.hp === CULT_SUMMONED_ROLE_RULES_V7.HORROR.maxHp) ||
+          (e.role === "IMP" &&
+            e.helperUnitId === null &&
+            e.hp === CULT_SUMMONED_ROLE_RULES_V7.IMP.maxHp)) &&
+        parseCoordV7(e.at) !== null
       );
     // Section 6.2.
     case "STRAND_FORMED":
@@ -2770,10 +2779,14 @@ function combat(input: unknown): boolean {
         "FROZEN",
         // The Vampire and Banshee rework (`pulp_wars-ty6i`): Terror.
         "TERROR",
+        // The Cult redesign (`pulp_wars-mch9.36`): Swarm.
+        "SWARMED",
       ].includes(input.noRetaliationReason as string)) &&
     (input.noRetaliationReason !== "FROZEN" ||
       (input.retaliation === false && input.defenderDies === false)) &&
     (input.noRetaliationReason !== "TERROR" ||
+      (input.retaliation === false && input.defenderDies === false)) &&
+    (input.noRetaliationReason !== "SWARMED" ||
       (input.retaliation === false && input.defenderDies === false)) &&
     // The Candy revision (section 13): a Splatted defender survives and
     // does not retaliate; the Rush bonus is on a first attack and never

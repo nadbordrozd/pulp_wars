@@ -224,6 +224,7 @@ describe("against the Cult: the gate", () => {
     expect(CULT_AGAINST_DAEMON_VALUE_V7).toEqual({
       HORROR: CULT_SUMMONED_ROLE_RULES_V7.HORROR.favourCost,
       HERALD: CULT_SUMMONED_ROLE_RULES_V7.HERALD.favourCost,
+      IMP: CULT_SUMMONED_ROLE_RULES_V7.IMP.favourCost,
     });
   });
 

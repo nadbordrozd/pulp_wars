@@ -37,12 +37,13 @@ export type FavourSourceV7 = (typeof FAVOUR_SOURCES_V7)[number];
  * Favour on, in the frozen order: summoning a Horror, (section 7.3,
  * `pulp_wars-mch9.7`) the Great Summoning, and (the Cult redesign,
  * `pulp_wars-mch9.32`, section 7.6) a bound Herald's Hunger at the Start
- * Turn check.
+ * Turn check, and (`pulp_wars-mch9.36`, section 7.1) summoning an Imp.
  */
 export const FAVOUR_PURPOSES_V7 = Object.freeze([
   "SUMMON_HORROR",
   "GREAT_SUMMONING",
   "HUNGER",
+  "SUMMON_IMP",
 ] as const);
 
 /**
@@ -145,6 +146,9 @@ export interface CombatPreviewV7 {
     // The Vampire and Banshee rework (`pulp_wars-ty6i`): a defender a
     // Banshee's Wail terrified this turn.
     | "TERROR"
+    // The Cult redesign (`pulp_wars-mch9.36`, section 7.3): a defender
+    // beside two or more of the attacking Imp's seat's Imps (Swarm).
+    | "SWARMED"
     | null;
   readonly advances: boolean;
   readonly push: "WILL_PUSH" | "BLOCKED" | "UNKNOWN_BEHIND_FOG";
@@ -1516,13 +1520,15 @@ export type DomainEventV7 =
       /**
        * The Cultists (section 6.1): the Summoner `unitId` of `playerId` and
        * its helper `helperUnitId` summoned the daemon `daemonUnitId` (a
-       * `role`) on `at`. The seat's `FAVOUR_SPENT` comes first; the two
-       * `STRAND_FORMED` follow.
+       * `role`) on `at`. The seat's `FAVOUR_SPENT` comes first; the
+       * `STRAND_FORMED` follow (one for each summoner). The Cult redesign
+       * (`pulp_wars-mch9.36`, section 7.1): an Imp's `helperUnitId` is null
+       * (the Summoner alone).
        */
       readonly kind: "DAEMON_SUMMONED";
       readonly playerId: PlayerId;
       readonly unitId: UnitId;
-      readonly helperUnitId: UnitId;
+      readonly helperUnitId: UnitId | null;
       readonly daemonUnitId: UnitId;
       readonly role: SummonedRoleIdV7;
       readonly at: CoordV7;

@@ -317,6 +317,7 @@ import {
   daemonControlV7,
   daemonRoleV7,
   holdingStrandsV7,
+  impBroodV7,
   summonHelperLegalV7,
   summonRejectionV7,
 } from "./cult-channel";
@@ -329,6 +330,7 @@ import {
   trickRefusalV7,
   unitIsFrogV7,
 } from "./cult-hexes";
+import { impSwarmsV7 } from "./cult-imp";
 import {
   awestruckBearersV7,
   awestruckRefusingAttackV7,
@@ -405,6 +407,7 @@ import {
   type ImprovementIdV7,
   type RitualKindV7,
   type TechnologyIdV7,
+  type SummonDaemonV7,
   type SummonedRoleIdV7,
   type RewardIdV7,
   type UnitRoleIdV7,
@@ -1576,17 +1579,36 @@ function appendPublicCultCommandsV7(
   // predicates of src/engine/v7/cult-channel.ts): Favour and the strands of
   // own cultists are in the view, and every unit beside an own unit is
   // visible.
+  // The Cult redesign (`pulp_wars-mch9.36`, section 7.1): an Imp on each
+  // tile with no helper, and a Horror on each tile with each helper.
   if (abilities.includes("SUMMON")) {
     const favour = favourOfV7(view, view.viewer.id);
     const facts = publicGiantTileFactsV7(view);
     const tiles = ringTilesV7(view.board.width, view.board.height, unit.at);
+    for (const at of tiles)
+      if (
+        summonRejectionV7(view, facts, favour, unit, "IMP", undefined, at) ===
+        null
+      )
+        candidates.push({ kind: "SUMMON", unitId: unit.id, daemon: "IMP", at });
     for (const helper of view.units)
       if (summonHelperLegalV7(view, unit, helper))
         for (const at of tiles)
-          if (summonRejectionV7(view, facts, favour, unit, helper, at) === null)
+          if (
+            summonRejectionV7(
+              view,
+              facts,
+              favour,
+              unit,
+              "HORROR",
+              helper,
+              at,
+            ) === null
+          )
             candidates.push({
               kind: "SUMMON",
               unitId: unit.id,
+              daemon: "HORROR",
               helperUnitId: helper.id,
               at,
             });
@@ -4382,29 +4404,34 @@ function favourGainPreviewV7(
 
 /**
  * The Cultists (`pulp_wars-mch9.5`, section 6.1): the preview of an offered
- * Summon: what it costs, the Horror that arrives, and the two strands it
- * starts with against its Control.
+ * Summon: what it costs, the daemon that arrives, and the strands it starts
+ * with against its Control. The Cult redesign (`pulp_wars-mch9.36`, section
+ * 7.1): an Imp (no helper: `helperUnitId` null, one strand) or a Horror.
  */
 export interface SummonPreviewV7 {
   readonly unitId: UnitId;
-  readonly helperUnitId: UnitId;
+  readonly helperUnitId: UnitId | null;
   readonly at: CoordV7;
-  readonly role: SummonedRoleIdV7;
-  /** The Horror's Hit Points (full). */
+  readonly role: SummonDaemonV7;
+  /** The daemon's Hit Points (full). */
   readonly hp: number;
   /** The Favour spent. */
   readonly favour: number;
   readonly favourAfter: number;
   readonly control: number;
-  /** The strands the summoning leaves on the Horror (the two summoners'). */
+  /** The strands the summoning leaves on it (one for each summoner). */
   readonly strands: number;
 }
 
-/** Section 6.1: null unless that `SUMMON` is offered; equals the result. */
+/**
+ * Section 6.1: null unless that `SUMMON` of `daemon` (with `helperUnitId`,
+ * null for an Imp) is offered; equals the result.
+ */
 export function previewSummonV7(
   view: PlayerViewV7,
   unitId: UnitId,
-  helperUnitId: UnitId,
+  daemon: SummonDaemonV7,
+  helperUnitId: UnitId | null,
   at: CoordV7,
 ): SummonPreviewV7 | null {
   if (
@@ -4412,23 +4439,24 @@ export function previewSummonV7(
       (command) =>
         command.kind === "SUMMON" &&
         command.unitId === unitId &&
-        command.helperUnitId === helperUnitId &&
+        command.daemon === daemon &&
+        (command.helperUnitId ?? null) === helperUnitId &&
         same(command.at, at),
     )
   )
     return null;
-  const registration = CULT_SUMMONED_ROLE_RULES_V7.HORROR;
+  const registration = CULT_SUMMONED_ROLE_RULES_V7[daemon];
   const favour = registration.favourCost ?? 0;
   return {
     unitId,
     helperUnitId,
     at: { x: at.x, y: at.y },
-    role: "HORROR",
+    role: daemon,
     hp: registration.maxHp,
     favour,
     favourAfter: favourOfV7(view, view.viewer.id) - favour,
     control: registration.control ?? 0,
-    strands: 2,
+    strands: helperUnitId === null ? 1 : 2,
   };
 }
 
@@ -4451,6 +4479,13 @@ export interface ChannelPreviewV7 {
   readonly holds: boolean;
   /** The daemon is Unbound and this strand brings the viewer's to its Control. */
   readonly binds: boolean;
+  /**
+   * The Cult redesign (`pulp_wars-mch9.36`, section 7.3): for an own bound
+   * Imp, the other own Imps its Brood would hold with this strand as the
+   * board stands (at most two, in unit-ID order); empty otherwise (a bind
+   * takes one Imp per Channel).
+   */
+  readonly brood: readonly UnitId[];
 }
 
 /**
@@ -4487,22 +4522,28 @@ export function previewChannelV7(
   if (daemon?.summoned === undefined) return null;
   const control = daemonControlV7(daemon);
   const strandsBefore = publicDaemonStrandsV7(view, view, daemon);
-  const strandsAfter = publicDaemonStrandsV7(
-    view,
-    {
-      ...view,
-      cult: {
-        ...view.cult,
-        strands: [
-          ...view.cult.strands.filter(
-            (strand) => strand.cultistUnitId !== unitId,
-          ),
-          { cultistUnitId: unitId, daemonUnitId },
-        ],
-      },
+  const after = {
+    ...view,
+    cult: {
+      ...view.cult,
+      strands: [
+        ...view.cult.strands.filter(
+          (strand) => strand.cultistUnitId !== unitId,
+        ),
+        { cultistUnitId: unitId, daemonUnitId },
+      ],
     },
-    daemon,
-  );
+  };
+  const strandsAfter = publicDaemonStrandsV7(view, after, daemon);
+  // Brood (`pulp_wars-mch9.36`): the Imps this Imp's strand would hold.
+  const brood: UnitId[] = [];
+  if (daemon.summoned === "IMP" && !unitIsUnboundV7(daemon))
+    for (const [heldId, lenderId] of impBroodV7(
+      after,
+      view.units,
+      daemon.ownerId,
+    ))
+      if (lenderId === daemonUnitId) brood.push(heldId);
   return {
     unitId,
     daemonUnitId,
@@ -4512,6 +4553,7 @@ export function previewChannelV7(
     strandsAfter,
     holds: strandsAfter >= control,
     binds: unitIsUnboundV7(daemon) && strandsAfter >= control,
+    brood: brood.sort((left, right) => left - right),
   };
 }
 
@@ -4657,7 +4699,10 @@ export function previewRampageV7(
 ): RampagePreviewV7 | null {
   const daemon = view.units.find((unit) => unit.id === unitId && unit.hp > 0);
   const role = daemon === undefined ? null : daemonRoleV7(daemon);
-  if (daemon === undefined || (role !== "HORROR" && role !== "HERALD"))
+  if (
+    daemon === undefined ||
+    (role !== "HORROR" && role !== "HERALD" && role !== "IMP")
+  )
     return null;
   const unbound = unitIsUnboundV7(daemon);
   const entry = unbound ? unboundEntryV7(view, unitId) : undefined;
@@ -4688,7 +4733,13 @@ export function previewRampageV7(
     furious: entry?.unbound?.furious === true,
     control,
     strands,
-    short: !unbound && strands < control,
+    // Brood (`pulp_wars-mch9.36`): an Imp a neighbour's strand holds is
+    // not short (the public channel entry names its lender).
+    short:
+      !unbound &&
+      strands < control &&
+      view.cult.daemons.find((entry) => entry.unitId === unitId)?.broodOf ===
+        undefined,
     targetUnitId: plan.target?.id ?? null,
     step: plan.step,
     path: plan.path,
@@ -11047,7 +11098,10 @@ function publicCombatPreviewCore(
   // The Vampire and Banshee rework (`pulp_wars-ty6i`): Terror (the public
   // `terrorThisTurn` of a visible unit).
   const terrified = unitIsTerrifiedV7(view, target.id);
-  const retaliation = wouldRetaliate && !splatted && !terrified;
+  // The Cult redesign (`pulp_wars-mch9.36`, section 7.3): Swarm (it counts
+  // the attacker's own Imps, which its seat always sees).
+  const swarmed = impSwarmsV7(view.units, attacker, target);
+  const retaliation = wouldRetaliate && !splatted && !terrified && !swarmed;
   // Section 13.2 (tuning 1, 7r46): the retaliation uses the defender's base
   // Defense, without fortification and cover, exactly as canonical
   // resolution does (the shared `retaliationDamageV7`).
@@ -11308,6 +11362,7 @@ function publicCombatPreviewCore(
       frozen: targetFrozen,
       splatted: wouldRetaliate && splatted,
       terrified: wouldRetaliate && !splatted && terrified,
+      swarmed: wouldRetaliate && !splatted && !terrified && swarmed,
     }),
     advances,
     push,

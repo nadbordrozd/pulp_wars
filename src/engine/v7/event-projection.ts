@@ -1002,8 +1002,12 @@ function unitIds(event: DomainEventV7): readonly UnitId[] {
     // other viewer that sees the Horror gets its `UNIT_REVEALED`). A strand
     // event follows its cultist (the default rule: the candle is on the
     // cultist), a grip its Thing and its cultist.
+    // The Cult redesign (`pulp_wars-mch9.36`): an Imp's summoning has no
+    // helper; the Summoner and the Imp.
     case "DAEMON_SUMMONED":
-      return [event.unitId, event.helperUnitId, event.daemonUnitId];
+      return event.helperUnitId === null
+        ? [event.unitId, event.daemonUnitId]
+        : [event.unitId, event.helperUnitId, event.daemonUnitId];
     case "ANCHOR_GRIPPED":
     case "ANCHOR_BROKEN":
       return [event.unitId, event.cultistUnitId];
