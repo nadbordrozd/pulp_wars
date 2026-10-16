@@ -1406,6 +1406,22 @@ in colour and greyscale, at native and half size), `summons-portraits-x4.png`,
 | `chibi-direction-icon-cult-action-join-chant`    | `ICON:ACTION:JOIN_CHANT`    | `icon-join-chant-a`     | 33 x 39 px | `icon`, `cult-lodge-icon`    | the first creation                                                                                   |
 | `chibi-direction-icon-cult-hunger`               | `ICON:HUD:CULT:HUNGER`      | `icon-hunger-a-clean`   | 40 x 37 px | `icon`, `cult-lodge-icon`    | a creation, then one erase edit (a small figure on the rim)                                          |
 
+Bead `pulp_wars-mch9.42` (U-R1) registered the Hunger bowl
+(`ICON:HUD:CULT:HUNGER`, `src/assets/chibi-direction-cult-summons-art-manifest.ts`):
+it heads the "Hunger 2" chip of a bound Herald's card and of the End Turn
+question. The rest of the batch waits for U-R2 and U-R3.
+
+**Retired with the redesign** (bead `pulp_wars-mch9.42`, through
+`npm run art:chibi -- retire`): the Caller (`chibi-direction-cult-caller`)
+and the Chosen (`chibi-direction-cult-chosen`) with their portraits, whose
+role slots are vacant, and the icons of the commands that went with them
+(`ICON:ACTION:BEHOLD`, `ICON:ACTION:PICK_ME`, `ICON:ACTION:MARTYR` and
+`ICON:STATUS:PICK_ME`). Their masters left `public/assets` and the runtime
+manifests; their recipes, raw sheets and receipts stay in batches
+`direction-cult` and `interface-cult` as history, bound to assets that stay
+(as the pipeline asks) with their verdicts turned to rejected. The tables of
+this document that list them describe the art as it was made.
+
 ### What the redesign's summons changed
 
 - **The Imp is generated smaller than its canvas** (the Spitter's rule,

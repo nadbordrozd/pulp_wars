@@ -34,7 +34,12 @@ import { ruleset7FixtureMountExpressionV7 } from "./browser-undead-fixture-v7";
  * being bound, every mark on four grounds, and the cues held at their
  * midpoint. Frogs (bead `pulp_wars-mch9.26`; scene `frogs`): seven hexed
  * units drawn as frogs with their badges, for the Cult player and for
- * their owner. `evidence.json` records
+ * their owner. The Cult redesign's Favour display (bead
+ * `pulp_wars-mch9.42`; scenes `cap` and `hunger`): the chip at 25 and full
+ * at 30, a Sacrifice and a Seizure aimed near the cap with what each loses,
+ * the Offering's "lost" chip, the "N lost" tag dropping from the chip after
+ * a Seizure, a bound Herald's "Hunger 2" card and the hungry End Turn
+ * question. `evidence.json` records
  * each capture's texts and whether anything overflows the viewport. It needs
  * the Vite dev server, because the fixtures are imported from
  * `tests/fixtures`.
@@ -155,6 +160,8 @@ try {
     if (wanted("hexed")) await hexed(connection, size);
     if (wanted("herald")) await heraldBind(connection, size);
     if (wanted("frogs")) await frogs(connection, size);
+    if (wanted("cap")) await favourCap(connection, size);
+    if (wanted("hunger")) await hunger(connection, size);
   }
   await viewport(connection, "desktop");
   if (wanted("grounds")) await grounds(connection);
@@ -219,6 +226,9 @@ async function record(connection: Connection, key: string): Promise<void> {
         cityStatus: Array.from(document.querySelectorAll('.v7-selection-dock .v7-city-stat.is-warning')).map((node) => node.textContent),
         panelButtons: Array.from(document.querySelectorAll('.v7-cult-pick button')).map((node) => node.dataset.action),
         question: document.querySelector('.v7-end-turn-confirm')?.textContent ?? null,
+        favourTitle: document.querySelector('.v7-favour')?.title ?? null,
+        favourFull: document.querySelector('.v7-favour')?.dataset.full ?? null,
+        puffs: Array.from(document.querySelectorAll('.v7-feedback-puff')).map((node) => node.textContent),
         questionRect: rect('.v7-end-turn-confirm'),
         questionButtons: Array.from(document.querySelectorAll('.v7-end-turn-confirm button')).map((node) => { const box = node.getBoundingClientRect(); return [node.textContent, Math.round(box.left), Math.round(box.right), Math.round(box.height)]; }),
       };
@@ -326,6 +336,63 @@ async function flight(connection: Connection, size: Size): Promise<void> {
   await delay(2_500);
   await record(connection, `${size}FlightLanded`);
   await capture(connection, `seize-landed-${size}.png`);
+}
+
+// ------------------------------- The cap, the trickle, Hunger (U-R1) ---
+
+/** The chip near and at the cap, the previews that lose, the lost tag. */
+async function favourCap(connection: Connection, size: Size): Promise<void> {
+  let at = await mount(connection, "cultFavourNearCapUiFixtureV7");
+  await activate(connection, at.summoner as Coord);
+  await click(connection, "cult-sacrifice");
+  await tab(connection, 1);
+  await delay(400);
+  await record(connection, `${size}CapSacrifice`);
+  await capture(connection, `cap-sacrifice-${size}.png`);
+  if (size === "desktop") {
+    await zoomIn(connection);
+    await capture(connection, `cap-sacrifice-zoom-${size}.png`);
+  }
+  await mount(connection, "cultFavourNearCapUiFixtureV7");
+  await selectCity(connection);
+  await record(connection, `${size}CapOffering`);
+  await capture(connection, `cap-offering-${size}.png`);
+  // A Seizure for 18 at 25: 5 fly, 13 drop from the chip as "13 lost".
+  at = await mount(connection, "cultFavourNearCapUiFixtureV7");
+  await activate(connection, at.summoner as Coord);
+  await click(connection, "cult-seize");
+  await evaluate(
+    connection,
+    `${REVIEW}.boardHost.activate(${JSON.stringify(at.knight)})`,
+  );
+  for (const [index, wait] of [700, 600, 600, 600].entries()) {
+    await delay(wait);
+    await record(connection, `${size}CapLost${index + 1}`);
+    await capture(connection, `cap-lost-${index + 1}-${size}.png`);
+  }
+  await delay(2_500);
+  await record(connection, `${size}CapFull`);
+  await capture(connection, `cap-full-${size}.png`);
+  await mount(connection, "cultFavourFullUiFixtureV7");
+  await record(connection, `${size}CapFullHud`);
+  await capture(connection, `cap-full-hud-${size}.png`);
+}
+
+/** A bound Herald's Hunger chip and the hungry End Turn question. */
+async function hunger(connection: Connection, size: Size): Promise<void> {
+  await mount(connection, "cultHungryHeraldUiFixtureV7");
+  const herald = (await evaluate(
+    connection,
+    `${REVIEW}.hungerAt.herald`,
+  )) as Coord;
+  await activate(connection, herald);
+  await record(connection, `${size}HungerCard`);
+  await capture(connection, `hunger-card-${size}.png`);
+  await deselect(connection);
+  await click(connection, "end-turn");
+  await record(connection, `${size}HungerEndTurn`);
+  await capture(connection, `hunger-end-turn-${size}.png`);
+  await click(connection, "end-turn-back");
 }
 
 // ----------------------------------------------- The channel (U2) ---
@@ -744,7 +811,6 @@ async function trickMarks(connection: Connection): Promise<void> {
           draw.drawCultGroundMarkV7(context, { kind: 'RITUAL_MARK', ritual: 'STARFALL', preview: true }, x + 20 * zoom, y + 280 * zoom, zoom);
           draw.drawCultOverMarkV7(context, { kind: 'COWED' }, x + 170 * zoom, y + 320 * zoom, zoom);
           draw.drawCultTrickUnitMarkersV7(context, { frog: { subject: 'UNIT:CULT:FROG', original: 'Knight', portraitSubject: 'PORTRAIT:KNIGHT', artSubject: 'UNIT:KNIGHT', afloat: true } }, x + 20 * zoom, y + 390 * zoom, zoom);
-          draw.drawCultTrickUnitMarkersV7(context, { taunt: true }, x + 100 * zoom, y + 430 * zoom, zoom);
           draw.drawCultTrickUnitMarkersV7(context, { sinks: 2 }, x + 190 * zoom, y + 340 * zoom, zoom);
           draw.drawCultGrabV7(context, { x: x - 40 * zoom, y: y + 470 * zoom }, { x: x + 80 * zoom, y: y + 470 * zoom }, zoom);
           draw.drawCultTauntTetherV7(context, { x: x + 110 * zoom, y: y + 460 * zoom }, { x: x + 240 * zoom, y: y + 460 * zoom }, zoom, false);
@@ -946,7 +1012,6 @@ async function cues(connection: Connection): Promise<void> {
       { effect: 'UNBOUND', cells: [{ x: 8, y: 3 }], progress: 0.45 },
       { effect: 'SUMMON', cells: [{ x: 2, y: 3 }], progress: 0.45 },
       { effect: 'BOO', cells: [{ x: 2, y: 5 }], progress: 0.45 },
-      { effect: 'IDOL', cells: [{ x: 8, y: 5 }], progress: 0.45 },
     ])`,
   );
   await delay(500);
@@ -1043,7 +1108,7 @@ async function mount(
       artSet: "CHIBI",
       global: "__CULT_REVIEW__",
       extras:
-        "at: fixtures.CULT_UI_V7, channelAt: fixtures.CULT_CHANNEL_UI_V7, ritualAt: fixtures.CULT_RITUAL_UI_V7, trickAt: fixtures.CULT_TRICK_UI_V7, frogAt: fixtures.CULT_FROGS_UI_V7",
+        "at: fixtures.CULT_UI_V7, channelAt: fixtures.CULT_CHANNEL_UI_V7, ritualAt: fixtures.CULT_RITUAL_UI_V7, trickAt: fixtures.CULT_TRICK_UI_V7, frogAt: fixtures.CULT_FROGS_UI_V7, hungerAt: fixtures.CULT_HUNGER_UI_V7",
     }),
     true,
   );

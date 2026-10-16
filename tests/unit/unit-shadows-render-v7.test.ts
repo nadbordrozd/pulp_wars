@@ -15,6 +15,7 @@ import { DWARF_FLYER_PRESENTATION_V7 } from "../../src/assets/chibi-direction-dw
 import { CHIBI_DIRECTION_DINOSAUR_ART_ASSETS_V7 } from "../../src/assets/chibi-direction-dinosaur-art-manifest";
 import { CHIBI_DIRECTION_CANDY_ART_ASSETS_V7 } from "../../src/assets/chibi-direction-candy-art-manifest";
 import { CHIBI_DIRECTION_CULT_ART_ASSETS_V7 } from "../../src/assets/chibi-direction-cult-art-manifest";
+import { CHIBI_DIRECTION_CULT_SUMMONS_ART_ASSETS_V7 } from "../../src/assets/chibi-direction-cult-summons-art-manifest";
 import { CHIBI_DIRECTION_DWARF_ART_ASSETS_V7 } from "../../src/assets/chibi-direction-dwarf-art-manifest";
 import { CHIBI_DIRECTION_ICE_FOLK_ART_ASSETS_V7 } from "../../src/assets/chibi-direction-ice-folk-art-manifest";
 import { CHIBI_DIRECTION_MARTIAN_ART_ASSETS_V7 } from "../../src/assets/chibi-direction-martian-art-manifest";
@@ -111,6 +112,8 @@ const LIVE_ASSETS: readonly ChibiArtAssetV7[] = [
   ...CHIBI_DIRECTION_CANDY_ART_ASSETS_V7,
   // The Cult's units and summoned units (bead pulp_wars-mch9.15).
   ...CHIBI_DIRECTION_CULT_ART_ASSETS_V7,
+  // The Cult redesign's Imp (bead pulp_wars-mch9.36).
+  ...CHIBI_DIRECTION_CULT_SUMMONS_ART_ASSETS_V7,
   ...CHIBI_NAVAL_FACTION_ART_ASSETS_V7.map((entry) => entry.asset),
   // The Submarines riding low in the water (bead pulp_wars-5ti.6).
   ...CHIBI_SUBMERGED_SUBMARINE_ART_ASSETS_V7.map((entry) => entry.asset),

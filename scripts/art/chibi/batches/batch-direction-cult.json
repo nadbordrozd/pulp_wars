@@ -106,31 +106,6 @@
       "bottomMargin": 6
     },
     {
-      "id": "chibi-direction-cult-caller",
-      "subject": "UNIT:CULT:KNIGHT",
-      "assetClass": "LARGE_UNIT",
-      "recipeClass": "unit",
-      "canvas": {
-        "width": 72,
-        "height": 88
-      },
-      "ownerColour": false,
-      "accent": "cult-lodge",
-      "bottomMargin": 6
-    },
-    {
-      "id": "chibi-direction-cult-chosen",
-      "subject": "UNIT:CULT:SWORDSMAN",
-      "assetClass": "STANDARD_UNIT",
-      "recipeClass": "unit",
-      "canvas": {
-        "width": 56,
-        "height": 80
-      },
-      "ownerColour": false,
-      "accent": "cult-lodge"
-    },
-    {
       "id": "chibi-direction-cult-thing",
       "subject": "UNIT:CULT:JUGGERNAUT",
       "assetClass": "GIANT_UNIT",
@@ -721,7 +696,7 @@
     },
     {
       "id": "caller-a",
-      "asset": "chibi-direction-cult-caller",
+      "asset": "chibi-direction-cult-horror",
       "endpoint": "create-image-pixen",
       "seed": 91551,
       "requestSize": {
@@ -730,7 +705,7 @@
       },
       "promptAddendum": "The robe is a bright saturated royal blue, clearly blue cloth, never grey, charcoal, navy or black. The round helmet is polished yellow brass, colour #c9a24a, and hides the whole head. The hands are pale cream mittens; no skin shows anywhere. The figure with its horn is drawn large: about 62 pixels wide and 78 pixels tall.",
       "negativeAddendum": "staff, wand, dagger, knife, sword, gun, beard, skull face, skeleton, face, grey robe, charcoal robe, black robe, cape, wings, skin, bare hands, air hose, flippers",
-      "notes": "The Caller: a fresh creation with the unit class."
+      "notes": "The Caller: a fresh creation with the unit class. Retired with its asset by the Cult redesign (pulp_wars-mch9.42); kept here as history."
     },
     {
       "id": "tentacle-a",
@@ -828,7 +803,7 @@
     },
     {
       "id": "chosen-s",
-      "asset": "chibi-direction-cult-chosen",
+      "asset": "chibi-direction-cult-hexer",
       "endpoint": "edit-image-pixen",
       "seed": 91562,
       "requestSize": {
@@ -841,7 +816,7 @@
         "sibling": true
       },
       "editInstruction": "Redraw it as another member of the same society in the same blue robe, burly and square with big broad shoulders: the hood is short with a small point; a broad pale cream sash crosses the chest with one round brass medal; one hand holds a huge polished brass cleaver low; the other arm is raised straight up with one finger pointing at the sky. No candle and no scroll. Keep the two cream eyes, the slippers, the thick black outline and the art style, on a transparent background.",
-      "notes": "The Chosen as a sibling edit of the accepted Initiate."
+      "notes": "The Chosen as a sibling edit of the accepted Initiate. Retired with its asset by the Cult redesign (pulp_wars-mch9.42); kept here as history."
     },
     {
       "id": "thing-c",

@@ -12,6 +12,9 @@ import {
   verifyAssetRecord,
 } from "../../scripts/art/chibi/pipeline";
 import { opaqueBounds } from "../../scripts/art/chibi/raster";
+import type { ArtSubjectV7 } from "../../src/assets/chibi-art-v7";
+import { chibiDirectionArtRegistryV7 } from "../../src/assets/chibi-direction-art-manifest";
+import { CHIBI_DIRECTION_CULT_SUMMONS_ART_ASSETS_V7 } from "../../src/assets/chibi-direction-cult-summons-art-manifest";
 
 /**
  * The Cult redesign's art (bead pulp_wars-mch9.45, ART-R1;
@@ -19,9 +22,11 @@ import { opaqueBounds } from "../../scripts/art/chibi/raster";
  * docs/art/factions/CULT.md, "The redesign's summons"): the Imp and the
  * Gibbering Mass, bound and Unbound, their portraits, and the redesign's
  * icons, in batch `summons-cult`. They are accepted and validated here; the
- * bead that puts them on the board (U-R3) registers them in the runtime
- * manifests. (The Imp's sprite, Unbound look, and portrait were registered
- * early, with engine bead pulp_wars-mch9.36, which put the Imp in play.)
+ * bead that puts each in play registers it in the runtime, in one manifest
+ * of the batch (src/assets/chibi-direction-cult-summons-art-manifest.ts):
+ * the Imp's sprite, Unbound look and portrait with engine bead
+ * pulp_wars-mch9.36, the Hunger bowl with pulp_wars-mch9.42, the Mass and
+ * the other icons with U-R2 and U-R3.
  */
 const ROOT = process.cwd();
 const BATCH = "summons-cult";
@@ -349,5 +354,48 @@ describe("the Cult redesign's summons art (pulp_wars-mch9.45)", () => {
     // The Unbound looks keep their bound sprite's outline.
     expect(box(await unit("chibi-direction-cult-imp-unbound"))).toEqual(imp);
     expect(box(await unit("chibi-direction-cult-mass-unbound"))).toEqual(mass);
+  });
+
+  it("registers the Imp (pulp_wars-mch9.36) and the Hunger bowl (pulp_wars-mch9.42) in one manifest on their records' canvases, and nothing else yet", async () => {
+    const records = await loadRecords(productionLayout(ROOT, BATCH), BATCH);
+    expect(
+      CHIBI_DIRECTION_CULT_SUMMONS_ART_ASSETS_V7.map((asset) => asset.id),
+    ).toEqual([
+      "chibi-direction-cult-imp",
+      "chibi-direction-cult-imp-unbound",
+      "chibi-direction-portrait-cult-imp",
+      "chibi-direction-icon-cult-hunger",
+    ]);
+    for (const asset of CHIBI_DIRECTION_CULT_SUMMONS_ART_ASSETS_V7) {
+      const record = records.assets[asset.id];
+      expect(record?.status, asset.id).toBe("ACCEPTED");
+      expect(asset.subject, asset.id).toBe(record?.subject);
+      expect([asset.width, asset.height], asset.id).toEqual([
+        record?.master.width,
+        record?.master.height,
+      ]);
+      expect(
+        asset.url.endsWith(
+          (record?.master.path ?? "?").replace(/^public\//, ""),
+        ),
+        asset.id,
+      ).toBe(true);
+    }
+    const registry = chibiDirectionArtRegistryV7();
+    expect(registry.variants("ICON:HUD:CULT:HUNGER")[0]?.id).toBe(
+      "chibi-direction-icon-cult-hunger",
+    );
+    for (const subject of [
+      "UNIT:CULT:IMP",
+      "UNIT:CULT:IMP_UNBOUND",
+      "PORTRAIT:CULT:IMP",
+    ] as const)
+      expect(registry.variants(subject).map((asset) => asset.id)).toEqual([
+        CHIBI_DIRECTION_CULT_SUMMONS_ART_ASSETS_V7.find(
+          (asset) => asset.subject === subject,
+        )?.id,
+      ]);
+    // The Mass waits for its bead.
+    expect(registry.variants("UNIT:CULT:MASS" as ArtSubjectV7)).toEqual([]);
   });
 });

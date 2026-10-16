@@ -47,6 +47,12 @@ const MODULES = [
     "/src/assets/chibi-direction-cult-art-manifest.ts",
     ["CHIBI_DIRECTION_CULT_ART_ASSETS_V7"],
   ],
+  // The Cult redesign's summons as they come into play (the Imp since
+  // pulp_wars-mch9.36).
+  [
+    "/src/assets/chibi-direction-cult-summons-art-manifest.ts",
+    ["CHIBI_DIRECTION_CULT_SUMMONS_ART_ASSETS_V7"],
+  ],
   [
     "/src/assets/chibi-curiosities-art-manifest.ts",
     [

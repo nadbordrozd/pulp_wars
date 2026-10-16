@@ -102,18 +102,16 @@ export type AbilityPreviewStyleV7 =
   | "FREEZE"
   | "FREEZE_FOCUS"
   /**
-   * The Cultists (bead pulp_wars-mch9.18): the chalk ring of a raised idol
-   * (the wax cream, outlined only), the ring an offered Behold! would raise
-   * and its "Warded" labels, and the reach of an aimed Channel (the lodge's
-   * green glow).
+   * The Cultists (bead pulp_wars-mch9.18): the chalk ring of a standing
+   * idol (the wax cream, outlined only), and the reach of an aimed Channel
+   * (the lodge's green glow).
    */
   | "IDOL_RING"
-  | "WARD_PREVIEW"
   | "CHANNEL_RANGE"
   /**
    * The Cultists (bead pulp_wars-mch9.19): the nine tiles of a star (the
-   * chalk cream on a warning red), and an enemy a Pick Me! binds (the red
-   * of a tether).
+   * chalk cream on a warning red), and an enemy the warden's idol holds
+   * Awestruck (the red of a tether).
    */
   | "STARFALL"
   | "TAUNT";
@@ -633,7 +631,6 @@ const STYLE_COLORS: Readonly<
   GATE_BLOCKED: { fill: "rgba(170, 179, 192, 0.24)", stroke: "#aab3c0" },
   // The Cultists: CULT_PALETTE_V7's wax cream (chalk) and green glow.
   IDOL_RING: { fill: "rgba(243, 231, 196, 0.1)", stroke: "#f3e7c4" },
-  WARD_PREVIEW: { fill: "rgba(243, 231, 196, 0)", stroke: "#f3e7c4" },
   CHANNEL_RANGE: { fill: "rgba(128, 255, 188, 0.1)", stroke: "#80ffbc" },
   STARFALL: { fill: "rgba(255, 101, 95, 0.24)", stroke: "#f3e7c4" },
   TAUNT: { fill: "rgba(255, 101, 95, 0)", stroke: "#ff655f" },

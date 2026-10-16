@@ -1157,6 +1157,8 @@ const STATUS_IDS: Readonly<Record<string, GlossaryIdV7>> = {
   // An Unbound daemon's own lines (`pulp_wars-mch9.6`).
   unbound: "UNBOUND",
   furious: "FURIOUS",
+  // A bound Herald's Hunger (the Cult redesign, `pulp_wars-mch9.42`).
+  hunger: "HUNGER",
   // Hexes and tricks (`pulp_wars-mch9.8`; the chips are bead
   // `pulp_wars-mch9.19`).
   frog: "STATUS_FROG",

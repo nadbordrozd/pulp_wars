@@ -460,22 +460,24 @@ export type CultInterfaceArtSubjectV7 =
   | `PORTRAIT:CULT:${SummonedRoleIdV7}`
   | `ICON:TECH:CULT:${CultTechIconIdV7}`
   | `ICON:ACTION:${CultActionIconIdV7}`
-  | `ICON:HUD:CULT:${"FAVOUR" | "FAVOUR_LARGE" | "EMBLEM"}`
+  | `ICON:HUD:CULT:${"FAVOUR" | "FAVOUR_LARGE" | "EMBLEM" | "HUNGER"}`
   | `ICON:STATUS:${CultStatusIconIdV7}`
   | `EFFECT:${CultEffectIdV7}`;
 
 /** Warding Circles, The Stars Are Right and Harvest Rites. */
 export type CultTechIconIdV7 = "FORTIFICATION" | "EXPLOSIVES" | "FARMING";
 
-/** The Cult's commands, rituals, hexes and unit abilities with an icon. */
+/**
+ * The Cult's commands, rituals, hexes and unit abilities with an icon.
+ * (Behold!'s, Pick Me!'s and Martyr's were retired with their commands:
+ * the Cult redesign, `pulp_wars-mch9.42`.)
+ */
 export type CultActionIconIdV7 =
   | "SACRIFICE"
   | "SEIZE"
   | "OFFERING"
   | "SUMMON"
   | "CHANNEL"
-  | "BEHOLD"
-  | "PICK_ME"
   | "ANCHOR"
   | "BOO"
   | "PROCLAIM"
@@ -485,19 +487,11 @@ export type CultActionIconIdV7 =
   | "STARFALL"
   | "GREAT_SUMMONING"
   | "PAMPHLETS"
-  | "MARTYR"
   | "GRAB";
 
 /** The Cult's status chips, each also the board marker of its status. */
 export type CultStatusIconIdV7 =
-  | "CANDLELIT"
-  | "FROG"
-  | "UNBOUND"
-  | "FURIOUS"
-  | "GRABBED"
-  | "COWED"
-  | "WARDED"
-  | "PICK_ME";
+  "CANDLELIT" | "FROG" | "UNBOUND" | "FURIOUS" | "GRABBED" | "COWED" | "WARDED";
 
 /** The Cult's effect sprites (CULT.md, "Markers and effects"). */
 export type CultEffectIdV7 =

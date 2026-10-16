@@ -1990,6 +1990,77 @@
   font-variant-numeric: tabular-nums;
 }
 
+/*
+ * The Cult redesign (bead pulp_wars-mch9.42): the cap after the number
+ * ("/ 30"), and a full chip in the warning amber: anything more is lost.
+ */
+.v7-favour-cap {
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-sm);
+  font-weight: var(--pw-fw-bold);
+  line-height: 1;
+}
+
+.v7-favour[data-full="true"] {
+  border-color: var(--pw-amber);
+  background: var(--pw-amber-fill);
+  color: var(--pw-amber);
+}
+
+.v7-favour[data-full="true"] .v7-favour-cap {
+  color: var(--pw-amber);
+}
+
+/* The part of an Offering's Favour that is lost above the cap. */
+.v7-economy-chip.v7-favour-lost-chip {
+  color: var(--pw-loss);
+}
+
+/*
+ * A word that slides out of the Favour chip's right edge and fades (the
+ * coins' layer): Favour lost above the cap, and the Heralds' Hunger. Only
+ * shown with motion; the boundary's notice says the same.
+ */
+.v7-feedback-puff {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 0.05rem 0.35rem;
+  border: var(--pw-line-w-sm) solid var(--pw-line);
+  border-radius: var(--pw-radius-xs);
+  background: var(--pw-surface-raised);
+  color: var(--pw-loss);
+  font-size: var(--pw-fs-sm);
+  font-weight: var(--pw-fw-heavy);
+  white-space: nowrap;
+  opacity: 0;
+  translate: 0 -50%;
+  animation-name: v7-favour-puff;
+  animation-timing-function: ease-out;
+  animation-fill-mode: both;
+}
+
+@keyframes v7-favour-puff {
+  0% {
+    opacity: 0;
+    translate: -0.6rem -50%;
+  }
+
+  15% {
+    opacity: 1;
+    translate: 0 -50%;
+  }
+
+  70% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    translate: 0.9rem -50%;
+  }
+}
+
 @keyframes v7-favour-count {
   35% {
     color: var(--pw-text);

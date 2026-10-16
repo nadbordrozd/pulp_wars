@@ -92,7 +92,7 @@
     },
     "icon-behold-a": {
       "id": "icon-behold-a",
-      "asset": "chibi-direction-icon-cult-action-behold",
+      "asset": "chibi-direction-icon-cult-status-warded",
       "jobId": "sync-d3afff5c-f14c-4f95-ae14-4971207c2240",
       "request": {
         "endpoint": "create-image-pixen",
@@ -172,9 +172,9 @@
       "completedAt": "2026-10-10T11:07:37.423Z",
       "usageUsd": 0.00934412956237793,
       "review": {
-        "verdict": "ACCEPTED",
+        "verdict": "REJECTED",
         "candidate": 0,
-        "notes": "Behold!: the grinning grey stone idol head with green eyes and eight cream rays. Reads as a grey face with rays at 24 and 18 px on the cream plates, on Grass and on the dark token. Two small green wisps sit at its lower right. Reviewed at 1:1 and x6.",
+        "notes": "Behold!: the grinning grey stone idol head with green eyes and eight cream rays. Reads as a grey face with rays at 24 and 18 px on the cream plates, on Grass and on the dark token. Two small green wisps sit at its lower right. Reviewed at 1:1 and x6. Retired with chibi-direction-icon-cult-action-behold: The Behold! button is gone: the warden's idol always stands (pulp_wars-mch9.33); the icon leaves the runtime (pulp_wars-mch9.42).",
         "reviewedAt": "2026-10-10T11:24:21.155Z"
       }
     },
@@ -2209,7 +2209,7 @@
     },
     "icon-martyr-a": {
       "id": "icon-martyr-a",
-      "asset": "chibi-direction-icon-cult-action-martyr",
+      "asset": "chibi-direction-icon-cult-action-offering",
       "jobId": "sync-31e09ffb-5021-45b4-8d9a-eeed31464578",
       "request": {
         "endpoint": "create-image-pixen",
@@ -2289,9 +2289,9 @@
       "completedAt": "2026-10-10T11:14:03.477Z",
       "usageUsd": 0.006976031091478136,
       "review": {
-        "verdict": "ACCEPTED",
+        "verdict": "REJECTED",
         "candidate": 0,
-        "notes": "Martyr: a round brass medal on two cream ribbon ends with a small green flame over it. Reads as a medal with ribbons at 24 and 18 px. Differences from the direction: two ribbon ends, not a folded sash; their purple shading and the yellow-green flame are indigo and the faction green after the cult-lodge-icon accent. Reviewed at 1:1 and x6.",
+        "notes": "Martyr: a round brass medal on two cream ribbon ends with a small green flame over it. Reads as a medal with ribbons at 24 and 18 px. Differences from the direction: two ribbon ends, not a folded sash; their purple shading and the yellow-green flame are indigo and the faction green after the cult-lodge-icon accent. Reviewed at 1:1 and x6. Retired with chibi-direction-icon-cult-action-martyr: Martyr is removed with the Chosen (pulp_wars-mch9.31); the icon leaves the runtime (pulp_wars-mch9.42).",
         "reviewedAt": "2026-10-10T11:24:21.546Z"
       }
     },
@@ -2540,7 +2540,7 @@
     },
     "icon-pick-me-a": {
       "id": "icon-pick-me-a",
-      "asset": "chibi-direction-icon-cult-action-pick-me",
+      "asset": "chibi-direction-icon-cult-status-warded",
       "jobId": "sync-801a83a0-6793-4d77-91c2-64e4c8a0dbb3",
       "request": {
         "endpoint": "create-image-pixen",
@@ -2628,7 +2628,7 @@
     },
     "icon-pick-me-b": {
       "id": "icon-pick-me-b",
-      "asset": "chibi-direction-icon-cult-action-pick-me",
+      "asset": "chibi-direction-icon-cult-status-warded",
       "jobId": "sync-df250d0e-19f9-40bb-86d4-f4a4a690d369",
       "request": {
         "endpoint": "create-image-pixen",
@@ -2716,7 +2716,7 @@
     },
     "icon-pick-me-c": {
       "id": "icon-pick-me-c",
-      "asset": "chibi-direction-icon-cult-action-pick-me",
+      "asset": "chibi-direction-icon-cult-status-warded",
       "jobId": "sync-ca986370-7703-4b94-a6ec-b1361321d797",
       "request": {
         "endpoint": "create-image-pixen",
@@ -2804,7 +2804,7 @@
     },
     "icon-pick-me-d": {
       "id": "icon-pick-me-d",
-      "asset": "chibi-direction-icon-cult-action-pick-me",
+      "asset": "chibi-direction-icon-cult-status-warded",
       "jobId": "sync-e1704dad-c0f6-4ced-8f60-753919b053be",
       "request": {
         "endpoint": "create-image-pixen",
@@ -2884,15 +2884,15 @@
       "completedAt": "2026-10-10T12:32:19.923Z",
       "usageUsd": 0.007988348722457886,
       "review": {
-        "verdict": "ACCEPTED",
+        "verdict": "REJECTED",
         "candidate": 0,
-        "notes": "Pick Me!: an open waving hand in a cream glove, palm to the viewer and all five fingers spread, on an indigo cuff before a spiky brass starburst. Reads as an open raised hand in a burst at 24 and 18 px on the cream plates, on Grass and on the dark marker token; no single extended finger. Reviewed at 1:1 and x6.",
+        "notes": "Pick Me!: an open waving hand in a cream glove, palm to the viewer and all five fingers spread, on an indigo cuff before a spiky brass starburst. Reads as an open raised hand in a burst at 24 and 18 px on the cream plates, on Grass and on the dark marker token; no single extended finger. Reviewed at 1:1 and x6. Retired with chibi-direction-icon-cult-action-pick-me: Pick Me! is removed with the Chosen (pulp_wars-mch9.31); the icon leaves the runtime (pulp_wars-mch9.42).",
         "reviewedAt": "2026-10-10T12:33:22.844Z"
       }
     },
     "icon-pick-me-status-a": {
       "id": "icon-pick-me-status-a",
-      "asset": "chibi-direction-icon-cult-status-pick-me",
+      "asset": "chibi-direction-icon-cult-status-grabbed",
       "jobId": "sync-fe75212a-109e-4cec-bdd4-c74fcbae6ae0",
       "request": {
         "endpoint": "create-image-pixen",
@@ -2980,7 +2980,7 @@
     },
     "icon-pick-me-status-s": {
       "id": "icon-pick-me-status-s",
-      "asset": "chibi-direction-icon-cult-status-pick-me",
+      "asset": "chibi-direction-icon-cult-status-grabbed",
       "jobId": "5a5db4c9-3191-4e58-abff-2bdca6a3d639",
       "request": {
         "endpoint": "edit-image-pixen",
@@ -3048,7 +3048,7 @@
     },
     "icon-pick-me-status-t": {
       "id": "icon-pick-me-status-t",
-      "asset": "chibi-direction-icon-cult-status-pick-me",
+      "asset": "chibi-direction-icon-cult-status-grabbed",
       "jobId": "1c6a95b9-a4b4-488b-8018-157592071d7d",
       "request": {
         "endpoint": "edit-image-pixen",
@@ -3108,9 +3108,9 @@
       "completedAt": "2026-10-10T12:33:05.412Z",
       "usageUsd": 0.007460888677173191,
       "review": {
-        "verdict": "ACCEPTED",
+        "verdict": "REJECTED",
         "candidate": 0,
-        "notes": "The Pick Me! chip: the open waving hand of the Pick Me! icon on its indigo cuff, all five fingers spread, without the starburst. Reads as an open raised hand at 24 and 16 px on the dark token, on Grass and on the cream plates; no single extended finger. Reviewed at 1:1 and x6.",
+        "notes": "The Pick Me! chip: the open waving hand of the Pick Me! icon on its indigo cuff, all five fingers spread, without the starburst. Reads as an open raised hand at 24 and 16 px on the dark token, on Grass and on the cream plates; no single extended finger. Reviewed at 1:1 and x6. Retired with chibi-direction-icon-cult-status-pick-me: Pick Me! is removed with the Chosen (pulp_wars-mch9.31); the status icon leaves the runtime (pulp_wars-mch9.42).",
         "reviewedAt": "2026-10-10T12:33:23.357Z"
       }
     },
@@ -4901,7 +4901,7 @@
     },
     "portrait-caller-s": {
       "id": "portrait-caller-s",
-      "asset": "chibi-direction-portrait-cult-caller",
+      "asset": "chibi-direction-portrait-cult-summoner",
       "jobId": "ad61f598-d705-4a6b-9fc1-f3a844eaa096",
       "request": {
         "endpoint": "edit-image-pixen",
@@ -4969,7 +4969,7 @@
     },
     "portrait-caller-s-helmet": {
       "id": "portrait-caller-s-helmet",
-      "asset": "chibi-direction-portrait-cult-caller",
+      "asset": "chibi-direction-portrait-cult-summoner",
       "jobId": "be67f340-c517-45bb-ae36-49363a214e03",
       "request": {
         "endpoint": "edit-image-pixen",
@@ -5028,15 +5028,15 @@
       "completedAt": "2026-10-10T11:51:33.665Z",
       "usageUsd": 0.00848925789197286,
       "review": {
-        "verdict": "ACCEPTED",
+        "verdict": "REJECTED",
         "candidate": 0,
-        "notes": "The Caller's bust: the round brass diving helmet with its green porthole in place of a head, the cream conch held up beside it and the indigo robe's shoulders, as the map sprite; the hood tip of the sibling edit is gone. Reviewed at 1:1 and x6 beside the sprite.",
+        "notes": "The Caller's bust: the round brass diving helmet with its green porthole in place of a head, the cream conch held up beside it and the indigo robe's shoulders, as the map sprite; the hood tip of the sibling edit is gone. Reviewed at 1:1 and x6 beside the sprite. Retired with chibi-direction-portrait-cult-caller: The Caller is retired by the Cult redesign (pulp_wars-mch9.31); its portrait leaves the runtime (pulp_wars-mch9.42).",
         "reviewedAt": "2026-10-10T11:52:20.541Z"
       }
     },
     "portrait-chosen-s": {
       "id": "portrait-chosen-s",
-      "asset": "chibi-direction-portrait-cult-chosen",
+      "asset": "chibi-direction-portrait-cult-hexer",
       "jobId": "9c0696d5-236e-4a87-93e2-387e2384d04a",
       "request": {
         "endpoint": "edit-image-pixen",
@@ -5096,9 +5096,9 @@
       "completedAt": "2026-10-10T11:39:30.198Z",
       "usageUsd": 0.0081529184712304,
       "review": {
-        "verdict": "ACCEPTED",
+        "verdict": "REJECTED",
         "candidate": 0,
-        "notes": "The Chosen's bust, a sibling of the Initiate's: broad shoulders, cream sashes crossed on the chest with a brass medal and one finger pointing up beside the hood. Differences from the sprite: the hood keeps a tall tip and the sash is crossed, not single. Reviewed at 1:1 and x6 beside the sprite.",
+        "notes": "The Chosen's bust, a sibling of the Initiate's: broad shoulders, cream sashes crossed on the chest with a brass medal and one finger pointing up beside the hood. Differences from the sprite: the hood keeps a tall tip and the sash is crossed, not single. Reviewed at 1:1 and x6 beside the sprite. Retired with chibi-direction-portrait-cult-chosen: The Chosen is retired by the Cult redesign (pulp_wars-mch9.31); its portrait leaves the runtime (pulp_wars-mch9.42).",
         "reviewedAt": "2026-10-10T11:41:34.220Z"
       }
     },
@@ -6953,113 +6953,6 @@
       "notes": "Anchor: a teal tentacle coiled three times round a candle with a green flame. Reads as a candle in a coil at 24 and 18 px. Pixen drew the coil steel blue with salmon suckers; the cult-summoned-icon accent makes it teal and the suckers peach. Reviewed at 1:1 and x6.",
       "acceptedAt": "2026-10-10T11:24:21.284Z"
     },
-    "chibi-direction-icon-cult-action-behold": {
-      "id": "chibi-direction-icon-cult-action-behold",
-      "subject": "ICON:ACTION:BEHOLD",
-      "assetClass": "ICON",
-      "status": "ACCEPTED",
-      "recipe": "icon-behold-a",
-      "candidate": 0,
-      "candidateSha256": "64480463f263a31ce59e8fb521cd46e5532b0b31e024628d0f18ba709670e62f",
-      "master": {
-        "path": "public/assets/chibi/icons/chibi-direction-icon-cult-action-behold.png",
-        "sha256": "9133ba0b150bc1a094bec15471f00ed7ce2602e825fd4eac7714c3a891457693",
-        "pixelSha256": "4a1b60380c4eadfb44e9d1ae2e444b88e957226fe874878de97e2f6fe104e0c0",
-        "width": 48,
-        "height": 48
-      },
-      "derivation": {
-        "kind": "as-is",
-        "accent": {
-          "preset": "cult-lodge-icon",
-          "spec": {
-            "band": {
-              "hueFrom": 66,
-              "hueTo": 152,
-              "saturationMin": 0.5,
-              "valueMin": 0.45,
-              "hueCentre": 120
-            },
-            "hue": 148,
-            "hueSpread": 0.07,
-            "then": {
-              "band": {
-                "hueFrom": 196,
-                "hueTo": 262,
-                "saturationMin": 0.45,
-                "valueMin": 0.14,
-                "hueCentre": 238
-              },
-              "hue": 244,
-              "hueSpread": 0.3,
-              "saturation": {
-                "scale": 1,
-                "add": 0,
-                "max": 0.6
-              },
-              "value": {
-                "scale": 0.5,
-                "add": 0.42
-              },
-              "then": {
-                "band": {
-                  "hueFrom": 262,
-                  "hueTo": 345,
-                  "saturationMin": 0.3,
-                  "valueMin": 0.14,
-                  "hueCentre": 300
-                },
-                "hue": 244,
-                "hueSpread": 0,
-                "then": {
-                  "band": {
-                    "hueFrom": 345,
-                    "hueTo": 12,
-                    "saturationMin": 0.5,
-                    "valueMin": 0.35,
-                    "hueCentre": 0
-                  },
-                  "hue": 28,
-                  "hueSpread": 0,
-                  "saturation": {
-                    "scale": 0.8,
-                    "add": 0,
-                    "max": 0.8
-                  }
-                }
-              }
-            }
-          },
-          "accentPixels": 17,
-          "trimPixels": 0
-        }
-      },
-      "anchor": {
-        "x": 24,
-        "y": 24
-      },
-      "overflow": {
-        "left": 0,
-        "right": 0,
-        "up": 0,
-        "down": 0
-      },
-      "plateCheck": {
-        "bandRows": 7,
-        "groundShare": 0.2935,
-        "footprintWidthShare": 0.7941,
-        "suspect": true
-      },
-      "reviewChecks": {
-        "native": true,
-        "enlarged": true,
-        "owners": true,
-        "noPlate": true,
-        "camera": true
-      },
-      "notes": "Behold!: the grinning grey stone idol head with green eyes and eight cream rays. Reads as a grey face with rays at 24 and 18 px on the cream plates, on Grass and on the dark token. Two small green wisps sit at its lower right. Reviewed at 1:1 and x6.",
-      "acceptedAt": "2026-10-10T11:24:21.155Z"
-    },
     "chibi-direction-icon-cult-action-boo": {
       "id": "chibi-direction-icon-cult-action-boo",
       "subject": "ICON:ACTION:BOO",
@@ -7470,113 +7363,6 @@
       "notes": "The Great Summoning: one big pale yellow eye with a black pupil on an indigo diamond, with four small candles with green flames at its corners. Reads as the Herald's eye among green lights at 24 and 18 px. Reviewed at 1:1 and x6.",
       "acceptedAt": "2026-10-10T11:41:28.942Z"
     },
-    "chibi-direction-icon-cult-action-martyr": {
-      "id": "chibi-direction-icon-cult-action-martyr",
-      "subject": "ICON:ACTION:MARTYR",
-      "assetClass": "ICON",
-      "status": "ACCEPTED",
-      "recipe": "icon-martyr-a",
-      "candidate": 0,
-      "candidateSha256": "298e97931502f21ebb679cc602175f2329806337ebeb3910e647042d5e8b74a1",
-      "master": {
-        "path": "public/assets/chibi/icons/chibi-direction-icon-cult-action-martyr.png",
-        "sha256": "d3bef2d362592521aac3432798ae490fd1630a60913ac4d5dca6bb0855448b55",
-        "pixelSha256": "6ddf7efeb7c9b5294a8cfe32c5cecaaf6a80301f96166e5c915c27350e21c3e6",
-        "width": 48,
-        "height": 48
-      },
-      "derivation": {
-        "kind": "as-is",
-        "accent": {
-          "preset": "cult-lodge-icon",
-          "spec": {
-            "band": {
-              "hueFrom": 66,
-              "hueTo": 152,
-              "saturationMin": 0.5,
-              "valueMin": 0.45,
-              "hueCentre": 120
-            },
-            "hue": 148,
-            "hueSpread": 0.07,
-            "then": {
-              "band": {
-                "hueFrom": 196,
-                "hueTo": 262,
-                "saturationMin": 0.45,
-                "valueMin": 0.14,
-                "hueCentre": 238
-              },
-              "hue": 244,
-              "hueSpread": 0.3,
-              "saturation": {
-                "scale": 1,
-                "add": 0,
-                "max": 0.6
-              },
-              "value": {
-                "scale": 0.5,
-                "add": 0.42
-              },
-              "then": {
-                "band": {
-                  "hueFrom": 262,
-                  "hueTo": 345,
-                  "saturationMin": 0.3,
-                  "valueMin": 0.14,
-                  "hueCentre": 300
-                },
-                "hue": 244,
-                "hueSpread": 0,
-                "then": {
-                  "band": {
-                    "hueFrom": 345,
-                    "hueTo": 12,
-                    "saturationMin": 0.5,
-                    "valueMin": 0.35,
-                    "hueCentre": 0
-                  },
-                  "hue": 28,
-                  "hueSpread": 0,
-                  "saturation": {
-                    "scale": 0.8,
-                    "add": 0,
-                    "max": 0.8
-                  }
-                }
-              }
-            }
-          },
-          "accentPixels": 21,
-          "trimPixels": 0
-        }
-      },
-      "anchor": {
-        "x": 24,
-        "y": 24
-      },
-      "overflow": {
-        "left": 0,
-        "right": 0,
-        "up": 0,
-        "down": 0
-      },
-      "plateCheck": {
-        "bandRows": 7,
-        "groundShare": 0.3483,
-        "footprintWidthShare": 0.4706,
-        "suspect": false
-      },
-      "reviewChecks": {
-        "native": true,
-        "enlarged": true,
-        "owners": true,
-        "noPlate": true,
-        "camera": true
-      },
-      "notes": "Martyr: a round brass medal on two cream ribbon ends with a small green flame over it. Reads as a medal with ribbons at 24 and 18 px. Differences from the direction: two ribbon ends, not a folded sash; their purple shading and the yellow-green flame are indigo and the faction green after the cult-lodge-icon accent. Reviewed at 1:1 and x6.",
-      "acceptedAt": "2026-10-10T11:24:21.546Z"
-    },
     "chibi-direction-icon-cult-action-offering": {
       "id": "chibi-direction-icon-cult-action-offering",
       "subject": "ICON:ACTION:OFFERING",
@@ -7790,113 +7576,6 @@
       },
       "notes": "Pamphlets: a sheaf of cream pamphlets, the front one with the indigo eye-in-a-spiral sign. Reads as papers with the eye sign at 24 and 18 px; the clump under them is gone. Reviewed at 1:1 and x6.",
       "acceptedAt": "2026-10-10T11:41:29.651Z"
-    },
-    "chibi-direction-icon-cult-action-pick-me": {
-      "id": "chibi-direction-icon-cult-action-pick-me",
-      "subject": "ICON:ACTION:PICK_ME",
-      "assetClass": "ICON",
-      "status": "ACCEPTED",
-      "recipe": "icon-pick-me-d",
-      "candidate": 0,
-      "candidateSha256": "be7f3b9a80f13e8dbc4a9703de2648128aced459cdd7140414b3c088b751574e",
-      "master": {
-        "path": "public/assets/chibi/icons/chibi-direction-icon-cult-action-pick-me.png",
-        "sha256": "470aced3e63e1e66243990d8da56e8b2c545521682f7abbe0c9a3e3f4816e67b",
-        "pixelSha256": "075c46f15368901c2bb9d927f56070652d0a2d8f4c73a067a414ca2d7e673b70",
-        "width": 48,
-        "height": 48
-      },
-      "derivation": {
-        "kind": "as-is",
-        "accent": {
-          "preset": "cult-lodge-icon",
-          "spec": {
-            "band": {
-              "hueFrom": 66,
-              "hueTo": 152,
-              "saturationMin": 0.5,
-              "valueMin": 0.45,
-              "hueCentre": 120
-            },
-            "hue": 148,
-            "hueSpread": 0.07,
-            "then": {
-              "band": {
-                "hueFrom": 196,
-                "hueTo": 262,
-                "saturationMin": 0.45,
-                "valueMin": 0.14,
-                "hueCentre": 238
-              },
-              "hue": 244,
-              "hueSpread": 0.3,
-              "saturation": {
-                "scale": 1,
-                "add": 0,
-                "max": 0.6
-              },
-              "value": {
-                "scale": 0.5,
-                "add": 0.42
-              },
-              "then": {
-                "band": {
-                  "hueFrom": 262,
-                  "hueTo": 345,
-                  "saturationMin": 0.3,
-                  "valueMin": 0.14,
-                  "hueCentre": 300
-                },
-                "hue": 244,
-                "hueSpread": 0,
-                "then": {
-                  "band": {
-                    "hueFrom": 345,
-                    "hueTo": 12,
-                    "saturationMin": 0.5,
-                    "valueMin": 0.35,
-                    "hueCentre": 0
-                  },
-                  "hue": 28,
-                  "hueSpread": 0,
-                  "saturation": {
-                    "scale": 0.8,
-                    "add": 0,
-                    "max": 0.8
-                  }
-                }
-              }
-            }
-          },
-          "accentPixels": 0,
-          "trimPixels": 0
-        }
-      },
-      "anchor": {
-        "x": 24,
-        "y": 24
-      },
-      "overflow": {
-        "left": 0,
-        "right": 0,
-        "up": 0,
-        "down": 0
-      },
-      "plateCheck": {
-        "bandRows": 9,
-        "groundShare": 0.2947,
-        "footprintWidthShare": 0.5435,
-        "suspect": false
-      },
-      "reviewChecks": {
-        "native": true,
-        "enlarged": true,
-        "owners": true,
-        "noPlate": true,
-        "camera": true
-      },
-      "notes": "Pick Me!: an open waving hand in a cream glove, palm to the viewer and all five fingers spread, on an indigo cuff before a spiky brass starburst. Reads as an open raised hand in a burst at 24 and 18 px on the cream plates, on Grass and on the dark marker token; no single extended finger. Reviewed at 1:1 and x6.",
-      "acceptedAt": "2026-10-10T12:33:22.844Z"
     },
     "chibi-direction-icon-cult-action-proclaim": {
       "id": "chibi-direction-icon-cult-action-proclaim",
@@ -9520,113 +9199,6 @@
       "notes": "The Grabbed chip: one tentacle curled into a closed loop with a cream underside. Reads as a loop at 24 and 16 px on the dark token, on Grass and on the cream plates. Pixen drew it steel blue; the cult-summoned-icon accent makes it teal. Reviewed at 1:1 and x6.",
       "acceptedAt": "2026-10-10T11:24:22.071Z"
     },
-    "chibi-direction-icon-cult-status-pick-me": {
-      "id": "chibi-direction-icon-cult-status-pick-me",
-      "subject": "ICON:STATUS:PICK_ME",
-      "assetClass": "ICON",
-      "status": "ACCEPTED",
-      "recipe": "icon-pick-me-status-t",
-      "candidate": 0,
-      "candidateSha256": "a41511dbccf5584f28faf7892e083c312cd4a6d6aa654e0f0e16cd26240d8f54",
-      "master": {
-        "path": "public/assets/chibi/icons/chibi-direction-icon-cult-status-pick-me.png",
-        "sha256": "41951820050fef1559953c28f9e7e4a9f55c4dbc5f4c7bb0cea75c44f7f74980",
-        "pixelSha256": "66f167f72cccd43326507d11d1b4f88a2334fafc5228cf975a95e10d8c0a02db",
-        "width": 48,
-        "height": 48
-      },
-      "derivation": {
-        "kind": "as-is",
-        "accent": {
-          "preset": "cult-lodge-icon",
-          "spec": {
-            "band": {
-              "hueFrom": 66,
-              "hueTo": 152,
-              "saturationMin": 0.5,
-              "valueMin": 0.45,
-              "hueCentre": 120
-            },
-            "hue": 148,
-            "hueSpread": 0.07,
-            "then": {
-              "band": {
-                "hueFrom": 196,
-                "hueTo": 262,
-                "saturationMin": 0.45,
-                "valueMin": 0.14,
-                "hueCentre": 238
-              },
-              "hue": 244,
-              "hueSpread": 0.3,
-              "saturation": {
-                "scale": 1,
-                "add": 0,
-                "max": 0.6
-              },
-              "value": {
-                "scale": 0.5,
-                "add": 0.42
-              },
-              "then": {
-                "band": {
-                  "hueFrom": 262,
-                  "hueTo": 345,
-                  "saturationMin": 0.3,
-                  "valueMin": 0.14,
-                  "hueCentre": 300
-                },
-                "hue": 244,
-                "hueSpread": 0,
-                "then": {
-                  "band": {
-                    "hueFrom": 345,
-                    "hueTo": 12,
-                    "saturationMin": 0.5,
-                    "valueMin": 0.35,
-                    "hueCentre": 0
-                  },
-                  "hue": 28,
-                  "hueSpread": 0,
-                  "saturation": {
-                    "scale": 0.8,
-                    "add": 0,
-                    "max": 0.8
-                  }
-                }
-              }
-            }
-          },
-          "accentPixels": 0,
-          "trimPixels": 0
-        }
-      },
-      "anchor": {
-        "x": 24,
-        "y": 24
-      },
-      "overflow": {
-        "left": 0,
-        "right": 0,
-        "up": 0,
-        "down": 0
-      },
-      "plateCheck": {
-        "bandRows": 7,
-        "groundShare": 0,
-        "footprintWidthShare": 0.6875,
-        "suspect": false
-      },
-      "reviewChecks": {
-        "native": true,
-        "enlarged": true,
-        "owners": true,
-        "noPlate": true,
-        "camera": true
-      },
-      "notes": "The Pick Me! chip: the open waving hand of the Pick Me! icon on its indigo cuff, all five fingers spread, without the starburst. Reads as an open raised hand at 24 and 16 px on the dark token, on Grass and on the cream plates; no single extended finger. Reviewed at 1:1 and x6.",
-      "acceptedAt": "2026-10-10T12:33:23.357Z"
-    },
     "chibi-direction-icon-cult-status-unbound": {
       "id": "chibi-direction-icon-cult-status-unbound",
       "subject": "ICON:STATUS:UNBOUND",
@@ -10161,220 +9733,6 @@
       },
       "notes": "Warding Circles: a squat grinning pale grey stone idol with green eyes standing in a cream chalk ring. Reads as an idol in a ring at 24 and 18 px on the cream plates, on Grass and on the dark token. Reviewed at 1:1 and x6.",
       "acceptedAt": "2026-10-10T11:41:26.613Z"
-    },
-    "chibi-direction-portrait-cult-caller": {
-      "id": "chibi-direction-portrait-cult-caller",
-      "subject": "PORTRAIT:CULT:KNIGHT",
-      "assetClass": "PORTRAIT",
-      "status": "ACCEPTED",
-      "recipe": "portrait-caller-s-helmet",
-      "candidate": 0,
-      "candidateSha256": "ba0b361897bcd196d6fa9931dceaa55b36c8478fa18817dc45385f7122ef6538",
-      "master": {
-        "path": "public/assets/chibi/portraits/chibi-direction-portrait-cult-caller.png",
-        "sha256": "28d5996c09ba0808b1a0456ed80d304fad041dad0697c6655ae1a967cdf628c8",
-        "pixelSha256": "5c17c57ff736758ae175b85d5b721581e91a7167370fc9ab8aef4c480dbd42b2",
-        "width": 48,
-        "height": 48
-      },
-      "derivation": {
-        "kind": "as-is",
-        "accent": {
-          "preset": "cult-lodge-icon",
-          "spec": {
-            "band": {
-              "hueFrom": 66,
-              "hueTo": 152,
-              "saturationMin": 0.5,
-              "valueMin": 0.45,
-              "hueCentre": 120
-            },
-            "hue": 148,
-            "hueSpread": 0.07,
-            "then": {
-              "band": {
-                "hueFrom": 196,
-                "hueTo": 262,
-                "saturationMin": 0.45,
-                "valueMin": 0.14,
-                "hueCentre": 238
-              },
-              "hue": 244,
-              "hueSpread": 0.3,
-              "saturation": {
-                "scale": 1,
-                "add": 0,
-                "max": 0.6
-              },
-              "value": {
-                "scale": 0.5,
-                "add": 0.42
-              },
-              "then": {
-                "band": {
-                  "hueFrom": 262,
-                  "hueTo": 345,
-                  "saturationMin": 0.3,
-                  "valueMin": 0.14,
-                  "hueCentre": 300
-                },
-                "hue": 244,
-                "hueSpread": 0,
-                "then": {
-                  "band": {
-                    "hueFrom": 345,
-                    "hueTo": 12,
-                    "saturationMin": 0.5,
-                    "valueMin": 0.35,
-                    "hueCentre": 0
-                  },
-                  "hue": 28,
-                  "hueSpread": 0,
-                  "saturation": {
-                    "scale": 0.8,
-                    "add": 0,
-                    "max": 0.8
-                  }
-                }
-              }
-            }
-          },
-          "accentPixels": 66,
-          "trimPixels": 0
-        }
-      },
-      "anchor": {
-        "x": 24,
-        "y": 24
-      },
-      "overflow": {
-        "left": 0,
-        "right": 0,
-        "up": 0,
-        "down": 0
-      },
-      "plateCheck": {
-        "bandRows": 8,
-        "groundShare": 0.0415,
-        "footprintWidthShare": 0.7368,
-        "suspect": false
-      },
-      "reviewChecks": {
-        "native": true,
-        "enlarged": true,
-        "owners": true,
-        "noPlate": true,
-        "camera": true
-      },
-      "notes": "The Caller's bust: the round brass diving helmet with its green porthole in place of a head, the cream conch held up beside it and the indigo robe's shoulders, as the map sprite; the hood tip of the sibling edit is gone. Reviewed at 1:1 and x6 beside the sprite.",
-      "acceptedAt": "2026-10-10T11:52:20.541Z"
-    },
-    "chibi-direction-portrait-cult-chosen": {
-      "id": "chibi-direction-portrait-cult-chosen",
-      "subject": "PORTRAIT:CULT:SWORDSMAN",
-      "assetClass": "PORTRAIT",
-      "status": "ACCEPTED",
-      "recipe": "portrait-chosen-s",
-      "candidate": 0,
-      "candidateSha256": "92b611e1775eca7ee85033f0afa142da54b2be440aee2d24dc3ad4255579865e",
-      "master": {
-        "path": "public/assets/chibi/portraits/chibi-direction-portrait-cult-chosen.png",
-        "sha256": "fa9a7a97b75d471a939be1bd25bf29b3f2d0476b7fb74b24d24c9c16777a066a",
-        "pixelSha256": "2d8736f83b578a2cfbce016e52f23af2a91e1e047b693d4d3a164415eeb3bba4",
-        "width": 48,
-        "height": 48
-      },
-      "derivation": {
-        "kind": "as-is",
-        "accent": {
-          "preset": "cult-lodge-icon",
-          "spec": {
-            "band": {
-              "hueFrom": 66,
-              "hueTo": 152,
-              "saturationMin": 0.5,
-              "valueMin": 0.45,
-              "hueCentre": 120
-            },
-            "hue": 148,
-            "hueSpread": 0.07,
-            "then": {
-              "band": {
-                "hueFrom": 196,
-                "hueTo": 262,
-                "saturationMin": 0.45,
-                "valueMin": 0.14,
-                "hueCentre": 238
-              },
-              "hue": 244,
-              "hueSpread": 0.3,
-              "saturation": {
-                "scale": 1,
-                "add": 0,
-                "max": 0.6
-              },
-              "value": {
-                "scale": 0.5,
-                "add": 0.42
-              },
-              "then": {
-                "band": {
-                  "hueFrom": 262,
-                  "hueTo": 345,
-                  "saturationMin": 0.3,
-                  "valueMin": 0.14,
-                  "hueCentre": 300
-                },
-                "hue": 244,
-                "hueSpread": 0,
-                "then": {
-                  "band": {
-                    "hueFrom": 345,
-                    "hueTo": 12,
-                    "saturationMin": 0.5,
-                    "valueMin": 0.35,
-                    "hueCentre": 0
-                  },
-                  "hue": 28,
-                  "hueSpread": 0,
-                  "saturation": {
-                    "scale": 0.8,
-                    "add": 0,
-                    "max": 0.8
-                  }
-                }
-              }
-            }
-          },
-          "accentPixels": 0,
-          "trimPixels": 0
-        }
-      },
-      "anchor": {
-        "x": 24,
-        "y": 24
-      },
-      "overflow": {
-        "left": 0,
-        "right": 0,
-        "up": 0,
-        "down": 0
-      },
-      "plateCheck": {
-        "bandRows": 9,
-        "groundShare": 0,
-        "footprintWidthShare": 0.8333,
-        "suspect": false
-      },
-      "reviewChecks": {
-        "native": true,
-        "enlarged": true,
-        "owners": true,
-        "noPlate": true,
-        "camera": true
-      },
-      "notes": "The Chosen's bust, a sibling of the Initiate's: broad shoulders, cream sashes crossed on the chest with a brass medal and one finger pointing up beside the hood. Differences from the sprite: the hood keeps a tall tip and the sash is crossed, not single. Reviewed at 1:1 and x6 beside the sprite.",
-      "acceptedAt": "2026-10-10T11:41:34.220Z"
     },
     "chibi-direction-portrait-cult-familiar": {
       "id": "chibi-direction-portrait-cult-familiar",

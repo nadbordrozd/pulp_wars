@@ -561,13 +561,8 @@ describe("the warden's ring and Boo! on the board", () => {
       selection: { kind: "UNIT", unitId: bearer },
       selectedUnitId: bearer,
     });
-    expect(
-      plan.entries.filter(
-        (entry) =>
-          entry.kind === "ABILITY_AREA" &&
-          entry.abilityStyle === "WARD_PREVIEW",
-      ),
-    ).toEqual([]);
+    // (The ring an offered Behold! would raise, "WARD_PREVIEW", is gone with
+    // the command: `pulp_wars-mch9.42`; the style no longer exists.)
     expect(
       plan.entries.filter((entry) => entry.abilityStyle === "IDOL_RING"),
     ).toHaveLength(9);
@@ -1174,8 +1169,10 @@ describe("what each event plays", () => {
     ) as CultFeedbackEffectV7[];
     // The channel's six and the twelve of rituals, hexes and tricks (bead
     // pulp_wars-mch9.19).
-    // (Seventeen since Pick Me!'s shout retired, `pulp_wars-mch9.31`.)
-    expect(effects).toHaveLength(17);
+    // (Seventeen since Pick Me!'s shout retired, `pulp_wars-mch9.31`;
+    // sixteen since the idol's raising cue went with Behold!'s button,
+    // `pulp_wars-mch9.42`.)
+    expect(effects).toHaveLength(16);
     const state = cultChannelUiFixtureV7();
     const view = viewOf(state);
     for (const effect of effects) {

@@ -932,7 +932,7 @@ describe("the marks, drawn", () => {
     }
   });
 
-  it("draws the badge of what a frog was, the bubble, the badge and a Tentacle's turns", () => {
+  it("draws the badge of what a frog was, the badge and a Tentacle's turns", () => {
     // Bead pulp_wars-mch9.26. Without a picture: a plain figure (its head
     // and shoulders); at sea a code frog (two legs and a body).
     const plain = draw((context) =>
@@ -972,13 +972,6 @@ describe("the marks, drawn", () => {
         ),
         fit,
       ).toContain("drawImage:was");
-    expect(
-      draw((context) =>
-        drawCultTrickUnitMarkersV7(context, { taunt: true }, 100, 100, 1, {
-          bubble: "ME!",
-        }),
-      ),
-    ).toContain("fillText:ME!");
     for (const ritual of ["STARFALL", "GREAT_SUMMONING"] as const)
       expect(
         draw((context) =>
@@ -1000,7 +993,7 @@ describe("the marks, drawn", () => {
     const context = recordingContext(log);
     drawCultTrickUnitMarkersV7(
       context,
-      { frog: WAS_KNIGHT, taunt: true, sinks: 2, ritual: "STARFALL" },
+      { frog: WAS_KNIGHT, sinks: 2, ritual: "STARFALL" },
       100,
       100,
       1,

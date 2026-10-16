@@ -6,7 +6,9 @@ import {
   SEIZE_BROKEN_HP_V7,
   SWITCHEROO_RANGE_V7,
   arePlayersHostileV7,
+  favourForfeitedV7,
   favourOfV7,
+  heraldHungerDueV7,
   previewOfferingV7,
   previewSacrificeV7,
   previewSeizeV7,
@@ -124,7 +126,7 @@ export function cultCommandPresentationV7(
       ? null
       : {
           label: OFFERING_LABEL_V7,
-          chip: `${favourGainTextV7(preview.favour)} · −${preview.population} population`,
+          chip: `${favourGainLossTextV7(preview.favour, preview.forfeited)} · −${preview.population} population`,
           tooltip: OFFERING_TOOLTIP_V7,
         };
   }
@@ -139,12 +141,12 @@ export function cultCommandPresentationV7(
   return command.kind === "SACRIFICE"
     ? {
         label: `${SACRIFICE_LABEL_V7} ${name}`,
-        chip: favourGainTextV7(preview.favour),
+        chip: favourGainLossTextV7(preview.favour, preview.forfeited),
         tooltip: SACRIFICE_TOOLTIP_V7,
       }
     : {
         label: `${SEIZE_LABEL_V7} ${name}`,
-        chip: favourGainTextV7(preview.favour),
+        chip: favourGainLossTextV7(preview.favour, preview.forfeited),
         tooltip: SEIZE_TOOLTIP_V7,
       };
 }
@@ -204,14 +206,104 @@ export function favourCountTextV7(favour: number): string {
   return `${favour} ${FAVOUR_LABEL_V7}`;
 }
 
-/** The label at a victim's mark: what it pays. */
-export function favourBoardLabelV7(favour: number): string {
-  return favourGainTextV7(favour);
+// ------------------------------- The cap, the trickle, Hunger (U-R1) ---
+//
+// The Cult redesign (`pulp_wars-mch9.42`,
+// docs/product/RULESET_7_CULT_REDESIGN.md sections 6, 7.6 and 13): Favour
+// stops at its cap and a gain above it is lost (shown, never banked); a
+// bound Herald eats Favour at each Start Turn.
+
+/** "/ 30": the cap, after the HUD chip's number. */
+export const FAVOUR_CAP_TEXT_V7 = `/ ${FAVOUR_CAP_V7}`;
+
+/** "12 / 30": the HUD chip's number against the cap. */
+export function favourChipTextV7(favour: number): string {
+  return `${favour} ${FAVOUR_CAP_TEXT_V7}`;
+}
+
+/** Whether Favour stands at the cap (anything more is lost). */
+export function favourAtCapV7(favour: number): boolean {
+  return favour >= FAVOUR_CAP_V7;
+}
+
+/**
+ * The Favour the viewer's bound Heralds eat at its next Start Turn
+ * (`HERALD_HUNGER_FAVOUR_V7` each), read from the public view.
+ */
+export function viewerHungerDueV7(view: PlayerViewV7): number {
+  return heraldHungerDueV7(view.units, view.viewer.id);
+}
+
+/** "Hunger −2 a turn". */
+export function hungerDueTextV7(hunger: number): string {
+  return `Hunger −${hunger} a turn`;
+}
+
+/**
+ * The HUD chip's tooltip: the card text, "Full" at the cap, and the Hunger
+ * the viewer's Heralds eat. No formula.
+ */
+export function favourChipTooltipV7(favour: number, hunger: number): string {
+  return [
+    FAVOUR_TOOLTIP_V7,
+    ...(favourAtCapV7(favour) ? ["Full: anything more is lost"] : []),
+    ...(hunger > 0 ? [hungerDueTextV7(hunger)] : []),
+  ].join(". ");
+}
+
+/** "12 of 30 Favour. Hunger −2 a turn", for a screen reader. */
+export function favourChipLabelV7(favour: number, hunger: number): string {
+  return [
+    `${favour} of ${FAVOUR_CAP_V7} ${FAVOUR_LABEL_V7}${favourAtCapV7(favour) ? ", full" : ""}`,
+    ...(hunger > 0 ? [hungerDueTextV7(hunger)] : []),
+  ].join(". ");
+}
+
+/**
+ * The part of a gain of `amount` Favour the viewer would lose above the cap
+ * (0 when it all fits): what a preview's "lost" says.
+ */
+export function viewerFavourForfeitV7(
+  view: PlayerViewV7,
+  amount: number,
+): number {
+  return favourForfeitedV7(favourOfV7(view, view.viewer.id), amount);
+}
+
+/** "3 lost": the part of a gain above the cap. */
+export function favourLostTextV7(forfeited: number): string {
+  return `${forfeited} lost`;
+}
+
+/** "Favour full: 3 lost": a gain cut by the cap that no notice names. */
+export function favourFullTextV7(forfeited: number): string {
+  return `${FAVOUR_LABEL_V7} full: ${favourLostTextV7(forfeited)}`;
+}
+
+/** "+12 Favour", or "+12 Favour (3 lost)" when part of it is above the cap. */
+export function favourGainLossTextV7(
+  amount: number,
+  forfeited: number,
+): string {
+  return forfeited > 0
+    ? `${favourGainTextV7(amount)} (${favourLostTextV7(forfeited)})`
+    : favourGainTextV7(amount);
+}
+
+/** The label at a victim's mark: what it pays, and what is lost of it. */
+export function favourBoardLabelV7(favour: number, forfeited = 0): string {
+  return forfeited > 0
+    ? `+${favour} (${favourLostTextV7(forfeited)})`
+    : favourGainTextV7(favour);
 }
 
 /** The cursor's sentence for a Sacrifice target. */
-export function sacrificeTargetNameV7(unit: string, favour: number): string {
-  return `${SACRIFICE_LABEL_V7} this ${unit}: ${favourGainTextV7(favour)}. It is gone for good.`;
+export function sacrificeTargetNameV7(
+  unit: string,
+  favour: number,
+  forfeited = 0,
+): string {
+  return `${SACRIFICE_LABEL_V7} this ${unit}: ${favourGainLossTextV7(favour, forfeited)}. It is gone for good.`;
 }
 
 /** The cursor's sentence for a Seize target (`holder`: who holds it down). */
@@ -219,8 +311,9 @@ export function seizeTargetNameV7(
   unit: string,
   favour: number,
   holder: string | null,
+  forfeited = 0,
 ): string {
-  return `${SEIZE_LABEL_V7} this ${unit}: ${favourGainTextV7(favour)}.${holder === null ? "" : ` Your ${holder} holds it down.`}`;
+  return `${SEIZE_LABEL_V7} this ${unit}: ${favourGainLossTextV7(favour, forfeited)}.${holder === null ? "" : ` Your ${holder} holds it down.`}`;
 }
 
 /** The own units next to `summoner` (any form): the Sacrifice candidates. */
@@ -386,10 +479,11 @@ function victimNameV7(before: PlayerViewV7, unitId: UnitId): string {
 
 /**
  * The notice of a boundary's Cult events (section 14.3): what the viewer's
- * own Sacrifice, Seizure, Offering, or Martyr paid ("Offering: +3 Favour,
- * −2 population"), and a Seizure of one of the viewer's units. Another
- * seat's Favour is read off the leaderboard, not announced. Null without
- * one. It names no tile and no ID.
+ * own Sacrifice, Seizure, or Offering paid ("Offering: +6 Favour, −2
+ * population"), with the part lost above the cap ("+6 Favour (2 lost)"; any
+ * other gain cut by the cap reads "Favour full: 2 lost"), and a Seizure of
+ * one of the viewer's units. Another seat's Favour is not announced. Null
+ * without one. It names no tile and no ID.
  */
 export function cultBoundaryNoticeV7(
   events: readonly PlayerEventV7[],
@@ -398,26 +492,50 @@ export function cultBoundaryNoticeV7(
 ): { readonly text: string; readonly toast: boolean } | null {
   const viewerId = after.viewer.id;
   const parts: string[] = [];
+  // The viewer's own gain whose `FAVOUR_GAINED` (with the part above the
+  // cap) follows it: its part and the words of its gain.
+  let gain: { readonly index: number; readonly amount: number } | null = null;
   for (const event of events) {
     if (event.kind === "UNIT_SACRIFICED") {
       if (event.playerId !== viewerId) continue;
+      gain = { index: parts.length, amount: event.favour };
       parts.push(
         `${victimNameV7(before, event.victimUnitId)} Sacrificed: ${favourGainTextV7(event.favour)}`,
       );
     } else if (event.kind === "UNIT_SEIZED") {
-      if (event.playerId === viewerId)
+      if (event.playerId === viewerId) {
+        gain = { index: parts.length, amount: event.favour };
         parts.push(
           `${victimNameV7(before, event.victimUnitId)} Seized: ${favourGainTextV7(event.favour)}`,
         );
-      else if (event.victimOwnerId === viewerId)
+      } else if (event.victimOwnerId === viewerId)
         parts.push(
           `${seatName(after, event.playerId)} Seized your ${victimNameV7(before, event.victimUnitId)}`,
         );
     } else if (event.kind === "OFFERING_MADE") {
       if (event.playerId !== viewerId) continue;
+      gain = { index: parts.length, amount: event.favour };
       parts.push(
         `${OFFERING_LABEL_V7}: ${favourGainTextV7(event.favour)}, −${event.population} population`,
       );
+    } else if (event.kind === "FAVOUR_GAINED" && event.playerId === viewerId) {
+      const paid = gain;
+      gain = null;
+      if (event.forfeited <= 0) continue;
+      const part = paid === null ? undefined : parts[paid.index];
+      if (
+        paid !== null &&
+        part !== undefined &&
+        paid.amount === event.amount &&
+        (event.source === "SACRIFICE" ||
+          event.source === "SEIZE" ||
+          event.source === "OFFERING")
+      )
+        parts[paid.index] = part.replace(
+          favourGainTextV7(paid.amount),
+          favourGainLossTextV7(paid.amount, event.forfeited),
+        );
+      else parts.push(favourFullTextV7(event.forfeited));
     }
   }
   // The channel (bead pulp_wars-mch9.18): the viewer's strands broken and a

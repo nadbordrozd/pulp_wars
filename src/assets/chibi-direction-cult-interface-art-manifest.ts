@@ -21,6 +21,11 @@ import { chibiArtUrl } from "./chibi-art-manifest";
  * rituals, hexes): they are loaded and resolvable under the subjects of
  * `CultInterfaceArtSubjectV7`, and nothing asks for them until the Cult's
  * engine and interface beads do.
+ *
+ * The Cult redesign (`pulp_wars-mch9.42`) retired the Caller's and the
+ * Chosen's portraits and the Behold!, Pick Me! and Martyr icons (and the
+ * Pick Me! status chip) through `npm run art:chibi -- retire`: their
+ * commands and units are gone.
  */
 export const CHIBI_DIRECTION_CULT_INTERFACE_ART_ASSETS_V7: readonly ChibiArtAssetV7[] =
   [
@@ -92,28 +97,6 @@ export const CHIBI_DIRECTION_CULT_INTERFACE_ART_ASSETS_V7: readonly ChibiArtAsse
       fixedColours: true,
     },
     {
-      id: "chibi-direction-portrait-cult-caller",
-      subject: "PORTRAIT:CULT:KNIGHT",
-      assetClass: "PORTRAIT",
-      width: 48,
-      height: 48,
-      url: chibiArtUrl(
-        "assets/chibi/portraits/chibi-direction-portrait-cult-caller.png",
-      ),
-      fixedColours: true,
-    },
-    {
-      id: "chibi-direction-portrait-cult-chosen",
-      subject: "PORTRAIT:CULT:SWORDSMAN",
-      assetClass: "PORTRAIT",
-      width: 48,
-      height: 48,
-      url: chibiArtUrl(
-        "assets/chibi/portraits/chibi-direction-portrait-cult-chosen.png",
-      ),
-      fixedColours: true,
-    },
-    {
       id: "chibi-direction-portrait-cult-thing",
       subject: "PORTRAIT:CULT:JUGGERNAUT",
       assetClass: "PORTRAIT",
@@ -154,19 +137,6 @@ export const CHIBI_DIRECTION_CULT_INTERFACE_ART_ASSETS_V7: readonly ChibiArtAsse
       height: 48,
       url: chibiArtUrl(
         "assets/chibi/portraits/chibi-direction-portrait-cult-tentacle.png",
-      ),
-      fixedColours: true,
-    },
-    // The Cult redesign's Imp (art bead pulp_wars-mch9.45; registered with
-    // engine bead pulp_wars-mch9.36).
-    {
-      id: "chibi-direction-portrait-cult-imp",
-      subject: "PORTRAIT:CULT:IMP",
-      assetClass: "PORTRAIT",
-      width: 48,
-      height: 48,
-      url: chibiArtUrl(
-        "assets/chibi/portraits/chibi-direction-portrait-cult-imp.png",
       ),
       fixedColours: true,
     },
@@ -265,26 +235,6 @@ export const CHIBI_DIRECTION_CULT_INTERFACE_ART_ASSETS_V7: readonly ChibiArtAsse
       ),
     },
     {
-      id: "chibi-direction-icon-cult-action-behold",
-      subject: "ICON:ACTION:BEHOLD",
-      assetClass: "ICON",
-      width: 48,
-      height: 48,
-      url: chibiArtUrl(
-        "assets/chibi/icons/chibi-direction-icon-cult-action-behold.png",
-      ),
-    },
-    {
-      id: "chibi-direction-icon-cult-action-pick-me",
-      subject: "ICON:ACTION:PICK_ME",
-      assetClass: "ICON",
-      width: 48,
-      height: 48,
-      url: chibiArtUrl(
-        "assets/chibi/icons/chibi-direction-icon-cult-action-pick-me.png",
-      ),
-    },
-    {
       id: "chibi-direction-icon-cult-action-anchor",
       subject: "ICON:ACTION:ANCHOR",
       assetClass: "ICON",
@@ -372,16 +322,6 @@ export const CHIBI_DIRECTION_CULT_INTERFACE_ART_ASSETS_V7: readonly ChibiArtAsse
       height: 48,
       url: chibiArtUrl(
         "assets/chibi/icons/chibi-direction-icon-cult-action-pamphlets.png",
-      ),
-    },
-    {
-      id: "chibi-direction-icon-cult-action-martyr",
-      subject: "ICON:ACTION:MARTYR",
-      assetClass: "ICON",
-      width: 48,
-      height: 48,
-      url: chibiArtUrl(
-        "assets/chibi/icons/chibi-direction-icon-cult-action-martyr.png",
       ),
     },
     {
@@ -493,16 +433,6 @@ export const CHIBI_DIRECTION_CULT_INTERFACE_ART_ASSETS_V7: readonly ChibiArtAsse
       height: 48,
       url: chibiArtUrl(
         "assets/chibi/icons/chibi-direction-icon-cult-status-warded.png",
-      ),
-    },
-    {
-      id: "chibi-direction-icon-cult-status-pick-me",
-      subject: "ICON:STATUS:PICK_ME",
-      assetClass: "ICON",
-      width: 48,
-      height: 48,
-      url: chibiArtUrl(
-        "assets/chibi/icons/chibi-direction-icon-cult-status-pick-me.png",
       ),
     },
     // --- The effect sprites (batch `effects-cult`, palette cult-green.png) ---

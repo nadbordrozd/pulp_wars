@@ -80,30 +80,6 @@
       "accent": "cult-lodge-icon"
     },
     {
-      "id": "chibi-direction-portrait-cult-caller",
-      "subject": "PORTRAIT:CULT:KNIGHT",
-      "assetClass": "PORTRAIT",
-      "recipeClass": "portrait",
-      "canvas": {
-        "width": 48,
-        "height": 48
-      },
-      "ownerColour": false,
-      "accent": "cult-lodge-icon"
-    },
-    {
-      "id": "chibi-direction-portrait-cult-chosen",
-      "subject": "PORTRAIT:CULT:SWORDSMAN",
-      "assetClass": "PORTRAIT",
-      "recipeClass": "portrait",
-      "canvas": {
-        "width": 48,
-        "height": 48
-      },
-      "ownerColour": false,
-      "accent": "cult-lodge-icon"
-    },
-    {
       "id": "chibi-direction-portrait-cult-thing",
       "subject": "PORTRAIT:CULT:JUGGERNAUT",
       "assetClass": "PORTRAIT",
@@ -253,28 +229,6 @@
       "accent": "cult-lodge-icon"
     },
     {
-      "id": "chibi-direction-icon-cult-action-behold",
-      "subject": "ICON:ACTION:BEHOLD",
-      "assetClass": "ICON",
-      "recipeClass": "icon",
-      "canvas": {
-        "width": 48,
-        "height": 48
-      },
-      "accent": "cult-lodge-icon"
-    },
-    {
-      "id": "chibi-direction-icon-cult-action-pick-me",
-      "subject": "ICON:ACTION:PICK_ME",
-      "assetClass": "ICON",
-      "recipeClass": "icon",
-      "canvas": {
-        "width": 48,
-        "height": 48
-      },
-      "accent": "cult-lodge-icon"
-    },
-    {
       "id": "chibi-direction-icon-cult-action-anchor",
       "subject": "ICON:ACTION:ANCHOR",
       "assetClass": "ICON",
@@ -365,17 +319,6 @@
     {
       "id": "chibi-direction-icon-cult-action-pamphlets",
       "subject": "ICON:ACTION:PAMPHLETS",
-      "assetClass": "ICON",
-      "recipeClass": "icon",
-      "canvas": {
-        "width": 48,
-        "height": 48
-      },
-      "accent": "cult-lodge-icon"
-    },
-    {
-      "id": "chibi-direction-icon-cult-action-martyr",
-      "subject": "ICON:ACTION:MARTYR",
       "assetClass": "ICON",
       "recipeClass": "icon",
       "canvas": {
@@ -497,17 +440,6 @@
     {
       "id": "chibi-direction-icon-cult-status-warded",
       "subject": "ICON:STATUS:WARDED",
-      "assetClass": "ICON",
-      "recipeClass": "icon",
-      "canvas": {
-        "width": 48,
-        "height": 48
-      },
-      "accent": "cult-lodge-icon"
-    },
-    {
-      "id": "chibi-direction-icon-cult-status-pick-me",
-      "subject": "ICON:STATUS:PICK_ME",
       "assetClass": "ICON",
       "recipeClass": "icon",
       "canvas": {
@@ -830,7 +762,7 @@
     },
     {
       "id": "icon-behold-a",
-      "asset": "chibi-direction-icon-cult-action-behold",
+      "asset": "chibi-direction-icon-cult-status-warded",
       "endpoint": "create-image-pixen",
       "seed": 93351,
       "requestSize": {
@@ -838,11 +770,11 @@
         "height": 48
       },
       "negativeAddendum": "grass, ground tile, slab, platform, person, character, figure, checkerboard, dark background, body, arms, legs, skull, moai, blue cloth, candle, flames",
-      "notes": "Behold!: a fresh creation with the icon class."
+      "notes": "Behold!: a fresh creation with the icon class. Retired with its asset by the Cult redesign (pulp_wars-mch9.42); kept here as history."
     },
     {
       "id": "icon-pick-me-a",
-      "asset": "chibi-direction-icon-cult-action-pick-me",
+      "asset": "chibi-direction-icon-cult-status-warded",
       "endpoint": "create-image-pixen",
       "seed": 93361,
       "requestSize": {
@@ -851,11 +783,11 @@
       },
       "promptAddendum": "The cloth is a bright saturated royal blue, clearly blue and much lighter than the black outline, never grey, charcoal, navy or black.",
       "negativeAddendum": "grass, ground tile, slab, platform, person, character, figure, checkerboard, dark background, face, eyes, skin, fist, thumb, glove with five fingers, flames",
-      "notes": "Pick Me!: a fresh creation with the icon class."
+      "notes": "Pick Me!: a fresh creation with the icon class. Retired with its asset by the Cult redesign (pulp_wars-mch9.42); kept here as history."
     },
     {
       "id": "icon-pick-me-b",
-      "asset": "chibi-direction-icon-cult-action-pick-me",
+      "asset": "chibi-direction-icon-cult-status-warded",
       "endpoint": "create-image-pixen",
       "seed": 93362,
       "requestSize": {
@@ -864,11 +796,11 @@
       },
       "promptAddendum": "The cloth is a bright saturated royal blue, clearly blue and much lighter than the black outline, never grey, charcoal, navy or black. It is a plain object, not a living thing: no face, no arms and no legs.",
       "negativeAddendum": "grass, ground tile, slab, platform, person, character, figure, checkerboard, dark background, face, eyes, skin, fist, knuckles, fingernail, middle finger, five fingers, flames, green",
-      "notes": "icon-pick-me-a drew a fist seen from the back with one finger up, which can be read as a rude gesture: a second creation that asks for a flat foam hand with an index finger and a thumb."
+      "notes": "icon-pick-me-a drew a fist seen from the back with one finger up, which can be read as a rude gesture: a second creation that asks for a flat foam hand with an index finger and a thumb. Retired with its asset by the Cult redesign (pulp_wars-mch9.42); kept here as history."
     },
     {
       "id": "icon-pick-me-c",
-      "asset": "chibi-direction-icon-cult-action-pick-me",
+      "asset": "chibi-direction-icon-cult-status-warded",
       "endpoint": "create-image-pixen",
       "seed": 93363,
       "requestSize": {
@@ -877,11 +809,11 @@
       },
       "promptAddendum": "The cloth is a bright saturated royal blue, clearly blue and much lighter than the black outline, never grey, charcoal, navy or black. It is a plain object, not a living thing: no face, no arms and no legs. The glove is smooth and plain, with no hair, no claws and no fur.",
       "negativeAddendum": "grass, ground tile, slab, platform, person, character, figure, checkerboard, dark background, face, eyes, skin, fist seen from the back, knuckles, fingernail, claws, fur, hair, crown, flames, green, orange",
-      "notes": "icon-pick-me-b drew a ragged fist with a spiky yellow fringe: a third creation that asks for a smooth round cartoon glove with the index finger up and the thumb out."
+      "notes": "icon-pick-me-b drew a ragged fist with a spiky yellow fringe: a third creation that asks for a smooth round cartoon glove with the index finger up and the thumb out. Retired with its asset by the Cult redesign (pulp_wars-mch9.42); kept here as history."
     },
     {
       "id": "icon-pick-me-d",
-      "asset": "chibi-direction-icon-cult-action-pick-me",
+      "asset": "chibi-direction-icon-cult-status-warded",
       "endpoint": "create-image-pixen",
       "seed": 93364,
       "requestSize": {
@@ -890,7 +822,7 @@
       },
       "promptAddendum": "The cloth is a bright saturated royal blue, clearly blue and much lighter than the black outline, never grey, charcoal, navy or black. It is a plain object, not a living thing: no face, no arms and no legs. All five fingers are open and spread: no fist and no single raised finger.",
       "negativeAddendum": "grass, ground tile, slab, platform, person, character, figure, checkerboard, dark background, face, eyes, skin, fist, pointing finger, one finger, two fingers, peace sign, thumbs up, claws, fur, hair, crown, flames, green, orange",
-      "notes": "Review of bead pulp_wars-mch9.23: a single raised finger can be misread as a rude gesture at 18 to 24 px. Pick Me! is redone as an open waving hand with all five fingers spread."
+      "notes": "Review of bead pulp_wars-mch9.23: a single raised finger can be misread as a rude gesture at 18 to 24 px. Pick Me! is redone as an open waving hand with all five fingers spread. Retired with its asset by the Cult redesign (pulp_wars-mch9.42); kept here as history."
     },
     {
       "id": "icon-anchor-a",
@@ -1106,7 +1038,7 @@
     },
     {
       "id": "icon-martyr-a",
-      "asset": "chibi-direction-icon-cult-action-martyr",
+      "asset": "chibi-direction-icon-cult-action-offering",
       "endpoint": "create-image-pixen",
       "seed": 93461,
       "requestSize": {
@@ -1115,7 +1047,7 @@
       },
       "promptAddendum": "It is a plain object, not a living thing: no face, no arms and no legs.",
       "negativeAddendum": "grass, ground tile, slab, platform, person, character, figure, checkerboard, dark background, face, body, red ribbon, blue ribbon, star medal, cross, candle, blue cloth",
-      "notes": "Martyr: a fresh creation with the icon class."
+      "notes": "Martyr: a fresh creation with the icon class. Retired with its asset by the Cult redesign (pulp_wars-mch9.42); kept here as history."
     },
     {
       "id": "icon-grab-a",
@@ -1367,7 +1299,7 @@
     },
     {
       "id": "icon-pick-me-status-a",
-      "asset": "chibi-direction-icon-cult-status-pick-me",
+      "asset": "chibi-direction-icon-cult-status-grabbed",
       "endpoint": "create-image-pixen",
       "seed": 93601,
       "requestSize": {
@@ -1376,7 +1308,7 @@
       },
       "promptAddendum": "The cloth is a bright saturated royal blue, clearly blue and much lighter than the black outline, never grey, charcoal, navy or black.",
       "negativeAddendum": "grass, ground tile, slab, platform, person, character, figure, checkerboard, dark background, face, eyes, skin, fist, thumb, glove with five fingers, flames, star",
-      "notes": "The Pick Me! chip: a fresh creation with the icon class."
+      "notes": "The Pick Me! chip: a fresh creation with the icon class. Retired with its asset by the Cult redesign (pulp_wars-mch9.42); kept here as history."
     },
     {
       "id": "portrait-idol-bearer-s",
@@ -1448,7 +1380,7 @@
     },
     {
       "id": "portrait-caller-s",
-      "asset": "chibi-direction-portrait-cult-caller",
+      "asset": "chibi-direction-portrait-cult-summoner",
       "endpoint": "edit-image-pixen",
       "seed": 93061,
       "requestSize": {
@@ -1461,11 +1393,11 @@
         "sibling": true
       },
       "editInstruction": "Redraw it as another member of the same society in the same blue hood: the hood and its eyes become one big round polished brass diving helmet with one round porthole glowing bright green in its front; beside the helmet is the wide mouth of one huge pale cream conch shell horn held in a cream mitten. No candle and no eyes. Keep the blue cloth, the size, thick black outline and art style, on a transparent background.",
-      "notes": "The Caller's bust as a sibling edit of the accepted Initiate bust: the helmet replaces the hood."
+      "notes": "The Caller's bust as a sibling edit of the accepted Initiate bust: the helmet replaces the hood. Retired with its asset by the Cult redesign (pulp_wars-mch9.42); kept here as history."
     },
     {
       "id": "portrait-chosen-s",
-      "asset": "chibi-direction-portrait-cult-chosen",
+      "asset": "chibi-direction-portrait-cult-hexer",
       "endpoint": "edit-image-pixen",
       "seed": 93071,
       "requestSize": {
@@ -1478,7 +1410,7 @@
         "sibling": true
       },
       "editInstruction": "Redraw it as another member of the same society in the same blue hood: burly, with big broad shoulders; the hood is short with a small point; a broad pale cream sash crosses the chest with one round brass medal; the cream mitten is raised beside the head with one finger pointing straight up. No candle. Keep the blue cloth, the black hood opening with its two cream eyes, the size, thick black outline and art style, on a transparent background.",
-      "notes": "The Chosen's bust as a sibling edit of the accepted Initiate bust."
+      "notes": "The Chosen's bust as a sibling edit of the accepted Initiate bust. Retired with its asset by the Cult redesign (pulp_wars-mch9.42); kept here as history."
     },
     {
       "id": "icon-boo-s",
@@ -1499,7 +1431,7 @@
     },
     {
       "id": "icon-pick-me-status-s",
-      "asset": "chibi-direction-icon-cult-status-pick-me",
+      "asset": "chibi-direction-icon-cult-status-grabbed",
       "endpoint": "edit-image-pixen",
       "seed": 93602,
       "requestSize": {
@@ -1512,11 +1444,11 @@
         "sibling": true
       },
       "editInstruction": "Change only one thing: erase the brass starburst behind the hand and the small green sparkle completely, leaving those areas transparent, so only the hand on its blue cuff is left. Do not redraw the hand: keep the cream glove with its index finger pointing up, the blue cuff, the thick black outline and the art style exactly the same, on a transparent background.",
-      "notes": "The Pick Me! chip is the raised hand of the accepted Pick Me! icon without its starburst: a sibling edit, so the chip and the command show the same hand."
+      "notes": "The Pick Me! chip is the raised hand of the accepted Pick Me! icon without its starburst: a sibling edit, so the chip and the command show the same hand. Retired with its asset by the Cult redesign (pulp_wars-mch9.42); kept here as history."
     },
     {
       "id": "icon-pick-me-status-t",
-      "asset": "chibi-direction-icon-cult-status-pick-me",
+      "asset": "chibi-direction-icon-cult-status-grabbed",
       "endpoint": "edit-image-pixen",
       "seed": 93603,
       "requestSize": {
@@ -1529,11 +1461,11 @@
         "sibling": true
       },
       "editInstruction": "Change only one thing: erase the brass starburst behind the hand completely, leaving that area transparent, so only the open waving hand on its blue cuff and its motion lines are left. Do not redraw the hand: keep the cream glove with all five fingers spread open, the blue cuff, the thick black outline and the art style exactly the same, on a transparent background.",
-      "notes": "Review of bead pulp_wars-mch9.23: the chip is the open waving hand of the redone Pick Me! icon without its starburst, a sibling edit."
+      "notes": "Review of bead pulp_wars-mch9.23: the chip is the open waving hand of the redone Pick Me! icon without its starburst, a sibling edit. Retired with its asset by the Cult redesign (pulp_wars-mch9.42); kept here as history."
     },
     {
       "id": "portrait-caller-s-helmet",
-      "asset": "chibi-direction-portrait-cult-caller",
+      "asset": "chibi-direction-portrait-cult-summoner",
       "endpoint": "edit-image-pixen",
       "seed": 93062,
       "requestSize": {
@@ -1545,7 +1477,7 @@
         "candidate": 0
       },
       "editInstruction": "Change only one thing: erase the blue cloth hood tip that sticks up behind the top of the brass helmet, leaving that area transparent, so the round brass diving helmet has nothing on top of it. Do not redraw anything else: keep the helmet with its green porthole and rivets, the cream conch shell, the blue robe shoulders, the thick black outline and the art style exactly the same, on a transparent background.",
-      "notes": "portrait-caller-s is the Caller's helmet and conch, but the Initiate's hood tip still sits on top of the helmet: the map sprite's helmet replaces the hood."
+      "notes": "portrait-caller-s is the Caller's helmet and conch, but the Initiate's hood tip still sits on top of the helmet: the map sprite's helmet replaces the hood. Retired with its asset by the Cult redesign (pulp_wars-mch9.42); kept here as history."
     },
     {
       "id": "portrait-frog-a",

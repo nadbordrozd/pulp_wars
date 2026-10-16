@@ -1,8 +1,11 @@
 import {
   CHANNEL_RANGE_V7,
   CULT_SUMMONED_ROLE_RULES_V7,
+  FAVOUR_CAP_V7,
+  HERALD_HUNGER_FAVOUR_V7,
   HORROR_FAVOUR_COST_V7,
   IMP_FAVOUR_COST_V7,
+  SUMMONER_TRICKLE_FAVOUR_V7,
   anchorRejectionV7,
   booRejectionV7,
   channelRejectionV7,
@@ -323,22 +326,107 @@ export function daemonsShortV7(view: PlayerViewV7): readonly ShortDaemonV7[] {
   });
 }
 
+/** "Hunger 2": the chip on a bound Herald's card (section 13). */
+export const HERALD_HUNGER_CHIP_V7 = `Hunger ${HERALD_HUNGER_FAVOUR_V7}`;
+/** The Hunger chip's sentence. */
+export const HERALD_HUNGER_STATUS_V7 = `At the start of its owner's turn it eats ${HERALD_HUNGER_FAVOUR_V7} Favour. Without it, it breaks loose`;
+
+/** A bound Herald of the viewer that its next Start Turn cannot feed. */
+export interface HungryHeraldV7 {
+  readonly unitId: UnitId;
+  /** "Herald". */
+  readonly name: string;
+}
+
+/**
+ * The Cult redesign (`pulp_wars-mch9.42`, docs/product/RULESET_7_CULT_REDESIGN.md
+ * sections 7.6 and 10.1): the viewer's bound Heralds that would go hungry
+ * and break loose at its next Start Turn as the board stands. The check
+ * first unbinds every daemon short of strands (`daemonsShortV7`: those are
+ * not counted here), then credits the trickle (1 for each own Summoner
+ * channelling a daemon that stays bound), then pays 2 for each Herald in
+ * unit-ID order; a Herald left without its 2 breaks loose. What End Turn
+ * asks about.
+ */
+export function heraldsHungryV7(view: PlayerViewV7): readonly HungryHeraldV7[] {
+  const viewerId = view.viewer.id;
+  const channel = channelOfV7(view);
+  const holding = new Set(
+    channel.daemons
+      .filter((daemon) => daemon.strands >= daemon.control)
+      .map((daemon) => daemon.unitId),
+  );
+  const own = (unitId: UnitId): PublicUnitV7 | undefined =>
+    view.units.find(
+      (unit) => unit.id === unitId && unit.ownerId === viewerId && unit.hp > 0,
+    );
+  const heralds = [...holding]
+    .flatMap((unitId) => {
+      const unit = own(unitId);
+      return unit?.summoned === "HERALD" ? [unit] : [];
+    })
+    .sort((left, right) => left.id - right.id);
+  if (heralds.length === 0) return [];
+  const payers = new Set(
+    channel.strands.flatMap((strand) => {
+      const cultist = own(strand.cultistUnitId);
+      return cultist !== undefined &&
+        strand.daemonUnitId !== null &&
+        holding.has(strand.daemonUnitId) &&
+        own(strand.daemonUnitId) !== undefined &&
+        (unitRoleRuleV7(view, cultist).abilities as readonly string[]).includes(
+          "SUMMON",
+        )
+        ? [cultist.id]
+        : [];
+    }),
+  );
+  let favour = Math.min(
+    FAVOUR_CAP_V7,
+    favourOfV7(view, viewerId) + SUMMONER_TRICKLE_FAVOUR_V7 * payers.size,
+  );
+  const hungry: HungryHeraldV7[] = [];
+  for (const herald of heralds) {
+    if (favour >= HERALD_HUNGER_FAVOUR_V7) {
+      favour -= HERALD_HUNGER_FAVOUR_V7;
+      continue;
+    }
+    hungry.push({
+      unitId: herald.id,
+      name: unitRoleRuleV7(view, herald).label,
+    });
+  }
+  return hungry;
+}
+
 /** The answers of the End Turn question. */
 export const END_TURN_UNBOUND_CONFIRM_V7 = "End turn";
 export const END_TURN_UNBOUND_BACK_V7 = "Back";
 
 /**
  * Section 6.2, what End Turn asks once when a daemon is short: "The Horror
- * will be Unbound." (the buttons are the choice). A confirmation, not a
- * protection.
+ * will be Unbound." (the buttons are the choice), and (the Cult redesign,
+ * section 7.6) when a Herald cannot be fed: "The Herald will go hungry and
+ * break loose.". A confirmation, not a protection.
  */
 export function endTurnUnboundQuestionV7(
   short: readonly ShortDaemonV7[],
+  hungry: readonly HungryHeraldV7[] = [],
 ): string {
+  const sentences: string[] = [];
   const [only] = short;
-  return short.length === 1 && only !== undefined
-    ? `The ${only.name} will be Unbound.`
-    : `${short.length} daemons will be Unbound.`;
+  if (short.length === 1 && only !== undefined)
+    sentences.push(`The ${only.name} will be Unbound.`);
+  else if (short.length > 1)
+    sentences.push(`${short.length} daemons will be Unbound.`);
+  const [herald] = hungry;
+  if (hungry.length === 1 && herald !== undefined)
+    sentences.push(`The ${herald.name} will go hungry and break loose.`);
+  else if (hungry.length > 1)
+    sentences.push(
+      `${hungry.length} ${herald?.name ?? "Herald"}s will go hungry and break loose.`,
+    );
+  return sentences.join(" ");
 }
 
 /** The label at a daemon an armed Channel may pick: its strands after. */
@@ -545,7 +633,8 @@ export interface CultChannelChipV7 {
     | "idol"
     | "control"
     | "unbound"
-    | "furious";
+    | "furious"
+    | "hunger";
   /** The chip's word, or a daemon's "2 / 3". */
   readonly label: string;
   /** Its one sentence (the tooltip and the accessible name). */
@@ -553,7 +642,8 @@ export interface CultChannelChipV7 {
   /** The raster asked for; the chip shows its word alone without one. */
   readonly icon:
     | `ICON:STATUS:${"CANDLELIT" | "WARDED" | "UNBOUND" | "FURIOUS"}`
-    | `ICON:ACTION:${"ANCHOR" | "CHANNEL"}`;
+    | `ICON:ACTION:${"ANCHOR" | "CHANNEL"}`
+    | "ICON:HUD:CULT:HUNGER";
   /** A daemon short of its Control: the chip takes the loss colour. */
   readonly short?: true;
 }
@@ -616,6 +706,14 @@ export function cultChannelChipsV7(
       ...(short ? { short: true as const } : {}),
     });
   }
+  // The Cult redesign (section 7.6): a bound Herald eats its seat's Favour.
+  if (!unbound && unit.summoned === "HERALD")
+    chips.push({
+      id: "hunger",
+      label: HERALD_HUNGER_CHIP_V7,
+      status: HERALD_HUNGER_STATUS_V7,
+      icon: "ICON:HUD:CULT:HUNGER",
+    });
   if (unbound) {
     chips.push({
       id: "unbound",
@@ -681,7 +779,12 @@ export function cultChannelNoticePartsV7(
     if (unit === undefined && !own) continue;
     const name =
       unit === undefined ? "daemon" : unitRoleRuleV7(before, unit).label;
-    parts.push(`${own ? "Your" : "A"} ${name} is Unbound`);
+    // The Cult redesign (section 7.6): a Herald its seat could not feed.
+    parts.push(
+      event.reason === "HUNGER"
+        ? `${own ? "Your" : "A"} ${name} went hungry and broke loose`
+        : `${own ? "Your" : "A"} ${name} is Unbound`,
+    );
   }
   return parts;
 }

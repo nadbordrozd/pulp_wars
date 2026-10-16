@@ -91,8 +91,6 @@ export interface CultUnitMarkersV7 {
    * keeps its look and the badge shows the frog).
    */
   readonly frog?: FrogLookV7;
-  /** A Chosen that shouted Pick Me!: its "ME!" bubble. */
-  readonly taunt?: true;
   /** A Tentacle: the neutral turns it has left, as pips under it. */
   readonly sinks?: 1 | 2 | 3;
 }
@@ -253,7 +251,7 @@ export function outlineEntries(
   entries: BoardRenderPlanEntryV7[],
   view: PlayerViewV7,
   cells: readonly CoordV7[],
-  style: "IDOL_RING" | "CHANNEL_RANGE" | "WARD_PREVIEW" | "STARFALL" | "TAUNT",
+  style: "IDOL_RING" | "CHANNEL_RANGE" | "STARFALL" | "TAUNT",
   prefix: string,
 ): void {
   const inside = cells.filter(

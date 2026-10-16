@@ -726,6 +726,7 @@ import {
   CULT_CHANNEL_KINDS_V7,
   END_TURN_UNBOUND_BACK_V7,
   END_TURN_UNBOUND_CONFIRM_V7,
+  HERALD_HUNGER_CHIP_V7,
   SUMMON_BUTTON_LABEL_V7,
   SUMMON_PICK_HELPER_V7,
   SUMMON_PICK_TILE_V7,
@@ -735,6 +736,7 @@ import {
   cultChannelUnavailableTextV7,
   daemonsShortV7,
   endTurnUnboundQuestionV7,
+  heraldsHungryV7,
   strandsTextV7,
   type CultChannelKindV7,
 } from "../cult-channel-presentation-v7";
@@ -767,7 +769,7 @@ import {
   type CultChannelPickV7,
 } from "../canvas/cult-channel-board-plan-v7";
 import {
-  FAVOUR_TOOLTIP_V7,
+  FAVOUR_CAP_TEXT_V7,
   GREAT_SUMMONING_UNLOCK_TEXT_V7,
   OFFERING_LABEL_V7,
   OFFERING_TOOLTIP_V7,
@@ -782,11 +784,15 @@ import {
   SWITCHEROO_UNLOCK_TEXT_V7,
   TENTACLES_UNLOCK_TEXT_V7,
   cultBoundaryNoticeV7,
-  favourCountTextV7,
-  favourGainTextV7,
+  favourAtCapV7,
+  favourChipLabelV7,
+  favourChipTooltipV7,
+  favourGainLossTextV7,
+  favourLostTextV7,
   sacrificeUnavailableTextV7,
   seatHasFavourV7,
   seizeUnavailableTextV7,
+  viewerHungerDueV7,
 } from "../cult-presentation-v7";
 import {
   isCultOfferingPickV7,
@@ -1993,6 +1999,8 @@ export class Ruleset7DomAppView {
         counterIcon: () =>
           this.#root.querySelector(".v7-favour .v7-favour-icon"),
         onBalance: (landed) => this.#showFavourBalance(landed),
+        // The Cult redesign: "N lost" and the Hunger drop beside the chip.
+        puffAnchor: () => this.#root.querySelector(".v7-match-hud .v7-favour"),
       },
     });
     this.#coinFlight.attach(this.#boardHost.feedback ?? null);
@@ -4643,10 +4651,24 @@ export class Ruleset7DomAppView {
     stats.append(economy);
     // The Cultists (bead pulp_wars-mch9.17, RULESET_7_CULTISTS.md section
     // 14.3): a Cult player's Favour, a candle and a number beside the Coins.
+    // The Cult redesign (`pulp_wars-mch9.42`): "12 / 30" against the cap,
+    // marked full at it, and the Heralds' Hunger in its tooltip.
     if (seatHasFavourV7(view, view.viewer.id)) {
       const favour = favourOfV7(view, view.viewer.id);
+      const hunger = viewerHungerDueV7(view);
       const chip = el(this.#document, "p", "v7-favour");
       chip.dataset.v7Region = "favour";
+      // Full as shown: the amber waits for the candles still in flight.
+      if (favourAtCapV7(this.#coinFlight.displayed(favour, "FAVOUR")))
+        chip.dataset.full = "true";
+      if (hunger > 0) chip.dataset.hunger = String(hunger);
+      const cap = text(
+        this.#document,
+        "span",
+        FAVOUR_CAP_TEXT_V7,
+        "v7-favour-cap",
+      );
+      cap.setAttribute("aria-hidden", "true");
       chip.append(
         this.#favourIcon(),
         text(
@@ -4656,9 +4678,10 @@ export class Ruleset7DomAppView {
           String(this.#coinFlight.displayed(favour, "FAVOUR")),
           "v7-favour-balance",
         ),
+        cap,
       );
-      chip.setAttribute("aria-label", favourCountTextV7(favour));
-      chip.title = FAVOUR_TOOLTIP_V7;
+      chip.setAttribute("aria-label", favourChipLabelV7(favour, hunger));
+      chip.title = favourChipTooltipV7(favour, hunger);
       stats.append(chip);
     }
     stats.append(round, status);
@@ -7904,7 +7927,7 @@ export class Ruleset7DomAppView {
         action.title = OFFERING_TOOLTIP_V7;
         action.setAttribute(
           "aria-label",
-          `${OFFERING_LABEL_V7} · ${favourGainTextV7(offering.favour)} · −${offering.population} population`,
+          `${OFFERING_LABEL_V7} · ${favourGainLossTextV7(offering.favour, offering.forfeited)} · −${offering.population} population`,
         );
         action.setAttribute("aria-description", `${OFFERING_TOOLTIP_V7}.`);
         action.dataset.cult = "offering";
@@ -7917,6 +7940,16 @@ export class Ruleset7DomAppView {
           "v7-economy-chip v7-favour-chip",
         );
         favour.append(`+${offering.favour}`, this.#favourIcon());
+        // The Cult redesign (section 6): the part above the cap is lost.
+        if (offering.forfeited > 0) {
+          const lost = text(
+            this.#document,
+            "span",
+            favourLostTextV7(offering.forfeited),
+            "v7-economy-chip v7-favour-lost-chip is-loss",
+          );
+          chips.prepend(lost);
+        }
         chips.prepend(favour);
         action.append(chips);
       } else if (command.kind === "RALLY" && berserk) {
@@ -11455,8 +11488,17 @@ export class Ruleset7DomAppView {
     );
     const feedback = this.#boardHost.feedback;
     const tickets = {
-      // The Cultists: the viewer's Favour flies with the Coins' ticket.
-      coins: this.#coinFlight.hold(plan.coins, plan.favour),
+      // The Cultists: the viewer's Favour flies with the Coins' ticket; the
+      // Cult redesign's Hunger and the Favour lost above the cap drop from
+      // its chip.
+      coins: this.#coinFlight.hold(plan.coins, plan.favour, [
+        ...(plan.favourHunger > 0
+          ? [{ kind: "hunger" as const, text: `−${plan.favourHunger}` }]
+          : []),
+        ...(plan.favourLost > 0
+          ? [{ kind: "lost" as const, text: favourLostTextV7(plan.favourLost) }]
+          : []),
+      ]),
       board: feedback?.hold(plan) ?? null,
     };
     if (
@@ -11595,11 +11637,17 @@ export class Ruleset7DomAppView {
     const view = this.#snapshot.view;
     const balance = this.#root.querySelector<HTMLElement>(".v7-favour-balance");
     if (view === null || balance === null) return;
-    const shown = String(
-      this.#coinFlight.displayed(favourOfV7(view, view.viewer.id), "FAVOUR"),
+    const displayed = this.#coinFlight.displayed(
+      favourOfV7(view, view.viewer.id),
+      "FAVOUR",
     );
+    const shown = String(displayed);
     if (balance.textContent !== shown) balance.textContent = shown;
     const pill = balance.closest<HTMLElement>(".v7-favour");
+    // The Cult redesign: the chip turns full as the last candle lands.
+    if (pill !== null)
+      if (favourAtCapV7(displayed)) pill.dataset.full = "true";
+      else delete pill.dataset.full;
     if (!landed || pill === null) return;
     // Restart the pulse for each candle that lands.
     pill.classList.remove("is-favour-landing");
@@ -14122,7 +14170,7 @@ export class Ruleset7DomAppView {
       view !== null &&
       view !== undefined &&
       !this.#localBusy() &&
-      daemonsShortV7(view).length > 0
+      (daemonsShortV7(view).length > 0 || heraldsHungryV7(view).length > 0)
     ) {
       this.#endTurnConfirm = true;
       this.#pendingFocusAction = "end-turn-back";
@@ -14141,9 +14189,11 @@ export class Ruleset7DomAppView {
 
   /**
    * The End Turn question: one sentence, each short daemon's strands
-   * against its Control, and the two answers. Null (and the question is
-   * dropped) when it was not asked, the turn can no longer be ended, or no
-   * daemon is short any more.
+   * against its Control, and the two answers. The Cult redesign
+   * (`pulp_wars-mch9.42`, section 7.6): also a Herald that would go hungry,
+   * with its Hunger chip. Null (and the question is dropped) when it was
+   * not asked, the turn can no longer be ended, or nothing is at risk any
+   * more.
    */
   #endTurnUnboundDialog(view: PlayerViewV7): HTMLElement | null {
     if (!this.#endTurnConfirm) return null;
@@ -14151,11 +14201,12 @@ export class Ruleset7DomAppView {
       (candidate) => candidate.kind === "END_TURN",
     );
     const short = daemonsShortV7(view);
-    if (command === undefined || short.length === 0) {
+    const hungry = heraldsHungryV7(view);
+    if (command === undefined || (short.length === 0 && hungry.length === 0)) {
       this.#endTurnConfirm = false;
       return null;
     }
-    const question = endTurnUnboundQuestionV7(short);
+    const question = endTurnUnboundQuestionV7(short, hungry);
     const modal = el(this.#document, "section", "v7-end-turn-confirm");
     modal.dataset.v7Region = "end-turn-confirm";
     modal.setAttribute("role", "alertdialog");
@@ -14173,6 +14224,23 @@ export class Ruleset7DomAppView {
       );
       chip.dataset.short = "true";
       chip.dataset.unitStatus = "control";
+      line.append(chip);
+    }
+    // The Hunger each hungry Herald could not be fed.
+    for (let index = 0; index < hungry.length; index += 1) {
+      const chip = el(this.#document, "span", "v7-chip v7-cult-chip");
+      const bowl = this.#chibiArt(
+        "ICON:HUD:CULT:HUNGER",
+        CHIBI_DOM_BOXES_V7.leaderboard,
+      )?.element;
+      if (bowl !== undefined) {
+        bowl.classList.add("v7-cult-chip-icon");
+        bowl.setAttribute("aria-hidden", "true");
+        chip.append(bowl);
+      }
+      chip.append(text(this.#document, "span", HERALD_HUNGER_CHIP_V7));
+      chip.dataset.short = "true";
+      chip.dataset.unitStatus = "hunger";
       line.append(chip);
     }
     const answers = el(this.#document, "div", "button-row v7-end-turn-answers");

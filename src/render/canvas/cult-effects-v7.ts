@@ -24,10 +24,11 @@ import type { SupportEffectArtV7 } from "./support-presentation-v7";
  *   channeller (`from`) to its daemon.
  * - **STRAND_SNAP:** the strand that was flashes red and its two halves
  *   recoil from a parted link.
- * - **IDOL:** the chalk ring spreads from the Idol Bearer to its eight
- *   tiles.
  * - **BOO:** a ring of startle lines jumps out of the Horror.
  * - **UNBOUND:** the collar bursts: a red ring and chain links flying.
+ *
+ * (The idol's raising cue went with the `BEHOLD` command: the Cult
+ * redesign's idol always stands, `pulp_wars-mch9.33` and `pulp_wars-mch9.42`.)
  *
  * `progress` runs 0 to 1; reduced motion holds one still frame of each
  * (`cultReducedMotionProgressV7`) where the cue reads. Each cue also asks
@@ -35,7 +36,7 @@ import type { SupportEffectArtV7 } from "./support-presentation-v7";
  * art has registered one.
  */
 export type CultChannelEffectV7 =
-  "SUMMON" | "STRAND_FORMED" | "STRAND_SNAP" | "IDOL" | "BOO" | "UNBOUND";
+  "SUMMON" | "STRAND_FORMED" | "STRAND_SNAP" | "BOO" | "UNBOUND";
 /**
  * Every Cult cue: the channel's, and those of rituals, hexes and tricks
  * (bead `pulp_wars-mch9.19`, cult-trick-effects-v7.ts).
@@ -60,7 +61,6 @@ export const CULT_EFFECT_DURATIONS_V7: Readonly<
   SUMMON: 420,
   STRAND_FORMED: 260,
   STRAND_SNAP: 380,
-  IDOL: 320,
   BOO: 360,
   UNBOUND: 620,
   ...CULT_TRICK_EFFECT_DURATIONS_V7,
@@ -345,18 +345,6 @@ export function drawCultFeedbackV7(
             fade,
           );
       }
-    } else if (feedback.effect === "IDOL") {
-      // The chalk spreads out to the ring's place.
-      const size = (64 + 128 * progress) * boardZoom;
-      context.save();
-      context.globalAlpha *= fade;
-      context.strokeStyle = CULT_PALETTE_V7.casing;
-      context.lineWidth = Math.max(2, 6 * zoom);
-      context.strokeRect(point.x - size, point.y - size, size * 2, size * 2);
-      context.strokeStyle = CULT_PALETTE_V7.wax;
-      context.lineWidth = Math.max(1, 3 * zoom);
-      context.strokeRect(point.x - size, point.y - size, size * 2, size * 2);
-      context.restore();
     } else if (feedback.effect === "BOO") {
       // Startle lines: sixteen short spokes jumping outward.
       if (!sprite(point, 1.1 + progress * 0.9, fade)) {

@@ -873,7 +873,7 @@ const ROSTER_BEAD = "pulp_wars-mch9.15";
 const NAVAL_BATCH = "naval-cult";
 
 type Family = "lodge" | "summoned" | "unbound";
-/** Every Cult unit sprite: the nine trained, the summoned, the Unbound. */
+/** Every Cult unit sprite: the seven trained, the summoned, the Unbound. */
 const ROSTER: readonly (readonly [
   title: string,
   asset: string,
@@ -885,8 +885,6 @@ const ROSTER: readonly (readonly [
   ["Hexer", "chibi-direction-cult-hexer", "lodge"],
   ["Summoner", "chibi-direction-cult-summoner", "lodge"],
   ["Stargazer", "chibi-direction-cult-stargazer", "lodge"],
-  ["Caller", "chibi-direction-cult-caller", "lodge"],
-  ["Chosen", "chibi-direction-cult-chosen", "lodge"],
   ["Thing in the Cellar", "chibi-direction-cult-thing", "summoned"],
   ["Horror", "chibi-direction-cult-horror", "summoned"],
   ["Herald", "chibi-direction-cult-herald", "summoned"],

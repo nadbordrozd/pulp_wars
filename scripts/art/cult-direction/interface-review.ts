@@ -88,8 +88,6 @@ const PORTRAITS: readonly (readonly [
   ["Hexer", "chibi-direction-portrait-cult-hexer", "hexer"],
   ["Summoner", "chibi-direction-portrait-cult-summoner", "summoner"],
   ["Stargazer", "chibi-direction-portrait-cult-stargazer", "stargazer"],
-  ["Caller", "chibi-direction-portrait-cult-caller", "caller"],
-  ["Chosen", "chibi-direction-portrait-cult-chosen", "chosen"],
   ["Thing in the Cellar", "chibi-direction-portrait-cult-thing", "thing"],
   ["Horror", "chibi-direction-portrait-cult-horror", "horror"],
   ["Herald", "chibi-direction-portrait-cult-herald", "herald"],

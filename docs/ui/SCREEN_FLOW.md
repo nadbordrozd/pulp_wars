@@ -112,8 +112,8 @@ are in [BOARD_TARGETING.md](BOARD_TARGETING.md). In short:
   unit. Arrow keys move in the chooser, Enter or a tap chooses, Escape or
   a press elsewhere closes it. The dock's buttons stay: arming one still
   narrows the board to that ability. Area and self actions (Fortify,
-  Disband, Promote, Kaboom!, Cold Snap, Whirl, Stomp, Behold!, Boo!, Pick
-  Me!, the Ice Witch's ring, Rally, Tend Wounded) stay in the dock only.
+  Disband, Promote, Kaboom!, Cold Snap, Whirl, Stomp, Boo!, the Ice
+  Witch's ring, Rally, Tend Wounded) stay in the dock only.
 - **Previews** stand at each target (damage, heal, cost, "Frozen"), from
   the engine's public previews, as an attack's does.
 - **Keyboard.** Tab and Shift+Tab on the board step through the armed
@@ -716,34 +716,49 @@ Roads, that text now describes the **Classic look** developer option
     shows nothing.
   - **Favour (bead `pulp_wars-mch9.17`,
     [the Cultists](../product/RULESET_7_CULTISTS.md#143-how-it-reads-on-the-board-without-text)).**
-    A Cult player's HUD has a Favour chip beside the Coins: a candle and
-    the number, in the Cult's hue (`--pw-emerald` on its mint fill), at
-    every width. Favour the viewer gains flies to it as candles in the
+    A Cult player's HUD has a Favour chip beside the Coins: a candle, the
+    number and the cap after it in a smaller grey ("12 / 30", the Cult
+    redesign, bead `pulp_wars-mch9.42`), in the Cult's hue (`--pw-emerald`
+    on its mint fill), at every width. At the cap the chip turns the
+    warning amber (`--pw-amber` on `--pw-amber-fill`, `data-full`): anything
+    more is lost. Its tooltip and accessible name say the cap, "Full" at it,
+    and the Hunger the player's bound Heralds will eat ("Hunger −2 a turn",
+    `data-hunger`). Favour the viewer gains flies to it as candles in the
     coins' layer and by the coins' rules (the same hop, toss, stagger, cap
     and count: the chip shows the true Favour less what is still on its way
     and pulses as each candle lands): from the victim's tile for a Sacrifice
-    or a Seizure, from the city for an Offering, from the tile a Chosen died
-    on for a Martyr (`FAVOUR_GAINED` names no tile, so the plan takes the
-    tile of what earned it, the event before it). An Offering's two pips
-    rise and fade from the city's column one after the other, as a lost Road
-    link's pip does. Another seat's Favour flies nowhere: it is public in
-    the leaderboard, where every Cult seat's row shows its candle and
-    number. With reduced motion the chip shows the number at once and
-    nothing flies or fades; the toast carries the numbers either way
-    ("Offering: +3 Favour, −2 population", "Knight Seized: +18 Favour",
-    "Initiate Sacrificed: +2 Favour", "Martyr: +6 Favour", and to the victim's
-    owner "Player 1 Seized your Knight").
+    or a Seizure, from the city for an Offering, from the tile of a daemon's
+    victim for its kill (`FAVOUR_GAINED` names no tile, so the plan takes
+    the tile of what earned it, the event before it), and at the Start Turn
+    one candle from each own Summoner that paid the trickle (the plan reads
+    them off the strands of the view before the check). Only what was
+    banked flies; the part above the cap slides out of the chip's right
+    edge as a small "N lost" tag in the loss red that fades (1.4 s, once the
+    candles are in), and the Favour the Heralds eat at the Start Turn slides
+    out the same way ("−2"). The chip turns amber as the last candle lands.
+    An Offering's two pips rise and fade from the city's column one after
+    the other, as a lost Road link's pip does. Another seat's Favour flies
+    nowhere. With reduced motion the chip shows the number at once and
+    nothing flies, fades or drops; the toast carries the numbers either way
+    ("Offering: +6 Favour, −2 population", "Knight Seized: +18 Favour (8
+    lost)", "Initiate Sacrificed: +2 Favour", "Favour full: 1 lost" for a
+    gain no other notice names, and to the victim's owner "Player 1 Seized
+    your Knight"). A preview near the cap says the same: the victim's label
+    "+12 (7 lost)" and the Offering's "3 lost" chip. A bound Herald's card
+    carries a "Hunger 2" chip (any viewer).
   - **The channel (bead `pulp_wars-mch9.18`,
     [board targeting, section 3.8](BOARD_TARGETING.md#38-the-cultists-the-channel-bead-pulp_wars-mch918)).**
     A Horror arrives in a green ring that bursts upward; a new strand is lit
     by a bead that runs from the channeller to the daemon; a broken strand
-    flashes red and its link flies apart; a raised idol spreads its chalk; a
-    Boo! throws out startle lines and each scared unit hops its one tile; a
+    flashes red and its link flies apart; a Boo! throws out startle lines
+    and each scared unit hops its one tile; a
     daemon that fails its check bursts its collar. Each plays once, 260 to
     620 ms, and another player's frames the camera as its moves do. With
     reduced motion each holds one still frame and nothing travels. The
     toast names what the board might not explain: "Strand broken: it was
-    hurt", "2 strands broken", "Your Horror is Unbound", "Horror bound again".
+    hurt", "2 strands broken", "Your Horror is Unbound", "Horror bound
+    again", and for a Herald its seat could not feed "Your Herald went
+    hungry and broke loose" (the Cult redesign, bead `pulp_wars-mch9.42`).
   - **Rituals, hexes and tricks (bead `pulp_wars-mch9.19`,
     [board targeting, section 3.9](BOARD_TARGETING.md#39-the-cultists-rituals-hexes-and-tricks-bead-pulp_wars-mch919)).**
     A rite's mark is chosen on the board, which previews it, and begun by
@@ -753,7 +768,7 @@ Roads, that text now describes the **Classic look** developer option
     pillar of green light; a Cowed city gets rings and "KNEEL!"; a Ribbit's
     spark flies from the Hexer and pops; a swap swirls on both tiles; a
     Tentacle rises and sinks in a teal splash and its coil closes on the
-    unit it grabs; "ME!" bursts over a Chosen; leaflets flutter up from a
+    unit it grabs; leaflets flutter up from a
     village taken with Pamphlets. Each plays once, 320 to 700 ms, with one
     still frame under reduced motion, and the toast names what the board
     might not ("Star-fall begun: it completes at the start of your next
@@ -762,7 +777,9 @@ Roads, that text now describes the **Classic look** developer option
     Control, End Turn opens a small dialog over a scrim before anything is
     sent: "The Horror will be Unbound.", the count ("0 / 1"), Back and End
     turn. Back and Escape return focus to End Turn; the dialog fits a
-    320 px phone.
+    320 px phone. The same dialog asks when the next Start Turn cannot feed
+    a bound Herald after the trickle: "The Herald will go hungry and break
+    loose." with a "Hunger 2" chip (bead `pulp_wars-mch9.42`).
   - **Territory click.** A click or tap on a tile inside a city's territory
     hops that city (any player's visible city); a click that gives an order
     does not.

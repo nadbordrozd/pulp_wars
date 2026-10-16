@@ -4,7 +4,7 @@
   "recipes": {
     "caller-a": {
       "id": "caller-a",
-      "asset": "chibi-direction-cult-caller",
+      "asset": "chibi-direction-cult-horror",
       "jobId": "sync-fa452fd4-c1fa-4ff2-a66b-53e53b6e6764",
       "request": {
         "endpoint": "create-image-pixen",
@@ -85,15 +85,15 @@
       "completedAt": "2026-10-10T10:13:40.354Z",
       "usageUsd": 0.009653608507580229,
       "review": {
-        "verdict": "ACCEPTED",
+        "verdict": "REJECTED",
         "candidate": 0,
-        "notes": "The Caller of the direction at the first creation: a round brass diving helmet with one green-lit porthole in place of a head, a blue robe, both mittens holding a cream conch horn as big as the body; 62 x 79 px, 4% green, no red or violet pixel. Seated 6 px above the canvas bottom, the foot line of the other large units. Reviewed at 1:1 and x4 on Grass, Snow, Forest and both waters and in greyscale.",
+        "notes": "The Caller of the direction at the first creation: a round brass diving helmet with one green-lit porthole in place of a head, a blue robe, both mittens holding a cream conch horn as big as the body; 62 x 79 px, 4% green, no red or violet pixel. Seated 6 px above the canvas bottom, the foot line of the other large units. Reviewed at 1:1 and x4 on Grass, Snow, Forest and both waters and in greyscale. Retired with chibi-direction-cult-caller: The Caller is retired by the Cult redesign (pulp_wars-mch9.31): its slot is vacant; the art leaves the runtime (pulp_wars-mch9.42).",
         "reviewedAt": "2026-10-10T10:14:20.595Z"
       }
     },
     "chosen-s": {
       "id": "chosen-s",
-      "asset": "chibi-direction-cult-chosen",
+      "asset": "chibi-direction-cult-hexer",
       "jobId": "57a41e34-c234-444d-a310-590b4a15ae13",
       "request": {
         "endpoint": "edit-image-pixen",
@@ -153,9 +153,9 @@
       "completedAt": "2026-10-10T10:15:01.248Z",
       "usageUsd": 0.01823761502901713,
       "review": {
-        "verdict": "ACCEPTED",
+        "verdict": "REJECTED",
         "candidate": 0,
-        "notes": "The Chosen of the direction as a sibling of the Initiate: a burly square block with one arm straight up and one finger at the sky (the Pick Me! pose), a cream sash with a brass medal across the chest, a big brass cleaver held low, a short hood; 56 x 73 px, the full canvas width, no green, red or violet pixel. Reviewed at 1:1 and x4 on Grass, Snow, Forest and both waters and in greyscale.",
+        "notes": "The Chosen of the direction as a sibling of the Initiate: a burly square block with one arm straight up and one finger at the sky (the Pick Me! pose), a cream sash with a brass medal across the chest, a big brass cleaver held low, a short hood; 56 x 73 px, the full canvas width, no green, red or violet pixel. Reviewed at 1:1 and x4 on Grass, Snow, Forest and both waters and in greyscale. Retired with chibi-direction-cult-chosen: The Chosen is retired by the Cult redesign (pulp_wars-mch9.31): its slot is vacant; the art leaves the runtime (pulp_wars-mch9.42).",
         "reviewedAt": "2026-10-10T10:16:08.090Z"
       }
     },
@@ -4842,163 +4842,6 @@
     }
   },
   "assets": {
-    "chibi-direction-cult-caller": {
-      "id": "chibi-direction-cult-caller",
-      "subject": "UNIT:CULT:KNIGHT",
-      "assetClass": "LARGE_UNIT",
-      "status": "ACCEPTED",
-      "recipe": "caller-a",
-      "candidate": 0,
-      "candidateSha256": "944f71318f764d07622ab09e92b92fed65f9c73dc5f36097189376068bfafa8f",
-      "master": {
-        "path": "public/assets/chibi/units/chibi-direction-cult-caller.png",
-        "sha256": "4e81ead0b7ab8b6f5f9ef88b0bf5036692bb01a9b6a6256a47c0c0b43939535c",
-        "pixelSha256": "cbd0ab13c91e1ed87e36166c503c1de57084f30e39a2f78920d824307fed2e73",
-        "width": 72,
-        "height": 88
-      },
-      "derivation": {
-        "kind": "seated",
-        "seat": {
-          "bottomMargin": 6
-        },
-        "accent": {
-          "preset": "cult-lodge",
-          "spec": {
-            "band": {
-              "hueFrom": 80,
-              "hueTo": 152,
-              "saturationMin": 0.5,
-              "valueMin": 0.45,
-              "hueCentre": 120
-            },
-            "hue": 148,
-            "hueSpread": 0.07,
-            "then": {
-              "band": {
-                "hueFrom": 212,
-                "hueTo": 262,
-                "saturationMin": 0.45,
-                "valueMin": 0.14,
-                "hueCentre": 238
-              },
-              "hue": 244,
-              "hueSpread": 0.3,
-              "saturation": {
-                "scale": 1,
-                "add": 0,
-                "max": 0.6
-              },
-              "value": {
-                "scale": 0.5,
-                "add": 0.42
-              }
-            }
-          },
-          "accentPixels": 144,
-          "trimPixels": 0
-        }
-      },
-      "anchor": {
-        "x": 36,
-        "y": 48
-      },
-      "overflow": {
-        "left": 0,
-        "right": 0,
-        "up": 8,
-        "down": 0
-      },
-      "reviewChecks": {
-        "native": true,
-        "enlarged": true,
-        "owners": true,
-        "noPlate": true,
-        "camera": true
-      },
-      "notes": "The Caller of the direction at the first creation: a round brass diving helmet with one green-lit porthole in place of a head, a blue robe, both mittens holding a cream conch horn as big as the body; 62 x 79 px, 4% green, no red or violet pixel. Seated 6 px above the canvas bottom, the foot line of the other large units. Reviewed at 1:1 and x4 on Grass, Snow, Forest and both waters and in greyscale.",
-      "acceptedAt": "2026-10-10T10:14:20.595Z"
-    },
-    "chibi-direction-cult-chosen": {
-      "id": "chibi-direction-cult-chosen",
-      "subject": "UNIT:CULT:SWORDSMAN",
-      "assetClass": "STANDARD_UNIT",
-      "status": "ACCEPTED",
-      "recipe": "chosen-s",
-      "candidate": 0,
-      "candidateSha256": "a139a2f090687986b66c8d80f7b497f6811456ee4bb9febf0ddb958600c42f86",
-      "master": {
-        "path": "public/assets/chibi/units/chibi-direction-cult-chosen.png",
-        "sha256": "3affad3e47de60ee9e1d9957ffc603b547fe4cf3e8d59d3e3d51099951e2cd88",
-        "pixelSha256": "9a4afd58fc7133ae16272782bf7393407483c0bc959bcc2ba88b8742e1c3192e",
-        "width": 56,
-        "height": 80
-      },
-      "derivation": {
-        "kind": "as-is",
-        "accent": {
-          "preset": "cult-lodge",
-          "spec": {
-            "band": {
-              "hueFrom": 80,
-              "hueTo": 152,
-              "saturationMin": 0.5,
-              "valueMin": 0.45,
-              "hueCentre": 120
-            },
-            "hue": 148,
-            "hueSpread": 0.07,
-            "then": {
-              "band": {
-                "hueFrom": 212,
-                "hueTo": 262,
-                "saturationMin": 0.45,
-                "valueMin": 0.14,
-                "hueCentre": 238
-              },
-              "hue": 244,
-              "hueSpread": 0.3,
-              "saturation": {
-                "scale": 1,
-                "add": 0,
-                "max": 0.6
-              },
-              "value": {
-                "scale": 0.5,
-                "add": 0.42
-              }
-            }
-          },
-          "accentPixels": 0,
-          "trimPixels": 0
-        }
-      },
-      "anchor": {
-        "x": 28,
-        "y": 40
-      },
-      "overflow": {
-        "left": 0,
-        "right": 0,
-        "up": 0,
-        "down": 0
-      },
-      "plateCheck": {
-        "bandRows": 15,
-        "groundShare": 0.2147,
-        "footprintWidthShare": 0.5714,
-        "suspect": false
-      },
-      "reviewChecks": {
-        "native": true,
-        "enlarged": true,
-        "owners": true,
-        "noPlate": true,
-        "camera": true
-      },
-      "notes": "The Chosen of the direction as a sibling of the Initiate: a burly square block with one arm straight up and one finger at the sky (the Pick Me! pose), a cream sash with a brass medal across the chest, a big brass cleaver held low, a short hood; 56 x 73 px, the full canvas width, no green, red or violet pixel. Reviewed at 1:1 and x4 on Grass, Snow, Forest and both waters and in greyscale.",
-      "acceptedAt": "2026-10-10T10:16:08.090Z"
-    },
     "chibi-direction-cult-familiar": {
       "id": "chibi-direction-cult-familiar",
       "subject": "UNIT:CULT:RAIDER",

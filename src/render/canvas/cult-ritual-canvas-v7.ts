@@ -18,9 +18,9 @@ import type { CultMarkV7 } from "./cult-ritual-board-plan-v7";
  *   Summoning).
  * - **Over the pieces:** the countdown on the marked tile, the banner of a
  *   Cowed city, the rite's badge on its leader, the badge of what it was on a
- *   hexed unit, the "ME!" bubble of a Chosen that shouted and the red
- *   tether to each unit it binds, a Tentacle's turns and the coil round
- *   the unit it holds, and the arrows of an aimed Switcheroo.
+ *   hexed unit, the red tether from each unit an idol holds Awestruck to
+ *   its Idol Bearer, a Tentacle's turns and the coil round the unit it
+ *   holds, and the arrows of an aimed Switcheroo.
  *
  * Everything is drawn in code, so it reads the same in every look, and
  * nothing moves: the reduced-motion still is the mark itself. Each mark has
@@ -47,8 +47,6 @@ export const CULT_TRICK_FRAME_V7 = {
    * eye on the right and of the status slots above it.
    */
   frog: { x: -38, y: 32, size: 48 },
-  /** The "ME!" bubble: over the Chosen's head, to its right. */
-  bubble: { x: 26, y: -64, width: 44, height: 24 },
   /**
    * A Tentacle's turns: the row under it, just above its HP bar like the
    * Control pips (CULT_PIP_ROW_BOTTOM_V7, bead pulp_wars-2yc.71).
@@ -466,9 +464,10 @@ function badgeDisc(
 
 /**
  * The trick marks of one unit at its tile centre (`x`, `y`): the rite's
- * badge of a ritual's leader, the badge of what a frog was, the "ME!" bubble, and a
+ * badge of a ritual's leader, the badge of what a frog was, and a
  * Tentacle's turns. (The candle, the pips and the Unbound marks are the
- * channel's, `drawCultUnitMarkersV7`.)
+ * channel's, `drawCultUnitMarkersV7`. Pick Me!'s "ME!" bubble went with the
+ * Chosen: the Cult redesign, `pulp_wars-mch9.42`.)
  */
 export function drawCultTrickUnitMarkersV7(
   context: CanvasRenderingContext2D,
@@ -478,7 +477,6 @@ export function drawCultTrickUnitMarkersV7(
   zoom: number,
   options: CultDrawOptionsV7 & {
     readonly art?: CultTrickArtV7;
-    readonly bubble?: string;
     /** The colour of the unit's owner: the rim of a frog's badge. */
     readonly ownerColor?: string | undefined;
   } = {},
@@ -606,37 +604,6 @@ export function drawCultTrickUnitMarkersV7(
       context.fill();
     }
     context.restore();
-  }
-  if (markers.taunt === true) {
-    const text = options.bubble ?? "ME!";
-    const height = Math.max(14, frame.bubble.height * zoom);
-    const font = Math.max(9, height * 0.6);
-    context.font = `800 ${font}px ${BOARD_LABEL_FONT_FAMILY_V7}`;
-    const width = Math.max(
-      frame.bubble.width * zoom,
-      context.measureText(text).width + height * 0.7,
-    );
-    const cx = x + frame.bubble.x * zoom;
-    const cy = y + frame.bubble.y * zoom;
-    const left = cx - width / 2;
-    const top = cy - height / 2;
-    context.lineJoin = "round";
-    context.fillStyle = highContrast ? "#ffffff" : CULT_PALETTE_V7.wax;
-    context.strokeStyle = palette.casing;
-    // The fill covers the inner half of this outline.
-    context.lineWidth = Math.max(2.4, 4 * zoom);
-    // The bubble, with its tail down to the Chosen's head.
-    context.beginPath();
-    context.roundRect(left, top, width, height, height * 0.42);
-    context.moveTo(left + width * 0.22, top + height - 1);
-    context.lineTo(left + width * 0.08, top + height + height * 0.42);
-    context.lineTo(left + width * 0.44, top + height - 1);
-    context.stroke();
-    context.fill();
-    context.fillStyle = highContrast ? "#000000" : CULT_PALETTE_V7.red;
-    context.textAlign = "center";
-    context.textBaseline = "middle";
-    context.fillText(text, cx, cy + height * 0.05);
   }
   if (markers.sinks !== undefined) {
     // One slot per neutral turn of its life: lit for the turns it has left.

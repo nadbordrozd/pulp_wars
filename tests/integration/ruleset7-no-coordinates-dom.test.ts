@@ -94,6 +94,7 @@ import {
   cultChannelUiFixtureV7,
   cultFavourUiFixtureV7,
   cultHeraldBindUiFixtureV7,
+  cultHungerUiFixtureV7,
   cultProclaimUiFixtureV7,
   cultRitualRivalUiFixtureV7,
   cultRivalUiFixtureV7,
@@ -107,6 +108,7 @@ import {
   cultTricksRivalUiFixtureV7,
   cultTricksUiFixtureV7,
 } from "../fixtures/v7-cult-ui";
+import { withFavourV7 } from "../fixtures/v7-cult";
 import { undeadShowcaseFixtureV7 } from "../fixtures/v7-undead-ui";
 
 /**
@@ -278,6 +280,14 @@ const FIXTURES: readonly (readonly [
     ],
   ],
   ["Cult: a rival's Favour", cultRivalUiFixtureV7, []],
+  // The Cult redesign (`pulp_wars-mch9.42`): Favour near its cap (the
+  // victims' labels say what is lost) and a Herald that would go hungry.
+  [
+    "Cult: Favour near the cap",
+    () => withFavourV7(cultFavourUiFixtureV7(), 0, 25),
+    ["cult-sacrifice aimed", "cult-seize aimed", "cult-seize performed"],
+  ],
+  ["Cult: a hungry Herald", () => cultHungerUiFixtureV7(1), []],
   // The channel (`pulp_wars-mch9.18`): Summon (its helper, then its tile),
   // Channel and Anchor are armed and picked on the board; Behold! is cast
   // by its button; Boo! is previewed and confirmed in the dock.

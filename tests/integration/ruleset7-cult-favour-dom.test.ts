@@ -306,7 +306,8 @@ describe("Favour in the HUD and the leaderboard", () => {
       true,
     );
     expect(chip.querySelector(".v7-favour-balance")?.textContent).toBe("7");
-    expect(chip.getAttribute("aria-label")).toBe("7 Favour");
+    expect(chip.getAttribute("aria-label")).toBe("7 of 30 Favour");
+    expect(chip.querySelector(".v7-favour-cap")?.textContent).toBe("/ 30");
     expect(chip.querySelector(".v7-favour-icon")).not.toBeNull();
     expect(chip.title).toMatch(/^Favour: /);
     scene.app.destroy();

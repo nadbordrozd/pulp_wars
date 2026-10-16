@@ -638,3 +638,81 @@ export function cultFrogsOwnerUiFixtureV7(): GameStateV7 {
 export function cultFrogsUndeadUiFixtureV7(): GameStateV7 {
   return cultFrogsUiFixtureV7("UNDEAD");
 }
+
+// ------------------------------- The cap, the trickle, Hunger (U-R1) ---
+
+/**
+ * Scenes for the Cult redesign's Favour display (bead `pulp_wars-mch9.42`,
+ * docs/product/RULESET_7_CULT_REDESIGN.md sections 6 and 7.6): a bound
+ * Herald held by three channelling cultists, and a Summoner beside them.
+ */
+export const CULT_HUNGER_UI_V7 = {
+  herald: at(5, 4),
+  /** Three Initiates that channel the Herald this turn. */
+  initiates: [at(4, 6), at(5, 6), at(6, 6)],
+  /** A Summoner in the Herald's reach. */
+  summoner: at(3, 4),
+} as const;
+
+/**
+ * The Cult player (seat 0, the human) with `favour` Favour and a bound
+ * Herald held by its three strands. With `summonerChannels` the Summoner
+ * holds the third strand in place of an Initiate, so the next Start Turn
+ * pays it the trickle before the Herald's Hunger.
+ */
+export function cultHungerUiFixtureV7(
+  favour: number,
+  summonerChannels = false,
+): GameStateV7 {
+  const A = CULT_HUNGER_UI_V7;
+  const channelled = { activation: { specialActed: true } };
+  // A seat with no Favour has no entry in the state (the view lists it at 0).
+  const withAnyFavour = (state: GameStateV7): GameStateV7 =>
+    favour > 0
+      ? withFavourV7(state, 0, favour)
+      : checkedV7({ ...state, cult: { ...state.cult, favour: [] } });
+  const herald = withHorrorV7(
+    withAnyFavour(
+      cultFieldV7([
+        ...A.initiates.map((where) => ({
+          seat: 0,
+          role: "FIGHTER" as const,
+          at: where,
+          ...channelled,
+        })),
+        {
+          seat: 0,
+          role: "CAPTAIN",
+          at: A.summoner,
+          ...(summonerChannels ? channelled : {}),
+        },
+        { seat: 1, role: "FIGHTER", at: at(1, 1) },
+      ]),
+    ),
+    0,
+    A.herald,
+    { role: "HERALD" },
+  );
+  return withStrandsV7(
+    herald,
+    A.herald,
+    summonerChannels
+      ? [A.initiates[0], A.initiates[1], A.summoner]
+      : A.initiates,
+  );
+}
+
+/** The Favour scene with 25 Favour: each victim's label says what is lost. */
+export function cultFavourNearCapUiFixtureV7(): GameStateV7 {
+  return withFavourV7(cultFavourUiFixtureV7(), 0, 25);
+}
+
+/** The Favour scene at the cap of 30: the chip is full. */
+export function cultFavourFullUiFixtureV7(): GameStateV7 {
+  return withFavourV7(cultFavourUiFixtureV7(), 0, 30);
+}
+
+/** A bound Herald with 1 Favour: the next Start Turn cannot feed it. */
+export function cultHungryHeraldUiFixtureV7(): GameStateV7 {
+  return cultHungerUiFixtureV7(1);
+}

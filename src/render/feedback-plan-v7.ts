@@ -2,6 +2,7 @@ import {
   NEUTRAL_OWNER_ID_V7,
   PROMOTION_KILLS_V7,
   unitGrowsV7,
+  unitRoleRuleV7,
   type CityId,
   type CoordV7,
   type FavourSourceV7,
@@ -91,8 +92,10 @@ export interface PopulationGainV7 {
  * The Cultists (bead pulp_wars-mch9.17, RULESET_7_CULTISTS.md section 3):
  * Favour the viewer's seat gained, from the tile that paid it (the victim's
  * of a Sacrifice or a Seizure, the city's of an Offering). Another seat's
- * Favour is public but flies nowhere: it is read
- * off the leaderboard.
+ * Favour is public but flies nowhere. The Cult redesign (`pulp_wars-mch9.42`):
+ * only the part the seat banked flies (the part above the cap is
+ * `FeedbackPlanV7.favourLost`), and the trickle flies from each Summoner
+ * that paid it.
  */
 export interface FavourGainV7 {
   readonly source: FavourSourceV7;
@@ -136,6 +139,13 @@ export interface FeedbackPlanV7 {
   readonly roadUnlinks: readonly RoadUnlinkV7[];
   /** The Cultists: the Favour the viewer's seat gained, by tile. */
   readonly favour: readonly FavourGainV7[];
+  /**
+   * The Cult redesign (`pulp_wars-mch9.42`): the viewer's Favour lost above
+   * the cap in this boundary (it puffs out at the chip), and the Favour its
+   * Heralds ate (Hunger).
+   */
+  readonly favourLost: number;
+  readonly favourHunger: number;
   /** The Cultists: the population visible cities gave up in Offerings. */
   readonly populationLosses: readonly PopulationLossV7[];
 }
@@ -149,6 +159,8 @@ export const EMPTY_FEEDBACK_PLAN_V7: FeedbackPlanV7 = Object.freeze({
   roadLinks: [],
   roadUnlinks: [],
   favour: [],
+  favourLost: 0,
+  favourHunger: 0,
   populationLosses: [],
 });
 
@@ -395,6 +407,8 @@ export function feedbackPlanV7(
   const favour: FavourGainV7[] = [];
   const populationLosses: PopulationLossV7[] = [];
   let favourAt: CoordV7 | null = null;
+  let favourLost = 0;
+  let favourHunger = 0;
   for (const event of envelope.events) {
     switch (event.kind) {
       case "UNIT_DIED": {
@@ -421,15 +435,42 @@ export function feedbackPlanV7(
         break;
       }
       case "FAVOUR_GAINED": {
-        const source = favourAt ?? home;
-        if (
-          event.playerId !== viewer ||
-          source === null ||
-          !Number.isSafeInteger(event.amount) ||
-          event.amount <= 0
-        )
+        if (event.playerId !== viewer || !Number.isSafeInteger(event.amount))
           break;
-        favour.push({ source: event.source, at: source, amount: event.amount });
+        // The Cult redesign: only what was banked flies; the part above the
+        // cap puffs out at the chip.
+        const forfeited = Number.isSafeInteger(event.forfeited)
+          ? Math.max(0, Math.min(event.amount, event.forfeited))
+          : 0;
+        favourLost += forfeited;
+        const banked = event.amount - forfeited;
+        if (banked <= 0) break;
+        if (event.source === "TRICKLE") {
+          // A candle from each Summoner that paid.
+          const payers = tricklePayersV7(before, after);
+          let left = banked;
+          for (const at of payers) {
+            if (left <= 0) break;
+            favour.push({ source: "TRICKLE", at, amount: 1 });
+            left -= 1;
+          }
+          if (left > 0 && home !== null)
+            favour.push({ source: "TRICKLE", at: home, amount: left });
+          break;
+        }
+        const source = favourAt ?? home;
+        if (source === null) break;
+        favour.push({ source: event.source, at: source, amount: banked });
+        break;
+      }
+      case "FAVOUR_SPENT": {
+        if (
+          event.playerId === viewer &&
+          event.purpose === "HUNGER" &&
+          Number.isSafeInteger(event.amount) &&
+          event.amount > 0
+        )
+          favourHunger += event.amount;
         break;
       }
       case "INCOME_AWARDED": {
@@ -652,6 +693,47 @@ export function feedbackPlanV7(
     roadLinks: roads.linked,
     roadUnlinks: roads.unlinked,
     favour,
+    favourLost,
+    favourHunger,
     populationLosses,
   };
+}
+
+/**
+ * The Cult redesign (`pulp_wars-mch9.42`, section 6): the tiles of the
+ * viewer's Summoners that paid the trickle at its Start Turn, in unit-ID
+ * order: each held a strand (the strands of the view before the check) to
+ * a daemon that is still the viewer's after it, and is still on the board.
+ * `FAVOUR_GAINED` names none, so the plan reads them off the two views.
+ */
+export function tricklePayersV7(
+  before: PlayerViewV7,
+  after: PlayerViewV7,
+): readonly CoordV7[] {
+  const viewer = after.viewer.id;
+  const strands =
+    (before as { readonly cult?: Partial<PlayerViewV7["cult"]> }).cult
+      ?.strands ?? [];
+  const ownAfter = (unitId: number | null): PublicUnitV7 | undefined =>
+    unitId === null
+      ? undefined
+      : after.units.find(
+          (unit) => unit.id === unitId && unit.ownerId === viewer,
+        );
+  const payers = new Map<number, CoordV7>();
+  for (const strand of strands) {
+    const summoner = ownAfter(strand.cultistUnitId);
+    if (
+      summoner === undefined ||
+      ownAfter(strand.daemonUnitId) === undefined ||
+      !(
+        unitRoleRuleV7(after, summoner).abilities as readonly string[]
+      ).includes("SUMMON")
+    )
+      continue;
+    payers.set(summoner.id, summoner.at);
+  }
+  return [...payers.entries()]
+    .sort(([left], [right]) => left - right)
+    .map(([, at]) => at);
 }

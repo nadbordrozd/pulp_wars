@@ -1015,6 +1015,14 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
       "BOARD",
     "src/render/cult-channel-presentation-v7.ts::cultChannelNoticePartsV7":
       "BOARD",
+    // The Cult redesign's Favour display (`pulp_wars-mch9.42`): the
+    // Heralds whose Hunger is due and the Summoners that paid the trickle
+    // are daemons and channellers on the board, read from the public view
+    // as the engine's own check reads them (a burrowed unit channels and
+    // hungers for nothing).
+    "src/render/cult-channel-presentation-v7.ts::heraldsHungryV7": "BOARD",
+    "src/render/cult-presentation-v7.ts::viewerHungerDueV7": "BOARD",
+    "src/render/feedback-plan-v7.ts::tricklePayersV7": "BOARD",
     // Rituals, hexes and tricks in the interface (`pulp_wars-mch9.19`): a
     // chanter, a frog, a Tentacle and the unit it holds
     // are units on the board (a ritual's participant is in land form; a

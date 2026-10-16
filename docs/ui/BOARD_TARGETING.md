@@ -91,8 +91,8 @@ arming).
 - **What stays in the dock only.** An action on the unit itself, its own
   tile or an area fixed by the rules: Recover, Wait, Capture, Promote,
   Pillage, Disband, Fortify, Wail, Raise Dead, Devour, the Wishing Well,
-  Kaboom!, Cold Snap, Whirl, Thunder Stomp, Behold!, Boo!, Pick Me!, the
-  Ice Witch's ring, Rally and Tend Wounded; and every command of a city,
+  Kaboom!, Cold Snap, Whirl, Thunder Stomp, Boo!, the Ice Witch's ring,
+  Rally and Tend Wounded; and every command of a city,
   a tile or the player. `TILE_ACTION_COMMAND_CLASSES_V7` classes every
   command kind, so a new one fails the type check until it is classed.
 - **A lone Move or Attack has no badge.** Its mark alone says what a tap
@@ -111,7 +111,7 @@ arming).
   makes the third "+N". Badges do not move or pulse.
 - **Clutter.** A badge's radius is 15% of a tile's width and never under
   11 CSS px. When more than eight tiles carry badges (a Stargazer's star
-  tiles, a Caller's Tentacle tiles) every badge shrinks to 11.5% and never
+  tiles, a Summoner's Tentacle tiles) every badge shrinks to 11.5% and never
   under 9 CSS px (`TILE_ACTION_FULL_SIZE_TILES_V7`, `TILE_ACTION_BADGE_V7`).
   No badge or chooser names a tile or a coordinate.
 - **A tap on a badged tile with one action does it** exactly as its board
@@ -492,11 +492,13 @@ reasons).
 - **Sacrifice** (a candle): armed, each own unit the engine offers a
   `SACRIFICE` on wears the **Help** ring, labelled with the Favour it pays,
   the unit's value: **"+12 Favour"**. The cursor reads "Sacrifice this Thing
-  in the Cellar: +12 Favour. It is gone for good."
+  in the Cellar: +12 Favour. It is gone for good." Near the cap of 30 (the
+  Cult redesign, bead `pulp_wars-mch9.42`) the label says what is lost above
+  it: **"+12 (7 lost)"**, and the cursor "+12 Favour (7 lost)".
 - **Seize** (a hook): armed, each enemy the engine offers a `SEIZE` on wears
-  the **Attack** mark, labelled with twice its value: **"+18 Favour"**. The
-  cursor names the cultist that holds it down ("Your Initiate holds it
-  down").
+  the **Attack** mark, labelled with twice its value: **"+18 Favour"** (or
+  **"+18 (13 lost)"** near the cap). The cursor names the cultist that holds
+  it down ("Your Initiate holds it down").
 - **A click, a tap or Enter** on a victim sends the command; Escape, Cancel
   or another selection disarms and sends nothing; Tab steps through the
   victims. The aiming panel holds the "?" and Cancel only.
@@ -515,9 +517,10 @@ reasons).
   cannot be Sacrificed", "It must be on land". With no own unit (for
   Sacrifice) or no enemy (for Seize) next to it, the button is not shown.
 - **The Offering** is not targeted: it is a button of the selected city's
-  panel, with two chips, the Favour it pays (a candle, "+3", on the Cult's
+  panel, with two chips, the Favour it pays (a candle, "+6", on the Cult's
   mint) and the population it costs ("-2" with the population icon, in the
-  loss colour), as a building's button shows its price.
+  loss colour), as a building's button shows its price. Near the cap a third
+  chip between them says what is lost ("3 lost", in the loss colour).
 - **Icons.** The buttons ask for `ICON:ACTION:SACRIFICE`, `ICON:ACTION:SEIZE`
   and `ICON:ACTION:OFFERING`, and the Favour chips for
   `ICON:HUD:CULT:FAVOUR`. Until the art registers them (and in the LEGACY set
@@ -536,14 +539,15 @@ and `src/render/canvas/cult-effects-v7.ts` (the cues).
 
 | Action  | Unit          | Class | How it is chosen                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Style            |
 | ------- | ------------- | ----- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- |
-| Summon  | Summoner      | (b)   | One Summon button with its price ("−5" and the Favour candle). Armed, the cultists that may help wear the Help ring badged "Helper" (one cultist: skipped), then the free tiles next to the Summoner are Place marks. Back steps from the tiles to the helper                                                                                                                                                                                                                                                                                                                 | Help, then Place |
+| Summon  | Summoner      | (b)   | One Summon button with its price ("−4" and the Favour candle). Armed, the cultists that may help wear the Help ring badged "Helper" (one cultist: skipped), then the free tiles next to the Summoner are Place marks. Back steps from the tiles to the helper                                                                                                                                                                                                                                                                                                                 | Help, then Place |
 | Channel | every cultist | (b)   | One Channel button. With **one** daemon in reach it casts at once: the button carries the daemon's strands after ("2 / 1") and the board marks that daemon with the broken Help ring. With two or more it arms: the tiles within 3 are outlined in the lodge's green and each daemon in reach wears the Help ring labelled with its strands after against its Control ("2 / 3"); the cursor says "It stays bound" or "Still short". An Unbound daemon that is not Furious is a target too ("Bind this Horror ... It is yours again"; alone in reach, the button reads "Bind") | Help             |
-| Behold! | Idol Bearer   | (c)   | One Behold! button casts it. While the Idol Bearer is selected and the button is offered, the ring it would raise is outlined in chalk cream and each cultist it would ward wears the broken Help ring labelled "Warded" (marked, not picked: section 2.1)                                                                                                                                                                                                                                                                                                                    | An area preview  |
 | Anchor  | Thing         | (b)   | One Anchor button. Armed, each channeller next to the Thing wears the Help ring labelled with its daemon's strands after the grip ("3 / 1")                                                                                                                                                                                                                                                                                                                                                                                                                                   | Help             |
 | Boo!    | Horror        | (c)   | One Boo! button opens a panel with its confirmation ("Boo!") and a summary ("2 jump · 1 stays · 1 strand breaks"). An arrow runs from each scared unit to the tile it jumps to; a unit that cannot jump has a barred stub and "Stays", an unknown jump a dashed arrow and "?"                                                                                                                                                                                                                                                                                                 | An area preview  |
 
-- **All but Behold! are armed** (a Channel only with two or more daemons in
-  reach: with one there is nothing to pick). A daemon and a channeller are own units,
+- **All but Boo! are armed** (a Channel only with two or more daemons in
+  reach: with one there is nothing to pick). Behold! has no button since
+  the Cult redesign (`pulp_wars-mch9.33`): the warden's idol always stands,
+  and its ring is drawn below. A daemon and a channeller are own units,
   which a click selects, and a Summon's tiles are tiles the Summoner could
   move to, so each follows the arming rule. Escape, Cancel or another
   selection disarms and sends nothing; Tab steps through the targets.
@@ -551,14 +555,15 @@ and `src/render/canvas/cult-effects-v7.ts` (the cues).
   with the warning stripes of friendly fire, whoever's cultist it is.
 - **Reasons on the button.** Without an offered command the button is shown
   disabled with the engine's first failing rule: "Already acted this turn",
-  "It must be on land", "Needs 5 Favour", "A cultist that has not acted must
+  "It must be on land", "Needs 4 Favour", "A cultist that has not acted must
   stand next to it", "No free tile next to it", "It channels already", "No
-  daemon within 3 tiles", "The daemon is Furious this turn", "The idol is raised", "It grips a cultist already",
+  daemon within 3 tiles", "The daemon is Furious this turn", "It grips a cultist already",
   "No channelling cultist next to it", "Nobody next to it to scare". A
   cultist with no daemon of its seat in sight has no Channel button, and a
   Thing has no Anchor button while its seat channels nothing.
-- **Icons.** The buttons draw `ICON:ACTION:SUMMON`, `CHANNEL`, `BEHOLD`,
-  `ANCHOR` and `BOO`, the chips `ICON:STATUS:CANDLELIT`, `WARDED`, `UNBOUND`
+- **Icons.** The buttons draw `ICON:ACTION:SUMMON`, `CHANNEL`, `ANCHOR`
+  and `BOO` (`ICON:ACTION:BEHOLD` was retired with its button, bead
+  `pulp_wars-mch9.42`), the chips `ICON:STATUS:CANDLELIT`, `WARDED`, `UNBOUND`
   and `FURIOUS`, the board the Candlelit, Unbound and Furious marks, and the
   cues `EFFECT:SUMMON_POP`, `STRAND_SNAP`, `BOO` and `UNBOUND`
   ([the Cult's art](../art/factions/CULT.md)). In the LEGACY set and the
@@ -576,7 +581,7 @@ over all of it, as over every other status mark (bead `pulp_wars-2yc.71`):
 | Candlelit        | A lit candle on a dark disc at the unit's upper left: every channeller, and a Thing that grips one                                                                                                                                                                                                                                                                                |
 | Control          | A row of pips under the daemon, just above its HP bar, so both show (bead `pulp_wars-2yc.71`): one slot per strand it needs, lit when held, hollow and red when missing; strands past its Control are small pips after the row. Short of its Control, the row is rimmed red with a cracked collar                                                                                 |
 | Anchor           | A teal tentacle from the Thing that loops round the gripped cultist's feet                                                                                                                                                                                                                                                                                                        |
-| Behold!          | A dashed chalk ring round the Idol Bearer's nine tiles while its idol is raised                                                                                                                                                                                                                                                                                                   |
+| Behold!          | A dashed chalk ring round the Idol Bearer's nine tiles while its idol stands (always, unless a status puts it down)                                                                                                                                                                                                                                                               |
 | Unbound, Furious | The Unbound sprite and name ("Unbound Horror"), a broken collar at its upper right, steam over it while Furious, and an eye on the unit it goes for; the same eye for a bound daemon short of its Control ("if it broke now"), from the engine's `previewRampageV7`. While the viewer holds strands to an Unbound daemon, its pips show the binding (hollow in cream, no red rim) |
 
 The marks keep a dark casing under their colour, so the green reads on
@@ -589,7 +594,11 @@ frame, measured on a hand-built board
 (the button or `E`) first asks once, in a small dialog over a scrim: "The
 Horror will be Unbound." (or "2 daemons will be Unbound."), the count the
 pips show ("0 / 1"), and two answers, **Back** (the default, also Escape)
-and **End turn**. It is a confirmation, not a protection.
+and **End turn**. It is a confirmation, not a protection. The Cult
+redesign (bead `pulp_wars-mch9.42`): the same dialog asks when the next
+Start Turn cannot feed a bound Herald, counting the trickle the player's
+channelling Summoners will pay first: "The Herald will go hungry and break
+loose." with its "Hunger 2" chip (both sentences when both apply).
 
 ### 3.9 The Cultists: rituals, hexes and tricks (bead `pulp_wars-mch9.19`)
 
@@ -604,14 +613,14 @@ and what is always drawn), `src/render/canvas/cult-ritual-canvas-v7.ts`
 | Action          | Unit      | Class | How it is chosen                                                                                                                                                                                                                                                                                                                                                                                                                                    | Style                                       |
 | --------------- | --------- | ----- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
 | Star-fall       | Stargazer | (b)   | One button. Armed, every tile the star may fall on is a Place mark and the cultists that would chant are labelled "Chants". The first pick of a tile previews it: its nine tiles on a warning tint, each unit there with what it takes ("−7", red when it dies, the warning stripes on the player's own), and in the dock "2 chanters · 7 damage · 3 units · 1 of yours" with **Begin**. Picking the same tile again begins it                      | Place, then one confirmation                |
-| Great Summoning | Summoner  | (b)   | One button with its price ("−20" and the Favour candle). Armed, the tiles next to the Summoner are Place marks; a tile whose unit would be consumed is labelled with the Favour ("+18 Favour"), one whose unit would stop the Herald "Blocks"; the player's own chanters read "Chants" alone until one's tile is the chosen mark (bead `pulp_wars-mch9.24`). The first pick previews it ("4 chanters · 5 / 3 · consumes +18 Favour") with **Begin** | Place, then one confirmation                |
+| Great Summoning | Summoner  | (b)   | One button with its price ("−18" and the Favour candle). Armed, the tiles next to the Summoner are Place marks; a tile whose unit would be consumed is labelled with the Favour ("+18 Favour"), one whose unit would stop the Herald "Blocks"; the player's own chanters read "Chants" alone until one's tile is the chosen mark (bead `pulp_wars-mch9.24`). The first pick previews it ("4 chanters · 5 / 3 · consumes +18 Favour") with **Begin** | Place, then one confirmation                |
 | Proclaim        | Herald    | (b)   | One button. Armed, each enemy city within 3 wears the Attack mark on its center, labelled "Kneel!". A city that kneels already keeps "Cowed" in grey                                                                                                                                                                                                                                                                                                | Attack                                      |
 | Ribbit          | Hexer     | (b)   | One button. Armed, each enemy within 2 that a hex takes wears the Attack mark labelled "Frog"; one it does not take keeps "Cannot be hexed" or "A frog" in grey                                                                                                                                                                                                                                                                                     | Attack                                      |
 | Switcheroo      | Familiar  | (b)   | One button. Armed, each unit within 2 it may swap with is labelled "Swap": the Help ring on an own unit, the Attack mark on an enemy. The focused target shows both units faintly beside each other's tile and two bowed arrows between the tiles                                                                                                                                                                                                   | Help or Attack, by the target (`highlight`) |
-| Tentacle        | Caller    | (b)   | One button. Armed, each free tile within 3 is a Place mark; the focused tile marks the unit the Tentacle slaps at once ("Slapped", the warning stripes on the player's own)                                                                                                                                                                                                                                                                         | Place                                       |
-| Pick Me!        | Chosen    | (c)   | One button casts it. While the Chosen is selected and the shout is offered, each enemy it would bind is labelled "Bound" with a pale tether to the Chosen (marked, not picked: section 2.1)                                                                                                                                                                                                                                                         | An area preview                             |
+| Tentacle        | Summoner  | (b)   | One button. Armed, each free tile within 3 is a Place mark; the focused tile marks the unit the Tentacle slaps at once ("Slapped", the warning stripes on the player's own)                                                                                                                                                                                                                                                                         | Place                                       |
 
-- **All but Pick Me! are armed, even with one target.** A rite cannot be
+- **All are armed, even with one target** (Pick Me! went with the Chosen,
+  bead `pulp_wars-mch9.31`). A rite cannot be
   taken back and a star hurts friends; a Proclaim, a Ribbit and a Tentacle
   are hostile; a Switcheroo's own unit is selected by a click and its
   enemy attacked. Escape, Cancel or another selection disarms and sends
@@ -626,17 +635,17 @@ and what is always drawn), `src/render/canvas/cult-ritual-canvas-v7.ts`
 - **Reasons on the button.** "Already acted this turn", "It must be on
   land", "It must not have moved this turn", "A cultist that has not acted
   must stand next to it", "Needs 3 cultists beside it that have not acted",
-  "Needs 20 Favour", "No tile next to it for the Herald", "No attack left
+  "Needs 18 Favour", "No tile next to it for the Herald", "No attack left
   this turn", "No enemy city within 3 tiles", "The city is Cowed already",
   "Spent: ready again next turn", "No enemy within 2 tiles it can hex",
   "Nobody within 2 tiles to swap with", "Its Tentacle is still up", "No
-  free tile within 3 tiles", "It shouted already", and, for a frogged
+  free tile within 3 tiles", and, for a frogged
   cultist, "A frog can only hop". A Summoner with fewer than three robed
   cultists beside it has no Great Summoning button, and a Familiar without
   the technology no Switcheroo.
 - **Icons.** The buttons draw `ICON:ACTION:STARFALL`, `GREAT_SUMMONING`,
-  `PROCLAIM`, `RIBBIT`, `SWITCHEROO`, `TENTACLE` and `PICK_ME`, the chips
-  `ICON:STATUS:CANDLELIT`, `FROG`, `GRABBED` and `PICK_ME`, the board the
+  `PROCLAIM`, `RIBBIT`, `SWITCHEROO` and `TENTACLE`, the chips
+  `ICON:STATUS:CANDLELIT`, `FROG` and `GRABBED`, the board the
   frog's sprite `UNIT:CULT:FROG` (and `PORTRAIT:CULT:FROG` on the badge of a frog at sea,
   bead `pulp_wars-mch9.26`) and the two rites' icons on their leaders (the Cowed
   banner's shutters are drawn in code at every size, bead
@@ -654,7 +663,7 @@ and what is always drawn), `src/render/canvas/cult-ritual-canvas-v7.ts`
 | The Herald's    | The unit on the mark labelled with the Favour it is consumed for, or "Blocks" in grey                                                                                                                                                                        |
 | Cowed           | An indigo banner over the city: two closed cream shutters with louvre slits, drawn in code, and "KNEEL!"; the city's panel adds "Status: Cowed"                                                                                                              |
 | A frog          | The unit is drawn as a frog on its own base, with a small round badge of what it was on the frog's lower left (bead `pulp_wars-mch9.26`); its card shows the frog, the badge, "Frog" over the unit's name, Defense 0.5, Move 1 and no Attack                 |
-| Pick Me!        | A "ME!" bubble over the Chosen and a red dashed tether from each unit it binds                                                                                                                                                                               |
+| Awestruck       | A red dashed tether from each enemy beside a standing idol to the Idol Bearer it may only attack (the "ME!" bubble went with Pick Me!, bead `pulp_wars-mch9.42`)                                                                                             |
 | A Tentacle      | Three pips under it (just above its HP bar), lit for the neutral turns it has left, a teal arm that coils once round the unit it holds, and the daemons' eye on the unit it slaps next as the board stands (the weakest beside it; bead `pulp_wars-mch9.24`) |
 
 The cursor reads each in one sentence: the mark ("Star-fall lands here at
@@ -758,8 +767,15 @@ for tools; it is never read out.
   exact "+N Favour" at each victim, the Help and Attack styles, the grey
   reasons and the buttons' reasons, a board pick sends the offered command,
   Escape and Cancel disarm, the Favour chip, the leaderboard, the
-  Offering's chips, the candles' flight and the notices. The guard test
-  sweeps the two Cult scenes. `scripts/browser-cult-review-v7.ts` (dev
+  Offering's chips, the candles' flight and the notices. The Cult
+  redesign (bead `pulp_wars-mch9.42`):
+  `tests/unit/cult-favour-cap-presentation-v7.test.ts` and
+  `tests/integration/ruleset7-cult-favour-cap-dom.test.ts` hold the chip's
+  "n / 30", full and Hunger tooltip, the lost part of each preview, the
+  banked candles and the "N lost" puff, the trickle's candles from the
+  Summoners that paid, the Herald's "Hunger 2" chip, the hungry End Turn
+  question and the Unbound-by-Hunger notice. The guard test sweeps four
+  Cult scenes (Favour near the cap and a hungry Herald among them). `scripts/browser-cult-review-v7.ts` (dev
   server only) captures them at 1440, 390 and 320 px wide and records that
   nothing overflows.
 - `tests/unit/cult-channel-presentation-v7.test.ts` and
@@ -768,7 +784,7 @@ for tools; it is never read out.
   idol ring of a lodge at work, for its player and for a rival; a slack
   strand; the pips of every count; each aimed action (one button, the
   targets and their labels, a board pick sends the offered command, Back,
-  Escape and Cancel), Behold!'s ring and Boo!'s jumps; every reason; the
+  Escape and Cancel), the standing idol's ring and Boo!'s jumps; every reason; the
   card's chips; the End Turn question and its two answers; the Unbound,
   Furious and eye marks on a hand-changed view; and the cue each event
   plays. The guard test sweeps four channel scenes.
@@ -782,8 +798,8 @@ for tools; it is never read out.
   its seat and for a rival, the Great Summoning's labels and price, every
   reason, Proclaim and the Cowed city's banner and panel line, the Herald's
   attack pips, Ribbit with its grey reasons and the frog's real numbers,
-  Switcheroo's styles and ghosts, the Tentacle's tiles and slap, Pick Me!'s
-  preview, bubble and tethers, the victim's chips, an Unbound Herald's
+  Switcheroo's styles and ghosts, the Tentacle's tiles and slap, the
+  victim's chips, an Unbound Herald's
   binding pips, the notices of both seats, the cue each event plays (a
   star falls after two turns ended by hand), and the drawing of each mark.
   The guard test sweeps ten scenes of rituals, hexes and tricks.

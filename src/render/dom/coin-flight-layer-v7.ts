@@ -47,6 +47,11 @@ export interface FlightCounterV7 {
    * landing, pulses.
    */
   readonly onBalance: (landed: boolean) => void;
+  /**
+   * The Cult redesign (`pulp_wars-mch9.42`): the whole counter, whose right
+   * edge a puff starts from (its icon without one).
+   */
+  readonly puffAnchor?: () => Element | null;
 }
 
 export interface CoinFlightLayerOptionsV7 {
@@ -71,6 +76,26 @@ export interface CoinFlightLayerOptionsV7 {
 interface GainV7 {
   readonly at: CoordV7;
   readonly amount: number;
+}
+
+/**
+ * The Cult redesign (`pulp_wars-mch9.42`): a short word that drops from the
+ * Favour counter and fades: the Favour lost above the cap ("2 lost", once
+ * the candles have landed) or eaten by the Heralds' Hunger ("−2"). Never
+ * shown without animation (the boundary's notice says it).
+ */
+export interface FlightPuffV7 {
+  readonly kind: "lost" | "hunger";
+  readonly text: string;
+}
+
+/** How long a puff shows, at the normal animation speed. */
+export const FLIGHT_PUFF_MS_V7 = 1400;
+
+interface HeldV7 {
+  readonly COIN: readonly GainV7[];
+  readonly FAVOUR: readonly GainV7[];
+  readonly puffs: readonly FlightPuffV7[];
 }
 
 interface Flight {
@@ -112,10 +137,9 @@ export class CoinFlightLayerV7 {
   readonly #pool: HTMLImageElement[] = [];
   #flights: Flight[] = [];
   #nextTicket = 1;
-  readonly #held = new Map<
-    number,
-    Readonly<Record<FlightPurseV7, readonly GainV7[]>>
-  >();
+  readonly #held = new Map<number, HeldV7>();
+  /** Puffs on screen, each with the timer that removes it. */
+  readonly #puffs = new Map<HTMLElement, number>();
 
   constructor(documentRoot: Document, options: CoinFlightLayerOptionsV7) {
     this.#document = documentRoot;
@@ -163,17 +187,19 @@ export class CoinFlightLayerV7 {
   hold(
     gains: readonly CoinGainV7[],
     favour: readonly FavourGainV7[] = [],
+    puffs: readonly FlightPuffV7[] = [],
   ): number {
     const ticket = this.#nextTicket;
     this.#nextTicket += 1;
     const flying = this.#options.favour === undefined ? [] : favour;
+    const words = this.#options.favour === undefined ? [] : puffs;
     if (
-      (gains.length === 0 && flying.length === 0) ||
+      (gains.length === 0 && flying.length === 0 && words.length === 0) ||
       this.#port === null ||
       !this.#port.animated()
     )
       return ticket;
-    this.#held.set(ticket, { COIN: gains, FAVOUR: flying });
+    this.#held.set(ticket, { COIN: gains, FAVOUR: flying, puffs: words });
     return ticket;
   }
 
@@ -188,7 +214,10 @@ export class CoinFlightLayerV7 {
     this.#held.delete(ticket);
     const before = this.#flights.length;
     const firstLanding = this.#fly("COIN", held.COIN);
-    this.#fly("FAVOUR", held.FAVOUR);
+    const favourLanding = this.#fly("FAVOUR", held.FAVOUR);
+    // Hunger drops at once; what the cap took, once the candles are in.
+    for (const puff of held.puffs)
+      this.#puff(puff, puff.kind === "lost" ? (favourLanding ?? 0) : 0);
     const port = this.#port;
     if (port !== null && this.#flights.length > before) {
       this.frame(port.timeMs());
@@ -296,9 +325,52 @@ export class CoinFlightLayerV7 {
 
   destroy(): void {
     this.finish();
+    for (const timer of this.#puffs.values())
+      this.#document.defaultView?.clearTimeout(timer);
+    this.#puffs.clear();
     this.attach(null);
     this.element.replaceChildren();
     this.#pool.length = 0;
+  }
+
+  /** Puffs on screen (review tooling and tests). */
+  activePuffs(): readonly HTMLElement[] {
+    return [...this.#puffs.keys()];
+  }
+
+  /**
+   * Drops one word from the Favour counter after `delayMs` real ms; it
+   * fades and is removed. Nothing without the counter on screen.
+   */
+  #puff(puff: FlightPuffV7, delayMs: number): void {
+    const browser = this.#document.defaultView;
+    const counter = this.#counter("FAVOUR");
+    // Beside the counter's right edge: the top bar's free side on a phone,
+    // and never under the rows, toasts and docks below it.
+    const anchor = counter?.puffAnchor?.() ?? counter?.counterIcon() ?? null;
+    if (browser === null || anchor === null || !anchor.isConnected) return;
+    const box = anchor.getBoundingClientRect();
+    const scale = this.#port?.durationScale() ?? 1;
+    const layer = this.element.getBoundingClientRect();
+    const word = this.#document.createElement("span");
+    word.className = "v7-feedback-puff";
+    word.dataset.kind = puff.kind;
+    word.textContent = puff.text;
+    word.setAttribute("aria-hidden", "true");
+    const lifeMs = Math.round(FLIGHT_PUFF_MS_V7 * scale);
+    word.style.left = `${(box.right - layer.left + 6).toFixed(1)}px`;
+    word.style.top = `${(box.top + box.height / 2 - layer.top).toFixed(1)}px`;
+    word.style.animationDuration = `${lifeMs}ms`;
+    word.style.animationDelay = `${Math.max(0, Math.round(delayMs))}ms`;
+    this.element.append(word);
+    const timer = browser.setTimeout(
+      () => {
+        this.#puffs.delete(word);
+        word.remove();
+      },
+      Math.max(0, delayMs) + lifeMs,
+    );
+    this.#puffs.set(word, timer);
   }
 
   /** One frame at the feedback clock's `timeMs`; true while coins fly. */

@@ -11,6 +11,7 @@ import type {
   CoinGainV7,
   FavourGainV7,
 } from "../../src/render/feedback-plan-v7";
+import { withFavourV7 } from "../fixtures/v7-cult";
 import { CULT_UI_V7, cultFavourUiFixtureV7 } from "../fixtures/v7-cult-ui";
 import {
   FixtureController,
@@ -178,6 +179,34 @@ describe("Favour in the flight layer", () => {
     plain.attach(new FakePort());
     plain.hold([], favour(6));
     expect(plain.pending("FAVOUR")).toBe(0);
+    // Nor does it drop a puff.
+    plain.launch(plain.hold([], [], [{ kind: "hunger", text: "−2" }]));
+    expect(plain.activePuffs()).toEqual([]);
+  });
+
+  it("drops the Hunger from the chip at once, and nothing in reduced motion (pulp_wars-mch9.42)", () => {
+    const truth = { coins: 0, favour: 5 };
+    const { layer, shown } = layerRig(truth);
+    truth.favour = 3;
+    // Hunger is spent, not gained: nothing is held off the chip.
+    const ticket = layer.hold([], [], [{ kind: "hunger", text: "−2" }]);
+    expect(layer.displayed(truth.favour, "FAVOUR")).toBe(3);
+    expect(layer.launch(ticket)).toBeNull();
+    const [puff, ...more] = layer.activePuffs();
+    expect(more).toEqual([]);
+    expect(puff?.textContent).toBe("−2");
+    expect(puff?.dataset.kind).toBe("hunger");
+    expect(puff?.style.animationDelay).toBe("0ms");
+    expect(shown.candles).toBe(0);
+    layer.destroy();
+    expect(layer.activePuffs()).toEqual([]);
+
+    const still = layerRig(truth);
+    still.port.isAnimated = false;
+    still.layer.launch(
+      still.layer.hold([], [], [{ kind: "lost", text: "2 lost" }]),
+    );
+    expect(still.layer.activePuffs()).toEqual([]);
   });
 });
 
@@ -222,7 +251,7 @@ describe("the Favour chip in the app", () => {
     expect(shownFavour()).toBe(7);
     expect(
       requiredElement<HTMLElement>(".v7-favour").getAttribute("aria-label"),
-    ).toBe("25 Favour");
+    ).toBe("25 of 30 Favour");
     await waitUntil(() => host.feedback.requested > 0);
     // The candles leave the victim's tile.
     const sprite = requiredElement<HTMLImageElement>(
@@ -245,6 +274,56 @@ describe("the Favour chip in the app", () => {
         "is-coin-landing",
       ),
     ).toBe(false);
+    app.destroy();
+  });
+
+  it("flies only the Favour banked under the cap, and drops what is lost from the chip (pulp_wars-mch9.42)", async () => {
+    const controller = new FixtureController(
+      withFavourV7(cultFavourUiFixtureV7(), 0, 20),
+    );
+    const host = new FeedbackHost();
+    const app = mount(controller, host);
+    expect(shownFavour()).toBe(20);
+    await seize(controller, host);
+    // The state is full at once; the chip waits for the 10 that fit.
+    expect(shownFavour()).toBe(20);
+    expect(host.feedback.plans.at(-1)).toMatchObject({
+      favour: [{ source: "SEIZE", at: CULT_UI_V7.knight, amount: 10 }],
+      favourLost: 8,
+    });
+    await waitUntil(() => host.feedback.requested > 0);
+    // "8 lost" drops from the chip once the candles are in.
+    const puff = requiredElement<HTMLElement>(
+      '.v7-feedback-puff[data-kind="lost"]',
+    );
+    expect(puff.textContent).toBe("8 lost");
+    expect(puff.getAttribute("aria-hidden")).toBe("true");
+    expect(Number.parseFloat(puff.style.animationDelay)).toBeGreaterThan(0);
+    host.feedback.advance(3_000);
+    expect(shownFavour()).toBe(30);
+    const chip = requiredElement<HTMLElement>(".v7-favour");
+    expect(chip.dataset.full).toBe("true");
+    expect(chip.getAttribute("aria-label")).toBe("30 of 30 Favour, full");
+    // The notice says it with or without motion.
+    await waitUntil(() =>
+      (document.querySelector("#v7-live")?.textContent ?? "").includes(
+        "Knight Seized: +18 Favour (8 lost)",
+      ),
+    );
+    app.destroy();
+    expect(document.querySelector(".v7-feedback-puff")).toBeNull();
+  });
+
+  it("drops no puff in reduced motion", async () => {
+    const controller = new FixtureController(
+      withFavourV7(cultFavourUiFixtureV7(), 0, 20),
+    );
+    const host = new FeedbackHost();
+    host.feedback.isAnimated = false;
+    const app = mount(controller, host);
+    await seize(controller, host);
+    expect(shownFavour()).toBe(30);
+    expect(document.querySelector(".v7-feedback-puff")).toBeNull();
     app.destroy();
   });
 

@@ -6106,13 +6106,12 @@ function drawCultChannelV7(
           furious: entry.cult.furious === true ? icon("FURIOUS") : null,
         },
       });
-      // Bead pulp_wars-mch9.19: the rite's badge, the "ME!" bubble and a
+      // Bead pulp_wars-mch9.19: the rite's badge and a
       // Tentacle's turns; bead pulp_wars-mch9.26: the badge of what a frog
       // was (its portrait, else its sprite; at sea the frog's portrait).
       if (
         entry.cult.ritual !== undefined ||
         entry.cult.frog !== undefined ||
-        entry.cult.taunt === true ||
         entry.cult.sinks !== undefined
       ) {
         const frog = entry.cult.frog;

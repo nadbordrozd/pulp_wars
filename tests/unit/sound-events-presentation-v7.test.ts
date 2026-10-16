@@ -810,7 +810,6 @@ describe("sounds of presentation steps", () => {
         SUMMON: ["cult.summon"],
         STRAND_FORMED: [],
         STRAND_SNAP: ["cult.snap"],
-        IDOL: ["support.rally"],
         BOO: ["special.boing"],
         UNBOUND: ["cult.unbound"],
         RITUAL_BEGUN: ["support.dark"],

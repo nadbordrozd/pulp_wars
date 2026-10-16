@@ -20,6 +20,10 @@ import { chibiArtUrl } from "./chibi-art-manifest";
  * frog yet (the Cult's command beads do): their rasters are loaded and
  * resolvable under their subjects, and nothing asks for them. The portraits,
  * the cities, the icons and the effects are bead pulp_wars-mch9.16's.
+ *
+ * The Cult redesign (`pulp_wars-mch9.42`) retired the Caller and the Chosen
+ * (their role slots `KNIGHT` and `SWORDSMAN` are vacant) through
+ * `npm run art:chibi -- retire`: seven trained units stay.
  */
 export const CHIBI_DIRECTION_CULT_ART_ASSETS_V7: readonly ChibiArtAssetV7[] = [
   {
@@ -74,24 +78,6 @@ export const CHIBI_DIRECTION_CULT_ART_ASSETS_V7: readonly ChibiArtAssetV7[] = [
     width: 72,
     height: 88,
     url: chibiArtUrl("assets/chibi/units/chibi-direction-cult-stargazer.png"),
-    fixedColours: true,
-  },
-  {
-    id: "chibi-direction-cult-caller",
-    subject: "UNIT:CULT:KNIGHT",
-    assetClass: "LARGE_UNIT",
-    width: 72,
-    height: 88,
-    url: chibiArtUrl("assets/chibi/units/chibi-direction-cult-caller.png"),
-    fixedColours: true,
-  },
-  {
-    id: "chibi-direction-cult-chosen",
-    subject: "UNIT:CULT:SWORDSMAN",
-    assetClass: "STANDARD_UNIT",
-    width: 56,
-    height: 80,
-    url: chibiArtUrl("assets/chibi/units/chibi-direction-cult-chosen.png"),
     fixedColours: true,
   },
   {
@@ -151,26 +137,6 @@ export const CHIBI_DIRECTION_CULT_ART_ASSETS_V7: readonly ChibiArtAssetV7[] = [
     width: 56,
     height: 80,
     url: chibiArtUrl("assets/chibi/units/chibi-direction-cult-tentacle.png"),
-    fixedColours: true,
-  },
-  // The Cult redesign's Imp (art bead pulp_wars-mch9.45, batch
-  // `summons-cult`; on the board since engine bead pulp_wars-mch9.36).
-  {
-    id: "chibi-direction-cult-imp",
-    subject: "UNIT:CULT:IMP",
-    assetClass: "STANDARD_UNIT",
-    width: 56,
-    height: 80,
-    url: chibiArtUrl("assets/chibi/units/chibi-direction-cult-imp.png"),
-    fixedColours: true,
-  },
-  {
-    id: "chibi-direction-cult-imp-unbound",
-    subject: "UNIT:CULT:IMP_UNBOUND",
-    assetClass: "STANDARD_UNIT",
-    width: 56,
-    height: 80,
-    url: chibiArtUrl("assets/chibi/units/chibi-direction-cult-imp-unbound.png"),
     fixedColours: true,
   },
   // --- The frog a Ribbit victim is drawn as (bead pulp_wars-mch9.26) ---

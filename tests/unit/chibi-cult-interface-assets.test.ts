@@ -49,8 +49,8 @@ const PORTRAITS = [
   ["hexer", "MARKSMAN", "portrait", "cult-lodge-icon"],
   ["summoner", "CAPTAIN", "portrait", "cult-lodge-icon"],
   ["stargazer", "CATAPULT", "portrait", "cult-lodge-icon"],
-  ["caller", "KNIGHT", "portrait", "cult-lodge-icon"],
-  ["chosen", "SWORDSMAN", "portrait", "cult-lodge-icon"],
+  // The Caller's and the Chosen's busts were retired by the Cult redesign
+  // (pulp_wars-mch9.42), with their units.
   ["thing", "JUGGERNAUT", "creature", "cult-green"],
   ["horror", "HORROR", "creature", "cult-green"],
   ["herald", "HERALD", "portrait", "cult-lodge-icon"],
@@ -69,8 +69,6 @@ const ICONS = [
   ["action-offering", "ICON:ACTION:OFFERING"],
   ["action-summon", "ICON:ACTION:SUMMON"],
   ["action-channel", "ICON:ACTION:CHANNEL"],
-  ["action-behold", "ICON:ACTION:BEHOLD"],
-  ["action-pick-me", "ICON:ACTION:PICK_ME"],
   ["action-anchor", "ICON:ACTION:ANCHOR"],
   ["action-boo", "ICON:ACTION:BOO"],
   ["action-proclaim", "ICON:ACTION:PROCLAIM"],
@@ -80,7 +78,6 @@ const ICONS = [
   ["action-starfall", "ICON:ACTION:STARFALL"],
   ["action-great-summoning", "ICON:ACTION:GREAT_SUMMONING"],
   ["action-pamphlets", "ICON:ACTION:PAMPHLETS"],
-  ["action-martyr", "ICON:ACTION:MARTYR"],
   ["action-grab", "ICON:ACTION:GRAB"],
   ["favour", "ICON:HUD:CULT:FAVOUR"],
   ["favour-large", "ICON:HUD:CULT:FAVOUR_LARGE"],
@@ -92,7 +89,6 @@ const ICONS = [
   ["status-grabbed", "ICON:STATUS:GRABBED"],
   ["status-cowed", "ICON:STATUS:COWED"],
   ["status-warded", "ICON:STATUS:WARDED"],
-  ["status-pick-me", "ICON:STATUS:PICK_ME"],
 ] as const;
 
 /** CULT.md, "Markers and effects": asset name, effect id, canvas side. */
@@ -142,7 +138,7 @@ const isGreen = (p: Hsv): boolean =>
   p.hue >= 80 && p.hue <= 152 && p.saturation >= 0.5 && p.value >= 0.45;
 
 describe("the Cultists' interface art (pulp_wars-mch9.23)", () => {
-  it("lists the twelve unit portraits and the thirty-two icons of the direction in batch interface-cult", async () => {
+  it("lists the unit portraits and the icons of the direction in batch interface-cult (Behold!, Pick Me!, Martyr, the Caller and the Chosen retired)", async () => {
     const manifest = await loadBatchManifest(ROOT, INTERFACE);
     const fragments = await loadFragments(ROOT);
     expect(batchManifestProblems(manifest, fragments, INTERFACE)).toEqual([]);
@@ -202,14 +198,7 @@ describe("the Cultists' interface art (pulp_wars-mch9.23)", () => {
         ?.source?.recipe;
       return source === undefined ? [recipe] : [recipe, ...chain(source)];
     };
-    for (const name of [
-      "idol-bearer",
-      "hexer",
-      "summoner",
-      "stargazer",
-      "caller",
-      "chosen",
-    ]) {
+    for (const name of ["idol-bearer", "hexer", "summoner", "stargazer"]) {
       const accepted =
         records.assets[`chibi-direction-portrait-cult-${name}`]?.recipe ?? "";
       expect(chain(accepted), name).toContain(bust?.recipe);
@@ -401,7 +390,7 @@ describe("the Cultists' interface art (pulp_wars-mch9.23)", () => {
     }
     // The robed busts wear the lodge's indigo, never a navy or an azure.
     for (const [name, , recipeClass] of PORTRAITS) {
-      if (recipeClass !== "portrait" || name === "caller") continue;
+      if (recipeClass !== "portrait") continue;
       const record = records.assets[`chibi-direction-portrait-cult-${name}`];
       if (record === undefined) throw new Error(name);
       const cloth = hsvPixels(
@@ -435,15 +424,9 @@ describe("the Cultists' interface art (pulp_wars-mch9.23)", () => {
     expect(accepted).toHaveLength(
       PORTRAITS.length + ICONS.length + EFFECT_ROWS.length,
     );
-    // The Cult redesign's Imp portrait (batch `summons-cult`, bead
-    // pulp_wars-mch9.45), registered with engine bead pulp_wars-mch9.36.
-    const summons = await loadRecords(
-      productionLayout(ROOT, "summons-cult"),
-      "summons-cult",
-    );
-    const imp = summons.assets["chibi-direction-portrait-cult-imp"];
-    expect(imp?.status).toBe("ACCEPTED");
-    if (imp !== undefined) accepted.push(imp);
+    // (The Cult redesign's Imp portrait, batch `summons-cult`, is
+    // registered in that batch's own manifest:
+    // chibi-cult-summons-assets.test.ts.)
     expect(
       CHIBI_DIRECTION_CULT_INTERFACE_ART_ASSETS_V7.map(
         (asset) => asset.id,
@@ -532,13 +515,15 @@ describe("the Cultists' interface art (pulp_wars-mch9.23)", () => {
       "MARKSMAN",
       "CAPTAIN",
       "CATAPULT",
-      "KNIGHT",
-      "SWORDSMAN",
       "JUGGERNAUT",
     ] as const)
       expect(own(portraitSubjectV7(role, "CULT")), role).toMatch(
         /^chibi-direction-portrait-cult-/,
       );
+    // The Caller's and the Chosen's busts left with their units
+    // (pulp_wars-mch9.42): their vacant slots have no Cult portrait.
+    for (const role of ["KNIGHT", "SWORDSMAN"] as const)
+      expect(own(portraitSubjectV7(role, "CULT")), role).toBeUndefined();
     for (const role of ["PATROL_BOAT", "BATTLESHIP", "SUBMARINE"] as const)
       expect(own(portraitSubjectV7(role, "CULT")), role).toMatch(
         /^chibi-naval-cult-portrait-/,

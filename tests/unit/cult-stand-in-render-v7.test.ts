@@ -34,6 +34,7 @@ import {
 } from "../../src/assets/chibi-direction-art-manifest";
 import {
   ACHIEVEMENT_IDS_V7,
+  CULT_VACANT_ROLES_V7,
   FACTION_IDS_V7,
   IMPROVEMENT_IDS_V7,
   NAVAL_ROLE_IDS_V7,
@@ -112,6 +113,14 @@ import { at, fieldV7 } from "../fixtures/v7-revision20";
 
 const LAND_ROLES = UNIT_ROLE_IDS_V7.filter(
   (role) => !(NAVAL_ROLE_IDS_V7 as readonly string[]).includes(role),
+);
+/**
+ * The land roles the Cult fields: the Caller's and the Chosen's slots
+ * are vacant (the Cult redesign), and their art was retired with them
+ * (`pulp_wars-mch9.42`).
+ */
+const CULT_LAND_ROLES = LAND_ROLES.filter(
+  (role) => !CULT_VACANT_ROLES_V7.includes(role),
 );
 
 /** Follows a subject's fallbacks to the first one with a registered raster. */
@@ -320,8 +329,18 @@ describe("Cult art subjects stand in with the shared art", () => {
   it("resolves every Cult subject to a registered raster in both looks, through its fallback", () => {
     const classic = buildChibiArtRegistryV7(CHIBI_ART_ASSETS_V7).registry;
     const live = chibiDirectionArtRegistryV7();
+    // The vacant roles have no Cult raster of their own any more.
+    for (const role of CULT_VACANT_ROLES_V7) {
+      expect(live.variants(`UNIT:CULT:${role}` as ArtSubjectV7), role).toEqual(
+        [],
+      );
+      expect(
+        live.variants(`PORTRAIT:CULT:${role}` as ArtSubjectV7),
+        role,
+      ).toEqual([]);
+    }
     const subjects: ArtSubjectV7[] = [
-      ...LAND_ROLES.flatMap((role): ArtSubjectV7[] => [
+      ...CULT_LAND_ROLES.flatMap((role): ArtSubjectV7[] => [
         unitArtSubjectV7({ role, form: "LAND", faction: "CULT" }),
         portraitSubjectV7(role, "CULT"),
       ]),
@@ -383,7 +402,7 @@ describe("Cult art subjects stand in with the shared art", () => {
     expect(cult(CHIBI_ART_ASSETS_V7)).toEqual([]);
     const live = chibiDirectionArtRegistryV7();
     const expected: ArtSubjectV7[] = [
-      ...LAND_ROLES.map((role) =>
+      ...CULT_LAND_ROLES.map((role) =>
         unitArtSubjectV7({ role, form: "LAND", faction: "CULT" }),
       ),
       ...NAVAL_ROLE_IDS_V7.map((role) =>
@@ -468,11 +487,13 @@ describe("Cult art subjects stand in with the shared art", () => {
       (entry) => entry.group === "CULT",
     );
     // The sprites, the terrain, and (bead pulp_wars-mch9.23) the 22
-    // interface rasters whose subject names the faction: twelve unit
-    // portraits and the frog's (bead pulp_wars-mch9.26), three ship
-    // portraits, three technology icons and three HUD icons; and the Imp's
-    // portrait (the Cult redesign, `pulp_wars-mch9.36`).
-    expect(cultFiles).toHaveLength(expected.length - 1 + 23 + terrainFiles);
+    // interface rasters whose subject names the faction: ten unit portraits
+    // (twelve until the Caller's and the Chosen's were retired,
+    // `pulp_wars-mch9.42`) and the frog's (bead pulp_wars-mch9.26), three
+    // ship portraits, three technology icons and four HUD icons (the Hunger
+    // bowl since `pulp_wars-mch9.42`); and the Imp's portrait (the Cult
+    // redesign, `pulp_wars-mch9.36`).
+    expect(cultFiles).toHaveLength(expected.length - 1 + 22 + terrainFiles);
     expect(assetInventoryForFactionsV7("LIVE", ["CULT", "ORIGINAL"])).toEqual(
       expect.arrayContaining([...cultFiles]),
     );

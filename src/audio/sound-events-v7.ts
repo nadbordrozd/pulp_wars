@@ -507,8 +507,6 @@ export function soundCuesForStepV7(
           return [{ id: "cult.summon", delayMs: 0 }];
         case "STRAND_SNAP":
           return [{ id: "cult.snap", delayMs: 0 }];
-        case "IDOL":
-          return [{ id: "support.rally", delayMs: 0 }];
         case "BOO":
           return [{ id: "special.boing", delayMs: 0 }];
         case "UNBOUND":

@@ -381,17 +381,8 @@ const BATCHES = [
     "cult-lodge",
     6,
   ],
-  ["caller", "UNIT:CULT:KNIGHT", "LARGE_UNIT", 72, 88, "unit", "cult-lodge", 6],
-  [
-    "chosen",
-    "UNIT:CULT:SWORDSMAN",
-    "STANDARD_UNIT",
-    56,
-    80,
-    "unit",
-    "cult-lodge",
-    null,
-  ],
+  // The Caller (KNIGHT) and the Chosen (SWORDSMAN) were retired by the Cult
+  // redesign (pulp_wars-mch9.42): their recipes stay as history.
   [
     "thing",
     "UNIT:CULT:JUGGERNAUT",
@@ -555,21 +546,8 @@ describe("the Cultists' batches (pulp_wars-mch9.15)", () => {
       (record) => record.status === "ACCEPTED",
     );
     expect(accepted).toHaveLength(SAMPLE.length + BATCHES.length);
-    // The Cult redesign's Imp, bound and Unbound (batch `summons-cult`,
-    // bead pulp_wars-mch9.45), registered with engine bead
-    // pulp_wars-mch9.36.
-    const summons = await loadRecords(
-      productionLayout(ROOT, "summons-cult"),
-      "summons-cult",
-    );
-    for (const id of [
-      "chibi-direction-cult-imp",
-      "chibi-direction-cult-imp-unbound",
-    ]) {
-      const record = summons.assets[id];
-      expect(record?.status, id).toBe("ACCEPTED");
-      if (record !== undefined) accepted.push(record);
-    }
+    // (The Cult redesign's Imp, batch `summons-cult`, is registered in that
+    // batch's own manifest: chibi-cult-summons-assets.test.ts.)
     expect(
       CHIBI_DIRECTION_CULT_ART_ASSETS_V7.map((asset) => asset.id).sort(),
     ).toEqual(accepted.map((record) => record.id).sort());
@@ -587,6 +565,44 @@ describe("the Cultists' batches (pulp_wars-mch9.15)", () => {
       ).toBe(true);
       expect(chibiAnchorV7(asset), asset.id).toEqual(record.anchor);
     }
+  });
+
+  it("has retired the Caller and the Chosen: no asset, record, raster or registration; the recipes stay as history (pulp_wars-mch9.42)", async () => {
+    const manifest = await loadBatchManifest(ROOT, BATCH);
+    const records = await loadRecords(productionLayout(ROOT, BATCH), BATCH);
+    for (const [name, recipe] of [
+      ["caller", "caller-a"],
+      ["chosen", "chosen-s"],
+    ] as const) {
+      const id = `chibi-direction-cult-${name}`;
+      expect(
+        manifest.assets.some((asset) => asset.id === id),
+        id,
+      ).toBe(false);
+      expect(records.assets[id], id).toBeUndefined();
+      expect(
+        CHIBI_DIRECTION_CULT_ART_ASSETS_V7.some((asset) => asset.id === id),
+        id,
+      ).toBe(false);
+      const present = await readFile(
+        path.join(ROOT, "public/assets/chibi/units", `${id}.png`),
+      ).then(
+        () => true,
+        () => false,
+      );
+      expect(present, id).toBe(false);
+      // The recipe and its record stay, rejected, bound to an asset that stays.
+      const kept = manifest.recipes.find((entry) => entry.id === recipe);
+      expect(kept?.asset, recipe).not.toBe(id);
+      expect(records.recipes[recipe]?.review?.verdict, recipe).toBe("REJECTED");
+    }
+    expect(
+      CHIBI_DIRECTION_CULT_ART_ASSETS_V7.some(
+        (asset) =>
+          asset.subject === "UNIT:CULT:KNIGHT" ||
+          asset.subject === "UNIT:CULT:SWORDSMAN",
+      ),
+    ).toBe(false);
   });
 
   it("keeps red for the Unbound looks, and violet and stray green off every piece", async () => {
@@ -626,7 +642,7 @@ describe("the Cultists' batches (pulp_wars-mch9.15)", () => {
         .length / frog.length,
     ).toBeGreaterThan(0.2);
     // The robed units of the batches wear the lodge's indigo.
-    for (const name of ["idol-bearer", "hexer", "summoner", "chosen"]) {
+    for (const name of ["idol-bearer", "hexer", "summoner"]) {
       const id = `chibi-direction-cult-${name}`;
       const cloth = hsvPixels(await unitsDir(id)).filter(
         (p) =>

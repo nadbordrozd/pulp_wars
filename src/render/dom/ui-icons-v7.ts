@@ -85,24 +85,24 @@ export type UiIconIdV7 =
   // and the action icons.
   | "candle"
   // The channel (bead pulp_wars-mch9.18): the glyphs of Summon (a flame in
-  // a chalk circle), Channel (two chain links), Behold! (the idol and its
-  // rays), Anchor (a coiled tentacle) and Boo! (a grin under two eyes),
-  // until the art registers their `ICON:ACTION:<KIND>` rasters.
+  // a chalk circle), Channel (two chain links), Anchor (a coiled tentacle)
+  // and Boo! (a grin under two eyes), until the art registers their
+  // `ICON:ACTION:<KIND>` rasters. (Behold!'s idol went with its button, the
+  // Cult redesign, `pulp_wars-mch9.42`.)
   | "summon"
   | "chain"
-  | "idol"
   | "tentacle"
   | "boo"
   // Rituals, hexes and tricks (bead pulp_wars-mch9.19): the glyphs of
   // Star-fall (a falling star), the Great Summoning (the lodge's eye),
-  // Proclaim (a megaphone), Ribbit (a frog), Switcheroo (two arrows) and
-  // Pick Me! (a shout), until the art registers their rasters.
+  // Proclaim (a megaphone), Ribbit (a frog) and Switcheroo (two arrows),
+  // until the art registers their rasters. (Pick Me!'s shout went with the
+  // Chosen.)
   | "comet"
   | "eye"
   | "megaphone"
   | "frog"
   | "swap"
-  | "shout"
   // The leaderboard's alliance setting (bead pulp_wars-2yc.45): two linked
   // rings, the mark of "AIs allied" and of every allied AI row.
   | "allied";
@@ -233,8 +233,6 @@ const PATHS: Readonly<Record<UiIconIdV7, string>> = {
   // Two chain links, one through the other.
   chain:
     "M10.6 13.4a3.4 3.4 0 0 1-4.8 0l-.7-.7a3.4 3.4 0 0 1 0-4.8l2-2a3.4 3.4 0 0 1 4.8 0l.7.7M13.4 10.6a3.4 3.4 0 0 1 4.8 0l.7.7a3.4 3.4 0 0 1 0 4.8l-2 2a3.4 3.4 0 0 1-4.8 0l-.7-.7M9.6 14.4l4.8-4.8",
-  // A squat idol: its block of a head, two eyes, a mouth, three rays.
-  idol: "M7.5 9.5h9V18a2 2 0 0 1-2 2h-5a2 2 0 0 1-2-2ZM10 13h.1M14 13h.1M10 16.5h4M12 3v3M5.2 5.2l2 2M18.8 5.2l-2 2",
   // A tentacle rising from the ground and coiling in on itself.
   tentacle:
     "M4.5 20.5c.6-7.3 3.6-11.6 8.3-11.6a4.5 4.5 0 1 1-4.5 4.5 2.3 2.3 0 1 1 2.3 2.3",
@@ -252,8 +250,6 @@ const PATHS: Readonly<Record<UiIconIdV7, string>> = {
   frog: "M4.5 15.5c0-4 3.3-6.5 7.5-6.5s7.5 2.5 7.5 6.5c0 2.2-2.6 3.5-7.5 3.5s-7.5-1.3-7.5-3.5ZM7 9.6a2.3 2.3 0 1 1 3.4-2M17 9.6a2.3 2.3 0 1 0-3.4-2M9 15.5c2 1.2 4 1.2 6 0",
   // Two arrows, one each way.
   swap: "M4 8.5h13.5M14 5l3.5 3.5L14 12M20 15.5H6.5M10 12l-3.5 3.5L10 19",
-  // A speech bubble with an exclamation mark.
-  shout: "M4 5.5h16v10H11l-4.5 4v-4H4ZM12 8v3.6M12 13.4v.2",
 };
 
 /**

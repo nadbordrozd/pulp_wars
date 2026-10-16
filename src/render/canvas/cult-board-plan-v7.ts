@@ -16,6 +16,7 @@ import {
   sacrificeTargetNameV7,
   seizeBlockTextV7,
   seizeTargetNameV7,
+  viewerFavourForfeitV7,
 } from "../cult-presentation-v7";
 import type {
   BoardRenderPlanEntryV7,
@@ -77,28 +78,32 @@ export function cultPickTargetsV7(
     const name = unitRoleRuleV7(view, victim).label;
     if (command.kind === "SACRIFICE") {
       const favour = sacrificeFavourV7(view, victim);
+      // The Cult redesign (section 6): the part above the cap is lost.
+      const lost = viewerFavourForfeitV7(view, favour);
       return [
         {
           at: victim.at,
           command,
           family: "SACRIFICE",
-          previewLabel: favourBoardLabelV7(favour),
-          semanticLabel: `${sacrificeTargetNameV7(name, favour)} ${SACRIFICE_PICK_V7}`,
+          previewLabel: favourBoardLabelV7(favour, lost),
+          semanticLabel: `${sacrificeTargetNameV7(name, favour, lost)} ${SACRIFICE_PICK_V7}`,
         },
       ];
     }
     const favour = seizeFavourV7(view, victim);
+    const lost = viewerFavourForfeitV7(view, favour);
     const holder = seizeHolderV7(view, view.units, summoner, victim);
     return [
       {
         at: victim.at,
         command,
         family: "SEIZE",
-        previewLabel: favourBoardLabelV7(favour),
+        previewLabel: favourBoardLabelV7(favour, lost),
         semanticLabel: `${seizeTargetNameV7(
           name,
           favour,
           holder === undefined ? null : unitRoleRuleV7(view, holder).label,
+          lost,
         )} ${SEIZE_PICK_V7}`,
       },
     ];
