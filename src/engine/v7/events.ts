@@ -703,10 +703,10 @@ export type DomainEventV7 =
       readonly playerId: PlayerId;
       readonly cityId: CityId;
       readonly at: CoordV7;
-      /** `GATHER_PEARLS_V7`: 2 Coins paid. */
-      readonly cost: 2;
-      /** `GATHER_PEARLS_V7`: 12 Coins received (4 before `7r84`). */
-      readonly coinsReceived: 12;
+      /** `GATHER_PEARLS_V7`: nothing paid (2 before `pulp_wars-5ti.14`). */
+      readonly cost: 0;
+      /** `GATHER_PEARLS_V7`: 10 Coins received (12 before `pulp_wars-5ti.14`, 4 before `7r84`). */
+      readonly coinsReceived: 10;
       /** `GATHER_PEARLS_GAIN_V7`: the net gain, 10 (2 before `7r84`). */
       readonly coinDelta: number;
     }

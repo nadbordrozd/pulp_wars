@@ -207,6 +207,7 @@ import { FOUNTAIN_HEAL_V7 } from "../src/engine/v7/curiosities";
 import {
   BLAST_MOUNTAIN_UNLOCK_TEXT_V7,
   BREACH_UNLOCK_TEXT_V7,
+  GATHER_PEARLS_UNLOCK_TEXT_V7,
   FIELD_DEFENSE_UNLOCK_TEXT_V7,
   advanceCombatNotesV7,
   landTradeStatusTextV7,
@@ -1690,7 +1691,9 @@ function unlockTextV7(
                     ` (${hireUnlockTextV7(faction === "DINOSAUR" ? DINOSAUR_HIRE_NOTE_V7 : null)})`
                   : unlock.command === "PILLAGE"
                     ? ` (${pillageUnlockTextV7(effectiveRoleRuleV7("RAIDER", faction).abilities.includes("ESCAPE") ? effectiveRoleRuleV7("RAIDER", faction).label : null)})`
-                    : ""
+                    : unlock.command === "GATHER_PEARLS"
+                      ? ` (${GATHER_PEARLS_UNLOCK_TEXT_V7})`
+                      : ""
           }`
         : unlock.command === "BUILD_MARKET"
           ? `cmd ${unlock.command} (${spatial.cost}c; a Market pays 2 or 3 Coins every turn: 1, plus 1 for each family of buildings beside it (farms, timber, metal), 3 at most; ${MARKET_PLACEMENT_TEXT_V7})`
@@ -1756,6 +1759,8 @@ function economicTextV7(view: PlayerViewV7, command: CommandV7): string {
       : "no exact public preview";
   const preview = result.preview;
   const parts = [`cost ${preview.cost}c`];
+  // `pulp_wars-5ti.14`: what the action pays at once (Gather Pearls +10).
+  if (preview.coinsReceived > 0) parts.push(`coins +${preview.coinsReceived}`);
   for (const entry of preview.populationDeltaByCity) {
     const city = view.cities.find((candidate) => candidate.id === entry.cityId);
     parts.push(
@@ -2638,6 +2643,12 @@ function eventTextV7(
         );
       break;
     }
+    // `pulp_wars-5ti.14`: Gather Pearls is free and pays its Coins.
+    case "PEARLS_GATHERED":
+      lines.push(
+        `PEARLS_GATHERED by ${seatLabelV7(context.view, event.playerId)} at ${xyV7(event.at)} for c${event.cityId}: +${event.coinDelta} Coins`,
+      );
+      break;
     case "TREASURE_CAPTURED": {
       // The serialized reward literal `KNIGHT` means "the chest unit" for
       // every faction and round, so the line names the unit that came.

@@ -3,6 +3,7 @@ import {
   BLAST_MOUNTAIN_DAMAGE_V7,
   BLAST_MOUNTAIN_POPULATION_V7,
   FIELD_DEFENSE_FORTIFICATION_LEVELS_V7,
+  GATHER_PEARLS_V7,
   PILLAGE_COINS_V7,
   technologyCapabilitiesV7,
   type CityId,
@@ -29,6 +30,12 @@ export const BREACH_UNLOCK_TEXT_V7 =
  * own unit outside the player's territory.
  */
 export const BLAST_MOUNTAIN_UNLOCK_TEXT_V7 = `Blast Mountain (${BLAST_MOUNTAIN_COST_V7} Coins): a Mountain in your territory or next to one of your units becomes Grass, and every unit on it or next to it takes ${BLAST_MOUNTAIN_DAMAGE_V7} damage, yours too except the one that sets it; in your territory its city gains +${BLAST_MOUNTAIN_POPULATION_V7} population`;
+
+/**
+ * Navigation, the `GATHER_PEARLS` command (`pulp_wars-5ti.14`): free, and it
+ * pays its Coins at once.
+ */
+export const GATHER_PEARLS_UNLOCK_TEXT_V7 = `Gather Pearls (${GATHER_PEARLS_V7.cost === 0 ? "free" : `${GATHER_PEARLS_V7.cost} Coins`}): +${GATHER_PEARLS_V7.coinsReceived} Coins, once per Pearls tile`;
 
 /** Tuning 3: the short reminder on a Blast Mountain button and preview. */
 export const BLAST_MOUNTAIN_DAMAGE_NOTE_V7 = `${BLAST_MOUNTAIN_DAMAGE_V7} damage on and around the tile, to your units too except the one that sets it`;

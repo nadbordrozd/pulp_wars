@@ -1,5 +1,6 @@
 import {
   BLAST_MOUNTAIN_UNLOCK_TEXT_V7,
+  GATHER_PEARLS_UNLOCK_TEXT_V7,
   BREACH_UNLOCK_TEXT_V7,
   FIELD_DEFENSE_UNLOCK_TEXT_V7,
   TRAINING_BLOCKED_CENTER_V7,
@@ -7978,7 +7979,13 @@ export class Ruleset7DomAppView {
           );
           action.append(
             economyChips(this.#document, {
-              cost: preview.preview.cost,
+              // `pulp_wars-5ti.14`: an action that pays Coins and costs
+              // none (Gather Pearls) shows only what it pays.
+              ...(preview.preview.cost === 0 &&
+              preview.preview.coinsReceived > 0
+                ? {}
+                : { cost: preview.preview.cost }),
+              coins: preview.preview.coinsReceived,
               population: preview.preview.populationDeltaByCity.reduce(
                 (total, change) => total + change.delta,
                 0,
@@ -15791,7 +15798,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
     return null;
   return {
-    rulesetId: "pulp-wars-poc-7r85",
+    rulesetId: "pulp-wars-poc-7r86",
     seed,
     width: effectiveBoardSize(draft),
     height: effectiveBoardSize(draft),
@@ -15922,25 +15929,29 @@ function effectDescription(
           : // Tuning 1 (7r46): the two commands whose rule changed say so.
             effect.command === "BLAST_MOUNTAIN"
             ? BLAST_MOUNTAIN_UNLOCK_TEXT_V7
-            : effect.command === "BUILD_FIELD_DEFENSE"
-              ? FIELD_DEFENSE_UNLOCK_TEXT_V7
-              : effect.command === "HIRE"
-                ? hireUnlockTextV7(
-                    faction === "DINOSAUR" ? DINOSAUR_HIRE_NOTE_V7 : null,
-                  )
-                : effect.command === "PILLAGE"
-                  ? pillageUnlockTextV7(
-                      effectiveRoleRuleV7("RAIDER", faction).abilities.includes(
-                        "ESCAPE",
-                      )
-                        ? label("RAIDER")
-                        : null,
+            : // `pulp_wars-5ti.14`: free, +10 Coins.
+              effect.command === "GATHER_PEARLS"
+              ? GATHER_PEARLS_UNLOCK_TEXT_V7
+              : effect.command === "BUILD_FIELD_DEFENSE"
+                ? FIELD_DEFENSE_UNLOCK_TEXT_V7
+                : effect.command === "HIRE"
+                  ? hireUnlockTextV7(
+                      faction === "DINOSAUR" ? DINOSAUR_HIRE_NOTE_V7 : null,
                     )
-                  : // The Dinosaur pass, correction: a faction's own
-                    // building under its own name ("Build Chopping Block").
-                    factionBuildCommandV7(effect.command, faction) === null
-                    ? title(effect.command)
-                    : `Build ${factionBuildCommandV7(effect.command, faction)?.name ?? ""}`;
+                  : effect.command === "PILLAGE"
+                    ? pillageUnlockTextV7(
+                        effectiveRoleRuleV7(
+                          "RAIDER",
+                          faction,
+                        ).abilities.includes("ESCAPE")
+                          ? label("RAIDER")
+                          : null,
+                      )
+                    : // The Dinosaur pass, correction: a faction's own
+                      // building under its own name ("Build Chopping Block").
+                      factionBuildCommandV7(effect.command, faction) === null
+                      ? title(effect.command)
+                      : `Build ${factionBuildCommandV7(effect.command, faction)?.name ?? ""}`;
     case "RAM":
       return NAVAL_RAM_UNLOCK_V7;
     case "HARBOURS":
@@ -16628,8 +16639,13 @@ function economicPreviewLabelV7(preview: EconomicPreviewV7): string {
   const changedPopulationCities = preview.populationDeltaByCity.filter(
     (change) => change.delta !== 0,
   ).length;
+  // `pulp_wars-5ti.14`: an action that pays Coins says so ("+10 Coins"),
+  // with no price when it costs none (Gather Pearls).
   const details = [
-    `${preview.cost} Coins`,
+    preview.cost === 0 && preview.coinsReceived > 0
+      ? null
+      : `${preview.cost} Coins`,
+    preview.coinsReceived > 0 ? `+${preview.coinsReceived} Coins` : null,
     population === 0
       ? null
       : `population ${population > 0 ? "+" : ""}${population}${changedPopulationCities > 1 ? ` across ${changedPopulationCities} cities` : ""}`,
@@ -16890,6 +16906,8 @@ function economyChips(
   documentRoot: Document,
   values: {
     readonly cost?: number;
+    /** Coins paid at once (`pulp_wars-5ti.14`: Gather Pearls' "+10"). */
+    readonly coins?: number;
     readonly population?: number;
     readonly income?: number;
   },
@@ -16906,6 +16924,8 @@ function economyChips(
   };
   if (values.cost !== undefined)
     chip("coin", values.cost === 0 ? "Free" : String(values.cost), "is-cost");
+  if (values.coins !== undefined && values.coins > 0)
+    chip("coin", `+${values.coins}`, "is-gain is-coins-received");
   if (values.population !== undefined && values.population !== 0)
     chip(
       "population",

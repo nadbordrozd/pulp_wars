@@ -12044,7 +12044,8 @@ function isPolicyCandidate(
   const economic = previewEconomicV7(context.view, command);
   // `pulp_wars-5ti.13` (7r84): Gather Pearls pays back more than it costs
   // (`GATHER_PEARLS_GAIN_V7`, 10), so no savings plan, war footing,
-  // research floor, or naval reserve holds it back.
+  // research floor, or naval reserve holds it back. `pulp_wars-5ti.14`: it
+  // is free, so a seat with no Coins gathers them too.
   if (
     economic.ok &&
     command.kind === "GATHER_PEARLS" &&
@@ -13821,10 +13822,10 @@ function scoreCommandWithContext(
             : distance(command.at, context.naval.target)) -
         (cityId?.explored === true ? (cityId.territoryCityId ?? 0) : 0);
     } else if (command.kind === "GATHER_PEARLS") {
-      // The Coins the Pearls pay (`GATHER_PEARLS_V7`; the cost is already
-      // subtracted above). `pulp_wars-5ti.13` (7r84): 12 for 2, so every
-      // seat gathers them, not only a naval one (1225), as it takes a
-      // population harvest (1140).
+      // The Coins the Pearls pay (`GATHER_PEARLS_V7`; the cost, none since
+      // `pulp_wars-5ti.14`, is already subtracted above). `pulp_wars-5ti.13`
+      // (7r84): a gain of 10, so every seat gathers them, not only a naval
+      // one (1225), as it takes a population harvest (1140).
       priority = Math.max(priority, context.naval.active ? 1225 : 1140);
       immediateValue += GATHER_PEARLS_V7.coinsReceived;
     } else if (context.naval.active && command.kind === "HARVEST_FISH") {

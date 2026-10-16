@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r85`, for all nine offered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r86`, for all nine offered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), Candy (`CANDY`), and
 the Cultists (`CULT`). The ninth faction, the Cultists of the Ancient Ones,
@@ -440,9 +440,16 @@ links to another, by Road or by Port. A sea link needs only **Shorecraft**
 the Roads technology, and unexplored water no longer breaks a link. A save,
 replay, or setup of `7r75` is rejected, and the browser autosave has a new
 key.
+`pulp-wars-poc-7r86` (`pulp_wars-5ti.14`, the user, 2026-10-16: Pearls
+"cost nothing! and instead return 10 coins") is **free Pearls**: Gather
+Pearls costs nothing and pays 10 Coins, the same gain of 10 as `7r84`'s 2
+for 12, and it needs no Coins in the treasury; the tile dock, the preview,
+Navigation's card, and the event say "+10" with no price
+([section 8.2](#82-resource-and-basic-actions)). A save, replay, or setup
+of `7r85` is rejected, and the browser autosave has a new key.
 `pulp-wars-poc-7r85` (`pulp_wars-mch9.31`, the first engine step of the
 Cult redesign, [its section 18](RULESET_7_CULT_REDESIGN.md#18-implementation-beads),
-approved by the user on 2026-10-16) is **the Cult's new roster**: the
+approved by the user on 2026-10-16) was **the Cult's new roster**: the
 robed cultists are casters (the Initiate, Hexer, Summoner, and Stargazer
 have 7 HP; the Initiate and the Hexer Attack 1.5 and the Initiate Defense
 1; the Hexer costs 3 and the Stargazer 7); the Caller and the Chosen
@@ -1015,7 +1022,7 @@ the build differs (its sections 20 to 24 list them);
 the values here are current. Where a document and the code disagreed, the
 code's behavior is the rule and is stated below;
 [Known discrepancies](#25-known-discrepancies) lists the open items and the
-resolved ones as of `pulp-wars-poc-7r85`.
+resolved ones as of `pulp-wars-poc-7r86`.
 
 **Terms.** "On the board" means a unit that currently exists (HP above 0).
 **Living** has the narrower revision-13 meaning used by Wail, Plague,
@@ -1118,10 +1125,10 @@ sections here cite.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r85`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Ruleset                                    | `pulp-wars-poc-7r86`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r85.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Browser autosave                           | `pulpWars.save.v7r86.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, `CULT`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`, `CULT_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -4788,25 +4795,32 @@ and no tile command changes a tile into water, a Rift, or a site.
 
 ### 8.2 Resource and basic actions
 
-| Action            | Tech        | Target                                     | Cost | Result                                     |
-| ----------------- | ----------- | ------------------------------------------ | ---: | ------------------------------------------ |
-| Harvest Fruit     | Gathering   | Grass + Fruit                              |    2 | remove Fruit; +1 permanent population      |
-| Hunt Game         | Hunting     | Forest + Game                              |    2 | remove Game; +1 permanent population       |
-| Harvest Fish      | Shorecraft  | Shallow Water + Fish (Port tile if active) |    2 | remove Fish; +1 permanent population       |
-| Gather Pearls     | Navigation  | any water + Pearls (Port tile if active)   |    2 | remove Pearls; receive 12 Coins (net +10)¹ |
-| Build Farm        | Farming     | Grass + Fertile Ground                     |    5 | Farm; +2 live population                   |
-| Build Lumber Camp | Forestry    | Forest, no resource or improvement         |    3 | Lumber Camp; +1 live population            |
-| Build Mine        | Engineering | Mountain + Ore                             |    5 | Mine; +2 live population                   |
+| Action            | Tech        | Target                                     | Cost | Result                                |
+| ----------------- | ----------- | ------------------------------------------ | ---: | ------------------------------------- |
+| Harvest Fruit     | Gathering   | Grass + Fruit                              |    2 | remove Fruit; +1 permanent population |
+| Hunt Game         | Hunting     | Forest + Game                              |    2 | remove Game; +1 permanent population  |
+| Harvest Fish      | Shorecraft  | Shallow Water + Fish (Port tile if active) |    2 | remove Fish; +1 permanent population  |
+| Gather Pearls     | Navigation  | any water + Pearls (Port tile if active)   |    0 | remove Pearls; receive 10 Coins¹      |
+| Build Farm        | Farming     | Grass + Fertile Ground                     |    5 | Farm; +2 live population              |
+| Build Lumber Camp | Forestry    | Forest, no resource or improvement         |    3 | Lumber Camp; +1 live population       |
+| Build Mine        | Engineering | Mountain + Ore                             |    5 | Mine; +2 live population              |
 
-¹ `pulp_wars-5ti.13` (`pulp-wars-poc-7r84`; the user, 2026-10-14: "make
-pearls more meaningful"): Gather Pearls pays 12 Coins (4 before), so the
-player gains 10 (2 before); the 2-Coin cost, the Navigation requirement,
-and the targets are unchanged (`GATHER_PEARLS_V7` in
-`src/engine/rules/ruleset-v7.ts`). Each Pearls tile is gathered once: the
-Pearls are removed. The Normal AI gathers Pearls whatever its plan (before,
-only a seat with an active naval plan did), and no savings plan, research
-floor, or naval Coin reserve holds the gathering back, since it pays more
-than it costs.
+¹ `pulp_wars-5ti.14` (`pulp-wars-poc-7r86`; the user, 2026-10-16:
+"they cost nothing! and instead return 10 coins"): Gather Pearls **costs
+nothing and pays 10 Coins**, so the player still gains 10, and it needs no
+Coins in the treasury (it was 2 Coins for 12 with `7r84`, `pulp_wars-5ti.13`,
+and 2 for 4 before). The Navigation requirement and the targets are
+unchanged (`GATHER_PEARLS_V7` in `src/engine/rules/ruleset-v7.ts`). The
+`PEARLS_GATHERED` event carries `cost` 0, `coinsReceived` 10 and
+`coinDelta` 10; the public economic preview has `cost` 0 and
+`coinsReceived` 10 (the Coins an action pays at once, 1 for Clear Forest).
+The tile dock's Pearls button shows no price chip, only a "+10" Coin chip,
+and its accessible name says "+10 Coins"; Navigation's card reads "Gather
+Pearls (free): +10 Coins, once per Pearls tile". Each Pearls tile is
+gathered once: the Pearls are removed. The Normal AI gathers Pearls
+whatever its plan and its Coins (before `7r84`, only a seat with an active
+naval plan did), and no savings plan, research floor, or naval Coin
+reserve holds the gathering back.
 
 ### 8.3 Processors and mixed buildings
 
@@ -13818,6 +13832,7 @@ first guesses.
 | Calm waves          | `pulp-wars-poc-7r83` | `pulp_wars-v642.5` the campaign follow-ups (a save, replay, or setup of `7r82` is rejected): a mission's reinforcement arrives with its turn spent and on the nearest free tile not next to a hostile unit, searched to the edge of the board; a match that is not a mission is unchanged                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | Battleship, Pearls  | `pulp-wars-poc-7r84` | `pulp_wars-5ti.13` (the user, 2026-10-14; a save, replay, or setup of `7r83` is rejected): the Battleship of every roster has Attack 5 and Defense 3 (6 and 4 before); Gather Pearls pays 12 Coins for its 2, a gain of 10 (4, a gain of 2, before); the Normal AI gathers Pearls whatever its plan                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Cult redesign, E-R1 | `pulp-wars-poc-7r85` | `pulp_wars-mch9.31` the Cult redesign's roster ([RULESET_7_CULT_REDESIGN.md](RULESET_7_CULT_REDESIGN.md); the user, 2026-10-16; a save, replay, or setup of `7r84` is rejected): the Initiate, Hexer, Summoner, and Stargazer have 7 HP (the Initiate and the Hexer Attack 1.5, the Initiate Defense 1; the Hexer costs 3, the Stargazer 7); the Cult's `KNIGHT` and `SWORDSMAN` slots are vacant (the Caller and the Chosen retired; `factionFieldsRoleV7`); Martyr and Pick Me! are removed; the Tentacle is the Summoner's with Tentacles (the Cult's Chivalry); Metallurgy is shown as Gibbering Masses; every Cult seat starts with 2 Favour; `FRONTIER_10` revision 3 and `LAB_CULT_MID` revision 2; a mission placing a vacant role is refused.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| Free Pearls         | `pulp-wars-poc-7r86` | `pulp_wars-5ti.14` (the user, 2026-10-16; a save, replay, or setup of `7r85` is rejected): Gather Pearls costs nothing and pays 10 Coins (2 for 12 before), the same gain of 10, with no Coins needed; the economic preview gains `coinsReceived`, and the tile dock shows "+10" with no price                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 
 **Documentation parity (2026-09-28, no ruleset or identity change):** where
 older documents disagreed with the code, the code's behavior was adopted as

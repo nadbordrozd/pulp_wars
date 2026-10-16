@@ -206,7 +206,10 @@ describe("ruleset-7 late public query performance", () => {
       // tier 2 costs 12 with the view's four cities, so its 12 Coins
       // buy one and six RESEARCH commands are offered again (was
       // 25ba7b…4a55).
-    ).toBe("9aa14d697724b0dd7b83d92cf0e1d62dcd186e8c511d0d7ece34a9c2ac72a856");
+      // Free Pearls (`pulp_wars-5ti.14`, 7r86): every economic preview
+      // carries `coinsReceived`, the Coins it pays at once (was
+      // 9aa14d…a856).
+    ).toBe("8109fe6404f2feb3086b34b5c8226d388835d9219fe7e63f9e1ef3377981b852");
     expect(
       canonicalHash(
         commands.filter(isRetainedLandCommand).map((command) => ({
@@ -220,7 +223,10 @@ describe("ruleset-7 late public query performance", () => {
       // tier 2 costs 12 with the view's four cities, so its 12 Coins
       // buy one and six RESEARCH commands are offered again (was
       // 25ba7b…4a55).
-    ).toBe("9aa14d697724b0dd7b83d92cf0e1d62dcd186e8c511d0d7ece34a9c2ac72a856");
+      // Free Pearls (`pulp_wars-5ti.14`, 7r86): every economic preview
+      // carries `coinsReceived`, the Coins it pays at once (was
+      // 9aa14d…a856).
+    ).toBe("8109fe6404f2feb3086b34b5c8226d388835d9219fe7e63f9e1ef3377981b852");
     expect(elapsed).toBeLessThan(250);
 
     const incrementalView = structuredClone(RETAINED_VIEW);

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { scoreCommandV7 } from "../../src/ai/v7";
+import { chooseNormalCommandV7, scoreCommandV7 } from "../../src/ai/v7";
 import { OBSOLETE_SAVE_STORAGE_KEYS_V7 } from "../../src/persistence/browser-v7";
 import {
   FACTION_IDS_V7,
@@ -30,21 +30,28 @@ import {
   type NavalArenaUnitV7,
 } from "../fixtures/v7-naval-branch";
 
-// `pulp_wars-5ti.13` (`pulp-wars-poc-7r85`; the user, 2026-10-14): the
+// `pulp_wars-5ti.13` (`pulp-wars-poc-7r84`; the user, 2026-10-14): the
 // Battleship has Attack 5 and Defense 3 (6 and 4 before) in every roster,
-// and Gather Pearls pays 12 Coins for 2, a gain of 10 (4 for 2 before).
+// and Gather Pearls pays 12 Coins for 2, a gain of 10 (4 for 2 before);
+// `pulp_wars-5ti.14` makes it free, paying 10 (the same gain).
 // Hand-built states on the naval arena of `pulp_wars-5ti.2` (rows 3 and 7
 // Shallow Water, rows 4 to 6 Deep Water; seat 0's capital on (5, 2) with a
 // Port on (4, 3)).
 
 describe("the identity", () => {
-  it("is 7r84, with 7r83 the last prior identity and its save key obsolete", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r85");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r85.current");
-    expect(PRIOR_RULESET_7_IDS.at(-2)).toBe("pulp-wars-poc-7r83");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-2)).toBe(
-      "pulpWars.save.v7r83.current",
-    );
+  // `pulp_wars-5ti.14` (free Pearls) is 7r86; 7r84 (`pulp_wars-5ti.13`) and
+  // 7r85 (the Cult redesign's roster) are retired with their save keys.
+  it("is 7r86, with 7r85 the last prior identity and 7r84 before it", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r86");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r86.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-2)).toEqual([
+      "pulp-wars-poc-7r84",
+      "pulp-wars-poc-7r85",
+    ]);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-2)).toEqual([
+      "pulpWars.save.v7r84.current",
+      "pulpWars.save.v7r85.current",
+    ]);
   });
 });
 
@@ -184,10 +191,12 @@ describe("Gather Pearls", () => {
   };
   const gather: CommandV7 = { kind: "GATHER_PEARLS", at: PEARLS };
 
-  it("costs 2 and pays 12, a gain of 10", () => {
-    expect(GATHER_PEARLS_V7).toEqual({ cost: 2, coinsReceived: 12 });
+  // `pulp_wars-5ti.14` (the user, 2026-10-16): free, and it pays 10 (2 for
+  // 12 before), the same gain of 10.
+  it("costs nothing and pays 10, a gain of 10", () => {
+    expect(GATHER_PEARLS_V7).toEqual({ cost: 0, coinsReceived: 10 });
     expect(GATHER_PEARLS_GAIN_V7).toBe(10);
-    const state = pearlArena(2);
+    const state = pearlArena(3);
     const human = seatV7(state, 0).id;
     expect(
       state.board.tiles.find((tile) => tile.at.x === 6 && tile.at.y === 3),
@@ -195,16 +204,17 @@ describe("Gather Pearls", () => {
     const view = viewForV7(state, human);
     expect(queryPlayerCommandsV7(view)).toContainEqual(gather);
     const preview = previewEconomicV7(view, gather);
-    expect(preview.ok && preview.preview.cost).toBe(2);
+    expect(preview.ok && preview.preview.cost).toBe(0);
+    expect(preview.ok && preview.preview.coinsReceived).toBe(10);
     const result = acceptV7(state, 0, gather);
-    expect(seatV7(result.state, 0).coins).toBe(12);
+    expect(seatV7(result.state, 0).coins).toBe(13);
     expect(result.events[0]).toEqual({
       kind: "PEARLS_GATHERED",
       playerId: human,
       cityId: expect.any(Number) as number,
       at: PEARLS,
-      cost: 2,
-      coinsReceived: 12,
+      cost: 0,
+      coinsReceived: 10,
       coinDelta: 10,
     });
     expect(
@@ -214,16 +224,18 @@ describe("Gather Pearls", () => {
     ).toBeNull();
   });
 
-  it("still needs the 2 Coins up front", () => {
-    const state = pearlArena(1);
-    expect(
-      queryPlayerCommandsV7(viewForV7(state, seatV7(state, 0).id)),
-    ).not.toContainEqual(gather);
-    const result = applyCommandV7(state, seatV7(state, 0).id, gather);
-    expect(result).toMatchObject({
-      accepted: false,
-      error: { code: "INSUFFICIENT_COINS", params: { cost: 2 } },
+  it("needs no Coins: an empty treasury is offered it and gathers it", () => {
+    const state = pearlArena(0);
+    const view = viewForV7(state, seatV7(state, 0).id);
+    expect(queryPlayerCommandsV7(view)).toContainEqual(gather);
+    const preview = previewEconomicV7(view, gather);
+    expect(preview).toMatchObject({
+      ok: true,
+      preview: { cost: 0, coinsReceived: 10 },
     });
+    const result = applyCommandV7(state, seatV7(state, 0).id, gather);
+    expect(result.accepted).toBe(true);
+    expect(seatV7(result.state, 0).coins).toBe(10);
   });
 
   it("is a harvest the Normal AI takes for its Coins, naval seat or not", () => {
@@ -232,13 +244,29 @@ describe("Gather Pearls", () => {
       // The Ice Folk have no ships: never a naval seat.
       ["ICE_FOLK", ["SHORECRAFT", "NAVIGATION"]],
     ] as const) {
-      const state = pearlArena(2, faction, techs);
-      const view = viewForV7(state, seatV7(state, 0).id);
-      expect(queryPlayerCommandsV7(view), faction).toContainEqual(gather);
-      const score = scoreCommandV7(view, gather);
-      expect(score.priority, faction).toBeGreaterThanOrEqual(1140);
-      // The Coins it pays less the Coins it costs.
-      expect(score.immediateValue, faction).toBeGreaterThanOrEqual(10);
+      // `pulp_wars-5ti.14`: with no Coins at all, as it is free.
+      for (const coins of [0, 2]) {
+        const state = pearlArena(coins, faction, techs);
+        const view = viewForV7(state, seatV7(state, 0).id);
+        expect(queryPlayerCommandsV7(view), faction).toContainEqual(gather);
+        const score = scoreCommandV7(view, gather);
+        expect(score.priority, `${faction} ${coins}`).toBeGreaterThanOrEqual(
+          1140,
+        );
+        // The Coins it pays less the Coins it costs (none).
+        expect(
+          score.immediateValue,
+          `${faction} ${coins}`,
+        ).toBeGreaterThanOrEqual(10);
+      }
     }
+  });
+
+  it("is the Normal AI's pick with an empty treasury (one decision)", () => {
+    const state = pearlArena(0);
+    const decision = chooseNormalCommandV7(
+      viewForV7(state, seatV7(state, 0).id),
+    );
+    expect(decision.command).toEqual(gather);
   });
 });

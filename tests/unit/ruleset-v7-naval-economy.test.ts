@@ -189,7 +189,7 @@ describe("ruleset-7 naval economy", () => {
     ).toBe(false);
   });
 
-  it("gathers Pearls for exact net +10 (7r84; +2 before) and fails overflow atomically", () => {
+  it("gathers Pearls for exact net +10, free (5ti.14; 2 for 12 before, 2 for 4 before 7r84) and fails overflow atomically", () => {
     const fixture = coastalV7(9101);
     const tile = fixture.state.board.tiles.find(
       (candidate) =>
@@ -222,8 +222,8 @@ describe("ruleset-7 naval economy", () => {
         ?.coins,
     ).toBe(before + 10);
     expect(result.events[0]).toMatchObject({
-      cost: 2,
-      coinsReceived: 12,
+      cost: 0,
+      coinsReceived: 10,
       coinDelta: 10,
     });
     expect(parseGameStateV7(result.state)).toEqual(result.state);

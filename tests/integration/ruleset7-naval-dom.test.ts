@@ -36,6 +36,7 @@ import {
   Ruleset7DomAppView,
   type Ruleset7ControllerPortV7,
 } from "../../src/render/dom/app-view-v7";
+import { GATHER_PEARLS_UNLOCK_TEXT_V7 } from "../../src/render/technology-unlock-text-v7";
 import {
   BOARD_ALREADY_ACTED_V7,
   BOARD_NO_WEAK_SHIP_V7,
@@ -427,6 +428,70 @@ describe("Harbours", () => {
       }
       app.destroy();
     }
+  });
+});
+
+// `pulp_wars-5ti.14` (the user, 2026-10-16): Gather Pearls costs nothing
+// and pays 10 Coins, and the dock says so.
+describe("Gather Pearls in the tile dock", () => {
+  const PEARLS: CoordV7 = { x: 6, y: 3 };
+  const pearls = (coins: number): GameStateV7 => {
+    const base = navalArenaV7({ units: [] });
+    return {
+      ...base,
+      board: {
+        ...base.board,
+        tiles: base.board.tiles.map((tile) =>
+          tile.at.x === PEARLS.x && tile.at.y === PEARLS.y
+            ? { ...tile, resource: "PEARLS" as const }
+            : tile,
+        ),
+      },
+      players: base.players.map((player) =>
+        player.id === base.humanPlayerId ? { ...player, coins } : player,
+      ),
+    };
+  };
+
+  for (const coins of [0, 7])
+    it(`shows no price and +10 Coins, pressable with ${coins} Coins`, async () => {
+      const { controller, host, app } = rig(pearls(coins));
+      host.callbacks?.onSelection({ kind: "TILE", at: PEARLS });
+      const gather = requiredButton("command-gather_pearls");
+      expect(gather.classList.contains("is-blocked")).toBe(false);
+      expect(gather.getAttribute("aria-disabled")).toBeNull();
+      expect(gather.querySelector(".v7-economy-chip.is-cost")).toBeNull();
+      const chips = [...gather.querySelectorAll(".v7-economy-chip")].map(
+        (chip) => chip.textContent,
+      );
+      expect(chips).toEqual(["+10"]);
+      expect(
+        gather.querySelector(".v7-economy-chip.is-gain.is-coins-received"),
+      ).not.toBeNull();
+      const label = gather.getAttribute("aria-label") ?? "";
+      expect(label).toBe("Pearls · +10 Coins");
+      gather.click();
+      await waitUntil(() => controller.accepted.length === 1);
+      expect(controller.accepted).toEqual([
+        { kind: "GATHER_PEARLS", at: PEARLS },
+      ]);
+      app.destroy();
+    });
+
+  it("Navigation's card says it is free and pays 10", () => {
+    const { app } = rig(pearls(0));
+    requiredButton("tech").click();
+    requiredButton("tech-navigation").click();
+    const lines = [
+      ...requiredElement<HTMLElement>(".v7-tech-detail").querySelectorAll(
+        ".v7-tech-unlocks li",
+      ),
+    ].map((item) => item.textContent ?? "");
+    expect(lines).toContain(GATHER_PEARLS_UNLOCK_TEXT_V7);
+    expect(GATHER_PEARLS_UNLOCK_TEXT_V7).toBe(
+      "Gather Pearls (free): +10 Coins, once per Pearls tile",
+    );
+    app.destroy();
   });
 });
 

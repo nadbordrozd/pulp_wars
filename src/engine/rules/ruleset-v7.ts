@@ -1078,12 +1078,14 @@ export const ECONOMIC_MIRACLE_COINS_V7 = 1 as const;
  * Gather Pearls (Navigation): the Coins it costs and the Coins it pays, so
  * the player gains `coinsReceived - cost`. `pulp_wars-5ti.13`
  * (`pulp-wars-poc-7r84`; the user, 2026-10-14, "make pearls more
- * meaningful"): it pays 12 for 2, a gain of 10 (4 for 2, a gain of 2,
- * before). The cost is unchanged.
+ * meaningful"): it paid 12 for 2, a gain of 10 (4 for 2, a gain of 2,
+ * before). `pulp_wars-5ti.14` (the user, 2026-10-16, "they cost nothing!
+ * and instead return 10 coins"): it is free and pays 10, the same gain of
+ * 10, and needs no Coins in the treasury.
  */
 export const GATHER_PEARLS_V7 = Object.freeze({
-  cost: 2,
-  coinsReceived: 12,
+  cost: 0,
+  coinsReceived: 10,
 } as const);
 /** The Coins one Gather Pearls adds to its player's treasury (10). */
 export const GATHER_PEARLS_GAIN_V7 =

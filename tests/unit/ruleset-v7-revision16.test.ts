@@ -67,9 +67,9 @@ const CELLS = [
 
 describe("ruleset-7 revision-16 identity", () => {
   it("keeps rejecting r15 after the r54 identity and cleans the r15 through r53 save keys", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r85");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r85.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-70, -30)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r86");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r86.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-71, -31)).toEqual([
       "pulpWars.save.v7r15.current",
       "pulpWars.save.v7r16.current",
       "pulpWars.save.v7r17.current",
@@ -182,8 +182,9 @@ describe("ruleset-7 prior identities", () => {
     // (`pulp_wars-w49.40`): 7r81. Mission objectives (`pulp_wars-v642.1`):
     // 7r82. Calm reinforcements (`pulp_wars-v642.5`): 7r83. The Battleship
     // nerf and 10-Coin Pearls (`pulp_wars-5ti.13`): 7r84. The Cult
-    // redesign's roster (`pulp_wars-mch9.31`): 7r85.
-    expect(revision).toBe(85);
+    // redesign's roster (`pulp_wars-mch9.31`): 7r85. Free Pearls paying 10
+    // (`pulp_wars-5ti.14`): 7r86.
+    expect(revision).toBe(86);
     expect([...PRIOR_RULESET_7_IDS]).toEqual(expectedPrior);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
   });
@@ -218,7 +219,7 @@ describe("ruleset-7 prior identities", () => {
 
   it("still reports an unknown Ruleset 7 identity as INVALID_REPLAY", () => {
     // The next identity after the current one is still unknown.
-    for (const id of ["pulp-wars-poc-7r1", "pulp-wars-poc-7r86", "other"])
+    for (const id of ["pulp-wars-poc-7r1", "pulp-wars-poc-7r87", "other"])
       expect(
         parseReplayFileV7({
           format: "pulp-wars-replay",

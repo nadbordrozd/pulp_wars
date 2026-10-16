@@ -7128,6 +7128,11 @@ export interface CityValueDeltaV7 {
 export interface EconomicPreviewV7 {
   readonly at: CoordV7;
   readonly cost: number;
+  /**
+   * The Coins the action pays at once (`pulp_wars-5ti.14`): Gather Pearls
+   * `GATHER_PEARLS_V7.coinsReceived` (10), Clear Forest 1, otherwise 0.
+   */
+  readonly coinsReceived: number;
   readonly ownerCityId: CityId | null;
   readonly populationDeltaByCity: readonly CityValueDeltaV7[];
   readonly coinIncomeDeltaByCity: readonly CityValueDeltaV7[];
@@ -7365,7 +7370,12 @@ function calculatePublicEconomicPreviewV7(
         });
       levelsReached.push(...growth.reachedLevels);
     }
-    const immediateCoins = command.kind === "CLEAR_FOREST" ? 1 : 0;
+    const immediateCoins =
+      command.kind === "CLEAR_FOREST"
+        ? 1
+        : command.kind === "GATHER_PEARLS"
+          ? GATHER_PEARLS_V7.coinsReceived
+          : 0;
     const coinsAfterAutomaticRewards =
       BigInt(view.viewer.coins) - BigInt(cost) + BigInt(immediateCoins);
     if (coinsAfterAutomaticRewards > BigInt(Number.MAX_SAFE_INTEGER))
@@ -7375,6 +7385,7 @@ function calculatePublicEconomicPreviewV7(
       preview: {
         at: command.at,
         cost,
+        coinsReceived: immediateCoins,
         ownerCityId: foreignBlast ? null : tile.territoryCityId,
         populationDeltaByCity,
         coinIncomeDeltaByCity,

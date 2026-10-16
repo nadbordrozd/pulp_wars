@@ -2900,9 +2900,10 @@ function applyPearls(
     return rejected(original, "TILE_ENEMY_OCCUPIED");
   if (hasCityChoice(state, city.id))
     return rejected(original, "CITY_REWARD_PENDING");
-  // `GATHER_PEARLS_V7`: 2 Coins up front, 12 back (`pulp_wars-5ti.13`).
-  const cost = GATHER_PEARLS_V7.cost;
-  if (player.coins < cost)
+  // `GATHER_PEARLS_V7`: free, 10 Coins back (`pulp_wars-5ti.14`; 2 up
+  // front and 12 back before), so an empty treasury may gather them.
+  const cost: number = GATHER_PEARLS_V7.cost;
+  if (cost > 0 && player.coins < cost)
     return rejected(original, "INSUFFICIENT_COINS", { cost });
   try {
     const next = checked({
@@ -2924,7 +2925,7 @@ function applyPearls(
         playerId: actor,
         cityId: city.id,
         at,
-        cost,
+        cost: GATHER_PEARLS_V7.cost,
         coinsReceived: GATHER_PEARLS_V7.coinsReceived,
         coinDelta: GATHER_PEARLS_GAIN_V7,
       },

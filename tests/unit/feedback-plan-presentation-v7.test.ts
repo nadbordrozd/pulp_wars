@@ -144,9 +144,10 @@ describe("feedback plan: Coins", () => {
         playerId: viewer,
         cityId: capital.id,
         at: { x: 5, y: 0 },
-        cost: 2,
-        coinsReceived: 4,
-        coinDelta: 2,
+        // `pulp_wars-5ti.14`: free, +10.
+        cost: 0,
+        coinsReceived: 10,
+        coinDelta: 10,
       },
     ] as unknown as readonly PlayerEventV7[];
     const plan = feedbackPlanV7(view, envelope(view, events), view);
@@ -161,9 +162,9 @@ describe("feedback plan: Coins", () => {
       { cause: "REFUND", at: own.at, amount: 1 },
       { cause: "BOUNTY", at: enemy.at, amount: 10 },
       { cause: "SALVAGE", at: tile, amount: 8 },
-      { cause: "HARVEST", at: { x: 5, y: 0 }, amount: 2 },
+      { cause: "HARVEST", at: { x: 5, y: 0 }, amount: 10 },
     ]);
-    expect(plan.coinTotal).toBe(56);
+    expect(plan.coinTotal).toBe(64);
   });
 
   it("shows no Coins of another player and none for a loss", () => {
