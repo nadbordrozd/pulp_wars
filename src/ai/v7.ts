@@ -52,6 +52,7 @@ import {
   CITY_REWARD_COINS_V7,
   GATHER_PEARLS_V7,
   GATHER_PEARLS_GAIN_V7,
+  SEIZE_BROKEN_HP_V7,
 } from "../engine/rules/ruleset-v7";
 import {
   attack2AfterToothacheV7,
@@ -105,6 +106,7 @@ import {
   previewMonumentV7,
   queryAiReadyCommandsV7,
   queryCombatPreviewV7,
+  previewSeizeV7,
   queryPublicEconomicPotentialsV7,
   previewRewardArrivalV7,
   queryPublicPlannedImprovementV7,
@@ -122,6 +124,7 @@ import {
   cityHasWallsV7,
   cityOfferedPopulationV7,
   isDaemonBreedV7,
+  isNeutralOwnerV7,
   type CoordV7,
   type ImprovementIdV7,
   type NavalRoleIdV7,
@@ -290,13 +293,22 @@ import {
   type ArmyCountsV7,
 } from "./v7-army";
 import {
+  CULT_FEED_INITIATE_VALUE_V7,
+  CULT_MASS_TECHNOLOGY_V7,
+  CULT_RESEARCH_AFTER_ROLES_V7,
+  CULT_RESEARCH_BEFORE_STARGAZER_V7,
   cultBackRowV7,
-  cultChosenCappedV7,
+  cultBodiesV7,
+  cultBodiesWantedV7,
+  cultCasterV7,
   cultEscortV7,
+  cultFeedWantedV7,
   cultHexersWantedV7,
   cultIdolBearerCappedV7,
+  cultMassWantedV7,
   cultRobedV7,
   cultStarsDueV7,
+  cultWardenV7,
   cultWeakLinkV7,
 } from "./v7-cult";
 import {
@@ -4117,7 +4129,16 @@ function armyResearchTargetV7(
       const hexer = effectiveRoleRuleV7("MARKSMAN", faction);
       if (hexer.technology !== null && hexer.cost !== null)
         chosen = toward(hexer.technology, "MARKSMAN") ?? chosen;
-    }
+    } else if (
+      // The Cult redesign's A-R1 (`pulp_wars-mch9.38`,
+      // RULESET_7_CULT_REDESIGN.md section 12.1): Gibbering Masses (the
+      // defensive summon) next, after Warding Circles, with a hostile unit
+      // within 6 of an own city (`cultMassWantedV7`). The Hexers-wanted rule
+      // above comes first when both apply.
+      armyCultSeatV7(context) &&
+      cultMassWantedV7(view, armyHostiles)
+    )
+      chosen = toward(CULT_MASS_TECHNOLOGY_V7) ?? chosen;
     for (const role of armyMartianResearchRolesV7(context)) {
       if (chosen !== null) break;
       if (roads && unlocked === ARMY_ROADS_AFTER_ROLES_V7)
@@ -4217,15 +4238,17 @@ function armyResearchTargetV7(
         )
           chosen = toward("PLANNING");
       }
-      // The Cult seat (`pulp_wars-mch9.9`, RULESET_7_CULTISTS.md section
-      // 15.1): Harvest Rites (the Farm, and the Offering) before the
-      // Chosen's two technologies, once the seat has its Summoner's.
-      if (
-        faction === "CULT" &&
-        role === "SWORDSMAN" &&
-        view.viewer.researchedTechs.includes("ADMINISTRATION")
-      )
-        chosen = toward("FARMING");
+      // The Cult seat (`pulp_wars-mch9.9`; the Cult redesign's A-R1,
+      // `pulp_wars-mch9.38`, RULESET_7_CULT_REDESIGN.md section 12.1):
+      // Harvest Rites (the Farm, and the Offering), then Gibbering Masses
+      // (through Engineering) before the Stargazer's two technologies
+      // (`CULT_RESEARCH_BEFORE_STARGAZER_V7`; Harvest Rites came before the
+      // retired Chosen's).
+      if (faction === "CULT" && role === "CATAPULT")
+        for (const technology of CULT_RESEARCH_BEFORE_STARGAZER_V7) {
+          chosen = toward(technology);
+          if (chosen !== null) break;
+        }
       if (chosen !== null) break;
       if (
         rule.technology === null ||
@@ -4237,6 +4260,14 @@ function armyResearchTargetV7(
       chosen = toward(rule.technology, role);
       unlocked += 1;
     }
+    // The Cult redesign's A-R1 (`pulp_wars-mch9.38`, section 12.1): a Cult
+    // seat's order ends with Tentacles, through Raiding
+    // (`CULT_RESEARCH_AFTER_ROLES_V7`).
+    if (faction === "CULT")
+      for (const technology of CULT_RESEARCH_AFTER_ROLES_V7) {
+        if (chosen !== null) break;
+        chosen = toward(technology);
+      }
     if (chosen === null && roads)
       chosen = toward("ROADS") ?? toward("COMMERCE");
     // Correction pass (`pulp_wars-w49.11`): with every unit of its order
@@ -4918,6 +4949,14 @@ function armyUndeadShortOfUnitsV7(context: PolicyContextV7): boolean {
       (!cult || cultRobedV7(view, unit))
     )
       units += 1;
+  // The Cult redesign's A-R1 (`pulp_wars-mch9.38`, RULESET_7_CULT_REDESIGN.md
+  // section 12.1): a Cult seat wants robed cultists enough for every own
+  // daemon's strands and two to spare, and one more Initiate to Sacrifice
+  // while a summon is wanted and Favour is short (`cultBodiesWantedV7`).
+  if (cult)
+    return (
+      units < cultBodiesWantedV7(view, (ownerId) => isHostile(view, ownerId))
+    );
   return units < cities + ARMY_UNDEAD_SPARE_UNITS_V7;
 }
 
@@ -7150,6 +7189,187 @@ function armyCultBackRowAdvanceHeldV7(
 }
 
 /**
+ * The Cult redesign's A-R1 (`pulp_wars-mch9.38`,
+ * docs/product/RULESET_7_CULT_REDESIGN.md section 12.1): spare Coins become
+ * Favour. A Cult seat trains an Initiate to be Sacrificed while a summon is
+ * wanted and Favour is short (`cultFeedWantedV7`) and it fields fewer robed
+ * cultists than it wants (`cultBodiesWantedV7`, which counts that Initiate).
+ */
+function cultFeedInitiateDueV7(context: PolicyContextV7): boolean {
+  if (!armyCultSeatV7(context)) return false;
+  const view = context.view;
+  const hostile = (ownerId: PlayerId): boolean => isHostile(view, ownerId);
+  return (
+    cultFeedWantedV7(view, hostile) &&
+    cultBodiesV7(view) < cultBodiesWantedV7(view, hostile)
+  );
+}
+
+/**
+ * The Cult redesign's A-R1 (`pulp_wars-mch9.38`,
+ * docs/product/RULESET_7_CULT_REDESIGN.md section 12.1), "cultists do not
+ * brawl": a Cult seat's caster (`cultCasterV7`: every robed cultist but the
+ * Idol Bearer, 7 HP since the redesign) makes an attack only when it kills,
+ * when it brings a living enemy to broken with a Summoner and a holder
+ * ready (`cultSeizureFollowsV7`: the Seizure this turn), or on a frog.
+ * Decided here: a caster the visible enemy kills where it stands strikes
+ * anyway (it has nothing to save; the plan's last-of-all Sacrifice of a
+ * doomed unit follows its blow, section 15.7 rule 9).
+ */
+function cultCasterBrawlHeldV7(
+  context: PolicyContextV7,
+  command: Extract<CommandV7, { kind: "ATTACK" }>,
+): boolean {
+  if (!armyCultSeatV7(context)) return false;
+  const view = context.view;
+  const actor = context.lookup.unitsById.get(command.unitId);
+  const target = context.lookup.unitsById.get(command.targetUnitId);
+  if (
+    actor === undefined ||
+    target === undefined ||
+    actor.ownerId !== view.viewer.id ||
+    !cultCasterV7(view, actor)
+  )
+    return false;
+  if (view.cult.frogs.includes(target.id)) return false;
+  const preview = queryCombatPreviewV7(view, actor.id, target.id);
+  if (preview === null || preview.defenderDies) return false;
+  if (visibleImmediateDamage(view, actor, actor.at, context) >= actor.hp)
+    return false;
+  return !cultSeizureFollowsV7(
+    context,
+    actor,
+    target,
+    target.hp - preview.damageToDefender,
+  );
+}
+
+/**
+ * Whether a Seizure of `target` can follow this turn once a blow by `actor`
+ * has left it `hpLeft` Hit Points: it is broken then, and an own Summoner
+ * other than `actor` beside it, or one that is offered a Move to a tile
+ * beside it, may Seize it on the board as it would stand (`previewSeizeV7`:
+ * a living hostile one-slot unit, the Summoner's action, and a robed holder
+ * beside it, `actor` among them).
+ */
+function cultSeizureFollowsV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+  target: PublicUnitV7,
+  hpLeft: number,
+): boolean {
+  if (hpLeft <= 0 || hpLeft > SEIZE_BROKEN_HP_V7) return false;
+  const view = context.view;
+  for (const summoner of view.units) {
+    // (`previewSeizeV7` refuses a Summoner that is not in land form.)
+    if (
+      summoner.id === actor.id ||
+      summoner.ownerId !== view.viewer.id ||
+      !unitRoleRuleV7(view, summoner).abilities.includes("SEIZE")
+    )
+      continue;
+    const stands: CoordV7[] =
+      distance(summoner.at, target.at) === 1 ? [summoner.at] : [];
+    for (const command of context.commands)
+      if (command.kind === "MOVE" && command.unitId === summoner.id) {
+        const end = command.path.at(-1);
+        if (end !== undefined && distance(end, target.at) === 1)
+          stands.push(end);
+      }
+    for (const stand of stands) {
+      const moved = !same(stand, summoner.at);
+      const projected = projectPublicUnits(
+        view,
+        view.units.map((unit) =>
+          unit.id === target.id
+            ? { ...unit, hp: hpLeft }
+            : unit.id === summoner.id && moved
+              ? {
+                  ...unit,
+                  at: stand,
+                  activation: {
+                    ...unit.activation,
+                    moved: true,
+                    movedPathLength: Math.max(1, distance(unit.at, stand)),
+                  },
+                }
+              : unit,
+        ),
+        moved ? [target.id, summoner.id] : [target.id],
+      );
+      if (previewSeizeV7(projected, summoner.id, target.id) !== null)
+        return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * The Cult redesign's A-R1 (`pulp_wars-mch9.38`,
+ * docs/product/RULESET_7_CULT_REDESIGN.md section 12.1), "cultists do not
+ * brawl": a Cult seat's caster (`cultCasterV7`) makes no Move into a visible
+ * enemy's reach (a tile a visible hostile unit of a player can attack next
+ * turn, from a tile it could not, or nearer that unit from inside its
+ * reach) unless an own summon or Idol Bearer stands nearer that enemy than
+ * the Move's tile: the summons are the front line, and the warden (decided
+ * here: "nearer", so a caster never steps beside an enemy to stand level
+ * with its screen). Exempt: a step of the plan (a channeller's, a bind, a
+ * Seizure's), a Move onto a center or a village (a capture), and a Move
+ * from which the caster's own attack kills.
+ */
+function cultCasterMoveHeldV7(
+  context: PolicyContextV7,
+  command: Extract<CommandV7, { kind: "MOVE" }>,
+): boolean {
+  if (!armyCultSeatV7(context)) return false;
+  if (cultSeizureMoveV7(context, command)) return false;
+  const view = context.view;
+  const actor = context.lookup.unitsById.get(command.unitId);
+  const to = command.path.at(-1);
+  if (
+    actor === undefined ||
+    to === undefined ||
+    actor.ownerId !== view.viewer.id ||
+    !cultCasterV7(view, actor)
+  )
+    return false;
+  if (
+    context.lookup.citiesByKey.has(coordKey(to)) ||
+    armyVillageMoveV7(context, actor, to)
+  )
+    return false;
+  if (armyEngagementsForV7(context, actor).get(coordKey(to))?.kills === true)
+    return false;
+  const toKey = coordKey(to);
+  const fromKey = coordKey(actor.at);
+  for (const [unitId, tiles] of context.threatenedTiles) {
+    if (!tiles.has(toKey)) continue;
+    const enemy = context.lookup.unitsById.get(unitId);
+    if (
+      enemy === undefined ||
+      isNeutralOwnerV7(enemy.ownerId) ||
+      !isHostile(view, enemy.ownerId)
+    )
+      continue;
+    const gap = distance(to, enemy.at);
+    // Inside that reach already, a step that comes no nearer it is no Move
+    // into it (a sidestep, a step back).
+    if (tiles.has(fromKey) && gap >= distance(actor.at, enemy.at)) continue;
+    const screened = view.units.some(
+      (unit) =>
+        unit.id !== actor.id &&
+        unit.ownerId === view.viewer.id &&
+        unit.form === "LAND" &&
+        unit.hp > 0 &&
+        (unit.summoned !== undefined || cultWardenV7(view, unit)) &&
+        distance(unit.at, enemy.at) < gap,
+    );
+    if (!screened) return true;
+  }
+  return false;
+}
+
+/**
  * Step two of the Ice Folk pass: whether a visible hostile unit with
  * Overrun can attack a unit on `at` next turn (the public threat lookup,
  * which stops another faction's ground unit at known Snow).
@@ -8829,10 +9049,11 @@ function armyWeakLinkV7(context: PolicyContextV7, unit: PublicUnitV7): boolean {
     unit.maxHp < ARMY_CANDY_STURDY_V7
   )
     return true;
-  // The Cult seat (`pulp_wars-mch9.9`, RULESET_7_CULTISTS.md section 15.1):
-  // a robed cultist a Knight's hit kills at full HP (`CULT_STURDY_V7`): the
-  // Initiate, the Hexer, the Summoner, the Stargazer, and the Caller; not
-  // the Chosen and the Idol Bearer. (No unit of another kind is robed.)
+  // The Cult seat (`pulp_wars-mch9.9`; the Cult redesign's A-R1,
+  // `pulp_wars-mch9.38`, RULESET_7_CULT_REDESIGN.md section 12.1): every
+  // caster at any HP (`cultWeakLinkV7`): the Initiate, the Hexer, the
+  // Summoner, the Stargazer (7 HP each); not the Idol Bearer. (No unit of
+  // another kind is robed.)
   return cultWeakLinkV7(context.view, unit);
 }
 
@@ -8967,9 +9188,10 @@ function armyEscortValueV7(
         publicCombatFacts(view, unit, context.lookup).move >= 2,
     );
   // The Cult seat (`pulp_wars-mch9.9`, RULESET_7_CULTISTS.md section 15.1):
-  // a Cult seat's Chosen and its Idol Bearer stand beside the robed
+  // a Cult seat's Idol Bearer (its only escort since the Cult redesign's
+  // A-R1, `pulp_wars-mch9.38`: the Chosen retired) stands beside the robed
   // cultists a Knight kills in one attack (the channellers and chanters)
-  // and end the ride.
+  // and ends the ride.
   const cult = armyCultSeatV7(context) && cultEscortV7(view, actor);
   const sturdyEscort = iceFolk || dwarf || candy || candyScreen || cult;
   if (
@@ -11691,6 +11913,14 @@ function isPolicyCandidate(
     armyCultBackRowAdvanceHeldV7(context, command)
   )
     return false;
+  // The Cult redesign's A-R1 (`pulp_wars-mch9.38`, RULESET_7_CULT_REDESIGN.md
+  // section 12.1): cultists do not brawl. A caster makes no attack but a
+  // kill, a Seizure's set-up, or a blow on a frog, and no Move into a visible
+  // enemy's reach unless an own summon or Idol Bearer stands nearer it.
+  if (command.kind === "ATTACK" && cultCasterBrawlHeldV7(context, command))
+    return false;
+  if (command.kind === "MOVE" && cultCasterMoveHeldV7(context, command))
+    return false;
   // Tuning 6 (`pulp_wars-w49.6`): so does a unit on a village it will
   // capture next turn.
   if (
@@ -13376,8 +13606,8 @@ function* sharedCityContextWorkV7(
               // The Cult seat (`pulp_wars-mch9.9`, RULESET_7_CULTISTS.md
               // section 15.1): no more Idol Bearers than cities, nor than
               // a third of the army (`cultIdolBearerCappedV7`, the Musk Ox
-              // cap), and a Chosen for every two Initiates, no more
-              // (`cultChosenCappedV7`).
+              // cap). (The Chosen's cap went with the Chosen: the Cult
+              // redesign's A-R1, `pulp_wars-mch9.38`.)
               (armyCultSeatV7(context) &&
               command.role === "GUARD" &&
               cultIdolBearerCappedV7(
@@ -13387,14 +13617,14 @@ function* sharedCityContextWorkV7(
                   .length,
               )
                 ? ARMY_ICE_FOLK_DEFENDER_CAP_COST_V7
-                : 0) -
-              (armyCultSeatV7(context) &&
-              command.role === "SWORDSMAN" &&
-              cultChosenCappedV7(
-                ownedRoleCounts.get("SWORDSMAN") ?? 0,
-                ownedRoleCounts.get("FIGHTER") ?? 0,
-              )
-                ? ARMY_MARTIAN_HEAVY_CAP_COST_V7
+                : 0) +
+              // The Cult redesign's A-R1 (`pulp_wars-mch9.38`, section
+              // 12.1): spare Coins become Favour: an Initiate (2 Coins)
+              // while a summon is wanted, Favour is short, and the seat
+              // fields fewer robed cultists than it wants
+              // (`cultFeedInitiateDueV7`).
+              (command.role === "FIGHTER" && cultFeedInitiateDueV7(context)
+                ? CULT_FEED_INITIATE_VALUE_V7
                 : 0) +
               // Step two of the Undead pass: the Necromancer for the
               // Graves beside this city (`armyNecromancerDueV7`).

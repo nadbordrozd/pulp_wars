@@ -21,13 +21,11 @@ import {
   CULT_FAMILIAR_PER_UNITS_V7,
   CULT_RESEARCH_ROLES_V7,
   CULT_STARS_FAVOUR_V7,
-  CULT_STURDY_V7,
   CULT_SUMMONER_MAXIMUM_V7,
   CULT_SUMMONER_MINIMUM_V7,
   CULT_SUMMONER_PER_UNITS_V7,
   cultBackRowV7,
   cultBodiesV7,
-  cultChosenCappedV7,
   cultEscortV7,
   cultFamiliarsWantedV7,
   cultHexersWantedV7,
@@ -279,28 +277,30 @@ describe("the Cult seat: the research order", () => {
       ),
     );
 
-  it("is the Summoner, the Hexer, the Idol Bearer, the Familiar, the Stargazer", () => {
-    // The Chosen and the Caller retired (the Cult redesign's stop-gap,
-    // `pulp_wars-mch9.31`).
+  it("is the Summoner, the Idol Bearer, the Hexer, the Familiar, the Stargazer", () => {
+    // The Cult redesign's A-R1 (`pulp_wars-mch9.38`, section 12.1): the
+    // warden before the Hexer; the Chosen and the Caller retired
+    // (`pulp_wars-mch9.31`).
     expect(CULT_RESEARCH_ROLES_V7).toEqual([
       "CAPTAIN",
-      "MARKSMAN",
       "GUARD",
+      "MARKSMAN",
       "RAIDER",
       "CATAPULT",
     ]);
     expect(ARMY_RESEARCH_ROLES_V7.CULT).toBe(CULT_RESEARCH_ROLES_V7);
   });
 
-  it("buys, from a Gathering opener, the eight technologies of its units in its order", () => {
+  it("buys, from a Gathering opener, the thirteen technologies of its order", () => {
     // Three Initiates for one city, no enemy in sight, no Coins: each
     // technology the seat names next, bought in turn. Leadership is the
-    // second technology. (The Cult redesign's stop-gap, `pulp_wars-mch9.31`:
-    // without the Chosen and the Caller the list ends at Stargazers; the
-    // redesign's AI bead sets the new order.)
+    // second technology. The Cult redesign's A-R1 (`pulp_wars-mch9.38`,
+    // section 12.1): Leadership, Crafting, Warding Circles, Hunting,
+    // Hexers, Familiars, Harvest Rites, Engineering, Gibbering Masses,
+    // Forestry, Stargazers, Raiding, Tentacles.
     const order: string[] = [];
     let techs: readonly TechnologyIdV7[] = ["GATHERING"];
-    for (let step = 0; step < 14; step += 1) {
+    for (let step = 0; step < 16; step += 1) {
       const next = research(quiet(techs));
       if (next === null) break;
       order.push(
@@ -310,13 +310,18 @@ describe("the Cult seat: the research order", () => {
     }
     expect(order).toEqual([
       "ADMINISTRATION:CAPTAIN",
-      "HUNTING",
-      "MARKSMANSHIP:MARKSMAN",
       "DRILL",
       "FORTIFICATION:GUARD",
+      "HUNTING",
+      "MARKSMANSHIP:MARKSMAN",
       "SCOUTING:RAIDER",
+      "FARMING",
+      "ENGINEERING",
+      "METALLURGY",
       "FORESTRY",
       "SAWMILLING:CATAPULT",
+      "RAIDING",
+      "CHIVALRY",
     ]);
   });
 
@@ -353,8 +358,9 @@ describe("the Cult seat: the research order", () => {
     ).toBe("ADMINISTRATION");
   });
 
-  it("makes The Stars Are Right its first late technology once Favour has reached 12", () => {
-    expect(CULT_STARS_FAVOUR_V7).toBe(12);
+  it("makes The Stars Are Right its first late technology once Favour has reached 9", () => {
+    // Half the Great Summoning's 18 (A-R1, `pulp_wars-mch9.38`; 12 before).
+    expect(CULT_STARS_FAVOUR_V7).toBe(9);
     // Every unit of the order is unlocked, an enemy army is at the gates,
     // and Fieldcraft (the first late technology of every seat) and The
     // Stars Are Right are both to buy.
@@ -378,11 +384,11 @@ describe("the Cult seat: the research order", () => {
         0,
         favour,
       );
-    expect(inspectNormalArmyV7(viewOf(late(12))).war).toBe(true);
-    expect(cultStarsDueV7(viewOf(late(11)))).toBe(false);
-    expect(cultStarsDueV7(viewOf(late(12)))).toBe(true);
-    expect(research(late(11))?.tech).toBe("FIELDCRAFT");
-    expect(research(late(12))?.tech).toBe("EXPLOSIVES");
+    expect(inspectNormalArmyV7(viewOf(late(9))).war).toBe(true);
+    expect(cultStarsDueV7(viewOf(late(8)))).toBe(false);
+    expect(cultStarsDueV7(viewOf(late(9)))).toBe(true);
+    expect(research(late(8))?.tech).toBe("FIELDCRAFT");
+    expect(research(late(9))?.tech).toBe("EXPLOSIVES");
   });
 });
 
@@ -401,13 +407,14 @@ describe("the Cult seat: the army", () => {
     expect(armySharesV7("CULT", true)).toBe(CULT_ARMY_SHARES_V7);
   });
 
-  it("wants one Summoner for every six units, at least one and at most three", () => {
+  it("wants one Summoner for every five units, at least one and at most three", () => {
+    // Five since A-R1 (`pulp_wars-mch9.38`, section 12.1; six before).
     expect([
       CULT_SUMMONER_PER_UNITS_V7,
       CULT_SUMMONER_MINIMUM_V7,
       CULT_SUMMONER_MAXIMUM_V7,
-    ]).toEqual([6, 1, 3]);
-    expect([0, 3, 6, 11, 12, 18, 40].map(cultSummonersWantedV7)).toEqual([
+    ]).toEqual([5, 1, 3]);
+    expect([0, 3, 5, 9, 10, 15, 40].map(cultSummonersWantedV7)).toEqual([
       1, 1, 1, 1, 2, 3, 3,
     ]);
     const summoner = (line: number, support: number): number =>
@@ -418,10 +425,10 @@ describe("the Cult seat: the army", () => {
         false,
       );
     // The first Summoner is wanted by an army of any size; a second only
-    // from twelve units; never a fourth.
+    // from ten units; never a fourth.
     expect(summoner(1, 0)).toBeGreaterThan(summoner(1, 1));
-    expect(summoner(5, 1)).toBe(summoner(10, 1));
-    expect(summoner(11, 1)).toBeGreaterThan(summoner(10, 1));
+    expect(summoner(4, 1)).toBe(summoner(8, 1));
+    expect(summoner(9, 1)).toBeGreaterThan(summoner(8, 1));
     expect(summoner(40, 3)).toBeLessThan(summoner(40, 2));
     // Another faction's support unit keeps its own count (one for four).
     expect(
@@ -450,15 +457,12 @@ describe("the Cult seat: the army", () => {
     expect(familiar(20, 2)).toBe(familiar(10, 2));
   });
 
-  it("caps the Idol Bearers (no more than cities, nor a third of the army) and the Chosen (one for two Initiates)", () => {
+  it("caps the Idol Bearers (no more than cities, nor a third of the army)", () => {
+    // (The Chosen's cap went with the Chosen: A-R1, `pulp_wars-mch9.38`.)
     expect(cultIdolBearerCappedV7(0, 5, 2)).toBe(false);
     expect(cultIdolBearerCappedV7(1, 6, 2)).toBe(false);
     expect(cultIdolBearerCappedV7(2, 7, 2)).toBe(true);
     expect(cultIdolBearerCappedV7(1, 2, 3)).toBe(true);
-    expect(cultChosenCappedV7(0, 2)).toBe(false);
-    expect(cultChosenCappedV7(1, 2)).toBe(true);
-    expect(cultChosenCappedV7(1, 3)).toBe(false);
-    expect(cultChosenCappedV7(0, 0)).toBe(true);
   });
 
   const trained = (state: GameStateV7): UnitRoleIdV7 | undefined => {
@@ -654,8 +658,9 @@ describe("the Cult seat: bodies first", () => {
 });
 
 describe("the Cult seat: weak links, escorts, and spacing", () => {
-  it("names every robed cultist under 15 HP a weak link at full HP, and the Idol Bearer the escort", () => {
-    expect(CULT_STURDY_V7).toBe(15);
+  it("names every caster a weak link at any HP, and the Idol Bearer the only escort", () => {
+    // A-R1 (`pulp_wars-mch9.38`, section 12.1): by what the unit is (every
+    // robed cultist but the Idol Bearer), not by its Hit Points.
     const state = withHorrorV7(roster(), 0, at(6, 4));
     const view = viewOf(state);
     const mine = view.units.filter((unit) => unit.ownerId === view.viewer.id);
@@ -683,7 +688,10 @@ describe("the Cult seat: weak links, escorts, and spacing", () => {
   // a hostile unit at (9, 1) (three tiles from that tile: a Knight there
   // has it in its reach) and the Human capital's Fighter. Only the kind of
   // the neighbour, or of the hostile unit, differs between two scenes.
-  // (`ARMY_CHAIN_SPACING_VALUE_V7` in `src/ai/v7.ts`.)
+  // (`ARMY_CHAIN_SPACING_VALUE_V7` in `src/ai/v7.ts`.) An Idol Bearer on
+  // (8, 2), beside the hostile unit, screens the tile (A-R1,
+  // `pulp_wars-mch9.38`: a caster makes no Move into a Knight's reach
+  // unless a summon or an Idol Bearer stands nearer it).
   const CHAIN_SPACING_VALUE = 8;
   const scene = (
     mover: UnitRoleIdV7,
@@ -693,6 +701,7 @@ describe("the Cult seat: weak links, escorts, and spacing", () => {
     ...asCult([
       own(mover, 5, 2),
       own(neighbour, 5, 4),
+      own("GUARD", 8, 2),
       foe(hostile, 9, 1),
       foe("FIGHTER", 2, 8),
     ]),
@@ -756,10 +765,14 @@ describe("the Cult seat: contact with company", () => {
     }
   });
 
-  it("lets it go with another own unit already beside that enemy", () => {
-    const company: GameStateV7 = {
+  it("lets a Familiar go with another own unit already beside that enemy, and no Initiate", () => {
+    // The Cult redesign's A-R1 (`pulp_wars-mch9.38`, section 12.1): an
+    // Initiate is a caster, and steps up to no enemy with company or
+    // without (only behind a nearer summon or Idol Bearer); the Familiar
+    // keeps the rule of contact with company.
+    const company = (role: UnitRoleIdV7): GameStateV7 => ({
       ...asCult([
-        own("FIGHTER", 2, 4),
+        own(role, 2, 4, role === "RAIDER" ? { hp: 4 } : {}),
         own("FIGHTER", 1, 1),
         own("FIGHTER", 8, 8),
         foe("FIGHTER", 2, 2),
@@ -767,8 +780,9 @@ describe("the Cult seat: contact with company", () => {
         foe("FIGHTER", 2, 8),
       ]),
       round: 12,
-    };
-    expect(touches(company)).toBe(true);
+    });
+    expect(touches(company("RAIDER"))).toBe(true);
+    expect(touches(company("FIGHTER"))).toBe(false);
   });
 
   it("holds the Familiar by the same rule", () => {
@@ -843,12 +857,18 @@ describe("the Cult seat: the back row out of reach", () => {
     ).toBe(false);
   });
 
-  it("lets a Hexer and a Summoner step up behind an own Initiate that stands nearer to the enemy", () => {
-    for (const role of ["MARKSMAN", "CAPTAIN"] as const)
+  it("lets a Hexer and a Summoner step up behind an own Idol Bearer that stands nearer to the enemy, not behind an Initiate", () => {
+    // The Cult redesign's A-R1 (`pulp_wars-mch9.38`, section 12.1): only a
+    // summon or the warden screens a caster; an Initiate is a caster too.
+    for (const role of ["MARKSMAN", "CAPTAIN"] as const) {
+      expect(nearest(scene(role, "FIGHTER", [own("GUARD", 2, 2)])), role).toBe(
+        2,
+      );
       expect(
         nearest(scene(role, "FIGHTER", [own("FIGHTER", 2, 2)])),
         role,
-      ).toBe(2);
+      ).toBeGreaterThan(2);
+    }
     // The Stargazer is a siege unit besides: the shared siege rule keeps it
     // four tiles from its objective until a unit with Defense 2 or more (an
     // Idol Bearer, the Thing) can stand beside its tile; an Initiate

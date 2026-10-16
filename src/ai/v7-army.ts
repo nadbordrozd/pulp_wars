@@ -505,9 +505,11 @@ export const ARMY_RESEARCH_ROLES_V7: Readonly<
     "KNIGHT",
   ] as const),
   // The Cult seat (`pulp_wars-mch9.9`, RULESET_7_CULTISTS.md section 15.1;
-  // reasoned, not played): the Summoner, the Hexer, the Idol Bearer, the
-  // Familiar, the Stargazer (`CULT_RESEARCH_ROLES_V7`, with the reasons;
-  // the Chosen and the Caller retired, `pulp_wars-mch9.31`).
+  // reasoned, not played): since the Cult redesign's A-R1
+  // (`pulp_wars-mch9.38`, RULESET_7_CULT_REDESIGN.md section 12.1) the
+  // Summoner, the Idol Bearer, the Hexer, the Familiar, the Stargazer
+  // (`CULT_RESEARCH_ROLES_V7`, with the reasons; the Chosen and the Caller
+  // retired, `pulp_wars-mch9.31`).
   CULT: CULT_RESEARCH_ROLES_V7,
 });
 
@@ -1429,7 +1431,8 @@ export function armyRoleScoreV7(
   else if (unitClass === "SUPPORT")
     deficit =
       100 *
-      // The Cult seat (`pulp_wars-mch9.9`): one Summoner per six units, at
+      // The Cult seat (`pulp_wars-mch9.9`): one Summoner per five units
+      // (six before the Cult redesign's A-R1, `pulp_wars-mch9.38`), at
       // least one and at most three.
       ((faction === "CULT"
         ? cultSummonersWantedV7(counts.total)

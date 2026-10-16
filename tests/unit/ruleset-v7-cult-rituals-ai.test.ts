@@ -294,7 +294,7 @@ describe("the Cult seat: the Great Summoning (section 15.3)", () => {
     );
   });
 
-  it("keeps its Favour for it: no Horror from 10 Favour on, with the cultists to hold a Herald", () => {
+  it("keeps its Favour for it: no Horror from 9 Favour on, with the cultists to hold a Herald", () => {
     // The scene of A2's Summon, with the bodies for a Herald.
     const build = (favour: number, bodies: number): GameStateV7 =>
       withFavourV7(
@@ -311,7 +311,7 @@ describe("the Cult seat: the Great Summoning (section 15.3)", () => {
       ofKind(policyTurn(state).commands, "SUMMON").length;
     expect(summons(build(CULT_SAVE_FAVOUR_V7, 4))).toBe(0);
     expect(favourOf(policyTurn(build(15, 4)).state)).toBe(15);
-    // Sanity (the mutations): below 10 Favour it summons; with three
+    // Sanity (the mutations): below 9 Favour it summons; with three
     // cultists (no Herald could be held) it summons; and with 25 it summons
     // from what is above the Herald's price.
     expect(summons(build(CULT_SAVE_FAVOUR_V7 - 1, 4))).toBe(1);
@@ -321,13 +321,16 @@ describe("the Cult seat: the Great Summoning (section 15.3)", () => {
     expect(favourOf(rich.state)).toBe(21);
   });
 
-  it("names the saving rule: The Stars Are Right, a Summoner, four spare cultists, 10 Favour", () => {
-    const facts = { stars: true, bodies: 6, wantedAll: 2, favour: 10 };
+  it("names the saving rule: The Stars Are Right, a Summoner, four spare cultists, 9 Favour", () => {
+    // Half the Great Summoning's 18 (the Cult redesign's A-R1,
+    // `pulp_wars-mch9.38`; 10 of 20 before).
+    expect(CULT_SAVE_FAVOUR_V7).toBe(9);
+    const facts = { stars: true, bodies: 6, wantedAll: 2, favour: 9 };
     expect(cultSavingV7(facts, 1)).toBe(true);
     expect(cultSavingV7({ ...facts, stars: false }, 1)).toBe(false);
     expect(cultSavingV7(facts, 0)).toBe(false);
     expect(cultSavingV7({ ...facts, bodies: 5 }, 1)).toBe(false);
-    expect(cultSavingV7({ ...facts, favour: 9 }, 1)).toBe(false);
+    expect(cultSavingV7({ ...facts, favour: 8 }, 1)).toBe(false);
   });
 
   it("ends no own Move on the mark of its own Great Summoning", () => {
@@ -474,13 +477,19 @@ describe("the Cult seat: the Herald (sections 15.2 and 15.4)", () => {
     own("FIGHTER", 6, 6),
     own("FIGHTER", 7, 6),
   ];
+  // (The Cult redesign's A-R1, `pulp_wars-mch9.38`: with the 2 Favour its
+  // Hunger eats at the next check, so the seat keeps it bound.)
   const herald = (
     pieces: readonly GoblinPieceV7[],
     where: CoordV7,
   ): GameStateV7 =>
-    withHorrorV7(scene([...CULTISTS, ...pieces]), 0, where, {
-      role: "HERALD",
-    });
+    withFavourV7(
+      withHorrorV7(scene([...CULTISTS, ...pieces]), 0, where, {
+        role: "HERALD",
+      }),
+      0,
+      2,
+    );
 
   it("scores its two attacks together: it moves to the tile from which both kill", () => {
     // Beside it one Fighter; one step away a tile beside two that stand
@@ -781,10 +790,17 @@ describe("the Cult seat: Switcheroo (section 15.4)", () => {
   });
 
   it("drops an enemy ranged unit beside two own melee units, and no melee unit", () => {
-    const build = (role: UnitRoleIdV7, initiates: number): GameStateV7 =>
+    // (The Cult redesign's A-R1, `pulp_wars-mch9.38`: the strikers are no
+    // casters, which make no blow that does not kill: two Idol Bearers
+    // here, and two Initiates are no strikers.)
+    const build = (
+      role: UnitRoleIdV7,
+      strikers: number,
+      striker: UnitRoleIdV7 = "GUARD",
+    ): GameStateV7 =>
       scene([
         own("RAIDER", 7, 3),
-        ...[own("FIGHTER", 8, 3), own("FIGHTER", 8, 4)].slice(0, initiates),
+        ...[own(striker, 8, 3), own(striker, 8, 4)].slice(0, strikers),
         foe(role, 5, 3),
       ]);
     const start = build("MARKSMAN", 2);
@@ -793,7 +809,7 @@ describe("the Cult seat: Switcheroo (section 15.4)", () => {
       kind: "SWITCHEROO",
       targetUnitId: target,
     });
-    // The Initiates then fall on it where it lands.
+    // The Idol Bearers then fall on it where it lands.
     const turn = policyTurn(start);
     expect(turn.commands[0]?.kind).toBe("SWITCHEROO");
     expect(
@@ -801,14 +817,17 @@ describe("the Cult seat: Switcheroo (section 15.4)", () => {
         (command) => command.targetUnitId === target,
       ).length,
     ).toBeGreaterThan(0);
-    // Sanity (the mutations): a Fighter is not dropped, and nothing is
-    // dropped beside one Initiate.
+    // Sanity (the mutations): a Fighter is not dropped, nothing is dropped
+    // beside one Idol Bearer, and nothing beside two Initiates.
     expect(kindsOf(policyTurn(build("FIGHTER", 2)).commands)).not.toContain(
       "SWITCHEROO",
     );
     expect(kindsOf(policyTurn(build("MARKSMAN", 1)).commands)).not.toContain(
       "SWITCHEROO",
     );
+    expect(
+      kindsOf(policyTurn(build("MARKSMAN", 2, "FIGHTER")).commands),
+    ).not.toContain("SWITCHEROO");
   });
 });
 

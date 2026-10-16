@@ -998,10 +998,12 @@ describe("research toward the army", () => {
       ],
       // The Cult seat (`pulp_wars-mch9.9`): the Summoner, the Hexer, the
       // Idol Bearer, the Familiar, the Chosen, the Stargazer, the Caller.
+      // The Cult redesign's A-R1 (`pulp_wars-mch9.38`): the Summoner, the
+      // Idol Bearer, the Hexer, the Familiar, the Stargazer.
       CULT: [
         "CAPTAIN",
-        "MARKSMAN",
         "GUARD",
+        "MARKSMAN",
         "RAIDER",
         // (The Chosen and the Caller retired, `pulp_wars-mch9.31`.)
         "CATAPULT",

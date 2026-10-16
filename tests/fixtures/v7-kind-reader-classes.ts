@@ -261,6 +261,10 @@ export const KIND_READER_CLASSES_V7: Readonly<
   // one (the viewer's faction). Its unit predicates (`src/ai/v7-cult.ts`)
   // read a unit's kind through `unitRoleMechanicsV7` and `unitRoleRuleV7`.
   "src/ai/v7.ts::armyCultSeatV7": "SEAT",
+  // The Cult redesign's A-R1 (`pulp_wars-mch9.38`): the Initiate a Cult
+  // seat trains to feed its Favour is priced by the viewer's own faction
+  // (the seat's training roster).
+  "src/ai/v7-cult.ts::cultFeedWantedV7": "SEAT",
   "src/ai/v7.ts::armyMartianResearchRolesV7": "SEAT",
   "src/ai/v7.ts::armyShootsBiterFirstV7": "SEAT",
   "src/ai/v7.ts::armyCureDueV7": "SEAT",

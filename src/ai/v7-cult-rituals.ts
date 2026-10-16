@@ -18,7 +18,7 @@ import {
 } from "../engine/v7/query";
 import { isNeutralOwnerV7, type CoordV7 } from "../engine/v7/types";
 import type { PlayerViewV7, PublicUnitV7 } from "../engine/v7/view";
-import { cultRobedV7 } from "./v7-cult";
+import { CULT_SUMMONING_FAVOUR_V7, cultCasterV7, cultRobedV7 } from "./v7-cult";
 
 /**
  * The Cult seat's rituals and tricks (`pulp_wars-mch9.11`, bead A3 of
@@ -46,23 +46,17 @@ import { cultRobedV7 } from "./v7-cult";
  */
 
 /**
- * Favour the Great Summoning costs (section 7.2): 18 since the Cult
- * redesign (`pulp_wars-mch9.32`), 20 before.
- */
-export const CULT_SUMMONING_FAVOUR_V7 = 18;
-/** Favour a Horror costs (section 6.1): 4 since `pulp_wars-mch9.32`. */
-export const CULT_HORROR_COST_V7 = 4;
-/**
  * The robed cultists the seat keeps for a Herald beyond every other
  * daemon's Control + 1: its Control and one to spare (section 15.3).
  */
 export const CULT_HERALD_BODIES_V7 = 4;
 /**
  * The seat saves its Favour for the Great Summoning from this much on (with
- * The Stars Are Right and the bodies to hold a Herald): half the price.
- * Below it a Horror is summoned as before.
+ * The Stars Are Right and the bodies to hold a Herald): half the price, 9
+ * of 18 since the Cult redesign's A-R1 (`pulp_wars-mch9.38`, section 12.3;
+ * 10 of 20 before). Below it a Horror is summoned as before.
  */
-export const CULT_SAVE_FAVOUR_V7 = 10;
+export const CULT_SAVE_FAVOUR_V7 = 9;
 /** The chanters the Great Summoning needs beside its leader (section 7.2). */
 export const CULT_SUMMONING_CHANTERS_V7 = 3;
 /** Star-fall reaches 2 to 4 tiles (section 7.4). */
@@ -82,8 +76,9 @@ export const CULT_PRICELESS_VALUE_V7 = 12;
 export const CULT_HERALD_PRIORITY_V7 = 3970;
 export const CULT_BOO_PRIORITY_V7 = 3950;
 /**
- * Just above Summon (1910): the circle before a Horror (below Behold!'s
- * 1920 until the Cult redesign retired that step, `pulp_wars-mch9.33`).
+ * Just above Summon (1910): the circle before a Horror; below the warden's
+ * placement (1920, A-R1, `pulp_wars-mch9.38`: Behold!'s step before the
+ * Cult redesign retired it, `pulp_wars-mch9.33`).
  */
 export const CULT_SUMMONING_PRIORITY_V7 = 1915;
 /** Below the Offering (1890), above every ordinary command. */
@@ -166,6 +161,11 @@ export interface CultRitualFactsV7 {
   readonly bodies: number;
   readonly wantedAll: number;
   readonly favour: number;
+  /**
+   * The Favour the seat's next check eats for its bound Heralds (the Cult
+   * redesign's A-R1, `pulp_wars-mch9.38`): never spent on a ritual.
+   */
+  readonly hunger: number;
   /** The seat has The Stars Are Right. */
   readonly stars: boolean;
   /** The own bound daemons. */
@@ -185,7 +185,7 @@ export interface CultRitualFactsV7 {
 
 export interface CultRitualPlanV7 {
   readonly steps: readonly CultRitualStepV7[];
-  /** Favour is kept for the Great Summoning: no Horror below 25. */
+  /** Favour is kept for the Great Summoning: no Horror below 22. */
   readonly saving: boolean;
   /** No own unit ends a Move here: under an own ritual's mark. */
   readonly mayEnd: (at: CoordV7) => boolean;
@@ -349,10 +349,16 @@ export function cultRitualPlanV7(facts: CultRitualFactsV7): CultRitualPlanV7 {
   };
 
   // ----------------------------------------------- the Great Summoning
-  // Section 15.3: only with 20 Favour, The Stars Are Right, a Summoner with
-  // three chanters, nobody of the circle and no mark in a visible enemy's
-  // reach, and four robed cultists to spare for the Herald.
-  if (saving && facts.favour >= CULT_SUMMONING_FAVOUR_V7 && !facts.pending) {
+  // Section 15.3: only with the price (18 since the Cult redesign; and,
+  // A-R1, beyond the Hunger of the Heralds the seat has), The Stars Are
+  // Right, a Summoner with three chanters, nobody of the circle and no mark
+  // in a visible enemy's reach, and four robed cultists to spare for the
+  // Herald.
+  if (
+    saving &&
+    facts.favour >= CULT_SUMMONING_FAVOUR_V7 + facts.hunger &&
+    !facts.pending
+  ) {
     let best: BeginV7 | undefined;
     let bestKey: readonly number[] = [];
     const leaders = new Set<UnitId>();
@@ -896,12 +902,16 @@ export function cultRitualPlanV7(facts: CultRitualFactsV7): CultRitualPlanV7 {
         }
       }
       if (rank === 0 && shooter(target)) {
+        // (The Cult redesign's A-R1, `pulp_wars-mch9.38`: a caster makes no
+        // blow that does not kill, so the strikers are the summons, the
+        // Familiar, the Idol Bearer, and the Thing.)
         const strikers = (at: CoordV7): number =>
           own.filter(
             (unit) =>
               unit.id !== familiar.id &&
               !held.has(unit.id) &&
               melee(unit) &&
+              !cultCasterV7(view, unit) &&
               primaryReady(unit) &&
               gap(unit.at, at) === 1,
           ).length;
@@ -935,7 +945,11 @@ export function cultRitualPlanV7(facts: CultRitualFactsV7): CultRitualPlanV7 {
   // ------------------------------------------------------------- Tentacle
   // Section 15.4: the tile beside the most enemy value whose weakest
   // neighbour is an enemy, with no own unit within 1; enemy siege and
-  // ranged units first. Not in place of a kill.
+  // ranged units first. Not in place of a kill. (The Summoner's since the
+  // Cult redesign: A-R1, `pulp_wars-mch9.38`, section 12.3, the channel
+  // plan takes this step back from a Summoner with a Summon, Seizure, or
+  // Sacrifice step, and does not take a Summoner with a Tentacle to make
+  // as a channeller for the trickle.)
   {
     const callers = new Map<UnitId, boolean>();
     let best: (typeof tentacles)[number] | undefined;

@@ -876,6 +876,93 @@ them, channelling and chanting.
   copy of the rampage rule (rule 7's eye mark for a bound daemon short of
   its Control) follows the four steps.
 
+### 12.5 As built: A-R1, the army rules and Favour (`pulp_wars-mch9.38`)
+
+Built on hand-built states only (`tests/unit/ruleset-v7-cult-army-favour-ai.test.ts`
+and the revised `ruleset-v7-cult-ai`, `-channel-ai`, and `-rituals-ai`
+tests; each rule was seen to fail its test with the rule switched off). No
+rule changed and the ruleset identity did not move. No match was played.
+The code is `src/ai/v7-cult.ts`, `src/ai/v7-cult-channel.ts`, and the
+hooks in `src/ai/v7.ts`; the prices, the cap, and the Hunger are read
+from the engine's constants. Decided here:
+
+1. **Research** as section 12.1. Harvest Rites and Gibbering Masses are
+   bought before the Stargazer's technologies, Tentacles after the last
+   unit of the order (before Roads and the late technologies). "No Mass on
+   offer" is read as "without Gibbering Masses"; the Masses rule waits for
+   Leadership (only a Summoner summons a Mass) and Warding Circles, counts
+   any visible hostile land unit within 6 of an
+   own city (a garrison at home too), and gives way to the Hexers-wanted
+   rule when both apply.
+2. **The army.** One Summoner for every five units; the Chosen's cap is
+   gone. Bodies first wants the larger of the seat's cities and two and
+   every own daemon's Control + 1 and two (`cultBodiesWantedV7`), and one
+   more while an Initiate is wanted for its Favour (`cultFeedWantedV7`: an
+   own Summoner has an enemy unit or center within 6, and one Initiate's
+   value brings Favour to the Horror's price, or with The Stars Are Right
+   the Great Summoning's, beyond the Hunger kept); that Initiate's training
+   is worth 150 more. The Sacrifice itself is the rule (b) of section
+   15.7, which reads the same thresholds.
+3. **Cultists do not brawl.** A caster (every robed cultist but the Idol
+   Bearer) attacks only for a kill, a frog, a blow that leaves a living
+   enemy broken where an own Summoner beside it (or offered a Move beside
+   it) can Seize it with a holder this turn (checked with `previewSeizeV7`
+   on the board as it would stand), or when the visible enemy kills it
+   where it stands anyway (its doomed Sacrifice follows). Its Move may not
+   end in a visible player unit's reach that it was outside of, nor nearer
+   such a unit inside it, unless an own summon or Idol Bearer stands
+   strictly nearer that unit (so it never steps beside an enemy level with
+   its screen); a plan step, a Move onto a center or village, and a Move
+   from which its own attack kills are exempt. The Idol Bearer is the only
+   escort; the casters are the weak links at any HP. Switcheroo's "two own
+   melee units" no longer counts casters (they would not strike).
+4. **Favour and the Hunger.** The seat keeps 2 Favour for each own bound
+   Herald: a Horror needs its price beyond that (and, while saving, the
+   Great Summoning's price beyond it too), the Great Summoning 18 beyond
+   it. Saving starts at 9 and The Stars Are Right is due at 9. Short of the
+   Hunger (counting the trickle of Summoners that hold a strand and an
+   Offering that is due), a free Summoner Sacrifices a spare Initiate
+   beside it (one the daemons' Control does not need; at the Sacrifice's
+   priority, both kept for it) or else channels for the trickle; a Herald
+   still unpaid, the highest unit IDs first, is let go as one that cannot
+   be held (no channeller, released toward the enemy, the own units near
+   it step away). Kills during the turn are not forecast: the plan is made
+   again at every decision, so a Herald that kills is fed again.
+5. **The cap.** From 26 Favour a Horror is summoned with no enemy near;
+   an Offering is never made when its 6 would pass 30, and it is made
+   short of the Hunger too; no Summoner channels for the trickle at 30.
+   (With too few bodies for a Horror the seat still forfeits at the cap:
+   a daemon it cannot hold would break loose on it.)
+6. **The trickle's channeller.** Free cultists are asked to channel in
+   this order: plain cultists, a Summoner with nothing better to do, an
+   Initiate with a village to take or beside a broken enemy a Summoner
+   with its action stands near, an Idol Bearer, a Summoner with a
+   Seizure, a Summon the seat would make, or a Tentacle that slaps an
+   enemy. A Summoner with nothing better to do also channels a held
+   daemon beyond its Control + 1, from a tile no visible enemy can attack.
+7. **The warden.** At 1920 (Behold!'s old place), an Idol Bearer whose
+   idol stands, that holds no strand, is in no ritual, is not on an own
+   center, and stands more than 2 tiles from every empty own center a
+   hostile unit within 6 watches (the garrison rule first), moves to the
+   offered tile beside the most casters a visible enemy can attack next
+   turn (channellers on their planned tiles, ritual members, Summoners,
+   Hexers, Stargazers; none another standing idol covers), only when it
+   covers more than its own tile, then nearest the enemy, never where the
+   visible enemy kills it. A bearer that covers some ends no Move where it
+   covers fewer (an own center excepted).
+8. **The Summoner's Tentacle** (12.3's ordering, in A-R1 at the root's
+   request): the plan takes the rituals' Tentacle step back from a
+   Summoner that has a Summon, Seizure, or Sacrifice step (the doomed
+   unit's included), and a Summoner with a Tentacle to make is no trickle
+   channeller.
+
+**Left for later.** A-R2: Star-fall's mark and joins at the new numbers,
+Switcheroo at 4, the Herald's advance in its scoring (the Herald's
+two-attack stop-gap stands). A-R3: what to summon (the Imp, the Mass, the
+Horror; today only the Horror), Brood, Doorstep, Swarm, and the Mass in the
+garrison; the cap rule then summons "the best it can". A-R4: every seat
+against the new Cult.
+
 ## 13. Interface
 
 All targeting stays on the board ([board targeting](../ui/BOARD_TARGETING.md));

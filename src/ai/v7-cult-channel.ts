@@ -1,26 +1,55 @@
 import type { CityId, PlayerId, UnitId } from "../engine/model/ids";
-import { unitRoleRuleV7 } from "../engine/rules/ruleset-v7";
+import {
+  OFFERING_FAVOUR_V7,
+  SEIZE_BROKEN_HP_V7,
+  SUMMONER_TRICKLE_FAVOUR_V7,
+  unitRoleRuleV7,
+} from "../engine/rules/ruleset-v7";
 import type { CommandV7 } from "../engine/v7/commands";
+import {
+  pamphletsApplyV7,
+  tentacleSlapTargetV7,
+} from "../engine/v7/cult-hexes";
 import {
   previewRampageV7,
   previewSacrificeV7,
   previewSeizeV7,
+  previewWardenV7,
 } from "../engine/v7/query";
 import { isNeutralOwnerV7, type CoordV7 } from "../engine/v7/types";
 import type { PlayerViewV7, PublicUnitV7 } from "../engine/v7/view";
-import { cultBodiesV7, cultFavourV7, cultRobedV7 } from "./v7-cult";
 import {
-  CULT_HORROR_COST_V7,
+  ARMY_GARRISON_FILL_REACH_V7,
+  ARMY_GARRISON_RADIUS_V7,
+} from "./v7-army";
+import {
+  CULT_CAP_SPEND_FAVOUR_V7,
+  CULT_FAVOUR_CAP_V7,
+  CULT_HORROR_FAVOUR_V7,
+  CULT_HUNGER_FAVOUR_V7,
   CULT_SUMMONING_FAVOUR_V7,
+  cultBackRowV7,
+  cultBodiesV7,
+  cultFavourV7,
+  cultRobedV7,
+  cultWardenV7,
+} from "./v7-cult";
+import {
   cultRitualPlanV7,
+  cultSavingV7,
   type CultRitualReasonV7,
 } from "./v7-cult-rituals";
 
 /**
  * The Cult seat's own commands (`pulp_wars-mch9.10`, bead A2 of
  * docs/product/RULESET_7_CULTISTS.md sections 15.2 to 15.4; as built in
- * section 15.7): the channel plan, Summon, Sacrifice, Seize, Offering,
- * Anchor, and Behold!.
+ * section 15.7): the channel plan, Summon, Sacrifice, Seize, Offering, and
+ * Anchor. Revised by the Cult redesign's A-R1 (`pulp_wars-mch9.38`,
+ * docs/product/RULESET_7_CULT_REDESIGN.md section 12.2): Favour against its
+ * cap of 30 and the Herald's Hunger (the prices beyond the Hunger kept, a
+ * Herald fed by a Sacrifice, the trickle, or an Offering, or let go), the
+ * trickle's channeller (a Summoner with nothing better to do), and the
+ * warden's placement in place of the Behold! step.
  *
  * The Normal AI chooses one command at a time and remembers nothing, so the
  * plan is a function of the public view and the commands the engine offers:
@@ -44,14 +73,17 @@ import {
  * 2. **A daemon that cannot be held** (`CULT_RELEASE_PRIORITY_V7`): it goes
  *    back to its cultists if a Move brings it within their reach, else it is
  *    released toward the enemy, and the own units nearest to it step away.
+ *    (A-R1: a Herald whose Hunger the seat cannot pay is released too.)
  * 3. **The daemons' ordinary play** (`CULT_DAEMON_PRIORITY_V7` added to the
  *    ordinary priority): a daemon moves and attacks before its channellers
  *    are placed, and only onto a tile its channellers can follow to.
  * 4. **Anchor**, **Channel** (the channellers of the bound daemons, each a
- *    Move and a Channel), **Bind again**.
- * 5. **Summon**, the **Sacrifice** of a spare Initiate, the **Offering**.
- *    (Behold! was a step here until the Cult redesign made it a lasting
- *    aura with no command, `pulp_wars-mch9.33`.)
+ *    Move and a Channel, and a Summoner's strand for the trickle), **Bind
+ *    again**.
+ * 5. **The warden's placement** (`CULT_WARDEN_PRIORITY_V7`, A-R1: in the
+ *    place of the Behold! step, which went with the Behold! command,
+ *    `pulp_wars-mch9.33`), **Summon**, the **Sacrifice** of a spare Initiate
+ *    (or of one that feeds the Herald's Hunger), the **Offering**.
  * 6. Last of all (`CULT_DOOMED_PRIORITY_V7`, below every ordinary command):
  *    the Sacrifice of an own unit the visible enemy kills this round.
  *
@@ -59,8 +91,10 @@ import {
  * are the part of the plan in `src/ai/v7-cult-rituals.ts`
  * (`cultRitualPlanV7`), called here once the channel plan has claimed its
  * cultists: the Herald's Move and Proclaim and a Horror's Boo! (above the
- * daemons' ordinary play), the Great Summoning (just above Summon), and Ribbit, Switcheroo, the Tentacle, Pick Me!, and Star-fall
- * (below the Offering, above the ordinary play).
+ * daemons' ordinary play), the Great Summoning (just above Summon), and
+ * Ribbit, Switcheroo, the Tentacle, Star-fall, and its joins (below the
+ * Offering, above the ordinary play). A Summoner calls a Tentacle only when
+ * it has no Summon, Seizure, or Sacrifice step (A-R1, section 12.3).
  */
 
 /** A cultist channels a daemon within this many tiles (section 6.2). */
@@ -70,13 +104,6 @@ export const CULT_CHANNEL_RANGE_V7 = 3;
  * (section 15.2 step 2): one more than the range, the step of a cultist.
  */
 export const CULT_DAEMON_LEASH_V7 = 4;
-/**
- * Favour a Horror costs, and the Great Summoning (the two thresholds): the
- * Cult redesign's prices (`pulp_wars-mch9.32`, a stop-gap until A-R1 reads
- * its own thresholds; 5 and 20 before).
- */
-export const CULT_HORROR_FAVOUR_V7 = 4;
-export const CULT_HERALD_FAVOUR_V7 = 18;
 /** A Horror is summoned with an enemy unit or center this near. */
 export const CULT_SUMMON_FRONT_V7 = 6;
 /** An enemy this near a center forbids an Offering and a last defender's Sacrifice. */
@@ -94,9 +121,14 @@ export const CULT_DAEMON_PRIORITY_V7 = 2000;
 export const CULT_ANCHOR_PRIORITY_V7 = 1950;
 export const CULT_CHANNEL_PRIORITY_V7 = 1940;
 export const CULT_BIND_PRIORITY_V7 = 1930;
-// (`CULT_BEHOLD_PRIORITY_V7`, 1920, the raised idol's step, went with the
-// Behold! command: the Cult redesign, `pulp_wars-mch9.33`; the warden's
-// placement is A-R1's.)
+/**
+ * The warden's placement (the Cult redesign's A-R1, `pulp_wars-mch9.38`,
+ * section 12.2): an Idol Bearer's Move to the tile beside the most casters
+ * a visible enemy can reach, once the channellers have their tiles. (It
+ * takes the place of the raised idol's step, `CULT_BEHOLD_PRIORITY_V7`,
+ * which went with the Behold! command, `pulp_wars-mch9.33`.)
+ */
+export const CULT_WARDEN_PRIORITY_V7 = 1920;
 /**
  * `pulp_wars-mch9.27` (section 15.10): the step of a cultist off a watched
  * own center for a clearly better garrison beside it (the general garrison
@@ -147,7 +179,9 @@ export type CultStepReasonV7 =
   | "SUMMON"
   | "SACRIFICE_SPARE"
   | "SACRIFICE_DOOMED"
+  | "SACRIFICE_HUNGER"
   | "OFFERING"
+  | "WARDEN"
   | CultRitualReasonV7;
 
 export interface CultStepV7 {
@@ -313,6 +347,7 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
   const summons: Extract<CommandV7, { kind: "SUMMON" }>[] = [];
   const anchors: Extract<CommandV7, { kind: "ANCHOR" }>[] = [];
   const offerings: Extract<CommandV7, { kind: "OFFERING" }>[] = [];
+  const tentacles: Extract<CommandV7, { kind: "TENTACLE" }>[] = [];
   const trainingCities = new Set<CityId>();
   for (const command of commands) {
     if (command.kind === "MOVE") {
@@ -326,6 +361,7 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
     else if (command.kind === "SUMMON") summons.push(command);
     else if (command.kind === "ANCHOR") anchors.push(command);
     else if (command.kind === "OFFERING") offerings.push(command);
+    else if (command.kind === "TENTACLE") tentacles.push(command);
     else if (command.kind === "TRAIN") trainingCities.add(command.cityId);
   }
 
@@ -407,10 +443,144 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
     (unit) =>
       cultRobedV7(view, unit) && primaryReady(unit) && !strandOf.has(unit.id),
   );
-  /** An Idol Bearer or a Summoner: it has a better use for its action. */
-  const isSpecialist = (unit: PublicUnitV7): boolean =>
-    bearers.some((bearer) => bearer.id === unit.id) ||
-    summoners.some((summoner) => summoner.id === unit.id);
+
+  // ------------------------------------------ Favour: the cap and Hunger
+  // The Cult redesign's A-R1 (`pulp_wars-mch9.38`, RULESET_7_CULT_REDESIGN.md
+  // section 12.2): the prices, the Herald's Hunger the seat keeps, the
+  // saving for the Great Summoning, and the cap it spends before.
+  const frogs = new Set(cult.frogs);
+  /** Every own bound daemon's Control and one to spare (section 15.2). */
+  const wantedAll = daemonEntries.reduce(
+    (sum, item) => sum + item.entry.control + 1,
+    0,
+  );
+  const controlAll = daemonEntries.reduce(
+    (sum, item) => sum + item.entry.control,
+    0,
+  );
+  /** The own bound Heralds, by unit ID (the order Hunger is paid in). */
+  const heraldIds = daemonEntries
+    .filter((item) => item.entry.role === "HERALD")
+    .map((item) => item.unit.id)
+    .sort((left, right) => left - right);
+  /** The Favour the next check eats: never spent, and fed when short. */
+  const hunger = heraldIds.length * CULT_HUNGER_FAVOUR_V7;
+  const saving = cultSavingV7(
+    { stars, bodies, wantedAll, favour },
+    summoners.length,
+  );
+  /** At the cap (nearly): the seat summons with no enemy near. */
+  const capSpend = favour >= CULT_CAP_SPEND_FAVOUR_V7;
+  const hostileCenters = view.cities.filter(
+    (city) => !isNeutralOwnerV7(city.ownerId) && tools.hostile(city.ownerId),
+  );
+  /** The tiles from `at` to the nearest enemy unit or hostile center. */
+  const frontOf = (at: CoordV7): number =>
+    Math.min(
+      enemyGap(at),
+      hostileCenters.reduce(
+        (nearest, city) => Math.min(nearest, gap(city.at, at)),
+        99,
+      ),
+    );
+  /**
+   * A Horror is within the Favour: its price beyond the Hunger kept, and,
+   * while the seat saves for the Great Summoning, beyond that price too.
+   */
+  const summonGate =
+    bodies >= wantedAll + 2 &&
+    favour - CULT_HORROR_FAVOUR_V7 >= hunger &&
+    (!saving ||
+      favour - CULT_HORROR_FAVOUR_V7 >= CULT_SUMMONING_FAVOUR_V7 + hunger);
+  /** The own units kept for the Herald's Hunger: no strand for them. */
+  const keep = new Set<UnitId>();
+
+  /** A Tentacle on `at` slaps an enemy, with no own or allied unit by it. */
+  const tentacleWorth = (at: CoordV7): boolean => {
+    const around = view.units.filter(
+      (unit) =>
+        unit.hp > 0 &&
+        !isNeutralOwnerV7(unit.ownerId) &&
+        gap(unit.at, at) === 1,
+    );
+    if (
+      around.length === 0 ||
+      around.some((unit) => !tools.hostile(unit.ownerId))
+    )
+      return false;
+    const slapped = tentacleSlapTargetV7(view.units, at);
+    return slapped !== null && tools.hostile(slapped.ownerId);
+  };
+  /**
+   * A Summoner with a better use for its action than a strand (section
+   * 12.2, the trickle; 12.3, the Tentacle): a Seizure offered to it, a
+   * Summon the seat would make with it, or a Tentacle that slaps an enemy.
+   */
+  const busySummoner = (unit: PublicUnitV7): boolean =>
+    seizes.some((command) => command.unitId === unit.id) ||
+    (summonGate &&
+      (capSpend || frontOf(unit.at) <= CULT_SUMMON_FRONT_V7) &&
+      summons.some((command) => command.unitId === unit.id)) ||
+    tentacles.some(
+      (command) => command.unitId === unit.id && tentacleWorth(command.at),
+    );
+  /**
+   * An Initiate with a village to take this turn (Pamphlets), or a cultist
+   * beside a broken enemy a Summoner with its action stands near (a
+   * Seizure to hold).
+   */
+  const occupied = (unit: PublicUnitV7): boolean =>
+    (cultInitiateV7(view, unit) &&
+      (movesByUnit.get(unit.id) ?? []).some((move) => {
+        const end = move.path.at(-1);
+        const tile =
+          end === undefined
+            ? undefined
+            : view.board.tiles[end.y * view.board.width + end.x];
+        return (
+          end !== undefined &&
+          tile?.explored === true &&
+          pamphletsApplyV7(view, unit, tile.site) &&
+          !view.cities.some((city) => sameTile(city.at, end))
+        );
+      })) ||
+    enemies.some(
+      (enemy) =>
+        enemy.form === "LAND" &&
+        gap(enemy.at, unit.at) === 1 &&
+        (enemy.hp <= SEIZE_BROKEN_HP_V7 ||
+          (frogs.has(enemy.id) && enemy.hp * 2 <= enemy.maxHp)) &&
+        summoners.some(
+          (summoner) =>
+            summoner.id !== unit.id &&
+            primaryReady(summoner) &&
+            gap(summoner.at, enemy.at) <= 2,
+        ),
+    );
+  /**
+   * The order in which free cultists are asked to channel (section 15.7
+   * rule 3, revised by A-R1 for the trickle): the plain cultists, then a
+   * Summoner with nothing better to do (its strand pays the trickle), then
+   * a cultist with a village or a Seizure to hold, then an Idol Bearer (the
+   * warden), then a Summoner with a Seizure, a Summon, or a Tentacle.
+   */
+  const ranks = new Map<UnitId, number>();
+  const channelRank = (unit: PublicUnitV7): number => {
+    let rank = ranks.get(unit.id);
+    if (rank === undefined) {
+      rank = bearers.some((bearer) => bearer.id === unit.id)
+        ? 3
+        : summoners.some((summoner) => summoner.id === unit.id)
+          ? busySummoner(unit)
+            ? 4
+            : 1
+          : occupied(unit)
+            ? 2
+            : 0;
+      ranks.set(unit.id, rank);
+    }
+    return rank;
+  };
 
   /** Where `unit` can channel the daemon from this turn. */
   const optionsFor = (
@@ -490,8 +660,10 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
   /**
    * The unassigned cultists that can channel `daemon` this turn, the
    * nearest first; one that has moved already (it came for this) before the
-   * others, an Idol Bearer and a Summoner after them (the one may raise its
-   * idol instead, the other Seize, Summon, or Sacrifice).
+   * others, then in the order of `channelRank` (the Summoner with nothing
+   * better to do before a cultist with a village or a Seizure to hold, the
+   * Idol Bearer and the busy Summoner last). Never a unit kept for the
+   * Herald's Hunger.
    */
   const candidatesFor = (
     daemon: PublicUnitV7,
@@ -500,14 +672,14 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
     readonly options: readonly OptionV7[];
   }[] =>
     free
-      .filter((unit) => !assigned.has(unit.id))
+      .filter((unit) => !assigned.has(unit.id) && !keep.has(unit.id))
       .map((unit) => ({ unit, options: optionsFor(unit, daemon) }))
       .filter((item) => item.options.length > 0)
       .sort(
         (left, right) =>
           Number(right.unit.activation.moved) -
             Number(left.unit.activation.moved) ||
-          Number(isSpecialist(left.unit)) - Number(isSpecialist(right.unit)) ||
+          channelRank(left.unit) - channelRank(right.unit) ||
           gap(left.unit.at, daemon.at) - gap(right.unit.at, daemon.at) ||
           left.unit.id - right.unit.id,
       );
@@ -546,6 +718,8 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
     /** A grip adds two strands: one is offered or one is planned. */
     grip: boolean;
     holdable: boolean;
+    /** A Herald whose Hunger the seat cannot pay (A-R1, section 12.2). */
+    starving: boolean;
     wanted: number;
     readonly channellers: UnitId[];
   }
@@ -555,13 +729,124 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
     strands: entry.strands,
     grip: false,
     holdable: true,
+    starving: false,
     wanted: entry.control,
     channellers: [],
   }));
 
+  // ---------------------------------------------------- the Offering
+  // Section 15.4 and 15.10 rule 3 (paced): a city at its unit limit or with
+  // nothing to train, no enemy within 3 of its center, and (A-R1, section
+  // 12.2) never when its 6 would pass the cap.
+  const offeringOk = (command: (typeof offerings)[number]): boolean => {
+    const city = view.cities.find((item) => item.id === command.cityId);
+    return (
+      city !== undefined &&
+      cultOfferingDueV7(view, city.id) &&
+      enemyGap(city.at) > CULT_HOME_GUARD_V7 &&
+      !(tools.freeCapacity(city.id) > 0 && trainingCities.has(city.id)) &&
+      favour + OFFERING_FAVOUR_V7 <= CULT_FAVOUR_CAP_V7
+    );
+  };
+
+  // ------------------------------------------------ the Herald's Hunger
+  // A-R1 (section 12.2): the seat pays 2 Favour for each bound Herald at
+  // its next check (after the trickle), and a Herald it cannot pay for
+  // breaks loose. Short of it, it feeds the Herald: a free Summoner
+  // Sacrifices a spare Initiate beside it (rule (b) of section 15.7,
+  // extended: both are kept for it, its step at the Sacrifice's priority),
+  // or else channels for the trickle; and an Offering that is due is made.
+  // A Herald the seat still cannot pay for (the lowest unit IDs are paid
+  // first, as the check pays) is one it cannot hold: released toward the
+  // enemy, its cultists step away (section 15.7 rule 5).
+  const feedSteps: CultStepV7[] = [];
+  /** The free Summoners that channel for the trickle the Hunger needs. */
+  const feedChannel = new Set<UnitId>();
+  const hungry = favour < hunger;
+  if (hungry) {
+    // The trickle of the Summoners that hold a strand already.
+    let purse =
+      favour +
+      summoners.filter((unit) => {
+        const daemonId = strandOf.get(unit.id);
+        return daemonId != null && ownDaemonIds.has(daemonId);
+      }).length *
+        SUMMONER_TRICKLE_FAVOUR_V7;
+    if (purse < hunger && offerings.some(offeringOk))
+      purse += OFFERING_FAVOUR_V7;
+    // A spare Initiate: one the daemons' Control does not need.
+    let spareBodies = bodies - controlAll;
+    for (const summoner of [...summoners].sort(
+      (left, right) => left.id - right.id,
+    )) {
+      if (purse >= hunger) break;
+      if (
+        !primaryReady(summoner) ||
+        strandOf.has(summoner.id) ||
+        frogs.has(summoner.id)
+      )
+        continue;
+      let best: (typeof sacrifices)[number] | undefined;
+      let bestKey: readonly number[] = [];
+      if (spareBodies > 0)
+        for (const command of sacrifices) {
+          if (command.unitId !== summoner.id) continue;
+          const victim = unitsById.get(command.victimUnitId);
+          if (
+            victim === undefined ||
+            keep.has(victim.id) ||
+            !cultInitiateV7(view, victim) ||
+            strandOf.has(victim.id) ||
+            lastDefender(victim)
+          )
+            continue;
+          const preview = previewSacrificeV7(view, summoner.id, victim.id);
+          if (preview === null) continue;
+          const key = [preview.favour, -victim.hp, -victim.id];
+          if (best === undefined || better(key, bestKey)) {
+            best = command;
+            bestKey = key;
+          }
+        }
+      if (best !== undefined) {
+        const gain = bestKey[0] ?? 0;
+        keep.add(summoner.id);
+        keep.add(best.victimUnitId);
+        held.add(summoner.id);
+        held.add(best.victimUnitId);
+        spareBodies -= 1;
+        purse += gain;
+        feedSteps.push({
+          command: best,
+          priority: CULT_SACRIFICE_PRIORITY_V7,
+          value: gain,
+          reason: "SACRIFICE_HUNGER",
+        });
+      } else if (
+        work.some((daemon) => optionsFor(summoner, daemon.unit).length > 0)
+      ) {
+        feedChannel.add(summoner.id);
+        purse += SUMMONER_TRICKLE_FAVOUR_V7;
+      }
+    }
+    for (const heraldId of heraldIds) {
+      if (purse >= CULT_HUNGER_FAVOUR_V7) {
+        purse -= CULT_HUNGER_FAVOUR_V7;
+        continue;
+      }
+      const daemon = work.find((item) => item.unit.id === heraldId);
+      if (daemon !== undefined) {
+        daemon.holdable = false;
+        daemon.starving = true;
+      }
+    }
+  }
+
   // Pass 1 (section 15.2 step 1): each daemon its Control, the Herald
   // first, then the Horrors by unit ID.
   for (const daemon of work) {
+    // (A-R1: a starving Herald is let go: no strand for it.)
+    if (daemon.starving) continue;
     // A grip that is offered on one of its channellers counts already.
     const offeredGrip = anchors.some(
       (command) => strandOf.get(command.cultistUnitId) === daemon.unit.id,
@@ -638,6 +923,43 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
     if (spare.length >= extra) daemon.wanted = daemon.control + 1;
   }
 
+  // Pass 3 (A-R1, section 12.2, the trickle): a Summoner with no Seizure,
+  // Summon, or Tentacle to make (`busySummoner`) channels a held daemon
+  // anyway, from a tile no visible enemy can attack: its strand pays 1
+  // Favour at the check. Not at the cap (the Favour would be lost). A
+  // Summoner the Herald's Hunger needs channels whatever else it could do,
+  // from any tile it can.
+  if (favour < CULT_FAVOUR_CAP_V7)
+    for (const summoner of [...summoners].sort(
+      (left, right) => left.id - right.id,
+    )) {
+      const needed = feedChannel.has(summoner.id);
+      if (
+        assigned.has(summoner.id) ||
+        keep.has(summoner.id) ||
+        frogs.has(summoner.id) ||
+        !free.some((unit) => unit.id === summoner.id) ||
+        (!needed && busySummoner(summoner))
+      )
+        continue;
+      const nearest = work
+        .filter((daemon) => daemon.holdable)
+        .sort(
+          (left, right) =>
+            gap(left.unit.at, summoner.at) - gap(right.unit.at, summoner.at) ||
+            left.unit.id - right.unit.id,
+        );
+      for (const daemon of nearest) {
+        const options = optionsFor(summoner, daemon.unit).filter(
+          (option) => needed || !tools.threatened(option.at),
+        );
+        if (options.length === 0) continue;
+        assign(daemon.unit, { unit: summoner, options }, false, false);
+        daemon.channellers.push(summoner.id);
+        break;
+      }
+    }
+
   // Anchor (section 15.4): a Thing always grips a channeller beside it.
   {
     let best: (typeof anchors)[number] | undefined;
@@ -713,8 +1035,9 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
     let chosen: MoveV7 | undefined;
     let chosenKey: readonly number[] = [];
     let reason: CultStepReasonV7 = "RETURN";
-    // Back to its cultists, if a Move brings it within their reach.
-    for (const move of moves) {
+    // Back to its cultists, if a Move brings it within their reach (not a
+    // starving Herald: strands do not feed it).
+    for (const move of daemon.starving ? [] : moves) {
       const end = move.path.at(-1);
       if (end === undefined || !landTile(end)) continue;
       const count = reachable(end);
@@ -967,7 +1290,6 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
   }
 
   const pending = channelPending || bindPending;
-  const wantedAll = work.reduce((sum, daemon) => sum + daemon.control + 1, 0);
 
   // ------------------------------------------- where a daemon may end
   const workById = new Map(work.map((daemon) => [daemon.unit.id, daemon]));
@@ -993,6 +1315,118 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
     return daemon.strands + near >= daemon.wanted;
   };
 
+  // ------------------------------------------- the warden's placement
+  // A-R1 (`pulp_wars-mch9.38`, section 12.2; it replaces the Behold! step):
+  // a free Idol Bearer whose idol stands ends its Move on the tile beside
+  // the most own casters a visible enemy can attack next turn (the
+  // channellers on their tiles, the circle of an own ritual, and the
+  // Summoners, Hexers, and Stargazers), counting none another standing idol
+  // covers already, and between them and the enemy: the shield wall halves
+  // the shots on them and Awestruck binds the enemies beside it to the
+  // bearer. It moves only to a tile that covers more than its own, and
+  // ends no Move on a tile that covers fewer (but an own center). The
+  // garrison rule comes first: a bearer on an own center, or within 2 of an
+  // empty own center a hostile unit within 6 watches, is left to it.
+  const wardens = new Map<UnitId, (at: CoordV7) => boolean>();
+  {
+    const ritualUnits = new Set<UnitId>();
+    for (const ritual of cult.rituals)
+      if (ritual.playerId === me) {
+        if (ritual.leaderUnitId !== null) ritualUnits.add(ritual.leaderUnitId);
+        for (const unitId of ritual.chanterUnitIds) ritualUnits.add(unitId);
+      }
+    /** The casters to shield, each on the tile it holds this turn. */
+    const wards = own.flatMap((unit) => {
+      if (cultWardenV7(view, unit) || !cultRobedV7(view, unit)) return [];
+      const at = assigned.get(unit.id)?.option.at ?? unit.at;
+      return (assigned.has(unit.id) ||
+        strandOf.has(unit.id) ||
+        ritualUnits.has(unit.id) ||
+        cultBackRowV7(view, unit)) &&
+        tools.threatened(at)
+        ? [{ id: unit.id, at }]
+        : [];
+    });
+    const standing = bearers.filter(
+      (bearer) => previewWardenV7(view, bearer.id)?.stands === true,
+    );
+    const watchedCenters = ownCenters.filter(
+      (city) =>
+        enemyGap(city.at) <= ARMY_GARRISON_RADIUS_V7 &&
+        !view.units.some((unit) => unit.hp > 0 && sameTile(unit.at, city.at)),
+    );
+    let best: { move: MoveV7; key: readonly number[] } | undefined;
+    for (const bearer of standing) {
+      if (
+        held.has(bearer.id) ||
+        strandOf.has(bearer.id) ||
+        ritualUnits.has(bearer.id) ||
+        onOwnCenter(bearer) ||
+        watchedCenters.some(
+          (city) => gap(city.at, bearer.at) <= ARMY_GARRISON_FILL_REACH_V7,
+        )
+      )
+        continue;
+      // The casters no other standing idol covers.
+      const open = wards.filter(
+        (ward) =>
+          !standing.some(
+            (other) => other.id !== bearer.id && gap(other.at, ward.at) === 1,
+          ),
+      );
+      const cover = (at: CoordV7): number =>
+        open.filter((ward) => ward.id !== bearer.id && gap(ward.at, at) === 1)
+          .length;
+      const here = cover(bearer.at);
+      if (here > 0)
+        wardens.set(
+          bearer.id,
+          (at) =>
+            cover(at) >= here ||
+            ownCenters.some((city) => sameTile(city.at, at)),
+        );
+      if (bearer.activation.moved) continue;
+      for (const move of movesByUnit.get(bearer.id) ?? []) {
+        const end = move.path.at(-1);
+        if (
+          end === undefined ||
+          !landTile(end) ||
+          tools.danger(bearer, end) >= bearer.hp
+        )
+          continue;
+        const count = cover(end);
+        if (count <= here) continue;
+        const key = [
+          count,
+          -enemyGap(end),
+          -move.path.length,
+          -bearer.id,
+          -end.y,
+          -end.x,
+        ];
+        if (best === undefined || better(key, best.key)) best = { move, key };
+      }
+    }
+    if (best !== undefined) {
+      const chosen = best.move;
+      const covered = best.key[0] ?? 0;
+      steps.push({
+        command: chosen,
+        priority: CULT_WARDEN_PRIORITY_V7,
+        value: covered,
+        reason: "WARDEN",
+      });
+      const end = chosen.path.at(-1);
+      if (end !== undefined)
+        wardens.set(
+          chosen.unitId,
+          (at) =>
+            sameTile(at, end) ||
+            ownCenters.some((city) => sameTile(city.at, at)),
+        );
+    }
+  }
+
   // ------------------------------------------- the rituals and tricks
   // Bead A3 (`pulp_wars-mch9.11`, `src/ai/v7-cult-rituals.ts`): from the
   // cultists the channel plan and the Seizure have left.
@@ -1013,6 +1447,7 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
     bodies,
     wantedAll,
     favour,
+    hunger,
     stars,
     daemons: work.map((daemon) => ({
       unit: daemon.unit,
@@ -1032,16 +1467,11 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
   // enough to send it at, and never beside an enemy where the Summoner or
   // its helper would be its nearest unit if it broke. Bead A3: and not with
   // the Favour the seat keeps for the Great Summoning (`cultSavingV7`): a
-  // Horror then only from what is above the Herald's price.
-  if (
-    !pending &&
-    bodies >= wantedAll + 2 &&
-    (!rituals.saving ||
-      favour - CULT_HORROR_COST_V7 >= CULT_SUMMONING_FAVOUR_V7)
-  ) {
-    const hostileCenters = view.cities.filter(
-      (city) => !isNeutralOwnerV7(city.ownerId) && tools.hostile(city.ownerId),
-    );
+  // Horror then only from what is above the Herald's price. A-R1 (section
+  // 12.2): never from the Favour its Herald's Hunger needs
+  // (`summonGate`), and at `CULT_CAP_SPEND_FAVOUR_V7` or more with no enemy
+  // near too (Favour above the cap is lost).
+  if (!pending && summonGate) {
     let best: (typeof summons)[number] | undefined;
     let bestKey: readonly number[] = [];
     for (const command of summons) {
@@ -1054,14 +1484,7 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
         held.has(helper.id)
       )
         continue;
-      const front = Math.min(
-        enemyGap(summoner.at),
-        hostileCenters.reduce(
-          (nearest, city) => Math.min(nearest, gap(city.at, summoner.at)),
-          99,
-        ),
-      );
-      if (front > CULT_SUMMON_FRONT_V7) continue;
+      if (!capSpend && frontOf(summoner.at) > CULT_SUMMON_FRONT_V7) continue;
       if (enemyGap(command.at) <= 1) {
         const nearest = cultNearestToV7(view, command.at, null);
         if (
@@ -1095,17 +1518,20 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
 
   /**
    * Favour is short of the next threshold the seat can spend it at: it has
-   * a Summoner, and the bodies to hold one more Horror.
+   * a Summoner, and the bodies to hold one more Horror. A-R1 (section
+   * 12.2): the thresholds are the prices beyond the Hunger the seat keeps
+   * (a Horror's 4, the Great Summoning's 18 with The Stars Are Right).
    */
   const short =
     summoners.length > 0 &&
     bodies >= wantedAll + 2 &&
-    (favour < CULT_HORROR_FAVOUR_V7 ||
-      (stars && favour < CULT_HERALD_FAVOUR_V7));
+    (favour < CULT_HORROR_FAVOUR_V7 + hunger ||
+      (stars && favour < CULT_SUMMONING_FAVOUR_V7 + hunger));
 
   // -------------------------------------------------------- Sacrifice
   // Section 15.4 (b): an Initiate beyond the wanted channellers and two,
-  // when its value brings Favour to 5 or (with The Stars Are Right) to 20.
+  // when its value brings Favour to a Horror's price or (with The Stars Are
+  // Right) the Great Summoning's, beyond the Hunger kept (A-R1).
   if (!pending && short && bodies > wantedAll + CULT_SPARE_BODIES_V7) {
     let best: (typeof sacrifices)[number] | undefined;
     let bestKey: readonly number[] = [];
@@ -1127,8 +1553,8 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
       const reaches = (threshold: number): boolean =>
         favour < threshold && preview.favourAfter >= threshold;
       if (
-        !reaches(CULT_HORROR_FAVOUR_V7) &&
-        !(stars && reaches(CULT_HERALD_FAVOUR_V7))
+        !reaches(CULT_HORROR_FAVOUR_V7 + hunger) &&
+        !(stars && reaches(CULT_SUMMONING_FAVOUR_V7 + hunger))
       )
         continue;
       const key = [-victim.hp, -victim.id, -summoner.id];
@@ -1145,6 +1571,8 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
         reason: "SACRIFICE_SPARE",
       });
   }
+  // A-R1 (section 12.2): the Sacrifice that feeds the Herald's Hunger.
+  steps.push(...feedSteps);
 
   // Section 15.4 (a): an own unit that the visible enemy kills this round
   // and that cannot retreat, after everything else it can do this turn. Its
@@ -1186,19 +1614,27 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
         reason: "SACRIFICE_DOOMED",
       });
       held.add(best.unitId);
-      // The Cult redesign's stop-gap (`pulp_wars-mch9.31`): the Tentacle is
-      // the Summoner's now (its step is the rituals', above), and a
-      // Summoner that keeps its action for this Sacrifice calls none. The
-      // redesign's AI bead orders the Summoner's steps.
-      const summonerId = best.unitId;
-      for (let index = steps.length - 1; index >= 0; index -= 1) {
-        const step = steps[index];
-        if (
-          step?.command.kind === "TENTACLE" &&
-          step.command.unitId === summonerId
-        )
-          steps.splice(index, 1);
-      }
+    }
+  }
+
+  // The Summoner's Tentacle (A-R1, section 12.3): a Summoner calls one only
+  // when it has no Summon, Seizure, or Sacrifice step (each is its action;
+  // the doomed unit's Sacrifice is made last of all, so its Summoner keeps
+  // its action for it). The rituals named the Tentacle before these steps
+  // were known; it is taken back here.
+  {
+    const busy = new Set<UnitId>();
+    for (const step of steps)
+      if (
+        step.command.kind === "SUMMON" ||
+        step.command.kind === "SEIZE" ||
+        step.command.kind === "SACRIFICE"
+      )
+        busy.add(step.command.unitId);
+    for (let index = steps.length - 1; index >= 0; index -= 1) {
+      const step = steps[index];
+      if (step?.command.kind === "TENTACLE" && busy.has(step.command.unitId))
+        steps.splice(index, 1);
     }
   }
 
@@ -1208,21 +1644,15 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
   // `pulp_wars-mch9.27` (section 15.10): paced, at most one a round
   // (`cultOfferingDueV7`). A lodge whose three cities started at their unit
   // limit offered in each of them every turn and began the Great Summoning
-  // in round 2 from 9 Favour.
-  if (short)
+  // in round 2 from 9 Favour. A-R1 (section 12.2): also to feed the
+  // Herald's Hunger, and never past the cap (`offeringOk`).
+  if (short || hungry)
     for (const command of offerings) {
-      const city = view.cities.find((item) => item.id === command.cityId);
-      if (
-        city === undefined ||
-        !cultOfferingDueV7(view, city.id) ||
-        enemyGap(city.at) <= CULT_HOME_GUARD_V7 ||
-        (tools.freeCapacity(city.id) > 0 && trainingCities.has(city.id))
-      )
-        continue;
+      if (!offeringOk(command)) continue;
       steps.push({
         command,
         priority: CULT_OFFERING_PRIORITY_V7,
-        value: -city.id,
+        value: -command.cityId,
         reason: "OFFERING",
       });
     }
@@ -1257,6 +1687,9 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
       if (!rituals.mayEnd(at)) return false;
       const cultist = gripTiles.get(unitId);
       if (cultist !== undefined) return gap(cultist, at) === 1;
+      // A-R1: a warden ends no Move where it covers fewer casters.
+      const ward = wardens.get(unitId);
+      if (ward !== undefined && !ward(at)) return false;
       return !ownDaemonIds.has(unitId) || daemonMayEnd(unitId, at);
     },
   };

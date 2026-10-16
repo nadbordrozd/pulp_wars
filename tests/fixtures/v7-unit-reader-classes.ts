@@ -116,6 +116,17 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     // The Cult seat (`pulp_wars-mch9.9`): the robed cultists a Cult seat
     // fields are on the board (a Cult seat has no burrowed unit).
     "src/ai/v7-cult.ts::cultBodiesV7": "BOARD",
+    // The Cult redesign's A-R1 (`pulp_wars-mch9.38`): the own bound
+    // daemons and Heralds (their upkeep and Hunger), the Summoners and the
+    // enemies near them (an Initiate to feed the Favour), a Summoner that
+    // may Seize after a caster's blow, and the summons and Idol Bearers
+    // that screen a caster's Move are units on the board (no daemon or
+    // cultist burrows, and a burrowed unit is no enemy at the front).
+    "src/ai/v7-cult.ts::cultUpkeepV7": "BOARD",
+    "src/ai/v7-cult.ts::cultHungerV7": "BOARD",
+    "src/ai/v7-cult.ts::cultFeedWantedV7": "BOARD",
+    "src/ai/v7.ts::cultSeizureFollowsV7": "BOARD",
+    "src/ai/v7.ts::cultCasterMoveHeldV7": "BOARD",
     // The Cult seat's plan (`pulp_wars-mch9.10`): channellers, daemons,
     // Things, victims, and the enemies it measures distances to are units
     // on the board (a strand, a grip, a Seizure, and a Sacrifice need a

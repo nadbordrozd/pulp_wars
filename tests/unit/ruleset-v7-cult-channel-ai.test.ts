@@ -346,12 +346,18 @@ describe("the Cult seat: channel first (section 15.2)", () => {
   });
 
   it("holds the Herald first, then the Horrors; the spare strands come after every Control", () => {
+    // (With the 2 Favour the Herald's Hunger eats at the next check: the
+    // Cult redesign's A-R1, `pulp_wars-mch9.38`.)
     const build = (initiates: readonly GoblinPieceV7[]): GameStateV7 =>
-      withHorrorV7(
-        withHorrorV7(scene(initiates), 0, at(4, 2), { activation: SPENT }),
+      withFavourV7(
+        withHorrorV7(
+          withHorrorV7(scene(initiates), 0, at(4, 2), { activation: SPENT }),
+          0,
+          at(4, 4),
+          { activation: SPENT, role: "HERALD" },
+        ),
         0,
-        at(4, 4),
-        { activation: SPENT, role: "HERALD" },
+        2,
       );
     const four = [
       own("FIGHTER", 6, 2),
@@ -582,15 +588,20 @@ describe("the Cult seat: Anchor (section 15.4)", () => {
   });
 
   it("holds a Herald with two cultists and a Thing: one steps beside the Thing and is gripped", () => {
-    const start = withHorrorV7(
-      scene([
-        own("JUGGERNAUT", 6, 6),
-        own("FIGHTER", 6, 3),
-        own("FIGHTER", 7, 4),
-      ]),
+    // (With the 2 Favour of its Hunger: A-R1, `pulp_wars-mch9.38`.)
+    const start = withFavourV7(
+      withHorrorV7(
+        scene([
+          own("JUGGERNAUT", 6, 6),
+          own("FIGHTER", 6, 3),
+          own("FIGHTER", 7, 4),
+        ]),
+        0,
+        at(4, 4),
+        { activation: SPENT, role: "HERALD" },
+      ),
       0,
-      at(4, 4),
-      { activation: SPENT, role: "HERALD" },
+      2,
     );
     const turn = policyTurn(start);
     expect(ofKind(turn.commands, "CHANNEL")).toHaveLength(2);
@@ -692,9 +703,11 @@ describe("the Cult seat: summon only what it can hold (section 15.3)", () => {
         5,
       );
     // Three bodies: two hold the Horror it has, and it summons no other.
+    // (The Cult redesign's A-R1, `pulp_wars-mch9.38`: the Summoner, with
+    // nothing better to do, channels it too, for the trickle.)
     const three = policyTurn(build(false));
     expect(ofKind(three.commands, "SUMMON")).toHaveLength(0);
-    expect(strandsOn(three.state, at(5, 3))).toBe(2);
+    expect(strandsOn(three.state, at(5, 3))).toBe(3);
     expect(favourOf(three.state)).toBe(5);
     // Four: the Initiates hold the first (the Summoner is kept for the
     // summoning), then the Summoner and the last Initiate summon.
