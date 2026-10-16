@@ -932,7 +932,9 @@ import {
   type SoundCueV1,
 } from "../../audio/index";
 import {
+  MENU_SOUND_LEVELS_V7,
   SILENT_CLICK_ATTRIBUTE_V7,
+  menuSoundLevelV7,
   soundControlsV7,
   soundTestPanelV7,
 } from "./sound-panel-v7";
@@ -4708,7 +4710,7 @@ export class Ruleset7DomAppView {
     if (this.#compactMenuOpen) {
       const menu = el(this.#document, "div", "v7-hud-menu");
       menu.id = "v7-hud-menu";
-      menu.append(this.#muteMenuItem("sound"), this.#muteMenuItem("music"));
+      menu.append(...this.#menuSoundLevels());
       for (const [label, screen, action] of [
         ["Leaderboard", "LEADERBOARD", "leaderboard"],
         ["Achievements", "ACHIEVEMENTS", "achievements"],
@@ -9717,40 +9719,19 @@ export class Ruleset7DomAppView {
   }
 
   /**
-   * The match menu's mutes (beads pulp_wars-2yc.10 and pulp_wars-2yc.27):
-   * one press turns the sound effects, or the music, off or on. Each
-   * redraws itself, so the menu stays open.
+   * The match menu's quick sound rows (beads pulp_wars-2yc.10,
+   * pulp_wars-2yc.27 and pulp_wars-2yc.67): Music and Sound, each an
+   * on/off toggle and a small volume slider on the same preference as
+   * Settings. They redraw themselves, so the menu stays open.
    */
-  #muteMenuItem(level: "sound" | "music"): HTMLButtonElement {
-    const music = level === "music";
-    const name = music ? "Music" : "Sound";
-    const item = this.#document.createElement("button");
-    item.type = "button";
-    item.dataset.action = music ? "mute-music" : "mute";
-    item.className = "v7-menu-item v7-menu-sound";
-    item.setAttribute(SILENT_CLICK_ATTRIBUTE_V7, "");
-    const on = (): boolean =>
-      music ? this.#audio.settings.musicEnabled : this.#audio.settings.enabled;
-    const sync = (): void => {
-      const enabled = on();
-      item.replaceChildren(
-        uiIconV7(this.#document, enabled ? level : `${level}-off`),
-        text(this.#document, "span", name),
-      );
-      item.setAttribute("aria-pressed", String(enabled));
-      item.dataset.sound = enabled ? "on" : "off";
-      item.title = `${name} ${enabled ? "on" : "off"}`;
-    };
-    sync();
-    item.onclick = () => {
-      const stored = music
-        ? this.#audio.setMusicEnabled(!on())
-        : this.#audio.setEnabled(!on());
-      if (!stored) this.#error = "Settings could not be saved.";
-      sync();
-      this.#audio.play("ui.toggle");
-    };
-    return item;
+  #menuSoundLevels(): HTMLElement[] {
+    return MENU_SOUND_LEVELS_V7.map((level) =>
+      menuSoundLevelV7(this.#document, this.#audio, level, {
+        onStoreFailed: () => {
+          this.#error = "Settings could not be saved.";
+        },
+      }),
+    );
   }
 
   /**

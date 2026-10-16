@@ -141,6 +141,118 @@ export function soundControlsV7(
   return group;
 }
 
+/** The two quick rows of the match menu, in the order Settings shows them. */
+export const MENU_SOUND_LEVELS_V7: readonly SoundLevelV7[] = ["music", "sound"];
+
+/**
+ * Draws one of the match menu's rows for the current preference: the
+ * toggle's icon, state and name, and the slider's value.
+ */
+export function syncMenuSoundLevelV7(
+  documentRoot: Document,
+  row: HTMLElement,
+  audio: GameAudioV1,
+): void {
+  const level: SoundLevelV7 =
+    row.dataset.soundLevel === "music" ? "music" : "sound";
+  const settings = audio.settings;
+  const enabled = level === "music" ? settings.musicEnabled : settings.enabled;
+  const volume = level === "music" ? settings.musicVolume : settings.volume;
+  const state = enabled ? "on" : "off";
+  row.dataset.sound = state;
+  const toggle = row.querySelector<HTMLButtonElement>("button");
+  if (toggle !== null) {
+    const name = documentRoot.createElement("span");
+    name.textContent = LEVEL_NAMES[level];
+    toggle.replaceChildren(
+      uiIconV7(documentRoot, enabled ? level : `${level}-off`),
+      name,
+    );
+    toggle.setAttribute("aria-pressed", String(enabled));
+    toggle.dataset.sound = state;
+    toggle.title = `${LEVEL_NAMES[level]} ${state}`;
+  }
+  const slider = row.querySelector<HTMLInputElement>('input[type="range"]');
+  if (slider !== null) {
+    slider.value = String(volume);
+    slider.setAttribute("aria-valuetext", `${volume}%`);
+    slider.title = `${LEVEL_NAMES[level]} ${volume}%`;
+  }
+}
+
+/**
+ * One quick row of the match menu (bead pulp_wars-2yc.67): Music or
+ * Sound, the same two levels as Settings, as an on/off toggle with the
+ * level's icon and name and a small volume slider beside it. Both act on
+ * the same `GameAudioV1` preference as Settings, so the two always agree
+ * and the change is stored at once.
+ *
+ * The match HUD is reconciled in place on every redraw (the live element
+ * keeps its node and takes the new element's handlers), so the handlers
+ * act on the element the event reached, never on the element built here.
+ */
+export function menuSoundLevelV7(
+  documentRoot: Document,
+  audio: GameAudioV1,
+  level: SoundLevelV7,
+  options: {
+    /** Called when the preference could not be stored. */
+    readonly onStoreFailed?: () => void;
+  } = {},
+): HTMLElement {
+  const music = level === "music";
+  const row = documentRoot.createElement("div");
+  row.className = "v7-menu-audio";
+  row.dataset.v7Region = `menu-${level}`;
+  row.dataset.soundLevel = level;
+  const toggle = documentRoot.createElement("button");
+  toggle.type = "button";
+  // The ids the mutes had before they had sliders.
+  toggle.dataset.action = music ? "mute-music" : "mute";
+  toggle.className = "v7-menu-item v7-menu-sound";
+  toggle.setAttribute(SILENT_CLICK_ATTRIBUTE_V7, "");
+  const slider = documentRoot.createElement("input");
+  slider.type = "range";
+  slider.id = `v7-menu-${level}-volume`;
+  slider.dataset.action = `menu-${level}-volume`;
+  slider.className = "v7-menu-volume";
+  slider.min = "0";
+  slider.max = "100";
+  slider.step = String(AUDIO_VOLUME_STEP_V1);
+  slider.setAttribute("aria-label", `${LEVEL_NAMES[level]} volume`);
+  row.append(toggle, slider);
+  syncMenuSoundLevelV7(documentRoot, row, audio);
+  const liveRow = (event: Event): HTMLElement | null =>
+    event.currentTarget instanceof HTMLElement
+      ? event.currentTarget.closest<HTMLElement>(".v7-menu-audio")
+      : null;
+  const settled = (event: Event, stored: boolean): void => {
+    if (!stored) options.onStoreFailed?.();
+    const live = liveRow(event);
+    if (live !== null) syncMenuSoundLevelV7(documentRoot, live, audio);
+  };
+  toggle.onclick = (event) => {
+    const stored = music
+      ? audio.setMusicEnabled(!audio.settings.musicEnabled)
+      : audio.setEnabled(!audio.settings.enabled);
+    settled(event, stored);
+    audio.play("ui.toggle");
+  };
+  slider.oninput = (event) => {
+    const target = event.currentTarget;
+    if (!(target instanceof HTMLInputElement)) return;
+    const value = Number(target.value);
+    settled(
+      event,
+      music ? audio.setMusicVolume(value) : audio.setVolume(value),
+    );
+  };
+  // As in Settings: the effects' new level is heard when the slider is
+  // let go; the music's is heard as it moves.
+  if (!music) slider.onchange = () => audio.play("ui.toggle");
+  return row;
+}
+
 export function soundTestPanelV7(
   documentRoot: Document,
   audio: GameAudioV1,

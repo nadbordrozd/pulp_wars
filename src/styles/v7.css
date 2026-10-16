@@ -2149,7 +2149,8 @@
   top: calc(100% + 0.4rem);
   right: 0;
   display: grid;
-  min-width: 13rem;
+  min-width: 15rem;
+  max-width: calc(100vw - 1.5rem);
   padding: 0.35rem;
   border: var(--pw-line-w) solid var(--pw-line);
   border-radius: var(--pw-radius);
@@ -7461,6 +7462,39 @@
   color: var(--pw-text);
   font-variant-numeric: tabular-nums;
   text-align: right;
+}
+
+/* The match menu's quick rows (bead pulp_wars-2yc.67): Music and Sound,
+   each a toggle with its icon and name and a small volume slider. */
+.v7-menu-audio {
+  display: grid;
+  grid-template-columns: 6.5rem minmax(5.5rem, 1fr);
+  gap: 0.4rem;
+  align-items: center;
+  padding-right: 0.5rem;
+}
+
+.v7-menu-audio .v7-menu-sound {
+  padding-right: 0.25rem;
+  white-space: nowrap;
+}
+
+.v7-menu-audio + .v7-menu-audio {
+  margin-bottom: 0.25rem;
+  padding-bottom: 0.25rem;
+  border-bottom: var(--pw-line-w-sm) solid var(--pw-line);
+}
+
+.v7-menu-volume {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  margin: 0;
+  accent-color: var(--pw-accent);
+}
+
+.v7-menu-audio[data-sound="off"] .v7-menu-volume {
+  opacity: 0.45;
 }
 
 .v7-menu-sound {

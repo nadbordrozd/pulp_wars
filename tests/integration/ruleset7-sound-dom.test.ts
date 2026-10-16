@@ -317,8 +317,13 @@ describe("sound settings", () => {
     expect(music.textContent).toBe("Music");
     expect(music.getAttribute("aria-pressed")).toBe("true");
     expect(music.querySelector("svg")?.dataset.icon).toBe("music");
-    // The two are next to each other at the top of the menu.
-    expect(requiredButton("mute").nextElementSibling).toBe(music);
+    // The two rows are next to each other at the top of the menu, Music
+    // first as in Settings (bead pulp_wars-2yc.67).
+    const musicRow = music.closest(".v7-menu-audio");
+    expect(musicRow?.parentElement?.firstElementChild).toBe(musicRow);
+    expect(musicRow?.nextElementSibling).toBe(
+      requiredButton("mute").closest(".v7-menu-audio"),
+    );
     music.click();
     expect(app.audio.settings.musicEnabled).toBe(false);
     expect(app.audio.settings.enabled).toBe(true);

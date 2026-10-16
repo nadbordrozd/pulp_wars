@@ -49,9 +49,14 @@ relative loudness still need a human ear
   heard as it moves. Below them, a collapsed **Sound test** lists every
   sound effect with a play button. The same two rows are in a match's
   Settings and at the top of the Gallery's Sounds tab.
-- **Mute in a match.** The match menu's first two items are **Sound** and
-  **Music**, toggles with the same icons. They change in place, so the menu
-  stays open.
+- **Music and Sound in a match.** The match menu (the three-bar button)
+  starts with two rows, **Music** then **Sound** as in Settings: an icon
+  toggle with the name (pressed is on) and a small volume slider with no
+  number (its percentage is its accessible value and tooltip). They are
+  the same two levels as Settings, so either place shows what the other
+  set, and each change is stored at once. They change in place, so the
+  menu stays open; a muted level's slider is dimmed and still sets the
+  level it will have when turned back on (bead pulp_wars-2yc.67).
 - **Music.** The title theme plays on the menu and its screens, the
   viewer's faction theme during a match
   ([Where the themes play](#where-the-themes-play)). It starts with the
