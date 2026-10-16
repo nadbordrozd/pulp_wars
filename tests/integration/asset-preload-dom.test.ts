@@ -158,6 +158,7 @@ describe("Ruleset 7 start behind the asset preloader", () => {
       storage: null,
       boardHost: host,
       randomSeed: () => 7,
+      randomDraw: () => 0,
     });
     await flush();
     expect(audioContexts).toBe(0);
@@ -407,6 +408,7 @@ describe("Ruleset 7 start behind the asset preloader", () => {
       storage: null,
       boardHost: host,
       randomSeed: () => 7,
+      randomDraw: () => 0,
     });
     await flush();
     requests[0]?.resolve(result(1));
@@ -457,6 +459,7 @@ describe("Ruleset 7 start behind the asset preloader", () => {
       storage: null,
       boardHost: host,
       randomSeed: () => 7,
+      randomDraw: () => 0,
     });
     await flush();
     requests[0]?.resolve(result(1));
@@ -515,6 +518,7 @@ describe("Ruleset 7 board entry and the factions' art", () => {
       storage: null,
       boardHost: host,
       randomSeed: () => 7,
+      randomDraw: () => 0,
     });
     await flush();
     requests[0]?.resolve(result(1));
@@ -590,6 +594,7 @@ describe("Ruleset 7 board entry and the factions' art", () => {
       storage: null,
       boardHost: host,
       randomSeed: () => 7,
+      randomDraw: () => 0,
     });
     await flush();
     settle(0);
@@ -628,6 +633,7 @@ describe("Ruleset 7 board entry and the factions' art", () => {
       boardHost: new Host(),
       galleryDemoHost: () => new Host(),
       randomSeed: () => 7,
+      randomDraw: () => 0,
     });
     await flush();
     requests[0]?.resolve(result(1));
@@ -663,6 +669,7 @@ describe("Ruleset 7 board entry and the factions' art", () => {
       storage: null,
       boardHost: host,
       randomSeed: () => 7,
+      randomDraw: () => 0,
     });
     await flush();
     warm.requests[0]?.resolve(result(0));
@@ -685,6 +692,7 @@ describe("Ruleset 7 board entry and the factions' art", () => {
       storage: window.localStorage,
       boardHost: new Host(),
       randomSeed: () => 7,
+      randomDraw: () => 0,
     });
     await flush();
     warm.requests[0]?.resolve(result(0));
@@ -703,6 +711,7 @@ describe("Ruleset 7 board entry and the factions' art", () => {
       storage: window.localStorage,
       boardHost: host,
       randomSeed: () => 7,
+      randomDraw: () => 0,
     });
     await flush();
     requests[0]?.resolve(result(1));
@@ -734,6 +743,7 @@ describe("Ruleset 7 board entry and the factions' art", () => {
       storage: null,
       boardHost: host,
       randomSeed: () => 7,
+      randomDraw: () => 0,
     });
     await flush();
     requests[0]?.resolve(result(1));
@@ -850,6 +860,7 @@ describe("Ruleset 7 start and the sound clips", () => {
       storage: null,
       boardHost: new Host(),
       randomSeed: () => 7,
+      randomDraw: () => 0,
       // Nothing ever answers: the clips are still loading.
       prefetchSounds: (urls) => asked.push(urls),
     });
@@ -887,6 +898,7 @@ describe("Ruleset 7 start and the sound clips", () => {
         storage: null,
         boardHost: new Host(),
         randomSeed: () => 7,
+        randomDraw: () => 0,
         soundHoldMs,
         prefetchSounds: () =>
           new Promise<void>((resolve) => {
@@ -932,6 +944,7 @@ describe("Ruleset 7 start and the sound clips", () => {
         storage: null,
         boardHost: new Host(),
         randomSeed: () => 7,
+        randomDraw: () => 0,
         prefetchSounds: (urls) => asked.push(urls),
       });
       await flush();
@@ -984,6 +997,7 @@ describe("Ruleset 7 start and the sound clips", () => {
       storage: null,
       boardHost: new Host(),
       randomSeed: () => 7,
+      randomDraw: () => 0,
       prefetchSounds: () => {
         throw new Error("no network");
       },
@@ -1006,6 +1020,7 @@ describe("Ruleset 7 start and the sound clips", () => {
         storage: null,
         boardHost: new Host(),
         randomSeed: () => 7,
+        randomDraw: () => 0,
         prefetchSounds: (urls) => asked.push(urls),
       });
       await flush();

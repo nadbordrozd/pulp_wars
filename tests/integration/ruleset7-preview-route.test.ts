@@ -88,6 +88,7 @@ describe("Ruleset 7 application route", () => {
       downloadSafeLog: safeDownload,
       downloadDebugBundle: debugDownload,
       diagnosticNow: () => "2026-09-08T12:34:56.789Z",
+      randomDraw: () => 0,
     });
     expect(document.querySelector("h1")?.textContent).toBe("Pulp Wars");
     expect(document.body.textContent).not.toContain("CANDY");

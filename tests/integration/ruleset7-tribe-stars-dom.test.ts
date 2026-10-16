@@ -202,6 +202,7 @@ function mount(
     boardHost: new Host(),
     settingsStorage: options.settings ?? null,
     randomSeed: () => 7,
+    randomDraw: () => 0,
   });
   return controller;
 }
@@ -317,8 +318,16 @@ describe("Ruleset 7 new game: mode toggle and tribe grid", () => {
       expect(node.querySelectorAll(".v7-star")).toHaveLength(3);
     }
     // The visible "Your faction" select is gone; its hidden value remains.
-    expect(required("#v7-faction-0").closest("[hidden]")).not.toBeNull();
-    expect(required("#v7-faction-1").closest("[hidden]")).toBeNull();
+    // The opponents' factions are pickers under Advanced settings (quick
+    // start, pulp_wars-2yc.54).
+    expect(required(".v7-setup-seat[data-seat='0']").hidden).toBe(true);
+    expect(
+      required("#v7-faction-1-control").closest<HTMLElement>(".v7-setup-seat")
+        ?.hidden,
+    ).toBe(false);
+    expect(
+      required("#v7-faction-1-control").closest(".v7-setup-advanced"),
+    ).not.toBeNull();
     expect(card("GOBLIN").getAttribute("aria-label")).toBe(
       "Goblin, 2 of 3 stars in Domination",
     );
@@ -551,6 +560,7 @@ describe("Ruleset 7 game end: the tribe record in the grade panel", () => {
     view = new Ruleset7DomAppView(document, required("#app"), chosen, {
       boardHost: new Host(),
       settingsStorage: null,
+      randomDraw: () => 0,
     });
   }
 

@@ -831,7 +831,6 @@
   text-transform: uppercase;
 }
 
-.v7-setup-form select,
 .v7-setup-form input {
   color: var(--pw-text);
   font-size: var(--pw-fs-base);
@@ -964,6 +963,274 @@
   grid-column: 1 / -1;
   min-height: 3.4rem;
   font-size: var(--pw-fs-lg);
+}
+
+/*
+ * Pickers (pulp_wars-2yc.65): the menus' choices in the Control recipe
+ * instead of the browser's dropdown. A list picker is a button with a caret
+ * that opens a list under it; a segmented picker is a row of options, the
+ * chosen one pressed. The select that keeps the value is hidden.
+ */
+.v7-picker-field {
+  position: relative;
+  min-width: 0;
+}
+
+.v7-picker-field[hidden],
+.v7-picker-store {
+  display: none;
+}
+
+.v7-picker {
+  position: relative;
+  min-width: 0;
+}
+
+.v7-picker-button {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  margin: 0;
+  padding: 0.35rem 0.75rem;
+  border: var(--pw-line-w-sm) solid var(--pw-line);
+  border-radius: var(--pw-radius-sm);
+  background: var(--pw-surface-raised);
+  box-shadow: var(--pw-shadow-sm);
+  color: var(--pw-text);
+  font-family: var(--pw-ui);
+  font-size: var(--pw-fs-base);
+  font-weight: var(--pw-fw-semi);
+  letter-spacing: 0;
+  text-align: left;
+  text-transform: none;
+  cursor: pointer;
+}
+
+.v7-picker-button:hover:not(:disabled),
+.v7-picker-button[aria-expanded="true"] {
+  background: var(--pw-yellow);
+  color: var(--pw-text);
+}
+
+.v7-picker-button:disabled {
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.v7-picker-value {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* A small ink triangle, turned up while the list is open. */
+.v7-picker-caret {
+  flex: none;
+  width: 0;
+  height: 0;
+  border-top: 0.45rem solid currentColor;
+  border-inline: 0.35rem solid transparent;
+}
+
+.v7-picker-button[aria-expanded="true"] .v7-picker-caret {
+  transform: rotate(180deg);
+}
+
+.v7-picker-list {
+  position: absolute;
+  top: calc(100% + 0.3rem);
+  left: 0;
+  z-index: 30;
+  min-width: 100%;
+  max-width: min(22rem, calc(100vw - 2rem));
+  max-height: min(20rem, 60vh);
+  margin: 0;
+  padding: 0.25rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border: var(--pw-line-w) solid var(--pw-line);
+  border-radius: var(--pw-radius-sm);
+  background: var(--pw-surface);
+  box-shadow: var(--pw-shadow);
+  list-style: none;
+}
+
+.v7-picker-list[data-placement="above"] {
+  top: auto;
+  bottom: calc(100% + 0.3rem);
+}
+
+.v7-picker-list[hidden] {
+  display: none;
+}
+
+.v7-picker-option {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0.3rem 0.7rem;
+  border-radius: var(--pw-radius-xs);
+  color: var(--pw-text);
+  font-size: var(--pw-fs-base);
+  font-weight: var(--pw-fw-semi);
+  letter-spacing: 0;
+  text-transform: none;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.v7-picker-option[aria-selected="true"] {
+  background: var(--pw-ink);
+  color: var(--pw-text-inverse);
+}
+
+.v7-picker-option[data-active="true"] {
+  outline: var(--pw-line-w-sm) solid var(--pw-line);
+  outline-offset: -2px;
+  background: var(--pw-yellow);
+  color: var(--pw-text);
+}
+
+.v7-picker-option[aria-disabled="true"] {
+  background: transparent;
+  color: var(--pw-text-2);
+  font-weight: var(--pw-fw-body);
+  cursor: not-allowed;
+}
+
+/* Segmented: equal options in one framed row, like the game-mode toggle. */
+.v7-picker-field[data-picker="segmented"] > .v7-picker {
+  display: grid;
+  grid-auto-columns: minmax(0, 1fr);
+  grid-auto-flow: column;
+  border: var(--pw-line-w-sm) solid var(--pw-line);
+  border-radius: var(--pw-radius-sm);
+  background: var(--pw-surface-raised);
+  box-shadow: var(--pw-shadow-sm);
+  overflow: hidden;
+}
+
+.v7-picker-segment {
+  min-width: 0;
+  min-height: 44px;
+  margin: 0;
+  padding: 0.2rem 0.5rem;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--pw-text-2);
+  font-family: var(--pw-ui);
+  font-size: var(--pw-fs-base);
+  font-weight: var(--pw-fw-bold);
+  letter-spacing: 0;
+  line-height: 1.15;
+  text-transform: none;
+  cursor: pointer;
+}
+
+.v7-picker-segment + .v7-picker-segment {
+  border-left: var(--pw-line-w-sm) solid var(--pw-line);
+}
+
+.v7-picker-segment:hover:not(:disabled) {
+  background: var(--pw-yellow);
+  color: var(--pw-text);
+}
+
+.v7-picker-segment[aria-pressed="true"],
+.v7-picker-segment[aria-pressed="true"]:hover {
+  background: var(--pw-ink);
+  color: var(--pw-text-inverse);
+}
+
+.v7-picker-segment:disabled {
+  opacity: var(--pw-dim);
+  cursor: not-allowed;
+}
+
+/*
+ * Quick start (pulp_wars-2yc.54): Opponents and Difficulty across the
+ * form, the map line under them, and Advanced settings behind one button.
+ */
+.v7-setup-form .v7-quick-choice {
+  grid-column: 1 / -1;
+}
+
+.v7-quick-map {
+  display: flex;
+  grid-column: 1 / -1;
+  gap: 0.45rem;
+  align-items: center;
+  margin: -0.2rem 0 0;
+  color: var(--pw-text-2);
+  font-weight: var(--pw-fw-semi);
+}
+
+.v7-quick-map .v7-ui-icon {
+  flex: none;
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.v7-advanced-toggle {
+  display: inline-flex;
+  grid-column: 1 / -1;
+  gap: 0.5rem;
+  align-items: center;
+  justify-self: start;
+  min-height: 44px;
+  padding: 0.3rem 0.9rem;
+  border-radius: var(--pw-radius-sm);
+  box-shadow: var(--pw-shadow-sm);
+  font-size: var(--pw-fs-sm);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.v7-advanced-toggle::after {
+  content: "";
+  width: 0;
+  height: 0;
+  border-top: 0.4rem solid currentColor;
+  border-inline: 0.3rem solid transparent;
+}
+
+.v7-advanced-toggle[aria-expanded="true"]::after {
+  transform: rotate(180deg);
+}
+
+.v7-advanced-toggle:hover {
+  background: var(--pw-yellow);
+  color: var(--pw-text);
+}
+
+.v7-setup-advanced {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem 1rem;
+  min-width: 0;
+  padding-top: 0.2rem;
+}
+
+.v7-setup-advanced[hidden] {
+  display: none;
+}
+
+.v7-setup-advanced > .v7-setup-factions {
+  grid-column: 1 / -1;
+}
+
+/* On a phone a row of buttons (Alliances) takes the whole width. */
+@media (max-width: 599px) {
+  .v7-setup-advanced > .v7-picker-field[data-picker="segmented"] {
+    grid-column: 1 / -1;
+  }
 }
 
 .v7-recovery-details summary {
@@ -1262,7 +1529,7 @@
   gap: 0.35rem;
 }
 
-.v7-briefing-choice select {
+.v7-briefing-choice .v7-picker-button {
   color: var(--pw-text);
   font-size: var(--pw-fs-base);
   letter-spacing: 0;
@@ -3203,7 +3470,7 @@
   font-weight: var(--pw-fw-bold);
 }
 
-.v7-settings-grid select {
+.v7-settings-grid .v7-picker-button {
   color: var(--pw-text);
   font-size: var(--pw-fs-base);
 }
@@ -6311,7 +6578,7 @@
 }
 
 /* A size or map the setup changed by itself is ringed until the next change. */
-.v7-setup-form select[data-moved="true"] {
+.v7-setup-form .v7-picker-button[data-moved="true"] {
   outline: 2px solid var(--pw-accent);
   outline-offset: 2px;
   animation: v7-setup-moved 0.9s ease-out 1;
@@ -6420,7 +6687,7 @@
   min-width: 0;
 }
 
-.v7-setup-seat select {
+.v7-setup-seat .v7-picker-button {
   width: 100%;
   min-width: 0;
 }
@@ -6996,8 +7263,8 @@
   }
 
   /* Room for the longest faction name beside the emblem. */
-  .v7-setup-form .v7-setup-seat select {
-    padding-inline: 0.5rem 0.2rem;
+  .v7-setup-form .v7-setup-seat .v7-picker-button {
+    padding-inline: 0.5rem 0.3rem;
     font-size: var(--pw-fs-md);
   }
 
@@ -7049,7 +7316,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .v7-setup-form select[data-moved="true"] {
+  .v7-setup-form .v7-picker-button[data-moved="true"] {
     animation: none;
   }
 
@@ -8513,8 +8780,8 @@
     padding-inline: 0.4rem;
   }
 
-  .v7-setup-form .v7-setup-seat select {
-    padding-inline: 0.35rem 0;
+  .v7-setup-form .v7-setup-seat .v7-picker-button {
+    padding-inline: 0.4rem 0.25rem;
     font-size: var(--pw-fs-sm);
   }
 

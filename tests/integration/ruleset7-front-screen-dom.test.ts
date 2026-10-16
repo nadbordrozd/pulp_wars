@@ -37,6 +37,7 @@ function mount(
   app = bootstrapRuleset7App(document, {
     boardHost: new Host(),
     randomSeed: () => 7,
+    randomDraw: () => 0,
     ...options,
   });
   return app;
@@ -232,16 +233,18 @@ describe("Ruleset 7 front screen", () => {
     ).toEqual(["Game mode", "Your tribe", "Players", "Map"]);
     expect(required(".v7-setup-form").closest("[hidden]")).toBeNull();
     // Reading and tab order: back, the game mode and your tribe
-    // (RULESET_7_SCORE_AND_STARS.md section 7), players, map, seed, the
-    // opponents' factions, Play. The tribe grid replaces "Your faction".
-    const order = [
-      ...required("[data-v7-setup]").querySelectorAll<HTMLElement>(
-        "button, select, input, a",
-      ),
-    ]
-      .filter((node) => node.closest("[hidden]") === null)
-      .map((node) => node.id || node.dataset.action || node.tagName);
-    expect(order).toEqual([
+    // (RULESET_7_SCORE_AND_STARS.md section 7), then the quick start
+    // (pulp_wars-2yc.54): Opponents, Difficulty, Advanced settings (closed)
+    // and Play. The tribe grid replaces "Your faction".
+    const order = (): string[] =>
+      [
+        ...required("[data-v7-setup]").querySelectorAll<HTMLElement>(
+          "button, select, input, a",
+        ),
+      ]
+        .filter((node) => node.closest("[hidden]") === null)
+        .map((node) => node.id || node.dataset.action || node.tagName);
+    const tribes = [
       "front-back",
       "game-mode-domination",
       "game-mode-perfection",
@@ -255,16 +258,29 @@ describe("Ruleset 7 front screen", () => {
       "tribe-dwarf",
       "tribe-candy",
       "tribe-cult",
-      "v7-ai-count",
-      "v7-ai-mode",
+      ...Array.from({ length: 8 }, (_, index) => `ai-count-${index + 1}`),
+      "difficulty-normal",
+      "difficulty-hard",
+      "difficulty-harder",
+      "difficulty-brutal",
+      "setup-advanced",
+    ];
+    expect(order()).toEqual([...tribes, "launch"]);
+    // Advanced settings open in place: players, map, seed, the opponents'
+    // factions, then Play.
+    press("setup-advanced");
+    expect(order()).toEqual([
+      ...tribes,
+      "ai-mode-rival",
+      "ai-mode-cooperative",
       // AI head start (`pulp_wars-w49.39`), after Alliances.
-      "v7-ai-head-start",
-      "v7-board-size",
-      "v7-map-type",
+      "v7-ai-head-start-control",
+      "v7-map-type-control",
+      "v7-board-size-control",
       "v7-curiosities",
       "seed-mode-new",
       "seed-mode-seed",
-      "v7-faction-1",
+      "v7-faction-1-control",
       "launch",
     ]);
     expect(required('[data-action="launch"]').textContent).toBe("Play");

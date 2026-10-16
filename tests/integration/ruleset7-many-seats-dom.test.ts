@@ -67,7 +67,11 @@ beforeEach(() => {
 
 describe("Ruleset 7 setup for many players", () => {
   it("offers one opponent per other faction and one faction cell per seat", () => {
-    const app = bootstrapRuleset7App(document, { storage: null });
+    // Opponents in registration order (quick start draws them at random).
+    const app = bootstrapRuleset7App(document, {
+      storage: null,
+      randomDraw: () => 0,
+    });
     expect(optionValues("#v7-ai-count")).toEqual(
       Array.from({ length: MOST_OPPONENTS }, (_, index) => String(index + 1)),
     );
@@ -569,7 +573,9 @@ describe("Ruleset 7 interface with nine players", () => {
     const reduced = section.slice(
       section.indexOf("@media (prefers-reduced-motion: reduce)"),
     );
-    expect(reduced).toContain('.v7-setup-form select[data-moved="true"]');
+    expect(reduced).toContain(
+      '.v7-setup-form .v7-picker-button[data-moved="true"]',
+    );
     expect(reduced).toContain("animation: none");
     expect(section).toContain("overflow-x: auto");
     expect(section).toContain("overflow-y: auto");

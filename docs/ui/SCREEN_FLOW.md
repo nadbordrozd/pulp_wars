@@ -2300,10 +2300,13 @@ the screens it opens (new game, campaign, Settings, save recovery). Ruleset
   on the button that opened the screen (in a mission briefing Escape first
   steps back to the mission list). Gallery opens the Gallery screen; its
   Back returns to the menu with focus on Gallery.
-- **New game.** The setup form in three groups in the old order:
-  **Players** (Opponents, Mode), **Map** (Size, Map, the village and
-  Crowded line, the map's sentence, Curiosities, New map / Use seed) and
-  **Factions**, where each seat is a card in its faction's colour with a
+- **New game.** Since the quick start (`pulp_wars-2yc.54`, the
+  [quick start overlay](#current-ruleset-7-quick-start-overlay)): Game mode,
+  Your tribe, Opponents, Difficulty, one line naming the map and its size,
+  then **Advanced settings** (closed) holding **Players** (Alliances, AI head
+  start), **Map** (Map, Size, the village and Crowded line, the map's
+  sentence, Curiosities, New map / Use seed) and **Factions**, where each
+  seat is a card in its faction's colour with a
   large emblem. **Play** is the one primary button, full width; it reads
   **Start new game** when it replaces a saved game, which stays untouched
   until then. While the menu is shown the form is already built and kept
@@ -2657,10 +2660,12 @@ both art sets. Where an older section below disagrees, this overlay wins.
   the resume and results screens label the map "Showcase".
 - **Setup: AI head start** (`pulp_wars-w49.39`,
   [match setup](../product/RULESET_7_CURRENT.md#21-match-setup)). In the
-  Players group, under Alliances, one select labelled **AI head start**:
-  None (the default), +5 Coins, +10 Coins, +20 Coins; its tooltip and
+  Players group, under Alliances, one picker labelled **AI head start**:
+  None, +5 Coins, +10 Coins, +20 Coins; its tooltip and
   accessible description say "Every AI player starts with extra Coins."
-  The choice is remembered per browser (like the game mode), is hidden
+  Since the quick start it sits under Advanced settings, the Difficulty
+  sets it unless it is set by hand, and it is no longer remembered per
+  browser (the Difficulty is). It is hidden
   while Showcase is selected (a Showcase launches without a head start)
   and comes back with its earlier value. Campaign missions and labs do not
   offer it. In a match, Settings show one read-only line under the map
@@ -2730,6 +2735,42 @@ both art sets. Where an older section below disagrees, this overlay wins.
   pale-yellow dashed coast line between land and water nor the dashed line
   between Shallow and Deep Water. The terrain art alone tells them apart.
   Territory borders and landing markers are unchanged.
+
+## Current Ruleset 7 quick start overlay
+
+This overlay (`pulp_wars-2yc.54` quick start, `pulp_wars-2yc.65` styled
+pickers) applies to the front screens and the match's Settings. Where an
+earlier section shows the setup form's order or a native select, this
+overlay wins. The heuristics are in [QUICK_START.md](QUICK_START.md); none of
+them is shown in the game.
+
+- **Quick path.** New game asks only: **Game mode**, **Your tribe**,
+  **Opponents** (a row of buttons 1 to 8) and **Difficulty** (a row of
+  buttons: Normal, Hard, Harder, Brutal; Normal by default, remembered per
+  browser; tooltip "Harder levels give the AI players more starting
+  Coins."). One line under them names the map and its size ("Continents ·
+  11 × 11"), with no word about how they were chosen. **Play** starts at
+  once on the defaults: free-for-all, Curiosities on, a new random map,
+  random opponents' factions (every faction but the player's), the map
+  from the cycle Continents, Lakes, Pangea (one step per game started,
+  remembered per browser), the size from the map and the opponents (never
+  above 20 × 20) and the AI head start from the difficulty and how crowded
+  the board is. The Showcase hides the Difficulty.
+- **Advanced settings.** One button under the quick choices
+  (`aria-expanded`, closed by default, open or closed for the page session)
+  shows every other option in place, pre-filled with what the quick path
+  picked: Players (Alliances as two buttons, AI head start), Map (Map, Size,
+  the village and Crowded line, the map's sentence, Curiosities, New map /
+  Use seed) and Factions (the opponents' pickers). A Size or AI head start
+  set there stays as set; a new Difficulty sets the AI head start again.
+- **Pickers.** No menu shows the browser's dropdown. A list is a button in
+  the Control recipe with the value and a caret (`role="combobox"`) that
+  opens a styled list (`role="listbox"`, options 44 CSS px tall, scrolling
+  inside itself, never wider than a phone); arrow keys, Home, End, a first
+  letter, Enter or Space, Escape and Tab work as in a native list, and a
+  press outside closes it. A short list is a framed row of buttons, the
+  chosen one pressed: Opponents, Difficulty, Alliances, Motion, Animation
+  speed. The hidden select behind each picker keeps the value.
 
 ## Current Ruleset 7 Campaign overlay
 

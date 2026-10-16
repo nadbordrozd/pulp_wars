@@ -182,7 +182,10 @@ describe("Revision 19 Dinosaur setup", () => {
 
   it("plays, saves and resumes a Showcase with a Dinosaur seat", async () => {
     const host = new RecordingBoardHost();
-    const app = bootstrapRuleset7App(document, { boardHost: host });
+    const app = bootstrapRuleset7App(document, {
+      boardHost: host,
+      randomDraw: () => 0,
+    });
     for (const [id, value] of [
       ["v7-ai-count", "3"],
       ["v7-map-type", "SHOWCASE"],
@@ -1402,7 +1405,7 @@ function mount(
     document,
     requiredElement<HTMLElement>("#app"),
     controller,
-    { boardHost: host, settingsStorage: null },
+    { boardHost: host, settingsStorage: null, randomDraw: () => 0 },
   );
 }
 

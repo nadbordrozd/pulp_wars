@@ -98,7 +98,11 @@ describe("Ruleset 7 Showcase setup option", () => {
 
   it("launches a 16 × 16 Showcase with a valid seed whatever the hidden seed field holds", async () => {
     const randomSeed = vi.fn(() => 123);
-    const app = bootstrapRuleset7App(document, { storage: null, randomSeed });
+    const app = bootstrapRuleset7App(document, {
+      storage: null,
+      randomSeed,
+      randomDraw: () => 0,
+    });
     requiredButton('[data-action="seed-mode-seed"]').click();
     requiredInput("v7-seed").value = "not a seed";
     choose("v7-ai-count", "2");

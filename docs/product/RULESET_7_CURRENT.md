@@ -2081,10 +2081,13 @@ player per offered faction (`OFFERED_FACTION_IDS_V7`).
   other win (the rating still divides by the best rival's peak score, which
   a head start tends to raise). The object leaves room for further kinds of
   head start (technology, starting cities: `pulp_wars-w49.7`) as further
-  keys; only `coins` exists. **Setup screen:** a select "AI head start" in
-  the Players group (None, +5 Coins, +10 Coins, +20 Coins; None by
-  default), remembered per browser, hidden for the Showcase; a match's
-  Settings show what it was started with ("AI head start: +10 Coins").
+  keys; only `coins` exists. **Setup screen:** a picker "AI head start"
+  under Advanced settings (None, +5 Coins, +10 Coins, +20 Coins), hidden
+  for the Showcase. Since the quick start (`pulp_wars-2yc.54`,
+  [docs/ui/QUICK_START.md](../ui/QUICK_START.md)) the Difficulty sets it
+  (Normal: None) unless it is set by hand, and it is no longer remembered
+  per browser (the Difficulty is); a match's Settings show what it was
+  started with ("AI head start: +10 Coins").
   **Tools:** `--ai-head-start 0|5|10|20` on the headless CLI's `match` and
   `batch` (refused with `--map-type mission` and, above 0, with the
   Showcase; in an all-AI headless match seat 0 is the seat without the head

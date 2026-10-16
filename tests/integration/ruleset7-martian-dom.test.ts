@@ -993,7 +993,7 @@ function mount(
     document,
     requiredElement<HTMLElement>("#app"),
     controller,
-    { boardHost: host, settingsStorage: null },
+    { boardHost: host, settingsStorage: null, randomDraw: () => 0 },
   );
 }
 

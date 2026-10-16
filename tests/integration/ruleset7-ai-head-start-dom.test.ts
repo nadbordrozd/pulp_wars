@@ -6,13 +6,14 @@ import {
   bootstrapRuleset7App,
   type BootstrappedRuleset7App,
 } from "../../src/app/index";
-import { AI_HEAD_START_COINS_STORAGE_KEY_V7 } from "../../src/app/ai-head-start-preference-v7";
 import type { StorageAdapter } from "../../src/persistence/index";
 
 /**
- * AI head start (`pulp_wars-w49.39`): the new-game control, its remembered
- * choice, the launched setup, and the read-only line in the match's
- * Settings, also after a resume. A match is created and never played.
+ * AI head start (`pulp_wars-w49.39`): the new-game control (under Advanced
+ * settings and set by the difficulty since the quick start,
+ * `pulp_wars-2yc.54`), the launched setup, and the read-only line in the
+ * match's Settings, also after a resume. A match is created and never
+ * played.
  */
 class MemoryStorage implements StorageAdapter {
   readonly values = new Map<string, string>();
@@ -83,13 +84,15 @@ afterEach(() => {
 });
 
 describe("AI head start on the new-game screen", () => {
-  it("is one labelled select in the Players group, None by default", () => {
+  it("is one labelled picker under Advanced, after Alliances, set by the difficulty", () => {
     boot(null, new MemoryStorage());
     const field = required<HTMLSelectElement>("#v7-ai-head-start");
     const label = field.closest("label");
     expect(label?.firstChild?.textContent).toBe("AI head start");
     expect(label?.classList).toContain("v7-ai-head-start-choice");
+    // Normal, the default difficulty, is no head start.
     expect(field.value).toBe("0");
+    expect(required("#v7-ai-head-start-control").textContent).toBe("None");
     expect([...field.options].map((option) => option.textContent)).toEqual([
       "None",
       "+5 Coins",
@@ -99,21 +102,27 @@ describe("AI head start on the new-game screen", () => {
     expect(field.getAttribute("aria-description")).toBe(
       "Every AI player starts with extra Coins.",
     );
-    // Between Alliances and the Map heading.
+    expect(
+      required("#v7-ai-head-start-control").getAttribute("aria-description"),
+    ).toBe("Every AI player starts with extra Coins.");
+    // Under Advanced settings, between Alliances and the Map heading.
+    expect(label?.closest(".v7-setup-advanced")).not.toBeNull();
     const labels = [
-      ...required(".v7-setup-form").querySelectorAll(":scope > label, h3, h2"),
+      ...required(".v7-setup-advanced").querySelectorAll(
+        ":scope > label, h3, h2",
+      ),
     ].map((node) => node.firstChild?.textContent ?? node.textContent);
     const index = labels.indexOf("AI head start");
     expect(labels[index - 1]).toBe("Alliances");
   });
 
-  it("launches the chosen head start, remembers it, and shows it in the match's Settings, also after a resume", async () => {
+  it("launches a head start set under Advanced and shows it in the match's Settings, also after a resume", async () => {
     const saves = new MemoryStorage();
     const settings = new MemoryStorage();
     const first = boot(saves, settings);
     if (document.querySelector("#v7-ai-head-start") === null) press("new-game");
     choose("v7-ai-head-start", "10");
-    expect(settings.getItem(AI_HEAD_START_COINS_STORAGE_KEY_V7)).toBe("10");
+    expect(required("#v7-ai-head-start-control").textContent).toBe("+10 Coins");
     press("launch");
     await waitUntil(() => active(first));
     const state = first.controller.snapshot().view;
@@ -124,7 +133,7 @@ describe("AI head start on the new-game screen", () => {
     expect(line.dataset.v7AiHeadStart).toBe("10");
 
     // A later visit: the saved game still says what it was started with,
-    // and the new-game screen starts on the remembered choice.
+    // and the new-game screen starts from the difficulty again.
     const second = boot(saves, settings);
     press("resume");
     await waitUntil(() => active(second));
@@ -136,16 +145,12 @@ describe("AI head start on the new-game screen", () => {
       "AI head start: +10 Coins",
     );
     boot(null, settings);
-    expect(required<HTMLSelectElement>("#v7-ai-head-start").value).toBe("10");
+    expect(required<HTMLSelectElement>("#v7-ai-head-start").value).toBe("0");
   });
 
-  it("launches no head start for None and says so in Settings", async () => {
-    const settings = new MemoryStorage();
-    settings.setItem(AI_HEAD_START_COINS_STORAGE_KEY_V7, "20");
-    const running = boot(null, settings);
-    expect(required<HTMLSelectElement>("#v7-ai-head-start").value).toBe("20");
-    choose("v7-ai-head-start", "0");
-    expect(settings.getItem(AI_HEAD_START_COINS_STORAGE_KEY_V7)).toBe("0");
+  it("launches no head start on Normal and says so in Settings", async () => {
+    const running = boot(null, new MemoryStorage());
+    expect(required<HTMLSelectElement>("#v7-difficulty").value).toBe("NORMAL");
     press("launch");
     await waitUntil(() => active(running));
     const setup = running.controller.snapshot().view?.setup;
@@ -157,8 +162,7 @@ describe("AI head start on the new-game screen", () => {
   });
 
   it("hides the control on the Showcase, which launches without a head start and keeps the choice", async () => {
-    const settings = new MemoryStorage();
-    const running = boot(null, settings);
+    const running = boot(null, new MemoryStorage());
     choose("v7-ai-head-start", "20");
     choose("v7-map-type", "SHOWCASE");
     const label = required("#v7-ai-head-start").closest("label");
@@ -166,6 +170,12 @@ describe("AI head start on the new-game screen", () => {
     expect(readFileSync("src/styles/v7.css", "utf8")).toMatch(
       /label\.v7-ai-head-start-choice\[hidden\] \{\s*display: none;\s*\}/,
     );
+    // The difficulty has nothing to set on the Showcase either.
+    expect(required(".v7-difficulty-choice").hidden).toBe(true);
+    choose("v7-map-type", "LAKES");
+    expect(label?.hidden).toBe(false);
+    expect(required<HTMLSelectElement>("#v7-ai-head-start").value).toBe("20");
+    choose("v7-map-type", "SHOWCASE");
     press("launch");
     await waitUntil(() => active(running));
     const setup = running.controller.snapshot().view?.setup;
@@ -173,6 +183,5 @@ describe("AI head start on the new-game screen", () => {
     expect(setup !== undefined && "aiHeadStart" in setup).toBe(false);
     openSettings();
     expect(document.querySelector(".v7-match-ai-head-start")).toBeNull();
-    expect(settings.getItem(AI_HEAD_START_COINS_STORAGE_KEY_V7)).toBe("20");
   });
 });

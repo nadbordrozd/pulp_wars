@@ -231,9 +231,27 @@ import {
   storeGameModePreferenceV7,
 } from "../../app/game-mode-preference-v7";
 import {
-  loadAiHeadStartCoinsPreferenceV7,
-  storeAiHeadStartCoinsPreferenceV7,
-} from "../../app/ai-head-start-preference-v7";
+  loadQuickDifficultyPreferenceV7,
+  loadQuickLastMapPreferenceV7,
+  storeQuickDifficultyPreferenceV7,
+  storeQuickLastMapPreferenceV7,
+} from "../../app/quick-start-preference-v7";
+import {
+  QUICK_DIFFICULTIES_V7,
+  QUICK_DIFFICULTY_LABELS_V7,
+  QUICK_MAP_CYCLE_V7,
+  nextQuickMapTypeV7,
+  quickBoardSizeV7,
+  quickHeadStartCoinsV7,
+  randomOpponentFactionsV7,
+  type QuickDifficultyV7,
+} from "../quick-start-v7";
+import {
+  fillPickerOptionsV7,
+  pickerFieldV7,
+  syncPickersV7,
+  type PickerStyleV7,
+} from "./picker-v7";
 import {
   AI_HEAD_START_CHOICES_V7,
   AI_HEAD_START_CHOICE_LABELS_V7,
@@ -939,6 +957,9 @@ const SHOWCASE_SEED = 0;
 const AI_MODE_LABELS: Readonly<Record<string, string>> = ALLIANCE_LABELS_V7;
 /** Map scale section 6.4: what "AIs allied" means, as the Mode tooltip. */
 const AI_MODE_HINT_V7 = "AIs allied: every opponent is allied against you.";
+/** Quick start: the Difficulty tooltip (never the formula behind it). */
+const DIFFICULTY_HINT_V7 =
+  "Harder levels give the AI players more starting Coins.";
 const MAP_TYPE_LABELS: Readonly<Record<string, string>> = {
   DRY_LAND: "Dry land",
   PANGEA: "Pangea",
@@ -1000,6 +1021,7 @@ function syncFactionFieldsV7(
         );
     if (field.value !== faction) field.value = faction;
   });
+  syncPickersV7(fieldset);
 }
 const FACTION_LABELS: Readonly<Record<string, string>> = {
   ORIGINAL: "Human",
@@ -1341,6 +1363,14 @@ export interface MountRuleset7AppOptions {
    */
   readonly randomSeed?: () => number;
   /**
+   * Quick start (bead pulp_wars-2yc.54): draws the new game's random
+   * choices (the opponents' factions), a non-negative integer per draw.
+   * Tests inject a fixed source (`() => 0` keeps the factions in their
+   * registration order); the browser's crypto (or Math.random) is the
+   * default. Separate from `randomSeed`, which only draws map seeds.
+   */
+  readonly randomDraw?: () => number;
+  /**
    * The Gallery animation preview's board host (bead pulp_wars-ic8);
    * tests inject a fake. A CanvasBoardHostV7 by default.
    */
@@ -1537,10 +1567,17 @@ interface DraftV7 {
   readonly gameMode: GameModeV7;
   /**
    * AI head start (`pulp_wars-w49.39`): the extra starting Coins of every
-   * AI seat, 0 for none, remembered for the next game. The Showcase always
-   * launches without one and keeps this choice for the next map.
+   * AI seat, 0 for none: set by the difficulty unless Advanced pins it
+   * (quick start, `pulp_wars-2yc.54`). The Showcase always launches without
+   * one and keeps this choice for the next map.
    */
   readonly aiHeadStartCoins: 0 | AiHeadStartCoinsV7;
+  /**
+   * Quick start (`pulp_wars-2yc.54`): the difficulty, remembered for the
+   * next game. It sets the AI head start (with the board's crowding) until
+   * Advanced pins a head start of its own.
+   */
+  readonly difficulty: QuickDifficultyV7;
 }
 
 type ScreenV7 =
@@ -1556,6 +1593,7 @@ export class Ruleset7DomAppView {
   readonly #downloadDebugBundle: (source: string, filename: string) => void;
   readonly #settingsStorage: StorageAdapter | null;
   readonly #randomSeed: () => number;
+  readonly #randomDraw: () => number;
   /** The interface art (the live look's rasters first). */
   readonly #chibiDom: ChibiDomArtV7;
   #chibiRenderQueued = false;
@@ -1573,7 +1611,24 @@ export class Ruleset7DomAppView {
     factions: distinctFactionsV7(setupMaxSeatCountV7()),
     gameMode: "DOMINATION",
     aiHeadStartCoins: 0,
+    difficulty: "NORMAL",
   };
+  /**
+   * Quick start: the values Advanced set by hand this game (a Size or an AI
+   * head start), which the quick defaults then leave alone. A new game
+   * after a launch starts unpinned.
+   */
+  #setupPins: { size: boolean; headStart: boolean } = {
+    size: false,
+    headStart: false,
+  };
+  /** Whether the new-game screen's Advanced settings are open. */
+  #setupAdvancedOpen = false;
+  /**
+   * The last map of the quick cycle started on this page, for a browser
+   * that cannot store it.
+   */
+  #quickLastMap: MapTypeV7 | null = null;
   /**
    * What the setup last changed by itself (a size or map that stopped being
    * legal for the players), shown under Size until the next change.
@@ -1887,13 +1942,15 @@ export class Ruleset7DomAppView {
       options.downloadDebugBundle ??
       ((source, filename) => downloadJsonFile(documentRoot, source, filename));
     this.#settingsStorage = options.settingsStorage ?? null;
-    this.#draft = {
-      ...this.#draft,
-      gameMode: loadGameModePreferenceV7(this.#settingsStorage),
-      aiHeadStartCoins: loadAiHeadStartCoinsPreferenceV7(this.#settingsStorage),
-    };
     this.#randomSeed =
       options.randomSeed ?? (() => browserRandomSeedV7(documentRoot));
+    this.#randomDraw =
+      options.randomDraw ?? (() => browserRandomSeedV7(documentRoot));
+    this.#draft = this.#quickDraft({
+      ...this.#draft,
+      gameMode: loadGameModePreferenceV7(this.#settingsStorage),
+      difficulty: loadQuickDifficultyPreferenceV7(this.#settingsStorage),
+    });
     this.#galleryDemoHost = options.galleryDemoHost;
     this.#ensureLookAssets = options.ensureLookAssets;
     this.#ensureFactionAssets = options.ensureFactionAssets;
@@ -3439,61 +3496,50 @@ export class Ruleset7DomAppView {
   }
 
   /**
-   * The setup form: the game mode, your tribe, Players, Map, the
-   * opponents' factions and Play (RULESET_7_SCORE_AND_STARS.md section 7).
+   * The setup form (quick start, bead pulp_wars-2yc.54): the game mode,
+   * your tribe, Opponents and Difficulty, then Advanced settings (closed by
+   * default: Alliances, AI head start, Map, Size, Curiosities, the seed and
+   * the opponents' factions) and Play (RULESET_7_SCORE_AND_STARS.md
+   * section 7). The quick choices set everything else: the map cycles from
+   * game to game, the size and the AI head start follow the opponents and
+   * the difficulty, and the opponents' factions are random. A Size or an AI
+   * head start set under Advanced stays as set.
    */
   #setupForm(replace: boolean): HTMLFormElement {
     const form = this.#document.createElement("form");
     form.className = "v7-setup-form";
+    const opponents = select(
+      this.#document,
+      "Opponents",
+      "v7-ai-count",
+      setupOpponentCountsV7().map(String),
+      String(this.#draft.aiCount),
+      {},
+      "segmented",
+    );
+    opponents.classList.add("v7-quick-choice", "v7-opponents-choice");
+    const difficulty = select(
+      this.#document,
+      "Difficulty",
+      "v7-difficulty",
+      QUICK_DIFFICULTIES_V7,
+      this.#draft.difficulty,
+      QUICK_DIFFICULTY_LABELS_V7,
+      "segmented",
+    );
+    difficulty.classList.add("v7-quick-choice", "v7-difficulty-choice");
+    difficulty
+      .querySelector("select")
+      ?.setAttribute("aria-description", DIFFICULTY_HINT_V7);
+    const advanced = this.#advancedSettings();
     form.append(
       this.#gameModeChoice(form),
       this.#tribePicker(form),
-      setupHeading(this.#document, "units", "Players"),
-      select(
-        this.#document,
-        "Opponents",
-        "v7-ai-count",
-        setupOpponentCountsV7().map(String),
-        String(this.#draft.aiCount),
-      ),
-      // Section 7, item 5: "Alliances", so the screen has one "mode".
-      select(
-        this.#document,
-        ALLIANCES_LABEL_V7,
-        "v7-ai-mode",
-        ["RIVAL", "COOPERATIVE"],
-        this.#draft.aiMode,
-        AI_MODE_LABELS,
-      ),
-      this.#aiHeadStartChoice(),
-      setupHeading(this.#document, "sight", "Map"),
-      select(
-        this.#document,
-        "Size",
-        "v7-board-size",
-        [String(effectiveBoardSize(this.#draft))],
-        String(effectiveBoardSize(this.#draft)),
-        BOARD_SIZE_LABELS,
-      ),
-      select(
-        this.#document,
-        "Map",
-        "v7-map-type",
-        MAP_TYPES,
-        this.#draft.mapType,
-        MAP_TYPE_LABELS,
-      ),
-      this.#sizeInfo(),
-      text(
-        this.#document,
-        "p",
-        mapTypeDescriptionV7(this.#draft.mapType),
-        "v7-map-type-description",
-      ),
-      this.#curiositiesChoice(),
-      this.#seedChoice(),
+      opponents,
+      difficulty,
+      this.#quickMapLine(),
+      ...advanced,
     );
-    form.append(this.#factionFields());
     const launch = button(
       this.#document,
       replace ? "Start new game" : "Play",
@@ -3509,9 +3555,22 @@ export class Ruleset7DomAppView {
       this.#syncStarFields(form);
     };
     syncShowcase();
-    form.addEventListener("change", () => {
+    form.addEventListener("change", (event) => {
+      const changed =
+        event.target instanceof HTMLElement ? event.target.id : "";
+      // Advanced pins what it sets by hand; a new difficulty sets the AI
+      // head start again.
+      if (changed === "v7-board-size") this.#setupPins.size = true;
+      if (changed === "v7-ai-head-start") this.#setupPins.headStart = true;
+      if (changed === "v7-difficulty") this.#setupPins.headStart = false;
       const own = this.#draft.factions[0];
+      const level = this.#draft.difficulty;
       this.#readDraft(form);
+      if (this.#draft.difficulty !== level)
+        storeQuickDifficultyPreferenceV7(
+          this.#settingsStorage,
+          this.#draft.difficulty,
+        );
       // The player chose a faction: its theme is heard at once.
       if (this.#draft.factions[0] !== own) {
         this.#setupThemeFaction = this.#draft.factions[0] ?? null;
@@ -3553,9 +3612,140 @@ export class Ruleset7DomAppView {
         this.#render();
         return;
       }
-      void this.#launch(setup, replace);
+      void this.#launch(setup, replace, () =>
+        this.#quickGameStarted(setup.mapType),
+      );
     });
     return form;
+  }
+
+  /**
+   * Quick start: a new game's defaults over `base` (its opponents,
+   * difficulty, mode and other choices are kept). The map is the next of
+   * the cycle (Pangea, Continents, Lakes) after the last one started, the
+   * opponents' factions are every other faction in a random order, and the
+   * size and the AI head start follow the opponents and the difficulty.
+   * Advanced starts unpinned.
+   */
+  #quickDraft(base: DraftV7): DraftV7 {
+    const own = base.factions[0] ?? "ORIGINAL";
+    const mapType = nextQuickMapTypeV7(
+      loadQuickLastMapPreferenceV7(this.#settingsStorage) ?? this.#quickLastMap,
+    );
+    const resolved = resolveSetupChoiceV7({
+      mapType,
+      opponents: base.aiCount,
+      boardSize: base.boardSize,
+    });
+    const boardSize = quickBoardSizeV7(resolved.mapType, resolved.opponents);
+    this.#setupPins = { size: false, headStart: false };
+    return {
+      ...base,
+      aiCount: resolved.opponents,
+      mapType: resolved.mapType,
+      boardSize,
+      factions: [
+        own,
+        ...randomOpponentFactionsV7(FACTIONS, own, this.#randomDraw),
+      ],
+      aiHeadStartCoins: quickHeadStartCoinsV7(
+        base.difficulty,
+        resolved.mapType,
+        boardSize,
+        resolved.opponents,
+      ),
+    };
+  }
+
+  /**
+   * A game from the new-game screen started: a map of the cycle is
+   * remembered as the last one, and the next new game gets fresh defaults.
+   */
+  #quickGameStarted(mapType: MapTypeV7): void {
+    if (QUICK_MAP_CYCLE_V7.includes(mapType)) {
+      this.#quickLastMap = mapType;
+      storeQuickLastMapPreferenceV7(this.#settingsStorage, mapType);
+    }
+    this.#draft = this.#quickDraft(this.#draft);
+  }
+
+  /** The line under the quick choices: the map and its size, no more. */
+  #quickMapLine(): HTMLElement {
+    const line = el(this.#document, "p", "v7-quick-map");
+    line.dataset.v7Region = "quick-map";
+    line.append(
+      uiIconV7(this.#document, "sight"),
+      text(this.#document, "span", "", "v7-quick-map-text"),
+    );
+    return line;
+  }
+
+  /**
+   * Advanced settings: a disclosure button and every other option of the
+   * setup in its groups, Players (Alliances, AI head start), Map (Size,
+   * Map, the village line, the map's sentence, Curiosities, the seed) and
+   * Factions. Closed by default; open or closed for the page session.
+   */
+  #advancedSettings(): readonly HTMLElement[] {
+    const body = el(this.#document, "div", "v7-setup-advanced");
+    body.id = "v7-setup-advanced";
+    body.dataset.v7Region = "setup-advanced";
+    body.hidden = !this.#setupAdvancedOpen;
+    const toggle = button(
+      this.#document,
+      "Advanced settings",
+      "setup-advanced",
+      "v7-advanced-toggle",
+    );
+    toggle.setAttribute("aria-expanded", String(this.#setupAdvancedOpen));
+    toggle.setAttribute("aria-controls", body.id);
+    toggle.onclick = () => {
+      this.#setupAdvancedOpen = !this.#setupAdvancedOpen;
+      body.hidden = !this.#setupAdvancedOpen;
+      toggle.setAttribute("aria-expanded", String(this.#setupAdvancedOpen));
+    };
+    body.append(
+      setupHeading(this.#document, "units", "Players"),
+      // Section 7, item 5: "Alliances", so the screen has one "mode".
+      select(
+        this.#document,
+        ALLIANCES_LABEL_V7,
+        "v7-ai-mode",
+        ["RIVAL", "COOPERATIVE"],
+        this.#draft.aiMode,
+        AI_MODE_LABELS,
+        "segmented",
+      ),
+      this.#aiHeadStartChoice(),
+      setupHeading(this.#document, "sight", "Map"),
+      select(
+        this.#document,
+        "Map",
+        "v7-map-type",
+        MAP_TYPES,
+        this.#draft.mapType,
+        MAP_TYPE_LABELS,
+      ),
+      select(
+        this.#document,
+        "Size",
+        "v7-board-size",
+        [String(effectiveBoardSize(this.#draft))],
+        String(effectiveBoardSize(this.#draft)),
+        BOARD_SIZE_LABELS,
+      ),
+      this.#sizeInfo(),
+      text(
+        this.#document,
+        "p",
+        mapTypeDescriptionV7(this.#draft.mapType),
+        "v7-map-type-description",
+      ),
+      this.#curiositiesChoice(),
+      this.#seedChoice(),
+      this.#factionFields(),
+    );
+    return [toggle, body];
   }
 
   /** Tribe stars as the controller keeps them (none without the port). */
@@ -3963,12 +4153,32 @@ export class Ruleset7DomAppView {
       ".v7-ai-head-start-choice",
     );
     if (headStart !== null) headStart.hidden = showcase;
+    // Quick start: the controls show what the quick choices derived (the
+    // size above, the opponents, the difficulty and the AI head start), the
+    // Showcase hides the difficulty, and the line under the quick choices
+    // names the map and its size.
+    const setField = (id: string, next: string): void => {
+      const field = form.querySelector<HTMLSelectElement>(`#${id}`);
+      if (field !== null && field.value !== next) field.value = next;
+    };
+    setField("v7-ai-count", String(draft.aiCount));
+    setField("v7-difficulty", draft.difficulty);
+    setField("v7-ai-head-start", String(draft.aiHeadStartCoins));
+    const difficulty = form.querySelector<HTMLElement>(".v7-difficulty-choice");
+    if (difficulty !== null) difficulty.hidden = showcase;
+    const quickMap = form.querySelector<HTMLElement>(".v7-quick-map-text");
+    if (quickMap !== null) {
+      const line = `${MAP_TYPE_LABELS[draft.mapType] ?? title(draft.mapType)} · ${BOARD_SIZE_LABELS[String(effective)] ?? effective}`;
+      if (quickMap.textContent !== line) quickMap.textContent = line;
+    }
+    syncPickersV7(form);
   }
 
   /**
-   * AI head start (`pulp_wars-w49.39`): one select, "None" by default, in
-   * the Players group, with the hint as its tooltip and accessible
-   * description. The choice is remembered for the next game.
+   * AI head start (`pulp_wars-w49.39`): one picker in the Players group
+   * under Advanced settings, with the hint as its tooltip and accessible
+   * description. The difficulty sets it until it is set by hand (quick
+   * start, `pulp_wars-2yc.54`).
    */
   #aiHeadStartChoice(): HTMLElement {
     const label = select(
@@ -9516,6 +9726,7 @@ export class Ruleset7DomAppView {
       ["FULL", "REDUCED"],
       this.#motion,
       { FULL: "Full", REDUCED: "Reduced" },
+      "segmented",
     );
     motion.querySelector("select")?.addEventListener("change", (event) => {
       this.#motion =
@@ -9533,6 +9744,7 @@ export class Ruleset7DomAppView {
       ["NORMAL", "FAST"],
       this.#animationSpeed,
       { NORMAL: "Normal", FAST: "Fast" },
+      "segmented",
     );
     speed.querySelector("select")?.addEventListener("change", (event) => {
       this.#animationSpeed =
@@ -10485,6 +10697,10 @@ export class Ruleset7DomAppView {
     )
       ? (value(form, "v7-map-type") as MapTypeV7)
       : "CONTINENTS";
+    const difficulty =
+      QUICK_DIFFICULTIES_V7.find(
+        (level) => level === value(form, "v7-difficulty"),
+      ) ?? this.#draft.difficulty;
     // While the Showcase was selected the Size select only held the forced
     // 16 x 16, so the player's own size is kept from the draft.
     const requestedSize =
@@ -10501,13 +10717,19 @@ export class Ruleset7DomAppView {
       opponents: clampOpponentCountV7(Number(value(form, "v7-ai-count"))),
       boardSize: requestedMap === "SHOWCASE" ? SHOWCASE_BOARD_SIZE : own,
     });
+    // Quick start: unless Advanced pinned a size, the size follows the map
+    // and the opponents (always a legal one, so nothing moves visibly).
+    const pinned = this.#setupPins.size;
     const boardSize =
       resolved.mapType === "SHOWCASE"
         ? own
-        : requestedMap === "SHOWCASE"
-          ? resolveSetupChoiceV7({ ...resolved, boardSize: own }).boardSize
-          : resolved.boardSize;
-    const sizeMoved = resolved.mapType !== "SHOWCASE" && boardSize !== own;
+        : !pinned
+          ? quickBoardSizeV7(resolved.mapType, resolved.opponents)
+          : requestedMap === "SHOWCASE"
+            ? resolveSetupChoiceV7({ ...resolved, boardSize: own }).boardSize
+            : resolved.boardSize;
+    const sizeMoved =
+      pinned && resolved.mapType !== "SHOWCASE" && boardSize !== own;
     this.#setupMoved = { size: sizeMoved, map: resolved.mapMoved };
     this.#setupNote = [
       ...(resolved.mapMoved
@@ -10519,19 +10741,23 @@ export class Ruleset7DomAppView {
         ? [`Size changed to ${BOARD_SIZE_LABELS[String(boardSize)]}.`]
         : []),
     ].join(" ");
+    // The AI head start follows the difficulty and the board's crowding,
+    // unless Advanced pinned one. The Showcase keeps it for the next map.
     const headStartField =
       form.querySelector<HTMLSelectElement>("#v7-ai-head-start");
     const aiHeadStartCoins =
-      headStartField === null
-        ? this.#draft.aiHeadStartCoins
-        : (AI_HEAD_START_CHOICES_V7.find(
+      this.#setupPins.headStart && headStartField !== null
+        ? (AI_HEAD_START_CHOICES_V7.find(
             (coins) => String(coins) === headStartField.value,
-          ) ?? 0);
-    if (aiHeadStartCoins !== this.#draft.aiHeadStartCoins)
-      storeAiHeadStartCoinsPreferenceV7(
-        this.#settingsStorage,
-        aiHeadStartCoins,
-      );
+          ) ?? 0)
+        : resolved.mapType === "SHOWCASE"
+          ? this.#draft.aiHeadStartCoins
+          : quickHeadStartCoinsV7(
+              difficulty,
+              resolved.mapType,
+              boardSize,
+              resolved.opponents,
+            );
     this.#draft = {
       seedMode: this.#draft.seedMode,
       aiCount: resolved.opponents,
@@ -10545,6 +10771,7 @@ export class Ruleset7DomAppView {
         this.#draft.curiosities,
       gameMode: this.#draft.gameMode,
       aiHeadStartCoins,
+      difficulty,
       // Seats keep their choice in seat order; a seat whose faction an
       // earlier seat now plays takes the first untaken faction, so the
       // seats always play different factions (RULESET_7_UNIQUE_FACTIONS.md).
@@ -10562,7 +10789,11 @@ export class Ruleset7DomAppView {
       ),
     };
   }
-  async #launch(setup: MatchSetupV7, replace: boolean): Promise<void> {
+  async #launch(
+    setup: MatchSetupV7,
+    replace: boolean,
+    onStarted?: () => void,
+  ): Promise<void> {
     this.#cancelPresentations();
     this.#scoreBreakdownFor = null;
     this.#achievementNotices = [];
@@ -10576,6 +10807,7 @@ export class Ruleset7DomAppView {
       this.#render();
       return;
     }
+    onStarted?.();
     this.#matchInstance += 1;
     this.#frontPage = "MENU";
     this.#briefingMissionId = null;
@@ -16501,6 +16733,11 @@ function live(
   node.setAttribute("aria-live", priority);
   return node;
 }
+/**
+ * A choice in the menus: a styled picker (a list under a button, or a row
+ * of segments for a short list) over a hidden select that keeps the value
+ * (bead pulp_wars-2yc.65, src/render/dom/picker-v7.ts).
+ */
 function select(
   documentRoot: Document,
   labelText: string,
@@ -16508,14 +16745,17 @@ function select(
   values: readonly string[],
   selected: string,
   labels: Readonly<Record<string, string>> = {},
+  style: PickerStyleV7 = "list",
 ): HTMLLabelElement {
-  const label = documentRoot.createElement("label");
-  label.textContent = labelText;
-  const field = documentRoot.createElement("select");
-  field.id = id;
-  replaceOptions(documentRoot, field, values, selected, labels);
-  label.append(field);
-  return label;
+  return pickerFieldV7(
+    documentRoot,
+    labelText,
+    id,
+    values,
+    selected,
+    labels,
+    style,
+  );
 }
 function replaceOptions(
   documentRoot: Document,
@@ -16524,15 +16764,7 @@ function replaceOptions(
   selected: string,
   labels: Readonly<Record<string, string>> = {},
 ): void {
-  field.replaceChildren(
-    ...values.map((entry) => {
-      const option = documentRoot.createElement("option");
-      option.value = entry;
-      option.textContent = labels[entry] ?? entry;
-      option.selected = entry === selected;
-      return option;
-    }),
-  );
+  fillPickerOptionsV7(documentRoot, field, values, selected, labels);
 }
 function input(
   documentRoot: Document,

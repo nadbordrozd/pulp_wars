@@ -78,6 +78,13 @@ plate.
   a `--pw-line-w` ink border, `--pw-radius`, `--pw-shadow`.
 - **Control** (button, select, tab group, train card): `--pw-surface-raised`,
   a `--pw-line-w-sm` ink border, `--pw-radius-sm`, `--pw-shadow-sm`.
+- **Picker** (bead `pulp_wars-2yc.65`, the menus' choices; no native
+  dropdown): a list picker is a Control with the value and a small ink
+  caret that opens a Panel-like list (`--pw-surface`, a `--pw-line-w`
+  border, `--pw-shadow`); the active option is `--pw-yellow` with an ink
+  rule, the chosen one ink with `--pw-text-inverse`. A short list is a
+  framed row of segments, the chosen one pressed (ink). Every option is at
+  least 44 CSS px tall.
 - **Primary action** (New game, Play, Research, End turn): `--pw-accent` with
   `--pw-accent-text`, heavy capitals.
 - **Selected or hovered**: `--pw-yellow` with ink text. A pressed toggle or

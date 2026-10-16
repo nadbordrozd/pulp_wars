@@ -57,7 +57,11 @@ function cultMatch(): GameStateV7 {
 
 describe("the setup screen offers the Cult (pulp_wars-mch9.20)", () => {
   it("offers nine factions, eight opponents, and a Cult tribe card", () => {
-    const app = bootstrapRuleset7App(document, { storage: null });
+    // Opponents in registration order (quick start draws them at random).
+    const app = bootstrapRuleset7App(document, {
+      storage: null,
+      randomDraw: () => 0,
+    });
     const counts = [
       ...requiredElement<HTMLSelectElement>("#v7-ai-count").options,
     ].map((option) => option.value);

@@ -26,11 +26,6 @@ import {
   chooseNormalTurnCommandV7,
 } from "../../src/ai/v7";
 import {
-  AI_HEAD_START_COINS_STORAGE_KEY_V7,
-  loadAiHeadStartCoinsPreferenceV7,
-  storeAiHeadStartCoinsPreferenceV7,
-} from "../../src/app/ai-head-start-preference-v7";
-import {
   AI_HEAD_START_CHOICES_V7,
   AI_HEAD_START_CHOICE_LABELS_V7,
   aiHeadStartOfMatchV7,
@@ -276,19 +271,8 @@ describe("AI head start: the Normal AI spends it", () => {
 });
 
 describe("AI head start: the new-game choice", () => {
-  class MemoryStorage {
-    readonly values = new Map<string, string>();
-    getItem(key: string): string | null {
-      return this.values.get(key) ?? null;
-    }
-    setItem(key: string, value: string): void {
-      this.values.set(key, value);
-    }
-    removeItem(key: string): void {
-      this.values.delete(key);
-    }
-  }
-
+  // The choice is no longer remembered: the quick start's difficulty sets
+  // it (pulp_wars-2yc.54, tests/unit/quick-start-v7.test.ts).
   it("offers None and the three amounts in few words", () => {
     expect(AI_HEAD_START_CHOICES_V7).toEqual([0, 5, 10, 20]);
     expect(AI_HEAD_START_CHOICE_LABELS_V7).toEqual({
@@ -297,30 +281,5 @@ describe("AI head start: the new-game choice", () => {
       "10": "+10 Coins",
       "20": "+20 Coins",
     });
-  });
-
-  it("remembers the choice per browser and reads anything else as None", () => {
-    const storage = new MemoryStorage();
-    expect(loadAiHeadStartCoinsPreferenceV7(storage)).toBe(0);
-    expect(loadAiHeadStartCoinsPreferenceV7(null)).toBe(0);
-    for (const coins of AI_HEAD_START_CHOICES_V7) {
-      expect(storeAiHeadStartCoinsPreferenceV7(storage, coins)).toBe(true);
-      expect(loadAiHeadStartCoinsPreferenceV7(storage)).toBe(coins);
-    }
-    for (const stored of ["", "7", "five", "05", "20 "]) {
-      storage.setItem(AI_HEAD_START_COINS_STORAGE_KEY_V7, stored);
-      expect(loadAiHeadStartCoinsPreferenceV7(storage)).toBe(0);
-    }
-    const broken = {
-      getItem: () => {
-        throw new Error("blocked");
-      },
-      setItem: () => {
-        throw new Error("blocked");
-      },
-      removeItem: () => undefined,
-    };
-    expect(loadAiHeadStartCoinsPreferenceV7(broken)).toBe(0);
-    expect(storeAiHeadStartCoinsPreferenceV7(broken, 5)).toBe(false);
   });
 });
