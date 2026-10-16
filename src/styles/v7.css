@@ -3018,9 +3018,8 @@
   transform: translateX(-50%);
 }
 
+/* Its size: the whole screen on a phone, the window less a margin beyond. */
 .v7-overlay[data-screen="tech"] {
-  width: min(84rem, calc(100% - 1.5rem));
-  height: min(52rem, calc(100dvh - 1.5rem));
   grid-template-rows: minmax(0, 1fr);
   overflow: hidden;
 }
@@ -3030,6 +3029,106 @@
   top: 0.65rem;
   right: 0.65rem;
   margin: 0;
+}
+
+/*
+ * Beyond a phone (bead pulp_wars-2yc.66) the technology screen takes the
+ * whole window less a thin margin, so a desktop fits the tree large; a
+ * landscape window also draws the wide tree (TECHNOLOGY_WIDE_TREE_MEDIA_V7).
+ */
+@media (min-width: 600px) {
+  .v7-overlay[data-screen="tech"] {
+    inset: max(0.5rem, env(safe-area-inset-top))
+      max(0.5rem, env(safe-area-inset-right))
+      max(0.5rem, env(safe-area-inset-bottom))
+      max(0.5rem, env(safe-area-inset-left));
+    width: auto;
+    height: auto;
+    max-height: none;
+    padding: 0.6rem 0.75rem 0.75rem;
+    transform: none;
+  }
+}
+
+/* A desktop has the width for the tutorial's line beside the title, so the
+ * tree keeps the height (and its names at Fit). */
+@media (min-width: 900px) {
+  .v7-overlay[data-screen="tech"]
+    > .v7-tech-screen:has(.v7-tutorial-tech-line) {
+    grid-template-columns: max-content minmax(0, 1fr);
+    grid-template-rows: max-content minmax(0, 1fr);
+  }
+
+  .v7-overlay[data-screen="tech"]
+    > .v7-tech-screen
+    > .v7-screen-header:has(+ .v7-tutorial-tech-line) {
+    padding-right: 0;
+  }
+
+  .v7-overlay[data-screen="tech"] > .v7-tech-screen > .v7-tutorial-tech-line {
+    align-self: center;
+    margin: 0 3.5rem 0 0;
+  }
+
+  .v7-overlay[data-screen="tech"]
+    > .v7-tech-screen:has(.v7-tutorial-tech-line)
+    > .v7-tech-graph-shell {
+    grid-column: 1 / -1;
+  }
+}
+
+/*
+ * A phone on its side: the height is all the tree has, so the title and
+ * Coins float on a plate over the ground's top-left corner (empty in the
+ * round tree), the zoom controls move to the bottom-left corner, and the
+ * close button sits over the top-right corner.
+ */
+@media (min-width: 600px) and (max-height: 500px) {
+  .v7-overlay[data-screen="tech"] {
+    padding: 0.4rem;
+  }
+
+  .v7-overlay[data-screen="tech"] > .close-button {
+    top: 0.8rem;
+    right: 0.8rem;
+  }
+
+  .v7-overlay[data-screen="tech"] > .v7-tech-screen {
+    margin-right: 0;
+  }
+
+  /* The tutorial's research step keeps its line under the title. */
+  .v7-overlay[data-screen="tech"]
+    > .v7-tech-screen:not(:has(.v7-tutorial-tech-line)) {
+    grid-template-rows: minmax(0, 1fr);
+  }
+
+  .v7-tech-screen:not(:has(.v7-tutorial-tech-line)) > .v7-screen-header {
+    position: absolute;
+    z-index: 4;
+    top: 0.4rem;
+    left: 0.4rem;
+    gap: 0.5rem;
+    padding: 0.2rem 0.5rem;
+    border: var(--pw-line-w-sm) solid var(--pw-line);
+    border-radius: var(--pw-radius-sm);
+    background: var(--pw-surface-raised);
+    box-shadow: var(--pw-shadow-sm);
+  }
+
+  .v7-tech-screen > .v7-screen-header h2 {
+    font-size: var(--pw-fs-lg);
+  }
+
+  .v7-tech-screen > .v7-screen-header .v7-tech-coins {
+    min-height: 0;
+  }
+
+  .v7-tech-graph-shell > .v7-tech-graph-controls {
+    top: auto;
+    bottom: 0.4rem;
+    left: 0.4rem;
+  }
 }
 
 .v7-recruit-help,

@@ -318,10 +318,13 @@ import {
 import { TARGET_HIGHLIGHT_HELP_TIP_V7 } from "../canvas/target-highlight-v7";
 import { targetLegendV7 } from "./target-legend-v7";
 import {
+  TECHNOLOGY_TREE_SHAPES_V7,
+  TECHNOLOGY_WIDE_TREE_MEDIA_V7,
   technologyTreeGraphLayoutV7,
   technologyTreeLayoutV7,
   type TechnologyTreeGraphLayoutV7,
   type TechnologyTreeGraphNodeV7,
+  type TechnologyTreeShapeV7,
 } from "./technology-tree-layout-v7";
 import { TechnologyTreeViewportV7 } from "./technology-tree-viewport-v7";
 import { createTacticalSymbolV7 } from "./tactical-symbol-v7";
@@ -1644,6 +1647,11 @@ export class Ruleset7DomAppView {
   #selectedTech: TechnologyIdV7 | null = null;
   /** Pan/zoom survives DOM replacement while technology art settles. */
   readonly #technologyViewport = new TechnologyTreeViewportV7();
+  /**
+   * A landscape screen gets the wide technology tree (bead
+   * pulp_wars-2yc.66); null where the browser cannot say (the tests).
+   */
+  #wideTreeMedia: MediaQueryList | null = null;
   #achievementNotices: AchievementIdV7[] = [];
   #achievementReturnAction: string | null = null;
   #selectedModifier: string | null = null;
@@ -2051,6 +2059,10 @@ export class Ruleset7DomAppView {
       "visibilitychange",
       this.#onVisibilityChange,
     );
+    this.#wideTreeMedia =
+      this.#document.defaultView?.matchMedia?.(TECHNOLOGY_WIDE_TREE_MEDIA_V7) ??
+      null;
+    this.#wideTreeMedia?.addEventListener?.("change", this.#onWideTreeChange);
     this.#unsubscribe = controller.subscribe((snapshot) => {
       if (this.#destroyed) return;
       const prior = this.#snapshot;
@@ -2106,6 +2118,10 @@ export class Ruleset7DomAppView {
     this.#document.removeEventListener(
       "visibilitychange",
       this.#onVisibilityChange,
+    );
+    this.#wideTreeMedia?.removeEventListener?.(
+      "change",
+      this.#onWideTreeChange,
     );
     this.#cancelPresentations();
     this.#releaseAiPacing(true);
@@ -4837,6 +4853,11 @@ export class Ruleset7DomAppView {
       focusedBefore.closest('[data-v7-region="overlay-tech"]') !== null
         ? (focusedBefore.dataset.action ?? null)
         : null;
+    // The graph itself (arrow keys and F) keeps the focus too, as when a
+    // turned screen redraws the tree in its other shape.
+    const techGraphFocused =
+      focusedBefore instanceof HTMLElement &&
+      focusedBefore.matches(".v7-tech-graph");
     const dock =
       this.#selection === null ? null : this.#dock(view, this.#selection);
     if (dock !== null) {
@@ -4971,12 +4992,19 @@ export class Ruleset7DomAppView {
       techStage !== null &&
       techStage !== undefined
     ) {
+      const shape =
+        TECHNOLOGY_TREE_SHAPES_V7[
+          techGraph.dataset.techGraphShape === "wide" ? "wide" : "compact"
+        ];
       this.#technologyViewport.attach(
         techGraph,
         techStage,
         {
           width: Number(techGraph.dataset.techGraphWidth),
           height: Number(techGraph.dataset.techGraphHeight),
+          labelScale: shape.labelScale,
+          fitGutterX: shape.fitGutterX,
+          fitGutterY: shape.fitGutterY,
         },
         popup?.querySelector<HTMLElement>("[data-tech-zoom-label]") ?? null,
       );
@@ -5030,6 +5058,15 @@ export class Ruleset7DomAppView {
         main
           .querySelector<HTMLButtonElement>(
             `[data-v7-region="overlay-tech"] [data-action="${techFocusAction}"]`,
+          )
+          ?.focus();
+      });
+    else if (techGraphFocused && this.#screen === "TECH")
+      queueMicrotask(() => {
+        if (this.#destroyed) return;
+        main
+          .querySelector<HTMLElement>(
+            '[data-v7-region="overlay-tech"] .v7-tech-graph',
           )
           ?.focus();
       });
@@ -8999,7 +9036,10 @@ export class Ruleset7DomAppView {
     section.append(header);
     const tree = queryTechnologyTreeV7(view);
     const layout = technologyTreeLayoutV7(tree.nodes);
-    const graphLayout = technologyTreeGraphLayoutV7(layout);
+    const graphLayout = technologyTreeGraphLayoutV7(
+      layout,
+      this.#technologyTreeShape(),
+    );
     const graphShell = el(this.#document, "div", "v7-tech-graph-shell");
     const controls = el(this.#document, "div", "v7-tech-graph-controls");
     controls.setAttribute("aria-label", "Technology tree view controls");
@@ -9041,6 +9081,7 @@ export class Ruleset7DomAppView {
     const viewport = el(this.#document, "div", "v7-tech-graph");
     viewport.dataset.techGraphWidth = String(graphLayout.width);
     viewport.dataset.techGraphHeight = String(graphLayout.height);
+    viewport.dataset.techGraphShape = graphLayout.shape;
     viewport.tabIndex = 0;
     viewport.setAttribute("role", "region");
     viewport.setAttribute("aria-label", "Technology tree");
@@ -11353,6 +11394,19 @@ export class Ruleset7DomAppView {
   readonly #onVisibilityChange = (): void => {
     this.#releaseAiPacing();
   };
+
+  /**
+   * Turning the screen redraws an open technology tree in its new shape;
+   * the camera keeps its zoom.
+   */
+  readonly #onWideTreeChange = (): void => {
+    if (this.#destroyed || this.#screen !== "TECH") return;
+    this.#render();
+  };
+
+  #technologyTreeShape(): TechnologyTreeShapeV7 {
+    return this.#wideTreeMedia?.matches === true ? "wide" : "compact";
+  }
 
   /**
    * Bead pulp_wars-2yc.29: an accepted boundary's Coins, population and

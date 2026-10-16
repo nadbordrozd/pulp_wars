@@ -1,10 +1,13 @@
-import { TECHNOLOGY_LABEL_SCALE_V7 } from "./technology-tree-layout-v7";
+import { TECHNOLOGY_TREE_SHAPES_V7 } from "./technology-tree-layout-v7";
 
 export interface TechnologyTreeViewportSizeV7 {
   readonly width: number;
   readonly height: number;
   /** Stage scale from which every name and price shows. */
   readonly labelScale?: number;
+  /** Screen pixels Fit leaves at each side, and above and below. */
+  readonly fitGutterX?: number;
+  readonly fitGutterY?: number;
 }
 
 /** Where a graph point is on screen, relative to the viewport's corner. */
@@ -32,12 +35,12 @@ const MAX_ZOOM_V7 = 2.8;
  * zoom far enough for the names (TECHNOLOGY_LABEL_SCALE_V7) to show.
  */
 const MAX_SCALE_FLOOR_V7 = 1.75;
-/** The largest scale Fit uses: a big desktop does not blow the icons up. */
-const MAX_FIT_SCALE_V7 = 1.25;
-/** Keeps badge rings inside the clip at the sides. */
-const FIT_GUTTER_X_V7 = 6;
-/** Leaves room above and below for the name of a hovered or focused leaf. */
-const FIT_GUTTER_Y_V7 = 34;
+/**
+ * The largest scale Fit uses (bead pulp_wars-2yc.66): a 1920 x 1080
+ * desktop fills its height, a bigger screen stops before the badges grow
+ * into posters.
+ */
+export const TECHNOLOGY_TREE_MAX_FIT_SCALE_V7 = 1.6;
 const PAN_SLOP_V7 = 7;
 
 /** The stage scale at which Fit shows the whole graph in a viewport. */
@@ -45,12 +48,15 @@ export function technologyTreeFitScaleV7(
   viewport: TechnologyTreeViewportSizeV7,
   graph: TechnologyTreeViewportSizeV7,
 ): number {
-  const availableWidth = Math.max(1, viewport.width - FIT_GUTTER_X_V7 * 2);
-  const availableHeight = Math.max(1, viewport.height - FIT_GUTTER_Y_V7 * 2);
+  const compact = TECHNOLOGY_TREE_SHAPES_V7.compact;
+  const gutterX = graph.fitGutterX ?? compact.fitGutterX;
+  const gutterY = graph.fitGutterY ?? compact.fitGutterY;
+  const availableWidth = Math.max(1, viewport.width - gutterX * 2);
+  const availableHeight = Math.max(1, viewport.height - gutterY * 2);
   return Math.min(
     availableWidth / graph.width,
     availableHeight / graph.height,
-    MAX_FIT_SCALE_V7,
+    TECHNOLOGY_TREE_MAX_FIT_SCALE_V7,
   );
 }
 
@@ -227,6 +233,14 @@ export class TechnologyTreeViewportV7 {
     this.#viewport = viewport;
     this.#stage = stage;
     this.#zoomLabel = zoomLabel;
+    // The tree changing shape (a turned screen) keeps the zoom and the
+    // same part of the tree in the middle.
+    const previous = this.#graph;
+    if (previous.width !== graph.width || previous.height !== graph.height)
+      this.#centre = {
+        x: (this.#centre.x * graph.width) / previous.width,
+        y: (this.#centre.y * graph.height) / previous.height,
+      };
     this.#graph = graph;
     if (!this.#initialised) this.fit();
     else this.#apply();
@@ -493,7 +507,9 @@ export class TechnologyTreeViewportV7 {
     // Names and prices keep their size on screen (v7.css reads the inverse).
     stage.style.setProperty("--tech-inverse", String(1 / scale));
     stage.dataset.labels =
-      scale >= (this.#graph.labelScale ?? TECHNOLOGY_LABEL_SCALE_V7) - 1e-9
+      scale >=
+      (this.#graph.labelScale ?? TECHNOLOGY_TREE_SHAPES_V7.compact.labelScale) -
+        1e-9
         ? "show"
         : "hidden";
     viewport.dataset.zoom = String(this.#zoom);

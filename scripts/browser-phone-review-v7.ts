@@ -50,7 +50,8 @@ import { prepareSmokeOutput } from "./browser-smoke-output";
  * Usage: tsx scripts/browser-phone-review-v7.ts http://localhost:6173/
  *   [--output-dir=<new-dir>] [--only=menu,setup,...] [--sizes=p390,p360,p320,l844]
  *   [--report-only]
- * `--sizes=d1440` adds a 1440 x 900 desktop capture of the named scenes.
+ * `--sizes=d1440` adds a 1440 x 900 desktop capture of the named scenes;
+ * `d1280` (1280 x 720) and `d1920` (1920 x 1080) add the other desktops.
  */
 
 interface DebugTarget {
@@ -74,7 +75,8 @@ interface Coord {
   readonly y: number;
 }
 interface Size {
-  readonly name: "p390" | "p360" | "p320" | "l844" | "d1440";
+  readonly name:
+    "p390" | "p360" | "p320" | "l844" | "d1280" | "d1440" | "d1920";
   readonly width: number;
   readonly height: number;
   /** Captured only when `--sizes` names it (the desktop comparison). */
@@ -104,6 +106,9 @@ const SIZES: readonly Size[] = [
   // A desktop window, for a side-by-side look at a front screen (bead
   // pulp_wars-2yc.44); not one of the phone sizes.
   { name: "d1440", width: 1440, height: 900, onRequest: true },
+  // The technology tree's other desktops (bead pulp_wars-2yc.66).
+  { name: "d1280", width: 1280, height: 720, onRequest: true },
+  { name: "d1920", width: 1920, height: 1080, onRequest: true },
 ];
 
 const args = process.argv.slice(2);
@@ -2039,6 +2044,12 @@ async function check(
         const unselected = cards.filter((card) => !card.matches(':hover, :focus-visible'));
         if (labelsOn ? shownNames.length !== 25 : shownNames.some((card) => unselected.includes(card)))
           add('tech-label-scale', true, shownNames.length + ' names shown with labels ' + (labelsOn ? 'on' : 'off'));
+        // A 1440 x 900 or larger desktop shows every name at Fit (bead
+        // pulp_wars-2yc.66); the graph's size and badge are noted.
+        if (fitted && ${size.name === "d1440" || size.name === "d1920"} && innerWidth === ${size.width} && !labelsOn)
+          add('tech-desktop-names', true, 'names hidden at Fit on a desktop');
+        if (fitted && cards.length > 0)
+          add('tech-graph-size', false, techGraph.clientWidth + 'x' + techGraph.clientHeight + ' graph (' + (techGraph.getAttribute('data-tech-graph-shape') ?? '') + '), badges ' + Math.round(cards[0].getBoundingClientRect().width) + 'px');
         const parts = cards.flatMap((card) => [
           { owner: card, kind: 'badge', element: card },
           ...Array.from(card.querySelectorAll('.v7-tech-name, .v7-tech-cost, .v7-tech-check')).filter(visible).map((element) => ({ owner: card, kind: element.className, element })),

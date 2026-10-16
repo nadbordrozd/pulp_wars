@@ -54,6 +54,8 @@ export interface TechnologyTreeGraphWedgeV7 {
 }
 
 export interface TechnologyTreeGraphLayoutV7 {
+  /** The phone ("compact") or the landscape and desktop ("wide") tree. */
+  readonly shape: TechnologyTreeShapeV7;
   readonly width: number;
   readonly height: number;
   readonly centre: { readonly x: number; readonly y: number };
@@ -109,6 +111,68 @@ export const TECHNOLOGY_NODE_OVERLAY_V7 = {
  * focused or selected node. Proven by tests/unit/technology-tree-layout-v7.
  */
 export const TECHNOLOGY_LABEL_SCALE_V7 = 1.35;
+
+/**
+ * The tree has two shapes (bead pulp_wars-2yc.66). "compact" is the phone
+ * tree of TECHNOLOGY_GRAPH_GEOMETRY_V7. "wide" is for a landscape screen
+ * (TECHNOLOGY_WIDE_TREE_MEDIA_V7: a desktop, a tablet or a phone on its
+ * side), where the height is short and the width is spare: the tree is
+ * drawn a little wider than tall, the second ring sits further out, and the
+ * outer leaves put their names beside them instead of above or below. The
+ * names then fit at a much smaller scale, so a desktop window shows them at
+ * Fit. The fit gutters are screen pixels round the graph: room for the
+ * names beside the outermost leaves, or above and below them.
+ */
+export type TechnologyTreeShapeV7 = "compact" | "wide";
+
+export interface TechnologyTreeShapeGeometryV7 {
+  /** Distance of tiers 1, 2 and 3 from the centre (before the stretch). */
+  readonly ringRadii: readonly [number, number, number];
+  /** Horizontal stretch of the circle: 1 is round. */
+  readonly stretchX: number;
+  /** Where the outer leaves' names go: away from the centre on the radius
+   * ("radial": above or below) or to the side ("beside": left or right). */
+  readonly outerLabels: "radial" | "beside";
+  /** Stage scale from which every name and price shows. */
+  readonly labelScale: number;
+  /** Screen pixels Fit leaves at each side and above and below the graph. */
+  readonly fitGutterX: number;
+  readonly fitGutterY: number;
+}
+
+export const TECHNOLOGY_TREE_SHAPES_V7: Readonly<
+  Record<TechnologyTreeShapeV7, TechnologyTreeShapeGeometryV7>
+> = {
+  compact: {
+    ringRadii: TECHNOLOGY_GRAPH_GEOMETRY_V7.ringRadii,
+    stretchX: 1,
+    outerLabels: "radial",
+    labelScale: TECHNOLOGY_LABEL_SCALE_V7,
+    // Keeps badge rings inside the clip at the sides, and leaves room above
+    // and below for the name of a hovered or focused leaf.
+    fitGutterX: 6,
+    fitGutterY: 34,
+  },
+  wide: {
+    ringRadii: [80, 205, 310],
+    stretchX: 1.15,
+    outerLabels: "beside",
+    labelScale: 1.1,
+    // A name beside the outermost leaf: its width and gap and a margin.
+    fitGutterX:
+      TECHNOLOGY_NODE_OVERLAY_V7.labelWidth +
+      TECHNOLOGY_NODE_OVERLAY_V7.labelGap +
+      6,
+    fitGutterY: 6,
+  },
+};
+
+/**
+ * The screens that get the wide tree; v7.css gives the same screens the
+ * larger technology panel.
+ */
+export const TECHNOLOGY_WIDE_TREE_MEDIA_V7 =
+  "(min-width: 600px) and (orientation: landscape)";
 
 export interface TechnologyBoxV7 {
   readonly left: number;
@@ -185,10 +249,16 @@ const RADIANS = Math.PI / 180;
  * A name goes on the side of its badge that faces away from the centre. The
  * outer leaves always take the top or bottom, so their names never widen
  * the tree; an inner node close to the horizontal takes the left or right.
+ * In the wide tree the outer leaves take the left or right instead.
  */
-function labelSideV7(angle: number, ring: 1 | 2 | 3): TechnologyLabelSideV7 {
+function labelSideV7(
+  angle: number,
+  ring: 1 | 2 | 3,
+  outerLabels: TechnologyTreeShapeGeometryV7["outerLabels"],
+): TechnologyLabelSideV7 {
   const cos = Math.cos(angle * RADIANS);
   const sin = Math.sin(angle * RADIANS);
+  if (ring === 3 && outerLabels === "beside") return cos < 0 ? "left" : "right";
   if (ring === 3 || Math.abs(sin) >= Math.abs(cos) * 0.3)
     return sin < 0 ? "above" : "below";
   return cos < 0 ? "left" : "right";
@@ -204,12 +274,17 @@ function round(value: number): number {
  * centre, then the two tier-2 technologies either side of the spoke, then
  * each one's tier-3 leaf, fanned a little wider. Coordinates are graph units
  * with the origin at the top left; they do not depend on the DOM or camera.
+ * The wide shape stretches the circle sideways (an ellipse), so every
+ * position, curve and wedge is the round tree's, scaled by its stretch.
  */
 export function technologyTreeGraphLayoutV7(
   roots: readonly TechnologyTreeLayoutNodeV7[],
+  shape: TechnologyTreeShapeV7 = "compact",
 ): TechnologyTreeGraphLayoutV7 {
   const geometry = TECHNOLOGY_GRAPH_GEOMETRY_V7;
-  const [ring1, ring2, ring3] = geometry.ringRadii;
+  const shapeGeometry = TECHNOLOGY_TREE_SHAPES_V7[shape];
+  const [ring1, ring2, ring3] = shapeGeometry.ringRadii;
+  const stretch = shapeGeometry.stretchX;
   const placed: {
     layout: TechnologyTreeLayoutNodeV7;
     ring: 1 | 2 | 3;
@@ -253,7 +328,7 @@ export function technologyTreeGraphLayoutV7(
   let minY = -geometry.centreRadius;
   let maxY: number = geometry.centreRadius;
   for (const entry of placed) {
-    const x = entry.radius * Math.cos(entry.angle * RADIANS);
+    const x = stretch * entry.radius * Math.cos(entry.angle * RADIANS);
     const y = entry.radius * Math.sin(entry.angle * RADIANS);
     minX = Math.min(minX, x - radius);
     maxX = Math.max(maxX, x + radius);
@@ -265,12 +340,17 @@ export function technologyTreeGraphLayoutV7(
   const centre = { x: round(offsetX), y: round(offsetY) };
   const nodes: TechnologyTreeGraphNodeV7[] = placed.map((entry) => ({
     layout: entry.layout,
-    x: round(offsetX + entry.radius * Math.cos(entry.angle * RADIANS)),
+    x: round(
+      offsetX + stretch * entry.radius * Math.cos(entry.angle * RADIANS),
+    ),
     y: round(offsetY + entry.radius * Math.sin(entry.angle * RADIANS)),
     ring: entry.ring,
     angle: entry.angle,
-    labelSide: labelSideV7(entry.angle, entry.ring),
+    labelSide: labelSideV7(entry.angle, entry.ring, shapeGeometry.outerLabels),
   }));
+  // The direction of an angle of the round tree once stretched.
+  const stretched = (angle: number): number =>
+    Math.atan2(Math.sin(angle * RADIANS), stretch * Math.cos(angle * RADIANS));
   const byId = new Map(nodes.map((node) => [node.layout.node.id, node]));
   const edges: TechnologyTreeGraphEdgeV7[] = [];
   const spokes: TechnologyTreeGraphSpokeV7[] = [];
@@ -278,10 +358,11 @@ export function technologyTreeGraphLayoutV7(
     const parentId = node.layout.parentId;
     if (parentId === null) {
       const inner = geometry.centreRadius;
+      const direction = stretched(node.angle);
       spokes.push({
         childId: node.layout.node.id,
-        x1: round(centre.x + inner * Math.cos(node.angle * RADIANS)),
-        y1: round(centre.y + inner * Math.sin(node.angle * RADIANS)),
+        x1: round(centre.x + inner * Math.cos(direction)),
+        y1: round(centre.y + inner * Math.sin(direction)),
         x2: node.x,
         y2: node.y,
       });
@@ -294,11 +375,11 @@ export function technologyTreeGraphLayoutV7(
     // reads as growing from the centre.
     const reach =
       0.45 *
-      (Math.hypot(node.x - centre.x, node.y - centre.y) -
-        Math.hypot(parent.x - centre.x, parent.y - centre.y));
-    const c1x = parent.x + reach * Math.cos(parent.angle * RADIANS);
+      (Math.hypot((node.x - centre.x) / stretch, node.y - centre.y) -
+        Math.hypot((parent.x - centre.x) / stretch, parent.y - centre.y));
+    const c1x = parent.x + stretch * reach * Math.cos(parent.angle * RADIANS);
     const c1y = parent.y + reach * Math.sin(parent.angle * RADIANS);
-    const c2x = node.x - reach * Math.cos(node.angle * RADIANS);
+    const c2x = node.x - stretch * reach * Math.cos(node.angle * RADIANS);
     const c2y = node.y - reach * Math.sin(node.angle * RADIANS);
     edges.push({
       parentId,
@@ -312,8 +393,14 @@ export function technologyTreeGraphLayoutV7(
   }
   const wedgeRadius = ring3 + radius + geometry.padding / 2;
   const halfWedge = 180 / Math.max(1, roots.length);
-  const point = (angle: number, distance: number): string =>
-    `${round(centre.x + distance * Math.cos(angle * RADIANS))} ${round(centre.y + distance * Math.sin(angle * RADIANS))}`;
+  // The outer rim is the stretched circle (an ellipse); the inner rim stays
+  // round round the emblem, on the same rays.
+  const outer = (angle: number): string =>
+    `${round(centre.x + stretch * wedgeRadius * Math.cos(angle * RADIANS))} ${round(centre.y + wedgeRadius * Math.sin(angle * RADIANS))}`;
+  const inner = (angle: number): string => {
+    const direction = stretched(angle);
+    return `${round(centre.x + geometry.centreRadius * Math.cos(direction))} ${round(centre.y + geometry.centreRadius * Math.sin(direction))}`;
+  };
   const wedges = roots.map((root, index) => {
     const angle = spokeAngles[index] ?? 0;
     const from = angle - halfWedge;
@@ -321,10 +408,11 @@ export function technologyTreeGraphLayoutV7(
     return {
       branch: root.node.branch,
       angle,
-      path: `M${point(from, geometry.centreRadius)}L${point(from, wedgeRadius)}A${wedgeRadius} ${wedgeRadius} 0 0 1 ${point(to, wedgeRadius)}L${point(to, geometry.centreRadius)}A${geometry.centreRadius} ${geometry.centreRadius} 0 0 0 ${point(from, geometry.centreRadius)}Z`,
+      path: `M${inner(from)}L${outer(from)}A${round(stretch * wedgeRadius)} ${wedgeRadius} 0 0 1 ${outer(to)}L${inner(to)}A${geometry.centreRadius} ${geometry.centreRadius} 0 0 0 ${inner(from)}Z`,
     };
   });
   return {
+    shape,
     width: round(maxX - minX + geometry.padding * 2),
     height: round(maxY - minY + geometry.padding * 2),
     centre,

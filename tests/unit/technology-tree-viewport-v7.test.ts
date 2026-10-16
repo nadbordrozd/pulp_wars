@@ -2,6 +2,7 @@
 
 import { beforeEach, describe, expect, it } from "vitest";
 import {
+  TECHNOLOGY_TREE_MAX_FIT_SCALE_V7,
   TechnologyTreeViewportV7,
   technologyTreeFitScaleV7,
   technologyTreeMaxScaleV7,
@@ -82,6 +83,59 @@ describe("Ruleset 7 technology tree viewport", () => {
     expect(camera.zoom * fit).toBeCloseTo(technologyTreeMaxScaleV7(fit));
     expect(technologyTreeMaxScaleV7(fit)).toBeGreaterThanOrEqual(1.35);
     expect(stage.dataset.labels).toBe("show");
+    camera.detach();
+  });
+
+  it("fits the wide tree on a desktop with every name, and keeps zoom and centre when the tree changes shape", () => {
+    // Bead pulp_wars-2yc.66: the graph's box in a 1440 x 900 window.
+    const viewport = required<HTMLElement>("#viewport");
+    const stage = required<HTMLElement>("#stage");
+    let width = 1388;
+    let height = 805;
+    viewport.getBoundingClientRect = () => rect(width, height);
+    viewportDimensions(
+      viewport,
+      () => width,
+      () => height,
+    );
+    const wide = {
+      width: 798.06,
+      height: 675.92,
+      labelScale: 1.1,
+      fitGutterX: 99,
+      fitGutterY: 6,
+    };
+    const camera = new TechnologyTreeViewportV7();
+    camera.attach(viewport, stage, wide);
+    // The height decides: (805 - 2 x 6) / 675.92.
+    const fit = technologyTreeFitScaleV7({ width, height }, wide);
+    expect(fit).toBeCloseTo((805 - 12) / 675.92);
+    expect(stage.style.transform).toContain(`scale(${fit})`);
+    expect(stage.dataset.labels).toBe("show");
+    // Without gutters of its own a graph keeps the phone's (6 and 34).
+    expect(
+      technologyTreeFitScaleV7(
+        { width, height },
+        { width: 798.06, height: 675.92 },
+      ),
+    ).toBeCloseTo((805 - 68) / 675.92);
+    // A huge screen stops at the largest Fit scale.
+    expect(technologyTreeFitScaleV7({ width: 4000, height: 3000 }, wide)).toBe(
+      TECHNOLOGY_TREE_MAX_FIT_SCALE_V7,
+    );
+
+    // Zoom in on the middle, then turn the screen: the compact tree keeps
+    // the zoom and the same part of the tree in the middle.
+    camera.zoomBy(1.22);
+    width = 354;
+    height = 762;
+    const compact = { width: 705.97, height: 675.92, labelScale: 1.35 };
+    camera.attach(viewport, stage, compact);
+    expect(camera.zoom).toBeCloseTo(1.22);
+    const middle = camera.project(compact.width / 2, compact.height / 2);
+    expect(middle?.x).toBeCloseTo(width / 2);
+    expect(middle?.y).toBeCloseTo(height / 2);
+    expect(stage.dataset.labels).toBe("hidden");
     camera.detach();
   });
 

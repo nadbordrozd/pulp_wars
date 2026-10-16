@@ -27,6 +27,7 @@ import {
   type Ruleset7ControllerPortV7,
 } from "../../src/render/dom/app-view-v7";
 import { createTacticalSymbolV7 } from "../../src/render/dom/tactical-symbol-v7";
+import { TECHNOLOGY_WIDE_TREE_MEDIA_V7 } from "../../src/render/dom/technology-tree-layout-v7";
 // pulp_wars-w5j.1: the browser launches only distinct factions.
 import { browserSetupV7 } from "../fixtures/v7-builders";
 import { HELP_SECTIONS_V7 } from "../../src/render/help-text-v7";
@@ -353,6 +354,8 @@ describe("Ruleset 7 DOM shell", () => {
     // hub, five tinted branch wedges and spokes, every badge on a ring.
     expect(Number(graph.dataset.techGraphWidth)).toBeCloseTo(705.97);
     expect(Number(graph.dataset.techGraphHeight)).toBeCloseTo(675.92);
+    // No media query to ask (a phone, or here jsdom): the round tree.
+    expect(graph.dataset.techGraphShape).toBe("compact");
     expect(
       graph.querySelectorAll(".v7-tech-centre .v7-faction-emblem"),
     ).toHaveLength(1);
@@ -588,6 +591,121 @@ describe("Ruleset 7 DOM shell", () => {
     clientWidthSpy.mockRestore();
     clientHeightSpy.mockRestore();
     app.destroy();
+  });
+
+  it("gives a desktop the whole window and the wide tree with every name at Fit, and a turned screen its other shape", async () => {
+    // Bead pulp_wars-2yc.66. The panel: the whole window less a thin
+    // margin beyond a phone; a phone keeps its own full-screen rule.
+    const css = readFileSync("src/styles/v7.css", "utf8");
+    expect(TECHNOLOGY_WIDE_TREE_MEDIA_V7).toContain("(min-width: 600px)");
+    const desktopPanel =
+      /@media \(min-width: 600px\) \{\n {2}\.v7-overlay\[data-screen="tech"\] \{([\s\S]*?)\n {2}\}/.exec(
+        css,
+      )?.[1] ?? "";
+    expect(desktopPanel).toMatch(/inset: max\(0\.5rem, env/);
+    expect(desktopPanel).toMatch(/\n {4}width: auto;/);
+    expect(desktopPanel).toMatch(/\n {4}height: auto;/);
+    expect(desktopPanel).toMatch(/\n {4}max-height: none;/);
+    expect(desktopPanel).toMatch(/\n {4}transform: none;/);
+    expect(css).toMatch(
+      /@media \(max-width: 599px\) \{[\s\S]*?\.v7-overlay\[data-screen="tech"\] \{\n {4}width: auto;\n {4}height: auto;\n {4}padding: 0\.75rem;\n {2}\}/,
+    );
+    // The old cap (52rem tall, 84rem wide) is gone from the desktop.
+    expect(css).not.toContain("height: min(52rem, calc(100dvh - 1.5rem));");
+
+    // A landscape window: the media query matches, and the graph is the
+    // size Chrome measures in a 1440 x 900 window.
+    let wide = true;
+    const listeners: (() => void)[] = [];
+    const matchMedia = vi.fn((query: string) => ({
+      get matches() {
+        return query === TECHNOLOGY_WIDE_TREE_MEDIA_V7 && wide;
+      },
+      media: query,
+      addEventListener: (_type: string, listener: () => void) => {
+        if (query === TECHNOLOGY_WIDE_TREE_MEDIA_V7) listeners.push(listener);
+      },
+      removeEventListener: () => {},
+    }));
+    Object.defineProperty(window, "matchMedia", {
+      configurable: true,
+      value: matchMedia,
+    });
+    let graphWidth = 1388;
+    let graphHeight = 805;
+    const rectSpy = vi
+      .spyOn(HTMLElement.prototype, "getBoundingClientRect")
+      .mockImplementation(function (this: HTMLElement) {
+        return this.classList.contains("v7-tech-graph")
+          ? domRect(graphWidth, graphHeight)
+          : domRect(0, 0);
+      });
+    const clientWidthSpy = vi
+      .spyOn(HTMLElement.prototype, "clientWidth", "get")
+      .mockImplementation(function (this: HTMLElement) {
+        return this.classList.contains("v7-tech-graph") ? graphWidth : 0;
+      });
+    const clientHeightSpy = vi
+      .spyOn(HTMLElement.prototype, "clientHeight", "get")
+      .mockImplementation(function (this: HTMLElement) {
+        return this.classList.contains("v7-tech-graph") ? graphHeight : 0;
+      });
+    try {
+      const app = bootstrapRuleset7App(document, { storage: null });
+      requiredInput("v7-seed").value = "3";
+      chooseSeed();
+      requiredButton('[data-action="launch"]').click();
+      await waitUntil(() => app.controller.snapshot().phase === "ACTIVE");
+      requiredButton('[data-action="tech"]').click();
+      await flushMicrotasks();
+      const graph = () => {
+        const element = document.querySelector<HTMLElement>(".v7-tech-graph");
+        if (element === null) throw new Error("Technology graph missing");
+        return element;
+      };
+      const stage = () => {
+        const element = document.querySelector<HTMLElement>(".v7-tech-stage");
+        if (element === null) throw new Error("Technology stage missing");
+        return element;
+      };
+      const outerSides = () =>
+        [
+          ...document.querySelectorAll<HTMLElement>(
+            '.v7-tech-node[data-ring="3"]',
+          ),
+        ].map((node) => node.dataset.labelSide);
+      expect(graph().dataset.techGraphShape).toBe("wide");
+      expect(Number(graph().dataset.techGraphWidth)).toBeCloseTo(798.06);
+      expect(Number(graph().dataset.techGraphHeight)).toBeCloseTo(675.92);
+      // (805 - 2 x 6) / 675.92: the badges are 84 px across, and every
+      // name and price shows at Fit.
+      expect(stage().style.transform).toContain("scale(1.1732");
+      expect(stage().dataset.labels).toBe("show");
+      expect(graph().dataset.zoom).toBe("1");
+      expect(new Set(outerSides())).toEqual(new Set(["left", "right"]));
+      expect(document.querySelectorAll(".v7-tech-card")).toHaveLength(25);
+
+      requiredButton('[data-action="tech-zoom-in"]').click();
+      expect(graph().dataset.zoom).toBe("1.22");
+      // Turned to portrait: the phone's round tree, the zoom kept, and the
+      // names hidden again at the phone's smaller scale.
+      wide = false;
+      graphWidth = 354;
+      graphHeight = 762;
+      for (const listener of listeners) listener();
+      await flushMicrotasks();
+      expect(graph().dataset.techGraphShape).toBe("compact");
+      expect(Number(graph().dataset.techGraphWidth)).toBeCloseTo(705.97);
+      expect(graph().dataset.zoom).toBe("1.22");
+      expect(stage().dataset.labels).toBe("hidden");
+      expect(new Set(outerSides())).toEqual(new Set(["above", "below"]));
+      app.destroy();
+    } finally {
+      rectSpy.mockRestore();
+      clientWidthSpy.mockRestore();
+      clientHeightSpy.mockRestore();
+      Reflect.deleteProperty(window, "matchMedia");
+    }
   });
 
   it("keeps settings route-scoped, exposes spoiler-safe export labels, and reports current save deletion", async () => {

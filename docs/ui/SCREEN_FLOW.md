@@ -3043,14 +3043,22 @@ Identical graph geometry does not permit a missing-registration fallback.
 Gathering is visibly researched at match start. Fighter is a baseline role
 beside the graph.
 
-The overview is a radial tree (bead `pulp_wars-2yc.58`), the same at every
-viewport size: the viewer's faction emblem at the hub and the five branches
+The overview is a radial tree (bead `pulp_wars-2yc.58`): the viewer's faction
+emblem at the hub and the five branches
 as spokes 72 degrees apart, Settlement straight up and the others clockwise
 (Wilds, Mobility, Industry, Naval). Along each spoke tier 1 is nearest the
 hub, the two tier-2 technologies sit 16 degrees either side of the spoke, and
 each one's tier-3 leaf fans out to 26 degrees. Rings are 80, 185 and 310
 graph units from the hub; badges are 72 units across
 (`TECHNOLOGY_GRAPH_GEOMETRY_V7` in `src/render/dom/technology-tree-layout-v7.ts`).
+That is the phone's ("compact") tree. A landscape screen 600 px wide or more
+(a desktop, a tablet or a phone on its side; `TECHNOLOGY_WIDE_TREE_MEDIA_V7`)
+gets the "wide" tree (bead `pulp_wars-2yc.66`,
+`TECHNOLOGY_TREE_SHAPES_V7`): the same spokes and angles, the circle stretched
+1.15 times sideways into an ellipse, the second ring at 205 units, and the
+outer leaves' names beside them (left or right, away from the hub) instead of
+above or below. Turning the screen redraws an open tree in its other shape,
+keeping the zoom and the part of the tree in the middle.
 Each branch has a faint wedge in its hue (Settlement amber, Wilds green,
 Mobility violet, Industry red, Naval blue) on a dark board-like ground.
 Connectors curve outward from parent to child and are styled by the state of
@@ -3071,22 +3079,35 @@ ring.
 
 Names are short display names in heavy 12 px cream type with an ink keyline,
 straight on the ground (never on a plate), on the side of the badge away from
-the hub: the outer leaves above or below, an inner node near the horizontal
-to the left or right. Names and price chips keep their size on screen at any
-zoom. They show for every node from a stage scale of 1.35 (1 graph unit = 1.35
-CSS pixels; `TECHNOLOGY_LABEL_SCALE_V7`), the smallest scale at which no name,
-chip or badge touches another in any faction's tree. Below it they are hidden
-and appear only for the hovered or keyboard-focused node. On a 390 px phone
-names appear at about 280% zoom, on a 320 px phone at about 350%, and on a
-1440 x 900 desktop after two presses of plus.
+the hub: the outer leaves above or below (beside them in the wide tree), an
+inner node near the horizontal to the left or right. Names and price chips
+keep their size on screen at any zoom. They show for every node from a stage
+scale of 1.35 in the phone's tree (1 graph unit = 1.35 CSS pixels;
+`TECHNOLOGY_LABEL_SCALE_V7`) and 1.1 in the wide tree, the smallest scales at
+which no name, chip or badge touches another in any faction's tree. Below it
+they are hidden and appear only for the hovered or keyboard-focused node. On
+a 390 px phone names appear at about 280% zoom, on a 320 px phone at about
+350%; a 1440 x 900 or larger desktop shows them at Fit, and a 1280 x 720
+window after one press of plus.
 
 The whole tree fits on entry without page scrolling: badges are about 35 CSS
-pixels across on a 390 x 844 phone, 32 at 360 and 28 at 320, and about 71 on a
-1440 x 900 desktop, where the tree sits centred. Fit keeps 6 px clear at the
-sides and 34 px above and below, room for a hovered leaf's name. Zooming in
-always reaches a stage scale of at least 1.75, so every phone can zoom until
-the names show. The minus, 100%, plus and Fit controls float over the ground's
-top left corner. Drag or one-finger drag pans, pinch and wheel zoom around
+pixels across on a 390 x 844 phone, 32 at 360 and 28 at 320. On a phone the
+technology screen fills the screen; from 600 px wide it fills the window less
+a 0.5rem margin (no fixed cap), so the wide tree's badges are about 65 px on a
+1280 x 720 window, 84 on 1440 x 900, 103 on 1920 x 1080 and 35 on an 844 x 390
+phone on its side (they were 71 at 1440 x 900 and at most 90 in the old 52rem
+panel). Fit never goes beyond a stage scale of 1.6
+(`TECHNOLOGY_TREE_MAX_FIT_SCALE_V7`). The phone's Fit keeps 6 px clear at the
+sides and 34 px above and below, room for a hovered leaf's name; the wide
+tree's keeps 99 px at the sides for the names beside the outermost leaves and
+6 px above and below. Zooming in always reaches a stage scale of at least
+1.75, so every phone can zoom until the names show. The minus, 100%, plus and
+Fit controls float over the ground's top left corner. A phone on its side
+(500 px tall or less) floats the title and Coins on a plate over that corner
+instead of a header row, moves the zoom controls to the bottom left and the
+close button over the top right, so the tree has the whole height. On a
+desktop the tutorial's research line sits beside the title rather than under
+it. Drag or one-finger drag pans, pinch and wheel zoom around
 their pointer. Arrow keys pan the focused graph, plus/minus zoom, and `F` or
 `0` fits it.
 
