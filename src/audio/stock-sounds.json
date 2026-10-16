@@ -2097,6 +2097,11 @@
       "wanted": "A giant spider's angry chittering hiss, 0.3 to 0.7 s."
     },
     {
+      "id": "unit.step.naval",
+      "why": "Added by bead pulp_wars-2yc.57 with ElevenLabs takes; the bundle was not searched for it.",
+      "wanted": "A soft oar dip or a gentle lap of water on a small hull, 0.25 to 0.6 s."
+    },
+    {
       "id": "unit.train",
       "why": "No horn call, drum roll or fanfare; the one cinematic horn is a six-second low blast (offered under Rally).",
       "wanted": "A short bright brass call or a snare flourish, about 0.5 s."

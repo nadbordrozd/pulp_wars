@@ -643,6 +643,39 @@ describe("Gallery sound choices", () => {
     }
   });
 
+  it("shows the move sounds side by side under Units, with their takes", () => {
+    // Bead pulp_wars-2yc.57: footsteps on land, an oar dip afloat.
+    const units = gallerySoundGroupsV7().find((group) => group.id === "UNITS");
+    const keys = units?.entries.map((entry) => entry.rowId) ?? [];
+    expect(keys.indexOf("unit.step.naval")).toBe(keys.indexOf("unit.step") + 1);
+    const land = entryOf("unit.step");
+    const naval = entryOf("unit.step.naval");
+    expect(land).toMatchObject({ name: "Footsteps", when: "Unit walks" });
+    expect(naval).toMatchObject({
+      name: "Ship moves",
+      when: "Ship sails",
+      picture: { kind: "ART", faction: "ORIGINAL" },
+    });
+    for (const entry of [land, naval]) {
+      const sound = soundChoiceSetV1(entry.rowId);
+      // New 1 is the default take, at least one more new take to choose,
+      // and the synth last.
+      expect(entry.choices[0]).toMatchObject({
+        label: "New 1",
+        isDefault: true,
+        n: sound?.default,
+      });
+      expect(
+        entry.choices.filter((choice) => choice.label.startsWith("New "))
+          .length,
+        entry.rowId,
+      ).toBeGreaterThanOrEqual(2);
+      expect(entry.choices.at(-1)?.label).toBe("Synth");
+    }
+    // The land sound keeps its chess-piece recordings to compare.
+    expect(land.choices.some((choice) => choice.label === "Old 1")).toBe(true);
+  });
+
   it("names a choice's controls with its whole origin and its note", () => {
     const hit = entryOf("impact.hit");
     const first = hit.choices[0];

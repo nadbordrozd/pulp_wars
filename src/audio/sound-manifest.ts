@@ -57,7 +57,10 @@ export const SOUND_IDS_V1 = [
   "unit.hurt.giant",
   "unit.hurt.monster",
   "unit.death",
+  // A unit's move (bead pulp_wars-2yc.57, `moveSoundOfUnitV7`): a soft
+  // shuffle of footsteps on land, an oar and water afloat.
   "unit.step",
+  "unit.step.naval",
   "unit.train",
   "unit.levelup",
   // Support and faction abilities.
@@ -580,7 +583,7 @@ const SYNTH_SOUNDS: Readonly<Record<SoundIdV1, SoundEntryV1>> = {
     },
     { wave: "noise", at: 140, ms: 200, lowpassHz: 900, gain: 0.25 },
   ]),
-  "unit.step": synth("Step", "combat", 1, 90, 0.1, [
+  "unit.step": synth("Footsteps", "combat", 1, 90, 0.1, [
     {
       wave: "noise",
       ms: 28,
@@ -590,6 +593,19 @@ const SYNTH_SOUNDS: Readonly<Record<SoundIdV1, SoundEntryV1>> = {
       decay: 3,
     },
     { wave: "sine", ms: 30, hz: 150, hzEnd: 110, gain: 0.5 },
+  ]),
+  // Bead pulp_wars-2yc.57: a soft lap of water, the fallback of the oar.
+  "unit.step.naval": synth("Ship moves", "combat", 1, 90, 0.1, [
+    {
+      wave: "noise",
+      ms: 240,
+      lowpassHz: 1400,
+      lowpassEndHz: 500,
+      highpassHz: 200,
+      attackMs: 40,
+      decay: 2,
+    },
+    { wave: "sine", ms: 160, hz: 240, hzEnd: 170, gain: 0.3, attackMs: 30 },
   ]),
   "unit.train": synth("Unit trained", "economy", 2, 0, 0.26, [
     ...drum(0, 0.8),

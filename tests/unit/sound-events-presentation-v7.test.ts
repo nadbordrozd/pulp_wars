@@ -4,6 +4,7 @@ import {
   NEUTRAL_OWNER_ID_V7,
   applyCommandV7,
   projectEventsV7,
+  queryPlayerCommandsV7,
   viewForV7,
   type CityId,
   type FactionIdV7,
@@ -16,8 +17,11 @@ import {
   type UnitRoleIdV7,
 } from "../../src/engine/index";
 import {
+  MOVE_SOUND_REPEAT_TILES_V7,
+  OTHER_PLAYER_MOVE_GAIN_V7,
   SOUND_IDS_V1,
   hurtSoundOfUnitV7,
+  moveSoundOfUnitV7,
   soundCuesForBoundaryV7,
   soundCuesForStepV7,
   type SoundCueV1,
@@ -222,6 +226,183 @@ describe("hurt sounds by the damaged unit's kind", () => {
   });
 });
 
+describe("move sounds by the moving unit (bead pulp_wars-2yc.57)", () => {
+  const state = exploredAllV7(initialV7(1518));
+  const view = viewForV7(state, state.humanPlayerId);
+  const unit = view.units.find((candidate) => candidate.form === "LAND");
+  if (unit === undefined) throw new Error("move fixture missing");
+  /** The view with the unit changed, its owner of `faction`. */
+  const as = (
+    change: Partial<PlayerViewV7["units"][number]>,
+    faction: FactionIdV7 = "ORIGINAL",
+  ): PlayerViewV7 => ({
+    ...view,
+    players: view.players.map((player) =>
+      player.id === unit.ownerId ? { ...player, faction } : player,
+    ),
+    units: view.units.map((candidate) =>
+      candidate.id === unit.id ? { ...candidate, ...change } : candidate,
+    ),
+  });
+  const envelope: PlayerEventEnvelopeV7 = {
+    format: "pulp-wars-player-events",
+    version: 7,
+    viewerId: view.viewer.id,
+    commandIndex: view.commandIndex,
+    events: [],
+  };
+  const move = (
+    before: PlayerViewV7,
+    after: PlayerViewV7,
+    tiles: number,
+    extra: Partial<Extract<CorePresentationStepV7, { kind: "MOVE" }>> = {},
+  ): readonly SoundCueV1[] =>
+    soundCuesForStepV7({
+      step: {
+        kind: "MOVE",
+        unitId: unit.id,
+        path: Array.from({ length: tiles + 1 }, (_, x) => ({ x, y: 1 })),
+        durationMs: 240 * tiles,
+        ...extra,
+      },
+      before,
+      after,
+      envelope,
+      durationScale: 1,
+    });
+
+  it("walks on land and rows afloat, both sounds in the manifest", () => {
+    expect(moveSoundOfUnitV7([as({})], unit.id)).toBe("unit.step");
+    expect(
+      moveSoundOfUnitV7([as({ form: "NAVAL", role: "PATROL_BOAT" })], unit.id),
+    ).toBe("unit.step.naval");
+    expect(
+      moveSoundOfUnitV7([as({ form: "NAVAL", role: "BATTLESHIP" })], unit.id),
+    ).toBe("unit.step.naval");
+    // An embarked land unit is afloat.
+    expect(moveSoundOfUnitV7([as({ form: "EMBARKED" })], unit.id)).toBe(
+      "unit.step.naval",
+    );
+    for (const id of ["unit.step", "unit.step.naval"])
+      expect(SOUND_IDS_V1 as readonly string[]).toContain(id);
+  });
+
+  it("keeps flyers silent and walks mounted units and giants", () => {
+    // The Saucer and the Gyrocopter fly.
+    expect(
+      moveSoundOfUnitV7([as({ role: "RAIDER" }, "MARTIAN")], unit.id),
+    ).toBe(null);
+    expect(moveSoundOfUnitV7([as({ role: "RAIDER" }, "DWARF")], unit.id)).toBe(
+      null,
+    );
+    // An embarked flyer is an ordinary embarked unit.
+    expect(
+      moveSoundOfUnitV7(
+        [as({ role: "RAIDER", form: "EMBARKED" }, "MARTIAN")],
+        unit.id,
+      ),
+    ).toBe("unit.step.naval");
+    // The Human rider and every giant walk, the Giant Spider too.
+    expect(moveSoundOfUnitV7([as({ role: "RAIDER" })], unit.id)).toBe(
+      "unit.step",
+    );
+    expect(moveSoundOfUnitV7([as({ role: "KNIGHT" })], unit.id)).toBe(
+      "unit.step",
+    );
+    for (const faction of FACTION_IDS_V7)
+      expect(
+        moveSoundOfUnitV7([as({ role: "JUGGERNAUT" }, faction)], unit.id),
+        faction,
+      ).toBe("unit.step");
+    expect(
+      moveSoundOfUnitV7(
+        [as({ ownerId: NEUTRAL_OWNER_ID_V7, role: "JUGGERNAUT" })],
+        unit.id,
+      ),
+    ).toBe("unit.step");
+  });
+
+  it("reads the unit where the move ends, and walks a unit no view holds", () => {
+    // Embarking: on land before, afloat after.
+    expect(moveSoundOfUnitV7([as({ form: "EMBARKED" }), as({})], unit.id)).toBe(
+      "unit.step.naval",
+    );
+    // Landing: afloat before, on land after.
+    expect(moveSoundOfUnitV7([as({}), as({ form: "EMBARKED" })], unit.id)).toBe(
+      "unit.step",
+    );
+    // Gone after the move: as it was before.
+    const gone: PlayerViewV7 = {
+      ...view,
+      units: view.units.filter((candidate) => candidate.id !== unit.id),
+    };
+    expect(
+      moveSoundOfUnitV7(
+        [gone, as({ form: "NAVAL", role: "SUBMARINE" })],
+        unit.id,
+      ),
+    ).toBe("unit.step.naval");
+    expect(moveSoundOfUnitV7([view], 987_654)).toBe("unit.step");
+    expect(moveSoundOfUnitV7([], unit.id)).toBe("unit.step");
+  });
+
+  it("sounds once a short move and twice a long one, from its middle", () => {
+    const land = as({});
+    const ship = as({ form: "NAVAL", role: "PATROL_BOAT" });
+    expect(move(land, land, 1)).toEqual([{ id: "unit.step", delayMs: 0 }]);
+    expect(move(land, land, MOVE_SOUND_REPEAT_TILES_V7 - 1)).toEqual([
+      { id: "unit.step", delayMs: 0 },
+    ]);
+    const tiles = MOVE_SOUND_REPEAT_TILES_V7;
+    expect(move(ship, ship, tiles)).toEqual([
+      { id: "unit.step.naval", delayMs: 0 },
+      { id: "unit.step.naval", delayMs: (240 * tiles) / 2 },
+    ]);
+    // Another player's move, followed by the camera: the same, quieter.
+    expect(move(ship, ship, tiles, { followCamera: true })).toEqual([
+      { id: "unit.step.naval", delayMs: 0, gain: OTHER_PLAYER_MOVE_GAIN_V7 },
+      {
+        id: "unit.step.naval",
+        delayMs: (240 * tiles) / 2,
+        gain: OTHER_PLAYER_MOVE_GAIN_V7,
+      },
+    ]);
+    expect(OTHER_PLAYER_MOVE_GAIN_V7).toBeLessThan(1);
+    expect(OTHER_PLAYER_MOVE_GAIN_V7).toBeGreaterThan(0.4);
+  });
+
+  it("is silent for a flyer, a push, and a move seen on one tile only", () => {
+    const flyer = as({ role: "RAIDER" }, "MARTIAN");
+    expect(move(flyer, flyer, 2)).toEqual([]);
+    expect(move(as({}), as({}), 1, { pushSlide: true })).toEqual([]);
+    // The plan cuts an enemy's move where it enters the unexplored: a
+    // stretch of a single tile (the camera framing it) makes no sound.
+    expect(move(as({}), as({}), 0, { followCamera: true })).toEqual([]);
+  });
+
+  it("steps the viewer's own accepted move, timed with the walk", () => {
+    const own = queryPlayerCommandsV7(view).find(
+      (command): command is Extract<typeof command, { kind: "MOVE" }> =>
+        command.kind === "MOVE",
+    );
+    if (own === undefined) throw new Error("no legal move");
+    const moved = applyCommandV7(state, state.humanPlayerId, own);
+    if (!moved.accepted) throw new Error("move rejected");
+    const seen = boundary(
+      state,
+      moved.state,
+      moved.events,
+      state.humanPlayerId,
+    );
+    const step = seen.steps.find((candidate) => candidate.kind === "MOVE");
+    expect(step).toBeDefined();
+    expect(ids(seen.cues)).toContain(
+      moveSoundOfUnitV7([seen.after, seen.before], own.unitId),
+    );
+    expect(seen.cues[0]?.delayMs).toBe(0);
+  });
+});
+
 describe("sounds of presentation steps", () => {
   it("times a melee swing, its hit and a death with the lunge", () => {
     const { state, next, events } = duel("FIGHTER", 1);
@@ -348,7 +529,7 @@ describe("sounds of presentation steps", () => {
     );
   });
 
-  it("keeps other players' moves silent and steps the viewer's own", () => {
+  it("steps every player's moves, another's quieter, pushes silent", () => {
     const view = viewForV7(
       exploredAllV7(initialV7(1518)),
       exploredAllV7(initialV7(1518)).humanPlayerId,
@@ -373,6 +554,7 @@ describe("sounds of presentation steps", () => {
     expect(cue({ kind: "MOVE", unitId: 1, path, durationMs: 90 })).toEqual([
       { id: "unit.step", delayMs: 0 },
     ]);
+    // Bead pulp_wars-2yc.57: another player's move is heard too, quieter.
     expect(
       cue({
         kind: "MOVE",
@@ -381,7 +563,9 @@ describe("sounds of presentation steps", () => {
         durationMs: 90,
         followCamera: true,
       }),
-    ).toEqual([]);
+    ).toEqual([
+      { id: "unit.step", delayMs: 0, gain: OTHER_PLAYER_MOVE_GAIN_V7 },
+    ]);
     expect(
       cue({ kind: "MOVE", unitId: 1, path, durationMs: 120, pushSlide: true }),
     ).toEqual([]);

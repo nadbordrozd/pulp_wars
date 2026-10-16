@@ -81,10 +81,13 @@ export {
   type PlayableSoundV1,
 } from "./playable-sound";
 export {
+  MOVE_SOUND_REPEAT_TILES_V7,
   OTHER_PLAYER_BUILD_GAIN_V7,
+  OTHER_PLAYER_MOVE_GAIN_V7,
   ROAD_LINK_SOUND_GAIN_V7,
   ROAD_LINK_SOUND_V7,
   hurtSoundOfUnitV7,
+  moveSoundOfUnitV7,
   soundCuesForBoundaryV7,
   soundCuesForStepV7,
   type BoundarySoundCuesV7,

@@ -1,6 +1,8 @@
 import {
   NEUTRAL_KIND_V7,
+  isAfloatFormV7,
   unitFactionV7,
+  unitFliesV7,
   type CoordV7,
   type FactionIdV7,
   type PlayerEventEnvelopeV7,
@@ -14,6 +16,7 @@ import {
   type AttackEffectIdV7,
 } from "../render/canvas/attack-effects-v7";
 import type {
+  CorePresentationStepV7,
   PresentationStepCueV7,
   SupportEffectV7,
 } from "../render/canvas/presentation-plan-v7";
@@ -210,6 +213,65 @@ function attackKills(cue: PresentationStepCueV7, unitId: number): boolean {
 }
 
 /**
+ * Another player's move (bead pulp_wars-2yc.57) is heard at this share of
+ * the level of the viewer's own: an enemy turn moves many units.
+ */
+export const OTHER_PLAYER_MOVE_GAIN_V7 = 0.7;
+
+/**
+ * A move of this many tiles or more is heard twice, from its start and
+ * from its middle; a shorter one once.
+ */
+export const MOVE_SOUND_REPEAT_TILES_V7 = 3;
+
+/**
+ * How a moving unit sounds (bead pulp_wars-2yc.57), from what the viewer
+ * sees of it at the end of the move (else at its start): a ship or an
+ * embarked unit (any afloat form) the oar and water of `unit.step.naval`,
+ * a flyer (a land-form unit whose kind flies: the Saucer, the Mothership,
+ * the Gyrocopter) nothing, and every other unit, mounted units, striders
+ * and giants too, the soft shuffle of `unit.step`. A unit neither view
+ * holds is `unit.step`.
+ */
+export function moveSoundOfUnitV7(
+  views: readonly PlayerViewV7[],
+  unitId: number,
+): SoundIdV1 | null {
+  for (const view of views) {
+    const unit = view.units.find((candidate) => candidate.id === unitId);
+    if (unit === undefined) continue;
+    if (isAfloatFormV7(unit.form)) return "unit.step.naval";
+    if (unitFliesV7(view, unit)) return null;
+    return "unit.step";
+  }
+  return "unit.step";
+}
+
+/**
+ * The sounds of a Move step (bead pulp_wars-2yc.57): one soft footstep
+ * shuffle or oar dip as the unit sets off, and a second from the middle of
+ * a long move, every player's alike, another player's a little quieter. A
+ * push or a knock-back slide is silent, and so is a move the viewer sees
+ * only one tile of: the plan cuts an enemy's move where it enters the
+ * unexplored, so what the viewer cannot see makes no sound.
+ */
+function moveSoundCuesV7(
+  cue: PresentationStepCueV7,
+  step: Extract<CorePresentationStepV7, { readonly kind: "MOVE" }>,
+): readonly SoundCueV1[] {
+  if (step.pushSlide === true || step.path.length < 2) return [];
+  const id = moveSoundOfUnitV7([cue.after, cue.before], step.unitId);
+  if (id === null) return [];
+  const gain = step.followCamera === true ? OTHER_PLAYER_MOVE_GAIN_V7 : 1;
+  const tiles = step.path.length - 1;
+  const at = (delayMs: number): SoundCueV1 =>
+    gain === 1 ? { id, delayMs } : { id, delayMs, gain };
+  return tiles >= MOVE_SOUND_REPEAT_TILES_V7
+    ? [at(0), at(step.durationMs / 2)]
+    : [at(0)];
+}
+
+/**
  * The sounds of one presentation step, timed from the step's start. The
  * delays are in the animation's own milliseconds; the caller scales them
  * with the animation speed.
@@ -220,13 +282,7 @@ export function soundCuesForStepV7(
   const step = cue.step;
   switch (step.kind) {
     case "MOVE":
-      // The viewer's own unit takes a quiet step. Other players' moves,
-      // pushes and one-frame camera steps are silent.
-      return step.followCamera === true ||
-        step.pushSlide === true ||
-        step.path.length < 2
-        ? []
-        : [{ id: "unit.step", delayMs: 0 }];
+      return moveSoundCuesV7(cue, step);
     case "MELEE":
     case "RANGED":
     case "CATAPULT": {

@@ -3644,21 +3644,23 @@
             "trimEndSeconds": 0.667,
             "trimmedSeconds": 0.667,
             "onsetMs": 0,
-            "tailMs": 25,
-            "energyPastLength": 0.0294,
-            "clipSeconds": 0.2,
-            "storedLufs": -27,
-            "crestDb": 8.6,
-            "centroidHz": 146,
-            "bands": [0.985, 0.002, 0.003, 0.01],
+            "tailMs": 135,
+            "energyPastLength": 0.0015,
+            "clipSeconds": 0.6,
+            "storedLufs": -26.3,
+            "crestDb": 13.2,
+            "centroidHz": 658,
+            "bands": [0.929, 0.002, 0.017, 0.052],
             "shape": [
-              -4, -3, -12, 0, 0, -3, -19, -13, -14, -14, -16, -22, -18, -16,
-              -21, -32
+              -3, 0, -13, -14, -16, -18, -22, -25, -26, -24, -20, -25, -18, -28,
+              -37, -51
             ]
           },
-          "failures": [],
-          "pass": true,
-          "score": 1.18
+          "failures": [
+            "retired: The user, 2026-10-15: \"there should be a discrete sound effect for moving a unit. like the sound of shuffling shoes or something\"; one thump is not a shuffle."
+          ],
+          "pass": false,
+          "score": 1.119
         },
         {
           "n": 102,
@@ -3675,20 +3677,23 @@
             "trimEndSeconds": 0.96,
             "trimmedSeconds": 0.96,
             "onsetMs": 0,
-            "tailMs": 15,
-            "energyPastLength": 0.2416,
-            "clipSeconds": 0.2,
-            "storedLufs": -18.8,
-            "crestDb": 10.1,
-            "centroidHz": 1420,
-            "bands": [0.771, 0.007, 0.069, 0.153],
+            "tailMs": 80,
+            "energyPastLength": 0.0008,
+            "clipSeconds": 0.6,
+            "storedLufs": -19.8,
+            "crestDb": 13.5,
+            "centroidHz": 2046,
+            "bands": [0.685, 0.006, 0.082, 0.227],
             "shape": [
-              0, 0, -8, -4, -4, -5, -12, -5, -3, -4, -6, -1, -3, -10, -11, -22
+              0, -4, -3, -1, -3, -9, -15, -9, -5, -6, -13, -12, -14, -15, -22,
+              -35
             ]
           },
-          "failures": ["too long (24% of its energy after 0.2 s)"],
+          "failures": [
+            "retired: The user, 2026-10-15: \"there should be a discrete sound effect for moving a unit. like the sound of shuffling shoes or something\"; one thump is not a shuffle."
+          ],
           "pass": false,
-          "score": 2.004
+          "score": 1.07
         },
         {
           "n": 103,
@@ -3705,20 +3710,21 @@
             "trimEndSeconds": 0.96,
             "trimmedSeconds": 0.96,
             "onsetMs": 5,
-            "tailMs": 35,
-            "energyPastLength": 0.025,
-            "clipSeconds": 0.2,
-            "storedLufs": -9.1,
-            "crestDb": 7.9,
-            "centroidHz": 458,
-            "bands": [0.959, 0.001, 0.006, 0.033],
+            "tailMs": 361,
+            "energyPastLength": 0.0059,
+            "clipSeconds": 0.6,
+            "storedLufs": -12.1,
+            "crestDb": 12.6,
+            "centroidHz": 793,
+            "bands": [0.929, 0.002, 0.01, 0.059],
             "shape": [
-              -9, -5, -5, -2, 0, 0, 0, -2, -4, -6, -8, -9, -12, -16, -30, -34
+              -5, 0, 0, -6, -12, -16, -18, -23, -29, -31, -29, -30, -31, -30,
+              -31, -40
             ]
           },
-          "failures": ["squashed (crest 7.9 dB, at least 8)"],
+          "failures": ["long tail (361 ms of 600)"],
           "pass": false,
-          "score": 1.308
+          "score": 1.349
         },
         {
           "n": 104,
@@ -3735,21 +3741,21 @@
             "trimEndSeconds": 0.531,
             "trimmedSeconds": 0.531,
             "onsetMs": 0,
-            "tailMs": 30,
-            "energyPastLength": 0.0148,
-            "clipSeconds": 0.2,
-            "storedLufs": -10.5,
-            "crestDb": 7.8,
-            "centroidHz": 129,
-            "bands": [0.84, 0.155, 0.004, 0.002],
+            "tailMs": 316,
+            "energyPastLength": 0,
+            "clipSeconds": 0.531,
+            "storedLufs": -13.4,
+            "crestDb": 12,
+            "centroidHz": 128,
+            "bands": [0.842, 0.153, 0.004, 0.002],
             "shape": [
-              -2, 0, 0, -1, -5, -2, -10, -14, -8, -4, -12, -14, -9, -10, -34,
-              -39
+              0, 0, -7, -4, -9, -13, -15, -23, -31, -32, -28, -31, -36, -32,
+              -32, -38
             ]
           },
-          "failures": ["squashed (crest 7.8 dB, at least 8)"],
+          "failures": ["too dull (centroid 128 Hz, at least 200)"],
           "pass": false,
-          "score": 1.134
+          "score": 1.043
         },
         {
           "n": 105,
@@ -3766,30 +3772,394 @@
             "trimEndSeconds": 0.96,
             "trimmedSeconds": 0.96,
             "onsetMs": 0,
-            "tailMs": 40,
-            "energyPastLength": 0.0044,
-            "clipSeconds": 0.2,
-            "storedLufs": -11.1,
-            "crestDb": 8.2,
-            "centroidHz": 24,
-            "bands": [1, 0, 0, 0],
+            "tailMs": 416,
+            "energyPastLength": 0,
+            "clipSeconds": 0.6,
+            "storedLufs": -14,
+            "crestDb": 12.9,
+            "centroidHz": 25,
+            "bands": [0.999, 0, 0, 0],
             "shape": [
-              -5, -3, -6, -7, -2, -1, -4, -5, -4, -4, -1, 0, -5, -21, -23, -36
+              -3, -1, -4, 0, -5, -23, -22, -23, -35, -41, -46, -55, -57, -59,
+              -60, -60
+            ]
+          },
+          "failures": [
+            "long tail (416 ms of 600)",
+            "too dull (centroid 25 Hz, at least 200)"
+          ],
+          "pass": false,
+          "score": 1.347
+        },
+        {
+          "n": 106,
+          "round": 7,
+          "take": 1,
+          "measured": {
+            "rawSeconds": 1.6,
+            "rawPeakDbfs": 0,
+            "clippedShare": 0.00003,
+            "clippedRunShare": 0,
+            "leadMs": 140,
+            "leadInShare": 0,
+            "trimStartSeconds": 0.14,
+            "trimEndSeconds": 1.158,
+            "trimmedSeconds": 1.017,
+            "onsetMs": 20,
+            "tailMs": 466,
+            "energyPastLength": 0.1837,
+            "clipSeconds": 0.6,
+            "storedLufs": -23.9,
+            "crestDb": 21.4,
+            "centroidHz": 513,
+            "bands": [0.385, 0.541, 0.05, 0.024],
+            "shape": [
+              -6, 0, -4, -15, -23, -33, -36, -36, -40, -39, -37, -35, -37, -35,
+              -44, -49
+            ]
+          },
+          "failures": [
+            "too long (18% of its energy after 0.6 s)",
+            "long tail (466 ms of 600)"
+          ],
+          "pass": false,
+          "score": 2.223
+        },
+        {
+          "n": 107,
+          "round": 7,
+          "take": 2,
+          "measured": {
+            "rawSeconds": 1.6,
+            "rawPeakDbfs": -24.3,
+            "clippedShare": 0,
+            "clippedRunShare": 0,
+            "leadMs": 0,
+            "leadInShare": 0,
+            "trimStartSeconds": 0,
+            "trimEndSeconds": 0.812,
+            "trimmedSeconds": 0.812,
+            "onsetMs": 10,
+            "tailMs": 35,
+            "energyPastLength": 0.0129,
+            "clipSeconds": 0.6,
+            "storedLufs": -18.3,
+            "crestDb": 17.1,
+            "centroidHz": 1225,
+            "bands": [0.049, 0.626, 0.28, 0.045],
+            "shape": [
+              -6, -10, -12, -15, -19, -18, -21, -24, -23, -15, -9, -1, 0, 0, -8,
+              -19
             ]
           },
           "failures": [],
           "pass": true,
-          "score": 1.118
+          "score": 1.131
+        },
+        {
+          "n": 108,
+          "round": 7,
+          "take": 3,
+          "measured": {
+            "rawSeconds": 1.6,
+            "rawPeakDbfs": -23.9,
+            "clippedShare": 0,
+            "clippedRunShare": 0,
+            "leadMs": 35,
+            "leadInShare": 0,
+            "trimStartSeconds": 0.035,
+            "trimEndSeconds": 1.478,
+            "trimmedSeconds": 1.443,
+            "onsetMs": 215,
+            "tailMs": 70,
+            "energyPastLength": 0.3463,
+            "clipSeconds": 0.6,
+            "storedLufs": -17.6,
+            "crestDb": 16.7,
+            "centroidHz": 1312,
+            "bands": [0.025, 0.717, 0.19, 0.069],
+            "shape": [
+              -29, -18, -17, -12, -12, -7, -6, -1, 0, -2, -10, -10, -13, -13,
+              -18, -28
+            ]
+          },
+          "failures": [
+            "too long (35% of its energy after 0.6 s)",
+            "slow onset (215 ms, at most 120)"
+          ],
+          "pass": false,
+          "score": 3.519
+        },
+        {
+          "n": 109,
+          "round": 8,
+          "take": 1,
+          "measured": {
+            "rawSeconds": 0.96,
+            "rawPeakDbfs": -16.6,
+            "clippedShare": 0,
+            "clippedRunShare": 0,
+            "leadMs": 0,
+            "leadInShare": 0,
+            "trimStartSeconds": 0,
+            "trimEndSeconds": 0.797,
+            "trimmedSeconds": 0.797,
+            "onsetMs": 306,
+            "tailMs": 80,
+            "energyPastLength": 0.0033,
+            "clipSeconds": 0.6,
+            "storedLufs": -21.1,
+            "crestDb": 19.5,
+            "centroidHz": 716,
+            "bands": [0.086, 0.758, 0.146, 0.009],
+            "shape": [
+              -29, -28, -28, -29, -29, -23, -22, -16, -9, -6, -2, 0, -5, -12,
+              -21, -35
+            ]
+          },
+          "failures": ["slow onset (306 ms, at most 120)"],
+          "pass": false,
+          "score": 2.61
+        },
+        {
+          "n": 110,
+          "round": 8,
+          "take": 2,
+          "measured": {
+            "rawSeconds": 0.96,
+            "rawPeakDbfs": -13.8,
+            "clippedShare": 0,
+            "clippedRunShare": 0,
+            "leadMs": 0,
+            "leadInShare": 0,
+            "trimStartSeconds": 0,
+            "trimEndSeconds": 0.591,
+            "trimmedSeconds": 0.591,
+            "onsetMs": 0,
+            "tailMs": 356,
+            "energyPastLength": 0,
+            "clipSeconds": 0.591,
+            "storedLufs": -22.3,
+            "crestDb": 20.2,
+            "centroidHz": 510,
+            "bands": [0.245, 0.702, 0.044, 0.01],
+            "shape": [
+              -1, 0, -9, -18, -16, -11, -16, -31, -24, -25, -28, -30, -33, -36,
+              -39, -39
+            ]
+          },
+          "failures": ["long tail (356 ms of 591)"],
+          "pass": false,
+          "score": 1.268
+        },
+        {
+          "n": 111,
+          "round": 8,
+          "take": 3,
+          "measured": {
+            "rawSeconds": 0.96,
+            "rawPeakDbfs": -2.8,
+            "clippedShare": 0,
+            "clippedRunShare": 0,
+            "leadMs": 105,
+            "leadInShare": 0,
+            "trimStartSeconds": 0.105,
+            "trimEndSeconds": 0.631,
+            "trimmedSeconds": 0.526,
+            "onsetMs": 55,
+            "tailMs": 276,
+            "energyPastLength": 0,
+            "clipSeconds": 0.529,
+            "storedLufs": -23,
+            "crestDb": 19.2,
+            "centroidHz": 239,
+            "bands": [0.735, 0.229, 0.034, 0.002],
+            "shape": [
+              -33, -2, 0, -10, -15, -10, -12, -15, -28, -39, -41, -41, -42, -42,
+              -43, -45
+            ]
+          },
+          "failures": [],
+          "pass": true,
+          "score": 1.274
         }
       ],
-      "kept": [105, 101],
+      "kept": [107, 111],
+      "offered": [],
+      "retired": [101, 102],
+      "confidence": "high",
+      "why": "#107 scored best (1.131) of 2 kept: 0.6 s for a range of 0.25–0.6 s, onset 10 ms, tail 35 ms, centred near 1225 Hz; the next, #111, scored 1.274. Retired by the user, kept to choose but never the default: #101, #102.",
+      "kind": "move",
+      "minSeconds": 0.25,
+      "maxSeconds": 0.6
+    },
+    {
+      "id": "unit.step.naval",
+      "takes": [
+        {
+          "n": 101,
+          "round": 1,
+          "take": 1,
+          "measured": {
+            "rawSeconds": 1.6,
+            "rawPeakDbfs": 0,
+            "clippedShare": 0.00028,
+            "clippedRunShare": 0.00021,
+            "leadMs": 0,
+            "leadInShare": 0,
+            "trimStartSeconds": 0,
+            "trimEndSeconds": 0.967,
+            "trimmedSeconds": 0.967,
+            "onsetMs": 5,
+            "tailMs": 110,
+            "energyPastLength": 0.0068,
+            "clipSeconds": 0.6,
+            "storedLufs": -20.8,
+            "crestDb": 18.4,
+            "centroidHz": 150,
+            "bands": [0.578, 0.42, 0.001, 0],
+            "shape": [
+              0, -3, -15, -12, -17, -18, -19, -18, -20, -22, -12, -17, -17, -19,
+              -33, -39
+            ]
+          },
+          "failures": ["too dull (centroid 150 Hz, at least 200)"],
+          "pass": false,
+          "score": 1.144
+        },
+        {
+          "n": 102,
+          "round": 1,
+          "take": 2,
+          "measured": {
+            "rawSeconds": 1.6,
+            "rawPeakDbfs": 0,
+            "clippedShare": 0.00037,
+            "clippedRunShare": 0.0001,
+            "leadMs": 0,
+            "leadInShare": 0,
+            "trimStartSeconds": 0,
+            "trimEndSeconds": 1.108,
+            "trimmedSeconds": 1.108,
+            "onsetMs": 45,
+            "tailMs": 60,
+            "energyPastLength": 0.0174,
+            "clipSeconds": 0.6,
+            "storedLufs": -17.8,
+            "crestDb": 15.2,
+            "centroidHz": 258,
+            "bands": [0.515, 0.481, 0.004, 0],
+            "shape": [
+              -18, -4, -8, -12, -12, -15, -14, -23, -17, -19, -17, 0, -5, -9,
+              -13, -33
+            ]
+          },
+          "failures": [],
+          "pass": true,
+          "score": 1.345
+        },
+        {
+          "n": 103,
+          "round": 1,
+          "take": 3,
+          "measured": {
+            "rawSeconds": 1.6,
+            "rawPeakDbfs": 0,
+            "clippedShare": 0.00075,
+            "clippedRunShare": 0.00052,
+            "leadMs": 0,
+            "leadInShare": 0,
+            "trimStartSeconds": 0,
+            "trimEndSeconds": 0.651,
+            "trimmedSeconds": 0.651,
+            "onsetMs": 45,
+            "tailMs": 210,
+            "energyPastLength": 0.0001,
+            "clipSeconds": 0.6,
+            "storedLufs": -18.9,
+            "crestDb": 15,
+            "centroidHz": 117,
+            "bands": [0.72, 0.28, 0.001, 0],
+            "shape": [
+              -21, -7, -1, 0, -7, -9, -19, -17, -21, -20, -20, -22, -24, -28,
+              -32, -52
+            ]
+          },
+          "failures": ["too dull (centroid 117 Hz, at least 200)"],
+          "pass": false,
+          "score": 1.4
+        },
+        {
+          "n": 104,
+          "round": 2,
+          "take": 1,
+          "measured": {
+            "rawSeconds": 0.96,
+            "rawPeakDbfs": 0,
+            "clippedShare": 0.00045,
+            "clippedRunShare": 0.00038,
+            "leadMs": 0,
+            "leadInShare": 0,
+            "trimStartSeconds": 0,
+            "trimEndSeconds": 0.682,
+            "trimmedSeconds": 0.682,
+            "onsetMs": 25,
+            "tailMs": 220,
+            "energyPastLength": 0.0008,
+            "clipSeconds": 0.6,
+            "storedLufs": -18.3,
+            "crestDb": 16.9,
+            "centroidHz": 913,
+            "bands": [0.001, 0.845, 0.136, 0.018],
+            "shape": [
+              -10, -12, 0, -7, -16, -4, -6, -16, -23, -17, -18, -24, -32, -30,
+              -40, -48
+            ]
+          },
+          "failures": [],
+          "pass": true,
+          "score": 1.312
+        },
+        {
+          "n": 105,
+          "round": 2,
+          "take": 2,
+          "measured": {
+            "rawSeconds": 0.96,
+            "rawPeakDbfs": -5.9,
+            "clippedShare": 0,
+            "clippedRunShare": 0,
+            "leadMs": 0,
+            "leadInShare": 0,
+            "trimStartSeconds": 0,
+            "trimEndSeconds": 0.636,
+            "trimmedSeconds": 0.636,
+            "onsetMs": 0,
+            "tailMs": 185,
+            "energyPastLength": 0.0002,
+            "clipSeconds": 0.6,
+            "storedLufs": -20.7,
+            "crestDb": 19.7,
+            "centroidHz": 1386,
+            "bands": [0, 0.71, 0.252, 0.038],
+            "shape": [
+              -4, 0, -3, -6, -12, -16, -19, -13, -14, -23, -21, -17, -29, -23,
+              -32, -54
+            ]
+          },
+          "failures": [],
+          "pass": true,
+          "score": 1.155
+        }
+      ],
+      "kept": [105, 104, 102],
       "offered": [],
       "retired": [],
       "confidence": "high",
-      "why": "#105 scored best (1.118) of 2 kept: 0.2 s for a range of 0.02–0.2 s, onset 0 ms, tail 40 ms, centred near 24 Hz; the next, #101, scored 1.18.",
-      "kind": "step",
-      "minSeconds": 0.02,
-      "maxSeconds": 0.2
+      "why": "#105 scored best (1.155) of 3 kept: 0.6 s for a range of 0.25–0.6 s, onset 0 ms, tail 185 ms, centred near 1386 Hz; the next, #104, scored 1.312.",
+      "kind": "move",
+      "minSeconds": 0.25,
+      "maxSeconds": 0.6
     },
     {
       "id": "unit.train",

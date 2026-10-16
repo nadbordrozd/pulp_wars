@@ -54,6 +54,7 @@ export type SfxKindV1 =
   | "ui"
   | "ui-error"
   | "step"
+  | "move"
   | "hit"
   | "pop"
   | "clang"

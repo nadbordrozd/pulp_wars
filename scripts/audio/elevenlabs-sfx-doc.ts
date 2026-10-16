@@ -208,11 +208,21 @@ export function elevenLabsSfxMarkdownV1(): string {
     } sounds still short of takes once more (round 3).${
       rounds.some((round) => round > 3)
         ? ` Bead \`pulp_wars-2yc.52\` added rounds 4 to 6, new prompts for the sounds whose takes the user heard and did not want (${prompts.sounds
-            .filter((sound) => (sound.retired ?? []).length > 0)
+            .filter(
+              (sound) =>
+                (sound.retired ?? []).length > 0 &&
+                (sound.revisions ?? []).some(
+                  (revision) => revision.round >= 4 && revision.round <= 6,
+                ),
+            )
             .map((sound) => `\`${sound.id}\``)
             .join(
               ", ",
             )}; their old takes are retired, kept to choose but never the default), and the first two rounds of its new sounds.`
+        : ""
+    }${
+      rounds.some((round) => round > 6)
+        ? ` Bead \`pulp_wars-2yc.57\` added rounds 7 and 8 for the move sounds: a shuffle of footsteps for \`unit.step\` (its single thumps retired) and the first two rounds of \`unit.step.naval\`, both 10 dB under the hit.`
         : ""
     }`,
     `- ${kept} takes kept: ${measured.filter((sound) => sound.kept.length > 0).length} sounds play a new take by default, ${measured.filter((sound) => sound.kept.length >= 2).length} of them with at least one other to choose.`,

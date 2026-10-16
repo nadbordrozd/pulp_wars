@@ -1,6 +1,6 @@
 {
   "provider": "ElevenLabs sound effects",
-  "provenance": "ElevenLabs sound effects, generated 2026-10-13, 2026-10-14",
+  "provenance": "ElevenLabs sound effects, generated 2026-10-13, 2026-10-14, 2026-10-16",
   "bead": "pulp_wars-2yc.51",
   "model": "eleven_text_to_sound_v2",
   "sounds": [
@@ -986,28 +986,85 @@
     },
     {
       "id": "unit.step",
-      "default": 105,
+      "default": 107,
       "confidence": "high",
       "takes": [
         {
-          "n": 105,
-          "file": "unit-step-105.m4a",
-          "generated": "2026-10-14",
-          "seconds": 0.2,
-          "gain": 0.12,
+          "n": 107,
+          "file": "unit-step-107.m4a",
+          "generated": "2026-10-16",
+          "seconds": 0.6,
+          "gain": 0.24,
           "passed": true,
-          "prompt": "One single tiny footstep on soft earth: a short muted thud, very short, nothing else.",
-          "note": "0.2 s, hard attack, centred near 24 Hz, 100% of its energy under 1 kHz, crest 8.2 dB."
+          "prompt": "A small game piece walks a short way: a few soft quick shuffling footsteps of light shoes on dirt and grass, gentle and quiet, nothing after.",
+          "note": "0.6 s, hard attack, centred near 1.2 kHz, 68% of its energy under 1 kHz, crest 17.1 dB."
+        },
+        {
+          "n": 111,
+          "file": "unit-step-111.m4a",
+          "generated": "2026-10-16",
+          "seconds": 0.529,
+          "gain": 0.42,
+          "passed": true,
+          "prompt": "Two quick soft shuffling footsteps of small light shoes on a dirt path, gentle and quiet, very short, nothing after.",
+          "note": "0.529 s, swells over 55 ms, centred near 239 Hz, 96% of its energy under 1 kHz, crest 19.2 dB."
         },
         {
           "n": 101,
           "file": "unit-step-101.m4a",
           "generated": "2026-10-14",
-          "seconds": 0.2,
-          "gain": 0.73,
-          "passed": true,
+          "seconds": 0.6,
+          "gain": 0.61,
+          "passed": false,
           "prompt": "One single soft footstep on grass: a tiny light boot thump, very short.",
-          "note": "0.2 s, hard attack, centred near 146 Hz, 99% of its energy under 1 kHz, crest 8.6 dB."
+          "note": "0.6 s, hard attack, centred near 658 Hz, 93% of its energy under 1 kHz, crest 13.2 dB."
+        },
+        {
+          "n": 102,
+          "file": "unit-step-102.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.6,
+          "gain": 0.29,
+          "passed": false,
+          "prompt": "One single soft footstep on grass: a tiny light boot thump, very short.",
+          "note": "0.6 s, hard attack, centred near 2.0 kHz, 69% of its energy under 1 kHz, crest 13.5 dB."
+        }
+      ]
+    },
+    {
+      "id": "unit.step.naval",
+      "default": 105,
+      "confidence": "high",
+      "takes": [
+        {
+          "n": 105,
+          "file": "unit-step-naval-105.m4a",
+          "generated": "2026-10-16",
+          "seconds": 0.6,
+          "gain": 0.32,
+          "passed": true,
+          "prompt": "A small rowing boat moves on: one light quick paddle splash and a soft little ripple of water, quiet and short, nothing after.",
+          "note": "0.6 s, hard attack, centred near 1.4 kHz, 71% of its energy under 1 kHz, crest 19.7 dB."
+        },
+        {
+          "n": 104,
+          "file": "unit-step-naval-104.m4a",
+          "generated": "2026-10-16",
+          "seconds": 0.6,
+          "gain": 0.24,
+          "passed": true,
+          "prompt": "A small rowing boat moves on: one light quick paddle splash and a soft little ripple of water, quiet and short, nothing after.",
+          "note": "0.6 s, quick attack, centred near 913 Hz, 85% of its energy under 1 kHz, crest 16.9 dB."
+        },
+        {
+          "n": 102,
+          "file": "unit-step-naval-102.m4a",
+          "generated": "2026-10-16",
+          "seconds": 0.6,
+          "gain": 0.23,
+          "passed": true,
+          "prompt": "A small wooden boat moves a short way: one soft oar dip and a gentle lap of water against the hull, quiet and calm, nothing after.",
+          "note": "0.6 s, swells over 45 ms, centred near 258 Hz, 100% of its energy under 1 kHz, crest 15.2 dB."
         }
       ]
     },

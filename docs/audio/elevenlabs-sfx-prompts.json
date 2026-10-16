@@ -451,12 +451,12 @@
     },
     {
       "id": "unit.step",
-      "kind": "step",
+      "kind": "move",
       "suffix": "style",
       "prompt": "One single soft footstep on grass: a tiny light boot thump, very short.",
       "durationSeconds": 0.5,
-      "minSeconds": 0.02,
-      "maxSeconds": 0.2,
+      "minSeconds": 0.25,
+      "maxSeconds": 0.6,
       "promptInfluence": 0.6,
       "revisions": [
         {
@@ -464,8 +464,76 @@
           "takes": 2,
           "prompt": "One single tiny footstep on soft earth: a short muted thud, very short, nothing else.",
           "reason": "One take too long, one squashed; asks for one muted thud and nothing after."
+        },
+        {
+          "round": 7,
+          "takes": 3,
+          "prompt": "A small game piece walks a short way: a few soft quick shuffling footsteps of light shoes on dirt and grass, gentle and quiet, nothing after.",
+          "durationSeconds": 0.8,
+          "promptInfluence": 0.5,
+          "reason": "Bead pulp_wars-2yc.57, the user: \"there should be a discrete sound effect for moving a unit. like the sound of shuffling shoes or something\". The step becomes every land unit's move, own and other players': a short soft shuffle of a few steps instead of one thump. The sound's kind became `move` and its length 0.25 to 0.6 s (it was a `step` of 0.02 to 0.2 s): its earlier takes are judged by the new rules too."
+        },
+        {
+          "round": 8,
+          "takes": 3,
+          "prompt": "Two quick soft shuffling footsteps of small light shoes on a dirt path, gentle and quiet, very short, nothing after.",
+          "durationSeconds": 0.5,
+          "promptInfluence": 0.6,
+          "reason": "Round 7 ran long: two of three takes walked on for a second or more (18% and 35% of their energy past 0.6 s) and one passed. Asks for two quick steps and a shorter take."
         }
-      ]
+      ],
+      "retired": [
+        {
+          "n": 101,
+          "reason": "The user, 2026-10-15: \"there should be a discrete sound effect for moving a unit. like the sound of shuffling shoes or something\"; one thump is not a shuffle."
+        },
+        {
+          "n": 102,
+          "reason": "The user, 2026-10-15: \"there should be a discrete sound effect for moving a unit. like the sound of shuffling shoes or something\"; one thump is not a shuffle."
+        },
+        {
+          "n": 103,
+          "reason": "The user, 2026-10-15: \"there should be a discrete sound effect for moving a unit. like the sound of shuffling shoes or something\"; one thump is not a shuffle."
+        },
+        {
+          "n": 104,
+          "reason": "The user, 2026-10-15: \"there should be a discrete sound effect for moving a unit. like the sound of shuffling shoes or something\"; one thump is not a shuffle."
+        },
+        {
+          "n": 105,
+          "reason": "The user, 2026-10-15: \"there should be a discrete sound effect for moving a unit. like the sound of shuffling shoes or something\"; one thump is not a shuffle."
+        }
+      ],
+      "loudness": {
+        "like": "impact.hit",
+        "offsetDb": -10,
+        "reason": "Bead pulp_wars-2yc.57: units move more than anything else happens, every unit of an enemy turn, so a move plays 10 dB under the level the hit sound is matched to."
+      }
+    },
+    {
+      "id": "unit.step.naval",
+      "kind": "move",
+      "suffix": "style",
+      "prompt": "A small wooden boat moves a short way: one soft oar dip and a gentle lap of water against the hull, quiet and calm, nothing after.",
+      "durationSeconds": 0.8,
+      "minSeconds": 0.25,
+      "maxSeconds": 0.6,
+      "promptInfluence": 0.5,
+      "revisions": [
+        {
+          "round": 2,
+          "takes": 2,
+          "prompt": "A small rowing boat moves on: one light quick paddle splash and a soft little ripple of water, quiet and short, nothing after.",
+          "durationSeconds": 0.5,
+          "promptInfluence": 0.5,
+          "reason": "Round 1 came back deep: two of three takes centred near 120 to 150 Hz, which a laptop barely plays, and one failed for it. Asks for a lighter splash and a shorter take."
+        }
+      ],
+      "loudness": {
+        "like": "impact.hit",
+        "offsetDb": -10,
+        "reason": "Bead pulp_wars-2yc.57: a ship's move, like a land unit's, plays 10 dB under the level the hit sound is matched to."
+      }
     },
     {
       "id": "unit.train",

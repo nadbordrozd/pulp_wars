@@ -377,7 +377,12 @@ const NOTES: Readonly<Partial<Record<SoundIdV1, SoundNoteV7>>> = {
     picture: art("PORTRAIT:MONSTER_GIANT_SPIDER"),
   },
   "unit.death": { when: "Unit dies", picture: icon("skull") },
-  "unit.step": { when: "Your unit moves", picture: icon("move") },
+  // Bead pulp_wars-2yc.57: every player's moves, on land and afloat.
+  "unit.step": { when: "Unit walks", picture: icon("move") },
+  "unit.step.naval": {
+    when: "Ship sails",
+    picture: unit("PATROL_BOAT", "ORIGINAL"),
+  },
   "unit.train": { when: "New unit joins", picture: icon("units") },
   "unit.levelup": { when: "Unit promoted", picture: icon("defense") },
   "support.heal": {

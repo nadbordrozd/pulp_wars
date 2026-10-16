@@ -1,6 +1,6 @@
 {
   "provider": "ElevenLabs sound effects",
-  "provenance": "ElevenLabs sound effects, generated 2026-10-13, 2026-10-14",
+  "provenance": "ElevenLabs sound effects, generated 2026-10-13, 2026-10-14, 2026-10-16",
   "bead": "pulp_wars-2yc.51",
   "output": {
     "folder": "public/assets/audio",
@@ -1682,29 +1682,46 @@
     },
     {
       "id": "unit.step",
-      "default": 105,
+      "default": 107,
       "confidence": "high",
-      "why": "#105 scored best (1.118) of 2 kept: 0.2 s for a range of 0.02–0.2 s, onset 0 ms, tail 40 ms, centred near 24 Hz; the next, #101, scored 1.18.",
+      "why": "#107 scored best (1.131) of 2 kept: 0.6 s for a range of 0.25–0.6 s, onset 10 ms, tail 35 ms, centred near 1225 Hz; the next, #111, scored 1.274. Retired by the user, kept to choose but never the default: #101, #102.",
       "reference": {
-        "source": "stock recording #1 (unit-step-1.m4a) at level 0.25",
-        "lufs": -29.7
+        "source": "-10 dB against `impact.hit`'s reference, stock recording #1 (impact-hit-1.m4a) at level 0.6",
+        "lufs": -30.6
       },
       "takes": [
         {
-          "n": 105,
-          "file": "unit-step-105.m4a",
-          "generated": "2026-10-14",
-          "round": 2,
+          "n": 107,
+          "file": "unit-step-107.m4a",
+          "generated": "2026-10-16",
+          "round": 7,
           "take": 2,
           "model": "eleven_text_to_sound_v2",
-          "prompt": "One single tiny footstep on soft earth: a short muted thud, very short, nothing else. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+          "prompt": "A small game piece walks a short way: a few soft quick shuffling footsteps of light shoes on dirt and grass, gentle and quiet, nothing after. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+          "durationSeconds": 0.8,
+          "promptInfluence": 0.5,
+          "startSeconds": 0,
+          "endSeconds": 0.6,
+          "gain": 0.24,
+          "lufs": -18.3,
+          "note": "0.6 s, hard attack, centred near 1.2 kHz, 68% of its energy under 1 kHz, crest 17.1 dB.",
+          "passed": true
+        },
+        {
+          "n": 111,
+          "file": "unit-step-111.m4a",
+          "generated": "2026-10-16",
+          "round": 8,
+          "take": 3,
+          "model": "eleven_text_to_sound_v2",
+          "prompt": "Two quick soft shuffling footsteps of small light shoes on a dirt path, gentle and quiet, very short, nothing after. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
           "durationSeconds": 0.5,
           "promptInfluence": 0.6,
-          "startSeconds": 0,
-          "endSeconds": 0.2,
-          "gain": 0.12,
-          "lufs": -11.1,
-          "note": "0.2 s, hard attack, centred near 24 Hz, 100% of its energy under 1 kHz, crest 8.2 dB.",
+          "startSeconds": 0.102,
+          "endSeconds": 0.631,
+          "gain": 0.42,
+          "lufs": -23,
+          "note": "0.529 s, swells over 55 ms, centred near 239 Hz, 96% of its energy under 1 kHz, crest 19.2 dB.",
           "passed": true
         },
         {
@@ -1718,10 +1735,90 @@
           "durationSeconds": 0.5,
           "promptInfluence": 0.6,
           "startSeconds": 0,
-          "endSeconds": 0.2,
-          "gain": 0.73,
-          "lufs": -27,
-          "note": "0.2 s, hard attack, centred near 146 Hz, 99% of its energy under 1 kHz, crest 8.6 dB.",
+          "endSeconds": 0.6,
+          "gain": 0.61,
+          "lufs": -26.3,
+          "note": "0.6 s, hard attack, centred near 658 Hz, 93% of its energy under 1 kHz, crest 13.2 dB.",
+          "passed": false
+        },
+        {
+          "n": 102,
+          "file": "unit-step-102.m4a",
+          "generated": "2026-10-14",
+          "round": 1,
+          "take": 2,
+          "model": "eleven_text_to_sound_v2",
+          "prompt": "One single soft footstep on grass: a tiny light boot thump, very short. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+          "durationSeconds": 0.5,
+          "promptInfluence": 0.6,
+          "startSeconds": 0,
+          "endSeconds": 0.6,
+          "gain": 0.29,
+          "lufs": -19.8,
+          "note": "0.6 s, hard attack, centred near 2.0 kHz, 69% of its energy under 1 kHz, crest 13.5 dB.",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "id": "unit.step.naval",
+      "default": 105,
+      "confidence": "high",
+      "why": "#105 scored best (1.155) of 3 kept: 0.6 s for a range of 0.25–0.6 s, onset 0 ms, tail 185 ms, centred near 1386 Hz; the next, #104, scored 1.312.",
+      "reference": {
+        "source": "-10 dB against `impact.hit`'s reference, stock recording #1 (impact-hit-1.m4a) at level 0.6",
+        "lufs": -30.6
+      },
+      "takes": [
+        {
+          "n": 105,
+          "file": "unit-step-naval-105.m4a",
+          "generated": "2026-10-16",
+          "round": 2,
+          "take": 2,
+          "model": "eleven_text_to_sound_v2",
+          "prompt": "A small rowing boat moves on: one light quick paddle splash and a soft little ripple of water, quiet and short, nothing after. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+          "durationSeconds": 0.5,
+          "promptInfluence": 0.5,
+          "startSeconds": 0,
+          "endSeconds": 0.6,
+          "gain": 0.32,
+          "lufs": -20.7,
+          "note": "0.6 s, hard attack, centred near 1.4 kHz, 71% of its energy under 1 kHz, crest 19.7 dB.",
+          "passed": true
+        },
+        {
+          "n": 104,
+          "file": "unit-step-naval-104.m4a",
+          "generated": "2026-10-16",
+          "round": 2,
+          "take": 1,
+          "model": "eleven_text_to_sound_v2",
+          "prompt": "A small rowing boat moves on: one light quick paddle splash and a soft little ripple of water, quiet and short, nothing after. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+          "durationSeconds": 0.5,
+          "promptInfluence": 0.5,
+          "startSeconds": 0,
+          "endSeconds": 0.6,
+          "gain": 0.24,
+          "lufs": -18.3,
+          "note": "0.6 s, quick attack, centred near 913 Hz, 85% of its energy under 1 kHz, crest 16.9 dB.",
+          "passed": true
+        },
+        {
+          "n": 102,
+          "file": "unit-step-naval-102.m4a",
+          "generated": "2026-10-16",
+          "round": 1,
+          "take": 2,
+          "model": "eleven_text_to_sound_v2",
+          "prompt": "A small wooden boat moves a short way: one soft oar dip and a gentle lap of water against the hull, quiet and calm, nothing after. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+          "durationSeconds": 0.8,
+          "promptInfluence": 0.5,
+          "startSeconds": 0,
+          "endSeconds": 0.6,
+          "gain": 0.23,
+          "lufs": -17.8,
+          "note": "0.6 s, swells over 45 ms, centred near 258 Hz, 100% of its energy under 1 kHz, crest 15.2 dB.",
           "passed": true
         }
       ]

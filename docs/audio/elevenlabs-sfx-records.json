@@ -5158,6 +5158,193 @@
       }
     },
     {
+      "id": "unit.step",
+      "n": 106,
+      "round": 7,
+      "take": 1,
+      "prompt": "A small game piece walks a short way: a few soft quick shuffling footsteps of light shoes on dirt and grass, gentle and quiet, nothing after. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-step-106.wav",
+      "date": "2026-10-16",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "unit.step",
+      "n": 107,
+      "round": 7,
+      "take": 2,
+      "prompt": "A small game piece walks a short way: a few soft quick shuffling footsteps of light shoes on dirt and grass, gentle and quiet, nothing after. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-step-107.wav",
+      "date": "2026-10-16",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "unit.step",
+      "n": 108,
+      "round": 7,
+      "take": 3,
+      "prompt": "A small game piece walks a short way: a few soft quick shuffling footsteps of light shoes on dirt and grass, gentle and quiet, nothing after. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-step-108.wav",
+      "date": "2026-10-16",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "unit.step",
+      "n": 109,
+      "round": 8,
+      "take": 1,
+      "prompt": "Two quick soft shuffling footsteps of small light shoes on a dirt path, gentle and quiet, very short, nothing after. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.6,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-step-109.wav",
+      "date": "2026-10-16",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "unit.step",
+      "n": 110,
+      "round": 8,
+      "take": 2,
+      "prompt": "Two quick soft shuffling footsteps of small light shoes on a dirt path, gentle and quiet, very short, nothing after. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.6,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-step-110.wav",
+      "date": "2026-10-16",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "unit.step",
+      "n": 111,
+      "round": 8,
+      "take": 3,
+      "prompt": "Two quick soft shuffling footsteps of small light shoes on a dirt path, gentle and quiet, very short, nothing after. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.6,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-step-111.wav",
+      "date": "2026-10-16",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "unit.step.naval",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A small wooden boat moves a short way: one soft oar dip and a gentle lap of water against the hull, quiet and calm, nothing after. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-step-naval-101.wav",
+      "date": "2026-10-16",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "unit.step.naval",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A small wooden boat moves a short way: one soft oar dip and a gentle lap of water against the hull, quiet and calm, nothing after. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-step-naval-102.wav",
+      "date": "2026-10-16",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "unit.step.naval",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A small wooden boat moves a short way: one soft oar dip and a gentle lap of water against the hull, quiet and calm, nothing after. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-step-naval-103.wav",
+      "date": "2026-10-16",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "unit.step.naval",
+      "n": 104,
+      "round": 2,
+      "take": 1,
+      "prompt": "A small rowing boat moves on: one light quick paddle splash and a soft little ripple of water, quiet and short, nothing after. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-step-naval-104.wav",
+      "date": "2026-10-16",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "unit.step.naval",
+      "n": 105,
+      "round": 2,
+      "take": 2,
+      "prompt": "A small rowing boat moves on: one light quick paddle splash and a soft little ripple of water, quiet and short, nothing after. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-step-naval-105.wav",
+      "date": "2026-10-16",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
       "id": "unit.train",
       "n": 101,
       "round": 1,

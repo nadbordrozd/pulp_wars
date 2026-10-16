@@ -398,6 +398,19 @@ export const ELEVENLABS_SFX_KIND_RULES: Readonly<
     maxTailShare: 0.7,
     prefer: "short",
   },
+  // A unit's move (bead pulp_wars-2yc.57): a short soft shuffle or a lap
+  // of water that may swell a little, never bright and never deep: a
+  // laptop plays little under about 150 Hz, and a take centred under
+  // 200 Hz has most of its energy there (the old step's default was
+  // centred near 25 Hz). Shorter is preferred.
+  move: {
+    onsetMs: 120,
+    minCentroidHz: 200,
+    maxCentroidHz: 4000,
+    minCrestDb: 5,
+    maxTailShare: 0.6,
+    prefer: "short",
+  },
   hit: { onsetMs: 30, minLowShare: 0.3, minCrestDb: 8, maxTailShare: 0.75 },
   pop: { onsetMs: 25, minCrestDb: 8, maxTailShare: 0.75 },
   clang: { onsetMs: 25, minCentroidHz: 800, minCrestDb: 8, maxTailShare: 0.8 },

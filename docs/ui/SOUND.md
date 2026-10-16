@@ -246,8 +246,9 @@ economy is silent.
 | A rite begun                                                    | `support.dark`                                                             |
 | A rite fizzled, a unit consumed by the Herald                   | `special.puff`                                                             |
 | Switcheroo                                                      | `special.sparkle`                                                          |
-| The viewer's own unit moving                                    | `unit.step`                                                                |
-| Another player's move, a push, a visibility crossfade           | none                                                                       |
+| A unit moving on land, the viewer's own or another player's     | `unit.step` ([Moves](#the-move-sounds)); another player's quieter          |
+| A ship or an embarked unit moving                               | `unit.step.naval`; another player's quieter                                |
+| A flyer moving, a push, a visibility crossfade                  | none                                                                       |
 | Another player's building in sight                              | `economy.build`, quieter                                                   |
 
 **The Rocket Cart's firework** (the user's pick, 2026-10-14) plays one
@@ -338,6 +339,46 @@ lethal area damage), and its default is no longer a voice:
   in the Gallery to choose, never the default, and matched to the same
   quieter level. The old stock recording and the synthesised sound are
   unchanged.
+
+### The move sounds
+
+Bead `pulp_wars-2yc.57`. The user, 2026-10-15: "there should be a
+discrete sound effect for moving a unit. like the sound of shuffling shoes
+or something. can be another one for naval units." (discreet: quiet and
+unobtrusive). Before it only the viewer's own moves made a sound, one
+thump whose default take was centred near 25 Hz, which a laptop does not
+play.
+
+- **Two sounds.** `unit.step` (Footsteps) is now a soft shuffle of a few
+  steps, and `unit.step.naval` (Ship moves) a light paddle splash. The
+  sound id `unit.step` was kept for the land move rather than adding a
+  third id beside an unplayed one: its old takes and its chess-piece
+  recordings stay to choose. Each was generated in two rounds (six land
+  takes, five naval) and judged by a new kind, `move`: 0.25 to 0.6 s, an
+  onset within 120 ms, centred between 200 Hz and 4 kHz (no sub-bass),
+  shorter preferred. The defaults are land #107 (0.6 s, centred near
+  1.2 kHz) and naval #105 (0.6 s, centred near 1.4 kHz); land #111 and
+  naval #104 and #102 are the other choices, and the old step takes
+  #101 and #102 are retired (kept to choose, never the default).
+- **The level.** Every move take is matched to the loudness the hit sound
+  (`impact.hit`) is matched to, less 10 dB: -30.6 LUFS over its loudest
+  400 ms. Another player's move plays at 0.7 of that (about 3 dB less),
+  because an enemy turn moves many units.
+- **When.** One sound as the unit sets off, and for a move of three tiles
+  or more a second from the middle of the move (at Normal speed a tile
+  takes 240 ms, so a step a tile would be busy). The delays scale with the
+  animation speed like every other step's; Fast Forward skips them, and
+  reduced motion plays them with the still frame.
+- **Who.** Read from the unit as the viewer sees it after the move (else
+  before it): any afloat unit (a ship, or an embarked land unit) is
+  naval; a flyer (a land-form unit whose kind flies: the Saucer, the
+  Mothership, the Gyrocopter) is silent; every other unit walks: mounted
+  units, the Martian striders, the Cult's daemons, the giants and the
+  Giant Spider included. A unit neither view holds walks. A unit pulled
+  by a Tractor Beam is heard as if it walked, under the beam.
+- **What is not heard.** A push or knock-back slide, and any stretch of
+  an enemy's move the viewer does not see: the plan cuts an enemy's path
+  where it enters the unexplored, and a stretch of one tile is silent.
 
 ### Events without a step
 
@@ -693,7 +734,8 @@ full scale). A unit test compares this table with the manifest.
 | `unit.hurt.giant`      | Giant hurt       | combat   | square + noise                   | 165–330    | 132         | 0.3  |
 | `unit.hurt.monster`    | Monster hurt     | combat   | square + noise                   | 165–330    | 132         | 0.3  |
 | `unit.death`           | Death            | combat   | triangle + square + noise        | 82–392     | 372         | 0.34 |
-| `unit.step`            | Step             | combat   | noise + sine                     | 110–150    | 42          | 0.1  |
+| `unit.step`            | Footsteps        | combat   | noise + sine                     | 110–150    | 42          | 0.1  |
+| `unit.step.naval`      | Ship moves       | combat   | noise + sine                     | 170–240    | 252         | 0.1  |
 | `unit.train`           | Unit trained     | economy  | square + sine + noise            | 70–784     | 332         | 0.26 |
 | `unit.levelup`         | Unit level up    | economy  | square + triangle                | 440–1109   | 352         | 0.24 |
 | `support.heal`         | Heal             | combat   | triangle + sine                  | 523–1568   | 412         | 0.26 |
@@ -1282,8 +1324,10 @@ the data by `npm run audio:elevenlabs-sfx -- doc`; in short:
   default is listed under `retired` in its sound's prompt: it is measured
   and kept to choose like the others, but never ranks for the default
   (`village.capture` #103, #106 and #107, `unit.death`'s groans #101 to
-  #103). A sound may also take its level from another's reference
-  (`loudness` in its prompt: `unit.death` is 6 dB under the hurt sounds).
+  #103, `unit.step`'s single thumps #101 to #105, of which #101 and #102
+  still pass). A sound may also take its level from another's reference
+  (`loudness` in its prompt: `unit.death` is 6 dB under the hurt sounds,
+  `unit.step` and `unit.step.naval` 10 dB under the hit).
   `encode --only <id>[,<id>...]` encodes those sounds again and leaves
   every other clip's bytes as they are (AAC
   encoding is not byte-stable from one run to the next).
@@ -1361,6 +1405,11 @@ instrumentation, never by listening
   soft thud whose energy is mostly under 200 Hz. Whether it is heard at
   all on a laptop or a phone, and whether 6 dB under the hurt sounds is
   discreet enough, needs a listener.
+- **The move sounds** (bead `pulp_wars-2yc.57`): whether 10 dB under the
+  hit (13 dB for another player's move) is quiet enough through a long
+  enemy turn, and whether the footsteps read as shuffling shoes. The land
+  default #107 has its loudest step late in its 0.6 s; #111 is a shorter
+  pair of steps with its weight at the start, but deeper.
 - The clips in Safari and Firefox. They decode correctly in Chrome; the
   other two have not been tried.
 - Relative loudness between sounds and categories. Peaks and RMS are bounded,

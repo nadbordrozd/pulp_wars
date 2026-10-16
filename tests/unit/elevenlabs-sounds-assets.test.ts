@@ -438,6 +438,76 @@ describe("ElevenLabs sound effects", () => {
     ).toBeCloseTo(deathReference, 0);
   });
 
+  it("plays a soft shuffle and an oar dip on moves, 10 dB under the hit", () => {
+    // Bead pulp_wars-2yc.57: "there should be a discrete sound effect for
+    // moving a unit. like the sound of shuffling shoes or something. can
+    // be another one for naval units."
+    const clips = JSON.parse(
+      readFileSync(join(ROOT, "docs/audio/elevenlabs-sfx-clips.json"), "utf8"),
+    ) as {
+      sounds: readonly {
+        id: string;
+        default: number | null;
+        reference: { lufs: number };
+        takes: readonly { n: number; lufs: number; gain: number }[];
+      }[];
+    };
+    const of = (id: string) => clips.sounds.find((sound) => sound.id === id);
+    const asPlayed = (id: string): number => {
+      const sound = of(id);
+      const take = sound?.takes.find((entry) => entry.n === sound.default);
+      if (take === undefined) throw new Error(`${id} has no default clip`);
+      return take.lufs + 20 * Math.log10(take.gain);
+    };
+    const hit = of("impact.hit")?.reference.lufs ?? 0;
+    const records = readRecordsV1().takes;
+    for (const id of ["unit.step", "unit.step.naval"]) {
+      const sound = elevenLabsSoundV1(id);
+      if (sound === null || sound.default === null)
+        throw new Error(`${id} has no default take`);
+      // Generated for this bead (rounds 7 and 8 of the step, the new
+      // sound's 1 and 2): at least three takes, the default among them.
+      const fresh = records.filter(
+        (take) =>
+          take.id === id && (id === "unit.step.naval" || take.round >= 7),
+      );
+      expect(fresh.length, id).toBeGreaterThanOrEqual(3);
+      expect(
+        fresh.map((take) => take.n),
+        id,
+      ).toContain(sound.default);
+      expect(soundChoiceSetV1(id)?.default, id).toBe(sound.default);
+      // At least one more new take to choose in the Gallery.
+      const others = sound.takes.filter(
+        (take) =>
+          take.passed &&
+          take.n !== sound.default &&
+          fresh.some((entry) => entry.n === take.n),
+      );
+      expect(others.length, id).toBeGreaterThanOrEqual(1);
+      for (const take of sound.takes) {
+        expect(isStockSoundChoiceV1(id, take.n), `${id} #${take.n}`).toBe(true);
+        // Short: a move is over in a fraction of a second.
+        expect(take.seconds, `${id} #${take.n}`).toBeLessThanOrEqual(0.6);
+      }
+      // The level: 10 dB under the hit's reference, as played.
+      expect(of(id)?.reference.lufs, id).toBeCloseTo(hit - 10, 1);
+      expect(asPlayed(id), id).toBeCloseTo(hit - 10, 0);
+      expect(asPlayed("impact.hit") - asPlayed(id), id).toBeGreaterThanOrEqual(
+        8,
+      );
+    }
+    // The old single thumps are retired: kept to choose, never the default.
+    const step = elevenLabsSoundV1("unit.step");
+    for (const n of [101, 102]) {
+      const take = step?.takes.find((entry) => entry.n === n);
+      expect(take?.passed, `#${n}`).toBe(false);
+    }
+    // The sub-bass thump that was the default (centred near 25 Hz) is gone.
+    expect(step?.takes.some((take) => take.n === 105)).toBe(false);
+    expect(existsSync(join(FOLDER, "unit-step-105.m4a"))).toBe(false);
+  });
+
   it("plays City lost's old chord made shorter, and keeps the whole one", () => {
     const full = stockSoundV1("city.lost")?.candidates.find((c) => c.n === 1);
     const short = soundCandidateV1("city.lost", 2);
