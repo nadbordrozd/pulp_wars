@@ -78,6 +78,28 @@ describe("Ruleset 7 AI playback pacing", () => {
     rig.destroy();
   });
 
+  it("keeps each AI result on the board exactly while the next boundary waits to play (pulp_wars-2yc.62)", async () => {
+    const rig = await mountRig();
+    await rig.endHumanTurn();
+    const ends: { readonly held: boolean; readonly nextPlayed: boolean }[] = [];
+    for (let round = 0; round < 200 && !rig.done(); round += 1) {
+      await rig.runAiAsFastAsItCan();
+      if (rig.host.playing() === 0) continue;
+      const presented = rig.host.presented.length;
+      const held = rig.host.finishOne();
+      await flush();
+      // The AI does not run while the test flushes: a boundary that starts
+      // now was already queued when the last one ended.
+      ends.push({ held, nextPlayed: rig.host.presented.length > presented });
+    }
+    expect(rig.done()).toBe(true);
+    expect(ends.filter((end) => end.held).length).toBeGreaterThan(5);
+    for (const end of ends) expect(end.held).toBe(end.nextPlayed);
+    // The last boundary hands the board back to the game's own view.
+    expect(ends.at(-1)?.held).toBe(false);
+    rig.destroy();
+  });
+
   it("lets Fast Forward release a held AI at once", async () => {
     const rig = await mountRig();
     await rig.endHumanTurn();
@@ -235,6 +257,8 @@ class PacedBoardHost implements BoardHostV7 {
     [];
   finishes = 0;
   readonly #pending: (() => void)[] = [];
+  /** Each playing boundary's options, to ask as it ends. */
+  readonly #options: PresentBoundaryOptionsV7[] = [];
 
   mount(container: HTMLElement, callbacks: BoardHostCallbacksV7): void {
     this.callbacks = callbacks;
@@ -259,18 +283,26 @@ class PacedBoardHost implements BoardHostV7 {
       ai: before.turnOrder[before.activeSeatIndex] !== before.viewer.id,
       upcoming: options.upcoming?.length ?? 0,
     });
+    this.#options.push(options);
     return new Promise<void>((resolve) => this.#pending.push(resolve));
   }
   /** Like the canvas host: a finished presentation ends at once. */
   finishPresentations(): void {
     this.finishes += 1;
+    this.#options.splice(0);
     for (const resolve of this.#pending.splice(0)) resolve();
   }
   playing(): number {
     return this.#pending.length;
   }
-  finishOne(): void {
+  /**
+   * Ends the oldest presentation; true when, like the canvas host, it was
+   * told to keep its result on the board (bead pulp_wars-2yc.62).
+   */
+  finishOne(): boolean {
+    const held = this.#options.shift()?.holdResult?.() === true;
     this.#pending.shift()?.();
+    return held;
   }
   destroy(): void {
     this.callbacks = null;

@@ -517,6 +517,13 @@ Nothing here changes a rule, an event or a saved game.
   never hold the AI. The controller asks a pacing gate before each AI
   command (`setAiPacingGate`); the DOM app view is the gate, and headless
   play has none.
+- **No flicker between boundaries** (bead `pulp_wars-2yc.62`). The board
+  never shows the game's latest view while it is ahead of the playback:
+  between two queued boundaries it keeps the result of the one that just
+  played, and a boundary queued while the board was idle shows the view
+  before it at once. A crossfade (a reveal, a Build, a Disband, and every
+  reduced-motion step) lays the view after over the view before, so only
+  what changes fades; the rest of the map stays as it is.
 - **Catching up.** When more than three boundaries wait to play (which the
   waiting AI no longer causes; a hidden page still can), playback shortens
   with the queue, down to 0.375 of Normal (90 ms a tile, the old Normal) at

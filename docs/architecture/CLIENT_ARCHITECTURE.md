@@ -1657,7 +1657,17 @@ them and draws. The AI waits for the board (`pulp_wars-2yc.59`): the DOM
 app view registers itself as the browser controller's AI pacing gate
 (`setAiPacingGate`), which holds the AI's next command while
 `AI_PACING_BACKLOG_V7` boundaries wait to play, so the AI never runs ahead
-of the playback into the hurried catch-up and the queue cut.
+of the playback into the hurried catch-up and the queue cut. The board
+never flashes that latest view during playback (`pulp_wars-2yc.62`): the
+app view's `holdResult` option keeps a boundary's result drawn while the
+next waits, `presentBoundary` draws its view before at once when the board
+last showed another state, and a crossfade draws the view after on an
+offscreen canvas of its own and lays it over the view before (never two
+half-faded boards). The host keeps four board plans (both views of the
+playing boundary, the view the territory ripple compares, the game's view)
+and builds none for a screen-reader description while no command is
+offered, so each AI command builds one plan; the canvas is sized only when
+its container's size changes.
 
 Canvas 2D responsibilities:
 

@@ -10707,6 +10707,13 @@ export class Ruleset7DomAppView {
                 after: queued.boundary.afterView,
                 events: queued.boundary.playerEvents,
               })),
+            // Bead pulp_wars-2yc.62: while the next boundary of this match
+            // waits, the board keeps this result instead of flashing the
+            // game's latest view between the two.
+            holdResult: () =>
+              !this.#destroyed &&
+              !this.#snapshot.ai.fastForward &&
+              this.#presentationQueue[0]?.matchInstance === next.matchInstance,
           },
         );
         if (!this.#destroyed && next.matchInstance === this.#matchInstance)

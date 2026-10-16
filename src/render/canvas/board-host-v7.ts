@@ -330,7 +330,23 @@ export interface PresentBoundaryOptionsV7 {
    * with it, and playback hurries as the queue grows.
    */
   readonly upcoming?: readonly QueuedBoundaryV7[];
+  /**
+   * Asked as the boundary ends (bead pulp_wars-2yc.62): true while another
+   * boundary waits to play next. The board then keeps showing this one's
+   * result until the next starts, instead of the game's latest view, which
+   * is ahead of the playback (its units already where later commands take
+   * them) and would show for a frame before snapping back.
+   */
+  readonly holdResult?: () => boolean;
 }
+
+/**
+ * The board plans kept (bead pulp_wars-2yc.62): a playing boundary draws
+ * its views before and after, the territory ripple reads the view drawn
+ * last, and the game's latest view is described for screen readers; with
+ * room for all four, each command of an AI turn builds one new plan.
+ */
+const PLAN_CACHE_SIZE_V7 = 4;
 
 /** How many queued boundaries the camera looks ahead when it frames. */
 const PLAYBACK_LOOKAHEAD_V7 = 8;
@@ -404,6 +420,8 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     plan: BoardRenderPlanV7;
   }[] = [];
   #drawSerial = 0;
+  /** The match and command index of the view drawn last (see drawnKeyV7). */
+  #drawnKey: string | null = null;
   #canvas: HTMLCanvasElement | null = null;
   #context: CanvasRenderingContext2D | null = null;
   #effectsCanvas: HTMLCanvasElement | null = null;
@@ -559,6 +577,11 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
   #victoryWaveHeard: number | null = null;
   /** The reduced-motion crossfade's own canvas (see #victoryFadeLayer). */
   #victoryFadeContext: CanvasRenderingContext2D | null = null;
+  /** The crossfade's own canvas (see #crossfadeLayer). */
+  #crossfadeCanvas: {
+    readonly canvas: HTMLCanvasElement;
+    readonly context: CanvasRenderingContext2D;
+  } | null = null;
   /** Review tooling only (pinVictoryWave): the wave held at a time. */
   #pinnedVictoryWaveMs: number | null = null;
   /** The Blizzard's slow ambient redraw (a timer, not every frame). */
@@ -1279,7 +1302,13 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     const model = this.#model;
     if (model === null) return;
     const steps = corePresentationPlanV7(before, envelope, after);
-    if (steps.length === 0) return;
+    if (steps.length === 0) {
+      // Nothing to play (a captured city's land ripples on its own): the
+      // board shows the result, held while a later boundary waits for it.
+      if (options.holdResult?.() === true) this.#presentedView = after;
+      else this.#draw();
+      return;
+    }
     // Calm playback (bead pulp_wars-2yc.49): the camera frames another
     // player's steps by the comfort-zone rule, unless the player took the
     // camera during this seat's playback.
@@ -1328,6 +1357,11 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     );
     let durationScale = baseDurationScale;
     this.#presentedView = before;
+    // Bead pulp_wars-2yc.62: a boundary queued while the board was idle was
+    // drawn at once as the game's view (its result); the view before is
+    // drawn now, so that result never shows for a frame before it plays.
+    if (this.#drawnKey !== drawnKeyV7(model.matchInstanceId, before))
+      this.#draw();
     // Bead pulp_wars-2yc.10: each step is announced once, as it starts.
     const announced = new Set<CorePresentationStepV7>();
     const announce = (step: CorePresentationStepV7): void => {
@@ -1611,8 +1645,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
             cultSteps.length ===
           steps.length
         ) {
-          this.#presentedView = null;
-          this.#draw();
+          this.#settlePresentation(after, options);
           return;
         }
       }
@@ -1623,8 +1656,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       });
       if (token !== this.#presentationToken) return;
       this.#crossfade = null;
-      this.#presentedView = null;
-      this.#draw();
+      this.#settlePresentation(after, options);
       return;
     }
     const pushBoundary = steps.some(
@@ -2031,9 +2063,22 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       }
       if (token !== this.#presentationToken) return;
     }
+    this.#settlePresentation(after, options);
+  }
+
+  /**
+   * A boundary has played: the board shows the game's view again, or
+   * (bead pulp_wars-2yc.62) keeps the boundary's result while the next
+   * boundary waits, so the game's latest view (ahead of the playback)
+   * never shows for a frame between two boundaries.
+   */
+  #settlePresentation(
+    after: PlayerViewV7,
+    options: PresentBoundaryOptionsV7,
+  ): void {
     this.#animatedUnit = null;
     this.#heldUnits = NO_HELD_UNITS;
-    this.#presentedView = null;
+    this.#presentedView = options.holdResult?.() === true ? after : null;
     this.#draw();
   }
 
@@ -2089,8 +2134,12 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
 
   #planFor(
     view: PlayerViewV7,
-    commands: BoardHostModelV7["offeredCommands"],
+    offered: BoardHostModelV7["offeredCommands"],
   ): BoardRenderPlanV7 {
+    // Bead pulp_wars-2yc.62: no commands are no commands, whichever empty
+    // list carries them (each game snapshot brings its own), so a view's
+    // plan is not built again for every snapshot of an AI turn.
+    const commands = offered.length === 0 ? NO_COMMANDS : offered;
     const model = this.#model;
     if (model === null) throw new Error("Board plan requires a mounted model");
     const interaction = {
@@ -2114,7 +2163,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     // massifs are packed over the explored cells and the ghosts.
     const ghosts = terrainGhostsOfV7(view, this.#terrainSkeleton(view));
     const plan = ghosts.length === 0 ? built : { ...built, ghosts };
-    if (this.#planCache.length === 2) this.#planCache.shift();
+    if (this.#planCache.length === PLAN_CACHE_SIZE_V7) this.#planCache.shift();
     this.#planCache.push({ view, commands, interactionKey, plan });
     return plan;
   }
@@ -2214,6 +2263,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       view: PlayerViewV7,
       clear: boolean,
       sceneAlpha: number,
+      target: CanvasRenderingContext2D = context,
     ): void => {
       // The territory ripple: a view newer than the last one drawn starts
       // it; the cells still to change keep their old look in the plan.
@@ -2266,7 +2316,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         // The crossfade: the skinned board is drawn whole, apart, and laid
         // over the old one, so a unit or a city never shows through it.
         drawLayer(
-          context,
+          target,
           view,
           present(rippled),
           clear,
@@ -2275,15 +2325,15 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
           null,
         );
         drawLayer(layer, view, present(plan), true, 1, tileHops, null);
-        context.save();
-        context.setTransform(1, 0, 0, 1, 0, 0);
-        context.globalAlpha = sceneAlpha * fade;
-        context.drawImage(layer.canvas, 0, 0);
-        context.restore();
+        target.save();
+        target.setTransform(1, 0, 0, 1, 0, 0);
+        target.globalAlpha = sceneAlpha * fade;
+        target.drawImage(layer.canvas, 0, 0);
+        target.restore();
         // A Human win's look does not change: a gold tint shows the fade.
         if (this.#victoryWave.faction === "ORIGINAL")
           drawVictoryFadeTintV7(
-            context,
+            target,
             {
               camera: this.#camera,
               devicePixelRatio:
@@ -2295,7 +2345,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
           );
       } else
         drawLayer(
-          context,
+          target,
           view,
           present(plan),
           clear,
@@ -2391,9 +2441,29 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
               },
       });
     };
+    this.#drawnKey = drawnKeyV7(
+      model.matchInstanceId,
+      this.#crossfade?.after ?? this.#presentedView ?? model.view,
+    );
     if (this.#crossfade !== null) {
-      renderView(this.#crossfade.before, true, 1 - this.#crossfade.progress);
-      renderView(this.#crossfade.after, false, this.#crossfade.progress);
+      // Bead pulp_wars-2yc.62: the view before is drawn whole and the view
+      // after, drawn whole apart, is laid over it, so only what changes
+      // fades. Two half-faded boards over the background dimmed the whole
+      // map at the middle of every crossfade, a flicker of the board.
+      const { before, after, progress } = this.#crossfade;
+      renderView(before, true, 1);
+      // A context that cannot lay one canvas over another (a stand-in with
+      // no drawImage) draws the view after over the view before instead.
+      const layer = canCompositeV7(context) ? this.#crossfadeLayer() : null;
+      if (layer === null) renderView(after, false, progress);
+      else {
+        renderView(after, true, 1, layer.context);
+        context.save();
+        context.setTransform(1, 0, 0, 1, 0, 0);
+        context.globalAlpha = progress;
+        context.drawImage(layer.canvas, 0, 0);
+        context.restore();
+      }
     } else renderView(this.#presentedView ?? model.view, true, 1);
     this.#pumpTerrainRipple();
     this.#pumpVictoryWave(victoryNow);
@@ -3099,8 +3169,15 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       return;
     }
     const city = model.view.cities.find((candidate) => same(candidate.at, at));
-    const actions = this.#planFor(model.view, model.offeredCommands)
-      .targets.filter((target) => same(target.at, at))
+    // Every map target is an offered command's (bead pulp_wars-2yc.62): with
+    // none offered (another player's turn) no plan is built to find none,
+    // so an AI command builds a plan only for the view the board plays.
+    const actions = (
+      model.offeredCommands.length === 0
+        ? []
+        : this.#planFor(model.view, model.offeredCommands).targets
+    )
+      .filter((target) => same(target.at, at))
       .map((target) =>
         target.semanticLabel !== undefined
           ? target.semanticLabel
@@ -3821,6 +3898,36 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     return layer;
   }
 
+  /**
+   * The crossfade's own canvas (bead pulp_wars-2yc.62), the board's size,
+   * where the view after is drawn whole before it is laid over the view
+   * before; made when first needed (null where no canvas can be made). Its
+   * size is set only when the board's has changed, since that clears it.
+   */
+  #crossfadeLayer(): {
+    readonly canvas: HTMLCanvasElement;
+    readonly context: CanvasRenderingContext2D;
+  } | null {
+    const board = this.#canvas;
+    if (board === null) return null;
+    let layer = this.#crossfadeCanvas;
+    if (layer === null) {
+      try {
+        const canvas = this.#document.createElement("canvas");
+        const context = canvas.getContext("2d");
+        layer = context === null ? null : { canvas, context };
+      } catch {
+        layer = null;
+      }
+      this.#crossfadeCanvas = layer;
+    }
+    if (layer === null) return null;
+    if (layer.canvas.width !== board.width) layer.canvas.width = board.width;
+    if (layer.canvas.height !== board.height)
+      layer.canvas.height = board.height;
+    return layer;
+  }
+
   /** How a victory reached now shows on this board. */
   #victoryWaveMode(model: BoardHostModelV7): VictoryWaveModeV7 {
     if (model.motion === "REDUCED") return "FADE";
@@ -4298,3 +4405,22 @@ const title = (value: string): string =>
     .replaceAll("_", " ")
     .replace(/^./, (letter) => letter.toUpperCase());
 let nextDescriptionIdV7 = 1;
+
+/**
+ * Whether `context` can lay an offscreen canvas over the board (bead
+ * pulp_wars-2yc.62); a stand-in context without these methods cannot.
+ */
+function canCompositeV7(context: CanvasRenderingContext2D): boolean {
+  const methods = context as unknown as Record<string, unknown>;
+  return ["save", "restore", "setTransform", "drawImage"].every(
+    (name) => typeof methods[name] === "function",
+  );
+}
+
+/** Which game state a drawn view shows: its match and command index. */
+function drawnKeyV7(
+  matchInstanceId: BoardHostModelV7["matchInstanceId"],
+  view: PlayerViewV7,
+): string {
+  return `${String(matchInstanceId)}:${view.commandIndex}`;
+}
