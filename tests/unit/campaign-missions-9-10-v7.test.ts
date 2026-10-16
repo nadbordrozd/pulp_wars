@@ -325,15 +325,57 @@ describe("mission 10, The Stars Are Right", () => {
     expect(met(cityTaken(won(20), at(4, 8), cult))).toEqual([true, false]);
   });
 
-  it("starts the Lodge with Favour for its first Horror, shown to everyone", () => {
+  it("starts the Lodge with Favour for its first summons, shown to everyone", () => {
     const state = start("FRONTIER_10");
     const cult = seatId(state, 2);
-    expect(favourOfV7(state, cult)).toBe(9);
+    // Revision 4 (`pulp_wars-mch9.46`): 8, a Gibbering Mass and an Imp or
+    // two Horrors, and less than half of the Herald's 18.
+    expect(favourOfV7(state, cult)).toBe(8);
     // Favour is public: your view carries the Lodge's.
-    expect(favourOfV7(viewForV7(state, state.humanPlayerId), cult)).toBe(9);
+    expect(favourOfV7(viewForV7(state, state.humanPlayerId), cult)).toBe(8);
     // No seat but the Cult's has any.
     for (const seat of [0, 1, 3])
       expect(favourOfV7(state, seatId(state, seat))).toBe(0);
+  });
+
+  it("lets the lodge raise a Gibbering Mass on the summit in its first turn", () => {
+    // Revision 4 (`pulp_wars-mch9.46`): the lodge owns Gibbering Masses,
+    // and its two Summoners stand side by side, so one summons a Mass with
+    // the other's help beside the Lodge (on its Doorstep) from round 1.
+    const state = start("FRONTIER_10");
+    const cult = seatId(state, 2);
+    let turn = state;
+    while (turn.turnOrder[turn.activeSeatIndex] !== cult) {
+      const actor = turn.turnOrder[turn.activeSeatIndex] as PlayerId;
+      const ended = applyCommandV7(turn, actor, { kind: "END_TURN" });
+      if (!ended.accepted) throw new Error(ended.error.code);
+      turn = ended.state;
+    }
+    expect(turn.round).toBe(1);
+    const summonerAt = (where: CoordV7) => {
+      const unit = turn.units.find(
+        (item) =>
+          item.ownerId === cult &&
+          item.at.x === where.x &&
+          item.at.y === where.y,
+      );
+      if (unit === undefined) throw new Error(`no unit at ${key(where)}`);
+      return unit.id;
+    };
+    const summoned = applyCommandV7(turn, cult, {
+      kind: "SUMMON",
+      unitId: summonerAt(at(10, 1)),
+      daemon: "MASS",
+      helperUnitId: summonerAt(at(9, 1)),
+      at: at(11, 2),
+    });
+    expect(summoned.accepted).toBe(true);
+    if (!summoned.accepted) return;
+    expect(favourOfV7(summoned.state, cult)).toBe(3);
+    expect(
+      summoned.state.units.find((unit) => unit.at.x === 11 && unit.at.y === 2)
+        ?.summoned,
+    ).toBe("MASS");
   });
 
   it("lets the ally grow until round 10 and sends it to war from then on", () => {

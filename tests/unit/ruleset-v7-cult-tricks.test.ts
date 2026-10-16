@@ -1685,6 +1685,30 @@ describe("the hand-play lab LAB_CULT_MID (built, not played)", () => {
       const command = need(offered.find((entry) => entry.kind === kind));
       expect(applyCommandV7(state, cult, command).accepted, kind).toBe(true);
     }
+    // The redesigned roster on the first turn (`pulp_wars-mch9.46`): the
+    // Summoners call an Imp, a Horror, or (Gibbering Masses) a Mass, and a
+    // star begun alone can be joined by a robed cultist beside the
+    // Stargazer.
+    const daemons = new Set(
+      offered.flatMap((command) =>
+        command.kind === "SUMMON" ? [command.daemon] : [],
+      ),
+    );
+    expect([...daemons].sort()).toEqual(["HORROR", "IMP", "MASS"]);
+    const star = need(
+      offered.find(
+        (command) =>
+          command.kind === "BEGIN_RITUAL" && command.ritual === "STARFALL",
+      ),
+    );
+    const begun = applyCommandV7(state, cult, star);
+    expect(begun.accepted).toBe(true);
+    if (!begun.accepted) return;
+    expect(
+      queryPlayerCommandsV7(viewForV7(begun.state, cult)).some(
+        (command) => command.kind === "JOIN_CHANT",
+      ),
+    ).toBe(true);
     // It builds the same state every time.
     expect(checkedV7(missionInitialStateV7(setup))).toEqual(
       missionInitialStateV7(setup),

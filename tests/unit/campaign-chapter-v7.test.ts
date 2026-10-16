@@ -815,13 +815,19 @@ describe("Chapter One data", () => {
     });
     expect(seat(finale, 3).directive).toEqual({ kind: "RUSH" });
     // The Cult meets the player with what makes it the Cult: Favour for
-    // the first Horrors, two Summoners, the Great Summoning known, and no
-    // Offering (its Favour is paid in blood).
+    // the first summons, two Summoners, the Great Summoning known, and no
+    // Offering (its Favour is paid in blood). Revision 4 (the Cult
+    // redesign's retune, `pulp_wars-mch9.46`): 8 Favour (the Herald costs
+    // 18), and Gibbering Masses (with Engineering, its prerequisite) for
+    // the summit's wall; still no Tentacles.
     const lodge = seat(finale, 2);
-    expect(lodge.favour).toBe(9);
+    expect(lodge.favour).toBe(8);
     expect(lodge.technologies).toContain("ADMINISTRATION");
     expect(lodge.technologies).toContain("EXPLOSIVES");
+    expect(lodge.technologies).toContain("ENGINEERING");
+    expect(lodge.technologies).toContain("METALLURGY");
     expect(lodge.forbiddenTechnologies).toContain("FARMING");
+    expect(lodge.forbiddenTechnologies).toContain("CHIVALRY");
     expect(lodge.units.filter((unit) => unit.role === "CAPTAIN")).toHaveLength(
       2,
     );

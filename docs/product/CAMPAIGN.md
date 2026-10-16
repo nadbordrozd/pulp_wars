@@ -1653,6 +1653,28 @@ redesigned Cult (its technologies, its Favour, its hints, and the replay)
 is the redesign's campaign bead
 ([its section 15](RULESET_7_CULT_REDESIGN.md#15-campaign-and-labs)).
 
+**Revision 4, the retune for the redesigned Cult** (`pulp_wars-mch9.46`,
+on `pulp-wars-poc-7r91`;
+[section 11.17](#1117-mission-10-on-the-redesigned-cult-pulp_wars-mch946)):
+the lodge owns Engineering and Gibbering Masses (Metallurgy needs
+Engineering; Tentacles stay forbidden) and starts with 8 Favour, the same
+share of the Herald's 18 as the old 9 of 20. The ring's units of revision
+3 are confirmed (the Idol Bearer on the goat path, the Initiate, the
+Hexer), and so are the seats, the clock, the waves, the stars, and the
+map. Engineering also lets the lodge mine the ore on its Mountains: the
+Lodge and Candlewick reach level 5 by round 6 and each raises a Thing in
+the Cellar, so the summit holds three Things where it held one. **The
+problem and its hints** changed with the Cult: the cultists have 7 Hit
+Points and every one dies to a Knight's blow, but a standing idol halves
+every shot on the units beside it (the Lodge's Thing included) and an enemy
+beside it may strike only its Bearer, and the Stargazer's star now falls
+for 15 with three chanters on whoever stays under its mark. So the hints
+read "An idol blunts your shots: break its Bearer, then charge." and "A
+marked star falls at dawn: scatter, or slay the gazer.", beside the
+countdown ("The Lodge's Favour is the countdown: at 18, the Herald."); the
+briefing's "every soldier a Horror takes" reads "every soldier its daemons
+take".
+
 ### 9.4 Unlock order, and free play
 
 Humans (from the start), Goblins (mission 2), Undead (4), Dwarves (5), Ice
@@ -2973,6 +2995,81 @@ build-up unwinnable is not the enemy you came for but the third seat's
 growth: the Baron with four villages outgrew the player by round 15 every
 time. A build-up mission keeps the neutral villages on the player's side
 of the board and the bystander's cities few.
+
+### 11.17 Mission 10 on the redesigned Cult (`pulp_wars-mch9.46`)
+
+Mission 10 at revision 4
+([section 9.3](#93-missions-5-to-10-in-detail): the lodge with Engineering,
+Gibbering Masses, and 8 Favour), played through the text harness on
+`pulp-wars-poc-7r91` with the whole redesign on the board: 7-HP robes, the
+warden's idol, Star-fall alone with joins, Imps in Broods, Masses on their
+Doorstep, the Herald's Hunger, the Cult AI that summons all three daemons,
+and the AI against it. Mission seed 20261110. The hand play was authorised
+for this bead; no AI-versus-AI match was run. No rule, AI, or framework
+code changed and the identity stays `7r91`. The sessions, the autopilot
+script (the one of [section 11.14](#1114-campaign-difficulty-pass-c-missions-8-to-10-pulp_wars-v6429))
+and both debriefs are in `scratchpad/pulp_wars-mch9.46/`.
+
+**Autopilot: lost, out of time** (round 24 ended). It researched Roads, Engineering, Milling, Land Grants,
+Pathfinding, Commerce, Armoury, and Explosives, trained nineteen Fighters,
+and marched them up the slope a few at a time. The lodge raised a Mass on
+its Doorstep in round 2, a Horror in round 3, and Imps from round 6; its
+Lodge and Candlewick reached level 5 (a second Thing in the Cellar in round
+5), it took Northwatch in round 11 (and Bonefield from the Goblins in
+round 16), the thralls took Fort Steele in round 17, and the lodge's
+Favour, fed by the daemons' kills, paid for the Great Summoning: a Herald
+in round 17 and a second in round 21. The player ended with Millford and
+one Fighter.
+
+**By hand: won in round 16, three stars**, four units lost (two Knights, a
+Juggernaut, a Fighter). The opening of
+[section 11.13](#1113-mission-10-on-the-corrected-cult-ai-pulp_wars-v6426)
+still works: the Muster Monument, a Farm and a fruit for a Juggernaut in
+round 1, Northwatch to level 5 for a second in round 3, Engineering in
+round 4, the barrow shot empty and taken in round 7 and grown with the
+Conqueror's Monument, a Boom and a Farm to level 5 (a third Juggernaut),
+Explosives (Breach) in round 7. Then the problem:
+
+- **The idols.** Every shot o- **The idols.** Every shot on a unit beside a standing idol is halved
+  (the Catapults dealt the Lodge's Thing 4 and 5, half their blow), and a
+  unit beside it may strike only the Bearer: the first Knight, frogged
+  beside a Bearer in round 5, died to its blow and an Initiate's. Three
+  Bearers fell to Juggernauts in rounds 8 and 9 and one to a Knight in
+  round 12 (another to its own Unbound Imp, the last to the Goblins), and
+  from round 12 the casters stood in the open.
+- **The star.** At the end of round 8 the Stargazer marked the siege camp
+  for 15 (three chanters): in round 9 every unit but one Fighter, which
+  had no tile out of the mark, stepped out of its nine tiles. In round 10
+  a Juggernaut killed the Stargazer behind the summit, and the star it had
+  marked next fizzled.
+- **The robes.** In round 12 one Knight's Overrun killed an Idol Bearer, a
+  Summoner, three Initiates and a Hexer (six kills); it died to the
+  Lodge's Thing, which stepped off the center to strike it. Candlewick's
+  Thing stepped off its center in round 10; a Juggernaut killed the Imp
+  left on it in round 11 and captured in round 12, and another killed the
+  Thing in round 13; the Goblins killed the third.
+- **The Lodge.** In round 15 two Catapults and a Marksman took the Lodge's
+  Thing from 16 to 4 through the idol, a Juggernaut with Breach killed it
+  and stepped onto the center, was promoted (a full heal), and captured in
+  round 16.
+  a Knight left beside a Bearer after its chain
+  (round 5), a Juggernaut on 5 Hit Points that struck a Bearer and died to
+  its blow (round 11), and the round 7 Zombie that stood on Millford with
+  nothing in reach to strike it (the Goblins eliminated the thralls the
+  next round, and it died with them). **What the Cult AI did:** it spent every
+  Favour as it came (a Mass on the Doorstep in rounds 5 and 14, an Imp
+  nearly every round, a Horror in round 12), so its Favour never passed 5
+  and no rite began; the Imps swarmed the Juggernauts for 3 a blow with no
+  strike back; a Mass that walked off its Doorstep with no strand broke
+  loose in round 9 and bit its own Initiate; the lodge's Things stepped off
+  the center to strike and stepped back. **The round-20 star is kept**: the
+  win came four rounds inside it by a player who knew the board, as in
+  section 11.13.
+
+**`LAB_CULT_MID`** was checked, not played: its revision 2 already places
+the redesigned roster, and a test now shows that on its first turn the
+Summoners offer an Imp, a Horror, and a Mass and a star begun alone can be
+joined. Its state did not change, so it stays at revision 2.
 
 ## 12. The mission builder's guide
 

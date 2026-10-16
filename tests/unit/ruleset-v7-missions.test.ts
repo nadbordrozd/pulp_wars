@@ -124,8 +124,10 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
   // Mission 10 replayed on the corrected Cult AI (`pulp_wars-v642.6`): revision 2.
   // The Cult redesign's roster (`pulp_wars-mch9.31`): revision 3 (the Chosen
   // and the Caller of the ring are an Idol Bearer, an Initiate, and a Hexer).
-  "FRONTIER_10@3:ORIGINAL":
-    "0c2b83dc7fbe270fb51c678ccfdaee1c5ea89e919c4d22c3dc23e144d72d6ac0",
+  // Its retune (`pulp_wars-mch9.46`): revision 4 (the lodge owns
+  // Engineering and Gibbering Masses and starts with 8 Favour).
+  "FRONTIER_10@4:ORIGINAL":
+    "24b8a05369bbeac09fc714cb1a5029878ce7e430a5d44aa46845664e08206f6f",
   // The siege fixture of the Normal AI (`pulp_wars-68k.6`).
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 2.
   "TEST_NECK@2:ORIGINAL":
@@ -409,8 +411,9 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
     "82e2e17c0f8e0a6f37ffdaf99f6b514d9e081892d6a7f12e80f7452aea9fc720",
   // Mission 10 replayed on the corrected Cult AI (`pulp_wars-v642.6`): revision 2.
   // The Cult redesign's roster (`pulp_wars-mch9.31`): revision 3.
-  "FRONTIER_10@3:ORIGINAL":
-    "f8018d93f4ab401a2882c52452988a35c26a87c40734a0c81946ef18e3374c99",
+  // Its retune (`pulp_wars-mch9.46`): revision 4.
+  "FRONTIER_10@4:ORIGINAL":
+    "e7f12c627772ba0f133b5dc67a1088edb0237712609b779cda348b48ba591eef",
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 2.
   "TEST_NECK@2:ORIGINAL":
     "32595babd0a4d5371b260320b8d360786ba69b01808d2716eaadec332213500e",

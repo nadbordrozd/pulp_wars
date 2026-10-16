@@ -43,6 +43,15 @@ import { LAB_DWARF_MID_V7 } from "./lab-dwarf";
  * Tentacle) and Metallurgy (now Gibbering Masses) stay owned; Favour 12
  * stays.
  *
+ * Checked again by the redesign's campaign bead (`pulp_wars-mch9.46`), with
+ * no change to its state (still revision 2): on the first turn the two
+ * Summoners side by side call an Imp (alone), a Horror, or a Gibbering Mass
+ * (with the other's help); the Stargazer begins a star alone and the robed
+ * units beside it (both Summoners and an Idol Bearer) may join the chant;
+ * the three Idol Bearers raise their idols; and 12 Favour buys a Mass, a
+ * Horror, and an Imp (5 + 4 + 2), or the Herald's 18 after Sacrifices
+ * worth 6. Still unplayed.
+ *
  * ```text
  *      x 0123456789ABCDEF
  * y  1   .Ge.....v....eG.      v: a neutral village
@@ -103,7 +112,7 @@ export const LAB_CULT_MID_V7: MissionDefinitionV7 = {
         // Warding Circles: the Idol Bearer (Behold!).
         "FORTIFICATION",
         "ENGINEERING",
-        // Gibbering Masses (the Forge; the Mass comes with a later bead).
+        // Gibbering Masses (the Forge; the Summoner's Mass).
         "METALLURGY",
         // The Stars Are Right: the Great Summoning.
         "EXPLOSIVES",

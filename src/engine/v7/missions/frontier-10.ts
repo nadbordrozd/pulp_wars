@@ -23,6 +23,17 @@ import type { MissionDefinitionV7 } from "./types";
  * Hexer. A stop-gap so the mission loads: its retune (technologies, Favour,
  * text, and the difficulty replay) is the campaign bead of the redesign.
  *
+ * Revision 4 (the redesign's retune, `pulp_wars-mch9.46`, CAMPAIGN.md
+ * section 11.17): the lodge owns Engineering and Gibbering Masses (the
+ * summit's wall; Tentacles stay forbidden) and starts with 8 Favour (the
+ * Herald costs 18). It opens with a Mass on its Doorstep and an Imp a
+ * turn; with Engineering it mines the summit's ore, and the Lodge and
+ * Candlewick reach level 5 (a Thing in the Cellar each) by round 6. The
+ * ring's units of revision 3 are kept. Hand-played: lost on autopilot
+ * (out of time, two of three cities lost, two Heralds), won in round 16
+ * with three stars by breaking the idols' Bearers, stepping out from
+ * under the Stargazer's mark, and riding Knights through the 7-HP robes.
+ *
  * The board is the map generator's (Pangea, seed 23). The Lodge stands in
  * the northern highlands with Mountains on three sides: a wooded slope
  * leads up to it from the south and a goat path from the west. Two
@@ -31,16 +42,17 @@ import type { MissionDefinitionV7 } from "./types";
  *
  * - **The Cultists** `GUARD` the summit with a garrison of eight (the
  *   Thing on the Lodge, three Idol Bearers, both Summoners, and two
- *   Hexers); the rest of the lodge roams. They start with 9 Favour, two
- *   Summoners, and The Stars Are Right, so the first Horrors come in the
- *   opening rounds and every unit a Horror kills, every Seizure, and every
- *   Sacrifice feeds the pool: at 18 Favour, with a Summoner and three
- *   chanters left unthreatened, the Great Summoning begins and the Herald
- *   comes. The Favour is public: it is the Summoning's clock, and round 24
- *   is its last toll. The seat may research nothing else (no Offering: the
- *   Favour is paid in blood), starts far over its unit limit, and is kept
- *   up by three waves that arrive behind the Lodge (rounds 8, 12, and 17),
- *   the last two with a fresh Summoner.
+ *   Hexers); the rest of the lodge roams. They start with 8 Favour, two
+ *   Summoners, Gibbering Masses, and The Stars Are Right, so a Mass and
+ *   the first Imps come in the opening rounds and every unit a daemon
+ *   kills, every Seizure, and every Sacrifice feeds the pool: at 18
+ *   Favour, with a Summoner and three chanters left unthreatened, the
+ *   Great Summoning begins and the Herald comes. The Favour is public: it
+ *   is the Summoning's clock, and round 24 is its last toll. The seat may
+ *   research nothing else (no Offering: the Favour is paid in blood),
+ *   starts over its unit limit (its cities grow on the summit's Mines),
+ *   and is kept up by three waves that arrive behind the Lodge (rounds 8,
+ *   12, and 17), the last two with a fresh Summoner.
  * - **The Undead** (the thralls) hold the barrow on your road and a town in
  *   the east, and `RUSH`. Three waves rise at the barrow (rounds 6, 12, and
  *   18) for as long as the seat lives: take both towns and the dead stop
@@ -75,7 +87,7 @@ import type { MissionDefinitionV7 } from "./types";
  */
 export const FRONTIER_10_V7: MissionDefinitionV7 = {
   id: "FRONTIER_10",
-  revision: 3,
+  revision: 4,
   seed: 20261110,
   // <map>
   size: 20,
@@ -278,13 +290,15 @@ export const FRONTIER_10_V7: MissionDefinitionV7 = {
     {
       faction: "CULT",
       coins: 0,
-      // One Horror at once and a second for a spare Initiate; the rest of
-      // the way to the Herald's 20 is paid by what the Horrors kill.
-      favour: 9,
-      // Leadership (the Summoner: Sacrifice, Seize, Summon), Hexers,
-      // Familiars, Warding Circles (the Idol Bearer), and The Stars Are
-      // Right (the Great Summoning). The Stargazer and the Thing in the
-      // Cellar are here as starting units only.
+      // A Mass and an Imp at once (or two Horrors); the rest of the way to
+      // the Herald's 18 is paid by what the daemons kill (revision 4: 8,
+      // the same share of the Herald's price as revision 3's 9 of 20).
+      favour: 8,
+      // Leadership (the Summoner: Sacrifice, Seize, Summon an Imp or a
+      // Horror), Hexers, Familiars, Warding Circles (the Idol Bearer),
+      // Engineering and Gibbering Masses (revision 4: the Mass, the summit's
+      // wall), and The Stars Are Right (the Great Summoning). The Stargazer
+      // and the Thing in the Cellar are here as starting units only.
       technologies: [
         "GATHERING",
         "ADMINISTRATION",
@@ -293,6 +307,8 @@ export const FRONTIER_10_V7: MissionDefinitionV7 = {
         "SCOUTING",
         "DRILL",
         "FORTIFICATION",
+        "ENGINEERING",
+        "METALLURGY",
         "EXPLOSIVES",
       ],
       cities: [
@@ -334,6 +350,8 @@ export const FRONTIER_10_V7: MissionDefinitionV7 = {
       // Hand play (CAMPAIGN.md section 11.11): with Harvest Rites the lodge
       // made an Offering in every city every turn and the Herald stood on
       // the summit in round 3; with the whole tree it fielded forty units.
+      // Revision 4: Engineering and Metallurgy are owned (no longer
+      // forbidden); Chivalry stays closed (no Tentacles on the slope).
       forbiddenTechnologies: [
         "FARMING",
         "MILLING",
@@ -345,8 +363,6 @@ export const FRONTIER_10_V7: MissionDefinitionV7 = {
         "COMMERCE",
         "RAIDING",
         "CHIVALRY",
-        "ENGINEERING",
-        "METALLURGY",
       ],
       directive: {
         kind: "GUARD",
