@@ -68,6 +68,9 @@ export const FRONTIER_9_V7: MissionDefinitionV7 = {
     size: 16,
     seats: 4,
     seed: 5,
+    // Baked before the natural water of `7r87` (pulp_wars-ykw.8): the board
+    // stays the one this generator drew.
+    rules: "SPREAD_VILLAGES_CURIOSITIES",
     edits: [
       { kind: "TERRAIN", at: { x: 4, y: 0 }, terrain: "x" },
       { kind: "TERRAIN", at: { x: 4, y: 1 }, terrain: "x" },

@@ -6,6 +6,7 @@ import {
   generateInitialMapWithVillageCountV7,
   nearestCapitalSharesV7,
   villageBalancedV7,
+  villageCountForRulesV7,
   villageCountV7,
   type AiCountV7,
   type BoardSizeV7,
@@ -56,7 +57,7 @@ function generated(
       ? generateInitialMapV7(input)
       : generateInitialMapWithVillageCountV7(
           input,
-          villageCountV7(input),
+          villageCountForRulesV7(input, rules),
           rules,
         );
   if (!result.ok) throw new Error(result.error.code);
@@ -267,10 +268,14 @@ describe("villages spread over the land (7r79)", () => {
       expect(generated(setup(mapType, 20, 3, 6)).villages).not.toEqual(
         map.villages,
       );
-      // The spread draws from no stream: the board differs from the 7r78
-      // board only by where settlements stand and what follows from that,
-      // and the candidate count of the land mask is unchanged.
-      expect(landOf(map)).toEqual(landOf(generated(input, "CAPITAL_DOMAINS")));
+      // The spread draws from no stream: the 7r79 board differs from the
+      // 7r78 board only by where settlements stand and what follows from
+      // that, and the candidate count of the land mask is unchanged. (The
+      // natural water of 7r87 draws its own land; see
+      // tests/unit/ruleset-v7-natural-water.test.ts.)
+      expect(landOf(generated(input, "SPREAD_VILLAGES_CURIOSITIES"))).toEqual(
+        landOf(generated(input, "CAPITAL_DOMAINS")),
+      );
     }
   });
 
@@ -366,7 +371,9 @@ describe("villages spread over the land (7r79)", () => {
         }),
       );
     expect(hashes("CAPITAL_DOMAINS_CURIOSITIES")).toEqual(PINNED);
-    const current = hashes();
+    // The 7r79 generator, kept as the SPREAD_VILLAGES rules since the
+    // natural water of 7r87 redrew Continents and Lakes.
+    const current = hashes("SPREAD_VILLAGES_CURIOSITIES");
     // A Pangea or Lakes board whose capital already stands on the coast
     // has no coastal village to move and is unchanged.
     expect(current["PANGEA/25"]).toBe(PINNED["PANGEA/25"]);

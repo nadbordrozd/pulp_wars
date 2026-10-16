@@ -75,12 +75,15 @@ otherwise the largest allowed size up to 20 × 20.
 | Map type   | L (land tiles per player) |
 | ---------- | ------------------------- |
 | Pangea     | 35                        |
-| Continents | 34                        |
+| Continents | 28                        |
 | Lakes      | 35                        |
 | Other      | 35                        |
 
-Continents asks for 34 so that one opponent keeps the long-standing
-11 × 11 board (68 land tiles). With today's land counts this gives:
+Continents asks for 28 so that one opponent keeps the long-standing
+11 × 11 board (56 land tiles since the natural water of `7r87`,
+`pulp_wars-ykw.8`; it asked 34 of 68 before, and 28 of 56 picks the same
+size for every count of opponents: the wider sea is crossed by boat, not
+lost room). With today's land counts this gives:
 
 | Opponents  | 1       | 2       | 3       | 4       | 5       | 6 to 8  |
 | ---------- | ------- | ------- | ------- | ------- | ------- | ------- |
@@ -97,7 +100,7 @@ start, scaled by how much land each player has, because a head start counts
 for more where players meet early:
 
 ```text
-raw   = base × (land tiles / players) / 40
+raw   = base × (land tiles / players) / 40   (33 on Continents)
 coins = the offered amount (5, 10 or 20) nearest to raw by ratio,
         never below 5; Normal is always 0
 ```
@@ -114,9 +117,13 @@ coins = the offered amount (5, 10 or 20) nearest to raw by ratio,
 and 20). The result never decreases with the difficulty or with the land
 per player.
 
-On the quick boards (25 to 55 land tiles per player) this is +5, +10 and +20
-almost everywhere; seven or eight opponents on Continents 20 × 20 (25 to 28
-land tiles each) get +5, +5 and +10. A board chosen larger under Advanced
+The Continents reference is 33, the 40 scaled to its 46% land since `7r87`
+(56% before), so every Continents board keeps the head start it had.
+
+On the quick boards (25 to 55 land tiles per player, 20 to 37 on
+Continents) this is +5, +10 and +20 almost everywhere; seven or eight
+opponents on Continents 20 × 20 (20 to 23 land tiles each) get +5, +5 and
++10. A board chosen larger under Advanced
 raises it: one opponent on Pangea 20 × 20 (144 land tiles each) is +20 even
 on Hard. The Showcase never has a head start.
 

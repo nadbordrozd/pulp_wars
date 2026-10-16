@@ -39,6 +39,7 @@ import {
   landmassLandCountV7,
   majorLandmassMinimumV7,
   pangeaLandCountV7,
+  priorVillageCountV7,
   villageCountV7,
 } from "./map-scale";
 import { validateMatchSetupV7, type MatchSetupErrorV7 } from "./setup";
@@ -293,7 +294,7 @@ export function generateInitialMapV7(input: unknown): GenerateMapResultV7 {
   return generateMapWithVillageCountV7(
     setup,
     villageCountV7(setup),
-    "SPREAD_VILLAGES_CURIOSITIES",
+    "NATURAL_WATER_CURIOSITIES",
   );
 }
 
@@ -361,11 +362,26 @@ function showcaseMapV7(setup: MatchSetupV7): GenerateMapResultV7 {
 }
 
 /**
- * Generation rules a parity call reproduces. The three `SPREAD_VILLAGES`
+ * Generation rules a parity call reproduces. The three `NATURAL_WATER`
+ * rules are the generator of `pulp_wars-ykw.8` (`pulp-wars-poc-7r87`,
+ * docs/product/RULESET_7_MAP_SCALE.md section 5.8): the spread-villages
+ * generator below except on Continents and Lakes. Continents landmasses
+ * cover 46% of the board (56% before; {@link villageCountForRulesV7} gives
+ * each rule its density), grow as noise-shaped blobs from inset spines
+ * with a sea margin between them (up to four seats) and with nine seats in
+ * neighbouring domains, and islets stand in the open sea; Lakes boards have
+ * two to five noise-shaped lakes; and up to four seats every start has a
+ * village within 5. Every other map type is byte-identical under the two.
+ * `NATURAL_WATER` is that generator without Rifts or curiosities,
+ * `NATURAL_WATER_RIFTS` adds Rift placement, and
+ * `NATURAL_WATER_CURIOSITIES`, the current generator, adds curiosity
+ * placement when the setup's `curiosities` is true.
+ *
+ * The three `SPREAD_VILLAGES`
  * rules are the generator of `pulp_wars-9s0.12` (`pulp-wars-poc-7r79`,
  * docs/product/RULESET_7_MAP_SCALE.md section 5.7): the many-seats
  * generator below except that no village is chosen by its place in
- * `(y, x)` order. On every water map the coastal settlement a landmass
+ * `(y, x)` order (`7r79` to `7r84`; mission boards baked then name them). On every water map the coastal settlement a landmass
  * needs is the legal coast tile of lowest tile rank (the first in `(y, x)`
  * order before), and on Continents and Archipelago the villages are the
  * sites of a full packing of the land kept in tile-rank order
@@ -374,8 +390,9 @@ function showcaseMapV7(setup: MatchSetupV7): GenerateMapResultV7 {
  * Land has neither step, so a Dry Land map is byte-identical under
  * `SPREAD_VILLAGES` and `CAPITAL_DOMAINS`. `SPREAD_VILLAGES` is that
  * generator without Rifts or curiosities, `SPREAD_VILLAGES_RIFTS` adds Rift
- * placement, and `SPREAD_VILLAGES_CURIOSITIES`, the current generator, adds
- * curiosity placement when the setup's `curiosities` is true.
+ * placement, and `SPREAD_VILLAGES_CURIOSITIES`, the `7r79` to `7r84`
+ * generator, adds curiosity placement when the setup's `curiosities` is
+ * true.
  *
  * The three `CAPITAL_DOMAINS`
  * rules are the many-seats generator of `pulp_wars-ykw.3`
@@ -460,6 +477,9 @@ export const MAP_GENERATION_RULES_V7 = Object.freeze([
   "SPREAD_VILLAGES",
   "SPREAD_VILLAGES_RIFTS",
   "SPREAD_VILLAGES_CURIOSITIES",
+  "NATURAL_WATER",
+  "NATURAL_WATER_RIFTS",
+  "NATURAL_WATER_CURIOSITIES",
 ] as const);
 export type MapGenerationRulesV7 = (typeof MAP_GENERATION_RULES_V7)[number];
 
@@ -471,7 +491,21 @@ function spreadRulesV7(rules: MapGenerationRulesV7): boolean {
   return (
     rules === "SPREAD_VILLAGES" ||
     rules === "SPREAD_VILLAGES_RIFTS" ||
-    rules === "SPREAD_VILLAGES_CURIOSITIES"
+    rules === "SPREAD_VILLAGES_CURIOSITIES" ||
+    naturalWaterRulesV7(rules)
+  );
+}
+
+/**
+ * Whether `rules` draw the natural water of `pulp_wars-ykw.8`
+ * (`pulp-wars-poc-7r87`, map scale section 5.8): wider seas, smaller
+ * landmasses, and islets on Continents, and noise-shaped lakes on Lakes.
+ */
+export function naturalWaterRulesV7(rules: MapGenerationRulesV7): boolean {
+  return (
+    rules === "NATURAL_WATER" ||
+    rules === "NATURAL_WATER_RIFTS" ||
+    rules === "NATURAL_WATER_CURIOSITIES"
   );
 }
 
@@ -524,7 +558,9 @@ function riftRulesV7(rules: MapGenerationRulesV7): boolean {
     rules === "CAPITAL_DOMAINS_RIFTS" ||
     rules === "CAPITAL_DOMAINS_CURIOSITIES" ||
     rules === "SPREAD_VILLAGES_RIFTS" ||
-    rules === "SPREAD_VILLAGES_CURIOSITIES"
+    rules === "SPREAD_VILLAGES_CURIOSITIES" ||
+    rules === "NATURAL_WATER_RIFTS" ||
+    rules === "NATURAL_WATER_CURIOSITIES"
   );
 }
 
@@ -534,7 +570,8 @@ function curiosityRulesV7(rules: MapGenerationRulesV7): boolean {
     rules === "CURIOSITIES" ||
     rules === "VILLAGE_DENSITY_CURIOSITIES" ||
     rules === "CAPITAL_DOMAINS_CURIOSITIES" ||
-    rules === "SPREAD_VILLAGES_CURIOSITIES"
+    rules === "SPREAD_VILLAGES_CURIOSITIES" ||
+    rules === "NATURAL_WATER_CURIOSITIES"
   );
 }
 
@@ -555,7 +592,7 @@ function curiosityRulesV7(rules: MapGenerationRulesV7): boolean {
 export function generateInitialMapWithVillageCountV7(
   input: unknown,
   villages: number,
-  rules: MapGenerationRulesV7 = "SPREAD_VILLAGES_CURIOSITIES",
+  rules: MapGenerationRulesV7 = "NATURAL_WATER_CURIOSITIES",
 ): GenerateMapResultV7 {
   const validated = validateMatchSetupV7(input);
   if (!validated.ok) return validated;
@@ -572,6 +609,23 @@ export function generateInitialMapWithVillageCountV7(
   )
     return { ok: false, error: { code: "INVALID_SETUP", params: {} } };
   return generateMapWithVillageCountV7(setup, villages, rules);
+}
+
+/**
+ * The neutral villages a parity call passes for `rules`
+ * ({@link generateInitialMapWithVillageCountV7}): the density of the
+ * natural-water rules ({@link villageCountV7}), or under the rules before
+ * them the density of their 56% Continents ({@link priorVillageCountV7};
+ * the same count on every other map type). The rules before the village
+ * density take a count of their own ({@link revision14VillageCountV7}).
+ */
+export function villageCountForRulesV7(
+  setup: MatchSetupV7,
+  rules: MapGenerationRulesV7,
+): number {
+  return naturalWaterRulesV7(rules)
+    ? villageCountV7(setup)
+    : priorVillageCountV7(setup);
 }
 
 function generateMapWithVillageCountV7(
@@ -3007,7 +3061,11 @@ function topologyMaskV7(
           : setup.aiCount === 1
             ? 2
             : 3;
-    const wanted = landmassLandCountV7(width, height, mapType);
+    // Map scale section 5.8: under the natural-water rules the Continents
+    // landmasses grow from inset spines, round and noise-shaped, on 46% of
+    // the board, with islets in the open sea afterwards.
+    const natural = naturalWaterRulesV7(rules) && mapType === "CONTINENTS";
+    const wanted = landmassLandCountV7(width, height, mapType, !natural);
     // From five seats (section 5.6, amended 2026-10-05) the land follows
     // the seats' ring domains: each domain has a centre, 2 or more from the
     // edge so that a capital's square fits around it; an Archipelago grows
@@ -3033,7 +3091,10 @@ function topologyMaskV7(
     const spines: readonly (readonly CoordV7[])[] = ring
       ? mapType === "ARCHIPELAGO"
         ? domainCentres.map((centre) => [centre])
-        : continentDomainGroupsV7(seats).map((group) =>
+        : (naturalWaterRulesV7(rules) && seats === 9
+            ? nineSeatContinentGroupsV7(width, domains ?? [])
+            : continentDomainGroupsV7(seats)
+          ).map((group) =>
             spineV7(group.map((slot) => domainCentres[slot] as CoordV7)),
           )
       : count === 2
@@ -3054,6 +3115,10 @@ function topologyMaskV7(
               [{ x: width - 2, y: height - 2 }],
             ];
     if (spines.length !== count) throw new RangeError("Missing island centres");
+    const naturalSpines =
+      natural && !ring
+        ? naturalContinentSpinesV7(width, height, count)
+        : spines;
     const reach = (at: CoordV7, spine: readonly CoordV7[]): number =>
       Math.min(...spine.map((point) => chebyshev(at, point)));
     // The land weights of the Continents landmasses are the capitals they
@@ -3091,40 +3156,93 @@ function topologyMaskV7(
     let allocated = 0;
     // Each landmass's cells, nearest its spine first.
     const grown: CoordV7[][] = [];
-    spines.forEach((spine, index) => {
-      const amount =
-        !spread && index === spines.length - 1
-          ? wanted - allocated
-          : (shares[index] ?? 0);
-      allocated += amount;
-      const center = spine[0] as CoordV7;
-      const distance = (at: CoordV7): number =>
-        !ring && mapType === "CONTINENTS" && count === 3 && index === 2
-          ? Math.abs(at.y - center.y)
-          : reach(at, spine);
-      const cells: CoordV7[] = [];
-      grown.push(cells);
-      for (const at of allCoords(width, height)
-        .filter(
-          (candidate) =>
-            !spines.some(
-              (other, otherIndex) =>
-                otherIndex !== index &&
-                reach(candidate, other) <= reach(candidate, spine) + 1,
-            ),
-        )
-        .sort(
-          (a, b) =>
-            distance(a) +
-              ((draws.get(key(a)) ?? 0) >>> 28) / 4 -
-              (distance(b) + ((draws.get(key(b)) ?? 0) >>> 28) / 4) ||
-            compareCoords(a, b),
-        )
-        .slice(0, amount)) {
-        add(at.x, at.y);
-        cells.push(at);
+    if (natural) {
+      const noise = smoothNoiseV7(width, height, draws);
+      // Land a landmass has no room for (its side of the sea margin is
+      // full) goes to the next, and what the last cannot take to the first
+      // with room, so the land count stays exact.
+      const amounts = naturalSpines.map((_, index) => {
+        const amount =
+          !spread && index === naturalSpines.length - 1
+            ? wanted - allocated
+            : (shares[index] ?? 0);
+        allocated += amount;
+        return amount;
+      });
+      const margin = ring
+        ? null
+        : continentSeaMarginV7(width, height, naturalSpines, amounts);
+      let owed = 0;
+      naturalSpines.forEach((_, index) => {
+        const amount = (amounts[index] ?? 0) + owed;
+        const cells = growNaturalLandmassV7(
+          width,
+          height,
+          naturalSpines,
+          index,
+          amount,
+          land,
+          noise,
+          margin,
+        );
+        owed = amount - cells.length;
+        for (const at of cells) add(at.x, at.y);
+        grown.push(cells);
+      });
+      for (let index = 0; owed > 0 && index < grown.length; index += 1) {
+        const cells = grown[index] as CoordV7[];
+        const more = growNaturalLandmassV7(
+          width,
+          height,
+          naturalSpines,
+          index,
+          owed,
+          land,
+          noise,
+          margin,
+          cells,
+        );
+        owed -= more.length;
+        for (const at of more) {
+          add(at.x, at.y);
+          cells.push(at);
+        }
       }
-    });
+    } else
+      spines.forEach((spine, index) => {
+        const amount =
+          !spread && index === spines.length - 1
+            ? wanted - allocated
+            : (shares[index] ?? 0);
+        allocated += amount;
+        const center = spine[0] as CoordV7;
+        const distance = (at: CoordV7): number =>
+          !ring && mapType === "CONTINENTS" && count === 3 && index === 2
+            ? Math.abs(at.y - center.y)
+            : reach(at, spine);
+        const cells: CoordV7[] = [];
+        grown.push(cells);
+        for (const at of allCoords(width, height)
+          .filter(
+            (candidate) =>
+              !spines.some(
+                (other, otherIndex) =>
+                  otherIndex !== index &&
+                  reach(candidate, other) <= reach(candidate, spine) + 1,
+              ),
+          )
+          .sort(
+            (a, b) =>
+              distance(a) +
+                ((draws.get(key(a)) ?? 0) >>> 28) / 4 -
+                (distance(b) + ((draws.get(key(b)) ?? 0) >>> 28) / 4) ||
+              compareCoords(a, b),
+          )
+          .slice(0, amount)) {
+          add(at.x, at.y);
+          cells.push(at);
+        }
+      });
     // Section 5.6 (amended 2026-10-05): under the capital domains a pond (a
     // Water cell with no Water neighbour, which `NAVAL_TOPOLOGY` refuses)
     // is filled, and the landmass it lies in gives up its outermost cell
@@ -3156,9 +3274,18 @@ function topologyMaskV7(
         cells.unshift(pond);
       }
     }
+    // Map scale section 5.8: tiny islets in the open sea, on top of the
+    // landmasses' land.
+    if (natural) placeIsletsV7(width, height, land, draws);
   } else if (mapType === "LAKES") {
     for (const at of allCoords(width, height)) add(at.x, at.y);
     const wantedWater = lakeWaterCountV7(width, height);
+    // Map scale section 5.8: under the natural-water rules the lakes of
+    // every width are noise-shaped blobs of varied size and count.
+    if (naturalWaterRulesV7(rules)) {
+      naturalLakesV7(width, height, wantedWater, land, draws);
+      return land;
+    }
     if (width === 11) {
       const variant = ((draws.get("0,0") ?? 0) >>> 30) & 3;
       for (const at of allCoords(width, height))
@@ -3269,6 +3396,65 @@ export function continentDomainGroupsV7(
 }
 
 /**
+ * Map scale section 5.8: the landmasses of a nine-seat Continents board
+ * under the natural-water rules, as lists of seat slots, the largest first.
+ * Nine seats take every domain of the 3 x 3 grid in a shuffled order
+ * (section 4.2), so the ring grouping of {@link continentDomainGroupsV7}
+ * joined domains that were not neighbours and drew landmasses across each
+ * other. Here the groups follow the grid: one landmass along a side (three
+ * capitals) and three along the columns that meet it (two each), turned a
+ * quarter as many times as the grid index of slot 0's domain modulo 4.
+ */
+export function nineSeatContinentGroupsV7(
+  width: number,
+  domains: readonly CapitalDomainV7[],
+): readonly (readonly number[])[] {
+  const band = (from: number): number =>
+    [0, 1, 2].find((index) => domainBandV7(width, 3, index).from === from) ?? 0;
+  const cells = domains.map((domain) => ({
+    column: band(domain.x0),
+    row: band(domain.y0),
+  }));
+  const first = cells[0] ?? { column: 0, row: 0 };
+  const turns = (first.row * 3 + first.column) % 4;
+  // Rotation 0: the top row, then the left, middle, and right columns below
+  // it; each quarter turn maps (column, row) to (2 - row, column).
+  const turned = (column: number, row: number): readonly [number, number] => {
+    let at: readonly [number, number] = [column, row];
+    for (let turn = 0; turn < turns; turn += 1) at = [2 - at[1], at[0]];
+    return at;
+  };
+  const pattern: readonly (readonly (readonly [number, number])[])[] = [
+    [
+      [0, 0],
+      [1, 0],
+      [2, 0],
+    ],
+    [
+      [0, 1],
+      [0, 2],
+    ],
+    [
+      [1, 1],
+      [1, 2],
+    ],
+    [
+      [2, 1],
+      [2, 2],
+    ],
+  ];
+  return pattern.map((group) =>
+    group.flatMap(([column, row]) => {
+      const [x, y] = turned(column, row);
+      const slot = cells.findIndex(
+        (cell) => cell.column === x && cell.row === y,
+      );
+      return slot < 0 ? [] : [slot];
+    }),
+  );
+}
+
+/**
  * The tiles on the straight lines joining `points` in order, each point
  * included (one tile per step of the longer axis).
  */
@@ -3288,6 +3474,529 @@ function spineV7(points: readonly CoordV7[]): readonly CoordV7[] {
       });
   });
   return spine;
+}
+
+/**
+ * Map scale section 5.8 (`pulp_wars-ykw.8`, `pulp-wars-poc-7r87`): the
+ * natural-water shapes of Continents and Lakes. Every draw comes from the
+ * topology draws the mask already has (one per tile), so the match stream
+ * is consumed exactly as before; the bits are split so that each use reads
+ * its own: bits 0-15 order the islets and the lake centres, bits 16-19 a
+ * lake's size and stretch or an islet's size, and bits 20-31 the noise.
+ */
+/** The water a Continents channel keeps, in tiles, per tile of width. */
+export const CONTINENT_SEA_MARGIN_PER_WIDTH_V7 = 1 / 7;
+/** The least channel margin of a Continents board. */
+export const CONTINENT_SEA_MARGIN_MINIMUM_V7 = 2.9;
+/** How far the noise pushes a Continents coast, in tiles. */
+const CONTINENT_NOISE_TILES_V7 = 4.5;
+/** The same for the landmasses of five or more seats (ring domains). */
+const CONTINENT_RING_NOISE_TILES_V7 = 3;
+/** How much a tile's score drops for each neighbour already grown. */
+const GROWTH_COHESION_V7 = 0.3;
+/** How far the noise pushes a lake shore, in tiles. */
+const LAKE_NOISE_TILES_V7 = 3.5;
+/**
+ * Map scale section 5.8: on a natural-water Continents or Lakes board of up
+ * to four seats, every start has a village this close (Chebyshev) ...
+ */
+export const NEAREST_VILLAGE_MAXIMUM_V7 = 5;
+/** ... and the starts' nearest villages differ by at most this much. */
+export const NEAREST_VILLAGE_SPREAD_V7 = 2;
+/** One islet for this many tiles of open water (rounded). */
+export const ISLET_WATER_PER_ISLET_V7 = 60;
+/** An islet keeps this far (Chebyshev) from any other land. */
+export const ISLET_CLEARANCE_V7 = 3;
+/** The most tiles of one islet. */
+export const ISLET_MAXIMUM_TILES_V7 = 3;
+
+/**
+ * The spines of two to four Continents landmasses up to four seats under
+ * the natural-water rules: inset by a quarter of the board so that the sea
+ * runs around the landmasses as well as between them. Two landmasses stand
+ * on north-south lines down the west and the east quarter; three put two on
+ * the top quarter corners and one on an east-west line along the bottom
+ * quarter (the landmass with the most capitals); four stand on the four
+ * quarter corners.
+ */
+function naturalContinentSpinesV7(
+  width: number,
+  height: number,
+  count: number,
+): readonly (readonly CoordV7[])[] {
+  const qx = Math.floor((width - 1) / 4);
+  const qy = Math.floor((height - 1) / 4);
+  const east = width - 1 - qx;
+  const south = height - 1 - qy;
+  if (count === 2)
+    return [
+      spineV7([
+        { x: qx, y: qy },
+        { x: qx, y: south },
+      ]),
+      spineV7([
+        { x: east, y: qy },
+        { x: east, y: south },
+      ]),
+    ];
+  if (count === 3)
+    return [
+      [{ x: qx, y: qy }],
+      [{ x: east, y: qy }],
+      spineV7([
+        { x: qx, y: south },
+        { x: east, y: south },
+      ]),
+    ];
+  return [
+    [{ x: qx, y: qy }],
+    [{ x: east, y: qy }],
+    [{ x: qx, y: south }],
+    [{ x: east, y: south }],
+  ];
+}
+
+/**
+ * Shore noise over the board from the topology draws: a coarse field (the
+ * mean of bits 20-31 of the draws within 2, which bends a whole coast) plus
+ * a fine one at a third of its weight (the mean of bits 4-15 within 1,
+ * which roughens it), each replaced by its rank so that it is uniform in
+ * `[0, 1)`. The sum is in `[0, 4/3)`.
+ */
+function smoothNoiseV7(
+  width: number,
+  height: number,
+  draws: ReadonlyMap<string, number>,
+): ReadonlyMap<string, number> {
+  const coarse = rankedMeansV7(width, height, draws, 20, 2);
+  const fine = rankedMeansV7(width, height, draws, 4, 1);
+  return new Map(
+    allCoords(width, height).map((at) => [
+      key(at),
+      (coarse.get(key(at)) ?? 0) + (fine.get(key(at)) ?? 0) / 3,
+    ]),
+  );
+}
+
+/**
+ * The 12 bits of every topology draw from `shift`, averaged over the tiles
+ * within `radius` and replaced by their rank in `[0, 1)` (ties by
+ * `(y, x)`).
+ */
+function rankedMeansV7(
+  width: number,
+  height: number,
+  draws: ReadonlyMap<string, number>,
+  shift: number,
+  radius: number,
+): ReadonlyMap<string, number> {
+  const raw = (at: CoordV7): number =>
+    ((draws.get(key(at)) ?? 0) >>> shift) & 0xfff;
+  const means = allCoords(width, height).map((at) => {
+    const around = coordsInRadius(width, height, at, radius);
+    return {
+      at,
+      value: around.reduce((sum, near) => sum + raw(near), 0) / around.length,
+    };
+  });
+  means.sort((a, b) => a.value - b.value || compareCoords(a.at, b.at));
+  return new Map(
+    means.map((entry, index) => [key(entry.at), index / means.length]),
+  );
+}
+
+/** The Euclidean distance from `at` to the nearest point of `spine`. */
+function euclideanReachV7(at: CoordV7, spine: readonly CoordV7[]): number {
+  return Math.min(
+    ...spine.map((point) =>
+      Math.sqrt((at.x - point.x) ** 2 + (at.y - point.y) ** 2),
+    ),
+  );
+}
+
+/** How many tiles `at` is from the nearest board edge (0 on the edge). */
+function edgeDistanceV7(width: number, height: number, at: CoordV7): number {
+  return Math.min(at.x, at.y, width - 1 - at.x, height - 1 - at.y);
+}
+
+/**
+ * Grows a region one tile at a time: the tile of lowest `score` less
+ * {@link GROWTH_COHESION_V7} for each of its four neighbours already in the
+ * region (so the region fills its bays rather than sending out one-tile
+ * arms), then lowest `(y, x)`, among the allowed `seeds` and the allowed
+ * four-neighbours of the region so far, until `amount` new tiles or no
+ * allowed tile is left. `start` is a region already grown (its tiles are
+ * not returned again). Every prefix of the returned order, with `start`,
+ * is connected when the seeds are.
+ */
+function growRegionV7(
+  width: number,
+  height: number,
+  seeds: readonly CoordV7[],
+  amount: number,
+  allowed: (at: CoordV7) => boolean,
+  score: (at: CoordV7) => number,
+  start: readonly CoordV7[] = [],
+): CoordV7[] {
+  const grown: CoordV7[] = [];
+  const taken = new Set<string>(start.map(key));
+  const frontier = new Map<string, { at: CoordV7; score: number }>();
+  const offer = (at: CoordV7): void => {
+    if (!taken.has(key(at)) && !frontier.has(key(at)) && allowed(at))
+      frontier.set(key(at), { at, score: score(at) });
+  };
+  for (const seed of seeds) offer(seed);
+  for (const at of start)
+    for (const near of neighbors4(width, height, at)) offer(near);
+  const effective = (entry: { at: CoordV7; score: number }): number =>
+    entry.score -
+    GROWTH_COHESION_V7 *
+      neighbors4(width, height, entry.at).filter((near) => taken.has(key(near)))
+        .length;
+  while (grown.length < amount && frontier.size > 0) {
+    let best: { at: CoordV7; score: number } | null = null;
+    let bestScore = 0;
+    for (const entry of frontier.values()) {
+      const value = effective(entry);
+      if (
+        best === null ||
+        value < bestScore ||
+        (value === bestScore && compareCoords(entry.at, best.at) < 0)
+      ) {
+        best = entry;
+        bestScore = value;
+      }
+    }
+    if (best === null) break;
+    frontier.delete(key(best.at));
+    taken.add(key(best.at));
+    grown.push(best.at);
+    for (const near of neighbors4(width, height, best.at)) offer(near);
+  }
+  return grown;
+}
+
+/**
+ * The sea margin of a natural-water Continents board up to four seats: the
+ * widest of `max(2.9, w / 7)` less 0.3 at a time, down to 2, at which the
+ * side of every landmass (the tiles nearer its spine than any other by more
+ * than the margin) holds 1.2 times its land. A margin of 2.9 or more keeps
+ * at least two Water tiles between two landmasses everywhere; 2 keeps one.
+ */
+function continentSeaMarginV7(
+  width: number,
+  height: number,
+  spines: readonly (readonly CoordV7[])[],
+  amounts: readonly number[],
+): number {
+  const widest = Math.max(
+    CONTINENT_SEA_MARGIN_MINIMUM_V7,
+    width * CONTINENT_SEA_MARGIN_PER_WIDTH_V7,
+  );
+  const coords = allCoords(width, height);
+  for (let step = 0; widest - 0.3 * step > 1.5; step += 1) {
+    const margin = widest - 0.3 * step;
+    const fits = spines.every((own, index) => {
+      const side = coords.filter((at) => {
+        const reach = euclideanReachV7(at, own);
+        return spines.every(
+          (other, otherIndex) =>
+            otherIndex === index ||
+            euclideanReachV7(at, other) > reach + margin,
+        );
+      }).length;
+      return side >= 1.2 * (amounts[index] ?? 0);
+    });
+    if (fits) return margin;
+  }
+  return 1.5;
+}
+
+/**
+ * One Continents landmass under the natural-water rules: grown from its
+ * spine's first tile over tiles nearer its own spine than any other by more
+ * than the sea margin ({@link continentSeaMarginV7}; null from five seats,
+ * where the channel rule of the many-seats generator stands), nearest first
+ * by Euclidean distance to the spine, pushed up to 6 tiles (4 from five
+ * seats) by the shore noise and away from the board's edge (2 on the edge,
+ * 0.75 next to it). `start` is land the landmass already holds.
+ */
+function growNaturalLandmassV7(
+  width: number,
+  height: number,
+  spines: readonly (readonly CoordV7[])[],
+  index: number,
+  amount: number,
+  land: ReadonlySet<string>,
+  noise: ReadonlyMap<string, number>,
+  margin: number | null,
+  start: readonly CoordV7[] = [],
+): CoordV7[] {
+  const own = spines[index] ?? [];
+  const ring = margin === null;
+  const amplitude = ring
+    ? CONTINENT_RING_NOISE_TILES_V7
+    : CONTINENT_NOISE_TILES_V7;
+  const chebyshevReach = (at: CoordV7, spine: readonly CoordV7[]): number =>
+    Math.min(...spine.map((point) => chebyshev(at, point)));
+  // One seed, the spine's first point: the spine's other tiles cost
+  // nothing but their noise, so the landmass runs along it, and it stays one
+  // landmass (seeding every spine tile could grow two pieces).
+  return growRegionV7(
+    width,
+    height,
+    start.length > 0 ? [] : own.slice(0, 1),
+    amount,
+    (at) => {
+      if (land.has(key(at))) return false;
+      // From five seats the channel rule of the many-seats generator
+      // stands (a tile is the landmass's only when every other spine is
+      // more than 1 further, Chebyshev): the ring domains leave no room for
+      // a wider margin, and with nine seats two spines may cross.
+      if (ring)
+        return spines.every(
+          (other, otherIndex) =>
+            otherIndex === index ||
+            chebyshevReach(at, other) > chebyshevReach(at, own) + 1,
+        );
+      const reach = euclideanReachV7(at, own);
+      return spines.every(
+        (other, otherIndex) =>
+          otherIndex === index ||
+          euclideanReachV7(at, other) > reach + (margin ?? 0),
+      );
+    },
+    (at) => {
+      const edge = edgeDistanceV7(width, height, at);
+      return (
+        euclideanReachV7(at, own) +
+        amplitude * (noise.get(key(at)) ?? 0) +
+        (edge === 0 ? 2 : edge === 1 ? 0.75 : 0)
+      );
+    },
+    start,
+  );
+}
+
+/**
+ * The islets of a natural-water Continents board, `round(water / 60)` of
+ * them: in the order of the tiles' draws (bits 0-15), a Water tile 1 or
+ * more from the board's edge with no land within 2 (open sea) starts an
+ * islet of 1 to 3 tiles (bits 16-19), each further tile a four-neighbour
+ * that keeps the same clearance from every other land. When the open sea
+ * runs out first, a second pass in the same order takes tiles with no land
+ * within 1 and at most 3 land tiles within 2. An islet therefore always has Water all round it and at least
+ * one Water tile between it and any other land: it never joins a landmass,
+ * never closes a channel or encloses a pond, and holds no settlement (a
+ * site needs four land neighbours). Adds the islets to `land` and returns
+ * them.
+ */
+function placeIsletsV7(
+  width: number,
+  height: number,
+  land: Set<string>,
+  draws: ReadonlyMap<string, number>,
+): readonly (readonly CoordV7[])[] {
+  const water = width * height - land.size;
+  const wanted = Math.round(water / ISLET_WATER_PER_ISLET_V7);
+  const order = (at: CoordV7): number => (draws.get(key(at)) ?? 0) & 0xffff;
+  const inside = (at: CoordV7): boolean =>
+    edgeDistanceV7(width, height, at) >= 1;
+  const islets: CoordV7[][] = [];
+  const starts = allCoords(width, height)
+    .filter(inside)
+    .sort((a, b) => order(a) - order(b) || compareCoords(a, b));
+  for (const clearance of [ISLET_CLEARANCE_V7, ISLET_CLEARANCE_V7 - 1]) {
+    const clear = (at: CoordV7, own: ReadonlySet<string>): boolean =>
+      coordsInRadius(width, height, at, clearance - 1).every(
+        (near) => !land.has(key(near)) || own.has(key(near)),
+      );
+    // The second pass keeps to open water all the same: at most 3 land
+    // tiles within 2, so an islet does not sit in a bay as a stray piece of
+    // coast.
+    const open = (at: CoordV7): boolean =>
+      coordsInRadius(width, height, at, 2).filter((near) => land.has(key(near)))
+        .length <= 3;
+    for (const start of starts) {
+      if (islets.length >= wanted) return islets;
+      if (!clear(start, new Set()) || !open(start)) continue;
+      const size =
+        1 +
+        ((((draws.get(key(start)) ?? 0) >>> 16) & 0xf) %
+          ISLET_MAXIMUM_TILES_V7);
+      const islet = [start];
+      const own = new Set([key(start)]);
+      while (islet.length < size) {
+        const next = islet
+          .flatMap((at) => neighbors4(width, height, at))
+          .filter((at) => !own.has(key(at)) && inside(at) && clear(at, own))
+          .sort((a, b) => order(a) - order(b) || compareCoords(a, b))[0];
+        if (next === undefined) break;
+        islet.push(next);
+        own.add(key(next));
+      }
+      for (const at of islet) land.add(key(at));
+      islets.push(islet);
+    }
+  }
+  return islets;
+}
+
+/** The lake counts a natural-water Lakes board draws from, by width. */
+export function naturalLakeCountRangeV7(
+  width: number,
+): readonly [number, number] {
+  return width <= 11
+    ? [2, 2]
+    : width <= 16
+      ? [2, 3]
+      : width <= 20
+        ? [3, 4]
+        : [3, 5];
+}
+
+/**
+ * The eight directions of a lake's second lobe; the first four are also
+ * the axes a lake may stretch along.
+ */
+const LAKE_DIRECTIONS_V7: readonly CoordV7[] = [
+  { x: 1, y: 0 },
+  { x: 1, y: 1 },
+  { x: 0, y: 1 },
+  { x: -1, y: 1 },
+  { x: -1, y: 0 },
+  { x: -1, y: -1 },
+  { x: 0, y: -1 },
+  { x: 1, y: -1 },
+];
+
+/**
+ * The lakes of a natural-water Lakes board (map scale section 5.8): the
+ * Water count of {@link lakeWaterCountV7} split over two to five lakes
+ * ({@link naturalLakeCountRangeV7}, drawn from the corner tile's bits
+ * 16-19), each a connected blob grown from its own centre. The lakes keep
+ * 3 from the board's edge (2 on 11 x 11), so a capital 2 from the edge
+ * keeps its land, and 1 tile of land between each other. Centres are taken
+ * in the order of their draws (bits 0-15) as far apart as the box allows;
+ * each lake gets a share of the Water by a weight of 2 to 5 (bits 16-17,
+ * at least 4 tiles), stretches along one of four axes by 1.4 or 2 (bits
+ * 18-19), and grows nearest first by that stretched distance plus up to 2
+ * tiles of smooth noise. Water a lake has no room for goes to the next.
+ * Removes the lakes from `land`.
+ */
+function naturalLakesV7(
+  width: number,
+  height: number,
+  wantedWater: number,
+  land: Set<string>,
+  draws: ReadonlyMap<string, number>,
+): void {
+  const inset = width <= 11 ? 2 : LAKE_EDGE_DISTANCE_V7;
+  const draw = (at: CoordV7): number => draws.get(key(at)) ?? 0;
+  const [fewest, most] = naturalLakeCountRangeV7(width);
+  const count =
+    fewest + (((draw({ x: 0, y: 0 }) >>> 16) & 0xf) % (most - fewest + 1));
+  const inBox = (at: CoordV7, margin: number): boolean =>
+    at.x >= inset + margin &&
+    at.y >= inset + margin &&
+    at.x <= width - 1 - inset - margin &&
+    at.y <= height - 1 - inset - margin;
+  const order = allCoords(width, height)
+    .filter((at) => inBox(at, 1))
+    .sort(
+      (a, b) => (draw(a) & 0xffff) - (draw(b) & 0xffff) || compareCoords(a, b),
+    );
+  let centres: CoordV7[] = [];
+  for (
+    let spacing = Math.max(4, Math.floor((width - 2 * inset) / 2));
+    spacing >= 4;
+    spacing -= 1
+  ) {
+    centres = [];
+    for (const at of order)
+      if (
+        centres.length < count &&
+        centres.every((other) => chebyshev(at, other) >= spacing)
+      )
+        centres.push(at);
+    if (centres.length >= count) break;
+  }
+  const weights = centres.map((at) => 2 + ((draw(at) >>> 16) & 3));
+  const total = weights.reduce((sum, value) => sum + value, 0);
+  const sizes = weights.map((weight) =>
+    Math.floor((wantedWater * weight) / total),
+  );
+  for (
+    let left = wantedWater - sizes.reduce((sum, value) => sum + value, 0),
+      index = 0;
+    left > 0;
+    left -= 1, index += 1
+  )
+    sizes[index % sizes.length] = (sizes[index % sizes.length] ?? 0) + 1;
+  for (let index = 0; index < sizes.length; index += 1)
+    while ((sizes[index] ?? 0) < 4) {
+      const largest = sizes.indexOf(Math.max(...sizes));
+      sizes[largest] = (sizes[largest] ?? 0) - 1;
+      sizes[index] = (sizes[index] ?? 0) + 1;
+    }
+  const noise = smoothNoiseV7(width, height, draws);
+  const lakes: CoordV7[][] = centres.map(() => []);
+  const lakeOf = new Map<string, number>();
+  const grow = (index: number, extra: number): number => {
+    const centre = centres[index] as CoordV7;
+    const bits = draw(centre) >>> 16;
+    const shapeBits = draw({ x: centre.x + 1, y: centre.y }) >>> 16;
+    const axis = LAKE_DIRECTIONS_V7[(bits >>> 2) & 3] as CoordV7;
+    const length = Math.sqrt(axis.x * axis.x + axis.y * axis.y);
+    const stretch = (shapeBits & 0x8) === 0 ? 1.25 : 1.6;
+    const towards = LAKE_DIRECTIONS_V7[shapeBits & 7] as CoordV7;
+    const reach = Math.max(2, Math.round(Math.sqrt(sizes[index] ?? 4) / 2));
+    const lobe = {
+      x: centre.x + towards.x * reach,
+      y: centre.y + towards.y * reach,
+    };
+    const ellipse = (from: CoordV7, at: CoordV7): number => {
+      const dx = at.x - from.x;
+      const dy = at.y - from.y;
+      const along = (dx * axis.x + dy * axis.y) / length;
+      const across = (dy * axis.x - dx * axis.y) / length;
+      return Math.sqrt((along / stretch) ** 2 + across ** 2);
+    };
+    const lake = lakes[index] as CoordV7[];
+    const cells = growRegionV7(
+      width,
+      height,
+      lake.length > 0 ? [] : [centre],
+      extra,
+      (at) =>
+        inBox(at, 0) &&
+        land.has(key(at)) &&
+        centres.every(
+          (other, otherIndex) =>
+            otherIndex === index || chebyshev(at, other) >= 2,
+        ) &&
+        coordsInRadius(width, height, at, 1).every((near) => {
+          const other = lakeOf.get(key(near));
+          return other === undefined || other === index;
+        }),
+      (at) =>
+        Math.min(ellipse(centre, at), ellipse(lobe, at) + 1) +
+        LAKE_NOISE_TILES_V7 * (noise.get(key(at)) ?? 0),
+      lake,
+    );
+    for (const at of cells) {
+      lakeOf.set(key(at), index);
+      land.delete(key(at));
+      lake.push(at);
+    }
+    return cells.length;
+  };
+  let owed = 0;
+  sizes.forEach((size, index) => {
+    owed += size - grow(index, size + owed);
+  });
+  for (let index = 0; owed > 0 && index < centres.length; index += 1)
+    owed -= grow(index, owed);
 }
 
 function smallLakeCell(at: CoordV7, variant: number): boolean {
@@ -3332,16 +4041,23 @@ function validateNavalCandidate(
     setup.mapType === "PANGEA"
       ? [0.68, 0.76]
       : setup.mapType === "CONTINENTS"
-        ? [0.5, 0.62]
+        ? // Map scale section 5.8: 46% landmasses plus islets.
+          naturalWaterRulesV7(rules)
+          ? [0.4, 0.56]
+          : [0.5, 0.62]
         : setup.mapType === "ARCHIPELAGO"
           ? [0.34, 0.46]
           : [0.72, 0.84];
-  // The coast-ring Pangea has exactly its land count (59.5-72% of the board).
+  // The coast-ring Pangea has exactly its land count (59.5-72% of the board),
+  // and so has a natural-water Lakes board (map scale section 5.8).
   if (
     coastRing
       ? land.length !== pangeaLandCountV7(board.width, board.height)
-      : land.length < Math.ceil((bounds[0] ?? 0) * board.tiles.length) ||
-        land.length > Math.floor((bounds[1] ?? 1) * board.tiles.length)
+      : setup.mapType === "LAKES" && naturalWaterRulesV7(rules)
+        ? land.length !==
+          board.tiles.length - lakeWaterCountV7(board.width, board.height)
+        : land.length < Math.ceil((bounds[0] ?? 0) * board.tiles.length) ||
+          land.length > Math.floor((bounds[1] ?? 1) * board.tiles.length)
   )
     failures.push("TILE_LAYOUT");
   if (
@@ -3579,6 +4295,28 @@ function validateNavalCandidate(
   )
     failures.push("CAPITAL_GROWTH");
   if (coastRing && !pangeaCoastRingV7(board)) failures.push("COAST_RING");
+  // Map scale section 5.8: on a natural-water Continents or Lakes board of
+  // up to four seats with a village for every seat, every start has a
+  // village within 5 and no start's nearest village is more than 2 further
+  // than another's (the spread fill of 7r79 held this by itself; the
+  // smaller, longer landmasses of 7r87 sometimes do not).
+  if (
+    naturalWaterRulesV7(rules) &&
+    (setup.mapType === "CONTINENTS" || setup.mapType === "LAKES") &&
+    seats <= 4 &&
+    candidate.villages.length >= seats
+  ) {
+    const nearest = candidate.capitals.map((capital) =>
+      Math.min(
+        ...candidate.villages.map((village) => chebyshev(capital, village)),
+      ),
+    );
+    if (
+      Math.max(...nearest) > NEAREST_VILLAGE_MAXIMUM_V7 ||
+      Math.max(...nearest) - Math.min(...nearest) > NEAREST_VILLAGE_SPREAD_V7
+    )
+      failures.push("VILLAGE_BALANCE");
+  }
   return [...new Set(failures)];
 }
 
@@ -3965,7 +4703,7 @@ export function createInitialMapStateV7(
 export function createInitialMapStateWithVillageCountV7(
   input: unknown,
   villages: number,
-  rules: MapGenerationRulesV7 = "SPREAD_VILLAGES_CURIOSITIES",
+  rules: MapGenerationRulesV7 = "NATURAL_WATER_CURIOSITIES",
 ): CreateInitialMapStateResultV7 {
   const validated = validateMatchSetupV7(input);
   if (!validated.ok) return validated;

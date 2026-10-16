@@ -135,7 +135,7 @@ function expectManySeatBoard(map: GeneratedMapV7, input: MatchSetupV7): void {
   expect(map.capitals).toHaveLength(seats);
   // Villages: the density count, or as many as fit on a setup new at V4.
   const target = villageCountV7(input);
-  if (partialVillagesV7("SPREAD_VILLAGES_CURIOSITIES", input))
+  if (partialVillagesV7("NATURAL_WATER_CURIOSITIES", input))
     expect(map.villages.length).toBeLessThanOrEqual(target);
   else expect(map.villages).toHaveLength(target);
   // Spacing, the edge margin, and the central zone.
@@ -218,7 +218,10 @@ describe("ruleset-7 map scale: many seats (7r42)", () => {
     expect(MAP_GENERATION_REVISION_V7).toBe("REGIONAL_BIOMES_NAVAL_V4");
     expect(maxSeatCountV7()).toBe(F);
     // Section 3.2, `P(w, type)` at 11 / 14 / 16 / 20 / 25, with the two
-    // measured cells of section 3.4 (11 x 11 Lakes 2, Continents 6).
+    // measured cells of section 3.4 (11 x 11 Lakes 2, Continents 6). The
+    // Continents of `7r87` (section 5.8) cover 46% of the board, which
+    // lowers `floor(L / 9)` (12 / 15 / 24 / 38 on 14 to 25 before) but no
+    // allowed seat count: every cell still holds at least nine.
     expect(
       Object.fromEntries(
         GENERATED_MAP_TYPES_V7.map((type) => [
@@ -229,7 +232,7 @@ describe("ruleset-7 map scale: many seats (7r42)", () => {
     ).toEqual({
       DRY_LAND: [9, 16, 16, 36, 49],
       PANGEA: [8, 14, 16, 32, 49],
-      CONTINENTS: [6, 12, 15, 24, 38],
+      CONTINENTS: [6, 10, 13, 20, 32],
       ARCHIPELAGO: [4, 8, 9, 16, 27],
       LAKES: [2, 16, 16, 35, 49],
     });
@@ -567,7 +570,7 @@ describe("ruleset-7 map scale: many seats (7r42)", () => {
   });
 
   it("keeps exact village counts on the setups of 7r41 and fills the new ones as far as they go", () => {
-    const rules = "SPREAD_VILLAGES_CURIOSITIES";
+    const rules = "NATURAL_WATER_CURIOSITIES";
     expect(partialVillagesV7(rules, setup("DRY_LAND", 11, 2, 0))).toBe(false);
     expect(partialVillagesV7(rules, setup("DRY_LAND", 14, 3, 0))).toBe(false);
     expect(partialVillagesV7(rules, setup("DRY_LAND", 16, 4, 0))).toBe(false);
@@ -608,7 +611,7 @@ describe("ruleset-7 map scale: many seats (7r42)", () => {
     const rifts = generateInitialMapWithVillageCountV7(
       input,
       villageCountV7(input),
-      "SPREAD_VILLAGES_RIFTS",
+      "NATURAL_WATER_RIFTS",
     );
     const current = generateInitialMapV7(input);
     if (!rifts.ok || !current.ok) throw new Error("generation");
@@ -765,7 +768,11 @@ describe("ruleset-7 map scale: many seats (7r42)", () => {
  * (`pulp_wars-9s0.12`): their villages are no longer filled in `(y, x)`
  * order, so they stand elsewhere (same candidate, same count). The Dry Land
  * boards have no such step, and on these Pangea and Lakes boards a capital
- * already stands on the coast, so those four hashes did not move.
+ * already stands on the coast, so those four hashes did not move. The Lakes
+ * and Continents boards were pinned again at `pulp-wars-poc-7r87`
+ * (`pulp_wars-ykw.8`, natural water): noise-shaped lakes (the wild reserve
+ * gives way to the villages on this eight-seat board) and Continents on 46%
+ * of the board, so 8 villages instead of 12.
  */
 const GOLDEN = {
   "DRY_LAND/11/8": [
@@ -787,15 +794,15 @@ const GOLDEN = {
     [],
   ],
   "LAKES/20/8": [
-    "9a01ed02be91816efaa0868b4402f479a0be57ca795d5666fb22e3293e0472e6",
+    "49f853a63b2b8e85d7d2b18a07c95772f48e8a21dfa9641d14aeeaa5c7039c3b",
     1,
     17,
-    [{ x: 8, y: 10 }],
+    [],
   ],
   "CONTINENTS/20/7": [
-    "853658b92668693ebc309c0b03971b610a78c5d3f6d31ac054f50c8fe6214c8e",
+    "827d0eaf44ad2285536238cb84e00ef87d095a1811cbb2e3992ef311cf20e965",
     1,
-    12,
+    8,
     [],
   ],
   "ARCHIPELAGO/25/8": [

@@ -12,6 +12,7 @@ import {
   parseMatchSetupV7,
   revision14VillageCountV7,
   settlementCountV7,
+  villageCountForRulesV7,
   villageCountV7,
   wildCentreLegalV7,
   wildCentreVillageDistanceV7,
@@ -85,9 +86,10 @@ function setup(
 }
 
 function generated(input: MatchSetupV7): GeneratedMapV7 {
+  // The V3 rules with their own density: 56% Continents before `7r87`.
   const result = generateInitialMapWithVillageCountV7(
     input,
-    villageCountV7(input),
+    villageCountForRulesV7(input, "VILLAGE_DENSITY_CURIOSITIES"),
     "VILLAGE_DENSITY_CURIOSITIES",
   );
   if (!result.ok)
@@ -241,9 +243,14 @@ describe("ruleset-7 map scale: village density (7r40, the V3 parity rules)", () 
       DRY_LAND: [121, 196, 256, 400, 625],
       LAKES: [96, 156, 204, 320, 500],
       PANGEA: [72, 129, 176, 288, 450],
-      CONTINENTS: [68, 110, 143, 224, 350],
+      // Map scale section 5.8 (`pulp_wars-ykw.8`, `7r87`): the Continents
+      // landmasses cover 46% (56% before; the parity rules here).
+      CONTINENTS: [56, 90, 118, 184, 288],
       ARCHIPELAGO: [48, 78, 102, 160, 250],
     });
+    expect(
+      WIDTHS.map((width) => landTileCountV7(width, "CONTINENTS", true)),
+    ).toEqual([68, 110, 143, 224, 350]);
     expect(
       Object.fromEntries(
         TYPES.map((type) => [
@@ -251,7 +258,10 @@ describe("ruleset-7 map scale: village density (7r40, the V3 parity rules)", () 
           WIDTHS.map((width) => settlementCountV7(width, type)),
         ]),
       ),
-    ).toEqual(SETTLEMENTS);
+    ).toEqual({ ...SETTLEMENTS, CONTINENTS: [5, 8, 10, 15, 24] });
+    expect(
+      WIDTHS.map((width) => settlementCountV7(width, "CONTINENTS", true)),
+    ).toEqual(SETTLEMENTS.CONTINENTS);
     // Villages are the settlements less one capital per seat.
     expect(
       ([1, 2, 3] as const).map((aiCount) =>
@@ -407,10 +417,14 @@ describe("ruleset-7 map scale: village density (7r40, the V3 parity rules)", () 
       "CAPITAL_DOMAINS",
       "CAPITAL_DOMAINS_RIFTS",
       "CAPITAL_DOMAINS_CURIOSITIES",
-      // `pulp_wars-9s0.12`: the current generator, villages spread.
+      // `pulp_wars-9s0.12`: villages spread.
       "SPREAD_VILLAGES",
       "SPREAD_VILLAGES_RIFTS",
       "SPREAD_VILLAGES_CURIOSITIES",
+      // `pulp_wars-ykw.8`: the current generator, natural water.
+      "NATURAL_WATER",
+      "NATURAL_WATER_RIFTS",
+      "NATURAL_WATER_CURIOSITIES",
     ]);
     const input = setup("DRY_LAND", 20, 1, 3, { curiosities: true });
     // The default rules and the density count are the current generator.

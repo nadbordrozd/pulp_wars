@@ -69,11 +69,13 @@ export const QUICK_MAX_BOARD_SIZE_V7: BoardSizeV7 = 20;
  * The land tiles each player should have to themselves, by map type: the
  * quick start picks the smallest board giving every player at least this
  * much land. The land counts of the map types already differ; Continents
- * asks a little less so that one opponent still plays the long-standing
- * 11 x 11 board (68 land tiles).
+ * asks less so that one opponent still plays the long-standing 11 x 11
+ * board (56 land tiles since the natural water of `7r87`, `pulp_wars-ykw.8`;
+ * 34 of 68 before, and 28 of 56 picks the same size for every count of
+ * opponents: the wider sea is crossed by boat, not lost room).
  */
 export const QUICK_LAND_PER_PLAYER_V7: Readonly<Record<string, number>> =
-  Object.freeze({ PANGEA: 35, CONTINENTS: 34, LAKES: 35 });
+  Object.freeze({ PANGEA: 35, CONTINENTS: 28, LAKES: 35 });
 /** The target for any other generated map type (from Advanced). */
 const DEFAULT_LAND_PER_PLAYER = 35;
 
@@ -111,6 +113,12 @@ export const QUICK_BASE_HEAD_START_V7: Readonly<
 > = Object.freeze({ NORMAL: 0, HARD: 5, HARDER: 10, BRUTAL: 20 });
 /** Reference crowding: one player per this many land tiles. */
 export const QUICK_REFERENCE_LAND_PER_PLAYER_V7 = 40;
+/**
+ * The reference on Continents: 33, the 40 above scaled to the 46% land of
+ * `7r87` (56% before), which gives every Continents board and opponent
+ * count the head start it had.
+ */
+export const QUICK_CONTINENTS_REFERENCE_LAND_PER_PLAYER_V7 = 33;
 
 /**
  * The AI head start of a difficulty on a board. A head start counts for more
@@ -132,7 +140,11 @@ export function quickHeadStartCoinsV7(
   const land = isGeneratedMapTypeV7(mapType)
     ? landTileCountV7(boardSize, mapType)
     : boardSize * boardSize;
-  const raw = (base * land) / seats / QUICK_REFERENCE_LAND_PER_PLAYER_V7;
+  const reference =
+    mapType === "CONTINENTS"
+      ? QUICK_CONTINENTS_REFERENCE_LAND_PER_PLAYER_V7
+      : QUICK_REFERENCE_LAND_PER_PLAYER_V7;
+  const raw = (base * land) / seats / reference;
   return nearestHeadStartCoinsV7(raw);
 }
 

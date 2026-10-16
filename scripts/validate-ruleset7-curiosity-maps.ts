@@ -99,7 +99,7 @@ for (const mix of ["PLAIN", "MARTIAN_UNDEAD"] as const)
         const base = generateInitialMapWithVillageCountV7(
           setup(true),
           villageCountV7(setup(true)),
-          "SPREAD_VILLAGES_RIFTS",
+          "NATURAL_WATER_RIFTS",
         );
         const label = `${mix}/${mapType}/${width}`;
         assert(off.ok && on.ok && again.ok && base.ok, `${label}/${seed}`);

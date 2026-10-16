@@ -135,7 +135,8 @@ const CAPACITY: Readonly<Record<GeneratedMapTypeV7, readonly number[]>> = {
   DRY_LAND: [9, 16, 16, 36, 49],
   LAKES: [2, 16, 16, 35, 49],
   PANGEA: [8, 14, 16, 32, 49],
-  CONTINENTS: [6, 12, 15, 24, 38],
+  // Map scale section 5.8 (`7r87`): Continents cover 46% of the board.
+  CONTINENTS: [6, 10, 13, 20, 32],
   ARCHIPELAGO: [4, 8, 9, 16, 27],
 };
 assert.deepEqual(MEASURED_SEAT_CAPACITY_V7, [
@@ -153,14 +154,14 @@ const LAND: Readonly<Record<GeneratedMapTypeV7, readonly number[]>> = {
   DRY_LAND: [121, 196, 256, 400, 625],
   LAKES: [96, 156, 204, 320, 500],
   PANGEA: [72, 129, 176, 288, 450],
-  CONTINENTS: [68, 110, 143, 224, 350],
+  CONTINENTS: [56, 90, 118, 184, 288],
   ARCHIPELAGO: [48, 78, 102, 160, 250],
 };
 const SETTLEMENTS: Readonly<Record<GeneratedMapTypeV7, readonly number[]>> = {
   DRY_LAND: [8, 13, 17, 27, 42],
   LAKES: [7, 12, 16, 25, 38],
   PANGEA: [6, 11, 15, 24, 38],
-  CONTINENTS: [6, 9, 12, 19, 29],
+  CONTINENTS: [5, 8, 10, 15, 24],
   ARCHIPELAGO: [4, 7, 9, 15, 23],
 };
 assert.deepEqual(LAND_PER_SETTLEMENT_V7, {
@@ -524,7 +525,7 @@ for (const mapType of mapTypes)
       }
       const map = result.map;
       assert.equal(
-        partialVillagesV7("SPREAD_VILLAGES_CURIOSITIES", setup),
+        partialVillagesV7("NATURAL_WATER_CURIOSITIES", setup),
         !legacy,
       );
       checkMap(map, mapType, width, seats, label, !legacy);

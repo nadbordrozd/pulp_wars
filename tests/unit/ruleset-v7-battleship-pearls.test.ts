@@ -39,18 +39,21 @@ import {
 // Port on (4, 3)).
 
 describe("the identity", () => {
-  // `pulp_wars-5ti.14` (free Pearls) is 7r86; 7r84 (`pulp_wars-5ti.13`) and
-  // 7r85 (the Cult redesign's roster) are retired with their save keys.
-  it("is 7r86, with 7r85 the last prior identity and 7r84 before it", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r86");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r86.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-2)).toEqual([
+  // `pulp_wars-5ti.14` (free Pearls) was 7r86; 7r84 (`pulp_wars-5ti.13`) and
+  // 7r85 (the Cult redesign's roster) came before it. The natural water of
+  // `pulp_wars-ykw.8` took 7r87, so all three are retired with their keys.
+  it("was 7r86 after 7r85 and 7r84, all three save keys obsolete now", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r87");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r87.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-3)).toEqual([
       "pulp-wars-poc-7r84",
       "pulp-wars-poc-7r85",
+      "pulp-wars-poc-7r86",
     ]);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-2)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-3)).toEqual([
       "pulpWars.save.v7r84.current",
       "pulpWars.save.v7r85.current",
+      "pulpWars.save.v7r86.current",
     ]);
   });
 });

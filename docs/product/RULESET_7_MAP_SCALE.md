@@ -23,7 +23,12 @@ say, with no change of identity. The Normal AI budget and the coarse check
 (`pulp_wars-9s0.12`, `pulp-wars-poc-7r79`):
 [section 5.7](#57-villages-spread-over-the-land-pulp_wars-9s012-pulp-wars-poc-7r79)
 replaces the `(y, x)` fill of Continents and Archipelago and the choice of
-the coastal settlement, so villages spread over the land. It is an overlay over
+the coastal settlement, so villages spread over the land. **Amended
+2026-10-16** (`pulp_wars-ykw.8`, `pulp-wars-poc-7r87`):
+[section 5.8](#58-natural-water-pulp_wars-ykw8-pulp-wars-poc-7r87) gives
+Continents 46% land (56% in sections 3.2 and 5 below), wider seas, and
+islets, and Lakes two to five noise-shaped lakes in place of the long or
+fixed lakes of section 4.3. It is an overlay over
 [Ruleset 7: current rules](RULESET_7_CURRENT.md) at `pulp-wars-poc-7r35`
 (sections 2.1–2.3, 2.7, and 3 in particular), the
 [unique-factions overlay](RULESET_7_UNIQUE_FACTIONS.md), and the
@@ -1141,6 +1146,141 @@ land over twelve seeds of eight cells, the `7r78` bias reproduced by the
 parity rules, the Pangea top row, fairness, determinism, and the pinned
 Dry Land hashes). `npm run validate:ruleset7-map-scale` (seeds 0-255 of
 every cell) was not run for this bead.
+
+### 5.8 Natural water (`pulp_wars-ykw.8`, `pulp-wars-poc-7r87`)
+
+**The report** (the user, 2026-10-15): "continents should have a bit more
+water than they do now. not just a narrow channel. and some tiny islands
+sprinkled here and there. I have noticed that the water in the lakes map is
+very regular. two rectangular lakes every time? make them more natural
+shaped."
+
+**What was measured** (the generator alone, no match; seeds 1-8 of each
+cell; `scripts/map-water-measure-v7.ts`, which also renders the contact
+sheets). "Sea" is the fewest Water tiles between two landmasses (Chebyshev
+distance less one) from the coast tiles of each landmass: the narrowest
+anywhere on the eight boards, and the median.
+
+| Cell (players)  | Water `7r84` | Narrowest / median sea `7r84` | Water `7r87` | Narrowest / median sea `7r87` | Islets `7r87` (tiles) |
+| --------------- | -----------: | ----------------------------: | -----------: | ----------------------------: | --------------------: |
+| Continents 11/2 |          44% |                         1 / 3 |          54% |                         3 / 4 |             0.3 (0.3) |
+| Continents 14/2 |          44% |                         2 / 4 |          53% |                         2 / 4 |             1.4 (2.5) |
+| Continents 16/2 |          44% |                         2 / 4 |          53% |                         2 / 5 |             1.9 (2.8) |
+| Continents 16/4 |          44% |                         2 / 4 |          53% |                         2 / 4 |             1.9 (3.5) |
+| Continents 20/2 |          44% |                         2 / 4 |          52% |                         2 / 7 |             4.0 (6.8) |
+| Continents 25/2 |          44% |                         1 / 5 |          52% |                         3 / 7 |             6.0 (9.9) |
+| Continents 25/4 |          44% |                         3 / 7 |          52% |                         3 / 6 |             6.0 (9.6) |
+| Continents 20/7 |          45% |                         1 / 4 |          52% |                         1 / 4 |             4.0 (7.3) |
+| Continents 25/9 |          44% |                         1 / 4 |          52% |                         1 / 4 |            6.0 (10.8) |
+
+Before, the landmasses of two to four players reached the board's edge
+(36% to 76% of the edge ring was land) and filled their sides up to a
+channel one or two tiles wide; the few islets were stray tiles of the
+per-tile jitter. Now 0% to 22% of the edge ring is land up to four players
+(the most on 11 x 11), so the sea runs around the landmasses as well.
+
+The lakes were two equal lakes every time: on 11 x 11 two fixed squares
+(4 x 4 and 3 x 3, in one of four mirror images), and from 14 two long lakes
+down the west and the east side, 95% of their bounding boxes filled (82% on
+25, where they bend). Now a board has two to five lakes of varied size
+(16 x 16, seeds 1-4: 21+17+14, 19+19+14, 26+26, 20+19+13 tiles; 25 x 25:
+46+45+34, 50+38+37, 56+42+27, 56+46+23), filling 66% to 74% of their boxes
+(82% for the two small lakes of 11 x 11).
+
+**The rules** (generation rules `NATURAL_WATER`, `NATURAL_WATER_RIFTS`, and
+the current `NATURAL_WATER_CURIOSITIES`; the `SPREAD_VILLAGES` rules of
+`7r79` to `7r86` stay as parity rules). Every draw comes from the topology
+draws the mask already had, one per tile, so no stream changes length.
+
+1. **Continents land: 46% of the board** (56% before), the landmasses only.
+   `landTileCountV7` and the village density follow: `S` is 5 / 8 / 10 / 15
+   / 24 on widths 11 to 25 (6 / 9 / 12 / 19 / 29 before). With the islets
+   about 52% to 54% of the board is water.
+2. **Shapes.** A landmass grows one tile at a time from the first tile of
+   its spine (so it stays one landmass), taking among its four-neighbours
+   the tile of lowest score: the Euclidean distance to its spine, plus
+   shore noise of up to 6 tiles (4 from five seats; a coarse field, the
+   mean of bits 20-31 of the draws within 2, plus a third of a fine field,
+   bits 4-15 within 1, each replaced by its rank), plus 2 on the board's
+   edge and 0.75 next to it, less 0.3 for each neighbour already grown (so
+   bays fill rather than one-tile arms growing out).
+3. **Spines.** Up to four seats they stand a quarter of the board in: two
+   north-south lines for two players; two points and a bottom east-west line
+   (the landmass with the most capitals) for three and four. From five
+   seats the ring domains of section 4.3 stand with their channel rule (a
+   tile is a landmass's only if every other spine is more than one further,
+   Chebyshev). **Nine seats** take every domain in a shuffled order, and the
+   ring grouping joined domains that were not neighbours, so landmasses were
+   drawn across each other: on 14 x 14 three seeds of 0-63 failed after 256
+   candidates, and 16 to 25 took 23 to 61 candidates on average. The
+   natural-water rules group the nine domains by the grid instead, one side
+   of three domains (three capitals) and the three columns of two that meet
+   it, turned a quarter as many times as the grid index of slot 0's domain,
+   modulo 4 (`nineSeatContinentGroupsV7`): 1.4 to 2.3 candidates on
+   average, and none of seeds 0-255 fails.
+4. **The sea margin** (up to four seats): a tile is a landmass's only when
+   it is nearer its own spine than any other by more than `max(2.9, w / 7)`
+   tiles (Euclidean), so two landmasses keep at least two Water tiles
+   apart. Where a landmass's side of that margin would not hold 1.2 times
+   its land (11 x 11 with three or four players) the margin narrows by 0.3
+   at a time, down to 1.5 (one Water tile). Land a landmass has no room for
+   goes to the next, so the land count stays exact.
+5. **Islets:** `round(water / 60)` of them (1 on 11 x 11, 2 on 14 and 16, 4
+   on 20, 6 on 25), in the order of the tiles' draws (bits 0-15): a Water
+   tile 1 or more from the edge with no land within 2 starts an islet of 1
+   to 3 tiles (bits 16-19); when the open sea runs out, a second pass takes
+   tiles with no land within 1 and at most 3 land tiles within 2. An islet
+   is never within 1 of other land, so it never joins a landmass, never
+   closes a channel, and holds no settlement (a site needs four land
+   neighbours); it counts for nobody's room and is not part of `L`. A
+   treasure chest, a Rift, or a curiosity may stand on one by the ordinary
+   rules.
+6. **Lakes:** the Water of `lakeWaterCountV7` (unchanged) split over 2 lakes
+   on 11 x 11, 2-3 on 14 and 16, 3-4 on 20, and 3-5 on 25 (bits 16-19 of
+   the corner tile's draw). Their centres are taken in the order of the
+   tiles' draws, as far apart as the box allows; each lake gets a share by a
+   weight of 2 to 5 (at least 4 tiles), stretches 1.25 or 1.6 along one of
+   four axes, has a second lobe 2 to 4 tiles off in one of eight directions
+   (one tile dearer), and grows like a landmass (rule 2) with up to 4.7
+   tiles of shore noise. Lakes keep 3 from the edge (2 on 11 x 11) and one
+   land tile between each other; Water a lake has no room for goes to the
+   next, and the count is checked exactly (`TILE_LAYOUT`).
+7. **A village near every start.** The smaller, longer landmasses sometimes
+   left one start's nearest village 6 away (one board in 84 measured). Up
+   to four seats, on a Continents or Lakes board with a village for every
+   seat, every start has a village within 5 and the starts' nearest
+   villages differ by at most 2, or the candidate is rejected
+   (`VILLAGE_BALANCE`), which the `7r79` spread fill had held by itself.
+
+**What does not move.**
+
+- **Setups.** The players each width allows are unchanged: `P` falls for
+  Continents (`floor(L / 9)` is 10 / 13 / 20 / 32 on 14 to 25, was 12 / 15
+  / 24 / 38) but stays at nine or more, and 11 x 11 Continents keeps its
+  measured 6 (`floor(56 / 9)` is 6 too). The Lakes `L` is unchanged.
+- **Other map types.** Dry Land, Pangea, and Archipelago boards are
+  byte-identical (hashes pinned from main at `7r84`, and the whole maps
+  equal to those of the `SPREAD_VILLAGES_CURIOSITIES` rules).
+- **Missions.** A mission's board is baked, but the drift test regenerated
+  missions 4 (Continents 16, seed 6) and 9 (Lakes 16, seed 5) from their
+  sources with the current generator. Their sources now name
+  `rules: "SPREAD_VILLAGES_CURIOSITIES"`, so the test regenerates them with
+  the generator they were baked with: no layer, `revision`, or
+  initial-state hash moved ([campaign](CAMPAIGN.md) section 10.5).
+- **Generation cost.** Seeds 0-255 of every legal Continents and Lakes cell
+  generate. Up to eight seats the mean candidates per board is 1.0 to 2.1
+  (5.5 on 11 x 11 Lakes, worst 31, against about 2 before). 14 x 14 Lakes
+  with nine seats stays the costliest cell, 20 to 27 on average with a
+  worst board of 158 (23, worst 88, at `7r84` on seeds 0-63); 25 x 25 Lakes
+  with nine seats falls from 40 to 1.7.
+
+**Tests:** `tests/unit/ruleset-v7-natural-water.test.ts` (the identity, the
+land share and the islets, the two-tile sea, the nine-seat grouping and the
+14 x 14 seeds the old generator failed, the lake counts, sizes, and shapes
+against the two old lakes, the byte-identical map types and the `7r84`
+boards under the parity rules, the unchanged seat limits, and the
+missions). `npm run validate:ruleset7-map-scale` and the naval and curiosity
+map validators (seeds 0-255) were updated for the new numbers but not run.
 
 ## 6. Setup rules
 

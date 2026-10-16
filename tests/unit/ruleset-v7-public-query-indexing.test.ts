@@ -325,7 +325,9 @@ function alliedCityViews(): {
 } {
   const created = createPlayableGameV7({
     rulesetId: RULESET_7_ID,
-    seed: 919,
+    // Seed 920: the actor's capital can farm on the natural-water
+    // Continents of `7r87` (seed 919 before).
+    seed: 920,
     width: 16,
     height: 16,
     aiCount: 3,

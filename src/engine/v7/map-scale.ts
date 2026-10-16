@@ -67,13 +67,36 @@ export function pangeaLandCountV7(width: number, height: number): number {
   );
 }
 
-/** The land cells of the Continents (56%) and Archipelago (40%) masks. */
+/**
+ * Map scale section 5.8 (`pulp_wars-ykw.8`): the share of the board the
+ * Continents landmasses cover, 46% (56% before `pulp-wars-poc-7r87`, which
+ * left only a narrow channel between the landmasses). The tiny islets
+ * sprinkled in the open sea come on top and are not counted here.
+ */
+export const CONTINENTS_LAND_SHARE_V7 = 0.46;
+/** The Continents land share of the generators before `7r87`. */
+export const PRIOR_CONTINENTS_LAND_SHARE_V7 = 0.56;
+
+/**
+ * The land cells of the Continents (46%; 56% under the generators before
+ * `7r87` when `prior` is true) and Archipelago (40%) masks. On Continents
+ * this is the landmasses' land, without the islets.
+ */
 export function landmassLandCountV7(
   width: number,
   height: number,
   mapType: "CONTINENTS" | "ARCHIPELAGO",
+  prior = false,
 ): number {
-  return Math.round(width * height * (mapType === "CONTINENTS" ? 0.56 : 0.4));
+  return Math.round(
+    width *
+      height *
+      (mapType === "ARCHIPELAGO"
+        ? 0.4
+        : prior
+          ? PRIOR_CONTINENTS_LAND_SHARE_V7
+          : CONTINENTS_LAND_SHARE_V7),
+  );
 }
 
 /**
@@ -87,12 +110,14 @@ export function lakeWaterCountV7(width: number, height: number): number {
 /**
  * Map scale section 5.2: the land tiles `L` of a generated map type at a
  * width, fixed by the generator on every seed: the whole board on Dry Land,
- * the coast-ring count on Pangea, 56% on Continents, 40% on Archipelago, and
- * the board minus its lakes on Lakes.
+ * the coast-ring count on Pangea, 46% on Continents (the landmasses, without
+ * the islets of section 5.8; 56% before `7r87`, with `prior`), 40% on
+ * Archipelago, and the board minus its lakes on Lakes.
  */
 export function landTileCountV7(
   width: number,
   mapType: GeneratedMapTypeV7,
+  prior = false,
 ): number {
   const area = width * width;
   return mapType === "DRY_LAND"
@@ -101,19 +126,21 @@ export function landTileCountV7(
       ? pangeaLandCountV7(width, width)
       : mapType === "LAKES"
         ? area - lakeWaterCountV7(width, width)
-        : landmassLandCountV7(width, width, mapType);
+        : landmassLandCountV7(width, width, mapType, prior);
 }
 
 /**
  * Map scale section 5.1: the settlements `S` (capitals plus villages) of a
  * generated map, `roundHalfUp(L / LPS)`. It depends only on the width and
- * the map type, never on the seat count: the density is constant.
+ * the map type, never on the seat count: the density is constant. `prior`
+ * counts the Continents land of the generators before `7r87`.
  */
 export function settlementCountV7(
   width: number,
   mapType: GeneratedMapTypeV7,
+  prior = false,
 ): number {
-  const land = landTileCountV7(width, mapType);
+  const land = landTileCountV7(width, mapType, prior);
   const perSettlement = LAND_PER_SETTLEMENT_V7[mapType];
   return Math.floor((2 * land + perSettlement) / (2 * perSettlement));
 }
@@ -244,8 +271,9 @@ export function generatedVillageCountV7(
   width: number,
   mapType: GeneratedMapTypeV7,
   seats: number,
+  prior = false,
 ): number {
-  return Math.max(0, settlementCountV7(width, mapType) - seats);
+  return Math.max(0, settlementCountV7(width, mapType, prior) - seats);
 }
 
 /**
@@ -347,4 +375,20 @@ export function majorLandmassMinimumV7(
 export function villageCountV7(setup: MatchSetupV7): number {
   if (!isGeneratedMapTypeV7(setup.mapType)) return 0;
   return generatedVillageCountV7(setup.width, setup.mapType, setup.aiCount + 1);
+}
+
+/**
+ * Parity support: the neutral villages of a generated setup under the
+ * generators before `pulp-wars-poc-7r87` (map scale section 5.8), whose
+ * Continents covered 56% of the board. Equal to {@link villageCountV7} on
+ * every other map type.
+ */
+export function priorVillageCountV7(setup: MatchSetupV7): number {
+  if (!isGeneratedMapTypeV7(setup.mapType)) return 0;
+  return generatedVillageCountV7(
+    setup.width,
+    setup.mapType,
+    setup.aiCount + 1,
+    true,
+  );
 }

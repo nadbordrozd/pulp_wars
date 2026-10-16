@@ -100,7 +100,7 @@ describe("quick start: the board size", () => {
     }
   });
 
-  it("gives every player at least 34 land tiles on an uncrowded board below the cap", () => {
+  it("gives every player its land share (35, or 28 on the 46% Continents) on an uncrowded board below the cap", () => {
     for (const mapType of QUICK_MAP_CYCLE_V7)
       for (const opponents of OPPONENTS) {
         const size = quickBoardSizeV7(mapType, opponents);
@@ -108,7 +108,7 @@ describe("quick start: the board size", () => {
         const seats = opponents + 1;
         expect(
           landTileCountV7(size, mapType as "PANGEA") / seats,
-        ).toBeGreaterThanOrEqual(34);
+        ).toBeGreaterThanOrEqual(mapType === "CONTINENTS" ? 28 : 35);
         expect(crowdedBoardV7(size, mapType as "PANGEA", seats)).toBe(false);
       }
   });
@@ -180,7 +180,8 @@ describe("quick start: the difficulty", () => {
   });
 
   it("gives a smaller head start where players are crowded and a larger one where they are spread out", () => {
-    // Nine players on Continents 20 x 20: 25 land tiles each.
+    // Nine players on Continents 20 x 20: 20 land tiles each (25 before the
+    // natural water of 7r87, against a reference of 33 instead of 40).
     expect(quickHeadStartCoinsV7("HARDER", "CONTINENTS", 20, 8)).toBe(5);
     expect(quickHeadStartCoinsV7("BRUTAL", "CONTINENTS", 20, 8)).toBe(10);
     // One opponent on Pangea 20 x 20: 144 land tiles each.

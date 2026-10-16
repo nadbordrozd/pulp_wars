@@ -7,6 +7,7 @@ import type {
   TechnologyIdV7,
   UnitRoleIdV7,
 } from "../types";
+import type { MapGenerationRulesV7 } from "../map";
 
 /**
  * A mission (docs/product/CAMPAIGN.md section 2.1): one frozen object that
@@ -215,6 +216,15 @@ export interface MissionMapSourceV7 {
   readonly seats: number;
   readonly seed: number;
   readonly edits: readonly MissionMapEditV7[];
+  /**
+   * The generation rules the map was baked with, when the current
+   * generator no longer draws it (`pulp_wars-ykw.8`: Continents and Lakes
+   * boards baked before `pulp-wars-poc-7r87` name
+   * `SPREAD_VILLAGES_CURIOSITIES`). The source is regenerated and compared
+   * under these rules, so the baked layers stay pinned to their generator.
+   * Absent: the current generator.
+   */
+  readonly rules?: MapGenerationRulesV7;
   /**
    * The generator changed after this map was baked: the baked layers are
    * the truth and the source is history, no longer compared.

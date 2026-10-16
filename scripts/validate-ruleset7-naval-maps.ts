@@ -185,7 +185,7 @@ for (const mapType of mapTypes)
       const base = generateInitialMapWithVillageCountV7(
         setup,
         villageCountV7(setup),
-        "SPREAD_VILLAGES",
+        "NATURAL_WATER",
       );
       assert(current.ok && base.ok, `${mapType}/${width}/${seed} failed`);
       const count = validateRifts(current.map, base.map, width);
@@ -387,7 +387,8 @@ function validate(
     mapType === "PANGEA"
       ? [0.59, 0.76]
       : mapType === "CONTINENTS"
-        ? [0.5, 0.62]
+        ? // Map scale section 5.8 (`7r87`): 46% landmasses plus islets.
+          [0.4, 0.56]
         : mapType === "ARCHIPELAGO"
           ? [0.34, 0.46]
           : [0.72, 0.84];

@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r86`, for all nine offered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r87`, for all nine offered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), Candy (`CANDY`), and
 the Cultists (`CULT`). The ninth faction, the Cultists of the Ancient Ones,
@@ -440,8 +440,23 @@ links to another, by Road or by Port. A sea link needs only **Shorecraft**
 the Roads technology, and unexplored water no longer breaks a link. A save,
 replay, or setup of `7r75` is rejected, and the browser autosave has a new
 key.
+`pulp-wars-poc-7r87` (`pulp_wars-ykw.8`, the user, 2026-10-15:
+"continents should have a bit more water than they do now. not just a
+narrow channel. and some tiny islands sprinkled here and there", and the
+lakes were "very regular. two rectangular lakes every time") is **natural
+water** ([section 2.3](#23-map-types),
+[map scale design](RULESET_7_MAP_SCALE.md) section 5.8): Continents
+landmasses cover 46% of the board (56% before) and grow as noise-shaped
+blobs from spines a quarter of the way in, with a sea of at least two tiles
+between them up to four players and islets of one to three tiles in the
+open sea; Lakes boards draw two to five noise-shaped lakes of varied size
+(two long or rectangular lakes before), with the Water count unchanged.
+Fewer villages stand on the smaller Continents (the density is unchanged).
+Dry Land, Pangea, and Archipelago boards are byte-identical, and the
+campaign boards are unchanged. A save, replay, or setup of `7r86` is
+rejected, and the browser autosave has a new key.
 `pulp-wars-poc-7r86` (`pulp_wars-5ti.14`, the user, 2026-10-16: Pearls
-"cost nothing! and instead return 10 coins") is **free Pearls**: Gather
+"cost nothing! and instead return 10 coins") was **free Pearls**: Gather
 Pearls costs nothing and pays 10 Coins, the same gain of 10 as `7r84`'s 2
 for 12, and it needs no Coins in the treasury; the tile dock, the preview,
 Navigation's card, and the event say "+10" with no price
@@ -1022,7 +1037,7 @@ the build differs (its sections 20 to 24 list them);
 the values here are current. Where a document and the code disagreed, the
 code's behavior is the rule and is stated below;
 [Known discrepancies](#25-known-discrepancies) lists the open items and the
-resolved ones as of `pulp-wars-poc-7r86`.
+resolved ones as of `pulp-wars-poc-7r87`.
 
 **Terms.** "On the board" means a unit that currently exists (HP above 0).
 **Living** has the narrower revision-13 meaning used by Wail, Plague,
@@ -1125,10 +1140,10 @@ sections here cite.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r86`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Ruleset                                    | `pulp-wars-poc-7r87`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r86.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Browser autosave                           | `pulpWars.save.v7r87.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, `CULT`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`, `CULT_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -2040,10 +2055,13 @@ player per offered faction (`OFFERED_FACTION_IDS_V7`).
   | Width | Dry Land | Lakes | Pangea | Continents | Archipelago |
   | ----: | -------: | ----: | -----: | ---------: | ----------: |
   |    11 |        9 |     2 |      8 |          6 |           4 |
-  |    14 |       16 |    16 |     14 |         12 |           8 |
-  |    16 |       16 |    16 |     16 |         15 |           9 |
-  |    20 |       36 |    35 |     32 |         24 |          16 |
-  |    25 |       49 |    49 |     49 |         38 |          27 |
+  |    14 |       16 |    16 |     14 |         10 |           8 |
+  |    16 |       16 |    16 |     16 |         13 |           9 |
+  |    20 |       36 |    35 |     32 |         20 |          16 |
+  |    25 |       49 |    49 |     49 |         32 |          27 |
+
+  (Continents 12 / 15 / 24 / 38 on 14 to 25 through `7r86`; the 46% land
+  of `7r87` lowers `floor(L / 9)` but no allowed seat count.)
 
   With 9 factions a cell allows 2 to `min(9, P)` players: nine everywhere
   but 11 x 11 Lakes (2), 11 x 11 Continents (2–6), 11 x 11 Archipelago
@@ -2133,11 +2151,11 @@ player per offered faction (`OFFERED_FACTION_IDS_V7`).
 
 | Board width | Settlements `S`: Dry Land / Lakes / Pangea / Continents / Archipelago | Treasure chests |
 | ----------: | --------------------------------------------------------------------- | --------------: |
-|          11 | 8 / 7 / 6 / 6 / 4                                                     |               2 |
-|          14 | 13 / 12 / 11 / 9 / 7                                                  |               2 |
-|          16 | 17 / 16 / 15 / 12 / 9                                                 |               2 |
-|          20 | 27 / 25 / 24 / 19 / 15                                                |               4 |
-|          25 | 42 / 38 / 38 / 29 / 23                                                |               5 |
+|          11 | 8 / 7 / 6 / 5 / 4                                                     |               2 |
+|          14 | 13 / 12 / 11 / 8 / 7                                                  |               2 |
+|          16 | 17 / 16 / 15 / 10 / 9                                                 |               2 |
+|          20 | 27 / 25 / 24 / 15 / 15                                                |               4 |
+|          25 | 42 / 38 / 38 / 24 / 23                                                |               5 |
 
 The seats each width holds are in [section 2.1](#21-match-setup).
 
@@ -2146,7 +2164,8 @@ The seats each width holds are in [section 2.1](#21-match-setup).
   has `S` **settlements** (capitals plus neutral villages),
   `S = roundHalfUp(L / LPS)`: `L` is the land tiles of the map type at that
   width (the whole board on Dry Land; the board minus its lakes on Lakes;
-  the coast-ring count on Pangea; 56% on Continents; 40% on Archipelago) and
+  the coast-ring count on Pangea; 46% on Continents, the landmasses without
+  their islets (56% through `7r86`); 40% on Archipelago) and
   `LPS` the **land per settlement** of the map type: Dry Land 15, Lakes 13,
   Pangea 12, Continents 12, Archipelago 11. `S` depends only on the width
   and the map type, never on the seats. Every seat has one capital, so the
@@ -2367,7 +2386,7 @@ The seats each width holds are in [section 2.1](#21-match-setup).
 | ------------- | ---------: | ------------------------------------------------------------------------------------------------- |
 | `DRY_LAND`    |       100% | No water; all capitals share one land component.                                                  |
 | `PANGEA`      |   59.5–72% | One major landmass holds every settlement and at least 90% of land; a coast ring surrounds it.    |
-| `CONTINENTS`  |     50–62% | Two major landmasses for 2 players, three for 3–5, four for 6–8; each holds exactly its capitals. |
+| `CONTINENTS`  |     40–56% | Two major landmasses for 2 players, three for 3–5, four for 6–9; each holds exactly its capitals. |
 | `ARCHIPELAGO` |     34–46% | Between `playerCount` and `2 * playerCount + 2` major islands; each capital on a different one.   |
 | `LAKES`       |     72–84% | At least two enclosed lakes of four or more cells; at least 75% of water is not edge-connected.   |
 
@@ -2393,14 +2412,32 @@ The seats each width holds are in [section 2.1](#21-match-setup).
     `max(6, min(floor(w² / 20), floor(L / (2N))))` land tiles, which is the
     earlier `max(6, floor(w² / 20))` up to four seats and lets eight
     20-tile islands of a 20 x 20 board count as major.
-  - **Lakes.** On boards 14 and wider the two lakes are long lakes down
-    the west and the east side, about three tiles wide and never closer
-    than 3 to the edge: each grows around a centred north-south line at
-    `x = 4` or `x = w − 5`, `ceil(water / 6) − 2` tiles long (through
-    `7r41` the lakes stood a quarter of the way in from two opposite
-    corners, on two corner domains, where no capital 2 from the edge fits).
-    The middle of the board stays land. The 11 x 11 board keeps its two
-    fixed lakes and holds two players.
+  - **Lakes.** Since `7r87` (natural water, map scale section 5.8) the
+    Water of a Lakes board is split over two to five noise-shaped lakes
+    (2 on 11 x 11, 2–3 on 14 and 16, 3–4 on 20, 3–5 on 25), each grown
+    from its own centre with a seeded size (a weight of 2 to 5, at least 4
+    tiles), axis and stretch, and a second lobe; the lakes keep 3 from the
+    edge (2 on 11 x 11) and one land tile between each other, and the
+    Water count is exactly that of `lakeWaterCountV7`. (`7r42` to `7r86`:
+    on boards 14 and wider two long lakes down the west and the east side,
+    about three tiles wide; the 11 x 11 board kept two fixed rectangles,
+    and still holds two players.)
+  - **Continents, natural water** (`7r87`, map scale section 5.8). The
+    landmasses cover 46% of the board. Up to four seats they grow from
+    spines a quarter of the board in (two north-south lines for two seats;
+    two points and a bottom east-west line for three and four), nearest
+    first by Euclidean distance plus smooth noise of up to 6 tiles, away
+    from the board's edge, and only on tiles nearer their own spine than
+    any other by the sea margin (`max(2.9, w / 7)`, narrowed in steps of
+    0.3 down to 1.5 only where a landmass would have no room), so two
+    landmasses keep at least two Water tiles apart wherever the margin is
+    2.9 or more. From five seats the ring domains and the channel rule of
+    `7r42` stand, with nine seats grouped into a side of three domains and
+    three columns of two. About one islet of 1 to 3 tiles per 60 Water
+    tiles stands in the open sea, never within 1 of other land, and holds
+    no settlement. Up to four seats, with a village for every seat, every
+    start has a village within 5 and the starts' nearest villages differ
+    by at most 2 (`VILLAGE_BALANCE` otherwise).
   - **Ponds.** On Continents and Archipelago a Water tile with no Water
     neighbour is filled, and the landmass it lies in gives up its outermost
     tile instead, so the land count stays exact.
@@ -13833,6 +13870,7 @@ first guesses.
 | Battleship, Pearls  | `pulp-wars-poc-7r84` | `pulp_wars-5ti.13` (the user, 2026-10-14; a save, replay, or setup of `7r83` is rejected): the Battleship of every roster has Attack 5 and Defense 3 (6 and 4 before); Gather Pearls pays 12 Coins for its 2, a gain of 10 (4, a gain of 2, before); the Normal AI gathers Pearls whatever its plan                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Cult redesign, E-R1 | `pulp-wars-poc-7r85` | `pulp_wars-mch9.31` the Cult redesign's roster ([RULESET_7_CULT_REDESIGN.md](RULESET_7_CULT_REDESIGN.md); the user, 2026-10-16; a save, replay, or setup of `7r84` is rejected): the Initiate, Hexer, Summoner, and Stargazer have 7 HP (the Initiate and the Hexer Attack 1.5, the Initiate Defense 1; the Hexer costs 3, the Stargazer 7); the Cult's `KNIGHT` and `SWORDSMAN` slots are vacant (the Caller and the Chosen retired; `factionFieldsRoleV7`); Martyr and Pick Me! are removed; the Tentacle is the Summoner's with Tentacles (the Cult's Chivalry); Metallurgy is shown as Gibbering Masses; every Cult seat starts with 2 Favour; `FRONTIER_10` revision 3 and `LAB_CULT_MID` revision 2; a mission placing a vacant role is refused.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | Free Pearls         | `pulp-wars-poc-7r86` | `pulp_wars-5ti.14` (the user, 2026-10-16; a save, replay, or setup of `7r85` is rejected): Gather Pearls costs nothing and pays 10 Coins (2 for 12 before), the same gain of 10, with no Coins needed; the economic preview gains `coinsReceived`, and the tile dock shows "+10" with no price                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Natural water       | `pulp-wars-poc-7r87` | `pulp_wars-ykw.8` (the user, 2026-10-15; a save, replay, or setup of `7r86` is rejected): Continents landmasses cover 46% of the board (56% before), grown as noise-shaped blobs from inset spines with a sea of at least two tiles between them up to four seats, plus islets of 1 to 3 tiles in the open sea, and nine seats grouped by neighbouring domains; Lakes boards draw two to five noise-shaped lakes (two long or rectangular lakes before) with the same Water; a village within 5 of every start up to four seats; the generation rules `NATURAL_WATER`, `NATURAL_WATER_RIFTS`, and `NATURAL_WATER_CURIOSITIES`; Dry Land, Pangea, Archipelago, and the campaign boards unchanged                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | [section 2.2](#22-settlements-and-treasures), [section 2.3](#23-map-types)                                                            |
 
 **Documentation parity (2026-09-28, no ruleset or identity change):** where
 older documents disagreed with the code, the code's behavior was adopted as

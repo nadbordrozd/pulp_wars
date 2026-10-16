@@ -483,9 +483,10 @@ describe("Ruleset 7 Canvas interaction", () => {
     });
     const seed = document.querySelector<HTMLInputElement>("#v7-seed");
     if (seed === null) throw new Error("seed missing");
-    // Seed 6: an AI seat moves first on the many-seats board (seed 0 did
-    // on the earlier boards).
-    seed.value = "6";
+    // Seed 4: an AI seat moves first on the 11 x 11 Continents, Lakes, and
+    // Pangea boards of the natural water (`7r87`), whichever map the quick
+    // start cycles to (seed 6 on the many-seats boards, seed 0 before).
+    seed.value = "4";
     chooseSeed();
     document
       .querySelector<HTMLButtonElement>('[data-action="launch"]')
@@ -524,11 +525,13 @@ describe("Ruleset 7 Canvas interaction", () => {
       storage: null,
       boardHost: host,
     });
-    // Seed 0: the human moves first on the many-seats board (the default
-    // seed 42 did on the earlier boards).
+    // Seed 3: the human moves first on the 11 x 11 Continents, Lakes, and
+    // Pangea boards of the natural water (`7r87`), whichever map the quick
+    // start cycles to (seed 0 did on the many-seats board, the default seed
+    // 42 on the earlier boards).
     const seedField = document.querySelector<HTMLInputElement>("#v7-seed");
     if (seedField === null) throw new Error("seed missing");
-    seedField.value = "0";
+    seedField.value = "3";
     chooseSeed();
     document
       .querySelector<HTMLButtonElement>('[data-action="launch"]')

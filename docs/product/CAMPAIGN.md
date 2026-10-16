@@ -1879,6 +1879,19 @@ removed. The four built missions change terrain on two tiles in all (Bone
 Neck); every other edit removes a village where a mission city stands or
 where a village would hand the AI a free city.
 
+**When the generator changes** (`pulp_wars-ykw.8`, `pulp-wars-poc-7r87`:
+natural water redrew every Continents and Lakes board), a mission keeps its
+board: the baked layers are what the game plays, and the source names the
+generation rules it was baked with, `source.rules` (here
+`"SPREAD_VILLAGES_CURIOSITIES"`, the generator of `7r79` to `7r86`, kept as
+parity rules). The drift test then regenerates the source under those
+rules, so the board stays pinned to a generator that can still draw it, and
+neither its layers, its `revision`, nor its initial-state hashes move.
+Missions 4 (Continents) and 9 (Lakes) carry it; the Dry Land, Pangea, and
+Archipelago missions need none, since those generators did not change. A
+source without `rules` is the current generator; `frozen` (no comparison
+at all) is the fallback for a board no kept rules can draw.
+
 `scripts/mission-map-v7.ts` is the seed browser:
 
 ```bash
@@ -2975,7 +2988,8 @@ How to add a mission.
    and keep the sheet with the bead's evidence.
 3. **Bake it.** `mission-map-v7.ts bake …` prints the layers; paste them
    into `src/engine/v7/missions/<id>.ts` between the `// <map>` markers,
-   with `source { mapType, size, seats, seed, edits: [] }`. Add an edit for
+   with `source { mapType, size, seats, seed, edits: [] }` (a board baked
+   before a generator change also names its `rules`, section 10.5). Add an edit for
    every change you make to a layer (remove the village where a city
    stands; a land bridge; a Rift band), and keep the list short: the board
    should read as generated.

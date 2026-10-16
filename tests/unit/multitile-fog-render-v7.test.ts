@@ -407,7 +407,8 @@ function sights(random: () => number, size: number): Set<string> {
 describe("multi-cell terrain of a generated map, half explored", () => {
   const MAPS = [
     ["PANGEA", 16, 5],
-    ["CONTINENTS", 20, 2],
+    // Seed 3: the natural-water Continents of `7r87` draw no Rift on seed 2.
+    ["CONTINENTS", 20, 3],
     ["DRY_LAND", 16, 4],
     ["PANGEA", 20, 5],
   ] as const;

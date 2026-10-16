@@ -1,4 +1,8 @@
-import { generateInitialMapV7 } from "../map";
+import {
+  generateInitialMapV7,
+  generateInitialMapWithVillageCountV7,
+  villageCountForRulesV7,
+} from "../map";
 import {
   FACTION_IDS_V7,
   MAP_GENERATION_REVISION_V7,
@@ -65,13 +69,15 @@ const byRowThenColumn = (left: CoordV7, right: CoordV7): number =>
   left.y - right.y || left.x - right.x;
 
 /**
- * The generator's board for `source` before any edit, as mission layers.
- * Throws when the generator refuses the setup.
+ * The generator's board for `source` before any edit, as mission layers:
+ * the current generator, or the generation rules the source names (a board
+ * baked before the generator changed). Throws when the generator refuses
+ * the setup.
  */
 export function generatedMissionLayersV7(
   source: Omit<MissionMapSourceV7, "edits">,
 ): MissionMapLayersV7 {
-  const generated = generateInitialMapV7({
+  const setup = {
     rulesetId: RULESET_7_ID,
     seed: source.seed,
     width: source.size,
@@ -86,7 +92,15 @@ export function generatedMissionLayersV7(
     mapType: source.mapType,
     mapGenerationRevision: MAP_GENERATION_REVISION_V7,
     curiosities: false,
-  });
+  } as const;
+  const generated =
+    source.rules === undefined
+      ? generateInitialMapV7(setup)
+      : generateInitialMapWithVillageCountV7(
+          setup,
+          villageCountForRulesV7(setup, source.rules),
+          source.rules,
+        );
   if (!generated.ok)
     throw new RangeError(
       `The generator refused ${source.mapType} ${String(source.size)} seed ${String(source.seed)}: ${generated.error.code}`,
