@@ -470,11 +470,30 @@ describe("Summon is aimed on the board", () => {
     const offered = commands.filter(
       (command) =>
         command.kind === "SUMMON" &&
+        command.daemon === "HORROR" &&
         command.helperUnitId === idAt(state, A.helper),
     );
     // The six free tiles round the Summoner (its two Initiates hold two).
     expect(offered).toHaveLength(6);
     expect(tiles.targets.map((target) => target.command)).toEqual(offered);
+    // The Cult redesign (`pulp_wars-mch9.37`): the Gibbering Mass is
+    // offered with the same helper on the same six tiles (the fixture has
+    // every technology), but the browser's pick aims the Horror only (the
+    // summon chooser is U-R3's, `pulp_wars-mch9.44`).
+    const masses = commands.filter(
+      (command) =>
+        command.kind === "SUMMON" &&
+        command.daemon === "MASS" &&
+        command.helperUnitId === idAt(state, A.helper),
+    );
+    expect(masses).toHaveLength(6);
+    expect(masses.some(browserSummonCommandV7)).toBe(false);
+    expect(
+      tiles.targets.some(
+        (target) =>
+          target.command.kind === "SUMMON" && target.command.daemon === "MASS",
+      ),
+    ).toBe(false);
     expect(tiles.targets.every((target) => target.family === "SUMMON")).toBe(
       true,
     );

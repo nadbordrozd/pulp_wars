@@ -216,6 +216,8 @@ export const NEUTRAL_BOUNTIES_V7: Readonly<Record<NeutralBreedV7, number>> =
     TENTACLE: 0,
     // An Unbound Imp (the Cult redesign, `pulp_wars-mch9.36`): a daemon.
     IMP: 0,
+    // An Unbound Gibbering Mass (`pulp_wars-mch9.37`): a daemon.
+    MASS: 0,
   });
 
 /** The guard breeds of a camp (section 25). */

@@ -62,6 +62,7 @@ import {
   HERALD_HUNGER_FAVOUR_V7,
   HORROR_FAVOUR_COST_V7,
   IMP_FAVOUR_COST_V7,
+  MASS_FAVOUR_COST_V7,
   RITUAL_MINIMUM_CHANTERS_V7,
   starfallDamageV7,
 } from "../rules/ruleset-v7";
@@ -1929,24 +1930,26 @@ function validPayload(
             ? HORROR_FAVOUR_COST_V7
             : e.purpose === "SUMMON_IMP"
               ? IMP_FAVOUR_COST_V7
-              : e.purpose === "HUNGER"
-                ? HERALD_HUNGER_FAVOUR_V7
-                : HERALD_FAVOUR_COST_V7) &&
+              : e.purpose === "SUMMON_MASS"
+                ? MASS_FAVOUR_COST_V7
+                : e.purpose === "HUNGER"
+                  ? HERALD_HUNGER_FAVOUR_V7
+                  : HERALD_FAVOUR_COST_V7) &&
         isNonNegativeSafeIntegerV7(e.favour)
       );
     // Section 6.1: a Horror at full HP, next to nobody it names twice. The
     // Cult redesign (`pulp_wars-mch9.36`): an Imp at full HP, with no
-    // helper.
+    // helper; (`pulp_wars-mch9.37`) a Gibbering Mass at full HP, helped.
     case "DAEMON_SUMMONED":
       return (
         id(e.playerId) &&
         id(e.unitId) &&
         id(e.daemonUnitId) &&
         e.unitId !== e.daemonUnitId &&
-        ((e.role === "HORROR" &&
+        (((e.role === "HORROR" || e.role === "MASS") &&
           id(e.helperUnitId) &&
           new Set([e.unitId, e.helperUnitId, e.daemonUnitId]).size === 3 &&
-          e.hp === CULT_SUMMONED_ROLE_RULES_V7.HORROR.maxHp) ||
+          e.hp === CULT_SUMMONED_ROLE_RULES_V7[e.role].maxHp) ||
           (e.role === "IMP" &&
             e.helperUnitId === null &&
             e.hp === CULT_SUMMONED_ROLE_RULES_V7.IMP.maxHp)) &&

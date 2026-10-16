@@ -97,6 +97,8 @@ export const NEUTRAL_BOUNTY_FOR_POLICY_V7: Readonly<
   TENTACLE: 0,
   // An Unbound Imp (`pulp_wars-mch9.36`) is a daemon.
   IMP: 0,
+  // So is an Unbound Gibbering Mass (`pulp_wars-mch9.37`).
+  MASS: 0,
 });
 /**
  * Section 33, "avoid unless strong": a unit strikes a camp guard only when

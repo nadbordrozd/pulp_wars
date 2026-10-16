@@ -1790,7 +1790,9 @@ describe("text-mode play harness", () => {
     expect(view).toContain(
       `daemon: strands 0/1 (UNBOUND at its turn start; it would go for u${at(2, 4)} (a cultist within 2) and can attack it)`,
     );
-    expect(view).toContain("Cult summoned: Im imp Ho horror He herald");
+    expect(view).toContain(
+      "Cult summoned: Im imp Ho horror Gm gibbering mass He herald",
+    );
     expect(view).not.toContain("[KNIGHT]");
     const summon = `u${at(5, 2)}.summon.u${at(6, 2)}.5,3`;
     const channel = `u${at(2, 4)}.channel.u${horror}`;

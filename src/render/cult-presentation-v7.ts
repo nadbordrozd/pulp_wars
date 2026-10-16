@@ -1,6 +1,7 @@
 import {
   FAVOUR_CAP_V7,
   HERALD_FAVOUR_COST_V7,
+  MASS_FAVOUR_COST_V7,
   OFFERING_FAVOUR_V7,
   OFFERING_POPULATION_V7,
   SEIZE_BROKEN_HP_V7,
@@ -73,6 +74,11 @@ export const SWITCHEROO_UNLOCK_TEXT_V7 = `Switcheroo: a Familiar swaps places wi
  */
 export const TENTACLES_UNLOCK_TEXT_V7 =
   "Tentacle: a Summoner calls up a Tentacle that belongs to nobody and slaps whoever is weakest beside it";
+/**
+ * Metallurgy (shown as Gibbering Masses), `SUMMON_MASS` (the Cult redesign,
+ * `pulp_wars-mch9.37`): the Summoner's Summon a Gibbering Mass.
+ */
+export const SUMMON_MASS_UNLOCK_TEXT_V7 = `Gibbering Mass: a Summoner and a cultist beside it summon a slow wall of mouths for ${MASS_FAVOUR_COST_V7} Favour. Enemies beside it can move only one tile`;
 /** Farming (shown as Harvest Rites), `OFFERING`. */
 export const OFFERING_UNLOCK_TEXT_V7 = `Offering: a city gives up ${OFFERING_POPULATION_V7} population for ${OFFERING_FAVOUR_V7} Favour`;
 

@@ -185,17 +185,22 @@ describe("Unbound: identity", () => {
 describe("Unbound: the registration (sections 6.4 and 13.1)", () => {
   it("registers the daemons as neutral breeds with their own numbers", () => {
     // (`pulp_wars-mch9.8` adds the Tentacle after them, the Cult redesign
-    // the Imp, `pulp_wars-mch9.36`.)
-    expect(NEUTRAL_BREEDS_V7.slice(-4)).toEqual([
+    // the Imp, `pulp_wars-mch9.36`, and the Gibbering Mass,
+    // `pulp_wars-mch9.37`.)
+    expect(NEUTRAL_BREEDS_V7.slice(-5)).toEqual([
       "HORROR",
       "HERALD",
       "TENTACLE",
       "IMP",
+      "MASS",
     ]);
-    expect(DAEMON_BREEDS_V7).toEqual(["HORROR", "HERALD", "IMP"]);
+    expect(DAEMON_BREEDS_V7).toEqual(["HORROR", "HERALD", "IMP", "MASS"]);
     for (const breed of NEUTRAL_BREEDS_V7)
       expect(isDaemonBreedV7(breed), breed).toBe(
-        breed === "HORROR" || breed === "HERALD" || breed === "IMP",
+        breed === "HORROR" ||
+          breed === "HERALD" ||
+          breed === "IMP" ||
+          breed === "MASS",
       );
     for (const breed of DAEMON_BREEDS_V7) {
       const rule = NEUTRAL_ROLE_RULES_V7[breed];
@@ -217,22 +222,31 @@ describe("Unbound: the registration (sections 6.4 and 13.1)", () => {
         summoned.range,
       ]);
       // (Unstoppable is the Herald's body rule: `pulp_wars-mch9.7`.)
+      // (An Unbound Gibbering Mass still Drags: `pulp_wars-mch9.37`.)
       expect(rule.abilities).toEqual(
         breed === "HERALD"
           ? ["ATTACK", "UNSTOPPABLE", "STRIDE"]
-          : ["ATTACK", "STRIDE"],
+          : breed === "MASS"
+            ? ["ATTACK", "DRAG", "STRIDE"]
+            : ["ATTACK", "STRIDE"],
       );
       expect(rule.sightRadius).toBe(0);
       const mechanics = NEUTRAL_ROLE_MECHANICS_V7[breed];
       expect(mechanics.construct).toBe(true);
       // The Cult redesign (`pulp_wars-mch9.35`, section 9.1): an Unbound
-      // daemon advances after a kill (it never did before).
-      expect(mechanics.advancesAfterKill).toBe(true);
+      // daemon advances after a kill (it never did before), but for the
+      // Gibbering Mass (`pulp_wars-mch9.37`).
+      expect(mechanics.advancesAfterKill).toBe(breed !== "MASS");
       expect(mechanics.movementMode).toBe("STRIDE");
       // No bounty Coins for an Unbound daemon.
       expect(NEUTRAL_BOUNTIES_V7[breed]).toBe(0);
     }
-    expect(RAMPAGE_ATTACKS_V7).toEqual({ HORROR: 1, HERALD: 2, IMP: 1 });
+    expect(RAMPAGE_ATTACKS_V7).toEqual({
+      HORROR: 1,
+      HERALD: 2,
+      IMP: 1,
+      MASS: 1,
+    });
     // A daemon on the board keeps its mechanical role when it breaks loose.
     for (const role of BOARD_SUMMONED_ROLE_IDS_V7)
       if (CULT_SUMMONED_ROLE_RULES_V7[role].control !== null)

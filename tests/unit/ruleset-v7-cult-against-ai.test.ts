@@ -225,6 +225,7 @@ describe("against the Cult: the gate", () => {
       HORROR: CULT_SUMMONED_ROLE_RULES_V7.HORROR.favourCost,
       HERALD: CULT_SUMMONED_ROLE_RULES_V7.HERALD.favourCost,
       IMP: CULT_SUMMONED_ROLE_RULES_V7.IMP.favourCost,
+      MASS: CULT_SUMMONED_ROLE_RULES_V7.MASS.favourCost,
     });
   });
 

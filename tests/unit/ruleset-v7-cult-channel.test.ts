@@ -250,6 +250,8 @@ describe("the Cult's channel: the registration", () => {
       "GREAT_SUMMONING",
       "HUNGER",
       "SUMMON_IMP",
+      // The Gibbering Mass (`pulp_wars-mch9.37`).
+      "SUMMON_MASS",
     ]);
     expect(DISRUPTION_CAUSES_V7).toEqual([
       "HP_LOSS",
@@ -639,7 +641,13 @@ describe("the Cult's channel: the Horror is a unit of its own (section 4.2)", ()
     const state = horrorField([SUMMONER]);
     const horror = unitAtV7(state, at(5, 4));
     // The Herald joined with `pulp_wars-mch9.7`.
-    expect(BOARD_SUMMONED_ROLE_IDS_V7).toEqual(["HORROR", "HERALD", "IMP"]);
+    // The Imp (`pulp_wars-mch9.36`) and the Mass (`pulp_wars-mch9.37`).
+    expect(BOARD_SUMMONED_ROLE_IDS_V7).toEqual([
+      "HORROR",
+      "HERALD",
+      "IMP",
+      "MASS",
+    ]);
     expect(horror.role).toBe("KNIGHT");
     const rule = unitRoleRuleV7(state, horror);
     expect(rule).toMatchObject({

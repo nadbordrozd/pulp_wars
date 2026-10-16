@@ -386,6 +386,13 @@ code `Im`, an Imp a neighbour's Brood holds shows `daemon: strands 0/1
 (held by the Brood of u41)`, and the Imp whose strand holds it adds
 `Brood: its strand holds u42 u43`. The attack option of an Imp on a unit
 beside two of its seat's Imps reads `no retaliation (SWARMED)`.
+The Gibbering Mass (`pulp_wars-mch9.37`) adds `.mass.u41.4,5` (the
+Summoner and its helper `u41` call a Gibbering Mass on that tile for 5
+Favour, with Gibbering Masses); a Mass has the map code `Gm`, a Mass on or
+beside your city or beside your standing idol shows `daemon: strands
+0/1 (DOORSTEP: needs no strand here)`, and a unit that begins its Move
+beside a hostile Mass shows `DRAGGED by u42: a Move it begins here covers
+one tile` (its offered Moves are one tile long).
 Unbound (`pulp_wars-mch9.6`) adds no id: `.channel.u40` on an Unbound daemon
 prints as `BIND AGAIN`, with the turn's strands against its Control. An
 Unbound daemon is a neutral unit (seat digit `N`); its line shows

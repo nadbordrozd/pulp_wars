@@ -402,11 +402,11 @@ const productionOf = (
 
 describe("the ninth unit: identity", () => {
   it("was 7r55 after 7r54, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r90");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r90.current");
-    expect(PRIOR_RULESET_7_IDS.at(-36)).toBe("pulp-wars-poc-7r54");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r91");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r91.current");
+    expect(PRIOR_RULESET_7_IDS.at(-37)).toBe("pulp-wars-poc-7r54");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-36)).toBe(
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-37)).toBe(
       "pulpWars.save.v7r54.current",
     );
     const state = field([]);
@@ -520,7 +520,8 @@ describe("the ninth unit: nine land units and nine jobs for every faction", () =
         heavy ? ["SWORDSMAN"] : [],
       );
       expect(node("ENGINEERING").unlockedRoles, faction).toEqual([]);
-      // Metallurgy keeps the Forge and Arms Industry.
+      // Metallurgy keeps the Forge and Arms Industry (and the Cult's grants
+      // the Summoner's Gibbering Mass: `pulp_wars-mch9.37`).
       expect(
         node("METALLURGY").unlocks.map((unlock) => unlock.kind),
         faction,
@@ -529,6 +530,7 @@ describe("the ninth unit: nine land units and nine jobs for every faction", () =
         "ECONOMIC_FORMULA",
         "ARMS_INDUSTRY_DISCOUNT",
         ...(heavy ? ["UNIT_ROLE"] : []),
+        ...(faction === "CULT" ? ["SUMMON_MASS"] : []),
       ]);
       // Engineering keeps Mountains, the Mine, and Redevelop (the Workshop
       // left it for the root at 7r56, the Industry reshuffle).

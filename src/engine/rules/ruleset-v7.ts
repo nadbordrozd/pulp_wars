@@ -251,6 +251,12 @@ export type TechnologyUnlockV7 =
    * tree may call a Tentacle (it was the retired Caller's).
    */
   | { readonly kind: "TENTACLES" }
+  /**
+   * The Cult redesign (docs/product/RULESET_7_CULT_REDESIGN.md sections 5
+   * and 7.4, `pulp_wars-mch9.37`): Gibbering Masses (the Cult
+   * `METALLURGY`): a Summoner of the tree may summon a Gibbering Mass.
+   */
+  | { readonly kind: "SUMMON_MASS" }
   | { readonly kind: "OVERRUN" }
   | {
       readonly kind: "CHARGE_BONUS";
@@ -487,7 +493,13 @@ export type UnitRoleAbilityV7 =
   // (one strand holds an Imp and up to two own Imps beside it) and Swarm
   // (a unit beside two or more of a seat's Imps cannot strike back at them).
   | "BROOD"
-  | "SWARM";
+  | "SWARM"
+  // The Cult redesign (`pulp_wars-mch9.37`, section 7.4): the Gibbering
+  // Mass's Doorstep (on or beside an own city center, or beside an own
+  // standing idol, it needs no strand) and Drag (a hostile unit that begins
+  // a Move beside it moves one tile).
+  | "DOORSTEP"
+  | "DRAG";
 
 /**
  * The Martian revision (section 7): how a land-form unit moves. `STRIDE`
@@ -3867,7 +3879,9 @@ export const CULT_VACANT_ROLES_V7: readonly UnitRoleIdV7[] = deepFreeze([
  * and 5, `pulp_wars-mch9.31`): Chivalry (shown as Tentacles) and
  * Metallurgy (shown as Gibbering Masses) unlock no unit, because the
  * `KNIGHT` and `SWORDSMAN` slots are vacant (the Caller and the Chosen
- * retired); Chivalry grants `TENTACLES` (the Summoner's Tentacle) instead.
+ * retired); Chivalry grants `TENTACLES` (the Summoner's Tentacle) instead,
+ * and (`pulp_wars-mch9.37`) Metallurgy `SUMMON_MASS` (a Summoner's Summon
+ * a Gibbering Mass).
  */
 export const CULT_BASELINE_V1_NODES: readonly TechnologyNodeV7[] = deepFreeze(
   SHARED_BASELINE_NODES_V7.map((original) =>
@@ -3888,6 +3902,11 @@ export const CULT_BASELINE_V1_NODES: readonly TechnologyNodeV7[] = deepFreeze(
       // `pulp_wars-mch9.31` (redesign section 8.4): Tentacles, the
       // Summoner's Tentacle.
       ...(original.id === "CHIVALRY" ? [{ kind: "TENTACLES" } as const] : []),
+      // `pulp_wars-mch9.37` (redesign section 7.4): Gibbering Masses, the
+      // Summoner's Summon a Gibbering Mass.
+      ...(original.id === "METALLURGY"
+        ? [{ kind: "SUMMON_MASS" } as const]
+        : []),
       // `pulp_wars-mch9.4` (section 5.3): Harvest Rites, the Offering.
       ...(original.id === "FARMING" ? [{ kind: "OFFERING" } as const] : []),
       // `pulp_wars-mch9.7` (section 7.3): The Stars Are Right, the Great
@@ -4304,6 +4323,22 @@ export const IMP_BROOD_SIZE_V7 = 2 as const;
  * does not strike back at an Imp's attack.
  */
 export const IMP_SWARM_MINIMUM_V7 = 2 as const;
+/**
+ * The Cult redesign (`pulp_wars-mch9.37`, RULESET_7_CULT_REDESIGN.md
+ * section 7.1): what a Summon Gibbering Mass costs in Favour (a Summoner
+ * and a helper, with Gibbering Masses).
+ */
+export const MASS_FAVOUR_COST_V7 = 5 as const;
+/**
+ * The Cult redesign (section 7.4): the strands a Gibbering Mass needs at
+ * each check off its Doorstep (none on it).
+ */
+export const MASS_CONTROL_V7 = 1 as const;
+/**
+ * The Cult redesign (section 7.4), Drag: the most tiles a Move may cover
+ * when its unit begins it beside a hostile Gibbering Mass.
+ */
+export const MASS_DRAG_TILES_V7 = 1 as const;
 /** The Cultists (section 6.2): the strands a Horror needs at each check. */
 export const HORROR_CONTROL_V7 = 1 as const;
 /** The Cultists (section 6.2): the strands the Herald needs at each check. */
@@ -4421,6 +4456,25 @@ export const CULT_SUMMONED_ROLE_RULES_V7: Readonly<
     movementMode: "STRIDE",
     unstoppable: false,
   },
+  // The Cult redesign (`pulp_wars-mch9.37`, RULESET_7_CULT_REDESIGN.md
+  // sections 4.1 and 7.4): the Gibbering Mass, 30 HP, Attack 2, Defense 3,
+  // Move 1, worth 6; Doorstep and Drag; immovable, it never advances and
+  // never captures.
+  MASS: {
+    id: "MASS",
+    label: "Gibbering Mass",
+    maxHp: 30,
+    attack2: 4,
+    defense2: 6,
+    move: 1,
+    range: 1,
+    minimumRange: 1,
+    favourCost: MASS_FAVOUR_COST_V7,
+    control: MASS_CONTROL_V7,
+    value: 6,
+    movementMode: "STRIDE",
+    unstoppable: false,
+  },
 });
 
 /** The registration of a summoned unit; an unknown ID is a `RangeError`. */
@@ -4450,11 +4504,17 @@ export function summonedRoleRuleV7(id: SummonedRoleIdV7): SummonedRoleRuleV7 {
  * stored role is its neutral registration's
  * (`NEUTRAL_ROLE_RULES_V7.TENTACLE.role`, the big body's `JUGGERNAUT` too).
  * The Imp (the Cult redesign, `pulp_wars-mch9.36`) is a `RAIDER`, the
- * same as its Unbound breed's.
+ * same as its Unbound breed's; the Gibbering Mass (`pulp_wars-mch9.37`) a
+ * `GUARD`, the same as its Unbound breed's.
  */
 export const SUMMONED_MECHANICAL_ROLES_V7: Readonly<
   Partial<Record<SummonedRoleIdV7, UnitRoleIdV7>>
-> = deepFreeze({ HORROR: "KNIGHT", HERALD: "JUGGERNAUT", IMP: "RAIDER" });
+> = deepFreeze({
+  HORROR: "KNIGHT",
+  HERALD: "JUGGERNAUT",
+  IMP: "RAIDER",
+  MASS: "GUARD",
+});
 
 /**
  * The summoned roles a seat's unit on the board may carry (in the frozen
@@ -4564,6 +4624,44 @@ const SUMMONED_UNIT_ROLE_RULES_V7: Readonly<
     mayUsePrimaryActionAfterMove: true,
     abilities: ["ATTACK", "BROOD", "SWARM", "STRIDE"],
   },
+  // The Gibbering Mass (the Cult redesign, `pulp_wars-mch9.37`, section
+  // 7.4): it attacks (it never advances after a kill), never captures (on
+  // a hostile center it besieges, as any unit does), needs no strand on its
+  // Doorstep, and Drags the hostile units beside it.
+  MASS: {
+    role: "GUARD",
+    label: CULT_SUMMONED_ROLE_RULES_V7.MASS.label,
+    tacticalRole: "DEFENDER",
+    cost: null,
+    maxHp: CULT_SUMMONED_ROLE_RULES_V7.MASS.maxHp,
+    attack2: CULT_SUMMONED_ROLE_RULES_V7.MASS.attack2,
+    defense2: CULT_SUMMONED_ROLE_RULES_V7.MASS.defense2,
+    move: CULT_SUMMONED_ROLE_RULES_V7.MASS.move,
+    range: CULT_SUMMONED_ROLE_RULES_V7.MASS.range,
+    minimumRange: CULT_SUMMONED_ROLE_RULES_V7.MASS.minimumRange,
+    sightRadius: 1,
+    technology: null,
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "DOORSTEP", "DRAG", "STRIDE"],
+  },
+});
+
+/**
+ * The Cult redesign (`pulp_wars-mch9.37`, section 7.4): the Gibbering
+ * Mass's mechanics, a seat's or nobody's: the ordinary land unit's (the
+ * Human Fighter's, never the Guard's Open to ranged) that never advances
+ * after a kill, a construct that strides like every daemon, and immovable:
+ * nothing shoves, swaps, pulls, bounces, Boos, or knocks it back (a
+ * Crushing Shove crushes it, as damage: `defenderCrushableV7`). Statuses
+ * stick to it (it is not Unstoppable).
+ */
+const MASS_ROLE_MECHANICS_V7: RoleMechanicsV7 = deepFreeze({
+  ...ORIGINAL_ROLE_MECHANICS_V7.FIGHTER,
+  advancesAfterKill: false,
+  buildsFieldDefense: false,
+  construct: true,
+  immovable: true,
+  movementMode: CULT_SUMMONED_ROLE_RULES_V7.MASS.movementMode,
 });
 
 /**
@@ -4629,6 +4727,8 @@ const SUMMONED_UNIT_ROLE_MECHANICS_V7: Readonly<
   HERALD: HERALD_ROLE_MECHANICS_V7,
   // The Imp (the Cult redesign, `pulp_wars-mch9.36`).
   IMP: IMP_ROLE_MECHANICS_V7,
+  // The Gibbering Mass (the Cult redesign, `pulp_wars-mch9.37`).
+  MASS: MASS_ROLE_MECHANICS_V7,
 });
 
 /** The role rule of a summoned unit on the board; `RangeError` otherwise. */
@@ -5171,6 +5271,25 @@ export const NEUTRAL_ROLE_RULES_V7: Readonly<
     mayUsePrimaryActionAfterMove: true,
     abilities: ["ATTACK", "STRIDE"],
   },
+  // The Cult redesign (`pulp_wars-mch9.37`, section 7.4): an Unbound
+  // Gibbering Mass attacks, strides, and Drags every player's units beside
+  // it; it has no Doorstep (a seat's rule).
+  MASS: {
+    role: "GUARD",
+    label: `Unbound ${CULT_SUMMONED_ROLE_RULES_V7.MASS.label}`,
+    tacticalRole: "DEFENDER",
+    cost: null,
+    maxHp: CULT_SUMMONED_ROLE_RULES_V7.MASS.maxHp,
+    attack2: CULT_SUMMONED_ROLE_RULES_V7.MASS.attack2,
+    defense2: CULT_SUMMONED_ROLE_RULES_V7.MASS.defense2,
+    move: CULT_SUMMONED_ROLE_RULES_V7.MASS.move,
+    range: CULT_SUMMONED_ROLE_RULES_V7.MASS.range,
+    minimumRange: CULT_SUMMONED_ROLE_RULES_V7.MASS.minimumRange,
+    sightRadius: 0,
+    technology: null,
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "DRAG", "STRIDE"],
+  },
 });
 
 /**
@@ -5179,7 +5298,7 @@ export const NEUTRAL_ROLE_RULES_V7: Readonly<
  * two ("when Unbound, its rampage also has two attacks").
  */
 export const RAMPAGE_ATTACKS_V7: Readonly<Record<DaemonBreedV7, number>> =
-  deepFreeze({ HORROR: 1, HERALD: 2, IMP: 1 });
+  deepFreeze({ HORROR: 1, HERALD: 2, IMP: 1, MASS: 1 });
 
 /**
  * The Cult redesign (`pulp_wars-mch9.35`, RULESET_7_CULT_REDESIGN.md
@@ -5251,6 +5370,9 @@ export const NEUTRAL_ROLE_MECHANICS_V7: Readonly<
   // body's mechanics (it advances after a kill, onto a tile the rampage
   // walk enters).
   IMP: IMP_ROLE_MECHANICS_V7,
+  // The Cult redesign (`pulp_wars-mch9.37`): an Unbound Gibbering Mass
+  // keeps its body's mechanics (it never advances, and nothing moves it).
+  MASS: MASS_ROLE_MECHANICS_V7,
 });
 
 /** Section 8.1: the faction-wide rules of the neutral registration. */
@@ -5817,7 +5939,8 @@ export function neutralBreedOfV7(
     unit.summoned === "HORROR" ||
     unit.summoned === "HERALD" ||
     unit.summoned === "TENTACLE" ||
-    unit.summoned === "IMP"
+    unit.summoned === "IMP" ||
+    unit.summoned === "MASS"
   )
     return unit.summoned;
   if (roster.monsters !== undefined && roster.monsters.length > 0) {
@@ -5838,9 +5961,13 @@ export function neutralBreedOfV7(
     case "MARKSMAN":
       return "RAY_GUNNER";
     case "GUARD":
+      // The Cult redesign (`pulp_wars-mch9.37`): an Unbound Gibbering Mass
+      // is a `GUARD` of the Mass's 30 HP.
       return unit.maxHp === NEUTRAL_ROLE_RULES_V7.ZOMBIE.maxHp
         ? "ZOMBIE"
-        : "SHIELD_PROJECTOR";
+        : unit.maxHp === NEUTRAL_ROLE_RULES_V7.MASS.maxHp
+          ? "MASS"
+          : "SHIELD_PROJECTOR";
     case "RAIDER":
       // The Cult redesign (`pulp_wars-mch9.36`): an Unbound Imp is a
       // `RAIDER` of the Imp's 6 HP.
@@ -7196,6 +7323,12 @@ export interface TechnologyCapabilitiesV7 {
    * the tree may call a Tentacle.
    */
   readonly tentacles: boolean;
+  /**
+   * The Cult redesign (docs/product/RULESET_7_CULT_REDESIGN.md section 7.1,
+   * `pulp_wars-mch9.37`): Gibbering Masses (the Cult `METALLURGY`), a
+   * Summoner of the tree may summon a Gibbering Mass.
+   */
+  readonly summonMass: boolean;
 }
 
 export function technologyCapabilitiesV7(
@@ -7268,6 +7401,7 @@ export function technologyCapabilitiesV7(
   let greatSummoning = false;
   let switcheroo = false;
   let tentacles = false;
+  let summonMass = false;
   for (const unlock of unlocks)
     switch (unlock.kind) {
       case "COMMAND":
@@ -7410,6 +7544,9 @@ export function technologyCapabilitiesV7(
       case "TENTACLES":
         tentacles = true;
         break;
+      case "SUMMON_MASS":
+        summonMass = true;
+        break;
       case "SUMMONER_SUPPORT":
       case "CONFECTIONER_SUPPORT":
       case "ENGINEER_SUPPORT":
@@ -7497,6 +7634,7 @@ export function technologyCapabilitiesV7(
     greatSummoning,
     switcheroo,
     tentacles,
+    summonMass,
   });
   TECHNOLOGY_CAPABILITIES_CACHE_V7.set(cacheKey, result);
   if (TECHNOLOGY_CAPABILITIES_CACHE_V7.size > 32) {

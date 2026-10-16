@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r90`, for all nine offered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r91`, for all nine offered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), Candy (`CANDY`), and
 the Cultists (`CULT`). The ninth faction, the Cultists of the Ancient Ones,
@@ -20,7 +20,8 @@ kept as the design record, and the notes of its six engine steps are in
 as it lands, and section 26 states only what is built (`7r85`: the roster
 step; `7r88`: Star-fall alone with Join the chant, Switcheroo at 4, the
 daemons' advance after a kill, and the Unbound target order; `7r89`: the
-Favour economy and the warden; `7r90`: the Imp). It
+Favour economy and the warden; `7r90`: the Imp; `7r91`: the Gibbering
+Mass). It
 folds in
 revision 12 (free opening technology, Fruit visible from the start, Fertile
 Ground revealed by Gathering, resources kept under improvements, Normal AI
@@ -442,6 +443,25 @@ links to another, by Road or by Port. A sea link needs only **Shorecraft**
 the Roads technology, and unexplored water no longer breaks a link. A save,
 replay, or setup of `7r75` is rejected, and the browser autosave has a new
 key.
+`pulp-wars-poc-7r91` (`pulp_wars-mch9.37`, step E-R7 of the Cult redesign,
+[its section 18](RULESET_7_CULT_REDESIGN.md#18-implementation-beads),
+approved by the user on 2026-10-16) is **the Gibbering Mass**. A Summoner
+and a helper summon a Gibbering Mass (`SUMMON` `daemon` `MASS`, with a
+`helperUnitId`) for **5 Favour** (`FAVOUR_SPENT` purpose `SUMMON_MASS`;
+`DAEMON_SUMMONED` role `MASS`) with **Gibbering Masses** (the Cult's
+Metallurgy now grants `SUMMON_MASS`, the capability `summonMass`; without
+it `SUMMON_NOT_LEGAL` reason `TECHNOLOGY`): 30 HP, Attack 2, Defense 3,
+Move 1, worth 6, Control 1, a daemon stored as a `GUARD` that is
+**immovable** (a Crushing Shove crushes it), **never advances** after a
+kill, and **never captures**. **Doorstep**: at the check a Mass short of
+its strands stays bound on or beside an own city center or beside an own
+standing idol (the view's `doorstep`). **Drag**: a hostile land-form unit
+that begins a Move beside a Mass moves one tile (the movement reason
+`DRAGGED`; an Unbound Mass drags every player's units). An Unbound Mass is
+the neutral breed `MASS` (reach 2, one attack, no advance). The Mass's
+sprite, Unbound look, and portrait join the runtime art
+([section 26](#26-cultist-faction-rules)). A save, replay, or setup of
+`7r90` is rejected, and the browser autosave has a new key.
 `pulp-wars-poc-7r90` (`pulp_wars-mch9.36`, step E-R6 of the Cult redesign,
 [its section 18](RULESET_7_CULT_REDESIGN.md#18-implementation-beads),
 approved by the user on 2026-10-16) is **the Imp**. A Summoner alone
@@ -1094,7 +1114,7 @@ the build differs (its sections 20 to 24 list them);
 the values here are current. Where a document and the code disagreed, the
 code's behavior is the rule and is stated below;
 [Known discrepancies](#25-known-discrepancies) lists the open items and the
-resolved ones as of `pulp-wars-poc-7r90`.
+resolved ones as of `pulp-wars-poc-7r91`.
 
 **Terms.** "On the board" means a unit that currently exists (HP above 0).
 **Living** has the narrower revision-13 meaning used by Wail, Plague,
@@ -1197,10 +1217,10 @@ sections here cite.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r90`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Ruleset                                    | `pulp-wars-poc-7r91`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r90.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Browser autosave                           | `pulpWars.save.v7r91.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, `CULT`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`, `CULT_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -4764,8 +4784,10 @@ displayed as **Familiars**, also grants `SWITCHEROO`
 **Tentacles**, unlocks no unit (the Cult's `KNIGHT` slot is vacant since
 `7r85`), grants `TENTACLES` (the Summoner's Tentacle), and grants no
 Overrun. **Metallurgy**, displayed as **Gibbering Masses**, unlocks no unit
-(the `SWORDSMAN` slot is vacant; the Gibbering Mass comes with a later step
-of the Cult redesign) and keeps the Forge and Arms Industry. **Fortification**, displayed as **Warding
+(the `SWORDSMAN` slot is vacant), keeps the Forge and Arms Industry, and
+grants `SUMMON_MASS` (the capability `summonMass`: the Summoner's Summon a
+Gibbering Mass, `pulp_wars-mch9.37`,
+[section 26.4](#264-daemons-and-summon)). **Fortification**, displayed as **Warding
 Circles**, grants no Field Defense command. **Explosives**, displayed as
 **The Stars Are Right**, keeps Blast Mountain and Breach and adds
 `GREAT_SUMMONING`
@@ -4774,23 +4796,24 @@ the Charge bonus (the Familiar's Charge). `TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7`
 holds the Cult's eight names (the table above). Arms Industry lowers
 training costs and never a price in Favour or a unit's value. Summon,
 Channel, Star-fall, Behold! (the warden's aura), Ribbit, Pamphlets, and Anchor need no
-technology beyond the unit that uses them (the Tentacle needs Tentacles),
+technology beyond the unit that uses them (the Tentacle needs Tentacles,
+and a Gibbering Mass's summoning Gibbering Masses),
 and every technology has a live unlock for a Cult seat. The Cult unlocks
 that read differently from the Human table are:
 
-| Technology     | Cult name           | Cult unlocks                                                  |
-| -------------- | ------------------- | ------------------------------------------------------------- |
-| Farming        | Harvest Rites       | Farm; Offering (a city gives 2 population for 6 Favour)       |
-| Administration | same                | Summoner (Sacrifice, Seize, Summon a Horror); Market; Disband |
-| Sawmilling     | Stargazers          | Sawmill; Stargazer (Star-fall)                                |
-| Marksmanship   | Hexers              | Hexer (Ribbit)                                                |
-| Fieldcraft     | same                | Replant Forest; Forest march; Hexer Sight 2                   |
-| Scouting       | Familiars           | Familiar (Switcheroo); Familiar Sight 2                       |
-| Raiding        | same                | Pillage; Familiar Charge                                      |
-| Chivalry       | Tentacles           | the Summoner's Tentacle; Cultivate Forest                     |
-| Metallurgy     | Gibbering Masses    | Forge; Arms Industry                                          |
-| Fortification  | Warding Circles     | Idol Bearer (Behold!)                                         |
-| Explosives     | The Stars Are Right | Blast Mountain; Breach; the Great Summoning (the Herald)      |
+| Technology     | Cult name           | Cult unlocks                                                            |
+| -------------- | ------------------- | ----------------------------------------------------------------------- |
+| Farming        | Harvest Rites       | Farm; Offering (a city gives 2 population for 6 Favour)                 |
+| Administration | same                | Summoner (Sacrifice, Seize, Summon an Imp or a Horror); Market; Disband |
+| Sawmilling     | Stargazers          | Sawmill; Stargazer (Star-fall)                                          |
+| Marksmanship   | Hexers              | Hexer (Ribbit)                                                          |
+| Fieldcraft     | same                | Replant Forest; Forest march; Hexer Sight 2                             |
+| Scouting       | Familiars           | Familiar (Switcheroo); Familiar Sight 2                                 |
+| Raiding        | same                | Pillage; Familiar Charge                                                |
+| Chivalry       | Tentacles           | the Summoner's Tentacle; Cultivate Forest                               |
+| Metallurgy     | Gibbering Masses    | Forge; Arms Industry; the Summoner's Gibbering Mass                     |
+| Fortification  | Warding Circles     | Idol Bearer (Behold!)                                                   |
+| Explosives     | The Stars Are Right | Blast Mountain; Breach; the Great Summoning (the Herald)                |
 
 The other technologies read the same for every faction. The engine, query,
 and AI checks of land trade read the technology capability
@@ -13935,6 +13958,7 @@ first guesses.
 | Cult E-R4 and E-R5  | `pulp-wars-poc-7r88` | `pulp_wars-mch9.34`, `pulp_wars-mch9.35` the Cult redesign's Star-fall and daemons (the user, 2026-10-16; a save, replay, or setup of `7r87` is rejected): a Stargazer begins Star-fall alone (6), and robed cultists beside it join its chant that turn with `JOIN_CHANT` (+3 each, their action; `CHANT_JOINED`, `JOIN_CHANT_NOT_LEGAL`, `previewJoinChantV7`); Switcheroo reaches 4; every daemon advances after a kill, bound or Unbound (the Herald's second attack from the victim's tile); an Unbound daemon goes for a cultist within 2, then anyone in reach, then a summon in reach, else the nearest non-summon (`previewRampageV7.step`)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | [section 26](#26-cultist-faction-rules)                                                                                               |
 | Cult E-R2 and E-R3  | `pulp-wars-poc-7r89` | `pulp_wars-mch9.32`, `pulp_wars-mch9.33` the Cult redesign's Favour economy and warden ([RULESET_7_CULT_REDESIGN.md](RULESET_7_CULT_REDESIGN.md); the user, 2026-10-16; a save, replay, or setup of `7r88` is rejected): Favour capped at 30 (a gain above it lost as `forfeited`, a mission's Favour clamped); the Offering pays 6, a Horror costs 4 and the Great Summoning 18; each Summoner whose strand held pays a trickle of 1 at the check, and each bound Herald eats 2 Favour a turn (Hunger) or is Unbound; the Idol Bearer's Behold! is a lasting aura (shots of 2+ tiles on its seat's units beside it halved, `idolHalved`; enemies beside it attack only an Idol Bearer, `ATTACK_AWESTRUCK`), and the `BEHOLD` command, the `idols` list, and the idol events are removed.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | Cult E-R6           | `pulp-wars-poc-7r90` | `pulp_wars-mch9.36` the Cult redesign's Imp ([RULESET_7_CULT_REDESIGN.md](RULESET_7_CULT_REDESIGN.md); the user, 2026-10-16; a save, replay, or setup of `7r89` is rejected): a Summoner alone summons an Imp for 2 Favour (`SUMMON` names its `daemon`; `SUMMON_IMP`); 6 HP, Attack 2, Defense 1, Move 3, worth 2, Control 1, never captures; Brood (one strand holds up to two own Imps beside the channelled one at the check) and Swarm (no strike-back at an Imp from a unit beside two of its seat's Imps, `SWARMED`); the Unbound breed `IMP`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Cult E-R7           | `pulp-wars-poc-7r91` | `pulp_wars-mch9.37` the Cult redesign's Gibbering Mass ([RULESET_7_CULT_REDESIGN.md](RULESET_7_CULT_REDESIGN.md); the user, 2026-10-16; a save, replay, or setup of `7r90` is rejected): a Summoner and a helper summon a Gibbering Mass for 5 Favour with Gibbering Masses (Metallurgy, `SUMMON_MASS`; `TECHNOLOGY` without it); 30 HP, Attack 2, Defense 3, Move 1, worth 6, Control 1, immovable, never advances or captures; Doorstep (no strand needed on or beside an own city center or beside an own standing idol) and Drag (a hostile unit that begins a Move beside it moves one tile, `DRAGGED`); the Unbound breed `MASS`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 
 **Documentation parity (2026-09-28, no ruleset or identity change):** where
 older documents disagreed with the code, the code's behavior was adopted as
@@ -14948,7 +14972,8 @@ advances after a kill, bound or Unbound, and the Unbound target order;
 and 18, the Summoners' trickle, and the Herald's Hunger;
 `pulp_wars-mch9.33`: the Idol Bearer's Behold! as the warden's lasting
 aura, with the shield wall and Awestruck; `pulp_wars-mch9.36`: the Imp,
-with Brood and Swarm; the Gibbering Mass is not built yet); where it
+with Brood and Swarm; `pulp_wars-mch9.37`: the Gibbering Mass, with
+Doorstep and Drag); where it
 differs from this section, this
 section is the rule, and the differences the fold found are listed in
 [its section 22](RULESET_7_CULTISTS.md#22-fold-notes-pulp_wars-mch921). The
@@ -14993,12 +15018,13 @@ change a number only to restore counterplay that was shown to be missing.
 
 Summoned, never trained, hired, found, or rewarded:
 
-| Summoned unit | From                                  | Its own thing                                      |
-| ------------- | ------------------------------------- | -------------------------------------------------- |
-| Imp           | a Summoner's Summon, alone, 2 Favour  | a daemon, Control 1; Brood; Swarm; never captures  |
-| Horror        | a Summoner's Summon, helped, 4 Favour | a daemon, Control 1; Boo!                          |
-| Herald        | the Great Summoning, 18 Favour        | a daemon, Control 3; Ravage, Unstoppable, Proclaim |
-| Tentacle      | a Summoner's Tentacle                 | nobody's from birth; slaps and Grabs; sinks        |
+| Summoned unit  | From                                               | Its own thing                                                                           |
+| -------------- | -------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| Imp            | a Summoner's Summon, alone, 2 Favour               | a daemon, Control 1; Brood; Swarm; never captures                                       |
+| Horror         | a Summoner's Summon, helped, 4 Favour              | a daemon, Control 1; Boo!                                                               |
+| Gibbering Mass | a Summoner's Summon, helped, 5 Favour (Metallurgy) | a daemon, Control 1 (none on its Doorstep); Drag; immovable; never advances or captures |
+| Herald         | the Great Summoning, 18 Favour                     | a daemon, Control 3; Ravage, Unstoppable, Proclaim                                      |
+| Tentacle       | a Summoner's Tentacle                              | nobody's from birth; slaps and Grabs; sinks                                             |
 
 A **Cult unit** is a unit whose kind is `CULT`; a **Cult seat** is a player
 whose faction is `CULT`. A **robed cultist** is one of the five trained
@@ -15006,7 +15032,8 @@ land units other than the Familiar (Initiate, Idol Bearer, Hexer, Summoner,
 Stargazer; role mechanic `robed`), in land form. Only a
 robed cultist channels, chants in a ritual, helps a summoning, or holds
 down a Seizure. A **daemon** is an Imp (`pulp_wars-mch9.36`), a Horror,
-or a Herald; a **summoned unit** is a daemon or a Tentacle (the unit key
+a Gibbering Mass (`pulp_wars-mch9.37`), or a Herald; a **summoned unit**
+is a daemon or a Tentacle (the unit key
 `summoned`). The stats are in
 [section 11](#11-unit-roster) and the technology in
 [section 6.2](#62-technology-tree).
@@ -15030,7 +15057,8 @@ these two and for the Ice Folk ships), and every reader that lists roles
 reads it (training, the Showcase, the Gallery's empty cells, mission
 validation). Chivalry (shown as **Tentacles**) gives the Summoner its
 Tentacle, and Metallurgy (shown as **Gibbering Masses**) keeps the Forge
-and Arms Industry.
+and Arms Industry and, since `pulp_wars-mch9.37`, lets the Summoner
+summon a Gibbering Mass (the capability `summonMass`).
 
 **Needs a Cult seat.** A mind-controlled Cult unit keeps the tricks that
 belong to the unit (Behold!, Ribbit, Switcheroo, Pamphlets) and
@@ -15054,19 +15082,20 @@ not Coins: it is never bought or traded, and it is spent only on
 summoning and on a Herald's Hunger. It is not a Score factor (Favour lost
 to the cap or to Hunger neither). An eliminated seat's Favour is gone.
 
-| Source                | What happens                                                                                 | Favour                           |
-| --------------------- | -------------------------------------------------------------------------------------------- | -------------------------------- |
-| Sacrifice             | A Summoner removes an own unit beside it                                                     | the unit's value                 |
-| Seize                 | A Summoner removes a broken living enemy beside it that a second cultist holds down          | twice its value                  |
-| Offering              | A city gives up 2 population                                                                 | 6 (3 before `pulp_wars-mch9.32`) |
-| A bound daemon's kill | An Imp, Horror, or Herald the seat commands kills a hostile unit that is not a summoned unit | the victim's value               |
-| Consumed              | The unit on the Great Summoning's mark is eaten when the Herald arrives                      | as a Sacrifice or a Seizure      |
-| The trickle           | At the check, each own Summoner whose strand held, for a daemon still bound (section 26.5)   | 1 each                           |
+| Source                | What happens                                                                                       | Favour                           |
+| --------------------- | -------------------------------------------------------------------------------------------------- | -------------------------------- |
+| Sacrifice             | A Summoner removes an own unit beside it                                                           | the unit's value                 |
+| Seize                 | A Summoner removes a broken living enemy beside it that a second cultist holds down                | twice its value                  |
+| Offering              | A city gives up 2 population                                                                       | 6 (3 before `pulp_wars-mch9.32`) |
+| A bound daemon's kill | An Imp, Horror, Mass, or Herald the seat commands kills a hostile unit that is not a summoned unit | the victim's value               |
+| Consumed              | The unit on the Great Summoning's mark is eaten when the Herald arrives                            | as a Sacrifice or a Seizure      |
+| The trickle           | At the check, each own Summoner whose strand held, for a daemon still bound (section 26.5)         | 1 each                           |
 
 | Spent on                                        | Favour |
 | ----------------------------------------------- | -----: |
 | Summon an Imp (`pulp_wars-mch9.36`)             |      2 |
 | Summon a Horror                                 |      4 |
+| Summon a Gibbering Mass (`pulp_wars-mch9.37`)   |      5 |
 | Begin the Great Summoning (never refunded)      |     18 |
 | Hunger: each bound Herald, at each check (26.5) |      2 |
 
@@ -15076,7 +15105,8 @@ A unit's **value** is the Score's unit value
 ([section 3.1](#31-score-play-modes-and-stars)): the printed cost of its
 role under its kind (an Initiate 2, a Knight 9), 12 for a reward giant, a
 neutral monster its bounty (the Giant Spider 10), and a summoned unit its
-own value (an Imp 2, a Horror 6, the Herald 24, a Tentacle 0). A free unit is worth
+own value (an Imp 2, a Horror 6, a Gibbering Mass 6, the Herald 24, a
+Tentacle 0). A free unit is worth
 its role, and Arms Industry lowers a price, never a value.
 
 ### 26.3 Sacrifice, Seize, and the Offering
@@ -15136,24 +15166,30 @@ A daemon is a land unit of a Cult seat with these rules of its own:
   without Engineering. It never enters water and never embarks. Like a
   Martian walker it is never fortified and takes no cover.
 - **While bound** it attacks and **captures** like any land unit, except
-  the Imp, which **never captures** (on a hostile center it besieges, as
-  any unit does). A Horror and an Imp
+  the Imp and the Gibbering Mass (`pulp_wars-mch9.37`), which **never
+  capture** (on a hostile center each besieges, as any unit does). A Horror
+  and an Imp
   advance after a kill and may Pillage; so does the Herald since the Cult
-  redesign (`pulp_wars-mch9.35`; it never advanced before). An advance can
+  redesign (`pulp_wars-mch9.35`; it never advanced before); the Gibbering
+  Mass never advances. An advance can
   carry a daemon more than 3 tiles from its channellers, which breaks it at
   the next check: the player chooses the kill knowing it.
 - **Its kills feed.** A kill by a bound daemon's attack or retaliation of a
   hostile unit pays its seat the victim's value in Favour, and a neutral
   monster's bounty Coins as to anyone. A summoned unit of any seat, bound
   or Unbound, pays nothing.
-- **Its value** (Imp 2, Horror 6, Herald 24) is in its seat's Army while
-  the seat commands it, and is what its kill is worth.
+- **Its value** (Imp 2, Horror 6, Gibbering Mass 6, Herald 24) is in its
+  seat's Army while the seat commands it, and is what its kill is worth.
 
-**Summon** (`SUMMON`, naming the daemon: `IMP` or `HORROR`). Since the
-Cult redesign (`pulp_wars-mch9.36`) a Summoner calls one of two daemons;
-the Imp is the Summoner's alone, the Horror needs a helper. Each is a
-primary action of a Summoner in land form, which may follow its Move, on
-the same tiles, and each summoner holds a strand to what it called.
+**Summon** (`SUMMON`, naming the daemon: `IMP`, `HORROR`, or `MASS`).
+Since the Cult redesign (`pulp_wars-mch9.36`, `pulp_wars-mch9.37`) a
+Summoner calls one of three daemons; the Imp is the Summoner's alone, the
+Horror and the Gibbering Mass need a helper, and the Mass needs
+**Gibbering Masses** (the Cult's Metallurgy; refused `SUMMON_NOT_LEGAL`
+reason `TECHNOLOGY` without it, checked through the Summoner's own tree).
+Each is a primary action of a Summoner in land form, which may follow its
+Move, on the same tiles, and each summoner holds a strand to what it
+called.
 
 **Summon an Imp** (`pulp_wars-mch9.36`). "The Summoner alone summons an
 Imp for 2 Favour and channels it this turn." No helper: the command names
@@ -15199,6 +15235,42 @@ Stuck, and Frozen. Its own rules:
 - **It never captures**, so it takes no village and no city (a 2-Favour
   unit of Move 3 that captured would replace the Initiate's Pamphlets).
 
+**Summon a Gibbering Mass** (`pulp_wars-mch9.37`). "The Summoner and a
+cultist beside it summon a Gibbering Mass for 5 Favour." As a Horror's
+summoning, with the same helper and tiles, for **5 Favour**
+(`FAVOUR_SPENT` purpose `SUMMON_MASS`; `DAEMON_SUMMONED` role `MASS`, and
+the two `STRAND_FORMED`), with Gibbering Masses.
+
+**The Gibbering Mass** (`pulp_wars-mch9.37`): 30 HP, Attack 2, Defense 3,
+Move 1, Range 1, Sight 1, worth 6, Control 1; its stored mechanical role is
+`GUARD` (no rule of it reads the role: it is not the Human Guard, so no
+Open to ranged; it may attack after its Move). A Fighter attacking it deals
+4 and takes 8; a Knight deals 10 and takes 6. Its own rules:
+
+- **Doorstep.** "On your doorstep it needs no strand." At the check a bound
+  Mass short of its Control by its strands stays bound when it stands **on
+  or beside an own city center** (a city, never a village) or **beside an
+  own Idol Bearer whose idol stands**
+  ([section 26.11](#2611-behold-anchor-and-boo)); elsewhere it needs 1
+  strand like a Horror ([section 26.5](#265-the-channel-strands-and-the-check)).
+- **Drag.** "Enemies beside it can move only one tile." A land-form unit of
+  a player hostile to the Mass's owner (flyers included) that **begins a
+  Move** on one of the eight tiles around a Gibbering Mass may move **one
+  tile** in that Move: one step, no hop (`MASS_DRAG_TILES_V7`; a longer
+  path is refused with the movement reason `DRAGGED`, and the offered Moves
+  and the movement query honour it). As for Stuck, an ice slide is no step.
+  It is no status and needs no state: it is read from the board when the
+  Move begins, so it limits an Escape, an Overrun step, and a Bat Escape
+  too, and never an advance after a kill, a shove, a swap, a pull, or a
+  Boo!. An Unbound Mass drags every player's units.
+- **Immovable.** Nothing shoves, swaps, pulls, bounces, Boos, or knocks it
+  back (role mechanic `immovable`); a Crushing Shove crushes it, as damage,
+  as it does the Herald. Statuses stick to it (it can be Frozen or Stuck),
+  and no summon is a frog's target.
+- **It never advances after a kill and never captures.** It may stand on
+  an own center (a daemon fills no slot), its natural post; on a hostile
+  center it besieges, as any unit does.
+
 ### 26.5 The Channel, strands, and the check
 
 **Channel.** "A cultist channels a daemon within 3 tiles. At the start of
@@ -15212,7 +15284,8 @@ strand a turn; a daemon may hold any number. A cultist that has channelled
 cannot move afterwards.
 
 **Control** is the number of strands a daemon needs: an Imp **1**, a
-Horror **1**, the Herald **3**.
+Horror **1**, a Gibbering Mass **1** (none on its Doorstep,
+`pulp_wars-mch9.37`), the Herald **3**.
 
 **Disrupted.** One rule decides when a strand breaks, a chanter leaves a
 ritual, and a Thing's grip fails. After every command,
@@ -15251,7 +15324,8 @@ strands whose cultist is still on the board as the seat's own robed
 cultist, within 3 tiles of the daemon **now**. Each counts 1, or 3 under a
 holding Anchor grip ([section 26.11](#2611-behold-anchor-and-boo)). With
 at least its Control the daemon stays bound; an Imp short of it may be
-held by a neighbour's **Brood** (below); otherwise it is **Unbound**
+held by a neighbour's **Brood** (below), and a Gibbering Mass short of it
+by its **Doorstep** (below); otherwise it is **Unbound**
 at once (`DAEMON_UNBOUND` reason `STRANDS`).
 
 **Brood** (`pulp_wars-mch9.36`). An Imp short of its Control by its own
@@ -15267,7 +15341,20 @@ a grip on an Imp's channeller changes nothing. The channellers of the
 lending Imp count as having held the Imp they held for it (the trickle).
 The view names the lender of each Imp a Brood holds (`broodOf` of its
 `cult.daemons` entry), so such an Imp is not short: no eye mark, no End
-Turn question. A fresh daemon is checked at
+Turn question.
+
+**Doorstep** (`pulp_wars-mch9.37`). A Gibbering Mass short of its Control
+by its own holding strands stays bound when it stands on or beside an own
+city center, or beside an own Idol Bearer whose idol stands, as the board
+stands at its check (`massOnDoorstepV7`). Its strands count first: a
+strand to a Mass on its Doorstep is legal and simply unneeded, and a
+Summoner whose strand holds it there still pays the trickle; a Mass held
+by its Doorstep alone has no holder and pays none. An Idol Bearer with a
+status of the disruption rule has its idol down, so a frogged or Frozen
+bearer holds nothing (a frog lasts until the end of its owner's next turn,
+so one made in another seat's turn stands at the check). The view marks a
+Mass on its Doorstep (`doorstep` of its `cult.daemons` entry), so it is not
+short: no eye mark, no End Turn question. A fresh daemon is checked at
 the first Start Turn after it appears, with the strands of its summoning.
 What one break does is felt by the next: a rampage that hurts, moves, or
 kills a channeller breaks that strand before the next daemon is checked.
@@ -15305,8 +15392,10 @@ then anyone near it, friend or foe, at once and after every round."
 
 **Unbound.** A daemon that fails its check belongs to the neutral owner,
 like the Giant Spider ([section 2.7](#27-map-curiosities)), and is shown as
-an "Unbound Imp", "Unbound Horror", or "Unbound Herald" (an Unbound Imp is
-the neutral breed `IMP`, with no Brood and no Swarm). It keeps its Hit Points, its
+an "Unbound Imp", "Unbound Horror", "Unbound Gibbering Mass", or "Unbound
+Herald" (an Unbound Imp is the neutral breed `IMP`, with no Brood and no
+Swarm; an Unbound Mass the breed `MASS`, which still Drags every player's
+units, never advances, and has no Doorstep). It keeps its Hit Points, its
 numbers, and its kills, and loses every status and every strand. As a
 neutral unit it only attacks: it never captures, besieges, Boos, or
 Proclaims, it sees nothing, no status, shove, Mind Control, or Swallow
@@ -15321,7 +15410,7 @@ neutral units:
 1. **The target** (the Cult redesign, `pulp_wars-mch9.35`; the nearest unit
    of any player until `7r87`) is chosen by four steps, distances measured
    in tiles in any direction, its **reach** being its Move + 1 (Imp 4,
-   Horror 3, Herald 3). The candidates are units of any player (an Egg, and a daemon
+   Horror 3, Gibbering Mass 2, Herald 3). The candidates are units of any player (an Egg, and a daemon
    another seat commands, included); never a neutral unit, a ship or an
    embarked unit, or a burrowed unit.
    1. **A cultist within 2:** the nearest robed cultist of any Cult seat
@@ -15346,7 +15435,7 @@ neutral units:
    near as it can.
 3. **The attack.** If it ends beside its target it attacks it: an ordinary
    attack with retaliation. **After a kill it advances** onto the victim's
-   tile (`pulp_wars-mch9.35`), unless that tile is one its walk never
+   tile (`pulp_wars-mch9.35`; never a Gibbering Mass), unless that tile is one its walk never
    enters (water, ice, a Rift, a settlement center, a curiosity tile, a
    treasure chest, a mound or a Barricade); then it stays. A Herald then
    attacks a second time, from where it stands, a unit beside it chosen by
@@ -15358,7 +15447,7 @@ neutral units:
 Its kills are credited to nobody and pay no Favour. A daemon Unbound while it stands on
 a city center besieges nothing from that moment and leaves at its first
 step. Killing an Unbound daemon is an ordinary kill at its value (Imp 2,
-Horror 6, Herald 24) with no bounty Coins, except that the seat that summoned it gets
+Horror 6, Gibbering Mass 6, Herald 24) with no bounty Coins, except that the seat that summoned it gets
 no Kills in the Score for it.
 
 **The eye mark.** Nothing about a rampage is random or hidden: the board
@@ -15693,7 +15782,8 @@ frog does not preach.
 2. After Plague and its chains, the watched units are judged (a channeller
    Plague hurt is disrupted), and then **the channel check** runs for each
    bound daemon in unit-ID order (an Imp held by its own strands or by a
-   neighbour's Brood, `pulp_wars-mch9.36`). Each daemon that breaks loose rampages at
+   neighbour's Brood, `pulp_wars-mch9.36`; a Gibbering Mass by its strands
+   or its Doorstep, `pulp_wars-mch9.37`). Each daemon that breaks loose rampages at
    once, with its deaths and their consequences, and is Furious for the
    turn. Then (`pulp_wars-mch9.32`) **the trickle** (+1 for each own
    Summoner whose strand held, for a daemon still bound, up to the cap) and
@@ -15742,11 +15832,12 @@ seat.
 | Kaboom and death blasts                               | A Sacrificed, Seized, or consumed exploding unit is removed and never explodes; one a daemon or a star kills explodes as usual. A frog cannot Kaboom.                                                                                                                                                                                                                                                                                              |
 | Candy statuses, Crumbs, Bounce                        | Splat, Stuck, and Toothache disrupt a cultist. A Sacrifice, a Seizure, and a consumption leave no Crumbs. The Herald is never Stuck, Splatted, given Toothache, or bounced; a bound Horror may be. A Top-Up cures a frog. A Jawbreaker is never swapped.                                                                                                                                                                                           |
 | Mind Control and the Tractor Beam                     | A mind-controlled cultist has changed owner and a pulled one is moved: both are disrupted. No summoned unit is mind-controlled or pulled. A Brain may be Seized, and its controlled unit is released. A mind-controlled Cult unit keeps only its unit's tricks ([section 26.1](#261-roles-robed-cultists-and-labels)).                                                                                                                             |
-| Giants' signatures                                    | A swallowed cultist is off the board (disrupted); no daemon is Swallowed. A Thunder Stomp and a trample disrupt the cultists they hit. A Crushing Shove crushes a Herald, which does not yield. A status from the Thing's own attack fails its grip.                                                                                                                                                                                               |
+| Giants' signatures                                    | A swallowed cultist is off the board (disrupted); no daemon is Swallowed. A Thunder Stomp and a trample disrupt the cultists they hit. A Crushing Shove crushes a Herald or a Gibbering Mass (`pulp_wars-mch9.37`), which does not yield. A status from the Thing's own attack fails its grip.                                                                                                                                                     |
 | Curiosities                                           | An Unbound daemon and a Tentacle act in the neutral turn and are monsters to every seat's previews (`previewMonsterV7`). A daemon never heals at a Fountain or a Wishing Well and is never promoted at a Shrine. A rampage never steps onto a curiosity tile or through a gate; a unit that would come through a gate onto the Herald is blocked. A bound daemon's kill of the Spider, a guard, or Bigfoot pays its bounty in Favour and in Coins. |
 | Score and play modes                                  | Favour is not scored (nor what the cap or Hunger takes). A daemon counts in its seat's Army while commanded. A Sacrifice and a consumed own unit are no Loss and end a flawless game; so does a daemon that breaks loose. A Seizure and a consumed enemy are kills. The kills of an Unbound daemon and of a Tentacle are nobody's.                                                                                                                 |
 | Achievements                                          | Slayer counts a Summoner's Seizures and a daemon's kills like any unit's. Muster counts the Cult's trained kinds; a daemon has no price and is not counted.                                                                                                                                                                                                                                                                                        |
-| Capture and siege                                     | Every Cult land unit and every bound daemon but the Imp captures (`pulp_wars-mch9.36`: an Imp besieges a hostile center it stands on and captures nothing); a city a daemon takes does not become its home. An Unbound daemon never besieges or captures. An Initiate captures a neutral village on arrival.                                                                                                                                       |
+| Capture and siege                                     | Every Cult land unit and every bound daemon but the Imp and the Gibbering Mass captures (`pulp_wars-mch9.36`, `pulp_wars-mch9.37`: each besieges a hostile center it stands on and captures nothing); a city a daemon takes does not become its home. An Unbound daemon never besieges or captures. An Initiate captures a neutral village on arrival.                                                                                             |
+| Movement (Drag)                                       | A unit that begins a Move beside a hostile Gibbering Mass moves one tile (`DRAGGED`): an Overrun step, an Escape, a Charge!'s run-up, a Sugar Rush Move, and a Bat Escape included; an advance after a kill, a shove, a swap, a pull, and a Boo! are no Move. A burrowed unit is not beside a Mass, and surfacing is no Move (`pulp_wars-mch9.37`).                                                                                                |
 | Boats and embarking                                   | The Cult's boats are the Human boats. An embarked cultist is no robed cultist: embarking breaks its strand, and it neither channels nor chants. Star-fall hits ships and embarked units; a Tentacle may rise on water and slaps ships; a rampage never goes for a unit afloat.                                                                                                                                                                     |
 | Missions                                              | A `MISSION` setup accepts a Cult seat, which may start with Favour, clamped to the cap of 30 ([section 2.6](#26-mission-setup)). The hidden lab `LAB_CULT_MID` (revision 2 since `7r85`) stages the roster with 12 Favour; it is built and has not been played.                                                                                                                                                                                    |
 | Nine seats                                            | The Cult is the ninth faction, so a match has 2 to 9 players ([section 2.1](#21-match-setup)). With more seats there are more enemy turns between two checks: more chances to break a strand.                                                                                                                                                                                                                                                      |
@@ -15759,10 +15850,11 @@ registration, Favour, the channel, Unbound, rituals and the Herald, hexes
 and tricks). In summary:
 
 - **Commands.** `SACRIFICE` and `SEIZE` (`unitId`, `victimUnitId`),
-  `OFFERING` (`cityId`), `SUMMON` (`unitId`, `daemon` `IMP` or `HORROR`,
-  `helperUnitId` for a Horror only, `at`; the `daemon` and the helperless
-  Imp since `pulp_wars-mch9.36`; offered in tile, Summoner, daemon (the Imp
-  first), then helper order),
+  `OFFERING` (`cityId`), `SUMMON` (`unitId`, `daemon` `IMP`, `HORROR`, or
+  `MASS`, `helperUnitId` for a Horror or a Mass only, `at`; the `daemon`
+  and the helperless Imp since `pulp_wars-mch9.36`, the Mass since
+  `pulp_wars-mch9.37`; offered in tile, Summoner, daemon (the Imp first,
+  then the Horror, then the Mass), then helper order),
   `CHANNEL` (`unitId`, `daemonUnitId`; also Bind again), `ANCHOR`
   (`unitId`, `cultistUnitId`), `BOO` (`unitId`),
   `BEGIN_RITUAL` (`ritual` `STARFALL` or `GREAT_SUMMONING`, `unitId`,
@@ -15776,7 +15868,8 @@ and tricks). In summary:
   with Pick Me!, `7r85`, and `idols` with Behold!'s command,
   `pulp_wars-mch9.33`: the aura is read from the board).
   A summoned unit has the key `summoned` (`HORROR`, `HERALD`, `TENTACLE`,
-  or, since `pulp_wars-mch9.36`, `IMP`, stored as a `RAIDER`)
+  or, since `pulp_wars-mch9.36`, `IMP`, stored as a `RAIDER`, and, since
+  `pulp_wars-mch9.37`, `MASS`, stored as a `GUARD`)
   and a stored mechanical role that no rule reads; an Unbound daemon and a
   Tentacle have an entry in the neutral registration (`monsters`). A city
   has `offeredPopulation` once it has made an Offering.
@@ -15784,10 +15877,11 @@ and tricks). In summary:
   `DAEMON_KILL`, `CONSUMPTION`, or, since `pulp_wars-mch9.32`, `TRICKLE`;
   `MARTYR` was removed at `7r85`; its `forfeited` is the part lost above
   the cap) and `FAVOUR_SPENT` (purpose `SUMMON_HORROR`, `GREAT_SUMMONING`,
-  `HUNGER`, or, since `pulp_wars-mch9.36`, `SUMMON_IMP`), both shown to
+  `HUNGER`, or, since `pulp_wars-mch9.36`, `SUMMON_IMP`, and, since
+  `pulp_wars-mch9.37`, `SUMMON_MASS`), both shown to
   every player; `UNIT_SACRIFICED`, `UNIT_SEIZED`, `OFFERING_MADE`;
-  `DAEMON_SUMMONED` (`role` `IMP` or `HORROR`; an Imp's `helperUnitId` is
-  null, and its one `STRAND_FORMED` follows), `STRAND_FORMED`,
+  `DAEMON_SUMMONED` (`role` `IMP`, `HORROR`, or `MASS`; an Imp's
+  `helperUnitId` is null, and its one `STRAND_FORMED` follows), `STRAND_FORMED`,
   `STRAND_BROKEN`, `ANCHOR_GRIPPED`,
   `ANCHOR_BROKEN`, `UNITS_SCARED` (`IDOL_RAISED` and `IDOL_DROPPED` were
   removed with Behold!'s command, `pulp_wars-mch9.33`); the combat
@@ -15808,7 +15902,8 @@ and tricks). In summary:
   `VICTIM`, `DAEMON`, `CONTROLLED`, `PLAGUED`, `BITTEN`); `SEIZE_NOT_LEGAL`
   (`EMBARKED`, `VICTIM`, `IMMUNE`, `HEALTHY`, `NO_HOLDER`);
   `OFFERING_NOT_LEGAL` (`LEVEL`, `POPULATION`); `SUMMON_NOT_LEGAL`
-  (`EMBARKED`, `HELPER`, `TILE`); `CHANNEL_NOT_LEGAL` (`EMBARKED`,
+  (`EMBARKED`, `TECHNOLOGY` (a Mass without Gibbering Masses,
+  `pulp_wars-mch9.37`), `HELPER`, `TILE`); `CHANNEL_NOT_LEGAL` (`EMBARKED`,
   `DAEMON`, `FURIOUS`, `RANGE`); `ANCHOR_NOT_LEGAL` (`EMBARKED`,
   `GRIPPING`, `CULTIST`); `BOO_NOT_LEGAL`
   (`NOBODY`); `RITUAL_NOT_LEGAL` (`EMBARKED`, `MOVED`, `CHANTERS` (the
@@ -15823,7 +15918,8 @@ and tricks). In summary:
   `7r85`); `ATTACK_AWESTRUCK` (`unitId`, the Idol Bearer; an awestruck
   unit's attack on anybody else, `pulp_wars-mch9.33`, which also removed
   `BEHOLD_NOT_LEGAL`); the
-  movement reason `GRABBED`, and `GATE_BLOCKED`. A Cowed city's refused
+  movement reasons `GRABBED` and (`pulp_wars-mch9.37`) `DRAGGED`, and
+  `GATE_BLOCKED`. A Cowed city's refused
   action is `CITY_ACTION_SPENT`.
 - **Queries and previews.** The public command query offers exactly the
   commands the reducer accepts. `previewSacrificeV7`, `previewSeizeV7`,
@@ -15849,27 +15945,32 @@ and tricks). In summary:
   Idol Bearer's aura does now (whether its idol stands, the own units it
   shields, the enemies it holds Awestruck) and `publicAwestruckBearersV7`
   the bearers that bind a unit (`previewBeholdV7` was removed,
-  `pulp_wars-mch9.33`). The combat preview of a
+  `pulp_wars-mch9.33`); `publicDraggingMassV7` is the Gibbering Mass that
+  drags a visible unit, and `publicDaemonHeldV7` whether a daemon is held
+  without strands of its own (Brood or Doorstep; `pulp_wars-mch9.37`). The combat preview of a
   frog is exact, and an attack a frog forbids has none.
 - **Fog.** A view carries the Favour of every Cult seat; the strands,
   grips, frogs, cooldowns, and Tentacles of the units its
   viewer sees; every visible daemon's Control and holding strands (which
   count the strands of cultists the viewer does not see), and for an Imp a
-  Brood holds the Imp that holds it (`broodOf`); the rituals it
+  Brood holds the Imp that holds it (`broodOf`), and a Gibbering Mass on
+  its Doorstep (`doorstep`); the rituals it
   knows of (it sees a participant or has explored the mark); and the Cowed
   cities it sees.
 - **Text harness** ([text-mode play](../validation/TEXT_PLAY.md)): the
   commands `.sacrifice.u<id>`, `.seize.u<id>`, `c<id>.offering`,
   `.imp.<x>,<y>` (`pulp_wars-mch9.36`), `.summon.u<id>.<x>,<y>` (a
-  Horror with its helper), `.channel.u<id>`, `.anchor.u<id>`,
+  Horror with its helper), `.mass.u<id>.<x>,<y>` (a Gibbering Mass with its
+  helper, `pulp_wars-mch9.37`), `.channel.u<id>`, `.anchor.u<id>`,
   `.boo`, `.starfall.<x>,<y>`, `.join.u<stargazer>`,
   `.summoning.<x>,<y>`, `.proclaim.c<id>`,
   `.ribbit.u<id>`, `.switch.u<id>`, and `.tentacle.<x>,<y>` (`.pickme`
   was removed at `7r85` and `.behold` with `pulp_wars-mch9.33`),
   and lines for Favour (`favour 12/30`, with the Hunger due at the next
   check, and what a gain lost above the cap), strands and Control (an Imp
-  `held by the Brood of u<id>`, and the Imps a strand's Brood holds), the
-  unit code `Im` of an Imp, grips,
+  `held by the Brood of u<id>`, and the Imps a strand's Brood holds; a Mass
+  `DOORSTEP: needs no strand here`), a dragged unit (`DRAGGED by u<id>`),
+  the unit codes `Im` of an Imp and `Gm` of a Gibbering Mass, grips,
   a standing idol (`IDOL STANDS`, or `idol down`), an awestruck unit
   (`AWESTRUCK by u<id>`), a halved shot (`HALVED by the Idol Bearer`),
   Unbound daemons and their targets (with the step's reason, "a cultist
@@ -15886,9 +15987,11 @@ and tricks). In summary:
   It is a baseline made by judgement on hand-built positions: no match was
   played to set a number in it. Until the redesign's summon choice
   (`pulp_wars-mch9.40`) the Cult seat summons Horrors only, never an Imp
-  (`pulp_wars-mch9.36`); it channels an Imp it binds again like any
-  daemon of Control 1, and every seat's play against the Cult reads an Imp
-  a Brood holds as held.
+  (`pulp_wars-mch9.36`) or a Gibbering Mass (`pulp_wars-mch9.37`); it
+  channels an Imp or a Mass it binds again like any daemon of Control 1,
+  and every seat's play against the Cult reads an Imp a Brood holds, and a
+  Mass on its Doorstep, as held. Drag is in the offered Moves every seat's
+  play reads; the policy's own Drag rule is A-R4's (`pulp_wars-mch9.41`).
 - **Presentation** (`pulp_wars-mch9.17` to `mch9.19`, with the art of
   `pulp_wars-mch9.13` to `mch9.16`, `mch9.22`, and `mch9.23`). Every seat's faction
   select offers the Cultists (`pulp_wars-mch9.20`: the tribe picker has
@@ -15927,6 +16030,14 @@ and tricks). In summary:
     chooser that offers the Imp, the Brood links, and Swarm's preview line
     are the interface bead's (`pulp_wars-mch9.44`), so until then an Imp is
     summoned through the text harness.
+  - **The Gibbering Mass** (`pulp_wars-mch9.37`) is drawn with its own
+    sprite, its Unbound look, and its portrait; a Mass on its Doorstep has
+    its pip lit and no eye mark, and a dragged unit is offered one-tile
+    Moves only. Its summon (the chooser), the Doorstep's house pip, the
+    Drag ring, and "Dragged" are the interface bead's
+    (`pulp_wars-mch9.44`), so until then a Mass is summoned through the
+    text harness. The glossary explains Doorstep, Drag, that it holds its
+    ground, and that it never captures.
   - The unit glossary has one sentence for every ability and status. The
     cues use the game's existing sounds. The Cult has its own theme music
     (`theme.cultists`, `pulp_wars-mch9.25`;

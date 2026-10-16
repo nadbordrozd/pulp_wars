@@ -91,6 +91,9 @@ export const CULT_AGAINST_DAEMON_VALUE_V7 = Object.freeze({
   // The Cult redesign (`pulp_wars-mch9.36`): the Imp. (Brood in the strand
   // hunt is A-R4's, `pulp_wars-mch9.41`.)
   IMP: 2,
+  // `pulp_wars-mch9.37`: the Gibbering Mass. (Doorstep in the strand hunt
+  // is A-R4's too.)
+  MASS: 5,
 });
 /** The strategic value of one point of a daemon's value. */
 export const CULT_AGAINST_VALUE_SCALE_V7 = 4;
@@ -246,8 +249,12 @@ export function cultAgainstFactsV7(
       strands: entry.strands,
       spare: Math.max(1, entry.strands - entry.control + 1),
       value: CULT_AGAINST_DAEMON_VALUE_V7[entry.role],
-      // An Imp a neighbour's Brood holds is not short (`pulp_wars-mch9.36`).
-      short: entry.strands < entry.control && entry.broodOf === undefined,
+      // An Imp a neighbour's Brood holds is not short (`pulp_wars-mch9.36`),
+      // nor a Gibbering Mass on its Doorstep (`pulp_wars-mch9.37`).
+      short:
+        entry.strands < entry.control &&
+        entry.broodOf === undefined &&
+        entry.doorstep !== true,
       reach: unitRoleRuleV7(view, unit).move + 1,
     });
     if (entry.role === "HERALD") heralds.add(unit.id);

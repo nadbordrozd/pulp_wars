@@ -221,6 +221,7 @@ export function selectedNeutralV7(
         preview.breed === "HORROR" ||
         preview.breed === "HERALD" ||
         preview.breed === "IMP" ||
+        preview.breed === "MASS" ||
         // Nor has a Tentacle (`pulp_wars-mch9.8`).
         preview.breed === "TENTACLE"
         ? null

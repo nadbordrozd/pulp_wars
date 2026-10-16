@@ -43,18 +43,19 @@ describe("the identity", () => {
   // 7r85 (the Cult redesign's roster) came before it. The natural water of
   // `pulp_wars-ykw.8` took 7r87 and the Cult redesign's Star-fall and
   // daemons (`pulp_wars-mch9.34`, `mch9.35`) 7r88 and its Favour economy and
-  // warden (`mch9.32`, `mch9.33`) 7r89 and its Imp (`mch9.36`) 7r90, so all
-  // of them are retired with their keys.
+  // warden (`mch9.32`, `mch9.33`) 7r89 and its Imp (`mch9.36`) 7r90 and its
+  // Gibbering Mass (`mch9.37`) 7r91, so all of them are retired with their
+  // keys.
   it("was 7r86 after 7r85 and 7r84, all their save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r90");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r90.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-6, -2)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r91");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r91.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-7, -3)).toEqual([
       "pulp-wars-poc-7r84",
       "pulp-wars-poc-7r85",
       "pulp-wars-poc-7r86",
       "pulp-wars-poc-7r87",
     ]);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-6, -2)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-7, -3)).toEqual([
       "pulpWars.save.v7r84.current",
       "pulpWars.save.v7r85.current",
       "pulpWars.save.v7r86.current",

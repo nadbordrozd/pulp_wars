@@ -2,6 +2,7 @@ import type { PlayerId } from "../model/ids";
 import {
   EMBARKED_MOVE_V7,
   FROG_MOVE_V7,
+  MASS_DRAG_TILES_V7,
   GLACIER_ICE_MOVE_BONUS_V7,
   canCrossWaterV7,
   canEnterTerrainV7,
@@ -22,6 +23,7 @@ import {
 } from "../rules/ruleset-v7";
 import { berserkIgnoresZocV7, berserkMoveBonusV7 } from "./berserk";
 import { grabbingTentacleAtV7, unitIsFrogV7 } from "./cult-hexes";
+import { draggingMassV7, massesOfV7 } from "./cult-mass";
 import { sugarRushMoveBonusV7 } from "./candy";
 import {
   glazeStepAppliesV7,
@@ -127,7 +129,11 @@ export type MovementFailureReasonV7 =
   | "HOP_ILLEGAL"
   // The Cultists (`pulp_wars-mch9.8`, RULESET_7_CULTISTS.md section 9.3):
   // a step of a unit a Tentacle holds that leaves the Tentacle's side.
-  | "GRABBED";
+  | "GRABBED"
+  // The Cult redesign (`pulp_wars-mch9.37`, RULESET_7_CULT_REDESIGN.md
+  // section 7.4): Drag, a Move of more than one tile (a second step or a
+  // hop) by a unit that began it beside a hostile Gibbering Mass.
+  | "DRAGGED";
 
 export type MovementPathResultV7 =
   | {
@@ -397,6 +403,11 @@ function validateMovementPathCoreV7(
   // The Cultists (`pulp_wars-mch9.8`, RULESET_7_CULTISTS.md section 9.3):
   // Grab. A unit a Tentacle holds moves only to tiles next to it.
   const grabbedBy = grabbingTentacleAtV7(state, unit.id);
+  // The Cult redesign (`pulp_wars-mch9.37`, section 7.4): Drag. A unit that
+  // begins its Move beside a hostile Gibbering Mass moves one tile (one
+  // step, no hop; as for Stuck, an ice slide is no step).
+  const dragged =
+    draggingMassV7(state, massesOfV7(state.units), unit) !== undefined;
 
   for (let index = 0; index < path.length; index += 1) {
     const step = path[index];
@@ -409,6 +420,7 @@ function validateMovementPathCoreV7(
       return { legal: false, reason: "NOT_ADJACENT" };
     if (grabbedBy !== null && chebyshev(step, grabbedBy) !== 1)
       return { legal: false, reason: "GRABBED" };
+    if (dragged && jumped !== null) return { legal: false, reason: "DRAGGED" };
     if (jumped !== null) {
       // Section 7.7: the jumped tile is explored and not water or ice; it
       // is not entered (no cost, stop, ZOC, eating, or reveal of its own).
@@ -426,6 +438,8 @@ function validateMovementPathCoreV7(
     if (!sliding) {
       steps += 1;
       if (steps > stepLimit) return { legal: false, reason: "STUCK" };
+      if (dragged && steps > MASS_DRAG_TILES_V7)
+        return { legal: false, reason: "DRAGGED" };
     }
     if (
       slide !== null &&
@@ -1157,6 +1171,28 @@ function publicMovementContextV7(view: PlayerViewV7): PublicMovementContextV7 {
   return context;
 }
 
+/**
+ * The Cult redesign (`pulp_wars-mch9.37`, section 7.4): whether a Move the
+ * visible unit `unit` begins now is Dragged by a Gibbering Mass on one of
+ * the eight tiles around it, read from the context's units by position.
+ */
+function publicDraggedV7(
+  view: PlayerViewV7,
+  context: PublicMovementContextV7,
+  unit: PublicUnitV7,
+): boolean {
+  const around: PublicUnitV7[] = [];
+  for (let dy = -1; dy <= 1; dy += 1)
+    for (let dx = -1; dx <= 1; dx += 1) {
+      if (dx === 0 && dy === 0) continue;
+      for (const other of context.unitsByPosition.get(
+        key({ x: unit.at.x + dx, y: unit.at.y + dy }),
+      ) ?? [])
+        if (other.summoned === "MASS") around.push(other);
+    }
+  return around.length > 0 && draggingMassV7(view, around, unit) !== undefined;
+}
+
 function validatePlayerMovementPathWithContextV7(
   view: PlayerViewV7,
   unit: PublicUnitV7,
@@ -1266,6 +1302,10 @@ function validatePlayerMovementPathCoreV7(
   // The Cultists (section 9.3): Grab, from the public Tentacles (the
   // Tentacle that holds an own unit stands next to it, so it is visible).
   const grabbedBy = grabbingTentacleAtV7(view, unit.id);
+  // The Cult redesign (`pulp_wars-mch9.37`, section 7.4): Drag, from the
+  // visible units beside the mover (every unit beside an own unit is
+  // visible), read from the context's index.
+  const dragged = publicDraggedV7(view, context, unit);
   for (let index = 0; index < path.length; index += 1) {
     const step = path[index];
     if (step === undefined) return { legal: false, reason: "OUT_OF_BOUNDS" };
@@ -1277,6 +1317,7 @@ function validatePlayerMovementPathCoreV7(
       return { legal: false, reason: "NOT_ADJACENT" };
     if (grabbedBy !== null && chebyshev(step, grabbedBy) !== 1)
       return { legal: false, reason: "GRABBED" };
+    if (dragged && jumped !== null) return { legal: false, reason: "DRAGGED" };
     if (jumped !== null) {
       const jumpedTile = publicTileAt(view, jumped);
       if (jumpedTile === undefined)
@@ -1291,6 +1332,8 @@ function validatePlayerMovementPathCoreV7(
     if (!sliding) {
       steps += 1;
       if (steps > stepLimit) return { legal: false, reason: "STUCK" };
+      if (dragged && steps > MASS_DRAG_TILES_V7)
+        return { legal: false, reason: "DRAGGED" };
     }
     if (
       slide !== null &&

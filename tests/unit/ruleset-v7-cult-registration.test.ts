@@ -148,14 +148,14 @@ describe("the Cult registration: identity", () => {
   // 7r74, and the Cult's Unbound (`pulp_wars-mch9.6`) 7r75, so 7r71 is a
   // prior identity.
   it("was 7r71 after 7r70, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r90");
-    expect(PRIOR_RULESET_7_IDS.slice(-20, -18)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r91");
+    expect(PRIOR_RULESET_7_IDS.slice(-21, -19)).toEqual([
       "pulp-wars-poc-7r70",
       "pulp-wars-poc-7r71",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r90.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-20, -18)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r91.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-21, -19)).toEqual([
       "pulpWars.save.v7r70.current",
       "pulpWars.save.v7r71.current",
     ]);
@@ -438,6 +438,8 @@ describe("the Cult registration: the three summoned units (section 4.2)", () => 
       "HERALD",
       "TENTACLE",
       "IMP",
+      // The Gibbering Mass (`pulp_wars-mch9.37`).
+      "MASS",
     ]);
     for (const id of SUMMONED_ROLE_IDS_V7) {
       // Never trained, hired, found, or rewarded: no faction's role table
@@ -561,6 +563,11 @@ describe("the Cult registration: the tree and its names (section 11)", () => {
           .concat(
             // Tentacles: the Summoner's Tentacle.
             node.id === "CHIVALRY" ? [{ kind: "TENTACLES" }] : [],
+          )
+          .concat(
+            // Gibbering Masses: the Summoner's Gibbering Mass
+            // (`pulp_wars-mch9.37`).
+            node.id === "METALLURGY" ? [{ kind: "SUMMON_MASS" }] : [],
           ),
       );
     }
@@ -580,9 +587,10 @@ describe("the Cult registration: the tree and its names (section 11)", () => {
     // Tentacles: Cultivate Forest and the Summoner's Tentacle; no Caller,
     // no Overrun (`pulp_wars-mch9.31`).
     expect(unlocksOf("CHIVALRY")).toEqual(["CULTIVATE_FOREST", "TENTACLES"]);
-    // Gibbering Masses: the Forge and Arms Industry; no Chosen (the Mass
-    // comes with a later bead).
+    // Gibbering Masses: the Forge and Arms Industry; no Chosen; the
+    // Summoner's Gibbering Mass (`pulp_wars-mch9.37`).
     expect(unlocksOf("METALLURGY")).not.toContain("UNIT:SWORDSMAN");
+    expect(unlocksOf("METALLURGY")).toContain("SUMMON_MASS");
     for (const node of CULT_BASELINE_V1_TREE.nodes)
       for (const role of CULT_VACANT_ROLES_V7)
         expect(node.unlockedRoles, node.id).not.toContain(role);
@@ -645,11 +653,21 @@ describe("the Cult registration: the tree and its names (section 11)", () => {
       switcheroo: true,
       // Tentacles (`pulp_wars-mch9.31`).
       tentacles: true,
+      // Gibbering Masses (`pulp_wars-mch9.37`).
+      summonMass: true,
       trainableRoles: human.trainableRoles.filter(
         (role) => !CULT_VACANT_ROLES_V7.includes(role),
       ),
     });
     expect(human.tentacles).toBe(false);
+    expect(human.summonMass).toBe(false);
+    // Only Metallurgy (shown as Gibbering Masses) grants the Mass.
+    expect(
+      technologyCapabilitiesV7(
+        all.filter((tech) => tech !== "METALLURGY"),
+        "CULT",
+      ).summonMass,
+    ).toBe(false);
     // The vacant slots are trained by nothing (`pulp_wars-mch9.31`).
     expect(cult.trainableRoles).toEqual(
       UNIT_ROLE_IDS_V7.filter(

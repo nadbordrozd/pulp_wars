@@ -5,7 +5,7 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r90" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r91" as const;
 /**
  * Every earlier Ruleset 7 identity, oldest first. Readers report these as
  * incompatible (never invalid). An identity bump must append the outgoing
@@ -101,8 +101,9 @@ export const PRIOR_RULESET_7_IDS = Object.freeze([
   "pulp-wars-poc-7r87",
   "pulp-wars-poc-7r88",
   "pulp-wars-poc-7r89",
+  "pulp-wars-poc-7r90",
 ] as const);
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r90.current" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r91.current" as const;
 /**
  * The map generator a setup names (docs/product/RULESET_7_MAP_SCALE.md
  * section 8.8): `V4` is the many-seats generator of `pulp_wars-ykw.3`
@@ -259,15 +260,23 @@ export const SUMMONED_ROLE_IDS_V7 = Object.freeze([
   // The Cult redesign (`pulp_wars-mch9.36`, RULESET_7_CULT_REDESIGN.md
   // section 7.3): the Imp, a Summoner's cheap summon (Brood, Swarm).
   "IMP",
+  // The Cult redesign (`pulp_wars-mch9.37`, section 7.4): the Gibbering
+  // Mass, the Cult's defender (Doorstep, Drag).
+  "MASS",
 ] as const);
 export type SummonedRoleIdV7 = (typeof SUMMONED_ROLE_IDS_V7)[number];
 /**
  * The Cult redesign (`pulp_wars-mch9.36`, RULESET_7_CULT_REDESIGN.md
  * section 7.1): the daemons a `SUMMON` may name, in the frozen order (the
- * order the command list offers them in): the Imp (no helper) and the
- * Horror (a helper). The Herald comes by the Great Summoning.
+ * order the command list offers them in): the Imp (no helper), the Horror
+ * (a helper), and (`pulp_wars-mch9.37`, section 7.4) the Gibbering Mass (a
+ * helper, with Gibbering Masses). The Herald comes by the Great Summoning.
  */
-export const SUMMON_DAEMONS_V7 = Object.freeze(["IMP", "HORROR"] as const);
+export const SUMMON_DAEMONS_V7 = Object.freeze([
+  "IMP",
+  "HORROR",
+  "MASS",
+] as const);
 export type SummonDaemonV7 = (typeof SUMMON_DAEMONS_V7)[number];
 /**
  * The Cultists (`pulp_wars-mch9.7`, docs/product/RULESET_7_CULTISTS.md
@@ -956,6 +965,8 @@ export const NEUTRAL_BREEDS_V7 = Object.freeze([
   "TENTACLE",
   // The Cult redesign (`pulp_wars-mch9.36`): an Unbound Imp.
   "IMP",
+  // The Cult redesign (`pulp_wars-mch9.37`): an Unbound Gibbering Mass.
+  "MASS",
 ] as const);
 export type NeutralBreedV7 = (typeof NEUTRAL_BREEDS_V7)[number];
 
@@ -969,12 +980,19 @@ export const DAEMON_BREEDS_V7 = Object.freeze([
   "HERALD",
   // The Cult redesign (`pulp_wars-mch9.36`): the Imp.
   "IMP",
+  // The Cult redesign (`pulp_wars-mch9.37`): the Gibbering Mass.
+  "MASS",
 ] as const);
 export type DaemonBreedV7 = (typeof DAEMON_BREEDS_V7)[number];
 
 /** Whether `breed` is the breed of an Unbound daemon (section 6.4). */
 export function isDaemonBreedV7(breed: NeutralBreedV7): breed is DaemonBreedV7 {
-  return breed === "HORROR" || breed === "HERALD" || breed === "IMP";
+  return (
+    breed === "HORROR" ||
+    breed === "HERALD" ||
+    breed === "IMP" ||
+    breed === "MASS"
+  );
 }
 
 /**

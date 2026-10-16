@@ -546,8 +546,9 @@ describe("the Cultists' batches (pulp_wars-mch9.15)", () => {
       (record) => record.status === "ACCEPTED",
     );
     expect(accepted).toHaveLength(SAMPLE.length + BATCHES.length);
-    // (The Cult redesign's Imp, batch `summons-cult`, is registered in that
-    // batch's own manifest: chibi-cult-summons-assets.test.ts.)
+    // (The Cult redesign's Imp and Gibbering Mass, batch `summons-cult`, are
+    // registered in that batch's own manifest:
+    // chibi-cult-summons-assets.test.ts.)
     expect(
       CHIBI_DIRECTION_CULT_ART_ASSETS_V7.map((asset) => asset.id).sort(),
     ).toEqual(accepted.map((record) => record.id).sort());

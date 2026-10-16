@@ -128,7 +128,9 @@ describe("Unbound: the daemon on the board", () => {
           ? "KNIGHT"
           : breed === "IMP"
             ? "RAIDER"
-            : "JUGGERNAUT",
+            : breed === "MASS"
+              ? "GUARD"
+              : "JUGGERNAUT",
       );
       expect(art.unit).toBe(cultSummonedArtSubjectV7(breed, true));
       expect(art.portrait).toBe(art.unit);
@@ -139,7 +141,9 @@ describe("Unbound: the daemon on the board", () => {
           ? "Unbound Horror"
           : breed === "IMP"
             ? "Unbound Imp"
-            : "Unbound Herald",
+            : breed === "MASS"
+              ? "Unbound Gibbering Mass"
+              : "Unbound Herald",
       );
     }
     // The breed is read off the unit, also without its registry entry.

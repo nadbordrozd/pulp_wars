@@ -331,6 +331,7 @@ import {
   unitIsFrogV7,
 } from "./cult-hexes";
 import { impSwarmsV7 } from "./cult-imp";
+import { draggingMassV7 } from "./cult-mass";
 import {
   awestruckBearersV7,
   awestruckRefusingAttackV7,
@@ -1580,38 +1581,55 @@ function appendPublicCultCommandsV7(
   // own cultists are in the view, and every unit beside an own unit is
   // visible.
   // The Cult redesign (`pulp_wars-mch9.36`, section 7.1): an Imp on each
-  // tile with no helper, and a Horror on each tile with each helper.
+  // tile with no helper, and a Horror on each tile with each helper;
+  // (`pulp_wars-mch9.37`) a Gibbering Mass too with Gibbering Masses,
+  // through the Summoner's own tree (`summonMass`).
   if (abilities.includes("SUMMON")) {
     const favour = favourOfV7(view, view.viewer.id);
     const facts = publicGiantTileFactsV7(view);
     const tiles = ringTilesV7(view.board.width, view.board.height, unit.at);
+    const summonMass = unitCapabilitiesV7(
+      view,
+      unit,
+      view.viewer.researchedTechs,
+    ).summonMass;
     for (const at of tiles)
       if (
-        summonRejectionV7(view, facts, favour, unit, "IMP", undefined, at) ===
-        null
+        summonRejectionV7(
+          view,
+          facts,
+          favour,
+          unit,
+          "IMP",
+          undefined,
+          at,
+          summonMass,
+        ) === null
       )
         candidates.push({ kind: "SUMMON", unitId: unit.id, daemon: "IMP", at });
     for (const helper of view.units)
       if (summonHelperLegalV7(view, unit, helper))
-        for (const at of tiles)
-          if (
-            summonRejectionV7(
-              view,
-              facts,
-              favour,
-              unit,
-              "HORROR",
-              helper,
-              at,
-            ) === null
-          )
-            candidates.push({
-              kind: "SUMMON",
-              unitId: unit.id,
-              daemon: "HORROR",
-              helperUnitId: helper.id,
-              at,
-            });
+        for (const daemon of ["HORROR", "MASS"] as const)
+          for (const at of tiles)
+            if (
+              summonRejectionV7(
+                view,
+                facts,
+                favour,
+                unit,
+                daemon,
+                helper,
+                at,
+                summonMass,
+              ) === null
+            )
+              candidates.push({
+                kind: "SUMMON",
+                unitId: unit.id,
+                daemon,
+                helperUnitId: helper.id,
+                at,
+              });
   }
   // Section 6.5: an Unbound daemon the viewer sees is a target too ("Bind
   // again"), unless it is Furious.
@@ -4690,6 +4708,39 @@ function publicRampageBoardV7(
 }
 
 /**
+ * The Cult redesign: whether the public channel entry of the bound daemon
+ * `unitId` says it is held at the check without strands of its own: an Imp
+ * a neighbour's Brood holds (`broodOf`, `pulp_wars-mch9.36`) or a
+ * Gibbering Mass on its Doorstep (`doorstep`, `pulp_wars-mch9.37`). Such a
+ * daemon is not short of its Control.
+ */
+export function publicDaemonHeldV7(
+  view: Pick<PlayerViewV7, "cult">,
+  unitId: UnitId,
+): boolean {
+  const entry = view.cult.daemons.find((daemon) => daemon.unitId === unitId);
+  return entry?.broodOf !== undefined || entry?.doorstep === true;
+}
+
+/**
+ * The Cult redesign (`pulp_wars-mch9.37`, section 7.4), Drag: the visible
+ * Gibbering Mass that drags the visible unit `unitId` as the board stands
+ * (a Move the unit begins now covers one tile), or null. Every unit beside
+ * an own unit is visible, so it is exact for the viewer's own units.
+ */
+export function publicDraggingMassV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+): UnitId | null {
+  const unit = view.units.find(
+    (candidate) => candidate.id === unitId && candidate.hp > 0,
+  );
+  return unit === undefined
+    ? null
+    : (draggingMassV7(view, view.units, unit)?.id ?? null);
+}
+
+/**
  * Section 6.4: the preview of the visible daemon `unitId` (bound or
  * Unbound), or null for any other unit.
  */
@@ -4701,7 +4752,10 @@ export function previewRampageV7(
   const role = daemon === undefined ? null : daemonRoleV7(daemon);
   if (
     daemon === undefined ||
-    (role !== "HORROR" && role !== "HERALD" && role !== "IMP")
+    (role !== "HORROR" &&
+      role !== "HERALD" &&
+      role !== "IMP" &&
+      role !== "MASS")
   )
     return null;
   const unbound = unitIsUnboundV7(daemon);
@@ -4734,12 +4788,12 @@ export function previewRampageV7(
     control,
     strands,
     // Brood (`pulp_wars-mch9.36`): an Imp a neighbour's strand holds is
-    // not short (the public channel entry names its lender).
+    // not short (the public channel entry names its lender); nor is a
+    // Gibbering Mass on its Doorstep (`pulp_wars-mch9.37`).
     short:
       !unbound &&
       strands < control &&
-      view.cult.daemons.find((entry) => entry.unitId === unitId)?.broodOf ===
-        undefined,
+      publicDaemonHeldV7(view, unitId) === false,
     targetUnitId: plan.target?.id ?? null,
     step: plan.step,
     path: plan.path,

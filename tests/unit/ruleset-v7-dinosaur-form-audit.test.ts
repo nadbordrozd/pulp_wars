@@ -624,6 +624,11 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // boat are immune), and a Tentacle slaps every form by design. (Pick
     // Me!'s test retired with the Chosen, `pulp_wars-mch9.31`.)
     "src/engine/v7/cult-hexes.ts": 3,
+    // The Cult redesign (`pulp_wars-mch9.37`): the Gibbering Mass's
+    // Doorstep holds only a land-form Mass, and its Drag stops only a
+    // land-form mover (an embarked unit, an Egg, and a boat are not
+    // dragged).
+    "src/engine/v7/cult-mass.ts": 2,
     // Ice Folk Freeze (`pulp_wars-w49.37`): the Frost Giant's Cold Aura
     // freezes only when the Giant ends its Move in land form (an embarked
     // Giant, an Egg, and a boat freeze nothing), and a Stampede needs the

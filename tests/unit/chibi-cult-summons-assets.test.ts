@@ -356,7 +356,7 @@ describe("the Cult redesign's summons art (pulp_wars-mch9.45)", () => {
     expect(box(await unit("chibi-direction-cult-mass-unbound"))).toEqual(mass);
   });
 
-  it("registers the Imp (pulp_wars-mch9.36) and the Hunger bowl (pulp_wars-mch9.42) in one manifest on their records' canvases, and nothing else yet", async () => {
+  it("registers the Imp (pulp_wars-mch9.36), the Hunger bowl (pulp_wars-mch9.42) and the Gibbering Mass (pulp_wars-mch9.37) in one manifest on their records' canvases, and nothing else yet", async () => {
     const records = await loadRecords(productionLayout(ROOT, BATCH), BATCH);
     expect(
       CHIBI_DIRECTION_CULT_SUMMONS_ART_ASSETS_V7.map((asset) => asset.id),
@@ -365,6 +365,10 @@ describe("the Cult redesign's summons art (pulp_wars-mch9.45)", () => {
       "chibi-direction-cult-imp-unbound",
       "chibi-direction-portrait-cult-imp",
       "chibi-direction-icon-cult-hunger",
+      // The Gibbering Mass (engine bead pulp_wars-mch9.37).
+      "chibi-direction-cult-mass",
+      "chibi-direction-cult-mass-unbound",
+      "chibi-direction-portrait-cult-mass",
     ]);
     for (const asset of CHIBI_DIRECTION_CULT_SUMMONS_ART_ASSETS_V7) {
       const record = records.assets[asset.id];
@@ -389,13 +393,18 @@ describe("the Cult redesign's summons art (pulp_wars-mch9.45)", () => {
       "UNIT:CULT:IMP",
       "UNIT:CULT:IMP_UNBOUND",
       "PORTRAIT:CULT:IMP",
+      "UNIT:CULT:MASS",
+      "UNIT:CULT:MASS_UNBOUND",
+      "PORTRAIT:CULT:MASS",
     ] as const)
       expect(registry.variants(subject).map((asset) => asset.id)).toEqual([
         CHIBI_DIRECTION_CULT_SUMMONS_ART_ASSETS_V7.find(
           (asset) => asset.subject === subject,
         )?.id,
       ]);
-    // The Mass waits for its bead.
-    expect(registry.variants("UNIT:CULT:MASS" as ArtSubjectV7)).toEqual([]);
+    // The summon chooser's icons wait for their bead (U-R3).
+    expect(
+      registry.variants("ICON:ACTION:SUMMON_MASS" as ArtSubjectV7),
+    ).toEqual([]);
   });
 });

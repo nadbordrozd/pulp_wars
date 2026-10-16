@@ -5,6 +5,7 @@ import {
   HERALD_HUNGER_FAVOUR_V7,
   HORROR_FAVOUR_COST_V7,
   IMP_FAVOUR_COST_V7,
+  MASS_FAVOUR_COST_V7,
   SUMMONER_TRICKLE_FAVOUR_V7,
   anchorRejectionV7,
   booRejectionV7,
@@ -73,6 +74,9 @@ export const SUMMON_TOOLTIP_V7 = `The Summoner and a cultist beside it summon a 
 /** The Cult redesign (`pulp_wars-mch9.36`, section 7.1): the Imp's. */
 export const SUMMON_IMP_LABEL_V7 = "Summon Imp";
 export const SUMMON_IMP_TOOLTIP_V7 = `The Summoner alone summons an Imp for ${IMP_FAVOUR_COST_V7} Favour and channels it this turn`;
+/** The Cult redesign (`pulp_wars-mch9.37`, section 7.4): the Mass's. */
+export const SUMMON_MASS_LABEL_V7 = "Summon Gibbering Mass";
+export const SUMMON_MASS_TOOLTIP_V7 = `The Summoner and a cultist beside it summon a Gibbering Mass for ${MASS_FAVOUR_COST_V7} Favour. Beside your city or a raised idol it needs no strand`;
 /** Section 6.2, the card text. */
 export const CHANNEL_TOOLTIP_V7 =
   "A cultist channels a daemon within 3 tiles. At the start of your turn each daemon needs as many unbroken strands as its Control, or it is Unbound";
@@ -98,6 +102,7 @@ export const FAVOUR_PURPOSE_LABELS_V7: Readonly<
 > = {
   SUMMON_HORROR: "summoning a Horror",
   SUMMON_IMP: "summoning an Imp",
+  SUMMON_MASS: "summoning a Gibbering Mass",
   GREAT_SUMMONING: "the Great Summoning",
   HUNGER: "the Herald's Hunger",
 };
@@ -145,14 +150,15 @@ export function cultChannelCommandPresentationV7(
         command.helperUnitId ?? null,
         command.at,
       );
-      const imp = command.daemon === "IMP";
+      const [label, tooltip] =
+        command.daemon === "IMP"
+          ? [SUMMON_IMP_LABEL_V7, SUMMON_IMP_TOOLTIP_V7]
+          : command.daemon === "MASS"
+            ? [SUMMON_MASS_LABEL_V7, SUMMON_MASS_TOOLTIP_V7]
+            : [SUMMON_LABEL_V7, SUMMON_TOOLTIP_V7];
       return preview === null
         ? null
-        : {
-            label: imp ? SUMMON_IMP_LABEL_V7 : SUMMON_LABEL_V7,
-            chip: favourCostTextV7(preview.favour),
-            tooltip: imp ? SUMMON_IMP_TOOLTIP_V7 : SUMMON_TOOLTIP_V7,
-          };
+        : { label, chip: favourCostTextV7(preview.favour), tooltip };
     }
     case "CHANNEL": {
       const preview = previewChannelV7(
@@ -309,11 +315,13 @@ export interface ShortDaemonV7 {
 export function daemonsShortV7(view: PlayerViewV7): readonly ShortDaemonV7[] {
   return channelOfV7(view).daemons.flatMap((daemon): ShortDaemonV7[] => {
     const unit = view.units.find((candidate) => candidate.id === daemon.unitId);
-    // An Imp a neighbour's Brood holds is not short (`pulp_wars-mch9.36`).
+    // An Imp a neighbour's Brood holds is not short (`pulp_wars-mch9.36`),
+    // nor a Gibbering Mass on its Doorstep (`pulp_wars-mch9.37`).
     return unit === undefined ||
       unit.ownerId !== view.viewer.id ||
       daemon.strands >= daemon.control ||
-      daemon.broodOf !== undefined
+      daemon.broodOf !== undefined ||
+      daemon.doorstep === true
       ? []
       : [
           {
@@ -554,6 +562,8 @@ export function cultChannelUnavailableTextV7(
         "HORROR",
         helper,
         unit.at,
+        // A Horror needs no technology beyond the Summoner's.
+        false,
       );
       if (rejection === null || rejection.code === "UNIT_ROLE_INVALID")
         return null;
@@ -695,13 +705,15 @@ export function cultChannelChipsV7(
   const daemon = channel.daemons.find((entry) => entry.unitId === unit.id);
   const unbound = unitIsUnboundV7(unit);
   if (daemon !== undefined && !unbound) {
-    // Brood (`pulp_wars-mch9.36`): an Imp held through a neighbour.
+    // Brood (`pulp_wars-mch9.36`): an Imp held through a neighbour; and
+    // (`pulp_wars-mch9.37`) a Gibbering Mass on its Doorstep.
     const brood = daemon.broodOf !== undefined;
-    const short = daemon.strands < daemon.control && !brood;
+    const doorstep = daemon.doorstep === true;
+    const short = daemon.strands < daemon.control && !brood && !doorstep;
     chips.push({
       id: "control",
       label: strandsTextV7(daemon.strands, daemon.control),
-      status: `${daemon.strands} of the ${daemon.control} ${daemon.control === 1 ? "strand" : "strands"} it needs. ${short ? "It will be Unbound at the start of its owner's turn" : brood ? "The Imp beside it holds it (Brood): it stays bound" : "It stays bound"}`,
+      status: `${daemon.strands} of the ${daemon.control} ${daemon.control === 1 ? "strand" : "strands"} it needs. ${short ? "It will be Unbound at the start of its owner's turn" : brood ? "The Imp beside it holds it (Brood): it stays bound" : doorstep && daemon.strands < daemon.control ? "On its doorstep it needs no strand: it stays bound" : "It stays bound"}`,
       icon: "ICON:ACTION:CHANNEL",
       ...(short ? { short: true as const } : {}),
     });

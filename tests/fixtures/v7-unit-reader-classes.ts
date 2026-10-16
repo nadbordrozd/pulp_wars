@@ -990,6 +990,11 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     // interface's channel reads the standing idols of the view.
     "src/engine/v7/query.ts::previewWardenV7": "BOARD",
     "src/engine/v7/query.ts::publicAwestruckBearersV7": "BOARD",
+    // The Cult redesign's Gibbering Mass (`pulp_wars-mch9.37`): Drag reads
+    // the Masses beside a unit that begins a Move (a burrowed unit begins
+    // no Move, and no Mass burrows), for the harness's line (the public
+    // movement rules read them from their context's units by position).
+    "src/engine/v7/query.ts::publicDraggingMassV7": "BOARD",
     "src/engine/v7/query.ts::appendOfferedUnitCommandsV7": "BOARD",
     "src/render/cult-channel-presentation-v7.ts::channelOfV7": "BOARD",
     "src/engine/v7/query.ts::previewBooV7": "BOARD",

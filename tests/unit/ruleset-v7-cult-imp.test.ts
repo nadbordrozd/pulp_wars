@@ -131,14 +131,19 @@ const SUMMONER = at(5, 2);
 
 describe("the Imp: the identity (7r90)", () => {
   // The Imp (`pulp_wars-mch9.36`) took 7r90 after the Favour economy and
-  // the warden of `pulp_wars-mch9.32` and `pulp_wars-mch9.33` (7r89).
-  it("is 7r90 after 7r89, its save key obsolete, a 7r89 state refused", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r90");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r90.current");
-    expect(PRIOR_RULESET_7_IDS.at(-1)).toBe("pulp-wars-poc-7r89");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
+  // the warden of `pulp_wars-mch9.32` and `pulp_wars-mch9.33` (7r89); the
+  // Gibbering Mass (`pulp_wars-mch9.37`) took 7r91 after it.
+  it("was 7r90 after 7r89, both save keys obsolete now, a 7r89 state refused", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r91");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r91.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-2)).toEqual([
+      "pulp-wars-poc-7r89",
+      "pulp-wars-poc-7r90",
+    ]);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-2)).toEqual([
       "pulpWars.save.v7r89.current",
-    );
+      "pulpWars.save.v7r90.current",
+    ]);
     const state = cultFieldV7([]);
     expect(
       parseGameStateV7({ ...state, rulesetId: "pulp-wars-poc-7r89" }),
@@ -169,7 +174,8 @@ describe("the Imp: its registration (sections 4.1 and 7.3)", () => {
       brood: IMP_BROOD_SIZE_V7,
       swarm: IMP_SWARM_MINIMUM_V7,
     }).toEqual({ cost: 2, control: 1, brood: 2, swarm: 2 });
-    expect(SUMMON_DAEMONS_V7).toEqual(["IMP", "HORROR"]);
+    // (The Gibbering Mass follows: `pulp_wars-mch9.37`.)
+    expect(SUMMON_DAEMONS_V7).toEqual(["IMP", "HORROR", "MASS"]);
     expect(BOARD_SUMMONED_ROLE_IDS_V7).toContain("IMP");
     // Its mechanical role is a Raider's, a role no rule of it reads.
     expect(SUMMONED_MECHANICAL_ROLES_V7.IMP).toBe("RAIDER");

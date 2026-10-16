@@ -272,6 +272,7 @@ import {
   previewBeginRitualV7,
   previewWardenV7,
   publicAwestruckBearersV7,
+  publicDraggingMassV7,
   previewBooV7,
   previewChannelV7,
   previewJoinChantV7,
@@ -1086,9 +1087,12 @@ export function textPlayCommandIdV7(command: CommandV7): string {
     // The channel (`pulp_wars-mch9.5`).
     // The Cult redesign (`pulp_wars-mch9.36`): an Imp has no helper.
     case "SUMMON":
+      // `pulp_wars-mch9.37`: a Gibbering Mass has a helper, as a Horror.
       return command.daemon === "IMP" || command.helperUnitId === undefined
         ? `u${command.unitId}.imp.${xyV7(command.at)}`
-        : `u${command.unitId}.summon.u${command.helperUnitId}.${xyV7(command.at)}`;
+        : command.daemon === "MASS"
+          ? `u${command.unitId}.mass.u${command.helperUnitId}.${xyV7(command.at)}`
+          : `u${command.unitId}.summon.u${command.helperUnitId}.${xyV7(command.at)}`;
     case "CHANNEL":
       return `u${command.unitId}.channel.u${command.daemonUnitId}`;
     case "ANCHOR":
@@ -2068,6 +2072,9 @@ function describeCommandV7(
       // Summoner's alone.
       if (command.helperUnitId === undefined)
         return `SUMMON an Imp at ${xyV7(command.at)} alone${preview === null ? "" : `: hp ${preview.hp}, it cannot act this turn | -${preview.favour} Favour (favour ${preview.favourAfter + preview.favour}->${preview.favourAfter}) | the Summoner channels it: strands ${preview.strands}/${preview.control}; Brood: its strand also holds up to 2 own Imps beside it; Swarm: a unit beside 2 of your Imps cannot strike back at them; it never captures`} | uses the Summoner's action`;
+      // `pulp_wars-mch9.37` (section 7.4): the Gibbering Mass.
+      if (command.daemon === "MASS")
+        return `SUMMON a Gibbering Mass at ${xyV7(command.at)} with ${context.memory.tag(command.helperUnitId)}${preview === null ? "" : `: hp ${preview.hp}, it cannot act this turn | -${preview.favour} Favour (favour ${preview.favourAfter + preview.favour}->${preview.favourAfter}) | both channel it: strands ${preview.strands}/${preview.control}; Doorstep: on or beside your city, or beside your standing idol, it needs no strand; Drag: an enemy that begins a Move beside it moves one tile; it never advances or captures, and nothing moves it`} | uses both units' actions`;
       return `SUMMON a Horror at ${xyV7(command.at)} with ${context.memory.tag(command.helperUnitId)}${preview === null ? "" : `: hp ${preview.hp}, it cannot act this turn | -${preview.favour} Favour (favour ${preview.favourAfter + preview.favour}->${preview.favourAfter}) | both channel it: strands ${preview.strands}/${preview.control}`} | uses both units' actions`;
     }
     case "CHANNEL": {
@@ -3567,7 +3574,7 @@ const NINTH_UNIT_LEGEND_V7: Readonly<Partial<Record<FactionIdV7, string>>> = {
   CANDY: "  Candy heavy: Jb jawbreaker",
   // The Cultists (`pulp_wars-mch9.5`): the summoned Horror;
   // (`pulp_wars-mch9.7`) the Herald; and (`pulp_wars-mch9.8`) the Tentacle.
-  CULT: "  Cult summoned: Im imp Ho horror He herald (a daemon: its line shows strands/Control) Te tentacle (wild: seat N)",
+  CULT: "  Cult summoned: Im imp Ho horror Gm gibbering mass He herald (a daemon: its line shows strands/Control) Te tentacle (wild: seat N)",
 };
 function roleCodeV7(view: PlayerViewV7, unit: PublicUnitV7): string {
   // The Cultists (`pulp_wars-mch9.5`): a summoned unit has its own code.
@@ -3576,6 +3583,8 @@ function roleCodeV7(view: PlayerViewV7, unit: PublicUnitV7): string {
   if (unit.summoned === "TENTACLE") return "Te";
   // The Cult redesign (`pulp_wars-mch9.36`): the Imp.
   if (unit.summoned === "IMP") return "Im";
+  // The Cult redesign (`pulp_wars-mch9.37`): the Gibbering Mass.
+  if (unit.summoned === "MASS") return "Gm";
   const faction = unitFactionV7(view, unit);
   return (
     (faction === "MARTIAN"
@@ -3743,7 +3752,7 @@ function unitStatusV7(view: PlayerViewV7, unit: PublicUnitV7): string {
       : view.cult.daemons.filter((entry) => entry.broodOf === daemon.unitId);
   if (daemon !== undefined)
     parts.push(
-      `daemon: strands ${daemon.strands}/${daemon.control}${daemon.broodOf !== undefined ? ` (held by the Brood of u${daemon.broodOf})` : daemon.strands < daemon.control ? ` (UNBOUND at its turn start; it would go for ${prey})` : ""}${broodHeld.length > 0 ? ` | Brood: its strand holds ${broodHeld.map((entry) => `u${entry.unitId}`).join(" ")}` : ""}`,
+      `daemon: strands ${daemon.strands}/${daemon.control}${daemon.broodOf !== undefined ? ` (held by the Brood of u${daemon.broodOf})` : daemon.doorstep === true ? " (DOORSTEP: needs no strand here)" : daemon.strands < daemon.control ? ` (UNBOUND at its turn start; it would go for ${prey})` : ""}${broodHeld.length > 0 ? ` | Brood: its strand holds ${broodHeld.map((entry) => `u${entry.unitId}`).join(" ")}` : ""}`,
     );
   if (rampage?.unbound === true)
     parts.push(
@@ -3779,6 +3788,10 @@ function unitStatusV7(view: PlayerViewV7, unit: PublicUnitV7): string {
     parts.push(
       `AWESTRUCK by ${awestruck.map((bearerId) => `u${bearerId}`).join(", ")}: attacks only an Idol Bearer beside it`,
     );
+  // The Cult redesign (`pulp_wars-mch9.37`): Drag, beside a hostile Mass.
+  const dragger = publicDraggingMassV7(view, unit.id);
+  if (dragger !== null)
+    parts.push(`DRAGGED by u${dragger}: a Move it begins here covers one tile`);
   // Rituals (`pulp_wars-mch9.7`): a participant's place in its circle, and
   // a Herald's attacks (Ravage: two a turn; a Proclaim takes one).
   for (const ritual of view.cult.rituals) {

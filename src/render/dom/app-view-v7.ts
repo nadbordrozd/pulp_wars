@@ -782,6 +782,7 @@ import {
   SEIZE_PICK_V7,
   SEIZE_TOOLTIP_V7,
   SUMMONER_SUPPORT_UNLOCK_TEXT_V7,
+  SUMMON_MASS_UNLOCK_TEXT_V7,
   SWITCHEROO_UNLOCK_TEXT_V7,
   TENTACLES_UNLOCK_TEXT_V7,
   cultBoundaryNoticeV7,
@@ -15885,7 +15886,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
     return null;
   return {
-    rulesetId: "pulp-wars-poc-7r90",
+    rulesetId: "pulp-wars-poc-7r91",
     seed,
     width: effectiveBoardSize(draft),
     height: effectiveBoardSize(draft),
@@ -16155,6 +16156,8 @@ function effectDescription(
       return SWITCHEROO_UNLOCK_TEXT_V7;
     case "TENTACLES":
       return TENTACLES_UNLOCK_TEXT_V7;
+    case "SUMMON_MASS":
+      return SUMMON_MASS_UNLOCK_TEXT_V7;
     case "OVERRUN":
       // Bead pulp_wars-2yc.63: Overrun in every faction (it was the Goblin
       // Ram and the Dinosaur Rampage).
@@ -16316,6 +16319,7 @@ function technologyEffectGroupIdV7(
     case "GREAT_SUMMONING":
     case "SWITCHEROO":
     case "TENTACLES":
+    case "SUMMON_MASS":
       return "ACTIONS";
     case "COMMAND":
       return effect.command.startsWith("BUILD_") &&

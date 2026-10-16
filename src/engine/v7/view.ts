@@ -35,6 +35,7 @@ import {
   holdingStrandsV7,
   impBroodV7,
 } from "./cult-channel";
+import { massOnDoorstepV7 } from "./cult-mass";
 import {
   missionStatusV7,
   type PublicMissionStatusV7,
@@ -234,7 +235,10 @@ export interface PublicStrandV7 {
  * The Cult redesign (`pulp_wars-mch9.36`, section 7.3): `broodOf`, only on
  * an Imp short of its Control by its own strands that a neighbour's Brood
  * holds as the board stands, names that neighbour (the Imp whose strand
- * holds it; public, like the strands).
+ * holds it; public, like the strands). `pulp_wars-mch9.37` (section 7.4):
+ * `doorstep`, only on a Gibbering Mass on its Doorstep as the board stands
+ * (on or beside an own city center, or beside an own standing idol): it
+ * needs no strand at the check (the Control preview's `DOORSTEP`).
  */
 export interface PublicDaemonV7 {
   readonly unitId: UnitId;
@@ -242,6 +246,7 @@ export interface PublicDaemonV7 {
   readonly control: number;
   readonly strands: number;
   readonly broodOf?: UnitId;
+  readonly doorstep?: true;
 }
 
 /**
@@ -1364,6 +1369,10 @@ export function viewForV7(
         // The Cult redesign (`pulp_wars-mch9.36`): an Imp a Brood holds.
         const broodOf =
           role === "IMP" ? broodOfSeat(unit.ownerId).get(unit.id) : undefined;
+        // `pulp_wars-mch9.37`: a Gibbering Mass on its Doorstep.
+        const doorstep =
+          role === "MASS" &&
+          massOnDoorstepV7(state, state.cities, state.units, unit);
         return [
           {
             unitId: unit.id,
@@ -1371,6 +1380,7 @@ export function viewForV7(
             control: daemonControlV7(unit),
             strands: holdingStrandsV7(state, state.units, unit),
             ...(broodOf === undefined ? {} : { broodOf }),
+            ...(doorstep ? { doorstep: true as const } : {}),
           },
         ];
       }),

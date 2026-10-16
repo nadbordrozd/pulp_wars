@@ -342,7 +342,12 @@ export function provokeMoveWarningV7(
   const breeds = new Set(provokedAt(view, end).map((preview) => preview.breed));
   if (breeds.has("GIANT_SPIDER")) return PROVOKE_MOVE_WARNING_V7;
   if (breeds.has("ZOMBIE")) return GRAVEYARD_PROVOKE_WARNING_V7;
-  if (breeds.has("HORROR") || breeds.has("HERALD") || breeds.has("IMP"))
+  if (
+    breeds.has("HORROR") ||
+    breeds.has("HERALD") ||
+    breeds.has("IMP") ||
+    breeds.has("MASS")
+  )
     return DAEMON_PROVOKE_WARNING_V7;
   return breeds.size > 0 ? SAUCER_PROVOKE_WARNING_V7 : null;
 }

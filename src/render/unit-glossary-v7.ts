@@ -167,7 +167,7 @@ const ENTRIES = {
   // The Cult redesign (`pulp_wars-mch9.36`, section 7): the Imp alone.
   SUMMON: [
     "Summon",
-    "Calls a daemon next to it for Favour and channels it this turn: an Imp alone, or a Horror with a robed cultist beside it.",
+    "Calls a daemon next to it for Favour and channels it this turn: an Imp alone, or a Horror or a Gibbering Mass with a robed cultist beside it.",
   ],
   // The Imp (the Cult redesign, `pulp_wars-mch9.36`, section 7.3).
   BROOD: [
@@ -181,6 +181,20 @@ const ENTRIES = {
   NEVER_CAPTURES: [
     "Never captures",
     "It cannot take a village or a city. Standing on an enemy city, it still lays siege.",
+  ],
+  // The Gibbering Mass (the Cult redesign, `pulp_wars-mch9.37`, section
+  // 7.4).
+  DOORSTEP: [
+    "Doorstep",
+    "On or beside your city, or beside your Idol Bearer while its idol is raised, it needs no strand to stay yours.",
+  ],
+  DRAG: [
+    "Drag",
+    "An enemy that starts its move beside it can move only one tile.",
+  ],
+  HOLDS_GROUND: [
+    "Holds its ground",
+    "It never steps forward after a kill, and nothing pushes, pulls or swaps it.",
   ],
   // The Favour economy of the Cult redesign (`pulp_wars-mch9.32`,
   // docs/product/RULESET_7_CULT_REDESIGN.md sections 6 and 7.6).
@@ -1066,6 +1080,9 @@ export function summonedGlossaryV7(
   if (summoned === "HERALD") ids.push("HUNGER");
   // The Imp (`pulp_wars-mch9.36`): it never captures.
   if (summoned === "IMP") ids.push("NEVER_CAPTURES");
+  // The Gibbering Mass (`pulp_wars-mch9.37`): it holds its ground and
+  // never captures.
+  if (summoned === "MASS") ids.push("HOLDS_GROUND", "NEVER_CAPTURES");
   // What happens when its channel fails.
   ids.push("UNBOUND");
   return ids.map(glossaryEntryV7);

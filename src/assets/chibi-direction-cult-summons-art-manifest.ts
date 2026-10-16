@@ -10,10 +10,12 @@ import { chibiArtUrl } from "./chibi-art-manifest";
  *   `pulp_wars-mch9.36`, which put the Imp on the board;
  * - the Hunger bowl (`ICON:HUD:CULT:HUNGER`) with the Favour display of bead
  *   `pulp_wars-mch9.42` (the "Hunger 2" chip of a bound Herald's card and of
- *   the End Turn question).
+ *   the End Turn question);
+ * - the Gibbering Mass's sprite, its Unbound look and its portrait with
+ *   engine bead `pulp_wars-mch9.37`, which put the Mass on the board.
  *
- * The Gibbering Mass, its portrait and the other icons wait for the beads
- * that put them on the board (E-R7, U-R2, U-R3), which add them here.
+ * The other icons wait for the beads that put them on the board (U-R2,
+ * U-R3), which add them here.
  */
 export const CHIBI_DIRECTION_CULT_SUMMONS_ART_ASSETS_V7: readonly ChibiArtAssetV7[] =
   [
@@ -57,5 +59,36 @@ export const CHIBI_DIRECTION_CULT_SUMMONS_ART_ASSETS_V7: readonly ChibiArtAssetV
       url: chibiArtUrl(
         "assets/chibi/icons/chibi-direction-icon-cult-hunger.png",
       ),
+    },
+    {
+      id: "chibi-direction-cult-mass",
+      subject: "UNIT:CULT:MASS",
+      assetClass: "LARGE_UNIT",
+      width: 72,
+      height: 88,
+      url: chibiArtUrl("assets/chibi/units/chibi-direction-cult-mass.png"),
+      fixedColours: true,
+    },
+    {
+      id: "chibi-direction-cult-mass-unbound",
+      subject: "UNIT:CULT:MASS_UNBOUND",
+      assetClass: "LARGE_UNIT",
+      width: 72,
+      height: 88,
+      url: chibiArtUrl(
+        "assets/chibi/units/chibi-direction-cult-mass-unbound.png",
+      ),
+      fixedColours: true,
+    },
+    {
+      id: "chibi-direction-portrait-cult-mass",
+      subject: "PORTRAIT:CULT:MASS",
+      assetClass: "PORTRAIT",
+      width: 48,
+      height: 48,
+      url: chibiArtUrl(
+        "assets/chibi/portraits/chibi-direction-portrait-cult-mass.png",
+      ),
+      fixedColours: true,
     },
   ];

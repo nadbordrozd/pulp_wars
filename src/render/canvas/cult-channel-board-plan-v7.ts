@@ -145,9 +145,10 @@ type SummonCommandV7 = Extract<CommandV7, { kind: "SUMMON" }>;
 
 /**
  * Whether the browser's Summon button and board pick aim `command`: a
- * Horror's summoning. The Cult redesign's Imp (`pulp_wars-mch9.36`) has no
- * browser chooser yet (the summon chooser through the tile icons is bead
- * U-R3, `pulp_wars-mch9.44`); it is summoned through the text harness.
+ * Horror's summoning. The Cult redesign's Imp (`pulp_wars-mch9.36`) and
+ * Gibbering Mass (`pulp_wars-mch9.37`) have no browser chooser yet (the
+ * summon chooser through the tile icons is bead U-R3,
+ * `pulp_wars-mch9.44`); they are summoned through the text harness.
  */
 export function browserSummonCommandV7(
   command: CommandV7,
@@ -209,8 +210,11 @@ export function cultUnitMarkersV7(
   };
   for (const daemon of channel.daemons) {
     // Brood (the Cult redesign, `pulp_wars-mch9.36`, section 13): an Imp
-    // a neighbour's strand holds has its pip lit.
-    const brood = daemon.broodOf !== undefined;
+    // a neighbour's strand holds has its pip lit; so has a Gibbering Mass
+    // on its Doorstep (`pulp_wars-mch9.37`; its house pip is U-R3's).
+    const brood =
+      daemon.broodOf !== undefined ||
+      (daemon.doorstep === true && daemon.strands < daemon.control);
     mark(daemon.unitId, {
       control: {
         control: daemon.control,

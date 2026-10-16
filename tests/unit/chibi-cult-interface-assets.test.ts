@@ -424,8 +424,8 @@ describe("the Cultists' interface art (pulp_wars-mch9.23)", () => {
     expect(accepted).toHaveLength(
       PORTRAITS.length + ICONS.length + EFFECT_ROWS.length,
     );
-    // (The Cult redesign's Imp portrait, batch `summons-cult`, is
-    // registered in that batch's own manifest:
+    // (The Cult redesign's Imp and Gibbering Mass portraits, batch
+    // `summons-cult`, are registered in that batch's own manifest:
     // chibi-cult-summons-assets.test.ts.)
     expect(
       CHIBI_DIRECTION_CULT_INTERFACE_ART_ASSETS_V7.map(

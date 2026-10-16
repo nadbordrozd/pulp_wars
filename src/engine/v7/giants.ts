@@ -239,7 +239,8 @@ export function attackCrushDamageV7(
  * crushed: an Egg, a Rock Hard unit, and an icebound unit. The Cultists
  * (`pulp_wars-mch9.7`, RULESET_7_CULTISTS.md section 4.2): the Herald is
  * the exception: nothing pushes it (Unstoppable), so a Crushing Shove
- * crushes it, as damage.
+ * crushes it, as damage. So is the Gibbering Mass (the Cult redesign,
+ * `pulp_wars-mch9.37`, section 7.4): immovable, it is crushed, not pushed.
  */
 export function defenderCrushableV7(
   lookup: FactionRosterV7 & {
@@ -250,7 +251,9 @@ export function defenderCrushableV7(
 ): boolean {
   return (
     defender.form !== "EGG" &&
-    (!unitIsImmovableV7(lookup, defender) || unitIsUnstoppableV7(defender)) &&
+    (!unitIsImmovableV7(lookup, defender) ||
+      unitIsUnstoppableV7(defender) ||
+      defender.summoned === "MASS") &&
     !unitIsIceboundV7(lookup, defender)
   );
 }

@@ -18,8 +18,9 @@ icons and effects are complete (bead `pulp_wars-mch9.23`), under
 are drawn** (bead `pulp_wars-mch9.45`, ART-R1 of
 [the Cult redesign](../../product/RULESET_7_CULT_REDESIGN.md#14-art)): the
 Imp and the Gibbering Mass with their Unbound looks and portraits, and the
-redesign's nine icons, accepted in batch `summons-cult` and not yet
-registered in the runtime (bead U-R3 does that), under
+redesign's nine icons, accepted in batch `summons-cult`; the two summons'
+sprites, Unbound looks and portraits are registered in the runtime with
+their engine beads (E-R6, E-R7) and the icons wait for U-R2 and U-R3, under
 [The redesign's summons](#the-redesigns-summons).
 
 The art pipeline reads the two `text` blocks under **Prompt fragment** and
@@ -317,7 +318,7 @@ for the selection dock. Their subject keys are the engine's summoned role IDs
 `pulp_wars-mch9.15`. The redesign's two summons take the roles `IMP` and
 `MASS` (beads E-R6 and E-R7); their sprites are accepted in batch
 `summons-cult` (bead `pulp_wars-mch9.45`, [The redesign's
-summons](#the-redesigns-summons)) and registered by bead U-R3.
+summons](#the-redesigns-summons)) and registered by those engine beads.
 
 | Unit           | Subject, asset                                        | Canvas, class            | Silhouette and what it shows                                                                                                                                                                                                                                                                                                                                                              |
 | -------------- | ----------------------------------------------------- | ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -1368,10 +1369,11 @@ Imp and the Gibbering Mass, bound and Unbound, their portraits, and the
 redesign's nine icons, **15 accepted rasters from 43 PixelLab calls** (30
 creations, 13 edits) in the new batch `summons-cult`
 (`scripts/art/chibi/batches/batch-summons-cult.json`; subject lines in
-`subjects/CULT.json`). They are accepted and validated but **not registered
-in the runtime**: the subjects need the engine's `IMP` and `MASS` roles
-(beads E-R6, E-R7), and bead U-R3 adds them to the runtime manifests, the
-unit-shadow measure and the board. No robed cultist was touched (the user
+`subjects/CULT.json`). They were accepted and validated before the
+subjects existed in the engine: the engine's `IMP` and `MASS` roles (beads
+E-R6, E-R7) registered the two summons' sprites, Unbound looks and
+portraits in the runtime manifest and the unit-shadow measure (below), and
+the icons wait for the interface beads. No robed cultist was touched (the user
 holds their refresh for bead `pulp_wars-mch9.29`).
 
 `npm run art:chibi-cult-direction-review` writes the evidence beside the
@@ -1409,7 +1411,12 @@ in colour and greyscale, at native and half size), `summons-portraits-x4.png`,
 Bead `pulp_wars-mch9.42` (U-R1) registered the Hunger bowl
 (`ICON:HUD:CULT:HUNGER`, `src/assets/chibi-direction-cult-summons-art-manifest.ts`):
 it heads the "Hunger 2" chip of a bound Herald's card and of the End Turn
-question. The rest of the batch waits for U-R2 and U-R3.
+question. The engine beads that put the summons on the board registered
+their sprites, Unbound looks and portraits in the same manifest (and the
+unit-shadow measure): the Imp with `pulp_wars-mch9.36` (E-R6), the
+Gibbering Mass with `pulp_wars-mch9.37` (E-R7). The rest of the batch (the
+summon, Brood, Swarm, Doorstep, Drag and join icons) waits for U-R2 and
+U-R3.
 
 **Retired with the redesign** (bead `pulp_wars-mch9.42`, through
 `npm run art:chibi -- retire`): the Caller (`chibi-direction-cult-caller`)

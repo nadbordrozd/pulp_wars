@@ -37,13 +37,15 @@ export type FavourSourceV7 = (typeof FAVOUR_SOURCES_V7)[number];
  * Favour on, in the frozen order: summoning a Horror, (section 7.3,
  * `pulp_wars-mch9.7`) the Great Summoning, and (the Cult redesign,
  * `pulp_wars-mch9.32`, section 7.6) a bound Herald's Hunger at the Start
- * Turn check, and (`pulp_wars-mch9.36`, section 7.1) summoning an Imp.
+ * Turn check, and (`pulp_wars-mch9.36`, section 7.1) summoning an Imp, and
+ * (`pulp_wars-mch9.37`) summoning a Gibbering Mass.
  */
 export const FAVOUR_PURPOSES_V7 = Object.freeze([
   "SUMMON_HORROR",
   "GREAT_SUMMONING",
   "HUNGER",
   "SUMMON_IMP",
+  "SUMMON_MASS",
 ] as const);
 
 /**
@@ -1523,7 +1525,8 @@ export type DomainEventV7 =
        * `role`) on `at`. The seat's `FAVOUR_SPENT` comes first; the
        * `STRAND_FORMED` follow (one for each summoner). The Cult redesign
        * (`pulp_wars-mch9.36`, section 7.1): an Imp's `helperUnitId` is null
-       * (the Summoner alone).
+       * (the Summoner alone); a Gibbering Mass (`pulp_wars-mch9.37`) has
+       * one, as a Horror does.
        */
       readonly kind: "DAEMON_SUMMONED";
       readonly playerId: PlayerId;

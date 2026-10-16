@@ -276,21 +276,21 @@ const MOVER_BY_MOVE: Readonly<Record<1 | 2 | 3, UnitRoleIdV7>> = {
 
 describe("ruleset-7 revision-18 identity", () => {
   it("keeps r17 and r18 among the gap-free prior identities after the r54 identity and cleans their keys", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r90");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r90.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r91");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r91.current");
     expect([...PRIOR_RULESET_7_IDS]).toEqual([
       "pulp-wars-poc-7",
       ...Array.from(
-        { length: 88 },
+        { length: 89 },
         (_, index) => `pulp-wars-poc-7r${index + 2}`,
       ),
     ]);
-    expect(PRIOR_RULESET_7_IDS.at(-73)).toBe("pulp-wars-poc-7r17");
-    expect(PRIOR_RULESET_7_IDS.at(-72)).toBe("pulp-wars-poc-7r18");
+    expect(PRIOR_RULESET_7_IDS.at(-74)).toBe("pulp-wars-poc-7r17");
+    expect(PRIOR_RULESET_7_IDS.at(-73)).toBe("pulp-wars-poc-7r18");
     expect([...OBSOLETE_SAVE_STORAGE_KEYS_V7]).toEqual([
       "pulpWars.save.v7.current",
       ...Array.from(
-        { length: 88 },
+        { length: 89 },
         (_, index) => `pulpWars.save.v7r${index + 2}.current`,
       ),
     ]);
@@ -327,7 +327,7 @@ describe("ruleset-7 revision-18 identity", () => {
     const setup = goblinSetupV7(["GOBLIN", "ORIGINAL"]);
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
-    expect(created.state.rulesetId).toBe("pulp-wars-poc-7r90");
+    expect(created.state.rulesetId).toBe("pulp-wars-poc-7r91");
     const oldSetup = { ...setup, rulesetId: "pulp-wars-poc-7r17" };
     expect(parseMatchSetupV7(setup)).not.toBeNull();
     expect(parseMatchSetupV7(oldSetup)).toBeNull();

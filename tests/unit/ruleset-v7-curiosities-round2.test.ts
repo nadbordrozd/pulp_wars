@@ -179,6 +179,8 @@ describe("the neutral registration by breed (sections 25.2, 29.1, 32.3)", () => 
       TENTACLE: ["JUGGERNAUT", "Tentacle", 8, 6, 2, 1],
       // The Cult redesign (`pulp_wars-mch9.36`): an Unbound Imp.
       IMP: ["RAIDER", "Unbound Imp", 6, 4, 2, 1],
+      // `pulp_wars-mch9.37`: an Unbound Gibbering Mass.
+      MASS: ["GUARD", "Unbound Gibbering Mass", 30, 4, 6, 1],
     };
     for (const breed of NEUTRAL_BREEDS_V7) {
       const rule = NEUTRAL_ROLE_RULES_V7[breed];

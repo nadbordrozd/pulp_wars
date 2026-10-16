@@ -415,8 +415,10 @@ describe("Cult art subjects stand in with the shared art", () => {
       ...SUMMONED_ROLE_IDS_V7.map((role) => cultSummonedArtSubjectV7(role)),
       cultSummonedArtSubjectV7("HORROR", true),
       cultSummonedArtSubjectV7("HERALD", true),
-      // The Cult redesign's Imp (`pulp_wars-mch9.36`).
+      // The Cult redesign's Imp (`pulp_wars-mch9.36`) and Gibbering Mass
+      // (`pulp_wars-mch9.37`).
       cultSummonedArtSubjectV7("IMP", true),
+      cultSummonedArtSubjectV7("MASS", true),
       "FROG",
       // Bead pulp_wars-mch9.26: the frog a Ribbit victim is drawn as.
       "UNIT:CULT:FROG",
@@ -453,8 +455,12 @@ describe("Cult art subjects stand in with the shared art", () => {
       "UNIT:CULT:HERALD",
       "UNIT:CULT:TENTACLE",
       "UNIT:CULT:IMP",
+      "UNIT:CULT:MASS",
     ]);
     expect(cultSummonedArtSubjectV7("IMP", true)).toBe("UNIT:CULT:IMP_UNBOUND");
+    expect(cultSummonedArtSubjectV7("MASS", true)).toBe(
+      "UNIT:CULT:MASS_UNBOUND",
+    );
     expect(cultSummonedArtSubjectV7("HORROR", true)).toBe(
       "UNIT:CULT:HORROR_UNBOUND",
     );
@@ -491,9 +497,10 @@ describe("Cult art subjects stand in with the shared art", () => {
     // (twelve until the Caller's and the Chosen's were retired,
     // `pulp_wars-mch9.42`) and the frog's (bead pulp_wars-mch9.26), three
     // ship portraits, three technology icons and four HUD icons (the Hunger
-    // bowl since `pulp_wars-mch9.42`); and the Imp's portrait (the Cult
-    // redesign, `pulp_wars-mch9.36`).
-    expect(cultFiles).toHaveLength(expected.length - 1 + 22 + terrainFiles);
+    // bowl since `pulp_wars-mch9.42`); and the Imp's and the Gibbering
+    // Mass's portraits (the Cult redesign, `pulp_wars-mch9.36` and
+    // `pulp_wars-mch9.37`).
+    expect(cultFiles).toHaveLength(expected.length - 1 + 23 + terrainFiles);
     expect(assetInventoryForFactionsV7("LIVE", ["CULT", "ORIGINAL"])).toEqual(
       expect.arrayContaining([...cultFiles]),
     );

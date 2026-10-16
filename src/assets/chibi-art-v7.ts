@@ -413,7 +413,7 @@ export const CULT_FROG_PORTRAIT_SUBJECT_V7 = "PORTRAIT:CULT:FROG";
 /** The sprites of the Cult's summoned units, bound and Unbound. */
 export type CultSummonedArtSubjectV7 =
   | `UNIT:CULT:${SummonedRoleIdV7}`
-  | `UNIT:CULT:${"HORROR" | "HERALD" | "IMP"}_UNBOUND`;
+  | `UNIT:CULT:${"HORROR" | "HERALD" | "IMP" | "MASS"}_UNBOUND`;
 
 /**
  * The art subject of a summoned Cult unit (bead pulp_wars-mch9.15): the
@@ -1053,9 +1053,9 @@ export function factionStandInLetterV7(
 }
 
 const CULT_SUMMONED_SUBJECT_PATTERN_V7 =
-  /^UNIT:CULT:(HORROR|HERALD|TENTACLE|IMP)(_UNBOUND)?$/;
+  /^UNIT:CULT:(HORROR|HERALD|TENTACLE|IMP|MASS)(_UNBOUND)?$/;
 const CULT_SUMMONED_PORTRAIT_PATTERN_V7 =
-  /^PORTRAIT:CULT:(HORROR|HERALD|TENTACLE|IMP|FROG)$/;
+  /^PORTRAIT:CULT:(HORROR|HERALD|TENTACLE|IMP|MASS|FROG)$/;
 
 /**
  * The Dwarf revision (bead pulp_wars-78i.6): the subject of a mound, the

@@ -11,6 +11,7 @@ import {
   primaryActionBlockedAfterMoveV7,
   summonedUnitRoleMechanicsV7,
   summonedUnitRoleRuleV7,
+  unitCapabilitiesV7,
   unitCapacitySlotsV7,
   unitIsFrozenV7,
   unitRoleMechanicsV7,
@@ -31,13 +32,19 @@ import {
   type CultReducerKitV7,
 } from "./cult";
 import { unitIsFrogV7, type TrickListsV7 } from "./cult-hexes";
+import { massOnDoorstepV7 } from "./cult-mass";
 import {
   daemonIsFuriousV7,
   unitIsUnboundV7,
   withDaemonBoundV7,
   withDaemonUnboundV7,
 } from "./cult-unbound";
-import type { DisruptionCauseV7, DomainEventV7, ScaredUnitV7 } from "./events";
+import type {
+  DisruptionCauseV7,
+  DomainEventV7,
+  FavourPurposeV7,
+  ScaredUnitV7,
+} from "./events";
 import type { GiantTileFactsV7 } from "./giants";
 import { canonicalGiantTileFactsV7 } from "./giants";
 import { unitSightRadiusAtV7 } from "./movement";
@@ -371,7 +378,9 @@ export type SummonRejectionV7 =
   | { readonly code: "INSUFFICIENT_FAVOUR"; readonly cost: number }
   | {
       readonly code: "SUMMON_NOT_LEGAL";
-      readonly reason: "EMBARKED" | "HELPER" | "TILE";
+      // The Cult redesign (`pulp_wars-mch9.37`): `TECHNOLOGY`, a Mass
+      // without Gibbering Masses.
+      readonly reason: "EMBARKED" | "TECHNOLOGY" | "HELPER" | "TILE";
     };
 
 /**
@@ -440,12 +449,24 @@ export function summonTileLegalV7(
 
 /**
  * The Cult redesign (`pulp_wars-mch9.36`, section 7.1): whether a `SUMMON`
- * of `daemon` needs a helper: the Horror does, the Imp does not (a
- * Summoner alone).
+ * of `daemon` needs a helper: the Horror and (`pulp_wars-mch9.37`) the
+ * Gibbering Mass do, the Imp does not (a Summoner alone).
  */
 export function summonNeedsHelperV7(daemon: SummonDaemonV7): boolean {
   return daemon !== "IMP";
 }
+
+/**
+ * The `FAVOUR_SPENT` purpose of a `SUMMON` of each daemon (the Cult
+ * redesign: `pulp_wars-mch9.36` the Imp, `pulp_wars-mch9.37` the Mass).
+ */
+export const SUMMON_FAVOUR_PURPOSES_V7: Readonly<
+  Record<SummonDaemonV7, FavourPurposeV7>
+> = Object.freeze({
+  IMP: "SUMMON_IMP",
+  HORROR: "SUMMON_HORROR",
+  MASS: "SUMMON_MASS",
+});
 
 /**
  * Section 6.1, shared by the reducer and the public command query: the
@@ -454,7 +475,10 @@ export function summonNeedsHelperV7(daemon: SummonDaemonV7): boolean {
  * undefined), or null. `favour` is the seat's Favour. The Cult redesign
  * (`pulp_wars-mch9.36`, section 7.1): an Imp (2 Favour) is the Summoner's
  * alone (its command names no helper: the command parser refuses one) and
- * `helper` is not read; a Horror (4) needs one.
+ * `helper` is not read; a Horror (4) needs one. `pulp_wars-mch9.37`
+ * (section 7.1): a Gibbering Mass (5) needs one too, and Gibbering Masses
+ * (`summonMass`, the Summoner's capability through its own tree; refused
+ * `TECHNOLOGY` without it).
  */
 export function summonRejectionV7(
   lookup: ChannelLookupV7,
@@ -464,6 +488,7 @@ export function summonRejectionV7(
   daemon: SummonDaemonV7,
   helper: ActorFactsV7 | undefined,
   at: CoordV7,
+  summonMass: boolean,
 ): SummonRejectionV7 | null {
   if (!unitRoleRuleV7(lookup, summoner).abilities.includes("SUMMON"))
     return { code: "UNIT_ROLE_INVALID" };
@@ -474,6 +499,8 @@ export function summonRejectionV7(
     primaryActionBlockedAfterMoveV7(lookup, summoner)
   )
     return { code: "UNIT_ALREADY_ACTED" };
+  if (daemon === "MASS" && !summonMass)
+    return { code: "SUMMON_NOT_LEGAL", reason: "TECHNOLOGY" };
   if (
     summonNeedsHelperV7(daemon) &&
     !summonHelperLegalV7(lookup, summoner, helper)
@@ -975,7 +1002,9 @@ export type RampageResolverV7 = (
  * 2. **The check:** each bound daemon of the seat, in unit-ID order, needs
  *    holding strands ({@link holdingStrandsV7}) of at least its Control,
  *    or, for an Imp (`pulp_wars-mch9.36`), a neighbour's **Brood**
- *    ({@link broodLenderV7}), or it is **Unbound** (`DAEMON_UNBOUND` reason `STRANDS`): it belongs to
+ *    ({@link broodLenderV7}), or, for a Gibbering Mass
+ *    (`pulp_wars-mch9.37`), its **Doorstep** (`massOnDoorstepV7`), or it
+ *    is **Unbound** (`DAEMON_UNBOUND` reason `STRANDS`): it belongs to
  *    the neutral owner as a neutral unit of its own breed, loses every
  *    status and the strands to it, is Furious until this seat's turn ends,
  *    and **rampages at once** (`rampage`). What the rampage disrupts breaks
@@ -1095,6 +1124,11 @@ export function resolveStartTurnChannelV7(
       });
       continue;
     }
+    // Doorstep (`pulp_wars-mch9.37`, section 7.4): a Gibbering Mass short
+    // of its strands on or beside an own city center, or beside an own
+    // standing idol, needs none (no holder: it pays no trickle).
+    if (massOnDoorstepV7(current, current.cities, current.units, daemon))
+      continue;
     breakLoose(daemon, strands, control, "STRANDS");
   }
   // The trickle: one Summoner pays once, for a daemon still bound.
@@ -1324,6 +1358,12 @@ export function applySummonV7(
     role,
     helper,
     command.at,
+    // `pulp_wars-mch9.37`: Gibbering Masses, through the Summoner's tree.
+    unitCapabilitiesV7(
+      state,
+      summoner,
+      kit.requirePlayer(state, actor).researchedTechs,
+    ).summonMass,
   );
   if (rejection !== null) return rejectWith(kit, original, summoner, rejection);
   if (summonNeedsHelperV7(role) && helper === undefined)
@@ -1363,7 +1403,7 @@ export function applySummonV7(
       {
         kind: "FAVOUR_SPENT",
         playerId: actor,
-        purpose: role === "IMP" ? "SUMMON_IMP" : "SUMMON_HORROR",
+        purpose: SUMMON_FAVOUR_PURPOSES_V7[role],
         amount: cost,
         favour: favourOfV7({ cult }, actor),
       },

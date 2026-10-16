@@ -155,15 +155,16 @@ describe("natural water: the identity (7r87)", () => {
   // `pulp_wars-ykw.8` took 7r87 after the free Pearls of `pulp_wars-5ti.14`
   // (7r86); the Cult redesign's Star-fall and daemons (`pulp_wars-mch9.34`,
   // `mch9.35`) took 7r88 after it, and its Favour economy and warden
-  // (`mch9.32`, `mch9.33`) 7r89, and its Imp (`mch9.36`) 7r90.
+  // (`mch9.32`, `mch9.33`) 7r89, and its Imp (`mch9.36`) 7r90, and its
+  // Gibbering Mass (`mch9.37`) 7r91.
   it("was 7r87 after 7r86, both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r90");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r90.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-4, -2)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r91");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r91.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-5, -3)).toEqual([
       "pulp-wars-poc-7r86",
       "pulp-wars-poc-7r87",
     ]);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-4, -2)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-5, -3)).toEqual([
       "pulpWars.save.v7r86.current",
       "pulpWars.save.v7r87.current",
     ]);
