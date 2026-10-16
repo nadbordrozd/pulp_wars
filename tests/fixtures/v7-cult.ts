@@ -308,23 +308,6 @@ export function withFrogsV7(
   });
 }
 
-/** The Chosen on each of `where` has shouted Pick Me! (section 8.2). */
-export function withTauntsV7(
-  state: GameStateV7,
-  where: readonly CoordV7[],
-): GameStateV7 {
-  return checkedV7({
-    ...state,
-    cult: {
-      ...state.cult,
-      taunts: [
-        ...state.cult.taunts,
-        ...where.map((tile) => unitAtV7(state, tile).id),
-      ].sort((left, right) => left - right),
-    },
-  });
-}
-
 /**
  * A Tentacle of the Caller on `caller` stands on `where` (section 9.3): a
  * neutral unit at full HP unless `hp` says otherwise, with `turnsLeft`

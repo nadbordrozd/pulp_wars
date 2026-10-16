@@ -64,6 +64,12 @@ export const GREAT_SUMMONING_UNLOCK_TEXT_V7 = `The Great Summoning: a Summoner a
 /** Scouting (shown as Familiars), `SWITCHEROO` (`pulp_wars-mch9.8`). */
 export const SWITCHEROO_UNLOCK_TEXT_V7 =
   "Switcheroo: a Familiar swaps places with a unit within 2 tiles, never on a city or village center";
+/**
+ * Chivalry (shown as Tentacles), `TENTACLES` (the Cult redesign,
+ * `pulp_wars-mch9.31`): the Summoner's Tentacle.
+ */
+export const TENTACLES_UNLOCK_TEXT_V7 =
+  "Tentacle: a Summoner calls up a Tentacle that belongs to nobody and slaps whoever is weakest beside it";
 /** Farming (shown as Harvest Rites), `OFFERING`. */
 export const OFFERING_UNLOCK_TEXT_V7 = `Offering: a city gives up ${OFFERING_POPULATION_V7} population for ${OFFERING_FAVOUR_V7} Favour`;
 
@@ -78,7 +84,6 @@ export const FAVOUR_SOURCE_LABELS_V7: Readonly<Record<FavourSourceV7, string>> =
     SACRIFICE: "a Sacrifice",
     SEIZE: "a Seizure",
     OFFERING: "an Offering",
-    MARTYR: "a Martyr",
     DAEMON_KILL: "a daemon's kill",
     CONSUMPTION: "the Great Summoning's meal",
   };
@@ -412,9 +417,6 @@ export function cultBoundaryNoticeV7(
       parts.push(
         `${OFFERING_LABEL_V7}: ${favourGainTextV7(event.favour)}, −${event.population} population`,
       );
-    } else if (event.kind === "FAVOUR_GAINED") {
-      if (event.playerId !== viewerId || event.source !== "MARTYR") continue;
-      parts.push(`Martyr: ${favourGainTextV7(event.amount)}`);
     }
   }
   // The channel (bead pulp_wars-mch9.18): the viewer's strands broken and a

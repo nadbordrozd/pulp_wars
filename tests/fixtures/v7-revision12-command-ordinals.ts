@@ -79,11 +79,11 @@ const LATER_COMMAND_KINDS: readonly string[] = [
   "BEGIN_RITUAL",
   "PROCLAIM",
   // The Cult's tricks (`pulp_wars-mch9.8`) insert RIBBIT, SWITCHEROO,
-  // TENTACLE, and PICK_ME after PROCLAIM.
+  // TENTACLE, and PICK_ME after PROCLAIM; the Cult redesign's roster
+  // (`pulp_wars-mch9.31`) removes PICK_ME again.
   "RIBBIT",
   "SWITCHEROO",
   "TENTACLE",
-  "PICK_ME",
   "LAY_EGG",
   "OFFERING",
   // Tuning 3 (`pulp_wars-w49.3`) inserts HIRE after TRAIN_NAVAL.

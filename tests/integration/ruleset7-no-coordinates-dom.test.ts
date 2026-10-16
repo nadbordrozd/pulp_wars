@@ -342,7 +342,7 @@ const FIXTURES: readonly (readonly [
       "cult-switcheroo performed",
       "cult-tentacle aimed",
       "cult-tentacle performed",
-      "cult-pick-me performed",
+      // (Pick Me! retired with the Chosen, `pulp_wars-mch9.31`.)
     ],
   ],
   ["Cult: hexed", cultTricksDoneUiFixtureV7, []],

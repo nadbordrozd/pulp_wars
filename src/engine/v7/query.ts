@@ -322,12 +322,9 @@ import {
   summonRejectionV7,
 } from "./cult-channel";
 import {
-  bindingTauntsV7,
   pamphletsApplyV7,
-  pickMeRejectionV7,
   ribbitRejectionV7,
   switcherooRejectionV7,
-  tauntRefusingAttackV7,
   tentacleRejectionV7,
   tentacleSlapTargetV7,
   trickRefusalV7,
@@ -1073,9 +1070,8 @@ export function queryLandingPreviewV7(
  * 21.3): every command that names an own Frozen unit (other than Promote,
  * Disband, and Wait), or tosses or carries one, is withheld, exactly as
  * the reducer refuses it (`UNIT_FROZEN`). The Cultists (`pulp_wars-mch9.8`,
- * RULESET_7_CULTISTS.md sections 9.1 and 8.2): so is every command of an own
- * frog but its hop (`UNIT_FROGGED`), and an `ATTACK` at anybody but the
- * taunting Chosen beside the attacker (`ATTACK_TAUNTED`).
+ * RULESET_7_CULTISTS.md section 9.1): so is every command of an own frog
+ * but its hop (`UNIT_FROGGED`).
  */
 function appendOfferedUnitCommandsV7(
   view: PlayerViewV7,
@@ -1091,13 +1087,10 @@ function appendOfferedUnitCommandsV7(
     readonly frozen?: readonly unknown[];
     readonly cult?: {
       readonly frogs?: readonly unknown[];
-      readonly taunts?: readonly unknown[];
     };
   } = view;
   const frozen = (lookup.frozen?.length ?? 0) > 0;
-  const tricks =
-    (lookup.cult?.frogs?.length ?? 0) > 0 ||
-    (lookup.cult?.taunts?.length ?? 0) > 0;
+  const tricks = (lookup.cult?.frogs?.length ?? 0) > 0;
   if (!frozen && !tricks) return;
   const kept = candidates
     .splice(start)
@@ -1660,10 +1653,10 @@ function appendPublicCultCommandsV7(
           unitId: unit.id,
           cityId: city.id,
         });
-  // Hexes and tricks (`pulp_wars-mch9.8`, sections 9.1 to 9.3 and 8.2), each
+  // Hexes and tricks (`pulp_wars-mch9.8`, sections 9.1 to 9.3), each
   // offered exactly when the reducer accepts it (the shared legality
   // predicates of src/engine/v7/cult-hexes.ts): the frogs, cooldowns,
-  // taunts, and Tentacles of visible units are in the view, a target is a
+  // and Tentacles of visible units are in the view, a target is a
   // visible unit, a tile is one the viewer has explored, and a swap reads
   // the viewer's own Engineering and Navigation.
   if (abilities.includes("RIBBIT"))
@@ -1696,6 +1689,13 @@ function appendPublicCultCommandsV7(
   }
   if (abilities.includes("TENTACLE")) {
     const facts = publicGiantTileFactsV7(view);
+    // The Cult redesign (`pulp_wars-mch9.31`): Tentacles, through the unit's
+    // own tree (a mind-controlled Summoner has no Tentacle anyway).
+    const unlocked = unitCapabilitiesV7(
+      view,
+      unit,
+      view.viewer.researchedTechs,
+    ).tentacles;
     tiles: for (
       let y = unit.at.y - TENTACLE_RANGE_V7;
       y <= unit.at.y + TENTACLE_RANGE_V7;
@@ -1708,7 +1708,10 @@ function appendPublicCultCommandsV7(
       ) {
         if (x < 0 || y < 0 || x >= view.board.width || y >= view.board.height)
           continue;
-        const rejection = tentacleRejectionV7(view, facts, unit, { x, y });
+        const rejection = tentacleRejectionV7(view, facts, unlocked, unit, {
+          x,
+          y,
+        });
         if (rejection === null)
           candidates.push({ kind: "TENTACLE", unitId: unit.id, at: { x, y } });
         // Every other reason holds for every tile.
@@ -1719,8 +1722,6 @@ function appendPublicCultCommandsV7(
           break tiles;
       }
   }
-  if (abilities.includes("PICK_ME") && pickMeRejectionV7(view, unit) === null)
-    candidates.push({ kind: "PICK_ME", unitId: unit.id });
 }
 
 /**
@@ -5044,61 +5045,6 @@ export function previewTentacleV7(
     neutralTurns: TENTACLE_LIFETIME_V7,
     exact: adjacentPublicTiles(view, at).every((tile) => tile.explored),
   };
-}
-
-/**
- * The Cultists (section 8.2): the preview of an offered Pick Me!: the
- * visible hostile units on the eight tiles around the Chosen now, which
- * may attack nobody else until its owner's next turn.
- */
-export interface PickMePreviewV7 {
-  readonly unitId: UnitId;
-  readonly boundUnitIds: readonly UnitId[];
-}
-
-/** Section 8.2: null unless that `PICK_ME` is offered. */
-export function previewPickMeV7(
-  view: PlayerViewV7,
-  unitId: UnitId,
-): PickMePreviewV7 | null {
-  if (
-    !queryPlayerCommandsV7(view).some(
-      (command) => command.kind === "PICK_ME" && command.unitId === unitId,
-    )
-  )
-    return null;
-  const chosen = view.units.find((unit) => unit.id === unitId);
-  if (chosen === undefined) return null;
-  return {
-    unitId,
-    boundUnitIds: view.units
-      .filter(
-        (unit) =>
-          unit.hp > 0 &&
-          chebyshev(unit.at, chosen.at) === 1 &&
-          !isNeutralOwnerV7(unit.ownerId) &&
-          publicHostile(view, chosen.ownerId, unit.ownerId),
-      )
-      .map((unit) => unit.id),
-  };
-}
-
-/**
- * The Cultists (section 8.2): the taunting Chosen that bind the viewer's
- * unit `unitId` now (it may `ATTACK` only one of them), in unit-ID order;
- * empty when it is free.
- */
-export function publicBindingTauntsV7(
-  view: PlayerViewV7,
-  unitId: UnitId,
-): readonly UnitId[] {
-  const unit = view.units.find(
-    (candidate) => candidate.id === unitId && candidate.hp > 0,
-  );
-  if (unit === undefined) return [];
-  return bindingTauntsV7(view, view.units, unit)
-    .map((chosen) => chosen.id)
-    .sort((left, right) => left - right);
 }
 
 /**
@@ -10596,10 +10542,9 @@ function publicCombatPreviewCore(
     // The frozen sea (naval branch section 8.9): an icebound ship cannot
     // attack.
     unitIsIceboundV7(view, attacker) ||
-    // The Cultists (`pulp_wars-mch9.8`, sections 9.1 and 8.2): a frog does
-    // not attack, and a unit beside a taunting Chosen attacks only it.
-    unitIsFrogV7(view, attacker) ||
-    tauntRefusingAttackV7(view, view.units, attacker, target.id) !== null
+    // The Cultists (`pulp_wars-mch9.8`, section 9.1): a frog does not
+    // attack.
+    unitIsFrogV7(view, attacker)
   )
     return null;
   // The naval branch (docs/product/RULESET_7_NAVAL_BRANCH.md sections 5.2

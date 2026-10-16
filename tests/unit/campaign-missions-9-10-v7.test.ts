@@ -367,7 +367,8 @@ describe("mission 10, The Stars Are Right", () => {
     // Revision 2 (`pulp_wars-v642.6`): the ring holds the Thing, two Idol
     // Bearers, a Chosen, both Summoners, and two Hexers, so a Knight's
     // Overrun ends on the first Idol Bearer or Chosen it meets instead of
-    // running through the summit.
+    // running through the summit. Revision 3 (`pulp_wars-mch9.31`): the
+    // Chosen retired, so a third Idol Bearer stands in its place.
     expect(
       (plan?.garrison ?? []).map((id) => units.get(id)?.role).sort(),
     ).toEqual(
@@ -376,10 +377,10 @@ describe("mission 10, The Stars Are Right", () => {
         "CAPTAIN",
         "GUARD",
         "GUARD",
+        "GUARD",
         "JUGGERNAUT",
         "MARKSMAN",
         "MARKSMAN",
-        "SWORDSMAN",
       ].sort(),
     );
     for (const id of plan?.garrison ?? []) {

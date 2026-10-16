@@ -163,10 +163,6 @@ const ENTRIES = {
     "Seize",
     "Offers a badly hurt enemy next to it, while another of your robed cultists stands beside that enemy. It pays double Favour.",
   ],
-  MARTYR: [
-    "Martyr",
-    "When it dies, the Ancient Ones pay you Favour. Sacrificing it pays nothing extra.",
-  ],
   // The channel (`pulp_wars-mch9.5`, sections 6 and 8).
   SUMMON: [
     "Summon",
@@ -243,10 +239,6 @@ const ENTRIES = {
     "Tentacle",
     "Calls up a Tentacle on a free tile within 3 tiles. It belongs to nobody and slaps whoever is weakest beside it.",
   ],
-  PICK_ME: [
-    "Pick Me!",
-    "Until your next turn, enemies standing next to it can attack nobody else. Enemies further away are not bound.",
-  ],
   GRAB: [
     "Grab",
     "The unit it slapped last cannot leave its side. It is free when the Tentacle dies, sinks or slaps someone else.",
@@ -262,10 +254,6 @@ const ENTRIES = {
   STATUS_GRABBED: [
     "Grabbed",
     "A Tentacle holds it. It can move only to tiles next to that Tentacle.",
-  ],
-  STATUS_TAUNTED: [
-    "Taunted",
-    "A Chosen beside it shouted. It can attack nobody but that Chosen.",
   ],
   STATUS_HEX_SPENT: [
     "Spent",
@@ -1126,8 +1114,6 @@ const STATUS_IDS: Readonly<Record<string, GlossaryIdV7>> = {
   // `pulp_wars-mch9.19`).
   frog: "STATUS_FROG",
   grabbed: "STATUS_GRABBED",
-  taunted: "STATUS_TAUNTED",
-  "pick-me": "PICK_ME",
   "hex-spent": "STATUS_HEX_SPENT",
   // A chanter, and a Herald's attacks left (`pulp_wars-mch9.19`).
   chanting: "STATUS_CHANTING",

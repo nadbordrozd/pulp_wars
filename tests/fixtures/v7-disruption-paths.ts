@@ -95,12 +95,10 @@ export const DISRUPTION_EVENT_PATHS_V7: Readonly<
   CITY_COWED: NONE,
   // Tricks (`pulp_wars-mch9.8`): a Tentacle rises on a free tile and sinks
   // when its own time is up (it is never a watched unit); its Grab limits
-  // the held unit's own Move (the slap before it is a `COMBAT_RESOLVED`);
-  // a Pick Me! limits other units' own attacks.
+  // the held unit's own Move (the slap before it is a `COMBAT_RESOLVED`).
   TENTACLE_ROSE: NONE,
   UNIT_GRABBED: NONE,
   TENTACLE_SANK: NONE,
-  PICK_ME_SHOUTED: NONE,
   SPOILS_AWARDED: NONE,
   PLUNDER_AWARDED: NONE,
   MONSTER_BOUNTY_AWARDED: NONE,

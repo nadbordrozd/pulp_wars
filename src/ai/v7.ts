@@ -955,8 +955,8 @@ interface PolicyContextV7 {
   /**
    * Against the Cult (`pulp_wars-mch9.12`, RULESET_7_CULTISTS.md section
    * 15.5; `src/ai/v7-cult-against.ts`): what the Cult has put on the
-   * viewer's board (strands, circles, marks, frogs, taunts, a Grab, a Cowed
-   * city), or null when there is none of it; every rule against the Cult
+   * viewer's board (strands, circles, marks, frogs, a Grab, a Cowed city),
+   * or null when there is none of it; every rule against the Cult
    * is gated on it.
    */
   readonly cultAgainst: CultAgainstFactsV7 | null;
@@ -11531,14 +11531,13 @@ function isPolicyCandidate(
   if (command.kind === "BEGIN_RITUAL" || command.kind === "PROCLAIM")
     return false;
   // Hexes and tricks (`pulp_wars-mch9.8`): likewise (Ribbit, Switcheroo,
-  // Tentacle, Pick Me!). A swap or a wild Tentacle can hurt its own side,
+  // Tentacle). A swap or a wild Tentacle can hurt its own side,
   // so none may be picked by a general rule. (Pamphlets needs no rule: it
   // is the ordinary Capture, offered a turn earlier.)
   if (
     command.kind === "RIBBIT" ||
     command.kind === "SWITCHEROO" ||
-    command.kind === "TENTACLE" ||
-    command.kind === "PICK_ME"
+    command.kind === "TENTACLE"
   )
     return false;
   // The frozen sea (`pulp_wars-5ti.5`, RULESET_7_NAVAL_BRANCH.md section

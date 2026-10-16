@@ -58,10 +58,10 @@ const adjacentAttackers = (faction: FactionIdV7): readonly UnitRoleIdV7[] =>
 
 describe("tuning 2 identity", () => {
   it("is 7r47 with 7r46 last in the prior list", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r84");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r84.current");
-    expect(PRIOR_RULESET_7_IDS.at(-38)).toBe("pulp-wars-poc-7r46");
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(83);
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r85");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r85.current");
+    expect(PRIOR_RULESET_7_IDS.at(-39)).toBe("pulp-wars-poc-7r46");
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(84);
   });
 });
 
@@ -273,7 +273,11 @@ describe("3: the Human Knight captures settlements", () => {
     const capturing = FACTION_IDS_V7.filter((faction) =>
       effectiveRoleRuleV7("KNIGHT", faction).abilities.includes("CAPTURE"),
     );
-    expect(capturing).toEqual(FACTION_IDS_V7);
+    // (The Cult's Knight slot is vacant since its redesign,
+    // `pulp_wars-mch9.31`: no unit to capture with.)
+    expect(capturing).toEqual(
+      FACTION_IDS_V7.filter((faction) => faction !== "CULT"),
+    );
     expect(
       FACTION_IDS_V7.map(
         (faction) => effectiveRoleRuleV7("KNIGHT", faction).label,
@@ -288,7 +292,7 @@ describe("3: the Human Knight captures settlements", () => {
       // (The ninth unit, 7r55: the Steam Tank is the Dwarf heavy role.)
       "Whirligig",
       "Chocolate Bunny",
-      "Caller",
+      "(vacant)",
     ]);
   });
 });

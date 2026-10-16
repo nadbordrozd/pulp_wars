@@ -8,7 +8,6 @@ import {
 import {
   previewBeginRitualV7,
   previewBooV7,
-  previewPickMeV7,
   previewProclaimV7,
   previewRibbitV7,
   previewSeizeV7,
@@ -25,7 +24,9 @@ import { cultRobedV7 } from "./v7-cult";
  * docs/product/RULESET_7_CULTISTS.md sections 15.3 and 15.4; as built in
  * section 15.8): the Great Summoning and the Favour saved for it, Star-fall,
  * the Herald's two attacks and Proclaim, Boo!, Ribbit, Switcheroo, the
- * Tentacle, Pick Me!, and Pamphlets.
+ * Tentacle, and Pamphlets. (Pick Me! retired with the Chosen: the Cult
+ * redesign, `pulp_wars-mch9.31`; the Tentacle step reads every offered
+ * `TENTACLE`, the Summoner's since then.)
  *
  * It is one part of the Cult seat's plan (`cultPlanV7` in
  * `src/ai/v7-cult-channel.ts`, which calls it once the channel plan has
@@ -79,7 +80,6 @@ export const CULT_SUMMONING_PRIORITY_V7 = 1915;
 export const CULT_RIBBIT_PRIORITY_V7 = 1880;
 export const CULT_SWITCHEROO_PRIORITY_V7 = 1875;
 export const CULT_TENTACLE_PRIORITY_V7 = 1870;
-export const CULT_PICK_ME_PRIORITY_V7 = 1865;
 export const CULT_STARFALL_PRIORITY_V7 = 1860;
 /** An Initiate's Move onto a neutral village it captures this turn. */
 export const CULT_PAMPHLETS_PRIORITY_V7 = 1855;
@@ -113,7 +113,6 @@ export type CultRitualReasonV7 =
   | "SWITCHEROO_SEIZE"
   | "SWITCHEROO"
   | "TENTACLE"
-  | "PICK_ME"
   | "PAMPHLETS";
 
 export interface CultRitualStepV7 {
@@ -248,7 +247,6 @@ export function cultRitualPlanV7(facts: CultRitualFactsV7): CultRitualPlanV7 {
   const ribbits: Extract<CommandV7, { kind: "RIBBIT" | "SWITCHEROO" }>[] = [];
   const swaps: Extract<CommandV7, { kind: "RIBBIT" | "SWITCHEROO" }>[] = [];
   const tentacles: Extract<CommandV7, { kind: "TENTACLE" }>[] = [];
-  const pickMes: Extract<CommandV7, { kind: "PICK_ME" }>[] = [];
   for (const command of commands) {
     if (command.kind === "ATTACK") {
       const list = attacksByUnit.get(command.unitId);
@@ -260,7 +258,6 @@ export function cultRitualPlanV7(facts: CultRitualFactsV7): CultRitualPlanV7 {
     else if (command.kind === "RIBBIT") ribbits.push(command);
     else if (command.kind === "SWITCHEROO") swaps.push(command);
     else if (command.kind === "TENTACLE") tentacles.push(command);
-    else if (command.kind === "PICK_ME") pickMes.push(command);
   }
   /** An attack the engine offers the unit now kills its target. */
   const killOnOffer = (unitId: UnitId): boolean =>
@@ -948,48 +945,6 @@ export function cultRitualPlanV7(facts: CultRitualFactsV7): CultRitualPlanV7 {
         reason: "TENTACLE",
       });
   }
-
-  // ------------------------------------------------------------- Pick Me!
-  // Section 15.4: a Chosen next to a channeller (or a chanter), with a
-  // hostile melee unit able to reach that cultist, taunts instead of
-  // attacking, unless its attack kills. Once the channellers stand.
-  if (!facts.pending)
-    for (const command of pickMes) {
-      const chosen = unitsById.get(command.unitId);
-      if (
-        chosen === undefined ||
-        chosen.ownerId !== me ||
-        held.has(chosen.id) ||
-        killOnOffer(chosen.id)
-      )
-        continue;
-      const guarded = own.filter(
-        (unit) =>
-          unit.id !== chosen.id &&
-          gap(unit.at, chosen.at) === 1 &&
-          (facts.channellers.has(unit.id) ||
-            cult.rituals.some(
-              (ritual) =>
-                ritual.playerId === me &&
-                (ritual.leaderUnitId === unit.id ||
-                  ritual.chanterUnitIds.includes(unit.id)),
-            )) &&
-          enemies.some(
-            (enemy) =>
-              melee(enemy) &&
-              !frogs.has(enemy.id) &&
-              facts.reach(enemy.id, unit.at),
-          ),
-      );
-      if (guarded.length === 0 || previewPickMeV7(view, chosen.id) === null)
-        continue;
-      steps.push({
-        command,
-        priority: CULT_PICK_ME_PRIORITY_V7,
-        value: guarded.length,
-        reason: "PICK_ME",
-      });
-    }
 
   // ------------------------------------------------------------ Star-fall
   // Section 15.4: the tile with the most enemy value on its nine tiles,

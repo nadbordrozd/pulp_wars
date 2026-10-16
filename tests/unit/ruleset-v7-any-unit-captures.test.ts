@@ -5,6 +5,7 @@ import {
   UNIT_ROLE_IDS_V7,
   applyCommandV7,
   effectiveRoleRuleV7,
+  factionFieldsRoleV7,
   isNavalRoleV7,
   parseGameStateV7,
   queryPlayerCommandsV7,
@@ -80,7 +81,11 @@ describe("any unit can capture (pulp_wars-ke95)", () => {
         expect(
           effectiveRoleRuleV7(role, faction).abilities.includes("CAPTURE"),
           `${faction} ${role}`,
-        ).toBe(!isNavalRoleV7(role));
+        ).toBe(
+          // The Cult redesign (`pulp_wars-mch9.31`): a vacant slot (the
+          // Cult's `KNIGHT` and `SWORDSMAN`) has no ability at all.
+          !isNavalRoleV7(role) && factionFieldsRoleV7(faction, role),
+        );
     // The neutral Giant Spider stays an attacker only.
     expect(NEUTRAL_MONSTER_ROLE_RULE_V7.abilities).toEqual(["ATTACK"]);
   });

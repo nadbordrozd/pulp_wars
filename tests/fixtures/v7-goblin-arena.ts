@@ -160,6 +160,9 @@ export function goblinArenaV7(
     // Shield entry goes with them (the pieces start without Shield entries;
     // `martianFieldV7` adds them).
     shields: [],
+    // Likewise a Cult seat's starting Favour (2 since the Cult redesign,
+    // `pulp_wars-mch9.31`): an arena names its Favour (`withFavourV7`).
+    cult: { ...base.cult, favour: [] },
     treasureChests: base.treasureChests.filter(
       (chest) => !cleared.some((at) => sameV7(at, chest)),
     ),

@@ -227,7 +227,6 @@ import {
 import {
   addCultTrickEntriesV7,
   addCultTrickPickEntriesV7,
-  addCultTrickPreviewsV7,
   cultTrickPickTargetsV7,
   cultTrickUnitMarkersV7,
   isCultTrickPickV7,
@@ -243,11 +242,7 @@ import {
   drawCultTrickUnitMarkersV7,
   type CultTrickArtV7,
 } from "./cult-ritual-canvas-v7";
-import {
-  COWED_BANNER_V7,
-  PICK_ME_BUBBLE_V7,
-  frogNameV7,
-} from "../cult-ritual-presentation-v7";
+import { COWED_BANNER_V7, frogNameV7 } from "../cult-ritual-presentation-v7";
 import {
   addFreezePickEntriesV7,
   addFreezeRingEntriesV7,
@@ -1984,8 +1979,6 @@ export function buildBoardRenderPlanV7(
       );
       // The Cultists: the ring an offered Behold! would raise.
       addCultChannelPreviewsV7(entries, view, commands, selectedUnitId);
-      // Whom an offered Pick Me! would bind (bead pulp_wars-mch9.19).
-      addCultTrickPreviewsV7(entries, view, commands, selectedUnitId);
     }
     // The Martian revision: the Force Field of a selected Shield Projector
     // and the control link between a controlled unit and its Brain.
@@ -6097,7 +6090,6 @@ function drawCultChannelV7(
         };
         drawCultTrickUnitMarkersV7(context, entry.cult, x, y, camera.zoom, {
           highContrast,
-          bubble: PICK_ME_BUBBLE_V7,
           ownerColor: entry.ownerColor,
           art: {
             frog: frogPicture(),

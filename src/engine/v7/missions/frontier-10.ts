@@ -11,9 +11,17 @@ import type { MissionDefinitionV7 } from "./types";
  * the corrected Cult AI, the first build was won in round 12 with nothing
  * lost (a Knight's Overrun ran through the summit's Initiates, Hexers, and
  * both Summoners in one charge). Toughened: 5 Coins for you (was 15), an
- * Idol Bearer and a Chosen in the ring where a Hexer and an Initiate stood
+ * Idol Bearer and a Chosen (an Idol Bearer since revision 3) in the ring
+ * where a Hexer and an Initiate stood
  * and a garrison of eight (was six), a Zombie on the barrow's center, and
  * the lodge's Summoner waves in rounds 12 and 17 (were 14 and 20).
+ *
+ * Revision 3 (the Cult redesign's roster, `pulp_wars-mch9.31`,
+ * docs/product/RULESET_7_CULT_REDESIGN.md section 15): the Caller and the
+ * Chosen retired, so the ring's Chosen on the goat path side (9,2) is an
+ * Idol Bearer, the other Chosen (11,4) an Initiate, and the Caller (9,4) a
+ * Hexer. A stop-gap so the mission loads: its retune (technologies, Favour,
+ * text, and the difficulty replay) is the campaign bead of the redesign.
  *
  * The board is the map generator's (Pangea, seed 23). The Lodge stands in
  * the northern highlands with Mountains on three sides: a wooded slope
@@ -22,11 +30,11 @@ import type { MissionDefinitionV7 } from "./types";
  * Lodge's Walls need the level).
  *
  * - **The Cultists** `GUARD` the summit with a garrison of eight (the
- *   Thing on the Lodge, two Idol Bearers, a Chosen, both Summoners, and two
+ *   Thing on the Lodge, three Idol Bearers, both Summoners, and two
  *   Hexers); the rest of the lodge roams. They start with 9 Favour, two
  *   Summoners, and The Stars Are Right, so the first Horrors come in the
  *   opening rounds and every unit a Horror kills, every Seizure, and every
- *   dead Chosen feeds the pool: at 20 Favour, with a Summoner and three
+ *   Sacrifice feeds the pool: at 20 Favour, with a Summoner and three
  *   chanters left unthreatened, the Great Summoning begins and the Herald
  *   comes. The Favour is public: it is the Summoning's clock, and round 24
  *   is its last toll. The seat may research nothing else (no Offering: the
@@ -67,7 +75,7 @@ import type { MissionDefinitionV7 } from "./types";
  */
 export const FRONTIER_10_V7: MissionDefinitionV7 = {
   id: "FRONTIER_10",
-  revision: 2,
+  revision: 3,
   seed: 20261110,
   // <map>
   size: 20,
@@ -275,8 +283,8 @@ export const FRONTIER_10_V7: MissionDefinitionV7 = {
       favour: 9,
       // Leadership (the Summoner: Sacrifice, Seize, Summon), Hexers,
       // Familiars, Warding Circles (the Idol Bearer), and The Stars Are
-      // Right (the Great Summoning). The Stargazer, the Caller, the Chosen,
-      // and the Thing in the Cellar are here as starting units only.
+      // Right (the Great Summoning). The Stargazer and the Thing in the
+      // Cellar are here as starting units only.
       technologies: [
         "GATHERING",
         "ADMINISTRATION",
@@ -300,22 +308,23 @@ export const FRONTIER_10_V7: MissionDefinitionV7 = {
       ],
       units: [
         // The ring (the GUARD garrison: the first eight inside the zone):
-        // the Idol Bearer on the goat path and the Chosen beside the
-        // Summoners end a Knight's Overrun (revision 2).
+        // the Idol Bearers on the goat path and beside the Summoners end a
+        // Knight's Overrun (revision 2; revision 3: the Chosen at 9,2 is an
+        // Idol Bearer, the one at 11,4 an Initiate, the Caller a Hexer).
         { role: "JUGGERNAUT", at: { x: 10, y: 2 } },
         { role: "GUARD", at: { x: 11, y: 1 } },
         { role: "GUARD", at: { x: 8, y: 1 } },
         { role: "CAPTAIN", at: { x: 9, y: 1 } },
         { role: "CAPTAIN", at: { x: 10, y: 1 } },
-        { role: "SWORDSMAN", at: { x: 9, y: 2 } },
+        { role: "GUARD", at: { x: 9, y: 2 } },
         { role: "MARKSMAN", at: { x: 10, y: 3 } },
         { role: "MARKSMAN", at: { x: 11, y: 3 } },
         { role: "GUARD", at: { x: 10, y: 4 } },
-        { role: "SWORDSMAN", at: { x: 11, y: 4 } },
+        { role: "FIGHTER", at: { x: 11, y: 4 } },
         { role: "FIGHTER", at: { x: 12, y: 4 } },
         { role: "CATAPULT", at: { x: 12, y: 3 } },
         { role: "FIGHTER", at: { x: 13, y: 3 } },
-        { role: "KNIGHT", at: { x: 9, y: 4 } },
+        { role: "MARKSMAN", at: { x: 9, y: 4 } },
         { role: "FIGHTER", at: { x: 7, y: 2 }, home: 1 },
         { role: "GUARD", at: { x: 6, y: 3 }, home: 1 },
         { role: "FIGHTER", at: { x: 13, y: 1 }, home: 2 },

@@ -10,7 +10,6 @@ import {
 import {
   CULT_BOO_PRIORITY_V7,
   CULT_HERALD_PRIORITY_V7,
-  CULT_PICK_ME_PRIORITY_V7,
   CULT_PROCLAIM_LAST_PRIORITY_V7,
   CULT_RIBBIT_PRIORITY_V7,
   CULT_SAVE_FAVOUR_V7,
@@ -63,8 +62,9 @@ import type { FieldOptionsV7 } from "../fixtures/v7-revision20";
 // (8, 5), (5, 8); every other land tile open Grass; every tile explored;
 // every technology (The Stars Are Right too); no Coins.
 // Roles: FIGHTER the Initiate, CAPTAIN the Summoner, MARKSMAN the Hexer,
-// GUARD the Idol Bearer, RAIDER the Familiar, CATAPULT the Stargazer,
-// KNIGHT the Caller, SWORDSMAN the Chosen.
+// GUARD the Idol Bearer, RAIDER the Familiar, CATAPULT the Stargazer (the
+// Cult's KNIGHT and SWORDSMAN slots are vacant since the Cult redesign,
+// `pulp_wars-mch9.31`: the Tentacle is the Summoner's, Pick Me! is gone).
 
 const at = (x: number, y: number): CoordV7 => ({ x, y });
 const gap = (left: CoordV7, right: CoordV7): number =>
@@ -769,10 +769,13 @@ describe("the Cult seat: Switcheroo (section 15.4)", () => {
 });
 
 describe("the Cult seat: the Tentacle (section 15.4)", () => {
+  // The Summoner's since the Cult redesign (`pulp_wars-mch9.31`).
   it("calls it up beside the enemy, where it slaps the siege unit, with no own unit within 1", () => {
     const start = scene([
-      own("KNIGHT", 7, 3),
-      own("FIGHTER", 6, 3, { activation: SPENT }),
+      own("CAPTAIN", 7, 3),
+      // An Idol Bearer free to step back, so not doomed (a doomed unit beside
+      // the Summoner keeps the Summoner's action for its Sacrifice).
+      own("GUARD", 6, 3),
       foe("CATAPULT", 4, 3),
       foe("SWORDSMAN", 4, 4),
     ]);
@@ -789,59 +792,15 @@ describe("the Cult seat: the Tentacle (section 15.4)", () => {
   });
 
   it("calls none with no enemy in reach, nor where every tile beside the enemy is beside an own unit", () => {
-    const far = scene([own("KNIGHT", 9, 1)]);
+    const far = scene([own("CAPTAIN", 9, 1)]);
     expect(kindsOf(policyTurn(far).commands)).not.toContain("TENTACLE");
     const close = scene([
-      own("KNIGHT", 7, 3, { activation: MOVED }),
-      own("SWORDSMAN", 5, 3, { activation: SPENT }),
+      own("CAPTAIN", 7, 3, { activation: MOVED }),
+      own("GUARD", 5, 3, { activation: SPENT }),
       foe("SWORDSMAN", 4, 3, { hp: 15 }),
     ]);
     for (const command of ofKind(policyTurn(close).commands, "TENTACLE"))
       expect(gap(command.at, at(5, 3))).toBeGreaterThan(1);
-  });
-});
-
-describe("the Cult seat: Pick Me! (section 15.4)", () => {
-  const build = (channels: boolean, hp: number): GameStateV7 => {
-    const base = withHorrorV7(
-      scene([
-        own("FIGHTER", 6, 4, { activation: CHANNELLED }),
-        own("FIGHTER", 7, 5, { activation: CHANNELLED }),
-        own("SWORDSMAN", 5, 4),
-        foe("SWORDSMAN", 4, 4, { hp }),
-      ]),
-      0,
-      at(8, 3),
-      { activation: SPENT },
-    );
-    return channels
-      ? withStrandsV7(base, at(8, 3), [at(6, 4), at(7, 5)])
-      : base;
-  };
-
-  it("taunts beside a channeller a hostile melee unit can reach, instead of an attack that does not kill", () => {
-    const start = build(true, 15);
-    const decision = first(start);
-    expect(decision.command?.kind).toBe("PICK_ME");
-    expect(decision.priority).toBe(CULT_PICK_ME_PRIORITY_V7);
-    const turn = policyTurn(start);
-    expect(turn.state.cult.taunts).toEqual([idAt(start, at(5, 4))]);
-  });
-
-  it("attacks instead when its attack kills, and taunts for nobody that holds no strand", () => {
-    const kill = build(true, 1);
-    const turn = policyTurn(kill);
-    expect(kindsOf(turn.commands)).not.toContain("PICK_ME");
-    expect(alive(turn.state, idAt(kill, at(4, 4)))).toBe(false);
-    // A Horror nobody channels is a daemon that cannot be held: another
-    // scene; here the two Initiates simply hold no strand.
-    const idle = scene([
-      own("FIGHTER", 6, 4, { activation: CHANNELLED }),
-      own("SWORDSMAN", 5, 4),
-      foe("SWORDSMAN", 4, 4),
-    ]);
-    expect(kindsOf(policyTurn(idle).commands)).not.toContain("PICK_ME");
-    expect(build(false, 15).cult.strands).toHaveLength(0);
   });
 });
 
@@ -867,8 +826,8 @@ describe("the Cult seat: Pamphlets (section 15.4)", () => {
     ).toBe(true);
   });
 
-  it("sends the Initiate, not the Chosen beside it, onto the village", () => {
-    const start = scene([own("FIGHTER", 6, 4), own("SWORDSMAN", 4, 4)]);
+  it("sends the Initiate, not the Idol Bearer beside it, onto the village", () => {
+    const start = scene([own("FIGHTER", 6, 4), own("GUARD", 4, 4)]);
     const turn = policyTurn(start);
     expect(nowAt(turn.state, idAt(start, at(6, 4)))).toEqual(at(5, 5));
     expect(ofKind(turn.commands, "CAPTURE")).toHaveLength(1);
@@ -883,7 +842,6 @@ describe("the Cult seat: legal, deterministic turns on what A3 covers", () => {
     "RIBBIT",
     "SWITCHEROO",
     "TENTACLE",
-    "PICK_ME",
   ];
 
   const midGame = (): GameStateV7 =>
@@ -893,12 +851,12 @@ describe("the Cult seat: legal, deterministic turns on what A3 covers", () => {
           [
             own("FIGHTER", 6, 6),
             own("FIGHTER", 6, 7),
-            own("SWORDSMAN", 6, 8),
+            own("FIGHTER", 6, 8),
             own("GUARD", 8, 8),
             own("MARKSMAN", 7, 6),
             own("CAPTAIN", 7, 7),
             own("CATAPULT", 7, 8),
-            own("KNIGHT", 7, 9),
+            own("MARKSMAN", 7, 9),
             own("RAIDER", 9, 6),
             own("JUGGERNAUT", 8, 7),
             foe("FIGHTER", 4, 6),
@@ -927,7 +885,6 @@ describe("the Cult seat: legal, deterministic turns on what A3 covers", () => {
       CULT_RIBBIT_PRIORITY_V7,
       CULT_SWITCHEROO_PRIORITY_V7,
       CULT_TENTACLE_PRIORITY_V7,
-      CULT_PICK_ME_PRIORITY_V7,
       CULT_STARFALL_PRIORITY_V7,
       CULT_PROCLAIM_LAST_PRIORITY_V7,
     ]);

@@ -825,11 +825,18 @@ describe("Chapter One data", () => {
     expect(lodge.units.filter((unit) => unit.role === "CAPTAIN")).toHaveLength(
       2,
     );
-    for (const role of ["JUGGERNAUT", "CATAPULT", "KNIGHT", "SWORDSMAN"])
+    // (Revision 3, the Cult redesign's roster, `pulp_wars-mch9.31`: the
+    // Caller and the Chosen retired, so no `KNIGHT` or `SWORDSMAN`.)
+    for (const role of ["JUGGERNAUT", "CATAPULT", "GUARD", "MARKSMAN"])
       expect(
         lodge.units.some((unit) => unit.role === role),
         role,
       ).toBe(true);
+    for (const role of ["KNIGHT", "SWORDSMAN"])
+      expect(
+        lodge.units.some((unit) => unit.role === role),
+        role,
+      ).toBe(false);
     expect(
       finale.reinforcements?.map((wave) => [wave.seat, wave.round]),
     ).toEqual([

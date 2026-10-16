@@ -218,13 +218,13 @@ describe("the words", () => {
       "RIBBIT",
       "SWITCHEROO",
       "TENTACLE",
-      "PICK_ME",
+      // (Pick Me! retired with the Chosen, `pulp_wars-mch9.31`.)
     ]);
     for (const kind of CULT_TRICK_KINDS_V7) {
       const words = [
         CULT_TRICK_LABELS_V7[kind],
         CULT_TRICK_TOOLTIPS_V7[kind],
-        kind === "PICK_ME" ? "" : CULT_TRICK_PICKS_V7[kind],
+        CULT_TRICK_PICKS_V7[kind],
       ].join(" | ");
       expect(words).not.toMatch(/[A-Z]{2,}_[A-Z]|\(\d+, ?\d+\)|[+*/=]\s*\d/);
       expect(CULT_TRICK_LABELS_V7[kind].length).toBeLessThanOrEqual(16);
@@ -283,7 +283,7 @@ describe("the words", () => {
       "2 chanters · 7 damage · 3 units · 1 of yours",
     );
     expect(beginRitualTargetNameV7(preview)).toBe(
-      "Star-fall here at the start of your next turn: 7 damage to every unit on the nine tiles: 3 units there now, 1 would die.",
+      "Star-fall here at the start of your next turn: 7 damage to every unit on the nine tiles: 3 units there now, 2 would die.",
     );
     const summoning = cultSummoningUiFixtureV7();
     const summoner = idAt(summoning, R.summoner);
@@ -320,7 +320,6 @@ describe("a ritual on the board, for every viewer", () => {
       cowed: [],
       frogs: [],
       hexCooldowns: [],
-      taunts: [],
       tentacles: [],
     });
     const base = new Map();
@@ -335,7 +334,7 @@ describe("a ritual on the board, for every viewer", () => {
     const own = viewOf(state);
     const ritual = required(own.cult.rituals[0]);
     expect(ritualMarkNameV7(own, previewRitualV7(own, ritual))).toBe(
-      "Star-fall lands here at the start of your next turn: 7 damage to every unit on the nine tiles: 3 units there now, 1 would die. Disrupt its circle and nothing happens.",
+      "Star-fall lands here at the start of your next turn: 7 damage to every unit on the nine tiles: 3 units there now, 2 would die. Disrupt its circle and nothing happens.",
     );
     const rival = viewOf(state, 1);
     const seen = required(rival.cult.rituals[0]);
@@ -344,7 +343,7 @@ describe("a ritual on the board, for every viewer", () => {
     );
     const forecast = (entry: typeof seen) => previewRitualV7(rival, entry);
     expect(cultTrickTileLinesV7(rival, R.star, forecast)).toEqual([
-      "Star-fall lands here at the start of the Cultists' next turn: 7 damage to every unit on the nine tiles: 3 units there now, 1 would die. Disrupt its circle and nothing happens",
+      "Star-fall lands here at the start of the Cultists' next turn: 7 damage to every unit on the nine tiles: 3 units there now, 2 would die. Disrupt its circle and nothing happens",
     ]);
     expect(cultTrickTileLinesV7(rival, R.starKnight, forecast)).toEqual([
       "In a star's path: 7 damage at the start of the Cultists' next turn",
@@ -555,14 +554,14 @@ describe("the chips and a frog's numbers", () => {
     ).toEqual([
       ["frog", "Frog", true],
       ["grabbed", "Grabbed", true],
-      ["taunted", "Taunted", true],
     ]);
+    // (Pick Me!'s chips retired with the Chosen, `pulp_wars-mch9.31`.)
     expect(
       cultTrickChipsV7(view, unit(T.fighter)).map((chip) => chip.id),
-    ).toEqual(["taunted"]);
+    ).toEqual([]);
     expect(
-      cultTrickChipsV7(view, unit(T.chosen)).map((chip) => chip.id),
-    ).toEqual(["pick-me"]);
+      cultTrickChipsV7(view, unit(T.bearer)).map((chip) => chip.id),
+    ).toEqual([]);
     expect(
       cultTrickChipsV7(view, unit(T.hexer)).map((chip) => [
         chip.id,
@@ -570,15 +569,7 @@ describe("the chips and a frog's numbers", () => {
       ]),
     ).toEqual([["hex-spent", "Spent"]]);
     // Every chip has its sentence in the unit's "?" (the glossary).
-    for (const id of [
-      "chanting",
-      "frog",
-      "grabbed",
-      "taunted",
-      "pick-me",
-      "hex-spent",
-      "attacks",
-    ])
+    for (const id of ["chanting", "frog", "grabbed", "hex-spent", "attacks"])
       expect(statusGlossaryV7(id), id).not.toBeNull();
     expect(statusGlossaryV7("attacks")).toEqual(glossaryEntryV7("RAVAGE"));
   });
@@ -621,18 +612,13 @@ describe("the notices", () => {
     expect(notice(step(state, swap, 0, 1))).toBe(
       "Switcheroo! Your Knight was swapped away",
     );
-    const shout: CommandV7 = { kind: "PICK_ME", unitId: idAt(state, T.chosen) };
-    expect(notice(step(state, shout))).toBeNull();
-    expect(notice(step(state, shout, 0, 1))).toBe(
-      "Pick Me! Your units beside the Chosen can attack only it",
-    );
     const call: CommandV7 = {
       kind: "TENTACLE",
       unitId: idAt(state, T.caller),
       at: at(5, 4),
     };
     // It rises beside the Human Knight and the Cult's own Hexer, and slaps
-    // the weaker.
+    // the weaker (the Summoner calls it since the Cult redesign).
     expect(notice(step(state, call, 0, 1))).toMatch(/^A Tentacle rises/);
   });
 
@@ -734,11 +720,6 @@ describe("what each event plays", () => {
     expect(cultSteps(swap.steps)).toEqual([
       ["SWITCHEROO", null, [T.familiar, T.knight]],
     ]);
-    const shout = step(state, {
-      kind: "PICK_ME",
-      unitId: idAt(state, T.chosen),
-    });
-    expect(cultSteps(shout.steps)).toEqual([["PICK_ME", null, [T.chosen]]]);
     const call = step(state, {
       kind: "TENTACLE",
       unitId: idAt(state, T.caller),
@@ -795,7 +776,8 @@ describe("what each event plays", () => {
   });
 
   it("has a duration, a still frame, a sound list and a drawing for every cue", () => {
-    expect(CULT_TRICK_EFFECTS_V7).toHaveLength(12);
+    // Eleven: Pick Me!'s shout retired with the Chosen (`pulp_wars-mch9.31`).
+    expect(CULT_TRICK_EFFECTS_V7).toHaveLength(11);
     const view = viewOf(cultTricksUiFixtureV7());
     for (const effect of CULT_TRICK_EFFECTS_V7) {
       expect(CULT_EFFECT_DURATIONS_V7[effect]).toBeGreaterThanOrEqual(200);
@@ -1163,7 +1145,8 @@ describe("the board", () => {
     expect(images(before)).not.toContain(
       "drawImage:chibi-direction-cult-frog-unit",
     );
-    expect(log).toContain("fillText:ME!");
+    // (Pick Me!'s "ME!" retired with the Chosen, `pulp_wars-mch9.31`.)
+    expect(log).not.toContain("fillText:ME!");
     const cowed = drawn(withCowedV7(cultTricksUiFixtureV7(), R.enemyCapital));
     expect(cowed).toContain("fillText:KNEEL!");
     // Bead pulp_wars-mch9.24: the banner's shutters are never the raster.
@@ -1186,7 +1169,7 @@ describe("the board", () => {
     );
     // The victim's seat sees the same mark on its own unit.
     expect(eyes(viewOf(cultTricksRivalUiFixtureV7()))).toEqual([T.knight]);
-    // Beside the Caller alone: the Cult's own unit is next.
+    // Beside the Summoner alone: the Cult's own unit is next.
     expect(
       eyes(viewOf(withTentacleV7(cultTricksUiFixtureV7(), T.caller, at(8, 2)))),
     ).toEqual([T.caller]);

@@ -368,21 +368,13 @@ export type CommandV7 =
     }
   | {
       /**
-       * The Cultists (section 9.3): the Caller `unitId` calls a Tentacle up
-       * on the free tile `at` within 3 tiles.
+       * The Cultists (section 9.3): the Summoner `unitId` (the retired
+       * Caller's before `pulp_wars-mch9.31`) calls a Tentacle up on the free
+       * tile `at` within 3 tiles.
        */
       readonly kind: "TENTACLE";
       readonly unitId: UnitId;
       readonly at: CoordV7;
-    }
-  | {
-      /**
-       * The Cultists (section 8.2): the Chosen `unitId` shouts Pick Me!:
-       * hostile units beside it may attack only it until its owner's next
-       * turn.
-       */
-      readonly kind: "PICK_ME";
-      readonly unitId: UnitId;
     }
   | {
       /**
@@ -523,8 +515,6 @@ const UNIT_ONLY_KINDS = new Set<CommandKindV7>([
   // The Cultists (`pulp_wars-mch9.5`): Behold! and Boo!.
   "BEHOLD",
   "BOO",
-  // `pulp_wars-mch9.8`: Pick Me!.
-  "PICK_ME",
 ]);
 
 export function parseCommandEnvelopeV7(
@@ -1081,7 +1071,7 @@ function referencedOrdinal(command: CommandV7): number {
     command.kind === "TOP_UP" ||
     command.kind === "SWALLOW" ||
     // The Cultists: `RIBBIT` and `SWITCHEROO` by unit, then target.
-    // (`TENTACLE` is ordered by its tile; `PICK_ME` by its unit.)
+    // (`TENTACLE` is ordered by its tile.)
     command.kind === "RIBBIT" ||
     command.kind === "SWITCHEROO"
   )

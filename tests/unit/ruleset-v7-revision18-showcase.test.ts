@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { endgamePlanForPolicyV7 } from "../../src/ai/v7-endgame";
 import {
+  CULT_VACANT_ROLES_V7,
   FACTION_IDS_V7,
   MAP_GENERATION_REVISION_V7,
   RULESET_7_ID,
@@ -249,7 +250,6 @@ describe("ruleset-7 revision-18 Showcase setup", () => {
         cowed: [],
         frogs: [],
         hexCooldowns: [],
-        taunts: [],
         tentacles: [],
       });
       expectInitialScoreLedgerV7(created.state, scoreLedger, false);
@@ -1007,8 +1007,11 @@ describe("ruleset-7 revision-18 Showcase play", () => {
         (unit) => unit.ownerId === state.humanPlayerId,
       );
       // The frozen sea (`pulp_wars-5ti.3`): an Ice Folk seat has no ships.
+      // The Cult redesign (`pulp_wars-mch9.31`): a Cult seat has no Caller
+      // and no Chosen (its vacant slots).
       const shipless = faction === "ICE_FOLK";
-      expect(own).toHaveLength(shipless ? 9 : 12);
+      const vacant = faction === "CULT" ? CULT_VACANT_ROLES_V7 : [];
+      expect(own).toHaveLength((shipless ? 9 : 12) - vacant.length);
       for (const unit of own) {
         const offered = commands.filter(
           (command) => "unitId" in command && command.unitId === unit.id,
@@ -1037,7 +1040,8 @@ describe("ruleset-7 revision-18 Showcase play", () => {
           (role) =>
             role !== "JUGGERNAUT" &&
             // (The ninth unit, 7r55: every seat trains its heavy.)
-            !(shipless && isNavalRoleV7(role)),
+            !(shipless && isNavalRoleV7(role)) &&
+            !vacant.includes(role),
         ).sort(),
       );
       expect(commands.at(-1)).toEqual({ kind: "END_TURN" });

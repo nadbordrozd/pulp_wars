@@ -66,7 +66,7 @@ import {
 } from "../fixtures/v7-revision20";
 
 /**
- * Tuning 5 (`pulp_wars-w49.4`, identity `pulp-wars-poc-7r84`;
+ * Tuning 5 (`pulp_wars-w49.4`, identity `pulp-wars-poc-7r85`;
  * docs/product/RULESET_7_TUNING_HUMAN.md section 12): the Normal AI's army
  * play, the Human Guard open to ranged attacks, the Swordsman, the removal
  * of Drill, the Blast Mountain's setter, the Land Grant's price, and the
@@ -163,13 +163,13 @@ describe("tuning 5 identity", () => {
   // took 7r49 and the Goblin pass 7r50, so 7r48 is the prior identity
   // before the last.
   it("was 7r48 after 7r47, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r84");
-    expect(PRIOR_RULESET_7_IDS.slice(-37, -35)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r85");
+    expect(PRIOR_RULESET_7_IDS.slice(-38, -36)).toEqual([
       "pulp-wars-poc-7r47",
       "pulp-wars-poc-7r48",
     ]);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r84.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-37, -35)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r85.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-38, -36)).toEqual([
       "pulpWars.save.v7r47.current",
       "pulpWars.save.v7r48.current",
     ]);
@@ -323,15 +323,18 @@ describe("the Swordsman (the Champion since 7r55)", () => {
       mayUsePrimaryActionAfterMove: true,
       abilities: ["ATTACK", "CAPTURE"],
     });
+    // The Cult redesign (`pulp_wars-mch9.31`): every tree but the Cult's,
+    // whose heavy slot is vacant (the Chosen retired).
     for (const faction of FACTION_IDS_V7) {
-      expect(factionUnlocksRoleV7(faction, "SWORDSMAN"), faction).toBe(true);
+      const heavy = faction !== "CULT";
+      expect(factionUnlocksRoleV7(faction, "SWORDSMAN"), faction).toBe(heavy);
       expect(
         technologyCapabilitiesV7(
           TECHNOLOGY_IDS_V7,
           faction,
         ).trainableRoles.includes("SWORDSMAN"),
         faction,
-      ).toBe(true);
+      ).toBe(heavy);
       expect(
         factionTreeV7(faction)
           .nodes.find((node) => node.id === "ENGINEERING")
@@ -343,7 +346,7 @@ describe("the Swordsman (the Champion since 7r55)", () => {
           .nodes.find((node) => node.id === "METALLURGY")
           ?.unlockedRoles.includes("SWORDSMAN"),
         faction,
-      ).toBe(true);
+      ).toBe(heavy);
     }
     expect(
       technologyCapabilitiesV7(
@@ -467,12 +470,18 @@ describe("the Swordsman (the Champion since 7r55)", () => {
       subject: "UNIT:SWORDSMAN",
       portrait: "PORTRAIT:SWORDSMAN",
     });
+    // (The Cult's slot is vacant since its redesign, `pulp_wars-mch9.31`:
+    // an empty cell.)
     for (const faction of FACTION_IDS_V7)
       if (faction !== "ORIGINAL")
-        expect(galleryUnitCellV7("SWORDSMAN", faction), faction).toMatchObject({
-          kind: "UNIT",
-          name: effectiveRoleRuleV7("SWORDSMAN", faction).label,
-        });
+        expect(galleryUnitCellV7("SWORDSMAN", faction), faction).toMatchObject(
+          faction === "CULT"
+            ? { kind: "EMPTY" }
+            : {
+                kind: "UNIT",
+                name: effectiveRoleRuleV7("SWORDSMAN", faction).label,
+              },
+        );
   });
 });
 
@@ -634,8 +643,9 @@ describe("Normal AI army play: the composition", () => {
     // (`reduce<number>`: the Dinosaur shares hold a 0, the Triceratops
     // being a line unit, which would otherwise narrow the sum's type.)
     // The Cult seat (`pulp_wars-mch9.9`): the Cult's shares are its spec's
-    // (RULESET_7_CULTISTS.md section 15.1: 45, 20, 10, 10, 10), which leave
-    // a twentieth to the Summoners and Familiars it counts apart.
+    // (RULESET_7_CULTISTS.md section 15.1: 45, 20, 10, 10, 10; 55, 20, 10,
+    // 10, 0 since the Caller retired, `pulp_wars-mch9.31`), which leave a
+    // twentieth to the Summoners and Familiars it counts apart.
     for (const [name, shares] of Object.entries(ARMY_SHARES_V7))
       expect(
         Object.values(shares).reduce<number>((sum, value) => sum + value, 0),

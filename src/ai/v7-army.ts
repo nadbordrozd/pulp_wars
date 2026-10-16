@@ -506,8 +506,8 @@ export const ARMY_RESEARCH_ROLES_V7: Readonly<
   ] as const),
   // The Cult seat (`pulp_wars-mch9.9`, RULESET_7_CULTISTS.md section 15.1;
   // reasoned, not played): the Summoner, the Hexer, the Idol Bearer, the
-  // Familiar, the Chosen, the Stargazer, the Caller
-  // (`CULT_RESEARCH_ROLES_V7`, with the reasons).
+  // Familiar, the Stargazer (`CULT_RESEARCH_ROLES_V7`, with the reasons;
+  // the Chosen and the Caller retired, `pulp_wars-mch9.31`).
   CULT: CULT_RESEARCH_ROLES_V7,
 });
 
@@ -1002,8 +1002,10 @@ export const ARMY_SHARES_V7 = Object.freeze({
     SIEGE: 10,
     BREAKTHROUGH: 20,
   }),
-  // The Cult seat (`pulp_wars-mch9.9`; reasoned, not played): 45 / 10 / 20
-  // / 10 / 10, the same against fragile enemies (`CULT_ARMY_SHARES_V7`).
+  // The Cult seat (`pulp_wars-mch9.9`; reasoned, not played): 55 / 10 / 20
+  // / 10 / 0 (no breakthrough unit since the Caller retired,
+  // `pulp_wars-mch9.31`: its tenth went to the line), the same against
+  // fragile enemies (`CULT_ARMY_SHARES_V7`).
   // The Summoners and the Familiars are counted apart (`armyRoleScoreV7`).
   cult: CULT_ARMY_SHARES_V7,
 });

@@ -27,7 +27,6 @@ import type { SupportEffectArtV7 } from "./support-presentation-v7";
  *   between them.
  * - **TENTACLE:** a teal splash where the Tentacle rises.
  * - **GRAB:** a teal ring closes round the unit it holds.
- * - **PICK_ME:** "ME!" bursts over the Chosen.
  * - **PAMPHLETS:** leaflets flutter up from the village.
  *
  * `progress` runs 0 to 1; reduced motion holds one still frame of each
@@ -45,7 +44,6 @@ export const CULT_TRICK_EFFECTS_V7 = [
   "SWITCHEROO",
   "TENTACLE",
   "GRAB",
-  "PICK_ME",
   "PAMPHLETS",
 ] as const;
 export type CultTrickEffectV7 = (typeof CULT_TRICK_EFFECTS_V7)[number];
@@ -69,7 +67,6 @@ export const CULT_TRICK_EFFECT_DURATIONS_V7: Readonly<
   SWITCHEROO: 420,
   TENTACLE: 420,
   GRAB: 320,
-  PICK_ME: 420,
   PAMPHLETS: 460,
 };
 
@@ -87,7 +84,6 @@ export const CULT_TRICK_STILL_PROGRESS_V7: Readonly<
   SWITCHEROO: 0.4,
   TENTACLE: 0.45,
   GRAB: 0.5,
-  PICK_ME: 0.4,
   PAMPHLETS: 0.45,
 };
 
@@ -566,42 +562,6 @@ export function drawCultTrickFeedbackV7(
         4.4 * zoom,
         fade,
         0.38,
-      );
-    } else if (effect === "PICK_ME") {
-      context.save();
-      context.globalAlpha *= fade;
-      context.lineCap = "round";
-      const inner = (34 + 20 * progress) * zoom;
-      const outer = inner + 14 * zoom;
-      for (const [stroke, width] of [
-        [CULT_PALETTE_V7.casing, 7 * zoom],
-        [CULT_PALETTE_V7.redLit, 3.4 * zoom],
-      ] as const) {
-        context.strokeStyle = stroke;
-        context.lineWidth = Math.max(1, width);
-        context.beginPath();
-        // The spokes over the upper half: a shout, not a blast.
-        for (let spoke = 0; spoke < 7; spoke += 1) {
-          const angle = Math.PI + (spoke / 6) * Math.PI;
-          context.moveTo(
-            point.x + Math.cos(angle) * inner,
-            point.y - 20 * zoom + Math.sin(angle) * inner,
-          );
-          context.lineTo(
-            point.x + Math.cos(angle) * outer,
-            point.y - 20 * zoom + Math.sin(angle) * outer,
-          );
-        }
-        context.stroke();
-      }
-      context.restore();
-      shout(
-        context,
-        { x: point.x, y: point.y - (56 + 14 * progress) * zoom },
-        "ME!",
-        (18 + 10 * Math.min(1, progress * 3)) * zoom,
-        CULT_PALETTE_V7.wax,
-        fade,
       );
     } else if (effect === "PAMPHLETS") {
       if (

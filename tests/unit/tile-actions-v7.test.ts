@@ -338,10 +338,12 @@ describe("tile actions: the factions' scenes", () => {
     ).toBe(false);
   });
 
-  it("gives the Chosen's Pick Me! (a shout round it) no badge", () => {
-    const plan = planOf(tileActionsHexerFixtureV7(), CULT_TRICK_UI_V7.chosen);
+  // (The Chosen's Pick Me! retired with the Cult redesign,
+  // `pulp_wars-mch9.31`; an Idol Bearer stands on its tile.)
+  it("gives the Idol Bearer's Behold! (raised round it) no badge", () => {
+    const plan = planOf(tileActionsHexerFixtureV7(), CULT_TRICK_UI_V7.bearer);
     for (const tile of plan?.tiles ?? [])
-      expect(tile.actions.map((action) => action.id)).not.toContain("PICK_ME");
+      expect(tile.actions.map((action) => action.id)).not.toContain("BEHOLD");
   });
 
   it("badges a Yeti's Freeze tiles, with the Attack on the boat it could hit", () => {

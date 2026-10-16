@@ -15,15 +15,15 @@ import type {
 /**
  * The Cultists (`pulp_wars-mch9.4`, docs/product/RULESET_7_CULTISTS.md
  * section 3): what paid a Cult seat Favour, in the frozen order: a
- * Sacrifice, a Seizure, an Offering, a Chosen's Martyr, (section 8.3,
- * `pulp_wars-mch9.6`) a bound daemon's kill, and (section 7.3,
- * `pulp_wars-mch9.7`) a unit the Great Summoning consumed.
+ * Sacrifice, a Seizure, an Offering, (section 8.3, `pulp_wars-mch9.6`) a
+ * bound daemon's kill, and (section 7.3, `pulp_wars-mch9.7`) a unit the
+ * Great Summoning consumed. (The Chosen's `MARTYR` retired with the Chosen:
+ * the Cult redesign, `pulp_wars-mch9.31`.)
  */
 export const FAVOUR_SOURCES_V7 = Object.freeze([
   "SACRIFICE",
   "SEIZE",
   "OFFERING",
-  "MARTYR",
   "DAEMON_KILL",
   "CONSUMPTION",
 ] as const);
@@ -1775,17 +1775,6 @@ export type DomainEventV7 =
       readonly at: CoordV7;
     }
   | {
-      /**
-       * The Cultists (section 8.2): the Chosen `unitId` of `playerId`, on
-       * `at`, shouted Pick Me!: until its owner's next Start Turn a hostile
-       * unit beside it may attack only it.
-       */
-      readonly kind: "PICK_ME_SHOUTED";
-      readonly playerId: PlayerId;
-      readonly unitId: UnitId;
-      readonly at: CoordV7;
-    }
-  | {
       readonly kind: "SPOILS_AWARDED";
       readonly playerId: PlayerId;
       readonly cityId: CityId;
@@ -1974,7 +1963,7 @@ export type DomainEventV7 =
          * Siege rules (`pulp_wars-0pgd`, `7r80`): the unit on a city center
          * that a level-up reward unit took, with no tile next to the center
          * to step to (after `UNIT_SPAWN_DISPLACED` with `to` null). A
-         * removal: no credit, Plunder, Grave, Crumbs, blast, or Martyr.
+         * removal: no credit, Plunder, Grave, Crumbs, or blast.
          */
         | "DISPLACED";
     }

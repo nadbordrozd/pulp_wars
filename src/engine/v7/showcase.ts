@@ -8,6 +8,7 @@ import {
   HUMAN_ONLY_ROLES_V7,
   dockPopulationV7,
   effectiveRoleRuleV7,
+  factionFieldsRoleV7,
   technologyCapabilitiesV7,
 } from "../rules/ruleset-v7";
 import {
@@ -225,6 +226,21 @@ export function showcaseUnitRoleV7(
 export const SHOWCASE_ROLE_IDS_V7: readonly UnitRoleIdV7[] = Object.freeze(
   UNIT_ROLE_IDS_V7.filter((role) => !HUMAN_ONLY_ROLES_V7.includes(role)),
 );
+
+/**
+ * The Cult redesign (docs/product/RULESET_7_CULT_REDESIGN.md section 4.2,
+ * `pulp_wars-mch9.31`): whether a seat of `faction` fields a unit on the
+ * template's tile: false for a vacant role ({@link factionFieldsRoleV7}).
+ */
+export function showcaseFieldsTemplateV7(
+  faction: FactionIdV7,
+  template: { readonly role: UnitRoleIdV7 },
+): boolean {
+  return factionFieldsRoleV7(
+    faction,
+    showcaseUnitRoleV7(template.role, faction),
+  );
+}
 
 /**
  * The center column of a seat's strip: seat 0 uses strip 0 and AI seat `i`
@@ -548,12 +564,17 @@ export function createShowcaseEntitiesV7(
         });
         continue;
       }
+      // The Cult redesign (`pulp_wars-mch9.31`): a vacant role (the Cult's
+      // `KNIGHT`) fields no unit; the seat still takes its entity ID.
+      if (!showcaseFieldsTemplateV7(player.faction, template)) continue;
       units.push(unitFor(seat, unit.id, template));
     }
   });
-  players.forEach((_, seat) => {
+  players.forEach((player, seat) => {
     const unit = allocateUnitId(nextEntityId);
     nextEntityId = unit.nextEntityId;
+    // The Cult's vacant `SWORDSMAN` fields no ninth unit either.
+    if (!showcaseFieldsTemplateV7(player.faction, ninthTemplate)) return;
     units.push(unitFor(seat, unit.id, ninthTemplate));
   });
   ice.sort((left, right) => left.at.y - right.at.y || left.at.x - right.at.x);

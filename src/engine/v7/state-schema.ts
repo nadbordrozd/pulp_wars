@@ -2133,7 +2133,6 @@ function parseCult(input: unknown): CultStateV7 | null {
       "idols",
       "rituals",
       "strands",
-      "taunts",
       "tentacles",
     ]) ||
     !isDenseArrayV7(input.hexCooldowns) ||
@@ -2267,12 +2266,11 @@ function parseCult(input: unknown): CultStateV7 | null {
       return null;
     cowed.push({ cityId, endsLeft: candidate.endsLeft });
   }
-  // `pulp_wars-mch9.8` (sections 9.1, 9.2, 8.2, and 9.3): the frogs and the
-  // taunts, strictly ascending; the hex cooldowns and the Tentacles,
-  // strictly ascending by unit.
+  // `pulp_wars-mch9.8` (sections 9.1, 9.2, and 9.3): the frogs, strictly
+  // ascending; the hex cooldowns and the Tentacles, strictly ascending by
+  // unit. (Pick Me!'s taunts retired with the Chosen, `pulp_wars-mch9.31`.)
   const frogs = parseStrictlyAscendingIdsV7(input.frogs, parseUnitIdV7);
-  const taunts = parseStrictlyAscendingIdsV7(input.taunts, parseUnitIdV7);
-  if (frogs === null || taunts === null) return null;
+  if (frogs === null) return null;
   const hexCooldowns: CultStateV7["hexCooldowns"][number][] = [];
   for (const candidate of input.hexCooldowns) {
     if (!hasExactKeysV7(candidate, ["turnsRemaining", "unitId"])) return null;
@@ -2333,7 +2331,6 @@ function parseCult(input: unknown): CultStateV7 | null {
     cowed,
     frogs,
     hexCooldowns,
-    taunts,
     tentacles,
   };
 }
@@ -2486,16 +2483,15 @@ function cultValid(
 
 /**
  * The Cultists (`pulp_wars-mch9.8`, RULESET_7_CULTISTS.md sections 9.1 to
- * 9.3 and 8.2): the cross references of the trick lists (see
+ * 9.3): the cross references of the trick lists (see
  * {@link cultValid}).
  */
 function tricksValid(value: CrossInput): boolean {
-  const { frogs, hexCooldowns, taunts, tentacles } = value.cult;
+  const { frogs, hexCooldowns, tentacles } = value.cult;
   const wild = value.monsters.filter((entry) => entry.breed === "TENTACLE");
   if (
     frogs.length === 0 &&
     hexCooldowns.length === 0 &&
-    taunts.length === 0 &&
     tentacles.length === 0 &&
     wild.length === 0
   )
@@ -2509,7 +2505,6 @@ function tricksValid(value: CrossInput): boolean {
   };
   if (
     !frogs.every(ofPlayer) ||
-    !taunts.every(ofPlayer) ||
     !hexCooldowns.every((entry) => ofPlayer(entry.unitId)) ||
     tentacles.length !== wild.length
   )

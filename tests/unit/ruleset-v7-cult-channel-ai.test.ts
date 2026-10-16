@@ -861,7 +861,8 @@ describe("the Cult seat: Sacrifice (section 15.4)", () => {
 
   it("offers up no unit the enemy does not kill", () => {
     expect(
-      ofKind(policyTurn(doomed(10, 1)).commands, "SACRIFICE"),
+      // (7 HP: a full-HP Initiate since the Cult redesign, `pulp_wars-mch9.31`.)
+      ofKind(policyTurn(doomed(7, 1)).commands, "SACRIFICE"),
     ).toHaveLength(0);
   });
 
@@ -961,7 +962,10 @@ describe("the Cult seat: Seize (section 15.4)", () => {
       own("CAPTAIN", 7, 2),
       foe("FIGHTER", 5, 2, { hp: 6 }),
     ]);
-    expect(ofKind(policyTurn(start).commands, "SEIZE")).toHaveLength(0);
+    // (Since the Cult redesign's Attack 1.5 Initiate, `pulp_wars-mch9.31`,
+    // the Initiate's own attack leaves the Fighter broken and the Summoner
+    // may Seize it after: the rule is only that no step is made toward it
+    // first.)
     expect(decides(start)?.kind).not.toBe("SEIZE");
     expect(
       chooseNormalCommandV7(viewOf(start)).candidates[0]?.score.priority,
@@ -1096,7 +1100,6 @@ describe("the Cult seat: legal, deterministic turns on what A2 covers", () => {
     "RIBBIT",
     "SWITCHEROO",
     "TENTACLE",
-    "PICK_ME",
   ];
   const A2: readonly CommandV7["kind"][] = [
     "SACRIFICE",
@@ -1116,12 +1119,12 @@ describe("the Cult seat: legal, deterministic turns on what A2 covers", () => {
             [
               own("FIGHTER", 6, 6),
               own("FIGHTER", 6, 7),
-              own("SWORDSMAN", 6, 8),
+              own("FIGHTER", 6, 8),
               own("GUARD", 8, 8),
               own("MARKSMAN", 7, 6),
               own("CAPTAIN", 7, 7),
               own("CATAPULT", 7, 8),
-              own("KNIGHT", 7, 9),
+              own("MARKSMAN", 7, 9),
               own("RAIDER", 9, 6),
               own("JUGGERNAUT", 8, 7),
               foe("FIGHTER", 4, 6),

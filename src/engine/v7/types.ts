@@ -5,7 +5,7 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r84" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r85" as const;
 /**
  * Every earlier Ruleset 7 identity, oldest first. Readers report these as
  * incompatible (never invalid). An identity bump must append the outgoing
@@ -95,8 +95,9 @@ export const PRIOR_RULESET_7_IDS = Object.freeze([
   "pulp-wars-poc-7r81",
   "pulp-wars-poc-7r82",
   "pulp-wars-poc-7r83",
+  "pulp-wars-poc-7r84",
 ] as const);
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r84.current" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r85.current" as const;
 /**
  * The map generator a setup names (docs/product/RULESET_7_MAP_SCALE.md
  * section 8.8): `V4` is the many-seats generator of `pulp_wars-ykw.3`
@@ -364,13 +365,12 @@ export const COMMAND_KIND_ORDER_V7 = Object.freeze([
   // (Star-fall, the Great Summoning) and the Herald's Proclaim.
   "BEGIN_RITUAL",
   "PROCLAIM",
-  // The Cultists (`pulp_wars-mch9.8`, sections 9 and 8.2): the Hexer's
-  // Ribbit, the Familiar's Switcheroo, the Caller's Tentacle, and the
-  // Chosen's Pick Me!.
+  // The Cultists (`pulp_wars-mch9.8`, section 9): the Hexer's Ribbit, the
+  // Familiar's Switcheroo, and the Summoner's Tentacle (the Caller's, and
+  // the Chosen's Pick Me!, before the Cult redesign, `pulp_wars-mch9.31`).
   "RIBBIT",
   "SWITCHEROO",
   "TENTACLE",
-  "PICK_ME",
   "CAPTURE",
   "PROMOTE",
   "PILLAGE",
@@ -610,15 +610,14 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   "UNIT_CONSUMED",
   "HERALD_ARRIVED",
   "CITY_COWED",
-  // The Cultists (`pulp_wars-mch9.8`, sections 9 and 8.2): a unit turned
-  // into a frog, two units swapped, a Tentacle that rose, grabbed a unit,
-  // or sank, and a Chosen's Pick Me!.
+  // The Cultists (`pulp_wars-mch9.8`, section 9): a unit turned into a
+  // frog, two units swapped, and a Tentacle that rose, grabbed a unit, or
+  // sank. (`PICK_ME_SHOUTED` retired with the Chosen, `pulp_wars-mch9.31`.)
   "UNIT_FROGGED",
   "UNITS_SWAPPED",
   "TENTACLE_ROSE",
   "UNIT_GRABBED",
   "TENTACLE_SANK",
-  "PICK_ME_SHOUTED",
   "SPOILS_AWARDED",
   "PLUNDER_AWARDED",
   // Map curiosities (section 8.7): the bounty for killing a Monster.
@@ -1600,13 +1599,6 @@ export interface CultStateV7 {
    */
   readonly hexCooldowns: readonly HexCooldownV7[];
   /**
-   * Pick Me! (section 8.2): the Chosen that shouted, sorted. A unit hostile
-   * to a listed Chosen's owner that stands next to it may `ATTACK` only a
-   * listed Chosen next to it. An entry ends at its Chosen's owner's next
-   * Start Turn and when the Chosen leaves the board.
-   */
-  readonly taunts: readonly UnitId[];
-  /**
    * Tentacle and Grab (section 9.3): one entry per Tentacle on the board,
    * sorted by `unitId`.
    */
@@ -1684,7 +1676,6 @@ export function emptyCultStateV7(): CultStateV7 {
     cowed: [],
     frogs: [],
     hexCooldowns: [],
-    taunts: [],
     tentacles: [],
   };
 }

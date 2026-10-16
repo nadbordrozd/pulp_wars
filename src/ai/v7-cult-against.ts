@@ -31,8 +31,6 @@ import type {
  *   pulls back once its attack is made.
  * - **Leave a bound Herald alone** unless the attack kills it.
  * - **A frog** steps to a safer tile, and a unit that Tends cures it first.
- * - **Pick Me!** A Move that would only bind its unit to a taunting Chosen
- *   is no more than a routine Move.
  * - **Grab.** A unit a Tentacle holds may strike it.
  * - **A Cowed city** keeps its garrison, and an empty one is given one.
  *
@@ -177,8 +175,6 @@ export interface CultAgainstFactsV7 {
   readonly heralds: ReadonlySet<UnitId>;
   /** The own units that are frogs this turn. */
   readonly frogs: ReadonlySet<UnitId>;
-  /** The hostile Chosen that taunt. */
-  readonly taunters: readonly PublicUnitV7[];
   /** The own units a Tentacle holds, each with its Tentacle. */
   readonly grabs: ReadonlyMap<UnitId, UnitId>;
   /** The centers of the own Cowed cities. */
@@ -217,7 +213,6 @@ export function cultAgainstFactsV7(
     cult.daemons.length === 0 &&
     cult.rituals.length === 0 &&
     cult.frogs.length === 0 &&
-    cult.taunts.length === 0 &&
     cult.tentacles.length === 0 &&
     cult.cowed.length === 0
   )
@@ -320,10 +315,6 @@ export function cultAgainstFactsV7(
   const frogs = new Set(
     cult.frogs.filter((unitId) => unitsById.get(unitId)?.ownerId === viewer),
   );
-  const taunters = cult.taunts.flatMap((unitId) => {
-    const chosen = unitsById.get(unitId);
-    return foe(chosen) ? [chosen] : [];
-  });
   const grabs = new Map<UnitId, UnitId>();
   for (const tentacle of cult.tentacles) {
     const held =
@@ -344,7 +335,6 @@ export function cultAgainstFactsV7(
     summonings.length === 0 &&
     starKeys.size === 0 &&
     frogs.size === 0 &&
-    taunters.length === 0 &&
     grabs.size === 0 &&
     cowedKeys.size === 0
   )
@@ -364,7 +354,6 @@ export function cultAgainstFactsV7(
     starHarm,
     heralds,
     frogs,
-    taunters,
     grabs,
     cowedKeys,
     otherTargets: new Set(
@@ -766,18 +755,9 @@ export function cultAgainstMoveV7(
     priority = Math.max(priority, CULT_AGAINST_COWED_PRIORITY_V7);
     forced = true;
   }
-  // Pick Me!: a Move that would bind the unit to a taunting Chosen is no
-  // more than a routine Move (the attack it was made for may be refused),
-  // unless it ends on a center, a village, or a chest.
-  if (
-    !forced &&
-    priority > tools.routineMaximum &&
-    !tools.site(to) &&
-    facts.taunters.some(
-      (chosen) => gap(chosen.at, to) === 1 && gap(chosen.at, from) !== 1,
-    )
-  )
-    priority = tools.routineMaximum;
+  // (Pick Me!'s rule, a Move that would bind the unit to a taunting Chosen,
+  // retired with the Chosen: the Cult redesign, `pulp_wars-mch9.31`; the
+  // warden's Awestruck takes its place in a later bead.)
   return { priority, strategic, forced };
 }
 

@@ -362,10 +362,12 @@ describe("where a gain of Favour comes from", () => {
     expect(plan.population).toEqual([]);
   });
 
-  it("is the tile a Chosen died on for a Martyr", () => {
+  it("flies nothing when a Cult unit dies (Martyr retired with the Chosen)", () => {
+    // The Cult redesign (`pulp_wars-mch9.31`): a Chosen's death paid 6
+    // Favour; no death pays any now.
     const state = cultFieldV7(
       [
-        { seat: 0, role: "SWORDSMAN", at: at(5, 3), hp: 2 },
+        { seat: 0, role: "GUARD", at: at(5, 3), hp: 2 },
         { seat: 1, role: "KNIGHT", at: at(5, 4) },
       ],
       { activeSeat: 1 },
@@ -375,13 +377,10 @@ describe("where a gain of Favour comes from", () => {
     const before = viewForV7(state, cult);
     const after = viewForV7(run.state, cult);
     const events = projectEventsV7(state, run.state, cult, run.events);
-    expect(feedbackPlanV7(before, events, after).favour).toEqual([
-      { source: "MARTYR", at: at(5, 3), amount: 6 },
-    ]);
-    expect(cultBoundaryNoticeV7(events.events, before, after)).toEqual({
-      text: "Martyr: +6 Favour",
-      toast: true,
-    });
+    expect(feedbackPlanV7(before, events, after).favour).toEqual([]);
+    expect(
+      cultBoundaryNoticeV7(events.events, before, after)?.text ?? "",
+    ).not.toContain("Martyr");
   });
 
   it("is empty in the empty plan", () => {

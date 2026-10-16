@@ -90,8 +90,8 @@ export interface PopulationGainV7 {
 /**
  * The Cultists (bead pulp_wars-mch9.17, RULESET_7_CULTISTS.md section 3):
  * Favour the viewer's seat gained, from the tile that paid it (the victim's
- * of a Sacrifice or a Seizure, the city's of an Offering, the tile a Chosen
- * died on). Another seat's Favour is public but flies nowhere: it is read
+ * of a Sacrifice or a Seizure, the city's of an Offering). Another seat's
+ * Favour is public but flies nowhere: it is read
  * off the leaderboard.
  */
 export interface FavourGainV7 {

@@ -46,8 +46,8 @@ function cultMatch(): GameStateV7 {
       { seat: 0, role: "MARKSMAN", at: at(5, 3) },
       { seat: 0, role: "CAPTAIN", at: at(6, 3) },
       { seat: 0, role: "CATAPULT", at: at(7, 3) },
-      { seat: 0, role: "KNIGHT", at: at(5, 4) },
-      { seat: 0, role: "SWORDSMAN", at: at(6, 4) },
+      // (The Cult's KNIGHT and SWORDSMAN slots are vacant since the Cult
+      // redesign, `pulp_wars-mch9.31`: no Caller, no Chosen.)
       { seat: 0, role: "JUGGERNAUT", at: at(7, 4) },
       { seat: 1, role: "FIGHTER", at: at(3, 3) },
     ],
@@ -122,8 +122,6 @@ describe("a match with a Cult seat is shown with stand-in art", () => {
     );
     expect(cult.map((entry) => entry.label).sort()).toEqual(
       [
-        "Caller",
-        "Chosen",
         "Familiar",
         "Hexer",
         "Idol Bearer",
@@ -144,8 +142,6 @@ describe("a match with a Cult seat is shown with stand-in art", () => {
       [at(5, 3), "Hexer"],
       [at(6, 3), "Summoner"],
       [at(7, 3), "Stargazer"],
-      [at(5, 4), "Caller"],
-      [at(6, 4), "Chosen"],
       [at(7, 4), "Thing in the Cellar"],
     ];
     for (const [where, name] of names) {

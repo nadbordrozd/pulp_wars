@@ -630,8 +630,10 @@ describe("the Cult in the interface's words and lists", () => {
   it("builds a Gallery cell, a recruit card and a glossary for every Cult unit all the same", () => {
     for (const row of GALLERY_UNIT_ROWS_V7) {
       const cell = galleryUnitCellV7(row, "CULT");
-      if (row === "EGG") {
-        expect(cell.kind).toBe("EMPTY");
+      // The Cult redesign (`pulp_wars-mch9.31`): the vacant Knight and
+      // Swordsman rows (the retired Caller and Chosen) are empty cells.
+      if (row === "EGG" || row === "KNIGHT" || row === "SWORDSMAN") {
+        expect(cell.kind, row).toBe("EMPTY");
         continue;
       }
       if (cell.kind !== "UNIT") throw new Error(`${row}: empty`);
@@ -669,8 +671,6 @@ describe("the Cult in the interface's words and lists", () => {
       "RAIDER",
       "MARKSMAN",
       "CAPTAIN",
-      "KNIGHT",
-      "SWORDSMAN",
       "JUGGERNAUT",
     ] as const)
       expect(restrictions(role), role).toEqual([]);

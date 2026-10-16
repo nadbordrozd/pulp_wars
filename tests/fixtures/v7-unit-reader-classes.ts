@@ -944,8 +944,7 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     // Seizure and the cultist that holds it down stand on one of the eight
     // tiles around the Summoner or the victim (a burrowed unit is
     // underground: never offered, never a holder), and the previews and the
-    // dock's stand-in buttons name the same units. (Martyr reads every unit
-    // a seat owned before the command through `allOwnedUnitsV7`.)
+    // dock's stand-in buttons name the same units.
     "src/engine/v7/cult.ts::applySacrificeV7": "BOARD",
     "src/engine/v7/cult.ts::applySeizeV7": "BOARD",
     "src/engine/v7/query.ts::appendPublicCultCommandsV7": "BOARD",
@@ -996,7 +995,7 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/render/cult-channel-presentation-v7.ts::cultChannelNoticePartsV7":
       "BOARD",
     // Rituals, hexes and tricks in the interface (`pulp_wars-mch9.19`): a
-    // chanter, a frog, a taunting Chosen, a Tentacle and the unit it holds
+    // chanter, a frog, a Tentacle and the unit it holds
     // are units on the board (a ritual's participant is in land form; a
     // burrowed unit is hexed, swapped and slapped by nothing), read from
     // the public view.
@@ -1004,15 +1003,12 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
       "BOARD",
     "src/render/canvas/cult-ritual-board-plan-v7.ts::addCultTrickEntriesV7":
       "BOARD",
-    "src/render/canvas/cult-ritual-board-plan-v7.ts::addCultTrickPreviewsV7":
-      "BOARD",
     "src/render/canvas/cult-ritual-board-plan-v7.ts::cultTrickPickTargetsV7":
       "BOARD",
     "src/render/canvas/cult-ritual-board-plan-v7.ts::addCultTrickPickEntriesV7":
       "BOARD",
     "src/render/cult-ritual-presentation-v7.ts::cultTrickUnavailableTextV7":
       "BOARD",
-    "src/render/cult-ritual-presentation-v7.ts::cultTrickChipsV7": "BOARD",
     "src/render/cult-ritual-presentation-v7.ts::unitLabel": "BOARD",
     "src/render/cult-ritual-presentation-v7.ts::cultTrickNoticePartsV7":
       "BOARD",
@@ -1063,7 +1059,6 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/engine/v7/cult-tricks.ts::visibleTarget": "BOARD",
     "src/engine/v7/cult-tricks.ts::applyRibbitV7": "BOARD",
     "src/engine/v7/cult-tricks.ts::applySwitcherooV7": "BOARD",
-    "src/engine/v7/cult-tricks.ts::applyPickMeV7": "BOARD",
     "src/engine/v7/cult-tricks.ts::withTentacleRisenV7": "BOARD",
     "src/engine/v7/cult-tricks.ts::withGrabAfterSlapV7": "BOARD",
     "src/engine/v7/cult-tricks.ts::applyTentacleV7": "BOARD",
@@ -1071,8 +1066,6 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/engine/v7/query.ts::previewRibbitV7": "BOARD",
     "src/engine/v7/query.ts::previewSwitcherooV7": "BOARD",
     "src/engine/v7/query.ts::previewTentacleV7": "BOARD",
-    "src/engine/v7/query.ts::previewPickMeV7": "BOARD",
-    "src/engine/v7/query.ts::publicBindingTauntsV7": "BOARD",
     "src/engine/v7/reducer.ts::resolveTentacleSlapV7": "BOARD",
     "src/engine/v7/state-schema.ts::tricksValid": "BOARD",
     "src/render/curiosity-presentation-v7.ts::daemonInfoLinesV7": "BOARD",

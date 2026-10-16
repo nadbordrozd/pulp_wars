@@ -4,6 +4,7 @@ import { ARMY_PLAY_FACTIONS_V7 } from "../../src/ai/v7-army";
 import {
   CULT_BASELINE_V1_TREE,
   CULT_ROLE_MECHANICS_V7,
+  CULT_VACANT_ROLES_V7,
   CULT_ROLE_RULES_V7,
   CULT_SUMMONED_ROLE_RULES_V7,
   FACTION_DISPLAY_NAMES_V7,
@@ -43,6 +44,7 @@ import {
   effectiveRoleRuleV7,
   factionRulesV7,
   factionTreeIdV7,
+  factionFieldsRoleV7,
   factionUnlocksRoleV7,
   isLivingUnitV7,
   maxSeatCountV7,
@@ -146,14 +148,14 @@ describe("the Cult registration: identity", () => {
   // 7r74, and the Cult's Unbound (`pulp_wars-mch9.6`) 7r75, so 7r71 is a
   // prior identity.
   it("was 7r71 after 7r70, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r84");
-    expect(PRIOR_RULESET_7_IDS.slice(-14, -12)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r85");
+    expect(PRIOR_RULESET_7_IDS.slice(-15, -13)).toEqual([
       "pulp-wars-poc-7r70",
       "pulp-wars-poc-7r71",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r84.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-14, -12)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r85.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-15, -13)).toEqual([
       "pulpWars.save.v7r70.current",
       "pulpWars.save.v7r71.current",
     ]);
@@ -248,15 +250,21 @@ const ROSTER: Readonly<
     ]
   >
 > = {
-  FIGHTER: ["Initiate", 2, 10, 2, 1.5, 1, [1, 1], 1, null, true],
+  // The Cult redesign (docs/product/RULESET_7_CULT_REDESIGN.md section 4.1,
+  // `pulp_wars-mch9.31`): the robed casters have 7 HP; the Initiate and the
+  // Hexer Attack 1.5 and the Initiate Defense 1; the Hexer costs 3 and the
+  // Stargazer 7. The Idol Bearer keeps its body.
+  FIGHTER: ["Initiate", 2, 7, 1.5, 1, 1, [1, 1], 1, null, true],
   GUARD: ["Idol Bearer", 3, 16, 1.5, 2.5, 1, [1, 1], 1, "FORTIFICATION", false],
   RAIDER: ["Familiar", 3, 8, 2, 1, 2, [1, 1], 2, "SCOUTING", true],
-  MARKSMAN: ["Hexer", 4, 9, 2, 1, 1, [1, 2], 1, "MARKSMANSHIP", true],
-  CAPTAIN: ["Summoner", 5, 10, 1, 1, 1, [1, 1], 1, "ADMINISTRATION", true],
+  MARKSMAN: ["Hexer", 3, 7, 1.5, 1, 1, [1, 2], 1, "MARKSMANSHIP", true],
+  CAPTAIN: ["Summoner", 5, 7, 1, 1, 1, [1, 1], 1, "ADMINISTRATION", true],
   // "No attack of its own": Attack 0 and no reach.
-  CATAPULT: ["Stargazer", 8, 10, 0, 0.5, 1, [1, 0], 1, "SAWMILLING", false],
-  KNIGHT: ["Caller", 8, 12, 2.5, 1, 2, [1, 1], 1, "CHIVALRY", true],
-  SWORDSMAN: ["Chosen", 6, 15, 3.5, 2, 1, [1, 1], 1, "METALLURGY", true],
+  CATAPULT: ["Stargazer", 7, 7, 0, 0.5, 1, [1, 0], 1, "SAWMILLING", false],
+  // Vacant (the Caller and the Chosen retired): no cost, no technology, and
+  // the smallest numbers a role rule holds.
+  KNIGHT: ["(vacant)", null, 1, 0, 0, 1, [1, 0], 1, null, false],
+  SWORDSMAN: ["(vacant)", null, 1, 0, 0, 1, [1, 0], 1, null, false],
   JUGGERNAUT: [
     "Thing in the Cellar",
     null,
@@ -297,10 +305,11 @@ describe("the Cult registration: the nine land roles (section 4.1)", () => {
       );
       expect(rule.role).toBe(role);
     }
+    // Seven names, and the two vacant slots.
     expect(
       new Set(LAND_ROLES.map((role) => effectiveRoleRuleV7(role, "CULT").label))
         .size,
-    ).toBe(9);
+    ).toBe(8);
   });
 
   it("sails the shared ships", () => {
@@ -332,20 +341,30 @@ describe("the Cult registration: the nine land roles (section 4.1)", () => {
       // Ribbit (`pulp_wars-mch9.8`).
       MARKSMAN: ["ATTACK", "CAPTURE", "CHANNEL", "RIBBIT"],
       GUARD: ["ATTACK", "CAPTURE", "CHANNEL", "BEHOLD"],
-      // No Rally and no Tend Wounded; Sacrifice, Seize, and Summon.
-      CAPTAIN: ["ATTACK", "CAPTURE", "SACRIFICE", "SEIZE", "SUMMON", "CHANNEL"],
+      // No Rally and no Tend Wounded; Sacrifice, Seize, and Summon; and
+      // the Tentacle (the Cult redesign, `pulp_wars-mch9.31`; the Caller's
+      // before).
+      CAPTAIN: [
+        "ATTACK",
+        "CAPTURE",
+        "SACRIFICE",
+        "SEIZE",
+        "SUMMON",
+        "CHANNEL",
+        "TENTACLE",
+      ],
       // No attack of its own; Star-fall is its ritual (`pulp_wars-mch9.7`).
       CATAPULT: ["CAPTURE", "CHANNEL", "STARFALL"],
-      // No Overrun; it calls a Tentacle (`pulp_wars-mch9.8`).
-      KNIGHT: ["ATTACK", "CAPTURE", "CHANNEL", "TENTACLE"],
-      // Pick Me! (`pulp_wars-mch9.8`).
-      SWORDSMAN: ["ATTACK", "CAPTURE", "MARTYR", "CHANNEL", "PICK_ME"],
+      // Vacant: the Caller and the Chosen (Martyr, Pick Me!) retired.
+      KNIGHT: [],
+      SWORDSMAN: [],
       // No Push; its signature is Anchor.
       JUGGERNAUT: ["ATTACK", "CAPTURE", "ANCHOR"],
     });
-    // Every land unit captures (`pulp_wars-ke95`).
+    // Every land unit captures (`pulp_wars-ke95`); a vacant slot is none.
     for (const role of LAND_ROLES)
-      expect(abilities[role], role).toContain("CAPTURE");
+      if (!CULT_VACANT_ROLES_V7.includes(role))
+        expect(abilities[role], role).toContain("CAPTURE");
   });
 
   it("builds no Field Defense, keeps the Hexer and the Stargazer from advancing, and copies no other faction's mechanic", () => {
@@ -364,7 +383,8 @@ describe("the Cult registration: the nine land roles (section 4.1)", () => {
       // The Stargazer has no attack, so it wrecks no Field Defense by one.
       expect(mechanics.demolishesFieldDefense, role).toBe(false);
       // The Cult's own mechanics so far (`pulp_wars-mch9.4`): the robed
-      // cultists and the Chosen's Martyr; and (`pulp_wars-mch9.5`) the
+      // cultists (not the vacant slots since `pulp_wars-mch9.31`, which
+      // also retired the Chosen's Martyr); and (`pulp_wars-mch9.5`) the
       // Thing's Anchor.
       expect(mechanics, role).toEqual({
         ...human[role],
@@ -373,8 +393,13 @@ describe("the Cult registration: the nine land roles (section 4.1)", () => {
         ignoresZocStops: false,
         crushDamage: 0,
         demolishesFieldDefense: false,
-        robed: !["RAIDER", "JUGGERNAUT", ...NAVAL_ROLE_IDS_V7].includes(role),
-        martyrFavour: role === "SWORDSMAN" ? 6 : 0,
+        robed: ![
+          "RAIDER",
+          "JUGGERNAUT",
+          "KNIGHT",
+          "SWORDSMAN",
+          ...NAVAL_ROLE_IDS_V7,
+        ].includes(role),
         anchorStrands: role === "JUGGERNAUT" ? 2 : 0,
       });
       expect(mechanics.capacitySlots, role).toBe(1);
@@ -384,11 +409,13 @@ describe("the Cult registration: the nine land roles (section 4.1)", () => {
 
   it("counts every Cult unit as living, and as the Cult's kind", () => {
     const state = fieldV7(
-      LAND_ROLES.map((role, index) => ({
-        seat: 0,
-        role,
-        at: at(1 + index, 1),
-      })),
+      LAND_ROLES.filter((role) => !CULT_VACANT_ROLES_V7.includes(role)).map(
+        (role, index) => ({
+          seat: 0,
+          role,
+          at: at(1 + index, 1),
+        }),
+      ),
       { factions: ["CULT", "ORIGINAL"] },
     );
     for (const unit of state.units) {
@@ -495,22 +522,38 @@ describe("the Cult registration: the tree and its names (section 11)", () => {
       ]);
       // `pulp_wars-mch9.4`: the Summoner's support stands where the
       // Captain's did, and Harvest Rites adds the Offering.
-      expect(node.unlocks, node.id).toEqual([
-        ...(shared?.unlocks ?? []).flatMap((unlock) =>
-          unlock.kind === "CAPTAIN_SUPPORT"
-            ? [{ kind: "SUMMONER_SUPPORT" }]
-            : unlock.kind === "OVERRUN" ||
-                (unlock.kind === "COMMAND" &&
-                  unlock.command === "BUILD_FIELD_DEFENSE")
-              ? []
-              : [unlock],
-        ),
-        ...(node.id === "FARMING" ? [{ kind: "OFFERING" }] : []),
-        // `pulp_wars-mch9.7`: The Stars Are Right adds the Great Summoning.
-        ...(node.id === "EXPLOSIVES" ? [{ kind: "GREAT_SUMMONING" }] : []),
-        // `pulp_wars-mch9.8`: Familiars adds the Switcheroo.
-        ...(node.id === "SCOUTING" ? [{ kind: "SWITCHEROO" }] : []),
-      ]);
+      expect(node.unlocks, node.id).toEqual(
+        [
+          ...(shared?.unlocks ?? []).flatMap((unlock) =>
+            unlock.kind === "CAPTAIN_SUPPORT"
+              ? [{ kind: "SUMMONER_SUPPORT" }]
+              : unlock.kind === "OVERRUN" ||
+                  (unlock.kind === "COMMAND" &&
+                    unlock.command === "BUILD_FIELD_DEFENSE")
+                ? []
+                : [unlock],
+          ),
+          ...(node.id === "FARMING" ? [{ kind: "OFFERING" }] : []),
+          // `pulp_wars-mch9.7`: The Stars Are Right adds the Great Summoning.
+          ...(node.id === "EXPLOSIVES" ? [{ kind: "GREAT_SUMMONING" }] : []),
+          // `pulp_wars-mch9.8`: Familiars adds the Switcheroo.
+          ...(node.id === "SCOUTING" ? [{ kind: "SWITCHEROO" }] : []),
+        ]
+          .filter(
+            // The Cult redesign (`pulp_wars-mch9.31`): the vacant slots are
+            // unlocked by nothing.
+            (unlock) =>
+              !(
+                unlock.kind === "UNIT_ROLE" &&
+                "role" in unlock &&
+                (unlock.role === "KNIGHT" || unlock.role === "SWORDSMAN")
+              ),
+          )
+          .concat(
+            // Tentacles: the Summoner's Tentacle.
+            node.id === "CHIVALRY" ? [{ kind: "TENTACLES" }] : [],
+          ),
+      );
     }
     // Leadership: the Summoner with its Sacrifice and Seize, the Market,
     // and Disband.
@@ -525,8 +568,15 @@ describe("the Cult registration: the tree and its names (section 11)", () => {
     expect(unlocksOf("ADMINISTRATION")).toHaveLength(4);
     // Harvest Rites: the Farm and the Offering.
     expect(unlocksOf("FARMING")).toContain("OFFERING");
-    // Callers: the Caller and Cultivate Forest; no Overrun.
-    expect(unlocksOf("CHIVALRY")).toEqual(["UNIT:KNIGHT", "CULTIVATE_FOREST"]);
+    // Tentacles: Cultivate Forest and the Summoner's Tentacle; no Caller,
+    // no Overrun (`pulp_wars-mch9.31`).
+    expect(unlocksOf("CHIVALRY")).toEqual(["CULTIVATE_FOREST", "TENTACLES"]);
+    // Gibbering Masses: the Forge and Arms Industry; no Chosen (the Mass
+    // comes with a later bead).
+    expect(unlocksOf("METALLURGY")).not.toContain("UNIT:SWORDSMAN");
+    for (const node of CULT_BASELINE_V1_TREE.nodes)
+      for (const role of CULT_VACANT_ROLES_V7)
+        expect(node.unlockedRoles, node.id).not.toContain(role);
     // Warding Circles: the Idol Bearer; no Field Defense.
     expect(unlocksOf("FORTIFICATION")).toEqual(["UNIT:GUARD"]);
     // Raiding keeps Pillage and the Familiar's Charge.
@@ -548,8 +598,10 @@ describe("the Cult registration: the tree and its names (section 11)", () => {
       SAWMILLING: "Stargazers",
       MARKSMANSHIP: "Hexers",
       SCOUTING: "Familiars",
-      CHIVALRY: "Callers",
-      METALLURGY: "The Chosen",
+      // The Cult redesign (`pulp_wars-mch9.31`): named for what takes the
+      // retired Caller's and Chosen's places.
+      CHIVALRY: "Tentacles",
+      METALLURGY: "Gibbering Masses",
       FORTIFICATION: "Warding Circles",
       EXPLOSIVES: "The Stars Are Right",
     };
@@ -582,9 +634,18 @@ describe("the Cult registration: the tree and its names (section 11)", () => {
       greatSummoning: true,
       // Familiars (`pulp_wars-mch9.8`).
       switcheroo: true,
+      // Tentacles (`pulp_wars-mch9.31`).
+      tentacles: true,
+      trainableRoles: human.trainableRoles.filter(
+        (role) => !CULT_VACANT_ROLES_V7.includes(role),
+      ),
     });
+    expect(human.tentacles).toBe(false);
+    // The vacant slots are trained by nothing (`pulp_wars-mch9.31`).
     expect(cult.trainableRoles).toEqual(
-      UNIT_ROLE_IDS_V7.filter((role) => role !== "JUGGERNAUT"),
+      UNIT_ROLE_IDS_V7.filter(
+        (role) => role !== "JUGGERNAUT" && !CULT_VACANT_ROLES_V7.includes(role),
+      ),
     );
     expect(cult.breach).toBe(true);
     expect(cult.roleSightRadius).toEqual({ RAIDER: 2, MARKSMAN: 2 });
@@ -658,6 +719,32 @@ describe("the Cult registration: the tree and its names (section 11)", () => {
     }
     // The Thing in the Cellar is a reward only.
     expect(factionUnlocksRoleV7("CULT", "JUGGERNAUT")).toBe(false);
+    expect(factionFieldsRoleV7("CULT", "JUGGERNAUT")).toBe(true);
+    // The vacant slots (the Cult redesign, `pulp_wars-mch9.31`): no faction
+    // field them but the eight that have the unit; nothing trains one, even
+    // with every technology.
+    expect(CULT_VACANT_ROLES_V7).toEqual(["KNIGHT", "SWORDSMAN"]);
+    for (const faction of FACTION_IDS_V7)
+      for (const role of CULT_VACANT_ROLES_V7)
+        expect(factionFieldsRoleV7(faction, role), `${faction} ${role}`).toBe(
+          faction !== "CULT",
+        );
+    const everything = fieldV7([], { factions: ["CULT", "ORIGINAL"] });
+    const actor = seatIdV7(everything, 0);
+    for (const role of CULT_VACANT_ROLES_V7) {
+      const command: CommandV7 = {
+        kind: "TRAIN",
+        cityId: cityOfV7(everything, 0).id,
+        role,
+      };
+      expect(
+        queryPlayerCommandsV7(viewForV7(everything, actor)),
+        role,
+      ).not.toContainEqual(command);
+      expect(applyCommandV7(everything, actor, command).accepted, role).toBe(
+        false,
+      );
+    }
   });
 
   it("offers no Field Defense with Warding Circles, to the Initiate or the Idol Bearer", () => {
@@ -708,8 +795,8 @@ describe("the Cult registration: the start and the rewards (section 4.3)", () =>
         role: "FIGHTER",
         form: "LAND",
         at: capital?.at,
-        hp: 10,
-        maxHp: 10,
+        hp: 7,
+        maxHp: 7,
       }),
     ]);
   });
@@ -754,8 +841,8 @@ describe("the Cult registration: the start and the rewards (section 4.3)", () =>
       expect(unit).toMatchObject({
         ownerId: owner,
         role: "FIGHTER",
-        hp: 10,
-        maxHp: 10,
+        hp: 7,
+        maxHp: 7,
       });
       expect(unitRoleRuleV7(result.state, unit).label).toBe("Initiate");
     }
@@ -873,9 +960,15 @@ describe("the Cult registration: the numbers in a fight (section 10)", () => {
   };
 
   it("resolves the spec's head-to-head table through the engine", () => {
+    // The Cult redesign (RULESET_7_CULT_REDESIGN.md section 4.3,
+    // `pulp_wars-mch9.31`): a robed caster loses every brawl.
     // Line: the Initiate against the Fighter.
-    expect(duel(["CULT", "FIGHTER"], ["ORIGINAL", "FIGHTER"])).toEqual([5, 5]);
-    expect(duel(["ORIGINAL", "FIGHTER"], ["CULT", "FIGHTER"])).toEqual([5, 3]);
+    expect(duel(["CULT", "FIGHTER"], ["ORIGINAL", "FIGHTER"])).toEqual([3, 5]);
+    expect(duel(["ORIGINAL", "FIGHTER"], ["CULT", "FIGHTER"])).toEqual([6, 2]);
+    // A Marksman's shot leaves an Initiate at 1.
+    expect(duel(["ORIGINAL", "MARKSMAN"], ["CULT", "FIGHTER"], 2)).toEqual([
+      6, 0,
+    ]);
     // Defender: softer up close, sturdier at range.
     expect(duel(["ORIGINAL", "FIGHTER"], ["CULT", "GUARD"])).toEqual([4, 6]);
     expect(duel(["ORIGINAL", "MARKSMAN"], ["CULT", "GUARD"], 2)).toEqual([
@@ -884,26 +977,22 @@ describe("the Cult registration: the numbers in a fight (section 10)", () => {
     // Fast: the Familiar and the Raider.
     expect(duel(["CULT", "RAIDER"], ["ORIGINAL", "MARKSMAN"])).toEqual([6, 2]);
     expect(duel(["ORIGINAL", "RAIDER"], ["CULT", "RAIDER"])).toEqual([6, 2]);
-    // Ranged: the Marksman's shot; a Knight kills a Hexer.
+    // Ranged: the Hexer's short shot; a Knight kills a Hexer, a Summoner,
+    // and an Initiate (7 of 7 each).
     expect(duel(["CULT", "MARKSMAN"], ["ORIGINAL", "FIGHTER"], 2)).toEqual([
-      5, 0,
+      3, 0,
     ]);
-    expect(duel(["ORIGINAL", "KNIGHT"], ["CULT", "MARKSMAN"])).toEqual([9, 0]);
+    for (const role of ["FIGHTER", "MARKSMAN", "CAPTAIN"] as const)
+      expect(duel(["ORIGINAL", "KNIGHT"], ["CULT", role]), role).toEqual([
+        7, 0,
+      ]);
     // Support: a Captain's body.
     expect(duel(["ORIGINAL", "MARKSMAN"], ["CULT", "CAPTAIN"], 2)).toEqual([
       6, 0,
     ]);
-    expect(duel(["ORIGINAL", "KNIGHT"], ["CULT", "CAPTAIN"])).toEqual([10, 0]);
-    // Breakthrough: much weaker than a Knight in its own fight.
-    expect(duel(["CULT", "KNIGHT"], ["ORIGINAL", "MARKSMAN"])).toEqual([8, 1]);
-    expect(duel(["ORIGINAL", "KNIGHT"], ["CULT", "KNIGHT"])).toEqual([12, 0]);
-    // Heavy line: Defense half a point under the Champion's.
-    expect(duel(["CULT", "SWORDSMAN"], ["ORIGINAL", "SWORDSMAN"])).toEqual([
-      9, 5,
-    ]);
-    expect(duel(["ORIGINAL", "SWORDSMAN"], ["CULT", "SWORDSMAN"])).toEqual([
-      10, 3,
-    ]);
+    // The warden: a Knight's charge leaves the Idol Bearer at 5.
+    expect(duel(["ORIGINAL", "KNIGHT"], ["CULT", "GUARD"])).toEqual([11, 4]);
+    // (The Caller's and the Chosen's rows retired with them.)
     // The giants.
     expect(duel(["CULT", "JUGGERNAUT"], ["ORIGINAL", "JUGGERNAUT"])).toEqual([
       9, 9,

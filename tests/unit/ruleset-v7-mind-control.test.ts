@@ -238,7 +238,6 @@ describe("Mind Control revision: legality (section 3)", () => {
       // The Cult's Favour (`pulp_wars-mch9.4`): Favour needs a Cult seat.
       "SACRIFICE",
       "SEIZE",
-      "MARTYR",
       // The Cult's channel (`pulp_wars-mch9.5`): it needs a Cult seat.
       "SUMMON",
       "CHANNEL",

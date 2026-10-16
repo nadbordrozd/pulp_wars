@@ -189,11 +189,13 @@ describe("Ruleset 7 Gallery", () => {
     // (93 before tuning 5, which added the Human Swordsman; 94 until the
     // ninth unit, 7r55, which fills the row for the other seven factions.)
     // The Cultists' column (pulp_wars-mch9.20) adds thirteen units and one
-    // empty Egg cell (101 and 11 before).
-    expect(document.querySelectorAll(".v7-gallery-cell")).toHaveLength(114);
+    // empty Egg cell (101 and 11 before). The Cult redesign
+    // (`pulp_wars-mch9.31`): its Knight and Swordsman cells are empty (the
+    // Caller and the Chosen retired; 114 and 12 before).
+    expect(document.querySelectorAll(".v7-gallery-cell")).toHaveLength(112);
     expect(
       document.querySelectorAll(".v7-gallery-cell-wrap.is-empty"),
-    ).toHaveLength(12);
+    ).toHaveLength(14);
     expect(
       [
         ...document.querySelectorAll<HTMLElement>(
@@ -209,8 +211,8 @@ describe("Ruleset 7 Gallery", () => {
       "Idol Bearer",
       "Summoner",
       "Stargazer",
-      "Caller",
       "Thing in the Cellar",
+      "Patrol Boat",
     ]);
     // Nine land units for every faction, each with a name.
     for (const faction of [
@@ -304,7 +306,8 @@ describe("Ruleset 7 Gallery", () => {
       [...document.querySelectorAll<HTMLElement>(".v7-gallery-cell")].map(
         (node) => node.dataset.row,
       ),
-    ).toEqual(Array(8).fill("KNIGHT"));
+      // (Seven: the Cult's Knight cell is empty since `pulp_wars-mch9.31`.)
+    ).toEqual(Array(7).fill("KNIGHT"));
     expect(
       required(
         '[data-filter="factions"] .v7-gallery-chip[data-value="GOBLIN"]',
@@ -325,7 +328,8 @@ describe("Ruleset 7 Gallery", () => {
     document.body.innerHTML = '<div id="app"></div>';
     mount();
     openGallery();
-    expect(document.querySelectorAll(".v7-gallery-cell")).toHaveLength(8);
+    // (Seven: the Cult's Knight cell is empty since `pulp_wars-mch9.31`.)
+    expect(document.querySelectorAll(".v7-gallery-cell")).toHaveLength(7);
     // None of a kind leaves an empty table; All brings everything back.
     required<HTMLButtonElement>(
       '[data-action="gallery-factions-none"]',
@@ -335,8 +339,9 @@ describe("Ruleset 7 Gallery", () => {
     );
     required<HTMLButtonElement>('[data-action="gallery-factions-all"]').click();
     required<HTMLButtonElement>('[data-action="gallery-rows-all"]').click();
-    // (94 before the ninth unit, 7r55; 101 before the Cultists' column.)
-    expect(document.querySelectorAll(".v7-gallery-cell")).toHaveLength(114);
+    // (94 before the ninth unit, 7r55; 101 before the Cultists' column;
+    // 114 before the Cult redesign's vacant slots, `pulp_wars-mch9.31`.)
+    expect(document.querySelectorAll(".v7-gallery-cell")).toHaveLength(112);
   });
 
   it("shows every Monument to a browser that stored its filters before they had rows", () => {

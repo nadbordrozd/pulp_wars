@@ -63,9 +63,13 @@ describe("Gallery presentation", () => {
         const cell = galleryUnitCellV7(role, faction);
         // The frozen sea: the Ice Folk have no ships (an empty cell).
         // The ninth unit (`pulp_wars-w49.17`, 7r55): every faction has
-        // a heavy line unit.
-        expect(cell.kind).toBe(
-          faction === "ICE_FOLK" && isNavalRoleV7(role) ? "EMPTY" : "UNIT",
+        // a heavy line unit. The Cult redesign (`pulp_wars-mch9.31`): but
+        // the Cult's `KNIGHT` and `SWORDSMAN` slots are vacant (empty).
+        expect(cell.kind, `${faction} ${role}`).toBe(
+          (faction === "ICE_FOLK" && isNavalRoleV7(role)) ||
+            (faction === "CULT" && (role === "KNIGHT" || role === "SWORDSMAN"))
+            ? "EMPTY"
+            : "UNIT",
         );
         if (cell.kind !== "UNIT") continue;
         expect(cell.name).toBe(effectiveRoleRuleV7(role, faction).label);

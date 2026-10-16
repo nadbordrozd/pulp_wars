@@ -245,6 +245,12 @@ export type TechnologyUnlockV7 =
    * Familiars): a Familiar swaps places with a unit within 2 tiles.
    */
   | { readonly kind: "SWITCHEROO" }
+  /**
+   * The Cult redesign (docs/product/RULESET_7_CULT_REDESIGN.md section 8.4,
+   * `pulp_wars-mch9.31`): Tentacles (the Cult `CHIVALRY`): a Summoner of the
+   * tree may call a Tentacle (it was the retired Caller's).
+   */
+  | { readonly kind: "TENTACLES" }
   | { readonly kind: "OVERRUN" }
   | {
       readonly kind: "CHARGE_BONUS";
@@ -441,12 +447,11 @@ export type UnitRoleAbilityV7 =
   | "SIEGE_HAMMER"
   | "BREAK_OFF"
   // The Cultists (`pulp_wars-mch9.4`, docs/product/RULESET_7_CULTISTS.md
-  // sections 5.1, 5.2, and 8.2): the Summoner's Sacrifice and Seize, and
-  // the Chosen's Martyr. The other Cult literals of section 11 arrive with
-  // their rules.
+  // sections 5.1 and 5.2): the Summoner's Sacrifice and Seize. (The
+  // Chosen's Martyr retired with the Chosen in the Cult redesign,
+  // `pulp_wars-mch9.31`.)
   | "SACRIFICE"
   | "SEIZE"
-  | "MARTYR"
   // The Cultists (`pulp_wars-mch9.5`, sections 6.1, 6.2, 8.1, 8.4, and
   // 8.5): the Summoner's Summon, every robed cultist's Channel, the Idol
   // Bearer's Behold!, the Thing in the Cellar's Anchor, and the Horror's
@@ -466,12 +471,13 @@ export type UnitRoleAbilityV7 =
   | "PROCLAIM"
   // The Cultists (`pulp_wars-mch9.8`, sections 8.7, 9, and 8.2): the
   // Initiate's Pamphlets, the Familiar's Switcheroo, the Hexer's Ribbit, the
-  // Caller's Tentacle, the Chosen's Pick Me!, and the Tentacle's Grab.
+  // Summoner's Tentacle (the Caller's until the Cult redesign,
+  // `pulp_wars-mch9.31`, which also retired the Chosen's Pick Me!), and the
+  // Tentacle's Grab.
   | "PAMPHLETS"
   | "SWITCHEROO"
   | "RIBBIT"
   | "TENTACLE"
-  | "PICK_ME"
   | "GRAB";
 
 /**
@@ -848,19 +854,14 @@ export interface RoleMechanicsV7 {
   readonly batEscapeTiles: number;
   /**
    * The Cultists (docs/product/RULESET_7_CULTISTS.md section 4): a robed
-   * cultist (the Initiate, Idol Bearer, Hexer, Summoner, Stargazer, Caller,
-   * and Chosen). Only a robed cultist holds down a Seizure (and, from the
+   * cultist (the Initiate, Idol Bearer, Hexer, Summoner, and Stargazer; the
+   * Caller and the Chosen were robed until they retired,
+   * `pulp_wars-mch9.31`). Only a robed cultist holds down a Seizure (and, from the
    * later Cult beads, channels and chants). False for the Familiar, the
-   * Thing in the Cellar, the ships, and every role of every other faction.
+   * Thing in the Cellar, the ships, the vacant slots, and every role of
+   * every other faction.
    */
   readonly robed: boolean;
-  /**
-   * The Cultists (section 8.2): Martyr, the Favour the role's death pays
-   * its Cult seat (the Chosen 6, its value), read only when the role, under
-   * the unit's kind, has the `MARTYR` ability literal. 0 for every other
-   * role.
-   */
-  readonly martyrFavour: number;
   /**
    * The Cultists (section 8.4): Anchor, the strands the role's grip adds to
    * the strand of the channeller it holds (the Thing in the Cellar 2, so a
@@ -1818,7 +1819,6 @@ const mechanics = (
           breakOffHp: 0,
           batEscapeTiles: 0,
           robed: false,
-          martyrFavour: 0,
           anchorStrands: 0,
           ravageAttacks: 1,
           ...overrides[roleId],
@@ -3822,6 +3822,18 @@ export function rebakeHpV7(role: UnitRoleIdV7): number {
 }
 
 /**
+ * The Cult redesign (docs/product/RULESET_7_CULT_REDESIGN.md section 4.2,
+ * `pulp_wars-mch9.31`): the Cult's **vacant** roles. The registry needs
+ * every role in every faction's table, so the retired Caller's `KNIGHT` and
+ * Chosen's `SWORDSMAN` stay registered, but nothing trains, rewards, hires,
+ * places, or shows a unit of them (see {@link factionFieldsRoleV7}).
+ */
+export const CULT_VACANT_ROLES_V7: readonly UnitRoleIdV7[] = deepFreeze([
+  "KNIGHT",
+  "SWORDSMAN",
+]);
+
+/**
  * The Cult technology graph (docs/product/RULESET_7_CULTISTS.md section 11;
  * registered by `pulp_wars-mch9.3`): identical to ORIGINAL_BASELINE_V5
  * except that Administration grants no Captain support (the Summoner has no
@@ -3839,6 +3851,12 @@ export function rebakeHpV7(role: UnitRoleIdV7): number {
  * (displayed as Harvest Rites) grants `OFFERING`; `pulp_wars-mch9.7`:
  * Explosives (The Stars Are Right) grants `GREAT_SUMMONING`;
  * `pulp_wars-mch9.8`: Scouting (Familiars) grants `SWITCHEROO`.
+ *
+ * The Cult redesign (docs/product/RULESET_7_CULT_REDESIGN.md sections 4.2
+ * and 5, `pulp_wars-mch9.31`): Chivalry (shown as Tentacles) and
+ * Metallurgy (shown as Gibbering Masses) unlock no unit, because the
+ * `KNIGHT` and `SWORDSMAN` slots are vacant (the Caller and the Chosen
+ * retired); Chivalry grants `TENTACLES` (the Summoner's Tentacle) instead.
  */
 export const CULT_BASELINE_V1_NODES: readonly TechnologyNodeV7[] = deepFreeze(
   SHARED_BASELINE_NODES_V7.map((original) =>
@@ -3850,10 +3868,15 @@ export const CULT_BASELINE_V1_NODES: readonly TechnologyNodeV7[] = deepFreeze(
           ? [{ kind: "SUMMONER_SUPPORT" }]
           : unlock.kind === "OVERRUN" ||
               (unlock.kind === "COMMAND" &&
-                unlock.command === "BUILD_FIELD_DEFENSE")
+                unlock.command === "BUILD_FIELD_DEFENSE") ||
+              (unlock.kind === "UNIT_ROLE" &&
+                CULT_VACANT_ROLES_V7.includes(unlock.role))
             ? []
             : [unlock],
       ),
+      // `pulp_wars-mch9.31` (redesign section 8.4): Tentacles, the
+      // Summoner's Tentacle.
+      ...(original.id === "CHIVALRY" ? [{ kind: "TENTACLES" } as const] : []),
       // `pulp_wars-mch9.4` (section 5.3): Harvest Rites, the Offering.
       ...(original.id === "FARMING" ? [{ kind: "OFFERING" } as const] : []),
       // `pulp_wars-mch9.7` (section 7.3): The Stars Are Right, the Great
@@ -3872,21 +3895,31 @@ export const CULT_BASELINE_V1_NODES: readonly TechnologyNodeV7[] = deepFreeze(
  * number is the spec's first guess. Unit for unit the cultists are a little
  * weaker or cheaper than the Human of the same role (section 10); what they
  * get for it (Pamphlets, Behold!, Switcheroo, Ribbit, Sacrifice, Seize,
- * Summon, Star-fall, the Tentacle, Pick Me!, Martyr, Anchor) was added by
- * the later Cult engine beads (`pulp_wars-mch9.4` to `.8`).
+ * Summon, Star-fall, the Tentacle, Anchor) was added by the later Cult
+ * engine beads (`pulp_wars-mch9.4` to `.8`).
+ *
+ * The Cult redesign (docs/product/RULESET_7_CULT_REDESIGN.md section 4.1,
+ * `pulp_wars-mch9.31`, `pulp-wars-poc-7r85`): summons are the army and the
+ * robed cultists the casters. The Initiate, Hexer, Summoner, and Stargazer
+ * have 7 HP; the Initiate and the Hexer Attack 1.5 and the Initiate Defense
+ * 1; the Hexer costs 3 and the Stargazer 7. The Idol Bearer keeps its body.
+ * The Caller (`KNIGHT`) and the Chosen (`SWORDSMAN`) retired: their slots
+ * are vacant ({@link CULT_VACANT_ROLES_V7}), with Pick Me! and Martyr gone
+ * and the Tentacle moved to the Summoner.
  */
 export const CULT_ROLE_RULES_V7: Readonly<
   Record<UnitRoleIdV7, EffectiveRoleRuleV7>
 > = deepFreeze({
-  // The Initiate: a Fighter's price for 2 HP and half a Defense less.
+  // The Initiate: a Fighter's price for a caster's body (the redesign: 7 HP,
+  // Attack 1.5, Defense 1; 10, 2, and 1.5 before).
   FIGHTER: role({
     role: "FIGHTER",
     label: "Initiate",
     tacticalRole: "LINE",
     cost: 2,
-    maxHp: 10,
-    attack2: 4,
-    defense2: 3,
+    maxHp: 7,
+    attack2: 3,
+    defense2: 2,
     move: 1,
     range: 1,
     minimumRange: 1,
@@ -3917,15 +3950,16 @@ export const CULT_ROLE_RULES_V7: Readonly<
     mayUsePrimaryActionAfterMove: true,
     abilities: ["ATTACK", "CAPTURE", "CHARGE", "SWITCHEROO"],
   }),
-  // The Hexer: the Marksman's shot on 3 HP less. It never advances.
-  // `pulp_wars-mch9.8` (section 9.1): Ribbit, every second turn.
+  // The Hexer: a short shot on a caster's body. It never advances.
+  // `pulp_wars-mch9.8` (section 9.1): Ribbit, every second turn. The
+  // redesign: 3 Coins, 7 HP, Attack 1.5 (4, 9, and 2 before).
   MARKSMAN: role({
     role: "MARKSMAN",
     label: "Hexer",
     tacticalRole: "RANGED",
-    cost: 4,
-    maxHp: 9,
-    attack2: 4,
+    cost: 3,
+    maxHp: 7,
+    attack2: 3,
     defense2: 2,
     move: 1,
     range: 2,
@@ -3956,13 +3990,15 @@ export const CULT_ROLE_RULES_V7: Readonly<
   }),
   // The Summoner: a Captain's body with no Rally and no Tend Wounded. It
   // Sacrifices an own unit and Seizes a broken enemy (`pulp_wars-mch9.4`),
-  // and Summons a Horror and Channels (`pulp_wars-mch9.5`).
+  // and Summons a Horror and Channels (`pulp_wars-mch9.5`). The redesign
+  // (`pulp_wars-mch9.31`): 7 HP (10 before), and the Tentacle with
+  // Tentacles (the capability `tentacles`; the retired Caller's before).
   CAPTAIN: role({
     role: "CAPTAIN",
     label: "Summoner",
     tacticalRole: "SUPPORT",
     cost: 5,
-    maxHp: 10,
+    maxHp: 7,
     attack2: 2,
     defense2: 2,
     move: 1,
@@ -3971,18 +4007,27 @@ export const CULT_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "ADMINISTRATION",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "CAPTURE", "SACRIFICE", "SEIZE", "SUMMON", "CHANNEL"],
+    abilities: [
+      "ATTACK",
+      "CAPTURE",
+      "SACRIFICE",
+      "SEIZE",
+      "SUMMON",
+      "CHANNEL",
+      "TENTACLE",
+    ],
   }),
   // The Stargazer has no attack of its own: no `ATTACK`, Attack 0, and no
   // reach, so it never strikes back either (the neutral Bigfoot's shape).
   // Star-fall is its ritual (`pulp_wars-mch9.7`, section 7.4): the
-  // `STARFALL` ability, which it leads only when it has not moved.
+  // `STARFALL` ability, which it leads only when it has not moved. The
+  // redesign: 7 Coins, 7 HP (8 and 10 before).
   CATAPULT: role({
     role: "CATAPULT",
     label: "Stargazer",
     tacticalRole: "SIEGE",
-    cost: 8,
-    maxHp: 10,
+    cost: 7,
+    maxHp: 7,
     attack2: 0,
     defense2: 1,
     move: 1,
@@ -3993,24 +4038,10 @@ export const CULT_ROLE_RULES_V7: Readonly<
     mayUsePrimaryActionAfterMove: false,
     abilities: ["CAPTURE", "CHANNEL", "STARFALL"],
   }),
-  // The Caller: much weaker than a Knight in its own fight, no Overrun.
-  // `pulp_wars-mch9.8` (section 9.3): it calls a Tentacle.
-  KNIGHT: role({
-    role: "KNIGHT",
-    label: "Caller",
-    tacticalRole: "BREAKTHROUGH",
-    cost: 8,
-    maxHp: 12,
-    attack2: 5,
-    defense2: 2,
-    move: 2,
-    range: 1,
-    minimumRange: 1,
-    sightRadius: 1,
-    technology: "CHIVALRY",
-    mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "CAPTURE", "CHANNEL", "TENTACLE"],
-  }),
+  // Vacant (the Cult redesign, `pulp_wars-mch9.31`): the Caller retired and
+  // its Tentacle is the Summoner's. No cost, no technology, no ability (the
+  // reward giant's shape), and the tactical role the registry needs.
+  KNIGHT: vacantCultRoleV7("KNIGHT", "BREAKTHROUGH"),
   // The Thing in the Cellar: the reward giant, Defense 3.5 (as the
   // Gingerbread Giant) because its signature, Anchor, is a support one
   // (`pulp_wars-mch9.5`). No Push.
@@ -4033,26 +4064,38 @@ export const CULT_ROLE_RULES_V7: Readonly<
   PATROL_BOAT: role({ ...ORIGINAL_ROLE_RULES_V7.PATROL_BOAT }),
   BATTLESHIP: role({ ...ORIGINAL_ROLE_RULES_V7.BATTLESHIP }),
   SUBMARINE: role({ ...ORIGINAL_ROLE_RULES_V7.SUBMARINE }),
-  // The Chosen: the Champion with half a Defense less. Martyr: its death
-  // pays its seat Favour (`pulp_wars-mch9.4`); Pick Me! is its taunt
-  // (`pulp_wars-mch9.8`, section 8.2).
-  SWORDSMAN: role({
-    role: "SWORDSMAN",
-    label: "Chosen",
-    tacticalRole: "LINE",
-    cost: 6,
-    maxHp: 15,
-    attack2: 7,
-    defense2: 4,
+  // Vacant (the Cult redesign, `pulp_wars-mch9.31`): the Chosen retired,
+  // and with it Martyr and Pick Me! (the Idol Bearer's warden aura takes
+  // Pick Me!'s place in a later bead, `pulp_wars-mch9.33`).
+  SWORDSMAN: vacantCultRoleV7("SWORDSMAN", "LINE"),
+});
+
+/**
+ * The Cult redesign (section 4.2): the registration of a vacant Cult role.
+ * Nothing fields a unit of it, so its numbers are never read; they are the
+ * smallest a role rule holds.
+ */
+function vacantCultRoleV7(
+  roleId: UnitRoleIdV7,
+  tacticalRole: EffectiveRoleRuleV7["tacticalRole"],
+): EffectiveRoleRuleV7 {
+  return role({
+    role: roleId,
+    label: "(vacant)",
+    tacticalRole,
+    cost: null,
+    maxHp: 1,
+    attack2: 0,
+    defense2: 0,
     move: 1,
-    range: 1,
+    range: 0,
     minimumRange: 1,
     sightRadius: 1,
-    technology: "METALLURGY",
-    mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "CAPTURE", "MARTYR", "CHANNEL", "PICK_ME"],
-  }),
-});
+    technology: null,
+    mayUsePrimaryActionAfterMove: false,
+    abilities: [],
+  });
+}
 
 /**
  * The Cultists (docs/product/RULESET_7_CULTISTS.md section 3): whether a
@@ -4061,6 +4104,22 @@ export const CULT_ROLE_RULES_V7: Readonly<
  */
 export function factionHasFavourV7(faction: FactionIdV7): boolean {
   return faction === "CULT";
+}
+
+/**
+ * The Cult redesign (docs/product/RULESET_7_CULT_REDESIGN.md section 6,
+ * `pulp_wars-mch9.31`): the Favour every Cult seat starts a match with (0
+ * before), so its first Summoner can act at once. A mission seat's own
+ * `favour` replaces it.
+ */
+export const CULT_STARTING_FAVOUR_V7 = 2 as const;
+
+/**
+ * The Favour a new seat of `faction` starts with: {@link
+ * CULT_STARTING_FAVOUR_V7} for a seat with Favour (the Cult), else 0.
+ */
+export function startingFavourV7(faction: FactionIdV7): number {
+  return factionHasFavourV7(faction) ? CULT_STARTING_FAVOUR_V7 : 0;
 }
 
 /** The Cultists (section 5.2): a hostile unit at this HP or less is broken. */
@@ -4073,8 +4132,6 @@ export const OFFERING_POPULATION_V7 = 2 as const;
 export const OFFERING_FAVOUR_V7 = 3 as const;
 /** The Cultists (section 5.3): the lowest city level that may Offer. */
 export const OFFERING_MINIMUM_LEVEL_V7 = 2 as const;
-/** The Cultists (section 8.2): the Favour a Chosen's death pays (its value). */
-export const MARTYR_FAVOUR_V7 = 6 as const;
 /**
  * The Cultists (section 6.2): the farthest (Chebyshev) a cultist may be from
  * the daemon it channels, when it channels and again at the check.
@@ -4116,8 +4173,8 @@ export const HEX_COOLDOWN_TURNS_V7 = 2 as const;
 /** The Cultists (section 9.2): the farthest (Chebyshev) a Switcheroo reaches. */
 export const SWITCHEROO_RANGE_V7 = 2 as const;
 /**
- * The Cultists (section 9.3): the farthest (Chebyshev) from its Caller a
- * Tentacle may rise, and the neutral turns it stays before it sinks.
+ * The Cultists (section 9.3): the farthest (Chebyshev) from its Summoner
+ * (the retired Caller's before `pulp_wars-mch9.31`) a Tentacle may rise, and the neutral turns it stays before it sinks.
  */
 export const TENTACLE_RANGE_V7 = 3 as const;
 export const TENTACLE_LIFETIME_V7 = 3 as const;
@@ -4135,9 +4192,10 @@ export function starfallDamageV7(chanters: number): number {
  * Hexer and the Stargazer never advance; the Stargazer, which has no attack,
  * destroys no Field Defense by one (Star-fall's own rule is its ritual's,
  * `pulp_wars-mch9.7`). Every role uses one slot and moves on the ground.
- * Boats are Human boats. `pulp_wars-mch9.4`: the seven robed cultists (every
- * trained land role but the Familiar; the Thing in the Cellar is not one),
- * and the Chosen's Martyr.
+ * Boats are Human boats. `pulp_wars-mch9.4`: the robed cultists (every
+ * trained land role but the Familiar; the Thing in the Cellar is not one).
+ * The Cult redesign (`pulp_wars-mch9.31`): the vacant `KNIGHT` and
+ * `SWORDSMAN` slots are not robed, and Martyr is gone.
  */
 export const CULT_ROLE_MECHANICS_V7 = mechanics({
   FIGHTER: { buildsFieldDefense: false, robed: true },
@@ -4149,8 +4207,6 @@ export const CULT_ROLE_MECHANICS_V7 = mechanics({
     demolishesFieldDefense: false,
     robed: true,
   },
-  KNIGHT: { robed: true },
-  SWORDSMAN: { robed: true, martyrFavour: MARTYR_FAVOUR_V7 },
   // `pulp_wars-mch9.5` (section 8.4): the Thing's grip adds two strands.
   JUGGERNAUT: { anchorStrands: ANCHOR_STRANDS_V7 },
   BATTLESHIP: { splash: true },
@@ -4191,7 +4247,7 @@ export interface SummonedRoleRuleV7 {
   readonly minimumRange: number;
   /**
    * What the summoning costs in Favour, or null for a unit that is not paid
-   * for in Favour (the Tentacle is its Caller's action).
+   * for in Favour (the Tentacle is its Summoner's action).
    */
   readonly favourCost: number | null;
   /**
@@ -4609,8 +4665,10 @@ export const TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7: Readonly<
     SAWMILLING: "Stargazers",
     MARKSMANSHIP: "Hexers",
     SCOUTING: "Familiars",
-    CHIVALRY: "Callers",
-    METALLURGY: "The Chosen",
+    // The Cult redesign (`pulp_wars-mch9.31`, section 5): the nodes of the
+    // retired Caller and Chosen are named for what takes their place.
+    CHIVALRY: "Tentacles",
+    METALLURGY: "Gibbering Masses",
     FORTIFICATION: "Warding Circles",
     EXPLOSIVES: "The Stars Are Right",
   },
@@ -5478,8 +5536,8 @@ export function ownerResearchedTechsV7(
  * never has: Raise Dead, Infect, Bite, Hatch, Assemble, Mind Control, and
  * tunnel riding. The Steam Mole's `TUNNEL` stays (it tunnels alone). The
  * Candy revision (section 12.5): Re-bake. The Cultists (`pulp_wars-mch9.4`):
- * and the abilities that pay Favour (Sacrifice, Seize, and Martyr), which
- * need a Cult seat.
+ * and the abilities that pay Favour (Sacrifice and Seize), which need a
+ * Cult seat.
  */
 export const MIND_CONTROLLED_LOST_ABILITIES_V7: readonly UnitRoleAbilityV7[] =
   deepFreeze([
@@ -5493,11 +5551,9 @@ export const MIND_CONTROLLED_LOST_ABILITIES_V7: readonly UnitRoleAbilityV7[] =
     "REBAKE",
     // The Cultists (docs/product/RULESET_7_CULTISTS.md section 13.1):
     // Favour needs a Cult seat. A mind-controlled Summoner neither
-    // Sacrifices nor Seizes, and a mind-controlled Chosen's death pays
-    // nobody.
+    // Sacrifices nor Seizes.
     "SACRIFICE",
     "SEIZE",
-    "MARTYR",
     // `pulp_wars-mch9.5` (section 13.1): Summon, Channel, and Anchor need a
     // Cult seat too. Behold! and Boo! are unit tricks and follow the unit.
     "SUMMON",
@@ -5507,8 +5563,8 @@ export const MIND_CONTROLLED_LOST_ABILITIES_V7: readonly UnitRoleAbilityV7[] =
     // Great Summoning is led by `SUMMON`, lost above.)
     "STARFALL",
     // `pulp_wars-mch9.8` (section 13.1): calling a Tentacle calls on the
-    // Ancient Ones, so it needs a Cult seat. Ribbit, Switcheroo, Pick Me!,
-    // and Pamphlets are unit tricks and follow the unit.
+    // Ancient Ones, so it needs a Cult seat. Ribbit, Switcheroo, and
+    // Pamphlets are unit tricks and follow the unit.
     "TENTACLE",
   ]);
 
@@ -6587,6 +6643,23 @@ export function terrainStopsMoveV7(input: {
 }
 
 /**
+ * The Cult redesign (docs/product/RULESET_7_CULT_REDESIGN.md section 4.2,
+ * `pulp_wars-mch9.31`): whether `faction` **fields** `role` at all: its tree
+ * unlocks the role for training ({@link factionUnlocksRoleV7}), or it is the
+ * reward giant every faction is given. False for a vacant slot: the Cult's
+ * `KNIGHT` and `SWORDSMAN` ({@link CULT_VACANT_ROLES_V7}) and the Ice Folk
+ * ships. THE answer for every reader that lists a faction's roles (the
+ * Gallery, the Showcase, the AI's training and research lists, mission
+ * validation, the glossary).
+ */
+export function factionFieldsRoleV7(
+  faction: FactionIdV7,
+  role: UnitRoleIdV7,
+): boolean {
+  return role === "JUGGERNAUT" || factionUnlocksRoleV7(faction, role);
+}
+
+/**
  * Whether the tree of `faction` unlocks `role` for training (the Fighter is
  * always trainable). The frozen sea (naval branch section 8.11): the Ice
  * Folk tree unlocks no ship, so `TRAIN_NAVAL` is refused for an Ice Folk
@@ -6941,6 +7014,12 @@ export interface TechnologyCapabilitiesV7 {
    * of the tree may Switcheroo.
    */
   readonly switcheroo: boolean;
+  /**
+   * The Cult redesign (docs/product/RULESET_7_CULT_REDESIGN.md section 8.4,
+   * `pulp_wars-mch9.31`): Tentacles (the Cult `CHIVALRY`), a Summoner of
+   * the tree may call a Tentacle.
+   */
+  readonly tentacles: boolean;
 }
 
 export function technologyCapabilitiesV7(
@@ -7012,6 +7091,7 @@ export function technologyCapabilitiesV7(
   let offering = false;
   let greatSummoning = false;
   let switcheroo = false;
+  let tentacles = false;
   for (const unlock of unlocks)
     switch (unlock.kind) {
       case "COMMAND":
@@ -7151,6 +7231,9 @@ export function technologyCapabilitiesV7(
       case "SWITCHEROO":
         switcheroo = true;
         break;
+      case "TENTACLES":
+        tentacles = true;
+        break;
       case "SUMMONER_SUPPORT":
       case "CONFECTIONER_SUPPORT":
       case "ENGINEER_SUPPORT":
@@ -7237,6 +7320,7 @@ export function technologyCapabilitiesV7(
     offering,
     greatSummoning,
     switcheroo,
+    tentacles,
   });
   TECHNOLOGY_CAPABILITIES_CACHE_V7.set(cacheKey, result);
   if (TECHNOLOGY_CAPABILITIES_CACHE_V7.size > 32) {

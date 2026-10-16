@@ -40,7 +40,6 @@ import {
   withIdolsV7,
   withRitualV7,
   withStrandsV7,
-  withTauntsV7,
   withTentacleV7,
   withUnboundV7,
 } from "../fixtures/v7-cult";
@@ -59,8 +58,8 @@ import { fieldV7 } from "../fixtures/v7-revision20";
 // villages (5, 5), (8, 5), (5, 8); every other land tile open Grass; every
 // tile explored; every technology; no Coins. The Cult's roles: FIGHTER the
 // Initiate, CAPTAIN the Summoner, MARKSMAN the Hexer, GUARD the Idol
-// Bearer, SWORDSMAN the Chosen, CATAPULT the Stargazer, KNIGHT the Caller,
-// JUGGERNAUT the Thing.
+// Bearer, CATAPULT the Stargazer, JUGGERNAUT the Thing (its KNIGHT and
+// SWORDSMAN slots are vacant since the Cult redesign, `pulp_wars-mch9.31`).
 
 const at = (x: number, y: number): CoordV7 => ({ x, y });
 const gap = (left: CoordV7, right: CoordV7): number =>
@@ -191,7 +190,7 @@ describe("against the Cult: the gate", () => {
   it("has no facts, and decides as before, in a view with none of the Cult's marks", () => {
     const fixtures: readonly GameStateV7[] = [
       // A Cult seat's plain units in sight: no strand, circle, daemon,
-      // frog, taunt, Tentacle, or Cowed city.
+      // frog, Tentacle, or Cowed city.
       scene([
         own("FIGHTER", 6, 2),
         own("MARKSMAN", 7, 2),
@@ -235,11 +234,10 @@ describe("against the Cult: the gate", () => {
       own("MARKSMAN", 6, 2),
       own("FIGHTER", 6, 3),
       cult("FIGHTER", 4, 2),
-      cult("SWORDSMAN", 5, 3),
+      cult("GUARD", 5, 3),
     ]);
     state = withHorrorV7(state, 1, at(3, 4), { activation: SPENT });
     state = withStrandsV7(state, at(3, 4), [at(4, 2)]);
-    state = withTauntsV7(state, [at(5, 3)]);
     const view = viewOf(state);
     const offered = queryAiReadyCommandsV7(view).map((item) =>
       JSON.stringify(item.command),
@@ -665,7 +663,7 @@ describe("against the Cult: an Unbound daemon and a Tentacle (sections 15.5 and 
 
   it("lets the unit a Tentacle holds strike it", () => {
     const state = withTentacleV7(
-      scene([own("FIGHTER", 6, 2), cult("KNIGHT", 2, 2)]),
+      scene([own("FIGHTER", 6, 2), cult("CAPTAIN", 2, 2)]),
       at(2, 2),
       at(5, 2),
       { grabbed: at(6, 2) },
@@ -677,7 +675,7 @@ describe("against the Cult: an Unbound daemon and a Tentacle (sections 15.5 and 
 
   it("leaves a Tentacle that holds nobody of its own alone", () => {
     const state = withTentacleV7(
-      scene([own("FIGHTER", 6, 2), cult("KNIGHT", 2, 2)]),
+      scene([own("FIGHTER", 6, 2), cult("CAPTAIN", 2, 2)]),
       at(2, 2),
       at(5, 2),
     );
@@ -732,49 +730,6 @@ describe("against the Cult: a frog (section 15.5)", () => {
         (move) => move.priority >= CULT_AGAINST_PULL_BACK_PRIORITY_V7,
       ),
     ).toBe(false);
-  });
-});
-
-describe("against the Cult: Pick Me! (section 15.5)", () => {
-  // A taunting Chosen on (5, 4); a broken Initiate beside it on (5, 3).
-  const taunt = (): GameStateV7 =>
-    withTauntsV7(
-      scene([
-        own("FIGHTER", 6, 4),
-        own("KNIGHT", 8, 3),
-        cult("SWORDSMAN", 5, 4),
-        cult("FIGHTER", 5, 3, { hp: 2 }),
-      ]),
-      [at(5, 4)],
-    );
-
-  it("offers a bound unit the Chosen only, and its decision is an offered command", () => {
-    const state = taunt();
-    const chosen = unitAtV7(state, at(5, 4)).id;
-    const bound = candidates(state, at(6, 4), "ATTACK");
-    for (const candidate of bound)
-      expect(candidate.command).toMatchObject({ targetUnitId: chosen });
-    const view = viewOf(state);
-    expect(
-      queryAiReadyCommandsV7(view).map((item) => JSON.stringify(item.command)),
-    ).toContain(JSON.stringify(decides(state)));
-  });
-
-  it("gives a Move that would only bind its unit no more than a routine Move's priority", () => {
-    const state = taunt();
-    const beside = (tile: CoordV7): boolean => gap(tile, at(5, 4)) === 1;
-    const on = moves(state, at(8, 3)).filter((move) => beside(move.to));
-    const off = moves(state, at(8, 3), false).filter((move) => beside(move.to));
-    // Before this module the Knight rode beside the Chosen for a kill of
-    // the broken Initiate that the taunt forbids.
-    expect(off.some((move) => move.priority > 735)).toBe(true);
-    expect(on.every((move) => move.priority <= 735)).toBe(true);
-    // The kill from a tile the taunt does not bind is still wanted.
-    expect(
-      moves(state, at(8, 3)).some(
-        (move) => !beside(move.to) && move.priority > 735,
-      ),
-    ).toBe(true);
   });
 });
 

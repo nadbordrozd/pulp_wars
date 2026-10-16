@@ -109,7 +109,14 @@ describe("Summon: the helper, then the tile, on the board", () => {
     ).toBe(12);
     // Sacrifice (its two Initiates), Summon, and Channel (the Horror is in
     // reach); no generic button of a channel command.
-    expect(cultButtons()).toEqual(["sacrifice", "summon", "channel"]);
+    // (And the Tentacle, the Summoner's since the Cult redesign,
+    // `pulp_wars-mch9.31`.)
+    expect(cultButtons()).toEqual([
+      "sacrifice",
+      "summon",
+      "channel",
+      "tentacle",
+    ]);
     expect(
       dock().querySelector(
         '[data-action^="command-summon"], [data-action^="command-channel"], [data-action^="command-behold"], [data-action^="command-anchor"], [data-action^="command-boo"]',

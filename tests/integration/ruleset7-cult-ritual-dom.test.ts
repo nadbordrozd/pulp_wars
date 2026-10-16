@@ -10,7 +10,6 @@ import {
   CULT_TRICK_PICKS_V7,
   GREAT_SUMMONING_NO_TILE_V7,
   HEX_SPENT_V7,
-  PICK_ME_TAUNTING_V7,
   PROCLAIM_COWED_V7,
   RITUAL_CONFIRM_HINT_V7,
   STARFALL_MOVED_V7,
@@ -57,9 +56,10 @@ import { at } from "../fixtures/v7-revision20";
  * docs/ui/BOARD_TARGETING.md section 3.9): one button per action; the mark
  * of a rite (chosen first, begun when chosen again), the city of a
  * Proclaim, the unit of a Ribbit or a Switcheroo and the tile of a Tentacle
- * are picked on the board; Pick Me! is cast by its button; the board
- * carries the rings, the countdown, the frog, the Grab, the taunt and the
- * Cowed banner for every viewer; and a frog's card shows its real numbers.
+ * are picked on the board; the board carries the rings, the countdown, the
+ * frog, the Grab and the Cowed banner for every viewer; and a frog's card
+ * shows its real numbers. (Pick Me! retired with the Chosen, and the
+ * Tentacle is the Summoner's: the Cult redesign, `pulp_wars-mch9.31`.)
  */
 
 const R = CULT_RITUAL_UI_V7;
@@ -277,7 +277,8 @@ describe("Star-fall: the mark is chosen, then begun", () => {
     ).toEqual([
       // The Knight has 6 HP left: the star takes them all.
       [R.starKnight, "−6", "BLAST", true],
-      [R.starInitiate, "−7", "BLAST_FRIENDLY", false],
+      // An Initiate has 7 HP since the Cult redesign (`pulp_wars-mch9.31`).
+      [R.starInitiate, "−7", "BLAST_FRIENDLY", true],
       [R.starFighter, "−7", "BLAST", false],
     ]);
     expect(targetAt(scene, R.star).semanticLabel).toContain(
@@ -742,7 +743,8 @@ describe("Tentacle and Grab", () => {
     const scene = rig(cultTricksUiFixtureV7());
     const { controller, host } = scene;
     select(scene, T.caller);
-    expect(cultButtons()).toEqual(["tentacle"]);
+    // The Summoner's (the Cult redesign, `pulp_wars-mch9.31`).
+    expect(cultButtons()).toEqual(["summon", "tentacle"]);
     requiredButton("cult-tentacle").click();
     expect(live()).toContain(CULT_TRICK_PICKS_V7.TENTACLE);
     const targets = boardPlan(host).targets;
@@ -760,7 +762,7 @@ describe("Tentacle and Grab", () => {
     expect(beside.semanticLabel).toMatch(
       /It slaps and grabs the Juggernaut at once/,
     );
-    // Beside the Caller alone: its own unit, in the warning stripes.
+    // Beside the Summoner alone: its own unit, in the warning stripes.
     expect(targetAt(scene, at(8, 2)).cultFocus?.marks).toEqual([
       { at: T.caller, label: "Slapped", friendly: true },
     ]);
@@ -774,7 +776,7 @@ describe("Tentacle and Grab", () => {
     scene.app.destroy();
   });
 
-  it("says a Caller's Tentacle is still up", () => {
+  it("says a Summoner's Tentacle is still up", () => {
     const scene = rig(
       withTentacleV7(cultTricksUiFixtureV7(), T.caller, at(9, 2)),
     );
@@ -786,63 +788,8 @@ describe("Tentacle and Grab", () => {
   });
 });
 
-describe("Pick Me!", () => {
-  it("marks whom it would bind, casts from its button, and tethers them", async () => {
-    const scene = rig(cultTricksUiFixtureV7());
-    const { controller, host } = scene;
-    select(scene, T.chosen);
-    expect(cultButtons()).toEqual(["pick-me"]);
-    const button = requiredButton("cult-pick-me");
-    expect(button.hasAttribute("aria-pressed")).toBe(false);
-    expect(
-      entries(scene, "ability-target:PICK_ME:").map((entry) => [
-        entry.at,
-        entry.label,
-        entry.abilityStyle,
-      ]),
-    ).toEqual([
-      [T.knight, "Bound", "TAUNT"],
-      [T.fighter, "Bound", "TAUNT"],
-    ]);
-    expect(
-      entries(scene, "cult-taunt-preview:").map((entry) => entry.cultLink),
-    ).toEqual([
-      { kind: "TAUNT", preview: true },
-      { kind: "TAUNT", preview: true },
-    ]);
-    // Marked, not picked.
-    expect(
-      boardPlan(host).targets.filter(
-        (target) => target.family !== "MOVE" && target.family !== "ATTACK",
-      ),
-    ).toEqual([]);
-    button.click();
-    await waitUntil(() => controller.accepted.length === 1);
-    expect(controller.accepted[0]).toMatchObject({ kind: "PICK_ME" });
-    await waitUntil(() => unitMarks(scene, T.chosen)?.taunt === true);
-    expect(
-      entries(scene, "cult-taunt:").map((entry) => [
-        entry.at,
-        entry.linkTo,
-        entry.cultLink,
-      ]),
-    ).toEqual([
-      [T.knight, T.chosen, { kind: "TAUNT", preview: false }],
-      [T.fighter, T.chosen, { kind: "TAUNT", preview: false }],
-    ]);
-    select(scene, T.chosen);
-    expect(chips()).toContainEqual(["pick-me", "Pick Me!"]);
-    expect(requiredButton("cult-pick-me").dataset.disabledReason).toBe(
-      PICK_ME_TAUNTING_V7,
-    );
-    select(scene, T.knight);
-    expect(chips()).toContainEqual(["taunted", "Taunted"]);
-    scene.app.destroy();
-  });
-});
-
 describe("The hexes on the board and on the card, for their victim", () => {
-  it("draws the frog, the Grab, the taunt and the Tentacle's turns", () => {
+  it("draws the frog, the Grab and the Tentacle's turns", () => {
     const scene = rig(cultTricksRivalUiFixtureV7());
     // The eye: the Tentacle beside it slaps it next (pulp_wars-mch9.24).
     expect(unitMarks(scene, T.knight)).toEqual({
@@ -863,7 +810,7 @@ describe("The hexes on the board and on the card, for their victim", () => {
     );
     expect(knightEntry.artSubject).toBe("UNIT:CULT:FROG");
     expect(knightEntry.label).toBe("Frog (Knight)");
-    expect(unitMarks(scene, T.chosen)).toEqual({ taunt: true });
+    expect(unitMarks(scene, T.bearer)).toBeUndefined();
     expect(unitMarks(scene, T.tentacle)).toEqual({ sinks: 2 });
     expect(
       entries(scene, "cult-grab:").map((entry) => [
@@ -872,7 +819,7 @@ describe("The hexes on the board and on the card, for their victim", () => {
         entry.cultLink,
       ]),
     ).toEqual([[T.tentacle, T.knight, { kind: "GRAB" }]]);
-    expect(entries(scene, "cult-taunt:")).toHaveLength(2);
+    expect(entries(scene, "cult-taunt:")).toHaveLength(0);
     // The viewer's own frog: the frog's card, its real numbers and every
     // chip. Its Fighter beside it keeps its own card.
     select(scene, T.fighter);
@@ -886,7 +833,6 @@ describe("The hexes on the board and on the card, for their victim", () => {
     expect(chips()).toEqual([
       ["frog", "Frog"],
       ["grabbed", "Grabbed"],
-      ["taunted", "Taunted"],
     ]);
     expect(
       [...dock().querySelectorAll<HTMLElement>(".v7-cult-chip")].every(

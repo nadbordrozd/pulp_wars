@@ -11,7 +11,6 @@ import {
   withIdolsV7,
   withRitualV7,
   withStrandsV7,
-  withTauntsV7,
   withTentacleV7,
   withUnboundHeraldV7,
   withUnboundV7,
@@ -458,15 +457,19 @@ export function cultRitualRivalUiFixtureV7(): GameStateV7 {
   );
 }
 
-/** Scenes for the hexes and tricks. */
+/**
+ * Scenes for the hexes and tricks. The Cult redesign (`pulp_wars-mch9.31`):
+ * the Tentacle's `caller` is a Summoner (the retired Caller's tile), and an
+ * Idol Bearer (`bearer`) stands where the retired Chosen stood.
+ */
 export const CULT_TRICK_UI_V7 = {
   hexer: at(5, 3),
   familiar: at(3, 3),
   caller: at(7, 2),
-  chosen: at(3, 5),
-  /** A Human Knight within 2 of the Hexer and beside the Chosen. */
+  bearer: at(3, 5),
+  /** A Human Knight within 2 of the Hexer and beside the Idol Bearer. */
   knight: at(4, 5),
-  /** A Human Fighter beside the Chosen. */
+  /** A Human Fighter beside the Idol Bearer. */
   fighter: at(2, 6),
   /** A Human Juggernaut within 2 of the Hexer: no hex takes it. */
   giant: at(7, 4),
@@ -476,16 +479,16 @@ export const CULT_TRICK_UI_V7 = {
 
 /**
  * The Cult player with every trick on offer: a Hexer with a Human Knight
- * and a Juggernaut within 2, a Familiar, a Caller, and a Chosen with the
- * Knight and a Fighter beside it.
+ * and a Juggernaut within 2, a Familiar, a Summoner (its Tentacle), and an
+ * Idol Bearer with the Knight and a Fighter beside it.
  */
 export function cultTricksUiFixtureV7(): GameStateV7 {
   const A = CULT_TRICK_UI_V7;
   return cultFieldV7([
     { seat: 0, role: "MARKSMAN", at: A.hexer },
     { seat: 0, role: "RAIDER", at: A.familiar },
-    { seat: 0, role: "KNIGHT", at: A.caller },
-    { seat: 0, role: "SWORDSMAN", at: A.chosen },
+    { seat: 0, role: "CAPTAIN", at: A.caller },
+    { seat: 0, role: "GUARD", at: A.bearer },
     { seat: 1, role: "KNIGHT", at: A.knight },
     { seat: 1, role: "FIGHTER", at: A.fighter },
     { seat: 1, role: "JUGGERNAUT", at: A.giant },
@@ -495,7 +498,7 @@ export function cultTricksUiFixtureV7(): GameStateV7 {
 function hexed(state: GameStateV7): GameStateV7 {
   const A = CULT_TRICK_UI_V7;
   const spent = withTentacleV7(
-    withTauntsV7(withFrogsV7(state, [A.knight]), [A.chosen]),
+    withFrogsV7(state, [A.knight]),
     A.caller,
     A.tentacle,
     { grabbed: A.knight, turnsLeft: 2 },
@@ -512,8 +515,7 @@ function hexed(state: GameStateV7): GameStateV7 {
 }
 
 /**
- * The same after the tricks: the Knight is a frog a Tentacle holds, the
- * Chosen has shouted (the Knight and the Fighter are bound), and the
+ * The same after the tricks: the Knight is a frog a Tentacle holds, and the
  * Hexer's Ribbit is spent.
  */
 export function cultTricksDoneUiFixtureV7(): GameStateV7 {
@@ -522,7 +524,7 @@ export function cultTricksDoneUiFixtureV7(): GameStateV7 {
 
 /**
  * The victim's side: a Human player (seat 0) whose Knight is a frog a
- * Tentacle holds, with a Cult Chosen that binds it and its Fighter.
+ * Tentacle holds, beside a Cult Idol Bearer with its Fighter.
  */
 export function cultTricksRivalUiFixtureV7(): GameStateV7 {
   const A = CULT_TRICK_UI_V7;
@@ -530,8 +532,8 @@ export function cultTricksRivalUiFixtureV7(): GameStateV7 {
     fieldV7(
       [
         { seat: 1, role: "MARKSMAN", at: A.hexer },
-        { seat: 1, role: "KNIGHT", at: A.caller },
-        { seat: 1, role: "SWORDSMAN", at: A.chosen },
+        { seat: 1, role: "CAPTAIN", at: A.caller },
+        { seat: 1, role: "GUARD", at: A.bearer },
         { seat: 0, role: "KNIGHT", at: A.knight },
         { seat: 0, role: "FIGHTER", at: A.fighter },
       ],

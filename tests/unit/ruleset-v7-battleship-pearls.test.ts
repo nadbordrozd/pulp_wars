@@ -30,7 +30,7 @@ import {
   type NavalArenaUnitV7,
 } from "../fixtures/v7-naval-branch";
 
-// `pulp_wars-5ti.13` (`pulp-wars-poc-7r84`; the user, 2026-10-14): the
+// `pulp_wars-5ti.13` (`pulp-wars-poc-7r85`; the user, 2026-10-14): the
 // Battleship has Attack 5 and Defense 3 (6 and 4 before) in every roster,
 // and Gather Pearls pays 12 Coins for 2, a gain of 10 (4 for 2 before).
 // Hand-built states on the naval arena of `pulp_wars-5ti.2` (rows 3 and 7
@@ -39,10 +39,10 @@ import {
 
 describe("the identity", () => {
   it("is 7r84, with 7r83 the last prior identity and its save key obsolete", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r84");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r84.current");
-    expect(PRIOR_RULESET_7_IDS.at(-1)).toBe("pulp-wars-poc-7r83");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r85");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r85.current");
+    expect(PRIOR_RULESET_7_IDS.at(-2)).toBe("pulp-wars-poc-7r83");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-2)).toBe(
       "pulpWars.save.v7r83.current",
     );
   });

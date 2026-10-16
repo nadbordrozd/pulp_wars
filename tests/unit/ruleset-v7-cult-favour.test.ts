@@ -11,7 +11,7 @@ import {
   FACTION_IDS_V7,
   FAVOUR_SOURCES_V7,
   FLAWLESS_BREAKING_EVENT_KINDS_V7,
-  MARTYR_FAVOUR_V7,
+  CULT_STARTING_FAVOUR_V7,
   MIND_CONTROLLED_LOST_ABILITIES_V7,
   OFFERING_FAVOUR_V7,
   OFFERING_MINIMUM_LEVEL_V7,
@@ -87,7 +87,6 @@ import {
 } from "../fixtures/v7-martian";
 import {
   at,
-  attackV7,
   fieldV7,
   kindsV7,
   movedV7,
@@ -98,8 +97,11 @@ import {
 /**
  * The Cultists of the Ancient Ones, engine bead E2 (`pulp_wars-mch9.4`,
  * docs/product/RULESET_7_CULTISTS.md sections 3, 5, and 8.2): Favour, the
- * Summoner's Sacrifice and Seize, a city's Offering, and the Chosen's
- * Martyr, with their Score and Flawless rules, events, previews, and saves.
+ * Summoner's Sacrifice and Seize, a city's Offering, and (until the Cult
+ * redesign's roster, `pulp_wars-mch9.31`, retired it with the Chosen) the
+ * Chosen's Martyr, with their Score and Flawless rules, events, previews,
+ * and saves. Since that bead every Cult seat starts a match with 2 Favour;
+ * the hand-built arenas start with none and name what they need.
  *
  * Every state here is built by hand; no match is played. The field is the
  * two-seat 11 x 11 board of `fieldV7`: seat 0 capital (8, 8) with territory
@@ -150,14 +152,14 @@ describe("the Cult's Favour: identity", () => {
   // (`pulp_wars-mch9.5`) 7r74, and the Cult's Unbound (`pulp_wars-mch9.6`)
   // 7r75, so 7r72 is a prior identity.
   it("was 7r72 after 7r71, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r84");
-    expect(PRIOR_RULESET_7_IDS.slice(-13, -11)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r85");
+    expect(PRIOR_RULESET_7_IDS.slice(-14, -12)).toEqual([
       "pulp-wars-poc-7r71",
       "pulp-wars-poc-7r72",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r84.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-13, -11)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r85.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-14, -12)).toEqual([
       "pulpWars.save.v7r71.current",
       "pulpWars.save.v7r72.current",
     ]);
@@ -231,11 +233,17 @@ describe("the Cult's Favour: identity", () => {
     expect(parseGameStateV7(JSON.parse(JSON.stringify(back.state)))).toEqual(
       back.state,
     );
-    // A new Cult match saves with its empty Cult block.
+    // A new Cult match saves with its Cult block: the Cult seat's starting
+    // Favour (the Cult redesign, `pulp_wars-mch9.31`) and nothing else.
     const fresh = createPlayableGameV7(goblinSetupV7(["CULT", "ORIGINAL"]));
     if (!fresh.ok) throw new Error(fresh.error.code);
     expect(fresh.state.cult).toEqual({
-      favour: [],
+      favour: [
+        {
+          playerId: seatIdV7(fresh.state, 0),
+          favour: CULT_STARTING_FAVOUR_V7,
+        },
+      ],
       strands: [],
       grips: [],
       idols: [],
@@ -243,7 +251,6 @@ describe("the Cult's Favour: identity", () => {
       cowed: [],
       frogs: [],
       hexCooldowns: [],
-      taunts: [],
       tentacles: [],
     });
     const save = createSaveEnvelopeV7(
@@ -255,8 +262,9 @@ describe("the Cult's Favour: identity", () => {
 });
 
 describe("the Cult's Favour: the registry (sections 4, 5, 8.2, and 11)", () => {
-  it("gives the Summoner Sacrifice and Seize, and the Chosen Martyr", () => {
-    // (Summon and Channel joined with the channel, `pulp_wars-mch9.5`.)
+  it("gives the Summoner Sacrifice and Seize; the Chosen and its Martyr retired", () => {
+    // (Summon and Channel joined with the channel, `pulp_wars-mch9.5`; the
+    // Tentacle with the Cult redesign, `pulp_wars-mch9.31`.)
     expect(effectiveRoleRuleV7("CAPTAIN", "CULT").abilities).toEqual([
       "ATTACK",
       "CAPTURE",
@@ -264,31 +272,27 @@ describe("the Cult's Favour: the registry (sections 4, 5, 8.2, and 11)", () => {
       "SEIZE",
       "SUMMON",
       "CHANNEL",
+      "TENTACLE",
     ]);
-    expect(effectiveRoleRuleV7("SWORDSMAN", "CULT").abilities).toEqual([
-      "ATTACK",
-      "CAPTURE",
-      "MARTYR",
-      "CHANNEL",
-      // The tricks (`pulp_wars-mch9.8`).
-      "PICK_ME",
-    ]);
+    // The Chosen's slot is vacant: no Martyr, no Pick Me!.
+    expect(effectiveRoleRuleV7("SWORDSMAN", "CULT").abilities).toEqual([]);
     // No other role of any faction has them.
     for (const faction of FACTION_IDS_V7)
       for (const role of UNIT_ROLE_IDS_V7) {
         const abilities = effectiveRoleRuleV7(role, faction).abilities;
-        const cult = (ability: "SACRIFICE" | "SEIZE" | "MARTYR") =>
+        const cult = (ability: "SACRIFICE" | "SEIZE") =>
           abilities.includes(ability);
         expect(cult("SACRIFICE") || cult("SEIZE"), `${faction} ${role}`).toBe(
           faction === "CULT" && role === "CAPTAIN",
         );
-        expect(cult("MARTYR"), `${faction} ${role}`).toBe(
-          faction === "CULT" && role === "SWORDSMAN",
-        );
+        expect(
+          abilities as readonly string[],
+          `${faction} ${role}`,
+        ).not.toContain("MARTYR");
       }
   });
 
-  it("names the seven robed cultists: not the Familiar, the Thing, or a ship", () => {
+  it("names the five robed cultists: not the Familiar, the Thing, a ship, or a vacant slot", () => {
     const robed = UNIT_ROLE_IDS_V7.filter(
       (role) => roleMechanicsV7(role, "CULT").robed,
     );
@@ -298,15 +302,11 @@ describe("the Cult's Favour: the registry (sections 4, 5, 8.2, and 11)", () => {
       "GUARD",
       "CAPTAIN",
       "CATAPULT",
-      "KNIGHT",
-      "SWORDSMAN",
     ]);
     for (const faction of FACTION_IDS_V7)
       if (faction !== "CULT")
-        for (const role of UNIT_ROLE_IDS_V7) {
+        for (const role of UNIT_ROLE_IDS_V7)
           expect(roleMechanicsV7(role, faction).robed, faction).toBe(false);
-          expect(roleMechanicsV7(role, faction).martyrFavour).toBe(0);
-        }
     // A robed cultist is one in land form.
     const state = cultFieldV7(
       [
@@ -321,13 +321,25 @@ describe("the Cult's Favour: the registry (sections 4, 5, 8.2, and 11)", () => {
     expect(isRobedCultistV7(state, unitAtV7(state, at(4, 2)))).toBe(false);
   });
 
-  it("pays 6 for a Martyr, the Chosen's value", () => {
-    expect(MARTYR_FAVOUR_V7).toBe(6);
-    expect(roleMechanicsV7("SWORDSMAN", "CULT").martyrFavour).toBe(6);
-    expect(effectiveRoleRuleV7("SWORDSMAN", "CULT").cost).toBe(6);
-    for (const role of UNIT_ROLE_IDS_V7)
-      if (role !== "SWORDSMAN")
-        expect(roleMechanicsV7(role, "CULT").martyrFavour, role).toBe(0);
+  it("starts every Cult seat with 2 Favour (the Cult redesign)", () => {
+    expect(CULT_STARTING_FAVOUR_V7).toBe(2);
+    for (const factions of [
+      ["CULT", "ORIGINAL"],
+      ["ORIGINAL", "CULT"],
+    ] as const) {
+      const created = createPlayableGameV7(goblinSetupV7(factions));
+      if (!created.ok) throw new Error(created.error.code);
+      const cultSeat = factions.indexOf("CULT");
+      expect(created.state.cult.favour).toEqual([
+        {
+          playerId: seatIdV7(created.state, cultSeat),
+          favour: 2,
+        },
+      ]);
+    }
+    const plain = createPlayableGameV7(goblinSetupV7(["ORIGINAL", "GOBLIN"]));
+    if (!plain.ok) throw new Error(plain.error.code);
+    expect(plain.state.cult.favour).toEqual([]);
   });
 
   it("holds the spec's numbers", () => {
@@ -342,7 +354,7 @@ describe("the Cult's Favour: the registry (sections 4, 5, 8.2, and 11)", () => {
       "SACRIFICE",
       "SEIZE",
       "OFFERING",
-      "MARTYR",
+      // (`MARTYR` retired with the Chosen, `pulp_wars-mch9.31`.)
       // `pulp_wars-mch9.6` (section 8.3): a bound daemon's kill.
       "DAEMON_KILL",
       // `pulp_wars-mch9.7` (section 7.3): the Great Summoning's meal.
@@ -375,7 +387,7 @@ describe("the Cult's Favour: the registry (sections 4, 5, 8.2, and 11)", () => {
 
   it("takes the Favour abilities from a mind-controlled unit (they need a Cult seat)", () => {
     expect(MIND_CONTROLLED_LOST_ABILITIES_V7).toEqual(
-      expect.arrayContaining(["SACRIFICE", "SEIZE", "MARTYR"]),
+      expect.arrayContaining(["SACRIFICE", "SEIZE"]),
     );
   });
 
@@ -400,7 +412,6 @@ describe("the Cult's Favour: the registry (sections 4, 5, 8.2, and 11)", () => {
       "RIBBIT",
       "SWITCHEROO",
       "TENTACLE",
-      "PICK_ME",
       "CAPTURE",
     ]);
     expect(order[order.indexOf("LAY_EGG") + 1]).toBe("OFFERING");
@@ -461,18 +472,18 @@ describe("the Cult's Favour: the registry (sections 4, 5, 8.2, and 11)", () => {
     expect(parseCommandV7({ kind: "OFFERING" }).ok).toBe(false);
   });
 
-  it("gives the Summoner and the Chosen their glossary lines", () => {
+  it("gives the Summoner its glossary lines, and the vacant Chosen none", () => {
     const names = (role: UnitRoleIdV7) =>
       roleGlossaryV7(role, "CULT").map((entry) => entry.name);
     expect(names("CAPTAIN")).toEqual(
       expect.arrayContaining(["Sacrifice", "Seize"]),
     );
-    expect(names("SWORDSMAN")).toContain("Martyr");
+    expect(names("SWORDSMAN")).not.toContain("Martyr");
   });
 });
 
 describe("the Cult's Favour: the pool (section 3)", () => {
-  it("starts at 0 and is public for every Cult seat", () => {
+  it("starts at 0 in an arena (it names its Favour) and is public for every Cult seat", () => {
     const state = cultFieldV7([SUMMONER]);
     expect(state.cult).toEqual({
       favour: [],
@@ -483,7 +494,6 @@ describe("the Cult's Favour: the pool (section 3)", () => {
       cowed: [],
       frogs: [],
       hexCooldowns: [],
-      taunts: [],
       tentacles: [],
     });
     expect(favour(state, 0)).toBe(0);
@@ -521,7 +531,6 @@ describe("the Cult's Favour: the pool (section 3)", () => {
       cowed: [],
       frogs: [],
       hexCooldowns: [],
-      taunts: [],
       tentacles: [],
     });
     expect(viewForV7(state, seatIdV7(state, 0)).cult).toEqual({
@@ -534,7 +543,6 @@ describe("the Cult's Favour: the pool (section 3)", () => {
       cowed: [],
       frogs: [],
       hexCooldowns: [],
-      taunts: [],
       tentacles: [],
     });
   });
@@ -567,7 +575,6 @@ describe("the Cult's Favour: the pool (section 3)", () => {
         cowed: [],
         frogs: [],
         hexCooldowns: [],
-        taunts: [],
         tentacles: [],
         ...value,
       },
@@ -636,7 +643,6 @@ describe("the Cult's Favour: the pool (section 3)", () => {
       cowed: [],
       frogs: [],
       hexCooldowns: [],
-      taunts: [],
       tentacles: [],
     });
     expect(
@@ -737,15 +743,15 @@ describe("the Cult's Sacrifice (section 5.1)", () => {
   });
 
   it("pays the value of every role, the Thing in the Cellar's 12 included", () => {
+    // The Cult redesign (`pulp_wars-mch9.31`): the Hexer costs 3 and the
+    // Stargazer 7; the Chosen and the Caller retired.
     const values: Readonly<Partial<Record<UnitRoleIdV7, number>>> = {
       FIGHTER: 2,
       GUARD: 3,
       RAIDER: 3,
-      MARKSMAN: 4,
+      MARKSMAN: 3,
       CAPTAIN: 5,
-      SWORDSMAN: 6,
-      CATAPULT: 8,
-      KNIGHT: 8,
+      CATAPULT: 7,
       JUGGERNAUT: 12,
     };
     for (const [role, value] of Object.entries(values) as [
@@ -757,7 +763,6 @@ describe("the Cult's Sacrifice (section 5.1)", () => {
         value,
       );
       const result = playV7(state, sacrifice(state, at(5, 2), at(5, 3)));
-      // A Sacrificed Chosen pays its value and no Martyr on top.
       expect(favour(result.state, 0), role).toBe(value);
       expect(
         result.events.filter((event) => event.kind === "FAVOUR_GAINED"),
@@ -1198,8 +1203,6 @@ describe("the Cult's Seize (section 5.2)", () => {
       "MARKSMAN",
       "CAPTAIN",
       "CATAPULT",
-      "KNIGHT",
-      "SWORDSMAN",
     ] as const) {
       const { state } = tryWith([
         {
@@ -1652,172 +1655,6 @@ describe("the Cult's Offering (section 5.3)", () => {
   });
 });
 
-describe("the Cult's Martyr (section 8.2)", () => {
-  it("pays 6 Favour when an enemy kills a Chosen", () => {
-    const state = cultFieldV7(
-      [
-        { seat: 0, role: "SWORDSMAN", at: at(5, 3), hp: 2 },
-        { seat: 1, role: "KNIGHT", at: at(5, 4) },
-      ],
-      { activeSeat: 1 },
-    );
-    const chosen = unitAtV7(state, at(5, 3));
-    const run = attackV7(state, at(5, 4), at(5, 3));
-    expect(run.target).toBeUndefined();
-    const died = run.events.findIndex(
-      (event) => event.kind === "UNIT_DIED" && event.unitId === chosen.id,
-    );
-    expect(run.events[died + 1]).toEqual({
-      kind: "FAVOUR_GAINED",
-      playerId: seatIdV7(state, 0),
-      source: "MARTYR",
-      amount: 6,
-      favour: 6,
-    });
-    expect(favour(run.state, 0)).toBe(6);
-    // It is an ordinary Loss for the Cult and a Kill for the Human seat.
-    expect(ledger(run.state, 0)).toMatchObject({
-      lossValue: 6,
-      flawless: false,
-    });
-    expect(ledger(run.state, 1)).toMatchObject({ killValue: 6 });
-    // The Favour is public: the killer's seat is told.
-    expect(
-      kindsV7(
-        projectEventsV7(state, run.state, seatIdV7(state, 1), run.events)
-          .events as readonly DomainEventV7[],
-      ),
-    ).toContain("FAVOUR_GAINED");
-  });
-
-  it("pays when a Chosen dies striking, on the Cult's own turn", () => {
-    // A Chosen at 1 HP attacks a Guard and dies of the answer.
-    const state = cultFieldV7([
-      { seat: 0, role: "SWORDSMAN", at: at(5, 3), hp: 1 },
-      { seat: 1, role: "GUARD", at: at(5, 4) },
-    ]);
-    const run = attackV7(state, at(5, 3), at(5, 4));
-    expect(run.attacker).toBeUndefined();
-    expect(favour(run.state, 0)).toBe(6);
-    expect(kindsV7(run.events)).toContain("FAVOUR_GAINED");
-  });
-
-  it("adds to the Favour the seat has, once for each Chosen", () => {
-    const state = withFavourV7(
-      cultFieldV7(
-        [
-          { seat: 0, role: "SWORDSMAN", at: at(5, 3), hp: 1 },
-          { seat: 1, role: "KNIGHT", at: at(5, 4) },
-        ],
-        { activeSeat: 1 },
-      ),
-      0,
-      10,
-    );
-    expect(favour(attackV7(state, at(5, 4), at(5, 3)).state, 0)).toBe(16);
-  });
-
-  it("pays nothing for another unit's death, or for a Chosen that survives", () => {
-    const state = cultFieldV7(
-      [
-        { seat: 0, role: "FIGHTER", at: at(5, 3), hp: 2 },
-        { seat: 0, role: "SWORDSMAN", at: at(7, 3) },
-        { seat: 1, role: "KNIGHT", at: at(5, 4) },
-        { seat: 1, role: "FIGHTER", at: at(7, 4) },
-      ],
-      { activeSeat: 1 },
-    );
-    const killed = attackV7(state, at(5, 4), at(5, 3));
-    expect(killed.target).toBeUndefined();
-    expect(killed.state.cult.favour).toEqual([]);
-    const hurt = attackV7(state, at(7, 4), at(7, 3));
-    expect(hurt.target).toBeDefined();
-    expect(hurt.state.cult.favour).toEqual([]);
-  });
-
-  it("pays nothing for a mind-controlled Chosen: Favour needs a Cult seat", () => {
-    const state = martianFieldV7(
-      [
-        { seat: 0, role: "CAPTAIN", at: at(2, 2) },
-        {
-          seat: 1,
-          role: "SWORDSMAN",
-          at: at(5, 3),
-          hp: 1,
-          controlledBy: at(2, 2),
-        },
-        { seat: 1, role: "KNIGHT", at: at(5, 4) },
-      ],
-      { factions: ["MARTIAN", "CULT"], activeSeat: 1 },
-    );
-    const chosen = unitAtV7(state, at(5, 3));
-    expect(chosen.ownerId).toBe(seatIdV7(state, 0));
-    const result = applyOkV7(state, seatIdV7(state, 1), {
-      kind: "ATTACK",
-      unitId: unitAtV7(state, at(5, 4)).id,
-      targetUnitId: chosen.id,
-    });
-    expect(result.state.units.map((unit) => unit.id)).not.toContain(chosen.id);
-    expect(result.state.cult.favour).toEqual([]);
-    expect(kindsV7(result.events)).not.toContain("FAVOUR_GAINED");
-  });
-
-  it("pays the Chosen's own seat when another Cult seat Seizes it", () => {
-    const state = cultFieldV7(
-      [
-        SUMMONER,
-        { seat: 0, role: "FIGHTER", at: at(6, 4) },
-        { seat: 1, role: "SWORDSMAN", at: at(5, 3), hp: 5 },
-      ],
-      { factions: ["CULT", "CULT"] },
-    );
-    const result = playV7(state, seize(state, at(5, 2), at(5, 3)));
-    expect(
-      result.events.filter((event) => event.kind === "FAVOUR_GAINED"),
-    ).toEqual([
-      {
-        kind: "FAVOUR_GAINED",
-        playerId: seatIdV7(state, 1),
-        source: "MARTYR",
-        amount: 6,
-        favour: 6,
-      },
-      {
-        kind: "FAVOUR_GAINED",
-        playerId: seatIdV7(state, 0),
-        source: "SEIZE",
-        amount: 12,
-        favour: 12,
-      },
-    ]);
-    expect([favour(result.state, 0), favour(result.state, 1)]).toEqual([12, 6]);
-    expect(viewForV7(result.state, seatIdV7(state, 1)).cult.favour).toEqual([
-      { playerId: seatIdV7(state, 0), favour: 12 },
-      { playerId: seatIdV7(state, 1), favour: 6 },
-    ]);
-  });
-
-  it("pays nothing to a seat that falls with its Chosen", () => {
-    // The Human Fighter takes the Cult's last city; its Chosen is removed.
-    const state = cultFieldV7(
-      [
-        { seat: 1, role: "FIGHTER", at: at(8, 8), captureEligible: true },
-        { seat: 0, role: "SWORDSMAN", at: at(5, 2) },
-      ],
-      { activeSeat: 1 },
-    );
-    const result = applyOkV7(state, seatIdV7(state, 1), {
-      kind: "CAPTURE",
-      unitId: unitAtV7(state, at(8, 8)).id,
-    });
-    expect(result.state.units.some((unit) => unit.role === "SWORDSMAN")).toBe(
-      false,
-    );
-    expect(kindsV7(result.events)).not.toContain("FAVOUR_GAINED");
-    expect(result.state.cult.favour).toEqual([]);
-  });
-});
-
 describe("the Cult's Favour: events, flawless, and the dock's stand-in", () => {
   it("validates the four events and the new cause of death", () => {
     const good: readonly DomainEventV7[] = [
@@ -1852,8 +1689,8 @@ describe("the Cult's Favour: events, flawless, and the dock's stand-in", () => {
       {
         kind: "FAVOUR_GAINED",
         playerId: 1 as never,
-        source: "MARTYR",
-        amount: 6,
+        source: "OFFERING",
+        amount: 3,
         favour: 6,
       },
       { kind: "UNIT_DIED", unitId: 6 as never, cause: "SACRIFICED" },
@@ -1877,6 +1714,8 @@ describe("the Cult's Favour: events, flawless, and the dock's stand-in", () => {
       { ...raw[2], population: 3 },
       { ...raw[2], favour: 4 },
       { ...raw[3], source: "GIFT" },
+      // Martyr retired with the Chosen (`pulp_wars-mch9.31`).
+      { ...raw[3], source: "MARTYR" },
       { ...raw[3], amount: 0 },
       { ...raw[3], amount: 7 },
       { ...raw[3], unitId: 6 },
@@ -1948,7 +1787,7 @@ describe("the Cult's Favour: the older Normal policy tolerates the commands", ()
           { seat: 1, role: "CAPTAIN", at: at(4, 4) },
           { seat: 1, role: "FIGHTER", at: at(4, 5) },
           { seat: 1, role: "JUGGERNAUT", at: at(3, 4) },
-          { seat: 1, role: "SWORDSMAN", at: at(3, 5) },
+          { seat: 1, role: "GUARD", at: at(3, 5) },
           { seat: 0, role: "KNIGHT", at: at(5, 5), hp: 3 },
           { seat: 0, role: "FIGHTER", at: at(8, 7) },
         ],

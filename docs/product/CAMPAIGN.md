@@ -1643,6 +1643,16 @@ the ring; then the Knights ride through.", and "No Summoner, no summoning:
 shoot the candle-bearers." The barrow hint moved into the briefing. Only
 the text changed.
 
+**Revision 3, a stop-gap** (`pulp_wars-mch9.31`, the Cult redesign's
+roster, `pulp-wars-poc-7r85`): the Caller and the Chosen retired, so the
+ring's Chosen on the goat path side (9, 2) is an Idol Bearer, the other
+Chosen (11, 4) an Initiate, and the Caller (9, 4) a Hexer, and the
+briefing's "every Chosen who dies a martyr" reads "every cultist offered
+up" (Martyr is gone). Nothing else changed: the mission's retune for the
+redesigned Cult (its technologies, its Favour, its hints, and the replay)
+is the redesign's campaign bead
+([its section 15](RULESET_7_CULT_REDESIGN.md#15-campaign-and-labs)).
+
 ### 9.4 Unlock order, and free play
 
 Humans (from the start), Goblins (mission 2), Undead (4), Dwarves (5), Ice

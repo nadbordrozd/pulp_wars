@@ -233,7 +233,9 @@ describe("ruleset-7 revision-20 section 6.3 sturdiness numbers", () => {
     // The Cult registration (`pulp_wars-mch9.3`) adds a ninth faction
     // (docs/product/RULESET_7_CULTISTS.md section 4.1): Initiate, Familiar,
     // Hexer, Idol Bearer, Summoner, Stargazer, Caller, Thing in the Cellar.
-    expect(hp("CULT")).toEqual([10, 8, 9, 16, 10, 10, 12, 40]);
+    // The Cult redesign (`pulp_wars-mch9.31`): the robed casters have 7 HP,
+    // and the Caller's slot is vacant (its rule holds 1).
+    expect(hp("CULT")).toEqual([7, 8, 7, 16, 7, 7, 1, 40]);
     expect(FACTION_IDS_V7).toHaveLength(9);
   });
 

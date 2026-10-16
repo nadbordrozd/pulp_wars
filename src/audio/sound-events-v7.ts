@@ -542,8 +542,6 @@ export function soundCuesForStepV7(
           return [{ id: "cult.tentacle", delayMs: 0 }];
         case "GRAB":
           return [{ id: "special.boing", delayMs: 0 }];
-        case "PICK_ME":
-          return [{ id: "support.rally", delayMs: 0 }];
         case "PAMPHLETS":
           return [{ id: "cult.pamphlets", delayMs: 0 }];
       }

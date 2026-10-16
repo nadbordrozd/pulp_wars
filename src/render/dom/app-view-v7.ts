@@ -779,6 +779,7 @@ import {
   SEIZE_TOOLTIP_V7,
   SUMMONER_SUPPORT_UNLOCK_TEXT_V7,
   SWITCHEROO_UNLOCK_TEXT_V7,
+  TENTACLES_UNLOCK_TEXT_V7,
   cultBoundaryNoticeV7,
   favourCountTextV7,
   favourGainTextV7,
@@ -1154,7 +1155,6 @@ const NON_BUTTON_COMMANDS = new Set<CommandV7["kind"]>([
   "RIBBIT",
   "SWITCHEROO",
   "TENTACLE",
-  "PICK_ME",
 ]);
 /**
  * The Cultists' channel (bead pulp_wars-mch9.18): each action's button
@@ -1201,7 +1201,6 @@ const CULT_TRICK_ICONS_V7: Readonly<Record<CultTrickKindV7, UiIconIdV7>> = {
   RIBBIT: "frog",
   SWITCHEROO: "swap",
   TENTACLE: "tentacle",
-  PICK_ME: "shout",
 };
 /** The `data-action` of a tile chooser's row (bead pulp_wars-2yc.60). */
 function tileChoiceActionV7(id: string): string {
@@ -13889,9 +13888,9 @@ export class Ruleset7DomAppView {
    * section 3.9): one button per action of the selected own unit, whatever
    * the number of tiles, cities or units: Star-fall, the Great Summoning,
    * Proclaim, Ribbit, Switcheroo and Tentacle arm their aiming (pressed
-   * while aiming) and are picked on the board; Pick Me! targets nothing
-   * and is cast by its button, the enemies it would bind being marked
-   * while the Chosen is selected. Without an offered command a button is
+   * while aiming) and are picked on the board. (Pick Me!, cast by its
+   * button, retired with the Chosen: the Cult redesign,
+   * `pulp_wars-mch9.31`.) Without an offered command a button is
    * shown disabled with the engine's reason, or not at all when the unit
    * lacks the technology.
    */
@@ -13947,20 +13946,14 @@ export class Ruleset7DomAppView {
       }
       if (reason === null) {
         const aiming = this.#cultPick?.kind === kind;
-        const [only] = commands;
         action.title = tooltip;
         action.setAttribute("aria-label", `${label}${price}. ${tooltip}`);
         action.disabled = this.#localBusy();
-        if (kind === "PICK_ME") {
-          if (only !== undefined)
-            action.onclick = () => void this.#dispatch(only);
-        } else {
-          action.setAttribute("aria-pressed", String(aiming));
-          action.onclick = () =>
-            aiming
-              ? this.#cancelCultPick()
-              : this.#startCultTrickPick(kind, unit.id);
-        }
+        action.setAttribute("aria-pressed", String(aiming));
+        action.onclick = () =>
+          aiming
+            ? this.#cancelCultPick()
+            : this.#startCultTrickPick(kind, unit.id);
       } else {
         // aria-disabled keeps the reason reachable by keyboard and touch.
         action.setAttribute("aria-disabled", "true");
@@ -15772,7 +15765,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
     return null;
   return {
-    rulesetId: "pulp-wars-poc-7r84",
+    rulesetId: "pulp-wars-poc-7r85",
     seed,
     width: effectiveBoardSize(draft),
     height: effectiveBoardSize(draft),
@@ -16036,6 +16029,8 @@ function effectDescription(
       return GREAT_SUMMONING_UNLOCK_TEXT_V7;
     case "SWITCHEROO":
       return SWITCHEROO_UNLOCK_TEXT_V7;
+    case "TENTACLES":
+      return TENTACLES_UNLOCK_TEXT_V7;
     case "OVERRUN":
       // Bead pulp_wars-2yc.63: Overrun in every faction (it was the Goblin
       // Ram and the Dinosaur Rampage).
@@ -16196,6 +16191,7 @@ function technologyEffectGroupIdV7(
     case "OFFERING":
     case "GREAT_SUMMONING":
     case "SWITCHEROO":
+    case "TENTACLES":
       return "ACTIONS";
     case "COMMAND":
       return effect.command.startsWith("BUILD_") &&

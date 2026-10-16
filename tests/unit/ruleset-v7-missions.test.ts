@@ -122,8 +122,10 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
   "FRONTIER_9@2:MARTIAN":
     "413a8bdae4f1733fb4f67625837aa5d6297bc02a7fe37db68d9c405a851a226f",
   // Mission 10 replayed on the corrected Cult AI (`pulp_wars-v642.6`): revision 2.
-  "FRONTIER_10@2:ORIGINAL":
-    "f50c51fc2bace84e06d3ee0d7e01e75ece913b0f2a662c5455497fc6aa17ee4e",
+  // The Cult redesign's roster (`pulp_wars-mch9.31`): revision 3 (the Chosen
+  // and the Caller of the ring are an Idol Bearer, an Initiate, and a Hexer).
+  "FRONTIER_10@3:ORIGINAL":
+    "0c2b83dc7fbe270fb51c678ccfdaee1c5ea89e919c4d22c3dc23e144d72d6ac0",
   // The siege fixture of the Normal AI (`pulp_wars-68k.6`).
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 2.
   "TEST_NECK@2:ORIGINAL":
@@ -193,9 +195,11 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
   // The Cult's tricks (`pulp_wars-mch9.8`): the Cult roster in the same
   // middle game, the hand player as the Cultists (its 12 Favour is in the
   // `cult` record, which the pins leave out and `expectedMissionCult`
-  // checks).
-  "LAB_CULT_MID@1:CULT":
-    "93dd6cf4cf2ccdd33830315a9f5974c1d1ea88764ec34b4cd8fc74c32e0263b1",
+  // checks). The Cult redesign's roster (`pulp_wars-mch9.31`): revision 2
+  // (the Caller and the two Chosen are a Hexer, an Idol Bearer, and an
+  // Initiate).
+  "LAB_CULT_MID@2:CULT":
+    "5314ea5794f60ad88ed98e7fbd59abc8cc9f173fcc902de0a4ecb6b53ff7f7a8",
   // The tutorial board (`pulp_wars-0yxy`): Humans against one Goblin seat.
   "TUTORIAL_1@1:ORIGINAL":
     "f8d36a0cd1ab6b2e351b45b3f2721d0b1cfab3b58728cbd5b7cd9b471bc3ecb1",
@@ -244,7 +248,6 @@ function expectedMissionCult(state: GameStateV7): GameStateV7["cult"] {
     cowed: [],
     frogs: [],
     hexCooldowns: [],
-    taunts: [],
     tentacles: [],
   };
 }
@@ -406,8 +409,9 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
   "FRONTIER_9@2:MARTIAN":
     "82e2e17c0f8e0a6f37ffdaf99f6b514d9e081892d6a7f12e80f7452aea9fc720",
   // Mission 10 replayed on the corrected Cult AI (`pulp_wars-v642.6`): revision 2.
-  "FRONTIER_10@2:ORIGINAL":
-    "e140613652331ecada12b69f31f055f1426382dd5c1ff26169b88f5fe1de8111",
+  // The Cult redesign's roster (`pulp_wars-mch9.31`): revision 3.
+  "FRONTIER_10@3:ORIGINAL":
+    "f8018d93f4ab401a2882c52452988a35c26a87c40734a0c81946ef18e3374c99",
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 2.
   "TEST_NECK@2:ORIGINAL":
     "32595babd0a4d5371b260320b8d360786ba69b01808d2716eaadec332213500e",
@@ -460,9 +464,10 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
     "ebd63e3819669af5c3446cca594362b3f44fdd534624e342fb48d9b24c8b19e0",
   "LAB_DWARF_MID@1:DWARF":
     "8a17c1c43532dc6a5e830d0f552cee4a955902a2897545267726d39c890c7ca2",
-  // The Cult's tricks (`pulp_wars-mch9.8`).
-  "LAB_CULT_MID@1:CULT":
-    "64514091a4c6998dbd67ff33bf9187ffe770f1fa2a631e572ede1a851819f576",
+  // The Cult's tricks (`pulp_wars-mch9.8`); the Cult redesign's roster
+  // (`pulp_wars-mch9.31`): revision 2.
+  "LAB_CULT_MID@2:CULT":
+    "dd0f9d881c53029f996b230d8be84a6c06098c5c28eeaf376518e0e60baded16",
   // The tutorial board (`pulp_wars-0yxy`).
   "TUTORIAL_1@1:ORIGINAL":
     "7740c5e7f57484e405c12cb665cfd33322eadbaf3c4907bc9b2483c5c05b0463",

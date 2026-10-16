@@ -1,8 +1,8 @@
 {
   "schemaVersion": 7,
-  "rulesetId": "pulp-wars-poc-7r84",
+  "rulesetId": "pulp-wars-poc-7r85",
   "setup": {
-    "rulesetId": "pulp-wars-poc-7r84",
+    "rulesetId": "pulp-wars-poc-7r85",
     "seed": 9,
     "width": 14,
     "height": 14,
@@ -2984,7 +2984,6 @@
     "cowed": [],
     "frogs": [],
     "hexCooldowns": [],
-    "taunts": [],
     "tentacles": []
   },
   "pendingChoices": [],

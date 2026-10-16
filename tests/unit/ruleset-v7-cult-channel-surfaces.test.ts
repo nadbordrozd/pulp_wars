@@ -102,8 +102,10 @@ function everything(seat = 0): GameStateV7 {
 
 describe("the Cult's channel: the Horror on the board", () => {
   it("draws a summoned Horror with its own sprite and name", () => {
+    // A Knight of the Human seat beside it (the Cult's own `KNIGHT` slot is
+    // vacant since the Cult redesign, `pulp_wars-mch9.31`).
     const state = withHorrorV7(
-      cultFieldV7([{ seat: 0, role: "KNIGHT", at: at(4, 4) }]),
+      cultFieldV7([{ seat: 1, role: "KNIGHT", at: at(4, 4) }]),
       0,
       at(5, 4),
     );
@@ -122,11 +124,11 @@ describe("the Cult's channel: the Horror on the board", () => {
         if (found?.kind !== "UNIT") throw new Error("no unit entry");
         return found;
       };
-      // The Horror, whose mechanical role is the Caller's, is no Caller.
+      // The Horror, whose mechanical role is `KNIGHT`, is no Knight.
       expect(entry(at(5, 4)).artSubject).toBe("UNIT:CULT:HORROR");
       expect(entry(at(5, 4)).label).toBe("Horror");
-      expect(entry(at(4, 4)).artSubject).toBe("UNIT:CULT:KNIGHT");
-      expect(entry(at(4, 4)).label).toBe("Caller");
+      expect(entry(at(4, 4)).artSubject).not.toBe("UNIT:CULT:HORROR");
+      expect(entry(at(4, 4)).label).toBe("Knight");
       const horror = view.units.find((unit) => unit.summoned === "HORROR");
       expect(
         horror === undefined ? null : unitDisplayNameV7(view, horror),
@@ -163,11 +165,11 @@ describe("the Cult's channel: the Horror on the board", () => {
       "STRIDE",
       "UNBOUND",
     ]);
-    // (The Caller's Tentacle arrived with the tricks, `pulp_wars-mch9.8`.)
-    expect(roleGlossaryV7("KNIGHT", "CULT").map((entry) => entry.id)).toEqual([
-      "CHANNEL",
-      "TENTACLE",
-    ]);
+    // The Cult's `KNIGHT` slot is vacant (the Caller retired with the Cult
+    // redesign, `pulp_wars-mch9.31`): it has no lines.
+    expect(roleGlossaryV7("KNIGHT", "CULT").map((entry) => entry.id)).toEqual(
+      [],
+    );
     for (const entry of lines) {
       expect(entry.text.length, entry.id).toBeLessThanOrEqual(
         GLOSSARY_TEXT_LIMIT_V7,

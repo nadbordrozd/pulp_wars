@@ -18,6 +18,7 @@ import {
   UNIT_ROLE_IDS_V7,
   effectiveRoleRuleV7,
   HUMAN_ONLY_ROLES_V7,
+  factionFieldsRoleV7,
   factionUnlocksRoleV7,
   isEggLaidRoleV7,
   isNavalRoleV7,
@@ -401,6 +402,15 @@ export function galleryUnitCellV7(
     row !== "EGG" &&
     HUMAN_ONLY_ROLES_V7.includes(row) &&
     !factionUnlocksRoleV7(faction, row)
+  )
+    return { kind: "EMPTY", row, faction };
+  // The Cult redesign (`pulp_wars-mch9.31`, section 4.2): a vacant role (the
+  // Cult's `KNIGHT` and `SWORDSMAN`, whose Caller and Chosen retired) is no
+  // unit of the faction.
+  if (
+    row !== "TRANSPORT" &&
+    row !== "EGG" &&
+    !factionFieldsRoleV7(faction, row)
   )
     return { kind: "EMPTY", row, faction };
   if (row === "TRANSPORT")

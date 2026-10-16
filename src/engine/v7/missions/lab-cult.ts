@@ -19,21 +19,29 @@ import { LAB_DWARF_MID_V7 } from "./lab-dwarf";
  * The Cult owns the fourteen technologies that make every Cult unit
  * trainable and every rite possible: the thirteen of the Dwarf lab
  * (Leadership: the Summoner with Sacrifice, Seize, and Summon; Familiars
- * with Switcheroo; Hexers; Stargazers; Callers; Warding Circles: the Idol
- * Bearer; the Chosen) and The Stars Are Right (the Great Summoning). It
+ * with Switcheroo; Hexers; Stargazers; Tentacles; Warding Circles: the Idol
+ * Bearer; Gibbering Masses) and The Stars Are Right (the Great Summoning). It
  * does not own Harvest Rites (the Offering), Fieldcraft, or Roads. It holds
- * 17 units worth 68 Coins (5 Initiates, 2 Idol Bearers, 2 Familiars, 2
- * Hexers, 2 Summoners, a Stargazer, a Caller, and 2 Chosen), two free unit
+ * 17 units worth 53 Coins (6 Initiates, 3 Idol Bearers, 2 Familiars, 3
+ * Hexers, 2 Summoners, and a Stargazer; 68 Coins in revision 1), two free unit
  * slots (one in the capital, one in the northern level-3 city), 20 Coins
  * before the income of the first turn (35 in hand on it), and **12 Favour**
  * (two Horrors, or the way to a Herald after Sacrifices worth 8 more): its
  * bodies are worth 12 Coins less than the Humans', and the Favour stands
- * for them. It starts with no daemon: the first summoning is the player's.
+ * for them (revision 1's numbers). It starts with no daemon: the first summoning is the player's.
  * The Humans hold 17 units worth 80 Coins with two free slots and 15 Coins
  * (30 on their first turn). The front cities are four tiles apart; two
  * neutral villages lie between the lines (an Initiate takes one in the turn
  * it arrives: Pamphlets). The AI has no directive: it plays the ordinary
  * Normal policy.
+ *
+ * Revision 2 (the Cult redesign's roster, `pulp_wars-mch9.31`,
+ * docs/product/RULESET_7_CULT_REDESIGN.md section 15): the Caller and the
+ * Chosen retired, so the Caller (3,6) is a Hexer and the two Chosen (6,4
+ * and 6,10) an Idol Bearer and an Initiate; the cultists' new prices make
+ * the 17 units worth 53 Coins. Chivalry (now Tentacles: the Summoner's
+ * Tentacle) and Metallurgy (now Gibbering Masses) stay owned; Favour 12
+ * stays.
  *
  * ```text
  *      x 0123456789ABCDEF
@@ -59,7 +67,7 @@ if (dwarfSeat === undefined || humanSeat === undefined)
 
 export const LAB_CULT_MID_V7: MissionDefinitionV7 = {
   id: "LAB_CULT_MID",
-  revision: 1,
+  revision: 2,
   hidden: true,
   size: LAB_DWARF_MID_V7.size,
   seed: 20261008,
@@ -89,13 +97,13 @@ export const LAB_CULT_MID_V7: MissionDefinitionV7 = {
         // Familiars (Switcheroo).
         "SCOUTING",
         "RAIDING",
-        // Callers (the Tentacle).
+        // Tentacles (the Summoner's Tentacle).
         "CHIVALRY",
         "DRILL",
         // Warding Circles: the Idol Bearer (Behold!).
         "FORTIFICATION",
         "ENGINEERING",
-        // The Chosen (Pick Me!, Martyr).
+        // Gibbering Masses (the Forge; the Mass comes with a later bead).
         "METALLURGY",
         // The Stars Are Right: the Great Summoning.
         "EXPLOSIVES",
@@ -107,18 +115,18 @@ export const LAB_CULT_MID_V7: MissionDefinitionV7 = {
       // turn.
       units: [
         // The capital's (one free slot): the two Summoners side by side (a
-        // Horror on the first turn), the Caller, and the Stargazer behind
-        // the line.
+        // Horror on the first turn), a Hexer (the Caller before revision 2),
+        // and the Stargazer behind the line.
         { role: "CAPTAIN", at: { x: 4, y: 7 } },
         { role: "CAPTAIN", at: { x: 3, y: 8 } },
-        { role: "KNIGHT", at: { x: 3, y: 6 } },
+        { role: "MARKSMAN", at: { x: 3, y: 6 } },
         { role: "CATAPULT", at: { x: 4, y: 8 } },
         // The northern cities' (one free slot in the level-3 city; the
         // front city is full).
         { role: "FIGHTER", at: { x: 3, y: 2 }, home: 1 },
         { role: "RAIDER", at: { x: 4, y: 2 }, home: 1 },
         { role: "MARKSMAN", at: { x: 5, y: 3 }, home: 1 },
-        { role: "SWORDSMAN", at: { x: 6, y: 4 }, home: 3 },
+        { role: "GUARD", at: { x: 6, y: 4 }, home: 3 },
         { role: "GUARD", at: { x: 6, y: 3 }, home: 3 },
         { role: "FIGHTER", at: { x: 6, y: 5 }, home: 3 },
         // The southern cities' (both full).
@@ -126,7 +134,7 @@ export const LAB_CULT_MID_V7: MissionDefinitionV7 = {
         { role: "RAIDER", at: { x: 4, y: 12 }, home: 2 },
         { role: "MARKSMAN", at: { x: 5, y: 11 }, home: 2 },
         { role: "GUARD", at: { x: 5, y: 7 }, home: 2 },
-        { role: "SWORDSMAN", at: { x: 6, y: 10 }, home: 4 },
+        { role: "FIGHTER", at: { x: 6, y: 10 }, home: 4 },
         { role: "FIGHTER", at: { x: 6, y: 11 }, home: 4 },
         { role: "FIGHTER", at: { x: 6, y: 9 }, home: 4 },
       ],

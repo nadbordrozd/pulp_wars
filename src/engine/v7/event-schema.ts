@@ -585,7 +585,6 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
   TENTACLE_ROSE: ["kind", "playerId", "unitId", "tentacleUnitId", "at", "hp"],
   UNIT_GRABBED: ["kind", "unitId", "targetUnitId", "at"],
   TENTACLE_SANK: ["kind", "unitId", "at"],
-  PICK_ME_SHOUTED: ["kind", "playerId", "unitId", "at"],
   SPOILS_AWARDED: ["kind", "playerId", "cityId", "coins"],
   PLUNDER_AWARDED: ["kind", "playerId", "kills", "coins"],
   MONSTER_BOUNTY_AWARDED: ["kind", "playerId", "unitId", "coins"],
@@ -2150,9 +2149,6 @@ function validPayload(
       );
     case "TENTACLE_SANK":
       return id(e.unitId) && parseCoordV7(e.at) !== null;
-    // Section 8.2.
-    case "PICK_ME_SHOUTED":
-      return id(e.playerId) && id(e.unitId) && parseCoordV7(e.at) !== null;
     case "SPOILS_AWARDED":
       return id(e.playerId) && id(e.cityId) && e.coins === 2;
     case "PLUNDER_AWARDED":

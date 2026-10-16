@@ -79,7 +79,7 @@ import { round2ArenaV7, round2SeatV7 } from "../fixtures/v7-round2-arena";
  * 13.1): Unbound. A daemon that fails its check belongs to nobody, is a
  * neutral unit of its own breed, rampages at once and in every neutral
  * turn, is Furious for the turn it broke loose in, and may be bound again;
- * a bound daemon's kills pay Favour; a wild unit's attack makes no Martyr.
+ * a bound daemon's kills pay Favour; a wild unit's attack pays nobody.
  *
  * Every state here is built by hand; no match is played. The field is the
  * two-seat 11 x 11 board of `fieldV7`: seat 0 (the Cult) capital (8, 8)
@@ -161,11 +161,6 @@ function strike(state: GameStateV7, from: CoordV7, to: CoordV7) {
   );
   return { ...result, combat: need(combats(result.events)[0]) };
 }
-
-const martyrs = (events: readonly DomainEventV7[]) =>
-  eventsOf(events, "FAVOUR_GAINED").filter(
-    (event) => event.source === "MARTYR",
-  );
 
 describe("Unbound: identity", () => {
   it("is a new identity after the channel's 7r74, whose saves are obsolete", () => {
@@ -496,11 +491,11 @@ describe("Unbound: the failed check (section 6.4)", () => {
   });
 
   it("lets one break start another: the rampage's hurt breaks strands before the next check", () => {
-    // Horror A (the lower ID) has no strand. The Chosen beside it channels
-    // Horror B alone.
-    const pieces: GoblinPieceV7[] = [
-      { seat: 0, role: "SWORDSMAN", at: at(5, 2) },
-    ];
+    // Horror A (the lower ID) has no strand. The Idol Bearer beside it
+    // channels Horror B alone. (A Chosen until the Cult redesign retired it,
+    // `pulp_wars-mch9.31`: the Idol Bearer is the robed body a Horror's hit
+    // does not kill.)
+    const pieces: GoblinPieceV7[] = [{ seat: 0, role: "GUARD", at: at(5, 2) }];
     const state = withStrandsV7(
       withHorrorV7(withHorrorV7(cultFieldV7(pieces), 0, at(4, 2)), 0, at(7, 2)),
       at(7, 2),
@@ -511,8 +506,8 @@ describe("Unbound: the failed check (section 6.4)", () => {
     const chosen = unitAtV7(state, at(5, 2));
     expect(first.id).toBeLessThan(second.id);
     const round = endTurnUntilV7(state, cultId(state));
-    // A breaks, hits the Chosen (which lives), and so B's strand snaps: B
-    // breaks in the same check and goes for the Chosen too.
+    // A breaks, hits the Idol Bearer (which lives), and so B's strand
+    // snaps: B breaks in the same check and goes for it too.
     expect(
       eventsOf(round.events, "DAEMON_UNBOUND").map((event) => event.unitId),
     ).toEqual([first.id, second.id]);
@@ -537,9 +532,7 @@ describe("Unbound: the failed check (section 6.4)", () => {
         .filter((unit) => unit.summoned !== undefined)
         .map((unit) => unit.ownerId),
     ).toEqual([NEUTRAL_OWNER_ID_V7, NEUTRAL_OWNER_ID_V7]);
-    // The Chosen died of a wild unit's attack: no Martyr (rule 4).
-    expect(round.state.units.some((unit) => unit.id === chosen.id)).toBe(false);
-    expect(martyrs(round.events)).toEqual([]);
+    // A wild unit's attacks pay nobody (rule 4).
     expect(favourOfV7(round.state, cultId(state))).toBe(0);
     expect(round.state.cult.strands).toEqual([]);
   });
@@ -1139,8 +1132,8 @@ describe("Unbound: kills, Favour, and the Score (sections 6.4, 8.2, and 8.3)", (
     // No Loss for the summoner: it was nobody's.
     expect(ledger(run.state, cultId(state)).lossValue).toBe(0);
     // The seat that summoned it gets no Kills and no Favour for it: not
-    // with a Chosen, and not with another daemon of its own.
-    for (const role of ["SWORDSMAN", "HORROR"] as const) {
+    // with an Idol Bearer, and not with another daemon of its own.
+    for (const role of ["GUARD", "HORROR"] as const) {
       const base =
         role === "HORROR"
           ? withHorrorV7(horrorField([], {}, { hp: 1 }), 0, at(5, 1))
@@ -1154,28 +1147,6 @@ describe("Unbound: kills, Favour, and the Score (sections 6.4, 8.2, and 8.3)", (
         "MONSTER_BOUNTY_AWARDED",
       );
     }
-  });
-
-  it("pays no Martyr for a Chosen a wild unit attacks and kills; its own attack on one still does", () => {
-    // The neutral turn: the Unbound Horror kills the wounded Chosen.
-    const state = looseField([
-      { seat: 0, role: "SWORDSMAN", at: at(5, 1), hp: 3 },
-    ]);
-    const chosen = unitAtV7(state, at(5, 1));
-    const round = endTurnUntilV7(state, cultId(state));
-    expect(round.state.units.some((unit) => unit.id === chosen.id)).toBe(false);
-    expect(martyrs(round.events)).toEqual([]);
-    expect(favourOfV7(round.state, cultId(state))).toBe(0);
-    // A Chosen that attacks the wild Horror and dies of its answer is a
-    // Martyr like any other (the wild unit did not attack it).
-    const brave = looseField([
-      { seat: 0, role: "SWORDSMAN", at: at(5, 1), hp: 1 },
-    ]);
-    const run = strike(brave, at(5, 1), HORROR);
-    expect(run.combat.attackerDies).toBe(true);
-    expect(martyrs(run.events)).toEqual([
-      expect.objectContaining({ amount: 6, favour: 6 }),
-    ]);
   });
 });
 
@@ -1242,7 +1213,6 @@ describe("Unbound: elimination (section 13.1)", () => {
       cowed: [],
       frogs: [],
       hexCooldowns: [],
-      taunts: [],
       tentacles: [],
     });
     expect(parseGameStateV7(JSON.parse(JSON.stringify(result.state)))).toEqual(

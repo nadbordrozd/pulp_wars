@@ -193,8 +193,8 @@ const LAND_ROLES = [
   "GUARD",
   "CAPTAIN",
   "CATAPULT",
-  "KNIGHT",
-  "SWORDSMAN",
+  // (The `KNIGHT` and `SWORDSMAN` slots are vacant since the Cult redesign,
+  // `pulp_wars-mch9.31`: no Caller, no Chosen.)
   "JUGGERNAUT",
 ] as const;
 
@@ -279,23 +279,25 @@ describe("the Cult seat: the research order", () => {
       ),
     );
 
-  it("is the Summoner, the Hexer, the Idol Bearer, the Familiar, the Chosen, the Stargazer, the Caller", () => {
+  it("is the Summoner, the Hexer, the Idol Bearer, the Familiar, the Stargazer", () => {
+    // The Chosen and the Caller retired (the Cult redesign's stop-gap,
+    // `pulp_wars-mch9.31`).
     expect(CULT_RESEARCH_ROLES_V7).toEqual([
       "CAPTAIN",
       "MARKSMAN",
       "GUARD",
       "RAIDER",
-      "SWORDSMAN",
       "CATAPULT",
-      "KNIGHT",
     ]);
     expect(ARMY_RESEARCH_ROLES_V7.CULT).toBe(CULT_RESEARCH_ROLES_V7);
   });
 
-  it("buys, from a Gathering opener, the thirteen technologies of the spec in its order", () => {
+  it("buys, from a Gathering opener, the eight technologies of its units in its order", () => {
     // Three Initiates for one city, no enemy in sight, no Coins: each
     // technology the seat names next, bought in turn. Leadership is the
-    // second technology; Harvest Rites comes before the Chosen's chain.
+    // second technology. (The Cult redesign's stop-gap, `pulp_wars-mch9.31`:
+    // without the Chosen and the Caller the list ends at Stargazers; the
+    // redesign's AI bead sets the new order.)
     const order: string[] = [];
     let techs: readonly TechnologyIdV7[] = ["GATHERING"];
     for (let step = 0; step < 14; step += 1) {
@@ -313,13 +315,8 @@ describe("the Cult seat: the research order", () => {
       "DRILL",
       "FORTIFICATION:GUARD",
       "SCOUTING:RAIDER",
-      "FARMING",
-      "ENGINEERING",
-      "METALLURGY:SWORDSMAN",
       "FORESTRY",
       "SAWMILLING:CATAPULT",
-      "RAIDING",
-      "CHIVALRY:KNIGHT",
     ]);
   });
 
@@ -390,13 +387,15 @@ describe("the Cult seat: the research order", () => {
 });
 
 describe("the Cult seat: the army", () => {
-  it("has its shares: 45 line, 10 Idol Bearers, 20 Hexers, 10 Stargazers, 10 Callers", () => {
+  it("has its shares: 55 line, 10 Idol Bearers, 20 Hexers, 10 Stargazers, no Callers", () => {
+    // (The Callers' tenth went to the line, `pulp_wars-mch9.31`.)
     expect(CULT_ARMY_SHARES_V7).toEqual({
-      LINE: 45,
+      LINE: 55,
       DEFENDER: 10,
       RANGED: 20,
       SIEGE: 10,
-      BREAKTHROUGH: 10,
+      // The Caller retired (`pulp_wars-mch9.31`).
+      BREAKTHROUGH: 0,
     });
     expect(armySharesV7("CULT", false)).toBe(CULT_ARMY_SHARES_V7);
     expect(armySharesV7("CULT", true)).toBe(CULT_ARMY_SHARES_V7);
@@ -469,16 +468,13 @@ describe("the Cult seat: the army", () => {
     return command?.kind === "TRAIN" ? command.role : undefined;
   };
 
-  it("trains an Initiate, not a second Chosen, beside one Chosen and two Initiates", () => {
-    const build = (chosen: number): GameStateV7 =>
+  it("trains an Initiate and never a Chosen, even with Metallurgy (the slot is vacant)", () => {
+    const build = (): GameStateV7 =>
       orphans(
         asCult(
           [
             own("FIGHTER", 9, 9),
             own("FIGHTER", 9, 7),
-            ...[at(7, 9)]
-              .slice(0, chosen)
-              .map((where) => own("SWORDSMAN", where.x, where.y)),
             foe("FIGHTER", 5, 8),
             foe("FIGHTER", 5, 7),
             foe("FIGHTER", 5, 9),
@@ -492,8 +488,7 @@ describe("the Cult seat: the army", () => {
           },
         ),
       );
-    expect(trained(build(0))).toBe("SWORDSMAN");
-    expect(trained(build(1))).toBe("FIGHTER");
+    expect(trained(build())).toBe("FIGHTER");
   });
 
   it("trains no second Idol Bearer for its one city", () => {
@@ -548,17 +543,9 @@ describe("the Cult seat: bodies first", () => {
       .map((unit) => unit.role)
       .sort();
     expect(robed).toEqual(
-      [
-        "FIGHTER",
-        "MARKSMAN",
-        "GUARD",
-        "CAPTAIN",
-        "CATAPULT",
-        "KNIGHT",
-        "SWORDSMAN",
-      ].sort(),
+      ["FIGHTER", "MARKSMAN", "GUARD", "CAPTAIN", "CATAPULT"].sort(),
     );
-    expect(cultBodiesV7(view)).toBe(7);
+    expect(cultBodiesV7(view)).toBe(5);
     // A Human Fighter is not robed.
     const human = view.units.find((unit) => unit.ownerId !== view.viewer.id);
     expect(human !== undefined && cultRobedV7(view, human)).toBe(false);
@@ -667,7 +654,7 @@ describe("the Cult seat: bodies first", () => {
 });
 
 describe("the Cult seat: weak links, escorts, and spacing", () => {
-  it("names every robed cultist under 15 HP a weak link at full HP, and the Chosen and the Idol Bearer escorts", () => {
+  it("names every robed cultist under 15 HP a weak link at full HP, and the Idol Bearer the escort", () => {
     expect(CULT_STURDY_V7).toBe(15);
     const state = withHorrorV7(roster(), 0, at(6, 4));
     const view = viewOf(state);
@@ -677,13 +664,13 @@ describe("the Cult seat: weak links, escorts, and spacing", () => {
         .filter((unit) => cultWeakLinkV7(view, unit))
         .map((unit) => unit.role)
         .sort(),
-    ).toEqual(["CAPTAIN", "CATAPULT", "FIGHTER", "KNIGHT", "MARKSMAN"]);
+    ).toEqual(["CAPTAIN", "CATAPULT", "FIGHTER", "MARKSMAN"]);
     expect(
       mine
         .filter((unit) => cultEscortV7(view, unit))
         .map((unit) => unit.role)
         .sort(),
-    ).toEqual(["GUARD", "SWORDSMAN"]);
+    ).toEqual(["GUARD"]);
     // The Familiar, the Thing, and the Horror are neither.
     expect(
       mine.filter(
@@ -715,28 +702,27 @@ describe("the Cult seat: weak links, escorts, and spacing", () => {
     moveCandidateV7(state, at(5, 2), at(6, 3))?.score.strategicValue ??
     Number.NaN;
 
-  it("charges an Initiate for a tile beside another weak link inside a Knight's reach, and not beside a Chosen", () => {
+  it("charges an Initiate for a tile beside another weak link inside a Knight's reach, and not beside an Idol Bearer", () => {
     const weak = beside(scene("FIGHTER", "FIGHTER", "KNIGHT"));
-    const sturdy = beside(scene("FIGHTER", "SWORDSMAN", "KNIGHT"));
+    const sturdy = beside(scene("FIGHTER", "GUARD", "KNIGHT"));
     expect(sturdy - weak).toBe(CHAIN_SPACING_VALUE);
     // With no unit that rides on in sight the two tiles are worth the same.
     expect(
-      beside(scene("FIGHTER", "SWORDSMAN", "FIGHTER")) -
+      beside(scene("FIGHTER", "GUARD", "FIGHTER")) -
         beside(scene("FIGHTER", "FIGHTER", "FIGHTER")),
     ).toBe(0);
   });
 
-  it("values a Chosen's and an Idol Bearer's tile beside a robed cultist a Knight would kill", () => {
-    for (const escort of ["SWORDSMAN", "GUARD"] as const)
-      expect(
-        beside(scene(escort, "CAPTAIN", "FIGHTER")) -
-          beside(scene(escort, "SWORDSMAN", "FIGHTER")),
-        escort,
-      ).toBe(ARMY_ESCORT_VALUE_V7);
+  it("values an Idol Bearer's tile beside a robed cultist a Knight would kill", () => {
+    // (The Chosen was an escort too until it retired, `pulp_wars-mch9.31`.)
+    expect(
+      beside(scene("GUARD", "CAPTAIN", "FIGHTER")) -
+        beside(scene("GUARD", "GUARD", "FIGHTER")),
+    ).toBe(ARMY_ESCORT_VALUE_V7);
     // An Initiate is no escort.
     expect(
       beside(scene("FIGHTER", "CAPTAIN", "FIGHTER")) -
-        beside(scene("FIGHTER", "SWORDSMAN", "FIGHTER")),
+        beside(scene("FIGHTER", "GUARD", "FIGHTER")),
     ).toBe(0);
   });
 });
@@ -785,8 +771,9 @@ describe("the Cult seat: contact with company", () => {
     expect(touches(company)).toBe(true);
   });
 
-  it("holds the Chosen, the Caller, and the Familiar by the same rule", () => {
-    for (const role of ["SWORDSMAN", "KNIGHT", "RAIDER"] as const) {
+  it("holds the Familiar by the same rule", () => {
+    // (The Chosen and the Caller too until they retired, `pulp_wars-mch9.31`.)
+    for (const role of ["RAIDER"] as const) {
       const state: GameStateV7 = {
         ...asCult([
           own(role, 2, 4, { hp: 4 }),
@@ -863,9 +850,9 @@ describe("the Cult seat: the back row out of reach", () => {
         role,
       ).toBe(2);
     // The Stargazer is a siege unit besides: the shared siege rule keeps it
-    // four tiles from its objective until a unit with Defense 2 or more (a
-    // Chosen, an Idol Bearer, the Thing) can stand beside its tile; an
-    // Initiate (Defense 1.5) is no such screen.
+    // four tiles from its objective until a unit with Defense 2 or more (an
+    // Idol Bearer, the Thing) can stand beside its tile; an Initiate
+    // (Defense 1) is no such screen.
     expect(
       nearest(scene("CATAPULT", "FIGHTER", [own("FIGHTER", 2, 2)])),
     ).toBeGreaterThan(2);
@@ -873,14 +860,14 @@ describe("the Cult seat: the back row out of reach", () => {
 
   it("offers none of them a Move into a Knight's reach from outside it, screened or not", () => {
     // The Knight's reach is the engine's own (`queryThreatenedTilesV7`).
-    // Each of the three stands just outside it, behind an own Chosen and
-    // an own Initiate; the engine offers it Moves into the reach, and the
+    // Each of the three stands just outside it, behind an own Idol Bearer
+    // and an own Initiate; the engine offers it Moves into the reach, and the
     // policy makes none of them a candidate.
     for (const role of ["MARKSMAN", "CATAPULT", "CAPTAIN"] as const) {
       const build = (y: number): GameStateV7 => ({
         ...asCult([
           own(role, 5, y),
-          own("SWORDSMAN", 5, 2),
+          own("GUARD", 5, 2),
           own("FIGHTER", 6, 2),
           own("FIGHTER", 8, 8),
           foe("KNIGHT", 5, 0),
@@ -939,7 +926,6 @@ describe("the Cult seat: legal, deterministic turns on what A1 covers", () => {
     "RIBBIT",
     "SWITCHEROO",
     "TENTACLE",
-    "PICK_ME",
   ];
   /** The lowest priority of a step of the plan but the last-of-all ones. */
   const PLAN_PRIORITY = 1860;
@@ -952,12 +938,12 @@ describe("the Cult seat: legal, deterministic turns on what A1 covers", () => {
         [
           own("FIGHTER", 6, 6),
           own("FIGHTER", 6, 7),
-          own("SWORDSMAN", 6, 8),
+          own("FIGHTER", 6, 8),
           own("GUARD", 8, 8),
           own("MARKSMAN", 7, 6),
           own("CAPTAIN", 7, 7),
           own("CATAPULT", 7, 8),
-          own("KNIGHT", 7, 9),
+          own("MARKSMAN", 7, 9),
           own("RAIDER", 9, 6),
           own("JUGGERNAUT", 8, 7),
           foe("FIGHTER", 4, 6),

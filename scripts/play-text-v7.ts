@@ -271,11 +271,9 @@ import {
   previewProclaimV7,
   previewRampageV7,
   previewRitualV7,
-  previewPickMeV7,
   previewRibbitV7,
   previewSwitcherooV7,
   previewTentacleV7,
-  publicBindingTauntsV7,
   attacksLeftV7,
   previewOfferingV7,
   previewSacrificeV7,
@@ -1101,8 +1099,6 @@ export function textPlayCommandIdV7(command: CommandV7): string {
       return `u${command.unitId}.switch.u${command.targetUnitId}`;
     case "TENTACLE":
       return `u${command.unitId}.tentacle.${xyV7(command.at)}`;
-    case "PICK_ME":
-      return `u${command.unitId}.pickme`;
     case "HATCH":
       return `u${command.unitId}.hatch.u${command.eggUnitId}`;
     case "BEAM_DOWN":
@@ -2103,11 +2099,7 @@ function describeCommandV7(
     }
     case "TENTACLE": {
       const preview = previewTentacleV7(view, command.unitId, command.at);
-      return `TENTACLE on ${xyV7(command.at)} (${tileBriefV7(view, command.at)}): a WILD Tentacle (hp ${CULT_SUMMONED_ROLE_RULES_V7.TENTACLE.maxHp}, Attack ${CULT_SUMMONED_ROLE_RULES_V7.TENTACLE.attack2 / 2}, Defense ${CULT_SUMMONED_ROLE_RULES_V7.TENTACLE.defense2 / 2}, rooted, nobody's)${preview === null ? "" : ` | it slaps at once: ${preview.slapTargetUnitId === null ? "nobody stands beside that tile" : `${context.memory.tag(preview.slapTargetUnitId)} (the weakest unit beside it, FRIEND OR FOE; an ordinary attack, it may be hit back)`}${preview.exact ? "" : ", unless something weaker hides beside it"} | then it slaps the weakest unit beside it after each of the next ${preview.neutralTurns} rounds and sinks`} | the unit it slapped last cannot leave its side (Grab) | one Tentacle per Caller | uses its action`;
-    }
-    case "PICK_ME": {
-      const preview = previewPickMeV7(view, command.unitId);
-      return `PICK ME: until your next turn start, enemies standing next to this unit can ATTACK only it${preview === null ? "" : ` | beside it now: ${preview.boundUnitIds.length === 0 ? "nobody" : preview.boundUnitIds.map((unitId) => context.memory.tag(unitId)).join(", ")}`} | it does not stop area hits, statuses, or attackers two tiles away | uses its action`;
+      return `TENTACLE on ${xyV7(command.at)} (${tileBriefV7(view, command.at)}): a WILD Tentacle (hp ${CULT_SUMMONED_ROLE_RULES_V7.TENTACLE.maxHp}, Attack ${CULT_SUMMONED_ROLE_RULES_V7.TENTACLE.attack2 / 2}, Defense ${CULT_SUMMONED_ROLE_RULES_V7.TENTACLE.defense2 / 2}, rooted, nobody's)${preview === null ? "" : ` | it slaps at once: ${preview.slapTargetUnitId === null ? "nobody stands beside that tile" : `${context.memory.tag(preview.slapTargetUnitId)} (the weakest unit beside it, FRIEND OR FOE; an ordinary attack, it may be hit back)`}${preview.exact ? "" : ", unless something weaker hides beside it"} | then it slaps the weakest unit beside it after each of the next ${preview.neutralTurns} rounds and sinks`} | the unit it slapped last cannot leave its side (Grab) | one Tentacle per Summoner | uses its action`;
     }
     // Rituals and the Herald (`pulp_wars-mch9.7`, RULESET_7_CULTISTS.md
     // sections 7 and 8.6).
@@ -2437,8 +2429,6 @@ function eventTextV7(
       lines.push(
         `FAVOUR ${seatLabelV7(context.view, event.playerId)} +${event.amount} from ${FAVOUR_SOURCE_LABELS_V7[event.source]} (now ${event.favour})`,
       );
-      if (event.playerId === me && event.source === "MARTYR")
-        notes.push(`MARTYR +${event.amount} Favour (now ${event.favour})`);
       break;
     // The channel (`pulp_wars-mch9.5`).
     case "FAVOUR_SPENT":
@@ -2519,12 +2509,6 @@ function eventTextV7(
         `TENTACLE ${context.memory.tag(event.unitId)} @${xyV7(event.at)} sank`,
       );
       break;
-    case "PICK_ME_SHOUTED": {
-      const text = `PICK ME! ${context.memory.tag(event.unitId)} of ${seatLabelV7(context.view, event.playerId)} @${xyV7(event.at)}: enemies standing next to it can ATTACK only it until that seat's next turn start`;
-      lines.push(text);
-      if (event.playerId !== me) notes.push(text);
-      break;
-    }
     case "DAEMON_UNBOUND":
       lines.push(
         `UNBOUND ${context.memory.tag(event.unitId)} of ${seatLabelV7(context.view, event.summonerPlayerId)}: strands ${event.strands}/${event.control}; it belongs to nobody now and attacks the nearest unit, friend or foe, at once and after every round`,
@@ -2992,7 +2976,7 @@ export const TEXT_PLAY_LABS_V7: Readonly<Record<string, string>> = {
   // The Cult's sixth engine bead (`pulp_wars-mch9.8`): the one lab played
   // as the Cultists, on the same land. Built and checked; not played yet.
   LAB_CULT_MID:
-    "YOU PLAY THE CULTISTS in an even middle game against the Human AI: five cities a side (a level-4 capital, two level-3, two level-2 at the front, 15c a turn each), every city with Forest and Fertile Ground in its land and the three larger ones with Ore and a Lumber Camp or two; you can train every Cult unit and hold every rite (fourteen technologies, The Stars Are Right among them; not Harvest Rites) and hold 5 Initiates, 2 Idol Bearers, 2 Familiars, 2 Hexers, 2 Summoners, a Stargazer, a Caller and 2 Chosen (17 units), 35c in hand on the first turn, 12 Favour (a Horror costs 5, the Great Summoning 20) and two free unit slots (one in the capital, one in the northern level-3 city); the Humans hold 3 Champions, 3 Marksmen, 2 Catapults, 2 Knights, 2 Guards and 5 Fighters (17 units) at the start (and 30c on their first turn, which buys more), a walled capital and a walled level-3 city, and Forest cover; you start with no daemon: your two Summoners stand side by side",
+    "YOU PLAY THE CULTISTS in an even middle game against the Human AI: five cities a side (a level-4 capital, two level-3, two level-2 at the front, 15c a turn each), every city with Forest and Fertile Ground in its land and the three larger ones with Ore and a Lumber Camp or two; you can train every Cult unit and hold every rite (fourteen technologies, The Stars Are Right among them; not Harvest Rites) and hold 6 Initiates, 3 Idol Bearers, 2 Familiars, 3 Hexers, 2 Summoners and a Stargazer (17 units), 35c in hand on the first turn, 12 Favour (a Horror costs 5, the Great Summoning 20) and two free unit slots (one in the capital, one in the northern level-3 city); the Humans hold 3 Champions, 3 Marksmen, 2 Catapults, 2 Knights, 2 Guards and 5 Fighters (17 units) at the start (and 30c on their first turn, which buys more), a walled capital and a walled level-3 city, and Forest cover; you start with no daemon: your two Summoners stand side by side",
 };
 
 function commandLabV7(args: ArgsV7): string {
@@ -3767,15 +3751,6 @@ function unitStatusV7(view: PlayerViewV7, unit: PublicUnitV7): string {
         ? "trick spent (back on the turn after its next)"
         : "trick spent (back next turn)",
     );
-  if (view.cult.taunts.includes(unit.id))
-    parts.push("PICK ME: enemies beside it can attack only it");
-  if (unit.ownerId === view.viewer.id) {
-    const binding = publicBindingTauntsV7(view, unit.id);
-    if (binding.length > 0)
-      parts.push(
-        `taunted: may attack only ${binding.map((unitId) => `u${unitId}`).join(" or ")}`,
-      );
-  }
   const tentacle = view.cult.tentacles.find(
     (entry) => entry.unitId === unit.id,
   );

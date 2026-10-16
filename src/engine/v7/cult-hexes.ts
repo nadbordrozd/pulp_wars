@@ -30,11 +30,11 @@ import {
 /**
  * The Cultists of the Ancient Ones, hexes and tricks (`pulp_wars-mch9.8`,
  * the sixth Cult engine bead; docs/product/RULESET_7_CULTISTS.md sections
- * 9.1 to 9.3, 8.2, and 8.7): what the canonical state and a player's view
- * share of Ribbit and the frog, Switcheroo, the Tentacle and Grab, and Pick
- * Me!: who is a frog, who is grabbed, who taunts, the legality of the four
- * commands, and the three restrictions on other commands
- * ({@link trickRefusalV7}). The reducer steps are in
+ * 9.1 to 9.3 and 8.7): what the canonical state and a player's view share
+ * of Ribbit and the frog, Switcheroo, and the Tentacle and Grab: who is a
+ * frog, who is grabbed, the legality of the three commands, and the frog's
+ * restriction on other commands ({@link trickRefusalV7}). (The Chosen's
+ * Pick Me! retired with the Chosen: the Cult redesign, `pulp_wars-mch9.31`.) The reducer steps are in
  * src/engine/v7/cult-tricks.ts.
  *
  * The helpers read only facts that canonical state and a player's view
@@ -64,7 +64,6 @@ export interface TrickListsV7 {
   readonly cult?: {
     readonly frogs?: readonly UnitId[];
     readonly hexCooldowns?: readonly { readonly unitId: UnitId }[];
-    readonly taunts?: readonly UnitId[];
     readonly tentacles?: readonly {
       readonly unitId: UnitId;
       readonly callerUnitId: UnitId | null;
@@ -75,7 +74,6 @@ export interface TrickListsV7 {
 
 const NO_IDS: readonly UnitId[] = Object.freeze([]);
 const frogsOf = (lookup: TrickListsV7) => lookup.cult?.frogs ?? NO_IDS;
-const tauntsOf = (lookup: TrickListsV7) => lookup.cult?.taunts ?? NO_IDS;
 const tentaclesOf = (lookup: TrickListsV7) => lookup.cult?.tentacles ?? [];
 const cooldownsOf = (lookup: TrickListsV7) => lookup.cult?.hexCooldowns ?? [];
 
@@ -303,87 +301,6 @@ export function switcherooRejectionV7(
   return null;
 }
 
-// ------------------------------------------------------------ Pick Me! ---
-
-/** Section 8.2: whether the Chosen `unit` has shouted and still taunts. */
-export function unitTauntsV7(
-  lookup: TrickListsV7,
-  unit: { readonly id: UnitId },
-): boolean {
-  const taunts = tauntsOf(lookup);
-  return taunts.length > 0 && taunts.includes(unit.id);
-}
-
-export type PickMeRejectionV7 =
-  | { readonly code: "UNIT_ROLE_INVALID" }
-  | { readonly code: "UNIT_ALREADY_ACTED" }
-  | { readonly code: "PICK_ME_NOT_LEGAL"; readonly reason: "EMBARKED" };
-
-/**
- * Section 8.2, shared by the reducer and the public command query: the
- * first reason the Chosen `chosen` may not shout Pick Me!, or null: a
- * land-form unit with Pick Me! that has not used a primary action (it may
- * have moved). (Its last shout ended at its owner's Start Turn, so it never
- * taunts when it may act.)
- */
-export function pickMeRejectionV7(
-  lookup: FrozenLookupV7 & TrickListsV7,
-  chosen: ActorFactsV7,
-): PickMeRejectionV7 | null {
-  if (!unitRoleRuleV7(lookup, chosen).abilities.includes("PICK_ME"))
-    return { code: "UNIT_ROLE_INVALID" };
-  if (chosen.form !== "LAND")
-    return { code: "PICK_ME_NOT_LEGAL", reason: "EMBARKED" };
-  if (
-    primaryActedV7(chosen) ||
-    primaryActionBlockedAfterMoveV7(lookup, chosen) ||
-    unitTauntsV7(lookup, chosen)
-  )
-    return { code: "UNIT_ALREADY_ACTED" };
-  return null;
-}
-
-/**
- * Section 8.2: the taunting Chosen that bind the unit `attacker`: every
- * unit on the board that taunts, is hostile to the attacker's owner, and
- * stands on one of the eight tiles around the attacker (a ranged attacker
- * next to one is bound too). Empty when nothing binds it. A neutral unit is
- * never bound (it makes no `ATTACK`).
- */
-export function bindingTauntsV7<U extends TrickUnitFactsV7>(
-  lookup: TrickListsV7 & Pick<GameStateV7, "setup" | "humanPlayerId">,
-  units: readonly U[],
-  attacker: { readonly ownerId: PlayerId; readonly at: CoordV7 },
-): readonly U[] {
-  const taunts = tauntsOf(lookup);
-  if (taunts.length === 0 || isNeutralOwnerV7(attacker.ownerId)) return [];
-  return units.filter(
-    (unit) =>
-      unit.hp > 0 &&
-      taunts.includes(unit.id) &&
-      chebyshev(unit.at, attacker.at) === 1 &&
-      arePlayersHostileV7(lookup, attacker.ownerId, unit.ownerId),
-  );
-}
-
-/**
- * Section 8.2: the taunting Chosen that forbids the `ATTACK` of `attacker`
- * on the unit `targetUnitId` (the one with the lowest unit ID), or null
- * when the attack is free: nothing binds the attacker, or the target is one
- * of the Chosen that bind it.
- */
-export function tauntRefusingAttackV7<U extends TrickUnitFactsV7>(
-  lookup: TrickListsV7 & Pick<GameStateV7, "setup" | "humanPlayerId">,
-  units: readonly U[],
-  attacker: { readonly ownerId: PlayerId; readonly at: CoordV7 },
-  targetUnitId: UnitId,
-): U | null {
-  const binding = bindingTauntsV7(lookup, units, attacker);
-  if (binding.length === 0) return null;
-  if (binding.some((unit) => unit.id === targetUnitId)) return null;
-  return binding.reduce((least, unit) => (unit.id < least.id ? unit : least));
-}
-
 // ------------------------------------------------- Tentacle and Grab ---
 
 /** Section 9.3: whether the unit is a Tentacle (a neutral summoned unit). */
@@ -445,21 +362,24 @@ export type TentacleRejectionV7 =
   | { readonly code: "UNIT_ALREADY_ACTED" }
   | {
       readonly code: "TENTACLE_NOT_LEGAL";
-      readonly reason: "EMBARKED" | "EXISTS" | "TILE";
+      readonly reason: "EMBARKED" | "TECHNOLOGY" | "EXISTS" | "TILE";
     };
 
 /**
  * Section 9.3, shared by the reducer and the public command query: the
- * first reason the Caller `caller` may not call a Tentacle up on `at`, or
- * null. The Caller is a land-form unit with Tentacle (a mind-controlled one
- * has none: it needs a Cult seat) that has not used a primary action (it
- * may have moved) and has no Tentacle of its own on the board; the tile is
- * 1 to `TENTACLE_RANGE_V7` tiles away and free
- * ({@link tentacleTileLegalV7}).
+ * first reason the unit `caller` may not call a Tentacle up on `at`, or
+ * null. The caller is a land-form unit with Tentacle (the Summoner since
+ * the Cult redesign, `pulp_wars-mch9.31`, the retired Caller before; a
+ * mind-controlled one has none: it needs a Cult seat) whose owner has
+ * Tentacles (`unlocked`, the capability `tentacles` of the Cult
+ * `CHIVALRY`), that has not used a primary action (it may have moved) and
+ * has no Tentacle of its own on the board; the tile is 1 to
+ * `TENTACLE_RANGE_V7` tiles away and free ({@link tentacleTileLegalV7}).
  */
 export function tentacleRejectionV7(
   lookup: FrozenLookupV7 & TrickListsV7,
   facts: GiantTileFactsV7,
+  unlocked: boolean,
   caller: ActorFactsV7,
   at: CoordV7,
 ): TentacleRejectionV7 | null {
@@ -467,6 +387,7 @@ export function tentacleRejectionV7(
     return { code: "UNIT_ROLE_INVALID" };
   if (caller.form !== "LAND")
     return { code: "TENTACLE_NOT_LEGAL", reason: "EMBARKED" };
+  if (!unlocked) return { code: "TENTACLE_NOT_LEGAL", reason: "TECHNOLOGY" };
   if (primaryActedV7(caller) || primaryActionBlockedAfterMoveV7(lookup, caller))
     return { code: "UNIT_ALREADY_ACTED" };
   if (tentaclesOf(lookup).some((entry) => entry.callerUnitId === caller.id))
@@ -550,21 +471,19 @@ const FROG_ALLOWED_KINDS_V7: ReadonlySet<CommandV7["kind"]> = new Set([
   "WAIT",
 ]);
 
-export type TrickRefusalV7 =
-  | { readonly code: "UNIT_FROGGED"; readonly unitId: UnitId }
-  | { readonly code: "ATTACK_TAUNTED"; readonly unitId: UnitId };
+export type TrickRefusalV7 = {
+  readonly code: "UNIT_FROGGED";
+  readonly unitId: UnitId;
+};
 
 /**
- * Sections 9.1 and 8.2, shared by the reducer (which refuses the command)
- * and the public command query (which withholds it): what a hex or a taunt
- * forbids of a command of `actor`, or null.
- *
- * - **A frog** gives no command but Move, Disembark, Promote, Disband, and
- *   Wait (`UNIT_FROGGED`, with the frog's ID): no attack, capture, Kaboom,
- *   or other action. A frogged helper summons nothing.
- * - **Pick Me!** An `ATTACK` by a unit that stands next to a taunting
- *   Chosen hostile to it may name only such a Chosen (`ATTACK_TAUNTED`,
- *   with the Chosen's ID). Nothing else is restricted.
+ * Section 9.1, shared by the reducer (which refuses the command) and the
+ * public command query (which withholds it): what a hex forbids of a
+ * command of `actor`, or null. **A frog** gives no command but Move,
+ * Disembark, Promote, Disband, and Wait (`UNIT_FROGGED`, with the frog's
+ * ID): no attack, capture, Kaboom, or other action. A frogged helper
+ * summons nothing. (Pick Me!'s `ATTACK_TAUNTED` retired with the Chosen:
+ * the Cult redesign, `pulp_wars-mch9.31`.)
  *
  * (Grab is a rule of the Move itself: `MOVEMENT_ILLEGAL` reason `GRABBED`,
  * src/engine/v7/movement.ts.)
@@ -578,33 +497,18 @@ export function trickRefusalV7<U extends TrickUnitFactsV7>(
   command: CommandV7,
 ): TrickRefusalV7 | null {
   const frogs = frogsOf(lookup);
-  const taunts = tauntsOf(lookup);
-  if (frogs.length === 0 && taunts.length === 0) return null;
+  if (frogs.length === 0) return null;
   const own = (unitId: UnitId): U | undefined =>
     lookup.units.find(
       (unit) => unit.id === unitId && unit.ownerId === actor && unit.hp > 0,
     );
-  if (frogs.length > 0) {
-    const named: UnitId[] = [];
-    if ("unitId" in command && !FROG_ALLOWED_KINDS_V7.has(command.kind))
-      named.push(command.unitId);
-    if (command.kind === "SUMMON") named.push(command.helperUnitId);
-    for (const unitId of named)
-      if (frogs.includes(unitId) && own(unitId) !== undefined)
-        return { code: "UNIT_FROGGED", unitId };
-  }
-  if (taunts.length > 0 && command.kind === "ATTACK") {
-    const attacker = own(command.unitId);
-    if (attacker !== undefined) {
-      const chosen = tauntRefusingAttackV7(
-        lookup,
-        lookup.units,
-        attacker,
-        command.targetUnitId,
-      );
-      if (chosen !== null) return { code: "ATTACK_TAUNTED", unitId: chosen.id };
-    }
-  }
+  const named: UnitId[] = [];
+  if ("unitId" in command && !FROG_ALLOWED_KINDS_V7.has(command.kind))
+    named.push(command.unitId);
+  if (command.kind === "SUMMON") named.push(command.helperUnitId);
+  for (const unitId of named)
+    if (frogs.includes(unitId) && own(unitId) !== undefined)
+      return { code: "UNIT_FROGGED", unitId };
   return null;
 }
 

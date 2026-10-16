@@ -21,7 +21,6 @@ import {
   neutralRuleV7,
   neutralUnitLabelV7,
 } from "../../src/render/curiosity-presentation-v7";
-import { roleAbilityNameV7 } from "../../src/render/role-presentation-v7";
 import {
   GLOSSARY_TEXT_LIMIT_V7,
   TENTACLE_GLOSSARY_IDS_V7,
@@ -31,12 +30,7 @@ import {
   statusGlossaryV7,
 } from "../../src/render/unit-glossary-v7";
 import { textPlayCommandIdV7 } from "../../scripts/play-text-v7";
-import {
-  cultFieldV7,
-  withFrogsV7,
-  withTauntsV7,
-  withTentacleV7,
-} from "../fixtures/v7-cult";
+import { cultFieldV7, withFrogsV7, withTentacleV7 } from "../fixtures/v7-cult";
 import { applyOkV7, seatIdV7, unitAtV7 } from "../fixtures/v7-goblin-arena";
 import { offeredV7 } from "../fixtures/v7-martian";
 import { at } from "../fixtures/v7-revision20";
@@ -46,21 +40,23 @@ import { at } from "../fixtures/v7-revision20";
  * what the hexes and tricks show outside the engine before their interface
  * bead (`pulp_wars-mch9.19`): the words of the glossary and the technology
  * card, a Tentacle on the board and in its dock, the ids of the text
- * harness, and the Normal AI, which tolerates the four commands without
- * picking them and plays a turn among frogs, a taunt, and a Tentacle. Every
- * state is built by hand; no match is played.
+ * harness, and the Normal AI, which tolerates the three commands without
+ * picking them and plays a turn among frogs and a Tentacle. (Pick Me!
+ * retired with the Chosen, and the Tentacle is the Summoner's: the Cult
+ * redesign, `pulp_wars-mch9.31`.) Every state is built by hand; no match is
+ * played.
  */
 
 const TRICK_KINDS: readonly CommandV7["kind"][] = [
   "RIBBIT",
   "SWITCHEROO",
   "TENTACLE",
-  "PICK_ME",
 ];
 
 /**
- * Seat `cultSeat` is the Cult, to move, with a Hexer, a Familiar, a Caller,
- * and a Chosen, each with a unit of the other seat in reach of its trick.
+ * Seat `cultSeat` is the Cult, to move, with a Hexer, a Familiar, and a
+ * Summoner, each with a unit of the other seat in reach of its trick, and
+ * an Idol Bearer beside a unit of the other seat.
  */
 function everything(cultSeat: 0 | 1): GameStateV7 {
   const other = cultSeat === 0 ? 1 : 0;
@@ -70,9 +66,9 @@ function everything(cultSeat: 0 | 1): GameStateV7 {
       { seat: other, role: "KNIGHT", at: at(2, 4) },
       { seat: cultSeat, role: "RAIDER", at: at(5, 2) },
       { seat: other, role: "CATAPULT", at: at(5, 4) },
-      { seat: cultSeat, role: "KNIGHT", at: at(8, 2) },
+      { seat: cultSeat, role: "CAPTAIN", at: at(8, 2) },
       { seat: other, role: "FIGHTER", at: at(9, 4) },
-      { seat: cultSeat, role: "SWORDSMAN", at: at(7, 6) },
+      { seat: cultSeat, role: "GUARD", at: at(7, 6) },
       { seat: other, role: "FIGHTER", at: at(6, 6) },
     ],
     {
@@ -89,12 +85,10 @@ describe("hexes and tricks: the words", () => {
       "SWITCHEROO",
       "RIBBIT",
       "TENTACLE",
-      "PICK_ME",
       "GRAB",
       "WILD_TENTACLE",
       "STATUS_FROG",
       "STATUS_GRABBED",
-      "STATUS_TAUNTED",
       "STATUS_HEX_SPENT",
     ] as const) {
       const entry = glossaryEntryV7(id);
@@ -103,15 +97,12 @@ describe("hexes and tricks: the words", () => {
       // Plain words: no formula, no identifier.
       expect(entry.text, id).not.toMatch(/[_=+*]|\bV7\b/);
     }
-    expect(roleAbilityNameV7("PICK_ME", "CULT")).toBe("Pick Me!");
-    expect(glossaryEntryV7("PICK_ME").name).toBe("Pick Me!");
-    // Each unit's card names its trick.
+    // Each unit's card names its trick (the Tentacle the Summoner's).
     const cards = {
       FIGHTER: "PAMPHLETS",
       RAIDER: "SWITCHEROO",
       MARKSMAN: "RIBBIT",
-      KNIGHT: "TENTACLE",
-      SWORDSMAN: "PICK_ME",
+      CAPTAIN: "TENTACLE",
     } as const;
     for (const [role, id] of Object.entries(cards))
       expect(
@@ -122,8 +113,11 @@ describe("hexes and tricks: the words", () => {
       ).toContain(id);
     expect(TENTACLE_GLOSSARY_IDS_V7).toEqual(["WILD_TENTACLE", "GRAB"]);
     // The status chips the interface bead will show have their lines.
-    for (const status of ["frog", "grabbed", "taunted", "pick-me", "hex-spent"])
+    for (const status of ["frog", "grabbed", "hex-spent"])
       expect(UNIT_STATUS_IDS_V7, status).toContain(status);
+    // Pick Me!'s chips retired with the Chosen.
+    for (const status of ["taunted", "pick-me"])
+      expect(UNIT_STATUS_IDS_V7, status).not.toContain(status);
     expect(statusGlossaryV7("frog")?.name).toBe("Frog");
   });
 
@@ -160,9 +154,6 @@ describe("hexes and tricks: the words", () => {
         at: at(4, 6),
       }),
     ).toBe("u5.tentacle.4,6");
-    expect(textPlayCommandIdV7({ kind: "PICK_ME", unitId: unitId(5) })).toBe(
-      "u5.pickme",
-    );
   });
 });
 
@@ -170,7 +161,7 @@ describe("hexes and tricks: the board", () => {
   it("draws a Tentacle with its own sprite and name, and its dock says how long it stays and whom it holds", () => {
     const state = withTentacleV7(
       cultFieldV7([
-        { seat: 0, role: "KNIGHT", at: at(5, 2) },
+        { seat: 0, role: "CAPTAIN", at: at(5, 2) },
         { seat: 1, role: "FIGHTER", at: at(6, 5) },
       ]),
       at(5, 2),
@@ -211,16 +202,15 @@ describe("hexes and tricks: the board", () => {
     }
   });
 
-  it("plans the board of a state with a frog, a taunt, and a Tentacle", () => {
+  it("plans the board of a state with a frog and a Tentacle", () => {
     const state = withTentacleV7(
-      withTauntsV7(withFrogsV7(everything(0), [at(2, 4)]), [at(7, 6)]),
+      withFrogsV7(everything(0), [at(2, 4)]),
       at(8, 2),
       at(8, 4),
     );
     for (const seat of [0, 1]) {
       const view = viewForV7(state, seatIdV7(state, seat));
       expect(view.cult.frogs).toHaveLength(1);
-      expect(view.cult.taunts).toHaveLength(1);
       expect(view.cult.tentacles).toHaveLength(1);
       const plan = buildBoardRenderPlanV7(view, queryPlayerCommandsV7(view), {
         selection: null,
@@ -252,7 +242,7 @@ describe("hexes and tricks: the older Normal policy tolerates the commands", () 
   }
 
   it("never picks a trick, and ends its turn", () => {
-    // A Cult AI seat (seat 1) with all four on offer.
+    // A Cult AI seat (seat 1) with all three on offer.
     const state = everything(1);
     const offered = new Set(
       offeredV7(state)
@@ -281,13 +271,13 @@ describe("hexes and tricks: the older Normal policy tolerates the commands", () 
     }
   });
 
-  it("plays a turn against a Cult seat with a frog of its own, a taunt beside it, and a Tentacle holding a unit", () => {
+  it("plays a turn against a Cult seat with a frog of its own and a Tentacle holding a unit", () => {
     // The Human AI (seat 1) to move: its Knight is a frog, its Fighter on
-    // (6, 6) stands beside a taunting Chosen, and a Tentacle holds its
-    // Fighter on (9, 4).
+    // (6, 6) stands beside an Idol Bearer, and a Tentacle holds its Fighter
+    // on (9, 4).
     const base = everything(0);
     const staged = withTentacleV7(
-      withTauntsV7(withFrogsV7(base, [at(2, 4)]), [at(7, 6)]),
+      withFrogsV7(base, [at(2, 4)]),
       at(8, 2),
       at(8, 4),
       { grabbed: at(9, 4) },

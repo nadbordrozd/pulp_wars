@@ -644,15 +644,8 @@ async function tricks(connection: Connection, size: Size): Promise<void> {
   await delay(1_400);
   await record(connection, `${size}TentacleDone`);
   await capture(connection, `tentacle-done-${size}.png`);
-
-  await mount(connection, "cultTricksUiFixtureV7");
-  await activate(connection, at.chosen as Coord);
-  await record(connection, `${size}PickMeOffered`);
-  await capture(connection, `pick-me-offered-${size}.png`);
-  await click(connection, "cult-pick-me");
-  await delay(1_400);
-  await record(connection, `${size}PickMeDone`);
-  await capture(connection, `pick-me-done-${size}.png`);
+  // (Pick Me! retired with the Chosen: the Cult redesign,
+  // `pulp_wars-mch9.31`.)
 }
 
 /** The hexes at rest, for the Cult player and for their victim. */
@@ -802,7 +795,6 @@ async function trickCues(connection: Connection): Promise<void> {
         { effect: 'SWITCHEROO', cells: [{ x: 4, y: 1 }, { x: 6, y: 2 }], progress: 0.4 },
         { effect: 'TENTACLE', cells: [{ x: 1, y: 6 }], progress: 0.45 },
         { effect: 'GRAB', cells: [{ x: 3, y: 6 }], progress: 0.5 },
-        { effect: 'PICK_ME', cells: [{ x: 6, y: 6 }], progress: 0.4 },
         { effect: 'PAMPHLETS', cells: [{ x: 8, y: 6 }], progress: 0.45 },
       ]`,
     ],

@@ -11,12 +11,10 @@ import {
   attackAllowanceV7,
   attacksLeftV7,
   beginRitualRejectionV7,
-  bindingTauntsV7,
   cityIsCowedV7,
   favourOfV7,
   grabbingTentacleAtV7,
   isRobedCultistV7,
-  pickMeRejectionV7,
   proclaimRejectionV7,
   ribbitRejectionV7,
   switcherooRejectionV7,
@@ -25,7 +23,6 @@ import {
   unitCapabilitiesV7,
   unitIsFrogV7,
   unitRoleRuleV7,
-  unitTauntsV7,
   type BeginRitualPreviewV7,
   type CityId,
   type CommandV7,
@@ -63,13 +60,14 @@ import { playerPossessiveV7, playerSubjectV7 } from "./player-names-v7";
  * interface (bead `pulp_wars-mch9.19`; docs/product/RULESET_7_CULTISTS.md
  * sections 7, 8.2, 8.6, 9, and 14.3; docs/ui/BOARD_TARGETING.md section
  * 3.9): the words of Star-fall, the Great Summoning, Proclaim, Ribbit,
- * Switcheroo, Tentacle, and Pick Me!: the buttons and their reasons, the
- * marks' labels, the cursor's sentences, the unit card's chips, a frog's
- * real numbers, and the notices. This module imports the engine only and
+ * Switcheroo, and Tentacle: the buttons and their reasons, the marks'
+ * labels, the cursor's sentences, the unit card's chips, a frog's real
+ * numbers, and the notices. (Pick Me! retired with the Chosen: the Cult
+ * redesign, `pulp_wars-mch9.31`.) This module imports the engine only and
  * names no tile and no ID.
  */
 
-/** The seven actions the dock aims or casts with one button each. */
+/** The six actions the dock aims with one button each. */
 export const CULT_TRICK_KINDS_V7 = [
   "STARFALL",
   "GREAT_SUMMONING",
@@ -77,7 +75,6 @@ export const CULT_TRICK_KINDS_V7 = [
   "RIBBIT",
   "SWITCHEROO",
   "TENTACLE",
-  "PICK_ME",
 ] as const;
 export type CultTrickKindV7 = (typeof CULT_TRICK_KINDS_V7)[number];
 
@@ -87,7 +84,6 @@ export const PROCLAIM_LABEL_V7 = "Proclaim";
 export const RIBBIT_LABEL_V7 = "Ribbit";
 export const SWITCHEROO_LABEL_V7 = "Switcheroo";
 export const TENTACLE_LABEL_V7 = "Tentacle";
-export const PICK_ME_LABEL_V7 = "Pick Me!";
 
 export const CULT_TRICK_LABELS_V7: Readonly<Record<CultTrickKindV7, string>> = {
   STARFALL: STARFALL_LABEL_V7,
@@ -96,7 +92,6 @@ export const CULT_TRICK_LABELS_V7: Readonly<Record<CultTrickKindV7, string>> = {
   RIBBIT: RIBBIT_LABEL_V7,
   SWITCHEROO: SWITCHEROO_LABEL_V7,
   TENTACLE: TENTACLE_LABEL_V7,
-  PICK_ME: PICK_ME_LABEL_V7,
 };
 
 /** The card texts (sections 7.2, 8.2, 8.6, and 9). */
@@ -109,14 +104,10 @@ export const CULT_TRICK_TOOLTIPS_V7: Readonly<Record<CultTrickKindV7, string>> =
     RIBBIT: `Turns an enemy within ${RIBBIT_RANGE_V7} tiles into a frog until its next turn ends. A frog hops one tile, is easy to hurt, and cannot attack or strike back`,
     SWITCHEROO: `It and a unit within ${SWITCHEROO_RANGE_V7} tiles swap places, friend or foe. Never on a city or village`,
     TENTACLE: `Up comes a Tentacle within ${TENTACLE_RANGE_V7} tiles. It belongs to nobody, and slaps and grabs whoever is weakest beside it`,
-    PICK_ME:
-      "I AM THE CHOSEN ONE! Enemies beside it can attack nobody else until your next turn",
   };
 
 /** The instruction of each aimed action. */
-export const CULT_TRICK_PICKS_V7: Readonly<
-  Record<Exclude<CultTrickKindV7, "PICK_ME">, string>
-> = {
+export const CULT_TRICK_PICKS_V7: Readonly<Record<CultTrickKindV7, string>> = {
   STARFALL: "Choose the tile the star falls on",
   GREAT_SUMMONING: "Choose a tile next to it for the Herald",
   PROCLAIM: "Choose an enemy city",
@@ -160,7 +151,6 @@ export const RIBBIT_NO_TARGET_V7 = `No enemy within ${RIBBIT_RANGE_V7} tiles it 
 export const SWITCHEROO_NO_TARGET_V7 = `Nobody within ${SWITCHEROO_RANGE_V7} tiles to swap with`;
 export const TENTACLE_EXISTS_V7 = "Its Tentacle is still up";
 export const TENTACLE_NO_TILE_V7 = `No free tile within ${TENTACLE_RANGE_V7} tiles`;
-export const PICK_ME_TAUNTING_V7 = "It shouted already";
 
 /** "Needs 3 cultists beside it that have not acted". */
 export function greatSummoningChantersTextV7(): string {
@@ -319,7 +309,22 @@ export function cultTrickUnavailableTextV7(
         : SWITCHEROO_NO_TARGET_V7;
     }
     case "TENTACLE": {
-      const rejection = tentacleRejectionV7(view, NO_TILE_FACTS, unit, unit.at);
+      if (!abilities.includes("TENTACLE")) return null;
+      // The Cult redesign (`pulp_wars-mch9.31`): the Summoner's Tentacle
+      // needs Tentacles; without the technology there is no button.
+      const unlocked = unitCapabilitiesV7(
+        view,
+        unit,
+        view.viewer.researchedTechs,
+      ).tentacles;
+      if (!unlocked) return null;
+      const rejection = tentacleRejectionV7(
+        view,
+        NO_TILE_FACTS,
+        unlocked,
+        unit,
+        unit.at,
+      );
       if (rejection === null || rejection.code === "UNIT_ROLE_INVALID")
         return null;
       if (frog) return TRICK_FROGGED_V7;
@@ -329,16 +334,6 @@ export function cultTrickUnavailableTextV7(
       return rejection.reason === "EXISTS"
         ? TENTACLE_EXISTS_V7
         : TENTACLE_NO_TILE_V7;
-    }
-    case "PICK_ME": {
-      const rejection = pickMeRejectionV7(view, unit);
-      if (rejection === null || rejection.code === "UNIT_ROLE_INVALID")
-        return frog && abilities.includes("PICK_ME") ? TRICK_FROGGED_V7 : null;
-      if (frog) return TRICK_FROGGED_V7;
-      if (rejection.code === "PICK_ME_NOT_LEGAL") return CHANNEL_EMBARKED_V7;
-      return unitTauntsV7(view, unit)
-        ? PICK_ME_TAUNTING_V7
-        : CHANNEL_ALREADY_ACTED_V7;
     }
   }
 }
@@ -508,9 +503,6 @@ export function tentacleTileNameV7(slapped: string | null): string {
   return `Call a Tentacle up here. ${slapped === null ? "Nobody stands beside it now" : `It slaps and grabs ${slapped} at once`}.`;
 }
 
-/** The label on an enemy an offered Pick Me! would bind. */
-export const PICK_ME_BOUND_LABEL_V7 = "Bound";
-
 // ------------------------------------------------------ A frog's card ---
 
 /** "0.5": a frog's flat Defense. */
@@ -596,21 +588,14 @@ export function frogLookV7(
 
 /** A status chip of the selected unit's card. */
 export interface CultTrickChipV7 {
-  readonly id:
-    | "chanting"
-    | "frog"
-    | "grabbed"
-    | "taunted"
-    | "pick-me"
-    | "hex-spent"
-    | "attacks";
+  readonly id: "chanting" | "frog" | "grabbed" | "hex-spent" | "attacks";
   readonly label: string;
   /** Its one sentence (the tooltip and the accessible name). */
   readonly status: string;
   /** The raster asked for; the chip shows its word alone without one. */
   readonly icon:
-    | `ICON:STATUS:${"CANDLELIT" | "FROG" | "GRABBED" | "PICK_ME"}`
-    | `ICON:ACTION:${"RIBBIT" | "SWITCHEROO" | "PICK_ME"}`
+    | `ICON:STATUS:${"CANDLELIT" | "FROG" | "GRABBED"}`
+    | `ICON:ACTION:${"RIBBIT" | "SWITCHEROO"}`
     | null;
   /** A harm done to the unit: the chip takes the loss colour. */
   readonly harm?: true;
@@ -635,8 +620,7 @@ export function ritualOfUnitV7(
 /**
  * The chips of rituals, hexes and tricks on a visible unit's card, any
  * owner's (all of it is public): a chanter, a frog, a unit a Tentacle
- * holds, a unit a Chosen binds, a Chosen that shouted, a spent trick, and
- * the attacks an own Herald has left.
+ * holds, a spent trick, and the attacks an own Herald has left.
  */
 export function cultTrickChipsV7(
   view: PlayerViewV7,
@@ -667,23 +651,6 @@ export function cultTrickChipsV7(
         "A Tentacle holds it: it can move only to tiles next to that Tentacle",
       icon: "ICON:STATUS:GRABBED",
       harm: true,
-    });
-  if (bindingTauntsV7(view, view.units, unit).length > 0)
-    chips.push({
-      id: "taunted",
-      label: "Taunted",
-      status:
-        "A Chosen beside it shouted Pick Me!: it can attack nobody but that Chosen",
-      icon: "ICON:STATUS:PICK_ME",
-      harm: true,
-    });
-  if (unitTauntsV7(view, unit))
-    chips.push({
-      id: "pick-me",
-      label: PICK_ME_LABEL_V7,
-      status:
-        "Enemies beside it can attack nobody else, until its owner's next turn",
-      icon: "ICON:ACTION:PICK_ME",
     });
   const cooldown = tricksOfV7(view).hexCooldowns.find(
     (entry) => entry.unitId === unit.id,
@@ -724,8 +691,6 @@ export const COWED_TOOLTIP_V7 =
   "A Herald Proclaimed at it: no income and no city action until its owner's turn ends";
 /** The banner over a Cowed city on the board. */
 export const COWED_BANNER_V7 = "KNEEL!";
-/** What a Chosen that shouted says on the board. */
-export const PICK_ME_BUBBLE_V7 = "ME!";
 
 /** Whether the city is Cowed in the viewer's view. */
 export function cityCowedV7(view: PlayerViewV7, cityId: CityId): boolean {
@@ -756,9 +721,8 @@ const capital = (text: string): string =>
  * The notice of a boundary's ritual, hex and trick events (section 14.3),
  * for what the board alone might not explain: a ritual begun by another
  * seat, a ritual that fizzled, a star that fell, a Herald that arrived, a
- * unit consumed, a city Cowed, a unit of the viewer's hexed, swapped away
- * or grabbed, and a Chosen that binds the viewer's units. It names no tile
- * and no ID.
+ * unit consumed, a city Cowed, and a unit of the viewer's hexed, swapped
+ * away or grabbed. It names no tile and no ID.
  */
 export function cultTrickNoticePartsV7(
   events: readonly PlayerEventV7[],
@@ -834,21 +798,6 @@ export function cultTrickNoticePartsV7(
           );
         break;
       }
-      case "PICK_ME_SHOUTED": {
-        if (event.playerId === viewerId) break;
-        const bound = after.units.some(
-          (unit) =>
-            unit.ownerId === viewerId &&
-            bindingTauntsV7(after, after.units, unit).some(
-              (chosen) => chosen.id === event.unitId,
-            ),
-        );
-        if (bound)
-          parts.push(
-            "Pick Me! Your units beside the Chosen can attack only it",
-          );
-        break;
-      }
       default:
         break;
     }
@@ -864,7 +813,6 @@ export function tricksOfV7(view: PlayerViewV7): {
   readonly cowed: PlayerViewV7["cult"]["cowed"];
   readonly frogs: PlayerViewV7["cult"]["frogs"];
   readonly hexCooldowns: PlayerViewV7["cult"]["hexCooldowns"];
-  readonly taunts: PlayerViewV7["cult"]["taunts"];
   readonly tentacles: PlayerViewV7["cult"]["tentacles"];
 } {
   const cult = (view as { readonly cult?: Partial<PlayerViewV7["cult"]> }).cult;
@@ -873,7 +821,6 @@ export function tricksOfV7(view: PlayerViewV7): {
     cowed: cult?.cowed ?? [],
     frogs: cult?.frogs ?? [],
     hexCooldowns: cult?.hexCooldowns ?? [],
-    taunts: cult?.taunts ?? [],
     tentacles: cult?.tentacles ?? [],
   };
 }

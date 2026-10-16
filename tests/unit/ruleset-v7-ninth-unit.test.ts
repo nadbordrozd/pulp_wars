@@ -40,6 +40,7 @@ import { chibiDirectionArtRegistryV7 } from "../../src/assets/chibi-direction-ar
 import { portraitSubjectV7 } from "../../src/assets/chibi-ui-art-v7";
 import {
   DOMAIN_EVENT_KIND_ORDER_V7,
+  CULT_VACANT_ROLES_V7,
   FACTION_IDS_V7,
   HUMAN_ONLY_ROLES_V7,
   NAVAL_ROLE_IDS_V7,
@@ -56,6 +57,7 @@ import {
   assertRuleset7Registry,
   effectiveRoleRuleV7,
   factionTreeV7,
+  factionFieldsRoleV7,
   factionUnlocksRoleV7,
   gangUpBonusV7,
   isEggLaidRoleV7,
@@ -257,11 +259,21 @@ const JOBS: Readonly<Record<FactionIdV7, Readonly<Record<Job, string>>>> = {
     RANGED: "Hexer",
     SUPPORT: "Summoner",
     SIEGE: "Stargazer",
-    BREAKTHROUGH: "Caller",
-    HEAVY_LINE: "Chosen",
+    // Vacant since the Cult redesign (`pulp_wars-mch9.31`): the Caller and
+    // the Chosen retired.
+    BREAKTHROUGH: "(vacant)",
+    HEAVY_LINE: "(vacant)",
     REWARD_GIANT: "Thing in the Cellar",
   },
 };
+
+/**
+ * The Cult redesign (`pulp_wars-mch9.31`): the factions that field a heavy
+ * (every faction but the Cult, whose `SWORDSMAN` slot is vacant).
+ */
+const HEAVY_FACTIONS_V7 = FACTION_IDS_V7.filter((faction) =>
+  factionFieldsRoleV7(faction, "SWORDSMAN"),
+);
 
 /** The technology of each job's role (the same node in every tree). */
 const TECH_OF_JOB: Readonly<Record<Job, TechnologyIdV7 | null>> = {
@@ -302,7 +314,8 @@ const HEAVY: Readonly<Record<FactionIdV7, Numbers>> = {
   ICE_FOLK: num(7, 20, 5, 4, 1),
   DWARF: num(9, 16, 6, 4, 2),
   CANDY: num(6, 16, 6, 5, 1),
-  // The Chosen: the Champion with half a Defense less.
+  // The Chosen (the Champion with half a Defense less) retired with the
+  // Cult redesign (`pulp_wars-mch9.31`): these numbers are read nowhere.
   CULT: num(6, 15, 7, 4, 1),
 };
 function num(
@@ -389,11 +402,11 @@ const productionOf = (
 
 describe("the ninth unit: identity", () => {
   it("was 7r55 after 7r54, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r84");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r84.current");
-    expect(PRIOR_RULESET_7_IDS.at(-30)).toBe("pulp-wars-poc-7r54");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r85");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r85.current");
+    expect(PRIOR_RULESET_7_IDS.at(-31)).toBe("pulp-wars-poc-7r54");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-30)).toBe(
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-31)).toBe(
       "pulpWars.save.v7r54.current",
     );
     const state = field([]);
@@ -436,7 +449,9 @@ describe("the ninth unit: identity", () => {
     // DAEMON_UNBOUND (141).
     // The Cult's rituals (`pulp_wars-mch9.7`) add seven kinds after
     // DAEMON_BOUND, from RITUAL_BEGUN to CITY_COWED (148).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(155);
+    // The Cult redesign's roster (`pulp_wars-mch9.31`) removes
+    // PICK_ME_SHOUTED (154).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(154);
   });
 });
 
@@ -451,6 +466,22 @@ describe("the ninth unit: nine land units and nine jobs for every faction", () =
         const job = JOB_OF_ROLE[role] as Job;
         const rule = effectiveRoleRuleV7(role, faction);
         expect(rule.label, `${faction} ${job}`).toBe(JOBS[faction][job]);
+        // The Cult redesign (`pulp_wars-mch9.31`): a vacant slot keeps its
+        // job's tactical label, and nothing more.
+        if (!factionFieldsRoleV7(faction, role)) {
+          expect(faction).toBe("CULT");
+          expect(CULT_VACANT_ROLES_V7).toContain(role);
+          expect(rule.tacticalRole, `${faction} ${job}`).toBe(
+            TACTICAL_OF_JOB[job],
+          );
+          expect([rule.cost, rule.technology, rule.abilities]).toEqual([
+            null,
+            null,
+            [],
+          ]);
+          expect(factionUnlocksRoleV7(faction, role)).toBe(false);
+          continue;
+        }
         // A role ID means a job: its tactical label is the job's.
         expect(rule.tacticalRole, `${faction} ${job}`).toBe(
           TACTICAL_OF_JOB[job],
@@ -466,8 +497,8 @@ describe("the ninth unit: nine land units and nine jobs for every faction", () =
         );
         names.add(rule.label);
       }
-      // Nine different units.
-      expect(names.size, faction).toBe(9);
+      // Nine different units (seven for the Cult since its redesign).
+      expect(names.size, faction).toBe(faction === "CULT" ? 7 : 9);
     }
   });
 
@@ -479,7 +510,12 @@ describe("the ninth unit: nine land units and nine jobs for every faction", () =
         if (found === undefined) throw new Error(id);
         return found;
       };
-      expect(node("METALLURGY").unlockedRoles, faction).toEqual(["SWORDSMAN"]);
+      // (The Cult's Metallurgy, Gibbering Masses since its redesign,
+      // `pulp_wars-mch9.31`, unlocks no unit: its heavy slot is vacant.)
+      const heavy = HEAVY_FACTIONS_V7.includes(faction);
+      expect(node("METALLURGY").unlockedRoles, faction).toEqual(
+        heavy ? ["SWORDSMAN"] : [],
+      );
       expect(node("ENGINEERING").unlockedRoles, faction).toEqual([]);
       // Metallurgy keeps the Forge and Arms Industry.
       expect(
@@ -489,7 +525,7 @@ describe("the ninth unit: nine land units and nine jobs for every faction", () =
         "COMMAND",
         "ECONOMIC_FORMULA",
         "ARMS_INDUSTRY_DISCOUNT",
-        "UNIT_ROLE",
+        ...(heavy ? ["UNIT_ROLE"] : []),
       ]);
       // Engineering keeps Mountains, the Mine, and Redevelop (the Workshop
       // left it for the root at 7r56, the Industry reshuffle).
@@ -514,8 +550,9 @@ describe("the ninth unit: nine land units and nine jobs for every faction", () =
   });
 
   it("gives each heavy the design's numbers", () => {
-    for (const faction of FACTION_IDS_V7)
+    for (const faction of HEAVY_FACTIONS_V7)
       expect(numbersOf("SWORDSMAN", faction), faction).toEqual(HEAVY[faction]);
+    expect(HEAVY_FACTIONS_V7).not.toContain("CULT");
     // The three backfills.
     expect(numbersOf("CATAPULT", "DINOSAUR")).toEqual({
       cost: 7,
@@ -697,7 +734,7 @@ describe("the ninth unit: nine land units and nine jobs for every faction", () =
 
 describe("the ninth unit: production", () => {
   it("offers each faction's heavy with Metallurgy only, at its own price, to that faction", () => {
-    for (const faction of FACTION_IDS_V7) {
+    for (const faction of HEAVY_FACTIONS_V7) {
       const without = chainTo(faction, "ENGINEERING");
       const withTech = chainTo(faction, "METALLURGY");
       const build = (techs: readonly TechnologyIdV7[]) =>
@@ -773,7 +810,8 @@ describe("the ninth unit: production", () => {
 
   it("puts Arms Industry on the heavy's own node in every tree", () => {
     // A city with a working Forge trains the heavy for 1 Coin less (the
-    // ordinary Arms Industry rule): the discount and the unit come together.
+    // ordinary Arms Industry rule): the discount and the unit come together
+    // (the Cult's Gibbering Masses has the discount and no unit).
     for (const faction of FACTION_IDS_V7) {
       const before = technologyCapabilitiesV7(
         chainTo(faction, "ENGINEERING"),
@@ -786,7 +824,9 @@ describe("the ninth unit: production", () => {
       expect(before.armsIndustryDiscountCoins, faction).toBe(0);
       expect(before.trainableRoles, faction).not.toContain("SWORDSMAN");
       expect(after.armsIndustryDiscountCoins, faction).toBe(1);
-      expect(after.trainableRoles, faction).toContain("SWORDSMAN");
+      if (HEAVY_FACTIONS_V7.includes(faction))
+        expect(after.trainableRoles, faction).toContain("SWORDSMAN");
+      else expect(after.trainableRoles, faction).not.toContain("SWORDSMAN");
       expect(after.commands, faction).toContain("BUILD_FORGE");
     }
   });
@@ -895,8 +935,9 @@ describe("the ninth unit: technology display names", () => {
       SAWMILLING: "Stargazers",
       MARKSMANSHIP: "Hexers",
       SCOUTING: "Familiars",
-      CHIVALRY: "Callers",
-      METALLURGY: "The Chosen",
+      // The Cult redesign (`pulp_wars-mch9.31`).
+      CHIVALRY: "Tentacles",
+      METALLURGY: "Gibbering Masses",
       FORTIFICATION: "Warding Circles",
       EXPLOSIVES: "The Stars Are Right",
     },
@@ -2281,7 +2322,7 @@ describe("the ninth unit: the Normal AI", () => {
     // Dwarf seat still builds Steam Tanks, at Metallurgy, and Whirligigs,
     // at Chivalry).
     const produced: readonly (readonly [FactionIdV7, UnitRoleIdV7])[] = [
-      ...FACTION_IDS_V7.map((faction) => [faction, "SWORDSMAN"] as const),
+      ...HEAVY_FACTIONS_V7.map((faction) => [faction, "SWORDSMAN"] as const),
       ["DINOSAUR", "CATAPULT"],
       ["ICE_FOLK", "GUARD"],
       ["DWARF", "KNIGHT"],

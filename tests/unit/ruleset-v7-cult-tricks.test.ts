@@ -35,12 +35,10 @@ import {
   parseEventV7,
   parseGameStateV7,
   previewMonsterV7,
-  previewPickMeV7,
   previewRibbitV7,
   previewSwitcherooV7,
   previewTentacleV7,
   projectEventsV7,
-  publicBindingTauntsV7,
   queryPlayerCommandsV7,
   technologyCapabilitiesV7,
   tentacleSlapTargetV7,
@@ -60,6 +58,7 @@ import {
   type PlayerId,
   type TechnologyIdV7,
 } from "../../src/engine/index";
+import { buildMissionStateV7 } from "../../src/engine/v7/missions/build";
 import { OBSOLETE_SAVE_STORAGE_KEYS_V7 } from "../../src/persistence/index";
 import { checkedV7 } from "../fixtures/v7-builders";
 import {
@@ -68,7 +67,6 @@ import {
   withHorrorV7,
   withRitualV7,
   withStrandsV7,
-  withTauntsV7,
   withTentacleV7,
 } from "../fixtures/v7-cult";
 import {
@@ -93,8 +91,10 @@ import {
 /**
  * The Cultists of the Ancient Ones, engine bead E6 (`pulp_wars-mch9.8`,
  * docs/product/RULESET_7_CULTISTS.md sections 9.1 to 9.3, 8.2, and 8.7):
- * Ribbit and the frog, Switcheroo, the Tentacle and Grab, Pick Me!,
- * Pamphlets, and the hand-play lab `LAB_CULT_MID` (built, not played).
+ * Ribbit and the frog, Switcheroo, the Tentacle and Grab, Pamphlets, and
+ * the hand-play lab `LAB_CULT_MID` (built, not played). The Cult redesign's
+ * roster (`pulp_wars-mch9.31`): Pick Me! retired with the Chosen, and the
+ * Tentacle is the Summoner's, with Tentacles (the Cult `CHIVALRY`).
  *
  * Every state here is built by hand; no match is played. The field is the
  * two-seat 11 x 11 board of `fieldV7`: seat 0 (the Cult) capital (8, 8)
@@ -102,8 +102,8 @@ import {
  * otherwise) capital (2, 8) with territory x 1 to 3, y 7 to 9; villages on
  * (5, 5), (8, 5), and (5, 8); everything else open Grass, all of it explored
  * by both seats. The Cult's roles: `FIGHTER` Initiate, `GUARD` Idol Bearer,
- * `RAIDER` Familiar, `MARKSMAN` Hexer, `CAPTAIN` Summoner, `KNIGHT` Caller,
- * `SWORDSMAN` Chosen.
+ * `RAIDER` Familiar, `MARKSMAN` Hexer, `CAPTAIN` Summoner (and the vacant
+ * `KNIGHT` and `SWORDSMAN`).
  */
 
 function need<T>(value: T | null | undefined): T {
@@ -149,21 +149,21 @@ const targeted = (
 
 const HEXER = at(5, 2);
 const FAMILIAR = at(5, 2);
+/** The Summoner that calls the Tentacle (the retired Caller's tile). */
 const CALLER = at(5, 2);
-const CHOSEN = at(5, 3);
 
 describe("tricks: identity and registration", () => {
   // The spread villages (`pulp_wars-9s0.12`) took 7r79, so 7r78 is a prior
   // identity.
   it("was 7r78 after 7r77, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r84");
-    expect(PRIOR_RULESET_7_IDS.slice(-7, -5)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r85");
+    expect(PRIOR_RULESET_7_IDS.slice(-8, -6)).toEqual([
       "pulp-wars-poc-7r77",
       "pulp-wars-poc-7r78",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r84.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-7, -5)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r85.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-8, -6)).toEqual([
       "pulpWars.save.v7r77.current",
       "pulpWars.save.v7r78.current",
     ]);
@@ -174,32 +174,33 @@ describe("tricks: identity and registration", () => {
     ).toBeNull();
   });
 
-  it("orders the four commands and the six events after the rituals'", () => {
+  it("orders the three commands and the five events after the rituals'", () => {
     const commands = COMMAND_KIND_ORDER_V7 as readonly string[];
     const from = commands.indexOf("PROCLAIM");
-    expect(commands.slice(from, from + 6)).toEqual([
+    expect(commands.slice(from, from + 5)).toEqual([
       "PROCLAIM",
       "RIBBIT",
       "SWITCHEROO",
       "TENTACLE",
-      "PICK_ME",
       "CAPTURE",
     ]);
     const events = DOMAIN_EVENT_KIND_ORDER_V7 as readonly string[];
     const cowed = events.indexOf("CITY_COWED");
-    expect(events.slice(cowed, cowed + 8)).toEqual([
+    expect(events.slice(cowed, cowed + 7)).toEqual([
       "CITY_COWED",
       "UNIT_FROGGED",
       "UNITS_SWAPPED",
       "TENTACLE_ROSE",
       "UNIT_GRABBED",
       "TENTACLE_SANK",
-      "PICK_ME_SHOUTED",
       "SPOILS_AWARDED",
     ]);
+    // Pick Me! retired with the Chosen (`pulp_wars-mch9.31`).
+    expect(commands).not.toContain("PICK_ME");
+    expect(events).not.toContain("PICK_ME_SHOUTED");
   });
 
-  it("parses the four commands and nothing near them", () => {
+  it("parses the three commands and nothing near them", () => {
     for (const kind of ["RIBBIT", "SWITCHEROO"] as const) {
       expect(parseCommandV7({ kind, unitId: 3, targetUnitId: 4 })).toEqual({
         ok: true,
@@ -217,13 +218,8 @@ describe("tricks: identity and registration", () => {
       value: { kind: "TENTACLE", unitId: 3, at: { x: 1, y: 2 } },
     });
     expect(parseCommandV7({ kind: "TENTACLE", unitId: 3 }).ok).toBe(false);
-    expect(parseCommandV7({ kind: "PICK_ME", unitId: 3 })).toEqual({
-      ok: true,
-      value: { kind: "PICK_ME", unitId: 3 },
-    });
-    expect(
-      parseCommandV7({ kind: "PICK_ME", unitId: 3, at: at(1, 1) }).ok,
-    ).toBe(false);
+    // Pick Me! is no command any more.
+    expect(parseCommandV7({ kind: "PICK_ME", unitId: 3 }).ok).toBe(false);
   });
 
   it("holds the spec's numbers", () => {
@@ -243,8 +239,8 @@ describe("tricks: identity and registration", () => {
       PAMPHLETS: "FIGHTER",
       SWITCHEROO: "RAIDER",
       RIBBIT: "MARKSMAN",
-      TENTACLE: "KNIGHT",
-      PICK_ME: "SWORDSMAN",
+      // The Cult redesign (`pulp_wars-mch9.31`): the Summoner's.
+      TENTACLE: "CAPTAIN",
     } as const;
     for (const faction of FACTION_IDS_V7)
       for (const role of UNIT_ROLE_IDS_V7) {
@@ -271,10 +267,25 @@ describe("tricks: identity and registration", () => {
     expect(
       technologyCapabilitiesV7(techsWithout("SCOUTING"), "CULT").switcheroo,
     ).toBe(false);
+    // The Tentacle is the Cult's Chivalry (Tentacles).
+    const chivalry = need(
+      factionTreeV7("CULT").nodes.find((node) => node.id === "CHIVALRY"),
+    );
+    expect(chivalry.unlocks.map((unlock) => unlock.kind)).toContain(
+      "TENTACLES",
+    );
+    for (const faction of FACTION_IDS_V7)
+      expect(
+        technologyCapabilitiesV7([...TECHNOLOGY_IDS_V7], faction).tentacles,
+        faction,
+      ).toBe(faction === "CULT");
+    expect(
+      technologyCapabilitiesV7(techsWithout("CHIVALRY"), "CULT").tentacles,
+    ).toBe(false);
     // Unit tricks follow a mind-controlled unit; a Tentacle needs a Cult
     // seat.
     expect(MIND_CONTROLLED_LOST_ABILITIES_V7).toContain("TENTACLE");
-    for (const ability of ["RIBBIT", "SWITCHEROO", "PICK_ME", "PAMPHLETS"])
+    for (const ability of ["RIBBIT", "SWITCHEROO", "PAMPHLETS"])
       expect(MIND_CONTROLLED_LOST_ABILITIES_V7).not.toContain(ability);
   });
 
@@ -433,10 +444,11 @@ describe("Ribbit and the frog (section 9.1)", () => {
 
   it("makes a frog soft: Defense 0.5 flat, no fortification, no cover, no strike back", () => {
     // The spec's numbers (section 9.1): an Initiate deals a frogged Fighter
-    // 7 and a frogged Knight 7, and takes nothing.
+    // 5 and a frogged Knight 5, and takes nothing (7 each before the Cult
+    // redesign's Attack 1.5 Initiate, `pulp_wars-mch9.31`).
     for (const [role, left] of [
-      ["FIGHTER", 5],
-      ["KNIGHT", 6],
+      ["FIGHTER", 7],
+      ["KNIGHT", 8],
     ] as const) {
       const open = cultFieldV7([
         { seat: 0, role: "FIGHTER", at: at(5, 3) },
@@ -450,7 +462,7 @@ describe("Ribbit and the frog (section 9.1)", () => {
         at(5, 4),
       );
       expect(frogged.combat, role).toMatchObject({
-        damageToDefender: 7,
+        damageToDefender: 5,
         retaliation: false,
         damageToAttacker: 0,
       });
@@ -538,7 +550,7 @@ describe("Ribbit and the frog (section 9.1)", () => {
     // A daemon of another lodge, and a Tentacle.
     const lodges = withTentacleV7(
       withHorrorV7(
-        field([{ seat: 0, role: "KNIGHT", at: at(8, 2) }], {
+        field([{ seat: 0, role: "CAPTAIN", at: at(8, 2) }], {
           factions: ["CULT", "CULT"],
         }),
         1,
@@ -819,7 +831,7 @@ describe("Switcheroo (section 9.2)", () => {
     const daemon = withHorrorV7(field([]), 0, at(5, 4));
     expect(reason(daemon, at(5, 4)).params).toEqual({ reason: "IMMUNE" });
     const tentacle = withTentacleV7(
-      field([{ seat: 0, role: "KNIGHT", at: at(8, 2) }]),
+      field([{ seat: 0, role: "CAPTAIN", at: at(8, 2) }]),
       at(8, 2),
       at(6, 3),
     );
@@ -860,7 +872,7 @@ describe("Switcheroo (section 9.2)", () => {
           cultFieldV7(
             [
               { seat: 0, role: "FIGHTER", at: at(5, 6) },
-              { seat: 0, role: "KNIGHT", at: at(8, 2) },
+              { seat: 0, role: "CAPTAIN", at: at(8, 2) },
               { seat: 1, role: "RAIDER", at: at(4, 7) },
             ],
             { factions: ["CULT", "CULT"], activeSeat: 1 },
@@ -895,140 +907,42 @@ describe("Switcheroo (section 9.2)", () => {
   });
 });
 
-// ---------------------------------------------------------- Pick Me! ---
+// ------------------------------------------------ Tentacle and Grab ---
 
-describe("Pick Me! (section 8.2)", () => {
-  // The Chosen on (5, 3) with an Initiate on (4, 4). A Fighter on (5, 4)
-  // stands next to both; a Marksman on (6, 4) next to the Chosen and 2 from
-  // the Initiate; a Marksman on (3, 5) is 2 from the Chosen.
-  const field = (activeSeat = 0) =>
-    cultFieldV7(
-      [
-        { seat: 0, role: "SWORDSMAN", at: CHOSEN },
-        { seat: 0, role: "FIGHTER", at: at(4, 4) },
-        { seat: 1, role: "FIGHTER", at: at(5, 4) },
-        { seat: 1, role: "MARKSMAN", at: at(6, 4) },
-        { seat: 1, role: "MARKSMAN", at: at(3, 5) },
-      ],
-      { activeSeat },
-    );
-
-  it("is a primary action of the Chosen that may follow its Move", () => {
-    const state = field();
-    const chosen = idAt(state, CHOSEN);
-    expect(previewPickMeV7(viewForV7(state, cultId(state)), chosen)).toEqual({
-      unitId: chosen,
-      boundUnitIds: [idAt(state, at(5, 4)), idAt(state, at(6, 4))],
+// The Cult redesign (`pulp_wars-mch9.31`): Pick Me! and Martyr retired with
+// the Chosen; nothing of them is left to offer, shout, or pay.
+describe("Pick Me! and Martyr, retired with the Chosen", () => {
+  it("leaves no Chosen, no shout, and no Martyr's Favour", () => {
+    expect(effectiveRoleRuleV7("SWORDSMAN", "CULT")).toMatchObject({
+      cost: null,
+      technology: null,
+      abilities: [],
     });
-    const shouted = playV7(state, { kind: "PICK_ME", unitId: chosen });
-    expect(shouted.events).toEqual([
-      {
-        kind: "PICK_ME_SHOUTED",
-        playerId: cultId(state),
-        unitId: chosen,
-        at: CHOSEN,
-      },
+    // A Chosen's death paid 6 Favour; a dying Cult unit pays nothing now.
+    const state = cultFieldV7([
+      { seat: 0, role: "FIGHTER", at: at(5, 3), hp: 1 },
+      { seat: 1, role: "FIGHTER", at: at(5, 4) },
     ]);
-    expect(shouted.state.cult.taunts).toEqual([chosen]);
-    expect(unitOf(shouted.state, chosen)?.activation.specialActed).toBe(true);
-    expect(
-      rejectedV7(shouted.state, { kind: "PICK_ME", unitId: chosen }).code,
-    ).toBe("UNIT_ALREADY_ACTED");
-    expect(viewForV7(shouted.state, otherId(state)).cult.taunts).toEqual([
-      chosen,
-    ]);
-    // After a Move too.
-    const moved = applyOkV7(state, cultId(state), {
-      kind: "MOVE",
-      unitId: chosen,
-      path: [at(6, 3)],
-    }).state;
-    expect(offeredV7(moved, "PICK_ME")).toEqual([
-      { kind: "PICK_ME", unitId: chosen },
-    ]);
-    // Nobody else shouts.
-    expect(
-      rejectedV7(state, { kind: "PICK_ME", unitId: idAt(state, at(4, 4)) })
-        .code,
-    ).toBe("UNIT_ROLE_INVALID");
-  });
-
-  it("binds the hostile units beside it to attack only it, ranged ones included, and nobody further away", () => {
-    const state = withTauntsV7(field(1), [CHOSEN]);
-    const chosen = idAt(state, CHOSEN);
-    const initiate = idAt(state, at(4, 4));
     const fighter = idAt(state, at(5, 4));
-    const near = idAt(state, at(6, 4));
-    const far = idAt(state, at(3, 5));
-    const attacks = offeredV7(state, "ATTACK");
-    const targetsOf = (unitId: number) =>
-      attacks
-        .filter(
-          (command) => command.kind === "ATTACK" && command.unitId === unitId,
-        )
-        .map((command) =>
-          command.kind === "ATTACK" ? command.targetUnitId : 0,
-        );
-    expect(targetsOf(fighter)).toEqual([chosen]);
-    expect(targetsOf(near)).toEqual([chosen]);
-    // The Marksman 2 tiles away is free.
-    expect(new Set(targetsOf(far))).toEqual(new Set([chosen, initiate]));
-    const view = viewForV7(state, otherId(state));
-    expect(publicBindingTauntsV7(view, fighter)).toEqual([chosen]);
-    expect(publicBindingTauntsV7(view, far)).toEqual([]);
-    expect(
-      rejectedV7(state, {
-        kind: "ATTACK",
-        unitId: fighter,
-        targetUnitId: initiate,
-      }),
-    ).toEqual({ code: "ATTACK_TAUNTED", params: { unitId: chosen } });
-    expect(
-      rejectedV7(state, {
-        kind: "ATTACK",
-        unitId: near,
-        targetUnitId: initiate,
-      }).code,
-    ).toBe("ATTACK_TAUNTED");
-    // The attack on the Chosen is an ordinary one.
-    attackV7(state, at(5, 4), CHOSEN);
-    // Without the shout the Fighter chooses.
-    expect(
-      new Set(
-        offeredV7(field(1), "ATTACK").flatMap((command) =>
-          command.kind === "ATTACK" && command.unitId === fighter
-            ? [command.targetUnitId]
-            : [],
-        ),
-      ),
-    ).toEqual(new Set([chosen, initiate]));
-  });
-
-  it("ends at its owner's next Start Turn, and when the Chosen leaves the board", () => {
-    const state = field();
-    const chosen = idAt(state, CHOSEN);
-    const shouted = playV7(state, { kind: "PICK_ME", unitId: chosen }).state;
-    const enemy = toOtherTurn(shouted).state;
-    expect(enemy.cult.taunts).toEqual([chosen]);
-    expect(toCultTurn(enemy).state.cult.taunts).toEqual([]);
-    // Killed: the taunt is gone with it.
-    const weak = patchUnitV7(withTauntsV7(field(1), [CHOSEN]), CHOSEN, {
-      hp: 1,
+    const killed = playV7(toOtherTurn(state).state, {
+      kind: "ATTACK",
+      unitId: fighter,
+      targetUnitId: idAt(state, at(5, 3)),
     });
-    const killed = attackV7(weak, at(5, 4), CHOSEN);
-    expect(killed.target).toBeUndefined();
-    expect(killed.state.cult.taunts).toEqual([]);
+    expect(eventsOf(killed.events, "UNIT_DIED")).toHaveLength(1);
+    expect(eventsOf(killed.events, "FAVOUR_GAINED")).toEqual([]);
+    expect(killed.state.cult).not.toHaveProperty("taunts");
   });
 });
 
-// ------------------------------------------------ Tentacle and Grab ---
-
 describe("Tentacle and Grab (section 9.3)", () => {
+  // The Cult redesign (`pulp_wars-mch9.31`): the Summoner calls it, with
+  // Tentacles (the field researches every technology).
   const field = (
     pieces: readonly GoblinPieceV7[],
     options: Parameters<typeof cultFieldV7>[1] = {},
   ) =>
-    cultFieldV7([{ seat: 0, role: "KNIGHT", at: CALLER }, ...pieces], options);
+    cultFieldV7([{ seat: 0, role: "CAPTAIN", at: CALLER }, ...pieces], options);
   const tentacleAt = (state: GameStateV7, where: CoordV7): CommandV7 => ({
     kind: "TENTACLE",
     unitId: idAt(state, CALLER),
@@ -1124,11 +1038,12 @@ describe("Tentacle and Grab (section 9.3)", () => {
   });
 
   it("matches the spec's slap numbers", () => {
-    // It kills a full-HP Catapult on arrival, leaves an Initiate at 1 and a
-    // Fighter at 4 (and takes 4).
+    // It kills a full-HP Catapult on arrival, and a full-HP Initiate (7 HP
+    // since the Cult redesign, `pulp_wars-mch9.31`; left at 1 before), and
+    // leaves a Fighter at 4 (and takes 4).
     const cases = [
       { seat: 1, role: "CATAPULT", left: null, taken: 0 },
-      { seat: 0, role: "FIGHTER", left: 1, taken: null },
+      { seat: 0, role: "FIGHTER", left: null, taken: null },
       { seat: 1, role: "FIGHTER", left: 4, taken: 4 },
     ] as const;
     for (const entry of cases) {
@@ -1172,17 +1087,20 @@ describe("Tentacle and Grab (section 9.3)", () => {
     expect(quiet.state.cult.tentacles[0]?.grabbedUnitId).toBeNull();
   });
 
-  it("pays no Martyr for a Chosen it kills", () => {
-    const state = field([{ seat: 0, role: "SWORDSMAN", at: at(6, 5), hp: 2 }]);
-    const risen = playV7(state, tentacleAt(state, at(5, 4)));
-    expect(eventsOf(risen.events, "UNIT_DIED")).toHaveLength(1);
-    expect(eventsOf(risen.events, "FAVOUR_GAINED")).toEqual([]);
-    expect(favourOfV7(risen.state, cultId(state))).toBe(0);
+  it("needs Tentacles: a Summoner without Chivalry calls none, and no other unit calls one", () => {
+    const state = field([], { techs: { 0: techsWithout("CHIVALRY") } });
+    expect(rejectedV7(state, tentacleAt(state, at(5, 4)))).toEqual({
+      code: "TENTACLE_NOT_LEGAL",
+      params: { reason: "TECHNOLOGY" },
+    });
+    expect(offeredV7(state, "TENTACLE")).toEqual([]);
+    // The vacant `KNIGHT` slot calls nothing.
+    expect(effectiveRoleRuleV7("KNIGHT", "CULT").abilities).toEqual([]);
   });
 
-  it("rises only on a free tile within 3 that is no settlement center, one per Caller", () => {
+  it("rises only on a free tile within 3 that is no settlement center, one per Summoner", () => {
     const state = field([
-      { seat: 0, role: "KNIGHT", at: at(8, 2) },
+      { seat: 0, role: "CAPTAIN", at: at(8, 2) },
       { seat: 1, role: "FIGHTER", at: at(5, 4) },
     ]);
     const reason = (target: GameStateV7, where: CoordV7) =>
@@ -1201,14 +1119,14 @@ describe("Tentacle and Grab (section 9.3)", () => {
       reason: "TILE",
     });
     // Every tile within 3 on the board is offered but its own, the two
-    // units' (the Fighter, the other Caller), and the two village centers
+    // units' (the Fighter, the other Summoner), and the two village centers
     // ((5, 5) and (8, 5)): 7 columns by 6 rows (y 0 to 5), less five.
     const offered = offeredV7(state, "TENTACLE").filter(
       (command) =>
         command.kind === "TENTACLE" && command.unitId === idAt(state, CALLER),
     );
     expect(offered).toHaveLength(7 * 6 - 5);
-    // One Tentacle per Caller: the other Caller may still call one.
+    // One Tentacle per Summoner: the other Summoner may still call one.
     const one = playV7(state, tentacleAt(state, at(4, 4))).state;
     const next = toCultTurn(one).state;
     expect(reason(next, at(6, 3))).toEqual({
@@ -1369,7 +1287,7 @@ describe("Tentacle and Grab (section 9.3)", () => {
           grabbedUnitId: null,
         },
       ]);
-      // One Tentacle per Caller, while it lasts.
+      // One Tentacle per Summoner, while it lasts.
       expect(offeredV7(current, "TENTACLE")).toEqual([]);
     }
     const last = toCultTurn(current);
@@ -1404,7 +1322,7 @@ describe("Tentacle and Grab (section 9.3)", () => {
     expect(last.state.monsters).toEqual([]);
     expect(last.state.cult.tentacles).toEqual([]);
     expect(last.state.graves).toEqual([]);
-    // The Caller may call another now.
+    // The Summoner may call another now.
     expect(offeredV7(last.state, "TENTACLE").length).toBeGreaterThan(0);
     expect(unitOf(last.state, guard)?.hp).toBe(17);
   });
@@ -1575,7 +1493,7 @@ describe("the hand-play lab LAB_CULT_MID (built, not played)", () => {
   const setup = need(missionMatchSetupV7(lab));
 
   it("is a hidden mission on the Dwarf lab's land against its Human side", () => {
-    expect(lab).toMatchObject({ revision: 1, hidden: true, size: 16 });
+    expect(lab).toMatchObject({ revision: 2, hidden: true, size: 16 });
     expect(() => validateMissionDefinitionV7(lab)).not.toThrow();
     const dwarf = need(missionByIdV7("LAB_DWARF_MID"));
     const [cult, humans] = lab.seats;
@@ -1599,22 +1517,22 @@ describe("the hand-play lab LAB_CULT_MID (built, not played)", () => {
         roles.filter((item) => item === role).length,
       ]),
     );
+    // Revision 2 (`pulp_wars-mch9.31`): the Caller is a Hexer and the two
+    // Chosen an Idol Bearer and an Initiate.
     expect(tally).toEqual({
       CAPTAIN: 2,
-      KNIGHT: 1,
+      MARKSMAN: 3,
       CATAPULT: 1,
-      FIGHTER: 5,
+      FIGHTER: 6,
       RAIDER: 2,
-      MARKSMAN: 2,
-      SWORDSMAN: 2,
-      GUARD: 2,
+      GUARD: 3,
     });
     expect(
       roles.reduce(
         (sum, role) => sum + (effectiveRoleRuleV7(role, "CULT").cost ?? 0),
         0,
       ),
-    ).toBe(68);
+    ).toBe(53);
     expect(need(cult).favour).toBe(12);
     // Favour is a Cult seat's alone.
     expect(() =>
@@ -1623,6 +1541,46 @@ describe("the hand-play lab LAB_CULT_MID (built, not played)", () => {
         seats: [need(cult), { ...need(humans), favour: 3 }],
       }),
     ).toThrow();
+  });
+
+  // The Cult redesign (`pulp_wars-mch9.31`, RULESET_7_CULT_REDESIGN.md
+  // sections 4.2 and 6): no mission places a unit of a vacant role, and a
+  // Cult seat with no Favour of its own starts with every Cult seat's 2.
+  it("refuses a vacant role, and gives a Cult seat without Favour the starting 2", () => {
+    const [cult, humans] = lab.seats;
+    const free = at(2, 7);
+    for (const role of ["KNIGHT", "SWORDSMAN"] as const) {
+      expect(() =>
+        validateMissionDefinitionV7({
+          ...lab,
+          seats: [
+            { ...need(cult), units: [...need(cult).units, { role, at: free }] },
+            need(humans),
+          ],
+        }),
+      ).toThrow(/does not field/);
+      expect(() =>
+        validateMissionDefinitionV7({
+          ...lab,
+          reinforcements: [{ seat: 0, round: 3, units: [{ role, at: free }] }],
+        }),
+      ).toThrow(/vacant role/);
+    }
+    // The Human seat's Knights stand as before.
+    expect(need(humans).units.some((unit) => unit.role === "KNIGHT")).toBe(
+      true,
+    );
+    expect(() => validateMissionDefinitionV7(lab)).not.toThrow();
+    // Without its own `favour` the Cult seat starts with 2.
+    const { favour: _favour, ...plain } = need(cult);
+    void _favour;
+    const state = buildMissionStateV7(
+      { ...lab, seats: [plain, need(humans)] },
+      setup,
+    );
+    const seat = need(state.players[0]).id;
+    expect(favourOfV7(state, seat)).toBe(2);
+    expect(state.cult.favour).toEqual([{ playerId: seat, favour: 2 }]);
   });
 
   it("builds a valid opening state with Favour and no daemon", () => {
@@ -1656,8 +1614,8 @@ describe("the hand-play lab LAB_CULT_MID (built, not played)", () => {
     const offered = queryPlayerCommandsV7(viewForV7(state, cult));
     const kinds = new Set(offered.map((command) => command.kind));
     // The two Summoners stand side by side with 12 Favour: a Horror, a
-    // Sacrifice, and (with the Stargazer and the Caller beside them) the
-    // Great Summoning's circle is one Favour-step away.
+    // Sacrifice, a Tentacle, and (with the Stargazer and the Hexer beside
+    // them) the Great Summoning's circle is one Favour-step away.
     for (const kind of [
       "MOVE",
       "TRAIN",
@@ -1667,7 +1625,6 @@ describe("the hand-play lab LAB_CULT_MID (built, not played)", () => {
       "BEGIN_RITUAL",
       "BEHOLD",
       "TENTACLE",
-      "PICK_ME",
       "SWITCHEROO",
       "END_TURN",
     ] as const)
@@ -1689,12 +1646,7 @@ describe("the hand-play lab LAB_CULT_MID (built, not played)", () => {
       ),
     ).toBe(true);
     // Every offered command of a trick is accepted.
-    for (const kind of [
-      "SUMMON",
-      "TENTACLE",
-      "PICK_ME",
-      "SWITCHEROO",
-    ] as const) {
+    for (const kind of ["SUMMON", "TENTACLE", "SWITCHEROO"] as const) {
       const command = need(offered.find((entry) => entry.kind === kind));
       expect(applyCommandV7(state, cult, command).accepted, kind).toBe(true);
     }

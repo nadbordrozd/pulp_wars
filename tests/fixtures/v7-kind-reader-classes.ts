@@ -81,6 +81,9 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/engine/v7/ice-folk.ts::winterV7": "SEAT",
   "src/engine/v7/map.ts::createPlayers": "SEAT",
   "src/engine/v7/map.ts::createEntities": "SEAT",
+  // The Cult redesign (`pulp_wars-mch9.31`): a new match's starting Favour
+  // is a Cult seat's.
+  "src/engine/v7/map.ts::initialCultStateV7": "SEAT",
   "src/engine/v7/martian.ts::rechargeShieldsAtEndTurnV7": "SEAT",
   "src/engine/v7/movement.ts::publicMovementContextV7": "SEAT",
   "src/engine/v7/query.ts::queryTechnologyTreeV7": "SEAT",
@@ -616,8 +619,8 @@ export const KIND_READER_CLASSES_V7: Readonly<
   // The Cult's Favour (`pulp_wars-mch9.4`). Both reads are a seat's: the
   // Offering is a city action of the seat that owns the city (its own
   // tree's Harvest Rites), and a Favour entry belongs to a Cult seat. The
-  // unit rules (Sacrifice, Seize, Martyr, the robed cultists) read the
-  // unit's kind through `unitRoleRuleV7` and `unitRoleMechanicsV7`.
+  // unit rules (Sacrifice, Seize, the robed cultists) read the unit's kind
+  // through `unitRoleRuleV7` and `unitRoleMechanicsV7`.
   "src/engine/v7/cult.ts::offeringRejectionV7": "SEAT",
   "src/engine/v7/state-schema.ts::cultValid": "SEAT",
   // The Cult's rituals (`pulp_wars-mch9.7`): The Stars Are Right is a

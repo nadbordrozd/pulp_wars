@@ -1161,9 +1161,6 @@ export function corePresentationPlanV7(
     } else if (event.kind === "TENTACLE_SANK") {
       if (isExplored(event.at))
         pushCult({ effect: "TENTACLE", cells: [event.at] });
-    } else if (event.kind === "PICK_ME_SHOUTED") {
-      if (isExplored(event.at))
-        pushCult({ effect: "PICK_ME", cells: [event.at] });
     } else if (event.kind === "CITY_CAPTURED" && event.from === null) {
       // Pamphlets (section 8.7): an Initiate takes a village in the turn
       // it walked onto it: its leaflets flutter up.

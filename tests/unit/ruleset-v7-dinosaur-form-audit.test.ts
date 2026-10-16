@@ -614,12 +614,13 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // its chanters are land-form robed cultists (`isRobedCultistV7`), and a
     // star hits every form in its area by design.
     "src/engine/v7/cult-rituals.ts": 1,
-    // The Cult's tricks (`pulp_wars-mch9.8`): Ribbit, Switcheroo, Pick Me!,
-    // and the Tentacle need their unit in land form (an embarked one is
-    // refused `EMBARKED`; an Egg never reaches them). A hex and a swap take
-    // only a land-form target (`trickTakesV7`: an Egg, an embarked unit,
-    // and a boat are immune), and a Tentacle slaps every form by design.
-    "src/engine/v7/cult-hexes.ts": 4,
+    // The Cult's tricks (`pulp_wars-mch9.8`): Ribbit, Switcheroo, and the
+    // Tentacle need their unit in land form (an embarked one is refused
+    // `EMBARKED`; an Egg never reaches them). A hex and a swap take only a
+    // land-form target (`trickTakesV7`: an Egg, an embarked unit, and a
+    // boat are immune), and a Tentacle slaps every form by design. (Pick
+    // Me!'s test retired with the Chosen, `pulp_wars-mch9.31`.)
+    "src/engine/v7/cult-hexes.ts": 3,
     // Ice Folk Freeze (`pulp_wars-w49.37`): the Frost Giant's Cold Aura
     // freezes only when the Giant ends its Move in land form (an embarked
     // Giant, an Egg, and a boat freeze nothing), and a Stampede needs the

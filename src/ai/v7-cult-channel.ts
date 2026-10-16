@@ -1206,6 +1206,19 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
         reason: "SACRIFICE_DOOMED",
       });
       held.add(best.unitId);
+      // The Cult redesign's stop-gap (`pulp_wars-mch9.31`): the Tentacle is
+      // the Summoner's now (its step is the rituals', above), and a
+      // Summoner that keeps its action for this Sacrifice calls none. The
+      // redesign's AI bead orders the Summoner's steps.
+      const summonerId = best.unitId;
+      for (let index = steps.length - 1; index >= 0; index -= 1) {
+        const step = steps[index];
+        if (
+          step?.command.kind === "TENTACLE" &&
+          step.command.unitId === summonerId
+        )
+          steps.splice(index, 1);
+      }
     }
   }
 

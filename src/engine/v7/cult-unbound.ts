@@ -82,7 +82,7 @@ export function unitIsUnboundV7(
 /**
  * Sections 6.4 and 9.3: whether the unit is a wild unit of the Cult's
  * making: an Unbound daemon or (`pulp_wars-mch9.8`) a Tentacle. Its kills
- * pay nobody, and a Chosen it attacks and kills is no Martyr.
+ * pay nobody.
  */
 export function unitIsWildV7(
   unit: SummonedUnitRefV7 & { readonly ownerId: PlayerId },

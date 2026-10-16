@@ -1,9 +1,7 @@
 import {
   PROCLAIM_RANGE_V7,
   RIBBIT_RANGE_V7,
-  bindingTauntsV7,
   previewBeginRitualV7,
-  previewPickMeV7,
   previewProclaimV7,
   previewRibbitV7,
   previewRitualV7,
@@ -25,7 +23,6 @@ import {
   COWED_LABEL_V7,
   COWED_TOOLTIP_V7,
   CULT_TRICK_PICKS_V7,
-  PICK_ME_BOUND_LABEL_V7,
   PROCLAIM_TARGET_LABEL_V7,
   RIBBIT_TARGET_LABEL_V7,
   RITUAL_CONFIRM_HINT_V7,
@@ -63,9 +60,10 @@ import {
  * under its leader and its chanters, the rite's badge, its marked tile with
  * the countdown, a star's nine tiles with what each unit there takes, the
  * unit that decides a Great Summoning, the banner of a Cowed city, a hexed
- * unit drawn as a frog, a Tentacle's turns and the unit it holds, and a taunting
- * Chosen with a tether to each unit it binds. **While the unit is
- * selected:** whom an offered Pick Me! would bind. **While aimed:** the
+ * unit drawn as a frog, and a Tentacle's turns and the unit it holds.
+ * (Pick Me!'s taunts and tethers retired with the Chosen: the Cult
+ * redesign, `pulp_wars-mch9.31`; the taunt marker and tether stay in the
+ * canvas for the warden's Awestruck.) **While aimed:** the
  * mark of a rite (chosen first, begun when chosen again), the city of a
  * Proclaim, the unit of a Ribbit or a Switcheroo, and the tile of a
  * Tentacle.
@@ -155,8 +153,8 @@ const chebyshev = (left: CoordV7, right: CoordV7): number =>
 /**
  * The marks of rituals, hexes and tricks on every visible unit, added to
  * the channel's (`cultUnitMarkersV7`): a ritual's leader and chanters are
- * Candlelit, the leader wears the rite's badge, a frog its look, a taunting
- * Chosen its bubble, a Tentacle its turns, and the unit a Tentacle slaps
+ * Candlelit, the leader wears the rite's badge, a frog its look, a
+ * Tentacle its turns, and the unit a Tentacle slaps
  * next the daemons' eye (bead `pulp_wars-mch9.24`).
  */
 export function cultTrickUnitMarkersV7(
@@ -167,7 +165,6 @@ export function cultTrickUnitMarkersV7(
   if (
     tricks.rituals.length === 0 &&
     tricks.frogs.length === 0 &&
-    tricks.taunts.length === 0 &&
     tricks.tentacles.length === 0
   )
     return base;
@@ -188,7 +185,6 @@ export function cultTrickUnitMarkersV7(
     const frog = unit === undefined ? null : frogLookV7(view, unit);
     if (frog !== null) mark(unitId, { frog });
   }
-  for (const unitId of tricks.taunts) mark(unitId, { taunt: true });
   for (const entry of tricks.tentacles) {
     mark(entry.unitId, { sinks: entry.turnsLeft });
     // Section 9.3: in every neutral turn it slaps the weakest unit beside
@@ -251,8 +247,7 @@ function addSummoningForecast(
 
 /**
  * The entries every viewer sees whatever is selected: each ritual's rings,
- * mark, countdown and forecast, each Cowed city's banner, each Grab and
- * each taunt's tethers.
+ * mark, countdown and forecast, each Cowed city's banner, and each Grab.
  */
 export function addCultTrickEntriesV7(
   entries: BoardRenderPlanEntryV7[],
@@ -262,7 +257,6 @@ export function addCultTrickEntriesV7(
   if (
     tricks.rituals.length === 0 &&
     tricks.cowed.length === 0 &&
-    tricks.taunts.length === 0 &&
     tricks.tentacles.length === 0
   )
     return;
@@ -349,65 +343,6 @@ export function addCultTrickEntriesV7(
         label: CULT_LINK_LABEL_V7,
         cultLink: { kind: "GRAB" },
       });
-  }
-  if (tricks.taunts.length > 0)
-    for (const unit of view.units)
-      for (const chosen of bindingTauntsV7(view, view.units, unit))
-        entries.push({
-          key: `cult-taunt:${unit.id}:${chosen.id}`,
-          kind: "LINK",
-          layer: 6,
-          at: unit.at,
-          linkTo: chosen.at,
-          label: CULT_LINK_LABEL_V7,
-          cultLink: { kind: "TAUNT", preview: false },
-        });
-}
-
-/**
- * Previews of the selected unit with nothing aimed: the enemies an offered
- * Pick Me! would bind, each labelled and tethered to the Chosen (marked,
- * not picked: the shout has no target).
- */
-export function addCultTrickPreviewsV7(
-  entries: BoardRenderPlanEntryV7[],
-  view: PlayerViewV7,
-  commands: readonly CommandV7[],
-  selectedUnitId: number,
-): void {
-  if (
-    !commands.some(
-      (command) =>
-        command.kind === "PICK_ME" && command.unitId === selectedUnitId,
-    )
-  )
-    return;
-  const chosen = view.units.find((unit) => unit.id === selectedUnitId);
-  if (chosen === undefined) return;
-  const preview = previewPickMeV7(view, chosen.id);
-  if (preview === null) return;
-  for (const unitId of preview.boundUnitIds) {
-    const bound = view.units.find((unit) => unit.id === unitId);
-    if (bound === undefined) continue;
-    entries.push(
-      {
-        key: `cult-taunt-preview:${bound.id}`,
-        kind: "LINK",
-        layer: 7.5,
-        at: bound.at,
-        linkTo: chosen.at,
-        label: CULT_LINK_LABEL_V7,
-        cultLink: { kind: "TAUNT", preview: true },
-      },
-      {
-        key: `ability-target:PICK_ME:${bound.id}`,
-        kind: "ABILITY_TARGET",
-        layer: 7.5,
-        at: bound.at,
-        abilityStyle: "TAUNT",
-        label: PICK_ME_BOUND_LABEL_V7,
-      },
-    );
   }
 }
 

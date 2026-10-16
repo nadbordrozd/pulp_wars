@@ -16,8 +16,10 @@ import {
   canEnterTerrainV7,
   dockPopulationV7,
   effectiveRoleRuleV7,
+  factionFieldsRoleV7,
   factionHasFavourV7,
   factionTreeV7,
+  startingFavourV7,
   gravesEnabledV7,
   growthStageForKillsV7,
   isEggLaidRoleV7,
@@ -60,6 +62,7 @@ import {
   type RewardIdV7,
   type TerrainIdV7,
   type TileStateV7,
+  type UnitRoleIdV7,
   type UnitStateV7,
 } from "../types";
 import { missionDefinitionV7, missionSeatFactionsV7 } from "./index";
@@ -639,14 +642,16 @@ export function buildMissionStateV7(
     ninthUnit: emptyNinthUnitStateV7(),
     barricades: [],
     giants: emptyGiantsStateV7(),
-    // The Cultists (`pulp_wars-mch9.8`): a Cult seat's starting Favour.
+    // The Cultists (`pulp_wars-mch9.8`): a Cult seat's starting Favour,
+    // the seat's own or, without one, every Cult seat's (the Cult redesign,
+    // `pulp_wars-mch9.31`: 2).
     cult: {
       ...emptyCultStateV7(),
-      favour: mission.seats.flatMap((seat, index) =>
-        (seat.favour ?? 0) > 0
-          ? [{ playerId: playerId(index + 1), favour: seat.favour ?? 0 }]
-          : [],
-      ),
+      favour: mission.seats.flatMap((seat, index) => {
+        const favour =
+          seat.favour ?? startingFavourV7(setup.factions[index] as FactionIdV7);
+        return favour > 0 ? [{ playerId: playerId(index + 1), favour }] : [];
+      }),
     },
     pendingChoices: [],
     outcome: null,
@@ -795,6 +800,16 @@ export function validateMissionDefinitionV7(
     if (seat.units.length === 0) fail(`seat ${String(index)} has no unit`);
     if (seat.units.some((unit) => !UNIT_ROLE_IDS_V7.includes(unit.role)))
       fail(`seat ${String(index)} has an unknown unit role`);
+    // The Cult redesign (`pulp_wars-mch9.31`, section 4.2): no mission
+    // places a unit of a role its seat's faction does not field (the Cult's
+    // vacant `KNIGHT` and `SWORDSMAN`). Ships are the Ice Folk rule's, at
+    // build.
+    for (const unit of seat.units)
+      for (const faction of factions)
+        if (missionPlacesVacantRoleV7(faction, unit.role))
+          fail(
+            `seat ${String(index)} places a ${unit.role}, a role ${faction} does not field`,
+          );
     if (!Number.isSafeInteger(seat.reveal.radius) || seat.reveal.radius < 0)
       fail(`seat ${String(index)} has an invalid reveal radius`);
     for (const rect of seat.reveal.rects ?? [])
@@ -1108,13 +1123,35 @@ function validateMissionGoalsV7(
       wave.seat !== 0
     )
       fail("a reinforcement seat has no fixed faction");
+    const waveSeat = mission.seats[wave.seat];
     for (const unit of wave.units) {
       if (!UNIT_ROLE_IDS_V7.includes(unit.role))
         fail("a reinforcement has an unknown unit role");
+      // The Cult redesign: no reinforcement of a vacant role either.
+      if (
+        waveSeat !== undefined &&
+        missionSeatFactionsV7(waveSeat).some((faction) =>
+          missionPlacesVacantRoleV7(faction, unit.role),
+        )
+      )
+        fail(`a reinforcement brings a ${unit.role}, a vacant role`);
       if (!onBoard(size, unit.at))
         fail(`a reinforcement at ${coordText(unit.at)} is off the board`);
     }
   }
+}
+
+/**
+ * The Cult redesign (docs/product/RULESET_7_CULT_REDESIGN.md section 4.2,
+ * `pulp_wars-mch9.31`): whether a mission unit of `role` for a seat of
+ * `faction` is of a vacant role (one the faction does not field). A ship
+ * is left to the Ice Folk rule of the build.
+ */
+function missionPlacesVacantRoleV7(
+  faction: FactionIdV7,
+  role: UnitRoleIdV7,
+): boolean {
+  return !NAVAL_ROLES_V7.has(role) && !factionFieldsRoleV7(faction, role);
 }
 
 function bareBoard(mission: MissionDefinitionV7): BoardStateV7 {

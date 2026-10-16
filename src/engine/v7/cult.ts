@@ -20,7 +20,6 @@ import {
 import { isLivingUnitV7 } from "./afflictions";
 import type { CommandV7 } from "./commands";
 import { unitIsFrogV7, type TrickListsV7 } from "./cult-hexes";
-import { unitIsWildV7 } from "./cult-unbound";
 import type { DwarfReducerKitV7 } from "./dwarf-reducer";
 import { arePlayersHostileV7, isCityBesiegedV7 } from "./economy";
 import type { DomainEventV7, FavourSourceV7 } from "./events";
@@ -39,14 +38,13 @@ import {
   type UnitRoleIdV7,
   type UnitStateV7,
 } from "./types";
-import { allOwnedUnitsV7 } from "./units";
 
 /**
  * The Cultists of the Ancient Ones (docs/product/RULESET_7_CULTISTS.md;
  * `pulp_wars-mch9.4`, the second Cult engine bead): Favour, the faction's
  * one economic mechanic (section 3), and what feeds it so far: the
  * Summoner's Sacrifice and Seize (sections 5.1 and 5.2), a city's Offering
- * (section 5.3), the Chosen's Martyr (section 8.2), and a bound daemon's
+ * (section 5.3), and a bound daemon's
  * kills (section 8.3, `pulp_wars-mch9.6`). Summoning a Horror spends it
  * (`pulp_wars-mch9.5`, src/engine/v7/cult-channel.ts), and so does the
  * Great Summoning, whose consumption is a source too (`pulp_wars-mch9.7`,
@@ -550,8 +548,7 @@ function rejectWith(
  * Section 5.1: `SACRIFICE`, a primary action of a Summoner that may follow
  * its Move. The victim is removed (`UNIT_SACRIFICED`, then `UNIT_DIED`
  * cause `SACRIFICED`): no kill credit, Grave, rising, death blast, Crumbs,
- * Plunder, or growth for anyone; its slot frees; a Chosen pays no Martyr
- * on top. The seat gains the victim's value in Favour. It is not a Loss in
+ * Plunder, or growth for anyone; its slot frees. The seat gains the victim's value in Favour. It is not a Loss in
  * the Score (like Disband) and ends a flawless game.
  */
 export function applySacrificeV7(
@@ -795,114 +792,6 @@ export function applyOfferingV7(
   } catch (cause) {
     return kit.arithmeticFailure(original, cause);
   }
-}
-
-// -------------------------------------------------------------- Martyr ---
-
-/**
- * Section 8.2, Martyr: "When a Chosen dies, the Ancient Ones pay 6 Favour."
- * Folds the deaths of a command (or a Start Turn) into Favour: every
- * `UNIT_DIED` of a unit that, before the command, had the `MARTYR` ability
- * under its kind and belonged to a seat still in the match afterwards pays
- * that seat the role's `martyrFavour`, with a `FAVOUR_GAINED` (source
- * `MARTYR`) right after the death. It reads the events, so every way a unit
- * dies is covered by one rule (an attack, a retaliation, a splash, a blast,
- * Plague, a Wail, a bomb, a crush, a digest, and whatever comes later).
- *
- * No Martyr for: a Sacrifice (it pays the unit's value anyway; a Seizure by
- * another Cult seat is a death and pays), a removal (`ELIMINATION`,
- * `BRAIN_LOST`: the seat is out, or the unit was not a Cult seat's), a
- * mind-controlled Chosen (a controlled unit has no `MARTYR`: Favour needs a
- * Cult seat), and a unit that was not on the board, burrowed, or held
- * before the command. **No Martyr for an attack by a wild unit**
- * (`pulp_wars-mch9.6`; rule 4: the Ancient Ones do not reward a failure):
- * a Chosen that dies as the target (or in the splash) of an attack made by
- * an Unbound daemon or (`pulp_wars-mch9.8`) a Tentacle. The attacker is
- * wild when it was wild before the command, or a `DAEMON_UNBOUND` earlier
- * in the events let it loose (and no `DAEMON_BOUND` since took it back), or
- * a `TENTACLE_ROSE` earlier in the events called it up. A Chosen that attacks a wild unit and
- * dies of its retaliation is a Martyr like any other. **No Martyr for a
- * consumption** (`pulp_wars-mch9.7`, section 8.2): a Chosen the Great
- * Summoning consumed on its marked tile (`UNIT_DIED` cause `CONSUMED`). A
- * kill by the Giant Spider, a camp guard, or Bigfoot pays: they are no
- * failure of the Cult's, and so does a death under a star.
- *
- * Returns the state and events unchanged (the same `events` array) when no
- * Martyr was paid.
- */
-export function withMartyrFavourV7(
-  before: Pick<
-    GameStateV7,
-    "players" | "mindControlled" | "monsters" | "units" | "burrowed" | "giants"
-  >,
-  after: GameStateV7,
-  events: readonly DomainEventV7[],
-): { readonly state: GameStateV7; readonly events: readonly DomainEventV7[] } {
-  if (!events.some((event) => event.kind === "UNIT_DIED"))
-    return { state: after, events };
-  const facts = new Map<UnitId, UnitStateV7>();
-  // The wild units as the events go by, and the victims of their attacks.
-  const wild = new Set<UnitId>();
-  for (const unit of allOwnedUnitsV7(before)) {
-    facts.set(unit.id, unit);
-    if (unitIsWildV7(unit)) wild.add(unit.id);
-  }
-  for (const entry of before.giants.swallowed)
-    facts.set(entry.unit.id, entry.unit);
-  const active = new Set(
-    after.players
-      .filter((player) => player.status === "ACTIVE")
-      .map((player) => player.id),
-  );
-  const sacrificed = new Set<UnitId>();
-  const wildVictims = new Set<UnitId>();
-  let cult = after.cult;
-  const out: DomainEventV7[] = [];
-  let paid = false;
-  for (const event of events) {
-    out.push(event);
-    if (event.kind === "UNIT_SACRIFICED") sacrificed.add(event.victimUnitId);
-    else if (event.kind === "DAEMON_UNBOUND") wild.add(event.unitId);
-    else if (event.kind === "TENTACLE_ROSE") wild.add(event.tentacleUnitId);
-    else if (event.kind === "DAEMON_BOUND") wild.delete(event.unitId);
-    else if (
-      event.kind === "COMBAT_RESOLVED" &&
-      wild.has(event.preview.attackerId)
-    ) {
-      if (event.preview.defenderDies)
-        wildVictims.add(event.preview.targetUnitId);
-      for (const entry of event.preview.splash)
-        if (entry.dies) wildVictims.add(entry.unitId);
-    }
-    if (
-      event.kind !== "UNIT_DIED" ||
-      event.cause === "ELIMINATION" ||
-      event.cause === "BRAIN_LOST" ||
-      event.cause === "CONSUMED" ||
-      // Siege rules (`pulp_wars-0pgd`, 7r80): nor for a Chosen a reward
-      // unit pushed off a center with nowhere to go (a removal).
-      event.cause === "DISPLACED" ||
-      sacrificed.has(event.unitId) ||
-      wildVictims.has(event.unitId)
-    )
-      continue;
-    const unit = facts.get(event.unitId);
-    if (
-      unit === undefined ||
-      isNeutralOwnerV7(unit.ownerId) ||
-      !active.has(unit.ownerId) ||
-      !unitRoleRuleV7(before, unit).abilities.includes("MARTYR")
-    )
-      continue;
-    const amount = unitRoleMechanicsV7(before, unit).martyrFavour;
-    if (amount <= 0) continue;
-    cult = withFavourGainedV7(cult, unit.ownerId, amount);
-    out.push(favourGainedEventV7(cult, unit.ownerId, "MARTYR", amount));
-    paid = true;
-  }
-  return paid
-    ? { state: { ...after, cult }, events: out }
-    : { state: after, events };
 }
 
 function visibleTo(state: GameStateV7, viewerId: PlayerId, unit: UnitStateV7) {

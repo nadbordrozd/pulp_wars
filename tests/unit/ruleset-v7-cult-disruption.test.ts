@@ -202,7 +202,7 @@ const PATH_CASES: readonly PathCaseV7[] = [
     cause: "HP_LOSS",
     build: () => {
       const state = rig("GOBLIN", [{ role: "MARKSMAN", at: at(2, 6) }], {
-        own: [{ seat: 0, role: "SWORDSMAN", at: at(4, 6) }],
+        own: [{ seat: 0, role: "GUARD", at: at(4, 6) }],
       });
       return {
         state,
@@ -291,7 +291,7 @@ const PATH_CASES: readonly PathCaseV7[] = [
     cause: "HP_LOSS",
     build: () => {
       const state = rig("CANDY", [{ role: "KNIGHT", at: at(5, 7) }], {
-        own: [{ seat: 0, role: "SWORDSMAN", at: at(4, 7) }],
+        own: [{ seat: 0, role: "GUARD", at: at(4, 7) }],
       });
       return {
         state,
@@ -306,7 +306,7 @@ const PATH_CASES: readonly PathCaseV7[] = [
     build: () => {
       const state = rig("CANDY", [{ role: "MARKSMAN", at: at(2, 6) }], {
         role: "FIGHTER",
-        own: [{ seat: 0, role: "SWORDSMAN", at: at(4, 6) }],
+        own: [{ seat: 0, role: "GUARD", at: at(4, 6) }],
       });
       return {
         state,
@@ -355,7 +355,7 @@ const PATH_CASES: readonly PathCaseV7[] = [
     cause: "STATUS",
     build: () => {
       const base = rig("UNDEAD", [{ role: "CATAPULT", at: at(1, 1) }], {
-        own: [{ seat: 0, role: "SWORDSMAN", at: at(4, 6) }],
+        own: [{ seat: 0, role: "GUARD", at: at(4, 6) }],
       });
       const state = checkedV7({
         ...base,

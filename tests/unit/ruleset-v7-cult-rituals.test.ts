@@ -1086,9 +1086,10 @@ describe("Star-fall (section 7.4)", () => {
         // A Guard on Field Defense: the star ignores fortification.
         { seat: 1, role: "GUARD", at: at(4, 6) },
         // A hurt Knight dies (it rests to 7 HP at the end of its own turn
-        // first); an own Initiate in the area is hit too.
+        // first); an own Idol Bearer in the area is hit too (an Initiate of
+        // 7 HP would die since the Cult redesign, `pulp_wars-mch9.31`).
         { seat: 1, role: "KNIGHT", at: at(6, 7), hp: 5 },
-        { seat: 0, role: "FIGHTER", at: at(6, 5) },
+        { seat: 0, role: "GUARD", at: at(6, 5) },
         // Just outside the area.
         { seat: 1, role: "FIGHTER", at: at(3, 6) },
       ]),
@@ -1170,7 +1171,7 @@ describe("Star-fall (section 7.4)", () => {
     expect(need(unitOf(round.state, leader)).kills).toBe(1);
     expect(unitAtV7(round.state, STAR).hp).toBe(12 - 7);
     expect(unitAtV7(round.state, at(4, 6)).hp).toBe(17 - 7);
-    expect(unitAtV7(round.state, at(6, 5)).hp).toBe(10 - 7);
+    expect(unitAtV7(round.state, at(6, 5)).hp).toBe(16 - 7);
     expect(unitAtV7(round.state, at(3, 6)).hp).toBe(12);
     // The Score: a Kill for the Cult, a Loss for the Knight's seat.
     const knightValue = unitFavourValueV7(state, unitAtV7(state, at(6, 7)));
@@ -1210,10 +1211,12 @@ describe("Star-fall (section 7.4)", () => {
     ]);
   });
 
-  it("pays a Martyr for an own Chosen it kills, and credits no kill for it", () => {
+  it("pays nothing for an own unit it kills, and credits no kill for it", () => {
+    // (A Chosen paid a Martyr here until the Cult redesign retired it,
+    // `pulp_wars-mch9.31`.)
     const state = cultFieldV7([
       ...circle,
-      { seat: 0, role: "SWORDSMAN", at: STAR, hp: 4 },
+      { seat: 0, role: "GUARD", at: STAR, hp: 4 },
     ]);
     const round = toCultTurn(playV7(state, starfall(state)).state);
     expect(round.events).toContainEqual({
@@ -1221,9 +1224,7 @@ describe("Star-fall (section 7.4)", () => {
       unitId: idAt(state, STAR),
       cause: "STARFALL",
     });
-    expect(
-      eventsOf(round.events, "FAVOUR_GAINED").map((event) => event.source),
-    ).toEqual(["MARTYR"]);
+    expect(eventsOf(round.events, "FAVOUR_GAINED")).toEqual([]);
     expect(need(unitOf(round.state, idAt(state, GAZER))).kills).toBe(0);
     expect(ledger(round.state, cultId(state)).killValue).toBe(0);
   });
@@ -1280,7 +1281,9 @@ describe("Star-fall (section 7.4)", () => {
       cultFieldV7([
         ...circle,
         { seat: 1, role: "FIGHTER", at: STAR, hp: 6 },
-        { seat: 0, role: "FIGHTER", at: at(6, 6) },
+        // An own Idol Bearer (an Initiate of 7 HP would die since the Cult
+        // redesign, `pulp_wars-mch9.31`).
+        { seat: 0, role: "GUARD", at: at(6, 6) },
       ]),
       at(4, 7),
     );
@@ -1468,9 +1471,10 @@ describe("the Great Summoning (section 7.3)", () => {
   });
 
   it("consumes an own unit on the mark for its value, like a Sacrifice", () => {
-    // A Chosen on the mark: its value is 6, and no Martyr is paid.
-    const state = lodgeField([{ seat: 0, role: "SWORDSMAN", at: MARK }]);
-    // The Chosen joined the circle (it stands beside the Summoner).
+    // An Idol Bearer on the mark: its value is 3. (A Chosen, worth 6 and
+    // no Martyr, until the Cult redesign retired it, `pulp_wars-mch9.31`.)
+    const state = lodgeField([{ seat: 0, role: "GUARD", at: MARK }]);
+    // The Idol Bearer joined the circle (it stands beside the Summoner).
     const begun = playV7(state, summoning(state)).state;
     const chosen = idAt(state, MARK);
     expect(begun.cult.rituals[0]?.chanterUnitIds).toContain(chosen);
@@ -1486,17 +1490,17 @@ describe("the Great Summoning (section 7.3)", () => {
         unitId: leader,
         victimUnitId: chosen,
         victimOwnerId: cultId(state),
-        role: "SWORDSMAN",
+        role: "GUARD",
         at: MARK,
-        favour: 6,
+        favour: 3,
       },
       { kind: "UNIT_DIED", unitId: chosen, cause: "CONSUMED" },
       {
         kind: "FAVOUR_GAINED",
         playerId: cultId(state),
         source: "CONSUMPTION",
-        amount: 6,
-        favour: 6,
+        amount: 3,
+        favour: 3,
       },
     ]);
     for (const event of round.events)
@@ -1505,7 +1509,7 @@ describe("the Great Summoning (section 7.3)", () => {
       eventsOf(round.events, "FAVOUR_GAINED").map((event) => event.source),
     ).toEqual(["CONSUMPTION"]);
     expect(kindsV7(round.events)).not.toContain("GRAVE_CREATED");
-    // The Herald stands where the Chosen stood, channelled by the rest.
+    // The Herald stands where the Idol Bearer stood, channelled by the rest.
     const herald = unitAtV7(round.state, MARK);
     expect(herald.summoned).toBe("HERALD");
     expect(
@@ -1774,7 +1778,9 @@ describe("the Great Summoning (section 7.3)", () => {
     const state = cultFieldV7([
       ...circle,
       { seat: 0, role: "CATAPULT", at: at(5, 6) },
-      { seat: 0, role: "FIGHTER", at: at(4, 6) },
+      // An Idol Bearer survives the first star (an Initiate of 7 HP would
+      // die of it since the Cult redesign, `pulp_wars-mch9.31`).
+      { seat: 0, role: "GUARD", at: at(4, 6) },
       { seat: 0, role: "FIGHTER", at: at(6, 6) },
     ]);
     const first = playV7(state, starfall(state, at(3, 6))).state;

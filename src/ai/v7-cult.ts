@@ -23,16 +23,19 @@ import type { PlayerViewV7, PublicUnitV7 } from "../engine/v7/view";
  * - **The gate.** `CULT` is in `ARMY_PLAY_FACTIONS_V7`, so a match with a
  *   Cult seat keeps every seat on the army rules.
  * - **Research order** (`CULT_RESEARCH_ROLES_V7`): the Summoner, the Hexer,
- *   the Idol Bearer, the Familiar, the Chosen, the Stargazer, the Caller.
+ *   the Idol Bearer, the Familiar, the Stargazer (the Chosen and the Caller
+ *   retired with the Cult redesign's roster, `pulp_wars-mch9.31`).
  *   Leadership is the second technology (no growth technology before it);
- *   Harvest Rites comes before the Chosen's chain; with a hostile Raider-
+ *   Harvest Rites comes before Engineering; with a hostile Raider-
  *   or Knight-role unit in sight before the seat has Hexers, Hexers go
  *   first (`cultHexersWantedV7`); The Stars Are Right is the first late
  *   technology once Favour has reached `CULT_STARS_FAVOUR_V7`.
- * - **The army** (`CULT_ARMY_SHARES_V7`): 45% line, 20% Hexers, 10% Idol
- *   Bearers (no more than cities), 10% Stargazers, 10% Callers; one
- *   Summoner for every six units (one to three); one Familiar for five
- *   units, two at most; one Chosen for every two Initiates.
+ * - **The army** (`CULT_ARMY_SHARES_V7`): 55% line, 20% Hexers, 10% Idol
+ *   Bearers (no more than cities), 10% Stargazers, no breakthrough unit
+ *   (the Caller retired, and its tenth went to the line); one Summoner for every six units (one to three);
+ *   one Familiar for five units, two at most. (The Chosen cap,
+ *   `cultChosenCappedV7`, never binds since the Chosen retired; the Cult
+ *   redesign's AI bead removes it.)
  * - **Bodies first.** The seat counts its robed cultists
  *   (`cultRobedV7`); short of them it trains before it researches and
  *   takes the Militia at level 2. It takes the Thing at every level from 5.
@@ -61,35 +64,38 @@ import type { PlayerViewV7, PublicUnitV7 } from "../engine/v7/view";
  * behind the Gathering most seats open with), the Hexer (Hunting and
  * Hexers: the shot from two tiles, and Ribbit), the Idol Bearer (Crafting
  * and Warding Circles: the garrison, and the unit a Knight's hit does not
- * kill), the Familiar (one comes free with Scouts), the Chosen (Engineering
- * and the Chosen: the heavy body that guards the circle), the Stargazer
- * (Forestry and Stargazers), the Caller (Raiding and Callers).
+ * kill), the Familiar (one comes free with Scouts), and the Stargazer
+ * (Forestry and Stargazers). The Cult redesign's roster
+ * (`pulp_wars-mch9.31`): the Chosen and the Caller retired (their `KNIGHT`
+ * and `SWORDSMAN` slots are vacant), so the list is the stop-gap of the
+ * old order without them; the Cult AI bead of the redesign sets the new
+ * order (Gibbering Masses, Tentacles).
  */
 export const CULT_RESEARCH_ROLES_V7: readonly UnitRoleIdV7[] = Object.freeze([
   "CAPTAIN",
   "MARKSMAN",
   "GUARD",
   "RAIDER",
-  "SWORDSMAN",
   "CATAPULT",
-  "KNIGHT",
 ] as const);
 
 /**
  * The shares of a Cult seat's land army, in percent (section 15.1; first
- * guesses, not tuned): 45% line (Initiates, and the Chosen once their
- * technology is owned: `cultChosenCappedV7`), 10% Idol Bearers
- * (`cultIdolBearerCappedV7`), 20% Hexers, 10% Stargazers, 10% Callers. The
- * Summoners and the Familiars are counted apart (below), which is why the
- * shares do not add up to 100. The same against fragile enemies: the Cult
- * has no unit that exists to reach a back row (a Caller has no Overrun).
+ * guesses, not tuned): 55% line (Initiates), 10% Idol Bearers
+ * (`cultIdolBearerCappedV7`), 20% Hexers, 10% Stargazers, and no
+ * breakthrough unit (until the Cult redesign's roster,
+ * `pulp_wars-mch9.31`, 45% line and 10% Callers: the Caller's slot is
+ * vacant, so its tenth went to the Initiates). The Summoners and the Familiars
+ * are counted apart (below), which is why the shares do not add up to 100.
+ * The same against fragile enemies: the Cult has no unit that exists to
+ * reach a back row.
  */
 export const CULT_ARMY_SHARES_V7 = Object.freeze({
-  LINE: 45,
+  LINE: 55,
   DEFENDER: 10,
   RANGED: 20,
   SIEGE: 10,
-  BREAKTHROUGH: 10,
+  BREAKTHROUGH: 0,
 });
 
 /** A Cult army has one Familiar per this many units, at most two. */
@@ -153,10 +159,10 @@ export function cultChosenCappedV7(chosen: number, initiates: number): boolean {
 
 /**
  * A robed cultist whose maximum HP is below this is a weak link of a kill
- * chain at any HP: a Human Knight's hit kills an Initiate (10 HP), a Hexer
- * (9), a Summoner (10), a Stargazer (10), and a Caller (12) at full HP and
- * rides on. The Chosen (15 HP, Defense 2) and the Idol Bearer (16 HP,
- * Defense 2.5) are not.
+ * chain at any HP: a Human Knight's hit kills an Initiate, a Hexer, a
+ * Summoner, and a Stargazer (7 HP each since the Cult redesign,
+ * `pulp_wars-mch9.31`) at full HP and rides on. The Idol Bearer (16 HP,
+ * Defense 2.5) is not.
  */
 export const CULT_STURDY_V7 = 15;
 
@@ -195,7 +201,7 @@ export function cultWeakLinkV7(
 
 /**
  * An escort: a robed cultist a Knight's hit does not kill at full HP (the
- * Chosen, the Idol Bearer). It stands beside the weak links and ends the
+ * Idol Bearer; the Chosen too until it retired). It stands beside the weak links and ends the
  * ride. (The Thing and the daemons are not robed: a daemon beside its own
  * cultists is the last thing a Cult seat wants.)
  */

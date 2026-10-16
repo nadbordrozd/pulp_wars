@@ -587,7 +587,6 @@ export interface PlayerViewV7 {
      */
     readonly frogs: readonly UnitId[];
     readonly hexCooldowns: readonly HexCooldownV7[];
-    readonly taunts: readonly UnitId[];
     readonly tentacles: readonly PublicTentacleV7[];
   };
   /** Score and modes (section 3.4): the score the viewer may know. */
@@ -1386,7 +1385,6 @@ export function viewForV7(
       hexCooldowns: state.cult.hexCooldowns.filter((entry) =>
         visibleUnitIds.has(entry.unitId),
       ),
-      taunts: state.cult.taunts.filter((unitId) => visibleUnitIds.has(unitId)),
       tentacles: state.cult.tentacles
         .filter((entry) => visibleUnitIds.has(entry.unitId))
         .map((entry) => ({

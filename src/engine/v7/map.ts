@@ -7,6 +7,7 @@ import {
   RULESET_7,
   effectiveRoleRuleV7,
   factionTreeV7,
+  startingFavourV7,
 } from "../rules/ruleset-v7";
 import { placeTreasureChestsV6 } from "./treasure-placement";
 import { initialAchievementEntitlementsV7 } from "./achievements";
@@ -66,6 +67,7 @@ import {
   type CityStateV7,
   type CoordV7,
   type CuriosityV7,
+  type CultStateV7,
   type GameStateV7,
   type FactionIdV7,
   type MapTypeV7,
@@ -4069,7 +4071,7 @@ function initialMapStateFromV7(
     ninthUnit: emptyNinthUnitStateV7(),
     barricades: [],
     giants: emptyGiantsStateV7(),
-    cult: emptyCultStateV7(),
+    cult: initialCultStateV7(explored),
     pendingChoices: [],
     outcome: null,
   };
@@ -4152,7 +4154,7 @@ function showcaseInitialStateV7(
     ninthUnit: emptyNinthUnitStateV7(),
     barricades: [],
     giants: emptyGiantsStateV7(),
-    cult: emptyCultStateV7(),
+    cult: initialCultStateV7(entities.players),
     pendingChoices: [],
     outcome: null,
   };
@@ -4649,4 +4651,21 @@ function opportunityScore(tile: TileStateV7): number {
           : tile.resource === "FISH" || tile.resource === "PEARLS"
             ? 1
             : 0;
+}
+
+/**
+ * The Cult redesign (docs/product/RULESET_7_CULT_REDESIGN.md section 6,
+ * `pulp_wars-mch9.31`): the Cult state of a new match (or Showcase): every
+ * Cult seat starts with its starting Favour (2), every other list empty.
+ */
+function initialCultStateV7(
+  players: readonly Pick<PlayerStateV7, "id" | "faction">[],
+): CultStateV7 {
+  return {
+    ...emptyCultStateV7(),
+    favour: players.flatMap((player) => {
+      const favour = startingFavourV7(player.faction);
+      return favour > 0 ? [{ playerId: player.id, favour }] : [];
+    }),
+  };
 }

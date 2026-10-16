@@ -91,7 +91,8 @@ describe("Sacrifice is picked on the board", () => {
         (button) => button.dataset.cultAbility,
       ),
       "one button per ability",
-    ).toEqual(["sacrifice", "seize", "summon"]);
+      // (And the Tentacle, the Summoner's since `pulp_wars-mch9.31`.)
+    ).toEqual(["sacrifice", "seize", "summon", "tentacle"]);
     expect(
       dock().querySelector(
         '[data-action^="command-sacrifice"], [data-action^="command-seize"]',

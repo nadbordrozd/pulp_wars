@@ -310,7 +310,6 @@ import {
   applySeizeV7,
   prunedCultV7,
   withDaemonKillFavourV7,
-  withMartyrFavourV7,
 } from "./cult";
 import {
   applyAnchorV7,
@@ -347,7 +346,6 @@ import {
   unitIsTentacleV7,
 } from "./cult-hexes";
 import {
-  applyPickMeV7,
   applyRibbitV7,
   applySwitcherooV7,
   applyTentacleV7,
@@ -551,21 +549,19 @@ export type RuleErrorCodeV7 =
   // `TILE`), and a Proclaim with no legal city (`CITY`, `RANGE`, `COWED`).
   | "RITUAL_NOT_LEGAL"
   | "PROCLAIM_NOT_LEGAL"
-  // The Cultists (`pulp_wars-mch9.8`, sections 9 and 8.2): an illegal
-  // Ribbit (`EMBARKED`, `COOLDOWN`, `TARGET`, `IMMUNE`, `FROG`, `RANGE`),
+  // The Cultists (`pulp_wars-mch9.8`, section 9): an illegal Ribbit
+  // (`EMBARKED`, `COOLDOWN`, `TARGET`, `IMMUNE`, `FROG`, `RANGE`),
   // Switcheroo (`EMBARKED`, `TECHNOLOGY`, `COOLDOWN`, `TARGET`, `IMMUNE`,
-  // `RANGE`, `CENTER`, `TILE`), Tentacle (`EMBARKED`, `EXISTS`, `TILE`), or
-  // Pick Me! (`EMBARKED`); a command of a frog other than Move,
-  // Disembark, Promote, Disband, or Wait (`UNIT_FROGGED { unitId }`); and
-  // an `ATTACK` by a unit beside a taunting Chosen at another target
-  // (`ATTACK_TAUNTED { unitId }`, the Chosen). A Move of a grabbed unit
-  // away from its Tentacle is `MOVEMENT_ILLEGAL` reason `GRABBED`.
+  // `RANGE`, `CENTER`, `TILE`), or Tentacle (`EMBARKED`, `TECHNOLOGY`,
+  // `EXISTS`, `TILE`); and a command of a frog other than Move, Disembark,
+  // Promote, Disband, or Wait (`UNIT_FROGGED { unitId }`). A Move of a
+  // grabbed unit away from its Tentacle is `MOVEMENT_ILLEGAL` reason
+  // `GRABBED`. (Pick Me!'s `PICK_ME_NOT_LEGAL` and `ATTACK_TAUNTED` retired
+  // with the Chosen: the Cult redesign, `pulp_wars-mch9.31`.)
   | "RIBBIT_NOT_LEGAL"
   | "SWITCHEROO_NOT_LEGAL"
   | "TENTACLE_NOT_LEGAL"
-  | "PICK_ME_NOT_LEGAL"
-  | "UNIT_FROGGED"
-  | "ATTACK_TAUNTED";
+  | "UNIT_FROGGED";
 export interface RuleErrorV7 {
   readonly code: RuleErrorCodeV7;
   readonly params: Readonly<Record<string, JsonValue>>;
@@ -915,21 +911,19 @@ function applyCommandUnscoredV7(
   // deaths left (Rise Again), folded from the events the same way.
   // The giants' signatures (section 6.2): first the events of the held
   // victims the command let go.
-  // The Cultists (RULESET_7_CULTISTS.md section 8.2): then the Favour the
-  // command's Chosen deaths paid (Martyr), folded from the events too.
+  // (The Cultists' Martyr, which folded the Favour of the command's Chosen
+  // deaths here, retired with the Chosen: the Cult redesign,
+  // `pulp_wars-mch9.31`.)
   // The Cultists (section 6.2): last, the strands, grips, and idols the
   // command broke (the one disruption rule, read from what happened to
   // each watched unit between the state before the command and after it).
   const core = withDisruptionsResultV7(
     stateInput,
     input,
-    withMartyrFavourResultV7(
+    withWightGravesResultV7(
       stateInput,
-      withWightGravesResultV7(
-        stateInput,
-        withCrumbsLeftResultV7(
-          withSwallowedOutcomesResultV7(stateInput, applied),
-        ),
+      withCrumbsLeftResultV7(
+        withSwallowedOutcomesResultV7(stateInput, applied),
       ),
     ),
   );
@@ -1398,23 +1392,6 @@ function withWightGravesResultV7(
   const state = withWightGravesV7(before, result.state, result.events);
   if (state === result.state) return result;
   const next = accepted(checked(state), result.events);
-  if (!next.accepted) throw new RangeError("INVALID_STATE");
-  return next;
-}
-
-/**
- * The Cultists (docs/product/RULESET_7_CULTISTS.md section 8.2): Martyr.
- * Folds the command's deaths of Chosen into their seats' Favour
- * (`withMartyrFavourV7`). Only `cult.favour` changes. Returns `result`
- * itself when the command paid no Martyr.
- */
-function withMartyrFavourResultV7(
-  before: GameStateV7,
-  result: Extract<ApplyCommandResultV7, { readonly accepted: true }>,
-): Extract<ApplyCommandResultV7, { readonly accepted: true }> {
-  const martyr = withMartyrFavourV7(before, result.state, result.events);
-  if (martyr.state === result.state) return result;
-  const next = accepted(checked(martyr.state), martyr.events);
   if (!next.accepted) throw new RangeError("INVALID_STATE");
   return next;
 }
@@ -1930,8 +1907,6 @@ function applyCommandCoreV7(
       command,
       resolveTentacleSlapV7,
     );
-  if (command.kind === "PICK_ME")
-    return applyPickMeV7(DWARF_KIT_V7, stateInput, state, actor, command);
   return rejected(stateInput, "INVALID_COMMAND");
 }
 
@@ -8058,9 +8033,8 @@ function applyEndTurn(
       nextPlayer,
       false,
       (reset) => {
-        // The Cultists (`pulp_wars-mch9.8`, sections 9.1, 9.2, and 8.2):
-        // the hex cooldowns count down and the seat's taunts end with the
-        // Mind Control cooldowns.
+        // The Cultists (`pulp_wars-mch9.8`, sections 9.1 and 9.2): the hex
+        // cooldowns count down with the Mind Control cooldowns.
         const recharge = rechargeShieldsV7(
           tricksStartTurnStepV7(
             mindControlCooldownStepV7(reset, nextPlayer.id),
@@ -9613,7 +9587,7 @@ function rewardDisplacementCellV7(
  * standing there (the garrison or a besieger) steps to a tile next to the
  * center, or dies when it has none (`rewardArrivalV7`; `UNIT_SPAWN_DISPLACED`
  * and, for a death, `UNIT_DIED` cause `DISPLACED`: no credit, Plunder,
- * Grave, Crumbs, blast, or Martyr). Tuning 6 (`7r49` to `7r79`) kept the
+ * Grave, Crumbs, or blast). Tuning 6 (`7r49` to `7r79`) kept the
  * garrison on the center and put the reward unit beside it.
  */
 function resolveCityCenterSpawnV7(
@@ -9987,7 +9961,7 @@ function checked(state: GameStateV7): GameStateV7 {
   // The Cultists: drop the Favour of a seat that left the game, and the
   // strands, grips, idols, ritual places, and Cowed entries whose units or
   // cities left the board; and (`pulp_wars-mch9.8`) the frogs, hex
-  // cooldowns, taunts, Tentacle entries, and grabs whose units left it.
+  // cooldowns, Tentacle entries, and grabs whose units left it.
   const result = parseGameStateV7(
     prunedCultV7(
       prunedTricksV7(

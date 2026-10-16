@@ -8,12 +8,10 @@ import {
 import type { CommandV7 } from "./commands";
 import type { CultReducerKitV7 } from "./cult";
 import {
-  pickMeRejectionV7,
   ribbitRejectionV7,
   switcherooRejectionV7,
   tentacleRejectionV7,
   unitIsTentacleV7,
-  type PickMeRejectionV7,
   type RibbitRejectionV7,
   type SwitcherooRejectionV7,
   type TentacleRejectionV7,
@@ -38,10 +36,11 @@ import {
 /**
  * The Cultists of the Ancient Ones, hexes and tricks (`pulp_wars-mch9.8`,
  * the sixth Cult engine bead; docs/product/RULESET_7_CULTISTS.md sections
- * 9.1 to 9.3 and 8.2): the reducer steps of Ribbit, Switcheroo, the
- * Tentacle, and Pick Me!, and what the turn does to their lists (a frog
- * ends with its owner's turn, a cooldown and a taunt count their owner's
- * Start Turns, a Tentacle sinks at the end of its third neutral turn). The
+ * 9.1 to 9.3): the reducer steps of Ribbit, Switcheroo, and the Tentacle,
+ * and what the turn does to their lists (a frog ends with its owner's turn,
+ * a cooldown counts its owner's Start Turns, a Tentacle sinks at the end of
+ * its third neutral turn). (Pick Me! retired with the Chosen: the Cult
+ * redesign, `pulp_wars-mch9.31`.) The
  * shared legality and the restrictions on other commands are in
  * src/engine/v7/cult-hexes.ts.
  */
@@ -84,28 +83,24 @@ export function withFrogsTurnEndedV7(
 }
 
 /**
- * Sections 9.1, 9.2, and 8.2: the tricks' step of the Start Turn of
- * `playerId`, with the Mind Control cooldowns: each hex cooldown of a unit
- * of that seat counts down and leaves the list at 0 (so a Hexer or a
- * Familiar skips its owner's turn after the cast), and the taunts of its
- * Chosen end. Returns `state` itself when nothing changes.
+ * Sections 9.1 and 9.2: the tricks' step of the Start Turn of `playerId`,
+ * with the Mind Control cooldowns: each hex cooldown of a unit of that seat
+ * counts down and leaves the list at 0 (so a Hexer or a Familiar skips its
+ * owner's turn after the cast). Returns `state` itself when nothing
+ * changes.
  */
 export function tricksStartTurnStepV7(
   state: GameStateV7,
   playerId: PlayerId,
 ): GameStateV7 {
-  const { hexCooldowns, taunts } = state.cult;
-  if (hexCooldowns.length === 0 && taunts.length === 0) return state;
+  const { hexCooldowns } = state.cult;
+  if (hexCooldowns.length === 0) return state;
   const own = new Set(
     state.units
       .filter((unit) => unit.ownerId === playerId)
       .map((unit) => unit.id),
   );
-  if (
-    !hexCooldowns.some((entry) => own.has(entry.unitId)) &&
-    !taunts.some((unitId) => own.has(unitId))
-  )
-    return state;
+  if (!hexCooldowns.some((entry) => own.has(entry.unitId))) return state;
   return {
     ...state,
     cult: {
@@ -117,14 +112,13 @@ export function tricksStartTurnStepV7(
             ? []
             : [{ unitId: entry.unitId, turnsRemaining: 1 }],
       ),
-      taunts: taunts.filter((unitId) => !own.has(unitId)),
     },
   };
 }
 
 /**
  * The structural half of the trick lists (every reducer output runs through
- * it before validation): a frog, a cooldown, and a taunt need their unit on
+ * it before validation): a frog and a cooldown need their unit on
  * the board; a Tentacle's entry needs its Tentacle, and its grab the held
  * unit on one of the eight tiles around it (a shove, a swap, or anything
  * else that takes the unit from its side ends the grab).
@@ -134,7 +128,6 @@ export function prunedTricksV7(state: GameStateV7): GameStateV7 {
   if (
     cult.frogs.length === 0 &&
     cult.hexCooldowns.length === 0 &&
-    cult.taunts.length === 0 &&
     cult.tentacles.length === 0
   )
     return state;
@@ -145,7 +138,6 @@ export function prunedTricksV7(state: GameStateV7): GameStateV7 {
   const hexCooldowns = cult.hexCooldowns.filter((entry) =>
     unitById.has(entry.unitId),
   );
-  const taunts = cult.taunts.filter((unitId) => unitById.has(unitId));
   let tentaclesChanged = false;
   const tentacles = cult.tentacles.flatMap((entry): TentacleV7[] => {
     const tentacle = unitById.get(entry.unitId);
@@ -162,17 +154,15 @@ export function prunedTricksV7(state: GameStateV7): GameStateV7 {
   });
   return frogs.length === cult.frogs.length &&
     hexCooldowns.length === cult.hexCooldowns.length &&
-    taunts.length === cult.taunts.length &&
     !tentaclesChanged
     ? state
-    : { ...state, cult: { ...cult, frogs, hexCooldowns, taunts, tentacles } };
+    : { ...state, cult: { ...cult, frogs, hexCooldowns, tentacles } };
 }
 
 // ----------------------------------------------------- Reducer steps ---
 
 type TargetCommandV7 = Extract<CommandV7, { kind: "RIBBIT" | "SWITCHEROO" }>;
 type TentacleCommandV7 = Extract<CommandV7, { kind: "TENTACLE" }>;
-type UnitCommandV7 = { readonly unitId: UnitId };
 
 /** Marks a unit as having used its primary action. */
 function withPrimaryUsed(unit: UnitStateV7): UnitStateV7 {
@@ -196,11 +186,7 @@ function rejectWith(
   kit: CultReducerKitV7,
   original: GameStateV7,
   unit: UnitStateV7,
-  rejection:
-    | RibbitRejectionV7
-    | SwitcherooRejectionV7
-    | TentacleRejectionV7
-    | PickMeRejectionV7,
+  rejection: RibbitRejectionV7 | SwitcherooRejectionV7 | TentacleRejectionV7,
 ): ApplyCommandResultV7 {
   switch (rejection.code) {
     case "UNIT_ROLE_INVALID":
@@ -372,49 +358,6 @@ export function applySwitcherooV7(
   }
 }
 
-/**
- * Section 8.2: `PICK_ME`, a primary action of a Chosen that may follow its
- * Move (`PICK_ME_SHOUTED`): until its owner's next Start Turn, a hostile
- * unit beside it may `ATTACK` only it.
- */
-export function applyPickMeV7(
-  kit: CultReducerKitV7,
-  original: GameStateV7,
-  state: GameStateV7,
-  actor: PlayerId,
-  command: UnitCommandV7,
-): ApplyCommandResultV7 {
-  if (state.commandIndex >= Number.MAX_SAFE_INTEGER)
-    return kit.rejected(original, "INTEGER_OVERFLOW");
-  const actorCheck = kit.validateUnitActor(state, actor, command.unitId);
-  if (!actorCheck.ok)
-    return kit.rejected(original, actorCheck.code, actorCheck.params);
-  const chosen = actorCheck.unit;
-  const rejection = pickMeRejectionV7(state, chosen);
-  if (rejection !== null) return rejectWith(kit, original, chosen, rejection);
-  return kit.accepted(
-    kit.checked({
-      ...state,
-      commandIndex: kit.nextSafe(state.commandIndex),
-      units: state.units.map((unit) =>
-        unit.id === chosen.id ? withPrimaryUsed(unit) : unit,
-      ),
-      cult: {
-        ...state.cult,
-        taunts: sortedIds([...state.cult.taunts, chosen.id]),
-      },
-    }),
-    [
-      {
-        kind: "PICK_ME_SHOUTED",
-        playerId: actor,
-        unitId: chosen.id,
-        at: { x: chosen.at.x, y: chosen.at.y },
-      },
-    ],
-  );
-}
-
 // ------------------------------------------------- Tentacle and Grab ---
 
 /**
@@ -553,8 +496,9 @@ export function withGrabAfterSlapV7(
 }
 
 /**
- * Section 9.3: `TENTACLE`, a primary action of a Caller that may follow its
- * Move: a Tentacle rises on `at` (`TENTACLE_ROSE`) and slaps at once
+ * Section 9.3: `TENTACLE`, a primary action of a Summoner (the retired
+ * Caller's before the Cult redesign, `pulp_wars-mch9.31`) with Tentacles
+ * that may follow its Move: a Tentacle rises on `at` (`TENTACLE_ROSE`) and slaps at once
  * (`slap`: the ordinary exchange, with retaliation, deaths, and Graves,
  * credited to nobody, and the Grab).
  */
@@ -575,6 +519,11 @@ export function applyTentacleV7(
   const rejection = tentacleRejectionV7(
     state,
     canonicalGiantTileFactsV7(state, actor),
+    unitCapabilitiesV7(
+      state,
+      caller,
+      kit.requirePlayer(state, actor).researchedTechs,
+    ).tentacles,
     caller,
     command.at,
   );

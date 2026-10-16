@@ -173,7 +173,9 @@ describe("Dwarf faction registration (sections 2 and 14)", () => {
     // ANCHOR, and BOO after SEIZE (78).
     // The Cult's rituals (`pulp_wars-mch9.7`) add BEGIN_RITUAL and PROCLAIM
     // after BOO (80).
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(84);
+    // The Cult redesign's roster (`pulp_wars-mch9.31`) removes PICK_ME
+    // (83).
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(83);
     const snap = COMMAND_KIND_ORDER_V7.indexOf("FREEZE");
     expect(COMMAND_KIND_ORDER_V7.slice(snap, snap + 7)).toEqual([
       "FREEZE", // the frozen sea (pulp_wars-5ti.3), after COLD_SNAP
@@ -209,7 +211,9 @@ describe("Dwarf faction registration (sections 2 and 14)", () => {
     // DAEMON_UNBOUND (141).
     // The Cult's rituals (`pulp_wars-mch9.7`) add seven kinds after
     // DAEMON_BOUND, from RITUAL_BEGUN to CITY_COWED (148).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(155);
+    // The Cult redesign's roster (`pulp_wars-mch9.31`) removes
+    // PICK_ME_SHOUTED (154).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(154);
     const after = (order: readonly string[], kind: string) =>
       order[order.indexOf(kind) + 1];
     for (const order of [

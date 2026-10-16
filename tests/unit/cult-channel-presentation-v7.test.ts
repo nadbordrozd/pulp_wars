@@ -1186,7 +1186,8 @@ describe("what each event plays", () => {
     ) as CultFeedbackEffectV7[];
     // The channel's six and the twelve of rituals, hexes and tricks (bead
     // pulp_wars-mch9.19).
-    expect(effects).toHaveLength(18);
+    // (Seventeen since Pick Me!'s shout retired, `pulp_wars-mch9.31`.)
+    expect(effects).toHaveLength(17);
     const state = cultChannelUiFixtureV7();
     const view = viewOf(state);
     for (const effect of effects) {

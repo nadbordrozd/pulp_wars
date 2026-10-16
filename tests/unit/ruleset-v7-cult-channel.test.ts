@@ -178,14 +178,19 @@ describe("the Cult's channel: the registration", () => {
       "MARKSMAN",
       "CAPTAIN",
       "CATAPULT",
-      "KNIGHT",
-      "SWORDSMAN",
     ] as const) {
       expect(abilities(role), role).toContain("CHANNEL");
       expect(roleMechanicsV7(role, "CULT").robed, role).toBe(true);
     }
-    // The Familiar, the Thing, and the ships never channel.
-    for (const role of ["RAIDER", "JUGGERNAUT", "PATROL_BOAT"] as const)
+    // The Familiar, the Thing, the ships, and (the Cult redesign,
+    // `pulp_wars-mch9.31`) the vacant slots never channel.
+    for (const role of [
+      "RAIDER",
+      "JUGGERNAUT",
+      "PATROL_BOAT",
+      "KNIGHT",
+      "SWORDSMAN",
+    ] as const)
       expect(abilities(role), role).not.toContain("CHANNEL");
     expect(abilities("CAPTAIN")).toContain("SUMMON");
     expect(abilities("GUARD")).toContain("BEHOLD");
@@ -1718,7 +1723,6 @@ describe("the Cult's channel: the public view and Candlelit (section 6.2)", () =
       cowed: [],
       frogs: [],
       hexCooldowns: [],
-      taunts: [],
       tentacles: [],
     });
     expect(

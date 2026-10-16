@@ -185,14 +185,14 @@ describe("the Industry reshuffle: identity", () => {
   it("was 7r56 after 7r55, with both save keys obsolete now", () => {
     // (Step two of the Undead pass, `pulp_wars-w49.24`, took 7r57, and
     // step two of the Martian pass, `pulp_wars-w49.25`, 7r58.)
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r84");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r84.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-29, -27)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r85");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r85.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-30, -28)).toEqual([
       "pulp-wars-poc-7r55",
       "pulp-wars-poc-7r56",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-29, -27)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-30, -28)).toEqual([
       "pulpWars.save.v7r55.current",
       "pulpWars.save.v7r56.current",
     ]);
@@ -282,9 +282,10 @@ describe("the Industry reshuffle: the tree of every faction", () => {
       expect(technologyDisplayNameV7("FORTIFICATION", faction), faction).toBe(
         expected.name,
       );
-      // The heavy line unit is on the other sub-branch.
+      // The heavy line unit is on the other sub-branch (the Cult's heavy
+      // slot is vacant since its redesign, `pulp_wars-mch9.31`).
       expect(effectiveRoleRuleV7("SWORDSMAN", faction).technology).toBe(
-        "METALLURGY",
+        faction === "CULT" ? null : "METALLURGY",
       );
       expect(
         factionTreeV7(faction).nodes.find((item) => item.id === "METALLURGY")

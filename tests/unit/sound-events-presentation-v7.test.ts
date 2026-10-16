@@ -823,7 +823,6 @@ describe("sounds of presentation steps", () => {
         SWITCHEROO: ["special.sparkle"],
         TENTACLE: ["cult.tentacle"],
         GRAB: ["special.boing"],
-        PICK_ME: ["support.rally"],
         PAMPHLETS: ["cult.pamphlets"],
       };
     for (const effect of Object.keys(expected) as CultFeedbackEffectV7[]) {

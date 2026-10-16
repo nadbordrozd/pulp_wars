@@ -277,7 +277,7 @@ export const CHAPTER_ONE_V7: CampaignChapterV7 = Object.freeze({
       name: "The Stars Are Right",
       format: "CAPTURE",
       briefing:
-        "The Lodge of the Unblinking Eye stands on the summit where the bell was cast, and tonight the stars are right. Every toll, every soldier a Horror takes and every Chosen who dies a martyr feeds the Great Summoning. At the twenty-fourth toll the door opens. Steele has her army, Grubnak his horde, and the dead still rise at Hollow Barrow. Take the Lodge first.",
+        "The Lodge of the Unblinking Eye stands on the summit where the bell was cast, and tonight the stars are right. Every toll, every soldier a Horror takes and every cultist offered up feeds the Great Summoning. At the twenty-fourth toll the door opens. Steele has her army, Grubnak his horde, and the dead still rise at Hollow Barrow. Take the Lodge first.",
       objective: "Capture the Lodge by turn 24.",
       hints: Object.freeze([
         "The Lodge's Favour is the countdown: at 20, the Herald.",

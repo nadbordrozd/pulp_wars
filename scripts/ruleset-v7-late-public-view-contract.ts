@@ -188,7 +188,10 @@ export const RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION = Object.freeze({
     // comment above (was e00a20…2d64).
     // The garrison of a watched center (`pulp_wars-mch9.27`): one Move
     // more, see `candidateCount` (was 5158ff…336d).
-    "9dd7942a25566c0ac2a68ceff2805fafef4613cdba787b85bc54bd1980918639",
+    // The Cult redesign's roster (`pulp_wars-mch9.31`) removes PICK_ME after
+    // TENTACLE, moving the later command kinds back by one (was 9dd794…8639);
+    // the revision-12-ordinal value is unchanged.
+    "ed9ce4dcbd4f5e2b60e8ca80fa3ff297953b6a0c2c841362702c0b0172e78c11",
   command: Object.freeze({
     kind: "RESEARCH",
     tech: "MARKSMANSHIP",
@@ -280,10 +283,10 @@ export function upgradeRetainedPublicViewV7(
   });
   return {
     ...retained,
-    rulesetId: "pulp-wars-poc-7r84",
+    rulesetId: "pulp-wars-poc-7r85",
     setup: {
       ...retained.setup,
-      rulesetId: "pulp-wars-poc-7r84",
+      rulesetId: "pulp-wars-poc-7r85",
       mapType: "DRY_LAND",
       mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
       curiosities: false,
@@ -425,7 +428,6 @@ export function upgradeRetainedPublicViewV7(
       rituals: [],
       frogs: [],
       hexCooldowns: [],
-      taunts: [],
       tentacles: [],
       cowed: [],
     },

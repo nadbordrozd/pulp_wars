@@ -732,7 +732,6 @@ describe("text-mode play harness", () => {
         for (const pattern of [
           /^u\d+\.summon\.u\d+\.\d+,\d+$/,
           /^u\d+\.tentacle\.\d+,\d+$/,
-          /^u\d+\.pickme$/,
           /^u\d+\.switch\.u\d+$/,
           /^u\d+\.starfall\.\d+,\d+$/,
         ])
@@ -2018,21 +2017,23 @@ describe("text-mode play harness", () => {
   });
 
   // The Cult's tricks (`pulp_wars-mch9.8`): the harness offers Ribbit,
-  // Switcheroo, the Tentacle, and Pick Me! with what each does, and prints
-  // a frog, a spent trick, a taunt, a Tentacle, and its Grab. A constructed
-  // position on the seat's own turn; no turn is ended.
-  it("prints the tricks, and offers Ribbit, Switcheroo, the Tentacle, and Pick Me!", () => {
+  // Switcheroo, and the Tentacle with what each does, and prints a frog, a
+  // spent trick, a Tentacle, and its Grab. A constructed position on the
+  // seat's own turn; no turn is ended. (Pick Me! retired with the Chosen,
+  // and the Tentacle is the Summoner's: the Cult redesign,
+  // `pulp_wars-mch9.31`.)
+  it("prints the tricks, and offers Ribbit, Switcheroo, and the Tentacle", () => {
     // A Hexer two tiles from a Knight; a Familiar two tiles from a
-    // Catapult; a Caller with a Fighter in reach of a Tentacle; a Chosen
-    // beside another Fighter.
+    // Catapult; a Summoner with a Fighter in reach of a Tentacle; an Idol
+    // Bearer beside another Fighter.
     const field = cultFieldV7([
       { seat: 0, role: "MARKSMAN", at: { x: 2, y: 2 } },
       { seat: 1, role: "KNIGHT", at: { x: 2, y: 4 } },
       { seat: 0, role: "RAIDER", at: { x: 5, y: 2 } },
       { seat: 1, role: "CATAPULT", at: { x: 5, y: 4 } },
-      { seat: 0, role: "KNIGHT", at: { x: 8, y: 2 } },
+      { seat: 0, role: "CAPTAIN", at: { x: 8, y: 2 } },
       { seat: 1, role: "FIGHTER", at: { x: 9, y: 4 } },
-      { seat: 0, role: "SWORDSMAN", at: { x: 7, y: 6 } },
+      { seat: 0, role: "GUARD", at: { x: 7, y: 6 } },
       { seat: 1, role: "FIGHTER", at: { x: 6, y: 6 } },
     ]);
     const session = path.join(root, "cult-tricks.json");
@@ -2062,20 +2063,22 @@ describe("text-mode play harness", () => {
     const ribbit = `u${at(2, 2)}.ribbit.u${at(2, 4)}`;
     const swap = `u${at(5, 2)}.switch.u${at(5, 4)}`;
     const tentacle = `u${at(8, 2)}.tentacle.8,4`;
-    const pickMe = `u${at(7, 6)}.pickme`;
     expect(offeredIds(session)).toEqual(
-      expect.arrayContaining([ribbit, swap, tentacle, pickMe]),
+      expect.arrayContaining([ribbit, swap, tentacle]),
+    );
+    expect(offeredIds(session).some((id) => id.endsWith(".pickme"))).toBe(
+      false,
     );
     // Every offered trick has an id of its own.
     const ids = queryPlayerCommandsV7(viewForV7(state, state.humanPlayerId))
       .filter((command) =>
-        ["RIBBIT", "SWITCHEROO", "TENTACLE", "PICK_ME"].includes(command.kind),
+        ["RIBBIT", "SWITCHEROO", "TENTACLE"].includes(command.kind),
       )
       .map(textPlayCommandIdV7);
     expect(new Set(ids).size).toBe(ids.length);
     for (const id of ids)
       expect(id).toMatch(
-        /^u\d+\.(ribbit\.u\d+|switch\.u\d+|tentacle\.\d+,\d+|pickme)$/,
+        /^u\d+\.(ribbit\.u\d+|switch\.u\d+|tentacle\.\d+,\d+)$/,
       );
     const options = ok("options", "--session", session, "--all");
     expect(options).toContain(
@@ -2087,9 +2090,6 @@ describe("text-mode play harness", () => {
     expect(options).toContain(
       "(the weakest unit beside it, FRIEND OR FOE; an ordinary attack, it may be hit back)",
     );
-    expect(options).toContain(
-      "PICK ME: until your next turn start, enemies standing next to this unit can ATTACK only it",
-    );
     // Ribbit: the Knight is a frog, and the Hexer's trick is spent.
     const frogged = ok("do", "--session", session, ribbit);
     expect(frogged).toMatch(/RIBBIT by .* of S0: .* @2,4 is a FROG/);
@@ -2097,10 +2097,7 @@ describe("text-mode play harness", () => {
     const risen = ok("do", "--session", session, tentacle);
     expect(risen).toMatch(/TENTACLE .* rose @8,4 hp 8/);
     expect(risen).toMatch(/GRABBED .* by the Tentacle .* @8,4/);
-    // Pick Me! and the swap.
-    expect(ok("do", "--session", session, pickMe)).toMatch(
-      /PICK ME! .* of S0 @7,6/,
-    );
+    // The swap.
     expect(ok("do", "--session", session, swap)).toMatch(
       /SWITCHEROO by .* of S0: it 5,2->5,4, .* 5,4->5,2/,
     );
@@ -2109,14 +2106,13 @@ describe("text-mode play harness", () => {
       "FROG until its owner's next turn ends (Defense 0.5, Move 1, no attack)",
     );
     expect(view).toContain("trick spent (back on the turn after its next)");
-    expect(view).toContain("PICK ME: enemies beside it can attack only it");
     expect(view).toMatch(/Tentacle \[TENTACLE\] @8,4/);
     expect(view).toContain(
       "WILD tentacle: slaps the weakest unit beside it after every round | sinks after 3 more rounds | holds u",
     );
     expect(view).toMatch(/GRABBED by u\d+: moves only to tiles next to it/);
     expect(view).not.toContain("[JUGGERNAUT]");
-    for (const id of [ribbit, swap, tentacle, pickMe])
+    for (const id of [ribbit, swap, tentacle])
       expect(offeredIds(session)).not.toContain(id);
   });
 
