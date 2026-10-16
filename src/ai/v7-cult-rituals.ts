@@ -152,6 +152,17 @@ export interface CultRitualStepV7 {
   readonly reason: CultRitualReasonV7;
 }
 
+/**
+ * A unit of a projected board (`CultRitualFactsV7.moved`): on `at`, and
+ * (the Cult redesign's A-R3, `pulp_wars-mch9.40`: the Herald's
+ * wound-then-kill) with `hp` Hit Points when given.
+ */
+export interface CultMovedUnitV7 {
+  readonly unit: PublicUnitV7;
+  readonly at: CoordV7;
+  readonly hp?: number;
+}
+
 /** What this part of the plan reads (given by `cultPlanV7`). */
 export interface CultRitualFactsV7 {
   readonly view: PlayerViewV7;
@@ -175,7 +186,7 @@ export interface CultRitualFactsV7 {
   readonly reach: (unitId: UnitId, at: CoordV7) => boolean;
   /** The view with each of these units on its tile. */
   readonly moved: (
-    moves: readonly { readonly unit: PublicUnitV7; readonly at: CoordV7 }[],
+    moves: readonly CultMovedUnitV7[],
     /** The visible units taken off the board too (A-R2: a Herald's victim). */
     gone?: readonly UnitId[],
   ) => PlayerViewV7;
@@ -625,6 +636,36 @@ export function cultRitualPlanV7(facts: CultRitualFactsV7): CultRitualPlanV7 {
       });
     };
     /**
+     * The Cult redesign's A-R3 (`pulp_wars-mch9.40`): its second hit on the
+     * target of `first` (a hit that did not kill) from `at`, the target and
+     * the Herald with the Hit Points the first hit leaves them; null unless
+     * it kills.
+     */
+    const woundThenKill = (at: CoordV7, first: HitV7): HitV7 | null => {
+      const projected = facts.moved([
+        { unit: herald, at, hp: Math.max(1, herald.hp - first.taken) },
+        {
+          unit: first.target,
+          at: first.target.at,
+          hp: first.target.hp - first.damage,
+        },
+      ]);
+      const preview = queryCombatPreviewV7(
+        projected,
+        herald.id,
+        first.target.id,
+      );
+      if (preview === null || !preview.defenderDies) return null;
+      return {
+        target: first.target,
+        kills: 1,
+        value: valueOf(first.target),
+        damage: preview.damageToDefender,
+        taken: preview.damageToAttacker,
+        advance: preview.advances ? first.target.at : null,
+      };
+    };
+    /**
      * Whether the pair from `at` may be made: no advance takes it off its
      * leash but one a second kill follows, and the tile where the Move and
      * the advances leave it is out of lethal reach (or it stands in such
@@ -684,6 +725,13 @@ export function cultRitualPlanV7(facts: CultRitualFactsV7): CultRitualPlanV7 {
         for (const secondHit of seconds) {
           if (secondHit.target.id === firstHit.target.id) continue;
           consider([firstHit, secondHit]);
+        }
+        // The Cult redesign's A-R3 (`pulp_wars-mch9.40`): the wound, then
+        // the kill of the same unit (a second hit that does not kill it is
+        // worth no more than a hit on another).
+        if (firstHit.advance === null && firstHit.kills === 0) {
+          const again = woundThenKill(at, firstHit);
+          if (again !== null) consider([firstHit, again]);
         }
       }
       return { hits, key };
@@ -873,114 +921,16 @@ export function cultRitualPlanV7(facts: CultRitualFactsV7): CultRitualPlanV7 {
   }
 
   // ------------------------------------------------- a Seizure's company
-  const seizers = summoners.filter(
-    (unit) =>
-      hasAbility(unit, "SEIZE") && primaryReady(unit) && !held.has(unit.id),
-  );
-  const holders = own.filter(
-    (unit) => cultRobedV7(view, unit) && !held.has(unit.id),
-  );
-  /** The tiles beside `at` the unit can take this turn (its own first). */
-  const besideTiles = (unit: PublicUnitV7, at: CoordV7): readonly CoordV7[] => {
-    if (gap(unit.at, at) === 1) return [unit.at];
-    if (facts.onOwnCenter(unit)) return [];
-    const tiles: CoordV7[] = [];
-    for (const move of facts.movesByUnit.get(unit.id) ?? []) {
-      const end = move.path.at(-1);
-      if (end !== undefined && gap(end, at) === 1 && facts.landTile(end))
-        tiles.push(end);
-    }
-    return tiles;
-  };
-  /**
-   * A Summoner and a holder that can both stand beside `at` this turn (on
-   * two tiles), the units of `except` aside: the company of a Seizure.
-   */
-  const companyAt = (
-    at: CoordV7,
-    except: readonly UnitId[],
-  ):
-    | {
-        readonly summoner: PublicUnitV7;
-        readonly stand: CoordV7;
-        readonly holder: PublicUnitV7;
-        readonly hold: CoordV7;
-      }
-    | undefined => {
-    for (const summoner of seizers) {
-      if (except.includes(summoner.id)) continue;
-      const stand = besideTiles(summoner, at)[0];
-      if (stand === undefined) continue;
-      for (const holder of holders) {
-        if (holder.id === summoner.id || except.includes(holder.id)) continue;
-        const hold = besideTiles(holder, at).find(
-          (tile) => !sameTile(tile, stand),
-        );
-        if (hold !== undefined) return { summoner, stand, holder, hold };
-      }
-    }
-    return undefined;
-  };
-  /**
-   * The Cult redesign's A-R2 (`pulp_wars-mch9.39`, section 12.3): the
-   * beating the own units can give `target` this turn with the attacks
-   * offered now, the units of `except`, the held units, and every Summoner
-   * (it keeps its action for the Seizure) aside. A caster strikes only on
-   * the terms of A-R1's "cultists do not brawl" (`cultCasterBrawlHeldV7` in
-   * `src/ai/v7.ts`): every blow on a frog (`frogged`: the target is one, or
-   * will be after the Ribbit), else one blow, after the others, that leaves
-   * it broken with the Seizure to follow (or kills it).
-   */
-  const beatingOn = (
-    target: PublicUnitV7,
-    frogged: boolean,
-    except: readonly UnitId[],
-  ): number => {
-    let plain = 0;
-    let caster = 0;
-    for (const [unitId, attacks] of attacksByUnit) {
-      const unit = unitsById.get(unitId);
-      if (
-        unit === undefined ||
-        except.includes(unitId) ||
-        held.has(unitId) ||
-        hasAbility(unit, "SEIZE") ||
-        !attacks.some((attack) => attack.targetUnitId === target.id)
-      )
-        continue;
-      const damage =
-        queryCombatPreviewV7(view, unitId, target.id)?.damageToDefender ?? 0;
-      if (!frogged && cultCasterV7(view, unit))
-        caster = Math.max(caster, damage);
-      else plain += damage;
-    }
-    return target.hp - plain - caster <= SEIZE_BROKEN_HP_V7
-      ? plain + caster
-      : plain;
-  };
-  /**
-   * The Summoners a Seizure this turn may need (A-R2, section 12.3: the
-   * Summoner's Tentacle is ordered against Seizure set-ups): for each
-   * visible hostile land unit that can be Seized now, or that the beating
-   * on offer leaves broken (a frog at half its Hit Points), the Summoner of
-   * a company that can stand beside it. None of them calls a Tentacle.
-   */
-  const seizing = new Set<UnitId>();
-  for (const target of enemies.filter(
-    // (A Seizure takes only a land-form victim.)
-    (unit) => unit.form === "LAND" && !isNeutralOwnerV7(unit.ownerId),
-  )) {
-    const frogged = frogs.has(target.id);
-    const seizable = (hp: number): boolean =>
-      hp <= SEIZE_BROKEN_HP_V7 || (frogged && hp * 2 <= target.maxHp);
-    if (
-      !seizable(target.hp) &&
-      !seizable(target.hp - beatingOn(target, frogged, []))
-    )
-      continue;
-    const company = companyAt(target.at, []);
-    if (company !== undefined) seizing.add(company.summoner.id);
-  }
+  const { companyAt, beatingOn, seizing } = cultSeizureToolsV7({
+    view,
+    commands,
+    own,
+    enemies,
+    held,
+    movesByUnit: facts.movesByUnit,
+    landTile: facts.landTile,
+    onOwnCenter: facts.onOwnCenter,
+  });
 
   // --------------------------------------------------------------- Ribbit
   // Section 15.4: first the enemy that can hit an own channeller or chanter
@@ -1660,4 +1610,167 @@ export function cultRitualPlanV7(facts: CultRitualFactsV7): CultRitualPlanV7 {
     mayEnd: (at) => !underMark(at),
     mayAttack,
   };
+}
+
+/** What `cultSeizureToolsV7` reads (given by the plan). */
+export interface CultSeizureFactsV7 {
+  readonly view: PlayerViewV7;
+  readonly commands: readonly CommandV7[];
+  /** The own living units in land form. */
+  readonly own: readonly PublicUnitV7[];
+  /** The visible hostile units of players (no Egg). */
+  readonly enemies: readonly PublicUnitV7[];
+  /** The units the plan holds (read when the tools are made). */
+  readonly held: ReadonlySet<UnitId>;
+  readonly movesByUnit: ReadonlyMap<UnitId, readonly MoveV7[]>;
+  readonly landTile: (at: CoordV7) => boolean;
+  readonly onOwnCenter: (unit: PublicUnitV7) => boolean;
+}
+
+/** A Summoner and a holder that can both stand beside a Seizure's victim. */
+export interface CultSeizureCompanyV7 {
+  readonly summoner: PublicUnitV7;
+  readonly stand: CoordV7;
+  readonly holder: PublicUnitV7;
+  readonly hold: CoordV7;
+}
+
+/**
+ * A Seizure's company (A-R2, `pulp_wars-mch9.39`, section 12.3; shared with
+ * the channel plan by the Cult redesign's A-R3, `pulp_wars-mch9.40`, so the
+ * trickle's channeller reads it too): who can stand beside a victim, the
+ * beating the own units can give a target this turn, and the Summoners a
+ * Seizure this turn may need (`seizing`).
+ */
+export function cultSeizureToolsV7(input: CultSeizureFactsV7): {
+  readonly companyAt: (
+    at: CoordV7,
+    except: readonly UnitId[],
+  ) => CultSeizureCompanyV7 | undefined;
+  readonly beatingOn: (
+    target: PublicUnitV7,
+    frogged: boolean,
+    except: readonly UnitId[],
+  ) => number;
+  readonly seizing: ReadonlySet<UnitId>;
+} {
+  const { view, own, enemies, held } = input;
+  const unitsById = new Map(view.units.map((unit) => [unit.id, unit]));
+  const hasAbility = (unit: PublicUnitV7, ability: string): boolean =>
+    (unitRoleRuleV7(view, unit).abilities as readonly string[]).includes(
+      ability,
+    );
+  const frogs = new Set(view.cult.frogs);
+  const attacksByUnit = new Map<UnitId, AttackV7[]>();
+  for (const command of input.commands)
+    if (command.kind === "ATTACK") {
+      const list = attacksByUnit.get(command.unitId);
+      if (list === undefined) attacksByUnit.set(command.unitId, [command]);
+      else list.push(command);
+    }
+  const summoners = own.filter((unit) => hasAbility(unit, "SUMMON"));
+  const facts = input;
+  const seizers = summoners.filter(
+    (unit) =>
+      hasAbility(unit, "SEIZE") && primaryReady(unit) && !held.has(unit.id),
+  );
+  const holders = own.filter(
+    (unit) => cultRobedV7(view, unit) && !held.has(unit.id),
+  );
+  /** The tiles beside `at` the unit can take this turn (its own first). */
+  const besideTiles = (unit: PublicUnitV7, at: CoordV7): readonly CoordV7[] => {
+    if (gap(unit.at, at) === 1) return [unit.at];
+    if (facts.onOwnCenter(unit)) return [];
+    const tiles: CoordV7[] = [];
+    for (const move of facts.movesByUnit.get(unit.id) ?? []) {
+      const end = move.path.at(-1);
+      if (end !== undefined && gap(end, at) === 1 && facts.landTile(end))
+        tiles.push(end);
+    }
+    return tiles;
+  };
+  /**
+   * A Summoner and a holder that can both stand beside `at` this turn (on
+   * two tiles), the units of `except` aside: the company of a Seizure.
+   */
+  const companyAt = (
+    at: CoordV7,
+    except: readonly UnitId[],
+  ): CultSeizureCompanyV7 | undefined => {
+    for (const summoner of seizers) {
+      if (except.includes(summoner.id)) continue;
+      const stand = besideTiles(summoner, at)[0];
+      if (stand === undefined) continue;
+      for (const holder of holders) {
+        if (holder.id === summoner.id || except.includes(holder.id)) continue;
+        const hold = besideTiles(holder, at).find(
+          (tile) => !sameTile(tile, stand),
+        );
+        if (hold !== undefined) return { summoner, stand, holder, hold };
+      }
+    }
+    return undefined;
+  };
+  /**
+   * The Cult redesign's A-R2 (`pulp_wars-mch9.39`, section 12.3): the
+   * beating the own units can give `target` this turn with the attacks
+   * offered now, the units of `except`, the held units, and every Summoner
+   * (it keeps its action for the Seizure) aside. A caster strikes only on
+   * the terms of A-R1's "cultists do not brawl" (`cultCasterBrawlHeldV7` in
+   * `src/ai/v7.ts`): every blow on a frog (`frogged`: the target is one, or
+   * will be after the Ribbit), else one blow, after the others, that leaves
+   * it broken with the Seizure to follow (or kills it).
+   */
+  const beatingOn = (
+    target: PublicUnitV7,
+    frogged: boolean,
+    except: readonly UnitId[],
+  ): number => {
+    let plain = 0;
+    let caster = 0;
+    for (const [unitId, attacks] of attacksByUnit) {
+      const unit = unitsById.get(unitId);
+      if (
+        unit === undefined ||
+        except.includes(unitId) ||
+        held.has(unitId) ||
+        hasAbility(unit, "SEIZE") ||
+        !attacks.some((attack) => attack.targetUnitId === target.id)
+      )
+        continue;
+      const damage =
+        queryCombatPreviewV7(view, unitId, target.id)?.damageToDefender ?? 0;
+      if (!frogged && cultCasterV7(view, unit))
+        caster = Math.max(caster, damage);
+      else plain += damage;
+    }
+    return target.hp - plain - caster <= SEIZE_BROKEN_HP_V7
+      ? plain + caster
+      : plain;
+  };
+  /**
+   * The Summoners a Seizure this turn may need (A-R2, section 12.3: the
+   * Summoner's Tentacle is ordered against Seizure set-ups): for each
+   * visible hostile land unit that can be Seized now, or that the beating
+   * on offer leaves broken (a frog at half its Hit Points), the Summoner of
+   * a company that can stand beside it. None of them calls a Tentacle.
+   */
+  const seizing = new Set<UnitId>();
+  for (const target of enemies.filter(
+    // (A Seizure takes only a land-form victim.)
+    (unit) => unit.form === "LAND" && !isNeutralOwnerV7(unit.ownerId),
+  )) {
+    const frogged = frogs.has(target.id);
+    const seizable = (hp: number): boolean =>
+      hp <= SEIZE_BROKEN_HP_V7 || (frogged && hp * 2 <= target.maxHp);
+    if (
+      !seizable(target.hp) &&
+      !seizable(target.hp - beatingOn(target, frogged, []))
+    )
+      continue;
+    const company = companyAt(target.at, []);
+    if (company !== undefined) seizing.add(company.summoner.id);
+  }
+
+  return { companyAt, beatingOn, seizing };
 }

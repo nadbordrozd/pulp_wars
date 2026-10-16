@@ -48,6 +48,7 @@ import {
   cultFieldV7,
   withFarmsV7,
   withFavourV7,
+  withFogV7,
   withFrogsV7,
   withHorrorV7,
   withStrandsV7,
@@ -430,10 +431,13 @@ describe("the Cult seat (A-R1): bodies first, and spare Coins become Favour", ()
     expect(gap(at(10, 1), GARRISON.at)).toBeGreaterThan(CULT_SUMMON_FRONT_V7);
     expect(wanted(field(2, true))).toBe(true);
     expect(wanted(field(3, true))).toBe(true);
-    // Sanity (the mutations): with 4 it summons already; with 1 one
-    // Initiate (2) does not reach 4; with no enemy near no summon is wanted.
+    // The Cult redesign's A-R3 (`pulp_wars-mch9.40`): from 0 or 1 one
+    // Initiate (2) reaches the Imp's 2.
+    expect(wanted(field(1, true))).toBe(true);
+    expect(wanted(field(0, true))).toBe(true);
+    // Sanity (the mutations): with 4 it summons already; with no enemy near
+    // no summon is wanted.
     expect(wanted(field(4, true))).toBe(false);
-    expect(wanted(field(1, true))).toBe(false);
     expect(wanted(field(2, false))).toBe(false);
   });
 
@@ -733,10 +737,18 @@ describe("the Cult seat (A-R1): the Herald's Hunger", () => {
         0,
         favour,
       );
-    expect(ofKind(policyTurn(build(5)).commands, "SUMMON")).toHaveLength(0);
+    // (A-R3, `pulp_wars-mch9.40`: with 5 it summons an Imp, whose 2 leave
+    // the Hunger's 2 too.)
+    const poor = policyTurn(build(5));
+    expect(
+      ofKind(poor.commands, "SUMMON").map((command) => command.daemon),
+    ).toEqual(["IMP"]);
+    expect(favourOf(poor.state)).toBeGreaterThanOrEqual(CULT_HUNGER_FAVOUR_V7);
     // Sanity (the mutation): with 6 the Horror's 4 leaves the Hunger's 2.
     const rich = policyTurn(build(6));
-    expect(ofKind(rich.commands, "SUMMON")).toHaveLength(1);
+    expect(
+      ofKind(rich.commands, "SUMMON").map((command) => command.daemon),
+    ).toEqual(["HORROR"]);
     expect(favourOf(rich.state)).toBe(2);
   });
 
@@ -777,11 +789,16 @@ describe("the Cult seat (A-R1): the Herald's Hunger", () => {
 describe("the Cult seat (A-R1): the cap", () => {
   it("summons with no enemy near from 26 Favour, before its gains are lost", () => {
     expect(CULT_FAVOUR_CAP_V7).toBe(30);
+    // (Fogged: the Human capital is within an Imp's front of 8, A-R3.)
     const far = (favour: number): GameStateV7 =>
-      favoured(
-        scene([own("CAPTAIN", 10, 0), own("FIGHTER", 10, 1)]),
+      withFogV7(
+        favoured(
+          scene([own("CAPTAIN", 10, 0), own("FIGHTER", 10, 1)]),
+          0,
+          favour,
+        ),
         0,
-        favour,
+        (where) => where.x >= 5,
       );
     expect(gap(at(10, 0), GARRISON.at)).toBeGreaterThan(
       CULT_SUMMON_FRONT_V7 + 1,

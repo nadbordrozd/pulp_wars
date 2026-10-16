@@ -413,9 +413,11 @@ describe("the Imp: Summon (section 7.1)", () => {
     );
   });
 
-  it("is summoned by no Cult AI plan yet (the summon choice is A-R3's)", () => {
-    // A Summoner alone with 3 Favour beside an enemy: an Imp is offered, a
-    // Horror is not, and the seat summons nothing.
+  it("is summoned by the Cult AI's plan (the summon choice, A-R3)", () => {
+    // A Summoner alone with 3 Favour near an enemy: an Imp is offered, a
+    // Horror is not (no helper), and the seat summons the Imp
+    // (`pulp_wars-mch9.40`; the choice itself is tested in
+    // ruleset-v7-cult-summons-ai.test.ts).
     const state = withFavourV7(
       cultFieldV7([own("CAPTAIN", SUMMONER), human("FIGHTER", at(3, 2))]),
       0,
@@ -423,9 +425,17 @@ describe("the Imp: Summon (section 7.1)", () => {
     );
     expect(offeredV7(state, "SUMMON").length).toBeGreaterThan(0);
     const decision = chooseNormalCommandV7(viewForV7(state, cultId(state)));
-    expect(decision.command?.kind).not.toBe("SUMMON");
     expect(
-      decision.candidates.some((entry) => entry.command.kind === "SUMMON"),
+      decision.candidates.some(
+        (entry) =>
+          entry.command.kind === "SUMMON" && entry.command.daemon === "IMP",
+      ),
+    ).toBe(true);
+    expect(
+      decision.candidates.some(
+        (entry) =>
+          entry.command.kind === "SUMMON" && entry.command.daemon !== "IMP",
+      ),
     ).toBe(false);
   });
 });

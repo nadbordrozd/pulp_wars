@@ -15985,11 +15985,14 @@ and tricks). In summary:
   [section 16](#16-normal-ai-summary) and in
   [Normal AI, the Cult](../architecture/NORMAL_AI.md#the-cult-seat-pulp_wars-mch99-to-mch912).
   It is a baseline made by judgement on hand-built positions: no match was
-  played to set a number in it. Until the redesign's summon choice
-  (`pulp_wars-mch9.40`) the Cult seat summons Horrors only, never an Imp
-  (`pulp_wars-mch9.36`) or a Gibbering Mass (`pulp_wars-mch9.37`); it
-  channels an Imp or a Mass it binds again like any daemon of Control 1,
-  and every seat's play against the Cult reads an Imp a Brood holds, and a
+  played to set a number in it. Since the redesign's summon choice
+  (`pulp_wars-mch9.40`) the Cult seat summons all three: a Gibbering Mass
+  beside a watched city or a threatened circle's standing idol, a Horror
+  at the front, an Imp beside an own Imp (its Brood) or with a body for its
+  strand, and the best it can at the cap; it channels one Imp of each
+  Brood, gives a Mass on its Doorstep no channeller, and plays Swarm
+  ([the redesign, section 12.7](RULESET_7_CULT_REDESIGN.md#127-as-built-a-r3-the-summons-pulp_wars-mch940)).
+  Every seat's play against the Cult reads an Imp a Brood holds, and a
   Mass on its Doorstep, as held. Drag is in the offered Moves every seat's
   play reads; the policy's own Drag rule is A-R4's (`pulp_wars-mch9.41`).
 - **Presentation** (`pulp_wars-mch9.17` to `mch9.19`, with the art of

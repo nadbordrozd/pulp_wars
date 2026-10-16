@@ -139,6 +139,10 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     // of a Ribbit, a Switcheroo, a Boo!, and the Herald's attacks are units
     // on the board (a star never reaches a burrowed unit: section 7.4).
     "src/ai/v7-cult-rituals.ts::cultRitualPlanV7": "BOARD",
+    // The Cult redesign's A-R3 (`pulp_wars-mch9.40`): a Seizure's company
+    // (the Summoner, the holder, the victim, and the units that beat it),
+    // shared by the rituals and the channel plan, are units on the board.
+    "src/ai/v7-cult-rituals.ts::cultSeizureToolsV7": "BOARD",
     // Against the Cult (`pulp_wars-mch9.12`): channellers, Idol Bearers,
     // chanters, daemons, taunting Chosen, frogs, the units a Tentacle
     // holds, and the units a rampage may go for are units on the board (a

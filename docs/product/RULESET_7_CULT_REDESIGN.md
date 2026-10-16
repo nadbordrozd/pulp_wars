@@ -1042,6 +1042,96 @@ A-R3: the trickle's channeller (A-R1, rule 6) does not yet read rule 5
 above, so a Summoner a beat-then-Seize needs may still be asked to channel
 when no other cultist can.
 
+### 12.7 As built: A-R3, the summons (`pulp_wars-mch9.40`)
+
+Built on hand-built states only (`tests/unit/ruleset-v7-cult-summons-ai.test.ts`
+and the revised `-channel-ai` and `-army-favour-ai` tests; each rule was
+seen to fail its test with the rule switched off). No rule changed and the
+ruleset identity did not move. No match was played. The code is
+`cultPlanV7` in `src/ai/v7-cult-channel.ts`, the Brood helpers and the
+upkeep in `src/ai/v7-cult.ts`, the Herald's scoring and the shared Seizure
+company (`cultSeizureToolsV7`) in `src/ai/v7-cult-rituals.ts`, and three
+hooks in `src/ai/v7.ts` (the garrison list, the advance check, the danger
+with victims gone). Decided here:
+
+1. **What to summon**, by class, then by tile (`CULT_SUMMON_CLASS_V7`;
+   one summon a turn per Summoner, its price always beyond the Hunger kept
+   and, while the seat saves, beyond the Great Summoning's):
+   1. a **Gibbering Mass** beside an own city center that a hostile land
+      unit outside its own land watches (within 6, the garrison rule) and
+      that no own Mass stands on or beside, on the tile nearest the enemy
+      (the summon's tile rule forbids the center itself; the Mass steps on
+      later as a garrison, rule 6);
+   2. a **Mass beside an own standing idol** with no Mass beside it that
+      shields a caster a visible enemy can attack (the circle's guard),
+      nearest the enemy;
+   3. a **Horror** with an enemy unit or center within 6 of the Summoner
+      and the bodies for every daemon's Control and spare plus its two;
+   4. **at the cap** (26) with no front asked: a Mass by any own city no
+      Mass guards, then a Horror, then a Mass beside any standing idol
+      with no Mass beside it (with no enemy near, a wall its Doorstep holds
+      comes before a fighter with nobody to fight);
+   5. an **Imp** with an enemy unit or center within **8**
+      (`CULT_IMP_FRONT_V7`): beside an own Imp that has fewer than two Imps
+      beside it first (its Brood will hold it; then it needs only the
+      bodies for every daemon's Control and the Summoner), else with a body
+      for its strand beyond every Control and spare; out of the visible
+      enemy's reach first, then nearest the enemy.
+      With 2 or 3 Favour and an enemy within 8 the seat summons an Imp (the
+      early game); from 4 with a helper a Horror. A Summoner a Seizure may
+      need this turn summons nothing and makes no spare Sacrifice.
+2. **Thresholds.** The Imp's 2 joins the Horror's 4 and the Great
+   Summoning's 18 in the spare Sacrifice (rule (b)) and in the Initiate
+   trained to feed (`cultFeedWantedV7`); a Summoner with a Tentacle that
+   slaps an enemy calls it instead of a Sacrifice made only for an Imp's 2.
+   The seat is short (Sacrifice, Offering) with the bodies for one more
+   Imp (was a Horror's two).
+3. **Brood planning** (`cultBroodLeadsV7`, checked against the engine's
+   `impBroodV7`): each decision the own Imps are grouped as the check
+   would hold them; the fewest Imps are channelled (an Imp with a strand
+   of its own leads; then the Imp that covers the most, nearest the
+   cultists). A lead wants one strand, and one to spare for a Brood of
+   three; the others want none (`cultUpkeepV7` and the bodies wanted
+   count the same). An Imp a Brood holds ends a Move beside a held lead
+   with room, or where a free cultist can follow it; a lead ends no Move
+   away from an Imp of its Brood that has moved already; an Imp's advance
+   after a kill may break its Brood. An Imp no cultist can hold goes back
+   beside a held lead whose Brood can take it (the RETURN step).
+4. **Doorstep.** A Mass on its Doorstep is given no channeller and wants
+   none; it ends a Move only on its Doorstep or where a channeller can
+   follow it; one that needs a strand goes back onto its Doorstep when it
+   cannot be held. An Idol Bearer that alone holds a forward Mass (no own
+   center beside it, no strand of its own) ends no Move away from it (it
+   may attack) and makes no warden's step away from it. A free Idol Bearer
+   whose idol stands steps beside a Mass that needs a strand (at the
+   channel's priority, reason `DOORSTEP`), so no cultist channels it.
+5. **Swarm.** The second Imp's Move goes beside a hostile land unit an own
+   Imp already stands beside (`CULT_SWARM_MOVE_PRIORITY_V7`, 3945), then
+   each Imp's attack that the preview says is `SWARMED`
+   (`CULT_SWARM_PRIORITY_V7`, 3940; kills first, then the target's
+   worth); never on a unit kept for a Seizure, and a kill's advance only
+   where the plan lets the Imp end it.
+6. **The garrison list** takes the Mass (a wall of 30 HP its Doorstep
+   holds on the center); every other daemon stays out of it.
+7. **The Summoner a Seizure may need** (A-R2's company, now shared as
+   `cultSeizureToolsV7`) is busy: no trickle strand, no spare strand (no
+   busy Summoner gives a spare strand), no Summon, no spare Sacrifice.
+8. **The Herald's wound-then-kill.** A first hit that kills nothing is
+   paired with a second hit on the same unit when the second kills it (the
+   target and the Herald at the Hit Points the first leaves them); the
+   pair is scored and vetted like any other (the leash, lethal reach).
+   Found here and fixed: the danger with victims gone (A-R2's lethal-reach
+   check) counted only the enemies that strike from where they stand; it
+   now counts their reach after a Move too.
+
+**Left for later.** Every seat against the Brood, the Doorstep, Swarm,
+and Drag is A-R4's (section 12.8, built alongside). C-R1: mission 10
+and the lab can now field Imps and Masses on the Cult side; their starting
+Favour and Gibbering Masses decide which. Not built: the Mass's tile
+"on the center when the Summoner can step off it first" (a summon never
+lands on a settlement center, section 7.1); the Swarm Move does not weigh
+the danger to the Imp it sends.
+
 ### 12.8 As built: A-R4, every seat against the new Cult (`pulp_wars-mch9.41`)
 
 (Numbered 12.8 so that A-R3's own notes, written at the same time, take

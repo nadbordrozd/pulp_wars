@@ -429,9 +429,12 @@ describe("the Gibbering Mass: Summon (section 7.1)", () => {
     expect(masses.some(browserSummonCommandV7)).toBe(false);
   });
 
-  it("is summoned by no Cult AI plan yet (the summon choice is A-R3's)", () => {
-    // A Summoner and a helper with 5 Favour beside an enemy: a Mass is
-    // offered, and no candidate of the seat names one.
+  it("is summoned by the Cult AI only to guard a city or a circle (A-R3)", () => {
+    // A Summoner and a helper with 5 Favour beside an enemy in the open: a
+    // Mass is offered, but no city or idol is beside its tiles, so no
+    // candidate of the seat names one (`pulp_wars-mch9.40`; the Mass for a
+    // watched city and for a circle is tested in
+    // ruleset-v7-cult-summons-ai.test.ts).
     const state = withFavourV7(
       cultFieldV7([
         own("CAPTAIN", SUMMONER),

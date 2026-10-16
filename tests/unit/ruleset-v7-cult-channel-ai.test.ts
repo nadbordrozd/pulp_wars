@@ -35,6 +35,7 @@ import {
   cultFieldV7,
   withFarmsV7,
   withFavourV7,
+  withFogV7,
   withHorrorV7,
   withStrandsV7,
   withUnboundV7,
@@ -47,6 +48,14 @@ import {
   type GoblinPieceV7,
 } from "../fixtures/v7-goblin-arena";
 import type { FieldOptionsV7 } from "../fixtures/v7-revision20";
+
+/**
+ * The Cult redesign's A-R3 (`pulp_wars-mch9.40`): the seat sees nothing
+ * west of x = 5 (the Human capital and its garrison hidden), so no enemy is
+ * within an Imp's front of 8 and no Imp is summoned.
+ */
+const fogged = (state: GameStateV7): GameStateV7 =>
+  withFogV7(state, 0, (where) => where.x >= 5);
 
 // The Cult seat's own commands (`pulp_wars-mch9.10`, bead A2 of
 // docs/product/RULESET_7_CULTISTS.md sections 15.2 to 15.4, as built in
@@ -666,7 +675,7 @@ describe("the Cult seat: summon only what it can hold (section 15.3)", () => {
     expect(strandsOn(turn.state, horror.at)).toBe(2);
   });
 
-  it("summons none with no enemy unit or center within six tiles of the Summoner", () => {
+  it("summons no Horror with no enemy unit or center within six tiles of the Summoner", () => {
     // Also after the one step the Summoner may take this turn.
     const far = withFavourV7(
       scene([own("CAPTAIN", 10, 0), own("FIGHTER", 10, 1)]),
@@ -678,10 +687,18 @@ describe("the Cult seat: summon only what it can hold (section 15.3)", () => {
     );
     expect(
       queryAiReadyCommandsV7(viewOf(far)).some(
-        (item) => item.command.kind === "SUMMON",
+        (item) =>
+          item.command.kind === "SUMMON" && item.command.daemon === "HORROR",
       ),
     ).toBe(true);
-    expect(ofKind(policyTurn(far).commands, "SUMMON")).toHaveLength(0);
+    // The Cult redesign's A-R3 (`pulp_wars-mch9.40`): the Human capital is
+    // within an Imp's front of 8, so an Imp comes instead.
+    const turn = policyTurn(far);
+    expect(
+      ofKind(turn.commands, "SUMMON").map((command) => command.daemon),
+    ).toEqual(["IMP"]);
+    // With nothing in sight, nothing.
+    expect(ofKind(policyTurn(fogged(far)).commands, "SUMMON")).toHaveLength(0);
   });
 
   it("summons a second Horror only with a spare cultist for both: four bodies, not three", () => {
@@ -702,13 +719,15 @@ describe("the Cult seat: summon only what it can hold (section 15.3)", () => {
         0,
         5,
       );
-    // Three bodies: two hold the Horror it has, and it summons no other.
-    // (The Cult redesign's A-R1, `pulp_wars-mch9.38`: the Summoner, with
-    // nothing better to do, channels it too, for the trickle.)
+    // Three bodies: two hold the Horror it has, and it summons no other
+    // Horror. (The Cult redesign's A-R3, `pulp_wars-mch9.40`: the third
+    // body holds an Imp, its one strand: the Summoner summons one.)
     const three = policyTurn(build(false));
-    expect(ofKind(three.commands, "SUMMON")).toHaveLength(0);
-    expect(strandsOn(three.state, at(5, 3))).toBe(3);
-    expect(favourOf(three.state)).toBe(5);
+    expect(
+      ofKind(three.commands, "SUMMON").map((command) => command.daemon),
+    ).toEqual(["IMP"]);
+    expect(strandsOn(three.state, at(5, 3))).toBe(2);
+    expect(favourOf(three.state)).toBe(3);
     // Four: the Initiates hold the first (the Summoner is kept for the
     // summoning), then the Summoner and the last Initiate summon.
     const four = policyTurn(build(true));
@@ -774,7 +793,9 @@ describe("the Cult seat: Sacrifice (section 15.4)", () => {
     );
 
   it("offers up a spare Initiate when its value brings Favour to a Horror's 4", () => {
-    const start = spare(3, 3);
+    // (A-R3, `pulp_wars-mch9.40`: with an enemy in sight it would summon an
+    // Imp with its 3 Favour first; fogged, it works toward the Horror.)
+    const start = fogged(spare(3, 3));
     const first = decides(start);
     expect(first?.kind).toBe("SACRIFICE");
     const victim =
@@ -787,12 +808,20 @@ describe("the Cult seat: Sacrifice (section 15.4)", () => {
     const turn = policyTurn(start);
     expect(ofKind(turn.commands, "SACRIFICE")).toHaveLength(1);
     expect(favourOf(turn.state)).toBe(5);
+    // With the enemy in sight, the Imp its 3 Favour buys comes first.
+    expect(decides(spare(3, 3))?.kind).toBe("SUMMON");
   });
 
-  it("offers none when the value does not reach 4, nor without bodies to spare", () => {
+  it("offers one up for an Imp's 2 (A-R3), none when it summons, nor without bodies to spare", () => {
+    // A-R3 (`pulp_wars-mch9.40`): from 1 Favour an Initiate (2) reaches the
+    // Imp's 2.
     expect(ofKind(policyTurn(spare(1, 3)).commands, "SACRIFICE")).toHaveLength(
-      0,
+      1,
     );
+    // From 4 it is short of nothing it summons with an enemy in sight.
+    expect(
+      ofKind(policyTurn(fogged(spare(4, 3))).commands, "SACRIFICE"),
+    ).toHaveLength(0);
     // The Summoner and one Initiate are the two a Horror needs.
     expect(ofKind(policyTurn(spare(3, 1)).commands, "SACRIFICE")).toHaveLength(
       0,
@@ -1010,7 +1039,8 @@ describe("the Cult seat: Offering (section 15.4)", () => {
     );
 
   it("gives up population for Favour in a city that can train nothing, short of 4 Favour", () => {
-    const start = build(1, home, noStars);
+    // (Fogged: A-R3's Imp would spend the Favour at once.)
+    const start = fogged(build(1, home, noStars));
     expect(offered(start)).toBe(true);
     const first = decides(start);
     expect(first?.kind).toBe("OFFERING");
@@ -1026,11 +1056,12 @@ describe("the Cult seat: Offering (section 15.4)", () => {
   });
 
   it("makes none with 5 Favour (but works on toward 20 with The Stars Are Right)", () => {
-    const rich = build(5, home, noStars);
+    // (Fogged: A-R3's Imp would spend the Favour first.)
+    const rich = fogged(build(5, home, noStars));
     expect(offered(rich)).toBe(true);
     expect(ofKind(policyTurn(rich).commands, "OFFERING")).toHaveLength(0);
     expect(
-      ofKind(policyTurn(build(5, home)).commands, "OFFERING"),
+      ofKind(policyTurn(fogged(build(5, home))).commands, "OFFERING"),
     ).toHaveLength(1);
   });
 

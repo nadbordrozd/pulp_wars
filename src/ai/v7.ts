@@ -4812,6 +4812,11 @@ function cultPlanForV7(context: PolicyContextV7): CultPlanV7 | null {
             ),
             unit,
             at,
+            // (The Cult redesign's A-R3, `pulp_wars-mch9.40`: with the
+            // context, so the enemies' reach after a Move counts, from the
+            // threatened tiles of this decision; without it only the units
+            // that strike from where they stand did.)
+            context,
           ),
     threatened: (at) => {
       if (threatened === undefined) {
@@ -4832,19 +4837,26 @@ function cultPlanForV7(context: PolicyContextV7): CultPlanV7 | null {
         view.units.flatMap((unit) => {
           if (gone.includes(unit.id)) return [];
           const move = moves.find((item) => item.unit.id === unit.id);
-          return move === undefined || same(move.at, unit.at)
+          // (The Cult redesign's A-R3, `pulp_wars-mch9.40`: a unit may
+          // have other Hit Points there, for the Herald's wound-then-kill.)
+          const hp = move?.hp ?? unit.hp;
+          return move === undefined ||
+            (same(move.at, unit.at) && hp === unit.hp)
             ? [unit]
-            : [
-                {
-                  ...unit,
-                  at: move.at,
-                  activation: {
-                    ...unit.activation,
-                    moved: true,
-                    movedPathLength: Math.max(1, distance(unit.at, move.at)),
+            : same(move.at, unit.at)
+              ? [{ ...unit, hp }]
+              : [
+                  {
+                    ...unit,
+                    at: move.at,
+                    hp,
+                    activation: {
+                      ...unit.activation,
+                      moved: true,
+                      movedPathLength: Math.max(1, distance(unit.at, move.at)),
+                    },
                   },
-                },
-              ];
+                ];
         }),
         moves.map((move) => move.unit.id),
       ),
@@ -6141,8 +6153,9 @@ const NO_GARRISON_PLAN_V7: ArmyGarrisonPlanV7 = {
  * (`ARMY_GARRISON_FILL_PRIORITY_V7`, `ARMY_SWAP_PRIORITY_V7`); the others
  * come just above the routine Moves (`ARMY_GARRISON_WATCH_PRIORITY_V7`),
  * after every attack, hunt, and siege job. Not a candidate for any step: a
- * unit on another own center, a summoned unit (a daemon), and a unit a Cult
- * seat's plan holds or keeps from that tile. A city its seat trains onto
+ * unit on another own center, a summoned unit (a daemon; but a Cult seat's
+ * Gibbering Mass steps on, `pulp_wars-mch9.40`), and a unit a Cult seat's
+ * plan holds or keeps from that tile. A city its seat trains onto
  * otherwise keeps the rules it had: the garrison steps aside and the
  * trained unit takes the center.
  */
@@ -6202,7 +6215,10 @@ function armyGarrisonPlanV7(context: PolicyContextV7): ArmyGarrisonPlanV7 {
     unit.ownerId === view.viewer.id &&
     unit.form === "LAND" &&
     unit.hp > 0 &&
-    unit.summoned === undefined &&
+    // The Cult redesign's A-R3 (`pulp_wars-mch9.40`, section 12.2): a
+    // Gibbering Mass joins the list (a wall of 30 HP that its Doorstep
+    // holds on the center); every other daemon stays out of it.
+    (unit.summoned === undefined || unit.summoned === "MASS") &&
     !context.lookup.citiesByKey.has(coordKey(unit.at)) &&
     (cultPlan === null ||
       (!cultPlan.held.has(unit.id) && cultPlan.mayEnd(unit.id, center)));
@@ -15824,7 +15840,9 @@ function scoreCommandWithContext(
         if (
           target !== undefined &&
           queryCombatPreviewV7(view, actor.id, target.id)?.advances === true &&
-          !cultPlan.mayEnd(actor.id, target.at)
+          // (The Cult redesign's A-R3, `pulp_wars-mch9.40`: an advance may
+          // break an Imp's Brood, which a Move may not.)
+          !cultPlan.mayAdvance(actor.id, target.at)
         )
           priority = -1;
       }

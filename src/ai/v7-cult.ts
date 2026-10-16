@@ -1,15 +1,19 @@
-import type { PlayerId } from "../engine/model/ids";
+import type { PlayerId, UnitId } from "../engine/model/ids";
 import {
   FAVOUR_CAP_V7,
   HERALD_FAVOUR_COST_V7,
   HERALD_HUNGER_FAVOUR_V7,
   HORROR_FAVOUR_COST_V7,
+  IMP_BROOD_SIZE_V7,
+  IMP_FAVOUR_COST_V7,
+  MASS_FAVOUR_COST_V7,
   effectiveRoleRuleV7,
   unitRoleMechanicsV7,
   unitRoleRuleV7,
 } from "../engine/rules/ruleset-v7";
 import {
   isNeutralOwnerV7,
+  type CoordV7,
   type TechnologyIdV7,
   type UnitRoleIdV7,
 } from "../engine/v7/types";
@@ -216,6 +220,15 @@ export const CULT_STARS_FAVOUR_V7 = 9;
 
 /** What a Horror costs (the engine's number: 4 since `pulp_wars-mch9.32`). */
 export const CULT_HORROR_FAVOUR_V7: number = HORROR_FAVOUR_COST_V7;
+/** What an Imp costs (the engine's number: 2, `pulp_wars-mch9.36`). */
+export const CULT_IMP_FAVOUR_V7: number = IMP_FAVOUR_COST_V7;
+/** What a Gibbering Mass costs (the engine's 5, `pulp_wars-mch9.37`). */
+export const CULT_MASS_FAVOUR_V7: number = MASS_FAVOUR_COST_V7;
+/**
+ * Brood (the engine's number, `pulp_wars-mch9.36`): one strand to an Imp
+ * holds this many other own Imps beside it at the check.
+ */
+export const CULT_BROOD_SIZE_V7: number = IMP_BROOD_SIZE_V7;
 /** What the Great Summoning costs (the engine's number: 18). */
 export const CULT_SUMMONING_FAVOUR_V7: number = HERALD_FAVOUR_COST_V7;
 /** What each bound Herald eats at its seat's check (the engine's 2). */
@@ -351,20 +364,146 @@ export function cultStarsDueV7(view: PlayerViewV7): boolean {
   return cultFavourV7(view) >= CULT_STARS_FAVOUR_V7;
 }
 
+/** An Imp as Brood reads it: its unit ID and its tile. */
+export interface CultBroodImpV7 {
+  readonly id: UnitId;
+  readonly at: CoordV7;
+}
+
+const broodGap = (left: CoordV7, right: CoordV7): number =>
+  Math.max(Math.abs(left.x - right.x), Math.abs(left.y - right.y));
+
+/** Lexicographic comparison, higher first. */
+function broodBetter(
+  left: readonly number[],
+  right: readonly number[],
+): boolean {
+  for (let index = 0; index < left.length; index += 1) {
+    const difference = (left[index] ?? 0) - (right[index] ?? 0);
+    if (difference !== 0) return difference > 0;
+  }
+  return false;
+}
+
+/**
+ * Brood as the engine's check takes it (the Cult redesign, section 7.3;
+ * `impBroodV7` in src/engine/v7/cult-channel.ts), for a chosen set of
+ * channelled Imps (`leads`, each held by a strand of its own): each Imp of
+ * `imps` mapped to the lead whose strand holds it (a lead to itself), or
+ * to null. The Imps are taken in unit-ID order; an Imp that is no lead is
+ * held by the lowest-ID lead on one of the eight tiles around it that has
+ * held fewer than `CULT_BROOD_SIZE_V7` others (a held Imp never lends on).
+ */
+export function cultBroodCoverV7(
+  imps: readonly CultBroodImpV7[],
+  leads: ReadonlySet<UnitId>,
+): ReadonlyMap<UnitId, UnitId | null> {
+  const cover = new Map<UnitId, UnitId | null>();
+  const lent = new Map<UnitId, number>();
+  const sorted = [...imps].sort((left, right) => left.id - right.id);
+  for (const imp of sorted) {
+    if (leads.has(imp.id)) {
+      cover.set(imp.id, imp.id);
+      continue;
+    }
+    const lender = sorted.find(
+      (other) =>
+        other.id !== imp.id &&
+        leads.has(other.id) &&
+        broodGap(other.at, imp.at) === 1 &&
+        (lent.get(other.id) ?? 0) < CULT_BROOD_SIZE_V7,
+    );
+    if (lender === undefined) {
+      cover.set(imp.id, null);
+      continue;
+    }
+    cover.set(imp.id, lender.id);
+    lent.set(lender.id, (lent.get(lender.id) ?? 0) + 1);
+  }
+  return cover;
+}
+
+/**
+ * Brood planning (the Cult redesign's A-R3, `pulp_wars-mch9.40`, section
+ * 12.2): the Imps to channel so that every Imp of `imps` is held, each
+ * mapped to its lead (a lead to itself), as the board stands. The Imps of
+ * `held` (a strand of their own holds them already) are leads first; then,
+ * while an Imp is not covered (`cultBroodCoverV7`), the Imp that covers the
+ * most becomes a lead: the higher `prefer` first (the channel plan prefers
+ * the Imp nearest its cultists), then the lowest unit ID. So a group of
+ * three Imps that stand together is one Imp of Control 1 to channel.
+ */
+export function cultBroodLeadsV7(
+  imps: readonly CultBroodImpV7[],
+  held: ReadonlySet<UnitId>,
+  prefer: (imp: CultBroodImpV7) => number = () => 0,
+): ReadonlyMap<UnitId, UnitId> {
+  const leads = new Set(
+    imps.filter((imp) => held.has(imp.id)).map((imp) => imp.id),
+  );
+  const covered = (set: ReadonlySet<UnitId>): number => {
+    let count = 0;
+    for (const lead of cultBroodCoverV7(imps, set).values())
+      if (lead !== null) count += 1;
+    return count;
+  };
+  for (;;) {
+    const cover = cultBroodCoverV7(imps, leads);
+    if ([...cover.values()].every((lead) => lead !== null)) break;
+    let best: CultBroodImpV7 | undefined;
+    let bestKey: readonly number[] = [];
+    for (const imp of imps) {
+      if (leads.has(imp.id)) continue;
+      const key = [covered(new Set([...leads, imp.id])), prefer(imp), -imp.id];
+      if (best === undefined || broodBetter(key, bestKey)) {
+        best = imp;
+        bestKey = key;
+      }
+    }
+    if (best === undefined) break;
+    leads.add(best.id);
+  }
+  const leadOf = new Map<UnitId, UnitId>();
+  for (const [impId, lead] of cultBroodCoverV7(imps, leads))
+    leadOf.set(impId, lead ?? impId);
+  return leadOf;
+}
+
 /**
  * The upkeep in bodies (section 15.2 step 1): every own bound daemon's
  * Control and one strand to spare, summed (the channel plan's
- * `wantedAll`).
+ * `wantedAll`). The Cult redesign's A-R3 (`pulp_wars-mch9.40`, section
+ * 12.2): the Imps by their Broods (`cultBroodLeadsV7`: one strand a Brood,
+ * and one to spare for a Brood of three), and nothing for a Gibbering Mass
+ * on its Doorstep.
  */
 export function cultUpkeepV7(view: PlayerViewV7): number {
   const cult = view.cult as PlayerViewV7["cult"] | undefined;
   if (cult === undefined) return 0;
   let upkeep = 0;
+  const imps: { readonly id: UnitId; readonly at: CoordV7 }[] = [];
+  const held = new Set<UnitId>();
+  const control = new Map<UnitId, number>();
   for (const entry of cult.daemons) {
     const unit = view.units.find((item) => item.id === entry.unitId);
-    if (unit?.ownerId === view.viewer.id && unit.form === "LAND")
+    const mine = unit?.ownerId === view.viewer.id && unit.form === "LAND";
+    if (unit === undefined || !mine) continue;
+    if (entry.role === "IMP") {
+      imps.push({ id: unit.id, at: unit.at });
+      control.set(unit.id, entry.control);
+      if (entry.strands >= entry.control) held.add(unit.id);
+    } else if (entry.role !== "MASS" || entry.doorstep !== true)
       upkeep += entry.control + 1;
   }
+  const leadOf = cultBroodLeadsV7(imps, held);
+  const followers = new Map<UnitId, number>();
+  for (const [impId, lead] of leadOf)
+    if (lead !== impId) followers.set(lead, (followers.get(lead) ?? 0) + 1);
+  for (const [impId, lead] of leadOf)
+    if (lead === impId)
+      upkeep +=
+        (control.get(impId) ?? 1) +
+        Number((followers.get(impId) ?? 0) >= CULT_BROOD_SIZE_V7);
   return upkeep;
 }
 
@@ -390,7 +529,10 @@ export function cultHungerV7(view: PlayerViewV7): number {
  * Summoner has a visible hostile unit or center within
  * `CULT_FEED_FRONT_V7`), Favour is short of the Horror's price beyond the
  * Hunger it keeps (or, with The Stars Are Right, of the Great Summoning's),
- * and the Sacrifice of one Initiate reaches that price.
+ * and the Sacrifice of one Initiate reaches that price. The Cult redesign's
+ * A-R3 (`pulp_wars-mch9.40`, section 12.2): the Imp's price is a threshold
+ * too (the opening of section 6: an Initiate Sacrificed makes the second
+ * Imp of a Brood).
  */
 export function cultFeedWantedV7(
   view: PlayerViewV7,
@@ -435,6 +577,7 @@ export function cultFeedWantedV7(
   const reaches = (price: number): boolean =>
     favour < price + hunger && favour + initiate >= price + hunger;
   return (
+    reaches(CULT_IMP_FAVOUR_V7) ||
     reaches(CULT_HORROR_FAVOUR_V7) ||
     (view.viewer.researchedTechs.includes("EXPLOSIVES") &&
       reaches(CULT_SUMMONING_FAVOUR_V7))

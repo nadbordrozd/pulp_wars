@@ -165,6 +165,29 @@ export function withHorrorV7(
   });
 }
 
+/**
+ * The Cult redesign's A-R3 (`pulp_wars-mch9.40`): the seat `seat` has
+ * explored only the tiles `keep` accepts (every unit and city elsewhere is
+ * hidden from it). On the 11 x 11 field every tile is within 8 of the other
+ * capital, an Imp's front: a test of a seat with no enemy in sight fogs the
+ * other side.
+ */
+export function withFogV7(
+  state: GameStateV7,
+  seat: number,
+  keep: (at: CoordV7) => boolean,
+): GameStateV7 {
+  const playerId = seatIdV7(state, seat);
+  return {
+    ...state,
+    players: state.players.map((player) =>
+      player.id === playerId
+        ? { ...player, explored: player.explored.filter(keep) }
+        : player,
+    ),
+  };
+}
+
 /** The unit on `daemon` is channelled by the cultist on each of `cultists`. */
 export function withStrandsV7(
   state: GameStateV7,

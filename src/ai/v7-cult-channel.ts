@@ -15,6 +15,7 @@ import {
   previewSacrificeV7,
   previewSeizeV7,
   previewWardenV7,
+  queryCombatPreviewV7,
 } from "../engine/v7/query";
 import { isNeutralOwnerV7, type CoordV7 } from "../engine/v7/types";
 import type { PlayerViewV7, PublicUnitV7 } from "../engine/v7/view";
@@ -23,13 +24,17 @@ import {
   ARMY_GARRISON_RADIUS_V7,
 } from "./v7-army";
 import {
+  CULT_BROOD_SIZE_V7,
   CULT_CAP_SPEND_FAVOUR_V7,
   CULT_FAVOUR_CAP_V7,
   CULT_HORROR_FAVOUR_V7,
   CULT_HUNGER_FAVOUR_V7,
+  CULT_IMP_FAVOUR_V7,
+  CULT_MASS_FAVOUR_V7,
   CULT_SUMMONING_FAVOUR_V7,
   cultBackRowV7,
   cultBodiesV7,
+  cultBroodLeadsV7,
   cultFavourV7,
   cultRobedV7,
   cultWardenV7,
@@ -37,6 +42,8 @@ import {
 import {
   cultRitualPlanV7,
   cultSavingV7,
+  cultSeizureToolsV7,
+  type CultMovedUnitV7,
   type CultRitualReasonV7,
 } from "./v7-cult-rituals";
 
@@ -49,7 +56,13 @@ import {
  * cap of 30 and the Herald's Hunger (the prices beyond the Hunger kept, a
  * Herald fed by a Sacrifice, the trickle, or an Offering, or let go), the
  * trickle's channeller (a Summoner with nothing better to do), and the
- * warden's placement in place of the Behold! step.
+ * warden's placement in place of the Behold! step. Revised by A-R3
+ * (`pulp_wars-mch9.40`, sections 12.2 and 12.3): what to summon (the Imp,
+ * the Horror, the Gibbering Mass), Brood planning (one channeller a
+ * Brood), Doorstep (no channeller for a Mass at home; an Idol Bearer that
+ * holds one stays by it, or steps beside one), Swarm, and the Summoner a
+ * Seizure may need kept from the trickle and the spare strands
+ * (`tests/unit/ruleset-v7-cult-summons-ai.test.ts`).
  *
  * The Normal AI chooses one command at a time and remembers nothing, so the
  * plan is a function of the public view and the commands the engine offers:
@@ -71,20 +84,25 @@ import {
  * 1. **Seize** (`CULT_SEIZE_PRIORITY_V7`): a Seizure that is offered, then
  *    the Move of a holder or of a Summoner that makes one legal this turn.
  * 2. **A daemon that cannot be held** (`CULT_RELEASE_PRIORITY_V7`): it goes
- *    back to its cultists if a Move brings it within their reach, else it is
+ *    back to its cultists if a Move brings it within their reach (A-R3: or
+ *    an Imp beside a held lead Imp, a Mass onto its Doorstep), else it is
  *    released toward the enemy, and the own units nearest to it step away.
  *    (A-R1: a Herald whose Hunger the seat cannot pay is released too.)
- * 3. **The daemons' ordinary play** (`CULT_DAEMON_PRIORITY_V7` added to the
+ * 3. **Swarm** (A-R3, `CULT_SWARM_MOVE_PRIORITY_V7` then
+ *    `CULT_SWARM_PRIORITY_V7`): the second Imp's Move beside a unit an own
+ *    Imp stands beside, then the Imps' unanswered attacks.
+ * 4. **The daemons' ordinary play** (`CULT_DAEMON_PRIORITY_V7` added to the
  *    ordinary priority): a daemon moves and attacks before its channellers
- *    are placed, and only onto a tile its channellers can follow to.
- * 4. **Anchor**, **Channel** (the channellers of the bound daemons, each a
- *    Move and a Channel, and a Summoner's strand for the trickle), **Bind
- *    again**.
- * 5. **The warden's placement** (`CULT_WARDEN_PRIORITY_V7`, A-R1: in the
+ *    are placed, and only onto a tile its channellers can follow to (A-R3:
+ *    or its Brood or Doorstep holds it on).
+ * 5. **Anchor**, **Channel** (the channellers of the bound daemons, each a
+ *    Move and a Channel, and a Summoner's strand for the trickle; A-R3: an
+ *    Idol Bearer's step beside a Mass), **Bind again**.
+ * 6. **The warden's placement** (`CULT_WARDEN_PRIORITY_V7`, A-R1: in the
  *    place of the Behold! step, which went with the Behold! command,
  *    `pulp_wars-mch9.33`), **Summon**, the **Sacrifice** of a spare Initiate
  *    (or of one that feeds the Herald's Hunger), the **Offering**.
- * 6. Last of all (`CULT_DOOMED_PRIORITY_V7`, below every ordinary command):
+ * 7. Last of all (`CULT_DOOMED_PRIORITY_V7`, below every ordinary command):
  *    the Sacrifice of an own unit the visible enemy kills this round.
  *
  * The rituals and the tricks (`pulp_wars-mch9.11`, bead A3; section 15.8)
@@ -106,6 +124,29 @@ export const CULT_CHANNEL_RANGE_V7 = 3;
 export const CULT_DAEMON_LEASH_V7 = 4;
 /** A Horror is summoned with an enemy unit or center this near. */
 export const CULT_SUMMON_FRONT_V7 = 6;
+/**
+ * An Imp is summoned with an enemy unit or center this near (the Cult
+ * redesign's A-R3, `pulp_wars-mch9.40`, section 12.2).
+ */
+export const CULT_IMP_FRONT_V7 = 8;
+/**
+ * The classes of a summon (A-R3, section 12.2), the higher first: a
+ * Gibbering Mass for a watched city, one beside a standing idol that
+ * shields a caster a visible enemy can attack, a Horror at the front; at
+ * the cap a Mass for a city, a Horror with no enemy near, and a Mass beside
+ * any idol; an Imp.
+ */
+export const CULT_SUMMON_CLASS_V7 = Object.freeze({
+  MASS_CITY: 50,
+  MASS_CIRCLE: 45,
+  HORROR: 40,
+  MASS_CITY_CAP: 30,
+  HORROR_CAP: 25,
+  MASS_CIRCLE_CAP: 20,
+  IMP: 10,
+});
+/** The value Swarm counts for a target with no price (a summon, a giant). */
+export const CULT_SWARM_PRICELESS_V7 = 12;
 /** An enemy this near a center forbids an Offering and a last defender's Sacrifice. */
 export const CULT_HOME_GUARD_V7 = 3;
 /** A spare Initiate is one beyond the wanted channellers and this many. */
@@ -116,6 +157,13 @@ export const CULT_FLEE_RANGE_V7 = 4;
 export const CULT_SEIZE_PRIORITY_V7 = 4000;
 export const CULT_RELEASE_PRIORITY_V7 = 3990;
 export const CULT_FLEE_PRIORITY_V7 = 3980;
+/**
+ * A-R3 (`pulp_wars-mch9.40`, section 12.3), Swarm: the second Imp's Move
+ * beside the target, then an Imp's unanswered attack (above the daemons'
+ * ordinary play, below Boo!).
+ */
+export const CULT_SWARM_MOVE_PRIORITY_V7 = 3945;
+export const CULT_SWARM_PRIORITY_V7 = 3940;
 /** Added to the ordinary priority of an own bound daemon's command. */
 export const CULT_DAEMON_PRIORITY_V7 = 2000;
 export const CULT_ANCHOR_PRIORITY_V7 = 1950;
@@ -167,7 +215,7 @@ export interface CultToolsV7 {
   readonly reach: (unitId: UnitId, at: CoordV7) => boolean;
   /** The view with each of these units after a Move to its tile. */
   readonly moved: (
-    moves: readonly { readonly unit: PublicUnitV7; readonly at: CoordV7 }[],
+    moves: readonly CultMovedUnitV7[],
     /** The visible units taken off the board too (A-R2: a Herald's victim). */
     gone?: readonly UnitId[],
   ) => PlayerViewV7;
@@ -193,6 +241,9 @@ export type CultStepReasonV7 =
   | "SACRIFICE_HUNGER"
   | "OFFERING"
   | "WARDEN"
+  | "DOORSTEP"
+  | "SWARM"
+  | "SWARM_MOVE"
   | CultRitualReasonV7;
 
 export interface CultStepV7 {
@@ -240,6 +291,12 @@ export interface CultPlanV7 {
    */
   readonly mayEnd: (unitId: UnitId, at: CoordV7) => boolean;
   /**
+   * The Cult redesign's A-R3 (`pulp_wars-mch9.40`): whether the own unit may
+   * end its advance after a kill on the tile: `mayEnd`, but a kill may
+   * break a Brood (an Imp's advance takes it from its lead).
+   */
+  readonly mayAdvance: (unitId: UnitId, at: CoordV7) => boolean;
+  /**
    * The Cult redesign's A-R2 (`pulp_wars-mch9.39`): false for an attack of
    * an own Herald the plan does not make (`CultRitualPlanV7.mayAttack`).
    */
@@ -254,6 +311,7 @@ const EMPTY_PLAN_V7: CultPlanV7 = Object.freeze({
   daemons: [],
   leashed: new Set<UnitId>(),
   mayEnd: () => true,
+  mayAdvance: () => true,
   mayAttack: () => true,
 });
 
@@ -365,6 +423,10 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
   const anchors: Extract<CommandV7, { kind: "ANCHOR" }>[] = [];
   const offerings: Extract<CommandV7, { kind: "OFFERING" }>[] = [];
   const tentacles: Extract<CommandV7, { kind: "TENTACLE" }>[] = [];
+  const attacksByUnit = new Map<
+    UnitId,
+    Extract<CommandV7, { kind: "ATTACK" }>[]
+  >();
   const trainingCities = new Set<CityId>();
   for (const command of commands) {
     if (command.kind === "MOVE") {
@@ -375,12 +437,14 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
       channelByPair.set(`${command.unitId}:${command.daemonUnitId}`, command);
     else if (command.kind === "SEIZE") seizes.push(command);
     else if (command.kind === "SACRIFICE") sacrifices.push(command);
-    // A Horror's summoning only: the Imp (the Cult redesign,
-    // `pulp_wars-mch9.36`) is summoned by no plan until A-R3
-    // (`pulp_wars-mch9.40`) decides the summon choice.
-    else if (command.kind === "SUMMON" && command.daemon === "HORROR")
-      summons.push(command);
-    else if (command.kind === "ANCHOR") anchors.push(command);
+    // Every summon (the Cult redesign's A-R3, `pulp_wars-mch9.40`: the
+    // Imp, the Horror, and the Gibbering Mass; section 12.2 chooses).
+    else if (command.kind === "SUMMON") summons.push(command);
+    else if (command.kind === "ATTACK") {
+      const list = attacksByUnit.get(command.unitId);
+      if (list === undefined) attacksByUnit.set(command.unitId, [command]);
+      else list.push(command);
+    } else if (command.kind === "ANCHOR") anchors.push(command);
     else if (command.kind === "OFFERING") offerings.push(command);
     else if (command.kind === "TENTACLE") tentacles.push(command);
     else if (command.kind === "TRAIN") trainingCities.add(command.cityId);
@@ -465,18 +529,84 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
       cultRobedV7(view, unit) && primaryReady(unit) && !strandOf.has(unit.id),
   );
 
+  // ------------------------------------------- Brood and Doorstep (A-R3)
+  // The Cult redesign's A-R3 (`pulp_wars-mch9.40`, RULESET_7_CULT_REDESIGN.md
+  // section 12.2). Brood: the own Imps that stand together are held through
+  // one channelled Imp (a lead), up to two others beside it
+  // (`cultBroodLeadsV7`, the lead nearest the cultists first); a lead wants
+  // one strand, and one to spare for a Brood of three. Doorstep: a
+  // Gibbering Mass on or beside an own city center, or beside an own
+  // standing idol, is given no channeller.
+  /** The own Idol Bearers whose idols stand (the warden, section 8.1). */
+  const standing = bearers.filter(
+    (bearer) => previewWardenV7(view, bearer.id)?.stands === true,
+  );
+  /** A Gibbering Mass on `at` stands on its Doorstep (section 7.4). */
+  const doorstepAt = (massId: UnitId, at: CoordV7): boolean =>
+    ownCenters.some((city) => gap(city.at, at) <= 1) ||
+    standing.some((bearer) => bearer.id !== massId && gap(bearer.at, at) === 1);
+  const impItems = daemonEntries.filter((item) => item.entry.role === "IMP");
+  const robedTiles = own
+    .filter((unit) => cultRobedV7(view, unit))
+    .map((unit) => unit.at);
+  const leadOf = cultBroodLeadsV7(
+    impItems.map((item) => item.unit),
+    new Set(
+      impItems
+        .filter((item) => item.entry.strands >= item.entry.control)
+        .map((item) => item.unit.id),
+    ),
+    (imp) =>
+      -robedTiles.reduce(
+        (nearest, at) => Math.min(nearest, gap(at, imp.at)),
+        99,
+      ),
+  );
+  /** The Imps each lead holds through its Brood. */
+  const followersOf = new Map<UnitId, UnitId[]>();
+  for (const [impId, lead] of leadOf)
+    if (lead !== impId) {
+      const list = followersOf.get(lead);
+      if (list === undefined) followersOf.set(lead, [impId]);
+      else list.push(impId);
+    }
+  const followerOf = (unitId: UnitId): boolean =>
+    (leadOf.get(unitId) ?? unitId) !== unitId;
+  const onDoorstep = (
+    entry: (typeof daemonEntries)[number]["entry"],
+  ): boolean => entry.role === "MASS" && entry.doorstep === true;
+  /**
+   * The strands a daemon wants beyond its Control: one, but none for a
+   * lone Imp or a Brood of two (A-R3: one for a Brood of three).
+   */
+  const spareOf = (item: (typeof daemonEntries)[number]): number =>
+    item.entry.role === "IMP"
+      ? Number(
+          (followersOf.get(item.unit.id)?.length ?? 0) >= CULT_BROOD_SIZE_V7,
+        )
+      : 1;
+  const isSummoner = (unit: PublicUnitV7): boolean =>
+    summoners.some((summoner) => summoner.id === unit.id);
+  /** A daemon a Brood or its Doorstep holds needs no strand of its own. */
+  const strandFree = (item: (typeof daemonEntries)[number]): boolean =>
+    followerOf(item.unit.id) || onDoorstep(item.entry);
+
   // ------------------------------------------ Favour: the cap and Hunger
   // The Cult redesign's A-R1 (`pulp_wars-mch9.38`, RULESET_7_CULT_REDESIGN.md
   // section 12.2): the prices, the Herald's Hunger the seat keeps, the
   // saving for the Great Summoning, and the cap it spends before.
   const frogs = new Set(cult.frogs);
-  /** Every own bound daemon's Control and one to spare (section 15.2). */
+  /**
+   * Every own bound daemon's Control and one to spare (section 15.2; A-R3:
+   * by Brood, and nothing for a Mass on its Doorstep).
+   */
   const wantedAll = daemonEntries.reduce(
-    (sum, item) => sum + item.entry.control + 1,
+    (sum, item) =>
+      strandFree(item) ? sum : sum + item.entry.control + spareOf(item),
     0,
   );
   const controlAll = daemonEntries.reduce(
-    (sum, item) => sum + item.entry.control,
+    (sum, item) => (strandFree(item) ? sum : sum + item.entry.control),
     0,
   );
   /** The own bound Heralds, by unit ID (the order Hunger is paid in). */
@@ -504,17 +634,176 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
         99,
       ),
     );
-  /**
-   * A Horror is within the Favour: its price beyond the Hunger kept, and,
-   * while the seat saves for the Great Summoning, beyond that price too.
-   */
-  const summonGate =
-    bodies >= wantedAll + 2 &&
-    favour - CULT_HORROR_FAVOUR_V7 >= hunger &&
-    (!saving ||
-      favour - CULT_HORROR_FAVOUR_V7 >= CULT_SUMMONING_FAVOUR_V7 + hunger);
   /** The own units kept for the Herald's Hunger: no strand for them. */
   const keep = new Set<UnitId>();
+
+  // ----------------------------------------------- what to summon (A-R3)
+  // The Cult redesign's A-R3 (`pulp_wars-mch9.40`, section 12.2): one summon
+  // a turn per Summoner, chosen by class, then by its tile.
+  //
+  // 1. A Gibbering Mass beside an own city center that a hostile unit
+  //    outside its own land watches (the garrison rule of section 15.10)
+  //    when no own Mass stands on or beside it: on the tile nearest the
+  //    enemy (Drag holds what comes).
+  // 2. A Gibbering Mass beside an own standing idol, with no Mass beside
+  //    it, that shields a caster a visible enemy can attack (the circle's
+  //    guard). Neither Mass needs a body after its summoning: its Doorstep
+  //    holds it.
+  // 3. A Horror (the army) with an enemy unit or center within
+  //    `CULT_SUMMON_FRONT_V7` and the bodies for its Control and one.
+  // 4. At the cap only: a Gibbering Mass beside an own city center no Mass
+  //    guards (watched or not), then a Horror with no enemy near (a wall
+  //    its Doorstep holds before a fighter with nobody to fight), then a
+  //    Mass beside any standing idol with no Mass beside it.
+  // 5. An Imp with an enemy unit or center within `CULT_IMP_FRONT_V7`:
+  //    beside an own Imp that has fewer than two Imps beside it (its Brood
+  //    holds it: no body beyond every daemon's Control), else with a body
+  //    for its strand; out of the visible enemy's reach first, then
+  //    nearest the enemy.
+  // At `CULT_CAP_SPEND_FAVOUR_V7` the fronts are not asked. Every price is
+  // beyond the Hunger kept and, while the seat saves, beyond the Great
+  // Summoning's. A Summoner a Seizure may need this turn summons nothing.
+  const affords = (price: number): boolean =>
+    favour - price >= hunger &&
+    (!saving || favour - price >= CULT_SUMMONING_FAVOUR_V7 + hunger);
+  const ownMasses = daemonEntries
+    .filter((item) => item.entry.role === "MASS")
+    .map((item) => item.unit);
+  const ownImps = impItems.map((item) => item.unit);
+  /** A hostile unit outside its own land within the garrison radius. */
+  const coming = enemies.filter((unit) => {
+    const tile = view.board.tiles[unit.at.y * view.board.width + unit.at.x];
+    return (
+      unit.form === "LAND" &&
+      !(tile?.explored === true && tile.territoryOwnerId === unit.ownerId)
+    );
+  });
+  const watched = (at: CoordV7): boolean =>
+    coming.some((unit) => gap(unit.at, at) <= ARMY_GARRISON_RADIUS_V7);
+  /** An own standing idol shields a caster a visible enemy can attack. */
+  const shieldsCaster = (bearer: PublicUnitV7): boolean =>
+    own.some(
+      (unit) =>
+        unit.id !== bearer.id &&
+        gap(unit.at, bearer.at) === 1 &&
+        cultRobedV7(view, unit) &&
+        !cultWardenV7(view, unit) &&
+        tools.threatened(unit.at),
+    );
+  /** The class and the key of a summon the plan would make, or null. */
+  const summonKey = (
+    command: (typeof summons)[number],
+    freeOnly: boolean,
+  ): readonly number[] | null => {
+    const summoner = unitsById.get(command.unitId);
+    const helper =
+      command.helperUnitId === undefined
+        ? undefined
+        : unitsById.get(command.helperUnitId);
+    if (
+      summoner === undefined ||
+      (command.helperUnitId !== undefined && helper === undefined) ||
+      (freeOnly &&
+        (held.has(summoner.id) ||
+          (helper !== undefined && held.has(helper.id)) ||
+          // A Summoner a Seizure may need keeps its action for it.
+          seizing.has(summoner.id)))
+    )
+      return null;
+    // Never beside an enemy where the Summoner or its helper would be the
+    // summon's nearest unit if it broke.
+    if (enemyGap(command.at) <= 1) {
+      const nearest = cultNearestToV7(view, command.at, null);
+      if (
+        nearest === null ||
+        nearest.id === summoner.id ||
+        nearest.id === helper?.id
+      )
+        return null;
+    }
+    const front = frontOf(summoner.at);
+    const tie = [
+      -(helper === undefined ? 0 : (unitRoleRuleV7(view, helper).cost ?? 0)),
+      -(helper?.id ?? 0),
+      -command.at.y,
+      -command.at.x,
+      -summoner.id,
+    ];
+    if (command.daemon === "MASS") {
+      const centers = ownCenters.filter(
+        (city) =>
+          gap(city.at, command.at) <= 1 &&
+          !ownMasses.some((mass) => gap(mass.at, city.at) <= 1),
+      );
+      if (!affords(CULT_MASS_FAVOUR_V7)) return null;
+      if (centers.some((city) => watched(city.at)))
+        return [CULT_SUMMON_CLASS_V7.MASS_CITY, -enemyGap(command.at), ...tie];
+      if (capSpend && centers.length > 0)
+        return [
+          CULT_SUMMON_CLASS_V7.MASS_CITY_CAP,
+          -enemyGap(command.at),
+          ...tie,
+        ];
+      const idols = standing.filter(
+        (bearer) =>
+          gap(bearer.at, command.at) === 1 &&
+          !ownMasses.some((mass) => gap(mass.at, bearer.at) === 1),
+      );
+      if (idols.some(shieldsCaster))
+        return [
+          CULT_SUMMON_CLASS_V7.MASS_CIRCLE,
+          -enemyGap(command.at),
+          ...tie,
+        ];
+      if (capSpend && idols.length > 0)
+        return [
+          CULT_SUMMON_CLASS_V7.MASS_CIRCLE_CAP,
+          -enemyGap(command.at),
+          ...tie,
+        ];
+      return null;
+    }
+    if (command.daemon === "HORROR")
+      return affords(CULT_HORROR_FAVOUR_V7) &&
+        bodies >= wantedAll + 2 &&
+        (capSpend || front <= CULT_SUMMON_FRONT_V7)
+        ? [
+            front <= CULT_SUMMON_FRONT_V7
+              ? CULT_SUMMON_CLASS_V7.HORROR
+              : CULT_SUMMON_CLASS_V7.HORROR_CAP,
+            -enemyGap(command.at),
+            ...tie,
+          ]
+        : null;
+    // The Imp.
+    const brood = ownImps.some(
+      (imp) =>
+        gap(imp.at, command.at) === 1 &&
+        ownImps.filter(
+          (other) => other.id !== imp.id && gap(other.at, imp.at) === 1,
+        ).length < CULT_BROOD_SIZE_V7,
+    );
+    // A lone Imp wants a body for its strand beyond every daemon's Control
+    // and spare; one its Brood will hold only the bodies for every Control
+    // while the Summoner's strand holds it this turn.
+    return affords(CULT_IMP_FAVOUR_V7) &&
+      bodies >= (brood ? controlAll : wantedAll) + 1 &&
+      (capSpend || front <= CULT_IMP_FRONT_V7)
+      ? [
+          CULT_SUMMON_CLASS_V7.IMP,
+          Number(brood),
+          Number(!tools.threatened(command.at)),
+          -enemyGap(command.at),
+          ...tie,
+        ]
+      : null;
+  };
+  /** A summon the plan would make with this Summoner (held or not). */
+  const summonsWith = (unit: PublicUnitV7): boolean =>
+    summons.some(
+      (command) =>
+        command.unitId === unit.id && summonKey(command, false) !== null,
+    );
 
   /** A Tentacle on `at` slaps an enemy, with no own or allied unit by it. */
   const tentacleWorth = (at: CoordV7): boolean => {
@@ -533,15 +822,30 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
     return slapped !== null && tools.hostile(slapped.ownerId);
   };
   /**
+   * The Summoners a Seizure this turn may need (A-R2's company, section
+   * 12.3; read here by A-R3, `pulp_wars-mch9.40`, as the A-R2 notes ask:
+   * the trickle's channeller is never one of them while another can).
+   */
+  const seizing = cultSeizureToolsV7({
+    view,
+    commands,
+    own,
+    enemies,
+    held,
+    movesByUnit,
+    landTile,
+    onOwnCenter,
+  }).seizing;
+  /**
    * A Summoner with a better use for its action than a strand (section
-   * 12.2, the trickle; 12.3, the Tentacle): a Seizure offered to it, a
-   * Summon the seat would make with it, or a Tentacle that slaps an enemy.
+   * 12.2, the trickle; 12.3, the Tentacle): a Seizure offered to it or one
+   * it may make this turn, a Summon the seat would make with it, or a
+   * Tentacle that slaps an enemy.
    */
   const busySummoner = (unit: PublicUnitV7): boolean =>
     seizes.some((command) => command.unitId === unit.id) ||
-    (summonGate &&
-      (capSpend || frontOf(unit.at) <= CULT_SUMMON_FRONT_V7) &&
-      summons.some((command) => command.unitId === unit.id)) ||
+    seizing.has(unit.id) ||
+    summonsWith(unit) ||
     tentacles.some(
       (command) => command.unitId === unit.id && tentacleWorth(command.at),
     );
@@ -743,16 +1047,25 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
     starving: boolean;
     wanted: number;
     readonly channellers: UnitId[];
+    /** The strands it wants beyond its Control (A-R3: by Brood). */
+    readonly spare: number;
+    /** A-R3: the lead Imp whose Brood holds it, or null. */
+    lead: UnitId | null;
+    /** A-R3: a Gibbering Mass its Doorstep holds (or an Idol Bearer's step). */
+    doorstep: boolean;
   }
-  const work: DaemonWorkV7[] = daemonEntries.map(({ entry, unit }) => ({
-    unit,
-    control: entry.control,
-    strands: entry.strands,
+  const work: DaemonWorkV7[] = daemonEntries.map((item) => ({
+    unit: item.unit,
+    control: item.entry.control,
+    strands: item.entry.strands,
     grip: false,
     holdable: true,
     starving: false,
-    wanted: entry.control,
+    wanted: strandFree(item) ? 0 : item.entry.control,
     channellers: [],
+    spare: spareOf(item),
+    lead: followerOf(item.unit.id) ? (leadOf.get(item.unit.id) ?? null) : null,
+    doorstep: onDoorstep(item.entry),
   }));
 
   // ---------------------------------------------------- the Offering
@@ -863,25 +1176,105 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
     }
   }
 
-  // Pass 1 (section 15.2 step 1): each daemon its Control, the Herald
-  // first, then the Horrors by unit ID.
+  // A-R3 (`pulp_wars-mch9.40`, section 12.2): an Idol Bearer that holds a
+  // forward Gibbering Mass by its Doorstep (no own center beside the Mass,
+  // and no strand of its own holds it) is held beside it: it may attack,
+  // not leave (`keepers`, read by `mayEnd`; the lowest unit ID among
+  // several).
+  const keepers = new Map<UnitId, CoordV7>();
   for (const daemon of work) {
-    // (A-R1: a starving Herald is let go: no strand for it.)
-    if (daemon.starving) continue;
+    if (
+      !daemon.doorstep ||
+      daemon.unit.summoned !== "MASS" ||
+      daemon.strands >= daemon.control ||
+      ownCenters.some((city) => gap(city.at, daemon.unit.at) <= 1)
+    )
+      continue;
+    const keeper = standing
+      .filter((bearer) => gap(bearer.at, daemon.unit.at) === 1)
+      .sort((left, right) => left.id - right.id)[0];
+    if (keeper !== undefined) keepers.set(keeper.id, daemon.unit.at);
+  }
+  /** A-R3: a Mass held by an Idol Bearer's step: it waits for it. */
+  const pinned = new Map<UnitId, CoordV7>();
+  const doorstepSteps: CultStepV7[] = [];
+  /**
+   * A-R3: a free Idol Bearer whose idol stands steps beside a Gibbering
+   * Mass that needs a strand, so its Doorstep holds it (no channeller's
+   * turn): one that has not moved, holds no strand, is no garrison of an
+   * own center, and steps onto a tile the visible enemy does not kill it
+   * on, out of reach first, then the shortest step.
+   */
+  const bearerDoorstep = (mass: PublicUnitV7): boolean => {
+    let best: { move: MoveV7; key: readonly number[] } | undefined;
+    for (const bearer of standing) {
+      if (
+        held.has(bearer.id) ||
+        keep.has(bearer.id) ||
+        keepers.has(bearer.id) ||
+        strandOf.has(bearer.id) ||
+        bearer.activation.moved ||
+        !primaryReady(bearer) ||
+        onOwnCenter(bearer)
+      )
+        continue;
+      for (const move of movesByUnit.get(bearer.id) ?? []) {
+        const end = move.path.at(-1);
+        if (
+          end === undefined ||
+          gap(end, mass.at) !== 1 ||
+          !landTile(end) ||
+          tools.danger(bearer, end) >= bearer.hp
+        )
+          continue;
+        const key = [
+          Number(!tools.threatened(end)),
+          -move.path.length,
+          -bearer.id,
+          -end.y,
+          -end.x,
+        ];
+        if (best === undefined || better(key, best.key)) best = { move, key };
+      }
+    }
+    const end = best?.move.path.at(-1);
+    if (best === undefined || end === undefined) return false;
+    held.add(best.move.unitId);
+    pinned.set(mass.id, end);
+    doorstepSteps.push({
+      command: best.move,
+      priority: CULT_CHANNEL_PRIORITY_V7,
+      value: 1,
+      reason: "DOORSTEP",
+    });
+    return true;
+  };
+
+  /**
+   * Section 15.2 step 1 for one daemon: its Control from the candidates,
+   * or a Thing's grip, or (A-R3) an Idol Bearer's step beside a Mass;
+   * false when it cannot be held.
+   */
+  const holdOne = (daemon: DaemonWorkV7): boolean => {
     // A grip that is offered on one of its channellers counts already.
     const offeredGrip = anchors.some(
       (command) => strandOf.get(command.cultistUnitId) === daemon.unit.id,
     );
     if (offeredGrip) daemon.grip = true;
     const need = daemon.control - daemon.strands - (offeredGrip ? 2 : 0);
-    if (need <= 0) continue;
+    if (need <= 0) return true;
+    if (daemon.unit.summoned === "MASS" && bearerDoorstep(daemon.unit)) {
+      daemon.doorstep = true;
+      daemon.wanted = 0;
+      return true;
+    }
     const candidates = candidatesFor(daemon.unit);
     if (candidates.length >= need) {
       for (const item of candidates.slice(0, need)) {
         assign(daemon.unit, item, false, false);
         daemon.channellers.push(item.unit.id);
       }
-      continue;
+      return true;
     }
     // Too few cultists: one of them beside a Thing counts three.
     const gripped = offeredGrip
@@ -907,15 +1300,34 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
         assign(daemon.unit, item, false, false);
         daemon.channellers.push(item.unit.id);
       }
-      continue;
+      return true;
     }
-    daemon.holdable = false;
+    return false;
+  };
+
+  // Pass 1 (section 15.2 step 1): each daemon its Control, the Herald
+  // first, then the others by unit ID. A-R3: an Imp a lead's Brood holds
+  // and a Mass on its Doorstep are given none; an Imp whose lead cannot be
+  // held then asks for a strand of its own.
+  for (const daemon of work) {
+    // (A-R1: a starving Herald is let go: no strand for it.)
+    if (daemon.starving || daemon.lead !== null || daemon.doorstep) continue;
+    if (!holdOne(daemon)) daemon.holdable = false;
+  }
+  const workById = new Map(work.map((daemon) => [daemon.unit.id, daemon]));
+  for (const daemon of work) {
+    if (daemon.lead === null) continue;
+    if (workById.get(daemon.lead)?.holdable === true) continue;
+    daemon.lead = null;
+    daemon.wanted = daemon.control;
+    if (!holdOne(daemon)) daemon.holdable = false;
   }
 
-  // Pass 2: one strand to spare for each daemon that is held, from the
-  // cultists that are left ("with too few robed cultists it wants Control").
+  // Pass 2: the strands to spare for each daemon that is held (one; A-R3:
+  // one for a Brood of three, none for a smaller Brood), from the cultists
+  // that are left ("with too few robed cultists it wants Control").
   for (const daemon of work) {
-    if (!daemon.holdable) continue;
+    if (!daemon.holdable || daemon.lead !== null || daemon.doorstep) continue;
     const holders = holdersOf(daemon.unit.id);
     const total =
       daemon.strands +
@@ -929,19 +1341,23 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
     // A gripped channeller counts three, and one hit takes all three: the
     // seat still wants a strand from somebody else.
     const extra = Math.max(
-      daemon.control + 1 - total,
+      daemon.control + daemon.spare - total,
       gripInvolved && count < 2 ? 1 : 0,
     );
     if (extra <= 0) {
-      daemon.wanted = daemon.control + 1;
+      daemon.wanted = daemon.control + daemon.spare;
       continue;
     }
-    const spare = candidatesFor(daemon.unit).slice(0, extra);
+    // (A-R3: never a Summoner with a Summon, a Seizure, or a Tentacle to
+    // make: a spare strand is no better use of its action.)
+    const spare = candidatesFor(daemon.unit)
+      .filter((item) => !(isSummoner(item.unit) && busySummoner(item.unit)))
+      .slice(0, extra);
     for (const item of spare) {
       assign(daemon.unit, item, false, false);
       daemon.channellers.push(item.unit.id);
     }
-    if (spare.length >= extra) daemon.wanted = daemon.control + 1;
+    if (spare.length >= extra) daemon.wanted = daemon.control + daemon.spare;
   }
 
   // Pass 3 (A-R1, section 12.2, the trickle): a Summoner with no Seizure,
@@ -1025,6 +1441,30 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
     break;
   }
 
+  /**
+   * A-R3 (section 12.2), Brood: an Imp on `at` is held through the Brood of
+   * an own lead Imp beside it that is held and holds fewer than two others
+   * besides it.
+   */
+  const broodAt = (impId: UnitId, at: CoordV7): boolean =>
+    work.some(
+      (lead) =>
+        lead.unit.id !== impId &&
+        lead.unit.summoned === "IMP" &&
+        lead.holdable &&
+        lead.lead === null &&
+        gap(lead.unit.at, at) === 1 &&
+        work.filter(
+          (follower) =>
+            follower.lead === lead.unit.id && follower.unit.id !== impId,
+        ).length < CULT_BROOD_SIZE_V7,
+    );
+  /** A-R3: the daemon on `at` is held there with no strand of its own. */
+  const heldThere = (daemon: DaemonWorkV7, at: CoordV7): boolean =>
+    daemon.unit.summoned === "IMP"
+      ? broodAt(daemon.unit.id, at)
+      : daemon.unit.summoned === "MASS" && doorstepAt(daemon.unit.id, at);
+
   // ------------------------------------- a daemon that cannot be held
   const releaseTiles = new Map<UnitId, string | null>();
   for (const daemon of work) {
@@ -1057,11 +1497,15 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
     let chosenKey: readonly number[] = [];
     let reason: CultStepReasonV7 = "RETURN";
     // Back to its cultists, if a Move brings it within their reach (not a
-    // starving Herald: strands do not feed it).
+    // starving Herald: strands do not feed it). A-R3: or beside an own
+    // lead Imp whose Brood holds it, or (a Mass) onto its Doorstep.
     for (const move of daemon.starving ? [] : moves) {
       const end = move.path.at(-1);
       if (end === undefined || !landTile(end)) continue;
-      const count = reachable(end);
+      const count = Math.max(
+        reachable(end),
+        heldThere(daemon, end) ? daemon.control : 0,
+      );
       if (count < daemon.control) continue;
       const key = [count, -enemyGap(end), -end.y, -end.x];
       if (chosen === undefined || better(key, chosenKey)) {
@@ -1313,8 +1757,40 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
   const pending = channelPending || bindPending;
 
   // ------------------------------------------- where a daemon may end
-  const workById = new Map(work.map((daemon) => [daemon.unit.id, daemon]));
-  const daemonMayEnd = (daemonUnitId: UnitId, at: CoordV7): boolean => {
+  /** Its holders and the free cultists near `at` can hold it there. */
+  const channelHolds = (
+    daemon: DaemonWorkV7,
+    at: CoordV7,
+    need: number,
+  ): boolean => {
+    const holders = holdersOf(daemon.unit.id);
+    if (holders.some((unit) => gap(unit.at, at) > CULT_CHANNEL_RANGE_V7))
+      return false;
+    const near = free.filter(
+      (unit) =>
+        (assigned.get(unit.id)?.daemon.id ?? daemon.unit.id) ===
+          daemon.unit.id &&
+        gap(unit.at, at) <=
+          (unit.activation.moved
+            ? CULT_CHANNEL_RANGE_V7
+            : CULT_DAEMON_LEASH_V7),
+    ).length;
+    return daemon.strands + near >= need;
+  };
+  /**
+   * Where an own bound daemon may end a Move (`advance`: its advance after a
+   * kill): where its channellers can follow it. The Cult redesign's A-R3
+   * (`pulp_wars-mch9.40`, section 12.2): a Gibbering Mass also anywhere on
+   * its Doorstep (and one an Idol Bearer steps beside waits for it); an Imp
+   * a Brood holds beside a lead whose Brood holds it, or where a cultist can
+   * follow it; a lead Imp keeps the Imps of its Brood that have moved beside
+   * it; a kill may break a Brood.
+   */
+  const daemonMayEndAs = (
+    daemonUnitId: UnitId,
+    at: CoordV7,
+    advance: boolean,
+  ): boolean => {
     const daemon = workById.get(daemonUnitId);
     if (daemon === undefined) return true;
     if (!daemon.holdable) {
@@ -1322,19 +1798,43 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
       const release = releaseTiles.get(daemonUnitId);
       return release === undefined || release === cultTileKeyV7(at);
     }
-    const holders = holdersOf(daemonUnitId);
-    if (holders.some((unit) => gap(unit.at, at) > CULT_CHANNEL_RANGE_V7))
-      return false;
-    const near = free.filter(
-      (unit) =>
-        (assigned.get(unit.id)?.daemon.id ?? daemonUnitId) === daemonUnitId &&
-        gap(unit.at, at) <=
-          (unit.activation.moved
-            ? CULT_CHANNEL_RANGE_V7
-            : CULT_DAEMON_LEASH_V7),
-    ).length;
-    return daemon.strands + near >= daemon.wanted;
+    if (daemon.unit.summoned === "MASS") {
+      const pin = pinned.get(daemonUnitId);
+      if (pin !== undefined)
+        return (
+          gap(pin, at) === 1 || ownCenters.some((city) => gap(city.at, at) <= 1)
+        );
+      return (
+        doorstepAt(daemonUnitId, at) ||
+        channelHolds(daemon, at, Math.max(daemon.wanted, daemon.control))
+      );
+    }
+    if (daemon.unit.summoned === "IMP") {
+      if (daemon.lead !== null)
+        return (
+          advance ||
+          broodAt(daemonUnitId, at) ||
+          channelHolds(daemon, at, daemon.control)
+        );
+      const followers = work.filter(
+        (follower) => follower.lead === daemonUnitId,
+      );
+      if (
+        !advance &&
+        followers.some(
+          (follower) =>
+            (follower.unit.activation.moved ||
+              follower.unit.activation.attacked) &&
+            gap(follower.unit.at, at) !== 1,
+        )
+      )
+        return false;
+      if (followers.length === 0 && broodAt(daemonUnitId, at)) return true;
+    }
+    return channelHolds(daemon, at, daemon.wanted);
   };
+  const daemonMayEnd = (daemonUnitId: UnitId, at: CoordV7): boolean =>
+    daemonMayEndAs(daemonUnitId, at, false);
 
   // ------------------------------------------- the warden's placement
   // A-R1 (`pulp_wars-mch9.38`, section 12.2; it replaces the Behold! step):
@@ -1368,9 +1868,6 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
         ? [{ id: unit.id, at }]
         : [];
     });
-    const standing = bearers.filter(
-      (bearer) => previewWardenV7(view, bearer.id)?.stands === true,
-    );
     const watchedCenters = ownCenters.filter(
       (city) =>
         enemyGap(city.at) <= ARMY_GARRISON_RADIUS_V7 &&
@@ -1409,10 +1906,13 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
       if (bearer.activation.moved) continue;
       for (const move of movesByUnit.get(bearer.id) ?? []) {
         const end = move.path.at(-1);
+        const keeps = keepers.get(bearer.id);
         if (
           end === undefined ||
           !landTile(end) ||
-          tools.danger(bearer, end) >= bearer.hp
+          tools.danger(bearer, end) >= bearer.hp ||
+          // A-R3: an Idol Bearer that holds a Mass stays beside it.
+          (keeps !== undefined && gap(keeps, end) !== 1)
         )
           continue;
         const count = cover(end);
@@ -1484,50 +1984,46 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
   });
   steps.push(...rituals.steps);
 
+  // A Thing that grips stays beside its cultist (the strand counts three
+  // only while it does: section 8.4).
+  const gripTiles = new Map<UnitId, CoordV7>();
+  for (const grip of cult.grips) {
+    const thing = unitsById.get(grip.thingUnitId);
+    const cultist = unitsById.get(grip.cultistUnitId);
+    if (thing?.ownerId === me && cultist !== undefined)
+      gripTiles.set(thing.id, cultist.at);
+  }
+  /** Where the own unit may end a Move (`advance`: its advance after a kill). */
+  const mayEndAs = (unitId: UnitId, at: CoordV7, advance: boolean): boolean => {
+    // Bead A3: no own unit ends a Move under an own ritual's mark.
+    if (!rituals.mayEnd(at)) return false;
+    const cultist = gripTiles.get(unitId);
+    if (cultist !== undefined) return gap(cultist, at) === 1;
+    // A-R1: a warden ends no Move where it covers fewer casters.
+    const ward = wardens.get(unitId);
+    if (ward !== undefined && !ward(at)) return false;
+    // A-R3: an Idol Bearer that holds a Mass by its Doorstep stays by it.
+    const mass = keepers.get(unitId);
+    if (mass !== undefined && gap(mass, at) !== 1) return false;
+    return !ownDaemonIds.has(unitId) || daemonMayEndAs(unitId, at, advance);
+  };
+
   // ----------------------------------------------------------- Summon
-  // Section 15.3: a Horror only when the seat can hold it: a robed cultist
-  // to spare for every daemon's Control + 1 afterwards, an enemy near
-  // enough to send it at, and never beside an enemy where the Summoner or
-  // its helper would be its nearest unit if it broke. Bead A3: and not with
-  // the Favour the seat keeps for the Great Summoning (`cultSavingV7`): a
-  // Horror then only from what is above the Herald's price. A-R1 (section
-  // 12.2): never from the Favour its Herald's Hunger needs
-  // (`summonGate`), and at `CULT_CAP_SPEND_FAVOUR_V7` or more with no enemy
-  // near too (Favour above the cap is lost).
-  if (!pending && summonGate) {
+  // Section 15.3: only what the seat can hold: a robed cultist to spare for
+  // every daemon's Control + 1 afterwards, an enemy near enough to send it
+  // at, and never beside an enemy where the Summoner or its helper would be
+  // its nearest unit if it broke. Bead A3: and not with the Favour the seat
+  // keeps for the Great Summoning (`cultSavingV7`). A-R1 (section 12.2):
+  // never from the Favour its Herald's Hunger needs, and at
+  // `CULT_CAP_SPEND_FAVOUR_V7` or more with no enemy near too (Favour above
+  // the cap is lost). A-R3 (`pulp_wars-mch9.40`): the Imp, the Horror, or
+  // the Gibbering Mass, by `summonKey` (the class first, then the tile).
+  if (!pending) {
     let best: (typeof summons)[number] | undefined;
     let bestKey: readonly number[] = [];
     for (const command of summons) {
-      const summoner = unitsById.get(command.unitId);
-      const helper =
-        command.helperUnitId === undefined
-          ? undefined
-          : unitsById.get(command.helperUnitId);
-      if (
-        summoner === undefined ||
-        helper === undefined ||
-        held.has(summoner.id) ||
-        held.has(helper.id)
-      )
-        continue;
-      if (!capSpend && frontOf(summoner.at) > CULT_SUMMON_FRONT_V7) continue;
-      if (enemyGap(command.at) <= 1) {
-        const nearest = cultNearestToV7(view, command.at, null);
-        if (
-          nearest === null ||
-          nearest.id === summoner.id ||
-          nearest.id === helper.id
-        )
-          continue;
-      }
-      const key = [
-        -enemyGap(command.at),
-        -(unitRoleRuleV7(view, helper).cost ?? 0),
-        -helper.id,
-        -command.at.y,
-        -command.at.x,
-        -summoner.id,
-      ];
+      const key = summonKey(command, true);
+      if (key === null) continue;
       if (best === undefined || better(key, bestKey)) {
         best = command;
         bestKey = key;
@@ -1542,15 +2038,106 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
       });
   }
 
+  // ------------------------------------------------------------ Swarm
+  // A-R3 (`pulp_wars-mch9.40`, section 12.3): an Imp attacks a unit with
+  // another own Imp already beside it before one with none (the unanswered
+  // attack: the defender does not strike back, `SWARMED`), and the second
+  // Imp's Move goes beside the target first. Never on a unit kept for a
+  // Seizure, and a kill's advance only where the plan lets the Imp end it.
+  {
+    const holdableImps = work.filter(
+      (daemon) =>
+        daemon.holdable &&
+        daemon.unit.summoned === "IMP" &&
+        !held.has(daemon.unit.id),
+    );
+    let attack: { command: CommandV7; key: readonly number[] } | undefined;
+    for (const daemon of holdableImps)
+      for (const command of attacksByUnit.get(daemon.unit.id) ?? []) {
+        const target = unitsById.get(command.targetUnitId);
+        if (target === undefined || seized.has(target.id)) continue;
+        const preview = queryCombatPreviewV7(view, daemon.unit.id, target.id);
+        if (preview?.noRetaliationReason !== "SWARMED") continue;
+        if (
+          preview.defenderDies &&
+          preview.advances &&
+          !mayEndAs(daemon.unit.id, target.at, true)
+        )
+          continue;
+        const key = [
+          Number(preview.defenderDies),
+          unitRoleRuleV7(view, target).cost ?? CULT_SWARM_PRICELESS_V7,
+          preview.damageToDefender,
+          -target.id,
+          -daemon.unit.id,
+        ];
+        if (attack === undefined || better(key, attack.key))
+          attack = { command, key };
+      }
+    if (attack !== undefined)
+      steps.push({
+        command: attack.command,
+        priority: CULT_SWARM_PRIORITY_V7,
+        value: attack.key[0] ?? 0,
+        reason: "SWARM",
+      });
+    let approach: { command: CommandV7; key: readonly number[] } | undefined;
+    const landEnemies = enemies.filter((unit) => unit.form === "LAND");
+    for (const daemon of holdableImps) {
+      const imp = daemon.unit;
+      if (imp.activation.moved || !primaryReady(imp)) continue;
+      for (const target of landEnemies) {
+        if (
+          seized.has(target.id) ||
+          gap(imp.at, target.at) === 1 ||
+          !ownImps.some(
+            (other) => other.id !== imp.id && gap(other.at, target.at) === 1,
+          )
+        )
+          continue;
+        for (const move of movesByUnit.get(imp.id) ?? []) {
+          const end = move.path.at(-1);
+          if (
+            end === undefined ||
+            gap(end, target.at) !== 1 ||
+            !landTile(end) ||
+            !mayEndAs(imp.id, end, false)
+          )
+            continue;
+          const key = [
+            unitRoleRuleV7(view, target).cost ?? CULT_SWARM_PRICELESS_V7,
+            -target.hp,
+            -move.path.length,
+            -target.id,
+            -imp.id,
+            -end.y,
+            -end.x,
+          ];
+          if (approach === undefined || better(key, approach.key))
+            approach = { command: move, key };
+        }
+      }
+    }
+    if (approach !== undefined)
+      steps.push({
+        command: approach.command,
+        priority: CULT_SWARM_MOVE_PRIORITY_V7,
+        value: 0,
+        reason: "SWARM_MOVE",
+      });
+  }
+
   /**
    * Favour is short of the next threshold the seat can spend it at: it has
    * a Summoner, and the bodies to hold one more Horror. A-R1 (section
    * 12.2): the thresholds are the prices beyond the Hunger the seat keeps
    * (a Horror's 4, the Great Summoning's 18 with The Stars Are Right).
+   * A-R3 (`pulp_wars-mch9.40`): the bodies to hold one more Imp (its one
+   * strand), the cheapest summon the seat makes.
    */
   const short =
     summoners.length > 0 &&
-    bodies >= wantedAll + 2 &&
+    bodies >= wantedAll + 1 &&
     (favour < CULT_HORROR_FAVOUR_V7 + hunger ||
       (stars && favour < CULT_SUMMONING_FAVOUR_V7 + hunger));
 
@@ -1569,6 +2156,8 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
         victim === undefined ||
         held.has(summoner.id) ||
         held.has(victim.id) ||
+        // (A-R3: a Summoner a Seizure may need keeps its action for it.)
+        seizing.has(summoner.id) ||
         !cultInitiateV7(view, victim) ||
         strandOf.has(victim.id) ||
         lastDefender(victim)
@@ -1578,7 +2167,16 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
       if (preview === null) continue;
       const reaches = (threshold: number): boolean =>
         favour < threshold && preview.favourAfter >= threshold;
+      // A-R3: the Imp's 2 is a threshold too, but a Summoner with a
+      // Tentacle that slaps an enemy calls it instead (the Imp's Favour can
+      // wait for the trickle; the Horror's and the Herald's cannot).
+      const forImp =
+        reaches(CULT_IMP_FAVOUR_V7 + hunger) &&
+        !tentacles.some(
+          (item) => item.unitId === summoner.id && tentacleWorth(item.at),
+        );
       if (
+        !forImp &&
         !reaches(CULT_HORROR_FAVOUR_V7 + hunger) &&
         !(stars && reaches(CULT_SUMMONING_FAVOUR_V7 + hunger))
       )
@@ -1599,6 +2197,8 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
   }
   // A-R1 (section 12.2): the Sacrifice that feeds the Herald's Hunger.
   steps.push(...feedSteps);
+  // A-R3: an Idol Bearer's step beside a Gibbering Mass (its Doorstep).
+  steps.push(...doorstepSteps);
 
   // Section 15.4 (a): an own unit that the visible enemy kills this round
   // and that cannot retreat, after everything else it can do this turn. Its
@@ -1683,15 +2283,6 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
       });
     }
 
-  // A Thing that grips stays beside its cultist (the strand counts three
-  // only while it does: section 8.4).
-  const gripTiles = new Map<UnitId, CoordV7>();
-  for (const grip of cult.grips) {
-    const thing = unitsById.get(grip.thingUnitId);
-    const cultist = unitsById.get(grip.cultistUnitId);
-    if (thing?.ownerId === me && cultist !== undefined)
-      gripTiles.set(thing.id, cultist.at);
-  }
   const leashed = new Set<UnitId>(gripTiles.keys());
   for (const daemon of work) if (daemon.holdable) leashed.add(daemon.unit.id);
 
@@ -1708,16 +2299,8 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
       strands: daemon.strands,
       channellerUnitIds: daemon.channellers,
     })),
-    mayEnd: (unitId, at) => {
-      // Bead A3: no own unit ends a Move under an own ritual's mark.
-      if (!rituals.mayEnd(at)) return false;
-      const cultist = gripTiles.get(unitId);
-      if (cultist !== undefined) return gap(cultist, at) === 1;
-      // A-R1: a warden ends no Move where it covers fewer casters.
-      const ward = wardens.get(unitId);
-      if (ward !== undefined && !ward(at)) return false;
-      return !ownDaemonIds.has(unitId) || daemonMayEnd(unitId, at);
-    },
+    mayEnd: (unitId, at) => mayEndAs(unitId, at, false),
+    mayAdvance: (unitId, at) => mayEndAs(unitId, at, true),
     mayAttack: rituals.mayAttack,
   };
 }
