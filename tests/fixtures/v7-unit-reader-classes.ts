@@ -148,6 +148,10 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/ai/v7-cult-against.ts::steppedView": "BOARD",
     "src/ai/v7-cult-against.ts::cultAgainstEyeMarkedV7": "BOARD",
     "src/ai/v7-cult-against.ts::cultAgainstCuresV7": "BOARD",
+    // The Cult redesign's A-R4 (`pulp_wars-mch9.41`): the board after an
+    // own unit's Move, for its combat preview on an Idol Bearer or an Imp
+    // beside it (a burrowed unit is attacked by nobody).
+    "src/ai/v7-cult-against.ts::killsFrom": "BOARD",
     "src/ai/v7-curiosities.ts::curiosityFactsV7": "BOARD",
     "src/ai/v7-curiosities.ts::planCuriosityErrandsV7": "BOARD",
     "src/ai/v7-curiosities.ts::soleCityDefenderV7": "BOARD",

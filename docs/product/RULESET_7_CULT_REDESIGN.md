@@ -1042,6 +1042,89 @@ A-R3: the trickle's channeller (A-R1, rule 6) does not yet read rule 5
 above, so a Summoner a beat-then-Seize needs may still be asked to channel
 when no other cultist can.
 
+### 12.8 As built: A-R4, every seat against the new Cult (`pulp_wars-mch9.41`)
+
+(Numbered 12.8 so that A-R3's own notes, written at the same time, take
+12.7.) Built on hand-built states only (the A-R4 tests of
+`tests/unit/ruleset-v7-cult-against-ai.test.ts`; each rule was seen to fail
+its test with the rule switched off, one rule at a time). No rule changed
+and the ruleset identity did not move. No match was played. The code is
+`src/ai/v7-cult-against.ts` and one more hook in `src/ai/v7.ts` (a Bolas or
+a Ribbit on a hostile Idol Bearer is valued by the policy). It reads the
+public view, the public combat and ritual previews, and the engine's public
+helpers `rampageChoiceV7` (the Unbound target rule) and `standingIdolsV7`;
+it imports no reducer and draws nothing from the PRNG. Every rule stays
+behind `cultAgainstFactsV7`, which is null without a hostile Cult mark (now
+including a hostile standing idol), so a match without a Cult seat decides
+byte for byte as before (the gate test still compares the whole candidate
+lists with the module on and off). Decided here:
+
+1. **Brood.** The channelled Imp of a Brood is worth its own price and 2
+   for every Imp the Brood holds (the public `broodOf`), so its channeller
+   is worth every Imp on the strand (a strand of three Imps: 24, against 8
+   for one); the kill of that Imp adds the Imps it frees (8 each). A strand
+   to a daemon held without strands (a Brood's Imp, a Mass on its
+   Doorstep) is worth nothing and never decisive.
+2. **Doorstep.** A strandless Mass on its Doorstep held only by one
+   standing idol (no own city center beside it, no second idol) makes that
+   Idol Bearer worth the Mass (20): its kill goes first at 1286 (the old
+   ward's priority, just above the strand hunt's 1285), and so does a Bolas
+   or a Ribbit on it, the status that puts the idol down, even when the
+   general rules see no worth in a status on that unit. A Mass two idols
+   hold, or one beside a center, is left to the ordinary scoring.
+3. **The warden.** For a seat with a unit that attacks from two tiles or
+   more, a standing idol is worth half of the strands and chanters on its
+   eight tiles (`CULT_AGAINST_SHIELD_SHARE_V7`, a judgement): its kill or a
+   status adds it all, a blow on the way adds it in proportion to the Hit
+   Points taken. A shot the shield wall halves (`idolHalved`) that does not
+   kill is worth the damage it lost less, so a melee blow on the same unit
+   ranks first. (A halved shot still breaks a strand or a chant: any damage
+   does.) **Awestruck** replaces Pick Me!'s Move rule: a Move worth more
+   than a routine one that ends beside a standing idol from a tile that is
+   not falls to a routine Move's priority (735), unless it ends on a
+   center, a village, or a chest, or the unit's attack on a bearer beside
+   it kills from there (the combat preview on the board after the Move).
+4. **Drag.** No routine Move ends beside a hostile bound Mass from a tile
+   that is not, unless onto a site or on or beside a hostile center a Mass
+   guards (on or beside it: the siege). A Move worth more than a routine
+   one (an attack's approach) is not stopped. An attack on a bound Mass that
+   does not kill it is no candidate from a unit that has an offered hit
+   breaking a hold instead (a strand that matters, a ritual's participant,
+   or the bearer holding a Mass). Multi-tile Moves from beside a Mass are
+   the engine's: the movement query offers one tile. An Unbound Mass stays a
+   lone monster (`src/ai/v7-curiosities.ts`: no routine Move in its reach).
+5. **Swarm.** No Move ends beside two or more of one hostile seat's bound
+   Imps, from a tile beside fewer, when it matters: always for a routine
+   Move, and for any other when the visible enemy kills the unit there;
+   unless onto a site, or when the unit's attack from there kills one of
+   them (the Swarm is broken). A unit beside two steps to a tile beside
+   fewer at 890 (after its attacks, as the eye mark), never off a site.
+6. **The joiners.** Every chanter of a hostile star carries what one chanter
+   fewer spares the seat (the public forecast at one chanter less: 3 on
+   every own unit under the star, after Armoured, Plated, Shields, and its
+   Hit Points). A hit on one is worth twice that and 2; when one chanter
+   fewer leaves an own unit alive that the star would kill, the hit is put
+   first at 1245 (the hit on a star's leader, as built). Decided: no guess
+   at joiners to come: every join is made in the casting turn, so the star
+   another seat sees in its own turn has its final chanters.
+7. **Hunger.** A hostile bound Herald (not short of strands) is about to
+   break when its seat's public Favour, with the trickle of its Summoners
+   whose strands hold, cannot pay 2 for it and every lower-ID Herald of the
+   seat: it is short, so its eye mark is minded (rule 7 of
+   [the spec, section 15.9](RULESET_7_CULTISTS.md#159-as-built-a4-every-seat-against-the-cult-pulp_wars-mch912)) and
+   its strands are not hunted (it breaks anyway).
+8. **The eye mark** is the engine's own target rule (`rampageChoiceV7`
+   within the daemon's reach, the board as it would stand after the Move):
+   a robed cultist within 2 first, then anyone in reach who is no summon,
+   then a summon. So a Human unit beside a short Horror is not marked while
+   a cultist stands within 2 of it, and a Cult seat's own cultist is, which
+   is the "2-tile range only matters for cultists" of the brief.
+
+**Left for later.** The Herald's second attack after an advance is not
+forecast (only its first target is the eye mark); a status other than a
+Bolas or a Ribbit (a frog, Plague, a bite) put on a bearer by an attack is
+valued only as the attack. No number was tuned (no simulation).
+
 ## 13. Interface
 
 All targeting stays on the board ([board targeting](../ui/BOARD_TARGETING.md));

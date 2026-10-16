@@ -742,6 +742,7 @@ import {
   cultAgainstFactsV7,
   cultAgainstGrabAttackV7,
   cultAgainstMoveV7,
+  cultAgainstStatusV7,
   type CultAgainstFactsV7,
   type CultAgainstMoveValueV7,
 } from "./v7-cult-against";
@@ -15763,7 +15764,9 @@ function scoreCommandWithContext(
 
   // Against the Cult (`pulp_wars-mch9.12`, RULESET_7_CULTISTS.md section
   // 15.5; `src/ai/v7-cult-against.ts`): the strands, the X, the star, the
-  // eye mark, the bound Herald, a frog, a taunt, a Grab, and a Cowed city.
+  // eye mark, the bound Herald, a frog, a Grab, and a Cowed city; and (the
+  // Cult redesign's A-R4, `pulp_wars-mch9.41`) Brood, Doorstep, the warden
+  // and Awestruck, Drag, Swarm, the star's joiners, and the Hunger.
   // Null (and nothing changes) in a view with none of the Cult's marks.
   if (context.cultAgainst !== null) {
     const against = cultAgainstValueV7(context, command, resultAt, priority);
@@ -18285,12 +18288,20 @@ function cultAgainstValueV7(
     facts === null ||
     (command.kind !== "MOVE" &&
       command.kind !== "ATTACK" &&
-      command.kind !== "TEND_WOUNDED")
+      command.kind !== "TEND_WOUNDED" &&
+      command.kind !== "THROW_BOLAS" &&
+      command.kind !== "RIBBIT")
   )
     return unchanged;
   const view = context.view;
   const actor = context.lookup.unitsById.get(command.unitId);
   if (actor === undefined || actor.ownerId !== view.viewer.id) return unchanged;
+  // The Cult redesign's A-R4 (`pulp_wars-mch9.41`): a status on a hostile
+  // Idol Bearer puts its idol down while it lasts.
+  if (command.kind === "THROW_BOLAS" || command.kind === "RIBBIT") {
+    const value = cultAgainstStatusV7(facts, command.targetUnitId, priority);
+    return { ...value, forced: value.priority > priority };
+  }
   if (command.kind === "MOVE") {
     const to = resultAt ?? command.path.at(-1);
     if (to === undefined) return unchanged;
