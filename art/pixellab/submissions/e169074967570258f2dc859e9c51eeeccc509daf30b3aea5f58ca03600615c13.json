@@ -1,0 +1,36 @@
+{
+  "id": "icon-swarm-b-broken",
+  "jobId": "d18cc45a-0a24-4855-b7b2-a087359919bb",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "summons-cult",
+    "asset": "chibi-direction-icon-cult-action-swarm",
+    "subject": "ICON:ACTION:SWARM",
+    "faction": "CULT",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 94743,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the blade: snap the sword's blade clean in two in its middle, so the tip half lies a little apart from the half on the hilt with a clear gap between them, the broken ends jagged. Keep the two teal spade-tipped tails curled round it, the hilt, the grey steel colour, the thick black outline and the art style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only the blade: snap the sword's blade clean in two in its middle, so the tip half lies a little apart from the half on the hilt with a clear gap between them, the broken ends jagged. Keep the two teal spade-tipped tails curled round it, the hilt, the grey steel colour, the thick black outline and the art style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only the blade: snap the sword's blade clean in two in its middle, so the tip half lies a little apart from the half on the hilt with a clear gap between them, the broken ends jagged. Keep the two teal spade-tipped tails curled round it, the hilt, the grey steel colour, the thick black outline and the art style the same, on a transparent background.",
+    "editInstruction": "Change only the blade: snap the sword's blade clean in two in its middle, so the tip half lies a little apart from the half on the hilt with a clear gap between them, the broken ends jagged. Keep the two teal spade-tipped tails curled round it, the hilt, the grey steel colour, the thick black outline and the art style the same, on a transparent background.",
+    "source": {
+      "recipe": "icon-swarm-b",
+      "candidate": 0,
+      "sha256": "456b902d61b72107bda0b66972649b5632f9d99110fc0d2ec3e499b728dd9a34"
+    }
+  }
+}

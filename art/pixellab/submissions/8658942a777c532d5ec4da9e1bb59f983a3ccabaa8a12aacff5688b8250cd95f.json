@@ -1,0 +1,36 @@
+{
+  "id": "imp-d-eye",
+  "jobId": "6a187253-266a-4771-bc56-a7df5b3f019e",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "summons-cult",
+    "asset": "chibi-direction-cult-imp",
+    "subject": "UNIT:CULT:IMP",
+    "faction": "CULT",
+    "recipeClass": "creature",
+    "requestSize": {
+      "width": 44,
+      "height": 60
+    },
+    "seed": 94507,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only one colour: the orange of the one big eye becomes pale yellow, colour #ffe27a with shade #e0b84a, with its black pupil kept. Do not redraw anything else: keep the teal body, the bat wings, the spade tail, the brass ear ring, the grin, the cream belly, the shape, the thick black outline and the art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only one colour: the orange of the one big eye becomes pale yellow, colour #ffe27a with shade #e0b84a, with its black pupil kept. Do not redraw anything else: keep the teal body, the bat wings, the spade tail, the brass ear ring, the grin, the cream belly, the shape, the thick black outline and the art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only one colour: the orange of the one big eye becomes pale yellow, colour #ffe27a with shade #e0b84a, with its black pupil kept. Do not redraw anything else: keep the teal body, the bat wings, the spade tail, the brass ear ring, the grin, the cream belly, the shape, the thick black outline and the art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only one colour: the orange of the one big eye becomes pale yellow, colour #ffe27a with shade #e0b84a, with its black pupil kept. Do not redraw anything else: keep the teal body, the bat wings, the spade tail, the brass ear ring, the grin, the cream belly, the shape, the thick black outline and the art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "imp-d",
+      "candidate": 0,
+      "sha256": "ab258e692d995b905a79bcceaf46f9553544d7e2238c7a22266fe2f8eff3d606"
+    }
+  }
+}

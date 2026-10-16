@@ -1,0 +1,37 @@
+{
+  "id": "imp-unbound-a",
+  "jobId": "20533cb9-69aa-45c5-af25-37011259b3cd",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "summons-cult",
+    "asset": "chibi-direction-cult-imp-unbound",
+    "subject": "UNIT:CULT:IMP_UNBOUND",
+    "faction": "CULT",
+    "recipeClass": "creature",
+    "requestSize": {
+      "width": 44,
+      "height": 60
+    },
+    "seed": 94511,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only two small things. The pale yellow of the one big eye becomes bright glowing red, colour #e0281e, with the black pupil kept. The small brass ring in its ear is erased. Keep the teal body, the bat wings, the spade tail, the wide grin with its cream teeth, the cream belly, the shape, the thick black outline and the art style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only two small things. The pale yellow of the one big eye becomes bright glowing red, colour #e0281e, with the black pupil kept. The small brass ring in its ear is erased. Keep the teal body, the bat wings, the spade tail, the wide grin with its cream teeth, the cream belly, the shape, the thick black outline and the art style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only two small things. The pale yellow of the one big eye becomes bright glowing red, colour #e0281e, with the black pupil kept. The small brass ring in its ear is erased. Keep the teal body, the bat wings, the spade tail, the wide grin with its cream teeth, the cream belly, the shape, the thick black outline and the art style the same, on a transparent background.",
+    "editInstruction": "Change only two small things. The pale yellow of the one big eye becomes bright glowing red, colour #e0281e, with the black pupil kept. The small brass ring in its ear is erased. Keep the teal body, the bat wings, the spade tail, the wide grin with its cream teeth, the cream belly, the shape, the thick black outline and the art style the same, on a transparent background.",
+    "source": {
+      "recipe": "imp-d-eye",
+      "candidate": 0,
+      "sibling": true,
+      "sha256": "31c03c80d21ccda50a6a9930293b0164e962fe08557c7a0ca9c334adf9f277b4"
+    }
+  }
+}

@@ -54,6 +54,14 @@
  * - `places.json`: sizes, seats and colour shares of every place;
  * - `candidates-{cities,buildings,monuments}-x2.png`: every recorded
  *   candidate of those three batches, with its verdict;
+ * - the redesign's summons (bead pulp_wars-mch9.45, batch `summons-cult`):
+ *   `summons-{x4,1x}.png` and `summons-zoom-0.75.png` (the Imp and the
+ *   Gibbering Mass, bound and Unbound, beside the Horror on every ground),
+ *   `summons-board-{x2,1x}.png` (three Imps, a Mass and the Horror on a
+ *   strip of board beside the cultists), `summons-lineup-{1x,x3}.png` (each
+ *   beside its look-alikes), `summons-portraits-x4.png`,
+ *   `summons-icons-x4.png`, `summons-icons-small-1x.png`,
+ *   `candidates-summons-x4.png` and `summons.json`;
  * - `index.json`.
  */
 import { copyFile, mkdir, writeFile } from "node:fs/promises";
@@ -68,7 +76,11 @@ import {
   readRaster,
   type BatchRecords,
 } from "./chibi/pipeline";
-import { cultInterfaceEvidence } from "./cult-direction/interface-review";
+import {
+  CULT_SUMMONS_BATCH,
+  cultInterfaceEvidence,
+  cultSummonsInterfaceEvidence,
+} from "./cult-direction/interface-review";
 import { candidateOfRecipe } from "./dwarf-direction/measure";
 import {
   greyscale,
@@ -1232,6 +1244,176 @@ async function rosterEvidence(): Promise<void> {
   );
 }
 
+// ------------------------------------------------------------ ART-R1
+
+const SUMMONS_BEAD = "pulp_wars-mch9.45";
+
+/** The redesign's summons (batch `summons-cult`), bound and Unbound. */
+const SUMMONS: readonly (readonly [title: string, asset: string])[] = [
+  ["Imp", "chibi-direction-cult-imp"],
+  ["Imp, Unbound", "chibi-direction-cult-imp-unbound"],
+  ["Gibbering Mass", "chibi-direction-cult-mass"],
+  ["Gibbering Mass, Unbound", "chibi-direction-cult-mass-unbound"],
+];
+
+/** Pieces the summons stand beside: scale, family and look-alikes. */
+const SUMMONS_PEERS: readonly Named[] = [
+  ["Horror", "chibi-direction-cult-horror"],
+  ["Initiate", "chibi-direction-cult-initiate"],
+  ["Summoner", "chibi-direction-cult-summoner"],
+  ["Thing in the Cellar", "chibi-direction-cult-thing"],
+  ["Tentacle", "chibi-direction-cult-tentacle"],
+  ["Familiar", "chibi-direction-cult-familiar"],
+];
+
+/** CULT_REDESIGN section 14's tells: who each summon must be told from. */
+const SUMMONS_LOOK_ALIKES: readonly (readonly [
+  unit: string,
+  rivals: readonly string[],
+])[] = [
+  ["Imp", ["Horror", "Tentacle", "Familiar", "Initiate"]],
+  ["Gibbering Mass", ["Thing in the Cellar", "Horror", "Familiar"]],
+  ["Imp, Unbound", ["Imp", "Horror"]],
+  ["Gibbering Mass, Unbound", ["Gibbering Mass", "Thing in the Cellar"]],
+];
+
+/**
+ * A strip of board on Grass: three Imps side by side (one of a swarm), a
+ * Mass and the Horror, and below them the Summoner, an Initiate, the two
+ * Unbound looks and the Tentacle; each piece bottom-centred on its cell.
+ */
+async function summonsBoardSheet(
+  of: (title: string) => RgbaRaster,
+  scale: number,
+  name: string,
+): Promise<void> {
+  const grass = await terrain("chibi-grass-1");
+  const rows = [
+    ["Imp", "Imp", "Imp", "Gibbering Mass", "Horror"],
+    [
+      "Summoner",
+      "Initiate",
+      "Imp, Unbound",
+      "Gibbering Mass, Unbound",
+      "Tentacle",
+    ],
+  ];
+  const top = 24;
+  const canvas = blank(
+    (5 * TILE + 2 * GAP) * scale,
+    (top + 2 * TILE + 24 + GAP) * scale,
+    PAPER,
+  );
+  const board = tiled(grass, 5 * TILE, 2 * TILE + 24);
+  blit(canvas, board, GAP * scale, top * scale, scale);
+  for (const [row, titles] of rows.entries())
+    for (const [column, title] of titles.entries()) {
+      const piece = of(title);
+      blit(
+        canvas,
+        piece,
+        (GAP + column * TILE + (TILE - piece.width) / 2) * scale,
+        (top + 24 + (row + 1) * TILE - piece.height) * scale,
+        scale,
+      );
+    }
+  await sheet(name, canvas, [
+    {
+      text: "Three Imps, a Gibbering Mass and the Horror; the Summoner, an Initiate, the two Unbound looks and the Tentacle",
+      left: GAP * scale,
+      top: 4,
+      size: 12 + scale,
+    },
+  ]);
+}
+
+/**
+ * The Imp and the Gibbering Mass (bead pulp_wars-mch9.45): on every ground,
+ * on a strip of board beside the rest of the Cult, in the lineup with the
+ * look-alikes the redesign names, and their portraits and icons.
+ */
+async function summonsEvidence(): Promise<void> {
+  const sprites = new Map<string, RgbaRaster>();
+  for (const [title, asset] of [...SUMMONS, ...SUMMONS_PEERS])
+    sprites.set(title, await unitMaster(asset));
+  const of = (title: string): RgbaRaster => {
+    const sprite = sprites.get(title);
+    if (sprite === undefined) throw new Error(`${title}: not loaded`);
+    return sprite;
+  };
+  const grounds = [
+    ...SUMMONS.map(([title]) => [title, of(title)] as const),
+    ["Horror", of("Horror")] as const,
+  ];
+  await groundsSheet(grounds, 4, 1, "summons-x4.png");
+  await groundsSheet(grounds, 1, 1, "summons-1x.png");
+  await groundsSheet(grounds, 2, 0.75, "summons-zoom-0.75.png");
+  await summonsBoardSheet(of, 2, "summons-board-x2.png");
+  await summonsBoardSheet(of, 1, "summons-board-1x.png");
+
+  const { thresholds } = await calibratedThresholds();
+  const rows: LineupRow[] = [
+    {
+      title: "The summoned",
+      rivals: "Imp, Horror, Gibbering Mass, Thing, Tentacle",
+      sprites: [
+        "Imp",
+        "Horror",
+        "Gibbering Mass",
+        "Thing in the Cellar",
+        "Tentacle",
+      ].map(of),
+    },
+  ];
+  const pairs: { unit: string; rival: string; measure: PairMeasure }[] = [];
+  for (const [unit, rivals] of SUMMONS_LOOK_ALIKES) {
+    rows.push({
+      title: unit,
+      rivals: rivals.join(", "),
+      sprites: [of(unit), ...rivals.map(of)],
+    });
+    for (const rival of rivals)
+      pairs.push({
+        unit,
+        rival,
+        measure: measurePair(of(unit), of(rival), thresholds),
+      });
+  }
+  await lineupSheet("summons-lineup-1x.png", rows, 1);
+  await lineupSheet("summons-lineup-x3.png", rows, 3);
+  const interfaceMeasures = await cultSummonsInterfaceEvidence({
+    root: ROOT,
+    sheet,
+    json,
+  });
+  await json("summons.json", {
+    bead: SUMMONS_BEAD,
+    batch: CULT_SUMMONS_BATCH,
+    note: "The Cult redesign's art (docs/product/RULESET_7_CULT_REDESIGN.md section 14): the Imp and the Gibbering Mass, bound and Unbound, their portraits and the redesign's icons. Measured on the accepted masters. Red (hue 345 to 12) is allowed on an Unbound look only; no piece may carry violet or magenta. `foot` is the lowest opaque row of the canvas. The lineup uses the Dwarf lineup's measures and calibrated thresholds; an Unbound look is its bound sprite with red eyes, so its pair with the bound sprite is expected to be close and is told apart by the eyes and the interface's eye mark.",
+    units: SUMMONS.map(([title, asset]) => {
+      const sprite = of(title);
+      const bounds = opaqueBounds(sprite);
+      return {
+        title,
+        asset,
+        canvas: `${sprite.width} x ${sprite.height}`,
+        size: `${bounds.width} x ${bounds.height}`,
+        foot: bounds.bottom,
+        greenShare: percent(share(sprite, isGreen)),
+        tealShare: percent(share(sprite, BANDS[5]?.test ?? isInk)),
+        redPixels: pixelsWhere([sprite], isRed).count,
+        violetOrMagentaPixels: pixelsWhere([sprite], isViolet).count,
+      };
+    }),
+    peers: SUMMONS_PEERS.map(([title, asset]) => {
+      const bounds = opaqueBounds(of(title));
+      return { title, asset, size: `${bounds.width} x ${bounds.height}` };
+    }),
+    lineup: { thresholds, pairs },
+    ...interfaceMeasures,
+  });
+}
+
 // ------------------------------------------------------------ places
 
 const PLACES_BEAD = "pulp_wars-mch9.16";
@@ -1547,6 +1729,8 @@ async function main(): Promise<void> {
   if (!study) await placesEvidence();
   // Bead pulp_wars-mch9.23: the portraits, icons and effects.
   if (!study) await cultInterfaceEvidence({ root: ROOT, sheet, json });
+  // Bead pulp_wars-mch9.45: the Imp, the Gibbering Mass and their icons.
+  if (!study) await summonsEvidence();
 
   const giantHeights = await giantsSheet(sprites.herald);
   await paletteFiles(sprites);

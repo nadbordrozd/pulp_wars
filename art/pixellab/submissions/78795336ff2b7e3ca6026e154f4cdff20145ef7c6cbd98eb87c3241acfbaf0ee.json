@@ -1,0 +1,36 @@
+{
+  "id": "icon-hunger-a-clean",
+  "jobId": "e47ede16-3a59-4761-8a9a-48e6ca27ef32",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "summons-cult",
+    "asset": "chibi-direction-icon-cult-hunger",
+    "subject": "ICON:HUD:CULT:HUNGER",
+    "faction": "CULT",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 94782,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only one thing: erase the small blue figure with the green flame sitting on the left rim of the bowl, leaving the bowl's rim plain there. Do not redraw anything else: keep the empty cream bowl with its blue band, the spoon in it, the thick black outline and the art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only one thing: erase the small blue figure with the green flame sitting on the left rim of the bowl, leaving the bowl's rim plain there. Do not redraw anything else: keep the empty cream bowl with its blue band, the spoon in it, the thick black outline and the art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only one thing: erase the small blue figure with the green flame sitting on the left rim of the bowl, leaving the bowl's rim plain there. Do not redraw anything else: keep the empty cream bowl with its blue band, the spoon in it, the thick black outline and the art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only one thing: erase the small blue figure with the green flame sitting on the left rim of the bowl, leaving the bowl's rim plain there. Do not redraw anything else: keep the empty cream bowl with its blue band, the spoon in it, the thick black outline and the art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "icon-hunger-a",
+      "candidate": 0,
+      "sha256": "7c6a2c8798d5084f1787bd8fdf30ef777cec375670268126768861666cdbd7d5"
+    }
+  }
+}

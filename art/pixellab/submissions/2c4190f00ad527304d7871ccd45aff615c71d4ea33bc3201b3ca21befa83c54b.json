@@ -1,0 +1,36 @@
+{
+  "id": "imp-a-teal",
+  "jobId": "f460fa0c-b63e-4ace-8632-dbbdedf9e533",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "summons-cult",
+    "asset": "chibi-direction-cult-imp",
+    "subject": "UNIT:CULT:IMP",
+    "faction": "CULT",
+    "recipeClass": "creature",
+    "requestSize": {
+      "width": 44,
+      "height": 60
+    },
+    "seed": 94503,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only two colours. The steel blue skin of the whole body, head, ears, arms, legs and tail becomes deep-sea teal, colour #1f8f95 with shade #145f6b. The purple inside of the open mouth becomes dark teal, colour #145f6b. Keep the one big yellow eye, the cream teeth, the cream belly, the brass ear ring, the spade tail, the shape, the thick black outline and the art style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only two colours. The steel blue skin of the whole body, head, ears, arms, legs and tail becomes deep-sea teal, colour #1f8f95 with shade #145f6b. The purple inside of the open mouth becomes dark teal, colour #145f6b. Keep the one big yellow eye, the cream teeth, the cream belly, the brass ear ring, the spade tail, the shape, the thick black outline and the art style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only two colours. The steel blue skin of the whole body, head, ears, arms, legs and tail becomes deep-sea teal, colour #1f8f95 with shade #145f6b. The purple inside of the open mouth becomes dark teal, colour #145f6b. Keep the one big yellow eye, the cream teeth, the cream belly, the brass ear ring, the spade tail, the shape, the thick black outline and the art style the same, on a transparent background.",
+    "editInstruction": "Change only two colours. The steel blue skin of the whole body, head, ears, arms, legs and tail becomes deep-sea teal, colour #1f8f95 with shade #145f6b. The purple inside of the open mouth becomes dark teal, colour #145f6b. Keep the one big yellow eye, the cream teeth, the cream belly, the brass ear ring, the spade tail, the shape, the thick black outline and the art style the same, on a transparent background.",
+    "source": {
+      "recipe": "imp-a",
+      "candidate": 0,
+      "sha256": "fca6d634fd79a683b1288c24d441f8b8d09d8bb5c7940ef8f13957feadfc3989"
+    }
+  }
+}

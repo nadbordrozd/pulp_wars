@@ -1,0 +1,36 @@
+{
+  "id": "portrait-mass-d-mouths",
+  "jobId": "8fde5e6b-5b8d-4a15-9c2a-cf17e9b4605a",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "summons-cult",
+    "asset": "chibi-direction-portrait-cult-mass",
+    "subject": "PORTRAIT:CULT:MASS",
+    "faction": "CULT",
+    "recipeClass": "creature",
+    "requestSize": {
+      "width": 48,
+      "height": 36
+    },
+    "seed": 94615,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only one colour: the red and pink inside of every small open mouth becomes dark teal, colour #145f6b, with no red and no pink left. Every mouth keeps its shape and its small cream teeth. Do not redraw anything else: keep the teal heap, the eyes, the tendrils, the shape, the thick black outline and the art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only one colour: the red and pink inside of every small open mouth becomes dark teal, colour #145f6b, with no red and no pink left. Every mouth keeps its shape and its small cream teeth. Do not redraw anything else: keep the teal heap, the eyes, the tendrils, the shape, the thick black outline and the art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only one colour: the red and pink inside of every small open mouth becomes dark teal, colour #145f6b, with no red and no pink left. Every mouth keeps its shape and its small cream teeth. Do not redraw anything else: keep the teal heap, the eyes, the tendrils, the shape, the thick black outline and the art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only one colour: the red and pink inside of every small open mouth becomes dark teal, colour #145f6b, with no red and no pink left. Every mouth keeps its shape and its small cream teeth. Do not redraw anything else: keep the teal heap, the eyes, the tendrils, the shape, the thick black outline and the art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-mass-d",
+      "candidate": 0,
+      "sha256": "28bb0f275f9232f5315ac2cd3035a88b68cca7951686b024ba59b104389a30f6"
+    }
+  }
+}

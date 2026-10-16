@@ -1,0 +1,410 @@
+{
+  "bead": "pulp_wars-mch9.45",
+  "batch": "summons-cult",
+  "note": "The Cult redesign's art (docs/product/RULESET_7_CULT_REDESIGN.md section 14): the Imp and the Gibbering Mass, bound and Unbound, their portraits and the redesign's icons. Measured on the accepted masters. Red (hue 345 to 12) is allowed on an Unbound look only; no piece may carry violet or magenta. `foot` is the lowest opaque row of the canvas. The lineup uses the Dwarf lineup's measures and calibrated thresholds; an Unbound look is its bound sprite with red eyes, so its pair with the bound sprite is expected to be close and is told apart by the eyes and the interface's eye mark.",
+  "units": [
+    {
+      "title": "Imp",
+      "asset": "chibi-direction-cult-imp",
+      "canvas": "56 x 80",
+      "size": "44 x 57",
+      "foot": 75,
+      "greenShare": 0,
+      "tealShare": 61.4,
+      "redPixels": 0,
+      "violetOrMagentaPixels": 0
+    },
+    {
+      "title": "Imp, Unbound",
+      "asset": "chibi-direction-cult-imp-unbound",
+      "canvas": "56 x 80",
+      "size": "44 x 57",
+      "foot": 75,
+      "greenShare": 0,
+      "tealShare": 62.7,
+      "redPixels": 68,
+      "violetOrMagentaPixels": 0
+    },
+    {
+      "title": "Gibbering Mass",
+      "asset": "chibi-direction-cult-mass",
+      "canvas": "72 x 88",
+      "size": "55 x 46",
+      "foot": 81,
+      "greenShare": 0,
+      "tealShare": 59.6,
+      "redPixels": 0,
+      "violetOrMagentaPixels": 0
+    },
+    {
+      "title": "Gibbering Mass, Unbound",
+      "asset": "chibi-direction-cult-mass-unbound",
+      "canvas": "72 x 88",
+      "size": "55 x 46",
+      "foot": 81,
+      "greenShare": 0,
+      "tealShare": 59.2,
+      "redPixels": 125,
+      "violetOrMagentaPixels": 0
+    }
+  ],
+  "peers": [
+    {
+      "title": "Horror",
+      "asset": "chibi-direction-cult-horror",
+      "size": "68 x 68"
+    },
+    {
+      "title": "Initiate",
+      "asset": "chibi-direction-cult-initiate",
+      "size": "48 x 73"
+    },
+    {
+      "title": "Summoner",
+      "asset": "chibi-direction-cult-summoner",
+      "size": "36 x 75"
+    },
+    {
+      "title": "Thing in the Cellar",
+      "asset": "chibi-direction-cult-thing",
+      "size": "80 x 84"
+    },
+    {
+      "title": "Tentacle",
+      "asset": "chibi-direction-cult-tentacle",
+      "size": "53 x 74"
+    },
+    {
+      "title": "Familiar",
+      "asset": "chibi-direction-cult-familiar",
+      "size": "58 x 65"
+    }
+  ],
+  "lineup": {
+    "thresholds": {
+      "palette": 18.5,
+      "simulated": 12.4,
+      "lightness": 5.6,
+      "silhouette": 0.65
+    },
+    "pairs": [
+      {
+        "unit": "Imp",
+        "rival": "Horror",
+        "measure": {
+          "palette": 15.8,
+          "deuteranopia": 13,
+          "protanopia": 13.2,
+          "greyPalette": 3.3,
+          "lightness": 5.1,
+          "meanLightness": [40.2, 40],
+          "silhouette": 0.44,
+          "distinct": false,
+          "reasons": ["colour too close"]
+        }
+      },
+      {
+        "unit": "Imp",
+        "rival": "Tentacle",
+        "measure": {
+          "palette": 7.7,
+          "deuteranopia": 6,
+          "protanopia": 6.5,
+          "greyPalette": 2.5,
+          "lightness": 2.2,
+          "meanLightness": [40.2, 39.5],
+          "silhouette": 0.42,
+          "distinct": false,
+          "reasons": ["colour too close"]
+        }
+      },
+      {
+        "unit": "Imp",
+        "rival": "Familiar",
+        "measure": {
+          "palette": 36,
+          "deuteranopia": 29,
+          "protanopia": 29.7,
+          "greyPalette": 2.4,
+          "lightness": 6.1,
+          "meanLightness": [40.2, 45.3],
+          "silhouette": 0.55,
+          "distinct": true,
+          "reasons": []
+        }
+      },
+      {
+        "unit": "Imp",
+        "rival": "Initiate",
+        "measure": {
+          "palette": 48.9,
+          "deuteranopia": 35.7,
+          "protanopia": 35,
+          "greyPalette": 4.1,
+          "lightness": 7.4,
+          "meanLightness": [40.2, 33.3],
+          "silhouette": 0.55,
+          "distinct": true,
+          "reasons": []
+        }
+      },
+      {
+        "unit": "Gibbering Mass",
+        "rival": "Thing in the Cellar",
+        "measure": {
+          "palette": 9.8,
+          "deuteranopia": 8.7,
+          "protanopia": 8.7,
+          "greyPalette": 1.6,
+          "lightness": 3.3,
+          "meanLightness": [44.5, 44],
+          "silhouette": 0.33,
+          "distinct": false,
+          "reasons": ["colour too close"]
+        }
+      },
+      {
+        "unit": "Gibbering Mass",
+        "rival": "Horror",
+        "measure": {
+          "palette": 11.7,
+          "deuteranopia": 8.9,
+          "protanopia": 9.5,
+          "greyPalette": 1.9,
+          "lightness": 6.9,
+          "meanLightness": [44.5, 40],
+          "silhouette": 0.49,
+          "distinct": false,
+          "reasons": ["colour too close"]
+        }
+      },
+      {
+        "unit": "Gibbering Mass",
+        "rival": "Familiar",
+        "measure": {
+          "palette": 35.4,
+          "deuteranopia": 29.2,
+          "protanopia": 27.4,
+          "greyPalette": 2.7,
+          "lightness": 7.7,
+          "meanLightness": [44.5, 45.3],
+          "silhouette": 0.55,
+          "distinct": true,
+          "reasons": []
+        }
+      },
+      {
+        "unit": "Imp, Unbound",
+        "rival": "Imp",
+        "measure": {
+          "palette": 3.8,
+          "deuteranopia": 2.3,
+          "protanopia": 2.5,
+          "greyPalette": 0.8,
+          "lightness": 1.7,
+          "meanLightness": [38.7, 40.2],
+          "silhouette": 1,
+          "distinct": false,
+          "reasons": ["colour too close", "greyscale too close"]
+        }
+      },
+      {
+        "unit": "Imp, Unbound",
+        "rival": "Horror",
+        "measure": {
+          "palette": 15.5,
+          "deuteranopia": 11.3,
+          "protanopia": 11.4,
+          "greyPalette": 2.8,
+          "lightness": 6.3,
+          "meanLightness": [38.7, 40],
+          "silhouette": 0.44,
+          "distinct": false,
+          "reasons": ["colour too close"]
+        }
+      },
+      {
+        "unit": "Gibbering Mass, Unbound",
+        "rival": "Gibbering Mass",
+        "measure": {
+          "palette": 6.2,
+          "deuteranopia": 2.6,
+          "protanopia": 3.4,
+          "greyPalette": 0.7,
+          "lightness": 2.3,
+          "meanLightness": [43.5, 44.5],
+          "silhouette": 1,
+          "distinct": false,
+          "reasons": ["colour too close", "greyscale too close"]
+        }
+      },
+      {
+        "unit": "Gibbering Mass, Unbound",
+        "rival": "Thing in the Cellar",
+        "measure": {
+          "palette": 14.7,
+          "deuteranopia": 10.3,
+          "protanopia": 10.2,
+          "greyPalette": 2.1,
+          "lightness": 3.9,
+          "meanLightness": [43.5, 44],
+          "silhouette": 0.33,
+          "distinct": false,
+          "reasons": ["colour too close"]
+        }
+      }
+    ]
+  },
+  "calls": {
+    "recipes": 43,
+    "creations": 30,
+    "edits": 13
+  },
+  "portraits": [
+    {
+      "asset": "chibi-direction-portrait-cult-imp",
+      "subject": "PORTRAIT:CULT:IMP",
+      "batch": "summons-cult",
+      "recipe": "portrait-imp-a",
+      "canvas": "48 x 48",
+      "sprite": "42 x 36",
+      "greenPercent": 0,
+      "indigoPercent": 0.3,
+      "tealPercent": 59.1,
+      "redPercent": 0,
+      "violetPercent": 0
+    },
+    {
+      "asset": "chibi-direction-portrait-cult-mass",
+      "subject": "PORTRAIT:CULT:MASS",
+      "batch": "summons-cult",
+      "recipe": "portrait-mass-d-cream",
+      "canvas": "48 x 48",
+      "sprite": "48 x 36",
+      "greenPercent": 0,
+      "indigoPercent": 0.6,
+      "tealPercent": 68.3,
+      "redPercent": 0,
+      "violetPercent": 0
+    }
+  ],
+  "icons": [
+    {
+      "asset": "chibi-direction-icon-cult-action-summon-imp",
+      "subject": "ICON:ACTION:SUMMON_IMP",
+      "batch": "summons-cult",
+      "recipe": "icon-summon-imp-s",
+      "canvas": "48 x 48",
+      "sprite": "40 x 40",
+      "greenPercent": 7.7,
+      "indigoPercent": 0,
+      "tealPercent": 47.6,
+      "redPercent": 0,
+      "violetPercent": 0
+    },
+    {
+      "asset": "chibi-direction-icon-cult-action-summon-horror",
+      "subject": "ICON:ACTION:SUMMON_HORROR",
+      "batch": "summons-cult",
+      "recipe": "icon-summon-horror-a",
+      "canvas": "48 x 48",
+      "sprite": "40 x 38",
+      "greenPercent": 7.4,
+      "indigoPercent": 0,
+      "tealPercent": 32,
+      "redPercent": 0,
+      "violetPercent": 0
+    },
+    {
+      "asset": "chibi-direction-icon-cult-action-summon-mass",
+      "subject": "ICON:ACTION:SUMMON_MASS",
+      "batch": "summons-cult",
+      "recipe": "icon-summon-mass-b",
+      "canvas": "48 x 48",
+      "sprite": "48 x 40",
+      "greenPercent": 1.1,
+      "indigoPercent": 0,
+      "tealPercent": 41.5,
+      "redPercent": 0,
+      "violetPercent": 0
+    },
+    {
+      "asset": "chibi-direction-icon-cult-action-brood",
+      "subject": "ICON:ACTION:BROOD",
+      "batch": "summons-cult",
+      "recipe": "icon-brood-a-clean",
+      "canvas": "48 x 48",
+      "sprite": "40 x 33",
+      "greenPercent": 6.9,
+      "indigoPercent": 0,
+      "tealPercent": 47.8,
+      "redPercent": 0,
+      "violetPercent": 0
+    },
+    {
+      "asset": "chibi-direction-icon-cult-action-swarm",
+      "subject": "ICON:ACTION:SWARM",
+      "batch": "summons-cult",
+      "recipe": "icon-swarm-b-broken",
+      "canvas": "48 x 48",
+      "sprite": "44 x 35",
+      "greenPercent": 6.8,
+      "indigoPercent": 0,
+      "tealPercent": 19.8,
+      "redPercent": 0,
+      "violetPercent": 0
+    },
+    {
+      "asset": "chibi-direction-icon-cult-action-doorstep",
+      "subject": "ICON:ACTION:DOORSTEP",
+      "batch": "summons-cult",
+      "recipe": "icon-doorstep-a",
+      "canvas": "48 x 48",
+      "sprite": "36 x 41",
+      "greenPercent": 2.7,
+      "indigoPercent": 43.9,
+      "tealPercent": 0.1,
+      "redPercent": 0,
+      "violetPercent": 0
+    },
+    {
+      "asset": "chibi-direction-icon-cult-action-drag",
+      "subject": "ICON:ACTION:DRAG",
+      "batch": "summons-cult",
+      "recipe": "icon-drag-b",
+      "canvas": "48 x 48",
+      "sprite": "44 x 41",
+      "greenPercent": 0,
+      "indigoPercent": 0,
+      "tealPercent": 37.5,
+      "redPercent": 0,
+      "violetPercent": 0
+    },
+    {
+      "asset": "chibi-direction-icon-cult-action-join-chant",
+      "subject": "ICON:ACTION:JOIN_CHANT",
+      "batch": "summons-cult",
+      "recipe": "icon-join-chant-a",
+      "canvas": "48 x 48",
+      "sprite": "33 x 39",
+      "greenPercent": 17.2,
+      "indigoPercent": 3.2,
+      "tealPercent": 0,
+      "redPercent": 0,
+      "violetPercent": 0
+    },
+    {
+      "asset": "chibi-direction-icon-cult-hunger",
+      "subject": "ICON:HUD:CULT:HUNGER",
+      "batch": "summons-cult",
+      "recipe": "icon-hunger-a-clean",
+      "canvas": "48 x 48",
+      "sprite": "40 x 37",
+      "greenPercent": 0,
+      "indigoPercent": 9.8,
+      "tealPercent": 0,
+      "redPercent": 0,
+      "violetPercent": 0
+    }
+  ]
+}

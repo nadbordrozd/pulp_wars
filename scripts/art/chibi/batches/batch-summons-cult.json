@@ -1,0 +1,789 @@
+{
+  "schemaVersion": 1,
+  "batch": "summons-cult",
+  "title": "Cult redesign ART-R1: the Imp and the Gibbering Mass (bound and Unbound looks, portraits) and the redesign's icons (the three summon heads, Brood, Swarm, Doorstep, Drag, Join the chant and Hunger)",
+  "bead": "pulp_wars-mch9.45",
+  "faction": "CULT",
+  "dryRun": false,
+  "fixedFactionColours": true,
+  "assets": [
+    {
+      "id": "chibi-direction-cult-imp",
+      "subject": "UNIT:CULT:IMP",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "creature",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false,
+      "accent": "cult-green",
+      "bottomMargin": 4
+    },
+    {
+      "id": "chibi-direction-cult-mass",
+      "subject": "UNIT:CULT:MASS",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "creature",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "ownerColour": false,
+      "accent": "cult-green",
+      "bottomMargin": 6
+    },
+    {
+      "id": "chibi-direction-portrait-cult-imp",
+      "subject": "PORTRAIT:CULT:IMP",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "creature",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "cult-green"
+    },
+    {
+      "id": "chibi-direction-portrait-cult-mass",
+      "subject": "PORTRAIT:CULT:MASS",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "creature",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "cult-green",
+      "bottomMargin": 6
+    },
+    {
+      "id": "chibi-direction-icon-cult-action-summon-imp",
+      "subject": "ICON:ACTION:SUMMON_IMP",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "cult-summoned-icon"
+    },
+    {
+      "id": "chibi-direction-icon-cult-action-summon-horror",
+      "subject": "ICON:ACTION:SUMMON_HORROR",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "cult-summoned-icon"
+    },
+    {
+      "id": "chibi-direction-icon-cult-action-summon-mass",
+      "subject": "ICON:ACTION:SUMMON_MASS",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "cult-summoned-icon"
+    },
+    {
+      "id": "chibi-direction-icon-cult-action-brood",
+      "subject": "ICON:ACTION:BROOD",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "cult-summoned-icon"
+    },
+    {
+      "id": "chibi-direction-icon-cult-action-swarm",
+      "subject": "ICON:ACTION:SWARM",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "cult-summoned-icon"
+    },
+    {
+      "id": "chibi-direction-icon-cult-action-doorstep",
+      "subject": "ICON:ACTION:DOORSTEP",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "cult-lodge-icon"
+    },
+    {
+      "id": "chibi-direction-icon-cult-action-drag",
+      "subject": "ICON:ACTION:DRAG",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "cult-summoned-icon"
+    },
+    {
+      "id": "chibi-direction-icon-cult-action-join-chant",
+      "subject": "ICON:ACTION:JOIN_CHANT",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "cult-lodge-icon"
+    },
+    {
+      "id": "chibi-direction-icon-cult-hunger",
+      "subject": "ICON:HUD:CULT:HUNGER",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "cult-lodge-icon"
+    },
+    {
+      "id": "chibi-direction-cult-imp-unbound",
+      "subject": "UNIT:CULT:IMP_UNBOUND",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "creature",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false,
+      "accent": "cult-green",
+      "bottomMargin": 4
+    },
+    {
+      "id": "chibi-direction-cult-mass-unbound",
+      "subject": "UNIT:CULT:MASS_UNBOUND",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "creature",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "ownerColour": false,
+      "accent": "cult-green",
+      "bottomMargin": 6
+    }
+  ],
+  "recipes": [
+    {
+      "id": "imp-a",
+      "asset": "chibi-direction-cult-imp",
+      "endpoint": "create-image-pixen",
+      "seed": 94501,
+      "requestSize": {
+        "width": 44,
+        "height": 60
+      },
+      "promptAddendum": "The imp is drawn large and fills the image. It is teal, not green, and nothing on it glows green.",
+      "negativeAddendum": "person, human, clothes, hat, horns, pitchfork, trident, fire, flames, green, lime, purple, violet, pink, red, tongue, two eyes, octopus, tentacles",
+      "notes": "First sample (ART-R1): the Imp with the creature class (no faction layer, so no robe, hood or green flame), generated smaller than the 56 x 80 standard canvas so it reads clearly smaller than the Horror and the cultists, then seated on the class's foot line."
+    },
+    {
+      "id": "imp-b",
+      "asset": "chibi-direction-cult-imp",
+      "endpoint": "create-image-pixen",
+      "seed": 94502,
+      "requestSize": {
+        "width": 48,
+        "height": 64
+      },
+      "promptAddendum": "The imp is drawn large and fills the image. It is teal, not green, and nothing on it glows green.",
+      "negativeAddendum": "person, human, clothes, hat, horns, pitchfork, trident, fire, flames, green, lime, purple, violet, pink, red, tongue, two eyes, octopus, tentacles",
+      "notes": "First sample: a second seed at a slightly larger request."
+    },
+    {
+      "id": "mass-a",
+      "asset": "chibi-direction-cult-mass",
+      "endpoint": "create-image-pixen",
+      "seed": 94521,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The heap is drawn large and low: about 66 pixels wide and 48 pixels tall, wider than it is tall. It has no head and no single face: the mouths and eyes are scattered all over it. Nothing on it glows green.",
+      "negativeAddendum": "person, human, legs, feet, arms, hands, head, dome, octopus, squid, trapdoor, collar, hat, party hat, slime drips, puddle, green slime, purple, violet, pink, red, tongue",
+      "notes": "First sample (ART-R1): the Gibbering Mass with the creature class, on the large canvas, low and wide; told from the Thing (a taller mound of tentacles with a trapdoor collar and a party hat) by its mouths and its flatter outline."
+    },
+    {
+      "id": "mass-b",
+      "asset": "chibi-direction-cult-mass",
+      "endpoint": "create-image-pixen",
+      "seed": 94522,
+      "requestSize": {
+        "width": 72,
+        "height": 64
+      },
+      "promptAddendum": "The heap is drawn large and low and fills the width of the image, wider than it is tall. It has no head and no single face: the mouths and eyes are scattered all over it. Nothing on it glows green.",
+      "negativeAddendum": "person, human, legs, feet, arms, hands, head, dome, octopus, squid, trapdoor, collar, hat, party hat, slime drips, puddle, green slime, purple, violet, pink, red, tongue",
+      "notes": "First sample: a second seed at a shorter request, so Pixen cannot draw it tall."
+    },
+    {
+      "id": "imp-a-teal",
+      "asset": "chibi-direction-cult-imp",
+      "endpoint": "edit-image-pixen",
+      "seed": 94503,
+      "requestSize": {
+        "width": 44,
+        "height": 60
+      },
+      "source": {
+        "recipe": "imp-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only two colours. The steel blue skin of the whole body, head, ears, arms, legs and tail becomes deep-sea teal, colour #1f8f95 with shade #145f6b. The purple inside of the open mouth becomes dark teal, colour #145f6b. Keep the one big yellow eye, the cream teeth, the cream belly, the brass ear ring, the spade tail, the shape, the thick black outline and the art style the same, on a transparent background.",
+      "notes": "imp-a:0 is the Imp of the direction (39 x 48 px seated: one big yellow eye, a cheeky grin, a spade tail, a brass ring in one ear), but its skin is steel blue, not the summoned teal, and its mouth is purple. imp-b:0 is rejected: two eyes and a yellow nose, red-pink hands and ears (79 px in the red band), 46 x 61 px, as tall as a cultist."
+    },
+    {
+      "id": "mass-c",
+      "asset": "chibi-direction-cult-mass",
+      "endpoint": "create-image-pixen",
+      "seed": 94523,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "It is a low flat heap like a melted pudding or a big soft pile of jelly, about 68 pixels wide and only 42 pixels tall, much wider than it is tall, with a lumpy top and no round ball shape. It has no head and no single big face: many small mouths and eyes are scattered all over it, and the inside of every open mouth is dark teal, colour #145f6b. Nothing on it glows green.",
+      "negativeAddendum": "person, human, legs, feet, arms, hands, head, face, big mouth, ball, sphere, round body, horns, spikes, dome, octopus, squid, trapdoor, collar, hat, party hat, slime drips, puddle, green slime, purple, violet, pink, red, tongue, gums",
+      "notes": "mass-a:0 is a round ball with horns, one big face in the middle and red mouths (66 x 69 px, 71 px in the red band); mass-b:0 is a small upright blob with one face and a red mouth (54 x 52 px, 119 px red). Both rejected: the Mass is a flat heap with no single face, and its mouths are dark inside."
+    },
+    {
+      "id": "mass-d",
+      "asset": "chibi-direction-cult-mass",
+      "endpoint": "create-image-pixen",
+      "seed": 94524,
+      "requestSize": {
+        "width": 72,
+        "height": 56
+      },
+      "promptAddendum": "It is a low flat heap like a melted pudding or a big soft pile of jelly that fills the whole width of the image, with a lumpy top and no round ball shape. It has no head and no single big face: many small mouths and eyes are scattered all over it, and the inside of every open mouth is dark teal, colour #145f6b. Nothing on it glows green.",
+      "negativeAddendum": "person, human, legs, feet, arms, hands, head, face, big mouth, ball, sphere, round body, horns, spikes, dome, octopus, squid, trapdoor, collar, hat, party hat, slime drips, puddle, green slime, purple, violet, pink, red, tongue, gums",
+      "notes": "As mass-c, at a wide short request (72 x 56) so the heap cannot be drawn tall, then seated in the large canvas."
+    },
+    {
+      "id": "portrait-imp-a",
+      "asset": "chibi-direction-portrait-cult-imp",
+      "endpoint": "create-image-pixen",
+      "seed": 94601,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The imp is drawn large and fills the whole height of the square. It is teal, not green, and nothing on it glows green.",
+      "negativeAddendum": "person, human, clothes, hat, horns, pitchfork, fire, flames, green, lime, purple, violet, pink, red, tongue, two eyes, octopus, tentacles",
+      "notes": "The Imp whole with the creature class, as the other summoned things' portraits, from a subject line that describes the board sprite."
+    },
+    {
+      "id": "portrait-mass-a",
+      "asset": "chibi-direction-portrait-cult-mass",
+      "endpoint": "create-image-pixen",
+      "seed": 94611,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The heap is drawn large and fills the whole width of the square, a low lumpy pile like melted pudding with no round ball shape. It has no single big face: the small mouths and eyes are scattered all over it, and the inside of every open mouth is dark teal, colour #145f6b. Nothing on it glows green.",
+      "negativeAddendum": "person, human, legs, feet, arms, hands, head, face, big mouth, ball, sphere, horns, spikes, octopus, trapdoor, collar, hat, green slime, purple, violet, pink, red, tongue, gums",
+      "notes": "The Gibbering Mass whole with the creature class, from a subject line that describes the board sprite."
+    },
+    {
+      "id": "icon-summon-imp-a",
+      "asset": "chibi-direction-icon-cult-action-summon-imp",
+      "endpoint": "create-image-pixen",
+      "seed": 94701,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The imp's head is big and fills the upper half of the image.",
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, checkerboard, dark background, horns, two eyes, fire, flames, candle, blue cloth, pink, red, tongue",
+      "notes": "Summon an Imp: the summoning ring of the Summon icon with the Imp's head rising from it, one of three summon heads for the chooser."
+    },
+    {
+      "id": "icon-summon-horror-a",
+      "asset": "chibi-direction-icon-cult-action-summon-horror",
+      "endpoint": "create-image-pixen",
+      "seed": 94711,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The monster's head is big and fills the upper half of the image.",
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, checkerboard, dark background, horns, fire, flames, candle, blue cloth, pink, red, tongue",
+      "notes": "Summon a Horror: the same ring with the Horror's grinning top half."
+    },
+    {
+      "id": "icon-summon-mass-a",
+      "asset": "chibi-direction-icon-cult-action-summon-mass",
+      "endpoint": "create-image-pixen",
+      "seed": 94721,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The blob is big and fills the upper half of the image. The inside of every open mouth is dark teal.",
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, checkerboard, dark background, horns, head, face, big mouth, fire, flames, candle, blue cloth, pink, red, tongue",
+      "notes": "Summon a Gibbering Mass: the same ring with the Mass bulging out of it."
+    },
+    {
+      "id": "icon-brood-a",
+      "asset": "chibi-direction-icon-cult-action-brood",
+      "endpoint": "create-image-pixen",
+      "seed": 94731,
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, checkerboard, dark background, bodies, horns, two eyes on one head, fire, flames, candle, blue cloth, pink, red, tongue",
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "notes": "Brood: three Imps held by one strand."
+    },
+    {
+      "id": "icon-swarm-a",
+      "asset": "chibi-direction-icon-cult-action-swarm",
+      "endpoint": "create-image-pixen",
+      "seed": 94741,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "There is no creature in the image: only the broken sword and the two tails.",
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, checkerboard, dark background, hand, arm, body, head, face, shield, blood, fire, flames, candle, blue cloth, pink, red",
+      "notes": "Swarm: a unit beside two Imps cannot strike back, shown as a sword snapped between two Imp tails."
+    },
+    {
+      "id": "icon-doorstep-a",
+      "asset": "chibi-direction-icon-cult-action-doorstep",
+      "endpoint": "create-image-pixen",
+      "seed": 94751,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "It is a plain object, not a living thing: no face, no arms and no legs. The house is drawn large and fills the image.",
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, checkerboard, dark background, face, eyes, garden, fence, trees, path, chimney smoke, red roof, orange roof, purple, candle",
+      "notes": "Doorstep: the Mass needs no strand at home; also the Doorstep pip, a tiny house."
+    },
+    {
+      "id": "icon-drag-a",
+      "asset": "chibi-direction-icon-cult-action-drag",
+      "endpoint": "create-image-pixen",
+      "seed": 94761,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "There is no person in the image: only one single boot with no leg above its top.",
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, figure, leg, knee, checkerboard, dark background, tentacle, octopus, face, mouth, water, splash, fire, flames, candle, blue cloth, pink, red, purple",
+      "notes": "Drag: an enemy beside the Mass moves only one tile, shown as a boot stuck in its goo (told from Seize and Grab, a tentacle round a boot)."
+    },
+    {
+      "id": "icon-join-chant-a",
+      "asset": "chibi-direction-icon-cult-action-join-chant",
+      "endpoint": "create-image-pixen",
+      "seed": 94771,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "It is a plain object, not a living thing: no face, no arms and no legs.",
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, figure, checkerboard, dark background, face, eyes, candlestick, holder, dish, several candles, orange flame, yellow flame, cross, red",
+      "notes": "Join the chant: a candle with a plus, the join icon on a pending Stargazer's tile."
+    },
+    {
+      "id": "icon-hunger-a",
+      "asset": "chibi-direction-icon-cult-hunger",
+      "endpoint": "create-image-pixen",
+      "seed": 94781,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "It is a plain object, not a living thing: no face, no arms and no legs. The bowl is empty: no food and no liquid in it.",
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, figure, checkerboard, dark background, face, eyes, food, soup, rice, fruit, steam, candle, flames, table, red, orange, purple",
+      "notes": "Hunger: the Herald's 2 Favour a turn, an empty bowl on its card and the HUD chip."
+    },
+    {
+      "id": "imp-a-wings",
+      "asset": "chibi-direction-cult-imp",
+      "endpoint": "edit-image-pixen",
+      "seed": 94504,
+      "requestSize": {
+        "width": 44,
+        "height": 60
+      },
+      "source": {
+        "recipe": "imp-a-teal",
+        "candidate": 0
+      },
+      "editInstruction": "Change only one thing: add two tiny teal bat wings, colour #1f8f95 with shade #145f6b, sticking out from behind its shoulders on both sides, each wing smaller than its head, with pointed scalloped edges and a thick black outline. Do not redraw anything else: keep the teal body, the one big yellow eye, the grin, the cream belly, the ears, the brass ear ring, the spade tail, the thick black outline and the art style exactly the same, on a transparent background.",
+      "notes": "imp-a-teal:0 is the teal Imp (39 x 48 px, its mouth dark teal; candidate 1 is nearly the same) but it has no wings, which the direction gives it (bat wings too small to fly)."
+    },
+    {
+      "id": "mass-e",
+      "asset": "chibi-direction-cult-mass",
+      "endpoint": "create-image-pixen",
+      "seed": 94525,
+      "requestSize": {
+        "width": 72,
+        "height": 56
+      },
+      "promptAddendum": "Its shape is a huge lumpy heap of soft teal jelly slumped on the ground like a big beanbag or a melted pudding: flat on top, as wide as the whole image from edge to edge, and only about 40 pixels tall. It has no legs and no head and no single face: about ten small mouths and a few small eyes are scattered all over the heap, and the inside of every open mouth is dark teal, colour #145f6b. Three or four short fat tendrils spread flat along the ground at its foot. Nothing on it glows green.",
+      "negativeAddendum": "person, human, legs, standing on legs, feet, arms, hands, head, face, big mouth, ball, sphere, round body, dome, horns, spikes, octopus, squid, trapdoor, collar, hat, party hat, puddle, green slime, purple, violet, pink, red, tongue, gums, spots, polka dots",
+      "notes": "mass-c:0 is a ball on four tentacle legs with one big face (59 x 61 px, 38 px red in its mouths); mass-d:0 is the nearest, a 58 x 48 px dome of mouths and eyes with tendrils spread at its foot, but it is narrower than the Horror and reads as a spotted dome at board size. Both rejected; the heap is named as a beanbag as wide as the image."
+    },
+    {
+      "id": "mass-f",
+      "asset": "chibi-direction-cult-mass",
+      "endpoint": "create-image-pixen",
+      "seed": 94526,
+      "requestSize": {
+        "width": 72,
+        "height": 60
+      },
+      "promptAddendum": "Its shape is a huge lumpy heap of soft teal jelly slumped on the ground like a big beanbag or a melted pudding: flat on top, as wide as the whole image from edge to edge. It has no legs and no head and no single face: about ten small mouths and a few small eyes are scattered all over the heap, and the inside of every open mouth is dark teal, colour #145f6b. Three or four short fat tendrils spread flat along the ground at its foot. Nothing on it glows green.",
+      "negativeAddendum": "person, human, legs, standing on legs, feet, arms, hands, head, face, big mouth, ball, sphere, round body, dome, horns, spikes, octopus, squid, trapdoor, collar, hat, party hat, puddle, green slime, purple, violet, pink, red, tongue, gums, spots, polka dots",
+      "notes": "As mass-e, a second seed at 72 x 60."
+    },
+    {
+      "id": "imp-c",
+      "asset": "chibi-direction-cult-imp",
+      "endpoint": "create-image-pixen",
+      "seed": 94505,
+      "requestSize": {
+        "width": 44,
+        "height": 60
+      },
+      "promptAddendum": "The imp is drawn large and fills the image. Its two tiny bat wings are spread out wide to both sides of its body so they show clearly in the outline. Its skin is a bright deep-sea teal, lit #2aa6a6 on its left side and #1f8f95 elsewhere, never dark and never green, and nothing on it glows green.",
+      "negativeAddendum": "person, human, clothes, hat, pitchfork, trident, fire, flames, green, lime, purple, violet, pink, red, tongue, two eyes, octopus, tentacles, folded wings",
+      "notes": "imp-a-wings barely changed imp-a-teal (Pixen kept the shoulder nubs), and the teal Imp is darker than the Horror: a fresh creation with the wings spread and the lit teal named, after the accepted look of portrait-imp-a."
+    },
+    {
+      "id": "imp-d",
+      "asset": "chibi-direction-cult-imp",
+      "endpoint": "create-image-pixen",
+      "seed": 94506,
+      "requestSize": {
+        "width": 44,
+        "height": 60
+      },
+      "promptAddendum": "The imp is drawn large and fills the image. Its two tiny bat wings are spread out wide to both sides of its body so they show clearly in the outline. Its skin is a bright deep-sea teal, lit #2aa6a6 on its left side and #1f8f95 elsewhere, never dark and never green, and nothing on it glows green.",
+      "negativeAddendum": "person, human, clothes, hat, pitchfork, trident, fire, flames, green, lime, purple, violet, pink, red, tongue, two eyes, octopus, tentacles, folded wings",
+      "notes": "As imp-c, a second seed."
+    },
+    {
+      "id": "mass-e-mouths",
+      "asset": "chibi-direction-cult-mass",
+      "endpoint": "edit-image-pixen",
+      "seed": 94527,
+      "requestSize": {
+        "width": 72,
+        "height": 56
+      },
+      "source": {
+        "recipe": "mass-e",
+        "candidate": 0
+      },
+      "editInstruction": "Change only one colour: the red and pink inside of every small open mouth becomes dark teal, colour #145f6b, with no red and no pink left. Every mouth keeps its shape and its small cream teeth. Do not redraw anything else: keep the teal heap, the eyes, the tendrils, the shape, the thick black outline and the art style exactly the same, on a transparent background.",
+      "notes": "mass-e:0 is the Mass of the direction: a low heap of babbling cream-toothed mouths and yellow eyes with tendrils spread at its foot (55 x 46 px), but the insides of its mouths are red and pink (51 px in the red band: red means Unbound), and a dark checkered shadow sits under it. mass-f:0 is rejected: one big face, a spoon stuck in it."
+    },
+    {
+      "id": "mass-e-big",
+      "asset": "chibi-direction-cult-mass",
+      "endpoint": "edit-image-pixen",
+      "seed": 94528,
+      "requestSize": {
+        "width": 72,
+        "height": 56
+      },
+      "source": {
+        "recipe": "mass-e",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the size: redraw the same heap bigger and wider, so it fills the whole width of the image from edge to edge and nearly its whole height, still lower than it is wide. Keep every mouth, eye and tendril, the teal colours, the thick black outline and the art style the same, on a transparent background, with no shadow under it.",
+      "notes": "A trial: mass-e is 55 x 46 px, narrower than the Horror (68 x 68); the Mass is the big guardian."
+    },
+    {
+      "id": "imp-d-eye",
+      "asset": "chibi-direction-cult-imp",
+      "endpoint": "edit-image-pixen",
+      "seed": 94507,
+      "requestSize": {
+        "width": 44,
+        "height": 60
+      },
+      "source": {
+        "recipe": "imp-d",
+        "candidate": 0
+      },
+      "editInstruction": "Change only one colour: the orange of the one big eye becomes pale yellow, colour #ffe27a with shade #e0b84a, with its black pupil kept. Do not redraw anything else: keep the teal body, the bat wings, the spade tail, the brass ear ring, the grin, the cream belly, the shape, the thick black outline and the art style exactly the same, on a transparent background.",
+      "notes": "imp-d:0 is the Imp of the direction and matches portrait-imp-a (bright teal, wings spread, spade tail, a brass ring in one ear, 44 x 57 px: clearly smaller than the Horror, 68 x 68, and lower than a cultist); its eye is orange, and every summoned eye is pale yellow. imp-c:0 is rejected (steel blue, a dark tail curled over its head); imp-a-wings and imp-a-teal are rejected (no wings, a dark teal that reads black at board size)."
+    },
+    {
+      "id": "mass-g",
+      "asset": "chibi-direction-cult-mass",
+      "endpoint": "create-image-pixen",
+      "seed": 94529,
+      "requestSize": {
+        "width": 72,
+        "height": 60
+      },
+      "promptAddendum": "Its shape is a huge lumpy heap of soft teal jelly slumped on the ground like a big beanbag or a melted pudding: flat on top, drawn very large, about 66 pixels wide from edge to edge of the image and about 46 pixels tall. It has no legs and no head and no single face: about ten small mouths and a few small eyes are scattered all over the heap, and the inside of every open mouth is dark teal, colour #145f6b. Three or four short fat tendrils spread flat along the ground at its foot. Nothing on it glows green.",
+      "negativeAddendum": "person, human, legs, standing on legs, feet, arms, hands, head, face, big mouth, ball, sphere, round body, dome, horns, spikes, octopus, squid, trapdoor, collar, hat, party hat, puddle, shadow, green slime, purple, violet, pink, red, tongue, gums, spots, polka dots, spoon",
+      "notes": "mass-e-mouths:0 is the Mass wanted but only 55 x 46 px, narrower than the Horror (68 x 68); mass-e-big did not resize it (an edit keeps the drawing's size). Two more creations of mass-e's request with the size named, for a bigger heap."
+    },
+    {
+      "id": "mass-h",
+      "asset": "chibi-direction-cult-mass",
+      "endpoint": "create-image-pixen",
+      "seed": 94530,
+      "requestSize": {
+        "width": 72,
+        "height": 64
+      },
+      "promptAddendum": "Its shape is a huge lumpy heap of soft teal jelly slumped on the ground like a big beanbag or a melted pudding: flat on top, drawn very large, about 66 pixels wide from edge to edge of the image and about 48 pixels tall. It has no legs and no head and no single face: about ten small mouths and a few small eyes are scattered all over the heap, and the inside of every open mouth is dark teal, colour #145f6b. Three or four short fat tendrils spread flat along the ground at its foot. Nothing on it glows green.",
+      "negativeAddendum": "person, human, legs, standing on legs, feet, arms, hands, head, face, big mouth, ball, sphere, round body, dome, horns, spikes, octopus, squid, trapdoor, collar, hat, party hat, puddle, shadow, green slime, purple, violet, pink, red, tongue, gums, spots, polka dots, spoon",
+      "notes": "As mass-g, at 72 x 64."
+    },
+    {
+      "id": "imp-unbound-a",
+      "asset": "chibi-direction-cult-imp-unbound",
+      "endpoint": "edit-image-pixen",
+      "seed": 94511,
+      "requestSize": {
+        "width": 44,
+        "height": 60
+      },
+      "source": {
+        "recipe": "imp-d-eye",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Change only two small things. The pale yellow of the one big eye becomes bright glowing red, colour #e0281e, with the black pupil kept. The small brass ring in its ear is erased. Keep the teal body, the bat wings, the spade tail, the wide grin with its cream teeth, the cream belly, the shape, the thick black outline and the art style the same, on a transparent background.",
+      "notes": "The Unbound look of the Imp: an edit of the accepted bound sprite that changes the eye and the ear ring only, as the Horror's (CULT.md, Unbound looks: the red eye is the cue, the brass ring is the Imp's collar)."
+    },
+    {
+      "id": "mass-unbound-a",
+      "asset": "chibi-direction-cult-mass-unbound",
+      "endpoint": "edit-image-pixen",
+      "seed": 94531,
+      "requestSize": {
+        "width": 72,
+        "height": 56
+      },
+      "source": {
+        "recipe": "mass-e-mouths",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Change only one colour: every round yellow eye on the heap becomes bright glowing red, colour #e0281e, with its black pupil kept. Do not redraw anything else: keep the teal heap, every small mouth with its cream teeth and dark teal inside, the tendrils at its foot, the shape, the thick black outline and the art style exactly the same, on a transparent background.",
+      "notes": "The Unbound look of the Gibbering Mass: an edit of the accepted bound sprite that turns its eyes red only (it has no collar or ring to break)."
+    },
+    {
+      "id": "portrait-mass-b",
+      "asset": "chibi-direction-portrait-cult-mass",
+      "endpoint": "create-image-pixen",
+      "seed": 94612,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "Its shape is a lumpy heap of soft teal jelly slumped on the ground like a beanbag, drawn large and filling the whole width of the square, wider than it is tall. It has no head and no single face: about eight small open mouths with tiny cream teeth and a few small yellow eyes are scattered all over the heap, and the inside of every open mouth is dark teal, colour #145f6b. Short fat tendrils spread flat along the ground at its foot. Nothing on it glows green.",
+      "negativeAddendum": "person, human, legs, standing on legs, feet, arms, hands, head, face, big mouth, two big eyes, ball, sphere, dome, horns, tusks, spikes, octopus, trapdoor, collar, hat, puddle, shadow, green slime, purple, violet, pink, red, tongue, gums",
+      "notes": "portrait-mass-a is a ball with one big face, two big eyes and white tusks, not the accepted heap: a second creation with the bound sprite's own words."
+    },
+    {
+      "id": "portrait-mass-c",
+      "asset": "chibi-direction-portrait-cult-mass",
+      "endpoint": "create-image-pixen",
+      "seed": 94613,
+      "requestSize": {
+        "width": 48,
+        "height": 36
+      },
+      "promptAddendum": "Its shape is a lumpy heap of soft teal jelly slumped on the ground like a beanbag, drawn large and filling the whole width of the image, wider than it is tall. It has no head and no single face: about eight small open mouths with tiny cream teeth and a few small yellow eyes are scattered all over the heap, and the inside of every open mouth is dark teal, colour #145f6b. Short fat tendrils spread flat along the ground at its foot. Nothing on it glows green.",
+      "negativeAddendum": "person, human, legs, standing on legs, feet, arms, hands, head, face, big mouth, two big eyes, ball, sphere, dome, horns, tusks, spikes, octopus, trapdoor, collar, hat, puddle, shadow, green slime, purple, violet, pink, red, tongue, gums",
+      "notes": "portrait-mass-b is an upright blob with one face, a red mouth and an arm: the square drew it tall. The portrait is now generated at a wide request (48 x 36), as the board sprite was, and seated in the 48 x 48 square."
+    },
+    {
+      "id": "portrait-mass-d",
+      "asset": "chibi-direction-portrait-cult-mass",
+      "endpoint": "create-image-pixen",
+      "seed": 94614,
+      "requestSize": {
+        "width": 48,
+        "height": 36
+      },
+      "promptAddendum": "Its shape is a lumpy heap of soft teal jelly slumped on the ground like a beanbag, drawn large and filling the whole width of the image, wider than it is tall. It has no head and no single face: about eight small open mouths with tiny cream teeth and a few small yellow eyes are scattered all over the heap, and the inside of every open mouth is dark teal, colour #145f6b. Short fat tendrils spread flat along the ground at its foot. Nothing on it glows green.",
+      "negativeAddendum": "person, human, legs, standing on legs, feet, arms, hands, head, face, big mouth, two big eyes, ball, sphere, dome, horns, tusks, spikes, octopus, trapdoor, collar, hat, puddle, shadow, green slime, purple, violet, pink, red, tongue, gums",
+      "notes": "As portrait-mass-c, a second seed."
+    },
+    {
+      "id": "icon-summon-imp-b",
+      "asset": "chibi-direction-icon-cult-action-summon-imp",
+      "endpoint": "create-image-pixen",
+      "seed": 94702,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The imp has only one single big round pale yellow eye in the middle of its face, a cyclops, and a crest of three small teal spikes on top of its head instead of ears. The ring is pale grey stone. Its head is big and fills the upper half of the image.",
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, checkerboard, dark background, two eyes, goblin, long ears, horns, fire, flames, candle, blue cloth, pink, red, tongue",
+      "notes": "icon-summon-imp-a drew a goblin with two eyes and long ears in a cream ring: the Imp is a cyclops with a spiky crest."
+    },
+    {
+      "id": "icon-summon-mass-b",
+      "asset": "chibi-direction-icon-cult-action-summon-mass",
+      "endpoint": "create-image-pixen",
+      "seed": 94722,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The blob is a low lumpy heap covered in many small open mouths with tiny cream teeth and a few small yellow eyes, with no single big mouth and no face; the inside of every mouth is dark teal. It bulges up out of the ring and fills the upper half of the image.",
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, checkerboard, dark background, horns, spikes, head, face, big mouth, cave, mushroom, spots, fire, flames, candle, blue cloth, pink, red, tongue",
+      "notes": "icon-summon-mass-a is a spotted dome with one big mouth like a cave in a stone ring, not the heap of mouths of the board sprite."
+    },
+    {
+      "id": "icon-brood-a-clean",
+      "asset": "chibi-direction-icon-cult-action-brood",
+      "endpoint": "edit-image-pixen",
+      "seed": 94732,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-brood-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only two things: erase the small orange flames on top of the three heads, and erase the flat cream plate under them, leaving nothing behind. Do not redraw anything else: keep the three teal one-eyed heads, their grins, the glowing green thread round them, the thick black outline and the art style exactly the same, on a transparent background.",
+      "notes": "icon-brood-a is three one-eyed teal Imp heads huddled in a glowing green loop, but three small orange flames sit on the heads (the faction has one accent, green) and a cream plate under them (Pixen's stand)."
+    },
+    {
+      "id": "icon-swarm-b",
+      "asset": "chibi-direction-icon-cult-action-swarm",
+      "endpoint": "create-image-pixen",
+      "seed": 94742,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "There is only one sword, lying flat and snapped clean in two in the middle: the blade's tip lies apart from the hilt with a gap between them. The thin teal spade-tipped tail of a small imp curls round each piece. There is no creature in the image: only the broken sword and the two tails.",
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, checkerboard, dark background, crossed swords, two swords, whole sword, hand, arm, body, head, face, shield, blood, fire, flames, candle, blue cloth, pink, red",
+      "notes": "icon-swarm-a drew two whole crossed swords wrapped in teal tails, which reads as an attack: Swarm is the defender that cannot strike back, so the sword must be broken."
+    },
+    {
+      "id": "portrait-mass-d-mouths",
+      "asset": "chibi-direction-portrait-cult-mass",
+      "endpoint": "edit-image-pixen",
+      "seed": 94615,
+      "requestSize": {
+        "width": 48,
+        "height": 36
+      },
+      "source": {
+        "recipe": "portrait-mass-d",
+        "candidate": 0
+      },
+      "editInstruction": "Change only one colour: the red and pink inside of every small open mouth becomes dark teal, colour #145f6b, with no red and no pink left. Every mouth keeps its shape and its small cream teeth. Do not redraw anything else: keep the teal heap, the eyes, the tendrils, the shape, the thick black outline and the art style exactly the same, on a transparent background.",
+      "notes": "portrait-mass-d:0 is the heap of the board sprite, filling the width (48 x 36 px), but its mouths are red inside (49 px in the red band), as the sprite's were before mass-e-mouths. portrait-mass-c:0 is rejected: a small low mound (44 x 27 px) whose mouths do not read."
+    },
+    {
+      "id": "icon-summon-imp-s",
+      "asset": "chibi-direction-icon-cult-action-summon-imp",
+      "endpoint": "edit-image-pixen",
+      "seed": 94703,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-summon-horror-a",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Change only the creature rising from the ring: it becomes the head and shoulders of a small teal imp with one single big round pale yellow eye in the middle of its face, a crest of three small teal spikes on its head, a wide cheeky cream grin and two tiny teal bat wings at its shoulders. Keep the grey stone ring, its green glow, the thick black outline and the art style the same, on a transparent background.",
+      "notes": "icon-summon-imp-a drew a two-eyed goblin in a cream ring and icon-summon-imp-b a one-eyed fish-like imp inside a round stone frame that reads as a badge; the three summon icons should share one ring, so the Imp's is a sibling edit of the accepted Horror icon."
+    },
+    {
+      "id": "icon-hunger-a-clean",
+      "asset": "chibi-direction-icon-cult-hunger",
+      "endpoint": "edit-image-pixen",
+      "seed": 94782,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-hunger-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only one thing: erase the small blue figure with the green flame sitting on the left rim of the bowl, leaving the bowl's rim plain there. Do not redraw anything else: keep the empty cream bowl with its blue band, the spoon in it, the thick black outline and the art style exactly the same, on a transparent background.",
+      "notes": "icon-hunger-a is the empty cream bowl with a blue band and a spoon, the Hunger chip, but a small blue figure with a green flame perches on its left rim."
+    },
+    {
+      "id": "icon-drag-b",
+      "asset": "chibi-direction-icon-cult-action-drag",
+      "endpoint": "create-image-pixen",
+      "seed": 94762,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "There is no person in the image: only one single brown leather boot, drawn large and filling most of the image, sunk to its ankle in a sticky blob of deep-sea teal goo, with thick stretchy strings of teal goo pulling down on it from the sides. Nothing else is in the image.",
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, figure, leg, knee, checkerboard, dark background, candle, flame, fire, green, tentacle, octopus, face, mouth, water, splash, blue cloth, pink, red, purple",
+      "notes": "icon-drag-a is a small dark boot in a teal puddle (35 x 29 px) with a candle and a green flame beside it: muddled at 24 px. A second creation with the boot large and nothing else."
+    },
+    {
+      "id": "portrait-mass-d-cream",
+      "asset": "chibi-direction-portrait-cult-mass",
+      "endpoint": "edit-image-pixen",
+      "seed": 94616,
+      "requestSize": {
+        "width": 48,
+        "height": 36
+      },
+      "source": {
+        "recipe": "portrait-mass-d-mouths",
+        "candidate": 0
+      },
+      "editInstruction": "Change only two colours: the small orange and red lips round the mouths become pale cream, colour #f3e7c4, and the dark navy shadows of the heap become dark teal, colour #145f6b. No red, orange or navy left. Do not redraw anything else: keep the heap's shape, every mouth and tooth, the eyes, the tendrils, the thick black outline and the art style exactly the same, on a transparent background.",
+      "notes": "portrait-mass-d-mouths:0 has dark teal mouths now, but 17 px of red-orange lips are left round them and its shadow side is navy, darker than the board sprite."
+    },
+    {
+      "id": "icon-swarm-b-broken",
+      "asset": "chibi-direction-icon-cult-action-swarm",
+      "endpoint": "edit-image-pixen",
+      "seed": 94743,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-swarm-b",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the blade: snap the sword's blade clean in two in its middle, so the tip half lies a little apart from the half on the hilt with a clear gap between them, the broken ends jagged. Keep the two teal spade-tipped tails curled round it, the hilt, the grey steel colour, the thick black outline and the art style the same, on a transparent background.",
+      "notes": "icon-swarm-b is one diagonal sword with two teal spade-tipped tails round it, but the sword is whole: Swarm is the defender that cannot strike back, shown by the broken blade."
+    }
+  ]
+}

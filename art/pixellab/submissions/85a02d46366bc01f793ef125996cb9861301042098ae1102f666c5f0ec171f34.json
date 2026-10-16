@@ -1,0 +1,36 @@
+{
+  "id": "portrait-mass-d-cream",
+  "jobId": "56cd4be1-c08c-4310-b116-892a12b9fe2a",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "summons-cult",
+    "asset": "chibi-direction-portrait-cult-mass",
+    "subject": "PORTRAIT:CULT:MASS",
+    "faction": "CULT",
+    "recipeClass": "creature",
+    "requestSize": {
+      "width": 48,
+      "height": 36
+    },
+    "seed": 94616,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only two colours: the small orange and red lips round the mouths become pale cream, colour #f3e7c4, and the dark navy shadows of the heap become dark teal, colour #145f6b. No red, orange or navy left. Do not redraw anything else: keep the heap's shape, every mouth and tooth, the eyes, the tendrils, the thick black outline and the art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only two colours: the small orange and red lips round the mouths become pale cream, colour #f3e7c4, and the dark navy shadows of the heap become dark teal, colour #145f6b. No red, orange or navy left. Do not redraw anything else: keep the heap's shape, every mouth and tooth, the eyes, the tendrils, the thick black outline and the art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only two colours: the small orange and red lips round the mouths become pale cream, colour #f3e7c4, and the dark navy shadows of the heap become dark teal, colour #145f6b. No red, orange or navy left. Do not redraw anything else: keep the heap's shape, every mouth and tooth, the eyes, the tendrils, the thick black outline and the art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only two colours: the small orange and red lips round the mouths become pale cream, colour #f3e7c4, and the dark navy shadows of the heap become dark teal, colour #145f6b. No red, orange or navy left. Do not redraw anything else: keep the heap's shape, every mouth and tooth, the eyes, the tendrils, the thick black outline and the art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-mass-d-mouths",
+      "candidate": 0,
+      "sha256": "17503f9f11e810ff5a69b2d464cf18cea5d0cf28437868964e0aabd71ae6983a"
+    }
+  }
+}

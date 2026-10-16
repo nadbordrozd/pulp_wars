@@ -1,0 +1,37 @@
+{
+  "id": "icon-summon-imp-s",
+  "jobId": "7bed751e-08e1-46fa-afad-3d578632417a",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "summons-cult",
+    "asset": "chibi-direction-icon-cult-action-summon-imp",
+    "subject": "ICON:ACTION:SUMMON_IMP",
+    "faction": "CULT",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 94703,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the creature rising from the ring: it becomes the head and shoulders of a small teal imp with one single big round pale yellow eye in the middle of its face, a crest of three small teal spikes on its head, a wide cheeky cream grin and two tiny teal bat wings at its shoulders. Keep the grey stone ring, its green glow, the thick black outline and the art style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only the creature rising from the ring: it becomes the head and shoulders of a small teal imp with one single big round pale yellow eye in the middle of its face, a crest of three small teal spikes on its head, a wide cheeky cream grin and two tiny teal bat wings at its shoulders. Keep the grey stone ring, its green glow, the thick black outline and the art style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only the creature rising from the ring: it becomes the head and shoulders of a small teal imp with one single big round pale yellow eye in the middle of its face, a crest of three small teal spikes on its head, a wide cheeky cream grin and two tiny teal bat wings at its shoulders. Keep the grey stone ring, its green glow, the thick black outline and the art style the same, on a transparent background.",
+    "editInstruction": "Change only the creature rising from the ring: it becomes the head and shoulders of a small teal imp with one single big round pale yellow eye in the middle of its face, a crest of three small teal spikes on its head, a wide cheeky cream grin and two tiny teal bat wings at its shoulders. Keep the grey stone ring, its green glow, the thick black outline and the art style the same, on a transparent background.",
+    "source": {
+      "recipe": "icon-summon-horror-a",
+      "candidate": 0,
+      "sibling": true,
+      "sha256": "aae8023b66bc008864a0744343775980aa4b94a674dd5ea78ae92920bb402383"
+    }
+  }
+}

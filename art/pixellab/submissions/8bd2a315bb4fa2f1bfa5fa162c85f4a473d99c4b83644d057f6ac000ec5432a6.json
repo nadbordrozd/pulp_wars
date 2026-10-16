@@ -1,0 +1,37 @@
+{
+  "id": "mass-unbound-a",
+  "jobId": "f82ecbbc-0c29-43ed-8b94-0253fd05bc05",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "summons-cult",
+    "asset": "chibi-direction-cult-mass-unbound",
+    "subject": "UNIT:CULT:MASS_UNBOUND",
+    "faction": "CULT",
+    "recipeClass": "creature",
+    "requestSize": {
+      "width": 72,
+      "height": 56
+    },
+    "seed": 94531,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only one colour: every round yellow eye on the heap becomes bright glowing red, colour #e0281e, with its black pupil kept. Do not redraw anything else: keep the teal heap, every small mouth with its cream teeth and dark teal inside, the tendrils at its foot, the shape, the thick black outline and the art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only one colour: every round yellow eye on the heap becomes bright glowing red, colour #e0281e, with its black pupil kept. Do not redraw anything else: keep the teal heap, every small mouth with its cream teeth and dark teal inside, the tendrils at its foot, the shape, the thick black outline and the art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only one colour: every round yellow eye on the heap becomes bright glowing red, colour #e0281e, with its black pupil kept. Do not redraw anything else: keep the teal heap, every small mouth with its cream teeth and dark teal inside, the tendrils at its foot, the shape, the thick black outline and the art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only one colour: every round yellow eye on the heap becomes bright glowing red, colour #e0281e, with its black pupil kept. Do not redraw anything else: keep the teal heap, every small mouth with its cream teeth and dark teal inside, the tendrils at its foot, the shape, the thick black outline and the art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "mass-e-mouths",
+      "candidate": 0,
+      "sibling": true,
+      "sha256": "565d2e83c63344104e20e8d42c0b8b3257e7a9e02d2a09fd7d9e2aacc31be5e7"
+    }
+  }
+}

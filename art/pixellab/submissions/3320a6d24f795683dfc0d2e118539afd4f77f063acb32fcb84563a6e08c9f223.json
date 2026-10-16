@@ -1,0 +1,36 @@
+{
+  "id": "imp-a-wings",
+  "jobId": "4b913c49-e849-4ae4-bcbb-6826c5b2965b",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "summons-cult",
+    "asset": "chibi-direction-cult-imp",
+    "subject": "UNIT:CULT:IMP",
+    "faction": "CULT",
+    "recipeClass": "creature",
+    "requestSize": {
+      "width": 44,
+      "height": 60
+    },
+    "seed": 94504,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only one thing: add two tiny teal bat wings, colour #1f8f95 with shade #145f6b, sticking out from behind its shoulders on both sides, each wing smaller than its head, with pointed scalloped edges and a thick black outline. Do not redraw anything else: keep the teal body, the one big yellow eye, the grin, the cream belly, the ears, the brass ear ring, the spade tail, the thick black outline and the art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only one thing: add two tiny teal bat wings, colour #1f8f95 with shade #145f6b, sticking out from behind its shoulders on both sides, each wing smaller than its head, with pointed scalloped edges and a thick black outline. Do not redraw anything else: keep the teal body, the one big yellow eye, the grin, the cream belly, the ears, the brass ear ring, the spade tail, the thick black outline and the art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only one thing: add two tiny teal bat wings, colour #1f8f95 with shade #145f6b, sticking out from behind its shoulders on both sides, each wing smaller than its head, with pointed scalloped edges and a thick black outline. Do not redraw anything else: keep the teal body, the one big yellow eye, the grin, the cream belly, the ears, the brass ear ring, the spade tail, the thick black outline and the art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only one thing: add two tiny teal bat wings, colour #1f8f95 with shade #145f6b, sticking out from behind its shoulders on both sides, each wing smaller than its head, with pointed scalloped edges and a thick black outline. Do not redraw anything else: keep the teal body, the one big yellow eye, the grin, the cream belly, the ears, the brass ear ring, the spade tail, the thick black outline and the art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "imp-a-teal",
+      "candidate": 0,
+      "sha256": "64d8e948c16e4eadafb9f49e9ba9e373e4e26fa607e24f9ed41b4e2103d07c02"
+    }
+  }
+}

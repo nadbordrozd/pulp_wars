@@ -1,0 +1,36 @@
+{
+  "id": "mass-e-mouths",
+  "jobId": "6b24f9fb-7e6b-43fe-8af5-19864b440704",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "summons-cult",
+    "asset": "chibi-direction-cult-mass",
+    "subject": "UNIT:CULT:MASS",
+    "faction": "CULT",
+    "recipeClass": "creature",
+    "requestSize": {
+      "width": 72,
+      "height": 56
+    },
+    "seed": 94527,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only one colour: the red and pink inside of every small open mouth becomes dark teal, colour #145f6b, with no red and no pink left. Every mouth keeps its shape and its small cream teeth. Do not redraw anything else: keep the teal heap, the eyes, the tendrils, the shape, the thick black outline and the art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only one colour: the red and pink inside of every small open mouth becomes dark teal, colour #145f6b, with no red and no pink left. Every mouth keeps its shape and its small cream teeth. Do not redraw anything else: keep the teal heap, the eyes, the tendrils, the shape, the thick black outline and the art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only one colour: the red and pink inside of every small open mouth becomes dark teal, colour #145f6b, with no red and no pink left. Every mouth keeps its shape and its small cream teeth. Do not redraw anything else: keep the teal heap, the eyes, the tendrils, the shape, the thick black outline and the art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only one colour: the red and pink inside of every small open mouth becomes dark teal, colour #145f6b, with no red and no pink left. Every mouth keeps its shape and its small cream teeth. Do not redraw anything else: keep the teal heap, the eyes, the tendrils, the shape, the thick black outline and the art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "mass-e",
+      "candidate": 0,
+      "sha256": "10384702167104e1e1d1ea271ce25b9e521a59d52b0bb53cc673013f07ea5de1"
+    }
+  }
+}

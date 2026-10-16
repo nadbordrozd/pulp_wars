@@ -249,6 +249,7 @@ async function portraitsSheet(
 async function iconsSheets(
   context: InterfaceReviewContext,
   icons: readonly Piece[],
+  prefix = "",
 ): Promise<void> {
   const { root } = context;
   const terrain = (id: string): Promise<RgbaRaster> =>
@@ -308,7 +309,7 @@ async function iconsSheets(
       top: canvas.height - 18,
       size: 12,
     });
-    await context.sheet("icons-x4.png", canvas, labels);
+    await context.sheet(`${prefix}icons-x4.png`, canvas, labels);
   }
 
   // The real sizes: one row per ground, one column per icon.
@@ -343,7 +344,7 @@ async function iconsSheets(
           GAP + r * cell,
         );
     }
-    await context.sheet("icons-small-1x.png", canvas, labels);
+    await context.sheet(`${prefix}icons-small-1x.png`, canvas, labels);
   }
 }
 
@@ -613,4 +614,107 @@ export async function cultInterfaceEvidence(
     icons: icons.map(measures),
     effects: effects.map(measures),
   });
+}
+
+// ------------------------------------------------------------ ART-R1
+
+/** Batch `summons-cult` (bead pulp_wars-mch9.45, the Cult redesign's art). */
+export const CULT_SUMMONS_BATCH = "summons-cult";
+
+/** The redesign's portraits, the board sprite each must match, and a peer. */
+const SUMMONS_PORTRAITS: readonly (readonly [
+  title: string,
+  portrait: string,
+  sprite: string,
+])[] = [
+  ["Imp", "chibi-direction-portrait-cult-imp", "chibi-direction-cult-imp"],
+  [
+    "Gibbering Mass",
+    "chibi-direction-portrait-cult-mass",
+    "chibi-direction-cult-mass",
+  ],
+  [
+    "Horror (for comparison)",
+    "chibi-direction-portrait-cult-horror",
+    "chibi-direction-cult-horror",
+  ],
+];
+
+async function summonsPortraitsSheet(
+  context: InterfaceReviewContext,
+  portraits: readonly Piece[],
+): Promise<void> {
+  const { root } = context;
+  const grass = await readRaster(
+    path.join(root, "public/assets/chibi/terrain/chibi-grass-1.png"),
+  );
+  const cellW = 48 * 4 + 96 * 2 + 64 + GAP * 3;
+  const cellH = 112 * 2 + 30;
+  const canvas = blank(
+    SUMMONS_PORTRAITS.length * (cellW + GAP) + GAP,
+    cellH + GAP * 2,
+    PAPER,
+  );
+  const labels: Label[] = [];
+  for (const [index, [title, id, sprite]] of SUMMONS_PORTRAITS.entries()) {
+    const left = GAP + index * (cellW + GAP);
+    const top = GAP;
+    labels.push({ text: title, left, top, size: 14 });
+    const portrait =
+      portraits.find((piece) => piece.id === id)?.raster ??
+      (await readRaster(
+        path.join(root, "public/assets/chibi/portraits", `${id}.png`),
+      ).catch(() => undefined));
+    fill(canvas, left, top + 24, 48 * 4, 48 * 4, CREAM);
+    if (portrait !== undefined) blit(canvas, portrait, left, top + 24, 4);
+    else labels.push({ text: "missing", left: left + 8, top: top + 60 });
+    const board = await readRaster(
+      path.join(root, "public/assets/chibi/units", `${sprite}.png`),
+    );
+    const boardLeft = left + 48 * 4 + GAP;
+    blit(canvas, tiled(grass, 96, 112), boardLeft, top + 24, 2);
+    blit(
+      canvas,
+      board,
+      boardLeft + (96 - board.width),
+      top + 24 + (112 - board.height) * 2,
+      2,
+    );
+    const smallLeft = boardLeft + 96 * 2 + GAP;
+    fill(canvas, smallLeft, top + 24, 64, 64, CREAM);
+    fill(canvas, smallLeft, top + 24 + 70, 64, 64, DOCK);
+    if (portrait !== undefined) {
+      blit(canvas, portrait, smallLeft + 8, top + 32);
+      blit(canvas, portrait, smallLeft + 8, top + 32 + 70);
+    }
+  }
+  await context.sheet("summons-portraits-x4.png", canvas, labels);
+}
+
+/**
+ * The redesign's portraits and icons (bead pulp_wars-mch9.45): writes
+ * `summons-portraits-x4.png`, `summons-icons-x4.png`,
+ * `summons-icons-small-1x.png` and `candidates-summons-x4.png`, and returns
+ * the measures and call counts for the caller's `summons.json`.
+ */
+export async function cultSummonsInterfaceEvidence(
+  context: InterfaceReviewContext,
+): Promise<Record<string, unknown>> {
+  const pieces = await acceptedPieces(context.root, CULT_SUMMONS_BATCH);
+  const portraits = pieces.filter((piece) =>
+    piece.subject.startsWith("PORTRAIT:"),
+  );
+  const icons = pieces.filter((piece) => piece.subject.startsWith("ICON:"));
+  await summonsPortraitsSheet(context, portraits);
+  await iconsSheets(context, icons, "summons-");
+  const calls = await candidatesSheet(
+    context,
+    CULT_SUMMONS_BATCH,
+    "candidates-summons-x4.png",
+  );
+  return {
+    calls,
+    portraits: portraits.map(measures),
+    icons: icons.map(measures),
+  };
 }

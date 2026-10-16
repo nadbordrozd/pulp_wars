@@ -13,7 +13,14 @@ Tentacle, the two Unbound looks, the four ships and the frog, under
 [The batches](#the-batches). **The cities, the seven buildings, the
 Monuments and the obelisk are complete and wired** (bead
 `pulp_wars-mch9.16`, ART4), under [The places](#the-places). The portraits,
-icons and effects below are still targets (bead `pulp_wars-mch9.23`).
+icons and effects are complete (bead `pulp_wars-mch9.23`), under
+[The interface batches](#the-interface-batches). **The redesign's summons
+are drawn** (bead `pulp_wars-mch9.45`, ART-R1 of
+[the Cult redesign](../../product/RULESET_7_CULT_REDESIGN.md#14-art)): the
+Imp and the Gibbering Mass with their Unbound looks and portraits, and the
+redesign's nine icons, accepted in batch `summons-cult` and not yet
+registered in the runtime (bead U-R3 does that), under
+[The redesign's summons](#the-redesigns-summons).
 
 The art pipeline reads the two `text` blocks under **Prompt fragment** and
 **Negative fragment** below as layer 3 of every Cult prompt, so edit them
@@ -291,44 +298,63 @@ accent `cult-lodge` (the summoned without cloth: `cult-green`; see
 | Hexer (`MARKSMAN`)                 | `UNIT:CULT:MARKSMAN`, `chibi-direction-cult-hexer`     | 56 x 80, `STANDARD_UNIT` | a hood whose tip curls like a question mark, big round brass spectacles on the hood, an open cream book held upside down in one hand, the other hand thrown forward with a green squiggle leaving it                                             |
 | Summoner (`CAPTAIN`)               | `UNIT:CULT:CAPTAIN`, `chibi-direction-cult-summoner`   | 56 x 80, `STANDARD_UNIT` | the tallest and thinnest: a straight pointed hat-hood that reaches the top of the canvas, a cream stole with the eye-in-a-spiral sign, a small brass bell raised in one hand and a looped brass chain hanging from the other                     |
 | Stargazer (`CATAPULT`)             | `UNIT:CULT:CATAPULT`, `chibi-direction-cult-stargazer` | 72 x 88, `LARGE_UNIT`    | brass first, robe second: a cultist bent to the eyepiece of a big brass telescope on a wooden tripod, the tube pointing up and to the right, an indigo nightcap with cream stars and a pompom, a cream star chart trailing on the ground         |
-| Caller (`KNIGHT`)                  | `UNIT:CULT:KNIGHT`, `chibi-direction-cult-caller`      | 72 x 88, `LARGE_UNIT`    | a round brass diving helmet with one green-lit porthole in place of the hood, a robe wet and darker at the hem, both hands holding a huge cream conch shell horn up to the helmet; the horn is as big as the body                                |
-| Chosen (`SWORDSMAN`)               | `UNIT:CULT:SWORDSMAN`, `chibi-direction-cult-chosen`   | 56 x 80, `STANDARD_UNIT` | burly and square: big shoulders, a short hood, a broad cream sash across the chest with a brass medal, a huge brass ceremonial cleaver in one hand, the other arm raised straight up with one finger pointing at the sky (the Pick Me! pose)     |
 | Thing in the Cellar (`JUGGERNAUT`) | `UNIT:CULT:JUGGERNAUT`, `chibi-direction-cult-thing`   | 88 x 104, `GIANT_UNIT`   | a wide heap of fat teal tentacles with cream suckers and many friendly yellow eyes of different sizes, a broken wooden trapdoor round its middle like a collar, a tiny cream-and-indigo striped party hat on top; a mound, wider than it is tall |
+
+**The Caller (`KNIGHT`) and the Chosen (`SWORDSMAN`) are retired** by
+[the Cult redesign](../../product/RULESET_7_CULT_REDESIGN.md#42-the-vacant-slots):
+their slots are vacant, so they leave this roster (bead `pulp_wars-mch9.45`).
+Their rasters, recipes and records stay in batch `direction-cult` and
+`interface-cult` as history (their rows are under
+[The batches](#the-batches) and [The portraits](#the-portraits)); bead U-R1
+takes them out of the runtime manifests, the Gallery and `public/assets`.
+The robed cultists' refresh is bead `pulp_wars-mch9.29`.
 
 ### Summoned units
 
 Never trained, so they have no training card; each still needs a portrait
 for the selection dock. Their subject keys are the engine's summoned role IDs
 (`SUMMONED_ROLE_IDS_V7`: `HORROR`, `HERALD`, `TENTACLE`), wired by bead
-`pulp_wars-mch9.15`.
+`pulp_wars-mch9.15`. The redesign's two summons take the roles `IMP` and
+`MASS` (beads E-R6 and E-R7); their sprites are accepted in batch
+`summons-cult` (bead `pulp_wars-mch9.45`, [The redesign's
+summons](#the-redesigns-summons)) and registered by bead U-R3.
 
-| Unit     | Subject, asset                                        | Canvas, class            | Silhouette and what it shows                                                                                                                                                                                                                                                                                                                                    |
-| -------- | ----------------------------------------------------- | ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Horror   | `UNIT:CULT:HORROR`, `chibi-direction-cult-horror`     | 72 x 88, `LARGE_UNIT`    | a ball on legs: a round rubbery teal body on four thick tentacles, a very wide toothy cream grin, two googly yellow eyes of different sizes, a brass spiked collar with a short trailing chain; no arms, no clothes; about the size of a Knight-role unit                                                                                                       |
-| Herald   | `UNIT:CULT:HERALD`, `chibi-direction-cult-herald`     | 88 x 104, `GIANT_UNIT`   | **as tall as the canvas allows**: a target of 100 px or more of the 104 (the tallest giant today, the Gingerbread Giant, is 80 x 102 px), and narrow, a tall tapering bell with its eye at the very top; a robe of indigo night sky with a few cream stars, no face but one huge yellow eye, a crown of teal tentacles, a brass collar ring, long empty sleeves |
-| Tentacle | `UNIT:CULT:TENTACLE`, `chibi-direction-cult-tentacle` | 56 x 80, `STANDARD_UNIT` | one thick teal tentacle rising straight from the canvas bottom, curled over at the top to slap, cream suckers down its inner side, one yellow eye at the tip; nothing under it: the hole on land and the ripple on water are drawn in code, so one sprite serves both                                                                                           |
+| Unit           | Subject, asset                                        | Canvas, class            | Silhouette and what it shows                                                                                                                                                                                                                                                                                                                                    |
+| -------------- | ----------------------------------------------------- | ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Horror         | `UNIT:CULT:HORROR`, `chibi-direction-cult-horror`     | 72 x 88, `LARGE_UNIT`    | a ball on legs: a round rubbery teal body on four thick tentacles, a very wide toothy cream grin, two googly yellow eyes of different sizes, a brass spiked collar with a short trailing chain; no arms, no clothes; about the size of a Knight-role unit                                                                                                       |
+| Herald         | `UNIT:CULT:HERALD`, `chibi-direction-cult-herald`     | 88 x 104, `GIANT_UNIT`   | **as tall as the canvas allows**: a target of 100 px or more of the 104 (the tallest giant today, the Gingerbread Giant, is 80 x 102 px), and narrow, a tall tapering bell with its eye at the very top; a robe of indigo night sky with a few cream stars, no face but one huge yellow eye, a crown of teal tentacles, a brass collar ring, long empty sleeves |
+| Tentacle       | `UNIT:CULT:TENTACLE`, `chibi-direction-cult-tentacle` | 56 x 80, `STANDARD_UNIT` | one thick teal tentacle rising straight from the canvas bottom, curled over at the top to slap, cream suckers down its inner side, one yellow eye at the tip; nothing under it: the hole on land and the ripple on water are drawn in code, so one sprite serves both                                                                                           |
+| Imp            | `UNIT:CULT:IMP`, `chibi-direction-cult-imp`           | 56 x 80, `STANDARD_UNIT` | small and upright, one of a swarm: a bright teal imp on two stubby legs, one big pale yellow eye, a wide cream grin, a crest of three small spikes, two little bat wings spread, a long spade-tipped tail, a brass ring in one ear, a cream belly; 44 x 57 px, smaller than the Horror and lower than a cultist                                                 |
+| Gibbering Mass | `UNIT:CULT:MASS`, `chibi-direction-cult-mass`         | 72 x 88, `LARGE_UNIT`    | a low wide heap of teal jelly covered in small babbling cream-toothed mouths (dark teal inside) and yellow eyes, short tendrils spread along the ground at its foot (the Drag); no face in the middle, no collar, no hat; 55 x 46 px                                                                                                                            |
 
 **Unbound looks** (`UNIT:CULT:HORROR_UNBOUND`, `UNIT:CULT:HERALD_UNBOUND`,
-same canvases and footprints): `edit-image-pixen` edits of the accepted
-bound sprites that change two things only: the eyes become red, and the
-Horror's chain is gone and its collar cracked (the Herald's collar ring is
-cracked). The interface adds the rest (no strands, the eye mark on its
+`UNIT:CULT:IMP_UNBOUND`, `UNIT:CULT:MASS_UNBOUND`, same canvases and
+footprints): `edit-image-pixen` edits of the accepted bound sprites that
+change two things only: the eyes become red, and the Horror's chain is gone
+and its collar cracked (the Herald's collar ring is cracked; the Imp's ear
+ring is gone; the Mass, which wears nothing, changes only its eyes). The interface adds the rest (no strands, the eye mark on its
 target, steam while Furious).
 
 ### How each is told apart at board size
 
 - **Inside the faction, by outline alone:** Initiate (small, floppy tip,
   candle up), Hexer (curl, book overhead-height, arm forward), Summoner
-  (a spike to the canvas top), Chosen (a block with one arm up and a
-  cleaver), Idol Bearer (a second head on top), Stargazer (a diagonal brass
-  tube), Caller (a round helmet and a horn), Familiar (a low blob with
-  wings), Thing (a mound). No two differ only by a thin prop.
+  (a spike to the canvas top), Idol Bearer (a second head on top),
+  Stargazer (a diagonal brass tube), Familiar (a low blob with wings),
+  Thing (a mound). No two differ only by a thin prop.
 - **Cultist against summoned, by colour:** indigo against teal. The Herald is
   the one summoned thing in a robe, and it is twice a cultist's height.
 - **Horror against Thing:** a ball on four legs with one grin, against a
   legless mound of many eyes with a trapdoor.
 - **Tentacle against the Thing and the Herald's crown:** a single upright
   limb with nothing else.
+- **Imp against the Horror, the Tentacle and the Familiar:** a small
+  upright figure on two legs with one eye, wings and a spade tail, against a
+  ball on four tentacles, a single limb, and an indigo toad-cat sitting.
+  Three Imps side by side read as three small pieces, not one.
+- **Gibbering Mass against the Thing and the Horror:** a low wide heap of
+  mouths with no face, no collar and no hat, against a taller tentacle mound
+  with a trapdoor and a party hat, and a ball with one grin on legs.
 
 ### Portraits
 
@@ -339,7 +365,10 @@ the head: candle, idol, spectacles and book, bell, nightcap and eyepiece,
 helmet and conch, sash and raised hand). Whole-figure portraits (`icon`
 class, as the Catapult has) for the Familiar, the Thing, the Horror, the
 Herald (the eye and the crown fill the frame) and the Tentacle. Twelve in
-all, plus the three ship portraits below. The Initiate's portrait is the
+all, plus the three ship portraits below. The redesign adds the Imp and the
+Gibbering Mass whole (`PORTRAIT:CULT:IMP`, `PORTRAIT:CULT:MASS`, the
+`creature` class as the other summoned things, batch `summons-cult`); the
+Caller's and the Chosen's busts retire with them. The Initiate's portrait is the
 faction emblem of the setup form and the Gallery until the emblem icon is
 drawn.
 
@@ -599,6 +628,19 @@ portrait; Leadership (Administration) shows the Summoner's.
 | `ICON:ACTION:PAMPHLETS`       | a fanned sheaf of cream pamphlets with the eye sign                       |
 | `ICON:ACTION:MARTYR`          | a cream sash with a brass medal and a small green flame over it           |
 | `ICON:ACTION:GRAB`            | a teal tentacle tip wrapped round an ankle                                |
+| `ICON:ACTION:SUMMON_IMP`      | the Imp's one-eyed head rising from the summoning ring (the chooser)      |
+| `ICON:ACTION:SUMMON_HORROR`   | the Horror's grinning top half rising from the same ring                  |
+| `ICON:ACTION:SUMMON_MASS`     | the Gibbering Mass bulging out of the same ring                           |
+| `ICON:ACTION:BROOD`           | three one-eyed Imp heads held in one green thread                         |
+| `ICON:ACTION:SWARM`           | a sword snapped in two between two Imps' spade-tipped tails               |
+| `ICON:ACTION:DOORSTEP`        | a tiny cottage, cream walls and an indigo roof (also the Doorstep pip)    |
+| `ICON:ACTION:DRAG`            | a boot stuck to the ankle in teal goo                                     |
+| `ICON:ACTION:JOIN_CHANT`      | a candle with a green flame and a green plus                              |
+
+The last eight are the redesign's (bead `pulp_wars-mch9.45`, batch
+`summons-cult`); Martyr, Pick Me! and Behold! as a button retire with it
+(their rasters stay as history until bead U-R1 takes them out of the
+runtime).
 
 Ravage and Unstoppable are text lines on the Herald's card with no icon
 (the Skeleton's Bones precedent).
@@ -619,6 +661,7 @@ slot, as the Candy status icons are):
 | `ICON:STATUS:COWED`     | a round window with its shutters closed                                                                              |
 | `ICON:STATUS:WARDED`    | Behold!: the idol's head inside a chalk ring                                                                         |
 | `ICON:STATUS:PICK_ME`   | the open waving hand                                                                                                 |
+| `ICON:HUD:CULT:HUNGER`  | Hunger: one empty cream bowl with a spoon, on a Herald's card and the HUD chip (bead `pulp_wars-mch9.45`)            |
 
 ## Markers and effects
 
@@ -738,13 +781,14 @@ What each art bead of
 generates from this document. Counts are accepted rasters, not PixelLab
 calls.
 
-| Bead            | Assets                                                                                                                                                                                                | Count |
-| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----: |
-| **ART2**        | the sample: Initiate, Horror, Herald; `subjects/CULT.json`; batch `direction-cult`; the `cult-green` accent preset; the review command `art:chibi-cult-direction-review`                              |     3 |
-| **ART3** (done) | the other eight trained units (Idol Bearer, Familiar, Hexer, Summoner, Stargazer, Caller, Chosen, Thing); the Tentacle; the two Unbound looks; the four ships and the derived submerged one; the frog |    17 |
-| **ART4** (done) | City 1 to 3; the seven buildings; the seven Monuments and the obelisk (bead `pulp_wars-mch9.16`, narrowed by the root)                                                                                |    18 |
-| `mch9.23`       | twelve unit portraits and three ship portraits; three technology icons; eighteen ability icons; ten HUD and status icons (the Favour candle at two sizes); fifteen effects                            |    62 |
-| `mch9.22` ART5  | the heather-moor Grass (three tiles, derived in code) and the lantern-wood Forest set (five clumps, twenty pieces, five seam clumps): see [Ground and forest](#ground-and-forest)                     |    28 |
+| Bead             | Assets                                                                                                                                                                                                                                         | Count |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----: |
+| **ART2**         | the sample: Initiate, Horror, Herald; `subjects/CULT.json`; batch `direction-cult`; the `cult-green` accent preset; the review command `art:chibi-cult-direction-review`                                                                       |     3 |
+| **ART3** (done)  | the other eight trained units (Idol Bearer, Familiar, Hexer, Summoner, Stargazer, Caller, Chosen, Thing); the Tentacle; the two Unbound looks; the four ships and the derived submerged one; the frog                                          |    17 |
+| **ART4** (done)  | City 1 to 3; the seven buildings; the seven Monuments and the obelisk (bead `pulp_wars-mch9.16`, narrowed by the root)                                                                                                                         |    18 |
+| `mch9.23`        | twelve unit portraits and three ship portraits; three technology icons; eighteen ability icons; ten HUD and status icons (the Favour candle at two sizes); fifteen effects                                                                     |    62 |
+| `mch9.22` ART5   | the heather-moor Grass (three tiles, derived in code) and the lantern-wood Forest set (five clumps, twenty pieces, five seam clumps): see [Ground and forest](#ground-and-forest)                                                              |    28 |
+| `mch9.45` ART-R1 | the redesign's summons: the Imp and the Gibbering Mass, their two Unbound looks and two portraits; nine icons (three summon heads, Brood, Swarm, Doorstep, Drag, Join the chant, Hunger): see [The redesign's summons](#the-redesigns-summons) |    15 |
 
 **Gates the sample must pass before ART3 batches** (the faction layer's
 step 4, with the Cult's own risks):
@@ -1310,6 +1354,105 @@ What PixelLab did, for the prompt notes:
   size a single finger can be misread (root review, 2026-10-10).
 
 <!-- pulp_wars-mch9.23: end -->
+
+## The redesign's summons
+
+Bead `pulp_wars-mch9.45` (ART-R1 of
+[the Cult redesign](../../product/RULESET_7_CULT_REDESIGN.md#14-art)): the
+Imp and the Gibbering Mass, bound and Unbound, their portraits, and the
+redesign's nine icons, **15 accepted rasters from 43 PixelLab calls** (30
+creations, 13 edits) in the new batch `summons-cult`
+(`scripts/art/chibi/batches/batch-summons-cult.json`; subject lines in
+`subjects/CULT.json`). They are accepted and validated but **not registered
+in the runtime**: the subjects need the engine's `IMP` and `MASS` roles
+(beads E-R6, E-R7), and bead U-R3 adds them to the runtime manifests, the
+unit-shadow measure and the board. No robed cultist was touched (the user
+holds their refresh for bead `pulp_wars-mch9.29`).
+
+`npm run art:chibi-cult-direction-review` writes the evidence beside the
+rest of the Cult's, in `art/pixellab/reviews/chibi-batch-direction-cult/`:
+`summons-{x4,1x}.png` and `summons-zoom-0.75.png` (the four sprites and the
+Horror on Grass, Forest, Mountain, Snow and Shallow Water),
+`summons-board-{x2,1x}.png` (three Imps, a Mass and the Horror on a strip of
+board above the Summoner, an Initiate, the two Unbound looks and the
+Tentacle), `summons-lineup-{1x,x3}.png` (each piece beside its look-alikes,
+in colour and greyscale, at native and half size), `summons-portraits-x4.png`,
+`summons-icons-x4.png`, `summons-icons-small-1x.png`,
+`candidates-summons-x4.png` (all 43 candidates with their verdicts) and
+`summons.json`.
+
+![Three Imps, a Gibbering Mass and the Horror above the Summoner, an Initiate, the two Unbound looks and the Tentacle](../../../art/pixellab/reviews/chibi-batch-direction-cult/summons-board-x2.png)
+
+| Asset                                            | Subject                     | Accepted recipe         | Sprite     | Class, accent                | How it was made                                                                                      |
+| ------------------------------------------------ | --------------------------- | ----------------------- | ---------- | ---------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `chibi-direction-cult-imp`                       | `UNIT:CULT:IMP`             | `imp-d-eye`             | 44 x 57 px | `creature`, `cult-green`     | the fourth creation (44 x 60 request, seated with margin 4), then one edit (an orange eye to yellow) |
+| `chibi-direction-cult-imp-unbound`               | `UNIT:CULT:IMP_UNBOUND`     | `imp-unbound-a`         | 44 x 57 px | `creature`, `cult-green`     | one sibling edit of the accepted Imp: the eye red, the ear ring gone                                 |
+| `chibi-direction-cult-mass`                      | `UNIT:CULT:MASS`            | `mass-e-mouths`         | 55 x 46 px | `creature`, `cult-green`     | the fifth creation (72 x 56 request, margin 6), then one edit (red mouths to dark teal; shadow gone) |
+| `chibi-direction-cult-mass-unbound`              | `UNIT:CULT:MASS_UNBOUND`    | `mass-unbound-a`        | 55 x 46 px | `creature`, `cult-green`     | one sibling edit of the accepted Mass: every eye red                                                 |
+| `chibi-direction-portrait-cult-imp`              | `PORTRAIT:CULT:IMP`         | `portrait-imp-a`        | 42 x 36 px | `creature`, `cult-green`     | the first creation                                                                                   |
+| `chibi-direction-portrait-cult-mass`             | `PORTRAIT:CULT:MASS`        | `portrait-mass-d-cream` | 48 x 36 px | `creature`, `cult-green`     | the fourth creation (48 x 36 request, seated with margin 6), then two recolour edits                 |
+| `chibi-direction-icon-cult-action-summon-imp`    | `ICON:ACTION:SUMMON_IMP`    | `icon-summon-imp-s`     | 40 x 40 px | `icon`, `cult-summoned-icon` | a sibling edit of the accepted Horror summon icon, so the three share one ring                       |
+| `chibi-direction-icon-cult-action-summon-horror` | `ICON:ACTION:SUMMON_HORROR` | `icon-summon-horror-a`  | 40 x 38 px | `icon`, `cult-summoned-icon` | the first creation                                                                                   |
+| `chibi-direction-icon-cult-action-summon-mass`   | `ICON:ACTION:SUMMON_MASS`   | `icon-summon-mass-b`    | 48 x 40 px | `icon`, `cult-summoned-icon` | the second creation                                                                                  |
+| `chibi-direction-icon-cult-action-brood`         | `ICON:ACTION:BROOD`         | `icon-brood-a-clean`    | 40 x 33 px | `icon`, `cult-summoned-icon` | a creation, then one erase edit (orange flames and a plate)                                          |
+| `chibi-direction-icon-cult-action-swarm`         | `ICON:ACTION:SWARM`         | `icon-swarm-b-broken`   | 44 x 35 px | `icon`, `cult-summoned-icon` | the second creation, then one edit (the blade snapped)                                               |
+| `chibi-direction-icon-cult-action-doorstep`      | `ICON:ACTION:DOORSTEP`      | `icon-doorstep-a`       | 36 x 41 px | `icon`, `cult-lodge-icon`    | the first creation                                                                                   |
+| `chibi-direction-icon-cult-action-drag`          | `ICON:ACTION:DRAG`          | `icon-drag-b`           | 44 x 41 px | `icon`, `cult-summoned-icon` | the second creation                                                                                  |
+| `chibi-direction-icon-cult-action-join-chant`    | `ICON:ACTION:JOIN_CHANT`    | `icon-join-chant-a`     | 33 x 39 px | `icon`, `cult-lodge-icon`    | the first creation                                                                                   |
+| `chibi-direction-icon-cult-hunger`               | `ICON:HUD:CULT:HUNGER`      | `icon-hunger-a-clean`   | 40 x 37 px | `icon`, `cult-lodge-icon`    | a creation, then one erase edit (a small figure on the rim)                                          |
+
+### What the redesign's summons changed
+
+- **The Imp is generated smaller than its canvas** (the Spitter's rule,
+  bead `pulp_wars-eu3r.8`): a 44 x 60 request seated in the 56 x 80
+  standard canvas gives a 44 x 57 px Imp, clearly smaller than the Horror
+  (68 x 68) and lower than the Initiate (48 x 73), so three side by side
+  read as a swarm. A full-canvas request draws it as tall as a cultist.
+- **A heap needs a wide request.** At the full 72 x 88 canvas, and even at
+  72 x 64, Pixen drew the Mass as a ball or an upright blob with one big
+  face, on tentacle legs (four creations). At 72 x 56 with "a big beanbag,
+  flat on top" it drew a heap of mouths. The portrait needed the same: a
+  48 x 36 request seated in the 48 x 48 square (a portrait with a
+  `bottomMargin`), where two square creations drew an upright blob.
+- **Mouths come out red.** Every Mass candidate had red or pink inside its
+  mouths (18 to 119 px in the red band). One recolour edit naming the dark
+  teal turned them teal and kept every tooth, against the ART2 note that
+  such edits turn a grin into a hole; on the portrait a second edit turned
+  the remaining red lips cream. "The inside of every mouth is dark teal" in
+  the creation prompt did not prevent it.
+- **An edit does not resize**: "redraw the same heap bigger" kept the
+  drawing at 55 x 46 px.
+- **The summon heads share one ring** because the Imp's is a sibling edit
+  of the accepted Horror icon; two fresh creations of it drew a two-eyed
+  goblin and a badge.
+- **Fresh icon creations still bring props**: orange flames on the Brood's
+  heads, a figure on the Hunger bowl's rim, a candle beside the Drag boot;
+  one erase edit each, or a second creation.
+
+### Differences from the direction, accepted
+
+- **The Mass is smaller than the Horror** (55 x 46 against 68 x 68 px),
+  where the redesign calls it huge. It is low and wide and fills more of
+  its cell's width than the Imp, the Initiate or the Tentacle; eight
+  creations and an enlarging edit did not give a wider heap without a
+  single face. If the board shows it too small, a later bead can try a
+  creation at 72 x 60 with the accepted prompt, or the Thing's giant
+  canvas.
+- **The Imp has a crest of three small spikes** (its ears and a middle
+  spike) where the direction says two pointed ears; it has no horns. Its
+  eye is a paler yellow than the Horror's.
+- **The Mass has two eyes and a mouth together at its lower left**, among
+  its scattered mouths: a small face, not the middle of the heap.
+- **The Hunger bowl's band** is the lodge's indigo (the accent step), and
+  its spoon is brass brown.
+- **The Swarm icon's break** is clear at x4 but small at 18 px, where the
+  two spade-tipped tails carry it.
+- **By the lineup's measure** every summoned pair is "colour too close"
+  (one teal palette by design; `summons.json`), and the Unbound looks are
+  their bound sprites with red eyes; they are told apart by outline and by
+  the eyes, as the Horror and the Thing are.
+
+<!-- pulp_wars-mch9.45: end -->
 
 ## Decisions
 

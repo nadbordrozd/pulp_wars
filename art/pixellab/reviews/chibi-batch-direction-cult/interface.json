@@ -3,9 +3,9 @@
   "note": "The Cult's interface art: every accepted portrait, icon and effect with its accepted recipe, sprite box and colour shares (percent of opaque pixels). Red is the cue of an Unbound daemon and belongs only to the Furious chip. `calls` counts the recorded PixelLab jobs of each batch (one job per recipe).",
   "calls": {
     "interface-cult": {
-      "recipes": 75,
-      "creations": 55,
-      "edits": 20
+      "recipes": 78,
+      "creations": 57,
+      "edits": 21
     },
     "effects-cult": {
       "recipes": 26,
@@ -172,6 +172,19 @@
       "greenPercent": 0,
       "indigoPercent": 0,
       "tealPercent": 53.8,
+      "redPercent": 0,
+      "violetPercent": 0
+    },
+    {
+      "asset": "chibi-direction-portrait-cult-frog",
+      "subject": "PORTRAIT:CULT:FROG",
+      "batch": "interface-cult",
+      "recipe": "portrait-frog-a-mouth",
+      "canvas": "48 x 48",
+      "sprite": "34 x 40",
+      "greenPercent": 0,
+      "indigoPercent": 7.4,
+      "tealPercent": 53.9,
       "redPercent": 0,
       "violetPercent": 0
     },

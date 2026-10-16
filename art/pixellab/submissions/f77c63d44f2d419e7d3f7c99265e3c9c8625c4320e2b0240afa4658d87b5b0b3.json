@@ -1,0 +1,36 @@
+{
+  "id": "mass-e-big",
+  "jobId": "70087a31-a5b2-4cfa-a733-30176ef93c2d",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "summons-cult",
+    "asset": "chibi-direction-cult-mass",
+    "subject": "UNIT:CULT:MASS",
+    "faction": "CULT",
+    "recipeClass": "creature",
+    "requestSize": {
+      "width": 72,
+      "height": 56
+    },
+    "seed": 94528,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the size: redraw the same heap bigger and wider, so it fills the whole width of the image from edge to edge and nearly its whole height, still lower than it is wide. Keep every mouth, eye and tendril, the teal colours, the thick black outline and the art style the same, on a transparent background, with no shadow under it."
+      }
+    ],
+    "prompt": "Change only the size: redraw the same heap bigger and wider, so it fills the whole width of the image from edge to edge and nearly its whole height, still lower than it is wide. Keep every mouth, eye and tendril, the teal colours, the thick black outline and the art style the same, on a transparent background, with no shadow under it.",
+    "negativePrompt": "",
+    "description": "Change only the size: redraw the same heap bigger and wider, so it fills the whole width of the image from edge to edge and nearly its whole height, still lower than it is wide. Keep every mouth, eye and tendril, the teal colours, the thick black outline and the art style the same, on a transparent background, with no shadow under it.",
+    "editInstruction": "Change only the size: redraw the same heap bigger and wider, so it fills the whole width of the image from edge to edge and nearly its whole height, still lower than it is wide. Keep every mouth, eye and tendril, the teal colours, the thick black outline and the art style the same, on a transparent background, with no shadow under it.",
+    "source": {
+      "recipe": "mass-e",
+      "candidate": 0,
+      "sha256": "10384702167104e1e1d1ea271ce25b9e521a59d52b0bb53cc673013f07ea5de1"
+    }
+  }
+}
