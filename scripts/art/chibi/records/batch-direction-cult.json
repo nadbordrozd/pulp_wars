@@ -3975,10 +3975,450 @@
       "completedAt": "2026-10-10T10:20:28.106Z",
       "usageUsd": 0.008933236943350898,
       "review": {
+        "verdict": "REJECTED",
+        "candidate": 0,
+        "notes": "The Tentacle: one thick teal tentacle rising from its base and curled over at the top, cream suckers down its inner side, one yellow eye at its tip, and no body, face, hole or water; 53 x 74 px, no green, red or violet pixel. Its base ends in a small curled tail on the ground. Seated 4 px above the canvas bottom. Reviewed at 1:1 and x4 on Grass, Snow, Forest and both waters and in greyscale. Superseded by tentacle-portal-c.",
+        "reviewedAt": "2026-10-10T10:22:23.322Z"
+      }
+    },
+    "tentacle-portal-a": {
+      "id": "tentacle-portal-a",
+      "asset": "chibi-direction-cult-tentacle",
+      "jobId": "sync-2ca8cacb-cde0-49f5-a5d8-23bd50c281ec",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "direction-cult",
+        "asset": "chibi-direction-cult-tentacle",
+        "subject": "UNIT:CULT:TENTACLE",
+        "faction": "CULT",
+        "recipeClass": "creature",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 94801,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-creature.txt + scripts/art/chibi/fragments/class-creature.negative.txt",
+            "text": "Class: one chunky cute creature map piece, a single living thing with big simple rounded rubbery shapes, big round eyes and a clear silhouette that reads at a glance, thick single-colour black outline; the whole creature is visible, and its lowest part is the lowest thing in the image. It holds no weapon and no tool.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple creatures, crowd, robe, hood, cloak, cloth, armour, weapon, flames, fire, candle, horns, claws, fangs, blood, gore, horror, realistic"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/CULT.json",
+            "text": "Subject: Tentacle, the arm of a much bigger monster hidden underground: one chunky cute thick rubbery deep-sea teal tentacle reaching straight up out of a round eldritch portal lying flat on the ground, a wide flat oval seen at an angle like a hoop lying on the floor, its inside a deep dark blue swirl and its rim a thin ring of glowing bright green light; the tentacle comes up out of the middle of the oval and curls over at the top as if to slap, a row of round pale cream suckers down its inner side, one round pale yellow eye with a black pupil at its tip; its lower end is hidden in the portal, with no tail and no end of it on the ground; the flat oval portal is the lowest thing in the image; silly, not scary; simple shapes and very few details."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The portal is part of the picture and lies under the tentacle: a flat oval about 48 pixels wide and 16 pixels tall along the bottom of the image, dark inside with a thin glowing green rim. The tentacle is about 22 pixels thick where it leaves the portal and rises about 60 pixels above it. It is deep-sea teal, colour #1f8f95 with shade #145f6b, its suckers pale cream, colour #f3e7c4, and its eye pale yellow, colour #ffe27a.",
+            "negative": "octopus, squid, animal, creature body, head, face, mouth, teeth, two eyes, second tentacle, several tentacles, tail, tentacle tip on the ground, coiled base, drops, splash, puddle, grass, dirt, rocks, stone ring, purple, violet, pink, red"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one chunky cute creature map piece, a single living thing with big simple rounded rubbery shapes, big round eyes and a clear silhouette that reads at a glance, thick single-colour black outline; the whole creature is visible, and its lowest part is the lowest thing in the image. It holds no weapon and no tool. Subject: Tentacle, the arm of a much bigger monster hidden underground: one chunky cute thick rubbery deep-sea teal tentacle reaching straight up out of a round eldritch portal lying flat on the ground, a wide flat oval seen at an angle like a hoop lying on the floor, its inside a deep dark blue swirl and its rim a thin ring of glowing bright green light; the tentacle comes up out of the middle of the oval and curls over at the top as if to slap, a row of round pale cream suckers down its inner side, one round pale yellow eye with a black pupil at its tip; its lower end is hidden in the portal, with no tail and no end of it on the ground; the flat oval portal is the lowest thing in the image; silly, not scary; simple shapes and very few details. The portal is part of the picture and lies under the tentacle: a flat oval about 48 pixels wide and 16 pixels tall along the bottom of the image, dark inside with a thin glowing green rim. The tentacle is about 22 pixels thick where it leaves the portal and rises about 60 pixels above it. It is deep-sea teal, colour #1f8f95 with shade #145f6b, its suckers pale cream, colour #f3e7c4, and its eye pale yellow, colour #ffe27a.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple creatures, crowd, robe, hood, cloak, cloth, armour, weapon, flames, fire, candle, horns, claws, fangs, blood, gore, horror, realistic, octopus, squid, animal, creature body, head, face, mouth, teeth, two eyes, second tentacle, several tentacles, tail, tentacle tip on the ground, coiled base, drops, splash, puddle, dirt, rocks, stone ring, purple, violet, pink, red",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one chunky cute creature map piece, a single living thing with big simple rounded rubbery shapes, big round eyes and a clear silhouette that reads at a glance, thick single-colour black outline; the whole creature is visible, and its lowest part is the lowest thing in the image. It holds no weapon and no tool. Subject: Tentacle, the arm of a much bigger monster hidden underground: one chunky cute thick rubbery deep-sea teal tentacle reaching straight up out of a round eldritch portal lying flat on the ground, a wide flat oval seen at an angle like a hoop lying on the floor, its inside a deep dark blue swirl and its rim a thin ring of glowing bright green light; the tentacle comes up out of the middle of the oval and curls over at the top as if to slap, a row of round pale cream suckers down its inner side, one round pale yellow eye with a black pupil at its tip; its lower end is hidden in the portal, with no tail and no end of it on the ground; the flat oval portal is the lowest thing in the image; silly, not scary; simple shapes and very few details. The portal is part of the picture and lies under the tentacle: a flat oval about 48 pixels wide and 16 pixels tall along the bottom of the image, dark inside with a thin glowing green rim. The tentacle is about 22 pixels thick where it leaves the portal and rises about 60 pixels above it. It is deep-sea teal, colour #1f8f95 with shade #145f6b, its suckers pale cream, colour #f3e7c4, and its eye pale yellow, colour #ffe27a. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple creatures, crowd, robe, hood, cloak, cloth, armour, weapon, flames, fire, candle, horns, claws, fangs, blood, gore, horror, realistic, octopus, squid, animal, creature body, head, face, mouth, teeth, two eyes, second tentacle, several tentacles, tail, tentacle tip on the ground, coiled base, drops, splash, puddle, dirt, rocks, stone ring, purple, violet, pink, red."
+      },
+      "submittedAt": "2026-10-16T15:36:34.752Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-cult/tentacle-portal-a.png",
+      "rawSheetSha256": "84e6f71d3a98268f4ddd37e0f6771cb42c9f5074125203febb841a9fe9dd81d6",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0.3195,
+          "footprintWidthShare": 1,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-16T15:37:08.924Z",
+      "usageUsd": 0.008210742606057062,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The portal is right (a flat oval, dark inside, a glowing green rim) but the tentacle grew a face with two eyes, like a worm peeking out, and a red stripe of suckers (26 px in the red band).",
+        "reviewedAt": "2026-10-16T15:41:28.036Z"
+      }
+    },
+    "tentacle-portal-b": {
+      "id": "tentacle-portal-b",
+      "asset": "chibi-direction-cult-tentacle",
+      "jobId": "sync-c1ad4518-daa9-47f7-a8c8-9288ae79974a",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "direction-cult",
+        "asset": "chibi-direction-cult-tentacle",
+        "subject": "UNIT:CULT:TENTACLE",
+        "faction": "CULT",
+        "recipeClass": "creature",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 94802,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-creature.txt + scripts/art/chibi/fragments/class-creature.negative.txt",
+            "text": "Class: one chunky cute creature map piece, a single living thing with big simple rounded rubbery shapes, big round eyes and a clear silhouette that reads at a glance, thick single-colour black outline; the whole creature is visible, and its lowest part is the lowest thing in the image. It holds no weapon and no tool.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple creatures, crowd, robe, hood, cloak, cloth, armour, weapon, flames, fire, candle, horns, claws, fangs, blood, gore, horror, realistic"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/CULT.json",
+            "text": "Subject: Tentacle, the arm of a much bigger monster hidden underground: one chunky cute thick rubbery deep-sea teal tentacle reaching straight up out of a round eldritch portal lying flat on the ground, a wide flat oval seen at an angle like a hoop lying on the floor, its inside a deep dark blue swirl and its rim a thin ring of glowing bright green light; the tentacle comes up out of the middle of the oval and curls over at the top as if to slap, a row of round pale cream suckers down its inner side, one round pale yellow eye with a black pupil at its tip; its lower end is hidden in the portal, with no tail and no end of it on the ground; the flat oval portal is the lowest thing in the image; silly, not scary; simple shapes and very few details."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The portal is part of the picture and lies under the tentacle: a flat oval about 48 pixels wide and 16 pixels tall along the bottom of the image, dark inside with a thin glowing green rim. The tentacle is about 22 pixels thick where it leaves the portal and rises about 60 pixels above it. It is deep-sea teal, colour #1f8f95 with shade #145f6b, its suckers pale cream, colour #f3e7c4, and its eye pale yellow, colour #ffe27a.",
+            "negative": "octopus, squid, animal, creature body, head, face, mouth, teeth, two eyes, second tentacle, several tentacles, tail, tentacle tip on the ground, coiled base, drops, splash, puddle, grass, dirt, rocks, stone ring, purple, violet, pink, red"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one chunky cute creature map piece, a single living thing with big simple rounded rubbery shapes, big round eyes and a clear silhouette that reads at a glance, thick single-colour black outline; the whole creature is visible, and its lowest part is the lowest thing in the image. It holds no weapon and no tool. Subject: Tentacle, the arm of a much bigger monster hidden underground: one chunky cute thick rubbery deep-sea teal tentacle reaching straight up out of a round eldritch portal lying flat on the ground, a wide flat oval seen at an angle like a hoop lying on the floor, its inside a deep dark blue swirl and its rim a thin ring of glowing bright green light; the tentacle comes up out of the middle of the oval and curls over at the top as if to slap, a row of round pale cream suckers down its inner side, one round pale yellow eye with a black pupil at its tip; its lower end is hidden in the portal, with no tail and no end of it on the ground; the flat oval portal is the lowest thing in the image; silly, not scary; simple shapes and very few details. The portal is part of the picture and lies under the tentacle: a flat oval about 48 pixels wide and 16 pixels tall along the bottom of the image, dark inside with a thin glowing green rim. The tentacle is about 22 pixels thick where it leaves the portal and rises about 60 pixels above it. It is deep-sea teal, colour #1f8f95 with shade #145f6b, its suckers pale cream, colour #f3e7c4, and its eye pale yellow, colour #ffe27a.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple creatures, crowd, robe, hood, cloak, cloth, armour, weapon, flames, fire, candle, horns, claws, fangs, blood, gore, horror, realistic, octopus, squid, animal, creature body, head, face, mouth, teeth, two eyes, second tentacle, several tentacles, tail, tentacle tip on the ground, coiled base, drops, splash, puddle, dirt, rocks, stone ring, purple, violet, pink, red",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one chunky cute creature map piece, a single living thing with big simple rounded rubbery shapes, big round eyes and a clear silhouette that reads at a glance, thick single-colour black outline; the whole creature is visible, and its lowest part is the lowest thing in the image. It holds no weapon and no tool. Subject: Tentacle, the arm of a much bigger monster hidden underground: one chunky cute thick rubbery deep-sea teal tentacle reaching straight up out of a round eldritch portal lying flat on the ground, a wide flat oval seen at an angle like a hoop lying on the floor, its inside a deep dark blue swirl and its rim a thin ring of glowing bright green light; the tentacle comes up out of the middle of the oval and curls over at the top as if to slap, a row of round pale cream suckers down its inner side, one round pale yellow eye with a black pupil at its tip; its lower end is hidden in the portal, with no tail and no end of it on the ground; the flat oval portal is the lowest thing in the image; silly, not scary; simple shapes and very few details. The portal is part of the picture and lies under the tentacle: a flat oval about 48 pixels wide and 16 pixels tall along the bottom of the image, dark inside with a thin glowing green rim. The tentacle is about 22 pixels thick where it leaves the portal and rises about 60 pixels above it. It is deep-sea teal, colour #1f8f95 with shade #145f6b, its suckers pale cream, colour #f3e7c4, and its eye pale yellow, colour #ffe27a. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple creatures, crowd, robe, hood, cloak, cloth, armour, weapon, flames, fire, candle, horns, claws, fangs, blood, gore, horror, realistic, octopus, squid, animal, creature body, head, face, mouth, teeth, two eyes, second tentacle, several tentacles, tail, tentacle tip on the ground, coiled base, drops, splash, puddle, dirt, rocks, stone ring, purple, violet, pink, red."
+      },
+      "submittedAt": "2026-10-16T15:37:08.937Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-cult/tentacle-portal-b.png",
+      "rawSheetSha256": "40482817f98ad3628747f0138103b6f2910210703ddeba68771f4cb13f634241",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0.346,
+          "footprintWidthShare": 0.9615,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-16T15:37:55.388Z",
+      "usageUsd": 0.009515859021080864,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The tentacle rises from the portal, but the portal is a thick disc with a dark side wall, like a pedestal, a second small tentacle tip pokes out of it at the lower left, and the tip carries a white highlight.",
+        "reviewedAt": "2026-10-16T15:41:28.843Z"
+      }
+    },
+    "tentacle-portal-c": {
+      "id": "tentacle-portal-c",
+      "asset": "chibi-direction-cult-tentacle",
+      "jobId": "sync-89c1909a-ce26-494d-8850-fd7340e93d26",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "direction-cult",
+        "asset": "chibi-direction-cult-tentacle",
+        "subject": "UNIT:CULT:TENTACLE",
+        "faction": "CULT",
+        "recipeClass": "creature",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 94803,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-creature.txt + scripts/art/chibi/fragments/class-creature.negative.txt",
+            "text": "Class: one chunky cute creature map piece, a single living thing with big simple rounded rubbery shapes, big round eyes and a clear silhouette that reads at a glance, thick single-colour black outline; the whole creature is visible, and its lowest part is the lowest thing in the image. It holds no weapon and no tool.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple creatures, crowd, robe, hood, cloak, cloth, armour, weapon, flames, fire, candle, horns, claws, fangs, blood, gore, horror, realistic"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/CULT.json",
+            "text": "Subject: Tentacle, the arm of a much bigger monster hidden underground: one chunky cute thick rubbery deep-sea teal tentacle reaching straight up out of a round eldritch portal lying flat on the ground, a wide flat oval seen at an angle like a hoop lying on the floor, its inside a deep dark blue swirl and its rim a thin ring of glowing bright green light; the tentacle comes up out of the middle of the oval and curls over at the top as if to slap, a row of round pale cream suckers down its inner side, one round pale yellow eye with a black pupil at its tip; its lower end is hidden in the portal, with no tail and no end of it on the ground; the flat oval portal is the lowest thing in the image; silly, not scary; simple shapes and very few details."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Like an elephant trunk coming up out of a manhole seen from above at an angle: the tentacle grows out of the dark middle of the flat oval and is cut off by the oval's far rim, so its root is never seen. The oval is about 50 pixels wide and 18 pixels tall along the bottom of the image. The tentacle is deep-sea teal, colour #1f8f95 with shade #145f6b, its suckers pale cream, colour #f3e7c4, and its eye pale yellow, colour #ffe27a.",
+            "negative": "octopus, squid, animal, creature body, head, face, mouth, teeth, two eyes, second tentacle, several tentacles, tail, tentacle tip on the ground, coiled base, drops, splash, puddle, grass, dirt, rocks, stone ring, manhole cover, metal, purple, violet, pink, red"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one chunky cute creature map piece, a single living thing with big simple rounded rubbery shapes, big round eyes and a clear silhouette that reads at a glance, thick single-colour black outline; the whole creature is visible, and its lowest part is the lowest thing in the image. It holds no weapon and no tool. Subject: Tentacle, the arm of a much bigger monster hidden underground: one chunky cute thick rubbery deep-sea teal tentacle reaching straight up out of a round eldritch portal lying flat on the ground, a wide flat oval seen at an angle like a hoop lying on the floor, its inside a deep dark blue swirl and its rim a thin ring of glowing bright green light; the tentacle comes up out of the middle of the oval and curls over at the top as if to slap, a row of round pale cream suckers down its inner side, one round pale yellow eye with a black pupil at its tip; its lower end is hidden in the portal, with no tail and no end of it on the ground; the flat oval portal is the lowest thing in the image; silly, not scary; simple shapes and very few details. Like an elephant trunk coming up out of a manhole seen from above at an angle: the tentacle grows out of the dark middle of the flat oval and is cut off by the oval's far rim, so its root is never seen. The oval is about 50 pixels wide and 18 pixels tall along the bottom of the image. The tentacle is deep-sea teal, colour #1f8f95 with shade #145f6b, its suckers pale cream, colour #f3e7c4, and its eye pale yellow, colour #ffe27a.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple creatures, crowd, robe, hood, cloak, cloth, armour, weapon, flames, fire, candle, horns, claws, fangs, blood, gore, horror, realistic, octopus, squid, animal, creature body, head, face, mouth, teeth, two eyes, second tentacle, several tentacles, tail, tentacle tip on the ground, coiled base, drops, splash, puddle, dirt, rocks, stone ring, manhole cover, metal, purple, violet, pink, red",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one chunky cute creature map piece, a single living thing with big simple rounded rubbery shapes, big round eyes and a clear silhouette that reads at a glance, thick single-colour black outline; the whole creature is visible, and its lowest part is the lowest thing in the image. It holds no weapon and no tool. Subject: Tentacle, the arm of a much bigger monster hidden underground: one chunky cute thick rubbery deep-sea teal tentacle reaching straight up out of a round eldritch portal lying flat on the ground, a wide flat oval seen at an angle like a hoop lying on the floor, its inside a deep dark blue swirl and its rim a thin ring of glowing bright green light; the tentacle comes up out of the middle of the oval and curls over at the top as if to slap, a row of round pale cream suckers down its inner side, one round pale yellow eye with a black pupil at its tip; its lower end is hidden in the portal, with no tail and no end of it on the ground; the flat oval portal is the lowest thing in the image; silly, not scary; simple shapes and very few details. Like an elephant trunk coming up out of a manhole seen from above at an angle: the tentacle grows out of the dark middle of the flat oval and is cut off by the oval's far rim, so its root is never seen. The oval is about 50 pixels wide and 18 pixels tall along the bottom of the image. The tentacle is deep-sea teal, colour #1f8f95 with shade #145f6b, its suckers pale cream, colour #f3e7c4, and its eye pale yellow, colour #ffe27a. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple creatures, crowd, robe, hood, cloak, cloth, armour, weapon, flames, fire, candle, horns, claws, fangs, blood, gore, horror, realistic, octopus, squid, animal, creature body, head, face, mouth, teeth, two eyes, second tentacle, several tentacles, tail, tentacle tip on the ground, coiled base, drops, splash, puddle, dirt, rocks, stone ring, manhole cover, metal, purple, violet, pink, red."
+      },
+      "submittedAt": "2026-10-16T15:37:55.403Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-cult/tentacle-portal-c.png",
+      "rawSheetSha256": "41b89fb5da1f5b5542df0bdd731776d44dbe6210946e1e29626a9fa8be92dd78",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0.2332,
+          "footprintWidthShare": 1,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-16T15:38:52.821Z",
+      "usageUsd": 0.00903156097730001,
+      "review": {
         "verdict": "ACCEPTED",
         "candidate": 0,
-        "notes": "The Tentacle: one thick teal tentacle rising from its base and curled over at the top, cream suckers down its inner side, one yellow eye at its tip, and no body, face, hole or water; 53 x 74 px, no green, red or violet pixel. Its base ends in a small curled tail on the ground. Seated 4 px above the canvas bottom. Reviewed at 1:1 and x4 on Grass, Snow, Forest and both waters and in greyscale.",
-        "reviewedAt": "2026-10-10T10:22:23.322Z"
+        "notes": "Bead pulp_wars-mch9.48: one thick teal tentacle with cream suckers and one eye at its hooked tip rises out of the middle of a flat oval portal, dark blue inside with a glowing green rim, so it reads as the arm of something below with no tail end; 51 x 74 px as before (53 x 74), seated on the 4 px foot line, green 2.4% of the sprite, no red, no violet. The portal reads on land and water alike, so one sprite still serves both. The eye is amber like the old sprite's.",
+        "reviewedAt": "2026-10-16T15:41:36.654Z"
+      }
+    },
+    "tentacle-portal-d": {
+      "id": "tentacle-portal-d",
+      "asset": "chibi-direction-cult-tentacle",
+      "jobId": "sync-571b2944-fbe1-481b-821d-f85269b172ec",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "direction-cult",
+        "asset": "chibi-direction-cult-tentacle",
+        "subject": "UNIT:CULT:TENTACLE",
+        "faction": "CULT",
+        "recipeClass": "creature",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 94804,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-creature.txt + scripts/art/chibi/fragments/class-creature.negative.txt",
+            "text": "Class: one chunky cute creature map piece, a single living thing with big simple rounded rubbery shapes, big round eyes and a clear silhouette that reads at a glance, thick single-colour black outline; the whole creature is visible, and its lowest part is the lowest thing in the image. It holds no weapon and no tool.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple creatures, crowd, robe, hood, cloak, cloth, armour, weapon, flames, fire, candle, horns, claws, fangs, blood, gore, horror, realistic"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/CULT.json",
+            "text": "Subject: Tentacle, the arm of a much bigger monster hidden underground: one chunky cute thick rubbery deep-sea teal tentacle reaching straight up out of a round eldritch portal lying flat on the ground, a wide flat oval seen at an angle like a hoop lying on the floor, its inside a deep dark blue swirl and its rim a thin ring of glowing bright green light; the tentacle comes up out of the middle of the oval and curls over at the top as if to slap, a row of round pale cream suckers down its inner side, one round pale yellow eye with a black pupil at its tip; its lower end is hidden in the portal, with no tail and no end of it on the ground; the flat oval portal is the lowest thing in the image; silly, not scary; simple shapes and very few details."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Like an elephant trunk coming up out of a manhole seen from above at an angle: the tentacle grows out of the dark middle of the flat oval and is cut off by the oval's far rim, so its root is never seen. The oval is about 50 pixels wide and 18 pixels tall along the bottom of the image. The tentacle is deep-sea teal, colour #1f8f95 with shade #145f6b, its suckers pale cream, colour #f3e7c4, and its eye pale yellow, colour #ffe27a.",
+            "negative": "octopus, squid, animal, creature body, head, face, mouth, teeth, two eyes, second tentacle, several tentacles, tail, tentacle tip on the ground, coiled base, drops, splash, puddle, grass, dirt, rocks, stone ring, manhole cover, metal, purple, violet, pink, red"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one chunky cute creature map piece, a single living thing with big simple rounded rubbery shapes, big round eyes and a clear silhouette that reads at a glance, thick single-colour black outline; the whole creature is visible, and its lowest part is the lowest thing in the image. It holds no weapon and no tool. Subject: Tentacle, the arm of a much bigger monster hidden underground: one chunky cute thick rubbery deep-sea teal tentacle reaching straight up out of a round eldritch portal lying flat on the ground, a wide flat oval seen at an angle like a hoop lying on the floor, its inside a deep dark blue swirl and its rim a thin ring of glowing bright green light; the tentacle comes up out of the middle of the oval and curls over at the top as if to slap, a row of round pale cream suckers down its inner side, one round pale yellow eye with a black pupil at its tip; its lower end is hidden in the portal, with no tail and no end of it on the ground; the flat oval portal is the lowest thing in the image; silly, not scary; simple shapes and very few details. Like an elephant trunk coming up out of a manhole seen from above at an angle: the tentacle grows out of the dark middle of the flat oval and is cut off by the oval's far rim, so its root is never seen. The oval is about 50 pixels wide and 18 pixels tall along the bottom of the image. The tentacle is deep-sea teal, colour #1f8f95 with shade #145f6b, its suckers pale cream, colour #f3e7c4, and its eye pale yellow, colour #ffe27a.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple creatures, crowd, robe, hood, cloak, cloth, armour, weapon, flames, fire, candle, horns, claws, fangs, blood, gore, horror, realistic, octopus, squid, animal, creature body, head, face, mouth, teeth, two eyes, second tentacle, several tentacles, tail, tentacle tip on the ground, coiled base, drops, splash, puddle, dirt, rocks, stone ring, manhole cover, metal, purple, violet, pink, red",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one chunky cute creature map piece, a single living thing with big simple rounded rubbery shapes, big round eyes and a clear silhouette that reads at a glance, thick single-colour black outline; the whole creature is visible, and its lowest part is the lowest thing in the image. It holds no weapon and no tool. Subject: Tentacle, the arm of a much bigger monster hidden underground: one chunky cute thick rubbery deep-sea teal tentacle reaching straight up out of a round eldritch portal lying flat on the ground, a wide flat oval seen at an angle like a hoop lying on the floor, its inside a deep dark blue swirl and its rim a thin ring of glowing bright green light; the tentacle comes up out of the middle of the oval and curls over at the top as if to slap, a row of round pale cream suckers down its inner side, one round pale yellow eye with a black pupil at its tip; its lower end is hidden in the portal, with no tail and no end of it on the ground; the flat oval portal is the lowest thing in the image; silly, not scary; simple shapes and very few details. Like an elephant trunk coming up out of a manhole seen from above at an angle: the tentacle grows out of the dark middle of the flat oval and is cut off by the oval's far rim, so its root is never seen. The oval is about 50 pixels wide and 18 pixels tall along the bottom of the image. The tentacle is deep-sea teal, colour #1f8f95 with shade #145f6b, its suckers pale cream, colour #f3e7c4, and its eye pale yellow, colour #ffe27a. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple creatures, crowd, robe, hood, cloak, cloth, armour, weapon, flames, fire, candle, horns, claws, fangs, blood, gore, horror, realistic, octopus, squid, animal, creature body, head, face, mouth, teeth, two eyes, second tentacle, several tentacles, tail, tentacle tip on the ground, coiled base, drops, splash, puddle, dirt, rocks, stone ring, manhole cover, metal, purple, violet, pink, red."
+      },
+      "submittedAt": "2026-10-16T15:39:51.820Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-cult/tentacle-portal-d.png",
+      "rawSheetSha256": "2281c8773d65205c530a19975b9153a2ca64e15dfc940d34e28bd9b1656e6f70",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0.2947,
+          "footprintWidthShare": 1,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-16T15:40:29.299Z",
+      "usageUsd": 0.008513307147555882,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The tentacle has a face with two big eyes halfway up, and the portal sits on a brown dirt slab with a white glare.",
+        "reviewedAt": "2026-10-16T15:41:29.607Z"
+      }
+    },
+    "tentacle-portal-e": {
+      "id": "tentacle-portal-e",
+      "asset": "chibi-direction-cult-tentacle",
+      "jobId": "sync-fbf9b39b-d3d3-457e-9523-3b77a5a99aa2",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "direction-cult",
+        "asset": "chibi-direction-cult-tentacle",
+        "subject": "UNIT:CULT:TENTACLE",
+        "faction": "CULT",
+        "recipeClass": "creature",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 94805,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-creature.txt + scripts/art/chibi/fragments/class-creature.negative.txt",
+            "text": "Class: one chunky cute creature map piece, a single living thing with big simple rounded rubbery shapes, big round eyes and a clear silhouette that reads at a glance, thick single-colour black outline; the whole creature is visible, and its lowest part is the lowest thing in the image. It holds no weapon and no tool.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple creatures, crowd, robe, hood, cloak, cloth, armour, weapon, flames, fire, candle, horns, claws, fangs, blood, gore, horror, realistic"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/CULT.json",
+            "text": "Subject: Tentacle, the arm of a much bigger monster hidden underground: one chunky cute thick rubbery deep-sea teal tentacle reaching straight up out of a round eldritch portal lying flat on the ground, a wide flat oval seen at an angle like a hoop lying on the floor, its inside a deep dark blue swirl and its rim a thin ring of glowing bright green light; the tentacle comes up out of the middle of the oval and curls over at the top as if to slap, a row of round pale cream suckers down its inner side, one round pale yellow eye with a black pupil at its tip; its lower end is hidden in the portal, with no tail and no end of it on the ground; the flat oval portal is the lowest thing in the image; silly, not scary; simple shapes and very few details."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Like an elephant trunk coming up out of a manhole seen from above at an angle: the tentacle grows out of the dark middle of the flat oval and is cut off by the oval's far rim, so its root is never seen. The oval is about 50 pixels wide and 18 pixels tall along the bottom of the image. The tentacle is deep-sea teal, colour #1f8f95 with shade #145f6b, its suckers pale cream, colour #f3e7c4, and its eye pale yellow, colour #ffe27a.",
+            "negative": "octopus, squid, animal, creature body, head, face, mouth, teeth, two eyes, second tentacle, several tentacles, tail, tentacle tip on the ground, coiled base, drops, splash, puddle, grass, dirt, rocks, stone ring, manhole cover, metal, purple, violet, pink, red"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one chunky cute creature map piece, a single living thing with big simple rounded rubbery shapes, big round eyes and a clear silhouette that reads at a glance, thick single-colour black outline; the whole creature is visible, and its lowest part is the lowest thing in the image. It holds no weapon and no tool. Subject: Tentacle, the arm of a much bigger monster hidden underground: one chunky cute thick rubbery deep-sea teal tentacle reaching straight up out of a round eldritch portal lying flat on the ground, a wide flat oval seen at an angle like a hoop lying on the floor, its inside a deep dark blue swirl and its rim a thin ring of glowing bright green light; the tentacle comes up out of the middle of the oval and curls over at the top as if to slap, a row of round pale cream suckers down its inner side, one round pale yellow eye with a black pupil at its tip; its lower end is hidden in the portal, with no tail and no end of it on the ground; the flat oval portal is the lowest thing in the image; silly, not scary; simple shapes and very few details. Like an elephant trunk coming up out of a manhole seen from above at an angle: the tentacle grows out of the dark middle of the flat oval and is cut off by the oval's far rim, so its root is never seen. The oval is about 50 pixels wide and 18 pixels tall along the bottom of the image. The tentacle is deep-sea teal, colour #1f8f95 with shade #145f6b, its suckers pale cream, colour #f3e7c4, and its eye pale yellow, colour #ffe27a.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple creatures, crowd, robe, hood, cloak, cloth, armour, weapon, flames, fire, candle, horns, claws, fangs, blood, gore, horror, realistic, octopus, squid, animal, creature body, head, face, mouth, teeth, two eyes, second tentacle, several tentacles, tail, tentacle tip on the ground, coiled base, drops, splash, puddle, dirt, rocks, stone ring, manhole cover, metal, purple, violet, pink, red",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one chunky cute creature map piece, a single living thing with big simple rounded rubbery shapes, big round eyes and a clear silhouette that reads at a glance, thick single-colour black outline; the whole creature is visible, and its lowest part is the lowest thing in the image. It holds no weapon and no tool. Subject: Tentacle, the arm of a much bigger monster hidden underground: one chunky cute thick rubbery deep-sea teal tentacle reaching straight up out of a round eldritch portal lying flat on the ground, a wide flat oval seen at an angle like a hoop lying on the floor, its inside a deep dark blue swirl and its rim a thin ring of glowing bright green light; the tentacle comes up out of the middle of the oval and curls over at the top as if to slap, a row of round pale cream suckers down its inner side, one round pale yellow eye with a black pupil at its tip; its lower end is hidden in the portal, with no tail and no end of it on the ground; the flat oval portal is the lowest thing in the image; silly, not scary; simple shapes and very few details. Like an elephant trunk coming up out of a manhole seen from above at an angle: the tentacle grows out of the dark middle of the flat oval and is cut off by the oval's far rim, so its root is never seen. The oval is about 50 pixels wide and 18 pixels tall along the bottom of the image. The tentacle is deep-sea teal, colour #1f8f95 with shade #145f6b, its suckers pale cream, colour #f3e7c4, and its eye pale yellow, colour #ffe27a. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple creatures, crowd, robe, hood, cloak, cloth, armour, weapon, flames, fire, candle, horns, claws, fangs, blood, gore, horror, realistic, octopus, squid, animal, creature body, head, face, mouth, teeth, two eyes, second tentacle, several tentacles, tail, tentacle tip on the ground, coiled base, drops, splash, puddle, dirt, rocks, stone ring, manhole cover, metal, purple, violet, pink, red."
+      },
+      "submittedAt": "2026-10-16T15:40:29.312Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-cult/tentacle-portal-e.png",
+      "rawSheetSha256": "8848469f7a452ac6fd7c53975f7ee9b1bfa0a09c4caff79d95fe2f5c9160389d",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0.6084,
+          "footprintWidthShare": 1,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-16T15:41:10.074Z",
+      "usageUsd": 0.009079157299465603,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The portal is ringed with brown dirt (a hole in a slab, wrong on water), the tentacle is a dull slate teal with purple suckers, and it is thin and short.",
+        "reviewedAt": "2026-10-16T15:41:30.434Z"
       }
     },
     "thing-a": {
@@ -5479,13 +5919,13 @@
       "subject": "UNIT:CULT:TENTACLE",
       "assetClass": "STANDARD_UNIT",
       "status": "ACCEPTED",
-      "recipe": "tentacle-b",
+      "recipe": "tentacle-portal-c",
       "candidate": 0,
-      "candidateSha256": "4226aa703ec352b9a3871a9f3afc9fad450bf57f38c2b74ea8e88a1fd97820b0",
+      "candidateSha256": "41b89fb5da1f5b5542df0bdd731776d44dbe6210946e1e29626a9fa8be92dd78",
       "master": {
         "path": "public/assets/chibi/units/chibi-direction-cult-tentacle.png",
-        "sha256": "d1e0e32d2a018e7376aae1d3b22956225ad4e7bec74079916f1c6db693262df9",
-        "pixelSha256": "9b7a8c455160228bf858b640c0a20281cd0706fe7b9f0d50c352558f2d19034d",
+        "sha256": "a758e82cda310d2eacd9f1c7403be659694d70503267939007528fd6a4972513",
+        "pixelSha256": "bc6fa60c792883d55201b88d777c3a8cbea8c15ef13b9326f24c6ac2724b8e6d",
         "width": 56,
         "height": 80
       },
@@ -5518,7 +5958,7 @@
               "hueSpread": 0
             }
           },
-          "accentPixels": 0,
+          "accentPixels": 55,
           "trimPixels": 0
         }
       },
@@ -5539,8 +5979,8 @@
         "noPlate": true,
         "camera": true
       },
-      "notes": "The Tentacle: one thick teal tentacle rising from its base and curled over at the top, cream suckers down its inner side, one yellow eye at its tip, and no body, face, hole or water; 53 x 74 px, no green, red or violet pixel. Its base ends in a small curled tail on the ground. Seated 4 px above the canvas bottom. Reviewed at 1:1 and x4 on Grass, Snow, Forest and both waters and in greyscale.",
-      "acceptedAt": "2026-10-10T10:22:23.322Z"
+      "notes": "Bead pulp_wars-mch9.48: one thick teal tentacle with cream suckers and one eye at its hooked tip rises out of the middle of a flat oval portal, dark blue inside with a glowing green rim, so it reads as the arm of something below with no tail end; 51 x 74 px as before (53 x 74), seated on the 4 px foot line, green 2.4% of the sprite, no red, no violet. The portal reads on land and water alike, so one sprite still serves both. The eye is amber like the old sprite's.",
+      "acceptedAt": "2026-10-16T15:41:36.654Z"
     },
     "chibi-direction-cult-thing": {
       "id": "chibi-direction-cult-thing",

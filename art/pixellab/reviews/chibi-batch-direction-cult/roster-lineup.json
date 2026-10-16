@@ -266,16 +266,16 @@
       "rival": "Tentacle",
       "kind": "own faction",
       "measure": {
-        "palette": 43.5,
-        "deuteranopia": 31.9,
-        "protanopia": 30.9,
-        "greyPalette": 4.9,
-        "lightness": 7,
+        "palette": 37.1,
+        "deuteranopia": 24.3,
+        "protanopia": 24.1,
+        "greyPalette": 4.5,
+        "lightness": 11,
         "meanLightness": [
           33.3,
-          39.5
+          44.5
         ],
-        "silhouette": 0.58,
+        "silhouette": 0.62,
         "distinct": true,
         "reasons": []
       }
@@ -471,16 +471,16 @@
       "rival": "Tentacle",
       "kind": "own faction",
       "measure": {
-        "palette": 33.1,
-        "deuteranopia": 25.2,
-        "protanopia": 23.3,
-        "greyPalette": 1.9,
-        "lightness": 5.7,
+        "palette": 31.4,
+        "deuteranopia": 19.8,
+        "protanopia": 19.7,
+        "greyPalette": 2.6,
+        "lightness": 6.1,
         "meanLightness": [
           39.1,
-          39.5
+          44.5
         ],
-        "silhouette": 0.53,
+        "silhouette": 0.55,
         "distinct": true,
         "reasons": []
       }
@@ -654,16 +654,16 @@
       "rival": "Tentacle",
       "kind": "own faction",
       "measure": {
-        "palette": 34.4,
-        "deuteranopia": 29,
-        "protanopia": 27.9,
-        "greyPalette": 2,
-        "lightness": 7.6,
+        "palette": 31.1,
+        "deuteranopia": 22.5,
+        "protanopia": 21.4,
+        "greyPalette": 3.2,
+        "lightness": 8.3,
         "meanLightness": [
           45.3,
-          39.5
+          44.5
         ],
-        "silhouette": 0.48,
+        "silhouette": 0.49,
         "distinct": true,
         "reasons": []
       }
@@ -816,16 +816,16 @@
       "rival": "Tentacle",
       "kind": "own faction",
       "measure": {
-        "palette": 31.9,
-        "deuteranopia": 23.2,
-        "protanopia": 23.7,
-        "greyPalette": 1.4,
-        "lightness": 5.5,
+        "palette": 28.5,
+        "deuteranopia": 18.4,
+        "protanopia": 19.5,
+        "greyPalette": 1.6,
+        "lightness": 9.1,
         "meanLightness": [
           34.9,
-          39.5
+          44.5
         ],
-        "silhouette": 0.55,
+        "silhouette": 0.65,
         "distinct": true,
         "reasons": []
       }
@@ -957,16 +957,16 @@
       "rival": "Tentacle",
       "kind": "own faction",
       "measure": {
-        "palette": 43.5,
-        "deuteranopia": 32.5,
-        "protanopia": 31.4,
-        "greyPalette": 2.6,
-        "lightness": 8.6,
+        "palette": 36.7,
+        "deuteranopia": 24.4,
+        "protanopia": 24.2,
+        "greyPalette": 4,
+        "lightness": 12.4,
         "meanLightness": [
           32.4,
-          39.5
+          44.5
         ],
-        "silhouette": 0.42,
+        "silhouette": 0.5,
         "distinct": true,
         "reasons": []
       }
@@ -1079,14 +1079,14 @@
       "rival": "Tentacle",
       "kind": "own faction",
       "measure": {
-        "palette": 26.4,
-        "deuteranopia": 17.3,
-        "protanopia": 17.2,
-        "greyPalette": 1.8,
-        "lightness": 6.6,
+        "palette": 25.6,
+        "deuteranopia": 16.9,
+        "protanopia": 17.1,
+        "greyPalette": 0.9,
+        "lightness": 9.1,
         "meanLightness": [
           35.5,
-          39.5
+          44.5
         ],
         "silhouette": 0.41,
         "distinct": true,
@@ -1181,16 +1181,16 @@
       "rival": "Tentacle",
       "kind": "own faction",
       "measure": {
-        "palette": 30.8,
-        "deuteranopia": 24.2,
-        "protanopia": 23.3,
-        "greyPalette": 1.4,
-        "lightness": 4.6,
+        "palette": 25.6,
+        "deuteranopia": 20,
+        "protanopia": 19.2,
+        "greyPalette": 1.2,
+        "lightness": 4.1,
         "meanLightness": [
           40.8,
-          39.5
+          44.5
         ],
-        "silhouette": 0.49,
+        "silhouette": 0.47,
         "distinct": true,
         "reasons": []
       }
@@ -1259,16 +1259,16 @@
       "rival": "Tentacle",
       "kind": "own faction",
       "measure": {
-        "palette": 42.7,
-        "deuteranopia": 33.3,
-        "protanopia": 32.2,
-        "greyPalette": 2.9,
-        "lightness": 7.2,
+        "palette": 37.1,
+        "deuteranopia": 26.4,
+        "protanopia": 26.1,
+        "greyPalette": 3.4,
+        "lightness": 9.6,
         "meanLightness": [
           35,
-          39.5
+          44.5
         ],
-        "silhouette": 0.45,
+        "silhouette": 0.52,
         "distinct": true,
         "reasons": []
       }
@@ -1318,16 +1318,16 @@
       "rival": "Tentacle",
       "kind": "own faction",
       "measure": {
-        "palette": 12.2,
-        "deuteranopia": 9.7,
-        "protanopia": 10.3,
-        "greyPalette": 1.2,
-        "lightness": 5.2,
+        "palette": 10.5,
+        "deuteranopia": 7.5,
+        "protanopia": 6.9,
+        "greyPalette": 1.9,
+        "lightness": 3.8,
         "meanLightness": [
           44,
-          39.5
+          44.5
         ],
-        "silhouette": 0.36,
+        "silhouette": 0.4,
         "distinct": false,
         "reasons": [
           "colour too close"
@@ -1360,16 +1360,16 @@
       "rival": "Tentacle",
       "kind": "own faction",
       "measure": {
-        "palette": 16,
-        "deuteranopia": 11.6,
-        "protanopia": 11.9,
-        "greyPalette": 2.1,
-        "lightness": 6.4,
+        "palette": 11.6,
+        "deuteranopia": 9.1,
+        "protanopia": 8.8,
+        "greyPalette": 1.4,
+        "lightness": 5.7,
         "meanLightness": [
           40,
-          39.5
+          44.5
         ],
-        "silhouette": 0.51,
+        "silhouette": 0.55,
         "distinct": false,
         "reasons": [
           "colour too close"
@@ -1381,16 +1381,16 @@
       "rival": "Tentacle",
       "kind": "own faction",
       "measure": {
-        "palette": 29,
-        "deuteranopia": 16.9,
-        "protanopia": 18.7,
-        "greyPalette": 1.7,
-        "lightness": 8.2,
+        "palette": 24.2,
+        "deuteranopia": 13.1,
+        "protanopia": 14.3,
+        "greyPalette": 2.4,
+        "lightness": 10.3,
         "meanLightness": [
           35.8,
-          39.5
+          44.5
         ],
-        "silhouette": 0.44,
+        "silhouette": 0.54,
         "distinct": true,
         "reasons": []
       }
@@ -1609,16 +1609,16 @@
       "rival": "Giant Spider",
       "kind": "look-alike",
       "measure": {
-        "palette": 26.1,
-        "deuteranopia": 21.2,
-        "protanopia": 18,
-        "greyPalette": 3.4,
-        "lightness": 5.6,
+        "palette": 30,
+        "deuteranopia": 24.4,
+        "protanopia": 22.2,
+        "greyPalette": 1.3,
+        "lightness": 9.6,
         "meanLightness": [
-          39.5,
+          44.5,
           34.1
         ],
-        "silhouette": 0.33,
+        "silhouette": 0.34,
         "distinct": true,
         "reasons": []
       }
@@ -1628,16 +1628,16 @@
       "rival": "Bigfoot",
       "kind": "look-alike",
       "measure": {
-        "palette": 27.7,
-        "deuteranopia": 21.2,
-        "protanopia": 16.3,
-        "greyPalette": 2.6,
-        "lightness": 8.7,
+        "palette": 29.2,
+        "deuteranopia": 22.4,
+        "protanopia": 19.1,
+        "greyPalette": 1.9,
+        "lightness": 11.9,
         "meanLightness": [
-          39.5,
+          44.5,
           31.6
         ],
-        "silhouette": 0.46,
+        "silhouette": 0.5,
         "distinct": true,
         "reasons": []
       }

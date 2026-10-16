@@ -2094,3 +2094,23 @@ sea. Seven PixelLab calls for two accepted pieces: three unit creations
 
 The unit shadow measurements were regenerated
 (`npm run art:unit-shadows-measure`).
+
+## The portal Tentacle (bead `pulp_wars-mch9.48`)
+
+The Tentacle (`direction-cult`) and its portrait (`interface-cult`) redrawn
+in place, rising out of a flat portal
+([what and why](factions/CULT.md#the-portal-tentacle)): ten PixelLab calls
+(seeds 94801 to 94805 and 94811 to 94815) for two accepted pieces, through
+new `subjectKey` lines (`…/PORTAL`), so the old recipes keep their records.
+
+- **A recipe can draw what the class text forbids** when the subject line
+  and the addendum name it as part of the picture: the `creature` class
+  says "nothing at all is drawn under it" and forbids a disc and a rim, yet
+  all five creations drew the portal under the limb (two set it in dirt,
+  one on a thick pedestal disc).
+- **A limb still grows a face** now and then (one creation of each
+  wording); "coming up out of a manhole … its root is never seen" drew the
+  cleanest limb out of the middle of the oval.
+
+The unit shadow measurements were regenerated
+(`npm run art:unit-shadows-measure`).

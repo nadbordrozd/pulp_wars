@@ -72,7 +72,7 @@
     {
       "title": "Tentacle",
       "asset": "chibi-direction-cult-tentacle",
-      "size": "53 x 74"
+      "size": "51 x 74"
     },
     {
       "title": "Familiar",
@@ -97,25 +97,35 @@
           "protanopia": 13.2,
           "greyPalette": 3.3,
           "lightness": 5.1,
-          "meanLightness": [40.2, 40],
+          "meanLightness": [
+            40.2,
+            40
+          ],
           "silhouette": 0.44,
           "distinct": false,
-          "reasons": ["colour too close"]
+          "reasons": [
+            "colour too close"
+          ]
         }
       },
       {
         "unit": "Imp",
         "rival": "Tentacle",
         "measure": {
-          "palette": 7.7,
-          "deuteranopia": 6,
-          "protanopia": 6.5,
-          "greyPalette": 2.5,
-          "lightness": 2.2,
-          "meanLightness": [40.2, 39.5],
-          "silhouette": 0.42,
+          "palette": 11.4,
+          "deuteranopia": 8,
+          "protanopia": 8.6,
+          "greyPalette": 2.1,
+          "lightness": 4,
+          "meanLightness": [
+            40.2,
+            44.5
+          ],
+          "silhouette": 0.46,
           "distinct": false,
-          "reasons": ["colour too close"]
+          "reasons": [
+            "colour too close"
+          ]
         }
       },
       {
@@ -127,7 +137,10 @@
           "protanopia": 29.7,
           "greyPalette": 2.4,
           "lightness": 6.1,
-          "meanLightness": [40.2, 45.3],
+          "meanLightness": [
+            40.2,
+            45.3
+          ],
           "silhouette": 0.55,
           "distinct": true,
           "reasons": []
@@ -142,7 +155,10 @@
           "protanopia": 35,
           "greyPalette": 4.1,
           "lightness": 7.4,
-          "meanLightness": [40.2, 33.3],
+          "meanLightness": [
+            40.2,
+            33.3
+          ],
           "silhouette": 0.55,
           "distinct": true,
           "reasons": []
@@ -157,10 +173,15 @@
           "protanopia": 8.7,
           "greyPalette": 1.6,
           "lightness": 3.3,
-          "meanLightness": [44.5, 44],
+          "meanLightness": [
+            44.5,
+            44
+          ],
           "silhouette": 0.33,
           "distinct": false,
-          "reasons": ["colour too close"]
+          "reasons": [
+            "colour too close"
+          ]
         }
       },
       {
@@ -172,10 +193,15 @@
           "protanopia": 9.5,
           "greyPalette": 1.9,
           "lightness": 6.9,
-          "meanLightness": [44.5, 40],
+          "meanLightness": [
+            44.5,
+            40
+          ],
           "silhouette": 0.49,
           "distinct": false,
-          "reasons": ["colour too close"]
+          "reasons": [
+            "colour too close"
+          ]
         }
       },
       {
@@ -187,7 +213,10 @@
           "protanopia": 27.4,
           "greyPalette": 2.7,
           "lightness": 7.7,
-          "meanLightness": [44.5, 45.3],
+          "meanLightness": [
+            44.5,
+            45.3
+          ],
           "silhouette": 0.55,
           "distinct": true,
           "reasons": []
@@ -202,10 +231,16 @@
           "protanopia": 2.5,
           "greyPalette": 0.8,
           "lightness": 1.7,
-          "meanLightness": [38.7, 40.2],
+          "meanLightness": [
+            38.7,
+            40.2
+          ],
           "silhouette": 1,
           "distinct": false,
-          "reasons": ["colour too close", "greyscale too close"]
+          "reasons": [
+            "colour too close",
+            "greyscale too close"
+          ]
         }
       },
       {
@@ -217,10 +252,15 @@
           "protanopia": 11.4,
           "greyPalette": 2.8,
           "lightness": 6.3,
-          "meanLightness": [38.7, 40],
+          "meanLightness": [
+            38.7,
+            40
+          ],
           "silhouette": 0.44,
           "distinct": false,
-          "reasons": ["colour too close"]
+          "reasons": [
+            "colour too close"
+          ]
         }
       },
       {
@@ -232,10 +272,16 @@
           "protanopia": 3.4,
           "greyPalette": 0.7,
           "lightness": 2.3,
-          "meanLightness": [43.5, 44.5],
+          "meanLightness": [
+            43.5,
+            44.5
+          ],
           "silhouette": 1,
           "distinct": false,
-          "reasons": ["colour too close", "greyscale too close"]
+          "reasons": [
+            "colour too close",
+            "greyscale too close"
+          ]
         }
       },
       {
@@ -247,10 +293,15 @@
           "protanopia": 10.2,
           "greyPalette": 2.1,
           "lightness": 3.9,
-          "meanLightness": [43.5, 44],
+          "meanLightness": [
+            43.5,
+            44
+          ],
           "silhouette": 0.33,
           "distinct": false,
-          "reasons": ["colour too close"]
+          "reasons": [
+            "colour too close"
+          ]
         }
       }
     ]

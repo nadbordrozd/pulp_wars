@@ -142,6 +142,7 @@
     {
       "id": "chibi-direction-portrait-cult-tentacle",
       "subject": "PORTRAIT:CULT:TENTACLE",
+      "subjectKey": "PORTRAIT:CULT:TENTACLE/PORTAL",
       "assetClass": "PORTRAIT",
       "recipeClass": "creature",
       "canvas": {
@@ -1587,6 +1588,74 @@
       },
       "editInstruction": "Change only one small thing: the small red line of the mouth becomes plain black, with no red, no pink and no orange left in it. Do not redraw anything else: keep the teal body, the cream belly, the two eyes, the arms, the feet, the shape, the black outline and the art style exactly the same, on a transparent background.",
       "notes": "portrait-frog-a is the frog wanted, but its mouth is red (4 px in the red band): red is the cue of an Unbound daemon."
+    },
+    {
+      "id": "portrait-tentacle-portal-a",
+      "asset": "chibi-direction-portrait-cult-tentacle",
+      "endpoint": "create-image-pixen",
+      "seed": 94811,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "Like an elephant trunk coming up out of a manhole seen from above at an angle: the tentacle grows out of the dark middle of the flat oval and is cut off by the oval's far rim, so its root is never seen. The oval fills the width of the square along its bottom, about 44 pixels wide and 14 pixels tall, and the tentacle fills the height above it. The tentacle is deep-sea teal, colour #1f8f95 with shade #145f6b, its suckers pale cream, colour #f3e7c4, and its eye pale yellow, colour #ffe27a.",
+      "negativeAddendum": "octopus, squid, animal, creature body, head, face, mouth, teeth, two eyes, second tentacle, several tentacles, tail, coiled base, drops, splash, puddle, grass, dirt, rocks, stone ring, manhole cover, metal, purple, violet, pink, red",
+      "notes": "Bead pulp_wars-mch9.48: the portrait of the portal Tentacle, the limb rising out of a flat oval portal as on the map sprite (tentacle-portal-c), subject PORTRAIT:CULT:TENTACLE/PORTAL."
+    },
+    {
+      "id": "portrait-tentacle-portal-b",
+      "asset": "chibi-direction-portrait-cult-tentacle",
+      "endpoint": "create-image-pixen",
+      "seed": 94812,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "Like an elephant trunk coming up out of a manhole seen from above at an angle: the tentacle grows out of the dark middle of the flat oval and is cut off by the oval's far rim, so its root is never seen. The oval fills the width of the square along its bottom, about 44 pixels wide and 14 pixels tall, and the tentacle fills the height above it. The tentacle is deep-sea teal, colour #1f8f95 with shade #145f6b, its suckers pale cream, colour #f3e7c4, and its eye pale yellow, colour #ffe27a.",
+      "negativeAddendum": "octopus, squid, animal, creature body, head, face, mouth, teeth, two eyes, second tentacle, several tentacles, tail, coiled base, drops, splash, puddle, grass, dirt, rocks, stone ring, manhole cover, metal, purple, violet, pink, red",
+      "notes": "The request of portrait-tentacle-portal-a on another seed."
+    },
+    {
+      "id": "portrait-tentacle-portal-c",
+      "asset": "chibi-direction-portrait-cult-tentacle",
+      "endpoint": "create-image-pixen",
+      "seed": 94813,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "Like an elephant trunk coming up out of a manhole seen from above at an angle: the tentacle grows out of the dark middle of the flat oval and is cut off by the oval's far rim, so its root is never seen. The oval fills the width of the square along its bottom, about 44 pixels wide and 14 pixels tall, and the tentacle fills the height above it. The tentacle is deep-sea teal, colour #1f8f95 with shade #145f6b, its suckers pale cream, colour #f3e7c4, and its eye pale yellow, colour #ffe27a.",
+      "negativeAddendum": "octopus, squid, animal, creature body, head, face, mouth, teeth, two eyes, second tentacle, several tentacles, tail, coiled base, drops, splash, puddle, grass, dirt, rocks, stone ring, manhole cover, metal, purple, violet, pink, red",
+      "notes": "The request of portrait-tentacle-portal-a on another seed."
+    },
+    {
+      "id": "portrait-tentacle-portal-d",
+      "asset": "chibi-direction-portrait-cult-tentacle",
+      "endpoint": "create-image-pixen",
+      "seed": 94814,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "Like an elephant trunk coming up out of a manhole seen from above at an angle: the tentacle grows out of the dark middle of the flat oval and is cut off by the oval's far rim, so its root is never seen. The oval fills the width of the square along its bottom, about 44 pixels wide and 14 pixels tall, and the tentacle fills the height above it. The tentacle is deep-sea teal, colour #1f8f95 with shade #145f6b, its suckers pale cream, colour #f3e7c4, and its eye pale yellow, colour #ffe27a.",
+      "negativeAddendum": "octopus, squid, animal, creature body, head, face, mouth, teeth, two eyes, second tentacle, several tentacles, tail, coiled base, drops, splash, puddle, grass, dirt, rocks, stone ring, manhole cover, metal, purple, violet, pink, red",
+      "notes": "The request of portrait-tentacle-portal-a on a fourth seed."
+    },
+    {
+      "id": "portrait-tentacle-portal-b-suckers",
+      "asset": "chibi-direction-portrait-cult-tentacle",
+      "endpoint": "edit-image-pixen",
+      "seed": 94815,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-tentacle-portal-b",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the suckers: the messy dark marks, brown specks and yellow dots down the inner side of the tentacle become one neat row of five round pale cream suckers, colour #f3e7c4, each a small round dot, and the brown specks inside the portal are erased. Keep the teal tentacle, its hooked tip with the one pale yellow eye, the flat oval portal with its dark blue inside and glowing green rim, the shape, the thick black outline and the art style the same, on a transparent background.",
+      "notes": "portrait-tentacle-portal-b is the portrait wanted (one tentacle out of the portal, the eye at its tip), but its suckers are a mess of dark squares, yellow dots and brown specks."
     }
   ]
 }

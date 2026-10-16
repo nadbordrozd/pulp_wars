@@ -1,0 +1,36 @@
+{
+  "id": "portrait-tentacle-portal-b-suckers",
+  "jobId": "6888591c-0ac7-4c7b-976c-c8019489a6a7",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "interface-cult",
+    "asset": "chibi-direction-portrait-cult-tentacle",
+    "subject": "PORTRAIT:CULT:TENTACLE",
+    "faction": "CULT",
+    "recipeClass": "creature",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 94815,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the suckers: the messy dark marks, brown specks and yellow dots down the inner side of the tentacle become one neat row of five round pale cream suckers, colour #f3e7c4, each a small round dot, and the brown specks inside the portal are erased. Keep the teal tentacle, its hooked tip with the one pale yellow eye, the flat oval portal with its dark blue inside and glowing green rim, the shape, the thick black outline and the art style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only the suckers: the messy dark marks, brown specks and yellow dots down the inner side of the tentacle become one neat row of five round pale cream suckers, colour #f3e7c4, each a small round dot, and the brown specks inside the portal are erased. Keep the teal tentacle, its hooked tip with the one pale yellow eye, the flat oval portal with its dark blue inside and glowing green rim, the shape, the thick black outline and the art style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only the suckers: the messy dark marks, brown specks and yellow dots down the inner side of the tentacle become one neat row of five round pale cream suckers, colour #f3e7c4, each a small round dot, and the brown specks inside the portal are erased. Keep the teal tentacle, its hooked tip with the one pale yellow eye, the flat oval portal with its dark blue inside and glowing green rim, the shape, the thick black outline and the art style the same, on a transparent background.",
+    "editInstruction": "Change only the suckers: the messy dark marks, brown specks and yellow dots down the inner side of the tentacle become one neat row of five round pale cream suckers, colour #f3e7c4, each a small round dot, and the brown specks inside the portal are erased. Keep the teal tentacle, its hooked tip with the one pale yellow eye, the flat oval portal with its dark blue inside and glowing green rim, the shape, the thick black outline and the art style the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-tentacle-portal-b",
+      "candidate": 0,
+      "sha256": "34bd771f92fcdc119107cc766f027f131004787beebf96c083d09c8fe050d320"
+    }
+  }
+}

@@ -146,6 +146,7 @@
     {
       "id": "chibi-direction-cult-tentacle",
       "subject": "UNIT:CULT:TENTACLE",
+      "subjectKey": "UNIT:CULT:TENTACLE/PORTAL",
       "assetClass": "STANDARD_UNIT",
       "recipeClass": "creature",
       "canvas": {
@@ -1015,6 +1016,71 @@
       },
       "editInstruction": "Change only one small thing: the red tongue inside the small open mouth becomes plain black, so the mouth is a small black oval with no red, no pink and no orange left in it. Do not redraw anything else: keep the teal body, the cream belly and throat, the two big yellow eyes, the arms, the feet, the shape, the thick black outline and the art style exactly the same, on a transparent background.",
       "notes": "frog-unit-b is the frog wanted, but its tongue is red (7 px in the red band): red is the cue of an Unbound daemon and no other Cult piece carries it."
+    },
+    {
+      "id": "tentacle-portal-a",
+      "asset": "chibi-direction-cult-tentacle",
+      "endpoint": "create-image-pixen",
+      "seed": 94801,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "The portal is part of the picture and lies under the tentacle: a flat oval about 48 pixels wide and 16 pixels tall along the bottom of the image, dark inside with a thin glowing green rim. The tentacle is about 22 pixels thick where it leaves the portal and rises about 60 pixels above it. It is deep-sea teal, colour #1f8f95 with shade #145f6b, its suckers pale cream, colour #f3e7c4, and its eye pale yellow, colour #ffe27a.",
+      "negativeAddendum": "octopus, squid, animal, creature body, head, face, mouth, teeth, two eyes, second tentacle, several tentacles, tail, tentacle tip on the ground, coiled base, drops, splash, puddle, grass, dirt, rocks, stone ring, purple, violet, pink, red",
+      "notes": "Bead pulp_wars-mch9.48 (the user: the Tentacle should come out of a hole or a flat portal, the arm of a bigger creature, never a self-contained thing with both ends): the limb rising out of a flat oval portal, subject UNIT:CULT:TENTACLE/PORTAL."
+    },
+    {
+      "id": "tentacle-portal-b",
+      "asset": "chibi-direction-cult-tentacle",
+      "endpoint": "create-image-pixen",
+      "seed": 94802,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "The portal is part of the picture and lies under the tentacle: a flat oval about 48 pixels wide and 16 pixels tall along the bottom of the image, dark inside with a thin glowing green rim. The tentacle is about 22 pixels thick where it leaves the portal and rises about 60 pixels above it. It is deep-sea teal, colour #1f8f95 with shade #145f6b, its suckers pale cream, colour #f3e7c4, and its eye pale yellow, colour #ffe27a.",
+      "negativeAddendum": "octopus, squid, animal, creature body, head, face, mouth, teeth, two eyes, second tentacle, several tentacles, tail, tentacle tip on the ground, coiled base, drops, splash, puddle, grass, dirt, rocks, stone ring, purple, violet, pink, red",
+      "notes": "The same request as tentacle-portal-a on another seed."
+    },
+    {
+      "id": "tentacle-portal-c",
+      "asset": "chibi-direction-cult-tentacle",
+      "endpoint": "create-image-pixen",
+      "seed": 94803,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "Like an elephant trunk coming up out of a manhole seen from above at an angle: the tentacle grows out of the dark middle of the flat oval and is cut off by the oval's far rim, so its root is never seen. The oval is about 50 pixels wide and 18 pixels tall along the bottom of the image. The tentacle is deep-sea teal, colour #1f8f95 with shade #145f6b, its suckers pale cream, colour #f3e7c4, and its eye pale yellow, colour #ffe27a.",
+      "negativeAddendum": "octopus, squid, animal, creature body, head, face, mouth, teeth, two eyes, second tentacle, several tentacles, tail, tentacle tip on the ground, coiled base, drops, splash, puddle, grass, dirt, rocks, stone ring, manhole cover, metal, purple, violet, pink, red",
+      "notes": "A variant that names the root as hidden inside the oval."
+    },
+    {
+      "id": "tentacle-portal-d",
+      "asset": "chibi-direction-cult-tentacle",
+      "endpoint": "create-image-pixen",
+      "seed": 94804,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "Like an elephant trunk coming up out of a manhole seen from above at an angle: the tentacle grows out of the dark middle of the flat oval and is cut off by the oval's far rim, so its root is never seen. The oval is about 50 pixels wide and 18 pixels tall along the bottom of the image. The tentacle is deep-sea teal, colour #1f8f95 with shade #145f6b, its suckers pale cream, colour #f3e7c4, and its eye pale yellow, colour #ffe27a.",
+      "negativeAddendum": "octopus, squid, animal, creature body, head, face, mouth, teeth, two eyes, second tentacle, several tentacles, tail, tentacle tip on the ground, coiled base, drops, splash, puddle, grass, dirt, rocks, stone ring, manhole cover, metal, purple, violet, pink, red",
+      "notes": "The request of tentacle-portal-c on another seed."
+    },
+    {
+      "id": "tentacle-portal-e",
+      "asset": "chibi-direction-cult-tentacle",
+      "endpoint": "create-image-pixen",
+      "seed": 94805,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "Like an elephant trunk coming up out of a manhole seen from above at an angle: the tentacle grows out of the dark middle of the flat oval and is cut off by the oval's far rim, so its root is never seen. The oval is about 50 pixels wide and 18 pixels tall along the bottom of the image. The tentacle is deep-sea teal, colour #1f8f95 with shade #145f6b, its suckers pale cream, colour #f3e7c4, and its eye pale yellow, colour #ffe27a.",
+      "negativeAddendum": "octopus, squid, animal, creature body, head, face, mouth, teeth, two eyes, second tentacle, several tentacles, tail, tentacle tip on the ground, coiled base, drops, splash, puddle, grass, dirt, rocks, stone ring, manhole cover, metal, purple, violet, pink, red",
+      "notes": "The request of tentacle-portal-c on a third seed."
     }
   ]
 }
