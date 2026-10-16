@@ -294,7 +294,7 @@ against (the Gingerbread Men are Toffee Troopers).
 
 Tests: `tests/unit/ruleset-v7-giants-ai.test.ts`.
 
-## The Cult seat (`pulp_wars-mch9.9` to `mch9.12`, `mch9.27`)
+## The Cult seat
 
 The ninth faction, the Cultists
 ([current rules, section 26](../product/RULESET_7_CURRENT.md#26-cultist-faction-rules)),
@@ -302,8 +302,14 @@ has a Normal AI in four parts: the Cult seat on the army rules (bead A1,
 `pulp_wars-mch9.9`), its own commands (A2, `pulp_wars-mch9.10`), its
 rituals and tricks (A3, `pulp_wars-mch9.11`), and every seat's play against
 the Cult (A4, `pulp_wars-mch9.12`); the corrections from its first real
-matches (`pulp_wars-mch9.27`) followed. None changed a rule or moved the
-identity. Everything reads the viewer's `PlayerViewV7`, the offered
+matches (`pulp_wars-mch9.27`) followed. **The Cult redesign** (approved by
+the user on 2026-10-16) rebuilt all four parts for the new Cult, in which
+the summons are the army and the robed cultists the casters: the army
+rules and Favour (A-R1, `pulp_wars-mch9.38`), the rituals and tricks
+(A-R2, `pulp_wars-mch9.39`), the summons (A-R3, `pulp_wars-mch9.40`), and
+every seat against the new Cult (A-R4, `pulp_wars-mch9.41`); this section
+describes the code after them (`pulp_wars-mch9.47`). None changed a rule or
+moved the identity. Everything reads the viewer's `PlayerViewV7`, the offered
 commands, and the public previews; the policy imports no reducer and draws
 nothing from the PRNG. Strands, Control, grips, rituals, marks, and Favour
 are all public, so the Cult needs no hidden knowledge and no memory.
@@ -315,14 +321,18 @@ passes; each rule is a decision, or the one turn a seat plays, on a small
 hand-built state, and the numbers should be read as first values. The
 design and the record of what each bead built and decided are in
 [the Cultists spec, section 15](../product/RULESET_7_CULTISTS.md#15-normal-ai)
-(15.1 to 15.5 the design, 15.6 to 15.10 as built); where the two differ,
-what is written here is what the code does.
+(15.1 to 15.5 the design, 15.6 to 15.10 as built) and, for the redesign,
+in [the Cult redesign, section 12](../product/RULESET_7_CULT_REDESIGN.md#12-normal-ai)
+(12.1 to 12.4 the design, 12.5 to 12.8 as built); where they differ, what
+is written here is what the code does.
 
 Tests: `tests/unit/ruleset-v7-cult-ai.test.ts`,
 `tests/unit/ruleset-v7-cult-channel-ai.test.ts`,
 `tests/unit/ruleset-v7-cult-rituals-ai.test.ts`,
 `tests/unit/ruleset-v7-cult-against-ai.test.ts`,
-`tests/unit/ruleset-v7-cult-corrections-ai.test.ts`.
+`tests/unit/ruleset-v7-cult-corrections-ai.test.ts`,
+`tests/unit/ruleset-v7-cult-army-favour-ai.test.ts`,
+`tests/unit/ruleset-v7-cult-summons-ai.test.ts`.
 
 ### The Cult seat on the army rules (`src/ai/v7-cult.ts`)
 
@@ -331,68 +341,85 @@ and a Cult viewer). `CULT` is in the list, so **every match of the nine
 factions plays the army rules**, and a Cult seat does not put any other
 seat back on the older policy. Every Cult rule is gated on a Cult viewer.
 
-**2. The order** (`CULT_RESEARCH_ROLES_V7`). The Summoner, the Hexer, the
-Idol Bearer, the Familiar, the Chosen, the Stargazer, the Caller: from a
-Gathering opener with no enemy in sight Leadership, Hunting, Hexers,
-Crafting, Warding Circles, Familiars, Harvest Rites, Engineering, The
-Chosen, Forestry, Stargazers, Raiding, and Callers. Four rules are the
-Cult's own:
+**2. The order** (`CULT_RESEARCH_ROLES_V7`). The Summoner, the Idol
+Bearer, the Hexer, the Familiar, the Stargazer (A-R1: the warden before the
+Hexer; the Chosen and the Caller retired at `7r85`). From a Gathering
+opener with no enemy in sight and three Initiates for one city:
+Leadership, Crafting, Warding Circles, Hunting, Hexers, Familiars, Harvest
+Rites, Engineering, Gibbering Masses, Forestry, Stargazers, Raiding, and
+Tentacles. Harvest Rites and Gibbering Masses are bought before the
+Stargazer's technologies (`CULT_RESEARCH_BEFORE_STARGAZER_V7`), Tentacles
+after the last unit of the order (`CULT_RESEARCH_AFTER_ROLES_V7`). Five
+rules are the Cult's own:
 
 - **Leadership is the second technology.** A Cult seat is left out of the
   other "bodies first" seats' rule of one growth technology before their
-  first unit (`armyUndeadGrowthFirstV7`). The shared "economy first" rule
-  still buys one growth technology the seat's land can use after
-  Leadership and before Hexers.
-- **Harvest Rites** is named before the Chosen's two technologies once
-  Leadership is owned.
+  first unit (`armyUndeadGrowthFirstV7`).
 - **Hexers when a fast unit shows** (`cultHexersWantedV7`). With a hostile
   land unit of the `RAIDER` or `KNIGHT` role in sight and no Hexers, the
   next technology is the first step to Hexers, on the seat's ordinary
   research tempo. The role decides, not the unit's speed.
+- **Gibbering Masses when a city is approached** (`cultMassWantedV7`). With
+  Leadership and Warding Circles owned and no Gibbering Masses, a visible
+  hostile land unit within 6 of an own city
+  (`CULT_MASS_ALERT_RADIUS_V7`) moves Gibbering Masses up; the Hexers rule
+  goes first when both apply.
 - **The Stars Are Right** is named before the shared late technologies once
   every unit of the order is unlocked, an enemy army is in the field, and
-  Favour has reached 12 (`CULT_STARS_FAVOUR_V7`). Below 12 the shared list
-  applies, and it ends with The Stars Are Right anyway.
+  Favour has reached 9 (`CULT_STARS_FAVOUR_V7`, half the Great Summoning's
+  18; 12 before the redesign). Below 9 the shared list applies, and it ends
+  with The Stars Are Right anyway.
 
-**3. The army** (`CULT_ARMY_SHARES_V7`, `armySharesV7`). 45% line
-(Initiates and the Chosen), 10% Idol Bearers, 20% Hexers, 10% Stargazers,
-10% Callers, the same against fragile enemies (the Cult has no unit made to
-reach a back row). They add up to 95: the Summoners and the Familiars are
-counted apart. One Summoner for every six units, at least one and at most
-three (`cultSummonersWantedV7`); one Familiar for five units, two at most
-(`cultFamiliarsWantedV7`). Two caps: no more Idol Bearers than cities, nor
-than a third of the army (`cultIdolBearerCappedV7`: it does not strike
-after it moves), and one Chosen for every two Initiates
-(`cultChosenCappedV7`: the Initiates are the channellers and the 2-Coin
-bodies, and a class the army is short of is otherwise bought in its dearest
-unit).
+**3. The army** (`CULT_ARMY_SHARES_V7`, `armySharesV7`). 55% line
+(Initiates), 10% Idol Bearers, 20% Hexers, 10% Stargazers, and no
+breakthrough unit (the Caller's slot is vacant), the same against fragile
+enemies (the Cult's answer to a back row is its summons). They add up to
+95: the Summoners and the Familiars are counted apart. One Summoner for
+every five units, at least one and at most three
+(`cultSummonersWantedV7`; six before the redesign); one Familiar for five
+units, two at most (`cultFamiliarsWantedV7`). No more Idol Bearers than
+cities, nor than a third of the army (`cultIdolBearerCappedV7`: it does not
+strike after it moves). The Chosen's cap went with the Chosen.
 
-**4. Bodies first and the rewards** (`cultRobedV7`, `cultBodiesV7`). The
-seat counts its robed cultists (not the Familiar, the Thing, or a daemon).
-With fewer than its cities and two more it trains before it researches and
-keeps no Coins for a technology. At level 2 it takes the Militia (two
-Initiates) while short of bodies, threatened, or with fewer than two units
-a city. At level 3 the shared rule applies (the Familiar, or Walls for a
-threatened city). At every level from 5 it takes the Thing in the Cellar,
-also with a Thing for every city already: a body that grips.
+**4. Bodies first and the rewards** (`cultRobedV7`, `cultBodiesV7`,
+`cultBodiesWantedV7`). The seat counts its robed cultists (not the
+Familiar, the Thing, or a daemon) and wants the larger of its cities and
+two and every own daemon's strands (`cultUpkeepV7`: one for each Brood,
+none for a Mass on its Doorstep) and two, and one more while an Initiate
+is wanted for its Favour (`cultFeedWantedV7`: an own Summoner has an enemy
+unit or center within 6, and one Initiate's value brings Favour to a
+summon's price, or with The Stars Are Right the Great Summoning's, beyond
+the Hunger kept; that Initiate's training is worth 150 more). Short of
+them it trains before it researches and keeps no Coins for a technology.
+At level 2 it takes the Militia (two Initiates) while short of bodies,
+threatened, or with fewer than two units a city. At level 3 the shared
+rule applies (the Familiar, or Walls for a threatened city). At every level
+from 5 it takes the Thing in the Cellar, also with a Thing for every city
+already: a body that grips.
 
-**5. Weak links, company, and the back row** (`cultWeakLinkV7`,
-`cultEscortV7`, `cultBackRowV7`, `CULT_STURDY_V7` 15).
+**5. Casters, the warden, and the back row** (`cultCasterV7`,
+`cultWardenV7`, `cultWeakLinkV7`, `cultEscortV7`, `cultBackRowV7`).
 
-- Every robed cultist of less than 15 HP at its maximum (the Initiate,
-  Hexer, Summoner, Stargazer, Caller) is a weak link of a kill chain at any
-  HP, so the shared spacing cost (`armyChainSpacingV7`) keeps them apart
-  inside the reach of a unit with Overrun: one Knight does not ride through
-  a whole circle. The Chosen and the Idol Bearer are escorts and are drawn
-  beside them. The Familiar is not robed and is left to the shared rules.
-- **Contact with company.** An Initiate, a Familiar, a Summoner, a Caller,
-  or a Chosen does not step beside an enemy where the visible enemies kill
-  it unless another own unit stands beside that enemy or can still come. A
-  Move onto a village or a center, and a holder's Move to a Seizure, are
-  exempt.
+- **Cultists do not brawl.** A caster (every robed cultist but the Idol
+  Bearer: the Initiate, the Hexer, the Summoner, the Stargazer, 7 HP each)
+  attacks only for a kill, a blow on a frog, a blow that leaves a living
+  enemy broken where an own Summoner beside it (or offered a Move beside
+  it) can Seize it with a holder this turn (`previewSeizeV7` on the board
+  as it would stand), or when the visible enemy kills it where it stands
+  anyway (its doomed Sacrifice follows). Its Move may not end in a visible
+  player unit's reach that it was outside of, nor nearer such a unit inside
+  it, unless an own summon or Idol Bearer stands strictly nearer that unit;
+  a plan step, a Move onto a center or a village, and a Move from which its
+  own attack kills are exempt.
+- **Weak links and the escort.** Every caster is a weak link of a kill
+  chain at any HP, so the shared spacing cost (`armyChainSpacingV7`) keeps
+  them apart inside the reach of a unit with Overrun: one Knight does not
+  ride through a whole circle. The Idol Bearer is the only escort and is
+  drawn beside them. The Familiar is not robed and is left to the shared
+  rules.
 - **The back row out of reach.** A Hexer, a Stargazer, or a Summoner makes
-  no Move into a visible hostile melee unit's reach with no own line,
-  defender, or Chosen nearer to the enemy, nor into the reach of a unit
+  no Move into a visible hostile melee unit's reach with no own line or
+  defender unit nearer to the enemy, nor into the reach of a unit
   with Overrun from outside it. Exempt: the Move from which its attack
   kills, a Move onto a center or a village, and a Summoner's (and a
   holder's) Move to a Seizure. A Stargazer is also a siege unit to the
@@ -419,62 +446,86 @@ the army policy say.
 
 **The order of a Cult turn**, by priority:
 
-| Priority        | Step                                                                                     |
-| --------------- | ---------------------------------------------------------------------------------------- |
-| 4000            | A Seizure, and the Move that makes one legal                                             |
-| 3990, 3980      | A daemon that cannot be held, and the own units that step away from it                   |
-| 3970            | The Herald's planned Move, and its Proclaim                                              |
-| 3950            | A Horror's Boo!                                                                          |
-| ordinary + 2000 | The own bound daemons' ordinary Moves and attacks (a daemon acts before its channellers) |
-| 1950            | Anchor                                                                                   |
-| 1940            | The channellers' Moves and Channels                                                      |
-| 1930            | Bind again                                                                               |
-| 1920            | Behold!                                                                                  |
-| 1915            | The Great Summoning, and the gathering for it                                            |
-| 1912            | The garrison swap on the lodge or a threatened center (step off, or out of the ring)     |
-| 1910            | Summon a Horror                                                                          |
-| 1900            | The Sacrifice of a spare Initiate                                                        |
-| 1890            | The Offering                                                                             |
-| 1880            | Ribbit                                                                                   |
-| 1875            | Switcheroo                                                                               |
-| 1870            | The Tentacle                                                                             |
-| 1865            | Pick Me!                                                                                 |
-| 1860            | Star-fall, and the chanter that comes for it                                             |
-| 1855            | An Initiate's step onto a village                                                        |
-| 1305 and below  | The ordinary play                                                                        |
-| 10              | The Proclaim of a Herald that has not moved and has nobody to attack                     |
-| 5               | The Sacrifice of a doomed unit (just above End Turn)                                     |
+| Priority        | Step                                                                                                              |
+| --------------- | ----------------------------------------------------------------------------------------------------------------- |
+| 4000            | A Seizure, and the Move that makes one legal                                                                      |
+| 3990, 3980      | A daemon that cannot be held (a Herald the seat cannot feed among them), and the own units that step away from it |
+| 3970            | The Herald's planned Move and attacks, and its Proclaim                                                           |
+| 3950            | A Horror's Boo!                                                                                                   |
+| 3945, 3940      | Swarm: the second Imp's Move beside the enemy, then each Imp's unanswered attack                                  |
+| ordinary + 2000 | The own bound daemons' ordinary Moves and attacks (a daemon acts before its channellers)                          |
+| 1950            | Anchor                                                                                                            |
+| 1940            | The channellers' Moves and Channels, and an Idol Bearer's step beside a Mass that needs a strand                  |
+| 1930            | Bind again                                                                                                        |
+| 1920            | The warden: a free Idol Bearer's step to shield the casters                                                       |
+| 1915            | The Great Summoning, and the gathering for it                                                                     |
+| 1912            | The garrison swap on the lodge or a threatened center (step off, or out of the ring)                              |
+| 1910            | Summon: a Gibbering Mass, a Horror, or an Imp, by class                                                           |
+| 1900            | The Sacrifice of a spare Initiate (and the one that feeds a Herald's Hunger)                                      |
+| 1890            | The Offering                                                                                                      |
+| 1880            | Ribbit                                                                                                            |
+| 1875            | Switcheroo                                                                                                        |
+| 1870            | The Summoner's Tentacle                                                                                           |
+| 1860            | Star-fall, begun alone                                                                                            |
+| 1859            | Join the chant, and the step beside the Stargazer to join it                                                      |
+| 1855            | An Initiate's step onto a village                                                                                 |
+| 1305 and below  | The ordinary play                                                                                                 |
+| 10              | The Proclaim of a Herald that has not moved and has nobody to attack                                              |
+| 5               | The Sacrifice of a doomed unit (just above End Turn)                                                              |
 
 **1. Channel first.** A candidate channeller is an own robed cultist in
 land form that has not used its action and holds no strand; it can channel
 a daemon when the engine offers it the Channel, or a Move that ends on land
-within 3 tiles of the daemon. Pass 1 gives each bound daemon its Control
-(the Herald first, then the Horrors by unit ID); pass 2 gives each **one
-strand to spare** from the cultists that are left, so that one hit never
-unbinds it. The nearest come first, except that a cultist that has moved
-already comes before the others, and an Idol Bearer and a Summoner come
-last (the one may raise its idol, the other Seize, Summon, or Sacrifice).
-The unit on an own center channels from its center or not at all. An
-assigned channeller prefers a tile next to an own Idol Bearer, then one
-outside every visible enemy's threatened tiles, then one not next to
-another channeller, then the farthest from the enemy, then one next to a
-Thing that grips nobody. It is held: it moves, channels, and does nothing
-else.
+within 3 tiles of the daemon. Pass 1 gives each bound daemon that needs
+strands its Control (the Herald first, then the others by unit ID); pass 2
+gives each **one strand to spare** from the cultists that are left, so that
+one hit never unbinds it. **Brood** (`cultBroodLeadsV7`, checked against
+the engine's `impBroodV7`): each decision the own Imps are grouped as the
+check would hold them and the fewest are channelled (an Imp with a strand
+of its own leads; then the Imp that covers the most, nearest the
+cultists); a lead wants one strand, and one to spare for a Brood of three,
+and the Imps it holds want none. **Doorstep:** a Gibbering Mass on its
+Doorstep is given no channeller and wants none. Free cultists are asked in
+this order: plain cultists, a Summoner with nothing better to do, an
+Initiate with a village to take or a Seizure to hold, an Idol Bearer, a
+Summoner with a Seizure, a Summon, or a Tentacle that slaps an enemy to
+make; a Summoner a Seizure may need this turn gives no strand. A Summoner
+with nothing better to do also channels for the **trickle** (its strand
+that holds pays 1 Favour), never at the cap of 30, and channels a held
+daemon beyond its Control + 1 from a tile no visible enemy can attack. The
+unit on an own center channels from its center or not at all. An assigned
+channeller prefers a tile next to an own Idol Bearer, then one outside
+every visible enemy's threatened tiles, then one not next to another
+channeller, then the farthest from the enemy, then one next to a Thing that
+grips nobody. It is held: it moves, channels, and does nothing else.
 
 **2. The daemon's move.** A bound daemon's Move and attack are chosen by
 the ordinary scoring and made first. A Move, and an attack whose kill would
 advance it, is refused unless the tile is within 3 tiles of every cultist
 that channels it already and within 4 (`CULT_DAEMON_LEASH_V7`) of as many
-free cultists as it still wants (within 3 for one that has moved).
+free cultists as it still wants (within 3 for one that has moved). An Imp a
+Brood holds ends a Move beside a held lead with room, or where a free
+cultist can follow it; a lead ends no Move away from an Imp of its Brood
+that has moved already (an Imp's advance after a kill may still break its
+Brood). A Gibbering Mass ends a Move only on its Doorstep or where a
+channeller can follow it.
 
 **3. A daemon that cannot be held** (fewer strands than its Control can
 reach it where it stands) **goes back** when a Move brings it within 4
-tiles of enough free cultists. Otherwise it is **released toward the
-enemy**: it takes the offered tile with the greatest lead of the nearest
-visible enemy over the nearest own unit, if that is better than where it
-stands. When it stays, the own units that would be its nearest (no farther
-than the nearest enemy, and within 4 tiles) step away one at a time; the
-unit on a center and a claimed channeller stay.
+tiles of enough free cultists; an Imp goes back beside a held lead whose
+Brood can take it, and a Mass that needs a strand back onto its Doorstep.
+Otherwise it is **released toward the enemy**: it takes the offered tile
+with the greatest lead of the nearest visible enemy over the nearest own
+unit, if that is better than where it stands. When it stays, the own units
+that would be its nearest (no farther than the nearest enemy, and within 4
+tiles) step away one at a time; the unit on a center and a claimed
+channeller stay. **A hungry Herald** is one too: the seat keeps 2 Favour
+for each bound Herald (its Hunger at the next check); short of it,
+counting the trickle of the Summoners that hold a strand and an Offering
+that is due, a free Summoner Sacrifices a spare Initiate beside it (one the
+daemons' Control does not need) or else channels for the trickle, and a
+Herald still unpaid, the highest unit IDs first, is let go. Kills during
+the turn are not forecast: the plan is made again at every decision.
 
 **4. Bind again.** An Unbound daemon that is not Furious is bound when the
 cultists the bound daemons leave can bring its whole Control this turn;
@@ -488,77 +539,114 @@ Control, one of them is sent beside a Thing that grips nobody and the Thing
 waits for it (a Herald is held by two cultists and a Thing). A Thing that
 grips makes no Move, and no kill that advances it, away from its cultist.
 
-**6. Behold!** An Idol Bearer with its action, next to two or more own
-cultists that hold a strand and stand on a tile a visible enemy can attack
-next turn, raises its idol, once every channeller is placed.
+**6. The warden** (`CULT_WARDEN_PRIORITY_V7`, 1920, Behold!'s old place:
+the idol stands by itself since `pulp_wars-mch9.33`). An Idol Bearer whose
+idol stands, that holds no strand, is in no ritual, is not on an own
+center, and stands more than 2 tiles from every empty own center a hostile
+unit within 6 watches (the garrison rule first), moves to the offered tile
+beside the most casters a visible enemy can attack next turn (channellers
+on their planned tiles, ritual members, Summoners, Hexers, Stargazers; none
+another standing idol covers), only when it covers more than its own tile,
+then nearest the enemy, never where the visible enemy kills it. A bearer
+that covers some ends no Move where it covers fewer (an own center
+excepted). An Idol Bearer that alone holds a forward Mass by its Doorstep
+(no own center beside the Mass, no strand of its own) ends no Move away
+from it (it may attack); a free one steps beside a Mass that needs a
+strand (at the channel's priority), so no cultist channels it.
 
-**7. Summon a Horror only when it can be held.** With 5 Favour, a helper
-(the engine's offer), no channeller still to be placed, robed cultists for
-every bound daemon's Control + 1 and two more (`CULT_SPARE_BODIES_V7`), and
-an enemy unit or center within 6 tiles of the Summoner
-(`CULT_SUMMON_FRONT_V7`: a Horror costs actions every turn, so it is
-summoned at the front). The tile is the one nearest the enemy and the
-helper the cheapest cultist. A tile beside an enemy unit is taken only when
-the unit the Horror would go for there is neither the Summoner nor the
-helper.
+**7. What to summon** (`CULT_SUMMON_CLASS_V7`, A-R3). One summon a turn per
+Summoner, its price always beyond the Hunger kept and, while the seat saves
+for the Great Summoning, beyond its 18 too, with no channeller still to be
+placed; by class, then by tile:
+
+1. a **Gibbering Mass** beside an own city center that a hostile land unit
+   outside its own land watches (within 6) and that no own Mass stands on
+   or beside, on the tile nearest the enemy (a summon never lands on a
+   center; the Mass steps on later as a garrison);
+2. a **Mass beside an own standing idol** with no Mass beside it that
+   shields a caster a visible enemy can attack, nearest the enemy;
+3. a **Horror** with an enemy unit or center within 6 of the Summoner
+   (`CULT_SUMMON_FRONT_V7`) and the robed bodies for every daemon's Control
+   and two spare plus its two;
+4. **at the cap** (26 Favour, `CULT_CAP_SPEND_FAVOUR_V7`) with no front
+   asked: a Mass by any own city no Mass guards, then a Horror, then a Mass
+   beside any standing idol with no Mass beside it;
+5. an **Imp** with an enemy unit or center within 8 (`CULT_IMP_FRONT_V7`):
+   beside an own Imp that has fewer than two Imps beside it first (its
+   Brood will hold it), else with a body for its strand beyond every
+   Control and spare; out of the visible enemy's reach first, then nearest
+   the enemy.
+
+The helper of a Horror or a Mass is the cheapest cultist the engine offers.
+A tile beside an enemy unit is taken only when the unit the daemon would go
+for there is neither the Summoner nor the helper. A Summoner a Seizure may
+need this turn summons nothing.
 
 **8. Seize.** An offered Seizure is made first, the richest first. With
 none offered, the seat makes the one Move that leads to one this turn: a
 holder steps beside the broken enemy first, then the Summoner. The plan
 asks `previewSeizeV7` on the projected board, so whatever the engine calls
 broken (a frog at half its Hit Points) is followed. A claimed channeller
-and the unit on a center are not sent.
+and the unit on a center are not sent. The Summoner of a company that a
+Seizure may need this turn (a Summoner and a holder that can stand beside
+a hostile land unit that can be Seized now, or that the beating on offer
+leaves broken; `cultSeizureToolsV7`) is busy: no strand, no Summon, no
+spare Sacrifice, and no Tentacle.
 
 **9. Sacrifice.** (a) An own unit beside a Summoner that the visible
 enemies' next turn kills where it stands, and that has no offered Move to a
 tile where it lives, is offered up last of all, after its own attack; its
 Summoner is held for it. (b) An Initiate, when the seat fields more robed
-cultists than its daemons' Control + 1 and two more, and its value brings
-Favour to 5, or to 20 with The Stars Are Right. Never a unit that holds a
-strand, and never the unit on an own center with a visible enemy within 3
-tiles (`CULT_HOME_GUARD_V7`).
+cultists than its daemons' strands and two more, and its value brings
+Favour, beyond the 2 kept for each bound Herald, to the Imp's 2, the
+Horror's 4, or with The Stars Are Right the Great Summoning's 18 (a
+Summoner with a Tentacle that slaps an enemy calls it instead of a
+Sacrifice made only for an Imp's 2). (c) The Sacrifice that feeds a
+Herald's Hunger (rule 3). Never a unit that holds a strand, and never the
+unit on an own center with a visible enemy within 3 tiles
+(`CULT_HOME_GUARD_V7`).
 
 **10. Offering.** A city whose Offering the engine offers, at its unit
 limit or with no unit on offer to train, with no visible enemy within 3
-tiles of its center, when Favour is below 5, or below 20 with The Stars Are
-Right; and only with a Summoner on the board and the robed cultists to hold
-one more Horror, else the Favour buys nothing and the population is gone
-for good. The same condition gates the Sacrifice of a spare Initiate.
+tiles of its center, when the seat is short (a Summoner on the board, the
+robed cultists for one more Imp, and Favour below a Horror's 4, or with
+The Stars Are Right below 18, beyond the Hunger kept) or a bound Herald
+would go hungry; never when its 6 would pass the cap of 30.
 `pulp_wars-mch9.27` (`cultOfferingDueV7`): paced, because the policy
 remembers nothing. Only the city whose turn it is offers (the seat's cities
 by ID, the round modulo their number), and only while the seat's Offerings
 so far (its cities' `offeredPopulation`, 2 each) times
 `CULT_OFFERING_PACE_ROUNDS_V7` (2) are below the round: one a round at most,
-one every other round on average. A lodge whose three cities started at
-their unit limit offered in each of them every turn and began the Great
-Summoning in round 2 from 9 Favour; from 9 the Offerings alone now reach 20
-in round 7.
+one every other round on average. (A lodge whose three cities started at
+their unit limit offered in each of them every turn and, at the old prices,
+began the Great Summoning in round 2.)
 
 ### Rituals and tricks (`src/ai/v7-cult-rituals.ts`)
 
 `cultRitualPlanV7` is one more part of the plan, called once the channel
 plan and the Seizure have claimed their cultists. A claimed cultist is
 never used for a trick or counted as a chanter. None of `BEGIN_RITUAL`,
-`PROCLAIM`, `BOO`, `RIBBIT`, `SWITCHEROO`, `TENTACLE`, or `PICK_ME` is a
+`JOIN_CHANT`, `PROCLAIM`, `BOO`, `RIBBIT`, `SWITCHEROO`, or `TENTACLE` is a
 candidate but as a step of the plan, so a seat that is no Cult seat of the
-army rules picks none.
+army rules picks none (`PICK_ME` went with the Chosen).
 
 **1. Favour is kept for the Great Summoning** (`cultSavingV7`). The seat
 saves when it has The Stars Are Right, a Summoner on the board, the robed
 cultists to hold a Herald beyond every other daemon's Control + 1 (four
-more, `CULT_HERALD_BODIES_V7`), and 10 Favour or more
-(`CULT_SAVE_FAVOUR_V7`, half the price). Then it summons a Horror only from
-what is above 20. Below 10 Favour it summons Horrors as before.
+more, `CULT_HERALD_BODIES_V7`), and 9 Favour or more
+(`CULT_SAVE_FAVOUR_V7`, half the price of 18). Then it summons only from
+what is above 18 and the Hunger it keeps. Below 9 Favour it summons as
+before.
 
-**2. The Great Summoning** is begun when the seat is saving, has 20 Favour,
-no channeller is still to be placed, and a Summoner has three chanters or
-more, none of them claimed by the plan, with the Summoner, every chanter,
-and the mark outside every visible enemy's threatened tiles. The mark is a
-free tile (the seat consumes nobody), the one with the most own units
-around it, then the farthest from the enemy. The Herald must arrive with
-its Control in strands (the preview).
+**2. The Great Summoning** is begun when the seat is saving, has 18 Favour
+beyond the Hunger kept, no channeller is still to be placed, and a
+Summoner has three chanters or more, none of them claimed by the plan, with
+the Summoner, every chanter, and the mark outside every visible enemy's
+threatened tiles. The mark is a free tile (the seat consumes nobody), the
+one with the most own units around it, then the farthest from the enemy.
+The Herald must arrive with its Control in strands (the preview).
 
-**3. Gathering.** With 20 Favour and no circle to begin, the seat takes the
+**3. Gathering.** With 18 Favour and no circle to begin, the seat takes the
 Summoner nearest an own center that no visible enemy can attack. The
 cheapest free robed cultists that can end a Move beside it on a tile no
 enemy can attack come, one at a time. When enough can come this turn to
@@ -570,59 +658,87 @@ held.
 Great Summoning, nor on a tile under an own star (`CultPlanV7.mayEnd`). The
 advance after a kill is not held by this.
 
-**5. Star-fall.** A Stargazer that has not moved looks at every explored
-tile 2 to 4 tiles away with no own or allied unit on its nine tiles. A tile
-is worth the hostile units under it: twice its cost for a unit the star
-kills as the board stands, else its share of the damage, and half as much
+**5. Star-fall, begun alone.** A Stargazer that has not moved looks at
+every explored tile 2 to 4 tiles away with no own or allied unit on its
+nine tiles. A tile is worth the hostile units under it: twice its cost for
+a unit the star kills, else its share of the damage, and half as much
 again for a unit that is likely to be there still (a siege unit, an Egg, a
-unit on a Field Defense, a fortified tile, or a center). One unit in the
-open is no target: a mark needs two hostile units, or one that stays. A
-unit without a cost counts 12 (`CULT_PRICELESS_VALUE_V7`). The Stargazer is
-held (a leader that moved leads no star). A Stargazer with a mark and
-nobody beside it calls one free cultist to a tile beside it that no enemy
-can attack, and the star is begun in the same turn.
+unit on a Field Defense, a fortified tile, or a center). The damage is the
+public forecast's at the chanters the star can expect this turn (rule 6,
+asked as if it were begun there), so a mark a join turns into kills can
+win over one only the lone star hurts. One unit in the open is no target:
+a mark needs two hostile units, or one that stays. A unit without a cost
+counts 12 (`CULT_PRICELESS_VALUE_V7`). The Stargazer is held (a leader that
+moved leads no star), and nobody is called before the begin.
 
-**6. The Herald's two attacks** are scored together through its Move.
-Before it has moved or attacked, each tile it may end on and its own are
-scored by the two best attacks from there, read from the combat preview on
-the projected board: the kills, then the value killed, then the attacks it
-has a use for (a Proclaim counts for one that is left over), then the
-damage, then a tile where a visible enemy is nearer to it than any own
-unit. It moves only to a tile that is better than its own. A Horror's Moves
-stay the ordinary scoring's.
+**6. Join the chant** (`CULT_JOIN_CHANT_PRIORITY_V7`, 1859). After the
+begin, a free robed cultist with Join the chant (not held by the plan,
+unacted, no frog, in no ritual, and **never a Summoner**: its action is
+kept for its Summon, Seizure, Sacrifice, and Tentacle) joins: those beside
+the Stargazer first, then those that can step beside it to a tile no
+visible enemy can attack and under no own mark (never from an own center),
+the cheapest first, then the nearest; the step is a plan step and the join
+follows it in the same turn. It joins while the join turns one more hostile
+unit on the nine tiles into a kill, counting the unexposed joins that can
+still follow it this turn, or while the mark holds three hostile units or
+more (`CULT_STARFALL_CROWD_V7`) and one of them still stands under the
+star; never when the join (or one it counts on) kills a unit of the seat or
+of a friend. An exposed joiner (one a visible enemy can attack where it
+chants) joins only for a kill worth at least its own cost, and never where
+the visible enemy kills it. One join a decision, each checked against
+`previewJoinChantV7`.
 
-**7. Proclaim.** After the Herald's first attack, when no attack on offer
-kills: the hostile city within 3 tiles of the highest level, then the
+**7. The Herald's two attacks** are plan steps (3970), scored together
+through its Move and its **advance**: each tile it may end on and its own
+are scored by the two best attacks from there, read from the combat preview
+on the projected board, with the advance onto each victim's tile and the
+second attack read from that tile with the victim gone: the kills, then the
+value killed, then the attacks it has a use for (a Proclaim counts for one
+that is left over), then the damage, then a tile where a visible enemy is
+nearer to it than any own unit. A first hit that kills nothing is paired
+with a second hit on the same unit when the second kills it. A kill whose
+advance takes it from a tile its channellers can hold it on to one they
+cannot is made only when the second attack from there kills too (**a lone
+kill off its leash is never made**), and a pair whose Move and advances
+leave it where the visible enemy, less its victims, kills it next turn is
+not made either (unless it stands in lethal reach already, or stays where
+it stands). Every other attack of the Herald, and every kill the plan does
+not make, is vetoed (`CultPlanV7.mayAttack`). A Horror's Moves stay the
+ordinary scoring's.
+
+**8. Proclaim.** After the Herald's first attack, when no allowed kill is
+on offer: the hostile city within 3 tiles of the highest level, then the
 nearest, never one whose center an own unit stands on. A Herald that has
 moved and has nobody to attack Proclaims at once; one that has not moved
 does so last of all, so its Move is not given up.
 
-**8. Boo!** A Horror whose Boo! moves two or more hostile units, or the
+**9. Boo!** A Horror whose Boo! moves two or more hostile units, or the
 garrison off a hostile center while an own unit that captures stands beside
 that center and has not moved. Never with an own or allied unit on its
 eight tiles, and not in place of an attack that kills.
 
-**9. Ribbit**, by a Hexer the plan has not claimed, in this order: the
+**10. Ribbit**, by a Hexer the plan has not claimed, in this order: the
 enemy that can attack an own channeller or chanter next turn (any hit
 breaks the strand; the most cultists first); then the enemy a Seizure can
-follow this turn; then the strongest melee unit in reach, by cost. Not in
-place of a shot that kills.
+follow this turn (the beating counted with every caster's blow, as on a
+frog, and no Summoner's: it keeps its action for the Seizure); then the
+strongest melee unit in reach, by cost. Not in place of a shot that kills.
 
-**10. Switcheroo** swaps with an enemy only (so never an own channeller): a
-broken enemy that no Seizure reaches where it stands, when a Summoner and a
-holder can stand beside the Familiar's tile; else an enemy ranged or siege
-unit when two own melee units that can still act stand beside the
-Familiar's tile and fewer than two beside the enemy's, and the visible
-enemy does not kill the Familiar where it lands.
+**11. Switcheroo** (range 4) swaps with an enemy only (so never an own
+channeller): a broken enemy that no Seizure reaches where it stands, when a
+Summoner and a holder can stand beside the Familiar's tile and the visible
+enemy does not kill the Familiar where it lands; else an enemy ranged or
+siege unit when two own melee units that can still act and strike (no
+caster counts) stand beside the Familiar's tile and fewer than two beside
+the enemy's, and the visible enemy does not kill the Familiar where it
+lands.
 
-**11. The Tentacle.** Among the offered tiles with no own or allied unit
-within 1 tile and a hostile unit beside them: the one whose slap lands on a
-ranged or siege unit first, then the most hostile value around it. Not in
-place of a kill by the Caller.
-
-**12. Pick Me!** Once the channellers are placed: a Chosen beside an own
-cultist that holds a strand or takes part in an own ritual, which a hostile
-melee unit can attack next turn; not when the Chosen's own attack kills.
+**12. The Summoner's Tentacle.** Among the offered tiles with no own or
+allied unit within 1 tile and a hostile unit beside them: the one whose
+slap lands on a ranged or siege unit first, then the most hostile value
+around it. Only from a Summoner with no Summon, Seizure, or Sacrifice step
+(the doomed unit's included), and never from one a Seizure may need this
+turn.
 
 **13. Pamphlets.** The Capture needs no rule. An Initiate that can end a
 Move on a neutral village this turn does, before the ordinary play sends
@@ -630,40 +746,66 @@ another unit there, unless the visible enemy kills it on that tile. An
 Initiate with a Monster within 3 tiles (`CULT_MONSTER_WATCH_V7`) is left to
 the ordinary play.
 
+(Swarm, the Imps' unanswered attack and the Move that sets it up, is a
+step of the channel plan, at 3945 and 3940: the second Imp's Move goes
+beside a hostile land unit an own Imp already stands beside, then each Imp
+attack the preview says is `SWARMED`, kills first, then the target's
+worth; never on a unit kept for a Seizure, and a kill's advance only where
+the plan lets the Imp end it.)
+
 ### Every seat against the Cult (`src/ai/v7-cult-against.ts`)
 
 The facts of a decision (`cultAgainstFactsV7`, `context.cultAgainst`) are
-null unless the view holds a hostile bound daemon, a hostile circle, a star
-of another seat, an own frog, a hostile taunting Chosen, an own unit a
-Tentacle holds, or an own Cowed city. With null nothing is asked, so **a
-match without a Cult seat decides byte for byte as before** (the test
-compares whole candidate lists). The rules hold for every seat, a Cult seat
-that faces another lodge included, and each can be switched off for a test
-(`setCultAgainstPolicyOptionsV7`). The policy's own commands are candidates
-whatever the general Move rules say (`cultAgainstForcedV7`), but never onto
-a tile the curiosity rules close.
+null unless the view holds something of the Cult: a Cult seat in the match
+(the public Favour list, so a hostile standing idol too), a strand, a
+daemon, a ritual, a frog, a Tentacle, or a Cowed city. With null nothing is
+asked, so **a match without a Cult seat decides byte for byte as before**
+(the test compares whole candidate lists with the module on and off). The
+rules hold for every seat, a Cult seat that faces another lodge included,
+and each can be switched off for a test (`setCultAgainstPolicyOptionsV7`).
+The policy's own commands are candidates whatever the general Move rules
+say (`cultAgainstForcedV7`), but never onto a tile the curiosity rules
+close. It reads the public view, the public combat and ritual previews, and
+the engine's public helpers `rampageChoiceV7` and `standingIdolsV7`; it
+imports no reducer and draws nothing from the PRNG.
 
 **1. Hunt the strands.** A hit that breaks a hostile channeller's strand
-(any damage, or the kill of a warded one) adds the daemon's value (its
-price in Favour: Horror 5, Herald 20) times 4, divided by the strands to
-spare (holding strands − Control + 1; a gripped channeller's strand counts
-its three). The hit goes before the ordinary kills (priority 1285: above
-the kill of a unit that threatens a city, below every capture) only when
-the attacks the seat is offered now can bring the daemon below its Control
-this turn (`cultAgainstDecisiveV7`). A hit that cannot keeps its ordinary
-priority and the added value. An attack the attacker dies of is never put
-first.
+(any damage, or a kill) adds the daemon's value (its price in Favour,
+`CULT_AGAINST_DAEMON_VALUE_V7`: Imp 2, Horror 4, Gibbering Mass 5, Herald 18) times 4, divided by the strands to spare (holding strands − Control +
+1; a gripped channeller's strand counts its three). **Brood:** the
+channelled Imp of a Brood is worth its own price and 2 for every Imp the
+Brood holds (the public `broodOf`), so its channeller is worth every Imp on
+the strand, and the kill of that Imp adds the Imps it frees. A strand to a
+daemon held without strands (a Brood's Imp, a Mass on its Doorstep) is
+worth nothing and never decisive. The hit goes before the ordinary kills
+(priority 1285: above the kill of a unit that threatens a city, below
+every capture) only when the attacks the seat is offered now can bring the
+daemon below its Control this turn (`cultAgainstDecisiveV7`). A hit that
+cannot keeps its ordinary priority and the added value. An attack the
+attacker dies of is never put first.
 
-**2. Under a raised idol** only a kill breaks a strand. The hit that drops
-the idol (any damage on the Idol Bearer) is put first (1286) when the seat
-has one more attacker than the strands it must break; otherwise it only
-adds the value of the best strand the idol protects.
+**2. The warden and the Doorstep.** For a seat with a unit that attacks
+from two tiles or more, a standing idol is worth half of the strands and
+chanters on its eight tiles (`CULT_AGAINST_SHIELD_SHARE_V7`): its kill or
+a status adds it all, a blow on the way adds it in proportion to the Hit
+Points taken. A shot the shield wall halves (the combat preview's
+`idolHalved`) that does not kill is worth the damage it lost less, so a
+melee blow on the same unit ranks first. A strandless Gibbering Mass on its
+Doorstep held only by one standing idol (no own city center beside it, no
+second idol) makes that Idol Bearer worth the Mass (20): its kill goes
+first at 1286, and so does a Bolas or a Ribbit on it, the status that puts
+the idol down.
 
 **3. A circle.** A hit on the leader of a Great Summoning, or on a chanter
 when it has only its three, ends it: priority 1287 and the Herald's value.
-A chanter it can spare is worth its share. A hit that ends a Star-fall is
-put before the ordinary attacks on a threatening unit (1245) when the
-star's forecast takes Hit Points from the seat's own units.
+A chanter it can spare is worth its share. **A star's chanters:** each
+carries what one chanter fewer spares the seat (the public forecast at one
+chanter less: 3 on every own unit under the star, after Armoured, Plated,
+Shields, and its Hit Points); a hit on one is worth twice that and 2, and
+when one chanter fewer leaves an own unit alive that the star would kill,
+the hit is put first at 1245, as the hit on a star's leader is when the
+star's forecast takes Hit Points from the seat's own units. No guess is
+made at joiners to come: every join is made in the casting turn.
 
 **4. Stand on the mark.** The Move of a unit onto the explored mark of a
 hostile Great Summoning has the priority of the hit that ends it (1287)
@@ -677,11 +819,16 @@ another seat (an ally's too) has the step out at the priority of the step
 away from the Spider (1176), and no routine Move ends in one from outside.
 
 **6. The eye mark.** For a hostile bound daemon with fewer holding strands
-than its Control, the policy computes the unit it would go for by the
-engine's rule (the test compares it with `previewRampageV7`). No routine
-Move ends as that unit, and the unit that is it has a step to a tile where
-it is not at priority 890: below every attack and above the routine Moves,
-so a unit strikes first and pulls back if it still can.
+than its Control, or a bound Herald about to go hungry (its seat's public
+Favour, with the trickle of its Summoners whose strands hold, cannot pay 2
+for it and every lower-ID Herald of the seat; its strands are then not
+hunted), the policy asks the engine's own target rule (`rampageChoiceV7`
+within the daemon's reach, the board as it would stand after the Move): a
+robed cultist within 2 first, then anyone in reach who is no summon, then a
+summon. No routine Move ends as that unit, and the unit that is it has a
+step to a tile where it is not at priority 890: below every attack and
+above the routine Moves, so a unit strikes first and pulls back if it
+still can.
 
 **7. Do not fight the Herald.** An attack on a hostile bound Herald that
 does not kill it is no candidate, but for a shot the Herald cannot answer
@@ -698,10 +845,20 @@ Tends first (1290). A frog that is not cured has the step to a tile where
 the visible enemy deals it less at priority 890, and makes no routine Move
 to a tile where it is dealt more.
 
-**10. Pick Me!** The engine offers a bound unit no attack but the Chosen. A
-Move that ends beside a hostile taunting Chosen, from a tile that is not
-beside it, has at most a routine Move's priority, unless it ends on a
-settlement center, a village, or a treasure chest.
+**10. Awestruck, Drag, and Swarm.** The engine offers a unit beside a
+standing idol no attack but the Idol Bearer. A Move worth more than a
+routine one that ends beside a standing idol from a tile that is not falls
+to a routine Move's priority (735), unless it ends on a center, a village,
+or a chest, or the unit's attack on a bearer beside it kills from there. No
+routine Move ends beside a hostile bound Gibbering Mass from a tile that is
+not, unless onto a site or on or beside a hostile center a Mass guards (the
+siege); an attack on a bound Mass that does not kill it is no candidate
+from a unit that has an offered hit breaking a hold instead (the movement
+query offers a dragged unit one tile). No Move ends beside two or more of
+one hostile seat's bound Imps, from a tile beside fewer, when it matters
+(always for a routine Move, and for any other when the visible enemy kills
+the unit there), unless onto a site or the unit's attack from there kills
+one of them; a unit beside two steps to a tile beside fewer at 890.
 
 **11. A Cowed city.** The unit on its center makes no Move (and no attack
 whose kill would advance it), and the Move onto an empty Cowed center of
@@ -764,8 +921,10 @@ it **for every army seat**:
   before the Summon, the Sacrifice, and the Offering a Summoner on the
   center would make there (after its action it could not step off).
 - Not a candidate for any of it: a unit on another own center, a summoned
-  unit (a daemon), and a unit the Cult seat's plan holds or keeps from that
-  tile (a channeller holding a strand stays where it channels).
+  unit (a daemon) but the Gibbering Mass (a wall of 30 HP its Doorstep holds
+  on the center, `pulp_wars-mch9.40`), and a unit the Cult seat's plan
+  holds or keeps from that tile (a channeller holding a strand stays where
+  it channels).
 
 **What changed for the other factions.** Every army seat (every match of
 the nine factions) now fills an empty watched center that its city does not
@@ -793,9 +952,13 @@ design section 10.4).
 
 - Nothing here was tuned or played: every share, threshold, and priority is
   a first value.
-- The Cult seat does not walk a Hexer, a Familiar, or a Caller into reach
-  for its trick (each trick is taken where the engine offers it), and a
-  Horror does not move to Boo.
+- The Cult seat does not walk a Hexer, a Familiar, or a Summoner into
+  reach for its trick (each trick is taken where the engine offers it), and
+  a Horror does not move to Boo.
+- A Gibbering Mass for a watched city is summoned beside its center, never
+  on it (a summon never lands on a center); it steps on later as a
+  garrison. The second Imp's Swarm Move does not weigh the danger to the
+  Imp it sends.
 - A Stargazer's star is not timed with a Boo! or a Grab that holds its
   targets.
 - A gripped Thing is not counted toward a Herald's upkeep before the circle
@@ -811,7 +974,11 @@ design section 10.4).
   own turn, choose which unit blocks a mark by anything but its Hit Points,
   walk toward a far mark over several turns, weigh a step out of a ring or
   back from an eye mark against the danger of the tile it steps to, walk a
-  Tender to a frog it is not beside, or use the Candy Top-Up as a cure.
+  Tender to a frog it is not beside, or use the Candy Top-Up as a cure. It
+  does not forecast a Herald's second attack after its advance (only the
+  first target is the eye mark), and a status other than a Bolas or a
+  Ribbit that an attack puts on an Idol Bearer is valued only as the
+  attack.
 - The lab `LAB_CULT_MID` has not been played.
 
 ## The Candy army seat (`pulp_wars-jdb.13`)
@@ -914,7 +1081,7 @@ factions. (The naval plan and the opening growth harvest still switch army
 rules off for a turn; those are the army rules' own exceptions.) Two things
 still read it: a faction registered outside the list (none today: the
 ninth faction, the Cultists, joined it with
-[its own bead](#the-cult-seat-pulp_wars-mch99-to-mch912)), and the tests
+[its own bead](#the-cult-seat)), and the tests
 that pin it, which take the Candy out of the list (`setArmyPlayFactionsV7`,
 `tests/fixtures/v7-older-policy.ts`: ten test files whole since
 `pulp_wars-737.18`, and single checks in three more).

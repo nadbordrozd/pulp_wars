@@ -11,6 +11,19 @@ this document differs; [section 22](#22-fold-notes-pulp_wars-mch921) here
 lists where the build differs from this text. Read this document for why a
 rule is what it is, not for what the rule is.
 
+**Since 2026-10-16 the Cult plays as redesigned**
+([the Cult redesign](RULESET_7_CULT_REDESIGN.md), approved by the user and
+built by `pulp_wars-mch9.31` to `mch9.47`, identities `7r85` to `7r91`):
+the summons are the army and the robed cultists 7-HP casters; the Caller
+and the Chosen are retired (Martyr and Pick Me! with them); the Imp and the
+Gibbering Mass join the Horror and the Herald; Favour is capped at 30 and a
+bound Herald eats 2 a turn; Star-fall is cast alone and joined; the Idol
+Bearer's Behold! is a lasting aura; Switcheroo reaches 4; and every daemon
+advances after a kill. Where this document's rules, numbers, and roster
+differ, **[section 23](#23-the-cult-redesign-folded-pulp_wars-mch947)** gives
+the Cult as it now plays and which sections it replaces; the rest of the
+text is the original design, kept as history.
+
 It is the final design spec for the ninth faction, validated on paper (bead
 `pulp_wars-mch9.2`, epic `pulp_wars-mch9`, 2026-10-09; the first draft was
 bead `pulp_wars-mch9.1`). No game was played or simulated to write it or to
@@ -30,7 +43,7 @@ build it. **Every step is built:**
   in sections [15.6](#156-as-built-a1-the-cult-seat-on-the-army-policy-pulp_wars-mch99)
   to [15.9](#159-as-built-a4-every-seat-against-the-cult-pulp_wars-mch912)
   and in
-  [Normal AI, the Cult seat](../architecture/NORMAL_AI.md#the-cult-seat-pulp_wars-mch99-to-mch912);
+  [Normal AI, the Cult seat](../architecture/NORMAL_AI.md#the-cult-seat);
 - **the art** ([the Cult's art direction](../art/factions/CULT.md)) and
   **the interface** (U1 to U3, `pulp_wars-mch9.17` to `mch9.19`), as built
   in [section 14.3](#143-how-it-reads-on-the-board-without-text), with the
@@ -57,6 +70,10 @@ throughout ([section 20](#20-decisions-and-open-questions)).
 [implementation beads](#19-implementation-beads) (section 19).
 
 ## One-page summary
+
+(The original design's summary. The Cult as it now plays, after the
+redesign of 2026-10-16, is summed up in
+[section 23](#23-the-cult-redesign-folded-pulp_wars-mch947).)
 
 **The faction.** A secret lodge of pulp-magazine cultists in pointed
 hoods who bargain with things from beyond the stars. Faction ID `CULT`,
@@ -3434,6 +3451,169 @@ were chosen from names and measurements and have not been heard
 ([section 14.2](#142-colour-looks-sound-music)). Its theme music is its
 own since `pulp_wars-mch9.25` (`theme.cultists`), which ended the Undead
 theme's turn as a stand-in.
+
+## 23. The Cult redesign, folded (`pulp_wars-mch9.47`)
+
+The user found the built Cult fought with its cultists instead of its
+summons, had no defence, a boring early game, a Favour pile once the
+Herald came, and a passive Herald, and approved a redesign on 2026-10-16
+([the Cult redesign](RULESET_7_CULT_REDESIGN.md)). Its beads
+(`pulp_wars-mch9.31` to `mch9.46`; engine at `pulp-wars-poc-7r85` to
+`7r91`) are built, and bead D-R1 (`pulp_wars-mch9.47`) folds the result
+here. It changed no code and no rule: every number below was read from the
+engine at `7r91` (`CULT_ROLE_RULES_V7`, `CULT_SUMMONED_ROLE_RULES_V7`, and
+the Favour and ability constants of `src/engine/rules/ruleset-v7.ts`). The
+rules themselves are
+[section 26 of the current rules](RULESET_7_CURRENT.md#26-cultist-faction-rules),
+which win wherever this section and they differ; the reasons for each
+change are the redesign's, and where its build differs from its own text
+is [its section 19](RULESET_7_CULT_REDESIGN.md#19-as-built).
+
+### 23.1 The roster as it now plays
+
+**Summons are the army, the robed cultists the casters.** Attack and
+Defense in whole units; cost in Coins for a trained unit and in Favour for
+a summon.
+
+| Unit                | Role         | Unlock (Cult name)               |      Cost |  HP | Attack | Defense | Move | Range | Its own rules                                                                                       |
+| ------------------- | ------------ | -------------------------------- | --------: | --: | -----: | ------: | ---: | ----: | --------------------------------------------------------------------------------------------------- |
+| Initiate            | `FIGHTER`    | start                            |   2 Coins |   7 |    1.5 |       1 |    1 |     1 | Pamphlets; channels, chants, joins a chant, helps, holds; captures                                  |
+| Idol Bearer         | `GUARD`      | Fortification (Warding Circles)  |   3 Coins |  16 |    1.5 |     2.5 |    1 |     1 | Behold!, the warden's lasting aura; cannot attack after moving; channels; captures                  |
+| Familiar            | `RAIDER`     | Scouting (Familiars)             |   3 Coins |   8 |      2 |       1 |    2 |     1 | Switcheroo at range 4; Charge (Raiding); Sight 2; not robed; captures                               |
+| Hexer               | `MARKSMAN`   | Marksmanship (Hexers)            |   3 Coins |   7 |    1.5 |       1 |    1 |   1–2 | Ribbit every second turn; never advances; channels; captures                                        |
+| Summoner            | `CAPTAIN`    | Administration (Leadership)      |   5 Coins |   7 |      1 |       1 |    1 |     1 | Sacrifice; Seize; Summon an Imp, a Horror, a Gibbering Mass; the Tentacle (Tentacles); the trickle  |
+| Stargazer           | `CATAPULT`   | Sawmilling (Stargazers)          |   7 Coins |   7 |      — |     0.5 |    1 |     — | Star-fall alone, 2 to 4 tiles; no attack; channels; captures                                        |
+| (vacant)            | `KNIGHT`     | nothing                          |         — |   — |      — |       — |    — |     — | The Caller is retired; its Tentacle is the Summoner's                                               |
+| (vacant)            | `SWORDSMAN`  | nothing                          |         — |   — |      — |       — |    — |     — | The Chosen is retired, with Martyr and Pick Me!                                                     |
+| Thing in the Cellar | `JUGGERNAUT` | reward only (levels 5 and up)    |         — |  40 |      4 |     3.5 |    1 |     1 | Anchor; captures                                                                                    |
+| Imp                 | summoned     | Administration (Leadership)      |  2 Favour |   6 |      2 |       1 |    3 |     1 | Control 1; Brood; Swarm; advances; never captures; worth 2                                          |
+| Horror              | summoned     | Administration (Leadership)      |  4 Favour |  18 |      4 |       2 |    2 |     1 | Control 1; Boo!; advances; captures while bound; worth 6                                            |
+| Gibbering Mass      | summoned     | Metallurgy (Gibbering Masses)    |  5 Favour |  30 |      2 |       3 |    1 |     1 | Control 1, none on its Doorstep; Drag; immovable; never advances or captures; worth 6               |
+| Herald              | summoned     | Explosives (The Stars Are Right) | 18 Favour |  60 |      7 |       4 |    2 |     1 | Control 3; Ravage; Unstoppable; Proclaim; advances; Hunger 2 a turn; captures while bound; worth 24 |
+| Tentacle            | wild         | Chivalry (Tentacles)             |         — |   8 |      3 |       1 |    0 |     1 | Nobody's from birth; slaps the weakest beside it; Grab; sinks after 3 rounds                        |
+
+The Imp is summoned by a Summoner alone; the Horror and the Mass need a
+helper, another robed cultist beside the Summoner that has not acted. The
+ships are the Human boats. The start unit, the rewards (two Initiates for
+the Militia, a Familiar for the Scouts, the Thing at every level from 5),
+and the treasure unit (a Familiar) are unchanged. The Cult fields seven
+land units: its `KNIGHT` and `SWORDSMAN` slots are registered but nothing
+trains, rewards, hires, or places a unit of them (`factionFieldsRoleV7`).
+
+### 23.2 Favour, the cap, and the Hunger
+
+- **Start:** 2 Favour (`CULT_STARTING_FAVOUR_V7`; a mission seat's own
+  Favour, clamped to the cap, replaces it), so the first Summoner can
+  summon an Imp at once.
+- **Cap:** 30 (`FAVOUR_CAP_V7`). Any gain above it is lost (the
+  `forfeited` of its `FAVOUR_GAINED`). Favour is public and not scored.
+- **Sources:** a Sacrifice (the unit's value), a Seizure (twice the
+  value), an **Offering of 2 population for 6** (3 before), a bound
+  daemon's kill (the victim's value), a consumption on the Great
+  Summoning's mark, and **the trickle**: at the check, +1 from each own
+  Summoner whose strand held for a daemon still bound. Martyr is gone.
+- **Sinks:** Imp 2, Horror **4** (5 before), Gibbering Mass 5, the Great
+  Summoning **18** (20 before), and **Hunger**: at each check after the
+  trickle, 2 for each bound Herald, in unit-ID order; a Herald whose 2
+  cannot be paid is Unbound at once (`DAEMON_UNBOUND` reason `HUNGER`),
+  rampages, and is Furious.
+
+**The variance rules, revised** (the user's approval): rule 3 now caps
+Favour at 30 (still no cap on daemons or summons); rule 5 gains the
+Hunger, an upkeep paid by a winning and a losing Cult alike; and rule 2
+gains one exception, the Gibbering Mass on its Doorstep, which needs no
+strand ([the redesign, section 3](RULESET_7_CULT_REDESIGN.md#3-the-variance-rules-revised)).
+
+### 23.3 What changed in the rules
+
+- **Behold! (the Idol Bearer, the warden)** is a lasting aura, with no
+  command: while the bearer is on the board with no status of the
+  disruption rule, its idol stands. An attack from two or more tiles on an
+  own unit beside it is **halved** (rounded up; not the bearer's own idol
+  on itself; two idols halve once), and a hostile unit beside it may attack
+  **only an Idol Bearer** (Awestruck, the old Pick Me! rule). The old
+  Behold! (a hurt channeller keeps its strand) is gone.
+- **Star-fall** is cast by the Stargazer **alone** (one that has not
+  moved, 2 to 4 tiles away) and deals **6, plus 3 for each chanter**.
+  Nobody joins at the begin; in the casting turn any robed cultist beside
+  the Stargazer may **Join the chant** (`JOIN_CHANT`, its primary action;
+  it may have moved, and cannot move after). A disrupted chanter takes 3
+  off; a disrupted Stargazer fizzles the star; it never fizzles for want of
+  chanters. The Great Summoning keeps its circle of three at the begin.
+- **Switcheroo** reaches **4** tiles (2 before); nothing else changed.
+- **The Tentacle** is the **Summoner's**, with Chivalry (shown as
+  **Tentacles**), one per Summoner, free of Favour, with the Caller's
+  numbers.
+- **Every daemon advances after a kill**, bound or Unbound, except the
+  Gibbering Mass; the Herald's second attack is made from the victim's
+  tile. An advance can carry a bound daemon out of its channellers' reach.
+- **An Unbound daemon's target**, at its reach of Move + 1 (Imp 4, Horror
+  3, Mass 2, Herald 3): the nearest robed cultist within 2; else the
+  nearest unit in reach that is no summon; else the nearest summon in
+  reach; else it walks toward the nearest non-summon. Ties: its own seat's
+  unit, then the fewest HP, then the lowest ID.
+- **The Imp:** **Brood**, one holding strand to an Imp also holds up to
+  two other own bound Imps beside it at the check; **Swarm**, a unit with
+  two or more of a seat's bound Imps beside it does not strike back at
+  their attacks. It never captures.
+- **The Gibbering Mass:** **Doorstep**, at the check it needs no strand on
+  or beside an own city center or beside an own standing idol; **Drag**, a
+  hostile unit that begins a Move beside it moves one tile. Immovable (a
+  Crushing Shove crushes it); it never advances and never captures.
+- **The Herald** costs 18, advances, and eats 2 Favour a turn (above).
+- **Technology names:** Chivalry is shown as **Tentacles** and Metallurgy
+  as **Gibbering Masses** (it also keeps the Forge and Arms Industry); the
+  rest are as in [section 11](#11-technology-tree).
+
+### 23.4 What was removed
+
+The **Caller** (`KNIGHT`) and the **Chosen** (`SWORDSMAN`), with their
+cards, art, and glossary entries (their raw generations stay as history);
+**Martyr** (the Favour source `MARTYR`); **Pick Me!** (`PICK_ME`, the
+`cult.taunts` list, `PICK_ME_SHOUTED`, `PICK_ME_NOT_LEGAL`, and
+`ATTACK_TAUNTED`, now `ATTACK_AWESTRUCK`); **the Behold! command**
+(`BEHOLD`, the `cult.idols` list, `IDOL_RAISED`, `IDOL_DROPPED`,
+`BEHOLD_NOT_LEGAL`, `previewBeholdV7`), and Star-fall's need of a chanter
+and its sweep of every unacted neighbour into the begin.
+
+### 23.5 Which sections of this spec it replaces
+
+Read these for the reasons of the original design only; the rule is
+sections 23.1 to 23.4 and the current rules:
+
+| Here                                          | What changed                                                                                                                                                                                                                       |
+| --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| One-page summary, the brief, 1                | The roster (no Caller, no Chosen; the Imp and the Mass), Favour (capped, the trickle, no Martyr), the Unbound target, Star-fall's chanters, the review axes                                                                        |
+| 2. The variance rules                         | Rules 2, 3, and 5 revised (23.2)                                                                                                                                                                                                   |
+| 3. Favour                                     | Start 2, cap 30, Offering 6, prices 2 / 4 / 5 / 18, the trickle, Hunger; no Martyr                                                                                                                                                 |
+| 4.1 to 4.4. Roster                            | 23.1: the casters' 7 HP, the Hexer's 3 and the Stargazer's 7 Coins, the vacant slots, the Imp and the Mass                                                                                                                         |
+| 5.3. Offering                                 | 6 Favour (its conditions unchanged)                                                                                                                                                                                                |
+| 6.1, 6.2, 6.4. Summon, Channel, Unbound       | Three summons; Brood and Doorstep at the check; the four-step target and the Unbound advance                                                                                                                                       |
+| 7.1, 7.3, 7.4. Rituals, the Herald, Star-fall | Star-fall alone and joined; the Herald at 18, its advance and Hunger                                                                                                                                                               |
+| 8.1, 8.2. Behold!, Pick Me! and Martyr        | Behold! is the warden's aura; Pick Me! is its Awestruck; Martyr is gone                                                                                                                                                            |
+| 9.2, 9.3. Switcheroo, the Tentacle            | Range 4; the Tentacle is the Summoner's, with Tentacles                                                                                                                                                                            |
+| 10. Balance against the Humans                | Old numbers; the redesign's head-to-head is [its section 4.3](RULESET_7_CULT_REDESIGN.md#43-head-to-head-hand-computed)                                                                                                            |
+| 11. Technology tree                           | Chivalry is Tentacles, Metallurgy Gibbering Masses, neither unlocks a unit                                                                                                                                                         |
+| 14. Presentation                              | The retired units' art left the runtime; the Imp, the Mass, nine icons, the summon chooser, and the board marks of [the redesign, sections 13 and 14](RULESET_7_CULT_REDESIGN.md#13-interface)                                     |
+| 15. Normal AI                                 | Rebuilt by A-R1 to A-R4: [the redesign, sections 12.5 to 12.8](RULESET_7_CULT_REDESIGN.md#125-as-built-a-r1-the-army-rules-and-favour-pulp_wars-mch938) and [Normal AI, the Cult seat](../architecture/NORMAL_AI.md#the-cult-seat) |
+| 16, 17. Worked examples, validation           | Worked and validated on the old numbers; not redone (no simulation)                                                                                                                                                                |
+
+### 23.6 The rest of the redesign
+
+The Normal AI was rebuilt for the new Cult without a match (A-R1 to A-R4,
+`pulp_wars-mch9.38` to `mch9.41`); the interface shows Favour as "n / 30",
+the trickle and the Hunger, the warden's ring and halved shots, the join
+icon, the summon chooser, Brood links, the Doorstep pip, the Drag ring,
+and the Swarmed and Dragged marks (U-R1 to U-R3, `pulp_wars-mch9.42` to
+`mch9.44`; [board targeting](../ui/BOARD_TARGETING.md#38-the-cultists-the-channel-bead-pulp_wars-mch918));
+the Imp, the Mass, and their icons were drawn by the PixelLab pipeline
+(ART-R1, `pulp_wars-mch9.45`;
+[the Cult's art direction](../art/factions/CULT.md#the-redesigns-summons));
+and campaign mission 10 was retuned and hand-played at revision 4 (C-R1,
+`pulp_wars-mch9.46`;
+[the campaign design, section 11.17](CAMPAIGN.md#1117-mission-10-on-the-redesigned-cult-pulp_wars-mch946)).
+No number was tuned by simulation, and `LAB_CULT_MID` (revision 2) has
+still not been played.
 
 ## Appendix A. The proposal's fifteen decisions, answered
 

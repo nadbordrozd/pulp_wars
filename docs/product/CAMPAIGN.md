@@ -3030,7 +3030,7 @@ round 4, the barrow shot empty and taken in round 7 and grown with the
 Conqueror's Monument, a Boom and a Farm to level 5 (a third Juggernaut),
 Explosives (Breach) in round 7. Then the problem:
 
-- **The idols.** Every shot o- **The idols.** Every shot on a unit beside a standing idol is halved
+- **The idols.** Every shot on a unit beside a standing idol is halved
   (the Catapults dealt the Lodge's Thing 4 and 5, half their blow), and a
   unit beside it may strike only the Bearer: the first Knight, frogged
   beside a Bearer in round 5, died to its blow and an Initiate's. Three

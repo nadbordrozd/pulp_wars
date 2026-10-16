@@ -1,15 +1,24 @@
 # Ruleset 7: the Cult redesign (design)
 
-**Status:** design, bead `pulp_wars-mch9.30` step 1 (2026-10-16). Nothing in
-this document is built yet. It is an overlay over
+**Status:** **implemented** (kept as the design record). Written as the
+design of bead `pulp_wars-mch9.30` (2026-10-16) and built by the beads of
+[section 18](#18-implementation-beads), `pulp_wars-mch9.31` to `mch9.47`:
+the engine at `pulp-wars-poc-7r85` to `7r91`, then the Normal AI, the
+interface, the art, and campaign mission 10 with no identity change.
+[Section 26 of the current rules](RULESET_7_CURRENT.md#26-cultist-faction-rules)
+describes the Cult as it now plays and wins wherever this document
+differs; [section 19](#19-as-built) lists each bead, where its notes are,
+and where the build differs from the text below, and
+[the Cultists spec, section 23](RULESET_7_CULTISTS.md#23-the-cult-redesign-folded-pulp_wars-mch947)
+gives the faction's record its new numbers. The text below is the design
+as approved, kept as history with the as-built notes of sections 12.5 to
+12.8, 13.1, 15.1, and 19; read it for why a rule is what it is.
+
+It was written as an overlay over
 [the Cultists spec](RULESET_7_CULTISTS.md) (the design record) and
-[section 26 of the current rules](RULESET_7_CURRENT.md#26-cultist-faction-rules)
-(the rules as built at `pulp-wars-poc-7r84`). Where this document and those
-two differ, this document is the intended design; each implementation bead
-of [section 18](#18-implementation-beads) folds its part into the current
-rules as it lands, and the current rules stay the rule of what is built.
-No game was played or simulated to write it (the user's standing rule):
-every number is a first guess for hand-play tuning, and the combat results
+section 26 of the current rules as built at `pulp-wars-poc-7r84`. No game
+was played or simulated to write it (the user's standing rule): every
+number is a first guess for hand-play tuning, and the combat results
 quoted were computed by hand with the formula of
 [section 13.2 of the current rules](RULESET_7_CURRENT.md#132-damage).
 
@@ -80,6 +89,7 @@ Every other decision is listed in [section 16](#16-decisions-made).
 16. [Decisions made](#16-decisions-made)
 17. [Test plan](#17-test-plan)
 18. [Implementation beads](#18-implementation-beads)
+19. [As built](#19-as-built)
 
 ## 1. The brief
 
@@ -1345,6 +1355,10 @@ in rubbery deep-sea teal, cultists in indigo robes):
 
 ## 15. Campaign and labs
 
+(The design as written before the build. What was built, revision 4 of
+mission 10 with its hand play, is in
+[section 15.1](#151-as-built-c-r1-mission-10-revision-4-pulp_wars-mch946).)
+
 Only two missions seat the Cult: campaign **mission 10, The Stars Are
 Right** (`FRONTIER_10`, revision 2) and the hidden lab **`LAB_CULT_MID`**.
 No other mission places a Caller or a Chosen.
@@ -1385,6 +1399,42 @@ and [section 11.14](CAMPAIGN.md#1114-campaign-difficulty-pass-c-missions-8-to-10
 (it owns Engineering already) and keeps Tentacles (Chivalry); Favour 12
 stays; revision 1 → 2. Still never played (the hand-play check runs only if
 the user asks).
+
+### 15.1 As built: C-R1, mission 10 revision 4 (`pulp_wars-mch9.46`)
+
+Recorded in full in
+[the campaign design, sections 9.3 and 11.17](CAMPAIGN.md#1117-mission-10-on-the-redesigned-cult-pulp_wars-mch946);
+in short, where the build differs from the proposal above:
+
+- **Revisions.** The unit swap was made by the roster bead E-R1
+  (`pulp_wars-mch9.31`, `7r85`) as revision **3**, a stop-gap; the retune
+  is revision **4**, on `pulp-wars-poc-7r91` (a revision bump does not move
+  the ruleset identity; the canonical hash pin moved with it).
+- **Units, technologies, Favour.** The ring's units of revision 3 are
+  confirmed as proposed (the Idol Bearer on the goat path side at 9,2, the
+  Initiate at 11,4, the Hexer at 9,4). The lodge owns Engineering and
+  Gibbering Masses (Metallurgy), Tentacles stay forbidden, and it starts
+  with **8 Favour** toward the 18-Favour Herald. Engineering also lets it
+  mine its Mountains, so the summit raises more Things in the Cellar.
+- **Text.** The objective line is unchanged ("Capture the Lodge by turn
+  24."); the briefing reads "every soldier its daemons take and every
+  cultist offered up feeds the Great Summoning". The three hints are now
+  (`src/campaign/chapter-1.ts`): "The Lodge's Favour is the countdown: at
+  18, the Herald.", "An idol blunts your shots: break its Bearer, then
+  charge.", and "A marked star falls at dawn: scatter, or slay the
+  gazer." (The proposal's "Catapults on the Masses" and "Imps in packs"
+  were not used: the idol's shield and the marked star are the lessons the
+  hand play found.)
+- **Difficulty.** The replay was **not** skipped: the user authorised the
+  hand play for that bead (no AI-versus-AI match was run). On autopilot the
+  mission is lost out of time; played by hand it was won in round 16 with
+  three stars. The stars are unchanged.
+- **`LAB_CULT_MID`** already owned Engineering and Metallurgy (Gibbering
+  Masses) and Chivalry (Tentacles) and fielded the redesigned roster from
+  E-R1's revision 2, so its state did not change and it stays at revision
+  2; a test shows its Summoners offer an Imp, a Horror, and a Mass on the
+  first turn and that a star begun alone can be joined. It is still never
+  played.
 
 ## 16. Decisions made
 
@@ -1433,7 +1483,8 @@ document.
 18. The retired units' art leaves the runtime; the raw generations stay.
 19. Mission 10 and the lab swap their Chosen and Callers for an Idol Bearer,
     an Initiate, and a Hexer; mission 10 gains Gibbering Masses and starts
-    at 8 Favour; its replay waits for the user's word.
+    at 8 Favour; its replay waits for the user's word. (Built: the user
+    authorised the replay for C-R1, [section 15.1](#151-as-built-c-r1-mission-10-revision-4-pulp_wars-mch946).)
 
 ## 17. Test plan
 
@@ -1574,3 +1625,84 @@ last. Between E-R1 and A-R3 the Cult AI plays the reduced roster with the
 old plan (no Imps, no Masses yet), which is weaker but legal; between E-R4
 and U-R2 a human player can begin a star alone but joins only through the
 text harness.
+
+## 19. As built
+
+Every bead of [section 18](#18-implementation-beads) is built and on
+`main` (2026-10-16). No simulation was run for any of them (the user's
+standing rule); the one hand-played game is mission 10's, authorised for
+C-R1. The rules as they now play are
+[section 26 of the current rules](RULESET_7_CURRENT.md#26-cultist-faction-rules);
+the faction's record has the new numbers in
+[the Cultists spec, section 23](RULESET_7_CULTISTS.md#23-the-cult-redesign-folded-pulp_wars-mch947).
+
+| Bead   | Issue               | Identity | What it built                                                                                                          | Its notes                                                                                                                                                                                        |
+| ------ | ------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| E-R1   | `pulp_wars-mch9.31` | `7r85`   | The roster, the vacant slots, the casters' numbers, the Summoner's Tentacle, starting Favour 2, the mission stop-gaps  | [current rules, section 1](RULESET_7_CURRENT.md#1-identity-and-compatibility) (`7r85`)                                                                                                           |
+| E-R2   | `pulp_wars-mch9.32` | `7r89`   | The Favour cap of 30, the Offering's 6, the prices 4 and 18, the trickle, the Herald's Hunger                          | the same (`7r89`)                                                                                                                                                                                |
+| E-R3   | `pulp_wars-mch9.33` | `7r89`   | Behold! as the warden's aura: the standing idol, the shield wall, Awestruck                                            | the same (`7r89`)                                                                                                                                                                                |
+| E-R4   | `pulp_wars-mch9.34` | `7r88`   | Star-fall alone, Join the chant, Switcheroo at 4                                                                       | the same (`7r88`)                                                                                                                                                                                |
+| E-R5   | `pulp_wars-mch9.35` | `7r88`   | Every daemon but the Mass advances after a kill; the four-step Unbound target rule                                     | the same (`7r88`)                                                                                                                                                                                |
+| E-R6   | `pulp_wars-mch9.36` | `7r90`   | The Imp, Brood, Swarm                                                                                                  | the same (`7r90`)                                                                                                                                                                                |
+| E-R7   | `pulp_wars-mch9.37` | `7r91`   | The Gibbering Mass, Doorstep, Drag                                                                                     | the same (`7r91`)                                                                                                                                                                                |
+| A-R1   | `pulp_wars-mch9.38` | none     | The army rules and Favour                                                                                              | [section 12.5](#125-as-built-a-r1-the-army-rules-and-favour-pulp_wars-mch938)                                                                                                                    |
+| A-R2   | `pulp_wars-mch9.39` | none     | Rituals and tricks                                                                                                     | [section 12.6](#126-as-built-a-r2-rituals-and-tricks-pulp_wars-mch939)                                                                                                                           |
+| A-R3   | `pulp_wars-mch9.40` | none     | The summons, Brood, Doorstep, Swarm                                                                                    | [section 12.7](#127-as-built-a-r3-the-summons-pulp_wars-mch940)                                                                                                                                  |
+| A-R4   | `pulp_wars-mch9.41` | none     | Every seat against the new Cult                                                                                        | [section 12.8](#128-as-built-a-r4-every-seat-against-the-new-cult-pulp_wars-mch941)                                                                                                              |
+| U-R1   | `pulp_wars-mch9.42` | none     | Favour "n / 30", the trickle and Hunger cues, the hungry End Turn, the removals                                        | [board targeting, sections 3.7 and 3.8](../ui/BOARD_TARGETING.md#38-the-cultists-the-channel-bead-pulp_wars-mch918)                                                                              |
+| U-R2   | `pulp_wars-mch9.43` | none     | The warden's ring, halved shots, Awestruck tethers, the join icon and its preview, Switcheroo's reach                  | [board targeting, sections 1.1, 3.8, and 3.9](../ui/BOARD_TARGETING.md#11-tile-actions-an-icon-on-every-target-tile-bead-pulp_wars-2yc60)                                                        |
+| U-R3   | `pulp_wars-mch9.44` | none     | The summon chooser and tile badges, Brood links, the Doorstep pip, the Drag ring, Dragged, Swarmed, the Unbound reason | [section 13.1](#131-as-built-u-r3-the-imp-and-the-mass-on-the-board-pulp_wars-mch944), folded into [board targeting](../ui/BOARD_TARGETING.md#38-the-cultists-the-channel-bead-pulp_wars-mch918) |
+| ART-R1 | `pulp_wars-mch9.45` | none     | The Imp and the Mass with Unbound looks and portraits, nine icons                                                      | [the Cult's art direction](../art/factions/CULT.md#the-redesigns-summons)                                                                                                                        |
+| C-R1   | `pulp_wars-mch9.46` | none     | Mission 10 revision 4                                                                                                  | [section 15.1](#151-as-built-c-r1-mission-10-revision-4-pulp_wars-mch946)                                                                                                                        |
+| D-R1   | `pulp_wars-mch9.47` | none     | This record                                                                                                            | this section                                                                                                                                                                                     |
+
+**Where the build differs from the design text above** (the build is the
+rule; none of these changes a decision of section 16):
+
+1. **Previews and queries** (section 10.3). `publicBindingTauntsV7` became
+   `publicAwestruckBearersV7` (the Idol Bearers that bind a unit), with
+   `previewWardenV7` (what a visible idol does now); added are
+   `publicDraggingMassV7`, `publicDaemonHeldV7` (held by a Brood or a
+   Doorstep), `heraldHungerDueV7`, and the engine helpers
+   `rampageChoiceV7` and `standingIdolsV7`, which the AI reads.
+2. **The shield wall** (section 8.1) halves an attack only: a retaliation,
+   a splash, and fixed damage are not halved, and a hit the Blizzard
+   halves is not halved again (the design had them never meet).
+3. **Drag** (section 7.4) is one step and no hop (`MASS_DRAG_TILES_V7`);
+   an ice slide is no step, and a Bat Escape is a Move it limits.
+4. **Stored roles** (section 10.3): the Imp is a `RAIDER` and the Mass a
+   `GUARD`, as proposed, but neither takes its role's rules: the Imp has no
+   zone-of-control slip, Charge, or Escape, and the Mass is not the Human
+   Guard (no Open to ranged; it may attack after its Move).
+5. **Join the chant** is on every robed role, the Summoner included, as
+   designed; the Normal AI never joins with a Summoner (its action is kept
+   for Summon, Seize, Sacrifice, and the Tentacle).
+6. **The Mass for a watched city** (section 12.2) is summoned beside the
+   center, never on it (a summon never lands on a settlement center,
+   section 7.1); it steps on later as a garrison, which the garrison list
+   now allows (the Mass is the one daemon in it).
+7. **The Offering's threshold** (section 12.2) is a Horror's 4 (or with The
+   Stars Are Right 18) beyond the Hunger kept, with the bodies for one more
+   Imp, not "below 2 for an Imp"; the pace and the cap rule are as
+   designed.
+8. **The Summon button** (section 13) carries no price and opens a chooser
+   of three tiles in the aiming panel, each with its price and, for the
+   Horror and the Mass, a "+1" cultist chip; each summon is also its own
+   tile badge (section 13.1).
+9. **Mission 10** (section 15) is revision 4 (revision 3 was E-R1's
+   stop-gap), its hints are the idol's shield and the marked star rather
+   than the proposal's, and its replay was played (section 15.1).
+
+**Checked at `7r91`** (`pulp_wars-mch9.47`, no code changed): every number
+of section 4.1 against `CULT_ROLE_RULES_V7`, `CULT_SUMMONED_ROLE_RULES_V7`,
+and the Favour constants of `src/engine/rules/ruleset-v7.ts`; they match
+(Initiate 2 Coins, 7 HP, Attack 1.5, Defense 1; Hexer 3, 7, 1.5, 1;
+Summoner 5, 7, 1, 1; Stargazer 7, 7, none, 0.5; Idol Bearer 3, 16, 1.5,
+2.5; Familiar 3, 8, 2, 1, Move 2; Imp 2 Favour, 6, 2, 1, Move 3, worth 2;
+Horror 4, 18, 4, 2, Move 2; Gibbering Mass 5, 30, 2, 3, Move 1, worth 6;
+Herald 18, 60, 7, 4, Move 2; the cap 30, starting Favour 2, the Offering
+6, the trickle 1, Hunger 2, Star-fall 6 + 3 a chanter at 2 to 4 tiles,
+Switcheroo 4, Brood 2, Swarm 2). The Normal AI's own copies of the prices
+(`CULT_AGAINST_DAEMON_VALUE_V7`: Imp 2, Horror 4, Mass 5, Herald 18) and
+thresholds (The Stars Are Right and saving from 9, the cap spend at 26)
+match too.
