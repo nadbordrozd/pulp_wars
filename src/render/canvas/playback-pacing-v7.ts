@@ -30,6 +30,17 @@ export const MIN_DURATION_SCALE_V7 = 0.375;
 export const CATCH_UP_FROM_BACKLOG_V7 = 3;
 /** Boundaries waiting at which playback is as quick as it gets. */
 export const CATCH_UP_FULL_BACKLOG_V7 = 8;
+/**
+ * The AI waits for the board (bead pulp_wars-2yc.59): while this many of
+ * its boundaries wait to play, the AI does not start on its next command.
+ * The AI decides a command in tens of milliseconds and a Move plays for
+ * hundreds, so without the wait a long AI turn ran ahead of the board, was
+ * hurried to the 0.375 floor and then cut to its last boundary, and the
+ * enemy's units jumped. At this backlog playback is still unhurried
+ * (`playbackDurationScaleV7` is 1 up to CATCH_UP_FROM_BACKLOG_V7), and the
+ * camera still sees the next few commands when it frames.
+ */
+export const AI_PACING_BACKLOG_V7 = CATCH_UP_FROM_BACKLOG_V7;
 
 /** The duration of an ordinary Move that enters `tiles` tiles, at Normal. */
 export function moveDurationMsV7(tiles: number): number {

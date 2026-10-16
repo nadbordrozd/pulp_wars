@@ -178,6 +178,55 @@ describe("Ruleset 7 browser controller", () => {
     controller.destroy();
   });
 
+  it("waits for the pacing gate before each AI command until Fast Forward, and a cancelled held run stays stopped (pulp_wars-2yc.59)", async () => {
+    const scheduler = manualScheduler();
+    const controller = new Ruleset7BrowserController({
+      aiProgressScheduler: scheduler.schedule,
+      createAiPolicyWork: immediateEndTurnWork,
+    });
+    const releases: (() => void)[] = [];
+    controller.setAiPacingGate(
+      () => new Promise<void>((resolve) => releases.push(resolve)),
+    );
+    // Seed 9: three AI turns run before the human's.
+    const launched = await controller.launch(setupV7(9, 3));
+    if (!launched.ok) throw new Error(launched.diagnostic);
+    const start = requireView(controller.snapshot()).commandIndex;
+    const progress = controller.progressAiTurns();
+    await waitUntil(() => releases.length === 1);
+    // Held: nothing is scheduled until the gate settles.
+    expect(scheduler.activeCount()).toBe(0);
+    releases.shift()?.();
+    await waitUntil(() => scheduler.activeCount() === 1);
+    scheduler.runNext();
+    expect(requireView(controller.snapshot()).commandIndex).toBe(start + 1);
+    await waitUntil(() => releases.length === 1);
+    expect(scheduler.activeCount()).toBe(0);
+    // Fast Forward lets the held AI go on and asks the gate no more.
+    controller.setFastForward(true);
+    await waitUntil(() => scheduler.activeCount() === 1);
+    while (scheduler.activeCount() > 0) {
+      scheduler.runNext();
+      await Promise.resolve();
+    }
+    expect(await progress).toMatchObject({ ok: true, acceptedCommands: 3 });
+    expect(releases).toHaveLength(1);
+
+    // A run cancelled while held ignores the gate settling later.
+    await controller.restart();
+    const second = controller.progressAiTurns();
+    await waitUntil(() => releases.length === 2);
+    const restart = controller.restart();
+    expect(await second).toMatchObject({ ok: false, cancelled: true });
+    await restart;
+    for (const release of releases) release();
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(scheduler.activeCount()).toBe(0);
+    expect(requireView(controller.snapshot()).commandIndex).toBe(0);
+    controller.destroy();
+  });
+
   it("cancels a same-tick queued AI request before restart and ignores its stale callbacks", async () => {
     const scheduler = manualScheduler();
     const controller = new Ruleset7BrowserController({

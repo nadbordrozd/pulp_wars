@@ -258,6 +258,7 @@ import {
   type StorageAdapter,
 } from "../../persistence/index";
 import { CanvasBoardHostV7, type BoardHostV7 } from "../canvas/board-host-v7";
+import { AI_PACING_BACKLOG_V7 } from "../canvas/playback-pacing-v7";
 import {
   VICTORY_WAVE_V7,
   victoryWaveTriggerV7,
@@ -1389,7 +1390,10 @@ export type Ruleset7ControllerPortV7 = Pick<
   > &
   // Tribe stars (pulp_wars-kaw6.4); a port without them shows no stars and
   // records nothing.
-  Partial<Pick<Ruleset7BrowserController, "tribeStars" | "resetTribeStars">>;
+  Partial<Pick<Ruleset7BrowserController, "tribeStars" | "resetTribeStars">> &
+  // Calm playback (pulp_wars-2yc.59); a port without it lets its AI run
+  // ahead of the board.
+  Partial<Pick<Ruleset7BrowserController, "setAiPacingGate">>;
 
 /** Tribe stars shown when the controller keeps none (tests, fixtures). */
 const NO_TRIBE_STARS_V7: Ruleset7TribeStarsV7 = Object.freeze({
@@ -1711,6 +1715,8 @@ export class Ruleset7DomAppView {
   #presentationTail: Promise<void> = Promise.resolve();
   #humanDispatchPending = false;
   #humanDispatchSettling = false;
+  /** AI turns held until the board catches up (bead pulp_wars-2yc.59). */
+  #aiPacingWaiters: (() => void)[] = [];
   #motion: "FULL" | "REDUCED";
   #animationSpeed: "NORMAL" | "FAST" = "NORMAL";
   #highContrast = false;
@@ -1936,6 +1942,12 @@ export class Ruleset7DomAppView {
     this.#unsubscribeAcceptedBoundary = controller.subscribeAcceptedBoundary(
       (boundary) => this.#queueBoundary(boundary),
     );
+    // Calm playback (bead pulp_wars-2yc.59): the AI waits for the board.
+    controller.setAiPacingGate?.(this.#aiPacingGate);
+    this.#document.addEventListener(
+      "visibilitychange",
+      this.#onVisibilityChange,
+    );
     this.#unsubscribe = controller.subscribe((snapshot) => {
       if (this.#destroyed) return;
       const prior = this.#snapshot;
@@ -1981,7 +1993,13 @@ export class Ruleset7DomAppView {
     this.#unsubscribe?.();
     this.#unsubscribeAcceptedBoundary?.();
     this.#unsubscribeAcceptedBoundary = null;
+    this.#controller.setAiPacingGate?.(null);
+    this.#document.removeEventListener(
+      "visibilitychange",
+      this.#onVisibilityChange,
+    );
     this.#cancelPresentations();
+    this.#releaseAiPacing(true);
     this.#endArtWait();
     this.#gallery?.destroy();
     this.#titleScene?.destroy();
@@ -10604,6 +10622,7 @@ export class Ruleset7DomAppView {
     );
     if (this.#snapshot.ai.fastForward) {
       this.#presentationQueue = [];
+      this.#releaseAiPacing();
       this.#finishFeedback();
       this.#audio.playCues(sounds.essential);
       return;
@@ -10633,10 +10652,14 @@ export class Ruleset7DomAppView {
       while (!this.#destroyed && this.#presentationQueue.length > 0) {
         if (this.#snapshot.ai.fastForward) {
           this.#presentationQueue = [];
+          this.#releaseAiPacing();
           this.#finishFeedback();
           break;
         }
         const next = this.#presentationQueue.shift();
+        // A boundary left the queue: a held AI may decide its next command
+        // while this one plays.
+        this.#releaseAiPacing();
         if (next === undefined) break;
         if (next.matchInstance !== this.#matchInstance) continue;
         await this.#boardHost.presentBoundary?.(
@@ -10676,7 +10699,45 @@ export class Ruleset7DomAppView {
     this.#presentationActive = false;
     this.#boardHost.finishPresentations?.();
     this.#finishFeedback();
+    this.#releaseAiPacing();
   }
+
+  /**
+   * Calm playback (bead pulp_wars-2yc.59), the controller's pacing gate:
+   * while AI_PACING_BACKLOG_V7 boundaries wait to play, the AI holds its
+   * next command until one of them starts, so the board plays every command
+   * of a long AI turn unhurried instead of hurrying it and cutting the
+   * queue. A hidden page (nothing is drawn), Fast Forward and a destroyed
+   * view never hold the AI; the queue cut stays the last resort for them.
+   */
+  readonly #aiPacingGate = (): Promise<void> | null => {
+    if (
+      this.#destroyed ||
+      this.#snapshot.ai.fastForward ||
+      this.#document.visibilityState === "hidden" ||
+      this.#presentationQueue.length < AI_PACING_BACKLOG_V7
+    )
+      return null;
+    return new Promise<void>((resolve) => this.#aiPacingWaiters.push(resolve));
+  };
+
+  /** Lets held AI turns go on once the board is less behind (or `all`). */
+  #releaseAiPacing(all = false): void {
+    if (this.#aiPacingWaiters.length === 0) return;
+    if (
+      !all &&
+      this.#document.visibilityState !== "hidden" &&
+      this.#presentationQueue.length >= AI_PACING_BACKLOG_V7
+    )
+      return;
+    const waiters = this.#aiPacingWaiters;
+    this.#aiPacingWaiters = [];
+    for (const resolve of waiters) resolve();
+  }
+
+  readonly #onVisibilityChange = (): void => {
+    this.#releaseAiPacing();
+  };
 
   /**
    * Bead pulp_wars-2yc.29: an accepted boundary's Coins, population and

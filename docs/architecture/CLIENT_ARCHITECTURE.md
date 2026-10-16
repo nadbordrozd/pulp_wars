@@ -1653,7 +1653,11 @@ of [calm playback](../ui/SCREEN_FLOW.md#calm-playback-bead-pulp_wars-2yc49):
 `playback-camera-v7.ts` is the pure module (where the camera should rest
 for an event, and the spring glide over a caller-owned clock) and
 `playback-pacing-v7.ts` holds the walk's timing; the board host only asks
-them and draws.
+them and draws. The AI waits for the board (`pulp_wars-2yc.59`): the DOM
+app view registers itself as the browser controller's AI pacing gate
+(`setAiPacingGate`), which holds the AI's next command while
+`AI_PACING_BACKLOG_V7` boundaries wait to play, so the AI never runs ahead
+of the playback into the hurried catch-up and the queue cut.
 
 Canvas 2D responsibilities:
 

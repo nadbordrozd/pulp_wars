@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { corePresentationPlanV7 } from "../../src/render/canvas/presentation-plan-v7";
 import {
+  AI_PACING_BACKLOG_V7,
   CATCH_UP_FROM_BACKLOG_V7,
   CATCH_UP_FULL_BACKLOG_V7,
   MIN_DURATION_SCALE_V7,
@@ -120,5 +121,15 @@ describe("the beat between two units", () => {
     expect(rest(1400, 1000)).toBe(0);
     expect(rest(1000, null)).toBe(0);
     expect(rest(1000, 1000, 0.5)).toBe(60);
+  });
+});
+
+describe("the AI waiting for the board (pulp_wars-2yc.59)", () => {
+  it("holds the AI before its backlog would hurry playback", () => {
+    expect(AI_PACING_BACKLOG_V7).toBe(3);
+    expect(AI_PACING_BACKLOG_V7).toBeLessThanOrEqual(CATCH_UP_FROM_BACKLOG_V7);
+    // The deepest queue a held AI leaves still plays at full pace.
+    expect(playbackDurationScaleV7("NORMAL", AI_PACING_BACKLOG_V7)).toBe(1);
+    expect(playbackDurationScaleV7("FAST", AI_PACING_BACKLOG_V7)).toBe(0.5);
   });
 });

@@ -506,12 +506,23 @@ Nothing here changes a rule, an event or a saved game.
 - **Fast** halves every duration, as before: a tile takes 120 ms, about
   what Normal took before this bead. The camera glide and the beat halve
   too.
-- **Catching up.** When more than three boundaries wait to play, playback
-  shortens with the queue, down to 0.375 of Normal (90 ms a tile, the old
-  Normal) at eight waiting; Fast never goes below the same floor. A long AI
-  turn therefore takes no longer than it used to once the queue is deep.
-  The existing last resort stays: past twelve waiting boundaries the queue
-  is cut to the newest.
+- **The AI waits for the board** (bead `pulp_wars-2yc.59`). The AI decides
+  a command in tens of milliseconds and a Move plays for hundreds, so on its
+  own a long AI turn ran ahead of the board: the queue grew, playback
+  hurried and the queue was cut, and the enemy's units jumped. While three
+  of its boundaries wait to play, the AI therefore does not start on its
+  next command; it decides it while the board plays the one before. An AI
+  turn takes as long as its playback, and every command of it plays at full
+  pace. Fast Forward, a hidden page (nothing is drawn) and a closed match
+  never hold the AI. The controller asks a pacing gate before each AI
+  command (`setAiPacingGate`); the DOM app view is the gate, and headless
+  play has none.
+- **Catching up.** When more than three boundaries wait to play (which the
+  waiting AI no longer causes; a hidden page still can), playback shortens
+  with the queue, down to 0.375 of Normal (90 ms a tile, the old Normal) at
+  eight waiting; Fast never goes below the same floor. The existing last
+  resort stays: past twelve waiting boundaries the queue is cut to the
+  newest.
 - **Out of view.** An event the fog hides has no step and takes no time. An
   event wholly off the canvas, when the player has taken the camera (below),
   plays at the 0.375 floor.

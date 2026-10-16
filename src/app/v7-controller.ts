@@ -211,6 +211,13 @@ export type Ruleset7AiProgressScheduler = (
   resume: () => void,
 ) => (() => void) | undefined;
 
+/**
+ * Calm playback (bead pulp_wars-2yc.59): asked before the AI starts on its
+ * next command. A promise holds the AI until it settles (the board has
+ * caught up); null lets the AI go on at once. Fast Forward never asks.
+ */
+export type Ruleset7AiPacingGateV7 = () => PromiseLike<void> | null;
+
 export interface Ruleset7PolicyWork {
   runSlice(maxMilliseconds: number): NormalAiDecisionV7 | null;
 }
@@ -296,6 +303,9 @@ export class Ruleset7BrowserController {
   #generation = 0;
   #activeAi: AiRunV7 | null = null;
   #fastForward = false;
+  #aiPacingGate: Ruleset7AiPacingGateV7 | null = null;
+  /** Lets an AI held by the pacing gate go on (Fast Forward). */
+  #aiPacingResume: (() => void) | null = null;
   #lastAiAcceptedCommands = 0;
   #lastPolicySlices = 0;
   #lastSliceMilliseconds = 0;
@@ -667,7 +677,19 @@ export class Ruleset7BrowserController {
   setFastForward(active: boolean): void {
     if (this.#destroyed || this.#fastForward === active) return;
     this.#fastForward = active;
+    if (active) this.#aiPacingResume?.();
     this.#emit();
+  }
+
+  /**
+   * Calm playback (bead pulp_wars-2yc.59): the view that plays accepted
+   * boundaries holds the AI back while the board is behind, so the AI does
+   * not run ahead of what the player sees. Null (the default, and every
+   * headless use) never waits.
+   */
+  setAiPacingGate(gate: Ruleset7AiPacingGateV7 | null): void {
+    this.#aiPacingGate = gate;
+    if (gate === null) this.#aiPacingResume?.();
   }
 
   exportSafeLog(): Ruleset7SafeLogExportResult | null {
@@ -874,6 +896,42 @@ export class Ruleset7BrowserController {
   }
 
   #scheduleAiCallback(run: AiRunV7): void {
+    if (!this.#isCurrentRun(run)) return;
+    // Calm playback (bead pulp_wars-2yc.59): before the next command, the
+    // AI waits while the board is behind. The wait ends once, when the gate
+    // settles (or rejects), Fast Forward starts, or the gate is removed; a
+    // cancelled run stays stopped.
+    const gate = this.#aiPacingGate;
+    if (run.policyWork === null && !this.#fastForward && gate !== null) {
+      let wait: PromiseLike<void> | null;
+      try {
+        wait = gate();
+      } catch {
+        // A failing gate never stops the AI.
+        wait = null;
+      }
+      if (wait !== null) {
+        let settled = false;
+        const release = (): void => {
+          settled = true;
+          if (this.#aiPacingResume === resume) this.#aiPacingResume = null;
+        };
+        const resume = (): void => {
+          if (settled) return;
+          release();
+          run.cancelScheduled = null;
+          this.#scheduleAiProgress(run);
+        };
+        run.cancelScheduled = release;
+        this.#aiPacingResume = resume;
+        wait.then(resume, resume);
+        return;
+      }
+    }
+    this.#scheduleAiProgress(run);
+  }
+
+  #scheduleAiProgress(run: AiRunV7): void {
     if (!this.#isCurrentRun(run)) return;
     try {
       const cancel = this.#aiProgressScheduler(() => {
