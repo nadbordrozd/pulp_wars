@@ -271,7 +271,7 @@ export const FAVOUR_CANDLE_SPRITE_URL_V7 = `data:image/svg+xml,${encodeURICompon
 )}`;
 
 /** One shape of a multi-part icon; `fill` may be a fixed colour. */
-interface IconPartV7 {
+export interface IconPartV7 {
   readonly d: string;
   readonly fill: string;
   readonly stroke: string;
@@ -365,6 +365,25 @@ const FILLED: ReadonlySet<UiIconIdV7> = new Set([
   "egg",
   "martian",
 ]);
+
+/**
+ * The shapes of a glyph in its 24-unit box, for drawing it on the Canvas
+ * (the tile action badges, bead pulp_wars-2yc.60): the same paths, fills
+ * and stroke widths the SVG uses, `currentColor` standing for the badge's
+ * ink.
+ */
+export function uiIconShapesV7(id: UiIconIdV7): readonly IconPartV7[] {
+  return (
+    PARTS[id] ?? [
+      {
+        d: PATHS[id],
+        fill: FILLED.has(id) ? "currentColor" : "none",
+        stroke: "currentColor",
+        width: 2,
+      },
+    ]
+  );
+}
 
 export function uiIconV7(
   documentRoot: Document,

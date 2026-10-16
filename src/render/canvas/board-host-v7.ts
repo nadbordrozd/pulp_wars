@@ -119,6 +119,7 @@ import {
   pickGridTile,
   projectGrid,
   screenToWorld,
+  TILE_WIDTH,
   worldToScreen,
   type CameraState,
   type Point,
@@ -271,6 +272,8 @@ import { BoardFeedbackV7, type BoardFeedbackPortV7 } from "./feedback-host-v7";
 import type { FirstStepMarkerV7 } from "../first-steps-v7";
 import type { MissionMarkerV7 } from "../mission-presentation-v7";
 import { cityAccessibleNameV7 } from "../city-names-presentation-v7";
+import { tileActionsAtV7, type TileActionPlanV7 } from "./tile-actions-v7";
+import { drawTileActionBadgesV7 } from "./tile-action-badges-v7";
 
 export interface BoardHostModelV7 {
   readonly matchInstanceId: string | number;
@@ -313,6 +316,23 @@ export interface BoardHostModelV7 {
    * places and named units. Omitted draws none.
    */
   readonly missionMarkers?: readonly MissionMarkerV7[];
+  /**
+   * Tile actions (bead pulp_wars-2yc.60): the selected unit's actions by
+   * tile, with nothing armed. Each listed tile wears its action badges and
+   * a tap (or Enter) on it goes to `onTileActions`. Omitted or null shows
+   * none.
+   */
+  readonly tileActions?: TileActionPlanV7 | null;
+}
+
+/**
+ * Where a tile is on screen, in CSS px from the canvas's top-left corner:
+ * its centre and its width (the tile chooser is anchored to it).
+ */
+export interface TileAnchorV7 {
+  readonly x: number;
+  readonly y: number;
+  readonly size: number;
 }
 
 /** A boundary waiting to play after the one being presented. */
@@ -354,6 +374,12 @@ const PLAYBACK_LOOKAHEAD_V7 = 8;
 export interface BoardHostCallbacksV7 {
   readonly onSelection: (selection: BoardSelectionV7 | null) => void;
   readonly onCommand: (target: MapCommandTargetV7) => void;
+  /**
+   * A tap or Enter on a tile of the model's `tileActions`: the app does its
+   * one action or opens its chooser there. Without it such a tap does what
+   * it did before.
+   */
+  readonly onTileActions?: (at: CoordV7, anchor: TileAnchorV7) => void;
 }
 
 export interface BoardHostV7 {
@@ -2465,6 +2491,22 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         context.restore();
       }
     } else renderView(this.#presentedView ?? model.view, true, 1);
+    // Tile actions (bead pulp_wars-2yc.60): the selected unit's action
+    // badges, over its marks, on the game's own view only.
+    if (
+      this.#presentedView === null &&
+      this.#crossfade === null &&
+      model.tileActions !== undefined &&
+      model.tileActions !== null
+    ) {
+      const ratio = this.#document.defaultView?.devicePixelRatio ?? 1;
+      context.save();
+      context.setTransform(ratio, 0, 0, ratio, 0, 0);
+      drawTileActionBadgesV7(context, model.tileActions, this.#camera, {
+        highContrast: model.highContrast,
+      });
+      context.restore();
+    }
     this.#pumpTerrainRipple();
     this.#pumpVictoryWave(victoryNow);
     if (this.#projectile !== null) {
@@ -3118,6 +3160,22 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     if (model === null) return;
     if (this.#inspectionCycle !== null && !same(this.#inspectionCycle.at, at))
       this.#inspectionCycle = null;
+    // Tile actions (bead pulp_wars-2yc.60): a badged tile's action, or its
+    // chooser, is the app's to open.
+    const onTileActions = this.#callbacks?.onTileActions;
+    if (
+      model.interactive &&
+      onTileActions !== undefined &&
+      tileActionsAtV7(model.tileActions, at) !== undefined
+    ) {
+      const centre = this.cellCentreCssPx(at);
+      onTileActions(at, {
+        x: centre.x,
+        y: centre.y,
+        size: TILE_WIDTH * this.#camera.zoom,
+      });
+      return;
+    }
     const plan = this.#planFor(model.view, model.offeredCommands);
     const target = plan.targets.find((candidate) => same(candidate.at, at));
     if (target !== undefined && model.interactive) {
@@ -3169,22 +3227,36 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       return;
     }
     const city = model.view.cities.find((candidate) => same(candidate.at, at));
-    // Every map target is an offered command's (bead pulp_wars-2yc.62): with
-    // none offered (another player's turn) no plan is built to find none,
-    // so an AI command builds a plan only for the view the board plays.
-    const actions = (
-      model.offeredCommands.length === 0
-        ? []
-        : this.#planFor(model.view, model.offeredCommands).targets
-    )
-      .filter((target) => same(target.at, at))
-      .map((target) =>
-        target.semanticLabel !== undefined
-          ? target.semanticLabel
-          : target.previewLabel === undefined
-            ? target.family
-            : `${target.family}: ${target.previewLabel}`,
-      );
+    // Tile actions (bead pulp_wars-2yc.60): a badged tile names each of
+    // its actions. Every other map target is an offered command's (bead
+    // pulp_wars-2yc.62): with none offered (another player's turn) no plan
+    // is built to find none, so an AI command builds a plan only for the
+    // view the board plays.
+    const tileActions = tileActionsAtV7(model.tileActions, at);
+    const actions =
+      tileActions !== undefined
+        ? tileActions.actions.map((action) =>
+            action.target === undefined
+              ? action.semanticLabel === undefined
+                ? action.label
+                : `${action.label}: ${action.semanticLabel}`
+              : (action.target.semanticLabel ??
+                (action.target.previewLabel === undefined
+                  ? action.label
+                  : `${action.label}: ${action.target.previewLabel}`)),
+          )
+        : (model.offeredCommands.length === 0
+            ? []
+            : this.#planFor(model.view, model.offeredCommands).targets
+          )
+            .filter((target) => same(target.at, at))
+            .map((target) =>
+              target.semanticLabel !== undefined
+                ? target.semanticLabel
+                : target.previewLabel === undefined
+                  ? target.family
+                  : `${target.family}: ${target.previewLabel}`,
+            );
     // While an ability is aimed its target's name is read first (bead
     // pulp_wars-b5f.8), so Tab through the targets speaks what each does.
     const interaction = model.interaction;
@@ -3469,6 +3541,10 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       .targets)
       if (aimed || targetIsSteppedV7(target.family))
         cells.set(`${target.at.x},${target.at.y}`, target.at);
+    // Tile actions (bead pulp_wars-2yc.60): every badged tile is a stop.
+    if (!aimed)
+      for (const tile of model.tileActions?.tiles ?? [])
+        cells.set(`${tile.at.x},${tile.at.y}`, tile.at);
     return [...cells.values()].sort(
       (left, right) => left.y - right.y || left.x - right.x,
     );

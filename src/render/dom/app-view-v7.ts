@@ -257,7 +257,19 @@ import {
   parseSettings,
   type StorageAdapter,
 } from "../../persistence/index";
-import { CanvasBoardHostV7, type BoardHostV7 } from "../canvas/board-host-v7";
+import {
+  CanvasBoardHostV7,
+  type BoardHostV7,
+  type TileAnchorV7,
+} from "../canvas/board-host-v7";
+import {
+  tileAbilityV7,
+  tileActionPlanForSelectionV7,
+  tileActionsAtV7,
+  type TileActionPlanV7,
+  type TileActionTileV7,
+  type TileActionV7,
+} from "../canvas/tile-actions-v7";
 import { AI_PACING_BACKLOG_V7 } from "../canvas/playback-pacing-v7";
 import {
   VICTORY_WAVE_V7,
@@ -274,6 +286,7 @@ import {
   type BoardSaturationV7,
 } from "../canvas/sprite-saturation-v7";
 import {
+  boardMapTargetsV7,
   LANDING_AFTER_MOVE_LABEL_V7,
   LANDING_NOW_LABEL_V7,
   type MapCommandTargetV7,
@@ -1163,6 +1176,10 @@ const CULT_TRICK_ICONS_V7: Readonly<Record<CultTrickKindV7, UiIconIdV7>> = {
   TENTACLE: "tentacle",
   PICK_ME: "shout",
 };
+/** The `data-action` of a tile chooser's row (bead pulp_wars-2yc.60). */
+function tileChoiceActionV7(id: string): string {
+  return `tile-choice-${id.toLowerCase().replaceAll("_", "-")}`;
+}
 /** "cult-great-summoning": the action and the focus name of a trick. */
 function cultTrickSlugV7(kind: string): string {
   return `cult-${kind.toLowerCase().replaceAll("_", "-")}`;
@@ -1658,6 +1675,24 @@ export class Ruleset7DomAppView {
    */
   #cultPick: CultPickV7 | null = null;
   /**
+   * Tile actions (bead pulp_wars-2yc.60): the tile whose chooser is open
+   * (several actions of the selected unit on one tile), and where on the
+   * canvas that tile was when it was tapped. Escape, a press elsewhere, a
+   * choice or another selection closes it.
+   */
+  #tileChooser: {
+    readonly at: CoordV7;
+    readonly unitId: number;
+    readonly anchor: TileAnchorV7;
+  } | null = null;
+  /** The last tile action plan, kept while its inputs are the same. */
+  #tileActionCache: {
+    readonly view: PlayerViewV7;
+    readonly commands: readonly CommandV7[];
+    readonly unitId: number;
+    readonly plan: TileActionPlanV7 | null;
+  } | null = null;
+  /**
    * The Cultists (bead pulp_wars-mch9.18, RULESET_7_CULTISTS.md section
    * 6.2): End Turn was pressed with a daemon short of its Control and waits
    * for the player's one answer.
@@ -1940,6 +1975,15 @@ export class Ruleset7DomAppView {
     // Capturing: the click is heard before the sound of what it does.
     this.#root.addEventListener("click", this.#onClickSound, true);
     this.#root.addEventListener("pointerdown", this.#onSkipVictoryWave, true);
+    this.#root.addEventListener(
+      "pointerdown",
+      this.#onPressOutsideChooser,
+      true,
+    );
+    this.#root.addEventListener("wheel", this.#onPressOutsideChooser, {
+      capture: true,
+      passive: true,
+    });
     this.#unsubscribeAcceptedBoundary = controller.subscribeAcceptedBoundary(
       (boundary) => this.#queueBoundary(boundary),
     );
@@ -1985,6 +2029,12 @@ export class Ruleset7DomAppView {
       this.#onSkipVictoryWave,
       true,
     );
+    this.#root.removeEventListener(
+      "pointerdown",
+      this.#onPressOutsideChooser,
+      true,
+    );
+    this.#root.removeEventListener("wheel", this.#onPressOutsideChooser, true);
     this.#releaseVictoryHold(false);
     this.#boardHost.setPresentationStepListener?.(null);
     this.#coinFlight.destroy();
@@ -2112,6 +2162,12 @@ export class Ruleset7DomAppView {
       event.preventDefault();
       this.#clearFirstStepOutOfMoves();
       this.#boardHost.resetInspectionCycle?.();
+      if (this.#tileChooser !== null) {
+        // Tile actions: Escape first closes the tile's chooser.
+        this.#closeTileChooser(true);
+        this.#queueBoardFocus();
+        return;
+      }
       if (this.#screen !== "MATCH") this.#screen = "MATCH";
       else if (this.#kaboomArmedUnitId !== null) {
         // Revision 17: Escape first disarms an armed Kaboom!.
@@ -4235,30 +4291,12 @@ export class Ruleset7DomAppView {
       this.#matchRoot = main;
       this.#boardContainer = board;
       this.#boardHost.mount(board, {
-        onSelection: (selection) => {
-          if (selection !== null) this.#audio.play("ui.select");
-          this.#selection = selection;
-          this.#clearFirstStepOutOfMoves();
-          this.#kaboomArmedUnitId = null;
-          this.#kaboomHoverUnitId = null;
-          this.#areaSupportHover = null;
-          this.#layEggPick = null;
-          this.#martianPick = null;
-          this.#iceFolkPick = null;
-          this.#dwarfPick = null;
-          this.#candyPick = null;
-          this.#giantPick = null;
-          this.#navalPick = null;
-          this.#freezePick = null;
-          this.#freezeHoverUnitId = null;
-          this.#freezeRingArmedUnitId = null;
-          this.#cultPick = null;
-          this.#selectedRecruitHelp = null;
-          this.#selectedUnitHelpId = null;
-          this.#selectedModifier = null;
-          this.#render();
+        onSelection: (selection) => this.#selectOnBoard(selection),
+        onCommand: (target) => {
+          this.#tileChooser = null;
+          void this.#handleMapCommand(target);
         },
-        onCommand: (target) => void this.#handleMapCommand(target),
+        onTileActions: (at, anchor) => this.#onTileActions(at, anchor),
       });
     }
     const liveNode = shell.querySelector<HTMLElement>("#v7-live");
@@ -4594,6 +4632,27 @@ export class Ruleset7DomAppView {
       dock.dataset.v7Region = "dock";
       nextChildren.push(dock);
     }
+    // Tile actions (bead pulp_wars-2yc.60): the chooser of the tapped
+    // tile, while the tile still has its actions.
+    const chooserState = this.#tileChooser;
+    const chooserTile =
+      chooserState === null ||
+      this.#selection?.kind !== "UNIT" ||
+      this.#selection.unitId !== chooserState.unitId
+        ? undefined
+        : tileActionsAtV7(this.#tileActionPlan(view), chooserState.at);
+    if (chooserTile === undefined) this.#tileChooser = null;
+    const focusedNow = this.#document.activeElement;
+    const chooserFocus =
+      focusedNow instanceof HTMLElement &&
+      focusedNow.closest('[data-v7-region="tile-chooser"]') !== null
+        ? (focusedNow.dataset.action ?? null)
+        : null;
+    const chooser =
+      chooserTile === undefined
+        ? null
+        : this.#tileChooserPanel(view, chooserTile);
+    if (chooser !== null) nextChildren.push(chooser);
     if (
       this.#unitHelpModal !== null &&
       !showAchievementNotice &&
@@ -4676,6 +4735,14 @@ export class Ruleset7DomAppView {
     );
     if (popup !== undefined) nextChildren.push(this.#scrim(popup));
     reconcileMatchChildren(main, board, nextChildren);
+    if (chooser !== null) {
+      this.#placeTileChooser(main, chooser);
+      // A redraw keeps the row that had the focus.
+      if (chooserFocus !== null)
+        chooser
+          .querySelector<HTMLElement>(`[data-action="${chooserFocus}"]`)
+          ?.focus();
+    }
     if (
       dock !== null &&
       previousDockScroll !== null &&
@@ -5062,6 +5129,8 @@ export class Ruleset7DomAppView {
         this.#firstStepCue?.marker ??
         null,
       missionMarkers: missionMarkersV7(view),
+      // Tile actions (bead pulp_wars-2yc.60): the selected unit's badges.
+      tileActions: this.#tileActionPlan(view),
       motion: this.#motion,
       animationSpeed: this.#animationSpeed,
       presentationPaused: this.#screen === "SETTINGS",
@@ -7958,6 +8027,340 @@ export class Ruleset7DomAppView {
     });
   }
 
+  /** A tap on the board selects a unit, a city or a tile (or nothing). */
+  #selectOnBoard(selection: BoardSelectionV7 | null): void {
+    if (selection !== null) this.#audio.play("ui.select");
+    this.#selection = selection;
+    this.#tileChooser = null;
+    this.#clearFirstStepOutOfMoves();
+    this.#kaboomArmedUnitId = null;
+    this.#kaboomHoverUnitId = null;
+    this.#areaSupportHover = null;
+    this.#layEggPick = null;
+    this.#martianPick = null;
+    this.#iceFolkPick = null;
+    this.#dwarfPick = null;
+    this.#candyPick = null;
+    this.#giantPick = null;
+    this.#navalPick = null;
+    this.#freezePick = null;
+    this.#freezeHoverUnitId = null;
+    this.#freezeRingArmedUnitId = null;
+    this.#cultPick = null;
+    this.#selectedRecruitHelp = null;
+    this.#selectedUnitHelpId = null;
+    this.#selectedModifier = null;
+    this.#render();
+  }
+
+  /**
+   * Tile actions (bead pulp_wars-2yc.60): the selected own unit's actions
+   * by tile, while nothing is aimed and the board takes input. Null when
+   * no tile carries a badge.
+   */
+  #tileActionPlan(view: PlayerViewV7): TileActionPlanV7 | null {
+    const selection = this.#selection;
+    if (
+      selection?.kind !== "UNIT" ||
+      this.#aimingOnBoard() ||
+      // A previewed Kaboom! is the unit's only preview: its targets step
+      // aside, and so do its badges.
+      this.#kaboomHoverUnitId === selection.unitId ||
+      !this.#boardInteractive(view) ||
+      this.#localBusy()
+    )
+      return null;
+    const commands = this.#snapshot.offeredCommands;
+    const cached = this.#tileActionCache;
+    if (
+      cached !== null &&
+      cached.view === view &&
+      cached.commands === commands &&
+      cached.unitId === selection.unitId
+    )
+      return cached.plan;
+    const plan = tileActionPlanForSelectionV7(view, commands, selection.unitId);
+    this.#tileActionCache = {
+      view,
+      commands,
+      unitId: selection.unitId,
+      plan,
+    };
+    return plan;
+  }
+
+  /**
+   * A tap or Enter on a badged tile: its one action is done at once (as
+   * its board pick or its armed board pick does); several actions, or an
+   * action on another own unit, open the tile's chooser.
+   */
+  #onTileActions(at: CoordV7, anchor: TileAnchorV7): void {
+    const view = this.#snapshot.view;
+    if (view === null) return;
+    const plan = this.#tileActionPlan(view);
+    const tile = tileActionsAtV7(plan, at);
+    if (plan === null || tile === undefined) return;
+    const [only] = tile.actions;
+    if (!tile.chooser && only !== undefined) {
+      this.#tileChooser = null;
+      void this.#doTileAction(at, only);
+      return;
+    }
+    this.#tileChooser = { at, unitId: plan.unitId, anchor };
+    this.#pendingFocusAction = tileChoiceActionV7(tile.actions[0]?.id ?? "");
+    this.#render();
+  }
+
+  /** Closes the tile chooser (`render`: redraw the screen without it). */
+  #closeTileChooser(render: boolean): void {
+    if (this.#tileChooser === null) return;
+    this.#tileChooser = null;
+    this.#root.querySelector('[data-v7-region="tile-chooser"]')?.remove();
+    if (render) this.#render();
+  }
+
+  /**
+   * A press (or a wheel zoom, which moves the tile away) outside the open
+   * tile chooser closes it.
+   */
+  readonly #onPressOutsideChooser = (event: Event): void => {
+    if (this.#tileChooser === null) return;
+    const target = event.target;
+    if (
+      target instanceof Node &&
+      this.#root
+        .querySelector('[data-v7-region="tile-chooser"]')
+        ?.contains(target) === true
+    )
+      return;
+    this.#closeTileChooser(false);
+  };
+
+  /**
+   * Does one tile action: an unarmed one sends its board target as a tap
+   * does; an aimed ability is armed as its dock button arms it and the
+   * tile is then picked as a tap on the armed board picks it (a rite's
+   * mark, a Stampede's end or a Tunnel's destination is chosen first and
+   * waits for its confirmation, as before).
+   */
+  async #doTileAction(at: CoordV7, action: TileActionV7): Promise<void> {
+    this.#tileChooser = null;
+    const view = this.#snapshot.view;
+    const selection = this.#selection;
+    if (view === null || this.#localBusy()) return;
+    if (action.target !== undefined) {
+      await this.#handleMapCommand(action.target);
+      return;
+    }
+    const ability =
+      action.ability === undefined ? undefined : tileAbilityV7(action.ability);
+    if (ability === undefined || selection?.kind !== "UNIT") return;
+    // The selection holds the unit's ID as a plain number.
+    this.#armTileAbility(ability.id, selection.unitId as UnitId);
+    const armed = this.#snapshot.view;
+    if (armed === null || !this.#aimingOnBoard()) return;
+    const target = boardMapTargetsV7(
+      armed,
+      this.#snapshot.offeredCommands,
+      this.#boardModel(armed).interaction,
+    ).find(
+      (candidate) =>
+        same(candidate.at, at) && ability.families.includes(candidate.family),
+    );
+    // Without a target there (the board changed), the ability stays armed
+    // as its button would leave it.
+    if (target !== undefined) await this.#handleMapCommand(target);
+  }
+
+  /** Arms an aimed ability as its dock button does. */
+  #armTileAbility(id: string, unitId: UnitId): void {
+    switch (id) {
+      case "BEAM_DOWN":
+      case "MIND_CONTROL":
+      case "TRACTOR_BEAM":
+        this.#startMartianPick(id, unitId);
+        return;
+      case "THROW_BOLAS":
+      case "FROST_BOLT":
+      case "STAMPEDE":
+        this.#startIceFolkPick(id, unitId);
+        return;
+      case "FREEZE":
+        this.#startFreezePick(unitId);
+        return;
+      case "TUNNEL":
+      case "BOMB_RUN":
+      case "ASSEMBLE":
+      case "BUILD_BARRICADE":
+        this.#startDwarfPick(id, unitId);
+        return;
+      case "SUGAR_RUSH":
+      case "REBAKE":
+        this.#startCandyPick(id, unitId);
+        return;
+      case "SWALLOW":
+      case "TOSS":
+      case "BREAK_OFF":
+        this.#startGiantPick(id, unitId);
+        return;
+      case "BOARD":
+        this.#startNavalPick(unitId);
+        return;
+      case "SACRIFICE":
+      case "SEIZE":
+        this.#startCultPick(id, unitId);
+        return;
+      case "SUMMON":
+      case "CHANNEL":
+      case "ANCHOR":
+        this.#startCultChannelPick(id, unitId);
+        return;
+      case "STARFALL":
+      case "GREAT_SUMMONING":
+      case "PROCLAIM":
+      case "RIBBIT":
+      case "SWITCHEROO":
+      case "TENTACLE":
+        this.#startCultTrickPick(id, unitId);
+        return;
+    }
+  }
+
+  /**
+   * The chooser of a tile with several actions (or an action on another
+   * own unit): one row per action with its badge's glyph and its short
+   * name, and Select for the own unit standing there. It is anchored to
+   * the tile; the arrow keys move between rows, Enter or a tap chooses,
+   * Escape or a press elsewhere closes it. It names no tile.
+   */
+  #tileChooserPanel(view: PlayerViewV7, tile: TileActionTileV7): HTMLElement {
+    const panel = el(this.#document, "div", "v7-tile-chooser");
+    panel.dataset.v7Region = "tile-chooser";
+    panel.setAttribute("role", "menu");
+    panel.setAttribute("aria-label", "Choose an action");
+    const rows: HTMLButtonElement[] = [];
+    for (const action of tile.actions) {
+      const row = button(
+        this.#document,
+        "",
+        tileChoiceActionV7(action.id),
+        "v7-tile-choice",
+      );
+      row.setAttribute("role", "menuitem");
+      row.dataset.tileAction = action.id.toLowerCase();
+      row.dataset.style = action.style.toLowerCase();
+      row.append(
+        uiIconV7(this.#document, action.icon, "v7-ui-icon v7-tile-choice-icon"),
+        text(this.#document, "span", action.label, "v7-tile-choice-label"),
+      );
+      row.setAttribute("aria-label", action.label);
+      row.disabled = this.#localBusy();
+      row.onclick = () => void this.#doTileAction(tile.at, action);
+      rows.push(row);
+    }
+    const occupant = tile.ownUnit
+      ? view.units.find(
+          (unit) =>
+            unit.ownerId === view.viewer.id &&
+            unit.at.x === tile.at.x &&
+            unit.at.y === tile.at.y,
+        )
+      : undefined;
+    if (occupant !== undefined) {
+      const row = button(
+        this.#document,
+        "",
+        "tile-choice-select",
+        "v7-tile-choice v7-tile-choice-select",
+      );
+      row.setAttribute("role", "menuitem");
+      row.dataset.tileAction = "select";
+      row.append(
+        uiIconV7(this.#document, "units", "v7-ui-icon v7-tile-choice-icon"),
+        text(this.#document, "span", "Select", "v7-tile-choice-label"),
+      );
+      row.setAttribute("aria-label", "Select this unit");
+      row.onclick = () => {
+        this.#selectOnBoard({ kind: "UNIT", unitId: occupant.id });
+        this.#queueBoardFocus();
+      };
+      rows.push(row);
+    }
+    panel.append(...rows);
+    panel.addEventListener("keydown", (event) => {
+      const index = rows.findIndex(
+        (row) => row === this.#document.activeElement,
+      );
+      const step =
+        event.key === "ArrowDown" || event.key === "ArrowRight"
+          ? 1
+          : event.key === "ArrowUp" || event.key === "ArrowLeft"
+            ? -1
+            : 0;
+      if (step !== 0 || event.key === "Home" || event.key === "End") {
+        event.preventDefault();
+        event.stopPropagation();
+        const next =
+          event.key === "Home"
+            ? 0
+            : event.key === "End"
+              ? rows.length - 1
+              : (index + step + rows.length) % rows.length;
+        rows[next]?.focus();
+      } else if (event.key === "Escape") {
+        event.preventDefault();
+        event.stopPropagation();
+        this.#closeTileChooser(true);
+        this.#queueBoardFocus();
+      }
+    });
+    return panel;
+  }
+
+  /**
+   * Puts the open chooser beside its tile, inside the board: to the right
+   * of the tile, or to its left when there is no room, never off the
+   * board or under the edge, and above the dock when it fits there.
+   */
+  #placeTileChooser(main: HTMLElement, panel: HTMLElement): void {
+    const chooser = this.#tileChooser;
+    const canvas = this.#boardContainer?.querySelector("canvas") ?? null;
+    if (chooser === null || canvas === null) return;
+    const area = main.getBoundingClientRect();
+    const board = canvas.getBoundingClientRect();
+    const box = panel.getBoundingClientRect();
+    const { x, y, size } = chooser.anchor;
+    const left = board.left - area.left + x;
+    const top = board.top - area.top + y;
+    const margin = 8;
+    const gap = size / 2 + 4;
+    const right = left + gap;
+    const placedLeft =
+      right + box.width + margin <= area.width || left - gap - box.width < 0
+        ? right
+        : left - gap - box.width;
+    const clampedLeft = Math.max(
+      margin,
+      Math.min(placedLeft, area.width - box.width - margin),
+    );
+    // The dock under the board is not covered while there is room above it.
+    const dock = main
+      .querySelector<HTMLElement>(".v7-selection-dock")
+      ?.getBoundingClientRect();
+    const dockTop =
+      dock === undefined || dock.height === 0 ? area.bottom : dock.top;
+    const bottom =
+      dockTop - area.top >= box.height + margin * 2
+        ? Math.min(area.height, dockTop - area.top)
+        : area.height;
+    const clampedTop = Math.max(
+      margin,
+      Math.min(top - box.height / 2, bottom - box.height - margin),
+    );
+    panel.style.left = `${Math.round(clampedLeft)}px`;
+    panel.style.top = `${Math.round(clampedTop)}px`;
+  }
+
   async #handleMapCommand(target: MapCommandTargetV7): Promise<void> {
     const view = this.#snapshot.view;
     if (view === null) return;
@@ -10327,6 +10730,7 @@ export class Ruleset7DomAppView {
     this.#freezeHoverUnitId = null;
     this.#freezeRingArmedUnitId = null;
     this.#cultPick = null;
+    this.#tileChooser = null;
     this.#endTurnConfirm = false;
     let restoreAction =
       command.kind === "RESEARCH" ? `tech-${command.tech.toLowerCase()}` : null;

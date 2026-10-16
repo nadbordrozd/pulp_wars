@@ -10,7 +10,10 @@ the [no-coordinates rule](SCREEN_FLOW.md#no-coordinates-minimal-text-bead-pulp_w
 drawing), `src/render/canvas/board-renderer-v7.ts` (`drawMapTarget`, the
 plan's targets), `src/render/canvas/board-host-v7.ts` (click, tap, Tab),
 `src/render/dom/app-view-v7.ts` (the dock and its aiming panels),
-`src/render/dom/target-legend-v7.ts` (the Help legend).
+`src/render/dom/target-legend-v7.ts` (the Help legend),
+`src/render/canvas/tile-actions-v7.ts` and
+`src/render/canvas/tile-action-badges-v7.ts` (the tile actions, section
+1.1).
 
 ## 1. The rule
 
@@ -35,8 +38,9 @@ The dock never lists one button, portrait or chip per target.
   it again or with Charge, as a Tunnel's destination is dug). Each has one button that arms it.
   While it is armed only its targets are highlighted and clickable; Back,
   Cancel, Escape or choosing something else disarms it. The choice between
-  two actions on one target is therefore made with the armed button, never
-  with a menu on the target.
+  two actions on one target is made with the armed button, or, unarmed,
+  with the tile's small chooser (section 1.1, bead `pulp_wars-2yc.60`,
+  which replaced "never with a menu on the target").
 - **Arming what cannot be taken back.** A Sacrifice removes an own unit for
   good, so it is armed too, although nothing else of the Summoner claims an
   own unit: unarmed, a click on an own unit must go on selecting it
@@ -55,6 +59,97 @@ The dock never lists one button, portrait or chip per target.
   selects as usual.
 - **Legality.** Every target is an offered command of the engine's public
   query; every number is a public preview. The interface restates no rule.
+
+### 1.1 Tile actions: an icon on every target tile (bead `pulp_wars-2yc.60`)
+
+The user's rule (2026-10-16): whenever an action can be understood as
+targeting a specific tile, the tile carries an icon to do it; when several
+actions apply to one tile, both icons show and a tap opens a small choice.
+The dock's buttons stay as well, so there are two ways to do each action.
+Code: `src/render/canvas/tile-actions-v7.ts` (the planner and the audit of
+every command kind), `src/render/canvas/tile-action-badges-v7.ts` (the
+drawing), `src/render/canvas/board-host-v7.ts` (the tap, Enter, Tab and
+the cursor) and `src/render/dom/app-view-v7.ts` (the chooser and the
+arming).
+
+- **Which tiles.** With a unit of the player's selected and nothing armed,
+  the board shows the unit's Moves and Attacks as before, and every tile
+  where one of its targeted commands is offered carries one **badge per
+  action**: the Move, a landing, the Attack, a Hatch, a Sugar Toss and a
+  Top-Up (the unarmed targets), and each aimed ability whose command is
+  offered: Mind Control, Tractor Beam, Beam Down, Bolas, Frost Bolt,
+  Stampede, a line role's Freeze, Tunnel, Bomb Run, Assemble, Barricade,
+  Sugar Rush (only on tiles the unit could not reach or hit without it),
+  Re-bake, Swallow, Goblin Toss, Break Off, Board, Sacrifice, Seize,
+  Summon, Channel (the summons a cultist can help bind), Anchor,
+  Star-fall, the Great Summoning, Proclaim, Ribbit, Switcheroo and
+  Tentacle. The list is derived from the offered commands: an ability's
+  tiles are exactly the targets its armed pick shows (the first step of a
+  two-step pick: a Beam Down's passenger, a Summon's helper, a Toss's
+  Goblin, a Re-bake's Crumbs, a Break Off's first tile, a Bomb Run's
+  target, a Tunnel's destination).
+- **What stays in the dock only.** An action on the unit itself, its own
+  tile or an area fixed by the rules: Recover, Wait, Capture, Promote,
+  Pillage, Disband, Fortify, Wail, Raise Dead, Devour, the Wishing Well,
+  Kaboom!, Cold Snap, Whirl, Thunder Stomp, Behold!, Boo!, Pick Me!, the
+  Ice Witch's ring, Rally and Tend Wounded; and every command of a city,
+  a tile or the player. `TILE_ACTION_COMMAND_CLASSES_V7` classes every
+  command kind, so a new one fails the type check until it is classed.
+- **A lone Move or Attack has no badge.** Its mark alone says what a tap
+  does. A tile with a Move or an Attack and another action shows a badge
+  for each, Move or Attack first.
+- **The selected unit's own tile is never badged**: a tap there goes on
+  selecting (and cycling to the tile under it).
+- **The badge** is a dark disc with the action's glyph (the dock's own
+  icon) in cream, rimmed in the colour of the mark its target wears when
+  armed (red for a harm, green for a help, cream for a place, teal for a
+  Move), on the dark casing every mark has. On a tile with a unit or a city
+  the badges stand in a column down the tile's right edge from its upper
+  right corner, inside the tile, so the unit stays visible;
+  on an empty tile they sit in a row across its middle, so a badge is
+  never read as its neighbour's. At most three per tile; a fourth action
+  makes the third "+N". Badges do not move or pulse.
+- **Clutter.** A badge's radius is 15% of a tile's width and never under
+  11 CSS px. When more than eight tiles carry badges (a Stargazer's star
+  tiles, a Caller's Tentacle tiles) every badge shrinks to 11.5% and never
+  under 9 CSS px (`TILE_ACTION_FULL_SIZE_TILES_V7`, `TILE_ACTION_BADGE_V7`).
+  No badge or chooser names a tile or a coordinate.
+- **A tap on a badged tile with one action does it** exactly as its board
+  pick does: an unarmed target sends its command; an aimed ability is
+  armed as its dock button arms it and the tile is then picked, so any
+  step it has stays (a Star-fall's or a Great Summoning's mark is chosen
+  and waits for Begin, a Stampede's end and a Tunnel's destination are
+  chosen and wait for a second pick, a Beam Down's passenger leads to its
+  tiles).
+- **The chooser.** A tile with several actions, or with an ability's badge
+  on another own unit (a tap on an own unit would otherwise select it, and
+  a Sacrifice cannot be taken back), opens a small panel beside the tile:
+  one row per action with its glyph (rimmed like its badge) and its short
+  name, and **Select** for the own unit standing there. It opens with the
+  focus on its first row; the arrow keys, Home and End move between rows;
+  Enter, Space or a tap chooses; Escape (or a press anywhere else, or
+  another selection) closes it and sends nothing. It is a `menu` with
+  `menuitem` rows, each with an accessible name. An unarmed help on an own
+  unit (a Hatch, a Sugar Toss, a Top-Up) alone keeps its one-tap pick.
+- **Keyboard and the cursor.** Tab stops on every badged tile as well as
+  the unit targets; Enter there does its one action or opens its chooser.
+  The cursor's line names each action of the tile ("Available: Attack:
+  Deal 6 · take 0, Ribbit: ...").
+- **The dock is unchanged.** Every ability keeps its one button; arming it
+  hides the badges and narrows the board to that ability's targets, as in
+  section 1.
+- **Joining a chant** (the Cult redesign, `pulp_wars-mch9.30`,
+  [section 13](../product/RULESET_7_CULT_REDESIGN.md#13-interface)): the
+  future `JOIN_CHANT { unitId, leaderUnitId }` of a cultist beside a
+  Stargazer that leads a pending Star-fall puts its badge (a candle, "+3")
+  on the Stargazer through the same planner, and "a tap joins": it will be
+  a `oneTap` ability (no chooser with Select for it alone, as a Hatch), a
+  chooser only when the Stargazer's tile has another action too.
+  `tests/unit/tile-actions-v7.test.ts` holds that shape with a stand-in
+  target until the command exists; it then gets one row in
+  `TILE_ABILITIES_V7`.
+- **An aimed ability's badge on another own unit** opens the chooser with
+  Select, unless the ability is `oneTap`.
 
 ## 2. The highlight vocabulary
 
@@ -579,6 +674,21 @@ for tools; it is never read out.
 
 ## 5. Tests that hold the rule
 
+- Tile actions (section 1.1, scenes in `tests/fixtures/v7-tile-actions-ui.ts`):
+  `tests/unit/tile-actions-v7.test.ts` (every command kind classed, every
+  aimed kind mapped to an ability with an icon and a dock button, the
+  planner's one action and several, the bar-only actions left out, the
+  own unit's Select, the compact limit, the join-the-chant shape, and the
+  Knight, Hexer, Yeti, Witch, Brain and Stargazer scenes),
+  `tests/unit/tile-action-badges-render-v7.test.ts` (where the badges
+  stand, their sizes, "+N", their rims, no coordinate),
+  `tests/integration/ruleset7-tile-actions-dom.test.ts` (tap → action,
+  tap → chooser → action, Escape and a press elsewhere, a rite's
+  confirmation kept, Select, the dock's button still arming) and
+  `tests/integration/ruleset7-tile-actions-canvas.test.ts` (the real host:
+  the badges drawn, a tap and Enter handed to the app, Tab, the cursor).
+  The phone review (`scripts/browser-phone-review-v7.ts`) captures the
+  `tile-actions-*` scenes.
 - `tests/unit/target-highlight-render-v7.test.ts`: the vocabulary (one
   style per family, four shapes, the colour-blindness distances, the
   drawing of each mark) and the style of every family's targets on the UI

@@ -31,6 +31,10 @@ import { prepareSmokeOutput } from "./browser-smoke-output";
  * technology tree. The tutorial (bead pulp_wars-0yxy; scenes `tutorial-*`):
  * its line at each of its eight steps, with the step's unit, city or tile
  * picked, the technology screen of its research step, and the farewell.
+ * Tile actions (bead pulp_wars-2yc.60; scenes `tile-actions-*`): a Human
+ * Knight, a Cult Hexer (and the chooser of its Attack and Ribbit on one
+ * Knight), an Ice Folk Yeti's Freeze, a Martian Brain's Mind Control and
+ * a Stargazer's compact star badges.
  *
  * Every state is hand-built (tests/fixtures/v7-*-ui.ts and the score
  * fixtures); no AI runs and no match is played. It needs the Vite dev
@@ -1123,6 +1127,33 @@ const SCENES: readonly Scene[] = [
       await delay(700);
     },
   },
+  // Tile actions (bead pulp_wars-2yc.60): a selected unit's action badges
+  // (a Human Knight has none, its Moves and Attacks keep their marks), and
+  // the chooser of a tile with an Attack and a Ribbit.
+  ...(
+    [
+      ["knight", "tileActionsKnightFixtureV7", "knight", null],
+      ["hexer", "tileActionsHexerFixtureV7", "hexer", null],
+      ["hexer-chooser", "tileActionsHexerFixtureV7", "hexer", "hexed"],
+      ["yeti", "tileActionsYetiFixtureV7", "yeti", null],
+      ["brain", "tileActionsBrainFixtureV7", "brain", null],
+      ["stargazer", "tileActionsStargazerFixtureV7", "stargazer", null],
+    ] as const
+  ).map(([name, fixture, unit, tile]): Scene => ({
+    name: `tile-actions-${name}`,
+    match: true,
+    run: async (c) => {
+      await mount(c, "/tests/fixtures/v7-tile-actions-ui.ts", `${fixture}()`);
+      await activate(c, await fixtureCoord(c, `TILE_ACTIONS_UI_V7.${unit}`));
+      if (tile !== null) {
+        await evaluate(
+          c,
+          `${REVIEW}.boardHost.activate(${REVIEW}.fixtures.TILE_ACTIONS_UI_V7.${tile})`,
+        );
+        await delay(500);
+      }
+    },
+  })),
   {
     name: "barricade-attack",
     match: true,

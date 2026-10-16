@@ -2551,6 +2551,75 @@
 }
 
 /*
+ * Tile actions (bead pulp_wars-2yc.60): the small chooser a tile with
+ * several actions opens beside itself on the board. A panel with one row
+ * per action (the badge's glyph and the action's name) and Select for an
+ * own unit there; over the dock, under the menus and dialogs.
+ */
+.v7-tile-chooser {
+  position: absolute;
+  z-index: 14;
+  display: grid;
+  gap: 0.3rem;
+  min-width: 8.5rem;
+  max-width: min(14rem, calc(100% - 1rem));
+  padding: 0.35rem;
+  border: var(--pw-line-w) solid var(--pw-line);
+  border-radius: var(--pw-radius);
+  background: var(--pw-surface);
+  box-shadow: var(--pw-shadow);
+}
+
+.v7-tile-choice {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  padding: 0.3rem 0.6rem 0.3rem 0.4rem;
+  border: var(--pw-line-w-sm) solid var(--pw-line);
+  border-radius: var(--pw-radius-sm);
+  background: var(--pw-surface-raised);
+  color: var(--pw-text);
+  font-size: var(--pw-fs-sm);
+  font-weight: var(--pw-fw-bold);
+  text-align: left;
+  box-shadow: var(--pw-shadow-sm);
+}
+
+.v7-tile-choice:hover:not(:disabled),
+.v7-tile-choice:focus-visible {
+  background: var(--pw-yellow);
+}
+
+.v7-tile-choice-icon {
+  flex: 0 0 auto;
+  width: 1.6rem;
+  height: 1.6rem;
+  padding: 0.2rem;
+  border: 0.18rem solid var(--pw-teal);
+  border-radius: var(--pw-radius-pill);
+  background: var(--pw-ink);
+  color: var(--pw-text-inverse);
+}
+
+/* The glyph's rim says the mark its target wears on the board. */
+.v7-tile-choice[data-style="attack"] .v7-tile-choice-icon {
+  border-color: var(--pw-red);
+}
+
+.v7-tile-choice[data-style="support"] .v7-tile-choice-icon {
+  border-color: var(--pw-green);
+}
+
+.v7-tile-choice[data-style="place"] .v7-tile-choice-icon {
+  border-color: var(--pw-amber);
+}
+
+.v7-tile-choice-select .v7-tile-choice-icon {
+  border-color: var(--pw-line-soft);
+}
+
+/*
  * Blocked action (bead pulp_wars-2yc.36): the viewer could take it but for
  * Coins, or the city is full. The dimmed plate with no shadow reads as "not
  * pressable"; the art is washed out and the name is secondary ink, all over

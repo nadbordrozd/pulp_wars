@@ -43,6 +43,13 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/render/canvas/feedback-host-v7.ts::BoardFeedbackV7.wantsAmbientFrames":
       "BOARD",
     "src/render/canvas/unit-turn-state-v7.ts::unitTurnStatesV7": "BOARD",
+    // Bead pulp_wars-2yc.60: the tile actions read the view's units for the
+    // selected unit, the own unit or any unit standing on a badged tile, and
+    // whether a Freeze is the Ice Witch's ring (her own unit). Each is a
+    // piece on the board; a burrowed unit is not drawn and takes no command.
+    "src/render/canvas/tile-actions-v7.ts::<module>": "BOARD",
+    "src/render/canvas/tile-actions-v7.ts::tileActionPlanForSelectionV7":
+      "BOARD",
     "src/render/feedback-plan-v7.ts::feedbackPlanV7": "BOARD",
     "src/render/feedback-plan-v7.ts::promotionReadyUnitIdsV7": "BOARD",
     // Bead pulp_wars-2yc.39 (classified by pulp_wars-2yc.40): the

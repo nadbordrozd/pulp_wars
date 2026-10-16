@@ -99,11 +99,27 @@ are in [BOARD_TARGETING.md](BOARD_TARGETING.md). In short:
   also be Move or Attack targets is armed with its one dock button; while
   it is armed only its targets are highlighted, and Back, Cancel or Escape
   disarms it.
+- **Tile actions** (bead `pulp_wars-2yc.60`,
+  [BOARD_TARGETING.md section 1.1](BOARD_TARGETING.md#11-tile-actions-an-icon-on-every-target-tile-bead-pulp_wars-2yc60)).
+  With nothing armed, every tile where the selected unit has an action
+  other than a lone Move or Attack carries a small round icon per action
+  (a Ribbit's frog on the enemy a Hexer could also shoot, a Channel's
+  chain on a daemon, a snowflake on the water a Yeti may freeze). A tap on
+  a tile with one action does it as the armed board pick would (a rite's
+  mark is chosen, then begun, as before); a tile with several actions, or
+  an ability's icon on another own unit, opens a small chooser beside the
+  tile with one row per action (its icon and name) and Select for the own
+  unit. Arrow keys move in the chooser, Enter or a tap chooses, Escape or
+  a press elsewhere closes it. The dock's buttons stay: arming one still
+  narrows the board to that ability. Area and self actions (Fortify,
+  Disband, Promote, Kaboom!, Cold Snap, Whirl, Stomp, Behold!, Boo!, Pick
+  Me!, the Ice Witch's ring, Rally, Tend Wounded) stay in the dock only.
 - **Previews** stand at each target (damage, heal, cost, "Frozen"), from
   the engine's public previews, as an attack's does.
 - **Keyboard.** Tab and Shift+Tab on the board step through the armed
   ability's targets, or, with nothing armed, through the units the
-  selection may attack, heal or hatch; Enter chooses; plain Move tiles are
+  selection may attack, heal or hatch and every tile with action icons;
+  Enter chooses (or opens the tile's chooser); plain Move tiles are
   reached with the arrow keys. Past the last target Tab leaves the board.
 - **Help** shows the four marks with their names under "How to play", and
   lists Tab as "Next target".

@@ -1999,176 +1999,19 @@ export function buildBoardRenderPlanV7(
     addKaboomPreview(entries, view, commands, interaction.kaboomPreviewUnitId);
   // Revision 17: while a Kaboom! is previewed its blast is the only
   // preview of that unit, so its Move and Attack targets step aside.
-  const kaboomPreview =
-    interaction.kaboomPreviewUnitId !== undefined &&
-    interaction.kaboomPreviewUnitId !== null &&
-    interaction.kaboomPreviewUnitId === interaction.selectedUnitId &&
-    commands.some(
-      (command) =>
-        command.kind === "KABOOM" &&
-        command.unitId === interaction.kaboomPreviewUnitId,
-    );
-  // Revision 19: while a nest tile is picked, the legal nest tiles of that
-  // city and role are the only targets.
-  const layEgg = interaction.layEgg ?? null;
-  // The Martian revision: while an ability is aimed, its targets are the
-  // only targets of the selected unit.
-  const martianPick =
-    interaction.martianPick !== undefined &&
-    interaction.martianPick !== null &&
-    interaction.martianPick.unitId === interaction.selectedUnitId
-      ? interaction.martianPick
-      : null;
-  // The Ice Folk revision: likewise while a Bolas or Cold Snap is aimed.
-  const iceFolkPick =
-    interaction.iceFolkPick !== undefined &&
-    interaction.iceFolkPick !== null &&
-    interaction.iceFolkPick.unitId === interaction.selectedUnitId
-      ? interaction.iceFolkPick
-      : null;
-  // The Dwarf revision: likewise while a Tunnel, Bomb Run or Assemble is
-  // aimed.
-  const dwarfPick =
-    interaction.dwarfPick !== undefined &&
-    interaction.dwarfPick !== null &&
-    interaction.dwarfPick.unitId === interaction.selectedUnitId
-      ? interaction.dwarfPick
-      : null;
-  // The Candy revision: likewise while a Sugar Rush is armed or a Re-bake
-  // or Sugar Toss is aimed.
-  const candyPick =
-    interaction.candyPick !== undefined &&
-    interaction.candyPick !== null &&
-    interaction.candyPick.unitId === interaction.selectedUnitId
-      ? interaction.candyPick
-      : null;
-  // The giants' signatures: likewise while a signature is aimed.
-  const giantPick =
-    interaction.giantPick !== undefined &&
-    interaction.giantPick !== null &&
-    interaction.giantPick.unitId === interaction.selectedUnitId
-      ? interaction.giantPick
-      : null;
-  // The naval branch interface: likewise while a Board is aimed.
-  const navalPick =
-    interaction.navalPick !== undefined &&
-    interaction.navalPick !== null &&
-    interaction.navalPick.unitId === interaction.selectedUnitId
-      ? interaction.navalPick
-      : null;
-  // The frozen sea: likewise while a line role's Freeze is aimed.
-  const freezePick =
-    interaction.freezePick !== undefined &&
-    interaction.freezePick !== null &&
-    interaction.freezePick.unitId === interaction.selectedUnitId
-      ? interaction.freezePick
-      : null;
-  // The Cultists: likewise while a Sacrifice or a Seize is aimed.
-  const cultPick =
-    interaction.cultPick !== undefined &&
-    interaction.cultPick !== null &&
-    interaction.cultPick.unitId === interaction.selectedUnitId
-      ? interaction.cultPick
-      : null;
-  /** The Candy revision: the art of a role the viewer would bake back. */
-  const candyGhost = (
-    role: UnitRoleIdV7,
-  ): NonNullable<MapCommandTargetV7["rebake"]> => ({
-    role,
-    assetId: UNIT_ART_KEYS_V7[role],
-    artSubject: unitArtSubjectV7({
-      role,
-      form: "LAND",
-      faction: "CANDY",
-      machine: false,
-    }),
-    ...ownerPresentation(view, view.viewer.id),
-  });
-  const unarmedToss = commands.find(
-    (command): command is Extract<CommandV7, { kind: "SUGAR_TOSS" }> =>
-      command.kind === "SUGAR_TOSS" && command.unitId === selectedUnitId,
-  );
-  // The Candy redesign: likewise a selected Confectioner's Top-Up targets.
-  const unarmedTopUp = commands.find(
-    (command): command is Extract<CommandV7, { kind: "TOP_UP" }> =>
-      command.kind === "TOP_UP" && command.unitId === selectedUnitId,
-  );
-  const targets = kaboomPreview
-    ? []
-    : layEgg !== null
-      ? layEggTargets(view, commands, layEgg)
-      : martianPick !== null
-        ? martianPickTargetsV7(view, commands, martianPick)
-        : iceFolkPick !== null
-          ? iceFolkPickTargetsV7(view, commands, iceFolkPick)
-          : dwarfPick !== null
-            ? dwarfPickTargetsV7(view, commands, dwarfPick)
-            : navalPick !== null
-              ? navalPickTargetsV7(view, commands, navalPick)
-              : cultPick !== null
-                ? isCultOfferingPickV7(cultPick)
-                  ? cultPickTargetsV7(view, commands, cultPick)
-                  : isCultTrickPickV7(cultPick)
-                    ? cultTrickPickTargetsV7(view, commands, cultPick)
-                    : cultChannelPickTargetsV7(view, commands, cultPick)
-                : freezePick !== null
-                  ? freezePickTargetsV7(view, commands, freezePick)
-                  : giantPick !== null
-                    ? giantPickTargetsV7(
-                        view,
-                        commands,
-                        giantPick,
-                        interaction.cursor ?? null,
-                      )
-                    : candyPick !== null
-                      ? candyPickTargetsV7(
-                          view,
-                          commands,
-                          candyPick,
-                          // An armed Rush shows the unit's attacks with the bonus.
-                          candyPick.kind === "SUGAR_RUSH"
-                            ? commandMapTargets(
-                                view,
-                                commands.filter(
-                                  (command) => command.kind === "ATTACK",
-                                ),
-                                candyPick.unitId,
-                                { assumeSugarRush: true },
-                              )
-                            : [],
-                          candyGhost,
-                        )
-                      : dedupeMapTargets([
-                          ...mapTargets(
-                            view,
-                            commands,
-                            interaction.selectedUnitId,
-                          ),
-                          // Bead pulp_wars-9im: a selected Gunner shows the units
-                          // it may heal beside its Moves and Attacks, unarmed: an
-                          // own unit is never a Move or an Attack target.
-                          ...(unarmedToss === undefined
-                            ? []
-                            : candyPickTargetsV7(
-                                view,
-                                commands,
-                                {
-                                  kind: "SUGAR_TOSS",
-                                  unitId: unarmedToss.unitId,
-                                },
-                                [],
-                                candyGhost,
-                              )),
-                          ...(unarmedTopUp === undefined
-                            ? []
-                            : candyPickTargetsV7(
-                                view,
-                                commands,
-                                { kind: "TOP_UP", unitId: unarmedTopUp.unitId },
-                                [],
-                                candyGhost,
-                              )),
-                        ]);
+  const {
+    kaboomPreview,
+    layEgg,
+    martianPick,
+    iceFolkPick,
+    dwarfPick,
+    candyPick,
+    giantPick,
+    navalPick,
+    freezePick,
+    cultPick,
+  } = activeBoardPicksV7(commands, interaction);
+  const targets = boardMapTargetsV7(view, commands, interaction);
   if (martianPick !== null)
     addMartianPickEntriesV7(entries, view, targets, martianPick);
   if (iceFolkPick !== null) addIceFolkPickEntriesV7(entries, view, iceFolkPick);
@@ -2281,6 +2124,229 @@ export function buildBoardRenderPlanV7(
       a.key.localeCompare(b.key),
   );
   return { version: 7, entries, targets };
+}
+
+/**
+ * The picks of an interaction that apply to its selected unit (an ability
+ * aimed by another unit is ignored), and whether a Kaboom! preview hides
+ * the unit's targets. Shared by the plan and `boardMapTargetsV7`.
+ */
+function activeBoardPicksV7(
+  commands: readonly CommandV7[],
+  interaction: BoardRenderInteractionV7,
+) {
+  const kaboomPreview =
+    interaction.kaboomPreviewUnitId !== undefined &&
+    interaction.kaboomPreviewUnitId !== null &&
+    interaction.kaboomPreviewUnitId === interaction.selectedUnitId &&
+    commands.some(
+      (command) =>
+        command.kind === "KABOOM" &&
+        command.unitId === interaction.kaboomPreviewUnitId,
+    );
+  // Revision 19: while a nest tile is picked, the legal nest tiles of that
+  // city and role are the only targets.
+  const layEgg = interaction.layEgg ?? null;
+  // The Martian revision: while an ability is aimed, its targets are the
+  // only targets of the selected unit.
+  const martianPick =
+    interaction.martianPick !== undefined &&
+    interaction.martianPick !== null &&
+    interaction.martianPick.unitId === interaction.selectedUnitId
+      ? interaction.martianPick
+      : null;
+  // The Ice Folk revision: likewise while a Bolas or Cold Snap is aimed.
+  const iceFolkPick =
+    interaction.iceFolkPick !== undefined &&
+    interaction.iceFolkPick !== null &&
+    interaction.iceFolkPick.unitId === interaction.selectedUnitId
+      ? interaction.iceFolkPick
+      : null;
+  // The Dwarf revision: likewise while a Tunnel, Bomb Run or Assemble is
+  // aimed.
+  const dwarfPick =
+    interaction.dwarfPick !== undefined &&
+    interaction.dwarfPick !== null &&
+    interaction.dwarfPick.unitId === interaction.selectedUnitId
+      ? interaction.dwarfPick
+      : null;
+  // The Candy revision: likewise while a Sugar Rush is armed or a Re-bake
+  // or Sugar Toss is aimed.
+  const candyPick =
+    interaction.candyPick !== undefined &&
+    interaction.candyPick !== null &&
+    interaction.candyPick.unitId === interaction.selectedUnitId
+      ? interaction.candyPick
+      : null;
+  // The giants' signatures: likewise while a signature is aimed.
+  const giantPick =
+    interaction.giantPick !== undefined &&
+    interaction.giantPick !== null &&
+    interaction.giantPick.unitId === interaction.selectedUnitId
+      ? interaction.giantPick
+      : null;
+  // The naval branch interface: likewise while a Board is aimed.
+  const navalPick =
+    interaction.navalPick !== undefined &&
+    interaction.navalPick !== null &&
+    interaction.navalPick.unitId === interaction.selectedUnitId
+      ? interaction.navalPick
+      : null;
+  // The frozen sea: likewise while a line role's Freeze is aimed.
+  const freezePick =
+    interaction.freezePick !== undefined &&
+    interaction.freezePick !== null &&
+    interaction.freezePick.unitId === interaction.selectedUnitId
+      ? interaction.freezePick
+      : null;
+  // The Cultists: likewise while a Sacrifice or a Seize is aimed.
+  const cultPick =
+    interaction.cultPick !== undefined &&
+    interaction.cultPick !== null &&
+    interaction.cultPick.unitId === interaction.selectedUnitId
+      ? interaction.cultPick
+      : null;
+  return {
+    kaboomPreview,
+    layEgg,
+    martianPick,
+    iceFolkPick,
+    dwarfPick,
+    candyPick,
+    giantPick,
+    navalPick,
+    freezePick,
+    cultPick,
+  };
+}
+
+/**
+ * The map targets of an interaction: an aimed ability's targets, or with
+ * nothing aimed the selected unit's unarmed targets (its Moves, Attacks,
+ * landings and the own units it may hatch, toss sugar to or top up). The
+ * board plan's `targets`; the tile actions (bead pulp_wars-2yc.60) read
+ * the targets an ability would have by passing its pick.
+ */
+export function boardMapTargetsV7(
+  view: PlayerViewV7,
+  commands: readonly CommandV7[],
+  interaction: BoardRenderInteractionV7,
+): MapCommandTargetV7[] {
+  const {
+    kaboomPreview,
+    layEgg,
+    martianPick,
+    iceFolkPick,
+    dwarfPick,
+    candyPick,
+    giantPick,
+    navalPick,
+    freezePick,
+    cultPick,
+  } = activeBoardPicksV7(commands, interaction);
+  const selectedUnitId =
+    interaction.selection?.kind === "UNIT"
+      ? interaction.selection.unitId
+      : null;
+  /** The Candy revision: the art of a role the viewer would bake back. */
+  const candyGhost = (
+    role: UnitRoleIdV7,
+  ): NonNullable<MapCommandTargetV7["rebake"]> => ({
+    role,
+    assetId: UNIT_ART_KEYS_V7[role],
+    artSubject: unitArtSubjectV7({
+      role,
+      form: "LAND",
+      faction: "CANDY",
+      machine: false,
+    }),
+    ...ownerPresentation(view, view.viewer.id),
+  });
+  const unarmedToss = commands.find(
+    (command): command is Extract<CommandV7, { kind: "SUGAR_TOSS" }> =>
+      command.kind === "SUGAR_TOSS" && command.unitId === selectedUnitId,
+  );
+  // The Candy redesign: likewise a selected Confectioner's Top-Up targets.
+  const unarmedTopUp = commands.find(
+    (command): command is Extract<CommandV7, { kind: "TOP_UP" }> =>
+      command.kind === "TOP_UP" && command.unitId === selectedUnitId,
+  );
+  return kaboomPreview
+    ? []
+    : layEgg !== null
+      ? layEggTargets(view, commands, layEgg)
+      : martianPick !== null
+        ? martianPickTargetsV7(view, commands, martianPick)
+        : iceFolkPick !== null
+          ? iceFolkPickTargetsV7(view, commands, iceFolkPick)
+          : dwarfPick !== null
+            ? dwarfPickTargetsV7(view, commands, dwarfPick)
+            : navalPick !== null
+              ? navalPickTargetsV7(view, commands, navalPick)
+              : cultPick !== null
+                ? isCultOfferingPickV7(cultPick)
+                  ? cultPickTargetsV7(view, commands, cultPick)
+                  : isCultTrickPickV7(cultPick)
+                    ? cultTrickPickTargetsV7(view, commands, cultPick)
+                    : cultChannelPickTargetsV7(view, commands, cultPick)
+                : freezePick !== null
+                  ? freezePickTargetsV7(view, commands, freezePick)
+                  : giantPick !== null
+                    ? giantPickTargetsV7(
+                        view,
+                        commands,
+                        giantPick,
+                        interaction.cursor ?? null,
+                      )
+                    : candyPick !== null
+                      ? candyPickTargetsV7(
+                          view,
+                          commands,
+                          candyPick,
+                          // An armed Rush shows the unit's attacks with the bonus.
+                          candyPick.kind === "SUGAR_RUSH"
+                            ? commandMapTargets(
+                                view,
+                                commands.filter(
+                                  (command) => command.kind === "ATTACK",
+                                ),
+                                candyPick.unitId,
+                                { assumeSugarRush: true },
+                              )
+                            : [],
+                          candyGhost,
+                        )
+                      : dedupeMapTargets([
+                          ...mapTargets(
+                            view,
+                            commands,
+                            interaction.selectedUnitId,
+                          ),
+                          // Bead pulp_wars-9im: a selected Gunner shows the units
+                          // it may heal beside its Moves and Attacks, unarmed: an
+                          // own unit is never a Move or an Attack target.
+                          ...(unarmedToss === undefined
+                            ? []
+                            : candyPickTargetsV7(
+                                view,
+                                commands,
+                                {
+                                  kind: "SUGAR_TOSS",
+                                  unitId: unarmedToss.unitId,
+                                },
+                                [],
+                                candyGhost,
+                              )),
+                          ...(unarmedTopUp === undefined
+                            ? []
+                            : candyPickTargetsV7(
+                                view,
+                                commands,
+                                { kind: "TOP_UP", unitId: unarmedTopUp.unitId },
+                                [],
+                                candyGhost,
+                              )),
+                        ]);
 }
 
 /** The Ice Folk revision: the `snow` member of a terrain entry, if any. */
