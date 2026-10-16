@@ -3,6 +3,7 @@ import {
   OFFERING_FAVOUR_V7,
   OFFERING_POPULATION_V7,
   SEIZE_BROKEN_HP_V7,
+  SWITCHEROO_RANGE_V7,
   arePlayersHostileV7,
   favourOfV7,
   previewOfferingV7,
@@ -62,8 +63,7 @@ export const SUMMONER_SUPPORT_UNLOCK_TEXT_V7 =
 /** Explosives (shown as The Stars Are Right), `GREAT_SUMMONING`. */
 export const GREAT_SUMMONING_UNLOCK_TEXT_V7 = `The Great Summoning: a Summoner and three cultists beside it call the Herald for ${HERALD_FAVOUR_COST_V7} Favour. It arrives next turn`;
 /** Scouting (shown as Familiars), `SWITCHEROO` (`pulp_wars-mch9.8`). */
-export const SWITCHEROO_UNLOCK_TEXT_V7 =
-  "Switcheroo: a Familiar swaps places with a unit within 2 tiles, never on a city or village center";
+export const SWITCHEROO_UNLOCK_TEXT_V7 = `Switcheroo: a Familiar swaps places with a unit within ${SWITCHEROO_RANGE_V7} tiles, never on a city or village center`;
 /**
  * Chivalry (shown as Tentacles), `TENTACLES` (the Cult redesign,
  * `pulp_wars-mch9.31`): the Summoner's Tentacle.

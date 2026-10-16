@@ -42,12 +42,14 @@ import {
   factionTreeV7,
   favourOfV7,
   isCityCowedV7,
+  joinChantRejectionV7,
   parseCommandV7,
   parseEventV7,
   parseGameStateV7,
   previewBeginRitualV7,
   previewChannelV7,
   previewGateV7,
+  previewJoinChantV7,
   previewProclaimV7,
   previewRampageV7,
   previewRitualV7,
@@ -177,6 +179,33 @@ const starfall = (state: GameStateV7, mark: CoordV7 = STAR): CommandV7 => ({
   at: mark,
 });
 
+/** The cultist on `where` joins the chant of the Stargazer on `leader`. */
+const joinChant = (
+  state: GameStateV7,
+  where: CoordV7,
+  leader: CoordV7 = GAZER,
+): CommandV7 => ({
+  kind: "JOIN_CHANT",
+  unitId: idAt(state, where),
+  leaderUnitId: idAt(state, leader),
+});
+
+/**
+ * The Cult redesign (`pulp_wars-mch9.34`): the star begun alone on `mark`,
+ * then joined by the cultists on `joiners` (the circle's two Initiates by
+ * default), in that order.
+ */
+const chantedStar = (
+  state: GameStateV7,
+  joiners: readonly CoordV7[] = [CHANTER_WEST, CHANTER_EAST],
+  mark: CoordV7 = STAR,
+): GameStateV7 => {
+  let current = playV7(state, starfall(state, mark)).state;
+  for (const where of joiners)
+    current = playV7(current, joinChant(current, where)).state;
+  return current;
+};
+
 /** The Summoner's circle: it stands on (5, 2) with three Initiates north. */
 const SUMMONER = at(5, 2);
 const MARK = at(5, 3);
@@ -221,6 +250,21 @@ const techsWithout = (without: TechnologyIdV7): readonly TechnologyIdV7[] =>
   TECHNOLOGY_IDS_V7.filter((tech) => tech !== without);
 
 describe("rituals: identity", () => {
+  // The Cult redesign's Star-fall and daemons (`pulp_wars-mch9.34`,
+  // `pulp_wars-mch9.35`) took 7r88 after the natural water of 7r87.
+  it("is 7r88 for Star-fall alone and the daemons' advance, 7r87 refused", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r88");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r88.current");
+    expect(PRIOR_RULESET_7_IDS.at(-1)).toBe("pulp-wars-poc-7r87");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
+      "pulpWars.save.v7r87.current",
+    );
+    const state = cultFieldV7([]);
+    expect(
+      parseGameStateV7({ ...state, rulesetId: "pulp-wars-poc-7r87" }),
+    ).toBeNull();
+  });
+
   it("is a new identity after the Port network's 7r76, whose saves are obsolete", () => {
     const revision = Number(RULESET_7_ID.replace("pulp-wars-poc-7r", ""));
     expect(revision).toBeGreaterThanOrEqual(77);
@@ -247,9 +291,11 @@ describe("rituals: the registration (sections 4.2, 7.2, and 11)", () => {
     ).toEqual(["BOO", "BEGIN_RITUAL", "PROCLAIM", "RIBBIT"]);
     const events = DOMAIN_EVENT_KIND_ORDER_V7 as readonly string[];
     const from = events.indexOf("DAEMON_BOUND");
-    expect(events.slice(from, from + 9)).toEqual([
+    expect(events.slice(from, from + 10)).toEqual([
       "DAEMON_BOUND",
       "RITUAL_BEGUN",
+      // (The Cult redesign, `pulp_wars-mch9.34`: a join of a star's chant.)
+      "CHANT_JOINED",
       "RITUAL_DISRUPTED",
       "RITUAL_FIZZLED",
       "STAR_FELL",
@@ -272,13 +318,17 @@ describe("rituals: the registration (sections 4.2, 7.2, and 11)", () => {
       STARFALL_MAXIMUM_RANGE_V7,
       PROCLAIM_RANGE_V7,
       RAVAGE_ATTACKS_V7,
-    ]).toEqual([5, 2, 4, 3, 2]);
+    ]).toEqual([6, 2, 4, 3, 2]);
+    // The Cult redesign (`pulp_wars-mch9.34`, section 8.2): a star needs no
+    // chanter; 6, plus 3 for each who joins: a Stargazer ringed by eight
+    // joiners drops a 30.
     expect(RITUAL_MINIMUM_CHANTERS_V7).toEqual({
-      STARFALL: 1,
+      STARFALL: 0,
       GREAT_SUMMONING: 3,
     });
-    // 5, plus 1 for each chanter: a Stargazer ringed by eight drops a 13.
-    expect([1, 2, 3, 8].map(starfallDamageV7)).toEqual([6, 7, 8, 13]);
+    expect([0, 1, 2, 3, 4, 8].map(starfallDamageV7)).toEqual([
+      6, 9, 12, 15, 18, 30,
+    ]);
     expect(CULT_SUMMONED_ROLE_RULES_V7.HERALD).toMatchObject({
       maxHp: 60,
       attack2: 14,
@@ -298,6 +348,7 @@ describe("rituals: the registration (sections 4.2, 7.2, and 11)", () => {
       "CAPTURE",
       "CHANNEL",
       "STARFALL",
+      "JOIN_CHANT",
     ]);
     // No other role of any faction has it.
     for (const faction of FACTION_IDS_V7)
@@ -325,7 +376,7 @@ describe("rituals: the registration (sections 4.2, 7.2, and 11)", () => {
     ).toBe(false);
     // Rituals need a Cult seat.
     expect(MIND_CONTROLLED_LOST_ABILITIES_V7).toEqual(
-      expect.arrayContaining(["STARFALL", "SUMMON"]),
+      expect.arrayContaining(["STARFALL", "SUMMON", "JOIN_CHANT"]),
     );
   });
 
@@ -368,7 +419,7 @@ describe("rituals: the registration (sections 4.2, 7.2, and 11)", () => {
     ])
       expect(mechanics).toMatchObject({
         ravageAttacks: 2,
-        advancesAfterKill: false,
+        advancesAfterKill: true, // since the Cult redesign, `pulp_wars-mch9.35`
         ignoresFortification: true,
         immovable: true,
         construct: true,
@@ -439,6 +490,12 @@ describe("rituals: the registration (sections 4.2, 7.2, and 11)", () => {
       cult: { ...state.cult, ...value },
     });
     expect(parseGameStateV7(withCult({ rituals: [good] }))).not.toBeNull();
+    // A star with no chanter (the Cult redesign, `pulp_wars-mch9.34`).
+    expect(
+      parseGameStateV7(
+        withCult({ rituals: [{ ...good, chanterUnitIds: [] }] }),
+      ),
+    ).not.toBeNull();
     const city = cityOfV7(state, 1);
     expect(
       parseGameStateV7(withCult({ cowed: [{ cityId: city.id, endsLeft: 1 }] })),
@@ -446,7 +503,6 @@ describe("rituals: the registration (sections 4.2, 7.2, and 11)", () => {
     for (const [label, value] of [
       ["no rituals list", { rituals: undefined }],
       ["an unknown rite", { rituals: [{ ...good, kind: "RIBBIT" }] }],
-      ["no chanter", { rituals: [{ ...good, chanterUnitIds: [] }] }],
       [
         "chanters out of order",
         { rituals: [{ ...good, chanterUnitIds: [east, west] }] },
@@ -527,11 +583,11 @@ describe("rituals: the registration (sections 4.2, 7.2, and 11)", () => {
 });
 
 describe("rituals: taking part (section 7.1)", () => {
-  it("begins a Star-fall with every unused robed cultist beside the Stargazer", () => {
+  it("begins a Star-fall alone, and lets every unused robed cultist beside the Stargazer join it", () => {
     const state = cultFieldV7([
       ...circle,
       // A Familiar and a Thing are no robed cultists; a cultist that has
-      // acted, and one two tiles away, stay out.
+      // acted, and one two tiles away, cannot join.
       { seat: 0, role: "RAIDER", at: at(5, 1) },
       { seat: 0, role: "JUGGERNAUT", at: at(4, 1) },
       {
@@ -541,7 +597,7 @@ describe("rituals: taking part (section 7.1)", () => {
         activation: { attacked: true, attacksUsed: 1 },
       },
       { seat: 0, role: "FIGHTER", at: at(7, 2) },
-      // A chanter that moved this turn still joins.
+      // A cultist that moved this turn may still join.
       {
         seat: 0,
         role: "GUARD",
@@ -554,6 +610,7 @@ describe("rituals: taking part (section 7.1)", () => {
     const chanters = [CHANTER_WEST, CHANTER_EAST, at(5, 3)]
       .map((where) => idAt(state, where))
       .sort((left, right) => left - right);
+    // The circle (the Great Summoning's joiners at its begin) is these.
     expect(
       ritualChantersV7(state, state.units, unitAtV7(state, GAZER)).map(
         (unit) => unit.id,
@@ -576,6 +633,8 @@ describe("rituals: taking part (section 7.1)", () => {
     // less the 5 x 4 block within 1 tile that is on the board (x 4 to 6,
     // y 1 to 3: 9 tiles).
     expect(marks).toHaveLength(9 * 7 - 9);
+    // The Cult redesign (`pulp_wars-mch9.34`, section 8.2): nobody is
+    // swept in at the begin.
     const begun = playV7(state, starfall(state));
     expect(begun.events).toEqual([
       {
@@ -583,7 +642,7 @@ describe("rituals: taking part (section 7.1)", () => {
         playerId: cultId(state),
         ritual: "STARFALL",
         unitId: leader,
-        chanterUnitIds: chanters,
+        chanterUnitIds: [],
         at: STAR,
       },
     ]);
@@ -592,17 +651,64 @@ describe("rituals: taking part (section 7.1)", () => {
         kind: "STARFALL",
         playerId: cultId(state),
         leaderUnitId: leader,
+        chanterUnitIds: [],
+        at: STAR,
+      },
+    ]);
+    // It costs no Favour, and spends the Stargazer's primary action only.
+    expect(favourOfV7(begun.state, cultId(state))).toBe(0);
+    expect(need(unitOf(begun.state, leader)).activation.specialActed).toBe(
+      true,
+    );
+    for (const unitId of chanters)
+      expect(need(unitOf(begun.state, unitId)).activation.specialActed).toBe(
+        false,
+      );
+    // Each unused robed cultist beside it is offered the join, and only
+    // they are.
+    expect(
+      offeredV7(begun.state, "JOIN_CHANT").map((command) =>
+        command.kind === "JOIN_CHANT"
+          ? [command.unitId, command.leaderUnitId]
+          : [],
+      ),
+    ).toEqual(chanters.map((unitId) => [unitId, leader]));
+    // They join one by one: each join is the joiner's primary action, and
+    // the star grows by 3 each time.
+    let joined = begun.state;
+    const damages: number[] = [];
+    for (const unitId of chanters) {
+      const step = playV7(joined, {
+        kind: "JOIN_CHANT",
+        unitId,
+        leaderUnitId: leader,
+      });
+      expect(step.events).toHaveLength(1);
+      const event = need(eventsOf(step.events, "CHANT_JOINED")[0]);
+      expect(event).toMatchObject({
+        playerId: cultId(state),
+        unitId,
+        leaderUnitId: leader,
+      });
+      expect(parseEventV7(event).ok).toBe(true);
+      damages.push(event.damage);
+      joined = step.state;
+    }
+    expect(damages).toEqual([9, 12, 15]);
+    expect(joined.cult.rituals).toEqual([
+      {
+        kind: "STARFALL",
+        playerId: cultId(state),
+        leaderUnitId: leader,
         chanterUnitIds: chanters,
         at: STAR,
       },
     ]);
-    // It costs no Favour, and spends every participant's primary action.
-    expect(favourOfV7(begun.state, cultId(state))).toBe(0);
     for (const unitId of [leader, ...chanters]) {
-      const unit = need(unitOf(begun.state, unitId));
+      const unit = need(unitOf(joined, unitId));
       expect(unit.activation.specialActed).toBe(true);
       expect(
-        offeredV7(begun.state).filter(
+        offeredV7(joined).filter(
           (command) =>
             "unitId" in command &&
             command.unitId === unitId &&
@@ -614,13 +720,213 @@ describe("rituals: taking part (section 7.1)", () => {
     }
     // The others are untouched.
     expect(
-      need(unitOf(begun.state, idAt(state, at(7, 2)))).activation.specialActed,
+      need(unitOf(joined, idAt(state, at(7, 2)))).activation.specialActed,
     ).toBe(false);
     // One ritual per leader: it cannot begin again this turn.
     expect(rejectedV7(begun.state, starfall(begun.state))).toEqual({
       code: "UNIT_ALREADY_ACTED",
       params: { unitId: leader },
     });
+  });
+
+  it("refuses a join that is not legal (section 8.2)", () => {
+    const state = withFrozenUnitsV7(
+      cultFieldV7(
+        [
+          ...circle,
+          // Two tiles off; acted; Frozen; a Familiar; a second Stargazer.
+          { seat: 0, role: "FIGHTER", at: at(7, 2) },
+          {
+            seat: 0,
+            role: "FIGHTER",
+            at: at(6, 1),
+            activation: { attacked: true, attacksUsed: 1 },
+          },
+          { seat: 0, role: "FIGHTER", at: at(4, 1) },
+          { seat: 0, role: "RAIDER", at: at(5, 1) },
+          { seat: 0, role: "CATAPULT", at: at(4, 3) },
+          { seat: 1, role: "FIGHTER", at: STAR },
+        ],
+        { factions: ["CULT", "ICE_FOLK"] },
+      ),
+      [{ at: at(4, 1), turnsLeft: 1 }],
+    );
+    // No star yet: nothing to join.
+    expect(offeredV7(state, "JOIN_CHANT")).toEqual([]);
+    expect(rejectedV7(state, joinChant(state, CHANTER_WEST))).toEqual({
+      code: "JOIN_CHANT_NOT_LEGAL",
+      params: { reason: "RITUAL" },
+    });
+    const begun = playV7(state, starfall(state)).state;
+    const refused = (where: CoordV7, leader: CoordV7 = GAZER) =>
+      rejectedV7(begun, joinChant(begun, where, leader));
+    expect(refused(at(7, 2))).toEqual({
+      code: "JOIN_CHANT_NOT_LEGAL",
+      params: { reason: "ADJACENT" },
+    });
+    expect(refused(at(6, 1))).toEqual({
+      code: "JOIN_CHANT_NOT_LEGAL",
+      params: { reason: "ACTED" },
+    });
+    // A Frozen unit is refused by the reducer's own gate first; the shared
+    // predicate (the public query's) says why.
+    expect(refused(at(4, 1))).toEqual({
+      code: "UNIT_FROZEN",
+      params: { unitId: idAt(begun, at(4, 1)) },
+    });
+    expect(
+      joinChantRejectionV7(
+        begun,
+        begun.cult.rituals,
+        unitAtV7(begun, at(4, 1)),
+        unitAtV7(begun, GAZER),
+      ),
+    ).toEqual({ code: "JOIN_CHANT_NOT_LEGAL", reason: "STATUS" });
+    expect(refused(at(5, 1))).toEqual({
+      code: "UNIT_ROLE_INVALID",
+      params: { role: "RAIDER" },
+    });
+    // The leader itself chants already; the other Stargazer leads no star.
+    expect(refused(GAZER, at(4, 3))).toEqual({
+      code: "JOIN_CHANT_NOT_LEGAL",
+      params: { reason: "CHANTING" },
+    });
+    expect(refused(CHANTER_WEST, at(4, 3))).toEqual({
+      code: "JOIN_CHANT_NOT_LEGAL",
+      params: { reason: "RITUAL" },
+    });
+    // A second Stargazer that has not acted joins as any robed cultist.
+    const second = playV7(begun, joinChant(begun, at(4, 3)));
+    expect(eventsOf(second.events, "CHANT_JOINED")).toMatchObject([
+      { damage: 9 },
+    ]);
+    // A joiner joins once.
+    const once = playV7(begun, joinChant(begun, CHANTER_WEST)).state;
+    expect(rejectedV7(once, joinChant(once, CHANTER_WEST))).toEqual({
+      code: "JOIN_CHANT_NOT_LEGAL",
+      params: { reason: "CHANTING" },
+    });
+    // A frog neither joins.
+    // (`tests/unit/ruleset-v7-cult-tricks.test.ts` hexes a cultist.)
+    // Another seat's unit joins no Cult star: a Human Fighter beside it.
+    const rival = cultFieldV7([
+      ...circle,
+      { seat: 1, role: "FIGHTER", at: at(6, 3) },
+    ]);
+    const rivalBegun = playV7(rival, starfall(rival)).state;
+    expect(
+      applyCommandV7(rivalBegun, otherId(rivalBegun), {
+        kind: "JOIN_CHANT",
+        unitId: idAt(rivalBegun, at(6, 3)),
+        leaderUnitId: idAt(rivalBegun, GAZER),
+      }).accepted,
+    ).toBe(false);
+    // The command parses with exactly its keys, two different units.
+    const ok = (input: unknown) => parseCommandV7(input).ok;
+    expect(ok({ kind: "JOIN_CHANT", unitId: 4, leaderUnitId: 5 })).toBe(true);
+    for (const bad of [
+      { kind: "JOIN_CHANT", unitId: 5, leaderUnitId: 5 },
+      { kind: "JOIN_CHANT", unitId: 4 },
+      { kind: "JOIN_CHANT", unitId: 4, leaderUnitId: 5, at: at(1, 1) },
+      { kind: "JOIN_CHANT", unitId: 0, leaderUnitId: 5 },
+    ])
+      expect(ok(bad), JSON.stringify(bad)).toBe(false);
+  });
+
+  it("projects a join to every seat that sees the joiner or the Stargazer", () => {
+    const state = cultFieldV7([
+      ...circle,
+      { seat: 1, role: "FIGHTER", at: STAR },
+    ]);
+    const begun = playV7(state, starfall(state)).state;
+    const joined = playV7(begun, joinChant(begun, CHANTER_WEST));
+    const human = otherId(state);
+    expect(
+      projectEventsV7(begun, joined.state, human, joined.events).events,
+    ).toEqual(joined.events);
+    const hidden = [GAZER, CHANTER_WEST, CHANTER_EAST];
+    expect(
+      projectEventsV7(
+        unexploreV7(begun, 1, hidden),
+        unexploreV7(joined.state, 1, hidden),
+        human,
+        joined.events,
+      ).events,
+    ).toEqual([]);
+  });
+
+  it("lets a cultist move up and join in the same turn, and not move after", () => {
+    const state = cultFieldV7([
+      { seat: 0, role: "CATAPULT", at: GAZER },
+      { seat: 0, role: "FIGHTER", at: at(7, 2) },
+      { seat: 1, role: "FIGHTER", at: STAR },
+    ]);
+    const begun = playV7(state, starfall(state)).state;
+    const walker = idAt(state, at(7, 2));
+    const moved = playV7(begun, {
+      kind: "MOVE",
+      unitId: walker,
+      path: [CHANTER_EAST],
+    }).state;
+    const joined = playV7(moved, joinChant(moved, CHANTER_EAST));
+    expect(joined.state.cult.rituals[0]?.chanterUnitIds).toEqual([walker]);
+    // It cannot move after joining.
+    expect(
+      offeredV7(joined.state, "MOVE").filter(
+        (command) => command.kind === "MOVE" && command.unitId === walker,
+      ),
+    ).toEqual([]);
+  });
+
+  it("previews a join: the star before and after, and the units it newly kills", () => {
+    // A Fighter (15 HP) and a Human Archer on the star's tiles.
+    const state = cultFieldV7([
+      ...circle,
+      { seat: 0, role: "FIGHTER", at: at(5, 3) },
+      { seat: 1, role: "FIGHTER", at: STAR },
+      { seat: 1, role: "MARKSMAN", at: at(6, 6) },
+    ]);
+    const joinedOnce = chantedStar(state, [CHANTER_WEST]);
+    const view = viewForV7(joinedOnce, cultId(joinedOnce));
+    const fighter = unitAtV7(joinedOnce, STAR);
+    const archer = unitAtV7(joinedOnce, at(6, 6));
+    const preview = need(
+      previewJoinChantV7(
+        view,
+        idAt(joinedOnce, CHANTER_EAST),
+        idAt(joinedOnce, GAZER),
+      ),
+    );
+    expect(preview).toMatchObject({
+      chantersBefore: 1,
+      chantersAfter: 2,
+      damageBefore: 9,
+      damageAfter: 12,
+    });
+    expect(preview.before?.damage).toBe(9);
+    expect(preview.after?.damage).toBe(12);
+    // What newly dies at 12 that did not at 9.
+    const dies = (hp: number, damage: number) => hp <= damage;
+    expect(preview.newlyKills).toEqual(
+      [fighter, archer]
+        .filter((unit) => dies(unit.hp, 12) && !dies(unit.hp, 9))
+        .map((unit) => unit.id)
+        .sort((left, right) => left - right),
+    );
+    // Not offered, not previewed: a unit two tiles off, an enemy view.
+    expect(
+      previewJoinChantV7(view, idAt(joinedOnce, at(5, 3)), fighter.id),
+    ).toBeNull();
+    expect(
+      previewJoinChantV7(
+        viewForV7(joinedOnce, otherId(joinedOnce)),
+        idAt(joinedOnce, CHANTER_EAST),
+        idAt(joinedOnce, GAZER),
+      ),
+    ).toBeNull();
+    // The public preview of the star under way counts its chanters.
+    const ritual = need(view.cult.rituals[0]);
+    expect(previewRitualV7(view, ritual).starfall?.damage).toBe(9);
   });
 
   it("refuses a Star-fall that cannot begin", () => {
@@ -651,27 +957,10 @@ describe("rituals: taking part (section 7.1)", () => {
       code: "RITUAL_NOT_LEGAL",
       params: { reason: "MOVED" },
     });
-    // Nobody to chant.
+    // Nobody to chant is no reason since the Cult redesign
+    // (`pulp_wars-mch9.34`): a lone Stargazer begins it.
     const alone = cultFieldV7([{ seat: 0, role: "CATAPULT", at: GAZER }]);
-    expect(rejectedV7(alone, starfall(alone))).toEqual({
-      code: "RITUAL_NOT_LEGAL",
-      params: { reason: "CHANTERS" },
-    });
-    // A Frozen chanter does not chant.
-    const frozen = withFrozenUnitsV7(
-      cultFieldV7(
-        [
-          { seat: 0, role: "CATAPULT", at: GAZER },
-          { seat: 0, role: "FIGHTER", at: CHANTER_WEST },
-        ],
-        { factions: ["CULT", "ICE_FOLK"] },
-      ),
-      [{ at: CHANTER_WEST, turnsLeft: 1 }],
-    );
-    expect(rejectedV7(frozen, starfall(frozen))).toEqual({
-      code: "RITUAL_NOT_LEGAL",
-      params: { reason: "CHANTERS" },
-    });
+    expect(playV7(alone, starfall(alone)).state.cult.rituals).toHaveLength(1);
     // Only a Stargazer leads it.
     expect(
       rejectedV7(state, {
@@ -811,12 +1100,9 @@ describe("rituals: taking part (section 7.1)", () => {
   });
 
   it("shows a ritual to every seat that sees a participant or has explored its mark", () => {
-    const begun = playV7(
+    const begun = chantedStar(
       cultFieldV7([...circle, { seat: 1, role: "FIGHTER", at: STAR }]),
-      starfall(
-        cultFieldV7([...circle, { seat: 1, role: "FIGHTER", at: STAR }]),
-      ),
-    ).state;
+    );
     const leader = idAt(begun, GAZER);
     const chanters = [idAt(begun, CHANTER_WEST), idAt(begun, CHANTER_EAST)];
     const full = {
@@ -856,10 +1142,12 @@ describe("rituals: taking part (section 7.1)", () => {
 });
 
 describe("rituals: breaking the circle (section 7.1)", () => {
-  /** A Star-fall under way, the Human to move, with the given enemies. */
+  /**
+   * A Star-fall under way (both Initiates joined), the Human to move, with
+   * the given enemies.
+   */
   const underWay = (enemies: readonly GoblinPieceV7[]): GameStateV7 => {
-    const state = cultFieldV7([...circle, ...enemies]);
-    const begun = playV7(state, starfall(state)).state;
+    const begun = chantedStar(cultFieldV7([...circle, ...enemies]));
     return applyOkV7(begun, cultId(begun), { kind: "END_TURN" }).state;
   };
 
@@ -889,14 +1177,14 @@ describe("rituals: breaking the circle (section 7.1)", () => {
         at: STAR,
       },
     ]);
-    // The star is one weaker for it: 5 + 1.
+    // The star is 3 weaker for it: 6 + 3.
     const landed = toCultTurn(shot.state);
     expect(eventsOf(landed.events, "STAR_FELL")).toMatchObject([
-      { chanters: 1, damage: 6 },
+      { chanters: 1, damage: 9 },
     ]);
   });
 
-  it("fizzles when the last chanter is disrupted, and when the leader is", () => {
+  it("keeps a star whose every joiner is disrupted, and fizzles it when the leader is", () => {
     const state = underWay([
       { seat: 1, role: "MARKSMAN", at: at(2, 2) },
       { seat: 1, role: "MARKSMAN", at: at(8, 2) },
@@ -919,18 +1207,15 @@ describe("rituals: breaking the circle (section 7.1)", () => {
         participantUnitId: idAt(state, CHANTER_EAST),
         cause: "HP_LOSS",
       },
-      {
-        kind: "RITUAL_FIZZLED",
-        playerId: cultId(state),
-        ritual: "STARFALL",
-        unitId: leader,
-        at: STAR,
-        reason: "CHANTERS",
-      },
     ]);
-    expect(second.state.cult.rituals).toEqual([]);
-    // Nothing lands at the Cult's Start Turn.
-    expect(kindsV7(toCultTurn(second.state).events)).not.toContain("STAR_FELL");
+    // The Cult redesign (`pulp_wars-mch9.34`): a star never fizzles for
+    // want of chanters; it lands alone, for 6.
+    expect(second.state.cult.rituals).toMatchObject([
+      { kind: "STARFALL", chanterUnitIds: [] },
+    ]);
+    expect(
+      eventsOf(toCultTurn(second.state).events, "STAR_FELL"),
+    ).toMatchObject([{ chanters: 0, damage: 6 }]);
     // The leader: one hit ends it whatever the chanters do.
     const beheaded = attackV7(state, at(5, 4), GAZER);
     expect(eventsOf(beheaded.events, "RITUAL_FIZZLED")).toMatchObject([
@@ -980,7 +1265,7 @@ describe("rituals: breaking the circle (section 7.1)", () => {
       [...circle, { seat: 1, role: "CAPTAIN", at: at(2, 2) }],
       { factions: ["CULT", "ICE_FOLK"] },
     );
-    const begun = playV7(iced, starfall(iced)).state;
+    const begun = chantedStar(iced);
     const turn = applyOkV7(begun, cultId(begun), { kind: "END_TURN" }).state;
     const bolt = playV7(turn, {
       kind: "FROST_BOLT",
@@ -1096,7 +1381,8 @@ describe("Star-fall (section 7.4)", () => {
       at(4, 6),
     );
     const leader = idAt(state, GAZER);
-    const begun = playV7(state, starfall(state)).state;
+    // One Initiate joins (the Cult redesign, `pulp_wars-mch9.34`): 6 + 3.
+    const begun = chantedStar(state, [CHANTER_WEST]);
     const round = toCultTurn(begun);
     const fell = eventsOf(round.events, "STAR_FELL");
     expect(fell).toEqual([
@@ -1105,33 +1391,34 @@ describe("Star-fall (section 7.4)", () => {
         playerId: cultId(state),
         unitId: leader,
         at: STAR,
-        chanters: 2,
-        damage: 7,
+        chanters: 1,
+        damage: 9,
         results: [
           {
             unitId: idAt(state, at(6, 5)),
             at: at(6, 5),
-            damage: 7,
+            damage: 9,
             dies: false,
             shieldDamage: 0,
           },
           {
             unitId: idAt(state, at(4, 6)),
             at: at(4, 6),
-            damage: 7,
+            damage: 9,
             dies: false,
             shieldDamage: 0,
           },
           {
             unitId: idAt(state, STAR),
             at: STAR,
-            damage: 7,
+            damage: 9,
             dies: false,
             shieldDamage: 0,
           },
           {
             unitId: idAt(state, at(6, 7)),
             at: at(6, 7),
+            // All its 7 HP.
             damage: 7,
             dies: true,
             shieldDamage: 0,
@@ -1155,7 +1442,7 @@ describe("Star-fall (section 7.4)", () => {
       kinds.lastIndexOf("INCOME_AWARDED"),
     );
     // The Field Defense is gone, the Knight is dead (a death of the star,
-    // credited to the Stargazer), and the others are hurt by 7.
+    // credited to the Stargazer), and the others are hurt by 9.
     expect(tileV7(round.state, at(4, 6)).fieldDefense).toBe(false);
     expect(round.events).toContainEqual({
       kind: "FIELD_DEFENSE_DESTROYED",
@@ -1169,9 +1456,9 @@ describe("Star-fall (section 7.4)", () => {
     });
     expect(unitOf(round.state, idAt(state, at(6, 7)))).toBeUndefined();
     expect(need(unitOf(round.state, leader)).kills).toBe(1);
-    expect(unitAtV7(round.state, STAR).hp).toBe(12 - 7);
-    expect(unitAtV7(round.state, at(4, 6)).hp).toBe(17 - 7);
-    expect(unitAtV7(round.state, at(6, 5)).hp).toBe(16 - 7);
+    expect(unitAtV7(round.state, STAR).hp).toBe(12 - 9);
+    expect(unitAtV7(round.state, at(4, 6)).hp).toBe(17 - 9);
+    expect(unitAtV7(round.state, at(6, 5)).hp).toBe(16 - 9);
     expect(unitAtV7(round.state, at(3, 6)).hp).toBe(12);
     // The Score: a Kill for the Cult, a Loss for the Knight's seat.
     const knightValue = unitFavourValueV7(state, unitAtV7(state, at(6, 7)));
@@ -1268,7 +1555,7 @@ describe("Star-fall (section 7.4)", () => {
         {
           unitId: idAt(state, STAR),
           at: STAR,
-          damage: 7,
+          damage: 6,
           dies: false,
           shieldDamage: 0,
         },
@@ -1291,18 +1578,19 @@ describe("Star-fall (section 7.4)", () => {
     const preview = need(
       previewBeginRitualV7(cult, idAt(state, GAZER), "STARFALL", STAR),
     );
+    // The Cult redesign (`pulp_wars-mch9.34`): it begins alone, for 6.
     expect(preview).toMatchObject({
       ritual: "STARFALL",
       at: STAR,
-      chanterUnitIds: [idAt(state, CHANTER_WEST), idAt(state, CHANTER_EAST)],
+      chanterUnitIds: [],
       favour: 0,
       favourAfter: 0,
       summoning: null,
     });
     expect(preview.starfall).toEqual({
       at: STAR,
-      chanters: 2,
-      damage: 7,
+      chanters: 0,
+      damage: 6,
       area: starfallAreaV7(11, 11, STAR),
       results: [
         {
@@ -1317,7 +1605,7 @@ describe("Star-fall (section 7.4)", () => {
           unitId: idAt(state, at(6, 6)),
           ownerId: cultId(state),
           at: at(6, 6),
-          damage: 7,
+          damage: 6,
           dies: false,
           shieldDamage: 0,
         },
@@ -1783,13 +2071,15 @@ describe("the Great Summoning (section 7.3)", () => {
       { seat: 0, role: "GUARD", at: at(4, 6) },
       { seat: 0, role: "FIGHTER", at: at(6, 6) },
     ]);
-    const first = playV7(state, starfall(state, at(3, 6))).state;
-    const second = playV7(first, {
+    const first = chantedStar(state, [CHANTER_WEST, CHANTER_EAST], at(3, 6));
+    const begun = playV7(first, {
       kind: "BEGIN_RITUAL",
       ritual: "STARFALL",
       unitId: idAt(first, at(5, 6)),
       at: at(9, 4),
     }).state;
+    const joined = playV7(begun, joinChant(begun, at(4, 6), at(5, 6))).state;
+    const second = playV7(joined, joinChant(joined, at(6, 6), at(5, 6))).state;
     const round = toCultTurn(second);
     expect(eventsOf(round.events, "RITUAL_DISRUPTED")).toEqual([
       {
@@ -1809,14 +2099,14 @@ describe("the Great Summoning (section 7.3)", () => {
         event.damage,
       ]),
     ).toEqual([
-      [idAt(state, GAZER), 2, 7],
-      [idAt(state, at(5, 6)), 1, 6],
+      [idAt(state, GAZER), 2, 12],
+      [idAt(state, at(5, 6)), 1, 9],
     ]);
   });
 });
 
 describe("the Herald: Ravage (section 4.2)", () => {
-  it("attacks twice a turn, at two targets or one, also after its Move, and never advances", () => {
+  it("attacks twice a turn, at two targets or one, also after its Move, and advances after a kill", () => {
     const state = heraldField(
       [
         { seat: 1, role: "FIGHTER", at: at(4, 4) },
@@ -1838,29 +2128,39 @@ describe("the Herald: Ravage (section 4.2)", () => {
     );
     const moved = playV7(state, stride).state;
     expect(attacksLeftV7(moved, unitAtV7(moved, at(5, 3)))).toBe(2);
-    // It kills a full-HP Fighter outright, takes nothing, and stays put.
+    // It kills a full-HP Fighter outright, takes nothing, and (the Cult
+    // redesign, `pulp_wars-mch9.35`, section 9.1) advances onto its tile.
     const first = attackV7(moved, at(5, 3), at(4, 4));
     expect(first.combat).toMatchObject({
       damageToDefender: 12,
       defenderDies: true,
       damageToAttacker: 0,
-      advances: false,
+      advances: true,
       attacksUsed: 1,
       attacksRemaining: 1,
     });
-    expect(first.attacker?.at).toEqual(at(5, 3));
+    expect(first.attacker?.at).toEqual(at(4, 4));
     expect(first.attacker?.activation.handled).toBe(false);
     // A kill by a bound daemon pays its value in Favour.
     expect(favourOfV7(first.state, cultId(state))).toBe(2);
-    const second = attackV7(first.state, at(5, 3), at(6, 4));
+    // Its second attack is made from there: the Fighter on (6, 4) is no
+    // longer beside it, the Juggernaut is.
+    expect(
+      offeredV7(first.state, "ATTACK").map((command) =>
+        command.kind === "ATTACK" ? command.targetUnitId : null,
+      ),
+    ).toEqual([idAt(state, at(5, 4))]);
+    const second = attackV7(first.state, at(4, 4), at(5, 4));
     expect(second.combat).toMatchObject({
-      defenderDies: true,
+      damageToDefender: 20,
+      damageToAttacker: 7,
+      defenderDies: false,
       advances: false,
       attacksUsed: 2,
       attacksRemaining: 0,
     });
     expect(second.attacker?.activation.handled).toBe(true);
-    // No third attack, and no Move after an attack.
+    // No third attack, and no Move after an attack (the advance is no Move).
     expect(offeredV7(second.state, "ATTACK", "MOVE", "PROCLAIM")).toEqual([]);
     expect(
       rejectedV7(second.state, {
@@ -1870,6 +2170,19 @@ describe("the Herald: Ravage (section 4.2)", () => {
       }),
     ).toEqual({ code: "UNIT_ALREADY_ACTED", params: { unitId: herald.id } });
     expect(offeredV7(first.state, "MOVE")).toEqual([]);
+    // Unmoved, it may not Move after a kill's advance either.
+    const lone = heraldField(
+      [{ seat: 1, role: "FIGHTER", at: at(5, 2) }],
+      at(5, 1),
+    );
+    const advanced = attackV7(lone, at(5, 1), at(5, 2));
+    expect(advanced.attacker?.at).toEqual(at(5, 2));
+    expect(
+      offeredV7(advanced.state, "MOVE").filter(
+        (command) =>
+          "unitId" in command && command.unitId === advanced.attacker?.id,
+      ),
+    ).toEqual([]);
     // Both attacks at one target: a giant dies in one turn (20 and 20).
     const giant = heraldField(
       [{ seat: 1, role: "JUGGERNAUT", at: at(5, 4) }],
@@ -1885,8 +2198,9 @@ describe("the Herald: Ravage (section 4.2)", () => {
     expect(kill.combat).toMatchObject({
       damageToDefender: 20,
       defenderDies: true,
-      advances: false,
+      advances: true,
     });
+    expect(kill.attacker?.at).toEqual(at(5, 4));
     expect(favourOfV7(kill.state, cultId(giant))).toBe(12);
   });
 
@@ -2269,10 +2583,13 @@ describe("the Herald: Proclaim and the Cowed city (section 8.6)", () => {
       attacksRemaining: 0,
     });
     expect(struck.attacker?.activation.handled).toBe(true);
-    // The other order: an attack, then the Proclaim with the attack left.
+    // The other order: an attack, then the Proclaim with the attack left
+    // (from the Fighter's tile, where the kill advanced it: the Cult
+    // redesign, `pulp_wars-mch9.35`).
     const first = attackV7(state, at(4, 6), at(4, 7));
-    const then = playV7(first.state, proclaim(first.state));
-    expect(unitAtV7(then.state, at(4, 6)).activation).toMatchObject({
+    expect(first.attacker?.at).toEqual(at(4, 7));
+    const then = playV7(first.state, proclaim(first.state, at(4, 7)));
+    expect(unitAtV7(then.state, at(4, 7)).activation).toMatchObject({
       attacksUsed: 2,
       handled: true,
     });
@@ -2598,7 +2915,42 @@ describe("rituals: the Normal AI and the public command list", () => {
     const view = viewForV7(state, cult);
     expect(
       queryCombatPreviewV7(view, idAt(state, at(4, 6)), idAt(state, at(4, 7))),
-    ).toMatchObject({ attacksUsed: 1, attacksRemaining: 1, advances: false });
+    ).toMatchObject({
+      attacksUsed: 1,
+      attacksRemaining: 1,
+      // A kill advances it (the Cult redesign, `pulp_wars-mch9.35`).
+      advances: true,
+    });
     expect(queryPlayerCommandsV7(view).length).toBeGreaterThan(0);
+    // Join the chant (`pulp_wars-mch9.34`): offered exactly when accepted,
+    // for every own unit and every own unit named as the Stargazer.
+    const star = playV7(state, {
+      kind: "BEGIN_RITUAL",
+      ritual: "STARFALL",
+      unitId: idAt(state, at(8, 2)),
+      at: at(8, 5),
+    }).state;
+    const joins = offeredV7(star, "JOIN_CHANT");
+    expect(joins).toEqual([
+      {
+        kind: "JOIN_CHANT",
+        unitId: idAt(state, at(8, 3)),
+        leaderUnitId: idAt(state, at(8, 2)),
+      },
+    ]);
+    const joinable = new Set(joins.map(key));
+    const own = star.units.filter((unit) => unit.ownerId === cult);
+    for (const unit of own)
+      for (const leader of own) {
+        if (unit.id === leader.id) continue;
+        const command: CommandV7 = {
+          kind: "JOIN_CHANT",
+          unitId: unit.id,
+          leaderUnitId: leader.id,
+        };
+        expect(applyCommandV7(star, cult, command).accepted, key(command)).toBe(
+          joinable.has(key(command)),
+        );
+      }
   });
 });

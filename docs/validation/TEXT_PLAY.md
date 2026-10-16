@@ -375,7 +375,11 @@ against its Control), a channeller's `channels u40`, a gripped one's
 Unbound (`pulp_wars-mch9.6`) adds no id: `.channel.u40` on an Unbound daemon
 prints as `BIND AGAIN`, with the turn's strands against its Control. An
 Unbound daemon is a neutral unit (seat digit `N`); its line shows
-`UNBOUND daemon of S1: goes for u9 and can attack it after this round`, then
+`UNBOUND daemon of S1: goes for u9 (the nearest unit in its reach) and can
+attack it after this round` (the reason names the step of the Cult
+redesign's target order, `pulp_wars-mch9.35`: `a cultist within 2`, `the
+nearest unit in its reach`, `a summon in its reach, nobody else being
+near`, or `the nearest unit, out of its reach`), then
 `FURIOUS` or how many strands bind it. A bound daemon short of its Control
 shows whom it would go for. The log prints `UNBOUND` and `BOUND AGAIN`.
 Rituals and the Herald (`pulp_wars-mch9.7`) add `.starfall.4,5` and
@@ -384,10 +388,14 @@ Rituals and the Herald (`pulp_wars-mch9.7`) add `.starfall.4,5` and
 as the board stands and whether the unit on a Great Summoning's mark is
 consumed or blocks it. A Herald prints as `Herald [HERALD]` with the map
 code `He` and, on its seat's turn, `attacks left 2`; a participant's line
-shows `leads Star-fall: 7 on 8,6 and around it, due at S0's next turn start
+shows `leads Star-fall: 12 on 8,6 and around it, due at S0's next turn start
 (2 chanting)` or `chants in ...`; a Cowed city's line ends in `COWED`. The
 log prints `RITUAL BEGUN`, `RITUAL FIZZLED`, `STAR FELL`, `CONSUMED`,
-`THE HERALD ... arrived`, and `COWED`.
+`THE HERALD ... arrived`, and `COWED`. The Cult redesign
+(`pulp_wars-mch9.34`) begins a star with the Stargazer alone and adds
+`.join.u7` (a robed cultist beside that Stargazer joins its pending star's
+chant, +3); `options` says the star's damage before and after the join
+and whom it then also kills, and the log prints `CHANT JOINED`.
 Hexes and tricks (`pulp_wars-mch9.8`) add `.ribbit.u9` (the Hexer frogs that
 unit), `.switch.u9` (the Familiar swaps with it), and `.tentacle.4,5` (the
 Summoner calls a Tentacle up on that tile; the Caller's, and `.pickme`, the

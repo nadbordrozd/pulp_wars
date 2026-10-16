@@ -1205,6 +1205,8 @@ const CULT_TRICK_ICONS_V7: Readonly<Record<CultTrickKindV7, UiIconIdV7>> = {
   RIBBIT: "frog",
   SWITCHEROO: "swap",
   TENTACLE: "tentacle",
+  // The Cult redesign (`pulp_wars-mch9.34`): a candle, as the join badge.
+  JOIN_CHANT: "candle",
 };
 /** The `data-action` of a tile chooser's row (bead pulp_wars-2yc.60). */
 function tileChoiceActionV7(id: string): string {
@@ -8453,6 +8455,7 @@ export class Ruleset7DomAppView {
       case "RIBBIT":
       case "SWITCHEROO":
       case "TENTACLE":
+      case "JOIN_CHANT":
         this.#startCultTrickPick(id, unitId);
         return;
     }
@@ -15798,7 +15801,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
     return null;
   return {
-    rulesetId: "pulp-wars-poc-7r87",
+    rulesetId: "pulp-wars-poc-7r88",
     seed,
     width: effectiveBoardSize(draft),
     height: effectiveBoardSize(draft),

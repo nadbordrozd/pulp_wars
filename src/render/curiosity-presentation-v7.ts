@@ -349,10 +349,11 @@ export function provokeMoveWarningV7(
 
 /**
  * The Cultists (section 6.4): the same warning for an Unbound daemon, which
- * goes for the nearest unit after every round.
+ * goes for a cultist close by first, then the nearest unit, after every
+ * round (the Cult redesign, `pulp_wars-mch9.35`).
  */
 export const DAEMON_PROVOKE_WARNING_V7 =
-  "Ends in an Unbound daemon's reach: it attacks the nearest unit after this round.";
+  "Ends in an Unbound daemon's reach: after this round it attacks a cultist close by, or else the nearest unit.";
 
 /** Section 12.1: `monsterRetaliates` in the combat preview. */
 export const MONSTER_RETALIATES_V7 = "The spider will strike back next round";

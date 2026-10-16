@@ -148,14 +148,14 @@ describe("the Cult registration: identity", () => {
   // 7r74, and the Cult's Unbound (`pulp_wars-mch9.6`) 7r75, so 7r71 is a
   // prior identity.
   it("was 7r71 after 7r70, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r87");
-    expect(PRIOR_RULESET_7_IDS.slice(-17, -15)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r88");
+    expect(PRIOR_RULESET_7_IDS.slice(-18, -16)).toEqual([
       "pulp-wars-poc-7r70",
       "pulp-wars-poc-7r71",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r87.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-17, -15)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r88.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-18, -16)).toEqual([
       "pulpWars.save.v7r70.current",
       "pulpWars.save.v7r71.current",
     ]);
@@ -332,15 +332,17 @@ describe("the Cult registration: the nine land roles (section 4.1)", () => {
         effectiveRoleRuleV7(role, "CULT").abilities,
       ]),
     );
+    // Every robed cultist joins a star's chant (the Cult redesign,
+    // `pulp_wars-mch9.34`).
     expect(abilities).toEqual({
       // Pamphlets (`pulp_wars-mch9.8`).
-      FIGHTER: ["ATTACK", "CAPTURE", "CHANNEL", "PAMPHLETS"],
+      FIGHTER: ["ATTACK", "CAPTURE", "CHANNEL", "PAMPHLETS", "JOIN_CHANT"],
       // Charge with Raiding; no Escape. The Familiar never channels.
       // Switcheroo (`pulp_wars-mch9.8`).
       RAIDER: ["ATTACK", "CAPTURE", "CHARGE", "SWITCHEROO"],
       // Ribbit (`pulp_wars-mch9.8`).
-      MARKSMAN: ["ATTACK", "CAPTURE", "CHANNEL", "RIBBIT"],
-      GUARD: ["ATTACK", "CAPTURE", "CHANNEL", "BEHOLD"],
+      MARKSMAN: ["ATTACK", "CAPTURE", "CHANNEL", "RIBBIT", "JOIN_CHANT"],
+      GUARD: ["ATTACK", "CAPTURE", "CHANNEL", "BEHOLD", "JOIN_CHANT"],
       // No Rally and no Tend Wounded; Sacrifice, Seize, and Summon; and
       // the Tentacle (the Cult redesign, `pulp_wars-mch9.31`; the Caller's
       // before).
@@ -352,9 +354,10 @@ describe("the Cult registration: the nine land roles (section 4.1)", () => {
         "SUMMON",
         "CHANNEL",
         "TENTACLE",
+        "JOIN_CHANT",
       ],
       // No attack of its own; Star-fall is its ritual (`pulp_wars-mch9.7`).
-      CATAPULT: ["CAPTURE", "CHANNEL", "STARFALL"],
+      CATAPULT: ["CAPTURE", "CHANNEL", "STARFALL", "JOIN_CHANT"],
       // Vacant: the Caller and the Chosen (Martyr, Pick Me!) retired.
       KNIGHT: [],
       SWORDSMAN: [],

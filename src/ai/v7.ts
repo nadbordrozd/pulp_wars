@@ -11451,17 +11451,16 @@ function isPolicyCandidate(
   // to its tile, a Seizure's holder, a daemon released toward the enemy):
   // the plan has claimed that unit, and nothing else is offered to it.
   const cultPlan = cultPlanForV7(context);
-  // (`pulp_wars-mch9.11`: but a cultist's walk to a village, a circle, or
-  // a Stargazer is never a Move the curiosity rules close: it goes beside
-  // no healthy Monster. The channel's and the bind's Moves are exempt: a
-  // binder walks up to an Unbound daemon.)
+  // (`pulp_wars-mch9.11`: but a cultist's walk to a village or a circle is
+  // never a Move the curiosity rules close: it goes beside no healthy
+  // Monster. The channel's and the bind's Moves are exempt: a binder walks
+  // up to an Unbound daemon. A star begins alone since the Cult redesign,
+  // `pulp_wars-mch9.34`, so no cultist walks to a Stargazer any more.)
   const cultStep =
     cultPlan === null ? undefined : cultStepForV7(cultPlan, command);
   if (cultStep !== undefined)
     return !(
-      (cultStep.reason === "PAMPHLETS" ||
-        cultStep.reason === "GATHER" ||
-        cultStep.reason === "STARFALL_CHANTER") &&
+      (cultStep.reason === "PAMPHLETS" || cultStep.reason === "GATHER") &&
       context.curiosities !== null &&
       curiosityRejectsV7(context, command)
     );
@@ -11530,6 +11529,10 @@ function isPolicyCandidate(
   // a general rule.
   if (command.kind === "BEGIN_RITUAL" || command.kind === "PROCLAIM")
     return false;
+  // Join the chant (the Cult redesign, `pulp_wars-mch9.34`): likewise, a
+  // step of the Cult seat's plan (`src/ai/v7-cult-rituals.ts`) only: a join
+  // spends a cultist's action on a star that hurts friend and foe.
+  if (command.kind === "JOIN_CHANT") return false;
   // Hexes and tricks (`pulp_wars-mch9.8`): likewise (Ribbit, Switcheroo,
   // Tentacle). A swap or a wild Tentacle can hurt its own side,
   // so none may be picked by a general rule. (Pamphlets needs no rule: it

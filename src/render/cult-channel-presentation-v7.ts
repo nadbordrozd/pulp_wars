@@ -624,7 +624,7 @@ export function cultChannelChipsV7(
       id: "unbound",
       label: "Unbound",
       status:
-        "It belongs to nobody. It attacks the nearest unit, friend or foe, after every round",
+        "It belongs to nobody. After every round it attacks a cultist close by, or else the nearest unit, friend or foe",
       icon: "ICON:STATUS:UNBOUND",
     });
     const rampage = previewRampageV7(view, unit.id);

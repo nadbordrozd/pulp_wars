@@ -195,7 +195,7 @@ const ENTRIES = {
   ],
   UNBOUND: [
     "Unbound",
-    "Its channel failed, so it belongs to nobody. Now and after every round it goes for the nearest unit, friend or foe, and attacks it.",
+    "Its channel failed, so it belongs to nobody. Now and after every round it attacks a cultist close by first, then anyone else near it, friend or foe.",
   ],
   FURIOUS: [
     "Furious",
@@ -208,11 +208,16 @@ const ENTRIES = {
   // Rituals and the Herald (`pulp_wars-mch9.7`, sections 7, 4.2, and 8.6).
   STARFALL: [
     "Star-fall",
-    "If it has not moved, it and the cultists beside it call a star onto a tile nearby. Next turn it hurts everything there and around it.",
+    "If it has not moved, it calls a star alone onto a tile nearby. Next turn it hurts everything there and around it.",
+  ],
+  // The Cult redesign (`pulp_wars-mch9.34`, section 8.2).
+  JOIN_CHANT: [
+    "Join the chant",
+    "Next to a Stargazer whose star is coming, it chants instead of acting, and the star hits harder. Hurt or moved, it stops.",
   ],
   RAVAGE: [
     "Ravage",
-    "Attacks twice each turn, at one target or two, even after moving. It never advances after a kill.",
+    "Attacks twice each turn, at one target or two, even after moving. After a kill it steps onto the victim's tile.",
   ],
   UNSTOPPABLE: [
     "Unstoppable",
@@ -229,7 +234,7 @@ const ENTRIES = {
   ],
   SWITCHEROO: [
     "Switcheroo",
-    "Swaps places with a unit within 2 tiles, friend or foe, but never on a city or village. It cannot swap two turns running.",
+    "Swaps places with a unit up to four tiles away, friend or foe, but never on a city or village. It cannot swap two turns running.",
   ],
   RIBBIT: [
     "Ribbit",

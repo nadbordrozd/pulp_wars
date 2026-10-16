@@ -296,6 +296,8 @@ export function roleAbilityNameV7(
   if (ability === "BOO") return BOO_LABEL_V7;
   // Rituals (`pulp_wars-mch9.7`): the rite's name has a hyphen.
   if (ability === "STARFALL") return "Star-fall";
+  // The Cult redesign (`pulp_wars-mch9.34`).
+  if (ability === "JOIN_CHANT") return "Join the chant";
   return title(ability);
 }
 

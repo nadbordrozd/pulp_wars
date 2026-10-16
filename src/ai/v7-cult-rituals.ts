@@ -7,6 +7,7 @@ import {
 } from "../engine/v7/cult-hexes";
 import {
   previewBeginRitualV7,
+  previewJoinChantV7,
   previewBooV7,
   previewProclaimV7,
   previewRibbitV7,
@@ -64,8 +65,11 @@ export const CULT_SUMMONING_CHANTERS_V7 = 3;
 /** Star-fall reaches 2 to 4 tiles (section 7.4). */
 export const CULT_STARFALL_MINIMUM_V7 = 2;
 export const CULT_STARFALL_MAXIMUM_V7 = 4;
-/** A star deals this and 1 for each chanter (section 7.4). */
-export const CULT_STARFALL_DAMAGE_V7 = 5;
+/**
+ * A star deals this alone, and 3 more for each cultist who joins its chant
+ * (the Cult redesign, `pulp_wars-mch9.34`, section 8.2; 5 and 1 before).
+ */
+export const CULT_STARFALL_DAMAGE_V7 = 6;
 /** Proclaim reaches a city within this many tiles (section 8.6). */
 export const CULT_PROCLAIM_RANGE_V7 = 3;
 /** The value of a unit that has no cost (a giant, a daemon, an Egg). */
@@ -81,6 +85,8 @@ export const CULT_RIBBIT_PRIORITY_V7 = 1880;
 export const CULT_SWITCHEROO_PRIORITY_V7 = 1875;
 export const CULT_TENTACLE_PRIORITY_V7 = 1870;
 export const CULT_STARFALL_PRIORITY_V7 = 1860;
+/** A join of an own pending star's chant, just below the begin. */
+export const CULT_JOIN_CHANT_PRIORITY_V7 = 1859;
 /** An Initiate's Move onto a neutral village it captures this turn. */
 export const CULT_PAMPHLETS_PRIORITY_V7 = 1855;
 /**
@@ -98,12 +104,13 @@ export const CULT_PROCLAIM_LAST_PRIORITY_V7 = 10;
 type MoveV7 = Extract<CommandV7, { kind: "MOVE" }>;
 type AttackV7 = Extract<CommandV7, { kind: "ATTACK" }>;
 type BeginV7 = Extract<CommandV7, { kind: "BEGIN_RITUAL" }>;
+type JoinV7 = Extract<CommandV7, { kind: "JOIN_CHANT" }>;
 
 export type CultRitualReasonV7 =
   | "GREAT_SUMMONING"
   | "GATHER"
   | "STARFALL"
-  | "STARFALL_CHANTER"
+  | "STARFALL_JOIN"
   | "HERALD_MOVE"
   | "PROCLAIM"
   | "BOO"
@@ -242,6 +249,7 @@ export function cultRitualPlanV7(facts: CultRitualFactsV7): CultRitualPlanV7 {
   // ------------------------------------------------ the offered commands
   const attacksByUnit = new Map<UnitId, AttackV7[]>();
   const begins: BeginV7[] = [];
+  const joins: JoinV7[] = [];
   const proclaims: Extract<CommandV7, { kind: "PROCLAIM" }>[] = [];
   const boos: Extract<CommandV7, { kind: "BEHOLD" | "BOO" }>[] = [];
   const ribbits: Extract<CommandV7, { kind: "RIBBIT" | "SWITCHEROO" }>[] = [];
@@ -253,6 +261,7 @@ export function cultRitualPlanV7(facts: CultRitualFactsV7): CultRitualPlanV7 {
       if (list === undefined) attacksByUnit.set(command.unitId, [command]);
       else list.push(command);
     } else if (command.kind === "BEGIN_RITUAL") begins.push(command);
+    else if (command.kind === "JOIN_CHANT") joins.push(command);
     else if (command.kind === "PROCLAIM") proclaims.push(command);
     else if (command.kind === "BOO") boos.push(command);
     else if (command.kind === "RIBBIT") ribbits.push(command);
@@ -486,30 +495,57 @@ export function cultRitualPlanV7(facts: CultRitualFactsV7): CultRitualPlanV7 {
         targets.length === 0 || sameTile(at, herald.at)
           ? view
           : facts.moved([{ unit: herald, at }]);
-      const hits = targets
-        .flatMap((target) => {
-          const preview = queryCombatPreviewV7(projected, herald.id, target.id);
-          return preview === null
-            ? []
-            : [
-                {
-                  kills: Number(preview.defenderDies),
-                  value: valueOf(target),
-                  damage: preview.damageToDefender,
-                },
-              ];
-        })
-        .sort(
-          (left, right) =>
-            right.kills - left.kills ||
-            right.value - left.value ||
-            right.damage - left.damage,
-        )
-        .slice(0, 2);
+      type HitV7 = {
+        readonly at: CoordV7;
+        readonly kills: number;
+        readonly value: number;
+        readonly damage: number;
+      };
+      const single: HitV7[] = targets.flatMap((target) => {
+        const preview = queryCombatPreviewV7(projected, herald.id, target.id);
+        return preview === null
+          ? []
+          : [
+              {
+                at: target.at,
+                kills: Number(preview.defenderDies),
+                value: valueOf(target),
+                damage: preview.damageToDefender,
+              },
+            ];
+      });
+      // The Cult redesign (`pulp_wars-mch9.35`, a stop-gap until A-R2,
+      // `pulp_wars-mch9.39`): a kill advances it onto the victim's tile, so
+      // the second attack must still reach its target from there.
+      const total = (pair: readonly HitV7[]): readonly number[] => [
+        pair.reduce((sum, hit) => sum + hit.kills, 0),
+        pair.reduce((sum, hit) => sum + hit.kills * hit.value, 0),
+        pair.length,
+        pair.reduce((sum, hit) => sum + hit.damage, 0),
+      ];
+      let hits: readonly HitV7[] = [];
+      const consider = (pair: readonly HitV7[]): void => {
+        if (hits.length === 0 || better(total(pair), total(hits))) hits = pair;
+      };
+      for (const firstHit of single) {
+        consider([firstHit]);
+        for (const secondHit of single) {
+          if (secondHit === firstHit) continue;
+          if (firstHit.kills > 0 && gap(secondHit.at, firstHit.at) > reachOf)
+            continue;
+          consider([firstHit, secondHit]);
+        }
+      }
       const kills = hits.reduce((sum, hit) => sum + hit.kills, 0);
+      // A Proclaim with the attack left over is made from where the first
+      // attack leaves it: on its victim's tile after a kill.
+      const lone = hits.length === 1 ? hits[0] : undefined;
+      const standsAt = lone !== undefined && lone.kills > 0 ? lone.at : at;
       const proclaim =
         hits.length < 2 &&
-        proclaimable.some((city) => gap(city.at, at) <= CULT_PROCLAIM_RANGE_V7);
+        proclaimable.some(
+          (city) => gap(city.at, standsAt) <= CULT_PROCLAIM_RANGE_V7,
+        );
       return [
         kills,
         hits.reduce((sum, hit) => sum + hit.kills * hit.value, 0),
@@ -950,7 +986,8 @@ export function cultRitualPlanV7(facts: CultRitualFactsV7): CultRitualPlanV7 {
   // Section 15.4: the tile with the most enemy value on its nine tiles,
   // preferring fortified units, siege units, and Eggs, with no own unit
   // there. A Stargazer that has not moved and has a mark worth a star
-  // stays; with no chanter beside it, one cultist comes to it.
+  // stays and begins it alone (the Cult redesign, `pulp_wars-mch9.34`: a
+  // stop-gap until the Cult AI's own pass, A-R2, `pulp_wars-mch9.39`).
   if (!facts.pending) {
     const tileAt = (at: CoordV7) =>
       view.board.tiles[at.y * view.board.width + at.x];
@@ -964,9 +1001,7 @@ export function cultRitualPlanV7(facts: CultRitualFactsV7): CultRitualPlanV7 {
         frogs.has(gazer.id)
       )
         continue;
-      const chanters = chantersOf(gazer);
-      if (chanters.some((unit) => held.has(unit.id))) continue;
-      const damage = CULT_STARFALL_DAMAGE_V7 + Math.max(1, chanters.length);
+      const damage = CULT_STARFALL_DAMAGE_V7;
       let mark: CoordV7 | undefined;
       let markKey: readonly number[] = [];
       for (
@@ -1026,18 +1061,6 @@ export function cultRitualPlanV7(facts: CultRitualFactsV7): CultRitualPlanV7 {
         }
       if (mark === undefined) continue;
       const target = mark;
-      if (chanters.length === 0) {
-        const comer = comersTo(gazer)[0];
-        if (comer === undefined) continue;
-        held.add(gazer.id);
-        steps.push({
-          command: comer.move,
-          priority: CULT_STARFALL_PRIORITY_V7,
-          value: markKey[0] ?? 0,
-          reason: "STARFALL_CHANTER",
-        });
-        continue;
-      }
       const command = begins.find(
         (item) =>
           item.ritual === "STARFALL" &&
@@ -1062,6 +1085,45 @@ export function cultRitualPlanV7(facts: CultRitualFactsV7): CultRitualPlanV7 {
         reason: "STARFALL",
       });
     }
+  }
+
+  // ------------------------------------------------------- Join the chant
+  // The Cult redesign (`pulp_wars-mch9.34`, section 8.2), a stop-gap until
+  // A-R2 (`pulp_wars-mch9.39`): a free cultist beside an own pending star
+  // joins its chant when the join turns one more hostile unit on its nine
+  // tiles into a kill as the board stands and kills no unit of the seat or
+  // of a friend. Each join is its own decision, so the next one reads the
+  // star after it.
+  for (const join of joins) {
+    if (held.has(join.unitId)) continue;
+    const preview = previewJoinChantV7(view, join.unitId, join.leaderUnitId);
+    if (preview === null || preview.after === null) continue;
+    const owners = new Map(
+      preview.after.results.map((entry) => [entry.unitId, entry.ownerId]),
+    );
+    const killed = preview.newlyKills.map((unitId) => owners.get(unitId));
+    if (
+      killed.some(
+        (ownerId) =>
+          ownerId === undefined ||
+          (!isNeutralOwnerV7(ownerId) && !facts.hostile(ownerId)),
+      ) ||
+      !killed.some(
+        (ownerId) =>
+          ownerId !== undefined &&
+          !isNeutralOwnerV7(ownerId) &&
+          facts.hostile(ownerId),
+      )
+    )
+      continue;
+    held.add(join.unitId);
+    steps.push({
+      command: join,
+      priority: CULT_JOIN_CHANT_PRIORITY_V7,
+      value: preview.newlyKills.length,
+      reason: "STARFALL_JOIN",
+    });
+    break;
   }
 
   // ------------------------------------------------------------ Pamphlets

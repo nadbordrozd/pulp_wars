@@ -324,8 +324,9 @@ export const CULT_RITUAL_UI_V7 = {
 
 /**
  * Star-fall on offer: the Stargazer with two Initiates beside it (a star of
- * 7), and, three tiles south, a Human Fighter, a Knight at 6 HP and one of
- * the Cult's own Initiates.
+ * 6 begun alone, 12 with both joining: the Cult redesign,
+ * `pulp_wars-mch9.34`), and, three tiles south, a Human Fighter, a Knight
+ * at 6 HP and one of the Cult's own Initiates.
  */
 export function cultStarfallUiFixtureV7(): GameStateV7 {
   const A = CULT_RITUAL_UI_V7;
@@ -339,7 +340,10 @@ export function cultStarfallUiFixtureV7(): GameStateV7 {
   ]);
 }
 
-/** The same star under way: the ring, the mark, the countdown, the hits. */
+/**
+ * The same star under way with both Initiates joined (12): the ring, the
+ * mark, the countdown, the hits.
+ */
 export function cultStarfallBegunUiFixtureV7(): GameStateV7 {
   const A = CULT_RITUAL_UI_V7;
   return withRitualV7(

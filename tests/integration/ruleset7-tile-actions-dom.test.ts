@@ -15,6 +15,7 @@ import {
   TILE_ACTIONS_UI_V7 as A,
   tileActionsBrainFixtureV7,
   tileActionsHexerFixtureV7,
+  tileActionsJoinChantFixtureV7,
   tileActionsKnightFixtureV7,
   tileActionsStargazerFixtureV7,
   tileActionsYetiFixtureV7,
@@ -177,6 +178,26 @@ describe("tile actions in the DOM", () => {
       ritual: "STARFALL",
       at: star,
     });
+  });
+
+  it("joins a star's chant with one tap on the casting Stargazer", async () => {
+    // The Cult redesign (`pulp_wars-mch9.34`): `oneTap`, no chooser.
+    const scene = rig(tileActionsJoinChantFixtureV7());
+    select(scene, A.joiner);
+    tap(scene, A.stargazer);
+    expect(chooser()).toBeNull();
+    await waitUntil(() => scene.controller.accepted.length === 1);
+    expect(scene.controller.accepted[0]).toMatchObject({
+      kind: "JOIN_CHANT",
+      leaderUnitId: required(
+        required(scene.controller.snapshot().view).units.find(
+          (unit) => unit.at.x === A.stargazer.x && unit.at.y === A.stargazer.y,
+        ),
+      ).id,
+    });
+    expect(
+      required(scene.controller.snapshot().view).cult.rituals[0]?.chanters,
+    ).toBe(1);
   });
 
   it("offers Select for an own unit under an ability's icon", async () => {

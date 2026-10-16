@@ -76,6 +76,7 @@ import {
   STARFALL_LABEL_V7,
   SWITCHEROO_LABEL_V7,
   TENTACLE_LABEL_V7,
+  JOIN_CHANT_LABEL_V7,
 } from "../cult-ritual-presentation-v7";
 
 type FamilyV7 = MapCommandTargetV7["family"];
@@ -128,6 +129,7 @@ export const TILE_ACTION_COMMAND_CLASSES_V7: Readonly<
   RIBBIT: "AIMED",
   SWITCHEROO: "AIMED",
   TENTACLE: "AIMED",
+  JOIN_CHANT: "AIMED",
   RALLY: "BAR_ONLY",
   TEND_WOUNDED: "BAR_ONLY",
   RAISE_DEAD: "BAR_ONLY",
@@ -544,6 +546,22 @@ export const TILE_ABILITIES_V7: readonly TileAbilityV7[] = [
     families: ["TENTACLE"],
     offered: kind("TENTACLE"),
     pick: (unitId) => ({ cultPick: { kind: "TENTACLE", unitId } }),
+  },
+  // The Cult redesign (`pulp_wars-mch9.34`, RULESET_7_CULT_REDESIGN.md
+  // sections 8.2 and 13): a cultist beside a Stargazer whose Star-fall is
+  // pending carries the join badge (a candle, "+3") on that Stargazer, and
+  // a tap joins (`oneTap`: no chooser with Select for it alone). The
+  // badge's glyph is the dock's candle; the raster `ICON:ACTION:JOIN_CHANT`
+  // is the dock button's.
+  {
+    id: "JOIN_CHANT",
+    label: JOIN_CHANT_LABEL_V7,
+    icon: "candle",
+    dockAction: "cult-join-chant",
+    families: ["JOIN_CHANT"],
+    offered: kind("JOIN_CHANT"),
+    pick: (unitId) => ({ cultPick: { kind: "JOIN_CHANT", unitId } }),
+    oneTap: true,
   },
 ];
 

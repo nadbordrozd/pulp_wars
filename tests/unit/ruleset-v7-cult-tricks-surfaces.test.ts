@@ -129,7 +129,7 @@ describe("hexes and tricks: the words", () => {
         ?.effects.map((effect) => effect.kind);
     expect(effects(0)).toContain("SWITCHEROO");
     expect(effects(1)).not.toContain("SWITCHEROO");
-    expect(SWITCHEROO_UNLOCK_TEXT_V7).toContain("within 2 tiles");
+    expect(SWITCHEROO_UNLOCK_TEXT_V7).toContain("within 4 tiles");
   });
 
   it("gives each command an id of its own in the text harness", () => {

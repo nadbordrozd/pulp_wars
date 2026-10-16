@@ -1,5 +1,10 @@
 import type { PlayerId, UnitId } from "../model/ids";
-import type { SummonedUnitRefV7 } from "../rules/ruleset-v7";
+import {
+  UNBOUND_CULTIST_REACH_V7,
+  unitRoleMechanicsV7,
+  type FactionRosterV7,
+  type SummonedUnitRefV7,
+} from "../rules/ruleset-v7";
 import {
   isDaemonBreedV7,
   isNeutralOwnerV7,
@@ -10,9 +15,10 @@ import {
   type MonsterStateV7,
   type UnitActivationV7,
   type UnitFormV7,
+  type UnitRoleIdV7,
   type UnitStateV7,
 } from "./types";
-import { tileOccupiedV7 } from "./units";
+import { barricadeAtV7, moundAtV7, tileOccupiedV7 } from "./units";
 
 /**
  * The Cultists of the Ancient Ones, Unbound (`pulp_wars-mch9.6`, the fourth
@@ -31,10 +37,15 @@ import { tileOccupiedV7 } from "./units";
  * toward a binding are `bindingStrandsV7` (src/engine/v7/cult-channel.ts).
  */
 
-/** The unit facts a rampage reads (state and public units). */
-export interface RampageUnitFactsV7 {
+/**
+ * The unit facts a rampage reads (state and public units): where and what
+ * a unit is, and (the Cult redesign, `pulp_wars-mch9.35`) whether it is a
+ * robed cultist (its role, through its kind's registration) or a summon.
+ */
+export interface RampageUnitFactsV7 extends SummonedUnitRefV7 {
   readonly id: UnitId;
   readonly ownerId: PlayerId;
+  readonly role: UnitRoleIdV7;
   readonly form: UnitFormV7;
   readonly at: CoordV7;
   readonly hp: number;
@@ -119,36 +130,124 @@ export function rampageTargetableV7(unit: RampageUnitFactsV7): boolean {
 }
 
 /**
- * Section 6.4, rule 1: the unit a rampage of the daemon on `from` goes for:
- * the nearest targetable unit by Chebyshev distance; ties go to a unit of
- * the seat that summoned it, then to the fewest Hit Points, then to the
- * lowest unit ID. With `maximumDistance` only units that near count (the
- * Herald's second attack: 1). Null when there is nobody.
+ * The step of the Unbound target rule (the Cult redesign,
+ * `pulp_wars-mch9.35`, RULESET_7_CULT_REDESIGN.md section 9.2) that chose a
+ * rampage's target: 1, a robed cultist within 2; 2, anyone in reach who is
+ * not a summon; 3, a summon in reach; 4, the walk toward the nearest unit
+ * on the board (a non-summon first).
  */
-export function rampageTargetV7<U extends RampageUnitFactsV7>(
+export type RampageStepV7 = 1 | 2 | 3 | 4;
+
+/** The unit a rampage goes for and the step that chose it. */
+export interface RampageChoiceV7<U> {
+  readonly target: U | null;
+  readonly step: RampageStepV7 | null;
+}
+
+/** Whether the unit is a summon: a daemon of any seat, or a Tentacle. */
+function isSummonV7(unit: SummonedUnitRefV7): boolean {
+  return unit.summoned !== undefined;
+}
+
+/** Whether the unit is a robed cultist (of any Cult seat) on land. */
+function isRobedV7(roster: FactionRosterV7, unit: RampageUnitFactsV7): boolean {
+  return unit.form === "LAND" && unitRoleMechanicsV7(roster, unit).robed;
+}
+
+/**
+ * The Cult redesign (`pulp_wars-mch9.35`, RULESET_7_CULT_REDESIGN.md
+ * section 9.2), replacing rule 1 of the rampage: whom the Unbound daemon
+ * on `from`, with the reach `reach` (its Move + 1), goes for. Among the
+ * targetable units ({@link rampageTargetableV7}), by Chebyshev distance:
+ *
+ * 1. the nearest robed cultist of any Cult seat within 2 tiles;
+ * 2. else the nearest unit within its reach that is not a summon;
+ * 3. else the nearest summon (a daemon of a seat) within its reach;
+ * 4. else the nearest unit on the board that is not a summon (a summon only
+ *    when there is no other), at any distance: it walks toward it.
+ *
+ * Ties inside a step go to a unit of the seat that summoned it, then to the
+ * fewest Hit Points, then to the lowest unit ID. With `maximumDistance`
+ * only units that near count and step 4 is not taken (the Herald's second
+ * attack: 1, steps 1 to 3 among the units beside it). Both nulls when there
+ * is nobody.
+ */
+export function rampageChoiceV7<U extends RampageUnitFactsV7>(
+  roster: FactionRosterV7,
   units: readonly U[],
   daemon: { readonly id: UnitId },
   from: CoordV7,
   summonerPlayerId: PlayerId,
+  reach: number,
+  maximumDistance = Number.POSITIVE_INFINITY,
+): RampageChoiceV7<U> {
+  const candidates = units.filter(
+    (unit) =>
+      unit.id !== daemon.id &&
+      rampageTargetableV7(unit) &&
+      chebyshev(unit.at, from) <= maximumDistance,
+  );
+  const nearest = (accept: (unit: U) => boolean): U | null => {
+    let best: U | null = null;
+    let bestDistance = 0;
+    for (const unit of candidates) {
+      if (!accept(unit)) continue;
+      const distance = chebyshev(unit.at, from);
+      if (
+        best === null ||
+        distance < bestDistance ||
+        (distance === bestDistance &&
+          compareTies(unit, best, summonerPlayerId) < 0)
+      ) {
+        best = unit;
+        bestDistance = distance;
+      }
+    }
+    return best;
+  };
+  const within = (unit: U, distance: number): boolean =>
+    chebyshev(unit.at, from) <= distance;
+  const steps: readonly [RampageStepV7, (unit: U) => boolean][] = [
+    [
+      1,
+      (unit) =>
+        within(unit, UNBOUND_CULTIST_REACH_V7) && isRobedV7(roster, unit),
+    ],
+    [2, (unit) => within(unit, reach) && !isSummonV7(unit)],
+    [3, (unit) => within(unit, reach) && isSummonV7(unit)],
+  ];
+  for (const [step, accept] of steps) {
+    const target = nearest(accept);
+    if (target !== null) return { target, step };
+  }
+  if (maximumDistance !== Number.POSITIVE_INFINITY)
+    return { target: null, step: null };
+  const target =
+    nearest((unit) => !isSummonV7(unit)) ?? nearest(() => true) ?? null;
+  return target === null ? { target: null, step: null } : { target, step: 4 };
+}
+
+/**
+ * The unit of {@link rampageChoiceV7} alone (null when there is nobody).
+ */
+export function rampageTargetV7<U extends RampageUnitFactsV7>(
+  roster: FactionRosterV7,
+  units: readonly U[],
+  daemon: { readonly id: UnitId },
+  from: CoordV7,
+  summonerPlayerId: PlayerId,
+  reach: number,
   maximumDistance = Number.POSITIVE_INFINITY,
 ): U | null {
-  let best: U | null = null;
-  let bestDistance = 0;
-  for (const unit of units) {
-    if (unit.id === daemon.id || !rampageTargetableV7(unit)) continue;
-    const distance = chebyshev(unit.at, from);
-    if (distance > maximumDistance) continue;
-    if (
-      best === null ||
-      distance < bestDistance ||
-      (distance === bestDistance &&
-        compareTies(unit, best, summonerPlayerId) < 0)
-    ) {
-      best = unit;
-      bestDistance = distance;
-    }
-  }
-  return best;
+  return rampageChoiceV7(
+    roster,
+    units,
+    daemon,
+    from,
+    summonerPlayerId,
+    reach,
+    maximumDistance,
+  ).target;
 }
 
 function compareTies(
@@ -165,6 +264,8 @@ function compareTies(
 export interface RampagePlanV7<U extends RampageUnitFactsV7> {
   /** The unit it goes for, or null when no unit is on the board for it. */
   readonly target: U | null;
+  /** The step of the target rule that chose it (`pulp_wars-mch9.35`). */
+  readonly step: RampageStepV7 | null;
   /** The tiles it steps through, in order (empty when it stays). */
   readonly path: readonly CoordV7[];
   /** Whether it ends next to its target, and so attacks it. */
@@ -173,7 +274,8 @@ export interface RampagePlanV7<U extends RampageUnitFactsV7> {
 
 /**
  * Section 6.4, rules 1 and 2: the rampage of the daemon `daemon` with Move
- * `move` on `board`. It goes for its target ({@link rampageTargetV7}) by a
+ * `move` on `board`. It goes for its target ({@link rampageChoiceV7}, with
+ * the reach `move + 1`: the Cult redesign, `pulp_wars-mch9.35`) by a
  * shortest walk over the tiles it may stand on to a tile next to the
  * target, at most `move` steps, each step to the first of the eight
  * neighbours in (y, x) order that shortens the walk; it stops as soon as it
@@ -187,15 +289,24 @@ export interface RampagePlanV7<U extends RampageUnitFactsV7> {
  */
 export function rampagePlanV7<U extends RampageUnitFactsV7>(
   board: RampageBoardV7,
+  roster: FactionRosterV7,
   units: readonly U[],
   daemon: { readonly id: UnitId; readonly at: CoordV7 },
   move: number,
   summonerPlayerId: PlayerId,
 ): RampagePlanV7<U> {
-  const target = rampageTargetV7(units, daemon, daemon.at, summonerPlayerId);
-  if (target === null) return { target: null, path: [], attacks: false };
+  const { target, step } = rampageChoiceV7(
+    roster,
+    units,
+    daemon,
+    daemon.at,
+    summonerPlayerId,
+    move + 1,
+  );
+  if (target === null)
+    return { target: null, step: null, path: [], attacks: false };
   if (chebyshev(daemon.at, target.at) === 1)
-    return { target, path: [], attacks: true };
+    return { target, step, path: [], attacks: true };
   const free = (at: CoordV7): boolean =>
     same(at, daemon.at) || board.tile(at) === "FREE";
   const keyOf = (at: CoordV7): number => at.y * board.width + at.x;
@@ -233,7 +344,12 @@ export function rampagePlanV7<U extends RampageUnitFactsV7>(
       path.push(next);
       current = next;
     }
-    return { target, path, attacks: chebyshev(current, target.at) === 1 };
+    return {
+      target,
+      step,
+      path,
+      attacks: chebyshev(current, target.at) === 1,
+    };
   }
   // No walk reaches the target: the reachable tile nearest to it.
   const reached = new Map<number, readonly CoordV7[]>([[keyOf(current), []]]);
@@ -263,9 +379,45 @@ export function rampagePlanV7<U extends RampageUnitFactsV7>(
   }
   return {
     target,
+    step,
     path: best.path,
     attacks: chebyshev(best.at, target.at) === 1,
   };
+}
+
+/**
+ * The Cult redesign (`pulp_wars-mch9.35`, section 9.1): whether an Unbound
+ * daemon that killed the unit on `at` advances onto it: a tile the rampage
+ * walk enters (Grass, Forest, or Mountain; never water, ice, a Rift, a
+ * settlement center, a curiosity tile, or a treasure chest, and no mound or
+ * Barricade). The victim's own body is gone by then; anything else there
+ * keeps it where it stands.
+ */
+export function rampageAdvanceTileV7(
+  state: Pick<
+    GameStateV7,
+    | "board"
+    | "units"
+    | "burrowed"
+    | "barricades"
+    | "treasureChests"
+    | "curiosities"
+  >,
+  at: CoordV7,
+): boolean {
+  const { board } = state;
+  if (at.x < 0 || at.y < 0 || at.x >= board.width || at.y >= board.height)
+    return false;
+  const tile = board.tiles[at.y * board.width + at.x];
+  return (
+    tile !== undefined &&
+    rampageTerrainV7(tile.terrain) &&
+    tile.site === null &&
+    moundAtV7(state, at) === undefined &&
+    barricadeAtV7(state, at) === undefined &&
+    !state.treasureChests.some((chest) => same(chest, at)) &&
+    !state.curiosities.some((curiosity) => same(curiosity.at, at))
+  );
 }
 
 /**

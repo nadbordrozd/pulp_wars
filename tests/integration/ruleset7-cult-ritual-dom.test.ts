@@ -13,7 +13,6 @@ import {
   PROCLAIM_COWED_V7,
   RITUAL_CONFIRM_HINT_V7,
   STARFALL_MOVED_V7,
-  STARFALL_NO_CHANTER_V7,
   TENTACLE_EXISTS_V7,
   TRICK_FROGGED_V7,
   greatSummoningChantersTextV7,
@@ -218,19 +217,12 @@ describe("Star-fall: the mark is chosen, then begun", () => {
     for (const target of targets) {
       expect(target.family).toBe("STARFALL");
       expect(targetHighlightStyleV7(target.family)).toBe("PLACE");
-      expect(target.semanticLabel).toMatch(/^Star-fall here .*7 damage/);
+      // A star begins alone (the Cult redesign, `pulp_wars-mch9.34`).
+      expect(target.semanticLabel).toMatch(/^Star-fall here .*6 damage/);
       expect(target.semanticLabel).not.toMatch(/\d, ?\d/);
     }
-    // The two Initiates that would chant are marked, not picked.
-    expect(
-      entries(scene, "ability-target:CHANT:").map((entry) => [
-        entry.at,
-        entry.label,
-      ]),
-    ).toEqual([
-      [R.chanter, "Chants"],
-      [R.secondChanter, "Chants"],
-    ]);
+    // Nobody is marked to chant: the Initiates join after the begin.
+    expect(entries(scene, "ability-target:CHANT:")).toEqual([]);
     expectPlainWords(dock());
     scene.app.destroy();
   });
@@ -249,7 +241,7 @@ describe("Star-fall: the mark is chosen, then begun", () => {
     });
     expect(live()).toContain(RITUAL_CONFIRM_HINT_V7);
     const panel = requiredElement<HTMLElement>("[data-v7-cult-pick]");
-    const summary = "2 chanters · 7 damage · 3 units · 1 of yours";
+    const summary = "6 damage · 3 units · 1 of yours";
     expect(panel.getAttribute("aria-label")).toBe(summary);
     expect(panel.querySelector(".v7-martian-detail")?.textContent).toBe(
       summary,
@@ -265,22 +257,22 @@ describe("Star-fall: the mark is chosen, then begun", () => {
     // The board: the mark's chalk, its nine tiles, and each unit's hit.
     expect(marks(scene)).toEqual([["RITUAL_MARK", R.star]]);
     expect(entries(scene, "ability-area:STARFALL:")).toHaveLength(9);
-    expect(
-      entries(scene, "ability-target:STARFALL:")
-        .map((entry) => [
-          entry.at,
-          entry.label,
-          entry.abilityStyle,
-          entry.lethal,
-        ])
-        .sort((left, right) => String(left[1]).localeCompare(String(right[1]))),
-    ).toEqual([
-      // The Knight has 6 HP left: the star takes them all.
-      [R.starKnight, "−6", "BLAST", true],
-      // An Initiate has 7 HP since the Cult redesign (`pulp_wars-mch9.31`).
-      [R.starInitiate, "−7", "BLAST_FRIENDLY", true],
-      [R.starFighter, "−7", "BLAST", false],
+    const hits = entries(scene, "ability-target:STARFALL:").map((entry) => [
+      entry.at,
+      entry.label,
+      entry.abilityStyle,
+      entry.lethal,
     ]);
+    expect(hits).toHaveLength(3);
+    expect(hits).toEqual(
+      expect.arrayContaining([
+        // The Knight has 6 HP left: the star alone takes them all.
+        [R.starKnight, "−6", "BLAST", true],
+        // An Initiate has 7 HP since the Cult redesign (`pulp_wars-mch9.31`).
+        [R.starInitiate, "−6", "BLAST_FRIENDLY", false],
+        [R.starFighter, "−6", "BLAST", false],
+      ]),
+    );
     expect(targetAt(scene, R.star).semanticLabel).toContain(
       RITUAL_CONFIRM_HINT_V7,
     );
@@ -323,7 +315,7 @@ describe("Star-fall: the mark is chosen, then begun", () => {
     const begin = requiredButton("cult-ritual-begin");
     expect(begin.textContent).toBe("Begin");
     expect(begin.getAttribute("aria-label")).toMatch(
-      /^Begin Star-fall\. 2 chanters/,
+      /^Begin Star-fall\. 6 damage/,
     );
     begin.click();
     await waitUntil(() => scene.controller.accepted.length === 1);
@@ -353,12 +345,14 @@ describe("Star-fall: the mark is chosen, then begun", () => {
     button.click();
     expect(live()).toContain(STARFALL_MOVED_V7);
     scene.app.destroy();
-    // Nobody to chant.
+    // Nobody to chant is no reason since the Cult redesign
+    // (`pulp_wars-mch9.34`): a lone Stargazer begins it.
     document.body.innerHTML = '<div id="app"></div>';
     scene = rig(cultFieldV7([{ seat: 0, role: "CATAPULT", at: R.stargazer }]));
     select(scene, R.stargazer);
     button = requiredButton("cult-starfall");
-    expect(button.dataset.disabledReason).toBe(STARFALL_NO_CHANTER_V7);
+    expect(button.getAttribute("aria-disabled")).toBeNull();
+    expect(button.dataset.disabledReason).toBeUndefined();
     scene.app.destroy();
   });
 });
@@ -380,14 +374,15 @@ describe("A ritual under way, for every viewer", () => {
         (entry) => entry.cultMark?.kind === "COUNTDOWN",
       ),
     );
+    // Both Initiates chanting: 6 + 3 + 3.
     expect(countdown.cultMark).toEqual({
       kind: "COUNTDOWN",
       ritual: "STARFALL",
       turns: 1,
-      damage: 7,
+      damage: 12,
     });
     expect(countdown.label).toMatch(
-      /^Star-fall lands here at the start of your next turn: 7 damage/,
+      /^Star-fall lands here at the start of your next turn: 12 damage/,
     );
     expect(entries(scene, "ability-area:STARFALL:")).toHaveLength(9);
     expect(entries(scene, "ability-target:STARFALL:")).toHaveLength(3);
@@ -426,7 +421,7 @@ describe("A ritual under way, for every viewer", () => {
       ),
     );
     expect(countdown.label).toMatch(
-      /^Star-fall lands here at the start of the Cultists' next turn: 6 damage/,
+      /^Star-fall lands here at the start of the Cultists' next turn: 9 damage/,
     );
     // The viewer's own units under the star wear the warning stripes.
     expect(
@@ -435,8 +430,8 @@ describe("A ritual under way, for every viewer", () => {
         entry.abilityStyle,
       ]),
     ).toEqual([
-      ["−6", "BLAST_FRIENDLY"],
-      ["−6", "BLAST_FRIENDLY"],
+      ["−9", "BLAST_FRIENDLY"],
+      ["−9", "BLAST_FRIENDLY"],
     ]);
     // The Cowed capital: the banner on the board, the line in its panel.
     const capital = required(

@@ -2,6 +2,7 @@ import {
   PROCLAIM_RANGE_V7,
   RIBBIT_RANGE_V7,
   previewBeginRitualV7,
+  previewJoinChantV7,
   previewProclaimV7,
   previewRibbitV7,
   previewRitualV7,
@@ -23,6 +24,7 @@ import {
   COWED_LABEL_V7,
   COWED_TOOLTIP_V7,
   CULT_TRICK_PICKS_V7,
+  JOIN_CHANT_TARGET_LABEL_V7,
   PROCLAIM_TARGET_LABEL_V7,
   RIBBIT_TARGET_LABEL_V7,
   RITUAL_CONFIRM_HINT_V7,
@@ -31,6 +33,7 @@ import {
   beginRitualTargetNameV7,
   cultTrickCommandsV7,
   frogLookV7,
+  joinChantTargetNameV7,
   proclaimTargetNameV7,
   ribbitTargetNameV7,
   ritualMarkNameV7,
@@ -81,7 +84,14 @@ export type CultTrickPickV7 =
       readonly chosen: CoordV7 | null;
     }
   | {
-      readonly kind: "PROCLAIM" | "RIBBIT" | "SWITCHEROO" | "TENTACLE";
+      readonly kind:
+        | "PROCLAIM"
+        | "RIBBIT"
+        | "SWITCHEROO"
+        | "TENTACLE"
+        // The Cult redesign (`pulp_wars-mch9.34`): the Stargazer whose
+        // pending star the cultist joins.
+        | "JOIN_CHANT";
       readonly unitId: UnitId;
     };
 
@@ -92,6 +102,7 @@ const TRICK_PICK_KINDS: ReadonlySet<string> = new Set([
   "RIBBIT",
   "SWITCHEROO",
   "TENTACLE",
+  "JOIN_CHANT",
 ]);
 
 /** Whether a Cult pick is one of this module's. */
@@ -374,11 +385,9 @@ export function cultTrickPickTargetsV7(
   const prompt = CULT_TRICK_PICKS_V7[pick.kind];
   switch (pick.kind) {
     case "STARFALL": {
-      // One sentence for every tile (a star's damage is the circle's);
-      // the chosen tile has its forecast.
-      const damage = starfallDamageV7(
-        ritualChantersV7(view, view.units, actor).length,
-      );
+      // One sentence for every tile (a star begins alone since the Cult
+      // redesign, `pulp_wars-mch9.34`); the chosen tile has its forecast.
+      const damage = starfallDamageV7(0);
       const chosen = chosenPreview(view, pick);
       return offered.flatMap((command): MapCommandTargetV7[] =>
         command.kind !== "BEGIN_RITUAL"
@@ -524,6 +533,28 @@ export function cultTrickPickTargetsV7(
           },
         ];
       });
+    // The Cult redesign (`pulp_wars-mch9.34`): the Stargazer it joins.
+    case "JOIN_CHANT":
+      return offered.flatMap((command): MapCommandTargetV7[] => {
+        if (command.kind !== "JOIN_CHANT") return [];
+        const leader = unitById(command.leaderUnitId);
+        const preview = previewJoinChantV7(
+          view,
+          command.unitId,
+          command.leaderUnitId,
+        );
+        return leader === undefined || preview === null
+          ? []
+          : [
+              {
+                at: leader.at,
+                command,
+                family: "JOIN_CHANT",
+                previewLabel: JOIN_CHANT_TARGET_LABEL_V7,
+                semanticLabel: `${joinChantTargetNameV7(preview)} ${prompt}.`,
+              },
+            ];
+      });
   }
 }
 
@@ -551,16 +582,19 @@ export function addCultTrickPickEntriesV7(
     });
   };
   if (pick.kind === "STARFALL" || pick.kind === "GREAT_SUMMONING") {
-    for (const chanter of ritualChantersV7(view, view.units, actor))
-      entries.push({
-        key: `ability-target:CHANT:${chanter.id}`,
-        kind: "ABILITY_TARGET",
-        layer: 7.5,
-        at: chanter.at,
-        abilityStyle: "RALLY",
-        areaSupport: "QUIET",
-        label: "Chants",
-      });
+    // A star begins alone (the Cult redesign, `pulp_wars-mch9.34`): only
+    // the Great Summoning's circle chants at its begin.
+    if (pick.kind === "GREAT_SUMMONING")
+      for (const chanter of ritualChantersV7(view, view.units, actor))
+        entries.push({
+          key: `ability-target:CHANT:${chanter.id}`,
+          kind: "ABILITY_TARGET",
+          layer: 7.5,
+          at: chanter.at,
+          abilityStyle: "RALLY",
+          areaSupport: "QUIET",
+          label: "Chants",
+        });
     const chosen = chosenPreview(view, pick);
     if (chosen === null) return;
     entries.push({

@@ -195,9 +195,11 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
     // after BOO (80).
     // The Cult redesign's roster (`pulp_wars-mch9.31`) removes PICK_ME
     // (83).
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(83);
+    // The Cult redesign's Star-fall (`pulp_wars-mch9.34`) adds
+    // JOIN_CHANT after TENTACLE (84).
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(84);
     const breakOff = COMMAND_KIND_ORDER_V7.indexOf("BREAK_OFF");
-    expect(COMMAND_KIND_ORDER_V7.slice(breakOff, breakOff + 16)).toEqual([
+    expect(COMMAND_KIND_ORDER_V7.slice(breakOff, breakOff + 17)).toEqual([
       "BREAK_OFF",
       "FROST_BOLT",
       "STAMPEDE",
@@ -218,6 +220,8 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
       "SWITCHEROO",
       "TENTACLE",
       // (PICK_ME retired with the Chosen, `pulp_wars-mch9.31`.)
+      // The Cult redesign's Star-fall (`pulp_wars-mch9.34`).
+      "JOIN_CHANT",
       "CAPTURE",
     ]);
     const tractor = COMMAND_KIND_ORDER_V7.indexOf("TRACTOR_BEAM");
@@ -252,7 +256,9 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
     // DAEMON_BOUND, from RITUAL_BEGUN to CITY_COWED (148).
     // The Cult redesign's roster (`pulp_wars-mch9.31`) removes
     // PICK_ME_SHOUTED (154).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(154);
+    // The Cult redesign's Star-fall (`pulp_wars-mch9.34`) adds
+    // CHANT_JOINED after RITUAL_BEGUN (155).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(155);
     const after = (order: readonly string[], kind: string) =>
       order[order.indexOf(kind) + 1];
     expect(after(DOMAIN_EVENT_KIND_ORDER_V7, "UNITS_RALLIED")).toBe(

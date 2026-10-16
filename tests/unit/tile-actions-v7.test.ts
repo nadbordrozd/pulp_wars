@@ -25,6 +25,7 @@ import {
   TILE_ACTIONS_UI_V7 as A,
   tileActionsBrainFixtureV7,
   tileActionsHexerFixtureV7,
+  tileActionsJoinChantFixtureV7,
   tileActionsKnightFixtureV7,
   tileActionsStargazerFixtureV7,
   tileActionsYetiFixtureV7,
@@ -32,6 +33,10 @@ import {
 
 const at = (x: number, y: number): CoordV7 => ({ x, y });
 const id = (value: number): UnitId => value as UnitId;
+function required<T>(value: T | null | undefined): T {
+  if (value === null || value === undefined) throw new Error("missing");
+  return value;
+}
 
 function planOf(state: GameStateV7, unitAt: CoordV7): TileActionPlanV7 | null {
   const view = viewForV7(state, state.humanPlayerId);
@@ -263,28 +268,28 @@ describe("tile actions: the planner", () => {
   });
 
   /**
-   * The Cult redesign's "join the chant" (pulp_wars-mch9.30,
-   * RULESET_7_CULT_REDESIGN.md sections 8.2 and 13; designed, not yet a
-   * command): `JOIN_CHANT { unitId, leaderUnitId }` of a cultist beside a
-   * Stargazer leading a pending Star-fall, and "a tap joins". The command
-   * does not exist yet, so this holds its shape with a stand-in target: an
-   * ability aimed at the adjacent Stargazer, marked on the Stargazer's
-   * tile, `oneTap` (no chooser with Select). With a second action on the
-   * Stargazer's tile the chooser comes back.
+   * The Cult redesign's "join the chant" (pulp_wars-mch9.34,
+   * RULESET_7_CULT_REDESIGN.md sections 8.2 and 13): `JOIN_CHANT { unitId,
+   * leaderUnitId }` of a cultist beside a Stargazer leading a pending
+   * Star-fall, and "a tap joins": its row of `TILE_ABILITIES_V7`, marked on
+   * the Stargazer's tile, `oneTap` (no chooser with Select). With a second
+   * action on the Stargazer's tile the chooser comes back.
    */
   it("puts an ability aimed at an adjacent own unit on that unit (join the chant)", () => {
     const stargazer = at(5, 4);
-    const join = {
-      id: "JOIN_CHANT",
+    const join = required(
+      TILE_ABILITIES_V7.find((ability) => ability.id === "JOIN_CHANT"),
+    );
+    expect(join).toMatchObject({
       label: "Join the chant",
       icon: "candle",
       oneTap: true,
-    } as const;
+      families: ["JOIN_CHANT"],
+    });
     const chant: MapCommandTargetV7 = {
       at: stargazer,
-      family: "CHANNEL",
-      // The fixture's stand-in for the future command.
-      command: { kind: "CHANNEL", unitId: id(1), daemonUnitId: id(7) },
+      family: "JOIN_CHANT",
+      command: { kind: "JOIN_CHANT", unitId: id(1), leaderUnitId: id(7) },
       previewLabel: "+3",
     };
     const ownUnitAt = (where: CoordV7) =>
@@ -381,12 +386,35 @@ describe("tile actions: the factions' scenes", () => {
     expect(initiate?.actions.map((action) => action.id)).toEqual(["STARFALL"]);
   });
 
+  it("puts the join badge on the casting Stargazer for an Initiate beside it, and only then", () => {
+    // The Cult redesign (`pulp_wars-mch9.34`): before the begin, nothing.
+    expect(
+      tileActionsAtV7(
+        planOf(tileActionsStargazerFixtureV7(), A.joiner),
+        A.stargazer,
+      ),
+    ).toBeUndefined();
+    const plan = planOf(tileActionsJoinChantFixtureV7(), A.joiner);
+    const tile = required(tileActionsAtV7(plan, A.stargazer));
+    expect(tile.actions.map((action) => [action.id, action.icon])).toEqual([
+      ["JOIN_CHANT", "candle"],
+    ]);
+    expect(tile.actions[0]?.style).toBe("SUPPORT");
+    expect(tile.actions[0]?.semanticLabel).toMatch(
+      /^Join this Stargazer's chant: its star hits 9 instead of 6/,
+    );
+    expect(tile).toMatchObject({ ownUnit: true, chooser: false });
+    // The Stargazer itself (it leads the star) carries no join.
+    expect(planOf(tileActionsJoinChantFixtureV7(), A.stargazer)).toBeNull();
+  });
+
   it("names no tile in any action", () => {
     for (const [state, unit] of [
       [tileActionsHexerFixtureV7(), A.hexer],
       [tileActionsYetiFixtureV7(), A.yeti],
       [tileActionsBrainFixtureV7(), A.brain],
       [tileActionsStargazerFixtureV7(), A.stargazer],
+      [tileActionsJoinChantFixtureV7(), A.joiner],
     ] as const)
       for (const tile of planOf(state, unit)?.tiles ?? [])
         for (const action of tile.actions)

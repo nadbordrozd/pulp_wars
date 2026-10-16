@@ -147,12 +147,13 @@ function primaryActedV7(unit: ActorFactsV7): boolean {
 }
 
 /**
- * Section 7.1: the chanters a ritual led by `leader` would begin with: the
- * leader's own robed cultists (in land form, with Channel, so never a
- * mind-controlled unit) on the eight tiles around it that have not used a
- * primary action (they may have moved) and are not Frozen or frogs
- * (`pulp_wars-mch9.8`), in unit-ID order. Every such unit joins; a player
- * who wants one left out uses it first.
+ * Section 7.1: the circle around `leader`: the leader's own robed cultists
+ * (in land form, with Channel, so never a mind-controlled unit) on the
+ * eight tiles around it that have not used a primary action (they may have
+ * moved) and are not Frozen or frogs (`pulp_wars-mch9.8`), in unit-ID
+ * order. Every such unit joins a Great Summoning at its begin; a player who
+ * wants one left out uses it first. A Star-fall begins with nobody (the
+ * Cult redesign, `pulp_wars-mch9.34`: {@link beginChantersV7}).
  */
 export function ritualChantersV7<U extends ActorFactsV7>(
   lookup: FrozenLookupV7 & TrickListsV7,
@@ -173,6 +174,21 @@ export function ritualChantersV7<U extends ActorFactsV7>(
         !unitIsFrogV7(lookup, unit),
     )
     .sort((left, right) => left.id - right.id);
+}
+
+/**
+ * The chanters the ritual `ritual` led by `leader` begins with: the circle
+ * ({@link ritualChantersV7}) for the Great Summoning, nobody for a
+ * Star-fall (the Cult redesign, `pulp_wars-mch9.34`, section 8.2: the
+ * Stargazer casts alone and cultists join with `JOIN_CHANT`).
+ */
+export function beginChantersV7<U extends ActorFactsV7>(
+  lookup: FrozenLookupV7 & TrickListsV7,
+  units: readonly U[],
+  leader: RitualUnitFactsV7,
+  ritual: RitualKindV7,
+): readonly U[] {
+  return ritual === "STARFALL" ? [] : ritualChantersV7(lookup, units, leader);
 }
 
 /**
@@ -246,8 +262,8 @@ export type BeginRitualRejectionV7 =
  * Stargazer's `STARFALL`; the Great Summoning: the Summoner's `SUMMON`, with
  * its seat's `greatSummoning`; a mind-controlled unit has neither) that has
  * not used a primary action. A Stargazer must not have moved this turn. It
- * needs the rite's chanters ({@link ritualChantersV7}), the rite's Favour,
- * and a legal mark.
+ * needs the rite's chanters ({@link beginChantersV7}: a Star-fall none),
+ * the rite's Favour, and a legal mark.
  */
 export function beginRitualRejectionV7<U extends ActorFactsV7>(
   lookup: FrozenLookupV7 & TrickListsV7,
@@ -277,7 +293,7 @@ export function beginRitualRejectionV7<U extends ActorFactsV7>(
   if (ritual === "STARFALL" && leader.activation.moved)
     return { code: "RITUAL_NOT_LEGAL", reason: "MOVED" };
   if (
-    ritualChantersV7(lookup, units, leader).length <
+    beginChantersV7(lookup, units, leader, ritual).length <
     RITUAL_MINIMUM_CHANTERS_V7[ritual]
   )
     return { code: "RITUAL_NOT_LEGAL", reason: "CHANTERS" };
@@ -338,6 +354,90 @@ export function starfallResultsV7<U extends RitualUnitFactsV7>(
         damage,
       ),
     );
+}
+
+// ---------------------------------------------------- Join the chant ---
+
+/**
+ * A ritual as a join reads it: a canonical entry, or a viewer's public one
+ * (its leader null when the viewer does not see it).
+ */
+export interface JoinableRitualV7 {
+  readonly kind: RitualKindV7;
+  readonly playerId: PlayerId;
+  readonly leaderUnitId: UnitId | null;
+  readonly chanterUnitIds: readonly UnitId[];
+}
+
+export type JoinChantRejectionV7 =
+  | { readonly code: "UNIT_ROLE_INVALID" }
+  | {
+      readonly code: "JOIN_CHANT_NOT_LEGAL";
+      readonly reason:
+        "EMBARKED" | "CHANTING" | "ACTED" | "STATUS" | "RITUAL" | "ADJACENT";
+    };
+
+/**
+ * The pending Star-fall of the seat `playerId` that the Stargazer
+ * `leaderUnitId` leads, if any.
+ */
+export function pendingStarfallOfV7<R extends JoinableRitualV7>(
+  rituals: readonly R[],
+  playerId: PlayerId,
+  leaderUnitId: UnitId,
+): R | undefined {
+  return rituals.find(
+    (ritual) =>
+      ritual.kind === "STARFALL" &&
+      ritual.playerId === playerId &&
+      ritual.leaderUnitId === leaderUnitId,
+  );
+}
+
+/**
+ * The Cult redesign (`pulp_wars-mch9.34`, RULESET_7_CULT_REDESIGN.md
+ * section 8.2), shared by the reducer and the public command query: the
+ * first reason the robed cultist `joiner` may not join the chant of the
+ * Star-fall led by `leader` (the unit the command names, if it is on the
+ * board), or null. The joiner has Join the chant (a robed role of a Cult
+ * seat: a mind-controlled unit has none), stands in land form, is in no
+ * ritual already, has not used its primary action (it may have moved), is
+ * neither Frozen nor a frog, and stands on one of the eight tiles around a
+ * Stargazer that leads a pending Star-fall of the joiner's seat. A star is
+ * pending only from its begin to its seat's next Start Turn, so a join
+ * happens in the casting turn.
+ */
+export function joinChantRejectionV7(
+  lookup: FrozenLookupV7 & TrickListsV7,
+  rituals: readonly JoinableRitualV7[],
+  joiner: ActorFactsV7,
+  leader: RitualUnitFactsV7 | undefined,
+): JoinChantRejectionV7 | null {
+  if (!unitRoleRuleV7(lookup, joiner).abilities.includes("JOIN_CHANT"))
+    return { code: "UNIT_ROLE_INVALID" };
+  if (!isRobedCultistV7(lookup, joiner))
+    return { code: "JOIN_CHANT_NOT_LEGAL", reason: "EMBARKED" };
+  if (
+    rituals.some(
+      (ritual) =>
+        ritual.leaderUnitId === joiner.id ||
+        ritual.chanterUnitIds.includes(joiner.id),
+    )
+  )
+    return { code: "JOIN_CHANT_NOT_LEGAL", reason: "CHANTING" };
+  if (primaryActedV7(joiner))
+    return { code: "JOIN_CHANT_NOT_LEGAL", reason: "ACTED" };
+  if (unitIsFrozenV7(lookup, joiner) || unitIsFrogV7(lookup, joiner))
+    return { code: "JOIN_CHANT_NOT_LEGAL", reason: "STATUS" };
+  if (
+    leader === undefined ||
+    leader.hp <= 0 ||
+    pendingStarfallOfV7(rituals, joiner.ownerId, leader.id) === undefined
+  )
+    return { code: "JOIN_CHANT_NOT_LEGAL", reason: "RITUAL" };
+  if (chebyshev(joiner.at, leader.at) !== 1)
+    return { code: "JOIN_CHANT_NOT_LEGAL", reason: "ADJACENT" };
+  return null;
 }
 
 // ------------------------------------------------- The Great Summoning ---
@@ -625,11 +725,11 @@ export function ritualDisruptionsV7(
         cause,
       });
     }
-    const chanterUnitIds = ritual.chanterUnitIds.filter(
-      (unitId) =>
-        !gone.has(unitId) &&
-        (now === undefined || now.chanterUnitIds.includes(unitId)),
-    );
+    // The chanters as the ritual stands after the command (a cultist that
+    // joined in it, `pulp_wars-mch9.34`, included), less the disrupted.
+    const chanterUnitIds = (
+      now?.chanterUnitIds ?? ritual.chanterUnitIds
+    ).filter((unitId) => !gone.has(unitId));
     if (
       gone.size === 0 &&
       now !== undefined &&
@@ -645,7 +745,8 @@ export function ritualDisruptionsV7(
     rituals = rituals.filter(
       (candidate) => candidate.leaderUnitId !== ritual.leaderUnitId,
     );
-    if (reason === null) rituals = [...rituals, { ...ritual, chanterUnitIds }];
+    if (reason === null)
+      rituals = [...rituals, { ...(now ?? ritual), chanterUnitIds }];
     else
       events.push({
         kind: "RITUAL_FIZZLED",
@@ -723,6 +824,7 @@ export function prunedRitualsV7(state: GameStateV7): GameStateV7 {
 // ----------------------------------------------------- Reducer steps ---
 
 type BeginRitualCommandV7 = Extract<CommandV7, { kind: "BEGIN_RITUAL" }>;
+type JoinChantCommandV7 = Extract<CommandV7, { kind: "JOIN_CHANT" }>;
 type ProclaimCommandV7 = Extract<CommandV7, { kind: "PROCLAIM" }>;
 
 /** Marks a unit as having used its primary action. */
@@ -735,8 +837,9 @@ function withPrimaryUsed(unit: UnitStateV7): UnitStateV7 {
 
 /**
  * Sections 7.1, 7.3, and 7.4: `BEGIN_RITUAL`, a primary action of the
- * leader that spends the primary action of every chanter too. A Great
- * Summoning pays its 20 Favour now (`FAVOUR_SPENT`); nothing is refunded
+ * leader that spends the primary action of every chanter too (a Star-fall
+ * begins with none: the Cult redesign, `pulp_wars-mch9.34`). A Great
+ * Summoning pays its Favour now (`FAVOUR_SPENT`); nothing is refunded
  * when a ritual fizzles. `RITUAL_BEGUN` names the chanters and the mark;
  * the ritual completes at the seat's next Start Turn.
  */
@@ -791,7 +894,12 @@ export function applyBeginRitualV7(
         });
     }
   try {
-    const chanters = ritualChantersV7(state, state.units, leader);
+    const chanters = beginChantersV7(
+      state,
+      state.units,
+      leader,
+      command.ritual,
+    );
     const chanterUnitIds = chanters.map((unit) => unit.id);
     const events: DomainEventV7[] = [];
     const cost = ritualFavourCostV7(command.ritual);
@@ -838,6 +946,81 @@ export function applyBeginRitualV7(
         },
       }),
       events,
+    );
+  } catch (cause) {
+    return kit.arithmeticFailure(original, cause);
+  }
+}
+
+/**
+ * The Cult redesign (`pulp_wars-mch9.34`, section 8.2): `JOIN_CHANT`, a
+ * primary action of the joiner (it cannot move after it). It becomes a
+ * chanter of the Stargazer's pending Star-fall (Candlelit, public, and 3
+ * more damage), and `CHANT_JOINED` names the star's damage after the join.
+ * It pays no Favour. A disrupted joiner leaves the ritual as any chanter
+ * does ({@link ritualDisruptionsV7}).
+ */
+export function applyJoinChantV7(
+  kit: CultReducerKitV7,
+  original: GameStateV7,
+  state: GameStateV7,
+  actor: PlayerId,
+  command: JoinChantCommandV7,
+): ApplyCommandResultV7 {
+  if (state.commandIndex >= Number.MAX_SAFE_INTEGER)
+    return kit.rejected(original, "INTEGER_OVERFLOW");
+  const actorCheck = kit.validateUnitActor(state, actor, command.unitId);
+  if (!actorCheck.ok)
+    return kit.rejected(original, actorCheck.code, actorCheck.params);
+  const joiner = actorCheck.unit;
+  const leader = state.units.find(
+    (unit) => unit.id === command.leaderUnitId && unit.hp > 0,
+  );
+  const rejection = joinChantRejectionV7(
+    state,
+    state.cult.rituals,
+    joiner,
+    leader,
+  );
+  if (rejection !== null)
+    return rejection.code === "UNIT_ROLE_INVALID"
+      ? kit.rejected(original, "UNIT_ROLE_INVALID", { role: joiner.role })
+      : kit.rejected(original, "JOIN_CHANT_NOT_LEGAL", {
+          reason: rejection.reason,
+        });
+  const ritual = pendingStarfallOfV7(
+    state.cult.rituals,
+    actor,
+    command.leaderUnitId,
+  );
+  if (ritual === undefined) return kit.rejected(original, "INVALID_STATE");
+  try {
+    const chanterUnitIds = [...ritual.chanterUnitIds, joiner.id].sort(
+      (left, right) => left - right,
+    );
+    return kit.accepted(
+      kit.checked({
+        ...state,
+        commandIndex: kit.nextSafe(state.commandIndex),
+        units: state.units.map((unit) =>
+          unit.id === joiner.id ? withPrimaryUsed(unit) : unit,
+        ),
+        cult: {
+          ...state.cult,
+          rituals: state.cult.rituals.map((entry) =>
+            entry === ritual ? { ...entry, chanterUnitIds } : entry,
+          ),
+        },
+      }),
+      [
+        {
+          kind: "CHANT_JOINED",
+          playerId: actor,
+          unitId: joiner.id,
+          leaderUnitId: ritual.leaderUnitId,
+          damage: starfallDamageV7(chanterUnitIds.length),
+        },
+      ],
     );
   } catch (cause) {
     return kit.arithmeticFailure(original, cause);

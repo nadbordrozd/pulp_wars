@@ -108,6 +108,8 @@ const EVERY_FAMILY: Readonly<
   PROCLAIM: "ATTACK",
   RIBBIT: "ATTACK",
   SWITCHEROO: "ATTACK",
+  // The Cult redesign (`pulp_wars-mch9.34`): the Stargazer a cultist joins.
+  JOIN_CHANT: "SUPPORT",
 };
 
 describe("target highlight vocabulary", () => {

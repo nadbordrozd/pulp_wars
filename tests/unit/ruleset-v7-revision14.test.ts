@@ -95,9 +95,9 @@ interface ArenaOptions {
 
 describe("ruleset-7 revision-14 identity and roster", () => {
   it("keeps rejecting r13 after the r54 identity and cleans the r13 through r53 save keys", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r87");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r87.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-74, -32)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r88");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r88.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-75, -33)).toEqual([
       "pulpWars.save.v7r13.current",
       "pulpWars.save.v7r14.current",
       "pulpWars.save.v7r15.current",

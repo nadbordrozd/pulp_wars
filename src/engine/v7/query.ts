@@ -337,12 +337,15 @@ import {
   unboundEntryV7,
   unitIsUnboundV7,
   type RampageBoardV7,
+  type RampageStepV7,
 } from "./cult-unbound";
 import {
   attacksLeftV7,
+  beginChantersV7,
   beginRitualRejectionV7,
+  joinChantRejectionV7,
+  pendingStarfallOfV7,
   proclaimRejectionV7,
-  ritualChantersV7,
   ritualFavourCostV7,
   ritualLeaderAbilityV7,
   starfallAreaV7,
@@ -1645,6 +1648,26 @@ function appendPublicCultCommandsV7(
           break marks;
       }
   }
+  // Join the chant (the Cult redesign, `pulp_wars-mch9.34`, section 8.2),
+  // offered exactly when the reducer accepts it: the viewer's own rituals
+  // and their Stargazers are in the view.
+  if (abilities.includes("JOIN_CHANT"))
+    for (const ritual of view.cult.rituals) {
+      if (
+        ritual.kind !== "STARFALL" ||
+        ritual.playerId !== unit.ownerId ||
+        ritual.leaderUnitId === null
+      )
+        continue;
+      const leaderUnitId = ritual.leaderUnitId;
+      const leader = view.units.find((other) => other.id === leaderUnitId);
+      if (joinChantRejectionV7(view, view.cult.rituals, unit, leader) === null)
+        candidates.push({
+          kind: "JOIN_CHANT",
+          unitId: unit.id,
+          leaderUnitId,
+        });
+    }
   if (abilities.includes("PROCLAIM"))
     for (const city of view.cities)
       if (proclaimRejectionV7(view, unit, city) === null)
@@ -4551,6 +4574,14 @@ export interface RampagePreviewV7 {
   readonly short: boolean;
   /** The eye mark: the unit it goes for, or null when it sees nobody. */
   readonly targetUnitId: UnitId | null;
+  /**
+   * The Cult redesign (`pulp_wars-mch9.35`, RULESET_7_CULT_REDESIGN.md
+   * section 9.2): the step of the target rule that chose it: 1, a robed
+   * cultist within 2; 2, anyone in reach (Move + 1) who is not a summon;
+   * 3, a summon in reach; 4, the walk toward the nearest unit beyond it.
+   * Null with no target.
+   */
+  readonly step: RampageStepV7 | null;
   /** The tiles it steps through (empty when it stays). */
   readonly path: readonly CoordV7[];
   /** Whether it ends next to its target and attacks it. */
@@ -4605,6 +4636,7 @@ export function previewRampageV7(
   const move = NEUTRAL_ROLE_RULES_V7[role].move;
   const plan = rampagePlanV7(
     publicRampageBoardV7(view, unitId),
+    view,
     view.units,
     daemon,
     move,
@@ -4626,6 +4658,7 @@ export function previewRampageV7(
     strands,
     short: !unbound && strands < control,
     targetUnitId: plan.target?.id ?? null,
+    step: plan.step,
     path: plan.path,
     attacks: plan.attacks,
     attackCount: RAMPAGE_ATTACKS_V7[role],
@@ -4637,7 +4670,7 @@ export function previewRampageV7(
 
 /**
  * The Cultists (`pulp_wars-mch9.7`, section 7.4): what a star on `at` does
- * as the viewer's board stands: its damage (5, plus 1 for each chanter), its
+ * as the viewer's board stands: its damage (6, plus 3 for each chanter), its
  * area (the marked tile and the eight around it), the hit on every unit the
  * viewer sees there (friend and foe; fixed damage, after Armoured, Plated,
  * and a Shield), and the Field Defense and Barricades it destroys. `exact`
@@ -4678,9 +4711,10 @@ export interface SummoningForecastV7 {
 
 /**
  * The Cultists (section 7.1): the preview of an offered `BEGIN_RITUAL`: the
- * chanters that join (every own robed cultist beside the leader that has
- * not used a primary action), the Favour it costs, and the forecast of its
- * rite as the board stands.
+ * chanters that join (for the Great Summoning every own robed cultist
+ * beside the leader that has not used a primary action; for a Star-fall
+ * nobody, since the Cult redesign, `pulp_wars-mch9.34`), the Favour it
+ * costs, and the forecast of its rite as the board stands.
  */
 export interface BeginRitualPreviewV7 {
   readonly ritual: RitualKindV7;
@@ -4787,7 +4821,7 @@ export function previewBeginRitualV7(
     return null;
   const leader = view.units.find((unit) => unit.id === unitId);
   if (leader === undefined) return null;
-  const chanterUnitIds = ritualChantersV7(view, view.units, leader).map(
+  const chanterUnitIds = beginChantersV7(view, view.units, leader, ritual).map(
     (unit) => unit.id,
   );
   const favour = ritualFavourCostV7(ritual);
@@ -4842,6 +4876,80 @@ export function previewRitualV7(
             ritual.chanterUnitIds,
           )
         : null,
+  };
+}
+
+/**
+ * The Cult redesign (`pulp_wars-mch9.34`, RULESET_7_CULT_REDESIGN.md
+ * section 8.2): the preview of an offered `JOIN_CHANT`: the pending star
+ * as the board stands before the join (`before`) and after it (`after`,
+ * with one chanter more: 3 more damage on every unit of the nine tiles),
+ * and the units the star newly kills (`newlyKills`: on the board now,
+ * killed after the join and not before, friend and foe, sorted by unit).
+ * The forecasts are null when the viewer has not explored the mark (never
+ * for its own star).
+ */
+export interface JoinChantPreviewV7 {
+  readonly unitId: UnitId;
+  readonly leaderUnitId: UnitId;
+  readonly chantersBefore: number;
+  readonly chantersAfter: number;
+  readonly damageBefore: number;
+  readonly damageAfter: number;
+  readonly before: StarfallForecastV7 | null;
+  readonly after: StarfallForecastV7 | null;
+  readonly newlyKills: readonly UnitId[];
+}
+
+/** Section 8.2: null unless that `JOIN_CHANT` is offered. */
+export function previewJoinChantV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+  leaderUnitId: UnitId,
+): JoinChantPreviewV7 | null {
+  if (
+    !queryPlayerCommandsV7(view).some(
+      (command) =>
+        command.kind === "JOIN_CHANT" &&
+        command.unitId === unitId &&
+        command.leaderUnitId === leaderUnitId,
+    )
+  )
+    return null;
+  const ritual = pendingStarfallOfV7(
+    view.cult.rituals,
+    view.viewer.id,
+    leaderUnitId,
+  );
+  if (ritual === undefined) return null;
+  const chantersBefore = ritual.chanters;
+  const chantersAfter = chantersBefore + 1;
+  const before =
+    ritual.at === null
+      ? null
+      : publicStarfallForecastV7(view, ritual.at, chantersBefore);
+  const after =
+    ritual.at === null
+      ? null
+      : publicStarfallForecastV7(view, ritual.at, chantersAfter);
+  const diedBefore = new Set(
+    (before?.results ?? [])
+      .filter((entry) => entry.dies)
+      .map((entry) => entry.unitId),
+  );
+  return {
+    unitId,
+    leaderUnitId,
+    chantersBefore,
+    chantersAfter,
+    damageBefore: starfallDamageV7(chantersBefore),
+    damageAfter: starfallDamageV7(chantersAfter),
+    before,
+    after,
+    newlyKills: (after?.results ?? [])
+      .filter((entry) => entry.dies && !diedBefore.has(entry.unitId))
+      .map((entry) => entry.unitId)
+      .sort((left, right) => left - right),
   };
 }
 

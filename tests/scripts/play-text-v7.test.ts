@@ -1780,9 +1780,11 @@ describe("text-mode play harness", () => {
     const view = ok("view", "--session", session, "--full");
     // The Horror is named for what it is, with its code and its strands.
     expect(view).toContain(`u${horror} Horror [HORROR] @2,2 hp 18/18`);
-    // Unbound (`pulp_wars-mch9.6`): and whom it would go for if it broke.
+    // Unbound (`pulp_wars-mch9.6`): and whom it would go for if it broke,
+    // and why (the Cult redesign, `pulp_wars-mch9.35`: the Initiate two
+    // tiles off before the Fighter beside it).
     expect(view).toContain(
-      `daemon: strands 0/1 (UNBOUND at its turn start; it would go for u${at(3, 2)} and can attack it)`,
+      `daemon: strands 0/1 (UNBOUND at its turn start; it would go for u${at(2, 4)} (a cultist within 2) and can attack it)`,
     );
     expect(view).toContain("Cult summoned: Ho horror He herald");
     expect(view).not.toContain("[KNIGHT]");
@@ -1886,7 +1888,7 @@ describe("text-mode play harness", () => {
       new RegExp(`u${horror} (N )?Unbound Horror \\[HORROR\\] @2,2 hp 18/18`),
     );
     expect(view).toContain(
-      `UNBOUND daemon of S0: goes for u${at(3, 2)} and can attack it after this round | bind again with 1 strand in one turn (yours now: 0)`,
+      `UNBOUND daemon of S0: goes for u${at(3, 2)} (the nearest unit in its reach) and can attack it after this round | bind again with 1 strand in one turn (yours now: 0)`,
     );
     const bind = `u${at(2, 5)}.channel.u${horror}`;
     expect(offeredIds(session)).toContain(bind);
@@ -1977,9 +1979,10 @@ describe("text-mode play harness", () => {
         /^u\d+\.(starfall\.\d+,\d+|summoning\.\d+,\d+|proclaim\.c\d+)$/,
       );
     const options = ok("options", "--session", session, "--all");
-    expect(options).toContain("STAR-FALL on 8,6 with");
+    // The Cult redesign (`pulp_wars-mch9.34`): the Stargazer begins alone.
+    expect(options).toContain("STAR-FALL on 8,6, the Stargazer alone:");
     expect(options).toContain(
-      "7 fixed damage (5 +1 for each chanter still chanting) to EVERY unit on that tile and the eight around it, friend and foe",
+      "6 fixed damage (6 +3 for each cultist who joins the chant this turn and is still chanting) to EVERY unit on that tile and the eight around it, friend and foe",
     );
     expect(options).toContain("THE GREAT SUMMONING, the Herald on 5,3 with");
     expect(options).toContain(
@@ -1995,14 +1998,29 @@ describe("text-mode play harness", () => {
     // Begin both rituals.
     const starred = ok("do", "--session", session, star);
     expect(starred).toMatch(
-      /RITUAL BEGUN Star-fall by .* of S0, mark @8,6, chanters .*; it completes at that seat's next turn start/,
+      /RITUAL BEGUN Star-fall by .* of S0, mark @8,6, the Stargazer alone \(cultists beside it may join this turn\); it completes at that seat's next turn start/,
+    );
+    // Its two Initiates join one by one (`.join`), each +3.
+    const joins = [at(9, 2), at(9, 3)].map(
+      (unitId) => `u${unitId}.join.u${at(8, 2)}`,
+    );
+    expect(offeredIds(session)).toEqual(expect.arrayContaining(joins));
+    const joinOptions = ok("options", "--session", session, "--all");
+    expect(joinOptions).toMatch(
+      /JOIN THE CHANT of .*'s Star-fall: the star 6->9 \(0->1 chanting\) on 8,6 and around it/,
+    );
+    expect(ok("do", "--session", session, joins[0] ?? "")).toMatch(
+      /CHANT JOINED by .* of S0: .*'s star now deals 9/,
+    );
+    expect(ok("do", "--session", session, joins[1] ?? "")).toMatch(
+      /star now deals 12/,
     );
     const summoned = ok("do", "--session", session, summoning);
     expect(summoned).toContain("-20 for the Great Summoning (now 0)");
     expect(summoned).toMatch(/RITUAL BEGUN the Great Summoning by /);
     const circles = ok("view", "--session", session, "--full");
     expect(circles).toContain(
-      "leads Star-fall: 7 on 8,6 and around it, due at S0's next turn start (2 chanting)",
+      "leads Star-fall: 12 on 8,6 and around it, due at S0's next turn start (2 chanting)",
     );
     expect(circles).toContain(
       "chants in the Great Summoning: the Herald on 5,3, due at S0's next turn start (3 chanting)",

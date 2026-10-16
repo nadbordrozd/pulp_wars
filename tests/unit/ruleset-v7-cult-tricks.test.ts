@@ -28,6 +28,7 @@ import {
   factionTreeV7,
   favourOfV7,
   isWildBreedV7,
+  joinChantRejectionV7,
   missionByIdV7,
   missionInitialStateV7,
   missionMatchSetupV7,
@@ -156,14 +157,14 @@ describe("tricks: identity and registration", () => {
   // The spread villages (`pulp_wars-9s0.12`) took 7r79, so 7r78 is a prior
   // identity.
   it("was 7r78 after 7r77, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r87");
-    expect(PRIOR_RULESET_7_IDS.slice(-10, -8)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r88");
+    expect(PRIOR_RULESET_7_IDS.slice(-11, -9)).toEqual([
       "pulp-wars-poc-7r77",
       "pulp-wars-poc-7r78",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r87.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-10, -8)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r88.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-11, -9)).toEqual([
       "pulpWars.save.v7r77.current",
       "pulpWars.save.v7r78.current",
     ]);
@@ -177,11 +178,13 @@ describe("tricks: identity and registration", () => {
   it("orders the three commands and the five events after the rituals'", () => {
     const commands = COMMAND_KIND_ORDER_V7 as readonly string[];
     const from = commands.indexOf("PROCLAIM");
-    expect(commands.slice(from, from + 5)).toEqual([
+    expect(commands.slice(from, from + 6)).toEqual([
       "PROCLAIM",
       "RIBBIT",
       "SWITCHEROO",
       "TENTACLE",
+      // The Cult redesign (`pulp_wars-mch9.34`): joining a star's chant.
+      "JOIN_CHANT",
       "CAPTURE",
     ]);
     const events = DOMAIN_EVENT_KIND_ORDER_V7 as readonly string[];
@@ -231,7 +234,8 @@ describe("tricks: identity and registration", () => {
       SWITCHEROO_RANGE_V7,
       TENTACLE_RANGE_V7,
       TENTACLE_LIFETIME_V7,
-    ]).toEqual([2, 0.5, 1, 2, 2, 3, 3]);
+      // Switcheroo reaches 4 since the Cult redesign (`pulp_wars-mch9.34`).
+    ]).toEqual([2, 0.5, 1, 2, 4, 3, 3]);
   });
 
   it("gives each trick to its unit and to no other role of any faction", () => {
@@ -701,19 +705,36 @@ describe("Ribbit and the frog (section 9.1)", () => {
       circle,
       targeted("RIBBIT", circle, at(5, 6), at(5, 4)),
     );
+    // (A star never fizzles for want of chanters since the Cult redesign,
+    // `pulp_wars-mch9.34`: it goes on alone.)
     expect(broken.events.map((event) => event.kind)).toEqual([
       "UNIT_FROGGED",
       "RITUAL_DISRUPTED",
-      "RITUAL_FIZZLED",
     ]);
+    expect(broken.state.cult.rituals).toMatchObject([{ chanterUnitIds: [] }]);
+    // A frog is offered no join of a star beside it.
     const frogged = withFrogsV7(
-      cultFieldV7([
-        { seat: 0, role: "CATAPULT", at: at(5, 3) },
-        { seat: 0, role: "FIGHTER", at: at(5, 4) },
-      ]),
+      withRitualV7(
+        cultFieldV7([
+          { seat: 0, role: "CATAPULT", at: at(5, 3) },
+          { seat: 0, role: "FIGHTER", at: at(5, 4) },
+        ]),
+        "STARFALL",
+        at(5, 3),
+        [],
+        at(2, 3),
+      ),
       [at(5, 4)],
     );
-    expect(offeredV7(frogged, "BEGIN_RITUAL")).toEqual([]);
+    expect(offeredV7(frogged, "JOIN_CHANT")).toEqual([]);
+    expect(
+      joinChantRejectionV7(
+        frogged,
+        frogged.cult.rituals,
+        unitAtV7(frogged, at(5, 4)),
+        unitAtV7(frogged, at(5, 3)),
+      ),
+    ).toEqual({ code: "JOIN_CHANT_NOT_LEGAL", reason: "STATUS" });
   });
 });
 
@@ -836,8 +857,14 @@ describe("Switcheroo (section 9.2)", () => {
       at(6, 3),
     );
     expect(reason(tentacle, at(6, 3)).params).toEqual({ reason: "IMMUNE" });
-    const far = field([{ seat: 1, role: "FIGHTER", at: at(8, 2) }]);
-    expect(reason(far, at(8, 2)).params).toEqual({ reason: "RANGE" });
+    // The Cult redesign (`pulp_wars-mch9.34`): legal at 4 tiles, refused
+    // at 5.
+    const four = field([{ seat: 1, role: "FIGHTER", at: at(9, 2) }]);
+    expect(
+      playV7(four, targeted("SWITCHEROO", four, FAMILIAR, at(9, 2))).events,
+    ).toMatchObject([{ kind: "UNITS_SWAPPED", from: FAMILIAR, to: at(9, 2) }]);
+    const far = field([{ seat: 1, role: "FIGHTER", at: at(10, 2) }]);
+    expect(reason(far, at(10, 2)).params).toEqual({ reason: "RANGE" });
     // Itself is no target.
     expect(reason(far, FAMILIAR).params).toEqual({ reason: "TARGET" });
   });

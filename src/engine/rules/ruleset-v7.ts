@@ -478,7 +478,11 @@ export type UnitRoleAbilityV7 =
   | "SWITCHEROO"
   | "RIBBIT"
   | "TENTACLE"
-  | "GRAB";
+  | "GRAB"
+  // The Cult redesign (`pulp_wars-mch9.34`, RULESET_7_CULT_REDESIGN.md
+  // section 8.2): every robed cultist's Join the chant, beside a Stargazer
+  // whose Star-fall is pending.
+  | "JOIN_CHANT";
 
 /**
  * The Martian revision (section 7): how a land-form unit moves. `STRIDE`
@@ -3930,7 +3934,7 @@ export const CULT_ROLE_RULES_V7: Readonly<
     mayUsePrimaryActionAfterMove: true,
     // `pulp_wars-mch9.8` (section 8.7): Pamphlets, a neutral village is
     // captured in the turn the Initiate walks onto it.
-    abilities: ["ATTACK", "CAPTURE", "CHANNEL", "PAMPHLETS"],
+    abilities: ["ATTACK", "CAPTURE", "CHANNEL", "PAMPHLETS", "JOIN_CHANT"],
   }),
   // The Familiar: Sight 2 and the Charge with Raiding; no Escape, and
   // hostile zones of control stop it (the Human Raider's freedom is a role
@@ -3969,7 +3973,7 @@ export const CULT_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "MARKSMANSHIP",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "CAPTURE", "CHANNEL", "RIBBIT"],
+    abilities: ["ATTACK", "CAPTURE", "CHANNEL", "RIBBIT", "JOIN_CHANT"],
   }),
   // The Idol Bearer: it cannot attack after moving (the Guard's rule), has
   // no Field Defense, and defends alike at every distance. Behold! and
@@ -3988,7 +3992,7 @@ export const CULT_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "FORTIFICATION",
     mayUsePrimaryActionAfterMove: false,
-    abilities: ["ATTACK", "CAPTURE", "CHANNEL", "BEHOLD"],
+    abilities: ["ATTACK", "CAPTURE", "CHANNEL", "BEHOLD", "JOIN_CHANT"],
   }),
   // The Summoner: a Captain's body with no Rally and no Tend Wounded. It
   // Sacrifices an own unit and Seizes a broken enemy (`pulp_wars-mch9.4`),
@@ -4017,6 +4021,7 @@ export const CULT_ROLE_RULES_V7: Readonly<
       "SUMMON",
       "CHANNEL",
       "TENTACLE",
+      "JOIN_CHANT",
     ],
   }),
   // The Stargazer has no attack of its own: no `ATTACK`, Attack 0, and no
@@ -4038,7 +4043,7 @@ export const CULT_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "SAWMILLING",
     mayUsePrimaryActionAfterMove: false,
-    abilities: ["CAPTURE", "CHANNEL", "STARFALL"],
+    abilities: ["CAPTURE", "CHANNEL", "STARFALL", "JOIN_CHANT"],
   }),
   // Vacant (the Cult redesign, `pulp_wars-mch9.31`): the Caller retired and
   // its Tentacle is the Summoner's. No cost, no technology, no ability (the
@@ -4148,16 +4153,22 @@ export const ANCHOR_STRANDS_V7 = 2 as const;
  * The Cultists (`pulp_wars-mch9.7`, section 7.4): Star-fall. The fixed
  * damage of a star with no chanter left, what each chanter still in the
  * ritual adds, and the nearest and farthest (Chebyshev) the marked tile may
- * be from the Stargazer.
+ * be from the Stargazer. The Cult redesign (`pulp_wars-mch9.34`,
+ * RULESET_7_CULT_REDESIGN.md section 8.2): the Stargazer casts alone, 6,
+ * and each cultist who joins the chant adds 3 (5 and 1 before).
  */
-export const STARFALL_BASE_DAMAGE_V7 = 5 as const;
-export const STARFALL_CHANTER_DAMAGE_V7 = 1 as const;
+export const STARFALL_BASE_DAMAGE_V7 = 6 as const;
+export const STARFALL_CHANTER_DAMAGE_V7 = 3 as const;
 export const STARFALL_MINIMUM_RANGE_V7 = 2 as const;
 export const STARFALL_MAXIMUM_RANGE_V7 = 4 as const;
-/** The Cultists (section 7.2): the chanters each rite needs to go on. */
+/**
+ * The Cultists (section 7.2): the chanters each rite needs to go on. The
+ * Cult redesign (`pulp_wars-mch9.34`, section 8.2): a star needs none (1
+ * before), so it never fizzles for want of chanters.
+ */
 export const RITUAL_MINIMUM_CHANTERS_V7: Readonly<
   Record<RitualKindV7, number>
-> = deepFreeze({ STARFALL: 1, GREAT_SUMMONING: 3 });
+> = deepFreeze({ STARFALL: 0, GREAT_SUMMONING: 3 });
 /** The Cultists (section 8.6): the farthest (Chebyshev) a Proclaim reaches. */
 export const PROCLAIM_RANGE_V7 = 3 as const;
 /** The Cultists (section 4.2): Ravage, the Herald's attacks in a turn. */
@@ -4172,8 +4183,11 @@ export const RIBBIT_RANGE_V7 = 2 as const;
 export const FROG_DEFENSE2_V7 = 1 as const;
 export const FROG_MOVE_V7 = 1 as const;
 export const HEX_COOLDOWN_TURNS_V7 = 2 as const;
-/** The Cultists (section 9.2): the farthest (Chebyshev) a Switcheroo reaches. */
-export const SWITCHEROO_RANGE_V7 = 2 as const;
+/**
+ * The Cultists (section 9.2): the farthest (Chebyshev) a Switcheroo reaches.
+ * The Cult redesign (`pulp_wars-mch9.34`, section 8.3): 4 (2 before).
+ */
+export const SWITCHEROO_RANGE_V7 = 4 as const;
 /**
  * The Cultists (section 9.3): the farthest (Chebyshev) from its Summoner
  * (the retired Caller's before `pulp_wars-mch9.31`) a Tentacle may rise, and the neutral turns it stays before it sinks.
@@ -4183,7 +4197,8 @@ export const TENTACLE_LIFETIME_V7 = 3 as const;
 
 /**
  * The Cultists (section 7.4): the damage of a star that `chanters` chanters
- * still chant for: 5, plus 1 for each.
+ * still chant for: 6, plus 3 for each (the Cult redesign,
+ * `pulp_wars-mch9.34`).
  */
 export function starfallDamageV7(chanters: number): number {
   return STARFALL_BASE_DAMAGE_V7 + STARFALL_CHANTER_DAMAGE_V7 * chanters;
@@ -4452,11 +4467,14 @@ const SUMMONED_UNIT_ROLE_RULES_V7: Readonly<
 
 /**
  * The Cultists (`pulp_wars-mch9.7`, section 4.2): the Herald's mechanics, a
- * seat's or nobody's: Ravage and Unstoppable are the body's rules.
+ * seat's or nobody's: Ravage and Unstoppable are the body's rules. The Cult
+ * redesign (`pulp_wars-mch9.35`, section 9.1): it advances after a kill,
+ * bound or Unbound (never before), and its second attack is made from the
+ * victim's tile.
  */
 const HERALD_ROLE_MECHANICS_V7: RoleMechanicsV7 = deepFreeze({
   ...ORIGINAL_ROLE_MECHANICS_V7.JUGGERNAUT,
-  advancesAfterKill: false,
+  advancesAfterKill: true,
   buildsFieldDefense: false,
   construct: true,
   movementMode: CULT_SUMMONED_ROLE_RULES_V7.HERALD.movementMode,
@@ -4489,7 +4507,8 @@ const SUMMONED_UNIT_ROLE_MECHANICS_V7: Readonly<
     movementMode: CULT_SUMMONED_ROLE_RULES_V7.HORROR.movementMode,
   },
   // The Herald (`pulp_wars-mch9.7`, section 4.2). Ravage: two attacks a
-  // turn and never an advance. Unstoppable: its attacks ignore the
+  // turn, and an advance after a kill (the Cult redesign,
+  // `pulp_wars-mch9.35`; never before). Unstoppable: its attacks ignore the
   // defender's fortification (cover stays) and destroy a Field Defense on
   // the target's tile, and nothing moves it. It has none of the giants'
   // signatures (it shares their mechanical role only).
@@ -5028,6 +5047,13 @@ export const NEUTRAL_ROLE_RULES_V7: Readonly<
 export const RAMPAGE_ATTACKS_V7: Readonly<Record<DaemonBreedV7, number>> =
   deepFreeze({ HORROR: 1, HERALD: 2 });
 
+/**
+ * The Cult redesign (`pulp_wars-mch9.35`, RULESET_7_CULT_REDESIGN.md
+ * section 9.2): an Unbound daemon goes first for a robed cultist this near
+ * (Chebyshev); beyond it a cultist is just anyone.
+ */
+export const UNBOUND_CULTIST_REACH_V7 = 2 as const;
+
 const NEUTRAL_GUARD_MECHANICS_V7 = {
   advancesAfterKill: false,
   buildsFieldDefense: false,
@@ -5066,15 +5092,19 @@ export const NEUTRAL_ROLE_MECHANICS_V7: Readonly<
   },
   // The Cultists (section 6.4): an Unbound daemon is still no living thing
   // (a construct: no Plague, bite, Infect, Wail, Seizure, Boo!, Mind
-  // Control, Swallow, healing, or Grave), still strides, and never advances.
+  // Control, Swallow, healing, or Grave) and still strides. The Cult
+  // redesign (`pulp_wars-mch9.35`, section 9.1): it advances after a kill
+  // (never before), onto a tile the rampage walk enters.
   HORROR: {
     ...ORIGINAL_ROLE_MECHANICS_V7.KNIGHT,
     ...NEUTRAL_GUARD_MECHANICS_V7,
+    advancesAfterKill: true,
     construct: true,
     movementMode: CULT_SUMMONED_ROLE_RULES_V7.HORROR.movementMode,
   },
-  // `pulp_wars-mch9.7`: the Herald's own mechanics (it never advances and
-  // has no Shield as it is); the rampage counts its attacks itself.
+  // `pulp_wars-mch9.7`: the Herald's own mechanics (it has no Shield as it
+  // is, and advances after a kill since `pulp_wars-mch9.35`); the rampage
+  // counts its attacks itself.
   HERALD: HERALD_ROLE_MECHANICS_V7,
   // `pulp_wars-mch9.8` (section 9.3): the Tentacle is no living thing (a
   // construct, like a daemon) and is rooted: nothing shoves it.
@@ -5568,6 +5598,9 @@ export const MIND_CONTROLLED_LOST_ABILITIES_V7: readonly UnitRoleAbilityV7[] =
     // Ancient Ones, so it needs a Cult seat. Ribbit, Switcheroo, and
     // Pamphlets are unit tricks and follow the unit.
     "TENTACLE",
+    // The Cult redesign (`pulp_wars-mch9.34`, section 8.2): joining a
+    // chant is a ritual's, so it needs a Cult seat.
+    "JOIN_CHANT",
   ]);
 
 const CONTROLLED_ROLE_RULES_V7 = new WeakMap<

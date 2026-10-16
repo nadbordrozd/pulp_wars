@@ -90,6 +90,9 @@ export const DISRUPTION_EVENT_PATHS_V7: Readonly<
   // disruption that made a participant leave has its own event). A Cowed
   // city is no unit.
   RITUAL_BEGUN: NONE,
+  // The Cult redesign (`pulp_wars-mch9.34`): a cultist that joins a chant
+  // chose to (its own command).
+  CHANT_JOINED: NONE,
   RITUAL_DISRUPTED: NONE,
   RITUAL_FIZZLED: NONE,
   CITY_COWED: NONE,

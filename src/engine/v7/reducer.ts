@@ -324,13 +324,16 @@ import {
 } from "./cult-channel";
 import {
   rampageBoardV7,
+  rampageAdvanceTileV7,
   rampagePlanV7,
   rampageTargetV7,
   unboundEntryV7,
+  unitIsUnboundV7,
   withFuriousEndedV7,
 } from "./cult-unbound";
 import {
   applyBeginRitualV7,
+  applyJoinChantV7,
   applyProclaimV7,
   cowedAfterCapturesV7,
   prunedRitualsV7,
@@ -549,6 +552,10 @@ export type RuleErrorCodeV7 =
   // `TILE`), and a Proclaim with no legal city (`CITY`, `RANGE`, `COWED`).
   | "RITUAL_NOT_LEGAL"
   | "PROCLAIM_NOT_LEGAL"
+  // The Cult redesign (`pulp_wars-mch9.34`, RULESET_7_CULT_REDESIGN.md
+  // section 8.2): a join of a Star-fall's chant that is refused
+  // (`EMBARKED`, `CHANTING`, `ACTED`, `STATUS`, `RITUAL`, `ADJACENT`).
+  | "JOIN_CHANT_NOT_LEGAL"
   // The Cultists (`pulp_wars-mch9.8`, section 9): an illegal Ribbit
   // (`EMBARKED`, `COOLDOWN`, `TARGET`, `IMMUNE`, `FROG`, `RANGE`),
   // Switcheroo (`EMBARKED`, `TECHNOLOGY`, `COOLDOWN`, `TARGET`, `IMMUNE`,
@@ -1893,6 +1900,9 @@ function applyCommandCoreV7(
     return applyBeginRitualV7(DWARF_KIT_V7, stateInput, state, actor, command);
   if (command.kind === "PROCLAIM")
     return applyProclaimV7(DWARF_KIT_V7, stateInput, state, actor, command);
+  // The Cult redesign (`pulp_wars-mch9.34`, section 8.2).
+  if (command.kind === "JOIN_CHANT")
+    return applyJoinChantV7(DWARF_KIT_V7, stateInput, state, actor, command);
   // The Cultists, hexes and tricks (sections 9 and 8.2).
   if (command.kind === "RIBBIT")
     return applyRibbitV7(DWARF_KIT_V7, stateInput, state, actor, command);
@@ -5939,27 +5949,32 @@ function resolveAttackExchangeV7(
   const destinationTile = tileAtV7(state.board, defender.at);
   // The advance enters the defender's tile through the shared
   // `canEnterTerrainV7` (a striding Colossus needs no Engineering). Map
-  // curiosities (section 8.3): the neutral Monster never advances.
+  // curiosities (section 8.3): the neutral Monster never advances. The Cult
+  // redesign (`pulp_wars-mch9.35`, section 9.1): an Unbound daemon does,
+  // onto a tile its rampage walk enters (`rampageAdvanceTileV7`).
+  const unbound = isNeutralOwnerV7(actor) && unitIsUnboundV7(attacker);
   const canAdvance =
     calculated.advances &&
-    !isNeutralOwnerV7(actor) &&
-    isExplored(requirePlayer(state, actor), defender.at) &&
-    destinationTile !== undefined &&
-    ((destinationTile.terrain !== "MOUNTAIN" &&
-      !isRiftTerrainV7(destinationTile.terrain)) ||
-      canEnterTerrainV7({
-        terrain: destinationTile.terrain,
-        movementMode: unitMovementModeV7(state, attacker),
-        afloat: false,
-        engineering: requirePlayer(state, actor).researchedTechs.includes(
-          "ENGINEERING",
-        ),
-        navigation: false,
-        mountainBorn: unitIsMountainBornV7(state, attacker),
-        // Only a Mountain or a Rift reaches here (an advance onto ice is
-        // an advance onto water terrain, admitted above).
-        ice: false,
-      }));
+    (unbound
+      ? rampageAdvanceTileV7(state, defender.at)
+      : !isNeutralOwnerV7(actor) &&
+        isExplored(requirePlayer(state, actor), defender.at) &&
+        destinationTile !== undefined &&
+        ((destinationTile.terrain !== "MOUNTAIN" &&
+          !isRiftTerrainV7(destinationTile.terrain)) ||
+          canEnterTerrainV7({
+            terrain: destinationTile.terrain,
+            movementMode: unitMovementModeV7(state, attacker),
+            afloat: false,
+            engineering: requirePlayer(state, actor).researchedTechs.includes(
+              "ENGINEERING",
+            ),
+            navigation: false,
+            mountainBorn: unitIsMountainBornV7(state, attacker),
+            // Only a Mountain or a Rift reaches here (an advance onto ice
+            // is an advance onto water terrain, admitted above).
+            ice: false,
+          })));
   // The Candy revision section 8: the Bounce is read after the advance, so
   // an advance the resolution refuses is refused for the Bounce too.
   const preview =
@@ -6106,17 +6121,19 @@ function resolveAttackExchangeV7(
           ...destinationTile,
           fieldDefense: false,
         });
-  const advanceReveal = preview.advances
-    ? revealRadius(
-        { ...state, board, units } as GameStateV7,
-        actor,
-        defender.at,
-        unitSightRadiusAtV7(
+  // An Unbound daemon explores nothing (it belongs to nobody).
+  const advanceReveal =
+    preview.advances && !isNeutralOwnerV7(actor)
+      ? revealRadius(
           { ...state, board, units } as GameStateV7,
-          attackerAfter,
-        ),
-      )
-    : null;
+          actor,
+          defender.at,
+          unitSightRadiusAtV7(
+            { ...state, board, units } as GameStateV7,
+            attackerAfter,
+          ),
+        )
+      : null;
   const visiblePlayers =
     advanceReveal === null
       ? state.players
@@ -8394,15 +8411,19 @@ function resolveTentacleSlapV7(
  * The Cultists (docs/product/RULESET_7_CULTISTS.md section 6.4, the rampage
  * rule): one rampage of the Unbound daemon `daemonId`, at the check that
  * let it loose or in a neutral turn. Its activation is reset; it goes for
- * the nearest unit (`rampagePlanV7`: of any player, never a neutral, a
- * burrowed, or an afloat unit; ties to the seat that summoned it, then the
- * fewest HP, then the lowest ID), walks toward it by its Move
- * (`UNIT_MOVED`), and attacks it when it ends next to it: the ordinary
- * exchange, with retaliation, deaths, Graves, and blasts, credited to
- * nobody. A daemon with more attacks (the Herald, `RAMPAGE_ATTACKS_V7`)
- * then attacks the nearest unit next to it by the same tie rule. It never
- * advances, captures, or explores. Returns `state` itself and no event for
- * a unit that is not an Unbound daemon on the board.
+ * its target (`rampagePlanV7`: never a neutral, a burrowed, or an afloat
+ * unit; the Cult redesign's order, `pulp_wars-mch9.35`: a robed cultist
+ * within 2, else anyone in its reach of Move + 1 who is not a summon, else
+ * a summon in reach, else the nearest non-summon; ties to the seat that
+ * summoned it, then the fewest HP, then the lowest ID), walks toward it by
+ * its Move (`UNIT_MOVED`), and attacks it when it ends next to it: the
+ * ordinary exchange, with retaliation, deaths, Graves, and blasts, credited
+ * to nobody. After a kill it advances onto the victim's tile when its walk
+ * could enter it (since `pulp_wars-mch9.35`). A daemon with more attacks
+ * (the Herald, `RAMPAGE_ATTACKS_V7`) then attacks a unit next to it chosen
+ * by steps 1 to 3 among its neighbours. It never captures or explores.
+ * Returns `state` itself and no event for a unit that is not an Unbound
+ * daemon on the board.
  */
 function resolveRampageV7(
   state: GameStateV7,
@@ -8432,6 +8453,7 @@ function resolveRampageV7(
   const rule = unitRoleRuleV7(current, daemon);
   const plan = rampagePlanV7(
     rampageBoardV7(current, daemon.id),
+    current,
     current.units,
     daemon,
     rule.move,
@@ -8479,8 +8501,15 @@ function resolveRampageV7(
     );
     if (after === undefined) break;
     targetId =
-      rampageTargetV7(current.units, after, after.at, summonerPlayerId, 1)
-        ?.id ?? null;
+      rampageTargetV7(
+        current,
+        current.units,
+        after,
+        after.at,
+        summonerPlayerId,
+        rule.move + 1,
+        1,
+      )?.id ?? null;
   }
   const survivor = current.units.find(
     (unit) => unit.id === daemonId && unit.hp > 0,

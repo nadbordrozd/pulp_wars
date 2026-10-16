@@ -179,6 +179,9 @@ const FAMILY_STYLES_V7: Readonly<Record<string, TargetHighlightStyleV7>> = {
   PROCLAIM: "ATTACK",
   RIBBIT: "ATTACK",
   SWITCHEROO: "ATTACK",
+  // The Cult redesign (`pulp_wars-mch9.34`): the Stargazer a cultist joins
+  // in its chant is the Cult's own unit (the Help ring).
+  JOIN_CHANT: "SUPPORT",
 };
 
 /** Every family the vocabulary knows, for the audit and its tests. */

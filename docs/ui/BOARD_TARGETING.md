@@ -139,15 +139,15 @@ arming).
   hides the badges and narrows the board to that ability's targets, as in
   section 1.
 - **Joining a chant** (the Cult redesign, `pulp_wars-mch9.30`,
-  [section 13](../product/RULESET_7_CULT_REDESIGN.md#13-interface)): the
-  future `JOIN_CHANT { unitId, leaderUnitId }` of a cultist beside a
-  Stargazer that leads a pending Star-fall puts its badge (a candle, "+3")
-  on the Stargazer through the same planner, and "a tap joins": it will be
-  a `oneTap` ability (no chooser with Select for it alone, as a Hatch), a
-  chooser only when the Stargazer's tile has another action too.
-  `tests/unit/tile-actions-v7.test.ts` holds that shape with a stand-in
-  target until the command exists; it then gets one row in
-  `TILE_ABILITIES_V7`.
+  [section 13](../product/RULESET_7_CULT_REDESIGN.md#13-interface); built
+  by `pulp_wars-mch9.34`): `JOIN_CHANT { unitId, leaderUnitId }` of a
+  cultist beside a Stargazer that leads a pending Star-fall puts its badge
+  (the candle glyph, "+3") on the Stargazer through the same planner, and
+  "a tap joins": its row of `TILE_ABILITIES_V7` is `oneTap` (no chooser
+  with Select for it alone, as a Hatch), a chooser only when the
+  Stargazer's tile has another action too. The dock shows a "Join the
+  chant" button while a join is offered. The live preview of the star's
+  nine tiles on a focused join is the interface bead's (U-R2).
 - **An aimed ability's badge on another own unit** opens the chooser with
   Select, unless the ability is `oneTap`.
 

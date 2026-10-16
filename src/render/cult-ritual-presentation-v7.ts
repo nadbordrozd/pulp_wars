@@ -6,6 +6,7 @@ import {
   PROCLAIM_RANGE_V7,
   RIBBIT_RANGE_V7,
   RITUAL_MINIMUM_CHANTERS_V7,
+  STARFALL_CHANTER_DAMAGE_V7,
   SWITCHEROO_RANGE_V7,
   TENTACLE_RANGE_V7,
   attackAllowanceV7,
@@ -26,6 +27,7 @@ import {
   type BeginRitualPreviewV7,
   type CityId,
   type CommandV7,
+  type JoinChantPreviewV7,
   type PlayerEventV7,
   type PlayerViewV7,
   type PublicRitualV7,
@@ -67,7 +69,11 @@ import { playerPossessiveV7, playerSubjectV7 } from "./player-names-v7";
  * names no tile and no ID.
  */
 
-/** The six actions the dock aims with one button each. */
+/**
+ * The seven actions the dock aims with one button each. Join the chant
+ * (the Cult redesign, `pulp_wars-mch9.34`) has a button only while it is
+ * offered; its icon on the casting Stargazer is the tile-action badge.
+ */
 export const CULT_TRICK_KINDS_V7 = [
   "STARFALL",
   "GREAT_SUMMONING",
@@ -75,6 +81,7 @@ export const CULT_TRICK_KINDS_V7 = [
   "RIBBIT",
   "SWITCHEROO",
   "TENTACLE",
+  "JOIN_CHANT",
 ] as const;
 export type CultTrickKindV7 = (typeof CULT_TRICK_KINDS_V7)[number];
 
@@ -84,6 +91,7 @@ export const PROCLAIM_LABEL_V7 = "Proclaim";
 export const RIBBIT_LABEL_V7 = "Ribbit";
 export const SWITCHEROO_LABEL_V7 = "Switcheroo";
 export const TENTACLE_LABEL_V7 = "Tentacle";
+export const JOIN_CHANT_LABEL_V7 = "Join the chant";
 
 export const CULT_TRICK_LABELS_V7: Readonly<Record<CultTrickKindV7, string>> = {
   STARFALL: STARFALL_LABEL_V7,
@@ -92,18 +100,20 @@ export const CULT_TRICK_LABELS_V7: Readonly<Record<CultTrickKindV7, string>> = {
   RIBBIT: RIBBIT_LABEL_V7,
   SWITCHEROO: SWITCHEROO_LABEL_V7,
   TENTACLE: TENTACLE_LABEL_V7,
+  JOIN_CHANT: JOIN_CHANT_LABEL_V7,
 };
 
 /** The card texts (sections 7.2, 8.2, 8.6, and 9). */
 export const CULT_TRICK_TOOLTIPS_V7: Readonly<Record<CultTrickKindV7, string>> =
   {
     STARFALL:
-      "It and the cultists beside it chant. At the start of your next turn a star hits every unit on the marked tile and the eight around it, friend and foe. Each chanter makes it hit harder",
+      "It chants alone. At the start of your next turn a star hits every unit on the marked tile and the eight around it, friend and foe. Cultists beside it can join the chant this turn to make it hit harder",
     GREAT_SUMMONING: `It and three or more cultists beside it chant, for ${HERALD_FAVOUR_COST_V7} Favour. At the start of your next turn the Herald stands on the marked tile and they all channel it`,
     PROCLAIM: `KNEEL! An enemy city within ${PROCLAIM_RANGE_V7} tiles hides in its cellars: no income and no city action until its owner's turn ends`,
     RIBBIT: `Turns an enemy within ${RIBBIT_RANGE_V7} tiles into a frog until its next turn ends. A frog hops one tile, is easy to hurt, and cannot attack or strike back`,
     SWITCHEROO: `It and a unit within ${SWITCHEROO_RANGE_V7} tiles swap places, friend or foe. Never on a city or village`,
     TENTACLE: `Up comes a Tentacle within ${TENTACLE_RANGE_V7} tiles. It belongs to nobody, and slaps and grabs whoever is weakest beside it`,
+    JOIN_CHANT: `It chants with the Stargazer beside it, so the star hits ${STARFALL_CHANTER_DAMAGE_V7} harder. It cannot move or act again this turn`,
   };
 
 /** The instruction of each aimed action. */
@@ -114,6 +124,7 @@ export const CULT_TRICK_PICKS_V7: Readonly<Record<CultTrickKindV7, string>> = {
   RIBBIT: "Choose an enemy to turn into a frog",
   SWITCHEROO: "Choose a unit to swap places with",
   TENTACLE: "Choose a tile for the Tentacle",
+  JOIN_CHANT: "Choose the Stargazer to chant with",
 };
 
 /** The one confirmation of a chosen mark. */
@@ -140,8 +151,6 @@ export function cultTrickCommandsV7(
 
 export const TRICK_FROGGED_V7 = "A frog can only hop";
 export const STARFALL_MOVED_V7 = "It must not have moved this turn";
-export const STARFALL_NO_CHANTER_V7 =
-  "A cultist that has not acted must stand next to it";
 export const GREAT_SUMMONING_NO_TILE_V7 = "No tile next to it for the Herald";
 export const PROCLAIM_NO_ATTACK_V7 = "No attack left this turn";
 export const PROCLAIM_OUT_OF_REACH_V7 = `No enemy city within ${PROCLAIM_RANGE_V7} tiles`;
@@ -233,7 +242,8 @@ export function cultTrickUnavailableTextV7(
       if (rejection.reason === "EMBARKED") return CHANNEL_EMBARKED_V7;
       if (rejection.reason === "MOVED") return STARFALL_MOVED_V7;
       if (rejection.reason === "CHANTERS") {
-        if (kind === "STARFALL") return STARFALL_NO_CHANTER_V7;
+        // (A star needs no chanter since the Cult redesign,
+        // `pulp_wars-mch9.34`: only the Great Summoning says this.)
         // Without a circle beside the Summoner (three robed cultists,
         // whatever they did this turn) there is no button: a Summoner on
         // its own business keeps a short dock.
@@ -335,7 +345,20 @@ export function cultTrickUnavailableTextV7(
         ? TENTACLE_EXISTS_V7
         : TENTACLE_NO_TILE_V7;
     }
+    // The Cult redesign (`pulp_wars-mch9.34`): a button only while a join
+    // is offered (no star beside it is no reason to show one).
+    case "JOIN_CHANT":
+      return null;
   }
+}
+
+/** "+3": what a cultist who joins the chant adds to the star. */
+export const JOIN_CHANT_TARGET_LABEL_V7 = `+${STARFALL_CHANTER_DAMAGE_V7}`;
+
+/** The cursor's sentence for the Stargazer a join targets. */
+export function joinChantTargetNameV7(preview: JoinChantPreviewV7): string {
+  const kills = preview.newlyKills.length;
+  return `Join this Stargazer's chant: its star hits ${preview.damageAfter} instead of ${preview.damageBefore}${kills > 0 ? `, and ${kills} more ${kills === 1 ? "unit dies" : "units die"}` : ""}.`;
 }
 
 // ------------------------------------------------ Marks and sentences ---
@@ -408,8 +431,10 @@ export function beginRitualSummaryV7(
   if (preview.starfall !== null) {
     const hits = preview.starfall.results;
     const own = hits.filter((entry) => entry.ownerId === view.viewer.id).length;
+    // A star begins alone (the Cult redesign, `pulp_wars-mch9.34`): its
+    // joiners come after the begin.
     return [
-      chant,
+      chanters === 0 ? null : chant,
       `${preview.starfall.damage} damage`,
       `${hits.length} ${hits.length === 1 ? "unit" : "units"}`,
       own > 0 ? `${own} of yours` : null,

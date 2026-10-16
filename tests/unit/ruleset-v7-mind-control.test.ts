@@ -246,6 +246,8 @@ describe("Mind Control revision: legality (section 3)", () => {
       "STARFALL",
       // The Cult's tricks (`pulp_wars-mch9.8`): and calling a Tentacle.
       "TENTACLE",
+      // The Cult redesign (`pulp_wars-mch9.34`): and joining a star's chant.
+      "JOIN_CHANT",
     ]);
   });
 

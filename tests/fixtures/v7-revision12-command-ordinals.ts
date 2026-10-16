@@ -84,6 +84,9 @@ const LATER_COMMAND_KINDS: readonly string[] = [
   "RIBBIT",
   "SWITCHEROO",
   "TENTACLE",
+  // The Cult redesign's Star-fall (`pulp_wars-mch9.34`) inserts JOIN_CHANT
+  // after TENTACLE.
+  "JOIN_CHANT",
   "LAY_EGG",
   "OFFERING",
   // Tuning 3 (`pulp_wars-w49.3`) inserts HIRE after TRAIN_NAVAL.

@@ -524,6 +524,8 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
     "chanterUnitIds",
     "at",
   ],
+  // The Cult redesign (`pulp_wars-mch9.34`).
+  CHANT_JOINED: ["kind", "playerId", "unitId", "leaderUnitId", "damage"],
   RITUAL_DISRUPTED: [
     "kind",
     "playerId",
@@ -2025,6 +2027,19 @@ function validPayload(
         !(e.chanterUnitIds as readonly number[]).includes(e.unitId as number) &&
         parseCoordV7(e.at) !== null
       );
+    // The Cult redesign (`pulp_wars-mch9.34`, section 8.2): a joiner that
+    // is not the Stargazer, and the star's damage after the join (one
+    // chanter at least, eight at most).
+    case "CHANT_JOINED":
+      return (
+        id(e.playerId) &&
+        id(e.unitId) &&
+        id(e.leaderUnitId) &&
+        e.unitId !== e.leaderUnitId &&
+        [1, 2, 3, 4, 5, 6, 7, 8].some(
+          (chanters) => e.damage === starfallDamageV7(chanters),
+        )
+      );
     case "RITUAL_DISRUPTED":
       return (
         id(e.playerId) &&
@@ -2043,8 +2058,9 @@ function validPayload(
         // Only the Great Summoning has a mark that can be blocked.
         (e.reason !== "BLOCKED" || e.ritual === "GREAT_SUMMONING")
       );
-    // Section 7.4: at least one chanter still chants, the damage is the
-    // star's, and no hit is more than it.
+    // Section 7.4: as many chanters as the star needs (none since the Cult
+    // redesign, `pulp_wars-mch9.34`), the damage is the star's, and no hit
+    // is more than it.
     case "STAR_FELL":
       return (
         id(e.playerId) &&

@@ -33,6 +33,8 @@ import {
   projectEventsV7,
   queryPlayerCommandsV7,
   rampageBoardV7,
+  UNBOUND_CULTIST_REACH_V7,
+  rampageChoiceV7,
   rampagePlanV7,
   rampageTargetV7,
   rampageTargetableV7,
@@ -221,7 +223,9 @@ describe("Unbound: the registration (sections 6.4 and 13.1)", () => {
       expect(rule.sightRadius).toBe(0);
       const mechanics = NEUTRAL_ROLE_MECHANICS_V7[breed];
       expect(mechanics.construct).toBe(true);
-      expect(mechanics.advancesAfterKill).toBe(false);
+      // The Cult redesign (`pulp_wars-mch9.35`, section 9.1): an Unbound
+      // daemon advances after a kill (it never did before).
+      expect(mechanics.advancesAfterKill).toBe(true);
       expect(mechanics.movementMode).toBe("STRIDE");
       // No bounty Coins for an Unbound daemon.
       expect(NEUTRAL_BOUNTIES_V7[breed]).toBe(0);
@@ -378,9 +382,9 @@ describe("Unbound: the failed check (section 6.4)", () => {
     expect(index).toBeLessThan(income);
   });
 
-  it("attacks the unit it ends next to, and never advances (worked example 16.6)", () => {
-    // A wounded Initiate and the Summoner stand beside it: both the Cult's,
-    // both at distance 1; the fewer Hit Points decide.
+  it("attacks the unit it ends next to, and advances after the kill (worked example 16.6)", () => {
+    // A wounded Initiate and the Summoner stand beside it: both the Cult's
+    // cultists, both at distance 1; the fewer Hit Points decide.
     const state = horrorField([
       { seat: 0, role: "FIGHTER", at: at(5, 1), hp: 5 },
       { seat: 0, role: "CAPTAIN", at: at(6, 3) },
@@ -394,15 +398,21 @@ describe("Unbound: the failed check (section 6.4)", () => {
         attackerId: horror.id,
         targetUnitId: initiate.id,
         defenderDies: true,
-        advances: false,
+        // The Cult redesign (`pulp_wars-mch9.35`): it advances.
+        advances: true,
       }),
     ]);
     expect(round.state.units.some((unit) => unit.id === initiate.id)).toBe(
       false,
     );
-    // It stays where it stood; the dead Initiate is the Cult's Loss, and
-    // nobody's kill: no Favour, no Kills, no Plunder, no bounty.
-    expect(unitAtV7(round.state, HORROR).id).toBe(horror.id);
+    // It stands on the Initiate's tile; the dead Initiate is the Cult's
+    // Loss, and nobody's kill: no Favour, no Kills, no Plunder, no bounty.
+    expect(unitAtV7(round.state, at(5, 1)).id).toBe(horror.id);
+    expect(
+      eventsOf(round.events, "UNIT_MOVED").filter(
+        (event) => event.unitId === horror.id,
+      ),
+    ).toEqual([{ kind: "UNIT_MOVED", unitId: horror.id, path: [at(5, 1)] }]);
     expect(kindsV7(round.events)).not.toContain("FAVOUR_GAINED");
     expect(kindsV7(round.events)).not.toContain("MONSTER_BOUNTY_AWARDED");
     expect(ledger(round.state, cultId(state)).lossValue).toBe(2);
@@ -410,7 +420,7 @@ describe("Unbound: the failed check (section 6.4)", () => {
       expect(ledger(round.state, player.id).killValue).toBe(0);
     // Furious: nobody may channel it for the rest of this turn.
     expect(
-      rejectedV7(round.state, channel(round.state, at(6, 3), HORROR)),
+      rejectedV7(round.state, channel(round.state, at(6, 3), at(5, 1))),
     ).toEqual({ code: "CHANNEL_NOT_LEGAL", params: { reason: "FURIOUS" } });
     expect(offeredV7(round.state, "CHANNEL")).toEqual([]);
     // After the round it rampages again, in the neutral turn: the Summoner.
@@ -435,6 +445,60 @@ describe("Unbound: the failed check (section 6.4)", () => {
       summonerPlayerId: cultId(state),
       furious: false,
     });
+  });
+
+  // The Cult redesign (`pulp_wars-mch9.35`, section 9.1).
+  it("advances after a kill only onto a tile its walk could enter", () => {
+    // A wounded Fighter on the neutral village (5, 5): the Horror walks
+    // beside it and kills it, and stays off the settlement center.
+    const village = looseField([
+      { seat: 1, role: "FIGHTER", at: at(5, 5), hp: 3 },
+    ]);
+    const horror = unitAtV7(village, HORROR);
+    const onCenter = endTurnUntilV7(village, cultId(village));
+    expect(combats(onCenter.events)[0]).toMatchObject({
+      attackerId: horror.id,
+      defenderDies: true,
+      advances: false,
+    });
+    expect(
+      need(onCenter.state.units.find((unit) => unit.id === horror.id)).at,
+    ).toEqual(at(4, 4)); // where its walk ended
+    // The same kill on open Grass: it advances onto the tile.
+    const grass = looseField([
+      { seat: 1, role: "FIGHTER", at: at(6, 5), hp: 3 },
+    ]);
+    const onGrass = endTurnUntilV7(grass, cultId(grass));
+    expect(combats(onGrass.events)[0]).toMatchObject({
+      defenderDies: true,
+      advances: true,
+    });
+    expect(
+      need(onGrass.state.units.find((unit) => unit.id === horror.id)).at,
+    ).toEqual(at(6, 5));
+    for (const event of onGrass.events)
+      expect(parseEventV7(event).ok, event.kind).toBe(true);
+  });
+
+  it("lets a bound daemon's advance carry it beyond its channeller's reach, which breaks it at the next check", () => {
+    // Its one channeller is three tiles west; the Fighter it kills stands
+    // east of it, so the advance leaves it four tiles from the strand.
+    const state = withStrandsV7(
+      horrorField([
+        { seat: 0, role: "FIGHTER", at: at(2, 2) },
+        { seat: 1, role: "FIGHTER", at: at(6, 2), hp: 3 },
+      ]),
+      HORROR,
+      [at(2, 2)],
+    );
+    const horror = unitAtV7(state, HORROR);
+    const kill = strike(state, HORROR, at(6, 2));
+    expect(kill.combat).toMatchObject({ defenderDies: true, advances: true });
+    expect(unitAtV7(kill.state, at(6, 2)).id).toBe(horror.id);
+    const round = endTurnUntilV7(kill.state, cultId(state));
+    expect(
+      eventsOf(round.events, "DAEMON_UNBOUND").map((event) => event.unitId),
+    ).toEqual([horror.id]);
   });
 
   it("loses every status when it breaks loose", () => {
@@ -480,9 +544,10 @@ describe("Unbound: the failed check (section 6.4)", () => {
     expect(isCityBesiegedV7(state, city)).toBe(true);
     const round = endTurnUntilV7(state, cultId(state));
     expect(kindsV7(round.events)).toContain("DAEMON_UNBOUND");
-    // It steps off at its first move, toward the Fighter, and attacks it.
+    // It steps off at its first move, toward the Fighter, attacks it, and
+    // (the Cult redesign, `pulp_wars-mch9.35`) advances onto its tile.
     const loose = need(round.state.units.find((unit) => unit.id === horror.id));
-    expect(loose.at).toEqual(at(1, 6));
+    expect(loose.at).toEqual(at(2, 5));
     expect(isCityBesiegedV7(round.state, city)).toBe(false);
     expect(combats(round.events)[0]).toMatchObject({ attackerId: horror.id });
     // A neutral unit on a center besieges nothing either.
@@ -566,70 +631,135 @@ describe("Unbound: the failed check (section 6.4)", () => {
   });
 });
 
-describe("Unbound: whom a rampage goes for (section 6.4, rule 1)", () => {
+describe("Unbound: whom a rampage goes for (section 6.4, rule 1; the Cult redesign, section 9.2)", () => {
+  // The roster: seat 0 is the Cult (a `FIGHTER` is a robed Initiate),
+  // seat 1 the Humans (a `FIGHTER` is a Fighter).
+  const roster = cultFieldV7([]);
+  const CULT = cultId(roster);
+  const HUMAN = humanId(roster);
   const facts = (
     id: number,
-    ownerId: number,
+    ownerId: PlayerId,
     where: CoordV7,
     hp = 10,
     form: RampageUnitFactsV7["form"] = "LAND",
+    extra: Partial<RampageUnitFactsV7> = {},
   ): RampageUnitFactsV7 => ({
     id: unitId(id),
-    ownerId: ownerId as PlayerId,
+    ownerId,
+    role: "FIGHTER",
     form,
     at: where,
     hp,
+    ...extra,
   });
+  const cultist = (id: number, where: CoordV7, hp = 7) =>
+    facts(id, CULT, where, hp);
+  const soldier = (id: number, where: CoordV7, hp = 10) =>
+    facts(id, HUMAN, where, hp, "LAND", { role: "KNIGHT" });
+  const summon = (id: number, where: CoordV7, hp = 18) =>
+    facts(id, CULT, where, hp, "LAND", { role: "KNIGHT", summoned: "HORROR" });
   const daemon = { id: unitId(99) };
   const from = at(5, 5);
-  const summoner = 1 as PlayerId;
+  // A Horror's reach: its Move 2, + 1.
+  const REACH = 3;
+  const choose = (
+    units: readonly RampageUnitFactsV7[],
+    summoner: PlayerId = HUMAN,
+    maximumDistance?: number,
+  ) =>
+    rampageChoiceV7(
+      roster,
+      units,
+      daemon,
+      from,
+      summoner,
+      REACH,
+      maximumDistance,
+    );
 
-  it("takes the nearest unit by Chebyshev distance, of any player", () => {
-    const near = facts(3, 2, at(7, 6));
-    expect(
-      rampageTargetV7(
-        [facts(1, 1, at(5, 9)), near, facts(2, 1, at(1, 5))],
-        daemon,
-        from,
-        summoner,
-      ),
-    ).toBe(near);
-    expect(rampageTargetV7([], daemon, from, summoner)).toBeNull();
+  it("goes first for a robed cultist within 2, over a nearer soldier", () => {
+    const initiate = cultist(1, at(5, 7));
+    const knight = soldier(2, at(5, 6));
+    expect(choose([initiate, knight])).toEqual({ target: initiate, step: 1 });
+    expect(UNBOUND_CULTIST_REACH_V7).toBe(2);
+  });
+
+  it("treats a cultist beyond 2 as anyone: the nearest non-summon in reach", () => {
+    const initiate = cultist(1, at(5, 8));
+    const knight = soldier(2, at(7, 5));
+    expect(choose([initiate, knight])).toEqual({ target: knight, step: 2 });
+    // At the same distance the ties decide (here the Knight's fewer HP).
+    const hurt = soldier(3, at(8, 5), 5);
+    expect(choose([initiate, hurt])).toEqual({ target: hurt, step: 2 });
+  });
+
+  it("goes for a summon in reach only when nobody else is in reach", () => {
+    const horror = summon(1, at(5, 6));
+    const fighter = soldier(2, at(5, 10));
+    expect(choose([horror, fighter])).toEqual({ target: horror, step: 3 });
+    // A soldier in reach comes before the summon beside it.
+    const near = soldier(3, at(5, 8));
+    expect(choose([horror, fighter, near])).toEqual({
+      target: near,
+      step: 2,
+    });
+  });
+
+  it("walks toward the nearest non-summon when nobody is in reach, a summon only when there is nobody else", () => {
+    const horror = summon(1, at(5, 9));
+    const fighter = soldier(2, at(5, 10));
+    expect(choose([horror, fighter])).toEqual({ target: fighter, step: 4 });
+    expect(choose([horror])).toEqual({ target: horror, step: 4 });
+    expect(choose([])).toEqual({ target: null, step: null });
+    expect(rampageTargetV7(roster, [], daemon, from, HUMAN, REACH)).toBeNull();
   });
 
   it("breaks a tie for the seat that summoned it, then the fewest HP, then the lowest ID", () => {
-    const enemy = facts(1, 2, at(5, 3), 1);
-    const own = facts(8, 1, at(7, 5), 9);
-    const ownWeak = facts(9, 1, at(3, 5), 4);
-    const ownWeakToo = facts(7, 1, at(5, 7), 4);
+    const enemy = facts(1, HUMAN, at(5, 3), 1);
+    const own = facts(8, CULT, at(7, 5), 9, "LAND", { role: "KNIGHT" });
+    const ownWeak = facts(9, CULT, at(3, 5), 4, "LAND", { role: "KNIGHT" });
+    const ownWeakToo = facts(7, CULT, at(5, 7), 4, "LAND", { role: "KNIGHT" });
+    const pick = (units: readonly RampageUnitFactsV7[]) =>
+      rampageTargetV7(roster, units, daemon, from, CULT, REACH);
     // The summoner's own units come first, however weak the enemy is.
-    expect(rampageTargetV7([enemy, own], daemon, from, summoner)).toBe(own);
-    expect(rampageTargetV7([enemy, own, ownWeak], daemon, from, summoner)).toBe(
-      ownWeak,
-    );
-    expect(
-      rampageTargetV7(
-        [enemy, own, ownWeak, ownWeakToo],
-        daemon,
-        from,
-        summoner,
-      ),
-    ).toBe(ownWeakToo);
+    expect(pick([enemy, own])).toBe(own);
+    expect(pick([enemy, own, ownWeak])).toBe(ownWeak);
+    expect(pick([enemy, own, ownWeak, ownWeakToo])).toBe(ownWeakToo);
     // Nearer always wins.
-    const adjacent = facts(20, 2, at(5, 4), 30);
-    expect(
-      rampageTargetV7([enemy, own, ownWeak, adjacent], daemon, from, summoner),
-    ).toBe(adjacent);
+    const adjacent = facts(20, HUMAN, at(5, 4), 30);
+    expect(pick([enemy, own, ownWeak, adjacent])).toBe(adjacent);
+  });
+
+  it("chooses the Herald's second attack by steps 1 to 3 among the units beside it", () => {
+    const initiate = cultist(1, at(4, 4));
+    const knight = soldier(2, at(6, 6), 3);
+    const horror = summon(3, at(5, 4), 1);
+    const far = cultist(4, at(5, 7));
+    expect(choose([horror, knight, initiate, far], HUMAN, 1)).toEqual({
+      target: initiate,
+      step: 1,
+    });
+    expect(choose([horror, knight, far], HUMAN, 1)).toEqual({
+      target: knight,
+      step: 2,
+    });
+    expect(choose([horror, far], HUMAN, 1)).toEqual({
+      target: horror,
+      step: 3,
+    });
+    // Nobody beside it: no second attack, and no walk.
+    expect(choose([far], HUMAN, 1)).toEqual({ target: null, step: null });
   });
 
   it("never goes for a neutral, an afloat, or a dead unit, or itself; an Egg is a unit", () => {
-    const egg = facts(5, 2, at(5, 8), 6, "EGG");
+    const egg = facts(5, HUMAN, at(5, 8), 6, "EGG");
     const units = [
-      facts(1, 0, at(5, 4)),
-      facts(2, 1, at(5, 6), 10, "NAVAL"),
-      facts(3, 1, at(4, 5), 10, "EMBARKED"),
-      facts(4, 1, at(6, 5), 0),
-      { ...facts(99, 1, at(5, 5)) },
+      facts(1, NEUTRAL_OWNER_ID_V7, at(5, 4)),
+      facts(2, HUMAN, at(5, 6), 10, "NAVAL"),
+      facts(3, HUMAN, at(4, 5), 10, "EMBARKED"),
+      facts(4, HUMAN, at(6, 5), 0),
+      { ...facts(99, HUMAN, at(5, 5)) },
       egg,
     ];
     expect(units.map(rampageTargetableV7)).toEqual([
@@ -640,9 +770,13 @@ describe("Unbound: whom a rampage goes for (section 6.4, rule 1)", () => {
       true,
       true,
     ]);
-    expect(rampageTargetV7(units, daemon, from, summoner)).toBe(egg);
+    expect(rampageTargetV7(roster, units, daemon, from, HUMAN, REACH)).toBe(
+      egg,
+    );
     // The Herald's second attack: only a unit next to it.
-    expect(rampageTargetV7(units, daemon, from, summoner, 1)).toBeNull();
+    expect(
+      rampageTargetV7(roster, units, daemon, from, HUMAN, REACH, 1),
+    ).toBeNull();
   });
 });
 
@@ -656,9 +790,11 @@ describe("Unbound: the rampage's walk (section 6.4, rules 2 and 3)", () => {
       return cell === "." ? "FREE" : cell === "?" ? "UNKNOWN" : "BLOCKED";
     },
   });
+  const roster = cultFieldV7([]);
   const target = (where: CoordV7): RampageUnitFactsV7 => ({
     id: unitId(2),
-    ownerId: 1 as PlayerId,
+    ownerId: humanId(roster),
+    role: "KNIGHT",
     form: "LAND",
     at: where,
     hp: 10,
@@ -670,7 +806,14 @@ describe("Unbound: the rampage's walk (section 6.4, rules 2 and 3)", () => {
     to: CoordV7,
     move = 2,
   ) =>
-    rampagePlanV7(board(rows), [target(to)], daemon(from), move, 1 as PlayerId);
+    rampagePlanV7(
+      board(rows),
+      roster,
+      [target(to)],
+      daemon(from),
+      move,
+      humanId(roster),
+    );
 
   it("stays and attacks a unit beside it", () => {
     expect(plan([".....", ".....", "....."], at(1, 1), at(2, 1))).toMatchObject(
@@ -798,20 +941,24 @@ describe("Unbound: the neutral turn (sections 6.4 and 13.3)", () => {
     );
   });
 
-  it("gives the Herald two attacks in a rampage", () => {
+  it("gives the Herald two attacks in a rampage, the second from the tile it advanced to", () => {
     // The Herald is summoned from E5; its breed rampages already.
     const state = withUnboundHeraldV7(
       cultFieldV7([
         { seat: 1, role: "FIGHTER", at: at(4, 2) },
         { seat: 1, role: "FIGHTER", at: at(6, 2), hp: 3 },
-        { seat: 0, role: "FIGHTER", at: at(5, 5) },
+        { seat: 1, role: "FIGHTER", at: at(6, 1) },
+        { seat: 0, role: "FIGHTER", at: at(8, 4) },
       ]),
       HORROR,
       0,
     );
     const herald = unitAtV7(state, HORROR);
     const round = endTurnUntilV7(state, cultId(state));
-    // The weaker Fighter first; then the nearest unit next to it.
+    // The weaker Fighter first; it dies and the Herald advances onto its
+    // tile (the Cult redesign, `pulp_wars-mch9.35`), so its second attack
+    // is on a unit beside (6, 2): the Fighter on (6, 1), not the one on
+    // (4, 2), which is no longer beside it.
     expect(
       combats(round.events).map((preview) => [
         preview.attackerId,
@@ -819,7 +966,7 @@ describe("Unbound: the neutral turn (sections 6.4 and 13.3)", () => {
       ]),
     ).toEqual([
       [herald.id, unitAtV7(state, at(6, 2)).id],
-      [herald.id, unitAtV7(state, at(4, 2)).id],
+      [herald.id, unitAtV7(state, at(6, 1)).id],
     ]);
     expect(
       need(round.state.units.find((unit) => unit.id === herald.id)).activation
@@ -831,7 +978,11 @@ describe("Unbound: the neutral turn (sections 6.4 and 13.3)", () => {
     // A seat can command a Herald (`pulp_wars-mch9.7`), so a cultist within
     // 3 tiles may channel the Unbound one. One strand of the three it
     // needs binds nothing: the Herald stays nobody's.
-    const cultist = unitAtV7(round.state, at(5, 5));
+    // Both kills advanced it: it stands on the second Fighter's tile.
+    expect(
+      need(round.state.units.find((unit) => unit.id === herald.id)).at,
+    ).toEqual(at(6, 1));
+    const cultist = unitAtV7(round.state, at(8, 4));
     const strand = playV7(round.state, {
       kind: "CHANNEL",
       unitId: cultist.id,
@@ -1241,6 +1392,8 @@ describe("Unbound: the public previews and the eye mark (section 6.4)", () => {
         strands: 0,
         short: false,
         targetUnitId: unitAtV7(state, at(2, 2)).id,
+        // Neither is a cultist within 2: anyone in reach (`pulp_wars-mch9.35`).
+        step: 2,
         path: [at(4, 1), at(3, 1)],
         attacks: true,
         attackCount: 1,
@@ -1278,12 +1431,15 @@ describe("Unbound: the public previews and the eye mark (section 6.4)", () => {
     );
     const horror = unitAtV7(state, HORROR);
     const view = viewForV7(state, humanId(state));
+    // The Cult redesign (`pulp_wars-mch9.35`): its own channeller two tiles
+    // off comes before the Fighter beside it (a cultist within 2).
     expect(previewRampageV7(view, horror.id)).toMatchObject({
       unbound: false,
       summonerPlayerId: cultId(state),
       strands: 1,
       short: false,
-      targetUnitId: unitAtV7(state, at(5, 1)).id,
+      targetUnitId: unitAtV7(state, at(5, 4)).id,
+      step: 1,
       attacks: true,
     });
     // Short of its Control, the mark is the warning of section 6.4.

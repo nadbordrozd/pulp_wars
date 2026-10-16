@@ -1047,7 +1047,11 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
           // The Cult redesign's roster (`pulp_wars-mch9.31`) removes PICK_ME
           // after TENTACLE, moving the later command kinds back by one (was
           // 1ecd35…e6d7); the revision-12-ordinal value is unchanged.
-          "52a07c4f77aba7d056de12ee01422903a1e304a1a11edd8269963018b31c1d52",
+          // The Cult redesign's Star-fall (`pulp_wars-mch9.34`) inserts
+          // JOIN_CHANT after TENTACLE, moving the later command kinds forward
+          // by one (was 52a07c…1d52); the revision-12-ordinal value is
+          // unchanged.
+          "1ecd35a386debbd65dd3d70e88abbedea5b23c8a02d452c139b9abb9dec1e6d7",
         );
         // Revision 13 shifts the command-kind ordinals in AI tie-break
         // tuples (spec section 8); this is the value with revision-12
@@ -1169,7 +1173,11 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
           // The Cult redesign's roster (`pulp_wars-mch9.31`) removes PICK_ME
           // after TENTACLE, moving the later command kinds back by one (was
           // a0c65a…00df); the revision-12-ordinal value is unchanged.
-          "741724ad13f34248346778225736538ea91538182ec33b5c7b284c46eacdb9de",
+          // The Cult redesign's Star-fall (`pulp_wars-mch9.34`) inserts
+          // JOIN_CHANT after TENTACLE, moving the later command kinds forward
+          // by one (was 741724…b9de); the revision-12-ordinal value is
+          // unchanged.
+          "a0c65af6a651e70c64a60052f3be40169db9ed7d0eb3c1fbd05da928c27600df",
         );
         // With revision-12 ordinals (pulp_wars-9s0.1: was c56f00…73c1;
         // pulp_wars-0hi.3: was 091615…054b).

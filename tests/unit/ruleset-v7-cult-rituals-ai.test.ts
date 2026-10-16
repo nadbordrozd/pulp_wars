@@ -408,25 +408,40 @@ describe("the Cult seat: Star-fall (section 15.4)", () => {
       expect(gap(command.at, at(4, 3))).toBeGreaterThan(1);
   });
 
-  it("calls a chanter to a Stargazer that has a mark and nobody beside it; the star falls the same turn", () => {
-    const start = scene([
+  // The Cult redesign (`pulp_wars-mch9.34`, a stop-gap until A-R2,
+  // `pulp_wars-mch9.39`): a star begins alone; a cultist beside it joins
+  // when the join turns a hit into a kill.
+  it("begins a star alone with a mark, and joins it when a join turns a hit into a kill", () => {
+    const pieces = [
       own("CATAPULT", 7, 3),
-      own("FIGHTER", 9, 3),
-      foe("FIGHTER", 4, 3),
+      own("FIGHTER", 8, 3),
       foe("FIGHTER", 4, 4),
-    ]);
+    ];
+    // A wounded Fighter: 6 alone leaves it standing, 9 kills it.
+    const start = scene([...pieces, foe("FIGHTER", 4, 3, { hp: 8 })]);
     const gazer = idAt(start, at(7, 3));
-    const chanter = idAt(start, at(9, 3));
+    const joiner = idAt(start, at(8, 3));
     const decision = first(start);
     expect(decision.priority).toBe(CULT_STARFALL_PRIORITY_V7);
-    expect(decision.command).toMatchObject({ kind: "MOVE", unitId: chanter });
+    expect(decision.command).toMatchObject({
+      kind: "BEGIN_RITUAL",
+      ritual: "STARFALL",
+      unitId: gazer,
+    });
     const turn = policyTurn(start);
     expect(kindsOf(turn.commands.slice(0, 2))).toEqual([
-      "MOVE",
       "BEGIN_RITUAL",
+      "JOIN_CHANT",
+    ]);
+    expect(ofKind(turn.commands, "JOIN_CHANT")).toEqual([
+      { kind: "JOIN_CHANT", unitId: joiner, leaderUnitId: gazer },
     ]);
     // The Stargazer has not moved (a leader that moved leads no star).
     expect(nowAt(turn.state, gazer)).toEqual(at(7, 3));
+    // Two healthy Fighters: the join kills nobody more, so nobody joins.
+    const healthy = policyTurn(scene([...pieces, foe("FIGHTER", 4, 3)]));
+    expect(kindsOf(healthy.commands)).toContain("BEGIN_RITUAL");
+    expect(ofKind(healthy.commands, "JOIN_CHANT")).toEqual([]);
   });
 
   it("ends no own Move under its own star", () => {
@@ -468,9 +483,12 @@ describe("the Cult seat: the Herald (sections 15.2 and 15.4)", () => {
     });
 
   it("scores its two attacks together: it moves to the tile from which both kill", () => {
-    // Beside it one Fighter; one step away a tile beside two.
+    // Beside it one Fighter; one step away a tile beside two that stand
+    // side by side. (The Cult redesign, `pulp_wars-mch9.35`: a kill
+    // advances it onto the victim's tile, so the second victim must stand
+    // beside the first.)
     const start = herald(
-      [foe("FIGHTER", 4, 3), foe("FIGHTER", 7, 2), foe("FIGHTER", 7, 4)],
+      [foe("FIGHTER", 4, 3), foe("FIGHTER", 7, 2), foe("FIGHTER", 7, 3)],
       at(5, 4),
     );
     const id = idAt(start, at(5, 4));
@@ -478,14 +496,30 @@ describe("the Cult seat: the Herald (sections 15.2 and 15.4)", () => {
     expect(decision.priority).toBe(CULT_HERALD_PRIORITY_V7);
     expect(decision.command).toMatchObject({ kind: "MOVE", unitId: id });
     const turn = policyTurn(start);
-    expect(nowAt(turn.state, id)).toEqual(at(6, 3));
     expect(
       ofKind(turn.commands, "ATTACK").filter(
         (command) => command.unitId === id,
       ),
     ).toHaveLength(2);
     expect(alive(turn.state, idAt(start, at(7, 2)))).toBe(false);
-    expect(alive(turn.state, idAt(start, at(7, 4)))).toBe(false);
+    expect(alive(turn.state, idAt(start, at(7, 3)))).toBe(false);
+    // It stands on its second victim's tile.
+    expect([at(7, 2), at(7, 3)]).toContainEqual(nowAt(turn.state, id));
+  });
+
+  it("scores no second kill its first kill's advance takes it away from", () => {
+    // Two Fighters two tiles apart: from (6, 3) both are beside it, but
+    // after the first kill it stands beside neither of the others.
+    const start = herald(
+      [foe("FIGHTER", 4, 3), foe("FIGHTER", 7, 2), foe("FIGHTER", 7, 4)],
+      at(5, 4),
+    );
+    const turn = policyTurn(start);
+    const id = idAt(start, at(5, 4));
+    expect(
+      ofKind(turn.commands, "ATTACK").filter((command) => command.unitId === id)
+        .length,
+    ).toBeLessThanOrEqual(1);
   });
 
   it("stays for the kill it has when no tile offers more", () => {
@@ -500,8 +534,10 @@ describe("the Cult seat: the Herald (sections 15.2 and 15.4)", () => {
   });
 
   it("Proclaims with its second attack when no second kill is on offer", () => {
-    // One Fighter beside it, the Human capital (2, 8) three tiles away.
-    const start = herald([foe("FIGHTER", 4, 4)], at(5, 5));
+    // One Fighter beside it, the Human capital (2, 8) three tiles away
+    // from the Fighter's tile, where the kill advances it (the Cult
+    // redesign, `pulp_wars-mch9.35`).
+    const start = herald([foe("FIGHTER", 4, 5)], at(5, 5));
     const id = idAt(start, at(5, 5));
     const turn = policyTurn(start);
     const mine = turn.commands.filter(
@@ -512,7 +548,7 @@ describe("the Cult seat: the Herald (sections 15.2 and 15.4)", () => {
       kindsOf(mine).indexOf("PROCLAIM"),
     );
     expect(turn.state.cult.cowed).toHaveLength(1);
-    expect(alive(turn.state, idAt(start, at(4, 4)))).toBe(false);
+    expect(alive(turn.state, idAt(start, at(4, 5)))).toBe(false);
   });
 
   it("makes the second kill instead when one is on offer", () => {
@@ -527,7 +563,15 @@ describe("the Cult seat: the Herald (sections 15.2 and 15.4)", () => {
   });
 
   it("Proclaims last of all when it has nobody to attack", () => {
-    const start = herald([], at(5, 5));
+    // The Human garrison out of its reach (on the capital it would be a
+    // kill whose advance puts it on the center, which is then being
+    // taken, not Proclaimed: the Cult redesign, `pulp_wars-mch9.35`).
+    const start = withHorrorV7(
+      scene(CULTISTS, {}, foe("FIGHTER", 1, 9)),
+      0,
+      at(5, 5),
+      { role: "HERALD" },
+    );
     const decision = chooseNormalCommandV7(viewOf(start));
     const proclaim = decision.candidates.find(
       (candidate) => candidate.command.kind === "PROCLAIM",

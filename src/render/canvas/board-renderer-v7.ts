@@ -761,7 +761,12 @@ export interface MapCommandTargetV7 {
     | "PROCLAIM"
     | "RIBBIT"
     | "SWITCHEROO"
-    | "TENTACLE";
+    | "TENTACLE"
+    /**
+     * The Cult redesign (`pulp_wars-mch9.34`): the Stargazer whose pending
+     * Star-fall an aimed Join the chant joins.
+     */
+    | "JOIN_CHANT";
   /**
    * The Cultists (bead `pulp_wars-mch9.19`): what this target also shows
    * while it is focused (or is the only one): the ghosts and arrows of a

@@ -99,7 +99,7 @@ import { at, kindsV7, movedV7 } from "../fixtures/v7-revision20";
 // (docs/product/RULESET_7_MARTIANS.md sections 2 to 4, 10.9, 10.10, and 11).
 
 /** The revision number of this identity (`pulp-wars-poc-7rNN`). */
-const REVISION = 87;
+const REVISION = 88;
 const ID = `pulp-wars-poc-7r${REVISION}`;
 const PREVIOUS_ID = `pulp-wars-poc-7r${REVISION - 1}`;
 
@@ -284,7 +284,9 @@ describe("Martian faction registration (sections 2 and 11)", () => {
     // after BOO (80).
     // The Cult redesign's roster (`pulp_wars-mch9.31`) removes PICK_ME
     // (83).
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(83);
+    // The Cult redesign's Star-fall (`pulp_wars-mch9.34`) adds
+    // JOIN_CHANT after TENTACLE (84).
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(84);
     const hatch = COMMAND_KIND_ORDER_V7.indexOf("HATCH");
     expect(COMMAND_KIND_ORDER_V7.slice(hatch, hatch + 4)).toEqual([
       "HATCH",
@@ -317,7 +319,9 @@ describe("Martian faction registration (sections 2 and 11)", () => {
     // DAEMON_BOUND, from RITUAL_BEGUN to CITY_COWED (148).
     // The Cult redesign's roster (`pulp_wars-mch9.31`) removes
     // PICK_ME_SHOUTED (154).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(154);
+    // The Cult redesign's Star-fall (`pulp_wars-mch9.34`) adds
+    // CHANT_JOINED after RITUAL_BEGUN (155).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(155);
     const after = (kind: string) =>
       DOMAIN_EVENT_KIND_ORDER_V7[
         DOMAIN_EVENT_KIND_ORDER_V7.indexOf(kind as never) + 1

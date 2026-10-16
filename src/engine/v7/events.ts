@@ -1614,6 +1614,21 @@ export type DomainEventV7 =
     }
   | {
       /**
+       * The Cult redesign (`pulp_wars-mch9.34`, RULESET_7_CULT_REDESIGN.md
+       * section 8.2): the robed cultist `unitId` of `playerId` joined the
+       * chant of the pending Star-fall led by the Stargazer `leaderUnitId`;
+       * the star now deals `damage` (6, plus 3 for each chanter). It is
+       * projected to its seat and to every viewer that sees the joiner or
+       * the Stargazer.
+       */
+      readonly kind: "CHANT_JOINED";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly leaderUnitId: UnitId;
+      readonly damage: number;
+    }
+  | {
+      /**
        * The Cultists (section 7.1): the participant `participantUnitId` of
        * the ritual `ritual` led by `unitId` (of `playerId`) was disrupted
        * (`cause`) and left it. When that ends the ritual, its
@@ -1643,8 +1658,8 @@ export type DomainEventV7 =
       /**
        * The Cultists (section 7.4): the star of the Stargazer `unitId` of
        * `playerId` landed on `at`: every unit on that tile and the eight
-       * around it took `damage` (5, plus 1 for each of the `chanters`
-       * still chanting) as fixed damage (`results`, sorted by (y, x,
+       * around it took `damage` (6, plus 3 for each of the `chanters`
+       * still chanting; 5 and 1 before the Cult redesign) as fixed damage (`results`, sorted by (y, x,
        * unitId); a projection keeps the units the viewer owns or could
        * see), and the Field Defense on `fieldDefenses` and the Barricades
        * on `barricades` were destroyed. The deaths follow as `UNIT_DIED`

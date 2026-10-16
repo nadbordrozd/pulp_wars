@@ -1,6 +1,7 @@
 import type { CoordV7, GameStateV7 } from "../../src/engine/index";
 import { CULT_RITUAL_UI_V7, CULT_TRICK_UI_V7 } from "./v7-cult-ui";
 import { cultStarfallUiFixtureV7, cultTricksUiFixtureV7 } from "./v7-cult-ui";
+import { withRitualV7 } from "./v7-cult";
 import { FROZEN_UI_V7, frozenFreezeUiFixtureV7 } from "./v7-frozen-sea-ui";
 import { MARTIAN_UI_V7, martianUiFixtureV7 } from "./v7-martian-ui";
 import { at, fieldV7 } from "./v7-revision20";
@@ -31,6 +32,8 @@ export const TILE_ACTIONS_UI_V7 = {
   controlTarget: MARTIAN_UI_V7.weakTarget,
   /** The Stargazer with its chanters. */
   stargazer: CULT_RITUAL_UI_V7.stargazer,
+  /** An Initiate beside it that may join its star's chant once begun. */
+  joiner: CULT_RITUAL_UI_V7.chanter,
 } as const satisfies Readonly<Record<string, CoordV7>>;
 
 /** The Human Knight scene (Humans against Goblins). */
@@ -55,3 +58,15 @@ export const tileActionsBrainFixtureV7 = (): GameStateV7 =>
   martianUiFixtureV7();
 export const tileActionsStargazerFixtureV7 = (): GameStateV7 =>
   cultStarfallUiFixtureV7();
+/**
+ * The Cult redesign's join (`pulp_wars-mch9.34`): the same Stargazer with
+ * its star begun alone; each Initiate beside it may join the chant.
+ */
+export const tileActionsJoinChantFixtureV7 = (): GameStateV7 =>
+  withRitualV7(
+    cultStarfallUiFixtureV7(),
+    "STARFALL",
+    CULT_RITUAL_UI_V7.stargazer,
+    [],
+    CULT_RITUAL_UI_V7.star,
+  );

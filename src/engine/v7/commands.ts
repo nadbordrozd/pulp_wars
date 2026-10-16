@@ -387,17 +387,30 @@ export type CommandV7 =
     }
   | {
       /**
-       * The Cultists (sections 7.3 and 7.4): the leader `unitId` and every
-       * own robed cultist beside it that has not used a primary action begin
-       * the ritual `ritual`, which completes at the seat's next Start Turn.
+       * The Cultists (sections 7.3 and 7.4): the leader `unitId` begins the
+       * ritual `ritual`, which completes at the seat's next Start Turn.
        * `STARFALL`: a Stargazer that has not moved marks the tile `at`, 2 to
-       * 4 tiles away. `GREAT_SUMMONING`: a Summoner with three chanters
-       * marks the tile `at` next to it, for 20 Favour.
+       * 4 tiles away, alone (the Cult redesign, `pulp_wars-mch9.34`: its
+       * chanters join afterwards with `JOIN_CHANT`). `GREAT_SUMMONING`: a
+       * Summoner and every own robed cultist beside it that has not used a
+       * primary action (three or more) mark the tile `at` next to it, for
+       * its Favour.
        */
       readonly kind: "BEGIN_RITUAL";
       readonly ritual: RitualKindV7;
       readonly unitId: UnitId;
       readonly at: CoordV7;
+    }
+  | {
+      /**
+       * The Cult redesign (`pulp_wars-mch9.34`, RULESET_7_CULT_REDESIGN.md
+       * section 8.2): the own robed cultist `unitId` beside the Stargazer
+       * `leaderUnitId`, whose Star-fall is pending, joins its chant (+3 to
+       * the star) with its primary action.
+       */
+      readonly kind: "JOIN_CHANT";
+      readonly unitId: UnitId;
+      readonly leaderUnitId: UnitId;
     }
   | {
       /**
@@ -674,6 +687,16 @@ export function parseCommandV7(input: unknown): CommandParseResultV7 {
             at,
           },
         };
+  }
+  // The Cult redesign (`pulp_wars-mch9.34`).
+  if (kind === "JOIN_CHANT") {
+    if (!hasExactKeysV7(input, ["kind", "leaderUnitId", "unitId"]))
+      return invalid(kind);
+    const unit = parseUnitIdV7(candidate.unitId);
+    const leader = parseUnitIdV7(candidate.leaderUnitId);
+    return unit === null || leader === null || unit === leader
+      ? invalid(kind)
+      : { ok: true, value: { kind, unitId: unit, leaderUnitId: leader } };
   }
   if (kind === "PROCLAIM") {
     if (!hasExactKeysV7(input, ["cityId", "kind", "unitId"]))
@@ -1089,6 +1112,8 @@ function referencedOrdinal(command: CommandV7): number {
   if (command.kind === "BEGIN_RITUAL")
     return RITUAL_KINDS_V7.indexOf(command.ritual);
   if (command.kind === "PROCLAIM") return command.cityId;
+  // `JOIN_CHANT` by cultist, then Stargazer.
+  if (command.kind === "JOIN_CHANT") return command.leaderUnitId;
   if (command.kind === "HATCH") return command.eggUnitId;
   return 0;
 }

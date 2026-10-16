@@ -93,9 +93,12 @@ export const CULT_AGAINST_DAEMON_VALUE_V7 = Object.freeze({
 export const CULT_AGAINST_VALUE_SCALE_V7 = 4;
 /** A gripped channeller's strand counts three (section 8.4). */
 export const CULT_AGAINST_GRIP_STRANDS_V7 = 3;
-/** The Great Summoning needs this many chanters, Star-fall one. */
+/**
+ * The Great Summoning needs this many chanters, Star-fall none (the Cult
+ * redesign, `pulp_wars-mch9.34`: a hit on a joiner only weakens a star).
+ */
 export const CULT_AGAINST_SUMMONING_CHANTERS_V7 = 3;
-export const CULT_AGAINST_STARFALL_CHANTERS_V7 = 1;
+export const CULT_AGAINST_STARFALL_CHANTERS_V7 = 0;
 
 /**
  * A hit that ends a Great Summoning (its leader, or a chanter it cannot

@@ -270,6 +270,7 @@ import {
   previewBeholdV7,
   previewBooV7,
   previewChannelV7,
+  previewJoinChantV7,
   previewProclaimV7,
   previewRampageV7,
   previewRitualV7,
@@ -1101,6 +1102,9 @@ export function textPlayCommandIdV7(command: CommandV7): string {
       return `u${command.unitId}.switch.u${command.targetUnitId}`;
     case "TENTACLE":
       return `u${command.unitId}.tentacle.${xyV7(command.at)}`;
+    // The Cult redesign (`pulp_wars-mch9.34`): join a Star-fall's chant.
+    case "JOIN_CHANT":
+      return `u${command.unitId}.join.u${command.leaderUnitId}`;
     case "HATCH":
       return `u${command.unitId}.hatch.u${command.eggUnitId}`;
     case "BEAM_DOWN":
@@ -2117,14 +2121,14 @@ function describeCommandV7(
         command.at,
       );
       const chanters =
-        preview === null
+        preview === null || preview.chanterUnitIds.length === 0
           ? ""
           : ` with ${preview.chanterUnitIds.map((unitId) => context.memory.tag(unitId)).join(", ")} chanting`;
       const frame =
         "it completes at your next turn start | a participant that is hurt, moved, given a status, or taken leaves the circle";
       if (command.ritual === "STARFALL") {
         const star = preview?.starfall ?? null;
-        return `STAR-FALL on ${xyV7(command.at)}${chanters}${star === null ? "" : `: ${star.damage} fixed damage (5 +1 for each chanter still chanting) to EVERY unit on that tile and the eight around it, friend and foe; fortification, cover, and Defense do not count${star.results.length === 0 ? " | nobody is there now" : ` | there now: ${star.results.map((entry) => `${context.memory.tag(entry.unitId)} -${entry.damage}${entry.dies ? " DIES" : ""}${entry.ownerId === view.viewer.id ? " (YOURS)" : ""}`).join(", ")}`}${star.exact ? "" : " (part of the area is unexplored)"}${star.fieldDefenses.length + star.barricades.length === 0 ? "" : ` | destroys ${star.fieldDefenses.length} Field Defense and ${star.barricades.length} Barricade(s)`}`} | ${frame}; it fizzles without its Stargazer or a chanter | uses the action of every participant`;
+        return `STAR-FALL on ${xyV7(command.at)}, the Stargazer alone${star === null ? "" : `: ${star.damage} fixed damage (6 +3 for each cultist who joins the chant this turn and is still chanting) to EVERY unit on that tile and the eight around it, friend and foe; fortification, cover, and Defense do not count${star.results.length === 0 ? " | nobody is there now" : ` | there now: ${star.results.map((entry) => `${context.memory.tag(entry.unitId)} -${entry.damage}${entry.dies ? " DIES" : ""}${entry.ownerId === view.viewer.id ? " (YOURS)" : ""}`).join(", ")}`}${star.exact ? "" : " (part of the area is unexplored)"}${star.fieldDefenses.length + star.barricades.length === 0 ? "" : ` | destroys ${star.fieldDefenses.length} Field Defense and ${star.barricades.length} Barricade(s)`}`} | ${frame}; it fizzles without its Stargazer | then any unacted cultist beside the Stargazer may JOIN (.join) for +3 each | uses the Stargazer's action`;
       }
       const summoning = preview?.summoning ?? null;
       const mark =
@@ -2136,6 +2140,17 @@ function describeCommandV7(
               ? `as the board stands ${context.memory.tag(summoning.unitId ?? command.unitId)} on the mark is CONSUMED for +${summoning.favour} Favour`
               : "as the board stands the unit on the mark BLOCKS the arrival (the Favour would be lost)";
       return `THE GREAT SUMMONING, the Herald on ${xyV7(command.at)}${chanters}${preview === null ? "" : `: -${preview.favour} Favour now (favour ${preview.favourAfter + preview.favour}->${preview.favourAfter}), never refunded | ${mark} | the Herald (hp ${CULT_SUMMONED_ROLE_RULES_V7.HERALD.maxHp}, Control ${summoning?.control ?? 3}) arrives next turn and every participant channels it at once (strands ${summoning?.strands ?? 0}/${summoning?.control ?? 3}), which spends their whole turn`} | ${frame}; it fizzles without its Summoner or with fewer than three chanters, and a healthy enemy that stands on the mark blocks it | uses the action of every participant`;
+    }
+    // The Cult redesign (`pulp_wars-mch9.34`, RULESET_7_CULT_REDESIGN.md
+    // section 8.2).
+    case "JOIN_CHANT": {
+      const preview = previewJoinChantV7(
+        view,
+        command.unitId,
+        command.leaderUnitId,
+      );
+      const after = preview?.after ?? null;
+      return `JOIN THE CHANT of ${context.memory.tag(command.leaderUnitId)}'s Star-fall${preview === null ? "" : `: the star ${preview.damageBefore}->${preview.damageAfter} (${preview.chantersBefore}->${preview.chantersAfter} chanting)${after === null ? "" : ` on ${xyV7(after.at)} and around it`}${preview.newlyKills.length === 0 ? " | kills nobody more as the board stands" : ` | now also KILLS ${preview.newlyKills.map((unitId) => context.memory.tag(unitId)).join(", ")}`}`} | this unit becomes a chanter: hurt, moved, given a status, or taken, it leaves (-3) | it cannot move again this turn | uses its action`;
     }
     case "PROCLAIM": {
       const preview = previewProclaimV7(view, command.unitId, command.cityId);
@@ -2534,7 +2549,14 @@ function eventTextV7(
       break;
     // Rituals and the Herald (`pulp_wars-mch9.7`).
     case "RITUAL_BEGUN": {
-      const text = `RITUAL BEGUN ${ritualNameV7(event.ritual)} by ${context.memory.tag(event.unitId)} of ${seatLabelV7(context.view, event.playerId)}, mark @${xyV7(event.at)}, ${event.chanterUnitIds.length === 0 ? "its chanters out of your sight" : `chanters ${event.chanterUnitIds.map((unitId) => context.memory.tag(unitId)).join(", ")}`}; it completes at that seat's next turn start`;
+      const text = `RITUAL BEGUN ${ritualNameV7(event.ritual)} by ${context.memory.tag(event.unitId)} of ${seatLabelV7(context.view, event.playerId)}, mark @${xyV7(event.at)}, ${event.ritual === "STARFALL" ? "the Stargazer alone (cultists beside it may join this turn)" : event.chanterUnitIds.length === 0 ? "its chanters out of your sight" : `chanters ${event.chanterUnitIds.map((unitId) => context.memory.tag(unitId)).join(", ")}`}; it completes at that seat's next turn start`;
+      lines.push(text);
+      if (event.playerId !== me) notes.push(text);
+      break;
+    }
+    // The Cult redesign (`pulp_wars-mch9.34`).
+    case "CHANT_JOINED": {
+      const text = `CHANT JOINED by ${context.memory.tag(event.unitId)} of ${seatLabelV7(context.view, event.playerId)}: ${context.memory.tag(event.leaderUnitId)}'s star now deals ${event.damage}`;
       lines.push(text);
       if (event.playerId !== me) notes.push(text);
       break;
@@ -3697,10 +3719,19 @@ function unitStatusV7(view: PlayerViewV7, unit: PublicUnitV7): string {
   // Unbound (`pulp_wars-mch9.6`): whom a daemon goes for, as the board
   // stands (an Unbound one after this round; a bound one if it broke now).
   const rampage = previewRampageV7(view, unit.id);
+  // The Cult redesign (`pulp_wars-mch9.35`): why it goes for that unit.
+  const why =
+    rampage?.step === 1
+      ? "a cultist within 2"
+      : rampage?.step === 2
+        ? "the nearest unit in its reach"
+        : rampage?.step === 3
+          ? "a summon in its reach, nobody else being near"
+          : "the nearest unit, out of its reach";
   const prey =
     rampage === null || rampage.targetUnitId === null
       ? "nobody in sight"
-      : `u${rampage.targetUnitId}${rampage.attacks ? " and can attack it" : " but cannot reach it yet"}${rampage.exact ? "" : ", unless a nearer unit is hidden"}`;
+      : `u${rampage.targetUnitId} (${why})${rampage.attacks ? " and can attack it" : " but cannot reach it yet"}${rampage.exact ? "" : ", unless a nearer unit is hidden"}`;
   if (daemon !== undefined)
     parts.push(
       `daemon: strands ${daemon.strands}/${daemon.control}${daemon.strands < daemon.control ? ` (UNBOUND at its turn start; it would go for ${prey})` : ""}`,

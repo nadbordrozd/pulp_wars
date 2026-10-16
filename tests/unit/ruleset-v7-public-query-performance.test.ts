@@ -176,7 +176,10 @@ describe("ruleset-7 late public query performance", () => {
       // The Cult redesign's roster (`pulp_wars-mch9.31`) removes PICK_ME after
       // TENTACLE, moving the later command kinds back by one (was 67e517…7ea5);
       // the revision-12-ordinal value is unchanged.
-      "8bb79a7041746f947fa2c1123ba08154d323dc7c6f66684475e8e5086d189ead",
+      // The Cult redesign's Star-fall (`pulp_wars-mch9.34`) inserts JOIN_CHANT
+      // after TENTACLE, moving the later command kinds forward by one (was
+      // 8bb79a…9ead); the revision-12-ordinal value is unchanged.
+      "67e5172f1da5bf9db181c08a073d9add76490332009a740832f987653ec27ea5",
     );
     // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
     // (spec section 8); with revision-12 ordinals the value is unchanged.

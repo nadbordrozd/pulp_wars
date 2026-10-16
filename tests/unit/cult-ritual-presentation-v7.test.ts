@@ -218,7 +218,9 @@ describe("the words", () => {
       "RIBBIT",
       "SWITCHEROO",
       "TENTACLE",
-      // (Pick Me! retired with the Chosen, `pulp_wars-mch9.31`.)
+      // (Pick Me! retired with the Chosen, `pulp_wars-mch9.31`; Join the
+      // chant came with the Cult redesign, `pulp_wars-mch9.34`.)
+      "JOIN_CHANT",
     ]);
     for (const kind of CULT_TRICK_KINDS_V7) {
       const words = [
@@ -279,11 +281,12 @@ describe("the words", () => {
     const preview = required(
       previewBeginRitualV7(view, idAt(state, R.stargazer), "STARFALL", R.star),
     );
+    // A star begins alone (the Cult redesign, `pulp_wars-mch9.34`).
     expect(beginRitualSummaryV7(view, preview)).toBe(
-      "2 chanters · 7 damage · 3 units · 1 of yours",
+      "6 damage · 3 units · 1 of yours",
     );
     expect(beginRitualTargetNameV7(preview)).toBe(
-      "Star-fall here at the start of your next turn: 7 damage to every unit on the nine tiles: 3 units there now, 2 would die.",
+      "Star-fall here at the start of your next turn: 6 damage to every unit on the nine tiles: 3 units there now, 1 would die.",
     );
     const summoning = cultSummoningUiFixtureV7();
     const summoner = idAt(summoning, R.summoner);
@@ -334,7 +337,7 @@ describe("a ritual on the board, for every viewer", () => {
     const own = viewOf(state);
     const ritual = required(own.cult.rituals[0]);
     expect(ritualMarkNameV7(own, previewRitualV7(own, ritual))).toBe(
-      "Star-fall lands here at the start of your next turn: 7 damage to every unit on the nine tiles: 3 units there now, 2 would die. Disrupt its circle and nothing happens.",
+      "Star-fall lands here at the start of your next turn: 12 damage to every unit on the nine tiles: 3 units there now, 3 would die. Disrupt its circle and nothing happens.",
     );
     const rival = viewOf(state, 1);
     const seen = required(rival.cult.rituals[0]);
@@ -343,10 +346,10 @@ describe("a ritual on the board, for every viewer", () => {
     );
     const forecast = (entry: typeof seen) => previewRitualV7(rival, entry);
     expect(cultTrickTileLinesV7(rival, R.star, forecast)).toEqual([
-      "Star-fall lands here at the start of the Cultists' next turn: 7 damage to every unit on the nine tiles: 3 units there now, 2 would die. Disrupt its circle and nothing happens",
+      "Star-fall lands here at the start of the Cultists' next turn: 12 damage to every unit on the nine tiles: 3 units there now, 3 would die. Disrupt its circle and nothing happens",
     ]);
     expect(cultTrickTileLinesV7(rival, R.starKnight, forecast)).toEqual([
-      "In a star's path: 7 damage at the start of the Cultists' next turn",
+      "In a star's path: 12 damage at the start of the Cultists' next turn",
     ]);
     expect(cultTrickTileLinesV7(rival, at(9, 1), forecast)).toEqual([]);
     // The leader's own tile: its chip, said.
@@ -642,7 +645,8 @@ describe("the notices", () => {
     const ended = step(begun.state, { kind: "END_TURN" });
     const fell = step(ended.state, { kind: "END_TURN" }, 1, 0);
     expect(fell.events.some((event) => event.kind === "STAR_FELL")).toBe(true);
-    expect(notice(fell)).toMatch(/The star fell: 7 damage/);
+    // Begun alone and joined by nobody: 6.
+    expect(notice(fell)).toMatch(/The star fell: 6 damage/);
     expect(cultSteps(fell.steps)).toContainEqual(["STARFALL", null, [R.star]]);
     expect(
       fell.steps
@@ -650,7 +654,7 @@ describe("the notices", () => {
         .map((entry) => (entry.kind === "DAMAGE" ? entry.damage : 0))
         .sort(),
       // The Knight rested at its owner's End Turn: 8 HP, and it lives.
-    ).toEqual([7, 7, 7]);
+    ).toEqual([6, 6, 6]);
 
     const proclaim = cultProclaimUiFixtureV7();
     const herald = required(

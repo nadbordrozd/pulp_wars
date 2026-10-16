@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r87`, for all nine offered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r88`, for all nine offered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), Candy (`CANDY`), and
 the Cultists (`CULT`). The ninth faction, the Cultists of the Ancient Ones,
@@ -18,7 +18,8 @@ kept as the design record, and the notes of its six engine steps are in
 ([its design](RULESET_7_CULT_REDESIGN.md), approved by the user on
 2026-10-16) is being built in steps; each folds its part into section 26
 as it lands, and section 26 states only what is built (`7r85`: the roster
-step). It
+step; `7r88`: Star-fall alone with Join the chant, Switcheroo at 4, the
+daemons' advance after a kill, and the Unbound target order). It
 folds in
 revision 12 (free opening technology, Fruit visible from the start, Fertile
 Ground revealed by Gathering, resources kept under improvements, Normal AI
@@ -440,10 +441,27 @@ links to another, by Road or by Port. A sea link needs only **Shorecraft**
 the Roads technology, and unexplored water no longer breaks a link. A save,
 replay, or setup of `7r75` is rejected, and the browser autosave has a new
 key.
+`pulp-wars-poc-7r88` (`pulp_wars-mch9.34` and `pulp_wars-mch9.35`, the
+fourth and fifth engine steps of the Cult redesign,
+[its section 18](RULESET_7_CULT_REDESIGN.md#18-implementation-beads),
+approved by the user on 2026-10-16) is **Star-fall alone and the daemons'
+advance**: a Stargazer begins Star-fall alone (6 damage), and any robed
+cultist beside it may **Join the chant** in that turn with the new command
+`JOIN_CHANT` (+3 each, its primary action; event `CHANT_JOINED`, error
+`JOIN_CHANT_NOT_LEGAL`, preview `previewJoinChantV7`); a star needs no
+chanter and never fizzles for want of one; Switcheroo reaches 4 tiles (2
+before). Every daemon now **advances after a kill**, bound or Unbound (the
+Herald too, its second attack made from the victim's tile; an Unbound one
+never onto a tile its walk avoids), and an **Unbound daemon** goes for a
+robed cultist within 2 first, then anyone in its reach (Move + 1) who is
+not a summon, then a summon in reach, else walks toward the nearest
+non-summon; `previewRampageV7` names the step
+([section 26](#26-cultist-faction-rules)). A save, replay, or setup of
+`7r87` is rejected, and the browser autosave has a new key.
 `pulp-wars-poc-7r87` (`pulp_wars-ykw.8`, the user, 2026-10-15:
 "continents should have a bit more water than they do now. not just a
 narrow channel. and some tiny islands sprinkled here and there", and the
-lakes were "very regular. two rectangular lakes every time") is **natural
+lakes were "very regular. two rectangular lakes every time") was **natural
 water** ([section 2.3](#23-map-types),
 [map scale design](RULESET_7_MAP_SCALE.md) section 5.8): Continents
 landmasses cover 46% of the board (56% before) and grow as noise-shaped
@@ -1037,7 +1055,7 @@ the build differs (its sections 20 to 24 list them);
 the values here are current. Where a document and the code disagreed, the
 code's behavior is the rule and is stated below;
 [Known discrepancies](#25-known-discrepancies) lists the open items and the
-resolved ones as of `pulp-wars-poc-7r87`.
+resolved ones as of `pulp-wars-poc-7r88`.
 
 **Terms.** "On the board" means a unit that currently exists (HP above 0).
 **Living** has the narrower revision-13 meaning used by Wail, Plague,
@@ -1140,10 +1158,10 @@ sections here cite.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r87`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Ruleset                                    | `pulp-wars-poc-7r88`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r87.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Browser autosave                           | `pulpWars.save.v7r88.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, `CULT`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`, `CULT_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -6140,8 +6158,9 @@ its own in the key `summoned`):
   attack**: no `ATTACK` ability, Attack 0, and no
   reach, so it never strikes back and destroys no Field Defense by an
   attack. Like every siege unit it does not act after it moves, but it may
-  Channel after a Move. It leads **Star-fall**
-  ([section 26.8](#268-star-fall)).
+  Channel after a Move. It leads **Star-fall**, alone since
+  `pulp_wars-mch9.34`, and every robed cultist beside it (another
+  Stargazer too) may **Join the chant** ([section 26.8](#268-star-fall)).
 - **The vacant `KNIGHT` and `SWORDSMAN` slots** (`CULT_VACANT_ROLES_V7`,
   `7r85`): the Caller and the Chosen retired. Each role rule has no cost,
   no technology, no ability, the smallest numbers a rule holds, and the
@@ -13871,6 +13890,7 @@ first guesses.
 | Cult redesign, E-R1 | `pulp-wars-poc-7r85` | `pulp_wars-mch9.31` the Cult redesign's roster ([RULESET_7_CULT_REDESIGN.md](RULESET_7_CULT_REDESIGN.md); the user, 2026-10-16; a save, replay, or setup of `7r84` is rejected): the Initiate, Hexer, Summoner, and Stargazer have 7 HP (the Initiate and the Hexer Attack 1.5, the Initiate Defense 1; the Hexer costs 3, the Stargazer 7); the Cult's `KNIGHT` and `SWORDSMAN` slots are vacant (the Caller and the Chosen retired; `factionFieldsRoleV7`); Martyr and Pick Me! are removed; the Tentacle is the Summoner's with Tentacles (the Cult's Chivalry); Metallurgy is shown as Gibbering Masses; every Cult seat starts with 2 Favour; `FRONTIER_10` revision 3 and `LAB_CULT_MID` revision 2; a mission placing a vacant role is refused.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | Free Pearls         | `pulp-wars-poc-7r86` | `pulp_wars-5ti.14` (the user, 2026-10-16; a save, replay, or setup of `7r85` is rejected): Gather Pearls costs nothing and pays 10 Coins (2 for 12 before), the same gain of 10, with no Coins needed; the economic preview gains `coinsReceived`, and the tile dock shows "+10" with no price                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | Natural water       | `pulp-wars-poc-7r87` | `pulp_wars-ykw.8` (the user, 2026-10-15; a save, replay, or setup of `7r86` is rejected): Continents landmasses cover 46% of the board (56% before), grown as noise-shaped blobs from inset spines with a sea of at least two tiles between them up to four seats, plus islets of 1 to 3 tiles in the open sea, and nine seats grouped by neighbouring domains; Lakes boards draw two to five noise-shaped lakes (two long or rectangular lakes before) with the same Water; a village within 5 of every start up to four seats; the generation rules `NATURAL_WATER`, `NATURAL_WATER_RIFTS`, and `NATURAL_WATER_CURIOSITIES`; Dry Land, Pangea, Archipelago, and the campaign boards unchanged                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | [section 2.2](#22-settlements-and-treasures), [section 2.3](#23-map-types)                                                            |
+| Cult E-R4 and E-R5  | `pulp-wars-poc-7r88` | `pulp_wars-mch9.34`, `pulp_wars-mch9.35` the Cult redesign's Star-fall and daemons (the user, 2026-10-16; a save, replay, or setup of `7r87` is rejected): a Stargazer begins Star-fall alone (6), and robed cultists beside it join its chant that turn with `JOIN_CHANT` (+3 each, their action; `CHANT_JOINED`, `JOIN_CHANT_NOT_LEGAL`, `previewJoinChantV7`); Switcheroo reaches 4; every daemon advances after a kill, bound or Unbound (the Herald's second attack from the victim's tile); an Unbound daemon goes for a cultist within 2, then anyone in reach, then a summon in reach, else the nearest non-summon (`previewRampageV7.step`)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | [section 26](#26-cultist-faction-rules)                                                                                               |
 
 **Documentation parity (2026-09-28, no ruleset or identity change):** where
 older documents disagreed with the code, the code's behavior was adopted as
@@ -14852,8 +14872,8 @@ buy with them is stronger than anything else in the game. Units are turned
 into **Favour** (a Sacrifice, a Seizure, an Offering), Favour into
 **daemons** (the Horror, and the Herald, which is far above every other
 unit), and every daemon must be **channelled** by cultists every turn or it
-is **Unbound**: it belongs to nobody and attacks the nearest unit, its own
-side first. They are strong for as long as the channel holds and with a
+is **Unbound**: it belongs to nobody and attacks a cultist close by first,
+then anyone near it. They are strong for as long as the channel holds and with a
 Herald on the board; they are weak wherever an enemy can hurt, move, or put
 a status on the cultists that hold a daemon or chant a rite, which any
 faction can do. Every rule in this section applies only to units of the
@@ -14877,9 +14897,11 @@ kept as the design record, and [the Cult redesign](RULESET_7_CULT_REDESIGN.md)
 (approved by the user on 2026-10-16), whose steps fold in here as they are
 built (`7r85`, `pulp_wars-mch9.31`: the roster, the robed casters'
 numbers, the vacant slots, the Summoner's Tentacle, starting Favour, and
-Martyr and Pick Me! removed; the Favour cap, the warden's aura, Star-fall
-alone, the Herald's advance, the Imp, and the Gibbering Mass are not built
-yet); where it differs from this section, this
+Martyr and Pick Me! removed; `pulp_wars-mch9.34`: Star-fall alone with
+Join the chant, and Switcheroo at 4; `pulp_wars-mch9.35`: every daemon
+advances after a kill, bound or Unbound, and the Unbound target order; the
+Favour cap, the warden's aura, the Imp, and the Gibbering Mass are not
+built yet); where it differs from this section, this
 section is the rule, and the differences the fold found are listed in
 [its section 22](RULESET_7_CULTISTS.md#22-fold-notes-pulp_wars-mch921). The
 Cult's numbers were checked against the engine code at
@@ -15049,7 +15071,10 @@ A daemon is a land unit of a Cult seat with these rules of its own:
   without Engineering. It never enters water and never embarks. Like a
   Martian walker it is never fortified and takes no cover.
 - **While bound** it attacks and **captures** like any land unit. A Horror
-  advances after a kill and may Pillage; the Herald never advances.
+  advances after a kill and may Pillage; so does the Herald since the Cult
+  redesign (`pulp_wars-mch9.35`; it never advanced before). An advance can
+  carry a daemon more than 3 tiles from its channellers, which breaks it at
+  the next check: the player chooses the kill knowing it.
 - **Its kills feed.** A kill by a bound daemon's attack or retaliation of a
   hostile unit pays its seat the victim's value in Favour, and a neutral
   monster's bounty Coins as to anyone. A summoned unit of any seat, bound
@@ -15136,8 +15161,8 @@ asks once ("The Horror will be Unbound.") and nothing stops the choice.
 
 ### 26.6 Unbound, the rampage, Furious, and Bind again
 
-"An Unbound daemon belongs to nobody. It attacks the nearest unit, friend
-or foe, at once and after every round."
+"An Unbound daemon belongs to nobody. It goes for a cultist within 2 first,
+then anyone near it, friend or foe, at once and after every round."
 
 **Unbound.** A daemon that fails its check belongs to the neutral owner,
 like the Giant Spider ([section 2.7](#27-map-curiosities)), and is shown as
@@ -15153,12 +15178,25 @@ Army, and the seat's game is no longer flawless.
 in every neutral turn after a round, in unit-ID order with the other
 neutral units:
 
-1. **The target** is the nearest unit of any player (an Egg, and a daemon
-   another seat commands, included), measured in tiles in any direction.
-   Never a neutral unit, a ship or an embarked unit, or a burrowed unit. A
-   tie goes to a unit of **the seat that summoned it**, then to the fewest
-   Hit Points, then to the lowest unit ID. It is chosen whether or not
-   anyone sees it.
+1. **The target** (the Cult redesign, `pulp_wars-mch9.35`; the nearest unit
+   of any player until `7r87`) is chosen by four steps, distances measured
+   in tiles in any direction, its **reach** being its Move + 1 (Horror 3,
+   Herald 3). The candidates are units of any player (an Egg, and a daemon
+   another seat commands, included); never a neutral unit, a ship or an
+   embarked unit, or a burrowed unit.
+   1. **A cultist within 2:** the nearest robed cultist of any Cult seat
+      within 2 tiles.
+   2. **Anyone in reach:** otherwise the nearest unit within its reach that
+      is not a summon (no daemon of any seat).
+   3. **A summon in reach:** otherwise the nearest bound daemon within its
+      reach.
+   4. **Walk on:** otherwise the nearest unit on the board that is not a
+      summon (a summon only when there is no other), at any distance.
+      A tie inside a step goes to a unit of **the seat that summoned it**,
+      then to the fewest Hit Points, then to the lowest unit ID. It is chosen
+      whether or not anyone sees it. So a daemon never walks past a soldier in
+      its reach to bite a summon beside it, and never hunts a cultist across
+      the map: beyond 2 tiles a cultist is just anyone.
 2. **The walk.** The daemon walks up to its Move toward a tile next to the
    target by a shortest way over Grass, Forest, and Mountain, and stops as
    soon as it stands beside it. It never steps onto water, ice, a Rift, a
@@ -15167,8 +15205,13 @@ neutral units:
    terrain neither stop nor slow it.** With no way to the target it goes as
    near as it can.
 3. **The attack.** If it ends beside its target it attacks it: an ordinary
-   attack with retaliation. A Herald then attacks a second time, the
-   nearest unit beside it by the same tie rule (which may be the same
+   attack with retaliation. **After a kill it advances** onto the victim's
+   tile (`pulp_wars-mch9.35`), unless that tile is one its walk never
+   enters (water, ice, a Rift, a settlement center, a curiosity tile, a
+   treasure chest, a mound or a Barricade); then it stays. A Herald then
+   attacks a second time, from where it stands, a unit beside it chosen by
+   steps 1 to 3 among its neighbours (a cultist beside it first, then any
+   non-summon, then a summon), by the same ties (which may be the same
    unit), and its attacks still ignore fortification. A daemon that does
    not end beside its target attacks nobody.
 
@@ -15201,13 +15244,16 @@ purpose, by not channelling it.
 "A leader and the cultists next to it chant. Everyone sees the countdown.
 Disrupt the circle and nothing happens."
 
-A ritual has a **leader** and **chanters**: every own robed cultist on the
-eight tiles around the leader that has not used its action (it may have
-moved) and is neither Frozen nor a frog. Every such unit joins; a player
-who wants one left out uses it first. Beginning a ritual spends the action
-of the leader and of every chanter, marks a tile, and is public: the
-circle, its mark, and its countdown are shown to every player who sees a
-participant or has explored the mark.
+A ritual has a **leader** and **chanters**. The Great Summoning begins
+with its circle: every own robed cultist on the eight tiles around the
+leader that has not used its action (it may have moved) and is neither
+Frozen nor a frog. Every such unit joins; a player who wants one left out
+uses it first. **A Star-fall begins with no chanter** (the Cult redesign,
+`pulp_wars-mch9.34`): cultists join it one by one afterwards with **Join
+the chant** ([section 26.8](#268-star-fall)). Beginning a ritual spends
+the action of the leader and of every chanter, marks a tile, and is
+public: the circle, its mark, and its countdown are shown to every player
+who sees a participant or has explored the mark.
 
 A ritual **completes at the start of its seat's next turn**, after the
 channel check, so the enemy has exactly one turn to answer. A participant
@@ -15218,29 +15264,49 @@ and nothing is refunded.
 
 | Rite                | Technology                       | Leader                         | Chanters needed | Price     | Pay-off                                               |
 | ------------------- | -------------------------------- | ------------------------------ | --------------: | --------- | ----------------------------------------------------- |
-| Star-fall           | Stargazers (Sawmilling)          | a Stargazer that has not moved |               1 | none      | 5, plus 1 for each chanter, to nine tiles             |
+| Star-fall           | Stargazers (Sawmilling)          | a Stargazer that has not moved |               0 | none      | 6, plus 3 for each chanter, to nine tiles             |
 | The Great Summoning | The Stars Are Right (Explosives) | a Summoner (it may have moved) |               3 | 20 Favour | the Herald, channelled by the leader and the chanters |
 
 ### 26.8 Star-fall
 
-"Next turn a star lands 2 to 4 tiles away: 5, plus 1 for every chanter, to
-everything around it."
+"Next turn a star lands 2 to 4 tiles away: 6 to everything around it, and
+3 more for every cultist who joins the chant."
 
 The Stargazer has no attack of its own and never strikes back. A Stargazer
-that has not moved this turn, with one chanter or more, marks any tile its
-seat has explored that is 2 to 4 tiles away, of any terrain.
+that has not moved this turn marks any tile its seat has explored that is
+2 to 4 tiles away, of any terrain, **alone**: nobody beside it is swept in
+(the Cult redesign, `pulp_wars-mch9.34`; until `7r85` it needed a chanter
+and every unacted robed neighbour joined at the begin).
+
+**Join the chant.** `JOIN_CHANT { unitId, leaderUnitId }` is a primary
+action of an own robed cultist in land form (a mind-controlled one has
+none) standing on one of the eight tiles around a Stargazer that leads a
+pending Star-fall of its seat. The joiner has not used its primary action
+(it may have moved this turn, and cannot move after joining), is neither
+Frozen nor a frog, and is in no ritual already. It becomes a chanter of
+that star: Candlelit, public, and **+3** to the star (`CHANT_JOINED`, with
+the star's damage after the join). It pays no Favour. A star is pending
+from its begin to its seat's next Start Turn, so joining happens in the
+casting turn, in any order with the seat's other commands; a cultist may
+move up beside the Stargazer and join in the same turn. A chanter beside
+two pending stars of its seat names the one it joins.
+
+**Disruption.** A disrupted chanter leaves the ritual (the star loses 3);
+a disrupted Stargazer fizzles it (nothing lands, nothing is refunded). A
+star **never fizzles for want of chanters**: it needs none.
 
 When the ritual completes, **every unit on the marked tile and the eight
 tiles around it**, of every seat and every form (the Cult's own units,
 ships, embarked units, Eggs, daemons, giants, and neutral units included; a
-burrowed unit is not on the board), takes **5 + 1 for each chanter still in
+burrowed unit is not on the board), takes **6 + 3 for each chanter still in
 the ritual**. It is fixed damage: Defense, fortification, cover, Snow, and
 the Blizzard do not count; Armoured, Plated, and a Shield apply as for
 every fixed hit. Every Field Defense in the area is destroyed and every
 Barricade removed. Nobody strikes back.
 
-A star with eight chanters deals 13. A chanter that was disrupted before
-the star fell makes it weaker by 1. The deaths are resolved like a Thunder
+By chanters: 0 → 6, 1 → 9, 2 → 12, 3 → 15, 4 → 18, 8 → 30 (no cap beyond
+the eight tiles around the Stargazer). A chanter that was disrupted before
+the star fell makes it weaker by 3. The deaths are resolved like a Thunder
 Stomp's: Graves, risings, Crumbs, and death blasts as for a splash death.
 The Stargazer is credited with the hostile units it kills, and its seat
 with their Score, Plunder, and bounty; an own unit the star kills is a
@@ -15281,9 +15347,12 @@ the one after the ritual begins, and the one after the Herald arrives.
 **The Herald:** 60 HP, Attack 7, Defense 4, Move 2, Sight 1, Control 3.
 
 - **Ravage.** It makes **two attacks** in each of its seat's turns, after
-  its Move or without one, at one target or two. It cannot move after an
-  attack and never advances after a kill. A Proclaim takes the place of
-  one attack.
+  its Move or without one, at one target or two. **After a kill it
+  advances** onto the victim's tile (the forced advance every unit makes;
+  the Cult redesign, `pulp_wars-mch9.35`: it never advanced before), and
+  its second attack, if it has one left, is made from there. It cannot
+  move after an attack (the advance is no Move). A Proclaim takes the
+  place of one attack.
 - **Unstoppable.** Its attacks ignore the defender's fortification (Walls,
   Field Defense, Dig In; cover still counts, and so do Armoured, Plated,
   and Shields) and destroy a Field Defense on the target's tile, bound or
@@ -15394,11 +15463,12 @@ An Initiate deals a frogged Fighter 5 (7 left) and a frogged Knight 5 (8
 left) and takes nothing back (7 each before the Initiate's Attack 1.5 of
 `7r85`).
 
-**Switcheroo (the Familiar).** "The toad-cat and a unit within 2 swap
+**Switcheroo (the Familiar).** "The toad-cat and a unit within 4 swap
 places. Never on a settlement center." With **Familiars** (the Cult's
 Scouting; a Familiar from the Scouts reward or a chest swaps only once its
 owner has it), the Familiar and one land-form unit of any player that it
-sees, within 2 tiles, swap tiles. Not a reward giant, a two-slot unit, an
+sees, within **4** tiles (2 until the Cult redesign, `pulp_wars-mch9.34`;
+nothing else changed), swap tiles. Not a reward giant, a two-slot unit, an
 Egg, a neutral unit, a summoned unit, or a unit nothing moves (a
 Jawbreaker). **Neither tile may be a settlement center**, each unit must be
 able to stand where the other stood by the Push conditions, and neither is
@@ -15522,7 +15592,8 @@ and tricks). In summary:
   `CHANNEL` (`unitId`, `daemonUnitId`; also Bind again), `BEHOLD`
   (`unitId`), `ANCHOR` (`unitId`, `cultistUnitId`), `BOO` (`unitId`),
   `BEGIN_RITUAL` (`ritual` `STARFALL` or `GREAT_SUMMONING`, `unitId`,
-  `at`), `PROCLAIM` (`unitId`, `cityId`), `RIBBIT` and `SWITCHEROO`
+  `at`), `JOIN_CHANT` (`unitId`, `leaderUnitId`; `pulp_wars-mch9.34`),
+  `PROCLAIM` (`unitId`, `cityId`), `RIBBIT` and `SWITCHEROO`
   (`unitId`, `targetUnitId`), and `TENTACLE` (`unitId`, `at`; the
   Summoner's). (`PICK_ME` was removed with the Chosen, `7r85`.) Pamphlets is the ordinary `CAPTURE`, and the Herald's two
   attacks the ordinary `ATTACK`.
@@ -15538,7 +15609,10 @@ and tricks). In summary:
   to every player; `UNIT_SACRIFICED`, `UNIT_SEIZED`, `OFFERING_MADE`;
   `DAEMON_SUMMONED`, `STRAND_FORMED`, `STRAND_BROKEN`, `IDOL_RAISED`,
   `IDOL_DROPPED`, `ANCHOR_GRIPPED`, `ANCHOR_BROKEN`, `UNITS_SCARED`;
-  `DAEMON_UNBOUND`, `DAEMON_BOUND`; `RITUAL_BEGUN`, `RITUAL_DISRUPTED`,
+  `DAEMON_UNBOUND`, `DAEMON_BOUND`; `RITUAL_BEGUN`, `CHANT_JOINED`
+  (`unitId`, `leaderUnitId`, the star's `damage` after the join; shown to
+  its seat and to every viewer that sees the joiner or the Stargazer),
+  `RITUAL_DISRUPTED`,
   `RITUAL_FIZZLED` (reason `LEADER`, `CHANTERS`, or `BLOCKED`),
   `STAR_FELL`, `UNIT_CONSUMED`, `HERALD_ARRIVED`, `CITY_COWED`;
   `UNIT_FROGGED`, `UNITS_SWAPPED`, `TENTACLE_ROSE`, `UNIT_GRABBED`,
@@ -15552,7 +15626,9 @@ and tricks). In summary:
   (`EMBARKED`, `HELPER`, `TILE`); `CHANNEL_NOT_LEGAL` (`EMBARKED`,
   `DAEMON`, `FURIOUS`, `RANGE`); `BEHOLD_NOT_LEGAL` (`EMBARKED`, `RAISED`);
   `ANCHOR_NOT_LEGAL` (`EMBARKED`, `GRIPPING`, `CULTIST`); `BOO_NOT_LEGAL`
-  (`NOBODY`); `RITUAL_NOT_LEGAL` (`EMBARKED`, `MOVED`, `CHANTERS`, `TILE`);
+  (`NOBODY`); `RITUAL_NOT_LEGAL` (`EMBARKED`, `MOVED`, `CHANTERS` (the
+  Great Summoning's only), `TILE`); `JOIN_CHANT_NOT_LEGAL` (`EMBARKED`,
+  `CHANTING`, `ACTED`, `STATUS`, `RITUAL`, `ADJACENT`);
   `PROCLAIM_NOT_LEGAL` (`CITY`, `RANGE`, `COWED`); `RIBBIT_NOT_LEGAL`
   (`EMBARKED`, `COOLDOWN`, `TARGET`, `IMMUNE`, `FROG`, `RANGE`);
   `SWITCHEROO_NOT_LEGAL` (`EMBARKED`, `TECHNOLOGY`, `COOLDOWN`, `TARGET`,
@@ -15567,12 +15643,15 @@ and tricks). In summary:
   `previewOfferingV7`, `previewSummonV7`, `previewChannelV7` (the daemon's
   strands before and after, and whether it binds), `previewAnchorV7`,
   `previewBeholdV7`, `previewBooV7`, `previewBeginRitualV7`,
-  `previewRitualV7` (a star's damage and hits; whether the Herald
+  `previewJoinChantV7` (the star before and after the join, and the units
+  it newly kills), `previewRitualV7` (a star's damage and hits, with its
+  joiners; whether the Herald
   `ARRIVES`, `CONSUMES`, or is `BLOCKED`), `previewProclaimV7`,
   `previewRibbitV7`, `previewSwitcherooV7`, and `previewTentacleV7`
   describe an offered command and are null otherwise.
-  `previewRampageV7` gives the unit a visible daemon goes for and its walk
-  (`exact` is false when an unexplored tile could hold a nearer unit);
+  `previewRampageV7` gives the unit a visible daemon goes for, the `step`
+  of the target rule that chose it (1 to 4, `pulp_wars-mch9.35`), and its
+  walk (`exact` is false when an unexplored tile could hold a nearer unit);
   `previewMonsterV7` answers for an Unbound daemon and a Tentacle;
   `attacksLeftV7` is a Herald's attacks left. The combat preview of a
   frog is exact, and an attack a frog forbids has none.
@@ -15585,11 +15664,13 @@ and tricks). In summary:
 - **Text harness** ([text-mode play](../validation/TEXT_PLAY.md)): the
   commands `.sacrifice.u<id>`, `.seize.u<id>`, `c<id>.offering`,
   `.summon.u<id>.<x>,<y>`, `.channel.u<id>`, `.behold`, `.anchor.u<id>`,
-  `.boo`, `.starfall.<x>,<y>`, `.summoning.<x>,<y>`, `.proclaim.c<id>`,
+  `.boo`, `.starfall.<x>,<y>`, `.join.u<stargazer>`,
+  `.summoning.<x>,<y>`, `.proclaim.c<id>`,
   `.ribbit.u<id>`, `.switch.u<id>`, and `.tentacle.<x>,<y>` (`.pickme`
   was removed at `7r85`),
   and lines for Favour, strands and Control, grips, idols, Unbound
-  daemons and their targets, circles, Cowed cities, frogs, and
+  daemons and their targets (with the step's reason, "a cultist within
+  2"), circles, Cowed cities, frogs, and
   Tentacles. The headless tools take `cult` (alias `cultists`) in
   `--factions`.
 
