@@ -963,6 +963,85 @@ Horror; today only the Horror), Brood, Doorstep, Swarm, and the Mass in the
 garrison; the cap rule then summons "the best it can". A-R4: every seat
 against the new Cult.
 
+### 12.6 As built: A-R2, rituals and tricks (`pulp_wars-mch9.39`)
+
+Built on hand-built states only (the A-R2 tests of
+`tests/unit/ruleset-v7-cult-rituals-ai.test.ts`; each rule was seen to
+fail its test with the rule switched off). No rule changed and the ruleset
+identity did not move. No match was played. The code is
+`cultRitualPlanV7` in `src/ai/v7-cult-rituals.ts`, two tools the channel
+plan hands it (the danger on a tile with some units gone, and a projected
+board with units gone), and one hook in `src/ai/v7.ts` (an attack the plan
+vetoes is no candidate). Decided here:
+
+1. **Star-fall alone.** The mark rule is unchanged (two hostile units, or
+   one that stays; no own or friendly unit on the nine tiles), but its
+   worth is counted at the damage of the chanters the star can expect
+   this turn (rule 2, asked as if it were begun there), so a mark that a
+   join turns into kills can win over one that only the lone star hurts.
+   The hits are the public forecast's at any number of chanters (fixed
+   damage; Armoured, Plated, and Shields apply). Nobody is called before
+   the begin.
+2. **Who joins.** A free robed cultist with Join the chant: not held by the
+   plan, unacted, no frog, in no ritual, and **never a Summoner** (its
+   action is kept for its Summon, Seizure, Sacrifice, and Tentacle). Those
+   beside the Stargazer are asked first, then those that can step beside
+   it to a tile no visible enemy can attack and under no own mark (never
+   from an own center), the cheapest first, then the nearest. The step is
+   a plan step at the joins' priority (1859); the join follows it in the
+   same turn. One join or step a decision, so the next reads the star after
+   it, and each join is checked against `previewJoinChantV7`.
+3. **When it joins.** While the join turns one more hostile unit on the
+   nine tiles into a kill, **counting the unexposed joins that can still
+   follow it this turn** (two joins that kill together are each worth it),
+   or while the mark holds three hostile units or more
+   (`CULT_STARFALL_CROWD_V7`) and one of them still stands under the star
+   as it is. Never when the join (or a join it counts on) kills a unit of
+   the seat or of a friend. **An exposed joiner** (one a visible enemy can
+   attack where it chants: it cannot move after the join, and any hit takes
+   it out of the chant) joins only for a kill worth at least its own cost,
+   and never where the visible enemy kills it; the crowd alone is not
+   enough for it.
+4. **Switcheroo at 4.** The rules of section 15.8 rule 13 read the engine's
+   offered swaps at the new range. Added, since a swap now reaches deep
+   into the enemy: the swap that sets up a Seizure is never made where the
+   visible enemy kills the Familiar on its new tile (the drop of a shooter
+   already had that rule).
+5. **The Summoner's Tentacle against Seizure set-ups.** A Summoner that a
+   Seizure may need this turn calls no Tentacle: the Summoner of a company
+   (a Summoner and a holder that can stand beside the victim) for a
+   visible hostile land unit that can be Seized now, or that the beating on
+   offer leaves broken (a frog at half). The beating is the attacks offered
+   now, no Summoner's and no held unit's, with A-R1's casters striking on
+   A-R1's terms: every blow on a frog, else only the one blow, after the
+   others, that breaks the enemy (or kills it). (A-R1 already took the
+   Tentacle back from a Summoner with a Summon, Seizure, or Sacrifice step.)
+6. **Ribbit's beating** reads the same beating: the target will be a frog,
+   so every caster's blow counts (A-R1 lets a caster strike a frog), and no
+   Summoner's blow does (it keeps its action for the Seizure).
+7. **The Herald's advance.** Its attacks are scored with the advance onto
+   each victim's tile, and its second attack after a kill is read from that
+   tile with the victim gone. A kill whose advance takes it from a tile its
+   channellers can hold it on (`daemonMayEnd`: the holders within 3, the
+   free cultists within their step) to one they cannot is made only when
+   the second attack from there kills too; **a lone kill off its leash is
+   never made** (scored below every attack and below no attack at all: it
+   would trade the bind of an 18-Favour Herald for one unit). A pair whose
+   Move and advances leave it where the visible enemy, less its victims,
+   kills it next turn is not made either (unless it stands in lethal reach
+   already, or stays where it stands). Its attacks are now plan steps
+   (3970, in the plan's order), and every other attack of the Herald, and
+   every kill the plan does not make, is vetoed (`CultPlanV7.mayAttack`);
+   a Proclaim takes the second attack's place when no allowed kill is on
+   offer. Unchanged: the Herald still scores no wound-then-kill of one unit
+   (two attacks on the same target).
+
+**Left for later.** A-R3: what to summon, Brood, Doorstep, Swarm. A-R4:
+every seat against the joiners, the warden, and the advance. Noted for
+A-R3: the trickle's channeller (A-R1, rule 6) does not yet read rule 5
+above, so a Summoner a beat-then-Seize needs may still be asked to channel
+when no other cultist can.
+
 ## 13. Interface
 
 All targeting stays on the board ([board targeting](../ui/BOARD_TARGETING.md));

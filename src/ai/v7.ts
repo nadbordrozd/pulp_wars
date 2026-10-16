@@ -4798,6 +4798,20 @@ function cultPlanForV7(context: PolicyContextV7): CultPlanV7 | null {
     commands: context.commands,
     hostile: (ownerId) => isHostile(view, ownerId),
     danger: (unit, at) => visibleImmediateDamage(view, unit, at, context),
+    // The Cult redesign's A-R2 (`pulp_wars-mch9.39`): the danger on a tile
+    // with some visible units gone (a Herald's victims, before it advances).
+    dangerWithout: (unit, at, gone) =>
+      gone.length === 0
+        ? visibleImmediateDamage(view, unit, at, context)
+        : visibleImmediateDamage(
+            projectPublicUnits(
+              view,
+              view.units.filter((item) => !gone.includes(item.id)),
+              [],
+            ),
+            unit,
+            at,
+          ),
     threatened: (at) => {
       if (threatened === undefined) {
         threatened = new Set();
@@ -4811,22 +4825,25 @@ function cultPlanForV7(context: PolicyContextV7): CultPlanV7 | null {
     },
     reach: (unitId, at) =>
       context.threatenedTiles.get(unitId)?.has(coordKey(at)) === true,
-    moved: (moves) =>
+    moved: (moves, gone = []) =>
       projectPublicUnits(
         view,
-        view.units.map((unit) => {
+        view.units.flatMap((unit) => {
+          if (gone.includes(unit.id)) return [];
           const move = moves.find((item) => item.unit.id === unit.id);
           return move === undefined || same(move.at, unit.at)
-            ? unit
-            : {
-                ...unit,
-                at: move.at,
-                activation: {
-                  ...unit.activation,
-                  moved: true,
-                  movedPathLength: Math.max(1, distance(unit.at, move.at)),
+            ? [unit]
+            : [
+                {
+                  ...unit,
+                  at: move.at,
+                  activation: {
+                    ...unit.activation,
+                    moved: true,
+                    movedPathLength: Math.max(1, distance(unit.at, move.at)),
+                  },
                 },
-              };
+              ];
         }),
         moves.map((move) => move.unit.id),
       ),
@@ -15772,7 +15789,10 @@ function scoreCommandWithContext(
       priority = -1;
     else if (
       command.kind === "ATTACK" &&
-      cultPlan.seized.has(command.targetUnitId)
+      (cultPlan.seized.has(command.targetUnitId) ||
+        // The Cult redesign's A-R2 (`pulp_wars-mch9.39`): an attack of an
+        // own Herald that its plan does not make.
+        !cultPlan.mayAttack(command.unitId, command.targetUnitId))
     )
       priority = -1;
     else if (actor !== undefined && actor.ownerId === view.viewer.id) {

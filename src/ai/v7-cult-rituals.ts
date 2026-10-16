@@ -1,10 +1,16 @@
 import type { PlayerId, UnitId } from "../engine/model/ids";
-import { unitRoleRuleV7 } from "../engine/rules/ruleset-v7";
+import {
+  SEIZE_BROKEN_HP_V7,
+  starfallDamageV7,
+  unitRoleRuleV7,
+} from "../engine/rules/ruleset-v7";
 import type { CommandV7 } from "../engine/v7/commands";
 import {
   pamphletsApplyV7,
   tentacleSlapTargetV7,
 } from "../engine/v7/cult-hexes";
+import { fixedSignatureHitV7 } from "../engine/v7/giants";
+import { shieldOfV7 } from "../engine/v7/martian";
 import {
   previewBeginRitualV7,
   previewJoinChantV7,
@@ -27,7 +33,11 @@ import { CULT_SUMMONING_FAVOUR_V7, cultCasterV7, cultRobedV7 } from "./v7-cult";
  * the Herald's two attacks and Proclaim, Boo!, Ribbit, Switcheroo, the
  * Tentacle, and Pamphlets. (Pick Me! retired with the Chosen: the Cult
  * redesign, `pulp_wars-mch9.31`; the Tentacle step reads every offered
- * `TENTACLE`, the Summoner's since then.)
+ * `TENTACLE`, the Summoner's since then.) Revised by the Cult redesign's
+ * A-R2 (`pulp_wars-mch9.39`, RULESET_7_CULT_REDESIGN.md sections 12.3 and
+ * 12.6): Star-fall begun alone and the joins of its chant, Switcheroo at 4,
+ * the Summoner's Tentacle against Seizure set-ups, and the Herald's attacks
+ * scored with the advance after a kill.
  *
  * It is one part of the Cult seat's plan (`cultPlanV7` in
  * `src/ai/v7-cult-channel.ts`, which calls it once the channel plan has
@@ -67,6 +77,15 @@ export const CULT_STARFALL_MAXIMUM_V7 = 4;
  * (the Cult redesign, `pulp_wars-mch9.34`, section 8.2; 5 and 1 before).
  */
 export const CULT_STARFALL_DAMAGE_V7 = 6;
+/**
+ * The Cult redesign's A-R2 (`pulp_wars-mch9.39`, RULESET_7_CULT_REDESIGN.md
+ * section 12.3): a free cultist joins a star's chant while the mark holds
+ * this many hostile units or more (one of them still standing under the
+ * star as it is), even when the join kills nobody more.
+ */
+export const CULT_STARFALL_CROWD_V7 = 3;
+/** The Herald's attacks a turn (Ravage, section 9.1). */
+export const CULT_HERALD_ATTACKS_V7 = 2;
 /** Proclaim reaches a city within this many tiles (section 8.6). */
 export const CULT_PROCLAIM_RANGE_V7 = 3;
 /** The value of a unit that has no cost (a giant, a daemon, an Egg). */
@@ -112,7 +131,9 @@ export type CultRitualReasonV7 =
   | "GATHER"
   | "STARFALL"
   | "STARFALL_JOIN"
+  | "STARFALL_COME"
   | "HERALD_MOVE"
+  | "HERALD_ATTACK"
   | "PROCLAIM"
   | "BOO"
   | "RIBBIT_GUARD"
@@ -138,6 +159,16 @@ export interface CultRitualFactsV7 {
   readonly hostile: (ownerId: PlayerId) => boolean;
   /** What the visible enemies deal `unit` on `at` in their next turn. */
   readonly danger: (unit: PublicUnitV7, at: CoordV7) => number;
+  /**
+   * The Cult redesign's A-R2 (`pulp_wars-mch9.39`): what the visible
+   * enemies but the units of `gone` (a Herald's victims) deal `unit` on
+   * `at` in their next turn.
+   */
+  readonly dangerWithout: (
+    unit: PublicUnitV7,
+    at: CoordV7,
+    gone: readonly UnitId[],
+  ) => number;
   /** A visible enemy can attack a unit on `at` in its next turn. */
   readonly threatened: (at: CoordV7) => boolean;
   /** The visible unit `unitId` can attack a unit on `at` in its next turn. */
@@ -145,6 +176,8 @@ export interface CultRitualFactsV7 {
   /** The view with each of these units on its tile. */
   readonly moved: (
     moves: readonly { readonly unit: PublicUnitV7; readonly at: CoordV7 }[],
+    /** The visible units taken off the board too (A-R2: a Herald's victim). */
+    gone?: readonly UnitId[],
   ) => PlayerViewV7;
   /** The own living units in land form. */
   readonly own: readonly PublicUnitV7[];
@@ -152,6 +185,8 @@ export interface CultRitualFactsV7 {
   readonly enemies: readonly PublicUnitV7[];
   /** The units the plan holds; this part adds its own. */
   readonly held: Set<UnitId>;
+  /** The broken enemies kept for a Seizure (nobody attacks them). */
+  readonly seized: ReadonlySet<UnitId>;
   readonly movesByUnit: ReadonlyMap<UnitId, readonly MoveV7[]>;
   /** The own cultists that hold a strand now. */
   readonly channellers: ReadonlySet<UnitId>;
@@ -189,6 +224,13 @@ export interface CultRitualPlanV7 {
   readonly saving: boolean;
   /** No own unit ends a Move here: under an own ritual's mark. */
   readonly mayEnd: (at: CoordV7) => boolean;
+  /**
+   * The Cult redesign's A-R2 (`pulp_wars-mch9.39`, section 12.3): false for
+   * an attack of an own Herald the plan does not make (a kill whose advance
+   * takes it into lethal reach, or off its leash while a better attack is
+   * on offer; any other attack while the plan names one).
+   */
+  readonly mayAttack: (unitId: UnitId, targetUnitId: UnitId) => boolean;
 }
 
 const gap = (left: CoordV7, right: CoordV7): number =>
@@ -469,9 +511,23 @@ export function cultRitualPlanV7(facts: CultRitualFactsV7): CultRitualPlanV7 {
   // ----------------------------------------------------------- the Herald
   // Section 15.2 step 2: the Herald's two attacks are scored together. It
   // cannot move after an attack, so its Move is chosen first: the tile from
-  // which its two attacks kill the most, then are worth the most, then
-  // where a city can be Proclaimed with an attack that is left over, then
-  // where a visible enemy is nearer to it than any own unit.
+  // which its two attacks are best, then where a city can be Proclaimed
+  // with an attack that is left over, then where a visible enemy is nearer
+  // to it than any own unit.
+  //
+  // The Cult redesign's A-R2 (`pulp_wars-mch9.39`, RULESET_7_CULT_REDESIGN.md
+  // section 12.3): the attacks are scored with the advance after a kill. A
+  // kill whose advance takes it from a tile its channellers can hold it on
+  // (`daemonMayEnd`) to one they cannot is scored below every attack that
+  // does not, unless the second attack from the new tile is a kill too (it
+  // breaks loose at the next check: two kills are worth that). Decided
+  // here: below no attack at all too, so a lone kill off its leash is never
+  // made (it would trade the Herald's bind, 18 Favour, for one unit); and a
+  // kill whose advance (or the two kills') leaves it where the visible
+  // enemy, less its victims, kills it next turn is not made either, unless
+  // it stands in such reach already. Its attacks are steps of the plan (in
+  // the plan's order of the two), and the attacks the plan does not make
+  // are vetoed (`mayAttack`).
   const cowed = new Set(cult.cowed.map((entry) => entry.cityId));
   const proclaimable = view.cities.filter(
     (city) =>
@@ -481,114 +537,233 @@ export function cultRitualPlanV7(facts: CultRitualFactsV7): CultRitualPlanV7 {
       // A center an own unit stands on is being taken already.
       !own.some((unit) => sameTile(unit.at, city.at)),
   );
+  const vetoes = new Set<string>();
+  const attackKey = (unitId: UnitId, targetUnitId: UnitId): string =>
+    `${unitId}>${targetUnitId}`;
+  const mayAttack = (unitId: UnitId, targetUnitId: UnitId): boolean =>
+    !vetoes.has(attackKey(unitId, targetUnitId));
   for (const daemon of facts.daemons) {
     const herald = daemon.unit;
-    if (
-      !daemon.herald ||
-      !daemon.holdable ||
-      herald.activation.moved ||
-      herald.activation.attacksUsed > 0 ||
-      !primaryReady(herald)
-    )
-      continue;
+    if (!daemon.herald || !daemon.holdable || held.has(herald.id)) continue;
+    const offered = attacksByUnit.get(herald.id) ?? [];
+    const fresh =
+      !herald.activation.moved &&
+      herald.activation.attacksUsed === 0 &&
+      primaryReady(herald);
+    if (!fresh && offered.length === 0) continue;
+    const left = Math.max(
+      0,
+      CULT_HERALD_ATTACKS_V7 - herald.activation.attacksUsed,
+    );
     const reachOf = ruleOf(herald).range;
+    const leashed = (at: CoordV7): boolean => facts.daemonMayEnd(herald.id, at);
+    // Where it stands now is in lethal reach already: an advance makes that
+    // no worse.
+    const doomed = facts.danger(herald, herald.at) >= herald.hp;
+    const lethal = new Map<string, number>();
+    const lethalAt = (
+      at: CoordV7,
+      gone: readonly UnitId[],
+      hp: number,
+    ): boolean => {
+      if (doomed) return false;
+      const key = `${tileKey(at)}:${[...gone].sort((a, b) => a - b).join(",")}`;
+      let danger = lethal.get(key);
+      if (danger === undefined) {
+        danger = facts.dangerWithout(herald, at, gone);
+        lethal.set(key, danger);
+      }
+      return danger >= hp;
+    };
+    type HitV7 = {
+      readonly target: PublicUnitV7;
+      readonly kills: number;
+      readonly value: number;
+      readonly damage: number;
+      readonly taken: number;
+      /** The victim's tile it advances onto, or null. */
+      readonly advance: CoordV7 | null;
+    };
+    /**
+     * Its hits from `at` (with the unit of `gone`, its first victim, off
+     * the board: the second attack after a kill is made from the victim's
+     * tile).
+     */
+    const hitsFrom = (
+      at: CoordV7,
+      gone: UnitId | null = null,
+    ): readonly HitV7[] => {
+      const targets = enemies.filter(
+        (unit) =>
+          unit.form === "LAND" &&
+          unit.id !== gone &&
+          gap(unit.at, at) <= reachOf &&
+          !facts.seized.has(unit.id) &&
+          // From its own tile only what the engine offers it.
+          (!sameTile(at, herald.at) ||
+            offered.some((command) => command.targetUnitId === unit.id)),
+      );
+      const projected =
+        targets.length === 0 || (sameTile(at, herald.at) && gone === null)
+          ? view
+          : facts.moved([{ unit: herald, at }], gone === null ? [] : [gone]);
+      return targets.flatMap((target) => {
+        const preview = queryCombatPreviewV7(projected, herald.id, target.id);
+        return preview === null
+          ? []
+          : [
+              {
+                target,
+                kills: Number(preview.defenderDies),
+                value: valueOf(target),
+                damage: preview.damageToDefender,
+                taken: preview.damageToAttacker,
+                advance:
+                  preview.defenderDies && preview.advances ? target.at : null,
+              },
+            ];
+      });
+    };
+    /**
+     * Whether the pair from `at` may be made: no advance takes it off its
+     * leash but one a second kill follows, and the tile where the Move and
+     * the advances leave it is out of lethal reach (or it stands in such
+     * reach already, or stays where it stands).
+     */
+    const allowed = (at: CoordV7, pair: readonly HitV7[]): boolean => {
+      let leash = true;
+      let from = at;
+      let hp = herald.hp;
+      const gone: UnitId[] = [];
+      pair.forEach((hit, index) => {
+        hp -= hit.taken;
+        if (hit.advance === null) return;
+        gone.push(hit.target.id);
+        const next = pair[index + 1];
+        if (
+          leashed(from) &&
+          !leashed(hit.advance) &&
+          !(next !== undefined && next.kills > 0)
+        )
+          leash = false;
+        from = hit.advance;
+      });
+      // (It ends where it moved when nothing advances it: a Move into lethal
+      // reach is refused too.)
+      return leash && (sameTile(from, herald.at) || !lethalAt(from, gone, hp));
+    };
+    /** The best attacks it may make from `at`: kills, value, number, damage. */
+    const bestFrom = (
+      at: CoordV7,
+    ): { readonly hits: readonly HitV7[]; readonly key: readonly number[] } => {
+      const single = hitsFrom(at);
+      let hits: readonly HitV7[] = [];
+      let key: readonly number[] = [0, 0, 0, 0];
+      const consider = (pair: readonly HitV7[]): void => {
+        if (!allowed(at, pair)) return;
+        const candidate = [
+          pair.reduce((sum, hit) => sum + hit.kills, 0),
+          pair.reduce((sum, hit) => sum + hit.kills * hit.value, 0),
+          pair.length,
+          pair.reduce((sum, hit) => sum + hit.damage, 0),
+        ];
+        if (better(candidate, key)) {
+          hits = pair;
+          key = candidate;
+        }
+      };
+      for (const firstHit of single) {
+        consider([firstHit]);
+        if (left < 2) continue;
+        // After a kill it strikes from its victim's tile (the Cult
+        // redesign, `pulp_wars-mch9.35`), its victim gone.
+        const seconds =
+          firstHit.advance === null
+            ? single
+            : hitsFrom(firstHit.advance, firstHit.target.id);
+        for (const secondHit of seconds) {
+          if (secondHit.target.id === firstHit.target.id) continue;
+          consider([firstHit, secondHit]);
+        }
+      }
+      return { hits, key };
+    };
     const ownGap = (at: CoordV7): number =>
       own.reduce(
         (nearest, unit) =>
           unit.id === herald.id ? nearest : Math.min(nearest, gap(unit.at, at)),
         99,
       );
-    /** What the Herald's two attacks do from `at`. */
+    /** The Move's score of `at`: its attacks, a Proclaim, the enemy near. */
     const scoreOn = (at: CoordV7): readonly number[] => {
-      const targets = enemies.filter(
-        (unit) => unit.form === "LAND" && gap(unit.at, at) <= reachOf,
-      );
-      const projected =
-        targets.length === 0 || sameTile(at, herald.at)
-          ? view
-          : facts.moved([{ unit: herald, at }]);
-      type HitV7 = {
-        readonly at: CoordV7;
-        readonly kills: number;
-        readonly value: number;
-        readonly damage: number;
-      };
-      const single: HitV7[] = targets.flatMap((target) => {
-        const preview = queryCombatPreviewV7(projected, herald.id, target.id);
-        return preview === null
-          ? []
-          : [
-              {
-                at: target.at,
-                kills: Number(preview.defenderDies),
-                value: valueOf(target),
-                damage: preview.damageToDefender,
-              },
-            ];
-      });
-      // The Cult redesign (`pulp_wars-mch9.35`, a stop-gap until A-R2,
-      // `pulp_wars-mch9.39`): a kill advances it onto the victim's tile, so
-      // the second attack must still reach its target from there.
-      const total = (pair: readonly HitV7[]): readonly number[] => [
-        pair.reduce((sum, hit) => sum + hit.kills, 0),
-        pair.reduce((sum, hit) => sum + hit.kills * hit.value, 0),
-        pair.length,
-        pair.reduce((sum, hit) => sum + hit.damage, 0),
-      ];
-      let hits: readonly HitV7[] = [];
-      const consider = (pair: readonly HitV7[]): void => {
-        if (hits.length === 0 || better(total(pair), total(hits))) hits = pair;
-      };
-      for (const firstHit of single) {
-        consider([firstHit]);
-        for (const secondHit of single) {
-          if (secondHit === firstHit) continue;
-          if (firstHit.kills > 0 && gap(secondHit.at, firstHit.at) > reachOf)
-            continue;
-          consider([firstHit, secondHit]);
-        }
-      }
-      const kills = hits.reduce((sum, hit) => sum + hit.kills, 0);
-      // A Proclaim with the attack left over is made from where the first
-      // attack leaves it: on its victim's tile after a kill.
-      const lone = hits.length === 1 ? hits[0] : undefined;
-      const standsAt = lone !== undefined && lone.kills > 0 ? lone.at : at;
+      const { hits, key } = bestFrom(at);
+      // A Proclaim with the attack left over is made from where the
+      // attacks leave it: on its last victim's tile after a kill.
+      const standsAt =
+        [...hits].reverse().find((hit) => hit.advance !== null)?.advance ?? at;
       const proclaim =
-        hits.length < 2 &&
+        hits.length < left &&
         proclaimable.some(
           (city) => gap(city.at, standsAt) <= CULT_PROCLAIM_RANGE_V7,
         );
       return [
-        kills,
-        hits.reduce((sum, hit) => sum + hit.kills * hit.value, 0),
+        key[0] ?? 0,
+        key[1] ?? 0,
         hits.length + Number(proclaim),
-        hits.reduce((sum, hit) => sum + hit.damage, 0),
+        key[3] ?? 0,
         Number(facts.enemyGap(at) < ownGap(at)),
       ];
     };
-    const here = scoreOn(herald.at);
-    let best: MoveV7 | undefined;
-    let bestKey: readonly number[] = here;
-    for (const move of facts.movesByUnit.get(herald.id) ?? []) {
-      const end = move.path.at(-1);
-      if (
-        end === undefined ||
-        !facts.landTile(end) ||
-        !facts.daemonMayEnd(herald.id, end)
-      )
+    if (fresh) {
+      const here = scoreOn(herald.at);
+      let best: MoveV7 | undefined;
+      let bestKey: readonly number[] = here;
+      for (const move of facts.movesByUnit.get(herald.id) ?? []) {
+        const end = move.path.at(-1);
+        if (
+          end === undefined ||
+          !facts.landTile(end) ||
+          !facts.daemonMayEnd(herald.id, end)
+        )
+          continue;
+        const key = scoreOn(end);
+        // A Move is made for something to do there, and only for more.
+        if ((key[2] ?? 0) === 0 || !better(key, bestKey)) continue;
+        best = move;
+        bestKey = key;
+      }
+      if (best !== undefined) {
+        steps.push({
+          command: best,
+          priority: CULT_HERALD_PRIORITY_V7,
+          value: bestKey[0] ?? 0,
+          reason: "HERALD_MOVE",
+        });
         continue;
-      const key = scoreOn(end);
-      // A Move is made for something to do there, and only for more.
-      if ((key[2] ?? 0) === 0 || !better(key, bestKey)) continue;
-      best = move;
-      bestKey = key;
+      }
     }
-    if (best !== undefined)
+    // Its attacks from where it stands: the plan's first when the best
+    // kills; else no kill at all (each is one the plan may not make).
+    const { hits } = bestFrom(herald.at);
+    const lead = hits[0];
+    const command =
+      lead === undefined || !hits.some((hit) => hit.kills > 0)
+        ? undefined
+        : offered.find((item) => item.targetUnitId === lead.target.id);
+    for (const item of offered) {
+      if (item === command) continue;
+      const kills =
+        queryCombatPreviewV7(view, herald.id, item.targetUnitId)
+          ?.defenderDies === true;
+      if (command !== undefined || kills)
+        vetoes.add(attackKey(herald.id, item.targetUnitId));
+    }
+    if (command !== undefined)
       steps.push({
-        command: best,
+        command,
         priority: CULT_HERALD_PRIORITY_V7,
-        value: bestKey[0] ?? 0,
-        reason: "HERALD_MOVE",
+        value: hits.reduce((sum, hit) => sum + hit.kills, 0),
+        reason: "HERALD_ATTACK",
       });
   }
 
@@ -605,8 +780,20 @@ export function cultRitualPlanV7(facts: CultRitualFactsV7): CultRitualPlanV7 {
       if (herald === undefined || herald.ownerId !== me || held.has(herald.id))
         continue;
       const second = herald.activation.attacksUsed > 0;
-      const attacks = attacksByUnit.get(herald.id) ?? [];
-      if (second ? killOnOffer(herald.id) : attacks.length > 0) continue;
+      // (A-R2, `pulp_wars-mch9.39`: an attack the plan vetoes is none.)
+      const attacks = (attacksByUnit.get(herald.id) ?? []).filter((command) =>
+        mayAttack(herald.id, command.targetUnitId),
+      );
+      if (
+        second
+          ? attacks.some(
+              (command) =>
+                queryCombatPreviewV7(view, herald.id, command.targetUnitId)
+                  ?.defenderDies === true,
+            )
+          : attacks.length > 0
+      )
+        continue;
       // The city: the highest level (the most income and the best units),
       // then the nearest.
       let best: (typeof proclaims)[number] | undefined;
@@ -734,6 +921,66 @@ export function cultRitualPlanV7(facts: CultRitualFactsV7): CultRitualPlanV7 {
     }
     return undefined;
   };
+  /**
+   * The Cult redesign's A-R2 (`pulp_wars-mch9.39`, section 12.3): the
+   * beating the own units can give `target` this turn with the attacks
+   * offered now, the units of `except`, the held units, and every Summoner
+   * (it keeps its action for the Seizure) aside. A caster strikes only on
+   * the terms of A-R1's "cultists do not brawl" (`cultCasterBrawlHeldV7` in
+   * `src/ai/v7.ts`): every blow on a frog (`frogged`: the target is one, or
+   * will be after the Ribbit), else one blow, after the others, that leaves
+   * it broken with the Seizure to follow (or kills it).
+   */
+  const beatingOn = (
+    target: PublicUnitV7,
+    frogged: boolean,
+    except: readonly UnitId[],
+  ): number => {
+    let plain = 0;
+    let caster = 0;
+    for (const [unitId, attacks] of attacksByUnit) {
+      const unit = unitsById.get(unitId);
+      if (
+        unit === undefined ||
+        except.includes(unitId) ||
+        held.has(unitId) ||
+        hasAbility(unit, "SEIZE") ||
+        !attacks.some((attack) => attack.targetUnitId === target.id)
+      )
+        continue;
+      const damage =
+        queryCombatPreviewV7(view, unitId, target.id)?.damageToDefender ?? 0;
+      if (!frogged && cultCasterV7(view, unit))
+        caster = Math.max(caster, damage);
+      else plain += damage;
+    }
+    return target.hp - plain - caster <= SEIZE_BROKEN_HP_V7
+      ? plain + caster
+      : plain;
+  };
+  /**
+   * The Summoners a Seizure this turn may need (A-R2, section 12.3: the
+   * Summoner's Tentacle is ordered against Seizure set-ups): for each
+   * visible hostile land unit that can be Seized now, or that the beating
+   * on offer leaves broken (a frog at half its Hit Points), the Summoner of
+   * a company that can stand beside it. None of them calls a Tentacle.
+   */
+  const seizing = new Set<UnitId>();
+  for (const target of enemies.filter(
+    // (A Seizure takes only a land-form victim.)
+    (unit) => unit.form === "LAND" && !isNeutralOwnerV7(unit.ownerId),
+  )) {
+    const frogged = frogs.has(target.id);
+    const seizable = (hp: number): boolean =>
+      hp <= SEIZE_BROKEN_HP_V7 || (frogged && hp * 2 <= target.maxHp);
+    if (
+      !seizable(target.hp) &&
+      !seizable(target.hp - beatingOn(target, frogged, []))
+    )
+      continue;
+    const company = companyAt(target.at, []);
+    if (company !== undefined) seizing.add(company.summoner.id);
+  }
 
   // --------------------------------------------------------------- Ribbit
   // Section 15.4: first the enemy that can hit an own channeller or chanter
@@ -790,21 +1037,13 @@ export function cultRitualPlanV7(facts: CultRitualFactsV7): CultRitualPlanV7 {
             : undefined;
         if (company !== undefined) {
           // The beating that brings it to half its Hit Points: the attacks
-          // offered on it now (a frog is softer, so this is the least).
-          let beating = 0;
-          if (!half)
-            for (const [unitId, attacks] of attacksByUnit) {
-              if (
-                unitId === hexer.id ||
-                unitId === company.summoner.id ||
-                held.has(unitId) ||
-                !attacks.some((attack) => attack.targetUnitId === target.id)
-              )
-                continue;
-              beating +=
-                queryCombatPreviewV7(view, unitId, target.id)
-                  ?.damageToDefender ?? 0;
-            }
+          // offered on it now (a frog is softer, so this is the least). A-R2
+          // (`pulp_wars-mch9.39`): the blows the seat makes, read as A-R1's
+          // casters strike (`beatingOn`; it will be a frog, so every
+          // caster's blow), and no Summoner's.
+          const beating = half
+            ? 0
+            : beatingOn(target, true, [hexer.id, company.summoner.id]);
           if (half || (target.hp - beating) * 2 <= target.maxHp) {
             const projected = facts.moved([
               { unit: company.summoner, at: company.stand },
@@ -888,7 +1127,14 @@ export function cultRitualPlanV7(facts: CultRitualFactsV7): CultRitualPlanV7 {
         // Seizure without the swap).
         const there = companyAt(target.at, [familiar.id]);
         const here = companyAt(familiar.at, [familiar.id]);
-        if (there === undefined && here !== undefined) {
+        // A-R2 (`pulp_wars-mch9.39`): the swap reaches 4 tiles since the
+        // Cult redesign, so this one too is never made where the visible
+        // enemy kills the Familiar on its new tile (as the drop below).
+        if (
+          there === undefined &&
+          here !== undefined &&
+          facts.danger(familiar, target.at) < familiar.hp
+        ) {
           const projected = facts.moved([
             { unit: familiar, at: target.at },
             { unit: target, at: familiar.at },
@@ -949,14 +1195,22 @@ export function cultRitualPlanV7(facts: CultRitualFactsV7): CultRitualPlanV7 {
   // Cult redesign: A-R1, `pulp_wars-mch9.38`, section 12.3, the channel
   // plan takes this step back from a Summoner with a Summon, Seizure, or
   // Sacrifice step, and does not take a Summoner with a Tentacle to make
-  // as a channeller for the trickle.)
+  // as a channeller for the trickle.) A-R2 (`pulp_wars-mch9.39`): nor by
+  // a Summoner a Seizure may need this turn (`seizing`: the blows that
+  // break its victim come below this step).
   {
     const callers = new Map<UnitId, boolean>();
     let best: (typeof tentacles)[number] | undefined;
     let bestKey: readonly number[] = [];
     for (const command of tentacles) {
       const caller = unitsById.get(command.unitId);
-      if (caller === undefined || caller.ownerId !== me || held.has(caller.id))
+      if (
+        caller === undefined ||
+        caller.ownerId !== me ||
+        held.has(caller.id) ||
+        // A-R2 (`pulp_wars-mch9.39`): not a Summoner a Seizure may need.
+        seizing.has(caller.id)
+      )
         continue;
       let kills = callers.get(caller.id);
       if (kills === undefined) {
@@ -1002,12 +1256,202 @@ export function cultRitualPlanV7(facts: CultRitualFactsV7): CultRitualPlanV7 {
       });
   }
 
-  // ------------------------------------------------------------ Star-fall
-  // Section 15.4: the tile with the most enemy value on its nine tiles,
-  // preferring fortified units, siege units, and Eggs, with no own unit
-  // there. A Stargazer that has not moved and has a mark worth a star
-  // stays and begins it alone (the Cult redesign, `pulp_wars-mch9.34`: a
-  // stop-gap until the Cult AI's own pass, A-R2, `pulp_wars-mch9.39`).
+  // ---------------------------------------------- Star-fall and the chant
+  // Section 15.4 and the Cult redesign's A-R2 (`pulp_wars-mch9.39`,
+  // RULESET_7_CULT_REDESIGN.md section 12.3). A Stargazer that has not
+  // moved begins a star alone on the tile with the most enemy value on its
+  // nine tiles (fortified units, siege units, and Eggs first), with no own
+  // or friendly unit there, when the mark holds two hostile units or one
+  // that stays. The value is counted at the damage the star will have with
+  // the chanters it can expect this turn. Then each free cultist beside the
+  // Stargazer, or that can step beside it to a tile no visible enemy can
+  // attack, joins while the join turns one more hostile unit into a kill or
+  // the mark holds three hostile units or more, and never when the join
+  // kills a unit of the seat or of a friend.
+  const ritualUnits = new Set<UnitId>();
+  for (const ritual of cult.rituals)
+    if (ritual.playerId === me) {
+      if (ritual.leaderUnitId !== null) ritualUnits.add(ritual.leaderUnitId);
+      for (const unitId of ritual.chanterUnitIds) ritualUnits.add(unitId);
+    }
+  const marks = cult.rituals.flatMap((ritual) =>
+    ritual.playerId === me && ritual.at !== null
+      ? [{ at: ritual.at, reach: ritual.kind === "STARFALL" ? 1 : 0 }]
+      : [],
+  );
+  const underMark = (at: CoordV7): boolean =>
+    marks.some((mark) => gap(mark.at, at) <= mark.reach);
+  const foeUnit = (unit: PublicUnitV7): boolean =>
+    !isNeutralOwnerV7(unit.ownerId) && facts.hostile(unit.ownerId);
+  const friendUnit = (unit: PublicUnitV7): boolean =>
+    !isNeutralOwnerV7(unit.ownerId) && !facts.hostile(unit.ownerId);
+  /**
+   * The hits of a star of `damage` on `mark` as the board stands: the
+   * public forecast's (`previewBeginRitualV7`, `previewJoinChantV7`) at any
+   * number of chanters (fixed damage; Armoured, Plated, and Shields apply).
+   */
+  const starHits = (
+    mark: CoordV7,
+    damage: number,
+  ): readonly {
+    readonly unit: PublicUnitV7;
+    readonly dies: boolean;
+    readonly damage: number;
+  }[] =>
+    view.units
+      .filter((unit) => unit.hp > 0 && gap(unit.at, mark) <= 1)
+      .map((unit) => {
+        const hit = fixedSignatureHitV7(
+          view,
+          unit,
+          shieldOfV7(view.shields, unit.id),
+          damage,
+        );
+        return { unit, dies: hit.dies, damage: hit.damage };
+      });
+  type JoinerV7 = {
+    readonly unit: PublicUnitV7;
+    readonly at: CoordV7;
+    readonly move: MoveV7 | null;
+  };
+  /**
+   * Who may join a star of `gazer` on `mark`, in the order they are asked:
+   * every one beside the Stargazer first (it needs no Move), then each that
+   * can step beside it this turn to a tile no visible enemy can attack and
+   * under no own mark; the cheapest first, then the nearest. Decided here:
+   * a free robed cultist with Join the chant that the plan has not held,
+   * that has not acted, is no frog, and is in no ritual, but never a
+   * Summoner (its action is kept for its Summon, Seizure, Sacrifice, and
+   * Tentacle); and nobody leaves an own center to come.
+   */
+  const joinersOf = (
+    gazer: PublicUnitV7,
+    mark: CoordV7,
+  ): readonly JoinerV7[] => {
+    const pool = own
+      .filter(
+        (unit) =>
+          unit.id !== gazer.id &&
+          cultRobedV7(view, unit) &&
+          hasAbility(unit, "JOIN_CHANT") &&
+          !hasAbility(unit, "SUMMON") &&
+          primaryReady(unit) &&
+          !frogs.has(unit.id) &&
+          !held.has(unit.id) &&
+          !ritualUnits.has(unit.id),
+      )
+      .sort(
+        (left, right) =>
+          valueOf(left) - valueOf(right) ||
+          gap(left.at, gazer.at) - gap(right.at, gazer.at) ||
+          left.id - right.id,
+      );
+    const beside: JoinerV7[] = [];
+    const comers: JoinerV7[] = [];
+    const taken = new Set<string>();
+    for (const unit of pool) {
+      if (gap(unit.at, gazer.at) === 1) {
+        beside.push({ unit, at: unit.at, move: null });
+        continue;
+      }
+      if (facts.onOwnCenter(unit)) continue;
+      let best: MoveV7 | undefined;
+      let bestEnd: CoordV7 | undefined;
+      let bestKey: readonly number[] = [];
+      for (const move of facts.movesByUnit.get(unit.id) ?? []) {
+        const end = move.path.at(-1);
+        if (
+          end === undefined ||
+          gap(end, gazer.at) !== 1 ||
+          gap(end, mark) <= 1 ||
+          underMark(end) ||
+          !facts.landTile(end) ||
+          facts.threatened(end) ||
+          taken.has(tileKey(end))
+        )
+          continue;
+        const key = [facts.enemyGap(end), -move.path.length, -end.y, -end.x];
+        if (best === undefined || better(key, bestKey)) {
+          best = move;
+          bestEnd = end;
+          bestKey = key;
+        }
+      }
+      if (best === undefined || bestEnd === undefined) continue;
+      taken.add(tileKey(bestEnd));
+      comers.push({ unit, at: bestEnd, move: best });
+    }
+    return [...beside, ...comers];
+  };
+  /**
+   * The hostile units the join of `joiner` turns into kills on a star of
+   * `chanters` on `mark` (with the `spare` joins that can still follow it
+   * this turn: decided here, two joins that kill together are each worth
+   * it), or null when the join is not made: it kills a unit of the seat or
+   * of a friend; or it turns no hostile unit into a kill and the mark holds
+   * fewer than `CULT_STARFALL_CROWD_V7` hostile units (or none of them
+   * still stands under the star as it is). Decided here: a joiner a visible
+   * enemy can attack where it chants (it cannot move after the join, and
+   * any hit takes it out of the chant) joins only for a kill worth at least
+   * itself, and never where the visible enemy kills it.
+   */
+  const joinWorth = (
+    mark: CoordV7,
+    chanters: number,
+    joiner: JoinerV7,
+    spare: number,
+  ): number | null => {
+    const before = starHits(mark, starfallDamageV7(chanters));
+    let killed: readonly PublicUnitV7[] = [];
+    for (let more = 1; more <= 1 + spare; more += 1) {
+      const after = starHits(mark, starfallDamageV7(chanters + more));
+      const newly = after
+        .filter((entry, index) => entry.dies && before[index]?.dies !== true)
+        .map((entry) => entry.unit);
+      // A join never kills a unit of the seat or of a friend; nor do the
+      // joins after it that it counts on.
+      if (newly.some(friendUnit)) {
+        if (more === 1) return null;
+        break;
+      }
+      killed = newly.filter(foeUnit);
+      if (killed.length > 0) break;
+    }
+    const crowd =
+      before.filter((entry) => foeUnit(entry.unit)).length >=
+        CULT_STARFALL_CROWD_V7 &&
+      before.some((entry) => foeUnit(entry.unit) && !entry.dies);
+    if (killed.length === 0 && !crowd) return null;
+    if (
+      facts.threatened(joiner.at) &&
+      (killed.reduce((sum, unit) => sum + valueOf(unit), 0) <
+        valueOf(joiner.unit) ||
+        facts.danger(joiner.unit, joiner.at) >= joiner.unit.hp)
+    )
+      return null;
+    return killed.length;
+  };
+  /**
+   * The joins that are made on a star of `gazer` on `mark` from `chanters`,
+   * in order: each joiner asked in turn, counting on the unexposed joiners
+   * after it.
+   */
+  const joinsOn = (
+    gazer: PublicUnitV7,
+    mark: CoordV7,
+    chanters: number,
+  ): readonly JoinerV7[] => {
+    const joiners = joinersOf(gazer, mark);
+    const made: JoinerV7[] = [];
+    joiners.forEach((joiner, index) => {
+      const spare = joiners
+        .slice(index + 1)
+        .filter((next) => !facts.threatened(next.at)).length;
+      if (joinWorth(mark, chanters + made.length, joiner, spare) !== null)
+        made.push(joiner);
+    });
+    return made;
+  };
   if (!facts.pending) {
     const tileAt = (at: CoordV7) =>
       view.board.tiles[at.y * view.board.width + at.x];
@@ -1021,7 +1465,6 @@ export function cultRitualPlanV7(facts: CultRitualFactsV7): CultRitualPlanV7 {
         frogs.has(gazer.id)
       )
         continue;
-      const damage = CULT_STARFALL_DAMAGE_V7;
       let mark: CoordV7 | undefined;
       let markKey: readonly number[] = [];
       for (
@@ -1044,35 +1487,36 @@ export function cultRitualPlanV7(facts: CultRitualFactsV7): CultRitualPlanV7 {
             tileAt(at)?.explored !== true
           )
             continue;
-          let score = 0;
-          let count = 0;
-          let sure = false;
-          let spared = true;
-          for (const unit of view.units) {
-            if (unit.hp <= 0 || gap(unit.at, at) > 1) continue;
-            if (isNeutralOwnerV7(unit.ownerId)) continue;
-            if (!facts.hostile(unit.ownerId)) {
-              spared = false;
-              break;
-            }
+          const under = view.units.filter(
+            (unit) =>
+              unit.hp > 0 &&
+              gap(unit.at, at) <= 1 &&
+              !isNeutralOwnerV7(unit.ownerId),
+          );
+          if (under.length === 0 || under.some(friendUnit)) continue;
+          /** A unit that is likely to be there still next turn. */
+          const stays = (unit: PublicUnitV7): boolean => {
             const tile = tileAt(unit.at);
-            // A unit that is likely to be there still next turn.
-            const stays =
+            return (
               unit.form === "EGG" ||
               ruleOf(unit).tacticalRole === "SIEGE" ||
               (tile?.explored === true &&
                 (tile.fieldDefense || (tile.fortificationLevel ?? 0) > 0)) ||
-              centers.has(tileKey(unit.at));
-            const worth = valueOf(unit) * (stays ? 3 : 2);
-            score +=
-              unit.hp <= damage
-                ? worth * 20
-                : Math.floor((worth * 10 * damage) / unit.maxHp);
-            count += 1;
-            sure ||= stays;
-          }
+              centers.has(tileKey(unit.at))
+            );
+          };
           // One unit in the open walks away: two, or one that stays.
-          if (!spared || count === 0 || (count < 2 && !sure)) continue;
+          if (under.length < 2 && !under.some(stays)) continue;
+          // The worth at the damage of the chanters it can expect (A-R2).
+          const chanters = joinsOn(gazer, at, 0).length;
+          let score = 0;
+          for (const entry of starHits(at, starfallDamageV7(chanters))) {
+            if (!foeUnit(entry.unit)) continue;
+            const worth = valueOf(entry.unit) * (stays(entry.unit) ? 3 : 2);
+            score += entry.dies
+              ? worth * 20
+              : Math.floor((worth * 10 * entry.damage) / entry.unit.maxHp);
+          }
           const key = [score, -gap(at, gazer.at), -y, -x];
           if (mark === undefined || better(key, markKey)) {
             mark = at;
@@ -1107,43 +1551,56 @@ export function cultRitualPlanV7(facts: CultRitualFactsV7): CultRitualPlanV7 {
     }
   }
 
-  // ------------------------------------------------------- Join the chant
-  // The Cult redesign (`pulp_wars-mch9.34`, section 8.2), a stop-gap until
-  // A-R2 (`pulp_wars-mch9.39`): a free cultist beside an own pending star
-  // joins its chant when the join turns one more hostile unit on its nine
-  // tiles into a kill as the board stands and kills no unit of the seat or
-  // of a friend. Each join is its own decision, so the next one reads the
-  // star after it.
-  for (const join of joins) {
-    if (held.has(join.unitId)) continue;
-    const preview = previewJoinChantV7(view, join.unitId, join.leaderUnitId);
-    if (preview === null || preview.after === null) continue;
-    const owners = new Map(
-      preview.after.results.map((entry) => [entry.unitId, entry.ownerId]),
-    );
-    const killed = preview.newlyKills.map((unitId) => owners.get(unitId));
+  // Join the chant of an own pending star: one join (or the step of a
+  // cultist that comes to join) a decision, so the next reads the star
+  // after it. The join is checked against the engine's public preview.
+  joining: for (const ritual of cult.rituals) {
     if (
-      killed.some(
-        (ownerId) =>
-          ownerId === undefined ||
-          (!isNeutralOwnerV7(ownerId) && !facts.hostile(ownerId)),
-      ) ||
-      !killed.some(
-        (ownerId) =>
-          ownerId !== undefined &&
-          !isNeutralOwnerV7(ownerId) &&
-          facts.hostile(ownerId),
-      )
+      ritual.kind !== "STARFALL" ||
+      ritual.playerId !== me ||
+      ritual.at === null ||
+      ritual.leaderUnitId === null
     )
       continue;
-    held.add(join.unitId);
-    steps.push({
-      command: join,
-      priority: CULT_JOIN_CHANT_PRIORITY_V7,
-      value: preview.newlyKills.length,
-      reason: "STARFALL_JOIN",
-    });
-    break;
+    const gazer = unitsById.get(ritual.leaderUnitId);
+    if (gazer === undefined) continue;
+    const mark = ritual.at;
+    for (const joiner of joinsOn(gazer, mark, ritual.chanters)) {
+      if (joiner.move !== null) {
+        held.add(joiner.unit.id);
+        steps.push({
+          command: joiner.move,
+          priority: CULT_JOIN_CHANT_PRIORITY_V7,
+          value: 0,
+          reason: "STARFALL_COME",
+        });
+        break joining;
+      }
+      const join = joins.find(
+        (command) =>
+          command.unitId === joiner.unit.id &&
+          command.leaderUnitId === gazer.id,
+      );
+      if (join === undefined) continue;
+      const preview = previewJoinChantV7(view, join.unitId, join.leaderUnitId);
+      if (
+        preview === null ||
+        preview.after === null ||
+        preview.newlyKills.some((unitId) => {
+          const unit = unitsById.get(unitId);
+          return unit === undefined || friendUnit(unit);
+        })
+      )
+        continue;
+      held.add(joiner.unit.id);
+      steps.push({
+        command: join,
+        priority: CULT_JOIN_CHANT_PRIORITY_V7,
+        value: preview.newlyKills.length,
+        reason: "STARFALL_JOIN",
+      });
+      break joining;
+    }
   }
 
   // ------------------------------------------------------------ Pamphlets
@@ -1197,14 +1654,10 @@ export function cultRitualPlanV7(facts: CultRitualFactsV7): CultRitualPlanV7 {
   // ------------------------------------------- under an own ritual's mark
   // Section 15.4: own units never end a Move under an own star, nor on the
   // mark of an own Great Summoning (the unit there is consumed, or blocks).
-  const marks = cult.rituals.flatMap((ritual) =>
-    ritual.playerId === me && ritual.at !== null
-      ? [{ at: ritual.at, reach: ritual.kind === "STARFALL" ? 1 : 0 }]
-      : [],
-  );
   return {
     steps,
     saving,
-    mayEnd: (at) => marks.every((mark) => gap(mark.at, at) > mark.reach),
+    mayEnd: (at) => !underMark(at),
+    mayAttack,
   };
 }

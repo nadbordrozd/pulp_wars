@@ -152,6 +152,15 @@ export interface CultToolsV7 {
   readonly hostile: (ownerId: PlayerId) => boolean;
   /** What the visible enemies deal `unit` on `at` in their next turn. */
   readonly danger: (unit: PublicUnitV7, at: CoordV7) => number;
+  /**
+   * The same, the visible units of `gone` aside (A-R2, `pulp_wars-mch9.39`:
+   * the Herald's victims).
+   */
+  readonly dangerWithout: (
+    unit: PublicUnitV7,
+    at: CoordV7,
+    gone: readonly UnitId[],
+  ) => number;
   /** A visible enemy can attack a unit on `at` in its next turn. */
   readonly threatened: (at: CoordV7) => boolean;
   /** The visible unit `unitId` can attack a unit on `at` in its next turn. */
@@ -159,6 +168,8 @@ export interface CultToolsV7 {
   /** The view with each of these units after a Move to its tile. */
   readonly moved: (
     moves: readonly { readonly unit: PublicUnitV7; readonly at: CoordV7 }[],
+    /** The visible units taken off the board too (A-R2: a Herald's victim). */
+    gone?: readonly UnitId[],
   ) => PlayerViewV7;
   /** The free unit slots of an own city. */
   readonly freeCapacity: (cityId: CityId) => number;
@@ -228,6 +239,11 @@ export interface CultPlanV7 {
    * beside its cultist, every other unit anywhere.
    */
   readonly mayEnd: (unitId: UnitId, at: CoordV7) => boolean;
+  /**
+   * The Cult redesign's A-R2 (`pulp_wars-mch9.39`): false for an attack of
+   * an own Herald the plan does not make (`CultRitualPlanV7.mayAttack`).
+   */
+  readonly mayAttack: (unitId: UnitId, targetUnitId: UnitId) => boolean;
 }
 
 const EMPTY_PLAN_V7: CultPlanV7 = Object.freeze({
@@ -238,6 +254,7 @@ const EMPTY_PLAN_V7: CultPlanV7 = Object.freeze({
   daemons: [],
   leashed: new Set<UnitId>(),
   mayEnd: () => true,
+  mayAttack: () => true,
 });
 
 const gap = (left: CoordV7, right: CoordV7): number =>
@@ -1439,12 +1456,14 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
     commands,
     hostile: tools.hostile,
     danger: tools.danger,
+    dangerWithout: tools.dangerWithout,
     threatened: tools.threatened,
     reach: tools.reach,
     moved: tools.moved,
     own,
     enemies,
     held,
+    seized,
     movesByUnit,
     channellers: new Set(strandOf.keys()),
     pending,
@@ -1699,6 +1718,7 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
       if (ward !== undefined && !ward(at)) return false;
       return !ownDaemonIds.has(unitId) || daemonMayEnd(unitId, at);
     },
+    mayAttack: rituals.mayAttack,
   };
 }
 

@@ -10,6 +10,7 @@ import {
 import {
   CULT_BOO_PRIORITY_V7,
   CULT_HERALD_PRIORITY_V7,
+  CULT_JOIN_CHANT_PRIORITY_V7,
   CULT_PROCLAIM_LAST_PRIORITY_V7,
   CULT_RIBBIT_PRIORITY_V7,
   CULT_SAVE_FAVOUR_V7,
@@ -537,7 +538,14 @@ describe("the Cult seat: the Herald (sections 15.2 and 15.4)", () => {
       [foe("FIGHTER", 4, 3), foe("FIGHTER", 7, 2)],
       at(5, 4),
     );
-    expect(first(start).priority).not.toBe(CULT_HERALD_PRIORITY_V7);
+    // (A-R2, `pulp_wars-mch9.39`: its attack is a step of the plan now, so
+    // the first decision is that attack, not a Move.)
+    const decision = first(start);
+    expect(decision.priority).toBe(CULT_HERALD_PRIORITY_V7);
+    expect(decision.command).toMatchObject({
+      kind: "ATTACK",
+      targetUnitId: idAt(start, at(4, 3)),
+    });
     const turn = policyTurn(start);
     expect(alive(turn.state, idAt(start, at(4, 3)))).toBe(false);
   });
@@ -894,6 +902,406 @@ describe("the Cult seat: Pamphlets (section 15.4)", () => {
     const turn = policyTurn(start);
     expect(nowAt(turn.state, idAt(start, at(6, 4)))).toEqual(at(5, 5));
     expect(ofKind(turn.commands, "CAPTURE")).toHaveLength(1);
+  });
+});
+
+// The Cult redesign's A-R2 (`pulp_wars-mch9.39`,
+// docs/product/RULESET_7_CULT_REDESIGN.md section 12.3, as built in section
+// 12.6): Star-fall begun alone and its joins, Switcheroo at 4, the
+// Summoner's Tentacle against Seizure set-ups, Ribbit's beating, and the
+// Herald's advance. Each rule on its hand-built state, beside the nearest
+// state where it must not fire.
+describe("the Cult seat (A-R2): Star-fall alone and the chant", () => {
+  it("joins a mark of three hostile units though the join kills nobody more, and not a mark of two", () => {
+    const build = (foes: number): GameStateV7 =>
+      scene([
+        own("CATAPULT", 7, 3),
+        own("FIGHTER", 8, 3),
+        ...[
+          foe("FIGHTER", 4, 3),
+          foe("FIGHTER", 4, 4),
+          foe("MARKSMAN", 3, 4),
+        ].slice(0, foes),
+      ]);
+    const start = build(3);
+    const gazer = idAt(start, at(7, 3));
+    const turn = policyTurn(start);
+    expect(kindsOf(turn.commands.slice(0, 2))).toEqual([
+      "BEGIN_RITUAL",
+      "JOIN_CHANT",
+    ]);
+    expect(ofKind(turn.commands, "JOIN_CHANT")).toEqual([
+      {
+        kind: "JOIN_CHANT",
+        unitId: idAt(start, at(8, 3)),
+        leaderUnitId: gazer,
+      },
+    ]);
+    // Sanity (the mutation): two healthy units, and the join kills
+    // neither: the star falls alone.
+    const two = policyTurn(build(2));
+    expect(kindsOf(two.commands)).toContain("BEGIN_RITUAL");
+    expect(ofKind(two.commands, "JOIN_CHANT")).toEqual([]);
+  });
+
+  it("joins twice when two joins together turn the hits into kills", () => {
+    // Two healthy Fighters: 9 kills neither, 12 kills both.
+    const build = (joiners: number): GameStateV7 =>
+      scene([
+        own("CATAPULT", 7, 3),
+        ...[own("FIGHTER", 8, 3), own("FIGHTER", 8, 2)].slice(0, joiners),
+        foe("FIGHTER", 4, 3),
+        foe("FIGHTER", 4, 4),
+      ]);
+    const turn = policyTurn(build(2));
+    expect(ofKind(turn.commands, "JOIN_CHANT")).toHaveLength(2);
+    expect(turn.state.cult.rituals[0]?.chanterUnitIds).toHaveLength(2);
+    // Sanity (the mutation): one joiner alone kills nobody more.
+    expect(ofKind(policyTurn(build(1)).commands, "JOIN_CHANT")).toEqual([]);
+  });
+
+  it("brings a free cultist beside the Stargazer to a tile no enemy can attack, and it joins in the same turn", () => {
+    const build = (hp: number): GameStateV7 =>
+      scene([
+        own("CATAPULT", 7, 3),
+        own("FIGHTER", 9, 3),
+        foe("FIGHTER", 4, 3, { hp }),
+        foe("FIGHTER", 4, 4, { hp }),
+      ]);
+    const start = build(8);
+    const comer = idAt(start, at(9, 3));
+    // Once the star is begun, its step: the Move beside the Stargazer.
+    const begun = first(start).command;
+    if (begun?.kind !== "BEGIN_RITUAL") throw new Error("no star");
+    const pending = applyOkV7(start, seatIdV7(start, 0), begun).state;
+    const step = first(pending);
+    expect(step.priority).toBe(CULT_JOIN_CHANT_PRIORITY_V7);
+    if (step.command?.kind !== "MOVE") throw new Error("no Move");
+    expect(step.command.unitId).toBe(comer);
+    const end = step.command.path.at(-1);
+    if (end === undefined) throw new Error("no tile");
+    expect(gap(end, at(7, 3))).toBe(1);
+    const turn = policyTurn(start);
+    const mine = turn.commands.filter(
+      (command) => "unitId" in command && command.unitId === comer,
+    );
+    expect(kindsOf(mine).slice(0, 2)).toEqual(["MOVE", "JOIN_CHANT"]);
+    expect(kindsOf(turn.commands).indexOf("BEGIN_RITUAL")).toBeLessThan(
+      kindsOf(turn.commands).indexOf("JOIN_CHANT"),
+    );
+    expect(gap(nowAt(turn.state, comer), at(7, 3))).toBe(1);
+    expect(turn.state.cult.rituals[0]?.chanterUnitIds).toEqual([comer]);
+    // Sanity (the mutation): healthy Fighters (12 HP), and the join kills
+    // nobody more: nobody comes to join.
+    const healthy = build(12);
+    expect(first(healthy).priority).not.toBe(CULT_JOIN_CHANT_PRIORITY_V7);
+    expect(ofKind(policyTurn(healthy).commands, "JOIN_CHANT")).toEqual([]);
+  });
+
+  it("joins no chant whose star would kill an own unit more", () => {
+    // A pending star on (4, 3): a wounded Fighter and, under it, an own
+    // Initiate that has acted (it cannot step out). 6 leaves both standing;
+    // 9 kills both.
+    const build = (own_: boolean): GameStateV7 =>
+      withRitualV7(
+        scene([
+          own("CATAPULT", 7, 3),
+          own("FIGHTER", 8, 3),
+          ...(own_ ? [own("FIGHTER", 4, 2, { activation: SPENT })] : []),
+          foe("FIGHTER", 4, 4, { hp: 8 }),
+        ]),
+        "STARFALL",
+        at(7, 3),
+        [],
+        at(4, 3),
+      );
+    expect(ofKind(policyTurn(build(true)).commands, "JOIN_CHANT")).toEqual([]);
+    // Sanity (the mutation): with nobody of its own under it, it joins.
+    expect(
+      ofKind(policyTurn(build(false)).commands, "JOIN_CHANT"),
+    ).toHaveLength(1);
+  });
+
+  it("joins from a tile a visible enemy can attack only for a kill worth the joiner", () => {
+    // A pending star on (4, 3) over three healthy hostile units (a join
+    // kills nobody more); a Fighter two tiles from the joiner, which has
+    // moved (it cannot step out of that reach).
+    const build = (watched: boolean, hp = 12): GameStateV7 =>
+      withRitualV7(
+        scene([
+          own("CATAPULT", 7, 3),
+          own("FIGHTER", 8, 3, { activation: MOVED }),
+          foe("FIGHTER", 4, 3, { hp }),
+          foe("FIGHTER", 4, 4, { hp }),
+          foe("MARKSMAN", 3, 4),
+          ...(watched ? [foe("FIGHTER", 9, 1)] : []),
+        ]),
+        "STARFALL",
+        at(7, 3),
+        [],
+        at(4, 3),
+      );
+    expect(ofKind(policyTurn(build(true)).commands, "JOIN_CHANT")).toEqual([]);
+    // Sanity (the mutations): out of every enemy's reach it joins the
+    // crowd; in reach it joins for the kill of a wounded Fighter.
+    expect(
+      ofKind(policyTurn(build(false)).commands, "JOIN_CHANT"),
+    ).toHaveLength(1);
+    expect(
+      ofKind(policyTurn(build(true, 8)).commands, "JOIN_CHANT"),
+    ).toHaveLength(1);
+  });
+
+  it("chooses its mark at the damage of the chanters it can expect", () => {
+    // Two wounded Fighters to the north (9 kills both, 6 neither) and three
+    // healthy ones to the south (6 hurts each). Alone, the south is worth
+    // more; with a joiner beside it, the north.
+    const build = (joiner: boolean): GameStateV7 =>
+      scene([
+        own("CATAPULT", 7, 3),
+        ...(joiner ? [own("FIGHTER", 8, 3)] : []),
+        foe("FIGHTER", 4, 0, { hp: 8 }),
+        foe("FIGHTER", 5, 0, { hp: 8 }),
+        foe("FIGHTER", 4, 6),
+        foe("FIGHTER", 5, 6),
+        foe("FIGHTER", 4, 7),
+      ]);
+    const north = (state: GameStateV7): boolean => {
+      const begun = first(state).command;
+      if (begun?.kind !== "BEGIN_RITUAL") throw new Error("no star");
+      return begun.at.y <= 1;
+    };
+    expect(north(build(true))).toBe(true);
+    // Sanity (the mutation): with nobody to join, the south.
+    expect(north(build(false))).toBe(false);
+  });
+});
+
+describe("the Cult seat (A-R2): Switcheroo at 4", () => {
+  // The Summoner and the Initiate have moved: they cannot come to it.
+  const build = (pieces: readonly GoblinPieceV7[]): GameStateV7 =>
+    scene([
+      own("RAIDER", 7, 3),
+      own("CAPTAIN", 8, 3, { activation: MOVED }),
+      own("FIGHTER", 8, 4, { activation: MOVED }),
+      ...pieces,
+    ]);
+
+  it("pulls a broken enemy four tiles away next to a Summoner and a holder, and seizes it", () => {
+    const start = build([foe("FIGHTER", 3, 3, { hp: 3 })]);
+    const victim = idAt(start, at(3, 3));
+    const decision = first(start);
+    expect(decision.priority).toBe(CULT_SWITCHEROO_PRIORITY_V7);
+    expect(decision.command).toMatchObject({
+      kind: "SWITCHEROO",
+      targetUnitId: victim,
+    });
+    const turn = policyTurn(start);
+    expect(kindsOf(turn.commands.slice(0, 2))).toEqual(["SWITCHEROO", "SEIZE"]);
+    expect(alive(turn.state, victim)).toBe(false);
+    // Sanity: five tiles is out of its reach.
+    expect(
+      kindsOf(policyTurn(build([foe("FIGHTER", 2, 3, { hp: 3 })])).commands),
+    ).not.toContain("SWITCHEROO");
+  });
+
+  it("swaps nobody onto a tile where the visible enemy kills the Familiar", () => {
+    // The broken Fighter four tiles away among three Swordsmen.
+    const start = build([
+      foe("FIGHTER", 3, 3, { hp: 3 }),
+      foe("SWORDSMAN", 2, 2),
+      foe("SWORDSMAN", 2, 3),
+      foe("SWORDSMAN", 2, 4),
+    ]);
+    expect(kindsOf(policyTurn(start).commands)).not.toContain("SWITCHEROO");
+  });
+});
+
+describe("the Cult seat (A-R2): the Summoner's Tentacle and the Seizure", () => {
+  // A Summoner beside a wounded Swordsman, an Idol Bearer beside it that
+  // has acted (the holder), and a Tentacle tile beside the Swordsman.
+  const build = (pieces: readonly GoblinPieceV7[], hp: number): GameStateV7 =>
+    scene([
+      own("CAPTAIN", 5, 3),
+      own("GUARD", 5, 4, { activation: SPENT }),
+      foe("SWORDSMAN", 4, 3, { hp }),
+      ...pieces,
+    ]);
+
+  it("calls no Tentacle when an Idol Bearer's blow breaks the enemy: the Summoner seizes it", () => {
+    const start = build([own("GUARD", 5, 2)], 6);
+    const victim = idAt(start, at(4, 3));
+    const turn = policyTurn(start);
+    expect(kindsOf(turn.commands)).not.toContain("TENTACLE");
+    const kinds = kindsOf(turn.commands);
+    expect(kinds).toContain("SEIZE");
+    expect(kinds.indexOf("ATTACK")).toBeLessThan(kinds.indexOf("SEIZE"));
+    expect(alive(turn.state, victim)).toBe(false);
+    // Sanity (the mutation): with nobody to break it, the Tentacle.
+    const alone = build([own("GUARD", 9, 1)], 6);
+    const decision = first(alone);
+    expect(decision.priority).toBe(CULT_TENTACLE_PRIORITY_V7);
+    expect(decision.command?.kind).toBe("TENTACLE");
+  });
+
+  it("counts a caster's blow only as A-R1 lets it strike: the one that breaks the enemy for the Seizure", () => {
+    // Two Initiates with their attacks beside the Swordsman. At 8 HP one
+    // blow (4) leaves it broken: that caster may strike, and the Seizure
+    // follows. At 9 one blow (3) does not, so neither strikes (two blows
+    // would break it, but A-R1 refuses the first): the Tentacle comes.
+    const strikers = [own("FIGHTER", 4, 2), own("FIGHTER", 3, 2)];
+    const broken = policyTurn(build(strikers, 8));
+    expect(kindsOf(broken.commands)).not.toContain("TENTACLE");
+    expect(kindsOf(broken.commands)).toContain("SEIZE");
+    const sturdy = build(strikers, 9);
+    expect(first(sturdy).command?.kind).toBe("TENTACLE");
+    expect(kindsOf(policyTurn(sturdy).commands)).not.toContain("SEIZE");
+  });
+});
+
+describe("the Cult seat (A-R2): Ribbit's beating", () => {
+  it("frogs an enemy a caster's blow on the frog brings to half, and the Seizure follows", () => {
+    // A Swordsman above half its Hit Points beside a Summoner, an Initiate
+    // with its attack (the blow on the frog, and the holder), and a Hexer;
+    // a Knight, the dearer melee unit, in the Hexer's reach too. Every
+    // caster may strike a frog (A-R1), so the Initiate's blow counts.
+    const build = (strikes: boolean): GameStateV7 =>
+      scene([
+        own("MARKSMAN", 7, 2),
+        own("CAPTAIN", 6, 3),
+        own("FIGHTER", 6, 1, strikes ? {} : { activation: SPENT }),
+        foe("SWORDSMAN", 5, 2, { hp: 10 }),
+        foe("KNIGHT", 9, 0),
+      ]);
+    const start = build(true);
+    const victim = idAt(start, at(5, 2));
+    expect(first(start).command).toMatchObject({
+      kind: "RIBBIT",
+      targetUnitId: victim,
+    });
+    const turn = policyTurn(start);
+    const kinds = kindsOf(turn.commands);
+    expect(kinds.slice(0, 1)).toEqual(["RIBBIT"]);
+    expect(kinds).toContain("SEIZE");
+    expect(alive(turn.state, victim)).toBe(false);
+    // Sanity (the mutation): with no blow to give, no Seizure follows.
+    expect(kindsOf(policyTurn(build(false)).commands)).not.toContain("SEIZE");
+  });
+});
+
+describe("the Cult seat (A-R2): the Herald's advance", () => {
+  // A Herald with four Initiates behind it that can follow it (to 4 tiles).
+  const CULTISTS = [
+    own("FIGHTER", 4, 6),
+    own("FIGHTER", 5, 6),
+    own("FIGHTER", 6, 6),
+    own("FIGHTER", 7, 6),
+  ];
+  const herald = (
+    pieces: readonly GoblinPieceV7[],
+    where: CoordV7,
+    hp?: number,
+  ): GameStateV7 =>
+    withFavourV7(
+      withHorrorV7(scene([...CULTISTS, ...pieces]), 0, where, {
+        role: "HERALD",
+        ...(hp === undefined ? {} : { hp }),
+      }),
+      0,
+      2,
+    );
+  const attacksOf = (
+    turn: { readonly commands: readonly CommandV7[] },
+    id: UnitId,
+  ): number =>
+    ofKind(turn.commands, "ATTACK").filter((command) => command.unitId === id)
+      .length;
+
+  it("makes no lone kill whose advance leaves it beyond its channellers' reach, but two kills that do", () => {
+    // From (5, 2) a kill on (5, 1) advances it five tiles from the
+    // Initiates: it would break loose at the next check.
+    const lone = herald([foe("FIGHTER", 5, 1)], at(5, 4));
+    const id = idAt(lone, at(5, 4));
+    const turn = policyTurn(lone);
+    expect(attacksOf(turn, id)).toBe(0);
+    expect(alive(turn.state, idAt(lone, at(5, 1)))).toBe(true);
+    // A second Fighter beside the first: from the first one's tile the
+    // second attack kills too, and both are worth the bind.
+    const pair = herald([foe("FIGHTER", 5, 1), foe("FIGHTER", 5, 0)], at(5, 4));
+    const both = policyTurn(pair);
+    expect(attacksOf(both, idAt(pair, at(5, 4)))).toBe(2);
+    expect(alive(both.state, idAt(pair, at(5, 1)))).toBe(false);
+    expect(alive(both.state, idAt(pair, at(5, 0)))).toBe(false);
+    // Sanity (the mutation): a Fighter within the leash is killed.
+    const near = herald([foe("FIGHTER", 5, 2)], at(5, 4));
+    expect(alive(policyTurn(near).state, idAt(near, at(5, 2)))).toBe(false);
+  });
+
+  it("makes no kill whose advance puts it where the visible enemy kills it", () => {
+    // A wounded Herald beside a Fighter; behind the Fighter, out of reach
+    // of the Herald's tile, three Swordsmen that reach the Fighter's.
+    const swords = [
+      foe("SWORDSMAN", 2, 2),
+      foe("SWORDSMAN", 2, 3),
+      foe("SWORDSMAN", 2, 4),
+    ];
+    const start = herald([foe("FIGHTER", 4, 3), ...swords], at(5, 4), 9);
+    const id = idAt(start, at(5, 4));
+    const turn = policyTurn(start);
+    expect(alive(turn.state, idAt(start, at(4, 3)))).toBe(true);
+    // Nor does it walk into their reach to strike them.
+    expect(gap(nowAt(turn.state, id), at(2, 3))).toBeGreaterThan(2);
+    // Sanity (the mutation): without the Swordsmen it kills.
+    const open = herald([foe("FIGHTER", 4, 3)], at(5, 4), 9);
+    expect(alive(policyTurn(open).state, idAt(open, at(4, 3)))).toBe(false);
+  });
+
+  it("vetoes that kill for a Herald that has moved, which the ordinary play would make", () => {
+    // It has moved; beside it a broken Fighter; behind the Fighter, out of
+    // reach of the Herald's tile, Swordsmen and Catapults.
+    const moved = (guarded: boolean): GameStateV7 =>
+      withFavourV7(
+        withHorrorV7(
+          scene([
+            ...CULTISTS,
+            foe("FIGHTER", 4, 3, { hp: 3 }),
+            ...(guarded
+              ? [
+                  foe("SWORDSMAN", 2, 2),
+                  foe("SWORDSMAN", 2, 3),
+                  foe("SWORDSMAN", 2, 4),
+                  foe("CATAPULT", 1, 2),
+                  foe("CATAPULT", 1, 3),
+                  foe("CATAPULT", 1, 4),
+                ]
+              : []),
+          ]),
+          0,
+          at(5, 4),
+          { role: "HERALD", hp: 15, activation: MOVED },
+        ),
+        0,
+        2,
+      );
+    const start = moved(true);
+    const id = idAt(start, at(5, 4));
+    expect(
+      chooseNormalCommandV7(viewOf(start)).candidates.some(
+        (candidate) =>
+          candidate.command.kind === "ATTACK" &&
+          candidate.command.unitId === id &&
+          candidate.score.priority >= 0,
+      ),
+    ).toBe(false);
+    expect(attacksOf(policyTurn(start), id)).toBe(0);
+    // Sanity (the mutation): unguarded, the kill is its step.
+    const open = moved(false);
+    const decision = first(open);
+    expect(decision.priority).toBe(CULT_HERALD_PRIORITY_V7);
+    expect(decision.command).toMatchObject({
+      kind: "ATTACK",
+      targetUnitId: idAt(open, at(4, 3)),
+    });
   });
 });
 
