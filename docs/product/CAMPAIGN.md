@@ -3057,15 +3057,19 @@ Explosives (Breach) in round 7. Then the problem:
 (round 5), a Juggernaut on 5 Hit Points that struck a Bearer and died to
 its blow (round 11), and the round 7 Zombie that stood on Millford with
 nothing in reach to strike it (the Goblins eliminated the thralls the
-next round, and it died with them). **What the Cult AI did:** it spent
-every Favour as it came (a Mass on the Doorstep in rounds 5 and 14, an Imp
+next round, and it died with them). **What the Cult AI did:** it spent every
+Favour as it came (a Mass on the Doorstep in rounds 5 and 14, an Imp
 nearly every round, a Horror in round 12), so its Favour never passed 5
 and no rite began; the Imps swarmed the Juggernauts for 3 a blow with no
-strike back; a Mass that walked off its Doorstep with no strand broke
-loose in round 9 and bit its own Initiate; the lodge's Things stepped off
-the center to strike and stepped back. **The round-20 star is kept**: the
-win came four rounds inside it by a player who knew the board, as in
-section 11.13.
+strike back; in round 8 the first Mass stepped from beside the Lodge's
+center to strike a Fighter, onto a tile beside an Idol Bearer (still its
+Doorstep, no strand), the Bearer struck a Juggernaut and was left on 4
+Hit Points, and that Juggernaut killed it first thing in round 9, so the
+Mass, held by nothing, broke loose at the lodge's check and bit its own
+Initiate (`pulp_wars-mch9.50` found the move legal; the idol was lost
+first); the lodge's Things stepped off the center to strike and stepped
+back. **The round-20 star is kept**: the win came four rounds inside it
+by a player who knew the board, as in section 11.13.
 
 **`LAB_CULT_MID`** was checked, not played: its revision 2 already places
 the redesigned roster, and a test now shows that on its first turn the

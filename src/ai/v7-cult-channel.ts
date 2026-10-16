@@ -1757,7 +1757,15 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
   const pending = channelPending || bindPending;
 
   // ------------------------------------------- where a daemon may end
-  /** Its holders and the free cultists near `at` can hold it there. */
+  /**
+   * Its holders and the free cultists near `at` can hold it there. Only a
+   * cultist the next plan can give it counts (`candidatesFor`):
+   * `pulp_wars-mch9.50` found two that the plan counted here but could not
+   * send after the daemon had moved, so a Gibbering Mass could step off its
+   * Doorstep and break loose: one kept for the Herald's Hunger, and a
+   * center's garrison beyond its Channel reach of the center (a garrison
+   * channels from its center or not at all).
+   */
   const channelHolds = (
     daemon: DaemonWorkV7,
     at: CoordV7,
@@ -1768,10 +1776,11 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
       return false;
     const near = free.filter(
       (unit) =>
+        !keep.has(unit.id) &&
         (assigned.get(unit.id)?.daemon.id ?? daemon.unit.id) ===
           daemon.unit.id &&
         gap(unit.at, at) <=
-          (unit.activation.moved
+          (unit.activation.moved || onOwnCenter(unit)
             ? CULT_CHANNEL_RANGE_V7
             : CULT_DAEMON_LEASH_V7),
     ).length;

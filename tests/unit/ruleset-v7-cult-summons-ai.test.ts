@@ -451,6 +451,116 @@ describe("the Cult seat (A-R3): Doorstep", () => {
     ).toBe(true);
   });
 
+  it("steps a Mass from its city's Doorstep onto a standing idol's with no strand, and nowhere else (pulp_wars-mch9.50)", () => {
+    // Mission 10's round 8 (CAMPAIGN.md section 11.17): a Mass beside the
+    // capital, a Human Fighter to the north, an Idol Bearer that has
+    // channelled already (no follower) two tiles from the center. A step
+    // beside the bearer keeps the Mass on its Doorstep; only the bearer's
+    // loss before the check breaks it loose (the engine's rule,
+    // ruleset-v7-cult-mass.test.ts).
+    const build = (bearer: boolean): GameStateV7 =>
+      daemon(
+        scene([
+          foe("FIGHTER", 10, 3),
+          ...(bearer ? [own("GUARD", 9, 5, { activation: CHANNELLED })] : []),
+        ]),
+        at(9, 7),
+        "MASS",
+        true,
+      );
+    const doorstep = (end: CoordV7, bearer: boolean): boolean =>
+      gap(end, at(8, 8)) <= 1 || (bearer && gap(end, at(9, 5)) === 1);
+    const held = ends(build(true), at(9, 7));
+    for (const end of held)
+      expect(doorstep(end, true), `${end.x},${end.y}`).toBe(true);
+    expect(held.some((end) => gap(end, at(8, 8)) > 1)).toBe(true);
+    // Sanity (the mutation): with no idol it stays by the center.
+    const alone = build(false);
+    expect(
+      offeredEnds(alone, at(9, 7)).some((end) => !doorstep(end, false)),
+    ).toBe(true);
+    const moves = ends(alone, at(9, 7));
+    expect(moves.length).toBeGreaterThan(0);
+    for (const end of moves)
+      expect(doorstep(end, false), `${end.x},${end.y}`).toBe(true);
+  });
+
+  it("counts no cultist kept for the Herald's Hunger as the one that follows a Mass off its Doorstep (pulp_wars-mch9.50)", () => {
+    // A spent Herald held by three Initiates that have channelled, a
+    // Summoner and an Initiate beside a Mass on the capital's Doorstep. With
+    // 0 Favour the pair is kept for the Sacrifice that feeds the Herald:
+    // neither channels this turn, so neither can follow the Mass.
+    const build = (favour: number): GameStateV7 => {
+      const state = withStrandsV7(
+        daemon(
+          daemon(
+            scene([
+              own("FIGHTER", 6, 3, { activation: CHANNELLED }),
+              own("FIGHTER", 6, 4, { activation: CHANNELLED }),
+              own("FIGHTER", 6, 5, { activation: CHANNELLED }),
+              own("CAPTAIN", 9, 5),
+              own("FIGHTER", 10, 5),
+            ]),
+            at(4, 4),
+            "HERALD",
+          ),
+          at(9, 7),
+          "MASS",
+          true,
+        ),
+        at(4, 4),
+        [at(6, 3), at(6, 4), at(6, 5)],
+      );
+      return favour > 0
+        ? withFavourV7(state, 0, favour)
+        : { ...state, cult: { ...state.cult, favour: [] } };
+    };
+    const hungry = build(0);
+    expect(
+      decision(hungry).candidates.some(
+        (candidate) => candidate.command.kind === "SACRIFICE",
+      ),
+    ).toBe(true);
+    expect(
+      offeredEnds(hungry, at(9, 7)).some((end) => gap(end, at(8, 8)) > 1),
+    ).toBe(true);
+    const moves = ends(hungry, at(9, 7));
+    expect(moves.length).toBeGreaterThan(0);
+    for (const end of moves) expect(gap(end, at(8, 8))).toBeLessThanOrEqual(1);
+    // Sanity (the mutation): fed, the Summoner is free to follow it.
+    expect(ends(build(2), at(9, 7)).some((end) => gap(end, at(8, 8)) > 1)).toBe(
+      true,
+    );
+  });
+
+  it("counts a center's garrison as a follower only within its Channel reach of the center (pulp_wars-mch9.50)", () => {
+    // A Mass beside an Idol Bearer that has channelled already, three
+    // tiles from the capital; the only free cultist garrisons the capital,
+    // and a garrison channels from its center or not at all.
+    const build = (garrison: CoordV7): GameStateV7 =>
+      daemon(
+        scene([
+          own("GUARD", 6, 6, { activation: CHANNELLED }),
+          own("FIGHTER", garrison.x, garrison.y),
+        ]),
+        at(5, 6),
+        "MASS",
+        true,
+      );
+    const doorstep = (end: CoordV7): boolean =>
+      gap(end, at(6, 6)) === 1 || gap(end, at(8, 8)) <= 1;
+    const walled = build(at(8, 8));
+    /** Off its Doorstep and out of the garrison's Channel reach. */
+    const lost = (end: CoordV7): boolean =>
+      !doorstep(end) && gap(end, at(8, 8)) > 3;
+    expect(offeredEnds(walled, at(5, 6)).some(lost)).toBe(true);
+    for (const end of ends(walled, at(5, 6)))
+      expect(lost(end), `${end.x},${end.y}`).toBe(false);
+    // Sanity (the mutation): off the center the same Initiate can walk
+    // after it, and the Mass may step out of the garrison's reach.
+    expect(ends(build(at(8, 7)), at(5, 6)).some(lost)).toBe(true);
+  });
+
   it("keeps an Idol Bearer beside the forward Mass its idol holds", () => {
     // An Idol Bearer beside the neutral village (8, 5), which the ordinary
     // play would take; a Mass beside the bearer, two tiles from the

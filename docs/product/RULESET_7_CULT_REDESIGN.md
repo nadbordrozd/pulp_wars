@@ -1110,7 +1110,10 @@ with victims gone). Decided here:
 4. **Doorstep.** A Mass on its Doorstep is given no channeller and wants
    none; it ends a Move only on its Doorstep or where a channeller can
    follow it; one that needs a strand goes back onto its Doorstep when it
-   cannot be held. An Idol Bearer that alone holds a forward Mass (no own
+   cannot be held. (`pulp_wars-mch9.50`: a channeller counts as able to
+   follow only when the next plan can send it, so not a cultist kept for
+   the Herald's Hunger, and a center's garrison only within its Channel
+   reach of the center; this holds for every daemon's Move.) An Idol Bearer that alone holds a forward Mass (no own
    center beside it, no strand of its own) ends no Move away from it (it
    may attack) and makes no warden's step away from it. A free Idol Bearer
    whose idol stands steps beside a Mass that needs a strand (at the
@@ -1706,3 +1709,11 @@ Switcheroo 4, Brood 2, Swarm 2). The Normal AI's own copies of the prices
 (`CULT_AGAINST_DAEMON_VALUE_V7`: Imp 2, Horror 4, Mass 5, Herald 18) and
 thresholds (The Stars Are Right and saving from 9, the cap spend at 26)
 match too.
+
+**Fixed after the build** (`pulp_wars-mch9.50`, no rule changed): the
+mission 10 hand play saw a Gibbering Mass break loose in round 9. Its
+move was legal (onto an idol's Doorstep); a Juggernaut killed that Idol
+Bearer before the check. The search found two real gaps in "where a
+channeller can follow it" (section 12.7, rule 4): a cultist kept for the
+Herald's Hunger, and a garrison beyond its Channel reach of its center,
+were counted as followers; neither is now.
