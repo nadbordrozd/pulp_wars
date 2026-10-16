@@ -587,6 +587,46 @@ describe("Ruleset 7 DOM shell", () => {
     expect(
       document.querySelector<HTMLElement>(".v7-tech-graph")?.dataset.zoom,
     ).toBe("1");
+    // Bead pulp_wars-2yc.72: the detail lives outside the zoomed stage and
+    // graph, in screen space, and a pinch on the tree's shell (where the
+    // inert graph's touches land) zooms the tree and not the detail.
+    requiredButton('[data-action="tech-hunting"]').click();
+    await flushMicrotasks();
+    const reopened = document.querySelector<HTMLElement>(".v7-tech-detail");
+    if (reopened === null) throw new Error("Technology detail missing");
+    expect(reopened.closest(".v7-tech-stage, .v7-tech-graph")).toBeNull();
+    const graphShell = reopened.closest<HTMLElement>(".v7-tech-graph-shell");
+    if (graphShell === null) throw new Error("Technology graph shell missing");
+    const zoomBefore = Number(
+      document.querySelector<HTMLElement>(".v7-tech-graph")?.dataset.zoom,
+    );
+    const shellPointer = (
+      type: string,
+      pointerId: number,
+      clientX: number,
+    ): void => {
+      const event = new Event(type, { bubbles: true, cancelable: true });
+      Object.defineProperties(event, {
+        pointerId: { value: pointerId },
+        pointerType: { value: "touch" },
+        button: { value: 0 },
+        clientX: { value: clientX },
+        clientY: { value: 100 },
+      });
+      graphShell.dispatchEvent(event);
+    };
+    shellPointer("pointerdown", 41, 100);
+    shellPointer("pointerdown", 42, 200);
+    shellPointer("pointermove", 42, 260);
+    shellPointer("pointerup", 41, 100);
+    shellPointer("pointerup", 42, 260);
+    expect(
+      Number(
+        document.querySelector<HTMLElement>(".v7-tech-graph")?.dataset.zoom,
+      ),
+    ).toBeGreaterThan(zoomBefore);
+    expect(reopened.isConnected).toBe(true);
+    expect(reopened.style.transform).toBe("");
     rectSpy.mockRestore();
     clientWidthSpy.mockRestore();
     clientHeightSpy.mockRestore();

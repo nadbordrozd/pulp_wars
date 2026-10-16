@@ -225,6 +225,75 @@ describe("Ruleset 7 technology tree viewport", () => {
     camera.detach();
   });
 
+  it("pinches the tree on its shell while a detail makes the graph inert, and leaves the detail alone", () => {
+    // Bead pulp_wars-2yc.72: an inert graph is not hit by touches, so they
+    // land on the shell round it; the tree still zooms and pans there,
+    // while touches and wheels on the detail (its own size on screen) and
+    // on the zoom controls never move the tree.
+    document.body.innerHTML = `
+      <div id="shell">
+        <div id="controls"><button>+</button></div>
+        <div id="viewport" tabindex="0"><div id="stage"></div></div>
+        <aside id="detail" class="v7-tech-detail"><p>Gathering</p></aside>
+      </div>
+    `;
+    const shell = required<HTMLElement>("#shell");
+    const viewport = required<HTMLElement>("#viewport");
+    const stage = required<HTMLElement>("#stage");
+    const detail = required<HTMLElement>("#detail p");
+    const controls = required<HTMLElement>("#controls button");
+    viewport.getBoundingClientRect = () => rect(340, 500);
+    viewportDimensions(
+      viewport,
+      () => 340,
+      () => 500,
+    );
+    const camera = new TechnologyTreeViewportV7();
+    camera.attach(viewport, stage, { width: 600, height: 600 }, null, shell);
+    viewport.inert = true;
+
+    pointer(detail, "pointerdown", 1, 100, 400, "touch");
+    pointer(detail, "pointerdown", 2, 200, 400, "touch");
+    pointer(detail, "pointermove", 2, 260, 400, "touch");
+    pointer(detail, "pointerup", 1, 100, 400, "touch");
+    pointer(detail, "pointerup", 2, 260, 400, "touch");
+    detail.dispatchEvent(
+      new WheelEvent("wheel", {
+        bubbles: true,
+        cancelable: true,
+        deltaY: -300,
+      }),
+    );
+    pointer(controls, "pointerdown", 3, 10, 10);
+    pointer(controls, "pointermove", 3, 60, 60);
+    pointer(controls, "pointerup", 3, 60, 60);
+    expect(camera.zoom).toBe(1);
+    const fitted = stage.style.transform;
+
+    pointer(shell, "pointerdown", 4, 100, 100, "touch");
+    pointer(shell, "pointerdown", 5, 200, 100, "touch");
+    pointer(shell, "pointermove", 5, 260, 100, "touch");
+    pointer(shell, "pointerup", 4, 100, 100, "touch");
+    pointer(shell, "pointerup", 5, 260, 100, "touch");
+    expect(camera.zoom).toBeGreaterThan(1);
+    const pinched = camera.zoom;
+
+    pointer(shell, "pointerdown", 6, 100, 100, "touch");
+    pointer(shell, "pointermove", 6, 140, 130, "touch");
+    pointer(shell, "pointerup", 6, 140, 130, "touch");
+    expect(camera.zoom).toBe(pinched);
+    expect(stage.style.transform).not.toBe(fitted);
+    const wheel = new WheelEvent("wheel", {
+      bubbles: true,
+      cancelable: true,
+      deltaY: -200,
+    });
+    shell.dispatchEvent(wheel);
+    expect(wheel.defaultPrevented).toBe(true);
+    expect(camera.zoom).toBeGreaterThan(pinched);
+    camera.detach();
+  });
+
   it("supports arrow, zoom and Fit keys when the graph itself has focus", () => {
     const viewport = required<HTMLElement>("#viewport");
     const stage = required<HTMLElement>("#stage");

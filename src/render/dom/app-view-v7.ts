@@ -328,6 +328,7 @@ import {
   type TechnologyTreeShapeV7,
 } from "./technology-tree-layout-v7";
 import { TechnologyTreeViewportV7 } from "./technology-tree-viewport-v7";
+import { installMatchGestureGuardV7 } from "./match-gesture-guard-v7";
 import { createTacticalSymbolV7 } from "./tactical-symbol-v7";
 import type { TacticalSymbolTheme } from "../../assets/ruleset7-tactical-ui-symbols";
 import {
@@ -1657,6 +1658,11 @@ export class Ruleset7DomAppView {
   /** Pan/zoom survives DOM replacement while technology art settles. */
   readonly #technologyViewport = new TechnologyTreeViewportV7();
   /**
+   * Keeps page zoom and page scroll out of the match shell (bead
+   * pulp_wars-2yc.72); removed with the shell.
+   */
+  #matchGestureGuard: (() => void) | null = null;
+  /**
    * A landscape screen gets the wide technology tree (bead
    * pulp_wars-2yc.66); null where the browser cannot say (the tests).
    */
@@ -2150,8 +2156,14 @@ export class Ruleset7DomAppView {
     this.#gallery?.destroy();
     this.#titleScene?.destroy();
     this.#technologyViewport.detach();
+    this.#releaseMatchGestureGuard();
     this.#boardHost.destroy();
     this.#root.replaceChildren();
+  }
+
+  #releaseMatchGestureGuard(): void {
+    this.#matchGestureGuard?.();
+    this.#matchGestureGuard = null;
   }
 
   /**
@@ -2600,6 +2612,7 @@ export class Ruleset7DomAppView {
       return;
     }
     if (this.#matchRoot !== null) this.#boardHost.destroy();
+    this.#releaseMatchGestureGuard();
     this.#matchShell = null;
     this.#matchRoot = null;
     this.#boardContainer = null;
@@ -4535,6 +4548,8 @@ export class Ruleset7DomAppView {
         main,
       );
       this.#root.replaceChildren(shell);
+      this.#releaseMatchGestureGuard();
+      this.#matchGestureGuard = installMatchGestureGuardV7(shell);
       this.#matchShell = shell;
       this.#matchRoot = main;
       this.#boardContainer = board;
@@ -5043,6 +5058,9 @@ export class Ruleset7DomAppView {
           fitGutterY: shape.fitGutterY,
         },
         popup?.querySelector<HTMLElement>("[data-tech-zoom-label]") ?? null,
+        // The tree still pinches and pans under an open detail, which
+        // stays its own size (bead pulp_wars-2yc.72).
+        techGraph.closest<HTMLElement>(".v7-tech-graph-shell") ?? techGraph,
       );
       // The detail must not hide the badge it describes: shift the drawing
       // until the badge sits in the part of the graph the detail leaves.

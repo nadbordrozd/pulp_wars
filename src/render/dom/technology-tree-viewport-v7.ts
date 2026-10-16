@@ -74,6 +74,15 @@ export function technologyTreeMaxScaleV7(fitScale: number): number {
 export class TechnologyTreeViewportV7 {
   #graph: TechnologyTreeViewportSizeV7 = { width: 1, height: 1 };
   #viewport: HTMLElement | null = null;
+  /**
+   * Where pans and pinches are read (bead pulp_wars-2yc.72): the viewport,
+   * or a shell round it, so the tree still moves under its pinch while a
+   * technology detail makes the viewport inert. Touches on anything else in
+   * the shell (the detail, the zoom controls) are left alone.
+   */
+  #surface: HTMLElement | null = null;
+  /** The element holding the pointers of the current gesture. */
+  #captor: HTMLElement | null = null;
   #stage: HTMLElement | null = null;
   #zoomLabel: HTMLElement | null = null;
   #centre: PointV7 = { x: 0.5, y: 0.5 };
@@ -228,9 +237,11 @@ export class TechnologyTreeViewportV7 {
     stage: HTMLElement,
     graph: TechnologyTreeViewportSizeV7,
     zoomLabel: HTMLElement | null = null,
+    gestureSurface: HTMLElement = viewport,
   ): void {
     this.detach();
     this.#viewport = viewport;
+    this.#surface = gestureSurface;
     this.#stage = stage;
     this.#zoomLabel = zoomLabel;
     // The tree changing shape (a turned screen) keeps the zoom and the
@@ -245,11 +256,11 @@ export class TechnologyTreeViewportV7 {
     if (!this.#initialised) this.fit();
     else this.#apply();
 
-    this.#listen(viewport, "pointerdown", this.#onPointerDown);
-    this.#listen(viewport, "pointermove", this.#onPointerMove);
-    this.#listen(viewport, "pointerup", this.#onPointerEnd);
-    this.#listen(viewport, "pointercancel", this.#onPointerEnd);
-    this.#listen(viewport, "wheel", this.#onWheel, { passive: false });
+    this.#listen(gestureSurface, "pointerdown", this.#onPointerDown);
+    this.#listen(gestureSurface, "pointermove", this.#onPointerMove);
+    this.#listen(gestureSurface, "pointerup", this.#onPointerEnd);
+    this.#listen(gestureSurface, "pointercancel", this.#onPointerEnd);
+    this.#listen(gestureSurface, "wheel", this.#onWheel, { passive: false });
     this.#listen(viewport, "click", this.#onClickCapture, true);
     this.#listen(viewport, "keydown", this.#onKeyDown);
     this.#listen(viewport, "focusin", this.#onFocusIn);
@@ -275,6 +286,8 @@ export class TechnologyTreeViewportV7 {
     this.#suppressClickTimer = null;
     this.#suppressClick = false;
     this.#viewport = null;
+    this.#surface = null;
+    this.#captor = null;
     this.#stage = null;
     this.#zoomLabel = null;
     this.#pointers.clear();
@@ -295,8 +308,23 @@ export class TechnologyTreeViewportV7 {
     );
   }
 
+  /**
+   * The element of the tree a gesture starting at `target` belongs to: the
+   * viewport for the tree itself, the surface for its bare ground while the
+   * viewport is inert, and null for the shell's other content.
+   */
+  #gestureOwner(target: EventTarget | null): HTMLElement | null {
+    const viewport = this.#viewport;
+    if (viewport === null) return null;
+    if (target instanceof Node && viewport.contains(target)) return viewport;
+    return target === this.#surface ? this.#surface : null;
+  }
+
   readonly #onPointerDown = (event: PointerEvent): void => {
     if (event.button !== 0 && event.pointerType !== "touch") return;
+    const owner = this.#gestureOwner(event.target);
+    if (owner === null) return;
+    if (this.#pointers.size === 0) this.#captor = owner;
     this.#keyboardNavigation = false;
     this.#pointers.set(event.pointerId, {
       x: event.clientX,
@@ -309,7 +337,7 @@ export class TechnologyTreeViewportV7 {
     if (this.#pointers.size >= 2) {
       this.#startPinch();
       for (const pointerId of this.#pointers.keys())
-        this.#viewport?.setPointerCapture?.(pointerId);
+        this.#captor?.setPointerCapture?.(pointerId);
     }
   };
 
@@ -348,8 +376,7 @@ export class TechnologyTreeViewportV7 {
       event.clientY - active.startY,
     );
     if (moved < PAN_SLOP_V7 && !this.#gestureMoved) return;
-    if (!this.#gestureMoved)
-      this.#viewport?.setPointerCapture?.(event.pointerId);
+    if (!this.#gestureMoved) this.#captor?.setPointerCapture?.(event.pointerId);
     this.#gestureMoved = true;
     if (this.#lastPan !== null)
       this.panBy(
@@ -363,8 +390,8 @@ export class TechnologyTreeViewportV7 {
   readonly #onPointerEnd = (event: PointerEvent): void => {
     if (!this.#pointers.has(event.pointerId)) return;
     this.#pointers.delete(event.pointerId);
-    if (this.#viewport?.hasPointerCapture?.(event.pointerId) === true)
-      this.#viewport.releasePointerCapture(event.pointerId);
+    if (this.#captor?.hasPointerCapture?.(event.pointerId) === true)
+      this.#captor.releasePointerCapture(event.pointerId);
     if (
       event.type !== "pointercancel" &&
       (this.#gestureMoved || this.#pinchDistance !== null)
@@ -390,6 +417,7 @@ export class TechnologyTreeViewportV7 {
   };
 
   readonly #onWheel = (event: WheelEvent): void => {
+    if (this.#gestureOwner(event.target) === null) return;
     event.preventDefault();
     this.zoomBy(
       Math.exp(-event.deltaY * 0.0015),

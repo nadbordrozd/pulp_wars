@@ -3172,7 +3172,9 @@ The detail docks inside the graph on the side away from the chosen badge: top
 or bottom on a tall graph, left or right on a wide one. If it would still
 cover the badge, the drawing shifts so the badge sits in the middle of the
 uncovered part; the stored camera does not move, so closing the detail puts
-the tree back where it was. Detail lists prerequisite, exact unlocks, spatial
+the tree back where it was. While the detail is open the tree still pans and
+pinches around it, and the detail keeps its size on screen (it is not part of
+the zoomed drawing). Detail lists prerequisite, exact unlocks, spatial
 formula when relevant, and the faction-correct unit label. It traps focus
 within its controls; Escape or its close button returns focus to the same
 node. Closing the outer technology layer returns to the board. Camera scale
@@ -3448,6 +3450,13 @@ button, or combat modal. Every attack highlight shows defender/retaliation
 damage and death/advance cues before activation, with the same text in its
 accessible name. Drag pans only after a movement threshold so a tap still
 selects. Wheel/pinch and zoom controls change camera only.
+
+On a phone the browser never zooms or scrolls the page during a match (bead
+pulp_wars-2yc.72): a pinch or a drag on the board or the technology tree moves
+only that camera, and one on the HUD, the dock or a panel does nothing worse
+than scroll that panel, so the HUD and the dock stay fixed on screen. The
+front screens keep the browser's pinch zoom for reading; a page zoom brought
+into a match is put back to normal scale.
 
 The active battlefield is an axis-aligned square grid. Its accessible Canvas
 name says “square-grid battlefield”; cursor announcements identify a one-based
