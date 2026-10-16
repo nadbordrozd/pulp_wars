@@ -74,6 +74,7 @@ import {
 } from "./candy-abilities";
 import { unitIsFrogV7 } from "./cult-hexes";
 import { arePlayersAlliedV7, arePlayersHostileV7 } from "./economy";
+import { idolShieldsV7 } from "./cult-warden";
 import { isUnitVisibleToPlayerV7 } from "./observation";
 import type { CombatPreviewV7, CombatSplashEntryV7 } from "./events";
 import {
@@ -691,9 +692,15 @@ export function calculateCombatPreviewV7(
     options.ignoreBlizzard !== true &&
     distance >= 2 &&
     blizzardProtectsV7(state, winterV7(state).witches, defender);
-  const formulaDefenderDamage = blizzardHalved
-    ? blizzardHalvedDamageV7(rawDefenderDamage)
-    : rawDefenderDamage;
+  // The Cult redesign (`pulp_wars-mch9.33`, section 8.1): the shield wall,
+  // the Blizzard's precedent for a unit beside a standing idol of its seat
+  // (two halvings halve once).
+  const idolHalved =
+    !blizzardHalved && idolShieldsV7(state, state.units, defender, distance);
+  const formulaDefenderDamage =
+    blizzardHalved || idolHalved
+      ? blizzardHalvedDamageV7(rawDefenderDamage)
+      : rawDefenderDamage;
   const defenderShield = shieldOfV7(state.shields, defender.id);
   const plated = options.ignorePlated !== true;
   // The Martian pass, correction: a whole Force Field holds one attack.
@@ -1048,6 +1055,7 @@ export function calculateCombatPreviewV7(
     rockfallApplied,
     plantedApplied,
     blizzardHalved,
+    idolHalved,
     snowCover,
     sweep,
     hiddenBlizzardPossible: false,

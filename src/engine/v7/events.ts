@@ -16,8 +16,10 @@ import type {
  * The Cultists (`pulp_wars-mch9.4`, docs/product/RULESET_7_CULTISTS.md
  * section 3): what paid a Cult seat Favour, in the frozen order: a
  * Sacrifice, a Seizure, an Offering, (section 8.3, `pulp_wars-mch9.6`) a
- * bound daemon's kill, and (section 7.3, `pulp_wars-mch9.7`) a unit the
- * Great Summoning consumed. (The Chosen's `MARTYR` retired with the Chosen:
+ * bound daemon's kill, (section 7.3, `pulp_wars-mch9.7`) a unit the Great
+ * Summoning consumed, and (the Cult redesign, `pulp_wars-mch9.32`,
+ * docs/product/RULESET_7_CULT_REDESIGN.md section 6) the Summoners' trickle
+ * at the Start Turn check. (The Chosen's `MARTYR` retired with the Chosen:
  * the Cult redesign, `pulp_wars-mch9.31`.)
  */
 export const FAVOUR_SOURCES_V7 = Object.freeze([
@@ -26,18 +28,36 @@ export const FAVOUR_SOURCES_V7 = Object.freeze([
   "OFFERING",
   "DAEMON_KILL",
   "CONSUMPTION",
+  "TRICKLE",
 ] as const);
 export type FavourSourceV7 = (typeof FAVOUR_SOURCES_V7)[number];
 
 /**
  * The Cultists (`pulp_wars-mch9.5`, section 3): what a Cult seat spent
- * Favour on, in the frozen order: summoning a Horror, and (section 7.3,
- * `pulp_wars-mch9.7`) the Great Summoning.
+ * Favour on, in the frozen order: summoning a Horror, (section 7.3,
+ * `pulp_wars-mch9.7`) the Great Summoning, and (the Cult redesign,
+ * `pulp_wars-mch9.32`, section 7.6) a bound Herald's Hunger at the Start
+ * Turn check.
  */
 export const FAVOUR_PURPOSES_V7 = Object.freeze([
   "SUMMON_HORROR",
   "GREAT_SUMMONING",
+  "HUNGER",
 ] as const);
+
+/**
+ * The Cult redesign (`pulp_wars-mch9.32`, section 7.6): why a bound daemon
+ * was Unbound, in the frozen order: it had fewer holding strands than its
+ * Control at the check (`STRANDS`); its seat could not pay a Herald's
+ * Hunger (`HUNGER`); or its seat left the match (`ELIMINATED`, section
+ * 13.1: no rampage follows).
+ */
+export const DAEMON_UNBOUND_REASONS_V7 = Object.freeze([
+  "STRANDS",
+  "HUNGER",
+  "ELIMINATED",
+] as const);
+export type DaemonUnboundReasonV7 = (typeof DAEMON_UNBOUND_REASONS_V7)[number];
 export type FavourPurposeV7 = (typeof FAVOUR_PURPOSES_V7)[number];
 
 /**
@@ -226,6 +246,14 @@ export interface CombatPreviewV7 {
    * `damageToDefender` is the halved value.
    */
   readonly blizzardHalved: boolean;
+  /**
+   * The Cult redesign (`pulp_wars-mch9.33`, section 8.1): the shield wall.
+   * The hit on the defender, from two or more tiles away, was halved
+   * (rounded up, before Armoured, Plated, and Shields) by a standing idol
+   * of the defender's seat beside it; `damageToDefender` is the halved
+   * value. Never with `blizzardHalved` (two halvings halve once).
+   */
+  readonly idolHalved: boolean;
   /** Section 6.2: the defender's cover comes from Snow. */
   readonly snowCover: boolean;
   /** Section 7.5: a Mammoth's Sweep; its flank victims are `splash`. */
@@ -1453,18 +1481,23 @@ export type DomainEventV7 =
       readonly cityId: CityId;
       readonly at: CoordV7;
       readonly population: 2;
-      readonly favour: 3;
+      /** 6 since the Cult redesign (`pulp_wars-mch9.32`), 3 before. */
+      readonly favour: 6;
     }
   | {
       /**
        * The Cultists (section 3): the Cult seat `playerId` gained `amount`
        * Favour from `source` and has `favour` now. Favour is public, so the
-       * event reaches every player; it names no unit and no tile.
+       * event reaches every player; it names no unit and no tile. The Cult
+       * redesign (`pulp_wars-mch9.32`, section 6): `forfeited` is the part
+       * of `amount` lost above the cap of 30 (0 when it all fit), so the
+       * seat banked `amount - forfeited`.
        */
       readonly kind: "FAVOUR_GAINED";
       readonly playerId: PlayerId;
       readonly source: FavourSourceV7;
       readonly amount: number;
+      readonly forfeited: number;
       readonly favour: number;
     }
   | {
@@ -1519,23 +1552,6 @@ export type DomainEventV7 =
       readonly cause: DisruptionCauseV7;
     }
   | {
-      /** The Cultists (section 8.1): the Idol Bearer `unitId` raised its idol. */
-      readonly kind: "IDOL_RAISED";
-      readonly playerId: PlayerId;
-      readonly unitId: UnitId;
-    }
-  | {
-      /**
-       * The Cultists (section 8.1): the idol of `unitId` dropped: its
-       * bearer was disrupted (`cause`), or it was lowered at the end of the
-       * channel check of its owner's next Start Turn (`EXPIRED`).
-       */
-      readonly kind: "IDOL_DROPPED";
-      readonly playerId: PlayerId;
-      readonly unitId: UnitId;
-      readonly cause: DisruptionCauseV7 | "EXPIRED";
-    }
-  | {
       /**
        * The Cultists (section 8.4): the Thing `unitId` of `playerId` grips
        * the channeller `cultistUnitId` beside it.
@@ -1573,16 +1589,20 @@ export type DomainEventV7 =
       /**
        * The Cultists (sections 6.2 and 6.4): at the Start Turn check of
        * `summonerPlayerId` the daemon `unitId` had `strands` holding strands
-       * against its `control`: it is Unbound. It belongs to nobody from
-       * this event on; the events of its first rampage follow. Also sent,
-       * with `strands` 0, for each bound daemon of a seat that is
-       * eliminated (section 13.1): no rampage follows that one.
+       * against its `control`: it is Unbound (`reason` `STRANDS`). It
+       * belongs to nobody from this event on; the events of its first
+       * rampage follow. The Cult redesign (`pulp_wars-mch9.32`, section
+       * 7.6): also a bound Herald whose Hunger its seat could not pay
+       * (`reason` `HUNGER`, `strands` as held), and, with `strands` 0, each
+       * bound daemon of a seat that is eliminated (`reason` `ELIMINATED`,
+       * section 13.1): no rampage follows that one.
        */
       readonly kind: "DAEMON_UNBOUND";
       readonly unitId: UnitId;
       readonly summonerPlayerId: PlayerId;
       readonly strands: number;
       readonly control: number;
+      readonly reason: DaemonUnboundReasonV7;
     }
   | {
       /**

@@ -7,7 +7,6 @@ import {
   targetHighlightStyleV7,
 } from "../../src/render/canvas/target-highlight-v7";
 import {
-  BEHOLD_RAISED_V7,
   CHANNEL_HOLDING_V7,
   CHANNEL_PICK_V7,
   SUMMON_NO_HELPER_V7,
@@ -126,8 +125,8 @@ describe("Summon: the helper, then the tile, on the board", () => {
     expect(summon.querySelector(".v7-action-label")?.textContent).toBe(
       "Summon",
     );
-    expect(summon.querySelector(".v7-favour-chip")?.textContent).toBe("−5");
-    expect(summon.getAttribute("aria-label")).toMatch(/^Summon · −5 Favour\. /);
+    expect(summon.querySelector(".v7-favour-chip")?.textContent).toBe("−4");
+    expect(summon.getAttribute("aria-label")).toMatch(/^Summon · −4 Favour\. /);
     expect(summon.getAttribute("aria-pressed")).toBe("false");
     expectPlainWords(dock());
     scene.app.destroy();
@@ -229,7 +228,7 @@ describe("Summon: the helper, then the tile, on the board", () => {
       at: at(5, 3),
     });
     const view = required(controller.snapshot().view);
-    expect(favourOfV7(view, view.viewer.id)).toBe(1);
+    expect(favourOfV7(view, view.viewer.id)).toBe(2);
     expect(
       view.units.filter((unit) => unit.summoned === "HORROR"),
     ).toHaveLength(2);
@@ -415,36 +414,17 @@ describe("Channel and Anchor: one button, the unit picked on the board", () => {
 });
 
 describe("Behold! and Boo!", () => {
-  it("casts Behold! from its button and shows the idol raised", async () => {
+  it("draws the standing idol's ring with no Behold! button (the Cult redesign's aura)", () => {
     const scene = rig(cultChannelUiFixtureV7());
-    const { controller, host } = scene;
+    const { host } = scene;
     select(scene, A.bearer);
-    expect(cultButtons()).toEqual(["channel", "behold"]);
-    const behold = requiredButton("cult-behold");
-    expect(behold.textContent).toBe("Behold!");
-    expect(behold.hasAttribute("aria-pressed")).toBe(false);
-    // The ring it would raise is drawn while the Idol Bearer is selected.
-    expect(
-      boardPlan(host).entries.filter(
-        (entry) => entry.abilityStyle === "WARD_PREVIEW",
-      ).length,
-    ).toBeGreaterThan(0);
-    behold.click();
-    await waitUntil(() => controller.accepted.length === 1);
-    expect(controller.accepted[0]).toEqual({
-      kind: "BEHOLD",
-      unitId: scene.unitAt(A.bearer).id,
-    });
-    select(scene, A.bearer);
+    expect(cultButtons()).toEqual(["channel"]);
     expect(
       boardPlan(host).entries.filter(
         (entry) => entry.abilityStyle === "IDOL_RING",
       ),
     ).toHaveLength(9);
     expect(chips()).toEqual([["idol", "Idol raised"]]);
-    const raised = requiredButton("cult-behold");
-    expect(raised.getAttribute("aria-disabled")).toBe("true");
-    expect(raised.dataset.disabledReason).toBe(BEHOLD_RAISED_V7);
     scene.app.destroy();
   });
 

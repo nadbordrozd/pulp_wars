@@ -25,7 +25,6 @@ import {
   cultFieldV7,
   withGripV7,
   withHorrorV7,
-  withIdolsV7,
   withStrandsV7,
 } from "../fixtures/v7-cult";
 import {
@@ -169,10 +168,12 @@ interface PathCaseV7 {
   };
 }
 
-/** An Idol Bearer on (6, 5) with its idol raised: it wards (5, 6). */
+/**
+ * An Idol Bearer on (6, 5), beside the channeller on (5, 6). Its idol
+ * stands (the Cult redesign's lasting aura, `pulp_wars-mch9.33`), which
+ * keeps no strand: it only halves shots.
+ */
 const WARD: GoblinPieceV7 = { seat: 0, role: "GUARD", at: at(6, 5) };
-const warded = (state: GameStateV7): GameStateV7 =>
-  withIdolsV7(state, [WARD.at]);
 
 const PATH_CASES: readonly PathCaseV7[] = [
   {
@@ -398,38 +399,30 @@ const PATH_CASES: readonly PathCaseV7[] = [
     },
   },
   {
-    name: "Sticky Toffee, under a raised idol (the hit is warded, the status is not)",
-    proves: ["UNIT_STUCK"],
-    cause: "STATUS",
+    name: "Sticky Toffee (the hit comes first)",
+    proves: ["COMBAT_RESOLVED", "UNIT_STUCK"],
+    cause: "HP_LOSS",
     build: () => {
-      const state = warded(
-        rig("CANDY", [{ role: "FIGHTER", at: at(5, 7) }], { own: [WARD] }),
-      );
+      const state = rig("CANDY", [{ role: "FIGHTER", at: at(5, 7) }]);
       return { state, command: targeted("ATTACK", state, at(5, 7)) };
     },
   },
   {
-    name: "a Push, under a raised idol (the hit is warded, the shove is not)",
-    proves: ["UNIT_PUSHED"],
-    cause: "MOVED",
+    name: "a Push (the hit comes first)",
+    proves: ["COMBAT_RESOLVED", "UNIT_PUSHED"],
+    cause: "HP_LOSS",
     build: () => {
       // From (6, 7) the Juggernaut pushes (5, 6) to the free (4, 5).
-      const state = warded(
-        rig("ORIGINAL", [{ role: "JUGGERNAUT", at: at(6, 7) }], {
-          own: [WARD],
-        }),
-      );
+      const state = rig("ORIGINAL", [{ role: "JUGGERNAUT", at: at(6, 7) }]);
       return { state, command: targeted("ATTACK", state, at(6, 7)) };
     },
   },
   {
-    name: "a Knockback, under a raised idol",
-    proves: ["UNIT_PUSHED"],
-    cause: "MOVED",
+    name: "a Knockback (the hit comes first)",
+    proves: ["COMBAT_RESOLVED", "UNIT_PUSHED"],
+    cause: "HP_LOSS",
     build: () => {
-      const state = warded(
-        rig("DWARF", [{ role: "CATAPULT", at: at(8, 6) }], { own: [WARD] }),
-      );
+      const state = rig("DWARF", [{ role: "CATAPULT", at: at(8, 6) }]);
       return { state, command: targeted("ATTACK", state, at(8, 6)) };
     },
   },
@@ -920,94 +913,24 @@ describe("the disruption rule: every path of the engine", () => {
   });
 });
 
-describe("the disruption rule: Behold! (section 8.1)", () => {
+describe("the disruption rule: the warden keeps no strand (the Cult redesign, pulp_wars-mch9.33)", () => {
   const shot = (state: GameStateV7, target: CoordV7) =>
     run(state, targeted("ATTACK", state, at(5, 8), target));
 
-  it("keeps the strand of a cultist beside a raised idol that loses Hit Points", () => {
-    const state = warded(
-      rig("ORIGINAL", [{ role: "MARKSMAN", at: at(5, 8) }], { own: [WARD] }),
-    );
-    const result = shot(state, CHANNELLER);
-    expect(unitAtV7(result.state, CHANNELLER).hp).toBeLessThan(16);
-    expect(broken(result.events)).toEqual([]);
-    expect(result.state.cult.strands).toHaveLength(1);
-    expect(result.state.cult.idols).toHaveLength(1);
-    // Without the idol the same shot breaks it.
-    const bare = rig("ORIGINAL", [{ role: "MARKSMAN", at: at(5, 8) }], {
+  it("breaks the strand of a cultist beside a standing idol that loses Hit Points (the shot is only halved)", () => {
+    const state = rig("ORIGINAL", [{ role: "MARKSMAN", at: at(5, 8) }], {
       own: [WARD],
     });
-    expect(broken(shot(bare, CHANNELLER).events)).toHaveLength(1);
-  });
-
-  it("drops the idol when the Idol Bearer is hit, and the next hit breaks the strand", () => {
-    const state = warded(
-      rig(
-        "ORIGINAL",
-        [
-          { role: "MARKSMAN", at: at(5, 8) },
-          { role: "MARKSMAN", at: at(8, 5) },
-        ],
-        { own: [WARD] },
-      ),
+    const result = shot(state, CHANNELLER);
+    expect(unitAtV7(result.state, CHANNELLER).hp).toBeLessThan(
+      unitAtV7(state, CHANNELLER).hp,
     );
-    const first = run(state, targeted("ATTACK", state, at(8, 5), WARD.at));
-    expect(
-      first.events.filter((event) => event.kind === "IDOL_DROPPED"),
-    ).toEqual([
-      {
-        kind: "IDOL_DROPPED",
-        playerId: seatIdV7(state, 0),
-        unitId: id(state, WARD.at),
-        cause: "HP_LOSS",
-      },
-    ]);
-    expect(first.state.cult.idols).toEqual([]);
-    // The strand it warded stays kept...
-    expect(first.state.cult.strands).toHaveLength(1);
-    // ...until the cultist itself is hit.
-    expect(broken(shot(first.state, CHANNELLER).events)).toHaveLength(1);
-  });
-
-  it("wards nobody in a command that hits the Idol Bearer too", () => {
-    // A Whirligig beside both: one Whirl hits the cultist and the Idol
-    // Bearer at once.
-    const state = warded(
-      rig("DWARF", [{ role: "KNIGHT", at: at(6, 6) }], { own: [WARD] }),
-    );
-    const result = run(state, unitCommand("WHIRL", state, at(6, 6)));
     expect(broken(result.events)).toHaveLength(1);
-    expect(result.state.cult.idols).toEqual([]);
-  });
-
-  it("never wards a kill, a cultist two tiles away, an enemy, or the Idol Bearer itself", () => {
-    // Killed under the idol: gone is gone.
-    const doomed = warded(
-      rig("ORIGINAL", [{ role: "KNIGHT", at: at(5, 7) }], {
-        own: [WARD],
-        role: "FIGHTER",
-        hp: 2,
-      }),
-    );
+    expect(result.state.cult.strands).toEqual([]);
+    // The shield wall halved the hit (the combat says so).
     expect(
-      broken(run(doomed, targeted("ATTACK", doomed, at(5, 7))).events)[0]
-        ?.cause,
-    ).toBe("GONE");
-    // The Idol Bearer two tiles from the cultist wards nothing.
-    const far: GoblinPieceV7 = { seat: 0, role: "GUARD", at: at(7, 5) };
-    const distant = withIdolsV7(
-      rig("ORIGINAL", [{ role: "MARKSMAN", at: at(5, 8) }], { own: [far] }),
-      [far.at],
-    );
-    expect(broken(shot(distant, CHANNELLER).events)).toHaveLength(1);
-    // A raised idol does not ward its own bearer's strand.
-    const self = withIdolsV7(
-      rig("ORIGINAL", [{ role: "MARKSMAN", at: at(5, 8) }]),
-      [CHANNELLER],
-    );
-    const hit = shot(self, CHANNELLER);
-    expect(broken(hit.events)).toHaveLength(1);
-    expect(hit.state.cult.idols).toEqual([]);
+      result.events.find((event) => event.kind === "COMBAT_RESOLVED"),
+    ).toMatchObject({ preview: { idolHalved: true } });
   });
 });
 

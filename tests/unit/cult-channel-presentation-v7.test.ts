@@ -43,7 +43,6 @@ import { targetHighlightStyleV7 } from "../../src/render/canvas/target-highlight
 import {
   ANCHOR_GRIPPING_V7,
   ANCHOR_NO_CULTIST_V7,
-  BEHOLD_RAISED_V7,
   BOO_NOBODY_V7,
   CHANNEL_ALREADY_ACTED_V7,
   CHANNEL_FURIOUS_V7,
@@ -480,7 +479,7 @@ describe("Summon is aimed on the board", () => {
     );
     expect(targetHighlightStyleV7("SUMMON")).toBe("PLACE");
     expect(tiles.targets[0]?.semanticLabel).toBe(
-      "Summon the Horror here: −5 Favour. Both cultists channel it. Choose a tile next to it for the Horror",
+      "Summon the Horror here: −4 Favour. Both cultists channel it. Choose a tile next to it for the Horror",
     );
     // The chosen helper keeps its mark while the tile is picked.
     expect(
@@ -553,8 +552,8 @@ describe("Channel and Anchor are aimed on the board", () => {
   });
 });
 
-describe("Behold! and Boo! are previewed on the board", () => {
-  it("draws the ring a Behold! would raise and marks the cultist it would ward", () => {
+describe("the warden's ring and Boo! on the board", () => {
+  it("draws the standing idol's ring with nothing to cast (the Cult redesign's warden)", () => {
     const state = cultChannelUiFixtureV7();
     const bearer = idAt(state, A.bearer);
     const plan = planOf(viewOf(state), {
@@ -567,20 +566,16 @@ describe("Behold! and Boo! are previewed on the board", () => {
           entry.kind === "ABILITY_AREA" &&
           entry.abilityStyle === "WARD_PREVIEW",
       ),
+    ).toEqual([]);
+    expect(
+      plan.entries.filter((entry) => entry.abilityStyle === "IDOL_RING"),
     ).toHaveLength(9);
-    // Marked, not picked: the broken Help ring of an area support.
+    // The Idol Bearer could channel the one Horror in its reach.
     expect(
       plan.entries
         .filter((entry) => entry.kind === "ABILITY_TARGET")
         .map((entry) => [entry.at, entry.label, entry.areaSupport]),
-    ).toEqual([
-      // The Idol Bearer could channel the one Horror in its reach instead.
-      [A.horror, "2 / 1", "QUIET"],
-      [A.channeller, "Warded", "QUIET"],
-    ]);
-    expect(plan.targets.some((target) => target.family === "CHANNEL")).toBe(
-      false,
-    );
+    ).toEqual([[A.horror, "2 / 1", "QUIET"]]);
   });
 
   it("shows where a Boo! sends each unit, and picks nothing", () => {
@@ -689,7 +684,6 @@ describe("why a channel button cannot be used", () => {
     const state = cultChannelUiFixtureV7();
     expect(reason(state, A.summoner, "SUMMON")).toBeNull();
     expect(reason(state, A.helper, "CHANNEL")).toBeNull();
-    expect(reason(state, A.bearer, "BEHOLD")).toBeNull();
     expect(reason(state, A.thing, "ANCHOR")).toBeNull();
     expect(reason(state, A.horror, "BOO")).toBeNull();
     // Not its ability: no button.
@@ -719,9 +713,9 @@ describe("why a channel button cannot be used", () => {
         { seat: 0, role: "FIGHTER", at: at(6, 2) },
       ]),
       0,
-      4,
+      3,
     );
-    expect(reason(poor, at(5, 2), "SUMMON")).toBe("Needs 5 Favour");
+    expect(reason(poor, at(5, 2), "SUMMON")).toBe("Needs 4 Favour");
     const acted = withFavourV7(
       cultFieldV7([
         {
@@ -773,9 +767,8 @@ describe("why a channel button cannot be used", () => {
     expect(reason(none, at(0, 0), "CHANNEL")).toBeNull();
   });
 
-  it("says the idol is raised, the Thing grips already, and nobody is beside the Horror", () => {
+  it("says the Thing grips already, and nobody is beside the Horror", () => {
     const busy = cultChannelBusyUiFixtureV7();
-    expect(reason(busy, A.bearer, "BEHOLD")).toBe(BEHOLD_RAISED_V7);
     expect(reason(busy, A.thing, "ANCHOR")).toBe(ANCHOR_GRIPPING_V7);
     // A Thing far from the channellers.
     const apart = withStrandsV7(
@@ -1169,15 +1162,6 @@ describe("what each event plays", () => {
       [[A.fighter, at(3, 4)], true],
       [[A.hexer, at(7, 6)], true],
     ]);
-  });
-
-  it("spreads the chalk when an idol is raised", () => {
-    const state = cultChannelUiFixtureV7();
-    const played = step(state, {
-      kind: "BEHOLD",
-      unitId: idAt(state, A.bearer),
-    });
-    expect(cultSteps(played.steps)).toEqual([["IDOL", null, [A.bearer]]]);
   });
 
   it("has a duration, a still frame, a sound list and a drawing for every cue", () => {

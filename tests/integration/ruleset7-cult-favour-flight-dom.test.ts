@@ -271,7 +271,7 @@ describe("the Favour chip in the app", () => {
     requiredButton("command-offering").click();
     await waitUntil(() => controller.accepted.length === 1);
     expect(host.feedback.plans.at(-1)).toMatchObject({
-      favour: [{ source: "OFFERING", at: capital.at, amount: 3 }],
+      favour: [{ source: "OFFERING", at: capital.at, amount: 6 }],
       populationLosses: [{ cityId: capital.id, at: capital.at, amount: 2 }],
     });
     app.destroy();

@@ -5,7 +5,7 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r88" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r89" as const;
 /**
  * Every earlier Ruleset 7 identity, oldest first. Readers report these as
  * incompatible (never invalid). An identity bump must append the outgoing
@@ -99,8 +99,9 @@ export const PRIOR_RULESET_7_IDS = Object.freeze([
   "pulp-wars-poc-7r85",
   "pulp-wars-poc-7r86",
   "pulp-wars-poc-7r87",
+  "pulp-wars-poc-7r88",
 ] as const);
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r88.current" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r89.current" as const;
 /**
  * The map generator a setup names (docs/product/RULESET_7_MAP_SCALE.md
  * section 8.8): `V4` is the many-seats generator of `pulp_wars-ykw.3`
@@ -357,11 +358,11 @@ export const COMMAND_KIND_ORDER_V7 = Object.freeze([
   // Ice Folk Freeze block, so no earlier kind moves).
   "SACRIFICE",
   "SEIZE",
-  // The Cultists (`pulp_wars-mch9.5`, sections 6.1, 6.2, 8.1, 8.4, and
-  // 8.5): Summon a Horror, Channel, Behold!, Anchor, and Boo!.
+  // The Cultists (`pulp_wars-mch9.5`, sections 6.1, 6.2, 8.4, and 8.5):
+  // Summon a Horror, Channel, Anchor, and Boo! (Behold! was a command
+  // until the Cult redesign made it an aura, `pulp_wars-mch9.33`).
   "SUMMON",
   "CHANNEL",
-  "BEHOLD",
   "ANCHOR",
   "BOO",
   // The Cultists (`pulp_wars-mch9.7`, sections 7 and 8.6): a ritual begun
@@ -589,15 +590,14 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   "OFFERING_MADE",
   "FAVOUR_GAINED",
   // The Cultists (`pulp_wars-mch9.5`, sections 6 and 8): Favour spent on a
-  // summoning; a Horror summoned; a strand formed and broken; an idol
-  // raised and dropped; a grip made and broken; a Horror's Boo!; and a
-  // daemon whose channel failed at its seat's Start Turn.
+  // summoning; a Horror summoned; a strand formed and broken; a grip made
+  // and broken; a Horror's Boo!; and a daemon whose channel failed at its
+  // seat's Start Turn. (An idol raised and dropped, until the Cult
+  // redesign made Behold! a lasting aura, `pulp_wars-mch9.33`.)
   "FAVOUR_SPENT",
   "DAEMON_SUMMONED",
   "STRAND_FORMED",
   "STRAND_BROKEN",
-  "IDOL_RAISED",
-  "IDOL_DROPPED",
   "ANCHOR_GRIPPED",
   "ANCHOR_BROKEN",
   "UNITS_SCARED",
@@ -1571,12 +1571,9 @@ export interface CultStateV7 {
    * disrupted, and at the seat's Start Turn check.
    */
   readonly grips: readonly GripV7[];
-  /**
-   * Behold! (section 8.1): the Idol Bearers whose idol is raised, sorted. An
-   * idol drops when its bearer is disrupted and at the end of the channel
-   * check of its owner's next Start Turn.
-   */
-  readonly idols: readonly UnitId[];
+  // (Behold!'s `idols`, the raised idols, went with the Cult redesign's
+  // lasting aura, `pulp_wars-mch9.33`: an idol stands while its bearer is
+  // on the board with no status, read from the board.)
   /**
    * Rituals (`pulp_wars-mch9.7`, section 7): the rituals under way, sorted
    * by `leaderUnitId` (one ritual per leader). A ritual is begun by
@@ -1680,7 +1677,6 @@ export function emptyCultStateV7(): CultStateV7 {
     favour: [],
     strands: [],
     grips: [],
-    idols: [],
     rituals: [],
     cowed: [],
     frogs: [],

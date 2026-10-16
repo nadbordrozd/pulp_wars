@@ -171,8 +171,6 @@ export const DISRUPTION_EVENT_PATHS_V7: Readonly<
   // The channel's own events.
   STRAND_FORMED: NONE,
   STRAND_BROKEN: NONE,
-  IDOL_RAISED: NONE,
-  IDOL_DROPPED: NONE,
   ANCHOR_GRIPPED: NONE,
   ANCHOR_BROKEN: NONE,
   // The daemon itself changes hands, not a cultist: it is Unbound (the

@@ -638,11 +638,11 @@ describe("the Cult seat: Bind again (section 15.2 step 5)", () => {
 });
 
 describe("the Cult seat: summon only what it can hold (section 15.3)", () => {
-  it("summons a Horror with 5 Favour, a helper, and an enemy near enough", () => {
+  it("summons a Horror with 4 Favour, a helper, and an enemy near enough", () => {
     const start = withFavourV7(
       scene([own("CAPTAIN", 7, 3), own("FIGHTER", 7, 2), foe("FIGHTER", 2, 3)]),
       0,
-      5,
+      4,
     );
     const first = decides(start);
     expect(first?.kind).toBe("SUMMON");
@@ -760,7 +760,7 @@ describe("the Cult seat: Sacrifice (section 15.4)", () => {
       favour,
     );
 
-  it("offers up a spare Initiate when its value brings Favour to 5", () => {
+  it("offers up a spare Initiate when its value brings Favour to a Horror's 4", () => {
     const start = spare(3, 3);
     const first = decides(start);
     expect(first?.kind).toBe("SACRIFICE");
@@ -776,8 +776,8 @@ describe("the Cult seat: Sacrifice (section 15.4)", () => {
     expect(favourOf(turn.state)).toBe(5);
   });
 
-  it("offers none when the value does not reach 5, nor without bodies to spare", () => {
-    expect(ofKind(policyTurn(spare(2, 3)).commands, "SACRIFICE")).toHaveLength(
+  it("offers none when the value does not reach 4, nor without bodies to spare", () => {
+    expect(ofKind(policyTurn(spare(1, 3)).commands, "SACRIFICE")).toHaveLength(
       0,
     );
     // The Summoner and one Initiate are the two a Horror needs.
@@ -806,11 +806,11 @@ describe("the Cult seat: Sacrifice (section 15.4)", () => {
     expect(ofKind(policyTurn(start).commands, "SACRIFICE")).toHaveLength(0);
   });
 
-  it("works toward 20 only with The Stars Are Right", () => {
-    expect(ofKind(policyTurn(spare(18, 3)).commands, "SACRIFICE")).toHaveLength(
+  it("works toward 18 only with The Stars Are Right", () => {
+    expect(ofKind(policyTurn(spare(16, 3)).commands, "SACRIFICE")).toHaveLength(
       1,
     );
-    const without = spare(18, 3, {
+    const without = spare(16, 3, {
       techs: {
         0: TECHNOLOGY_IDS_V7.filter((tech) => tech !== "EXPLOSIVES"),
         1: [],
@@ -996,14 +996,14 @@ describe("the Cult seat: Offering (section 15.4)", () => {
       (item) => item.command.kind === "OFFERING",
     );
 
-  it("gives up population for Favour in a city that can train nothing, short of 5 Favour", () => {
+  it("gives up population for Favour in a city that can train nothing, short of 4 Favour", () => {
     const start = build(1, home, noStars);
     expect(offered(start)).toBe(true);
     const first = decides(start);
     expect(first?.kind).toBe("OFFERING");
     const turn = policyTurn(start);
     expect(ofKind(turn.commands, "OFFERING")).toHaveLength(1);
-    expect(favourOf(turn.state)).toBe(4);
+    expect(favourOf(turn.state)).toBe(7);
   });
 
   it("makes none with an enemy within three tiles of the center", () => {
@@ -1052,44 +1052,6 @@ describe("the Cult seat: Offering (section 15.4)", () => {
   });
 });
 
-describe("the Cult seat: Behold! (section 15.4)", () => {
-  // A Horror two cultists channel already; the Idol Bearer stands between
-  // them.
-  const build = (fighter: GoblinPieceV7 | null, holders = 2): GameStateV7 =>
-    withStrandsV7(
-      withHorrorV7(
-        scene([
-          own("FIGHTER", 4, 3, { activation: CHANNELLED }),
-          own("FIGHTER", 6, 3, { activation: CHANNELLED }),
-          own("GUARD", 5, 3),
-          ...(fighter === null ? [] : [fighter]),
-        ]),
-        0,
-        at(5, 5 - 1),
-        { activation: SPENT },
-      ),
-      at(5, 4),
-      [at(4, 3), at(6, 3)].slice(0, holders),
-    );
-
-  it("raises the idol beside two channellers a visible enemy can hit", () => {
-    const start = build(foe("FIGHTER", 5, 1));
-    const bearer = unitAtV7(start, at(5, 3)).id;
-    const turn = policyTurn(start);
-    expect(ofKind(turn.commands, "BEHOLD")).toEqual([
-      { kind: "BEHOLD", unitId: bearer },
-    ]);
-    expect(turn.state.cult.idols).toEqual([bearer]);
-  });
-
-  it("raises none with no enemy in reach of them, nor beside one channeller", () => {
-    expect(ofKind(policyTurn(build(null)).commands, "BEHOLD")).toHaveLength(0);
-    expect(
-      ofKind(policyTurn(build(foe("FIGHTER", 5, 1), 1)).commands, "BEHOLD"),
-    ).toHaveLength(0);
-  });
-});
-
 describe("the Cult seat: legal, deterministic turns on what A2 covers", () => {
   // Bead A3 (`pulp_wars-mch9.11`) plays these, by the same plan
   // (tests/unit/ruleset-v7-cult-rituals-ai.test.ts).
@@ -1107,7 +1069,6 @@ describe("the Cult seat: legal, deterministic turns on what A2 covers", () => {
     "OFFERING",
     "SUMMON",
     "CHANNEL",
-    "BEHOLD",
     "ANCHOR",
   ];
 

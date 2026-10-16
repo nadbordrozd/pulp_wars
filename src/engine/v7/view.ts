@@ -556,15 +556,16 @@ export interface PlayerViewV7 {
   readonly cult: {
     readonly favour: readonly FavourEntryV7[];
     /**
-     * The channel (`pulp_wars-mch9.5`, sections 6.2, 8.1, and 8.4), for the
+     * The channel (`pulp_wars-mch9.5`, sections 6.2 and 8.4), for the
      * units the viewer sees: the strands (by cultist), the grips whose
-     * Thing and cultist are both visible, the raised idols of visible Idol
-     * Bearers, and every visible bound daemon with its Control and holding
-     * strands. All empty in a match without a Cult seat.
+     * Thing and cultist are both visible, and every visible bound daemon
+     * with its Control and holding strands. All empty in a match without a
+     * Cult seat. (The raised idols went with the Cult redesign's lasting
+     * aura, `pulp_wars-mch9.33`: `standingIdolsV7` reads them from the
+     * units and their statuses.)
      */
     readonly strands: readonly PublicStrandV7[];
     readonly grips: readonly GripV7[];
-    readonly idols: readonly UnitId[];
     readonly daemons: readonly PublicDaemonV7[];
     /**
      * Rituals (`pulp_wars-mch9.7`, section 7.1): the rituals under way that
@@ -1341,7 +1342,6 @@ export function viewForV7(
           visibleUnitIds.has(grip.thingUnitId) &&
           visibleUnitIds.has(grip.cultistUnitId),
       ),
-      idols: state.cult.idols.filter((unitId) => visibleUnitIds.has(unitId)),
       daemons: visibleUnits.flatMap((unit): PublicDaemonV7[] => {
         const role = daemonIsBoundV7(unit) ? daemonRoleV7(unit) : null;
         return role === null

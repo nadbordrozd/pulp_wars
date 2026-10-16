@@ -17,6 +17,7 @@ import {
 } from "../rules/ruleset-v7";
 import type { CommandV7 } from "./commands";
 import { arePlayersHostileV7 } from "./economy";
+import { awestruckRefusingAttackV7, type WardenLookupV7 } from "./cult-warden";
 import type { GiantTileFactsV7 } from "./giants";
 import {
   isNeutralOwnerV7,
@@ -472,43 +473,63 @@ const FROG_ALLOWED_KINDS_V7: ReadonlySet<CommandV7["kind"]> = new Set([
 ]);
 
 export type TrickRefusalV7 = {
-  readonly code: "UNIT_FROGGED";
+  readonly code: "UNIT_FROGGED" | "ATTACK_AWESTRUCK";
   readonly unitId: UnitId;
 };
 
 /**
  * Section 9.1, shared by the reducer (which refuses the command) and the
- * public command query (which withholds it): what a hex forbids of a
- * command of `actor`, or null. **A frog** gives no command but Move,
- * Disembark, Promote, Disband, and Wait (`UNIT_FROGGED`, with the frog's
- * ID): no attack, capture, Kaboom, or other action. A frogged helper
- * summons nothing. (Pick Me!'s `ATTACK_TAUNTED` retired with the Chosen:
- * the Cult redesign, `pulp_wars-mch9.31`.)
+ * public command query (which withholds it): what a hex or an idol forbids
+ * of a command of `actor`, or null.
+ *
+ * - **A frog** gives no command but Move, Disembark, Promote, Disband, and
+ *   Wait (`UNIT_FROGGED`, with the frog's ID): no attack, capture, Kaboom,
+ *   or other action. A frogged helper summons nothing.
+ * - **Awestruck** (the Cult redesign, `pulp_wars-mch9.33`, section 8.1):
+ *   an `ATTACK` by a unit that stands beside a standing idol hostile to it
+ *   may name only such an Idol Bearer (`ATTACK_AWESTRUCK`, with the
+ *   bearer's ID; src/engine/v7/cult-warden.ts). Nothing else is
+ *   restricted. (Pick Me!'s `ATTACK_TAUNTED`, the retired Chosen's, was
+ *   the rule it took over.)
  *
  * (Grab is a rule of the Move itself: `MOVEMENT_ILLEGAL` reason `GRABBED`,
  * src/engine/v7/movement.ts.)
  */
 export function trickRefusalV7<U extends TrickUnitFactsV7>(
   lookup: TrickListsV7 &
-    Pick<GameStateV7, "setup" | "humanPlayerId"> & {
+    WardenLookupV7 & {
       readonly units: readonly U[];
     },
   actor: PlayerId,
   command: CommandV7,
 ): TrickRefusalV7 | null {
   const frogs = frogsOf(lookup);
-  if (frogs.length === 0) return null;
   const own = (unitId: UnitId): U | undefined =>
     lookup.units.find(
       (unit) => unit.id === unitId && unit.ownerId === actor && unit.hp > 0,
     );
-  const named: UnitId[] = [];
-  if ("unitId" in command && !FROG_ALLOWED_KINDS_V7.has(command.kind))
-    named.push(command.unitId);
-  if (command.kind === "SUMMON") named.push(command.helperUnitId);
-  for (const unitId of named)
-    if (frogs.includes(unitId) && own(unitId) !== undefined)
-      return { code: "UNIT_FROGGED", unitId };
+  if (frogs.length > 0) {
+    const named: UnitId[] = [];
+    if ("unitId" in command && !FROG_ALLOWED_KINDS_V7.has(command.kind))
+      named.push(command.unitId);
+    if (command.kind === "SUMMON") named.push(command.helperUnitId);
+    for (const unitId of named)
+      if (frogs.includes(unitId) && own(unitId) !== undefined)
+        return { code: "UNIT_FROGGED", unitId };
+  }
+  if (command.kind === "ATTACK") {
+    const attacker = own(command.unitId);
+    if (attacker !== undefined) {
+      const bearer = awestruckRefusingAttackV7(
+        lookup,
+        lookup.units,
+        attacker,
+        command.targetUnitId,
+      );
+      if (bearer !== null)
+        return { code: "ATTACK_AWESTRUCK", unitId: bearer.id };
+    }
+  }
   return null;
 }
 

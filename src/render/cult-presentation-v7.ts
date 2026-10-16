@@ -1,4 +1,5 @@
 import {
+  FAVOUR_CAP_V7,
   HERALD_FAVOUR_COST_V7,
   OFFERING_FAVOUR_V7,
   OFFERING_POPULATION_V7,
@@ -86,6 +87,7 @@ export const FAVOUR_SOURCE_LABELS_V7: Readonly<Record<FavourSourceV7, string>> =
     OFFERING: "an Offering",
     DAEMON_KILL: "a daemon's kill",
     CONSUMPTION: "the Great Summoning's meal",
+    TRICKLE: "the Summoners' channelling",
   };
 
 /** The Favour of a seat as a viewer knows it (Favour is public). */
@@ -173,8 +175,7 @@ export const SEIZE_HEALTHY_V7 = `No enemy next to it is at ${SEIZE_BROKEN_HP_V7}
 export const SEIZE_IMMUNE_V7 = "This enemy cannot be Seized";
 
 /** The HUD chip's tooltip. */
-export const FAVOUR_TOOLTIP_V7 =
-  "Favour: the Ancient Ones pay it for Sacrifices, Seizures and Offerings. It pays for summoning";
+export const FAVOUR_TOOLTIP_V7 = `Favour: the Ancient Ones pay it for Sacrifices, Seizures and Offerings, up to ${FAVOUR_CAP_V7}. It pays for summoning`;
 
 const chebyshev = (a: CoordV7, b: CoordV7): number =>
   Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y));

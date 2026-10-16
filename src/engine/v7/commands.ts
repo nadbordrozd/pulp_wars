@@ -329,7 +329,7 @@ export type CommandV7 =
       /**
        * The Cultists (section 6.1): the Summoner `unitId` and the robed
        * cultist `helperUnitId` beside it summon a Horror on the free tile
-       * `at` next to the Summoner, for 5 Favour. Both channel it.
+       * `at` next to the Summoner, for 4 Favour. Both channel it.
        */
       readonly kind: "SUMMON";
       readonly unitId: UnitId;
@@ -348,11 +348,12 @@ export type CommandV7 =
     }
   | {
       /**
-       * The Cultists. `BEHOLD` (section 8.1): the Idol Bearer `unitId`
-       * raises its idol. `BOO` (section 8.5): the Horror `unitId` scares
-       * every living unit beside it one tile away.
+       * The Cultists. `BOO` (section 8.5): the Horror `unitId` scares
+       * every living unit beside it one tile away. (`BEHOLD`, the Idol
+       * Bearer's raised idol, became a lasting aura with no command: the
+       * Cult redesign, `pulp_wars-mch9.33`.)
        */
-      readonly kind: "BEHOLD" | "BOO";
+      readonly kind: "BOO";
       readonly unitId: UnitId;
     }
   | {
@@ -424,7 +425,7 @@ export type CommandV7 =
   | {
       /**
        * The Cultists (section 5.3): the own city `cityId` gives up 2
-       * population for 3 Favour, as its city action.
+       * population for 6 Favour, as its city action.
        */
       readonly kind: "OFFERING";
       readonly cityId: CityId;
@@ -525,8 +526,8 @@ const UNIT_ONLY_KINDS = new Set<CommandKindV7>([
   "WAIL",
   "KABOOM",
   "TOSS_COIN",
-  // The Cultists (`pulp_wars-mch9.5`): Behold! and Boo!.
-  "BEHOLD",
+  // The Cultists (`pulp_wars-mch9.5`): Boo! (Behold!'s command retired
+  // with the Cult redesign, `pulp_wars-mch9.33`).
   "BOO",
 ]);
 

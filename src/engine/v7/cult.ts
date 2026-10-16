@@ -1,6 +1,7 @@
 import type { CityId, PlayerId, UnitId } from "../model/ids";
 import {
   CULT_SUMMONED_ROLE_RULES_V7,
+  FAVOUR_CAP_V7,
   OFFERING_FAVOUR_V7,
   OFFERING_MINIMUM_LEVEL_V7,
   OFFERING_POPULATION_V7,
@@ -84,8 +85,11 @@ export function favourOfV7(
 
 /**
  * Section 3: the Cult state after `playerId` gained `amount` Favour (a
- * positive whole number; there is no maximum but the safe-integer range,
- * past which the command is refused as an overflow).
+ * positive whole number). The Cult redesign (`pulp_wars-mch9.32`,
+ * docs/product/RULESET_7_CULT_REDESIGN.md section 6): the seat never holds
+ * more than `FAVOUR_CAP_V7`; the part of a gain above it is lost
+ * ({@link favourForfeitedV7}). A gain at the cap changes nothing and is
+ * still legal.
  */
 export function withFavourGainedV7(
   cult: CultStateV7,
@@ -94,8 +98,11 @@ export function withFavourGainedV7(
 ): CultStateV7 {
   if (!Number.isSafeInteger(amount) || amount <= 0)
     throw new RangeError("INVALID_STATE");
-  const total = favourOfV7({ cult }, playerId) + amount;
-  if (!Number.isSafeInteger(total)) throw new RangeError("INTEGER_OVERFLOW");
+  const before = favourOfV7({ cult }, playerId);
+  if (!Number.isSafeInteger(before + amount))
+    throw new RangeError("INTEGER_OVERFLOW");
+  const total = Math.min(FAVOUR_CAP_V7, before + amount);
+  if (total === before) return cult;
   return {
     ...cult,
     favour: [
@@ -103,6 +110,15 @@ export function withFavourGainedV7(
       { playerId, favour: total },
     ].sort((left, right) => left.playerId - right.playerId),
   };
+}
+
+/**
+ * The Cult redesign (section 6, `pulp_wars-mch9.32`): the part of a gain of
+ * `amount` that a seat holding `favour` loses to `FAVOUR_CAP_V7` (0 when
+ * it all fits).
+ */
+export function favourForfeitedV7(favour: number, amount: number): number {
+  return Math.max(0, favour + amount - FAVOUR_CAP_V7);
 }
 
 /**
@@ -126,8 +142,14 @@ export function withFavourSpentV7(
   };
 }
 
-/** The `FAVOUR_GAINED` event of a gain that left the seat at `favour`. */
+/**
+ * The `FAVOUR_GAINED` event of a gain of `amount` that left the seat at
+ * `favour` (in `cult`, the state after the gain). `before` is the Cult
+ * state before it: the part above `FAVOUR_CAP_V7` is `forfeited` (the Cult
+ * redesign, `pulp_wars-mch9.32`).
+ */
 export function favourGainedEventV7(
+  before: CultStateV7,
   cult: CultStateV7,
   playerId: PlayerId,
   source: FavourSourceV7,
@@ -138,6 +160,10 @@ export function favourGainedEventV7(
     playerId,
     source,
     amount,
+    forfeited: favourForfeitedV7(
+      favourOfV7({ cult: before }, playerId),
+      amount,
+    ),
     favour: favourOfV7({ cult }, playerId),
   };
 }
@@ -233,7 +259,9 @@ export function withDaemonKillFavourV7(
   const amount = daemonKillFavourV7(lookup, killer, victim);
   if (amount <= 0) return cult;
   const next = withFavourGainedV7(cult, killer.ownerId, amount);
-  events.push(favourGainedEventV7(next, killer.ownerId, "DAEMON_KILL", amount));
+  events.push(
+    favourGainedEventV7(cult, next, killer.ownerId, "DAEMON_KILL", amount),
+  );
   return next;
 }
 
@@ -584,7 +612,7 @@ export function applySacrificeV7(
         favour,
       },
       { kind: "UNIT_DIED", unitId: victim.id, cause: "SACRIFICED" },
-      favourGainedEventV7(cult, actor, "SACRIFICE", favour),
+      favourGainedEventV7(state.cult, cult, actor, "SACRIFICE", favour),
     ];
     const units = state.units
       .filter((unit) => unit.id !== victim.id)
@@ -676,7 +704,7 @@ export function applySeizeV7(
         favour,
       },
       { kind: "UNIT_DIED", unitId: victim.id, cause: "SACRIFICED" },
-      favourGainedEventV7(cult, actor, "SEIZE", favour),
+      favourGainedEventV7(state.cult, cult, actor, "SEIZE", favour),
     ];
     const units = state.units
       .filter((unit) => unit.id !== victim.id)
@@ -786,7 +814,13 @@ export function applyOfferingV7(
       events,
     );
     events.push(
-      favourGainedEventV7(cult, actor, "OFFERING", OFFERING_FAVOUR_V7),
+      favourGainedEventV7(
+        state.cult,
+        cult,
+        actor,
+        "OFFERING",
+        OFFERING_FAVOUR_V7,
+      ),
     );
     return kit.accepted(kit.checked(staged), events);
   } catch (cause) {

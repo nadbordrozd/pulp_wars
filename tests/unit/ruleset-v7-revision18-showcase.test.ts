@@ -245,7 +245,6 @@ describe("ruleset-7 revision-18 Showcase setup", () => {
         favour: [],
         strands: [],
         grips: [],
-        idols: [],
         rituals: [],
         cowed: [],
         frogs: [],

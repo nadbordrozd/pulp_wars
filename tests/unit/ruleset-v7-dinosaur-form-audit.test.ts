@@ -580,10 +580,11 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // attacker Feasts, `unitFeastsV7`, and its Bat Escape lands on land; an
     // Egg, an embarked unit, and a boat must fail the state check).
     // The Cult's channel (`pulp_wars-mch9.5`): a summoned unit is a
-    // land-form unit, and so are a strand's cultist, a grip's Thing, and a
-    // raised idol's bearer (an Egg, an embarked unit, and a boat must fail
-    // the unit and the `cult` checks).
-    "src/engine/v7/state-schema.ts": 16,
+    // land-form unit, and so are a strand's cultist and a grip's Thing (an
+    // Egg, an embarked unit, and a boat must fail the unit and the `cult`
+    // checks). (A raised idol's bearer was one more until the Cult
+    // redesign removed the list, `pulp_wars-mch9.33`.)
+    "src/engine/v7/state-schema.ts": 15,
     // The Vampire and Banshee rework: only a land-form unit's Escape Move
     // is a Bat Escape (`batEscapeTilesV7`; the state check allows
     // `escapeAvailable` in land form only, so an Egg, an embarked unit, and
@@ -602,12 +603,14 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // land-form unit (an Egg, an embarked unit, and a boat are refused
     // `VICTIM`).
     "src/engine/v7/cult.ts": 4,
-    // The Cult's channel (`pulp_wars-mch9.5`): Summon, Behold!, Anchor, and
-    // Boo! need their unit in land form (an embarked one is refused; an Egg
+    // The Cult's channel (`pulp_wars-mch9.5`): Summon, Anchor, and Boo!
+    // need their unit in land form (an embarked one is refused; an Egg
     // never reaches them), and a watched unit that is no longer in land
-    // form (it embarked) has left the board: its strand, grip, or idol is
-    // gone.
-    "src/engine/v7/cult-channel.ts": 5,
+    // form (it embarked) has left the board: its strand or grip is gone.
+    // (Behold!'s command, one more, went with the Cult redesign,
+    // `pulp_wars-mch9.33`: the warden's idol stands only in land form,
+    // src/engine/v7/cult-warden.ts.)
+    "src/engine/v7/cult-channel.ts": 4,
     // The Cult's rituals (`pulp_wars-mch9.7`): a Proclaim needs the Herald
     // in land form (a daemon never embarks and is never an Egg, so the gate
     // only ever refuses a unit that is no Herald). A ritual's leader and

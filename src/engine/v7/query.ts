@@ -298,8 +298,8 @@ import {
   type GiantTileFactsV7,
 } from "./giants";
 import {
+  favourForfeitedV7,
   favourOfV7,
-  isRobedCultistV7,
   offeringRejectionV7,
   sacrificeFavourV7,
   sacrificeRejectionV7,
@@ -309,7 +309,6 @@ import {
 } from "./cult";
 import {
   anchorRejectionV7,
-  beholdRejectionV7,
   booDestinationV7,
   booRejectionV7,
   booVictimsV7,
@@ -330,6 +329,12 @@ import {
   trickRefusalV7,
   unitIsFrogV7,
 } from "./cult-hexes";
+import {
+  awestruckBearersV7,
+  awestruckRefusingAttackV7,
+  idolShieldsV7,
+  idolStandsV7,
+} from "./cult-warden";
 import {
   rampagePlanV7,
   rampageTargetableV7,
@@ -1074,7 +1079,9 @@ export function queryLandingPreviewV7(
  * Disband, and Wait), or tosses or carries one, is withheld, exactly as
  * the reducer refuses it (`UNIT_FROZEN`). The Cultists (`pulp_wars-mch9.8`,
  * RULESET_7_CULTISTS.md section 9.1): so is every command of an own frog
- * but its hop (`UNIT_FROGGED`).
+ * but its hop (`UNIT_FROGGED`), and (the Cult redesign,
+ * `pulp_wars-mch9.33`) an `ATTACK` at anybody but an Idol Bearer beside an
+ * awestruck attacker (`ATTACK_AWESTRUCK`).
  */
 function appendOfferedUnitCommandsV7(
   view: PlayerViewV7,
@@ -1093,7 +1100,12 @@ function appendOfferedUnitCommandsV7(
     };
   } = view;
   const frozen = (lookup.frozen?.length ?? 0) > 0;
-  const tricks = (lookup.cult?.frogs?.length ?? 0) > 0;
+  // Awestruck needs a standing hostile idol beside the unit (read only
+  // when the unit has an attack on offer).
+  const tricks =
+    (lookup.cult?.frogs?.length ?? 0) > 0 ||
+    (candidates.slice(start).some((command) => command.kind === "ATTACK") &&
+      awestruckBearersV7(view, view.units, unit).length > 0);
   if (!frozen && !tricks) return;
   const kept = candidates
     .splice(start)
@@ -1592,8 +1604,6 @@ function appendPublicCultCommandsV7(
           unitId: unit.id,
           daemonUnitId: daemon.id,
         });
-  if (abilities.includes("BEHOLD") && beholdRejectionV7(view, unit) === null)
-    candidates.push({ kind: "BEHOLD", unitId: unit.id });
   if (abilities.includes("ANCHOR"))
     for (const cultist of view.units)
       if (
@@ -4241,6 +4251,12 @@ export interface SacrificePreviewV7 {
   readonly at: CoordV7;
   /** The Favour gained: the victim's value. */
   readonly favour: number;
+  /**
+   * The Cult redesign (`pulp_wars-mch9.32`): the part of `favour` lost
+   * above the cap of 30, and the Favour the viewer has afterwards (never
+   * above the cap).
+   */
+  readonly forfeited: number;
   readonly favourAfter: number;
 }
 export interface SeizePreviewV7 extends SacrificePreviewV7 {
@@ -4273,7 +4289,7 @@ export function previewSacrificeV7(
     role: victim.role,
     at: { x: victim.at.x, y: victim.at.y },
     favour,
-    favourAfter: favourOfV7(view, view.viewer.id) + favour,
+    ...favourGainPreviewV7(view, favour),
   };
 }
 
@@ -4307,7 +4323,7 @@ export function previewSeizeV7(
     role: victim.role,
     at: { x: victim.at.x, y: victim.at.y },
     favour,
-    favourAfter: favourOfV7(view, view.viewer.id) + favour,
+    ...favourGainPreviewV7(view, favour),
     holderUnitId: holder.id,
   };
 }
@@ -4323,6 +4339,8 @@ export interface OfferingPreviewV7 {
   readonly populationAfter: number;
   /** `OFFERING_FAVOUR_V7`. */
   readonly favour: number;
+  /** The part of it lost above the cap (`pulp_wars-mch9.32`). */
+  readonly forfeited: number;
   readonly favourAfter: number;
 }
 
@@ -4344,8 +4362,22 @@ export function previewOfferingV7(
     population: OFFERING_POPULATION_V7,
     populationAfter: city.population - OFFERING_POPULATION_V7,
     favour: OFFERING_FAVOUR_V7,
-    favourAfter: favourOfV7(view, view.viewer.id) + OFFERING_FAVOUR_V7,
+    ...favourGainPreviewV7(view, OFFERING_FAVOUR_V7),
   };
+}
+
+/**
+ * The Cult redesign (`pulp_wars-mch9.32`, section 6): what a gain of
+ * `amount` Favour leaves the viewer with (never above `FAVOUR_CAP_V7`) and
+ * the part of it that is lost above the cap.
+ */
+function favourGainPreviewV7(
+  view: PlayerViewV7,
+  amount: number,
+): { readonly forfeited: number; readonly favourAfter: number } {
+  const favour = favourOfV7(view, view.viewer.id);
+  const forfeited = favourForfeitedV7(favour, amount);
+  return { forfeited, favourAfter: favour + amount - forfeited };
 }
 
 /**
@@ -5156,40 +5188,75 @@ export function previewTentacleV7(
 }
 
 /**
- * The Cultists (section 8.1): the preview of an offered Behold!: the own
- * robed cultists on the eight tiles around the Idol Bearer now, which keep
- * their strands when they lose Hit Points while the idol is raised.
+ * The Cult redesign (`pulp_wars-mch9.33`, docs/product/RULESET_7_CULT_REDESIGN.md
+ * section 8.1): what a visible Idol Bearer's lasting aura does now. `stands`
+ * is whether its idol stands (no status of the disruption rule); while it
+ * does, the own units beside it (`shieldedUnitIds`, never the bearer) take
+ * half from shots of two or more tiles, and the hostile units beside it
+ * (`awestruckUnitIds`) may attack only an Idol Bearer they stand beside.
+ * Both lists are empty while the idol is down.
  */
-export interface BeholdPreviewV7 {
+export interface WardenPreviewV7 {
   readonly unitId: UnitId;
-  readonly wardedUnitIds: readonly UnitId[];
+  readonly stands: boolean;
+  readonly shieldedUnitIds: readonly UnitId[];
+  readonly awestruckUnitIds: readonly UnitId[];
 }
 
-/** Section 8.1: null unless that `BEHOLD` is offered. */
-export function previewBeholdV7(
+/** Section 8.1: null unless `unitId` is a visible Idol Bearer. */
+export function previewWardenV7(
   view: PlayerViewV7,
   unitId: UnitId,
-): BeholdPreviewV7 | null {
+): WardenPreviewV7 | null {
+  const bearer = view.units.find((unit) => unit.id === unitId && unit.hp > 0);
   if (
-    !queryPlayerCommandsV7(view).some(
-      (command) => command.kind === "BEHOLD" && command.unitId === unitId,
-    )
+    bearer === undefined ||
+    !unitRoleRuleV7(view, bearer).abilities.includes("BEHOLD")
   )
     return null;
-  const bearer = view.units.find((unit) => unit.id === unitId);
-  if (bearer === undefined) return null;
-  return {
-    unitId,
-    wardedUnitIds: view.units
-      .filter(
+  const stands = idolStandsV7(view, bearer);
+  const beside = stands
+    ? view.units.filter(
         (unit) =>
           unit.id !== bearer.id &&
-          unit.ownerId === bearer.ownerId &&
-          chebyshev(unit.at, bearer.at) === 1 &&
-          isRobedCultistV7(view, unit),
+          unit.hp > 0 &&
+          chebyshev(unit.at, bearer.at) === 1,
       )
-      .map((unit) => unit.id),
+    : [];
+  return {
+    unitId,
+    stands,
+    shieldedUnitIds: beside
+      .filter((unit) => unit.ownerId === bearer.ownerId)
+      .map((unit) => unit.id)
+      .sort((left, right) => left - right),
+    awestruckUnitIds: beside
+      .filter(
+        (unit) =>
+          !isNeutralOwnerV7(unit.ownerId) &&
+          publicHostile(view, unit.ownerId, bearer.ownerId),
+      )
+      .map((unit) => unit.id)
+      .sort((left, right) => left - right),
   };
+}
+
+/**
+ * The Cult redesign (`pulp_wars-mch9.33`, section 8.1), Awestruck: the Idol
+ * Bearers whose standing idol binds the visible unit `unitId` now (it may
+ * `ATTACK` only one of them), in unit-ID order; empty when it is free.
+ * (Pick Me!'s `publicBindingTauntsV7`, the retired Chosen's, was its
+ * forerunner.)
+ */
+export function publicAwestruckBearersV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+): readonly UnitId[] {
+  const unit = view.units.find(
+    (candidate) => candidate.id === unitId && candidate.hp > 0,
+  );
+  if (unit === undefined) return [];
+  return awestruckBearersV7(view, view.units, unit).map((bearer) => bearer.id);
 }
 
 /**
@@ -10662,8 +10729,11 @@ function publicCombatPreviewCore(
     // attack.
     unitIsIceboundV7(view, attacker) ||
     // The Cultists (`pulp_wars-mch9.8`, section 9.1): a frog does not
-    // attack.
-    unitIsFrogV7(view, attacker)
+    // attack; and (the Cult redesign, `pulp_wars-mch9.33`, section 8.1) a
+    // unit beside a standing hostile idol attacks only an Idol Bearer
+    // beside it (Awestruck).
+    unitIsFrogV7(view, attacker) ||
+    awestruckRefusingAttackV7(view, view.units, attacker, target.id) !== null
   )
     return null;
   // The naval branch (docs/product/RULESET_7_NAVAL_BRANCH.md sections 5.2
@@ -10913,9 +10983,14 @@ function publicCombatPreviewCore(
   // Blizzard (her seat's units only).
   const blizzardHalved =
     distance >= 2 && blizzardProtectsV7(view, publicWitchesV7(view), target);
-  const formulaDefenderDamage = blizzardHalved
-    ? blizzardHalvedDamageV7(rawDefenderDamage)
-    : rawDefenderDamage;
+  // The Cult redesign (`pulp_wars-mch9.33`, section 8.1): the shield wall
+  // of a visible standing idol beside the target.
+  const idolHalved =
+    !blizzardHalved && idolShieldsV7(view, view.units, target, distance);
+  const formulaDefenderDamage =
+    blizzardHalved || idolHalved
+      ? blizzardHalvedDamageV7(rawDefenderDamage)
+      : rawDefenderDamage;
   // The Martian revision section 5.3: the Shield absorbs the hit first.
   const defenderShield = shieldOfV7(view.shields, target.id);
   // The Martian pass, correction: a whole Force Field holds one attack.
@@ -11281,6 +11356,7 @@ function publicCombatPreviewCore(
     rockfallApplied,
     plantedApplied,
     blizzardHalved,
+    idolHalved,
     snowCover,
     sweep,
     // Section 10.10: a hidden Witch next to an Ice Folk defender may change

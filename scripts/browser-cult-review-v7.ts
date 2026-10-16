@@ -18,7 +18,8 @@ import { ruleset7FixtureMountExpressionV7 } from "./browser-undead-fixture-v7";
  * rival), the candles in flight after a Seizure, and the Cult's hue beside
  * the Plague chip and the owned-technology tint. The channel (bead
  * `pulp_wars-mch9.18`, section 3.8; scenes `channel`, `summon`, `aim`,
- * `behold`, `boo`, `endturn`, `rival`, `grounds`, `wild`, `cues`, `cost`):
+ * `boo`, `endturn`, `rival`, `grounds`, `wild`, `cues`, `cost`; `behold` went with
+ * the Behold! command, the Cult redesign, `pulp_wars-mch9.33`):
  * the strands, candles, pips, grip and idol ring at rest and enlarged, each
  * aimed action, the End Turn question, a rival's view, the strands on
  * Grass, Snow and water, the Unbound and Furious marks on a hand-changed
@@ -144,7 +145,6 @@ try {
     if (wanted("channel")) await channelBoard(connection, size);
     if (wanted("summon")) await summonAim(connection, size);
     if (wanted("aim")) await channelAims(connection, size);
-    if (wanted("behold")) await behold(connection, size);
     if (wanted("boo")) await boo(connection, size);
     if (wanted("endturn")) await endTurn(connection, size);
     if (wanted("rival")) await rival(connection, size);
@@ -436,19 +436,6 @@ async function channelAims(connection: Connection, size: Size): Promise<void> {
     await record(connection, `${size}${kind}Done`);
     await capture(connection, `${kind}-done-${size}.png`);
   }
-}
-
-/** Behold!: the ring it would raise, then the idol raised. */
-async function behold(connection: Connection, size: Size): Promise<void> {
-  await mount(connection, "cultChannelUiFixtureV7");
-  const at = await channelAt(connection);
-  await activate(connection, at.bearer as Coord);
-  await record(connection, `${size}BeholdOffered`);
-  await capture(connection, `behold-offered-${size}.png`);
-  await click(connection, "cult-behold");
-  await delay(900);
-  await record(connection, `${size}BeholdRaised`);
-  await capture(connection, `behold-raised-${size}.png`);
 }
 
 /** Boo!: where each unit jumps, and the one confirmation. */
@@ -985,7 +972,7 @@ async function cost(connection: Connection): Promise<void> {
       const host = ${REVIEW}.boardHost;
       const draw = host.__cultOriginalUpdate;
       const model = host.__cultSeenModel;
-      const bare = { ...model, view: { ...model.view, cult: { ...model.view.cult, strands: [], grips: [], idols: [], daemons: [] } } };
+      const bare = { ...model, view: { ...model.view, cult: { ...model.view.cult, strands: [], grips: [], daemons: [] } } };
       const time = (subject) => { const samples = []; for (let round = 0; round < 7; round += 1) { const start = performance.now(); for (let index = 0; index < 100; index += 1) draw({ ...subject }); samples.push((performance.now() - start) / 100); } samples.sort((a, b) => a - b); return samples[3]; };
       time(model); time(bare);
       const withChannel = time(model);

@@ -9,6 +9,7 @@ import {
   CULT_BASELINE_V1_TREE,
   DOMAIN_EVENT_KIND_ORDER_V7,
   FACTION_IDS_V7,
+  FAVOUR_CAP_V7,
   FAVOUR_SOURCES_V7,
   FLAWLESS_BREAKING_EVENT_KINDS_V7,
   CULT_STARTING_FAVOUR_V7,
@@ -152,14 +153,14 @@ describe("the Cult's Favour: identity", () => {
   // (`pulp_wars-mch9.5`) 7r74, and the Cult's Unbound (`pulp_wars-mch9.6`)
   // 7r75, so 7r72 is a prior identity.
   it("was 7r72 after 7r71, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r88");
-    expect(PRIOR_RULESET_7_IDS.slice(-17, -15)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r89");
+    expect(PRIOR_RULESET_7_IDS.slice(-18, -16)).toEqual([
       "pulp-wars-poc-7r71",
       "pulp-wars-poc-7r72",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r88.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-17, -15)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r89.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-18, -16)).toEqual([
       "pulpWars.save.v7r71.current",
       "pulpWars.save.v7r72.current",
     ]);
@@ -216,14 +217,14 @@ describe("the Cult's Favour: identity", () => {
     );
     const seized = playV7(state, seize(state, at(5, 2), at(5, 3))).state;
     const offered = playV7(seized, offering(seized)).state;
-    expect(favour(offered, 0)).toBe(3 + 18 + 3);
+    expect(favour(offered, 0)).toBe(3 + 18 + 6);
     expect(cityOfferedPopulationV7(cityOfV7(offered, 0))).toBe(2);
     // Both survive the End Turn and the other seat's turn.
     const ended = applyOkV7(offered, seatIdV7(offered, 0), {
       kind: "END_TURN",
     }).state;
     const back = applyOkV7(ended, seatIdV7(ended, 1), { kind: "END_TURN" });
-    expect(favour(back.state, 0)).toBe(24);
+    expect(favour(back.state, 0)).toBe(27);
     expect(cityOfV7(back.state, 0)).toMatchObject({
       offeredPopulation: 2,
       population: 0,
@@ -246,7 +247,6 @@ describe("the Cult's Favour: identity", () => {
       ],
       strands: [],
       grips: [],
-      idols: [],
       rituals: [],
       cowed: [],
       frogs: [],
@@ -351,7 +351,7 @@ describe("the Cult's Favour: the registry (sections 4, 5, 8.2, and 11)", () => {
       OFFERING_POPULATION_V7,
       OFFERING_FAVOUR_V7,
       OFFERING_MINIMUM_LEVEL_V7,
-    ]).toEqual([5, 2, 2, 3, 2]);
+    ]).toEqual([5, 2, 2, 6, 2]);
     expect(FAVOUR_SOURCES_V7).toEqual([
       "SACRIFICE",
       "SEIZE",
@@ -361,6 +361,8 @@ describe("the Cult's Favour: the registry (sections 4, 5, 8.2, and 11)", () => {
       "DAEMON_KILL",
       // `pulp_wars-mch9.7` (section 7.3): the Great Summoning's meal.
       "CONSUMPTION",
+      // The Cult redesign (`pulp_wars-mch9.32`): the Summoners' trickle.
+      "TRICKLE",
     ]);
   });
 
@@ -401,10 +403,10 @@ describe("the Cult's Favour: the registry (sections 4, 5, 8.2, and 11)", () => {
       "STAMPEDE",
       "SACRIFICE",
       "SEIZE",
-      // The channel (`pulp_wars-mch9.5`).
+      // The channel (`pulp_wars-mch9.5`; BEHOLD went with the Cult
+      // redesign's warden, `pulp_wars-mch9.33`).
       "SUMMON",
       "CHANNEL",
-      "BEHOLD",
       "ANCHOR",
       "BOO",
       // Rituals and the Herald (`pulp_wars-mch9.7`).
@@ -493,7 +495,6 @@ describe("the Cult's Favour: the pool (section 3)", () => {
       favour: [],
       strands: [],
       grips: [],
-      idols: [],
       rituals: [],
       cowed: [],
       frogs: [],
@@ -530,7 +531,6 @@ describe("the Cult's Favour: the pool (section 3)", () => {
       favour: [],
       strands: [],
       grips: [],
-      idols: [],
       rituals: [],
       cowed: [],
       frogs: [],
@@ -541,7 +541,6 @@ describe("the Cult's Favour: the pool (section 3)", () => {
       favour: [],
       strands: [],
       grips: [],
-      idols: [],
       daemons: [],
       rituals: [],
       cowed: [],
@@ -574,7 +573,6 @@ describe("the Cult's Favour: the pool (section 3)", () => {
       cult: {
         strands: [],
         grips: [],
-        idols: [],
         rituals: [],
         cowed: [],
         frogs: [],
@@ -642,7 +640,6 @@ describe("the Cult's Favour: the pool (section 3)", () => {
       favour: [],
       strands: [],
       grips: [],
-      idols: [],
       rituals: [],
       cowed: [],
       frogs: [],
@@ -683,6 +680,7 @@ describe("the Cult's Sacrifice (section 5.1)", () => {
       role: "FIGHTER",
       at: at(5, 3),
       favour: 2,
+      forfeited: 0,
       favourAfter: 2,
     });
     const result = playV7(state, command);
@@ -702,6 +700,7 @@ describe("the Cult's Sacrifice (section 5.1)", () => {
         playerId: actor,
         source: "SACRIFICE",
         amount: 2,
+        forfeited: 0,
         favour: 2,
       },
     ]);
@@ -775,17 +774,46 @@ describe("the Cult's Sacrifice (section 5.1)", () => {
     }
   });
 
-  it("adds to the Favour the seat has, with no maximum", () => {
-    const state = withFavourV7(field("JUGGERNAUT"), 0, 1_000_000);
+  it("adds to the Favour the seat has, up to the cap of 30 (the Cult redesign)", () => {
+    expect(FAVOUR_CAP_V7).toBe(30);
+    const below = withFavourV7(field("JUGGERNAUT"), 0, 10);
+    expect(
+      favour(playV7(below, sacrifice(below, at(5, 2), at(5, 3))).state, 0),
+    ).toBe(22);
+    // An Initiate (2) at 29: 30, and the 1 above the cap is lost; the
+    // preview and the event say so.
+    const state = withFavourV7(field("FIGHTER"), 0, 29);
+    const summoner = unitAtV7(state, at(5, 2));
+    const victim = unitAtV7(state, at(5, 3));
+    expect(
+      previewSacrificeV7(
+        viewForV7(state, seatIdV7(state, 0)),
+        summoner.id,
+        victim.id,
+      ),
+    ).toMatchObject({ favour: 2, forfeited: 1, favourAfter: 30 });
     const result = playV7(state, sacrifice(state, at(5, 2), at(5, 3)));
-    expect(favour(result.state, 0)).toBe(1_000_012);
+    expect(favour(result.state, 0)).toBe(30);
     expect(result.events.at(-1)).toEqual({
       kind: "FAVOUR_GAINED",
       playerId: seatIdV7(state, 0),
       source: "SACRIFICE",
-      amount: 12,
-      favour: 1_000_012,
+      amount: 2,
+      forfeited: 1,
+      favour: 30,
     });
+    // At the cap a Sacrifice is still legal and pays nothing.
+    const full = withFavourV7(field("JUGGERNAUT"), 0, 30);
+    const fed = playV7(full, sacrifice(full, at(5, 2), at(5, 3)));
+    expect(favour(fed.state, 0)).toBe(30);
+    expect(fed.events.at(-1)).toMatchObject({
+      kind: "FAVOUR_GAINED",
+      amount: 12,
+      forfeited: 12,
+      favour: 30,
+    });
+    // A state never holds more than the cap.
+    expect(() => withFavourV7(field("FIGHTER"), 0, 31)).toThrow();
   });
 
   it("may follow the Summoner's Move, and a hurt or exhausted victim is as good", () => {
@@ -1012,6 +1040,7 @@ describe("the Cult's Sacrifice (section 5.1)", () => {
         playerId: seatIdV7(state, 0),
         source: "SACRIFICE",
         amount: 2,
+        forfeited: 0,
         favour: 2,
       },
     ]);
@@ -1060,6 +1089,7 @@ describe("the Cult's Seize (section 5.2)", () => {
       role: "FIGHTER",
       at: at(5, 3),
       favour: 4,
+      forfeited: 0,
       favourAfter: 4,
       holderUnitId: holder.id,
     });
@@ -1082,6 +1112,7 @@ describe("the Cult's Seize (section 5.2)", () => {
         playerId: actor,
         source: "SEIZE",
         amount: 4,
+        forfeited: 0,
         favour: 4,
       },
     ]);
@@ -1439,7 +1470,7 @@ describe("the Cult's Offering (section 5.3)", () => {
       farms,
     );
 
-  it("gives up 2 population for good and pays 3 Favour, as the city action", () => {
+  it("gives up 2 population for good and pays 6 Favour, as the city action", () => {
     const state = grown();
     const city = cityOfV7(state, 0);
     expect([city.level, city.population]).toEqual([2, 2]);
@@ -1450,8 +1481,9 @@ describe("the Cult's Offering (section 5.3)", () => {
       cityId: city.id,
       population: 2,
       populationAfter: 0,
-      favour: 3,
-      favourAfter: 3,
+      favour: 6,
+      forfeited: 0,
+      favourAfter: 6,
     });
     const income = cityIncomeV7(state, city);
     const result = playV7(state, command);
@@ -1462,7 +1494,7 @@ describe("the Cult's Offering (section 5.3)", () => {
         cityId: city.id,
         at: city.at,
         population: 2,
-        favour: 3,
+        favour: 6,
       },
       {
         kind: "CITY_ECONOMY_CHANGED",
@@ -1478,8 +1510,9 @@ describe("the Cult's Offering (section 5.3)", () => {
         kind: "FAVOUR_GAINED",
         playerId: actor,
         source: "OFFERING",
-        amount: 3,
-        favour: 3,
+        amount: 6,
+        forfeited: 0,
+        favour: 6,
       },
     ]);
     const after = cityOfV7(result.state, 0);
@@ -1491,7 +1524,7 @@ describe("the Cult's Offering (section 5.3)", () => {
       cityActionAvailable: false,
     });
     expect(cityOfferedPopulationV7(after)).toBe(2);
-    expect(favour(result.state, 0)).toBe(3);
+    expect(favour(result.state, 0)).toBe(6);
     // Its income is what it was (the population is not below 0).
     expect(cityIncomeV7(result.state, after)).toBe(income);
     // The city action is spent: nothing is trained there this turn.
@@ -1688,14 +1721,15 @@ describe("the Cult's Favour: events, flawless, and the dock's stand-in", () => {
         cityId: 3 as never,
         at: at(1, 1),
         population: 2,
-        favour: 3,
+        favour: 6,
       },
       {
         kind: "FAVOUR_GAINED",
         playerId: 1 as never,
         source: "OFFERING",
-        amount: 3,
-        favour: 6,
+        amount: 6,
+        forfeited: 0,
+        favour: 9,
       },
       { kind: "UNIT_DIED", unitId: 6 as never, cause: "SACRIFICED" },
     ];
@@ -1716,12 +1750,19 @@ describe("the Cult's Favour: events, flawless, and the dock's stand-in", () => {
       { ...raw[1], role: "JUGGERNAUT" },
       { ...raw[1], favour: 9 },
       { ...raw[2], population: 3 },
-      { ...raw[2], favour: 4 },
+      // The Offering pays 6 (3 before the Cult redesign, `pulp_wars-mch9.32`).
+      { ...raw[2], favour: 3 },
       { ...raw[3], source: "GIFT" },
       // Martyr retired with the Chosen (`pulp_wars-mch9.31`).
       { ...raw[3], source: "MARTYR" },
       { ...raw[3], amount: 0 },
-      { ...raw[3], amount: 7 },
+      { ...raw[3], amount: 10 },
+      // The cap (`pulp_wars-mch9.32`): never above 30, and only a gain that
+      // reached it forfeits anything, never more than it paid.
+      { ...raw[3], favour: 31 },
+      { ...raw[3], forfeited: 1 },
+      { ...raw[3], forfeited: 7, favour: 30 },
+      { ...raw[3], forfeited: -1 },
       { ...raw[3], unitId: 6 },
     ];
     for (const event of bad)
@@ -1751,7 +1792,7 @@ describe("the Cult's Favour: events, flawless, and the dock's stand-in", () => {
     expect(buttons.map((button) => [button.label, button.chip])).toEqual([
       ["Sacrifice Thing in the Cellar", "+12 Favour"],
       ["Seize Knight", "+18 Favour"],
-      ["Offering", "+3 Favour · −2 population"],
+      ["Offering", "+6 Favour · −2 population"],
     ]);
     for (const button of buttons) {
       expect(`${button.label} ${button.chip} ${button.tooltip}`).not.toMatch(

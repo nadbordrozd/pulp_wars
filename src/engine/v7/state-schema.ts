@@ -32,6 +32,7 @@ import {
   effectiveRoleRuleV7,
   eggMaxHpOptionsV7,
   factionHasFavourV7,
+  FAVOUR_CAP_V7,
   factionTreeIdV7,
   gravesEnabledV7,
   growthStageForKillsV7,
@@ -2118,9 +2119,9 @@ function ninthUnitValid(
  * The Cultists (docs/product/RULESET_7_CULTISTS.md sections 3, 6.2, 8.1, and
  * 8.4): the shape of `cult`: the Favour entries, strictly ascending by
  * player, each a positive whole number; the strands, strictly ascending by
- * cultist; the grips, strictly ascending by Thing, no cultist gripped twice;
- * and the raised idols, strictly ascending. The cross references are
- * checked by `cultValid`.
+ * cultist; and the grips, strictly ascending by Thing, no cultist gripped
+ * twice. The cross references are checked by `cultValid`. (The raised
+ * idols went with the Cult redesign, `pulp_wars-mch9.33`.)
  */
 function parseCult(input: unknown): CultStateV7 | null {
   if (
@@ -2130,7 +2131,6 @@ function parseCult(input: unknown): CultStateV7 | null {
       "frogs",
       "grips",
       "hexCooldowns",
-      "idols",
       "rituals",
       "strands",
       "tentacles",
@@ -2140,7 +2140,6 @@ function parseCult(input: unknown): CultStateV7 | null {
     !isDenseArrayV7(input.favour) ||
     !isDenseArrayV7(input.strands) ||
     !isDenseArrayV7(input.grips) ||
-    !isDenseArrayV7(input.idols) ||
     !isDenseArrayV7(input.rituals) ||
     !isDenseArrayV7(input.cowed)
   )
@@ -2153,6 +2152,8 @@ function parseCult(input: unknown): CultStateV7 | null {
     if (
       playerId === null ||
       !isPositiveSafeIntegerV7(candidate.favour) ||
+      // The Cult redesign (`pulp_wars-mch9.32`): never above the cap.
+      candidate.favour > FAVOUR_CAP_V7 ||
       (prior !== undefined && prior.playerId >= playerId)
     )
       return null;
@@ -2190,14 +2191,6 @@ function parseCult(input: unknown): CultStateV7 | null {
     )
       return null;
     grips.push({ thingUnitId, cultistUnitId });
-  }
-  const idols: UnitId[] = [];
-  for (const candidate of input.idols) {
-    const unitId = parseUnitIdV7(candidate);
-    const prior = idols.at(-1);
-    if (unitId === null || (prior !== undefined && prior >= unitId))
-      return null;
-    idols.push(unitId);
   }
   // `pulp_wars-mch9.7` (section 7.1): the rituals, strictly ascending by
   // leader; the chanters strictly ascending, never the leader, at most the
@@ -2326,7 +2319,6 @@ function parseCult(input: unknown): CultStateV7 | null {
     favour,
     strands,
     grips,
-    idols,
     rituals,
     cowed,
     frogs,
@@ -2343,8 +2335,7 @@ function parseCult(input: unknown): CultStateV7 | null {
  * the board that has a Control, both of the same Cult seat (or, section
  * 6.5, the daemon is Unbound: a strand toward binding it). Section 8.4:
  * every grip is of a land-form unit with Anchor on a cultist that holds a
- * strand, of the same seat, next to it. Section 8.1: every raised idol is
- * of a land-form unit with Behold! on the board. Section 7.1
+ * strand, of the same seat, next to it. Section 7.1
  * (`pulp_wars-mch9.7`): every ritual is of an active Cult seat, its leader
  * and chanters are land-form robed cultists of that seat on the board, the
  * chanters next to the leader and at least as many as the rite needs; a
@@ -2382,7 +2373,6 @@ function cultValid(
   if (
     value.cult.strands.length === 0 &&
     value.cult.grips.length === 0 &&
-    value.cult.idols.length === 0 &&
     value.cult.rituals.length === 0
   )
     return true;
@@ -2466,15 +2456,6 @@ function cultValid(
       ) !== 1 ||
       !unitRoleRuleV7(roster, thing).abilities.includes("ANCHOR") ||
       !value.cult.strands.some((strand) => strand.cultistUnitId === cultist.id)
-    )
-      return false;
-  }
-  for (const unitId of value.cult.idols) {
-    const bearer = unitById.get(unitId);
-    if (
-      bearer === undefined ||
-      bearer.form !== "LAND" ||
-      !unitRoleRuleV7(roster, bearer).abilities.includes("BEHOLD")
     )
       return false;
   }

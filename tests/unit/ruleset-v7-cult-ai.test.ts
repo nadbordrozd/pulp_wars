@@ -907,7 +907,8 @@ describe("the Cult seat: the back row out of reach", () => {
 
 describe("the Cult seat: legal, deterministic turns on what A1 covers", () => {
   // Bead A2 (`pulp_wars-mch9.10`) plays Sacrifice, Seize, Offering, Summon,
-  // Channel, Behold!, and Anchor by the Cult seat's plan
+  // Channel and Anchor (Behold! until the Cult redesign made it an aura,
+  // `pulp_wars-mch9.33`) by the Cult seat's plan
   // (tests/unit/ruleset-v7-cult-channel-ai.test.ts), and bead A3
   // (`pulp_wars-mch9.11`) the rituals, Proclaim, Boo!, and the tricks
   // (tests/unit/ruleset-v7-cult-rituals-ai.test.ts): every one of them is a
@@ -918,7 +919,6 @@ describe("the Cult seat: legal, deterministic turns on what A1 covers", () => {
     "OFFERING",
     "SUMMON",
     "CHANNEL",
-    "BEHOLD",
     "ANCHOR",
     "BOO",
     "BEGIN_RITUAL",

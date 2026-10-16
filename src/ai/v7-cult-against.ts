@@ -86,8 +86,8 @@ export function setCultAgainstPolicyOptionsV7(
  * the test).
  */
 export const CULT_AGAINST_DAEMON_VALUE_V7 = Object.freeze({
-  HORROR: 5,
-  HERALD: 20,
+  HORROR: 4,
+  HERALD: 18,
 });
 /** The strategic value of one point of a daemon's value. */
 export const CULT_AGAINST_VALUE_SCALE_V7 = 4;
@@ -148,7 +148,11 @@ export interface CultAgainstChannellerV7 {
   readonly daemon: CultAgainstDaemonV7;
   /** What its strand counts: 1, or 3 under a grip. */
   readonly weight: number;
-  /** The raised idols that ward it: only a kill breaks its strand. */
+  /**
+   * The raised idols that warded it (only a kill broke its strand). Always
+   * empty since the Cult redesign made Behold! the warden's aura, which
+   * keeps no strand (`pulp_wars-mch9.33`); A-R4 reads the new warden.
+   */
   readonly wardens: readonly UnitId[];
 }
 
@@ -245,10 +249,8 @@ export function cultAgainstFactsV7(
     if (entry.role === "HERALD") heralds.add(unit.id);
   }
 
-  const idols = cult.idols.flatMap((unitId) => {
-    const bearer = unitsById.get(unitId);
-    return foe(bearer) ? [bearer] : [];
-  });
+  // No idol keeps a strand since the Cult redesign (`pulp_wars-mch9.33`).
+  const idols: readonly PublicUnitV7[] = [];
   const channellers = new Map<UnitId, CultAgainstChannellerV7>();
   const wardens = new Map<UnitId, CultAgainstChannellerV7[]>();
   for (const strand of cult.strands) {

@@ -263,11 +263,15 @@ import {
   SUMMONER_SUPPORT_UNLOCK_TEXT_V7,
 } from "../src/render/cult-presentation-v7";
 import {
+  FAVOUR_CAP_V7,
+  HERALD_HUNGER_FAVOUR_V7,
   factionHasFavourV7,
+  heraldHungerDueV7,
   favourOfV7,
   previewAnchorV7,
   previewBeginRitualV7,
-  previewBeholdV7,
+  previewWardenV7,
+  publicAwestruckBearersV7,
   previewBooV7,
   previewChannelV7,
   previewJoinChantV7,
@@ -1084,8 +1088,6 @@ export function textPlayCommandIdV7(command: CommandV7): string {
       return `u${command.unitId}.summon.u${command.helperUnitId}.${xyV7(command.at)}`;
     case "CHANNEL":
       return `u${command.unitId}.channel.u${command.daemonUnitId}`;
-    case "BEHOLD":
-      return `u${command.unitId}.behold`;
     case "ANCHOR":
       return `u${command.unitId}.anchor.u${command.cultistUnitId}`;
     case "BOO":
@@ -1574,6 +1576,9 @@ function combatTextV7(
   )
     parts.push("Overrun ends: it does not advance after this kill");
   if (preview.push !== "BLOCKED") parts.push(`push ${preview.push}`);
+  // The Cult redesign (`pulp_wars-mch9.33`): the warden's shield wall.
+  if (preview.idolHalved === true)
+    parts.push("HALVED by the Idol Bearer beside it");
   // The giants' signatures (`pulp_wars-w49.30`): Crushing Shove, the Siege
   // Hammer, and the Glacial Smash.
   if (preview.crush !== undefined && preview.crush !== "NONE") {
@@ -2029,7 +2034,7 @@ function describeCommandV7(
         command.unitId,
         command.victimUnitId,
       );
-      return `SACRIFICE your ${context.memory.tag(command.victimUnitId)}: it is removed for good (no kill for anyone, no Grave; its city slot frees)${preview === null ? "" : ` | +${preview.favour} Favour, its value (favour ${preview.favourAfter - preview.favour}->${preview.favourAfter})`} | not a Loss in the score, but it ends a flawless game`;
+      return `SACRIFICE your ${context.memory.tag(command.victimUnitId)}: it is removed for good (no kill for anyone, no Grave; its city slot frees)${preview === null ? "" : ` | +${preview.favour} Favour, its value (favour ${preview.favourAfter - preview.favour + preview.forfeited}->${preview.favourAfter}${preview.forfeited > 0 ? `, ${preview.forfeited} lost above the cap` : ""})`} | not a Loss in the score, but it ends a flawless game`;
     }
     case "SEIZE": {
       const preview = previewSeizeV7(
@@ -2037,14 +2042,14 @@ function describeCommandV7(
         command.unitId,
         command.victimUnitId,
       );
-      return `SEIZE ${context.memory.tag(command.victimUnitId)}: it dies, a kill for this unit (no Grave, no blast, no rising)${preview === null ? "" : ` | held down by ${context.memory.tag(preview.holderUnitId)} | +${preview.favour} Favour, twice its value (favour ${preview.favourAfter - preview.favour}->${preview.favourAfter})`}`;
+      return `SEIZE ${context.memory.tag(command.victimUnitId)}: it dies, a kill for this unit (no Grave, no blast, no rising)${preview === null ? "" : ` | held down by ${context.memory.tag(preview.holderUnitId)} | +${preview.favour} Favour, twice its value (favour ${preview.favourAfter - preview.favour + preview.forfeited}->${preview.favourAfter}${preview.forfeited > 0 ? `, ${preview.forfeited} lost above the cap` : ""})`}`;
     }
     case "OFFERING": {
       const preview = previewOfferingV7(view, command.cityId);
       const city = view.cities.find(
         (candidate) => candidate.id === command.cityId,
       );
-      return `OFFERING${preview === null ? "" : `: the city gives up ${preview.population} population for good${city === undefined ? "" : ` (pop ${city.population}/${city.level + 1} -> ${preview.populationAfter}/${city.level + 1})`} | +${preview.favour} Favour (favour ${preview.favourAfter - preview.favour}->${preview.favourAfter})`} | uses the city action`;
+      return `OFFERING${preview === null ? "" : `: the city gives up ${preview.population} population for good${city === undefined ? "" : ` (pop ${city.population}/${city.level + 1} -> ${preview.populationAfter}/${city.level + 1})`} | +${preview.favour} Favour (favour ${preview.favourAfter - preview.favour + preview.forfeited}->${preview.favourAfter}${preview.forfeited > 0 ? `, ${preview.forfeited} lost above the cap` : ""})`} | uses the city action`;
     }
     // The channel (`pulp_wars-mch9.5`, RULESET_7_CULTISTS.md sections 6
     // and 8).
@@ -2072,10 +2077,6 @@ function describeCommandV7(
       if (unbound)
         return `BIND AGAIN ${context.memory.tag(command.daemonUnitId)} (UNBOUND)${preview === null ? "" : `: your strands this turn ${preview.strandsBefore}/${preview.control} -> ${preview.strandsAfter}/${preview.control}${preview.binds ? ": it is YOURS at once, and cannot act until your next turn" : " (still short: it stays UNBOUND until they reach its Control in one turn)"}`} | the strand breaks if this unit is hurt, moved, given a status, or taken before your next turn | uses its action`;
       return `CHANNEL ${context.memory.tag(command.daemonUnitId)}${preview === null ? "" : `: strands ${preview.strandsBefore}/${preview.control} -> ${preview.strandsAfter}/${preview.control}${preview.holds ? "" : " (still short: it is UNBOUND at your next turn start)"}`} | the strand breaks if this unit is hurt, moved, given a status, or taken before your next turn | uses its action`;
-    }
-    case "BEHOLD": {
-      const preview = previewBeholdV7(view, command.unitId);
-      return `BEHOLD: raise the idol until your next turn start${preview === null ? "" : ` | wards ${preview.wardedUnitIds.length === 0 ? "nobody yet" : preview.wardedUnitIds.map((unitId) => context.memory.tag(unitId)).join(", ")}`} (your robed cultists beside it keep their strands when they lose hp; a move, a status, or a kill still breaks them) | it drops when this unit is hit | uses its action (it does not channel this turn)`;
     }
     case "ANCHOR": {
       const preview = previewAnchorV7(
@@ -2448,13 +2449,13 @@ function eventTextV7(
       break;
     case "FAVOUR_GAINED":
       lines.push(
-        `FAVOUR ${seatLabelV7(context.view, event.playerId)} +${event.amount} from ${FAVOUR_SOURCE_LABELS_V7[event.source]} (now ${event.favour})`,
+        `FAVOUR ${seatLabelV7(context.view, event.playerId)} +${event.amount} from ${FAVOUR_SOURCE_LABELS_V7[event.source]} (now ${event.favour}/${FAVOUR_CAP_V7}${event.forfeited > 0 ? `; ${event.forfeited} lost above the cap` : ""})`,
       );
       break;
     // The channel (`pulp_wars-mch9.5`).
     case "FAVOUR_SPENT":
       lines.push(
-        `FAVOUR ${seatLabelV7(context.view, event.playerId)} -${event.amount} for ${FAVOUR_PURPOSE_LABELS_V7[event.purpose]} (now ${event.favour})`,
+        `FAVOUR ${seatLabelV7(context.view, event.playerId)} -${event.amount} for ${FAVOUR_PURPOSE_LABELS_V7[event.purpose]} (now ${event.favour}/${FAVOUR_CAP_V7})`,
       );
       break;
     case "DAEMON_SUMMONED":
@@ -2477,14 +2478,6 @@ function eventTextV7(
         notes.push(
           `STRAND BROKEN ${context.memory.tag(event.unitId)} (${DISRUPTION_CAUSE_LABELS_V7[event.cause]})`,
         );
-      break;
-    case "IDOL_RAISED":
-      lines.push(`IDOL RAISED by ${context.memory.tag(event.unitId)}`);
-      break;
-    case "IDOL_DROPPED":
-      lines.push(
-        `IDOL DROPPED ${context.memory.tag(event.unitId)}: ${event.cause === "EXPIRED" ? "its turn is over" : DISRUPTION_CAUSE_LABELS_V7[event.cause]}`,
-      );
       break;
     case "ANCHOR_GRIPPED":
       lines.push(
@@ -2532,11 +2525,11 @@ function eventTextV7(
       break;
     case "DAEMON_UNBOUND":
       lines.push(
-        `UNBOUND ${context.memory.tag(event.unitId)} of ${seatLabelV7(context.view, event.summonerPlayerId)}: strands ${event.strands}/${event.control}; it belongs to nobody now and attacks the nearest unit, friend or foe, at once and after every round`,
+        `UNBOUND ${context.memory.tag(event.unitId)} of ${seatLabelV7(context.view, event.summonerPlayerId)}: ${event.reason === "HUNGER" ? `its Hunger went unpaid (${HERALD_HUNGER_FAVOUR_V7} Favour)` : event.reason === "ELIMINATED" ? "its seat is out of the game" : `strands ${event.strands}/${event.control}`}; it belongs to nobody now and attacks the nearest unit, friend or foe, at once and after every round`,
       );
       notes.push(
         event.summonerPlayerId === me
-          ? `UNBOUND ${context.memory.tag(event.unitId)} (strands ${event.strands}/${event.control}): yours no more`
+          ? `UNBOUND ${context.memory.tag(event.unitId)} (${event.reason === "HUNGER" ? "hungry" : `strands ${event.strands}/${event.control}`}): yours no more`
           : `SAW UNBOUND ${context.memory.tag(event.unitId)}`,
       );
       break;
@@ -3010,7 +3003,7 @@ export const TEXT_PLAY_LABS_V7: Readonly<Record<string, string>> = {
   // The Cult's sixth engine bead (`pulp_wars-mch9.8`): the one lab played
   // as the Cultists, on the same land. Built and checked; not played yet.
   LAB_CULT_MID:
-    "YOU PLAY THE CULTISTS in an even middle game against the Human AI: five cities a side (a level-4 capital, two level-3, two level-2 at the front, 15c a turn each), every city with Forest and Fertile Ground in its land and the three larger ones with Ore and a Lumber Camp or two; you can train every Cult unit and hold every rite (fourteen technologies, The Stars Are Right among them; not Harvest Rites) and hold 6 Initiates, 3 Idol Bearers, 2 Familiars, 3 Hexers, 2 Summoners and a Stargazer (17 units), 35c in hand on the first turn, 12 Favour (a Horror costs 5, the Great Summoning 20) and two free unit slots (one in the capital, one in the northern level-3 city); the Humans hold 3 Champions, 3 Marksmen, 2 Catapults, 2 Knights, 2 Guards and 5 Fighters (17 units) at the start (and 30c on their first turn, which buys more), a walled capital and a walled level-3 city, and Forest cover; you start with no daemon: your two Summoners stand side by side",
+    "YOU PLAY THE CULTISTS in an even middle game against the Human AI: five cities a side (a level-4 capital, two level-3, two level-2 at the front, 15c a turn each), every city with Forest and Fertile Ground in its land and the three larger ones with Ore and a Lumber Camp or two; you can train every Cult unit and hold every rite (fourteen technologies, The Stars Are Right among them; not Harvest Rites) and hold 6 Initiates, 3 Idol Bearers, 2 Familiars, 3 Hexers, 2 Summoners and a Stargazer (17 units), 35c in hand on the first turn, 12 Favour (a Horror costs 4, the Great Summoning 18; Favour is capped at 30) and two free unit slots (one in the capital, one in the northern level-3 city); the Humans hold 3 Champions, 3 Marksmen, 2 Catapults, 2 Knights, 2 Guards and 5 Fighters (17 units) at the start (and 30c on their first turn, which buys more), a walled capital and a walled level-3 city, and Forest cover; you start with no daemon: your two Summoners stand side by side",
 };
 
 function commandLabV7(args: ArgsV7): string {
@@ -3756,7 +3749,20 @@ function unitStatusV7(view: PlayerViewV7, unit: PublicUnitV7): string {
         ? `grips u${grip.cultistUnitId}`
         : `gripped by u${grip.thingUnitId} (strand counts three)`,
     );
-  if (view.cult.idols.includes(unit.id)) parts.push("idol raised");
+  // The Cult redesign (`pulp_wars-mch9.33`): the warden's lasting aura,
+  // and the units it holds Awestruck.
+  const warden = previewWardenV7(view, unit.id);
+  if (warden !== null)
+    parts.push(
+      warden.stands
+        ? "IDOL STANDS (its units beside it take half from shots of 2+ tiles; enemies beside it attack only an Idol Bearer)"
+        : "idol down (a status)",
+    );
+  const awestruck = publicAwestruckBearersV7(view, unit.id);
+  if (awestruck.length > 0)
+    parts.push(
+      `AWESTRUCK by ${awestruck.map((bearerId) => `u${bearerId}`).join(", ")}: attacks only an Idol Bearer beside it`,
+    );
   // Rituals (`pulp_wars-mch9.7`): a participant's place in its circle, and
   // a Herald's attacks (Ravage: two a turn; a Proclaim takes one).
   for (const ritual of view.cult.rituals) {
@@ -4206,7 +4212,7 @@ function headerLinesV7(session: SessionV7, view: PlayerViewV7): string[] {
   const score = queryScoreV7(view);
   const lines = [
     `== state #${state.commandIndex} | ${RULESET_7_ID} | ${view.setup.mapType.toLowerCase()} ${view.board.width}x${view.board.height} seed ${view.setup.seed} | ${score.gameMode.toLowerCase()} ==`,
-    `ROUND ${view.round}${score.roundLimit === null ? "" : ` of ${score.roundLimit}`} | you are ${seatNameV7(view, view.viewer.id)} | ${view.outcome !== null ? "MATCH OVER" : active === view.viewer.id ? "YOUR TURN" : `waiting for ${seatLabelV7(view, active ?? 0)}`} | coins ${view.viewer.coins}${factionHasFavourV7(view.viewer.faction) ? ` | favour ${favourOfV7(view, view.viewer.id)}` : ""} | income +${totalIncomeV7(view)}/turn | cities ${ownCitiesV7(view).length} | units ${allOwnedUnitsV7(view, view.viewer.id).length} | score ${score.own?.total ?? 0}`,
+    `ROUND ${view.round}${score.roundLimit === null ? "" : ` of ${score.roundLimit}`} | you are ${seatNameV7(view, view.viewer.id)} | ${view.outcome !== null ? "MATCH OVER" : active === view.viewer.id ? "YOUR TURN" : `waiting for ${seatLabelV7(view, active ?? 0)}`} | coins ${view.viewer.coins}${factionHasFavourV7(view.viewer.faction) ? ` | favour ${favourOfV7(view, view.viewer.id)}/${FAVOUR_CAP_V7}${heraldHungerDueV7(view.units, view.viewer.id) > 0 ? ` (Hunger ${heraldHungerDueV7(view.units, view.viewer.id)} due at your next turn)` : ""}` : ""} | income +${totalIncomeV7(view)}/turn | cities ${ownCitiesV7(view).length} | units ${allOwnedUnitsV7(view, view.viewer.id).length} | score ${score.own?.total ?? 0}`,
     `PLAYERS in turn order: ${[
       ...view.turnOrder.flatMap((playerId) =>
         view.leaderboard.filter((entry) => entry.playerId === playerId),
@@ -4217,7 +4223,7 @@ function headerLinesV7(session: SessionV7, view: PlayerViewV7): string[] {
     ]
       .map(
         (entry) =>
-          `S${entry.seat} ${FACTION_DISPLAY_NAMES_V7[entry.faction]}${entry.isViewer ? " (you)" : " (AI)"} ${entry.status.toLowerCase()} score ${entry.score} cities ${entry.cityCount} units ${entry.livingUnitCount}${factionHasFavourV7(entry.faction) && entry.status === "ACTIVE" ? ` favour ${favourOfV7(view, entry.playerId)}` : ""}`,
+          `S${entry.seat} ${FACTION_DISPLAY_NAMES_V7[entry.faction]}${entry.isViewer ? " (you)" : " (AI)"} ${entry.status.toLowerCase()} score ${entry.score} cities ${entry.cityCount} units ${entry.livingUnitCount}${factionHasFavourV7(entry.faction) && entry.status === "ACTIVE" ? ` favour ${favourOfV7(view, entry.playerId)}/${FAVOUR_CAP_V7}` : ""}`,
       )
       .join(" > ")}`,
   ];

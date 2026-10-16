@@ -3,6 +3,8 @@ import {
   BOARD_SUMMONED_ROLE_IDS_V7,
   CHANNEL_RANGE_V7,
   CULT_SUMMONED_ROLE_RULES_V7,
+  HERALD_HUNGER_FAVOUR_V7,
+  SUMMONER_TRICKLE_FAVOUR_V7,
   SUMMONED_MECHANICAL_ROLES_V7,
   canEnterTerrainV7,
   primaryActionBlockedAfterMoveV7,
@@ -20,8 +22,10 @@ import { isLivingUnitV7 } from "./afflictions";
 import { displacementDestinationLegalV7 } from "./combat";
 import type { CommandV7 } from "./commands";
 import {
+  favourGainedEventV7,
   favourOfV7,
   isRobedCultistV7,
+  withFavourGainedV7,
   withFavourSpentV7,
   type CultReducerKitV7,
 } from "./cult";
@@ -54,8 +58,10 @@ import {
 /**
  * The Cultists of the Ancient Ones, the channel (`pulp_wars-mch9.5`, the
  * third Cult engine bead; docs/product/RULESET_7_CULTISTS.md sections 6.1,
- * 6.2, 8.1, 8.4, and 8.5): Summon a Horror, Channel and the strands, the
- * one disruption rule, the Start Turn check, Behold!, Anchor, and Boo!.
+ * 6.2, 8.4, and 8.5): Summon a Horror, Channel and the strands, the one
+ * disruption rule, the Start Turn check, Anchor, and Boo!. (Behold! is the
+ * Idol Bearer's lasting aura since the Cult redesign, `pulp_wars-mch9.33`:
+ * src/engine/v7/cult-warden.ts.)
  * `pulp_wars-mch9.6` (sections 6.4 and 6.5): a daemon that fails the check
  * is Unbound and rampages at once (src/engine/v7/cult-unbound.ts), and a
  * Channel may bind an Unbound daemon again.
@@ -99,7 +105,6 @@ export interface ChannelListsV7 {
       readonly daemonUnitId: UnitId | null;
     }[];
     readonly grips?: readonly GripV7[];
-    readonly idols?: readonly UnitId[];
   };
 }
 export type ChannelLookupV7 = FactionRosterV7 &
@@ -113,7 +118,6 @@ export type ChannelTargetLookupV7 = ChannelLookupV7 & {
 
 const strandsOf = (lookup: ChannelListsV7) => lookup.cult?.strands ?? [];
 const gripsOf = (lookup: ChannelListsV7) => lookup.cult?.grips ?? [];
-const idolsOf = (lookup: ChannelListsV7) => lookup.cult?.idols ?? [];
 
 // ------------------------------------------------------------ Daemons ---
 
@@ -160,6 +164,22 @@ export function holdingStrandsV7<U extends ChannelUnitFactsV7>(
   daemon: ChannelUnitFactsV7,
 ): number {
   let total = 0;
+  for (const cultist of holdingChannellersV7(lookup, units, daemon))
+    total += 1 + gripStrandsV7(lookup, units, cultist);
+  return total;
+}
+
+/**
+ * Section 6.2: the cultists whose strands to `daemon` hold as the board
+ * stands (those {@link holdingStrandsV7} counts), in strand order. The
+ * Cult redesign (`pulp_wars-mch9.32`): the trickle reads them at the check.
+ */
+export function holdingChannellersV7<U extends ChannelUnitFactsV7>(
+  lookup: FactionRosterV7 & ChannelListsV7,
+  units: readonly U[],
+  daemon: ChannelUnitFactsV7,
+): readonly U[] {
+  const holders: U[] = [];
   for (const strand of strandsOf(lookup)) {
     if (strand.daemonUnitId !== daemon.id) continue;
     const cultist = units.find(
@@ -172,9 +192,34 @@ export function holdingStrandsV7<U extends ChannelUnitFactsV7>(
       chebyshev(cultist.at, daemon.at) > CHANNEL_RANGE_V7
     )
       continue;
-    total += 1 + gripStrandsV7(lookup, units, cultist);
+    holders.push(cultist);
   }
-  return total;
+  return holders;
+}
+
+/**
+ * The Cult redesign (`pulp_wars-mch9.32`,
+ * docs/product/RULESET_7_CULT_REDESIGN.md section 7.6): the Favour the seat
+ * `playerId` owes at its next check for the Hunger of its bound Heralds
+ * (`HERALD_HUNGER_FAVOUR_V7` each) among `units` (a state's or a view's).
+ */
+export function heraldHungerDueV7(
+  units: readonly (SummonedUnitRefV7 & {
+    readonly ownerId: PlayerId;
+    readonly hp: number;
+  })[],
+  playerId: PlayerId,
+): number {
+  let due = 0;
+  for (const unit of units)
+    if (
+      unit.hp > 0 &&
+      unit.ownerId === playerId &&
+      unit.summoned === "HERALD" &&
+      daemonIsBoundV7(unit)
+    )
+      due += HERALD_HUNGER_FAVOUR_V7;
+  return due;
 }
 
 /**
@@ -234,10 +279,10 @@ function gripStrandsV7<U extends ChannelUnitFactsV7>(
 // --------------------------------------------------------- Legality ---
 
 /**
- * A cultist's channel action (Summon, Channel, Behold!, Boo!) is a primary
- * action: refused when the unit has used one or has a continuation waiting.
- * It may follow the unit's Move, also for a role that may not attack after
- * moving (the Idol Bearer, the Stargazer): section 8.1.
+ * A cultist's channel action (Summon, Channel, Boo!) is a primary action:
+ * refused when the unit has used one or has a continuation waiting. It may
+ * follow the unit's Move, also for a role that may not attack after moving
+ * (the Idol Bearer, the Stargazer): section 8.1.
  */
 function primaryActedV7(unit: ActorFactsV7): boolean {
   return (
@@ -402,32 +447,6 @@ export function channelRejectionV7(
     return { code: "CHANNEL_NOT_LEGAL", reason: "DAEMON" };
   if (chebyshev(cultist.at, daemon.at) > CHANNEL_RANGE_V7)
     return { code: "CHANNEL_NOT_LEGAL", reason: "RANGE" };
-  return null;
-}
-
-export type BeholdRejectionV7 =
-  | { readonly code: "UNIT_ROLE_INVALID" }
-  | { readonly code: "UNIT_ALREADY_ACTED" }
-  | {
-      readonly code: "BEHOLD_NOT_LEGAL";
-      readonly reason: "EMBARKED" | "RAISED";
-    };
-
-/**
- * Section 8.1, shared by the reducer and the public command query: the
- * first reason the Idol Bearer `bearer` may not raise its idol, or null.
- */
-export function beholdRejectionV7(
-  lookup: ChannelLookupV7,
-  bearer: ActorFactsV7,
-): BeholdRejectionV7 | null {
-  if (!unitRoleRuleV7(lookup, bearer).abilities.includes("BEHOLD"))
-    return { code: "UNIT_ROLE_INVALID" };
-  if (bearer.form !== "LAND")
-    return { code: "BEHOLD_NOT_LEGAL", reason: "EMBARKED" };
-  if (primaryActedV7(bearer)) return { code: "UNIT_ALREADY_ACTED" };
-  if (idolsOf(lookup).includes(bearer.id))
-    return { code: "BEHOLD_NOT_LEGAL", reason: "RAISED" };
   return null;
 }
 
@@ -667,25 +686,21 @@ export function unitDisruptionCausesV7(
 
 /**
  * Section 6.2: the disruptions of one command (or of the steps of a Start
- * Turn so far): the strands, grips, and raised idols of `before` whose unit
- * was disrupted between `before` and `after`, as events, and the Cult state
- * of `after` without them.
+ * Turn so far): the strands and grips of `before` whose unit was disrupted
+ * between `before` and `after`, as events, and the Cult state of `after`
+ * without them.
  *
- * - **A strand** breaks when its cultist is disrupted by anything, except
- *   that a cultist that only lost Hit Points keeps it under Behold!
- *   (section 8.1): at the start of the command it stood on one of the eight
- *   tiles around an own Idol Bearer whose idol was raised, and that Idol
- *   Bearer was not itself disrupted in the command (hit the Idol Bearer too
- *   and the ward is gone: section 13.1).
+ * - **A strand** breaks when its cultist is disrupted by anything. (Behold!
+ *   kept a hurt channeller's strand until the Cult redesign made it the
+ *   warden's aura, `pulp_wars-mch9.33`.)
  * - **A grip** fails when its Thing was moved, given a status, taken, or
  *   removed (its own HP loss never matters: section 8.4), and ends with its
  *   cultist's strand.
- * - **An idol** drops when its bearer is disrupted by anything.
  *
  * `actingUnitId` is the unit the command names as its actor (its own Move,
  * advance, or gate traversal is not a displacement); null for `END_TURN`.
  * `skipSeat` is a seat whose Start Turn check already ran in this command
- * (its strands, grips, and idols were judged before the check and cleared
+ * (its strands and grips were judged before the check and cleared
  * by it); `reported` are the events of the command so far, whose reported
  * units are not reported twice.
  */
@@ -697,11 +712,7 @@ export function cultDisruptionsV7(
   reported: readonly DomainEventV7[] = [],
 ): { readonly cult: CultStateV7; readonly events: readonly DomainEventV7[] } {
   const watched = before.cult;
-  if (
-    watched.strands.length === 0 &&
-    watched.grips.length === 0 &&
-    watched.idols.length === 0
-  )
+  if (watched.strands.length === 0 && watched.grips.length === 0)
     return { cult: after.cult, events: [] };
   const beforeStatuses = disruptingStatusKeysV7(before);
   const afterStatuses = disruptingStatusKeysV7(after);
@@ -724,29 +735,12 @@ export function cultDisruptionsV7(
   const ownerBefore = (unitId: UnitId): PlayerId | undefined =>
     before.units.find((unit) => unit.id === unitId)?.ownerId;
   const brokenStrands = new Set<UnitId>();
-  const droppedIdols = new Set<UnitId>();
   const failedGrips = new Set<UnitId>();
   for (const event of reported) {
     if (event.kind === "STRAND_BROKEN") brokenStrands.add(event.unitId);
-    if (event.kind === "IDOL_DROPPED") droppedIdols.add(event.unitId);
     if (event.kind === "ANCHOR_BROKEN") failedGrips.add(event.unitId);
   }
   const events: DomainEventV7[] = [];
-  // Behold!: the raised idols of `before` whose bearer was not disrupted.
-  const wards = watched.idols.flatMap((unitId) => {
-    const bearer = before.units.find((unit) => unit.id === unitId);
-    return bearer !== undefined && causesOf(unitId).length === 0
-      ? [bearer]
-      : [];
-  });
-  const warded = (cultist: UnitStateV7): boolean =>
-    isRobedCultistV7(before, cultist) &&
-    wards.some(
-      (bearer) =>
-        bearer.id !== cultist.id &&
-        bearer.ownerId === cultist.ownerId &&
-        chebyshev(bearer.at, cultist.at) === 1,
-    );
   const newlyBroken = new Set<UnitId>();
   for (const strand of watched.strands) {
     const cultist = before.units.find(
@@ -758,14 +752,7 @@ export function cultDisruptionsV7(
       brokenStrands.has(cultist.id)
     )
       continue;
-    const causes = causesOf(cultist.id);
-    // Under Behold! the loss of Hit Points does not count; what else
-    // happened to the cultist still does (and is what is reported).
-    const effective =
-      causes.includes("HP_LOSS") && warded(cultist)
-        ? causes.filter((candidate) => candidate !== "HP_LOSS")
-        : causes;
-    const cause = effective[0];
+    const cause = causesOf(cultist.id)[0];
     if (cause === undefined) continue;
     newlyBroken.add(cultist.id);
     // A strand to a daemon that left the board in the same command is
@@ -811,21 +798,7 @@ export function cultDisruptionsV7(
       cause,
     });
   }
-  const newlyDropped = new Set<UnitId>();
-  for (const unitId of watched.idols) {
-    const owner = ownerBefore(unitId);
-    if (owner === undefined || owner === skipSeat || droppedIdols.has(unitId))
-      continue;
-    const cause = causesOf(unitId)[0];
-    if (cause === undefined) continue;
-    newlyDropped.add(unitId);
-    events.push({ kind: "IDOL_DROPPED", playerId: owner, unitId, cause });
-  }
-  if (
-    newlyBroken.size === 0 &&
-    newlyFailed.size === 0 &&
-    newlyDropped.size === 0
-  )
+  if (newlyBroken.size === 0 && newlyFailed.size === 0)
     return { cult: after.cult, events };
   return {
     cult: {
@@ -838,7 +811,6 @@ export function cultDisruptionsV7(
           !newlyFailed.has(grip.thingUnitId) &&
           !newlyBroken.has(grip.cultistUnitId),
       ),
-      idols: after.cult.idols.filter((unitId) => !newlyDropped.has(unitId)),
     },
     events,
   };
@@ -851,18 +823,13 @@ export function cultDisruptionsV7(
  * daemon (on the board, of the same seat, or Unbound: a strand toward a
  * binding, section 6.5); a grip its Thing (in land form,
  * with Anchor, next to its cultist, of the same seat) and its cultist's
- * strand; an idol its bearer (in land form, with Behold!). What it drops
+ * strand. What it drops
  * was reported, or is reported at the end of the command, by
  * {@link cultDisruptionsV7}, which reads the state before the command.
  */
 export function prunedChannelV7(state: GameStateV7): GameStateV7 {
   const cult = state.cult;
-  if (
-    cult.strands.length === 0 &&
-    cult.grips.length === 0 &&
-    cult.idols.length === 0
-  )
-    return state;
+  if (cult.strands.length === 0 && cult.grips.length === 0) return state;
   const unitById = new Map(
     state.units.filter((unit) => unit.hp > 0).map((unit) => [unit.id, unit]),
   );
@@ -891,19 +858,10 @@ export function prunedChannelV7(state: GameStateV7): GameStateV7 {
       strands.some((strand) => strand.cultistUnitId === cultist.id)
     );
   });
-  const idols = cult.idols.filter((unitId) => {
-    const bearer = unitById.get(unitId);
-    return (
-      bearer !== undefined &&
-      bearer.form === "LAND" &&
-      unitRoleRuleV7(state, bearer).abilities.includes("BEHOLD")
-    );
-  });
   return strands.length === cult.strands.length &&
-    grips.length === cult.grips.length &&
-    idols.length === cult.idols.length
+    grips.length === cult.grips.length
     ? state
-    : { ...state, cult: { ...cult, strands, grips, idols } };
+    : { ...state, cult: { ...cult, strands, grips } };
 }
 
 // --------------------------------------------------- The Start Turn ---
@@ -921,21 +879,30 @@ export type RampageResolverV7 = (
 /**
  * Sections 6.2, 6.4, and 13.3: the channel step of the Start Turn of
  * `playerId`, after Plague and its chains and before Egg hatching.
- * `original` is the state the `END_TURN` began with.
+ * `original` is the state the `END_TURN` began with. The Cult redesign
+ * (`pulp_wars-mch9.32`, docs/product/RULESET_7_CULT_REDESIGN.md section
+ * 10.1, steps 3 to 6):
  *
  * 1. The disruptions of the command so far (the neutral turn, Black Ice,
  *    the surfacing, Plague and its chains) break their strands.
  * 2. **The check:** each bound daemon of the seat, in unit-ID order, needs
  *    holding strands ({@link holdingStrandsV7}) of at least its Control, or
- *    it is **Unbound** (`DAEMON_UNBOUND`): it belongs to the neutral owner
- *    as a neutral unit of its own breed, loses every status and the strands
- *    to it, is Furious until this seat's turn ends, and **rampages at
- *    once** (`rampage`). What the rampage disrupts breaks before the next
- *    daemon is checked, so one break can start another; a daemon an earlier
- *    rampage killed is not checked.
- * 3. Every strand and grip of the seat is cleared: it must channel again.
- * 4. The idols of the seat's Idol Bearers are lowered (`IDOL_DROPPED` cause
- *    `EXPIRED`): Behold! lasts until the end of this check.
+ *    it is **Unbound** (`DAEMON_UNBOUND` reason `STRANDS`): it belongs to
+ *    the neutral owner as a neutral unit of its own breed, loses every
+ *    status and the strands to it, is Furious until this seat's turn ends,
+ *    and **rampages at once** (`rampage`). What the rampage disrupts breaks
+ *    before the next daemon is checked, so one break can start another; a
+ *    daemon an earlier rampage killed is not checked.
+ * 3. **The trickle:** each own Summoner (a unit with Summon) whose strand
+ *    held at its daemon's check, for a daemon still bound now and while the
+ *    Summoner is still on the board as the seat's own, pays
+ *    `SUMMONER_TRICKLE_FAVOUR_V7` (once, whatever it held): one
+ *    `FAVOUR_GAINED` source `TRICKLE` for them all, up to the cap.
+ * 4. **Hunger:** each still bound Herald of the seat, in unit-ID order,
+ *    costs `HERALD_HUNGER_FAVOUR_V7` (`FAVOUR_SPENT` purpose `HUNGER`); one
+ *    the seat cannot pay for is Unbound at once (`DAEMON_UNBOUND` reason
+ *    `HUNGER`), Furious, and rampages, as in step 2. Nothing is refunded.
+ * 5. Every strand and grip of the seat is cleared: it must channel again.
  *
  * Returns the state itself and no event when nothing of it applied.
  */
@@ -953,10 +920,8 @@ export function resolveStartTurnChannelV7(
   const hasChannel =
     state.cult.strands.length > 0 ||
     state.cult.grips.length > 0 ||
-    state.cult.idols.length > 0 ||
     original.cult.strands.length > 0 ||
-    original.cult.grips.length > 0 ||
-    original.cult.idols.length > 0;
+    original.cult.grips.length > 0;
   const daemons = state.units
     .filter(
       (unit) =>
@@ -971,15 +936,13 @@ export function resolveStartTurnChannelV7(
   let current: GameStateV7 =
     disrupted.cult === state.cult ? state : { ...state, cult: disrupted.cult };
   const unbound: UnitId[] = [];
-  for (const candidate of daemons) {
-    const daemon = current.units.find(
-      (unit) =>
-        unit.id === candidate.id && unit.hp > 0 && unit.ownerId === playerId,
-    );
-    if (daemon === undefined) continue;
-    const control = daemonControlV7(daemon);
-    const strands = holdingStrandsV7(current, current.units, daemon);
-    if (strands >= control) continue;
+  /** Breaks `daemon` loose (`reason`) and resolves its first rampage. */
+  const breakLoose = (
+    daemon: UnitStateV7,
+    strands: number,
+    control: number,
+    reason: "STRANDS" | "HUNGER",
+  ): void => {
     unbound.push(daemon.id);
     events.push({
       kind: "DAEMON_UNBOUND",
@@ -987,6 +950,7 @@ export function resolveStartTurnChannelV7(
       summonerPlayerId: playerId,
       strands,
       control,
+      reason,
     });
     const loose = withoutStrandsToV7(
       withDaemonUnboundV7(current, daemon.id, playerId, true),
@@ -994,28 +958,96 @@ export function resolveStartTurnChannelV7(
     );
     const rampaged = rampage(loose, daemon.id);
     events.push(...rampaged.events);
-    // The consequences of the rampage: the strands, grips, and idols of
-    // the units it hurt or killed break now, before the next check.
+    // The consequences of the rampage: the strands and grips of the units
+    // it hurt or killed break now, before the next daemon is judged.
     const broken = cultDisruptionsV7(loose, rampaged.state, null, null, events);
     events.push(...broken.events);
     current =
       broken.cult === rampaged.state.cult
         ? rampaged.state
         : { ...rampaged.state, cult: broken.cult };
+  };
+  const ownBound = (unitId: UnitId): UnitStateV7 | undefined =>
+    current.units.find(
+      (unit) =>
+        unit.id === unitId &&
+        unit.hp > 0 &&
+        unit.ownerId === playerId &&
+        daemonIsBoundV7(unit),
+    );
+  // The trickle's ledger: the cultists whose strands held, by daemon.
+  const held: { readonly daemonId: UnitId; readonly holders: UnitId[] }[] = [];
+  for (const candidate of daemons) {
+    const daemon = ownBound(candidate.id);
+    if (daemon === undefined) continue;
+    const control = daemonControlV7(daemon);
+    const strands = holdingStrandsV7(current, current.units, daemon);
+    if (strands >= control) {
+      held.push({
+        daemonId: daemon.id,
+        holders: holdingChannellersV7(current, current.units, daemon).map(
+          (unit) => unit.id,
+        ),
+      });
+      continue;
+    }
+    breakLoose(daemon, strands, control, "STRANDS");
+  }
+  // The trickle: one Summoner pays once, for a daemon still bound.
+  const payers = new Set<UnitId>();
+  for (const entry of held) {
+    if (ownBound(entry.daemonId) === undefined) continue;
+    for (const holderId of entry.holders) {
+      const holder = current.units.find(
+        (unit) =>
+          unit.id === holderId && unit.hp > 0 && unit.ownerId === playerId,
+      );
+      if (
+        holder !== undefined &&
+        unitRoleRuleV7(current, holder).abilities.includes("SUMMON")
+      )
+        payers.add(holderId);
+    }
+  }
+  if (payers.size > 0) {
+    const amount = SUMMONER_TRICKLE_FAVOUR_V7 * payers.size;
+    const cult = withFavourGainedV7(current.cult, playerId, amount);
+    events.push(
+      favourGainedEventV7(current.cult, cult, playerId, "TRICKLE", amount),
+    );
+    current = { ...current, cult };
+  }
+  // Hunger: each still bound Herald, in unit-ID order.
+  for (const candidate of daemons) {
+    if (candidate.summoned !== "HERALD") continue;
+    const herald = ownBound(candidate.id);
+    if (herald === undefined) continue;
+    if (favourOfV7(current, playerId) >= HERALD_HUNGER_FAVOUR_V7) {
+      const cult = withFavourSpentV7(
+        current.cult,
+        playerId,
+        HERALD_HUNGER_FAVOUR_V7,
+      );
+      events.push({
+        kind: "FAVOUR_SPENT",
+        playerId,
+        purpose: "HUNGER",
+        amount: HERALD_HUNGER_FAVOUR_V7,
+        favour: favourOfV7({ cult }, playerId),
+      });
+      current = { ...current, cult };
+      continue;
+    }
+    breakLoose(
+      herald,
+      holdingStrandsV7(current, current.units, herald),
+      daemonControlV7(herald),
+      "HUNGER",
+    );
   }
   const ownerOf = (unitId: UnitId): PlayerId | undefined =>
     current.units.find((unit) => unit.id === unitId)?.ownerId ??
     state.units.find((unit) => unit.id === unitId)?.ownerId;
-  const expired = current.cult.idols.filter(
-    (unitId) => ownerOf(unitId) === playerId,
-  );
-  for (const unitId of expired)
-    events.push({
-      kind: "IDOL_DROPPED",
-      playerId,
-      unitId,
-      cause: "EXPIRED",
-    });
   const cult: CultStateV7 = {
     ...current.cult,
     strands: current.cult.strands.filter(
@@ -1024,12 +1056,10 @@ export function resolveStartTurnChannelV7(
     grips: current.cult.grips.filter(
       (grip) => ownerOf(grip.thingUnitId) !== playerId,
     ),
-    idols: current.cult.idols.filter((unitId) => !expired.includes(unitId)),
   };
   const changed =
     cult.strands.length !== current.cult.strands.length ||
-    cult.grips.length !== current.cult.grips.length ||
-    cult.idols.length !== current.cult.idols.length;
+    cult.grips.length !== current.cult.grips.length;
   return {
     state: changed ? { ...current, cult } : current,
     events,
@@ -1087,6 +1117,7 @@ export function withEliminatedSeatDaemonsUnboundV7(
       summonerPlayerId: playerId,
       strands: 0,
       control: daemonControlV7(daemon),
+      reason: "ELIMINATED",
     });
     current = withoutStrandsToV7(
       withDaemonUnboundV7(current, daemon.id, playerId, false),
@@ -1132,11 +1163,7 @@ function rejectWith(
   original: GameStateV7,
   unit: UnitStateV7,
   rejection:
-    | SummonRejectionV7
-    | ChannelRejectionV7
-    | BeholdRejectionV7
-    | AnchorRejectionV7
-    | BooRejectionV7,
+    SummonRejectionV7 | ChannelRejectionV7 | AnchorRejectionV7 | BooRejectionV7,
 ): ApplyCommandResultV7 {
   switch (rejection.code) {
     case "UNIT_ROLE_INVALID":
@@ -1156,7 +1183,7 @@ function rejectWith(
 
 /**
  * Section 6.1: `SUMMON`, a primary action of a Summoner that may follow its
- * Move. The seat pays 5 Favour (`FAVOUR_SPENT`); a Horror of the actor
+ * Move. The seat pays 4 Favour (`FAVOUR_SPENT`); a Horror of the actor
  * stands on `at` at full HP, exhausted until the next turn, with no home
  * city (`DAEMON_SUMMONED`); the Summoner and the helper have each channelled
  * it (`STRAND_FORMED`, in unit-ID order) and their primary actions are
@@ -1410,44 +1437,6 @@ export function applyChannelV7(
   } catch (cause) {
     return kit.arithmeticFailure(original, cause);
   }
-}
-
-/**
- * Section 8.1: `BEHOLD`, a primary action of an Idol Bearer that may follow
- * its Move: its idol is raised (`IDOL_RAISED`) until the end of the channel
- * check of its owner's next Start Turn, or until it is disrupted.
- */
-export function applyBeholdV7(
-  kit: CultReducerKitV7,
-  original: GameStateV7,
-  state: GameStateV7,
-  actor: PlayerId,
-  command: UnitCommandV7,
-): ApplyCommandResultV7 {
-  if (state.commandIndex >= Number.MAX_SAFE_INTEGER)
-    return kit.rejected(original, "INTEGER_OVERFLOW");
-  const actorCheck = kit.validateUnitActor(state, actor, command.unitId);
-  if (!actorCheck.ok)
-    return kit.rejected(original, actorCheck.code, actorCheck.params);
-  const bearer = actorCheck.unit;
-  const rejection = beholdRejectionV7(state, bearer);
-  if (rejection !== null) return rejectWith(kit, original, bearer, rejection);
-  return kit.accepted(
-    kit.checked({
-      ...state,
-      commandIndex: kit.nextSafe(state.commandIndex),
-      units: state.units.map((unit) =>
-        unit.id === bearer.id ? withPrimaryUsed(unit) : unit,
-      ),
-      cult: {
-        ...state.cult,
-        idols: [...state.cult.idols, bearer.id].sort(
-          (left, right) => left - right,
-        ),
-      },
-    }),
-    [{ kind: "IDOL_RAISED", playerId: actor, unitId: bearer.id }],
-  );
 }
 
 /**

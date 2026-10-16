@@ -148,14 +148,14 @@ describe("the Cult registration: identity", () => {
   // 7r74, and the Cult's Unbound (`pulp_wars-mch9.6`) 7r75, so 7r71 is a
   // prior identity.
   it("was 7r71 after 7r70, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r88");
-    expect(PRIOR_RULESET_7_IDS.slice(-18, -16)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r89");
+    expect(PRIOR_RULESET_7_IDS.slice(-19, -17)).toEqual([
       "pulp-wars-poc-7r70",
       "pulp-wars-poc-7r71",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r88.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-18, -16)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r89.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-19, -17)).toEqual([
       "pulpWars.save.v7r70.current",
       "pulpWars.save.v7r71.current",
     ]);
@@ -465,11 +465,12 @@ describe("the Cult registration: the three summoned units (section 4.2)", () => 
         rule.value,
       ];
     };
-    expect(row("HORROR")).toEqual(["Horror", 5, 1, 18, 4, 2, 2, 6]);
-    expect(row("HERALD")).toEqual(["Herald", 20, 3, 60, 7, 4, 2, 24]);
+    // The Cult redesign's prices (`pulp_wars-mch9.32`): 4 and 18.
+    expect(row("HORROR")).toEqual(["Horror", 4, 1, 18, 4, 2, 2, 6]);
+    expect(row("HERALD")).toEqual(["Herald", 18, 3, 60, 7, 4, 2, 24]);
     // Wild from birth: no price in Favour, no Control, worth nothing.
     expect(row("TENTACLE")).toEqual(["Tentacle", null, null, 8, 3, 1, 0, 0]);
-    expect([HORROR_FAVOUR_COST_V7, HERALD_FAVOUR_COST_V7]).toEqual([5, 20]);
+    expect([HORROR_FAVOUR_COST_V7, HERALD_FAVOUR_COST_V7]).toEqual([4, 18]);
     expect([HORROR_CONTROL_V7, HERALD_CONTROL_V7]).toEqual([1, 3]);
     // A daemon moves like a Martian walker; the Tentacle is rooted.
     expect(summonedRoleRuleV7("HORROR").movementMode).toBe("STRIDE");

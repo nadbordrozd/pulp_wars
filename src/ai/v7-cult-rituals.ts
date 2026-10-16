@@ -45,10 +45,13 @@ import { cultRobedV7 } from "./v7-cult";
  * the PRNG, and does not depend on elapsed time.
  */
 
-/** Favour the Great Summoning costs (section 7.2). */
-export const CULT_SUMMONING_FAVOUR_V7 = 20;
-/** Favour a Horror costs (section 6.1). */
-export const CULT_HORROR_COST_V7 = 5;
+/**
+ * Favour the Great Summoning costs (section 7.2): 18 since the Cult
+ * redesign (`pulp_wars-mch9.32`), 20 before.
+ */
+export const CULT_SUMMONING_FAVOUR_V7 = 18;
+/** Favour a Horror costs (section 6.1): 4 since `pulp_wars-mch9.32`. */
+export const CULT_HORROR_COST_V7 = 4;
 /**
  * The robed cultists the seat keeps for a Herald beyond every other
  * daemon's Control + 1: its Control and one to spare (section 15.3).
@@ -78,7 +81,10 @@ export const CULT_PRICELESS_VALUE_V7 = 12;
 /** The Herald's planned Move, its Proclaim, and a Horror's Boo!. */
 export const CULT_HERALD_PRIORITY_V7 = 3970;
 export const CULT_BOO_PRIORITY_V7 = 3950;
-/** Between Behold! (1920) and Summon (1910): the circle before a Horror. */
+/**
+ * Just above Summon (1910): the circle before a Horror (below Behold!'s
+ * 1920 until the Cult redesign retired that step, `pulp_wars-mch9.33`).
+ */
 export const CULT_SUMMONING_PRIORITY_V7 = 1915;
 /** Below the Offering (1890), above every ordinary command. */
 export const CULT_RIBBIT_PRIORITY_V7 = 1880;
@@ -251,7 +257,7 @@ export function cultRitualPlanV7(facts: CultRitualFactsV7): CultRitualPlanV7 {
   const begins: BeginV7[] = [];
   const joins: JoinV7[] = [];
   const proclaims: Extract<CommandV7, { kind: "PROCLAIM" }>[] = [];
-  const boos: Extract<CommandV7, { kind: "BEHOLD" | "BOO" }>[] = [];
+  const boos: Extract<CommandV7, { kind: "BOO" }>[] = [];
   const ribbits: Extract<CommandV7, { kind: "RIBBIT" | "SWITCHEROO" }>[] = [];
   const swaps: Extract<CommandV7, { kind: "RIBBIT" | "SWITCHEROO" }>[] = [];
   const tentacles: Extract<CommandV7, { kind: "TENTACLE" }>[] = [];

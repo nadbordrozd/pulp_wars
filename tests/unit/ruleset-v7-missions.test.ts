@@ -243,7 +243,6 @@ function expectedMissionCult(state: GameStateV7): GameStateV7["cult"] {
     }),
     strands: [],
     grips: [],
-    idols: [],
     rituals: [],
     cowed: [],
     frogs: [],

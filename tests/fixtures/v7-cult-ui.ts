@@ -8,7 +8,6 @@ import {
   withFrogsV7,
   withGripV7,
   withHorrorV7,
-  withIdolsV7,
   withRitualV7,
   withStrandsV7,
   withTentacleV7,
@@ -149,20 +148,18 @@ export function cultChannelUiFixtureV7(): GameStateV7 {
 
 /**
  * The same lodge at work: the Thing grips the channeller (its strand counts
- * three), the Idol Bearer's idol is raised, and the Hexer channels the
- * Horror too.
+ * three) and the Hexer channels the Horror too. (The Idol Bearer's idol
+ * stands by itself since the Cult redesign's lasting aura,
+ * `pulp_wars-mch9.33`.)
  */
 export function cultChannelBusyUiFixtureV7(): GameStateV7 {
-  return withIdolsV7(
-    withGripV7(
-      withStrandsV7(channelBase(), CULT_CHANNEL_UI_V7.horror, [
-        CULT_CHANNEL_UI_V7.channeller,
-        CULT_CHANNEL_UI_V7.hexer,
-      ]),
-      CULT_CHANNEL_UI_V7.thing,
+  return withGripV7(
+    withStrandsV7(channelBase(), CULT_CHANNEL_UI_V7.horror, [
       CULT_CHANNEL_UI_V7.channeller,
-    ),
-    [CULT_CHANNEL_UI_V7.bearer],
+      CULT_CHANNEL_UI_V7.hexer,
+    ]),
+    CULT_CHANNEL_UI_V7.thing,
+    CULT_CHANNEL_UI_V7.channeller,
   );
 }
 

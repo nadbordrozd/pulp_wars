@@ -237,7 +237,7 @@ export type TechnologyUnlockV7 =
   /**
    * The Cultists (section 7.3): the Great Summoning (the Cult `EXPLOSIVES`,
    * shown as The Stars Are Right): a Summoner and three chanters call the
-   * Herald for 20 Favour.
+   * Herald for 18 Favour.
    */
   | { readonly kind: "GREAT_SUMMONING" }
   /**
@@ -4129,14 +4129,41 @@ export function startingFavourV7(faction: FactionIdV7): number {
   return factionHasFavourV7(faction) ? CULT_STARTING_FAVOUR_V7 : 0;
 }
 
+/**
+ * The Cult redesign (docs/product/RULESET_7_CULT_REDESIGN.md section 6,
+ * `pulp_wars-mch9.32`): the most Favour a seat may hold. Any gain above it
+ * is lost (the `forfeited` of its `FAVOUR_GAINED`); a mission seat's
+ * `favour` is clamped to it. (Uncapped before.)
+ */
+export const FAVOUR_CAP_V7 = 30 as const;
+
+/**
+ * The Cult redesign (section 6, `pulp_wars-mch9.32`): the trickle. At the
+ * Start Turn check each own Summoner whose strand held, for a daemon that
+ * stayed bound, pays its seat this much Favour (one Summoner pays it once
+ * a turn, whatever it held).
+ */
+export const SUMMONER_TRICKLE_FAVOUR_V7 = 1 as const;
+
+/**
+ * The Cult redesign (section 7.6, `pulp_wars-mch9.32`): the Herald's
+ * Hunger. At the Start Turn check, after the trickle, a seat pays this much
+ * Favour for each of its bound Heralds; a Herald it cannot pay for is
+ * Unbound at once.
+ */
+export const HERALD_HUNGER_FAVOUR_V7 = 2 as const;
+
 /** The Cultists (section 5.2): a hostile unit at this HP or less is broken. */
 export const SEIZE_BROKEN_HP_V7 = 5 as const;
 /** The Cultists (section 5.2): a Seizure pays this many times the value. */
 export const SEIZE_FAVOUR_MULTIPLIER_V7 = 2 as const;
 /** The Cultists (section 5.3): the population an Offering gives up. */
 export const OFFERING_POPULATION_V7 = 2 as const;
-/** The Cultists (section 5.3): the Favour an Offering pays. */
-export const OFFERING_FAVOUR_V7 = 3 as const;
+/**
+ * The Cultists (section 5.3): the Favour an Offering pays: 6 since the Cult
+ * redesign (`pulp_wars-mch9.32`, section 6), 3 before.
+ */
+export const OFFERING_FAVOUR_V7 = 6 as const;
 /** The Cultists (section 5.3): the lowest city level that may Offer. */
 export const OFFERING_MINIMUM_LEVEL_V7 = 2 as const;
 /**
@@ -4183,6 +4210,12 @@ export const RIBBIT_RANGE_V7 = 2 as const;
 export const FROG_DEFENSE2_V7 = 1 as const;
 export const FROG_MOVE_V7 = 1 as const;
 export const HEX_COOLDOWN_TURNS_V7 = 2 as const;
+/**
+ * The Cult redesign (`pulp_wars-mch9.33`, section 8.1): the shield wall. An
+ * attack from this many tiles or more on a unit beside a standing idol of
+ * its seat is halved (rounded up).
+ */
+export const IDOL_SHIELD_MINIMUM_RANGE_V7 = 2 as const;
 /**
  * The Cultists (section 9.2): the farthest (Chebyshev) a Switcheroo reaches.
  * The Cult redesign (`pulp_wars-mch9.34`, section 8.3): 4 (2 before).
@@ -4238,10 +4271,16 @@ export const CULT_BASELINE_V1_TREE: FactionTechnologyTreeV7 = deepFreeze({
   roleMechanics: CULT_ROLE_MECHANICS_V7,
 });
 
-/** The Cultists (section 3): what a Summon Horror costs in Favour. */
-export const HORROR_FAVOUR_COST_V7 = 5 as const;
-/** The Cultists (section 3): what the Great Summoning costs in Favour. */
-export const HERALD_FAVOUR_COST_V7 = 20 as const;
+/**
+ * The Cultists (section 3): what a Summon Horror costs in Favour: 4 since
+ * the Cult redesign (`pulp_wars-mch9.32`, section 6), 5 before.
+ */
+export const HORROR_FAVOUR_COST_V7 = 4 as const;
+/**
+ * The Cultists (section 3): what the Great Summoning costs in Favour: 18
+ * since the Cult redesign (`pulp_wars-mch9.32`, section 6), 20 before.
+ */
+export const HERALD_FAVOUR_COST_V7 = 18 as const;
 /** The Cultists (section 6.2): the strands a Horror needs at each check. */
 export const HORROR_CONTROL_V7 = 1 as const;
 /** The Cultists (section 6.2): the strands the Herald needs at each check. */

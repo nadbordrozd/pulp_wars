@@ -168,13 +168,32 @@ const ENTRIES = {
     "Summon",
     "With a robed cultist beside it, calls a Horror onto a free tile next to it for Favour. Both of them channel it this turn.",
   ],
+  // The Favour economy of the Cult redesign (`pulp_wars-mch9.32`,
+  // docs/product/RULESET_7_CULT_REDESIGN.md sections 6 and 7.6).
+  TRICKLE: [
+    "Trickle",
+    "At the start of your turn, a Summoner whose strand still holds a daemon pays you 1 Favour.",
+  ],
+  FAVOUR_CAP: [
+    "Favour cap",
+    "Favour stops at a limit, shown beside it. Anything you would gain above the limit is lost, so spend it.",
+  ],
+  HUNGER: [
+    "Hunger",
+    "At the start of your turn it eats 2 of your Favour. If you cannot pay, it breaks loose.",
+  ],
   CHANNEL: [
     "Channel",
     "Holds a strand to one of your daemons nearby until your next turn. If it is hurt, moved, hexed or taken, the strand snaps.",
   ],
+  // The warden's lasting aura (the Cult redesign, `pulp_wars-mch9.33`).
   BEHOLD: [
     "Behold!",
-    "Raises its idol. Your cultists beside it keep their strands when they are hurt, until the Idol Bearer itself is hit.",
+    "Its idol is always raised: your units beside it take half from shots. Any status on the Idol Bearer puts the idol down.",
+  ],
+  AWESTRUCK: [
+    "Awestruck",
+    "An enemy that stands beside a raised idol can attack only an Idol Bearer beside it.",
   ],
   ANCHOR: [
     "Anchor",
@@ -799,7 +818,7 @@ const ENTRIES = {
   ],
   STATUS_IDOL_RAISED: [
     "Idol raised",
-    "Your cultists beside it keep their strands when they are hurt, until the Idol Bearer itself is hit.",
+    "Its units beside it take half from shots, and enemies beside it can attack only the Idol Bearer.",
   ],
   STATUS_CONTROL: [
     "Strands",
@@ -986,6 +1005,11 @@ export function roleTraitGlossaryIdsV7(
   if (mechanics.leavesCrumbs) traits.push("CRUMBS");
   if (mechanics.immovable) traits.push("ROCK_HARD");
   if (mechanics.capacitySlots > 1) traits.push("BIG_BODY");
+  // The Cult redesign (`pulp_wars-mch9.32`): the Summoner's trickle, and
+  // the cap on the Favour it earns and spends.
+  if (rule.abilities.includes("SUMMON")) traits.push("TRICKLE", "FAVOUR_CAP");
+  // The warden (`pulp_wars-mch9.33`): what its aura does to enemies.
+  if (rule.abilities.includes("BEHOLD")) traits.push("AWESTRUCK");
   return traits;
 }
 
@@ -1024,6 +1048,8 @@ export function summonedGlossaryV7(
       !ids.includes(ability as GlossaryIdV7)
     )
       ids.push(ability as GlossaryIdV7);
+  // The Cult redesign (`pulp_wars-mch9.32`): the Herald's upkeep.
+  if (summoned === "HERALD") ids.push("HUNGER");
   // What happens when its channel fails.
   ids.push("UNBOUND");
   return ids.map(glossaryEntryV7);

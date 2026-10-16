@@ -49,8 +49,9 @@ import {
  *    are placed, and only onto a tile its channellers can follow to.
  * 4. **Anchor**, **Channel** (the channellers of the bound daemons, each a
  *    Move and a Channel), **Bind again**.
- * 5. **Behold!**, **Summon**, the **Sacrifice** of a spare Initiate, the
- *    **Offering**.
+ * 5. **Summon**, the **Sacrifice** of a spare Initiate, the **Offering**.
+ *    (Behold! was a step here until the Cult redesign made it a lasting
+ *    aura with no command, `pulp_wars-mch9.33`.)
  * 6. Last of all (`CULT_DOOMED_PRIORITY_V7`, below every ordinary command):
  *    the Sacrifice of an own unit the visible enemy kills this round.
  *
@@ -58,8 +59,7 @@ import {
  * are the part of the plan in `src/ai/v7-cult-rituals.ts`
  * (`cultRitualPlanV7`), called here once the channel plan has claimed its
  * cultists: the Herald's Move and Proclaim and a Horror's Boo! (above the
- * daemons' ordinary play), the Great Summoning (between Behold! and
- * Summon), and Ribbit, Switcheroo, the Tentacle, Pick Me!, and Star-fall
+ * daemons' ordinary play), the Great Summoning (just above Summon), and Ribbit, Switcheroo, the Tentacle, Pick Me!, and Star-fall
  * (below the Offering, above the ordinary play).
  */
 
@@ -70,9 +70,13 @@ export const CULT_CHANNEL_RANGE_V7 = 3;
  * (section 15.2 step 2): one more than the range, the step of a cultist.
  */
 export const CULT_DAEMON_LEASH_V7 = 4;
-/** Favour a Horror costs, and the Great Summoning (the two thresholds). */
-export const CULT_HORROR_FAVOUR_V7 = 5;
-export const CULT_HERALD_FAVOUR_V7 = 20;
+/**
+ * Favour a Horror costs, and the Great Summoning (the two thresholds): the
+ * Cult redesign's prices (`pulp_wars-mch9.32`, a stop-gap until A-R1 reads
+ * its own thresholds; 5 and 20 before).
+ */
+export const CULT_HORROR_FAVOUR_V7 = 4;
+export const CULT_HERALD_FAVOUR_V7 = 18;
 /** A Horror is summoned with an enemy unit or center this near. */
 export const CULT_SUMMON_FRONT_V7 = 6;
 /** An enemy this near a center forbids an Offering and a last defender's Sacrifice. */
@@ -90,7 +94,9 @@ export const CULT_DAEMON_PRIORITY_V7 = 2000;
 export const CULT_ANCHOR_PRIORITY_V7 = 1950;
 export const CULT_CHANNEL_PRIORITY_V7 = 1940;
 export const CULT_BIND_PRIORITY_V7 = 1930;
-export const CULT_BEHOLD_PRIORITY_V7 = 1920;
+// (`CULT_BEHOLD_PRIORITY_V7`, 1920, the raised idol's step, went with the
+// Behold! command: the Cult redesign, `pulp_wars-mch9.33`; the warden's
+// placement is A-R1's.)
 /**
  * `pulp_wars-mch9.27` (section 15.10): the step of a cultist off a watched
  * own center for a clearly better garrison beside it (the general garrison
@@ -138,7 +144,6 @@ export type CultStepReasonV7 =
   | "CHANNEL_MOVE"
   | "BIND"
   | "BIND_MOVE"
-  | "BEHOLD"
   | "SUMMON"
   | "SACRIFICE_SPARE"
   | "SACRIFICE_DOOMED"
@@ -307,7 +312,6 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
   const sacrifices: Extract<CommandV7, { kind: "SACRIFICE" | "SEIZE" }>[] = [];
   const summons: Extract<CommandV7, { kind: "SUMMON" }>[] = [];
   const anchors: Extract<CommandV7, { kind: "ANCHOR" }>[] = [];
-  const beholds: Extract<CommandV7, { kind: "BEHOLD" | "BOO" }>[] = [];
   const offerings: Extract<CommandV7, { kind: "OFFERING" }>[] = [];
   const trainingCities = new Set<CityId>();
   for (const command of commands) {
@@ -321,7 +325,6 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
     else if (command.kind === "SACRIFICE") sacrifices.push(command);
     else if (command.kind === "SUMMON") summons.push(command);
     else if (command.kind === "ANCHOR") anchors.push(command);
-    else if (command.kind === "BEHOLD") beholds.push(command);
     else if (command.kind === "OFFERING") offerings.push(command);
     else if (command.kind === "TRAIN") trainingCities.add(command.cityId);
   }
@@ -1022,29 +1025,6 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
     enemyGap,
   });
   steps.push(...rituals.steps);
-
-  // ---------------------------------------------------------- Behold!
-  // Section 15.4: an Idol Bearer next to two or more channellers that a
-  // visible enemy can hit raises its idol (once the channellers stand).
-  if (!pending)
-    for (const command of beholds) {
-      const bearer = unitsById.get(command.unitId);
-      if (bearer === undefined || held.has(bearer.id)) continue;
-      const warded = own.filter(
-        (unit) =>
-          unit.id !== bearer.id &&
-          strandOf.has(unit.id) &&
-          gap(unit.at, bearer.at) === 1 &&
-          tools.threatened(unit.at),
-      );
-      if (warded.length < 2) continue;
-      steps.push({
-        command,
-        priority: CULT_BEHOLD_PRIORITY_V7,
-        value: warded.length,
-        reason: "BEHOLD",
-      });
-    }
 
   // ----------------------------------------------------------- Summon
   // Section 15.3: a Horror only when the seat can hold it: a robed cultist

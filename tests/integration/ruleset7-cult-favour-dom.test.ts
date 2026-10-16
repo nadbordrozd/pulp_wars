@@ -363,12 +363,12 @@ describe("the Offering in the city panel", () => {
     const chips = [
       ...offering.querySelectorAll<HTMLElement>(".v7-economy-chip"),
     ];
-    expect(chips.map((chip) => chip.textContent)).toEqual(["+3", "-2"]);
+    expect(chips.map((chip) => chip.textContent)).toEqual(["+6", "-2"]);
     expect(chips[0]?.classList.contains("v7-favour-chip")).toBe(true);
     expect(chips[0]?.querySelector(".v7-favour-icon")).not.toBeNull();
     expect(chips[1]?.classList.contains("is-loss")).toBe(true);
     expect(offering.getAttribute("aria-label")).toBe(
-      "Offering · +3 Favour · −2 population",
+      "Offering · +6 Favour · −2 population",
     );
     expectPlainWords(offering);
     offering.click();
@@ -378,17 +378,17 @@ describe("the Offering in the city panel", () => {
       cityId: capital.id,
     });
     const view = required(scene.controller.snapshot().view);
-    expect(favourOfV7(view, view.viewer.id)).toBe(10);
+    expect(favourOfV7(view, view.viewer.id)).toBe(13);
     expect(view.cities.find((city) => city.id === capital.id)).toMatchObject({
       population: 0,
       offeredPopulation: 2,
     });
     // The notice (and its toast) carries both numbers, with or without
     // motion.
-    await waitUntil(() => live().includes("Offering: +3 Favour"));
-    expect(live()).toMatch(/Offering: \+3 Favour, −2\s*population/);
+    await waitUntil(() => live().includes("Offering: +6 Favour"));
+    expect(live()).toMatch(/Offering: \+6 Favour, −2\s*population/);
     await waitUntil(
-      () => document.querySelector(".v7-favour-balance")?.textContent === "10",
+      () => document.querySelector(".v7-favour-balance")?.textContent === "13",
     );
     // The city action is spent: no second Offering.
     scene.host.callbacks?.onSelection({ kind: "CITY", cityId: capital.id });

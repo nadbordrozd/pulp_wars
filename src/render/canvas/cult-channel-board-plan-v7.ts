@@ -1,10 +1,10 @@
 import {
   CHANNEL_RANGE_V7,
   CULT_SUMMONED_ROLE_RULES_V7,
+  awestruckBearersV7,
   bindingStrandsV7,
   holdingStrandsV7,
   previewAnchorV7,
-  previewBeholdV7,
   previewBooV7,
   previewChannelV7,
   previewRampageV7,
@@ -21,7 +21,6 @@ import {
   CHANNEL_PICK_V7,
   SUMMON_HELPER_BADGE_V7,
   SUMMON_PICK_TILE_V7,
-  WARDED_LABEL_V7,
   anchorTargetLabelV7,
   anchorTargetNameV7,
   booEntryLabelV7,
@@ -44,9 +43,11 @@ import type { FrogLookV7 } from "../cult-ritual-presentation-v7";
  *
  * **Always on the board, for every viewer:** a strand from each channeller
  * to its daemon, a candle over every Candlelit unit, the Control pips under
- * every daemon, the Anchor tentacle, the chalk ring of a raised idol, and
- * the marks of an Unbound daemon. **While the unit is selected:** the ring a
- * Behold! would draw and the cultists it would ward. **While aimed:** the
+ * every daemon, the Anchor tentacle, the chalk ring of a standing idol with
+ * a tether from each enemy it holds Awestruck (the Cult redesign's warden,
+ * `pulp_wars-mch9.33`; the retired Pick Me!'s tether), and the marks of an
+ * Unbound daemon. **While the unit is selected:** a lone Channel's daemon.
+ * **While aimed:** the
  * helper and the tile of a Summon, the daemon of a Channel inside its
  * reach, the cultist of an Anchor, and where a Boo! sends each unit.
  *
@@ -120,8 +121,9 @@ export type CultLinkV7 =
   | { readonly kind: "GRAB" }
   | {
       /**
-       * Pick Me!: from a bound unit to the Chosen it may only attack.
-       * `preview`: the shout is only offered (the Chosen is selected).
+       * Awestruck (the Cult redesign, `pulp_wars-mch9.33`; Pick Me!'s
+       * tether before): from a bound unit to the Idol Bearer it may only
+       * attack. `preview` is false since the aura needs no shout.
        */
       readonly kind: "TAUNT";
       readonly preview: boolean;
@@ -272,7 +274,8 @@ function square(centre: CoordV7, radius: number): CoordV7[] {
 /**
  * The entries every viewer sees whatever is selected: each strand whose
  * daemon the viewer sees (a strand to an unseen daemon is its cultist's
- * candle alone), each grip, and the chalk ring of each raised idol.
+ * candle alone), each grip, and the chalk ring of each standing idol, with
+ * the Awestruck tether of each visible enemy beside it.
  */
 export function addCultChannelEntriesV7(
   entries: BoardRenderPlanEntryV7[],
@@ -350,14 +353,35 @@ export function addCultChannelEntriesV7(
   }
   for (const unitId of channel.idols) {
     const bearer = unitById.get(unitId);
-    if (bearer !== undefined)
-      outlineEntries(
-        entries,
-        view,
-        square(bearer.at, 1),
-        "IDOL_RING",
-        `cult-idol:${unitId}`,
-      );
+    if (bearer === undefined) continue;
+    outlineEntries(
+      entries,
+      view,
+      square(bearer.at, 1),
+      "IDOL_RING",
+      `cult-idol:${unitId}`,
+    );
+    // Awestruck: each visible enemy beside it may attack only an Idol
+    // Bearer (the engine's own rule).
+    for (const unit of view.units)
+      if (
+        Math.max(
+          Math.abs(unit.at.x - bearer.at.x),
+          Math.abs(unit.at.y - bearer.at.y),
+        ) === 1 &&
+        awestruckBearersV7(view, view.units, unit).some(
+          (binding) => binding.id === bearer.id,
+        )
+      )
+        entries.push({
+          key: `cult-awestruck:${unit.id}:${bearer.id}`,
+          kind: "LINK",
+          layer: 6,
+          at: unit.at,
+          linkTo: bearer.at,
+          label: CULT_LINK_LABEL_V7,
+          cultLink: { kind: "TAUNT", preview: false },
+        });
   }
 }
 
@@ -365,9 +389,10 @@ export function addCultChannelEntriesV7(
 export const CULT_LINK_LABEL_V7 = "CULT_LINK";
 
 /**
- * Previews of the selected unit with nothing aimed: the ring an offered
- * Behold! would raise and each cultist it would ward (the broken Help ring
- * of an area support: marked, not picked).
+ * Previews of the selected unit with nothing aimed: a lone Channel's
+ * daemon. (The ring an offered Behold! would raise, and the cultists it
+ * would ward, went with the command: the Cult redesign,
+ * `pulp_wars-mch9.33`; the standing idol's ring is always drawn.)
  */
 export function addCultChannelPreviewsV7(
   entries: BoardRenderPlanEntryV7[],
@@ -375,7 +400,6 @@ export function addCultChannelPreviewsV7(
   commands: readonly CommandV7[],
   selectedUnitId: number,
 ): void {
-  const bearer = view.units.find((unit) => unit.id === selectedUnitId);
   // A cultist with exactly one daemon in reach channels it from its button
   // (nothing to pick): the daemon is marked, with its strands after.
   const channels = commands.filter(
@@ -395,35 +419,6 @@ export function addCultChannelPreviewsV7(
         abilityStyle: "RALLY",
         areaSupport: "QUIET",
         label: channelTargetLabelV7(preview),
-      });
-  }
-  if (
-    bearer === undefined ||
-    !commands.some(
-      (command) => command.kind === "BEHOLD" && command.unitId === bearer.id,
-    )
-  )
-    return;
-  const preview = previewBeholdV7(view, bearer.id);
-  if (preview === null) return;
-  outlineEntries(
-    entries,
-    view,
-    square(bearer.at, 1),
-    "WARD_PREVIEW",
-    `ability-area:WARD_PREVIEW:${selectedUnitId}`,
-  );
-  for (const unitId of preview.wardedUnitIds) {
-    const cultist = view.units.find((unit) => unit.id === unitId);
-    if (cultist !== undefined)
-      entries.push({
-        key: `ability-target:WARD_PREVIEW:${unitId}`,
-        kind: "ABILITY_TARGET",
-        layer: 7.5,
-        at: cultist.at,
-        abilityStyle: "WARD_PREVIEW",
-        areaSupport: "QUIET",
-        label: WARDED_LABEL_V7,
       });
   }
 }

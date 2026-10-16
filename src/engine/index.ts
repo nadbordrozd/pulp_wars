@@ -43,6 +43,7 @@ export * from "./v7/cult-unbound";
 export * from "./v7/cult-rituals";
 export * from "./v7/cult-hexes";
 export * from "./v7/cult-tricks";
+export * from "./v7/cult-warden";
 export * from "./v7/observation";
 export * from "./v7/order";
 export * from "./v7/plague";

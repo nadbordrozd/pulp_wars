@@ -694,7 +694,6 @@ describe("ruleset-7 all-Human parity digests", () => {
                 favour: [],
                 strands: [],
                 grips: [],
-                idols: [],
               });
               return undefined;
             }

@@ -1068,9 +1068,6 @@ export function corePresentationPlanV7(
       const to = cultUnitAt(event.daemonUnitId, before, after);
       if (from !== undefined && to !== undefined)
         pushCult({ effect: "STRAND_SNAP", cells: [to], from });
-    } else if (event.kind === "IDOL_RAISED") {
-      const at = cultUnitAt(event.unitId, after, before);
-      if (at !== undefined) pushCult({ effect: "IDOL", cells: [at] });
     } else if (event.kind === "UNITS_SCARED") {
       // The Boo!, then every scared unit the viewer sees hops one tile.
       if (isExplored(event.at)) pushCult({ effect: "BOO", cells: [event.at] });

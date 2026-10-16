@@ -12,7 +12,6 @@ import {
   CULT_AGAINST_STAR_STEP_PRIORITY_V7,
   CULT_AGAINST_STRAND_PRIORITY_V7,
   CULT_AGAINST_SUMMONING_PRIORITY_V7,
-  CULT_AGAINST_WARD_PRIORITY_V7,
   cultAgainstEyeMarkedV7,
   cultAgainstFactsV7,
   setCultAgainstPolicyOptionsV7,
@@ -37,7 +36,6 @@ import {
   withFrogsV7,
   withGripV7,
   withHorrorV7,
-  withIdolsV7,
   withRitualV7,
   withStrandsV7,
   withTentacleV7,
@@ -348,45 +346,20 @@ describe("against the Cult: hunt the strands (section 15.5)", () => {
     ).toBeLessThan(CULT_AGAINST_STRAND_PRIORITY_V7);
   });
 
-  describe("under a raised idol", () => {
-    const warded = (shooters: readonly GoblinPieceV7[]): GameStateV7 => {
-      let state = scene([
-        ...shooters,
-        cult("FIGHTER", 4, 2),
-        cult("GUARD", 4, 3),
-      ]);
-      state = withHorrorV7(state, 1, at(2, 3), { activation: SPENT });
-      state = withStrandsV7(state, at(2, 3), [at(4, 2)]);
-      return withIdolsV7(state, [at(4, 3)]);
-    };
-
-    it("hits the Idol Bearer first when a second unit can then break the strand", () => {
-      const state = warded([own("MARKSMAN", 6, 2), own("MARKSMAN", 6, 3)]);
-      const chosen = decides(state);
-      expect(chosen).toMatchObject({
-        kind: "ATTACK",
-        targetUnitId: unitAtV7(state, at(4, 3)).id,
-      });
-      expect(attack(state, at(6, 2), at(4, 3))?.score.priority).toBe(
-        CULT_AGAINST_WARD_PRIORITY_V7,
-      );
-      // The warded channeller's own hit breaks nothing yet.
-      expect(attack(state, at(6, 2), at(4, 2))?.score.priority).toBeLessThan(
-        CULT_AGAINST_STRAND_PRIORITY_V7,
-      );
-      // Before this module the Idol Bearer was an ordinary target.
-      expect(
-        attack(state, at(6, 2), at(4, 3), false)?.score.priority,
-      ).toBeLessThan(CULT_AGAINST_STRAND_PRIORITY_V7);
-    });
-
-    it("does not with one shooter (the ward drops, the strand stays)", () => {
-      const state = warded([own("MARKSMAN", 6, 3)]);
-      for (const target of [at(4, 2), at(4, 3)])
-        expect(
-          attack(state, at(6, 3), target)?.score.priority ?? 0,
-        ).toBeLessThan(CULT_AGAINST_STRAND_PRIORITY_V7);
-    });
+  // (The Cult redesign, `pulp_wars-mch9.33`: an idol keeps no strand any
+  // more, so a channeller beside an Idol Bearer is hunted like any other;
+  // the warden's own rules for the other seats are A-R4's.)
+  it("hunts a channeller beside a standing idol like any other", () => {
+    let state = scene([
+      own("MARKSMAN", 6, 2),
+      cult("FIGHTER", 4, 2),
+      cult("GUARD", 4, 3),
+    ]);
+    state = withHorrorV7(state, 1, at(2, 3), { activation: SPENT });
+    state = withStrandsV7(state, at(2, 3), [at(4, 2)]);
+    expect(attack(state, at(6, 2), at(4, 2))?.score.priority).toBe(
+      CULT_AGAINST_STRAND_PRIORITY_V7,
+    );
   });
 
   describe("a circle", () => {

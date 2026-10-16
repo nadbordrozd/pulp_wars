@@ -282,7 +282,7 @@ work as in a generated match.
 | `LAB_DINOSAUR_MID`        | 16 x 16. **You play the Dinosaurs** against the Human AI in an even middle game ([the Dinosaur pass](../product/RULESET_7_TUNING_DINOSAUR.md#9-the-lab)), on the land and against the Human side of `LAB_MARTIAN_MID`: five cities a side (a level-4 capital, two level-3, two level-2 at the front), 15 Coins a turn each, ten technologies each. You can produce every Dinosaur unit and hold 3 Cavemen, 2 Raptors (one Big), 2 Spitters (one Big), 2 Ankylosauruses, a Shaman, 2 Triceratops (one Big), and a T-Rex Egg beside your capital, two turns from hatching, with the Shaman next to it (12 units and the Egg, 67 Coins), 35 Coins on the first turn, and three free unit slots (two in the capital, one in the northern level-3 city; a Triceratops and a T-Rex fill two). You own neither Nesting (one more unit slot in every city, Eggs with 10 HP) nor Wallbreaker (the second tile of a Triceratops's run-up). The Humans hold 3 Swordsmen, 3 Marksmen, 2 Catapults, 2 Knights, 2 Guards, and 5 Fighters (77 Coins) at the start and 30 Coins on their first turn, a walled capital and a walled level-3 city, and Forest cover. |
 | `LAB_ICE_FOLK_MID`        | 16 x 16. **You play the Ice Folk** against the Human AI in an even middle game ([step two of the Ice Folk pass](../product/RULESET_7_TUNING_ICE_FOLK.md#6-the-lab)), on the land and against the Human side of `LAB_DINOSAUR_MID`: five cities a side, thirteen technologies for you (Deep Winter, Engineering, and Mammoths among them) and twelve for the Humans. You hold 5 Yetis, 2 Sleds, 2 Snow Hunters, 2 Musk Oxen, an Ice Witch, 2 Mammoths, a Boulder Yeti, and a Sabretooth (16 units, 70 Coins since revision 2), 35 Coins on the first turn, and three free unit slots; your land is Snow. The Humans hold 17 units (80 Coins). Revision 2 (Ice Folk Freeze, `pulp_wars-w49.37`: the same units under the new numbers).                                                                                                                                                                                                                                                                                                                                                                                                               |
 | `LAB_DWARF_MID`           | 16 x 16. **You play the Dwarves** against the Human AI in an even middle game ([step two of the Dwarf pass](../product/RULESET_7_TUNING_DWARF.md#6-the-lab)), on the land and against the Human side of `LAB_ICE_FOLK_MID`: five cities a side, thirteen technologies for you (Dig In, Clockwork, Dive Bombing, Mining, Steam Tanks, Steam Cannons, and Whirligigs among them; not Blasting Charges) and twelve for the Humans. You hold 5 Hammerers, 2 Gyrocopters, 2 Clockwork Gunners, 2 Steam Moles, an Engineer, 2 Steam Tanks, a Steam Cannon, and a Whirligig (16 units, 74 Coins), 35 Coins on the first turn, and three free unit slots. The Humans hold 17 units (80 Coins). Revision 1.                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| `LAB_CULT_MID`            | 16 x 16. **You play the Cultists** against the Human AI in an even middle game ([the Cultists spec, section 21.6](../product/RULESET_7_CULTISTS.md#216-e6-hexes-and-tricks-pulp_wars-mch98-pulp-wars-poc-7r78)), on the land and against the Human side of `LAB_DWARF_MID`: five cities a side, fourteen technologies for you (every Cult unit and every rite, The Stars Are Right among them; not Harvest Rites) and twelve for the Humans. You hold 6 Initiates, 3 Idol Bearers, 2 Familiars, 3 Hexers, 2 Summoners (side by side), and a Stargazer (17 units, 53 Coins; revision 2, the Cult redesign's roster), 35 Coins on the first turn, **12 Favour** (a Horror costs 5, the Great Summoning 20), no daemon, and two free unit slots. **Built and checked; not played yet.**                                                                                                                                                                                                                                                                                                                                                               |
+| `LAB_CULT_MID`            | 16 x 16. **You play the Cultists** against the Human AI in an even middle game ([the Cultists spec, section 21.6](../product/RULESET_7_CULTISTS.md#216-e6-hexes-and-tricks-pulp_wars-mch98-pulp-wars-poc-7r78)), on the land and against the Human side of `LAB_DWARF_MID`: five cities a side, fourteen technologies for you (every Cult unit and every rite, The Stars Are Right among them; not Harvest Rites) and twelve for the Humans. You hold 6 Initiates, 3 Idol Bearers, 2 Familiars, 3 Hexers, 2 Summoners (side by side), and a Stargazer (17 units, 53 Coins; revision 2, the Cult redesign's roster), 35 Coins on the first turn, **12 Favour** (a Horror costs 4, the Great Summoning 18, and Favour stops at 30), no daemon, and two free unit slots. **Built and checked; not played yet.**                                                                                                                                                                                                                                                                                                                                                               |
 
 ### Dinosaur seats
 
@@ -365,13 +365,21 @@ Other factions add `.raise`, `.devour`, `.wail`, `.kaboom`, `.coldsnap`,
 Barricades on explored tiles (owner and HP) and marks their cells `B`.
 The Cultists (`pulp_wars-mch9.4`) add `.sacrifice.u9` and `.seize.u31`
 (the Summoner offers that unit) and `c1.offering`; a Cult seat's header and
-every Cult seat in the player list show its Favour. The channel
+every Cult seat in the player list show its Favour against the cap
+(`favour 12/30`; the header adds the Hunger its Heralds will eat at its
+next turn, and a `FAVOUR` log line what a gain lost above the cap: the Cult
+redesign, `pulp_wars-mch9.32`). The channel
 (`pulp_wars-mch9.5`) adds `.summon.u9.4,5` (the helper, then the Horror's
-tile), `.channel.u40` (the daemon), `.behold`, `.anchor.u9` (the cultist the
+tile), `.channel.u40` (the daemon), `.anchor.u9` (the cultist the
 Thing grips), and `.boo`. A Horror prints as `Horror [HORROR]` with the map
 code `Ho`; a daemon's line shows `daemon: strands 1/1` (its holding strands
 against its Control), a channeller's `channels u40`, a gripped one's
-`gripped by u12 (strand counts three)`, and an Idol Bearer's `idol raised`.
+`gripped by u12 (strand counts three)`, and an Idol Bearer's `IDOL STANDS`
+(or `idol down` under a status). Since the Cult redesign's warden
+(`pulp_wars-mch9.33`) there is no `.behold`: an enemy beside a standing
+idol shows `AWESTRUCK by u12: attacks only an Idol Bearer beside it`, and
+an attack option that the idol halves says `HALVED by the Idol Bearer
+beside it`.
 Unbound (`pulp_wars-mch9.6`) adds no id: `.channel.u40` on an Unbound daemon
 prints as `BIND AGAIN`, with the turn's strands against its Control. An
 Unbound daemon is a neutral unit (seat digit `N`); its line shows
@@ -381,7 +389,8 @@ redesign's target order, `pulp_wars-mch9.35`: `a cultist within 2`, `the
 nearest unit in its reach`, `a summon in its reach, nobody else being
 near`, or `the nearest unit, out of its reach`), then
 `FURIOUS` or how many strands bind it. A bound daemon short of its Control
-shows whom it would go for. The log prints `UNBOUND` and `BOUND AGAIN`.
+shows whom it would go for. The log prints `UNBOUND` (with `its Hunger
+went unpaid` for a Herald its seat could not feed) and `BOUND AGAIN`.
 Rituals and the Herald (`pulp_wars-mch9.7`) add `.starfall.4,5` and
 `.summoning.4,5` (the leader begins the rite with that mark) and
 `.proclaim.c3` (the Herald Cows that city). `options` says what a star hits

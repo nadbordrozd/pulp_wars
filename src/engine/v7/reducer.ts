@@ -313,7 +313,6 @@ import {
 } from "./cult";
 import {
   applyAnchorV7,
-  applyBeholdV7,
   applyBooV7,
   applyChannelV7,
   applySummonV7,
@@ -538,12 +537,12 @@ export type RuleErrorCodeV7 =
   | "OFFERING_NOT_LEGAL"
   // The Cultists (`pulp_wars-mch9.5`, sections 6 and 8): an illegal Summon
   // (`EMBARKED`, `HELPER`, `TILE`), Channel (`EMBARKED`, `DAEMON`, `RANGE`),
-  // Behold! (`EMBARKED`, `RAISED`), Anchor (`EMBARKED`, `GRIPPING`,
-  // `CULTIST`), or Boo! (`NOBODY`); and a summoning the seat's Favour does
-  // not pay for (`cost`).
+  // Anchor (`EMBARKED`, `GRIPPING`, `CULTIST`), or Boo! (`NOBODY`); and a
+  // summoning the seat's Favour does not pay for (`cost`). (Behold!'s
+  // `BEHOLD_NOT_LEGAL` went with its command: the Cult redesign,
+  // `pulp_wars-mch9.33`.)
   | "SUMMON_NOT_LEGAL"
   | "CHANNEL_NOT_LEGAL"
-  | "BEHOLD_NOT_LEGAL"
   | "ANCHOR_NOT_LEGAL"
   | "BOO_NOT_LEGAL"
   | "INSUFFICIENT_FAVOUR"
@@ -568,7 +567,11 @@ export type RuleErrorCodeV7 =
   | "RIBBIT_NOT_LEGAL"
   | "SWITCHEROO_NOT_LEGAL"
   | "TENTACLE_NOT_LEGAL"
-  | "UNIT_FROGGED";
+  | "UNIT_FROGGED"
+  // The Cult redesign (`pulp_wars-mch9.33`, section 8.1): an `ATTACK` by
+  // a unit beside a standing hostile idol at anybody but an Idol Bearer
+  // beside it (`ATTACK_AWESTRUCK { unitId }`, the bearer).
+  | "ATTACK_AWESTRUCK";
 export interface RuleErrorV7 {
   readonly code: RuleErrorCodeV7;
   readonly params: Readonly<Record<string, JsonValue>>;
@@ -921,7 +924,7 @@ function applyCommandUnscoredV7(
   // (The Cultists' Martyr, which folded the Favour of the command's Chosen
   // deaths here, retired with the Chosen: the Cult redesign,
   // `pulp_wars-mch9.31`.)
-  // The Cultists (section 6.2): last, the strands, grips, and idols the
+  // The Cultists (section 6.2): last, the strands and grips the
   // command broke (the one disruption rule, read from what happened to
   // each watched unit between the state before the command and after it).
   const core = withDisruptionsResultV7(
@@ -1405,12 +1408,11 @@ function withWightGravesResultV7(
 
 /**
  * The Cultists (docs/product/RULESET_7_CULTISTS.md section 6.2): the one
- * disruption rule, applied to every accepted command. A strand's cultist, a
- * grip's Thing, or a raised idol's bearer that lost Hit Points, was moved
- * by anything but its own command, got a status, changed owner, or left
- * the board between `before` and the result is disrupted
- * (`cultDisruptionsV7`): `STRAND_BROKEN`, `ANCHOR_BROKEN`, and
- * `IDOL_DROPPED` follow the command's other events. In an `END_TURN` the
+ * disruption rule, applied to every accepted command. A strand's cultist
+ * or a grip's Thing that lost Hit Points, was moved by anything but its
+ * own command, got a status, changed owner, or left the board between
+ * `before` and the result is disrupted (`cultDisruptionsV7`):
+ * `STRAND_BROKEN` and `ANCHOR_BROKEN` follow the command's other events. In an `END_TURN` the
  * seat that began its turn was judged before its channel check
  * (`resolveStartTurnChannelStepV7`) and is not judged again. Only `cult`
  * changes. Returns `result` itself when nothing was watched or broke.
@@ -1421,12 +1423,7 @@ function withDisruptionsResultV7(
   result: Extract<ApplyCommandResultV7, { readonly accepted: true }>,
 ): Extract<ApplyCommandResultV7, { readonly accepted: true }> {
   const watched = before.cult;
-  if (
-    watched.strands.length === 0 &&
-    watched.grips.length === 0 &&
-    watched.idols.length === 0
-  )
-    return result;
+  if (watched.strands.length === 0 && watched.grips.length === 0) return result;
   let started: PlayerId | null = null;
   for (const event of result.events)
     if (event.kind === "TURN_STARTED") started = event.playerId;
@@ -1494,7 +1491,7 @@ function withRitualDisruptionsResultV7(
  * The Cultists (sections 6.2 and 13.3): the channel step of a Start Turn
  * (`resolveStartTurnChannelV7`: the disruptions of the `END_TURN` so far,
  * the check of each bound daemon and the rampage of each one that broke
- * loose, the cleared strands and grips, the lowered idols), with the live
+ * loose, the trickle and Hunger, the cleared strands and grips), with the live
  * economy of a board where a daemon left its seat (an Unbound daemon on a
  * center besieges nothing).
  */
@@ -1694,9 +1691,9 @@ function applyCommandCoreV7(
   const frozenNamed = frozenUnitNamedV7(state, actor, command);
   if (frozenNamed !== null)
     return rejected(stateInput, "UNIT_FROZEN", { unitId: frozenNamed });
-  // The Cultists (`pulp_wars-mch9.8`, RULESET_7_CULTISTS.md sections 9.1
-  // and 8.2): a frog only hops, and a unit beside a taunting Chosen attacks
-  // only it.
+  // The Cultists (`pulp_wars-mch9.8`, RULESET_7_CULTISTS.md section 9.1):
+  // a frog only hops; and (the Cult redesign, `pulp_wars-mch9.33`) a unit
+  // beside a standing hostile idol attacks only an Idol Bearer (Awestruck).
   const trick = trickRefusalV7(state, actor, command);
   if (trick !== null)
     return rejected(stateInput, trick.code, { unitId: trick.unitId });
@@ -1889,8 +1886,6 @@ function applyCommandCoreV7(
     return applySummonV7(DWARF_KIT_V7, stateInput, state, actor, command);
   if (command.kind === "CHANNEL")
     return applyChannelV7(DWARF_KIT_V7, stateInput, state, actor, command);
-  if (command.kind === "BEHOLD")
-    return applyBeholdV7(DWARF_KIT_V7, stateInput, state, actor, command);
   if (command.kind === "ANCHOR")
     return applyAnchorV7(DWARF_KIT_V7, stateInput, state, actor, command);
   if (command.kind === "BOO")
@@ -9989,7 +9984,7 @@ function checked(state: GameStateV7): GameStateV7 {
   // holders, and a victim whose holder left is released or gone (first, so
   // a released victim is an ordinary unit for the other prunes).
   // The Cultists: drop the Favour of a seat that left the game, and the
-  // strands, grips, idols, ritual places, and Cowed entries whose units or
+  // strands, grips, ritual places, and Cowed entries whose units or
   // cities left the board; and (`pulp_wars-mch9.8`) the frogs, hex
   // cooldowns, Tentacle entries, and grabs whose units left it.
   const result = parseGameStateV7(

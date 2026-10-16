@@ -302,7 +302,7 @@ describe("the words", () => {
         ),
       );
     expect(names(R.free)).toBe(
-      "The Herald arrives here at the start of your next turn: the Herald starts with 5 of the 3 strands it needs. −20 Favour.",
+      "The Herald arrives here at the start of your next turn: the Herald starts with 5 of the 3 strands it needs. −18 Favour.",
     );
     expect(names(R.broken)).toMatch(/the unit on it is consumed for 18 Favour/);
     expect(names(R.healthy)).toMatch(

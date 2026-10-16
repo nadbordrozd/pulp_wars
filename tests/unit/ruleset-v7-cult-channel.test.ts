@@ -23,7 +23,7 @@ import {
   parseEventV7,
   parseGameStateV7,
   previewAnchorV7,
-  previewBeholdV7,
+  previewWardenV7,
   previewBooV7,
   previewChannelV7,
   previewSummonV7,
@@ -49,7 +49,6 @@ import {
   withFavourV7,
   withGripV7,
   withHorrorV7,
-  withIdolsV7,
   withStrandsV7,
 } from "../fixtures/v7-cult";
 import {
@@ -130,10 +129,6 @@ const anchor = (
   unitId: unitAtV7(state, thing).id,
   cultistUnitId: unitAtV7(state, cultist).id,
 });
-const behold = (state: GameStateV7, bearer: CoordV7): CommandV7 => ({
-  kind: "BEHOLD",
-  unitId: unitAtV7(state, bearer).id,
-});
 const boo = (state: GameStateV7, horror: CoordV7): CommandV7 => ({
   kind: "BOO",
   unitId: unitAtV7(state, horror).id,
@@ -153,10 +148,13 @@ const eventsOf = <K extends DomainEventV7["kind"]>(
       event.kind === kind,
   );
 
-/** A summoning field: a Summoner, an Initiate beside it, and 5 Favour. */
+/**
+ * A summoning field: a Summoner, an Initiate beside it, and 4 Favour (a
+ * Horror's price since the Cult redesign, `pulp_wars-mch9.32`).
+ */
 const summonField = (
   pieces: readonly GoblinPieceV7[] = [],
-  favourAmount = 5,
+  favourAmount = 4,
 ): GameStateV7 =>
   withFavourV7(cultFieldV7([SUMMONER, HELPER, ...pieces]), 0, favourAmount);
 
@@ -200,7 +198,7 @@ describe("the Cult's channel: the registration", () => {
     );
     expect(ANCHOR_STRANDS_V7).toBe(2);
     expect(CHANNEL_RANGE_V7).toBe(3);
-    expect(HORROR_FAVOUR_COST_V7).toBe(5);
+    expect(HORROR_FAVOUR_COST_V7).toBe(4);
     // No other faction has any of them.
     for (const faction of ["ORIGINAL", "UNDEAD", "MARTIAN", "CANDY"] as const)
       for (const role of ["FIGHTER", "CAPTAIN", "GUARD", "JUGGERNAUT"] as const)
@@ -227,25 +225,30 @@ describe("the Cult's channel: the registration", () => {
   it("orders the new command and event kinds after the Favour ones", () => {
     const commands = COMMAND_KIND_ORDER_V7 as readonly string[];
     expect(
-      commands.slice(commands.indexOf("SEIZE"), commands.indexOf("SEIZE") + 6),
-    ).toEqual(["SEIZE", "SUMMON", "CHANNEL", "BEHOLD", "ANCHOR", "BOO"]);
+      commands.slice(commands.indexOf("SEIZE"), commands.indexOf("SEIZE") + 5),
+    ).toEqual(["SEIZE", "SUMMON", "CHANNEL", "ANCHOR", "BOO"]);
     const events = DOMAIN_EVENT_KIND_ORDER_V7 as readonly string[];
     const from = events.indexOf("FAVOUR_GAINED");
-    expect(events.slice(from, from + 11)).toEqual([
+    // (BEHOLD and the idol events went with the Cult redesign's warden,
+    // `pulp_wars-mch9.33`.)
+    expect(events.slice(from, from + 9)).toEqual([
       "FAVOUR_GAINED",
       "FAVOUR_SPENT",
       "DAEMON_SUMMONED",
       "STRAND_FORMED",
       "STRAND_BROKEN",
-      "IDOL_RAISED",
-      "IDOL_DROPPED",
       "ANCHOR_GRIPPED",
       "ANCHOR_BROKEN",
       "UNITS_SCARED",
       "DAEMON_UNBOUND",
     ]);
-    // The Great Summoning joined with `pulp_wars-mch9.7`.
-    expect(FAVOUR_PURPOSES_V7).toEqual(["SUMMON_HORROR", "GREAT_SUMMONING"]);
+    // The Great Summoning joined with `pulp_wars-mch9.7`, the Herald's
+    // Hunger with the Cult redesign (`pulp_wars-mch9.32`).
+    expect(FAVOUR_PURPOSES_V7).toEqual([
+      "SUMMON_HORROR",
+      "GREAT_SUMMONING",
+      "HUNGER",
+    ]);
     expect(DISRUPTION_CAUSES_V7).toEqual([
       "HP_LOSS",
       "MOVED",
@@ -255,11 +258,10 @@ describe("the Cult's channel: the registration", () => {
     ]);
   });
 
-  it("parses and orders the five commands", () => {
+  it("parses and orders the four commands (Behold! has none since pulp_wars-mch9.33)", () => {
     const good: CommandV7[] = [
       { kind: "SUMMON", unitId: 31, helperUnitId: 32, at: at(4, 4) } as never,
       { kind: "CHANNEL", unitId: 31, daemonUnitId: 40 } as never,
-      { kind: "BEHOLD", unitId: 31 } as never,
       { kind: "ANCHOR", unitId: 31, cultistUnitId: 32 } as never,
       { kind: "BOO", unitId: 31 } as never,
     ];
@@ -275,7 +277,7 @@ describe("the Cult's channel: the registration", () => {
       { kind: "CHANNEL", unitId: 31, daemonUnitId: 31 },
       { kind: "CHANNEL", unitId: 31 },
       { kind: "ANCHOR", unitId: 31, cultistUnitId: 31 },
-      { kind: "BEHOLD", unitId: 31, at: at(1, 1) },
+      { kind: "BEHOLD", unitId: 31 },
       { kind: "BOO" },
     ])
       expect(parseCommandV7(bad).ok, JSON.stringify(bad)).toBe(false);
@@ -314,7 +316,7 @@ describe("the Cult's channel: the registration", () => {
 });
 
 describe("the Cult's channel: Summon a Horror (section 6.1)", () => {
-  it("costs 5 Favour, puts an exhausted Horror beside the Summoner, and both channel it", () => {
+  it("costs 4 Favour, puts an exhausted Horror beside the Summoner, and both channel it", () => {
     const state = summonField([], 7);
     const command = summon(state, at(5, 2), at(6, 2), at(5, 3));
     const view = viewForV7(state, seatIdV7(state, 0));
@@ -339,8 +341,8 @@ describe("the Cult's channel: Summon a Horror (section 6.1)", () => {
       at: at(5, 3),
       role: "HORROR",
       hp: 18,
-      favour: 5,
-      favourAfter: 2,
+      favour: 4,
+      favourAfter: 3,
       control: 1,
       strands: 2,
     });
@@ -365,7 +367,7 @@ describe("the Cult's channel: Summon a Horror (section 6.1)", () => {
         (offered) => "unitId" in offered && offered.unitId === horror.id,
       ),
     ).toEqual([]);
-    expect(favour(played.state, 0)).toBe(2);
+    expect(favour(played.state, 0)).toBe(3);
     expect(played.state.cult.strands).toEqual([
       { cultistUnitId: unitAtV7(state, at(5, 2)).id, daemonUnitId: horror.id },
       { cultistUnitId: unitAtV7(state, at(6, 2)).id, daemonUnitId: horror.id },
@@ -386,8 +388,8 @@ describe("the Cult's channel: Summon a Horror (section 6.1)", () => {
       kind: "FAVOUR_SPENT",
       playerId: seatIdV7(state, 0),
       purpose: "SUMMON_HORROR",
-      amount: 5,
-      favour: 2,
+      amount: 4,
+      favour: 3,
     });
     expect(played.events[1]).toEqual({
       kind: "DAEMON_SUMMONED",
@@ -402,7 +404,7 @@ describe("the Cult's channel: Summon a Horror (section 6.1)", () => {
   });
 
   it("spends the last Favour (the entry goes) and may follow both Moves", () => {
-    const state = summonField([], 5);
+    const state = summonField([], 4);
     const moved = moveV7(moveV7(state, at(5, 2), [at(5, 3)]).state, at(6, 2), [
       at(6, 3),
     ]).state;
@@ -449,10 +451,10 @@ describe("the Cult's channel: Summon a Horror (section 6.1)", () => {
       [
         [
           "too little Favour",
-          withFavourV7(base, 0, 4),
+          withFavourV7(base, 0, 3),
           good,
           "INSUFFICIENT_FAVOUR",
-          { cost: 5 },
+          { cost: 4 },
         ],
         [
           "a helper that is not robed (the Familiar)",
@@ -564,7 +566,7 @@ describe("the Cult's channel: Summon a Horror (section 6.1)", () => {
         { seat: 0, role: "CAPTAIN", at: at(5, 6) },
         { seat: 0, role: "FIGHTER", at: at(6, 6) },
       ],
-      10,
+      8,
     );
     const first = playV7(state, summon(state, at(5, 2), at(6, 2), at(5, 3)));
     const second = playV7(
@@ -882,7 +884,7 @@ describe("the Cult's channel: a bound Horror and the other factions (sections 4.
     expect(pushed.target?.at).toEqual(at(5, 3));
   });
 
-  it("takes the channel from a mind-controlled cultist, and leaves it Behold!", () => {
+  it("takes the channel from a mind-controlled cultist (its idol stands for its controller)", () => {
     // Two Brains hold an Initiate and an Idol Bearer; the Cult's Horror
     // stands within their reach.
     const state = withHorrorV7(
@@ -899,10 +901,14 @@ describe("the Cult's channel: a bound Horror and the other factions (sections 4.
       1,
       at(5, 4),
     );
-    const offered = offeredV7(state, "CHANNEL", "BEHOLD", "SUMMON", "ANCHOR");
-    expect(offered).toEqual([
-      { kind: "BEHOLD", unitId: unitAtV7(state, at(5, 6)).id },
-    ]);
+    const offered = offeredV7(state, "CHANNEL", "SUMMON", "ANCHOR");
+    expect(offered).toEqual([]);
+    // The Idol Bearer's aura is a unit trick: its idol stands for the
+    // Martian that controls it (the Cult redesign, `pulp_wars-mch9.33`).
+    const view = viewForV7(state, seatIdV7(state, 0));
+    expect(previewWardenV7(view, unitAtV7(state, at(5, 6)).id)).toMatchObject({
+      stands: true,
+    });
     expect(rejectedV7(state, channel(state, at(4, 6), at(5, 4)))).toEqual({
       code: "UNIT_ROLE_INVALID",
       params: { role: "FIGHTER" },
@@ -1093,6 +1099,7 @@ describe("the Cult's channel: the Start Turn check (sections 6.2 and 13.3)", () 
         summonerPlayerId: cultId(state),
         strands: 0,
         control: 1,
+        reason: "STRANDS",
       },
     ]);
     const index = round.events.findIndex(
@@ -1330,79 +1337,21 @@ describe("the Cult's channel: Anchor (section 8.4)", () => {
   });
 });
 
-describe("the Cult's channel: Behold! (section 8.1)", () => {
-  it("raises the idol after a Move, as the Idol Bearer's action for the turn", () => {
+describe("the Cult's channel: Behold! has no command (the Cult redesign, pulp_wars-mch9.33)", () => {
+  it("offers and accepts no BEHOLD: the idol stands with no action, and the Idol Bearer channels", () => {
     const state = horrorField([
       { seat: 0, role: "GUARD", at: at(5, 6), activation: movedV7(1) },
-      { seat: 0, role: "FIGHTER", at: at(6, 6) },
-      { seat: 0, role: "RAIDER", at: at(4, 6) },
       { seat: 1, role: "FIGHTER", at: at(5, 7) },
     ]);
-    const bearer = unitAtV7(state, at(5, 6));
+    expect(COMMAND_KIND_ORDER_V7 as readonly string[]).not.toContain("BEHOLD");
     expect(
-      previewBeholdV7(viewForV7(state, seatIdV7(state, 0)), bearer.id),
-    ).toEqual({
-      unitId: bearer.id,
-      // The Initiate beside it; never the Familiar or an enemy.
-      wardedUnitIds: [unitAtV7(state, at(6, 6)).id],
-    });
-    const played = playV7(state, behold(state, at(5, 6)));
-    expect(played.events).toEqual([
-      { kind: "IDOL_RAISED", playerId: seatIdV7(state, 0), unitId: bearer.id },
+      parseCommandV7({ kind: "BEHOLD", unitId: unitAtV7(state, at(5, 6)).id })
+        .ok,
+    ).toBe(false);
+    // Its turn is free for the channel.
+    expect(offeredV7(state, "CHANNEL")).toEqual([
+      channel(state, at(5, 6), at(5, 4)),
     ]);
-    expect(played.state.cult.idols).toEqual([bearer.id]);
-    // It spent its action: it does not channel this turn, and cannot raise
-    // the idol twice.
-    expect(
-      rejectedV7(played.state, channel(played.state, at(5, 6), at(5, 4))).code,
-    ).toBe("UNIT_ALREADY_ACTED");
-    expect(rejectedV7(played.state, behold(played.state, at(5, 6))).code).toBe(
-      "UNIT_ALREADY_ACTED",
-    );
-    // Every viewer who sees the Idol Bearer sees the idol.
-    expect(viewForV7(played.state, seatIdV7(state, 1)).cult.idols).toEqual([
-      bearer.id,
-    ]);
-  });
-
-  it("lasts until the end of the channel check of the next Start Turn", () => {
-    const state = withIdolsV7(
-      cultFieldV7([{ seat: 0, role: "GUARD", at: at(5, 6) }]),
-      [at(5, 6)],
-    );
-    const bearer = unitAtV7(state, at(5, 6));
-    const ended = applyOkV7(state, seatIdV7(state, 0), { kind: "END_TURN" });
-    expect(ended.state.cult.idols).toEqual([bearer.id]);
-    const back = applyOkV7(ended.state, seatIdV7(state, 1), {
-      kind: "END_TURN",
-    });
-    expect(back.state.cult.idols).toEqual([]);
-    expect(eventsOf(back.events, "IDOL_DROPPED")).toEqual([
-      {
-        kind: "IDOL_DROPPED",
-        playerId: seatIdV7(state, 0),
-        unitId: bearer.id,
-        cause: "EXPIRED",
-      },
-    ]);
-  });
-
-  it("refuses a unit that is no Idol Bearer and an idol already raised", () => {
-    const state = withIdolsV7(
-      cultFieldV7([
-        { seat: 0, role: "GUARD", at: at(5, 6) },
-        { seat: 0, role: "FIGHTER", at: at(6, 6) },
-      ]),
-      [at(5, 6)],
-    );
-    expect(rejectedV7(state, behold(state, at(6, 6)))).toEqual({
-      code: "UNIT_ROLE_INVALID",
-      params: { role: "FIGHTER" },
-    });
-    expect(rejectedV7(state, behold(state, at(5, 6)))).toEqual({
-      code: "BEHOLD_NOT_LEGAL",
-      params: { reason: "RAISED" },
-    });
   });
 });
 
@@ -1628,24 +1577,21 @@ describe("the Cult's channel: the public view and Candlelit (section 6.2)", () =
     ]);
   });
 
-  it("carries strands, grips, and idols through a save and rejects malformed lists", () => {
-    const state = withIdolsV7(
-      withGripV7(
-        withStrandsV7(
-          horrorField([
-            { seat: 0, role: "FIGHTER", at: at(5, 6) },
-            { seat: 0, role: "JUGGERNAUT", at: at(6, 6) },
-            { seat: 0, role: "GUARD", at: at(4, 6) },
-            { seat: 0, role: "RAIDER", at: at(6, 5) },
-            { seat: 1, role: "FIGHTER", at: at(1, 1) },
-          ]),
-          at(5, 4),
-          [at(5, 6)],
-        ),
-        at(6, 6),
-        at(5, 6),
+  it("carries strands and grips through a save and rejects malformed lists", () => {
+    const state = withGripV7(
+      withStrandsV7(
+        horrorField([
+          { seat: 0, role: "FIGHTER", at: at(5, 6) },
+          { seat: 0, role: "JUGGERNAUT", at: at(6, 6) },
+          { seat: 0, role: "GUARD", at: at(4, 6) },
+          { seat: 0, role: "RAIDER", at: at(6, 5) },
+          { seat: 1, role: "FIGHTER", at: at(1, 1) },
+        ]),
+        at(5, 4),
+        [at(5, 6)],
       ),
-      [at(4, 6)],
+      at(6, 6),
+      at(5, 6),
     );
     expect(parseGameStateV7(JSON.parse(JSON.stringify(state)))).toEqual(state);
     const id = (where: CoordV7) => unitAtV7(state, where).id;
@@ -1695,11 +1641,8 @@ describe("the Cult's channel: the public view and Candlelit (section 6.2)", () =
           grips: [{ thingUnitId: id(at(6, 6)), cultistUnitId: id(at(4, 6)) }],
         }),
       ],
-      [
-        "an idol of a unit that is no Idol Bearer",
-        withCult({ idols: [id(at(5, 6))] }),
-      ],
-      ["idols out of order", withCult({ idols: [id(at(4, 6)), id(at(4, 6))] })],
+      // The raised idols' list is gone (`pulp_wars-mch9.33`).
+      ["a list of raised idols", withCult({ idols: [id(at(4, 6))] })],
     ] as const)
       expect(parseGameStateV7(input), label).toBeNull();
   });
@@ -1718,7 +1661,6 @@ describe("the Cult's channel: the public view and Candlelit (section 6.2)", () =
       favour: [],
       strands: [],
       grips: [],
-      idols: [],
       rituals: [],
       cowed: [],
       frogs: [],

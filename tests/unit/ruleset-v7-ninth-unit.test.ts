@@ -402,11 +402,11 @@ const productionOf = (
 
 describe("the ninth unit: identity", () => {
   it("was 7r55 after 7r54, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r88");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r88.current");
-    expect(PRIOR_RULESET_7_IDS.at(-34)).toBe("pulp-wars-poc-7r54");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r89");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r89.current");
+    expect(PRIOR_RULESET_7_IDS.at(-35)).toBe("pulp-wars-poc-7r54");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-34)).toBe(
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-35)).toBe(
       "pulpWars.save.v7r54.current",
     );
     const state = field([]);
@@ -452,8 +452,9 @@ describe("the ninth unit: identity", () => {
     // The Cult redesign's roster (`pulp_wars-mch9.31`) removes
     // PICK_ME_SHOUTED (154).
     // The Cult redesign's Star-fall (`pulp_wars-mch9.34`) adds
-    // CHANT_JOINED after RITUAL_BEGUN (155).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(155);
+    // CHANT_JOINED after RITUAL_BEGUN (155), and its warden
+    // (`pulp_wars-mch9.33`) removes IDOL_RAISED and IDOL_DROPPED (153).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(153);
   });
 });
 

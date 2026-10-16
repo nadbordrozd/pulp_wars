@@ -68,10 +68,10 @@ const LATER_COMMAND_KINDS: readonly string[] = [
   "SACRIFICE",
   "SEIZE",
   // The Cult's channel (`pulp_wars-mch9.5`) inserts SUMMON, CHANNEL, BEHOLD,
-  // ANCHOR, and BOO after SEIZE.
+  // ANCHOR, and BOO after SEIZE; the Cult redesign's warden
+  // (`pulp_wars-mch9.33`) removes BEHOLD again.
   "SUMMON",
   "CHANNEL",
-  "BEHOLD",
   "ANCHOR",
   "BOO",
   // The Cult's rituals (`pulp_wars-mch9.7`) insert BEGIN_RITUAL and PROCLAIM

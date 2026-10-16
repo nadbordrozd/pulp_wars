@@ -263,8 +263,12 @@ describe("Unbound: the registration (sections 6.4 and 13.1)", () => {
       "DAEMON_UNBOUND",
       "DAEMON_BOUND",
     ]);
-    // (A consumption joined after it with `pulp_wars-mch9.7`.)
-    expect(FAVOUR_SOURCES_V7.slice(-2)).toEqual(["DAEMON_KILL", "CONSUMPTION"]);
+    // (A consumption joined after it with `pulp_wars-mch9.7`, the trickle
+    // with `pulp_wars-mch9.32`.)
+    expect(FAVOUR_SOURCES_V7.slice(-3, -1)).toEqual([
+      "DAEMON_KILL",
+      "CONSUMPTION",
+    ]);
     expect(
       parseEventV7({
         kind: "DAEMON_BOUND",
@@ -304,6 +308,7 @@ describe("Unbound: the failed check (section 6.4)", () => {
         summonerPlayerId: cultId(state),
         strands: 0,
         control: 1,
+        reason: "STRANDS",
       },
     ]);
     const loose = need(round.state.units.find((unit) => unit.id === horror.id));
@@ -1189,6 +1194,7 @@ describe("Unbound: kills, Favour, and the Score (sections 6.4, 8.2, and 8.3)", (
         playerId: cultId(state),
         source: "DAEMON_KILL",
         amount: 2,
+        forfeited: 0,
         favour: 2,
       },
     ]);
@@ -1332,6 +1338,7 @@ describe("Unbound: elimination (section 13.1)", () => {
         summonerPlayerId: cultId(state),
         strands: 0,
         control: 1,
+        reason: "ELIMINATED",
       },
     ]);
     // Its cultist is removed with the seat; both daemons stay.
@@ -1359,7 +1366,6 @@ describe("Unbound: elimination (section 13.1)", () => {
       favour: [],
       strands: [],
       grips: [],
-      idols: [],
       rituals: [],
       cowed: [],
       frogs: [],

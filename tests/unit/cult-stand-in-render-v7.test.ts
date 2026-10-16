@@ -675,12 +675,14 @@ describe("the Cult in the interface's words and lists", () => {
     ] as const)
       expect(restrictions(role), role).toEqual([]);
     // (Channel and Behold! arrived with the channel, `pulp_wars-mch9.5`.)
+    // (And Awestruck, the warden's aura, `pulp_wars-mch9.33`.)
     // (And Join the chant, the Cult redesign, `pulp_wars-mch9.34`.)
     expect(roleGlossaryV7("GUARD", "CULT").map((entry) => entry.id)).toEqual([
       "CHANNEL",
       "BEHOLD",
       "JOIN_CHANT",
       "SLOW_TO_STRIKE",
+      "AWESTRUCK",
     ]);
     // (Switcheroo arrived with the tricks, `pulp_wars-mch9.8`.)
     expect(roleGlossaryV7("RAIDER", "CULT").map((entry) => entry.id)).toEqual([

@@ -39,7 +39,7 @@ const setup: MatchSetupV7 = {
 
 describe("ruleset-7 revision-8 deterministic foundation", () => {
   it("freezes the exact identity and registries", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r88");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r89");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
@@ -141,8 +141,9 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
     // The Cult redesign's roster (`pulp_wars-mch9.31`) removes PICK_ME
     // (83).
     // The Cult redesign's Star-fall (`pulp_wars-mch9.34`) adds
-    // JOIN_CHANT after TENTACLE (84).
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(84);
+    // JOIN_CHANT after TENTACLE (84), and its warden (`pulp_wars-mch9.33`)
+    // removes BEHOLD (83).
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(83);
     // The revision-19 Dinosaur STAMPEDE stays gone; Ice Folk Freeze's
     // Mammoth STAMPEDE is a new command after BREAK_OFF.
     expect(COMMAND_KIND_ORDER_V7.indexOf("STAMPEDE")).toBe(
@@ -177,8 +178,9 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
     // The Cult redesign's roster (`pulp_wars-mch9.31`) removes
     // PICK_ME_SHOUTED (154).
     // The Cult redesign's Star-fall (`pulp_wars-mch9.34`) adds
-    // CHANT_JOINED after RITUAL_BEGUN (155).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(155);
+    // CHANT_JOINED after RITUAL_BEGUN (155), and its warden
+    // (`pulp_wars-mch9.33`) removes IDOL_RAISED and IDOL_DROPPED (153).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(153);
     // Revision 19 inserts HATCH after KABOOM (and, until revision 20,
     // STAMPEDE between them), LAY_EGG after TRAIN_NAVAL, EGG_LAID and
     // EGG_HATCHED after NAVAL_UNIT_TRAINED, and UNIT_GREW after

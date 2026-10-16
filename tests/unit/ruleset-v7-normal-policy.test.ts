@@ -417,7 +417,11 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       // The Cult redesign's Star-fall (`pulp_wars-mch9.34`) inserts JOIN_CHANT
       // after TENTACLE, moving the later command kinds forward by one (was
       // 80c6b9…b5e9); the revision-12-ordinal value is unchanged.
-      "341e85f9999aa8d0ce50e0c5381b719ad642de60fd522676944f71b6d4e47a81",
+      // The Cult redesign's warden (`pulp_wars-mch9.33`) removes BEHOLD
+      // after CHANNEL, moving the kinds from ANCHOR to TENTACLE back by
+      // one, and the view's `cult.idols` (was 341e85…7a81); the
+      // revision-12-ordinal value is unchanged.
+      "80c6b9e8b3a4fce9fabcfd5d84232a37d7df22eb0d80b9113bfacf1426a7b5e9",
     );
     // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
     // (spec section 8); this is the value with revision-12 ordinals
@@ -1257,7 +1261,11 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       // The Cult redesign's Star-fall (`pulp_wars-mch9.34`) inserts JOIN_CHANT
       // after TENTACLE, moving the later command kinds forward by one (was
       // 3c3694…4f25); the revision-12-ordinal value is unchanged.
-      "fd2fd5f9eb7662557d1c9fa1338a731f297fa489a69b596e269d67b3b351da67",
+      // The Cult redesign's warden (`pulp_wars-mch9.33`) removes BEHOLD
+      // after CHANNEL, moving the kinds from ANCHOR to TENTACLE back by
+      // one, and the view's `cult.idols` (was fd2fd5…da67); the
+      // revision-12-ordinal value is unchanged.
+      "3c36948f1d3aff2d3dfbebabb6017d5d2094fbcadfef34c4a5adf6b46b504f25",
     );
     expect(
       canonicalHash(withRevision12CandidateOrdinalsV7(revision4Candidates)),
@@ -1278,7 +1286,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     const source = upgradeRetainedPublicViewV7(retained);
 
     expect(canonicalJson(retained)).toBe(retainedBytes);
-    expect(source.rulesetId).toBe("pulp-wars-poc-7r88");
+    expect(source.rulesetId).toBe("pulp-wars-poc-7r89");
     expect(source.viewer.factionTreeId).toBe("ORIGINAL_BASELINE_V5");
     expect(
       source.players.every(

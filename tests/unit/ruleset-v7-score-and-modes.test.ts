@@ -857,6 +857,7 @@ describe("score and modes: the ledger fold", () => {
         summonerPlayerId: loser,
         strands: 0,
         control: 1,
+        reason: "STRANDS",
       },
       UNIT_CONSUMED: {
         kind: "UNIT_CONSUMED",

@@ -125,7 +125,7 @@ describe("rituals and the Herald: the words", () => {
       expect(FAVOUR_PURPOSE_LABELS_V7[purpose].length, purpose).toBeGreaterThan(
         3,
       );
-    expect(GREAT_SUMMONING_UNLOCK_TEXT_V7).toContain("20 Favour");
+    expect(GREAT_SUMMONING_UNLOCK_TEXT_V7).toContain("18 Favour");
   });
 
   it("names the Great Summoning on the Cult's Explosives, and on no other tree", () => {

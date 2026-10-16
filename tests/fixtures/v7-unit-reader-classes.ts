@@ -968,13 +968,19 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/engine/v7/cult-channel.ts::resolveStartTurnChannelV7": "BOARD",
     "src/engine/v7/cult-channel.ts::applySummonV7": "BOARD",
     "src/engine/v7/cult-channel.ts::applyChannelV7": "BOARD",
-    "src/engine/v7/cult-channel.ts::applyBeholdV7": "BOARD",
     "src/engine/v7/cult-channel.ts::applyAnchorV7": "BOARD",
     "src/engine/v7/cult-channel.ts::planBooV7": "BOARD",
     "src/engine/v7/cult-channel.ts::applyBooV7": "BOARD",
     "src/engine/v7/query.ts::previewChannelV7": "BOARD",
     "src/engine/v7/query.ts::previewAnchorV7": "BOARD",
-    "src/engine/v7/query.ts::previewBeholdV7": "BOARD",
+    // The Cult redesign's warden (`pulp_wars-mch9.33`): the Idol Bearer and
+    // the units beside it stand on the board (no cultist burrows), and the
+    // offered attacks of a unit read the bearers beside it (Awestruck); the
+    // interface's channel reads the standing idols of the view.
+    "src/engine/v7/query.ts::previewWardenV7": "BOARD",
+    "src/engine/v7/query.ts::publicAwestruckBearersV7": "BOARD",
+    "src/engine/v7/query.ts::appendOfferedUnitCommandsV7": "BOARD",
+    "src/render/cult-channel-presentation-v7.ts::channelOfV7": "BOARD",
     "src/engine/v7/query.ts::previewBooV7": "BOARD",
     "src/engine/v7/reducer.ts::resolveStartTurnChannelStepV7": "BOARD",
     "src/engine/v7/state-schema.ts::cultValid": "BOARD",

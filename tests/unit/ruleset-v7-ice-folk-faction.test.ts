@@ -196,10 +196,11 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
     // The Cult redesign's roster (`pulp_wars-mch9.31`) removes PICK_ME
     // (83).
     // The Cult redesign's Star-fall (`pulp_wars-mch9.34`) adds
-    // JOIN_CHANT after TENTACLE (84).
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(84);
+    // JOIN_CHANT after TENTACLE (84), and its warden (`pulp_wars-mch9.33`)
+    // removes BEHOLD (83).
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(83);
     const breakOff = COMMAND_KIND_ORDER_V7.indexOf("BREAK_OFF");
-    expect(COMMAND_KIND_ORDER_V7.slice(breakOff, breakOff + 17)).toEqual([
+    expect(COMMAND_KIND_ORDER_V7.slice(breakOff, breakOff + 16)).toEqual([
       "BREAK_OFF",
       "FROST_BOLT",
       "STAMPEDE",
@@ -209,7 +210,7 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
       // The Cult's channel (`pulp_wars-mch9.5`).
       "SUMMON",
       "CHANNEL",
-      "BEHOLD",
+      // (BEHOLD went with the Cult redesign's warden, `pulp_wars-mch9.33`.)
       "ANCHOR",
       "BOO",
       // The Cult's rituals (`pulp_wars-mch9.7`).
@@ -257,8 +258,9 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
     // The Cult redesign's roster (`pulp_wars-mch9.31`) removes
     // PICK_ME_SHOUTED (154).
     // The Cult redesign's Star-fall (`pulp_wars-mch9.34`) adds
-    // CHANT_JOINED after RITUAL_BEGUN (155).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(155);
+    // CHANT_JOINED after RITUAL_BEGUN (155), and its warden
+    // (`pulp_wars-mch9.33`) removes IDOL_RAISED and IDOL_DROPPED (153).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(153);
     const after = (order: readonly string[], kind: string) =>
       order[order.indexOf(kind) + 1];
     expect(after(DOMAIN_EVENT_KIND_ORDER_V7, "UNITS_RALLIED")).toBe(

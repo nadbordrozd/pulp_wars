@@ -34,7 +34,7 @@ import type { MissionDefinitionV7 } from "./types";
  *   Hexers); the rest of the lodge roams. They start with 9 Favour, two
  *   Summoners, and The Stars Are Right, so the first Horrors come in the
  *   opening rounds and every unit a Horror kills, every Seizure, and every
- *   Sacrifice feeds the pool: at 20 Favour, with a Summoner and three
+ *   Sacrifice feeds the pool: at 18 Favour, with a Summoner and three
  *   chanters left unthreatened, the Great Summoning begins and the Herald
  *   comes. The Favour is public: it is the Summoning's clock, and round 24
  *   is its last toll. The seat may research nothing else (no Offering: the

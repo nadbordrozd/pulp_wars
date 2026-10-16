@@ -455,9 +455,9 @@ describe("The Great Summoning", () => {
     expect(button.querySelector(".v7-action-label")?.textContent).toBe(
       "Great Summoning",
     );
-    expect(button.querySelector(".v7-favour-chip")?.textContent).toBe("−20");
+    expect(button.querySelector(".v7-favour-chip")?.textContent).toBe("−18");
     expect(button.getAttribute("aria-label")).toMatch(
-      /^Great Summoning · −20 Favour\. /,
+      /^Great Summoning · −18 Favour\. /,
     );
     button.click();
     const targets = boardPlan(host).targets;
@@ -507,7 +507,7 @@ describe("The Great Summoning", () => {
       at: R.free,
     });
     const after = required(controller.snapshot().view);
-    expect(favourOfV7(after, after.viewer.id)).toBe(2);
+    expect(favourOfV7(after, after.viewer.id)).toBe(4);
     expect(live()).toContain("The Great Summoning begun");
     scene.app.destroy();
   });
@@ -537,10 +537,10 @@ describe("The Great Summoning", () => {
 
   it("says why it cannot begin", () => {
     // Too little Favour.
-    let scene = rig(withFavourV7(cultSummoningUiFixtureV7(), 0, 19));
+    let scene = rig(withFavourV7(cultSummoningUiFixtureV7(), 0, 17));
     select(scene, R.summoner);
     expect(requiredButton("cult-great-summoning").dataset.disabledReason).toBe(
-      ritualNeedsFavourTextV7(20),
+      ritualNeedsFavourTextV7(18),
     );
     scene.app.destroy();
     // A circle that has acted: the reason. Without a circle: no button.

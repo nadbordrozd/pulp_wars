@@ -1,4 +1,5 @@
 import {
+  DAEMON_UNBOUND_REASONS_V7,
   DISRUPTION_CAUSES_V7,
   FAVOUR_PURPOSES_V7,
   FAVOUR_SOURCES_V7,
@@ -56,7 +57,9 @@ import {
   OFFERING_POPULATION_V7,
   SEIZE_FAVOUR_MULTIPLIER_V7,
   CULT_SUMMONED_ROLE_RULES_V7,
+  FAVOUR_CAP_V7,
   HERALD_FAVOUR_COST_V7,
+  HERALD_HUNGER_FAVOUR_V7,
   HORROR_FAVOUR_COST_V7,
   RITUAL_MINIMUM_CHANTERS_V7,
   starfallDamageV7,
@@ -493,7 +496,14 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
     "favour",
   ],
   OFFERING_MADE: ["kind", "playerId", "cityId", "at", "population", "favour"],
-  FAVOUR_GAINED: ["kind", "playerId", "source", "amount", "favour"],
+  FAVOUR_GAINED: [
+    "kind",
+    "playerId",
+    "source",
+    "amount",
+    "forfeited",
+    "favour",
+  ],
   // The Cultists (`pulp_wars-mch9.5`, sections 6 and 8).
   FAVOUR_SPENT: ["kind", "playerId", "purpose", "amount", "favour"],
   DAEMON_SUMMONED: [
@@ -508,12 +518,17 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
   ],
   STRAND_FORMED: ["kind", "playerId", "unitId", "daemonUnitId"],
   STRAND_BROKEN: ["kind", "playerId", "unitId", "daemonUnitId", "cause"],
-  IDOL_RAISED: ["kind", "playerId", "unitId"],
-  IDOL_DROPPED: ["kind", "playerId", "unitId", "cause"],
   ANCHOR_GRIPPED: ["kind", "playerId", "unitId", "cultistUnitId"],
   ANCHOR_BROKEN: ["kind", "playerId", "unitId", "cultistUnitId", "cause"],
   UNITS_SCARED: ["kind", "playerId", "unitId", "at", "results"],
-  DAEMON_UNBOUND: ["kind", "unitId", "summonerPlayerId", "strands", "control"],
+  DAEMON_UNBOUND: [
+    "kind",
+    "unitId",
+    "summonerPlayerId",
+    "strands",
+    "control",
+    "reason",
+  ],
   DAEMON_BOUND: ["kind", "playerId", "unitId", "strands", "control"],
   // The Cultists (`pulp_wars-mch9.7`, sections 7 and 8.6).
   RITUAL_BEGUN: [
@@ -1885,14 +1900,21 @@ function validPayload(
         e.population === OFFERING_POPULATION_V7 &&
         e.favour === OFFERING_FAVOUR_V7
       );
-    // Section 3: the seat has at least what it just gained.
+    // Section 3: the seat has at least what it just banked. The Cult
+    // redesign (`pulp_wars-mch9.32`): never more than the cap, and only a
+    // gain that reached the cap forfeits anything.
     case "FAVOUR_GAINED":
       return (
         id(e.playerId) &&
         FAVOUR_SOURCES_V7.includes(e.source as FavourSourceV7) &&
         pos(e.amount) &&
+        isNonNegativeSafeIntegerV7(e.forfeited) &&
+        (e.forfeited as number) <= (e.amount as number) &&
         pos(e.favour) &&
-        (e.favour as number) >= (e.amount as number)
+        (e.favour as number) <= FAVOUR_CAP_V7 &&
+        (e.favour as number) >=
+          (e.amount as number) - (e.forfeited as number) &&
+        ((e.forfeited as number) === 0 || e.favour === FAVOUR_CAP_V7)
       );
     // The Cultists (`pulp_wars-mch9.5`). Section 3: the price of a summoning
     // (the seat may have nothing left): a Horror's, or (`pulp_wars-mch9.7`)
@@ -1904,7 +1926,9 @@ function validPayload(
         e.amount ===
           (e.purpose === "SUMMON_HORROR"
             ? HORROR_FAVOUR_COST_V7
-            : HERALD_FAVOUR_COST_V7) &&
+            : e.purpose === "HUNGER"
+              ? HERALD_HUNGER_FAVOUR_V7
+              : HERALD_FAVOUR_COST_V7) &&
         isNonNegativeSafeIntegerV7(e.favour)
       );
     // Section 6.1: a Horror at full HP, next to nobody it names twice.
@@ -1934,16 +1958,6 @@ function validPayload(
         id(e.daemonUnitId) &&
         e.unitId !== e.daemonUnitId &&
         DISRUPTION_CAUSES_V7.includes(e.cause as never)
-      );
-    // Section 8.1.
-    case "IDOL_RAISED":
-      return id(e.playerId) && id(e.unitId);
-    case "IDOL_DROPPED":
-      return (
-        id(e.playerId) &&
-        id(e.unitId) &&
-        (e.cause === "EXPIRED" ||
-          DISRUPTION_CAUSES_V7.includes(e.cause as never))
       );
     // Section 8.4: the Thing's own HP loss never breaks its grip.
     case "ANCHOR_GRIPPED":
@@ -1996,14 +2010,20 @@ function validPayload(
       }
       return true;
     }
-    // Sections 6.2 and 6.4: fewer holding strands than the Control.
+    // Sections 6.2 and 6.4: fewer holding strands than the Control. The
+    // Cult redesign (`pulp_wars-mch9.32`, section 7.6): a Herald's unpaid
+    // Hunger, whatever its strands; an eliminated seat's daemon, none.
     case "DAEMON_UNBOUND":
       return (
         id(e.unitId) &&
         id(e.summonerPlayerId) &&
         isNonNegativeSafeIntegerV7(e.strands) &&
         pos(e.control) &&
-        (e.strands as number) < (e.control as number)
+        DAEMON_UNBOUND_REASONS_V7.includes(e.reason as never) &&
+        (e.reason === "HUNGER" ||
+          (e.reason === "ELIMINATED"
+            ? e.strands === 0
+            : (e.strands as number) < (e.control as number)))
       );
     // Section 6.5: the strands of one turn reached the Control.
     case "DAEMON_BOUND":
@@ -2551,6 +2571,7 @@ function combat(input: unknown): boolean {
       "rockfallApplied",
       "plantedApplied",
       "blizzardHalved",
+      "idolHalved",
       "snowCover",
       "sweep",
       "hiddenBlizzardPossible",
@@ -2654,10 +2675,14 @@ function combat(input: unknown): boolean {
       input.rockfallApplied,
       input.plantedApplied,
       input.blizzardHalved,
+      input.idolHalved,
       input.snowCover,
       input.sweep,
       input.hiddenBlizzardPossible,
     ].every((item) => typeof item === "boolean") &&
+    // The Cult redesign (`pulp_wars-mch9.33`): one halving at most, and the
+    // shield wall only against a hit from two or more tiles.
+    !(input.idolHalved === true && input.blizzardHalved === true) &&
     (input.shatters !== true ||
       (input.defenderDies === true &&
         input.retaliation === false &&

@@ -711,7 +711,6 @@ import {
 import type { DwarfPickV7 } from "../canvas/dwarf-board-plan-v7";
 import {
   ANCHOR_LABEL_V7,
-  BEHOLD_LABEL_V7,
   BOO_LABEL_V7,
   CHANNEL_LABEL_V7,
   SUMMON_LABEL_V7,
@@ -720,7 +719,6 @@ import {
   BIND_LABEL_V7,
   BIND_TOOLTIP_V7,
   ANCHOR_TOOLTIP_V7,
-  BEHOLD_TOOLTIP_V7,
   BOO_CAST_V7,
   BOO_TOOLTIP_V7,
   CHANNEL_PICK_V7,
@@ -1140,11 +1138,11 @@ const NON_BUTTON_COMMANDS = new Set<CommandV7["kind"]>([
   "SACRIFICE",
   "SEIZE",
   // The channel (bead pulp_wars-mch9.18): Summon, Channel, Anchor and Boo!
-  // have one button each that aims on the board, and Behold! one that
-  // casts (BOARD_TARGETING.md section 3.8).
+  // have one button each that aims on the board (BOARD_TARGETING.md
+  // section 3.8). (Behold!'s button went with its command: the Cult
+  // redesign, `pulp_wars-mch9.33`.)
   "SUMMON",
   "CHANNEL",
-  "BEHOLD",
   "ANCHOR",
   "BOO",
   // Rituals and Proclaim (engine bead pulp_wars-mch9.7): a Star-fall alone
@@ -1185,7 +1183,6 @@ const CULT_CHANNEL_TEXT_V7: Readonly<
     tooltip: CHANNEL_TOOLTIP_V7,
     icon: "chain",
   },
-  BEHOLD: { label: BEHOLD_LABEL_V7, tooltip: BEHOLD_TOOLTIP_V7, icon: "idol" },
   ANCHOR: {
     label: ANCHOR_BUTTON_LABEL_V7,
     tooltip: ANCHOR_TOOLTIP_V7,
@@ -13752,7 +13749,7 @@ export class Ruleset7DomAppView {
         action.title = tooltip;
         action.setAttribute("aria-label", `${label}${price}. ${tooltip}`);
         action.disabled = this.#localBusy();
-        if (kind === "BEHOLD" || direct !== null) {
+        if (direct !== null) {
           if (only !== undefined)
             action.onclick = () => void this.#dispatch(only);
         } else {
@@ -13787,10 +13784,7 @@ export class Ruleset7DomAppView {
    * Starts aiming a channel action on the board. A Summoner with a single
    * cultist that may help goes straight to the Horror's tiles.
    */
-  #startCultChannelPick(
-    kind: Exclude<CultChannelKindV7, "BEHOLD">,
-    unitId: UnitId,
-  ): void {
+  #startCultChannelPick(kind: CultChannelKindV7, unitId: UnitId): void {
     if (this.#localBusy()) return;
     const helpers =
       kind === "SUMMON"
@@ -15801,7 +15795,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
     return null;
   return {
-    rulesetId: "pulp-wars-poc-7r88",
+    rulesetId: "pulp-wars-poc-7r89",
     seed,
     width: effectiveBoardSize(draft),
     height: effectiveBoardSize(draft),
@@ -16545,7 +16539,6 @@ const COMMAND_LABELS: Partial<Record<CommandV7["kind"], string>> = {
   // The channel (`pulp_wars-mch9.5`).
   SUMMON: SUMMON_LABEL_V7,
   CHANNEL: CHANNEL_LABEL_V7,
-  BEHOLD: BEHOLD_LABEL_V7,
   ANCHOR: ANCHOR_LABEL_V7,
   BOO: BOO_LABEL_V7,
   HARVEST_FRUIT: "Harvest",

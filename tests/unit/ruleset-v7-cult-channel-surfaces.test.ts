@@ -56,7 +56,8 @@ import { at, fieldV7 } from "../fixtures/v7-revision20";
  * Every state is built by hand; no match is played.
  */
 
-const CHANNEL_KINDS = ["SUMMON", "CHANNEL", "BEHOLD", "ANCHOR", "BOO"];
+// (BEHOLD's command went with the Cult redesign's warden, `pulp_wars-mch9.33`.)
+const CHANNEL_KINDS = ["SUMMON", "CHANNEL", "ANCHOR", "BOO"];
 
 /** The value, which the test requires to be there. */
 function need<T>(value: T | null | undefined): T {
@@ -232,17 +233,16 @@ describe("the Cult's channel: the words of each command (the text harness)", () 
     const count = (kind: string) =>
       buttons.filter((button) => button[0] === kind);
     // One Summon per Summoner (the engine offers one per helper and tile).
-    expect(count("SUMMON")).toEqual([["SUMMON", "Summon Horror", "−5 Favour"]]);
+    expect(count("SUMMON")).toEqual([["SUMMON", "Summon Horror", "−4 Favour"]]);
     // The Summoner, its Initiate, the Hexer, and the Idol Bearer are in
     // reach of the Horror, which holds one strand already.
     expect(count("CHANNEL")).toEqual(
       Array.from({ length: 4 }, () => ["CHANNEL", "Channel Horror", "2 / 1"]),
     );
-    expect(count("BEHOLD")).toEqual([["BEHOLD", "Behold!", "1 cultist"]]);
     expect(count("ANCHOR")).toEqual([["ANCHOR", "Grip Initiate", "3 / 1"]]);
     // The Human Fighter and the cultists' own Hexer stand beside the Horror.
     expect(count("BOO")).toEqual([["BOO", "Boo!", "2 units"]]);
-    expect(buttons).toHaveLength(8);
+    expect(buttons).toHaveLength(7);
     expect(
       offered.filter((command) => command.kind === "SUMMON").length,
     ).toBeGreaterThan(1);
@@ -297,8 +297,8 @@ describe("the Cult's channel: the older Normal policy tolerates the commands", (
     throw new Error("the turn did not end");
   }
 
-  it("never picks Summon, Channel, Behold!, Anchor, or Boo!, and ends its turn", () => {
-    // A Cult AI seat (seat 1) with all five on offer.
+  it("never picks Summon, Channel, Anchor, or Boo!, and ends its turn", () => {
+    // A Cult AI seat (seat 1) with all four on offer.
     const state = everything(1);
     const offered = new Set(
       offeredV7(state)

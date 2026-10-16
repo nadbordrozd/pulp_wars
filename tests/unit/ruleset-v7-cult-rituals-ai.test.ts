@@ -227,8 +227,8 @@ describe("the Cult seat: the Great Summoning (section 15.3)", () => {
       favour,
     );
 
-  it("begins it with 20 Favour, three chanters, and nobody in a visible enemy's reach", () => {
-    const start = circle(20, 3);
+  it("begins it with 18 Favour, three chanters, and nobody in a visible enemy's reach", () => {
+    const start = circle(18, 3);
     const decision = first(start);
     expect(decision.command?.kind).toBe("BEGIN_RITUAL");
     expect(decision.priority).toBe(CULT_SUMMONING_PRIORITY_V7);
@@ -246,18 +246,18 @@ describe("the Cult seat: the Great Summoning (section 15.3)", () => {
     expect(turn.state.cult.rituals[0]?.chanterUnitIds).toHaveLength(3);
   });
 
-  it("begins none with 19 Favour, nor with two chanters and nobody to come", () => {
-    expect(kindsOf(policyTurn(circle(19, 3)).commands)).not.toContain(
+  it("begins none with 17 Favour, nor with two chanters and nobody to come", () => {
+    expect(kindsOf(policyTurn(circle(17, 3)).commands)).not.toContain(
       "BEGIN_RITUAL",
     );
-    expect(kindsOf(policyTurn(circle(20, 2)).commands)).not.toContain(
+    expect(kindsOf(policyTurn(circle(18, 2)).commands)).not.toContain(
       "BEGIN_RITUAL",
     );
   });
 
   it("begins none with a visible enemy able to reach a chanter", () => {
     // A Knight three tiles from the Initiate on (8, 2).
-    const start = circle(20, 3, [foe("KNIGHT", 5, 3)]);
+    const start = circle(18, 3, [foe("KNIGHT", 5, 3)]);
     expect(
       queryAiReadyCommandsV7(viewOf(start)).some(
         (item) => item.command.kind === "BEGIN_RITUAL",
@@ -268,7 +268,7 @@ describe("the Cult seat: the Great Summoning (section 15.3)", () => {
 
   it("begins none without four robed cultists to spare beyond its Horror's Control and one", () => {
     // Four cultists and a Horror: two are the Horror's, two are left.
-    const start = withHorrorV7(circle(20, 3), 0, at(6, 1), {
+    const start = withHorrorV7(circle(18, 3), 0, at(6, 1), {
       activation: SPENT,
     });
     const turn = policyTurn(start);
@@ -278,7 +278,7 @@ describe("the Cult seat: the Great Summoning (section 15.3)", () => {
 
   it("gathers: a cultist that can come steps beside the Summoner, and the circle begins in the same turn", () => {
     // Two beside the Summoner; the third stands two tiles from it.
-    const start = circle(20, 2, [own("FIGHTER", 7, 3)]);
+    const start = circle(18, 2, [own("FIGHTER", 7, 3)]);
     const third = idAt(start, at(7, 3));
     const decision = first(start);
     expect(decision.command?.kind).toBe("MOVE");
@@ -288,8 +288,8 @@ describe("the Cult seat: the Great Summoning (section 15.3)", () => {
     const turn = policyTurn(start);
     expect(gap(nowAt(turn.state, third), at(9, 1))).toBe(1);
     expect(kindsOf(turn.commands)).toEqual(["MOVE", "BEGIN_RITUAL"]);
-    // Sanity (the mutation): with 19 Favour nobody is called.
-    expect(first(circle(19, 2, [own("FIGHTER", 7, 3)])).priority).not.toBe(
+    // Sanity (the mutation): with 17 Favour nobody is called.
+    expect(first(circle(17, 2, [own("FIGHTER", 7, 3)])).priority).not.toBe(
       CULT_SUMMONING_PRIORITY_V7,
     );
   });
@@ -318,7 +318,7 @@ describe("the Cult seat: the Great Summoning (section 15.3)", () => {
     expect(summons(build(15, 3))).toBe(1);
     const rich = policyTurn(build(25, 4));
     expect(ofKind(rich.commands, "SUMMON")).toHaveLength(1);
-    expect(favourOf(rich.state)).toBe(20);
+    expect(favourOf(rich.state)).toBe(21);
   });
 
   it("names the saving rule: The Stars Are Right, a Summoner, four spare cultists, 10 Favour", () => {

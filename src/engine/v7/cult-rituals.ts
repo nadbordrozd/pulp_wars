@@ -1228,6 +1228,7 @@ function completeGreatSummoningV7(
   let chanterUnitIds = ritual.chanterUnitIds;
   if (outcome.kind === "CONSUMES") {
     const victim = outcome.victim;
+    const unfed = cult;
     cult = withFavourGainedV7(cult, playerId, outcome.favour);
     // A consumed enemy is a kill like a Seizure's: the Score's Kills and
     // the victim's owner's Loss, without Plunder.
@@ -1251,7 +1252,7 @@ function completeGreatSummoningV7(
         favour: outcome.favour,
       },
       { kind: "UNIT_DIED", unitId: victim.id, cause: "CONSUMED" },
-      favourGainedEventV7(cult, playerId, "CONSUMPTION", outcome.favour),
+      favourGainedEventV7(unfed, cult, playerId, "CONSUMPTION", outcome.favour),
     );
     chanterUnitIds = chanterUnitIds.filter((unitId) => unitId !== victim.id);
     const release = releaseControlledV7(

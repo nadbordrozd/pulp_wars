@@ -11503,7 +11503,7 @@ function isPolicyCandidate(
   }
   // The Cult seat (`pulp_wars-mch9.10`, RULESET_7_CULTISTS.md sections 15.2
   // to 15.4; `src/ai/v7-cult-channel.ts`): a Sacrifice, a Seizure, an
-  // Offering, a Summon, a Channel, a Behold!, and an Anchor are candidates
+  // Offering, a Summon, a Channel, and an Anchor are candidates
   // only as a step of the Cult seat's plan (above). A Sacrifice removes an own
   // unit, an Offering gives up population, and a Summon spends Favour on a
   // unit that must be held, so none may be picked by a general rule; a seat
@@ -11515,7 +11515,6 @@ function isPolicyCandidate(
     command.kind === "OFFERING" ||
     command.kind === "SUMMON" ||
     command.kind === "CHANNEL" ||
-    command.kind === "BEHOLD" ||
     command.kind === "ANCHOR"
   )
     return false;

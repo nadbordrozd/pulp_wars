@@ -292,7 +292,8 @@ const FIXTURES: readonly (readonly [
       "cult-channel performed",
       "cult-anchor aimed",
       "cult-anchor performed",
-      "cult-behold performed",
+      // (Behold! has no button since the Cult redesign's warden,
+      // `pulp_wars-mch9.33`.)
       "cult-boo aimed",
     ],
   ],

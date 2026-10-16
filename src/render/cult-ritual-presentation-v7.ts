@@ -166,7 +166,7 @@ export function greatSummoningChantersTextV7(): string {
   return `Needs ${RITUAL_MINIMUM_CHANTERS_V7.GREAT_SUMMONING} cultists beside it that have not acted`;
 }
 
-/** "Needs 20 Favour". */
+/** "Needs 18 Favour". */
 export function ritualNeedsFavourTextV7(cost: number): string {
   return `Needs ${cost} Favour`;
 }

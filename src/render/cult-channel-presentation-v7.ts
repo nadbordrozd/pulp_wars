@@ -3,19 +3,18 @@ import {
   CULT_SUMMONED_ROLE_RULES_V7,
   HORROR_FAVOUR_COST_V7,
   anchorRejectionV7,
-  beholdRejectionV7,
   booRejectionV7,
   channelRejectionV7,
   daemonRoleV7,
   favourOfV7,
   previewAnchorV7,
-  previewBeholdV7,
   previewBooV7,
   previewChannelV7,
   previewRampageV7,
   previewSummonV7,
   summonHelperLegalV7,
   summonRejectionV7,
+  standingIdolsV7,
   unitIsUnboundV7,
   unitRoleRuleV7,
   type AnchorPreviewV7,
@@ -73,9 +72,12 @@ export const CHANNEL_TOOLTIP_V7 =
 /** Section 6.5, the card text. */
 export const BIND_TOOLTIP_V7 =
   "Channel an Unbound daemon with enough cultists in one turn and it is yours again, but not in the turn it broke loose";
-/** Section 8.1, the card text. */
+/**
+ * Section 8.1, the card text: the warden's lasting aura since the Cult
+ * redesign (`pulp_wars-mch9.33`; a button that raised the idol before).
+ */
 export const BEHOLD_TOOLTIP_V7 =
-  "It holds up the idol. Cultists beside it are too awestruck to flinch, until someone hits the Idol Bearer";
+  "The idol is always raised. Your units beside it take half from shots, and enemies beside it can attack only the Idol Bearer";
 /** Section 8.4, the card text. */
 export const ANCHOR_TOOLTIP_V7 =
   "The Thing grips the cultist beside it: that cultist's strand counts three. Hit that cultist and all three go";
@@ -89,6 +91,7 @@ export const FAVOUR_PURPOSE_LABELS_V7: Readonly<
 > = {
   SUMMON_HORROR: "summoning a Horror",
   GREAT_SUMMONING: "the Great Summoning",
+  HUNGER: "the Herald's Hunger",
 };
 
 /** How a cultist was disrupted, in plain words (the event log). */
@@ -107,7 +110,7 @@ export function strandsTextV7(strands: number, control: number): string {
   return `${strands} / ${control}`;
 }
 
-/** "−5 Favour". */
+/** "−4 Favour". */
 export function favourCostTextV7(amount: number): string {
   return `−${amount} Favour`;
 }
@@ -165,17 +168,6 @@ export function cultChannelCommandPresentationV7(
             tooltip: unbound ? BIND_TOOLTIP_V7 : CHANNEL_TOOLTIP_V7,
           };
     }
-    case "BEHOLD": {
-      const preview = previewBeholdV7(view, command.unitId);
-      const warded = preview?.wardedUnitIds.length ?? 0;
-      return preview === null
-        ? null
-        : {
-            label: BEHOLD_LABEL_V7,
-            chip: `${warded} ${warded === 1 ? "cultist" : "cultists"}`,
-            tooltip: BEHOLD_TOOLTIP_V7,
-          };
-    }
     case "ANCHOR": {
       const preview = previewAnchorV7(
         view,
@@ -215,11 +207,14 @@ export function cultChannelCommandPresentationV7(
 // reasons, the marks' labels, the cursor's sentences, the dock's chips, the
 // End Turn question, and the notices.
 
-/** The five channel commands the dock aims or casts with its own buttons. */
+/**
+ * The four channel commands the dock aims or casts with its own buttons
+ * (Behold!'s button went with its command: the Cult redesign,
+ * `pulp_wars-mch9.33`).
+ */
 export const CULT_CHANNEL_KINDS_V7 = [
   "SUMMON",
   "CHANNEL",
-  "BEHOLD",
   "ANCHOR",
   "BOO",
 ] as const;
@@ -241,8 +236,6 @@ export const CHANNEL_PICK_V7 = `Choose a daemon within ${CHANNEL_RANGE_V7} tiles
 export const ANCHOR_PICK_V7 = "Choose a channelling cultist next to it";
 /** The one confirmation of an aimed Boo!. */
 export const BOO_CAST_V7 = "Boo!";
-/** The label on a cultist a Behold! would ward. */
-export const WARDED_LABEL_V7 = "Warded";
 
 export const CHANNEL_ALREADY_ACTED_V7 = "Already acted this turn";
 export const CHANNEL_EMBARKED_V7 = "It must be on land";
@@ -252,17 +245,21 @@ export const CHANNEL_OUT_OF_REACH_V7 = `No daemon within ${CHANNEL_RANGE_V7} til
 export const SUMMON_NO_HELPER_V7 =
   "A cultist that has not acted must stand next to it";
 export const SUMMON_NO_TILE_V7 = "No free tile next to it";
-export const BEHOLD_RAISED_V7 = "The idol is raised";
 export const ANCHOR_GRIPPING_V7 = "It grips a cultist already";
 export const ANCHOR_NO_CULTIST_V7 = "No channelling cultist next to it";
 export const BOO_NOBODY_V7 = "Nobody next to it to scare";
 
-/** "Needs 5 Favour". */
+/** "Needs 4 Favour". */
 export function summonNeedsFavourTextV7(cost: number): string {
   return `Needs ${cost} Favour`;
 }
 
-/** The channel a viewer sees: every list, empty in an older view. */
+/**
+ * The channel a viewer sees: every list, empty in an older view. `idols`
+ * are the visible Idol Bearers whose idol stands (the Cult redesign's
+ * lasting aura, `pulp_wars-mch9.33`: read from the units and their
+ * statuses, no list of the view).
+ */
 export interface ChannelViewV7 {
   readonly strands: readonly PublicStrandV7[];
   readonly grips: readonly GripV7[];
@@ -279,7 +276,7 @@ export function channelOfV7(view: PlayerViewV7): ChannelViewV7 {
   return {
     strands: cult?.strands ?? [],
     grips: cult?.grips ?? [],
-    idols: cult?.idols ?? [],
+    idols: standingIdolsV7(view, view.units).map((unit) => unit.id),
     daemons: cult?.daemons ?? [],
   };
 }
@@ -498,18 +495,6 @@ export function cultChannelUnavailableTextV7(
       if (reasons.includes("FURIOUS")) return CHANNEL_FURIOUS_V7;
       return reasons.includes("RANGE") ? CHANNEL_OUT_OF_REACH_V7 : null;
     }
-    case "BEHOLD": {
-      const rejection = beholdRejectionV7(view, unit);
-      if (rejection === null || rejection.code === "UNIT_ROLE_INVALID")
-        return null;
-      if (rejection.code === "UNIT_ALREADY_ACTED")
-        return channel.idols.includes(unit.id)
-          ? BEHOLD_RAISED_V7
-          : CHANNEL_ALREADY_ACTED_V7;
-      return rejection.reason === "RAISED"
-        ? BEHOLD_RAISED_V7
-        : CHANNEL_EMBARKED_V7;
-    }
     case "ANCHOR": {
       // Nothing to grip while the seat channels nothing: no button.
       if (
@@ -604,7 +589,7 @@ export function cultChannelChipsV7(
       id: "idol",
       label: "Idol raised",
       status:
-        "Cultists beside it keep their strands when they lose HP, until someone hits the Idol Bearer",
+        "Its units beside it take half from shots, and enemies beside it can attack only the Idol Bearer",
       icon: "ICON:STATUS:WARDED",
     });
   const daemon = channel.daemons.find((entry) => entry.unitId === unit.id);

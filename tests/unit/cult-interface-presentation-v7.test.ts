@@ -353,7 +353,7 @@ describe("where a gain of Favour comes from", () => {
     const offered = step(state, { kind: "OFFERING", cityId: capital.id });
     const plan = feedbackPlanV7(offered.before, offered.events, offered.after);
     expect(plan.favour).toEqual([
-      { source: "OFFERING", at: capital.at, amount: 3 },
+      { source: "OFFERING", at: capital.at, amount: 6 },
     ]);
     expect(plan.populationLosses).toEqual([
       { cityId: capital.id, at: capital.at, amount: 2 },
@@ -411,7 +411,7 @@ describe("the notice of a Cult boundary", () => {
     });
     expect(
       notice({ kind: "OFFERING", cityId: capitalOf(state, 0).id }),
-    ).toEqual({ text: "Offering: +3 Favour, −2 population", toast: true });
+    ).toEqual({ text: "Offering: +6 Favour, −2 population", toast: true });
     // The Human seat is told its Knight was Seized, and no more.
     expect(notice(seizeOf(state, CULT_UI_V7.knight), 1)).toEqual({
       text: "The Cultists Seized your Knight",

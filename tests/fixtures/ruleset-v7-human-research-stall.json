@@ -1,8 +1,8 @@
 {
   "schemaVersion": 7,
-  "rulesetId": "pulp-wars-poc-7r88",
+  "rulesetId": "pulp-wars-poc-7r89",
   "setup": {
-    "rulesetId": "pulp-wars-poc-7r88",
+    "rulesetId": "pulp-wars-poc-7r89",
     "seed": 9,
     "width": 14,
     "height": 14,
@@ -4140,7 +4140,6 @@
     "favour": [],
     "strands": [],
     "grips": [],
-    "idols": [],
     "rituals": [],
     "cowed": [],
     "frogs": [],

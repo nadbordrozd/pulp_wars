@@ -19,6 +19,7 @@ import {
   factionFieldsRoleV7,
   factionHasFavourV7,
   factionTreeV7,
+  FAVOUR_CAP_V7,
   startingFavourV7,
   gravesEnabledV7,
   growthStageForKillsV7,
@@ -644,12 +645,14 @@ export function buildMissionStateV7(
     giants: emptyGiantsStateV7(),
     // The Cultists (`pulp_wars-mch9.8`): a Cult seat's starting Favour,
     // the seat's own or, without one, every Cult seat's (the Cult redesign,
-    // `pulp_wars-mch9.31`: 2).
+    // `pulp_wars-mch9.31`: 2), never above the cap (`pulp_wars-mch9.32`).
     cult: {
       ...emptyCultStateV7(),
       favour: mission.seats.flatMap((seat, index) => {
-        const favour =
-          seat.favour ?? startingFavourV7(setup.factions[index] as FactionIdV7);
+        const favour = Math.min(
+          FAVOUR_CAP_V7,
+          seat.favour ?? startingFavourV7(setup.factions[index] as FactionIdV7),
+        );
         return favour > 0 ? [{ playerId: playerId(index + 1), favour }] : [];
       }),
     },

@@ -85,7 +85,6 @@ import {
   withFavourV7,
   withGripV7,
   withHorrorV7,
-  withIdolsV7,
   withRitualV7,
   withStrandsV7,
   withUnboundHeraldV7,
@@ -222,10 +221,13 @@ const summoning = (state: GameStateV7, mark: CoordV7 = MARK): CommandV7 => ({
   at: mark,
 });
 
-/** The lodge with `favour` Favour and the given other pieces. */
+/**
+ * The lodge with `favour` Favour (by default the Great Summoning's 18, the
+ * Cult redesign's price, `pulp_wars-mch9.32`) and the given other pieces.
+ */
 const lodgeField = (
   pieces: readonly GoblinPieceV7[] = [],
-  favour = 20,
+  favour = 18,
   options: Parameters<typeof cultFieldV7>[1] = {},
 ): GameStateV7 =>
   withFavourV7(cultFieldV7([...lodge, ...pieces], options), 0, favour);
@@ -251,14 +253,20 @@ const techsWithout = (without: TechnologyIdV7): readonly TechnologyIdV7[] =>
 
 describe("rituals: identity", () => {
   // The Cult redesign's Star-fall and daemons (`pulp_wars-mch9.34`,
-  // `pulp_wars-mch9.35`) took 7r88 after the natural water of 7r87.
-  it("is 7r88 for Star-fall alone and the daemons' advance, 7r87 refused", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r88");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r88.current");
-    expect(PRIOR_RULESET_7_IDS.at(-1)).toBe("pulp-wars-poc-7r87");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
+  // `pulp_wars-mch9.35`) took 7r88 after the natural water of 7r87; its
+  // Favour economy and warden (`pulp_wars-mch9.32`, `pulp_wars-mch9.33`)
+  // took 7r89 after it.
+  it("was 7r88 for Star-fall alone and the daemons' advance, 7r87 refused", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r89");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r89.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-2)).toEqual([
+      "pulp-wars-poc-7r87",
+      "pulp-wars-poc-7r88",
+    ]);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-2)).toEqual([
       "pulpWars.save.v7r87.current",
-    );
+      "pulpWars.save.v7r88.current",
+    ]);
     const state = cultFieldV7([]);
     expect(
       parseGameStateV7({ ...state, rulesetId: "pulp-wars-poc-7r87" }),
@@ -307,8 +315,13 @@ describe("rituals: the registration (sections 4.2, 7.2, and 11)", () => {
     ]);
     expect(RITUAL_KINDS_V7).toEqual(["STARFALL", "GREAT_SUMMONING"]);
     expect(RITUAL_FIZZLE_REASONS_V7).toEqual(["LEADER", "CHANTERS", "BLOCKED"]);
-    expect(FAVOUR_SOURCES_V7.at(-1)).toBe("CONSUMPTION");
-    expect(FAVOUR_PURPOSES_V7).toEqual(["SUMMON_HORROR", "GREAT_SUMMONING"]);
+    // (The trickle and Hunger joined with the Cult redesign,
+    // `pulp_wars-mch9.32`.)
+    expect(FAVOUR_SOURCES_V7.at(-2)).toBe("CONSUMPTION");
+    expect(FAVOUR_PURPOSES_V7.slice(0, 2)).toEqual([
+      "SUMMON_HORROR",
+      "GREAT_SUMMONING",
+    ]);
   });
 
   it("holds the spec's numbers", () => {
@@ -334,7 +347,7 @@ describe("rituals: the registration (sections 4.2, 7.2, and 11)", () => {
       attack2: 14,
       defense2: 8,
       move: 2,
-      favourCost: 20,
+      favourCost: 18,
       control: 3,
       value: 24,
       unstoppable: true,
@@ -977,7 +990,7 @@ describe("rituals: taking part (section 7.1)", () => {
     ).toBe(false);
   });
 
-  it("begins the Great Summoning for 20 Favour with three chanters or more", () => {
+  it("begins the Great Summoning for 18 Favour with three chanters or more", () => {
     const state = lodgeField([{ seat: 1, role: "FIGHTER", at: at(2, 2) }], 23);
     const leader = idAt(state, SUMMONER);
     const chanters = TRIO.map((where) => idAt(state, where));
@@ -1003,8 +1016,8 @@ describe("rituals: taking part (section 7.1)", () => {
         kind: "FAVOUR_SPENT",
         playerId: cultId(state),
         purpose: "GREAT_SUMMONING",
-        amount: 20,
-        favour: 3,
+        amount: 18,
+        favour: 5,
       },
       {
         kind: "RITUAL_BEGUN",
@@ -1015,7 +1028,7 @@ describe("rituals: taking part (section 7.1)", () => {
         at: MARK,
       },
     ]);
-    expect(favourOfV7(begun.state, cultId(state))).toBe(3);
+    expect(favourOfV7(begun.state, cultId(state))).toBe(5);
     expect(begun.state.cult.rituals).toEqual([
       {
         kind: "GREAT_SUMMONING",
@@ -1034,13 +1047,13 @@ describe("rituals: taking part (section 7.1)", () => {
   it("refuses a Great Summoning that cannot begin", () => {
     const state = lodgeField();
     // Short of Favour.
-    const poor = lodgeField([], 19);
+    const poor = lodgeField([], 17);
     expect(rejectedV7(poor, summoning(poor))).toEqual({
       code: "INSUFFICIENT_FAVOUR",
-      params: { cost: 20 },
+      params: { cost: 18 },
     });
     // Without The Stars Are Right.
-    const early = lodgeField([], 20, {
+    const early = lodgeField([], 18, {
       techs: { 0: techsWithout("EXPLOSIVES") },
     });
     expect(rejectedV7(early, summoning(early))).toEqual({
@@ -1048,7 +1061,7 @@ describe("rituals: taking part (section 7.1)", () => {
       params: { tech: "EXPLOSIVES" },
     });
     // Two chanters are not enough.
-    const two = withFavourV7(cultFieldV7(lodge.slice(0, 3)), 0, 20);
+    const two = withFavourV7(cultFieldV7(lodge.slice(0, 3)), 0, 18);
     expect(rejectedV7(two, summoning(two))).toEqual({
       code: "RITUAL_NOT_LEGAL",
       params: { reason: "CHANTERS" },
@@ -1059,7 +1072,7 @@ describe("rituals: taking part (section 7.1)", () => {
         code: "RITUAL_NOT_LEGAL",
         params: { reason: "TILE" },
       });
-    const wet = lodgeField([], 20, { water: [MARK] });
+    const wet = lodgeField([], 18, { water: [MARK] });
     expect(rejectedV7(wet, summoning(wet))).toEqual({
       code: "RITUAL_NOT_LEGAL",
       params: { reason: "TILE" },
@@ -1091,7 +1104,7 @@ describe("rituals: taking part (section 7.1)", () => {
         ...lodge.slice(1),
       ]),
       0,
-      20,
+      18,
     );
     expect(rejectedV7(gazer, summoning(gazer))).toEqual({
       code: "UNIT_ROLE_INVALID",
@@ -1226,29 +1239,27 @@ describe("rituals: breaking the circle (section 7.1)", () => {
       expect(parseEventV7(event).ok, event.kind).toBe(true);
   });
 
-  it("does not ward a chanter with Behold! (the idol protects only strands)", () => {
+  it("takes out a chanter beside a standing idol that is hurt (the aura keeps no participant)", () => {
     const state = cultFieldV7([
       ...circle,
       { seat: 0, role: "GUARD", at: at(3, 2) },
       { seat: 1, role: "MARKSMAN", at: at(2, 4) },
     ]);
     // The circle is under way (built by hand), and the Idol Bearer beside
-    // its western chanter has raised its idol.
-    const raised = withIdolsV7(
-      withRitualV7(
-        patchUnitV7(state, at(3, 2), {
-          activation: {
-            ...unitAtV7(state, at(3, 2)).activation,
-            specialActed: true,
-            handled: true,
-          },
-        }),
-        "STARFALL",
-        GAZER,
-        [CHANTER_WEST, CHANTER_EAST],
-        STAR,
-      ),
-      [at(3, 2)],
+    // its western chanter stands (its idol always raised since the Cult
+    // redesign, `pulp_wars-mch9.33`).
+    const raised = withRitualV7(
+      patchUnitV7(state, at(3, 2), {
+        activation: {
+          ...unitAtV7(state, at(3, 2)).activation,
+          specialActed: true,
+          handled: true,
+        },
+      }),
+      "STARFALL",
+      GAZER,
+      [CHANTER_WEST, CHANTER_EAST],
+      STAR,
     );
     const turn = applyOkV7(raised, cultId(raised), {
       kind: "END_TURN",
@@ -1306,7 +1317,7 @@ describe("rituals: breaking the circle (section 7.1)", () => {
         { seat: 1, role: "MARKSMAN", at: at(2, 1) },
         { seat: 0, role: "FIGHTER", at: at(6, 2) },
       ],
-      20,
+      18,
     );
     // Four chanters: the fourth is insurance.
     const begun = playV7(state, summoning(state)).state;
@@ -1728,11 +1739,20 @@ describe("the Great Summoning (section 7.3)", () => {
   });
 
   it("holds the Herald at its first check with three unbroken strands, and loses it with two", () => {
-    const state = lodgeField([
-      { seat: 1, role: "MARKSMAN", at: at(2, 1) },
-      { seat: 1, role: "MARKSMAN", at: at(8, 1) },
-    ]);
-    const arrived = toCultTurn(playV7(state, summoning(state)).state).state;
+    // 2 Favour beyond the price pays its first Hunger (`pulp_wars-mch9.32`).
+    const state = lodgeField(
+      [
+        { seat: 1, role: "MARKSMAN", at: at(2, 1) },
+        { seat: 1, role: "MARKSMAN", at: at(8, 1) },
+      ],
+      20,
+    );
+    const arriving = toCultTurn(playV7(state, summoning(state)).state);
+    // A Herald that arrives at this Start Turn eats nothing yet: the check
+    // and its Hunger come before the rituals (`pulp_wars-mch9.32`).
+    expect(eventsOf(arriving.events, "FAVOUR_SPENT")).toEqual([]);
+    expect(favourOfV7(arriving.state, cultId(state))).toBe(2);
+    const arrived = arriving.state;
     const herald = unitAtV7(arrived, MARK);
     // The Human breaks one strand: three hold.
     const human = applyOkV7(arrived, cultId(arrived), { kind: "END_TURN" });
@@ -1740,6 +1760,8 @@ describe("the Great Summoning (section 7.3)", () => {
     expect(eventsOf(one.events, "STRAND_BROKEN")).toHaveLength(1);
     const held = toCultTurn(one.state);
     expect(kindsV7(held.events)).not.toContain("DAEMON_UNBOUND");
+    // Its leader's strand held: +1; then its Hunger: -2.
+    expect(favourOfV7(held.state, cultId(state))).toBe(1);
     expect(need(unitOf(held.state, herald.id)).ownerId).toBe(cultId(state));
     // Two broken strands leave two against its Control of three.
     const two = attackV7(one.state, at(8, 1), at(6, 1));
@@ -1751,6 +1773,7 @@ describe("the Great Summoning (section 7.3)", () => {
         summonerPlayerId: cultId(state),
         strands: 2,
         control: 3,
+        reason: "STRANDS",
       },
     ]);
     expect(need(unitOf(lost.state, herald.id)).ownerId).toBe(
@@ -1788,6 +1811,7 @@ describe("the Great Summoning (section 7.3)", () => {
         playerId: cultId(state),
         source: "CONSUMPTION",
         amount: 3,
+        forfeited: 0,
         favour: 3,
       },
     ]);
@@ -1947,7 +1971,7 @@ describe("the Great Summoning (section 7.3)", () => {
         list,
       ).toEqual({ kind: "BLOCKED", unit: familiar });
     // A Barricade built on the mark after the ritual began.
-    const base = lodgeField([], 20, { factions: ["CULT", "DWARF"] });
+    const base = lodgeField([], 18, { factions: ["CULT", "DWARF"] });
     const walled = checkedV7({
       ...playV7(base, summoning(base)).state,
       barricades: [{ at: MARK, ownerId: otherId(base), hp: 10 }],
@@ -1968,7 +1992,7 @@ describe("the Great Summoning (section 7.3)", () => {
   });
 
   it("previews the Great Summoning before it begins", () => {
-    const state = lodgeField([{ seat: 0, role: "RAIDER", at: MARK }], 26);
+    const state = lodgeField([{ seat: 0, role: "RAIDER", at: MARK }], 24);
     const view = viewForV7(state, cultId(state));
     expect(
       previewBeginRitualV7(
@@ -1982,7 +2006,7 @@ describe("the Great Summoning (section 7.3)", () => {
       unitId: idAt(state, SUMMONER),
       at: MARK,
       chanterUnitIds: TRIO.map((where) => idAt(state, where)),
-      favour: 20,
+      favour: 18,
       favourAfter: 6,
       starfall: null,
       // The Familiar on the mark is consumed for its value (3).
@@ -2020,7 +2044,7 @@ describe("the Great Summoning (section 7.3)", () => {
         { seat: 0, role: "FIGHTER", at: at(9, 2) },
       ]),
       0,
-      20,
+      18,
     );
     const summoned = playV7(state, summoning(state)).state;
     const star = playV7(summoned, {
@@ -2810,8 +2834,9 @@ describe("the Herald: Unbound, and bound again (sections 6.4 and 6.5)", () => {
     expect(view(bound.state).cult.daemons).toEqual([
       { unitId: herald.id, role: "HERALD", control: 3, strands: 3 },
     ]);
-    // Those strands count for its next check.
-    const held = toCultTurn(bound.state);
+    // Those strands count for its next check (with its Hunger paid: the
+    // Cult redesign, `pulp_wars-mch9.32`).
+    const held = toCultTurn(withFavourV7(bound.state, 0, 2));
     expect(kindsV7(held.events)).not.toContain("DAEMON_UNBOUND");
   });
 

@@ -208,23 +208,6 @@ export function withGripV7(
   });
 }
 
-/** The Idol Bearer on each of `bearers` has its idol raised. */
-export function withIdolsV7(
-  state: GameStateV7,
-  bearers: readonly CoordV7[],
-): GameStateV7 {
-  return checkedV7({
-    ...state,
-    cult: {
-      ...state.cult,
-      idols: [
-        ...state.cult.idols,
-        ...bearers.map((where) => unitAtV7(state, where).id),
-      ].sort((left, right) => left - right),
-    },
-  });
-}
-
 /**
  * The ritual fixtures (`pulp_wars-mch9.7`, section 7). A ritual of `kind`
  * under way: the unit on `leader` leads it, the units on `chanters` chant,

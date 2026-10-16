@@ -1675,15 +1675,15 @@ describe("text-mode play harness", () => {
     );
     const tech = ok("tech", "--session", session);
     expect(tech).toContain(
-      "Offering: a city gives up 2 population for 3 Favour [OFFERING]",
+      "Offering: a city gives up 2 population for 6 Favour [OFFERING]",
     );
     expect(tech).toContain(
       "Summoners Sacrifice your own units and Seize badly hurt enemies for Favour, and Summon Horrors with it [SUMMONER_SUPPORT]",
     );
     const state = sessionState(session);
     const view = ok("view", "--session", session);
-    expect(view).toContain("| favour 7 |");
-    expect(view).toMatch(/S0 Cultists \(you\) active [^>]* favour 7/);
+    expect(view).toContain("| favour 7/30 |");
+    expect(view).toMatch(/S0 Cultists \(you\) active [^>]* favour 7\/30/);
     expect(view).not.toMatch(/S1 Human[^>\n]* favour/);
     const unit = (role: string) => {
       const found = state.units.find((candidate) => candidate.role === role);
@@ -1715,24 +1715,28 @@ describe("text-mode play harness", () => {
     expect(options).toContain("+12 Favour, its value (favour 7->19)");
     expect(options).toContain("+18 Favour, twice its value (favour 7->25)");
     expect(options).toContain(
-      "OFFERING: the city gives up 2 population for good (pop 2/3 -> 0/3) | +3 Favour (favour 7->10) | uses the city action",
+      "OFFERING: the city gives up 2 population for good (pop 2/3 -> 0/3) | +6 Favour (favour 7->13) | uses the city action",
     );
     const seized = ok("do", "--session", session, seize);
     expect(seized).toMatch(/SEIZED .* for \+18 Favour/);
-    expect(seized).toContain("+18 from a Seizure (now 25)");
+    expect(seized).toContain("+18 from a Seizure (now 25/30)");
     const offered = ok("do", "--session", session, offering);
-    expect(offered).toContain("-2 population for +3 Favour");
-    expect(offered).toContain("+3 from an Offering (now 28)");
-    expect(ok("view", "--session", session)).toContain("| favour 28 |");
+    expect(offered).toContain("-2 population for +6 Favour");
+    // The cap (`pulp_wars-mch9.32`): 25 + 6 stops at 30, and 1 is lost.
+    expect(offered).toContain(
+      "+6 from an Offering (now 30/30; 1 lost above the cap)",
+    );
+    expect(ok("view", "--session", session)).toContain("| favour 30/30 |");
     // The Summoner has acted: no Sacrifice is left on offer.
     expect(offeredIds(session)).not.toContain(sacrifice);
   });
 
   // The Cult's channel (`pulp_wars-mch9.5`): the harness names a Horror,
   // prints its strands against its Control, and offers Summon, Channel,
-  // Behold!, Anchor, and Boo! with what each does. A constructed position
+  // Anchor, and Boo! with what each does (and the Idol Bearer's standing
+  // idol since `pulp_wars-mch9.33`). A constructed position
   // on the seat's own turn; no turn is ended.
-  it("prints the Cult's channel, and offers Summon, Channel, Behold!, Anchor, and Boo!", () => {
+  it("prints the Cult's channel, and offers Summon, Channel, Anchor, and Boo!", () => {
     // A Summoner with an Initiate beside it and 6 Favour; a Horror with an
     // Idol Bearer, a second Initiate, and the Thing near it, and a Human
     // Fighter beside the Horror.
@@ -1790,11 +1794,13 @@ describe("text-mode play harness", () => {
     expect(view).not.toContain("[KNIGHT]");
     const summon = `u${at(5, 2)}.summon.u${at(6, 2)}.5,3`;
     const channel = `u${at(2, 4)}.channel.u${horror}`;
-    const behold = `u${at(2, 5)}.behold`;
     const boo = `u${horror}.boo`;
     expect(offeredIds(session)).toEqual(
-      expect.arrayContaining([summon, channel, behold, boo]),
+      expect.arrayContaining([summon, channel, boo]),
     );
+    // Behold! is the warden's lasting aura since the Cult redesign
+    // (`pulp_wars-mch9.33`): no command, the idol stands.
+    expect(offeredIds(session)).not.toContain(`u${at(2, 5)}.behold`);
     // Every offered channel command has an id of its own.
     const ids = queryPlayerCommandsV7(viewForV7(state, state.humanPlayerId))
       .filter((command) =>
@@ -1807,12 +1813,9 @@ describe("text-mode play harness", () => {
     const options = ok("options", "--session", session, "--all");
     expect(options).toContain("SUMMON a Horror at 5,3 with");
     expect(options).toContain(
-      "-5 Favour (favour 6->1) | both channel it: strands 2/1",
+      "-4 Favour (favour 6->2) | both channel it: strands 2/1",
     );
     expect(options).toContain("strands 0/1 -> 1/1");
-    expect(options).toContain(
-      "BEHOLD: raise the idol until your next turn start",
-    );
     expect(options).toContain(
       "BOO: every living unit beside it jumps one tile away",
     );
@@ -1830,14 +1833,13 @@ describe("text-mode play harness", () => {
     expect(after).toContain("daemon: strands 3/1");
     expect(after).toContain(`channels u${horror}`);
     expect(after).toContain(`gripped by u${at(1, 4)} (strand counts three)`);
-    // Summon, Behold!, and Boo!.
+    // Summon and Boo!.
     const summoned = ok("do", "--session", session, summon);
-    expect(summoned).toContain("-5 for summoning a Horror (now 1)");
+    expect(summoned).toContain("-4 for summoning a Horror (now 2/30)");
     expect(summoned).toMatch(/SUMMONED a Horror .* @5,3 hp 18/);
-    expect(ok("do", "--session", session, behold)).toContain("IDOL RAISED");
     const booed = ok("do", "--session", session, boo);
     expect(booed).toMatch(/BOO by .* @2,2: .* 3,2->4,2/);
-    expect(ok("view", "--session", session, "--full")).toContain("idol raised");
+    expect(ok("view", "--session", session, "--full")).toContain("IDOL STANDS");
   });
 
   // Unbound (`pulp_wars-mch9.6`): the harness names an Unbound daemon, says
@@ -1986,7 +1988,7 @@ describe("text-mode play harness", () => {
     );
     expect(options).toContain("THE GREAT SUMMONING, the Herald on 5,3 with");
     expect(options).toContain(
-      "-20 Favour now (favour 20->0), never refunded | the mark is free",
+      "-18 Favour now (favour 20->2), never refunded | the mark is free",
     );
     expect(options).toContain("(strands 4/3)");
     expect(options).toContain(
@@ -2016,7 +2018,7 @@ describe("text-mode play harness", () => {
       /star now deals 12/,
     );
     const summoned = ok("do", "--session", session, summoning);
-    expect(summoned).toContain("-20 for the Great Summoning (now 0)");
+    expect(summoned).toContain("-18 for the Great Summoning (now 2/30)");
     expect(summoned).toMatch(/RITUAL BEGUN the Great Summoning by /);
     const circles = ok("view", "--session", session, "--full");
     expect(circles).toContain(
