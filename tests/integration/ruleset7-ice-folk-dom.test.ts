@@ -46,7 +46,6 @@ import {
   stampedePlanV7,
   stampedeSemanticV7,
   iceFolkRoleUnlockTextV7,
-  snowChipTooltipV7,
   snowTooltipV7,
 } from "../../src/render/ice-folk-presentation-v7";
 import {
@@ -172,8 +171,19 @@ describe("Ice Folk unit dock", () => {
     expect(
       requiredElement(".v7-selection-dock .v7-faction-chip").textContent,
     ).toBe("Ice Folk");
+    // Bead pulp_wars-2yc.63: the Blizzard is her tile's (its dock says
+    // so); her card shows the unit only.
+    host.callbacks?.onSelection({ kind: "TILE", at: AT.witch });
+    expect(
+      requiredElement('.v7-selection-dock [data-winter="blizzard"]')
+        .textContent,
+    ).toBe("Blizzard");
     selectUnitAt(controller, host, AT.witch);
-    expect(chipText("blizzard")).toBe("Blizzard");
+    expect(
+      document.querySelector(
+        '.v7-selection-dock [data-unit-status="blizzard"]',
+      ),
+    ).toBeNull();
     // Her "?" lists the unit glossary's lines (bead pulp_wars-2yc.39); her
     // own Blizzard is said once, as her ability.
     requiredButton("unit-help").click();
@@ -191,7 +201,6 @@ describe("Ice Folk unit dock", () => {
     expect(
       roleGlossaryV7("CAPTAIN", "ICE_FOLK").map((entry) => entry.name),
     ).toEqual([
-      "Capture",
       "Blizzard",
       "Cold Snap",
       // Ice Folk Freeze (`pulp_wars-w49.37`).
@@ -287,20 +296,27 @@ describe("Ice Folk unit dock", () => {
     const controller = new FixtureController(iceFolkGlideFixtureV7());
     const host = new RecordingBoardHost();
     const app = mount(controller, host);
-    selectUnitAt(controller, host, ICE_FOLK_GLIDE_V7.inside);
-    const dock = requiredElement<HTMLElement>(".v7-selection-dock");
-    const snow = requiredElement<HTMLButtonElement>(
-      '.v7-stat[data-stat="defense"] [data-modifier-source="snow"]',
+    // Bead pulp_wars-2yc.63: Snow cover is the tile's; its dock names it
+    // for the unit standing there, and the unit card shows neither the
+    // Snow chip nor the Snow term.
+    host.callbacks?.onSelection({
+      kind: "TILE",
+      at: ICE_FOLK_GLIDE_V7.inside,
+    });
+    const snow = requiredElement<HTMLElement>(
+      '.v7-selection-dock [data-ground-bonus="snow"]',
     );
-    expect(snow.textContent).toBe("+25%");
+    expect(snow.textContent).toBe("Snow cover +25% Defense");
     expect(snow.getAttribute("aria-label")).toContain("Snow cover");
     // The product's fraction (a Yeti's 1.5 x 1.25 = 1.875) is never shown.
-    expect(dock.textContent).not.toMatch(/1\.875|0\.375/);
     expect(
-      requiredElement<HTMLElement>(
-        '.v7-selection-dock [data-unit-status="snow"]',
-      ).title,
-    ).toBe(snowChipTooltipV7(true));
+      requiredElement<HTMLElement>(".v7-selection-dock").textContent,
+    ).not.toMatch(/1\.875|0\.375/);
+    selectUnitAt(controller, host, ICE_FOLK_GLIDE_V7.inside);
+    expect(
+      document.querySelector('.v7-selection-dock [data-unit-status="snow"]'),
+    ).toBeNull();
+    expect(document.querySelector('[data-modifier-source="snow"]')).toBeNull();
     // Its range reaches two tiles inside the Snow: the legend names the
     // pale-ice outlines, and the board marks them.
     expect(requiredElement('[data-landing-marker="glide"]').textContent).toBe(

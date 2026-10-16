@@ -128,15 +128,17 @@ export function restlessRecoverBlockedV7(
 export const RESTLESS_EXPLANATION_V7 =
   "Restless: Undead recover only inside your territory.";
 
-/** Short Undead ability names; RALLY reads as Frenzy for Undead support. */
+/**
+ * Short Undead ability names. Bead pulp_wars-2yc.63: the Necromancer's
+ * Rally is Rally (Frenzy before) and the Banshee's Ethereal is Slips past,
+ * the names those mechanics have in every faction.
+ */
 export function undeadAbilityNameV7(
   ability: string,
   faction: FactionIdV7,
 ): string | null {
   if (faction !== "UNDEAD") return null;
   switch (ability) {
-    case "RALLY":
-      return "Frenzy";
     case "RAISE_DEAD":
       return "Raise Dead";
     case "DEVOUR":
@@ -161,7 +163,7 @@ export function undeadAbilityNameV7(
     case "TERROR":
       return "Terror";
     case "ETHEREAL":
-      return "Ethereal";
+      return "Slips past";
     default:
       return null;
   }
@@ -177,7 +179,7 @@ export function undeadAbilityDescriptionV7(
   if (faction !== "UNDEAD") return null;
   switch (ability) {
     case "RALLY":
-      return "Frenzies adjacent friendly land troops except Necromancers, Liches and Banshees: +1 Attack on their next attack.";
+      return "Inspires adjacent friendly land troops except Necromancers, Liches and Banshees: +1 Attack on their next attack.";
     case "RAISE_DEAD":
       // The Undead pass, correction: two tiles; a raised unit fills no
       // unit slot.
@@ -216,15 +218,14 @@ export function undeadAbilityDescriptionV7(
 /** The Undead pass, correction: the Pestilence unlock (Undead Explosives). */
 export const PESTILENCE_UNLOCK_TEXT_V7 = "Liches plague the units they hit";
 
-/** Undead command labels; Human commands keep their revision-12 labels. */
-export function undeadCommandLabelV7(
-  kind: string,
-  faction: FactionIdV7,
-): string | null {
+/**
+ * Undead command labels; Human commands keep their revision-12 labels.
+ * Bead pulp_wars-2yc.63: a Necromancer's RALLY is Rally (Frenzy before).
+ */
+export function undeadCommandLabelV7(kind: string): string | null {
   if (kind === "RAISE_DEAD") return "Raise Dead";
   if (kind === "DEVOUR") return "Devour";
   if (kind === "WAIL") return "Wail";
-  if (kind === "RALLY" && faction === "UNDEAD") return "Frenzy";
   return null;
 }
 
@@ -251,9 +252,12 @@ export const FEAST_PREVIEW_V7 = "Feast: full heal";
 /** The cursor and legend name of a Bat Escape landing tile. */
 export const BAT_ESCAPE_REACH_LABEL_V7 =
   "Bat Escape: flies up to 2 tiles, over units and past enemies";
-/** The cursor and legend name of a tile only Ethereal reaches. */
+/**
+ * The cursor and legend name of a tile only Ethereal reaches (Slips past,
+ * the trait's one name since bead pulp_wars-2yc.63).
+ */
 export const ETHEREAL_REACH_LABEL_V7 =
-  "Ethereal reach: passes enemy zones of control";
+  "Slips past: enemy zones of control do not stop it";
 
 /** The note of an attack preview that Feasts, or null. */
 export function feastPreviewNoteV7(

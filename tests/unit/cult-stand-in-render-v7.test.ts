@@ -662,7 +662,7 @@ describe("the Cult in the interface's words and lists", () => {
     // (It channels, like every robed cultist: `pulp_wars-mch9.5`.)
     expect(roleGlossaryV7("CATAPULT", "CULT").map((entry) => entry.id)).toEqual(
       // Star-fall is its ritual (`pulp_wars-mch9.7`).
-      ["CAPTURE", "CHANNEL", "STARFALL"],
+      ["CHANNEL", "STARFALL"],
     );
     for (const role of [
       "FIGHTER",
@@ -676,20 +676,18 @@ describe("the Cult in the interface's words and lists", () => {
       expect(restrictions(role), role).toEqual([]);
     // (Channel and Behold! arrived with the channel, `pulp_wars-mch9.5`.)
     expect(roleGlossaryV7("GUARD", "CULT").map((entry) => entry.id)).toEqual([
-      "CAPTURE",
       "CHANNEL",
       "BEHOLD",
       "SLOW_TO_STRIKE",
     ]);
     // (Switcheroo arrived with the tricks, `pulp_wars-mch9.8`.)
     expect(roleGlossaryV7("RAIDER", "CULT").map((entry) => entry.id)).toEqual([
-      "CAPTURE",
       "CHARGE",
       "SWITCHEROO",
     ]);
     // (And Ribbit.)
     expect(roleGlossaryV7("MARKSMAN", "CULT").map((entry) => entry.id)).toEqual(
-      ["CAPTURE", "CHANNEL", "RIBBIT", "RANGED"],
+      ["CHANNEL", "RIBBIT", "RANGED"],
     );
   });
 

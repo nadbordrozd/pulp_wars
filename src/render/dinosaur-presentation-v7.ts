@@ -69,8 +69,12 @@ export const HATCH_PICK_V7 = "Choose a highlighted Egg";
 export const HATCH_NEW_EGG_V7 =
   "This Egg was laid this turn; it can be hatched from your next turn";
 export const ABANDON_EGG_LABEL_V7 = "Abandon Egg";
-/** Revision 20: the Triceratops's passive ability (`LINEBREAKER`). */
-export const CHARGE_LABEL_V7 = "Charge!";
+/**
+ * Revision 20: the Triceratops's passive ability (`LINEBREAKER`). Bead
+ * pulp_wars-2yc.63: it is Gore (Charge! before), so that Charge names the
+ * Raider bonus alone in every faction.
+ */
+export const CHARGE_LABEL_V7 = "Gore";
 export const CHARGE_IGNORES_FORTIFICATION_V7 = "Ignores fortification";
 export const WALLBREAKER_PREVIEW_V7 = "Wallbreaker: ignores City Walls";
 /**
@@ -89,9 +93,6 @@ export const CHARGE_DESTROYS_FIELD_DEFENSE_V7 = "Destroys Field Defense";
 export const ACID_PREVIEW_V7 = "Acid: ignores cover and fortification";
 export const DINOSAUR_FIELD_DEFENSE_EXPLANATION_V7 =
   "Dinosaurs cannot build Field Defense";
-export const WAR_DRUMS_LABEL_V7 = "War Drums";
-export const RAMPAGE_LABEL_V7 = "Rampage";
-export const POUNCE_LABEL_V7 = "Pounce";
 export const GROWTH_STAGE_LABELS_V7 = ["Big", "Alpha"] as const;
 
 /** "Big" for stage 1 and "Alpha" for stage 2. */
@@ -392,7 +393,7 @@ export function dinosaurHelpRulesV7(): readonly (readonly [string, string])[] {
     ],
     ["Wild", "Dinosaurs cannot build Field Defense."],
     [
-      "Rampage, Pounce, War Drums",
+      "Overrun, Charge, Rally",
       `a ${dinosaurLabel("KNIGHT")} attacks again after a kill, a ${dinosaurLabel("RAIDER")} gets +1 Attack after moving two tiles, and a ${dinosaurLabel("CAPTAIN")} gives adjacent units +1 Attack on their next attack.`,
     ],
     // The ninth unit (`pulp_wars-w49.17`, 7r55): the Stegosaurus's
@@ -510,19 +511,18 @@ export function layEggUnavailableTextV7(
   }
 }
 
-/** Dinosaur ability names; other factions' names are unchanged. */
+/**
+ * Dinosaur ability names; other factions' names are unchanged. Bead
+ * pulp_wars-2yc.63: the Shaman's Rally, the T-Rex's Overrun and the
+ * Raptor's Charge carry their names of every faction (War Drums, Rampage
+ * and Pounce before), and the Triceratops's run-up is Gore.
+ */
 export function dinosaurAbilityNameV7(
   ability: string,
   faction: FactionIdV7,
 ): string | null {
   if (faction !== "DINOSAUR") return null;
   switch (ability) {
-    case "RALLY":
-      return WAR_DRUMS_LABEL_V7;
-    case "OVERRUN":
-      return RAMPAGE_LABEL_V7;
-    case "CHARGE":
-      return POUNCE_LABEL_V7;
     case "LINEBREAKER":
       return CHARGE_LABEL_V7;
     case "HATCH":
@@ -546,10 +546,7 @@ export function dinosaurAbilityDescriptionV7(
   switch (ability) {
     case "RALLY":
       return "Adjacent friendly land troops, except Shamans and Triceratopses, get +1 Attack on their next attack this turn.";
-    case "OVERRUN":
-      return "After a kill, advances and can attack another adjacent enemy.";
-    case "CHARGE":
-      return "With Raiding, +1 Attack on the first Attack after moving 2+ cells.";
+    // Overrun and Charge read the shared sentences of every faction.
     case "LINEBREAKER":
       return CHARGE_DESCRIPTION_V7;
     case "HATCH":
@@ -568,16 +565,12 @@ export function dinosaurAbilityDescriptionV7(
 }
 
 /**
- * Dinosaur command labels: Lay Egg and Hatch for every viewer, and War Drums
- * for a Dinosaur viewer's Rally.
+ * Dinosaur command labels: Lay Egg and Hatch for every viewer (a Shaman's
+ * Rally is Rally since bead pulp_wars-2yc.63).
  */
-export function dinosaurCommandLabelV7(
-  kind: string,
-  faction: FactionIdV7,
-): string | null {
+export function dinosaurCommandLabelV7(kind: string): string | null {
   if (kind === "LAY_EGG") return LAY_EGG_LABEL_V7;
   if (kind === "HATCH") return HATCH_LABEL_V7;
-  if (kind === "RALLY" && faction === "DINOSAUR") return WAR_DRUMS_LABEL_V7;
   return null;
 }
 
@@ -786,7 +779,7 @@ export function chargePreviewLinesV7(
       0
   )
     lines.push(packHuntPreviewLineV7());
-  if (preview.runUp > 0) lines.push(`Charge +${preview.runUp}`);
+  if (preview.runUp > 0) lines.push(`${CHARGE_LABEL_V7} +${preview.runUp}`);
   // A heat ray's ignored fortification is the Martian Disintegrator, which
   // the Martian preview lines name (bead pulp_wars-t6s.4).
   // Tuning 1 (7r46): a Breach has its own note (`breachCombatNotesV7`).

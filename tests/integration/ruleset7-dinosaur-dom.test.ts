@@ -291,9 +291,9 @@ describe("Revision 19 Dinosaur setup", () => {
     );
     expect(charge.runUp).toBe(2);
     await waitUntil(() => statusChips().length > 0);
-    expect(statusChips()).toContain("Charge! +2 Attack");
+    expect(statusChips()).toContain("Gore +2 Attack");
     const attack = required(boardTarget(host, "ATTACK", captain.at));
-    expect(attack.previewNote).toContain("Charge +2");
+    expect(attack.previewNote).toContain("Gore +2");
     host.callbacks?.onCommand(attack);
     await waitUntil(() => {
       const target = app.controller
@@ -819,13 +819,13 @@ describe("Revision 20 Charge!", () => {
     expect(preview).toMatchObject({ runUp: 2, push: "WILL_PUSH" });
     // The dock returns once the Move has been presented.
     await waitUntil(() => statusChips().length > 0);
-    expect(statusChips()).toEqual(["Charge! +2 Attack"]);
+    expect(statusChips()).toEqual(["Gore +2 Attack"]);
     const attack = required(boardTarget(host, "ATTACK", AT.pushTarget));
     expect(attack.previewLabel).toBe(
       `Deal ${preview.damageToDefender} · take ${preview.damageToAttacker}`,
     );
     expect(attack.previewNote).toBe(
-      "Charge +2 · Pushes back; Triceratops follows",
+      "Gore +2 · Pushes back; Triceratops follows",
     );
     // One activation of the board target performs the ordinary Attack.
     host.callbacks?.onCommand(attack);
@@ -866,11 +866,11 @@ describe("Revision 20 Charge!", () => {
     );
     expect(preview).toMatchObject({ runUp: 1, defenderDies: true });
     await waitUntil(() => statusChips().length > 0);
-    expect(statusChips()).toEqual(["Charge! +1 Attack"]);
+    expect(statusChips()).toEqual(["Gore +1 Attack"]);
     // A kill has no Push line; since tuning 2 (7r47) it says that the
     // attacker takes the tile.
     expect(boardTarget(host, "ATTACK", AT.killTarget)?.previewNote).toBe(
-      "Charge +1 · Advances",
+      "Gore +1 · Advances",
     );
     app.destroy();
   });
@@ -968,13 +968,7 @@ describe("Revision 19 growth, abilities and labels", () => {
     );
     expect(
       roleGlossaryV7("KNIGHT", "DINOSAUR").map((entry) => entry.name),
-    ).toEqual([
-      "Capture",
-      "Rampage",
-      "Grows",
-      "Egg-laid",
-      ...bigBody("KNIGHT"),
-    ]);
+    ).toEqual(["Overrun", "Grows", "Egg-laid", ...bigBody("KNIGHT")]);
     // Its chips explain themselves under the abilities.
     expect(
       [
@@ -1012,7 +1006,6 @@ describe("Revision 19 growth, abilities and labels", () => {
       return names;
     };
     expect(abilityNames(AT.spitter)).toEqual([
-      "Capture",
       "Acid",
       "Grows",
       "Ranged",
@@ -1020,22 +1013,15 @@ describe("Revision 19 growth, abilities and labels", () => {
       ...bigBody("MARKSMAN"),
     ]);
     expect(abilityNames(AT.ankylosaurus)).toEqual([
-      "Capture",
       "Armoured",
       "Grows",
       "Slow to strike",
       "Egg-laid",
       ...bigBody("GUARD"),
     ]);
-    expect(abilityNames(AT.shaman)).toEqual([
-      "Capture",
-      "War Drums",
-      "Tend",
-      "Hatch",
-    ]);
+    expect(abilityNames(AT.shaman)).toEqual(["Rally", "Tend", "Hatch"]);
     expect(abilityNames(AT.triceratops)).toEqual([
-      "Capture",
-      "Charge!",
+      "Gore",
       "Grows",
       "Egg-laid",
       ...bigBody("SWORDSMAN"),
@@ -1043,7 +1029,7 @@ describe("Revision 19 growth, abilities and labels", () => {
     app.destroy();
   });
 
-  it("labels War Drums, the faction chip and the Field Defense restriction", () => {
+  it("labels the Shaman's Rally, the faction chip and the Field Defense restriction", () => {
     const controller = new FixtureController(
       dinosaurUiFieldV7([
         { seat: 0, role: "CAPTAIN", at: { x: 7, y: 8 } },
@@ -1055,7 +1041,7 @@ describe("Revision 19 growth, abilities and labels", () => {
     const host = new RecordingBoardHost();
     const app = mount(controller, host);
     selectUnitAt(controller, host, { x: 7, y: 8 });
-    expect(actionLabels()).toEqual(["War Drums", "Disband", "Wait"]);
+    expect(actionLabels()).toEqual(["Rally", "Disband", "Wait"]);
     expect(
       requiredElement('.v7-faction-chip[data-faction="dinosaur"]').textContent,
     ).toBe("Dinosaur");
@@ -1117,7 +1103,7 @@ describe("Revision 19 growth, abilities and labels", () => {
     );
     expect(unlocks("scouting")).toContain("Raptor Egg");
     // (The ninth unit, 7r55: the Triceratops is at Metallurgy.)
-    expect(unlocks("metallurgy")).toContain("Triceratops Egg (Charge!)");
+    expect(unlocks("metallurgy")).toContain("Triceratops Egg (Gore)");
     expect(unlocks("sawmilling")[0]).toContain("Stegosaurus Egg");
     // Revision 20: the Explosives slot is Wallbreaker for a Dinosaur.
     expect(
@@ -1137,13 +1123,13 @@ describe("Revision 19 growth, abilities and labels", () => {
     expect(unlocks("chivalry")).toEqual(
       expect.arrayContaining([
         "T-Rex Egg",
-        "Rampage: T-Rexes advance after a kill and may attack again",
+        "Overrun: T-Rexes advance after a kill and may attack again",
       ]),
     );
     expect(unlocks("administration")).toEqual(
       expect.arrayContaining([
         "Train Shaman",
-        "Shamans beat War Drums or Tend nearby troops, and Hatch Eggs",
+        "Shamans Rally or Tend nearby troops, and Hatch Eggs",
       ]),
     );
     expect(unlocks("metallurgy")).toContain(
@@ -1162,8 +1148,7 @@ describe("Revision 19 growth, abilities and labels", () => {
     expect(
       recruitmentRolePresentationV7("SWORDSMAN", "DINOSAUR").abilities,
     ).toEqual([
-      "Capture: Can take villages and enemy cities.",
-      `Charge!: ${dinosaurAbilityDescriptionV7("LINEBREAKER", "DINOSAUR")}`,
+      `Gore: ${dinosaurAbilityDescriptionV7("LINEBREAKER", "DINOSAUR")}`,
       `Grows: ${dinosaurAbilityDescriptionV7("GROW", "DINOSAUR")}`,
     ]);
     expect(dinosaurRecruitNotesV7("SWORDSMAN", "DINOSAUR")[0]).toMatch(

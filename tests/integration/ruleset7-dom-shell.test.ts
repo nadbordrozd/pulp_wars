@@ -30,7 +30,10 @@ import { createTacticalSymbolV7 } from "../../src/render/dom/tactical-symbol-v7"
 // pulp_wars-w5j.1: the browser launches only distinct factions.
 import { browserSetupV7 } from "../fixtures/v7-builders";
 import { HELP_SECTIONS_V7 } from "../../src/render/help-text-v7";
-import { roleGlossaryV7 } from "../../src/render/unit-glossary-v7";
+import {
+  GROUND_MODIFIER_SOURCES_V7,
+  roleGlossaryV7,
+} from "../../src/render/unit-glossary-v7";
 
 beforeEach(() => {
   document.body.innerHTML = '<div id="app"></div>';
@@ -914,7 +917,7 @@ describe("Ruleset 7 DOM shell", () => {
     );
     expect(
       roleGlossaryV7("KNIGHT", "ORIGINAL").map((entry) => entry.id),
-    ).toEqual(["CAPTURE", "OVERRUN"]);
+    ).toEqual(["OVERRUN"]);
     // The terms of the card are folded away until asked for.
     const terms = modal.querySelector<HTMLDetailsElement>(".v7-glossary-terms");
     expect(terms?.open).toBe(false);
@@ -1608,13 +1611,15 @@ describe("Ruleset 7 DOM shell", () => {
                 stat.id === "DEFENSE"
                   ? {
                       ...stat,
+                      // Bead pulp_wars-2yc.63: a term of the unit's own
+                      // (a city's fortification is the city dock's now).
                       modifiers: [
                         {
                           value: { numerator: 1, denominator: 1 },
-                          source: "CITY_FORTIFICATION" as const,
-                          sourceLabel: "City fortification",
+                          source: "DIG_IN" as const,
+                          sourceLabel: "Dug in",
                           description:
-                            "Prospecting adds 1 Defense on an owned city center.",
+                            "Dug in: a unit that has not moved, on or next to its own city center, adds 1 Defense.",
                         },
                       ],
                     }
@@ -1752,8 +1757,14 @@ describe("Ruleset 7 DOM shell", () => {
     );
     expect(cityDock).not.toBeNull();
     expect(cityActions).not.toBeNull();
+    // Bead pulp_wars-2yc.63: a term of the unit itself (the tile's cover,
+    // Walls and Field Defense are shown on the tile's dock instead).
     const statsWithModifier = view.unitStats.find((stats) =>
-      stats.stats.some((stat) => stat.modifiers.length > 0),
+      stats.stats.some((stat) =>
+        stat.modifiers.some(
+          (modifier) => !GROUND_MODIFIER_SOURCES_V7.includes(modifier.source),
+        ),
+      ),
     );
     if (statsWithModifier === undefined)
       throw new Error("Public modifier fixture missing");
@@ -1792,10 +1803,11 @@ describe("Ruleset 7 DOM shell", () => {
     expect(
       document.querySelector('[data-v7-region="unit-help"][aria-modal="true"]'),
     ).not.toBeNull();
+    // Bead pulp_wars-2yc.63: a plain Fighter has no line of its own (every
+    // land unit captures), so its dialog is the card terms alone.
     expect(
-      document.querySelector(".v7-unit-help-dialog .v7-abilities")?.textContent
-        ?.length,
-    ).toBeGreaterThan(0);
+      document.querySelector(".v7-unit-help-dialog .v7-glossary-terms"),
+    ).not.toBeNull();
     document.dispatchEvent(
       new KeyboardEvent("keydown", { key: "Escape", bubbles: true }),
     );

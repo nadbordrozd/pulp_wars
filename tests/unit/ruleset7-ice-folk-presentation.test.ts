@@ -165,7 +165,8 @@ describe("Ice Folk texts (section 13.2)", () => {
       "Mountain-born",
     );
     expect(iceFolkAbilityNameV7("MOUNTAIN_BORN", "ORIGINAL")).toBeNull();
-    expect(iceFolkCommandLabelV7("THROW_BOLAS")).toBe("Bolas");
+    // Bead pulp_wars-2yc.63: the Sled's Bolas is the Witch's Frost Bolt.
+    expect(iceFolkCommandLabelV7("THROW_BOLAS")).toBe("Frost Bolt");
     expect(iceFolkCommandLabelV7("COLD_SNAP")).toBe("Cold Snap");
     // Ice Folk Freeze (`pulp_wars-w49.38`): the Witch's Frost Bolt and the
     // Mammoth's Stampede.
@@ -183,7 +184,7 @@ describe("Ice Folk texts (section 13.2)", () => {
       `Train ${label("CAPTAIN")} (Blizzard, Cold Snap, Frost Bolt)`,
     );
     expect(iceFolkRoleUnlockTextV7("SWORDSMAN")).toBe(
-      `Train ${label("SWORDSMAN")} (Sweep, Trample, Stampede)`,
+      `Train ${label("SWORDSMAN")} (Sweep, Wrecker, Stampede)`,
     );
     expect(iceFolkRoleUnlockTextV7("CATAPULT")).toBe(
       `Train ${label("CATAPULT")} (ignores Walls and Field Defense)`,
@@ -648,14 +649,15 @@ describe("Ice Folk Help (section 13.3)", () => {
       "Snow",
       "Blizzard",
       "Cold Snap",
+      // Bead pulp_wars-2yc.63: Bolas is Frost Bolt, Trample is Wrecker,
+      // Prowl is Slips past.
       "Frost Bolt",
-      "Bolas",
       "Cold Blood",
-      "Sweep and Trample",
+      "Sweep and Wrecker",
       "Mountain-born",
       "Rockfall",
       "Boulders",
-      "Prowl",
+      "Slips past",
       "Cold Aura",
       "Stampede",
       "Deep Winter",
@@ -674,7 +676,9 @@ describe("Ice Folk Help (section 13.3)", () => {
       `Ice Folk units recover ${DEEP_WINTER_RECOVER_V7} in their own territory`,
     );
     expect(DEEP_WINTER_RADIUS_V7).toBe(2);
-    expect(rule("Sweep and Trample")).toContain(`deals ${SWEEP_DAMAGE_V7}`);
+    expect(rule("Sweep and Wrecker")).toContain(`deals ${SWEEP_DAMAGE_V7}`);
+    expect(rule("Frost Bolt")).toContain(label("RAIDER"));
+    expect(rule("Frost Bolt")).toContain(label("CAPTAIN"));
     expect(rule("Frozen")).toContain("It can be frozen again at once.");
     expect(rule("Stampede")).toContain(`takes ${STAMPEDE_DAMAGE_V7}`);
     expect(rule("Frostbite")).toContain("is Frozen");

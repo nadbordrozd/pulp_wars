@@ -501,7 +501,7 @@ describe("the Dinosaur pass: a run-up of one tile, two with Wallbreaker", () => 
     expect(help.get("Wallbreaker")).toBe(
       "with Wallbreaker, a Triceratops's run-up counts two tiles, and dinosaurs ignore City Walls when they attack.",
     );
-    expect(help.get("Charge!")).toContain(
+    expect(help.get("Gore")).toContain(
       "(+1 Attack; with Wallbreaker +1 per tile, up to +2)",
     );
   });

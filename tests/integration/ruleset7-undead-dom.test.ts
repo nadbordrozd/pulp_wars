@@ -248,7 +248,7 @@ describe("Revision 13 Undead DOM", () => {
     expect(host.lastModel?.interaction.selectedUnitId).toBeDefined();
 
     selectUnitAt(controller, host, at.necromancer);
-    expect(actionLabels()).toEqual(["Frenzy", "Raise Dead", "Disband", "Wait"]);
+    expect(actionLabels()).toEqual(["Rally", "Raise Dead", "Disband", "Wait"]);
     expect(
       requiredButton("command-raise_dead").getAttribute("aria-label"),
     ).toBe("Raise Dead · 3 Skeletons rise from adjacent Graves at 5 HP");
@@ -260,21 +260,26 @@ describe("Revision 13 Undead DOM", () => {
         (line) => line.textContent,
       ),
     ).toEqual([
-      "CaptureTakes a village or an enemy city when it starts your turn standing on its centre.",
-      "FrenzyFriendly units next to it hit harder on their next attack this turn.",
+      "RallyFriendly units next to it hit harder on their next attack this turn.",
       "Raise DeadRaises a Skeleton from every free Grave within 2 tiles.",
       "RestlessHeals only inside your own borders.",
     ]);
-    expect(help.textContent).not.toContain("Rally");
+    expect(help.textContent).not.toContain("Frenzy");
     requiredButton("close-unit-help").click();
 
     selectUnitAt(controller, host, at.ghoul);
     expect(requiredButton("command-devour").getAttribute("aria-label")).toBe(
       "Devour · Eats the Grave: heal +6 to 10 HP",
     );
+    // Bead pulp_wars-2yc.63: the Grave under it is the tile's: no chip on
+    // the unit card, the Grave chip on the tile's dock.
+    expect(document.querySelector('[data-unit-status="grave"]')).toBeNull();
+    expect(document.body.textContent).not.toContain("On a Grave");
+    host.callbacks?.onSelection({ kind: "TILE", at: at.ghoul });
     expect(
-      document.querySelector('[data-unit-status="grave"]')?.textContent,
-    ).toBe("On a Grave");
+      document.querySelector('.v7-selection-dock [data-grave="true"]')
+        ?.textContent,
+    ).toBe("Grave");
 
     selectUnitAt(controller, host, at.restlessSkeleton);
     expect(
@@ -345,11 +350,10 @@ describe("Revision 13 Undead DOM", () => {
         (line) => line.textContent,
       ),
     ).toEqual([
-      "CaptureTakes a village or an enemy city when it starts your turn standing on its centre.",
       "WailHurts every living enemy within 2 tiles at once. It has no ordinary attack.",
       // The Vampire and Banshee rework (`pulp_wars-ty6i`).
-      "TerrorEnemies its Wail hurts cannot hit back until the end of your turn.",
-      "EtherealEnemies next to its path do not stop it.",
+      "TerrorEnemies its Wail hurts cannot hit back for the rest of your turn.",
+      "Slips pastEnemies next to its path do not stop its movement.",
       "RestlessHeals only inside your own borders.",
     ]);
     requiredButton("close-recruit-help").click();
@@ -359,7 +363,7 @@ describe("Revision 13 Undead DOM", () => {
     const detail = requiredElement<HTMLElement>(".v7-tech-detail");
     expect(detail.textContent).toContain("Train Necromancer");
     expect(detail.textContent).toContain(
-      "Necromancers Frenzy nearby troops or Raise Dead",
+      "Necromancers Rally nearby troops or Raise Dead",
     );
     requiredButton("close-overlay").click();
 
@@ -624,7 +628,7 @@ describe("Vampire and Banshee DOM (pulp_wars-iqhp)", () => {
       ).querySelectorAll<HTMLElement>(".v7-unit-ability"),
     ].map((line) => line.textContent ?? "");
     expect(abilities.some((line) => line.startsWith("Terror"))).toBe(true);
-    expect(abilities.some((line) => line.startsWith("Ethereal"))).toBe(true);
+    expect(abilities.some((line) => line.startsWith("Slips past"))).toBe(true);
     etherealApp.destroy();
   });
 });

@@ -172,7 +172,7 @@ describe("Revision 19 board targets on the board host", () => {
     const preview = queryCombatPreviewV7(view, triceratops.id, target.id);
     if (preview === null) throw new Error("attack not offered");
     expect(rig.description()).toBe(
-      `Grass. Juggernaut, ${target.hp} of ${target.maxHp} HP. Available: Attack preview. Defender fortification level 0. Primary damage ${preview.damageToDefender}. Charge +${preview.runUp}. Pushes back; Triceratops follows.`,
+      `Grass. Juggernaut, ${target.hp} of ${target.maxHp} HP. Available: Attack preview. Defender fortification level 0. Primary damage ${preview.damageToDefender}. Gore +${preview.runUp}. Pushes back; Triceratops follows.`,
     );
     expect(preview.runUp).toBe(2);
     // An Egg under the cursor reads its name and countdown.

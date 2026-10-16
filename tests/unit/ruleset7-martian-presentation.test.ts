@@ -198,7 +198,9 @@ describe("Martian texts (section 13.2)", () => {
     expect(martianCommandLabelV7("BEAM_DOWN", "ORIGINAL")).toBe("Beam Down");
     expect(martianCommandLabelV7("RALLY", "MARTIAN")).toBe("Psychic Command");
     expect(martianCommandLabelV7("RALLY", "ORIGINAL")).toBeNull();
-    expect(martianAbilityNameV7("CHARGE", "MARTIAN")).toBe("Strafe");
+    // Bead pulp_wars-2yc.63: the Saucer's Strafe is Charge, its name in
+    // every faction.
+    expect(martianAbilityNameV7("CHARGE", "MARTIAN")).toBeNull();
     expect(martianAbilityNameV7("CHARGE", "DINOSAUR")).toBeNull();
     expect(martianRewardLabelV7("MILITIA")).toEqual([
       "Militia",
@@ -246,7 +248,7 @@ describe("Martian texts (section 13.2)", () => {
       "Beam Down",
       "Mind Control",
       "Tractor Beam",
-      "Psychic Command, Strafe",
+      "Psychic Command, Charge",
       // The ninth unit (`pulp_wars-w49.17`, 7r55): the Shock Trooper.
       "Shock Field",
     ]);

@@ -549,7 +549,6 @@ describe("Ruleset 7 Gallery", () => {
       // The unit glossary (bead pulp_wars-2yc.39): every ability and trait
       // of the Lich, each with its one plain sentence, and no second list.
     ).toEqual([
-      "CAPTURE",
       "PLAGUE",
       "LONG_SHOT",
       "SLOW_TO_STRIKE",

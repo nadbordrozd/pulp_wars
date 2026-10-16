@@ -177,9 +177,9 @@ describe("Ruleset 7 public presentation", () => {
       { label: "Range", value: "1" },
       { label: "Sight", value: "1" },
     ]);
-    // Tuning 2 (7r47): the Human Knight captures.
+    // Tuning 2 (7r47): the Human Knight captures, as every land unit does
+    // (`pulp_wars-ke95`), so no line says it (bead pulp_wars-2yc.63).
     expect(knightOverrun.abilities).toEqual([
-      "Capture: Can take villages and enemy cities.",
       "Overrun: After a kill, advances and can attack another adjacent enemy.",
     ]);
     expect(knightOverrun.restrictions).toEqual([]);

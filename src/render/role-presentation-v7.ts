@@ -230,8 +230,10 @@ export function roleAbilityDescriptionV7(
       return minimum > 1
         ? `Fires at range ${minimum}–${maximum}. Can't hit adjacent units or move and fire.`
         : null;
+    // Bead pulp_wars-2yc.63: every land unit captures (`pulp_wars-ke95`),
+    // so Capture needs no line.
     case "CAPTURE":
-      return "Can take villages and enemy cities.";
+      return null;
     case "CHARGE":
       return `With ${technologyDisplayNameV7("RAIDING", faction)}, +1 Attack on the first Attack after moving 2+ cells.`;
     case "RALLY":

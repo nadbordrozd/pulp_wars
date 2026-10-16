@@ -159,14 +159,12 @@ describe("the Cult's channel: the Horror on the board", () => {
     expect(lines.map((entry) => entry.id)).toEqual([
       "DAEMON",
       "DAEMONS_FEED",
-      "CAPTURE",
       "BOO",
       "STRIDE",
       "UNBOUND",
     ]);
     // (The Caller's Tentacle arrived with the tricks, `pulp_wars-mch9.8`.)
     expect(roleGlossaryV7("KNIGHT", "CULT").map((entry) => entry.id)).toEqual([
-      "CAPTURE",
       "CHANNEL",
       "TENTACLE",
     ]);

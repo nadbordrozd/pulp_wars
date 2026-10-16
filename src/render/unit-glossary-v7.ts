@@ -5,10 +5,15 @@ import {
   roleMechanicsV7,
   summonedUnitRoleRuleV7,
   type FactionIdV7,
+  type PlayerViewV7,
   type SummonedRoleIdV7,
   type UnitRoleAbilityV7,
   type UnitRoleIdV7,
 } from "../engine/index";
+import {
+  ICE_COVER_LABEL_V7,
+  ICE_COVER_TOOLTIP_V7,
+} from "./frozen-sea-presentation-v7";
 
 /**
  * The unit glossary (bead pulp_wars-2yc.39): one name and one or two plain
@@ -73,20 +78,13 @@ const ENTRIES = {
   ],
 
   // ------------------------------------------------------ shared abilities
-  CAPTURE: [
-    "Capture",
-    "Takes a village or an enemy city when it starts your turn standing on its centre.",
-  ],
+  // Bead pulp_wars-2yc.63: one entry per mechanic. Capture is no line (every
+  // land unit captures); the Raider bonus is Charge in every faction (it
+  // was Pounce and Strafe), the Inspire support is Rally (Frenzy, War
+  // Drums), the kill chain is Overrun (Ram, Rampage), and the zone-of-control
+  // trait is Slips past (Ethereal, Prowl).
   CHARGE: [
     "Charge",
-    "Its first attack after a long move hits harder. Unlocked by a technology.",
-  ],
-  POUNCE: [
-    "Pounce",
-    "Its first attack after a long move hits harder. Unlocked by a technology.",
-  ],
-  STRAFE: [
-    "Strafe",
     "Its first attack after a long move hits harder. Unlocked by a technology.",
   ],
   ESCAPE: ["Escape", "After attacking it may move once more, if it survived."],
@@ -94,22 +92,15 @@ const ENTRIES = {
     "Rally",
     "Friendly units next to it hit harder on their next attack this turn.",
   ],
-  FRENZY: [
-    "Frenzy",
-    "Friendly units next to it hit harder on their next attack this turn.",
+  // The same Inspire as Rally, every second turn only.
+  PSYCHIC_COMMAND: [
+    "Psychic Command",
+    "Friendly units next to it hit harder on their next attack this turn. It can do this only every second turn.",
   ],
   // `pulp_wars-w49.36`: the Orc Warboss's Berserk replaced WAAAGH!.
   BERSERK: [
     "Berserk",
     "Your units within 2 tiles that have not moved yet go one tile farther this turn, and enemies next to their path do not stop them.",
-  ],
-  WAR_DRUMS: [
-    "War Drums",
-    "Friendly units next to it hit harder on their next attack this turn.",
-  ],
-  PSYCHIC_COMMAND: [
-    "Psychic Command",
-    "Friendly units next to it hit harder on their next attack. It can do this every second turn.",
   ],
   TEND: [
     "Tend",
@@ -121,18 +112,10 @@ const ENTRIES = {
   ],
   REPAIR: [
     "Repair",
-    "Heals the friendly units next to it, machines most of all, and cures their ailments. It also mends your Barricades.",
+    "Heals the wounded friendly units next to it, machines most of all, and cures their ailments. It also mends your Barricades.",
   ],
   OVERRUN: [
     "Overrun",
-    "After a kill it takes the tile and may attack again, for as long as it keeps killing.",
-  ],
-  RAM_BUGGY: [
-    "Ram",
-    "After a kill it takes the tile and may attack again, for as long as it keeps killing.",
-  ],
-  RAMPAGE: [
-    "Rampage",
     "After a kill it takes the tile and may attack again, for as long as it keeps killing.",
   ],
   PUSH: ["Push", "Shoves a target that survives its attack one tile back."],
@@ -295,7 +278,9 @@ const ENTRIES = {
   ],
 
   // ------------------------------------------------------------------ ships
-  SHIP: ["Ship", "Built at a Port. It heals only next to your own Ports."],
+  // Bead pulp_wars-2yc.63: every ship is built at a Port, so the line says
+  // only what sets a ship apart.
+  SHIP: ["Heals at Ports", "It heals only next to your own Ports."],
   BOW_RAM: [
     "Bow Ram",
     "After moving it hits ships harder and shoves them back. Unlocked by a technology.",
@@ -332,6 +317,7 @@ const ENTRIES = {
     "Defends worse against attacks from a distance.",
   ],
   SPLASH: ["Splash", "Its shots also hurt the enemies next to the target."],
+  // The Mammoth's Trample is the same (bead pulp_wars-2yc.63).
   WRECKER: [
     "Wrecker",
     "Its attack knocks down the Field Defense under the target.",
@@ -363,7 +349,7 @@ const ENTRIES = {
     "Units it hits catch the Plague: they lose health every turn and can pass it on. Unlocked by a technology.",
   ],
   LIFESTEAL: ["Lifesteal", "Heals itself by the damage it deals."],
-  UNANSWERED: ["Unanswered", "Units it attacks cannot hit back."],
+  UNANSWERED: ["Unanswered", "A unit it attacks cannot hit back."],
   // The Vampire and Banshee rework (`pulp_wars-ty6i`).
   FEAST: [
     "Feast",
@@ -375,9 +361,8 @@ const ENTRIES = {
   ],
   TERROR: [
     "Terror",
-    "Enemies its Wail hurts cannot hit back until the end of your turn.",
+    "Enemies its Wail hurts cannot hit back for the rest of your turn.",
   ],
-  ETHEREAL: ["Ethereal", "Enemies next to its path do not stop it."],
   RISE_AGAIN: [
     "Rise Again",
     "Once, after it falls, it climbs back out of its Grave on your next turn, unless a unit stands on the Grave.",
@@ -435,8 +420,10 @@ const ENTRIES = {
     "Hatch",
     "Hatches an Egg next to it at once, instead of waiting out its turns.",
   ],
+  // Bead pulp_wars-2yc.63: the Triceratops's run-up (`LINEBREAKER`) is
+  // Gore, so that Charge names the Raider bonus alone.
   CHARGE_BANG: [
-    "Charge!",
+    "Gore",
     "Hits harder after moving. Ignores Walls and Field Defense, and shoves the target back.",
   ],
   THAGOMIZER: [
@@ -484,7 +471,7 @@ const ENTRIES = {
   ],
   SHOCK_FIELD: [
     "Shock Field",
-    "While its Shield holds, an enemy that attacks it from the next tile is hurt in return.",
+    "While its Shield holds, an enemy that hits it from the next tile is hurt in return.",
   ],
 
   // --------------------------------------------------------------- Ice Folk
@@ -498,7 +485,6 @@ const ENTRIES = {
     "Freeze",
     "Turns the water next to it to ice, which your units slide across. Unlocked by a technology.",
   ],
-  BOLAS: ["Bolas", "Freezes an enemy within 2 tiles. It does no damage."],
   COLD_BLOOD: ["Cold Blood", "Hits a Frozen unit harder."],
   BLIZZARD: [
     "Blizzard",
@@ -506,10 +492,11 @@ const ENTRIES = {
   ],
   COLD_SNAP: ["Cold Snap", "Freezes every enemy next to her."],
   // Ice Folk Freeze (`pulp_wars-w49.37`): the Witch's Frost Bolt and the
-  // Mammoth's Stampede.
+  // Mammoth's Stampede. Bead pulp_wars-2yc.63: the Sled's Bolas is the same
+  // freeze, so it is a Frost Bolt too.
   FROST_BOLT: [
     "Frost Bolt",
-    "Freezes one enemy within 2 tiles instead of a Cold Snap. It does no damage.",
+    "Freezes one enemy within 2 tiles. It does no damage.",
   ],
   STAMPEDE: [
     "Stampede",
@@ -519,7 +506,6 @@ const ENTRIES = {
     "Boulders",
     "Its throw ignores Walls and Field Defense, and hits harder when it has not moved.",
   ],
-  PROWL: ["Prowl", "Enemies next to its path do not stop it."],
   COLD_AURA: [
     "Cold Aura",
     "Freezes every enemy next to it when it ends its own move.",
@@ -528,13 +514,9 @@ const ENTRIES = {
     "Sweep",
     "Its attack also hurts the enemies on both sides of the target.",
   ],
-  TRAMPLE: [
-    "Trample",
-    "Its attack flattens the Field Defense under the target.",
-  ],
   FROSTBITE: [
     "Frostbite",
-    "An enemy that attacks it from the next tile and survives is Frozen.",
+    "An enemy that hits it from the next tile and survives is Frozen.",
   ],
 
   // ----------------------------------------------------------------- Dwarves
@@ -570,14 +552,15 @@ const ENTRIES = {
     "Assemble",
     "Builds a Clockwork Gunner on a free tile next to it, for Coins. Unlocked by a technology.",
   ],
+  // Push from afar, but never on a giant or a two-slot unit.
   KNOCKBACK: [
     "Knockback",
-    "Its shot knocks a surviving target one tile straight back.",
+    "Shoves a target that survives its shot one tile back, unless it is a giant or a big unit.",
   ],
   PLATED: ["Plated", "Thick plating: one hit never takes much of its health."],
   MACHINE: ["Machine", "An Engineer's Repair heals it more than other units."],
   // Dwarf crowd control (`pulp_wars-w49.33`).
-  WHIRL: ["Whirl", "Hits every enemy next to it at once. Nobody hits back."],
+  WHIRL: ["Whirl", "Hurts every enemy next to it at once. Nobody hits back."],
   BARRICADE: [
     "Barricade",
     "Builds a Barricade on a free tile next to it, for Coins. It blocks every unit until attacks break it.",
@@ -613,7 +596,7 @@ const ENTRIES = {
   ],
   TOOTHACHE: [
     "Toothache",
-    "An enemy that bites it from the next tile has its next attack 1 weaker.",
+    "An enemy that hits it from the next tile has its next attack 1 weaker.",
   ],
   TOP_UP: [
     "Top-Up",
@@ -642,7 +625,8 @@ const ENTRIES = {
     "Neutral",
     "Belongs to nobody. It wanders near its lair and attacks the weakest unit that came next to it or hurt it.",
   ],
-  SPIDER_REGENERATES: ["Regenerates", "Heals itself after every round."],
+  // The Troll's Regenerate, at the end of every round instead.
+  SPIDER_REGENERATES: ["Regenerate", "Heals itself after every round."],
   SPIDER_BOUNTY: ["Bounty", "Killing it pays Coins."],
 
   // --------------------------------------------------------------- statuses
@@ -662,10 +646,6 @@ const ENTRIES = {
   STATUS_RESTING: [
     "Resting",
     "It has not moved or acted, so it heals at the end of your turn.",
-  ],
-  STATUS_ON_GRAVE: [
-    "On a Grave",
-    "A unit fell here. The Undead can raise or devour the Grave.",
   ],
   STATUS_PLAGUED: [
     "Plagued",
@@ -721,27 +701,11 @@ const ENTRIES = {
     "Ice crush",
     "The ice hurts it at the start of the Ice Folk turn.",
   ],
-  STATUS_ICE_COVER: [
-    "Ice cover",
-    "Harder to hurt while it stands on its own ice.",
-  ],
-  STATUS_ON_ICE: [
-    "On ice",
-    "Ice Folk slide across ice. Every other unit stops when it steps onto it.",
-  ],
   // Ice Folk Freeze (`pulp_wars-w49.38`): Frozen is the one Ice Folk
   // status of a unit.
   STATUS_FROZEN: [
     "Frozen",
     "It cannot move or act or strike back until it thaws at the end of its owner's turn (the chip counts them). Ice Folk can shatter a weak Frozen unit.",
-  ],
-  STATUS_SNOW: [
-    "Snow",
-    "Ice Folk cross snow fast and are harder to hurt on it. Other units stop on entering it.",
-  ],
-  STATUS_BLIZZARD: [
-    "Blizzard",
-    "In an Ice Witch's Blizzard: Ice Folk units here take less damage from ranged attacks.",
   ],
   STATUS_PLANTED: [
     "Planted",
@@ -759,7 +723,10 @@ const ENTRIES = {
     "Crashed",
     "Worn out after a Sugar Rush: it can move, but not attack or use abilities.",
   ],
-  STATUS_SPLATTED: ["Splatted", "Hit by a pie: it cannot hit back this turn."],
+  STATUS_SPLATTED: [
+    "Splatted",
+    "Hit by a pie: it cannot hit back for the rest of this turn.",
+  ],
   // The Candy redesign (`pulp_wars-jdb.14`): what a Toffee Trooper and a
   // Jawbreaker leave on the units that fight them.
   STATUS_STUCK: [
@@ -792,7 +759,7 @@ const ENTRIES = {
     "Berserk",
     "It goes one tile farther this turn, and enemies next to its path do not stop it.",
   ],
-  STATUS_RUN_UP: ["Charge!", "It moved this turn, so its attack hits harder."],
+  STATUS_RUN_UP: ["Gore", "It moved this turn, so its attack hits harder."],
   STATUS_TENDED: ["Tended", "A healer has already tended it this turn."],
   STATUS_ATTACK_AGAIN: ["Attack again", "It just killed: it may attack again."],
   STATUS_ESCAPE: ["Escape", "It may move once more this turn."],
@@ -807,7 +774,7 @@ const ENTRIES = {
   ],
   STATUS_TERROR: [
     "Terror",
-    "A Banshee's wail terrified it: it cannot hit back until the end of this turn.",
+    "A Banshee's wail terrified it: it cannot hit back for the rest of this turn.",
   ],
   STATUS_CRACKED: ["Cracked", "Easier to hurt for the rest of this turn."],
   STATUS_RISEN: [
@@ -905,54 +872,52 @@ export function statGlossaryIdV7(stat: string): GlossaryIdV7 | null {
 
 /**
  * Abilities with no line of their own: `ATTACK` is what the Attack stat
- * says (a unit that shoots from afar has the Ranged or Long shot trait).
+ * says (a unit that shoots from afar has the Ranged or Long shot trait),
+ * and `CAPTURE` is what every land unit can do (`pulp_wars-ke95`), so a
+ * line for it would tell a player nothing (bead pulp_wars-2yc.63).
  */
 export const ABILITIES_WITHOUT_ENTRY_V7: readonly UnitRoleAbilityV7[] = [
   "ATTACK",
+  "CAPTURE",
 ];
 
 /**
- * The entry of a role ability as a faction's role has it (Rally is Frenzy
- * for the Undead; a Mothership's Tractor Beam is the heavy one), or null
- * for an ability with no line of its own.
+ * The entry of a role ability as a faction's role has it, by its mechanic
+ * (bead pulp_wars-2yc.63: one entry per mechanic, whatever the faction; a
+ * Brain's Rally cools, so it is Psychic Command; a Warboss's is Berserk; a
+ * Mothership's Tractor Beam is the heavy one), or null for an ability with
+ * no line of its own.
  */
 export function abilityGlossaryIdV7(
   ability: UnitRoleAbilityV7,
   role: UnitRoleIdV7,
   faction: FactionIdV7,
 ): GlossaryIdV7 | null {
+  if (ABILITIES_WITHOUT_ENTRY_V7.includes(ability)) return null;
   const mechanics = roleMechanicsV7(role, faction);
   switch (ability) {
-    case "ATTACK":
-      return null;
-    case "CHARGE":
-      return faction === "DINOSAUR"
-        ? "POUNCE"
-        : faction === "MARTIAN"
-          ? "STRAFE"
-          : "CHARGE";
     case "RALLY":
-      return faction === "UNDEAD"
-        ? "FRENZY"
-        : faction === "GOBLIN"
-          ? "BERSERK"
-          : faction === "DINOSAUR"
-            ? "WAR_DRUMS"
-            : faction === "MARTIAN"
-              ? "PSYCHIC_COMMAND"
-              : "RALLY";
+      return mechanics.rallyEffect === "BERSERK"
+        ? "BERSERK"
+        : mechanics.rallyCools
+          ? "PSYCHIC_COMMAND"
+          : "RALLY";
     case "TEND_WOUNDED":
       return faction === "DWARF"
         ? "REPAIR"
         : mechanics.tendGrowingHeal !== null
           ? "TEND_DINOSAUR"
           : "TEND";
-    case "OVERRUN":
-      return faction === "GOBLIN"
-        ? "RAM_BUGGY"
-        : faction === "DINOSAUR"
-          ? "RAMPAGE"
-          : "OVERRUN";
+    // Zones of control do not stop it: the Raider's trait by another name.
+    case "ETHEREAL":
+    case "PROWL":
+      return "SLIPS_PAST";
+    // The Mammoth's attack knocks down Field Defense like a Catapult's.
+    case "TRAMPLE":
+      return "WRECKER";
+    // The Sled's freeze is the Witch's Frost Bolt.
+    case "BOLAS":
+      return "FROST_BOLT";
     case "RAM":
       return "BOW_RAM";
     case "LINEBREAKER":
@@ -994,12 +959,8 @@ export function roleTraitGlossaryIdsV7(
     if (mechanics.splash) traits.push("SPLASH");
     return traits;
   }
-  if (
-    mechanics.ignoresZocStops &&
-    !rule.abilities.includes("PROWL") &&
-    !rule.abilities.includes("ETHEREAL")
-  )
-    traits.push("SLIPS_PAST");
+  // A Banshee's Ethereal and a Sabretooth's Prowl list it already.
+  if (mechanics.ignoresZocStops) traits.push("SLIPS_PAST");
   if (mechanics.rangedDefense2 !== null)
     traits.push(
       mechanics.rangedDefense2 < rule.defense2 ? "OPEN_TO_RANGED" : "BONES",
@@ -1064,7 +1025,11 @@ export function summonedGlossaryV7(
 ): readonly GlossaryEntryV7[] {
   const ids: GlossaryIdV7[] = ["DAEMON", "DAEMONS_FEED"];
   for (const ability of summonedUnitRoleRuleV7(summoned).abilities)
-    if (ability in ENTRIES && !ids.includes(ability as GlossaryIdV7))
+    if (
+      !ABILITIES_WITHOUT_ENTRY_V7.includes(ability) &&
+      ability in ENTRIES &&
+      !ids.includes(ability as GlossaryIdV7)
+    )
       ids.push(ability as GlossaryIdV7);
   // What happens when its channel fails.
   ids.push("UNBOUND");
@@ -1084,13 +1049,18 @@ export const SPIDER_GLOSSARY_IDS_V7: readonly GlossaryIdV7[] = [
   "SPIDER_BOUNTY",
 ];
 
+/**
+ * The chips of the unit dock, by `data-unit-status`. Bead pulp_wars-2yc.63:
+ * a unit card shows facts about the unit only, so the chips of its tile
+ * (On a Grave, Snow, Blizzard, On ice, Ice cover, Rockfall) are gone; the
+ * tile dock shows those facts.
+ */
 const STATUS_IDS: Readonly<Record<string, GlossaryIdV7>> = {
   neutral: "STATUS_NEUTRAL",
   provoked: "STATUS_PROVOKED",
   restless: "STATUS_RESTLESS",
   done: "STATUS_DONE",
   "idle-recovery": "STATUS_RESTING",
-  grave: "STATUS_ON_GRAVE",
   plague: "STATUS_PLAGUED",
   bitten: "STATUS_BITTEN",
   "egg-countdown": "STATUS_HATCHING",
@@ -1109,12 +1079,7 @@ const STATUS_IDS: Readonly<Record<string, GlossaryIdV7>> = {
   boardable: "STATUS_BOARDABLE",
   icebound: "STATUS_ICEBOUND",
   "ice-crush": "STATUS_ICE_CRUSH",
-  "ice-cover": "STATUS_ICE_COVER",
-  "on-ice": "STATUS_ON_ICE",
   frozen: "STATUS_FROZEN",
-  snow: "STATUS_SNOW",
-  blizzard: "STATUS_BLIZZARD",
-  rockfall: "ROCKFALL",
   planted: "STATUS_PLANTED",
   rushed: "STATUS_RUSHED",
   "home-sweet-home": "STATUS_HOME_SWEET_HOME",
@@ -1131,15 +1096,13 @@ const STATUS_IDS: Readonly<Record<string, GlossaryIdV7>> = {
   surfaced: "STATUS_SURFACED",
   // The engine's own status lines (`PublicUnitStatsV7.statuses`), by the
   // words before their colon.
+  // (`unitStatusLineChipV7` names each by its mechanic: a Frenzied unit
+  // is Inspired, a Scrap Buggy's Ram is Overrun.)
   inspired: "STATUS_INSPIRED",
-  frenzied: "STATUS_INSPIRED",
   berserk: "STATUS_BERSERK",
-  "war-drums": "STATUS_INSPIRED",
-  "psychic-command": "STATUS_INSPIRED",
+  gore: "STATUS_RUN_UP",
   tended: "STATUS_TENDED",
   overrun: "STATUS_ATTACK_AGAIN",
-  ram: "STATUS_ATTACK_AGAIN",
-  rampage: "STATUS_ATTACK_AGAIN",
   escape: "STATUS_ESCAPE",
   "bat-escape": "STATUS_BAT_ESCAPE",
   feast: "STATUS_FEAST",
@@ -1181,8 +1144,198 @@ export const UNIT_STATUS_IDS_V7: readonly string[] = Object.freeze(
  * `data-unit-status`, or null for a chip the glossary does not know.
  */
 export function statusGlossaryV7(status: string): GlossaryEntryV7 | null {
-  const key = status.toLowerCase();
-  const id =
-    STATUS_IDS[key] ?? (key.startsWith("charge!") ? "STATUS_RUN_UP" : null);
+  const id = STATUS_IDS[status.toLowerCase()] ?? null;
   return id === null ? null : glossaryEntryV7(id);
+}
+
+/** A chip of an engine status line: its words and its `data-unit-status`. */
+export interface UnitStatusLineChipV7 {
+  readonly label: string;
+  readonly id: string;
+}
+
+/** The engine's words for the one Inspire of the Rally family. */
+const INSPIRED_LINES: readonly string[] = [
+  "Inspired",
+  "Frenzied",
+  "War Drums",
+  "Psychic Command",
+];
+
+/**
+ * The chip of one engine status line (`PublicUnitStatsV7.statuses`): the
+ * words before its colon, named by the mechanic's one name (bead
+ * pulp_wars-2yc.63): every Inspire of a Rally-family support is "Inspired",
+ * every kill chain "Overrun", and the Triceratops's run-up "Gore +2
+ * Attack". The engine's own lines are unchanged.
+ */
+export function unitStatusLineChipV7(status: string): UnitStatusLineChipV7 {
+  if (status.startsWith("Charge!"))
+    return { label: status.replace(/^Charge!/, "Gore"), id: "gore" };
+  const head = status.startsWith("Tended")
+    ? "Tended"
+    : status.startsWith("Escape: may fly")
+      ? "Bat Escape"
+      : (status.split(":", 1)[0] ?? status);
+  const label = INSPIRED_LINES.includes(head)
+    ? "Inspired"
+    : head === "Ram" || head === "Rampage"
+      ? "Overrun"
+      : head;
+  return { label, id: label.toLowerCase().replaceAll(" ", "-") };
+}
+
+/** A stat modifier's name and sentence as a unit card shows them. */
+export interface PresentedModifierV7 {
+  readonly sourceLabel: string;
+  readonly description: string;
+}
+
+/**
+ * A stat modifier of the public unit stats under the mechanic's one name
+ * (bead pulp_wars-2yc.63): Pounce and Strafe are Charge, Frenzied and War
+ * Drums are Inspired by a Rally, and the Triceratops's Charge! is Gore. The
+ * engine's own terms are unchanged.
+ */
+export function presentedModifierV7(modifier: {
+  readonly source: string;
+  readonly sourceLabel: string;
+  readonly description: string;
+}): PresentedModifierV7 {
+  switch (modifier.source) {
+    case "CHARGE":
+      return {
+        sourceLabel: "Charge",
+        description: modifier.description.replace(
+          /^(?:Pounce|Strafe)/,
+          "Charge",
+        ),
+      };
+    case "INSPIRED":
+      return {
+        sourceLabel: "Inspired",
+        description: modifier.description
+          .replace("Necromancer Frenzy adds", "Necromancer Rally adds")
+          .replace("Shaman War Drums add", "Shaman Rally adds"),
+      };
+    case "RUN_UP":
+      return {
+        sourceLabel: "Gore",
+        description: modifier.description.replaceAll("Charge!", "Gore"),
+      };
+    default:
+      return {
+        sourceLabel: modifier.sourceLabel,
+        description: modifier.description,
+      };
+  }
+}
+
+/**
+ * The stat modifiers that belong to the tile a unit stands on, not to the
+ * unit (bead pulp_wars-2yc.63): terrain cover, Snow and ice cover, a city's
+ * Walls, Field Defense, and a Mountain's high ground. The unit card leaves
+ * them out; the tile (or city) dock shows them for the unit standing there.
+ */
+export const GROUND_MODIFIER_SOURCES_V7: readonly string[] = Object.freeze([
+  "CITY_WALLS",
+  "CITY_FORTIFICATION",
+  "FIELD_DEFENSE",
+  "MOUNTAIN",
+  "FOREST",
+  "SNOW",
+  "HIGH_GROUND",
+]);
+
+/** The tile dock's name of each ground source. */
+const GROUND_LABELS: Readonly<Record<string, string>> = {
+  CITY_WALLS: "City Walls",
+  CITY_FORTIFICATION: "Fortified",
+  FIELD_DEFENSE: "Field Defense",
+  MOUNTAIN: "Cover",
+  FOREST: "Cover",
+  SNOW: "Snow cover",
+  HIGH_GROUND: "High ground",
+};
+
+/**
+ * The text of one stat modifier: Snow cover multiplies Defense (x 1.25),
+ * so its term is the share it adds, "+25%" (`pulp_wars-1wy.5`); every other
+ * term is its value, at most two decimals.
+ */
+export function modifierValueTextV7(
+  base: { readonly numerator: number; readonly denominator: number },
+  modifier: {
+    readonly source: string;
+    readonly value: {
+      readonly numerator: number;
+      readonly denominator: number;
+    };
+  },
+): string {
+  const value = modifier.value.numerator / modifier.value.denominator;
+  if (modifier.source === "SNOW" && base.numerator > 0)
+    return `+${Math.round((value * 100 * base.denominator) / base.numerator)}%`;
+  return `+${String(Math.round(value * 100) / 100)}`;
+}
+
+/** One fact of a tile about the unit standing on it. */
+export interface GroundBonusChipV7 {
+  /** `data-ground-bonus`: the modifier source, or `rockfall`. */
+  readonly id: string;
+  /** "Cover +1 Defense", "Snow cover +25% Defense", "Rockfall". */
+  readonly label: string;
+  /** One sentence for the tooltip and the accessible name. */
+  readonly text: string;
+}
+
+/**
+ * What the tile at `at` gives the unit standing on it (bead
+ * pulp_wars-2yc.63): one chip per ground modifier of its public stats
+ * (cover, Snow or Glacier's ice cover, Walls, Field Defense, high ground),
+ * and Rockfall for an Ice Folk unit on a Mountain. The unit card leaves
+ * these out; the tile dock (and a city's) shows them. Empty for an empty
+ * tile, or for a unit whose position the viewer may not read.
+ */
+export function groundBonusChipsV7(
+  view: Pick<PlayerViewV7, "units" | "unitStats">,
+  at: { readonly x: number; readonly y: number },
+  skip: readonly string[] = [],
+): readonly GroundBonusChipV7[] {
+  const unit = view.units.find(
+    (candidate) => candidate.at.x === at.x && candidate.at.y === at.y,
+  );
+  if (unit === undefined) return [];
+  const stats = view.unitStats.find((entry) => entry.unitId === unit.id);
+  if (stats === undefined) return [];
+  const chips: GroundBonusChipV7[] = [];
+  for (const stat of stats.stats) {
+    if (stat.visibility === "BASE_ONLY") continue;
+    for (const modifier of stat.modifiers) {
+      if (
+        !GROUND_MODIFIER_SOURCES_V7.includes(modifier.source) ||
+        skip.includes(modifier.source)
+      )
+        continue;
+      // The frozen sea (section 8.10): Glacier's cover on ice is the Snow
+      // cover's amount, named for what it is.
+      const iceCover =
+        modifier.source === "SNOW" && stats.iceFolk?.iceCover === true;
+      const name = iceCover
+        ? ICE_COVER_LABEL_V7
+        : (GROUND_LABELS[modifier.source] ?? modifier.sourceLabel);
+      chips.push({
+        id: modifier.source.toLowerCase(),
+        label: `${name} ${modifierValueTextV7(stat.base.value, modifier)} ${stat.label}`,
+        text: iceCover ? `${ICE_COVER_TOOLTIP_V7}.` : modifier.description,
+      });
+    }
+  }
+  if (stats.iceFolk?.rockfall === true && !skip.includes("ROCKFALL"))
+    chips.push({
+      id: "rockfall",
+      label: "Rockfall",
+      text: "From this Mountain the Ice Folk unit here can attack two tiles away.",
+    });
+  return chips;
 }

@@ -65,6 +65,11 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     // Goblins only: nothing burrows there, and a burrowed unit takes no
     // command anyway.
     "src/render/tutorial-v7.ts::ownUnitAt": "BOARD",
+    // Bead pulp_wars-2yc.63: the tile dock names what a tile gives the unit
+    // standing on it (cover, Snow, Field Defense, Rockfall), so it reads
+    // the view's units for the one on the tile. A burrowed unit stands on
+    // no tile (its mound is shown instead).
+    "src/render/unit-glossary-v7.ts::groundBonusChipsV7": "BOARD",
     "src/render/tutorial-v7.ts::tutorialCommandMatchesV7": "BOARD",
     // Bead pulp_wars-2yc.10 (classified by pulp_wars-2yp): the boundary
     // sounds read the views' units only to ask whether a promoted unit is

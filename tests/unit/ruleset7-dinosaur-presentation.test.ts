@@ -70,6 +70,7 @@ import {
 } from "../../src/render/dinosaur-presentation-v7";
 import { corePresentationPlanV7 } from "../../src/render/canvas/presentation-plan-v7";
 import { tacticalAttachmentsV7 } from "../../src/render/tactical-presentation-v7";
+import { roleAbilityNameV7 } from "../../src/render/role-presentation-v7";
 import { technologyNameV7 } from "../../src/render/goblin-presentation-v7";
 import { withTileV7 } from "../fixtures/v7-dinosaur-arena";
 import { walledV7 } from "../fixtures/v7-revision20";
@@ -202,21 +203,23 @@ describe("Revision 19 Dinosaur text (spec section 12.2)", () => {
   });
 
   it("labels the commands, abilities and Nesting for a Dinosaur viewer only", () => {
-    expect(dinosaurCommandLabelV7("LAY_EGG", "DINOSAUR")).toBe("Lay Egg");
-    expect(dinosaurCommandLabelV7("HATCH", "DINOSAUR")).toBe("Hatch");
-    // Revision 20: Stampede is no command; Charge! is the passive ability.
-    expect(dinosaurCommandLabelV7("STAMPEDE", "DINOSAUR")).toBe(null);
-    expect(dinosaurAbilityNameV7("LINEBREAKER", "DINOSAUR")).toBe("Charge!");
+    expect(dinosaurCommandLabelV7("LAY_EGG")).toBe("Lay Egg");
+    expect(dinosaurCommandLabelV7("HATCH")).toBe("Hatch");
+    // Revision 20: Stampede is no command; the run-up is the passive
+    // ability, Gore since bead pulp_wars-2yc.63 (Charge! before).
+    expect(dinosaurCommandLabelV7("STAMPEDE")).toBe(null);
+    expect(dinosaurAbilityNameV7("LINEBREAKER", "DINOSAUR")).toBe("Gore");
     expect(dinosaurAbilityNameV7("STAMPEDE", "DINOSAUR")).toBe(null);
     expect(dinosaurAbilityNameV7("LINEBREAKER", "ORIGINAL")).toBe(null);
-    expect(CHARGE_LABEL_V7).toBe("Charge!");
-    expect(dinosaurCommandLabelV7("RALLY", "DINOSAUR")).toBe("War Drums");
-    expect(dinosaurCommandLabelV7("RALLY", "ORIGINAL")).toBe(null);
+    expect(CHARGE_LABEL_V7).toBe("Gore");
+    // Bead pulp_wars-2yc.63: a Shaman's Rally, a T-Rex's Overrun and a
+    // Raptor's Charge carry the names they have in every faction.
+    expect(dinosaurCommandLabelV7("RALLY")).toBe(null);
     expect(
       ["RALLY", "OVERRUN", "CHARGE", "GROW", "ACID", "ARMOURED"].map(
-        (ability) => dinosaurAbilityNameV7(ability, "DINOSAUR"),
+        (ability) => roleAbilityNameV7(ability, "DINOSAUR"),
       ),
-    ).toEqual(["War Drums", "Rampage", "Pounce", "Grows", "Acid", "Armoured"]);
+    ).toEqual(["Rally", "Overrun", "Charge", "Grows", "Acid", "Armoured"]);
     expect(dinosaurAbilityNameV7("OVERRUN", "ORIGINAL")).toBe(null);
     // The run-up per tile and its maximum are the Triceratops's registry
     // values (revision 20 section 7.2 "Unit info (Triceratops)").
@@ -385,7 +388,7 @@ describe("Revision 19 Dinosaur text (spec section 12.2)", () => {
       "Egg weakness",
       ...(bigBodies.length > 0 ? ["Big bodies"] : []),
       "Grow",
-      "Charge!",
+      "Gore",
       "Acid",
       "Armoured",
       "Hatch",
@@ -396,7 +399,7 @@ describe("Revision 19 Dinosaur text (spec section 12.2)", () => {
       // The correction: a Shaman heals a dinosaur 4.
       "Tend Wounded",
       "Wild",
-      "Rampage, Pounce, War Drums",
+      "Overrun, Charge, Rally",
       // The ninth unit (`pulp_wars-w49.17`, 7r55): the Stegosaurus.
       "Thagomizer",
     ]);
@@ -411,7 +414,7 @@ describe("Revision 19 Dinosaur text (spec section 12.2)", () => {
     expect(rule("Grow")).toBe(
       `a Dinosaur grows when it kills: ${GROWTH_RULE} and ${ALPHA_RULE}, for good; each growth fully heals it.`,
     );
-    expect(rule("Charge!")).toBe(
+    expect(rule("Gore")).toBe(
       `a Triceratops hits harder after it moved this turn (+${chargeRunUpBaseV7()} Attack; with Wallbreaker +${chargeRunUpBonusV7()} per tile, up to +${chargeRunUpMaximumV7()}); its attack ignores Walls and Field Defense, destroys Field Defense, and pushes a surviving defender back, taking its place.`,
     );
     expect(rule("Nesting")).toBe(
@@ -494,11 +497,11 @@ describe("Revision 20 Charge! attack preview text (section 7.2)", () => {
       runUp: 2,
     });
     expect(push.lines).toEqual([
-      `Charge +${push.preview.runUp}`,
+      `Gore +${push.preview.runUp}`,
       "Pushes back; Triceratops follows",
     ]);
-    expect(push.note).toBe("Charge +2 · Pushes back; Triceratops follows");
-    expect(push.semantic).toBe("Charge +2. Pushes back; Triceratops follows.");
+    expect(push.note).toBe("Gore +2 · Pushes back; Triceratops follows");
+    expect(push.semantic).toBe("Gore +2. Pushes back; Triceratops follows.");
     // The moved Triceratops shows its run-up as a unit status.
     expect(
       view.unitStats.find(
@@ -511,7 +514,7 @@ describe("Revision 20 Charge! attack preview text (section 7.2)", () => {
     );
     const kill = charge(killView, AT.killFrom, AT.killTarget);
     expect(kill.preview).toMatchObject({ defenderDies: true, runUp: 1 });
-    expect(kill.lines).toEqual(["Charge +1"]);
+    expect(kill.lines).toEqual(["Gore +1"]);
     // Unmoved: no run-up line; the Push stays.
     const still = humanView(
       dinosaurUiFieldV7([
@@ -532,10 +535,7 @@ describe("Revision 20 Charge! attack preview text (section 7.2)", () => {
     );
     const unknown = charge(mountain, AT.chargeFrom, AT.pushTarget);
     expect(unknown.preview.push).toBe("UNKNOWN_BEHIND_FOG");
-    expect(unknown.lines).toEqual([
-      "Charge +2",
-      "Juggernaut may be pushed back",
-    ]);
+    expect(unknown.lines).toEqual(["Gore +2", "Juggernaut may be pushed back"]);
     // A unit behind the target blocks the Push: nothing moves.
     const blocked = humanView(
       dinosaurUiFieldV7([
@@ -628,7 +628,7 @@ describe("Revision 20 Charge! attack preview text (section 7.2)", () => {
       DINOSAUR_BLAST_V7.bombChucker,
     );
     expect(kill.preview).toMatchObject({ defenderDies: true, advances: true });
-    expect(kill.lines).toEqual(["Charge +2"]);
+    expect(kill.lines).toEqual(["Gore +2"]);
     expect(GOBLIN_ROLE_MECHANICS_V7.MARKSMAN.deathBlastDamage).toBeGreaterThan(
       0,
     );
@@ -1009,7 +1009,9 @@ describe("Revision 19 presentation steps", () => {
 });
 
 describe("Revision 19 War Drums status", () => {
-  it("labels a Dinosaur Inspired unit with War Drums", () => {
+  // Bead pulp_wars-2yc.63: the Shaman's War Drums is Rally, so the unit is
+  // Inspired by it (the engine's own status line is unchanged).
+  it("labels a Dinosaur Inspired unit with the Shaman's Rally", () => {
     const state = dinosaurUiFieldV7([
       { seat: 0, role: "CAPTAIN", at: { x: 5, y: 2 } },
       { seat: 0, role: "RAIDER", at: { x: 5, y: 3 } },
@@ -1022,7 +1024,7 @@ describe("Revision 19 War Drums status", () => {
     });
     expect(
       tacticalAttachmentsV7(rallied.after).map((item) => item.label),
-    ).toEqual(["War Drums from a Shaman: +1 Attack on the next attack"]);
+    ).toEqual(["Inspired by Shaman Rally: +1 next Attack"]);
     const stats = rallied.after.unitStats.find(
       (entry) => entry.unitId === unitAt(rallied.after, { x: 5, y: 3 }).id,
     );

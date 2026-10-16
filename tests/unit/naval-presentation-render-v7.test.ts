@@ -487,11 +487,12 @@ describe("the Submarine on the board plan", () => {
 });
 
 describe("naval words", () => {
-  it("names the boats' ram apart from the Goblin Scrap Buggy's Ram", () => {
+  it("names the boats' ram apart from the Goblin Scrap Buggy's Overrun", () => {
     expect(NAVAL_RAM_LABEL_V7).toBe("Bow Ram");
     for (const faction of ["ORIGINAL", "GOBLIN", "CANDY"] as const)
       expect(roleAbilityNameV7("RAM", faction)).toBe("Bow Ram");
-    expect(roleAbilityNameV7("OVERRUN", "GOBLIN")).toBe("Ram");
+    // Bead pulp_wars-2yc.63: the Buggy's Overrun is Overrun (Ram before).
+    expect(roleAbilityNameV7("OVERRUN", "GOBLIN")).toBe("Overrun");
     const boat = recruitmentRolePresentationV7("PATROL_BOAT", "GOBLIN");
     expect(boat.abilities.some((line) => line.startsWith("Bow Ram: "))).toBe(
       true,

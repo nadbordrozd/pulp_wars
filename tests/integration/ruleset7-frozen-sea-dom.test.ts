@@ -14,7 +14,9 @@ import {
   FREEZE_ALREADY_ACTED_V7,
   FREEZE_NEEDS_RIME_V7,
   ICEBOUND_BLOCKED_V7,
+  ICE_COVER_TOOLTIP_V7,
   ICE_FOR_SHIPS_HELP_V7,
+  ICE_MOVE_TEXT_V7,
   ICE_HELP_RULES_V7,
   ICE_SEA_DOG_GOAL_V7,
   SLIDE_MOVE_LABEL_V7,
@@ -389,13 +391,29 @@ describe("moving on ice", () => {
       ),
     );
     expect(at(moved.at)).toBe(at(last));
-    // On the ice its dock says so.
+    // On the ice its tile's dock says so (bead pulp_wars-2yc.63: the unit
+    // card shows the unit only, so no "Ice cover" chip and no Snow term).
     host.callbacks?.onSelection({ kind: "UNIT", unitId: yeti.id });
     expect(
-      requiredElement<HTMLElement>(
+      document.querySelector(
         '.v7-selection-dock [data-unit-status="ice-cover"]',
-      ).textContent,
-    ).toBe("Ice cover");
+      ),
+    ).toBeNull();
+    expect(
+      document.querySelector(
+        '.v7-selection-dock [data-modifier-source="snow"]',
+      ),
+    ).toBeNull();
+    host.callbacks?.onSelection({ kind: "TILE", at: moved.at });
+    const cover = requiredElement<HTMLElement>(
+      '.v7-selection-dock [data-ground-bonus="snow"]',
+    );
+    expect(cover.textContent).toBe("Ice cover +25% Defense");
+    expect(cover.title).toBe(`${ICE_COVER_TOOLTIP_V7}.`);
+    expect(
+      requiredElement<HTMLElement>('.v7-selection-dock [data-winter="ice"]')
+        .title,
+    ).toContain(ICE_MOVE_TEXT_V7);
     app.destroy();
   });
 

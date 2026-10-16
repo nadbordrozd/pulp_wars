@@ -292,11 +292,11 @@ describe("Revision 19 board plan", () => {
       [
         AT.pushTarget,
         `Deal ${preview.damageToDefender} · take ${preview.damageToAttacker}`,
-        "Charge +2 · Pushes back; Triceratops follows",
+        "Gore +2 · Pushes back; Triceratops follows",
       ],
     ]);
     expect(attacks[0]?.semanticLabel).toBe(
-      `Attack preview. Defender fortification level 0. Primary damage ${preview.damageToDefender}. Charge +2. Pushes back; Triceratops follows.`,
+      `Attack preview. Defender fortification level 0. Primary damage ${preview.damageToDefender}. Gore +2. Pushes back; Triceratops follows.`,
     );
     // No lane entries exist in any plan.
     for (const candidate of [before, plan, planFor(view, null)])
@@ -334,7 +334,7 @@ describe("Revision 19 board plan", () => {
     expect(text.warnings).toHaveLength(3);
     expect(attack).toMatchObject({
       // Tuning 2 (7r47): a kill says that the attacker takes the tile.
-      previewNote: "Charge +2 · Advances",
+      previewNote: "Gore +2 · Advances",
       previewWarnings: text.warnings,
       previewWarningSummary: text.summary,
     });

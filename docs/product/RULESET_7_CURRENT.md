@@ -5359,7 +5359,7 @@ other two (7 Coins at a Shipyard), promoted to 17 HP, attackable only from
 an adjacent tile (**Submerged**), and attacking only units afloat, which
 never strike back (**Torpedo**). A Patrol Boat's **Ram** needs Seamanship
 (the interface calls it **Bow Ram**, since the Goblin Scrap Buggy's Overrun
-is displayed as "Ram"). The three ships have the same numbers, names, and
+was displayed as "Ram" until `pulp_wars-2yc.63`). The three ships have the same numbers, names, and
 rules in the Human, Undead, Goblin, Dinosaur, Martian, Dwarf, Candy, and
 Cult rosters (each drawn in its faction's style); the Ice Folk have none
 ([section 14](#14-naval-rules)). Public abilities: Patrol Boat `ATTACK`,
@@ -6112,6 +6112,34 @@ General roster rules:
   regeneration in its own turn, a 10-Coin bounty), owned by nobody, never
   trained, rewarded, or commanded
   ([section 2.7](#27-map-curiosities)).
+
+**Player-facing ability names (bead `pulp_wars-2yc.63`).** The interface
+names one mechanic once, whatever the faction, and lists no line for what
+every land unit can do. These are display names only: no rule, number,
+ability literal, command, event, or engine status line changed, and the
+rest of this document keeps the older names where it describes a rule.
+
+| Engine ability (and command)           | Shown before                                        | Shown now                         |
+| -------------------------------------- | --------------------------------------------------- | --------------------------------- |
+| `CAPTURE`                              | Capture (a unit-info line)                          | no line: every land unit captures |
+| `CHARGE`                               | Charge; Pounce (Dinosaur); Strafe (Martian)         | Charge                            |
+| `RALLY` (Inspire)                      | Rally; Frenzy (Undead); War Drums (Dinosaur)        | Rally (the unit is "Inspired")    |
+| `OVERRUN`                              | Overrun; Ram (Goblin); Rampage (Dinosaur)           | Overrun                           |
+| `ETHEREAL`, `PROWL`, `ignoresZocStops` | Ethereal (Banshee); Prowl (Sabretooth); Slips past  | Slips past                        |
+| `TRAMPLE`, `demolishesFieldDefense`    | Trample (Mammoth); Wrecker                          | Wrecker                           |
+| `BOLAS` (`THROW_BOLAS`), `FROST_BOLT`  | Bolas (Sled); Frost Bolt (Ice Witch)                | Frost Bolt                        |
+| `LINEBREAKER`                          | Charge! (Triceratops)                               | Gore                              |
+| naval roles                            | Ship ("Built at a Port. It heals only next to ...") | Heals at Ports                    |
+
+The Brain's `RALLY` stays **Psychic Command** (it cools: every second
+turn), the Orc Warboss's stays **Berserk** (it moves, it does not inspire),
+the Steam Cannon's `KNOCKBACK` stays apart from `PUSH` (never a giant or a
+two-slot unit), and the Shaman's and Engineer's `TEND_WOUNDED` keep their
+own lines (whom they heal most): similar mechanics with a different number
+or condition keep their names, with parallel sentences. A unit's card
+shows facts about the unit only: a Grave, Snow, a Blizzard, ice, Rockfall,
+terrain cover, Field Defense, Walls, and high ground are shown on the
+tile's (or city's) dock for the unit standing there.
 
 ### 11.1 The giants' signatures
 
@@ -7243,8 +7271,8 @@ Every rule that names "naval units", "ships", or "boats" covers all three.
 
 **One sentence:** a Patrol Boat that moved this turn rams a boat or a
 transport: +1 Attack, and the target is shoved one tile back. (The
-interface calls it **Bow Ram**; "Ram" there is the Goblin Scrap Buggy's
-Overrun.)
+interface calls it **Bow Ram**; "Ram" was the Goblin Scrap Buggy's
+Overrun, shown as Overrun since `pulp_wars-2yc.63`.)
 
 - **Who.** A unit in `NAVAL` form whose role has the `RAM` ability (the
   Patrol Boat), whose kind's capabilities under its owner have `ram`
@@ -11322,7 +11350,10 @@ uses **one of the two per turn** (and neither after an Attack).
   and the error `FROST_BOLT_NOT_LEGAL` (reasons `EMBARKED`,
   `TARGET_IMMUNE`, `OUT_OF_RANGE`); its result is the Bolas result with the
   event source `FROST_BOLT`. The interface calls it FROST BOLT; the
-  frozen-sea `FREEZE` keeps its own name.
+  frozen-sea `FREEZE` keeps its own name. Since `pulp_wars-2yc.63` the
+  interface calls the Sled's Bolas a Frost Bolt too: the two are one
+  mechanic (the ability `BOLAS` and the command `THROW_BOLAS` are
+  unchanged).
 
 ### 21.7 Deep Winter and Brittle
 

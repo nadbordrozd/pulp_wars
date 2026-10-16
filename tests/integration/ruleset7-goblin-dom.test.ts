@@ -223,7 +223,7 @@ describe("Revision 17 Goblin DOM", () => {
     app.destroy();
   });
 
-  it("labels Goblin commands, unit info, Ram and the Field Defense restriction", () => {
+  it("labels Goblin commands, unit info, Overrun and the Field Defense restriction", () => {
     const controller = new FixtureController(goblinShowcaseFixtureV7());
     const host = new RecordingBoardHost();
     const app = mount(controller, host);
@@ -240,7 +240,6 @@ describe("Revision 17 Goblin DOM", () => {
         ),
       ].map((entry) => entry.textContent);
     expect(glossaryLines()).toEqual([
-      "CaptureTakes a village or an enemy city when it starts your turn standing on its centre.",
       "BerserkYour units within 2 tiles that have not moved yet go one tile farther this turn, and enemies next to their path do not stop them.",
       "Gang UpHits harder for each of your other units next to its target.",
     ]);
@@ -258,7 +257,6 @@ describe("Revision 17 Goblin DOM", () => {
     requiredButton("unit-help").click();
     // The Goblin pass (7r50): a bomb gets no Gang Up, so it has no such line.
     expect(glossaryLines()).toEqual([
-      "CaptureTakes a village or an enemy city when it starts your turn standing on its centre.",
       "Kaboom!Blows itself up, hurting every unit next to it, yours too.",
       "Long shotShoots over a distance only: it cannot hit a unit on the next tile.",
       "BombsIts bomb also hurts every unit next to the target, yours too.",
@@ -300,14 +298,17 @@ describe("Revision 17 Goblin DOM", () => {
     blocked.click();
     expect(fortify.accepted).toEqual([]);
     selectUnitAt(fortify, fortifyHost, { x: 4, y: 3 });
+    // Bead pulp_wars-2yc.63: the engine's "Ram: attack again" is the
+    // Scrap Buggy's Overrun, named as in every faction.
     expect(
-      document.querySelector('[data-unit-status="ram"]')?.textContent,
-    ).toBe("Ram");
+      document.querySelector('[data-unit-status="overrun"]')?.textContent,
+    ).toBe("Overrun");
+    expect(document.querySelector('[data-unit-status="ram"]')).toBeNull();
     requiredButton("unit-help").click();
     // The chip explains itself in the dialog (the unit glossary).
     expect(
-      document.querySelector('[data-tactical-state="ram"]')?.textContent,
-    ).toBe("RamIt just killed: it may attack again.");
+      document.querySelector('[data-tactical-state="overrun"]')?.textContent,
+    ).toBe("OverrunIt just killed: it may attack again.");
     fortifyApp.destroy();
   });
 
@@ -372,7 +373,9 @@ describe("Revision 17 Goblin DOM", () => {
     requiredButton("tech-chivalry").click();
     expect(
       requiredElement<HTMLElement>(".v7-tech-detail").textContent,
-    ).toContain("Ram: Scrap Buggies advance after a kill and may attack again");
+    ).toContain(
+      "Overrun: Scrap Buggies advance after a kill and may attack again",
+    );
     requiredButton("close-overlay").click();
 
     requiredButton("compact-menu").click();

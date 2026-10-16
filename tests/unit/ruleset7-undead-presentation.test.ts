@@ -235,8 +235,8 @@ describe("Revision 13 Undead presentation", () => {
     expect(tacticalAttachmentsV7(view).map((item) => item.label)).not.toContain(
       "Frenzied by Necromancer Frenzy: +1 next Attack",
     );
-    expect(undeadCommandLabelV7("RALLY", "ORIGINAL")).toBeNull();
-    expect(undeadCommandLabelV7("RALLY", "UNDEAD")).toBe("Frenzy");
+    // Bead pulp_wars-2yc.63: a Necromancer's Rally is Rally in every UI.
+    expect(undeadCommandLabelV7("RALLY")).toBeNull();
   });
 
   it("draws the Grave corner marker and the Undead badge over stand-in art", () => {

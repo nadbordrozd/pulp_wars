@@ -56,14 +56,17 @@ export function tacticalAttachmentsV7(
 function inspiredLabelV7(
   faction: PlayerViewV7["players"][number]["faction"] | undefined,
 ): string {
+  // Bead pulp_wars-2yc.63: one Inspire, named Rally in every faction (the
+  // Undead Frenzy and the Dinosaur War Drums before).
   if (faction === "UNDEAD")
-    return "Frenzied by Necromancer Frenzy: +1 next Attack";
+    return "Inspired by Necromancer Rally: +1 next Attack";
   // Goblin explosions and Berserk (`pulp_wars-w49.36`): the Orc Warboss
   // inspires nobody now (its Rally is Berserk), so a Goblin unit is Inspired
   // only by another faction's Rally (a mind-controlled Captain): plain words.
   if (faction === "GOBLIN") return "Inspired: +1 next Attack";
-  // Revision 19: Dinosaur Inspired units show War Drums.
-  if (faction === "DINOSAUR")
-    return "War Drums from a Shaman: +1 Attack on the next attack";
+  if (faction === "DINOSAUR") return "Inspired by Shaman Rally: +1 next Attack";
+  // The Brain's Psychic Command inspires the same way.
+  if (faction === "MARTIAN")
+    return "Inspired by Brain Psychic Command: +1 next Attack";
   return "Inspired by Captain Rally: +1 next Attack";
 }

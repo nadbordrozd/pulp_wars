@@ -481,7 +481,6 @@ import {
   MIND_CONTROL_TOOLTIP_V7,
   RELEASE_LABEL_V7,
   RELEASE_TOOLTIP_V7,
-  STRAFE_LABEL_V7,
   MIND_CONTROLLED_LABEL_V7,
   MIND_CONTROLLED_NO_SLOT_V7,
   MIND_CONTROL_NO_TARGET_V7,
@@ -546,7 +545,6 @@ import {
   iceFolkRewardLabelV7,
   iceFolkRoleUnlockTextV7,
   boulderThrowTextV7,
-  snowChipTooltipV7,
   matchHasIceFolkSeatV7,
   snowTooltipV7,
   moveUsesGlacierV7,
@@ -590,13 +588,10 @@ import {
   ICEBOUND_LABEL_V7,
   ICEBOUND_TOOLTIP_V7,
   ICEBOUND_UNLOCK_V7,
-  ICE_COVER_LABEL_V7,
-  ICE_COVER_TOOLTIP_V7,
+  ICE_MOVE_TEXT_V7,
   ICE_NO_SHIPS_NOTE_V7,
   ICE_SEA_DOG_GOAL_V7,
-  ON_ICE_LABEL_V7,
   SLIDE_MOVE_LABEL_V7,
-  SLIDE_RULE_V7,
   SLIP_MOVE_LABEL_V7,
   crushWarningV7,
   freezeOutcomeTextV7,
@@ -842,11 +837,16 @@ import {
   type TutorialProgressV7,
 } from "../tutorial-v7";
 import {
+  GROUND_MODIFIER_SOURCES_V7,
   SPIDER_GLOSSARY_IDS_V7,
   glossaryEntryV7,
+  groundBonusChipsV7,
+  modifierValueTextV7,
+  presentedModifierV7,
   roleGlossaryV7,
   summonedGlossaryV7,
   statusGlossaryV7,
+  unitStatusLineChipV7,
 } from "../unit-glossary-v7";
 import {
   glossaryListV7,
@@ -1442,7 +1442,6 @@ type FrontPageV7 = "MENU" | "SETUP" | "CAMPAIGN" | "SETTINGS";
  */
 const STATUS_COVERED_BY_ABILITY_V7: Readonly<Record<string, string>> = {
   slots: "BIG_BODY",
-  blizzard: "BLIZZARD",
 };
 /**
  * A board's wait for its factions' art shows the loading plate only after
@@ -5498,11 +5497,8 @@ export class Ruleset7DomAppView {
         cue.title = explanation;
         identityColumn?.append(cue);
       }
-      if (view.graves.some((grave) => same(grave, unit.at))) {
-        const grave = text(this.#document, "span", "On a Grave", "v7-chip");
-        grave.dataset.unitStatus = "grave";
-        identityColumn?.append(grave);
-      }
+      // Bead pulp_wars-2yc.63: the card shows facts about the unit only; a
+      // Grave under it is the tile's (the tile dock names it).
       // Revision 14: public Plague and Bitten statuses, with a one-sentence
       // explanation in the chip's accessible name and in the ? details.
       for (const affliction of unitAfflictionsV7(view, unit.id)) {
@@ -5708,8 +5704,9 @@ export class Ruleset7DomAppView {
           );
       }
       // The frozen sea: a ship locked in the ice (any owner) with the
-      // crush it takes next, and an Ice Folk unit standing on ice with
-      // Glacier's cover, from the public unit stats.
+      // crush it takes next, from the public unit stats. (Bead
+      // pulp_wars-2yc.63: standing on ice, and Glacier's cover there, are
+      // the tile's facts; the tile dock shows them.)
       if (matchHasIceFolkSeatV7(view) && stats !== undefined) {
         const frozenChip = (
           label: string,
@@ -5734,21 +5731,12 @@ export class Ruleset7DomAppView {
           warning.classList.add("is-warning");
           warning.dataset.lethal = String(crush.lethal);
         }
-        if (stats.iceFolk?.onIce === true)
-          frozenChip(
-            stats.iceFolk.iceCover ? ICE_COVER_LABEL_V7 : ON_ICE_LABEL_V7,
-            stats.iceFolk.iceCover ? "ice-cover" : "on-ice",
-            stats.iceFolk.iceCover
-              ? ICE_COVER_TOOLTIP_V7
-              : stats.iceFolk.slides
-                ? SLIDE_RULE_V7.replace(/\.$/, "")
-                : "On ice: it walks here and does not slide",
-          );
       }
       // The Ice Folk revision (section 13.1): Frozen on a unit of any owner
-      // (with its turns left; Ice Folk Freeze, `pulp_wars-w49.38`), and an
-      // Ice Folk unit's Blizzard or Snow, Rockfall reach and Boulder throw,
-      // from the view's `frozen` list and `stats.iceFolk`.
+      // (with its turns left; Ice Folk Freeze, `pulp_wars-w49.38`), and a
+      // Boulder Yeti's throw, from the view's `frozen` list and
+      // `stats.iceFolk`. (Bead pulp_wars-2yc.63: Snow, a Blizzard and a
+      // Mountain's Rockfall belong to the tile; the tile dock shows them.)
       if (matchHasIceFolkSeatV7(view)) {
         const iceChip = (
           label: string,
@@ -5783,22 +5771,6 @@ export class Ruleset7DomAppView {
         }
         const mechanics = stats?.iceFolk;
         if (mechanics !== undefined && unit.form === "LAND") {
-          if (mechanics.inBlizzard)
-            iceChip(BLIZZARD_LABEL_V7, "blizzard", BLIZZARD_TOOLTIP_V7);
-          else if (mechanics.onSnow)
-            iceChip(
-              SNOW_LABEL_V7,
-              "snow",
-              mechanics.snowCover
-                ? snowChipTooltipV7(mechanics.glides)
-                : "On Snow, but no Snow cover here",
-            );
-          if (mechanics.rockfall)
-            iceChip(
-              "Rockfall",
-              "rockfall",
-              "On a Mountain: it can attack two tiles away",
-            );
           if (mechanics.planted !== null)
             iceChip(
               boulderThrowTextV7(mechanics.planted),
@@ -5954,16 +5926,12 @@ export class Ruleset7DomAppView {
         if (stats.statuses.length > 0) {
           const cues = el(this.#document, "div", "v7-unit-status-cues");
           for (const status of stats.statuses) {
-            // A Vampire's Escape is its Bat Escape (it flies).
-            const short = status.startsWith("Tended")
-              ? "Tended"
-              : status.startsWith("Escape: may fly")
-                ? "Bat Escape"
-                : (status.split(":", 1)[0] ?? status);
-            const statusId = short.toLowerCase().replaceAll(" ", "-");
-            const cue = text(this.#document, "span", short, "v7-chip");
-            cue.dataset.unitStatus = statusId;
-            cue.setAttribute("aria-label", `${short} status`);
+            // A Vampire's Escape is its Bat Escape (it flies); bead
+            // pulp_wars-2yc.63: each line by its mechanic's one name.
+            const chip = unitStatusLineChipV7(status);
+            const cue = text(this.#document, "span", chip.label, "v7-chip");
+            cue.dataset.unitStatus = chip.id;
+            cue.setAttribute("aria-label", `${chip.label} status`);
             cues.append(cue);
           }
           identityColumn?.append(cues);
@@ -6024,8 +5992,13 @@ export class Ruleset7DomAppView {
                           : formatValue(stat.base.value),
             ),
           );
+          // Bead pulp_wars-2yc.63: the card shows the unit's own numbers;
+          // cover, Snow, Walls, Field Defense and high ground belong to its
+          // tile, whose dock shows them.
           for (const [index, modifier] of (exact && frogValue === null
-            ? stat.modifiers
+            ? stat.modifiers.filter(
+                (term) => !GROUND_MODIFIER_SOURCES_V7.includes(term.source),
+              )
             : []
           ).entries()) {
             const modifierId = `${unit.id}-${stat.id}-${index}`;
@@ -6036,20 +6009,12 @@ export class Ruleset7DomAppView {
               "v7-stat-modifier",
             );
             term.dataset.modifierSource = modifier.source.toLowerCase();
-            // The frozen sea (section 8.10): Glacier's cover on ice is the
-            // Snow cover's amount; the dock names it for what it is.
-            const iceCover =
-              modifier.source === "SNOW" && stats.iceFolk?.iceCover === true;
+            const presented = presentedModifierV7(modifier);
             term.setAttribute(
               "aria-label",
-              iceCover
-                ? ICE_COVER_TOOLTIP_V7
-                : `${modifier.sourceLabel}: ${modifier.description}`,
+              `${presented.sourceLabel}: ${presented.description}`,
             );
-            term.dataset.tooltip = iceCover
-              ? ICE_COVER_LABEL_V7
-              : modifier.sourceLabel;
-            if (iceCover) term.dataset.iceCover = "true";
+            term.dataset.tooltip = presented.sourceLabel;
             term.setAttribute(
               "aria-expanded",
               String(this.#selectedModifier === modifierId),
@@ -6852,6 +6817,10 @@ export class Ruleset7DomAppView {
         );
         details.append(cowed);
       }
+      // Bead pulp_wars-2yc.63: what the center gives the unit standing on
+      // it, besides the Walls above (the unit card leaves it out).
+      for (const chip of this.#groundBonusChips(view, city.at, ["CITY_WALLS"]))
+        details.append(chip);
       dock.append(details);
       if (owned) {
         const picking =
@@ -7012,7 +6981,11 @@ export class Ruleset7DomAppView {
           [
             iceHere !== undefined,
             iceHere === undefined ? "" : iceChipLabelV7(iceHere),
-            iceHere === undefined ? "" : iceChipTooltipV7(view, iceHere),
+            // Bead pulp_wars-2yc.63: who slides here, which the card of a
+            // unit on the ice no longer says.
+            iceHere === undefined
+              ? ""
+              : `${iceChipTooltipV7(view, iceHere)} ${ICE_MOVE_TEXT_V7}`,
             "ice",
           ],
           [tile.snow === true, SNOW_LABEL_V7, snowTooltipV7(view), "snow"],
@@ -7067,6 +7040,11 @@ export class Ruleset7DomAppView {
           grave.title = "A Necromancer can raise it; a Ghoul can devour it.";
           details.append(grave);
         }
+        // Bead pulp_wars-2yc.63: what this tile gives the unit standing on
+        // it (cover, Snow or ice cover, Field Defense, high ground,
+        // Rockfall); the unit card shows only the unit's own facts.
+        for (const chip of this.#groundBonusChips(view, tile.at))
+          details.append(chip);
         // The Candy revision (section 15.2): the tile's Crumbs, whose they
         // are by their unit, their turns left, and their Peppermint bite.
         const crumbsLines = crumbsTileLinesV7(view, tile.at);
@@ -11473,8 +11451,7 @@ export class Ruleset7DomAppView {
       const entry = statusGlossaryV7(status);
       const label = (chip.textContent ?? "").trim();
       const id = entry?.id ?? status;
-      // A two-slot body is already explained by its Big body line, and an
-      // Ice Witch's own Blizzard by her ability.
+      // A two-slot body is already explained by its Big body line.
       const coveredBy = STATUS_COVERED_BY_ABILITY_V7[status];
       if (seen.has(id) || (coveredBy !== undefined && seen.has(coveredBy)))
         continue;
@@ -11491,6 +11468,24 @@ export class Ruleset7DomAppView {
       });
     }
     return lines;
+  }
+
+  /**
+   * The chips of what a tile gives the unit standing on it (bead
+   * pulp_wars-2yc.63, `groundBonusChipsV7`), for the tile and city docks.
+   */
+  #groundBonusChips(
+    view: PlayerViewV7,
+    at: CoordV7,
+    skip: readonly string[] = [],
+  ): HTMLElement[] {
+    return groundBonusChipsV7(view, at, skip).map((entry) => {
+      const chip = text(this.#document, "p", entry.label, "v7-chip");
+      chip.dataset.groundBonus = entry.id;
+      chip.title = entry.text;
+      chip.setAttribute("aria-label", `${entry.label}. ${entry.text}`);
+      return chip;
+    });
   }
 
   #closeUnitHelp(): void {
@@ -15642,6 +15637,12 @@ function effectDescription(
 ): string {
   const label = (roleId: UnitRoleIdV7): string =>
     effectiveRoleRuleV7(roleId, faction).label;
+  // "Knights", "Scrap Buggies", "T-Rexes".
+  const plural = (roleId: UnitRoleIdV7): string =>
+    label(roleId)
+      .replace(/([^aeiou])y$/, "$1ie")
+      .replace(/(ch|sh|s|x)$/, "$1e")
+      .concat("s");
   switch (effect.kind) {
     case "COMMAND":
       return effect.command === "CULTIVATE_FOREST"
@@ -15726,12 +15727,12 @@ function effectDescription(
     case "SEA_LINK":
       return SEA_LINK_UNLOCK_TEXT_V7;
     case "CAPTAIN_SUPPORT":
-      // Revision 19: the Dinosaur Rally is War Drums.
+      // Bead pulp_wars-2yc.63: the Rally of every faction is Rally.
       return faction === "DINOSAUR"
-        ? "Shamans beat War Drums or Tend nearby troops, and Hatch Eggs"
+        ? "Shamans Rally or Tend nearby troops, and Hatch Eggs"
         : "Captains Rally or Tend nearby troops";
     case "NECROMANCER_SUPPORT":
-      return "Necromancers Frenzy nearby troops or Raise Dead";
+      return "Necromancers Rally nearby troops or Raise Dead";
     case "BERSERK_SUPPORT":
       return "Orc Warbosses send troops within 2 tiles Berserk: +1 Move, ignore zones of control";
     case "PLUNDER":
@@ -15787,15 +15788,13 @@ function effectDescription(
     case "SWITCHEROO":
       return SWITCHEROO_UNLOCK_TEXT_V7;
     case "OVERRUN":
-      // Revision 17: the Goblin Overrun is Ram; revision 19: the Dinosaur
-      // Overrun is Rampage.
-      return faction === "GOBLIN"
-        ? "Ram: Scrap Buggies advance after a kill and may attack again"
-        : faction === "DINOSAUR"
-          ? "Rampage: T-Rexes advance after a kill and may attack again"
-          : "Knights advance after a kill and may attack again";
+      // Bead pulp_wars-2yc.63: Overrun in every faction (it was the Goblin
+      // Ram and the Dinosaur Rampage).
+      return `Overrun: ${plural("KNIGHT")} advance after a kill and may attack again`;
     case "CHARGE_BONUS":
-      return `${faction === "DINOSAUR" ? "Pounce: " : faction === "MARTIAN" ? `${STRAFE_LABEL_V7}: ` : ""}${label("RAIDER")}s gain +${effect.attack} Attack after moving ${effect.minimumMove}+ cells`;
+      // Charge in every faction (it was the Dinosaur Pounce and the Martian
+      // Strafe).
+      return `Charge: ${plural("RAIDER")} gain +${effect.attack} Attack after moving ${effect.minimumMove}+ cells`;
     case "MELEE_FIELD_DEMOLITION":
       // Tuning 1 (7r46): Breach.
       return BREACH_UNLOCK_TEXT_V7;
@@ -16326,11 +16325,11 @@ function commandLabel(command: CommandV7, faction: FactionIdV7): string {
   // Tuning 3 (`pulp_wars-w49.3`): a Market hires.
   if (command.kind === "HIRE")
     return `Hire ${effectiveRoleRuleV7(command.role, faction).label}`;
-  const undead = undeadCommandLabelV7(command.kind, faction);
+  const undead = undeadCommandLabelV7(command.kind);
   if (undead !== null) return undead;
   const goblin = goblinCommandLabelV7(command.kind, faction);
   if (goblin !== null) return goblin;
-  const dinosaur = dinosaurCommandLabelV7(command.kind, faction);
+  const dinosaur = dinosaurCommandLabelV7(command.kind);
   if (dinosaur !== null) return dinosaur;
   const martian = martianCommandLabelV7(command.kind, faction);
   if (martian !== null) return martian;
@@ -16391,10 +16390,7 @@ export function statModifierTextV7(
     };
   },
 ): string {
-  const value = modifier.value.numerator / modifier.value.denominator;
-  if (modifier.source === "SNOW" && base.numerator > 0)
-    return `+${Math.round((value * 100 * base.denominator) / base.numerator)}%`;
-  return `+${String(Math.round(value * 100) / 100)}`;
+  return modifierValueTextV7(base, modifier);
 }
 function same(a: CoordV7, b: CoordV7): boolean {
   return a.x === b.x && a.y === b.y;

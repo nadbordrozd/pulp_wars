@@ -196,7 +196,6 @@ export const TRACTOR_BEAM_PICK_V7 = "Choose a unit to pull";
 export const PSYCHIC_COMMAND_LABEL_V7 = "Psychic Command";
 export const PSYCHIC_COMMAND_STATUS_V7 =
   "Psychic Command: +1 Attack on the next attack";
-export const STRAFE_LABEL_V7 = "Strafe";
 export const MARTIAN_FIELD_DEFENSE_EXPLANATION_V7 =
   "Martians cannot build Field Defense";
 /**
@@ -466,7 +465,8 @@ export function martianHelpRulesV7(): readonly (readonly [string, string])[] {
       `a ${joinOr(lightPullers)} pulls a unit ${numberWord(TRACTOR_BEAM_RANGE_V7)} tiles away one tile closer, but not a unit on its own city center with City Walls; a ${joinOr(heavyPullers)} pulls a unit ${numberWord(TRACTOR_BEAM_RANGE_V7)} or ${numberWord(HEAVY_TRACTOR_RANGE_V7)} tiles away up to ${numberWord(HEAVY_TRACTOR_PULL_V7)} tiles closer, also off City Walls, once a turn, and can still act.`,
     ],
     [
-      `${PSYCHIC_COMMAND_LABEL_V7}, ${STRAFE_LABEL_V7}`,
+      // Bead pulp_wars-2yc.63: the Saucer's bonus is Charge (Strafe before).
+      `${PSYCHIC_COMMAND_LABEL_V7}, Charge`,
       `a ${joinOr(brains)} gives adjacent units +1 Attack on their next attack, every second turn (it is Cooling in between), and a ${joinOr(strafers)} gets +1 Attack after moving two tiles.`,
     ],
     // The ninth unit (`pulp_wars-w49.17`, 7r55): the Shock Trooper's Shock
@@ -489,8 +489,6 @@ export function martianAbilityNameV7(
   switch (ability) {
     case "RALLY":
       return PSYCHIC_COMMAND_LABEL_V7;
-    case "CHARGE":
-      return STRAFE_LABEL_V7;
     case "HEAT_RAY":
       return "Heat ray";
     case "PIERCE":
@@ -523,8 +521,7 @@ export function martianAbilityDescriptionV7(
   switch (ability) {
     case "RALLY":
       return `Adjacent friendly land troops, except ${martianLabelV7("CAPTAIN")}s and ${martianLabelV7("CATAPULT")}s, get +1 Attack on their next attack this turn. ${PSYCHIC_COMMAND_COOLDOWN_V7}`;
-    case "CHARGE":
-      return "With Raiding, +1 Attack on the first Attack after moving 2+ cells.";
+    // Charge reads the shared sentence of every faction.
     case "HEAT_RAY":
       return `Fires at full power if it has not moved this turn and is not Cooling; a full-power shot leaves it Cooling, at half Attack, until the end of its next turn.${
         role !== undefined && roleMechanicsV7(role, faction).heatSink

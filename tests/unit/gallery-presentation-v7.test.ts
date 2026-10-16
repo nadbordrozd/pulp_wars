@@ -116,8 +116,8 @@ describe("Gallery presentation", () => {
         description: entry.text,
       })),
     );
+    // Bead pulp_wars-2yc.63: no Capture line (every land unit captures).
     expect(details.abilities.map((ability) => ability.name)).toEqual([
-      "Capture",
       "Plague",
       "Long shot",
       "Slow to strike",

@@ -14,6 +14,7 @@ import {
 } from "../../engine/index";
 import { iceFolkSnowVariantV7 } from "../../assets/chibi-direction-ice-folk-presentation";
 import {
+  BOLAS_LABEL_V7,
   BOLAS_PICK_V7,
   COLD_SNAP_LABEL_V7,
   FROST_BOLT_LABEL_V7,
@@ -188,7 +189,7 @@ export function iceFolkPickTargetsV7(
           ...(lines.length > 1
             ? { previewNote: lines.slice(1).join(" · ") }
             : {}),
-          semanticLabel: `${bolas ? "Bolas" : FROST_BOLT_LABEL_V7}: freezes this ${name}. ${lines.join(". ")}. ${bolas ? BOLAS_PICK_V7 : FROST_BOLT_PICK_V7}.`,
+          semanticLabel: `${bolas ? BOLAS_LABEL_V7 : FROST_BOLT_LABEL_V7}: freezes this ${name}. ${lines.join(". ")}. ${bolas ? BOLAS_PICK_V7 : FROST_BOLT_PICK_V7}.`,
         },
       ];
     });

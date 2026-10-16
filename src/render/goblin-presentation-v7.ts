@@ -49,7 +49,6 @@ export function unitIsGoblinV7(
 
 /** Section 11.2 texts. */
 export const KABOOM_LABEL_V7 = "Kaboom!";
-export const RAM_LABEL_V7 = "Ram";
 /**
  * Goblin explosions and Berserk (`pulp_wars-w49.36`): the Orc Warboss's
  * Rally is Berserk (it replaced WAAAGH! in `pulp_wars-w49.35`).
@@ -174,7 +173,11 @@ export function technologyNameV7(
   return technologyDisplayNameV7(tech, faction);
 }
 
-/** Goblin ability names; Human and Undead names are unchanged. */
+/**
+ * Goblin ability names; Human and Undead names are unchanged. Bead
+ * pulp_wars-2yc.63: the Scrap Buggy's Overrun is Overrun (Ram before), its
+ * name in every faction.
+ */
 export function goblinAbilityNameV7(
   ability: string,
   faction: FactionIdV7,
@@ -183,8 +186,6 @@ export function goblinAbilityNameV7(
   switch (ability) {
     case "RALLY":
       return BERSERK_LABEL_V7;
-    case "OVERRUN":
-      return RAM_LABEL_V7;
     case "KABOOM":
       return KABOOM_LABEL_V7;
     case "REGENERATE":
@@ -203,7 +204,7 @@ export function goblinAbilityDescriptionV7(
     case "RALLY":
       return BERSERK_DESCRIPTION_V7;
     case "OVERRUN":
-      return "After a kill, rams forward and can attack another adjacent enemy.";
+      return "After a kill, advances and can attack another adjacent enemy.";
     default:
       return null;
   }

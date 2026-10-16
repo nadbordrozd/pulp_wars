@@ -2445,6 +2445,13 @@
   gap: 0.35rem;
   align-content: center;
   max-width: 14rem;
+  /* Bead pulp_wars-2yc.63: on a phone the chips (a unit's ground bonuses
+   * among them) wrap beside the tile's art and never squeeze it. */
+  min-width: 0;
+}
+
+.v7-selection-summary > .v7-identity {
+  flex-shrink: 0;
 }
 
 /* Faction building looks (epic pulp_wars-xdh): one flavour line. */

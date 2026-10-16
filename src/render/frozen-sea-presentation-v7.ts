@@ -289,6 +289,12 @@ export const ICEBOUND_PREVIEW_V7 = "Icebound: no strike-back";
 export const ICE_COVER_PREVIEW_V7 = ICE_COVER_LABEL_V7;
 export const ICE_COVER_TOOLTIP_V7 = `${ICE_COVER_LABEL_V7}: light cover on its own ice (${GLACIER_LABEL_V7})`;
 export const ON_ICE_LABEL_V7 = "On ice";
+/**
+ * Bead pulp_wars-2yc.63: who slides on ice, in the tooltip of a tile's ice
+ * chip (a unit card no longer says "On ice").
+ */
+export const ICE_MOVE_TEXT_V7 =
+  "Ice Folk slide across ice; every other unit stops when it steps onto it.";
 
 /** The crush an icebound unit takes next: its amount and whose turn. */
 export interface CrushWarningV7 {

@@ -220,7 +220,6 @@ describe("Unbound: words", () => {
     expect(summonedGlossaryV7("HORROR").map((entry) => entry.id)).toEqual([
       "DAEMON",
       "DAEMONS_FEED",
-      "CAPTURE",
       "BOO",
       "STRIDE",
       "UNBOUND",

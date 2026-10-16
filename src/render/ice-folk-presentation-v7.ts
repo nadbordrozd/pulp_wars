@@ -138,7 +138,8 @@ export const SHATTERS_PREVIEW_V7 = "Shatters";
 export function sweepPreviewTextV7(unit: string, damage: number): string {
   return `Sweep: ${unit} ${damage} damage`;
 }
-export const TRAMPLE_PREVIEW_V7 = "Tramples Field Defense";
+/** Bead pulp_wars-2yc.63: the Mammoth's Trample is Wrecker. */
+export const TRAMPLE_PREVIEW_V7 = "Destroys Field Defense";
 export const BOULDERS_PREVIEW_V7 = "Ignores fortification";
 export const ROCKFALL_PREVIEW_V7 = `Rockfall: Attack ${half(ROCKFALL_ATTACK2_V7)} from the Mountain`;
 export const PLANTED_PREVIEW_V7 = `Planted: +${half(PLANTED_BONUS2_V7)} Attack`;
@@ -154,8 +155,13 @@ export const SNOW_TOOLTIP_OTHERS_V7 =
   "Snow: your units stop on entering, as in a Forest. Ice Folk units have cover";
 export const BLIZZARD_TOOLTIP_V7 =
   "Blizzard: Snow, and Ice Folk units here take half damage from ranged attacks";
-export const BOLAS_LABEL_V7 = "Bolas";
-export const BOLAS_TOOLTIP_V7 = `Freeze a hostile unit within ${BOLAS_RANGE_V7} tiles. No damage.`;
+/**
+ * Bead pulp_wars-2yc.63: the Sled's Bolas freezes exactly as the Witch's
+ * Frost Bolt does, so it carries that name (`THROW_BOLAS` and `BOLAS` stay
+ * the engine's IDs).
+ */
+export const BOLAS_LABEL_V7 = "Frost Bolt";
+export const BOLAS_TOOLTIP_V7 = `Freeze one hostile unit within ${BOLAS_RANGE_V7} tiles. No damage.`;
 export const BOLAS_PICK_V7 = "Choose a unit to freeze";
 export const WILL_BE_FROZEN_V7 = "Will be Frozen";
 /** A target that is Frozen already: the freeze renews it. */
@@ -187,7 +193,8 @@ export const STAMPEDE_MOVED_V7 = "It moved this turn";
 export const STAMPEDE_CHARGE_V7 = "Charge";
 /** Ice Folk Freeze: the Frost Giant's Move freezes the enemies around it. */
 export const COLD_AURA_LABEL_V7 = "Cold Aura";
-export const SABRETOOTH_INFO_V7 = "Prowl: zones of control do not stop it";
+/** Bead pulp_wars-2yc.63: Prowl is Slips past, its name in every faction. */
+export const SABRETOOTH_INFO_V7 = "Slips past: zones of control do not stop it";
 export const MOUNTAIN_BORN_INFO_V7 =
   "Mountain-born: crosses Mountains without Engineering";
 /**
@@ -377,7 +384,7 @@ export function iceFolkHelpRulesV7(): readonly (readonly [string, string])[] {
   return [
     [
       FROZEN_LABEL_V7,
-      `a ${BOLAS_LABEL_V7}, a ${COLD_SNAP_LABEL_V7}, a ${FROST_BOLT_LABEL_V7}, a ${joinOr(giants)}'s ${COLD_AURA_LABEL_V7}, Frostbite, or Black Ice freezes an enemy: it cannot move or act on its owner's next turn, it does not strike back while Frozen, and it thaws at the end of that turn. It can be frozen again at once.`,
+      `a ${FROST_BOLT_LABEL_V7}, a ${COLD_SNAP_LABEL_V7}, a ${joinOr(giants)}'s ${COLD_AURA_LABEL_V7}, Frostbite, or Black Ice freezes an enemy: it cannot move or act on its owner's next turn, it does not strike back while Frozen, and it thaws at the end of that turn. It can be frozen again at once.`,
     ],
     [
       "Shatter",
@@ -401,19 +408,15 @@ export function iceFolkHelpRulesV7(): readonly (readonly [string, string])[] {
     ],
     [
       FROST_BOLT_LABEL_V7,
-      `instead, an ${joinOr(witches)} freezes one hostile unit up to ${numberWord(FROST_BOLT_RANGE_V7)} tiles away; she casts one of the two a turn.`,
-    ],
-    [
-      BOLAS_LABEL_V7,
-      `a ${joinOr(sledders)} freezes one hostile unit within ${BOLAS_RANGE_V7} tiles, without damage.`,
+      `a ${joinOr([...sledders, ...witches])} freezes one hostile unit up to ${numberWord(FROST_BOLT_RANGE_V7)} tiles away, without damage; an ${joinOr(witches)} casts it or a ${COLD_SNAP_LABEL_V7}, one of the two a turn.`,
     ],
     [
       "Cold Blood",
       `a ${joinOr(hunters)} has +${half(COLD_BLOOD_BONUS2_V7)} Attack against a Frozen unit.`,
     ],
     [
-      "Sweep and Trample",
-      `a ${joinOr(sweepers)}'s attack also deals ${SWEEP_DAMAGE_V7} to the units on both sides of its target and flattens the Field Defense under it.`,
+      "Sweep and Wrecker",
+      `a ${joinOr(sweepers)}'s attack also deals ${SWEEP_DAMAGE_V7} to the units on both sides of its target and knocks down the Field Defense under it.`,
     ],
     [
       "Mountain-born",
@@ -427,7 +430,7 @@ export function iceFolkHelpRulesV7(): readonly (readonly [string, string])[] {
       "Boulders",
       `a ${joinOr(boulders)}'s throw ignores Walls and Field Defense, and has +${half(PLANTED_BONUS2_V7)} Attack on a turn it has not moved.`,
     ],
-    ["Prowl", `zones of control do not stop a ${joinOr(prowlers)}.`],
+    ["Slips past", `zones of control do not stop a ${joinOr(prowlers)}.`],
     [
       COLD_AURA_LABEL_V7,
       `a ${joinOr(giants)} freezes every hostile unit next to it when it ends its own Move.`,
@@ -467,8 +470,9 @@ export function iceFolkAbilityNameV7(
       return "Cold Blood";
     case "SWEEP":
       return "Sweep";
+    // Bead pulp_wars-2yc.63: the names of these mechanics in every faction.
     case "TRAMPLE":
-      return "Trample";
+      return "Wrecker";
     case "BLIZZARD":
       return BLIZZARD_LABEL_V7;
     case "COLD_SNAP":
@@ -480,7 +484,7 @@ export function iceFolkAbilityNameV7(
     case "BOULDERS":
       return "Boulders";
     case "PROWL":
-      return "Prowl";
+      return "Slips past";
     case "COLD_AURA":
       return COLD_AURA_LABEL_V7;
     default:
@@ -506,7 +510,7 @@ export function iceFolkAbilityDescriptionV7(
     case "SWEEP":
       return `Its attack also deals ${SWEEP_DAMAGE_V7} to the hostile units on both sides of its target.`;
     case "TRAMPLE":
-      return "Its attack flattens the Field Defense under its target.";
+      return "Its attack knocks down the Field Defense under its target.";
     case "BLIZZARD":
       return `The tiles within ${BLIZZARD_RADIUS_V7} of her are Snow on any ground; your units there take half damage from ranged attacks.`;
     case "COLD_SNAP":
@@ -518,11 +522,10 @@ export function iceFolkAbilityDescriptionV7(
     case "BOULDERS":
       return `Its throw ignores Walls and Field Defense and has +${half(PLANTED_BONUS2_V7)} Attack on a turn it has not moved.`;
     case "PROWL":
-      return `${SABRETOOTH_INFO_V7}.`;
+      return "Enemy zones of control don't stop its Move.";
     case "COLD_AURA":
       return "Freezes every hostile unit next to it when it ends its own Move.";
-    case "CHARGE":
-      return "With Raiding, +1 Attack on the first Attack after moving 2+ cells.";
+    // Charge reads the shared sentence of every faction.
     default:
       return null;
   }
@@ -566,13 +569,13 @@ export function iceFolkRoleUnlockTextV7(role: UnitRoleIdV7): string {
     ...(abilities.includes("BOLAS") ? [BOLAS_LABEL_V7] : []),
     ...(abilities.includes("COLD_BLOOD") ? ["Cold Blood"] : []),
     ...(abilities.includes("SWEEP") ? ["Sweep"] : []),
-    ...(abilities.includes("TRAMPLE") ? ["Trample"] : []),
+    ...(abilities.includes("TRAMPLE") ? ["Wrecker"] : []),
     ...(abilities.includes("STAMPEDE") ? [STAMPEDE_LABEL_V7] : []),
     ...(abilities.includes("COLD_AURA") ? [COLD_AURA_LABEL_V7] : []),
     ...(abilities.includes("BOULDERS")
       ? ["ignores Walls and Field Defense"]
       : []),
-    ...(abilities.includes("PROWL") ? ["Prowl"] : []),
+    ...(abilities.includes("PROWL") ? ["Slips past"] : []),
   ];
   const label = iceFolkLabelV7(role);
   return notes.length === 0

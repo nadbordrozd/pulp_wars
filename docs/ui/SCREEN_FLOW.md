@@ -491,6 +491,34 @@ dock, and the terms of a unit card.
   same abilities and traits; the Gallery has no second list of notes.
 - The dock itself is unchanged: its chips keep their tooltips, which may
   be exact where the dialog is plain.
+- **One name per mechanic, no universal lines** (bead
+  `pulp_wars-2yc.63`). A line says what sets a unit apart: there is no
+  Capture line (every land unit captures), and a ship's line is "Heals at
+  Ports". A mechanic that is the same in several factions has one entry
+  and one name everywhere it is shown (unit dialogs, action buttons,
+  previews, Help, technology texts): Charge (was also Pounce and Strafe),
+  Rally (Frenzy, War Drums; the unit it reaches is "Inspired"), Overrun
+  (Ram, Rampage), Slips past (Ethereal, Prowl), Wrecker (the Mammoth's
+  Trample), and Frost Bolt (the Sled's Bolas). The Triceratops's run-up is
+  Gore (was Charge!), so Charge names one mechanic. Similar mechanics that
+  differ in a number or a condition keep their names with parallel
+  sentences (Psychic Command and Rally; Berserk; Push and Knockback; Tend
+  and Repair; Splash and Bombs; Bones and Open to ranged; Unanswered,
+  Splat and Terror). `tests/unit/unit-glossary-ui-v7.test.ts` fails when
+  two entries share a sentence or a name for different mechanics, or a
+  unit lists Capture. The table of names is in
+  `docs/product/RULESET_7_CURRENT.md` section 11.
+- **The unit card shows the unit only** (bead `pulp_wars-2yc.63`). Facts of
+  the tile it stands on are not chips or stat terms of its card: no "On a
+  Grave", Snow, Blizzard, On ice, Ice cover or Rockfall chip, and its
+  Defense and Sight show no terrain cover, Snow cover, Field Defense, Walls
+  or high ground term. Selecting the tile (a second tap on the unit) shows
+  them: the Grave, Snow, Blizzard and Ice chips (the Ice chip's tooltip
+  says who slides), and one chip per bonus the tile gives the unit standing
+  there ("Cover +0.75 Defense", "Snow cover +25% Defense", "Ice cover",
+  "Field Defense +1 Defense", "High ground +1 Sight", "Rockfall";
+  `data-ground-bonus`). On a city center the city dock shows them, its
+  Walls as its own Walls stat. The attack preview still counts all of them.
 
 ### Calm playback (bead `pulp_wars-2yc.49`)
 
@@ -918,7 +946,8 @@ an Undead seat looks and behaves exactly as in revision 12.
   above units (see the
   [playtest round 3 overlay](#current-ruleset-7-playtest-round-3-interface-overlay));
   the registered CHIBI Grave raster is no longer drawn on the board. The tile
-  dock shows a Grave chip and a unit standing on one shows "On a Grave".
+  dock shows a Grave chip (a unit standing on one shows no chip for it since
+  bead `pulp_wars-2yc.63`: the Grave is the tile's).
 - Selecting an own unit previews its offered revision-13 command on the
   board: a Banshee's radius-2 Wail area with per-target damage (red for a
   kill), a Necromancer's Graves that will rise ("Rise"), and a Ghoul's
@@ -2678,7 +2707,7 @@ both art sets. Where an older section below disagrees, this overlay wins.
   chips and the capital crown (top). On a city tile the CHIBI marker sits
   just left of the population column. Markers are drawn after every unit and
   overlay, so a Grave under a unit stays visible. The tile dock's Grave chip,
-  the unit's "On a Grave" chip, the map cursor description, and the Raise
+  the map cursor description, and the Raise
   Dead and Devour previews are unchanged.
 - **Water.** No boundary lines are drawn around water: neither the former
   pale-yellow dashed coast line between land and water nor the dashed line
