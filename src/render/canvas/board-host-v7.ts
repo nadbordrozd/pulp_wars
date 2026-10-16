@@ -193,10 +193,12 @@ import {
   type WindmillHealingFeedbackV7,
 } from "./support-presentation-v7";
 import {
+  DEFAULT_BOARD_SATURATION_V7,
   createSpriteSaturationCacheV7,
   type BoardSaturationV7,
   type SpriteSaturationCacheV7,
 } from "./sprite-saturation-v7";
+import { buildingFadeFromSearchV7 } from "./building-fade-v7";
 import {
   createDirectedChibiArtV7,
   type BoardDirectionRuntimeV7,
@@ -502,6 +504,8 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
   /** A TRY (pulp_wars-2yc.8): the settlement shadow switch, read once. */
   readonly #settlementShadow = settlementShadowEnabledV7();
   readonly #settlementShadowPlain = settlementShadowPlainV7();
+  /** Bead pulp_wars-2yc.61: the faded tile buildings, read once. */
+  readonly #buildingFade = buildingFadeFromSearchV7();
   /** The shoreline (pulp_wars-2yc.5): undefined with the switch off. */
   readonly #coastArt?: CoastSandArtV7;
   /** The atmosphere (pulp_wars-2yc.17): each undefined with its switch off. */
@@ -2327,14 +2331,15 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
           ? {}
           : { unitPulses: this.#unitPulses }),
         chibiArt: this.#chibiArt,
-        ...(model.saturation === undefined
+        // The saturation cache also holds the faded buildings
+        // (pulp_wars-2yc.61), drawn in the live look only.
+        saturation: {
+          levels: model.saturation ?? DEFAULT_BOARD_SATURATION_V7,
+          cache: this.#saturationCache,
+        },
+        ...(model.visualDirection === undefined
           ? {}
-          : {
-              saturation: {
-                levels: model.saturation,
-                cache: this.#saturationCache,
-              },
-            }),
+          : { buildingFade: this.#buildingFade }),
         ...(model.visualDirection === undefined
           ? {}
           : {

@@ -1,3 +1,8 @@
+import {
+  buildingFadeKeyV7,
+  fadeBuildingPixelsInPlaceV7,
+  type BuildingFadeToneV7,
+} from "./building-fade-v7";
 import type { ChibiRasterEnvironmentV7 } from "./chibi-art-resolver-v7";
 import { parseHexColourV7 } from "./owner-recolour-v7";
 
@@ -70,10 +75,15 @@ export function desaturateHexColourV7(colour: string, percent: number): string {
 
 export interface SpriteSaturationCacheV7 {
   /**
-   * The sprite at `percent` saturation. 100, an unreadable raster or a
-   * raster of unknown size returns the sprite itself.
+   * The sprite at `percent` saturation, then faded to the background
+   * (bead pulp_wars-2yc.61) when a fade is given. 100 without a fade, an
+   * unreadable raster or a raster of unknown size returns the sprite itself.
    */
-  resolve(image: CanvasImageSource, percent: number): CanvasImageSource;
+  resolve(
+    image: CanvasImageSource,
+    percent: number,
+    fade?: BuildingFadeToneV7 | null,
+  ): CanvasImageSource;
 }
 
 function intrinsicSize(
@@ -106,34 +116,52 @@ function intrinsicSize(
  * Each sprite keeps only its latest level, and the copy is released with
  * the sprite, so dragging a slider replaces copies instead of piling them
  * up. Drawing a frame does no pixel work once the copies exist.
+ *
+ * A faded building (bead pulp_wars-2yc.61) is keyed by its fade as well:
+ * at one level a sprite keeps one copy per fade and ground (a shared
+ * building may stand in several territories in one frame), at most one
+ * per territory ground, and a new level replaces them all.
  */
 export function createSpriteSaturationCacheV7(
   environment: Pick<ChibiRasterEnvironmentV7, "readPixels" | "createSurface">,
 ): SpriteSaturationCacheV7 {
   const copies = new WeakMap<
     object,
-    { readonly percent: number; readonly surface: CanvasImageSource | null }
+    {
+      readonly level: number;
+      readonly tones: Map<string, CanvasImageSource | null>;
+    }
   >();
   return {
-    resolve(image, percent) {
+    resolve(image, percent, fade = null) {
       const level = clampSaturationPercentV7(percent);
-      if (level === 100) return image;
-      const cached = copies.get(image);
-      if (cached?.percent === level) return cached.surface ?? image;
+      if (level === 100 && fade === null) return image;
+      const key = buildingFadeKeyV7(fade);
+      let entry = copies.get(image);
+      if (entry?.level !== level) {
+        entry = { level, tones: new Map() };
+        copies.set(image, entry);
+      }
+      const cached = entry.tones.get(key);
+      if (cached !== undefined) return cached ?? image;
       const size = intrinsicSize(image);
       const pixels =
         size === null
           ? null
           : environment.readPixels(image, size.width, size.height);
+      const desaturated =
+        pixels === null ? null : desaturatePixelsV7(pixels, level);
       const surface =
-        size === null || pixels === null
+        size === null || desaturated === null
           ? null
           : environment.createSurface(
-              desaturatePixelsV7(pixels, level),
+              fade === null
+                ? desaturated
+                : fadeBuildingPixelsInPlaceV7(desaturated, fade),
               size.width,
               size.height,
             );
-      copies.set(image, { percent: level, surface });
+      entry.tones.set(key, surface);
       return surface ?? image;
     },
   };

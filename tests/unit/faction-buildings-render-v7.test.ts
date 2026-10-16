@@ -413,7 +413,9 @@ describe("the board plan follows the territory owner", () => {
         expect(entry.artSubject).toMatch(/^IMPROVEMENT:[A-Z_]+$/);
     }
     // A faction look changes the art subject and nothing else: a Forge in
-    // Undead territory is the entry a Human Forge has, under its subject.
+    // Undead territory is the entry a Human Forge has, under its subject
+    // (and, bead pulp_wars-2yc.61, with the ground its faded copy is
+    // pulled toward).
     const forge = (view: PlayerViewV7) =>
       improvementEntries(view).find((entry) => entry.label === "Forge");
     const { ownerColor: _a, ...undeadForge } =
@@ -425,6 +427,7 @@ describe("the board plan follows the territory owner", () => {
     expect(undeadForge).toEqual({
       ...humanForge,
       artSubject: "IMPROVEMENT:UNDEAD:FORGE",
+      factionGrass: "UNDEAD",
     });
     // And a match of factions without looks plans exactly what it planned
     // before the faction looks: no entry names a faction building.

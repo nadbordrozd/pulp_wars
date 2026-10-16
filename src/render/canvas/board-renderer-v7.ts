@@ -372,6 +372,7 @@ import {
   type SourceGeometry,
 } from "./board-art-geometry";
 import { drawUncachedGlowV7, type BoardGlowCacheV7 } from "./glow-cache-v7";
+import { buildingFadeGroundV7, type BuildingFadeV7 } from "./building-fade-v7";
 import {
   TILE_HEIGHT,
   TILE_WIDTH,
@@ -506,6 +507,7 @@ import {
   drawFactionGrassV7,
   factionGrassCellsOfV7,
   factionGrassGladeLayersV7,
+  factionGrassIdV7,
   factionGrassPlanMemberV7,
   type FactionGrassArtV7,
   type FactionGrassIdV7,
@@ -1104,7 +1106,11 @@ export interface BoardRenderPlanEntryV7 {
    * such territory.
    */
   readonly territoryGround?: TerritoryGroundV7;
-  /** EXPERIMENT pulp_wars-2o7.4: the faction grass of the cell's territory. */
+  /**
+   * EXPERIMENT pulp_wars-2o7.4: the faction grass of the cell's territory.
+   * On an IMPROVEMENT (bead pulp_wars-2yc.61): the territory ground its
+   * faded copy is pulled toward (absent: the default Grass).
+   */
   readonly factionGrass?: FactionGrassIdV7;
   /** Faction forests (pulp_wars-2yc.2): a Forest cell's own faction set. */
   readonly factionForest?: FactionForestIdV7;
@@ -1532,6 +1538,8 @@ export function buildBoardRenderPlanV7(
         tile.improvement === "FARM"
           ? farmPresentation.get(coordKey(tile.at))
           : undefined;
+      // Bead pulp_wars-2yc.61: the ground its faded copy is pulled toward.
+      const fadeGround = factionGrassIdV7(tileFaction);
       entries.push({
         key: `improvement:${tile.at.x},${tile.at.y}`,
         kind: "IMPROVEMENT",
@@ -1556,6 +1564,7 @@ export function buildBoardRenderPlanV7(
           ? {}
           : { sourceCrop: farm.sourceCrop }),
         ...(farm?.partner === undefined ? {} : { farmPartner: farm.partner }),
+        ...(fadeGround === null ? {} : { factionGrass: fadeGround }),
         label:
           factionBuildingV7(tile.improvement, tileFaction)?.name ??
           title(tile.improvement),
@@ -2474,6 +2483,21 @@ export function boardSaturationGroupV7(
   return null;
 }
 
+/**
+ * Bead pulp_wars-2yc.61 (building-fade-v7.ts): the entries drawn faded to
+ * the background are tile improvements other than the Monument. Cities,
+ * villages, units, Monuments, the Mine on its mountain and the Field
+ * Defense badge keep their full strength.
+ */
+export function boardBuildingFadeAppliesV7(
+  entry: BoardRenderPlanEntryV7,
+): boolean {
+  return (
+    entry.kind === "IMPROVEMENT" &&
+    entry.assetId !== IMPROVEMENT_ART_KEYS_V7.MONUMENT
+  );
+}
+
 /** Revision 19: one unit sprite's cue transform for a frame. */
 export interface UnitPulseV7 {
   readonly unitId: number;
@@ -2549,6 +2573,13 @@ export function drawBoardV7(input: {
     readonly levels: BoardSaturationV7;
     readonly cache: SpriteSaturationCacheV7;
   };
+  /**
+   * Bead pulp_wars-2yc.61 (building-fade-v7.ts): tile improvements are
+   * drawn from the saturation cache's faded copy at this strength. Omitted
+   * or null, or without `saturation` (whose cache holds the copies), they
+   * are drawn as before.
+   */
+  readonly buildingFade?: BuildingFadeV7 | null;
   /**
    * The visual direction of the CHIBI art set (beads pulp_wars-3tq.1 to .6;
    * the game passes the live direction by default). Omitted, the frame is
@@ -2656,9 +2687,16 @@ export function drawBoardV7(input: {
   ): Image | CanvasImageSource => {
     if (image === null || image === undefined) return image;
     const percent = saturationOf(entry);
-    return percent === 100 || input.saturation === undefined
+    const strength = boardBuildingFadeAppliesV7(entry)
+      ? (input.buildingFade ?? null)
+      : null;
+    const fade =
+      strength === null
+        ? null
+        : { strength, ground: buildingFadeGroundV7(entry.factionGrass) };
+    return (percent === 100 && fade === null) || input.saturation === undefined
       ? image
-      : input.saturation.cache.resolve(image, percent);
+      : input.saturation.cache.resolve(image, percent, fade);
   };
   const chibiArt: ChibiBoardArtV7 =
     input.direction?.art ?? input.chibiArt ?? NO_BOARD_ART_V7;

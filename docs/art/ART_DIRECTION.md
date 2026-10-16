@@ -36,7 +36,10 @@ low detail and flat, simple shading. Every figure reads from its silhouette
 alone. Units and buildings are saturated and carry a large owner-colour area;
 terrain is calmer, so the pieces pop off the board. The mood is playful and
 slightly ridiculous, a board game come to life, and it must stretch to wildly
-different factions (see [factions](factions/README.md)).
+different factions (see [factions](factions/README.md)). On the board the
+tile improvements are drawn a little faded toward their ground, so they read
+as background like trees, fruit and animals while units and cities pop
+([faded tile buildings](BUILDING_FADE.md), `pulp_wars-2yc.61`).
 
 ## 2. Shared rules for every asset
 
