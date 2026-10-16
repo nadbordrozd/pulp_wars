@@ -19,8 +19,13 @@ import {
   previewSummonV7,
   previewWardenV7,
   publicAwestruckBearersV7,
+  publicDraggingMassV7,
   summonHelperLegalV7,
+  summonNeedsHelperV7,
   summonRejectionV7,
+  technologyDisplayNameV7,
+  unitCapabilitiesV7,
+  SUMMON_DAEMONS_V7,
   standingIdolsV7,
   unitIsFrogV7,
   unitIsUnboundV7,
@@ -38,6 +43,7 @@ import {
   type PublicDaemonV7,
   type PublicStrandV7,
   type PublicUnitV7,
+  type SummonDaemonV7,
   type UnitId,
 } from "../engine/index";
 import type { CultCommandPresentationV7 } from "./cult-presentation-v7";
@@ -79,6 +85,8 @@ export const SUMMON_IMP_LABEL_V7 = "Summon Imp";
 export const SUMMON_IMP_TOOLTIP_V7 = `The Summoner alone summons an Imp for ${IMP_FAVOUR_COST_V7} Favour and channels it this turn`;
 /** The Cult redesign (`pulp_wars-mch9.37`, section 7.4): the Mass's. */
 export const SUMMON_MASS_LABEL_V7 = "Summon Gibbering Mass";
+/** The tile chooser's row (bead `pulp_wars-mch9.44`): it fits a phone. */
+export const SUMMON_MASS_SHORT_LABEL_V7 = "Summon Mass";
 export const SUMMON_MASS_TOOLTIP_V7 = `The Summoner and a cultist beside it summon a Gibbering Mass for ${MASS_FAVOUR_COST_V7} Favour. Beside your city or a raised idol it needs no strand`;
 /** Section 6.2, the card text. */
 export const CHANNEL_TOOLTIP_V7 =
@@ -141,6 +149,49 @@ export function wardenCombatNotesV7(preview: {
   readonly idolHalved?: boolean;
 }): readonly string[] {
   return preview.idolHalved === true ? [IDOL_HALVED_PREVIEW_V7] : [];
+}
+
+// ------------------------------- The Imp and the Mass on the board ---
+// The Cult redesign's U-R3 (bead `pulp_wars-mch9.44`;
+// RULESET_7_CULT_REDESIGN.md sections 7.3, 7.4 and 13): Swarm's line on an
+// attack's preview, and Drag's word on a unit a Gibbering Mass holds.
+
+/** An Imp's attack the Swarm leaves unanswered (the combat preview). */
+export const SWARMED_PREVIEW_V7 = "Swarmed: no strike back";
+/** The cursor's sentence for the same. */
+export const SWARMED_SEMANTIC_V7 =
+  "Swarmed: beside two or more of your Imps, the defender cannot strike back.";
+
+/** Swarm's note of an attack's public preview: none or one. */
+export function swarmCombatNotesV7(preview: {
+  readonly noRetaliationReason?: string | null;
+}): readonly string[] {
+  return preview.noRetaliationReason === "SWARMED" ? [SWARMED_PREVIEW_V7] : [];
+}
+
+/**
+ * The control chip of a daemon held with no strand of its own: an Imp a
+ * neighbour's Brood holds, a Gibbering Mass on its Doorstep.
+ */
+export const BROOD_HELD_LABEL_V7 = "Brood";
+export const DOORSTEP_HELD_LABEL_V7 = "Doorstep";
+
+/** The word on a unit a Gibbering Mass drags, and its chip. */
+export const DRAGGED_LABEL_V7 = "Dragged";
+export const DRAGGED_STATUS_V7 =
+  "A Gibbering Mass beside it: it can move only one tile";
+/** The cursor's sentence on each Move of a dragged unit. */
+export const DRAGGED_MOVE_V7 = `${DRAGGED_LABEL_V7}: only one tile`;
+
+/**
+ * Whether the visible unit `unitId` is dragged as the board stands: a Move
+ * it begins now covers one tile (the engine's own rule).
+ */
+export function unitDraggedV7(view: PlayerViewV7, unitId: UnitId): boolean {
+  return (
+    view.units.some((unit) => unit.summoned === "MASS") &&
+    publicDraggingMassV7(view, unitId) !== null
+  );
 }
 /** Section 8.4, the card text. */
 export const ANCHOR_TOOLTIP_V7 =
@@ -289,14 +340,29 @@ export const CULT_CHANNEL_KINDS_V7 = [
 ] as const;
 export type CultChannelKindV7 = (typeof CULT_CHANNEL_KINDS_V7)[number];
 
-/** The Summoner's one button (the Horror is what it summons today). */
+/**
+ * The Summoner's one button. It opens the summon chooser (the Cult
+ * redesign's U-R3, `pulp_wars-mch9.44`): Imp, Horror or Gibbering Mass.
+ */
 export const SUMMON_BUTTON_LABEL_V7 = "Summon";
+/** The button's card text. */
+export const SUMMON_BUTTON_TOOLTIP_V7 =
+  "Call a daemon onto a free tile next to it for Favour: an Imp alone, a Horror or a Gibbering Mass with a cultist beside it. It channels it this turn";
+/** The instruction of the armed Summon before its kind is chosen. */
+export const SUMMON_PICK_KIND_V7 = "Choose what to summon";
 /** The Thing's one button: the ability's name, as its card lists it. */
 export const ANCHOR_BUTTON_LABEL_V7 = "Anchor";
 /** The instruction of an armed Summon with several cultists beside it. */
 export const SUMMON_PICK_HELPER_V7 = "Choose the cultist that helps";
-/** The instruction of an armed Summon once the helper is known. */
-export const SUMMON_PICK_TILE_V7 = "Choose a tile next to it for the Horror";
+/**
+ * The instruction of an armed Summon once the helper is known (an Imp needs
+ * none): "Choose a tile next to it for the Imp".
+ */
+export function summonPickTileTextV7(daemon: SummonDaemonV7): string {
+  return `Choose a tile next to it for the ${summonNameV7(daemon)}`;
+}
+/** The Horror's (the summon the button aimed before the chooser). */
+export const SUMMON_PICK_TILE_V7 = summonPickTileTextV7("HORROR");
 /** The badge on a cultist that may help a summoning. */
 export const SUMMON_HELPER_BADGE_V7 = "Helper";
 /** The instruction of an armed Channel. */
@@ -314,6 +380,8 @@ export const CHANNEL_OUT_OF_REACH_V7 = `No daemon within ${CHANNEL_RANGE_V7} til
 export const SUMMON_NO_HELPER_V7 =
   "A cultist that has not acted must stand next to it";
 export const SUMMON_NO_TILE_V7 = "No free tile next to it";
+/** The Gibbering Mass before its technology: "Needs Gibbering Masses". */
+export const SUMMON_MASS_NEEDS_TECH_V7 = `Needs ${technologyDisplayNameV7("METALLURGY", "CULT")}`;
 export const ANCHOR_GRIPPING_V7 = "It grips a cultist already";
 export const ANCHOR_NO_CULTIST_V7 = "No channelling cultist next to it";
 export const BOO_NOBODY_V7 = "Nobody next to it to scare";
@@ -526,13 +594,20 @@ export function anchorTargetNameV7(
 }
 
 /** The cursor's sentence for a cultist that may help a summoning. */
-export function summonHelperNameV7(helper: string): string {
-  return `This ${helper} helps and channels the Horror. Then choose the Horror's tile.`;
+export function summonHelperNameV7(
+  helper: string,
+  daemon: SummonDaemonV7 = "HORROR",
+): string {
+  const name = summonNameV7(daemon);
+  return `This ${helper} helps and channels the ${name}. Then choose the ${name}'s tile.`;
 }
 
 /** The cursor's sentence for a Summon tile. */
-export function summonTileNameV7(favour: number): string {
-  return `Summon the Horror here: ${favourCostTextV7(favour)}. Both cultists channel it.`;
+export function summonTileNameV7(
+  favour: number,
+  daemon: SummonDaemonV7 = "HORROR",
+): string {
+  return `Summon the ${summonNameV7(daemon)} here: ${favourCostTextV7(favour)}. ${summonNeedsHelperV7(daemon) ? "Both cultists channel it" : "The Summoner channels it"}.`;
 }
 
 /**
@@ -595,40 +670,10 @@ export function cultChannelUnavailableTextV7(
     return null;
   const channel = channelOfV7(view);
   switch (kind) {
-    case "SUMMON": {
-      const helper = view.units.find((candidate) =>
-        summonHelperLegalV7(view, unit, candidate),
-      );
-      // The Summoner's own tile is never a legal one, so the tile facts
-      // are not read: every earlier rule answers first.
-      const rejection = summonRejectionV7(
-        view,
-        {
-          tile: () => undefined,
-          occupied: () => true,
-          chest: () => false,
-          curiosity: () => false,
-          allied: () => false,
-        } as unknown as Parameters<typeof summonRejectionV7>[1],
-        favourOfV7(view, view.viewer.id),
-        unit,
-        "HORROR",
-        helper,
-        unit.at,
-        // A Horror needs no technology beyond the Summoner's.
-        false,
-      );
-      if (rejection === null || rejection.code === "UNIT_ROLE_INVALID")
-        return null;
-      if (rejection.code === "UNIT_ALREADY_ACTED")
-        return CHANNEL_ALREADY_ACTED_V7;
-      if (rejection.code === "INSUFFICIENT_FAVOUR")
-        return summonNeedsFavourTextV7(rejection.cost);
-      if (rejection.reason === "EMBARKED") return CHANNEL_EMBARKED_V7;
-      return rejection.reason === "HELPER"
-        ? SUMMON_NO_HELPER_V7
-        : SUMMON_NO_TILE_V7;
-    }
+    case "SUMMON":
+      // The Imp needs least (no helper, the lowest price): its reason is
+      // the Summoner's own (the chooser names each summon's).
+      return summonKindUnavailableTextV7(view, unit, "IMP");
     case "CHANNEL": {
       // A cultist with no daemon of its seat and no Unbound one in sight
       // has nothing to channel: no button.
@@ -687,6 +732,146 @@ export function cultChannelUnavailableTextV7(
   }
 }
 
+/**
+ * Why the viewer's Summoner, offered no Summon of `daemon`, cannot summon
+ * it, as the engine's own first failing rule (the tile rule, read last, is
+ * "No free tile next to it"); null for a unit with no Summon at all. Ask
+ * only when nothing of `daemon` is offered (`summonChoicesV7` does). The
+ * Gibbering Mass before its technology says so: "Needs Gibbering Masses".
+ */
+export function summonKindUnavailableTextV7(
+  view: PlayerViewV7,
+  unit: PublicUnitV7,
+  daemon: SummonDaemonV7,
+): string | null {
+  if (
+    unit.ownerId !== view.viewer.id ||
+    !abilitiesOf(view, unit).includes("SUMMON")
+  )
+    return null;
+  const helper = summonNeedsHelperV7(daemon)
+    ? view.units.find((candidate) => summonHelperLegalV7(view, unit, candidate))
+    : undefined;
+  // The Summoner's own tile is never a legal one, so the tile facts are
+  // not read: every earlier rule answers first.
+  const rejection = summonRejectionV7(
+    view,
+    {
+      tile: () => undefined,
+      occupied: () => true,
+      chest: () => false,
+      curiosity: () => false,
+      allied: () => false,
+    } as unknown as Parameters<typeof summonRejectionV7>[1],
+    favourOfV7(view, view.viewer.id),
+    unit,
+    daemon,
+    helper,
+    unit.at,
+    unitCapabilitiesV7(view, unit, view.viewer.researchedTechs).summonMass,
+  );
+  if (rejection === null || rejection.code === "UNIT_ROLE_INVALID") return null;
+  if (rejection.code === "UNIT_ALREADY_ACTED") return CHANNEL_ALREADY_ACTED_V7;
+  if (rejection.code === "INSUFFICIENT_FAVOUR")
+    return summonNeedsFavourTextV7(rejection.cost);
+  switch (rejection.reason) {
+    case "EMBARKED":
+      return CHANNEL_EMBARKED_V7;
+    case "TECHNOLOGY":
+      return SUMMON_MASS_NEEDS_TECH_V7;
+    case "HELPER":
+      return SUMMON_NO_HELPER_V7;
+    default:
+      return SUMMON_NO_TILE_V7;
+  }
+}
+
+/** "Imp", "Horror", "Gibbering Mass". */
+export function summonNameV7(daemon: SummonDaemonV7): string {
+  return CULT_SUMMONED_ROLE_RULES_V7[daemon].label;
+}
+
+/** The chooser's short name of each summon (the Mass fits a phone row). */
+export const SUMMON_CHOICE_LABELS_V7: Readonly<Record<SummonDaemonV7, string>> =
+  {
+    IMP: "Imp",
+    HORROR: "Horror",
+    MASS: "Mass",
+  };
+
+/** The helper chip's sentence on a summon that needs one. */
+export const SUMMON_HELPER_NEEDED_V7 = "With a cultist beside it";
+
+/**
+ * One row of the summon chooser (the Cult redesign's U-R3,
+ * `pulp_wars-mch9.44`; RULESET_7_CULT_REDESIGN.md sections 7.1 and 13).
+ */
+export interface SummonChoiceV7 {
+  readonly daemon: SummonDaemonV7;
+  /** "Imp", "Horror", "Mass". */
+  readonly label: string;
+  /** Its price in Favour. */
+  readonly favour: number;
+  /** A cultist beside the Summoner helps (the Horror and the Mass). */
+  readonly helper: boolean;
+  /** How many offered commands summon it (its tiles, times its helpers). */
+  readonly offered: number;
+  /** Why it cannot be summoned now; null when it is offered. */
+  readonly reason: string | null;
+  /** The icon of its row, its board badge and its tile chooser row. */
+  readonly icon: `ICON:ACTION:SUMMON_${SummonDaemonV7}`;
+  /** Its card text (the command's own). */
+  readonly tooltip: string;
+}
+
+/** The card text of each summon's command (the text harness's too). */
+const SUMMON_TOOLTIPS_V7: Readonly<Record<SummonDaemonV7, string>> = {
+  IMP: SUMMON_IMP_TOOLTIP_V7,
+  HORROR: SUMMON_TOOLTIP_V7,
+  MASS: SUMMON_MASS_TOOLTIP_V7,
+};
+
+/**
+ * The summon chooser of the viewer's Summoner: Imp, Horror and Gibbering
+ * Mass, each with its price, whether it needs a helper, and the offered
+ * commands that summon it or the reason it cannot (its technology, its
+ * helper, the Favour, the tile). Empty for a unit without Summon. Every
+ * row is listed: a locked Mass shows its technology.
+ */
+export function summonChoicesV7(
+  view: PlayerViewV7,
+  unit: PublicUnitV7,
+  commands: readonly CommandV7[],
+): readonly SummonChoiceV7[] {
+  if (
+    unit.ownerId !== view.viewer.id ||
+    !abilitiesOf(view, unit).includes("SUMMON")
+  )
+    return [];
+  return SUMMON_DAEMONS_V7.map((daemon): SummonChoiceV7 => {
+    const offered = commands.filter(
+      (command) =>
+        command.kind === "SUMMON" &&
+        command.unitId === unit.id &&
+        command.daemon === daemon,
+    ).length;
+    return {
+      daemon,
+      label: SUMMON_CHOICE_LABELS_V7[daemon],
+      favour: CULT_SUMMONED_ROLE_RULES_V7[daemon].favourCost ?? 0,
+      helper: summonNeedsHelperV7(daemon),
+      offered,
+      reason:
+        offered > 0
+          ? null
+          : (summonKindUnavailableTextV7(view, unit, daemon) ??
+            SUMMON_NO_TILE_V7),
+      icon: `ICON:ACTION:SUMMON_${daemon}`,
+      tooltip: SUMMON_TOOLTIPS_V7[daemon],
+    };
+  });
+}
+
 /** A status chip of the selected unit's card. */
 export interface CultChannelChipV7 {
   readonly id:
@@ -698,6 +883,9 @@ export interface CultChannelChipV7 {
     // an enemy it holds Awestruck.
     | "shielded"
     | "awestruck"
+    // The Cult redesign's Drag (bead `pulp_wars-mch9.44`): a unit a
+    // Gibbering Mass beside it holds to one tile a Move.
+    | "dragged"
     | "control"
     | "unbound"
     | "furious"
@@ -709,10 +897,15 @@ export interface CultChannelChipV7 {
   /** The raster asked for; the chip shows its word alone without one. */
   readonly icon:
     | `ICON:STATUS:${"CANDLELIT" | "WARDED" | "UNBOUND" | "FURIOUS"}`
-    | `ICON:ACTION:${"ANCHOR" | "CHANNEL"}`
+    | `ICON:ACTION:${"ANCHOR" | "CHANNEL" | "DRAG" | "DOORSTEP" | "BROOD"}`
     | "ICON:HUD:CULT:HUNGER";
   /** A daemon short of its Control: the chip takes the loss colour. */
   readonly short?: true;
+  /**
+   * A harm done to the unit (Dragged, bead `pulp_wars-mch9.44`): the loss
+   * colour too, as a hex's chip.
+   */
+  readonly harm?: true;
 }
 
 /**
@@ -785,6 +978,16 @@ export function cultChannelChipsV7(
       status: AWESTRUCK_STATUS_V7,
       icon: "ICON:STATUS:WARDED",
     });
+  // Drag (bead `pulp_wars-mch9.44`): the ooze ring round the Mass says
+  // the same on the board.
+  if (unitDraggedV7(view, unit.id))
+    chips.push({
+      id: "dragged",
+      label: DRAGGED_LABEL_V7,
+      status: DRAGGED_STATUS_V7,
+      icon: "ICON:ACTION:DRAG",
+      harm: true,
+    });
   const daemon = channel.daemons.find((entry) => entry.unitId === unit.id);
   const unbound = unitIsUnboundV7(unit);
   if (daemon !== undefined && !unbound) {
@@ -793,11 +996,26 @@ export function cultChannelChipsV7(
     const brood = daemon.broodOf !== undefined;
     const doorstep = daemon.doorstep === true;
     const short = daemon.strands < daemon.control && !brood && !doorstep;
+    // Held without its own strands (bead `pulp_wars-mch9.44`): the chip
+    // names what holds it, with its icon, as the board's lit pip says it.
+    const heldBy =
+      daemon.strands >= daemon.control
+        ? null
+        : brood
+          ? "BROOD"
+          : doorstep
+            ? "DOORSTEP"
+            : null;
     chips.push({
       id: "control",
-      label: strandsTextV7(daemon.strands, daemon.control),
+      label:
+        heldBy === "BROOD"
+          ? BROOD_HELD_LABEL_V7
+          : heldBy === "DOORSTEP"
+            ? DOORSTEP_HELD_LABEL_V7
+            : strandsTextV7(daemon.strands, daemon.control),
       status: `${daemon.strands} of the ${daemon.control} ${daemon.control === 1 ? "strand" : "strands"} it needs. ${short ? "It will be Unbound at the start of its owner's turn" : brood ? "The Imp beside it holds it (Brood): it stays bound" : doorstep && daemon.strands < daemon.control ? "On its doorstep it needs no strand: it stays bound" : "It stays bound"}`,
-      icon: "ICON:ACTION:CHANNEL",
+      icon: heldBy === null ? "ICON:ACTION:CHANNEL" : `ICON:ACTION:${heldBy}`,
       ...(short ? { short: true as const } : {}),
     });
   }

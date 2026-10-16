@@ -44,7 +44,7 @@ import {
   type TechnologyIdV7,
 } from "../../src/engine/index";
 import { OBSOLETE_SAVE_STORAGE_KEYS_V7 } from "../../src/persistence/index";
-import { browserSummonCommandV7 } from "../../src/render/canvas/cult-channel-board-plan-v7";
+import { tileActionPlanForSelectionV7 } from "../../src/render/canvas/tile-actions-v7";
 import { daemonsShortV7 } from "../../src/render/cult-channel-presentation-v7";
 import { summonedGlossaryV7 } from "../../src/render/unit-glossary-v7";
 import { textPlayCommandIdV7 } from "../../scripts/play-text-v7";
@@ -420,13 +420,27 @@ describe("the Gibbering Mass: Summon (section 7.1)", () => {
     );
   });
 
-  it("is not aimed by the browser's Summon button yet (the chooser is U-R3's)", () => {
+  it("is aimed in the browser by its own badge on each of its tiles (the chooser, pulp_wars-mch9.44)", () => {
     const state = field(5);
     const masses = offeredV7(state, "SUMMON").filter(
-      (command) => command.kind === "SUMMON" && command.daemon === "MASS",
+      (command): command is Extract<CommandV7, { kind: "SUMMON" }> =>
+        command.kind === "SUMMON" && command.daemon === "MASS",
     );
     expect(masses.length).toBeGreaterThan(0);
-    expect(masses.some(browserSummonCommandV7)).toBe(false);
+    const view = viewForV7(state, cultId(state));
+    const plan = tileActionPlanForSelectionV7(
+      view,
+      queryPlayerCommandsV7(view),
+      idAt(state, SUMMONER),
+    );
+    const badged = (plan?.tiles ?? []).filter((tile) =>
+      tile.actions.some((action) => action.id === "SUMMON_MASS"),
+    );
+    expect(badged.map((tile) => tile.at)).toEqual(
+      masses
+        .map((command) => command.at)
+        .sort((left, right) => left.y - right.y || left.x - right.x),
+    );
   });
 
   it("is summoned by the Cult AI only to guard a city or a circle (A-R3)", () => {

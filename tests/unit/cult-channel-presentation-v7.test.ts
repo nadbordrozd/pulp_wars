@@ -19,8 +19,8 @@ import {
 } from "../../src/render/canvas/board-renderer-v7";
 import {
   cultUnitMarkersV7,
-  browserSummonCommandV7,
   summonHelpersV7,
+  summonPickV7,
   type CultChannelPickV7,
 } from "../../src/render/canvas/cult-channel-board-plan-v7";
 import {
@@ -53,6 +53,7 @@ import {
   SUMMON_NO_HELPER_V7,
   SUMMON_NO_TILE_V7,
   booSummaryV7,
+  summonChoicesV7,
   channelOfV7,
   cultChannelChipsV7,
   cultChannelNoticePartsV7,
@@ -448,9 +449,27 @@ describe("Summon is aimed on the board", () => {
       idAt(state, A.helper),
       idAt(state, A.secondHelper),
     ]);
+    // The chooser's Horror (bead pulp_wars-mch9.44): two helpers, so the
+    // helper is picked first.
+    expect(summonPickV7(commands, summoner, "HORROR")).toEqual({
+      kind: "SUMMON",
+      unitId: summoner,
+      daemon: "HORROR",
+      helperUnitId: null,
+    });
+    // Before the kind is chosen the board waits for the dock's chooser.
+    expect(
+      aimed(state, A.summoner, (unitId) => ({
+        kind: "SUMMON",
+        unitId,
+        daemon: null,
+        helperUnitId: null,
+      })).targets,
+    ).toEqual([]);
     const helpers = aimed(state, A.summoner, (unitId) => ({
       kind: "SUMMON",
       unitId,
+      daemon: "HORROR",
       helperUnitId: null,
     }));
     expect(
@@ -470,6 +489,7 @@ describe("Summon is aimed on the board", () => {
     const tiles = aimed(state, A.summoner, (unitId) => ({
       kind: "SUMMON",
       unitId,
+      daemon: "HORROR",
       helperUnitId: idAt(state, A.helper),
     }));
     const offered = commands.filter(
@@ -483,8 +503,8 @@ describe("Summon is aimed on the board", () => {
     expect(tiles.targets.map((target) => target.command)).toEqual(offered);
     // The Cult redesign (`pulp_wars-mch9.37`): the Gibbering Mass is
     // offered with the same helper on the same six tiles (the fixture has
-    // every technology), but the browser's pick aims the Horror only (the
-    // summon chooser is U-R3's, `pulp_wars-mch9.44`).
+    // every technology); the Horror's pick aims Horrors only, and the
+    // Mass's its own (the chooser, bead `pulp_wars-mch9.44`).
     const masses = commands.filter(
       (command) =>
         command.kind === "SUMMON" &&
@@ -492,13 +512,40 @@ describe("Summon is aimed on the board", () => {
         command.helperUnitId === idAt(state, A.helper),
     );
     expect(masses).toHaveLength(6);
-    expect(masses.some(browserSummonCommandV7)).toBe(false);
     expect(
       tiles.targets.some(
         (target) =>
           target.command.kind === "SUMMON" && target.command.daemon === "MASS",
       ),
     ).toBe(false);
+    const massTiles = aimed(state, A.summoner, (unitId) => ({
+      kind: "SUMMON",
+      unitId,
+      daemon: "MASS",
+      helperUnitId: idAt(state, A.helper),
+    }));
+    expect(massTiles.targets.map((target) => target.command)).toEqual(masses);
+    expect(massTiles.targets[0]?.semanticLabel).toBe(
+      "Summon the Gibbering Mass here: −5 Favour. Both cultists channel it. Choose a tile next to it for the Gibbering Mass",
+    );
+    // The Imp needs no helper: its pick goes straight to its six tiles.
+    const imps = commands.filter(
+      (command) => command.kind === "SUMMON" && command.daemon === "IMP",
+    );
+    expect(imps).toHaveLength(6);
+    expect(summonPickV7(commands, summoner, "IMP")).toEqual({
+      kind: "SUMMON",
+      unitId: summoner,
+      daemon: "IMP",
+      helperUnitId: null,
+    });
+    const impTiles = aimed(state, A.summoner, (unitId) =>
+      summonPickV7(commands, unitId, "IMP"),
+    );
+    expect(impTiles.targets.map((target) => target.command)).toEqual(imps);
+    expect(impTiles.targets[0]?.semanticLabel).toBe(
+      "Summon the Imp here: −2 Favour. The Summoner channels it. Choose a tile next to it for the Imp",
+    );
     expect(tiles.targets.every((target) => target.family === "SUMMON")).toBe(
       true,
     );
@@ -691,11 +738,11 @@ describe("why a channel button cannot be used", () => {
       (candidate) => candidate.at.x === where.x && candidate.at.y === where.y,
     );
     if (unit === undefined) throw new Error("no unit");
-    // The browser's Summon button aims a Horror (`pulp_wars-mch9.36`).
+    // The Summon button opens the chooser of every summon
+    // (`pulp_wars-mch9.44`).
     const offered = queryPlayerCommandsV7(view).some(
       (command) =>
         command.kind === kind &&
-        (command.kind !== "SUMMON" || browserSummonCommandV7(command)) &&
         "unitId" in command &&
         command.unitId === unit.id,
     );
@@ -723,12 +770,35 @@ describe("why a channel button cannot be used", () => {
   });
 
   it("names the first rule a Summon fails", () => {
+    // The Cult redesign (bead pulp_wars-mch9.44): the Summon button offers
+    // the chooser while any summon can be called; a Summoner alone calls an
+    // Imp, and the chooser names what each other summon lacks.
     const lone = withFavourV7(
       cultFieldV7([{ seat: 0, role: "CAPTAIN", at: at(5, 2) }]),
       0,
       9,
     );
-    expect(reason(lone, at(5, 2), "SUMMON")).toBe(SUMMON_NO_HELPER_V7);
+    expect(reason(lone, at(5, 2), "SUMMON")).toBeNull();
+    const kindReason = (
+      state: GameStateV7,
+      where: CoordV7,
+      daemon: "IMP" | "HORROR" | "MASS",
+    ): string | null => {
+      const view = viewOf(state);
+      const unit = view.units.find(
+        (candidate) => candidate.at.x === where.x && candidate.at.y === where.y,
+      );
+      if (unit === undefined) throw new Error("no unit");
+      return (
+        summonChoicesV7(view, unit, queryPlayerCommandsV7(view)).find(
+          (choice) => choice.daemon === daemon,
+        )?.reason ?? null
+      );
+    };
+    expect(kindReason(lone, at(5, 2), "IMP")).toBeNull();
+    expect(kindReason(lone, at(5, 2), "HORROR")).toBe(SUMMON_NO_HELPER_V7);
+    // The field has every technology: the Mass, too, lacks its helper.
+    expect(kindReason(lone, at(5, 2), "MASS")).toBe(SUMMON_NO_HELPER_V7);
     const poor = withFavourV7(
       cultFieldV7([
         { seat: 0, role: "CAPTAIN", at: at(5, 2) },
@@ -737,7 +807,17 @@ describe("why a channel button cannot be used", () => {
       0,
       3,
     );
-    expect(reason(poor, at(5, 2), "SUMMON")).toBe("Needs 4 Favour");
+    expect(reason(poor, at(5, 2), "SUMMON")).toBeNull();
+    expect(kindReason(poor, at(5, 2), "HORROR")).toBe("Needs 4 Favour");
+    const broke = withFavourV7(
+      cultFieldV7([
+        { seat: 0, role: "CAPTAIN", at: at(5, 2) },
+        { seat: 0, role: "FIGHTER", at: at(6, 2) },
+      ]),
+      0,
+      1,
+    );
+    expect(reason(broke, at(5, 2), "SUMMON")).toBe("Needs 2 Favour");
     const acted = withFavourV7(
       cultFieldV7([
         {

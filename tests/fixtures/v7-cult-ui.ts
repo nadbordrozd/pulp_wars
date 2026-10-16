@@ -1,4 +1,9 @@
-import type { CoordV7, FactionIdV7, GameStateV7 } from "../../src/engine/index";
+import {
+  TECHNOLOGY_IDS_V7,
+  type CoordV7,
+  type FactionIdV7,
+  type GameStateV7,
+} from "../../src/engine/index";
 import { checkedV7 } from "./v7-builders";
 import {
   cultFieldV7,
@@ -785,5 +790,103 @@ export function cultJoinUiFixtureV7(): GameStateV7 {
     A.stargazer,
     [],
     A.star,
+  );
+}
+
+/**
+ * The Cult redesign's summons on the board (bead `pulp_wars-mch9.44`,
+ * docs/product/RULESET_7_CULT_REDESIGN.md sections 7.3, 7.4 and 13): the
+ * named tiles of `cultSummonsUiFixtureV7`.
+ */
+export const CULT_SUMMONS_UI_V7 = {
+  /** The Summoner, with one Initiate beside it to help, and 9 Favour. */
+  summoner: at(5, 2),
+  helper: at(6, 2),
+  /** The Initiate whose strand holds the first Imp. */
+  channeller: at(1, 2),
+  /** The channelled Imp, and the two Imps beside it its Brood holds. */
+  imp: at(2, 3),
+  broodImp: at(3, 3),
+  secondBroodImp: at(2, 4),
+  /** A Human Fighter beside all three Imps: Swarmed. */
+  swarmed: at(3, 4),
+  /** A Gibbering Mass beside the Cult capital (8, 8): its Doorstep. */
+  mass: at(7, 7),
+  /** A Human Fighter beside the Mass: Dragged. */
+  dragged: at(6, 6),
+  /** An Unbound Imp and an Unbound Gibbering Mass (the summoner's seat 0). */
+  unboundImp: at(9, 2),
+  unboundMass: at(9, 4),
+} as const satisfies Readonly<Record<string, CoordV7>>;
+
+/**
+ * The Cult player (seat 0, the human) to move with every summon on the
+ * board: a Summoner with one helper and 9 Favour (an Imp, a Horror and a
+ * Mass are each offered; with `massLocked` the seat lacks Metallurgy,
+ * shown as Gibbering Masses, so the Mass is not); a Brood of three Imps
+ * held by one strand, round a Human Fighter they Swarm; a Gibbering Mass on
+ * its Doorstep that drags the Human Fighter beside it; and an Unbound Imp
+ * and an Unbound Mass in their Unbound looks.
+ */
+export function cultSummonsUiFixtureV7(massLocked = false): GameStateV7 {
+  const A = CULT_SUMMONS_UI_V7;
+  let state = withFavourV7(
+    cultFieldV7(
+      [
+        { seat: 0, role: "CAPTAIN", at: A.summoner },
+        { seat: 0, role: "FIGHTER", at: A.helper },
+        { seat: 0, role: "FIGHTER", at: A.channeller },
+        { seat: 1, role: "FIGHTER", at: A.swarmed },
+        { seat: 1, role: "FIGHTER", at: A.dragged },
+      ],
+      massLocked
+        ? {
+            techs: {
+              0: TECHNOLOGY_IDS_V7.filter((tech) => tech !== "METALLURGY"),
+            },
+          }
+        : {},
+    ),
+    0,
+    9,
+  );
+  for (const where of [A.imp, A.broodImp, A.secondBroodImp, A.unboundImp])
+    state = withHorrorV7(state, 0, where, { role: "IMP" });
+  for (const where of [A.mass, A.unboundMass])
+    state = withHorrorV7(state, 0, where, { role: "MASS" });
+  state = withStrandsV7(state, A.imp, [A.channeller]);
+  state = withUnboundV7(state, A.unboundImp, 0);
+  return withUnboundV7(state, A.unboundMass, 0);
+}
+
+/** The same with the Mass locked behind its technology. */
+export function cultSummonsLockedUiFixtureV7(): GameStateV7 {
+  return cultSummonsUiFixtureV7(true);
+}
+
+/**
+ * Drag as its victim sees it (bead `pulp_wars-mch9.44`): the Human player
+ * (seat 0) to move, its Fighter beside a Gibbering Mass that stands beside
+ * the Cult capital (2, 8) of seat 1 (its Doorstep).
+ */
+export const CULT_SUMMONS_RIVAL_UI_V7 = {
+  mass: at(3, 7),
+  dragged: at(4, 6),
+  free: at(6, 4),
+} as const satisfies Readonly<Record<string, CoordV7>>;
+
+export function cultSummonsRivalUiFixtureV7(): GameStateV7 {
+  const A = CULT_SUMMONS_RIVAL_UI_V7;
+  return withHorrorV7(
+    fieldV7(
+      [
+        { seat: 0, role: "FIGHTER", at: A.dragged },
+        { seat: 0, role: "FIGHTER", at: A.free },
+      ],
+      { factions: ["ORIGINAL", "CULT"] },
+    ),
+    1,
+    A.mass,
+    { role: "MASS" },
   );
 }

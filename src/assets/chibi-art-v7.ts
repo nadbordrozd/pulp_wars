@@ -487,7 +487,19 @@ export type CultActionIconIdV7 =
   | "STARFALL"
   | "GREAT_SUMMONING"
   | "PAMPHLETS"
-  | "GRAB";
+  | "GRAB"
+  /**
+   * The Cult redesign's summons (art bead `pulp_wars-mch9.45`, batch
+   * `summons-cult`; on the board since bead `pulp_wars-mch9.44`): the
+   * chooser's three summons and the Imp's and the Mass's abilities.
+   */
+  | "SUMMON_IMP"
+  | "SUMMON_HORROR"
+  | "SUMMON_MASS"
+  | "BROOD"
+  | "SWARM"
+  | "DOORSTEP"
+  | "DRAG";
 
 /** The Cult's status chips, each also the board marker of its status. */
 export type CultStatusIconIdV7 =

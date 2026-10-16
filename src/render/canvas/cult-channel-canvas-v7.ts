@@ -347,7 +347,78 @@ export function drawCultLinkV7(
     drawCultStrandV7(context, from, to, zoom, link.holds, options);
   else if (link.kind === "GRIP")
     drawCultGripV7(context, from, to, zoom, link.holds, options);
+  else if (link.kind === "BROOD")
+    drawCultBroodLinkV7(context, from, to, zoom, options);
   else drawCultBooJumpV7(context, from, to, zoom, link.outcome, options);
+}
+
+/** How far from each Imp's tile centre a Brood link starts. */
+export const BROOD_LINK_END_V7 = 34;
+
+/**
+ * Brood (the Cult redesign, bead `pulp_wars-mch9.44`): a short straight
+ * green link from the Imp whose strand holds it (`from`) to an Imp it
+ * holds beside it (`to`), low at the Imps' feet: a dark casing, the lit
+ * green and three cream beads, so it reads apart from a strand's sagging
+ * chain. Neighbours only, so it is at most a tile and a half long.
+ */
+export function drawCultBroodLinkV7(
+  context: CanvasRenderingContext2D,
+  from: Point,
+  to: Point,
+  zoom: number,
+  options: CultDrawOptionsV7 = {},
+): void {
+  const palette = colours(options.highContrast ?? false);
+  const dx = to.x - from.x;
+  const dy = to.y - from.y;
+  const span = Math.hypot(dx, dy);
+  if (span === 0) return;
+  const ux = dx / span;
+  const uy = dy / span;
+  const lift = 20 * zoom;
+  const a = {
+    x: from.x + ux * BROOD_LINK_END_V7 * zoom,
+    y: from.y + uy * BROOD_LINK_END_V7 * zoom + lift,
+  };
+  const b = {
+    x: to.x - ux * BROOD_LINK_END_V7 * zoom,
+    y: to.y - uy * BROOD_LINK_END_V7 * zoom + lift,
+  };
+  context.save();
+  context.lineCap = "round";
+  context.setLineDash([]);
+  const path = (): void => {
+    context.beginPath();
+    context.moveTo(a.x, a.y);
+    context.lineTo(b.x, b.y);
+  };
+  path();
+  context.globalAlpha = 0.85;
+  context.strokeStyle = palette.casing;
+  context.lineWidth = Math.max(3, 7 * zoom);
+  context.stroke();
+  context.globalAlpha = 1;
+  path();
+  context.strokeStyle = palette.line;
+  context.lineWidth = Math.max(1.6, 3.4 * zoom);
+  context.stroke();
+  context.fillStyle = palette.cream;
+  context.strokeStyle = palette.casing;
+  context.lineWidth = Math.max(0.8, 1.2 * zoom);
+  for (const t of [0, 0.5, 1]) {
+    context.beginPath();
+    context.arc(
+      a.x + (b.x - a.x) * t,
+      a.y + (b.y - a.y) * t,
+      Math.max(1.8, 3.4 * zoom),
+      0,
+      Math.PI * 2,
+    );
+    context.fill();
+    context.stroke();
+  }
+  context.restore();
 }
 
 /** The dark disc under a badge. */
@@ -521,6 +592,24 @@ function drawRaster(
   context.drawImage(image, cx - size / 2, cy - size / 2, size, size);
 }
 
+/** The outline of a house pip of half-size `radius` round (`cx`, `cy`). */
+function traceHousePip(
+  context: CanvasRenderingContext2D,
+  cx: number,
+  cy: number,
+  radius: number,
+): void {
+  const half = radius * 0.78;
+  context.moveTo(cx, cy - radius);
+  context.lineTo(cx + radius, cy - radius * 0.05);
+  context.lineTo(cx + half, cy - radius * 0.05);
+  context.lineTo(cx + half, cy + radius * 0.85);
+  context.lineTo(cx - half, cy + radius * 0.85);
+  context.lineTo(cx - half, cy - radius * 0.05);
+  context.lineTo(cx - radius, cy - radius * 0.05);
+  context.closePath();
+}
+
 /** What the row of pips under a daemon shows. */
 export interface CultControlPipsV7 {
   /** One slot per strand the daemon needs (its Control). */
@@ -564,6 +653,8 @@ export function drawCultControlPipsV7(
     readonly strands: number;
     /** An Unbound daemon being bound: no red rim, no collar. */
     readonly binding?: true;
+    /** A Mass held on its Doorstep: each lit pip is a small house. */
+    readonly doorstep?: true;
   },
   options: CultDrawOptionsV7 = {},
 ): void {
@@ -613,7 +704,11 @@ export function drawCultControlPipsV7(
   for (let index = 0; index < slots; index += 1) {
     const px = cx + radius + index * (radius * 2 + gap);
     context.beginPath();
-    context.arc(px, cy, radius - Math.max(0.6, zoom), 0, Math.PI * 2);
+    if (index < lit && control.doorstep === true)
+      // The Doorstep (bead pulp_wars-mch9.44): held with no strand, by its
+      // house, so the pip is a small house (a gable on a square).
+      traceHousePip(context, px, cy, radius + Math.max(0.5, 0.6 * zoom));
+    else context.arc(px, cy, radius - Math.max(0.6, zoom), 0, Math.PI * 2);
     if (index < lit) {
       context.fillStyle = highContrast ? "#ffffff" : CULT_PALETTE_V7.flame;
       context.fill();

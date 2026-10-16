@@ -110,6 +110,9 @@ import {
   cultJoinUiFixtureV7,
   cultWardenRivalUiFixtureV7,
   cultWardenUiFixtureV7,
+  cultSummonsLockedUiFixtureV7,
+  cultSummonsRivalUiFixtureV7,
+  cultSummonsUiFixtureV7,
 } from "../fixtures/v7-cult-ui";
 import { withFavourV7 } from "../fixtures/v7-cult";
 import { undeadShowcaseFixtureV7 } from "../fixtures/v7-undead-ui";
@@ -299,6 +302,8 @@ const FIXTURES: readonly (readonly [
     cultChannelUiFixtureV7,
     [
       "cult-summon aimed",
+      // The summon chooser (bead pulp_wars-mch9.44).
+      "cult-summon chosen",
       "cult-summon stage 1",
       "cult-summon performed",
       "cult-channel aimed",
@@ -367,6 +372,21 @@ const FIXTURES: readonly (readonly [
   // with its live preview and joined.
   ["Cult: the warden", cultWardenUiFixtureV7, []],
   ["Cult: the warden's victim", cultWardenRivalUiFixtureV7, []],
+  // The Cult redesign's U-R3 (`pulp_wars-mch9.44`): the summon chooser and
+  // each summon on its tiles, the Brood's links, the Doorstep's pip, the
+  // ooze ring, Swarm's line, the Unbound looks, a locked Mass, and Dragged
+  // as its victim sees it.
+  [
+    "Cult: the summons",
+    cultSummonsUiFixtureV7,
+    ["cult-summon aimed", "cult-summon chosen"],
+  ],
+  [
+    "Cult: a locked Mass",
+    cultSummonsLockedUiFixtureV7,
+    ["cult-summon aimed", "cult-summon chosen"],
+  ],
+  ["Cult: the dragged", cultSummonsRivalUiFixtureV7, []],
   [
     "Cult: join the chant",
     cultJoinUiFixtureV7,
@@ -761,6 +781,20 @@ async function sweep(fixture: () => GameStateV7): Promise<{
       .querySelector<HTMLButtonElement>(`[data-action="${action}"]`)
       ?.click();
     check(`${action} aimed`);
+    // The summon chooser (the Cult redesign, bead pulp_wars-mch9.44): the
+    // Horror (whose helper is a stage on the board), else the first summon
+    // on offer, goes on to the board.
+    const kind =
+      document.querySelector<HTMLButtonElement>(
+        '[data-action="cult-summon-horror"]:not([aria-disabled="true"])',
+      ) ??
+      document.querySelector<HTMLButtonElement>(
+        '.v7-summon-choice:not([aria-disabled="true"])',
+      );
+    if (kind !== null) {
+      kind.click();
+      check(`${action} chosen`);
+    }
     for (let stage = 0; stage < 3; stage += 1) {
       const target = boardPlan(host).targets.find((candidate) =>
         STAGE_FAMILIES.has(candidate.family),
@@ -822,6 +856,13 @@ async function sweep(fixture: () => GameStateV7): Promise<{
     document
       .querySelector<HTMLButtonElement>(`[data-action="${action}"]`)
       ?.click();
+    // The summon chooser (bead pulp_wars-mch9.44): its first summon on
+    // offer goes on to the board.
+    document
+      .querySelector<HTMLButtonElement>(
+        '.v7-summon-choice:not([aria-disabled="true"])',
+      )
+      ?.click();
     for (
       let step = 0;
       step < 4 && controller.accepted.length === 0;
@@ -873,9 +914,13 @@ async function sweep(fixture: () => GameStateV7): Promise<{
   return { offences: [...offences], visited };
 }
 
-/** The only controls an aiming panel may hold (bead pulp_wars-9im). */
+/**
+ * The only controls an aiming panel may hold (bead pulp_wars-9im). The
+ * summon chooser's three kinds (the Cult redesign, bead pulp_wars-mch9.44)
+ * are a fixed set, never targets: the tiles are picked on the board.
+ */
 const PICK_PANEL_CONTROLS =
-  /^(pick-info|[a-z-]+-pick-cancel|[a-z-]+-pick-back|tunnel-confirm|tunnel-passenger-none|cold-snap-cast|stampede-charge|cult-boo-cast|cult-ritual-begin)$/;
+  /^(pick-info|[a-z-]+-pick-cancel|[a-z-]+-pick-back|tunnel-confirm|tunnel-passenger-none|cold-snap-cast|stampede-charge|cult-boo-cast|cult-ritual-begin|cult-summon-(imp|horror|mass))$/;
 
 /**
  * Bead pulp_wars-9im, the generic guard: targets are picked on the board,

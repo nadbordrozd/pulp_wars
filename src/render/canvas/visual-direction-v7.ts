@@ -928,7 +928,12 @@ export function createDirectedChibiArtV7(input: {
             // unit the warden's shield wall covers, and the join icon on
             // a pending Stargazer's tile badge.
             request.subject === "ICON:STATUS:WARDED" ||
-            request.subject === "ICON:ACTION:JOIN_CHANT")
+            request.subject === "ICON:ACTION:JOIN_CHANT" ||
+            // The Cult redesign's summons (bead pulp_wars-mch9.44): each
+            // summon's badge on the Summoner's tiles.
+            request.subject === "ICON:ACTION:SUMMON_IMP" ||
+            request.subject === "ICON:ACTION:SUMMON_HORROR" ||
+            request.subject === "ICON:ACTION:SUMMON_MASS")
         ) {
           const sample = input.samples.resolve(request);
           if (sample.kind !== "MISSING") return sample;

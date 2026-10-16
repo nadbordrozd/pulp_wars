@@ -2917,6 +2917,37 @@ html:has(.v7-match-shell) body {
 }
 
 /*
+ * The summon chooser (the Cult redesign, bead pulp_wars-mch9.44): the
+ * Summon button's panel lists Imp, Horror and Mass as three action tiles,
+ * each with its price and, for a Horror or a Mass, the helper it needs. A
+ * summon that cannot be called is a blocked tile with its reason under it.
+ */
+.v7-summon-choices {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 7.5rem));
+  justify-content: center;
+  gap: 0.35rem;
+}
+
+/* Three across at every width: a narrow tile wraps its chips. */
+.v7-summon-choices > .v7-summon-choice {
+  width: auto;
+  min-width: 0;
+  max-width: none;
+  padding-inline: 0.15rem;
+}
+
+.v7-summon-reason {
+  max-width: 100%;
+  overflow-wrap: normal;
+  word-break: normal;
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-xs);
+  font-weight: var(--pw-fw-semi);
+  text-align: center;
+}
+
+/*
  * Tile actions (bead pulp_wars-2yc.60): the small chooser a tile with
  * several actions opens beside itself on the board. A panel with one row
  * per action (the badge's glyph and the action's name) and Select for an
@@ -2979,6 +3010,17 @@ html:has(.v7-match-shell) body {
 
 .v7-tile-choice[data-style="place"] .v7-tile-choice-icon {
   border-color: var(--pw-amber);
+}
+
+/* A summon's row (bead pulp_wars-mch9.44): its own icon, then its price. */
+.v7-tile-choice-art {
+  flex: 0 0 auto;
+  width: 2rem;
+  height: 2rem;
+}
+
+.v7-tile-choice .v7-favour-chip {
+  margin-left: auto;
 }
 
 .v7-tile-choice-select .v7-tile-choice-icon {

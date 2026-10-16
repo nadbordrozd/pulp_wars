@@ -1033,6 +1033,12 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/render/cult-channel-presentation-v7.ts::daemonsShortV7": "BOARD",
     "src/render/cult-channel-presentation-v7.ts::cultChannelUnavailableTextV7":
       "BOARD",
+    // The Cult redesign's U-R3 (`pulp_wars-mch9.44`): the helper a summon
+    // of the chooser needs, and the hostile Mass that drags a visible unit
+    // (the engine's own Drag rule on the visible units).
+    "src/render/cult-channel-presentation-v7.ts::summonKindUnavailableTextV7":
+      "BOARD",
+    "src/render/cult-channel-presentation-v7.ts::unitDraggedV7": "BOARD",
     "src/render/cult-channel-presentation-v7.ts::cultChannelNoticePartsV7":
       "BOARD",
     // The Cult redesign's Favour display (`pulp_wars-mch9.42`): the

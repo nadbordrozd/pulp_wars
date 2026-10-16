@@ -164,7 +164,8 @@ describe("Unbound: the daemon on the board", () => {
       ["provoked", "Hunting"],
     ]);
     expect(need(lines[2]).description).toBe(
-      "Will attack your Fighter after this round.",
+      // The Unbound order's reason (bead pulp_wars-mch9.44, section 9.2).
+      "Will attack your Fighter after this round: the nearest unit in reach.",
     );
     // No bounty line: killing it pays no Coins.
     expect(lines.some((line) => line.id === "bounty")).toBe(false);

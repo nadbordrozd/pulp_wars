@@ -237,6 +237,10 @@ import {
 } from "./cult-ritual-board-plan-v7";
 import {
   IDOL_HALVED_SEMANTIC_V7,
+  SWARMED_SEMANTIC_V7,
+  DRAGGED_MOVE_V7,
+  swarmCombatNotesV7,
+  unitDraggedV7,
   wardenCombatNotesV7,
 } from "../cult-channel-presentation-v7";
 import {
@@ -6250,8 +6254,9 @@ function drawAbilityAreasV7(
       camera.zoom,
       style,
     );
-    // The warden's chalk ring is stroked below, once round.
-    if (style === "IDOL_RING") continue;
+    // The warden's chalk ring and a Mass's ooze ring are stroked below,
+    // once round.
+    if (style === "IDOL_RING" || style === "DRAG_RING") continue;
     context.strokeStyle = abilityAreaStrokeV7(style);
     context.lineWidth = 3 * camera.zoom;
     context.setLineDash([6 * camera.zoom, 4 * camera.zoom]);
@@ -6262,13 +6267,21 @@ function drawAbilityAreasV7(
   // while the idol stands, so a solid chalk line on a dark casing that
   // reads on Grass and on Snow, not a preview's dashes. Every casing goes
   // down before any chalk, so no corner of one cell covers its neighbour's.
-  const rings = areas.filter((entry) => entry.abilityStyle === "IDOL_RING");
-  if (rings.length > 0) {
+  // The Cult redesign's Drag (bead pulp_wars-mch9.44): a Mass's ooze ring
+  // the same way, thinner and in the dark teal, so it stays quiet beside a
+  // chalk ring and under every preview.
+  // (Widths in world units, then their least CSS px.)
+  for (const [style, casing, line, leastCasing, leastLine] of [
+    ["DRAG_RING", 4.5, 2, 2.5, 1.2],
+    ["IDOL_RING", 6, 3, 3, 1.5],
+  ] as const) {
+    const rings = areas.filter((entry) => entry.abilityStyle === style);
+    if (rings.length === 0) continue;
     context.setLineDash([]);
     context.lineCap = "square";
     for (const [stroke, width] of [
-      [IDOL_RING_CASING_V7, Math.max(3, 6 * camera.zoom)],
-      [abilityAreaStrokeV7("IDOL_RING"), Math.max(1.5, 3 * camera.zoom)],
+      [IDOL_RING_CASING_V7, Math.max(leastCasing, casing * camera.zoom)],
+      [abilityAreaStrokeV7(style), Math.max(leastLine, line * camera.zoom)],
     ] as const) {
       context.strokeStyle = stroke;
       context.lineWidth = width;
@@ -7652,6 +7665,20 @@ function commandMapTargets(
   const gateMatch = view.curiosities.some(
     (curiosity) => curiosity.kind === "GATE",
   );
+  // The Cult redesign's Drag (bead pulp_wars-mch9.44): a unit a Gibbering
+  // Mass beside it drags has one tile a Move, and each Move says why.
+  const dragged =
+    selectedUnitId !== null && unitDraggedV7(view, selectedUnitId as UnitId);
+  const dragNote = (target: MapCommandTargetV7): MapCommandTargetV7 =>
+    dragged
+      ? {
+          ...target,
+          semanticLabel:
+            target.semanticLabel === undefined
+              ? `Move. ${DRAGGED_MOVE_V7}`
+              : `${target.semanticLabel}. ${DRAGGED_MOVE_V7}`,
+        }
+      : target;
   return commands.flatMap((command): readonly MapCommandTargetV7[] => {
     if (selectedUnitId === null) return [];
     // Revision 19: an adjacent own Egg the selected Shaman may hatch.
@@ -7710,7 +7737,7 @@ function commandMapTargets(
       return at === undefined
         ? []
         : [
-            {
+            dragNote({
               at,
               command,
               family: "MOVE",
@@ -7802,7 +7829,7 @@ function commandMapTargets(
                       blocked: gate.preview.blocked,
                     },
                   }),
-            },
+            }),
           ];
     }
     if (command.kind === "ATTACK" && command.unitId === selectedUnitId) {
@@ -7909,6 +7936,9 @@ function commandMapTargets(
         // The Cult redesign's warden (bead pulp_wars-mch9.43): a shot at a
         // unit beside a standing idol is halved.
         ...(preview === null ? [] : wardenCombatNotesV7(preview)),
+        // The Cult redesign's Swarm (bead pulp_wars-mch9.44): an Imp's
+        // attack the defender cannot answer.
+        ...(preview === null ? [] : swarmCombatNotesV7(preview)),
         // Tuning 1 (7r46): Breach (Explosives) ignores fortification.
         // The giants' signatures: a Siege Hammer's own note says it.
         ...(preview === null || preview.siegeHammer
@@ -7934,6 +7964,7 @@ function commandMapTargets(
         ...giantNotes.map((note) => `${note}.`),
         ...advanceNotes.map((note) => `Attacker ${note.toLowerCase()}.`),
         preview?.idolHalved === true ? IDOL_HALVED_SEMANTIC_V7 : null,
+        preview?.noRetaliationReason === "SWARMED" ? SWARMED_SEMANTIC_V7 : null,
       ].filter((part): part is string => part !== null);
       const semanticNote =
         semanticParts.length === 0 ? null : semanticParts.join(" ");

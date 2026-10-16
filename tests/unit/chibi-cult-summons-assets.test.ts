@@ -356,7 +356,7 @@ describe("the Cult redesign's summons art (pulp_wars-mch9.45)", () => {
     expect(box(await unit("chibi-direction-cult-mass-unbound"))).toEqual(mass);
   });
 
-  it("registers the Imp (pulp_wars-mch9.36), the Hunger bowl (pulp_wars-mch9.42), the Gibbering Mass (pulp_wars-mch9.37) and the join icon (pulp_wars-mch9.43) in one manifest on their records' canvases, and nothing else yet", async () => {
+  it("registers the Imp (pulp_wars-mch9.36), the Hunger bowl (pulp_wars-mch9.42), the Gibbering Mass (pulp_wars-mch9.37), the join icon (pulp_wars-mch9.43) and the summon chooser's and abilities' icons (pulp_wars-mch9.44) in one manifest on their records' canvases", async () => {
     const records = await loadRecords(productionLayout(ROOT, BATCH), BATCH);
     expect(
       CHIBI_DIRECTION_CULT_SUMMONS_ART_ASSETS_V7.map((asset) => asset.id),
@@ -371,6 +371,15 @@ describe("the Cult redesign's summons art (pulp_wars-mch9.45)", () => {
       "chibi-direction-portrait-cult-mass",
       // The join icon (bead pulp_wars-mch9.43).
       "chibi-direction-icon-cult-action-join-chant",
+      // The summon chooser and the summons' abilities (bead
+      // pulp_wars-mch9.44): every piece of the batch is in play.
+      "chibi-direction-icon-cult-action-summon-imp",
+      "chibi-direction-icon-cult-action-summon-horror",
+      "chibi-direction-icon-cult-action-summon-mass",
+      "chibi-direction-icon-cult-action-brood",
+      "chibi-direction-icon-cult-action-swarm",
+      "chibi-direction-icon-cult-action-doorstep",
+      "chibi-direction-icon-cult-action-drag",
     ]);
     for (const asset of CHIBI_DIRECTION_CULT_SUMMONS_ART_ASSETS_V7) {
       const record = records.assets[asset.id];
@@ -408,9 +417,22 @@ describe("the Cult redesign's summons art (pulp_wars-mch9.45)", () => {
           (asset) => asset.subject === subject,
         )?.id,
       ]);
-    // The summon chooser's icons wait for their bead (U-R3).
-    expect(
-      registry.variants("ICON:ACTION:SUMMON_MASS" as ArtSubjectV7),
-    ).toEqual([]);
+    // The summon chooser's icons and the summons' abilities' (U-R3).
+    for (const id of [
+      "SUMMON_IMP",
+      "SUMMON_HORROR",
+      "SUMMON_MASS",
+      "BROOD",
+      "SWARM",
+      "DOORSTEP",
+      "DRAG",
+    ] as const)
+      expect(
+        registry
+          .variants(`ICON:ACTION:${id}` satisfies ArtSubjectV7)
+          .map((asset) => asset.id),
+      ).toEqual([
+        `chibi-direction-icon-cult-action-${id.toLowerCase().replaceAll("_", "-")}`,
+      ]);
   });
 });

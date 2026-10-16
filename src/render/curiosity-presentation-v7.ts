@@ -31,6 +31,7 @@ import {
   type PlayerViewV7,
   type PublicCombatPreviewV7,
   type PublicUnitV7,
+  type RampageStepV7,
   type UnitRoleIdV7,
   type UnitId,
 } from "../engine/index";
@@ -621,6 +622,10 @@ function daemonInfoLinesV7(
       ? undefined
       : view.units.find((unit) => unit.id === rampage.targetUnitId);
   const hedge = rampage.exact ? "" : ", unless something nearer hides nearby";
+  // The Cult redesign's Unbound order (bead `pulp_wars-mch9.44`, section
+  // 9.2): why it goes for that unit, in the step's own words.
+  const why =
+    rampage.step === null ? "" : `: ${RAMPAGE_STEP_REASONS_V7[rampage.step]}`;
   return [
     line("unbound", "UNBOUND"),
     rampage.furious
@@ -636,11 +641,24 @@ function daemonInfoLinesV7(
           id: "provoked",
           name: "Hunting",
           description: rampage.attacks
-            ? `Will attack ${ownedUnitName(view, target)} after this round${hedge}.`
-            : `Will go for ${ownedUnitName(view, target)} after this round${hedge}.`,
+            ? `Will attack ${ownedUnitName(view, target)} after this round${hedge}${why}.`
+            : `Will go for ${ownedUnitName(view, target)} after this round${hedge}${why}.`,
         },
   ];
 }
+
+/**
+ * The Cult redesign (bead `pulp_wars-mch9.44`; RULESET_7_CULT_REDESIGN.md
+ * section 9.2): why a loose daemon goes for its target, by the step of the
+ * Unbound order that chose it.
+ */
+export const RAMPAGE_STEP_REASONS_V7: Readonly<Record<RampageStepV7, string>> =
+  {
+    1: "the nearest cultist within 2",
+    2: "the nearest unit in reach",
+    3: "the nearest summon in reach",
+    4: "it walks toward the nearest unit",
+  };
 
 /**
  * Whether a visible hostile neutral unit has a visible provoker (its board

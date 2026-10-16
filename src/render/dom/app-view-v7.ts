@@ -74,7 +74,6 @@ import {
   previewBeginRitualV7,
   HERALD_FAVOUR_COST_V7,
   previewChannelV7,
-  HORROR_FAVOUR_COST_V7,
   favourOfV7,
   unitRoleRuleV7,
   unitRoleMechanicsV7,
@@ -132,6 +131,7 @@ import {
   type AchievementIdV7,
   type UnitRoleIdV7,
   type UnitId,
+  type SummonDaemonV7,
   type CityId,
   type FactionIdV7,
   type BoardSizeV7,
@@ -288,6 +288,7 @@ import {
   type TileAnchorV7,
 } from "../canvas/board-host-v7";
 import {
+  tileAbilitySummonV7,
   tileAbilityV7,
   tileActionPlanForSelectionV7,
   tileActionsAtV7,
@@ -729,9 +730,10 @@ import {
   END_TURN_UNBOUND_CONFIRM_V7,
   HERALD_HUNGER_CHIP_V7,
   SUMMON_BUTTON_LABEL_V7,
+  SUMMON_BUTTON_TOOLTIP_V7,
+  SUMMON_HELPER_NEEDED_V7,
   SUMMON_PICK_HELPER_V7,
-  SUMMON_PICK_TILE_V7,
-  SUMMON_TOOLTIP_V7,
+  SUMMON_PICK_KIND_V7,
   booSummaryV7,
   cultChannelChipsV7,
   cultChannelUnavailableTextV7,
@@ -739,6 +741,8 @@ import {
   endTurnUnboundQuestionV7,
   heraldsHungryV7,
   strandsTextV7,
+  summonChoicesV7,
+  summonPickTileTextV7,
   type CultChannelKindV7,
 } from "../cult-channel-presentation-v7";
 import {
@@ -765,8 +769,9 @@ import {
   type CultTrickPickV7,
 } from "../canvas/cult-ritual-board-plan-v7";
 import {
-  browserSummonCommandV7,
   summonHelpersV7,
+  summonPickNeedsHelperV7,
+  summonPickV7,
   type CultChannelPickV7,
 } from "../canvas/cult-channel-board-plan-v7";
 import {
@@ -1188,7 +1193,7 @@ const CULT_CHANNEL_TEXT_V7: Readonly<
 > = {
   SUMMON: {
     label: SUMMON_BUTTON_LABEL_V7,
-    tooltip: SUMMON_TOOLTIP_V7,
+    tooltip: SUMMON_BUTTON_TOOLTIP_V7,
     icon: "summon",
   },
   CHANNEL: {
@@ -1222,6 +1227,10 @@ const CULT_TRICK_ICONS_V7: Readonly<Record<CultTrickKindV7, UiIconIdV7>> = {
 function tileChoiceActionV7(id: string): string {
   return `tile-choice-${id.toLowerCase().replaceAll("_", "-")}`;
 }
+/** "cult-summon-imp": the summon chooser's row of a daemon. */
+function summonChoiceActionV7(daemon: SummonDaemonV7): string {
+  return `cult-summon-${daemon.toLowerCase()}`;
+}
 /** "cult-great-summoning": the action and the focus name of a trick. */
 function cultTrickSlugV7(kind: string): string {
   return `cult-${kind.toLowerCase().replaceAll("_", "-")}`;
@@ -1229,10 +1238,14 @@ function cultTrickSlugV7(kind: string): string {
 /** The instruction of an aimed channel action. */
 function cultChannelPickPromptV7(pick: CultChannelPickV7): string {
   switch (pick.kind) {
+    // The Cult redesign's chooser (bead pulp_wars-mch9.44): what to
+    // summon first, then a Horror's or a Mass's helper, then the tile.
     case "SUMMON":
-      return pick.helperUnitId === null
-        ? SUMMON_PICK_HELPER_V7
-        : SUMMON_PICK_TILE_V7;
+      return pick.daemon === null
+        ? SUMMON_PICK_KIND_V7
+        : summonPickNeedsHelperV7(pick)
+          ? SUMMON_PICK_HELPER_V7
+          : summonPickTileTextV7(pick.daemon);
     case "CHANNEL":
       return CHANNEL_PICK_V7;
     case "ANCHOR":
@@ -6120,6 +6133,8 @@ export class Ruleset7DomAppView {
         cue.append(text(this.#document, "span", chip.label));
         cue.dataset.unitStatus = chip.id;
         if (chip.short === true) cue.dataset.short = "true";
+        // A harm done to the unit (Dragged, bead pulp_wars-mch9.44).
+        if (chip.harm === true) cue.dataset.harm = "true";
         cue.title = chip.status;
         cue.setAttribute("aria-label", `${chip.label}. ${chip.status}`);
         identityColumn?.append(cue);
@@ -8462,6 +8477,13 @@ export class Ruleset7DomAppView {
 
   /** Arms an aimed ability as its dock button does. */
   #armTileAbility(id: string, unitId: UnitId): void {
+    // The Cult redesign's summons (bead pulp_wars-mch9.44): each summon's
+    // badge arms the Summon of that daemon.
+    const daemon = tileAbilitySummonV7(id);
+    if (daemon !== null) {
+      this.#startCultChannelPick("SUMMON", unitId, daemon);
+      return;
+    }
     switch (id) {
       case "BEAM_DOWN":
       case "MIND_CONTROL":
@@ -8498,7 +8520,6 @@ export class Ruleset7DomAppView {
       case "SEIZE":
         this.#startCultPick(id, unitId);
         return;
-      case "SUMMON":
       case "CHANNEL":
       case "ANCHOR":
         this.#startCultChannelPick(id, unitId);
@@ -8538,11 +8559,38 @@ export class Ruleset7DomAppView {
       row.setAttribute("role", "menuitem");
       row.dataset.tileAction = action.id.toLowerCase();
       row.dataset.style = action.style.toLowerCase();
+      // A summon's own icon tells the three apart (bead pulp_wars-mch9.44);
+      // every other row keeps its badge's glyph.
+      const art =
+        action.favour === undefined || action.raster === undefined
+          ? null
+          : this.#chibiArt(action.raster, CHIBI_DOM_BOXES_V7.passenger);
+      art?.element.classList.add("v7-tile-choice-art");
       row.append(
-        uiIconV7(this.#document, action.icon, "v7-ui-icon v7-tile-choice-icon"),
+        art?.element ??
+          uiIconV7(
+            this.#document,
+            action.icon,
+            "v7-ui-icon v7-tile-choice-icon",
+          ),
         text(this.#document, "span", action.label, "v7-tile-choice-label"),
       );
-      row.setAttribute("aria-label", action.label);
+      // A summon's row carries its price (bead pulp_wars-mch9.44).
+      if (action.favour !== undefined) {
+        const favour = el(
+          this.#document,
+          "span",
+          "v7-economy-chip v7-favour-chip",
+        );
+        favour.append(`−${action.favour}`, this.#favourIcon());
+        row.append(favour);
+      }
+      row.setAttribute(
+        "aria-label",
+        action.favour === undefined
+          ? action.label
+          : `${action.label} · −${action.favour} Favour`,
+      );
       row.disabled = this.#localBusy();
       row.onclick = () => void this.#doTileAction(tile.at, action);
       rows.push(row);
@@ -8726,9 +8774,10 @@ export class Ruleset7DomAppView {
       this.#cultPick = {
         kind: "SUMMON",
         unitId: command.unitId,
+        daemon: command.daemon,
         helperUnitId: command.helperUnitId ?? null,
       };
-      this.#notice = `${SUMMON_PICK_TILE_V7}.`;
+      this.#notice = `${summonPickTileTextV7(command.daemon)}.`;
       this.#render();
       this.#queueBoardFocus();
       return;
@@ -11768,19 +11817,25 @@ export class Ruleset7DomAppView {
       );
       return;
     }
-    const naval =
+    // The Imp's and the Gibbering Mass's abilities (the Cult redesign,
+    // bead pulp_wars-mch9.44) have icons of their own.
+    const iconed =
       glossaryId === "BOW_RAM"
         ? "RAM"
-        : glossaryId === "TORPEDO"
-          ? "TORPEDO"
+        : glossaryId === "TORPEDO" ||
+            glossaryId === "BROOD" ||
+            glossaryId === "SWARM" ||
+            glossaryId === "DOORSTEP" ||
+            glossaryId === "DRAG"
+          ? glossaryId
           : null;
-    if (naval === null) return;
+    if (iconed === null) return;
     const icon = this.#chibiArt(
-      `ICON:ACTION:${naval}`,
+      `ICON:ACTION:${iconed}`,
       CHIBI_DOM_BOXES_V7.action,
     )?.element;
     if (icon === undefined) return;
-    entry.dataset.ability = naval.toLowerCase();
+    entry.dataset.ability = iconed.toLowerCase();
     entry.prepend(icon);
   }
 
@@ -13643,13 +13698,18 @@ export class Ruleset7DomAppView {
    */
   #cancelCultPick(stepBack = false): void {
     const pick = this.#cultPick;
-    if (
-      stepBack &&
-      pick?.kind === "SUMMON" &&
-      pick.helperUnitId !== null &&
-      summonHelpersV7(this.#snapshot.offeredCommands, pick.unitId).length > 1
-    ) {
-      const back: CultChannelPickV7 = { ...pick, helperUnitId: null };
+    if (stepBack && pick?.kind === "SUMMON" && pick.daemon !== null) {
+      // A seated helper steps back to choosing it when several could help;
+      // else the summon steps back to the chooser of what to summon.
+      const back: CultChannelPickV7 =
+        pick.helperUnitId !== null &&
+        summonHelpersV7(
+          this.#snapshot.offeredCommands,
+          pick.unitId,
+          pick.daemon,
+        ).length > 1
+          ? { ...pick, helperUnitId: null }
+          : { ...pick, daemon: null, helperUnitId: null };
       this.#cultPick = back;
       this.#notice = `${cultChannelPickPromptV7(back)}.`;
       this.#render();
@@ -13749,11 +13809,11 @@ export class Ruleset7DomAppView {
     const buttons: HTMLButtonElement[] = [];
     for (const kind of CULT_CHANNEL_KINDS_V7) {
       const entry = CULT_CHANNEL_TEXT_V7[kind];
-      // The Summon button aims a Horror (the Imp's chooser is U-R3's).
+      // The Summon button opens the chooser of what to summon (bead
+      // pulp_wars-mch9.44): each summon's price is on its row.
       const commands = this.#snapshot.offeredCommands.filter(
         (command) =>
           command.kind === kind &&
-          (command.kind !== "SUMMON" || browserSummonCommandV7(command)) &&
           "unitId" in command &&
           command.unitId === unit.id,
       );
@@ -13788,7 +13848,6 @@ export class Ruleset7DomAppView {
         text(this.#document, "span", label, "v7-action-label"),
       );
       action.dataset.cultAbility = kind.toLowerCase();
-      // A Summon shows its price in Favour, as a build shows its Coins.
       let price = "";
       if (direct !== null && reason === null) {
         const chips = el(this.#document, "span", "v7-command-economy");
@@ -13804,18 +13863,6 @@ export class Ruleset7DomAppView {
         action.append(chips);
         price = ` · ${strands}`;
         action.dataset.cultDirect = "true";
-      }
-      if (kind === "SUMMON") {
-        const chips = el(this.#document, "span", "v7-command-economy");
-        const favour = el(
-          this.#document,
-          "span",
-          "v7-economy-chip v7-favour-chip",
-        );
-        favour.append(`−${HORROR_FAVOUR_COST_V7}`, this.#favourIcon());
-        chips.append(favour);
-        action.append(chips);
-        price = ` · −${HORROR_FAVOUR_COST_V7} Favour`;
       }
       if (reason === null) {
         const aiming = this.#cultPick?.kind === kind;
@@ -13855,29 +13902,131 @@ export class Ruleset7DomAppView {
   }
 
   /**
-   * Starts aiming a channel action on the board. A Summoner with a single
-   * cultist that may help goes straight to the Horror's tiles.
+   * Starts aiming a channel action on the board. The Summon button opens
+   * the dock's chooser of what to summon (bead pulp_wars-mch9.44); a
+   * summon chosen there or by its badge on a tile (`daemon`) goes on to
+   * its helper, or with a single cultist that may help (or for an Imp,
+   * which needs none) straight to its tiles.
    */
-  #startCultChannelPick(kind: CultChannelKindV7, unitId: UnitId): void {
+  #startCultChannelPick(
+    kind: CultChannelKindV7,
+    unitId: UnitId,
+    daemon: SummonDaemonV7 | null = null,
+  ): void {
     if (this.#localBusy()) return;
-    const helpers =
-      kind === "SUMMON"
-        ? summonHelpersV7(this.#snapshot.offeredCommands, unitId)
-        : [];
     const pick: CultChannelPickV7 =
       kind === "SUMMON"
-        ? {
-            kind,
-            unitId,
-            helperUnitId: helpers.length === 1 ? (helpers[0] ?? null) : null,
-          }
+        ? daemon === null
+          ? { kind, unitId, daemon: null, helperUnitId: null }
+          : summonPickV7(this.#snapshot.offeredCommands, unitId, daemon)
         : { kind, unitId };
     this.#cultPick = pick;
     this.#notice = `${cultChannelPickPromptV7(pick)}.`;
-    this.#pendingFocusAction = kind === "BOO" ? "cult-boo-cast" : null;
+    const choosing = pick.kind === "SUMMON" && pick.daemon === null;
+    this.#pendingFocusAction =
+      kind === "BOO"
+        ? "cult-boo-cast"
+        : choosing
+          ? (this.#firstSummonChoiceAction(unitId) ?? "cult-pick-cancel")
+          : null;
     this.#render();
     // The board takes the keyboard, so Tab and Enter pick.
-    if (kind !== "BOO") this.#queueBoardFocus();
+    if (kind !== "BOO" && !choosing) this.#queueBoardFocus();
+  }
+
+  /** The `data-action` of the first summon the chooser offers. */
+  #firstSummonChoiceAction(unitId: UnitId): string | null {
+    const view = this.#snapshot.view;
+    const unit = view?.units.find((candidate) => candidate.id === unitId);
+    if (view === null || view === undefined || unit === undefined) return null;
+    const first = summonChoicesV7(
+      view,
+      unit,
+      this.#snapshot.offeredCommands,
+    ).find((choice) => choice.reason === null);
+    return first === undefined ? null : summonChoiceActionV7(first.daemon);
+  }
+
+  /**
+   * The summon chooser of the dock (bead pulp_wars-mch9.44): one row per
+   * summon with its icon, its name, its price in Favour and, for a Horror
+   * or a Mass, the helper it needs; a summon that cannot be called now is
+   * shown disabled with the reason (its technology, its helper, the
+   * Favour, the tile). A row arms that summon on the board.
+   */
+  #summonChoiceRows(view: PlayerViewV7, unitId: UnitId): HTMLElement {
+    const unit = view.units.find((candidate) => candidate.id === unitId);
+    const rows = el(this.#document, "div", "v7-summon-choices");
+    rows.setAttribute("role", "group");
+    rows.setAttribute("aria-label", SUMMON_PICK_KIND_V7);
+    if (unit === undefined) return rows;
+    for (const choice of summonChoicesV7(
+      view,
+      unit,
+      this.#snapshot.offeredCommands,
+    )) {
+      const slug = summonChoiceActionV7(choice.daemon);
+      const row = button(
+        this.#document,
+        "",
+        slug,
+        `v7-context-action v7-summon-choice${choice.reason === null ? "" : " is-blocked"}`,
+      );
+      row.dataset.summon = choice.daemon.toLowerCase();
+      row.append(
+        this.#chibiArt(choice.icon, CHIBI_DOM_BOXES_V7.action)?.element ??
+          uiIconV7(this.#document, "summon", "v7-ui-icon v7-command-icon"),
+        text(this.#document, "span", choice.label, "v7-action-label"),
+      );
+      const chips = el(this.#document, "span", "v7-command-economy");
+      const favour = el(
+        this.#document,
+        "span",
+        "v7-economy-chip v7-favour-chip",
+      );
+      favour.append(`−${choice.favour}`, this.#favourIcon());
+      chips.append(favour);
+      if (choice.helper) {
+        // The helper it needs: a small cultist mark, named for the ear.
+        const helper = el(
+          this.#document,
+          "span",
+          "v7-economy-chip v7-summon-helper-chip",
+        );
+        helper.title = SUMMON_HELPER_NEEDED_V7;
+        helper.append(
+          uiIconV7(this.#document, "units", "v7-ui-icon v7-economy-icon"),
+          "+1",
+        );
+        chips.append(helper);
+      }
+      row.append(chips);
+      const words = `${choice.label} · −${choice.favour} Favour${choice.helper ? ` · ${SUMMON_HELPER_NEEDED_V7}` : ""}`;
+      if (choice.reason === null) {
+        row.title = choice.tooltip;
+        row.setAttribute("aria-label", `${words}. ${choice.tooltip}`);
+        row.disabled = this.#localBusy();
+        row.onclick = () =>
+          this.#startCultChannelPick("SUMMON", unitId, choice.daemon);
+      } else {
+        const reason = choice.reason;
+        // aria-disabled keeps the reason reachable by keyboard and touch.
+        row.setAttribute("aria-disabled", "true");
+        row.dataset.disabledReason = reason;
+        row.title = reason;
+        row.setAttribute("aria-label", `${words}. Unavailable. ${reason}`);
+        const note = text(this.#document, "span", reason, "v7-summon-reason");
+        row.append(note);
+        row.onclick = () => {
+          this.#notice = `${reason}.`;
+          this.#showToast(`${reason}.`);
+          this.#pendingFocusAction = slug;
+          this.#render();
+        };
+      }
+      rows.append(row);
+    }
+    return rows;
   }
 
   /**
@@ -13893,10 +14042,14 @@ export class Ruleset7DomAppView {
     unitId: UnitId,
   ): HTMLElement | null {
     const view = this.#snapshot.view;
+    // A chosen summon aims its own commands (bead pulp_wars-mch9.44).
     const commands = this.#snapshot.offeredCommands.filter(
       (command) =>
         command.kind === pick.kind &&
-        (command.kind !== "SUMMON" || browserSummonCommandV7(command)) &&
+        (command.kind !== "SUMMON" ||
+          pick.kind !== "SUMMON" ||
+          pick.daemon === null ||
+          command.daemon === pick.daemon) &&
         "unitId" in command &&
         command.unitId === unitId,
     );
@@ -13913,8 +14066,8 @@ export class Ruleset7DomAppView {
     );
     panel.dataset.v7CultPick = pick.kind.toLowerCase();
     const helpers =
-      pick.kind === "SUMMON"
-        ? summonHelpersV7(this.#snapshot.offeredCommands, unitId)
+      pick.kind === "SUMMON" && pick.daemon !== null
+        ? summonHelpersV7(this.#snapshot.offeredCommands, unitId, pick.daemon)
         : [];
     let summary: string | null = null;
     let cast: HTMLButtonElement | null = null;
@@ -13940,33 +14093,47 @@ export class Ruleset7DomAppView {
       cast.onclick = () => void this.#dispatch(command);
     } else if (pick.kind === "SUMMON")
       panel.dataset.boardTargets = String(
-        pick.helperUnitId === null
-          ? helpers.length
-          : commands.filter(
-              (command) =>
-                command.kind === "SUMMON" &&
-                command.helperUnitId === pick.helperUnitId,
-            ).length,
+        pick.daemon === null
+          ? 0
+          : summonPickNeedsHelperV7(pick)
+            ? helpers.length
+            : commands.filter(
+                (command) =>
+                  command.kind === "SUMMON" &&
+                  (command.helperUnitId ?? null) === pick.helperUnitId,
+              ).length,
       );
     else panel.dataset.boardTargets = String(commands.length);
     panel.setAttribute("aria-label", summary ?? prompt);
+    // A chosen summon heads the panel with its own icon and name.
+    const summoner = view.units.find((candidate) => candidate.id === unitId);
+    const chosen =
+      pick.kind === "SUMMON" && pick.daemon !== null && summoner !== undefined
+        ? summonChoicesV7(view, summoner, this.#snapshot.offeredCommands).find(
+            (choice) => choice.daemon === pick.daemon,
+          )
+        : undefined;
+    if (chosen !== undefined)
+      panel.dataset.summon = chosen.daemon.toLowerCase();
     panel.append(
       this.#pickHead(
-        `ICON:ACTION:${pick.kind}`,
+        chosen?.icon ?? `ICON:ACTION:${pick.kind}`,
         entry.icon,
-        entry.label,
-        pick.kind === "BOO" ? entry.tooltip : `${prompt}. ${entry.tooltip}`,
+        chosen === undefined ? entry.label : `${entry.label} ${chosen.label}`,
+        pick.kind === "BOO"
+          ? entry.tooltip
+          : `${prompt}. ${chosen?.tooltip ?? entry.tooltip}`,
       ),
     );
     if (summary !== null && summary !== "")
       panel.append(text(this.#document, "p", summary, "v7-martian-detail"));
+    if (pick.kind === "SUMMON" && pick.daemon === null)
+      panel.append(this.#summonChoiceRows(view, unitId));
     const buttons = el(this.#document, "div", "button-row v7-kaboom-actions");
     if (cast !== null) buttons.append(cast);
-    if (
-      pick.kind === "SUMMON" &&
-      pick.helperUnitId !== null &&
-      helpers.length > 1
-    ) {
+    // Back: a seated helper steps back to choosing it; a summon, to the
+    // chooser of what to summon.
+    if (pick.kind === "SUMMON" && pick.daemon !== null) {
       const back = button(
         this.#document,
         "Back",

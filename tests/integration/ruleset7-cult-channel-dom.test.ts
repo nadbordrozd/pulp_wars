@@ -11,6 +11,7 @@ import {
   CHANNEL_PICK_V7,
   SUMMON_NO_HELPER_V7,
   SUMMON_PICK_HELPER_V7,
+  SUMMON_PICK_KIND_V7,
   SUMMON_PICK_TILE_V7,
 } from "../../src/render/cult-channel-presentation-v7";
 import { cultFieldV7, withFavourV7 } from "../fixtures/v7-cult";
@@ -97,8 +98,8 @@ function expectPlainWords(element: HTMLElement): void {
   );
 }
 
-describe("Summon: the helper, then the tile, on the board", () => {
-  it("has one button with its price, whatever the number of tiles", () => {
+describe("Summon: the kind, the helper, then the tile, on the board", () => {
+  it("has one button, whatever the number of tiles and summons", () => {
     const scene = rig(cultChannelUiFixtureV7());
     select(scene, A.summoner);
     expect(
@@ -109,8 +110,8 @@ describe("Summon: the helper, then the tile, on the board", () => {
         ).length,
     ).toBe(12);
     // The Cult redesign (`pulp_wars-mch9.36`): the six Imps of the
-    // Summoner alone are offered too; the button aims the Horror (the
-    // Imp's chooser is U-R3's).
+    // Summoner alone are offered too; the button opens the chooser of all
+    // of them (bead `pulp_wars-mch9.44`).
     expect(
       scene.controller
         .snapshot()
@@ -137,8 +138,9 @@ describe("Summon: the helper, then the tile, on the board", () => {
     expect(summon.querySelector(".v7-action-label")?.textContent).toBe(
       "Summon",
     );
-    expect(summon.querySelector(".v7-favour-chip")?.textContent).toBe("−4");
-    expect(summon.getAttribute("aria-label")).toMatch(/^Summon · −4 Favour\. /);
+    // The prices are on the chooser's rows, not on the button.
+    expect(summon.querySelector(".v7-favour-chip")).toBeNull();
+    expect(summon.getAttribute("aria-label")).toMatch(/^Summon\. /);
     expect(summon.getAttribute("aria-pressed")).toBe("false");
     expectPlainWords(dock());
     scene.app.destroy();
@@ -156,9 +158,20 @@ describe("Summon: the helper, then the tile, on the board", () => {
       ),
     ).toEqual([]);
     requiredButton("cult-summon").click();
+    // The chooser first: nothing on the board yet.
     expect(host.lastModel?.interaction.cultPick).toEqual({
       kind: "SUMMON",
       unitId: summoner.id,
+      daemon: null,
+      helperUnitId: null,
+    });
+    expect(live()).toContain(SUMMON_PICK_KIND_V7);
+    expect(boardPlan(host).targets).toEqual([]);
+    requiredButton("cult-summon-horror").click();
+    expect(host.lastModel?.interaction.cultPick).toEqual({
+      kind: "SUMMON",
+      unitId: summoner.id,
+      daemon: "HORROR",
       helperUnitId: null,
     });
     expect(live()).toContain(SUMMON_PICK_HELPER_V7);
@@ -168,7 +181,7 @@ describe("Summon: the helper, then the tile, on the board", () => {
     expect(panel.dataset.boardTargets).toBe("2");
     expect(
       [...panel.querySelectorAll("button")].map((node) => node.dataset.action),
-    ).toEqual(["pick-info", "cult-pick-cancel"]);
+    ).toEqual(["pick-info", "cult-pick-back", "cult-pick-cancel"]);
     // The dock names no helper.
     expect(panel.textContent ?? "").not.toMatch(/Initiate/);
     const helpers = boardPlan(host).targets;
@@ -184,6 +197,7 @@ describe("Summon: the helper, then the tile, on the board", () => {
     expect(host.lastModel?.interaction.cultPick).toEqual({
       kind: "SUMMON",
       unitId: summoner.id,
+      daemon: "HORROR",
       helperUnitId: scene.unitAt(A.helper).id,
     });
     expect(live()).toContain(SUMMON_PICK_TILE_V7);
@@ -208,16 +222,24 @@ describe("Summon: the helper, then the tile, on the board", () => {
       expect(target.semanticLabel).not.toMatch(/\d, ?\d/);
     }
 
-    // Back and Escape return to the helper; a second Escape disarms.
+    // Back and Escape return to the helper, then to the chooser; one more
+    // Escape disarms.
     requiredButton("cult-pick-back").click();
     expect(host.lastModel?.interaction.cultPick).toMatchObject({
+      daemon: "HORROR",
       helperUnitId: null,
     });
     host.callbacks?.onCommand(required(boardPlan(host).targets[1]));
     escape();
     expect(host.lastModel?.interaction.cultPick).toMatchObject({
       kind: "SUMMON",
+      daemon: "HORROR",
       helperUnitId: null,
+    });
+    escape();
+    expect(host.lastModel?.interaction.cultPick).toMatchObject({
+      kind: "SUMMON",
+      daemon: null,
     });
     escape();
     expect(host.lastModel?.interaction.cultPick ?? null).toBeNull();
@@ -225,6 +247,7 @@ describe("Summon: the helper, then the tile, on the board", () => {
 
     // The pick sends the offered command.
     requiredButton("cult-summon").click();
+    requiredButton("cult-summon-horror").click();
     host.callbacks?.onCommand(required(boardPlan(host).targets[0]));
     const tile = required(
       boardPlan(host).targets.find(
@@ -265,20 +288,26 @@ describe("Summon: the helper, then the tile, on the board", () => {
     );
     select(scene, at(5, 2));
     requiredButton("cult-summon").click();
+    requiredButton("cult-summon-horror").click();
     expect(scene.host.lastModel?.interaction.cultPick).toEqual({
       kind: "SUMMON",
       unitId: scene.unitAt(at(5, 2)).id,
+      daemon: "HORROR",
       helperUnitId: scene.unitAt(at(6, 2)).id,
     });
     const panel = requiredElement<HTMLElement>("[data-v7-cult-pick]");
     expect(panel.dataset.boardTargets).toBe("7");
-    // One helper: nothing to step back to.
-    expect(document.querySelector('[data-action="cult-pick-back"]')).toBeNull();
+    // One helper: Back goes to the chooser.
+    requiredButton("cult-pick-back").click();
+    expect(scene.host.lastModel?.interaction.cultPick).toMatchObject({
+      daemon: null,
+    });
     escape();
     expect(scene.host.lastModel?.interaction.cultPick ?? null).toBeNull();
     scene.app.destroy();
 
-    // A Summoner alone keeps its button, with the reason.
+    // A Summoner alone calls an Imp; the chooser says why the Horror and
+    // the Mass cannot come.
     document.body.innerHTML = '<div id="app"></div>';
     scene = rig(
       withFavourV7(
@@ -288,15 +317,36 @@ describe("Summon: the helper, then the tile, on the board", () => {
       ),
     );
     select(scene, at(5, 2));
+    requiredButton("cult-summon").click();
+    const horror = requiredButton("cult-summon-horror");
+    expect(horror.getAttribute("aria-disabled")).toBe("true");
+    expect(horror.dataset.disabledReason).toBe(SUMMON_NO_HELPER_V7);
+    horror.click();
+    expect(scene.host.lastModel?.interaction.cultPick).toMatchObject({
+      daemon: null,
+    });
+    expect(live()).toContain(SUMMON_NO_HELPER_V7);
+    scene.app.destroy();
+
+    // A Summoner alone without Favour keeps its button, with the reason.
+    document.body.innerHTML = '<div id="app"></div>';
+    scene = rig(
+      withFavourV7(
+        cultFieldV7([{ seat: 0, role: "CAPTAIN", at: at(5, 2) }]),
+        0,
+        1,
+      ),
+    );
+    select(scene, at(5, 2));
     const summon = requiredButton("cult-summon");
     expect(summon.getAttribute("aria-disabled")).toBe("true");
-    expect(summon.dataset.disabledReason).toBe(SUMMON_NO_HELPER_V7);
+    expect(summon.dataset.disabledReason).toBe("Needs 2 Favour");
     expect(summon.getAttribute("aria-label")).toBe(
-      `Summon unavailable. ${SUMMON_NO_HELPER_V7}`,
+      "Summon unavailable. Needs 2 Favour",
     );
     summon.click();
     expect(scene.host.lastModel?.interaction.cultPick ?? null).toBeNull();
-    expect(live()).toContain(SUMMON_NO_HELPER_V7);
+    expect(live()).toContain("Needs 2 Favour");
     scene.app.destroy();
   });
 });

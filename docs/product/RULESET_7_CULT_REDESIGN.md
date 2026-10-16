@@ -1269,6 +1269,42 @@ The tile icons and the chooser are the system of bead `pulp_wars-2yc.60`.
   summon sound for the Imp and the Mass, the chord for a join); any new
   clip is a later, separate bead.
 
+### 13.1 As built: U-R3, the Imp and the Mass on the board (`pulp_wars-mch9.44`)
+
+- **Summon.** Each summon is a tile ability of its own (`SUMMON_IMP`,
+  `SUMMON_HORROR`, `SUMMON_MASS`) whose badge is its own icon
+  (`ICON:ACTION:SUMMON_<DAEMON>`); a tile that offers several opens the tile
+  chooser, each summon's row with its icon and price ("Summon Imp −2",
+  "Summon Horror −4", "Summon Mass −5"). The dock keeps one Summon button,
+  with no price on it; it opens a chooser of three tiles in the aiming
+  panel (Imp, Horror, Mass, each with its price and, for the Horror and the
+  Mass, a "+1" cultist chip for the helper). A summon that cannot be called
+  is a blocked tile with its reason under it ("Needs Gibbering Masses",
+  "A cultist that has not acted must stand next to it", "Needs 5 Favour",
+  "No free tile next to it"). The button is disabled only when no summon
+  can be called, with the Imp's reason. Back and Escape step from the tile
+  to the helper (several helpers) and then to the chooser. The Horror-only
+  stop-gap (`browserSummonCommandV7`) is gone. A tile badge column holds
+  three badges, so a Summoner's tile with a Move, three summons and a
+  Tentacle shows the Move, the Imp and "+3"; the chooser lists them all.
+- **Brood.** A short straight green link with three cream beads runs from
+  the channelled Imp to each Imp its Brood holds; their pips are lit and
+  their control chip reads "Brood" with the Brood icon.
+- **Doorstep.** A Mass held on its Doorstep has a small house for its lit
+  pip; its control chip reads "Doorstep" with the Doorstep icon.
+- **Drag.** Every visible Gibbering Mass, bound or Unbound, has a thin teal
+  ring on a faint dark wash round its eight tiles (`DRAG_RING`). A dragged
+  unit with a Move on offer shows "Dragged" on its own tile while
+  selected, each of its Moves reads "Dragged: only one tile" in the cursor
+  line, and its card has a "Dragged" chip in the loss colour.
+- **Swarm.** An unanswered Imp attack's preview reads "Swarmed: no strike
+  back", and its cursor line says why.
+- **The Unbound order.** The Hunting line of a loose daemon names the
+  step's reason ("…after this round: the nearest unit in reach").
+- **Cards.** The Imp's and the Mass's card lines Brood, Swarm, Doorstep
+  and Drag carry their icons; the Unbound Imp and Mass wear their Unbound
+  looks (as registered by ART-R1).
+
 ## 14. Art
 
 Through the checked-in PixelLab pipeline only, light from the south-west,

@@ -1178,6 +1178,8 @@ const STATUS_IDS: Readonly<Record<string, GlossaryIdV7>> = {
   // The warden's shield wall and Awestruck (`pulp_wars-mch9.43`).
   shielded: "STATUS_SHIELDED",
   awestruck: "AWESTRUCK",
+  // A unit a Gibbering Mass drags (the Cult redesign, `pulp_wars-mch9.44`).
+  dragged: "DRAG",
   control: "STATUS_CONTROL",
   // An Unbound daemon's own lines (`pulp_wars-mch9.6`).
   unbound: "UNBOUND",

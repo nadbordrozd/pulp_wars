@@ -107,6 +107,13 @@ export type AbilityPreviewStyleV7 =
    * (the lodge's green glow).
    */
   | "IDOL_RING"
+  /**
+   * The Cult redesign (bead pulp_wars-mch9.44): the dark ooze ring of a
+   * Gibbering Mass round its eight tiles, where Drag holds an enemy to one
+   * tile a Move. Always drawn, so quiet: a thin teal line on a dark casing
+   * and a faint dark wash.
+   */
+  | "DRAG_RING"
   | "CHANNEL_RANGE"
   /**
    * The Cult redesign (bead pulp_wars-mch9.43): the reach of an aimed
@@ -638,6 +645,8 @@ const STYLE_COLORS: Readonly<
   GATE_BLOCKED: { fill: "rgba(170, 179, 192, 0.24)", stroke: "#aab3c0" },
   // The Cultists: CULT_PALETTE_V7's wax cream (chalk) and green glow.
   IDOL_RING: { fill: "rgba(243, 231, 196, 0.1)", stroke: "#f3e7c4" },
+  // The Mass's ooze: CULT_PALETTE_V7's teal on a dark wash.
+  DRAG_RING: { fill: "rgba(16, 40, 44, 0.12)", stroke: "#2aa6a6" },
   CHANNEL_RANGE: { fill: "rgba(128, 255, 188, 0.1)", stroke: "#80ffbc" },
   TRICK_RANGE: { fill: "rgba(243, 231, 196, 0.13)", stroke: "#f3e7c4" },
   STARFALL: { fill: "rgba(255, 101, 95, 0.24)", stroke: "#f3e7c4" },

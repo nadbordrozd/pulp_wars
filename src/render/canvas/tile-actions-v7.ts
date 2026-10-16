@@ -14,11 +14,14 @@
  * arms the ability and picks that tile, as the dock button and a board tap
  * would. It names no tile and no coordinate to the player.
  */
-import type {
-  CommandV7,
-  CoordV7,
-  PlayerViewV7,
-  UnitId,
+import {
+  CULT_SUMMONED_ROLE_RULES_V7,
+  SUMMON_DAEMONS_V7,
+  type CommandV7,
+  type CoordV7,
+  type PlayerViewV7,
+  type SummonDaemonV7,
+  type UnitId,
 } from "../../engine/index";
 import type { ArtSubjectV7 } from "../../assets/chibi-art-v7";
 import type { UiIconIdV7 } from "../dom/ui-icons-v7";
@@ -31,10 +34,7 @@ import {
   targetHighlightStyleV7,
   type TargetHighlightStyleV7,
 } from "./target-highlight-v7";
-import {
-  browserSummonCommandV7,
-  summonHelpersV7,
-} from "./cult-channel-board-plan-v7";
+import { summonPickV7 } from "./cult-channel-board-plan-v7";
 import { tossPassengersV7 } from "./giant-board-plan-v7";
 import { tunnelRidersV7 } from "../dwarf-tunnel-v7";
 import { freezesRingV7 } from "../frozen-sea-presentation-v7";
@@ -71,7 +71,9 @@ import { SACRIFICE_LABEL_V7, SEIZE_LABEL_V7 } from "../cult-presentation-v7";
 import {
   ANCHOR_BUTTON_LABEL_V7,
   CHANNEL_LABEL_V7,
-  SUMMON_BUTTON_LABEL_V7,
+  SUMMON_IMP_LABEL_V7,
+  SUMMON_LABEL_V7,
+  SUMMON_MASS_SHORT_LABEL_V7,
 } from "../cult-channel-presentation-v7";
 import {
   GREAT_SUMMONING_LABEL_V7,
@@ -197,6 +199,11 @@ export interface TileActionLookV7 {
    * first: the dock's button draws the same `ICON:ACTION:<KIND>`.
    */
   readonly raster?: ArtSubjectV7;
+  /**
+   * Its price in Favour, shown on its chooser row (the Cult redesign's
+   * summons, bead `pulp_wars-mch9.44`).
+   */
+  readonly favour?: number;
 }
 
 /**
@@ -245,6 +252,39 @@ const ritual =
     command.kind === "BEGIN_RITUAL" &&
     command.ritual === name &&
     command.unitId === unitId;
+
+/** The tile chooser's name of each summon. */
+const SUMMON_TILE_LABELS_V7: Readonly<Record<SummonDaemonV7, string>> = {
+  IMP: SUMMON_IMP_LABEL_V7,
+  HORROR: SUMMON_LABEL_V7,
+  // "Summon Mass": a phone's chooser row has no room for the full name.
+  MASS: SUMMON_MASS_SHORT_LABEL_V7,
+};
+
+/** The tile ability of a Summon of `daemon` ("SUMMON_IMP", ...). */
+function summonAbilityV7(daemon: SummonDaemonV7): TileAbilityV7 {
+  return {
+    id: `SUMMON_${daemon}`,
+    label: SUMMON_TILE_LABELS_V7[daemon],
+    icon: "summon",
+    raster: `ICON:ACTION:SUMMON_${daemon}`,
+    favour: CULT_SUMMONED_ROLE_RULES_V7[daemon].favourCost ?? 0,
+    dockAction: "cult-summon",
+    families: daemon === "IMP" ? ["SUMMON"] : ["SUMMON_HELPER", "SUMMON"],
+    offered: (command, unitId) =>
+      command.kind === "SUMMON" &&
+      command.daemon === daemon &&
+      command.unitId === unitId,
+    pick: (unitId, _view, commands) => ({
+      cultPick: summonPickV7(commands, unitId, daemon),
+    }),
+  };
+}
+
+/** The summon of a tile ability's ID, or null for any other ability. */
+export function tileAbilitySummonV7(id: string): SummonDaemonV7 | null {
+  return SUMMON_DAEMONS_V7.find((daemon) => id === `SUMMON_${daemon}`) ?? null;
+}
 
 /**
  * Every aimed ability, in the order its icons and chooser rows are listed
@@ -463,26 +503,12 @@ export const TILE_ABILITIES_V7: readonly TileAbilityV7[] = [
     offered: kind("SEIZE"),
     pick: (unitId) => ({ cultPick: { kind: "SEIZE", unitId } }),
   },
-  {
-    id: "SUMMON",
-    label: SUMMON_BUTTON_LABEL_V7,
-    icon: "summon",
-    dockAction: "cult-summon",
-    families: ["SUMMON_HELPER", "SUMMON"],
-    // A Horror's summoning (the Imp's chooser is U-R3's, `pulp_wars-mch9.44`).
-    offered: (command, unitId) =>
-      browserSummonCommandV7(command) && command.unitId === unitId,
-    pick: (unitId, _view, commands) => {
-      const helpers = summonHelpersV7(commands, unitId);
-      return {
-        cultPick: {
-          kind: "SUMMON",
-          unitId,
-          helperUnitId: helpers.length === 1 ? (helpers[0] ?? null) : null,
-        },
-      };
-    },
-  },
+  // The Cult redesign's summon chooser (bead `pulp_wars-mch9.44`,
+  // RULESET_7_CULT_REDESIGN.md section 13): each summon marks its own tiles
+  // with its own icon (and a Horror's or a Mass's helpers, when several
+  // could help); a tile that offers several opens the tile chooser, each
+  // row with its price. The dock's one Summon button opens the same choice.
+  ...SUMMON_DAEMONS_V7.map((daemon) => summonAbilityV7(daemon)),
   {
     id: "CHANNEL",
     label: CHANNEL_LABEL_V7,
@@ -661,7 +687,9 @@ export const TILE_ACTION_FULL_SIZE_TILES_V7 = 8;
 /** One ability with the targets its armed pick would show. */
 export interface TileAbilityTargetsV7 {
   readonly ability: Pick<TileAbilityV7, "id" | "label" | "icon"> &
-    Partial<Pick<TileAbilityV7, "onlyBeyondBoard" | "oneTap" | "raster">>;
+    Partial<
+      Pick<TileAbilityV7, "onlyBeyondBoard" | "oneTap" | "raster" | "favour">
+    >;
   readonly targets: readonly MapCommandTargetV7[];
 }
 
@@ -716,6 +744,7 @@ export function planTileActionsV7(input: {
         label: ability.label,
         icon: ability.icon,
         ...(ability.raster === undefined ? {} : { raster: ability.raster }),
+        ...(ability.favour === undefined ? {} : { favour: ability.favour }),
         style: targetHighlightStyleV7(target.family, target.highlight),
         ability: ability.id,
         ...(ability.oneTap === true ? { oneTap: true as const } : {}),

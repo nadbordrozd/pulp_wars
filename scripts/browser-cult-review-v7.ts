@@ -39,7 +39,11 @@ import { ruleset7FixtureMountExpressionV7 } from "./browser-undead-fixture-v7";
  * at 30, a Sacrifice and a Seizure aimed near the cap with what each loses,
  * the Offering's "lost" chip, the "N lost" tag dropping from the chip after
  * a Seizure, a bound Herald's "Hunger 2" card and the hungry End Turn
- * question. `evidence.json` records
+ * question. The Imp and the Mass (bead `pulp_wars-mch9.44`; scene
+ * `summons`): the Brood's links, the Doorstep's house pip, the ooze ring
+ * and the Unbound looks at rest, the summon chooser with a locked Mass,
+ * each summon's badge and the tile chooser, a Swarmed attack, an Imp's
+ * card, and Dragged as its victim sees it. `evidence.json` records
  * each capture's texts and whether anything overflows the viewport. It needs
  * the Vite dev server, because the fixtures are imported from
  * `tests/fixtures`.
@@ -164,6 +168,7 @@ try {
     if (wanted("hunger")) await hunger(connection, size);
     if (wanted("warden")) await warden(connection, size);
     if (wanted("join")) await join(connection, size);
+    if (wanted("summons")) await summons(connection, size);
   }
   await viewport(connection, "desktop");
   if (wanted("grounds")) await grounds(connection);
@@ -227,6 +232,8 @@ async function record(connection: Connection, key: string): Promise<void> {
         stats: Array.from(document.querySelectorAll('.v7-selection-dock .v7-stat')).map((node) => [node.dataset.stat, node.querySelector('.v7-stat-value')?.textContent ?? null, node.dataset.frog ?? null]),
         cityStatus: Array.from(document.querySelectorAll('.v7-selection-dock .v7-city-stat.is-warning')).map((node) => node.textContent),
         panelButtons: Array.from(document.querySelectorAll('.v7-cult-pick button')).map((node) => node.dataset.action),
+        summonChoices: Array.from(document.querySelectorAll('.v7-summon-choice')).map((node) => node.getAttribute('aria-label')),
+        tileChooser: Array.from(document.querySelectorAll('[data-v7-region="tile-chooser"] [role=menuitem]')).map((node) => node.getAttribute('aria-label')),
         question: document.querySelector('.v7-end-turn-confirm')?.textContent ?? null,
         favourTitle: document.querySelector('.v7-favour')?.title ?? null,
         favourFull: document.querySelector('.v7-favour')?.dataset.full ?? null,
@@ -499,6 +506,85 @@ async function join(connection: Connection, size: Size): Promise<void> {
   await capture(connection, `join-done-${size}.png`);
 }
 
+// ------------------------- The Imp and the Mass on the board (U-R3) ---
+
+/** The summons' named tiles (tests/fixtures/v7-cult-ui.ts). */
+async function summonsTiles(
+  connection: Connection,
+): Promise<Record<string, Coord>> {
+  return (await evaluate(connection, `${REVIEW}.summonsAt`)) as Record<
+    string,
+    Coord
+  >;
+}
+
+/**
+ * The Cult redesign's summons (bead `pulp_wars-mch9.44`): the board at
+ * rest (the Brood's links and lit pips, the Mass's house pip and ooze
+ * ring, the Unbound looks), the Summon button's chooser with a locked
+ * Mass, each summon's badge on the Summoner's tiles and the tile chooser,
+ * an Imp's Swarmed attack, an Imp's card, and Dragged from the victim's
+ * side.
+ */
+async function summons(connection: Connection, size: Size): Promise<void> {
+  await mount(connection, "cultSummonsUiFixtureV7");
+  const at = await summonsTiles(connection);
+  await record(connection, `${size}SummonsBoard`);
+  await capture(connection, `summons-board-${size}.png`);
+  if (size === "desktop") {
+    await zoomIn(connection);
+    await capture(connection, `summons-board-zoom-${size}.png`);
+  }
+  await mount(connection, "cultSummonsLockedUiFixtureV7");
+  await activate(connection, at.summoner as Coord);
+  await click(connection, "cult-summon");
+  await record(connection, `${size}SummonsChooserLocked`);
+  await capture(connection, `summons-chooser-locked-${size}.png`);
+  await mount(connection, "cultSummonsUiFixtureV7");
+  await activate(connection, at.summoner as Coord);
+  await record(connection, `${size}SummonsBadges`);
+  await capture(connection, `summons-badges-${size}.png`);
+  if (size === "desktop") {
+    await zoomIn(connection);
+    await capture(connection, `summons-badges-zoom-${size}.png`);
+  }
+  await mount(connection, "cultSummonsUiFixtureV7");
+  await activate(connection, at.summoner as Coord);
+  await pick(connection, {
+    x: (at.summoner as Coord).x,
+    y: (at.summoner as Coord).y + 1,
+  });
+  await record(connection, `${size}SummonsTileChooser`);
+  await capture(connection, `summons-tile-chooser-${size}.png`);
+  await mount(connection, "cultSummonsUiFixtureV7");
+  await activate(connection, at.broodImp as Coord);
+  await tab(connection, 1);
+  await hoverTile(connection, at.swarmed as Coord);
+  await record(connection, `${size}SummonsSwarm`);
+  await capture(connection, `summons-swarm-${size}.png`);
+  await click(connection, "unit-help");
+  await record(connection, `${size}SummonsImpCard`);
+  await capture(connection, `summons-imp-card-${size}.png`);
+  await mount(connection, "cultSummonsRivalUiFixtureV7");
+  const rival = (await evaluate(
+    connection,
+    `${REVIEW}.summonsRivalAt`,
+  )) as Record<string, Coord>;
+  await activate(connection, rival.dragged as Coord);
+  // The keyboard's cursor one tile up, onto a Move, so it reads "Dragged".
+  await evaluate(
+    connection,
+    `(() => { const canvas = document.querySelector('canvas.board-canvas-v7'); canvas?.focus(); canvas?.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp', bubbles: true, cancelable: true })); })()`,
+  );
+  await delay(500);
+  await record(connection, `${size}SummonsDragged`);
+  await capture(connection, `summons-dragged-${size}.png`);
+  if (size === "desktop") {
+    await zoomIn(connection);
+    await capture(connection, `summons-dragged-zoom-${size}.png`);
+  }
+}
+
 // ----------------------------------------------- The channel (U2) ---
 
 /** The scene's named tiles (tests/fixtures/v7-cult-ui.ts). */
@@ -555,7 +641,12 @@ async function summonAim(connection: Connection, size: Size): Promise<void> {
   await activate(connection, at.summoner as Coord);
   await record(connection, `${size}SummonerChannelButtons`);
   await capture(connection, `summoner-channel-buttons-${size}.png`);
+  // The chooser of what to summon (the Cult redesign, bead
+  // `pulp_wars-mch9.44`), then the Horror's helper.
   await click(connection, "cult-summon");
+  await record(connection, `${size}SummonChooser`);
+  await capture(connection, `summon-chooser-${size}.png`);
+  await click(connection, "cult-summon-horror");
   await record(connection, `${size}SummonHelper`);
   await capture(connection, `summon-helper-${size}.png`);
   await evaluate(
@@ -1212,7 +1303,7 @@ async function mount(
       artSet: "CHIBI",
       global: "__CULT_REVIEW__",
       extras:
-        "at: fixtures.CULT_UI_V7, channelAt: fixtures.CULT_CHANNEL_UI_V7, ritualAt: fixtures.CULT_RITUAL_UI_V7, trickAt: fixtures.CULT_TRICK_UI_V7, frogAt: fixtures.CULT_FROGS_UI_V7, hungerAt: fixtures.CULT_HUNGER_UI_V7, wardenAt: fixtures.CULT_WARDEN_UI_V7",
+        "at: fixtures.CULT_UI_V7, channelAt: fixtures.CULT_CHANNEL_UI_V7, ritualAt: fixtures.CULT_RITUAL_UI_V7, trickAt: fixtures.CULT_TRICK_UI_V7, frogAt: fixtures.CULT_FROGS_UI_V7, hungerAt: fixtures.CULT_HUNGER_UI_V7, wardenAt: fixtures.CULT_WARDEN_UI_V7, summonsAt: fixtures.CULT_SUMMONS_UI_V7, summonsRivalAt: fixtures.CULT_SUMMONS_RIVAL_UI_V7",
     }),
     true,
   );

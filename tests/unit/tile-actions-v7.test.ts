@@ -88,14 +88,21 @@ describe("tile actions: the audit of every command kind", () => {
           { kind, ritual: "GREAT_SUMMONING", unitId: id(1), at: at(0, 0) },
         ]
       : kind === "SUMMON"
-        ? // The Summon button aims a Horror; the Imp's chooser (the Cult
-          // redesign, `pulp_wars-mch9.36`) is the interface bead U-R3's
-          // (`pulp_wars-mch9.44`).
+        ? // The summon chooser (the Cult redesign, `pulp_wars-mch9.44`):
+          // each summon is an ability of its own, with its own badge.
           [
+            { kind, unitId: id(1), daemon: "IMP", at: at(0, 0) },
             {
               kind,
               unitId: id(1),
               daemon: "HORROR",
+              helperUnitId: id(2),
+              at: at(0, 0),
+            },
+            {
+              kind,
+              unitId: id(1),
+              daemon: "MASS",
               helperUnitId: id(2),
               at: at(0, 0),
             },

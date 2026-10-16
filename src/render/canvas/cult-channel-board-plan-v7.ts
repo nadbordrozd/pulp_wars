@@ -12,19 +12,21 @@ import {
   previewRampageV7,
   previewSummonV7,
   previewWardenV7,
+  summonNeedsHelperV7,
   unitIsUnboundV7,
   unitRoleRuleV7,
   type CommandV7,
   type CoordV7,
   type PlayerViewV7,
+  type SummonDaemonV7,
   type UnitId,
 } from "../../engine/index";
 import {
   ANCHOR_PICK_V7,
   AWESTRUCK_REASON_V7,
   CHANNEL_PICK_V7,
+  DRAGGED_LABEL_V7,
   SUMMON_HELPER_BADGE_V7,
-  SUMMON_PICK_TILE_V7,
   anchorTargetLabelV7,
   anchorTargetNameV7,
   booEntryLabelV7,
@@ -32,7 +34,9 @@ import {
   channelTargetLabelV7,
   channelTargetNameV7,
   summonHelperNameV7,
+  summonPickTileTextV7,
   summonTileNameV7,
+  unitDraggedV7,
 } from "../cult-channel-presentation-v7";
 import type {
   BoardRenderPlanEntryV7,
@@ -73,6 +77,12 @@ export interface CultUnitMarkersV7 {
     readonly control: number;
     readonly strands: number;
     readonly binding?: true;
+    /**
+     * The Cult redesign's Doorstep (`pulp_wars-mch9.44`): a Gibbering Mass
+     * held on its doorstep with no strand of its own; its pip is a small
+     * house.
+     */
+    readonly doorstep?: true;
   };
   /** An Unbound daemon: the broken collar. */
   readonly unbound?: true;
@@ -127,6 +137,12 @@ export type CultLinkV7 =
    * unit it holds.
    */
   | { readonly kind: "GRAB" }
+  /**
+   * The Cult redesign's Brood (`pulp_wars-mch9.44`, section 13): a short
+   * green link from an Imp whose strand holds it to each Imp beside it that
+   * it holds as well.
+   */
+  | { readonly kind: "BROOD" }
   | {
       /**
        * Awestruck (the Cult redesign, `pulp_wars-mch9.33`; Pick Me!'s
@@ -142,7 +158,15 @@ export type CultChannelPickV7 =
   | {
       readonly kind: "SUMMON";
       readonly unitId: UnitId;
-      /** The cultist that helps; null while it is being chosen. */
+      /**
+       * What it summons (the Cult redesign's chooser, `pulp_wars-mch9.44`);
+       * null while it is being chosen in the dock.
+       */
+      readonly daemon: SummonDaemonV7 | null;
+      /**
+       * The cultist that helps; null while it is being chosen, and always
+       * for an Imp (the Summoner calls it alone).
+       */
       readonly helperUnitId: UnitId | null;
     }
   | { readonly kind: "CHANNEL"; readonly unitId: UnitId }
@@ -153,42 +177,68 @@ const key = (at: CoordV7): string => `${at.x},${at.y}`;
 
 type SummonCommandV7 = Extract<CommandV7, { kind: "SUMMON" }>;
 
-/**
- * Whether the browser's Summon button and board pick aim `command`: a
- * Horror's summoning. The Cult redesign's Imp (`pulp_wars-mch9.36`) and
- * Gibbering Mass (`pulp_wars-mch9.37`) have no browser chooser yet (the
- * summon chooser through the tile icons is bead U-R3,
- * `pulp_wars-mch9.44`); they are summoned through the text harness.
- */
-export function browserSummonCommandV7(
-  command: CommandV7,
-): command is SummonCommandV7 {
-  return command.kind === "SUMMON" && command.daemon === "HORROR";
-}
-
-/** The offered Summons of a Summoner that the browser aims (Horrors). */
+/** The offered Summons of a Summoner, of one kind. */
 function summonCommandsV7(
   commands: readonly CommandV7[],
   unitId: UnitId,
+  daemon: SummonDaemonV7,
 ): readonly SummonCommandV7[] {
   return commands.filter(
     (command): command is SummonCommandV7 =>
-      browserSummonCommandV7(command) && command.unitId === unitId,
+      command.kind === "SUMMON" &&
+      command.unitId === unitId &&
+      command.daemon === daemon,
   );
 }
 
-/** The cultists that may help the Summoner (each once, in command order). */
+/**
+ * The cultists that may help the Summoner summon `daemon` (each once, in
+ * command order); none for an Imp.
+ */
 export function summonHelpersV7(
   commands: readonly CommandV7[],
   unitId: UnitId,
+  daemon: SummonDaemonV7 = "HORROR",
 ): readonly UnitId[] {
   return [
     ...new Set(
-      summonCommandsV7(commands, unitId).flatMap((command) =>
+      summonCommandsV7(commands, unitId, daemon).flatMap((command) =>
         command.helperUnitId === undefined ? [] : [command.helperUnitId],
       ),
     ),
   ];
+}
+
+/**
+ * The armed pick of a Summon of `daemon` (its chooser row, its tile badge):
+ * an Imp goes straight to its tiles; a Horror or a Mass with one cultist
+ * that may help seats it at once, with several the helper is picked first.
+ */
+export function summonPickV7(
+  commands: readonly CommandV7[],
+  unitId: UnitId,
+  daemon: SummonDaemonV7,
+): Extract<CultChannelPickV7, { kind: "SUMMON" }> {
+  const helpers = summonNeedsHelperV7(daemon)
+    ? summonHelpersV7(commands, unitId, daemon)
+    : [];
+  return {
+    kind: "SUMMON",
+    unitId,
+    daemon,
+    helperUnitId: helpers.length === 1 ? (helpers[0] ?? null) : null,
+  };
+}
+
+/** Whether an armed Summon still waits for its helper. */
+export function summonPickNeedsHelperV7(
+  pick: Extract<CultChannelPickV7, { kind: "SUMMON" }>,
+): boolean {
+  return (
+    pick.daemon !== null &&
+    summonNeedsHelperV7(pick.daemon) &&
+    pick.helperUnitId === null
+  );
 }
 
 /**
@@ -226,14 +276,16 @@ export function cultUnitMarkersV7(
   for (const daemon of channel.daemons) {
     // Brood (the Cult redesign, `pulp_wars-mch9.36`, section 13): an Imp
     // a neighbour's strand holds has its pip lit; so has a Gibbering Mass
-    // on its Doorstep (`pulp_wars-mch9.37`; its house pip is U-R3's).
-    const brood =
-      daemon.broodOf !== undefined ||
-      (daemon.doorstep === true && daemon.strands < daemon.control);
+    // on its Doorstep (`pulp_wars-mch9.37`), whose pip is a small house
+    // (`pulp_wars-mch9.44`).
+    const doorstep =
+      daemon.doorstep === true && daemon.strands < daemon.control;
+    const brood = daemon.broodOf !== undefined || doorstep;
     mark(daemon.unitId, {
       control: {
         control: daemon.control,
         strands: brood ? daemon.control : daemon.strands,
+        ...(doorstep ? { doorstep: true as const } : {}),
       },
     });
     // Section 6.4: a bound daemon that would break now shows its target.
@@ -270,7 +322,13 @@ export function outlineEntries(
   entries: BoardRenderPlanEntryV7[],
   view: PlayerViewV7,
   cells: readonly CoordV7[],
-  style: "IDOL_RING" | "CHANNEL_RANGE" | "TRICK_RANGE" | "STARFALL" | "TAUNT",
+  style:
+    | "IDOL_RING"
+    | "DRAG_RING"
+    | "CHANNEL_RANGE"
+    | "TRICK_RANGE"
+    | "STARFALL"
+    | "TAUNT",
   prefix: string,
 ): void {
   const inside = cells.filter(
@@ -319,6 +377,17 @@ export function addCultChannelEntriesV7(
   view: PlayerViewV7,
 ): void {
   const channel = channelOfV7(view);
+  // The Cult redesign (`pulp_wars-mch9.44`): the ooze ring of each visible
+  // Gibbering Mass, bound or Unbound (an Unbound one drags everybody).
+  for (const mass of view.units)
+    if (mass.summoned === "MASS" && mass.hp > 0)
+      outlineEntries(
+        entries,
+        view,
+        square(mass.at, 1),
+        "DRAG_RING",
+        `cult-drag:${mass.id}`,
+      );
   if (
     channel.strands.length === 0 &&
     channel.grips.length === 0 &&
@@ -326,6 +395,23 @@ export function addCultChannelEntriesV7(
   )
     return;
   const unitById = new Map(view.units.map((unit) => [unit.id, unit]));
+  // Brood (the Cult redesign, `pulp_wars-mch9.44`, section 13): a short
+  // green link from the Imp whose strand holds it to each Imp it holds.
+  for (const daemon of channel.daemons) {
+    if (daemon.broodOf === undefined) continue;
+    const held = unitById.get(daemon.unitId);
+    const lender = unitById.get(daemon.broodOf);
+    if (held === undefined || lender === undefined) continue;
+    entries.push({
+      key: `cult-brood:${held.id}`,
+      kind: "LINK",
+      layer: 6,
+      at: lender.at,
+      linkTo: held.at,
+      label: CULT_LINK_LABEL_V7,
+      cultLink: { kind: "BROOD" },
+    });
+  }
   for (const strand of channel.strands) {
     const cultist = unitById.get(strand.cultistUnitId);
     const daemon =
@@ -437,6 +523,25 @@ export function addCultChannelPreviewsV7(
   commands: readonly CommandV7[],
   selectedUnitId: number,
 ): void {
+  // Drag (the Cult redesign, `pulp_wars-mch9.44`, section 13): a unit a
+  // Gibbering Mass beside it drags, with a Move on offer, says so on its
+  // own tile (its Moves reach one tile; their cursor sentences say why).
+  const selected = view.units.find((unit) => unit.id === selectedUnitId);
+  if (
+    selected !== undefined &&
+    commands.some(
+      (command) => command.kind === "MOVE" && command.unitId === selected.id,
+    ) &&
+    unitDraggedV7(view, selected.id)
+  )
+    entries.push({
+      key: `ability-target:DRAGGED:${selected.id}`,
+      kind: "ABILITY_TARGET",
+      layer: 7.5,
+      at: selected.at,
+      abilityStyle: "DRAG_RING",
+      label: DRAGGED_LABEL_V7,
+    });
   // A cultist with exactly one daemon in reach channels it from its button
   // (nothing to pick): the daemon is marked, with its strands after.
   const channels = commands.filter(
@@ -535,9 +640,12 @@ export function cultChannelPickTargetsV7(
       ? name(daemon.id)
       : CULT_SUMMONED_ROLE_RULES_V7[daemon.summoned].label;
   if (pick.kind === "SUMMON") {
-    const summons = summonCommandsV7(commands, pick.unitId);
-    if (pick.helperUnitId === null)
-      return summonHelpersV7(commands, pick.unitId).flatMap(
+    // While the dock's chooser asks what to summon, the board waits.
+    const daemon = pick.daemon;
+    if (daemon === null) return [];
+    const summons = summonCommandsV7(commands, pick.unitId, daemon);
+    if (summonPickNeedsHelperV7(pick))
+      return summonHelpersV7(commands, pick.unitId, daemon).flatMap(
         (id): MapCommandTargetV7[] => {
           const helper = unitById(id);
           const command = summons.find((entry) => entry.helperUnitId === id);
@@ -549,13 +657,13 @@ export function cultChannelPickTargetsV7(
                   command,
                   family: "SUMMON_HELPER",
                   previewLabel: SUMMON_HELPER_BADGE_V7,
-                  semanticLabel: summonHelperNameV7(name(id)),
+                  semanticLabel: summonHelperNameV7(name(id), daemon),
                 },
               ];
         },
       );
     return summons
-      .filter((command) => command.helperUnitId === pick.helperUnitId)
+      .filter((command) => (command.helperUnitId ?? null) === pick.helperUnitId)
       .flatMap((command): MapCommandTargetV7[] => {
         const preview = previewSummonV7(
           view,
@@ -572,7 +680,7 @@ export function cultChannelPickTargetsV7(
                 command,
                 family: "SUMMON",
                 // No label per tile: the button carries the price.
-                semanticLabel: `${summonTileNameV7(preview.favour)} ${SUMMON_PICK_TILE_V7}`,
+                semanticLabel: `${summonTileNameV7(preview.favour, daemon)} ${summonPickTileTextV7(daemon)}`,
               },
             ];
       });
