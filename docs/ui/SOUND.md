@@ -237,7 +237,7 @@ economy is silent.
 | Charge! hit, Bow Ram                                            | `impact.heavy`                                                             |
 | Hatch, Egg destroyed                                            | `special.hatch`                                                            |
 | Grow                                                            | `unit.levelup`                                                             |
-| Horror summoned                                                 | `cult.summon`                                                              |
+| A daemon summoned: an Imp, a Horror or a Gibbering Mass         | `cult.summon`                                                              |
 | Strand broken                                                   | `cult.snap`                                                                |
 | Daemon Unbound                                                  | `cult.unbound`                                                             |
 | Star-fall                                                       | `cult.starfall`, then `impact.explosion` as the star lands                 |
@@ -246,7 +246,7 @@ economy is silent.
 | Ribbit                                                          | `cult.ribbit` as the frog jumps out                                        |
 | Tentacle rises or sinks                                         | `cult.tentacle`                                                            |
 | Pamphlets take a village                                        | `cult.pamphlets`                                                           |
-| Behold!, Pick Me!                                               | `support.rally`                                                            |
+| Join the chant, a strand formed                                 | none                                                                       |
 | Boo!, Grab                                                      | `special.boing`                                                            |
 | A rite begun                                                    | `support.dark`                                                             |
 | A rite fizzled, a unit consumed by the Herald                   | `special.puff`                                                             |
@@ -276,13 +276,13 @@ is heard in its own kind's voice. `hurtSoundOfUnitV7`
 (`src/audio/sound-events-v7.ts`) reads only what the viewer sees of the
 unit (the views before and after the step):
 
-| The damaged unit                                   | Sound                                                                                                        |
-| -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| A Cult summoning: a Horror, the Herald, a Tentacle | `unit.hurt.daemon`                                                                                           |
-| The neutral Giant Spider                           | `unit.hurt.monster`                                                                                          |
-| A giant of any faction                             | `unit.hurt.giant`                                                                                            |
-| Any other unit, by its kind's faction              | `unit.hurt.human`, `.undead`, `.goblin`, `.dinosaur`, `.martian`, `.icefolk`, `.dwarf`, `.candy`, `.cultist` |
-| A unit neither view holds                          | `unit.hurt`, the sound every unit had before                                                                 |
+| The damaged unit                                                             | Sound                                                                                                        |
+| ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| A Cult summoning: an Imp, a Horror, a Gibbering Mass, the Herald, a Tentacle | `unit.hurt.daemon`                                                                                           |
+| The neutral Giant Spider                                                     | `unit.hurt.monster`                                                                                          |
+| A giant of any faction                                                       | `unit.hurt.giant`                                                                                            |
+| Any other unit, by its kind's faction                                        | `unit.hurt.human`, `.undead`, `.goblin`, `.dinosaur`, `.martian`, `.icefolk`, `.dwarf`, `.candy`, `.cultist` |
+| A unit neither view holds                                                    | `unit.hurt`, the sound every unit had before                                                                 |
 
 A mind-controlled unit has its original owner's voice, as it has its
 original owner's art. The hurt sound plays where a unit takes damage and
@@ -977,7 +977,7 @@ was used, and nothing was downloaded.
 | `cult.ribbit`    | Ribbit lands                    | a squeak of wet rubber (the bundle has no frog)               | a longer squeak; a synthesiser "wah" |
 | `cult.pamphlets` | Pamphlets take a village        | a sheet of paper crumpled                                     | a book's page turned                 |
 | `cult.proclaim`  | Proclaim cows a city ("KNEEL!") | a low cinematic battle horn                                   | a coach's air horn                   |
-| `cult.summon`    | A Horror is summoned            | a designed "vortex in"                                        | a robotic creature powering on       |
+| `cult.summon`    | A daemon is summoned            | a designed "vortex in"                                        | a robotic creature powering on       |
 | `cult.herald`    | The Herald arrives              | a metallic trailer boom                                       | a brighter cinematic hit             |
 | `cult.starfall`  | The star in flight              | a fast designed whoosh; the burst is still `impact.explosion` | a "searing" sweep; a low pass-by     |
 | `cult.snap`      | A strand breaks                 | an elastic let go                                             | a taut steel cable plucked           |
@@ -1003,6 +1003,11 @@ Decisions:
   a rite fizzled and a unit consumed (the puff), Switcheroo (the sparkle),
   a strand formed (silent), and the Cult Battleship's broadside, which is
   the Battleship's cannon and explosion in every faction.
+- **Since the Cult redesign** (`pulp_wars-mch9.31`, `pulp_wars-mch9.33`):
+  Pick Me! is gone and Behold! is a lasting aura with no command, so
+  neither plays a sound. Every summoning, an Imp's and a Gibbering Mass's
+  as well as a Horror's, plays `cult.summon`. Join the chant has no sound
+  of its own (silent), like a strand formed.
 - **Sacrifice had no sound.** It now plays when the viewer sacrifices, and
   for both sides of a Seize.
 

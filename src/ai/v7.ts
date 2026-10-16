@@ -7112,9 +7112,11 @@ function armyIceFolkShooterHeldV7(
   // "shooters and the back row out of reach"): a Cult seat's Hexer,
   // Stargazer, and Summoner are held the same way, all three by the whole
   // rule (`cultBackRowV7`): no Move into a visible hostile melee unit's
-  // reach with no own line, defender, or Chosen nearer to the enemy, nor
-  // into the reach of a unit with Overrun from outside it. The Move from
-  // which a Hexer's shot kills is exempt, as every shooter's is.
+  // reach with no own line, defender, or breakthrough unit (an Initiate, an
+  // Idol Bearer, a Gibbering Mass, a Horror: `armyScreenedV7`) nearer to
+  // the enemy, nor into the reach of a unit with Overrun from outside it.
+  // The Move from which a Hexer's shot kills is exempt, as every shooter's
+  // is.
   const cult = armyCultSeatV7(context);
   if (!armyIceFolkSeatV7(context) && !dwarf && !candy && !cult) return false;
   // The Cult seat (`pulp_wars-mch9.10`, section 15.1): a Summoner's Move

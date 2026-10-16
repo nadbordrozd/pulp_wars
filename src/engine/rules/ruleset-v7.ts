@@ -3865,15 +3865,14 @@ export const CULT_VACANT_ROLES_V7: readonly UnitRoleIdV7[] = deepFreeze([
  * keeps `CHARGE_BONUS` (the Familiar's Charge) and Explosives (displayed as
  * The Stars Are Right) keeps Blast Mountain and Breach.
  *
- * The registration is the first of the six Cult engine beads: it carries
- * the roster, its numbers, and the names. The Cult's own unlocks and every
- * ability literal of section 11 arrive with the bead that implements the
- * rule (`pulp_wars-mch9.4` to `.8`), so that no surface names an ability
- * that does nothing. So far (`pulp_wars-mch9.4`): Administration grants
- * `SUMMONER_SUPPORT` (the Summoner's Sacrifice and Seize) and Farming
- * (displayed as Harvest Rites) grants `OFFERING`; `pulp_wars-mch9.7`:
- * Explosives (The Stars Are Right) grants `GREAT_SUMMONING`;
- * `pulp_wars-mch9.8`: Scouting (Familiars) grants `SWITCHEROO`.
+ * The registration (`pulp_wars-mch9.3`) carried the roster, its numbers,
+ * and the names; each of the Cult's own unlocks arrived with the bead that
+ * implemented its rule, so that no surface names an ability that does
+ * nothing. Administration grants `SUMMONER_SUPPORT` (the Summoner's
+ * Sacrifice and Seize) and Farming (displayed as Harvest Rites) grants
+ * `OFFERING` (`pulp_wars-mch9.4`); Explosives (The Stars Are Right) grants
+ * `GREAT_SUMMONING` (`pulp_wars-mch9.7`); Scouting (Familiars) grants
+ * `SWITCHEROO` (`pulp_wars-mch9.8`).
  *
  * The Cult redesign (docs/product/RULESET_7_CULT_REDESIGN.md sections 4.2
  * and 5, `pulp_wars-mch9.31`): Chivalry (shown as Tentacles) and
@@ -3921,12 +3920,12 @@ export const CULT_BASELINE_V1_NODES: readonly TechnologyNodeV7[] = deepFreeze(
 );
 
 /**
- * The Cult roster (docs/product/RULESET_7_CULTISTS.md section 4.1). Every
- * number is the spec's first guess. Unit for unit the cultists are a little
- * weaker or cheaper than the Human of the same role (section 10); what they
- * get for it (Pamphlets, Behold!, Switcheroo, Ribbit, Sacrifice, Seize,
- * Summon, Star-fall, the Tentacle, Anchor) was added by the later Cult
- * engine beads (`pulp_wars-mch9.4` to `.8`).
+ * The Cult roster (docs/product/RULESET_7_CULTISTS.md section 4.1, as
+ * revised by the redesign below). The trained units fill the Human roles'
+ * slots; their abilities (Pamphlets, Behold!, Switcheroo, Ribbit,
+ * Sacrifice, Seize, Summon, Star-fall, Join the chant, the Tentacle,
+ * Anchor) came with the Cult engine beads (`pulp_wars-mch9.4` to `.8`) and
+ * the redesign.
  *
  * The Cult redesign (docs/product/RULESET_7_CULT_REDESIGN.md section 4.1,
  * `pulp_wars-mch9.31`, `pulp-wars-poc-7r85`): summons are the army and the
@@ -4000,8 +3999,9 @@ export const CULT_ROLE_RULES_V7: Readonly<
     abilities: ["ATTACK", "CAPTURE", "CHANNEL", "RIBBIT", "JOIN_CHANT"],
   }),
   // The Idol Bearer: it cannot attack after moving (the Guard's rule), has
-  // no Field Defense, and defends alike at every distance. Behold! and
-  // Channel may follow its Move (`pulp_wars-mch9.5`).
+  // no Field Defense, and defends alike at every distance. Channel may
+  // follow its Move (`pulp_wars-mch9.5`). Behold! is the warden's lasting
+  // aura, with no command (`pulp_wars-mch9.33`, src/engine/v7/cult-warden.ts).
   GUARD: role({
     role: "GUARD",
     label: "Idol Bearer",
@@ -4020,7 +4020,8 @@ export const CULT_ROLE_RULES_V7: Readonly<
   }),
   // The Summoner: a Captain's body with no Rally and no Tend Wounded. It
   // Sacrifices an own unit and Seizes a broken enemy (`pulp_wars-mch9.4`),
-  // and Summons a Horror and Channels (`pulp_wars-mch9.5`). The redesign
+  // and Summons and Channels (`pulp_wars-mch9.5`; an Imp or a Horror, and a
+  // Gibbering Mass with Gibbering Masses, since the redesign). The redesign
   // (`pulp_wars-mch9.31`): 7 HP (10 before), and the Tentacle with
   // Tentacles (the capability `tentacles`; the retired Caller's before).
   CAPTAIN: role({
@@ -4096,8 +4097,8 @@ export const CULT_ROLE_RULES_V7: Readonly<
   BATTLESHIP: role({ ...ORIGINAL_ROLE_RULES_V7.BATTLESHIP }),
   SUBMARINE: role({ ...ORIGINAL_ROLE_RULES_V7.SUBMARINE }),
   // Vacant (the Cult redesign, `pulp_wars-mch9.31`): the Chosen retired,
-  // and with it Martyr and Pick Me! (the Idol Bearer's warden aura takes
-  // Pick Me!'s place in a later bead, `pulp_wars-mch9.33`).
+  // and with it Martyr and Pick Me! (the Idol Bearer's warden aura,
+  // Behold!, took Pick Me!'s place: `pulp_wars-mch9.33`).
   SWORDSMAN: vacantCultRoleV7("SWORDSMAN", "LINE"),
 });
 

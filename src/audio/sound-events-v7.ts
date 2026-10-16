@@ -148,8 +148,8 @@ const FACTION_HURT_SOUNDS_V7: Readonly<Record<FactionIdV7, SoundIdV1>> = {
 
 /**
  * The hurt sound of a damaged unit (bead pulp_wars-2yc.52), from what the
- * viewer sees of it: a Cult summoning (a Horror, the Herald, a Tentacle)
- * is a daemon, the neutral Giant Spider a monster, any faction's giant a
+ * viewer sees of it: a Cult summoning (an Imp, a Horror, a Gibbering Mass,
+ * the Herald, a Tentacle) is a daemon, the neutral Giant Spider a monster, any faction's giant a
  * giant, every other unit its kind's faction (the faction of its original
  * owner while it is mind-controlled, as its art). A unit neither view
  * holds is the plain `unit.hurt`.

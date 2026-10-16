@@ -844,7 +844,10 @@ const ENTRIES = {
     "Grips",
     "It grips the channelling cultist beside it. Move, freeze or hex the Thing and the grip fails.",
   ],
-  STATUS_IDOL_RAISED: [
+  // The warden's standing idol (Behold!, a lasting aura since
+  // `pulp_wars-mch9.33`; the key was STATUS_IDOL_RAISED, after the retired
+  // IDOL_RAISED event).
+  STATUS_IDOL_STANDING: [
     "Idol raised",
     "Its units beside it take half from shots, and enemies beside it can attack only the Idol Bearer.",
   ],
@@ -1174,7 +1177,7 @@ const STATUS_IDS: Readonly<Record<string, GlossaryIdV7>> = {
   candlelit: "STATUS_CANDLELIT",
   gripped: "STATUS_GRIPPED",
   gripping: "STATUS_GRIPPING",
-  idol: "STATUS_IDOL_RAISED",
+  idol: "STATUS_IDOL_STANDING",
   // The warden's shield wall and Awestruck (`pulp_wars-mch9.43`).
   shielded: "STATUS_SHIELDED",
   awestruck: "AWESTRUCK",

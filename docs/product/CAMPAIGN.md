@@ -3052,19 +3052,20 @@ Explosives (Breach) in round 7. Then the problem:
   Thing from 16 to 4 through the idol, a Juggernaut with Breach killed it
   and stepped onto the center, was promoted (a full heal), and captured in
   round 16.
-  a Knight left beside a Bearer after its chain
-  (round 5), a Juggernaut on 5 Hit Points that struck a Bearer and died to
-  its blow (round 11), and the round 7 Zombie that stood on Millford with
-  nothing in reach to strike it (the Goblins eliminated the thralls the
-  next round, and it died with them). **What the Cult AI did:** it spent every
-  Favour as it came (a Mass on the Doorstep in rounds 5 and 14, an Imp
-  nearly every round, a Horror in round 12), so its Favour never passed 5
-  and no rite began; the Imps swarmed the Juggernauts for 3 a blow with no
-  strike back; a Mass that walked off its Doorstep with no strand broke
-  loose in round 9 and bit its own Initiate; the lodge's Things stepped off
-  the center to strike and stepped back. **The round-20 star is kept**: the
-  win came four rounds inside it by a player who knew the board, as in
-  section 11.13.
+
+**What nearly went wrong:** a Knight left beside a Bearer after its chain
+(round 5), a Juggernaut on 5 Hit Points that struck a Bearer and died to
+its blow (round 11), and the round 7 Zombie that stood on Millford with
+nothing in reach to strike it (the Goblins eliminated the thralls the
+next round, and it died with them). **What the Cult AI did:** it spent
+every Favour as it came (a Mass on the Doorstep in rounds 5 and 14, an Imp
+nearly every round, a Horror in round 12), so its Favour never passed 5
+and no rite began; the Imps swarmed the Juggernauts for 3 a blow with no
+strike back; a Mass that walked off its Doorstep with no strand broke
+loose in round 9 and bit its own Initiate; the lodge's Things stepped off
+the center to strike and stepped back. **The round-20 star is kept**: the
+win came four rounds inside it by a player who knew the board, as in
+section 11.13.
 
 **`LAB_CULT_MID`** was checked, not played: its revision 2 already places
 the redesigned roster, and a test now shows that on its first turn the
