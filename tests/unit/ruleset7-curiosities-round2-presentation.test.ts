@@ -331,7 +331,7 @@ describe("curiosities round two previews", () => {
     });
     expect(target?.previewLabel).toBe("Gate · shoves");
     expect(target?.semanticLabel).toBe(
-      "Steps through the gate and comes out of the other one, shoving Player 2's Goblin aside.",
+      "Steps through the gate and comes out of the other one, shoving the Goblins' Goblin aside.",
     );
   });
 
@@ -422,7 +422,7 @@ describe("curiosities round two playback and texts", () => {
       step.after,
     );
     expect(notice?.text).toBe(
-      "Gate: Player 2's Goblin was shoved aside · Your Fighter stepped through the gate",
+      "Gate: the Goblins' Goblin was shoved aside · Your Fighter stepped through the gate",
     );
     expect(COORDINATE.test(notice?.text ?? "")).toBe(false);
   });

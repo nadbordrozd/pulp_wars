@@ -565,7 +565,7 @@ describe("Icebound and the crush", () => {
       });
       expect(warning?.text).toBe(
         victim
-          ? "The ice crushes it for 3 at the start of Player 2's turn"
+          ? "The ice crushes it for 3 at the start of the Ice Folk's turn"
           : "The ice crushes it for 3 at the start of your turn",
       );
       const entry = plan(view, null).entries.find(
@@ -595,7 +595,7 @@ describe("Icebound and the crush", () => {
         damage: 2,
         lethal: true,
         label: "Sinks",
-        text: "The ice crushes it at the start of Player 2's turn: it sinks",
+        text: "The ice crushes it at the start of the Ice Folk's turn: it sinks",
       },
     );
     // A free ship has no warning.
@@ -678,7 +678,7 @@ describe("frozen-sea cues and notices", () => {
     });
     const notice = frozenSeaBoundaryNoticeV7(envelope.events, before, after);
     expect(notice?.text).toBe(
-      "You froze 1 tile: Player 2's Patrol Boat is icebound",
+      "You froze 1 tile: the Humans' Patrol Boat is icebound",
     );
     expect(notice?.text).not.toMatch(COORDINATE);
     expect(frozenSeaBoundaryNoticeV7([], before, after)).toBeNull();

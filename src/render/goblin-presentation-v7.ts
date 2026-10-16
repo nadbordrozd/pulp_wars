@@ -24,6 +24,7 @@ import {
   type UnitRoleIdV7,
 } from "../engine/index";
 import { ninthUnitHelpRulesV7 } from "./ninth-unit-presentation-v7";
+import { playerPossessiveV7 } from "./player-names-v7";
 
 /**
  * Presentation helpers for revision 17 Goblins (spec section 11). Every
@@ -394,11 +395,9 @@ export function goblinFieldDefenseBlockedV7(
   return cached.has(unitId);
 }
 
-/** "your" for the viewer, otherwise "Player N's". */
+/** "your" for the viewer, otherwise "the Martians'". */
 function possessive(view: PlayerViewV7, playerId: number): string {
-  if (playerId === view.viewer.id) return "your";
-  const player = view.players.find((candidate) => candidate.id === playerId);
-  return player === undefined ? "an enemy" : `Player ${player.seat + 1}'s`;
+  return playerPossessiveV7(view, playerId, "an enemy");
 }
 
 function capitalized(text: string): string {

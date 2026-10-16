@@ -42,6 +42,7 @@ import {
   technologyDisplayNameV7,
 } from "../engine/index";
 import { ninthUnitHelpRulesV7 } from "./ninth-unit-presentation-v7";
+import { playerPossessiveV7 } from "./player-names-v7";
 
 /**
  * Presentation helpers for the Steampunk Dwarf faction (docs/product/
@@ -322,7 +323,7 @@ export const BARRICADE_NO_TILE_V7 = "No free tile";
 /** The rule of a standing Barricade, for the tile dock and the cursor. */
 export const BARRICADE_RULE_V7 =
   "Blocks every unit, its owner's too. Only an attack breaks it; an Engineer's Repair mends it";
-/** "Your Barricade", "Player 2's Barricade". */
+/** "Your Barricade", "The Martians' Barricade". */
 export function barricadeNameV7(
   view: PlayerViewV7,
   barricade: Pick<BarricadeV7, "ownerId">,
@@ -376,14 +377,12 @@ export const UNDERMINED_LOG_V7 = "Field Defense undermined";
 
 // --------------------------------------------------------- owner wording
 
-/** "your" for the viewer, otherwise "Player N's". */
+/** "your" for the viewer, otherwise "the Martians'". */
 export function dwarfPossessiveV7(
   view: PlayerViewV7,
   playerId: number,
 ): string {
-  if (playerId === view.viewer.id) return "your";
-  const player = view.players.find((candidate) => candidate.id === playerId);
-  return player === undefined ? "an enemy's" : `Player ${player.seat + 1}'s`;
+  return playerPossessiveV7(view, playerId);
 }
 
 /** A visible unit's name under its kind's registration. */

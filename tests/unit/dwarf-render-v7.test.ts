@@ -1136,7 +1136,7 @@ describe("Dwarf crowd control on the board (pulp_wars-w49.34)", () => {
         family: "ATTACK",
         previewLabel: "Deal 5 · 5 left",
         semanticLabel:
-          "Attack Player 2's Barricade: deals 5, nothing strikes back. 5 of 10 HP left.",
+          "Attack the Dwarves' Barricade: deals 5, nothing strikes back. 5 of 10 HP left.",
       }),
     ]);
     const catapult = planFor(victim, V.catapult).targets.filter(
@@ -1220,7 +1220,7 @@ describe("Dwarf crowd control on the board (pulp_wars-w49.34)", () => {
       cells: [V.wholeBarricade],
     });
     expect(hit.notice?.text).toBe(
-      "Your Fighter hit Player 2's Barricade for 5",
+      "Your Fighter hit the Dwarves' Barricade for 5",
     );
     const broken = boundary(
       victim,
@@ -1230,7 +1230,7 @@ describe("Dwarf crowd control on the board (pulp_wars-w49.34)", () => {
     );
     expect(broken.steps[0]).toMatchObject({ kind: "CATAPULT" });
     expect(broken.notice?.text).toBe(
-      "Your Catapult broke Player 2's Barricade",
+      "Your Catapult broke the Dwarves' Barricade",
     );
     const repaired = boundary(
       state,

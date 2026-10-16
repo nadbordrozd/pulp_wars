@@ -404,9 +404,9 @@ export const KIND_READER_CLASSES_V7: Readonly<
     "SEAT",
   "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#factionFields": "SEAT",
   "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#resultSeats": "SEAT",
-  // Score and modes (pulp_wars-kaw6.3): the winner by score is named by
-  // its seat's faction.
-  "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#scoreVerdict": "SEAT",
+  // Players named by tribe (pulp_wars-2yc.56): a seat's name is its own
+  // faction's plural.
+  "src/render/player-names-v7.ts::tribeLabelV7": "SEAT",
   "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#turnStrip": "SEAT",
   // Tribe stars (pulp_wars-kaw6.4): the setup's tribe cards and the end of
   // a match's star award read the human seat's faction.
@@ -471,7 +471,6 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/render/dock-terrain-presentation-v7.ts::dockTerrainGroundV7": "SEAT",
   "src/render/dock-terrain-presentation-v7.ts::dockTerrainSwatchV7": "SEAT",
   "src/render/dom/app-view-v7.ts::commandLabel": "SEAT",
-  "src/render/dom/app-view-v7.ts::playerTitle": "SEAT",
   "src/render/dom/app-view-v7.ts::factionBadgeArt": "SEAT",
   "src/render/dwarf-presentation-v7.ts::matchHasDwarfSeatV7": "SEAT",
   "src/render/dwarf-presentation-v7.ts::dwarfLabelV7": "SEAT",

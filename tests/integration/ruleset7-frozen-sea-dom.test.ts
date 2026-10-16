@@ -494,7 +494,7 @@ describe("an icebound ship", () => {
     );
     expect(crush.textContent).toBe("−3 HP");
     expect(crush.title).toBe(
-      "The ice crushes it for 3 at the start of Player 2's turn",
+      "The ice crushes it for 3 at the start of the Ice Folk's turn",
     );
     expect(crush.dataset.lethal).toBe("false");
     const blocked = requiredButton("icebound-blocked");

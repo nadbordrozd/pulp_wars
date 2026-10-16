@@ -265,7 +265,7 @@ describe("Board on the board plan", () => {
       result.events,
     ).events;
     expect(navalBoundaryNoticeV7(events, before, after)).toEqual({
-      text: "You boarded Player 2's Patrol Boat",
+      text: "You boarded the Undead's Patrol Boat",
       toast: true,
     });
     expect(navalBoundaryNoticeV7([], before, after)).toBeNull();

@@ -394,7 +394,7 @@ describe("Ruleset 7 curiosities round two: the Well and the gates", () => {
     await settle();
     const text = document.body.textContent ?? "";
     expect(text).toContain("Your Fighter stepped through the gate");
-    expect(text).toContain("Player 2's Goblin was shoved aside");
+    expect(text).toContain("the Goblins' Goblin was shoved aside");
     expect(COORDINATE.test(text)).toBe(false);
     expect(unitAt(app.state(), AT.gateB).id).toBe(traveller.id);
     expect(unitAt(app.state(), AT.shoved).id).toBe(occupant.id);

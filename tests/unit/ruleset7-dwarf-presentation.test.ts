@@ -352,7 +352,7 @@ describe("Dwarf unit information (section 16.1)", () => {
     const enemy = moundAtV7(victim, DWARF_VICTIM_V7.mound);
     if (enemy === undefined) throw new Error("enemy mound");
     expect(moundInfoLinesV7(victim, enemy).burrowed).toBe(
-      burrowedInfoTextV7("Player 2's"),
+      burrowedInfoTextV7("the Dwarves'"),
     );
   });
 });

@@ -2181,7 +2181,7 @@ repeated in the interface.
   (the eight opponents of a nine-player game are four rows): each cell is
   the faction's emblem (its
   Fighter portrait ringed in the faction colour) beside the seat's select
-  ("Your faction", "Player N faction"). The emblem follows the select in
+  ("Your faction", "Opponent 1", "Opponent 2"…). The emblem follows the select in
   place. There is no random choice.
 
 **Match**
@@ -2191,23 +2191,40 @@ repeated in the interface.
   turn order, each ringed in its faction colour: the player whose turn it is
   has a second, gold ring and is slightly larger; a player who is out is
   grey and crossed out. It is a list ("Turn order"), not a control: nothing
-  in it takes focus, and each emblem's name is spoken ("Player 5, Dwarf,
-  playing now", "Player 3, Goblin, out", "You, Human"). Below 600 CSS px
+  in it takes focus, and each emblem's name is spoken ("Dwarves, playing
+  now", "Goblins, out", "You"). Below 600 CSS px
   the strip collapses to the current player's emblem and the place in the
   order, "3/9". Two-player matches have no strip.
 - **AI-turn status.** With two or more opponents still in the game the
-  status reads "Player 5 (Dwarf) is playing… (3 of 7)". The count starts
+  status reads "The Dwarves are playing… (3 of 7)". The count starts
   with the opponent who plays right after the human, so it runs 1, 2, 3…
   while the player waits, and it skips players who are out. Below 600 CSS
   px the "(3 of 7)" is left out (the strip shows "3/8").
 - **Leaderboard.** One row per player as before; the row of the player
   whose turn it is has a gold edge and a gold ring on its swatch
   (`aria-current`). The list scrolls inside its popup when it does not fit.
+  A row is the swatch, the name ("You" or the tribe, see Player names
+  below), the cities and units, and the score: the same shape for every
+  faction (the Cultists' Favour stays in their own top bar).
 - **Results.** Victory and Defeat list every player once, in leaderboard
-  order: emblem, "You" or "Player N" with the faction's name, a trophy on
+  order: emblem, "You" or the tribe ("Goblins"), a trophy on
   the winner of a Victory, "Out" on players who lost every city, and the
   city count. The list scrolls inside the dialog. A Defeat shows no trophy:
   the match ends with the other players still in it.
+- **Player names** (bead pulp_wars-2yc.56). The interface never says
+  "Player N". The viewer is "You" ("you", "your"); every other seat is its
+  tribe in the plural: bare as a label ("Martians" on a leaderboard row, a
+  results row, a unit's or city's owner line, a turn-strip emblem) and with
+  "the" in a sentence ("The Martians are playing…", "Aldmere lost to the
+  Martians", "the Martians' Brain", "the Ice Folk's Ice Archer"). Only when
+  two or more rival seats play the same tribe does each carry its place
+  among them, in seat order: "Goblins (1)", "Goblins (2)"; the viewer's own
+  seat never counts, so a rival of the viewer's tribe stays "Goblins". The
+  campaign gives its seats no story names, so missions follow the same
+  rule. The setup's opponent rows read "Opponent 1", "Opponent 2"… (the
+  select beside each names the tribe). Older examples elsewhere in the docs
+  that say "Player 2's …" now read "the <tribe>'s …"
+  (`src/render/player-names-v7.ts`).
 - **Resume and Help.** The resume summary names the player count ("Turn 7 ·
   12 coins · 9 players · Dry land").
 
@@ -3281,7 +3298,7 @@ event animation. DOM controls sit around it.
 
 Persistent HUD content:
 
-- player identity as Player 1 plus color/pattern;
+- player identity as its tribe plus color/pattern (see Player names);
 - Stars as `stock (+next income)`, where besieged-city effects are current;
 - Round and active player/turn status;
 - owned cities and units as compact counts;

@@ -137,10 +137,10 @@ describe("Martian texts (section 13.2)", () => {
         view.mindControlled.find((entry) => entry.unitId === controlled.id),
       ).originalOwnerId,
       controllerName: "You",
-      originalOwnerName: "Player 2",
+      originalOwnerName: "Humans",
       returns: true,
       byLine: `Mind-controlled by your ${label("CAPTAIN")}`,
-      fateLine: `Returns to Player 2 if the ${label("CAPTAIN")} is lost`,
+      fateLine: `Returns to the Humans if the ${label("CAPTAIN")} is lost`,
     });
     expect(MIND_CONTROLLED_LABEL_V7).toBe("Controlled");
     expect(mindControlledInfoV7(view, unitAt(view, AT.brain))).toBeNull();
@@ -401,7 +401,7 @@ describe("Martian log lines (section 13.2)", () => {
         targetUnitId: unitAt(view, AT.weakTarget).id,
       })?.text,
     ).toBe(
-      `Your ${label("CAPTAIN")} took control of Player 2's ${effectiveRoleRuleV7("MARKSMAN", "ORIGINAL").label}`,
+      `Your ${label("CAPTAIN")} took control of the Humans' ${effectiveRoleRuleV7("MARKSMAN", "ORIGINAL").label}`,
     );
     expect(
       notice({
@@ -410,7 +410,7 @@ describe("Martian log lines (section 13.2)", () => {
         targetUnitId: unitAt(view, AT.pullTarget).id,
       })?.text,
     ).toBe(
-      `Your ${label("KNIGHT")} pulled Player 2's ${effectiveRoleRuleV7("RAIDER", "ORIGINAL").label}`,
+      `Your ${label("KNIGHT")} pulled the Humans' ${effectiveRoleRuleV7("RAIDER", "ORIGINAL").label}`,
     );
   });
 
@@ -429,7 +429,7 @@ describe("Martian log lines (section 13.2)", () => {
       humanView(result.state),
     );
     expect(notice).toEqual({
-      text: `${effectiveRoleRuleV7("FIGHTER", "GOBLIN").label} returned to Player 2`,
+      text: `${effectiveRoleRuleV7("FIGHTER", "GOBLIN").label} returned to the Goblins`,
       toast: true,
     });
   });

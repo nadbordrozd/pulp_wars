@@ -763,17 +763,17 @@ describe("Revision 19 log lines", () => {
         smashed.before,
         smashed.after,
       ),
-    ).toEqual({ text: "Player 2's T-Rex Egg was destroyed", toast: true });
+    ).toEqual({ text: "The Dinosaurs' T-Rex Egg was destroyed", toast: true });
     const lost: readonly PlayerEventV7[] = [
       { kind: "UNIT_DIED", unitId: raptorEgg.id, cause: "CITY_CAPTURED" },
       { kind: "UNIT_DIED", unitId: tRexEgg.id, cause: "CITY_CAPTURED" },
     ];
     expect(dinosaurBoundaryNoticeV7(lost, view, view)).toEqual({
-      text: "2 Eggs were lost with Player 2's Capital",
+      text: "2 Eggs were lost with the Dinosaurs' Capital",
       toast: true,
     });
     expect(dinosaurBoundaryNoticeV7(lost.slice(0, 1), view, view)?.text).toBe(
-      "1 Egg was lost with Player 2's Capital",
+      "1 Egg was lost with the Dinosaurs' Capital",
     );
   });
 });

@@ -75,7 +75,7 @@ describe("Revision 13 Undead DOM", () => {
     const app = mount(chosen, new RecordingBoardHost());
     expect(labelsIn("[data-v7-factions]")).toEqual([
       "Your faction",
-      "Player 2 faction",
+      "Opponent 1",
     ]);
     const count = requiredElement<HTMLSelectElement>("#v7-ai-count");
     count.value = "2";
@@ -87,9 +87,9 @@ describe("Revision 13 Undead DOM", () => {
     expect(requiredElement("#v7-ai-count")).toBe(count);
     expect(labelsIn("[data-v7-factions]")).toEqual([
       "Your faction",
-      "Player 2 faction",
-      "Player 3 faction",
-      "Player 4 faction",
+      "Opponent 1",
+      "Opponent 2",
+      "Opponent 3",
     ]);
     // The unique-factions rule (pulp_wars-w5j.1): distinct defaults.
     expect(factionValues()).toEqual([
@@ -378,10 +378,10 @@ describe("Revision 13 Undead DOM", () => {
     requiredButton("compact-menu").click();
     requiredButton("leaderboard").click();
     expect(
-      [...document.querySelectorAll(".v7-leaderboard .v7-faction-chip")]
-        .map((chip) => chip.textContent)
+      [...document.querySelectorAll(".v7-leaderboard .v7-leaderboard-player")]
+        .map((name) => name.textContent)
         .sort(),
-    ).toEqual(["Human", "Undead"]);
+    ).toEqual(["Humans", "You"]);
     app.destroy();
   });
 
@@ -397,7 +397,7 @@ describe("Revision 13 Undead DOM", () => {
       new RecordingBoardHost(),
     );
     expect(document.querySelector(".v7-turn-status")?.textContent).toBe(
-      "Player 2 (Human) is playing…",
+      "The Humans are playing…",
     );
     mixed.destroy();
     document.body.innerHTML = '<div id="app"></div>';
@@ -406,7 +406,7 @@ describe("Revision 13 Undead DOM", () => {
       new RecordingBoardHost(),
     );
     expect(document.querySelector(".v7-turn-status")?.textContent).toMatch(
-      /^Player \d is playing…$/,
+      /^The Humans are playing…$/,
     );
     human.destroy();
   });
@@ -417,7 +417,7 @@ describe("Revision 13 Undead DOM", () => {
     const app = mount(controller, host);
     const at = AFFLICTION_SHOWCASE_V7.human;
     const plague =
-      "Plague from Player 2's Lich: −2 HP at the start of each of its next 3 turns, then it ends; at the first it spreads to adjacent living units. It ends sooner if that Lich dies or a Captain tends it.";
+      "Plague from the Undead's Lich: −2 HP at the start of each of its next 3 turns, then it ends; at the first it spreads to adjacent living units. It ends sooner if that Lich dies or a Captain tends it.";
 
     selectUnitAt(controller, host, at.plaguedWarrior);
     const chip = requiredElement<HTMLElement>(
@@ -458,7 +458,7 @@ describe("Revision 13 Undead DOM", () => {
         .querySelector('.v7-selection-dock [data-unit-status="bitten"]')
         ?.getAttribute("aria-label"),
     ).toBe(
-      "Bitten. Bitten by Player 2's Zombie: if it dies it rises as Player 2's Zombie, unless a Captain tends it first.",
+      "Bitten. Bitten by the Undead's Zombie: if it dies it rises as the Undead's Zombie, unless a Captain tends it first.",
     );
     expect(requiredButton("affliction-disband").dataset.disabledReason).toBe(
       "bitten",

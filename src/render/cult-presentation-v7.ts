@@ -26,6 +26,7 @@ import {
   cultChannelNoticePartsV7,
 } from "./cult-channel-presentation-v7";
 import { cultTrickNoticePartsV7 } from "./cult-ritual-presentation-v7";
+import { playerSubjectV7 } from "./player-names-v7";
 
 /**
  * The Cultists of the Ancient Ones (docs/product/RULESET_7_CULTISTS.md;
@@ -365,9 +366,7 @@ export function seizeUnavailableTextV7(
 }
 
 function seatName(view: PlayerViewV7, playerId: PlayerId): string {
-  if (playerId === view.viewer.id) return "You";
-  const player = view.players.find((candidate) => candidate.id === playerId);
-  return player === undefined ? "An enemy" : `Player ${player.seat + 1}`;
+  return playerSubjectV7(view, playerId);
 }
 
 /**

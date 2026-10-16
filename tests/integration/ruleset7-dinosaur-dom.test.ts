@@ -672,7 +672,7 @@ describe("Revision 19 Egg dock and Shaman Hatch", () => {
     const dock = requiredElement<HTMLElement>(".v7-selection-dock");
     expect(dock.querySelector("h2")?.textContent).toBe("T-Rex Egg");
     expect(dock.querySelector(".v7-identity-owner")?.textContent).toBe(
-      "Player 2",
+      "Dinosaurs",
     );
     expect(
       dock.querySelector('[data-stat="hp"] .v7-stat-value')?.textContent,
@@ -1062,14 +1062,14 @@ describe("Revision 19 growth, abilities and labels", () => {
     expect(
       document.querySelector('[data-action="dinosaur-field-defense"]'),
     ).toBe(null);
-    // Leaderboard and turn status name the factions.
+    // The leaderboard names each rival by its tribe and the viewer "You".
     requiredButton("compact-menu").click();
     requiredButton("leaderboard").click();
     expect(
-      [...document.querySelectorAll(".v7-leaderboard .v7-faction-chip")]
-        .map((chip) => chip.textContent)
+      [...document.querySelectorAll(".v7-leaderboard .v7-leaderboard-player")]
+        .map((name) => name.textContent)
         .sort(),
-    ).toEqual(["Dinosaur", "Human"]);
+    ).toEqual(["Humans", "You"]);
     app.destroy();
   });
 

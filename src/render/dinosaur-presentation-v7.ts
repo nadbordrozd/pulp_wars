@@ -30,6 +30,7 @@ import { ninthUnitHelpRulesV7 } from "./ninth-unit-presentation-v7";
 import { GINGERBREAD_MAN_LABEL_V7 } from "./giant-presentation-v7";
 import { packHuntAttack2V7 } from "../engine/v7/combat";
 import { technologyNameV7 } from "./goblin-presentation-v7";
+import { playerPossessiveV7 } from "./player-names-v7";
 
 /**
  * Presentation helpers for revision 19 Dinosaurs (spec section 12) as
@@ -744,11 +745,9 @@ export function hatchBlockedEggsV7(
   );
 }
 
-/** "your" for the viewer, otherwise "Player N's". */
+/** "your" for the viewer, otherwise "the Martians'". */
 function possessive(view: PlayerViewV7, playerId: number): string {
-  if (playerId === view.viewer.id) return "your";
-  const player = view.players.find((candidate) => candidate.id === playerId);
-  return player === undefined ? "an enemy" : `Player ${player.seat + 1}'s`;
+  return playerPossessiveV7(view, playerId, "an enemy");
 }
 
 function capitalized(text: string): string {

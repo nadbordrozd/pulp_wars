@@ -423,7 +423,11 @@ describe("Ruleset 7 DOM shell", () => {
     expect(document.querySelectorAll(".v7-leaderboard-row")).toHaveLength(
       current.leaderboard.length,
     );
-    expect(document.body.textContent).toContain("(you)");
+    expect(
+      document.querySelector(
+        '.v7-leaderboard-row[data-viewer="true"] .v7-leaderboard-player',
+      )?.textContent,
+    ).toBe("You");
     expect(document.body.textContent).not.toContain("Opponent Coins");
     app.destroy();
   });

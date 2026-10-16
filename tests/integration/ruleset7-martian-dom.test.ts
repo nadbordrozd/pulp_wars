@@ -178,7 +178,7 @@ describe("Martian unit dock", () => {
       ]),
     ).toEqual([
       ["controller", "You"],
-      ["original", "Player 2"],
+      ["original", "Humans"],
     ]);
     expect(badge.querySelector(".v7-control-label")?.textContent).toBe(
       MIND_CONTROLLED_LABEL_V7,

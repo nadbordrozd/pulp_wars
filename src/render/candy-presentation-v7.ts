@@ -33,6 +33,7 @@ import {
   type UnitRoleIdV7,
 } from "../engine/index";
 import { ninthUnitHelpRulesV7 } from "./ninth-unit-presentation-v7";
+import { playerPossessiveV7, playerSubjectV7 } from "./player-names-v7";
 
 /**
  * Presentation helpers for the Candy faction (docs/product/
@@ -169,12 +170,11 @@ export const GLAZED_LABEL_V7 = "Glazed";
 /** The Glaze of a tile, for the viewer's own turn. */
 export const GLAZED_OWN_TILE_V7 =
   "Glazed: your units step onto it at half cost this turn";
-/** "Glazed: Player N's units step onto it at half cost this turn". */
+/** "Glazed: the Martians' units step onto it at half cost this turn". */
 export function glazedTileTextV7(view: PlayerViewV7): string {
   const active = view.turnOrder[view.activeSeatIndex];
   if (active === view.viewer.id) return GLAZED_OWN_TILE_V7;
-  const player = view.players.find((candidate) => candidate.id === active);
-  return `${GLAZED_LABEL_V7}: ${player === undefined ? "the active player's" : `Player ${player.seat + 1}'s`} units step onto it at half cost this turn`;
+  return `${GLAZED_LABEL_V7}: ${active === undefined ? "the active player's" : playerPossessiveV7(view, active, "the active player's")} units step onto it at half cost this turn`;
 }
 /** The Glaze line of a tile, or an empty list (no text names a tile). */
 export function glazeTileLinesV7(
@@ -958,18 +958,14 @@ export function candyCombatLinesV7(
 
 // ------------------------------------------------------- Log lines ---
 
-/** "your" for the viewer, otherwise "Player N's". */
+/** "your" for the viewer, otherwise "the Martians'". */
 function possessive(view: PlayerViewV7, playerId: number): string {
-  if (playerId === view.viewer.id) return "your";
-  const player = view.players.find((candidate) => candidate.id === playerId);
-  return player === undefined ? "an enemy's" : `Player ${player.seat + 1}'s`;
+  return playerPossessiveV7(view, playerId);
 }
 
-/** "You" for the viewer, otherwise "Player N". */
+/** "You" for the viewer, otherwise "The Martians". */
 function subject(view: PlayerViewV7, playerId: number): string {
-  if (playerId === view.viewer.id) return "You";
-  const player = view.players.find((candidate) => candidate.id === playerId);
-  return player === undefined ? "An enemy" : `Player ${player.seat + 1}`;
+  return playerSubjectV7(view, playerId);
 }
 
 /**

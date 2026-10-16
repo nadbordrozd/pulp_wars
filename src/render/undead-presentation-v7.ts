@@ -30,6 +30,7 @@ import {
   type WailPreviewV7,
 } from "../engine/index";
 import { HIDDEN_BLIZZARD_PREVIEW_V7 } from "./ice-folk-presentation-v7";
+import { playerPossessiveV7 } from "./player-names-v7";
 
 /**
  * Presentation helpers for revision 13 Undead (spec section 10). Every helper
@@ -658,11 +659,9 @@ export function unitAfflictionsV7(
   return result;
 }
 
-/** "your" for the viewer, otherwise "Player N's". */
+/** "your" for the viewer, otherwise "the Martians'". */
 function possessive(view: PlayerViewV7, playerId: number): string {
-  if (playerId === view.viewer.id) return "your";
-  const player = view.players.find((candidate) => candidate.id === playerId);
-  return player === undefined ? "an enemy" : `Player ${player.seat + 1}'s`;
+  return playerPossessiveV7(view, playerId, "an enemy");
 }
 
 /** Lower-case cursor cue, e.g. "plagued, bitten"; empty without statuses. */
@@ -880,10 +879,10 @@ export function undeadBoundaryNoticeV7(
     before.units.find((unit) => unit.id === id);
   const owned = (playerId: number, label: string): string => {
     if (playerId === viewerId) return label;
-    const player = after.players.find((candidate) => candidate.id === playerId);
-    return player === undefined
+    const owner = playerPossessiveV7(after, playerId, "");
+    return owner === ""
       ? label
-      : `Player ${player.seat + 1}'s ${label}`;
+      : `${owner.charAt(0).toUpperCase()}${owner.slice(1)} ${label}`;
   };
   const labelOf = (id: number, fallback: string): string => {
     const unit = unitById(id);

@@ -746,7 +746,7 @@ async function fixtureTour(
   evidence[`${suffix}DugInCursor`] = await cursorText(connection);
   await capture(connection, `attack-dug-in-${suffix}.png`);
   await deselect(connection);
-  // An enemy mound: "surfaces at the start of Player 2's next turn".
+  // An enemy mound: "surfaces at the start of the Dwarves' next turn".
   await activate(connection, victim.mound as Coord);
   evidence[`${suffix}EnemyMound`] = await evaluate(
     connection,

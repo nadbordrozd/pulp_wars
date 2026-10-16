@@ -17,6 +17,7 @@ import {
   CITY_NAME_PATTERN_V7,
   CITY_NAMES_PER_FACTION_V7,
 } from "../../src/render/city-name-lists-v7";
+import { tribePluralV7 } from "../../src/render/tribe-stars-presentation-v7";
 import {
   assignCityNamesV7,
   cityAccessibleNameV7,
@@ -375,7 +376,7 @@ describe("city names in player-facing text", () => {
       [
         `${theirName} founded`,
         `${theirName} captured`,
-        `${ownName} lost to Player ${(rival?.seat ?? 0) + 1}`,
+        `${ownName} lost to the ${tribePluralV7(rival?.faction ?? "ORIGINAL")}`,
         `${ownName} grew to level 3`,
       ].join(" · "),
     );
@@ -395,7 +396,7 @@ describe("city names in player-facing text", () => {
       view,
     );
     expect(watched).toEqual({
-      text: `Player ${(rival?.seat ?? 0) + 1} founded ${theirName}`,
+      text: `The ${tribePluralV7(rival?.faction ?? "ORIGINAL")} founded ${theirName}`,
       toast: false,
     });
   });

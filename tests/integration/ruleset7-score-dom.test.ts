@@ -334,7 +334,7 @@ describe("Ruleset 7 score at the end of the match", () => {
     const app = mount(state);
     expect(required(".v7-results h2").textContent).toBe("Defeat");
     expect(required('[data-v7-region="score-verdict"]').textContent).toBe(
-      "Player 3 · Goblin wins with 337 points, the highest score after round 30.",
+      "The Goblins win with 337 points, the highest score after round 30.",
     );
     expect(document.querySelector('[data-v7-region="grade"]')).toBe(null);
     const rows = [

@@ -514,14 +514,14 @@ describe("Revision 17 Goblin presentation text", () => {
     expect(
       unitAfflictionsV7(view, goblin).map((item) => item.explanation),
     ).toEqual([
-      "Plague from Player 2's Lich: −2 HP at the start of each of its next 2 turns, then it ends. It ends sooner only if that Lich dies; Goblins can't cure it.",
-      "Bitten by Player 2's Zombie: if it dies it rises as Player 2's Zombie; Goblins can't cure bites.",
+      "Plague from the Undead's Lich: −2 HP at the start of each of its next 2 turns, then it ends. It ends sooner only if that Lich dies; Goblins can't cure it.",
+      "Bitten by the Undead's Zombie: if it dies it rises as the Undead's Zombie; Goblins can't cure bites.",
     ]);
     expect(
       unitAfflictionsV7(view, human).map((item) => item.explanation),
     ).toEqual([
-      "Plague from Player 2's Lich: −2 HP at the start of each of its next 2 turns, then it ends. It ends sooner if that Lich dies or a Captain tends it.",
-      "Bitten by Player 2's Zombie: if it dies it rises as Player 2's Zombie, unless a Captain tends it first.",
+      "Plague from the Undead's Lich: −2 HP at the start of each of its next 2 turns, then it ends. It ends sooner if that Lich dies or a Captain tends it.",
+      "Bitten by the Undead's Zombie: if it dies it rises as the Undead's Zombie, unless a Captain tends it first.",
     ]);
   });
 });

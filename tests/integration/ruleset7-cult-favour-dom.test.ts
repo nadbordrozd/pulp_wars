@@ -316,11 +316,8 @@ describe("Favour in the HUD and the leaderboard", () => {
     scene.app.destroy();
   });
 
-  it("shows every Cult seat's Favour in the leaderboard, to every player", () => {
-    for (const [fixture, favour] of [
-      [cultFavourUiFixtureV7, "7"],
-      [cultRivalUiFixtureV7, "11"],
-    ] as const) {
+  it("keeps Favour out of the leaderboard: every faction's row has the same shape (pulp_wars-mch9.28)", () => {
+    for (const fixture of [cultFavourUiFixtureV7, cultRivalUiFixtureV7]) {
       document.body.innerHTML = '<div id="app"></div>';
       const scene = rig(fixture());
       document.dispatchEvent(
@@ -330,19 +327,22 @@ describe("Favour in the HUD and the leaderboard", () => {
         ...document.querySelectorAll<HTMLElement>(".v7-leaderboard-row"),
       ];
       expect(rows.length).toBe(2);
+      expect(rows.some((row) => row.dataset.faction === "cult")).toBe(true);
       expect(
-        rows.map(
-          (row) =>
-            row.querySelector<HTMLElement>(".v7-leaderboard-favour")?.dataset
-              .favour ?? null,
+        document.querySelector(".v7-leaderboard .v7-favour-icon"),
+        "no Favour candle in any row",
+      ).toBeNull();
+      expect(
+        rows.map((row) =>
+          [...row.querySelectorAll<HTMLElement>(".v7-leaderboard-stat")].map(
+            (stat) => stat.title,
+          ),
         ),
-        "only the Cult seat has a Favour stat",
-      ).toEqual(
-        rows.map((row) => (row.dataset.faction === "cult" ? favour : null)),
-      );
-      const stat = requiredElement<HTMLElement>(".v7-leaderboard-favour");
-      expect(stat.textContent).toBe(`${favour} Favour`);
-      expect(stat.querySelector(".v7-favour-icon")).not.toBeNull();
+        "every row carries the same stats",
+      ).toEqual([
+        ["Cities", "Units"],
+        ["Cities", "Units"],
+      ]);
       scene.app.destroy();
     }
   });

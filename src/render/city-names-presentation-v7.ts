@@ -15,6 +15,7 @@ import {
   CITY_NAME_LISTS_V7,
   CITY_NAMES_PER_FACTION_V7,
 } from "./city-name-lists-v7";
+import { playerObjectV7, playerSubjectV7 } from "./player-names-v7";
 
 /**
  * City names (bead `pulp_wars-2yc.30`): presentation only. Nothing here is
@@ -320,14 +321,13 @@ export function cityAccessibleNameV7(
 }
 
 function seatName(view: PlayerViewV7, playerId: number): string {
-  const player = view.players.find((candidate) => candidate.id === playerId);
-  return player === undefined ? "An enemy" : `Player ${player.seat + 1}`;
+  return playerSubjectV7(view, playerId);
 }
 
 /**
  * Log and toast text for the city events of one projected boundary, by
  * name: a village taken ("Aldmere founded"), a city taken ("Aldmere
- * captured", "Aldmere lost to Player 2") and an own city's growth
+ * captured", "Aldmere lost to the Martians") and an own city's growth
  * ("Aldmere grew to level 3"). A city the viewer cannot see is not named
  * and adds no text.
  */
@@ -350,7 +350,7 @@ export function cityBoundaryNoticeV7(
         parts.push(`${name} ${event.from === null ? "founded" : "captured"}`);
       } else if (event.from === viewerId) {
         toast = true;
-        parts.push(`${name} lost to ${seatName(after, event.to)}`);
+        parts.push(`${name} lost to ${playerObjectV7(after, event.to)}`);
       } else
         parts.push(
           event.from === null

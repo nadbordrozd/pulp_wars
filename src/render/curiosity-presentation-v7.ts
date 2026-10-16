@@ -43,6 +43,11 @@ import {
 } from "../assets/chibi-art-v7";
 import { portraitSubjectV7 } from "../assets/chibi-ui-art-v7";
 import { glossaryEntryV7 } from "./unit-glossary-v7";
+import {
+  playerObjectV7,
+  playerPossessiveV7,
+  playerSubjectV7,
+} from "./player-names-v7";
 
 /**
  * Map curiosities UI (bead pulp_wars-737.6,
@@ -403,13 +408,12 @@ function unitName(
   return unitRoleRuleV7(view, unit).label;
 }
 
-/** "your Fighter", "Player 2's Fighter". */
+/** "your Fighter", "the Martians' Fighter". */
 function ownedUnitName(view: PlayerViewV7, unit: PublicUnitV7): string {
-  if (unit.ownerId === view.viewer.id) return `your ${unitName(view, unit)}`;
-  const owner = view.players.find((player) => player.id === unit.ownerId);
-  return owner === undefined
+  const owner = playerPossessiveV7(view, unit.ownerId, "");
+  return owner === ""
     ? unitName(view, unit)
-    : `Player ${owner.seat + 1}'s ${unitName(view, unit)}`;
+    : `${owner} ${unitName(view, unit)}`;
 }
 
 export interface CuriosityInfoLineV7 {
@@ -779,8 +783,7 @@ export function wellOutcomeTextV7(
 ): string {
   const label = CURIOSITY_LABELS_V7.WISHING_WELL;
   if (event.playerId !== view.viewer.id) {
-    const owner = view.players.find((player) => player.id === event.playerId);
-    return `${owner === undefined ? "An enemy" : `Player ${owner.seat + 1}`} tossed a Coin into the ${label}`;
+    return `${playerSubjectV7(view, event.playerId)} tossed a Coin into the ${label}`;
   }
   switch (event.outcome) {
     case "SPLASH":
@@ -882,13 +885,10 @@ export function curiosityBoundaryNoticeV7(
       );
     } else if (event.kind === "WRECK_SALVAGED") {
       if (event.playerId === viewerId) toast = true;
-      const owner = after.players.find(
-        (player) => player.id === event.playerId,
-      );
       parts.push(
         event.playerId === viewerId
           ? `Wreck salvaged: +${event.coins} Coins`
-          : `Wreck salvaged by ${owner === undefined ? "an enemy" : `Player ${owner.seat + 1}`}`,
+          : `Wreck salvaged by ${playerObjectV7(after, event.playerId)}`,
       );
     } else if (event.kind === "GATE_TRAVERSED") {
       const unit = unitById(event.unitId);

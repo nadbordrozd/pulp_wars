@@ -15,6 +15,7 @@ import {
   type PlayerViewV7,
   type PublicUnitV7,
 } from "../engine/index";
+import { playerPossessiveV7, playerSubjectV7 } from "./player-names-v7";
 
 /**
  * The naval branch interface (bead pulp_wars-5ti.7, first part;
@@ -253,15 +254,11 @@ export function navalCombatLinesV7(
 }
 
 function possessive(view: PlayerViewV7, playerId: number): string {
-  if (playerId === view.viewer.id) return "your";
-  const player = view.players.find((candidate) => candidate.id === playerId);
-  return player === undefined ? "an enemy" : `Player ${player.seat + 1}'s`;
+  return playerPossessiveV7(view, playerId, "an enemy");
 }
 
 function subject(view: PlayerViewV7, playerId: number): string {
-  if (playerId === view.viewer.id) return "You";
-  const player = view.players.find((candidate) => candidate.id === playerId);
-  return player === undefined ? "An enemy" : `Player ${player.seat + 1}`;
+  return playerSubjectV7(view, playerId);
 }
 
 /**

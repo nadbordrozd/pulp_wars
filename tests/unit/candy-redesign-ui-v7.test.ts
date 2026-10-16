@@ -298,7 +298,7 @@ describe("The Glaze overlay (section 7.2)", () => {
         view.viewer.id,
     );
     expect(glazedTileTextV7(other)).toBe(
-      "Glazed: Player 1's units step onto it at half cost this turn",
+      "Glazed: the Candy's units step onto it at half cost this turn",
     );
   });
 

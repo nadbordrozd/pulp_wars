@@ -1173,7 +1173,7 @@ Bearer is one figure, and the gondola is indigo.
 
 | Thing                      | Shown as                                                                                                                                 |
 | -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| Favour                     | Green candles and a number beside the Coins (own) and beside each Cult seat in the leaderboard (everyone)                                |
+| Favour                     | Green candles and a number beside the Coins (own); not in the leaderboard, whose rows are the same for every faction                     |
 | A strand                   | A thin green chain from channeller to daemon, for every viewer who has explored both tiles; it snaps (red flash) on a disruption         |
 | Candlelit                  | A lit candle over every channeller and participant, on every explored tile                                                               |
 | Control                    | Pips under each daemon: lit for holding strands, hollow for missing ones ("2 / 3"); a gripped strand shows three lit pips                |
@@ -1198,9 +1198,10 @@ The details are in
 and [the screen flow](../ui/SCREEN_FLOW.md):
 
 - **Favour** is one candle and a number, not a row of candles (a pool has
-  no maximum): a chip beside the Coins for a Cult player, and a candle and
-  number in the leaderboard row of every Cult seat, for every player. Favour
-  the viewer gains flies to the chip as candles from the tile that paid it.
+  no maximum): a chip beside the Coins for a Cult player. The leaderboard
+  shows no Favour (bead pulp_wars-mch9.28): every faction's row has the same
+  shape. Favour the viewer gains flies to the chip as candles from the tile
+  that paid it.
 - **Sacrifice and Seize** have one button each on the Summoner; each arms
   its aiming, and the victim is picked on the board: the help mark on own
   units, the attack mark on enemies, each labelled "+N Favour". A unit next

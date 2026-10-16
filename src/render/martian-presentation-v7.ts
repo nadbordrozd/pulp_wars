@@ -36,6 +36,11 @@ import {
   type UnitRoleIdV7,
 } from "../engine/index";
 import { ninthUnitHelpRulesV7 } from "./ninth-unit-presentation-v7";
+import {
+  playerNameV7,
+  playerObjectV7,
+  playerPossessiveV7,
+} from "./player-names-v7";
 
 /**
  * Presentation helpers for the Martian faction (docs/product/
@@ -208,14 +213,12 @@ export const MIND_CONTROLLED_NO_SLOT_V7 = "Mind-controlled units use no slot";
 /** The short reason on a Mind Control button without a legal target. */
 export const MIND_CONTROL_NO_TARGET_V7 = "No wounded enemy in reach";
 
-/** "You" for the viewer, otherwise "Player N" (a chip's owner name). */
+/** "You" for the viewer, otherwise "Martians" (a chip's owner name). */
 export function playerShortNameV7(
   view: PlayerViewV7,
   playerId: number,
 ): string {
-  if (playerId === view.viewer.id) return "You";
-  const player = view.players.find((candidate) => candidate.id === playerId);
-  return player === undefined ? "Unknown" : `Player ${player.seat + 1}`;
+  return playerNameV7(view, playerId, "Unknown");
 }
 
 /** What the dock and unit info say about a mind-controlled unit. */
@@ -223,14 +226,14 @@ export interface MindControlledInfoV7 {
   /** The controller (the unit's owner now). */
   readonly controllerId: number;
   readonly originalOwnerId: number;
-  /** "You" or "Player N". */
+  /** "You" or "Martians". */
   readonly controllerName: string;
   readonly originalOwnerName: string;
   /** The unit goes back to its original owner (not eliminated). */
   readonly returns: boolean;
-  /** "Mind-controlled by your Brain", "... by Player 1's Brain". */
+  /** "Mind-controlled by your Brain", "... by the Martians' Brain". */
   readonly byLine: string;
-  /** "Returns to Player 2 if the Brain is lost", or "Lost with the Brain". */
+  /** "Returns to the Dwarves if the Brain is lost", or "Lost with the Brain". */
   readonly fateLine: string;
 }
 
@@ -259,7 +262,7 @@ export function mindControlledInfoV7(
     returns,
     byLine: `Mind-controlled by ${possessive(view, unit.ownerId)} ${brain}`,
     fateLine: returns
-      ? `Returns to ${entry.originalOwnerId === view.viewer.id ? "you" : originalName} if the ${brain} is lost`
+      ? `Returns to ${playerObjectV7(view, entry.originalOwnerId)} if the ${brain} is lost`
       : `Lost with the ${brain}`,
   };
 }
@@ -720,11 +723,9 @@ export function martianUnitInfoLinesV7(
 
 // --------------------------------------------------------- attack preview
 
-/** "your" for the viewer, otherwise "Player N's". */
+/** "your" for the viewer, otherwise "the Martians'". */
 function possessive(view: PlayerViewV7, playerId: number): string {
-  if (playerId === view.viewer.id) return "your";
-  const player = view.players.find((candidate) => candidate.id === playerId);
-  return player === undefined ? "an enemy" : `Player ${player.seat + 1}'s`;
+  return playerPossessiveV7(view, playerId, "an enemy");
 }
 
 function allied(view: PlayerViewV7, left: number, right: number): boolean {
@@ -1138,7 +1139,7 @@ export function martianBoundaryNoticeV7(
       const name =
         unit === undefined ? "A unit" : martianUnitNameV7(after, unit);
       parts.push(
-        `${name} returned to ${event.toPlayerId === viewerId ? "you" : playerShortNameV7(after, event.toPlayerId)}`,
+        `${name} returned to ${playerObjectV7(after, event.toPlayerId)}`,
       );
     } else if (event.kind === "UNIT_DIED" && event.cause === "BRAIN_LOST") {
       toast = true;

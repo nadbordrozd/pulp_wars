@@ -197,7 +197,7 @@ describe("Revision 14 Plague and Bitten presentation", () => {
         id: "PLAGUE",
         chip: "Plague · 3 turns",
         explanation:
-          "Plague from Player 2's Lich: −2 HP at the start of each of its next 3 turns, then it ends; at the first it spreads to adjacent living units. It ends sooner if that Lich dies or a Captain tends it.",
+          "Plague from the Undead's Lich: −2 HP at the start of each of its next 3 turns, then it ends; at the first it spreads to adjacent living units. It ends sooner if that Lich dies or a Captain tends it.",
       },
     ]);
     // Revision 15: the chip and sentence count the remaining turns down, and
@@ -209,12 +209,12 @@ describe("Revision 14 Plague and Bitten presentation", () => {
     expect(unitAfflictionsV7(later(2), warrior.id)[0]).toMatchObject({
       chip: "Plague · 2 turns",
       explanation:
-        "Plague from Player 2's Lich: −2 HP at the start of each of its next 2 turns, then it ends. It ends sooner if that Lich dies or a Captain tends it.",
+        "Plague from the Undead's Lich: −2 HP at the start of each of its next 2 turns, then it ends. It ends sooner if that Lich dies or a Captain tends it.",
     });
     expect(unitAfflictionsV7(later(1), warrior.id)[0]).toMatchObject({
       chip: "Plague · 1 turn",
       explanation:
-        "Plague from Player 2's Lich: −2 HP at the start of its next turn, then it ends. It ends sooner if that Lich dies or a Captain tends it.",
+        "Plague from the Undead's Lich: −2 HP at the start of its next turn, then it ends. It ends sooner if that Lich dies or a Captain tends it.",
     });
     const archer = unitAt(view, HUMAN.bittenArcher);
     expect(unitAfflictionsV7(view, archer.id)).toEqual([
@@ -222,7 +222,7 @@ describe("Revision 14 Plague and Bitten presentation", () => {
         id: "BITTEN",
         chip: "Bitten",
         explanation:
-          "Bitten by Player 2's Zombie: if it dies it rises as Player 2's Zombie, unless a Captain tends it first.",
+          "Bitten by the Undead's Zombie: if it dies it rises as the Undead's Zombie, unless a Captain tends it first.",
       },
     ]);
     const hidden: PlayerViewV7 = {

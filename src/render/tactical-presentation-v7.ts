@@ -2,6 +2,7 @@ import type { PlayerViewV7 } from "../engine/index";
 import { presentedUnitFactionV7 } from "./neutral-presentation-v7";
 import type { Ruleset7TacticalUiSymbolId } from "../assets/ruleset7-tactical-ui-symbols";
 import type { CoordV7 } from "../engine/v7/types";
+import { playerNameV7 } from "./player-names-v7";
 
 export interface TacticalAttachmentV7 {
   readonly key: string;
@@ -11,9 +12,9 @@ export interface TacticalAttachmentV7 {
   readonly pulse: boolean;
 }
 
+/** "You" for the viewer, otherwise "Martians" (bead pulp_wars-2yc.56). */
 export function playerLabelV7(view: PlayerViewV7, playerId: number): string {
-  const player = view.players.find((candidate) => candidate.id === playerId);
-  return player === undefined ? "Unknown player" : `Player ${player.seat + 1}`;
+  return playerNameV7(view, playerId, "Unknown player");
 }
 
 export function tacticalAttachmentsV7(

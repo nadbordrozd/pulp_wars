@@ -574,7 +574,7 @@ describe("Candy log lines (section 15.2)", () => {
       path: [at.crumbs],
     });
     expect(eaten.text).toBe(
-      `Fighter ate Player 2's Crumbs; Peppermint Surprise: Fighter −${PEPPERMINT_DAMAGE_V7}`,
+      `Fighter ate the Candy's Crumbs; Peppermint Surprise: Fighter −${PEPPERMINT_DAMAGE_V7}`,
     );
   });
 

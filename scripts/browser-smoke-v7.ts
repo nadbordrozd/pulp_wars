@@ -1156,8 +1156,7 @@ async function probeUndeadSetup(connection: Connection): Promise<string> {
     `Array.from(document.querySelectorAll('[data-v7-factions] label')).map((label) => label.firstChild?.textContent ?? '')`,
   );
   if (
-    JSON.stringify(labels) !==
-      JSON.stringify(["Your faction", "Player 2 faction"]) ||
+    JSON.stringify(labels) !== JSON.stringify(["Your faction", "Opponent 1"]) ||
     !(await evaluate<boolean>(
       connection,
       `JSON.stringify(Array.from(document.querySelectorAll('[data-v7-factions] select')).map((field) => field.value)) === '["ORIGINAL","UNDEAD"]' && document.querySelector('#v7-faction-1 option[value="ORIGINAL"]').disabled && !document.querySelector('#v7-faction-0 option[value="UNDEAD"]').disabled`,
@@ -1337,9 +1336,9 @@ async function probeAfflictionFixture(
       JSON.stringify(evidence.markers) !==
         JSON.stringify(AFFLICTION_HUMAN_MARKERS_V7) ||
       !evidence.chips[0]?.startsWith(
-        "Plague · 3 turns. Plague from Player 2's Lich",
+        "Plague · 3 turns. Plague from the Undead's Lich",
       ) ||
-      !evidence.chips[1]?.startsWith("Bitten. Bitten by Player 2's Zombie") ||
+      !evidence.chips[1]?.startsWith("Bitten. Bitten by the Undead's Zombie") ||
       evidence.disband !==
         "Disband unavailable. Plagued units can't Disband." ||
       evidence.disbandDisabled !== "true"

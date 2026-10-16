@@ -425,7 +425,7 @@ describe("A ritual under way, for every viewer", () => {
       ),
     );
     expect(countdown.label).toMatch(
-      /^Star-fall lands here at the start of Player 2's next turn: 6 damage/,
+      /^Star-fall lands here at the start of the Cultists' next turn: 6 damage/,
     );
     // The viewer's own units under the star wear the warning stripes.
     expect(

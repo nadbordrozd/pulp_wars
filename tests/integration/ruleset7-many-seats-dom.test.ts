@@ -27,6 +27,7 @@ import type {
   BoardHostV7,
 } from "../../src/render/canvas/board-host-v7";
 import { FACTION_COLOURS_V7 } from "../../src/render/canvas/faction-colours-v7";
+import { tribePluralV7 } from "../../src/render/tribe-stars-presentation-v7";
 import {
   Ruleset7DomAppView,
   type Ruleset7ControllerPortV7,
@@ -352,7 +353,7 @@ describe("Ruleset 7 interface with nine players", () => {
     // Six opponents are still in; this is the first of them to play.
     expect(status.textContent).toMatch(
       new RegExp(
-        `^Player ${active.seat + 1} \\(.+\\) is playing… \\(1 of ${SEATS - 2}\\)$`,
+        `^The ${tribePluralV7(active.faction)} are playing… \\(1 of ${SEATS - 2}\\)$`,
       ),
     );
     expect(status.querySelector(".v7-turn-place")?.textContent).toBe(
@@ -472,24 +473,24 @@ describe("Ruleset 7 interface with nine players", () => {
     expect(list.dataset.players).toBe("9");
     const rows = [...list.querySelectorAll<HTMLElement>(".v7-leaderboard-row")];
     expect(rows).toHaveLength(9);
-    // The player's row: the Cult's colour, its chip and its Favour.
+    // The player's row: the Cult's colour and "You"; no Favour stat in any
+    // row (pulp_wars-mch9.28), and no "Player N" (pulp_wars-2yc.56).
     const own = required_(rows.find((row) => row.dataset.viewer === "true"));
     expect(own.style.getPropertyValue("--player")).toBe(
       FACTION_COLOURS_V7.CULT,
     );
-    const chip = required_(own.querySelector<HTMLElement>(".v7-faction-chip"));
-    expect(chip.dataset.faction).toBe("cult");
-    expect(chip.textContent).toBe("Cultists");
-    expect(own.querySelector(".v7-leaderboard-favour")).not.toBeNull();
+    expect(own.dataset.faction).toBe("cult");
+    expect(own.querySelector(".v7-leaderboard-player")?.textContent).toBe(
+      "You",
+    );
+    expect(list.textContent).not.toMatch(/Player \d/);
     // "AIs allied" above the list, and the team mark on each of the eight.
     expect(required(".v7-leaderboard-alliances").textContent).toContain(
       "AIs allied",
     );
     expect(list.querySelectorAll(".v7-leaderboard-team")).toHaveLength(8);
     expect(own.querySelector(".v7-leaderboard-team")).toBeNull();
-    expect(
-      rows.filter((row) => row.querySelector(".v7-leaderboard-favour")),
-    ).toHaveLength(1);
+    expect(list.querySelector(".v7-favour-icon")).toBeNull();
     app.destroy();
   });
 

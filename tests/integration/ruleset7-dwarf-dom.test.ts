@@ -187,7 +187,7 @@ describe("Dwarf unit dock", () => {
     });
     expect(
       requiredElement<HTMLElement>(".v7-dwarf-mound").textContent,
-    ).toContain(`${burrowedInfoTextV7("Player 2's")}.`);
+    ).toContain(`${burrowedInfoTextV7("the Dwarves'")}.`);
     victimApp.destroy();
   });
 });
@@ -777,7 +777,7 @@ describe("Dwarf crowd control through the dock and the board", () => {
       at: V.wholeBarricade,
     });
     await waitUntil(() =>
-      live().includes("Your Fighter hit Player 2's Barricade for 5"),
+      live().includes("Your Fighter hit the Dwarves' Barricade for 5"),
     );
     host.callbacks?.onSelection({ kind: "TILE", at: V.wholeBarricade });
     expect(

@@ -162,7 +162,7 @@ describe("Board is picked on the board", () => {
       () =>
         document
           .querySelector("#v7-live")
-          ?.textContent?.includes("You boarded Player 2's Patrol Boat") ===
+          ?.textContent?.includes("You boarded the Undead's Patrol Boat") ===
         true,
     );
     expect(host.lastModel?.interaction.navalPick ?? null).toBeNull();

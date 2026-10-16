@@ -415,7 +415,7 @@ describe("the notice of a Cult boundary", () => {
     ).toEqual({ text: "Offering: +3 Favour, −2 population", toast: true });
     // The Human seat is told its Knight was Seized, and no more.
     expect(notice(seizeOf(state, CULT_UI_V7.knight), 1)).toEqual({
-      text: "Player 1 Seized your Knight",
+      text: "The Cultists Seized your Knight",
       toast: true,
     });
     expect(notice(sacrificeOf(state, CULT_UI_V7.initiate), 1)).toBeNull();

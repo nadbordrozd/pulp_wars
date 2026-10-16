@@ -56,6 +56,7 @@ import {
   favourCostTextV7,
   strandsTextV7,
 } from "./cult-channel-presentation-v7";
+import { playerPossessiveV7, playerSubjectV7 } from "./player-names-v7";
 
 /**
  * The Cultists of the Ancient Ones, rituals, hexes and tricks in the
@@ -358,13 +359,9 @@ export function summoningMarkLabelV7(
   return null;
 }
 
-/** "your next turn" or "Player 2's next turn". */
+/** "your next turn" or "the Martians' next turn". */
 function nextTurnOf(view: PlayerViewV7, playerId: number): string {
-  if (playerId === view.viewer.id) return "your next turn";
-  const player = view.players.find((candidate) => candidate.id === playerId);
-  return player === undefined
-    ? "its owner's next turn"
-    : `Player ${player.seat + 1}'s next turn`;
+  return `${playerPossessiveV7(view, playerId, "its owner's")} next turn`;
 }
 
 /** "6 damage to every unit on these nine tiles". */
@@ -744,8 +741,7 @@ const FIZZLE_REASONS_V7: Readonly<Record<RitualFizzleReasonV7, string>> = {
 };
 
 function seat(view: PlayerViewV7, playerId: number): string {
-  const player = view.players.find((candidate) => candidate.id === playerId);
-  return player === undefined ? "An enemy" : `Player ${player.seat + 1}`;
+  return playerSubjectV7(view, playerId);
 }
 
 function unitLabel(view: PlayerViewV7, unitId: UnitId): string | null {
@@ -777,12 +773,12 @@ export function cultTrickNoticePartsV7(
         parts.push(
           event.playerId === viewerId
             ? `${capital(ritualNameV7(event.ritual))} begun: it completes at the start of your next turn`
-            : `${seat(after, event.playerId)} begins ${ritualNameV7(event.ritual)}: break its circle before their next turn`,
+            : `${seat(after, event.playerId)} begin ${ritualNameV7(event.ritual)}: break its circle before their next turn`,
         );
         break;
       case "RITUAL_FIZZLED":
         parts.push(
-          `${event.playerId === viewerId ? "Your" : `${seat(after, event.playerId)}'s`} ${ritualNameV7(event.ritual).replace(/^the /, "")} fizzled: ${FIZZLE_REASONS_V7[event.reason]}`,
+          `${capital(playerPossessiveV7(after, event.playerId))} ${ritualNameV7(event.ritual).replace(/^the /, "")} fizzled: ${FIZZLE_REASONS_V7[event.reason]}`,
         );
         break;
       case "STAR_FELL":
@@ -800,7 +796,7 @@ export function cultTrickNoticePartsV7(
         parts.push(
           event.playerId === viewerId
             ? `The ${CULT_SUMMONED_ROLE_RULES_V7.HERALD.label} arrives`
-            : `${seat(after, event.playerId)}'s ${CULT_SUMMONED_ROLE_RULES_V7.HERALD.label} arrives`,
+            : `${capital(playerPossessiveV7(after, event.playerId))} ${CULT_SUMMONED_ROLE_RULES_V7.HERALD.label} arrives`,
         );
         break;
       case "CITY_COWED":

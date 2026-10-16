@@ -65,8 +65,8 @@ describe("Revision 17 Goblin DOM", () => {
     count.dispatchEvent(new Event("change", { bubbles: true }));
     expect(labelsIn("[data-v7-factions]")).toEqual([
       "Your faction",
-      "Player 2 faction",
-      "Player 3 faction",
+      "Opponent 1",
+      "Opponent 2",
     ]);
     for (const seat of [0, 1, 2]) {
       const field = requiredElement<HTMLSelectElement>(`#v7-faction-${seat}`);
@@ -395,10 +395,10 @@ describe("Revision 17 Goblin DOM", () => {
     requiredButton("compact-menu").click();
     requiredButton("leaderboard").click();
     expect(
-      [...document.querySelectorAll(".v7-faction-chip")].map(
-        (chip) => chip.textContent,
+      [...document.querySelectorAll(".v7-leaderboard-player")].map(
+        (name) => name.textContent,
       ),
-    ).toEqual(expect.arrayContaining(["Goblin", "Human"]));
+    ).toEqual(expect.arrayContaining(["You", "Humans"]));
     app.destroy();
 
     // Training shows Goblin names, and LEGACY Human art carries the badge.

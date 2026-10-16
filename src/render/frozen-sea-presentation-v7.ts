@@ -16,6 +16,7 @@ import {
   type PublicIceTileV7,
   type PublicUnitV7,
 } from "../engine/index";
+import { playerPossessiveV7, playerSubjectV7 } from "./player-names-v7";
 
 /**
  * The frozen sea interface (bead pulp_wars-5ti.7, second part;
@@ -324,10 +325,7 @@ export function crushWarningV7(
   if (ice === undefined) return null;
   const damage = Math.min(unit.hp, ICE_CRUSH_DAMAGE_V7);
   const lethal = damage >= unit.hp;
-  const whose =
-    ice.ownerId === view.viewer.id
-      ? "your"
-      : `${playerName(view, ice.ownerId)}'s`;
+  const whose = possessive(view, ice.ownerId);
   return {
     damage,
     lethal,
@@ -351,19 +349,12 @@ export function frozenSeaCombatNotesV7(
 /** The Ice Folk goal of Sea Dog (section 8.11). */
 export const ICE_SEA_DOG_GOAL_V7 = `Hold the ice with ${ICE_SEA_DOG_UNITS_V7} units at once.`;
 
-function playerName(view: PlayerViewV7, playerId: number): string {
-  const player = view.players.find((candidate) => candidate.id === playerId);
-  return player === undefined ? "an enemy" : `Player ${player.seat + 1}`;
-}
-
 function subject(view: PlayerViewV7, playerId: number): string {
-  return playerId === view.viewer.id ? "You" : playerName(view, playerId);
+  return playerSubjectV7(view, playerId);
 }
 
 function possessive(view: PlayerViewV7, playerId: number): string {
-  return playerId === view.viewer.id
-    ? "your"
-    : `${playerName(view, playerId)}'s`;
+  return playerPossessiveV7(view, playerId);
 }
 
 /**

@@ -340,14 +340,14 @@ describe("a ritual on the board, for every viewer", () => {
     const rival = viewOf(state, 1);
     const seen = required(rival.cult.rituals[0]);
     expect(ritualMarkNameV7(rival, previewRitualV7(rival, seen))).toMatch(
-      /at the start of Player 1's next turn/,
+      /at the start of the Cultists' next turn/,
     );
     const forecast = (entry: typeof seen) => previewRitualV7(rival, entry);
     expect(cultTrickTileLinesV7(rival, R.star, forecast)).toEqual([
-      "Star-fall lands here at the start of Player 1's next turn: 7 damage to every unit on the nine tiles: 3 units there now, 1 would die. Disrupt its circle and nothing happens",
+      "Star-fall lands here at the start of the Cultists' next turn: 7 damage to every unit on the nine tiles: 3 units there now, 1 would die. Disrupt its circle and nothing happens",
     ]);
     expect(cultTrickTileLinesV7(rival, R.starKnight, forecast)).toEqual([
-      "In a star's path: 7 damage at the start of Player 1's next turn",
+      "In a star's path: 7 damage at the start of the Cultists' next turn",
     ]);
     expect(cultTrickTileLinesV7(rival, at(9, 1), forecast)).toEqual([]);
     // The leader's own tile: its chip, said.
@@ -364,7 +364,7 @@ describe("a ritual on the board, for every viewer", () => {
         previewRitualV7(free, required(free.cult.rituals[0])),
       ),
     ).toBe(
-      "The Herald arrives here at the start of Player 1's next turn: the Herald starts with 5 of the 3 strands it needs. A healthy unit on this tile blocks it.",
+      "The Herald arrives here at the start of the Cultists' next turn: the Herald starts with 5 of the 3 strands it needs. A healthy unit on this tile blocks it.",
     );
     const blocked = viewOf(cultSummoningBlockedUiFixtureV7(), 1);
     expect(
@@ -649,7 +649,7 @@ describe("the notices", () => {
       "Star-fall begun: it completes at the start of your next turn",
     );
     expect(notice(step(state, begin, 0, 1))).toBe(
-      "Player 1 begins Star-fall: break its circle before their next turn",
+      "The Cultists begin Star-fall: break its circle before their next turn",
     );
     // Both seats end their turn by hand: the star falls at the Cult's
     // Start Turn.
@@ -712,7 +712,7 @@ describe("the notices", () => {
     ] as unknown as PlayerEventV7[];
     expect(cultTrickNoticePartsV7(events, view, view)).toEqual([
       "Your Great Summoning fizzled: the mark was blocked",
-      "Player 2's Star-fall fizzled: too few cultists still chant",
+      "The Humans' Star-fall fizzled: too few cultists still chant",
     ]);
   });
 });

@@ -249,6 +249,12 @@ import {
   tribeCardLabelV7,
 } from "../tribe-stars-presentation-v7";
 import {
+  playerNameV7,
+  playerPossessiveV7,
+  playerSubjectV7,
+  tribeLabelV7,
+} from "../player-names-v7";
+import {
   LIVE_DIRECTION_ART_REGISTRY_V7,
   liveBoardLookV7,
 } from "../canvas/live-board-look-v7";
@@ -414,7 +420,6 @@ import {
   goblinFieldDefenseBlockedV7,
   kaboomPreviewTextV7,
   kaboomTooltipV7,
-  matchHasGoblinV7,
   rallyIsBerserkV7,
   technologyNameV7,
   type KaboomPreviewTextV7,
@@ -455,7 +460,6 @@ import {
   hatchBlockedEggsV7,
   layEggRowTextV7,
   layEggUnavailableTextV7,
-  matchHasDinosaurV7,
   slotCapacityTooltipV7,
   slotsTextV7,
   turnsTextV7,
@@ -498,7 +502,6 @@ import {
   martianStatsV7,
   martianTurnChipsV7,
   martianUnitNameV7,
-  matchHasMartianV7,
   mindControlUnavailableTextV7,
   mindControlledInfoV7,
   rayPowerTextV7,
@@ -742,7 +745,6 @@ import {
   type CultChannelPickV7,
 } from "../canvas/cult-channel-board-plan-v7";
 import {
-  FAVOUR_LABEL_V7,
   FAVOUR_TOOLTIP_V7,
   GREAT_SUMMONING_UNLOCK_TEXT_V7,
   OFFERING_LABEL_V7,
@@ -4084,7 +4086,7 @@ export class Ruleset7DomAppView {
         this.#factionEmblem(faction, "small"),
         select(
           this.#document,
-          seat === 0 ? "Your faction" : `${playerName(seat)} faction`,
+          seat === 0 ? "Your faction" : `Opponent ${seat}`,
           `v7-faction-${seat}`,
           FACTIONS,
           faction,
@@ -5346,18 +5348,11 @@ export class Ruleset7DomAppView {
       // names its controller and original owner, so no owner line.
       const control = mindControlledInfoV7(view, unit);
       if (unit.ownerId !== view.viewer.id && control === null) {
-        const owner = view.players.find((player) => player.id === unit.ownerId);
+        const owner = tribeLabelV7(view, unit.ownerId);
         if (owner !== undefined)
           dock
             .querySelector(".v7-identity")
-            ?.append(
-              text(
-                this.#document,
-                "span",
-                playerName(owner.seat),
-                "v7-identity-owner",
-              ),
-            );
+            ?.append(text(this.#document, "span", owner, "v7-identity-owner"));
       }
       const identityColumn = dock.querySelector<HTMLElement>(".v7-identity");
       // Map curiosities (section 12.1): the Spider belongs to nobody.
@@ -6514,18 +6509,11 @@ export class Ruleset7DomAppView {
             "v7-identity-kind",
           ),
         );
-      const owner = view.players.find((player) => player.id === city.ownerId);
+      const owner = tribeLabelV7(view, city.ownerId);
       if (!owned && owner !== undefined)
         dock
           .querySelector(".v7-identity")
-          ?.append(
-            text(
-              this.#document,
-              "span",
-              playerName(owner.seat),
-              "v7-identity-owner",
-            ),
-          );
+          ?.append(text(this.#document, "span", owner, "v7-identity-owner"));
       const details = el(this.#document, "dl", "v7-city-stats");
       const besieged = view.units.some(
         (unit) =>
@@ -9193,23 +9181,18 @@ export class Ruleset7DomAppView {
       row.style.setProperty("--player", factionColourV7(entry.faction));
       row.dataset.status = entry.status.toLowerCase();
       if (entry.isViewer) row.dataset.viewer = "true";
+      // Named by tribe, "You" for the viewer (bead pulp_wars-2yc.56): the
+      // name is the faction, so no separate faction chip.
       const name = el(this.#document, "span", "v7-leaderboard-name");
       name.append(
         el(this.#document, "span", "v7-player-swatch"),
-        entry.isViewer
-          ? `${playerName(entry.seat)} (you)`
-          : playerName(entry.seat),
-      );
-      if (matchHasFactionsV7(view)) {
-        const faction = text(
+        text(
           this.#document,
           "span",
-          factionNameV7(entry.faction),
-          "v7-chip v7-faction-chip",
-        );
-        faction.dataset.faction = entry.faction.toLowerCase();
-        name.append(faction);
-      }
+          playerNameV7(view, entry.playerId),
+          "v7-leaderboard-player",
+        ),
+      );
       // AIs allied (`pulp_wars-2yc.45`): every AI row carries the mark of
       // the chip above the list, so the sides read at a glance in any
       // order; a row that is out keeps it.
@@ -9244,24 +9227,8 @@ export class Ruleset7DomAppView {
       // The counts are grouped so a phone can set them under the name.
       const stats = el(this.#document, "span", "v7-leaderboard-stats");
       stats.append(cities, units);
-      // The Cultists (bead pulp_wars-mch9.17, section 3): Favour is public,
-      // so every Cult seat still in the match shows its candle and number
-      // to every player.
-      if (seatHasFavourV7(view, entry.playerId)) {
-        const favour = el(
-          this.#document,
-          "span",
-          "v7-leaderboard-stat v7-leaderboard-favour",
-        );
-        favour.title = FAVOUR_LABEL_V7;
-        favour.dataset.favour = String(favourOfV7(view, entry.playerId));
-        favour.append(
-          this.#favourIcon(),
-          String(favourOfV7(view, entry.playerId)),
-          text(this.#document, "span", ` ${FAVOUR_LABEL_V7}`, "v7-sr-only"),
-        );
-        stats.append(favour);
-      }
+      // Every faction's row has the same shape (bead pulp_wars-mch9.28):
+      // the Cultists' Favour stays in their own top bar, not here.
       if (entry.status === "ELIMINATED")
         stats.append(text(this.#document, "span", "Out", "v7-chip is-idle"));
       row.append(name, stats);
@@ -10096,9 +10063,7 @@ export class Ruleset7DomAppView {
     const total = summary.players.find((entry) => entry.playerId === winnerId)
       ?.score.total;
     if (winner === undefined || total === undefined) return null;
-    const who = winner.isViewer
-      ? "You win"
-      : `${playerName(winner.seat)} · ${factionNameV7(winner.faction)} wins`;
+    const who = `${playerSubjectV7(view, winner.playerId)} win`;
     const verdict = text(
       this.#document,
       "p",
@@ -10211,7 +10176,7 @@ export class Ruleset7DomAppView {
       const name = text(
         this.#document,
         "span",
-        `${entry.isViewer ? "You" : playerName(entry.seat)} · ${factionNameV7(entry.faction)}`,
+        playerNameV7(view, entry.playerId),
         "v7-result-seat-name",
       );
       const cities = el(this.#document, "span", "v7-leaderboard-stat");
@@ -10925,12 +10890,12 @@ export class Ruleset7DomAppView {
         : view.players.find(
             (player) => player.id === view.turnOrder[view.activeSeatIndex],
           );
-    return view === null
-      ? `${playerName(active?.seat ?? 0)} is playing…`
-      : `${playerTitle(view, active?.seat ?? 0)} is playing…`;
+    return view === null || active === undefined
+      ? "Your rivals are playing…"
+      : `${playerSubjectV7(view, active.id)} are playing…`;
   }
   /**
-   * The AI-turn status: "Player 5 (Dwarf) is playing…", and with several
+   * The AI-turn status: "The Dwarves are playing…", and with several
    * opponents still in the game its place among them, "(3 of 7)" (map
    * scale section 8.1). The place is its own element so that a phone,
    * where the turn-order strip already shows it, can leave it out.
@@ -10982,9 +10947,7 @@ export class Ruleset7DomAppView {
       if (id === view.viewer.id) chip.dataset.viewer = "true";
       if (active) chip.setAttribute("aria-current", "true");
       chip.style.setProperty("--player", factionColourV7(player.faction));
-      const name = `${
-        id === view.viewer.id ? "You" : playerName(player.seat)
-      }, ${factionNameV7(player.faction)}${
+      const name = `${playerNameV7(view, id)}${
         out ? ", out" : active ? ", playing now" : ""
       }`;
       chip.title = name;
@@ -12646,7 +12609,7 @@ export class Ruleset7DomAppView {
       const target = unitById(id);
       return target === undefined
         ? "unit"
-        : `${possessiveName(view, target.ownerId)} ${unitRoleRuleV7(view, target).label}`;
+        : `${playerPossessiveV7(view, target.ownerId, "an enemy")} ${unitRoleRuleV7(view, target).label}`;
     };
     const entry = ICE_FOLK_ABILITY_ENTRIES_V7.find(
       (candidate) => candidate.kind === pick.kind,
@@ -16605,17 +16568,6 @@ function iconButton(
   return node;
 }
 
-/** "Your" for the viewer, otherwise "Player N's". */
-function possessiveName(view: PlayerViewV7, playerId: number): string {
-  if (playerId === view.viewer.id) return "your";
-  const player = view.players.find((candidate) => candidate.id === playerId);
-  return player === undefined ? "an enemy" : `${playerName(player.seat)}'s`;
-}
-
-function playerName(seat: number): string {
-  return `Player ${seat + 1}`;
-}
-
 const STAT_ICONS: Readonly<Record<string, UiIconIdV7>> = {
   HP: "hp",
   SHIELD: "shield",
@@ -16676,32 +16628,6 @@ function populationMeter(
     meter.append(pip);
   }
   return meter;
-}
-
-/**
- * True in a match with an Undead or Goblin seat, where the leaderboard and
- * turn status name each player's faction.
- */
-function matchHasFactionsV7(view: PlayerViewV7): boolean {
-  return (
-    matchHasUndeadV7(view) ||
-    matchHasGoblinV7(view) ||
-    matchHasDinosaurV7(view) ||
-    matchHasMartianV7(view) ||
-    matchHasIceFolkSeatV7(view) ||
-    matchHasDwarfSeatV7(view)
-  );
-}
-
-/**
- * Leaderboard, banner and turn names; faction appears only in matches with
- * an Undead or Goblin seat.
- */
-function playerTitle(view: PlayerViewV7, seat: number): string {
-  const player = view.players.find((candidate) => candidate.seat === seat);
-  return matchHasFactionsV7(view) && player !== undefined
-    ? `${playerName(seat)} (${factionNameV7(player.faction)})`
-    : playerName(seat);
 }
 
 const FACTION_COMMAND_ICONS: Partial<Record<CommandV7["kind"], UiIconIdV7>> = {
