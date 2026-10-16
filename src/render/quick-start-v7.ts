@@ -1,11 +1,15 @@
 import {
-  AI_HEAD_START_COINS_V7,
+  DIFFICULTIES_V7,
+  DIFFICULTY_BASE_HEAD_START_V7,
+  DIFFICULTY_CONTINENTS_REFERENCE_LAND_PER_PLAYER_V7,
+  DIFFICULTY_REFERENCE_LAND_PER_PLAYER_V7,
   allowedBoardSizesV7,
   crowdedBoardV7,
+  difficultyHeadStartCoinsV7,
   isGeneratedMapTypeV7,
   landTileCountV7,
-  type AiHeadStartCoinsV7,
   type BoardSizeV7,
+  type DifficultyV7,
   type FactionIdV7,
   type MapTypeV7,
 } from "../engine/index";
@@ -21,17 +25,14 @@ import {
  */
 
 /**
- * The difficulty levels, easiest first. Normal is the game as balanced, the
- * AI with no head start (the AI cannot be made weaker than that without a
- * rule change); each harder level gives the AI players more starting Coins.
+ * The difficulty levels, easiest first (the engine's `DIFFICULTIES_V7`,
+ * `src/engine/v7/difficulty.ts`, which also reads a match's level back for
+ * the skirmish stars). Normal is the game as balanced, the AI with no head
+ * start (the AI cannot be made weaker than that without a rule change);
+ * each harder level gives the AI players more starting Coins.
  */
-export const QUICK_DIFFICULTIES_V7 = Object.freeze([
-  "NORMAL",
-  "HARD",
-  "HARDER",
-  "BRUTAL",
-] as const);
-export type QuickDifficultyV7 = (typeof QUICK_DIFFICULTIES_V7)[number];
+export const QUICK_DIFFICULTIES_V7 = DIFFICULTIES_V7;
+export type QuickDifficultyV7 = DifficultyV7;
 /** The difficulty a first game starts on. */
 export const QUICK_DEFAULT_DIFFICULTY_V7: QuickDifficultyV7 = "NORMAL";
 export const QUICK_DIFFICULTY_LABELS_V7: Readonly<
@@ -105,57 +106,18 @@ export function quickBoardSizeV7(
 }
 
 /**
- * The AI head start of each difficulty on a board of reference crowding:
- * Normal none, then +5, +10 and +20 Coins.
+ * The AI head start of each difficulty and its scaling by crowding: the
+ * engine's (`src/engine/v7/difficulty.ts`) under the quick start's names.
+ * Normal none, then +5, +10 and +20 Coins at one player per 40 land tiles
+ * (33 on Continents), scaled by the land each player has and snapped to the
+ * Coins the engine offers.
  */
-export const QUICK_BASE_HEAD_START_V7: Readonly<
-  Record<QuickDifficultyV7, number>
-> = Object.freeze({ NORMAL: 0, HARD: 5, HARDER: 10, BRUTAL: 20 });
-/** Reference crowding: one player per this many land tiles. */
-export const QUICK_REFERENCE_LAND_PER_PLAYER_V7 = 40;
-/**
- * The reference on Continents: 33, the 40 above scaled to the 46% land of
- * `7r87` (56% before), which gives every Continents board and opponent
- * count the head start it had.
- */
-export const QUICK_CONTINENTS_REFERENCE_LAND_PER_PLAYER_V7 = 33;
-
-/**
- * The AI head start of a difficulty on a board. A head start counts for more
- * where players meet early, so the base Coins scale with the land each
- * player has: `base * (land / players) / 40`. The result snaps to the
- * nearest Coins the engine offers (5, 10, 20, nearest by ratio), never
- * below +5, so only Normal has none. Non-decreasing with the difficulty and
- * with the land per player.
- */
-export function quickHeadStartCoinsV7(
-  difficulty: QuickDifficultyV7,
-  mapType: MapTypeV7,
-  boardSize: BoardSizeV7,
-  opponents: number,
-): 0 | AiHeadStartCoinsV7 {
-  const base = QUICK_BASE_HEAD_START_V7[difficulty];
-  if (base === 0) return 0;
-  const seats = opponents + 1;
-  const land = isGeneratedMapTypeV7(mapType)
-    ? landTileCountV7(boardSize, mapType)
-    : boardSize * boardSize;
-  const reference =
-    mapType === "CONTINENTS"
-      ? QUICK_CONTINENTS_REFERENCE_LAND_PER_PLAYER_V7
-      : QUICK_REFERENCE_LAND_PER_PLAYER_V7;
-  const raw = (base * land) / seats / reference;
-  return nearestHeadStartCoinsV7(raw);
-}
-
-/** The offered Coins nearest to `raw` by ratio (the larger on a tie). */
-function nearestHeadStartCoinsV7(raw: number): AiHeadStartCoinsV7 {
-  let best: AiHeadStartCoinsV7 = AI_HEAD_START_COINS_V7[0];
-  for (const coins of AI_HEAD_START_COINS_V7)
-    if (Math.abs(Math.log(raw / coins)) <= Math.abs(Math.log(raw / best)))
-      best = coins;
-  return best;
-}
+export const QUICK_BASE_HEAD_START_V7 = DIFFICULTY_BASE_HEAD_START_V7;
+export const QUICK_REFERENCE_LAND_PER_PLAYER_V7 =
+  DIFFICULTY_REFERENCE_LAND_PER_PLAYER_V7;
+export const QUICK_CONTINENTS_REFERENCE_LAND_PER_PLAYER_V7 =
+  DIFFICULTY_CONTINENTS_REFERENCE_LAND_PER_PLAYER_V7;
+export const quickHeadStartCoinsV7 = difficultyHeadStartCoinsV7;
 
 /**
  * The opponents' factions: every faction but the player's, in a random

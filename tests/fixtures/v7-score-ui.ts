@@ -1,8 +1,10 @@
 import {
   createPlayableGameV7,
+  difficultyHeadStartCoinsV7,
   factionTreeV7,
   scoreRankingV7,
   scoresV7,
+  type DifficultyV7,
   type FactionIdV7,
   type GameModeV7,
   type GameStateV7,
@@ -194,11 +196,34 @@ function withPeaksV7(state: GameStateV7, extra = 6): GameStateV7 {
  * stars when the rating allows. `flawless` clears the human's losses (it
  * lost no unit and no city, section 5.4): 3 stars and the glow.
  */
-export function scoreDominationVictoryV7(flawless = false): GameStateV7 {
+export function scoreDominationVictoryV7(
+  flawless = false,
+  options: {
+    /**
+     * Skirmish stars (`pulp_wars-2yc.69`): the difficulty named on the
+     * setup, with its own head start (Normal by default).
+     */
+    readonly difficulty?: DifficultyV7;
+    /** Kill value added to the human's ledger (2 points per Coin). */
+    readonly extraKillValue?: number;
+  } = {},
+): GameStateV7 {
   const live = scoreUiStateV7("DOMINATION", 18);
   const human = live.humanPlayerId;
+  const difficulty = options.difficulty ?? "NORMAL";
+  const coins = difficultyHeadStartCoinsV7(
+    difficulty,
+    live.setup.mapType,
+    live.setup.width,
+    live.setup.aiCount,
+  );
   const state: GameStateV7 = {
     ...live,
+    setup: {
+      ...live.setup,
+      aiDifficulty: difficulty,
+      ...(coins === 0 ? {} : { aiHeadStart: { coins } }),
+    },
     players: live.players.map((player) =>
       player.id === human ? player : { ...player, status: "ELIMINATED" },
     ),
@@ -206,9 +231,11 @@ export function scoreDominationVictoryV7(flawless = false): GameStateV7 {
     units: live.units.filter((unit) => unit.ownerId === human),
     scoreLedger: live.scoreLedger.map((entry, index) =>
       entry.playerId === human
-        ? flawless
-          ? { ...entry, lossValue: 0, flawless: true }
-          : entry
+        ? {
+            ...entry,
+            killValue: entry.killValue + (options.extraKillValue ?? 0),
+            ...(flawless ? { lossValue: 0, flawless: true } : {}),
+          }
         : { ...entry, eliminatedBy: human, eliminatedAt: 100 + index },
     ),
     outcome: { kind: "VICTORY", winnerId: human },

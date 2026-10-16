@@ -127,6 +127,16 @@ opponents on Continents 20 × 20 (20 to 23 land tiles each) get +5, +5 and
 raises it: one opponent on Pangea 20 × 20 (144 land tiles each) is +20 even
 on Hard. The Showcase never has a head start.
 
+**Stars** (`pulp_wars-2yc.69`). The difficulty also caps the tribe stars a
+win can earn: Normal 1, Hard and Harder 2, Brutal 3
+([score and stars section 5](../product/RULESET_7_SCORE_AND_STARS.md#5-stars)).
+The launched setup names it in `aiDifficulty` when the head start is the
+one the difficulty gives on that board; a head start set by hand under
+Advanced launches as `NORMAL`, and the stars read its level back from the
+head start (the hardest level whose head start it reaches). The base head
+starts and their scaling live in the engine
+(`src/engine/v7/difficulty.ts`), which the quick start re-exports.
+
 ## Pickers (`pulp_wars-2yc.65`)
 
 The menus (new game, campaign briefing, Settings on the front screens and in

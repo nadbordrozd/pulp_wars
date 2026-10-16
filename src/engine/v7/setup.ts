@@ -1,4 +1,5 @@
 import {
+  DIFFICULTIES_V7,
   FACTION_IDS_V7,
   MAP_GENERATION_REVISION_V7,
   PLAYER_COLORS_V7,
@@ -8,6 +9,7 @@ import {
   type AiHeadStartCoinsV7,
   type AiHeadStartV7,
   type BoardSizeV7,
+  type DifficultyV7,
   type FactionIdV7,
   type GameModeV7,
   type MatchSetupV7,
@@ -15,6 +17,7 @@ import {
 } from "./types";
 import { hasExactKeysV7, isDenseArrayV7, isUint32V7 } from "./schema";
 import { seatCountAllowedV7 } from "./map-scale";
+import { setupDifficultyAllowedV7 } from "./difficulty";
 import { missionDefinitionV7, missionSeatFactionsV7 } from "./missions/index";
 
 const SETUP_KEYS_V7 = [
@@ -92,6 +95,28 @@ function splitAiHeadStartV7(input: unknown): {
         ? { coins: aiHeadStart.coins as AiHeadStartCoinsV7 }
         : null,
   };
+}
+
+/**
+ * Difficulty (`pulp_wars-2yc.69`): `aiDifficulty` is `NORMAL` or a harder
+ * level of `DIFFICULTIES_V7`. The setup without the harder name (read as
+ * `NORMAL` by the shape checks), and the name (null when invalid).
+ */
+function splitDifficultyV7(input: unknown): {
+  readonly rest: unknown;
+  readonly difficulty: DifficultyV7 | null;
+} {
+  if (typeof input !== "object" || input === null)
+    return { rest: input, difficulty: "NORMAL" };
+  const named = (input as { readonly aiDifficulty?: unknown }).aiDifficulty;
+  if (named === "NORMAL" || named === undefined)
+    return { rest: input, difficulty: "NORMAL" };
+  return DIFFICULTIES_V7.includes(named as DifficultyV7)
+    ? {
+        rest: { ...input, aiDifficulty: "NORMAL" },
+        difficulty: named as DifficultyV7,
+      }
+    : { rest: input, difficulty: null };
 }
 
 /**
@@ -203,7 +228,10 @@ export function allowDuplicateFactionsV7(setup: MatchSetupV7): MatchSetupV7 {
  * setup without it is a Domination setup and is returned without the key.
  * The optional `aiHeadStart` (`pulp_wars-w49.39`) is `{ coins }` with 5, 10,
  * or 20, and never on the Showcase or a mission; a setup without it has no
- * head start and is returned without the key.
+ * head start and is returned without the key. `aiDifficulty`
+ * (`pulp_wars-2yc.69`) is `NORMAL`, or `HARD`, `HARDER`, or `BRUTAL` only on
+ * a generated map with exactly that level's head start on the board
+ * (`setupDifficultyAllowedV7`).
  */
 export function validateMatchSetupV7(input: unknown): MatchSetupValidationV7 {
   // Score and modes (section 4.3): `gameMode` is optional; a `SHOWCASE` or
@@ -211,11 +239,30 @@ export function validateMatchSetupV7(input: unknown): MatchSetupValidationV7 {
   const { rest: withoutMode, gameMode } = splitGameModeV7(input);
   // AI head start (`pulp_wars-w49.39`): `aiHeadStart` is optional and never
   // on a `SHOWCASE` or `MISSION` setup, which fix their own start.
-  const { rest, aiHeadStart } = splitAiHeadStartV7(withoutMode);
-  if (gameMode === null || aiHeadStart === null)
+  const { rest: withoutHeadStart, aiHeadStart } =
+    splitAiHeadStartV7(withoutMode);
+  // Difficulty (`pulp_wars-2yc.69`): a harder name is checked against the
+  // head start once the rest of the setup is valid.
+  const { rest, difficulty } = splitDifficultyV7(withoutHeadStart);
+  if (gameMode === null || aiHeadStart === null || difficulty === null)
     return { ok: false, error: { code: "INVALID_SETUP", params: {} } };
   const result = validateSetupWithoutModeV7(rest);
-  if (!result.ok || (gameMode === undefined && aiHeadStart === undefined))
+  if (!result.ok) return result;
+  if (
+    !setupDifficultyAllowedV7(
+      {
+        ...result.setup,
+        ...(aiHeadStart === undefined ? {} : { aiHeadStart }),
+      },
+      difficulty,
+    )
+  )
+    return { ok: false, error: { code: "INVALID_SETUP", params: {} } };
+  if (
+    gameMode === undefined &&
+    aiHeadStart === undefined &&
+    difficulty === "NORMAL"
+  )
     return result;
   const fixed =
     result.setup.mapType === "SHOWCASE" || result.setup.mapType === "MISSION";
@@ -225,6 +272,7 @@ export function validateMatchSetupV7(input: unknown): MatchSetupValidationV7 {
     ok: true,
     setup: {
       ...result.setup,
+      aiDifficulty: difficulty,
       ...(gameMode === undefined ? {} : { gameMode }),
       ...(aiHeadStart === undefined ? {} : { aiHeadStart }),
     },

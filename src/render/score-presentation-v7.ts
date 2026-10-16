@@ -240,14 +240,16 @@ export function leaderboardOrderV7<
   );
 }
 
-/** A rating threshold in hundredths as the screen shows it: "1.50". */
-export function ratingThresholdV7(hundredths: number): string {
-  return `${Math.floor(hundredths / 100)}.${String(hundredths % 100).padStart(2, "0")}`;
-}
-
-/** Section 8: "×1.83 the best rival's score". */
-export function ratingTextV7(grade: Pick<StarGradeV7, "rating">): string {
-  return `×${grade.rating.display} the best rival's score`;
+/**
+ * Section 8: the score the stars read, "Score 640", with the round when
+ * the match ran past it ("Score 640 at round 30": a long match is graded
+ * at round 30).
+ */
+export function gradeScoreTextV7(
+  grade: Pick<StarGradeV7, "score" | "ratingRound">,
+  endRound: number,
+): string {
+  return `Score ${grade.score}${endRound > grade.ratingRound ? ` at round ${grade.ratingRound}` : ""}`;
 }
 
 /** "2 of 3 stars", with ", flawless" for the glow. */
@@ -259,58 +261,46 @@ export function starsLabelV7(
 
 /** One condition of the grade on the end screen, met or missed. */
 export interface GradeConditionLineV7 {
-  readonly key:
-    "win" | "two" | "three" | "conquest" | "difficulty" | "flawless";
-  /** The stars the condition belongs to. */
-  readonly stars: 1 | 2 | 3;
+  readonly key: "win" | "two" | "three" | "flawless";
+  /** The stars the condition belongs to (0 for the glow, which adds none). */
+  readonly stars: 0 | 1 | 2 | 3;
   readonly text: string;
   readonly met: boolean;
 }
 
 /**
- * Section 8: the conditions met and missed, star by star. The hardest
- * difficulty is listed only when it was missed (Normal is the only, and so
- * the hardest, difficulty today, section 5.5), and the flawless glow only
- * when earned (nothing explains it before, section 7).
+ * Section 8: the conditions met and missed, star by star: the win, then
+ * for each further star the score it needs, or, where the difficulty
+ * cannot earn it, the difficulty that can ("Play on Hard or harder",
+ * "Play on Brutal"). The flawless glow is listed only when earned (nothing
+ * explains it before, section 7).
  */
 export function gradeConditionLinesV7(
   grade: StarGradeV7,
 ): readonly GradeConditionLineV7[] {
-  const two = ratingThresholdV7(grade.thresholds.twoStarsHundredths);
-  const three = ratingThresholdV7(grade.thresholds.threeStarsHundredths);
   const lines: GradeConditionLineV7[] = [
     { key: "win", stars: 1, text: "Win", met: grade.conditions.victory },
-    {
-      key: "two",
-      stars: 2,
-      text: `Score ${two} times the best rival's`,
-      met: grade.conditions.twoStarRating,
-    },
-    {
-      key: "three",
-      stars: 3,
-      text: `Score ${three} times the best rival's`,
-      met: grade.conditions.threeStarRating,
-    },
+    grade.maxStars >= 2
+      ? {
+          key: "two",
+          stars: 2,
+          text: `Score ${grade.thresholds.twoStars} or more`,
+          met: grade.conditions.twoStarScore,
+        }
+      : { key: "two", stars: 2, text: "Play on Hard or harder", met: false },
+    grade.maxStars >= 3
+      ? {
+          key: "three",
+          stars: 3,
+          text: `Score ${grade.thresholds.threeStars} or more`,
+          met: grade.conditions.threeStarScore,
+        }
+      : { key: "three", stars: 3, text: "Play on Brutal", met: false },
   ];
-  if (grade.conditions.everyRivalEliminatedByYou !== null)
-    lines.push({
-      key: "conquest",
-      stars: 3,
-      text: "Take every rival's last city yourself",
-      met: grade.conditions.everyRivalEliminatedByYou,
-    });
-  if (!grade.conditions.hardestDifficulty)
-    lines.push({
-      key: "difficulty",
-      stars: 3,
-      text: "Play on the hardest difficulty",
-      met: false,
-    });
   if (grade.glow)
     lines.push({
       key: "flawless",
-      stars: 3,
+      stars: 0,
       text: "Flawless: you lost no unit and no city",
       met: true,
     });

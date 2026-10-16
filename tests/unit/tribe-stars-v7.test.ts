@@ -19,7 +19,6 @@ import {
 } from "../../src/app/game-mode-preference-v7";
 import {
   gameModeLineV7,
-  ratingMultipleV7,
   starAwardNewBestV7,
   starRulesV7,
   tribeCardLabelV7,
@@ -371,7 +370,9 @@ describe("tribe stars: what a finished game records (section 6)", () => {
       ratingHundredths: expect.any(Number) as number,
     });
     const flawless = tribeStarResultV7(won({ rivalPeak: 20 }));
-    expect(flawless).toMatchObject({ stars: 3, glow: true });
+    // No head start is Normal: a win earns 1 star, and the glow still
+    // records (pulp_wars-2yc.69).
+    expect(flawless).toMatchObject({ stars: 1, glow: true });
   });
 
   it("records nothing for a defeat or the Showcase", () => {
@@ -448,16 +449,11 @@ describe("tribe stars text (sections 7 and 8)", () => {
     expect(gameModeLineV7("PERFECTION")).toBe(
       "30 rounds. The highest score wins.",
     );
-    expect(ratingMultipleV7(150)).toBe("1.5");
-    expect(ratingMultipleV7(175)).toBe("1.75");
-    expect(ratingMultipleV7(200)).toBe("2");
-    expect(starRulesV7(3)).toEqual([
+    expect(starRulesV7()).toEqual([
       "★ Win.",
-      "★★ Win with 1.5 times the best rival's score.",
-      "★★★ Win with 2 times the best rival's score on the hardest difficulty, and in Domination take every rival's last city yourself.",
+      "★★ Win on Hard or harder with a high score.",
+      "★★★ Win on Brutal with a great score.",
     ]);
-    expect(starRulesV7(1)[2]).toContain("3 times");
-    expect(starRulesV7(2)[1]).toContain("1.75 times");
     expect(starAwardNewBestV7("GOBLIN", "DOMINATION")).toBe(
       "New best for the Goblins in Domination",
     );

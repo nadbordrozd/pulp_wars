@@ -766,7 +766,17 @@ export interface MatchSetupV7 {
   readonly width: BoardSizeV7;
   readonly height: BoardSizeV7;
   readonly aiCount: AiCountV7;
-  readonly aiDifficulty: "NORMAL";
+  /**
+   * The difficulty named at setup (`pulp_wars-2yc.69`, skirmish stars):
+   * `NORMAL` on every setup made before the levels, every Showcase and
+   * mission, and every setup whose head start was set by hand; `HARD`,
+   * `HARDER`, or `BRUTAL` only with exactly that level's AI head start on
+   * this board ({@link aiHeadStart}, `difficultyHeadStartCoinsV7`). Nothing
+   * in play reads it; the star grade reads it through
+   * `matchDifficultyV7`, which reads a `NORMAL` setup's level back from its
+   * head start.
+   */
+  readonly aiDifficulty: DifficultyV7;
   readonly aiMode: "RIVAL" | "COOPERATIVE";
   readonly humanColor: PlayerColorV7;
   readonly factions: readonly FactionIdV7[];
@@ -816,6 +826,19 @@ export interface MatchSetupV7 {
    */
   readonly aiHeadStart?: AiHeadStartV7;
 }
+
+/**
+ * Difficulty (`pulp_wars-2yc.54`, `pulp_wars-2yc.69`): the levels the
+ * new-game screen offers, easiest first; `src/engine/v7/difficulty.ts`
+ * holds their head starts.
+ */
+export const DIFFICULTIES_V7 = Object.freeze([
+  "NORMAL",
+  "HARD",
+  "HARDER",
+  "BRUTAL",
+] as const);
+export type DifficultyV7 = (typeof DIFFICULTIES_V7)[number];
 
 /** AI head start: the extra starting Coins a setup may give each AI seat. */
 export const AI_HEAD_START_COINS_V7 = Object.freeze([5, 10, 20] as const);

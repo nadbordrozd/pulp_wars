@@ -11,10 +11,9 @@ import {
   allianceLabelV7,
   alliedTeamV7,
   gradeConditionLinesV7,
+  gradeScoreTextV7,
   leaderboardOrderV7,
   pointsLabelV7,
-  ratingTextV7,
-  ratingThresholdV7,
   roundsLeftLabelV7,
   scoreBreakdownLinesV7,
   scoreLedeV7,
@@ -44,11 +43,12 @@ const GRADE_INPUTS: StarGradeInputsV7 = {
   gameMode: "DOMINATION",
   victory: true,
   rivals: 3,
-  hardestDifficulty: true,
+  difficulty: "BRUTAL",
+  // 2 stars at 200 + 2 x 90 = 380, 3 stars at 300 + 3 x 90 = 570.
+  landTiles: 90,
   yourScore: 312,
   bestRivalPeak: 223,
   ratingRound: 18,
-  everyRivalEliminatedByYou: false,
   flawless: false,
 };
 
@@ -233,57 +233,57 @@ describe("the match's alliance setting", () => {
 });
 
 describe("the grade on the end screen", () => {
-  it("shows the rating and the stars", () => {
+  it("shows the score the stars read and the stars", () => {
     const grade = starGradeV7(GRADE_INPUTS);
-    expect(ratingTextV7(grade)).toBe("×1.39 the best rival's score");
+    expect(gradeScoreTextV7(grade, 18)).toBe("Score 312");
+    expect(gradeScoreTextV7({ score: 640, ratingRound: 30 }, 41)).toBe(
+      "Score 640 at round 30",
+    );
     expect(starsLabelV7(grade)).toBe("1 of 3 stars");
     expect(starsLabelV7({ stars: 3, glow: true })).toBe(
       "3 of 3 stars, flawless",
     );
-    expect(ratingThresholdV7(175)).toBe("1.75");
   });
 
-  it("lists every condition met or missed, star by star, in Domination", () => {
+  it("lists every condition met or missed, star by star, on Brutal", () => {
     const lines = gradeConditionLinesV7(starGradeV7(GRADE_INPUTS));
     expect(lines.map((line) => [line.key, line.stars, line.met])).toEqual([
       ["win", 1, true],
       ["two", 2, false],
       ["three", 3, false],
-      ["conquest", 3, false],
     ]);
     expect(lines.map((line) => line.text)).toEqual([
       "Win",
-      "Score 1.50 times the best rival's",
-      "Score 2.00 times the best rival's",
-      "Take every rival's last city yourself",
+      "Score 380 or more",
+      "Score 570 or more",
+    ]);
+    const better = gradeConditionLinesV7(
+      starGradeV7({ ...GRADE_INPUTS, yourScore: 450 }),
+    );
+    expect(better.slice(1).map((line) => line.met)).toEqual([true, false]);
+  });
+
+  it("names the difficulty a star needs instead of a score it cannot earn", () => {
+    const normal = gradeConditionLinesV7(
+      starGradeV7({ ...GRADE_INPUTS, difficulty: "NORMAL", yourScore: 900 }),
+    );
+    expect(normal.map((line) => [line.text, line.met])).toEqual([
+      ["Win", true],
+      ["Play on Hard or harder", false],
+      ["Play on Brutal", false],
+    ]);
+    const hard = gradeConditionLinesV7(
+      starGradeV7({ ...GRADE_INPUTS, difficulty: "HARD", yourScore: 900 }),
+    );
+    expect(hard.map((line) => [line.text, line.met])).toEqual([
+      ["Win", true],
+      ["Score 380 or more", true],
+      ["Play on Brutal", false],
     ]);
   });
 
-  it("uses the thresholds for the number of rivals", () => {
-    const lines = gradeConditionLinesV7(
-      starGradeV7({ ...GRADE_INPUTS, rivals: 1, yourScore: 450 }),
-    );
-    expect(lines.slice(1, 3).map((line) => [line.text, line.met])).toEqual([
-      ["Score 2.00 times the best rival's", true],
-      ["Score 3.00 times the best rival's", false],
-    ]);
-  });
-
-  it("asks no conquest in Perfection, names a missed difficulty, and shows the glow only when earned", () => {
-    const perfection = gradeConditionLinesV7(
-      starGradeV7({
-        ...GRADE_INPUTS,
-        gameMode: "PERFECTION",
-        hardestDifficulty: false,
-      }),
-    );
-    expect(perfection.map((line) => line.key)).toEqual([
-      "win",
-      "two",
-      "three",
-      "difficulty",
-    ]);
-    // Flawless but under the 2-star rating: no glow, so nothing says it.
+  it("shows the glow only when earned, as no extra star", () => {
+    // Flawless but under the 2-star score: no glow, so nothing says it.
     expect(
       gradeConditionLinesV7(starGradeV7({ ...GRADE_INPUTS, flawless: true }))
         .map((line) => line.key)
@@ -294,7 +294,7 @@ describe("the grade on the end screen", () => {
     );
     expect(glowing.at(-1)).toEqual({
       key: "flawless",
-      stars: 3,
+      stars: 0,
       text: "Flawless: you lost no unit and no city",
       met: true,
     });

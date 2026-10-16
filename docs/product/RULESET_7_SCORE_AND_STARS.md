@@ -4,7 +4,10 @@
 engine (sections 3, 4, 5, and 9) is implemented by `pulp_wars-kaw6.2` and
 stated in [current rules section 3.1](RULESET_7_CURRENT.md#31-score-play-modes-and-stars)
 at `pulp-wars-poc-7r65`;
-the UI (sections 6 to 8) is not yet. It is an overlay over
+the UI (sections 6 to 8) is not yet. Section 5 (the stars) was redesigned
+by `pulp_wars-2yc.69` (the user, 2026-10-16): a win first, then the score
+against fixed thresholds, with the difficulty capping the stars. It is an
+overlay over
 [Ruleset 7: current rules](RULESET_7_CURRENT.md) at `pulp-wars-poc-7r59`;
 every rule this document does not mention stays in force. Section 12 lists
 the implementation beads. Appendix A records the first draft, the
@@ -50,15 +53,14 @@ whatever the AI mode.
 
 ## 1. Summary
 
-| Piece          | One sentence                                                                                                                                                                                          |
-| -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Score**      | Every player's score is territory, city levels, technology, achievements, army, and kills, minus units lost and damage taken; the penalty never takes away more than half.                            |
-| **Domination** | Today's game: you win when every rival is eliminated and lose when you are.                                                                                                                           |
-| **Perfection** | 30 rounds; after round 30 the highest score wins (eliminating every rival earlier still wins at once, and being eliminated still loses).                                                              |
-| **Rating**     | At the end, your score divided by the best rival's highest score, both measured no later than round 30.                                                                                               |
-| **Stars**      | 1 star: win. 2 stars: win with a rating of 1.5 or more (higher with fewer rivals). 3 stars: a rating of 2 or more on the hardest setup, and in Domination every rival eliminated by you. Flawless: 3. |
-| **Glow**       | A win in which you lost no unit and no city, with at least the 2-star rating, gives 3 stars and a hidden glow.                                                                                        |
-| **Tribe grid** | The new-game screen shows every tribe's emblem with its best stars (and glow) in the chosen mode; the record is kept in the browser and never lowered.                                                |
+| Piece          | One sentence                                                                                                                                                                               |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Score**      | Every player's score is territory, city levels, technology, achievements, army, and kills, minus units lost and damage taken; the penalty never takes away more than half.                 |
+| **Domination** | Today's game: you win when every rival is eliminated and lose when you are.                                                                                                                |
+| **Perfection** | 30 rounds; after round 30 the highest score wins (eliminating every rival earlier still wins at once, and being eliminated still loses).                                                   |
+| **Stars**      | No win, no star. A win is 1 star; a score of `200 + 2 × land` 2 stars and `300 + 3 × land` 3 stars (at the end, or round 30), capped by difficulty: Normal 1, Hard and Harder 2, Brutal 3. |
+| **Glow**       | A win in which you lost no unit and no city, with at least the 2-star score, gives a hidden glow (no extra star).                                                                          |
+| **Tribe grid** | The new-game screen shows every tribe's emblem with its best stars (and glow) in the chosen mode; the record is kept in the browser and never lowered.                                     |
 
 ## 2. Pillars
 
@@ -68,9 +70,9 @@ whatever the AI mode.
 2. **No factor rules, none is decoration.** In the hand-played games
    (section 3.6) no positive factor is more than 42% of a player's points
    and every factor that can be non-zero by then is a few percent or more.
-3. **Stars measure play, not the map.** The rating compares you with your
-   own rivals on the same board, so a bigger board or a longer game cannot
-   buy a star.
+3. **Stars measure play, not the map.** The thresholds grow with the
+   board's land and the grade stops at round 30, so a bigger board or a
+   longer game cannot buy a star (section 5.7).
 4. **Readable rules.** Every weight is a small whole number of points per
    counted thing, and the leaderboard shows the arithmetic.
 5. **Deterministic and replayable.** The score is a pure function of the
@@ -88,7 +90,7 @@ whatever the AI mode.
 | **Technology**   | the sum of the tiers of your researched technologies                                   | 8 per tier   | 55 tiers (44 on Dry Land): 25 technologies, 5 of tier 1, 10 of tier 2, 10 of tier 3 |
 | **Achievements** | achievements unlocked                                                                  | 40 each      | 7                                                                                   |
 | **Army**         | the value of the units you command now                                                 | 1 per Coin   | your unit slots                                                                     |
-| **Kills**        | the value of enemy units whose death is credited to you                                | 2 per Coin   | the rating stops counting at round 30 (section 5.1)                                 |
+| **Kills**        | the value of enemy units whose death is credited to you                                | 2 per Coin   | the grade stops counting at round 30 (section 5.1)                                  |
 | **Losses**       | the value of your units that died                                                      | −1 per Coin  | the penalty cap                                                                     |
 | **Damage taken** | Hit Points your units lost                                                             | −1 per 5 HP  | the penalty cap                                                                     |
 | **Penalty cap**  | Losses and Damage taken together never take away more than half of the positive points | —            | —                                                                                   |
@@ -352,63 +354,82 @@ domination|perfection` (default domination); `play:text` prints the
 
 ## 5. Stars
 
-### 5.1 The rating
+**Redesigned by `pulp_wars-2yc.69`** (the user, 2026-10-16): the first
+design compared your score with the best rival's ("2.5 times the best
+rival's score" in words), which sounds robust but is not: it moves with
+how the AI seats happen to fare against each other. Stars now need a win
+first, and then compare your score with fixed numbers, and the difficulty
+decides how many stars a win can earn at all. "We shall tune this later":
+every number below is a first estimate.
 
-```text
-rating = your score at the rating moment
-         ÷ the highest peakScore of any rival at the rating moment
-```
+### 5.1 The score the stars read
 
-- **The rating moment** is the end of the match if it ends at or before
-  the round end of round 30, and the round end of round 30 otherwise (the
-  stored `round30` values: your `score` and each rival's `peakScore`).
-- A rival's **peak** is its highest score at any round end up to the
-  rating moment (section 3.3), and, for a match that ends before a round
-  end, its score at the end if that is higher.
-- The rating is a ratio of two scores on the same board, so it is computed
-  with exact integers and reported rounded down to two decimals; the
-  thresholds compare the exact fraction (`your × 100 ≥ threshold × 100 ×
-rival`).
-- A rival's peak is never 0 (every player starts with a city: at least 28
-  points).
+The grade reads **your score at the rating moment**: the end of the match
+if it ends at or before the round end of round 30, and your stored
+`round30` score otherwise. A long match is graded at round 30, so a grind
+after it buys nothing.
+
+The **rating** (your score over the highest rival peak at the same moment,
+a rival's final score counting when above its peak) is still computed but
+earns nothing; the tribe records keep the best one as `bestRating`
+(section 6), so their shape is unchanged.
 
 ### 5.2 Thresholds
 
-The thresholds depend on the number of rivals at setup (`aiCount`):
-
 ```text
-2-star rating = 1.5 + 0.25 × max(0, 3 − rivals)
-3-star rating = 2.0 + 0.5  × max(0, 3 − rivals)
+2 stars: score ≥ 200 + 2 × land
+3 stars: score ≥ 300 + 3 × land
 ```
 
-| Rivals    | 2 stars | 3 stars |
-| --------- | ------: | ------: |
-| 1         |    2.00 |    3.00 |
-| 2         |    1.75 |    2.50 |
-| 3 or more |    1.50 |    2.00 |
+`land` is the number of the board's tiles that are not water. The numbers
+are one named constant, `SKIRMISH_STARS_V7` in
+[`src/engine/v7/star-grade.ts`](../../src/engine/v7/star-grade.ts).
 
-With one rival your score absorbs everything the only rival loses and
-ratios run high (the small game's author stood at 1.46 to 1.66 between
-rounds 10 and 20 while the war was undecided); with three or more rivals the
-best of them is the bar and the rivals also fight each other (the leaders
-of Large I and II, AI or human, stood at 1.3 to 1.55 mid-game).
+| Board (quick start)               | Land | 2 stars | 3 stars |
+| --------------------------------- | ---: | ------: | ------: |
+| Continents 11 × 11 (1 opponent)   |   56 |     312 |     468 |
+| Continents 14 × 14 (2 opponents)  |   90 |     380 |     570 |
+| Pangea 14 × 14 (2 opponents)      |  129 |     458 |     687 |
+| Continents 16 × 16 (3 opponents)  |  118 |     436 |     654 |
+| Lakes 16 × 16 (4 opponents)       |  204 |     608 |     912 |
+| Continents 20 × 20 (4 to 8 opp.)  |  184 |     568 |     852 |
+| Pangea 20 × 20 (5 to 8 opponents) |  288 |     776 |   1,164 |
+
+**The back-of-the-envelope estimate.** A decent winning game by about
+round 25 on a quick-start board scores about `300 + 3.3 × land`:
+
+- **The board part grows with the land.** At the end of a Domination win
+  you hold every city; a city is worth about 40 points then (an average
+  level of about 2.5, 25 points, and about 7 territory tiles, 14), and
+  there is one settlement per about 12 land tiles
+  (`LAND_PER_SETTLEMENT_V7`), so about 3.3 points per land tile. A
+  Perfection winner holds fewer cities but grows them further, about two
+  fair shares of the board.
+- **The rest does not.** By round 25: technology about 20 tiers (160),
+  two achievements (80), an army of about 45, about 35 Coins of kills
+  (70), less about 50 of losses and damage: about 300 whatever the board.
+
+So the third star asks for about that decent win (`300 + 3 × land`), and
+the second for about two thirds of it (`200 + 2 × land`), a scrappy win
+staying at one. Scaling by the land, not the number of opponents, keeps a
+board chosen larger under Advanced from buying stars and follows the quick
+start, whose boards stop growing at 20 × 20.
 
 ### 5.3 The grade
 
-At the end of a match the engine grades the human's result:
+| Grade   | Domination and Perfection alike                                              |
+| ------- | ---------------------------------------------------------------------------- |
+| 0 stars | no victory (eliminated, or in Perfection not ranked first)                   |
+| 1 star  | a victory, whatever the score                                                |
+| 2 stars | a victory with the 2-star score, on Hard, Harder, or Brutal                  |
+| 3 stars | a victory with the 3-star score, on Brutal                                   |
+| Glow    | a **flawless** victory (section 5.4) with at least the 2-star score; no star |
 
-| Grade                | Domination                                                                                                                                                                 | Perfection                                                  |
-| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
-| 0 stars              | a defeat                                                                                                                                                                   | a defeat (eliminated, or not ranked first)                  |
-| 1 star               | a victory                                                                                                                                                                  | a victory                                                   |
-| 2 stars              | a victory with the 2-star rating                                                                                                                                           | a victory with the 2-star rating                            |
-| 3 stars              | a victory with the 3-star rating, on the hardest difficulty (section 5.5), in which **every rival was eliminated by your capture** (`eliminatedBy` is you for every rival) | a victory with the 3-star rating, on the hardest difficulty |
-| 3 stars and the glow | a **flawless** victory (section 5.4) with at least the 2-star rating, on any difficulty                                                                                    | the same                                                    |
-
-A grade is the highest row whose conditions hold. Perfection asks for no
-eliminations: its goal is the score. In Cooperative mode the rivals are
-allies and cannot capture each other's cities, so in Domination every
-elimination is yours.
+The difficulty caps the stars: **Normal 1, Hard 2, Harder 2, Brutal 3**.
+So every win on Normal is exactly 1 star, and 3 stars need Brutal and a
+well-played (not flawless) game. The win itself is what each mode already
+calls a win: every rival eliminated in Domination, the highest score after
+round 30 in Perfection (section 4).
 
 ### 5.4 Flawless
 
@@ -423,104 +444,70 @@ state keeps it as the `flawless` flag (section 3.3); an engine audit test
 lists every event that removes a unit or a city from a player and checks
 each one clears the flag.
 
-The 2-star rating is required so that a pacifist Perfection game on a big
-board (never meeting anyone, so never losing anything) does not earn the
-glow without outplaying the rivals (appendix A, C7).
+A flawless win with at least the 2-star score gets the hidden **glow**, on
+any difficulty. Since `pulp_wars-2yc.69` the glow adds no star (only Brutal
+reaches 3); the 2-star score is still required so that a pacifist
+Perfection game on a big board does not earn it without playing well
+(appendix A, C7).
 
-### 5.5 The hardest difficulty
+### 5.5 The difficulty
 
-`MatchSetupV7.aiDifficulty` is only `"NORMAL"` today, so **Normal is the
-hardest difficulty and every match meets the condition**
-(`HARDEST_AI_DIFFICULTY_V7 = "NORMAL"`). The AI head start of
-`pulp_wars-w49.7` (AI seats start with 2 or 3 cities) is the expected
-difficulty lever: when it lands, the hardest difficulty is the largest
-head start the setup screen offers, and the 3-star row (not the flawless
-row) asks for it. A head start also raises the rivals' scores and so
-lowers the rating by itself. Stars already recorded are never lowered when
-a harder difficulty appears (open question 2).
+The difficulty is the AI head start of the quick start
+([QUICK_START.md](../ui/QUICK_START.md#difficulty-the-ai-head-start)):
+Normal none, then Hard, Harder, and Brutal with more starting Coins for
+every AI seat, scaled by the land per player
+(`difficultyHeadStartCoinsV7`, in the engine since `pulp_wars-2yc.69`).
+
+- **Recorded on the setup.** `MatchSetupV7.aiDifficulty`, which was only
+  ever `NORMAL`, now also takes `HARD`, `HARDER`, and `BRUTAL`, but only
+  on a generated map with exactly that level's head start on the board
+  (setup validation refuses anything else). The new-game screen writes the
+  level it launched with. Saves and replays of setups before this keep
+  `NORMAL` and stay valid.
+- **Read back from a head start.** A `NORMAL` setup with a head start (one
+  set by hand under Advanced, the headless `--ai-head-start`, or a save
+  made before the levels were recorded) counts as the hardest level whose
+  head start on that board it reaches (`matchDifficultyV7`): +10 where
+  Harder gives +10 is Harder; where two levels give the same head start
+  (Harder and Brutal on a roomy board) it is the harder, the same game.
+- **Recorded stars stay.** A tribe's stars are never lowered, so stars
+  earned under the first design (when Normal counted as the hardest
+  difficulty) remain.
 
 ### 5.6 Worked examples
 
-Scores use section 3.1; the Points column shows the positive points and then the penalty.
+The score tables of the first design, graded again (section 3.1 has the
+arithmetic; the rating is shown for the records only).
 
-**A. Small map, easy win: 2 stars.** Domination, 11 x 11 Dry Land, 1 rival
-(Goblin). You take the Goblin capital, its last city, in round 16.
+| Example                                             | Land | Score at the rating moment | Normal | Hard / Harder | Brutal  |
+| --------------------------------------------------- | ---: | -------------------------: | -----: | ------------: | ------- |
+| **A.** 11 × 11 Dry Land, 1 rival, win in round 16   |  121 |                        420 |      1 |             1 | 1       |
+| **B.** 25 × 25 Dry Land, 7 rivals, win in round 64  |  625 |               1,078 at R30 |      1 |             1 | 1       |
+| **C.** 14 × 14 Pangea, 2 rivals, flawless, round 21 |  129 |                        589 |      1 |             2 | 2, glow |
+| **D.** 16 × 16 Continents, 3 rivals, round 27       |  118 |                        958 |      1 |             2 | 3       |
+| **E.** Perfection, 20 × 20 Dry Land, 4 rivals       |  400 |                      1,344 |      1 |             2 | 2       |
+| **F.** Perfection, 11 × 11, 1 rival, outscored      |  121 |                        433 |      0 |             0 | 0       |
 
-| Who                   | Tiles | Σ levels | Σ tiers | Ach. | Army | Kills | Lost | HP lost | Points                                                   | Score |
-| --------------------- | ----: | -------: | ------: | ---: | ---: | ----: | ---: | ------: | -------------------------------------------------------- | ----: |
-| You at the end (R16)  |    54 |       13 |      11 |    1 |   26 |    24 |    8 |      64 | 108 + 130 + 88 + 40 + 26 + 48 = 440; penalty 8 + 12 = 20 |   420 |
-| Goblin peak (R11 end) |    27 |        6 |       5 |    0 |   16 |     8 |    6 |      32 | 54 + 60 + 40 + 0 + 16 + 16 = 186; penalty 6 + 6 = 12     |   174 |
-
-Rating 420 ÷ 174 = 2.41: at least 2.00 (2 stars, 1 rival) and below 3.00:
-**2 stars**. You lost units, so no glow. A 3-star 1-rival win needs three
-times the Goblins' best score.
-
-**B. Huge map grind: 1 star.** Domination, 25 x 25, 7 rivals. You win in
-round 64 with a final score of 3,900, many times any rival's peak; but the
-rating moment is the end of round 30:
-
-| Who                    | Tiles | Σ levels | Σ tiers | Ach. | Army | Kills | Lost | HP lost | Points                                                        | Score |
-| ---------------------- | ----: | -------: | ------: | ---: | ---: | ----: | ---: | ------: | ------------------------------------------------------------- | ----: |
-| You at R30             |   117 |       40 |      30 |    2 |   70 |    60 |   30 |     180 | 234 + 400 + 240 + 80 + 70 + 120 = 1,144; penalty 30 + 36 = 66 | 1,078 |
-| Best rival peak by R30 |   108 |       34 |      24 |    1 |   90 |    50 |   20 |     150 | 216 + 340 + 192 + 40 + 90 + 100 = 978; penalty 20 + 30 = 50   |   928 |
-
-Rating 1,078 ÷ 928 = 1.16, below 1.50: **1 star**. The 34 rounds of grind
-after round 30 and the 3,900 points buy nothing; a 3-star result on this
-board needs twice the best rival's score by round 30 and every one of the
-seven eliminations made by you.
-
-**C. Flawless: 3 stars and the glow.** Domination, 14 x 14 Pangea, 2
-rivals. You win in round 21 without losing a unit or a city (your units
-took 46 HP of damage in all).
-
-| Who                   | Tiles | Σ levels | Σ tiers | Ach. | Army | Kills | Lost | HP lost | Points                                                  | Score |
-| --------------------- | ----: | -------: | ------: | ---: | ---: | ----: | ---: | ------: | ------------------------------------------------------- | ----: |
-| You at the end (R21)  |    63 |       17 |      16 |    2 |   34 |    30 |    0 |      46 | 126 + 170 + 128 + 80 + 34 + 60 = 598; penalty 0 + 9 = 9 |   589 |
-| Best rival peak (R14) |    45 |       10 |      10 |    0 |   24 |    10 |    8 |      40 | 90 + 100 + 80 + 0 + 24 + 20 = 314; penalty 8 + 8 = 16   |   298 |
-
-Rating 1.97, at least 1.75 (2 stars, 2 rivals), and flawless: **3 stars
-and the glow**, whoever eliminated the rivals and on any difficulty.
-
-**D. Hard elimination game: 3 stars.** Domination, 16 x 16 Continents, 3
-rivals, Rival mode, Normal (the hardest today). You take each rival's last
-city yourself and win in round 27.
-
-| Who                   | Tiles | Σ levels | Σ tiers | Ach. | Army | Kills | Lost | HP lost | Points                                                       | Score |
-| --------------------- | ----: | -------: | ------: | ---: | ---: | ----: | ---: | ------: | ------------------------------------------------------------ | ----: |
-| You at the end (R27)  |    99 |       30 |      24 |    3 |   48 |    70 |   16 |     120 | 198 + 300 + 192 + 120 + 48 + 140 = 998; penalty 16 + 24 = 40 |   958 |
-| Best rival peak (R19) |    54 |       14 |      14 |    1 |   30 |    22 |   10 |      60 | 108 + 140 + 112 + 40 + 30 + 44 = 474; penalty 10 + 12 = 22   |   452 |
-
-Rating 2.11, at least 2.00 (3 rivals), every elimination yours, hardest
-difficulty: **3 stars**. The same game in which the Goblin AI had taken the
-Dinosaurs' last city is **2 stars**: the rating is there, but not every
-rival fell to you.
-
-**E. Perfection, strong but not excellent: 2 stars.** 20 x 20, 4 rivals.
-After round 30:
-
-| Who               | Tiles | Σ levels | Σ tiers | Ach. | Army | Kills | Lost | HP lost | Points                                                         | Score |
-| ----------------- | ----: | -------: | ------: | ---: | ---: | ----: | ---: | ------: | -------------------------------------------------------------- | ----: |
-| You at R30        |   144 |       46 |      34 |    3 |   80 |    90 |   24 |     160 | 288 + 460 + 272 + 120 + 80 + 180 = 1,400; penalty 24 + 32 = 56 | 1,344 |
-| Best rival (peak) |    90 |       28 |      20 |    1 |   60 |    40 |   20 |     140 | 180 + 280 + 160 + 40 + 60 + 80 = 800; penalty 20 + 28 = 48     |   752 |
-
-Ranked first: a victory. Rating 1.78: at least 1.50, below 2.00: **2
-stars**.
-
-**F. Perfection, outscored: 0 stars.** 11 x 11, 1 rival. After round 30
-you have 433 and the Undead 521 (the small game of section 3.6 at round
-30): the Undead rank first, the human is defeated, nothing is recorded.
+- **A** is a fast win on a small board: 420 is short of the 442 of the
+  second star; a few more rounds of growth before the last capture, or
+  fewer losses, would have reached it.
+- **B**'s grind after round 30 counts for nothing; at round 30 it was 1,078
+  against 1,450 for the second star on that very large board.
+- **C** is flawless, so the glow is on every difficulty where it wins; its
+  589 is above 458 and short of 687.
+- **D** is a strong game: 958 against 654 for the third star.
+- **E** is strong but not excellent on an oversized board: 1,344 is above
+  1,000 and short of 1,500.
+- **F** is a defeat: nothing.
 
 ### 5.7 Why size cannot buy stars
 
-- The rating divides by a rival's score on the **same board**: a bigger
-  board grows the rivals' scores too (Large II's AIs reached 700–800 by
-  round 30 against 520 for the small game's leader).
-- The rating stops at **round 30**: a long grind (example B) adds score
+- The thresholds grow with the board's **land** (section 5.2), so a bigger
+  board raises the bar with the score it allows.
+- The grade stops at **round 30**: a long grind (example B) adds score
   after the rating moment that counts for nothing.
-- The rival's **peak** is the bar, so crushing a rival late does not lower
-  it; only staying ahead of everyone does.
-- **Fewer rivals raise the bar** (section 5.2), so the 1-rival game, where
-  every capture moves the ratio twice, is not the easy way to 3 stars.
+- The **difficulty caps** the stars, so no board and no score earns more
+  than one star on Normal, or three anywhere but Brutal.
 
 ## 6. Records
 
@@ -551,8 +538,9 @@ you have 433 and the Undead 521 (the small game of section 3.6 at round
   ```
 
   `stars` is 1 to 3 (a tribe with no record shows 0), `glow` a boolean,
-  `bestRating` the best rating of any recorded win (two decimals). Unknown
-  modes and factions are kept and ignored.
+  `bestRating` the best rating of any recorded win (two decimals; since
+  `pulp_wars-2yc.69` it earns no star and is kept as a record only).
+  Unknown modes and factions are kept and ignored.
 
 - **Never lowered.** Recording a result sets `stars` to the larger,
   `glow` to either, and `bestRating` to the larger; `updatedAt` changes
@@ -593,10 +581,9 @@ becomes, top to bottom:
    and "flawless" in its accessible label. Nothing on the screen explains
    it before it is earned.
 4. **How stars are earned.** An info button beside the heading opens the
-   rules for the current opponent count: "★ Win. ★★ Win with 1.5 times the
-   best rival's score. ★★★ Win with 2 times the best rival's score on the
-   hardest difficulty, and in Domination take every rival's last city
-   yourself." (numbers from section 5.2).
+   rules in words, with no numbers (`pulp_wars-2yc.69`): "★ Win. ★★ Win on
+   Hard or harder with a high score. ★★★ Win on Brutal with a great
+   score."
 5. **The existing options**, unchanged: Players (Opponents and the AI
    mode select), Map, Size, Curiosities, seed, the opponents' faction
    selects (seats 1 and up; the human's tribe is the grid's), and Play.
@@ -618,11 +605,13 @@ becomes, top to bottom:
   "Highest score after round 30 wins." with "Round N of 30". Phones keep
   one row per player; the breakdown opens below the row.
 - **End of match** (`#resultSeats`): final scores in rank order, every
-  player's breakdown, and for a win the grade: the stars, "×1.83 the best
-  rival's score" (the rating), the conditions met and missed ("Take every
-  rival's last city yourself for 3 stars"), and "New best for the Goblins
-  in Domination" when the record improved. The glow appears only when
-  earned. Perfection names the winner by score.
+  player's breakdown, and for a win the grade: the stars, the score they
+  read ("Score 640", "Score 640 at round 30" when the match ran longer),
+  the conditions met and missed star by star ("Win", "Score 458 or more",
+  "Score 687 or more"; where the difficulty cannot earn a star, "Play on
+  Hard or harder" or "Play on Brutal" instead), and "New best for the
+  Goblins in Domination" when the record improved. The glow appears only
+  when earned. Perfection names the winner by score.
 
 ## 9. Engine impact
 
@@ -647,15 +636,17 @@ change (it never optimises for score in any mode, section 4.2).
   in `PlayerViewV7`, every player's breakdown once `outcome` is set, the
   `gameMode`, and in Perfection the rounds left.
 - `queryScoreV7(view)` (the public query the UI reads; it reads only the
-  view) and `queryStarGradeV7(view)` after the end: stars, glow, rating
-  (exact fraction and two-decimal display), the rating round, the
-  thresholds, and each condition met or missed.
+  view) and `queryStarGradeV7(view)` after the end: stars, glow, the
+  difficulty and its star cap, the score read, the thresholds, the rating
+  (exact fraction and two-decimal display, for the records), the rating
+  round, and each condition met or missed.
 - `MatchOutcomeV7`: a Perfection result is `VICTORY` or `DEFEAT` as in
   section 4.2 with a `decidedBy: "SCORE"` field (absent for elimination
   results, so older outcomes parse unchanged); the engine bead may choose
   an equivalent shape.
-- The grade inputs (rating, eliminations, flawless) are computed by the
-  engine from the state; the browser only records the result.
+- The grade inputs (the score, the difficulty, the land, flawless, and the
+  rating for the records) are computed by the engine from the state; the
+  browser only records the result.
 
 ### 9.4 Headless and text play
 
@@ -676,9 +667,11 @@ change (it never optimises for score in any mode, section 4.2).
 4. **Perfection.** Ends at the round end of round 30 with no round-31
    events; ranking and every tie-break; early victory and early defeat;
    the human outscored is a defeat.
-5. **Grade.** Every row of section 5.3, the thresholds for 1, 2, 3, and 7
-   rivals at the exact boundaries, the rating moment before and after
-   round 30, eliminations by another rival.
+5. **Grade.** Every row of section 5.3 on every difficulty, the
+   thresholds at their exact scores and their growth with the land, the
+   rating moment before and after round 30, the difficulty named on the
+   setup and read back from a head start
+   (`tests/unit/skirmish-stars-v7.test.ts`).
 6. **Persistence.** Saves of both modes round-trip; a save without
    `gameMode` loads as Domination; replays reproduce scores.
 7. **Records.** Parse, write, never lowered, idempotent, unreadable and
@@ -715,30 +708,27 @@ change (it never optimises for score in any mode, section 4.2).
 | 4   | `pulp_wars-kaw6.4` | New-game screen and records: sections 6 and 7 (mode toggle, tribe grid with stars and glow, records store, grade shown and recorded at the end), test 7–8; smoke starts a Perfection match.              | `ui/presentation` (+ `smoke:browser`) | 2                     |
 
 Beads 3 and 4 touch different parts of `app-view-v7.ts` and can follow
-bead 2 in either order. The AI head start (`pulp_wars-w49.7`) is not a
-dependency; when it lands it updates `HARDEST_AI_DIFFICULTY_V7` (section
-5.5).
+bead 2 in either order. The difficulty levels (`pulp_wars-2yc.54`) and the
+stars' redesign (`pulp_wars-2yc.69`, section 5) came later.
 
 ## 13. Open questions for the user
 
 1. **The mode's name.** "Perfection" is Polytopia's name. Keep it, or our
    own (for example "Glory" or "Thirty Rounds")? **Default:** "Perfection"
    until you name it.
-2. **"Hardest difficulty" while only Normal exists.** **Default:** Normal
-   counts as the hardest, so 3 stars need the rating and (in Domination)
-   every elimination; when the AI head start (`w49.7`) lands, 3 stars need
-   its largest setting and stars earned before stay. Alternatives: treat
-   Cooperative mode, or at least two rivals, as the hard setup until then.
+2. **"Hardest difficulty" while only Normal exists.** Settled by the user
+   (2026-10-16, `pulp_wars-2yc.69`): the difficulty levels cap the stars,
+   3 only on Brutal; stars earned before stay.
 3. **Score under fog.** **Default:** every player's total is visible in
    the leaderboard (like the city and unit counts today), the breakdown
    only your own until the end. Alternative: hide the totals of players
    you have never seen.
 4. **Flawless.** **Default:** no unit died, was disbanded, or was taken,
-   and no city lost; damage is allowed; the 2-star rating is required.
-   Should damage also break it, or the rating not be required?
-5. **Thresholds.** **Default:** 1.5 / 2.0 with three or more rivals, 1.75
-   / 2.5 with two, 2.0 / 3.0 with one. Revisit after you have played a few
-   games of each mode.
+   and no city lost; damage is allowed; the 2-star score is required.
+   Should damage also break it, or the score not be required?
+5. **Thresholds.** Replaced by the user (2026-10-16, `pulp_wars-2yc.69`):
+   fixed scores from a back-of-the-envelope estimate (section 5.2), to be
+   tuned after a few games on each difficulty.
 6. **Army as a factor.** You listed kills, damage taken, achievements,
    cities, and territory "etc."; the spec adds Army (the units you have)
    and Technology. **Default:** both in.

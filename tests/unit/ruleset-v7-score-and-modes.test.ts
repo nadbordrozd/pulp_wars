@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
   FLAWLESS_BREAKING_EVENT_KINDS_V7,
-  HARDEST_AI_DIFFICULTY_V7,
   PERFECTION_ROUNDS_V7,
   SCORE_GIANT_VALUE_V7,
   SCORE_MONSTER_VALUE_V7,
@@ -24,9 +23,10 @@ import {
   scoreRankingV7,
   scoreV7,
   scoresV7,
+  SKIRMISH_STARS_V7,
+  skirmishStarThresholdsV7,
   starGradeInputsV7,
   starGradeV7,
-  starThresholdsV7,
   unitId,
   unitScoreValueV7,
   validateMatchSetupV7,
@@ -90,9 +90,9 @@ function grade(
     gameMode: "DOMINATION",
     victory: true,
     rivals: 3,
-    hardestDifficulty: true,
+    difficulty: "BRUTAL",
+    landTiles: 129,
     ratingRound: 20,
-    everyRivalEliminatedByYou: true,
     flawless: false,
     ...overrides,
   });
@@ -189,54 +189,78 @@ describe("score and modes: the score of section 3.1", () => {
   });
 
   it("grades worked examples A to F (section 5.6)", () => {
-    // A: 1 rival, 420 against 174: 2.41, 2 stars, no glow.
-    const a = grade({ rivals: 1, yourScore: 420, bestRivalPeak: 174 });
-    expect([a.stars, a.glow, a.rating.display]).toEqual([2, false, "2.41"]);
-    // B: 7 rivals, 1,078 against 928 at round 30: 1.16, 1 star.
+    // A: 11 x 11 Dry Land (121 land tiles: 2 stars at 442, 3 at 663), a
+    // fast win with 420: 1 star on any difficulty.
+    const a = grade({
+      rivals: 1,
+      landTiles: 121,
+      yourScore: 420,
+      bestRivalPeak: 174,
+    });
+    expect([a.stars, a.glow, a.thresholds]).toEqual([
+      1,
+      false,
+      { twoStars: 442, threeStars: 663 },
+    ]);
+    expect(a.rating.display).toBe("2.41");
+    // B: 25 x 25 Dry Land (625: 1,450 and 2,175), 1,078 at round 30: 1
+    // star; the grind after round 30 buys nothing.
     const b = grade({
       rivals: 7,
+      landTiles: 625,
       yourScore: 1078,
       bestRivalPeak: 928,
       ratingRound: 30,
     });
-    expect([b.stars, b.rating.display, b.ratingRound]).toEqual([1, "1.16", 30]);
-    // C: 2 rivals, flawless, 589 against 298: 1.97, 3 stars and the glow,
-    // whoever eliminated the rivals and on any difficulty.
+    expect([b.stars, b.ratingRound]).toEqual([1, 30]);
+    // C: 14 x 14 Pangea (129: 458 and 687), flawless with 589: 2 stars
+    // and the glow on Brutal; on Normal 1 star, still with the glow.
     const c = grade({
       rivals: 2,
       yourScore: 589,
       bestRivalPeak: 298,
       flawless: true,
-      everyRivalEliminatedByYou: false,
-      hardestDifficulty: false,
     });
-    expect([c.stars, c.glow, c.rating.display]).toEqual([3, true, "1.97"]);
-    // D: 3 rivals, every elimination yours: 2.11, 3 stars; with one
-    // elimination made by a rival, 2 stars.
-    const d = grade({ rivals: 3, yourScore: 958, bestRivalPeak: 452 });
-    expect([d.stars, d.rating.display]).toEqual([3, "2.11"]);
+    expect([c.stars, c.glow]).toEqual([2, true]);
     expect(
       grade({
+        rivals: 2,
+        yourScore: 589,
+        bestRivalPeak: 298,
+        flawless: true,
+        difficulty: "NORMAL",
+      }),
+    ).toMatchObject({ stars: 1, glow: true });
+    // D: 16 x 16 Continents (118: 436 and 654), 958: 3 stars on Brutal,
+    // 2 on Hard and Harder, 1 on Normal.
+    const atD = (difficulty: StarGradeInputsV7["difficulty"]) =>
+      grade({
         rivals: 3,
+        landTiles: 118,
         yourScore: 958,
         bestRivalPeak: 452,
-        everyRivalEliminatedByYou: false,
-      }).stars,
-    ).toBe(2);
-    // E: Perfection, 4 rivals, 1,344 against 752: 1.78, 2 stars.
+        difficulty,
+      }).stars;
+    expect((["NORMAL", "HARD", "HARDER", "BRUTAL"] as const).map(atD)).toEqual([
+      1, 2, 2, 3,
+    ]);
+    // E: Perfection, 20 x 20 Dry Land (400: 1,000 and 1,500), 1,344: 2
+    // stars on Brutal.
     const e = grade({
       gameMode: "PERFECTION",
       rivals: 4,
+      landTiles: 400,
       yourScore: 1344,
       bestRivalPeak: 752,
-      everyRivalEliminatedByYou: false,
     });
-    expect([e.stars, e.rating.display]).toEqual([2, "1.78"]);
-    expect(e.conditions.everyRivalEliminatedByYou).toBeNull();
+    expect([e.stars, e.thresholds.twoStars, e.thresholds.threeStars]).toEqual([
+      2, 1000, 1500,
+    ]);
     // F: Perfection, outscored 433 to 521: a defeat, 0 stars.
     const f = grade({
       gameMode: "PERFECTION",
       rivals: 1,
+      landTiles: 121,
       victory: false,
       yourScore: 433,
       bestRivalPeak: 521,
@@ -246,72 +270,54 @@ describe("score and modes: the score of section 3.1", () => {
 });
 
 describe("score and modes: the grade of section 5", () => {
-  it("sets the thresholds by rival count (section 5.2)", () => {
-    expect(starThresholdsV7(1)).toEqual({
-      twoStarsHundredths: 200,
-      threeStarsHundredths: 300,
+  it("sets the thresholds from the board's land (section 5.2)", () => {
+    expect(skirmishStarThresholdsV7(0)).toEqual({
+      twoStars: SKIRMISH_STARS_V7.twoStars.base,
+      threeStars: SKIRMISH_STARS_V7.threeStars.base,
     });
-    expect(starThresholdsV7(2)).toEqual({
-      twoStarsHundredths: 175,
-      threeStarsHundredths: 250,
+    expect(skirmishStarThresholdsV7(90)).toEqual({
+      twoStars: 380,
+      threeStars: 570,
     });
-    expect(starThresholdsV7(3)).toEqual({
-      twoStarsHundredths: 150,
-      threeStarsHundredths: 200,
+    expect(skirmishStarThresholdsV7(129)).toEqual({
+      twoStars: 458,
+      threeStars: 687,
     });
-    expect(starThresholdsV7(7)).toEqual(starThresholdsV7(3));
+    expect(SKIRMISH_STARS_V7.maxStars).toEqual({
+      NORMAL: 1,
+      HARD: 2,
+      HARDER: 2,
+      BRUTAL: 3,
+    });
   });
 
-  it("compares the exact fraction at each boundary", () => {
-    for (const [rivals, two, three] of [
-      [1, 200, 300],
-      [2, 175, 250],
-      [3, 150, 200],
-      [7, 150, 200],
-    ] as const) {
-      // A rival peak of 400: the boundary is exactly `threshold × 4`.
-      const at = (yourScore: number) =>
-        grade({ rivals, yourScore, bestRivalPeak: 400 }).stars;
-      expect(at(two * 4 - 1)).toBe(1);
-      expect(at(two * 4)).toBe(2);
-      expect(at(three * 4 - 1)).toBe(2);
-      expect(at(three * 4)).toBe(3);
-    }
-    // 2.005 against 2.00 is exact, not rounded: 401 / 200 meets 2 stars
-    // with one rival; 399 / 200 does not.
-    expect(grade({ rivals: 1, yourScore: 401, bestRivalPeak: 200 }).stars).toBe(
-      2,
-    );
-    expect(grade({ rivals: 1, yourScore: 399, bestRivalPeak: 200 }).stars).toBe(
-      1,
-    );
+  it("meets a threshold at exactly its score", () => {
+    // 129 land tiles: 2 stars at 458, 3 at 687 (Brutal).
+    const at = (yourScore: number) =>
+      grade({ yourScore, bestRivalPeak: 400 }).stars;
+    expect(at(457)).toBe(1);
+    expect(at(458)).toBe(2);
+    expect(at(686)).toBe(2);
+    expect(at(687)).toBe(3);
   });
 
   it("grades every row of section 5.3", () => {
-    // Defeat: 0 stars whatever the rating.
+    // Defeat: 0 stars whatever the score.
     expect(
       grade({ victory: false, yourScore: 900, bestRivalPeak: 100 }).stars,
     ).toBe(0);
-    // Victory below the 2-star rating: 1 star.
+    // Victory below the 2-star score: 1 star.
     expect(grade({ yourScore: 140, bestRivalPeak: 100 }).stars).toBe(1);
-    // 3-star rating but not the hardest difficulty: 2 stars.
+    // The 3-star score below Brutal: the difficulty's cap.
     expect(
-      grade({
-        yourScore: 300,
-        bestRivalPeak: 100,
-        hardestDifficulty: false,
-      }).stars,
+      grade({ yourScore: 900, bestRivalPeak: 100, difficulty: "HARDER" }).stars,
     ).toBe(2);
-    // Perfection asks for no eliminations.
+    // Both modes grade alike.
     expect(
-      grade({
-        gameMode: "PERFECTION",
-        yourScore: 300,
-        bestRivalPeak: 100,
-        everyRivalEliminatedByYou: false,
-      }).stars,
+      grade({ gameMode: "PERFECTION", yourScore: 900, bestRivalPeak: 100 })
+        .stars,
     ).toBe(3);
-    // Flawless needs the 2-star rating for the glow (the pacifist game).
+    // Flawless needs the 2-star score for the glow (the pacifist game).
     const pacifist = grade({
       gameMode: "PERFECTION",
       yourScore: 140,
@@ -328,7 +334,6 @@ describe("score and modes: the grade of section 5", () => {
         bestRivalPeak: 100,
       }),
     ).toMatchObject({ stars: 0, glow: false });
-    expect(HARDEST_AI_DIFFICULTY_V7).toBe("NORMAL");
   });
 });
 
@@ -1059,9 +1064,8 @@ describe("score and modes: round ends and Perfection (sections 3.3 and 4.2)", ()
     expect(summary?.gradeInputs).toMatchObject({
       gameMode: "PERFECTION",
       victory: true,
-      everyRivalEliminatedByYou: true,
     });
-    expect(summary?.grade.conditions.everyRivalEliminatedByYou).toBeNull();
+    expect(summary?.grade.stars).toBe(1);
   });
 
   it("ranks by score, then cities, then territory, then turn order; eliminated players last", () => {
@@ -1163,10 +1167,13 @@ describe("score and modes: grade inputs from a finished match (section 5.1)", ()
       gameMode: "DOMINATION",
       victory: true,
       rivals: 1,
-      hardestDifficulty: true,
+      difficulty: "NORMAL",
+      landTiles: won.board.tiles.filter(
+        (tile) =>
+          tile.terrain !== "SHALLOW_WATER" && tile.terrain !== "DEEP_WATER",
+      ).length,
       bestRivalPeak: 77,
       ratingRound: 12,
-      everyRivalEliminatedByYou: true,
       flawless: true,
       yourScore: scoreV7(won, human).total,
     });
@@ -1196,8 +1203,9 @@ describe("score and modes: grade inputs from a finished match (section 5.1)", ()
       yourScore: 300,
       bestRivalPeak: 150,
       ratingRound: 30,
+      difficulty: "NORMAL",
     });
-    expect(starGradeV7(inputs).stars).toBe(2);
+    expect(starGradeV7(inputs)).toMatchObject({ stars: 1, score: 300 });
     expect(matchSummaryV7(finished)?.grade.rating.display).toBe("2.00");
   });
 });

@@ -2,8 +2,10 @@
 
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
+  difficultyHeadStartCoinsV7,
   queryStarGradeV7,
   viewForV7,
+  type DifficultyV7,
   type GameStateV7,
   type MatchSetupV7,
 } from "../../src/engine/index";
@@ -259,7 +261,17 @@ async function waitUntil(predicate: () => boolean): Promise<void> {
 }
 
 /** A hand-built two-seat Goblin win by one capture (no match is played). */
-function wonMatch(rivalPeak: number, flawless: boolean): GameStateV7 {
+/**
+ * A won match on `difficulty` (with its own head start), the human's
+ * score raised by `killValue` Coins of kills (2 points each) so the
+ * skirmish stars' thresholds can be met (`pulp_wars-2yc.69`).
+ */
+function wonMatch(
+  rivalPeak: number,
+  flawless: boolean,
+  difficulty: DifficultyV7 = "NORMAL",
+  killValue = 0,
+): GameStateV7 {
   const at = (x: number, y: number) => ({ x, y });
   const base = goblinArenaV7(
     ["GOBLIN", "UNDEAD"],
@@ -268,13 +280,24 @@ function wonMatch(rivalPeak: number, flawless: boolean): GameStateV7 {
   );
   const human = seatIdV7(base, 0);
   const rival = seatIdV7(base, 1);
+  const coins = difficultyHeadStartCoinsV7(
+    difficulty,
+    base.setup.mapType,
+    base.setup.width,
+    base.setup.aiCount,
+  );
   const state = checkedV7({
     ...base,
+    setup: {
+      ...base.setup,
+      aiDifficulty: difficulty,
+      ...(coins === 0 ? {} : { aiHeadStart: { coins } }),
+    },
     round: 12,
     scoreLedger: base.scoreLedger.map((entry) =>
       entry.playerId === rival
         ? { ...entry, peakScore: rivalPeak }
-        : { ...entry, flawless },
+        : { ...entry, flawless, killValue: entry.killValue + killValue },
     ),
   });
   return applyOkV7(state, human, {
@@ -388,7 +411,7 @@ describe("Ruleset 7 new game: mode toggle and tribe grid", () => {
     ).toBe("true");
   });
 
-  it("explains the stars for the current opponent count behind the info button", () => {
+  it("explains in words how stars are earned behind the info button", () => {
     mount(seeded());
     press("new-game");
     const info = required('[data-action="star-rules"]');
@@ -396,15 +419,15 @@ describe("Ruleset 7 new game: mode toggle and tribe grid", () => {
     expect(required("#v7-star-rules").hidden).toBe(true);
     info.click();
     expect(info.getAttribute("aria-expanded")).toBe("true");
-    expect(required("#v7-star-rules").textContent).toContain(
-      "★★ Win with 2 times the best rival's score.",
-    );
-    const count = required<HTMLSelectElement>("#v7-ai-count");
-    count.value = "3";
-    count.dispatchEvent(new Event("change", { bubbles: true }));
-    expect(required("#v7-star-rules").textContent).toContain(
-      "★★ Win with 1.5 times the best rival's score.",
-    );
+    expect(
+      [...required("#v7-star-rules").querySelectorAll(".v7-star-rule")].map(
+        (line) => line.textContent,
+      ),
+    ).toEqual([
+      "★ Win.",
+      "★★ Win on Hard or harder with a high score.",
+      "★★★ Win on Brutal with a great score.",
+    ]);
   });
 
   it("moves with the arrow keys, picks with Enter or Space, and keeps one tab stop", () => {
@@ -565,7 +588,7 @@ describe("Ruleset 7 game end: the tribe record in the grade panel", () => {
   }
 
   it('folds "New best" into the one grade panel, with no second set of stars', () => {
-    const finished = wonMatch(20, true);
+    const finished = wonMatch(20, true, "BRUTAL", 400);
     const graded = queryStarGradeV7(
       viewForV7(finished, finished.humanPlayerId),
     );
@@ -600,7 +623,7 @@ describe("Ruleset 7 game end: the tribe record in the grade panel", () => {
   });
 
   it("shows no record line when nothing improved, and notes unsaved stars", () => {
-    const finished = wonMatch(240, false);
+    const finished = wonMatch(240, false, "HARDER", 400);
     const graded = queryStarGradeV7(
       viewForV7(finished, finished.humanPlayerId),
     );

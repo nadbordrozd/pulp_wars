@@ -9,7 +9,10 @@ import {
   QUICK_DIFFICULTY_STORAGE_KEY_V7,
   QUICK_LAST_MAP_STORAGE_KEY_V7,
 } from "../../src/app/quick-start-preference-v7";
-import { OFFERED_FACTION_IDS_V7 } from "../../src/engine/index";
+import {
+  OFFERED_FACTION_IDS_V7,
+  matchDifficultyV7,
+} from "../../src/engine/index";
 import type {
   BoardHostModelV7,
   BoardHostV7,
@@ -221,6 +224,7 @@ describe("Quick start on the new-game screen", () => {
       curiosities: true,
       gameMode: "DOMINATION",
       factions: ["ORIGINAL", opponent],
+      aiDifficulty: "NORMAL",
     });
     expect("aiHeadStart" in setup).toBe(false);
   });
@@ -250,11 +254,14 @@ describe("Quick start on the new-game screen", () => {
     );
     expect(settings.getItem(QUICK_DIFFICULTY_STORAGE_KEY_V7)).toBe("BRUTAL");
     const setup = await launch(running);
+    // The setup names the difficulty for the skirmish stars
+    // (pulp_wars-2yc.69).
     expect(setup).toMatchObject({
       mapType: "CONTINENTS",
       width: size,
       aiCount: 4,
       aiHeadStart: { coins },
+      aiDifficulty: "BRUTAL",
     });
     expect(new Set(setup.factions).size).toBe(5);
   });
@@ -349,7 +356,25 @@ describe("Quick start on the new-game screen", () => {
       aiMode: "COOPERATIVE",
       curiosities: false,
       aiHeadStart: { coins },
+      aiDifficulty: "HARD",
     });
+  });
+
+  it("launches a head start set by hand as Normal, which the stars read back from the head start", async () => {
+    const running = boot(new MemoryStorage());
+    press("setup-advanced");
+    press("ai-count-2");
+    choose("v7-ai-head-start", "10");
+    const setup = await launch(running);
+    expect(setup).toMatchObject({
+      aiHeadStart: { coins: 10 },
+      aiDifficulty: "NORMAL",
+    });
+    // On this board +10 is Harder's head start.
+    expect(quickHeadStartCoinsV7("HARDER", setup.mapType, setup.width, 2)).toBe(
+      10,
+    );
+    expect(matchDifficultyV7(setup)).toBe("HARDER");
   });
 
   it("draws the opponents from every other tribe, and a tribe the player takes moves its opponent", () => {

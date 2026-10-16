@@ -238,7 +238,13 @@ describe("Ruleset 7 score in the leaderboard", () => {
 
 describe("Ruleset 7 score at the end of the match", () => {
   it("ranks the final scores, opens every player's breakdown, and grades a Domination win", async () => {
-    const state = scoreDominationVictoryV7();
+    // Brutal, 16 x 16 Dry Land (256 land tiles): 2 stars at 712, 3 at
+    // 1,068; the fixture's 456 points and 320 Coins more of kills make
+    // 1,096.
+    const state = scoreDominationVictoryV7(false, {
+      difficulty: "BRUTAL",
+      extraKillValue: 320,
+    });
     const view = viewForV7(state, state.humanPlayerId);
     const summary = queryScoreV7(view).summary;
     if (summary === null) throw new Error("summary missing");
@@ -257,14 +263,17 @@ describe("Ruleset 7 score at the end of the match", () => {
       "3 of 3 stars",
     );
     expect(grade.querySelectorAll(".v7-grade-star.is-earned")).toHaveLength(3);
-    expect(required(".v7-grade-rating").textContent).toBe(
-      "×2.04 the best rival's score",
-    );
+    expect(required(".v7-grade-rating").textContent).toBe("Score 1096");
     expect(
       [...grade.querySelectorAll<HTMLElement>(".v7-grade-condition")].map(
         (item) => `${item.dataset.condition}:${item.dataset.met}`,
       ),
-    ).toEqual(["win:true", "two:true", "three:true", "conquest:true"]);
+    ).toEqual(["win:true", "two:true", "three:true"]);
+    expect(
+      [...grade.querySelectorAll<HTMLElement>(".v7-grade-text")].map(
+        (item) => item.textContent,
+      ),
+    ).toEqual(["Win", "Score 712 or more", "Score 1068 or more"]);
     const rows = [
       ...document.querySelectorAll<HTMLElement>(".v7-results .v7-result-seat"),
     ];
@@ -297,13 +306,23 @@ describe("Ruleset 7 score at the end of the match", () => {
     app.destroy();
   });
 
-  it("shows the glow only for a flawless win", () => {
-    const app = mount(scoreDominationVictoryV7(true));
+  it("shows the glow only for a flawless win, as no extra star", () => {
+    // Hard: at most 2 stars; 460 points and 300 Coins more of kills make
+    // 1,060, past the 712 of the second star.
+    const app = mount(
+      scoreDominationVictoryV7(true, {
+        difficulty: "HARD",
+        extraKillValue: 300,
+      }),
+    );
     const grade = required('[data-v7-region="grade"]');
     expect(grade.dataset.glow).toBe("true");
     expect(required(".v7-grade-stars").getAttribute("aria-label")).toBe(
-      "3 of 3 stars, flawless",
+      "2 of 3 stars, flawless",
     );
+    expect(
+      grade.querySelector('[data-condition="three"]')?.textContent,
+    ).toContain("Play on Brutal");
     expect(
       grade.querySelector('[data-condition="flawless"]')?.textContent,
     ).toContain("Flawless: you lost no unit and no city");
@@ -323,9 +342,14 @@ describe("Ruleset 7 score at the end of the match", () => {
       "You win with 312 points, the highest score after round 30.",
     );
     const grade = required('[data-v7-region="grade"]');
+    // Normal: a win is 1 star, and the end screen names the difficulty
+    // the further stars need.
     expect(grade.dataset.stars).toBe("1");
-    // Perfection asks no conquest.
-    expect(grade.querySelector('[data-condition="conquest"]')).toBe(null);
+    expect(
+      [...grade.querySelectorAll<HTMLElement>(".v7-grade-text")].map(
+        (item) => item.textContent,
+      ),
+    ).toEqual(["Win", "Play on Hard or harder", "Play on Brutal"]);
     app.destroy();
   });
 

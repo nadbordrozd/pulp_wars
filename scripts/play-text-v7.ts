@@ -4308,10 +4308,9 @@ function outcomeLinesV7(view: PlayerViewV7): string[] {
   const graded = queryStarGradeV7(view);
   if (graded === null || view.viewer.id !== view.humanPlayerId) return lines;
   const { grade, inputs } = graded;
-  const met = (value: boolean | null): string =>
-    value === null ? "n/a" : value ? "yes" : "no";
+  const met = (value: boolean): string => (value ? "yes" : "no");
   lines.push(
-    `GRADE: ${grade.stars} star${grade.stars === 1 ? "" : "s"}${grade.glow ? " and the glow (flawless)" : ""} | rating ${grade.rating.display} (${grade.rating.numerator}/${grade.rating.denominator} at round ${grade.ratingRound}; 2 stars ${(grade.thresholds.twoStarsHundredths / 100).toFixed(2)}, 3 stars ${(grade.thresholds.threeStarsHundredths / 100).toFixed(2)} with ${inputs.rivals} rival${inputs.rivals === 1 ? "" : "s"}) | victory ${met(grade.conditions.victory)}, hardest difficulty ${met(grade.conditions.hardestDifficulty)}, every rival eliminated by you ${met(grade.conditions.everyRivalEliminatedByYou)}, flawless ${met(grade.conditions.flawless)}${graded.recordable ? "" : " | not recorded (Showcase, mission, or mirror setup)"}`,
+    `GRADE: ${grade.stars} star${grade.stars === 1 ? "" : "s"}${grade.glow ? " and the glow (flawless)" : ""} | ${grade.difficulty.toLowerCase()} (at most ${grade.maxStars}) | score ${grade.score} at round ${grade.ratingRound}; 2 stars ${grade.thresholds.twoStars}, 3 stars ${grade.thresholds.threeStars} on ${inputs.landTiles} land tiles | rating ${grade.rating.display} against the best rival | victory ${met(grade.conditions.victory)}, flawless ${met(grade.conditions.flawless)}${graded.recordable ? "" : " | not recorded (Showcase, mission, or mirror setup)"}`,
   );
   return lines;
 }

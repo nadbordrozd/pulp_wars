@@ -2104,18 +2104,18 @@ seats: `pulp_wars-ykw.3`, `pulp-wars-poc-7r42`,
 is offered (`pulp_wars-mch9.20`; 2 to 8 before): the setup screen seats one
 player per offered faction (`OFFERED_FACTION_IDS_V7`).
 
-| Setup field   | Legal values                                                                                                                                                                                                                             |
-| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Board width   | 11, 14, 16, 20, or 25 (height equals width), as long as the width holds the seats on the map type (the table below)                                                                                                                      |
-| Auto size     | the smallest allowed width with at least 56 tiles per seat: 11, 14, 16 for 2, 3, 4 seats, 20 for 5–7, 25 for 8 and 9 (`autoBoardSizeV7`)                                                                                                 |
-| Map type      | `DRY_LAND`, `PANGEA`, `CONTINENTS` (default), `ARCHIPELAGO`, `LAKES`, `SHOWCASE` (width 16 only, at most 3 AI), `MISSION` (a registered mission only)                                                                                    |
-| AI            | `aiCount` 1 to `F − 1` (8, in the engine and on the setup screen), difficulty `NORMAL`, mode `RIVAL` or `COOPERATIVE`                                                                                                                    |
-| Human color   | `CORAL`, `TEAL`, `GOLD`, `VIOLET`, `SKY`, `LIME`, `ROSE`, `SLATE`, `AMBER` (`PLAYER_COLORS_V7`; stored, never shown: owner colours are the factions'). The AI seats take the other colours in this order. There are never fewer than `F` |
-| Factions      | one per seat (`aiCount + 1`, seat 0 is the human): `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, or `CULT`; no two seats alike                                                                    |
-| Seed          | uint32; equal setups and seeds generate byte-identical maps, turn order, and treasures                                                                                                                                                   |
-| Curiosities   | `true` (the setup screen's and the headless default) or `false`; `false` on a mission ([section 2.7](#27-map-curiosities))                                                                                                               |
-| Game mode     | `gameMode`: `DOMINATION` or `PERFECTION`, optional; a setup without it is Domination; never `PERFECTION` on the Showcase or a mission ([section 3.1](#31-score-play-modes-and-stars))                                                    |
-| AI head start | `aiHeadStart`: `{ coins }` with `coins` 5, 10, or 20, optional; a setup without it has no head start; never on the Showcase or a mission (the bullet below)                                                                              |
+| Setup field   | Legal values                                                                                                                                                                                                                                                                                                                   |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Board width   | 11, 14, 16, 20, or 25 (height equals width), as long as the width holds the seats on the map type (the table below)                                                                                                                                                                                                            |
+| Auto size     | the smallest allowed width with at least 56 tiles per seat: 11, 14, 16 for 2, 3, 4 seats, 20 for 5–7, 25 for 8 and 9 (`autoBoardSizeV7`)                                                                                                                                                                                       |
+| Map type      | `DRY_LAND`, `PANGEA`, `CONTINENTS` (default), `ARCHIPELAGO`, `LAKES`, `SHOWCASE` (width 16 only, at most 3 AI), `MISSION` (a registered mission only)                                                                                                                                                                          |
+| AI            | `aiCount` 1 to `F − 1` (8, in the engine and on the setup screen), difficulty `aiDifficulty` `NORMAL`, or `HARD`, `HARDER`, `BRUTAL` only with exactly that level's AI head start on the board (`pulp_wars-2yc.69`, read only by the star grade, [section 3.1](#31-score-play-modes-and-stars)), mode `RIVAL` or `COOPERATIVE` |
+| Human color   | `CORAL`, `TEAL`, `GOLD`, `VIOLET`, `SKY`, `LIME`, `ROSE`, `SLATE`, `AMBER` (`PLAYER_COLORS_V7`; stored, never shown: owner colours are the factions'). The AI seats take the other colours in this order. There are never fewer than `F`                                                                                       |
+| Factions      | one per seat (`aiCount + 1`, seat 0 is the human): `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, or `CULT`; no two seats alike                                                                                                                                                          |
+| Seed          | uint32; equal setups and seeds generate byte-identical maps, turn order, and treasures                                                                                                                                                                                                                                         |
+| Curiosities   | `true` (the setup screen's and the headless default) or `false`; `false` on a mission ([section 2.7](#27-map-curiosities))                                                                                                                                                                                                     |
+| Game mode     | `gameMode`: `DOMINATION` or `PERFECTION`, optional; a setup without it is Domination; never `PERFECTION` on the Showcase or a mission ([section 3.1](#31-score-play-modes-and-stars))                                                                                                                                          |
+| AI head start | `aiHeadStart`: `{ coins }` with `coins` 5, 10, or 20, optional; a setup without it has no head start; never on the Showcase or a mission (the bullet below)                                                                                                                                                                    |
 
 - **Seats a width holds.** A generated board holds
   `P(w, type) = min(floor((w − 2) / 3)², floor(L / 9))` players (a 3 x 3
@@ -2201,11 +2201,11 @@ player per offered faction (`OFFERED_FACTION_IDS_V7`).
   any PRNG draw: setups that differ only in `aiHeadStart` create states
   that differ only in the AI seats' Coins. The field is saved with the
   match (state, save, and replay setups) and is in every view's `setup`.
-  Nothing else reads it: income, prices, the Normal AI's policy, the Score,
-  and the star grade are unchanged, so the AI simply has more to spend on
-  its first turns, and a win against a head start grades and records as any
-  other win (the rating still divides by the best rival's peak score, which
-  a head start tends to raise). The object leaves room for further kinds of
+  Nothing else in play reads it: income, prices, the Normal AI's policy,
+  and the Score are unchanged, so the AI simply has more to spend on its
+  first turns. Since `pulp_wars-2yc.69` the star grade reads the
+  difficulty the head start stands for (`matchDifficultyV7`,
+  [section 3.1](#31-score-play-modes-and-stars)). The object leaves room for further kinds of
   head start (technology, starting cities: `pulp_wars-w49.7`) as further
   keys; only `coins` exists. **Setup screen:** a picker "AI head start"
   under Advanced settings (None, +5 Coins, +10 Coins, +20 Coins), hidden
@@ -3766,17 +3766,21 @@ the UI beads `pulp_wars-kaw6.3` and `kaw6.4`.
   seat's grade inputs and grade, and whether the setup may record stars (a
   generated map without the mirror option). `queryScoreV7(view)` and
   `queryStarGradeV7(view)` read only the view.
-- **Grade** (`starGradeV7`, pure; inputs `starGradeInputsV7`). The rating is
-  the human's score over the highest rival peak at the rating moment: the
-  end of the match if it ends at or before the round end of round 30 (a
-  rival's final score counts when above its peak), otherwise the `round30`
-  snapshots. Thresholds by `aiCount`: 2 stars at `1.5 + 0.25 × max(0, 3 −
-rivals)`, 3 stars at `2.0 + 0.5 × max(0, 3 − rivals)`, compared as exact
-  fractions; the display is rounded down to two decimals. 0 stars for a
-  defeat, 1 for a victory, 2 with the 2-star rating, 3 with the 3-star
-  rating on the hardest difficulty (`HARDEST_AI_DIFFICULTY_V7`, `NORMAL`)
-  and, in Domination, every rival eliminated by the human's capture; 3 and
-  the glow for a flawless victory with at least the 2-star rating.
+- **Grade** (`starGradeV7`, pure; inputs `starGradeInputsV7`;
+  `pulp_wars-2yc.69`, to be tuned). The grade reads the human's score at
+  the rating moment: the end of the match if it ends at or before the
+  round end of round 30, otherwise the `round30` snapshot. 0 stars without
+  a victory; a victory is 1 star, 2 with a score of at least `200 + 2 ×
+land`, 3 with at least `300 + 3 × land` (`land` the board's tiles that
+  are not water; `SKIRMISH_STARS_V7`), never more than the difficulty
+  allows: Normal 1, Hard and Harder 2, Brutal 3. The difficulty is the
+  setup's `aiDifficulty`, and for a `NORMAL` setup with a head start the
+  hardest level whose head start on that board the head start reaches
+  (`matchDifficultyV7`). The glow is a flawless victory with at least the
+  2-star score, on any difficulty; it adds no star. The rating (the score
+  over the highest rival peak at the rating moment, a rival's final score
+  counting when above its peak) earns nothing and is kept only for the
+  tribe records' `bestRating`.
 - **Headless and text play.** The headless CLI (`match` and `batch`) and
   `play:text new` take `--mode domination|perfection` (default domination);
   a headless match result carries `score` (the mode, every player's score

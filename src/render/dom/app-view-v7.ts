@@ -183,7 +183,7 @@ import {
   alliedTeamV7,
   leaderboardOrderV7,
   pointsLabelV7,
-  ratingTextV7,
+  gradeScoreTextV7,
   roundsLeftLabelV7,
   scoreBreakdownLinesV7,
   scoreLedeV7,
@@ -4040,7 +4040,7 @@ export class Ruleset7DomAppView {
     if (note !== null) this.#fillTribeRecordsNote(note, stored, showcase);
     const rules = picker.querySelector<HTMLElement>(".v7-star-rules");
     if (rules !== null && !rules.hidden) {
-      const lines = starRulesV7(draft.aiCount);
+      const lines = starRulesV7();
       if (
         Array.from(rules.children)
           .map((entry) => entry.textContent)
@@ -10400,7 +10400,10 @@ export class Ruleset7DomAppView {
     if (verdict !== null) result.append(verdict);
     const grade = queryStarGradeV7(view);
     if (grade !== null && grade.grade.conditions.victory) {
-      const panel = this.#gradePanel(grade.grade);
+      const panel = this.#gradePanel(
+        grade.grade,
+        score.summary?.endRound ?? view.round,
+      );
       // The tribe record (pulp_wars-kaw6.4) folds into the grade panel.
       const record = this.#starRecordLine(grade);
       if (record !== null) panel.append(record);
@@ -10450,9 +10453,9 @@ export class Ruleset7DomAppView {
 
   /**
    * Section 8: the grade of a win: the stars (the glow only when earned),
-   * the rating against the best rival, and each condition met or missed.
+   * the score they read, and each condition met or missed.
    */
-  #gradePanel(grade: StarGradeV7): HTMLElement {
+  #gradePanel(grade: StarGradeV7, endRound: number): HTMLElement {
     const panel = el(this.#document, "section", "v7-grade");
     panel.dataset.v7Region = "grade";
     panel.dataset.stars = String(grade.stars);
@@ -10471,11 +10474,9 @@ export class Ruleset7DomAppView {
     const rating = text(
       this.#document,
       "p",
-      ratingTextV7(grade),
+      gradeScoreTextV7(grade, endRound),
       "v7-grade-rating",
     );
-    if (grade.ratingRound > 0)
-      rating.title = `Your score against the best rival's highest score, at round ${grade.ratingRound}`;
     const conditions = el(this.#document, "ul", "v7-grade-conditions");
     for (const line of gradeConditionLinesV7(grade)) {
       const item = el(this.#document, "li", "v7-grade-condition");
@@ -10497,7 +10498,7 @@ export class Ruleset7DomAppView {
         text(
           this.#document,
           "span",
-          `${line.met ? "Met" : "Missed"}, ${line.stars === 1 ? "1 star" : `${line.stars} stars`}: `,
+          `${line.met ? "Met" : "Missed"}${line.stars === 0 ? "" : line.stars === 1 ? ", 1 star" : `, ${line.stars} stars`}: `,
           "v7-sr-only",
         ),
         text(this.#document, "span", line.text, "v7-grade-text"),
@@ -16056,13 +16057,29 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   const seed = Number(draft.seedText);
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
     return null;
+  const width = effectiveBoardSize(draft);
+  const aiHeadStartCoins =
+    draft.mapType === "SHOWCASE" ? 0 : draft.aiHeadStartCoins;
   return {
     rulesetId: "pulp-wars-poc-7r91",
     seed,
-    width: effectiveBoardSize(draft),
-    height: effectiveBoardSize(draft),
+    width,
+    height: width,
     aiCount: draft.aiCount,
-    aiDifficulty: "NORMAL",
+    // Skirmish stars (`pulp_wars-2yc.69`): the difficulty is named when the
+    // head start is the one it gives on this board; a head start Advanced
+    // set by hand launches as Normal, and the stars read its level back
+    // from the head start (`matchDifficultyV7`).
+    aiDifficulty:
+      aiHeadStartCoins !== 0 &&
+      quickHeadStartCoinsV7(
+        draft.difficulty,
+        draft.mapType,
+        width,
+        draft.aiCount,
+      ) === aiHeadStartCoins
+        ? draft.difficulty
+        : "NORMAL",
     aiMode: draft.aiMode,
     // The engine's seat colour is not shown anywhere: every owner colour
     // is the faction's (bead pulp_wars-b5f.4), so the setup offers no
@@ -16081,9 +16098,9 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
     gameMode: effectiveGameModeV7(draft),
     // AI head start (`pulp_wars-w49.39`): written only when chosen; the
     // Showcase never has one.
-    ...(draft.mapType === "SHOWCASE" || draft.aiHeadStartCoins === 0
+    ...(aiHeadStartCoins === 0
       ? {}
-      : { aiHeadStart: { coins: draft.aiHeadStartCoins } }),
+      : { aiHeadStart: { coins: aiHeadStartCoins } }),
   };
 }
 /** The mode a launch uses; the draft keeps the player's own choice. */

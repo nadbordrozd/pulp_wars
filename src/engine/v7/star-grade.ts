@@ -1,35 +1,55 @@
 import type { PlayerId } from "../model/ids";
+import { matchDifficultyV7 } from "./difficulty";
 import { scoreRankingV7, scoresV7, type PlayerScoreV7 } from "./score";
 import {
   PERFECTION_ROUNDS_V7,
   gameModeOfV7,
+  type DifficultyV7,
   type GameModeV7,
   type GameStateV7,
-  type MatchSetupV7,
   type ScoreRound30SnapshotV7,
 } from "./types";
 
 /**
- * Score and modes (docs/product/RULESET_7_SCORE_AND_STARS.md section 5.5):
- * the hardest AI difficulty a setup can choose. Normal is the only one
- * today, so every match meets the condition; the AI head start
- * (`pulp_wars-w49.7`) is the expected lever and updates this constant.
+ * Skirmish stars (docs/product/RULESET_7_SCORE_AND_STARS.md section 5,
+ * `pulp_wars-2yc.69`; to be tuned): a win earns stars by the difficulty and
+ * the score. The difficulty caps the stars (`maxStars`); the score at the
+ * rating moment, against two fixed thresholds that grow with the board's
+ * land, earns the stars up to the cap.
+ *
+ * Back of the envelope (section 5.2): a decent win by about round 25 on a
+ * quick-start board scores about `300 + 3.3 × land`. The board part (city
+ * levels and territory) is about 40 points per city at the end, one city
+ * per 12 land tiles, so about 3.3 per land tile; the rest (technology
+ * about 160, achievements 80, army 45, kills 70, less about 50 of losses
+ * and damage) is about 300 whatever the board. So 3 stars ask for about
+ * that decent win (`300 + 3 × land`: 570 on Continents 14 x 14, 687 on
+ * Pangea 14 x 14) and 2 stars for about two thirds of it (`200 + 2 ×
+ * land`: 380 and 458), a scrappy win staying at 1.
  */
-export const HARDEST_AI_DIFFICULTY_V7: MatchSetupV7["aiDifficulty"] = "NORMAL";
+export const SKIRMISH_STARS_V7 = Object.freeze({
+  /** The most stars a win can earn on each difficulty. */
+  maxStars: Object.freeze({
+    NORMAL: 1,
+    HARD: 2,
+    HARDER: 2,
+    BRUTAL: 3,
+  }) satisfies Readonly<Record<DifficultyV7, 1 | 2 | 3>>,
+  /** The score for the second star: `base + perLandTile × land`. */
+  twoStars: Object.freeze({ base: 200, perLandTile: 2 }),
+  /** The score for the third star: `base + perLandTile × land`. */
+  threeStars: Object.freeze({ base: 300, perLandTile: 3 }),
+} as const);
 
-/**
- * Section 5.2: the rating thresholds in hundredths for `rivals` rivals at
- * setup: 2 stars at `1.5 + 0.25 × max(0, 3 − rivals)`, 3 stars at
- * `2.0 + 0.5 × max(0, 3 − rivals)`.
- */
-export function starThresholdsV7(rivals: number): {
-  readonly twoStarsHundredths: number;
-  readonly threeStarsHundredths: number;
+/** The scores for the second and third stars on a board with this land. */
+export function skirmishStarThresholdsV7(landTiles: number): {
+  readonly twoStars: number;
+  readonly threeStars: number;
 } {
-  const missing = Math.max(0, 3 - rivals);
+  const { twoStars, threeStars } = SKIRMISH_STARS_V7;
   return {
-    twoStarsHundredths: 150 + 25 * missing,
-    threeStarsHundredths: 200 + 50 * missing,
+    twoStars: twoStars.base + twoStars.perLandTile * landTiles,
+    threeStars: threeStars.base + threeStars.perLandTile * landTiles,
   };
 }
 
@@ -40,20 +60,26 @@ export function starThresholdsV7(rivals: number): {
  */
 export interface StarGradeInputsV7 {
   readonly gameMode: GameModeV7;
-  /** The human won (`VICTORY` for the human seat). */
+  /**
+   * The human won (`VICTORY` for the human seat): every rival eliminated in
+   * Domination, the highest score in Perfection.
+   */
   readonly victory: boolean;
   /** `aiCount` at setup. */
   readonly rivals: number;
-  /** The setup is on the hardest difficulty (section 5.5). */
-  readonly hardestDifficulty: boolean;
+  /** The difficulty, read back from the setup's head start. */
+  readonly difficulty: DifficultyV7;
+  /** The board's land tiles (every tile that is not water). */
+  readonly landTiles: number;
   /** The human's score at the rating moment (section 5.1). */
   readonly yourScore: number;
-  /** The highest rival peak at the rating moment. */
+  /**
+   * The highest rival peak at the rating moment. It earns no star; the
+   * ratio is kept for the tribe records' `bestRating` (section 6).
+   */
   readonly bestRivalPeak: number;
   /** The round of the rating moment (at most `PERFECTION_ROUNDS_V7`). */
   readonly ratingRound: number;
-  /** Every rival was eliminated by the human's capture. */
-  readonly everyRivalEliminatedByYou: boolean;
   /** The human lost no unit and no city (section 5.4). */
   readonly flawless: boolean;
 }
@@ -61,22 +87,35 @@ export interface StarGradeInputsV7 {
 /** One condition of the grade, met or missed (section 8 shows them). */
 export interface StarGradeConditionsV7 {
   readonly victory: boolean;
-  readonly twoStarRating: boolean;
-  readonly threeStarRating: boolean;
-  readonly hardestDifficulty: boolean;
-  /** Domination only; null in Perfection, which asks for no eliminations. */
-  readonly everyRivalEliminatedByYou: boolean | null;
+  /** The score reached the 2-star threshold (whatever the difficulty). */
+  readonly twoStarScore: boolean;
+  /** The score reached the 3-star threshold (whatever the difficulty). */
+  readonly threeStarScore: boolean;
   readonly flawless: boolean;
 }
 
 /** Section 5: the grade of a finished match for the human seat. */
 export interface StarGradeV7 {
   readonly stars: 0 | 1 | 2 | 3;
-  /** The hidden glow: a flawless win with at least the 2-star rating. */
-  readonly glow: boolean;
   /**
-   * The rating `yourScore ÷ bestRivalPeak` as an exact fraction, and
-   * rounded down to two decimals (`display`, for example "2.41").
+   * The hidden glow: a flawless win with at least the 2-star score, on any
+   * difficulty. It adds no star.
+   */
+  readonly glow: boolean;
+  readonly difficulty: DifficultyV7;
+  /** The most stars a win can earn on this difficulty. */
+  readonly maxStars: 1 | 2 | 3;
+  /** The human's score at the rating moment, the number the grade reads. */
+  readonly score: number;
+  /** The scores for the second and third stars on this board. */
+  readonly thresholds: {
+    readonly twoStars: number;
+    readonly threeStars: number;
+  };
+  /**
+   * The ratio `yourScore ÷ bestRivalPeak` as an exact fraction, and
+   * rounded down to two decimals (`display`, for example "2.41"). It earns
+   * nothing; the tribe records keep the best one (section 6).
    */
   readonly rating: {
     readonly numerator: number;
@@ -85,74 +124,59 @@ export interface StarGradeV7 {
     readonly display: string;
   };
   readonly ratingRound: number;
-  readonly thresholds: {
-    readonly twoStarsHundredths: number;
-    readonly threeStarsHundredths: number;
-  };
   readonly conditions: StarGradeConditionsV7;
 }
 
 /**
- * Section 5.3: the grade is the highest row whose conditions hold. 0 stars
- * for a defeat; 1 for a victory; 2 with the 2-star rating; 3 with the
- * 3-star rating on the hardest difficulty and, in Domination, every rival
- * eliminated by your capture; 3 and the glow for a flawless victory with at
- * least the 2-star rating, on any difficulty. Thresholds compare the exact
- * fraction (`your × 100 ≥ threshold × rival`).
+ * Section 5.3: 0 stars without a win; a win earns 1 star, a second with
+ * the 2-star score and a third with the 3-star score, never more than the
+ * difficulty allows (Normal 1, Hard and Harder 2, Brutal 3). The glow is a
+ * flawless win with at least the 2-star score.
  */
 export function starGradeV7(inputs: StarGradeInputsV7): StarGradeV7 {
   for (const value of [
     inputs.rivals,
+    inputs.landTiles,
     inputs.yourScore,
     inputs.bestRivalPeak,
     inputs.ratingRound,
   ])
     if (!Number.isSafeInteger(value) || value < 0)
       throw new RangeError("grade inputs must be non-negative integers");
-  // Section 5.1: a rival's peak is never 0 (every player starts with a
-  // city); a 0 here (a hand-built state) is read as 1.
-  const denominator = Math.max(1, inputs.bestRivalPeak);
-  const numerator = inputs.yourScore;
-  const thresholds = starThresholdsV7(inputs.rivals);
-  const meets = (hundredths: number): boolean =>
-    numerator * 100 >= hundredths * denominator;
-  const twoStarRating = meets(thresholds.twoStarsHundredths);
-  const threeStarRating = meets(thresholds.threeStarsHundredths);
-  const domination = inputs.gameMode === "DOMINATION";
-  const conditions: StarGradeConditionsV7 = {
-    victory: inputs.victory,
-    twoStarRating,
-    threeStarRating,
-    hardestDifficulty: inputs.hardestDifficulty,
-    everyRivalEliminatedByYou: domination
-      ? inputs.everyRivalEliminatedByYou
-      : null,
-    flawless: inputs.flawless,
-  };
-  const glow = inputs.victory && inputs.flawless && twoStarRating;
+  const maxStars = SKIRMISH_STARS_V7.maxStars[inputs.difficulty];
+  const thresholds = skirmishStarThresholdsV7(inputs.landTiles);
+  const score = inputs.yourScore;
+  const twoStarScore = score >= thresholds.twoStars;
+  const threeStarScore = score >= thresholds.threeStars;
+  const earned: 1 | 2 | 3 = threeStarScore ? 3 : twoStarScore ? 2 : 1;
   const stars: 0 | 1 | 2 | 3 = !inputs.victory
     ? 0
-    : glow ||
-        (threeStarRating &&
-          inputs.hardestDifficulty &&
-          (!domination || inputs.everyRivalEliminatedByYou))
-      ? 3
-      : twoStarRating
-        ? 2
-        : 1;
-  const hundredths = Math.floor((numerator * 100) / denominator);
+    : (Math.min(earned, maxStars) as 1 | 2 | 3);
+  const glow = inputs.victory && inputs.flawless && twoStarScore;
+  // A rival's peak is never 0 (every player starts with a city); a 0 here
+  // (a hand-built state) is read as 1.
+  const denominator = Math.max(1, inputs.bestRivalPeak);
+  const hundredths = Math.floor((score * 100) / denominator);
   return {
     stars,
     glow,
+    difficulty: inputs.difficulty,
+    maxStars,
+    score,
+    thresholds,
     rating: {
-      numerator,
+      numerator: score,
       denominator,
       hundredths,
       display: `${Math.floor(hundredths / 100)}.${String(hundredths % 100).padStart(2, "0")}`,
     },
     ratingRound: inputs.ratingRound,
-    thresholds,
-    conditions,
+    conditions: {
+      victory: inputs.victory,
+      twoStarScore,
+      threeStarScore,
+      flawless: inputs.flawless,
+    },
   };
 }
 
@@ -190,9 +214,10 @@ export interface MatchSummaryV7 {
 /**
  * Section 5.1: the grade inputs of the human seat, from a finished match.
  * The rating moment is the end of the match if it ended at or before the
- * round end of round 30 (your final score against each rival's highest
- * peak, a rival's final score counting when higher), and otherwise the
- * stored `round30` snapshots.
+ * round end of round 30 (your final score, and each rival's highest peak, a
+ * rival's final score counting when higher), and otherwise the stored
+ * `round30` snapshots. The difficulty is read back from the setup's head
+ * start ({@link matchDifficultyV7}) and the land counted on the board.
  */
 export function starGradeInputsV7(
   state: GameStateV7,
@@ -218,18 +243,17 @@ export function starGradeInputsV7(
     gameMode: gameModeOfV7(state.setup),
     victory: outcome?.kind === "VICTORY" && outcome.winnerId === human,
     rivals: state.setup.aiCount,
-    hardestDifficulty: state.setup.aiDifficulty === HARDEST_AI_DIFFICULTY_V7,
+    difficulty: matchDifficultyV7(state.setup),
+    landTiles: state.board.tiles.filter(
+      (tile) =>
+        tile.terrain !== "SHALLOW_WATER" && tile.terrain !== "DEEP_WATER",
+    ).length,
     yourScore: snapshot?.score ?? totals.get(human) ?? 0,
     bestRivalPeak: Math.max(0, ...rivals.map((player) => rivalPeak(player.id))),
     ratingRound:
       snapshot !== null
         ? PERFECTION_ROUNDS_V7
         : Math.min(state.round, PERFECTION_ROUNDS_V7),
-    everyRivalEliminatedByYou: rivals.every(
-      (player) =>
-        player.status === "ELIMINATED" &&
-        ledger.get(player.id)?.eliminatedBy === human,
-    ),
     flawless: own?.flawless === true,
   };
 }

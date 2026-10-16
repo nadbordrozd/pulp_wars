@@ -1,7 +1,6 @@
 import {
   FACTION_DISPLAY_NAMES_V7,
   PERFECTION_ROUNDS_V7,
-  starThresholdsV7,
   type FactionIdV7,
   type GameModeV7,
 } from "../engine/index";
@@ -51,24 +50,17 @@ export function tribeCardLabelV7(
   return `${FACTION_DISPLAY_NAMES_V7[faction]}, ${stars} of 3 stars in ${GAME_MODE_LABELS_V7[mode]}${glow ? ", flawless" : ""}`;
 }
 
-/** A rating in hundredths without trailing zeros: 150 is "1.5", 200 "2". */
-export function ratingMultipleV7(hundredths: number): string {
-  const whole = Math.floor(hundredths / 100);
-  const rest = hundredths % 100;
-  if (rest === 0) return String(whole);
-  return `${whole}.${String(rest).padStart(2, "0").replace(/0$/, "")}`;
-}
-
 /**
- * Section 7, item 4: how stars are earned for the current opponent count
- * (the thresholds of section 5.2). The glow is never explained.
+ * Section 7, item 4: how stars are earned (section 5.3), in words: the
+ * difficulty decides how many stars a win can earn, a high score earns
+ * them. No numbers (the thresholds are on the end screen). The glow is
+ * never explained.
  */
-export function starRulesV7(rivals: number): readonly string[] {
-  const { twoStarsHundredths, threeStarsHundredths } = starThresholdsV7(rivals);
+export function starRulesV7(): readonly string[] {
   return [
     "★ Win.",
-    `★★ Win with ${ratingMultipleV7(twoStarsHundredths)} times the best rival's score.`,
-    `★★★ Win with ${ratingMultipleV7(threeStarsHundredths)} times the best rival's score on the hardest difficulty, and in Domination take every rival's last city yourself.`,
+    "★★ Win on Hard or harder with a high score.",
+    "★★★ Win on Brutal with a great score.",
   ];
 }
 
