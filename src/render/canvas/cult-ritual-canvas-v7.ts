@@ -1,6 +1,7 @@
 import { BOARD_LABEL_FONT_FAMILY_V7 } from "./board-label-font-v7";
 import {
   CULT_PALETTE_V7,
+  cultPipRowPlateV7,
   type CultDrawOptionsV7,
 } from "./cult-channel-canvas-v7";
 import type { CultUnitMarkersV7 } from "./cult-channel-board-plan-v7";
@@ -48,8 +49,11 @@ export const CULT_TRICK_FRAME_V7 = {
   frog: { x: -38, y: 32, size: 48 },
   /** The "ME!" bubble: over the Chosen's head, to its right. */
   bubble: { x: 26, y: -64, width: 44, height: 24 },
-  /** A Tentacle's turns: the row under it. */
-  sinks: { y: 55, radius: 5.2, gap: 4 },
+  /**
+   * A Tentacle's turns: the row under it, just above its HP bar like the
+   * Control pips (CULT_PIP_ROW_BOTTOM_V7, bead pulp_wars-2yc.71).
+   */
+  sinks: { radius: 5.2, gap: 4 },
 } as const;
 
 /** The slots of a Tentacle's turns row (`TENTACLE_LIFETIME_V7`). */
@@ -640,10 +644,8 @@ export function drawCultTrickUnitMarkersV7(
     const gap = frame.sinks.gap * zoom;
     const slots = TENTACLE_TURN_PIPS_V7;
     const width = slots * radius * 2 + (slots - 1) * gap;
-    const cy = y + frame.sinks.y * zoom;
+    const { pad, height, cy } = cultPipRowPlateV7(y, zoom, radius);
     const left = x - width / 2;
-    const pad = Math.max(2, 3 * zoom);
-    const height = radius * 2 + pad * 2;
     context.fillStyle = highContrast ? "#000000" : CULT_PALETTE_V7.casing;
     context.globalAlpha *= 0.86;
     context.beginPath();

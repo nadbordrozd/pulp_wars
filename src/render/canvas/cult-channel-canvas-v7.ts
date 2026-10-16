@@ -35,11 +35,42 @@ export const CULT_PALETTE_V7 = {
   casing: "#10131c",
 } as const;
 
+/**
+ * The bottom edge of a row of pips under a unit (the Control pips, a
+ * Tentacle's turns), in world units below the tile's centre. Bead
+ * pulp_wars-2yc.71: the row sits just above the HP bar on the base (whose
+ * top is DIRECTED_BASE_HP_BAR_TOP_V7, 50), so a summon shows its pips and
+ * its health together; the row never covers the bar.
+ */
+export const CULT_PIP_ROW_BOTTOM_V7 = 48;
+
+/**
+ * The dark plate of a row of pips of `radius` (CSS px, already zoomed):
+ * its padding, height and centre, from the tile's centre `y`. The plate's
+ * bottom edge is CULT_PIP_ROW_BOTTOM_V7 at every zoom.
+ */
+export function cultPipRowPlateV7(
+  y: number,
+  zoom: number,
+  radius: number,
+): { readonly pad: number; readonly height: number; readonly cy: number } {
+  const pad = Math.max(2, 3 * zoom);
+  const height = radius * 2 + pad * 2;
+  return {
+    pad,
+    height,
+    cy: y + CULT_PIP_ROW_BOTTOM_V7 * zoom - height / 2,
+  };
+}
+
 /** Where each unit mark sits, from the tile's centre. */
 export const CULT_MARKER_FRAME_V7 = {
   candle: { x: -42, y: -42, size: 32 },
-  /** The pips' row: its centre, a pip's radius and the gap between pips. */
-  pips: { x: 0, y: 55, radius: 6.5, gap: 4, extraRadius: 4.2 },
+  /**
+   * The pips' row: its centre across, a pip's radius and the gap between
+   * pips; its plate's bottom edge is CULT_PIP_ROW_BOTTOM_V7.
+   */
+  pips: { x: 0, radius: 6, gap: 3.5, extraRadius: 4 },
   /** Unbound, and the eye on a target: the piece's upper right corner. */
   badge: { x: 44, y: -46, radius: 13 },
   steam: { y: -60, spread: 18 },
@@ -513,13 +544,12 @@ export function drawCultControlPipsV7(
     slots * radius * 2 +
     (slots - 1) * gap +
     (extra === 0 ? 0 : gap * 1.5 + extra * extraRadius * 2 + (extra - 1) * gap);
-  const cy = y + frame.y * zoom;
+  // The row stands just above the HP bar (bead pulp_wars-2yc.71).
+  const { pad, height, cy } = cultPipRowPlateV7(y, zoom, radius);
   let cx = x + frame.x * zoom - width / 2;
   context.save();
   context.setLineDash([]);
   // The plate: a dark pill, red-rimmed when the daemon would break.
-  const pad = Math.max(2, 3 * zoom);
-  const height = radius * 2 + pad * 2;
   context.fillStyle = highContrast ? "#000000" : CULT_PALETTE_V7.casing;
   context.globalAlpha *= 0.86;
   context.beginPath();

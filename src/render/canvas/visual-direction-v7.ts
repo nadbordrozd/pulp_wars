@@ -1550,6 +1550,12 @@ export function drawDirectedPieceChromeV7(
   garrisoned = false,
   /** The city's pennant was already drawn on its art's own anchor. */
   flagDrawn = false,
+  /**
+   * Bead pulp_wars-2yc.71: the caller draws the HP bar itself later, with
+   * drawDirectedHpBarV7, over the unit's status marks; `hp` still says
+   * whether the direction handles the bar.
+   */
+  hpDeferred = false,
 ): DirectedChromeHandledV7 {
   if (entry.kind !== "UNIT" && entry.kind !== "CITY") return NOTHING_HANDLED;
   const { chrome } = direction;
@@ -1637,55 +1643,94 @@ export function drawDirectedPieceChromeV7(
       context.stroke();
     }
   }
-  if (
-    entry.kind === "UNIT" &&
-    entry.hp !== undefined &&
-    entry.maxHp !== undefined &&
-    (chrome.hp === "DAMAGED" || chrome.hpPlacement === "BASE")
-  ) {
+  if (directedHpBarHandledV7(direction, entry)) {
     hp = true;
-    const share = Math.max(0, Math.min(1, entry.hp / entry.maxHp));
-    if (chrome.hp === "ALWAYS" || share < 1) {
-      if (chrome.hpPlacement === "SIDE") {
-        const bar = { left: -63, top: -36, width: 9, height: 76 };
-        context.fillStyle = "#101718";
-        context.fillRect(
-          x + bar.left * zoom,
-          y + bar.top * zoom,
-          bar.width * zoom,
-          bar.height * zoom,
-        );
-        const inner = (bar.height - 2) * share;
-        context.fillStyle = share <= 0.34 ? "#f0625a" : "#65d889";
-        context.fillRect(
-          x + (bar.left + 1) * zoom,
-          y + (bar.top + bar.height - 1 - inner) * zoom,
-          (bar.width - 2) * zoom,
-          inner * zoom,
-        );
-      } else {
-        // A short bar under the feet, on the base. It stays clear of the
-        // cell's bottom edge, where the territory border and the selection
-        // outline are drawn (bead pulp_wars-3tq.6).
-        const width = (garrisoned ? 40 : 54) * zoom;
-        const height = 8 * zoom;
-        const left = x + (garrisoned ? 20 : 0) * zoom - width / 2;
-        const top = y + DIRECTED_BASE_HP_BAR_TOP_V7 * zoom;
-        context.fillStyle = "#101718";
-        context.fillRect(left, top, width, height);
-        context.fillStyle =
-          share <= 0.34 ? "#f0625a" : share <= 0.67 ? "#f1c94b" : "#65d889";
-        context.fillRect(
-          left + zoom,
-          top + zoom,
-          (width - 2 * zoom) * share,
-          height - 2 * zoom,
-        );
-      }
-    }
+    if (!hpDeferred)
+      drawDirectedHpBarV7(context, direction, entry, x, y, zoom, garrisoned);
   }
   context.restore();
   return { badge, hp, crown };
+}
+
+/**
+ * Whether a direction draws this unit's HP bar itself, in place of the
+ * stock bar: a bar shown only when damaged, or a bar on the base.
+ */
+export function directedHpBarHandledV7(
+  direction: BoardVisualDirectionV7,
+  entry: BoardRenderPlanEntryV7,
+): boolean {
+  return (
+    entry.kind === "UNIT" &&
+    entry.hp !== undefined &&
+    entry.maxHp !== undefined &&
+    (direction.chrome.hp === "DAMAGED" ||
+      direction.chrome.hpPlacement === "BASE")
+  );
+}
+
+/**
+ * The direction's HP bar of a unit. The board draws it after every status
+ * mark on the unit (bead pulp_wars-2yc.71), so none of them covers it.
+ * Draws nothing for a unit whose bar the direction does not handle, nor at
+ * full health when the bar shows only when damaged.
+ */
+export function drawDirectedHpBarV7(
+  context: CanvasRenderingContext2D,
+  direction: BoardVisualDirectionV7,
+  entry: BoardRenderPlanEntryV7,
+  x: number,
+  y: number,
+  zoom: number,
+  garrisoned = false,
+): void {
+  if (
+    !directedHpBarHandledV7(direction, entry) ||
+    entry.hp === undefined ||
+    entry.maxHp === undefined
+  )
+    return;
+  const { chrome } = direction;
+  const share = Math.max(0, Math.min(1, entry.hp / entry.maxHp));
+  if (chrome.hp !== "ALWAYS" && share >= 1) return;
+  context.save();
+  if (chrome.hpPlacement === "SIDE") {
+    const bar = { left: -63, top: -36, width: 9, height: 76 };
+    context.fillStyle = "#101718";
+    context.fillRect(
+      x + bar.left * zoom,
+      y + bar.top * zoom,
+      bar.width * zoom,
+      bar.height * zoom,
+    );
+    const inner = (bar.height - 2) * share;
+    context.fillStyle = share <= 0.34 ? "#f0625a" : "#65d889";
+    context.fillRect(
+      x + (bar.left + 1) * zoom,
+      y + (bar.top + bar.height - 1 - inner) * zoom,
+      (bar.width - 2) * zoom,
+      inner * zoom,
+    );
+  } else {
+    // A short bar under the feet, on the base. It stays clear of the
+    // cell's bottom edge, where the territory border and the selection
+    // outline are drawn (bead pulp_wars-3tq.6).
+    const width = (garrisoned ? 40 : 54) * zoom;
+    const height = 8 * zoom;
+    const left = x + (garrisoned ? 20 : 0) * zoom - width / 2;
+    const top = y + DIRECTED_BASE_HP_BAR_TOP_V7 * zoom;
+    context.fillStyle = "#101718";
+    context.fillRect(left, top, width, height);
+    context.fillStyle =
+      share <= 0.34 ? "#f0625a" : share <= 0.67 ? "#f1c94b" : "#65d889";
+    context.fillRect(
+      left + zoom,
+      top + zoom,
+      (width - 2 * zoom) * share,
+      height - 2 * zoom,
+    );
+  }
+  context.restore();
 }
 
 /**

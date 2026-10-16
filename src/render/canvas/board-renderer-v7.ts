@@ -518,6 +518,7 @@ import { DOCK_LINK_V7, drawDirtRoadV7, type DockLinkV7 } from "./dirt-road-v7";
 import {
   DIRECTED_BASE_HP_BAR_TOP_V7,
   drawDirectedFlagV7,
+  drawDirectedHpBarV7,
   drawDirectedPieceChromeV7,
   drawDirectedTerritoryBoundaryV7,
   drawDirectedUnitBaseV7,
@@ -3016,6 +3017,10 @@ export function drawBoardV7(input: {
   // Bead pulp_wars-2yc.29: Promotion markers and ready chevrons, drawn
   // last so a city's name plate never covers one.
   const deferredFeedbackMarks: (() => void)[] = [];
+  // Bead pulp_wars-2yc.71: every unit's HP bar (and the Shatter window,
+  // Shield bar and clockwork gear on it), drawn after every piece's status
+  // marks and the Cult's channel marks, so no status art covers it.
+  const deferredHpBars: (() => void)[] = [];
   // A Barricade's HP goes over the target marks (bead pulp_wars-eu3r.9).
   const deferredBarricadeHp: (() => void)[] = [];
   // The cells a unit stands on (for a curiosity's corner badge).
@@ -4506,6 +4511,9 @@ export function drawBoardV7(input: {
                 camera.zoom,
                 directedGarrison,
                 directedFlag,
+                // Bead pulp_wars-2yc.71: the HP bar is drawn in its own
+                // pass, over every status mark (deferredHpBars).
+                true,
               );
         if (
           (entry.kind === "UNIT" || entry.kind === "CITY") &&
@@ -4908,188 +4916,212 @@ export function drawBoardV7(input: {
               highContrast: input.highContrast ?? false,
             },
           );
-        if (
-          entry.kind === "UNIT" &&
-          entry.hp !== undefined &&
-          entry.maxHp !== undefined &&
-          directed?.hp !== true &&
-          (entry.egg === undefined || entry.hp < entry.maxHp)
-        ) {
-          const share = Math.max(0, Math.min(1, entry.hp / entry.maxHp));
-          context.fillStyle = "#101718";
-          if (chibiPiece) {
-            // Vertical bar in the cell's left strip, filling from the bottom.
-            const bar = CHIBI_OVERLAY_FRAME_V7.hpBar;
-            context.fillRect(
-              x + bar.left * camera.zoom,
-              y + bar.top * camera.zoom,
-              bar.width * camera.zoom,
-              bar.height * camera.zoom,
-            );
-            const inner = (bar.height - 2) * share;
-            context.fillStyle = "#65d889";
-            context.fillRect(
-              x + (bar.left + 1) * camera.zoom,
-              y + (bar.top + bar.height - 1 - inner) * camera.zoom,
-              (bar.width - 2) * camera.zoom,
-              inner * camera.zoom,
-            );
-          } else {
-            context.fillRect(
-              x - 25 * camera.zoom,
-              y + 25 * camera.zoom,
-              50 * camera.zoom,
-              7 * camera.zoom,
-            );
-            context.fillStyle = "#65d889";
-            context.fillRect(
-              x - 24 * camera.zoom,
-              y + 26 * camera.zoom,
-              48 * (entry.hp / entry.maxHp) * camera.zoom,
-              5 * camera.zoom,
-            );
-          }
-        }
-        // The Ice Folk revision (section 13.1): the Shatter window on a
-        // Frozen unit's HP bar, in the bar of the look. The live look's
-        // base bar shows only when damaged, so a Frozen unit at full HP
-        // gets its bar too: the window is the point.
-        if (
-          entry.kind === "UNIT" &&
-          entry.hp !== undefined &&
-          entry.maxHp !== undefined &&
-          entry.iceFolk !== undefined &&
-          entry.iceFolk.shatterWindow !== null
-        ) {
-          const zoom = camera.zoom;
-          let bar: HpBarGeometryV7;
-          if (directed?.hp === true && direction !== undefined) {
-            if (direction.chrome.hpPlacement === "SIDE") {
-              const side = { left: -63, top: -36, width: 9, height: 76 };
-              bar = {
-                vertical: true,
-                inner: {
-                  x: x + (side.left + 1) * zoom,
-                  y: y + (side.top + 1) * zoom,
-                  width: (side.width - 2) * zoom,
-                  height: (side.height - 2) * zoom,
-                },
-              };
-            } else {
-              const width = (directedGarrison ? 40 : 54) * zoom;
-              const height = 8 * zoom;
-              const left = x + (directedGarrison ? 20 : 0) * zoom - width / 2;
-              const top = y + DIRECTED_BASE_HP_BAR_TOP_V7 * zoom;
-              if (direction.chrome.hp !== "ALWAYS" && entry.hp >= entry.maxHp) {
-                context.fillStyle = "#101718";
-                context.fillRect(left, top, width, height);
+        // Bead pulp_wars-2yc.71: the HP bar, with what rides on it (the
+        // Shatter window, the Shield bar, the clockwork gear), is drawn in
+        // a pass of its own after every piece's status marks and the Cult's
+        // channel marks, so no Sticky Toffee, frost, frog badge or pip row
+        // ever covers it.
+        if (entry.kind === "UNIT")
+          deferredHpBars.push(() => {
+            if (directed?.hp === true && direction !== undefined)
+              drawDirectedHpBarV7(
+                context,
+                direction,
+                entry,
+                x,
+                y,
+                camera.zoom,
+                directedGarrison,
+              );
+            if (
+              entry.kind === "UNIT" &&
+              entry.hp !== undefined &&
+              entry.maxHp !== undefined &&
+              directed?.hp !== true &&
+              (entry.egg === undefined || entry.hp < entry.maxHp)
+            ) {
+              const share = Math.max(0, Math.min(1, entry.hp / entry.maxHp));
+              context.fillStyle = "#101718";
+              if (chibiPiece) {
+                // Vertical bar in the cell's left strip, filling from the bottom.
+                const bar = CHIBI_OVERLAY_FRAME_V7.hpBar;
+                context.fillRect(
+                  x + bar.left * camera.zoom,
+                  y + bar.top * camera.zoom,
+                  bar.width * camera.zoom,
+                  bar.height * camera.zoom,
+                );
+                const inner = (bar.height - 2) * share;
                 context.fillStyle = "#65d889";
                 context.fillRect(
-                  left + zoom,
-                  top + zoom,
-                  width - 2 * zoom,
-                  height - 2 * zoom,
+                  x + (bar.left + 1) * camera.zoom,
+                  y + (bar.top + bar.height - 1 - inner) * camera.zoom,
+                  (bar.width - 2) * camera.zoom,
+                  inner * camera.zoom,
+                );
+              } else {
+                context.fillRect(
+                  x - 25 * camera.zoom,
+                  y + 25 * camera.zoom,
+                  50 * camera.zoom,
+                  7 * camera.zoom,
+                );
+                context.fillStyle = "#65d889";
+                context.fillRect(
+                  x - 24 * camera.zoom,
+                  y + 26 * camera.zoom,
+                  48 * (entry.hp / entry.maxHp) * camera.zoom,
+                  5 * camera.zoom,
                 );
               }
-              bar = {
-                vertical: false,
-                inner: {
-                  x: left + zoom,
-                  y: top + zoom,
-                  width: width - 2 * zoom,
-                  height: height - 2 * zoom,
-                },
-              };
             }
-          } else if (chibiPiece) {
-            const side = CHIBI_OVERLAY_FRAME_V7.hpBar;
-            bar = {
-              vertical: true,
-              inner: {
-                x: x + (side.left + 1) * zoom,
-                y: y + (side.top + 1) * zoom,
-                width: (side.width - 2) * zoom,
-                height: (side.height - 2) * zoom,
-              },
-            };
-          } else
-            bar = {
-              vertical: false,
-              inner: {
-                x: x - 24 * zoom,
-                y: y + 26 * zoom,
-                width: 48 * zoom,
-                height: 5 * zoom,
-              },
-            };
-          drawShatterWindowV7(
-            context,
-            bar,
-            entry.hp,
-            entry.maxHp,
-            entry.iceFolk.shatterWindow,
-            input.highContrast ?? false,
-          );
-        }
-        // The Martian revision (section 13.1): the segmented Shield bar,
-        // with the HP bar of the look: under a stand-in's plain bar, beside
-        // the classic side bar, or on the live look's base.
-        if (
-          entry.kind === "UNIT" &&
-          entry.martian !== undefined &&
-          entry.martian.shieldSegments > 0
-        ) {
-          const base =
-            directed?.hp === true && direction?.chrome.hpPlacement === "BASE";
-          drawShieldBarV7(context, x, y, camera.zoom, entry.martian, {
-            placement: base ? "BASE" : chibiPiece ? "SIDE" : "LEGACY",
-            hpShown:
-              direction?.chrome.hp === "ALWAYS" ||
-              (entry.hp ?? 0) < (entry.maxHp ?? 0) ||
-              // The Ice Folk revision: a Frozen unit always shows its bar.
-              (entry.iceFolk?.shatterWindow ?? null) !== null,
-            garrisoned: directedGarrison,
-            highContrast: input.highContrast ?? false,
+            // The Ice Folk revision (section 13.1): the Shatter window on a
+            // Frozen unit's HP bar, in the bar of the look. The live look's
+            // base bar shows only when damaged, so a Frozen unit at full HP
+            // gets its bar too: the window is the point.
+            if (
+              entry.kind === "UNIT" &&
+              entry.hp !== undefined &&
+              entry.maxHp !== undefined &&
+              entry.iceFolk !== undefined &&
+              entry.iceFolk.shatterWindow !== null
+            ) {
+              const zoom = camera.zoom;
+              let bar: HpBarGeometryV7;
+              if (directed?.hp === true && direction !== undefined) {
+                if (direction.chrome.hpPlacement === "SIDE") {
+                  const side = { left: -63, top: -36, width: 9, height: 76 };
+                  bar = {
+                    vertical: true,
+                    inner: {
+                      x: x + (side.left + 1) * zoom,
+                      y: y + (side.top + 1) * zoom,
+                      width: (side.width - 2) * zoom,
+                      height: (side.height - 2) * zoom,
+                    },
+                  };
+                } else {
+                  const width = (directedGarrison ? 40 : 54) * zoom;
+                  const height = 8 * zoom;
+                  const left =
+                    x + (directedGarrison ? 20 : 0) * zoom - width / 2;
+                  const top = y + DIRECTED_BASE_HP_BAR_TOP_V7 * zoom;
+                  if (
+                    direction.chrome.hp !== "ALWAYS" &&
+                    entry.hp >= entry.maxHp
+                  ) {
+                    context.fillStyle = "#101718";
+                    context.fillRect(left, top, width, height);
+                    context.fillStyle = "#65d889";
+                    context.fillRect(
+                      left + zoom,
+                      top + zoom,
+                      width - 2 * zoom,
+                      height - 2 * zoom,
+                    );
+                  }
+                  bar = {
+                    vertical: false,
+                    inner: {
+                      x: left + zoom,
+                      y: top + zoom,
+                      width: width - 2 * zoom,
+                      height: height - 2 * zoom,
+                    },
+                  };
+                }
+              } else if (chibiPiece) {
+                const side = CHIBI_OVERLAY_FRAME_V7.hpBar;
+                bar = {
+                  vertical: true,
+                  inner: {
+                    x: x + (side.left + 1) * zoom,
+                    y: y + (side.top + 1) * zoom,
+                    width: (side.width - 2) * zoom,
+                    height: (side.height - 2) * zoom,
+                  },
+                };
+              } else
+                bar = {
+                  vertical: false,
+                  inner: {
+                    x: x - 24 * zoom,
+                    y: y + 26 * zoom,
+                    width: 48 * zoom,
+                    height: 5 * zoom,
+                  },
+                };
+              drawShatterWindowV7(
+                context,
+                bar,
+                entry.hp,
+                entry.maxHp,
+                entry.iceFolk.shatterWindow,
+                input.highContrast ?? false,
+              );
+            }
+            // The Martian revision (section 13.1): the segmented Shield bar,
+            // with the HP bar of the look: under a stand-in's plain bar, beside
+            // the classic side bar, or on the live look's base.
+            if (
+              entry.kind === "UNIT" &&
+              entry.martian !== undefined &&
+              entry.martian.shieldSegments > 0
+            ) {
+              const base =
+                directed?.hp === true &&
+                direction?.chrome.hpPlacement === "BASE";
+              drawShieldBarV7(context, x, y, camera.zoom, entry.martian, {
+                placement: base ? "BASE" : chibiPiece ? "SIDE" : "LEGACY",
+                hpShown:
+                  direction?.chrome.hp === "ALWAYS" ||
+                  (entry.hp ?? 0) < (entry.maxHp ?? 0) ||
+                  // The Ice Folk revision: a Frozen unit always shows its bar.
+                  (entry.iceFolk?.shatterWindow ?? null) !== null,
+                garrisoned: directedGarrison,
+                highContrast: input.highContrast ?? false,
+              });
+            }
+            // The Dwarf revision (DWARF.md "Clockwork glyph"): a construct's
+            // gear at its HP bar's end, whenever the bar shows.
+            if (
+              entry.kind === "UNIT" &&
+              entry.dwarf?.clockwork === true &&
+              entry.hp !== undefined &&
+              entry.maxHp !== undefined &&
+              (entry.hp < entry.maxHp || direction?.chrome.hp === "ALWAYS")
+            ) {
+              const zoom = camera.zoom;
+              const radius = Math.max(4.5, 6.5 * zoom);
+              let gear: { readonly x: number; readonly y: number };
+              if (
+                directed?.hp === true &&
+                direction !== undefined &&
+                direction.chrome.hpPlacement === "BASE"
+              ) {
+                const width = (directedGarrison ? 40 : 54) * zoom;
+                const left = x + (directedGarrison ? 20 : 0) * zoom - width / 2;
+                gear = {
+                  x: left + width + radius * 0.9,
+                  y: y + (DIRECTED_BASE_HP_BAR_TOP_V7 + 4) * zoom,
+                };
+              } else if (chibiPiece) {
+                const bar = CHIBI_OVERLAY_FRAME_V7.hpBar;
+                gear = {
+                  x: x + (bar.left + bar.width / 2) * zoom,
+                  y: y + bar.top * zoom - radius * 0.9,
+                };
+              } else
+                gear = { x: x + 25 * zoom + radius * 0.9, y: y + 28.5 * zoom };
+              drawClockworkGearV7(
+                context,
+                gear.x,
+                gear.y,
+                radius,
+                input.highContrast ?? false,
+              );
+            }
           });
-        }
-        // The Dwarf revision (DWARF.md "Clockwork glyph"): a construct's
-        // gear at its HP bar's end, whenever the bar shows.
-        if (
-          entry.kind === "UNIT" &&
-          entry.dwarf?.clockwork === true &&
-          entry.hp !== undefined &&
-          entry.maxHp !== undefined &&
-          (entry.hp < entry.maxHp || direction?.chrome.hp === "ALWAYS")
-        ) {
-          const zoom = camera.zoom;
-          const radius = Math.max(4.5, 6.5 * zoom);
-          let gear: { readonly x: number; readonly y: number };
-          if (
-            directed?.hp === true &&
-            direction !== undefined &&
-            direction.chrome.hpPlacement === "BASE"
-          ) {
-            const width = (directedGarrison ? 40 : 54) * zoom;
-            const left = x + (directedGarrison ? 20 : 0) * zoom - width / 2;
-            gear = {
-              x: left + width + radius * 0.9,
-              y: y + (DIRECTED_BASE_HP_BAR_TOP_V7 + 4) * zoom,
-            };
-          } else if (chibiPiece) {
-            const bar = CHIBI_OVERLAY_FRAME_V7.hpBar;
-            gear = {
-              x: x + (bar.left + bar.width / 2) * zoom,
-              y: y + bar.top * zoom - radius * 0.9,
-            };
-          } else gear = { x: x + 25 * zoom + radius * 0.9, y: y + 28.5 * zoom };
-          drawClockworkGearV7(
-            context,
-            gear.x,
-            gear.y,
-            radius,
-            input.highContrast ?? false,
-          );
-        }
         // Bead pulp_wars-2yc.29: over the unit, the marker of one that
         // waits for its Promotion (the Promote button's own icon) or,
         // without one, the chevron of a unit that can still move. Always
@@ -5382,6 +5414,9 @@ export function drawBoardV7(input: {
       return resolved.kind === "READY" ? resolved.image : null;
     },
   );
+  // Bead pulp_wars-2yc.71: the HP bars, over every status mark on a unit,
+  // the Cult's strands and pips included; under the previews and labels.
+  for (const drawHp of deferredHpBars) drawHp();
   // Preview labels and notes stay inside the visible, unobscured band and
   // off each other; one placer serves every preview box of this frame.
   // Every label is queued and drawn after every outline and area fill, so
