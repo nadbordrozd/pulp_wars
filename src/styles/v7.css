@@ -97,6 +97,15 @@
   --pw-marker-after-move: #f4c95d;
   --pw-marker-slide: #d6f0ff;
   --pw-marker-launch: #c7e7f5;
+  /*
+   * The technology tree's night ground (bead pulp_wars-2yc.58): a dark
+   * board-like field, its glow at the hub, the bright ring and line of an
+   * owned technology and the faint line of a locked one.
+   */
+  --pw-tree-ground: #181a29;
+  --pw-tree-glow: #34395a;
+  --pw-tree-owned: #64e6cf;
+  --pw-tree-locked: rgb(247 239 216 / 28%);
 
   /* ---- shape ---- */
   --pw-line-w: 3px;
@@ -3323,21 +3332,25 @@
   height: 1.5rem;
 }
 
+/*
+ * The radial technology tree (bead pulp_wars-2yc.58, docs/ui/SCREEN_FLOW.md):
+ * a night ground like the board's, a tinted wedge per branch, round badges
+ * whose fill and ring show the state, and names and prices that keep their
+ * size on screen (the stage scales them by --tech-inverse, 1 / its scale).
+ */
 .v7-tech-graph {
   position: relative;
   width: 100%;
   height: 100%;
   min-height: 12rem;
   overflow: hidden;
-  border: var(--pw-line-w-sm) solid var(--pw-line-soft);
-  border-radius: var(--pw-radius-sm);
-  background:
-    radial-gradient(
-      circle at center,
-      var(--pw-surface-raised) 0 15%,
-      transparent 42%
-    ),
-    var(--pw-surface-2);
+  border: var(--pw-line-w) solid var(--pw-line);
+  border-radius: var(--pw-radius);
+  background: radial-gradient(
+    circle at center,
+    var(--pw-tree-glow) 0,
+    var(--pw-tree-ground) 62%
+  );
   cursor: grab;
   touch-action: none;
   user-select: none;
@@ -3355,20 +3368,23 @@
 .v7-tech-graph-shell {
   position: relative;
   display: grid;
-  grid-template-rows: max-content minmax(0, 1fr);
-  gap: 0.35rem;
+  grid-template-rows: minmax(0, 1fr);
   min-height: 0;
 }
 
+/* The zoom controls float over the ground's corner, like the map's. */
 .v7-tech-graph-controls {
+  position: absolute;
+  z-index: 3;
+  top: 0.5rem;
+  left: 0.5rem;
   display: flex;
   align-items: center;
-  justify-self: start;
   gap: 0.2rem;
   padding: 0.2rem;
   border: var(--pw-line-w-sm) solid var(--pw-line);
   border-radius: var(--pw-radius-sm);
-  background: color-mix(in srgb, var(--pw-surface-raised) 92%, transparent);
+  background: var(--pw-surface-raised);
   box-shadow: var(--pw-shadow-sm);
 }
 
@@ -3412,189 +3428,318 @@
   pointer-events: none;
 }
 
-.v7-tech-edges line {
-  stroke: var(--pw-line);
+/* A branch's wedge: its hue, faint, so the eye groups its five badges. */
+.v7-tech-wedge {
+  fill: color-mix(in srgb, var(--tech-branch) 24%, transparent);
+  stroke: color-mix(in srgb, var(--tech-branch) 60%, transparent);
+  stroke-width: 2;
+}
+
+.v7-tech-wedge[data-tech-branch="SETTLEMENT"] {
+  --tech-branch: var(--pw-amber);
+}
+
+.v7-tech-wedge[data-tech-branch="WILDS"] {
+  --tech-branch: var(--pw-green);
+}
+
+.v7-tech-wedge[data-tech-branch="MOBILITY"] {
+  --tech-branch: var(--pw-violet);
+}
+
+.v7-tech-wedge[data-tech-branch="INDUSTRY"] {
+  --tech-branch: var(--pw-red);
+}
+
+.v7-tech-wedge[data-tech-branch="NAVAL"] {
+  --tech-branch: var(--pw-blue);
+}
+
+/* Connectors by the state of the technology they lead to. */
+.v7-tech-edge,
+.v7-tech-spoke {
+  fill: none;
+  stroke: var(--pw-tree-locked);
   stroke-linecap: round;
-  stroke-width: 5;
+  stroke-width: 4;
+}
+
+.v7-tech-edge[data-state="owned"],
+.v7-tech-spoke[data-state="owned"] {
+  stroke: var(--pw-tree-owned);
+  stroke-width: 7;
+}
+
+.v7-tech-edge[data-state="available"],
+.v7-tech-spoke[data-state="available"] {
+  stroke: var(--pw-yellow);
+  stroke-width: 6;
+}
+
+.v7-tech-edge[data-state="disabled"],
+.v7-tech-spoke[data-state="disabled"] {
+  stroke-dasharray: 1 10;
+}
+
+/* The faction's emblem at the hub, ringed in the faction's colour. */
+.v7-tech-centre {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border: 4px solid var(--tech-faction, var(--pw-line));
+  border-radius: 50%;
+  background: var(--pw-surface-raised);
+  box-shadow: 0 0 0 3px var(--pw-ink);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.v7-tech-centre .v7-faction-emblem {
+  width: 48px;
+  height: 48px;
+  background: transparent;
 }
 
 .v7-tech-node {
   position: absolute;
-  width: 86px;
-  height: 86px;
+  width: 72px;
+  height: 72px;
   transform: translate(-50%, -50%);
 }
 
+.v7-tech-node:hover,
+.v7-tech-node:focus-within {
+  z-index: 4;
+}
+
+/* A round badge: the state is its fill and ring, the art sits whole inside. */
 .v7-tech-card {
   position: relative;
-  width: 86px;
-  min-width: 86px;
-  height: 86px;
-  min-height: 86px;
   display: grid;
-  grid-template-rows: minmax(0, 1fr);
-  justify-items: center;
-  align-content: stretch;
-  gap: 0;
-  padding: 3px 3px 2px;
-  border: 3px solid var(--pw-line);
-  border-radius: var(--pw-radius-sm);
-  background: var(--pw-surface-raised);
-  box-shadow: 2px 2px 0 color-mix(in srgb, var(--pw-ink) 35%, transparent);
+  place-items: center;
+  width: 72px;
+  min-width: 72px;
+  height: 72px;
+  min-height: 72px;
+  padding: 0;
+  border: 4px solid var(--pw-line-soft);
+  border-radius: 50%;
+  background: var(--pw-surface-2);
+  box-shadow: 0 0 0 2px var(--pw-ink);
   overflow: visible;
 }
 
 .v7-tech-art {
   position: relative;
-  display: grid;
-  place-items: center;
-  width: 48px;
-  height: 48px;
-  overflow: hidden;
-}
-
-.v7-tech-art .v7-art-frame {
-  width: 48px;
-  height: 48px;
-  scale: 0.8;
-}
-
-.v7-tech-art[data-frame-mode="visible-alpha"] .v7-art-frame {
-  position: absolute;
-  max-width: none;
-  max-height: none;
-}
-
-.v7-tech-name {
-  display: none;
-  position: absolute;
-  z-index: 2;
-  top: calc(100% + 3px);
-  left: 50%;
-  width: 112px;
-  padding: 1px 3px;
-  border-radius: var(--pw-radius-xs);
-  background: color-mix(in srgb, var(--pw-surface-raised) 88%, transparent);
-  transform: translateX(-50%);
-  font-size: 10px;
-  line-height: 1.05;
-  text-align: center;
-  font-weight: var(--pw-fw-bold);
-  overflow-wrap: anywhere;
+  width: 46px;
+  height: 46px;
+  margin-top: -2px;
   pointer-events: none;
 }
 
-.v7-tech-node[data-label-side="above"] .v7-tech-name {
-  top: auto;
-  bottom: calc(100% + 3px);
-}
-
-.v7-tech-stage[data-labels="show"] .v7-tech-name {
-  display: block;
-}
-
-.v7-tech-cost {
+/* The whole raster, scaled to fit inside the badge's padding: never cropped. */
+.v7-tech-card .v7-tech-art > .v7-art-frame {
   position: absolute;
-  right: -2px;
-  bottom: -2px;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.15rem;
-  color: var(--pw-coin);
-  min-height: 24px;
-  font-size: 11px;
-  padding: 0 3px 0 5px;
-  border: 2px solid var(--pw-line);
-  border-radius: var(--pw-radius-pill);
-  background: var(--pw-surface-raised);
-  font-weight: var(--pw-fw-heavy);
-}
-
-.v7-tech-cost .v7-economy-icon {
-  width: 14px;
-  height: 14px;
-}
-
-.v7-tech-check {
-  position: absolute;
-  right: -2px;
-  bottom: -2px;
-  display: grid;
-  place-items: center;
-  width: 24px;
-  height: 24px;
-  border: 2px solid var(--pw-line);
-  border-radius: 50%;
-  background: var(--pw-surface-raised);
-  color: var(--pw-teal);
-  font-size: 16px;
-  font-weight: var(--pw-fw-heavy);
-}
-
-.v7-tech-achievement {
-  position: absolute;
-  top: 0.35rem;
-  right: 0.35rem;
-  color: var(--pw-coin);
-}
-
-.v7-tech-achievement .v7-ui-icon {
-  width: 1rem;
-  height: 1rem;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .v7-tech-card.state-owned {
-  border-color: var(--pw-teal);
+  border-color: var(--pw-tree-owned);
   background: var(--pw-teal-fill);
 }
 
 .v7-tech-card.state-available {
-  border-color: var(--pw-line);
+  border-color: var(--pw-ink);
   background: var(--pw-yellow);
-  box-shadow: var(--pw-shadow-sm);
+  box-shadow:
+    0 0 0 3px var(--pw-yellow),
+    0 0 0 5px var(--pw-ink);
 }
 
-.v7-tech-card.state-blocked {
-  border-color: var(--pw-line-soft);
-  background: var(--pw-surface-2);
+/* Available, but the Coins are short: a pale plate, no glow. */
+.v7-tech-card.state-available[data-affordable="false"] {
+  border-color: var(--pw-yellow);
+  background: var(--pw-amber-fill);
+  box-shadow: 0 0 0 2px var(--pw-ink);
+}
+
+.v7-tech-card.state-blocked .v7-tech-art,
+.v7-tech-card.state-disabled .v7-tech-art {
+  opacity: 0.8;
+  filter: grayscale(0.7);
 }
 
 .v7-tech-card.state-disabled {
   border-style: dashed;
-  border-color: var(--pw-line-soft);
-  background: var(--pw-surface-2);
-}
-
-.v7-tech-card.state-blocked .v7-tech-art {
-  opacity: var(--pw-dim);
-}
-
-.v7-tech-card.state-blocked .v7-tech-name {
-  color: var(--pw-text-2);
 }
 
 .v7-app-shell[data-contrast="high"] .v7-tech-card.state-blocked {
   border-style: dashed;
 }
 
-.v7-app-shell[data-contrast="high"] .v7-tech-card.state-blocked .v7-tech-art {
-  border-radius: var(--pw-radius-xs);
-  background-image: repeating-linear-gradient(
-    135deg,
-    transparent 0 5px,
-    var(--pw-ink) 5px 6px
-  );
-}
-
 .v7-tech-card[data-selected="true"] {
-  outline: 3px solid var(--pw-accent);
-  outline-offset: 3px;
+  outline: 4px solid var(--pw-accent);
+  outline-offset: 4px;
 }
 
 /* The technology a research prompt asked for (bead pulp_wars-gl1). */
 .v7-tech-card[data-goal="true"] {
-  border-style: dashed;
-  border-color: var(--pw-accent);
+  outline: 4px dashed var(--pw-accent);
+  outline-offset: 4px;
+}
+
+/*
+ * The name: cream type with an ink keyline straight on the ground, never on
+ * a plate. Shown for every node from TECHNOLOGY_LABEL_SCALE_V7 up (the
+ * viewport sets data-labels) and for the hovered or keyboard-focused node.
+ */
+.v7-tech-name {
+  display: none;
+  position: absolute;
+  z-index: 2;
+  top: 100%;
+  left: 50%;
+  width: 90px;
+  padding: 1px;
+  overflow: hidden;
+  color: var(--pw-text-inverse);
+  font-size: var(--pw-fs-xs);
+  font-weight: var(--pw-fw-heavy);
+  line-height: 1.08;
+  text-align: center;
+  text-shadow:
+    -1px -1px 0 var(--pw-ink),
+    1px -1px 0 var(--pw-ink),
+    -1px 1px 0 var(--pw-ink),
+    1px 1px 0 var(--pw-ink),
+    0 2px 0 var(--pw-ink);
+  transform-origin: 0 0;
+  transform: scale(var(--tech-inverse, 1)) translate(-50%, 12px);
+  pointer-events: none;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.v7-tech-node[data-label-side="above"] .v7-tech-name {
+  top: auto;
+  bottom: 100%;
+  transform-origin: 0 100%;
+  transform: scale(var(--tech-inverse, 1)) translate(-50%, -3px);
+}
+
+.v7-tech-node[data-label-side="right"] .v7-tech-name {
+  top: 50%;
+  left: 100%;
+  text-align: left;
+  transform: scale(var(--tech-inverse, 1)) translate(3px, -50%);
+}
+
+.v7-tech-node[data-label-side="left"] .v7-tech-name {
+  top: 50%;
+  right: 100%;
+  left: auto;
+  text-align: right;
+  transform-origin: 100% 0;
+  transform: scale(var(--tech-inverse, 1)) translate(-3px, -50%);
+}
+
+/* The price chip under the badge and the owned check, same size on screen. */
+.v7-tech-cost,
+.v7-tech-check {
+  display: none;
+  position: absolute;
+  z-index: 1;
+  top: 100%;
+  left: 50%;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  box-sizing: border-box;
+  height: 18px;
+  border: var(--pw-line-w-sm) solid var(--pw-ink);
+  border-radius: var(--pw-radius-pill);
+  background: var(--pw-surface-raised);
+  color: var(--pw-text);
+  font-size: var(--pw-fs-xs);
+  font-weight: var(--pw-fw-heavy);
+  line-height: 1;
+  white-space: nowrap;
+  transform-origin: 0 0;
+  transform: scale(var(--tech-inverse, 1)) translate(-50%, -9px);
+  pointer-events: none;
+}
+
+.v7-tech-cost {
+  max-width: 40px;
+  padding: 0 4px 0 2px;
+}
+
+.v7-tech-cost .v7-economy-icon {
+  width: 12px;
+  height: 12px;
+}
+
+/* The free first technology: a red "Free" chip. */
+.v7-tech-cost[data-free="true"] {
+  padding: 0 3px;
+  background: var(--pw-accent);
+  color: var(--pw-accent-text);
+}
+
+.v7-tech-card[data-affordable="false"] .v7-tech-cost {
+  background: var(--pw-red-fill);
+  color: var(--pw-loss);
+}
+
+.v7-tech-check {
+  width: 18px;
+  border-radius: 50%;
+  background: var(--pw-tree-owned);
+}
+
+.v7-tech-achievement {
+  display: none;
+  position: absolute;
+  top: 0;
+  right: 0;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border: var(--pw-line-w-sm) solid var(--pw-ink);
+  border-radius: 50%;
+  background: var(--pw-surface-raised);
+  color: var(--pw-coin);
+  transform-origin: 100% 0;
+  transform: scale(var(--tech-inverse, 1)) translate(4px, -4px);
+  pointer-events: none;
+}
+
+.v7-tech-achievement .v7-ui-icon {
+  width: 13px;
+  height: 13px;
+}
+
+.v7-tech-stage[data-labels="show"] .v7-tech-name,
+.v7-tech-node:hover .v7-tech-name,
+.v7-tech-card:focus-visible .v7-tech-name {
+  display: -webkit-box;
+}
+
+.v7-tech-stage[data-labels="show"] :is(.v7-tech-cost, .v7-tech-check),
+.v7-tech-node:hover :is(.v7-tech-cost, .v7-tech-check),
+.v7-tech-card:focus-visible :is(.v7-tech-cost, .v7-tech-check) {
+  display: inline-flex;
+}
+
+.v7-tech-stage[data-labels="show"] .v7-tech-achievement,
+.v7-tech-node:hover .v7-tech-achievement,
+.v7-tech-card:focus-visible .v7-tech-achievement {
+  display: grid;
 }
 
 .v7-tech-detail {
@@ -3616,6 +3761,64 @@
   box-shadow: 6px 6px 0 var(--pw-accent);
   overflow: auto;
   transform: translate(-50%, -50%);
+}
+
+/*
+ * The detail docks on the side of the graph away from the chosen badge
+ * (data-dock, set from the camera), so the badge and its neighbours stay
+ * in sight above, below or beside it.
+ */
+.v7-tech-detail[data-dock="top"],
+.v7-tech-detail[data-dock="bottom"] {
+  max-height: calc(58% - 0.75rem);
+  transform: translateX(-50%);
+}
+
+.v7-tech-detail[data-dock="top"] {
+  top: 0.75rem;
+}
+
+.v7-tech-detail[data-dock="bottom"] {
+  top: auto;
+  bottom: 0.75rem;
+}
+
+.v7-tech-detail[data-dock="left"],
+.v7-tech-detail[data-dock="right"] {
+  grid-template-columns: minmax(0, 1fr);
+  width: min(24rem, calc(50% - 1.5rem));
+  transform: translateY(-50%);
+}
+
+/* Beside the tree the name sits over the text, both full width. */
+.v7-tech-detail:is([data-dock="left"], [data-dock="right"]) > * {
+  grid-column: 1;
+}
+
+.v7-tech-detail:is([data-dock="left"], [data-dock="right"]) > .v7-identity {
+  grid-row: auto;
+  padding-right: 2.4rem;
+}
+
+.v7-tech-detail:is([data-dock="left"], [data-dock="right"]) > .v7-identity h2 {
+  max-width: none;
+}
+
+.v7-tech-detail[data-dock="left"] {
+  left: 0.75rem;
+}
+
+.v7-tech-detail[data-dock="right"] {
+  right: 0.75rem;
+  left: auto;
+}
+
+.v7-tech-detail:is([data-dock="left"], [data-dock="right"])
+  .v7-research-action {
+  grid-row: auto;
+  grid-column: 1;
+  justify-content: center;
+  margin-right: 0;
 }
 
 .v7-tech-detail > .close-button {

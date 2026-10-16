@@ -1,7 +1,11 @@
 // @vitest-environment jsdom
 
 import { beforeEach, describe, expect, it } from "vitest";
-import { TechnologyTreeViewportV7 } from "../../src/render/dom/technology-tree-viewport-v7";
+import {
+  TechnologyTreeViewportV7,
+  technologyTreeFitScaleV7,
+  technologyTreeMaxScaleV7,
+} from "../../src/render/dom/technology-tree-viewport-v7";
 
 beforeEach(() => {
   document.body.innerHTML = `
@@ -26,11 +30,17 @@ describe("Ruleset 7 technology tree viewport", () => {
       () => height,
     );
     const camera = new TechnologyTreeViewportV7();
-    camera.attach(viewport, stage, { width: 600, height: 600 }, label);
-    expect(stage.style.transform).toContain("scale(0.5533333333333333)");
+    const graph = { width: 600, height: 600, labelScale: 1 };
+    camera.attach(viewport, stage, graph, label);
+    // (340 - 2 x 6) / 600: the side gutters keep the badge rings clear.
+    expect(stage.style.transform).toContain("scale(0.5466666666666666)");
     expect(viewport.dataset.zoom).toBe("1");
     expect(label.textContent).toBe("100%");
     expect(stage.dataset.labels).toBe("hidden");
+    // Names and prices keep their size on screen.
+    expect(Number(stage.style.getPropertyValue("--tech-inverse"))).toBeCloseTo(
+      1 / 0.5466666666666666,
+    );
 
     camera.zoomBy(1.22);
     expect(viewport.dataset.zoom).toBe("1.22");
@@ -43,7 +53,7 @@ describe("Ruleset 7 technology tree viewport", () => {
     const zoomed = stage.style.transform;
     width = 320;
     height = 420;
-    camera.attach(viewport, stage, { width: 600, height: 600 }, label);
+    camera.attach(viewport, stage, graph, label);
     expect(viewport.dataset.zoom).toBe("1.22");
     expect(stage.style.transform).not.toBe(zoomed);
 
@@ -51,6 +61,55 @@ describe("Ruleset 7 technology tree viewport", () => {
     expect(viewport.dataset.zoom).toBe("1");
     camera.zoomBy(0.1);
     expect(viewport.dataset.zoom).toBe("1");
+    camera.detach();
+  });
+
+  it("zooms far enough on a small phone for the names to show", () => {
+    const viewport = required<HTMLElement>("#viewport");
+    const stage = required<HTMLElement>("#stage");
+    viewport.getBoundingClientRect = () => rect(288, 590);
+    viewportDimensions(
+      viewport,
+      () => 288,
+      () => 590,
+    );
+    const camera = new TechnologyTreeViewportV7();
+    const graph = { width: 706, height: 676, labelScale: 1.35 };
+    camera.attach(viewport, stage, graph);
+    const fit = technologyTreeFitScaleV7({ width: 288, height: 590 }, graph);
+    expect(fit).toBeCloseTo((288 - 12) / 706);
+    camera.zoomBy(100);
+    expect(camera.zoom * fit).toBeCloseTo(technologyTreeMaxScaleV7(fit));
+    expect(technologyTreeMaxScaleV7(fit)).toBeGreaterThanOrEqual(1.35);
+    expect(stage.dataset.labels).toBe("show");
+    camera.detach();
+  });
+
+  it("reveals a badge under a docked detail without moving the stored camera", () => {
+    const viewport = required<HTMLElement>("#viewport");
+    const stage = required<HTMLElement>("#stage");
+    viewport.getBoundingClientRect = () => rect(340, 600);
+    viewportDimensions(
+      viewport,
+      () => 340,
+      () => 600,
+    );
+    const camera = new TechnologyTreeViewportV7();
+    camera.attach(viewport, stage, { width: 600, height: 600 });
+    const before = stage.style.transform;
+    const at = camera.project(300, 300);
+    expect(at).toEqual({ x: 170, y: 300, width: 340, height: 600 });
+    // A detail over the top 60%: the centre moves into the lower 40%.
+    camera.reveal(300, 300, { left: 8, top: 0, right: 332, bottom: 360 });
+    expect(stage.style.transform).toContain("translate(170px, 480px)");
+    // A badge already clear of the detail does not move.
+    camera.reveal(300, 300, { left: 8, top: 0, right: 332, bottom: 120 });
+    expect(stage.style.transform).toBe(before);
+    // Beside a detail on the right: only the horizontal position moves.
+    camera.reveal(300, 300, { left: 150, top: 100, right: 332, bottom: 500 });
+    expect(stage.style.transform).toContain("translate(75px, 300px)");
+    camera.clearReveal();
+    expect(stage.style.transform).toBe(before);
     camera.detach();
   });
 

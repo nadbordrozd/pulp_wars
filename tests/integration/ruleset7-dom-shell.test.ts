@@ -346,8 +346,50 @@ describe("Ruleset 7 DOM shell", () => {
       ".v7-tech-graph[role='region']",
     );
     if (graph === null) throw new Error("Technology graph missing");
-    expect(graph.dataset.techGraphWidth).toBe("600");
-    expect(graph.dataset.techGraphHeight).toBe("600");
+    // The radial tree (bead pulp_wars-2yc.58): the faction's emblem at the
+    // hub, five tinted branch wedges and spokes, every badge on a ring.
+    expect(Number(graph.dataset.techGraphWidth)).toBeCloseTo(705.97);
+    expect(Number(graph.dataset.techGraphHeight)).toBeCloseTo(675.92);
+    expect(
+      graph.querySelectorAll(".v7-tech-centre .v7-faction-emblem"),
+    ).toHaveLength(1);
+    expect(graph.querySelectorAll(".v7-tech-wedge")).toHaveLength(5);
+    expect(graph.querySelectorAll(".v7-tech-spoke")).toHaveLength(5);
+    expect(
+      [...graph.querySelectorAll<HTMLElement>(".v7-tech-node")].map(
+        (node) => node.dataset.ring,
+      ),
+    ).toEqual(
+      Array.from({ length: 5 }, () => ["1", "2", "3", "2", "3"]).flat(),
+    );
+    // At the start every branch root is available and free, the rest locked.
+    expect(
+      graph.querySelectorAll(
+        '.v7-tech-card.state-available[data-free="true"] .v7-tech-cost[data-free="true"]',
+      ),
+    ).toHaveLength(5);
+    expect(
+      [...graph.querySelectorAll<SVGElement>(".v7-tech-spoke")].map(
+        (spoke) => spoke.dataset.state,
+      ),
+    ).toEqual([
+      "available",
+      "available",
+      "available",
+      "available",
+      "available",
+    ]);
+    expect(
+      graph.querySelectorAll('.v7-tech-edge[data-state="locked"]').length +
+        graph.querySelectorAll('.v7-tech-edge[data-state="disabled"]').length,
+    ).toBe(20);
+    // The art is the whole raster, fitted by CSS rather than a fixed box.
+    for (const image of graph.querySelectorAll<HTMLElement>(
+      ".v7-tech-art > img.v7-chibi-art",
+    )) {
+      expect(image.style.width).toBe("");
+      expect(image.style.height).toBe("");
+    }
     expect(requiredButton('[data-action="tech-fit"]').textContent).toBe("Fit");
     expect(requiredButton('[data-action="tech-zoom-in"]')).not.toBeNull();
     expect(requiredButton('[data-action="tech-zoom-out"]')).not.toBeNull();
@@ -393,6 +435,70 @@ describe("Ruleset 7 DOM shell", () => {
     expect(symbol.textContent).toBe("");
   });
 
+  it("shows each technology's state on its radial badge and docks the detail away from it", async () => {
+    const app = bootstrapRuleset7App(document, { storage: null });
+    requiredInput("v7-seed").value = "3";
+    chooseSeed();
+    requiredButton('[data-action="launch"]').click();
+    await waitUntil(() => app.controller.snapshot().phase === "ACTIVE");
+    requiredButton('[data-action="tech"]').click();
+    await flushMicrotasks();
+    const gathering = requiredButton('[data-action="tech-gathering"]');
+    expect(gathering.classList.contains("state-available")).toBe(true);
+    expect(gathering.dataset.free).toBe("true");
+    expect(gathering.querySelector(".v7-tech-name")?.textContent).toBe(
+      "Gathering",
+    );
+    // The name, chip and badge sit on their node's side away from the hub.
+    const node = gathering.closest<HTMLElement>(".v7-tech-node");
+    expect(node?.dataset.labelSide).toBe("above");
+    expect(node?.dataset.ring).toBe("1");
+
+    gathering.click();
+    await flushMicrotasks();
+    const detail = document.querySelector<HTMLElement>(".v7-tech-detail");
+    if (detail === null) throw new Error("Technology detail missing");
+    expect(["top", "bottom", "left", "right"]).toContain(detail.dataset.dock);
+    expect(
+      document
+        .querySelector('.v7-tech-card[data-selected="true"]')
+        ?.getAttribute("data-action"),
+    ).toBe("tech-gathering");
+    requiredButton('[data-action="research-gathering"]').click();
+    await waitUntil(
+      () =>
+        document
+          .querySelector('[data-action="tech-gathering"]')
+          ?.classList.contains("state-owned") === true,
+    );
+    const owned = requiredButton('[data-action="tech-gathering"]');
+    expect(owned.querySelector(".v7-tech-check")).not.toBeNull();
+    expect(owned.querySelector(".v7-tech-cost")).toBeNull();
+    expect(owned.getAttribute("aria-label")).toContain("researched");
+    expect(
+      document.querySelector<SVGElement>(
+        '.v7-tech-spoke[data-child-tech="GATHERING"]',
+      )?.dataset.state,
+    ).toBe("owned");
+    // Its two children are now available; their lines light up.
+    expect(
+      [
+        ...document.querySelectorAll<SVGElement>(
+          '.v7-tech-edge[data-parent-tech="GATHERING"]',
+        ),
+      ].map((edge) => edge.dataset.state),
+    ).toEqual(["available", "available"]);
+    // The free first technology is spent: the other roots have a price,
+    // and one the Coins do not cover is marked short.
+    const hunting = requiredButton('[data-action="tech-hunting"]');
+    expect(hunting.dataset.free).toBeUndefined();
+    const coins = app.controller.snapshot().view?.viewer.coins ?? 0;
+    const price = Number(hunting.querySelector(".v7-tech-cost")?.textContent);
+    expect(price).toBeGreaterThan(0);
+    expect(hunting.dataset.affordable).toBe(String(price <= coins));
+    app.destroy();
+  });
+
   it("keeps the compact technology camera through detail focus, Escape, and resize", async () => {
     let graphWidth = 320;
     const rectSpy = vi
@@ -421,14 +527,15 @@ describe("Ruleset 7 DOM shell", () => {
     await flushMicrotasks();
     const fitted = document.querySelector<HTMLElement>(".v7-tech-stage");
     if (fitted === null) throw new Error("Technology stage missing");
-    expect(fitted.style.transform).toContain("scale(0.52)");
+    // (320 - 2 x 6) / the radial tree's 705.97 width.
+    expect(fitted.style.transform).toContain("scale(0.43627");
     expect(
       document.querySelector<HTMLElement>(".v7-tech-graph")?.dataset.zoom,
     ).toBe("1");
 
     requiredButton('[data-action="tech-zoom-in"]').click();
     const zoomedTransform = fitted.style.transform;
-    expect(zoomedTransform).toContain("scale(0.6344)");
+    expect(zoomedTransform).toContain("scale(0.53226");
     requiredButton('[data-action="tech-hunting"]').click();
     await flushMicrotasks();
     const detail = document.querySelector<HTMLElement>(".v7-tech-detail");

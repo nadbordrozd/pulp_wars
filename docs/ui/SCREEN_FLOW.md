@@ -2933,31 +2933,67 @@ Identical graph geometry does not permit a missing-registration fallback.
 Gathering is visibly researched at match start. Fighter is a baseline role
 beside the graph.
 
-The overview is one compact square graph at every viewport size. Five branch
-roots cross the centre; each branch's two prerequisite paths grow outward in
-its own lane.
-The whole 25-node graph fits on entry at 390 x 844 and 360 x 640 without page
-scrolling. Drag or one-finger drag pans, pinch and wheel zoom around their
-pointer, and the minus, plus and Fit controls provide exact alternatives. Fit
-is the minimum zoom and preserves at least 44 CSS-pixel node targets at the
-supported phone widths. At larger zoom only part of the graph is visible.
-Arrow keys pan the focused graph, plus/minus zoom, and `F` or `0` fits it.
+The overview is a radial tree (bead `pulp_wars-2yc.58`), the same at every
+viewport size: the viewer's faction emblem at the hub and the five branches
+as spokes 72 degrees apart, Settlement straight up and the others clockwise
+(Wilds, Mobility, Industry, Naval). Along each spoke tier 1 is nearest the
+hub, the two tier-2 technologies sit 16 degrees either side of the spoke, and
+each one's tier-3 leaf fans out to 26 degrees. Rings are 80, 185 and 310
+graph units from the hub; badges are 72 units across
+(`TECHNOLOGY_GRAPH_GEOMETRY_V7` in `src/render/dom/technology-tree-layout-v7.ts`).
+Each branch has a faint wedge in its hue (Settlement amber, Wilds green,
+Mobility violet, Industry red, Naval blue) on a dark board-like ground.
+Connectors curve outward from parent to child and are styled by the state of
+the technology they lead to: owned a thick bright mint line, available a
+yellow line, locked a faint line, unavailable (Dry Land, a mission) a dotted
+one. The hub's spokes follow the same rule.
 
-Every node retains its overview symbol, dynamic Coin price, redundant state,
-prerequisite connectors, and separate detail dialog pattern. A tap activates a
-node only when the pointer did not become a drag or pinch. Detail lists
-prerequisite, exact unlocks, spatial formula when relevant, and the
-faction-correct unit label. It traps focus within its controls; Escape or its
-close button returns focus to the same node without moving the graph camera.
-Closing the outer technology layer returns to the board. Camera scale and
-position survive interface-art redraws and viewport resize. Candy
+A badge is a round plate whose fill and ring show the state: owned is mint
+with a bright mint ring and a check; available is yellow with a yellow halo;
+available but short of Coins is pale amber without the halo, its price on a
+red chip; locked is parchment with the art greyed; unavailable adds a dashed
+ring. The art is the whole raster, scaled with `object-fit: contain` inside
+the badge's padding; it is never cropped or stretched. The price is a small
+chip overlapping the badge's bottom rim; the free first technology's chip is
+a red "Free". The technology a research prompt asked for has a dashed red
+ring, the chosen one a solid red ring, and the tutorial's target its pointer
+ring.
+
+Names are short display names in heavy 12 px cream type with an ink keyline,
+straight on the ground (never on a plate), on the side of the badge away from
+the hub: the outer leaves above or below, an inner node near the horizontal
+to the left or right. Names and price chips keep their size on screen at any
+zoom. They show for every node from a stage scale of 1.35 (1 graph unit = 1.35
+CSS pixels; `TECHNOLOGY_LABEL_SCALE_V7`), the smallest scale at which no name,
+chip or badge touches another in any faction's tree. Below it they are hidden
+and appear only for the hovered or keyboard-focused node. On a 390 px phone
+names appear at about 280% zoom, on a 320 px phone at about 350%, and on a
+1440 x 900 desktop after two presses of plus.
+
+The whole tree fits on entry without page scrolling: badges are about 35 CSS
+pixels across on a 390 x 844 phone, 32 at 360 and 28 at 320, and about 71 on a
+1440 x 900 desktop, where the tree sits centred. Fit keeps 6 px clear at the
+sides and 34 px above and below, room for a hovered leaf's name. Zooming in
+always reaches a stage scale of at least 1.75, so every phone can zoom until
+the names show. The minus, 100%, plus and Fit controls float over the ground's
+top left corner. Drag or one-finger drag pans, pinch and wheel zoom around
+their pointer. Arrow keys pan the focused graph, plus/minus zoom, and `F` or
+`0` fits it.
+
+A tap activates a node only when the pointer did not become a drag or pinch.
+The detail docks inside the graph on the side away from the chosen badge: top
+or bottom on a tall graph, left or right on a wide one. If it would still
+cover the badge, the drawing shifts so the badge sits in the middle of the
+uncovered part; the stored camera does not move, so closing the detail puts
+the tree back where it was. Detail lists prerequisite, exact unlocks, spatial
+formula when relevant, and the faction-correct unit label. It traps focus
+within its controls; Escape or its close button returns focus to the same
+node. Closing the outer technology layer returns to the board. Camera scale
+and position survive interface-art redraws and viewport resize. Candy
 Raiding explicitly says Donut and Kamikaze Roll rather than promising baseline
-Raider Charge. Explosives says Breacher/Candy Crusher, never Catapult.
-Every technology symbol preserves the accepted raster's aspect ratio and
-transparent padding with `object-fit: contain`. The compact overview uses the
-icon at its node size; the selected technology's identity in the detail dialog
-uses the larger established art treatment. Full names and unlock prose live in
-that dialog rather than forcing the overview to scroll.
+Raider Charge. Explosives says Breacher/Candy Crusher, never Catapult. Full
+names and unlock prose live in the detail rather than forcing the overview to
+scroll.
 
 ### Units and abilities
 

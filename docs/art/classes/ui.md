@@ -94,8 +94,9 @@ tap.
   population icons instead of prose.
 - **Explanations on demand.** The unit `?` dialog and the training `?` dialog
   show stats as icons plus one short line per notable ability or restriction.
-  The technology overview is a compact five-lane icon graph that fits a phone
-  on entry. Its accepted raster art is contained in small square nodes; the
+  The technology overview is a radial tree (five branch spokes round the
+  faction emblem) that fits a phone on entry. Its accepted raster art is
+  contained whole in round badges (`object-fit: contain`, never cropped); the
   former 112 x 130 technology-card viewport does not set overview geometry.
   Tech detail opens as a bounded dialog over the tree with the full name, a
   short unlock list, state, and a Research button that shows the cost.

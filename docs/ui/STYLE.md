@@ -52,6 +52,7 @@ All of them are declared once, on `.v7-app-shell` at the top of
 | Meaning     | `--pw-coin`, `--pw-gain`, `--pw-loss`                                                                           |
 | Hues        | `--pw-red`, `-amber`, `-green`, `-teal`, `-blue`, `-violet`, `-pink`, `-brown`, `-emerald`, each with a `-fill` |
 | Board       | `--pw-sky-high/mid/low`, `--pw-marker-landing/after-move/slide/launch`                                          |
+| Tech tree   | `--pw-tree-ground`, `--pw-tree-glow`, `--pw-tree-owned`, `--pw-tree-locked`                                     |
 | Shape       | `--pw-radius`, `--pw-radius-sm`, `--pw-radius-xs`, `--pw-radius-pill`, `--pw-shadow`, `--pw-shadow-sm`          |
 
 A hue is two tokens: an ink dark enough to be text or a rule on any plate, and
@@ -89,10 +90,14 @@ plate.
   pay for (`.is-blocked`, bead `pulp_wars-2yc.36`) is `--pw-surface-2` with
   a soft rule and no shadow, its art greyed, its name `--pw-text-2` and its
   price `--pw-loss` on `--pw-red-fill`.
-- **Technology**: available is a yellow plate with the art straight on the
-  yellow, on a transparent ground like every other state (no square behind
-  it, bead `pulp_wars-szc9`); owned is `--pw-teal-fill` with a teal rule;
-  locked is `--pw-surface-2`.
+- **Technology** (the radial tree, bead `pulp_wars-2yc.58`): round badges
+  on a night ground (`--pw-tree-ground` with `--pw-tree-glow` at the hub).
+  Available is a `--pw-yellow` badge with the art straight on the yellow and
+  a yellow halo inside an ink keyline; owned is `--pw-teal-fill` with a
+  `--pw-tree-owned` ring; locked is `--pw-surface-2` with the art greyed.
+  Names are `--pw-text-inverse` with an ink keyline straight on the ground,
+  never on a plate; prices are small chips. Connectors are `--pw-tree-owned`,
+  `--pw-yellow` or `--pw-tree-locked` by state.
 - **Hint** (the first-steps line, bead `pulp_wars-2yc.39`): `--pw-yellow`
   with ink text, a `--pw-line-w-sm` ink border and `--pw-shadow-sm`. The HUD
   button a hint points at has a `--pw-yellow` outline; the marker on the

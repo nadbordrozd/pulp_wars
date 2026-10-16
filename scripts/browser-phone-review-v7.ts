@@ -802,7 +802,9 @@ const SCENES: readonly Scene[] = [
       }
 
       const beforeDrag = await stageTransform(c);
-      await physicalDrag(c, ".v7-tech-graph", 0.08, 0.08, 0.25, 0.22);
+      // From the empty ground at the bottom right (the zoom controls float
+      // over the top left).
+      await physicalDrag(c, ".v7-tech-graph", 0.92, 0.92, 0.75, 0.78);
       result.pointerDragPanned = (await stageTransform(c)) !== beforeDrag;
       result.pointerDragDidNotOpenDetail = !(await exists(
         c,
@@ -874,6 +876,53 @@ const SCENES: readonly Scene[] = [
       await delay(500);
     },
   })),
+  ...(["ORIGINAL", "CULT", "GOBLIN", "CANDY"] as const).flatMap(
+    (faction): Scene[] => [
+      {
+        // Zoomed in until every name and price shows (bead pulp_wars-2yc.58).
+        name: `tech-zoom-${faction.toLowerCase()}`,
+        match: true,
+        run: async (c) => {
+          await mount(
+            c,
+            "/tests/fixtures/v7-score-ui.ts",
+            "null",
+            nineSeatFaction(faction),
+          );
+          await click(c, "tech");
+          await delay(300);
+          for (let step = 0; step < 12; step += 1) {
+            if (
+              await evaluate(
+                c,
+                `document.querySelector('.v7-tech-stage')?.getAttribute('data-labels') === 'show'`,
+              )
+            )
+              break;
+            await click(c, "tech-zoom-in");
+          }
+          await delay(300);
+        },
+      },
+      {
+        // A tier-2 technology's popup over the fitted tree.
+        name: `tech-popup-${faction.toLowerCase()}`,
+        match: true,
+        run: async (c) => {
+          await mount(
+            c,
+            "/tests/fixtures/v7-score-ui.ts",
+            "null",
+            nineSeatFaction(faction),
+          );
+          await click(c, "tech");
+          await delay(300);
+          await click(c, "tech-roads");
+          await delay(500);
+        },
+      },
+    ],
+  ),
   {
     name: "tech-detail",
     match: true,
@@ -1807,9 +1856,9 @@ async function check(
         const box = control.getBoundingClientRect();
         for (const inner of control.querySelectorAll('*')) {
           if (!shown(inner) || !(ownText(inner) || inner.matches('img'))) continue;
-          // At readable desktop scale the compact technology name is an
-          // intentional label in the open lane below/above its icon button.
-          if (inner.matches('.v7-tech-name')) continue;
+          // A technology badge's name, price chip and trophy sit outside
+          // its round button by design, in the space the layout keeps clear.
+          if (inner.closest('.v7-tech-name, .v7-tech-cost, .v7-tech-check, .v7-tech-achievement')) continue;
           const rect = inner.getBoundingClientRect();
           const spill = Math.max(box.left - rect.left, rect.right - box.right, box.top - rect.top, rect.bottom - box.bottom);
           if (spill > 3) add('spills-out', true, name(inner) + ' leaves ' + name(control).split(' "')[0] + ' by ' + Math.round(spill) + 'px');
@@ -1911,34 +1960,68 @@ async function check(
         if (cards.length !== 25) add('tech-node-count', true, cards.length + ' technology nodes, expected 25');
         const edges = techGraph.querySelectorAll('.v7-tech-edge');
         if (edges.length !== 20) add('tech-edge-count', true, edges.length + ' technology edges, expected 20');
+        // At Fit the whole tree, every badge and its shown name and price,
+        // is inside the graph; zoomed in, parts are off screen by design.
+        const fitted = techGraph.getAttribute('data-zoom') === '1' && document.querySelector('.v7-tech-detail') === null;
+        const visible = (element) => element !== null && getComputedStyle(element).display !== 'none';
+        const inside = (rect) => rect.left >= graphContent.left - 0.5 && rect.right <= graphContent.right + 0.5 && rect.top >= graphContent.top - 0.5 && rect.bottom <= graphContent.bottom + 0.5;
         for (const card of cards) {
           const rect = card.getBoundingClientRect();
-          if (rect.left < graphContent.left || rect.right > graphContent.right || rect.top < graphContent.top || rect.bottom > graphContent.bottom)
+          if (fitted && !inside(rect))
             add('tech-node-clipped', true, name(card).split(' "')[0] + ' exceeds graph content bounds');
-          const badge = card.querySelector('.v7-tech-cost, .v7-tech-check');
-          if (badge !== null) {
-            const badgeRect = badge.getBoundingClientRect();
-            if (badgeRect.left < graphContent.left || badgeRect.right > graphContent.right || badgeRect.top < graphContent.top || badgeRect.bottom > graphContent.bottom)
-              add('tech-badge-clipped', true, name(card).split(' "')[0] + ' badge exceeds graph content bounds');
-          }
-          if (${size.name === "p390" || size.name === "p360"} && (rect.width < 44 || rect.height < 44))
+          for (const extra of card.querySelectorAll('.v7-tech-cost, .v7-tech-check, .v7-tech-name'))
+            if (fitted && visible(extra) && !inside(extra.getBoundingClientRect()))
+              add('tech-badge-clipped', true, name(card).split(' "')[0] + ' ' + extra.className + ' exceeds graph content bounds');
+          // The whole tree fits a phone at Fit with badges still about 1 cm.
+          if (fitted && ${size.name === "p390" || size.name === "p360" || size.name === "p320"} && rect.width < ${size.name === "p320" ? 27 : 31})
             add('tech-target-small', true, name(card).split(' "')[0] + ' is ' + Math.round(rect.width) + 'x' + Math.round(rect.height) + 'px');
+          // The art sits whole inside its round badge: never cropped.
+          const artFrame = card.querySelector('.v7-tech-art');
+          const image = artFrame?.querySelector('img');
+          if (image !== null && image !== undefined && image.complete && image.naturalWidth > 0) {
+            const art = artFrame.getBoundingClientRect();
+            const ratio = image.naturalWidth / image.naturalHeight;
+            const scale = Math.min(art.width / image.naturalWidth, art.height / image.naturalHeight);
+            const drawnWidth = image.naturalWidth * scale, drawnHeight = image.naturalHeight * scale;
+            if (getComputedStyle(image).objectFit !== 'contain' || Math.abs(drawnWidth / drawnHeight - ratio) > 0.02)
+              add('tech-art-cropped', true, name(card).split(' "')[0] + ' art is not contained');
+            const cx = (rect.left + rect.right) / 2, cy = (rect.top + rect.bottom) / 2;
+            const ax = (art.left + art.right) / 2, ay = (art.top + art.bottom) / 2;
+            const corner = Math.hypot(Math.abs(ax - cx) + drawnWidth / 2, Math.abs(ay - cy) + drawnHeight / 2);
+            if (corner > rect.width / 2 + 1)
+              add('tech-art-cropped', true, name(card).split(' "')[0] + ' art reaches past its badge');
+          }
         }
+        // Round badges: centre distance, not their square boxes.
         for (let i = 0; i < cards.length; i += 1)
           for (let j = i + 1; j < cards.length; j += 1) {
             const a = cards[i].getBoundingClientRect(), b = cards[j].getBoundingClientRect();
+            const gap = Math.hypot((a.left + a.right - b.left - b.right) / 2, (a.top + a.bottom - b.top - b.bottom) / 2) - (a.width + b.width) / 2;
+            if (gap < 1)
+              add('tech-node-overlap', true, name(cards[i]).split(' "')[0] + ' and ' + name(cards[j]).split(' "')[0] + ' overlap by ' + Math.round(-gap) + 'px');
+          }
+        // Names and prices show for every node exactly when the stage says
+        // so, and then never cover another node, name or price.
+        const stage = techGraph.querySelector('.v7-tech-stage');
+        const labelsOn = stage?.getAttribute('data-labels') === 'show';
+        const shownNames = cards.filter((card) => visible(card.querySelector('.v7-tech-name')));
+        const unselected = cards.filter((card) => !card.matches(':hover, :focus-visible'));
+        if (labelsOn ? shownNames.length !== 25 : shownNames.some((card) => unselected.includes(card)))
+          add('tech-label-scale', true, shownNames.length + ' names shown with labels ' + (labelsOn ? 'on' : 'off'));
+        const parts = cards.flatMap((card) => [
+          { owner: card, kind: 'badge', element: card },
+          ...Array.from(card.querySelectorAll('.v7-tech-name, .v7-tech-cost, .v7-tech-check')).filter(visible).map((element) => ({ owner: card, kind: element.className, element })),
+        ]);
+        for (let i = 0; i < parts.length; i += 1)
+          for (let j = i + 1; j < parts.length; j += 1) {
+            const first = parts[i], second = parts[j];
+            if (first.owner === second.owner || (first.kind === 'badge' && second.kind === 'badge')) continue;
+            const a = first.element.getBoundingClientRect(), b = second.element.getBoundingClientRect();
             const width = Math.min(a.right, b.right) - Math.max(a.left, b.left);
             const height = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top);
             if (width > 1 && height > 1)
-              add('tech-node-overlap', true, name(cards[i]).split(' "')[0] + ' and ' + name(cards[j]).split(' "')[0] + ' overlap ' + Math.round(width) + 'x' + Math.round(height) + 'px');
+              add('tech-label-overlap', true, name(first.owner).split(' "')[0] + ' ' + first.kind + ' and ' + name(second.owner).split(' "')[0] + ' ' + second.kind + ' overlap ' + Math.round(width) + 'x' + Math.round(height) + 'px');
           }
-        const firstName = cards[0]?.querySelector('.v7-tech-name');
-        if (firstName !== null && cards[0] !== undefined) {
-          const readable = cards[0].getBoundingClientRect().width >= 79;
-          const visibleName = getComputedStyle(firstName).display !== 'none';
-          if (readable !== visibleName)
-            add('tech-label-scale', true, 'node names are ' + (visibleName ? 'shown' : 'hidden') + ' at ' + Math.round(cards[0].getBoundingClientRect().width) + 'px');
-        }
       }
       // A control on screen that something else covers (not its own parts).
       for (const control of controls) {

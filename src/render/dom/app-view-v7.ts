@@ -283,6 +283,7 @@ import { targetLegendV7 } from "./target-legend-v7";
 import {
   technologyTreeGraphLayoutV7,
   technologyTreeLayoutV7,
+  type TechnologyTreeGraphLayoutV7,
   type TechnologyTreeGraphNodeV7,
 } from "./technology-tree-layout-v7";
 import { TechnologyTreeViewportV7 } from "./technology-tree-viewport-v7";
@@ -4701,6 +4702,31 @@ export class Ruleset7DomAppView {
         },
         popup?.querySelector<HTMLElement>("[data-tech-zoom-label]") ?? null,
       );
+      // The detail must not hide the badge it describes: shift the drawing
+      // until the badge sits in the part of the graph the detail leaves.
+      const detail = popup?.querySelector<HTMLElement>(".v7-tech-detail");
+      const chosen =
+        detail === null || detail === undefined
+          ? null
+          : techStage.querySelector<HTMLElement>(
+              '.v7-tech-card[data-selected="true"]',
+            );
+      if (detail === null || detail === undefined || chosen === null)
+        this.#technologyViewport.clearReveal();
+      else {
+        const graphBox = techGraph.getBoundingClientRect();
+        const detailBox = detail.getBoundingClientRect();
+        this.#technologyViewport.reveal(
+          Number(chosen.dataset.graphX),
+          Number(chosen.dataset.graphY),
+          {
+            left: detailBox.left - graphBox.left - techGraph.clientLeft,
+            top: detailBox.top - graphBox.top - techGraph.clientTop,
+            right: detailBox.right - graphBox.left - techGraph.clientLeft,
+            bottom: detailBox.bottom - graphBox.top - techGraph.clientTop,
+          },
+        );
+      }
     } else this.#technologyViewport.detach();
     shell.dataset.contrast = this.#highContrast ? "high" : "standard";
     shell.dataset.motion = this.#motion.toLowerCase();
@@ -8443,31 +8469,17 @@ export class Ruleset7DomAppView {
     const stage = el(this.#document, "div", "v7-tech-stage");
     stage.style.width = `${graphLayout.width}px`;
     stage.style.height = `${graphLayout.height}px`;
-    const edges = this.#document.createElementNS(
-      "http://www.w3.org/2000/svg",
-      "svg",
+    stage.append(technologyBackdropV7(this.#document, graphLayout));
+    const centre = el(this.#document, "div", "v7-tech-centre");
+    centre.style.left = `${graphLayout.centre.x}px`;
+    centre.style.top = `${graphLayout.centre.y}px`;
+    centre.style.setProperty(
+      "--tech-faction",
+      factionColourV7(this.#viewerFaction()),
     );
-    edges.classList.add("v7-tech-edges");
-    edges.setAttribute(
-      "viewBox",
-      `0 0 ${graphLayout.width} ${graphLayout.height}`,
-    );
-    edges.setAttribute("aria-hidden", "true");
-    for (const edge of graphLayout.edges) {
-      const line = this.#document.createElementNS(
-        "http://www.w3.org/2000/svg",
-        "line",
-      );
-      line.classList.add("v7-tech-edge");
-      line.setAttribute("x1", String(edge.x1));
-      line.setAttribute("y1", String(edge.y1));
-      line.setAttribute("x2", String(edge.x2));
-      line.setAttribute("y2", String(edge.y2));
-      line.dataset.parentTech = edge.parentId;
-      line.dataset.childTech = edge.childId;
-      edges.append(line);
-    }
-    stage.append(edges);
+    centre.setAttribute("aria-hidden", "true");
+    centre.append(this.#factionEmblem(this.#viewerFaction()));
+    stage.append(centre);
     const choose = (node: PublicTechnologyNodeV7): void => {
       this.#selectedTech = node.id;
       this.#pendingFocusAction = `research-${node.id.toLowerCase()}`;
@@ -8522,13 +8534,32 @@ export class Ruleset7DomAppView {
       if (node !== null && this.#selectedTech !== tutorial.technology)
         node.dataset.firstStep = tutorial.buttonMotion.toLowerCase();
     }
-    const selected = tree.nodes.find((node) => node.id === this.#selectedTech);
+    const selected = graphLayout.nodes.find(
+      (graphNode) => graphNode.layout.node.id === this.#selectedTech,
+    );
     if (selected !== undefined) {
       controls.inert = true;
       viewport.inert = true;
-      section.append(this.#techDetail(selected));
+      const detail = this.#techDetail(selected.layout.node);
+      detail.dataset.dock = this.#techDetailDock(selected);
+      graphShell.append(detail);
     }
     return section;
+  }
+
+  /**
+   * Where the technology detail docks inside the graph: on the side away
+   * from the chosen node, so the node and its neighbours stay in sight. A
+   * wide graph docks it left or right, a tall one top or bottom.
+   */
+  #techDetailDock(
+    node: TechnologyTreeGraphNodeV7,
+  ): "top" | "bottom" | "left" | "right" {
+    const point = this.#technologyViewport.project(node.x, node.y);
+    if (point === null) return "bottom";
+    if (point.width > point.height * 1.15)
+      return point.x > point.width / 2 ? "left" : "right";
+    return point.y > point.height / 2 ? "top" : "bottom";
   }
 
   #techDetail(node: PublicTechnologyNodeV7): HTMLElement {
@@ -14779,6 +14810,67 @@ function stableElementKey(element: Element): string {
   return `${element.tagName}:${element.className}`;
 }
 
+/** The state a connector or badge shows: owned, available, locked or off. */
+function technologyStateKeyV7(node: PublicTechnologyNodeV7): string {
+  return node.state === "OWNED"
+    ? "owned"
+    : node.state === "AVAILABLE"
+      ? "available"
+      : node.state === "DISABLED"
+        ? "disabled"
+        : "locked";
+}
+
+/**
+ * The radial tree's drawing under the badges: a tinted wedge per branch,
+ * the spokes from the centre emblem, and the curved prerequisite lines,
+ * each styled by the state of the technology it leads to.
+ */
+function technologyBackdropV7(
+  documentRoot: Document,
+  graph: TechnologyTreeGraphLayoutV7,
+): SVGSVGElement {
+  const namespace = "http://www.w3.org/2000/svg";
+  const svg = documentRoot.createElementNS(namespace, "svg");
+  svg.classList.add("v7-tech-edges");
+  svg.setAttribute("viewBox", `0 0 ${graph.width} ${graph.height}`);
+  svg.setAttribute("aria-hidden", "true");
+  const stateOf = new Map(
+    graph.nodes.map(
+      (node) =>
+        [node.layout.node.id, technologyStateKeyV7(node.layout.node)] as const,
+    ),
+  );
+  for (const wedge of graph.wedges) {
+    const path = documentRoot.createElementNS(namespace, "path");
+    path.classList.add("v7-tech-wedge");
+    path.setAttribute("d", wedge.path);
+    path.dataset.techBranch = wedge.branch;
+    svg.append(path);
+  }
+  for (const spoke of graph.spokes) {
+    const line = documentRoot.createElementNS(namespace, "line");
+    line.classList.add("v7-tech-spoke");
+    line.setAttribute("x1", String(spoke.x1));
+    line.setAttribute("y1", String(spoke.y1));
+    line.setAttribute("x2", String(spoke.x2));
+    line.setAttribute("y2", String(spoke.y2));
+    line.dataset.childTech = spoke.childId;
+    line.dataset.state = stateOf.get(spoke.childId) ?? "locked";
+    svg.append(line);
+  }
+  for (const edge of graph.edges) {
+    const path = documentRoot.createElementNS(namespace, "path");
+    path.classList.add("v7-tech-edge");
+    path.setAttribute("d", edge.path);
+    path.dataset.parentTech = edge.parentId;
+    path.dataset.childTech = edge.childId;
+    path.dataset.state = stateOf.get(edge.childId) ?? "locked";
+    svg.append(path);
+  }
+  return svg;
+}
+
 function appendTechNode(
   documentRoot: Document,
   parent: HTMLElement,
@@ -14801,7 +14893,8 @@ function appendTechNode(
   node.style.left = `${graphNode.x}px`;
   node.style.top = `${graphNode.y}px`;
   node.dataset.techBranch = layout.node.branch;
-  node.dataset.labelSide = graphNode.y >= 500 ? "above" : "below";
+  node.dataset.ring = String(graphNode.ring);
+  node.dataset.labelSide = graphNode.labelSide;
   const card = button(
     documentRoot,
     "",
@@ -14811,12 +14904,21 @@ function appendTechNode(
   card.dataset.graphX = String(graphNode.x);
   card.dataset.graphY = String(graphNode.y);
   card.dataset.selected = String(layout.node.id === selected);
+  if (layout.node.state === "AVAILABLE")
+    card.dataset.affordable = String(layout.node.affordable);
   if (layout.node.id === goal && layout.node.state !== "OWNED")
     card.dataset.goal = "true";
   const artFrame = el(documentRoot, "span", "v7-tech-art");
   const assetId = TECH_ART_KEYS_V7[layout.node.id];
   const chibiImage = chibiArt(layout.node.id);
-  if (chibiImage !== null) artFrame.dataset.artSet = "chibi";
+  if (chibiImage !== null) {
+    artFrame.dataset.artSet = "chibi";
+    // The badge fits the whole trimmed raster inside its padding
+    // (object-fit: contain in v7.css); the card box's fixed size would
+    // stretch or crop it.
+    chibiImage.style.removeProperty("width");
+    chibiImage.style.removeProperty("height");
+  }
   artFrame.append(chibiImage ?? art(documentRoot, assetId, ""));
   card.append(artFrame, text(documentRoot, "span", name, "v7-tech-name"));
   if (layout.parentId === null) card.dataset.branchRoot = "true";
@@ -14830,11 +14932,12 @@ function appendTechNode(
   if (layout.node.state !== "OWNED") {
     const cost = el(documentRoot, "span", "v7-tech-cost");
     const free = layout.node.cost === 0;
-    if (free) cost.dataset.free = "true";
-    cost.append(
-      free ? "Free" : String(layout.node.cost),
-      economyIcon(documentRoot, "coin"),
-    );
+    if (free) {
+      cost.dataset.free = "true";
+      card.dataset.free = "true";
+      cost.append("Free");
+    } else
+      cost.append(economyIcon(documentRoot, "coin"), String(layout.node.cost));
     card.append(cost);
     card.setAttribute(
       "aria-label",

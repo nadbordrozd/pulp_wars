@@ -1,4 +1,16 @@
+import { TECHNOLOGY_LABEL_SCALE_V7 } from "./technology-tree-layout-v7";
+
 export interface TechnologyTreeViewportSizeV7 {
+  readonly width: number;
+  readonly height: number;
+  /** Stage scale from which every name and price shows. */
+  readonly labelScale?: number;
+}
+
+/** Where a graph point is on screen, relative to the viewport's corner. */
+export interface TechnologyTreeScreenPointV7 {
+  readonly x: number;
+  readonly y: number;
   readonly width: number;
   readonly height: number;
 }
@@ -15,9 +27,37 @@ interface ActivePointerV7 extends PointV7 {
 
 const MIN_ZOOM_V7 = 1;
 const MAX_ZOOM_V7 = 2.8;
-/** Keeps card borders, cost badges and shadows visibly inside the clip. */
-const FIT_GUTTER_V7 = 4;
+/**
+ * Zooming in always reaches this stage scale, so a small phone can still
+ * zoom far enough for the names (TECHNOLOGY_LABEL_SCALE_V7) to show.
+ */
+const MAX_SCALE_FLOOR_V7 = 1.75;
+/** The largest scale Fit uses: a big desktop does not blow the icons up. */
+const MAX_FIT_SCALE_V7 = 1.25;
+/** Keeps badge rings inside the clip at the sides. */
+const FIT_GUTTER_X_V7 = 6;
+/** Leaves room above and below for the name of a hovered or focused leaf. */
+const FIT_GUTTER_Y_V7 = 34;
 const PAN_SLOP_V7 = 7;
+
+/** The stage scale at which Fit shows the whole graph in a viewport. */
+export function technologyTreeFitScaleV7(
+  viewport: TechnologyTreeViewportSizeV7,
+  graph: TechnologyTreeViewportSizeV7,
+): number {
+  const availableWidth = Math.max(1, viewport.width - FIT_GUTTER_X_V7 * 2);
+  const availableHeight = Math.max(1, viewport.height - FIT_GUTTER_Y_V7 * 2);
+  return Math.min(
+    availableWidth / graph.width,
+    availableHeight / graph.height,
+    MAX_FIT_SCALE_V7,
+  );
+}
+
+/** The largest stage scale zooming in reaches from a given Fit scale. */
+export function technologyTreeMaxScaleV7(fitScale: number): number {
+  return Math.max(fitScale * MAX_ZOOM_V7, MAX_SCALE_FLOOR_V7);
+}
 
 /**
  * Persistent camera for the compact technology graph. Zoom is stored as a
@@ -31,6 +71,12 @@ export class TechnologyTreeViewportV7 {
   #stage: HTMLElement | null = null;
   #zoomLabel: HTMLElement | null = null;
   #centre: PointV7 = { x: 0.5, y: 0.5 };
+  /**
+   * A screen offset while a detail covers part of the graph: it moves the
+   * chosen node into the uncovered part without touching the stored camera,
+   * so closing the detail puts the tree back where it was.
+   */
+  #peek: PointV7 = { x: 0, y: 0 };
   #zoom = 1;
   #initialised = false;
   #pointers = new Map<number, ActivePointerV7>();
@@ -72,7 +118,11 @@ export class TechnologyTreeViewportV7 {
     const point = anchor ?? { x: width / 2, y: height / 2 };
     const oldScale = this.#scale(width, height);
     const oldZoom = this.#zoom;
-    this.#zoom = clamp(oldZoom * factor, MIN_ZOOM_V7, MAX_ZOOM_V7);
+    this.#zoom = clamp(
+      oldZoom * factor,
+      MIN_ZOOM_V7,
+      this.#maxZoom(width, height),
+    );
     const newScale = this.#scale(width, height);
     if (oldScale > 0 && newScale > 0) {
       const offsetX = point.x - width / 2;
@@ -100,6 +150,71 @@ export class TechnologyTreeViewportV7 {
   centreOn(x: number, y: number): void {
     this.#centre = { x, y };
     this.#apply();
+  }
+
+  /**
+   * Keeps a graph point (and a margin round it) out from under `cover`, a
+   * box in viewport pixels such as the technology detail, by shifting the
+   * drawing; `clearReveal` undoes it.
+   */
+  reveal(
+    x: number,
+    y: number,
+    cover: {
+      readonly left: number;
+      readonly top: number;
+      readonly right: number;
+      readonly bottom: number;
+    },
+    margin = 48,
+  ): void {
+    const point = this.project(x, y);
+    if (point === null) return;
+    const { width, height } = point;
+    // A detail docked above or below spans most of the width.
+    const coversWidth = cover.right - cover.left > width * 0.6;
+    let free: { left: number; top: number; right: number; bottom: number };
+    if (coversWidth)
+      free =
+        cover.top > height - cover.bottom
+          ? { left: 0, top: 0, right: width, bottom: cover.top }
+          : { left: 0, top: cover.bottom, right: width, bottom: height };
+    else
+      free =
+        cover.left > width - cover.right
+          ? { left: 0, top: 0, right: cover.left, bottom: height }
+          : { left: cover.right, top: 0, right: width, bottom: height };
+    const shift = (at: number, low: number, high: number): number => {
+      if (at - margin >= low && at + margin <= high) return 0;
+      return (low + high) / 2 - at;
+    };
+    this.#peek = {
+      x: coversWidth ? 0 : shift(point.x, free.left, free.right),
+      y: coversWidth ? shift(point.y, free.top, free.bottom) : 0,
+    };
+    this.#apply();
+  }
+
+  clearReveal(): void {
+    if (this.#peek.x === 0 && this.#peek.y === 0) return;
+    this.#peek = { x: 0, y: 0 };
+    this.#apply();
+  }
+
+  /** Where a graph point is drawn now, or null before the graph is shown. */
+  project(x: number, y: number): TechnologyTreeScreenPointV7 | null {
+    const viewport = this.#viewport;
+    if (viewport === null) return null;
+    const width = viewport.clientWidth;
+    const height = viewport.clientHeight;
+    if (width <= 0 || height <= 0) return null;
+    const scale = this.#scale(width, height);
+    return {
+      x: width / 2 + (x - this.#centre.x) * scale,
+      y: height / 2 + (y - this.#centre.y) * scale,
+      width,
+      height,
+    };
   }
 
   attach(
@@ -352,13 +467,12 @@ export class TechnologyTreeViewportV7 {
   }
 
   #fitScale(width: number, height: number): number {
-    const availableWidth = Math.max(1, width - FIT_GUTTER_V7 * 2);
-    const availableHeight = Math.max(1, height - FIT_GUTTER_V7 * 2);
-    return Math.min(
-      availableWidth / this.#graph.width,
-      availableHeight / this.#graph.height,
-      1.15,
-    );
+    return technologyTreeFitScaleV7({ width, height }, this.#graph);
+  }
+
+  #maxZoom(width: number, height: number): number {
+    const fit = this.#fitScale(width, height);
+    return fit > 0 ? technologyTreeMaxScaleV7(fit) / fit : MAX_ZOOM_V7;
   }
 
   #scale(width: number, height: number): number {
@@ -374,9 +488,14 @@ export class TechnologyTreeViewportV7 {
     if (width <= 0 || height <= 0) return;
     const scale = this.#scale(width, height);
     this.#clampCentre(width, height, scale);
-    stage.style.transform = `translate(${width / 2}px, ${height / 2}px) scale(${scale}) translate(${-this.#centre.x}px, ${-this.#centre.y}px)`;
+    stage.style.transform = `translate(${width / 2 + this.#peek.x}px, ${height / 2 + this.#peek.y}px) scale(${scale}) translate(${-this.#centre.x}px, ${-this.#centre.y}px)`;
     stage.dataset.zoom = String(this.#zoom);
-    stage.dataset.labels = scale >= 0.95 ? "show" : "hidden";
+    // Names and prices keep their size on screen (v7.css reads the inverse).
+    stage.style.setProperty("--tech-inverse", String(1 / scale));
+    stage.dataset.labels =
+      scale >= (this.#graph.labelScale ?? TECHNOLOGY_LABEL_SCALE_V7) - 1e-9
+        ? "show"
+        : "hidden";
     viewport.dataset.zoom = String(this.#zoom);
     if (this.#zoomLabel !== null) {
       this.#zoomLabel.textContent = `${Math.round(this.#zoom * 100)}%`;
