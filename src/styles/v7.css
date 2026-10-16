@@ -6033,24 +6033,40 @@
 
 /* ---------- Gallery (bead pulp_wars-ic8) ---------- */
 
-.v7-gallery {
-  display: block;
+/*
+ * One vertical scroller (bead pulp_wars-2yc.73): the Gallery is exactly one
+ * screen tall (the dynamic viewport, so a phone's URL bar adds no page
+ * scroll). The header, the tabs and the filters stay put; the table (or the
+ * Sounds tab's cards) takes the rest of the height and is the only thing
+ * that scrolls. The detail dialog is fixed above it and scrolls inside
+ * itself.
+ */
+body:has(> #app [data-v7-gallery]) {
   min-height: 100dvh;
+}
+
+.v7-gallery {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
   background: var(--pw-surface);
 }
 
 .v7-gallery-content {
-  display: grid;
-  align-content: start;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
   gap: 0.8rem;
   width: min(92rem, 100%);
+  min-height: 0;
   margin-inline: auto;
   padding: max(1rem, env(safe-area-inset-top))
-    max(1rem, env(safe-area-inset-right)) 1rem
+    max(1rem, env(safe-area-inset-right)) max(1rem, env(safe-area-inset-bottom))
     max(1rem, env(safe-area-inset-left));
 }
 
 .v7-gallery-header {
+  flex: none;
   display: flex;
   align-items: center;
   gap: 0.9rem;
@@ -6077,8 +6093,9 @@
 }
 
 .v7-gallery-tabs {
+  flex: none;
   display: inline-flex;
-  justify-self: start;
+  align-self: flex-start;
   padding: 0;
   border: var(--pw-line-w-sm) solid var(--pw-line);
   border-radius: var(--pw-radius-sm);
@@ -6102,12 +6119,23 @@
 }
 
 .v7-gallery-panel {
-  display: grid;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
   gap: 0.8rem;
   min-width: 0;
+  min-height: 0;
 }
 
+/*
+ * Open filters on a short screen would leave the table no room: they stop
+ * at about half the screen and scroll their own chips.
+ */
 .v7-gallery-filters {
+  flex: none;
+  max-height: 45dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   padding: 0 0.8rem;
   border: var(--pw-line-w-sm) solid var(--pw-line);
   border-radius: var(--pw-radius-sm);
@@ -6204,11 +6232,14 @@
 
 /*
  * The table scrolls inside its own frame, both ways, so its header row and
- * its first column stay put; the page itself never scrolls sideways.
+ * its first column stay put; the page itself never scrolls either way. The
+ * frame fills the height left under the filters (bead pulp_wars-2yc.73) and
+ * hugs a shorter table.
  */
 .v7-gallery-scroll {
+  flex: 0 1 auto;
   max-width: 100%;
-  max-height: calc(100dvh - 1.5rem);
+  min-height: 0;
   overflow: auto;
   overscroll-behavior: contain;
   border: var(--pw-line-w-sm) solid var(--pw-line);
@@ -7645,8 +7676,14 @@
    cards that play a sound, grouped, with the volume above them. */
 .v7-gallery-sounds-panel {
   display: grid;
+  flex: 0 1 auto;
+  align-content: start;
   gap: 1rem;
   min-width: 0;
+  min-height: 0;
+  /* The Gallery's one scroller on this tab (bead pulp_wars-2yc.73). */
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .v7-gallery-sounds-bar {
@@ -8846,7 +8883,7 @@
   .v7-gallery-tabs {
     display: flex;
     flex-wrap: wrap;
-    justify-self: stretch;
+    align-self: stretch;
   }
 
   .v7-gallery-tab {

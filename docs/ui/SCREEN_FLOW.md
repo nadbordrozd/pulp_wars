@@ -2469,7 +2469,13 @@ This overlay (`pulp_wars-ic8`) adds one front screen to the current Ruleset
   selected."
 - **Layout.** The table scrolls inside its own frame in both directions,
   its header row and first column sticky; the page never scrolls
-  sideways, on a phone or a desktop.
+  sideways, on a phone or a desktop. There is one vertical scroller
+  (`pulp_wars-2yc.73`): the Gallery is exactly one screen tall (the
+  dynamic viewport, so a phone's URL bar adds no page scroll), the
+  header, the tabs and the filters stay put, and the table (on the Sounds
+  tab, the cards) fills the rest and scrolls; the page itself never
+  scrolls, on any tab. Open filters stop at about half the screen height
+  and scroll their own chips, so the table keeps room on a short phone.
 - **Keyboard.** The table is a grid with one tab stop: the arrow keys move
   between cells (skipping empty ones), Home and End go to a row's ends,
   Enter or Space opens the cell. The tabs switch with the arrow keys.
