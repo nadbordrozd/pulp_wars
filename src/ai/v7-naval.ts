@@ -730,11 +730,52 @@ function navalDangerAfterAttackV7(
   return moved === undefined ? 0 : tools.danger(after, moved, to);
 }
 
+const NAVAL_MOVE_PATH_LENGTHS_CACHE_V7 = new WeakMap<
+  readonly CommandV7[],
+  ReadonlyMap<string, number>
+>();
+
+/**
+ * Themed naval branches, the Horned Prow (`pulp_wars-5ti.18`,
+ * docs/product/RULESET_7_NAVAL_FACTIONS.md section 5.6): the tiles the
+ * offered Move of `actor` to `to` enters (its path's length, the shortest
+ * when several are offered), so a Dugout's run-up is previewed with the
+ * Move's real length; the Chebyshev distance when no Move to `to` is on
+ * offer.
+ */
+export function navalMovePathLengthV7(
+  tools: Pick<NavalToolsV7, "commands">,
+  actor: PublicUnitV7,
+  to: CoordV7,
+): number {
+  let lengths = NAVAL_MOVE_PATH_LENGTHS_CACHE_V7.get(tools.commands);
+  if (lengths === undefined) {
+    const built = new Map<string, number>();
+    for (const command of tools.commands) {
+      if (command.kind !== "MOVE") continue;
+      const end = command.path.at(-1);
+      if (end === undefined) continue;
+      const key = `${String(command.unitId)}:${String(end.x)},${String(end.y)}`;
+      const known = built.get(key);
+      if (known === undefined || command.path.length < known)
+        built.set(key, command.path.length);
+    }
+    lengths = built;
+    NAVAL_MOVE_PATH_LENGTHS_CACHE_V7.set(tools.commands, lengths);
+  }
+  return (
+    lengths.get(`${String(actor.id)}:${String(to.x)},${String(to.y)}`) ??
+    chebyshev(actor.at, to)
+  );
+}
+
 /**
  * The attack of an own Patrol Boat that has not moved is held while a Move
  * on offer earns a better Ram on the same target (more damage, or the kill
  * the plain attack does not make): the boat sidesteps first and the attack
- * is offered again with the Ram.
+ * is offered again with the Ram. Each Move is previewed with its real path
+ * length (`navalMovePathLengthV7`): a Dugout next to its target holds the
+ * plain attack while a two-tile run in sinks it.
  */
 export function navalRamHoldsAttackV7(
   view: PlayerViewV7,
@@ -759,7 +800,7 @@ export function navalRamHoldsAttackV7(
       tools,
       actor,
       to,
-      chebyshev(actor.at, to),
+      navalMovePathLengthV7(tools, actor, to),
     );
     if (
       approach !== null &&
@@ -1127,7 +1168,8 @@ export function navalSeaRouteBeatsWalkV7(route: {
  *   attacked only from an adjacent tile.
  * - `ramBonus2`: the `attack2` a visible hostile Patrol Boat adds by
  *   ramming a defender afloat on open water. Its owner's Seamanship is
- *   private, so the Ram is assumed (the Wallbreaker precedent).
+ *   private, so the Ram is assumed (the Wallbreaker precedent), and a
+ *   Dinosaur Dugout's Horned Prow with its run-up (`pulp_wars-5ti.18`).
  */
 export function navalThreatFactsV7(
   view: PlayerViewV7,
@@ -1150,7 +1192,12 @@ export function navalThreatFactsV7(
       hostile.form === "NAVAL" &&
       defenderAfloat &&
       unitRoleRuleV7(view, hostile).abilities.includes("RAM")
-        ? RAM_BONUS2_V7
+        ? // Themed naval branches (`pulp_wars-5ti.18`): a hostile Dugout's
+          // Horned Prow is assumed to have its two-tile run-up.
+          Math.max(
+            RAM_BONUS2_V7,
+            unitRoleMechanicsV7(view, hostile).ramRunUpBonus2,
+          )
         : 0,
   };
 }

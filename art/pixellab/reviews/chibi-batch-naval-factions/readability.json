@@ -274,27 +274,27 @@
       "ships": [
         {
           "role": "PATROL_BOAT",
-          "opaquePixels": 2363,
-          "outlineShare": 21.7,
-          "bodyMean": "#996335",
+          "opaquePixels": 2461,
+          "outlineShare": 22.8,
+          "bodyMean": "#9a6333",
           "mainColours": [
-            "#cda461 15.2%",
-            "#ab8344 9.7%",
-            "#5d351b 9.6%",
-            "#7f401a 7%",
-            "#7d592e 6.6%"
+            "#cca15e 15.7%",
+            "#7b3c16 6.8%",
+            "#5a2c14 6.6%",
+            "#593116 6.5%",
+            "#7a5629 6.4%"
           ],
           "water": {
             "shallow": {
-              "bodyMeanDeltaE": 67.5,
+              "bodyMeanDeltaE": 68.2,
               "bodyMeanContrast": 3,
-              "nearestSwatchDeltaE": 52.5,
+              "nearestSwatchDeltaE": 54.8,
               "bodyShareWithin12": 0
             },
             "deep": {
-              "bodyMeanDeltaE": 68.2,
+              "bodyMeanDeltaE": 69,
               "bodyMeanContrast": 1,
-              "nearestSwatchDeltaE": 17.6,
+              "nearestSwatchDeltaE": 19.4,
               "bodyShareWithin12": 0
             }
           }
@@ -542,8 +542,8 @@
           "deuteranopia": 10
         },
         "Dinosaur": {
-          "normal": 18.3,
-          "deuteranopia": 7.9
+          "normal": 18.2,
+          "deuteranopia": 7.8
         },
         "Martian": {
           "normal": 43.7,
@@ -564,8 +564,8 @@
           "deuteranopia": 11.9
         },
         "Dinosaur": {
-          "normal": 19.3,
-          "deuteranopia": 17.4
+          "normal": 19,
+          "deuteranopia": 16.9
         },
         "Martian": {
           "normal": 23.2,
@@ -587,7 +587,7 @@
         },
         "Dinosaur": {
           "normal": 17,
-          "deuteranopia": 10.5
+          "deuteranopia": 10.8
         },
         "Martian": {
           "normal": 28.9,
@@ -600,24 +600,24 @@
       },
       "Dinosaur": {
         "Human": {
-          "normal": 18.3,
-          "deuteranopia": 7.9
+          "normal": 18.2,
+          "deuteranopia": 7.8
         },
         "Undead": {
-          "normal": 19.3,
-          "deuteranopia": 17.4
+          "normal": 19,
+          "deuteranopia": 16.9
         },
         "Goblin": {
           "normal": 17,
-          "deuteranopia": 10.5
+          "deuteranopia": 10.8
         },
         "Martian": {
-          "normal": 42.3,
-          "deuteranopia": 40.3
+          "normal": 41.7,
+          "deuteranopia": 39.9
         },
         "Ice Folk": {
-          "normal": 31,
-          "deuteranopia": 28.7
+          "normal": 29.1,
+          "deuteranopia": 27.2
         }
       },
       "Martian": {
@@ -634,8 +634,8 @@
           "deuteranopia": 27.5
         },
         "Dinosaur": {
-          "normal": 42.3,
-          "deuteranopia": 40.3
+          "normal": 41.7,
+          "deuteranopia": 39.9
         },
         "Ice Folk": {
           "normal": 17.6,
@@ -656,8 +656,8 @@
           "deuteranopia": 19.1
         },
         "Dinosaur": {
-          "normal": 31,
-          "deuteranopia": 28.7
+          "normal": 29.1,
+          "deuteranopia": 27.2
         },
         "Martian": {
           "normal": 17.6,
@@ -1043,31 +1043,31 @@
       {
         "faction": "DINOSAUR",
         "label": "Dinosaur",
-        "opaquePixels": 1907,
-        "outlineShare": 20.4,
-        "bodyMean": "#9f602d",
+        "opaquePixels": 1830,
+        "outlineShare": 17.4,
+        "bodyMean": "#73625c",
         "mainColours": [
-          "#e48429 21.8%",
-          "#552718 8.6%",
-          "#8b491d 6.7%",
-          "#a55920 6.1%",
-          "#b46222 5.4%"
+          "#2f4264 30.6%",
+          "#ffe6a0 13.6%",
+          "#d9b579 9.2%",
+          "#fd5800 8.9%",
+          "#324567 7.7%"
         ],
-        "size": "62 x 59",
-        "patrolBoatSize": "57 x 71",
-        "heightShareOfPatrolBoat": 83.1,
+        "size": "64 x 61",
+        "patrolBoatSize": "59 x 71",
+        "heightShareOfPatrolBoat": 85.9,
         "waterlineRow": 79,
         "patrolBoatWaterlineRow": 80,
-        "paletteDistanceToPatrolBoat": 2.9,
+        "paletteDistanceToPatrolBoat": 17.1,
         "water": {
           "shallow": {
-            "bodyMeanDeltaE": 72.7,
-            "bodyMeanContrast": 3,
+            "bodyMeanDeltaE": 48.1,
+            "bodyMeanContrast": 3.4,
             "bodyShareWithin12": 0
           },
           "deep": {
-            "bodyMeanDeltaE": 73.2,
-            "bodyMeanContrast": 1.1,
+            "bodyMeanDeltaE": 37.6,
+            "bodyMeanContrast": 1.2,
             "bodyShareWithin12": 0
           }
         }
@@ -1180,8 +1180,8 @@
           "deuteranopia": 9.9
         },
         "Dinosaur": {
-          "normal": 15.9,
-          "deuteranopia": 8.2
+          "normal": 25,
+          "deuteranopia": 19.8
         },
         "Martian": {
           "normal": 34,
@@ -1206,8 +1206,8 @@
           "deuteranopia": 15.7
         },
         "Dinosaur": {
-          "normal": 25.2,
-          "deuteranopia": 17.3
+          "normal": 25,
+          "deuteranopia": 17.1
         },
         "Martian": {
           "normal": 33.4,
@@ -1232,8 +1232,8 @@
           "deuteranopia": 15.7
         },
         "Dinosaur": {
-          "normal": 17.6,
-          "deuteranopia": 10.1
+          "normal": 27.3,
+          "deuteranopia": 23.4
         },
         "Martian": {
           "normal": 22.3,
@@ -1250,28 +1250,28 @@
       },
       "Dinosaur": {
         "Human": {
-          "normal": 15.9,
-          "deuteranopia": 8.2
+          "normal": 25,
+          "deuteranopia": 19.8
         },
         "Undead": {
-          "normal": 25.2,
-          "deuteranopia": 17.3
+          "normal": 25,
+          "deuteranopia": 17.1
         },
         "Goblin": {
-          "normal": 17.6,
-          "deuteranopia": 10.1
+          "normal": 27.3,
+          "deuteranopia": 23.4
         },
         "Martian": {
-          "normal": 44.3,
-          "deuteranopia": 41.1
+          "normal": 27,
+          "deuteranopia": 25
         },
         "Dwarf": {
-          "normal": 20.4,
-          "deuteranopia": 14.6
+          "normal": 27.3,
+          "deuteranopia": 23.2
         },
         "Candy": {
-          "normal": 12.8,
-          "deuteranopia": 10.2
+          "normal": 33.8,
+          "deuteranopia": 26.5
         }
       },
       "Martian": {
@@ -1288,8 +1288,8 @@
           "deuteranopia": 21.4
         },
         "Dinosaur": {
-          "normal": 44.3,
-          "deuteranopia": 41.1
+          "normal": 27,
+          "deuteranopia": 25
         },
         "Dwarf": {
           "normal": 18.9,
@@ -1314,8 +1314,8 @@
           "deuteranopia": 8.6
         },
         "Dinosaur": {
-          "normal": 20.4,
-          "deuteranopia": 14.6
+          "normal": 27.3,
+          "deuteranopia": 23.2
         },
         "Martian": {
           "normal": 18.9,
@@ -1340,8 +1340,8 @@
           "deuteranopia": 15.3
         },
         "Dinosaur": {
-          "normal": 12.8,
-          "deuteranopia": 10.2
+          "normal": 33.8,
+          "deuteranopia": 26.5
         },
         "Martian": {
           "normal": 37.4,
@@ -1354,9 +1354,9 @@
       }
     },
     "weakestPair": {
-      "pair": "Candy / Dinosaur",
-      "normal": 12.8,
-      "deuteranopia": 10.2
+      "pair": "Dwarf / Goblin",
+      "normal": 14.1,
+      "deuteranopia": 8.6
     }
   }
 }

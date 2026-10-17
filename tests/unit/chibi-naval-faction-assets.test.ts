@@ -313,8 +313,12 @@ describe("faction-styled naval art (pulp_wars-w5j.2)", () => {
         expect([asset.width, asset.height, asset.assetClass], asset.id).toEqual(
           [shared.width, shared.height, shared.assetClass],
         );
+        // The Plesiosaur (`pulp_wars-5ti.18`): a sea reptile whose front
+        // flipper reaches further left than a hull, drawn 2 px further right.
         expect(chibiAnchorV7(asRegistered(asset)), asset.id).toEqual(
-          chibiAnchorV7(shared),
+          asset.id === "chibi-naval-dinosaur-submarine"
+            ? { x: chibiAnchorV7(shared).x - 2, y: chibiAnchorV7(shared).y }
+            : chibiAnchorV7(shared),
         );
         const master = await readRaster(masterFile(asset));
         expect([master.width, master.height], asset.id).toEqual([

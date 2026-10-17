@@ -2,6 +2,7 @@ import {
   effectiveRoleRuleV7,
   factionRulesV7,
   isNavalRoleV7,
+  RAM_BONUS2_V7,
   roleMechanicsV7,
   summonedUnitRoleRuleV7,
   type FactionIdV7,
@@ -324,6 +325,12 @@ const ENTRIES = {
   BOW_RAM: [
     "Bow Ram",
     "After moving it hits ships harder and shoves them back. Unlocked by a technology.",
+  ],
+  // Themed naval branches (section 5.3 D1, `pulp_wars-5ti.18`): the
+  // Dinosaur Dugout's Ram.
+  HORNED_PROW: [
+    "Horned Prow",
+    "After moving it hits ships harder and shoves them back, and harder still after a longer run. Unlocked by a technology.",
   ],
   SUBMERGED: [
     "Submerged",
@@ -981,8 +988,12 @@ export function abilityGlossaryIdV7(
     // The Sled's freeze is the Witch's Frost Bolt.
     case "BOLAS":
       return "FROST_BOLT";
+    // Themed naval branches (`pulp_wars-5ti.18`): a Ram with a run-up
+    // bonus is the Dinosaur Horned Prow.
     case "RAM":
-      return "BOW_RAM";
+      return mechanics.ramRunUpBonus2 > RAM_BONUS2_V7
+        ? "HORNED_PROW"
+        : "BOW_RAM";
     case "LINEBREAKER":
       return "CHARGE_BANG";
     case "TRACTOR_BEAM":

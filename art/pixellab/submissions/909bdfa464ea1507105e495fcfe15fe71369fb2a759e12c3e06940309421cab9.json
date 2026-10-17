@@ -1,0 +1,36 @@
+{
+  "id": "icon-tech-horned-prows-c",
+  "jobId": "4303a1ad-bf0a-4b7b-b0a0-7133323fab3a",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-dinosaur",
+    "asset": "chibi-naval-dinosaur-icon-tech-seamanship",
+    "subject": "ICON:TECH:DINOSAUR:SEAMANSHIP",
+    "faction": "DINOSAUR",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 99343,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove the red crest and the spikes from the head: the head becomes a smooth carved figurehead painted deep blue with bold orange stripes and a cream jaw, like the prow of the Dinosaur canoes. Keep the big bone-white horn, the canoe, the thick black outline and the style, on a transparent background."
+      }
+    ],
+    "prompt": "Remove the red crest and the spikes from the head: the head becomes a smooth carved figurehead painted deep blue with bold orange stripes and a cream jaw, like the prow of the Dinosaur canoes. Keep the big bone-white horn, the canoe, the thick black outline and the style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Remove the red crest and the spikes from the head: the head becomes a smooth carved figurehead painted deep blue with bold orange stripes and a cream jaw, like the prow of the Dinosaur canoes. Keep the big bone-white horn, the canoe, the thick black outline and the style, on a transparent background.",
+    "editInstruction": "Remove the red crest and the spikes from the head: the head becomes a smooth carved figurehead painted deep blue with bold orange stripes and a cream jaw, like the prow of the Dinosaur canoes. Keep the big bone-white horn, the canoe, the thick black outline and the style, on a transparent background.",
+    "source": {
+      "recipe": "icon-tech-horned-prows-a",
+      "candidate": 0,
+      "sha256": "5645bd50d3c5b571ef10dcc1ba58acf93e864cc8e89768b524bf137f43fbd47e"
+    }
+  }
+}

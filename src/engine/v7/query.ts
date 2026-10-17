@@ -37,7 +37,7 @@ import {
   rebakePriceV7,
   armouredDamageV7,
   unitIsBlastProofV7,
-  RAM_BONUS2_V7,
+  ramBonus2V7,
   attackIsRamV7,
   attackIsTorpedoV7,
   boardedPrizeHpV7,
@@ -11024,7 +11024,11 @@ function publicCombatPreviewCore(
   const attack2BeforeToothache =
     rationalToHalfUnits(attack.total) +
     assumedRush2 +
-    (ram ? RAM_BONUS2_V7 : 0) +
+    // Themed naval branches (`pulp_wars-5ti.18`): a Horned Prow's run-up
+    // (the viewer's own unit: its activation is public to it).
+    (ram
+      ? ramBonus2V7(view, attacker, attacker.activation.movedPathLength)
+      : 0) +
     gangUp * 2 +
     (rockfallApplied
       ? attackerMechanics0.rockfallAttack2 - attackerRule.attack2

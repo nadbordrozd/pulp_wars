@@ -1,0 +1,36 @@
+{
+  "id": "dugout-horn-a",
+  "jobId": "286589d8-2b65-468a-9941-2cd5fe6864ab",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-dinosaur",
+    "asset": "chibi-naval-dinosaur-patrol-boat",
+    "subject": "UNIT:DINOSAUR:PATROL_BOAT",
+    "faction": "DINOSAUR",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 99321,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Add one big curved bone-white horn on the snout of the carved blue plesiosaur head at the bow, pointing forward like a triceratops horn, with a thin dark outline. Do not redraw anything else: keep the hull, mast, sail, feathers, colours, thick black outline and style exactly the same, on a transparent background with nothing under the hull."
+      }
+    ],
+    "prompt": "Add one big curved bone-white horn on the snout of the carved blue plesiosaur head at the bow, pointing forward like a triceratops horn, with a thin dark outline. Do not redraw anything else: keep the hull, mast, sail, feathers, colours, thick black outline and style exactly the same, on a transparent background with nothing under the hull.",
+    "negativePrompt": "",
+    "description": "Add one big curved bone-white horn on the snout of the carved blue plesiosaur head at the bow, pointing forward like a triceratops horn, with a thin dark outline. Do not redraw anything else: keep the hull, mast, sail, feathers, colours, thick black outline and style exactly the same, on a transparent background with nothing under the hull.",
+    "editInstruction": "Add one big curved bone-white horn on the snout of the carved blue plesiosaur head at the bow, pointing forward like a triceratops horn, with a thin dark outline. Do not redraw anything else: keep the hull, mast, sail, feathers, colours, thick black outline and style exactly the same, on a transparent background with nothing under the hull.",
+    "source": {
+      "recipe": "dinosaur-patrol-boat-primal-a",
+      "candidate": 0,
+      "sha256": "33bc841993cf9f60dae1d1221ecff4ac0017cb01a6e154ecee9b8d249829f7ff"
+    }
+  }
+}

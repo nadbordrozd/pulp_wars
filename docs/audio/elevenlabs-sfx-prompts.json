@@ -129,6 +129,31 @@
       "promptInfluence": 0.5
     },
     {
+      "id": "attack.plesiosaur",
+      "kind": "vocal",
+      "suffix": "vocal",
+      "prompt": "A big friendly sea reptile lunges out of the water and bites a boat: a quick wet splash, a short gurgling roar and a snap of jaws.",
+      "durationSeconds": 1,
+      "minSeconds": 0.25,
+      "maxSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "loudness": {
+        "like": "attack.melee",
+        "offsetDb": 0,
+        "reason": "Bead pulp_wars-5ti.18: the Plesiosaur's torpedo bite (docs/product/RULESET_7_NAVAL_FACTIONS.md section 5.7) plays where every other melee attack plays its swing, at the swing's level."
+      },
+      "revisions": [
+        {
+          "round": 2,
+          "takes": 2,
+          "prompt": "A sea reptile bites a boat: one quick wet splash, a short throaty gurgling roar and a snap of jaws, over fast, nothing after.",
+          "durationSeconds": 0.7,
+          "promptInfluence": 0.5,
+          "reason": "Two of three round-1 takes ran long (56% and 79% of their energy after 0.8 s): asks for a quicker bite and a shorter take."
+        }
+      ]
+    },
+    {
       "id": "impact.hit",
       "kind": "hit",
       "suffix": "style",

@@ -9,6 +9,7 @@ import {
   ELEVENLABS_SFX_RECORDS_PATH,
   fileStemV1,
   readPromptsV1,
+  readJsonV1,
   readRecordsV1,
   roundRequestV1,
   writeJsonV1,
@@ -36,7 +37,7 @@ import {
  *
  *   npm run audio:elevenlabs-sfx -- generate [--round <n>] [--only <id>] [--group <prefix>] [--out <folder>]
  *   npm run audio:elevenlabs-sfx -- import --from <folder> [--only <id>] [--out <folder>]
- *   npm run audio:elevenlabs-sfx -- measure [--out <folder>]
+ *   npm run audio:elevenlabs-sfx -- measure [--only <id>] [--out <folder>]
  *   npm run audio:elevenlabs-sfx -- encode [--only <id>] [--out <folder>]
  *   npm run audio:elevenlabs-sfx -- doc
  *   npm run audio:elevenlabs-sfx -- usage
@@ -401,11 +402,25 @@ function readRaw(path: string): Float32Array {
 function measure(args: ArgumentsV1): void {
   const prompts = readPromptsV1();
   const records = readRecordsV1();
+  // Bead pulp_wars-5ti.18: with `--only` (sound ids joined by commas) only
+  // those sounds are measured again; every other sound keeps its recorded
+  // measurement, so a new sound can be measured without the raw takes of
+  // the earlier rounds at hand.
+  const onlyIds = args.only?.split(",").filter((id) => id !== "");
+  const previous = readJsonV1<SfxMeasurementsFileV1>(
+    ELEVENLABS_SFX_MEASUREMENTS_PATH,
+    { bead: prompts.bead, sounds: [] },
+  );
   const sounds: SfxMeasurementsFileV1["sounds"][number][] = [];
   const lines: string[] = [];
   let passed = 0;
   let total = 0;
   for (const sound of prompts.sounds) {
+    if (onlyIds !== undefined && !onlyIds.includes(sound.id)) {
+      const kept = previous.sounds.find((entry) => entry.id === sound.id);
+      if (kept !== undefined) sounds.push(kept);
+      continue;
+    }
     const takes = records.takes
       .filter((take) => take.id === sound.id)
       .filter((take) => existsSync(join(args.out, take.rawFile)));

@@ -1,0 +1,36 @@
+{
+  "id": "plesiosaur-a-flipper-edit-2",
+  "jobId": "537c2dae-cfa6-4de1-ad50-20135e94cc71",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-dinosaur",
+    "asset": "chibi-naval-dinosaur-submarine",
+    "subject": "UNIT:DINOSAUR:SUBMARINE",
+    "faction": "DINOSAUR",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 99305,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Fold the front left flipper back under the body so it points down and back and no longer sticks out to the left; the body's left edge is then the chest. Do not redraw anything else: keep the head, neck, body, the other flippers, the tail, the colours, the thick black outline and the style the same, with nothing under the body."
+      }
+    ],
+    "prompt": "Fold the front left flipper back under the body so it points down and back and no longer sticks out to the left; the body's left edge is then the chest. Do not redraw anything else: keep the head, neck, body, the other flippers, the tail, the colours, the thick black outline and the style the same, with nothing under the body.",
+    "negativePrompt": "",
+    "description": "Fold the front left flipper back under the body so it points down and back and no longer sticks out to the left; the body's left edge is then the chest. Do not redraw anything else: keep the head, neck, body, the other flippers, the tail, the colours, the thick black outline and the style the same, with nothing under the body.",
+    "editInstruction": "Fold the front left flipper back under the body so it points down and back and no longer sticks out to the left; the body's left edge is then the chest. Do not redraw anything else: keep the head, neck, body, the other flippers, the tail, the colours, the thick black outline and the style the same, with nothing under the body.",
+    "source": {
+      "recipe": "plesiosaur-a",
+      "candidate": 0,
+      "sha256": "75af9d6d5189d63c2986f75c7585f5c8def530d35872953af0e65517c4460a61"
+    }
+  }
+}

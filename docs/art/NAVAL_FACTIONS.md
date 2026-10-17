@@ -382,7 +382,10 @@ Decisions:
    "olive" predates the redesign).
 6. **The Dinosaur one is a log**, not an animal: the first edit read as a
    swimming turtle on four flippers and was rejected; the accepted one asks
-   for "no legs, no flippers: a log boat".
+   for "no legs, no flippers: a log boat". (Overruled by bead
+   `pulp_wars-5ti.18`: the Dinosaur Submarine is now the Plesiosaur, a
+   living sea reptile; see
+   [below](#the-dinosaur-plesiosaur-and-horned-prows-bead-pulp_wars-5ti18).)
 7. **Portraits** are edits of each fleet's Patrol Boat portrait with the
    same instruction (the Classic one of the batch-5 portrait). The Classic
    portrait's red tower, pennant and fin were enlarged by a second edit: the
@@ -667,3 +670,47 @@ hand, and an `edit-image-pixen` edit of `-a` that made its hand bigger. At
 48 px the accepted icon reads as a dark wheel taken by a bone hand, beside
 the shared birch wheel. Weak spot: the wheel's lit rim (upper right and
 lower left) does not follow the south-west light strictly.
+
+## The Dinosaur Plesiosaur and Horned Prows (bead `pulp_wars-5ti.18`)
+
+The Dinosaur ships of the
+[themed naval branches](../product/RULESET_7_NAVAL_FACTIONS.md#57-art-and-sound):
+the Submarine is the **Plesiosaur**, a living sea reptile (overruling the
+log of bead `pulp_wars-5ti.6`, decision 6 above); the Patrol Boat is the
+**Dugout** with a carved horn on its prow (the **Horned Prow**); the War
+Raft keeps the accepted Battleship. The Plesiosaur's map sprite and
+portrait and the Dugout's sprite and portrait are **redrawn in place**
+(same asset IDs and canvases; subject keys `…/PLESIOSAUR` and `…/HORNED`),
+each an `edit-image-pixen` edit of the accepted piece; the submerged
+Plesiosaur is derived by `submerged.ts` as every Submarine. The **Horned
+Prows** card has its own icon (`ICON:TECH:DINOSAUR:SEAMANSHIP`, registered
+in the live look by `CHIBI_NAVAL_FACTION_TECH_ICON_ASSETS_V7`, falling back
+to the shared wheel); the Dugouts and Plesiosaurs cards show the ships'
+portraits (`NAVAL_FACTION_TECH_SUBJECTS_V7`).
+
+| Asset                                       | Subject                         | Accepted                               | Rejected                                                                                                                                                                                                                  |
+| ------------------------------------------- | ------------------------------- | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `chibi-naval-dinosaur-submarine`            | `UNIT:DINOSAUR:SUBMARINE`       | `plesiosaur-a` candidate 0             | `-b` (from the Dugout): a land sauropod on four legs over a grey shadow; `-c`: a water puddle under it; `-a-flipper-edit` and `-a-flipper-edit-2`: the front flipper unchanged (the second turned the flippers into legs) |
+| `chibi-naval-dinosaur-portrait-submarine`   | `PORTRAIT:DINOSAUR:SUBMARINE`   | `portrait-plesiosaur-a` candidate 0    | —                                                                                                                                                                                                                         |
+| `chibi-naval-dinosaur-patrol-boat`          | `UNIT:DINOSAUR:PATROL_BOAT`     | `dugout-horn-a` candidate 0            | —                                                                                                                                                                                                                         |
+| `chibi-naval-dinosaur-portrait-patrol-boat` | `PORTRAIT:DINOSAUR:PATROL_BOAT` | `portrait-dugout-horn-a` candidate 0   | —                                                                                                                                                                                                                         |
+| `chibi-naval-dinosaur-icon-tech-seamanship` | `ICON:TECH:DINOSAUR:SEAMANSHIP` | `icon-tech-horned-prows-c` candidate 0 | `-a`: a horned head in a canoe with a red crest (5.8% of its pixels in the owner key's band; kept as the edit source); `-b`: a cluttered spiked head over a hide raft                                                     |
+
+Eleven PixelLab jobs (seeds 99301 to 99305, 99311, 99321, 99331, 99341 to 99343) for five accepted pieces. The Plesiosaur is deep blue with a navy
+back, a cream belly and throat, an orange-striped neck and big orange
+spots, four paddle flippers and a short tail, the Brontosaurus's palette
+on water; it faces left. Measured (`readability.json`, `submarines`):
+64 x 61 px, 86% of the Dugout's height; body mean ΔE 48.1 on Shallow and
+37.6 on Deep Water, nothing within 12 of either; no pixel in the owner
+key's band. **Anchor:** its front flipper reaches further left than any
+hull, one pixel into the seat badge strip at the shared Submarine anchor
+(and its submerged foam with it), and edits do not move pixels, so it is
+anchored at (30, 48) (`PLESIOSAUR_ANCHOR_V7`), 2 px right of the other
+Submarines, on the shared waterline. The Dugout's horn is a bone-white
+curve rising from the blue plesiosaur prow; at 72 px it reads beside the
+sail. The icon is a carved blue striped figurehead with a horn rising out
+of a dark canoe bow. The unit shadow measurements were regenerated.
+
+Weak spots: the Plesiosaur faces left where the fleet's hulls face right;
+it is the tallest Submarine but the Goblin barrel; and the Horned Prows
+icon's figurehead reads as a horned animal in a boat more than a carving.

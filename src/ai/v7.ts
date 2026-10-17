@@ -656,6 +656,7 @@ import {
   drownedCrewTorpedoPriorityV7,
   navalPlagueTechnologyV7,
 } from "./v7-naval-undead";
+import { plesiosaurGrowthTorpedoPriorityV7 } from "./v7-naval-dinosaur";
 import {
   BREAK_OFF_FRONT_RADIUS_V7,
   BREAK_OFF_MINIMUM_HP_V7,
@@ -14764,6 +14765,18 @@ function scoreCommandWithContext(
             preview,
           );
           if (rising !== null) priority = Math.max(priority, rising);
+        }
+        // Themed naval branches (`pulp_wars-5ti.18`): a Plesiosaur's torpedo
+        // kill that makes it grow before a chip on a capital ship.
+        if (preview.torpedo && preview.defenderDies) {
+          const growth = plesiosaurGrowthTorpedoPriorityV7(
+            view,
+            navalToolsV7(context),
+            actor,
+            targetUnit,
+            preview,
+          );
+          if (growth !== null) priority = Math.max(priority, growth);
         }
         strategicValue += navalRamShoveValueV7(
           view,

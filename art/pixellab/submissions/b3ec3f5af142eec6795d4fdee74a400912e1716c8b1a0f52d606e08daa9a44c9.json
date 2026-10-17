@@ -1,0 +1,36 @@
+{
+  "id": "portrait-plesiosaur-a",
+  "jobId": "fdce2f5c-0aa8-4ac3-9ade-905b8774fdd8",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-dinosaur",
+    "asset": "chibi-naval-dinosaur-portrait-submarine",
+    "subject": "PORTRAIT:DINOSAUR:SUBMARINE",
+    "faction": "DINOSAUR",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 99311,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Turn the log into a living plesiosaur swimming: a fat round body, a long curved neck rising to a small smiling head, four big paddle flippers, a short tail; deep blue hide with a dark navy back, cream belly and throat, bold orange stripes on the neck and big orange spots on the back. No log, hatch or reed. Keep the size, thick black outline and art style, with no water, on a transparent background."
+      }
+    ],
+    "prompt": "Turn the log into a living plesiosaur swimming: a fat round body, a long curved neck rising to a small smiling head, four big paddle flippers, a short tail; deep blue hide with a dark navy back, cream belly and throat, bold orange stripes on the neck and big orange spots on the back. No log, hatch or reed. Keep the size, thick black outline and art style, with no water, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Turn the log into a living plesiosaur swimming: a fat round body, a long curved neck rising to a small smiling head, four big paddle flippers, a short tail; deep blue hide with a dark navy back, cream belly and throat, bold orange stripes on the neck and big orange spots on the back. No log, hatch or reed. Keep the size, thick black outline and art style, with no water, on a transparent background.",
+    "editInstruction": "Turn the log into a living plesiosaur swimming: a fat round body, a long curved neck rising to a small smiling head, four big paddle flippers, a short tail; deep blue hide with a dark navy back, cream belly and throat, bold orange stripes on the neck and big orange spots on the back. No log, hatch or reed. Keep the size, thick black outline and art style, with no water, on a transparent background.",
+    "source": {
+      "recipe": "dinosaur-portrait-submarine-a",
+      "candidate": 0,
+      "sha256": "d97408b4204ad4cfde95965c457585e70ab743375e0bd964ddd176895159f7bc"
+    }
+  }
+}

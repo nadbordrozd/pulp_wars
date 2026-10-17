@@ -77,11 +77,11 @@ import {
 
 describe("ruleset-7 revision-17 identity", () => {
   it("keeps r16 among the prior identities after the r55 identity and cleans the r16 key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r93");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r93.current");
-    expect(PRIOR_RULESET_7_IDS.at(-77)).toBe("pulp-wars-poc-7r16");
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(92);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-77)).toBe(
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r94");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r94.current");
+    expect(PRIOR_RULESET_7_IDS.at(-78)).toBe("pulp-wars-poc-7r16");
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(93);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-78)).toBe(
       "pulpWars.save.v7r16.current",
     );
     const storage = new MemoryStorage([
@@ -832,6 +832,11 @@ describe("ruleset-7 Goblin technology", () => {
         MARKSMANSHIP: "Spitters",
         CHIVALRY: "T-Rex",
         METALLURGY: "Triceratops",
+        // Themed naval branches (`pulp_wars-5ti.18`).
+        SHORECRAFT: "Dugouts",
+        NAVAL_ENGINEERING: "War Rafts",
+        SEAMANSHIP: "Horned Prows",
+        SUBMERSIBLES: "Plesiosaurs",
       },
       MARTIAN: {
         FORTIFICATION: "Force Fields",

@@ -1,0 +1,37 @@
+{
+  "id": "plesiosaur-b",
+  "jobId": "ebfe2702-8148-4c2e-b1e3-18c54f0cf14c",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-dinosaur",
+    "asset": "chibi-naval-dinosaur-submarine",
+    "subject": "UNIT:DINOSAUR:SUBMARINE",
+    "faction": "DINOSAUR",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 99302,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Turn the canoe into a living plesiosaur swimming at the surface: a fat round body low in the water, a long curved neck rising at the front to a small smiling head, four big paddle flippers, a short tail; deep blue hide with a dark navy back, cream belly and throat, bold orange stripes on the neck and big orange spots on the back. No canoe, mast, sail or feathers. Keep the size, waterline, thick black outline and style, nothing under the body."
+      }
+    ],
+    "prompt": "Turn the canoe into a living plesiosaur swimming at the surface: a fat round body low in the water, a long curved neck rising at the front to a small smiling head, four big paddle flippers, a short tail; deep blue hide with a dark navy back, cream belly and throat, bold orange stripes on the neck and big orange spots on the back. No canoe, mast, sail or feathers. Keep the size, waterline, thick black outline and style, nothing under the body.",
+    "negativePrompt": "",
+    "description": "Turn the canoe into a living plesiosaur swimming at the surface: a fat round body low in the water, a long curved neck rising at the front to a small smiling head, four big paddle flippers, a short tail; deep blue hide with a dark navy back, cream belly and throat, bold orange stripes on the neck and big orange spots on the back. No canoe, mast, sail or feathers. Keep the size, waterline, thick black outline and style, nothing under the body.",
+    "editInstruction": "Turn the canoe into a living plesiosaur swimming at the surface: a fat round body low in the water, a long curved neck rising at the front to a small smiling head, four big paddle flippers, a short tail; deep blue hide with a dark navy back, cream belly and throat, bold orange stripes on the neck and big orange spots on the back. No canoe, mast, sail or feathers. Keep the size, waterline, thick black outline and style, nothing under the body.",
+    "source": {
+      "recipe": "dinosaur-patrol-boat-primal-a",
+      "candidate": 0,
+      "sibling": true,
+      "sha256": "33bc841993cf9f60dae1d1221ecff4ac0017cb01a6e154ecee9b8d249829f7ff"
+    }
+  }
+}

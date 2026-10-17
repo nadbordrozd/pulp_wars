@@ -710,6 +710,94 @@ on a Plesiosaur.
   the Plesiosaur's torpedo bite (a wet roar), through the checked-in
   script.
 
+### 5.8 As built (`pulp_wars-5ti.18`, `pulp-wars-poc-7r94`)
+
+Built as above at identity `7r94` (`7r93` is a prior identity; the
+autosave key is `pulpWars.save.v7r94.current`). Every row of 5.2 is a
+registry value and every row of 5.4 an exact preview or result in
+`tests/unit/ruleset-v7-naval-dinosaur.test.ts`; the AI scenarios of 5.6
+are `tests/unit/ruleset-v7-naval-dinosaur-ai.test.ts`. Where the build is
+more precise than the text above:
+
+- **The Horned Prow.** The role mechanic `ramRunUpBonus2` is
+  `RAM_BONUS2_V7` (2) for every role and `HORNED_PROW_RAM_BONUS2_V7` (3)
+  for the Dinosaur `PATROL_BOAT`; `ramBonus2V7(roster, attacker,
+pathLength)` gives the bonus of a Ram (`attackIsRamV7` decides whether
+  it is one) after a Move that entered `pathLength` tiles, 2 below
+  `RAM_RUN_UP_TILES_V7` (2). The canonical combat reads the activation's
+  `movedPathLength` (an interrupted Move counts the tiles it entered, the
+  movement's `traversedPath`) or the estimate's planned path length; the
+  public preview reads the viewer's own unit's activation. The Ram never
+  applies on retaliation, so a Dugout that ran strikes back at its own
+  Attack. The preview's `ram` is true and its `attack2` holds the bonus;
+  the interface reads the bonus with the same helper ("Horned Prow +1.5").
+- **Zones of control limit the run.** Not in the text above: a hostile
+  ship projects a zone of control onto the water beside it, and entering
+  it ends a Move, so a two-tile run ends beside a ship only when its first
+  tile is outside that zone (two or more tiles from the target, an "open
+  run"); and the movement query offers each destination once, by its
+  shortest path, so a Dugout beside a boat cannot step back and run in on
+  one Move (a one-tile sidestep rams for +1). A transport projects no zone
+  of control, so the 5.6 scenario "a Dugout next to the boat steps back and
+  runs in" is built against a transport (a 12-HP embarked Fighter: the
+  one-tile Ram leaves it on 2 HP, the run sinks it), and the test beside it
+  shows that a Dugout beside a boat sidesteps and rams for 8. This keeps
+  the rule as designed; the Horned Prow wins boat duels for whoever runs in
+  first from two or three tiles away.
+- **The Plesiosaur** is the Dinosaur `SUBMARINE` with `GROW` and
+  `SEA_BEAST` in its abilities and `seaBeast` in its mechanics; growth,
+  state parsing (`maxHp = 12 + 4 × stage`), and the refusal of Promotion
+  are the existing `GROW` rules, which never read the form, so a torpedo or
+  a retaliation kill afloat grows it. Every land-only reader (Pack Hunt,
+  Wallbreaker, War Drums' Rally, the Shaman's Tend, the curiosities) already
+  required land form; the tests pin each. `boardSeaBeastBlockedV7` refuses a
+  Board of a Plesiosaur and a Dinosaur ship's Board of any Submarine; the
+  Dinosaur Seamanship keeps `COMMAND BOARD`, so a Dugout or a War Raft
+  boards a weak Patrol Boat or Battleship (the prize a Dugout or a War Raft).
+- **Private research.** The threat estimate (`navalThreatFactsV7`) assumes
+  a hostile Dugout's Horned Prow with its run-up (+1.5), as it assumes any
+  hostile Ram: a 10-HP Patrol Boat three tiles from a hostile Dugout is in
+  lethal reach (10), where a Ghost Ship's Ram deals 8.
+- **The run-up (AI).** `navalMovePathLengthV7` reads an offered Move's path
+  length from the offered commands (the shortest when several end on one
+  tile; the Chebyshev distance for a tile with no Move on offer); the held
+  plain attack and the Fire Raft's best Ram use it, and the Move scorer
+  already passed the Move's own path. The approach priority is the existing 1276.
+- **The Plesiosaur's growth (AI).** `growthKillTenthsV7` values the growth
+  of the next kill in tenths of a Coin: the HP it restores (the missing HP
+  plus 4) as a share of the ship's cost over its maximum HP, plus at Alpha
+  the Attack it adds as the same share of its cost (`ALPHA_ATTACK2_V7` over
+  the role's `attack2`). One kill from Big at full HP it is 33 tenths, so
+  the doc's example holds: a Patrol Boat kill (50 + 33) beats a chip on a
+  Battleship (64). `plesiosaurGrowthTorpedoPriorityV7` (priority 1280) fires
+  such a torpedo first unless another of its torpedoes is worth as much or
+  another own Submarine follows on that target. The land attack scorer's
+  growth value (`growthKillValueV7`) already applied to every growing
+  attacker.
+- **Text.** The glossary has a `HORNED_PROW` entry ("Horned Prow", the
+  Dugout's Ram in place of the Bow Ram) and the existing `SEA_BEAST` and
+  `GROW` entries on the Plesiosaur; the Bow Ram card line, the Ram's help
+  sentence, and the attack preview name the Horned Prow and its +1.5; the
+  Submersibles card reads "Plesiosaur: hit only from the next tile; torpedo
+  with no strike-back; grows; never boarded"; the Board
+  aiming marks a Plesiosaur "Sea beast" and the dock says "A sea beast
+  cannot be boarded"; the Dinosaur Help has an "At sea" line.
+- **Art.** The Plesiosaur's map sprite and portrait are redrawn in place
+  (same asset IDs, subject keys `…/PLESIOSAUR`), edits of the accepted log
+  submarine; its front flipper reaches further left than any hull, so it is
+  anchored at (30, 48) (`PLESIOSAUR_ANCHOR_V7`), 2 px right of the other
+  Submarines, and its submerged variant is derived as every other. The
+  Dugout's sprite and portrait are edits adding a bone-white horn on the
+  prow (`…/HORNED`). Horned Prows has its own icon
+  (`ICON:TECH:DINOSAUR:SEAMANSHIP`, batch `naval-dinosaur`); the Dugouts and
+  Plesiosaurs cards show the ships' portraits. See
+  [NAVAL_FACTIONS.md](../art/NAVAL_FACTIONS.md#the-dinosaur-plesiosaur-and-horned-prows-bead-pulp_wars-5ti18).
+- **Sound.** One new ElevenLabs clip, `attack.plesiosaur` (a wet roar and
+  a snap of jaws), played in place of the melee swing when a sea beast
+  attacks (`seaBeastAttacksV7`); five takes in two rounds, two kept
+  ([ELEVENLABS_SFX.md](../audio/ELEVENLABS_SFX.md)). The growth plays the
+  existing dinosaur growth cue.
+
 ## 6. Martians: the Hover Fleet
 
 **Theme.** A small high-tech invasion force: frail hulls behind Shields,

@@ -28,6 +28,9 @@ export const SOUND_IDS_V1 = [
   "attack.gatling",
   "attack.cannon",
   "attack.pop",
+  // Themed naval branches (`pulp_wars-5ti.18`): the Plesiosaur's torpedo,
+  // a bite with a wet roar.
+  "attack.plesiosaur",
   // Where it lands.
   "impact.hit",
   "impact.heavy",
@@ -464,6 +467,30 @@ const SYNTH_SOUNDS: Readonly<Record<SoundIdV1, SoundEntryV1>> = {
   "attack.pop": synth("Gumball pop", "combat", 2, 60, 0.26, [
     { wave: "sine", ms: 70, hz: 420, hzEnd: 980 },
     { wave: "triangle", ms: 50, hz: 840, hzEnd: 1500, gain: 0.3 },
+  ]),
+  // Bead pulp_wars-5ti.18: a splash and a low growl, the fallback of the
+  // Plesiosaur's bite.
+  "attack.plesiosaur": synth("Plesiosaur bite", "combat", 2, 60, 0.3, [
+    {
+      wave: "noise",
+      ms: 160,
+      lowpassHz: 2200,
+      lowpassEndHz: 600,
+      highpassHz: 250,
+      attackMs: 4,
+      decay: 2,
+    },
+    {
+      wave: "saw",
+      at: 60,
+      ms: 220,
+      hz: 110,
+      hzEnd: 70,
+      lowpassHz: 900,
+      gain: 0.5,
+      attackMs: 20,
+      decay: 1.5,
+    },
   ]),
   "impact.hit": synth("Hit", "combat", 2, 70, 0.4, [
     { wave: "sine", ms: 110, hz: 190, hzEnd: 70, decay: 2.5 },

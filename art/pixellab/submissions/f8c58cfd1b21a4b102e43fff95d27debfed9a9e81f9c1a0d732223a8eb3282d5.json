@@ -1,0 +1,36 @@
+{
+  "id": "plesiosaur-c",
+  "jobId": "5770e47c-7723-4134-b18e-00991964d331",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-dinosaur",
+    "asset": "chibi-naval-dinosaur-submarine",
+    "subject": "UNIT:DINOSAUR:SUBMARINE",
+    "faction": "DINOSAUR",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 99304,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Turn the log into a living plesiosaur swimming at the surface: a fat round body low in the water, a long curved neck rising at the front to a small smiling head, four big paddle flippers, a short tail; deep blue hide with a dark navy back, cream belly and throat, bold orange stripes on the neck and big orange spots on the back. No log, hatch or reed. Keep the size, waterline, thick black outline and style, nothing under the body."
+      }
+    ],
+    "prompt": "Turn the log into a living plesiosaur swimming at the surface: a fat round body low in the water, a long curved neck rising at the front to a small smiling head, four big paddle flippers, a short tail; deep blue hide with a dark navy back, cream belly and throat, bold orange stripes on the neck and big orange spots on the back. No log, hatch or reed. Keep the size, waterline, thick black outline and style, nothing under the body.",
+    "negativePrompt": "",
+    "description": "Turn the log into a living plesiosaur swimming at the surface: a fat round body low in the water, a long curved neck rising at the front to a small smiling head, four big paddle flippers, a short tail; deep blue hide with a dark navy back, cream belly and throat, bold orange stripes on the neck and big orange spots on the back. No log, hatch or reed. Keep the size, waterline, thick black outline and style, nothing under the body.",
+    "editInstruction": "Turn the log into a living plesiosaur swimming at the surface: a fat round body low in the water, a long curved neck rising at the front to a small smiling head, four big paddle flippers, a short tail; deep blue hide with a dark navy back, cream belly and throat, bold orange stripes on the neck and big orange spots on the back. No log, hatch or reed. Keep the size, waterline, thick black outline and style, nothing under the body.",
+    "source": {
+      "recipe": "dinosaur-submarine-b",
+      "candidate": 0,
+      "sha256": "59be609b76e347d2beda94dd8641ad363f46bbe1678dcfb6ba47fd7b97de9ffc"
+    }
+  }
+}

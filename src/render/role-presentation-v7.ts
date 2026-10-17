@@ -40,7 +40,8 @@ import {
 import { FREEZE_RULE_V7 } from "./frozen-sea-presentation-v7";
 import { ninthUnitRecruitNotesV7 } from "./ninth-unit-presentation-v7";
 import {
-  NAVAL_RAM_RULE_V7,
+  navalRamDescriptionV7,
+  SEA_BEAST_RULE_V7,
   SUBMERGED_RULE_V7,
   TORPEDO_RULE_V7,
   navalAbilityNameV7,
@@ -255,7 +256,9 @@ export function roleAbilityDescriptionV7(
     // sentences of docs/product/RULESET_7_NAVAL_BRANCH.md section 14.2,
     // shared by every faction.
     case "RAM":
-      return `With ${technologyDisplayNameV7("SEAMANSHIP", faction)}: ${NAVAL_RAM_RULE_V7.replace(/^A Patrol Boat/, "a Patrol Boat")}`;
+      // Themed naval branches (`pulp_wars-5ti.18`): the faction's own boat,
+      // and a Horned Prow's run-up.
+      return navalRamDescriptionV7(faction);
     // The frozen sea (`pulp_wars-5ti.7`): every Ice Folk land role.
     case "FREEZE":
       return `With Rime: ${FREEZE_RULE_V7.replace(/^A unit/, "it")}`;
@@ -263,6 +266,10 @@ export function roleAbilityDescriptionV7(
       return SUBMERGED_RULE_V7;
     case "TORPEDO":
       return TORPEDO_RULE_V7;
+    // Themed naval branches (section 2 rule 6, `pulp_wars-5ti.18`): the
+    // Plesiosaur.
+    case "SEA_BEAST":
+      return SEA_BEAST_RULE_V7;
     default:
       return null;
   }
@@ -294,7 +301,7 @@ export function roleAbilityNameV7(
   if (giant !== null) return giant;
   // The naval branch interface: the boats' ram is "Bow Ram" (the Goblin
   // Scrap Buggy's Overrun is displayed as "Ram").
-  const naval = navalAbilityNameV7(ability);
+  const naval = navalAbilityNameV7(ability, faction);
   if (naval !== null) return naval;
   // The Cultists (`pulp_wars-mch9.5`): the abilities that are shouted.
   if (ability === "BEHOLD") return BEHOLD_LABEL_V7;

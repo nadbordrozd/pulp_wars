@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r93`, for all nine offered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r94`, for all nine offered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), Candy (`CANDY`), and
 the Cultists (`CULT`). The ninth faction, the Cultists of the Ancient Ones,
@@ -445,6 +445,37 @@ links to another, by Road or by Port. A sea link needs only **Shorecraft**
 the Roads technology, and unexplored water no longer breaks a link. A save,
 replay, or setup of `7r75` is rejected, and the browser autosave has a new
 key.
+`pulp-wars-poc-7r94` (`pulp_wars-5ti.18`, the third bead of the
+[themed naval branches](RULESET_7_NAVAL_FACTIONS.md)) is **Horned Prows
+and the Plesiosaur**, the Dinosaur fleet. The Dinosaur `PATROL_BOAT` is the
+**Dugout**, the Human Patrol Boat's numbers with a **Horned Prow**: its Ram
+adds +1 Attack after a Move that entered one tile and **+1.5** after two or
+more (the role mechanic `ramRunUpBonus2` 3, `HORNED_PROW_RAM_BONUS2_V7`;
+every other Ram is +1 whatever its run); an interrupted Move counts the
+tiles it entered, and the canonical estimate counts a planned path's
+length. The `BATTLESHIP` is the **War Raft** (the Battleship's numbers).
+The `SUBMARINE` is the **Plesiosaur**, a living sea reptile: 10 Coins (8 at
+a Shipyard), 12 HP, Submerged and Torpedo, trained at a dock (never an
+Egg), it **grows** from its torpedo and retaliation kills like a dinosaur
+(Big 16 HP, Alpha 20 HP and +1 Attack, a full heal each; never promoted)
+and is a **sea beast** (`seaBeast`, ability `SEA_BEAST`): nobody boards it,
+and a Dinosaur ship never boards a `SUBMARINE`-role ship
+(`BOARD_NOT_LEGAL { reason: "TARGET_IMMUNE" }`). It is not a dinosaur for
+the land rules (Pack Hunt, Wallbreaker, War Drums, the Shaman's 4-HP
+Tend). The Dinosaur Seamanship keeps the Ram and Board. The five Dinosaur
+Naval technologies are shown as Dugouts, Navigation, War Rafts, Horned
+Prows, and Plesiosaurs. Another seat's Horned Prows is private, so its
+threat estimate assumes a hostile Dugout's two-tile run. The Normal AI
+previews a Dugout's approach with each offered Move's real path length (a
+two-tile run that sinks beats a one-tile Ram; a hostile ship's zone of
+control stops a Move beside it, so the run must start at least two tiles
+away), holds a plain attack while such a run kills, fires a Plesiosaur's
+growing torpedo kill before a chip on a capital ship, and trains the
+Plesiosaur and the Dugout by the counter of every seat
+([section 16](#16-normal-ai-summary)). The Plesiosaur, the Dugout's horn,
+and the Horned Prows card are new art, and the Plesiosaur's bite has its
+own sound (`attack.plesiosaur`). A save, replay, or setup of `7r93` is
+rejected, and the browser autosave has a new key.
 `pulp-wars-poc-7r93` (`pulp_wars-5ti.17`, the second bead of the
 [themed naval branches](RULESET_7_NAVAL_FACTIONS.md)) is **the Undead
 Drowned Fleet**. The Undead ships keep the Human numbers under their own
@@ -492,7 +523,7 @@ Navigation, Dreadnoughts, Powder Kegs, and Diving Barrels. For every
 faction: a boarded prize takes its new kind's maximum HP (plus 5 for a
 veteran) and `floor(max / 3) + 1` HP, and loses a Shield entry its new kind
 has no Shield for; the role mechanic `seaBeast` (no role has it yet) makes
-a ship unboardable, and a seat whose own Submarine is a sea beast never
+a ship unboardable (the Dinosaur Plesiosaur since `7r94`), and a seat whose own Submarine is a sea beast never
 boards a Submarine (`BOARD_NOT_LEGAL { reason: "TARGET_IMMUNE" }`; ability
 literal `SEA_BEAST`). The Normal AI blows a raft up where the blast is
 worth its 4 Coins, kills, or the raft is lost anyway, approaches a cluster
@@ -1173,7 +1204,7 @@ the build differs (its sections 20 to 24 list them);
 the values here are current. Where a document and the code disagreed, the
 code's behavior is the rule and is stated below;
 [Known discrepancies](#25-known-discrepancies) lists the open items and the
-resolved ones as of `pulp-wars-poc-7r93`.
+resolved ones as of `pulp-wars-poc-7r94`.
 
 **Terms.** "On the board" means a unit that currently exists (HP above 0).
 **Living** has the narrower revision-13 meaning used by Wail, Plague,
@@ -1276,10 +1307,10 @@ sections here cite.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r93`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Ruleset                                    | `pulp-wars-poc-7r94`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r93.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Browser autosave                           | `pulpWars.save.v7r94.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, `CULT`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`, `CULT_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -4505,33 +4536,33 @@ sentence case. Eight shared names changed at `7r55`: `DRILL` was **Garrison** an
 `NAVAL_ENGINEERING` **Shipbuilding**, and `SEAMANSHIP` **Boarding**. The
 names every player sees (a cell in bold is the faction's own):
 
-| ID                  | Human         | Undead              | Goblin             | Dinosaur        | Martian           | Ice Folk        | Dwarf                | Candy                   | Cult                    |
-| ------------------- | ------------- | ------------------- | ------------------ | --------------- | ----------------- | --------------- | -------------------- | ----------------------- | ----------------------- |
-| `GATHERING`         | Gathering     | Gathering           | Gathering          | Gathering       | Gathering         | Gathering       | Gathering            | Gathering               | Gathering               |
-| `FARMING`           | Farming       | Farming             | Farming            | Farming         | Farming           | Farming         | Farming              | Farming                 | **Harvest Rites**       |
-| `MILLING`           | Milling       | **Bone Mills**      | Milling            | **Grinding**    | **Solar Arrays**  | Milling         | **Steam Pumps**      | Milling                 | Milling                 |
-| `ADMINISTRATION`    | Leadership    | Leadership          | Leadership         | Leadership      | Leadership        | Leadership      | Leadership           | Leadership              | Leadership              |
-| `PLANNING`          | Land Grants   | Land Grants         | Land Grants        | Land Grants     | Land Grants       | Land Grants     | Land Grants          | Land Grants             | Land Grants             |
-| `HUNTING`           | Hunting       | Hunting             | Hunting            | Hunting         | Hunting           | Hunting         | Hunting              | Hunting                 | Hunting                 |
-| `FORESTRY`          | Forestry      | Forestry            | Forestry           | Forestry        | Forestry          | Forestry        | Forestry             | Forestry                | Forestry                |
-| `SAWMILLING`        | Sawmilling    | **Liches**          | **Rocket Carts**   | **Timber**      | **Tripods**       | **Boulders**    | **Steam Cannons**    | **Pie Launchers**       | **Stargazers**          |
-| `MARKSMANSHIP`      | Marksmanship  | **Banshees**        | **Bomb Chuckers**  | **Spitters**    | **Ray Gunners**   | Marksmanship    | **Clockwork**        | **Gumball Gunners**     | **Hexers**              |
-| `FIELDCRAFT`        | Pathfinding   | Pathfinding         | Pathfinding        | Pathfinding     | **Heat Sinks**    | Pathfinding     | Pathfinding          | Pathfinding             | Pathfinding             |
-| `SCOUTING`          | Scouting      | Scouting            | Scouting           | Scouting        | **Saucers**       | Scouting        | **Gyrocopters**      | Scouting                | **Familiars**           |
-| `ROADS`             | Roads         | Roads               | Roads              | Roads           | Roads             | Roads           | Roads                | Roads                   | Roads                   |
-| `COMMERCE`          | Commerce      | Commerce            | **Plunder**        | Commerce        | Commerce          | Commerce        | Commerce             | Commerce                | Commerce                |
-| `RAIDING`           | Raiding       | Raiding             | Raiding            | Raiding         | Raiding           | Raiding         | **Dive Bombing**     | Raiding                 | Raiding                 |
-| `CHIVALRY`          | Chivalry      | **Vampires**        | **Scrap Buggies**  | **T-Rex**       | **Motherships**   | **Sabretooths** | **Whirligigs**       | **Chocolate Bunnies**   | **Tentacles**           |
-| `DRILL`             | Crafting      | Crafting            | Crafting           | Crafting        | Crafting          | Crafting        | Crafting             | Crafting                | Crafting                |
-| `ENGINEERING`       | Engineering   | Engineering         | Engineering        | Engineering     | Engineering       | Engineering     | **Mining**           | Engineering             | Engineering             |
-| `METALLURGY`        | Armoury       | Armoury             | Armoury            | **Triceratops** | Armoury           | **Mammoths**    | **Steam Tanks**      | **Jawbreakers**         | **Gibbering Masses**    |
-| `FORTIFICATION`     | Fortification | Fortification       | Fortification      | **Nesting**     | **Force Fields**  | **Deep Winter** | **Dig In**           | **Home Sweet Home**     | **Warding Circles**     |
-| `EXPLOSIVES`        | Explosives    | **Pestilence**      | Explosives         | **Wallbreaker** | **Disintegrator** | **Brittle**     | **Blasting Charges** | **Peppermint Surprise** | **The Stars Are Right** |
-| `SHORECRAFT`        | Sailing       | **Ghost Ships**     | **Fire Rafts**     | Sailing         | Sailing           | **Rime**        | Sailing              | Sailing                 | Sailing                 |
-| `NAVIGATION`        | Navigation    | Navigation          | Navigation         | Navigation      | Navigation        | **Pack Ice**    | Navigation           | Navigation              | Navigation              |
-| `NAVAL_ENGINEERING` | Shipbuilding  | **Plague Galleons** | **Dreadnoughts**   | Shipbuilding    | Shipbuilding      | **Icebound**    | Shipbuilding         | Shipbuilding            | Shipbuilding            |
-| `SEAMANSHIP`        | Boarding      | **Drowned Crews**   | **Powder Kegs**    | Boarding        | Boarding          | **Black Ice**   | Boarding             | Boarding                | Boarding                |
-| `SUBMERSIBLES`      | Submersibles  | **Sunken Galleys**  | **Diving Barrels** | Submersibles    | Submersibles      | **Glacier**     | Submersibles         | Submersibles            | Submersibles            |
+| ID                  | Human         | Undead              | Goblin             | Dinosaur         | Martian           | Ice Folk        | Dwarf                | Candy                   | Cult                    |
+| ------------------- | ------------- | ------------------- | ------------------ | ---------------- | ----------------- | --------------- | -------------------- | ----------------------- | ----------------------- |
+| `GATHERING`         | Gathering     | Gathering           | Gathering          | Gathering        | Gathering         | Gathering       | Gathering            | Gathering               | Gathering               |
+| `FARMING`           | Farming       | Farming             | Farming            | Farming          | Farming           | Farming         | Farming              | Farming                 | **Harvest Rites**       |
+| `MILLING`           | Milling       | **Bone Mills**      | Milling            | **Grinding**     | **Solar Arrays**  | Milling         | **Steam Pumps**      | Milling                 | Milling                 |
+| `ADMINISTRATION`    | Leadership    | Leadership          | Leadership         | Leadership       | Leadership        | Leadership      | Leadership           | Leadership              | Leadership              |
+| `PLANNING`          | Land Grants   | Land Grants         | Land Grants        | Land Grants      | Land Grants       | Land Grants     | Land Grants          | Land Grants             | Land Grants             |
+| `HUNTING`           | Hunting       | Hunting             | Hunting            | Hunting          | Hunting           | Hunting         | Hunting              | Hunting                 | Hunting                 |
+| `FORESTRY`          | Forestry      | Forestry            | Forestry           | Forestry         | Forestry          | Forestry        | Forestry             | Forestry                | Forestry                |
+| `SAWMILLING`        | Sawmilling    | **Liches**          | **Rocket Carts**   | **Timber**       | **Tripods**       | **Boulders**    | **Steam Cannons**    | **Pie Launchers**       | **Stargazers**          |
+| `MARKSMANSHIP`      | Marksmanship  | **Banshees**        | **Bomb Chuckers**  | **Spitters**     | **Ray Gunners**   | Marksmanship    | **Clockwork**        | **Gumball Gunners**     | **Hexers**              |
+| `FIELDCRAFT`        | Pathfinding   | Pathfinding         | Pathfinding        | Pathfinding      | **Heat Sinks**    | Pathfinding     | Pathfinding          | Pathfinding             | Pathfinding             |
+| `SCOUTING`          | Scouting      | Scouting            | Scouting           | Scouting         | **Saucers**       | Scouting        | **Gyrocopters**      | Scouting                | **Familiars**           |
+| `ROADS`             | Roads         | Roads               | Roads              | Roads            | Roads             | Roads           | Roads                | Roads                   | Roads                   |
+| `COMMERCE`          | Commerce      | Commerce            | **Plunder**        | Commerce         | Commerce          | Commerce        | Commerce             | Commerce                | Commerce                |
+| `RAIDING`           | Raiding       | Raiding             | Raiding            | Raiding          | Raiding           | Raiding         | **Dive Bombing**     | Raiding                 | Raiding                 |
+| `CHIVALRY`          | Chivalry      | **Vampires**        | **Scrap Buggies**  | **T-Rex**        | **Motherships**   | **Sabretooths** | **Whirligigs**       | **Chocolate Bunnies**   | **Tentacles**           |
+| `DRILL`             | Crafting      | Crafting            | Crafting           | Crafting         | Crafting          | Crafting        | Crafting             | Crafting                | Crafting                |
+| `ENGINEERING`       | Engineering   | Engineering         | Engineering        | Engineering      | Engineering       | Engineering     | **Mining**           | Engineering             | Engineering             |
+| `METALLURGY`        | Armoury       | Armoury             | Armoury            | **Triceratops**  | Armoury           | **Mammoths**    | **Steam Tanks**      | **Jawbreakers**         | **Gibbering Masses**    |
+| `FORTIFICATION`     | Fortification | Fortification       | Fortification      | **Nesting**      | **Force Fields**  | **Deep Winter** | **Dig In**           | **Home Sweet Home**     | **Warding Circles**     |
+| `EXPLOSIVES`        | Explosives    | **Pestilence**      | Explosives         | **Wallbreaker**  | **Disintegrator** | **Brittle**     | **Blasting Charges** | **Peppermint Surprise** | **The Stars Are Right** |
+| `SHORECRAFT`        | Sailing       | **Ghost Ships**     | **Fire Rafts**     | **Dugouts**      | Sailing           | **Rime**        | Sailing              | Sailing                 | Sailing                 |
+| `NAVIGATION`        | Navigation    | Navigation          | Navigation         | Navigation       | Navigation        | **Pack Ice**    | Navigation           | Navigation              | Navigation              |
+| `NAVAL_ENGINEERING` | Shipbuilding  | **Plague Galleons** | **Dreadnoughts**   | **War Rafts**    | Shipbuilding      | **Icebound**    | Shipbuilding         | Shipbuilding            | Shipbuilding            |
+| `SEAMANSHIP`        | Boarding      | **Drowned Crews**   | **Powder Kegs**    | **Horned Prows** | Boarding          | **Black Ice**   | Boarding             | Boarding                | Boarding                |
+| `SUBMERSIBLES`      | Submersibles  | **Sunken Galleys**  | **Diving Barrels** | **Plesiosaurs**  | Submersibles      | **Glacier**     | Submersibles         | Submersibles            | Submersibles            |
 
 The rest of this document, the tuning documents, and the faction documents
 name a technology by its ID in title case (Drill, Administration,
@@ -5597,9 +5628,9 @@ an adjacent tile (**Submerged**), and attacking only units afloat, which
 never strike back (**Torpedo**). A Patrol Boat's **Ram** needs Seamanship
 (the interface calls it **Bow Ram**, since the Goblin Scrap Buggy's Overrun
 was displayed as "Ram" until `pulp_wars-2yc.63`). The three ships have the same numbers, names, and
-rules in the Human, Dinosaur, Martian, Dwarf, Candy, and Cult rosters
-(each drawn in its faction's style); the Goblin (`7r92`) and Undead
-(`7r93`) ships are their own (the themed naval branches); the Ice Folk
+rules in the Human, Martian, Dwarf, Candy, and Cult rosters (each drawn
+in its faction's style); the Goblin (`7r92`), Undead (`7r93`), and
+Dinosaur (`7r94`) ships are their own (the themed naval branches); the Ice Folk
 have none ([section 14](#14-naval-rules)). Public abilities: Patrol Boat `ATTACK`,
 `RAM` (listed whatever its owner has researched); Battleship `ATTACK`;
 Submarine `ATTACK`, `SUBMERGED`, `TORPEDO`.
@@ -5796,11 +5827,18 @@ capacity the unit, or its Egg, uses
 | Triceratops  | `SWORDSMAN`   | Metallurgy        |    8 | 2       |     2 |  20 |   3 (6) |   2 (4) |    2 |     1 |     1 | yes               | yes     | yes   | Charge! (the heavy role since `7r55`; `CATAPULT` at Sawmilling before) |
 | T-Rex        | `KNIGHT`      | Chivalry          |   14 | 4       |     2 |  28 |   4 (8) |   2 (4) |    2 |     1 |     1 | yes               | yes     | yes   | Rampage                                                                |
 | Brontosaurus | `JUGGERNAUT`  | reward only       |    — | —       |     2 |  45 | 3.5 (7) |   4 (8) |    1 |     1 |     1 | yes               | yes     | yes   | Thunder Stomp                                                          |
-| Patrol Boat  | `PATROL_BOAT` | Shorecraft        |    5 | trained |     1 |  10 |   2 (4) |   2 (4) |    2 |     1 |     2 | yes               | no      | no    | naval; Ram (Seamanship)                                                |
-| Battleship   | `BATTLESHIP`  | Naval Engineering |   16 | trained |     1 |  25 |  5 (10) |   3 (6) |    2 |   1–3 |     3 | no                | no      | no    | naval; splash                                                          |
-| Submarine    | `SUBMARINE`   | Submersibles      |    9 | trained |     1 |  12 |   4 (8) |   2 (4) |    2 |     1 |     2 | yes               | no      | no    | naval; Submerged; Torpedo                                              |
+| Dugout⁵      | `PATROL_BOAT` | Shorecraft        |    5 | trained |     1 |  10 |   2 (4) |   2 (4) |    2 |     1 |     2 | yes               | no      | no    | naval; Horned Prow (Seamanship)                                        |
+| War Raft⁵    | `BATTLESHIP`  | Naval Engineering |   16 | trained |     1 |  25 |  5 (10) |   3 (6) |    2 |   1–3 |     3 | no                | no      | no    | naval; splash                                                          |
+| Plesiosaur⁵  | `SUBMARINE`   | Submersibles      |   10 | trained |     1 |  12 |   4 (8) |   2 (4) |    2 |     1 |     2 | yes               | no      | yes   | naval; Submerged; Torpedo; sea beast                                   |
 
 ⁴ Spitter Sight becomes 2 with Fieldcraft.
+
+⁵ Horned Prows and the Plesiosaur (`7r94`, `pulp_wars-5ti.18`,
+[themed naval branches section 5](RULESET_7_NAVAL_FACTIONS.md#5-dinosaurs-horned-prows-and-the-plesiosaur)):
+the Dugout's Ram is the Horned Prow (+1.5 Attack after a two-tile run);
+the Plesiosaur grows (16 HP Big, 20 HP and +1 Attack Alpha) and is never
+boarded ([section 14](#14-naval-rules)). At a Shipyard the three ships cost
+3, 14, and 8.
 
 - **Caveman** has Fighter parity (capture, Pillage with Raiding, Disband,
   ordinary Promotion: 15 HP promoted) except that it cannot build Field
@@ -7500,7 +7538,8 @@ Every rule that names "naval units", "ships", or "boats" covers all three.
   takes its new kind's maximum HP (plus 5 for a veteran) and
   `floor(max / 3) + 1` HP, keeps its ID, role, kills, `veteran`, tile, and
   statuses, and loses a Shield entry its new kind has no Shield for. A
-  role whose mechanics have `seaBeast` (none yet) is never boarded, and a
+  role whose mechanics have `seaBeast` (the Dinosaur Plesiosaur since
+  `7r94`) is never boarded, and a
   seat whose Submarine is a sea beast never boards a Submarine
   (`TARGET_IMMUNE`).
 - **Goblin boats** are the **Scrap Fleet** (`7r92`): the **Fire Raft**
@@ -7519,9 +7558,28 @@ Every rule that names "naval units", "ships", or "boats" covers all three.
   blast area like any unit (the embarked Defense 1 is irrelevant to fixed
   damage), and an exploding unit killed while embarked explodes on its water
   tile. A blast that kills a blockader lifts the blockade.
-- **Dinosaur boats** are the Human Patrol Boat, Battleship, and Submarine
-  too: trained
-  with `TRAIN_NAVAL`, one slot each, no growth, ordinary Promotion. Dinosaur
+- **Dinosaur boats** are **Horned Prows and the Plesiosaur** (`7r94`,
+  [themed branches section 5](RULESET_7_NAVAL_FACTIONS.md#5-dinosaurs-horned-prows-and-the-plesiosaur)):
+  the **Dugout** (Patrol Boat), the **War Raft** (Battleship), and the
+  **Plesiosaur** (Submarine), trained with `TRAIN_NAVAL`, one slot each.
+  Their Seamanship, **Horned Prows**, is the Ram and Board. The Dugout's
+  Ram is a **Horned Prow**: +1 Attack (`RAM_BONUS2_V7`) when the boat's
+  Move entered one tile, +1.5 (`ramRunUpBonus2` 3) when it entered two or
+  more (`RAM_RUN_UP_TILES_V7`); an interrupted Move counts the tiles it
+  entered; every other Ram rule holds (Seamanship, a target afloat and not
+  icebound, the shove, never on retaliation). A hostile ship's zone of
+  control stops a Move on the tiles beside it, so a two-tile run ends
+  beside a ship only from two or more tiles away, and the movement query
+  offers each destination once, by its shortest path; a transport
+  projects no zone of control. The Dugout and the War Raft have ordinary
+  Promotion. The **Plesiosaur** costs 10 (8 at a Shipyard) and grows
+  ([section 19.8](#198-grow)) from its torpedo and retaliation kills, never
+  promoted; it is living (Plague and Bite apply) but not a dinosaur for Pack
+  Hunt, Wallbreaker, War Drums, or the Shaman's 4-HP Tend, which stay
+  land-only. It is a **sea beast**: never boarded, and a Dinosaur ship never
+  boards a Submarine-role ship (`TARGET_IMMUNE`). Icebound freezes it like
+  any ship. Another seat's Horned Prows is private: the threat estimate
+  assumes a hostile Dugout's run. Dinosaur
   land units embark, sail, and land under the ordinary rules (a two-slot
   unit embarks like any other, keeping its slots and growth; landing ends
   the activation, so a landed Triceratops cannot Charge! that turn). An Egg
@@ -8559,6 +8617,24 @@ Harbours from it.
   counts a Ghost Ship it would feed an Undead seat: an attack whose reply
   would sink its ship and raise one is refused unless it saves a city or
   opens a lethal follow-up, as an attack that feeds a Zombie is.
+- **Horned Prows and the Plesiosaur** (`7r94`, `pulp_wars-5ti.18`,
+  `src/ai/v7-naval-dinosaur.ts`, `navalMovePathLengthV7` in
+  `src/ai/v7-naval.ts`). The Dinosaur ships are read by role, so a Dinosaur
+  seat trains a Plesiosaur against a visible Battleship and a Dugout against
+  a visible Submarine, and researches Horned Prows by the Seamanship rule.
+  The ram approach previews each offered Move with its real path length
+  (the shortest offered path to its destination), so a Dugout's two-tile
+  run that sinks a boat beats a one-tile Ram, and a Dugout's plain attack
+  is held while such a run kills (beside a transport, which projects no
+  zone of control, it steps back and runs in). A Plesiosaur's torpedo that
+  sinks a ship and makes it grow (Big or Alpha) is fired first (priority
+  1280, above the Battleship torpedo's 1279) when the kill and the growth
+  (the HP it restores as a share of its 10 Coins, and at Alpha its +1
+  Attack) are worth more than each other torpedo it has and no other own
+  Submarine has a torpedo on that other target; otherwise it plays as a
+  Submarine. Every other seat's threat estimate assumes a hostile Dugout's
+  Horned Prow with its run-up (+1.5), and no seat is offered a Board of a
+  Plesiosaur.
 - **The frozen sea** (`pulp_wars-5ti.5`, `src/ai/v7-frozen-sea.ts`). An
   Ice Folk seat has no ship and no naval plan; it has an **ice plan**
   where a seafaring seat's naval plan would activate (every known
@@ -10126,14 +10202,16 @@ Coins and no technology beyond the Shaman itself.
 
 - **Stages** are derived from `kills` (`GROWTH_KILLS_V7` `[1, 3]`): stage 0
   with no kill, **Big** (stage 1) from 1 kill, **Alpha** (stage 2) from 3
-  kills. There is no stage beyond Alpha. Only the six dinosaurs grow (the
-  `GROW` ability); Eggs never do.
+  kills. There is no stage beyond Alpha. Only the six dinosaurs and the
+  Plesiosaur (the Dinosaur `SUBMARINE`, `7r94`) grow (the `GROW` ability);
+  Eggs never do.
 - **Kill credit** is the ordinary one
   ([section 18.9](#189-kill-credit-plunder-and-friendly-fire)): the unit's
   attack kills (each Rampage kill too), retaliation kills, and hostile
   splash kills count; a victim that rises still counts; destroying an Egg
   counts; explosions, Plague, and kills of own or allied units do not. A
-  dinosaur is credited only in land form.
+  dinosaur is credited only in land form (an embarked one never fights);
+  the Plesiosaur afloat, by its torpedo and its retaliation.
 - **Effect.** Each stage reached adds 4 maximum HP (`GROWTH_HP_V7`) and
   **fully heals** the unit (`hp` becomes the new maximum; revision 20).
   Alpha also adds +1 Attack (`ALPHA_ATTACK2_V7` 2) to every attack the unit
@@ -10326,7 +10404,7 @@ Attack 3, Defense 2). The rows with two tiles need Wallbreaker since
 | Push, Overrun, Charge   | No Push (Juggernaut role or Charge!) ever moves an Egg or ends on an Egg's tile. A Knight, Scrap Buggy, or T-Rex that destroys an Egg advances and may attack again. Only Charge! follows a pushed target.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | Field Defense, Walls    | They give Human, Undead, and Goblin defenders their ordinary bonus against every Dinosaur attack except the Spitter's (none), the Triceratops's (none), and, with Wallbreaker, the Walls levels against any dinosaur. A Catapult may target an Egg at range 2–3.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Cities, siege           | A besieged Dinosaur city cannot lay or train; its Eggs stay, count down, and hatch. An enemy that wants the city may ignore its Eggs: capture destroys them all. A Triceratops on a hostile center besieges it and may capture it like any land unit.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| Boats, water            | Eggs never embark or stand on water or a dock; a two-slot unit embarks like any other. Dinosaur boats are the Human boats.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Boats, water            | Eggs never embark or stand on water or a dock; a two-slot unit embarks like any other. Dinosaur boats are the Dugout, the War Raft, and the Plesiosaur (`7r94`, [section 14](#14-naval-rules)).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | Achievements, Promotion | Muster counts hatched Dinosaur roles, never an Egg; Slayer counts a dinosaur's kills (growth does not reset them); a destroyed Egg is a kill for its killer. Promotion stays for the Caveman, the Shaman, and the boats.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | Martians                | Martian attacks, rays, and Pierce hit an Egg like any unit (Defense 1, no retaliation); an Egg is never a Mind Control or Tractor Beam target, and its tile never a Beam Down or pull destination. A Charge! on a Martian unit is absorbed by the Shield first and pushes and follows whatever it absorbed; Acid and Wallbreaker reach only a Martian foot unit's cover and Walls (machines have neither). An Ankylosaurus takes 1 less from every Martian hit. The two-slot Triceratops, T-Rex, and Brontosaurus are immune to Mind Control and the Tractor Beam; a wounded Raptor, Spitter, or Ankylosaurus at 6 HP or less is not, and it keeps growing under its controller (it has no Hatch). A Mind Control and a `BRAIN_LOST` removal are no kill for growth.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | Ice Folk                | An Egg cannot be Frozen (a Bolas or Frost Bolt on it is `TARGET_IMMUNE`; every other freeze source skips it) and is never shattered; it is an ordinary target of Ice Folk attacks (Defense 1, no retaliation), and a Sweep flank hit deals it 2. Dinosaurs are Frozen and shattered like any unit, the two-slot ones included (a Frozen T-Rex only by the hit that leaves it at 1 to 3 of its HP); a Brontosaurus (`JUGGERNAUT`) never. Growth from killing Ice Folk units is ordinary; its full heal takes a unit out of the Shatter window but does not thaw it. A Triceratops's Move ends on its first Snow tile, so its run-up inside Snow is at most the tiles up to that one; its Charge! ignores an Ice Folk defender's fortification, not its Snow cover, and a pushed unit stays Frozen (a Mountain-born one may be pushed onto a Mountain). A Raptor's Pounce needs its first tile off Snow (Fieldcraft waives deep snow); a Frozen Raptor cannot Pounce, and a Frozen T-Rex cannot attack. Acid ignores Snow cover; a Spitter's shot from distance 2 at an Ice Folk unit in its own Witch's Blizzard is halved. An Ankylosaurus takes 1 from a Sweep flank hit, Armoured applying before the Shatter test. Wallbreaker removes Walls levels, and the Ice Folk defender on that center still has no Snow cover. The Shaman's Tend Wounded thaws a Frozen unit; a Frozen Shaman can use neither War Drums nor Hatch. |

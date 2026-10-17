@@ -2140,3 +2140,22 @@ A fresh `icon` for the Undead Seamanship in batch `naval-undead`
   an `edit-image-pixen` edit of the best wheel ("make the hand bigger and
   clearer: four bony fingers and a thumb gripping the rim") kept the
   wheel and fixed the hand in both candidates.
+
+## The Dinosaur Plesiosaur and Horned Prows (bead `pulp_wars-5ti.18`)
+
+Edits of the accepted Dinosaur pieces in batch `naval-dinosaur` and a
+fresh `icon` for the Dinosaur Seamanship
+([what and why](NAVAL_FACTIONS.md#the-dinosaur-plesiosaur-and-horned-prows-bead-pulp_wars-5ti18)).
+
+- **"Turn the log into a living plesiosaur"** worked from the log
+  submarine on the first seed (a swimming reptile, flippers, no water);
+  the same request from the Dugout drew a sauropod standing on legs over a
+  shadow, and another seed drew a water puddle under it.
+- **An edit cannot shorten a limb by a pixel or two**: "make the front
+  flipper shorter" returned the sprite unchanged, and "fold it back under
+  the body" changed the pose without moving the tip. A placement problem
+  of a pixel is solved by the anchor, not by an edit.
+- **A creature's crest comes out red**: the first icon drew a horned head
+  with a red crest (5.8% in the owner key's band); one edit ("remove the
+  red crest, a smooth carved figurehead in the fleet's blue and orange")
+  fixed it in both candidates.

@@ -396,6 +396,91 @@
       }
     },
     {
+      "id": "attack.plesiosaur",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A big friendly sea reptile lunges out of the water and bites a boat: a quick wet splash, a short gurgling roar and a snap of jaws. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 1,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "attack-plesiosaur-101.wav",
+      "date": "2026-10-17",
+      "bytes": 176400,
+      "cost": {
+        "character-cost": "11"
+      }
+    },
+    {
+      "id": "attack.plesiosaur",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A big friendly sea reptile lunges out of the water and bites a boat: a quick wet splash, a short gurgling roar and a snap of jaws. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 1,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "attack-plesiosaur-102.wav",
+      "date": "2026-10-17",
+      "bytes": 176400,
+      "cost": {
+        "character-cost": "11"
+      }
+    },
+    {
+      "id": "attack.plesiosaur",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A big friendly sea reptile lunges out of the water and bites a boat: a quick wet splash, a short gurgling roar and a snap of jaws. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 1,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "attack-plesiosaur-103.wav",
+      "date": "2026-10-17",
+      "bytes": 176400,
+      "cost": {
+        "character-cost": "11"
+      }
+    },
+    {
+      "id": "attack.plesiosaur",
+      "n": 104,
+      "round": 2,
+      "take": 1,
+      "prompt": "A sea reptile bites a boat: one quick wet splash, a short throaty gurgling roar and a snap of jaws, over fast, nothing after. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 0.7,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "attack-plesiosaur-104.wav",
+      "date": "2026-10-17",
+      "bytes": 119952,
+      "cost": {
+        "character-cost": "8"
+      }
+    },
+    {
+      "id": "attack.plesiosaur",
+      "n": 105,
+      "round": 2,
+      "take": 2,
+      "prompt": "A sea reptile bites a boat: one quick wet splash, a short throaty gurgling roar and a snap of jaws, over fast, nothing after. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 0.7,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "attack-plesiosaur-105.wav",
+      "date": "2026-10-17",
+      "bytes": 119952,
+      "cost": {
+        "character-cost": "8"
+      }
+    },
+    {
       "id": "attack.pop",
       "n": 101,
       "round": 1,

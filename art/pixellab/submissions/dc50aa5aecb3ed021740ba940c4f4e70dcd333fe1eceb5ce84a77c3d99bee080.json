@@ -1,0 +1,36 @@
+{
+  "id": "portrait-dugout-horn-a",
+  "jobId": "44d033e5-5bb5-43d8-82b9-c92a0558a995",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-dinosaur",
+    "asset": "chibi-naval-dinosaur-portrait-patrol-boat",
+    "subject": "PORTRAIT:DINOSAUR:PATROL_BOAT",
+    "faction": "DINOSAUR",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 99331,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Add one big curved bone-white horn on the snout of the carved blue plesiosaur head at the bow, pointing forward like a triceratops horn, with a thin dark outline. Do not redraw anything else: keep the hull, sail, colours, thick black outline and style exactly the same, with no water, on a transparent background."
+      }
+    ],
+    "prompt": "Add one big curved bone-white horn on the snout of the carved blue plesiosaur head at the bow, pointing forward like a triceratops horn, with a thin dark outline. Do not redraw anything else: keep the hull, sail, colours, thick black outline and style exactly the same, with no water, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Add one big curved bone-white horn on the snout of the carved blue plesiosaur head at the bow, pointing forward like a triceratops horn, with a thin dark outline. Do not redraw anything else: keep the hull, sail, colours, thick black outline and style exactly the same, with no water, on a transparent background.",
+    "editInstruction": "Add one big curved bone-white horn on the snout of the carved blue plesiosaur head at the bow, pointing forward like a triceratops horn, with a thin dark outline. Do not redraw anything else: keep the hull, sail, colours, thick black outline and style exactly the same, with no water, on a transparent background.",
+    "source": {
+      "recipe": "dinosaur-portrait-patrol-boat-primal-a",
+      "candidate": 0,
+      "sha256": "3a3164c2d31fe47dc84b30a5019dfa083873aef2586ef52b462849eb03261883"
+    }
+  }
+}

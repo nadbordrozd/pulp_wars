@@ -14,6 +14,7 @@ import {
 } from "./v7-goblin";
 import {
   navalAttackBlastOnAttackerV7,
+  navalMovePathLengthV7,
   navalRamApproachV7,
   navalRamShoveValueV7,
   type NavalFleetFactsV7,
@@ -308,7 +309,7 @@ function bestRamApproachV7(
       tools,
       raft,
       to,
-      chebyshev(raft.at, to),
+      navalMovePathLengthV7(tools, raft, to),
     );
     if (ram !== null) best = Math.max(best, ram.value);
   }

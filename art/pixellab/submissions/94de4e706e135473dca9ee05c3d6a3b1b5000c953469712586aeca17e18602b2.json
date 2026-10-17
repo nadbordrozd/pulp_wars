@@ -1,0 +1,36 @@
+{
+  "id": "plesiosaur-a-flipper-edit",
+  "jobId": "24ecdfc0-0d18-47be-9a7b-3d5104355daf",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-dinosaur",
+    "asset": "chibi-naval-dinosaur-submarine",
+    "subject": "UNIT:DINOSAUR:SUBMARINE",
+    "faction": "DINOSAUR",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 99303,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Make the front left flipper a little shorter, so its tip ends a few pixels further right, away from the left edge of the image. Do not redraw anything else: keep the head, neck, body, the other flippers, the tail, the colours, the thick black outline and the style exactly the same, with nothing under the body."
+      }
+    ],
+    "prompt": "Make the front left flipper a little shorter, so its tip ends a few pixels further right, away from the left edge of the image. Do not redraw anything else: keep the head, neck, body, the other flippers, the tail, the colours, the thick black outline and the style exactly the same, with nothing under the body.",
+    "negativePrompt": "",
+    "description": "Make the front left flipper a little shorter, so its tip ends a few pixels further right, away from the left edge of the image. Do not redraw anything else: keep the head, neck, body, the other flippers, the tail, the colours, the thick black outline and the style exactly the same, with nothing under the body.",
+    "editInstruction": "Make the front left flipper a little shorter, so its tip ends a few pixels further right, away from the left edge of the image. Do not redraw anything else: keep the head, neck, body, the other flippers, the tail, the colours, the thick black outline and the style exactly the same, with nothing under the body.",
+    "source": {
+      "recipe": "plesiosaur-a",
+      "candidate": 0,
+      "sha256": "75af9d6d5189d63c2986f75c7585f5c8def530d35872953af0e65517c4460a61"
+    }
+  }
+}

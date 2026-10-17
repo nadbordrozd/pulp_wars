@@ -4,13 +4,17 @@ import {
   roleMechanicsV7,
   HARBOUR_POPULATION_V7,
   RAM_BONUS2_V7,
+  RAM_RUN_UP_TILES_V7,
   boardSeaBeastBlockedV7,
+  ramBonus2V7,
+  roleRamBonus2MaximumV7,
   boardTargetBlockV7,
   isAfloatFormV7,
   knockbackDestinationV7,
   seatRoleRuleV7,
   technologyCapabilitiesV7,
   technologyDisplayNameV7,
+  unitRoleMechanicsV7,
   type BoardPreviewV7,
   type BoardTargetBlockV7,
   type CombatPreviewV7,
@@ -49,6 +53,8 @@ export const BOARD_RULE_V7 =
 export const SUBMERGED_RULE_V7 = "Can only be attacked from an adjacent tile.";
 export const TORPEDO_RULE_V7 =
   "Attacks only boats and transports, which cannot strike back.";
+/** Section 2 rule 6 (`pulp_wars-5ti.18`): a sea beast (the Plesiosaur). */
+export const SEA_BEAST_RULE_V7 = "A living beast: it cannot be boarded.";
 export const HARBOURS_RULE_V7 = `Every active Port and Shipyard gives ${HARBOUR_POPULATION_V7} more population.`;
 
 /** The Help screen's naval rules, in reading order. */
@@ -93,19 +99,91 @@ function goblinNavalBlastV7(
 
 /**
  * The Bow Ram card line of a faction: its own Patrol Boat-role ships by
- * name ("Fire Rafts that moved …" for the Goblins).
+ * name ("Fire Rafts that moved …" for the Goblins). A Horned Prow
+ * (`pulp_wars-5ti.18`) is named so and adds its run-up bonus.
  */
 export function navalRamUnlockTextV7(faction: FactionIdV7): string {
   const label = effectiveRoleRuleV7("PATROL_BOAT", faction).label;
-  return label === "Patrol Boat"
-    ? NAVAL_RAM_UNLOCK_V7
-    : NAVAL_RAM_UNLOCK_V7.replace("Patrol Boats", `${label}s`);
+  const line =
+    label === "Patrol Boat"
+      ? NAVAL_RAM_UNLOCK_V7
+      : NAVAL_RAM_UNLOCK_V7.replace("Patrol Boats", `${label}s`);
+  const runUp = roleRamBonus2MaximumV7("PATROL_BOAT", faction);
+  return runUp > RAM_BONUS2_V7
+    ? line
+        .replace(NAVAL_RAM_LABEL_V7, navalRamLabelV7(faction))
+        .replace(
+          "+1 Attack",
+          `+${RAM_BONUS2_V7 / 2} Attack (+${runUp / 2} after ${String(RAM_RUN_UP_TILES_V7)} tiles)`,
+        )
+    : line;
+}
+
+/**
+ * Themed naval branches, Horned Prows and the Plesiosaur
+ * (docs/product/RULESET_7_NAVAL_FACTIONS.md sections 5.3 and 12,
+ * `pulp_wars-5ti.18`): the Dinosaur Ram is the Horned Prow, a Ram with a
+ * run-up bonus (the role mechanic `ramRunUpBonus2`).
+ */
+export const HORNED_PROW_LABEL_V7 = "Horned Prow";
+
+/** The name of a faction's Ram: "Horned Prow" with a run-up bonus, else "Bow Ram". */
+export function navalRamLabelV7(faction: FactionIdV7): string {
+  return roleRamBonus2MaximumV7("PATROL_BOAT", faction) > RAM_BONUS2_V7
+    ? HORNED_PROW_LABEL_V7
+    : NAVAL_RAM_LABEL_V7;
+}
+
+/** The Horned Prow's rule sentence, the ship named from the registry. */
+export function hornedProwRuleV7(): string {
+  return `A ${effectiveRoleRuleV7("PATROL_BOAT", "DINOSAUR").label}'s ram hits harder after a longer run.`;
+}
+
+/** The Plesiosaur's rule sentence, the beast named from the registry. */
+export function plesiosaurRuleV7(): string {
+  return `A sea reptile: the ${effectiveRoleRuleV7("SUBMARINE", "DINOSAUR").label} grows from kills like a dinosaur, and nobody can board it.`;
+}
+
+/**
+ * The Ram's help sentence of a faction ("With Horned Prows: a Dugout that
+ * moved this turn …"), with a Horned Prow's run-up bonus.
+ */
+export function navalRamDescriptionV7(faction: FactionIdV7): string {
+  const label = effectiveRoleRuleV7("PATROL_BOAT", faction).label;
+  const runUp = roleRamBonus2MaximumV7("PATROL_BOAT", faction);
+  const rule = NAVAL_RAM_RULE_V7.replace(
+    /^A Patrol Boat/,
+    `${/^[AEIOU]/.test(label) ? "an" : "a"} ${label}`,
+  );
+  const withRunUp =
+    runUp > RAM_BONUS2_V7
+      ? rule.replace(
+          "+1 Attack",
+          `+${RAM_BONUS2_V7 / 2} Attack (+${runUp / 2} after a ${numberWordV7(RAM_RUN_UP_TILES_V7)}-tile run)`,
+        )
+      : rule;
+  return `With ${technologyDisplayNameV7("SEAMANSHIP", faction)}: ${withRunUp}`;
+}
+
+function numberWordV7(value: number): string {
+  return value === 2 ? "two" : value === 3 ? "three" : String(value);
 }
 
 /** The Submersibles card note of a faction, its Submarine by name. */
 export function submarineUnlockNoteV7(faction: FactionIdV7): string {
-  const label = effectiveRoleRuleV7("SUBMARINE", faction).label;
-  return SUBMARINE_UNLOCK_NOTE_V7.replace(/^Submarine/, label);
+  const rule = effectiveRoleRuleV7("SUBMARINE", faction);
+  // Themed naval branches (`pulp_wars-5ti.18`): a growing sea beast, in a
+  // line as short as the card's others.
+  const beast = roleMechanicsV7("SUBMARINE", faction).seaBeast;
+  const grows = rule.abilities.includes("GROW");
+  if (!beast && !grows)
+    return SUBMARINE_UNLOCK_NOTE_V7.replace(/^Submarine/, rule.label);
+  return [
+    `${rule.label}: hit only from the next tile`,
+    "torpedo with no strike-back",
+    ...(grows ? ["grows"] : []),
+    ...(beast ? ["never boarded"] : []),
+  ].join("; ");
 }
 
 /** The Shipbuilding card note of a faction, its Battleship by name. */
@@ -165,10 +243,18 @@ export const TORPEDO_PREVIEW_V7 = "No strike-back";
 /** The grey mark of a Submarine the selected unit cannot attack from here. */
 export const SUBMERGED_OUT_OF_REACH_V7 = "Submerged: get adjacent";
 
-/** The name of a naval role ability, or null for every other ability. */
-export function navalAbilityNameV7(ability: string): string | null {
+/**
+ * The name of a naval role ability, or null for every other ability (the
+ * Ram is a Horned Prow for a faction whose Ram has a run-up bonus).
+ */
+export function navalAbilityNameV7(
+  ability: string,
+  faction?: FactionIdV7,
+): string | null {
   if (ability === "DROWNED_CREW") return "Drowned Crew";
-  return ability === "RAM" ? NAVAL_RAM_LABEL_V7 : null;
+  if (ability === "SEA_BEAST") return "Sea beast";
+  if (ability !== "RAM") return null;
+  return faction === undefined ? NAVAL_RAM_LABEL_V7 : navalRamLabelV7(faction);
 }
 
 /** The board label of a Board target: the prize and its HP after the patch. */
@@ -180,13 +266,24 @@ export function boardTargetLabelV7(preview: BoardPreviewV7): string {
 export function boardBlockTextV7(
   reason: BoardTargetBlockV7,
   boardableAt: number | null,
+  /**
+   * Themed naval branches (`pulp_wars-5ti.18`): the immune target is a sea
+   * beast (a Plesiosaur), or the boarder's seat sails one.
+   */
+  seaBeast = false,
 ): string {
-  if (reason === "TARGET_IMMUNE") return "Not a ship";
+  if (reason === "TARGET_IMMUNE")
+    return seaBeast ? SEA_BEAST_BLOCK_V7 : "Not a ship";
   if (reason === "OUT_OF_RANGE") return "Too far";
   // Row 10 (`pulp_wars-5ti.3`): a prize on Deep Water needs Navigation.
   if (reason === "DEEP_WATER") return BOARD_BLOCK_DEEP_WATER_V7;
   return boardableAt === null ? "Too healthy" : `Above ${boardableAt} HP`;
 }
+
+/** The grey reason on a ship no Board can take because of a sea beast. */
+export const SEA_BEAST_BLOCK_V7 = "Sea beast";
+/** Why an own ship beside weak sea beasts only has no Board to aim. */
+export const BOARD_SEA_BEAST_V7 = "A sea beast cannot be boarded";
 
 /** The grey reason on a weak ship that stands on Deep Water. */
 export const BOARD_BLOCK_DEEP_WATER_V7 = "Needs Navigation";
@@ -280,6 +377,15 @@ export function boardUnavailableTextV7(
   // A ship that could be taken stands there: the boarder itself cannot act.
   if (blocks.includes(null)) return BOARD_ALREADY_ACTED_V7;
   if (blocks.includes("DEEP_WATER")) return BOARD_NEEDS_NAVIGATION_V7;
+  // Themed naval branches (`pulp_wars-5ti.18`): only sea beasts are weak
+  // enough there.
+  if (
+    !blocks.includes("TARGET_HEALTHY") &&
+    adjacent.some((candidate) =>
+      boardSeaBeastBlockedV7(view, view.viewer.id, candidate),
+    )
+  )
+    return BOARD_SEA_BEAST_V7;
   return blocks.includes("TARGET_HEALTHY")
     ? BOARD_NO_WEAK_SHIP_V7
     : BOARD_NOT_A_SHIP_V7;
@@ -309,8 +415,22 @@ export function navalCombatLinesV7(
   const notes: string[] = [];
   let shove: NavalCombatLinesV7["shove"] = null;
   if (preview.ram) {
-    notes.push(RAM_PREVIEW_V7);
     const attacker = view.units.find((unit) => unit.id === preview.attackerId);
+    // Themed naval branches (`pulp_wars-5ti.18`): a Horned Prow's run-up
+    // ("Horned Prow +1.5"), read from the attacker's own Move.
+    const bonus2 =
+      attacker === undefined
+        ? RAM_BONUS2_V7
+        : ramBonus2V7(view, attacker, attacker.activation.movedPathLength);
+    notes.push(
+      attacker === undefined
+        ? RAM_PREVIEW_V7
+        : `${
+            unitRoleMechanicsV7(view, attacker).ramRunUpBonus2 > RAM_BONUS2_V7
+              ? HORNED_PROW_LABEL_V7
+              : NAVAL_RAM_LABEL_V7
+          } +${bonus2 / 2}`,
+    );
     const defender = view.units.find(
       (unit) => unit.id === preview.targetUnitId,
     );

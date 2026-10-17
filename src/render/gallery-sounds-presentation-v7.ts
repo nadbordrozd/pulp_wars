@@ -311,6 +311,11 @@ const NOTES: Readonly<Partial<Record<SoundIdV1, SoundNoteV7>>> = {
     when: `${unitName("MARKSMAN", "CANDY")} attacks`,
     picture: unit("MARKSMAN", "CANDY"),
   },
+  // Themed naval branches (`pulp_wars-5ti.18`): the Plesiosaur's bite.
+  "attack.plesiosaur": {
+    when: `${unitName("SUBMARINE", "DINOSAUR")} attacks`,
+    picture: unit("SUBMARINE", "DINOSAUR"),
+  },
   "impact.hit": { when: "Attack lands", picture: icon("attack") },
   "impact.heavy": { when: "Siege or charge lands", picture: icon("stampede") },
   "impact.explosion": { when: "Bomb or shell bursts", picture: icon("bomb") },

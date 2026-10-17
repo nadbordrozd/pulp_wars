@@ -1,6 +1,6 @@
 {
   "provider": "ElevenLabs sound effects",
-  "provenance": "ElevenLabs sound effects, generated 2026-10-13, 2026-10-14, 2026-10-16",
+  "provenance": "ElevenLabs sound effects, generated 2026-10-13, 2026-10-14, 2026-10-16, 2026-10-17",
   "bead": "pulp_wars-2yc.51",
   "output": {
     "folder": "public/assets/audio",
@@ -557,6 +557,52 @@
           "gain": 0.33,
           "lufs": -18.4,
           "note": "0.259 s, hard attack, centred near 1.6 kHz, 42% of its energy under 1 kHz, crest 16.2 dB.",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "attack.plesiosaur",
+      "default": 104,
+      "confidence": "medium",
+      "why": "#104 scored best (0.57) of 2 kept: 0.8 s for a range of 0.25–0.8 s, onset 0 ms, tail 110 ms, centred near 606 Hz; the next, #103, scored 0.833.",
+      "reference": {
+        "source": "+0 dB against `attack.melee`'s reference, stock recording #1 (attack-melee-1.m4a) at level 0.45",
+        "lufs": -23.4
+      },
+      "takes": [
+        {
+          "n": 104,
+          "file": "attack-plesiosaur-104.m4a",
+          "generated": "2026-10-17",
+          "round": 2,
+          "take": 1,
+          "model": "eleven_text_to_sound_v2",
+          "prompt": "A sea reptile bites a boat: one quick wet splash, a short throaty gurgling roar and a snap of jaws, over fast, nothing after. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+          "durationSeconds": 0.7,
+          "promptInfluence": 0.5,
+          "startSeconds": 0,
+          "endSeconds": 0.8,
+          "gain": 0.33,
+          "lufs": -13.8,
+          "note": "0.8 s, hard attack, centred near 606 Hz, 93% of its energy under 1 kHz, crest 13 dB.",
+          "passed": true
+        },
+        {
+          "n": 103,
+          "file": "attack-plesiosaur-103.m4a",
+          "generated": "2026-10-17",
+          "round": 1,
+          "take": 3,
+          "model": "eleven_text_to_sound_v2",
+          "prompt": "A big friendly sea reptile lunges out of the water and bites a boat: a quick wet splash, a short gurgling roar and a snap of jaws. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+          "durationSeconds": 1,
+          "promptInfluence": 0.5,
+          "startSeconds": 0,
+          "endSeconds": 0.8,
+          "gain": 0.36,
+          "lufs": -14.6,
+          "note": "0.8 s, hard attack, centred near 761 Hz, 81% of its energy under 1 kHz, crest 13.1 dB.",
           "passed": true
         }
       ]

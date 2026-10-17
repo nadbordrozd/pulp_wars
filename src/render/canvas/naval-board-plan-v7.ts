@@ -1,4 +1,5 @@
 import {
+  boardSeaBeastBlockedV7,
   cooperativeAlliesV7,
   isAfloatFormV7,
   previewBoardV7,
@@ -128,6 +129,8 @@ export function addNavalPickEntriesV7(
         reason,
         view.unitStats.find((entry) => entry.unitId === unit.id)?.boardableAt ??
           null,
+        // Themed naval branches (`pulp_wars-5ti.18`): a Plesiosaur.
+        boardSeaBeastBlockedV7(view, boarder.ownerId, unit),
       ),
     });
   }

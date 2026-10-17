@@ -388,6 +388,8 @@ describe("Revision 19 Dinosaur text (spec section 12.2)", () => {
       "Egg weakness",
       ...(bigBodies.length > 0 ? ["Big bodies"] : []),
       "Grow",
+      // Horned Prows and the Plesiosaur (`pulp_wars-5ti.18`).
+      "At sea",
       "Gore",
       "Acid",
       "Armoured",
@@ -433,6 +435,9 @@ describe("Revision 19 Dinosaur text (spec section 12.2)", () => {
     expect(rule("Stampede")).toBe("");
     expect(nestingEggHpBonusV7()).toBeGreaterThan(0);
     expect(rule("Wild")).toBe("Dinosaurs cannot build Field Defense.");
+    expect(rule("At sea")).toBe(
+      "with Horned Prows, a Dugout that moved rams ships with +1 Attack, +1.5 after a two-tile run; a Plesiosaur grows from its kills like a dinosaur, and nobody can board it.",
+    );
     // Every two-slot role is named, and only those.
     for (const role of UNIT_ROLE_IDS_V7.filter(
       (candidate) => candidate !== "PATROL_BOAT" && candidate !== "BATTLESHIP",

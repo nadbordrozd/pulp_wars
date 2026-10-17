@@ -6,6 +6,8 @@ import {
   MILITIA_FIGHTERS_V7,
   PROMOTION_HP_V7,
   PROMOTION_KILLS_V7,
+  RAM_BONUS2_V7,
+  RAM_RUN_UP_TILES_V7,
   RUN_UP_BASE_TILES_V7,
   RUN_UP_MAXIMUM_TILES_V7,
   UNIT_ROLE_IDS_V7,
@@ -13,6 +15,7 @@ import {
   effectiveRoleRuleV7,
   factionTreeV7,
   isEggLaidRoleV7,
+  roleRamBonus2MaximumV7,
   unitFactionV7,
   roleMechanicsV7,
   seatRoleRuleV7,
@@ -355,6 +358,12 @@ export function dinosaurHelpRulesV7(): readonly (readonly [string, string])[] {
     [
       "Grow",
       `a Dinosaur grows when it kills: ${growthRuleText()} and ${alphaRuleText()}, for good; each growth fully heals it.`,
+    ],
+    // Themed naval branches (`pulp_wars-5ti.18`): Horned Prows and the
+    // Plesiosaur.
+    [
+      "At sea",
+      `with ${technologyNameV7("SEAMANSHIP", "DINOSAUR")}, a ${dinosaurLabel("PATROL_BOAT")} that moved rams ships with +${RAM_BONUS2_V7 / 2} Attack, +${roleRamBonus2MaximumV7("PATROL_BOAT", "DINOSAUR") / 2} after a ${numberWord(RAM_RUN_UP_TILES_V7)}-tile run; a ${dinosaurLabel("SUBMARINE")} grows from its kills like a dinosaur, and nobody can board it.`,
     ],
     [
       CHARGE_LABEL_V7,

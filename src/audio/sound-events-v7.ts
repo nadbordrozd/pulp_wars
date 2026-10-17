@@ -3,6 +3,7 @@ import {
   isAfloatFormV7,
   unitFactionV7,
   unitFliesV7,
+  unitRoleMechanicsV7,
   type CoordV7,
   type FactionIdV7,
   type PlayerEventEnvelopeV7,
@@ -248,6 +249,23 @@ export function moveSoundOfUnitV7(
 }
 
 /**
+ * Themed naval branches (`pulp_wars-5ti.18`): whether the attacker of a
+ * step is a sea beast afloat (the Dinosaur Plesiosaur), whose torpedo is a
+ * bite (`attack.plesiosaur`) and not a swing.
+ */
+export function seaBeastAttacksV7(
+  views: readonly PlayerViewV7[],
+  unitId: number,
+): boolean {
+  for (const view of views) {
+    const unit = view.units.find((candidate) => candidate.id === unitId);
+    if (unit === undefined) continue;
+    return unit.form === "NAVAL" && unitRoleMechanicsV7(view, unit).seaBeast;
+  }
+  return false;
+}
+
+/**
  * The sounds of a Move step (bead pulp_wars-2yc.57): one soft footstep
  * shuffle or oar dip as the unit sets off, and a second from the middle of
  * a long move, every player's alike, another player's a little quieter. A
@@ -333,7 +351,9 @@ export function soundCuesForStepV7(
       }
       const launch: SoundIdV1 =
         step.kind === "MELEE"
-          ? "attack.melee"
+          ? seaBeastAttacksV7([cue.before, cue.after], step.unitId)
+            ? "attack.plesiosaur"
+            : "attack.melee"
           : step.kind === "RANGED"
             ? "attack.ranged"
             : "attack.siege";

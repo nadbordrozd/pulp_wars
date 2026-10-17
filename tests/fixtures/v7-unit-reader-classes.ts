@@ -94,6 +94,9 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     // flyer stay silent. A burrowed unit is not drawn and takes no Move,
     // so the mover of a Move step always stands on the board.
     "src/audio/sound-events-v7.ts::moveSoundOfUnitV7": "BOARD",
+    // Horned Prows and the Plesiosaur (`pulp_wars-5ti.18`): the attacker of
+    // a step, on the board.
+    "src/audio/sound-events-v7.ts::seaBeastAttacksV7": "BOARD",
     // `pulp_wars-737.4`: the curiosity policy reads the board: the visible
     // Monsters, the units that walk to a Fountain, a Shrine, or a Wreck, and
     // the units that defend a center (a burrowed unit takes no errand and
@@ -212,6 +215,9 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/ai/v7-naval.ts::drownedCrewRisingTenthsV7": "BOARD",
     "src/ai/v7-naval-undead.ts::drownedCrewTorpedoPriorityV7": "BOARD",
     "src/ai/v7-naval-undead.ts::navalPlagueTechnologyV7": "BOARD",
+    // Horned Prows and the Plesiosaur (`pulp_wars-5ti.18`): the other
+    // torpedoes of a Plesiosaur and its fellow Submarines are on the board.
+    "src/ai/v7-naval-dinosaur.ts::plesiosaurGrowthTorpedoPriorityV7": "BOARD",
     // `pulp_wars-5ti.5`: the frozen sea reads the board: the units that
     // walk to a crossing and Freeze it, the ships a Freeze locks in and the
     // units that can strike them, the units on ice, and the unit that

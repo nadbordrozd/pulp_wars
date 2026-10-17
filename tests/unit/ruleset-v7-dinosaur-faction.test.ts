@@ -121,22 +121,22 @@ const EGG_LAID_ROLES: readonly UnitRoleIdV7[] = [
 
 describe("ruleset-7 revision-19 identity", () => {
   it("keeps r18 among the gap-free prior identities after the r55 identity, and the save key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r93");
-    expect(RULESET_7.id).toBe("pulp-wars-poc-7r93");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r93.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r94");
+    expect(RULESET_7.id).toBe("pulp-wars-poc-7r94");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r94.current");
     expect([...PRIOR_RULESET_7_IDS]).toEqual([
       "pulp-wars-poc-7",
       ...Array.from(
-        { length: 91 },
+        { length: 92 },
         (_, index) => `pulp-wars-poc-7r${index + 2}`,
       ),
     ]);
-    expect(PRIOR_RULESET_7_IDS.at(-75)).toBe("pulp-wars-poc-7r18");
+    expect(PRIOR_RULESET_7_IDS.at(-76)).toBe("pulp-wars-poc-7r18");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
     expect([...OBSOLETE_SAVE_STORAGE_KEYS_V7]).toEqual([
       "pulpWars.save.v7.current",
       ...Array.from(
-        { length: 91 },
+        { length: 92 },
         (_, index) => `pulpWars.save.v7r${index + 2}.current`,
       ),
     ]);
@@ -174,7 +174,7 @@ describe("ruleset-7 revision-19 identity", () => {
     const setup = goblinSetupV7(["DINOSAUR", "ORIGINAL"]);
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
-    expect(created.state.rulesetId).toBe("pulp-wars-poc-7r93");
+    expect(created.state.rulesetId).toBe("pulp-wars-poc-7r94");
     const oldSetup = { ...setup, rulesetId: "pulp-wars-poc-7r18" };
     expect(parseMatchSetupV7(setup)).not.toBeNull();
     expect(parseMatchSetupV7(oldSetup)).toBeNull();
@@ -571,8 +571,10 @@ describe("ruleset-7 Dinosaur roster", () => {
       ["ATTACK", "CAPTURE", "GROW", "STOMP"],
       "MYTHIC",
     ],
+    // Themed naval branches (`pulp_wars-5ti.18`): the Dugout, the War Raft
+    // and the Plesiosaur (RULESET_7_NAVAL_FACTIONS.md section 5.2).
     [
-      "Patrol Boat",
+      "Dugout",
       "PATROL_BOAT",
       "SHORECRAFT",
       5,
@@ -591,7 +593,7 @@ describe("ruleset-7 Dinosaur roster", () => {
       "NAVAL_SCREEN",
     ],
     [
-      "Battleship",
+      "War Raft",
       "BATTLESHIP",
       "NAVAL_ENGINEERING",
       16,
@@ -608,12 +610,13 @@ describe("ruleset-7 Dinosaur roster", () => {
       ["ATTACK"],
       "NAVAL_CAPITAL",
     ],
-    // The naval branch (`pulp_wars-5ti.2`): the shared Submarine.
+    // The naval branch (`pulp_wars-5ti.2`): the shared Submarine; the
+    // Plesiosaur since `pulp_wars-5ti.18` (10 Coins, Grows, a sea beast).
     [
-      "Submarine",
+      "Plesiosaur",
       "SUBMARINE",
       "SUBMERSIBLES",
-      9,
+      10,
       null,
       1,
       12,
@@ -624,7 +627,7 @@ describe("ruleset-7 Dinosaur roster", () => {
       1,
       2,
       true,
-      ["ATTACK", "SUBMERGED", "TORPEDO"],
+      ["ATTACK", "SUBMERGED", "TORPEDO", "GROW", "SEA_BEAST"],
       "NAVAL_HUNTER",
     ],
     // The ninth unit (7r55): the Triceratops is the heavy line role, at
@@ -751,10 +754,13 @@ describe("ruleset-7 Dinosaur roster", () => {
   });
 
   it("keeps the Human boats' rules and maps Dinosaur units and boats to their own art subject", () => {
+    // Themed naval branches (`pulp_wars-5ti.18`): the Dugout and the War
+    // Raft keep the Human numbers under their own names.
     for (const role of ["PATROL_BOAT", "BATTLESHIP"] as const)
-      expect(effectiveRoleRuleV7(role, "DINOSAUR")).toEqual(
-        effectiveRoleRuleV7(role, "ORIGINAL"),
-      );
+      expect({ ...effectiveRoleRuleV7(role, "DINOSAUR"), label: "" }).toEqual({
+        ...effectiveRoleRuleV7(role, "ORIGINAL"),
+        label: "",
+      });
     expect(
       unitArtSubjectV7({ role: "KNIGHT", form: "LAND", faction: "DINOSAUR" }),
     ).toBe("UNIT:DINOSAUR:KNIGHT");
@@ -972,6 +978,11 @@ describe("ruleset-7 Dinosaur technology", () => {
       MARKSMANSHIP: "Spitters",
       CHIVALRY: "T-Rex",
       METALLURGY: "Triceratops",
+      // Themed naval branches (`pulp_wars-5ti.18`).
+      SHORECRAFT: "Dugouts",
+      NAVAL_ENGINEERING: "War Rafts",
+      SEAMANSHIP: "Horned Prows",
+      SUBMERSIBLES: "Plesiosaurs",
     });
     expect(
       FACTION_IDS_V7.map((faction) => technologyNameV7("EXPLOSIVES", faction)),

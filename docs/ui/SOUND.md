@@ -197,6 +197,7 @@ economy is silent.
 | Harpoon                                                         | `attack.ranged`, then `impact.hit`                                         |
 | Pie Launcher                                                    | `attack.siege`, then `impact.splat`                                        |
 | Gumball Gunner                                                  | `attack.pop`, then `impact.hit`                                            |
+| Plesiosaur torpedo (`pulp_wars-5ti.18`)                         | `attack.plesiosaur` (a bite with a wet roar), then `impact.hit`            |
 | Martian heat ray and ray pistol                                 | `attack.ray`, then `impact.hit`                                            |
 | Any attack that kills either side                               | `unit.death` just after the hit                                            |
 | An attack whose target lives (melee, ranged, siege, ray)        | the target's hurt sound, 40 ms after the hit ([Hurt sounds](#hurt-sounds)) |
@@ -717,6 +718,7 @@ full scale). A unit test compares this table with the manifest.
 | `attack.gatling`       | Gun burst        | combat   | noise + square                   | 110–190    | 149         | 0.32 |
 | `attack.cannon`        | Cannon           | combat   | sine + noise                     | 42–110     | 272         | 0.45 |
 | `attack.pop`           | Gumball pop      | combat   | sine + triangle                  | 420–1500   | 82          | 0.26 |
+| `attack.plesiosaur`    | Plesiosaur bite  | combat   | noise + saw                      | 70–110     | 292         | 0.3  |
 | `impact.hit`           | Hit              | combat   | sine + noise                     | 70–190     | 122         | 0.4  |
 | `impact.heavy`         | Heavy hit        | combat   | sine + noise + square            | 45–120     | 232         | 0.46 |
 | `impact.explosion`     | Explosion        | combat   | noise + sine                     | 36–90      | 432         | 0.5  |

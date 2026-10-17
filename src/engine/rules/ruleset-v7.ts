@@ -451,8 +451,8 @@ export type UnitRoleAbilityV7 =
   | "TORPEDO"
   // Themed naval branches (docs/product/RULESET_7_NAVAL_FACTIONS.md section
   // 2 rule 6, `pulp_wars-5ti.16`): a sea beast (a role whose mechanics have
-  // `seaBeast`) is never boarded. No role carries it yet; the Dinosaur
-  // Plesiosaur and the Cult Kraken will.
+  // `seaBeast`) is never boarded: the Dinosaur Plesiosaur
+  // (`pulp_wars-5ti.18`), and the Cult Kraken from its bead.
   | "SEA_BEAST"
   // Themed naval branches (section 4.3 U1, `pulp_wars-5ti.17`): an Undead
   // ship's Drowned Crew (with Drowned Crews, a hostile ship it sinks rises
@@ -926,9 +926,19 @@ export interface RoleMechanicsV7 {
    * 2 rule 6, `pulp_wars-5ti.16`): a living sea beast (the Dinosaur
    * Plesiosaur and the Cult Kraken, from their beads). It is never a
    * `BOARD` target, and a seat whose own `SUBMARINE` role is one never
-   * boards a `SUBMARINE`-role ship. False for every role today.
+   * boards a `SUBMARINE`-role ship. The Dinosaur Plesiosaur is one
+   * (`pulp_wars-5ti.18`); false for every other role.
    */
   readonly seaBeast: boolean;
+  /**
+   * Themed naval branches, the Horned Prow (section 5.3 D1,
+   * `pulp_wars-5ti.18`): the `attack2` a Ram of the role adds after a Move
+   * that entered `RAM_RUN_UP_TILES_V7` or more tiles (the Dinosaur Dugout
+   * `HORNED_PROW_RAM_BONUS2_V7` 3). After a one-tile Move every Ram adds
+   * `RAM_BONUS2_V7`; every other role has `RAM_BONUS2_V7` here (no run-up
+   * bonus). Read only for an attack that is a Ram.
+   */
+  readonly ramRunUpBonus2: number;
 }
 
 export interface FactionTechnologyTreeV7 {
@@ -1819,6 +1829,21 @@ export const ORIGINAL_ROLE_RULES_V7: Readonly<
   }),
 });
 
+/**
+ * The naval branch (docs/product/RULESET_7_NAVAL_BRANCH.md section 4.1): the
+ * `attack2` a Ram adds (+1 Attack).
+ */
+export const RAM_BONUS2_V7 = 2;
+/**
+ * Themed naval branches, the Dinosaur Horned Prow
+ * (docs/product/RULESET_7_NAVAL_FACTIONS.md section 5.3 D1,
+ * `pulp_wars-5ti.18`): the `attack2` of a Dugout's Ram after a run of two
+ * or more tiles (+1.5 Attack; the role mechanic `ramRunUpBonus2`).
+ */
+export const HORNED_PROW_RAM_BONUS2_V7 = 3;
+/** The Horned Prow: the tiles a Move must enter for the run-up bonus. */
+export const RAM_RUN_UP_TILES_V7 = 2;
+
 const mechanics = (
   overrides: Partial<Record<UnitRoleIdV7, Partial<RoleMechanicsV7>>>,
 ): Readonly<Record<UnitRoleIdV7, RoleMechanicsV7>> =>
@@ -1901,6 +1926,7 @@ const mechanics = (
           anchorStrands: 0,
           ravageAttacks: 1,
           seaBeast: false,
+          ramRunUpBonus2: RAM_BONUS2_V7,
           ...overrides[roleId],
         },
       ]),
@@ -2759,9 +2785,28 @@ export const DINOSAUR_ROLE_RULES_V7: Readonly<
     // The giants' signatures (section 6.4): Thunder Stomp instead of Push.
     abilities: ["ATTACK", "CAPTURE", "GROW", "STOMP"],
   }),
-  PATROL_BOAT: role({ ...ORIGINAL_ROLE_RULES_V7.PATROL_BOAT }),
-  BATTLESHIP: role({ ...ORIGINAL_ROLE_RULES_V7.BATTLESHIP }),
-  SUBMARINE: role({ ...ORIGINAL_ROLE_RULES_V7.SUBMARINE }),
+  // Themed naval branches, Horned Prows and the Plesiosaur
+  // (docs/product/RULESET_7_NAVAL_FACTIONS.md section 5.2,
+  // `pulp_wars-5ti.18`): the Dugout has the Human Patrol Boat's numbers and
+  // a Horned Prow (its Ram, the role mechanic `ramRunUpBonus2`); the War
+  // Raft the Battleship's. The Plesiosaur is a living sea reptile: 10 Coins
+  // (one more than a Submarine), trained at a dock (never an Egg), it grows
+  // from kills like a dinosaur (12 / 16 / 20 HP, the Alpha's +1 Attack) and
+  // is a sea beast (never boarded).
+  PATROL_BOAT: role({
+    ...ORIGINAL_ROLE_RULES_V7.PATROL_BOAT,
+    label: "Dugout",
+  }),
+  BATTLESHIP: role({
+    ...ORIGINAL_ROLE_RULES_V7.BATTLESHIP,
+    label: "War Raft",
+  }),
+  SUBMARINE: role({
+    ...ORIGINAL_ROLE_RULES_V7.SUBMARINE,
+    label: "Plesiosaur",
+    cost: 10,
+    abilities: ["ATTACK", "SUBMERGED", "TORPEDO", "GROW", "SEA_BEAST"],
+  }),
   // The ninth unit (`pulp_wars-w49.17`, 7r55): the Triceratops is the
   // Dinosaur heavy line unit (Metallurgy; it was the `CATAPULT` role at
   // Sawmilling). Its numbers and rules are unchanged; the role mechanics
@@ -2791,7 +2836,8 @@ export const DINOSAUR_ROLE_RULES_V7: Readonly<
  * (Wild); the Triceratops, T-Rex, and Brontosaurus use two capacity slots;
  * the five egg-laid roles carry their hatch time; the Triceratops is a melee
  * body that advances after a kill and carries the Charge! run-up bonus; the
- * Ankylosaurus is Armoured. Boats are Human boats.
+ * Ankylosaurus is Armoured. Boats are Human boats but for the Dugout's
+ * Horned Prow and the Plesiosaur sea beast (`pulp_wars-5ti.18`).
  */
 export const DINOSAUR_ROLE_MECHANICS_V7 = mechanics({
   // The Dinosaur pass (`pulp_wars-w49.15`, 7r53): Pack Hunt.
@@ -2813,6 +2859,11 @@ export const DINOSAUR_ROLE_MECHANICS_V7 = mechanics({
   // The giants' signatures (section 6.4): Thunder Stomp.
   JUGGERNAUT: { capacitySlots: 2, stompDamage: STOMP_DAMAGE_V7 },
   BATTLESHIP: { splash: true },
+  // Themed naval branches (section 5.3, `pulp_wars-5ti.18`): the Dugout's
+  // Horned Prow (+1.5 Attack after a two-tile run) and the Plesiosaur, a
+  // sea beast.
+  PATROL_BOAT: { ramRunUpBonus2: HORNED_PROW_RAM_BONUS2_V7 },
+  SUBMARINE: { seaBeast: true },
   // The ninth unit (7r55): the Triceratops in the heavy slot keeps its two
   // slots, hatch time, and run-up, stays out of War Drums (`rallyExcluded`;
   // it was excluded as a `SIEGE` role), and its attacks still destroy
@@ -4978,6 +5029,13 @@ export const TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7: Readonly<
     MARKSMANSHIP: "Spitters",
     CHIVALRY: "T-Rex",
     METALLURGY: "Triceratops",
+    // Themed naval branches, Horned Prows and the Plesiosaur
+    // (`pulp_wars-5ti.18`, docs/product/RULESET_7_NAVAL_FACTIONS.md section
+    // 5.1): Navigation keeps its shared name.
+    SHORECRAFT: "Dugouts",
+    NAVAL_ENGINEERING: "War Rafts",
+    SEAMANSHIP: "Horned Prows",
+    SUBMERSIBLES: "Plesiosaurs",
   },
   // The Martian revision: Fortification and Explosives are renamed. The
   // Martian pass (`pulp_wars-w49.14`, 7r52): Fieldcraft is Heat Sinks.
@@ -6773,11 +6831,6 @@ export const BARRICADE_DEFENSE2_V7 = 4;
 export const BARRICADE_CAP_V7 = 4;
 
 /**
- * The naval branch (docs/product/RULESET_7_NAVAL_BRANCH.md section 4.1): the
- * `attack2` a Ram adds (+1 Attack).
- */
-export const RAM_BONUS2_V7 = 2;
-/**
  * The naval branch (section 4.2): a ship can be boarded at
  * `floor(maxHp / BOARDING_HP_DIVISOR_V7)` HP or less.
  */
@@ -7038,6 +7091,41 @@ export function attackIsRamV7(
     unitRoleRuleV7(roster, attacker).abilities.includes("RAM") &&
     unitCapabilitiesV7(roster, attacker, attackerOwnerResearchedTechs).ram
   );
+}
+
+/**
+ * Themed naval branches, the Horned Prow
+ * (docs/product/RULESET_7_NAVAL_FACTIONS.md section 5.3 D1,
+ * `pulp_wars-5ti.18`): the `attack2` a Ram (`attackIsRamV7`) by `attacker`
+ * adds after a Move that entered `pathLength` tiles: the role mechanic
+ * `ramRunUpBonus2` (the Dinosaur Dugout's 3) after `RAM_RUN_UP_TILES_V7` or
+ * more, otherwise `RAM_BONUS2_V7`. An interrupted Move counts the tiles it
+ * entered (the activation's `movedPathLength`); an estimate passes the
+ * planned path's length.
+ */
+export function ramBonus2V7(
+  roster: FactionRosterV7,
+  attacker: UnitKindRefV7 & { readonly role: UnitRoleIdV7 } & SummonedUnitRefV7,
+  pathLength: number,
+): number {
+  return pathLength >= RAM_RUN_UP_TILES_V7
+    ? Math.max(
+        RAM_BONUS2_V7,
+        unitRoleMechanicsV7(roster, attacker).ramRunUpBonus2,
+      )
+    : RAM_BONUS2_V7;
+}
+
+/**
+ * The most `attack2` a Ram by a ship of `role` under `faction` can add (its
+ * run-up bonus when it has one). The threat estimate assumes it for a
+ * hostile rammer, as it assumes the hostile Seamanship (private research).
+ */
+export function roleRamBonus2MaximumV7(
+  role: UnitRoleIdV7,
+  faction: FactionIdV7,
+): number {
+  return Math.max(RAM_BONUS2_V7, roleMechanicsV7(role, faction).ramRunUpBonus2);
 }
 
 /** The unit facts the Martian registry helpers read. */

@@ -1,6 +1,6 @@
 {
   "provider": "ElevenLabs sound effects",
-  "provenance": "ElevenLabs sound effects, generated 2026-10-13, 2026-10-14, 2026-10-16",
+  "provenance": "ElevenLabs sound effects, generated 2026-10-13, 2026-10-14, 2026-10-16, 2026-10-17",
   "bead": "pulp_wars-2yc.51",
   "model": "eleven_text_to_sound_v2",
   "sounds": [
@@ -324,6 +324,33 @@
           "passed": true,
           "prompt": "A toy gumball launcher firing: a hollow rubbery pop like a cork shot from a toy gun, bright and bouncy, very short.",
           "note": "0.259 s, hard attack, centred near 1.6 kHz, 42% of its energy under 1 kHz, crest 16.2 dB."
+        }
+      ]
+    },
+    {
+      "id": "attack.plesiosaur",
+      "default": 104,
+      "confidence": "medium",
+      "takes": [
+        {
+          "n": 104,
+          "file": "attack-plesiosaur-104.m4a",
+          "generated": "2026-10-17",
+          "seconds": 0.8,
+          "gain": 0.33,
+          "passed": true,
+          "prompt": "A sea reptile bites a boat: one quick wet splash, a short throaty gurgling roar and a snap of jaws, over fast, nothing after.",
+          "note": "0.8 s, hard attack, centred near 606 Hz, 93% of its energy under 1 kHz, crest 13 dB."
+        },
+        {
+          "n": 103,
+          "file": "attack-plesiosaur-103.m4a",
+          "generated": "2026-10-17",
+          "seconds": 0.8,
+          "gain": 0.36,
+          "passed": true,
+          "prompt": "A big friendly sea reptile lunges out of the water and bites a boat: a quick wet splash, a short gurgling roar and a snap of jaws.",
+          "note": "0.8 s, hard attack, centred near 761 Hz, 81% of its energy under 1 kHz, crest 13.1 dB."
         }
       ]
     },

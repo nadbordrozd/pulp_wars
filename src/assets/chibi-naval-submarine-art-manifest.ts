@@ -10,6 +10,14 @@ import type { ChibiNavalFactionArtV7 } from "./chibi-naval-faction-art-manifest"
 export const SUBMARINE_ANCHOR_V7 = { x: 32, y: 48 } as const;
 
 /**
+ * Themed naval branches (`pulp_wars-5ti.18`): the Dinosaur Plesiosaur, a
+ * living sea reptile whose front flipper reaches further left than any
+ * hull, is drawn 2 px further right still, so the flipper (and, sunk, its
+ * foam) stays clear of the seat badge strip.
+ */
+export const PLESIOSAUR_ANCHOR_V7 = { x: 30, y: 48 } as const;
+
+/**
  * The Submarines of the naval branch (bead pulp_wars-5ti.6, batches
  * `naval-human`, `naval-undead`, `naval-goblin`, `naval-dinosaur`,
  * `naval-martian`, `naval-dwarf` and `naval-candy`; see
@@ -134,7 +142,7 @@ export const CHIBI_NAVAL_SUBMARINE_ART_ASSETS_V7: readonly ChibiNavalFactionArtV
         assetClass: "LARGE_UNIT",
         width: 72,
         height: 88,
-        anchor: SUBMARINE_ANCHOR_V7,
+        anchor: PLESIOSAUR_ANCHOR_V7,
         url: chibiArtUrl(
           "assets/chibi/units/chibi-naval-dinosaur-submarine.png",
         ),
@@ -362,7 +370,7 @@ export const CHIBI_SUBMERGED_SUBMARINE_ART_ASSETS_V7: readonly ChibiNavalFaction
         assetClass: "LARGE_UNIT",
         width: 72,
         height: 88,
-        anchor: SUBMARINE_ANCHOR_V7,
+        anchor: PLESIOSAUR_ANCHOR_V7,
         url: chibiArtUrl(
           "assets/chibi/units/chibi-naval-dinosaur-submarine-submerged.png",
         ),

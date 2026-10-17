@@ -69,9 +69,10 @@ const SEAFARING_FACTIONS = FACTION_IDS_V7.filter(
 
 /**
  * Themed naval branches (`pulp_wars-5ti.16`, `pulp_wars-5ti.17`,
- * docs/product/RULESET_7_NAVAL_FACTIONS.md section 2): Seamanship is the Ram
- * plus one trick, Board for the factions not yet themed, and each themed
- * faction's ships have their own names, numbers, and abilities.
+ * `pulp_wars-5ti.18`, docs/product/RULESET_7_NAVAL_FACTIONS.md section 2):
+ * Seamanship is the Ram plus one trick, Board for the Humans, the Dinosaurs
+ * and the factions not yet themed, and each themed faction's ships have
+ * their own names, numbers, and abilities.
  */
 const SEAMANSHIP_TRICK: Partial<
   Record<FactionIdV7, { readonly kind: string }>
@@ -93,6 +94,13 @@ const THEMED_SUBMARINE: Partial<
     cost: 9,
     maxHp: 12,
     abilities: ["ATTACK", "SUBMERGED", "TORPEDO", "DROWNED_CREW"],
+  },
+  // The Plesiosaur: one Coin more, grows, and a sea beast.
+  DINOSAUR: {
+    label: "Plesiosaur",
+    cost: 10,
+    maxHp: 12,
+    abilities: ["ATTACK", "SUBMERGED", "TORPEDO", "GROW", "SEA_BEAST"],
   },
 };
 const THEMED_PATROL_BOAT_ABILITIES: Partial<

@@ -6,7 +6,7 @@ import {
   coverBonusV7,
   ownerHasForestCoverV7,
   terrainGivesCoverV7,
-  RAM_BONUS2_V7,
+  ramBonus2V7,
   armouredDamageV7,
   unitIsBlastProofV7,
   attackIgnoresCityWallsV7,
@@ -550,7 +550,17 @@ export function calculateCombatPreviewV7(
     attacker.form === "EMBARKED"
       ? 0
       : baseAttack2 +
-        (ram ? RAM_BONUS2_V7 : 0) +
+        // Themed naval branches (`pulp_wars-5ti.18`): a Horned Prow's
+        // run-up (the planned path, or the tiles the Move entered).
+        (ram
+          ? ramBonus2V7(
+              state,
+              attacker,
+              plannedPathLength !== undefined && plannedPathLength > 0
+                ? plannedPathLength
+                : attacker.activation.movedPathLength,
+            )
+          : 0) +
         (chargeApplied ? 2 : 0) +
         (inspiredApplied ? 2 : 0) +
         sugarRush2 +

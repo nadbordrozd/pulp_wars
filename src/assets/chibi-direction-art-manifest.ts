@@ -639,8 +639,9 @@ export function chibiDirectionArtAssetsV7(): readonly ChibiArtAssetV7[] {
     // --- Naval, every faction (pulp_wars-w5j.2 art, wired in by
     // pulp_wars-w5j.3): the Human entries take the shared ship subjects.
     ...CHIBI_NAVAL_FACTION_ART_ASSETS_V7.map((entry) => entry.asset),
-    // Themed naval branches (`pulp_wars-5ti.16`, `pulp_wars-5ti.17`): the
-    // Goblin Powder Kegs and the Undead Drowned Crews.
+    // Themed naval branches (`pulp_wars-5ti.16`, `pulp_wars-5ti.17`,
+    // `pulp_wars-5ti.18`): the Goblin Powder Kegs, the Undead Drowned Crews
+    // and the Dinosaur Horned Prows.
     ...CHIBI_NAVAL_FACTION_TECH_ICON_ASSETS_V7,
     // --- The Submarines riding low in the water (pulp_wars-5ti.6): derived
     // from the surfaced sprites, drawn for a submerged Submarine.

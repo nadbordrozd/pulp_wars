@@ -419,14 +419,22 @@ describe("Revision 17 Goblin presentation text", () => {
     // the ID in sentence case.
     // Themed naval branches (`pulp_wars-5ti.16`): the Goblin Shipbuilding
     // is Dreadnoughts; Navigation keeps its shared name.
-    for (const faction of ["ORIGINAL", "UNDEAD", "GOBLIN"] as const) {
+    for (const faction of [
+      "ORIGINAL",
+      "UNDEAD",
+      "GOBLIN",
+      "DINOSAUR",
+    ] as const) {
       expect(technologyNameV7("NAVAL_ENGINEERING", faction)).toBe(
         faction === "GOBLIN"
           ? "Dreadnoughts"
           : // The Undead Drowned Fleet (`pulp_wars-5ti.17`).
             faction === "UNDEAD"
             ? "Plague Galleons"
-            : "Shipbuilding",
+            : // Horned Prows and the Plesiosaur (`pulp_wars-5ti.18`).
+              faction === "DINOSAUR"
+              ? "War Rafts"
+              : "Shipbuilding",
       );
       expect(technologyNameV7("NAVIGATION", faction)).toBe("Navigation");
     }

@@ -523,10 +523,19 @@ describe("technology cards and Help", () => {
       // ships on every card.)
       // (The Undead Drowned Fleet, `pulp_wars-5ti.17`: Drowned Crews,
       // whose trick raises a Ghost Ship from a ship it sinks.)
+      // (Horned Prows and the Plesiosaur, `pulp_wars-5ti.18`: the Ram is
+      // the Horned Prow, Board stays.)
       const goblin = faction === "GOBLIN";
       const undead = faction === "UNDEAD";
+      const dinosaur = faction === "DINOSAUR";
       expect(seamanship.querySelector(".v7-tech-name")?.textContent).toBe(
-        goblin ? "Powder Kegs" : undead ? "Drowned Crews" : "Boarding",
+        goblin
+          ? "Powder Kegs"
+          : undead
+            ? "Drowned Crews"
+            : dinosaur
+              ? "Horned Prows"
+              : "Boarding",
       );
       seamanship.click();
       const lines = (): string[] =>
@@ -546,14 +555,25 @@ describe("technology cards and Help", () => {
                 "Bow Ram: Ghost Ships that moved hit ships with +1 Attack and shove them back",
                 "Drowned Crews: A ship your ships sink rises as your Ghost Ship",
               ]
-            : [
-                "Board: capture an adjacent enemy ship at a third of its HP or less",
-                "Bow Ram: Patrol Boats that moved hit ships with +1 Attack and shove them back",
-              ],
+            : dinosaur
+              ? [
+                  "Board: capture an adjacent enemy ship at a third of its HP or less",
+                  "Horned Prow: Dugouts that moved hit ships with +1 Attack (+1.5 after 2 tiles) and shove them back",
+                ]
+              : [
+                  "Board: capture an adjacent enemy ship at a third of its HP or less",
+                  "Bow Ram: Patrol Boats that moved hit ships with +1 Attack and shove them back",
+                ],
       );
       const submersibles = requiredButton("tech-submersibles");
       expect(submersibles.querySelector(".v7-tech-name")?.textContent).toBe(
-        goblin ? "Diving Barrels" : undead ? "Sunken Galleys" : "Submersibles",
+        goblin
+          ? "Diving Barrels"
+          : undead
+            ? "Sunken Galleys"
+            : dinosaur
+              ? "Plesiosaurs"
+              : "Submersibles",
       );
       submersibles.click();
       const unlocks = lines();
@@ -561,13 +581,17 @@ describe("technology cards and Help", () => {
         ? "Diving Barrel"
         : undead
           ? "Sunken Galley"
-          : "Submarine";
+          : dinosaur
+            ? "Plesiosaur"
+            : "Submarine";
       expect(unlocks.some((line) => line.includes(sub))).toBe(true);
       expect(unlocks).toContain(
         "Harbours: +1 population from every active Port and Shipyard",
       );
       expect(unlocks).toContain(
-        `${sub}: attacked only from the next tile; its torpedo hits ships with no strike-back`,
+        dinosaur
+          ? "Plesiosaur: hit only from the next tile; torpedo with no strike-back; grows; never boarded"
+          : `${sub}: attacked only from the next tile; its torpedo hits ships with no strike-back`,
       );
       for (const line of unlocks) expect(line.length).toBeLessThanOrEqual(92);
       requiredButton("tech-shorecraft").click();

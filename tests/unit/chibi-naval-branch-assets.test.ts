@@ -19,6 +19,7 @@ import { CHIBI_NAVAL_FACTION_ART_ASSETS_V7 } from "../../src/assets/chibi-naval-
 import {
   CHIBI_NAVAL_SUBMARINE_ART_ASSETS_V7,
   CHIBI_SUBMERGED_SUBMARINE_ART_ASSETS_V7,
+  PLESIOSAUR_ANCHOR_V7,
   SUBMARINE_ANCHOR_V7,
 } from "../../src/assets/chibi-naval-submarine-art-manifest";
 import {
@@ -207,7 +208,8 @@ describe("naval branch art (pulp_wars-5ti.6)", () => {
       expect(live.variants(unit), unit).toHaveLength(1);
       expect(live.variants(portrait), portrait).toHaveLength(1);
       expect(chibiAnchorV7(live.variants(unit)[0] as ChibiArtAssetV7)).toEqual(
-        SUBMARINE_ANCHOR_V7,
+        // The Plesiosaur (`pulp_wars-5ti.18`) is drawn 2 px further right.
+        faction === "DINOSAUR" ? PLESIOSAUR_ANCHOR_V7 : SUBMARINE_ANCHOR_V7,
       );
     }
   });
@@ -296,7 +298,9 @@ describe("naval branch art (pulp_wars-5ti.6)", () => {
       // Themed naval branches (`pulp_wars-5ti.16`, `pulp_wars-5ti.17`): the
       // Goblin Powder Kegs and Undead Drowned Crews cards have their own
       // icons, and Diving Barrels and Sunken Galleys show their ships.
-      const themed = faction === "GOBLIN" || faction === "UNDEAD";
+      // Horned Prows and Plesiosaurs (`pulp_wars-5ti.18`) too.
+      const themed =
+        faction === "GOBLIN" || faction === "UNDEAD" || faction === "DINOSAUR";
       expect(technologySubjectV7("SEAMANSHIP", faction), faction).toBe(
         faction === "ICE_FOLK"
           ? "ICON:TECH:ICE_FOLK:SEAMANSHIP"

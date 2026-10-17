@@ -541,6 +541,14 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/render/naval-presentation-v7.ts::drownedCrewRuleV7": "SEAT",
   "src/render/undead-presentation-v7.ts::undeadAbilityDescriptionV7": "SEAT",
   "src/render/naval-presentation-v7.ts::plagueGalleonRuleV7": "SEAT",
+  // Themed naval branches (`pulp_wars-5ti.18`): the Dinosaur Horned Prow
+  // and Plesiosaur sentences read the Dinosaur registration, and a
+  // faction's Ram help its own seat's Patrol Boat role; the threat
+  // estimate's most a hostile Ram adds reads a role of a faction.
+  "src/render/naval-presentation-v7.ts::hornedProwRuleV7": "SEAT",
+  "src/render/naval-presentation-v7.ts::plesiosaurRuleV7": "SEAT",
+  "src/render/naval-presentation-v7.ts::navalRamDescriptionV7": "SEAT",
+  "src/engine/rules/ruleset-v7.ts::roleRamBonus2MaximumV7": "SEAT",
   "src/render/goblin-presentation-v7.ts::<module>": "SEAT",
   // A prize under its new flag: its kind follows its new owner (a ship is
   // never mind-controlled), so the prize's maximum HP is its captor seat's

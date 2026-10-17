@@ -558,7 +558,8 @@ export const CHIBI_NAVAL_FACTION_ART_ASSETS_V7: readonly ChibiNavalFactionArtV7[
  * 12, `pulp_wars-5ti.16`): the Seamanship card of a faction whose
  * Seamanship trick is its own, in the live look (the faction's batch
  * `naval-<faction>`). The Goblin Powder Kegs, a keg with a lit fuse, and
- * the Undead Drowned Crews (`pulp_wars-5ti.17`), a bone hand on a wheel. The
+ * the Undead Drowned Crews (`pulp_wars-5ti.17`), a bone hand on a wheel,
+ * and the Dinosaur Horned Prows (`pulp_wars-5ti.18`), a horned prow. The
  * Classic look shows the shared ship's wheel.
  */
 export const CHIBI_NAVAL_FACTION_TECH_ICON_ASSETS_V7: readonly ChibiArtAssetV7[] =
@@ -583,6 +584,18 @@ export const CHIBI_NAVAL_FACTION_TECH_ICON_ASSETS_V7: readonly ChibiArtAssetV7[]
       height: 48,
       url: chibiArtUrl(
         "assets/chibi/icons/chibi-naval-undead-icon-tech-seamanship.png",
+      ),
+    },
+    // `pulp_wars-5ti.18`: the Dinosaur Horned Prows, a carved plesiosaur
+    // prow with a horn (batch `naval-dinosaur`).
+    {
+      id: "chibi-naval-dinosaur-icon-tech-seamanship",
+      subject: "ICON:TECH:DINOSAUR:SEAMANSHIP",
+      assetClass: "ICON",
+      width: 48,
+      height: 48,
+      url: chibiArtUrl(
+        "assets/chibi/icons/chibi-naval-dinosaur-icon-tech-seamanship.png",
       ),
     },
   ];

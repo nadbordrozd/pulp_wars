@@ -207,7 +207,8 @@ export const CHIBI_TECH_ART_SUBJECTS_V7 = {
  * shared card (the compass, the faction's Battleship). The Goblin Scrap
  * Fleet (`pulp_wars-5ti.16`: Fire Rafts, Powder Kegs, Diving Barrels) and
  * the Undead Drowned Fleet (`pulp_wars-5ti.17`: Ghost Ships, Drowned Crews,
- * Sunken Galleys).
+ * Sunken Galleys), and the Dinosaurs (`pulp_wars-5ti.18`: Dugouts, Horned
+ * Prows, Plesiosaurs).
  */
 export const NAVAL_FACTION_TECH_SUBJECTS_V7: Readonly<
   Partial<Record<FactionIdV7, Partial<Record<TechnologyIdV7, ArtSubjectV7>>>>
@@ -221,6 +222,11 @@ export const NAVAL_FACTION_TECH_SUBJECTS_V7: Readonly<
     SHORECRAFT: "PORTRAIT:UNDEAD:PATROL_BOAT",
     SEAMANSHIP: "ICON:TECH:UNDEAD:SEAMANSHIP",
     SUBMERSIBLES: "PORTRAIT:UNDEAD:SUBMARINE",
+  },
+  DINOSAUR: {
+    SHORECRAFT: "PORTRAIT:DINOSAUR:PATROL_BOAT",
+    SEAMANSHIP: "ICON:TECH:DINOSAUR:SEAMANSHIP",
+    SUBMERSIBLES: "PORTRAIT:DINOSAUR:SUBMARINE",
   },
 };
 

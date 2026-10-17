@@ -130,9 +130,9 @@
       ],
       "completedAt": "2026-10-03T08:00:05.082Z",
       "review": {
-        "verdict": "ACCEPTED",
+        "verdict": "REJECTED",
         "candidate": 0,
-        "notes": "A dugout canoe whose bow is a carved deep blue plesiosaur head with orange stripes and a cream jaw, a sandy hide sail with big dark brown spots, orange feathers on the mast. The log hull came out a warm orange-brown, lighter than the Goblin planks. The plate hint is a false positive: nothing is drawn under the hull.",
+        "notes": "A dugout canoe whose bow is a carved deep blue plesiosaur head with orange stripes and a cream jaw, a sandy hide sail with big dark brown spots, orange feathers on the mast. The log hull came out a warm orange-brown, lighter than the Goblin planks. The plate hint is a false positive: nothing is drawn under the hull. Superseded by dugout-horn-a.",
         "reviewedAt": "2026-10-03T08:03:00.358Z"
       }
     },
@@ -330,9 +330,9 @@
       ],
       "completedAt": "2026-10-03T08:01:59.538Z",
       "review": {
-        "verdict": "ACCEPTED",
+        "verdict": "REJECTED",
         "candidate": 0,
-        "notes": "The cog portrait as a dugout: spotted sandy hide sail, blue plesiosaur head with orange stripes at the bow, an orange feather pennant.",
+        "notes": "The cog portrait as a dugout: spotted sandy hide sail, blue plesiosaur head with orange stripes at the bow, an orange feather pennant. Superseded by portrait-dugout-horn-a.",
         "reviewedAt": "2026-10-03T08:03:06.172Z"
       }
     },
@@ -397,9 +397,9 @@
       ],
       "completedAt": "2026-10-05T09:46:42.059Z",
       "review": {
-        "verdict": "ACCEPTED",
+        "verdict": "REJECTED",
         "candidate": 0,
-        "notes": "The log submersible at 48 px: a bark log with the blue orange-striped head at its end, the spotted hide hatch and the bone reed.",
+        "notes": "The log submersible at 48 px: a bark log with the blue orange-striped head at its end, the spotted hide hatch and the bone reed. Superseded by portrait-plesiosaur-a.",
         "reviewedAt": "2026-10-05T09:48:05.252Z"
       }
     },
@@ -531,9 +531,9 @@
       ],
       "completedAt": "2026-10-05T09:40:05.777Z",
       "review": {
-        "verdict": "ACCEPTED",
+        "verdict": "REJECTED",
         "candidate": 0,
-        "notes": "A closed tree-trunk log with bark and a sawn end, the blue orange-striped plesiosaur head at the bow end, a spotted hide hatch and a bone reed on top; a log boat with no limbs. The shared Submarine's anchor.",
+        "notes": "A closed tree-trunk log with bark and a sawn end, the blue orange-striped plesiosaur head at the bow end, a spotted hide hatch and a bone reed on top; a log boat with no limbs. The shared Submarine's anchor. Superseded by plesiosaur-a.",
         "reviewedAt": "2026-10-05T10:22:48.956Z"
       }
     },
@@ -669,6 +669,785 @@
         "notes": "The barge as a tawny log boat with the cargo under a spotted sandy hide, a small blue plesiosaur head with orange stripes at the bow and orange feathers on the pole; oars kept. No ground under the hull. Superseded by dinosaur-transport-neck-edit-a.",
         "reviewedAt": "2026-10-03T08:03:04.333Z"
       }
+    },
+    "dugout-horn-a": {
+      "id": "dugout-horn-a",
+      "asset": "chibi-naval-dinosaur-patrol-boat",
+      "jobId": "286589d8-2b65-468a-9941-2cd5fe6864ab",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-dinosaur",
+        "asset": "chibi-naval-dinosaur-patrol-boat",
+        "subject": "UNIT:DINOSAUR:PATROL_BOAT",
+        "faction": "DINOSAUR",
+        "recipeClass": "ship",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 99321,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Add one big curved bone-white horn on the snout of the carved blue plesiosaur head at the bow, pointing forward like a triceratops horn, with a thin dark outline. Do not redraw anything else: keep the hull, mast, sail, feathers, colours, thick black outline and style exactly the same, on a transparent background with nothing under the hull."
+          }
+        ],
+        "prompt": "Add one big curved bone-white horn on the snout of the carved blue plesiosaur head at the bow, pointing forward like a triceratops horn, with a thin dark outline. Do not redraw anything else: keep the hull, mast, sail, feathers, colours, thick black outline and style exactly the same, on a transparent background with nothing under the hull.",
+        "negativePrompt": "",
+        "description": "Add one big curved bone-white horn on the snout of the carved blue plesiosaur head at the bow, pointing forward like a triceratops horn, with a thin dark outline. Do not redraw anything else: keep the hull, mast, sail, feathers, colours, thick black outline and style exactly the same, on a transparent background with nothing under the hull.",
+        "editInstruction": "Add one big curved bone-white horn on the snout of the carved blue plesiosaur head at the bow, pointing forward like a triceratops horn, with a thin dark outline. Do not redraw anything else: keep the hull, mast, sail, feathers, colours, thick black outline and style exactly the same, on a transparent background with nothing under the hull.",
+        "source": {
+          "recipe": "dinosaur-patrol-boat-primal-a",
+          "candidate": 0,
+          "sha256": "33bc841993cf9f60dae1d1221ecff4ac0017cb01a6e154ecee9b8d249829f7ff"
+        }
+      },
+      "submittedAt": "2026-10-17T03:02:53.324Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-dinosaur/dugout-horn-a.png",
+      "rawSheetSha256": "4ede293406bf50eb3c5af79785f77bf86c93c59dc5f7980d3adeb337b23c8a3c",
+      "plateHints": [
+        {
+          "bandRows": 14,
+          "groundShare": 0.4406,
+          "footprintWidthShare": 0.9322,
+          "suspect": true
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0.4406,
+          "footprintWidthShare": 0.9322,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-17T03:03:34.537Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "The Dugout (bead pulp_wars-5ti.18): the accepted Dinosaur canoe unchanged but for one big curved bone-white horn rising from the snout of its blue plesiosaur prow, which reads at 72 px as the Horned Prow; the plate hint is the hull's dark shading, no plate is drawn. Candidate 1 is near identical.",
+        "reviewedAt": "2026-10-17T03:07:06.295Z"
+      }
+    },
+    "icon-tech-horned-prows-a": {
+      "id": "icon-tech-horned-prows-a",
+      "asset": "chibi-naval-dinosaur-icon-tech-seamanship",
+      "jobId": "sync-a97be63a-5bd4-4c57-9d19-709ac8411388",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "naval-dinosaur",
+        "asset": "chibi-naval-dinosaur-icon-tech-seamanship",
+        "subject": "ICON:TECH:DINOSAUR:SEAMANSHIP",
+        "faction": "DINOSAUR",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 99341,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/DINOSAUR.md#prompt-fragment + docs/art/factions/DINOSAUR.md#negative-fragment",
+            "text": "Faction: cheerful prehistoric lost-world storybook, playful and never scary. Their fixed colours: deep blue hide shaded dark navy, with warm cream bellies, jaws, teeth, claws and bone; tawny fur with big dark brown spots; dark basalt stone; and exactly one hot accent colour, a bright red-orange, only on feathers, crests, frill markings, body patterns and war paint.",
+            "negative": "metal, iron, steel, armour plates, sword, wheels, lava, fire, flames, red cloth, red cape, red blanket, red feathers, green skin, green scales, lime green, teal, purple, realistic reptile, scary, blood, gore, fine scales, many small spots, thin stripes, solid orange frill, orange fur"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+            "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/DINOSAUR.json",
+            "text": "Subject: a horned prow, one single big carved wooden boat prow seen from the side and pointing right: the curved front of a tawny wooden dugout log carved into a deep blue plesiosaur head with bold orange stripes and a cream jaw, and one big curved bone-white horn rising forward from its snout like a triceratops horn; nothing else in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "water, waves, sail, mast, person, caveman, red, full boat, ship, two heads"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: cheerful prehistoric lost-world storybook, playful and never scary. Their fixed colours: deep blue hide shaded dark navy, with warm cream bellies, jaws, teeth, claws and bone; tawny fur with big dark brown spots; dark basalt stone; and exactly one hot accent colour, a bright red-orange, only on feathers, crests, frill markings, body patterns and war paint. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: a horned prow, one single big carved wooden boat prow seen from the side and pointing right: the curved front of a tawny wooden dugout log carved into a deep blue plesiosaur head with bold orange stripes and a cream jaw, and one big curved bone-white horn rising forward from its snout like a triceratops horn; nothing else in the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, metal, iron, steel, armour plates, sword, wheels, lava, fire, flames, red cloth, red cape, red blanket, red feathers, green skin, green scales, lime green, teal, purple, realistic reptile, scary, blood, gore, fine scales, many small spots, thin stripes, solid orange frill, orange fur, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, water, waves, sail, mast, person, caveman, red, full boat, ship, two heads",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: cheerful prehistoric lost-world storybook, playful and never scary. Their fixed colours: deep blue hide shaded dark navy, with warm cream bellies, jaws, teeth, claws and bone; tawny fur with big dark brown spots; dark basalt stone; and exactly one hot accent colour, a bright red-orange, only on feathers, crests, frill markings, body patterns and war paint. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: a horned prow, one single big carved wooden boat prow seen from the side and pointing right: the curved front of a tawny wooden dugout log carved into a deep blue plesiosaur head with bold orange stripes and a cream jaw, and one big curved bone-white horn rising forward from its snout like a triceratops horn; nothing else in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, metal, iron, steel, armour plates, sword, wheels, lava, fire, flames, red cloth, red cape, red blanket, red feathers, green skin, green scales, lime green, teal, purple, realistic reptile, scary, blood, gore, fine scales, many small spots, thin stripes, solid orange frill, orange fur, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, water, waves, sail, mast, person, caveman, red, full boat, ship, two heads."
+      },
+      "submittedAt": "2026-10-17T03:04:20.854Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-dinosaur/icon-tech-horned-prows-a.png",
+      "rawSheetSha256": "5645bd50d3c5b571ef10dcc1ba58acf93e864cc8e89768b524bf137f43fbd47e",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0.2953,
+          "footprintWidthShare": 0.7381,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-17T03:04:59.834Z",
+      "usageUsd": 0.008835566494199965,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Reads as a horned head in a canoe, but a red crest (5.8% of the pixels in the owner key's band); kept as the source of icon-tech-horned-prows-c.",
+        "reviewedAt": "2026-10-17T03:07:49.575Z"
+      }
+    },
+    "icon-tech-horned-prows-b": {
+      "id": "icon-tech-horned-prows-b",
+      "asset": "chibi-naval-dinosaur-icon-tech-seamanship",
+      "jobId": "sync-a6a16a88-b488-40b0-985e-881734ad6bf8",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "naval-dinosaur",
+        "asset": "chibi-naval-dinosaur-icon-tech-seamanship",
+        "subject": "ICON:TECH:DINOSAUR:SEAMANSHIP",
+        "faction": "DINOSAUR",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 99342,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/DINOSAUR.md#prompt-fragment + docs/art/factions/DINOSAUR.md#negative-fragment",
+            "text": "Faction: cheerful prehistoric lost-world storybook, playful and never scary. Their fixed colours: deep blue hide shaded dark navy, with warm cream bellies, jaws, teeth, claws and bone; tawny fur with big dark brown spots; dark basalt stone; and exactly one hot accent colour, a bright red-orange, only on feathers, crests, frill markings, body patterns and war paint.",
+            "negative": "metal, iron, steel, armour plates, sword, wheels, lava, fire, flames, red cloth, red cape, red blanket, red feathers, green skin, green scales, lime green, teal, purple, realistic reptile, scary, blood, gore, fine scales, many small spots, thin stripes, solid orange frill, orange fur"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+            "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/DINOSAUR.json",
+            "text": "Subject: a horned prow, one single big carved wooden boat prow seen from the side and pointing right: the curved front of a tawny wooden dugout log carved into a deep blue plesiosaur head with bold orange stripes and a cream jaw, and one big curved bone-white horn rising forward from its snout like a triceratops horn; nothing else in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "water, waves, sail, mast, person, caveman, red, full boat, ship, two heads"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: cheerful prehistoric lost-world storybook, playful and never scary. Their fixed colours: deep blue hide shaded dark navy, with warm cream bellies, jaws, teeth, claws and bone; tawny fur with big dark brown spots; dark basalt stone; and exactly one hot accent colour, a bright red-orange, only on feathers, crests, frill markings, body patterns and war paint. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: a horned prow, one single big carved wooden boat prow seen from the side and pointing right: the curved front of a tawny wooden dugout log carved into a deep blue plesiosaur head with bold orange stripes and a cream jaw, and one big curved bone-white horn rising forward from its snout like a triceratops horn; nothing else in the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, metal, iron, steel, armour plates, sword, wheels, lava, fire, flames, red cloth, red cape, red blanket, red feathers, green skin, green scales, lime green, teal, purple, realistic reptile, scary, blood, gore, fine scales, many small spots, thin stripes, solid orange frill, orange fur, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, water, waves, sail, mast, person, caveman, red, full boat, ship, two heads",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: cheerful prehistoric lost-world storybook, playful and never scary. Their fixed colours: deep blue hide shaded dark navy, with warm cream bellies, jaws, teeth, claws and bone; tawny fur with big dark brown spots; dark basalt stone; and exactly one hot accent colour, a bright red-orange, only on feathers, crests, frill markings, body patterns and war paint. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: a horned prow, one single big carved wooden boat prow seen from the side and pointing right: the curved front of a tawny wooden dugout log carved into a deep blue plesiosaur head with bold orange stripes and a cream jaw, and one big curved bone-white horn rising forward from its snout like a triceratops horn; nothing else in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, metal, iron, steel, armour plates, sword, wheels, lava, fire, flames, red cloth, red cape, red blanket, red feathers, green skin, green scales, lime green, teal, purple, realistic reptile, scary, blood, gore, fine scales, many small spots, thin stripes, solid orange frill, orange fur, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, water, waves, sail, mast, person, caveman, red, full boat, ship, two heads."
+      },
+      "submittedAt": "2026-10-17T03:04:59.836Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-dinosaur/icon-tech-horned-prows-b.png",
+      "rawSheetSha256": "d419faa3cbf218a164a54cac27e60aaf63d3b3173b65f1a5b43409b33b70c2cd",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0.1027,
+          "footprintWidthShare": 0.766,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-17T03:05:36.550Z",
+      "usageUsd": 0.008569295777214898,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "A cluttered heap: a spiked horned head over a hide-covered raft with crates, no clear prow at 48 px.",
+        "reviewedAt": "2026-10-17T03:07:11.315Z"
+      }
+    },
+    "icon-tech-horned-prows-c": {
+      "id": "icon-tech-horned-prows-c",
+      "asset": "chibi-naval-dinosaur-icon-tech-seamanship",
+      "jobId": "4303a1ad-bf0a-4b7b-b0a0-7133323fab3a",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-dinosaur",
+        "asset": "chibi-naval-dinosaur-icon-tech-seamanship",
+        "subject": "ICON:TECH:DINOSAUR:SEAMANSHIP",
+        "faction": "DINOSAUR",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 99343,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Remove the red crest and the spikes from the head: the head becomes a smooth carved figurehead painted deep blue with bold orange stripes and a cream jaw, like the prow of the Dinosaur canoes. Keep the big bone-white horn, the canoe, the thick black outline and the style, on a transparent background."
+          }
+        ],
+        "prompt": "Remove the red crest and the spikes from the head: the head becomes a smooth carved figurehead painted deep blue with bold orange stripes and a cream jaw, like the prow of the Dinosaur canoes. Keep the big bone-white horn, the canoe, the thick black outline and the style, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Remove the red crest and the spikes from the head: the head becomes a smooth carved figurehead painted deep blue with bold orange stripes and a cream jaw, like the prow of the Dinosaur canoes. Keep the big bone-white horn, the canoe, the thick black outline and the style, on a transparent background.",
+        "editInstruction": "Remove the red crest and the spikes from the head: the head becomes a smooth carved figurehead painted deep blue with bold orange stripes and a cream jaw, like the prow of the Dinosaur canoes. Keep the big bone-white horn, the canoe, the thick black outline and the style, on a transparent background.",
+        "source": {
+          "recipe": "icon-tech-horned-prows-a",
+          "candidate": 0,
+          "sha256": "5645bd50d3c5b571ef10dcc1ba58acf93e864cc8e89768b524bf137f43fbd47e"
+        }
+      },
+      "submittedAt": "2026-10-17T03:06:44.975Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-dinosaur/icon-tech-horned-prows-c.png",
+      "rawSheetSha256": "fe82ab03bfbf5d2d4f742618c46be117d3a051a0b4173884dd358f71a18b28ec",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0.2953,
+          "footprintWidthShare": 0.7381,
+          "suspect": true
+        },
+        {
+          "bandRows": 8,
+          "groundShare": 0.2953,
+          "footprintWidthShare": 0.7381,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-17T03:07:16.109Z",
+      "usageUsd": 0.0076891291141510006,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Horned Prows (bead pulp_wars-5ti.18): a carved deep blue plesiosaur figurehead with orange stripes and a cream jaw and one big bone-white horn, rising out of a dark wooden canoe bow; at 48 px it reads as the horned prow of the Dugout. No pixel in the owner key's band (icon-tech-horned-prows-a, its source, had a red crest, 5.8%). Candidate 1 is near identical; the plate hint is the dark hull.",
+        "reviewedAt": "2026-10-17T03:07:49.454Z"
+      }
+    },
+    "plesiosaur-a": {
+      "id": "plesiosaur-a",
+      "asset": "chibi-naval-dinosaur-submarine",
+      "jobId": "20a0780a-654e-46eb-a614-e4dd3e4597b5",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-dinosaur",
+        "asset": "chibi-naval-dinosaur-submarine",
+        "subject": "UNIT:DINOSAUR:SUBMARINE",
+        "faction": "DINOSAUR",
+        "recipeClass": "ship",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 99301,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Turn the log into a living plesiosaur swimming at the surface: a fat round body low in the water, a long curved neck rising at the front to a small smiling head, four big paddle flippers, a short tail; deep blue hide with a dark navy back, cream belly and throat, bold orange stripes on the neck and big orange spots on the back. No log, hatch or reed. Keep the size, waterline, thick black outline and style, nothing under the body."
+          }
+        ],
+        "prompt": "Turn the log into a living plesiosaur swimming at the surface: a fat round body low in the water, a long curved neck rising at the front to a small smiling head, four big paddle flippers, a short tail; deep blue hide with a dark navy back, cream belly and throat, bold orange stripes on the neck and big orange spots on the back. No log, hatch or reed. Keep the size, waterline, thick black outline and style, nothing under the body.",
+        "negativePrompt": "",
+        "description": "Turn the log into a living plesiosaur swimming at the surface: a fat round body low in the water, a long curved neck rising at the front to a small smiling head, four big paddle flippers, a short tail; deep blue hide with a dark navy back, cream belly and throat, bold orange stripes on the neck and big orange spots on the back. No log, hatch or reed. Keep the size, waterline, thick black outline and style, nothing under the body.",
+        "editInstruction": "Turn the log into a living plesiosaur swimming at the surface: a fat round body low in the water, a long curved neck rising at the front to a small smiling head, four big paddle flippers, a short tail; deep blue hide with a dark navy back, cream belly and throat, bold orange stripes on the neck and big orange spots on the back. No log, hatch or reed. Keep the size, waterline, thick black outline and style, nothing under the body.",
+        "source": {
+          "recipe": "dinosaur-submarine-b",
+          "candidate": 0,
+          "sha256": "59be609b76e347d2beda94dd8641ad363f46bbe1678dcfb6ba47fd7b97de9ffc"
+        }
+      },
+      "submittedAt": "2026-10-17T03:02:53.320Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-dinosaur/plesiosaur-a.png",
+      "rawSheetSha256": "ec5e9fbc6fb5054353e5d421872262b886592df0fcb2fc56f9db5c160493e63b",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.875,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.875,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-17T03:03:55.198Z",
+      "usageUsd": 0.01118661716249254,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "The Plesiosaur (bead pulp_wars-5ti.18): a living sea reptile in the Dinosaur palette, deep blue with a navy back, cream belly and throat, an orange-striped long neck and big orange spots, four paddle flippers and a short tail, low on the water; at 72 px it reads as an animal beside the fleet's log hulls. It faces left (the log's head was on the right). Its front flipper reaches further left than any hull, so it is anchored at (30, 48), 2 px right of the other Submarines, clear of the seat badge strip surfaced and sunk. Candidate 1 is near identical.",
+        "reviewedAt": "2026-10-17T03:18:32.042Z"
+      }
+    },
+    "plesiosaur-a-flipper-edit": {
+      "id": "plesiosaur-a-flipper-edit",
+      "asset": "chibi-naval-dinosaur-submarine",
+      "jobId": "24ecdfc0-0d18-47be-9a7b-3d5104355daf",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-dinosaur",
+        "asset": "chibi-naval-dinosaur-submarine",
+        "subject": "UNIT:DINOSAUR:SUBMARINE",
+        "faction": "DINOSAUR",
+        "recipeClass": "ship",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 99303,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Make the front left flipper a little shorter, so its tip ends a few pixels further right, away from the left edge of the image. Do not redraw anything else: keep the head, neck, body, the other flippers, the tail, the colours, the thick black outline and the style exactly the same, with nothing under the body."
+          }
+        ],
+        "prompt": "Make the front left flipper a little shorter, so its tip ends a few pixels further right, away from the left edge of the image. Do not redraw anything else: keep the head, neck, body, the other flippers, the tail, the colours, the thick black outline and the style exactly the same, with nothing under the body.",
+        "negativePrompt": "",
+        "description": "Make the front left flipper a little shorter, so its tip ends a few pixels further right, away from the left edge of the image. Do not redraw anything else: keep the head, neck, body, the other flippers, the tail, the colours, the thick black outline and the style exactly the same, with nothing under the body.",
+        "editInstruction": "Make the front left flipper a little shorter, so its tip ends a few pixels further right, away from the left edge of the image. Do not redraw anything else: keep the head, neck, body, the other flippers, the tail, the colours, the thick black outline and the style exactly the same, with nothing under the body.",
+        "source": {
+          "recipe": "plesiosaur-a",
+          "candidate": 0,
+          "sha256": "75af9d6d5189d63c2986f75c7585f5c8def530d35872953af0e65517c4460a61"
+        }
+      },
+      "submittedAt": "2026-10-17T03:11:04.756Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-dinosaur/plesiosaur-a-flipper-edit.png",
+      "rawSheetSha256": "11fdc9999bfb9333b135eb98a032d5f4a6aa7df8b03f33a132a7ff2b2453a082",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.875,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.875,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-17T03:11:41.280Z",
+      "usageUsd": 0.007983841551674737,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Both candidates returned plesiosaur-a unchanged (the flipper tip on the same column): edits do not move pixels, as the fleet's notes say. The sprite is seated one row lower instead (bottomMargin 7).",
+        "reviewedAt": "2026-10-17T03:12:34.350Z"
+      }
+    },
+    "plesiosaur-a-flipper-edit-2": {
+      "id": "plesiosaur-a-flipper-edit-2",
+      "asset": "chibi-naval-dinosaur-submarine",
+      "jobId": "537c2dae-cfa6-4de1-ad50-20135e94cc71",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-dinosaur",
+        "asset": "chibi-naval-dinosaur-submarine",
+        "subject": "UNIT:DINOSAUR:SUBMARINE",
+        "faction": "DINOSAUR",
+        "recipeClass": "ship",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 99305,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Fold the front left flipper back under the body so it points down and back and no longer sticks out to the left; the body's left edge is then the chest. Do not redraw anything else: keep the head, neck, body, the other flippers, the tail, the colours, the thick black outline and the style the same, with nothing under the body."
+          }
+        ],
+        "prompt": "Fold the front left flipper back under the body so it points down and back and no longer sticks out to the left; the body's left edge is then the chest. Do not redraw anything else: keep the head, neck, body, the other flippers, the tail, the colours, the thick black outline and the style the same, with nothing under the body.",
+        "negativePrompt": "",
+        "description": "Fold the front left flipper back under the body so it points down and back and no longer sticks out to the left; the body's left edge is then the chest. Do not redraw anything else: keep the head, neck, body, the other flippers, the tail, the colours, the thick black outline and the style the same, with nothing under the body.",
+        "editInstruction": "Fold the front left flipper back under the body so it points down and back and no longer sticks out to the left; the body's left edge is then the chest. Do not redraw anything else: keep the head, neck, body, the other flippers, the tail, the colours, the thick black outline and the style the same, with nothing under the body.",
+        "source": {
+          "recipe": "plesiosaur-a",
+          "candidate": 0,
+          "sha256": "75af9d6d5189d63c2986f75c7585f5c8def530d35872953af0e65517c4460a61"
+        }
+      },
+      "submittedAt": "2026-10-17T03:14:05.735Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-dinosaur/plesiosaur-a-flipper-edit-2.png",
+      "rawSheetSha256": "dce119395bf2062ab6cbea96dc92f406f52145855c9ce18c3a28c1e2bd10b2f1",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.875,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.875,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-17T03:15:02.597Z",
+      "usageUsd": 0.01016509493192037,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The flippers turned into stubby legs and the front flipper still reaches the same column; plesiosaur-a is kept, seated one row higher.",
+        "reviewedAt": "2026-10-17T03:16:30.088Z"
+      }
+    },
+    "plesiosaur-b": {
+      "id": "plesiosaur-b",
+      "asset": "chibi-naval-dinosaur-submarine",
+      "jobId": "ebfe2702-8148-4c2e-b1e3-18c54f0cf14c",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-dinosaur",
+        "asset": "chibi-naval-dinosaur-submarine",
+        "subject": "UNIT:DINOSAUR:SUBMARINE",
+        "faction": "DINOSAUR",
+        "recipeClass": "ship",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 99302,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Turn the canoe into a living plesiosaur swimming at the surface: a fat round body low in the water, a long curved neck rising at the front to a small smiling head, four big paddle flippers, a short tail; deep blue hide with a dark navy back, cream belly and throat, bold orange stripes on the neck and big orange spots on the back. No canoe, mast, sail or feathers. Keep the size, waterline, thick black outline and style, nothing under the body."
+          }
+        ],
+        "prompt": "Turn the canoe into a living plesiosaur swimming at the surface: a fat round body low in the water, a long curved neck rising at the front to a small smiling head, four big paddle flippers, a short tail; deep blue hide with a dark navy back, cream belly and throat, bold orange stripes on the neck and big orange spots on the back. No canoe, mast, sail or feathers. Keep the size, waterline, thick black outline and style, nothing under the body.",
+        "negativePrompt": "",
+        "description": "Turn the canoe into a living plesiosaur swimming at the surface: a fat round body low in the water, a long curved neck rising at the front to a small smiling head, four big paddle flippers, a short tail; deep blue hide with a dark navy back, cream belly and throat, bold orange stripes on the neck and big orange spots on the back. No canoe, mast, sail or feathers. Keep the size, waterline, thick black outline and style, nothing under the body.",
+        "editInstruction": "Turn the canoe into a living plesiosaur swimming at the surface: a fat round body low in the water, a long curved neck rising at the front to a small smiling head, four big paddle flippers, a short tail; deep blue hide with a dark navy back, cream belly and throat, bold orange stripes on the neck and big orange spots on the back. No canoe, mast, sail or feathers. Keep the size, waterline, thick black outline and style, nothing under the body.",
+        "source": {
+          "recipe": "dinosaur-patrol-boat-primal-a",
+          "candidate": 0,
+          "sibling": true,
+          "sha256": "33bc841993cf9f60dae1d1221ecff4ac0017cb01a6e154ecee9b8d249829f7ff"
+        }
+      },
+      "submittedAt": "2026-10-17T03:03:55.202Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-dinosaur/plesiosaur-b.png",
+      "rawSheetSha256": "7d9a46e8385ef7555ab1a9576099db7b508eb31822351eee102e325ba4e9f221",
+      "plateHints": [
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-17T03:04:36.410Z",
+      "usageUsd": 0.008116594420539008,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Both candidates stand on four legs like a land sauropod with a grey shadow pool under the body, which the ship class forbids; plesiosaur-a swims.",
+        "reviewedAt": "2026-10-17T03:07:05.917Z"
+      }
+    },
+    "plesiosaur-c": {
+      "id": "plesiosaur-c",
+      "asset": "chibi-naval-dinosaur-submarine",
+      "jobId": "5770e47c-7723-4134-b18e-00991964d331",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-dinosaur",
+        "asset": "chibi-naval-dinosaur-submarine",
+        "subject": "UNIT:DINOSAUR:SUBMARINE",
+        "faction": "DINOSAUR",
+        "recipeClass": "ship",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 99304,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Turn the log into a living plesiosaur swimming at the surface: a fat round body low in the water, a long curved neck rising at the front to a small smiling head, four big paddle flippers, a short tail; deep blue hide with a dark navy back, cream belly and throat, bold orange stripes on the neck and big orange spots on the back. No log, hatch or reed. Keep the size, waterline, thick black outline and style, nothing under the body."
+          }
+        ],
+        "prompt": "Turn the log into a living plesiosaur swimming at the surface: a fat round body low in the water, a long curved neck rising at the front to a small smiling head, four big paddle flippers, a short tail; deep blue hide with a dark navy back, cream belly and throat, bold orange stripes on the neck and big orange spots on the back. No log, hatch or reed. Keep the size, waterline, thick black outline and style, nothing under the body.",
+        "negativePrompt": "",
+        "description": "Turn the log into a living plesiosaur swimming at the surface: a fat round body low in the water, a long curved neck rising at the front to a small smiling head, four big paddle flippers, a short tail; deep blue hide with a dark navy back, cream belly and throat, bold orange stripes on the neck and big orange spots on the back. No log, hatch or reed. Keep the size, waterline, thick black outline and style, nothing under the body.",
+        "editInstruction": "Turn the log into a living plesiosaur swimming at the surface: a fat round body low in the water, a long curved neck rising at the front to a small smiling head, four big paddle flippers, a short tail; deep blue hide with a dark navy back, cream belly and throat, bold orange stripes on the neck and big orange spots on the back. No log, hatch or reed. Keep the size, waterline, thick black outline and style, nothing under the body.",
+        "source": {
+          "recipe": "dinosaur-submarine-b",
+          "candidate": 0,
+          "sha256": "59be609b76e347d2beda94dd8641ad363f46bbe1678dcfb6ba47fd7b97de9ffc"
+        }
+      },
+      "submittedAt": "2026-10-17T03:13:33.759Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-dinosaur/plesiosaur-c.png",
+      "rawSheetSha256": "aa80a8da18c4198f3b847f516b0c5f71df20cefaf9a5fc1e6255a7de9b1fc2e7",
+      "plateHints": [
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-17T03:14:05.731Z",
+      "usageUsd": 0.00731598064634535,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Both candidates draw a blue water puddle under the body, which the ship class forbids.",
+        "reviewedAt": "2026-10-17T03:16:29.967Z"
+      }
+    },
+    "portrait-dugout-horn-a": {
+      "id": "portrait-dugout-horn-a",
+      "asset": "chibi-naval-dinosaur-portrait-patrol-boat",
+      "jobId": "44d033e5-5bb5-43d8-82b9-c92a0558a995",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-dinosaur",
+        "asset": "chibi-naval-dinosaur-portrait-patrol-boat",
+        "subject": "PORTRAIT:DINOSAUR:PATROL_BOAT",
+        "faction": "DINOSAUR",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 99331,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Add one big curved bone-white horn on the snout of the carved blue plesiosaur head at the bow, pointing forward like a triceratops horn, with a thin dark outline. Do not redraw anything else: keep the hull, sail, colours, thick black outline and style exactly the same, with no water, on a transparent background."
+          }
+        ],
+        "prompt": "Add one big curved bone-white horn on the snout of the carved blue plesiosaur head at the bow, pointing forward like a triceratops horn, with a thin dark outline. Do not redraw anything else: keep the hull, sail, colours, thick black outline and style exactly the same, with no water, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Add one big curved bone-white horn on the snout of the carved blue plesiosaur head at the bow, pointing forward like a triceratops horn, with a thin dark outline. Do not redraw anything else: keep the hull, sail, colours, thick black outline and style exactly the same, with no water, on a transparent background.",
+        "editInstruction": "Add one big curved bone-white horn on the snout of the carved blue plesiosaur head at the bow, pointing forward like a triceratops horn, with a thin dark outline. Do not redraw anything else: keep the hull, sail, colours, thick black outline and style exactly the same, with no water, on a transparent background.",
+        "source": {
+          "recipe": "dinosaur-portrait-patrol-boat-primal-a",
+          "candidate": 0,
+          "sha256": "3a3164c2d31fe47dc84b30a5019dfa083873aef2586ef52b462849eb03261883"
+        }
+      },
+      "submittedAt": "2026-10-17T03:03:34.540Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-dinosaur/portrait-dugout-horn-a.png",
+      "rawSheetSha256": "1ed35ee72f1f5da896e760ae243a725544b0c4e9687751f0c6f9111373677771",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0.4233,
+          "footprintWidthShare": 0.8056,
+          "suspect": true
+        },
+        {
+          "bandRows": 9,
+          "groundShare": 0.4233,
+          "footprintWidthShare": 0.8056,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-17T03:04:20.852Z",
+      "usageUsd": 0.008920420090357463,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "The Dugout portrait: the accepted portrait with the map sprite's horn on the prow; at 48 px the horn is a white curve beside the sail. Candidate 1 is near identical.",
+        "reviewedAt": "2026-10-17T03:07:06.419Z"
+      }
+    },
+    "portrait-plesiosaur-a": {
+      "id": "portrait-plesiosaur-a",
+      "asset": "chibi-naval-dinosaur-portrait-submarine",
+      "jobId": "fdce2f5c-0aa8-4ac3-9ade-905b8774fdd8",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-dinosaur",
+        "asset": "chibi-naval-dinosaur-portrait-submarine",
+        "subject": "PORTRAIT:DINOSAUR:SUBMARINE",
+        "faction": "DINOSAUR",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 99311,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Turn the log into a living plesiosaur swimming: a fat round body, a long curved neck rising to a small smiling head, four big paddle flippers, a short tail; deep blue hide with a dark navy back, cream belly and throat, bold orange stripes on the neck and big orange spots on the back. No log, hatch or reed. Keep the size, thick black outline and art style, with no water, on a transparent background."
+          }
+        ],
+        "prompt": "Turn the log into a living plesiosaur swimming: a fat round body, a long curved neck rising to a small smiling head, four big paddle flippers, a short tail; deep blue hide with a dark navy back, cream belly and throat, bold orange stripes on the neck and big orange spots on the back. No log, hatch or reed. Keep the size, thick black outline and art style, with no water, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Turn the log into a living plesiosaur swimming: a fat round body, a long curved neck rising to a small smiling head, four big paddle flippers, a short tail; deep blue hide with a dark navy back, cream belly and throat, bold orange stripes on the neck and big orange spots on the back. No log, hatch or reed. Keep the size, thick black outline and art style, with no water, on a transparent background.",
+        "editInstruction": "Turn the log into a living plesiosaur swimming: a fat round body, a long curved neck rising to a small smiling head, four big paddle flippers, a short tail; deep blue hide with a dark navy back, cream belly and throat, bold orange stripes on the neck and big orange spots on the back. No log, hatch or reed. Keep the size, thick black outline and art style, with no water, on a transparent background.",
+        "source": {
+          "recipe": "dinosaur-portrait-submarine-a",
+          "candidate": 0,
+          "sha256": "d97408b4204ad4cfde95965c457585e70ab743375e0bd964ddd176895159f7bc"
+        }
+      },
+      "submittedAt": "2026-10-17T03:04:36.413Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-dinosaur/portrait-plesiosaur-a.png",
+      "rawSheetSha256": "3d5325d6ee0841450a215532ff0bc000ffd9651bc052c8ffb53772aeaf0eae7c",
+      "plateHints": [
+        {
+          "bandRows": 7,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9048,
+          "suspect": false
+        },
+        {
+          "bandRows": 7,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9048,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-17T03:05:54.490Z",
+      "usageUsd": 0.012981015337838069,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "The Plesiosaur portrait: the map sprite's sea reptile (blue, orange-striped neck, orange spots, four flippers) whole at 48 px. Candidate 1 is near identical.",
+        "reviewedAt": "2026-10-17T03:07:06.040Z"
+      }
     }
   },
   "assets": {
@@ -716,18 +1495,62 @@
       "notes": "A log war raft with cream bone fittings, three spotted sandy hide sails, orange feather pennants and a big deep blue plesiosaur-head prow with orange stripes and a cream throat. The plate hint is the raft's flat log deck, not ground.",
       "acceptedAt": "2026-10-03T08:03:02.485Z"
     },
+    "chibi-naval-dinosaur-icon-tech-seamanship": {
+      "id": "chibi-naval-dinosaur-icon-tech-seamanship",
+      "subject": "ICON:TECH:DINOSAUR:SEAMANSHIP",
+      "assetClass": "ICON",
+      "status": "ACCEPTED",
+      "recipe": "icon-tech-horned-prows-c",
+      "candidate": 0,
+      "candidateSha256": "1566382d4641325e80ac64b75dfeb587cd99ae3ac46249949017f5b8af6dfbea",
+      "master": {
+        "path": "public/assets/chibi/icons/chibi-naval-dinosaur-icon-tech-seamanship.png",
+        "sha256": "1566382d4641325e80ac64b75dfeb587cd99ae3ac46249949017f5b8af6dfbea",
+        "pixelSha256": "52f8e666a017b490d4bdda40973f33f622c7425fd028297c704ee2daf64b50bf",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 8,
+        "groundShare": 0.2953,
+        "footprintWidthShare": 0.7381,
+        "suspect": true
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Horned Prows (bead pulp_wars-5ti.18): a carved deep blue plesiosaur figurehead with orange stripes and a cream jaw and one big bone-white horn, rising out of a dark wooden canoe bow; at 48 px it reads as the horned prow of the Dugout. No pixel in the owner key's band (icon-tech-horned-prows-a, its source, had a red crest, 5.8%). Candidate 1 is near identical; the plate hint is the dark hull.",
+      "acceptedAt": "2026-10-17T03:07:49.454Z"
+    },
     "chibi-naval-dinosaur-patrol-boat": {
       "id": "chibi-naval-dinosaur-patrol-boat",
       "subject": "UNIT:DINOSAUR:PATROL_BOAT",
       "assetClass": "LARGE_UNIT",
       "status": "ACCEPTED",
-      "recipe": "dinosaur-patrol-boat-primal-a",
+      "recipe": "dugout-horn-a",
       "candidate": 0,
-      "candidateSha256": "33bc841993cf9f60dae1d1221ecff4ac0017cb01a6e154ecee9b8d249829f7ff",
+      "candidateSha256": "324a973c7b0e9a001ad97dd22df7ee96ca3edf36c36ab1e4f68b5939bc465572",
       "master": {
         "path": "public/assets/chibi/units/chibi-naval-dinosaur-patrol-boat.png",
-        "sha256": "33bc841993cf9f60dae1d1221ecff4ac0017cb01a6e154ecee9b8d249829f7ff",
-        "pixelSha256": "5ba35df29f900fd20c63fab8fa2f685b4a2b8fed91b04516bd1ca337e8632eae",
+        "sha256": "324a973c7b0e9a001ad97dd22df7ee96ca3edf36c36ab1e4f68b5939bc465572",
+        "pixelSha256": "81c2d9f9f263d33ea9869274343006998cb6a70c7367116d7fe87e122dd4d817",
         "width": 72,
         "height": 88
       },
@@ -747,7 +1570,7 @@
       "plateCheck": {
         "bandRows": 14,
         "groundShare": 0.4406,
-        "footprintWidthShare": 0.9649,
+        "footprintWidthShare": 0.9322,
         "suspect": true
       },
       "reviewChecks": {
@@ -757,8 +1580,8 @@
         "noPlate": true,
         "camera": true
       },
-      "notes": "A dugout canoe whose bow is a carved deep blue plesiosaur head with orange stripes and a cream jaw, a sandy hide sail with big dark brown spots, orange feathers on the mast. The log hull came out a warm orange-brown, lighter than the Goblin planks. The plate hint is a false positive: nothing is drawn under the hull.",
-      "acceptedAt": "2026-10-03T08:03:00.358Z"
+      "notes": "The Dugout (bead pulp_wars-5ti.18): the accepted Dinosaur canoe unchanged but for one big curved bone-white horn rising from the snout of its blue plesiosaur prow, which reads at 72 px as the Horned Prow; the plate hint is the hull's dark shading, no plate is drawn. Candidate 1 is near identical.",
+      "acceptedAt": "2026-10-17T03:07:06.295Z"
     },
     "chibi-naval-dinosaur-portrait-battleship": {
       "id": "chibi-naval-dinosaur-portrait-battleship",
@@ -809,13 +1632,13 @@
       "subject": "PORTRAIT:DINOSAUR:PATROL_BOAT",
       "assetClass": "PORTRAIT",
       "status": "ACCEPTED",
-      "recipe": "dinosaur-portrait-patrol-boat-primal-a",
+      "recipe": "portrait-dugout-horn-a",
       "candidate": 0,
-      "candidateSha256": "3a3164c2d31fe47dc84b30a5019dfa083873aef2586ef52b462849eb03261883",
+      "candidateSha256": "97f8aa0ab720f6ce760a4119e69097a4c9cf321fc4c7da4a717e16d189721ba2",
       "master": {
         "path": "public/assets/chibi/portraits/chibi-naval-dinosaur-portrait-patrol-boat.png",
-        "sha256": "3a3164c2d31fe47dc84b30a5019dfa083873aef2586ef52b462849eb03261883",
-        "pixelSha256": "ca7327f95525f61b9afb18e0b056baf6992d21ca26ab75e3c2c6e810eecc8f80",
+        "sha256": "97f8aa0ab720f6ce760a4119e69097a4c9cf321fc4c7da4a717e16d189721ba2",
+        "pixelSha256": "dd9c09ba5e69823376d06bc36bcc2856192540cb599c9b9eea7ca31818e45c4e",
         "width": 48,
         "height": 48
       },
@@ -835,7 +1658,7 @@
       "plateCheck": {
         "bandRows": 9,
         "groundShare": 0.4233,
-        "footprintWidthShare": 0.9355,
+        "footprintWidthShare": 0.8056,
         "suspect": true
       },
       "reviewChecks": {
@@ -845,21 +1668,21 @@
         "noPlate": true,
         "camera": true
       },
-      "notes": "The cog portrait as a dugout: spotted sandy hide sail, blue plesiosaur head with orange stripes at the bow, an orange feather pennant.",
-      "acceptedAt": "2026-10-03T08:03:06.172Z"
+      "notes": "The Dugout portrait: the accepted portrait with the map sprite's horn on the prow; at 48 px the horn is a white curve beside the sail. Candidate 1 is near identical.",
+      "acceptedAt": "2026-10-17T03:07:06.419Z"
     },
     "chibi-naval-dinosaur-portrait-submarine": {
       "id": "chibi-naval-dinosaur-portrait-submarine",
       "subject": "PORTRAIT:DINOSAUR:SUBMARINE",
       "assetClass": "PORTRAIT",
       "status": "ACCEPTED",
-      "recipe": "dinosaur-portrait-submarine-a",
+      "recipe": "portrait-plesiosaur-a",
       "candidate": 0,
-      "candidateSha256": "d97408b4204ad4cfde95965c457585e70ab743375e0bd964ddd176895159f7bc",
+      "candidateSha256": "d7207eaad3c8d2c06f48e7cd120164af202f6f2a9f367c4c5de8fb2223d5c7b8",
       "master": {
         "path": "public/assets/chibi/portraits/chibi-naval-dinosaur-portrait-submarine.png",
-        "sha256": "d97408b4204ad4cfde95965c457585e70ab743375e0bd964ddd176895159f7bc",
-        "pixelSha256": "2fcc1401fda6ecfdf69c7d01d07e9b9c4412ac22e158a359224bdb931505a135",
+        "sha256": "d7207eaad3c8d2c06f48e7cd120164af202f6f2a9f367c4c5de8fb2223d5c7b8",
+        "pixelSha256": "45db15ba01c32eca00dc385d3dfeff178f23838381a9eb62aa14a75a78fc4678",
         "width": 48,
         "height": 48
       },
@@ -878,9 +1701,9 @@
       },
       "plateCheck": {
         "bandRows": 7,
-        "groundShare": 0.5542,
-        "footprintWidthShare": 0.9487,
-        "suspect": true
+        "groundShare": 0,
+        "footprintWidthShare": 0.9048,
+        "suspect": false
       },
       "reviewChecks": {
         "native": true,
@@ -889,21 +1712,21 @@
         "noPlate": true,
         "camera": true
       },
-      "notes": "The log submersible at 48 px: a bark log with the blue orange-striped head at its end, the spotted hide hatch and the bone reed.",
-      "acceptedAt": "2026-10-05T09:48:05.252Z"
+      "notes": "The Plesiosaur portrait: the map sprite's sea reptile (blue, orange-striped neck, orange spots, four flippers) whole at 48 px. Candidate 1 is near identical.",
+      "acceptedAt": "2026-10-17T03:07:06.040Z"
     },
     "chibi-naval-dinosaur-submarine": {
       "id": "chibi-naval-dinosaur-submarine",
       "subject": "UNIT:DINOSAUR:SUBMARINE",
       "assetClass": "LARGE_UNIT",
       "status": "ACCEPTED",
-      "recipe": "dinosaur-submarine-b",
+      "recipe": "plesiosaur-a",
       "candidate": 0,
-      "candidateSha256": "59be609b76e347d2beda94dd8641ad363f46bbe1678dcfb6ba47fd7b97de9ffc",
+      "candidateSha256": "75af9d6d5189d63c2986f75c7585f5c8def530d35872953af0e65517c4460a61",
       "master": {
         "path": "public/assets/chibi/units/chibi-naval-dinosaur-submarine.png",
-        "sha256": "43e1a780af42aaf9ab2d0b37d76afa5e1c845cb799eadeb596d9d6dd8f336579",
-        "pixelSha256": "4cf0eabdbecffe9387626e96125cf0381bb005792eb594b867f74f2f7f603684",
+        "sha256": "051096a9e0b7e2c3f195c31a5ca13875ea0b6806def5b43788c1582ca3f13b39",
+        "pixelSha256": "608e4a22581b774d70c47ecaabaa77efd2cc8a643b17405b86395b63d5ded72a",
         "width": 72,
         "height": 88
       },
@@ -914,12 +1737,12 @@
         }
       },
       "anchor": {
-        "x": 32,
+        "x": 30,
         "y": 48
       },
       "overflow": {
         "left": 0,
-        "right": 0,
+        "right": 2,
         "up": 8,
         "down": 0
       },
@@ -930,8 +1753,8 @@
         "noPlate": true,
         "camera": true
       },
-      "notes": "A closed tree-trunk log with bark and a sawn end, the blue orange-striped plesiosaur head at the bow end, a spotted hide hatch and a bone reed on top; a log boat with no limbs. The shared Submarine's anchor.",
-      "acceptedAt": "2026-10-05T10:22:48.956Z"
+      "notes": "The Plesiosaur (bead pulp_wars-5ti.18): a living sea reptile in the Dinosaur palette, deep blue with a navy back, cream belly and throat, an orange-striped long neck and big orange spots, four paddle flippers and a short tail, low on the water; at 72 px it reads as an animal beside the fleet's log hulls. It faces left (the log's head was on the right). Its front flipper reaches further left than any hull, so it is anchored at (30, 48), 2 px right of the other Submarines, clear of the seat badge strip surfaced and sunk. Candidate 1 is near identical.",
+      "acceptedAt": "2026-10-17T03:18:32.042Z"
     },
     "chibi-naval-dinosaur-transport": {
       "id": "chibi-naval-dinosaur-transport",

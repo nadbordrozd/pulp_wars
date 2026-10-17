@@ -100,7 +100,12 @@ describe("training a Submarine", () => {
         activation: { handled: true },
       });
       expect([rule.cost, rule.maxHp], faction).toEqual(
-        faction === "GOBLIN" ? [8, 10] : [9, 12],
+        faction === "GOBLIN"
+          ? [8, 10]
+          : // The Plesiosaur (`pulp_wars-5ti.18`): 10 Coins.
+            faction === "DINOSAUR"
+            ? [10, 12]
+            : [9, 12],
       );
       expect(result.events[0]).toEqual({
         kind: "NAVAL_UNIT_TRAINED",
