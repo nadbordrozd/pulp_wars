@@ -205,6 +205,13 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/ai/v7-naval-goblin.ts::navalBestAttackTenthsV7": "BOARD",
     "src/ai/v7-naval-goblin.ts::fireRaftApproachV7": "BOARD",
     "src/ai/v7-naval-goblin.ts::navalDreadnoughtCrowdRejectedV7": "BOARD",
+    // The Undead Drowned Fleet (`pulp_wars-5ti.17`): the risen Ghost Ship's
+    // safety, the other torpedoes of the Galley and its fellow Submarines,
+    // and the own Galleon read the units on the board; nothing burrows at
+    // sea.
+    "src/ai/v7-naval.ts::drownedCrewRisingTenthsV7": "BOARD",
+    "src/ai/v7-naval-undead.ts::drownedCrewTorpedoPriorityV7": "BOARD",
+    "src/ai/v7-naval-undead.ts::navalPlagueTechnologyV7": "BOARD",
     // `pulp_wars-5ti.5`: the frozen sea reads the board: the units that
     // walk to a crossing and Freeze it, the ships a Freeze locks in and the
     // units that can strike them, the units on ice, and the unit that
@@ -836,6 +843,9 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/render/tactical-presentation-v7.ts::tacticalAttachmentsV7": "BOARD",
     "src/render/undead-presentation-v7.ts::combatPreviewSemanticNoteV7":
       "BOARD",
+    // Themed naval branches (`pulp_wars-5ti.17`): whether the previewed
+    // victim on the board is a ship (a Drowned Crews rising).
+    "src/render/undead-presentation-v7.ts::risingLabelV7": "BOARD",
     "src/render/undead-presentation-v7.ts::disbandBlockedByAfflictionV7":
       "BOARD",
     "src/render/undead-presentation-v7.ts::tendPreviewPresentationV7": "BOARD",

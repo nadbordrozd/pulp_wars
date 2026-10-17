@@ -1,7 +1,10 @@
 import type { PlayerId, UnitId } from "../engine/model/ids";
 import {
+  DROWNED_CREW_HP_V7,
   RAM_BONUS2_V7,
   attackIsTorpedoV7,
+  attackPlaguesV7,
+  seatRoleRuleV7,
   isIceAtV7,
   technologyCapabilitiesV7,
   unitCapabilitiesV7,
@@ -11,6 +14,7 @@ import {
   unitRoleMechanicsV7,
   unitRoleRuleV7,
 } from "../engine/rules/ruleset-v7";
+import { isLivingUnitV7, unitTakesStatusV7 } from "../engine/v7/afflictions";
 import type { CommandV7 } from "../engine/v7/commands";
 import type { CombatPreviewV7 } from "../engine/v7/events";
 import {
@@ -89,6 +93,12 @@ export const NAVAL_STATION_PRIORITY_V7 = 832;
 export const NAVAL_STATION_TARGET_VALUE_V7 = 6;
 export const NAVAL_STATION_CLUSTER_VALUE_V7 = 4;
 export const NAVAL_STATION_TARGETS_V7 = 3;
+/**
+ * Themed naval branches (`pulp_wars-5ti.17`): a Plague Galleon's station,
+ * for each living hostile unit not yet plagued in its best target's splash
+ * cluster (the target included), with Pestilence.
+ */
+export const NAVAL_STATION_PLAGUE_VALUE_V7 = 3;
 
 const chebyshev = (left: CoordV7, right: CoordV7): number =>
   Math.max(Math.abs(left.x - right.x), Math.abs(left.y - right.y));
@@ -304,10 +314,71 @@ export function navalCounterRoleV7(
   return null;
 }
 
+// --- Drowned Crews -----------------------------------------------------------------
+
+/**
+ * Themed naval branches, the Undead Drowned Fleet
+ * (docs/product/RULESET_7_NAVAL_FACTIONS.md section 4.6,
+ * `pulp_wars-5ti.17`): what the Ghost Ship an own ship's kill raises is
+ * worth, in tenths of a Coin. 0 unless `preview` (the exact preview of the
+ * own `killer`'s attack, in `view`) says `defenderInfected` on a ship. It
+ * is half the viewer's Patrol Boat's cost, at the Board scorer's factor:
+ * whole when the risen ship is safe, `NAVAL_BOARD_DOOMED_TENTHS_V7` tenths
+ * when a visible hostile unit can sink it on the enemy's next turn. A
+ * hostile unit whose reach covers the killer too does not make it doomed:
+ * the risen ship splits that fire, it adds no target the enemy did not
+ * already have.
+ */
+export function drownedCrewRisingTenthsV7(
+  view: PlayerViewV7,
+  tools: NavalToolsV7,
+  killer: PublicUnitV7,
+  preview: CombatPreviewV7,
+): number {
+  if (!preview.defenderInfected || killer.ownerId !== view.viewer.id) return 0;
+  const victim = view.units.find((unit) => unit.id === preview.targetUnitId);
+  if (victim?.form !== "NAVAL") return 0;
+  const ship = seatRoleRuleV7(view, view.viewer.id, "PATROL_BOAT");
+  const half = Math.floor(((ship.cost ?? 0) * 10) / 2);
+  const risen = tools.project(view, victim.id, {
+    ownerId: view.viewer.id,
+    role: "PATROL_BOAT",
+    hp: Math.min(DROWNED_CREW_HP_V7, ship.maxHp),
+    maxHp: ship.maxHp,
+  });
+  // The hostile units that reach the killer as well are left out.
+  const shared = new Set(
+    risen.units
+      .filter(
+        (unit) =>
+          unit.hp > 0 &&
+          tools.isHostile(unit.ownerId) &&
+          tools.reaches(unit, killer.at),
+      )
+      .map((unit) => unit.id),
+  );
+  const after: PlayerViewV7 =
+    shared.size === 0
+      ? risen
+      : {
+          ...risen,
+          units: risen.units.filter((unit) => !shared.has(unit.id)),
+          unitStats: risen.unitStats.filter(
+            (stats) => !shared.has(stats.unitId),
+          ),
+        };
+  const ghost = after.units.find((unit) => unit.id === victim.id);
+  const safe =
+    ghost !== undefined &&
+    tools.danger(after, ghost, ghost.at) <
+      Math.min(DROWNED_CREW_HP_V7, ship.maxHp);
+  return safe ? half : Math.floor((half * NAVAL_BOARD_DOOMED_TENTHS_V7) / 10);
+}
+
 // --- Board -----------------------------------------------------------------------
 
 /** The value of an exchange in tenths of a Coin: what the target loses less what the attacker loses. */
-function exchangeTenthsV7(
+export function exchangeTenthsV7(
   view: PlayerViewV7,
   attacker: PublicUnitV7,
   target: PublicUnitV7,
@@ -587,7 +658,18 @@ export function navalRamApproachV7(
         : 0,
     );
     if (preview.attackerDies) continue;
-    const exchange = exchangeTenthsV7(view, actor, target, preview);
+    // Themed naval branches (`pulp_wars-5ti.17`): a Ghost Ship rises from
+    // what an Undead boat sinks.
+    const exchange =
+      exchangeTenthsV7(view, actor, target, preview) +
+      (preview.defenderInfected
+        ? drownedCrewRisingTenthsV7(
+            tools.project(view, actor.id, { at: to }),
+            tools,
+            { ...actor, at: to },
+            preview,
+          )
+        : 0);
     if (exchange <= 0) continue;
     const value =
       exchange +
@@ -889,6 +971,24 @@ export function navalBattleshipStationValueV7(
   const hostiles = view.units.filter(
     (unit) => unit.hp > 0 && tools.isHostile(unit.ownerId),
   );
+  // Themed naval branches (`pulp_wars-5ti.17`): a Plague Galleon with
+  // Pestilence plagues its target and every living splash victim not yet
+  // plagued, and an Undead ship's kill of a ship raises a Ghost Ship.
+  const plagues = attackPlaguesV7(
+    view,
+    actor,
+    rule,
+    view.viewer.researchedTechs,
+  );
+  const plagued = new Set(view.plagued.map((entry) => entry.unitId));
+  const unplagued = (unit: PublicUnitV7): boolean =>
+    unit.form !== "EGG" &&
+    !plagued.has(unit.id) &&
+    unitTakesStatusV7(unit) &&
+    isLivingUnitV7(view, unit);
+  const crew =
+    rule.abilities.includes("DROWNED_CREW") &&
+    unitCapabilitiesV7(view, actor, view.viewer.researchedTechs).drownedCrews;
   const station = (at: CoordV7): number => {
     if (facts.hostileSubmarines.some((sub) => tools.reaches(sub, at))) return 0;
     const targets = hostiles.filter((unit) => {
@@ -900,19 +1000,49 @@ export function navalBattleshipStationValueV7(
       );
     });
     if (targets.length === 0) return 0;
+    const neighbours = (target: PublicUnitV7): readonly PublicUnitV7[] =>
+      hostiles.filter(
+        (unit) => unit.id !== target.id && chebyshev(unit.at, target.at) === 1,
+      );
     const cluster = Math.max(
-      ...targets.map(
-        (target) =>
-          hostiles.filter(
-            (unit) =>
-              unit.id !== target.id && chebyshev(unit.at, target.at) === 1,
-          ).length,
-      ),
+      ...targets.map((target) => neighbours(target).length),
     );
+    const plague = plagues
+      ? Math.max(
+          ...targets.map(
+            (target) =>
+              [target, ...neighbours(target)].filter(unplagued).length,
+          ),
+        )
+      : 0;
+    let rising = 0;
+    if (crew) {
+      const there = tools.project(view, actor.id, {
+        at,
+        activation: {
+          ...actor.activation,
+          moved: false,
+          movedPathLength: 0,
+          attacked: false,
+          attacksUsed: 0,
+        },
+      });
+      const moved = there.units.find((unit) => unit.id === actor.id);
+      for (const target of targets) {
+        if (target.form !== "NAVAL" || moved === undefined) continue;
+        const shot = queryCombatPreviewV7(there, actor.id, target.id);
+        if (shot?.defenderInfected === true)
+          rising += Math.floor(
+            drownedCrewRisingTenthsV7(there, tools, moved, shot) / 5,
+          );
+      }
+    }
     return (
       Math.min(NAVAL_STATION_TARGETS_V7, targets.length) *
         NAVAL_STATION_TARGET_VALUE_V7 +
-      cluster * NAVAL_STATION_CLUSTER_VALUE_V7
+      cluster * NAVAL_STATION_CLUSTER_VALUE_V7 +
+      plague * NAVAL_STATION_PLAGUE_VALUE_V7 +
+      rising
     );
   };
   const there = station(to);

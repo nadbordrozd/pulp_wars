@@ -510,8 +510,11 @@ describe("BOARD result", () => {
   });
 
   it("cannot be boarded back without a new hit, and then can", () => {
-    // Seat 1 has a second Patrol Boat next to the ship seat 0 takes.
+    // Seat 1 has a second Patrol Boat next to the ship seat 0 takes. It is
+    // a Dinosaur seat: the Undead Seamanship is Drowned Crews, no Board
+    // (`pulp_wars-5ti.17`).
     const retake = scene({
+      factions: ["ORIGINAL", "DINOSAUR"],
       targetHp: 3,
       extra: [{ seat: 1, role: "PATROL_BOAT", at: { x: 6, y: 6 } }],
     });

@@ -78,8 +78,8 @@ const READY: UnitStateV7["activation"] = {
 
 describe("ruleset-7 revision-13 identity and faction registration", () => {
   it("pins the current identity, frozen faction and tree orders, and bindings", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r92");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r92.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r93");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r93.current");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
@@ -139,10 +139,10 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
   });
 
   it("cleans obsolete keys through v7r65 and preserves the r66 save", () => {
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-27)).toBe(
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-28)).toBe(
       "pulpWars.save.v7r65.current",
     );
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(91);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(92);
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
     const storage = new MemoryStorage([
       ["pulpWars.save.v7r12.current", "r12"],
@@ -587,8 +587,10 @@ describe("ruleset-7 Undead roster and technology registration", () => {
         // (`pulp_wars-w49.30`): Swallow instead of Push.
         ["ATTACK", "CAPTURE", "INFECT", "SWALLOW"],
       ],
+      // Themed naval branches, the Drowned Fleet (`pulp_wars-5ti.17`): the
+      // Human numbers under the Undead names, each with a Drowned Crew.
       PATROL_BOAT: [
-        "Patrol Boat",
+        "Ghost Ship",
         5,
         10,
         4,
@@ -600,10 +602,10 @@ describe("ruleset-7 Undead roster and technology registration", () => {
         "SHORECRAFT",
         true,
         // The naval branch (`pulp_wars-5ti.2`): the Ram (with Seamanship).
-        ["ATTACK", "RAM"],
+        ["ATTACK", "RAM", "DROWNED_CREW"],
       ],
       BATTLESHIP: [
-        "Battleship",
+        "Plague Galleon",
         16,
         25,
         10,
@@ -614,11 +616,10 @@ describe("ruleset-7 Undead roster and technology registration", () => {
         3,
         "NAVAL_ENGINEERING",
         false,
-        ["ATTACK"],
+        ["ATTACK", "PLAGUE", "DROWNED_CREW"],
       ],
-      // The naval branch (`pulp_wars-5ti.2`): the shared Submarine.
       SUBMARINE: [
-        "Submarine",
+        "Sunken Galley",
         9,
         12,
         8,
@@ -629,7 +630,7 @@ describe("ruleset-7 Undead roster and technology registration", () => {
         2,
         "SUBMERSIBLES",
         true,
-        ["ATTACK", "SUBMERGED", "TORPEDO"],
+        ["ATTACK", "SUBMERGED", "TORPEDO", "DROWNED_CREW"],
       ],
       // The ninth unit (`pulp_wars-w49.17`, 7r55): the Wight, the Undead
       // heavy line unit, at Metallurgy (6 Coins, 14 HP, Attack 3, Defense
@@ -669,12 +670,14 @@ describe("ruleset-7 Undead roster and technology registration", () => {
       expect(rule.role).toBe(role);
       expect(rule.tacticalRole).toBe(ORIGINAL_ROLE_RULES_V7[role].tacticalRole);
     }
-    expect(UNDEAD_ROLE_RULES_V7.PATROL_BOAT).toEqual(
-      ORIGINAL_ROLE_RULES_V7.PATROL_BOAT,
-    );
-    expect(UNDEAD_ROLE_RULES_V7.BATTLESHIP).toEqual(
-      ORIGINAL_ROLE_RULES_V7.BATTLESHIP,
-    );
+    // Themed naval branches (`pulp_wars-5ti.17`): the Drowned Fleet has the
+    // Human numbers under its own names and abilities.
+    for (const role of ["PATROL_BOAT", "BATTLESHIP", "SUBMARINE"] as const)
+      expect({
+        ...UNDEAD_ROLE_RULES_V7[role],
+        label: ORIGINAL_ROLE_RULES_V7[role].label,
+        abilities: ORIGINAL_ROLE_RULES_V7[role].abilities,
+      }).toEqual(ORIGINAL_ROLE_RULES_V7[role]);
     // Disband refunds floor(cost / 2): Skeleton through Vampire 1,1,1,1,2,4,4.
     expect(
       (
@@ -766,6 +769,13 @@ describe("ruleset-7 Undead roster and technology registration", () => {
           ...human.unlocks,
           { kind: "PESTILENCE" },
         ]);
+      // Themed naval branches (`pulp_wars-5ti.17`): Drowned Crews, the Ram
+      // and the rising instead of Board.
+      else if (human.id === "SEAMANSHIP")
+        expect(undead.unlocks).toEqual([
+          { kind: "RAM" },
+          { kind: "DROWNED_CREWS" },
+        ]);
       else expect(undead.unlocks).toEqual(human.unlocks);
     });
   });
@@ -832,9 +842,10 @@ describe("ruleset-7 Undead roster and technology registration", () => {
       FORTIFICATION: "Zombie",
       // The ninth unit (7r55).
       METALLURGY: "Wight",
-      SHORECRAFT: "Patrol Boat",
-      NAVAL_ENGINEERING: "Battleship",
-      SUBMERSIBLES: "Submarine",
+      // Themed naval branches (`pulp_wars-5ti.17`): the Drowned Fleet.
+      SHORECRAFT: "Ghost Ship",
+      NAVAL_ENGINEERING: "Plague Galleon",
+      SUBMERSIBLES: "Sunken Galley",
     });
     expect(labels(humanTree)).toEqual({
       ADMINISTRATION: "Captain",

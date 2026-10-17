@@ -200,17 +200,28 @@ export const CHIBI_TECH_ART_SUBJECTS_V7 = {
 } as const satisfies Readonly<Record<TechnologyIdV7, ArtSubjectV7>>;
 
 /**
- * The Goblin Scrap Fleet's cards (`pulp_wars-5ti.16`, see
- * `technologySubjectV7`): Fire Rafts and Diving Barrels show their ships'
- * portraits and Powder Kegs its keg; Navigation and Dreadnoughts keep the
- * shared card (the compass, the faction's Battleship).
+ * Themed naval branches (docs/product/RULESET_7_NAVAL_FACTIONS.md section 2
+ * rule 3, see `technologySubjectV7`): the cards of a faction whose naval
+ * branch is its own. Its Sailing and Submersibles show its ships' portraits
+ * and its Seamanship its trick's icon; Navigation and Shipbuilding keep the
+ * shared card (the compass, the faction's Battleship). The Goblin Scrap
+ * Fleet (`pulp_wars-5ti.16`: Fire Rafts, Powder Kegs, Diving Barrels) and
+ * the Undead Drowned Fleet (`pulp_wars-5ti.17`: Ghost Ships, Drowned Crews,
+ * Sunken Galleys).
  */
-export const GOBLIN_NAVAL_TECH_SUBJECTS_V7: Readonly<
-  Partial<Record<TechnologyIdV7, ArtSubjectV7>>
+export const NAVAL_FACTION_TECH_SUBJECTS_V7: Readonly<
+  Partial<Record<FactionIdV7, Partial<Record<TechnologyIdV7, ArtSubjectV7>>>>
 > = {
-  SHORECRAFT: "PORTRAIT:GOBLIN:PATROL_BOAT",
-  SEAMANSHIP: "ICON:TECH:GOBLIN:SEAMANSHIP",
-  SUBMERSIBLES: "PORTRAIT:GOBLIN:SUBMARINE",
+  GOBLIN: {
+    SHORECRAFT: "PORTRAIT:GOBLIN:PATROL_BOAT",
+    SEAMANSHIP: "ICON:TECH:GOBLIN:SEAMANSHIP",
+    SUBMERSIBLES: "PORTRAIT:GOBLIN:SUBMARINE",
+  },
+  UNDEAD: {
+    SHORECRAFT: "PORTRAIT:UNDEAD:PATROL_BOAT",
+    SEAMANSHIP: "ICON:TECH:UNDEAD:SEAMANSHIP",
+    SUBMERSIBLES: "PORTRAIT:UNDEAD:SUBMARINE",
+  },
 };
 
 /**
@@ -282,11 +293,11 @@ export function technologySubjectV7(
   )
     return `ICON:TECH:CULT:${tech}`;
   // Themed naval branches (docs/product/RULESET_7_NAVAL_FACTIONS.md
-  // sections 2 rule 3 and 3.7, `pulp_wars-5ti.16`): a Goblin technology that
-  // unlocks a ship shows its portrait (Fire Rafts, Diving Barrels), and
-  // Powder Kegs its own icon.
-  const naval = GOBLIN_NAVAL_TECH_SUBJECTS_V7[tech];
-  if (faction === "GOBLIN" && naval !== undefined) return naval;
+  // sections 2 rule 3, 3.7 and 4.7, `pulp_wars-5ti.16`, `pulp_wars-5ti.17`):
+  // a technology that unlocks a faction's own ship shows its portrait, and
+  // its Seamanship its own icon.
+  const naval = NAVAL_FACTION_TECH_SUBJECTS_V7[faction]?.[tech];
+  if (naval !== undefined) return naval;
   if (subject.startsWith("PORTRAIT:"))
     return portraitSubjectV7(
       subject.slice("PORTRAIT:".length) as UnitRoleIdV7,

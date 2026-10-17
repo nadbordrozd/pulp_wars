@@ -129,6 +129,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       "./v7-naval",
       // pulp_wars-5ti.16: the Goblin Scrap Fleet (public view and previews).
       "./v7-naval-goblin",
+      "./v7-naval-undead",
       // pulp_wars-w49.31: the giants' signatures (public view, previews,
       // and the engine's public legality helpers only).
       "./v7-giants",
@@ -1288,7 +1289,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     const source = upgradeRetainedPublicViewV7(retained);
 
     expect(canonicalJson(retained)).toBe(retainedBytes);
-    expect(source.rulesetId).toBe("pulp-wars-poc-7r92");
+    expect(source.rulesetId).toBe("pulp-wars-poc-7r93");
     expect(source.viewer.factionTreeId).toBe("ORIGINAL_BASELINE_V5");
     expect(
       source.players.every(

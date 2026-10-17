@@ -1,8 +1,11 @@
 import {
   FACTION_DISPLAY_NAMES_V7,
   PLAGUE_DURATION_TURNS_V7,
+  DROWNED_CREW_HP_V7,
   batEscapeTilesV7,
   cooperativeAlliesV7,
+  effectiveRoleRuleV7,
+  technologyDisplayNameV7,
   factionRulesV7,
   factionTreeV7,
   feastReadyV7,
@@ -11,6 +14,7 @@ import {
   isNeutralOwnerV7,
   playerFactionV7,
   reachablePlayerMovementPathsV7,
+  seatRoleRuleV7,
   unitFactionV7,
   unitFliesV7,
   unitIsIceboundV7,
@@ -27,6 +31,7 @@ import {
   type PlayerViewV7,
   type RaiseDeadPreviewV7,
   type TendWoundedPreviewV7,
+  type UnitRoleIdV7,
   type WailPreviewV7,
 } from "../engine/index";
 import { HIDDEN_BLIZZARD_PREVIEW_V7 } from "./ice-folk-presentation-v7";
@@ -165,6 +170,9 @@ export function undeadAbilityNameV7(
       return "Terror";
     case "ETHEREAL":
       return "Slips past";
+    // Themed naval branches (`pulp_wars-5ti.17`): the ships' Drowned Crew.
+    case "DROWNED_CREW":
+      return "Drowned Crew";
     default:
       return null;
   }
@@ -176,6 +184,9 @@ export function undeadAbilityDescriptionV7(
   // pulp_wars-0ao.18: `cureCaptainPhraseV7` of the match; null when no seat
   // can cure, so the Plague sentence names no cure.
   cureCaptain: string | null = "a Captain",
+  // Themed naval branches (`pulp_wars-5ti.17`): the role, so the Plague
+  // Galleon's sentence names the Galleon (the Lich's otherwise).
+  role?: UnitRoleIdV7,
 ): string | null {
   if (faction !== "UNDEAD") return null;
   switch (ability) {
@@ -191,13 +202,18 @@ export function undeadAbilityDescriptionV7(
       return "Damages every visible living enemy within 2 tiles. It can't attack.";
     case "INFECT":
       return "A land unit it kills rises as your Zombie. It fills no unit slot.";
+    // Themed naval branches (`pulp_wars-5ti.17`, section 4.3 U1).
+    case "DROWNED_CREW":
+      return `With ${technologyDisplayNameV7("SEAMANSHIP", "UNDEAD")}: a ship it sinks rises as your ${effectiveRoleRuleV7("PATROL_BOAT", "UNDEAD").label} with ${DROWNED_CREW_HP_V7} HP. It fills no unit slot.`;
     case "LIFESTEAL":
       return "Heals by the damage it deals when it survives the fight.";
     case "PLAGUE":
       // The Undead pass, correction: Plague needs Pestilence.
-      return `With Pestilence: living units its attacks hit are plagued for 3 turns: −2 HP each turn, spreading to neighbours on the first. It ends sooner if this Lich dies${
-        cureCaptain === null ? "." : ` or ${cureCaptain} tends them.`
-      }`;
+      return `With Pestilence: living units its attacks hit are plagued for 3 turns: −2 HP each turn, spreading to neighbours on the first. It ends sooner if this ${
+        role === "BATTLESHIP"
+          ? effectiveRoleRuleV7("BATTLESHIP", "UNDEAD").label
+          : "Lich"
+      } dies${cureCaptain === null ? "." : ` or ${cureCaptain} tends them.`}`;
     case "BITE":
       return "Living land units it damages are bitten and rise as your Zombies when they die.";
     case "UNANSWERED":
@@ -489,10 +505,35 @@ export function etherealNewReachV7(
 }
 
 /**
+ * Themed naval branches, Drowned Crews (`pulp_wars-5ti.17`): what a
+ * combatant killed in `preview` rises as: a Ghost Ship (its killer's seat's
+ * `PATROL_BOAT`) when it is a ship of `view`, otherwise a Zombie.
+ */
+function risingLabelV7(
+  preview: CombatPreviewV7,
+  side: "ATTACKER" | "DEFENDER",
+  view: PlayerViewV7 | undefined,
+): string {
+  if (view === undefined) return "Zombie";
+  const victimId =
+    side === "DEFENDER" ? preview.targetUnitId : preview.attackerId;
+  const killerId =
+    side === "DEFENDER" ? preview.attackerId : preview.targetUnitId;
+  const victim = view.units.find((unit) => unit.id === victimId);
+  const killer = view.units.find((unit) => unit.id === killerId);
+  if (victim?.form !== "NAVAL" || killer === undefined) return "Zombie";
+  return seatRoleRuleV7(view, killer.ownerId, "PATROL_BOAT").label;
+}
+
+/**
  * Short canvas note for the Lifesteal and Infect outcomes of an attack
  * preview. It is null for every Human-only exchange (heal 0, not infected).
+ * With `view`, a ship's rising (Drowned Crews) is named as the Ghost Ship.
  */
-export function combatPreviewNoteV7(preview: CombatPreviewV7): string | null {
+export function combatPreviewNoteV7(
+  preview: CombatPreviewV7,
+  view?: PlayerViewV7,
+): string | null {
   const parts: string[] = [];
   if (preview.noRetaliationReason === "UNANSWERED")
     parts.push("No retaliation");
@@ -505,9 +546,22 @@ export function combatPreviewNoteV7(preview: CombatPreviewV7): string | null {
   if (feast !== null) parts.push(feast);
   if (preview.defenderHeal > 0)
     parts.push(`Foe heals +${preview.defenderHeal}`);
-  if (preview.defenderInfected) parts.push("Rises as Zombie");
+  if (preview.defenderInfected) {
+    const label = risingLabelV7(preview, "DEFENDER", view);
+    parts.push(
+      label === "Zombie" ? "Rises as Zombie" : `Rises as your ${label}`,
+    );
+  }
   if (preview.defenderBittenRises) parts.push("Rises as Zombie (bitten)");
-  if (preview.attackerInfected) parts.push("You rise as enemy Zombie");
+  if (preview.attackerInfected) {
+    // A hostile ship's Drowned Crews is private, so the rising is a risk.
+    const label = risingLabelV7(preview, "ATTACKER", view);
+    parts.push(
+      label === "Zombie"
+        ? "You rise as enemy Zombie"
+        : `You may rise as enemy ${label}`,
+    );
+  }
   if (preview.attackerBittenRises)
     parts.push("You rise as enemy Zombie (bitten)");
   const plague = plagueNote(preview);
@@ -556,11 +610,19 @@ export function combatPreviewSemanticNoteV7(
   if (preview.defenderHeal > 0)
     parts.push(`Lifesteal heals the defender by ${preview.defenderHeal} HP.`);
   if (preview.defenderInfected)
-    parts.push("The defender dies and rises as a Zombie.");
+    parts.push(
+      risingLabelV7(preview, "DEFENDER", view) === "Zombie"
+        ? "The defender dies and rises as a Zombie."
+        : `The defender sinks and its crew rises as your ${risingLabelV7(preview, "DEFENDER", view)}.`,
+    );
   if (preview.defenderBittenRises)
     parts.push("The bitten defender dies and rises as a Zombie.");
   if (preview.attackerInfected)
-    parts.push("The attacker dies and rises as an enemy Zombie.");
+    parts.push(
+      risingLabelV7(preview, "ATTACKER", view) === "Zombie"
+        ? "The attacker dies and rises as an enemy Zombie."
+        : `The attacker sinks, and its crew may rise as an enemy ${risingLabelV7(preview, "ATTACKER", view)}.`,
+    );
   if (preview.attackerBittenRises)
     parts.push("The bitten attacker dies and rises as an enemy Zombie.");
   if (preview.plagued.length > 0) {
@@ -938,7 +1000,13 @@ export function undeadBoundaryNoticeV7(
       const victim = unitById(event.victimUnitId);
       const victimLabel =
         victim === undefined ? "unit" : unitLabelV7(after, victim);
-      parts.push(`A fallen ${victimLabel} rose as a Zombie`);
+      // Themed naval branches (`pulp_wars-5ti.17`): a Drowned Crews rising.
+      const risen = unitById(event.unitId);
+      parts.push(
+        risen?.form === "NAVAL"
+          ? `A sunk ${victimLabel} rose as a ${unitLabelV7(after, risen)}`
+          : `A fallen ${victimLabel} rose as a Zombie`,
+      );
     } else if (event.kind === "GRAVE_CREATED") graves += 1;
     else if (event.kind === "PLAGUE_DAMAGED") {
       // Revision 14 Start Turn Plague damage of one player's units.

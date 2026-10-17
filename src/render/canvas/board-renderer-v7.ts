@@ -7964,7 +7964,9 @@ function commandMapTargets(
             })
           : queryCombatPreviewV7(view, command.unitId, command.targetUnitId);
       const undeadNote =
-        undeadMatch && preview !== null ? combatPreviewNoteV7(preview) : null;
+        undeadMatch && preview !== null
+          ? combatPreviewNoteV7(preview, view)
+          : null;
       const undeadSemanticNote =
         undeadMatch && preview !== null
           ? combatPreviewSemanticNoteV7(preview, view)

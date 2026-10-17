@@ -155,15 +155,16 @@ const chebyshev = (left: CoordV7, right: CoordV7): number =>
 describe("the Gibbering Mass: the identity (7r91)", () => {
   // The Gibbering Mass (`pulp_wars-mch9.37`) took 7r91 after the Imp of
   // `pulp_wars-mch9.36` (7r90); the Goblin Scrap Fleet
-  // (`pulp_wars-5ti.16`) took 7r92 after it.
+  // (`pulp_wars-5ti.16`) took 7r92 after it, the Undead Drowned Fleet
+  // (`pulp_wars-5ti.17`) 7r93.
   it("was 7r91 after 7r90, both save keys obsolete now, a 7r90 state refused", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r92");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r92.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-2)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r93");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r93.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-3, -1)).toEqual([
       "pulp-wars-poc-7r90",
       "pulp-wars-poc-7r91",
     ]);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-2)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-3, -1)).toEqual([
       "pulpWars.save.v7r90.current",
       "pulpWars.save.v7r91.current",
     ]);

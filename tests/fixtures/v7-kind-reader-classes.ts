@@ -176,6 +176,10 @@ export const KIND_READER_CLASSES_V7: Readonly<
   // the Ram: a seafaring seat); a ship's Ram is read by its kind
   // (`navalRammerV7`, through `unitCapabilitiesV7`).
   "src/ai/v7-naval.ts::navalBranchResearchV7": "SEAT",
+  // Themed naval branches (`pulp_wars-5ti.17`): Pestilence for the viewer's
+  // own Plague Galleon, its seat's tree and research (a ship is never
+  // mind-controlled; a Galleon's Plague reads its own kind's role).
+  "src/ai/v7-naval-undead.ts::navalPlagueTechnologyV7": "SEAT",
   // `pulp_wars-5ti.5`: the ice plan is a seat's plan: the seat's own tree
   // (whether its Shorecraft is Rime) and its own research (Pack Ice, the
   // turns its ice lasts). Black Ice is a seat rule in the engine too
@@ -532,6 +536,11 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/render/naval-presentation-v7.ts::navalRamUnlockTextV7": "SEAT",
   "src/render/naval-presentation-v7.ts::submarineUnlockNoteV7": "SEAT",
   "src/render/naval-presentation-v7.ts::battleshipUnlockNoteV7": "SEAT",
+  // Themed naval branches (`pulp_wars-5ti.17`): the Undead Drowned Crews
+  // and Plague Galleon sentences read the Undead registration.
+  "src/render/naval-presentation-v7.ts::drownedCrewRuleV7": "SEAT",
+  "src/render/undead-presentation-v7.ts::undeadAbilityDescriptionV7": "SEAT",
+  "src/render/naval-presentation-v7.ts::plagueGalleonRuleV7": "SEAT",
   "src/render/goblin-presentation-v7.ts::<module>": "SEAT",
   // A prize under its new flag: its kind follows its new owner (a ship is
   // never mind-controlled), so the prize's maximum HP is its captor seat's

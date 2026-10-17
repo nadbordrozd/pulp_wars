@@ -16,6 +16,8 @@ import {
   attackIsRamV7,
   attackIsTorpedoV7,
   canEnterTerrainV7,
+  drownedCrewOfV7,
+  drownedCrewRaisesV7,
   chargeRunUpAttack2V7,
   factionRulesV7,
   flyerMayStandOnSiteV7,
@@ -979,6 +981,36 @@ export function calculateCombatPreviewV7(
     defenderDies,
     attackerOnRift: noRisingAtV7(state.board, attacker.at),
     defenderOnRift: noRisingAtV7(state.board, defender.at),
+    // Themed naval branches (`pulp_wars-5ti.17`): Drowned Crews, from each
+    // owner's research.
+    attackerDrowns: drownedCrewRaisesV7(
+      {
+        form: defender.form,
+        drownedCrew: drownedCrewOfV7(
+          state,
+          defender,
+          ownerResearchedTechsV7(state, defender.ownerId),
+        ),
+      },
+      attacker,
+      tileAtV7(state.board, attacker.at)?.terrain,
+      isIceAtV7(state, attacker.at),
+    ),
+    defenderDrowns:
+      unitTakesStatusV7(defender) &&
+      drownedCrewRaisesV7(
+        {
+          form: attacker.form,
+          drownedCrew: drownedCrewOfV7(
+            state,
+            attacker,
+            ownerResearchedTechsV7(state, attacker.ownerId),
+          ),
+        },
+        defender,
+        tileAtV7(state.board, defender.at)?.terrain,
+        isIceAtV7(state, defender.at),
+      ),
   });
   return {
     attackerId,
@@ -1653,6 +1685,15 @@ export function undeadCombatEffectsV7(input: {
   /** The Rift (RULESET_7_RIFT.md section 4): nothing rises on a Rift. */
   readonly attackerOnRift: boolean;
   readonly defenderOnRift: boolean;
+  /**
+   * Themed naval branches, Drowned Crews
+   * (docs/product/RULESET_7_NAVAL_FACTIONS.md section 4.3 U1,
+   * `pulp_wars-5ti.17`): whether the attacker (killed by the retaliation)
+   * or the defender (killed by the attack) would rise as the killer's Ghost
+   * Ship (`drownedCrewRaisesV7`). The Infect step pointed at the sea.
+   */
+  readonly attackerDrowns?: boolean;
+  readonly defenderDrowns?: boolean;
 }): Pick<
   CombatPreviewV7,
   "attackerHeal" | "defenderHeal" | "attackerInfected" | "defenderInfected"
@@ -1673,17 +1714,19 @@ export function undeadCombatEffectsV7(input: {
       input.defenderDies,
     ),
     attackerInfected:
-      input.attackerDies &&
-      input.attacker.form === "LAND" &&
-      input.attacker.construct !== true &&
-      !input.attackerOnRift &&
-      input.defenderRule.abilities.includes("INFECT"),
+      (input.attackerDies &&
+        input.attacker.form === "LAND" &&
+        input.attacker.construct !== true &&
+        !input.attackerOnRift &&
+        input.defenderRule.abilities.includes("INFECT")) ||
+      (input.attackerDies && input.attackerDrowns === true),
     defenderInfected:
-      input.defenderDies &&
-      input.defender.form === "LAND" &&
-      input.defender.construct !== true &&
-      !input.defenderOnRift &&
-      input.attackerRule.abilities.includes("INFECT"),
+      (input.defenderDies &&
+        input.defender.form === "LAND" &&
+        input.defender.construct !== true &&
+        !input.defenderOnRift &&
+        input.attackerRule.abilities.includes("INFECT")) ||
+      (input.defenderDies && input.defenderDrowns === true),
   };
 }
 

@@ -640,3 +640,30 @@ and rocket unchanged; the Fire Raft's mean colour on Deep Water moved from
 ΔE 58.6 to 62.7 (`readability.json`). The unit shadow measurements were
 regenerated. Weak spot: the fuse's spark sits just right of the goblin's
 ear and reads as a small star rather than a burning fuse at 1x.
+
+## The Undead Drowned Crews (bead `pulp_wars-5ti.17`)
+
+The Undead ships of the
+[themed naval branches](../product/RULESET_7_NAVAL_FACTIONS.md#47-art-and-sound)
+are the accepted Undead Patrol Boat, Battleship, and Submarine under new
+labels (the **Ghost Ship**, the **Plague Galleon**, the **Sunken Galley**):
+no unit art changes. The **Drowned Crews** card (the Undead Seamanship)
+shows its own icon, a dark weathered ship's wheel with ivory handles and a
+violet flame at the hub, gripped by a pale bone skeleton hand from the
+lower right (registered in the live look by
+`CHIBI_NAVAL_FACTION_TECH_ICON_ASSETS_V7`, falling back to the shared
+ship's wheel); the Ghost Ships and Sunken Galleys cards show the ships'
+portraits (`NAVAL_FACTION_TECH_SUBJECTS_V7`). The rising of a Ghost Ship is
+the existing Infect wisps drawn on the ship's tile.
+
+| Asset                                     | Subject                       | Accepted                                | Rejected                                                                                                                                                                                                                                                   |
+| ----------------------------------------- | ----------------------------- | --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `chibi-naval-undead-icon-tech-seamanship` | `ICON:TECH:UNDEAD:SEAMANSHIP` | `icon-tech-drowned-crews-d` candidate 1 | `-a`: the wheel reads, the hand is a white blob at 48 px (kept as the edit source); `-b`: an ivory wheel in a black spiked ring that reads as a sea mine; `-c`: a grey cog with a fleshy living hand; `-d` candidate 0: as candidate 1 with a smaller hand |
+
+Four PixelLab jobs (seeds 99251, 99252, 99253, and the edit 99254) for one
+accepted piece: two fresh `icon`-class creations in batch `naval-undead`
+(`undead-violet` accent), a third with a prompt addendum asking for a big
+hand, and an `edit-image-pixen` edit of `-a` that made its hand bigger. At
+48 px the accepted icon reads as a dark wheel taken by a bone hand, beside
+the shared birch wheel. Weak spot: the wheel's lit rim (upper right and
+lower left) does not follow the south-west light strictly.

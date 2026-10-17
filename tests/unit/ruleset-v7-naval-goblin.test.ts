@@ -225,14 +225,18 @@ describe("the Scrap Fleet registry (section 3.1 and 3.2)", () => {
       true,
       false,
     ]);
-    // Every other faction keeps Board and has no Fire Rafts.
+    // Every other faction has no Fire Rafts; those not yet themed keep
+    // Board (the Undead trade it for Drowned Crews, `pulp_wars-5ti.17`).
     for (const faction of FACTION_IDS_V7) {
       if (faction === "GOBLIN" || faction === "ICE_FOLK") continue;
       const other = technologyCapabilitiesV7(
         ["SHORECRAFT", "SEAMANSHIP"],
         faction,
       );
-      expect([other.boarding, other.fireRafts], faction).toEqual([true, false]);
+      expect([other.boarding, other.fireRafts], faction).toEqual([
+        faction !== "UNDEAD",
+        false,
+      ]);
     }
   });
 

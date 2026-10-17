@@ -10,6 +10,7 @@ import {
   knockbackDestinationV7,
   seatRoleRuleV7,
   technologyCapabilitiesV7,
+  technologyDisplayNameV7,
   type BoardPreviewV7,
   type BoardTargetBlockV7,
   type CombatPreviewV7,
@@ -109,11 +110,32 @@ export function submarineUnlockNoteV7(faction: FactionIdV7): string {
 
 /** The Shipbuilding card note of a faction, its Battleship by name. */
 export function battleshipUnlockNoteV7(faction: FactionIdV7): string {
-  const label = effectiveRoleRuleV7("BATTLESHIP", faction).label;
+  const rule = effectiveRoleRuleV7("BATTLESHIP", faction);
   const blast = roleMechanicsV7("BATTLESHIP", faction).deathBlastDamage;
+  // Themed naval branches (`pulp_wars-5ti.17`): the Plague Galleon.
+  if (rule.abilities.includes("PLAGUE"))
+    return `${rule.label}: long-range splash damage; with ${technologyDisplayNameV7("EXPLOSIVES", faction)} its shot plagues whoever it hits`;
   return blast === null
-    ? `${label}: long-range splash damage`
-    : `${label}: long-range splash damage; explodes when it sinks (${blast} to every unit around it)`;
+    ? `${rule.label}: long-range splash damage`
+    : `${rule.label}: long-range splash damage; explodes when it sinks (${blast} to every unit around it)`;
+}
+
+/**
+ * Themed naval branches, the Drowned Fleet
+ * (docs/product/RULESET_7_NAVAL_FACTIONS.md sections 4.3 and 12,
+ * `pulp_wars-5ti.17`): the two Undead sentences, with the names read from
+ * the registry.
+ */
+export function drownedCrewRuleV7(): string {
+  return `A ship your ships sink rises as your ${effectiveRoleRuleV7("PATROL_BOAT", "UNDEAD").label}.`;
+}
+export function plagueGalleonRuleV7(): string {
+  const galleon = effectiveRoleRuleV7("BATTLESHIP", "UNDEAD").label;
+  return `With ${technologyDisplayNameV7("EXPLOSIVES", "UNDEAD")}, the ${galleon.replace(/^Plague /, "")}'s shot plagues whoever it hits.`;
+}
+/** The Drowned Crews card line (the Undead `DROWNED_CREWS` unlock). */
+export function drownedCrewsUnlockTextV7(): string {
+  return `${technologyDisplayNameV7("SEAMANSHIP", "UNDEAD")}: ${drownedCrewRuleV7().replace(/\.$/, "")}`;
 }
 
 export function harboursUnlockTextV7(population: number): string {
@@ -145,6 +167,7 @@ export const SUBMERGED_OUT_OF_REACH_V7 = "Submerged: get adjacent";
 
 /** The name of a naval role ability, or null for every other ability. */
 export function navalAbilityNameV7(ability: string): string | null {
+  if (ability === "DROWNED_CREW") return "Drowned Crew";
   return ability === "RAM" ? NAVAL_RAM_LABEL_V7 : null;
 }
 

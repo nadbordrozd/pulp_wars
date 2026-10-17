@@ -421,7 +421,12 @@ describe("Revision 17 Goblin presentation text", () => {
     // is Dreadnoughts; Navigation keeps its shared name.
     for (const faction of ["ORIGINAL", "UNDEAD", "GOBLIN"] as const) {
       expect(technologyNameV7("NAVAL_ENGINEERING", faction)).toBe(
-        faction === "GOBLIN" ? "Dreadnoughts" : "Shipbuilding",
+        faction === "GOBLIN"
+          ? "Dreadnoughts"
+          : // The Undead Drowned Fleet (`pulp_wars-5ti.17`).
+            faction === "UNDEAD"
+            ? "Plague Galleons"
+            : "Shipbuilding",
       );
       expect(technologyNameV7("NAVIGATION", faction)).toBe("Navigation");
     }

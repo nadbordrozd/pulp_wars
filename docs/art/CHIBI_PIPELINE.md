@@ -2128,3 +2128,15 @@ list) was refused by the manifest check and cut down.
 - **"Add kegs on deck" can repaint the hull**: one seed's two candidates
   striped the whole hull black and yellow; the other seed put two kegs at
   the bow as asked.
+
+## The Undead Drowned Crews icon (bead `pulp_wars-5ti.17`)
+
+A fresh `icon` for the Undead Seamanship in batch `naval-undead`
+([what and why](NAVAL_FACTIONS.md#the-undead-drowned-crews-bead-pulp_wars-5ti17)).
+
+- **A hand on an object comes out small**: both fresh creations drew the
+  wheel well and the bone hand as a white blob or a claw. A prompt
+  addendum asking for a big hand gave a cog and a living hand instead;
+  an `edit-image-pixen` edit of the best wheel ("make the hand bigger and
+  clearer: four bony fingers and a thumb gripping the rim") kept the
+  wheel and fixed the hand in both candidates.

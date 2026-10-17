@@ -289,6 +289,13 @@ export type TechnologyUnlockV7 =
    */
   | { readonly kind: "FIRE_RAFTS" }
   /**
+   * Themed naval branches (docs/product/RULESET_7_NAVAL_FACTIONS.md section
+   * 4.3 U1, `pulp_wars-5ti.17`): Drowned Crews, the Undead `SEAMANSHIP` in
+   * place of Board. A hostile ship the owner's ships sink by attack or
+   * retaliation rises at once as the owner's Ghost Ship.
+   */
+  | { readonly kind: "DROWNED_CREWS" }
+  /**
    * The naval branch (section 5.4): Harbours, every active Port and
    * Shipyard of the owner gives `population` more live population.
    */
@@ -447,6 +454,10 @@ export type UnitRoleAbilityV7 =
   // `seaBeast`) is never boarded. No role carries it yet; the Dinosaur
   // Plesiosaur and the Cult Kraken will.
   | "SEA_BEAST"
+  // Themed naval branches (section 4.3 U1, `pulp_wars-5ti.17`): an Undead
+  // ship's Drowned Crew (with Drowned Crews, a hostile ship it sinks rises
+  // as the owner's Ghost Ship).
+  | "DROWNED_CREW"
   // The naval branch, the frozen sea (section 8.4): every Ice Folk land
   // role Freezes.
   | "FREEZE"
@@ -2040,21 +2051,33 @@ export const ORIGINAL_BASELINE_V5_TREE: FactionTechnologyTreeV7 = deepFreeze({
  * support and Chivalry grants no Overrun.
  */
 export const UNDEAD_BASELINE_V1_NODES: readonly TechnologyNodeV7[] = deepFreeze(
-  SHARED_BASELINE_NODES_V7.map((original) =>
-    node(original.id, original.branch, original.tier, original.prerequisites, [
-      ...original.unlocks.flatMap((unlock): TechnologyUnlockV7[] =>
-        unlock.kind === "CAPTAIN_SUPPORT"
-          ? [{ kind: "NECROMANCER_SUPPORT" }]
-          : unlock.kind === "OVERRUN"
-            ? []
-            : [unlock],
+  withSeamanshipUnlocksV7(
+    SHARED_BASELINE_NODES_V7.map((original) =>
+      node(
+        original.id,
+        original.branch,
+        original.tier,
+        original.prerequisites,
+        [
+          ...original.unlocks.flatMap((unlock): TechnologyUnlockV7[] =>
+            unlock.kind === "CAPTAIN_SUPPORT"
+              ? [{ kind: "NECROMANCER_SUPPORT" }]
+              : unlock.kind === "OVERRUN"
+                ? []
+                : [unlock],
+          ),
+          // The Undead pass, correction: Explosives (shown as Pestilence)
+          // keeps both Human unlocks and adds `PESTILENCE`.
+          ...(original.id === "EXPLOSIVES"
+            ? [{ kind: "PESTILENCE" } as const]
+            : []),
+        ],
       ),
-      // The Undead pass, correction: Explosives (shown as Pestilence)
-      // keeps both Human unlocks and adds `PESTILENCE`.
-      ...(original.id === "EXPLOSIVES"
-        ? [{ kind: "PESTILENCE" } as const]
-        : []),
-    ]),
+    ),
+    // Themed naval branches (docs/product/RULESET_7_NAVAL_FACTIONS.md
+    // section 4.1, `pulp_wars-5ti.17`): Drowned Crews, the Ram and the
+    // rising of what the Undead ships sink instead of Board.
+    [{ kind: "DROWNED_CREWS" }],
   ),
 );
 
@@ -2199,9 +2222,26 @@ export const UNDEAD_ROLE_RULES_V7: Readonly<
     // The giants' signatures (section 6.2): Swallow instead of Push.
     abilities: ["ATTACK", "CAPTURE", "INFECT", "SWALLOW"],
   }),
-  PATROL_BOAT: role({ ...ORIGINAL_ROLE_RULES_V7.PATROL_BOAT }),
-  BATTLESHIP: role({ ...ORIGINAL_ROLE_RULES_V7.BATTLESHIP }),
-  SUBMARINE: role({ ...ORIGINAL_ROLE_RULES_V7.SUBMARINE }),
+  // Themed naval branches, the Drowned Fleet
+  // (docs/product/RULESET_7_NAVAL_FACTIONS.md section 4.2,
+  // `pulp_wars-5ti.17`): the Human numbers. Every Undead ship has a Drowned
+  // Crew (a hostile ship it sinks rises as a Ghost Ship, with Drowned
+  // Crews); the Plague Galleon's shot plagues (with Pestilence).
+  PATROL_BOAT: role({
+    ...ORIGINAL_ROLE_RULES_V7.PATROL_BOAT,
+    label: "Ghost Ship",
+    abilities: ["ATTACK", "RAM", "DROWNED_CREW"],
+  }),
+  BATTLESHIP: role({
+    ...ORIGINAL_ROLE_RULES_V7.BATTLESHIP,
+    label: "Plague Galleon",
+    abilities: ["ATTACK", "PLAGUE", "DROWNED_CREW"],
+  }),
+  SUBMARINE: role({
+    ...ORIGINAL_ROLE_RULES_V7.SUBMARINE,
+    label: "Sunken Galley",
+    abilities: ["ATTACK", "SUBMERGED", "TORPEDO", "DROWNED_CREW"],
+  }),
   // The ninth unit (`pulp_wars-w49.17`, 7r55): the Wight, the Undead
   // heavy line unit (Metallurgy). Rise Again is the role mechanic
   // `riseAgainHp`.
@@ -4905,6 +4945,13 @@ export const TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7: Readonly<
     MARKSMANSHIP: "Banshees",
     SAWMILLING: "Liches",
     CHIVALRY: "Vampires",
+    // Themed naval branches, the Drowned Fleet (`pulp_wars-5ti.17`,
+    // docs/product/RULESET_7_NAVAL_FACTIONS.md section 4.1): Navigation
+    // keeps its shared name.
+    SHORECRAFT: "Ghost Ships",
+    NAVAL_ENGINEERING: "Plague Galleons",
+    SEAMANSHIP: "Drowned Crews",
+    SUBMERSIBLES: "Sunken Galleys",
   },
   GOBLIN: {
     COMMERCE: "Plunder",
@@ -6795,6 +6842,61 @@ export function boardSeaBeastBlockedV7(
 }
 
 /**
+ * Themed naval branches, the Drowned Fleet
+ * (docs/product/RULESET_7_NAVAL_FACTIONS.md section 4.3 U1,
+ * `pulp_wars-5ti.17`): the HP of a Ghost Ship risen by Drowned Crews (of
+ * the Undead Patrol Boat's 10).
+ */
+export const DROWNED_CREW_HP_V7 = 5;
+
+/**
+ * Drowned Crews, the killer's side: null unless `unit`'s role has the
+ * `DROWNED_CREW` ability and its kind's capabilities under its controller
+ * have `drownedCrews`; otherwise whether the controller may also raise a
+ * Ghost Ship on Deep Water (Navigation: no seat owns a ship it could not
+ * sail). The canonical reader passes the controller's research; the public
+ * unit stats publish it (`drownedCrew`), so every preview is exact.
+ */
+export function drownedCrewOfV7(
+  roster: FactionRosterV7,
+  unit: UnitKindRefV7 & { readonly role: UnitRoleIdV7 } & SummonedUnitRefV7,
+  controllerResearchedTechs: readonly TechnologyIdV7[],
+): { readonly deepWater: boolean } | null {
+  if (!unitRoleRuleV7(roster, unit).abilities.includes("DROWNED_CREW"))
+    return null;
+  if (!unitCapabilitiesV7(roster, unit, controllerResearchedTechs).drownedCrews)
+    return null;
+  return { deepWater: controllerResearchedTechs.includes("NAVIGATION") };
+}
+
+/**
+ * Drowned Crews (section 4.3 U1): whether a kill by `killer` of `victim`
+ * (by the `ATTACK` or by its retaliation) raises a Ghost Ship of the
+ * killer's owner on the victim's tile. The killer is a ship (`NAVAL`) with
+ * a Drowned Crew (`drownedCrewOfV7`), the victim a ship (`NAVAL`: an
+ * embarked victim is a land unit and drowns) on Shallow Water, or on Deep
+ * Water when the killer's owner has Navigation, and never on ice. Splash,
+ * blasts, Wail, Plague, bombs, the crush, and a Tentacle never reach this
+ * reader (it is the Infect step of a combat kill).
+ */
+export function drownedCrewRaisesV7(
+  killer: {
+    readonly form: UnitFormV7;
+    readonly drownedCrew: { readonly deepWater: boolean } | null;
+  },
+  victim: { readonly form: UnitFormV7 },
+  victimTerrain: string | undefined,
+  victimOnIce: boolean,
+): boolean {
+  if (killer.form !== "NAVAL" || killer.drownedCrew === null) return false;
+  if (victim.form !== "NAVAL" || victimOnIce) return false;
+  return (
+    victimTerrain === "SHALLOW_WATER" ||
+    (victimTerrain === "DEEP_WATER" && killer.drownedCrew.deepWater)
+  );
+}
+
+/**
  * The naval branch (section 5.4): THE live population of an active dock: a
  * Port gives 1 and a Shipyard 2, plus the owner's `harbourPopulation`
  * (Harbours). A blockaded dock gives 0 (the caller's rule).
@@ -7530,6 +7632,13 @@ export interface TechnologyCapabilitiesV7 {
    * Fire Raft of the tree may Kaboom afloat.
    */
   readonly fireRafts: boolean;
+  /**
+   * Themed naval branches (docs/product/RULESET_7_NAVAL_FACTIONS.md section
+   * 4.3 U1, `pulp_wars-5ti.17`): Drowned Crews (the Undead `SEAMANSHIP`), a
+   * hostile ship a ship of the tree sinks by attack or retaliation rises as
+   * the owner's Ghost Ship.
+   */
+  readonly drownedCrews: boolean;
 }
 
 export function technologyCapabilitiesV7(
@@ -7614,6 +7723,7 @@ export function technologyCapabilitiesV7(
   let tentacles = false;
   let summonMass = false;
   let fireRafts = false;
+  let drownedCrews = false;
   for (const unlock of unlocks)
     switch (unlock.kind) {
       case "COMMAND":
@@ -7762,6 +7872,9 @@ export function technologyCapabilitiesV7(
       case "FIRE_RAFTS":
         fireRafts = true;
         break;
+      case "DROWNED_CREWS":
+        drownedCrews = true;
+        break;
       case "SUMMONER_SUPPORT":
       case "CONFECTIONER_SUPPORT":
       case "ENGINEER_SUPPORT":
@@ -7851,6 +7964,7 @@ export function technologyCapabilitiesV7(
     tentacles,
     summonMass,
     fireRafts,
+    drownedCrews,
   });
   TECHNOLOGY_CAPABILITIES_CACHE_V7.set(cacheKey, result);
   if (TECHNOLOGY_CAPABILITIES_CACHE_V7.size > 32) {

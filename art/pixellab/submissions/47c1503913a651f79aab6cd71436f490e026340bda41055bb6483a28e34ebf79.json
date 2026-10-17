@@ -1,0 +1,36 @@
+{
+  "id": "icon-tech-drowned-crews-d",
+  "jobId": "4d5b7596-2b47-4b2d-8f98-db9926000e95",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-undead",
+    "asset": "chibi-naval-undead-icon-tech-seamanship",
+    "subject": "ICON:TECH:UNDEAD:SEAMANSHIP",
+    "faction": "UNDEAD",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 99254,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Make the pale ivory skeleton hand bigger and clearer: four long bony fingers and a thumb gripping the right side of the dark wheel rim, the bony wrist coming in from the lower right corner. Keep the dark wheel, its ivory handles, the violet flame at the hub, the thick black outline and the style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Make the pale ivory skeleton hand bigger and clearer: four long bony fingers and a thumb gripping the right side of the dark wheel rim, the bony wrist coming in from the lower right corner. Keep the dark wheel, its ivory handles, the violet flame at the hub, the thick black outline and the style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Make the pale ivory skeleton hand bigger and clearer: four long bony fingers and a thumb gripping the right side of the dark wheel rim, the bony wrist coming in from the lower right corner. Keep the dark wheel, its ivory handles, the violet flame at the hub, the thick black outline and the style the same, on a transparent background.",
+    "editInstruction": "Make the pale ivory skeleton hand bigger and clearer: four long bony fingers and a thumb gripping the right side of the dark wheel rim, the bony wrist coming in from the lower right corner. Keep the dark wheel, its ivory handles, the violet flame at the hub, the thick black outline and the style the same, on a transparent background.",
+    "source": {
+      "recipe": "icon-tech-drowned-crews-a",
+      "candidate": 0,
+      "sha256": "12ddc986fd6c445afa1ff87410253dc3b2f1351bf207495bd28f5f61101686df"
+    }
+  }
+}

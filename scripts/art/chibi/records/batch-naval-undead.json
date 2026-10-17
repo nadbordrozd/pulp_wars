@@ -2,6 +2,336 @@
   "schemaVersion": 1,
   "batch": "naval-undead",
   "recipes": {
+    "icon-tech-drowned-crews-a": {
+      "id": "icon-tech-drowned-crews-a",
+      "asset": "chibi-naval-undead-icon-tech-seamanship",
+      "jobId": "sync-f2f01be2-9f8a-45d7-9854-b1802209cb5b",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "naval-undead",
+        "asset": "chibi-naval-undead-icon-tech-seamanship",
+        "subject": "ICON:TECH:UNDEAD:SEAMANSHIP",
+        "faction": "UNDEAD",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 99251,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/UNDEAD.md#prompt-fragment + docs/art/factions/UNDEAD.md#negative-fragment",
+            "text": "Faction: cheerful spooky storybook, playful and never scary. Their fixed colours: a lot of smooth pale warm ivory bone (skulls, ribs, bone trinkets), ragged near-black charcoal cloth with torn zigzag hems, pallid ash grey skin, small pieces of tarnished bronze and dark rusted iron, and exactly one accent colour, a bright glowing violet, only as small glows and thin trim: eye sockets, magic flames, a staff head, a hem. Bone is shaded warm grey, cloth near-black.",
+            "negative": "blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, slime, red cloth, red tunic, red robe, red hood, green skin, blue skin, orange flames, pumpkin, see-through, translucent, gun, musket, modern clothing, blue flames, yellow glow, gold armour, large glowing area, moss"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+            "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/UNDEAD.json",
+            "text": "Subject: one round dark weathered grey-brown wooden ship's steering wheel with eight spokes and round handles, seen from the front, its rim pale warm ivory bone, and one pale warm ivory skeleton bone hand reaching up from below and gripping the lowest handle, a small bright violet ghost-glow at the hub; nothing else in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "person, full skeleton, skull, ship, boat, water, sail, anchor, rope, red, orange, green, blue, gold, text"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: cheerful spooky storybook, playful and never scary. Their fixed colours: a lot of smooth pale warm ivory bone (skulls, ribs, bone trinkets), ragged near-black charcoal cloth with torn zigzag hems, pallid ash grey skin, small pieces of tarnished bronze and dark rusted iron, and exactly one accent colour, a bright glowing violet, only as small glows and thin trim: eye sockets, magic flames, a staff head, a hem. Bone is shaded warm grey, cloth near-black. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one round dark weathered grey-brown wooden ship's steering wheel with eight spokes and round handles, seen from the front, its rim pale warm ivory bone, and one pale warm ivory skeleton bone hand reaching up from below and gripping the lowest handle, a small bright violet ghost-glow at the hub; nothing else in the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, slime, red cloth, red tunic, red robe, red hood, green skin, blue skin, orange flames, pumpkin, see-through, translucent, gun, musket, modern clothing, blue flames, yellow glow, gold armour, large glowing area, moss, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, person, full skeleton, skull, ship, boat, water, sail, anchor, rope, red, orange, green, blue, gold",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: cheerful spooky storybook, playful and never scary. Their fixed colours: a lot of smooth pale warm ivory bone (skulls, ribs, bone trinkets), ragged near-black charcoal cloth with torn zigzag hems, pallid ash grey skin, small pieces of tarnished bronze and dark rusted iron, and exactly one accent colour, a bright glowing violet, only as small glows and thin trim: eye sockets, magic flames, a staff head, a hem. Bone is shaded warm grey, cloth near-black. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one round dark weathered grey-brown wooden ship's steering wheel with eight spokes and round handles, seen from the front, its rim pale warm ivory bone, and one pale warm ivory skeleton bone hand reaching up from below and gripping the lowest handle, a small bright violet ghost-glow at the hub; nothing else in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, slime, red cloth, red tunic, red robe, red hood, green skin, blue skin, orange flames, pumpkin, see-through, translucent, gun, musket, modern clothing, blue flames, yellow glow, gold armour, large glowing area, moss, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, person, full skeleton, skull, ship, boat, water, sail, anchor, rope, red, orange, green, blue, gold."
+      },
+      "submittedAt": "2026-10-17T02:15:37.616Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-undead/icon-tech-drowned-crews-a.png",
+      "rawSheetSha256": "12ddc986fd6c445afa1ff87410253dc3b2f1351bf207495bd28f5f61101686df",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0.1485,
+          "footprintWidthShare": 0.6591,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-17T02:16:10.257Z",
+      "usageUsd": 0.007969818962944878,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Reads as a dark ship's wheel with a violet hub, but the bone hand is a small white blob at 48 px; kept as the edit source of icon-tech-drowned-crews-d.",
+        "reviewedAt": "2026-10-17T02:19:31.399Z"
+      }
+    },
+    "icon-tech-drowned-crews-b": {
+      "id": "icon-tech-drowned-crews-b",
+      "asset": "chibi-naval-undead-icon-tech-seamanship",
+      "jobId": "sync-4a1d8cbf-bb05-4ac7-9c6e-70913b6342d0",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "naval-undead",
+        "asset": "chibi-naval-undead-icon-tech-seamanship",
+        "subject": "ICON:TECH:UNDEAD:SEAMANSHIP",
+        "faction": "UNDEAD",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 99252,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/UNDEAD.md#prompt-fragment + docs/art/factions/UNDEAD.md#negative-fragment",
+            "text": "Faction: cheerful spooky storybook, playful and never scary. Their fixed colours: a lot of smooth pale warm ivory bone (skulls, ribs, bone trinkets), ragged near-black charcoal cloth with torn zigzag hems, pallid ash grey skin, small pieces of tarnished bronze and dark rusted iron, and exactly one accent colour, a bright glowing violet, only as small glows and thin trim: eye sockets, magic flames, a staff head, a hem. Bone is shaded warm grey, cloth near-black.",
+            "negative": "blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, slime, red cloth, red tunic, red robe, red hood, green skin, blue skin, orange flames, pumpkin, see-through, translucent, gun, musket, modern clothing, blue flames, yellow glow, gold armour, large glowing area, moss"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+            "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/UNDEAD.json",
+            "text": "Subject: one round dark weathered grey-brown wooden ship's steering wheel with eight spokes and round handles, seen from the front, its rim pale warm ivory bone, and one pale warm ivory skeleton bone hand reaching up from below and gripping the lowest handle, a small bright violet ghost-glow at the hub; nothing else in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "person, full skeleton, skull, ship, boat, water, sail, anchor, rope, red, orange, green, blue, gold, text"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: cheerful spooky storybook, playful and never scary. Their fixed colours: a lot of smooth pale warm ivory bone (skulls, ribs, bone trinkets), ragged near-black charcoal cloth with torn zigzag hems, pallid ash grey skin, small pieces of tarnished bronze and dark rusted iron, and exactly one accent colour, a bright glowing violet, only as small glows and thin trim: eye sockets, magic flames, a staff head, a hem. Bone is shaded warm grey, cloth near-black. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one round dark weathered grey-brown wooden ship's steering wheel with eight spokes and round handles, seen from the front, its rim pale warm ivory bone, and one pale warm ivory skeleton bone hand reaching up from below and gripping the lowest handle, a small bright violet ghost-glow at the hub; nothing else in the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, slime, red cloth, red tunic, red robe, red hood, green skin, blue skin, orange flames, pumpkin, see-through, translucent, gun, musket, modern clothing, blue flames, yellow glow, gold armour, large glowing area, moss, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, person, full skeleton, skull, ship, boat, water, sail, anchor, rope, red, orange, green, blue, gold",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: cheerful spooky storybook, playful and never scary. Their fixed colours: a lot of smooth pale warm ivory bone (skulls, ribs, bone trinkets), ragged near-black charcoal cloth with torn zigzag hems, pallid ash grey skin, small pieces of tarnished bronze and dark rusted iron, and exactly one accent colour, a bright glowing violet, only as small glows and thin trim: eye sockets, magic flames, a staff head, a hem. Bone is shaded warm grey, cloth near-black. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one round dark weathered grey-brown wooden ship's steering wheel with eight spokes and round handles, seen from the front, its rim pale warm ivory bone, and one pale warm ivory skeleton bone hand reaching up from below and gripping the lowest handle, a small bright violet ghost-glow at the hub; nothing else in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, slime, red cloth, red tunic, red robe, red hood, green skin, blue skin, orange flames, pumpkin, see-through, translucent, gun, musket, modern clothing, blue flames, yellow glow, gold armour, large glowing area, moss, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, person, full skeleton, skull, ship, boat, water, sail, anchor, rope, red, orange, green, blue, gold."
+      },
+      "submittedAt": "2026-10-17T02:16:10.259Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-undead/icon-tech-drowned-crews-b.png",
+      "rawSheetSha256": "0bc240e6b2e3e9c88e955cc49faeb8e49cf5a00e39b63d69616bfe2b6a8976d8",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0.1484,
+          "footprintWidthShare": 0.7083,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-17T02:16:35.226Z",
+      "usageUsd": 0.00743165045314365,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "An ivory wheel inside a black spiked ring with bronze knobs; the hand below reads as a claw and the ring as a sea mine.",
+        "reviewedAt": "2026-10-17T02:19:31.637Z"
+      }
+    },
+    "icon-tech-drowned-crews-c": {
+      "id": "icon-tech-drowned-crews-c",
+      "asset": "chibi-naval-undead-icon-tech-seamanship",
+      "jobId": "sync-d997fac5-ad35-46ba-a736-2e9a12962728",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "naval-undead",
+        "asset": "chibi-naval-undead-icon-tech-seamanship",
+        "subject": "ICON:TECH:UNDEAD:SEAMANSHIP",
+        "faction": "UNDEAD",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 99253,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/UNDEAD.md#prompt-fragment + docs/art/factions/UNDEAD.md#negative-fragment",
+            "text": "Faction: cheerful spooky storybook, playful and never scary. Their fixed colours: a lot of smooth pale warm ivory bone (skulls, ribs, bone trinkets), ragged near-black charcoal cloth with torn zigzag hems, pallid ash grey skin, small pieces of tarnished bronze and dark rusted iron, and exactly one accent colour, a bright glowing violet, only as small glows and thin trim: eye sockets, magic flames, a staff head, a hem. Bone is shaded warm grey, cloth near-black.",
+            "negative": "blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, slime, red cloth, red tunic, red robe, red hood, green skin, blue skin, orange flames, pumpkin, see-through, translucent, gun, musket, modern clothing, blue flames, yellow glow, gold armour, large glowing area, moss"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+            "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/UNDEAD.json",
+            "text": "Subject: one round dark weathered grey-brown wooden ship's steering wheel with eight spokes and round handles, seen from the front, its rim pale warm ivory bone, and one pale warm ivory skeleton bone hand reaching up from below and gripping the lowest handle, a small bright violet ghost-glow at the hub; nothing else in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The skeleton hand is big and clear, as wide as a quarter of the wheel: four long pale ivory bone fingers and a bony thumb wrapped around the right side of the dark wheel rim, the bony wrist coming in from the lower right corner.",
+            "negative": "person, full skeleton, skull, ship, boat, water, sail, anchor, rope, spikes, red, orange, green, blue, gold, text"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: cheerful spooky storybook, playful and never scary. Their fixed colours: a lot of smooth pale warm ivory bone (skulls, ribs, bone trinkets), ragged near-black charcoal cloth with torn zigzag hems, pallid ash grey skin, small pieces of tarnished bronze and dark rusted iron, and exactly one accent colour, a bright glowing violet, only as small glows and thin trim: eye sockets, magic flames, a staff head, a hem. Bone is shaded warm grey, cloth near-black. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one round dark weathered grey-brown wooden ship's steering wheel with eight spokes and round handles, seen from the front, its rim pale warm ivory bone, and one pale warm ivory skeleton bone hand reaching up from below and gripping the lowest handle, a small bright violet ghost-glow at the hub; nothing else in the image. The skeleton hand is big and clear, as wide as a quarter of the wheel: four long pale ivory bone fingers and a bony thumb wrapped around the right side of the dark wheel rim, the bony wrist coming in from the lower right corner.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, slime, red cloth, red tunic, red robe, red hood, green skin, blue skin, orange flames, pumpkin, see-through, translucent, gun, musket, modern clothing, blue flames, yellow glow, gold armour, large glowing area, moss, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, person, full skeleton, skull, ship, boat, water, sail, anchor, rope, spikes, red, orange, green, blue, gold",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: cheerful spooky storybook, playful and never scary. Their fixed colours: a lot of smooth pale warm ivory bone (skulls, ribs, bone trinkets), ragged near-black charcoal cloth with torn zigzag hems, pallid ash grey skin, small pieces of tarnished bronze and dark rusted iron, and exactly one accent colour, a bright glowing violet, only as small glows and thin trim: eye sockets, magic flames, a staff head, a hem. Bone is shaded warm grey, cloth near-black. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one round dark weathered grey-brown wooden ship's steering wheel with eight spokes and round handles, seen from the front, its rim pale warm ivory bone, and one pale warm ivory skeleton bone hand reaching up from below and gripping the lowest handle, a small bright violet ghost-glow at the hub; nothing else in the image. The skeleton hand is big and clear, as wide as a quarter of the wheel: four long pale ivory bone fingers and a bony thumb wrapped around the right side of the dark wheel rim, the bony wrist coming in from the lower right corner. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, blood, gore, guts, exposed organs, open wounds, dripping, horror, creepy realism, slime, red cloth, red tunic, red robe, red hood, green skin, blue skin, orange flames, pumpkin, see-through, translucent, gun, musket, modern clothing, blue flames, yellow glow, gold armour, large glowing area, moss, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, person, full skeleton, skull, ship, boat, water, sail, anchor, rope, spikes, red, orange, green, blue, gold."
+      },
+      "submittedAt": "2026-10-17T02:17:26.686Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-undead/icon-tech-drowned-crews-c.png",
+      "rawSheetSha256": "eccebdcb46e9dc1fe92b756b1fa33ec03eab5c3bf0aa88df9ec4f757cbe4c440",
+      "plateHints": [
+        {
+          "bandRows": 10,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8333,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-17T02:18:02.702Z",
+      "usageUsd": 0.00812184927198622,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "A grey cog with a violet glow and a fleshy living hand in a dark sleeve: not a ship's wheel and not a skeleton hand.",
+        "reviewedAt": "2026-10-17T02:19:31.873Z"
+      }
+    },
+    "icon-tech-drowned-crews-d": {
+      "id": "icon-tech-drowned-crews-d",
+      "asset": "chibi-naval-undead-icon-tech-seamanship",
+      "jobId": "4d5b7596-2b47-4b2d-8f98-db9926000e95",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-undead",
+        "asset": "chibi-naval-undead-icon-tech-seamanship",
+        "subject": "ICON:TECH:UNDEAD:SEAMANSHIP",
+        "faction": "UNDEAD",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 99254,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Make the pale ivory skeleton hand bigger and clearer: four long bony fingers and a thumb gripping the right side of the dark wheel rim, the bony wrist coming in from the lower right corner. Keep the dark wheel, its ivory handles, the violet flame at the hub, the thick black outline and the style the same, on a transparent background."
+          }
+        ],
+        "prompt": "Make the pale ivory skeleton hand bigger and clearer: four long bony fingers and a thumb gripping the right side of the dark wheel rim, the bony wrist coming in from the lower right corner. Keep the dark wheel, its ivory handles, the violet flame at the hub, the thick black outline and the style the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Make the pale ivory skeleton hand bigger and clearer: four long bony fingers and a thumb gripping the right side of the dark wheel rim, the bony wrist coming in from the lower right corner. Keep the dark wheel, its ivory handles, the violet flame at the hub, the thick black outline and the style the same, on a transparent background.",
+        "editInstruction": "Make the pale ivory skeleton hand bigger and clearer: four long bony fingers and a thumb gripping the right side of the dark wheel rim, the bony wrist coming in from the lower right corner. Keep the dark wheel, its ivory handles, the violet flame at the hub, the thick black outline and the style the same, on a transparent background.",
+        "source": {
+          "recipe": "icon-tech-drowned-crews-a",
+          "candidate": 0,
+          "sha256": "12ddc986fd6c445afa1ff87410253dc3b2f1351bf207495bd28f5f61101686df"
+        }
+      },
+      "submittedAt": "2026-10-17T02:18:02.706Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-undead/icon-tech-drowned-crews-d.png",
+      "rawSheetSha256": "3a364261bdac2c01f0f3c83617bf9226a3d04f21f1ef811c9a1a2e195691a338",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0.1184,
+          "footprintWidthShare": 0.7273,
+          "suspect": false
+        },
+        {
+          "bandRows": 9,
+          "groundShare": 0.1184,
+          "footprintWidthShare": 0.7273,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-17T02:18:43.922Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 1,
+        "notes": "Drowned Crews (bead pulp_wars-5ti.17): a dark weathered ship's wheel with ivory handles and a violet flame at the hub, a pale bone skeleton hand gripping it from the lower right; reads at 48 px as a ship's wheel taken by the dead, beside the shared birch wheel. Candidate 1 has the larger, clearer hand.",
+        "reviewedAt": "2026-10-17T02:19:32.117Z"
+      }
+    },
     "undead-battleship-ghost-a": {
       "id": "undead-battleship-ghost-a",
       "asset": "chibi-naval-undead-battleship",
@@ -539,6 +869,73 @@
       },
       "notes": "A black ghost galleon: tattered charcoal sails, black rag pennants, bone studs along the side, a skull figurehead and violet lanterns. The bone ribs came out as studs; the darkest naval sprite, carried by the skull, the bone and the lights.",
       "acceptedAt": "2026-10-03T08:04:10.842Z"
+    },
+    "chibi-naval-undead-icon-tech-seamanship": {
+      "id": "chibi-naval-undead-icon-tech-seamanship",
+      "subject": "ICON:TECH:UNDEAD:SEAMANSHIP",
+      "assetClass": "ICON",
+      "status": "ACCEPTED",
+      "recipe": "icon-tech-drowned-crews-d",
+      "candidate": 1,
+      "candidateSha256": "8a2b54206dd43cb5b661dac1275ef0721e178220d9502f70b0408f8ddd14e40a",
+      "master": {
+        "path": "public/assets/chibi/icons/chibi-naval-undead-icon-tech-seamanship.png",
+        "sha256": "d567c27815b2eeefc91e9b77eb8e0eeb08b4b2536aac329463a6d13a642cb8d0",
+        "pixelSha256": "4e9150b9c0e494727f0207157e56e1c9f0154602fce6fadb3d34842376e07efa",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is",
+        "accent": {
+          "preset": "undead-violet",
+          "spec": {
+            "band": {
+              "hueFrom": 250,
+              "hueTo": 320,
+              "saturationMin": 0.4,
+              "valueMin": 0.2,
+              "hueCentre": 285
+            },
+            "hue": 274,
+            "hueSpread": 0.5,
+            "trim": {
+              "maxAccentNeighbours": 2,
+              "minDarkNeighbours": 3,
+              "darkValueMax": 0.3,
+              "saturationMax": 0.62,
+              "valueMin": 0.96
+            }
+          },
+          "accentPixels": 34,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 9,
+        "groundShare": 0.1184,
+        "footprintWidthShare": 0.7273,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Drowned Crews (bead pulp_wars-5ti.17): a dark weathered ship's wheel with ivory handles and a violet flame at the hub, a pale bone skeleton hand gripping it from the lower right; reads at 48 px as a ship's wheel taken by the dead, beside the shared birch wheel. Candidate 1 has the larger, clearer hand.",
+      "acceptedAt": "2026-10-17T02:19:32.117Z"
     },
     "chibi-naval-undead-patrol-boat": {
       "id": "chibi-naval-undead-patrol-boat",

@@ -265,10 +265,12 @@ describe("training a Submarine", () => {
         4,
         ["ATTACK", "SUBMERGED", "TORPEDO"],
       ]);
+      // Seat 1 is Undead: its Sunken Galley has a Drowned Crew
+      // (`pulp_wars-5ti.17`).
       expect(stats({ x: 2, y: 6 })).toEqual([
         true,
         4,
-        ["ATTACK", "SUBMERGED", "TORPEDO"],
+        ["ATTACK", "SUBMERGED", "TORPEDO", "DROWNED_CREW"],
       ]);
       expect(stats({ x: 3, y: 4 })).toEqual([false, 3, ["ATTACK", "RAM"]]);
       expect(stats({ x: 4, y: 5 })).toEqual([false, 8, ["ATTACK"]]);

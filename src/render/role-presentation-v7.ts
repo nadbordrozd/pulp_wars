@@ -207,7 +207,12 @@ export function roleAbilityDescriptionV7(
    */
   role?: UnitRoleIdV7,
 ): string | null {
-  const undead = undeadAbilityDescriptionV7(ability, faction, cureCaptain);
+  const undead = undeadAbilityDescriptionV7(
+    ability,
+    faction,
+    cureCaptain,
+    role,
+  );
   if (undead !== null) return undead;
   const goblin = goblinAbilityDescriptionV7(ability, faction);
   if (goblin !== null) return goblin;

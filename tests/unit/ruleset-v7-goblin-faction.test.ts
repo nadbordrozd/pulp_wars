@@ -77,11 +77,11 @@ import {
 
 describe("ruleset-7 revision-17 identity", () => {
   it("keeps r16 among the prior identities after the r55 identity and cleans the r16 key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r92");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r92.current");
-    expect(PRIOR_RULESET_7_IDS.at(-76)).toBe("pulp-wars-poc-7r16");
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(91);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-76)).toBe(
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r93");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r93.current");
+    expect(PRIOR_RULESET_7_IDS.at(-77)).toBe("pulp-wars-poc-7r16");
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(92);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-77)).toBe(
       "pulpWars.save.v7r16.current",
     );
     const storage = new MemoryStorage([
@@ -807,6 +807,11 @@ describe("ruleset-7 Goblin technology", () => {
         MARKSMANSHIP: "Banshees",
         SAWMILLING: "Liches",
         CHIVALRY: "Vampires",
+        // Themed naval branches (`pulp_wars-5ti.17`).
+        SHORECRAFT: "Ghost Ships",
+        NAVAL_ENGINEERING: "Plague Galleons",
+        SEAMANSHIP: "Drowned Crews",
+        SUBMERSIBLES: "Sunken Galleys",
       },
       GOBLIN: {
         COMMERCE: "Plunder",

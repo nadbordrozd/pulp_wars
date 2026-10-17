@@ -342,6 +342,12 @@ const ENTRIES = {
     "When it sinks it blows up and hurts every unit next to it, yours too. A boarded ship does not.",
   ],
   SEA_BEAST: ["Sea beast", "A living beast: it cannot be boarded."],
+  // Themed naval branches (section 4.3 U1, `pulp_wars-5ti.17`): the
+  // Undead ships (the Plague Galleon's Plague is the Lich's Plague line).
+  DROWNED_CREW: [
+    "Drowned Crew",
+    "A ship your ships sink rises as your Ghost Ship. Unlocked by a technology.",
+  ],
   AT_SEA: [
     "At sea",
     "A transport carries a land unit across water. The unit cannot fight until it lands on a shore.",

@@ -557,7 +557,8 @@ export const CHIBI_NAVAL_FACTION_ART_ASSETS_V7: readonly ChibiNavalFactionArtV7[
  * Themed naval branches (docs/product/RULESET_7_NAVAL_FACTIONS.md section
  * 12, `pulp_wars-5ti.16`): the Seamanship card of a faction whose
  * Seamanship trick is its own, in the live look (the faction's batch
- * `naval-<faction>`). The Goblin Powder Kegs, a keg with a lit fuse. The
+ * `naval-<faction>`). The Goblin Powder Kegs, a keg with a lit fuse, and
+ * the Undead Drowned Crews (`pulp_wars-5ti.17`), a bone hand on a wheel. The
  * Classic look shows the shared ship's wheel.
  */
 export const CHIBI_NAVAL_FACTION_TECH_ICON_ASSETS_V7: readonly ChibiArtAssetV7[] =
@@ -570,6 +571,18 @@ export const CHIBI_NAVAL_FACTION_TECH_ICON_ASSETS_V7: readonly ChibiArtAssetV7[]
       height: 48,
       url: chibiArtUrl(
         "assets/chibi/icons/chibi-naval-goblin-icon-tech-seamanship.png",
+      ),
+    },
+    // `pulp_wars-5ti.17`: the Undead Drowned Crews, a skeletal hand on a
+    // dark ship's wheel (batch `naval-undead`).
+    {
+      id: "chibi-naval-undead-icon-tech-seamanship",
+      subject: "ICON:TECH:UNDEAD:SEAMANSHIP",
+      assetClass: "ICON",
+      width: 48,
+      height: 48,
+      url: chibiArtUrl(
+        "assets/chibi/icons/chibi-naval-undead-icon-tech-seamanship.png",
       ),
     },
   ];

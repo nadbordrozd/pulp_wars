@@ -526,6 +526,79 @@ no `BOARD` is offered to an Undead ship.
 - **Icons:** Drowned Crews (a skeletal hand on a ship's wheel).
 - **Sound:** the existing rising and Plague cues; no new clip.
 
+### 4.8 As built (`pulp_wars-5ti.17`, `pulp-wars-poc-7r93`)
+
+Built as above at identity `7r93` (`7r92` is a prior identity; the
+autosave key is `pulpWars.save.v7r93.current`). Every row of 4.2 is a
+registry value and every row of 4.4 an exact preview or result in
+`tests/unit/ruleset-v7-naval-undead.test.ts`; the AI scenarios of 4.6 are
+`tests/unit/ruleset-v7-naval-undead-ai.test.ts`. Where the build is more
+precise than the text above:
+
+- **The rising.** `drownedCrewOfV7` (the killer's role has `DROWNED_CREW`
+  and its kind's capabilities under its controller have `drownedCrews`;
+  `deepWater` is the controller's Navigation) and `drownedCrewRaisesV7`
+  (killer and victim in `NAVAL` form, the victim on Shallow Water or, with
+  Navigation, Deep Water, never on ice) feed two new inputs of the shared
+  `undeadCombatEffectsV7` (`attackerDrowns`, `defenderDrowns`), so the
+  canonical and public previews set `defenderInfected` and
+  `attackerInfected` and the reducer's Infect step runs unchanged;
+  `recordInfectionV7` makes a naval victim's rising the killer seat's
+  `PATROL_BOAT` in `NAVAL` form at `DROWNED_CREW_HP_V7` 5. The public
+  chain preview (`previewAttackExplosionsV7`) raises the same Ghost Ship.
+  A neutral victim never rises (no neutral unit sails today).
+- **Private research.** The text above says the preview carries
+  `attackerInfected` for a retaliation kill. An Undead seat's Drowned
+  Crews and Navigation are private (a ship's public stats never tell its
+  owner's naval research: `ruleset-v7-naval-branch-submarine.test.ts`), so
+  the public preview of another seat assumes both for an Undead ship, as
+  the threat estimate assumes a hostile Ram: a Human boat that would sink
+  to a Ghost Ship's reply is told it may rise ("You may rise as enemy
+  Ghost Ship"); the result follows the research. The viewer's own kills
+  are exact.
+- **A Dreadnought sunk by an Undead ship** rises, and its death blast (7)
+  then hits the 5-HP Ghost Ship on its tile, as a Zombie risen from a
+  Goblin exploding unit is hit: the crew rises and the powder blows.
+- **The rising's value (AI).** `drownedCrewRisingTenthsV7`: half the
+  viewer's Patrol Boat's cost (25 tenths), or three tenths of it (7) when a
+  visible hostile unit can sink the risen ship next turn. A hostile unit
+  whose reach covers the killer too is left out of that test: the risen
+  ship splits its fire. Without this rule the doc's own example (a Galley
+  beside a Patrol Boat and a Battleship) could not hold: the Battleship
+  always reaches the risen ship, and 5 + 0.75 Coins is less than the
+  chip's 6.4. The torpedo rule is `drownedCrewTorpedoPriorityV7` (priority
+  1280); the attack scorer values a naval rising at the risen ship's
+  strategic worth (its cost × 4 + 5 HP at the same factor) instead of the
+  Zombie's 24, and an own ship that would rise for the enemy at 25.
+- **Pestilence for a Galleon.** "Before Navigation" cannot happen: the
+  Galleon needs Shipbuilding, which needs Navigation. Built as: a seat that
+  owns a ship whose role has `PLAGUE` and lacks the capability `plague`
+  researches the first step of the chain to the node that grants it, at
+  priority 1220 (above the army's due research, 1219; below the naval
+  plan's 1280 and every training rule). A Lich keeps the army's own rule
+  (Pestilence before the last unit of the order once two Liches are
+  fielded), unchanged.
+- **The plague value** of the attack scorer already applied to every
+  attacker whose preview plagues (it reads `preview.plagued` in any match
+  with an Undead seat); the claim was verified, nothing changed there. The
+  station's plague term is `NAVAL_STATION_PLAGUE_VALUE_V7` 3 for each
+  living hostile unit not yet plagued in the best target's splash cluster
+  (the target included).
+- **Text.** The glossary has one `DROWNED_CREW` entry ("Drowned Crew") on
+  the three ships; the Galleon's Plague is the Lich's `PLAGUE` line (one
+  name, one mechanic), and its ability sentence names the Galleon. The
+  Drowned Crews card says the rule sentence, the Shipbuilding card says the
+  Galleon's plague, the Bow Ram and Submersibles cards name the Ghost Ship
+  and the Sunken Galley, the attack preview says "Rises as your Ghost
+  Ship", and a rising's notice says "A sunk Patrol Boat rose as a Ghost
+  Ship".
+- **Art.** The Drowned Crews card has its own icon
+  (`ICON:TECH:UNDEAD:SEAMANSHIP`, `chibi-naval-undead-icon-tech-seamanship`,
+  batch `naval-undead`; it falls back to the shared wheel); the Ghost Ships
+  and Sunken Galleys cards show the ships' portraits. The rising on water
+  is the existing Infect effect (the wisps), drawn on the ship's tile. No
+  new sound.
+
 ## 5. Dinosaurs: Horned Prows and the Plesiosaur
 
 **Theme.** Few, big, and growing: boats that charge, and one sea reptile

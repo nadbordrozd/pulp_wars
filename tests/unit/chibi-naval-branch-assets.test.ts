@@ -293,20 +293,22 @@ describe("naval branch art (pulp_wars-5ti.6)", () => {
       // The frozen sea: the Ice Folk have no ship; their Black Ice and
       // Glacier cards show ice, with icons of their own since
       // `pulp_wars-5ti.10` (stand-ins of registered art before).
-      // Themed naval branches (`pulp_wars-5ti.16`): the Goblin Powder Kegs
-      // card has its own keg, and Diving Barrels shows its ship.
+      // Themed naval branches (`pulp_wars-5ti.16`, `pulp_wars-5ti.17`): the
+      // Goblin Powder Kegs and Undead Drowned Crews cards have their own
+      // icons, and Diving Barrels and Sunken Galleys show their ships.
+      const themed = faction === "GOBLIN" || faction === "UNDEAD";
       expect(technologySubjectV7("SEAMANSHIP", faction), faction).toBe(
         faction === "ICE_FOLK"
           ? "ICON:TECH:ICE_FOLK:SEAMANSHIP"
-          : faction === "GOBLIN"
-            ? "ICON:TECH:GOBLIN:SEAMANSHIP"
+          : themed
+            ? `ICON:TECH:${faction}:SEAMANSHIP`
             : "ICON:TECH:SEAMANSHIP",
       );
       expect(technologySubjectV7("SUBMERSIBLES", faction), faction).toBe(
         faction === "ICE_FOLK"
           ? "ICON:TECH:ICE_FOLK:SUBMERSIBLES"
-          : faction === "GOBLIN"
-            ? "PORTRAIT:GOBLIN:SUBMARINE"
+          : themed
+            ? `PORTRAIT:${faction}:SUBMARINE`
             : "ICON:TECH:SUBMERSIBLES",
       );
     }

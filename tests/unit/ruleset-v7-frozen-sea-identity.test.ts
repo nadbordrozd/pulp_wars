@@ -72,17 +72,17 @@ const SEAFARERS = FACTION_IDS_V7.filter((faction) => faction !== "ICE_FOLK");
 // identities of tunings 5 and 6).
 describe("the frozen sea identity (7r44, then 7r45 for the ice fortification fix, then 7r46 and 7r47 for tunings 1 and 2)", () => {
   it("is 7r47 with 7r44 to 7r46 last in the gap-free prior list and their save keys obsolete", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r92");
-    expect(PRIOR_RULESET_7_IDS.slice(-49, -45)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r93");
+    expect(PRIOR_RULESET_7_IDS.slice(-50, -46)).toEqual([
       "pulp-wars-poc-7r43",
       "pulp-wars-poc-7r44",
       "pulp-wars-poc-7r45",
       "pulp-wars-poc-7r46",
     ]);
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(91);
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(92);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r92.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-48, -45)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r93.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-49, -46)).toEqual([
       "pulpWars.save.v7r44.current",
       "pulpWars.save.v7r45.current",
       "pulpWars.save.v7r46.current",
@@ -95,7 +95,7 @@ describe("the frozen sea identity (7r44, then 7r45 for the ice fortification fix
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
     const { state } = created;
-    expect(state.rulesetId).toBe("pulp-wars-poc-7r92");
+    expect(state.rulesetId).toBe("pulp-wars-poc-7r93");
     const oldSetup = { ...setup, rulesetId: "pulp-wars-poc-7r44" };
     expect(parseMatchSetupV7(oldSetup)).toBeNull();
     expect(
@@ -322,12 +322,13 @@ describe("the Ice Folk Naval tree (section 2.2)", () => {
         ],
         faction,
       ).toEqual(["NONE", false, false, 3, false]);
-      // Themed naval branches (`pulp_wars-5ti.16`): the Goblin Seamanship
-      // is Powder Kegs, the Ram and Fire Rafts instead of Board.
+      // Themed naval branches (`pulp_wars-5ti.16`, `pulp_wars-5ti.17`): the
+      // Goblin Seamanship is Powder Kegs, the Ram and Fire Rafts instead of
+      // Board, and the Undead one Drowned Crews.
       expect(
         [caps.ram, caps.boarding, caps.harbourPopulation],
         faction,
-      ).toEqual([true, faction !== "GOBLIN", 1]);
+      ).toEqual([true, faction !== "GOBLIN" && faction !== "UNDEAD", 1]);
       expect(caps.trainableRoles, faction).toEqual(
         expect.arrayContaining([...NAVAL_ROLE_IDS_V7]),
       );

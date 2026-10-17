@@ -45,6 +45,9 @@ import {
   dockPopulationV7,
   unitIsSubmergedV7,
   isIceAtV7,
+  DROWNED_CREW_HP_V7,
+  drownedCrewOfV7,
+  drownedCrewRaisesV7,
   unitIsIceboundV7,
   coverBonusV7,
   terrainGivesCoverV7,
@@ -10444,6 +10447,35 @@ export function queryIdleRecoveryV7(
     .sort((left, right) => left.unitId - right.unitId);
 }
 
+/**
+ * Themed naval branches, Drowned Crews (`pulp_wars-5ti.17`): a visible
+ * unit's Drowned Crew (`drownedCrewOfV7`). The viewer's own unit reads the
+ * viewer's research, so a preview of its kill is exact. Another seat's
+ * Drowned Crews and Navigation are private (a ship's public stats never
+ * tell its owner's naval research), so a ship of another seat whose role
+ * has the ability is assumed to have both, as a hostile Patrol Boat's Ram
+ * is: the preview of a retaliation that would sink the viewer's ship says
+ * it may rise for the enemy.
+ */
+function publicDrownedCrewV7(
+  view: PlayerViewV7,
+  unit: PublicUnitV7,
+): { readonly deepWater: boolean } | null {
+  if (unit.ownerId === view.viewer.id)
+    return drownedCrewOfV7(view, unit, view.viewer.researchedTechs);
+  return unitRoleRuleV7(view, unit).abilities.includes("DROWNED_CREW")
+    ? { deepWater: true }
+    : null;
+}
+
+function exploredTerrainAtV7(
+  view: PlayerViewV7,
+  at: CoordV7,
+): string | undefined {
+  const tile = tileAtView(view, at);
+  return tile?.explored === true ? tile.terrain : undefined;
+}
+
 function tileAtView(view: PlayerViewV7, at: CoordV7) {
   if (
     !Number.isSafeInteger(at.x) ||
@@ -11432,6 +11464,25 @@ function publicCombatPreviewCore(
     defenderDies,
     attackerOnRift: noRisingAtV7(view.board, attacker.at),
     defenderOnRift: noRisingAtV7(view.board, target.at),
+    // Themed naval branches (`pulp_wars-5ti.17`): Drowned Crews, from the
+    // viewer's research or the hostile ship's public stats.
+    attackerDrowns: drownedCrewRaisesV7(
+      { form: target.form, drownedCrew: publicDrownedCrewV7(view, target) },
+      attacker,
+      exploredTerrainAtV7(view, attacker.at),
+      isIceAtV7(view, attacker.at),
+    ),
+    defenderDrowns:
+      unitTakesStatusV7(target) &&
+      drownedCrewRaisesV7(
+        {
+          form: attacker.form,
+          drownedCrew: publicDrownedCrewV7(view, attacker),
+        },
+        target,
+        targetTile.terrain,
+        isIceAtV7(view, target.at),
+      ),
   });
   const frostbitten = attackIsFrostbittenV7(
     view,
@@ -11973,17 +12024,24 @@ function createPublicChainSimulationV7(
   const owners = new Map<UnitId, PlayerId>(
     view.units.map((unit) => [unit.id, unit.ownerId] as const),
   );
-  const rising = (at: CoordV7, ownerId: PlayerId, hp: number): BlastUnitV7 => {
+  const rising = (
+    at: CoordV7,
+    ownerId: PlayerId,
+    hp: number,
+    naval = false,
+  ): BlastUnitV7 => {
     provisional -= 1;
     const id = provisional as UnitId;
     owners.set(id, ownerId);
-    // A rising is its seat's own `GUARD` (a role-level read).
-    const rule = seatRoleRuleV7(view, ownerId, "GUARD");
+    // A rising is its seat's own `GUARD` (a role-level read); a Drowned
+    // Crews rising (`pulp_wars-5ti.17`) its own `PATROL_BOAT` afloat.
+    const role = naval ? "PATROL_BOAT" : "GUARD";
+    const rule = seatRoleRuleV7(view, ownerId, role);
     return {
       id,
       ownerId,
-      role: "GUARD",
-      form: "LAND",
+      role,
+      form: naval ? "NAVAL" : "LAND",
       at: { x: at.x, y: at.y },
       hp: Math.min(hp, rule.maxHp),
     };
@@ -12051,7 +12109,9 @@ function createPublicChainSimulationV7(
     },
     rise,
     infect: (victim, killerId) =>
-      rising(victim.at, killerId, INFECT_RISING_HP_V7),
+      victim.form === "NAVAL"
+        ? rising(victim.at, killerId, DROWNED_CREW_HP_V7, true)
+        : rising(victim.at, killerId, INFECT_RISING_HP_V7),
     run: (
       units,
       initial,

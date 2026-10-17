@@ -2,6 +2,8 @@ import type { CityId, PlayerId, UnitId } from "../engine/model/ids";
 import {
   BASIC_ECONOMIC_ACTIONS_V7,
   BEAM_DOWN_PICKUP_RANGE_V7,
+  DROWNED_CREW_HP_V7,
+  seatRoleRuleV7,
   EGG_DEFENSE2_V7,
   EGG_HP_V7,
   EMBARKED_LANDING_MAX_SPENT_V7,
@@ -637,6 +639,7 @@ import {
   navalSeaRouteBeatsWalkV7,
   navalTorpedoPriorityV7,
   navalAttackBlastOnAttackerV7,
+  drownedCrewRisingTenthsV7,
   navalTorpedoReachV7,
   navalTransportMoveRejectedV7,
   type NavalFleetFactsV7,
@@ -648,6 +651,11 @@ import {
   fireRaftKaboomScoreV7,
   navalDreadnoughtCrowdRejectedV7,
 } from "./v7-naval-goblin";
+import {
+  NAVAL_PLAGUE_RESEARCH_PRIORITY_V7,
+  drownedCrewTorpedoPriorityV7,
+  navalPlagueTechnologyV7,
+} from "./v7-naval-undead";
 import {
   BREAK_OFF_FRONT_RADIUS_V7,
   BREAK_OFF_MINIMUM_HP_V7,
@@ -12665,8 +12673,19 @@ function undeadAttackValueV7(
   const target = context.lookup.unitsById.get(command.targetUnitId);
   if (target === undefined) return 0;
   let value = 0;
-  if (preview.defenderInfected) value += INFECT_RISING_VALUE_V7;
-  if (preview.attackerInfected) value -= INFECT_RISING_VALUE_V7;
+  // Themed naval branches (`pulp_wars-5ti.17`): a ship's rising is a
+  // 5-HP Ghost Ship, worth what `drownedCrewRisingTenthsV7` says (a
+  // Zombie's rising keeps its value).
+  if (preview.defenderInfected)
+    value +=
+      target.form === "NAVAL"
+        ? drownedCrewRisingStrategicV7(context, actor, preview)
+        : INFECT_RISING_VALUE_V7;
+  if (preview.attackerInfected)
+    value -=
+      actor.form === "NAVAL"
+        ? DROWNED_CREW_RISING_COST_V7
+        : INFECT_RISING_VALUE_V7;
   if (isZombieV7(view, target) && distance(actor.at, target.at) >= 2)
     value += 6;
   if (zombieChipExposureV7(context, actor, target, preview))
@@ -12799,6 +12818,38 @@ function biteHarmAdjustmentV7(
 
 /** A 12-HP Zombie rising: Zombie cost 3 x 4 + 12 HP (10 HP and 22 until 7r56). */
 const INFECT_RISING_VALUE_V7 = 24;
+/**
+ * Themed naval branches (`pulp_wars-5ti.17`): a 5-HP Ghost Ship rising for
+ * the enemy (Ghost Ship cost 5 x 4 + 5 HP), the cost of an own ship that
+ * sinks to an Undead ship's reply.
+ */
+const DROWNED_CREW_RISING_COST_V7 = 25;
+
+/**
+ * The strategic value of the Ghost Ship an own ship's kill raises, on the
+ * scale of `targetStrategicValue` (its cost x 4 + 5 HP when safe), by the
+ * factor of `drownedCrewRisingTenthsV7` (safe, or doomed and worth three
+ * tenths).
+ */
+function drownedCrewRisingStrategicV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+  preview: CombatPreviewV7,
+): number {
+  const view = context.view;
+  const ship = seatRoleRuleV7(view, view.viewer.id, "PATROL_BOAT");
+  const half = Math.floor(((ship.cost ?? 0) * 10) / 2);
+  if (half <= 0) return 0;
+  const tenths = drownedCrewRisingTenthsV7(
+    view,
+    navalToolsV7(context),
+    actor,
+    preview,
+  );
+  return Math.floor(
+    (((ship.cost ?? 0) * 4 + DROWNED_CREW_HP_V7) * tenths) / half,
+  );
+}
 
 function attackPurposeExceptionV7(
   context: PolicyContextV7,
@@ -14477,6 +14528,21 @@ function scoreCommandWithContext(
   )
     priority = Math.max(priority, SAVINGS_BUY_PRIORITY_V7);
 
+  // Themed naval branches (`pulp_wars-5ti.17`): Pestilence (its chain's
+  // first step) for a seat whose Plague Galleon does not plague yet, over
+  // the army's and the naval plan's other research.
+  if (command.kind === "RESEARCH" && priority >= 0) {
+    const plague = navalPlagueTechnologyV7(view);
+    if (
+      plague !== null &&
+      researchChain(view, plague)[0] === command.tech &&
+      priority < NAVAL_PLAGUE_RESEARCH_PRIORITY_V7
+    ) {
+      priority = NAVAL_PLAGUE_RESEARCH_PRIORITY_V7;
+      strategicValue = Math.max(strategicValue, 60);
+    }
+  }
+
   if (command.kind === "TRAIN" || command.kind === "LAY_EGG") {
     priority = threatenedCity(context, command.cityId)
       ? 1260
@@ -14687,6 +14753,18 @@ function scoreCommandWithContext(
               actor.hp - preview.damageToAttacker,
         );
         if (torpedo !== null) priority = Math.max(priority, torpedo);
+        // Themed naval branches (`pulp_wars-5ti.17`): a torpedo kill that
+        // raises a Ghost Ship before a chip on a capital ship.
+        if (preview.torpedo && preview.defenderInfected) {
+          const rising = drownedCrewTorpedoPriorityV7(
+            view,
+            navalToolsV7(context),
+            actor,
+            targetUnit,
+            preview,
+          );
+          if (rising !== null) priority = Math.max(priority, rising);
+        }
         strategicValue += navalRamShoveValueV7(
           view,
           actor,

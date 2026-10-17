@@ -163,7 +163,7 @@ describe("Board is picked on the board", () => {
       () =>
         document
           .querySelector("#v7-live")
-          ?.textContent?.includes("You boarded the Undead's Patrol Boat") ===
+          ?.textContent?.includes("You boarded the Undead's Ghost Ship") ===
         true,
     );
     expect(host.lastModel?.interaction.navalPick ?? null).toBeNull();
@@ -521,9 +521,12 @@ describe("technology cards and Help", () => {
       // Boarding; the Goblin Scrap Fleet, `pulp_wars-5ti.16`: as Powder
       // Kegs, whose trick is the Fire Raft's Kaboom afloat, with its own
       // ships on every card.)
+      // (The Undead Drowned Fleet, `pulp_wars-5ti.17`: Drowned Crews,
+      // whose trick raises a Ghost Ship from a ship it sinks.)
       const goblin = faction === "GOBLIN";
+      const undead = faction === "UNDEAD";
       expect(seamanship.querySelector(".v7-tech-name")?.textContent).toBe(
-        goblin ? "Powder Kegs" : "Boarding",
+        goblin ? "Powder Kegs" : undead ? "Drowned Crews" : "Boarding",
       );
       seamanship.click();
       const lines = (): string[] =>
@@ -538,18 +541,27 @@ describe("technology cards and Help", () => {
               "Bow Ram: Fire Rafts that moved hit ships with +1 Attack and shove them back",
               "Powder Kegs: A Fire Raft can blow itself up, hitting every unit around it for 5",
             ]
-          : [
-              "Board: capture an adjacent enemy ship at a third of its HP or less",
-              "Bow Ram: Patrol Boats that moved hit ships with +1 Attack and shove them back",
-            ],
+          : undead
+            ? [
+                "Bow Ram: Ghost Ships that moved hit ships with +1 Attack and shove them back",
+                "Drowned Crews: A ship your ships sink rises as your Ghost Ship",
+              ]
+            : [
+                "Board: capture an adjacent enemy ship at a third of its HP or less",
+                "Bow Ram: Patrol Boats that moved hit ships with +1 Attack and shove them back",
+              ],
       );
       const submersibles = requiredButton("tech-submersibles");
       expect(submersibles.querySelector(".v7-tech-name")?.textContent).toBe(
-        goblin ? "Diving Barrels" : "Submersibles",
+        goblin ? "Diving Barrels" : undead ? "Sunken Galleys" : "Submersibles",
       );
       submersibles.click();
       const unlocks = lines();
-      const sub = goblin ? "Diving Barrel" : "Submarine";
+      const sub = goblin
+        ? "Diving Barrel"
+        : undead
+          ? "Sunken Galley"
+          : "Submarine";
       expect(unlocks.some((line) => line.includes(sub))).toBe(true);
       expect(unlocks).toContain(
         "Harbours: +1 population from every active Port and Shipyard",

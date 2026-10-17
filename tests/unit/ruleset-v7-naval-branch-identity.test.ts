@@ -68,20 +68,42 @@ const SEAFARING_FACTIONS = FACTION_IDS_V7.filter(
 );
 
 /**
- * Themed naval branches (`pulp_wars-5ti.16`,
+ * Themed naval branches (`pulp_wars-5ti.16`, `pulp_wars-5ti.17`,
  * docs/product/RULESET_7_NAVAL_FACTIONS.md section 2): Seamanship is the Ram
  * plus one trick, Board for the factions not yet themed, and each themed
- * faction's ships have their own names and numbers.
+ * faction's ships have their own names, numbers, and abilities.
  */
 const SEAMANSHIP_TRICK: Partial<
   Record<FactionIdV7, { readonly kind: string }>
-> = { GOBLIN: { kind: "FIRE_RAFTS" } };
+> = { GOBLIN: { kind: "FIRE_RAFTS" }, UNDEAD: { kind: "DROWNED_CREWS" } };
 const THEMED_SUBMARINE: Partial<
-  Record<FactionIdV7, { label: string; cost: number; maxHp: number }>
-> = { GOBLIN: { label: "Diving Barrel", cost: 8, maxHp: 10 } };
+  Record<
+    FactionIdV7,
+    {
+      label: string;
+      cost: number;
+      maxHp: number;
+      abilities?: readonly string[];
+    }
+  >
+> = {
+  GOBLIN: { label: "Diving Barrel", cost: 8, maxHp: 10 },
+  UNDEAD: {
+    label: "Sunken Galley",
+    cost: 9,
+    maxHp: 12,
+    abilities: ["ATTACK", "SUBMERGED", "TORPEDO", "DROWNED_CREW"],
+  },
+};
 const THEMED_PATROL_BOAT_ABILITIES: Partial<
   Record<FactionIdV7, readonly string[]>
-> = { GOBLIN: ["ATTACK", "RAM", "KABOOM"] };
+> = {
+  GOBLIN: ["ATTACK", "RAM", "KABOOM"],
+  UNDEAD: ["ATTACK", "RAM", "DROWNED_CREW"],
+};
+const THEMED_BATTLESHIP_ABILITIES: Partial<
+  Record<FactionIdV7, readonly string[]>
+> = { UNDEAD: ["ATTACK", "PLAGUE", "DROWNED_CREW"] };
 
 const NAVAL_BRANCH = [
   "SHORECRAFT",
@@ -289,14 +311,18 @@ describe("the five-node Naval branch in every tree", () => {
         sightRadius: 2,
         technology: "SUBMERSIBLES",
         mayUsePrimaryActionAfterMove: true,
-        abilities: ["ATTACK", "SUBMERGED", "TORPEDO"],
+        abilities: THEMED_SUBMARINE[faction]?.abilities ?? [
+          "ATTACK",
+          "SUBMERGED",
+          "TORPEDO",
+        ],
       });
       expect(effectiveRoleRuleV7("PATROL_BOAT", faction).abilities).toEqual(
         THEMED_PATROL_BOAT_ABILITIES[faction] ?? ["ATTACK", "RAM"],
       );
-      expect(effectiveRoleRuleV7("BATTLESHIP", faction).abilities).toEqual([
-        "ATTACK",
-      ]);
+      expect(effectiveRoleRuleV7("BATTLESHIP", faction).abilities).toEqual(
+        THEMED_BATTLESHIP_ABILITIES[faction] ?? ["ATTACK"],
+      );
       // No faction rule applies to a Submarine yet: one slot, no splash, no
       // Shield, no blast, no growth, no Crumbs (a faction rule applies to a
       // ship only where its themed section says so).
@@ -342,6 +368,8 @@ describe("the five-node Naval branch in every tree", () => {
       else expect(seamanship.commands).not.toContain("BOARD");
       expect(seamanship.fireRafts, faction).toBe(faction === "GOBLIN");
       expect(none.fireRafts, faction).toBe(false);
+      expect(seamanship.drownedCrews, faction).toBe(faction === "UNDEAD");
+      expect(none.drownedCrews, faction).toBe(false);
       expect(seamanship.trainableRoles).not.toContain("SUBMARINE");
       const submersibles = technologyCapabilitiesV7(
         ["SHORECRAFT", "SEAMANSHIP", "SUBMERSIBLES"],

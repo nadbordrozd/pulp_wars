@@ -63,6 +63,10 @@ export const OWNER_READER_CLASSES_V7: Readonly<
   // whether its Submarine is a sea beast (the Spider never boards).
   "src/engine/v7/reducer.ts::applyBoard": "PLAYER_ONLY",
   "src/engine/rules/ruleset-v7.ts::boardSeaBeastBlockedV7": "PLAYER_ONLY",
+  // The Undead Drowned Fleet (`pulp_wars-5ti.17`): the risen Ghost Ship is
+  // the viewer's own seat's Patrol Boat (the Spider never sinks a ship).
+  "src/ai/v7-naval.ts::drownedCrewRisingTenthsV7": "PLAYER_ONLY",
+  "src/ai/v7.ts::drownedCrewRisingStrategicV7": "PLAYER_ONLY",
   "src/engine/v7/dwarf-reducer.ts::applyAssembleV7": "PLAYER_ONLY",
   // The tunnelling Mole is the acting seat's unit.
   "src/engine/v7/dwarf-reducer.ts::tunnelTileLegalV7": "PLAYER_ONLY",

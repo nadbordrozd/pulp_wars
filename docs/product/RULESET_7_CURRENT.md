@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r92`, for all nine offered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r93`, for all nine offered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), Candy (`CANDY`), and
 the Cultists (`CULT`). The ninth faction, the Cultists of the Ancient Ones,
@@ -445,6 +445,35 @@ links to another, by Road or by Port. A sea link needs only **Shorecraft**
 the Roads technology, and unexplored water no longer breaks a link. A save,
 replay, or setup of `7r75` is rejected, and the browser autosave has a new
 key.
+`pulp-wars-poc-7r93` (`pulp_wars-5ti.17`, the second bead of the
+[themed naval branches](RULESET_7_NAVAL_FACTIONS.md)) is **the Undead
+Drowned Fleet**. The Undead ships keep the Human numbers under their own
+names, the **Ghost Ship** (`PATROL_BOAT`), the **Plague Galleon**
+(`BATTLESHIP`), and the **Sunken Galley** (`SUBMARINE`), each with the
+ability literal `DROWNED_CREW`, and the Galleon has `PLAGUE`: with
+Pestilence its shot plagues its target and every living splash victim as a
+Lich's does. The Undead Seamanship, shown as **Drowned Crews**, is the Ram
+and the unlock `DROWNED_CREWS` (capability `drownedCrews`) in place of
+`COMMAND BOARD`: a hostile ship that an Undead ship sinks by its `ATTACK`
+or its retaliation rises at once on its tile as the killer's owner's
+**Ghost Ship at 5 HP** (`DROWNED_CREW_HP_V7`; no home city, no slot,
+exhausted, not capture-eligible), the Infect step pointed at the sea
+(`UNIT_INFECTED`, the preview's `defenderInfected` or `attackerInfected`);
+never from splash, a blast, Plague, or any other cause, never from a
+transport, never on ice, and on Deep Water only when the Undead seat has
+Navigation. An Undead ship never boards (other seats may board one). The
+five Undead Naval technologies are shown as Ghost Ships, Navigation, Plague
+Galleons, Drowned Crews, and Sunken Galleys. Another seat's Drowned Crews
+is private, so its public preview of a retaliation that sinks its ship
+assumes the rising. The Normal AI values the risen Ghost Ship (half the
+Patrol Boat's cost, safe or doomed) in its torpedoes, rams, and Battleship
+stations, sinks a ship with a rising torpedo before chipping a capital
+ship when no other Submarine follows, keeps a Plague Galleon's stations by
+the unplagued units in its splash, researches Pestilence for a Galleon,
+and as any other seat counts a Ghost Ship it would feed the enemy
+([section 16](#16-normal-ai-summary)). The Drowned Crews card is new art. A
+save, replay, or setup of `7r92` is rejected, and the browser autosave has
+a new key.
 `pulp-wars-poc-7r92` (`pulp_wars-5ti.16`, the first bead of the
 [themed naval branches](RULESET_7_NAVAL_FACTIONS.md), approved as the
 user's 2026-10-17 request) is **the Goblin Scrap Fleet** and the shared
@@ -1144,7 +1173,7 @@ the build differs (its sections 20 to 24 list them);
 the values here are current. Where a document and the code disagreed, the
 code's behavior is the rule and is stated below;
 [Known discrepancies](#25-known-discrepancies) lists the open items and the
-resolved ones as of `pulp-wars-poc-7r92`.
+resolved ones as of `pulp-wars-poc-7r93`.
 
 **Terms.** "On the board" means a unit that currently exists (HP above 0).
 **Living** has the narrower revision-13 meaning used by Wail, Plague,
@@ -1247,10 +1276,10 @@ sections here cite.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r92`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Ruleset                                    | `pulp-wars-poc-7r93`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r92.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Browser autosave                           | `pulpWars.save.v7r93.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, `CULT`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`, `CULT_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -4476,33 +4505,33 @@ sentence case. Eight shared names changed at `7r55`: `DRILL` was **Garrison** an
 `NAVAL_ENGINEERING` **Shipbuilding**, and `SEAMANSHIP` **Boarding**. The
 names every player sees (a cell in bold is the faction's own):
 
-| ID                  | Human         | Undead         | Goblin             | Dinosaur        | Martian           | Ice Folk        | Dwarf                | Candy                   | Cult                    |
-| ------------------- | ------------- | -------------- | ------------------ | --------------- | ----------------- | --------------- | -------------------- | ----------------------- | ----------------------- |
-| `GATHERING`         | Gathering     | Gathering      | Gathering          | Gathering       | Gathering         | Gathering       | Gathering            | Gathering               | Gathering               |
-| `FARMING`           | Farming       | Farming        | Farming            | Farming         | Farming           | Farming         | Farming              | Farming                 | **Harvest Rites**       |
-| `MILLING`           | Milling       | **Bone Mills** | Milling            | **Grinding**    | **Solar Arrays**  | Milling         | **Steam Pumps**      | Milling                 | Milling                 |
-| `ADMINISTRATION`    | Leadership    | Leadership     | Leadership         | Leadership      | Leadership        | Leadership      | Leadership           | Leadership              | Leadership              |
-| `PLANNING`          | Land Grants   | Land Grants    | Land Grants        | Land Grants     | Land Grants       | Land Grants     | Land Grants          | Land Grants             | Land Grants             |
-| `HUNTING`           | Hunting       | Hunting        | Hunting            | Hunting         | Hunting           | Hunting         | Hunting              | Hunting                 | Hunting                 |
-| `FORESTRY`          | Forestry      | Forestry       | Forestry           | Forestry        | Forestry          | Forestry        | Forestry             | Forestry                | Forestry                |
-| `SAWMILLING`        | Sawmilling    | **Liches**     | **Rocket Carts**   | **Timber**      | **Tripods**       | **Boulders**    | **Steam Cannons**    | **Pie Launchers**       | **Stargazers**          |
-| `MARKSMANSHIP`      | Marksmanship  | **Banshees**   | **Bomb Chuckers**  | **Spitters**    | **Ray Gunners**   | Marksmanship    | **Clockwork**        | **Gumball Gunners**     | **Hexers**              |
-| `FIELDCRAFT`        | Pathfinding   | Pathfinding    | Pathfinding        | Pathfinding     | **Heat Sinks**    | Pathfinding     | Pathfinding          | Pathfinding             | Pathfinding             |
-| `SCOUTING`          | Scouting      | Scouting       | Scouting           | Scouting        | **Saucers**       | Scouting        | **Gyrocopters**      | Scouting                | **Familiars**           |
-| `ROADS`             | Roads         | Roads          | Roads              | Roads           | Roads             | Roads           | Roads                | Roads                   | Roads                   |
-| `COMMERCE`          | Commerce      | Commerce       | **Plunder**        | Commerce        | Commerce          | Commerce        | Commerce             | Commerce                | Commerce                |
-| `RAIDING`           | Raiding       | Raiding        | Raiding            | Raiding         | Raiding           | Raiding         | **Dive Bombing**     | Raiding                 | Raiding                 |
-| `CHIVALRY`          | Chivalry      | **Vampires**   | **Scrap Buggies**  | **T-Rex**       | **Motherships**   | **Sabretooths** | **Whirligigs**       | **Chocolate Bunnies**   | **Tentacles**           |
-| `DRILL`             | Crafting      | Crafting       | Crafting           | Crafting        | Crafting          | Crafting        | Crafting             | Crafting                | Crafting                |
-| `ENGINEERING`       | Engineering   | Engineering    | Engineering        | Engineering     | Engineering       | Engineering     | **Mining**           | Engineering             | Engineering             |
-| `METALLURGY`        | Armoury       | Armoury        | Armoury            | **Triceratops** | Armoury           | **Mammoths**    | **Steam Tanks**      | **Jawbreakers**         | **Gibbering Masses**    |
-| `FORTIFICATION`     | Fortification | Fortification  | Fortification      | **Nesting**     | **Force Fields**  | **Deep Winter** | **Dig In**           | **Home Sweet Home**     | **Warding Circles**     |
-| `EXPLOSIVES`        | Explosives    | **Pestilence** | Explosives         | **Wallbreaker** | **Disintegrator** | **Brittle**     | **Blasting Charges** | **Peppermint Surprise** | **The Stars Are Right** |
-| `SHORECRAFT`        | Sailing       | Sailing        | **Fire Rafts**     | Sailing         | Sailing           | **Rime**        | Sailing              | Sailing                 | Sailing                 |
-| `NAVIGATION`        | Navigation    | Navigation     | Navigation         | Navigation      | Navigation        | **Pack Ice**    | Navigation           | Navigation              | Navigation              |
-| `NAVAL_ENGINEERING` | Shipbuilding  | Shipbuilding   | **Dreadnoughts**   | Shipbuilding    | Shipbuilding      | **Icebound**    | Shipbuilding         | Shipbuilding            | Shipbuilding            |
-| `SEAMANSHIP`        | Boarding      | Boarding       | **Powder Kegs**    | Boarding        | Boarding          | **Black Ice**   | Boarding             | Boarding                | Boarding                |
-| `SUBMERSIBLES`      | Submersibles  | Submersibles   | **Diving Barrels** | Submersibles    | Submersibles      | **Glacier**     | Submersibles         | Submersibles            | Submersibles            |
+| ID                  | Human         | Undead              | Goblin             | Dinosaur        | Martian           | Ice Folk        | Dwarf                | Candy                   | Cult                    |
+| ------------------- | ------------- | ------------------- | ------------------ | --------------- | ----------------- | --------------- | -------------------- | ----------------------- | ----------------------- |
+| `GATHERING`         | Gathering     | Gathering           | Gathering          | Gathering       | Gathering         | Gathering       | Gathering            | Gathering               | Gathering               |
+| `FARMING`           | Farming       | Farming             | Farming            | Farming         | Farming           | Farming         | Farming              | Farming                 | **Harvest Rites**       |
+| `MILLING`           | Milling       | **Bone Mills**      | Milling            | **Grinding**    | **Solar Arrays**  | Milling         | **Steam Pumps**      | Milling                 | Milling                 |
+| `ADMINISTRATION`    | Leadership    | Leadership          | Leadership         | Leadership      | Leadership        | Leadership      | Leadership           | Leadership              | Leadership              |
+| `PLANNING`          | Land Grants   | Land Grants         | Land Grants        | Land Grants     | Land Grants       | Land Grants     | Land Grants          | Land Grants             | Land Grants             |
+| `HUNTING`           | Hunting       | Hunting             | Hunting            | Hunting         | Hunting           | Hunting         | Hunting              | Hunting                 | Hunting                 |
+| `FORESTRY`          | Forestry      | Forestry            | Forestry           | Forestry        | Forestry          | Forestry        | Forestry             | Forestry                | Forestry                |
+| `SAWMILLING`        | Sawmilling    | **Liches**          | **Rocket Carts**   | **Timber**      | **Tripods**       | **Boulders**    | **Steam Cannons**    | **Pie Launchers**       | **Stargazers**          |
+| `MARKSMANSHIP`      | Marksmanship  | **Banshees**        | **Bomb Chuckers**  | **Spitters**    | **Ray Gunners**   | Marksmanship    | **Clockwork**        | **Gumball Gunners**     | **Hexers**              |
+| `FIELDCRAFT`        | Pathfinding   | Pathfinding         | Pathfinding        | Pathfinding     | **Heat Sinks**    | Pathfinding     | Pathfinding          | Pathfinding             | Pathfinding             |
+| `SCOUTING`          | Scouting      | Scouting            | Scouting           | Scouting        | **Saucers**       | Scouting        | **Gyrocopters**      | Scouting                | **Familiars**           |
+| `ROADS`             | Roads         | Roads               | Roads              | Roads           | Roads             | Roads           | Roads                | Roads                   | Roads                   |
+| `COMMERCE`          | Commerce      | Commerce            | **Plunder**        | Commerce        | Commerce          | Commerce        | Commerce             | Commerce                | Commerce                |
+| `RAIDING`           | Raiding       | Raiding             | Raiding            | Raiding         | Raiding           | Raiding         | **Dive Bombing**     | Raiding                 | Raiding                 |
+| `CHIVALRY`          | Chivalry      | **Vampires**        | **Scrap Buggies**  | **T-Rex**       | **Motherships**   | **Sabretooths** | **Whirligigs**       | **Chocolate Bunnies**   | **Tentacles**           |
+| `DRILL`             | Crafting      | Crafting            | Crafting           | Crafting        | Crafting          | Crafting        | Crafting             | Crafting                | Crafting                |
+| `ENGINEERING`       | Engineering   | Engineering         | Engineering        | Engineering     | Engineering       | Engineering     | **Mining**           | Engineering             | Engineering             |
+| `METALLURGY`        | Armoury       | Armoury             | Armoury            | **Triceratops** | Armoury           | **Mammoths**    | **Steam Tanks**      | **Jawbreakers**         | **Gibbering Masses**    |
+| `FORTIFICATION`     | Fortification | Fortification       | Fortification      | **Nesting**     | **Force Fields**  | **Deep Winter** | **Dig In**           | **Home Sweet Home**     | **Warding Circles**     |
+| `EXPLOSIVES`        | Explosives    | **Pestilence**      | Explosives         | **Wallbreaker** | **Disintegrator** | **Brittle**     | **Blasting Charges** | **Peppermint Surprise** | **The Stars Are Right** |
+| `SHORECRAFT`        | Sailing       | **Ghost Ships**     | **Fire Rafts**     | Sailing         | Sailing           | **Rime**        | Sailing              | Sailing                 | Sailing                 |
+| `NAVIGATION`        | Navigation    | Navigation          | Navigation         | Navigation      | Navigation        | **Pack Ice**    | Navigation           | Navigation              | Navigation              |
+| `NAVAL_ENGINEERING` | Shipbuilding  | **Plague Galleons** | **Dreadnoughts**   | Shipbuilding    | Shipbuilding      | **Icebound**    | Shipbuilding         | Shipbuilding            | Shipbuilding            |
+| `SEAMANSHIP`        | Boarding      | **Drowned Crews**   | **Powder Kegs**    | Boarding        | Boarding          | **Black Ice**   | Boarding             | Boarding                | Boarding                |
+| `SUBMERSIBLES`      | Submersibles  | **Sunken Galleys**  | **Diving Barrels** | Submersibles    | Submersibles      | **Glacier**     | Submersibles         | Submersibles            | Submersibles            |
 
 The rest of this document, the tuning documents, and the faction documents
 name a technology by its ID in title case (Drill, Administration,
@@ -5568,9 +5597,10 @@ an adjacent tile (**Submerged**), and attacking only units afloat, which
 never strike back (**Torpedo**). A Patrol Boat's **Ram** needs Seamanship
 (the interface calls it **Bow Ram**, since the Goblin Scrap Buggy's Overrun
 was displayed as "Ram" until `pulp_wars-2yc.63`). The three ships have the same numbers, names, and
-rules in the Human, Undead, Goblin, Dinosaur, Martian, Dwarf, Candy, and
-Cult rosters (each drawn in its faction's style); the Ice Folk have none
-([section 14](#14-naval-rules)). Public abilities: Patrol Boat `ATTACK`,
+rules in the Human, Dinosaur, Martian, Dwarf, Candy, and Cult rosters
+(each drawn in its faction's style); the Goblin (`7r92`) and Undead
+(`7r93`) ships are their own (the themed naval branches); the Ice Folk
+have none ([section 14](#14-naval-rules)). Public abilities: Patrol Boat `ATTACK`,
 `RAM` (listed whatever its owner has researched); Battleship `ATTACK`;
 Submarine `ATTACK`, `SUBMERGED`, `TORPEDO`.
 
@@ -5578,20 +5608,20 @@ The table above is the Human (`ORIGINAL`) roster. The Undead (`UNDEAD`)
 roster, by mechanical role (half-unit values `attack2`/`defense2` in
 parentheses):
 
-| Unit        | Role          | Tech              | Cost |  HP |   Attack | Defense | Move | Range | Sight | Attack after Move | Capture | Abilities                                         |
-| ----------- | ------------- | ----------------- | ---: | --: | -------: | ------: | ---: | ----: | ----: | ----------------- | ------- | ------------------------------------------------- |
-| Skeleton    | `FIGHTER`     | start             |    2 |  10 |    2 (4) |  2 (4)³ |    1 |     1 |     1 | yes               | yes     | Field Defense; Bones³                             |
-| Ghoul       | `RAIDER`      | Scouting          |    3 |  10 |    2 (4) |   1 (2) |    2 |     1 |     2 | yes               | yes     | Charge (Raiding); Devour; Carrion⁴                |
-| Banshee     | `MARKSMAN`    | Marksmanship      |    3 |   8 | 1.5 (3)⁵ |   1 (2) |    1 |     — |    1² | Wail: yes         | yes     | Wail; Terror⁵; Ethereal⁵; no targeted Attack      |
-| Zombie      | `GUARD`       | Fortification     |    3 |  18 |    2 (4) |   2 (4) |    1 |     1 |     1 | no                | yes     | Field Defense; Infect; Bite; never advances       |
-| Necromancer | `CAPTAIN`     | Administration    |    5 |  10 |    1 (2) |   1 (2) |    1 |     1 |     1 | yes               | yes     | Frenzy; Raise Dead (2 tiles⁴)                     |
-| Lich        | `CATAPULT`    | Sawmilling        |    8 |  10 |    3 (6) |   1 (2) |    1 |   2–3 |     1 | no                | yes     | splash; Plague (Pestilence⁴); never advances      |
-| Vampire     | `KNIGHT`      | Chivalry          |    9 | 13⁵ |    3 (6) |   1 (2) |    3 |     1 |     1 | yes               | yes     | Lifesteal; Unanswered; Bat Escape⁵; Feast⁵        |
-| Wight       | `SWORDSMAN`   | Metallurgy        |    6 |  14 |    3 (6) | 2.5 (5) |    1 |     1 |     1 | yes               | yes     | Rise Again (7 HP, once; `7r55`); no Field Defense |
-| Abomination | `JUGGERNAUT`  | reward only       |    — |  40 |    4 (8) |   4 (8) |    1 |     1 |     1 | yes               | yes     | Swallow; Infect³; never advances³                 |
-| Patrol Boat | `PATROL_BOAT` | Shorecraft        |    5 |  10 |    2 (4) |   2 (4) |    2 |     1 |     2 | yes               | no      | naval; Ram (Seamanship)                           |
-| Battleship  | `BATTLESHIP`  | Naval Engineering |   16 |  25 |   5 (10) |   3 (6) |    2 |   1–3 |     3 | no                | no      | naval; splash                                     |
-| Submarine   | `SUBMARINE`   | Submersibles      |    9 |  12 |    4 (8) |   2 (4) |    2 |     1 |     2 | yes               | no      | naval; Submerged; Torpedo                         |
+| Unit            | Role          | Tech              | Cost |  HP |   Attack | Defense | Move | Range | Sight | Attack after Move | Capture | Abilities                                         |
+| --------------- | ------------- | ----------------- | ---: | --: | -------: | ------: | ---: | ----: | ----: | ----------------- | ------- | ------------------------------------------------- |
+| Skeleton        | `FIGHTER`     | start             |    2 |  10 |    2 (4) |  2 (4)³ |    1 |     1 |     1 | yes               | yes     | Field Defense; Bones³                             |
+| Ghoul           | `RAIDER`      | Scouting          |    3 |  10 |    2 (4) |   1 (2) |    2 |     1 |     2 | yes               | yes     | Charge (Raiding); Devour; Carrion⁴                |
+| Banshee         | `MARKSMAN`    | Marksmanship      |    3 |   8 | 1.5 (3)⁵ |   1 (2) |    1 |     — |    1² | Wail: yes         | yes     | Wail; Terror⁵; Ethereal⁵; no targeted Attack      |
+| Zombie          | `GUARD`       | Fortification     |    3 |  18 |    2 (4) |   2 (4) |    1 |     1 |     1 | no                | yes     | Field Defense; Infect; Bite; never advances       |
+| Necromancer     | `CAPTAIN`     | Administration    |    5 |  10 |    1 (2) |   1 (2) |    1 |     1 |     1 | yes               | yes     | Frenzy; Raise Dead (2 tiles⁴)                     |
+| Lich            | `CATAPULT`    | Sawmilling        |    8 |  10 |    3 (6) |   1 (2) |    1 |   2–3 |     1 | no                | yes     | splash; Plague (Pestilence⁴); never advances      |
+| Vampire         | `KNIGHT`      | Chivalry          |    9 | 13⁵ |    3 (6) |   1 (2) |    3 |     1 |     1 | yes               | yes     | Lifesteal; Unanswered; Bat Escape⁵; Feast⁵        |
+| Wight           | `SWORDSMAN`   | Metallurgy        |    6 |  14 |    3 (6) | 2.5 (5) |    1 |     1 |     1 | yes               | yes     | Rise Again (7 HP, once; `7r55`); no Field Defense |
+| Abomination     | `JUGGERNAUT`  | reward only       |    — |  40 |    4 (8) |   4 (8) |    1 |     1 |     1 | yes               | yes     | Swallow; Infect³; never advances³                 |
+| Ghost Ship⁶     | `PATROL_BOAT` | Shorecraft        |    5 |  10 |    2 (4) |   2 (4) |    2 |     1 |     2 | yes               | no      | naval; Ram (Seamanship); Drowned Crew             |
+| Plague Galleon⁶ | `BATTLESHIP`  | Naval Engineering |   16 |  25 |   5 (10) |   3 (6) |    2 |   1–3 |     3 | no                | no      | naval; splash; Plague (Pestilence); Drowned Crew  |
+| Sunken Galley⁶  | `SUBMARINE`   | Submersibles      |    9 |  12 |    4 (8) |   2 (4) |    2 |     1 |     2 | yes               | no      | naval; Submerged; Torpedo; Drowned Crew           |
 
 ² Banshee Sight becomes 2 with Fieldcraft.
 
@@ -5606,6 +5636,15 @@ tiles, and Plague behind Pestilence.
 [section 17.12](#1712-the-vampire-and-banshee-rework)): the Vampire's 13 HP
 (10 before), Bat Escape (its Escape), and Feast; the Banshee's Wail at
 Attack 1.5 (1 before), Terror, and Ethereal.
+
+⁶ The Drowned Fleet (`7r93`, `pulp_wars-5ti.17`,
+[themed naval branches section 4](RULESET_7_NAVAL_FACTIONS.md#4-undead-the-drowned-fleet)):
+the Human numbers under Undead names. With Drowned Crews (the Undead
+Seamanship) a hostile ship an Undead ship sinks by its attack or its
+retaliation rises as a 5-HP Ghost Ship of the killer's owner
+([section 14](#14-naval-rules)); with Pestilence the Galleon plagues as
+a Lich does ([section 17.8](#178-plague)). At a Shipyard the three ships
+cost 3, 14, and 7.
 
 - **Skeleton** has Fighter parity for Field Defense with Fortification,
   capture, Pillage, and Disband; Raise Dead also creates Skeletons. Since
@@ -5657,8 +5696,9 @@ Attack 1.5 (1 before), Terror, and Ethereal.
   as a Zombie on its tile, and the Abomination never advances after a kill
   (`advancesAfterKill` false). It has no Bite.
 - **Abomination** has exact Juggernaut parity (reward only, capture, no
-  Pillage or Disband) but its signature (Swallow, no Push). Patrol Boat, Battleship, and Submarine are the Human
-  units.
+  Pillage or Disband) but its signature (Swallow, no Push). The Ghost Ship,
+  Plague Galleon, and Sunken Galley have the Human ships' numbers (footnote
+  ⁶).
 - Undead Disband refunds: Skeleton, Ghoul, Banshee, and Zombie 1,
   Necromancer 2, Lich and Vampire 4. Arms Industry and the Shipyard discount
   apply to every faction.
@@ -7421,10 +7461,35 @@ Every rule that names "naval units", "ships", or "boats" covers all three.
   ([section 10](#10-recovery-and-support)), projects ZOC onto adjacent
   water it could enter (never onto ice), and blockades a hostile dock it
   stands on.
-- **Undead boats** are the Human ships (until their themed bead): a ship leaves no Grave and never
-  rises, Restless never applies to it, and a boarded Undead ship simply
-  becomes its captor's ship. Wail is not an attack, so it reaches a
-  Submarine within its radius.
+- **Undead boats** are the **Drowned Fleet** (`7r93`,
+  [themed branches section 4](RULESET_7_NAVAL_FACTIONS.md#4-undead-the-drowned-fleet)):
+  the **Ghost Ship** (Patrol Boat), the **Plague Galleon** (Battleship),
+  and the **Sunken Galley** (Submarine), with the Human numbers. Their
+  Seamanship is **Drowned Crews**: the Ram and `DROWNED_CREWS` (capability
+  `drownedCrews`) instead of Board, so an Undead ship never boards (other
+  seats may board one, and the prize becomes its captor's ship). **A
+  hostile ship an Undead ship sinks rises**: when a unit in `NAVAL` form is
+  killed by the `ATTACK` or the retaliation of an Undead unit in `NAVAL`
+  form whose role has `DROWNED_CREW` and whose kind's capabilities under
+  its owner have `drownedCrews`, it rises at once on its tile as a Ghost
+  Ship of the killer's owner at 5 of 10 HP (`DROWNED_CREW_HP_V7`), with no
+  home city (no slot), exhausted, not capture-eligible, no kills, not a
+  veteran, a new unit ID; the killer keeps the kill. It is the Infect step
+  of [section 17.6](#176-infect) (`UNIT_INFECTED`, preview
+  `defenderInfected` or `attackerInfected`). Never from splash, a blast,
+  Wail, Plague, a bomb, the ice crush, or a Tentacle; never from a
+  transport (an embarked victim drowns); never on an ice tile; never on
+  Deep Water while the killer's owner lacks Navigation. A risen Ghost Ship
+  on a hostile dock blockades it. Another seat's Drowned Crews and
+  Navigation are private: its public preview of an attack whose
+  retaliation sinks its ship assumes the rising (the result follows the
+  research). With **Pestilence** the Plague Galleon's shot plagues its
+  target and every surviving living splash victim, as a Lich's does
+  ([section 17.8](#178-plague)). An Undead ship leaves no Grave, and
+  Restless never applies to it. Wail is not an attack, so it reaches a
+  Submarine within its radius. A Goblin Scrap Dreadnought an Undead ship
+  sinks rises, and its death blast (7) then hits the 5-HP Ghost Ship on
+  its tile.
 - Reward units and treasure units are always land units.
 - **Themed naval branches** (`7r92`,
   [RULESET_7_NAVAL_FACTIONS.md](RULESET_7_NAVAL_FACTIONS.md)): every
@@ -8474,6 +8539,26 @@ Harbours from it.
   where a visible hostile Submarine reaches the Dreadnought, and a raft
   never screens one. The threat estimate assumes a hostile Fire Raft's
   Kaboom (its owner's Powder Kegs is private, as the Ram is).
+- **The Undead Drowned Fleet** (`7r93`, `pulp_wars-5ti.17`,
+  `src/ai/v7-naval-undead.ts`, `drownedCrewRisingTenthsV7` in
+  `src/ai/v7-naval.ts`). Its ships are read by role, so it researches
+  Drowned Crews by the Seamanship rule and trains a Sunken Galley against a
+  visible Battleship and a Ghost Ship against a visible Submarine. A kill
+  whose exact preview raises a Ghost Ship is worth the ship as well: half
+  the Patrol Boat's cost (2.5 Coins), whole when the risen ship is safe and
+  three tenths when a visible hostile unit can sink it next turn (a hostile
+  unit that also reaches the killer does not count: the risen ship splits
+  its fire). The ram approach, the Battleship station, and the attack
+  scorer add it; a Sunken Galley's torpedo that sinks and raises is fired
+  first (priority 1280, above the Battleship torpedo's 1279) when the kill
+  and the risen ship are worth more than each other torpedo it has and no
+  other own Submarine has a torpedo on that other target. A Plague Galleon
+  with Pestilence picks its station by the living hostile units not yet
+  plagued in its best splash cluster, and a seat that owns a Galleon
+  without Pestilence researches its first step (priority 1220). Every seat
+  counts a Ghost Ship it would feed an Undead seat: an attack whose reply
+  would sink its ship and raise one is refused unless it saves a city or
+  opens a lethal follow-up, as an attack that feeds a Zombie is.
 - **The frozen sea** (`pulp_wars-5ti.5`, `src/ai/v7-frozen-sea.ts`). An
   Ice Folk seat has no ship and no naval plan; it has an **ice plan**
   where a seafaring seat's naval plan would activate (every known
@@ -9087,8 +9172,10 @@ way, and like the Zombie it never advances after a kill. It has no Bite, so
 a unit that survives its hit is not Bitten. The
 victim may be of any faction and any land role, on any land tile,
 including a city or village center. The killing Zombie never advances.
-Naval and embarked victims, splash, Wail, Kaboom, and explosions never
-infect, and a Dwarf construct never rises. Event
+Embarked victims, splash, Wail, Kaboom, and explosions never
+infect, and a Dwarf construct never rises; a naval victim rises only by
+the Undead **Drowned Crews** ([section 14](#14-naval-rules), `7r93`): a
+hostile ship an Undead ship sinks rises as a 5-HP Ghost Ship. Event
 `UNIT_INFECTED`; the combat preview carries `attackerInfected` and
 `defenderInfected`.
 
@@ -9140,7 +9227,9 @@ of the Abomination's kills in combat only.
   `7r51`). Without it a Lich's shot and splash deal their damage and the
   preview's `plagued` is empty. A mind-controlled Lich plagues by its
   controller's technologies read in the Lich's own tree (a Martian
-  controller with its Explosives, the Disintegrator).
+  controller with its Explosives, the Disintegrator). Since `7r93` the
+  Undead **Plague Galleon** (the Undead Battleship, `PLAGUE`) plagues in
+  the same way with Pestilence; what is said of a Lich here holds for it.
 - **Application.** When such a Lich attacks and survives the exchange, the
   primary target and every surviving splash target that is living become
   plagued unless already plagued; units of any form qualify, except a target

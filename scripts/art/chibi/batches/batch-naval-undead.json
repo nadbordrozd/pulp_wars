@@ -95,6 +95,18 @@
       },
       "ownerColour": false,
       "accent": "undead-violet"
+    },
+    {
+      "id": "chibi-naval-undead-icon-tech-seamanship",
+      "subject": "ICON:TECH:UNDEAD:SEAMANSHIP",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "undead-violet"
     }
   ],
   "recipes": [
@@ -214,6 +226,59 @@
       },
       "editInstruction": "Turn it into a drowned ghost galley submarine: remove the mast, the sail and the rag; the hull becomes long, low and closed, of the same near-black wood with pale grey barnacle studs, the ivory bone rail and a skull on the bow; on deck a low humped black cabin with a row of windows glowing bright violet; one small violet lantern on a short crooked pole. Keep the size, thick black outline and art style the same, on a transparent background.",
       "notes": "The accepted Undead Patrol Boat portrait with the map sprite's change."
+    },
+    {
+      "id": "icon-tech-drowned-crews-a",
+      "asset": "chibi-naval-undead-icon-tech-seamanship",
+      "endpoint": "create-image-pixen",
+      "seed": 99251,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "person, full skeleton, skull, ship, boat, water, sail, anchor, rope, red, orange, green, blue, gold, text",
+      "notes": "Bead pulp_wars-5ti.17 (docs/product/RULESET_7_NAVAL_FACTIONS.md section 4.7): the Undead Seamanship card, Drowned Crews (a skeletal hand on a ship's wheel), a fresh creation with the icon class as the shared Seamanship icon was."
+    },
+    {
+      "id": "icon-tech-drowned-crews-b",
+      "asset": "chibi-naval-undead-icon-tech-seamanship",
+      "endpoint": "create-image-pixen",
+      "seed": 99252,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "person, full skeleton, skull, ship, boat, water, sail, anchor, rope, red, orange, green, blue, gold, text",
+      "notes": "The request of icon-tech-drowned-crews-a on another seed."
+    },
+    {
+      "id": "icon-tech-drowned-crews-c",
+      "asset": "chibi-naval-undead-icon-tech-seamanship",
+      "endpoint": "create-image-pixen",
+      "seed": 99253,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The skeleton hand is big and clear, as wide as a quarter of the wheel: four long pale ivory bone fingers and a bony thumb wrapped around the right side of the dark wheel rim, the bony wrist coming in from the lower right corner.",
+      "negativeAddendum": "person, full skeleton, skull, ship, boat, water, sail, anchor, rope, spikes, red, orange, green, blue, gold, text",
+      "notes": "icon-tech-drowned-crews-a and -b read as a wheel, but the hand of -a is a small white blob at 1x and -b has a spiked ring: the hand made big and clear."
+    },
+    {
+      "id": "icon-tech-drowned-crews-d",
+      "asset": "chibi-naval-undead-icon-tech-seamanship",
+      "endpoint": "edit-image-pixen",
+      "seed": 99254,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-tech-drowned-crews-a",
+        "candidate": 0
+      },
+      "editInstruction": "Make the pale ivory skeleton hand bigger and clearer: four long bony fingers and a thumb gripping the right side of the dark wheel rim, the bony wrist coming in from the lower right corner. Keep the dark wheel, its ivory handles, the violet flame at the hub, the thick black outline and the style the same, on a transparent background.",
+      "notes": "An edit of icon-tech-drowned-crews-a: its wheel reads well, its hand does not at 1x."
     }
   ]
 }
