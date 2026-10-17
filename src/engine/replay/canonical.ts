@@ -31,7 +31,7 @@ const UTF8_ENCODER = new (
 
 export function canonicalJson(value: unknown): string {
   const ancestors = new Set<object>();
-  return serialize(value, ancestors, "$", true);
+  return serialize(value, ancestors, null, null);
 }
 
 export function canonicalHash(value: unknown): string {
@@ -65,11 +65,42 @@ function remainingCodePoints(value: string, start: number): number {
   return count;
 }
 
+/**
+ * Where a value sits in the serialized root, for the error messages only
+ * (`pulp_wars-2yc.79`: the path text is built when an error is thrown,
+ * never for a value that serializes): the parent's place and this value's
+ * array index or object key; the root has neither.
+ */
+interface CanonicalPlaceV7 {
+  readonly parent: CanonicalPlaceV7 | null;
+  readonly segment: string | number | null;
+}
+
+/** `$`, then `[index]` for an array item and `.key` for a property. */
+function pathText(
+  parent: CanonicalPlaceV7 | null,
+  segment: string | number | null,
+): string {
+  const segments: (string | number)[] = [];
+  if (segment !== null) segments.push(segment);
+  for (let place = parent; place !== null; place = place.parent)
+    if (place.segment !== null) segments.push(place.segment);
+  let path = "$";
+  for (let index = segments.length - 1; index >= 0; index -= 1) {
+    const item = segments[index];
+    path += typeof item === "number" ? `[${item}]` : `.${String(item)}`;
+  }
+  return path;
+}
+
+/** A key with a UTF-16 surrogate, whose code point order may differ. */
+const SURROGATE = /[\uD800-\uDFFF]/;
+
 function serialize(
   value: unknown,
   ancestors: Set<object>,
-  path: string,
-  isRoot: boolean,
+  parent: CanonicalPlaceV7 | null,
+  segment: string | number | null,
 ): string {
   if (value === null) {
     return "null";
@@ -81,41 +112,46 @@ function serialize(
       return JSON.stringify(value);
     case "number":
       if (!Number.isSafeInteger(value)) {
-        throw new TypeError(`Non-safe-integer JSON number at ${path}`);
+        throw new TypeError(
+          `Non-safe-integer JSON number at ${pathText(parent, segment)}`,
+        );
       }
       return Object.is(value, -0) ? "0" : String(value);
     case "object":
       break;
     default:
       throw new TypeError(
-        `${isRoot ? "Root value" : `Value at ${path}`} is not JSON-compatible`,
+        `${parent === null && segment === null ? "Root value" : `Value at ${pathText(parent, segment)}`} is not JSON-compatible`,
       );
   }
 
   if (ancestors.has(value)) {
-    throw new TypeError(`Cyclic JSON value at ${path}`);
+    throw new TypeError(`Cyclic JSON value at ${pathText(parent, segment)}`);
   }
   ancestors.add(value);
   try {
+    const place: CanonicalPlaceV7 = { parent, segment };
     if (Array.isArray(value)) {
-      validateArray(value, path);
-      return `[${value
-        .map((item, index) =>
-          serialize(item, ancestors, `${path}[${index}]`, false),
-        )
-        .join(",")}]`;
+      validateArray(value, place);
+      const items: string[] = [];
+      for (let index = 0; index < value.length; index += 1)
+        items.push(serialize(value[index], ancestors, place, index));
+      return `[${items.join(",")}]`;
     }
 
     const prototype: object | null = Object.getPrototypeOf(value) as
       object | null;
     if (prototype !== Object.prototype && prototype !== null) {
-      throw new TypeError(`Non-plain JSON object at ${path}`);
+      throw new TypeError(
+        `Non-plain JSON object at ${pathText(parent, segment)}`,
+      );
     }
     const keys = Reflect.ownKeys(value);
     if (keys.some((key) => typeof key !== "string")) {
-      throw new TypeError(`Symbol key at ${path}`);
+      throw new TypeError(`Symbol key at ${pathText(parent, segment)}`);
     }
     const stringKeys = keys as string[];
+    let surrogates = false;
     for (const key of stringKeys) {
       const descriptor = Object.getOwnPropertyDescriptor(value, key);
       if (
@@ -123,34 +159,57 @@ function serialize(
         !descriptor.enumerable ||
         !("value" in descriptor)
       ) {
-        throw new TypeError(`Non-data JSON property at ${path}.${key}`);
+        throw new TypeError(
+          `Non-data JSON property at ${pathText(parent, segment)}.${key}`,
+        );
       }
+      if (!surrogates && SURROGATE.test(key)) surrogates = true;
     }
-    stringKeys.sort(compareUnicodeCodePoints);
-    return `{${stringKeys
-      .map((key) => {
-        const item = (value as Record<string, unknown>)[key];
-        return `${JSON.stringify(key)}:${serialize(item, ancestors, `${path}.${key}`, false)}`;
-      })
-      .join(",")}}`;
+    // Without a surrogate, UTF-16 code unit order (the default sort) is
+    // code point order; keys are distinct, so the order is the same.
+    if (surrogates) stringKeys.sort(compareUnicodeCodePoints);
+    else stringKeys.sort();
+    const items: string[] = [];
+    for (const key of stringKeys) {
+      const item = (value as Record<string, unknown>)[key];
+      items.push(
+        `${JSON.stringify(key)}:${serialize(item, ancestors, place, key)}`,
+      );
+    }
+    return `{${items.join(",")}}`;
   } finally {
     ancestors.delete(value);
   }
 }
 
-function validateArray(value: readonly unknown[], path: string): void {
+function validateArray(
+  value: readonly unknown[],
+  place: CanonicalPlaceV7,
+): void {
   for (let index = 0; index < value.length; index += 1) {
     if (!Object.prototype.hasOwnProperty.call(value, index)) {
-      throw new TypeError(`Sparse JSON array at ${path}[${index}]`);
+      throw new TypeError(
+        `Sparse JSON array at ${pathText(place.parent, place.segment)}[${index}]`,
+      );
     }
   }
   const keys = Reflect.ownKeys(value);
   const expectedKeyCount = value.length + 1;
   if (keys.length !== expectedKeyCount || !keys.includes("length")) {
-    throw new TypeError(`Array with extra properties at ${path}`);
+    throw new TypeError(
+      `Array with extra properties at ${pathText(place.parent, place.segment)}`,
+    );
   }
 }
 
+const SHA256_K = Int32Array.from(SHA256_CONSTANTS);
+
+/**
+ * SHA-256 (FIPS 180-4) of the bytes, as lowercase hex. `pulp_wars-2yc.79`:
+ * the same digest as before, computed in 32-bit integer registers (the
+ * message words read through a big-endian DataView, every sum taken with
+ * `| 0`, the rotations written out), with no per-block allocation.
+ */
 function sha256Hex(input: Uint8Array): string {
   const padded = new Uint8Array(Math.ceil((input.length + 9) / 64) * 64);
   padded.set(input);
@@ -158,86 +217,78 @@ function sha256Hex(input: Uint8Array): string {
   const bitLength = input.length * 8;
   const high = Math.floor(bitLength / 0x1_0000_0000);
   const low = bitLength >>> 0;
-  const lengthView = new DataView(padded.buffer);
-  lengthView.setUint32(padded.length - 8, high);
-  lengthView.setUint32(padded.length - 4, low);
+  const data = new DataView(padded.buffer);
+  data.setUint32(padded.length - 8, high);
+  data.setUint32(padded.length - 4, low);
 
-  const hash = new Uint32Array(SHA256_INITIAL);
-  const words = new Uint32Array(64);
+  const words = new Int32Array(64);
+  const k = SHA256_K;
+  let h0 = SHA256_INITIAL[0] | 0;
+  let h1 = SHA256_INITIAL[1] | 0;
+  let h2 = SHA256_INITIAL[2] | 0;
+  let h3 = SHA256_INITIAL[3] | 0;
+  let h4 = SHA256_INITIAL[4] | 0;
+  let h5 = SHA256_INITIAL[5] | 0;
+  let h6 = SHA256_INITIAL[6] | 0;
+  let h7 = SHA256_INITIAL[7] | 0;
   for (let offset = 0; offset < padded.length; offset += 64) {
-    for (let index = 0; index < 16; index += 1) {
-      const wordOffset = offset + index * 4;
-      words[index] =
-        (((padded[wordOffset] ?? 0) << 24) |
-          ((padded[wordOffset + 1] ?? 0) << 16) |
-          ((padded[wordOffset + 2] ?? 0) << 8) |
-          (padded[wordOffset + 3] ?? 0)) >>>
-        0;
-    }
+    for (let index = 0; index < 16; index += 1)
+      words[index] = data.getInt32(offset + index * 4);
     for (let index = 16; index < 64; index += 1) {
-      const previous15 = words[index - 15] ?? 0;
-      const previous2 = words[index - 2] ?? 0;
+      const w15 = words[index - 15] ?? 0;
+      const w2 = words[index - 2] ?? 0;
       const sigma0 =
-        rotateRight(previous15, 7) ^
-        rotateRight(previous15, 18) ^
-        (previous15 >>> 3);
+        ((w15 >>> 7) | (w15 << 25)) ^
+        ((w15 >>> 18) | (w15 << 14)) ^
+        (w15 >>> 3);
       const sigma1 =
-        rotateRight(previous2, 17) ^
-        rotateRight(previous2, 19) ^
-        (previous2 >>> 10);
+        ((w2 >>> 17) | (w2 << 15)) ^ ((w2 >>> 19) | (w2 << 13)) ^ (w2 >>> 10);
       words[index] =
-        ((words[index - 16] ?? 0) +
-          sigma0 +
-          (words[index - 7] ?? 0) +
-          sigma1) >>>
+        ((words[index - 16] ?? 0) + sigma0 + (words[index - 7] ?? 0) + sigma1) |
         0;
     }
-
-    let a = hash[0] ?? 0;
-    let b = hash[1] ?? 0;
-    let c = hash[2] ?? 0;
-    let d = hash[3] ?? 0;
-    let e = hash[4] ?? 0;
-    let f = hash[5] ?? 0;
-    let g = hash[6] ?? 0;
-    let h = hash[7] ?? 0;
+    let a = h0;
+    let b = h1;
+    let c = h2;
+    let d = h3;
+    let e = h4;
+    let f = h5;
+    let g = h6;
+    let h = h7;
     for (let index = 0; index < 64; index += 1) {
-      const sum1 = rotateRight(e, 6) ^ rotateRight(e, 11) ^ rotateRight(e, 25);
+      const sum1 =
+        ((e >>> 6) | (e << 26)) ^
+        ((e >>> 11) | (e << 21)) ^
+        ((e >>> 25) | (e << 7));
       const choice = (e & f) ^ (~e & g);
       const temporary1 =
-        (h +
-          sum1 +
-          choice +
-          (SHA256_CONSTANTS[index] ?? 0) +
-          (words[index] ?? 0)) >>>
-        0;
-      const sum0 = rotateRight(a, 2) ^ rotateRight(a, 13) ^ rotateRight(a, 22);
+        (h + sum1 + choice + (k[index] ?? 0) + (words[index] ?? 0)) | 0;
+      const sum0 =
+        ((a >>> 2) | (a << 30)) ^
+        ((a >>> 13) | (a << 19)) ^
+        ((a >>> 22) | (a << 10));
       const majority = (a & b) ^ (a & c) ^ (b & c);
-      const temporary2 = (sum0 + majority) >>> 0;
+      const temporary2 = (sum0 + majority) | 0;
       h = g;
       g = f;
       f = e;
-      e = (d + temporary1) >>> 0;
+      e = (d + temporary1) | 0;
       d = c;
       c = b;
       b = a;
-      a = (temporary1 + temporary2) >>> 0;
+      a = (temporary1 + temporary2) | 0;
     }
-    hash[0] = ((hash[0] ?? 0) + a) >>> 0;
-    hash[1] = ((hash[1] ?? 0) + b) >>> 0;
-    hash[2] = ((hash[2] ?? 0) + c) >>> 0;
-    hash[3] = ((hash[3] ?? 0) + d) >>> 0;
-    hash[4] = ((hash[4] ?? 0) + e) >>> 0;
-    hash[5] = ((hash[5] ?? 0) + f) >>> 0;
-    hash[6] = ((hash[6] ?? 0) + g) >>> 0;
-    hash[7] = ((hash[7] ?? 0) + h) >>> 0;
+    h0 = (h0 + a) | 0;
+    h1 = (h1 + b) | 0;
+    h2 = (h2 + c) | 0;
+    h3 = (h3 + d) | 0;
+    h4 = (h4 + e) | 0;
+    h5 = (h5 + f) | 0;
+    h6 = (h6 + g) | 0;
+    h7 = (h7 + h) | 0;
   }
 
-  return Array.from(hash, (word) => word.toString(16).padStart(8, "0")).join(
-    "",
-  );
-}
-
-function rotateRight(value: number, count: number): number {
-  return (value >>> count) | (value << (32 - count));
+  return [h0, h1, h2, h3, h4, h5, h6, h7]
+    .map((word) => (word >>> 0).toString(16).padStart(8, "0"))
+    .join("");
 }

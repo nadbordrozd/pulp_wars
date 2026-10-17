@@ -133,7 +133,7 @@ import {
   cooperativeAlliesV7,
   harbourPopulationForV7,
   rewardCandidatesForLevelV7,
-  roadPopulationForCityV7,
+  roadPopulationReaderV7,
 } from "./economy";
 import {
   compareCoordsV7,
@@ -3921,6 +3921,9 @@ function populationLedgerValid(
         return false;
     }
   }
+  // `pulp_wars-2yc.79`: the graph is not changed below, so each owner's
+  // network is read once for every city.
+  const roadPopulation = roadPopulationReaderV7(roadGraph);
   for (const city of cities) {
     const entries = contributions.filter((entry) => entry.cityId === city.id);
     const permanentTotal = entries
@@ -3929,8 +3932,7 @@ function populationLedgerValid(
     const storedLiveTotal = entries
       .filter((entry) => entry.category === "LIVE")
       .reduce((sum, entry) => sum + entry.amount, 0);
-    const liveTotal =
-      storedLiveTotal + roadPopulationForCityV7(roadGraph, city);
+    const liveTotal = storedLiveTotal + roadPopulation(city);
     if (
       !Number.isSafeInteger(permanentTotal) ||
       !Number.isSafeInteger(liveTotal) ||

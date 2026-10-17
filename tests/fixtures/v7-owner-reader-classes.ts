@@ -68,6 +68,7 @@ export const OWNER_READER_CLASSES_V7: Readonly<
   // that is no player has no Harbours (0).
   "src/engine/v7/economy.ts::harbourPopulationForV7": "NEUTRAL_SAFE",
   "src/engine/v7/economy.ts::roadPopulationForCityV7": "PLAYER_ONLY",
+  "src/engine/v7/economy.ts::roadPopulationReaderV7": "PLAYER_ONLY",
   "src/engine/v7/eggs.ts::isNestTileV7": "PLAYER_ONLY",
   // The killing Zombie's seat (the Spider has no Infect).
   "src/engine/v7/infect.ts::recordInfectionV7": "PLAYER_ONLY",

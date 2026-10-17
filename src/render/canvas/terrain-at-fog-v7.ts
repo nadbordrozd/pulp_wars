@@ -182,6 +182,13 @@ export function terrainSkeletonFitsV7(
 }
 
 const skeletons = new WeakMap<object, TerrainSkeletonV7 | null>();
+/**
+ * `pulp_wars-2yc.79`: the skeletons of the last few setups by their text,
+ * so that a view whose setup is an equal but new object (every accepted
+ * command parses a new state) does not make the map again.
+ */
+const SKELETON_TEXT_LIMIT_V7 = 6;
+const skeletonsByText = new Map<string, TerrainSkeletonV7 | null>();
 
 /**
  * The skeleton of a view's match, made once per setup and checked against
@@ -192,7 +199,16 @@ export function terrainSkeletonOfViewV7(
 ): TerrainSkeletonV7 | null {
   let skeleton = skeletons.get(view.setup);
   if (skeleton === undefined) {
-    skeleton = terrainSkeletonOfSetupV7(view.setup);
+    const text = JSON.stringify(view.setup);
+    skeleton = skeletonsByText.get(text);
+    if (skeleton === undefined) {
+      skeleton = terrainSkeletonOfSetupV7(view.setup);
+      skeletonsByText.set(text, skeleton);
+      if (skeletonsByText.size > SKELETON_TEXT_LIMIT_V7) {
+        const oldest = skeletonsByText.keys().next().value;
+        if (oldest !== undefined) skeletonsByText.delete(oldest);
+      }
+    }
     skeletons.set(view.setup, skeleton);
   }
   return skeleton !== null && terrainSkeletonFitsV7(skeleton, view)

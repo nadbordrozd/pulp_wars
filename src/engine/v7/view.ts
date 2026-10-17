@@ -1,4 +1,5 @@
 import { deepFreeze } from "../model/freeze";
+import { hasAcceptedStateCertificateV7 } from "./accepted-state-certificate";
 import type { CityId, PlayerId, UnitId } from "../model/ids";
 import {
   REVISION_21_ACHIEVEMENT_IDS_V7,
@@ -705,10 +706,28 @@ export interface PublicNavalFactsV7 {
   readonly recoverableNavalUnitIds: readonly UnitId[];
 }
 
+/**
+ * `pulp_wars-2yc.79`: the views of accepted states, which are validated and
+ * deep-frozen before they are certified and so never change. A view is a
+ * pure function of its state and viewer and is itself deep-frozen, so the
+ * same object serves every later ask (the browser asks for the human's
+ * view of each accepted state several times: the boundary, the event
+ * projection, the snapshot).
+ */
+const CERTIFIED_VIEWS_V7 = new WeakMap<
+  GameStateV7,
+  Map<PlayerId, PlayerViewV7>
+>();
+
 export function viewForV7(
   state: GameStateV7,
   viewerId: PlayerId,
 ): PlayerViewV7 {
+  const certified = hasAcceptedStateCertificateV7(state);
+  if (certified) {
+    const remembered = CERTIFIED_VIEWS_V7.get(state)?.get(viewerId);
+    if (remembered !== undefined) return remembered;
+  }
   const viewer = state.players.find((player) => player.id === viewerId);
   if (viewer === undefined) throw new RangeError(`Unknown viewer: ${viewerId}`);
   const mission = missionStatusV7(state);
@@ -1033,7 +1052,7 @@ export function viewForV7(
       };
     },
   );
-  return deepFreeze({
+  const view: PlayerViewV7 = deepFreeze({
     schemaVersion: 7,
     rulesetId: state.rulesetId,
     commandIndex: state.commandIndex,
@@ -1439,6 +1458,15 @@ export function viewForV7(
     // Mission objectives (7r82): present exactly in a mission match.
     ...(mission === null ? {} : { mission }),
   });
+  if (certified) {
+    let byViewer = CERTIFIED_VIEWS_V7.get(state);
+    if (byViewer === undefined) {
+      byViewer = new Map();
+      CERTIFIED_VIEWS_V7.set(state, byViewer);
+    }
+    byViewer.set(viewerId, view);
+  }
+  return view;
 }
 
 /** Section 3.4: the viewer's part of the score (`PlayerViewV7.score`). */

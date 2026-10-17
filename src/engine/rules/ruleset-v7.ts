@@ -5728,10 +5728,46 @@ export function seatRosterV7(
 }
 
 /** The faction a seat is bound to (its research, production, and economy). */
+/**
+ * `pulp_wars-2yc.79`: the factions of the last frozen player list asked
+ * about, by id (the first player of each id, as `find` reads it). A frozen
+ * list of frozen players cannot change, so its answers never go stale; any
+ * other list is searched every time.
+ */
+let factionMemoPlayers: FactionRosterV7["players"] | null = null;
+let factionMemo: ReadonlyMap<PlayerId, FactionIdV7> | null = null;
+
+function factionMemoOfV7(
+  players: FactionRosterV7["players"],
+): ReadonlyMap<PlayerId, FactionIdV7> | null {
+  if (players === factionMemoPlayers) return factionMemo;
+  factionMemoPlayers = players;
+  factionMemo = null;
+  if (
+    Object.isFrozen(players) &&
+    players.every((player) => Object.isFrozen(player))
+  ) {
+    const memo = new Map<PlayerId, FactionIdV7>();
+    for (const player of players)
+      if (!memo.has(player.id)) memo.set(player.id, player.faction);
+    factionMemo = memo;
+  }
+  return factionMemo;
+}
+
 export function playerFactionV7(
   roster: Pick<FactionRosterV7, "players">,
   playerId: PlayerId,
 ): FactionIdV7 {
+  // NaN is never a player id; `find` and a Map would disagree on it.
+  if (playerId === playerId) {
+    const memo = factionMemoOfV7(roster.players);
+    if (memo !== null) {
+      const faction = memo.get(playerId);
+      if (faction === undefined) throw new RangeError("INVALID_STATE");
+      return faction;
+    }
+  }
   const player = roster.players.find((candidate) => candidate.id === playerId);
   if (player === undefined) throw new RangeError("INVALID_STATE");
   return player.faction;
@@ -7337,11 +7373,21 @@ export function technologyCapabilitiesV7(
   faction: FactionIdV7,
 ): TechnologyCapabilitiesV7 {
   const tree = factionTreeV7(faction);
+  // `pulp_wars-2yc.79`: a frozen technology list (every accepted state's
+  // and view's) is answered by identity, without its text key.
+  const frozen = Object.isFrozen(researchedTechs);
+  if (frozen) {
+    const known = TECHNOLOGY_CAPABILITIES_BY_LIST_V7.get(researchedTechs)?.get(
+      tree.id,
+    );
+    if (known !== undefined) return known;
+  }
   const cacheKey = JSON.stringify([tree.id, ...[...researchedTechs].sort()]);
   const cached = TECHNOLOGY_CAPABILITIES_CACHE_V7.get(cacheKey);
   if (cached !== undefined) {
     TECHNOLOGY_CAPABILITIES_CACHE_V7.delete(cacheKey);
     TECHNOLOGY_CAPABILITIES_CACHE_V7.set(cacheKey, cached);
+    if (frozen) rememberCapabilitiesOfListV7(researchedTechs, tree.id, cached);
     return cached;
   }
   const known = new Set(researchedTechs);
@@ -7642,6 +7688,7 @@ export function technologyCapabilitiesV7(
     const oldest = TECHNOLOGY_CAPABILITIES_CACHE_V7.keys().next().value;
     if (oldest !== undefined) TECHNOLOGY_CAPABILITIES_CACHE_V7.delete(oldest);
   }
+  if (frozen) rememberCapabilitiesOfListV7(researchedTechs, tree.id, result);
   return result;
 }
 
@@ -7650,6 +7697,24 @@ const TECHNOLOGY_CAPABILITIES_CACHE_V7 = new Map<
   string,
   TechnologyCapabilitiesV7
 >();
+/** The same tables by frozen technology list and tree (`pulp_wars-2yc.79`). */
+const TECHNOLOGY_CAPABILITIES_BY_LIST_V7 = new WeakMap<
+  readonly TechnologyIdV7[],
+  Map<FactionTreeIdV7, TechnologyCapabilitiesV7>
+>();
+
+function rememberCapabilitiesOfListV7(
+  list: readonly TechnologyIdV7[],
+  treeId: FactionTreeIdV7,
+  capabilities: TechnologyCapabilitiesV7,
+): void {
+  let byTree = TECHNOLOGY_CAPABILITIES_BY_LIST_V7.get(list);
+  if (byTree === undefined) {
+    byTree = new Map();
+    TECHNOLOGY_CAPABILITIES_BY_LIST_V7.set(list, byTree);
+  }
+  byTree.set(treeId, capabilities);
+}
 
 export function assertRuleset7Registry(): void {
   const complete = FACTION_IDS_V7.every((faction, index) => {

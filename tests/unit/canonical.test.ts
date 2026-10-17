@@ -143,4 +143,42 @@ describe("canonical JSON", () => {
       expect(() => canonicalHash(value)).toThrow(message);
     }
   });
+
+  // Bead pulp_wars-2yc.79: the path in an error is built only when one is
+  // thrown; it reads exactly as before.
+  it("names the exact path of a rejected value", () => {
+    const sparse: unknown[] = [1, 2];
+    Reflect.deleteProperty(sparse, "1");
+    const cyclic: { self?: unknown } = {};
+    cyclic.self = cyclic;
+    for (const [value, message] of [
+      [{ a: [1, { b: 1.5 }] }, "Non-safe-integer JSON number at $.a[1].b"],
+      [1.5, "Non-safe-integer JSON number at $"],
+      [undefined, "Root value is not JSON-compatible"],
+      [{ "0": [undefined] }, "Value at $.0[0] is not JSON-compatible"],
+      [{ list: [[0, sparse]] }, "Sparse JSON array at $.list[0][1][1]"],
+      [{ x: { y: cyclic } }, "Cyclic JSON value at $.x.y.self"],
+      [{ d: new Date(0) }, "Non-plain JSON object at $.d"],
+      [[{ [Symbol("s")]: 1 }], "Symbol key at $[0]"],
+      [
+        { o: Object.defineProperty({}, "v", { value: 1 }) },
+        "Non-data JSON property at $.o.v",
+      ],
+      [
+        { a: Object.assign([1], { e: 1 }) },
+        "Array with extra properties at $.a",
+      ],
+    ] as const)
+      expect(() => canonicalJson(value)).toThrow(message);
+  });
+
+  it("orders surrogate and plain keys alike in nested objects", () => {
+    const value = {
+      b: { "\u{1F600}": 1, "\uFFFF": 2, z: 3 },
+      a: [{ y: 1, x: 2, "\uD800": 3 }],
+    };
+    expect(canonicalJson(value)).toBe(
+      '{"a":[{"x":2,"y":1,"\\ud800":3}],"b":{"z":3,"\uFFFF":2,"\u{1F600}":1}}',
+    );
+  });
 });

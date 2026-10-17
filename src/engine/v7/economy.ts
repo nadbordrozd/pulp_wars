@@ -350,6 +350,41 @@ export function marketIncomeForCityV7(
   return total;
 }
 
+/**
+ * {@link marketIncomeForCityV7} for any number of cities of one state that
+ * does not change while the reader is used (`pulp_wars-2yc.79`): the
+ * Markets are grouped by territory once, in board order, so every city's
+ * total sums the same Markets in the same order.
+ */
+export function marketIncomeReaderV7(
+  state: NetworkStateV7,
+): (city: Pick<CityStateV7, "id">) => number {
+  let marketsByCity: Map<
+    CityStateV7["id"] | null,
+    GameStateV7["board"]["tiles"][number][]
+  > | null = null;
+  return (city) => {
+    if (marketsByCity === null) {
+      marketsByCity = new Map();
+      for (const tile of state.board.tiles)
+        if (tile.improvement === "MARKET") {
+          const list = marketsByCity.get(tile.territoryCityId);
+          if (list === undefined)
+            marketsByCity.set(tile.territoryCityId, [tile]);
+          else list.push(tile);
+        }
+    }
+    let total = 0;
+    for (const tile of marketsByCity.get(city.id) ?? []) {
+      const evaluation = spatialContributionAtV7(state, tile.at, "MARKET");
+      total += marketCoinsV7(evaluation.marketIncome);
+      if (!Number.isSafeInteger(total))
+        throw new RangeError("INTEGER_OVERFLOW");
+    }
+    return total;
+  };
+}
+
 export function recomputeLiveEconomyV7(
   beforeState: GameStateV7,
   finalGraph: Pick<GameStateV7, "board" | "cities"> &
@@ -422,6 +457,11 @@ export function recomputeLiveEconomyV7(
   const changes: CityEconomyChangeV7[] = [];
   const cities: CityStateV7[] = [];
   const afterStateForMarkets = graphState;
+  // `pulp_wars-2yc.79`: nothing below changes either state, so each owner's
+  // network and each state's Markets are read once for every city.
+  const roadPopulation = roadPopulationReaderV7(graphState);
+  const marketsBefore = marketIncomeReaderV7(beforeState);
+  const marketsAfter = marketIncomeReaderV7(afterStateForMarkets);
   for (const city of [...finalGraph.cities].sort((a, b) => a.id - b.id)) {
     let permanent = 0;
     let live = 0;
@@ -433,17 +473,14 @@ export function recomputeLiveEconomyV7(
         if (!Number.isSafeInteger(permanent) || !Number.isSafeInteger(live))
           throw new RangeError("INTEGER_OVERFLOW");
       }
-    live += roadPopulationForCityV7(graphState, city);
+    live += roadPopulation(city);
     if (!Number.isSafeInteger(live)) throw new RangeError("INTEGER_OVERFLOW");
     const growth = resolveCityGrowthV7(city, permanent, live);
     cities.push(growth.city);
     const before = beforeState.cities.find((item) => item.id === city.id);
     if (before === undefined) continue;
-    const marketBefore = marketIncomeForCityV7(beforeState, before);
-    const marketAfter = marketIncomeForCityV7(
-      afterStateForMarkets,
-      growth.city,
-    );
+    const marketBefore = marketsBefore(before);
+    const marketAfter = marketsAfter(growth.city);
     if (
       before.economicPopulation !== growth.city.economicPopulation ||
       before.population !== growth.city.population ||
@@ -548,9 +585,14 @@ const COMBINED_ROAD_CACHE = new WeakMap<
   object,
   Map<PlayerId, ReadonlySet<string>>
 >();
+/**
+ * The facts the cached network of an uncertified state was computed from
+ * ({@link networkFactsV7}); `null` for a certified state, whose facts cannot
+ * change.
+ */
 const NETWORK_CACHE_SIGNATURE = new WeakMap<
   object,
-  Map<PlayerId, string | null>
+  Map<PlayerId, NetworkFactsV7 | null>
 >();
 
 const SEA_ROUTE_GEOMETRY_CACHE_LIMIT = 16;
@@ -618,7 +660,41 @@ export function roadPopulationForCityV7(
     (candidate) => candidate.id === city.ownerId,
   );
   if (player === undefined) return 0;
-  const connected = landConnectedCityIdsV7(state, city.ownerId);
+  return roadPopulationInNetworkV7(
+    player,
+    landConnectedCityIdsV7(state, city.ownerId),
+    city,
+  );
+}
+
+/**
+ * {@link roadPopulationForCityV7} for any number of cities of one state that
+ * does not change while the reader is used (`pulp_wars-2yc.79`): each
+ * owner's connection network is looked up once.
+ */
+export function roadPopulationReaderV7(
+  state: NetworkStateV7,
+): (city: Pick<CityStateV7, "id" | "ownerId">) => number {
+  const connectedByOwner = new Map<PlayerId, ReadonlySet<CityId>>();
+  return (city) => {
+    const player = state.players.find(
+      (candidate) => candidate.id === city.ownerId,
+    );
+    if (player === undefined) return 0;
+    let connected = connectedByOwner.get(city.ownerId);
+    if (connected === undefined) {
+      connected = landConnectedCityIdsV7(state, city.ownerId);
+      connectedByOwner.set(city.ownerId, connected);
+    }
+    return roadPopulationInNetworkV7(player, connected, city);
+  };
+}
+
+function roadPopulationInNetworkV7(
+  player: Pick<GameStateV7["players"][number], "originalCapitalCityId">,
+  connected: ReadonlySet<CityId>,
+  city: Pick<CityStateV7, "id">,
+): number {
   if (!connected.has(player.originalCapitalCityId)) return 0;
   const connectedOtherCities = [...connected].filter(
     (cityId) => cityId !== player.originalCapitalCityId,
@@ -702,20 +778,26 @@ export function seaTradeCityIdsV7(
   state: NetworkStateV7,
   playerId: PlayerId,
 ): ReadonlySet<CityId> {
-  const signature = hasAcceptedStateCertificateV7(state as GameStateV7)
-    ? null
-    : networkFactsSignatureV7(state, playerId);
+  const certified = hasAcceptedStateCertificateV7(state as GameStateV7);
   let byOwner = SEA_TRADE_CACHE.get(state);
   if (byOwner === undefined) {
     byOwner = new Map();
     SEA_TRADE_CACHE.set(state, byOwner);
   }
   const prior = byOwner.get(playerId);
+  // `pulp_wars-2yc.79`: the cached network is reused while the facts it was
+  // computed from are unchanged, compared in place (no string is built);
+  // the facts are recorded only when the network is computed again.
+  const priorFacts = NETWORK_CACHE_SIGNATURE.get(state)?.get(playerId);
   if (
     prior !== undefined &&
-    NETWORK_CACHE_SIGNATURE.get(state)?.get(playerId) === signature
+    priorFacts !== undefined &&
+    (certified
+      ? priorFacts === null
+      : priorFacts !== null && networkFactsMatchV7(state, playerId, priorFacts))
   )
     return prior;
+  const signature = certified ? null : networkFactsV7(state, playerId);
   const player = state.players.find((candidate) => candidate.id === playerId);
   if (player === undefined) {
     const empty = new Set<CityId>();
@@ -945,7 +1027,7 @@ function setLandLinkedV7(
 function setNetworkCacheSignatureV7(
   state: NetworkStateV7,
   playerId: PlayerId,
-  signature: string | null,
+  signature: NetworkFactsV7 | null,
 ): void {
   let byOwner = NETWORK_CACHE_SIGNATURE.get(state);
   if (byOwner === undefined) {
@@ -955,26 +1037,119 @@ function setNetworkCacheSignatureV7(
   byOwner.set(playerId, signature);
 }
 
-function networkFactsSignatureV7(
+/**
+ * The facts an owner's connection network is computed from, as a flat list
+ * of values (`pulp_wars-2yc.79`; formerly one joined string of the same
+ * fields): the board size, the mode and human seat, the owner's first
+ * capital, technologies and explored tiles, every tile's place, biome,
+ * terrain, improvement, Road and territory, every city's id, owner and
+ * place, and every unit's owner, place, hit points and form. List lengths
+ * delimit the lists; a missing owner reads `"~"` for both of its lists.
+ * {@link networkFactsV7} writes the list and {@link networkFactsMatchV7}
+ * compares a state with one in place; the two read the same fields in the
+ * same order.
+ */
+type NetworkFactsV7 = readonly (string | number)[];
+
+function networkFactsV7(
   state: NetworkStateV7,
   playerId: PlayerId,
-): string {
+): NetworkFactsV7 {
   const player = state.players.find((candidate) => candidate.id === playerId);
-  const tiles = state.board.tiles
-    .map(
-      (tile) =>
-        `${coordKey(tile.at)}:${tile.biome ?? "~"}:${tile.terrain}:${tile.improvement ?? "~"}:${Number(tile.road)}:${tile.territoryCityId ?? "~"}`,
+  const tiles = state.board.tiles;
+  const facts: (string | number)[] = [
+    state.board.width,
+    state.board.height,
+    state.setup.aiMode,
+    state.humanPlayerId,
+    player?.originalCapitalCityId ?? "~",
+  ];
+  if (player === undefined) facts.push("~", "~");
+  else {
+    facts.push(player.researchedTechs.length, ...player.researchedTechs);
+    facts.push(player.explored.length);
+    for (const at of player.explored) facts.push(at.y, at.x);
+  }
+  facts.push(tiles.length);
+  for (const tile of tiles)
+    facts.push(
+      tile.at.y,
+      tile.at.x,
+      tile.biome ?? "~",
+      tile.terrain,
+      tile.improvement ?? "~",
+      Number(tile.road),
+      tile.territoryCityId ?? "~",
+    );
+  facts.push(state.cities.length);
+  for (const city of state.cities)
+    facts.push(city.id, city.ownerId, city.at.y, city.at.x);
+  facts.push(state.units.length);
+  for (const unit of state.units)
+    facts.push(unit.ownerId, unit.at.y, unit.at.x, unit.hp, unit.form);
+  return facts;
+}
+
+function networkFactsMatchV7(
+  state: NetworkStateV7,
+  playerId: PlayerId,
+  facts: NetworkFactsV7,
+): boolean {
+  const player = state.players.find((candidate) => candidate.id === playerId);
+  if (
+    facts[0] !== state.board.width ||
+    facts[1] !== state.board.height ||
+    facts[2] !== state.setup.aiMode ||
+    facts[3] !== state.humanPlayerId ||
+    facts[4] !== (player?.originalCapitalCityId ?? "~")
+  )
+    return false;
+  let index = 5;
+  if (player === undefined) {
+    if (facts[5] !== "~" || facts[6] !== "~") return false;
+    index = 7;
+  } else {
+    const technologies = player.researchedTechs;
+    if (facts[index++] !== technologies.length) return false;
+    for (const technology of technologies)
+      if (facts[index++] !== technology) return false;
+    if (facts[index++] !== player.explored.length) return false;
+    for (const at of player.explored)
+      if (facts[index++] !== at.y || facts[index++] !== at.x) return false;
+  }
+  const tiles = state.board.tiles;
+  if (facts[index++] !== tiles.length) return false;
+  for (const tile of tiles)
+    if (
+      facts[index++] !== tile.at.y ||
+      facts[index++] !== tile.at.x ||
+      facts[index++] !== (tile.biome ?? "~") ||
+      facts[index++] !== tile.terrain ||
+      facts[index++] !== (tile.improvement ?? "~") ||
+      facts[index++] !== Number(tile.road) ||
+      facts[index++] !== (tile.territoryCityId ?? "~")
     )
-    .join(";");
-  const cities = state.cities
-    .map((city) => `${city.id}:${city.ownerId}:${coordKey(city.at)}`)
-    .join(";");
-  const units = state.units
-    .map(
-      (unit) => `${unit.ownerId}:${coordKey(unit.at)}:${unit.hp}:${unit.form}`,
+      return false;
+  if (facts[index++] !== state.cities.length) return false;
+  for (const city of state.cities)
+    if (
+      facts[index++] !== city.id ||
+      facts[index++] !== city.ownerId ||
+      facts[index++] !== city.at.y ||
+      facts[index++] !== city.at.x
     )
-    .join(";");
-  return `${state.board.width}x${state.board.height}|${state.setup.aiMode}:${state.humanPlayerId}|${player?.originalCapitalCityId ?? "~"}|${player?.researchedTechs.join(",") ?? "~"}|${player?.explored.map(coordKey).join(";") ?? "~"}|${tiles}|${cities}|${units}`;
+      return false;
+  if (facts[index++] !== state.units.length) return false;
+  for (const unit of state.units)
+    if (
+      facts[index++] !== unit.ownerId ||
+      facts[index++] !== unit.at.y ||
+      facts[index++] !== unit.at.x ||
+      facts[index++] !== unit.hp ||
+      facts[index++] !== unit.form
+    )
+      return false;
+  return index === facts.length;
 }
 
 function seaRouteGeometryV7(

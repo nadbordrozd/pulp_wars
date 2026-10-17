@@ -8646,8 +8646,28 @@ function economicOutputTransitionsV7(
   before: PublicEconomyGraphV7,
   after: PublicEconomyGraphV7,
 ): readonly EconomicOutputTransitionV7[] {
+  // `pulp_wars-2yc.79`: each graph's tiles indexed once by place (the first
+  // tile of each place, as `find` reads it), not searched for every tile.
+  const tileAt = (graph: PublicEconomyGraphV7) => {
+    const byX = new Map<
+      number,
+      Map<number, PublicEconomyGraphV7["board"]["tiles"][number]>
+    >();
+    for (const candidate of graph.board.tiles) {
+      let byY = byX.get(candidate.at.x);
+      if (byY === undefined) {
+        byY = new Map();
+        byX.set(candidate.at.x, byY);
+      }
+      if (!byY.has(candidate.at.y)) byY.set(candidate.at.y, candidate);
+    }
+    return (at: CoordV7) =>
+      at.x !== at.x || at.y !== at.y ? undefined : byX.get(at.x)?.get(at.y);
+  };
+  const tileAtBefore = tileAt(before);
+  const tileAtAfter = tileAt(after);
   const outputAt = (graph: PublicEconomyGraphV7, at: CoordV7) => {
-    const tile = graph.board.tiles.find((candidate) => same(candidate.at, at));
+    const tile = (graph === before ? tileAtBefore : tileAtAfter)(at);
     if (
       tile?.improvement === null ||
       tile?.improvement === undefined ||
@@ -10537,12 +10557,43 @@ function projectedRestoredResource(
     : null;
 }
 
+/**
+ * `pulp_wars-2yc.79`: the explored improvements of a frozen tile list, by
+ * city (a frozen list of frozen tiles cannot change).
+ */
+const CITY_IMPROVEMENTS_V7 = new WeakMap<
+  PlayerViewV7["board"]["tiles"],
+  ReadonlyMap<CityId | null, ReadonlySet<ImprovementIdV7 | null>>
+>();
+
 function cityHasImprovement(
   view: PlayerViewV7,
   cityId: CityId,
   improvement: ImprovementIdV7,
 ): boolean {
-  return view.board.tiles.some(
+  const tiles = view.board.tiles;
+  let byCity = CITY_IMPROVEMENTS_V7.get(tiles);
+  if (
+    byCity === undefined &&
+    Object.isFrozen(tiles) &&
+    tiles.every((tile) => Object.isFrozen(tile))
+  ) {
+    const built = new Map<CityId | null, Set<ImprovementIdV7 | null>>();
+    for (const tile of tiles) {
+      if (!tile.explored) continue;
+      let improvements = built.get(tile.territoryCityId);
+      if (improvements === undefined) {
+        improvements = new Set();
+        built.set(tile.territoryCityId, improvements);
+      }
+      improvements.add(tile.improvement);
+    }
+    byCity = built;
+    CITY_IMPROVEMENTS_V7.set(tiles, built);
+  }
+  if (byCity !== undefined && cityId === cityId && improvement === improvement)
+    return byCity.get(cityId)?.has(improvement) ?? false;
+  return tiles.some(
     (tile) =>
       tile.explored &&
       tile.territoryCityId === cityId &&
