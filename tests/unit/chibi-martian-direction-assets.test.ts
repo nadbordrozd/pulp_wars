@@ -530,12 +530,15 @@ describe("the Martian accent derivation (pulp_wars-t6s.6)", () => {
     // (pulp_wars-wrn.2) `goblin-hazard`, the Candy bead (pulp_wars-jdb.5)
     // `candy-pink`, the Cult sample (pulp_wars-mch9.14) `cult-green` and
     // `cult-lodge`, the Cult interface art (pulp_wars-mch9.23)
-    // `cult-lodge-icon` and `cult-summoned-icon`.
+    // `cult-lodge-icon` and `cult-summoned-icon`, the robed cultists' round 2
+    // (pulp_wars-mch9.54) `cult-robe` and `cult-robe-icon`.
     expect(Object.keys(ACCENT_PRESETS).sort()).toEqual([
       "candy-pink",
       "cult-green",
       "cult-lodge",
       "cult-lodge-icon",
+      "cult-robe",
+      "cult-robe-icon",
       "cult-summoned-icon",
       "dwarf-copper",
       "goblin-hazard",

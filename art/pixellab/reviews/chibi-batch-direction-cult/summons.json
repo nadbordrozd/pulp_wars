@@ -57,12 +57,12 @@
     {
       "title": "Initiate",
       "asset": "chibi-direction-cult-initiate",
-      "size": "48 x 73"
+      "size": "50 x 59"
     },
     {
       "title": "Summoner",
       "asset": "chibi-direction-cult-summoner",
-      "size": "36 x 75"
+      "size": "52 x 78"
     },
     {
       "title": "Thing in the Cellar",
@@ -150,16 +150,16 @@
         "unit": "Imp",
         "rival": "Initiate",
         "measure": {
-          "palette": 48.9,
-          "deuteranopia": 35.7,
-          "protanopia": 35,
-          "greyPalette": 4.1,
-          "lightness": 7.4,
+          "palette": 34.1,
+          "deuteranopia": 16.5,
+          "protanopia": 15.9,
+          "greyPalette": 4.9,
+          "lightness": 13.3,
           "meanLightness": [
             40.2,
-            33.3
+            26.5
           ],
-          "silhouette": 0.55,
+          "silhouette": 0.67,
           "distinct": true,
           "reasons": []
         }

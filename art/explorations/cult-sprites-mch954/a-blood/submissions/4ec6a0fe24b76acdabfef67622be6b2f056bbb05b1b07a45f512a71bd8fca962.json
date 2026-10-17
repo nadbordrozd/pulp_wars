@@ -1,0 +1,36 @@
+{
+  "id": "r2a-summoner-1-blade",
+  "jobId": "fde93ba8-fbb4-4180-8392-a9e1e1fa34fe",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "cult-sprites-mch954-a-blood",
+    "asset": "chibi-explore-cult2-a-summoner",
+    "subject": "UNIT:CULT:CAPTAIN",
+    "faction": "TEST-CULT-BLOOD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 95432,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the dagger: the cyan glints at its hilt become dull gold, colour #c9a24a, and the blade becomes pale steel grey, colour #c8c8d0, with bright red blood, colour #d01818, running down it. Do not redraw anything else: keep the tall red cowl, the pale grey face, the red, black and gold robe, the chain, the thick black outline and the art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only the dagger: the cyan glints at its hilt become dull gold, colour #c9a24a, and the blade becomes pale steel grey, colour #c8c8d0, with bright red blood, colour #d01818, running down it. Do not redraw anything else: keep the tall red cowl, the pale grey face, the red, black and gold robe, the chain, the thick black outline and the art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only the dagger: the cyan glints at its hilt become dull gold, colour #c9a24a, and the blade becomes pale steel grey, colour #c8c8d0, with bright red blood, colour #d01818, running down it. Do not redraw anything else: keep the tall red cowl, the pale grey face, the red, black and gold robe, the chain, the thick black outline and the art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only the dagger: the cyan glints at its hilt become dull gold, colour #c9a24a, and the blade becomes pale steel grey, colour #c8c8d0, with bright red blood, colour #d01818, running down it. Do not redraw anything else: keep the tall red cowl, the pale grey face, the red, black and gold robe, the chain, the thick black outline and the art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "r2a-summoner-1",
+      "candidate": 0,
+      "sha256": "39756f54c39e90d44d51c36d53df49ff709f48c2300e39f2575f122263a33c4e"
+    }
+  }
+}

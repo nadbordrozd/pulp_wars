@@ -8,25 +8,28 @@
   "gates": [
     {
       "gate": 1,
-      "asks": "The Initiate's robe is indigo with a lit side: not navy, not near-black, under about 45% dark pixels; its eyes and candle read at zoom 0.75.",
+      "asks": "Round 2 (pulp_wars-mch9.54): the Initiate is an ordinary man in an evil robe: a human face shows, the robe is blood red and not the lodge's indigo (so it parts from the indigo-roofed buildings); its face, dagger and candle read at zoom 0.75. (Round 1 asked for an indigo robe with a lit side.)",
       "measured": {
-        "darkShare": 21.7,
-        "meanLightness": 45.1,
-        "ink": 26.2,
-        "clothMean": "#4e48b5",
-        "clothHue": 243,
-        "clothLitMean": "#4f49b7",
-        "clothLitHue": 243,
-        "litShareOfCloth": 96.8,
-        "litClothFromUndeadBlack": 66.4,
-        "litClothFromIceWitchNavy": 27.5,
+        "skinPixels": 170,
+        "redPixels": 454,
+        "lodgeIndigoShare": 0,
+        "darkShare": 63.8,
+        "meanLightness": 34.3,
+        "ink": 22.8,
+        "clothMean": "#1e1a26",
+        "clothHue": 260,
+        "clothLitMean": null,
+        "clothLitHue": null,
+        "litShareOfCloth": 0,
+        "litClothFromUndeadBlack": 20.6,
+        "litClothFromIceWitchNavy": 50.6,
         "atZoom075": {
-          "creamPixels": 74,
-          "greenPixels": 8
+          "skinPixels": 108,
+          "greenPixels": 17
         },
-        "rule": "dark share (L* under 35, outline excluded) under 45%; mean cloth hue 236 to 256; at least a quarter of the cloth lit (value 0.55 and more); lit cloth at least 40 from the Undead near-black #313135"
+        "rule": "at least 30 skin pixels (a face) and 30 red pixels (the robe, the blood); lodge indigo (hue 228 to 266, saturation 0.45 and more, value 0.35 and more) at most 1% of the sprite"
       },
-      "byEye": "On sample-zoom-0.75.png the two cream eyes are the first thing read on every ground, and the candle is a cream stub with a green flame beside the body; the flame is 8 px at that zoom and weakest on Grass and Snow. The robe reads indigo, lighter on the left; its shading is shallow (the accent compresses it).",
+      "byEye": "Round 2 (pulp_wars-mch9.54): on sample-zoom-0.75.png the Initiate is a bearded man's pale face in a blood-red hood, with the bloody blade on the left and the green candle flame on the right; the robe is darker than round 1's (64% dark pixels), which the bog's mid value carries, and it shares no colour with the indigo roofs.",
       "verdict": "PASS"
     },
     {
@@ -66,15 +69,15 @@
     },
     {
       "gate": 4,
-      "asks": "Green is small on all three and lands on hue 148 after the accent step; no pixel is red, violet or magenta.",
+      "asks": "Green is small on all three and lands on hue 148 after the accent step; no pixel of the Horror or the Herald is red, violet or magenta (since round 2, pulp_wars-mch9.54, the Initiate's blood red and purple trim are its own).",
       "measured": {
         "Initiate": {
-          "share": 0.7,
-          "pixels": 17,
-          "hueMin": 147,
-          "hueMax": 147,
-          "redPixels": 0,
-          "violetOrMagentaPixels": 0
+          "share": 1.1,
+          "pixels": 22,
+          "hueMin": 148,
+          "hueMax": 148,
+          "redPixels": 454,
+          "violetOrMagentaPixels": 135
         },
         "Horror": {
           "share": 0.5,
@@ -92,9 +95,9 @@
           "redPixels": 0,
           "violetOrMagentaPixels": 0
         },
-        "rule": "green (the accent band: hue 80 to 152, saturation 0.5 and more) at most 8% of each sprite and every green tone at hue 144 to 152; no red (hue 345 to 12) and no violet or magenta (hue 270 to 345) pixel"
+        "rule": "green (the accent band: hue 80 to 152, saturation 0.5 and more) at most 8% of each sprite and every green tone at hue 144 to 152; no red (hue 345 to 12) and no violet or magenta (hue 270 to 345) pixel on the Horror and the Herald"
       },
-      "byEye": "The only green on the Initiate is the flame. The Horror keeps a few green specks on its head, and the lit tips of the Herald's tentacle crown fall in the accent band and turn green (4% of the sprite): they read as part of the teal crown.",
+      "byEye": "The only green on the Initiate is the candle flame and a small amulet (1%). The Horror keeps a few green specks on its head, and the lit tips of the Herald's tentacle crown fall in the accent band and turn green (4% of the sprite): they read as part of the teal crown.",
       "verdict": "PASS"
     },
     {
@@ -105,64 +108,66 @@
           {
             "unit": "Initiate",
             "rival": "Necromancer",
-            "palette": 25.7,
-            "deuteranopia": 17.2,
-            "protanopia": 18.1,
-            "greyPalette": 3.6,
-            "lightness": 13.7,
+            "palette": 28,
+            "deuteranopia": 16.8,
+            "protanopia": 15.7,
+            "greyPalette": 2.2,
+            "lightness": 7.1,
             "meanLightness": [
-              33.3,
+              26.5,
               28.2
             ],
-            "silhouette": 0.59,
+            "silhouette": 0.66,
             "distinct": true,
             "reasons": []
           },
           {
             "unit": "Initiate",
             "rival": "Ice Witch",
-            "palette": 22.8,
-            "deuteranopia": 17.1,
-            "protanopia": 18,
-            "greyPalette": 3.9,
-            "lightness": 16,
+            "palette": 22.4,
+            "deuteranopia": 18.2,
+            "protanopia": 16.4,
+            "greyPalette": 2.4,
+            "lightness": 21.8,
             "meanLightness": [
-              33.3,
+              26.5,
               48.7
             ],
-            "silhouette": 0.52,
+            "silhouette": 0.57,
             "distinct": true,
             "reasons": []
           },
           {
             "unit": "Initiate",
             "rival": "Human Fighter",
-            "palette": 39.1,
-            "deuteranopia": 33,
-            "protanopia": 32.7,
-            "greyPalette": 3.1,
-            "lightness": 11.6,
+            "palette": 14.9,
+            "deuteranopia": 11.1,
+            "protanopia": 10.4,
+            "greyPalette": 2.8,
+            "lightness": 17.6,
             "meanLightness": [
-              33.3,
+              26.5,
               45.2
             ],
-            "silhouette": 0.65,
-            "distinct": true,
-            "reasons": []
+            "silhouette": 0.62,
+            "distinct": false,
+            "reasons": [
+              "colour too close"
+            ]
           },
           {
             "unit": "Initiate",
             "rival": "Grunt",
-            "palette": 29.3,
-            "deuteranopia": 29.2,
-            "protanopia": 25.2,
-            "greyPalette": 3.3,
-            "lightness": 14.3,
+            "palette": 26.2,
+            "deuteranopia": 21.8,
+            "protanopia": 17.9,
+            "greyPalette": 1.5,
+            "lightness": 19.6,
             "meanLightness": [
-              33.3,
+              26.5,
               45.8
             ],
-            "silhouette": 0.66,
+            "silhouette": 0.54,
             "distinct": true,
             "reasons": []
           },
@@ -247,11 +252,13 @@
             "reasons": []
           }
         ],
-        "failing": [],
+        "failing": [
+          "Initiate / Human Fighter: colour too close"
+        ],
         "rule": "every named pair distinct by the Dwarf lineup's calibrated thresholds (lineup.json)"
       },
-      "byEye": "On lineup-1x.png, at half size and in greyscale: the Initiate is a hood with two white eyes and no staff (Necromancer: beard and skull staff; Ice Witch: pale face and crown); the Horror is a ball with a pale belly band (Spider: flat with eight legs; Bunny: ears); the Herald is a bell with one eye (Lich: raised arms and ribs).",
-      "verdict": "PASS"
+      "byEye": "On lineup-1x.png, at half size and in greyscale: the Initiate (round 2) is a hooded bearded face with a dagger and a candle and no staff (Necromancer: white beard and skull staff; Ice Witch: pale face and crown). Since round 2 the measure calls the Initiate and the Human Fighter colour-too-close (both red): by eye the Fighter is a steel helmet with a red plume, a cross tabard, a sword and a round shield, the Initiate a dark hood and robe; the measured FAIL stands and is reported. The Horror is a ball with a pale belly band (Spider: flat with eight legs; Bunny: ears); the Herald is a bell with one eye (Lich: raised arms and ribs).",
+      "verdict": "FAIL"
     }
   ]
 }

@@ -1,0 +1,36 @@
+{
+  "id": "r2a-idol-bearer-1-clean",
+  "jobId": "373985a5-8c7f-40fb-b315-d5ab05aa9df2",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "cult-sprites-mch954-a-blood",
+    "asset": "chibi-explore-cult2-a-idol-bearer",
+    "subject": "UNIT:CULT:GUARD",
+    "faction": "TEST-CULT-BLOOD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 95412,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only one thing: erase the green flame and the small dark box at the top right of the stone idol head, leaving that area transparent. Do not redraw anything else: keep the grey stone idol with its toothy grin and green eyes, the bald man under it, his black robe with the red and gold stole, the thick black outline and the art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only one thing: erase the green flame and the small dark box at the top right of the stone idol head, leaving that area transparent. Do not redraw anything else: keep the grey stone idol with its toothy grin and green eyes, the bald man under it, his black robe with the red and gold stole, the thick black outline and the art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only one thing: erase the green flame and the small dark box at the top right of the stone idol head, leaving that area transparent. Do not redraw anything else: keep the grey stone idol with its toothy grin and green eyes, the bald man under it, his black robe with the red and gold stole, the thick black outline and the art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only one thing: erase the green flame and the small dark box at the top right of the stone idol head, leaving that area transparent. Do not redraw anything else: keep the grey stone idol with its toothy grin and green eyes, the bald man under it, his black robe with the red and gold stole, the thick black outline and the art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "r2a-idol-bearer-1",
+      "candidate": 0,
+      "sha256": "2daed6c189b84d746ad262593f2f5efa47c1b715d6aada42fb773f6ccfcb5173"
+    }
+  }
+}

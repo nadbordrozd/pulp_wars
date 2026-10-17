@@ -1,0 +1,36 @@
+{
+  "id": "r2a-stargazer-1-torch-b",
+  "jobId": "ee82870d-04cc-4b3b-bc4e-d1a70fe79784",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "cult-sprites-mch954-a-blood",
+    "asset": "chibi-explore-cult2-a-stargazer",
+    "subject": "UNIT:CULT:CATAPULT",
+    "faction": "TEST-CULT-BLOOD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 95443,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only one thing: erase the small torch with its green and orange flames at the left edge, leaving that area transparent. Do not redraw anything else: keep the old man with his red hood and white beard, the red and black robe, the dagger at his belt, the brass telescope, the wooden tripod, the star chart, the thick black outline and the art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only one thing: erase the small torch with its green and orange flames at the left edge, leaving that area transparent. Do not redraw anything else: keep the old man with his red hood and white beard, the red and black robe, the dagger at his belt, the brass telescope, the wooden tripod, the star chart, the thick black outline and the art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only one thing: erase the small torch with its green and orange flames at the left edge, leaving that area transparent. Do not redraw anything else: keep the old man with his red hood and white beard, the red and black robe, the dagger at his belt, the brass telescope, the wooden tripod, the star chart, the thick black outline and the art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only one thing: erase the small torch with its green and orange flames at the left edge, leaving that area transparent. Do not redraw anything else: keep the old man with his red hood and white beard, the red and black robe, the dagger at his belt, the brass telescope, the wooden tripod, the star chart, the thick black outline and the art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "r2a-stargazer-1",
+      "candidate": 0,
+      "sha256": "2886c76246d01723565f530fa2c9d6817127b228c0e86a6200543252800124fa"
+    }
+  }
+}

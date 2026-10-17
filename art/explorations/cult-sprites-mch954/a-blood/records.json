@@ -1,0 +1,2095 @@
+{
+  "schemaVersion": 1,
+  "batch": "cult-sprites-mch954-a-blood",
+  "recipes": {
+    "r2a-hexer-1": {
+      "id": "r2a-hexer-1",
+      "asset": "chibi-explore-cult2-a-hexer",
+      "jobId": "sync-73559bdb-daf0-4f0c-b67a-f3f38d78df7d",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "cult-sprites-mch954-a-blood",
+        "asset": "chibi-explore-cult2-a-hexer",
+        "subject": "UNIT:CULT:MARKSMAN",
+        "faction": "TEST-CULT-BLOOD",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 95421,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "faction",
+            "source": "art/explorations/cult-sprites-mch954/a-blood/faction.md#prompt-fragment + art/explorations/cult-sprites-mch954/a-blood/faction.md#negative-fragment",
+            "text": "Faction: a pulp-magazine secret society of the 1920s, sinister, grim and evil, not cute. Their colours: ceremonial cloth of deep blood red and black, embroidered with tarnished gold occult sigils; dull brass; pale cream candle wax and parchment; bright red fresh blood on blades; and one small accent, a glowing spring green, only as candle flames and sparks.",
+            "negative": "cute, friendly smile, tentacles, tentacle hands, skull face, skull mask, skeleton, glowing eyes, empty black face, monster face, teal, cyan, blue cloth, indigo cloth, gore, guts, slime, magenta, pink, orange flames, yellow flames, blue flames, steel armour, chrome, gold armour, sword, gun, staff, pentagram, cross, large glowing area"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+            "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+          },
+          {
+            "layer": "subject",
+            "source": "art/explorations/cult-sprites-mch954/a-blood/subjects.json",
+            "text": "Subject: Hexer, a chunky sly woman of an evil secret society: a long blood-red robe embroidered with gold occult sigils and a deep purple cowl over her dark hair, her pale face clearly visible with a cruel smug smile and narrowed eyes; one hand holds up an open black-bound ritual book, the other hand is thrust forward with one small green spark of a curse leaving her fingers; simple shapes and very few details."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The figure is drawn large: about 44 pixels wide and 70 pixels tall. A human face with skin, eyes, nose and mouth shows under the hood.",
+            "negative": "staff, wand, sword, skull, tentacle, glowing eyes, empty hood, blue robe, witch hat"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: a pulp-magazine secret society of the 1920s, sinister, grim and evil, not cute. Their colours: ceremonial cloth of deep blood red and black, embroidered with tarnished gold occult sigils; dull brass; pale cream candle wax and parchment; bright red fresh blood on blades; and one small accent, a glowing spring green, only as candle flames and sparks. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: Hexer, a chunky sly woman of an evil secret society: a long blood-red robe embroidered with gold occult sigils and a deep purple cowl over her dark hair, her pale face clearly visible with a cruel smug smile and narrowed eyes; one hand holds up an open black-bound ritual book, the other hand is thrust forward with one small green spark of a curse leaving her fingers; simple shapes and very few details. The figure is drawn large: about 44 pixels wide and 70 pixels tall. A human face with skin, eyes, nose and mouth shows under the hood.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, cute, friendly smile, tentacles, tentacle hands, skull face, skull mask, skeleton, glowing eyes, empty black face, monster face, teal, cyan, blue cloth, indigo cloth, gore, guts, slime, magenta, pink, orange flames, yellow flames, blue flames, steel armour, chrome, gold armour, sword, gun, staff, pentagram, cross, large glowing area, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, wand, skull, tentacle, empty hood, blue robe, witch hat",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: a pulp-magazine secret society of the 1920s, sinister, grim and evil, not cute. Their colours: ceremonial cloth of deep blood red and black, embroidered with tarnished gold occult sigils; dull brass; pale cream candle wax and parchment; bright red fresh blood on blades; and one small accent, a glowing spring green, only as candle flames and sparks. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: Hexer, a chunky sly woman of an evil secret society: a long blood-red robe embroidered with gold occult sigils and a deep purple cowl over her dark hair, her pale face clearly visible with a cruel smug smile and narrowed eyes; one hand holds up an open black-bound ritual book, the other hand is thrust forward with one small green spark of a curse leaving her fingers; simple shapes and very few details. The figure is drawn large: about 44 pixels wide and 70 pixels tall. A human face with skin, eyes, nose and mouth shows under the hood. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, cute, friendly smile, tentacles, tentacle hands, skull face, skull mask, skeleton, glowing eyes, empty black face, monster face, teal, cyan, blue cloth, indigo cloth, gore, guts, slime, magenta, pink, orange flames, yellow flames, blue flames, steel armour, chrome, gold armour, sword, gun, staff, pentagram, cross, large glowing area, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, wand, skull, tentacle, empty hood, blue robe, witch hat."
+      },
+      "submittedAt": "2026-10-17T09:35:33.786Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/explorations/cult-sprites-mch954/a-blood/raw/r2a-hexer-1.png",
+      "rawSheetSha256": "696ccaf24ee146469ddd0ddd4a26d0d21d402e6b212474e0974de3d2db2beac3",
+      "plateHints": [
+        {
+          "bandRows": 13,
+          "groundShare": 0.2027,
+          "footprintWidthShare": 0.7308,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-17T09:36:24.150Z",
+      "usageUsd": 0.010379513581593832,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Purple cowl, red robe, book and green spark as asked, but a tall sword stands beside her and her wide smile reads cute; fixed by r2a-hexer-1-fix.",
+        "reviewedAt": "2026-10-17T09:43:30.441Z"
+      }
+    },
+    "r2a-hexer-1-fix": {
+      "id": "r2a-hexer-1-fix",
+      "asset": "chibi-explore-cult2-a-hexer",
+      "jobId": "72b9a3e8-b7a6-4d1e-8cb9-15b13b12825a",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "cult-sprites-mch954-a-blood",
+        "asset": "chibi-explore-cult2-a-hexer",
+        "subject": "UNIT:CULT:MARKSMAN",
+        "faction": "TEST-CULT-BLOOD",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 95422,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only two things: erase the tall sword standing at the left, leaving that area transparent; and her face gets narrowed cruel eyes and a thin smug sneer instead of the wide smile. Do not redraw anything else: keep the purple hood, the red and gold robe, the black book, the green spark, the thick black outline and the art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change only two things: erase the tall sword standing at the left, leaving that area transparent; and her face gets narrowed cruel eyes and a thin smug sneer instead of the wide smile. Do not redraw anything else: keep the purple hood, the red and gold robe, the black book, the green spark, the thick black outline and the art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only two things: erase the tall sword standing at the left, leaving that area transparent; and her face gets narrowed cruel eyes and a thin smug sneer instead of the wide smile. Do not redraw anything else: keep the purple hood, the red and gold robe, the black book, the green spark, the thick black outline and the art style exactly the same, on a transparent background.",
+        "editInstruction": "Change only two things: erase the tall sword standing at the left, leaving that area transparent; and her face gets narrowed cruel eyes and a thin smug sneer instead of the wide smile. Do not redraw anything else: keep the purple hood, the red and gold robe, the black book, the green spark, the thick black outline and the art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "r2a-hexer-1",
+          "candidate": 0,
+          "sha256": "696ccaf24ee146469ddd0ddd4a26d0d21d402e6b212474e0974de3d2db2beac3"
+        }
+      },
+      "submittedAt": "2026-10-17T09:39:36.258Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/explorations/cult-sprites-mch954/a-blood/raw/r2a-hexer-1-fix.png",
+      "rawSheetSha256": "e82bdea242999bdcd0a07680bc5d0356d5bda7ff1328b42023f8e1f3958fa4ec",
+      "plateHints": [
+        {
+          "bandRows": 13,
+          "groundShare": 0.1571,
+          "footprintWidthShare": 0.7045,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.1571,
+          "footprintWidthShare": 0.7045,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-17T09:40:20.338Z",
+      "usageUsd": 0.008732267565197415,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "The sword is gone and the smile is a cold stare; purple cowl over a blood-red robe with gold, a black book and a green spark. The slimmest standard piece.",
+        "reviewedAt": "2026-10-17T09:43:30.637Z"
+      }
+    },
+    "r2a-idol-bearer-1": {
+      "id": "r2a-idol-bearer-1",
+      "asset": "chibi-explore-cult2-a-idol-bearer",
+      "jobId": "sync-15127abd-138c-4665-8556-07dd19c9293d",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "cult-sprites-mch954-a-blood",
+        "asset": "chibi-explore-cult2-a-idol-bearer",
+        "subject": "UNIT:CULT:GUARD",
+        "faction": "TEST-CULT-BLOOD",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 95411,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "faction",
+            "source": "art/explorations/cult-sprites-mch954/a-blood/faction.md#prompt-fragment + art/explorations/cult-sprites-mch954/a-blood/faction.md#negative-fragment",
+            "text": "Faction: a pulp-magazine secret society of the 1920s, sinister, grim and evil, not cute. Their colours: ceremonial cloth of deep blood red and black, embroidered with tarnished gold occult sigils; dull brass; pale cream candle wax and parchment; bright red fresh blood on blades; and one small accent, a glowing spring green, only as candle flames and sparks.",
+            "negative": "cute, friendly smile, tentacles, tentacle hands, skull face, skull mask, skeleton, glowing eyes, empty black face, monster face, teal, cyan, blue cloth, indigo cloth, gore, guts, slime, magenta, pink, orange flames, yellow flames, blue flames, steel armour, chrome, gold armour, sword, gun, staff, pentagram, cross, large glowing area"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+            "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+          },
+          {
+            "layer": "subject",
+            "source": "art/explorations/cult-sprites-mch954/a-blood/subjects.json",
+            "text": "Subject: Idol Bearer, a chunky stout broad-shouldered bald man with a heavy grim scowling face, the widest and squarest figure: a long black robe with a deep blood-red stole embroidered with gold sigils and an iron chain round the waist; both arms are raised and hold over his head one squat pale grey stone idol head as big as his own head, with a wide evil toothy grin and two small green eyes; simple shapes and very few details."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The figure is drawn large: about 44 pixels wide and 70 pixels tall. A human face with skin, eyes, nose and mouth shows under the hood.",
+            "negative": "staff, sword, skull, tentacle, glowing eyes, empty hood, blue robe, two idols"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: a pulp-magazine secret society of the 1920s, sinister, grim and evil, not cute. Their colours: ceremonial cloth of deep blood red and black, embroidered with tarnished gold occult sigils; dull brass; pale cream candle wax and parchment; bright red fresh blood on blades; and one small accent, a glowing spring green, only as candle flames and sparks. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: Idol Bearer, a chunky stout broad-shouldered bald man with a heavy grim scowling face, the widest and squarest figure: a long black robe with a deep blood-red stole embroidered with gold sigils and an iron chain round the waist; both arms are raised and hold over his head one squat pale grey stone idol head as big as his own head, with a wide evil toothy grin and two small green eyes; simple shapes and very few details. The figure is drawn large: about 44 pixels wide and 70 pixels tall. A human face with skin, eyes, nose and mouth shows under the hood.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, cute, friendly smile, tentacles, tentacle hands, skull face, skull mask, skeleton, glowing eyes, empty black face, monster face, teal, cyan, blue cloth, indigo cloth, gore, guts, slime, magenta, pink, orange flames, yellow flames, blue flames, steel armour, chrome, gold armour, sword, gun, staff, pentagram, cross, large glowing area, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, skull, tentacle, empty hood, blue robe, two idols",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: a pulp-magazine secret society of the 1920s, sinister, grim and evil, not cute. Their colours: ceremonial cloth of deep blood red and black, embroidered with tarnished gold occult sigils; dull brass; pale cream candle wax and parchment; bright red fresh blood on blades; and one small accent, a glowing spring green, only as candle flames and sparks. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: Idol Bearer, a chunky stout broad-shouldered bald man with a heavy grim scowling face, the widest and squarest figure: a long black robe with a deep blood-red stole embroidered with gold sigils and an iron chain round the waist; both arms are raised and hold over his head one squat pale grey stone idol head as big as his own head, with a wide evil toothy grin and two small green eyes; simple shapes and very few details. The figure is drawn large: about 44 pixels wide and 70 pixels tall. A human face with skin, eyes, nose and mouth shows under the hood. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, cute, friendly smile, tentacles, tentacle hands, skull face, skull mask, skeleton, glowing eyes, empty black face, monster face, teal, cyan, blue cloth, indigo cloth, gore, guts, slime, magenta, pink, orange flames, yellow flames, blue flames, steel armour, chrome, gold armour, sword, gun, staff, pentagram, cross, large glowing area, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, skull, tentacle, empty hood, blue robe, two idols."
+      },
+      "submittedAt": "2026-10-17T09:32:47.981Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/explorations/cult-sprites-mch954/a-blood/raw/r2a-idol-bearer-1.png",
+      "rawSheetSha256": "2daed6c189b84d746ad262593f2f5efa47c1b715d6aada42fb773f6ccfcb5173",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0.0486,
+          "footprintWidthShare": 0.8333,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-17T09:33:23.940Z",
+      "usageUsd": 0.008451147688759698,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The right man and idol (a grinning grey stone god over a scowling bald man in black and red), but a stray green flame and a dark box sit on the idol's top right; fixed by r2a-idol-bearer-1-clean.",
+        "reviewedAt": "2026-10-17T09:43:30.065Z"
+      }
+    },
+    "r2a-idol-bearer-1-clean": {
+      "id": "r2a-idol-bearer-1-clean",
+      "asset": "chibi-explore-cult2-a-idol-bearer",
+      "jobId": "373985a5-8c7f-40fb-b315-d5ab05aa9df2",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "cult-sprites-mch954-a-blood",
+        "asset": "chibi-explore-cult2-a-idol-bearer",
+        "subject": "UNIT:CULT:GUARD",
+        "faction": "TEST-CULT-BLOOD",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 95412,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only one thing: erase the green flame and the small dark box at the top right of the stone idol head, leaving that area transparent. Do not redraw anything else: keep the grey stone idol with its toothy grin and green eyes, the bald man under it, his black robe with the red and gold stole, the thick black outline and the art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change only one thing: erase the green flame and the small dark box at the top right of the stone idol head, leaving that area transparent. Do not redraw anything else: keep the grey stone idol with its toothy grin and green eyes, the bald man under it, his black robe with the red and gold stole, the thick black outline and the art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only one thing: erase the green flame and the small dark box at the top right of the stone idol head, leaving that area transparent. Do not redraw anything else: keep the grey stone idol with its toothy grin and green eyes, the bald man under it, his black robe with the red and gold stole, the thick black outline and the art style exactly the same, on a transparent background.",
+        "editInstruction": "Change only one thing: erase the green flame and the small dark box at the top right of the stone idol head, leaving that area transparent. Do not redraw anything else: keep the grey stone idol with its toothy grin and green eyes, the bald man under it, his black robe with the red and gold stole, the thick black outline and the art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "r2a-idol-bearer-1",
+          "candidate": 0,
+          "sha256": "2daed6c189b84d746ad262593f2f5efa47c1b715d6aada42fb773f6ccfcb5173"
+        }
+      },
+      "submittedAt": "2026-10-17T09:37:10.455Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/explorations/cult-sprites-mch954/a-blood/raw/r2a-idol-bearer-1-clean.png",
+      "rawSheetSha256": "1da3bccf88c8ad08e8855de677d0835cac9e010fc363e43ebe590282d2a1dc3b",
+      "plateHints": [
+        {
+          "bandRows": 14,
+          "groundShare": 0.0478,
+          "footprintWidthShare": 0.9302,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0.0478,
+          "footprintWidthShare": 0.9302,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-17T09:37:46.515Z",
+      "usageUsd": 0.007835617701212565,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "The flame and the box are gone; the idol keeps its grin and green eyes, the man his scowl, black robe and red-and-gold stole.",
+        "reviewedAt": "2026-10-17T09:43:30.244Z"
+      }
+    },
+    "r2a-initiate-1": {
+      "id": "r2a-initiate-1",
+      "asset": "chibi-explore-cult2-a-initiate",
+      "jobId": "sync-0e263382-e770-46dd-ada6-f92e60966006",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "cult-sprites-mch954-a-blood",
+        "asset": "chibi-explore-cult2-a-initiate",
+        "subject": "UNIT:CULT:FIGHTER",
+        "faction": "TEST-CULT-BLOOD",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 95401,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "faction",
+            "source": "art/explorations/cult-sprites-mch954/a-blood/faction.md#prompt-fragment + art/explorations/cult-sprites-mch954/a-blood/faction.md#negative-fragment",
+            "text": "Faction: a pulp-magazine secret society of the 1920s, sinister, grim and evil, not cute. Their colours: ceremonial cloth of deep blood red and black, embroidered with tarnished gold occult sigils; dull brass; pale cream candle wax and parchment; bright red fresh blood on blades; and one small accent, a glowing spring green, only as candle flames and sparks.",
+            "negative": "cute, friendly smile, tentacles, tentacle hands, skull face, skull mask, skeleton, glowing eyes, empty black face, monster face, teal, cyan, blue cloth, indigo cloth, gore, guts, slime, magenta, pink, orange flames, yellow flames, blue flames, steel armour, chrome, gold armour, sword, gun, staff, pentagram, cross, large glowing area"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+            "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+          },
+          {
+            "layer": "subject",
+            "source": "art/explorations/cult-sprites-mch954/a-blood/subjects.json",
+            "text": "Subject: Initiate, a chunky shifty young man, a novice of an evil secret society and the smallest figure: a plain deep blood-red hooded robe with a black rope belt and a ragged pointed hem down to his black boots; the hood is up but his pale human face is clearly visible, with narrow suspicious eyes, a nasty smirk and dark stubble; one hand raises a curved sacrificial dagger whose steel blade is smeared with bright red blood, the other holds a short cream candle with a small green flame; simple shapes and very few details."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The figure is drawn large: about 44 pixels wide and 70 pixels tall. A human face with skin, eyes, nose and mouth shows under the hood.",
+            "negative": "staff, wand, sword, skull, beard, tentacle, glowing eyes, empty hood, blue robe"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: a pulp-magazine secret society of the 1920s, sinister, grim and evil, not cute. Their colours: ceremonial cloth of deep blood red and black, embroidered with tarnished gold occult sigils; dull brass; pale cream candle wax and parchment; bright red fresh blood on blades; and one small accent, a glowing spring green, only as candle flames and sparks. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: Initiate, a chunky shifty young man, a novice of an evil secret society and the smallest figure: a plain deep blood-red hooded robe with a black rope belt and a ragged pointed hem down to his black boots; the hood is up but his pale human face is clearly visible, with narrow suspicious eyes, a nasty smirk and dark stubble; one hand raises a curved sacrificial dagger whose steel blade is smeared with bright red blood, the other holds a short cream candle with a small green flame; simple shapes and very few details. The figure is drawn large: about 44 pixels wide and 70 pixels tall. A human face with skin, eyes, nose and mouth shows under the hood.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, cute, friendly smile, tentacles, tentacle hands, skull face, skull mask, skeleton, glowing eyes, empty black face, monster face, teal, cyan, blue cloth, indigo cloth, gore, guts, slime, magenta, pink, orange flames, yellow flames, blue flames, steel armour, chrome, gold armour, sword, gun, staff, pentagram, cross, large glowing area, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, wand, skull, beard, tentacle, empty hood, blue robe",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: a pulp-magazine secret society of the 1920s, sinister, grim and evil, not cute. Their colours: ceremonial cloth of deep blood red and black, embroidered with tarnished gold occult sigils; dull brass; pale cream candle wax and parchment; bright red fresh blood on blades; and one small accent, a glowing spring green, only as candle flames and sparks. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: Initiate, a chunky shifty young man, a novice of an evil secret society and the smallest figure: a plain deep blood-red hooded robe with a black rope belt and a ragged pointed hem down to his black boots; the hood is up but his pale human face is clearly visible, with narrow suspicious eyes, a nasty smirk and dark stubble; one hand raises a curved sacrificial dagger whose steel blade is smeared with bright red blood, the other holds a short cream candle with a small green flame; simple shapes and very few details. The figure is drawn large: about 44 pixels wide and 70 pixels tall. A human face with skin, eyes, nose and mouth shows under the hood. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, cute, friendly smile, tentacles, tentacle hands, skull face, skull mask, skeleton, glowing eyes, empty black face, monster face, teal, cyan, blue cloth, indigo cloth, gore, guts, slime, magenta, pink, orange flames, yellow flames, blue flames, steel armour, chrome, gold armour, sword, gun, staff, pentagram, cross, large glowing area, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, wand, skull, beard, tentacle, empty hood, blue robe."
+      },
+      "submittedAt": "2026-10-17T09:31:54.084Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/explorations/cult-sprites-mch954/a-blood/raw/r2a-initiate-1.png",
+      "rawSheetSha256": "74079fb5b40c7f6c0d2413511a67e9176d4d97cff3878fa9476a6c1967d4c3b6",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0.0275,
+          "footprintWidthShare": 0.76,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-17T09:32:47.971Z",
+      "usageUsd": 0.010566544983122084,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "A shifty bearded man in a blood-red hooded robe with gold trim, a nasty grin, a bloody curved dagger and a cream candle with a green flame; a small green amulet. Reads at 1x on the bog.",
+        "reviewedAt": "2026-10-17T09:43:29.883Z"
+      }
+    },
+    "r2a-portrait-hexer-1": {
+      "id": "r2a-portrait-hexer-1",
+      "asset": "chibi-explore-cult2-a-portrait-hexer",
+      "jobId": "sync-753fe704-b24b-498a-9237-0c19d2b630f9",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "cult-sprites-mch954-a-blood",
+        "asset": "chibi-explore-cult2-a-portrait-hexer",
+        "subject": "PORTRAIT:CULT:MARKSMAN",
+        "faction": "TEST-CULT-BLOOD",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 95621,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "side",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-portrait.txt",
+            "text": "Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image."
+          },
+          {
+            "layer": "faction",
+            "source": "art/explorations/cult-sprites-mch954/a-blood/faction.md#prompt-fragment + art/explorations/cult-sprites-mch954/a-blood/faction.md#negative-fragment",
+            "text": "Faction: a pulp-magazine secret society of the 1920s, sinister, grim and evil, not cute. Their colours: ceremonial cloth of deep blood red and black, embroidered with tarnished gold occult sigils; dull brass; pale cream candle wax and parchment; bright red fresh blood on blades; and one small accent, a glowing spring green, only as candle flames and sparks.",
+            "negative": "cute, friendly smile, tentacles, tentacle hands, skull face, skull mask, skeleton, glowing eyes, empty black face, monster face, teal, cyan, blue cloth, indigo cloth, gore, guts, slime, magenta, pink, orange flames, yellow flames, blue flames, steel armour, chrome, gold armour, sword, gun, staff, pentagram, cross, large glowing area"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-portrait.txt + scripts/art/chibi/fragments/class-portrait.negative.txt",
+            "text": "Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels.",
+            "negative": "full body, legs, feet, standing figure, pedestal, base, plinth, frame, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, text"
+          },
+          {
+            "layer": "subject",
+            "source": "art/explorations/cult-sprites-mch954/a-blood/subjects.json",
+            "text": "Subject: Hexer portrait, head and shoulders of a chunky sly woman of an evil secret society: a deep purple hood with gold trim over her dark hair, her pale face clearly visible with narrowed cruel eyes and a thin smug sneer, blood-red robe shoulders embroidered with gold, and one hand raised beside her face with a small green spark of a curse above the fingers; simple shapes and very few details."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "A close-up bust: the head and shoulders fill the whole square; no legs. A human face with skin, eyes, nose and mouth.",
+            "negative": "full body, legs, feet, skull face, skeleton, tentacles, glowing eyes, empty hood, blue robe"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: a pulp-magazine secret society of the 1920s, sinister, grim and evil, not cute. Their colours: ceremonial cloth of deep blood red and black, embroidered with tarnished gold occult sigils; dull brass; pale cream candle wax and parchment; bright red fresh blood on blades; and one small accent, a glowing spring green, only as candle flames and sparks. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Subject: Hexer portrait, head and shoulders of a chunky sly woman of an evil secret society: a deep purple hood with gold trim over her dark hair, her pale face clearly visible with narrowed cruel eyes and a thin smug sneer, blood-red robe shoulders embroidered with gold, and one hand raised beside her face with a small green spark of a curse above the fingers; simple shapes and very few details. A close-up bust: the head and shoulders fill the whole square; no legs. A human face with skin, eyes, nose and mouth.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, cute, friendly smile, tentacles, tentacle hands, skull face, skull mask, skeleton, glowing eyes, empty black face, monster face, teal, cyan, blue cloth, indigo cloth, gore, guts, slime, magenta, pink, orange flames, yellow flames, blue flames, steel armour, chrome, gold armour, sword, gun, staff, pentagram, cross, large glowing area, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, empty hood, blue robe",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: a pulp-magazine secret society of the 1920s, sinister, grim and evil, not cute. Their colours: ceremonial cloth of deep blood red and black, embroidered with tarnished gold occult sigils; dull brass; pale cream candle wax and parchment; bright red fresh blood on blades; and one small accent, a glowing spring green, only as candle flames and sparks. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Subject: Hexer portrait, head and shoulders of a chunky sly woman of an evil secret society: a deep purple hood with gold trim over her dark hair, her pale face clearly visible with narrowed cruel eyes and a thin smug sneer, blood-red robe shoulders embroidered with gold, and one hand raised beside her face with a small green spark of a curse above the fingers; simple shapes and very few details. A close-up bust: the head and shoulders fill the whole square; no legs. A human face with skin, eyes, nose and mouth. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, cute, friendly smile, tentacles, tentacle hands, skull face, skull mask, skeleton, glowing eyes, empty black face, monster face, teal, cyan, blue cloth, indigo cloth, gore, guts, slime, magenta, pink, orange flames, yellow flames, blue flames, steel armour, chrome, gold armour, sword, gun, staff, pentagram, cross, large glowing area, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, empty hood, blue robe."
+      },
+      "submittedAt": "2026-10-17T09:45:34.499Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/explorations/cult-sprites-mch954/a-blood/raw/r2a-portrait-hexer-1.png",
+      "rawSheetSha256": "7784b3cc1ac1b444001c4ad195532ad56373a974401db4b745043e495f33e1e4",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0.0987,
+          "footprintWidthShare": 1,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-17T09:46:14.009Z",
+      "usageUsd": 0.008422845972908868,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "The Hexer's bust: a sly woman in a deep purple hood with gold trim, a smug half-smile, a blood-red and gold robe, a green spark at her raised fingers.",
+        "reviewedAt": "2026-10-17T09:49:52.979Z"
+      }
+    },
+    "r2a-portrait-idol-bearer-1": {
+      "id": "r2a-portrait-idol-bearer-1",
+      "asset": "chibi-explore-cult2-a-portrait-idol-bearer",
+      "jobId": "sync-1e0de241-857d-4d5e-8f20-04e0bf1ad2c0",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "cult-sprites-mch954-a-blood",
+        "asset": "chibi-explore-cult2-a-portrait-idol-bearer",
+        "subject": "PORTRAIT:CULT:GUARD",
+        "faction": "TEST-CULT-BLOOD",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 95611,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "side",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-portrait.txt",
+            "text": "Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image."
+          },
+          {
+            "layer": "faction",
+            "source": "art/explorations/cult-sprites-mch954/a-blood/faction.md#prompt-fragment + art/explorations/cult-sprites-mch954/a-blood/faction.md#negative-fragment",
+            "text": "Faction: a pulp-magazine secret society of the 1920s, sinister, grim and evil, not cute. Their colours: ceremonial cloth of deep blood red and black, embroidered with tarnished gold occult sigils; dull brass; pale cream candle wax and parchment; bright red fresh blood on blades; and one small accent, a glowing spring green, only as candle flames and sparks.",
+            "negative": "cute, friendly smile, tentacles, tentacle hands, skull face, skull mask, skeleton, glowing eyes, empty black face, monster face, teal, cyan, blue cloth, indigo cloth, gore, guts, slime, magenta, pink, orange flames, yellow flames, blue flames, steel armour, chrome, gold armour, sword, gun, staff, pentagram, cross, large glowing area"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-portrait.txt + scripts/art/chibi/fragments/class-portrait.negative.txt",
+            "text": "Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels.",
+            "negative": "full body, legs, feet, standing figure, pedestal, base, plinth, frame, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, text"
+          },
+          {
+            "layer": "subject",
+            "source": "art/explorations/cult-sprites-mch954/a-blood/subjects.json",
+            "text": "Subject: Idol Bearer portrait, head and shoulders of a chunky stout bald man of an evil secret society with a heavy grim scowl and grey stubble, black robe shoulders with a blood-red and gold stole, and resting on top of his bald head, held by his two hands, a squat pale grey stone idol head with a wide evil toothy grin and two small green eyes; simple shapes and very few details."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "A close-up bust: the head and shoulders fill the whole square; no legs. A human face with skin, eyes, nose and mouth.",
+            "negative": "full body, legs, feet, skull face, skeleton, tentacles, glowing eyes, empty hood, blue robe"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: a pulp-magazine secret society of the 1920s, sinister, grim and evil, not cute. Their colours: ceremonial cloth of deep blood red and black, embroidered with tarnished gold occult sigils; dull brass; pale cream candle wax and parchment; bright red fresh blood on blades; and one small accent, a glowing spring green, only as candle flames and sparks. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Subject: Idol Bearer portrait, head and shoulders of a chunky stout bald man of an evil secret society with a heavy grim scowl and grey stubble, black robe shoulders with a blood-red and gold stole, and resting on top of his bald head, held by his two hands, a squat pale grey stone idol head with a wide evil toothy grin and two small green eyes; simple shapes and very few details. A close-up bust: the head and shoulders fill the whole square; no legs. A human face with skin, eyes, nose and mouth.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, cute, friendly smile, tentacles, tentacle hands, skull face, skull mask, skeleton, glowing eyes, empty black face, monster face, teal, cyan, blue cloth, indigo cloth, gore, guts, slime, magenta, pink, orange flames, yellow flames, blue flames, steel armour, chrome, gold armour, sword, gun, staff, pentagram, cross, large glowing area, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, empty hood, blue robe",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: a pulp-magazine secret society of the 1920s, sinister, grim and evil, not cute. Their colours: ceremonial cloth of deep blood red and black, embroidered with tarnished gold occult sigils; dull brass; pale cream candle wax and parchment; bright red fresh blood on blades; and one small accent, a glowing spring green, only as candle flames and sparks. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Subject: Idol Bearer portrait, head and shoulders of a chunky stout bald man of an evil secret society with a heavy grim scowl and grey stubble, black robe shoulders with a blood-red and gold stole, and resting on top of his bald head, held by his two hands, a squat pale grey stone idol head with a wide evil toothy grin and two small green eyes; simple shapes and very few details. A close-up bust: the head and shoulders fill the whole square; no legs. A human face with skin, eyes, nose and mouth. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, cute, friendly smile, tentacles, tentacle hands, skull face, skull mask, skeleton, glowing eyes, empty black face, monster face, teal, cyan, blue cloth, indigo cloth, gore, guts, slime, magenta, pink, orange flames, yellow flames, blue flames, steel armour, chrome, gold armour, sword, gun, staff, pentagram, cross, large glowing area, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, empty hood, blue robe."
+      },
+      "submittedAt": "2026-10-17T09:44:28.132Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/explorations/cult-sprites-mch954/a-blood/raw/r2a-portrait-idol-bearer-1.png",
+      "rawSheetSha256": "cb1d76e3a6febeb87b3abb9ea2bf769503583d9d88ad0a532e8f2ae40d5d709a",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0.0252,
+          "footprintWidthShare": 0.7826,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-17T09:44:58.175Z",
+      "usageUsd": 0.007653598493999905,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The idol on his head reads as a skull with green eyes, and the man has a grey beard.",
+        "reviewedAt": "2026-10-17T09:49:52.609Z"
+      }
+    },
+    "r2a-portrait-idol-bearer-2": {
+      "id": "r2a-portrait-idol-bearer-2",
+      "asset": "chibi-explore-cult2-a-portrait-idol-bearer",
+      "jobId": "sync-3b54627b-1db6-4e54-9f06-78b7b2f8be5b",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "cult-sprites-mch954-a-blood",
+        "asset": "chibi-explore-cult2-a-portrait-idol-bearer",
+        "subject": "PORTRAIT:CULT:GUARD",
+        "faction": "TEST-CULT-BLOOD",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 95612,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "side",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-portrait.txt",
+            "text": "Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image."
+          },
+          {
+            "layer": "faction",
+            "source": "art/explorations/cult-sprites-mch954/a-blood/faction.md#prompt-fragment + art/explorations/cult-sprites-mch954/a-blood/faction.md#negative-fragment",
+            "text": "Faction: a pulp-magazine secret society of the 1920s, sinister, grim and evil, not cute. Their colours: ceremonial cloth of deep blood red and black, embroidered with tarnished gold occult sigils; dull brass; pale cream candle wax and parchment; bright red fresh blood on blades; and one small accent, a glowing spring green, only as candle flames and sparks.",
+            "negative": "cute, friendly smile, tentacles, tentacle hands, skull face, skull mask, skeleton, glowing eyes, empty black face, monster face, teal, cyan, blue cloth, indigo cloth, gore, guts, slime, magenta, pink, orange flames, yellow flames, blue flames, steel armour, chrome, gold armour, sword, gun, staff, pentagram, cross, large glowing area"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-portrait.txt + scripts/art/chibi/fragments/class-portrait.negative.txt",
+            "text": "Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels.",
+            "negative": "full body, legs, feet, standing figure, pedestal, base, plinth, frame, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, text"
+          },
+          {
+            "layer": "subject",
+            "source": "art/explorations/cult-sprites-mch954/a-blood/subjects.json",
+            "text": "Subject: Idol Bearer portrait, head and shoulders of a chunky stout bald man of an evil secret society with a heavy grim scowl and grey stubble, black robe shoulders with a blood-red and gold stole, and resting on top of his bald head, held by his two hands, a squat pale grey stone idol head with a wide evil toothy grin and two small green eyes; simple shapes and very few details."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "A close-up bust: the head and shoulders fill the whole square; no legs. The man is bald and clean-shaven with a heavy scowl. The idol on his head is carved dull grey stone, a stone god's face with a broad flat nose, thick lips and a wide grin of square teeth, clearly carved stone and never a skull.",
+            "negative": "full body, legs, feet, skull, skull face, skeleton, beard, tentacles, glowing eyes, empty hood, blue robe"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: a pulp-magazine secret society of the 1920s, sinister, grim and evil, not cute. Their colours: ceremonial cloth of deep blood red and black, embroidered with tarnished gold occult sigils; dull brass; pale cream candle wax and parchment; bright red fresh blood on blades; and one small accent, a glowing spring green, only as candle flames and sparks. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Subject: Idol Bearer portrait, head and shoulders of a chunky stout bald man of an evil secret society with a heavy grim scowl and grey stubble, black robe shoulders with a blood-red and gold stole, and resting on top of his bald head, held by his two hands, a squat pale grey stone idol head with a wide evil toothy grin and two small green eyes; simple shapes and very few details. A close-up bust: the head and shoulders fill the whole square; no legs. The man is bald and clean-shaven with a heavy scowl. The idol on his head is carved dull grey stone, a stone god's face with a broad flat nose, thick lips and a wide grin of square teeth, clearly carved stone and never a skull.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, cute, friendly smile, tentacles, tentacle hands, skull face, skull mask, skeleton, glowing eyes, empty black face, monster face, teal, cyan, blue cloth, indigo cloth, gore, guts, slime, magenta, pink, orange flames, yellow flames, blue flames, steel armour, chrome, gold armour, sword, gun, staff, pentagram, cross, large glowing area, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, skull, beard, empty hood, blue robe",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: a pulp-magazine secret society of the 1920s, sinister, grim and evil, not cute. Their colours: ceremonial cloth of deep blood red and black, embroidered with tarnished gold occult sigils; dull brass; pale cream candle wax and parchment; bright red fresh blood on blades; and one small accent, a glowing spring green, only as candle flames and sparks. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Subject: Idol Bearer portrait, head and shoulders of a chunky stout bald man of an evil secret society with a heavy grim scowl and grey stubble, black robe shoulders with a blood-red and gold stole, and resting on top of his bald head, held by his two hands, a squat pale grey stone idol head with a wide evil toothy grin and two small green eyes; simple shapes and very few details. A close-up bust: the head and shoulders fill the whole square; no legs. The man is bald and clean-shaven with a heavy scowl. The idol on his head is carved dull grey stone, a stone god's face with a broad flat nose, thick lips and a wide grin of square teeth, clearly carved stone and never a skull. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, cute, friendly smile, tentacles, tentacle hands, skull face, skull mask, skeleton, glowing eyes, empty black face, monster face, teal, cyan, blue cloth, indigo cloth, gore, guts, slime, magenta, pink, orange flames, yellow flames, blue flames, steel armour, chrome, gold armour, sword, gun, staff, pentagram, cross, large glowing area, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, skull, beard, empty hood, blue robe."
+      },
+      "submittedAt": "2026-10-17T09:46:59.987Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/explorations/cult-sprites-mch954/a-blood/raw/r2a-portrait-idol-bearer-2.png",
+      "rawSheetSha256": "25f0a74c616a9fba32bc21c79249e89669cef8fdf40dc2a6a8bbb25ea9ceec4e",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0.0848,
+          "footprintWidthShare": 0.6818,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-17T09:47:20.179Z",
+      "usageUsd": 0.006891768296559652,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The scowling man under the idol, but the idol still reads as a skull and the man's eyes are green; fixed by r2a-portrait-idol-bearer-2-idol.",
+        "reviewedAt": "2026-10-17T09:49:52.732Z"
+      }
+    },
+    "r2a-portrait-idol-bearer-2-idol": {
+      "id": "r2a-portrait-idol-bearer-2-idol",
+      "asset": "chibi-explore-cult2-a-portrait-idol-bearer",
+      "jobId": "c44c27c5-0a5d-4fb9-b8c4-fbea5362ce5f",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "cult-sprites-mch954-a-blood",
+        "asset": "chibi-explore-cult2-a-portrait-idol-bearer",
+        "subject": "PORTRAIT:CULT:GUARD",
+        "faction": "TEST-CULT-BLOOD",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 95613,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only two things: the man's eyes become small dark brown human eyes, not green; the grey head on top becomes a carved stone god's face with a broad flat stone nose, thick stone lips and a grin of square teeth, clearly stone, not a skull. Keep the scowling man, his grey beard, his raised hands, the black robe with the gold and red stole, the thick black outline and the art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change only two things: the man's eyes become small dark brown human eyes, not green; the grey head on top becomes a carved stone god's face with a broad flat stone nose, thick stone lips and a grin of square teeth, clearly stone, not a skull. Keep the scowling man, his grey beard, his raised hands, the black robe with the gold and red stole, the thick black outline and the art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only two things: the man's eyes become small dark brown human eyes, not green; the grey head on top becomes a carved stone god's face with a broad flat stone nose, thick stone lips and a grin of square teeth, clearly stone, not a skull. Keep the scowling man, his grey beard, his raised hands, the black robe with the gold and red stole, the thick black outline and the art style exactly the same, on a transparent background.",
+        "editInstruction": "Change only two things: the man's eyes become small dark brown human eyes, not green; the grey head on top becomes a carved stone god's face with a broad flat stone nose, thick stone lips and a grin of square teeth, clearly stone, not a skull. Keep the scowling man, his grey beard, his raised hands, the black robe with the gold and red stole, the thick black outline and the art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "r2a-portrait-idol-bearer-2",
+          "candidate": 0,
+          "sha256": "25f0a74c616a9fba32bc21c79249e89669cef8fdf40dc2a6a8bbb25ea9ceec4e"
+        }
+      },
+      "submittedAt": "2026-10-17T09:48:41.163Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/explorations/cult-sprites-mch954/a-blood/raw/r2a-portrait-idol-bearer-2-idol.png",
+      "rawSheetSha256": "1e71c6a0ef5a0fb7fafa7686f90a32f86b9597d9005b12806e75443f6b674769",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0.0848,
+          "footprintWidthShare": 0.6818,
+          "suspect": false
+        },
+        {
+          "bandRows": 9,
+          "groundShare": 0.0848,
+          "footprintWidthShare": 0.6818,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-17T09:49:12.173Z",
+      "usageUsd": 0.0075003685156504315,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "The idol is a carved stone face with a flat nose and square teeth, no skull; the man scowls with dark eyes under it, a black robe with a red-and-gold stole. The idol's eyes are dark here, green on the map sprite.",
+        "reviewedAt": "2026-10-17T09:49:52.855Z"
+      }
+    },
+    "r2a-portrait-initiate-1": {
+      "id": "r2a-portrait-initiate-1",
+      "asset": "chibi-explore-cult2-a-portrait-initiate",
+      "jobId": "sync-93464506-215a-43c8-b7f7-a2a0fc41b34b",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "cult-sprites-mch954-a-blood",
+        "asset": "chibi-explore-cult2-a-portrait-initiate",
+        "subject": "PORTRAIT:CULT:FIGHTER",
+        "faction": "TEST-CULT-BLOOD",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 95601,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "side",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-portrait.txt",
+            "text": "Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image."
+          },
+          {
+            "layer": "faction",
+            "source": "art/explorations/cult-sprites-mch954/a-blood/faction.md#prompt-fragment + art/explorations/cult-sprites-mch954/a-blood/faction.md#negative-fragment",
+            "text": "Faction: a pulp-magazine secret society of the 1920s, sinister, grim and evil, not cute. Their colours: ceremonial cloth of deep blood red and black, embroidered with tarnished gold occult sigils; dull brass; pale cream candle wax and parchment; bright red fresh blood on blades; and one small accent, a glowing spring green, only as candle flames and sparks.",
+            "negative": "cute, friendly smile, tentacles, tentacle hands, skull face, skull mask, skeleton, glowing eyes, empty black face, monster face, teal, cyan, blue cloth, indigo cloth, gore, guts, slime, magenta, pink, orange flames, yellow flames, blue flames, steel armour, chrome, gold armour, sword, gun, staff, pentagram, cross, large glowing area"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-portrait.txt + scripts/art/chibi/fragments/class-portrait.negative.txt",
+            "text": "Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels.",
+            "negative": "full body, legs, feet, standing figure, pedestal, base, plinth, frame, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, text"
+          },
+          {
+            "layer": "subject",
+            "source": "art/explorations/cult-sprites-mch954/a-blood/subjects.json",
+            "text": "Subject: Initiate portrait, head and shoulders of a chunky shifty bearded man of an evil secret society: a deep blood-red hood with gold trim up over his head, his pale human face clearly visible with narrow mean eyes, a nasty toothy grin and a short dark beard, blood-red robe shoulders, a small green glowing amulet on his chest, and one curved sacrificial dagger with bright red blood on its steel blade held up beside his face; simple shapes and very few details."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "A close-up bust: the head and shoulders fill the whole square; no legs. A human face with skin, eyes, nose and mouth.",
+            "negative": "full body, legs, feet, skull face, skeleton, tentacles, glowing eyes, empty hood, blue robe"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: a pulp-magazine secret society of the 1920s, sinister, grim and evil, not cute. Their colours: ceremonial cloth of deep blood red and black, embroidered with tarnished gold occult sigils; dull brass; pale cream candle wax and parchment; bright red fresh blood on blades; and one small accent, a glowing spring green, only as candle flames and sparks. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Subject: Initiate portrait, head and shoulders of a chunky shifty bearded man of an evil secret society: a deep blood-red hood with gold trim up over his head, his pale human face clearly visible with narrow mean eyes, a nasty toothy grin and a short dark beard, blood-red robe shoulders, a small green glowing amulet on his chest, and one curved sacrificial dagger with bright red blood on its steel blade held up beside his face; simple shapes and very few details. A close-up bust: the head and shoulders fill the whole square; no legs. A human face with skin, eyes, nose and mouth.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, cute, friendly smile, tentacles, tentacle hands, skull face, skull mask, skeleton, glowing eyes, empty black face, monster face, teal, cyan, blue cloth, indigo cloth, gore, guts, slime, magenta, pink, orange flames, yellow flames, blue flames, steel armour, chrome, gold armour, sword, gun, staff, pentagram, cross, large glowing area, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, empty hood, blue robe",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: a pulp-magazine secret society of the 1920s, sinister, grim and evil, not cute. Their colours: ceremonial cloth of deep blood red and black, embroidered with tarnished gold occult sigils; dull brass; pale cream candle wax and parchment; bright red fresh blood on blades; and one small accent, a glowing spring green, only as candle flames and sparks. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Subject: Initiate portrait, head and shoulders of a chunky shifty bearded man of an evil secret society: a deep blood-red hood with gold trim up over his head, his pale human face clearly visible with narrow mean eyes, a nasty toothy grin and a short dark beard, blood-red robe shoulders, a small green glowing amulet on his chest, and one curved sacrificial dagger with bright red blood on its steel blade held up beside his face; simple shapes and very few details. A close-up bust: the head and shoulders fill the whole square; no legs. A human face with skin, eyes, nose and mouth. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, cute, friendly smile, tentacles, tentacle hands, skull face, skull mask, skeleton, glowing eyes, empty black face, monster face, teal, cyan, blue cloth, indigo cloth, gore, guts, slime, magenta, pink, orange flames, yellow flames, blue flames, steel armour, chrome, gold armour, sword, gun, staff, pentagram, cross, large glowing area, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, empty hood, blue robe."
+      },
+      "submittedAt": "2026-10-17T09:42:53.937Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/explorations/cult-sprites-mch954/a-blood/raw/r2a-portrait-initiate-1.png",
+      "rawSheetSha256": "a2b929354607bb2ecafbccca093f9218f6dee2fa97df352ceba005a5b4e50d8d",
+      "plateHints": [
+        {
+          "bandRows": 10,
+          "groundShare": 0.0989,
+          "footprintWidthShare": 0.9512,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-17T09:44:28.131Z",
+      "usageUsd": 0.01470486044883728,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "The Initiate's bust and the faction emblem: a bearded man snarling under a blood-red hood with gold trim, a bloody curved dagger beside his face, a green amulet. Reads at 48 px.",
+        "reviewedAt": "2026-10-17T09:49:52.486Z"
+      }
+    },
+    "r2a-portrait-stargazer-1": {
+      "id": "r2a-portrait-stargazer-1",
+      "asset": "chibi-explore-cult2-a-portrait-stargazer",
+      "jobId": "sync-956debb5-b6c0-4b51-b609-73eeef7a001a",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "cult-sprites-mch954-a-blood",
+        "asset": "chibi-explore-cult2-a-portrait-stargazer",
+        "subject": "PORTRAIT:CULT:CATAPULT",
+        "faction": "TEST-CULT-BLOOD",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 95641,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "side",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-portrait.txt",
+            "text": "Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image."
+          },
+          {
+            "layer": "faction",
+            "source": "art/explorations/cult-sprites-mch954/a-blood/faction.md#prompt-fragment + art/explorations/cult-sprites-mch954/a-blood/faction.md#negative-fragment",
+            "text": "Faction: a pulp-magazine secret society of the 1920s, sinister, grim and evil, not cute. Their colours: ceremonial cloth of deep blood red and black, embroidered with tarnished gold occult sigils; dull brass; pale cream candle wax and parchment; bright red fresh blood on blades; and one small accent, a glowing spring green, only as candle flames and sparks.",
+            "negative": "cute, friendly smile, tentacles, tentacle hands, skull face, skull mask, skeleton, glowing eyes, empty black face, monster face, teal, cyan, blue cloth, indigo cloth, gore, guts, slime, magenta, pink, orange flames, yellow flames, blue flames, steel armour, chrome, gold armour, sword, gun, staff, pentagram, cross, large glowing area"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-portrait.txt + scripts/art/chibi/fragments/class-portrait.negative.txt",
+            "text": "Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels.",
+            "negative": "full body, legs, feet, standing figure, pedestal, base, plinth, frame, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, text"
+          },
+          {
+            "layer": "subject",
+            "source": "art/explorations/cult-sprites-mch954/a-blood/subjects.json",
+            "text": "Subject: Stargazer portrait, head and shoulders of a crooked old astrologer of an evil secret society: a floppy blood-red hood with gold trim, a wrinkled pale face with bushy white eyebrows, a white beard and one eye squinting, red and black robe shoulders, and beside his face the eyepiece end of one fat polished brass telescope pointing up to the right; simple shapes and very few details."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "A close-up bust: the head and shoulders fill the whole square; no legs. A human face with skin, eyes, nose and mouth.",
+            "negative": "full body, legs, feet, skull face, skeleton, tentacles, glowing eyes, empty hood, blue robe"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: a pulp-magazine secret society of the 1920s, sinister, grim and evil, not cute. Their colours: ceremonial cloth of deep blood red and black, embroidered with tarnished gold occult sigils; dull brass; pale cream candle wax and parchment; bright red fresh blood on blades; and one small accent, a glowing spring green, only as candle flames and sparks. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Subject: Stargazer portrait, head and shoulders of a crooked old astrologer of an evil secret society: a floppy blood-red hood with gold trim, a wrinkled pale face with bushy white eyebrows, a white beard and one eye squinting, red and black robe shoulders, and beside his face the eyepiece end of one fat polished brass telescope pointing up to the right; simple shapes and very few details. A close-up bust: the head and shoulders fill the whole square; no legs. A human face with skin, eyes, nose and mouth.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, cute, friendly smile, tentacles, tentacle hands, skull face, skull mask, skeleton, glowing eyes, empty black face, monster face, teal, cyan, blue cloth, indigo cloth, gore, guts, slime, magenta, pink, orange flames, yellow flames, blue flames, steel armour, chrome, gold armour, sword, gun, staff, pentagram, cross, large glowing area, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, empty hood, blue robe",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: a pulp-magazine secret society of the 1920s, sinister, grim and evil, not cute. Their colours: ceremonial cloth of deep blood red and black, embroidered with tarnished gold occult sigils; dull brass; pale cream candle wax and parchment; bright red fresh blood on blades; and one small accent, a glowing spring green, only as candle flames and sparks. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Subject: Stargazer portrait, head and shoulders of a crooked old astrologer of an evil secret society: a floppy blood-red hood with gold trim, a wrinkled pale face with bushy white eyebrows, a white beard and one eye squinting, red and black robe shoulders, and beside his face the eyepiece end of one fat polished brass telescope pointing up to the right; simple shapes and very few details. A close-up bust: the head and shoulders fill the whole square; no legs. A human face with skin, eyes, nose and mouth. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, cute, friendly smile, tentacles, tentacle hands, skull face, skull mask, skeleton, glowing eyes, empty black face, monster face, teal, cyan, blue cloth, indigo cloth, gore, guts, slime, magenta, pink, orange flames, yellow flames, blue flames, steel armour, chrome, gold armour, sword, gun, staff, pentagram, cross, large glowing area, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, empty hood, blue robe."
+      },
+      "submittedAt": "2026-10-17T09:46:14.010Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/explorations/cult-sprites-mch954/a-blood/raw/r2a-portrait-stargazer-1.png",
+      "rawSheetSha256": "226f4a99b861b7a778b6c7311ed4f361927244b7e08cb808f8acc20fbf15807c",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0.0884,
+          "footprintWidthShare": 0.8696,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-17T09:46:35.175Z",
+      "usageUsd": 0.007047174241807726,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "The Stargazer's bust: a crooked old man with a white beard under a floppy red hood, his eye to the brass telescope's eyepiece.",
+        "reviewedAt": "2026-10-17T09:49:53.356Z"
+      }
+    },
+    "r2a-portrait-summoner-1": {
+      "id": "r2a-portrait-summoner-1",
+      "asset": "chibi-explore-cult2-a-portrait-summoner",
+      "jobId": "sync-d4ec2a94-6fc8-4ce7-b316-8b609f8c23a4",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "cult-sprites-mch954-a-blood",
+        "asset": "chibi-explore-cult2-a-portrait-summoner",
+        "subject": "PORTRAIT:CULT:CAPTAIN",
+        "faction": "TEST-CULT-BLOOD",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 95631,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "side",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-portrait.txt",
+            "text": "Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image."
+          },
+          {
+            "layer": "faction",
+            "source": "art/explorations/cult-sprites-mch954/a-blood/faction.md#prompt-fragment + art/explorations/cult-sprites-mch954/a-blood/faction.md#negative-fragment",
+            "text": "Faction: a pulp-magazine secret society of the 1920s, sinister, grim and evil, not cute. Their colours: ceremonial cloth of deep blood red and black, embroidered with tarnished gold occult sigils; dull brass; pale cream candle wax and parchment; bright red fresh blood on blades; and one small accent, a glowing spring green, only as candle flames and sparks.",
+            "negative": "cute, friendly smile, tentacles, tentacle hands, skull face, skull mask, skeleton, glowing eyes, empty black face, monster face, teal, cyan, blue cloth, indigo cloth, gore, guts, slime, magenta, pink, orange flames, yellow flames, blue flames, steel armour, chrome, gold armour, sword, gun, staff, pentagram, cross, large glowing area"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-portrait.txt + scripts/art/chibi/fragments/class-portrait.negative.txt",
+            "text": "Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels.",
+            "negative": "full body, legs, feet, standing figure, pedestal, base, plinth, frame, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, text"
+          },
+          {
+            "layer": "subject",
+            "source": "art/explorations/cult-sprites-mch954/a-blood/subjects.json",
+            "text": "Subject: Summoner portrait, head and shoulders of the gaunt high priest of an evil secret society: a very tall pointed blood-red cowl with gold trim reaching the top of the image, his living face pallid grey-white with dark veins round the eyes, one dark eye and one milky white eye, a nose and a thin cruel mouth, a black and gold collar, and a ritual dagger with bright red blood on its steel blade held up beside his face; simple shapes and very few details."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "A close-up bust: the head and shoulders fill the whole square; no legs. A human face with skin, eyes, nose and mouth.",
+            "negative": "full body, legs, feet, skull face, skeleton, tentacles, glowing eyes, empty hood, blue robe"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: a pulp-magazine secret society of the 1920s, sinister, grim and evil, not cute. Their colours: ceremonial cloth of deep blood red and black, embroidered with tarnished gold occult sigils; dull brass; pale cream candle wax and parchment; bright red fresh blood on blades; and one small accent, a glowing spring green, only as candle flames and sparks. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Subject: Summoner portrait, head and shoulders of the gaunt high priest of an evil secret society: a very tall pointed blood-red cowl with gold trim reaching the top of the image, his living face pallid grey-white with dark veins round the eyes, one dark eye and one milky white eye, a nose and a thin cruel mouth, a black and gold collar, and a ritual dagger with bright red blood on its steel blade held up beside his face; simple shapes and very few details. A close-up bust: the head and shoulders fill the whole square; no legs. A human face with skin, eyes, nose and mouth.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, cute, friendly smile, tentacles, tentacle hands, skull face, skull mask, skeleton, glowing eyes, empty black face, monster face, teal, cyan, blue cloth, indigo cloth, gore, guts, slime, magenta, pink, orange flames, yellow flames, blue flames, steel armour, chrome, gold armour, sword, gun, staff, pentagram, cross, large glowing area, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, empty hood, blue robe",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: a pulp-magazine secret society of the 1920s, sinister, grim and evil, not cute. Their colours: ceremonial cloth of deep blood red and black, embroidered with tarnished gold occult sigils; dull brass; pale cream candle wax and parchment; bright red fresh blood on blades; and one small accent, a glowing spring green, only as candle flames and sparks. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Subject: Summoner portrait, head and shoulders of the gaunt high priest of an evil secret society: a very tall pointed blood-red cowl with gold trim reaching the top of the image, his living face pallid grey-white with dark veins round the eyes, one dark eye and one milky white eye, a nose and a thin cruel mouth, a black and gold collar, and a ritual dagger with bright red blood on its steel blade held up beside his face; simple shapes and very few details. A close-up bust: the head and shoulders fill the whole square; no legs. A human face with skin, eyes, nose and mouth. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, cute, friendly smile, tentacles, tentacle hands, skull face, skull mask, skeleton, glowing eyes, empty black face, monster face, teal, cyan, blue cloth, indigo cloth, gore, guts, slime, magenta, pink, orange flames, yellow flames, blue flames, steel armour, chrome, gold armour, sword, gun, staff, pentagram, cross, large glowing area, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, empty hood, blue robe."
+      },
+      "submittedAt": "2026-10-17T09:44:58.178Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/explorations/cult-sprites-mch954/a-blood/raw/r2a-portrait-summoner-1.png",
+      "rawSheetSha256": "f994082d035d420c5ba827da2a7f8f5dcaf86a4086bc4d95fb35fc1eee2e33e1",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0.0478,
+          "footprintWidthShare": 0.8333,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-17T09:45:34.497Z",
+      "usageUsd": 0.008241785208384197,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "A blue-grey skull for a face: the high priest is a living man.",
+        "reviewedAt": "2026-10-17T09:49:53.103Z"
+      }
+    },
+    "r2a-portrait-summoner-2": {
+      "id": "r2a-portrait-summoner-2",
+      "asset": "chibi-explore-cult2-a-portrait-summoner",
+      "jobId": "sync-e6551954-6c07-4c95-bd6a-2c39331c77c2",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "cult-sprites-mch954-a-blood",
+        "asset": "chibi-explore-cult2-a-portrait-summoner",
+        "subject": "PORTRAIT:CULT:CAPTAIN",
+        "faction": "TEST-CULT-BLOOD",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 95632,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "side",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-portrait.txt",
+            "text": "Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image."
+          },
+          {
+            "layer": "faction",
+            "source": "art/explorations/cult-sprites-mch954/a-blood/faction.md#prompt-fragment + art/explorations/cult-sprites-mch954/a-blood/faction.md#negative-fragment",
+            "text": "Faction: a pulp-magazine secret society of the 1920s, sinister, grim and evil, not cute. Their colours: ceremonial cloth of deep blood red and black, embroidered with tarnished gold occult sigils; dull brass; pale cream candle wax and parchment; bright red fresh blood on blades; and one small accent, a glowing spring green, only as candle flames and sparks.",
+            "negative": "cute, friendly smile, tentacles, tentacle hands, skull face, skull mask, skeleton, glowing eyes, empty black face, monster face, teal, cyan, blue cloth, indigo cloth, gore, guts, slime, magenta, pink, orange flames, yellow flames, blue flames, steel armour, chrome, gold armour, sword, gun, staff, pentagram, cross, large glowing area"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-portrait.txt + scripts/art/chibi/fragments/class-portrait.negative.txt",
+            "text": "Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels.",
+            "negative": "full body, legs, feet, standing figure, pedestal, base, plinth, frame, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, text"
+          },
+          {
+            "layer": "subject",
+            "source": "art/explorations/cult-sprites-mch954/a-blood/subjects.json",
+            "text": "Subject: Summoner portrait, head and shoulders of the gaunt high priest of an evil secret society: a very tall pointed blood-red cowl with gold trim reaching the top of the image, his living face pallid grey-white with dark veins round the eyes, one dark eye and one milky white eye, a nose and a thin cruel mouth, a black and gold collar, and a ritual dagger with bright red blood on its steel blade held up beside his face; simple shapes and very few details."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "A close-up bust: the head and shoulders fill the whole square; no legs. His face is a living sickly old man's face with pale yellowish-white skin, wrinkles, a long nose, thin lips and one eye ringed with a dark bruise and red veins: human, never a skull, never blue.",
+            "negative": "full body, legs, feet, skull, skull face, skeleton, blue skin, grey skin, white eyes, tentacles, glowing eyes, empty hood, blue robe"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: a pulp-magazine secret society of the 1920s, sinister, grim and evil, not cute. Their colours: ceremonial cloth of deep blood red and black, embroidered with tarnished gold occult sigils; dull brass; pale cream candle wax and parchment; bright red fresh blood on blades; and one small accent, a glowing spring green, only as candle flames and sparks. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Subject: Summoner portrait, head and shoulders of the gaunt high priest of an evil secret society: a very tall pointed blood-red cowl with gold trim reaching the top of the image, his living face pallid grey-white with dark veins round the eyes, one dark eye and one milky white eye, a nose and a thin cruel mouth, a black and gold collar, and a ritual dagger with bright red blood on its steel blade held up beside his face; simple shapes and very few details. A close-up bust: the head and shoulders fill the whole square; no legs. His face is a living sickly old man's face with pale yellowish-white skin, wrinkles, a long nose, thin lips and one eye ringed with a dark bruise and red veins: human, never a skull, never blue.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, cute, friendly smile, tentacles, tentacle hands, skull face, skull mask, skeleton, glowing eyes, empty black face, monster face, teal, cyan, blue cloth, indigo cloth, gore, guts, slime, magenta, pink, orange flames, yellow flames, blue flames, steel armour, chrome, gold armour, sword, gun, staff, pentagram, cross, large glowing area, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, skull, blue skin, grey skin, white eyes, empty hood, blue robe",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: a pulp-magazine secret society of the 1920s, sinister, grim and evil, not cute. Their colours: ceremonial cloth of deep blood red and black, embroidered with tarnished gold occult sigils; dull brass; pale cream candle wax and parchment; bright red fresh blood on blades; and one small accent, a glowing spring green, only as candle flames and sparks. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Subject: Summoner portrait, head and shoulders of the gaunt high priest of an evil secret society: a very tall pointed blood-red cowl with gold trim reaching the top of the image, his living face pallid grey-white with dark veins round the eyes, one dark eye and one milky white eye, a nose and a thin cruel mouth, a black and gold collar, and a ritual dagger with bright red blood on its steel blade held up beside his face; simple shapes and very few details. A close-up bust: the head and shoulders fill the whole square; no legs. His face is a living sickly old man's face with pale yellowish-white skin, wrinkles, a long nose, thin lips and one eye ringed with a dark bruise and red veins: human, never a skull, never blue. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, cute, friendly smile, tentacles, tentacle hands, skull face, skull mask, skeleton, glowing eyes, empty black face, monster face, teal, cyan, blue cloth, indigo cloth, gore, guts, slime, magenta, pink, orange flames, yellow flames, blue flames, steel armour, chrome, gold armour, sword, gun, staff, pentagram, cross, large glowing area, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, skull, blue skin, grey skin, white eyes, empty hood, blue robe."
+      },
+      "submittedAt": "2026-10-17T09:47:20.181Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/explorations/cult-sprites-mch954/a-blood/raw/r2a-portrait-summoner-2.png",
+      "rawSheetSha256": "7c785fc22f8ef54e0dbb1e26a9a294abfda016d9bf181a1a8130db13ea8c3c3a",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0.1158,
+          "footprintWidthShare": 0.8636,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-17T09:47:43.772Z",
+      "usageUsd": 0.007388773785697089,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "The high priest's bust: a living pallid face under a tall blood-red cowl, one red-veined eye and one milky one, blood at the lip, a bloody steel dagger beside him: the one corrupted face of the lodge.",
+        "reviewedAt": "2026-10-17T09:49:53.229Z"
+      }
+    },
+    "r2a-stargazer-1": {
+      "id": "r2a-stargazer-1",
+      "asset": "chibi-explore-cult2-a-stargazer",
+      "jobId": "sync-7525d8c8-7d07-4559-802a-c0f5114c014f",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "cult-sprites-mch954-a-blood",
+        "asset": "chibi-explore-cult2-a-stargazer",
+        "subject": "UNIT:CULT:CATAPULT",
+        "faction": "TEST-CULT-BLOOD",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 95441,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "faction",
+            "source": "art/explorations/cult-sprites-mch954/a-blood/faction.md#prompt-fragment + art/explorations/cult-sprites-mch954/a-blood/faction.md#negative-fragment",
+            "text": "Faction: a pulp-magazine secret society of the 1920s, sinister, grim and evil, not cute. Their colours: ceremonial cloth of deep blood red and black, embroidered with tarnished gold occult sigils; dull brass; pale cream candle wax and parchment; bright red fresh blood on blades; and one small accent, a glowing spring green, only as candle flames and sparks.",
+            "negative": "cute, friendly smile, tentacles, tentacle hands, skull face, skull mask, skeleton, glowing eyes, empty black face, monster face, teal, cyan, blue cloth, indigo cloth, gore, guts, slime, magenta, pink, orange flames, yellow flames, blue flames, steel armour, chrome, gold armour, sword, gun, staff, pentagram, cross, large glowing area"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+            "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+          },
+          {
+            "layer": "subject",
+            "source": "art/explorations/cult-sprites-mch954/a-blood/subjects.json",
+            "text": "Subject: Stargazer, a crooked old astrologer of an evil secret society at a big brass telescope: a long black robe embroidered with gold stars and a blood-red hood; his wrinkled pale face is pressed to the eyepiece of one fat polished brass telescope on a wooden tripod, the tube pointing up to the right; a cream star chart scroll trails on the ground; the telescope glass is dark, not glowing; simple shapes and very few details."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The group is drawn large: about 64 pixels wide and 74 pixels tall. The telescope is polished yellow brass and is the biggest thing in the image. The old man's human face with skin shows.",
+            "negative": "staff, weapon, cannon, gun, wheels, skull, tentacle, glowing eyes, glowing lens, green, blue robe, beard"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: a pulp-magazine secret society of the 1920s, sinister, grim and evil, not cute. Their colours: ceremonial cloth of deep blood red and black, embroidered with tarnished gold occult sigils; dull brass; pale cream candle wax and parchment; bright red fresh blood on blades; and one small accent, a glowing spring green, only as candle flames and sparks. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: Stargazer, a crooked old astrologer of an evil secret society at a big brass telescope: a long black robe embroidered with gold stars and a blood-red hood; his wrinkled pale face is pressed to the eyepiece of one fat polished brass telescope on a wooden tripod, the tube pointing up to the right; a cream star chart scroll trails on the ground; the telescope glass is dark, not glowing; simple shapes and very few details. The group is drawn large: about 64 pixels wide and 74 pixels tall. The telescope is polished yellow brass and is the biggest thing in the image. The old man's human face with skin shows.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, cute, friendly smile, tentacles, tentacle hands, skull face, skull mask, skeleton, glowing eyes, empty black face, monster face, teal, cyan, blue cloth, indigo cloth, gore, guts, slime, magenta, pink, orange flames, yellow flames, blue flames, steel armour, chrome, gold armour, sword, gun, staff, pentagram, cross, large glowing area, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, weapon, cannon, wheels, skull, tentacle, glowing lens, green, blue robe, beard",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: a pulp-magazine secret society of the 1920s, sinister, grim and evil, not cute. Their colours: ceremonial cloth of deep blood red and black, embroidered with tarnished gold occult sigils; dull brass; pale cream candle wax and parchment; bright red fresh blood on blades; and one small accent, a glowing spring green, only as candle flames and sparks. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: Stargazer, a crooked old astrologer of an evil secret society at a big brass telescope: a long black robe embroidered with gold stars and a blood-red hood; his wrinkled pale face is pressed to the eyepiece of one fat polished brass telescope on a wooden tripod, the tube pointing up to the right; a cream star chart scroll trails on the ground; the telescope glass is dark, not glowing; simple shapes and very few details. The group is drawn large: about 64 pixels wide and 74 pixels tall. The telescope is polished yellow brass and is the biggest thing in the image. The old man's human face with skin shows. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, cute, friendly smile, tentacles, tentacle hands, skull face, skull mask, skeleton, glowing eyes, empty black face, monster face, teal, cyan, blue cloth, indigo cloth, gore, guts, slime, magenta, pink, orange flames, yellow flames, blue flames, steel armour, chrome, gold armour, sword, gun, staff, pentagram, cross, large glowing area, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, weapon, cannon, wheels, skull, tentacle, glowing lens, green, blue robe, beard."
+      },
+      "submittedAt": "2026-10-17T09:36:24.152Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/explorations/cult-sprites-mch954/a-blood/raw/r2a-stargazer-1.png",
+      "rawSheetSha256": "2886c76246d01723565f530fa2c9d6817127b228c0e86a6200543252800124fa",
+      "plateHints": [
+        {
+          "bandRows": 13,
+          "groundShare": 0.1624,
+          "footprintWidthShare": 0.7538,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-17T09:37:10.452Z",
+      "usageUsd": 0.00968613166279263
+    },
+    "r2a-stargazer-1-torch": {
+      "id": "r2a-stargazer-1-torch",
+      "asset": "chibi-explore-cult2-a-stargazer",
+      "jobId": "aef38e0f-1175-432f-9d6a-677948d46a33",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "cult-sprites-mch954-a-blood",
+        "asset": "chibi-explore-cult2-a-stargazer",
+        "subject": "UNIT:CULT:CATAPULT",
+        "faction": "TEST-CULT-BLOOD",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 95442,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only one thing: erase the small torch with its green and orange flames at the left edge, leaving that area transparent. Do not redraw anything else: keep the old man with his red hood and white beard, the red and black robe, the dagger at his belt, the brass telescope, the wooden tripod, the star chart, the thick black outline and the art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change only one thing: erase the small torch with its green and orange flames at the left edge, leaving that area transparent. Do not redraw anything else: keep the old man with his red hood and white beard, the red and black robe, the dagger at his belt, the brass telescope, the wooden tripod, the star chart, the thick black outline and the art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only one thing: erase the small torch with its green and orange flames at the left edge, leaving that area transparent. Do not redraw anything else: keep the old man with his red hood and white beard, the red and black robe, the dagger at his belt, the brass telescope, the wooden tripod, the star chart, the thick black outline and the art style exactly the same, on a transparent background.",
+        "editInstruction": "Change only one thing: erase the small torch with its green and orange flames at the left edge, leaving that area transparent. Do not redraw anything else: keep the old man with his red hood and white beard, the red and black robe, the dagger at his belt, the brass telescope, the wooden tripod, the star chart, the thick black outline and the art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "r2a-stargazer-1",
+          "candidate": 0,
+          "sha256": "2886c76246d01723565f530fa2c9d6817127b228c0e86a6200543252800124fa"
+        }
+      },
+      "submittedAt": "2026-10-17T09:40:20.341Z"
+    },
+    "r2a-stargazer-1-torch-b": {
+      "id": "r2a-stargazer-1-torch-b",
+      "asset": "chibi-explore-cult2-a-stargazer",
+      "jobId": "ee82870d-04cc-4b3b-bc4e-d1a70fe79784",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "cult-sprites-mch954-a-blood",
+        "asset": "chibi-explore-cult2-a-stargazer",
+        "subject": "UNIT:CULT:CATAPULT",
+        "faction": "TEST-CULT-BLOOD",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 95443,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only one thing: erase the small torch with its green and orange flames at the left edge, leaving that area transparent. Do not redraw anything else: keep the old man with his red hood and white beard, the red and black robe, the dagger at his belt, the brass telescope, the wooden tripod, the star chart, the thick black outline and the art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change only one thing: erase the small torch with its green and orange flames at the left edge, leaving that area transparent. Do not redraw anything else: keep the old man with his red hood and white beard, the red and black robe, the dagger at his belt, the brass telescope, the wooden tripod, the star chart, the thick black outline and the art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only one thing: erase the small torch with its green and orange flames at the left edge, leaving that area transparent. Do not redraw anything else: keep the old man with his red hood and white beard, the red and black robe, the dagger at his belt, the brass telescope, the wooden tripod, the star chart, the thick black outline and the art style exactly the same, on a transparent background.",
+        "editInstruction": "Change only one thing: erase the small torch with its green and orange flames at the left edge, leaving that area transparent. Do not redraw anything else: keep the old man with his red hood and white beard, the red and black robe, the dagger at his belt, the brass telescope, the wooden tripod, the star chart, the thick black outline and the art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "r2a-stargazer-1",
+          "candidate": 0,
+          "sha256": "2886c76246d01723565f530fa2c9d6817127b228c0e86a6200543252800124fa"
+        }
+      },
+      "submittedAt": "2026-10-17T09:43:20.923Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/explorations/cult-sprites-mch954/a-blood/raw/r2a-stargazer-1-torch-b.png",
+      "rawSheetSha256": "43159bcd37913d1a8fe884c999b43ecd5faf2219e5072cbe6d2666045ea20d79",
+      "plateHints": [
+        {
+          "bandRows": 13,
+          "groundShare": 0.1482,
+          "footprintWidthShare": 0.7778,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.1482,
+          "footprintWidthShare": 0.7778,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-17T09:43:51.983Z",
+      "usageUsd": 0.007129660553402371,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "The torch with green and orange flames is gone: a crooked old astrologer in a red hood and a black-and-red robe at a fat brass telescope with a dark lens on a wooden tripod, a bloody knife at his belt, a star chart on the ground; no green anywhere.",
+        "reviewedAt": "2026-10-17T09:44:28.566Z"
+      }
+    },
+    "r2a-summoner-1": {
+      "id": "r2a-summoner-1",
+      "asset": "chibi-explore-cult2-a-summoner",
+      "jobId": "sync-1572c7f4-055d-4251-9e20-6a85568f662b",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "cult-sprites-mch954-a-blood",
+        "asset": "chibi-explore-cult2-a-summoner",
+        "subject": "UNIT:CULT:CAPTAIN",
+        "faction": "TEST-CULT-BLOOD",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 95431,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "faction",
+            "source": "art/explorations/cult-sprites-mch954/a-blood/faction.md#prompt-fragment + art/explorations/cult-sprites-mch954/a-blood/faction.md#negative-fragment",
+            "text": "Faction: a pulp-magazine secret society of the 1920s, sinister, grim and evil, not cute. Their colours: ceremonial cloth of deep blood red and black, embroidered with tarnished gold occult sigils; dull brass; pale cream candle wax and parchment; bright red fresh blood on blades; and one small accent, a glowing spring green, only as candle flames and sparks.",
+            "negative": "cute, friendly smile, tentacles, tentacle hands, skull face, skull mask, skeleton, glowing eyes, empty black face, monster face, teal, cyan, blue cloth, indigo cloth, gore, guts, slime, magenta, pink, orange flames, yellow flames, blue flames, steel armour, chrome, gold armour, sword, gun, staff, pentagram, cross, large glowing area"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+            "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+          },
+          {
+            "layer": "subject",
+            "source": "art/explorations/cult-sprites-mch954/a-blood/subjects.json",
+            "text": "Subject: Summoner, the high priest of an evil secret society, the tallest and thinnest figure: a narrow ornate ceremonial robe of deep blood red and black with a gold embroidered collar of sigils and a very tall pointed blood-red cowl; his gaunt face is pallid grey-white with dark veins round the eyes and one milky white eye; one hand raises a long ornate ritual dagger, its steel blade dripping bright red blood, and a black iron chain hangs from the other hand; simple shapes and very few details."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The figure is drawn large: about 44 pixels wide and 70 pixels tall. A human face with skin, eyes, nose and mouth shows under the hood.",
+            "negative": "staff, sword, skull, tentacle, tentacles, glowing eyes, empty hood, blue robe, beard"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: a pulp-magazine secret society of the 1920s, sinister, grim and evil, not cute. Their colours: ceremonial cloth of deep blood red and black, embroidered with tarnished gold occult sigils; dull brass; pale cream candle wax and parchment; bright red fresh blood on blades; and one small accent, a glowing spring green, only as candle flames and sparks. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: Summoner, the high priest of an evil secret society, the tallest and thinnest figure: a narrow ornate ceremonial robe of deep blood red and black with a gold embroidered collar of sigils and a very tall pointed blood-red cowl; his gaunt face is pallid grey-white with dark veins round the eyes and one milky white eye; one hand raises a long ornate ritual dagger, its steel blade dripping bright red blood, and a black iron chain hangs from the other hand; simple shapes and very few details. The figure is drawn large: about 44 pixels wide and 70 pixels tall. A human face with skin, eyes, nose and mouth shows under the hood.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, cute, friendly smile, tentacles, tentacle hands, skull face, skull mask, skeleton, glowing eyes, empty black face, monster face, teal, cyan, blue cloth, indigo cloth, gore, guts, slime, magenta, pink, orange flames, yellow flames, blue flames, steel armour, chrome, gold armour, sword, gun, staff, pentagram, cross, large glowing area, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, skull, tentacle, empty hood, blue robe, beard",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: a pulp-magazine secret society of the 1920s, sinister, grim and evil, not cute. Their colours: ceremonial cloth of deep blood red and black, embroidered with tarnished gold occult sigils; dull brass; pale cream candle wax and parchment; bright red fresh blood on blades; and one small accent, a glowing spring green, only as candle flames and sparks. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: Summoner, the high priest of an evil secret society, the tallest and thinnest figure: a narrow ornate ceremonial robe of deep blood red and black with a gold embroidered collar of sigils and a very tall pointed blood-red cowl; his gaunt face is pallid grey-white with dark veins round the eyes and one milky white eye; one hand raises a long ornate ritual dagger, its steel blade dripping bright red blood, and a black iron chain hangs from the other hand; simple shapes and very few details. The figure is drawn large: about 44 pixels wide and 70 pixels tall. A human face with skin, eyes, nose and mouth shows under the hood. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, cute, friendly smile, tentacles, tentacle hands, skull face, skull mask, skeleton, glowing eyes, empty black face, monster face, teal, cyan, blue cloth, indigo cloth, gore, guts, slime, magenta, pink, orange flames, yellow flames, blue flames, steel armour, chrome, gold armour, sword, gun, staff, pentagram, cross, large glowing area, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, skull, tentacle, empty hood, blue robe, beard."
+      },
+      "submittedAt": "2026-10-17T09:33:23.941Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/explorations/cult-sprites-mch954/a-blood/raw/r2a-summoner-1.png",
+      "rawSheetSha256": "39756f54c39e90d44d51c36d53df49ff709f48c2300e39f2575f122263a33c4e",
+      "plateHints": [
+        {
+          "bandRows": 16,
+          "groundShare": 0.113,
+          "footprintWidthShare": 0.7692,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-17T09:34:00.738Z",
+      "usageUsd": 0.00852163667149014,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The high priest of the direction (tall pointed red cowl, pallid face, black and gold robe, chain), but the dagger's hilt glints cyan (teal is the summons') and its blade is solid red; fixed by r2a-summoner-1-blade.",
+        "reviewedAt": "2026-10-17T09:44:28.072Z"
+      }
+    },
+    "r2a-summoner-1-blade": {
+      "id": "r2a-summoner-1-blade",
+      "asset": "chibi-explore-cult2-a-summoner",
+      "jobId": "fde93ba8-fbb4-4180-8392-a9e1e1fa34fe",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "cult-sprites-mch954-a-blood",
+        "asset": "chibi-explore-cult2-a-summoner",
+        "subject": "UNIT:CULT:CAPTAIN",
+        "faction": "TEST-CULT-BLOOD",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 95432,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only the dagger: the cyan glints at its hilt become dull gold, colour #c9a24a, and the blade becomes pale steel grey, colour #c8c8d0, with bright red blood, colour #d01818, running down it. Do not redraw anything else: keep the tall red cowl, the pale grey face, the red, black and gold robe, the chain, the thick black outline and the art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change only the dagger: the cyan glints at its hilt become dull gold, colour #c9a24a, and the blade becomes pale steel grey, colour #c8c8d0, with bright red blood, colour #d01818, running down it. Do not redraw anything else: keep the tall red cowl, the pale grey face, the red, black and gold robe, the chain, the thick black outline and the art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only the dagger: the cyan glints at its hilt become dull gold, colour #c9a24a, and the blade becomes pale steel grey, colour #c8c8d0, with bright red blood, colour #d01818, running down it. Do not redraw anything else: keep the tall red cowl, the pale grey face, the red, black and gold robe, the chain, the thick black outline and the art style exactly the same, on a transparent background.",
+        "editInstruction": "Change only the dagger: the cyan glints at its hilt become dull gold, colour #c9a24a, and the blade becomes pale steel grey, colour #c8c8d0, with bright red blood, colour #d01818, running down it. Do not redraw anything else: keep the tall red cowl, the pale grey face, the red, black and gold robe, the chain, the thick black outline and the art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "r2a-summoner-1",
+          "candidate": 0,
+          "sha256": "39756f54c39e90d44d51c36d53df49ff709f48c2300e39f2575f122263a33c4e"
+        }
+      },
+      "submittedAt": "2026-10-17T09:37:46.518Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/explorations/cult-sprites-mch954/a-blood/raw/r2a-summoner-1-blade.png",
+      "rawSheetSha256": "a09b979731a70b3d94045f8f93e9717b7096cc2282c180938c5d8ef512e59988",
+      "plateHints": [
+        {
+          "bandRows": 16,
+          "groundShare": 0.0979,
+          "footprintWidthShare": 0.7692,
+          "suspect": false
+        },
+        {
+          "bandRows": 16,
+          "groundShare": 0.0979,
+          "footprintWidthShare": 0.7692,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-17T09:38:22.559Z",
+      "usageUsd": 0.008098933829201592,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "A pale steel blade running with blood and a gold hilt; the cowl and trim came out a warmer crimson-orange, which sets the high priest apart from the oxblood rank and file. The face is a living gaunt man's, pallid, one eye sunk in a dark bruise with a red vein: the corruption, no skull.",
+        "reviewedAt": "2026-10-17T09:44:28.226Z"
+      }
+    },
+    "r2a-summoner-1-face": {
+      "id": "r2a-summoner-1-face",
+      "asset": "chibi-explore-cult2-a-summoner",
+      "jobId": "cf9e20d2-1dd4-42e6-adf8-500e6d20c84f",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "cult-sprites-mch954-a-blood",
+        "asset": "chibi-explore-cult2-a-summoner",
+        "subject": "UNIT:CULT:CAPTAIN",
+        "faction": "TEST-CULT-BLOOD",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 95433,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only the face: it becomes a living gaunt old man's face with pale grey-white skin, dark veins round the eyes, one dark eye and one milky white eye, a nose and a thin cruel mouth, clearly human and not a skull. Do not redraw anything else: keep the tall red cowl, the black, red and gold robe, the bloody steel dagger, the chain, the thick black outline and the art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change only the face: it becomes a living gaunt old man's face with pale grey-white skin, dark veins round the eyes, one dark eye and one milky white eye, a nose and a thin cruel mouth, clearly human and not a skull. Do not redraw anything else: keep the tall red cowl, the black, red and gold robe, the bloody steel dagger, the chain, the thick black outline and the art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only the face: it becomes a living gaunt old man's face with pale grey-white skin, dark veins round the eyes, one dark eye and one milky white eye, a nose and a thin cruel mouth, clearly human and not a skull. Do not redraw anything else: keep the tall red cowl, the black, red and gold robe, the bloody steel dagger, the chain, the thick black outline and the art style exactly the same, on a transparent background.",
+        "editInstruction": "Change only the face: it becomes a living gaunt old man's face with pale grey-white skin, dark veins round the eyes, one dark eye and one milky white eye, a nose and a thin cruel mouth, clearly human and not a skull. Do not redraw anything else: keep the tall red cowl, the black, red and gold robe, the bloody steel dagger, the chain, the thick black outline and the art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "r2a-summoner-1-blade",
+          "candidate": 0,
+          "sha256": "8532f62602d2e55cba51adf721ef848e1e6f76e9323e187f7db840f787f730f1"
+        }
+      },
+      "submittedAt": "2026-10-17T09:42:27.871Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/explorations/cult-sprites-mch954/a-blood/raw/r2a-summoner-1-face.png",
+      "rawSheetSha256": "ebfa830fe1719de391ec2a51ac6879b4f2a0cb00133e1b02d8ca20feb491bf9e",
+      "plateHints": [
+        {
+          "bandRows": 16,
+          "groundShare": 0.096,
+          "footprintWidthShare": 0.7692,
+          "suspect": false
+        },
+        {
+          "bandRows": 16,
+          "groundShare": 0.096,
+          "footprintWidthShare": 0.7692,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-17T09:43:20.919Z",
+      "usageUsd": 0.009801397217644586,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Both candidates give the priest two blank white eyes, which read as glowing eyes; r2a-summoner-1-blade:0, one dark-ringed eye and a human mouth, is the better face.",
+        "reviewedAt": "2026-10-17T09:44:28.401Z"
+      }
+    }
+  },
+  "assets": {
+    "chibi-explore-cult2-a-hexer": {
+      "id": "chibi-explore-cult2-a-hexer",
+      "subject": "UNIT:CULT:MARKSMAN",
+      "assetClass": "STANDARD_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "r2a-hexer-1-fix",
+      "candidate": 0,
+      "candidateSha256": "c729c88370ee75c140a28bbc612ad4dcc220156aceb4135d725ac8521bd6feee",
+      "master": {
+        "path": "art/explorations/cult-sprites-mch954/a-blood/assets/units/chibi-explore-cult2-a-hexer.png",
+        "sha256": "e19ea08c2687053bd7a9d468f2557dcadc141906538dc422020d5fa47d5a1c5e",
+        "pixelSha256": "b3c409db2bc3686aa1c48d94601e9775f778a2259ae1c86aa07035e38394cdfa",
+        "width": 56,
+        "height": 80
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        },
+        "accent": {
+          "preset": "cult-robe",
+          "spec": {
+            "band": {
+              "hueFrom": 80,
+              "hueTo": 152,
+              "saturationMin": 0.5,
+              "valueMin": 0.45,
+              "hueCentre": 120
+            },
+            "hue": 148,
+            "hueSpread": 0.07
+          },
+          "accentPixels": 16,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 28,
+        "y": 40
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "The sword is gone and the smile is a cold stare; purple cowl over a blood-red robe with gold, a black book and a green spark. The slimmest standard piece.",
+      "acceptedAt": "2026-10-17T09:43:30.637Z"
+    },
+    "chibi-explore-cult2-a-idol-bearer": {
+      "id": "chibi-explore-cult2-a-idol-bearer",
+      "subject": "UNIT:CULT:GUARD",
+      "assetClass": "STANDARD_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "r2a-idol-bearer-1-clean",
+      "candidate": 0,
+      "candidateSha256": "e0f403a497ef25ee5626007759092c085a1c925a7f7ae3b0c246c94a10b95569",
+      "master": {
+        "path": "art/explorations/cult-sprites-mch954/a-blood/assets/units/chibi-explore-cult2-a-idol-bearer.png",
+        "sha256": "9e03684e92e339fda4a2338504e8dcf1de729d07af41fed55bb348f2de33dc2d",
+        "pixelSha256": "e97baf498fda00070fc2c17b3b6924ee4bb74caab653f627938b0f577c1ca6dc",
+        "width": 56,
+        "height": 80
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        },
+        "accent": {
+          "preset": "cult-robe",
+          "spec": {
+            "band": {
+              "hueFrom": 80,
+              "hueTo": 152,
+              "saturationMin": 0.5,
+              "valueMin": 0.45,
+              "hueCentre": 120
+            },
+            "hue": 148,
+            "hueSpread": 0.07
+          },
+          "accentPixels": 0,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 28,
+        "y": 40
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "The flame and the box are gone; the idol keeps its grin and green eyes, the man his scowl, black robe and red-and-gold stole.",
+      "acceptedAt": "2026-10-17T09:43:30.244Z"
+    },
+    "chibi-explore-cult2-a-initiate": {
+      "id": "chibi-explore-cult2-a-initiate",
+      "subject": "UNIT:CULT:FIGHTER",
+      "assetClass": "STANDARD_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "r2a-initiate-1",
+      "candidate": 0,
+      "candidateSha256": "74079fb5b40c7f6c0d2413511a67e9176d4d97cff3878fa9476a6c1967d4c3b6",
+      "master": {
+        "path": "art/explorations/cult-sprites-mch954/a-blood/assets/units/chibi-explore-cult2-a-initiate.png",
+        "sha256": "3e20b433459a357eaf8e7bd4ed4e35923a4bb6afd346554d4b01504798457832",
+        "pixelSha256": "c6576e456278e1c6b9e6f70c96692581b645a4947caaedc5f12fe1a4ae1cd01a",
+        "width": 56,
+        "height": 80
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        },
+        "accent": {
+          "preset": "cult-robe",
+          "spec": {
+            "band": {
+              "hueFrom": 80,
+              "hueTo": 152,
+              "saturationMin": 0.5,
+              "valueMin": 0.45,
+              "hueCentre": 120
+            },
+            "hue": 148,
+            "hueSpread": 0.07
+          },
+          "accentPixels": 22,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 28,
+        "y": 40
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "A shifty bearded man in a blood-red hooded robe with gold trim, a nasty grin, a bloody curved dagger and a cream candle with a green flame; a small green amulet. Reads at 1x on the bog.",
+      "acceptedAt": "2026-10-17T09:43:29.883Z"
+    },
+    "chibi-explore-cult2-a-portrait-hexer": {
+      "id": "chibi-explore-cult2-a-portrait-hexer",
+      "subject": "PORTRAIT:CULT:MARKSMAN",
+      "assetClass": "PORTRAIT",
+      "status": "ACCEPTED",
+      "recipe": "r2a-portrait-hexer-1",
+      "candidate": 0,
+      "candidateSha256": "7784b3cc1ac1b444001c4ad195532ad56373a974401db4b745043e495f33e1e4",
+      "master": {
+        "path": "art/explorations/cult-sprites-mch954/a-blood/assets/portraits/chibi-explore-cult2-a-portrait-hexer.png",
+        "sha256": "027438252802606c698a6feb015f3516f30fb3d9367547b447055977ec7369d4",
+        "pixelSha256": "9cd6bfefa0a930e3fc6abee4f1106f506bf711d21fd4d20c9d7946cb7f0228cb",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is",
+        "accent": {
+          "preset": "cult-robe-icon",
+          "spec": {
+            "band": {
+              "hueFrom": 66,
+              "hueTo": 152,
+              "saturationMin": 0.5,
+              "valueMin": 0.45,
+              "hueCentre": 120
+            },
+            "hue": 148,
+            "hueSpread": 0.07
+          },
+          "accentPixels": 11,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 8,
+        "groundShare": 0.0987,
+        "footprintWidthShare": 1,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "The Hexer's bust: a sly woman in a deep purple hood with gold trim, a smug half-smile, a blood-red and gold robe, a green spark at her raised fingers.",
+      "acceptedAt": "2026-10-17T09:49:52.979Z"
+    },
+    "chibi-explore-cult2-a-portrait-idol-bearer": {
+      "id": "chibi-explore-cult2-a-portrait-idol-bearer",
+      "subject": "PORTRAIT:CULT:GUARD",
+      "assetClass": "PORTRAIT",
+      "status": "ACCEPTED",
+      "recipe": "r2a-portrait-idol-bearer-2-idol",
+      "candidate": 0,
+      "candidateSha256": "c8a2cd6a695d91569e4e4008cb42a2a1314e76146b14565a0cd99a117da138ea",
+      "master": {
+        "path": "art/explorations/cult-sprites-mch954/a-blood/assets/portraits/chibi-explore-cult2-a-portrait-idol-bearer.png",
+        "sha256": "77acc906ff04c725a4cd48649c7be0c61b1c698d7140c0bb128b5f7821bcbc4e",
+        "pixelSha256": "a87c5e671ab05649efe9bcf69fbab0ddffc201798420bf504544aad2a56bc111",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is",
+        "accent": {
+          "preset": "cult-robe-icon",
+          "spec": {
+            "band": {
+              "hueFrom": 66,
+              "hueTo": 152,
+              "saturationMin": 0.5,
+              "valueMin": 0.45,
+              "hueCentre": 120
+            },
+            "hue": 148,
+            "hueSpread": 0.07
+          },
+          "accentPixels": 1,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 9,
+        "groundShare": 0.0848,
+        "footprintWidthShare": 0.6818,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "The idol is a carved stone face with a flat nose and square teeth, no skull; the man scowls with dark eyes under it, a black robe with a red-and-gold stole. The idol's eyes are dark here, green on the map sprite.",
+      "acceptedAt": "2026-10-17T09:49:52.855Z"
+    },
+    "chibi-explore-cult2-a-portrait-initiate": {
+      "id": "chibi-explore-cult2-a-portrait-initiate",
+      "subject": "PORTRAIT:CULT:FIGHTER",
+      "assetClass": "PORTRAIT",
+      "status": "ACCEPTED",
+      "recipe": "r2a-portrait-initiate-1",
+      "candidate": 0,
+      "candidateSha256": "a2b929354607bb2ecafbccca093f9218f6dee2fa97df352ceba005a5b4e50d8d",
+      "master": {
+        "path": "art/explorations/cult-sprites-mch954/a-blood/assets/portraits/chibi-explore-cult2-a-portrait-initiate.png",
+        "sha256": "bd5535492e47a7b341f35fed2a807bb1dd15b867a2075495c3184ff16c56e62f",
+        "pixelSha256": "4787ee9a191e12b304a84e097efb063538374ef9515fff213a9f6b441bb3ab28",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is",
+        "accent": {
+          "preset": "cult-robe-icon",
+          "spec": {
+            "band": {
+              "hueFrom": 66,
+              "hueTo": 152,
+              "saturationMin": 0.5,
+              "valueMin": 0.45,
+              "hueCentre": 120
+            },
+            "hue": 148,
+            "hueSpread": 0.07
+          },
+          "accentPixels": 12,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 10,
+        "groundShare": 0.0989,
+        "footprintWidthShare": 0.9512,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "The Initiate's bust and the faction emblem: a bearded man snarling under a blood-red hood with gold trim, a bloody curved dagger beside his face, a green amulet. Reads at 48 px.",
+      "acceptedAt": "2026-10-17T09:49:52.486Z"
+    },
+    "chibi-explore-cult2-a-portrait-stargazer": {
+      "id": "chibi-explore-cult2-a-portrait-stargazer",
+      "subject": "PORTRAIT:CULT:CATAPULT",
+      "assetClass": "PORTRAIT",
+      "status": "ACCEPTED",
+      "recipe": "r2a-portrait-stargazer-1",
+      "candidate": 0,
+      "candidateSha256": "226f4a99b861b7a778b6c7311ed4f361927244b7e08cb808f8acc20fbf15807c",
+      "master": {
+        "path": "art/explorations/cult-sprites-mch954/a-blood/assets/portraits/chibi-explore-cult2-a-portrait-stargazer.png",
+        "sha256": "226f4a99b861b7a778b6c7311ed4f361927244b7e08cb808f8acc20fbf15807c",
+        "pixelSha256": "f22122f0a7d94ef3ff4cc30cfe3f889f4eea639fc5e4d974b95589590f855d2e",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is",
+        "accent": {
+          "preset": "cult-robe-icon",
+          "spec": {
+            "band": {
+              "hueFrom": 66,
+              "hueTo": 152,
+              "saturationMin": 0.5,
+              "valueMin": 0.45,
+              "hueCentre": 120
+            },
+            "hue": 148,
+            "hueSpread": 0.07
+          },
+          "accentPixels": 0,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 8,
+        "groundShare": 0.0884,
+        "footprintWidthShare": 0.8696,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "The Stargazer's bust: a crooked old man with a white beard under a floppy red hood, his eye to the brass telescope's eyepiece.",
+      "acceptedAt": "2026-10-17T09:49:53.356Z"
+    },
+    "chibi-explore-cult2-a-portrait-summoner": {
+      "id": "chibi-explore-cult2-a-portrait-summoner",
+      "subject": "PORTRAIT:CULT:CAPTAIN",
+      "assetClass": "PORTRAIT",
+      "status": "ACCEPTED",
+      "recipe": "r2a-portrait-summoner-2",
+      "candidate": 0,
+      "candidateSha256": "7c785fc22f8ef54e0dbb1e26a9a294abfda016d9bf181a1a8130db13ea8c3c3a",
+      "master": {
+        "path": "art/explorations/cult-sprites-mch954/a-blood/assets/portraits/chibi-explore-cult2-a-portrait-summoner.png",
+        "sha256": "7c785fc22f8ef54e0dbb1e26a9a294abfda016d9bf181a1a8130db13ea8c3c3a",
+        "pixelSha256": "cac4d8fc00a093f0741430233e84779707bb8a2bad5c0e399d8079bd605e29bf",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is",
+        "accent": {
+          "preset": "cult-robe-icon",
+          "spec": {
+            "band": {
+              "hueFrom": 66,
+              "hueTo": 152,
+              "saturationMin": 0.5,
+              "valueMin": 0.45,
+              "hueCentre": 120
+            },
+            "hue": 148,
+            "hueSpread": 0.07
+          },
+          "accentPixels": 0,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 8,
+        "groundShare": 0.1158,
+        "footprintWidthShare": 0.8636,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "The high priest's bust: a living pallid face under a tall blood-red cowl, one red-veined eye and one milky one, blood at the lip, a bloody steel dagger beside him: the one corrupted face of the lodge.",
+      "acceptedAt": "2026-10-17T09:49:53.229Z"
+    },
+    "chibi-explore-cult2-a-stargazer": {
+      "id": "chibi-explore-cult2-a-stargazer",
+      "subject": "UNIT:CULT:CATAPULT",
+      "assetClass": "LARGE_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "r2a-stargazer-1-torch-b",
+      "candidate": 0,
+      "candidateSha256": "65d90c06ae17539bbe67b84a9fdd72b01f194f11d607c1a12184679ce67cc1a9",
+      "master": {
+        "path": "art/explorations/cult-sprites-mch954/a-blood/assets/units/chibi-explore-cult2-a-stargazer.png",
+        "sha256": "a688f8f7b92a232fe41c04ec33faf434bb4b5da2bec3b1a1b071bb7ad8266ced",
+        "pixelSha256": "6b88ec14e02fecdded73c3f9a01b83121fb5f47c7407ea7456dbf63d884f7506",
+        "width": 72,
+        "height": 88
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 6
+        },
+        "accent": {
+          "preset": "cult-robe",
+          "spec": {
+            "band": {
+              "hueFrom": 80,
+              "hueTo": 152,
+              "saturationMin": 0.5,
+              "valueMin": 0.45,
+              "hueCentre": 120
+            },
+            "hue": 148,
+            "hueSpread": 0.07
+          },
+          "accentPixels": 1,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 36,
+        "y": 48
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 8,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "The torch with green and orange flames is gone: a crooked old astrologer in a red hood and a black-and-red robe at a fat brass telescope with a dark lens on a wooden tripod, a bloody knife at his belt, a star chart on the ground; no green anywhere.",
+      "acceptedAt": "2026-10-17T09:44:28.566Z"
+    },
+    "chibi-explore-cult2-a-summoner": {
+      "id": "chibi-explore-cult2-a-summoner",
+      "subject": "UNIT:CULT:CAPTAIN",
+      "assetClass": "STANDARD_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "r2a-summoner-1-blade",
+      "candidate": 0,
+      "candidateSha256": "8532f62602d2e55cba51adf721ef848e1e6f76e9323e187f7db840f787f730f1",
+      "master": {
+        "path": "art/explorations/cult-sprites-mch954/a-blood/assets/units/chibi-explore-cult2-a-summoner.png",
+        "sha256": "b2b172b676510670c40a8699572fb9434b356c514846c37ffcd98fc21d1a4884",
+        "pixelSha256": "aca8b257d937d2a6404f0553f5b61ddfbb23630fffd7d549bb8134b68d21114d",
+        "width": 56,
+        "height": 80
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        },
+        "accent": {
+          "preset": "cult-robe",
+          "spec": {
+            "band": {
+              "hueFrom": 80,
+              "hueTo": 152,
+              "saturationMin": 0.5,
+              "valueMin": 0.45,
+              "hueCentre": 120
+            },
+            "hue": 148,
+            "hueSpread": 0.07
+          },
+          "accentPixels": 0,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 28,
+        "y": 40
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "A pale steel blade running with blood and a gold hilt; the cowl and trim came out a warmer crimson-orange, which sets the high priest apart from the oxblood rank and file. The face is a living gaunt man's, pallid, one eye sunk in a dark bruise with a red vein: the corruption, no skull.",
+      "acceptedAt": "2026-10-17T09:44:28.226Z"
+    }
+  }
+}

@@ -21,7 +21,13 @@ Imp and the Gibbering Mass with their Unbound looks and portraits, and the
 redesign's nine icons, accepted in batch `summons-cult`; the two summons'
 sprites, Unbound looks and portraits are registered in the runtime with
 their engine beads (E-R6, E-R7) and the icons wait for U-R2 and U-R3, under
-[The redesign's summons](#the-redesigns-summons).
+[The redesign's summons](#the-redesigns-summons). **The robed cultists are
+redrawn** (bead `pulp_wars-mch9.54`, round 2 after the user rejected the
+round-1 samples of bead `pulp_wars-mch9.29`): the Initiate, the Idol
+Bearer, the Hexer, the Summoner and the Stargazer and their five busts are
+ordinary people in evil robes with bloody daggers, replaced in place, under
+[The robed cultists](#the-robed-cultists-round-2). The summons are
+unchanged.
 
 The art pipeline reads the two `text` blocks under **Prompt fragment** and
 **Negative fragment** below as layer 3 of every Cult prompt, so edit them
@@ -37,22 +43,36 @@ there, it is listed under [Decisions](#decisions).
 
 ## Identity
 
-A secret lodge from the cover of a 1920s pulp magazine: small round people in
-robes too big for them, pointed hoods that flop over, candles, brass bells, a
-telescope, pamphlets, and a cellar they should not have opened. What they
-summon is rubbery, many-eyed and pleased to be here. Mock-sinister and silly,
-never grim: a village amateur dramatic society that got the spell right by
-accident. Nothing is gory, nothing comes from a published mythos or a real
-religion (no named Old One or book, no altar, cross or pentagram), and
-nothing is drawn to frighten.
+A secret society from the cover of a 1920s pulp magazine. The user
+(2026-10-17): "thematically, the cultists are schmucks who learned some
+incantations. That's why I don't want them to have tentacles or skeletal
+faces. etc. I guess some high priest might show signs of corruption but in
+general they're just dudes with fancy robes while their summons are weird
+and otherwordly. I want their evil be portrayed through evil looking robes
+and bloody daggers and such." So the cultists are ordinary men and women
+with human faces, grim, shifty, smug or fanatical, and their evil is in the
+costume and the props: dark ceremonial robes of blood red, black and deep
+purple with gold occult embroidery, hoods and cowls, sacrificial daggers
+with blood on the blade, candles, ritual books, chains. Only the high
+priest (the Summoner) shows corruption: a pallid face, a bruised and veined
+eye. Sinister, not cute; still the chibi house style shared with the other
+factions. What they summon is weird and otherworldly, rubbery and
+many-eyed. Nothing comes from a published mythos or a real religion (no
+named Old One or book, no altar, cross or pentagram); no cultist has a
+tentacle, a skull face or glowing eyes.
 
 The faction wears **fixed colours**; no sprite has an owner area or a mask.
 The player is read from the territory border, which is the Cult's eldritch
 green. Two families share the faction:
 
-- **The lodge** (the nine trained units, the cities, the buildings, the
-  ships): midnight indigo cloth, pale cream wax and paper, warm brass, and
-  exactly one accent, the green flame.
+- **The robed cultists** (the Initiate, the Idol Bearer, the Hexer, the
+  Summoner, the Stargazer, since round 2): blood red, black and deep purple
+  cloth with gold embroidery, skin, steel and blood, and the green flame as
+  the one accent, small.
+- **The lodge's places and things** (the Familiar, the cities, the
+  buildings, the ships): midnight indigo, pale cream wax and paper, warm
+  brass, and exactly one accent, the green flame. The cultists' red and
+  black stand apart from the indigo roofs on purpose.
 - **The summoned** (the Horror, the Herald's crown, the Tentacle, the Thing
   in the Cellar): rubbery deep-sea teal with pale cream bellies and suckers
   and big pale yellow eyes. Their colours are in their subject lines, not in
@@ -70,34 +90,43 @@ when `CULT` becomes a faction of the game.
 
 It names only a mood, an era, materials, colours and small motifs: no figure
 and no place or building (60 words, the limit). "Secret society" is used
-instead of "lodge", which is a building word.
+instead of "lodge", which is a building word. Since round 2 of the robed
+cultists (bead `pulp_wars-mch9.54`) it is the fragment their sprites and
+busts were generated with (the run `art/explorations/cult-sprites-mch954/a-blood`):
+the evil robes and the bloody blades. The places, the ships and the
+summons were generated with the round-1 fragment (indigo cloth,
+"mock-sinister, silly and never scary"), which their records keep; a new
+place or ship names its indigo in its subject line, as the cities and
+buildings already do ("bright royal blue roofs").
 
 ```text
-Faction: a pulp-magazine secret society of the 1920s, mock-sinister, silly
-and never scary. Their fixed colours: soft midnight indigo cloth shaded
-deeper violet-blue, never black; pale cream candle wax and parchment; small
-pieces of warm polished brass; and exactly one accent colour, a bright
-glowing spring green, only as small flames and glows: candle flames, lamp
-glass, an eye-in-a-spiral sign.
+Faction: a pulp-magazine secret society of the 1920s, sinister, grim and
+evil, not cute. Their colours: ceremonial cloth of deep blood red and black,
+embroidered with tarnished gold occult sigils; dull brass; pale cream candle
+wax and parchment; bright red fresh blood on blades; and one small accent, a
+glowing spring green, only as candle flames and sparks.
 ```
 
 ## Negative fragment
 
-Gore and horror words keep the tone playful. Bone, skulls, black and grey
-cloth and torn hems are the Undead's; purple and violet their accent;
-magenta and pink the Martians' and the Candy's; chrome, steel and gold
-armour the other factions' metals. Red cloth is the Humans', and red is kept
-for the Unbound cue (see [Palette](#palette)). Orange, yellow and blue
-flames because the faction has one accent. The two symbols keep it a lodge
-and not a religion. It has no figure and no building word, because the
-negative also reaches the other classes.
+Round 2: "cute" and "friendly smile" against the house style's cheer;
+tentacles, skulls, skeletons, glowing eyes and monster faces because the
+user ruled them out for the cultists; teal and cyan because they are the
+summons'; blue and indigo cloth so that no robe matches the indigo roofs;
+gore, guts and slime because the blood is on the blades, not a horror
+scene; magenta and pink the Martians' and the Candy's; chrome, steel and
+gold armour the other factions' metals; orange, yellow and blue flames
+because the faction has one accent. The two symbols keep it a secret
+society and not a religion. It has no figure and no building word, because
+the negative also reaches the other classes. (Round 1 also forbade blood,
+black and red cloth, torn hems and purple.)
 
 ```text
-blood, gore, guts, dripping, horror, creepy realism, slime, skull, bone,
-black cloth, grey cloth, torn cloth, ragged hems, purple, violet, magenta,
-pink, red cloth, red robe, orange flames, yellow flames, blue flames, gold
-armour, chrome, steel armour, sword, gun, pentagram, cross, large glowing
-area
+cute, friendly smile, tentacles, tentacle hands, skull face, skull mask,
+skeleton, glowing eyes, empty black face, monster face, teal, cyan, blue
+cloth, indigo cloth, gore, guts, slime, magenta, pink, orange flames, yellow
+flames, blue flames, steel armour, chrome, gold armour, sword, gun, staff,
+pentagram, cross, large glowing area
 ```
 
 ## Faction colour, seat and hue token
@@ -208,9 +237,18 @@ measurement.
 | Idol stone          | pale grey `#b9b8b0`; shade `#8a8a86`           | the Idol Bearer's idol, city walls' stone footing, Monuments                                  |
 | Outline             | black                                          | the thick outline of the chibi look                                                           |
 
+Since round 2 (bead `pulp_wars-mch9.54`) the robed cultists wear their own
+colours, measured on the masters: blood red (cloth, a hood, a stole, the
+blood on a blade), black, deep purple (the Hexer's cowl, trims), tarnished
+gold embroidery, steel, and skin; no lodge indigo (none of the five has an
+indigo pixel of saturation 0.45 and value 0.35 or more) and at most a glint
+of teal (1%). The rules below are round 1's for the places, the ships,
+the Familiar and the summons, except where a rule names the cultists.
+
 Rules:
 
-- **Indigo, never black, never navy.** The robe is a violet-leaning blue at
+- **Indigo, never black, never navy** (the places, the ships, the
+  Familiar, the Herald). The robe is a violet-leaning blue at
   hue 240° to 250° with a clearly lit side. That keeps it 69 from the Undead
   near-black cloth (`#313135`), 46 from the Undead lit violet (hue 274°), 38
   to 47 from the Dinosaur deep blue hide (hue 212°), 54 from the Ice Witch's
@@ -224,17 +262,18 @@ Rules:
   `martian-magenta`: it finds the green glow pixels by colour and pins them
   to hue 148°. Green is at most about 8% of a lodge sprite; a large glowing
   area is rejected.
-- **Wax cream carries each silhouette.** No cultist is a featureless dark
-  cone: every one has two round cream eyes in the hood's opening and at
-  least one big pale or brass prop (a candle, pamphlets, a book, an idol, a
-  telescope, a conch, a sash).
+- **A face and a prop carry each cultist** (round 2): every robed cultist
+  shows a human face under the hood and holds a big readable prop (a bloody
+  dagger and a candle, the idol, a book, a dagger and a chain, a
+  telescope). Round 1 had two round cream eyes in a dark hood instead.
 - **Teal belongs to the summoned.** No cultist, building or ship has a teal
   area, except a tentacle that is itself a summoned thing (the Market's
   joke, the Anchor grip). Teal on Grass is 56, on Deep Water 31 and on
   Shallow Water 28: the Tentacle on water leans on its outline, its cream
   suckers and its yellow eye.
-- **Red means broken.** No bound or trained Cult piece has a red pixel. Red
-  eyes are the sprite cue of an Unbound daemon, as the red flash of a
+- **Red eyes mean broken.** No summoned or bound piece has a red pixel; the
+  robed cultists' blood red is cloth and blood (round 2), never a
+  summoned thing's eye. Red eyes are the sprite cue of an Unbound daemon, as the red flash of a
   snapped strand and the red tether of Pick Me! are in the interface
   ([spec, section 14.3](../../product/RULESET_7_CULTISTS.md#143-how-it-reads-on-the-board-without-text)).
 - **Wood is allowed** (a converted faction has no owner key to protect): the
@@ -245,24 +284,28 @@ Rules:
 
 This guides the subject lines; it is not sent to PixelLab.
 
-- **The pointed hood is the faction.** Every robed cultist ends in a point,
-  and the point says the job: it flops (Initiate), stands very tall
-  (Summoner), curls (Hexer), is squashed flat by a load (Idol Bearer), is
-  thrown back from big shoulders (Chosen), or is replaced by a nightcap
-  (Stargazer) or a diving helmet (Caller).
-- **No face, two eyes.** The hood's opening is dark with two big round cream
-  eyes. No beard, no skull, no skin: against the Necromancer's white beard
-  and gaunt face, the Lich's skull and the Ice Witch's pale face.
-- **Bell-shaped and neat.** A robe is a smooth bell with a round clean hem
-  that reaches the ground and hides the legs; cream slippers peek out. The
-  Undead hems are torn zigzags, the Undead robes hang open over ribs.
-- **Small and round.** A cultist is a head-and-hood on a tiny body, a little
-  shorter than a Human Fighter; the props are oversized.
+- **The hood or cowl is the faction, the outline says the job** (round 2):
+  the Initiate is the smallest, a hood with a dagger and a candle held out
+  to both sides; the Idol Bearer two heads stacked (the grinning stone idol
+  on a bald man); the Hexer the slimmest, a purple cowl over a red robe and
+  a book; the Summoner the tallest, a crimson spike of a cowl to the canvas
+  top with a dagger and a chain; the Stargazer a crooked old man at a brass
+  telescope.
+- **A face, not a void.** Every cultist shows a human face (a beard, a
+  scowl, a sneer, a squint); no skull, no glowing eyes, no mask. Only the
+  Summoner is corrupted: a pallid face, one eye sunk in a dark bruise with
+  a red vein (the bust: one red-veined eye, one milky). Against the
+  Undead: the Necromancer has a white beard and a skull staff, the Lich a
+  skull; the cultists have living faces and no staff.
+- **Ceremonial and sinister.** Long robes with gold embroidery, stoles,
+  ragged or pointed hems are allowed (round 1 asked for neat bells).
+- **Chibi but not cute.** The house proportions stay (a big head on a short
+  body); the faces are grim, shifty, smug or fanatical.
 - **Everything summoned is soft.** Rounded, rubbery, no bones, no armour, no
   claws: fat tentacles, googly eyes of two sizes, wide grins.
 - **Nobody carries a staff.** The staff is the Necromancer's, the Ice
-  Witch's and the Shaman's. The Cult's caster props are a candle, a book, a
-  bell and chain, a telescope and a conch.
+  Witch's and the Shaman's. The Cult's caster props are a dagger, a candle,
+  a book, a chain and a telescope.
 
 **Against the robed units of other factions** (the board-size tells; ART2
 and ART3 put each pair in a lineup):
@@ -294,15 +337,15 @@ accent `cult-lodge` (the summoned without cloth: `cult-green`; see
 
 ### Trained units
 
-| Unit (role)                        | Subject, asset                                         | Canvas, class            | Silhouette and what it shows                                                                                                                                                                                                                     |
-| ---------------------------------- | ------------------------------------------------------ | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Initiate (`FIGHTER`)               | `UNIT:CULT:FIGHTER`, `chibi-direction-cult-initiate`   | 56 x 80, `STANDARD_UNIT` | the plain one and the smallest robe: a hood whose tip flops to one side, sleeves too long, a fat cream candle with a green flame held up in one hand, a sheaf of cream pamphlets under the other arm, cream slippers                             |
-| Idol Bearer (`GUARD`)              | `UNIT:CULT:GUARD`, `chibi-direction-cult-idol-bearer`  | 56 x 80, `STANDARD_UNIT` | "two heads stacked": one stout wide cultist, the hood squashed flat, holding a squat grinning pale stone idol with green eyes over its head with both arms; the idol is as big as the head under it; the widest and squarest standard piece      |
-| Familiar (`RAIDER`)                | `UNIT:CULT:RAIDER`, `chibi-direction-cult-familiar`    | 72 x 88, `LARGE_UNIT`    | the one piece with no robe: a fat toad-cat in mid-hop, low and wide (about 60 x 50 px), indigo-blue hide with a cream belly, stubby bat wings, one big cream eye and one small, a brass collar with a bell                                       |
-| Hexer (`MARKSMAN`)                 | `UNIT:CULT:MARKSMAN`, `chibi-direction-cult-hexer`     | 56 x 80, `STANDARD_UNIT` | a hood whose tip curls like a question mark, big round brass spectacles on the hood, an open cream book held upside down in one hand, the other hand thrown forward with a green squiggle leaving it                                             |
-| Summoner (`CAPTAIN`)               | `UNIT:CULT:CAPTAIN`, `chibi-direction-cult-summoner`   | 56 x 80, `STANDARD_UNIT` | the tallest and thinnest: a straight pointed hat-hood that reaches the top of the canvas, a cream stole with the eye-in-a-spiral sign, a small brass bell raised in one hand and a looped brass chain hanging from the other                     |
-| Stargazer (`CATAPULT`)             | `UNIT:CULT:CATAPULT`, `chibi-direction-cult-stargazer` | 72 x 88, `LARGE_UNIT`    | brass first, robe second: a cultist bent to the eyepiece of a big brass telescope on a wooden tripod, the tube pointing up and to the right, an indigo nightcap with cream stars and a pompom, a cream star chart trailing on the ground         |
-| Thing in the Cellar (`JUGGERNAUT`) | `UNIT:CULT:JUGGERNAUT`, `chibi-direction-cult-thing`   | 88 x 104, `GIANT_UNIT`   | a wide heap of fat teal tentacles with cream suckers and many friendly yellow eyes of different sizes, a broken wooden trapdoor round its middle like a collar, a tiny cream-and-indigo striped party hat on top; a mound, wider than it is tall |
+| Unit (role)                        | Subject, asset                                         | Canvas, class            | Silhouette and what it shows                                                                                                                                                                                                                                                              |
+| ---------------------------------- | ------------------------------------------------------ | ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Initiate (`FIGHTER`)               | `UNIT:CULT:FIGHTER`, `chibi-direction-cult-initiate`   | 56 x 80, `STANDARD_UNIT` | the smallest: a shifty bearded man in a blood-red hooded robe with gold trim and a black rope belt, a nasty grin, a curved dagger with blood on the blade in one hand and a cream candle with a green flame in the other, a small green amulet (round 2)                                  |
+| Idol Bearer (`GUARD`)              | `UNIT:CULT:GUARD`, `chibi-direction-cult-idol-bearer`  | 56 x 80, `STANDARD_UNIT` | "two heads stacked": a stout scowling bald man in a black robe with a blood-red and gold stole holding over his head a squat grey stone idol that keeps its wide toothy grin and green eyes (round 2)                                                                                     |
+| Familiar (`RAIDER`)                | `UNIT:CULT:RAIDER`, `chibi-direction-cult-familiar`    | 72 x 88, `LARGE_UNIT`    | the one piece with no robe: a fat toad-cat in mid-hop, low and wide (about 60 x 50 px), indigo-blue hide with a cream belly, stubby bat wings, one big cream eye and one small, a brass collar with a bell                                                                                |
+| Hexer (`MARKSMAN`)                 | `UNIT:CULT:MARKSMAN`, `chibi-direction-cult-hexer`     | 56 x 80, `STANDARD_UNIT` | the slimmest: a cold-eyed woman in a deep purple cowl and a blood-red robe embroidered with gold, a black ritual book held open, a small green spark of a curse at her fingers (round 2)                                                                                                  |
+| Summoner (`CAPTAIN`)               | `UNIT:CULT:CAPTAIN`, `chibi-direction-cult-summoner`   | 56 x 80, `STANDARD_UNIT` | the tallest, the high priest and the one corrupted: a crimson spike of a cowl to the canvas top, black and gold ceremonial vestments, a long dagger whose steel blade runs with blood, an iron chain; a gaunt pallid living face, one eye sunk in a dark bruise with a red vein (round 2) |
+| Stargazer (`CATAPULT`)             | `UNIT:CULT:CATAPULT`, `chibi-direction-cult-stargazer` | 72 x 88, `LARGE_UNIT`    | brass first: a crooked old white-bearded astrologer in a blood-red hood and a black-and-red robe bent to the eyepiece of a fat brass telescope with a dark lens on a wooden tripod, a bloody knife at his belt, a cream star chart on the ground; no green (round 2)                      |
+| Thing in the Cellar (`JUGGERNAUT`) | `UNIT:CULT:JUGGERNAUT`, `chibi-direction-cult-thing`   | 88 x 104, `GIANT_UNIT`   | a wide heap of fat teal tentacles with cream suckers and many friendly yellow eyes of different sizes, a broken wooden trapdoor round its middle like a collar, a tiny cream-and-indigo striped party hat on top; a mound, wider than it is tall                                          |
 
 **The Caller (`KNIGHT`) and the Chosen (`SWORDSMAN`) are retired** by
 [the Cult redesign](../../product/RULESET_7_CULT_REDESIGN.md#42-the-vacant-slots):
@@ -311,7 +354,8 @@ Their rasters, recipes and records stay in batch `direction-cult` and
 `interface-cult` as history (their rows are under
 [The batches](#the-batches) and [The portraits](#the-portraits)); bead U-R1
 takes them out of the runtime manifests, the Gallery and `public/assets`.
-The robed cultists' refresh is bead `pulp_wars-mch9.29`.
+The robed cultists were redrawn by bead `pulp_wars-mch9.54` (round 2,
+[The robed cultists](#the-robed-cultists-round-2)).
 
 ### Summoned units
 
@@ -341,13 +385,15 @@ target, steam while Furious).
 
 ### How each is told apart at board size
 
-- **Inside the faction, by outline alone:** Initiate (small, floppy tip,
-  candle up), Hexer (curl, book overhead-height, arm forward), Summoner
-  (a spike to the canvas top), Idol Bearer (a second head on top),
-  Stargazer (a diagonal brass tube), Familiar (a low blob with wings),
-  Thing (a mound). No two differ only by a thin prop.
-- **Cultist against summoned, by colour:** indigo against teal. The Herald is
-  the one summoned thing in a robe, and it is twice a cultist's height.
+- **Inside the faction, by outline and colour** (round 2): Initiate (the
+  smallest, a red hood, a blade and a candle out to both sides), Hexer (the
+  slimmest, a purple cowl, a book), Summoner (a crimson spike to the canvas
+  top, a dagger and a chain), Idol Bearer (a second, grey head on top),
+  Stargazer (a diagonal brass tube), Familiar (a low indigo blob with
+  wings), Thing (a mound). No two differ only by a thin prop.
+- **Cultist against summoned, by colour:** blood red, black and skin against
+  teal. The Herald is the one summoned thing in a robe (indigo), and it is
+  twice a cultist's height.
 - **Horror against Thing:** a ball on four legs with one grin, against a
   legless mound of many eyes with a trapdoor.
 - **Tentacle against the Thing and the Herald's crown:** a single upright
@@ -364,9 +410,10 @@ target, steam while Furious).
 
 48 x 48, `PORTRAIT` class, fixed colours, no mask
 (`chibi-direction-portrait-cult-<unit>`, subjects `PORTRAIT:CULT:<ROLE>`).
-Busts for the seven robed cultists (the hood, the eyes, and the prop beside
-the head: candle, idol, spectacles and book, bell, nightcap and eyepiece,
-helmet and conch, sash and raised hand). Whole-figure portraits (`icon`
+Busts for the robed cultists (since round 2, bead `pulp_wars-mch9.54`: the
+hooded face and the prop beside the head: the bloody dagger, the stone
+idol, the green spark, the bloody ritual dagger, the telescope's eyepiece;
+round 1's showed two cream eyes in a hood). Whole-figure portraits (`icon`
 class, as the Catapult has) for the Familiar, the Thing, the Horror, the
 Herald (the eye and the crown fill the frame) and the Tentacle. Twelve in
 all, plus the three ship portraits below. The redesign adds the Imp and the
@@ -935,26 +982,26 @@ derived. `npm run art:chibi-cult-direction-review` now also writes
 
 ![The whole Cult roster on Grass, Forest, Mountain, Snow and Shallow Water at zoom 0.75](../../../art/pixellab/reviews/chibi-batch-direction-cult/roster-zoom-0.75.png)
 
-| Asset                                  | Accepted recipe      | Sprite     | Class, accent            | How it was made                                                                                 |
-| -------------------------------------- | -------------------- | ---------- | ------------------------ | ----------------------------------------------------------------------------------------------- |
-| `chibi-direction-cult-idol-bearer`     | `idol-bearer-s-one`  | 43 x 71 px | `unit`, `cult-lodge`     | a sibling edit of the Initiate, then one edit (two small idols into one)                        |
-| `chibi-direction-cult-familiar`        | `familiar-a-brass`   | 58 x 65 px | `creature`, `cult-lodge` | a creation, then one edit (a leather collar to brass, the tongue gone)                          |
-| `chibi-direction-cult-hexer`           | `hexer-s`            | 50 x 73 px | `unit`, `cult-lodge`     | a sibling edit of the Initiate                                                                  |
-| `chibi-direction-cult-summoner`        | `summoner-s`         | 36 x 75 px | `unit`, `cult-lodge`     | a sibling edit of the Initiate                                                                  |
-| `chibi-direction-cult-stargazer`       | `stargazer-a-hood`   | 68 x 54 px | `unit`, `cult-lodge`     | a creation, then one edit (a bearded face into a hood with two eyes)                            |
-| `chibi-direction-cult-caller`          | `caller-a`           | 62 x 79 px | `unit`, `cult-lodge`     | the first creation                                                                              |
-| `chibi-direction-cult-chosen`          | `chosen-s`           | 56 x 73 px | `unit`, `cult-lodge`     | a sibling edit of the Initiate                                                                  |
-| `chibi-direction-cult-thing`           | `thing-c-heap`       | 80 x 84 px | `creature`, `cult-green` | the third creation, then one edit (a small face into a tentacle coil)                           |
-| `chibi-direction-cult-tentacle`        | `tentacle-portal-c`  | 51 x 74 px | `creature`, `cult-green` | the third of five portal creations (bead `pulp_wars-mch9.48`; until then `tentacle-b`, 53 x 74) |
-| `chibi-direction-cult-horror-unbound`  | `horror-unbound-a`   | 68 x 68 px | `unit`, `cult-green`     | one edit of the accepted Horror                                                                 |
-| `chibi-direction-cult-herald-unbound`  | `herald-unbound-a`   | 53 x 97 px | `machine`, `cult-lodge`  | one edit of the accepted Herald                                                                 |
-| `chibi-direction-cult-frog`            | `frog-a`             | 33 x 34 px | `creature`, `cult-green` | the first creation                                                                              |
-| `chibi-direction-cult-frog-unit`       | `frog-unit-b-mouth`  | 50 x 64 px | `creature`, `cult-green` | the second of three creations, then one edit (a red tongue to black; bead `pulp_wars-mch9.26`)  |
-| `chibi-naval-cult-patrol-boat`         | `cult-patrol-boat-a` | 59 x 68 px | `ship`, `cult-lodge`     | one edit of the shared cog                                                                      |
-| `chibi-naval-cult-battleship`          | `cult-battleship-a`  | 71 x 79 px | `ship`, `cult-lodge`     | one edit of the shared carrack                                                                  |
-| `chibi-naval-cult-transport`           | `cult-transport-a`   | 60 x 49 px | `ship`, `cult-lodge`     | one edit of the shared barge                                                                    |
-| `chibi-naval-cult-submarine`           | `cult-submarine-a`   | 61 x 52 px | `ship`, `cult-lodge`     | one sibling edit of the accepted gondola                                                        |
-| `chibi-naval-cult-submarine-submerged` | derived              | 61 x 46 px | none                     | `scripts/art/naval-branch/submerged.ts`                                                         |
+| Asset                                  | Accepted recipe      | Sprite     | Class, accent            | How it was made                                                                                  |
+| -------------------------------------- | -------------------- | ---------- | ------------------------ | ------------------------------------------------------------------------------------------------ |
+| `chibi-direction-cult-idol-bearer`     | `idol-bearer-s-one`  | 43 x 71 px | `unit`, `cult-lodge`     | a sibling edit of the Initiate, then one edit (two small idols into one) (superseded by round 2) |
+| `chibi-direction-cult-familiar`        | `familiar-a-brass`   | 58 x 65 px | `creature`, `cult-lodge` | a creation, then one edit (a leather collar to brass, the tongue gone)                           |
+| `chibi-direction-cult-hexer`           | `hexer-s`            | 50 x 73 px | `unit`, `cult-lodge`     | a sibling edit of the Initiate (superseded by round 2)                                           |
+| `chibi-direction-cult-summoner`        | `summoner-s`         | 36 x 75 px | `unit`, `cult-lodge`     | a sibling edit of the Initiate (superseded by round 2)                                           |
+| `chibi-direction-cult-stargazer`       | `stargazer-a-hood`   | 68 x 54 px | `unit`, `cult-lodge`     | a creation, then one edit (a bearded face into a hood with two eyes) (superseded by round 2)     |
+| `chibi-direction-cult-caller`          | `caller-a`           | 62 x 79 px | `unit`, `cult-lodge`     | the first creation                                                                               |
+| `chibi-direction-cult-chosen`          | `chosen-s`           | 56 x 73 px | `unit`, `cult-lodge`     | a sibling edit of the Initiate                                                                   |
+| `chibi-direction-cult-thing`           | `thing-c-heap`       | 80 x 84 px | `creature`, `cult-green` | the third creation, then one edit (a small face into a tentacle coil)                            |
+| `chibi-direction-cult-tentacle`        | `tentacle-portal-c`  | 51 x 74 px | `creature`, `cult-green` | the third of five portal creations (bead `pulp_wars-mch9.48`; until then `tentacle-b`, 53 x 74)  |
+| `chibi-direction-cult-horror-unbound`  | `horror-unbound-a`   | 68 x 68 px | `unit`, `cult-green`     | one edit of the accepted Horror                                                                  |
+| `chibi-direction-cult-herald-unbound`  | `herald-unbound-a`   | 53 x 97 px | `machine`, `cult-lodge`  | one edit of the accepted Herald                                                                  |
+| `chibi-direction-cult-frog`            | `frog-a`             | 33 x 34 px | `creature`, `cult-green` | the first creation                                                                               |
+| `chibi-direction-cult-frog-unit`       | `frog-unit-b-mouth`  | 50 x 64 px | `creature`, `cult-green` | the second of three creations, then one edit (a red tongue to black; bead `pulp_wars-mch9.26`)   |
+| `chibi-naval-cult-patrol-boat`         | `cult-patrol-boat-a` | 59 x 68 px | `ship`, `cult-lodge`     | one edit of the shared cog                                                                       |
+| `chibi-naval-cult-battleship`          | `cult-battleship-a`  | 71 x 79 px | `ship`, `cult-lodge`     | one edit of the shared carrack                                                                   |
+| `chibi-naval-cult-transport`           | `cult-transport-a`   | 60 x 49 px | `ship`, `cult-lodge`     | one edit of the shared barge                                                                     |
+| `chibi-naval-cult-submarine`           | `cult-submarine-a`   | 61 x 52 px | `ship`, `cult-lodge`     | one sibling edit of the accepted gondola                                                         |
+| `chibi-naval-cult-submarine-submerged` | derived              | 61 x 46 px | none                     | `scripts/art/naval-branch/submerged.ts`                                                          |
 
 ### What the batches changed
 
@@ -1171,12 +1218,12 @@ recipe, sprite box, colour shares, call counts).
 
 | Asset                                       | Subject                     | Accepted recipe                      | Sprite     | Class, accent                 | Calls                                          |
 | ------------------------------------------- | --------------------------- | ------------------------------------ | ---------- | ----------------------------- | ---------------------------------------------- |
-| `chibi-direction-portrait-cult-initiate`    | `PORTRAIT:CULT:FIGHTER`     | `portrait-initiate-b-eyes`           | 43 x 42 px | `portrait`, `cult-lodge-icon` | 1 creation, 1 edit                             |
-| `chibi-direction-portrait-cult-idol-bearer` | `PORTRAIT:CULT:GUARD`       | `portrait-idol-bearer-s`             | 34 x 42 px | `portrait`, `cult-lodge-icon` | 1 edit                                         |
+| `chibi-direction-portrait-cult-initiate`    | `PORTRAIT:CULT:FIGHTER`     | `portrait-initiate-b-eyes`           | 43 x 42 px | `portrait`, `cult-lodge-icon` | 1 creation, 1 edit, superseded by round 2      |
+| `chibi-direction-portrait-cult-idol-bearer` | `PORTRAIT:CULT:GUARD`       | `portrait-idol-bearer-s`             | 34 x 42 px | `portrait`, `cult-lodge-icon` | 1 edit, superseded by round 2                  |
 | `chibi-direction-portrait-cult-familiar`    | `PORTRAIT:CULT:RAIDER`      | `portrait-familiar-a`                | 48 x 44 px | `creature`, `cult-lodge-icon` | 1 creation                                     |
-| `chibi-direction-portrait-cult-hexer`       | `PORTRAIT:CULT:MARKSMAN`    | `portrait-hexer-s`                   | 43 x 42 px | `portrait`, `cult-lodge-icon` | 1 edit                                         |
-| `chibi-direction-portrait-cult-summoner`    | `PORTRAIT:CULT:CAPTAIN`     | `portrait-summoner-s`                | 34 x 44 px | `portrait`, `cult-lodge-icon` | 1 edit                                         |
-| `chibi-direction-portrait-cult-stargazer`   | `PORTRAIT:CULT:CATAPULT`    | `portrait-stargazer-s`               | 45 x 42 px | `portrait`, `cult-lodge-icon` | 1 edit                                         |
+| `chibi-direction-portrait-cult-hexer`       | `PORTRAIT:CULT:MARKSMAN`    | `portrait-hexer-s`                   | 43 x 42 px | `portrait`, `cult-lodge-icon` | 1 edit, superseded by round 2                  |
+| `chibi-direction-portrait-cult-summoner`    | `PORTRAIT:CULT:CAPTAIN`     | `portrait-summoner-s`                | 34 x 44 px | `portrait`, `cult-lodge-icon` | 1 edit, superseded by round 2                  |
+| `chibi-direction-portrait-cult-stargazer`   | `PORTRAIT:CULT:CATAPULT`    | `portrait-stargazer-s`               | 45 x 42 px | `portrait`, `cult-lodge-icon` | 1 edit, superseded by round 2                  |
 | `chibi-direction-portrait-cult-caller`      | `PORTRAIT:CULT:KNIGHT`      | `portrait-caller-s-helmet`           | 38 x 38 px | `portrait`, `cult-lodge-icon` | 2 edits                                        |
 | `chibi-direction-portrait-cult-chosen`      | `PORTRAIT:CULT:SWORDSMAN`   | `portrait-chosen-s`                  | 42 x 43 px | `portrait`, `cult-lodge-icon` | 1 edit                                         |
 | `chibi-direction-portrait-cult-thing`       | `PORTRAIT:CULT:JUGGERNAUT`  | `portrait-thing-a`                   | 42 x 40 px | `creature`, `cult-green`      | 1 creation                                     |
@@ -1530,6 +1577,108 @@ supersedes `tentacle-b` and `portrait-tentacle-b` (kept as history).
 Evidence: the roster sheets of `npm run art:chibi-cult-direction-review`
 (`roster-*`, `summons-*`, `portraits-x4.png`, `candidates-*`).
 
+## The robed cultists, round 2
+
+Bead `pulp_wars-mch9.54`. The user rejected the three round-1 directions of
+bead `pulp_wars-mch9.29` (eerie accents on the indigo robes, a mask per role,
+"touched by the deep" with tentacles), in the words quoted under
+[Identity](#identity), and asked for ordinary people whose evil is in their
+robes and bloody daggers. The five robed sprites and their five busts were
+redrawn **in place** (same asset ids, canvases and anchors; the round-1
+recipes stay in batches `direction-cult` and `interface-cult` as history,
+rejected with "Superseded by …"). The summons, the Familiar, the places and
+the ships are unchanged.
+
+**How.** Two variants were explored as fresh creations in exploration runs
+(the chibi pipeline's `--exploration`), each with its own faction fragment
+and subject lines, all five robed units each:
+
+- **A, `a-blood`, "blood livery"** (chosen): the society mostly in deep
+  blood red, with black and deep purple as the second colour of some roles
+  and tarnished gold embroidery. Its fragment is now the
+  [prompt fragment](#prompt-fragment) above.
+- **B, `b-black`, "black vestments"** (rejected): mostly black with
+  blood-red linings, the high priest alone in red. Black cloth and pallid
+  skin kept drifting to the Undead: both Summoner creations came back with
+  a skull for a face although the second asked for "a living man's face …
+  never a skull", and both idols read as skulls; its Hexer had big cute
+  eyes. Only its Initiate and Stargazer were good.
+
+The chosen recipes were brought into production with `import` (no new
+call), reviewed again and accepted; the five standard and large creations
+are seated on their class's foot line (`bottomMargin` 3, the Stargazer 6),
+and two new accent presets pin only the green
+([`accent.ts`](../../../scripts/art/chibi/accent.ts)): `cult-robe` for the
+sprites and `cult-robe-icon` (the green band from hue 66) for the busts,
+because `cult-lodge` would turn a purple trim indigo and the lodge's icon
+preset would turn blood red brass.
+
+| Asset                                       | Accepted recipe                   | Sprite     | Accent           | How it was made                                                                             |
+| ------------------------------------------- | --------------------------------- | ---------- | ---------------- | ------------------------------------------------------------------------------------------- |
+| `chibi-direction-cult-initiate`             | `r2a-initiate-1`                  | 50 x 59 px | `cult-robe`      | the first creation                                                                          |
+| `chibi-direction-cult-idol-bearer`          | `r2a-idol-bearer-1-clean`         | 43 x 69 px | `cult-robe`      | a creation, then one edit (a stray green flame and a box off the idol)                      |
+| `chibi-direction-cult-hexer`                | `r2a-hexer-1-fix`                 | 44 x 65 px | `cult-robe`      | a creation, then one edit (a stray sword gone, the cute smile a cold stare)                 |
+| `chibi-direction-cult-summoner`             | `r2a-summoner-1-blade`            | 52 x 78 px | `cult-robe`      | a creation, then one edit (a cyan hilt to gold, the solid red blade to steel with blood)    |
+| `chibi-direction-cult-stargazer`            | `r2a-stargazer-1-torch-b`         | 63 x 67 px | `cult-robe`      | a creation, then one edit (a torch with green and orange flames gone; the first job failed) |
+| `chibi-direction-portrait-cult-initiate`    | `r2a-portrait-initiate-1`         | 41 x 48 px | `cult-robe-icon` | the first creation                                                                          |
+| `chibi-direction-portrait-cult-idol-bearer` | `r2a-portrait-idol-bearer-2-idol` | 44 x 43 px | `cult-robe-icon` | the second creation, then one edit (a skull-like idol into a stone god's face)              |
+| `chibi-direction-portrait-cult-hexer`       | `r2a-portrait-hexer-1`            | 40 x 42 px | `cult-robe-icon` | the first creation                                                                          |
+| `chibi-direction-portrait-cult-summoner`    | `r2a-portrait-summoner-2`         | 44 x 42 px | `cult-robe-icon` | the second creation (the first had a blue-grey skull for a face)                            |
+| `chibi-direction-portrait-cult-stargazer`   | `r2a-portrait-stargazer-1`        | 46 x 42 px | `cult-robe-icon` | the first creation                                                                          |
+
+**Calls.** 26 PixelLab calls in all: variant A's sprites 11 (5 creations, 6
+edits, one of which failed at PixelLab and was retried under a new id), its
+busts 8 (7 creations, 1 edit), variant B 7 creations. No call was made in
+the production batches.
+
+**Round 1's known flaws** are gone: the idol keeps its grin; the telescope
+has a dark lens and no green tufts (the Stargazer has no green pixel the
+faction band finds beyond one); green is at most 1.1% of any robed sprite.
+
+**Sheets** (compressed copies in `art/explorations/cult-sprites-mch954/sheets/`,
+drawn by
+[`scripts/art/cult-sprites-mch954/review.ts`](../../../scripts/art/cult-sprites-mch954/review.ts)
+and
+[`emblem-capture.ts`](../../../scripts/art/cult-sprites-mch954/emblem-capture.ts)):
+`before-after.png` (round 1 and round 2 at 1x on the bog, the new set x3, the
+busts, and a board mock with a Cult city, three faded Cult buildings, three
+summons, the Undead Necromancer and Skeleton and four Human units),
+`compare.png` (round 1 and both variants), `sheet-a.png`, `sheet-b.png`,
+`cand-a.png` and `cand-b.png` (every candidate with its verdict, its green
+and red shares), `setup-form-emblem.png` and `gallery-cult.png` (the
+Initiate's bust as the faction emblem, captured in muted headless Chrome).
+
+![Round 1 and round 2 of the robed cultists, the busts, and a board mock](../../../art/explorations/cult-sprites-mch954/sheets/before-after.png)
+
+### Differences from the direction, accepted
+
+- The **Initiate** has a full dark beard (the subject asked for stubble)
+  and a small green amulet, and is the smallest piece by height (59 px).
+- The **Summoner**'s cowl and embroidery came out crimson-orange after the
+  blade edit rather than the oxblood of the rank and file; it sets the high
+  priest apart. Its corruption is one bruised, veined eye; the asked-for
+  milky eye shows only on the bust.
+- The **Hexer**'s eyes and spark are a pale green-cyan; a few pixels fall
+  in the teal band (under 1%).
+- The **Stargazer** has a white beard (the Necromancer's beard is white
+  too; the telescope is the tell) and a bloody knife at his belt.
+- The **Idol Bearer**'s bust has a grey beard and an idol with dark eyes;
+  the sprite's man is clean-shaven under a green-eyed idol.
+- The **Initiate**'s bust has bloodshot red-brown eyes.
+
+### Weak spots
+
+- **The Initiate against the Human Fighter, by the measure.** Gate 5 of
+  `npm run art:chibi-cult-direction-review` now calls the pair "colour too
+  close" (both red; CIE76 14.9): by eye the Fighter is a steel helmet with
+  a plume, a cross tabard, a sword and a round shield, the Initiate a dark
+  hood, a beard, a dagger and a candle. The Human Marksman's red hood is
+  the nearer look-alike at 1x; the Initiate's oxblood is darker and its
+  robe reaches the ground.
+- **Dark robes.** The Initiate is 64% dark pixels (round 1: 22%); the bog's
+  mid value carries it, and the face and the blade are the lightest shapes.
+- **The Familiar** keeps round 1's indigo look beside red-robed masters.
+
 ## Decisions
 
 Made in this bead. The first four are the spec's; the rest are this
@@ -1539,8 +1688,12 @@ document's and differ from a look written in the spec or the proposal.
    factions and it passes. Hue token `--pw-emerald`.
 2. **Fixed colours:** indigo robes, one green accent; the summoned in teal.
 3. **Tone:** a silly lodge, never grim; no mythos names, no religion.
+   **Overruled for the cultists by the user** (2026-10-17, bead
+   `pulp_wars-mch9.54`): ordinary people, sinister, with evil robes and
+   bloody daggers; the summons stay weird and silly-otherworldly.
 4. **The sample** is the Initiate, the Horror and the Herald.
-5. **The Initiate has no dagger.** The proposal gave it a candle and a wavy
+5. **The Initiate has no dagger** (round 1; round 2 gives it a bloody
+   dagger and a candle, and drops the pamphlets). The proposal gave it a candle and a wavy
    dagger and the spec added pamphlets; three props do not read at 56 px.
    The candle and the pamphlets stay: they are the faction and the ability.
 6. **The Idol Bearer is one figure**, not two under a pole: two bodies on a
@@ -1550,7 +1703,8 @@ document's and differ from a look written in the spec or the proposal.
    crimson-trimmed hood and a "CHOSEN" sash. Sprites carry no text, crimson
    is the Humans' colour, and red is kept for "broken": the sash is plain
    cream with a brass medal, and the raised arm and the cleaver say the rest.
-8. **Cultists have cream eyes, not green ones.** Glowing accent-coloured
+8. **Cultists have cream eyes, not green ones** (round 1; since round 2
+   they have human faces). Glowing accent-coloured
    eyes in a dark hood are the Undead's look; green stays on flames, lamps
    and the idol.
 9. **The summoned have yellow eyes; red eyes mean Unbound.** Two edited

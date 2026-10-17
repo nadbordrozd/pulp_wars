@@ -11,7 +11,7 @@
     "2": "PASS",
     "3": "FAIL",
     "4": "PASS",
-    "5": "PASS"
+    "5": "FAIL"
   },
   "files": [
     "candidates-x3.png",

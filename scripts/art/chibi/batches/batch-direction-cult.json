@@ -17,7 +17,9 @@
         "height": 80
       },
       "ownerColour": false,
-      "accent": "cult-lodge"
+      "accent": "cult-robe",
+      "subjectKey": "UNIT:CULT:FIGHTER/BLOOD",
+      "bottomMargin": 3
     },
     {
       "id": "chibi-direction-cult-horror",
@@ -53,7 +55,9 @@
         "height": 80
       },
       "ownerColour": false,
-      "accent": "cult-lodge"
+      "accent": "cult-robe",
+      "subjectKey": "UNIT:CULT:GUARD/BLOOD",
+      "bottomMargin": 3
     },
     {
       "id": "chibi-direction-cult-familiar",
@@ -78,7 +82,9 @@
         "height": 80
       },
       "ownerColour": false,
-      "accent": "cult-lodge"
+      "accent": "cult-robe",
+      "subjectKey": "UNIT:CULT:MARKSMAN/BLOOD",
+      "bottomMargin": 3
     },
     {
       "id": "chibi-direction-cult-summoner",
@@ -90,7 +96,9 @@
         "height": 80
       },
       "ownerColour": false,
-      "accent": "cult-lodge"
+      "accent": "cult-robe",
+      "subjectKey": "UNIT:CULT:CAPTAIN/BLOOD",
+      "bottomMargin": 3
     },
     {
       "id": "chibi-direction-cult-stargazer",
@@ -102,8 +110,9 @@
         "height": 88
       },
       "ownerColour": false,
-      "accent": "cult-lodge",
-      "bottomMargin": 6
+      "accent": "cult-robe",
+      "bottomMargin": 6,
+      "subjectKey": "UNIT:CULT:CATAPULT/BLOOD"
     },
     {
       "id": "chibi-direction-cult-thing",
@@ -1056,6 +1065,135 @@
       "promptAddendum": "Like an elephant trunk coming up out of a manhole seen from above at an angle: the tentacle grows out of the dark middle of the flat oval and is cut off by the oval's far rim, so its root is never seen. The oval is about 50 pixels wide and 18 pixels tall along the bottom of the image. The tentacle is deep-sea teal, colour #1f8f95 with shade #145f6b, its suckers pale cream, colour #f3e7c4, and its eye pale yellow, colour #ffe27a.",
       "negativeAddendum": "octopus, squid, animal, creature body, head, face, mouth, teeth, two eyes, second tentacle, several tentacles, tail, tentacle tip on the ground, coiled base, drops, splash, puddle, grass, dirt, rocks, stone ring, manhole cover, metal, purple, violet, pink, red",
       "notes": "The request of tentacle-portal-c on a third seed."
+    },
+    {
+      "id": "r2a-initiate-1",
+      "asset": "chibi-direction-cult-initiate",
+      "endpoint": "create-image-pixen",
+      "seed": 95401,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "The figure is drawn large: about 44 pixels wide and 70 pixels tall. A human face with skin, eyes, nose and mouth shows under the hood.",
+      "negativeAddendum": "staff, wand, sword, skull, beard, tentacle, glowing eyes, empty hood, blue robe",
+      "notes": "Round 2 of the robed cultists (bead pulp_wars-mch9.54), imported from art/explorations/cult-sprites-mch954/a-blood: Variant A, the Initiate: a fresh creation with the unit class."
+    },
+    {
+      "id": "r2a-idol-bearer-1",
+      "asset": "chibi-direction-cult-idol-bearer",
+      "endpoint": "create-image-pixen",
+      "seed": 95411,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "The figure is drawn large: about 44 pixels wide and 70 pixels tall. A human face with skin, eyes, nose and mouth shows under the hood.",
+      "negativeAddendum": "staff, sword, skull, tentacle, glowing eyes, empty hood, blue robe, two idols",
+      "notes": "Round 2 of the robed cultists (bead pulp_wars-mch9.54), imported from art/explorations/cult-sprites-mch954/a-blood: Variant A, the Idol Bearer: a fresh creation with the unit class."
+    },
+    {
+      "id": "r2a-idol-bearer-1-clean",
+      "asset": "chibi-direction-cult-idol-bearer",
+      "endpoint": "edit-image-pixen",
+      "seed": 95412,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "r2a-idol-bearer-1",
+        "candidate": 0
+      },
+      "editInstruction": "Change only one thing: erase the green flame and the small dark box at the top right of the stone idol head, leaving that area transparent. Do not redraw anything else: keep the grey stone idol with its toothy grin and green eyes, the bald man under it, his black robe with the red and gold stole, the thick black outline and the art style exactly the same, on a transparent background.",
+      "notes": "Round 2 of the robed cultists (bead pulp_wars-mch9.54), imported from art/explorations/cult-sprites-mch954/a-blood: r2a-idol-bearer-1 is the right man and idol, but a stray green flame and a dark box sit on the idol's top right."
+    },
+    {
+      "id": "r2a-hexer-1",
+      "asset": "chibi-direction-cult-hexer",
+      "endpoint": "create-image-pixen",
+      "seed": 95421,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "The figure is drawn large: about 44 pixels wide and 70 pixels tall. A human face with skin, eyes, nose and mouth shows under the hood.",
+      "negativeAddendum": "staff, wand, sword, skull, tentacle, glowing eyes, empty hood, blue robe, witch hat",
+      "notes": "Round 2 of the robed cultists (bead pulp_wars-mch9.54), imported from art/explorations/cult-sprites-mch954/a-blood: Variant A, the Hexer: a fresh creation with the unit class."
+    },
+    {
+      "id": "r2a-hexer-1-fix",
+      "asset": "chibi-direction-cult-hexer",
+      "endpoint": "edit-image-pixen",
+      "seed": 95422,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "r2a-hexer-1",
+        "candidate": 0
+      },
+      "editInstruction": "Change only two things: erase the tall sword standing at the left, leaving that area transparent; and her face gets narrowed cruel eyes and a thin smug sneer instead of the wide smile. Do not redraw anything else: keep the purple hood, the red and gold robe, the black book, the green spark, the thick black outline and the art style exactly the same, on a transparent background.",
+      "notes": "Round 2 of the robed cultists (bead pulp_wars-mch9.54), imported from art/explorations/cult-sprites-mch954/a-blood: r2a-hexer-1 is the Hexer of the direction (purple cowl, red robe, book, green spark), but a tall sword stands beside her and her wide smile reads cute, not smug."
+    },
+    {
+      "id": "r2a-summoner-1",
+      "asset": "chibi-direction-cult-summoner",
+      "endpoint": "create-image-pixen",
+      "seed": 95431,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "The figure is drawn large: about 44 pixels wide and 70 pixels tall. A human face with skin, eyes, nose and mouth shows under the hood.",
+      "negativeAddendum": "staff, sword, skull, tentacle, tentacles, glowing eyes, empty hood, blue robe, beard",
+      "notes": "Round 2 of the robed cultists (bead pulp_wars-mch9.54), imported from art/explorations/cult-sprites-mch954/a-blood: Variant A, the Summoner: a fresh creation with the unit class."
+    },
+    {
+      "id": "r2a-summoner-1-blade",
+      "asset": "chibi-direction-cult-summoner",
+      "endpoint": "edit-image-pixen",
+      "seed": 95432,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "r2a-summoner-1",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the dagger: the cyan glints at its hilt become dull gold, colour #c9a24a, and the blade becomes pale steel grey, colour #c8c8d0, with bright red blood, colour #d01818, running down it. Do not redraw anything else: keep the tall red cowl, the pale grey face, the red, black and gold robe, the chain, the thick black outline and the art style exactly the same, on a transparent background.",
+      "notes": "Round 2 of the robed cultists (bead pulp_wars-mch9.54), imported from art/explorations/cult-sprites-mch954/a-blood: r2a-summoner-1 is the high priest of the direction, but the dagger's hilt glints cyan (teal is the summons') and the blade is solid red, not a bloody steel blade."
+    },
+    {
+      "id": "r2a-stargazer-1",
+      "asset": "chibi-direction-cult-stargazer",
+      "endpoint": "create-image-pixen",
+      "seed": 95441,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The group is drawn large: about 64 pixels wide and 74 pixels tall. The telescope is polished yellow brass and is the biggest thing in the image. The old man's human face with skin shows.",
+      "negativeAddendum": "staff, weapon, cannon, gun, wheels, skull, tentacle, glowing eyes, glowing lens, green, blue robe, beard",
+      "notes": "Round 2 of the robed cultists (bead pulp_wars-mch9.54), imported from art/explorations/cult-sprites-mch954/a-blood: Variant A, the Stargazer: a fresh creation with the unit class."
+    },
+    {
+      "id": "r2a-stargazer-1-torch-b",
+      "asset": "chibi-direction-cult-stargazer",
+      "endpoint": "edit-image-pixen",
+      "seed": 95443,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "r2a-stargazer-1",
+        "candidate": 0
+      },
+      "editInstruction": "Change only one thing: erase the small torch with its green and orange flames at the left edge, leaving that area transparent. Do not redraw anything else: keep the old man with his red hood and white beard, the red and black robe, the dagger at his belt, the brass telescope, the wooden tripod, the star chart, the thick black outline and the art style exactly the same, on a transparent background.",
+      "notes": "Round 2 of the robed cultists (bead pulp_wars-mch9.54), imported from art/explorations/cult-sprites-mch954/a-blood: Retry of r2a-stargazer-1-torch, whose PixelLab job failed (a failed job keeps its recipe id, so the retry has a new one)."
     }
   ]
 }

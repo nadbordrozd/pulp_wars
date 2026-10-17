@@ -2219,3 +2219,38 @@ for the Cult Seamanship
 - **A wave under a candle can turn into a mound**: one of two seeds drew
   the wave as a sand heap with a dark hollow; the other drew a curling
   wave round the candle.
+
+## The robed cultists, round 2 (bead `pulp_wars-mch9.54`)
+
+The five robed Cult sprites and their busts were redrawn in place
+([what and why](factions/CULT.md#the-robed-cultists-round-2)): fresh
+creations in two exploration runs under
+`art/explorations/cult-sprites-mch954/`, the chosen ones imported into
+`direction-cult` and `interface-cult` and accepted again, superseding the
+round-1 recipes. Two accent presets were added, `cult-robe` and
+`cult-robe-icon`: the green band of `cult-green` alone (from hue 80, or 66
+for 48 px busts), so blood red, purple, skin and gold stay as drawn.
+[`review.ts`](../../scripts/art/cult-sprites-mch954/review.ts) draws the
+candidate, variant, comparison and before/after sheets (the round-1 look
+re-derived from the superseded recipes' candidates, so no copy of the old
+masters is kept) and
+[`emblem-capture.ts`](../../scripts/art/cult-sprites-mch954/emblem-capture.ts)
+captures the faction emblem in the setup form and the Gallery in muted
+headless Chrome.
+
+What PixelLab did, added to the prompt notes of the earlier batches:
+
+- **"Pallid grey-white skin" on a robed figure draws a skull.** Both black
+  variant Summoners and the first red bust came back skull-faced although
+  the second asked for "a living man's face … never a skull"; "pale
+  yellowish-white skin, wrinkles, a long nose, thin lips … never blue"
+  drew a living face.
+- **A stone head held overhead reads as a skull** unless the line gives it
+  "a broad flat stone nose, thick stone lips and a grin of square teeth".
+- **A creation adds a stray prop**: a sword beside the Hexer, a torch with
+  an orange flame beside the Stargazer, a green flame on the idol; an erase
+  edit ("erase … leaving that area transparent") removed each at the first
+  call.
+- **A blade recolour edit shifts the cloth warmer**: asking for a steel
+  blade with blood moved the Summoner's oxblood cowl to a crimson-orange.
+- **"Stubble" drew a full beard**, and a negative "beard" did not stop it.

@@ -17,7 +17,8 @@
         "height": 48
       },
       "ownerColour": false,
-      "accent": "cult-lodge-icon"
+      "accent": "cult-robe-icon",
+      "subjectKey": "PORTRAIT:CULT:FIGHTER/BLOOD"
     },
     {
       "id": "chibi-direction-portrait-cult-idol-bearer",
@@ -29,7 +30,8 @@
         "height": 48
       },
       "ownerColour": false,
-      "accent": "cult-lodge-icon"
+      "accent": "cult-robe-icon",
+      "subjectKey": "PORTRAIT:CULT:GUARD/BLOOD"
     },
     {
       "id": "chibi-direction-portrait-cult-familiar",
@@ -53,7 +55,8 @@
         "height": 48
       },
       "ownerColour": false,
-      "accent": "cult-lodge-icon"
+      "accent": "cult-robe-icon",
+      "subjectKey": "PORTRAIT:CULT:MARKSMAN/BLOOD"
     },
     {
       "id": "chibi-direction-portrait-cult-summoner",
@@ -65,7 +68,8 @@
         "height": 48
       },
       "ownerColour": false,
-      "accent": "cult-lodge-icon"
+      "accent": "cult-robe-icon",
+      "subjectKey": "PORTRAIT:CULT:CAPTAIN/BLOOD"
     },
     {
       "id": "chibi-direction-portrait-cult-stargazer",
@@ -77,7 +81,8 @@
         "height": 48
       },
       "ownerColour": false,
-      "accent": "cult-lodge-icon"
+      "accent": "cult-robe-icon",
+      "subjectKey": "PORTRAIT:CULT:CATAPULT/BLOOD"
     },
     {
       "id": "chibi-direction-portrait-cult-thing",
@@ -1588,6 +1593,87 @@
       },
       "editInstruction": "Change only the suckers: the messy dark marks, brown specks and yellow dots down the inner side of the tentacle become one neat row of five round pale cream suckers, colour #f3e7c4, each a small round dot, and the brown specks inside the portal are erased. Keep the teal tentacle, its hooked tip with the one pale yellow eye, the flat oval portal with its dark blue inside and glowing green rim, the shape, the thick black outline and the art style the same, on a transparent background.",
       "notes": "portrait-tentacle-portal-b is the portrait wanted (one tentacle out of the portal, the eye at its tip), but its suckers are a mess of dark squares, yellow dots and brown specks."
+    },
+    {
+      "id": "r2a-portrait-initiate-1",
+      "asset": "chibi-direction-portrait-cult-initiate",
+      "endpoint": "create-image-pixen",
+      "seed": 95601,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "A close-up bust: the head and shoulders fill the whole square; no legs. A human face with skin, eyes, nose and mouth.",
+      "negativeAddendum": "full body, legs, feet, skull face, skeleton, tentacles, glowing eyes, empty hood, blue robe",
+      "notes": "Round 2 of the robed cultists (bead pulp_wars-mch9.54), imported from art/explorations/cult-sprites-mch954/a-blood: The Initiate's bust: a fresh creation with the portrait class, to match the accepted map sprite of variant A."
+    },
+    {
+      "id": "r2a-portrait-idol-bearer-2",
+      "asset": "chibi-direction-portrait-cult-idol-bearer",
+      "endpoint": "create-image-pixen",
+      "seed": 95612,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "A close-up bust: the head and shoulders fill the whole square; no legs. The man is bald and clean-shaven with a heavy scowl. The idol on his head is carved dull grey stone, a stone god's face with a broad flat nose, thick lips and a wide grin of square teeth, clearly carved stone and never a skull.",
+      "negativeAddendum": "full body, legs, feet, skull, skull face, skeleton, beard, tentacles, glowing eyes, empty hood, blue robe",
+      "notes": "Round 2 of the robed cultists (bead pulp_wars-mch9.54), imported from art/explorations/cult-sprites-mch954/a-blood: r2a-portrait-idol-bearer-1's idol reads as a skull and its man has a grey beard: the map sprite's man is bald and clean-shaven under a stone god's face."
+    },
+    {
+      "id": "r2a-portrait-idol-bearer-2-idol",
+      "asset": "chibi-direction-portrait-cult-idol-bearer",
+      "endpoint": "edit-image-pixen",
+      "seed": 95613,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "r2a-portrait-idol-bearer-2",
+        "candidate": 0
+      },
+      "editInstruction": "Change only two things: the man's eyes become small dark brown human eyes, not green; the grey head on top becomes a carved stone god's face with a broad flat stone nose, thick stone lips and a grin of square teeth, clearly stone, not a skull. Keep the scowling man, his grey beard, his raised hands, the black robe with the gold and red stole, the thick black outline and the art style exactly the same, on a transparent background.",
+      "notes": "Round 2 of the robed cultists (bead pulp_wars-mch9.54), imported from art/explorations/cult-sprites-mch954/a-blood: r2a-portrait-idol-bearer-2 is the bust of the map sprite's scowling man holding the idol, but the idol still reads as a skull and the man's eyes are green."
+    },
+    {
+      "id": "r2a-portrait-hexer-1",
+      "asset": "chibi-direction-portrait-cult-hexer",
+      "endpoint": "create-image-pixen",
+      "seed": 95621,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "A close-up bust: the head and shoulders fill the whole square; no legs. A human face with skin, eyes, nose and mouth.",
+      "negativeAddendum": "full body, legs, feet, skull face, skeleton, tentacles, glowing eyes, empty hood, blue robe",
+      "notes": "Round 2 of the robed cultists (bead pulp_wars-mch9.54), imported from art/explorations/cult-sprites-mch954/a-blood: The Hexer's bust: a fresh creation with the portrait class, to match the accepted map sprite of variant A."
+    },
+    {
+      "id": "r2a-portrait-summoner-2",
+      "asset": "chibi-direction-portrait-cult-summoner",
+      "endpoint": "create-image-pixen",
+      "seed": 95632,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "A close-up bust: the head and shoulders fill the whole square; no legs. His face is a living sickly old man's face with pale yellowish-white skin, wrinkles, a long nose, thin lips and one eye ringed with a dark bruise and red veins: human, never a skull, never blue.",
+      "negativeAddendum": "full body, legs, feet, skull, skull face, skeleton, blue skin, grey skin, white eyes, tentacles, glowing eyes, empty hood, blue robe",
+      "notes": "Round 2 of the robed cultists (bead pulp_wars-mch9.54), imported from art/explorations/cult-sprites-mch954/a-blood: r2a-portrait-summoner-1 has a blue-grey skull for a face: the high priest is a living man; his corruption is pallor, a bruised eye and red veins, as on the map sprite."
+    },
+    {
+      "id": "r2a-portrait-stargazer-1",
+      "asset": "chibi-direction-portrait-cult-stargazer",
+      "endpoint": "create-image-pixen",
+      "seed": 95641,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "A close-up bust: the head and shoulders fill the whole square; no legs. A human face with skin, eyes, nose and mouth.",
+      "negativeAddendum": "full body, legs, feet, skull face, skeleton, tentacles, glowing eyes, empty hood, blue robe",
+      "notes": "Round 2 of the robed cultists (bead pulp_wars-mch9.54), imported from art/explorations/cult-sprites-mch954/a-blood: The Stargazer's bust: a fresh creation with the portrait class, to match the accepted map sprite of variant A."
     }
   ]
 }

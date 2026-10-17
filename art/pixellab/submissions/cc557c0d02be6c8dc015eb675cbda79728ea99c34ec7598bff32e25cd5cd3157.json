@@ -1,0 +1,36 @@
+{
+  "id": "r2a-portrait-idol-bearer-2-idol",
+  "jobId": "c44c27c5-0a5d-4fb9-b8c4-fbea5362ce5f",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "cult-sprites-mch954-a-blood",
+    "asset": "chibi-explore-cult2-a-portrait-idol-bearer",
+    "subject": "PORTRAIT:CULT:GUARD",
+    "faction": "TEST-CULT-BLOOD",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 95613,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only two things: the man's eyes become small dark brown human eyes, not green; the grey head on top becomes a carved stone god's face with a broad flat stone nose, thick stone lips and a grin of square teeth, clearly stone, not a skull. Keep the scowling man, his grey beard, his raised hands, the black robe with the gold and red stole, the thick black outline and the art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only two things: the man's eyes become small dark brown human eyes, not green; the grey head on top becomes a carved stone god's face with a broad flat stone nose, thick stone lips and a grin of square teeth, clearly stone, not a skull. Keep the scowling man, his grey beard, his raised hands, the black robe with the gold and red stole, the thick black outline and the art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only two things: the man's eyes become small dark brown human eyes, not green; the grey head on top becomes a carved stone god's face with a broad flat stone nose, thick stone lips and a grin of square teeth, clearly stone, not a skull. Keep the scowling man, his grey beard, his raised hands, the black robe with the gold and red stole, the thick black outline and the art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only two things: the man's eyes become small dark brown human eyes, not green; the grey head on top becomes a carved stone god's face with a broad flat stone nose, thick stone lips and a grin of square teeth, clearly stone, not a skull. Keep the scowling man, his grey beard, his raised hands, the black robe with the gold and red stole, the thick black outline and the art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "r2a-portrait-idol-bearer-2",
+      "candidate": 0,
+      "sha256": "25f0a74c616a9fba32bc21c79249e89669cef8fdf40dc2a6a8bbb25ea9ceec4e"
+    }
+  }
+}

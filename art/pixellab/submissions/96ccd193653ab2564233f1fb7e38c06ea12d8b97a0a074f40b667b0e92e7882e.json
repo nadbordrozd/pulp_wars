@@ -1,0 +1,36 @@
+{
+  "id": "r2a-hexer-1-fix",
+  "jobId": "72b9a3e8-b7a6-4d1e-8cb9-15b13b12825a",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "cult-sprites-mch954-a-blood",
+    "asset": "chibi-explore-cult2-a-hexer",
+    "subject": "UNIT:CULT:MARKSMAN",
+    "faction": "TEST-CULT-BLOOD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 95422,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only two things: erase the tall sword standing at the left, leaving that area transparent; and her face gets narrowed cruel eyes and a thin smug sneer instead of the wide smile. Do not redraw anything else: keep the purple hood, the red and gold robe, the black book, the green spark, the thick black outline and the art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only two things: erase the tall sword standing at the left, leaving that area transparent; and her face gets narrowed cruel eyes and a thin smug sneer instead of the wide smile. Do not redraw anything else: keep the purple hood, the red and gold robe, the black book, the green spark, the thick black outline and the art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only two things: erase the tall sword standing at the left, leaving that area transparent; and her face gets narrowed cruel eyes and a thin smug sneer instead of the wide smile. Do not redraw anything else: keep the purple hood, the red and gold robe, the black book, the green spark, the thick black outline and the art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only two things: erase the tall sword standing at the left, leaving that area transparent; and her face gets narrowed cruel eyes and a thin smug sneer instead of the wide smile. Do not redraw anything else: keep the purple hood, the red and gold robe, the black book, the green spark, the thick black outline and the art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "r2a-hexer-1",
+      "candidate": 0,
+      "sha256": "696ccaf24ee146469ddd0ddd4a26d0d21d402e6b212474e0974de3d2db2beac3"
+    }
+  }
+}

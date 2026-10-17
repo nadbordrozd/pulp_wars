@@ -42,7 +42,8 @@ const SAMPLE = [
     "STANDARD_UNIT",
     56,
     80,
-    "cult-lodge",
+    // Round 2 of the robed cultists (pulp_wars-mch9.54).
+    "cult-robe",
   ],
   [
     "chibi-direction-cult-horror",
@@ -92,6 +93,20 @@ function hsvPixels(
 const master = (id: string): Promise<RgbaRaster> =>
   readRaster(path.join(ROOT, "public/assets/chibi/units", `${id}.png`));
 
+/**
+ * The robed cultists of round 2 (bead pulp_wars-mch9.54): ordinary people in
+ * evil robes, fresh creations of the exploration run
+ * `art/explorations/cult-sprites-mch954/a-blood`, imported and accepted in
+ * place of the round-1 lodge sprites.
+ */
+const ROBED_ROUND_2: readonly string[] = [
+  "chibi-direction-cult-initiate",
+  "chibi-direction-cult-idol-bearer",
+  "chibi-direction-cult-hexer",
+  "chibi-direction-cult-summoner",
+  "chibi-direction-cult-stargazer",
+];
+
 describe("the Cultists' first art sample (pulp_wars-mch9.14)", () => {
   it("is a valid fixed-colour batch that starts with the Initiate, the Horror and the Herald", async () => {
     const manifest = await loadBatchManifest(ROOT, BATCH);
@@ -121,7 +136,11 @@ describe("the Cultists' first art sample (pulp_wars-mch9.14)", () => {
   it("keeps layer 3 free of figures and buildings, and the subjects of the sample", async () => {
     const fragments = await loadFragments(ROOT);
     const fragment = fragments.factions.CULT?.text ?? "";
-    expect(fragment).toContain("midnight indigo");
+    // Since round 2 of the robed cultists (pulp_wars-mch9.54) the fragment
+    // is the one their sprites were generated with: evil robes, bloody
+    // blades, and no indigo for a robe to borrow from the roofs.
+    expect(fragment).toContain("blood red");
+    expect(fragment).not.toContain("never scary");
     expect(fragment.split(/\s+/).length).toBeLessThanOrEqual(60);
     for (const word of ["cultist", "monk", "lodge", "tentacle", "monster"])
       expect(fragment.toLowerCase()).not.toContain(word);
@@ -151,10 +170,16 @@ describe("the Cultists' first art sample (pulp_wars-mch9.14)", () => {
       expect(record.mask, id).toBeUndefined();
       expect(record.master.width).toBe(width);
       expect(record.master.height).toBe(height);
-      expect(record.derivation.kind).toBe("as-is");
+      // Round 2's Initiate is a fresh creation, seated on the foot line.
+      expect(record.derivation.kind).toBe(
+        ROBED_ROUND_2.includes(id) ? "seated" : "as-is",
+      );
       expect(record.derivation.accent?.preset).toBe(preset);
       expect(record.derivation.accent?.spec).toEqual(ACCENT_PRESETS[preset]);
       expect(await verifyAssetRecord(ROOT, manifest, record), id).toEqual([]);
+      // A seated master is moved as well as recoloured: verifyAssetRecord
+      // above re-derives it.
+      if (ROBED_ROUND_2.includes(id)) continue;
       const recipe = records.recipes[record.recipe];
       if (recipe?.rawSheet === undefined || recipe.candidateSize === undefined)
         throw new Error(`${id}: no raw sheet`);
@@ -195,6 +220,9 @@ describe("the Cultists' first art sample (pulp_wars-mch9.14)", () => {
       }
       // "Green is at most about 8% of a lodge sprite" (CULT.md, Palette).
       expect(greens.length / pixels.length, id).toBeLessThanOrEqual(0.08);
+      // Round 2's robed cultists wear blood red and deep purple (checked
+      // under "the robed cultists, round 2" below).
+      if (ROBED_ROUND_2.includes(id)) continue;
       // Red means Unbound; violet and magenta are other factions' accents.
       expect(
         pixels.filter(
@@ -216,10 +244,7 @@ describe("the Cultists' first art sample (pulp_wars-mch9.14)", () => {
         id,
       ).toBe(0);
     }
-    for (const id of [
-      "chibi-direction-cult-initiate",
-      "chibi-direction-cult-herald",
-    ]) {
+    for (const id of ["chibi-direction-cult-herald"]) {
       // The lodge's cloth: every saturated blue is a violet-leaning indigo
       // (hue 236 to 250) no darker than value 0.49, never a navy.
       const cloth = hsvPixels(await master(id)).filter(
@@ -236,6 +261,130 @@ describe("the Cultists' first art sample (pulp_wars-mch9.14)", () => {
         expect(p.value, id).toBeGreaterThanOrEqual(0.48);
       }
     }
+  });
+});
+
+/** Round 2's accepted recipe of each robed cultist and the one it superseded. */
+const ROUND_2_RECIPES = [
+  ["chibi-direction-cult-initiate", "r2a-initiate-1", "initiate-a-indigo-flop"],
+  [
+    "chibi-direction-cult-idol-bearer",
+    "r2a-idol-bearer-1-clean",
+    "idol-bearer-s-one",
+  ],
+  ["chibi-direction-cult-hexer", "r2a-hexer-1-fix", "hexer-s"],
+  ["chibi-direction-cult-summoner", "r2a-summoner-1-blade", "summoner-s"],
+  [
+    "chibi-direction-cult-stargazer",
+    "r2a-stargazer-1-torch-b",
+    "stargazer-a-hood",
+  ],
+] as const;
+
+describe("the robed cultists, round 2 (pulp_wars-mch9.54)", () => {
+  it("replaced the five robed sprites in place with round 2's imported recipes", async () => {
+    const manifest = await loadBatchManifest(ROOT, BATCH);
+    const records = await loadRecords(productionLayout(ROOT, BATCH), BATCH);
+    const subjects = JSON.parse(
+      await readFile(
+        path.join(ROOT, "scripts/art/chibi/subjects/CULT.json"),
+        "utf8",
+      ),
+    ) as { subjects: Record<string, string> };
+    for (const [id, recipe, superseded] of ROUND_2_RECIPES) {
+      const asset = manifest.assets.find((entry) => entry.id === id);
+      expect(asset?.accent, id).toBe("cult-robe");
+      expect(asset?.subjectKey, id).toBe(`${asset?.subject ?? ""}/BLOOD`);
+      // The look is in the subject line: a face shows, and no tentacle,
+      // skull or glowing eye is asked for.
+      const line = subjects.subjects[asset?.subjectKey ?? ""] ?? "";
+      expect(line, id).toMatch(/face/);
+      expect(line, id).not.toMatch(/tentacle|skull|glowing eye/);
+      const record = records.assets[id];
+      expect(record?.status, id).toBe("ACCEPTED");
+      expect(record?.recipe, id).toBe(recipe);
+      expect(record?.derivation.kind, id).toBe("seated");
+      expect(record?.derivation.accent?.preset, id).toBe("cult-robe");
+      if (record !== undefined)
+        expect(await verifyAssetRecord(ROOT, manifest, record), id).toEqual([]);
+      expect(records.recipes[recipe]?.importedFrom?.exploration, id).toBe(
+        "art/explorations/cult-sprites-mch954/a-blood",
+      );
+      expect(records.recipes[superseded]?.review?.verdict, id).toBe("REJECTED");
+    }
+  });
+
+  it("wears blood red, no lodge indigo and no teal, and keeps the green small and on the faction's hue", async () => {
+    for (const [id] of ROUND_2_RECIPES) {
+      const pixels = hsvPixels(await master(id));
+      const count = (test: (p: (typeof pixels)[number]) => boolean): number =>
+        pixels.filter(test).length;
+      // Blood on a blade, a red robe, hood or stole.
+      expect(count(isRed), id).toBeGreaterThanOrEqual(30);
+      // Told from the indigo-roofed Cult buildings: no lodge indigo cloth.
+      expect(
+        count(
+          (p) =>
+            p.hue >= 212 &&
+            p.hue <= 266 &&
+            p.saturation >= 0.45 &&
+            p.value >= 0.14,
+        ) / pixels.length,
+        id,
+      ).toBeLessThanOrEqual(0.01);
+      // Teal is the summons': at most a glint (a lens, an eye).
+      expect(
+        count(
+          (p) =>
+            p.hue > 152 &&
+            p.hue <= 205 &&
+            p.saturation >= 0.35 &&
+            p.value >= 0.14,
+        ) / pixels.length,
+        id,
+      ).toBeLessThanOrEqual(0.01);
+      // A human face: skin tones.
+      expect(
+        count(
+          (p) =>
+            p.hue >= 8 &&
+            p.hue <= 40 &&
+            p.saturation >= 0.12 &&
+            p.saturation <= 0.6 &&
+            p.value >= 0.6,
+        ),
+        id,
+      ).toBeGreaterThanOrEqual(30);
+      const greens = pixels.filter(isGreen);
+      expect(greens.length / pixels.length, id).toBeLessThanOrEqual(0.02);
+      for (const green of greens) {
+        expect(green.hue, id).toBeGreaterThanOrEqual(144);
+        expect(green.hue, id).toBeLessThanOrEqual(152);
+      }
+    }
+    // The telescope has no green tufts and no green lens.
+    expect(
+      hsvPixels(await master("chibi-direction-cult-stargazer")).filter(isGreen)
+        .length,
+    ).toBeLessThanOrEqual(2);
+  });
+
+  it("pins only the green: cult-robe leaves red, purple and skin as drawn", () => {
+    const robe = ACCENT_PRESETS["cult-robe"];
+    expect("then" in robe).toBe(false);
+    const source = raster([
+      [120, 20, 30], // blood red
+      [90, 40, 120], // deep purple
+      [230, 180, 150], // skin
+      [140, 230, 40], // a lime flame
+    ]);
+    const out = accentRaster(source, robe).raster;
+    expect(pixel(out, 0)).toEqual([120, 20, 30]);
+    expect(pixel(out, 1)).toEqual([90, 40, 120]);
+    expect(pixel(out, 2)).toEqual([230, 180, 150]);
+    const flame = rgbToHsv(...pixel(out, 3));
+    expect(flame.hue).toBeGreaterThanOrEqual(144);
+    expect(flame.hue).toBeLessThanOrEqual(152);
   });
 });
 
@@ -338,8 +487,8 @@ const BATCHES = [
     56,
     80,
     "unit",
-    "cult-lodge",
-    null,
+    "cult-robe",
+    3,
   ],
   [
     "familiar",
@@ -358,8 +507,8 @@ const BATCHES = [
     56,
     80,
     "unit",
-    "cult-lodge",
-    null,
+    "cult-robe",
+    3,
   ],
   [
     "summoner",
@@ -368,8 +517,8 @@ const BATCHES = [
     56,
     80,
     "unit",
-    "cult-lodge",
-    null,
+    "cult-robe",
+    3,
   ],
   [
     "stargazer",
@@ -378,7 +527,7 @@ const BATCHES = [
     72,
     88,
     "unit",
-    "cult-lodge",
+    "cult-robe",
     6,
   ],
   // The Caller (KNIGHT) and the Chosen (SWORDSMAN) were retired by the Cult
@@ -619,13 +768,15 @@ describe("the Cultists' batches (pulp_wars-mch9.15)", () => {
     for (const [name] of BATCHES) {
       const id = `chibi-direction-cult-${name}`;
       const pixels = hsvPixels(await unitsDir(id));
-      expect(pixels.filter(isViolet).length, id).toBe(0);
       const greens = pixels.filter(isGreen);
       expect(greens.length / pixels.length, id).toBeLessThanOrEqual(0.08);
       for (const green of greens) {
         expect(green.hue, id).toBeGreaterThanOrEqual(144);
         expect(green.hue, id).toBeLessThanOrEqual(152);
       }
+      // Round 2's robed cultists wear blood red and deep purple.
+      if (ROBED_ROUND_2.includes(id)) continue;
+      expect(pixels.filter(isViolet).length, id).toBe(0);
       const red = pixels.filter(isRed).length;
       if (name.endsWith("-unbound"))
         // The Unbound cue: the eyes are red (CULT.md, "Red means broken").
@@ -642,22 +793,6 @@ describe("the Cultists' batches (pulp_wars-mch9.15)", () => {
       frog.filter((p) => p.hue > 152 && p.hue <= 205 && p.saturation >= 0.35)
         .length / frog.length,
     ).toBeGreaterThan(0.2);
-    // The robed units of the batches wear the lodge's indigo.
-    for (const name of ["idol-bearer", "hexer", "summoner"]) {
-      const id = `chibi-direction-cult-${name}`;
-      const cloth = hsvPixels(await unitsDir(id)).filter(
-        (p) =>
-          p.hue >= 212 &&
-          p.hue <= 266 &&
-          p.saturation >= 0.45 &&
-          p.value >= 0.14,
-      );
-      expect(cloth.length, id).toBeGreaterThan(400);
-      for (const p of cloth) {
-        expect(p.hue, id).toBeGreaterThanOrEqual(236);
-        expect(p.hue, id).toBeLessThanOrEqual(250);
-      }
-    }
   });
 
   it("makes the four ships as edits of the shared fleet in batch naval-cult", async () => {

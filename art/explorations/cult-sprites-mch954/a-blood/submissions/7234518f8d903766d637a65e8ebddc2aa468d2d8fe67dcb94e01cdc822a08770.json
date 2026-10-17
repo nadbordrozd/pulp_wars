@@ -1,0 +1,36 @@
+{
+  "id": "r2a-summoner-1-face",
+  "jobId": "cf9e20d2-1dd4-42e6-adf8-500e6d20c84f",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "cult-sprites-mch954-a-blood",
+    "asset": "chibi-explore-cult2-a-summoner",
+    "subject": "UNIT:CULT:CAPTAIN",
+    "faction": "TEST-CULT-BLOOD",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 95433,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the face: it becomes a living gaunt old man's face with pale grey-white skin, dark veins round the eyes, one dark eye and one milky white eye, a nose and a thin cruel mouth, clearly human and not a skull. Do not redraw anything else: keep the tall red cowl, the black, red and gold robe, the bloody steel dagger, the chain, the thick black outline and the art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only the face: it becomes a living gaunt old man's face with pale grey-white skin, dark veins round the eyes, one dark eye and one milky white eye, a nose and a thin cruel mouth, clearly human and not a skull. Do not redraw anything else: keep the tall red cowl, the black, red and gold robe, the bloody steel dagger, the chain, the thick black outline and the art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only the face: it becomes a living gaunt old man's face with pale grey-white skin, dark veins round the eyes, one dark eye and one milky white eye, a nose and a thin cruel mouth, clearly human and not a skull. Do not redraw anything else: keep the tall red cowl, the black, red and gold robe, the bloody steel dagger, the chain, the thick black outline and the art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only the face: it becomes a living gaunt old man's face with pale grey-white skin, dark veins round the eyes, one dark eye and one milky white eye, a nose and a thin cruel mouth, clearly human and not a skull. Do not redraw anything else: keep the tall red cowl, the black, red and gold robe, the bloody steel dagger, the chain, the thick black outline and the art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "r2a-summoner-1-blade",
+      "candidate": 0,
+      "sha256": "8532f62602d2e55cba51adf721ef848e1e6f76e9323e187f7db840f787f730f1"
+    }
+  }
+}

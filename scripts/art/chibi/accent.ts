@@ -320,6 +320,43 @@ export const ACCENT_PRESETS = {
     },
   },
   /**
+   * The robed cultists of round 2 (bead pulp_wars-mch9.54, CULT.md, "The
+   * robed cultists"): ordinary people in blood-red, black and deep purple
+   * robes with bloody daggers. Only the green band of `cult-green`: the
+   * candle flames and the small spark of a curse are pinned to the faction
+   * green, and nothing else is touched, so the red cloth and the blood, the
+   * purple trim, the skin and the gold stay as drawn (the lodge's indigo
+   * band of `cult-lodge` would have moved a purple trim to indigo).
+   */
+  "cult-robe": {
+    band: {
+      hueFrom: 80,
+      hueTo: 152,
+      saturationMin: 0.5,
+      valueMin: 0.45,
+      hueCentre: 120,
+    },
+    hue: 148,
+    hueSpread: 0.07,
+  },
+  /**
+   * The robed cultists' busts (bead pulp_wars-mch9.54): `cult-robe` with the
+   * wider green band of `cult-lodge-icon` (from hue 66: a 48 px flame drawn
+   * yellow-green), and none of its cloth, purple or red bands, so a bust
+   * keeps its blood red and its purple as the map sprite does.
+   */
+  "cult-robe-icon": {
+    band: {
+      hueFrom: 66,
+      hueTo: 152,
+      saturationMin: 0.5,
+      valueMin: 0.45,
+      hueCentre: 120,
+    },
+    hue: 148,
+    hueSpread: 0.07,
+  },
+  /**
    * The lodge's interface art (bead pulp_wars-mch9.23: busts, icons, ship
    * portraits). `cult-lodge` with three changes an item sprite needs, where
    * a 48 px creation drifts further than a unit and no edit is spent on a

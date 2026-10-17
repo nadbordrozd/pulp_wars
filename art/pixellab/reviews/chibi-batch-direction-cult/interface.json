@@ -3,9 +3,9 @@
   "note": "The Cult's interface art: every accepted portrait, icon and effect with its accepted recipe, sprite box and colour shares (percent of opaque pixels). Red is the cue of an Unbound daemon and belongs only to the Furious chip. `calls` counts the recorded PixelLab jobs of each batch (one job per recipe).",
   "calls": {
     "interface-cult": {
-      "recipes": 83,
-      "creations": 61,
-      "edits": 22
+      "recipes": 89,
+      "creations": 66,
+      "edits": 23
     },
     "effects-cult": {
       "recipes": 26,
@@ -13,9 +13,9 @@
       "edits": 8
     },
     "naval-cult (portraits)": {
-      "recipes": 3,
+      "recipes": 4,
       "creations": 0,
-      "edits": 3
+      "edits": 4
     }
   },
   "portraits": [
@@ -23,26 +23,26 @@
       "asset": "chibi-direction-portrait-cult-initiate",
       "subject": "PORTRAIT:CULT:FIGHTER",
       "batch": "interface-cult",
-      "recipe": "portrait-initiate-b-eyes",
+      "recipe": "r2a-portrait-initiate-1",
       "canvas": "48 x 48",
-      "sprite": "43 x 42",
-      "greenPercent": 0.9,
-      "indigoPercent": 42.1,
-      "tealPercent": 0,
-      "redPercent": 0,
-      "violetPercent": 0
+      "sprite": "41 x 48",
+      "greenPercent": 0.7,
+      "indigoPercent": 0,
+      "tealPercent": 0.2,
+      "redPercent": 21,
+      "violetPercent": 20.9
     },
     {
       "asset": "chibi-direction-portrait-cult-idol-bearer",
       "subject": "PORTRAIT:CULT:GUARD",
       "batch": "interface-cult",
-      "recipe": "portrait-idol-bearer-s",
+      "recipe": "r2a-portrait-idol-bearer-2-idol",
       "canvas": "48 x 48",
-      "sprite": "34 x 42",
-      "greenPercent": 0.2,
-      "indigoPercent": 36.1,
+      "sprite": "44 x 43",
+      "greenPercent": 0.1,
+      "indigoPercent": 0,
       "tealPercent": 0,
-      "redPercent": 0,
+      "redPercent": 9.8,
       "violetPercent": 0
     },
     {
@@ -62,66 +62,40 @@
       "asset": "chibi-direction-portrait-cult-hexer",
       "subject": "PORTRAIT:CULT:MARKSMAN",
       "batch": "interface-cult",
-      "recipe": "portrait-hexer-s",
+      "recipe": "r2a-portrait-hexer-1",
       "canvas": "48 x 48",
-      "sprite": "43 x 42",
-      "greenPercent": 0.3,
-      "indigoPercent": 36.3,
+      "sprite": "40 x 42",
+      "greenPercent": 0.9,
+      "indigoPercent": 0,
       "tealPercent": 0,
-      "redPercent": 0,
-      "violetPercent": 0
+      "redPercent": 6.2,
+      "violetPercent": 21.3
     },
     {
       "asset": "chibi-direction-portrait-cult-summoner",
       "subject": "PORTRAIT:CULT:CAPTAIN",
       "batch": "interface-cult",
-      "recipe": "portrait-summoner-s",
+      "recipe": "r2a-portrait-summoner-2",
       "canvas": "48 x 48",
-      "sprite": "34 x 44",
+      "sprite": "44 x 42",
       "greenPercent": 0,
-      "indigoPercent": 43.8,
-      "tealPercent": 0,
-      "redPercent": 0,
-      "violetPercent": 0
+      "indigoPercent": 0,
+      "tealPercent": 0.7,
+      "redPercent": 28.9,
+      "violetPercent": 0.7
     },
     {
       "asset": "chibi-direction-portrait-cult-stargazer",
       "subject": "PORTRAIT:CULT:CATAPULT",
       "batch": "interface-cult",
-      "recipe": "portrait-stargazer-s",
+      "recipe": "r2a-portrait-stargazer-1",
       "canvas": "48 x 48",
-      "sprite": "45 x 42",
+      "sprite": "46 x 42",
       "greenPercent": 0,
-      "indigoPercent": 40.8,
-      "tealPercent": 0,
-      "redPercent": 0,
-      "violetPercent": 0
-    },
-    {
-      "asset": "chibi-direction-portrait-cult-caller",
-      "subject": "PORTRAIT:CULT:KNIGHT",
-      "batch": "interface-cult",
-      "recipe": "portrait-caller-s-helmet",
-      "canvas": "48 x 48",
-      "sprite": "38 x 38",
-      "greenPercent": 6.4,
-      "indigoPercent": 9.9,
-      "tealPercent": 0,
-      "redPercent": 0,
-      "violetPercent": 0
-    },
-    {
-      "asset": "chibi-direction-portrait-cult-chosen",
-      "subject": "PORTRAIT:CULT:SWORDSMAN",
-      "batch": "interface-cult",
-      "recipe": "portrait-chosen-s",
-      "canvas": "48 x 48",
-      "sprite": "42 x 43",
-      "greenPercent": 0,
-      "indigoPercent": 44.6,
-      "tealPercent": 0,
-      "redPercent": 0,
-      "violetPercent": 0
+      "indigoPercent": 0,
+      "tealPercent": 0.4,
+      "redPercent": 21.4,
+      "violetPercent": 9
     },
     {
       "asset": "chibi-direction-portrait-cult-thing",
@@ -218,11 +192,11 @@
       "asset": "chibi-naval-cult-portrait-submarine",
       "subject": "PORTRAIT:CULT:SUBMARINE",
       "batch": "naval-cult",
-      "recipe": "cult-portrait-submarine-a",
+      "recipe": "portrait-kraken-a",
       "canvas": "48 x 48",
-      "sprite": "41 x 35",
-      "greenPercent": 5.2,
-      "indigoPercent": 5,
+      "sprite": "40 x 35",
+      "greenPercent": 1.3,
+      "indigoPercent": 60.1,
       "tealPercent": 0,
       "redPercent": 0,
       "violetPercent": 0
@@ -329,32 +303,6 @@
       "sprite": "15 x 44",
       "greenPercent": 27.7,
       "indigoPercent": 7.7,
-      "tealPercent": 0,
-      "redPercent": 0,
-      "violetPercent": 0
-    },
-    {
-      "asset": "chibi-direction-icon-cult-action-behold",
-      "subject": "ICON:ACTION:BEHOLD",
-      "batch": "interface-cult",
-      "recipe": "icon-behold-a",
-      "canvas": "48 x 48",
-      "sprite": "34 x 36",
-      "greenPercent": 2.1,
-      "indigoPercent": 13.7,
-      "tealPercent": 0,
-      "redPercent": 0,
-      "violetPercent": 0
-    },
-    {
-      "asset": "chibi-direction-icon-cult-action-pick-me",
-      "subject": "ICON:ACTION:PICK_ME",
-      "batch": "interface-cult",
-      "recipe": "icon-pick-me-d",
-      "canvas": "48 x 48",
-      "sprite": "46 x 46",
-      "greenPercent": 0,
-      "indigoPercent": 9.2,
       "tealPercent": 0,
       "redPercent": 0,
       "violetPercent": 0
@@ -472,19 +420,6 @@
       "sprite": "31 x 31",
       "greenPercent": 0,
       "indigoPercent": 20.1,
-      "tealPercent": 0,
-      "redPercent": 0,
-      "violetPercent": 0
-    },
-    {
-      "asset": "chibi-direction-icon-cult-action-martyr",
-      "subject": "ICON:ACTION:MARTYR",
-      "batch": "interface-cult",
-      "recipe": "icon-martyr-a",
-      "canvas": "48 x 48",
-      "sprite": "34 x 34",
-      "greenPercent": 3.2,
-      "indigoPercent": 9.4,
       "tealPercent": 0,
       "redPercent": 0,
       "violetPercent": 0
@@ -628,19 +563,6 @@
       "sprite": "38 x 40",
       "greenPercent": 4.3,
       "indigoPercent": 23.4,
-      "tealPercent": 0,
-      "redPercent": 0,
-      "violetPercent": 0
-    },
-    {
-      "asset": "chibi-direction-icon-cult-status-pick-me",
-      "subject": "ICON:STATUS:PICK_ME",
-      "batch": "interface-cult",
-      "recipe": "icon-pick-me-status-t",
-      "canvas": "48 x 48",
-      "sprite": "32 x 34",
-      "greenPercent": 0,
-      "indigoPercent": 16.1,
       "tealPercent": 0,
       "redPercent": 0,
       "violetPercent": 0

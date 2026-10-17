@@ -9,17 +9,17 @@
         "herald"
       ],
       "target": "#4a43b5",
-      "mean": "#4d49ab",
-      "hue": 243,
-      "lightness": 36.5,
-      "fromTarget": 9.9,
+      "mean": "#4c49a3",
+      "hue": 242,
+      "lightness": 35.8,
+      "fromTarget": 14.6,
       "tones": [
         "#5452ab",
         "#443d98",
-        "#4a49b8",
-        "#3f439f"
+        "#3f439f",
+        "#413b93"
       ],
-      "share": 51.7
+      "share": 32.4
     },
     {
       "role": "Indigo cloth, shade",
@@ -28,15 +28,14 @@
         "herald"
       ],
       "target": "#372f8f",
-      "mean": "#3c378a",
-      "hue": 244,
-      "lightness": 28.3,
-      "fromTarget": 8.9,
+      "mean": "#1e1a26",
+      "hue": 260,
+      "lightness": 10.2,
+      "fromTarget": 54.9,
       "tones": [
-        "#3d388c",
-        "#373380"
+        "#1e1a26"
       ],
-      "share": 0.7
+      "share": 2
     },
     {
       "role": "Wax and parchment",
@@ -46,17 +45,17 @@
         "herald"
       ],
       "target": "#f3e7c4",
-      "mean": "#eee5b0",
-      "hue": 52,
-      "lightness": 90.6,
-      "fromTarget": 9.5,
+      "mean": "#f4e9ab",
+      "hue": 51,
+      "lightness": 91.9,
+      "fromTarget": 13.4,
       "tones": [
         "#fceba0",
         "#f8f0b1",
         "#ddc893",
-        "#f6fed6"
+        "#ffffc5"
       ],
-      "share": 4.6
+      "share": 3.3
     },
     {
       "role": "Brass",
@@ -66,15 +65,15 @@
         "herald"
       ],
       "target": "#c9a24a",
-      "mean": "#af792c",
+      "mean": "#b07523",
       "hue": 35,
-      "lightness": 55.1,
-      "fromTarget": 16.4,
+      "lightness": 54.1,
+      "fromTarget": 18.7,
       "tones": [
-        "#d9bb7f",
         "#caa472",
         "#b56e22",
-        "#80460a"
+        "#80460a",
+        "#91520f"
       ],
       "share": 7.9
     },
@@ -84,15 +83,16 @@
         "initiate"
       ],
       "target": "#00ff78",
-      "mean": "#63e89f",
-      "hue": 147,
-      "lightness": 83.2,
-      "fromTarget": 36.1,
+      "mean": "#47df8d",
+      "hue": 148,
+      "lightness": 79.5,
+      "fromTarget": 30.6,
       "tones": [
-        "#65eaa1",
-        "#3cc078"
+        "#4bec95",
+        "#44cf84",
+        "#2e8556"
       ],
-      "share": 0.7
+      "share": 1.1
     },
     {
       "role": "Deep-sea teal",

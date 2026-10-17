@@ -19,16 +19,16 @@
       "rival": "Necromancer",
       "gated": true,
       "measure": {
-        "palette": 25.7,
-        "deuteranopia": 17.2,
-        "protanopia": 18.1,
-        "greyPalette": 3.6,
-        "lightness": 13.7,
+        "palette": 28,
+        "deuteranopia": 16.8,
+        "protanopia": 15.7,
+        "greyPalette": 2.2,
+        "lightness": 7.1,
         "meanLightness": [
-          33.3,
+          26.5,
           28.2
         ],
-        "silhouette": 0.59,
+        "silhouette": 0.66,
         "distinct": true,
         "reasons": []
       }
@@ -38,16 +38,16 @@
       "rival": "Ice Witch",
       "gated": true,
       "measure": {
-        "palette": 22.8,
-        "deuteranopia": 17.1,
-        "protanopia": 18,
-        "greyPalette": 3.9,
-        "lightness": 16,
+        "palette": 22.4,
+        "deuteranopia": 18.2,
+        "protanopia": 16.4,
+        "greyPalette": 2.4,
+        "lightness": 21.8,
         "meanLightness": [
-          33.3,
+          26.5,
           48.7
         ],
-        "silhouette": 0.52,
+        "silhouette": 0.57,
         "distinct": true,
         "reasons": []
       }
@@ -57,18 +57,20 @@
       "rival": "Human Fighter",
       "gated": true,
       "measure": {
-        "palette": 39.1,
-        "deuteranopia": 33,
-        "protanopia": 32.7,
-        "greyPalette": 3.1,
-        "lightness": 11.6,
+        "palette": 14.9,
+        "deuteranopia": 11.1,
+        "protanopia": 10.4,
+        "greyPalette": 2.8,
+        "lightness": 17.6,
         "meanLightness": [
-          33.3,
+          26.5,
           45.2
         ],
-        "silhouette": 0.65,
-        "distinct": true,
-        "reasons": []
+        "silhouette": 0.62,
+        "distinct": false,
+        "reasons": [
+          "colour too close"
+        ]
       }
     },
     {
@@ -76,16 +78,16 @@
       "rival": "Grunt",
       "gated": true,
       "measure": {
-        "palette": 29.3,
-        "deuteranopia": 29.2,
-        "protanopia": 25.2,
-        "greyPalette": 3.3,
-        "lightness": 14.3,
+        "palette": 26.2,
+        "deuteranopia": 21.8,
+        "protanopia": 17.9,
+        "greyPalette": 1.5,
+        "lightness": 19.6,
         "meanLightness": [
-          33.3,
+          26.5,
           45.8
         ],
-        "silhouette": 0.66,
+        "silhouette": 0.54,
         "distinct": true,
         "reasons": []
       }
@@ -95,18 +97,20 @@
       "rival": "Lich",
       "gated": false,
       "measure": {
-        "palette": 26.5,
-        "deuteranopia": 15.2,
-        "protanopia": 17.1,
-        "greyPalette": 3.6,
-        "lightness": 12.1,
+        "palette": 22.3,
+        "deuteranopia": 11.3,
+        "protanopia": 12.4,
+        "greyPalette": 1.8,
+        "lightness": 6.7,
         "meanLightness": [
-          33.3,
+          26.5,
           29.3
         ],
-        "silhouette": 0.61,
-        "distinct": true,
-        "reasons": []
+        "silhouette": 0.54,
+        "distinct": false,
+        "reasons": [
+          "colour too close"
+        ]
       }
     },
     {
@@ -114,16 +118,16 @@
       "rival": "Banshee",
       "gated": false,
       "measure": {
-        "palette": 23.4,
-        "deuteranopia": 14.3,
-        "protanopia": 16.2,
-        "greyPalette": 2.2,
-        "lightness": 19.6,
+        "palette": 25.7,
+        "deuteranopia": 15.5,
+        "protanopia": 13.2,
+        "greyPalette": 2.9,
+        "lightness": 24.8,
         "meanLightness": [
-          33.3,
+          26.5,
           51.5
         ],
-        "silhouette": 0.67,
+        "silhouette": 0.52,
         "distinct": true,
         "reasons": []
       }
@@ -133,18 +137,20 @@
       "rival": "Shaman",
       "gated": false,
       "measure": {
-        "palette": 33.2,
-        "deuteranopia": 31.1,
-        "protanopia": 29.2,
-        "greyPalette": 4.9,
+        "palette": 16.7,
+        "deuteranopia": 7.2,
+        "protanopia": 8.9,
+        "greyPalette": 1.8,
         "lightness": 11.2,
         "meanLightness": [
-          33.3,
+          26.5,
           37.2
         ],
-        "silhouette": 0.72,
-        "distinct": true,
-        "reasons": []
+        "silhouette": 0.67,
+        "distinct": false,
+        "reasons": [
+          "colour too close"
+        ]
       }
     },
     {

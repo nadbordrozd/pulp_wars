@@ -1,0 +1,64 @@
+{
+  "id": "r2a-portrait-summoner-1",
+  "jobId": "sync-d4ec2a94-6fc8-4ce7-b316-8b609f8c23a4",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "cult-sprites-mch954-a-blood",
+    "asset": "chibi-explore-cult2-a-portrait-summoner",
+    "subject": "PORTRAIT:CULT:CAPTAIN",
+    "faction": "TEST-CULT-BLOOD",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 95631,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "side",
+      "direction": "south-east"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-portrait.txt",
+        "text": "Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image."
+      },
+      {
+        "layer": "faction",
+        "source": "art/explorations/cult-sprites-mch954/a-blood/faction.md#prompt-fragment + art/explorations/cult-sprites-mch954/a-blood/faction.md#negative-fragment",
+        "text": "Faction: a pulp-magazine secret society of the 1920s, sinister, grim and evil, not cute. Their colours: ceremonial cloth of deep blood red and black, embroidered with tarnished gold occult sigils; dull brass; pale cream candle wax and parchment; bright red fresh blood on blades; and one small accent, a glowing spring green, only as candle flames and sparks.",
+        "negative": "cute, friendly smile, tentacles, tentacle hands, skull face, skull mask, skeleton, glowing eyes, empty black face, monster face, teal, cyan, blue cloth, indigo cloth, gore, guts, slime, magenta, pink, orange flames, yellow flames, blue flames, steel armour, chrome, gold armour, sword, gun, staff, pentagram, cross, large glowing area"
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-portrait.txt + scripts/art/chibi/fragments/class-portrait.negative.txt",
+        "text": "Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels.",
+        "negative": "full body, legs, feet, standing figure, pedestal, base, plinth, frame, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, text"
+      },
+      {
+        "layer": "subject",
+        "source": "art/explorations/cult-sprites-mch954/a-blood/subjects.json",
+        "text": "Subject: Summoner portrait, head and shoulders of the gaunt high priest of an evil secret society: a very tall pointed blood-red cowl with gold trim reaching the top of the image, his living face pallid grey-white with dark veins round the eyes, one dark eye and one milky white eye, a nose and a thin cruel mouth, a black and gold collar, and a ritual dagger with bright red blood on its steel blade held up beside his face; simple shapes and very few details."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "A close-up bust: the head and shoulders fill the whole square; no legs. A human face with skin, eyes, nose and mouth.",
+        "negative": "full body, legs, feet, skull face, skeleton, tentacles, glowing eyes, empty hood, blue robe"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: a pulp-magazine secret society of the 1920s, sinister, grim and evil, not cute. Their colours: ceremonial cloth of deep blood red and black, embroidered with tarnished gold occult sigils; dull brass; pale cream candle wax and parchment; bright red fresh blood on blades; and one small accent, a glowing spring green, only as candle flames and sparks. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Subject: Summoner portrait, head and shoulders of the gaunt high priest of an evil secret society: a very tall pointed blood-red cowl with gold trim reaching the top of the image, his living face pallid grey-white with dark veins round the eyes, one dark eye and one milky white eye, a nose and a thin cruel mouth, a black and gold collar, and a ritual dagger with bright red blood on its steel blade held up beside his face; simple shapes and very few details. A close-up bust: the head and shoulders fill the whole square; no legs. A human face with skin, eyes, nose and mouth.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, cute, friendly smile, tentacles, tentacle hands, skull face, skull mask, skeleton, glowing eyes, empty black face, monster face, teal, cyan, blue cloth, indigo cloth, gore, guts, slime, magenta, pink, orange flames, yellow flames, blue flames, steel armour, chrome, gold armour, sword, gun, staff, pentagram, cross, large glowing area, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, empty hood, blue robe",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: a pulp-magazine secret society of the 1920s, sinister, grim and evil, not cute. Their colours: ceremonial cloth of deep blood red and black, embroidered with tarnished gold occult sigils; dull brass; pale cream candle wax and parchment; bright red fresh blood on blades; and one small accent, a glowing spring green, only as candle flames and sparks. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Subject: Summoner portrait, head and shoulders of the gaunt high priest of an evil secret society: a very tall pointed blood-red cowl with gold trim reaching the top of the image, his living face pallid grey-white with dark veins round the eyes, one dark eye and one milky white eye, a nose and a thin cruel mouth, a black and gold collar, and a ritual dagger with bright red blood on its steel blade held up beside his face; simple shapes and very few details. A close-up bust: the head and shoulders fill the whole square; no legs. A human face with skin, eyes, nose and mouth. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, cute, friendly smile, tentacles, tentacle hands, skull face, skull mask, skeleton, glowing eyes, empty black face, monster face, teal, cyan, blue cloth, indigo cloth, gore, guts, slime, magenta, pink, orange flames, yellow flames, blue flames, steel armour, chrome, gold armour, sword, gun, staff, pentagram, cross, large glowing area, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, empty hood, blue robe."
+  }
+}

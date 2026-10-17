@@ -1,0 +1,64 @@
+{
+  "id": "r2b-idol-bearer-2",
+  "jobId": "sync-25bef005-1cd1-4402-8516-8fdf8782d560",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "cult-sprites-mch954-b-black",
+    "asset": "chibi-explore-cult2-b-idol-bearer",
+    "subject": "UNIT:CULT:GUARD",
+    "faction": "TEST-CULT-BLACK",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 95513,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "low top-down",
+      "direction": "south-east"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+        "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+      },
+      {
+        "layer": "faction",
+        "source": "art/explorations/cult-sprites-mch954/b-black/faction.md#prompt-fragment + art/explorations/cult-sprites-mch954/b-black/faction.md#negative-fragment",
+        "text": "Faction: a pulp-magazine secret society of the 1920s, sinister, grim and evil, not cute. Their colours: ceremonial cloth of black and charcoal with deep blood-red linings, sashes and trim, embroidered with tarnished gold occult sigils; dull brass; pale cream candle wax and parchment; bright red fresh blood on blades; and one small accent, a glowing spring green, only as candle flames and sparks.",
+        "negative": "cute, friendly smile, tentacles, tentacle hands, skull face, skull mask, skeleton, glowing eyes, empty black face, monster face, teal, cyan, blue cloth, indigo cloth, gore, guts, slime, magenta, pink, orange flames, yellow flames, blue flames, steel armour, chrome, gold armour, sword, gun, staff, pentagram, cross, large glowing area"
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+        "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+        "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+      },
+      {
+        "layer": "subject",
+        "source": "art/explorations/cult-sprites-mch954/b-black/subjects.json",
+        "text": "Subject: Idol Bearer, a chunky stout broad-shouldered bald man with a heavy grim scowling face, the widest and squarest figure: a long black robe with heavy iron chains crossed over the chest and a blood-red sash; both arms are raised and hold over his head one squat pale grey stone idol head as big as his own head, with a wide evil toothy grin and two small green eyes; simple shapes and very few details."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "The figure is drawn large: about 44 pixels wide and 70 pixels tall. The idol is carved dull grey stone, a stone god's face with a broad flat nose, thick lips and a wide grin of square teeth, clearly carved stone and never a skull.",
+        "negative": "staff, sword, skull, white skull, tentacle, glowing eyes, empty hood, blue robe, two idols"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: a pulp-magazine secret society of the 1920s, sinister, grim and evil, not cute. Their colours: ceremonial cloth of black and charcoal with deep blood-red linings, sashes and trim, embroidered with tarnished gold occult sigils; dull brass; pale cream candle wax and parchment; bright red fresh blood on blades; and one small accent, a glowing spring green, only as candle flames and sparks. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: Idol Bearer, a chunky stout broad-shouldered bald man with a heavy grim scowling face, the widest and squarest figure: a long black robe with heavy iron chains crossed over the chest and a blood-red sash; both arms are raised and hold over his head one squat pale grey stone idol head as big as his own head, with a wide evil toothy grin and two small green eyes; simple shapes and very few details. The figure is drawn large: about 44 pixels wide and 70 pixels tall. The idol is carved dull grey stone, a stone god's face with a broad flat nose, thick lips and a wide grin of square teeth, clearly carved stone and never a skull.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, cute, friendly smile, tentacles, tentacle hands, skull face, skull mask, skeleton, glowing eyes, empty black face, monster face, teal, cyan, blue cloth, indigo cloth, gore, guts, slime, magenta, pink, orange flames, yellow flames, blue flames, steel armour, chrome, gold armour, sword, gun, staff, pentagram, cross, large glowing area, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, skull, white skull, tentacle, empty hood, blue robe, two idols",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: a pulp-magazine secret society of the 1920s, sinister, grim and evil, not cute. Their colours: ceremonial cloth of black and charcoal with deep blood-red linings, sashes and trim, embroidered with tarnished gold occult sigils; dull brass; pale cream candle wax and parchment; bright red fresh blood on blades; and one small accent, a glowing spring green, only as candle flames and sparks. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: Idol Bearer, a chunky stout broad-shouldered bald man with a heavy grim scowling face, the widest and squarest figure: a long black robe with heavy iron chains crossed over the chest and a blood-red sash; both arms are raised and hold over his head one squat pale grey stone idol head as big as his own head, with a wide evil toothy grin and two small green eyes; simple shapes and very few details. The figure is drawn large: about 44 pixels wide and 70 pixels tall. The idol is carved dull grey stone, a stone god's face with a broad flat nose, thick lips and a wide grin of square teeth, clearly carved stone and never a skull. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, cute, friendly smile, tentacles, tentacle hands, skull face, skull mask, skeleton, glowing eyes, empty black face, monster face, teal, cyan, blue cloth, indigo cloth, gore, guts, slime, magenta, pink, orange flames, yellow flames, blue flames, steel armour, chrome, gold armour, sword, gun, staff, pentagram, cross, large glowing area, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, skull, white skull, tentacle, empty hood, blue robe, two idols."
+  }
+}

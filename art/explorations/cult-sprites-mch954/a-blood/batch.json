@@ -1,0 +1,416 @@
+{
+  "schemaVersion": 1,
+  "batch": "cult-sprites-mch954-a-blood",
+  "title": "Robed cultists, round 2, variant A: ordinary people in blood-red livery with bloody daggers (exploration, never registered)",
+  "bead": "pulp_wars-mch9.54",
+  "faction": "TEST-CULT-BLOOD",
+  "dryRun": false,
+  "fixedFactionColours": true,
+  "assets": [
+    {
+      "id": "chibi-explore-cult2-a-initiate",
+      "subject": "UNIT:CULT:FIGHTER",
+      "subjectKey": "UNIT:CULT:FIGHTER/BLOOD",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false,
+      "accent": "cult-robe",
+      "bottomMargin": 3
+    },
+    {
+      "id": "chibi-explore-cult2-a-idol-bearer",
+      "subject": "UNIT:CULT:GUARD",
+      "subjectKey": "UNIT:CULT:GUARD/BLOOD",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false,
+      "accent": "cult-robe",
+      "bottomMargin": 3
+    },
+    {
+      "id": "chibi-explore-cult2-a-hexer",
+      "subject": "UNIT:CULT:MARKSMAN",
+      "subjectKey": "UNIT:CULT:MARKSMAN/BLOOD",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false,
+      "accent": "cult-robe",
+      "bottomMargin": 3
+    },
+    {
+      "id": "chibi-explore-cult2-a-summoner",
+      "subject": "UNIT:CULT:CAPTAIN",
+      "subjectKey": "UNIT:CULT:CAPTAIN/BLOOD",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false,
+      "accent": "cult-robe",
+      "bottomMargin": 3
+    },
+    {
+      "id": "chibi-explore-cult2-a-stargazer",
+      "subject": "UNIT:CULT:CATAPULT",
+      "subjectKey": "UNIT:CULT:CATAPULT/BLOOD",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "ownerColour": false,
+      "accent": "cult-robe",
+      "bottomMargin": 6
+    },
+    {
+      "id": "chibi-explore-cult2-a-portrait-initiate",
+      "subject": "PORTRAIT:CULT:FIGHTER",
+      "subjectKey": "PORTRAIT:CULT:FIGHTER/BLOOD",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "cult-robe-icon"
+    },
+    {
+      "id": "chibi-explore-cult2-a-portrait-idol-bearer",
+      "subject": "PORTRAIT:CULT:GUARD",
+      "subjectKey": "PORTRAIT:CULT:GUARD/BLOOD",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "cult-robe-icon"
+    },
+    {
+      "id": "chibi-explore-cult2-a-portrait-hexer",
+      "subject": "PORTRAIT:CULT:MARKSMAN",
+      "subjectKey": "PORTRAIT:CULT:MARKSMAN/BLOOD",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "cult-robe-icon"
+    },
+    {
+      "id": "chibi-explore-cult2-a-portrait-summoner",
+      "subject": "PORTRAIT:CULT:CAPTAIN",
+      "subjectKey": "PORTRAIT:CULT:CAPTAIN/BLOOD",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "cult-robe-icon"
+    },
+    {
+      "id": "chibi-explore-cult2-a-portrait-stargazer",
+      "subject": "PORTRAIT:CULT:CATAPULT",
+      "subjectKey": "PORTRAIT:CULT:CATAPULT/BLOOD",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "cult-robe-icon"
+    }
+  ],
+  "recipes": [
+    {
+      "id": "r2a-initiate-1",
+      "asset": "chibi-explore-cult2-a-initiate",
+      "endpoint": "create-image-pixen",
+      "seed": 95401,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "The figure is drawn large: about 44 pixels wide and 70 pixels tall. A human face with skin, eyes, nose and mouth shows under the hood.",
+      "negativeAddendum": "staff, wand, sword, skull, beard, tentacle, glowing eyes, empty hood, blue robe",
+      "notes": "Variant A, the Initiate: a fresh creation with the unit class."
+    },
+    {
+      "id": "r2a-idol-bearer-1",
+      "asset": "chibi-explore-cult2-a-idol-bearer",
+      "endpoint": "create-image-pixen",
+      "seed": 95411,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "The figure is drawn large: about 44 pixels wide and 70 pixels tall. A human face with skin, eyes, nose and mouth shows under the hood.",
+      "negativeAddendum": "staff, sword, skull, tentacle, glowing eyes, empty hood, blue robe, two idols",
+      "notes": "Variant A, the Idol Bearer: a fresh creation with the unit class."
+    },
+    {
+      "id": "r2a-hexer-1",
+      "asset": "chibi-explore-cult2-a-hexer",
+      "endpoint": "create-image-pixen",
+      "seed": 95421,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "The figure is drawn large: about 44 pixels wide and 70 pixels tall. A human face with skin, eyes, nose and mouth shows under the hood.",
+      "negativeAddendum": "staff, wand, sword, skull, tentacle, glowing eyes, empty hood, blue robe, witch hat",
+      "notes": "Variant A, the Hexer: a fresh creation with the unit class."
+    },
+    {
+      "id": "r2a-summoner-1",
+      "asset": "chibi-explore-cult2-a-summoner",
+      "endpoint": "create-image-pixen",
+      "seed": 95431,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "The figure is drawn large: about 44 pixels wide and 70 pixels tall. A human face with skin, eyes, nose and mouth shows under the hood.",
+      "negativeAddendum": "staff, sword, skull, tentacle, tentacles, glowing eyes, empty hood, blue robe, beard",
+      "notes": "Variant A, the Summoner: a fresh creation with the unit class."
+    },
+    {
+      "id": "r2a-stargazer-1",
+      "asset": "chibi-explore-cult2-a-stargazer",
+      "endpoint": "create-image-pixen",
+      "seed": 95441,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The group is drawn large: about 64 pixels wide and 74 pixels tall. The telescope is polished yellow brass and is the biggest thing in the image. The old man's human face with skin shows.",
+      "negativeAddendum": "staff, weapon, cannon, gun, wheels, skull, tentacle, glowing eyes, glowing lens, green, blue robe, beard",
+      "notes": "Variant A, the Stargazer: a fresh creation with the unit class."
+    },
+    {
+      "id": "r2a-idol-bearer-1-clean",
+      "asset": "chibi-explore-cult2-a-idol-bearer",
+      "endpoint": "edit-image-pixen",
+      "seed": 95412,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "r2a-idol-bearer-1",
+        "candidate": 0
+      },
+      "editInstruction": "Change only one thing: erase the green flame and the small dark box at the top right of the stone idol head, leaving that area transparent. Do not redraw anything else: keep the grey stone idol with its toothy grin and green eyes, the bald man under it, his black robe with the red and gold stole, the thick black outline and the art style exactly the same, on a transparent background.",
+      "notes": "r2a-idol-bearer-1 is the right man and idol, but a stray green flame and a dark box sit on the idol's top right."
+    },
+    {
+      "id": "r2a-summoner-1-blade",
+      "asset": "chibi-explore-cult2-a-summoner",
+      "endpoint": "edit-image-pixen",
+      "seed": 95432,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "r2a-summoner-1",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the dagger: the cyan glints at its hilt become dull gold, colour #c9a24a, and the blade becomes pale steel grey, colour #c8c8d0, with bright red blood, colour #d01818, running down it. Do not redraw anything else: keep the tall red cowl, the pale grey face, the red, black and gold robe, the chain, the thick black outline and the art style exactly the same, on a transparent background.",
+      "notes": "r2a-summoner-1 is the high priest of the direction, but the dagger's hilt glints cyan (teal is the summons') and the blade is solid red, not a bloody steel blade."
+    },
+    {
+      "id": "r2a-hexer-1-fix",
+      "asset": "chibi-explore-cult2-a-hexer",
+      "endpoint": "edit-image-pixen",
+      "seed": 95422,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "r2a-hexer-1",
+        "candidate": 0
+      },
+      "editInstruction": "Change only two things: erase the tall sword standing at the left, leaving that area transparent; and her face gets narrowed cruel eyes and a thin smug sneer instead of the wide smile. Do not redraw anything else: keep the purple hood, the red and gold robe, the black book, the green spark, the thick black outline and the art style exactly the same, on a transparent background.",
+      "notes": "r2a-hexer-1 is the Hexer of the direction (purple cowl, red robe, book, green spark), but a tall sword stands beside her and her wide smile reads cute, not smug."
+    },
+    {
+      "id": "r2a-stargazer-1-torch",
+      "asset": "chibi-explore-cult2-a-stargazer",
+      "endpoint": "edit-image-pixen",
+      "seed": 95442,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "r2a-stargazer-1",
+        "candidate": 0
+      },
+      "editInstruction": "Change only one thing: erase the small torch with its green and orange flames at the left edge, leaving that area transparent. Do not redraw anything else: keep the old man with his red hood and white beard, the red and black robe, the dagger at his belt, the brass telescope, the wooden tripod, the star chart, the thick black outline and the art style exactly the same, on a transparent background.",
+      "notes": "r2a-stargazer-1 is the astrologer at a brass telescope with a dark lens, but a stray torch with green and orange flames sits at its left edge."
+    },
+    {
+      "id": "r2a-summoner-1-face",
+      "asset": "chibi-explore-cult2-a-summoner",
+      "endpoint": "edit-image-pixen",
+      "seed": 95433,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "r2a-summoner-1-blade",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the face: it becomes a living gaunt old man's face with pale grey-white skin, dark veins round the eyes, one dark eye and one milky white eye, a nose and a thin cruel mouth, clearly human and not a skull. Do not redraw anything else: keep the tall red cowl, the black, red and gold robe, the bloody steel dagger, the chain, the thick black outline and the art style exactly the same, on a transparent background.",
+      "notes": "r2a-summoner-1-blade:0 has the bloody steel dagger, but the face's dark sockets lean towards a skull: the high priest is a living man whose pallor and one milky eye show the corruption."
+    },
+    {
+      "id": "r2a-stargazer-1-torch-b",
+      "asset": "chibi-explore-cult2-a-stargazer",
+      "endpoint": "edit-image-pixen",
+      "seed": 95443,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "r2a-stargazer-1",
+        "candidate": 0
+      },
+      "editInstruction": "Change only one thing: erase the small torch with its green and orange flames at the left edge, leaving that area transparent. Do not redraw anything else: keep the old man with his red hood and white beard, the red and black robe, the dagger at his belt, the brass telescope, the wooden tripod, the star chart, the thick black outline and the art style exactly the same, on a transparent background.",
+      "notes": "Retry of r2a-stargazer-1-torch, whose PixelLab job failed (a failed job keeps its recipe id, so the retry has a new one)."
+    },
+    {
+      "id": "r2a-portrait-initiate-1",
+      "asset": "chibi-explore-cult2-a-portrait-initiate",
+      "endpoint": "create-image-pixen",
+      "seed": 95601,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "A close-up bust: the head and shoulders fill the whole square; no legs. A human face with skin, eyes, nose and mouth.",
+      "negativeAddendum": "full body, legs, feet, skull face, skeleton, tentacles, glowing eyes, empty hood, blue robe",
+      "notes": "The Initiate's bust: a fresh creation with the portrait class, to match the accepted map sprite of variant A."
+    },
+    {
+      "id": "r2a-portrait-idol-bearer-1",
+      "asset": "chibi-explore-cult2-a-portrait-idol-bearer",
+      "endpoint": "create-image-pixen",
+      "seed": 95611,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "A close-up bust: the head and shoulders fill the whole square; no legs. A human face with skin, eyes, nose and mouth.",
+      "negativeAddendum": "full body, legs, feet, skull face, skeleton, tentacles, glowing eyes, empty hood, blue robe",
+      "notes": "The Idol Bearer's bust: a fresh creation with the portrait class, to match the accepted map sprite of variant A."
+    },
+    {
+      "id": "r2a-portrait-hexer-1",
+      "asset": "chibi-explore-cult2-a-portrait-hexer",
+      "endpoint": "create-image-pixen",
+      "seed": 95621,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "A close-up bust: the head and shoulders fill the whole square; no legs. A human face with skin, eyes, nose and mouth.",
+      "negativeAddendum": "full body, legs, feet, skull face, skeleton, tentacles, glowing eyes, empty hood, blue robe",
+      "notes": "The Hexer's bust: a fresh creation with the portrait class, to match the accepted map sprite of variant A."
+    },
+    {
+      "id": "r2a-portrait-summoner-1",
+      "asset": "chibi-explore-cult2-a-portrait-summoner",
+      "endpoint": "create-image-pixen",
+      "seed": 95631,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "A close-up bust: the head and shoulders fill the whole square; no legs. A human face with skin, eyes, nose and mouth.",
+      "negativeAddendum": "full body, legs, feet, skull face, skeleton, tentacles, glowing eyes, empty hood, blue robe",
+      "notes": "The Summoner's bust: a fresh creation with the portrait class, to match the accepted map sprite of variant A."
+    },
+    {
+      "id": "r2a-portrait-stargazer-1",
+      "asset": "chibi-explore-cult2-a-portrait-stargazer",
+      "endpoint": "create-image-pixen",
+      "seed": 95641,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "A close-up bust: the head and shoulders fill the whole square; no legs. A human face with skin, eyes, nose and mouth.",
+      "negativeAddendum": "full body, legs, feet, skull face, skeleton, tentacles, glowing eyes, empty hood, blue robe",
+      "notes": "The Stargazer's bust: a fresh creation with the portrait class, to match the accepted map sprite of variant A."
+    },
+    {
+      "id": "r2a-portrait-idol-bearer-2",
+      "asset": "chibi-explore-cult2-a-portrait-idol-bearer",
+      "endpoint": "create-image-pixen",
+      "seed": 95612,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "A close-up bust: the head and shoulders fill the whole square; no legs. The man is bald and clean-shaven with a heavy scowl. The idol on his head is carved dull grey stone, a stone god's face with a broad flat nose, thick lips and a wide grin of square teeth, clearly carved stone and never a skull.",
+      "negativeAddendum": "full body, legs, feet, skull, skull face, skeleton, beard, tentacles, glowing eyes, empty hood, blue robe",
+      "notes": "r2a-portrait-idol-bearer-1's idol reads as a skull and its man has a grey beard: the map sprite's man is bald and clean-shaven under a stone god's face."
+    },
+    {
+      "id": "r2a-portrait-summoner-2",
+      "asset": "chibi-explore-cult2-a-portrait-summoner",
+      "endpoint": "create-image-pixen",
+      "seed": 95632,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "A close-up bust: the head and shoulders fill the whole square; no legs. His face is a living sickly old man's face with pale yellowish-white skin, wrinkles, a long nose, thin lips and one eye ringed with a dark bruise and red veins: human, never a skull, never blue.",
+      "negativeAddendum": "full body, legs, feet, skull, skull face, skeleton, blue skin, grey skin, white eyes, tentacles, glowing eyes, empty hood, blue robe",
+      "notes": "r2a-portrait-summoner-1 has a blue-grey skull for a face: the high priest is a living man; his corruption is pallor, a bruised eye and red veins, as on the map sprite."
+    },
+    {
+      "id": "r2a-portrait-idol-bearer-2-idol",
+      "asset": "chibi-explore-cult2-a-portrait-idol-bearer",
+      "endpoint": "edit-image-pixen",
+      "seed": 95613,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "r2a-portrait-idol-bearer-2",
+        "candidate": 0
+      },
+      "editInstruction": "Change only two things: the man's eyes become small dark brown human eyes, not green; the grey head on top becomes a carved stone god's face with a broad flat stone nose, thick stone lips and a grin of square teeth, clearly stone, not a skull. Keep the scowling man, his grey beard, his raised hands, the black robe with the gold and red stole, the thick black outline and the art style exactly the same, on a transparent background.",
+      "notes": "r2a-portrait-idol-bearer-2 is the bust of the map sprite's scowling man holding the idol, but the idol still reads as a skull and the man's eyes are green."
+    }
+  ]
+}

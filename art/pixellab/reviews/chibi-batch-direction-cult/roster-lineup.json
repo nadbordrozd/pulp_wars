@@ -8,48 +8,29 @@
     "silhouette": 0.65
   },
   "notDistinct": [
-    "Initiate / Idol Bearer: colour too close",
-    "Initiate / Familiar: colour too close",
-    "Initiate / Hexer: colour too close, greyscale too close",
-    "Initiate / Summoner: colour too close",
+    "Initiate / Idol Bearer: colour too close, greyscale too close",
+    "Initiate / Hexer: colour too close",
+    "Initiate / Summoner: colour too close, greyscale too close",
     "Initiate / Stargazer: colour too close",
-    "Initiate / Caller: colour too close",
-    "Initiate / Chosen: colour too close, greyscale too close",
-    "Initiate / Herald: colour too close",
-    "Idol Bearer / Familiar: colour too close",
+    "Initiate / Horror: colour too close",
     "Idol Bearer / Hexer: colour too close",
     "Idol Bearer / Summoner: colour too close",
     "Idol Bearer / Stargazer: colour too close",
-    "Idol Bearer / Caller: colour too close",
-    "Idol Bearer / Chosen: colour too close, greyscale too close",
-    "Idol Bearer / Herald: colour too close",
-    "Familiar / Hexer: colour too close",
-    "Familiar / Summoner: colour too close",
-    "Familiar / Stargazer: colour too close",
-    "Familiar / Caller: colour too close",
-    "Familiar / Chosen: colour too close",
+    "Idol Bearer / Thing in the Cellar: colour too close",
+    "Idol Bearer / Horror: colour too close",
+    "Idol Bearer / Tentacle: colour too close",
     "Familiar / Herald: colour too close",
     "Hexer / Summoner: colour too close",
     "Hexer / Stargazer: colour too close",
-    "Hexer / Caller: colour too close",
-    "Hexer / Chosen: colour too close",
-    "Hexer / Herald: colour too close",
+    "Hexer / Horror: colour too close",
     "Summoner / Stargazer: colour too close",
-    "Summoner / Caller: colour too close",
-    "Summoner / Chosen: colour too close",
-    "Summoner / Herald: colour too close",
-    "Stargazer / Caller: colour too close",
-    "Stargazer / Chosen: colour too close",
+    "Summoner / Horror: colour too close",
     "Stargazer / Horror: colour too close",
-    "Stargazer / Herald: colour too close",
-    "Caller / Chosen: colour too close",
-    "Caller / Horror: colour too close, greyscale too close",
-    "Caller / Herald: colour too close",
-    "Chosen / Herald: colour too close",
     "Thing in the Cellar / Horror: colour too close",
     "Thing in the Cellar / Tentacle: colour too close",
     "Horror / Herald: colour too close",
     "Horror / Tentacle: colour too close",
+    "Initiate / Shaman: colour too close",
     "Thing in the Cellar / Abomination: colour too close"
   ],
   "pairs": [
@@ -58,19 +39,20 @@
       "rival": "Idol Bearer",
       "kind": "own faction",
       "measure": {
-        "palette": 5,
-        "deuteranopia": 4.4,
-        "protanopia": 4.1,
-        "greyPalette": 1.8,
-        "lightness": 7,
+        "palette": 10.1,
+        "deuteranopia": 6.4,
+        "protanopia": 6.6,
+        "greyPalette": 1.7,
+        "lightness": 4.5,
         "meanLightness": [
-          33.3,
-          39.1
+          26.5,
+          29.7
         ],
-        "silhouette": 0.76,
+        "silhouette": 0.66,
         "distinct": false,
         "reasons": [
-          "colour too close"
+          "colour too close",
+          "greyscale too close"
         ]
       }
     },
@@ -79,201 +61,14 @@
       "rival": "Familiar",
       "kind": "own faction",
       "measure": {
-        "palette": 8.5,
-        "deuteranopia": 5.9,
-        "protanopia": 6.9,
-        "greyPalette": 2.4,
-        "lightness": 12,
+        "palette": 39.8,
+        "deuteranopia": 34,
+        "protanopia": 34.7,
+        "greyPalette": 7.2,
+        "lightness": 18.1,
         "meanLightness": [
-          33.3,
+          26.5,
           45.3
-        ],
-        "silhouette": 0.63,
-        "distinct": false,
-        "reasons": [
-          "colour too close"
-        ]
-      }
-    },
-    {
-      "unit": "Initiate",
-      "rival": "Hexer",
-      "kind": "own faction",
-      "measure": {
-        "palette": 2.3,
-        "deuteranopia": 2.1,
-        "protanopia": 1.8,
-        "greyPalette": 0.7,
-        "lightness": 2.1,
-        "meanLightness": [
-          33.3,
-          34.9
-        ],
-        "silhouette": 0.9,
-        "distinct": false,
-        "reasons": [
-          "colour too close",
-          "greyscale too close"
-        ]
-      }
-    },
-    {
-      "unit": "Initiate",
-      "rival": "Summoner",
-      "kind": "own faction",
-      "measure": {
-        "palette": 2.7,
-        "deuteranopia": 2.5,
-        "protanopia": 2.2,
-        "greyPalette": 1.3,
-        "lightness": 1.8,
-        "meanLightness": [
-          33.3,
-          32.4
-        ],
-        "silhouette": 0.53,
-        "distinct": false,
-        "reasons": [
-          "colour too close"
-        ]
-      }
-    },
-    {
-      "unit": "Initiate",
-      "rival": "Stargazer",
-      "kind": "own faction",
-      "measure": {
-        "palette": 11.4,
-        "deuteranopia": 9.1,
-        "protanopia": 9.2,
-        "greyPalette": 2.6,
-        "lightness": 6.2,
-        "meanLightness": [
-          33.3,
-          35.5
-        ],
-        "silhouette": 0.45,
-        "distinct": false,
-        "reasons": [
-          "colour too close"
-        ]
-      }
-    },
-    {
-      "unit": "Initiate",
-      "rival": "Caller",
-      "kind": "own faction",
-      "measure": {
-        "palette": 9.8,
-        "deuteranopia": 7.9,
-        "protanopia": 7.7,
-        "greyPalette": 2.6,
-        "lightness": 8.4,
-        "meanLightness": [
-          33.3,
-          40.8
-        ],
-        "silhouette": 0.58,
-        "distinct": false,
-        "reasons": [
-          "colour too close"
-        ]
-      }
-    },
-    {
-      "unit": "Initiate",
-      "rival": "Chosen",
-      "kind": "own faction",
-      "measure": {
-        "palette": 5,
-        "deuteranopia": 4.7,
-        "protanopia": 4.4,
-        "greyPalette": 1.5,
-        "lightness": 3.7,
-        "meanLightness": [
-          33.3,
-          35
-        ],
-        "silhouette": 0.65,
-        "distinct": false,
-        "reasons": [
-          "colour too close",
-          "greyscale too close"
-        ]
-      }
-    },
-    {
-      "unit": "Initiate",
-      "rival": "Thing in the Cellar",
-      "kind": "own faction",
-      "measure": {
-        "palette": 34.5,
-        "deuteranopia": 26.4,
-        "protanopia": 25.5,
-        "greyPalette": 4,
-        "lightness": 10.6,
-        "meanLightness": [
-          33.3,
-          44
-        ],
-        "silhouette": 0.44,
-        "distinct": true,
-        "reasons": []
-      }
-    },
-    {
-      "unit": "Initiate",
-      "rival": "Horror",
-      "kind": "own faction",
-      "measure": {
-        "palette": 31.5,
-        "deuteranopia": 23.1,
-        "protanopia": 22.8,
-        "greyPalette": 3.9,
-        "lightness": 9.5,
-        "meanLightness": [
-          33.3,
-          40
-        ],
-        "silhouette": 0.64,
-        "distinct": true,
-        "reasons": []
-      }
-    },
-    {
-      "unit": "Initiate",
-      "rival": "Herald",
-      "kind": "own faction",
-      "measure": {
-        "palette": 13.3,
-        "deuteranopia": 9.7,
-        "protanopia": 9.8,
-        "greyPalette": 1.9,
-        "lightness": 3,
-        "meanLightness": [
-          33.3,
-          35.8
-        ],
-        "silhouette": 0.59,
-        "distinct": false,
-        "reasons": [
-          "colour too close"
-        ]
-      }
-    },
-    {
-      "unit": "Initiate",
-      "rival": "Tentacle",
-      "kind": "own faction",
-      "measure": {
-        "palette": 37.1,
-        "deuteranopia": 24.3,
-        "protanopia": 24.1,
-        "greyPalette": 4.5,
-        "lightness": 11,
-        "meanLightness": [
-          33.3,
-          44.5
         ],
         "silhouette": 0.62,
         "distinct": true,
@@ -281,223 +76,18 @@
       }
     },
     {
-      "unit": "Idol Bearer",
-      "rival": "Familiar",
-      "kind": "own faction",
-      "measure": {
-        "palette": 12.2,
-        "deuteranopia": 8.9,
-        "protanopia": 8.4,
-        "greyPalette": 1.2,
-        "lightness": 5.2,
-        "meanLightness": [
-          39.1,
-          45.3
-        ],
-        "silhouette": 0.59,
-        "distinct": false,
-        "reasons": [
-          "colour too close"
-        ]
-      }
-    },
-    {
-      "unit": "Idol Bearer",
+      "unit": "Initiate",
       "rival": "Hexer",
       "kind": "own faction",
       "measure": {
-        "palette": 5.6,
-        "deuteranopia": 4.8,
-        "protanopia": 4.4,
-        "greyPalette": 1.4,
-        "lightness": 5.6,
+        "palette": 13.1,
+        "deuteranopia": 7.7,
+        "protanopia": 7.7,
+        "greyPalette": 1.5,
+        "lightness": 3.3,
         "meanLightness": [
-          39.1,
-          34.9
-        ],
-        "silhouette": 0.71,
-        "distinct": false,
-        "reasons": [
-          "colour too close"
-        ]
-      }
-    },
-    {
-      "unit": "Idol Bearer",
-      "rival": "Summoner",
-      "kind": "own faction",
-      "measure": {
-        "palette": 5.4,
-        "deuteranopia": 4.6,
-        "protanopia": 4.4,
-        "greyPalette": 1.9,
-        "lightness": 8.3,
-        "meanLightness": [
-          39.1,
-          32.4
-        ],
-        "silhouette": 0.59,
-        "distinct": false,
-        "reasons": [
-          "colour too close"
-        ]
-      }
-    },
-    {
-      "unit": "Idol Bearer",
-      "rival": "Stargazer",
-      "kind": "own faction",
-      "measure": {
-        "palette": 12.2,
-        "deuteranopia": 8.5,
-        "protanopia": 9.3,
-        "greyPalette": 2.4,
-        "lightness": 5.5,
-        "meanLightness": [
-          39.1,
-          35.5
-        ],
-        "silhouette": 0.47,
-        "distinct": false,
-        "reasons": [
-          "colour too close"
-        ]
-      }
-    },
-    {
-      "unit": "Idol Bearer",
-      "rival": "Caller",
-      "kind": "own faction",
-      "measure": {
-        "palette": 12.7,
-        "deuteranopia": 8.8,
-        "protanopia": 8.5,
-        "greyPalette": 1.9,
-        "lightness": 3.7,
-        "meanLightness": [
-          39.1,
-          40.8
-        ],
-        "silhouette": 0.55,
-        "distinct": false,
-        "reasons": [
-          "colour too close"
-        ]
-      }
-    },
-    {
-      "unit": "Idol Bearer",
-      "rival": "Chosen",
-      "kind": "own faction",
-      "measure": {
-        "palette": 7,
-        "deuteranopia": 6.1,
-        "protanopia": 6.2,
-        "greyPalette": 1.6,
-        "lightness": 5.5,
-        "meanLightness": [
-          39.1,
-          35
-        ],
-        "silhouette": 0.71,
-        "distinct": false,
-        "reasons": [
-          "colour too close",
-          "greyscale too close"
-        ]
-      }
-    },
-    {
-      "unit": "Idol Bearer",
-      "rival": "Thing in the Cellar",
-      "kind": "own faction",
-      "measure": {
-        "palette": 27.4,
-        "deuteranopia": 19.4,
-        "protanopia": 16.8,
-        "greyPalette": 1.3,
-        "lightness": 6.2,
-        "meanLightness": [
-          39.1,
-          44
-        ],
-        "silhouette": 0.39,
-        "distinct": true,
-        "reasons": []
-      }
-    },
-    {
-      "unit": "Idol Bearer",
-      "rival": "Horror",
-      "kind": "own faction",
-      "measure": {
-        "palette": 27,
-        "deuteranopia": 17.5,
-        "protanopia": 17.9,
-        "greyPalette": 3.6,
-        "lightness": 3.8,
-        "meanLightness": [
-          39.1,
-          40
-        ],
-        "silhouette": 0.58,
-        "distinct": true,
-        "reasons": []
-      }
-    },
-    {
-      "unit": "Idol Bearer",
-      "rival": "Herald",
-      "kind": "own faction",
-      "measure": {
-        "palette": 13.8,
-        "deuteranopia": 9.2,
-        "protanopia": 10.4,
-        "greyPalette": 1.4,
-        "lightness": 7.3,
-        "meanLightness": [
-          39.1,
-          35.8
-        ],
-        "silhouette": 0.53,
-        "distinct": false,
-        "reasons": [
-          "colour too close"
-        ]
-      }
-    },
-    {
-      "unit": "Idol Bearer",
-      "rival": "Tentacle",
-      "kind": "own faction",
-      "measure": {
-        "palette": 31.4,
-        "deuteranopia": 19.8,
-        "protanopia": 19.7,
-        "greyPalette": 2.6,
-        "lightness": 6.1,
-        "meanLightness": [
-          39.1,
-          44.5
-        ],
-        "silhouette": 0.55,
-        "distinct": true,
-        "reasons": []
-      }
-    },
-    {
-      "unit": "Familiar",
-      "rival": "Hexer",
-      "kind": "own faction",
-      "measure": {
-        "palette": 10.7,
-        "deuteranopia": 7.8,
-        "protanopia": 8.7,
-        "greyPalette": 1.9,
-        "lightness": 10.6,
-        "meanLightness": [
-          45.3,
-          34.9
+          26.5,
+          22.7
         ],
         "silhouette": 0.6,
         "distinct": false,
@@ -507,20 +97,42 @@
       }
     },
     {
-      "unit": "Familiar",
+      "unit": "Initiate",
       "rival": "Summoner",
       "kind": "own faction",
       "measure": {
-        "palette": 9.2,
-        "deuteranopia": 6.4,
-        "protanopia": 7.4,
-        "greyPalette": 2.1,
-        "lightness": 13.3,
+        "palette": 9.6,
+        "deuteranopia": 6.5,
+        "protanopia": 6.1,
+        "greyPalette": 1.3,
+        "lightness": 5.6,
         "meanLightness": [
-          45.3,
-          32.4
+          26.5,
+          20.7
         ],
-        "silhouette": 0.42,
+        "silhouette": 0.68,
+        "distinct": false,
+        "reasons": [
+          "colour too close",
+          "greyscale too close"
+        ]
+      }
+    },
+    {
+      "unit": "Initiate",
+      "rival": "Stargazer",
+      "kind": "own faction",
+      "measure": {
+        "palette": 9.7,
+        "deuteranopia": 5.2,
+        "protanopia": 5.6,
+        "greyPalette": 1.1,
+        "lightness": 2.2,
+        "meanLightness": [
+          26.5,
+          27.9
+        ],
+        "silhouette": 0.54,
         "distinct": false,
         "reasons": [
           "colour too close"
@@ -528,18 +140,37 @@
       }
     },
     {
-      "unit": "Familiar",
-      "rival": "Stargazer",
+      "unit": "Initiate",
+      "rival": "Thing in the Cellar",
       "kind": "own faction",
       "measure": {
-        "palette": 15.6,
-        "deuteranopia": 12.5,
-        "protanopia": 12.9,
-        "greyPalette": 2.4,
-        "lightness": 9.8,
+        "palette": 26.9,
+        "deuteranopia": 14.4,
+        "protanopia": 13.4,
+        "greyPalette": 5.8,
+        "lightness": 17.2,
         "meanLightness": [
-          45.3,
-          35.5
+          26.5,
+          44
+        ],
+        "silhouette": 0.37,
+        "distinct": true,
+        "reasons": []
+      }
+    },
+    {
+      "unit": "Initiate",
+      "rival": "Horror",
+      "kind": "own faction",
+      "measure": {
+        "palette": 25.5,
+        "deuteranopia": 12.1,
+        "protanopia": 11.2,
+        "greyPalette": 1.4,
+        "lightness": 12.9,
+        "meanLightness": [
+          26.5,
+          40
         ],
         "silhouette": 0.55,
         "distinct": false,
@@ -549,20 +180,201 @@
       }
     },
     {
-      "unit": "Familiar",
-      "rival": "Caller",
+      "unit": "Initiate",
+      "rival": "Herald",
       "kind": "own faction",
       "measure": {
-        "palette": 15.5,
-        "deuteranopia": 11.6,
-        "protanopia": 12,
-        "greyPalette": 2.1,
-        "lightness": 6.2,
+        "palette": 36,
+        "deuteranopia": 27.5,
+        "protanopia": 27.1,
+        "greyPalette": 5.4,
+        "lightness": 9.4,
         "meanLightness": [
-          45.3,
-          40.8
+          26.5,
+          35.8
         ],
-        "silhouette": 0.57,
+        "silhouette": 0.5,
+        "distinct": true,
+        "reasons": []
+      }
+    },
+    {
+      "unit": "Initiate",
+      "rival": "Tentacle",
+      "kind": "own faction",
+      "measure": {
+        "palette": 28.1,
+        "deuteranopia": 17.3,
+        "protanopia": 16.5,
+        "greyPalette": 2.1,
+        "lightness": 17,
+        "meanLightness": [
+          26.5,
+          44.5
+        ],
+        "silhouette": 0.53,
+        "distinct": true,
+        "reasons": []
+      }
+    },
+    {
+      "unit": "Idol Bearer",
+      "rival": "Familiar",
+      "kind": "own faction",
+      "measure": {
+        "palette": 35.3,
+        "deuteranopia": 31.6,
+        "protanopia": 31.2,
+        "greyPalette": 5.9,
+        "lightness": 15.2,
+        "meanLightness": [
+          29.7,
+          45.3
+        ],
+        "silhouette": 0.59,
+        "distinct": true,
+        "reasons": []
+      }
+    },
+    {
+      "unit": "Idol Bearer",
+      "rival": "Hexer",
+      "kind": "own faction",
+      "measure": {
+        "palette": 14.2,
+        "deuteranopia": 9.1,
+        "protanopia": 9.5,
+        "greyPalette": 1.4,
+        "lightness": 6.3,
+        "meanLightness": [
+          29.7,
+          22.7
+        ],
+        "silhouette": 0.64,
+        "distinct": false,
+        "reasons": [
+          "colour too close"
+        ]
+      }
+    },
+    {
+      "unit": "Idol Bearer",
+      "rival": "Summoner",
+      "kind": "own faction",
+      "measure": {
+        "palette": 12.7,
+        "deuteranopia": 8,
+        "protanopia": 7,
+        "greyPalette": 1.4,
+        "lightness": 8.5,
+        "meanLightness": [
+          29.7,
+          20.7
+        ],
+        "silhouette": 0.72,
+        "distinct": false,
+        "reasons": [
+          "colour too close"
+        ]
+      }
+    },
+    {
+      "unit": "Idol Bearer",
+      "rival": "Stargazer",
+      "kind": "own faction",
+      "measure": {
+        "palette": 10.1,
+        "deuteranopia": 7.5,
+        "protanopia": 7.7,
+        "greyPalette": 1.1,
+        "lightness": 4,
+        "meanLightness": [
+          29.7,
+          27.9
+        ],
+        "silhouette": 0.55,
+        "distinct": false,
+        "reasons": [
+          "colour too close"
+        ]
+      }
+    },
+    {
+      "unit": "Idol Bearer",
+      "rival": "Thing in the Cellar",
+      "kind": "own faction",
+      "measure": {
+        "palette": 24.1,
+        "deuteranopia": 11,
+        "protanopia": 10.8,
+        "greyPalette": 3.6,
+        "lightness": 14.3,
+        "meanLightness": [
+          29.7,
+          44
+        ],
+        "silhouette": 0.4,
+        "distinct": false,
+        "reasons": [
+          "colour too close"
+        ]
+      }
+    },
+    {
+      "unit": "Idol Bearer",
+      "rival": "Horror",
+      "kind": "own faction",
+      "measure": {
+        "palette": 23,
+        "deuteranopia": 10,
+        "protanopia": 9.3,
+        "greyPalette": 1.3,
+        "lightness": 10,
+        "meanLightness": [
+          29.7,
+          40
+        ],
+        "silhouette": 0.59,
+        "distinct": false,
+        "reasons": [
+          "colour too close"
+        ]
+      }
+    },
+    {
+      "unit": "Idol Bearer",
+      "rival": "Herald",
+      "kind": "own faction",
+      "measure": {
+        "palette": 30.9,
+        "deuteranopia": 23.7,
+        "protanopia": 23.3,
+        "greyPalette": 4.6,
+        "lightness": 11.8,
+        "meanLightness": [
+          29.7,
+          35.8
+        ],
+        "silhouette": 0.59,
+        "distinct": true,
+        "reasons": []
+      }
+    },
+    {
+      "unit": "Idol Bearer",
+      "rival": "Tentacle",
+      "kind": "own faction",
+      "measure": {
+        "palette": 24.1,
+        "deuteranopia": 11.6,
+        "protanopia": 11.3,
+        "greyPalette": 1.7,
+        "lightness": 14.1,
+        "meanLightness": [
+          29.7,
+          44.5
+        ],
+        "silhouette": 0.63,
         "distinct": false,
         "reasons": [
           "colour too close"
@@ -571,23 +383,59 @@
     },
     {
       "unit": "Familiar",
-      "rival": "Chosen",
+      "rival": "Hexer",
       "kind": "own faction",
       "measure": {
-        "palette": 10.6,
-        "deuteranopia": 7.6,
-        "protanopia": 8.5,
-        "greyPalette": 1.7,
-        "lightness": 9.5,
+        "palette": 32,
+        "deuteranopia": 29.4,
+        "protanopia": 28.7,
+        "greyPalette": 6.2,
+        "lightness": 21.5,
         "meanLightness": [
           45.3,
-          35
+          22.7
         ],
-        "silhouette": 0.64,
-        "distinct": false,
-        "reasons": [
-          "colour too close"
-        ]
+        "silhouette": 0.51,
+        "distinct": true,
+        "reasons": []
+      }
+    },
+    {
+      "unit": "Familiar",
+      "rival": "Summoner",
+      "kind": "own faction",
+      "measure": {
+        "palette": 40.8,
+        "deuteranopia": 37.8,
+        "protanopia": 37.1,
+        "greyPalette": 5.4,
+        "lightness": 23.7,
+        "meanLightness": [
+          45.3,
+          20.7
+        ],
+        "silhouette": 0.57,
+        "distinct": true,
+        "reasons": []
+      }
+    },
+    {
+      "unit": "Familiar",
+      "rival": "Stargazer",
+      "kind": "own faction",
+      "measure": {
+        "palette": 34.1,
+        "deuteranopia": 32.9,
+        "protanopia": 32.1,
+        "greyPalette": 5.1,
+        "lightness": 16.4,
+        "meanLightness": [
+          45.3,
+          27.9
+        ],
+        "silhouette": 0.62,
+        "distinct": true,
+        "reasons": []
       }
     },
     {
@@ -673,16 +521,16 @@
       "rival": "Summoner",
       "kind": "own faction",
       "measure": {
-        "palette": 3.4,
-        "deuteranopia": 2.5,
-        "protanopia": 2.7,
-        "greyPalette": 1.2,
-        "lightness": 3.6,
+        "palette": 13.7,
+        "deuteranopia": 7.6,
+        "protanopia": 6.8,
+        "greyPalette": 1.3,
+        "lightness": 2.4,
         "meanLightness": [
-          34.9,
-          32.4
+          22.7,
+          20.7
         ],
-        "silhouette": 0.53,
+        "silhouette": 0.64,
         "distinct": false,
         "reasons": [
           "colour too close"
@@ -694,58 +542,115 @@
       "rival": "Stargazer",
       "kind": "own faction",
       "measure": {
-        "palette": 7.9,
-        "deuteranopia": 6.1,
-        "protanopia": 6.5,
-        "greyPalette": 1.3,
-        "lightness": 4.6,
+        "palette": 11.3,
+        "deuteranopia": 6.7,
+        "protanopia": 6.7,
+        "greyPalette": 1,
+        "lightness": 5,
         "meanLightness": [
-          34.9,
-          35.5
+          22.7,
+          27.9
+        ],
+        "silhouette": 0.5,
+        "distinct": false,
+        "reasons": [
+          "colour too close"
+        ]
+      }
+    },
+    {
+      "unit": "Hexer",
+      "rival": "Thing in the Cellar",
+      "kind": "own faction",
+      "measure": {
+        "palette": 27.8,
+        "deuteranopia": 14.8,
+        "protanopia": 15,
+        "greyPalette": 4.3,
+        "lightness": 20.5,
+        "meanLightness": [
+          22.7,
+          44
+        ],
+        "silhouette": 0.31,
+        "distinct": true,
+        "reasons": []
+      }
+    },
+    {
+      "unit": "Hexer",
+      "rival": "Horror",
+      "kind": "own faction",
+      "measure": {
+        "palette": 22.2,
+        "deuteranopia": 10.2,
+        "protanopia": 8.3,
+        "greyPalette": 1.7,
+        "lightness": 16.3,
+        "meanLightness": [
+          22.7,
+          40
+        ],
+        "silhouette": 0.47,
+        "distinct": false,
+        "reasons": [
+          "colour too close"
+        ]
+      }
+    },
+    {
+      "unit": "Hexer",
+      "rival": "Herald",
+      "kind": "own faction",
+      "measure": {
+        "palette": 27.4,
+        "deuteranopia": 21.2,
+        "protanopia": 20.5,
+        "greyPalette": 4.7,
+        "lightness": 12.3,
+        "meanLightness": [
+          22.7,
+          35.8
         ],
         "silhouette": 0.42,
-        "distinct": false,
-        "reasons": [
-          "colour too close"
-        ]
+        "distinct": true,
+        "reasons": []
       }
     },
     {
       "unit": "Hexer",
-      "rival": "Caller",
+      "rival": "Tentacle",
       "kind": "own faction",
       "measure": {
-        "palette": 8,
-        "deuteranopia": 5.9,
-        "protanopia": 6.3,
-        "greyPalette": 1.2,
-        "lightness": 6.6,
+        "palette": 30.1,
+        "deuteranopia": 15.6,
+        "protanopia": 15.4,
+        "greyPalette": 1.6,
+        "lightness": 20.3,
         "meanLightness": [
-          34.9,
-          40.8
+          22.7,
+          44.5
         ],
-        "silhouette": 0.54,
-        "distinct": false,
-        "reasons": [
-          "colour too close"
-        ]
+        "silhouette": 0.52,
+        "distinct": true,
+        "reasons": []
       }
     },
     {
-      "unit": "Hexer",
-      "rival": "Chosen",
+      "unit": "Summoner",
+      "rival": "Stargazer",
       "kind": "own faction",
       "measure": {
-        "palette": 4.6,
-        "deuteranopia": 4,
-        "protanopia": 3.8,
-        "greyPalette": 1.5,
-        "lightness": 3.4,
+        "palette": 9.6,
+        "deuteranopia": 5.6,
+        "protanopia": 5.2,
+        "greyPalette": 1,
+        "lightness": 7.3,
         "meanLightness": [
-          34.9,
-          35
+          20.7,
+          27.9
         ],
-        "silhouette": 0.62,
+        "silhouette": 0.53,
         "distinct": false,
         "reasons": [
           "colour too close"
@@ -753,340 +658,18 @@
       }
     },
     {
-      "unit": "Hexer",
+      "unit": "Summoner",
       "rival": "Thing in the Cellar",
       "kind": "own faction",
       "measure": {
         "palette": 26.3,
-        "deuteranopia": 19.8,
-        "protanopia": 20.1,
-        "greyPalette": 1.4,
-        "lightness": 9,
+        "deuteranopia": 15,
+        "protanopia": 15.7,
+        "greyPalette": 3.8,
+        "lightness": 22.7,
         "meanLightness": [
-          34.9,
+          20.7,
           44
-        ],
-        "silhouette": 0.43,
-        "distinct": true,
-        "reasons": []
-      }
-    },
-    {
-      "unit": "Hexer",
-      "rival": "Horror",
-      "kind": "own faction",
-      "measure": {
-        "palette": 24.2,
-        "deuteranopia": 17.6,
-        "protanopia": 18.3,
-        "greyPalette": 1.9,
-        "lightness": 7.6,
-        "meanLightness": [
-          34.9,
-          40
-        ],
-        "silhouette": 0.61,
-        "distinct": true,
-        "reasons": []
-      }
-    },
-    {
-      "unit": "Hexer",
-      "rival": "Herald",
-      "kind": "own faction",
-      "measure": {
-        "palette": 11.8,
-        "deuteranopia": 8.9,
-        "protanopia": 9.2,
-        "greyPalette": 1.4,
-        "lightness": 3.1,
-        "meanLightness": [
-          34.9,
-          35.8
-        ],
-        "silhouette": 0.58,
-        "distinct": false,
-        "reasons": [
-          "colour too close"
-        ]
-      }
-    },
-    {
-      "unit": "Hexer",
-      "rival": "Tentacle",
-      "kind": "own faction",
-      "measure": {
-        "palette": 28.5,
-        "deuteranopia": 18.4,
-        "protanopia": 19.5,
-        "greyPalette": 1.6,
-        "lightness": 9.1,
-        "meanLightness": [
-          34.9,
-          44.5
-        ],
-        "silhouette": 0.65,
-        "distinct": true,
-        "reasons": []
-      }
-    },
-    {
-      "unit": "Summoner",
-      "rival": "Stargazer",
-      "kind": "own faction",
-      "measure": {
-        "palette": 10.5,
-        "deuteranopia": 8.4,
-        "protanopia": 8.3,
-        "greyPalette": 2.7,
-        "lightness": 7.9,
-        "meanLightness": [
-          32.4,
-          35.5
-        ],
-        "silhouette": 0.38,
-        "distinct": false,
-        "reasons": [
-          "colour too close"
-        ]
-      }
-    },
-    {
-      "unit": "Summoner",
-      "rival": "Caller",
-      "kind": "own faction",
-      "measure": {
-        "palette": 9.9,
-        "deuteranopia": 6.9,
-        "protanopia": 6.3,
-        "greyPalette": 2.8,
-        "lightness": 10,
-        "meanLightness": [
-          32.4,
-          40.8
-        ],
-        "silhouette": 0.34,
-        "distinct": false,
-        "reasons": [
-          "colour too close"
-        ]
-      }
-    },
-    {
-      "unit": "Summoner",
-      "rival": "Chosen",
-      "kind": "own faction",
-      "measure": {
-        "palette": 3.3,
-        "deuteranopia": 3.1,
-        "protanopia": 3.1,
-        "greyPalette": 0.8,
-        "lightness": 4.6,
-        "meanLightness": [
-          32.4,
-          35
-        ],
-        "silhouette": 0.52,
-        "distinct": false,
-        "reasons": [
-          "colour too close"
-        ]
-      }
-    },
-    {
-      "unit": "Summoner",
-      "rival": "Thing in the Cellar",
-      "kind": "own faction",
-      "measure": {
-        "palette": 33.8,
-        "deuteranopia": 26.2,
-        "protanopia": 25.2,
-        "greyPalette": 3.7,
-        "lightness": 11.7,
-        "meanLightness": [
-          32.4,
-          44
-        ],
-        "silhouette": 0.25,
-        "distinct": true,
-        "reasons": []
-      }
-    },
-    {
-      "unit": "Summoner",
-      "rival": "Horror",
-      "kind": "own faction",
-      "measure": {
-        "palette": 30.3,
-        "deuteranopia": 22.4,
-        "protanopia": 21.7,
-        "greyPalette": 3,
-        "lightness": 11.1,
-        "meanLightness": [
-          32.4,
-          40
-        ],
-        "silhouette": 0.36,
-        "distinct": true,
-        "reasons": []
-      }
-    },
-    {
-      "unit": "Summoner",
-      "rival": "Herald",
-      "kind": "own faction",
-      "measure": {
-        "palette": 11.8,
-        "deuteranopia": 8.6,
-        "protanopia": 8.6,
-        "greyPalette": 1.8,
-        "lightness": 3.7,
-        "meanLightness": [
-          32.4,
-          35.8
-        ],
-        "silhouette": 0.38,
-        "distinct": false,
-        "reasons": [
-          "colour too close"
-        ]
-      }
-    },
-    {
-      "unit": "Summoner",
-      "rival": "Tentacle",
-      "kind": "own faction",
-      "measure": {
-        "palette": 36.7,
-        "deuteranopia": 24.4,
-        "protanopia": 24.2,
-        "greyPalette": 4,
-        "lightness": 12.4,
-        "meanLightness": [
-          32.4,
-          44.5
-        ],
-        "silhouette": 0.5,
-        "distinct": true,
-        "reasons": []
-      }
-    },
-    {
-      "unit": "Stargazer",
-      "rival": "Caller",
-      "kind": "own faction",
-      "measure": {
-        "palette": 8.9,
-        "deuteranopia": 6.3,
-        "protanopia": 7,
-        "greyPalette": 1.3,
-        "lightness": 5.5,
-        "meanLightness": [
-          35.5,
-          40.8
-        ],
-        "silhouette": 0.45,
-        "distinct": false,
-        "reasons": [
-          "colour too close"
-        ]
-      }
-    },
-    {
-      "unit": "Stargazer",
-      "rival": "Chosen",
-      "kind": "own faction",
-      "measure": {
-        "palette": 10.6,
-        "deuteranopia": 7.9,
-        "protanopia": 8.1,
-        "greyPalette": 2.6,
-        "lightness": 4.3,
-        "meanLightness": [
-          35.5,
-          35
-        ],
-        "silhouette": 0.46,
-        "distinct": false,
-        "reasons": [
-          "colour too close"
-        ]
-      }
-    },
-    {
-      "unit": "Stargazer",
-      "rival": "Thing in the Cellar",
-      "kind": "own faction",
-      "measure": {
-        "palette": 25.1,
-        "deuteranopia": 16.2,
-        "protanopia": 15.2,
-        "greyPalette": 2,
-        "lightness": 9,
-        "meanLightness": [
-          35.5,
-          44
-        ],
-        "silhouette": 0.38,
-        "distinct": true,
-        "reasons": []
-      }
-    },
-    {
-      "unit": "Stargazer",
-      "rival": "Horror",
-      "kind": "own faction",
-      "measure": {
-        "palette": 20.4,
-        "deuteranopia": 11.7,
-        "protanopia": 11.2,
-        "greyPalette": 1.2,
-        "lightness": 4.6,
-        "meanLightness": [
-          35.5,
-          40
-        ],
-        "silhouette": 0.53,
-        "distinct": false,
-        "reasons": [
-          "colour too close"
-        ]
-      }
-    },
-    {
-      "unit": "Stargazer",
-      "rival": "Herald",
-      "kind": "own faction",
-      "measure": {
-        "palette": 13.8,
-        "deuteranopia": 10.4,
-        "protanopia": 10.9,
-        "greyPalette": 2.1,
-        "lightness": 7,
-        "meanLightness": [
-          35.5,
-          35.8
-        ],
-        "silhouette": 0.4,
-        "distinct": false,
-        "reasons": [
-          "colour too close"
-        ]
-      }
-    },
-    {
-      "unit": "Stargazer",
-      "rival": "Tentacle",
-      "kind": "own faction",
-      "measure": {
-        "palette": 25.6,
-        "deuteranopia": 16.9,
-        "protanopia": 17.1,
-        "greyPalette": 0.9,
-        "lightness": 9.1,
-        "meanLightness": [
-          35.5,
-          44.5
         ],
         "silhouette": 0.41,
         "distinct": true,
@@ -1094,80 +677,18 @@
       }
     },
     {
-      "unit": "Caller",
-      "rival": "Chosen",
-      "kind": "own faction",
-      "measure": {
-        "palette": 9.7,
-        "deuteranopia": 5.9,
-        "protanopia": 6.2,
-        "greyPalette": 1.9,
-        "lightness": 6.8,
-        "meanLightness": [
-          40.8,
-          35
-        ],
-        "silhouette": 0.57,
-        "distinct": false,
-        "reasons": [
-          "colour too close"
-        ]
-      }
-    },
-    {
-      "unit": "Caller",
-      "rival": "Thing in the Cellar",
-      "kind": "own faction",
-      "measure": {
-        "palette": 23.3,
-        "deuteranopia": 18.2,
-        "protanopia": 17,
-        "greyPalette": 1.1,
-        "lightness": 5,
-        "meanLightness": [
-          40.8,
-          44
-        ],
-        "silhouette": 0.59,
-        "distinct": true,
-        "reasons": []
-      }
-    },
-    {
-      "unit": "Caller",
+      "unit": "Summoner",
       "rival": "Horror",
       "kind": "own faction",
       "measure": {
-        "palette": 18,
-        "deuteranopia": 14.7,
-        "protanopia": 14,
-        "greyPalette": 1.8,
-        "lightness": 2.5,
+        "palette": 24.9,
+        "deuteranopia": 10.4,
+        "protanopia": 9.9,
+        "greyPalette": 1.1,
+        "lightness": 18.5,
         "meanLightness": [
-          40.8,
+          20.7,
           40
-        ],
-        "silhouette": 0.68,
-        "distinct": false,
-        "reasons": [
-          "colour too close",
-          "greyscale too close"
-        ]
-      }
-    },
-    {
-      "unit": "Caller",
-      "rival": "Herald",
-      "kind": "own faction",
-      "measure": {
-        "palette": 16,
-        "deuteranopia": 10.8,
-        "protanopia": 11,
-        "greyPalette": 1.6,
-        "lightness": 8.6,
-        "meanLightness": [
-          40.8,
-          35.8
         ],
         "silhouette": 0.58,
         "distinct": false,
@@ -1177,56 +698,37 @@
       }
     },
     {
-      "unit": "Caller",
+      "unit": "Summoner",
+      "rival": "Herald",
+      "kind": "own faction",
+      "measure": {
+        "palette": 34.4,
+        "deuteranopia": 29.3,
+        "protanopia": 28.5,
+        "greyPalette": 4.1,
+        "lightness": 14.5,
+        "meanLightness": [
+          20.7,
+          35.8
+        ],
+        "silhouette": 0.55,
+        "distinct": true,
+        "reasons": []
+      }
+    },
+    {
+      "unit": "Summoner",
       "rival": "Tentacle",
       "kind": "own faction",
       "measure": {
-        "palette": 25.6,
-        "deuteranopia": 20,
-        "protanopia": 19.2,
-        "greyPalette": 1.2,
-        "lightness": 4.1,
+        "palette": 30.4,
+        "deuteranopia": 19.8,
+        "protanopia": 17.5,
+        "greyPalette": 1.1,
+        "lightness": 22.6,
         "meanLightness": [
-          40.8,
+          20.7,
           44.5
-        ],
-        "silhouette": 0.47,
-        "distinct": true,
-        "reasons": []
-      }
-    },
-    {
-      "unit": "Chosen",
-      "rival": "Thing in the Cellar",
-      "kind": "own faction",
-      "measure": {
-        "palette": 32.8,
-        "deuteranopia": 26.3,
-        "protanopia": 24.5,
-        "greyPalette": 2.6,
-        "lightness": 9.1,
-        "meanLightness": [
-          35,
-          44
-        ],
-        "silhouette": 0.44,
-        "distinct": true,
-        "reasons": []
-      }
-    },
-    {
-      "unit": "Chosen",
-      "rival": "Horror",
-      "kind": "own faction",
-      "measure": {
-        "palette": 29.1,
-        "deuteranopia": 22.1,
-        "protanopia": 20.5,
-        "greyPalette": 2.8,
-        "lightness": 7.2,
-        "meanLightness": [
-          35,
-          40
         ],
         "silhouette": 0.6,
         "distinct": true,
@@ -1234,20 +736,39 @@
       }
     },
     {
-      "unit": "Chosen",
-      "rival": "Herald",
+      "unit": "Stargazer",
+      "rival": "Thing in the Cellar",
       "kind": "own faction",
       "measure": {
-        "palette": 10.9,
-        "deuteranopia": 8,
-        "protanopia": 7.9,
-        "greyPalette": 1.8,
-        "lightness": 4.3,
+        "palette": 22.7,
+        "deuteranopia": 12.5,
+        "protanopia": 12.9,
+        "greyPalette": 3.6,
+        "lightness": 15.5,
         "meanLightness": [
-          35,
-          35.8
+          27.9,
+          44
         ],
-        "silhouette": 0.53,
+        "silhouette": 0.51,
+        "distinct": true,
+        "reasons": []
+      }
+    },
+    {
+      "unit": "Stargazer",
+      "rival": "Horror",
+      "kind": "own faction",
+      "measure": {
+        "palette": 20.8,
+        "deuteranopia": 9.9,
+        "protanopia": 10,
+        "greyPalette": 0.9,
+        "lightness": 11.2,
+        "meanLightness": [
+          27.9,
+          40
+        ],
+        "silhouette": 0.63,
         "distinct": false,
         "reasons": [
           "colour too close"
@@ -1255,20 +776,39 @@
       }
     },
     {
-      "unit": "Chosen",
+      "unit": "Stargazer",
+      "rival": "Herald",
+      "kind": "own faction",
+      "measure": {
+        "palette": 28.9,
+        "deuteranopia": 25.6,
+        "protanopia": 23.7,
+        "greyPalette": 3.9,
+        "lightness": 8.1,
+        "meanLightness": [
+          27.9,
+          35.8
+        ],
+        "silhouette": 0.49,
+        "distinct": true,
+        "reasons": []
+      }
+    },
+    {
+      "unit": "Stargazer",
       "rival": "Tentacle",
       "kind": "own faction",
       "measure": {
-        "palette": 37.1,
-        "deuteranopia": 26.4,
-        "protanopia": 26.1,
-        "greyPalette": 3.4,
-        "lightness": 9.6,
+        "palette": 27.1,
+        "deuteranopia": 16.6,
+        "protanopia": 14.8,
+        "greyPalette": 1.7,
+        "lightness": 15.3,
         "meanLightness": [
-          35,
+          27.9,
           44.5
         ],
-        "silhouette": 0.52,
+        "silhouette": 0.48,
         "distinct": true,
         "reasons": []
       }
@@ -1400,16 +940,16 @@
       "rival": "Necromancer",
       "kind": "look-alike",
       "measure": {
-        "palette": 25.9,
-        "deuteranopia": 17.5,
-        "protanopia": 19.2,
-        "greyPalette": 2.9,
-        "lightness": 15.4,
+        "palette": 28.3,
+        "deuteranopia": 19.1,
+        "protanopia": 18.6,
+        "greyPalette": 2,
+        "lightness": 8.2,
         "meanLightness": [
-          32.4,
+          20.7,
           28.2
         ],
-        "silhouette": 0.47,
+        "silhouette": 0.63,
         "distinct": true,
         "reasons": []
       }
@@ -1419,16 +959,16 @@
       "rival": "Lich",
       "kind": "look-alike",
       "measure": {
-        "palette": 21.1,
-        "deuteranopia": 13,
-        "protanopia": 14.6,
-        "greyPalette": 1.6,
-        "lightness": 7.1,
+        "palette": 20.7,
+        "deuteranopia": 14.8,
+        "protanopia": 14.1,
+        "greyPalette": 1.3,
+        "lightness": 6.4,
         "meanLightness": [
-          35.5,
+          27.9,
           29.3
         ],
-        "silhouette": 0.52,
+        "silhouette": 0.57,
         "distinct": true,
         "reasons": []
       }
@@ -1438,16 +978,16 @@
       "rival": "Ice Witch",
       "kind": "look-alike",
       "measure": {
-        "palette": 22.7,
-        "deuteranopia": 15.9,
-        "protanopia": 17.3,
-        "greyPalette": 1.9,
-        "lightness": 14.1,
+        "palette": 24.2,
+        "deuteranopia": 18,
+        "protanopia": 17.4,
+        "greyPalette": 2.3,
+        "lightness": 25.1,
         "meanLightness": [
-          34.9,
+          22.7,
           48.7
         ],
-        "silhouette": 0.5,
+        "silhouette": 0.63,
         "distinct": true,
         "reasons": []
       }
@@ -1457,16 +997,16 @@
       "rival": "Banshee",
       "kind": "look-alike",
       "measure": {
-        "palette": 23.4,
-        "deuteranopia": 14.3,
-        "protanopia": 16.2,
-        "greyPalette": 2.2,
-        "lightness": 19.6,
+        "palette": 25.7,
+        "deuteranopia": 15.5,
+        "protanopia": 13.2,
+        "greyPalette": 2.9,
+        "lightness": 24.8,
         "meanLightness": [
-          33.3,
+          26.5,
           51.5
         ],
-        "silhouette": 0.67,
+        "silhouette": 0.52,
         "distinct": true,
         "reasons": []
       }
@@ -1476,18 +1016,20 @@
       "rival": "Shaman",
       "kind": "look-alike",
       "measure": {
-        "palette": 33.2,
-        "deuteranopia": 31.1,
-        "protanopia": 29.2,
-        "greyPalette": 4.9,
+        "palette": 16.7,
+        "deuteranopia": 7.2,
+        "protanopia": 8.9,
+        "greyPalette": 1.8,
         "lightness": 11.2,
         "meanLightness": [
-          33.3,
+          26.5,
           37.2
         ],
-        "silhouette": 0.72,
-        "distinct": true,
-        "reasons": []
+        "silhouette": 0.67,
+        "distinct": false,
+        "reasons": [
+          "colour too close"
+        ]
       }
     },
     {

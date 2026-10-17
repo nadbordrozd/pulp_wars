@@ -1,0 +1,170 @@
+{
+  "schemaVersion": 1,
+  "batch": "cult-sprites-mch954-b-black",
+  "title": "Robed cultists, round 2, variant B: ordinary people in black vestments with blood-red trim and bloody daggers (exploration, never registered)",
+  "bead": "pulp_wars-mch9.54",
+  "faction": "TEST-CULT-BLACK",
+  "dryRun": false,
+  "fixedFactionColours": true,
+  "assets": [
+    {
+      "id": "chibi-explore-cult2-b-initiate",
+      "subject": "UNIT:CULT:FIGHTER",
+      "subjectKey": "UNIT:CULT:FIGHTER/BLACK",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false,
+      "accent": "cult-robe"
+    },
+    {
+      "id": "chibi-explore-cult2-b-idol-bearer",
+      "subject": "UNIT:CULT:GUARD",
+      "subjectKey": "UNIT:CULT:GUARD/BLACK",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false,
+      "accent": "cult-robe"
+    },
+    {
+      "id": "chibi-explore-cult2-b-hexer",
+      "subject": "UNIT:CULT:MARKSMAN",
+      "subjectKey": "UNIT:CULT:MARKSMAN/BLACK",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false,
+      "accent": "cult-robe"
+    },
+    {
+      "id": "chibi-explore-cult2-b-summoner",
+      "subject": "UNIT:CULT:CAPTAIN",
+      "subjectKey": "UNIT:CULT:CAPTAIN/BLACK",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false,
+      "accent": "cult-robe"
+    },
+    {
+      "id": "chibi-explore-cult2-b-stargazer",
+      "subject": "UNIT:CULT:CATAPULT",
+      "subjectKey": "UNIT:CULT:CATAPULT/BLACK",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "ownerColour": false,
+      "accent": "cult-robe",
+      "bottomMargin": 6
+    }
+  ],
+  "recipes": [
+    {
+      "id": "r2b-initiate-1",
+      "asset": "chibi-explore-cult2-b-initiate",
+      "endpoint": "create-image-pixen",
+      "seed": 95501,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "The figure is drawn large: about 44 pixels wide and 70 pixels tall. A human face with skin, eyes, nose and mouth shows under the hood.",
+      "negativeAddendum": "staff, wand, sword, skull, beard, tentacle, glowing eyes, empty hood, blue robe",
+      "notes": "Variant B, the Initiate: a fresh creation with the unit class."
+    },
+    {
+      "id": "r2b-idol-bearer-1",
+      "asset": "chibi-explore-cult2-b-idol-bearer",
+      "endpoint": "create-image-pixen",
+      "seed": 95511,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "The figure is drawn large: about 44 pixels wide and 70 pixels tall. A human face with skin, eyes, nose and mouth shows under the hood.",
+      "negativeAddendum": "staff, sword, skull, tentacle, glowing eyes, empty hood, blue robe, two idols",
+      "notes": "Variant B, the Idol Bearer: a fresh creation with the unit class."
+    },
+    {
+      "id": "r2b-hexer-1",
+      "asset": "chibi-explore-cult2-b-hexer",
+      "endpoint": "create-image-pixen",
+      "seed": 95521,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "The figure is drawn large: about 44 pixels wide and 70 pixels tall. A human face with skin, eyes, nose and mouth shows under the hood.",
+      "negativeAddendum": "staff, wand, sword, skull, tentacle, glowing eyes, empty hood, blue robe, witch hat",
+      "notes": "Variant B, the Hexer: a fresh creation with the unit class."
+    },
+    {
+      "id": "r2b-summoner-1",
+      "asset": "chibi-explore-cult2-b-summoner",
+      "endpoint": "create-image-pixen",
+      "seed": 95531,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "The figure is drawn large: about 44 pixels wide and 70 pixels tall. A human face with skin, eyes, nose and mouth shows under the hood.",
+      "negativeAddendum": "staff, sword, skull, tentacle, tentacles, glowing eyes, empty hood, blue robe, beard",
+      "notes": "Variant B, the Summoner: a fresh creation with the unit class."
+    },
+    {
+      "id": "r2b-stargazer-1",
+      "asset": "chibi-explore-cult2-b-stargazer",
+      "endpoint": "create-image-pixen",
+      "seed": 95541,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The group is drawn large: about 64 pixels wide and 74 pixels tall. The telescope is polished yellow brass and is the biggest thing in the image. The old man's human face with skin shows.",
+      "negativeAddendum": "staff, weapon, cannon, gun, wheels, skull, tentacle, glowing eyes, glowing lens, green, blue robe, beard",
+      "notes": "Variant B, the Stargazer: a fresh creation with the unit class."
+    },
+    {
+      "id": "r2b-idol-bearer-2",
+      "asset": "chibi-explore-cult2-b-idol-bearer",
+      "endpoint": "create-image-pixen",
+      "seed": 95513,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "The figure is drawn large: about 44 pixels wide and 70 pixels tall. The idol is carved dull grey stone, a stone god's face with a broad flat nose, thick lips and a wide grin of square teeth, clearly carved stone and never a skull.",
+      "negativeAddendum": "staff, sword, skull, white skull, tentacle, glowing eyes, empty hood, blue robe, two idols",
+      "notes": "r2b-idol-bearer-1 held a white idol that reads as a skull: the idol is named carved grey stone with a nose and lips."
+    },
+    {
+      "id": "r2b-summoner-2",
+      "asset": "chibi-explore-cult2-b-summoner",
+      "endpoint": "create-image-pixen",
+      "seed": 95533,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "The figure is drawn large: about 40 pixels wide and 74 pixels tall. His face is a living old man's face with a nose, lips, eyebrows and sunken cheeks, pale grey skin and dark veins, clearly human and never a skull.",
+      "negativeAddendum": "staff, sword, skull, skull face, skeleton, bones, tentacle, tentacles, glowing eyes, empty hood, blue robe, beard",
+      "notes": "r2b-summoner-1 has a skull for a face: the high priest is a living man whose pallor and veins show the corruption."
+    }
+  ]
+}

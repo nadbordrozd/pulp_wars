@@ -42,13 +42,26 @@ const EFFECTS = "effects-cult";
 const NAVAL = "naval-cult";
 
 /** CULT.md, "Portraits": unit, subject role, recipe class, accent preset. */
+/**
+ * The busts of the robed cultists, redrawn by round 2 (bead
+ * pulp_wars-mch9.54) as ordinary people in blood-red, black and purple
+ * robes: the `cult-robe-icon` accent, and red and purple are theirs.
+ */
+const ROBED_BUSTS: readonly string[] = [
+  "chibi-direction-portrait-cult-initiate",
+  "chibi-direction-portrait-cult-idol-bearer",
+  "chibi-direction-portrait-cult-hexer",
+  "chibi-direction-portrait-cult-summoner",
+  "chibi-direction-portrait-cult-stargazer",
+];
+
 const PORTRAITS = [
-  ["initiate", "FIGHTER", "portrait", "cult-lodge-icon"],
-  ["idol-bearer", "GUARD", "portrait", "cult-lodge-icon"],
+  ["initiate", "FIGHTER", "portrait", "cult-robe-icon"],
+  ["idol-bearer", "GUARD", "portrait", "cult-robe-icon"],
   ["familiar", "RAIDER", "creature", "cult-lodge-icon"],
-  ["hexer", "MARKSMAN", "portrait", "cult-lodge-icon"],
-  ["summoner", "CAPTAIN", "portrait", "cult-lodge-icon"],
-  ["stargazer", "CATAPULT", "portrait", "cult-lodge-icon"],
+  ["hexer", "MARKSMAN", "portrait", "cult-robe-icon"],
+  ["summoner", "CAPTAIN", "portrait", "cult-robe-icon"],
+  ["stargazer", "CATAPULT", "portrait", "cult-robe-icon"],
   // The Caller's and the Chosen's busts were retired by the Cult redesign
   // (pulp_wars-mch9.42), with their units.
   ["thing", "JUGGERNAUT", "creature", "cult-green"],
@@ -185,23 +198,36 @@ describe("the Cultists' interface art (pulp_wars-mch9.23)", () => {
       expect([asset.canvas.width, asset.canvas.height], asset.id).toEqual(
         asset.subject === "ICON:HUD:CULT:FAVOUR" ? [32, 32] : [48, 48],
       );
-    // The six other robed busts are sibling edits of the accepted Initiate
-    // bust, as the map sprites are siblings of the Initiate.
+    // Round 1's robed busts were sibling edits of its Initiate bust; round 2
+    // (pulp_wars-mch9.54) drew each bust as a fresh creation beside its map
+    // sprite, imported from the exploration run and accepted in place.
     const records = await loadRecords(
       productionLayout(ROOT, INTERFACE),
       INTERFACE,
     );
-    const bust = records.assets["chibi-direction-portrait-cult-initiate"];
-    expect(bust?.status).toBe("ACCEPTED");
     const chain = (recipe: string): string[] => {
       const source = manifest.recipes.find((entry) => entry.id === recipe)
         ?.source?.recipe;
       return source === undefined ? [recipe] : [recipe, ...chain(source)];
     };
-    for (const name of ["idol-bearer", "hexer", "summoner", "stargazer"]) {
-      const accepted =
-        records.assets[`chibi-direction-portrait-cult-${name}`]?.recipe ?? "";
-      expect(chain(accepted), name).toContain(bust?.recipe);
+    for (const name of [
+      "initiate",
+      "idol-bearer",
+      "hexer",
+      "summoner",
+      "stargazer",
+    ]) {
+      const record = records.assets[`chibi-direction-portrait-cult-${name}`];
+      expect(record?.status, name).toBe("ACCEPTED");
+      const root = chain(record?.recipe ?? "").at(-1) ?? "";
+      expect(root, name).toMatch(/^r2a-portrait-/);
+      expect(
+        manifest.recipes.find((entry) => entry.id === root)?.endpoint,
+        name,
+      ).toBe("create-image-pixen");
+      expect(
+        records.recipes[record?.recipe ?? ""]?.importedFrom?.exploration,
+      ).toBe("art/explorations/cult-sprites-mch954/a-blood");
     }
   });
 
@@ -377,20 +403,38 @@ describe("the Cultists' interface art (pulp_wars-mch9.23)", () => {
       const pixels = hsvPixels(
         await readRaster(path.join(ROOT, record.master.path)),
       );
-      expect(pixels.filter(isViolet).length, record.id).toBe(0);
       for (const green of pixels.filter(isGreen)) {
         expect(green.hue, record.id).toBeGreaterThanOrEqual(144);
         expect(green.hue, record.id).toBeLessThanOrEqual(152);
       }
+      if (ROBED_BUSTS.includes(record.id)) {
+        // Round 2: blood red is theirs, and no lodge indigo is left.
+        expect(pixels.filter(isRed).length, record.id).toBeGreaterThan(0);
+        expect(
+          pixels.filter(
+            (p) =>
+              p.hue >= 212 &&
+              p.hue <= 266 &&
+              p.saturation >= 0.45 &&
+              p.value >= 0.14,
+          ).length / pixels.length,
+          record.id,
+        ).toBeLessThanOrEqual(0.02);
+        continue;
+      }
+      expect(pixels.filter(isViolet).length, record.id).toBe(0);
       const red = pixels.filter(isRed).length;
       if (record.subject === "ICON:STATUS:FURIOUS")
         // Red eyes are the cue of an Unbound daemon (CULT.md, Palette).
         expect(red, record.id).toBeGreaterThanOrEqual(40);
       else expect(red, record.id).toBe(0);
     }
-    // The robed busts wear the lodge's indigo, never a navy or an azure.
+    // The Herald's bust wears the lodge's indigo, never a navy or an azure
+    // (the robed cultists' busts are round 2's, checked above).
     for (const [name, , recipeClass] of PORTRAITS) {
       if (recipeClass !== "portrait") continue;
+      if (ROBED_BUSTS.includes(`chibi-direction-portrait-cult-${name}`))
+        continue;
       const record = records.assets[`chibi-direction-portrait-cult-${name}`];
       if (record === undefined) throw new Error(name);
       const cloth = hsvPixels(
