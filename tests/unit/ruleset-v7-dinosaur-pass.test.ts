@@ -2085,14 +2085,15 @@ describe("the Dinosaur pass, correction: the Chopping Block by name", () => {
     expect(text("DINOSAUR")).toEqual(
       expect.arrayContaining([
         "Build Chopping Block",
-        "Chopping Block: +1 per adjacent lumber camp",
+        // Bead pulp_wars-2yc.90: the placement line says what it gives.
+        "Chopping Block: one per city, next to your Lumber Camps; +1 population for each, max 8",
       ]),
     );
     expect(text("DINOSAUR").join(" ")).not.toMatch(/[Ss]awmill/);
     expect(text("ORIGINAL")).toEqual(
       expect.arrayContaining([
         "Build sawmill",
-        "Sawmill: +1 per adjacent lumber camp",
+        "Sawmill: one per city, next to your Lumber Camps; +1 population for each, max 8",
       ]),
     );
   });

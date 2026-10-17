@@ -54,7 +54,9 @@ export function economicFormulaV7(
   if (improvement === "FORGE" && formula === "ADJACENT_FRIENDLY_CONTRIBUTORS")
     return "Forge: +1 per adjacent mine";
   if (improvement === "WORKSHOP" && formula === "DISTINCT_BASIC_TYPES")
-    return "Workshop: grows with varied neighbors";
+    // Bead pulp_wars-2yc.90: what "varied neighbors" means
+    // (`spatialContributionAtV7`: 1 + the distinct kinds next to it).
+    return "Workshop: +1, and +1 for each kind of farm, lumber camp or mine next to it";
   // Tuning 4 (`pulp_wars-w49.3`): the card states the placement rule.
   return `Market: 1–${MARKET_INCOME_CAP_V7} Coins (1 + adjacent families, max ${MARKET_INCOME_CAP_V7}); ${MARKET_PLACEMENT_TEXT_V7}`;
 }

@@ -4811,7 +4811,8 @@ pass's correction (`7r53`) `hatchTurns` was 1 and every Egg hatched one
 turn sooner (minimum 1); it takes no turn off now. **Sawmilling** is
 displayed as **Timber** for a Dinosaur player since the same correction
 (its mill is the Chopping Block, and the tree's unlock lines read "Build
-Chopping Block" and "Chopping Block: +1 per adjacent lumber camp"); the
+Chopping Block" and, since `pulp_wars-2yc.90`, "Chopping Block: one per
+city, next to your Lumber Camps; +1 population for each, max 8"); the
 node, its price, and its unlocks are the Human ones. **Explosives**,
 displayed as **Wallbreaker**, keeps Blast Mountain and Breach and adds
 `WALLBREAKER`: the player's dinosaurs ignore

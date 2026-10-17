@@ -362,6 +362,11 @@ import {
   territoryFactionV7,
 } from "../faction-buildings-v7";
 import {
+  buildCommandImprovementV7,
+  buildingRuleCoversYieldV7,
+  buildingRuleTextV7,
+} from "../building-rules-v7";
+import {
   CHIBI_DOM_BOXES_V7,
   browserChibiDomEnvironmentV7,
   chibiDomImageV7,
@@ -7401,6 +7406,18 @@ export class Ruleset7DomAppView {
           flavour.dataset.factionBuilding = `${tileFaction ?? ""}:${tile.improvement ?? ""}`;
           details.append(flavour);
         }
+        // Bead pulp_wars-2yc.90: where the building may be built, the line
+        // of its technology card, behind the dock's "?".
+        if (tile.improvement !== null) {
+          const rule = text(
+            this.#document,
+            "p",
+            buildingRuleTextV7(tile.improvement, tileFaction),
+            "v7-building-rule",
+          );
+          rule.dataset.buildingRule = tile.improvement;
+          details.append(rule);
+        }
         if (tile.road && name !== "Road")
           details.append(text(this.#document, "p", "Road", "v7-chip"));
         // The Rift (bead pulp_wars-9s0.5): who may stand on it.
@@ -7884,7 +7901,7 @@ export class Ruleset7DomAppView {
   ): void {
     const descriptive = [
       ...details.querySelectorAll<HTMLElement>(
-        ".v7-building-flavour, .v7-curiosity-info > p:not(.v7-curiosity-status), .v7-dwarf-barricade-rule",
+        ".v7-building-flavour, .v7-building-rule, .v7-curiosity-info > p:not(.v7-curiosity-status), .v7-dwarf-barricade-rule",
       ),
     ];
     if (descriptive.length === 0) return;
@@ -17078,14 +17095,42 @@ export function technologyEffectGroupsV7(
     PASSIVE_EFFECTS: "Passive effects",
   };
   const grouped = new Map<TechnologyEffectGroupV7["id"], string[]>();
+  // Bead pulp_wars-2yc.90: the buildings this card unlocks; each one's
+  // "Build" line is followed by where it may be built.
+  const built = new Set(
+    effects.flatMap((effect) => {
+      const improvement =
+        effect.kind === "COMMAND"
+          ? buildCommandImprovementV7(effect.command)
+          : null;
+      return improvement === null ? [] : [improvement];
+    }),
+  );
   for (const effect of effects) {
     if (effect.kind === "CONNECTED_FARM_VISUALS" && options.farmsJoin === false)
       continue;
+    // The placement line says what the building gives too, so its formula
+    // line would repeat it.
+    if (
+      effect.kind === "ECONOMIC_FORMULA" &&
+      built.has(effect.improvement) &&
+      buildingRuleCoversYieldV7(effect.improvement)
+    )
+      continue;
     const id = technologyEffectGroupIdV7(effect);
+    const improvement =
+      effect.kind === "COMMAND"
+        ? buildCommandImprovementV7(effect.command)
+        : null;
     const descriptions =
       effect.kind === "UNIT_ROLE"
         ? technologyRoleDescriptionsV7(effect.role, faction)
-        : [effectDescription(effect, faction)];
+        : improvement !== null
+          ? [
+              effectDescription(effect, faction),
+              buildingRuleTextV7(improvement, faction),
+            ]
+          : [effectDescription(effect, faction)];
     grouped.set(id, [...(grouped.get(id) ?? []), ...descriptions]);
   }
   return order.flatMap((id) => {

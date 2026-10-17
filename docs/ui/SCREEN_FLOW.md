@@ -2826,6 +2826,27 @@ as before.
   faction's territory (an Undead Farm is a Graveyard). They work the
   same."
 
+### Where a building may be built
+
+Bead `pulp_wars-2yc.90` (the user, 2026-10-17: "workshop is never
+explained"). Every technology card that unlocks a building has one line
+under its "Build" line: where the building may be built and, when it fits
+in the card's 92 characters, what it gives, with the reader's faction
+names ("Graveyard: on Grass with Fertile Ground in your borders; +2
+population", "Workshop: one per city, next to your Farm, Lumber Camp or
+Mine"). The lines are `buildingRuleTextV7` in
+`src/render/building-rules-v7.ts`, read from the engine's placement checks
+([the current rules, sections 8.2, 8.3 and 14](../product/RULESET_7_CURRENT.md#8-economic-actions-and-buildings));
+a test checks every building of every faction's tree and the terrain,
+resource, caps and limits against the engine. A mill's line says what it
+gives, so its card no longer shows the formula line ("+1 per adjacent
+farm"); a Workshop keeps its formula line ("+1, and +1 for each kind of
+farm, lumber camp or mine next to it"). The same line is behind the "?" of
+a building's tile dock (named by the territory owner's faction), the
+Monument's too. The gates every building shares (no village, resource or
+treasure on the tile; a Mountain needs Engineering) are not repeated: the
+build buttons are offered only where the engine allows them.
+
 ## Current Ruleset 7 playtest round 3 interface overlay
 
 This overlay (`pulp_wars-6gd.4`) applies to the current Ruleset 7 route in

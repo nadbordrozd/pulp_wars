@@ -1066,6 +1066,8 @@ describe("ruleset-7 Dinosaur technology", () => {
       "Train Shaman",
       "Disband",
       "Build market",
+      // Bead pulp_wars-2yc.90: where it may be built.
+      "Market: one per city, next to your Farm, Lumber Camp, Mine or mill; 1–3 Coins",
       "Shamans Rally or Tend nearby troops, and Hatch Eggs",
     ]);
 
@@ -1075,7 +1077,9 @@ describe("ruleset-7 Dinosaur technology", () => {
     // Ankylosaurus Egg is at Nesting (above).
     expect(text(0, "DRILL")).toEqual([
       "Build workshop",
-      "Workshop: grows with varied neighbors",
+      // Bead pulp_wars-2yc.90: where it may be built, and what it gives.
+      "Workshop: one per city, next to your Farm, Lumber Camp or Mine",
+      "Workshop: +1, and +1 for each kind of farm, lumber camp or mine next to it",
       "Reveals Ore",
       "+2 Coins for each city you capture",
     ]);

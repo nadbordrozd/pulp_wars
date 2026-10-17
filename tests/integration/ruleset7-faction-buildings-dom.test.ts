@@ -21,6 +21,7 @@ import {
   type Ruleset7ControllerPortV7,
 } from "../../src/render/dom/app-view-v7";
 import { FACTION_BUILDINGS_HELP_V7 } from "../../src/render/faction-buildings-v7";
+import { buildingRuleTextV7 } from "../../src/render/building-rules-v7";
 import { undeadUiArenaV7 } from "../fixtures/v7-undead-ui";
 import {
   closeDetailsV7,
@@ -176,6 +177,36 @@ describe("Ruleset 7 faction buildings in the interface", () => {
     host.callbacks?.onSelection({ kind: "TILE", at: data.forge });
     expect(dockTitle()).toBe("Forge");
     expect(document.querySelector(".v7-building-flavour")).toBeNull();
+    app.destroy();
+  });
+
+  it("says behind a building's '?' where it may be built, as its technology card does (pulp_wars-2yc.90)", () => {
+    const data = fixture("UNDEAD", "ORIGINAL");
+    const { app, host } = open(data);
+    host.callbacks?.onSelection({ kind: "TILE", at: data.farm });
+    // The dock itself stays compact: the line is in the details.
+    expect(
+      document.querySelector(".v7-selection-dock .v7-building-rule"),
+    ).toBeNull();
+    const graveyard =
+      openDockDetailsV7().querySelector<HTMLElement>(".v7-building-rule");
+    expect(graveyard?.textContent).toBe(buildingRuleTextV7("FARM", "UNDEAD"));
+    expect(graveyard?.textContent).toBe(
+      "Graveyard: on Grass with Fertile Ground in your borders; +2 population",
+    );
+    expect(graveyard?.dataset.buildingRule).toBe("FARM");
+    closeDetailsV7();
+    // A shared building with no flavour line gets its "?" for the line.
+    host.callbacks?.onSelection({ kind: "TILE", at: data.forge });
+    expect(
+      openDockDetailsV7().querySelector(".v7-building-rule")?.textContent,
+    ).toBe(
+      "Forge: one per city, next to your Mines; +1 population for each, max 6",
+    );
+    closeDetailsV7();
+    // Bare ground has no building and no line.
+    host.callbacks?.onSelection({ kind: "TILE", at: data.site });
+    expect(document.querySelector(".v7-building-rule")).toBeNull();
     app.destroy();
   });
 

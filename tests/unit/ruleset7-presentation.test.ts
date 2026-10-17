@@ -200,11 +200,18 @@ describe("Ruleset 7 public presentation", () => {
       { kind: "COMMAND", command: "BUILD_FARM" },
       { kind: "CONNECTED_FARM_VISUALS" },
     ] as const;
+    const FARM_RULE =
+      "Farm: on Grass with Fertile Ground in your borders; +2 population";
     const joined = [
       {
         id: "BUILDINGS",
         label: "Buildings",
-        items: ["Build farm", "Neighboring farms join into one field"],
+        items: [
+          "Build farm",
+          // Bead pulp_wars-2yc.90: where it may be built.
+          FARM_RULE,
+          "Neighboring farms join into one field",
+        ],
       },
     ];
     expect(technologyEffectGroupsV7(effects, "ORIGINAL")).toEqual(joined);
@@ -213,7 +220,13 @@ describe("Ruleset 7 public presentation", () => {
     ).toEqual(joined);
     expect(
       technologyEffectGroupsV7(effects, "ORIGINAL", { farmsJoin: false }),
-    ).toEqual([{ id: "BUILDINGS", label: "Buildings", items: ["Build farm"] }]);
+    ).toEqual([
+      {
+        id: "BUILDINGS",
+        label: "Buildings",
+        items: ["Build farm", FARM_RULE],
+      },
+    ]);
     // Nothing else is dropped, and a card of that one effect has no group.
     expect(
       technologyEffectGroupsV7(
@@ -243,7 +256,10 @@ describe("Ruleset 7 public presentation", () => {
       {
         id: "BUILDINGS",
         label: "Buildings",
-        items: ["Build market"],
+        items: [
+          "Build market",
+          "Market: one per city, next to your Farm, Lumber Camp, Mine or mill; 1–3 Coins",
+        ],
       },
       {
         id: "PASSIVE_EFFECTS",
@@ -661,7 +677,7 @@ describe("Ruleset 7 public presentation", () => {
       "Windmill: +1 per adjacent farm; heals adjacent owner units for 6 HP at Start Turn",
       "Sawmill: +1 per adjacent lumber camp",
       "Forge: +1 per adjacent mine",
-      "Workshop: grows with varied neighbors",
+      "Workshop: +1, and +1 for each kind of farm, lumber camp or mine next to it",
       // Revision 16 (economy deflation): the Market pays 1-3 Coins.
       "Market: 1–3 Coins (1 + adjacent families, max 3); needs one of your Farms, Lumber Camps, Mines or their mills next to it",
     ]);

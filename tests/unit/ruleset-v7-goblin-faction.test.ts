@@ -943,6 +943,8 @@ describe("ruleset-7 Goblin technology", () => {
       "Train Orc Warboss",
       "Disband",
       "Build market",
+      // Bead pulp_wars-2yc.90: where it may be built.
+      "Market: one per city, next to your Farm, Lumber Camp, Mine or mill; 1–3 Coins",
       "Orc Warbosses send troops within 2 tiles Berserk: +1 Move, ignore zones of control",
     ]);
     expect(text(0, "SAWMILLING")).toContain("Train Rocket Cart");
