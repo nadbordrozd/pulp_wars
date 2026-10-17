@@ -1,10 +1,12 @@
 import type { UnitId } from "../engine/model/ids";
 import {
+  RAM_BONUS2_V7,
   REBAKE_OVER_CAPACITY_V7,
   REBAKE_REACH_V7,
   effectiveRoleRuleV7,
   factionTreeV7,
   unitMayActAfterMoveV7,
+  unitRoleMechanicsV7,
   unitRoleRuleV7,
 } from "../engine/rules/ruleset-v7";
 import {
@@ -374,6 +376,44 @@ function byOwnCenterV7(view: PlayerViewV7, at: CoordV7): boolean {
 }
 
 /**
+ * Themed naval branches (`pulp_wars-5ti.21`): whether Home Sweet Home
+ * would spare the own unit on `at` at End Turn (its owner's public
+ * capability, by an own center).
+ */
+function homeSweetHomeSparesAtV7(
+  view: PlayerViewV7,
+  unit: PublicUnitV7,
+  at: CoordV7,
+): boolean {
+  return (
+    candyStatsV7(view, unit.id)?.homeSweetHome === true &&
+    byOwnCenterV7(view, at)
+  );
+}
+
+/**
+ * Themed naval branches (`pulp_wars-5ti.21`): the Ram `attack2` the cheap
+ * estimate adds for a ship whose role rams a target afloat (the exact
+ * preview after a Move decides whether it is a Ram).
+ */
+function shipRamCheapBonus2V7(
+  tools: CandyPolicyToolsV7,
+  unit: PublicUnitV7,
+  target: PublicUnitV7,
+): number {
+  if (
+    unit.form !== "NAVAL" ||
+    (target.form !== "NAVAL" && target.form !== "EMBARKED") ||
+    !unitRoleRuleV7(tools.view, unit).abilities.includes("RAM")
+  )
+    return 0;
+  return Math.max(
+    RAM_BONUS2_V7,
+    unitRoleMechanicsV7(tools.view, unit).ramRunUpBonus2,
+  );
+}
+
+/**
  * The targets an own Rushed unit that has neither moved nor attacked is
  * about to kill (its plan), so that a second unit does not Rush for them.
  */
@@ -421,8 +461,16 @@ function bestRushKillV7(
     if (claimed.has(target.id) || chebyshev(target.at, unit.at) > reach)
       continue;
     // The cheap estimate first: the Rush bonus (the Charge bonus replaces
-    // it, and is 2 as well) must reach the target's HP.
-    if (tools.projectedDamage(unit, target, 2) < target.hp) continue;
+    // it, and is 2 as well) must reach the target's HP. Themed naval
+    // branches (`pulp_wars-5ti.21`): a ship's Ram adds to it.
+    if (
+      tools.projectedDamage(
+        unit,
+        target,
+        2 + shipRamCheapBonus2V7(tools, unit, target),
+      ) < target.hp
+    )
+      continue;
     const froms = [unit.at, ...(mayMove ? ends : [])].filter((from) => {
       const range = chebyshev(from, target.at);
       return range >= rule.minimumRange && range <= rule.range;
@@ -476,7 +524,14 @@ function plainKillsV7(
   const view = tools.view;
   const rule = unitRoleRuleV7(view, unit);
   const charge = rule.abilities.includes("CHARGE") ? 2 : 0;
-  if (tools.projectedDamage(unit, target, charge) < target.hp) return false;
+  if (
+    tools.projectedDamage(
+      unit,
+      target,
+      charge + shipRamCheapBonus2V7(tools, unit, target),
+    ) < target.hp
+  )
+    return false;
   const mayMove = !unit.activation.moved && unitMayActAfterMoveV7(view, unit);
   for (const from of [unit.at, ...(mayMove ? plainEnds : [])]) {
     const range = chebyshev(from, target.at);
@@ -500,6 +555,17 @@ function rushKillAcceptableV7(
   unit: PublicUnitV7,
   option: AttackOptionV7,
 ): boolean {
+  // Themed naval branches (`pulp_wars-5ti.21`, RULESET_7_NAVAL_FACTIONS.md
+  // section 8.6, "Rush at sea"): a ship never Rushes into visible lethal
+  // reach for its next turn, when it is Crashed and cannot strike first,
+  // unless Home Sweet Home spares it where the kill leaves it.
+  if (unit.form === "NAVAL") {
+    const hp = unit.hp - option.preview.damageToAttacker;
+    return (
+      homeSweetHomeSparesAtV7(tools.view, unit, option.end) ||
+      tools.dangerWithout({ ...unit, hp }, option.end, option.target.id) < hp
+    );
+  }
   const key = RUSH_KEY_KILL_ROLES_V7.includes(option.target.role);
   if (key) return true;
   if (unitHopsV7(tools.view, unit)) return false;
@@ -531,7 +597,11 @@ function rushedKillPlanV7(
  * 1. `KILL`: the Rushed plan kills a target no plain plan of the unit
  *    kills, and the unit does not end in visible lethal reach unless the
  *    kill is a Catapult, Captain, or Knight role; a Chocolate Bunny also needs a
- *    Sugar Frenzy target next to its new tile (or a key kill).
+ *    Sugar Frenzy target next to its new tile (or a key kill). Themed naval
+ *    branches (`pulp_wars-5ti.21`): a ship's Rushed Ram, torpedo, or shot,
+ *    after a Move of one more tile for the Tug and the Sub; a ship never
+ *    ends in visible lethal reach, whatever it kills, unless Home Sweet Home
+ *    spares it there.
  * 2. `CITY`: the Rushed Move reaches a threatened own center with no own
  *    unit on it that the plain Move cannot reach.
  * 3. `HOME`: the seat has Home Sweet Home and the unit has an attack that
@@ -544,7 +614,9 @@ export function planSugarRushV7(
   const view = tools.view;
   if (
     unit.ownerId !== view.viewer.id ||
-    unit.form !== "LAND" ||
+    // Themed naval branches (`pulp_wars-5ti.21`): a Candy ship with Sugar
+    // Sails too (the Rush is offered only then: `previewSugarRushV7`).
+    (unit.form !== "LAND" && unit.form !== "NAVAL") ||
     unit.activation.moved
   )
     return null;
@@ -689,7 +761,8 @@ export function rushedMovePlanV7(
   const view = tools.view;
   if (
     unit.ownerId !== view.viewer.id ||
-    unit.form !== "LAND" ||
+    // Themed naval branches (`pulp_wars-5ti.21`): a Rushed ship too.
+    (unit.form !== "LAND" && unit.form !== "NAVAL") ||
     unit.activation.moved ||
     unit.activation.attacked ||
     !unitIsRushedV7(view, unit.id)

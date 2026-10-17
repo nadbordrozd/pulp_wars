@@ -1185,7 +1185,9 @@ function appendPublicUnitCommandsV7(
       feastReadyV7(view, unit));
   // The Candy revision: Sugar Rush, Re-bake, and Sugar Toss, each offered
   // exactly when the reducer accepts it (the shared legality predicates).
-  if (sugarRushRejectionV7(view, unit) === null)
+  // Themed naval branches (`pulp_wars-5ti.21`): a ship with the viewer's
+  // Sugar Sails too.
+  if (sugarRushRejectionV7(view, unit, view.viewer.researchedTechs) === null)
     candidates.push({ kind: "SUGAR_RUSH", unitId: unit.id });
   if (candyActionRejectionV7(view, unit, "REBAKE") === null)
     for (const option of publicRebakeFactsV7(view, unit)?.options ?? [])
@@ -7310,8 +7312,16 @@ export function queryThreatenedTilesV7(
     (rushPhase === "RUSHED" && !publicHomeSweetHomeSparesV7(view, unit))
   )
     return [];
+  // Themed naval branches (`pulp_wars-5ti.21`): a Candy ship too, with
+  // Sugar Sails (the viewer's own research for its own ship; another
+  // seat's is private and assumed, as the Ram is).
   const reachView =
-    unit.form === "LAND" && rule.abilities.includes("SUGAR_RUSH")
+    rule.abilities.includes("SUGAR_RUSH") &&
+    (unit.form === "LAND" ||
+      (unit.form === "NAVAL" &&
+        (unit.ownerId !== view.viewer.id ||
+          unitCapabilitiesV7(view, unit, view.viewer.researchedTechs)
+            .sugarSails)))
       ? viewWithRushV7(view, unit.id)
       : view;
   // The Dwarf revision section 14: a Gyrocopter's bombing reach (no

@@ -295,7 +295,8 @@ export interface PublicDwarfMechanicsV7 {
 /**
  * The Candy revision (docs/product/RULESET_7_CANDY.md section 13): the Candy
  * mechanics of a unit of the Candy kind. `sugarRush` is whether the unit's
- * role may Rush (every land role, in land form); `rebake` is the price and
+ * role may Rush (every land role, in land form; a ship, with Sugar Sails,
+ * themed naval branches, `pulp_wars-5ti.21`); `rebake` is the price and
  * HP of a Re-bake of its role (null for a role that leaves no Crumbs);
  * `homeSweetHome` is the owner's unit-level capability and `crumbsBite` the
  * owner's Peppermint Surprise damage (both public: they make every Candy
@@ -997,8 +998,11 @@ export function publicUnitStatsV7(
     ...(candy
       ? {
           candy: {
+            // Themed naval branches (`pulp_wars-5ti.21`): a Candy ship's
+            // role may Rush with Sugar Sails (private research, not told).
             sugarRush:
-              unit.form === "LAND" && role.abilities.includes("SUGAR_RUSH"),
+              (unit.form === "LAND" || unit.form === "NAVAL") &&
+              role.abilities.includes("SUGAR_RUSH"),
             sticky: unitSticksV7(state, unit),
             glazeTrail: unitLaysGlazeV7(state, unit),
             ricochet: unitRicochetsV7(state, unit),

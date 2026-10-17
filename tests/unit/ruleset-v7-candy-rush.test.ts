@@ -110,7 +110,9 @@ describe("the Sugar Rush command (section 5.1)", () => {
   });
 
   it("rejects each row in order, atomically", () => {
-    // Row 2: a role without SUGAR_RUSH (a Human unit; a Candy boat).
+    // Row 2: a role without SUGAR_RUSH (a Human unit). Themed naval
+    // branches (`pulp_wars-5ti.21`): a Candy ship Rushes with Sugar Sails;
+    // without them it is `TECH_REQUIRED` (tests/unit/ruleset-v7-naval-candy.test.ts).
     const human = candyFieldV7(
       [{ seat: 0, role: "FIGHTER", at: at(5, 3) }, FAR],
       {
@@ -126,7 +128,7 @@ describe("the Sugar Rush command (section 5.1)", () => {
       { water: [at(5, 1), at(6, 1)] },
     );
     expect(rejectedV7(boat, rushCommand(boat, at(5, 1))).code).toBe(
-      "UNIT_ROLE_INVALID",
+      "TECH_REQUIRED",
     );
     // Row 3: embarked.
     const afloat = candyFieldV7(

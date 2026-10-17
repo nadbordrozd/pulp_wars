@@ -3756,7 +3756,8 @@ function martianTurnListsValid(
 /**
  * The Candy revision (docs/product/RULESET_7_CANDY.md section 13): the
  * Candy lists are empty in a match without a Candy seat. A `sugarRush` entry
- * names a unit on the board of kind `CANDY` in land or embarked form; a
+ * names a unit on the board of kind `CANDY` in land, embarked, or (themed
+ * naval branches, `pulp_wars-5ti.21`) naval form; a
  * `splattedThisTurn` entry a unit on the board that is not a neutral
  * Monster; a `tossedThisTurn` entry a unit on the board in land form; a
  * `crumbs` entry lies on a land tile that is not a Rift, a chest tile, or a
@@ -3799,7 +3800,11 @@ function candyListsValid(
       unit.hp <= 0 ||
       isNeutralOwnerV7(unit.ownerId) ||
       kindOf(unit) !== "CANDY" ||
-      (unit.form !== "LAND" && unit.form !== "EMBARKED")
+      // Themed naval branches (`pulp_wars-5ti.21`): a Candy ship Rushes
+      // afloat with Sugar Sails.
+      (unit.form !== "LAND" &&
+        unit.form !== "EMBARKED" &&
+        unit.form !== "NAVAL")
     )
       return false;
   }

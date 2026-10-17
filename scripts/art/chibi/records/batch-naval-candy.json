@@ -1206,6 +1206,316 @@
         "reviewedAt": "2026-10-05T16:47:38.473Z"
       }
     },
+    "icon-tech-sugar-sails-a": {
+      "id": "icon-tech-sugar-sails-a",
+      "asset": "chibi-naval-candy-icon-tech-seamanship",
+      "jobId": "sync-66b09875-2a5c-4a69-95f2-ee810b6bd7cb",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "naval-candy",
+        "asset": "chibi-naval-candy-icon-tech-seamanship",
+        "subject": "ICON:TECH:CANDY:SEAMANSHIP",
+        "faction": "CANDY",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 99581,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/CANDY.md#prompt-fragment + docs/art/factions/CANDY.md#negative-fragment",
+            "text": "Faction: a cheerful chocolatier's kingdom of living sweets, rich, glossy and silly. Its fixed colours: glossy dark chocolate, colour #4a2412, and milk chocolate, colour #7a4526, as the dark anchor on every piece (a dipped half, a shield, a glaze, boots, a roof); golden caramel and toffee, colour #e0a040; vanilla cream and marshmallow white, colour #fff1d0; pale biscuit wafer; a few small jewel-candy accents in amber, mint green and cherry pink; one hard pure white highlight on every glossy surface.",
+            "negative": "crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, pastel pink frosting everywhere, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+            "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/CANDY.json",
+            "text": "Subject: Sugar Sails: one big billowing square ship sail with bold diagonal cherry pink and white candy-cane stripes, puffed out by the wind, on one short thick milk chocolate mast with a small round caramel gold ball on its top and a small cream pennant; two small white four-pointed sparkle stars beside the sail; drawn large, filling the square; no hull, no boat, no water; nothing else in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "person, character, face, ship, boat, hull, water, sea, wave, island, beach, text"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: a cheerful chocolatier's kingdom of living sweets, rich, glossy and silly. Its fixed colours: glossy dark chocolate, colour #4a2412, and milk chocolate, colour #7a4526, as the dark anchor on every piece (a dipped half, a shield, a glaze, boots, a roof); golden caramel and toffee, colour #e0a040; vanilla cream and marshmallow white, colour #fff1d0; pale biscuit wafer; a few small jewel-candy accents in amber, mint green and cherry pink; one hard pure white highlight on every glossy surface. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Sugar Sails: one big billowing square ship sail with bold diagonal cherry pink and white candy-cane stripes, puffed out by the wind, on one short thick milk chocolate mast with a small round caramel gold ball on its top and a small cream pennant; two small white four-pointed sparkle stars beside the sail; drawn large, filling the square; no hull, no boat, no water; nothing else in the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, pastel pink frosting everywhere, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, person, character, face, ship, boat, hull, water, sea, wave, island, beach",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: a cheerful chocolatier's kingdom of living sweets, rich, glossy and silly. Its fixed colours: glossy dark chocolate, colour #4a2412, and milk chocolate, colour #7a4526, as the dark anchor on every piece (a dipped half, a shield, a glaze, boots, a roof); golden caramel and toffee, colour #e0a040; vanilla cream and marshmallow white, colour #fff1d0; pale biscuit wafer; a few small jewel-candy accents in amber, mint green and cherry pink; one hard pure white highlight on every glossy surface. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Sugar Sails: one big billowing square ship sail with bold diagonal cherry pink and white candy-cane stripes, puffed out by the wind, on one short thick milk chocolate mast with a small round caramel gold ball on its top and a small cream pennant; two small white four-pointed sparkle stars beside the sail; drawn large, filling the square; no hull, no boat, no water; nothing else in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, pastel pink frosting everywhere, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, person, character, face, ship, boat, hull, water, sea, wave, island, beach."
+      },
+      "submittedAt": "2026-10-17T05:36:00.342Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-candy/icon-tech-sugar-sails-a.png",
+      "rawSheetSha256": "d544d889c0a16ce0b3b9beed59ce22e754f985136db4e6f3fa600ed256bce2df",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0.3274,
+          "footprintWidthShare": 0.6818,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-17T05:36:33.503Z",
+      "usageUsd": 0.007879819737540351,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "A busy three-masted galleon: at 1x its sails read as a ship, not as one candy sail, and the hull carries stray candy dots.",
+        "reviewedAt": "2026-10-17T05:39:33.746Z"
+      }
+    },
+    "icon-tech-sugar-sails-b": {
+      "id": "icon-tech-sugar-sails-b",
+      "asset": "chibi-naval-candy-icon-tech-seamanship",
+      "jobId": "sync-c50b7b8e-d644-4ec8-8e81-1b8baaff4e89",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "naval-candy",
+        "asset": "chibi-naval-candy-icon-tech-seamanship",
+        "subject": "ICON:TECH:CANDY:SEAMANSHIP",
+        "faction": "CANDY",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 99582,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/CANDY.md#prompt-fragment + docs/art/factions/CANDY.md#negative-fragment",
+            "text": "Faction: a cheerful chocolatier's kingdom of living sweets, rich, glossy and silly. Its fixed colours: glossy dark chocolate, colour #4a2412, and milk chocolate, colour #7a4526, as the dark anchor on every piece (a dipped half, a shield, a glaze, boots, a roof); golden caramel and toffee, colour #e0a040; vanilla cream and marshmallow white, colour #fff1d0; pale biscuit wafer; a few small jewel-candy accents in amber, mint green and cherry pink; one hard pure white highlight on every glossy surface.",
+            "negative": "crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, pastel pink frosting everywhere, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+            "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/CANDY.json",
+            "text": "Subject: Sugar Sails: one big billowing square ship sail with bold diagonal cherry pink and white candy-cane stripes, puffed out by the wind, on one short thick milk chocolate mast with a small round caramel gold ball on its top and a small cream pennant; two small white four-pointed sparkle stars beside the sail; drawn large, filling the square; no hull, no boat, no water; nothing else in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "person, character, face, ship, boat, hull, water, sea, wave, island, beach, text"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: a cheerful chocolatier's kingdom of living sweets, rich, glossy and silly. Its fixed colours: glossy dark chocolate, colour #4a2412, and milk chocolate, colour #7a4526, as the dark anchor on every piece (a dipped half, a shield, a glaze, boots, a roof); golden caramel and toffee, colour #e0a040; vanilla cream and marshmallow white, colour #fff1d0; pale biscuit wafer; a few small jewel-candy accents in amber, mint green and cherry pink; one hard pure white highlight on every glossy surface. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Sugar Sails: one big billowing square ship sail with bold diagonal cherry pink and white candy-cane stripes, puffed out by the wind, on one short thick milk chocolate mast with a small round caramel gold ball on its top and a small cream pennant; two small white four-pointed sparkle stars beside the sail; drawn large, filling the square; no hull, no boat, no water; nothing else in the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, pastel pink frosting everywhere, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, person, character, face, ship, boat, hull, water, sea, wave, island, beach",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: a cheerful chocolatier's kingdom of living sweets, rich, glossy and silly. Its fixed colours: glossy dark chocolate, colour #4a2412, and milk chocolate, colour #7a4526, as the dark anchor on every piece (a dipped half, a shield, a glaze, boots, a roof); golden caramel and toffee, colour #e0a040; vanilla cream and marshmallow white, colour #fff1d0; pale biscuit wafer; a few small jewel-candy accents in amber, mint green and cherry pink; one hard pure white highlight on every glossy surface. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Sugar Sails: one big billowing square ship sail with bold diagonal cherry pink and white candy-cane stripes, puffed out by the wind, on one short thick milk chocolate mast with a small round caramel gold ball on its top and a small cream pennant; two small white four-pointed sparkle stars beside the sail; drawn large, filling the square; no hull, no boat, no water; nothing else in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, pastel pink frosting everywhere, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, person, character, face, ship, boat, hull, water, sea, wave, island, beach."
+      },
+      "submittedAt": "2026-10-17T05:36:33.504Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-candy/icon-tech-sugar-sails-b.png",
+      "rawSheetSha256": "ebd13181112a834ce9a8cd55b29949b6a4941e34066f2db2b2e157e8098e1f58",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0.4462,
+          "footprintWidthShare": 0.8529,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-17T05:36:57.306Z",
+      "usageUsd": 0.007238669819302029,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Kept only as the source of icon-tech-sugar-sails-c: a clear candy-striped sail, but a plain wooden hull lit from the right.",
+        "reviewedAt": "2026-10-17T05:39:53.323Z"
+      }
+    },
+    "icon-tech-sugar-sails-c": {
+      "id": "icon-tech-sugar-sails-c",
+      "asset": "chibi-naval-candy-icon-tech-seamanship",
+      "jobId": "207c816b-a41b-462e-b0ee-419ffe189fc1",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-candy",
+        "asset": "chibi-naval-candy-icon-tech-seamanship",
+        "subject": "ICON:TECH:CANDY:SEAMANSHIP",
+        "faction": "CANDY",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 99583,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Make the small hull glossy milk chocolate with a thin caramel gold rim and one hard white highlight on its lower left, and light the whole picture from the lower left: the left edge of the sail brighter, its right edge in a darker cherry pink shade. Add two small white four-pointed sparkle stars beside the sail. Keep the big pink and white candy-cane striped sail, the mast, the caramel ball, the cream pennant, the size, the thick black outline and the style, on a transparent background."
+          }
+        ],
+        "prompt": "Make the small hull glossy milk chocolate with a thin caramel gold rim and one hard white highlight on its lower left, and light the whole picture from the lower left: the left edge of the sail brighter, its right edge in a darker cherry pink shade. Add two small white four-pointed sparkle stars beside the sail. Keep the big pink and white candy-cane striped sail, the mast, the caramel ball, the cream pennant, the size, the thick black outline and the style, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Make the small hull glossy milk chocolate with a thin caramel gold rim and one hard white highlight on its lower left, and light the whole picture from the lower left: the left edge of the sail brighter, its right edge in a darker cherry pink shade. Add two small white four-pointed sparkle stars beside the sail. Keep the big pink and white candy-cane striped sail, the mast, the caramel ball, the cream pennant, the size, the thick black outline and the style, on a transparent background.",
+        "editInstruction": "Make the small hull glossy milk chocolate with a thin caramel gold rim and one hard white highlight on its lower left, and light the whole picture from the lower left: the left edge of the sail brighter, its right edge in a darker cherry pink shade. Add two small white four-pointed sparkle stars beside the sail. Keep the big pink and white candy-cane striped sail, the mast, the caramel ball, the cream pennant, the size, the thick black outline and the style, on a transparent background.",
+        "source": {
+          "recipe": "icon-tech-sugar-sails-b",
+          "candidate": 0,
+          "sha256": "ebd13181112a834ce9a8cd55b29949b6a4941e34066f2db2b2e157e8098e1f58"
+        }
+      },
+      "submittedAt": "2026-10-17T05:37:37.929Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-candy/icon-tech-sugar-sails-c.png",
+      "rawSheetSha256": "01aa3af3a4e4044c302680e8a5e010898b253031e47ad57f3d3d68a35cf2bf01",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0.4308,
+          "footprintWidthShare": 0.8529,
+          "suspect": true
+        },
+        {
+          "bandRows": 9,
+          "groundShare": 0.4308,
+          "footprintWidthShare": 0.8529,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-17T05:38:09.034Z",
+      "usageUsd": 0.00744742676946852,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Kept only as the source of icon-tech-sugar-sails-d: the chocolate hull and the light from the lower left are right, but the two sparkle stars are hollow black diamond outlines that vanish on a dark card.",
+        "reviewedAt": "2026-10-17T05:39:53.446Z"
+      }
+    },
+    "icon-tech-sugar-sails-d": {
+      "id": "icon-tech-sugar-sails-d",
+      "asset": "chibi-naval-candy-icon-tech-seamanship",
+      "jobId": "ffcc162e-fa03-44fd-a1a2-2720385187c7",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-candy",
+        "asset": "chibi-naval-candy-icon-tech-seamanship",
+        "subject": "ICON:TECH:CANDY:SEAMANSHIP",
+        "faction": "CANDY",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 99584,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Remove the two small hollow diamond outlines floating beside the mast, leaving that space empty and transparent. Keep everything else exactly the same: the pink and white candy-cane striped sail lit from the lower left, the mast, the caramel ball, the cream pennant, the glossy milk chocolate hull with its caramel gold rim, the size, the thick black outline and the style, on a transparent background."
+          }
+        ],
+        "prompt": "Remove the two small hollow diamond outlines floating beside the mast, leaving that space empty and transparent. Keep everything else exactly the same: the pink and white candy-cane striped sail lit from the lower left, the mast, the caramel ball, the cream pennant, the glossy milk chocolate hull with its caramel gold rim, the size, the thick black outline and the style, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Remove the two small hollow diamond outlines floating beside the mast, leaving that space empty and transparent. Keep everything else exactly the same: the pink and white candy-cane striped sail lit from the lower left, the mast, the caramel ball, the cream pennant, the glossy milk chocolate hull with its caramel gold rim, the size, the thick black outline and the style, on a transparent background.",
+        "editInstruction": "Remove the two small hollow diamond outlines floating beside the mast, leaving that space empty and transparent. Keep everything else exactly the same: the pink and white candy-cane striped sail lit from the lower left, the mast, the caramel ball, the cream pennant, the glossy milk chocolate hull with its caramel gold rim, the size, the thick black outline and the style, on a transparent background.",
+        "source": {
+          "recipe": "icon-tech-sugar-sails-c",
+          "candidate": 0,
+          "sha256": "7121440ad92838c24175c7824cd461d2ad3d6247ed162434b4dc2f4fbdc464bb"
+        }
+      },
+      "submittedAt": "2026-10-17T05:38:43.670Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-candy/icon-tech-sugar-sails-d.png",
+      "rawSheetSha256": "5c36345985d98d5ca04b4466e9f514c5840c2befd938ce4e06281ae1850b83d9",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0.4286,
+          "footprintWidthShare": 0.8824,
+          "suspect": true
+        },
+        {
+          "bandRows": 9,
+          "groundShare": 0.4286,
+          "footprintWidthShare": 0.8824,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-17T05:39:19.803Z",
+      "usageUsd": 0.007642353746626113,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "A big cherry pink and white candy-cane striped sail on a chocolate mast with a caramel ball and a cream pennant, over a small glossy milk chocolate hull with a caramel rim, lit from the lower left; reads at 1x as a candy sail at sea on light and dark cards. The plate flag is the flat hull bottom: no backdrop.",
+        "reviewedAt": "2026-10-17T05:39:33.871Z"
+      }
+    },
     "ship-a": {
       "id": "ship-a",
       "asset": "chibi-naval-candy-battleship",
@@ -1348,6 +1658,75 @@
       },
       "notes": "Chocolatier look (pulp_wars-jdb.10): the Battleship as a chocolate cake galleon with caramel gold rims and cream sails; nothing pink. The proposal's sample, imported.",
       "acceptedAt": "2026-10-05T16:28:20.752Z"
+    },
+    "chibi-naval-candy-icon-tech-seamanship": {
+      "id": "chibi-naval-candy-icon-tech-seamanship",
+      "subject": "ICON:TECH:CANDY:SEAMANSHIP",
+      "assetClass": "ICON",
+      "status": "ACCEPTED",
+      "recipe": "icon-tech-sugar-sails-d",
+      "candidate": 0,
+      "candidateSha256": "22c4801f1aa721c061bb4baa7580fbd0183548e660bf576966ad03a84a9f9488",
+      "master": {
+        "path": "public/assets/chibi/icons/chibi-naval-candy-icon-tech-seamanship.png",
+        "sha256": "932e3a95cfee43aae15a137c5fa33442195fca3bc2381fbb4c4d98f6caf8ce52",
+        "pixelSha256": "ff83fc0835c82d425c791788c35c321193e3b4340b3da85b7f67bf8dd05146a7",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is",
+        "accent": {
+          "preset": "candy-pink",
+          "spec": {
+            "band": {
+              "hueFrom": 310,
+              "hueTo": 356,
+              "saturationMin": 0.3,
+              "valueMin": 0.3,
+              "hueCentre": 340
+            },
+            "hue": 334,
+            "hueSpread": 0.25,
+            "saturation": {
+              "scale": 0.55,
+              "add": 0.08,
+              "max": 0.5
+            },
+            "value": {
+              "scale": 0.6,
+              "add": 0.42
+            }
+          },
+          "accentPixels": 135,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 9,
+        "groundShare": 0.4286,
+        "footprintWidthShare": 0.8824,
+        "suspect": true
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "A big cherry pink and white candy-cane striped sail on a chocolate mast with a caramel ball and a cream pennant, over a small glossy milk chocolate hull with a caramel rim, lit from the lower left; reads at 1x as a candy sail at sea on light and dark cards. The plate flag is the flat hull bottom: no backdrop.",
+      "acceptedAt": "2026-10-17T05:39:33.871Z"
     },
     "chibi-naval-candy-patrol-boat": {
       "id": "chibi-naval-candy-patrol-boat",

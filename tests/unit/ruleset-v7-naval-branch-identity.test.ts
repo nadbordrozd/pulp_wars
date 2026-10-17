@@ -83,6 +83,8 @@ const SEAMANSHIP_TRICK: Partial<
   MARTIAN: { kind: "HOVER_PODS" },
   // The Dwarf Sea Tunnels (`pulp_wars-5ti.20`).
   DWARF: { kind: "SEA_TUNNELS" },
+  // The Candy Sugar Sails (`pulp_wars-5ti.21`).
+  CANDY: { kind: "SUGAR_SAILS" },
 };
 const THEMED_SUBMARINE: Partial<
   Record<
@@ -118,6 +120,14 @@ const THEMED_SUBMARINE: Partial<
     maxHp: 12,
     abilities: ["ATTACK", "SUBMERGED", "TORPEDO", "ARMOURED"],
   },
+  // The Choco Sub: the Human numbers, Rushing with Sugar Sails
+  // (`pulp_wars-5ti.21`).
+  CANDY: {
+    label: "Choco Sub",
+    cost: 9,
+    maxHp: 12,
+    abilities: ["ATTACK", "SUBMERGED", "TORPEDO", "SUGAR_RUSH"],
+  },
 };
 const THEMED_PATROL_BOAT_ABILITIES: Partial<
   Record<FactionIdV7, readonly string[]>
@@ -125,12 +135,14 @@ const THEMED_PATROL_BOAT_ABILITIES: Partial<
   GOBLIN: ["ATTACK", "RAM", "KABOOM"],
   UNDEAD: ["ATTACK", "RAM", "DROWNED_CREW"],
   DWARF: ["ATTACK", "RAM", "ARMOURED"],
+  CANDY: ["ATTACK", "RAM", "SUGAR_RUSH"],
 };
 const THEMED_BATTLESHIP_ABILITIES: Partial<
   Record<FactionIdV7, readonly string[]>
 > = {
   UNDEAD: ["ATTACK", "PLAGUE", "DROWNED_CREW"],
   DWARF: ["ATTACK", "ARMOURED"],
+  CANDY: ["ATTACK", "SPLAT", "SUGAR_RUSH"],
 };
 
 const NAVAL_BRANCH = [

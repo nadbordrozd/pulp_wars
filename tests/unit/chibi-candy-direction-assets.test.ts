@@ -23,7 +23,10 @@ import {
   CANDY_MARKERS_V7,
   CANDY_PALETTE_V7,
 } from "../../src/assets/chibi-direction-candy-presentation";
-import { CHIBI_NAVAL_FACTION_ART_ASSETS_V7 } from "../../src/assets/chibi-naval-faction-art-manifest";
+import {
+  CHIBI_NAVAL_FACTION_ART_ASSETS_V7,
+  CHIBI_NAVAL_FACTION_TECH_ICON_ASSETS_V7,
+} from "../../src/assets/chibi-naval-faction-art-manifest";
 import { CHIBI_NAVAL_SUBMARINE_ART_ASSETS_V7 } from "../../src/assets/chibi-naval-submarine-art-manifest";
 import type { FactionIdV7 } from "../../src/engine/index";
 import {
@@ -192,6 +195,14 @@ const ALL_MASTERS = [...CHIBI_DIRECTION_CANDY_ART_ASSETS_V7, ...NAVAL_MASTERS];
 const SUBMARINE_MASTERS = CHIBI_NAVAL_SUBMARINE_ART_ASSETS_V7.filter(
   (entry) => entry.faction === "CANDY",
 ).map((entry) => asRegistered(entry.asset));
+/**
+ * The Sugar Sails icon (themed naval branches, `pulp_wars-5ti.21`): a later
+ * asset of the naval batch, listed with every faction's Seamanship icon in
+ * chibi-naval-faction-art-manifest.ts.
+ */
+const SEAMANSHIP_ICONS = CHIBI_NAVAL_FACTION_TECH_ICON_ASSETS_V7.filter(
+  (asset) => asset.subject.startsWith("ICON:TECH:CANDY:"),
+);
 
 describe("Candy production art (pulp_wars-jdb.5)", () => {
   const byId = new Map(
@@ -353,7 +364,10 @@ describe("Candy production art (pulp_wars-jdb.5)", () => {
   it("matches the accepted records of both batches: no mask, no owner area", async () => {
     for (const [batch, entries] of [
       [BATCH, CHIBI_DIRECTION_CANDY_ART_ASSETS_V7],
-      [NAVAL_BATCH, [...NAVAL_MASTERS, ...SUBMARINE_MASTERS]],
+      [
+        NAVAL_BATCH,
+        [...NAVAL_MASTERS, ...SUBMARINE_MASTERS, ...SEAMANSHIP_ICONS],
+      ],
     ] as const) {
       const manifest = await loadBatchManifest(ROOT, batch);
       expect(

@@ -1,0 +1,36 @@
+{
+  "id": "icon-tech-sugar-sails-d",
+  "jobId": "ffcc162e-fa03-44fd-a1a2-2720385187c7",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-candy",
+    "asset": "chibi-naval-candy-icon-tech-seamanship",
+    "subject": "ICON:TECH:CANDY:SEAMANSHIP",
+    "faction": "CANDY",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 99584,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove the two small hollow diamond outlines floating beside the mast, leaving that space empty and transparent. Keep everything else exactly the same: the pink and white candy-cane striped sail lit from the lower left, the mast, the caramel ball, the cream pennant, the glossy milk chocolate hull with its caramel gold rim, the size, the thick black outline and the style, on a transparent background."
+      }
+    ],
+    "prompt": "Remove the two small hollow diamond outlines floating beside the mast, leaving that space empty and transparent. Keep everything else exactly the same: the pink and white candy-cane striped sail lit from the lower left, the mast, the caramel ball, the cream pennant, the glossy milk chocolate hull with its caramel gold rim, the size, the thick black outline and the style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Remove the two small hollow diamond outlines floating beside the mast, leaving that space empty and transparent. Keep everything else exactly the same: the pink and white candy-cane striped sail lit from the lower left, the mast, the caramel ball, the cream pennant, the glossy milk chocolate hull with its caramel gold rim, the size, the thick black outline and the style, on a transparent background.",
+    "editInstruction": "Remove the two small hollow diamond outlines floating beside the mast, leaving that space empty and transparent. Keep everything else exactly the same: the pink and white candy-cane striped sail lit from the lower left, the mast, the caramel ball, the cream pennant, the glossy milk chocolate hull with its caramel gold rim, the size, the thick black outline and the style, on a transparent background.",
+    "source": {
+      "recipe": "icon-tech-sugar-sails-c",
+      "candidate": 0,
+      "sha256": "7121440ad92838c24175c7824cd461d2ad3d6247ed162434b4dc2f4fbdc464bb"
+    }
+  }
+}

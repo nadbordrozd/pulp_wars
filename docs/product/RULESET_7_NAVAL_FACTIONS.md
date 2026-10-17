@@ -1316,6 +1316,89 @@ without Sugar Sails.
 - **Icons:** Sugar Sails (a striped candy sail).
 - **Sound:** the existing Rush, Crash, and Splat cues.
 
+### 8.8 As built (`pulp_wars-5ti.21`, `pulp-wars-poc-7r97`)
+
+Built as above at identity `7r97` (`7r96` is a prior identity; the
+autosave key is `pulpWars.save.v7r97.current`). Every row of 8.2 is a
+registry value and every row of 8.4 an exact preview equal to its result
+in `tests/unit/ruleset-v7-naval-candy.test.ts`; the AI scenarios of 8.6
+are `tests/unit/ruleset-v7-naval-candy-ai.test.ts`. Where the build is
+more precise than the text above:
+
+- **Sugar Sails** is the unlock `SUGAR_SAILS` (capability `sugarSails`)
+  after `RAM` on the Candy Seamanship (`withSeamanshipUnlocksV7`). Row 3
+  of the Rush legality is one helper, `sugarRushFormBlockV7` (in
+  `src/engine/v7/candy.ts`), read by `sugarRushRejectionV7`, which the
+  reducer (with the owner's research) and the public command query (with
+  the viewer's) share, so a Rush afloat is offered exactly when it is
+  accepted: land form passes; any other form that is not a ship is
+  `EMBARKED`; a ship without Sugar Sails is `TECH_REQUIRED { tech:
+"SEAMANSHIP" }`; an icebound ship is `SUGAR_RUSH_NOT_LEGAL { reason:
+"ICEBOUND" }` (in that order, as the Kaboom afloat). The Rush's +1 Move
+  (`sugarRushMoveBonusV7`), its +1 Attack (`sugarRushAttack2V7`, added to
+  the Ram), and the Splat (`attackSplatsV7`) read land or naval form; the
+  state schema lets a `sugarRush` entry name a Candy ship. The Crash, Home
+  Sweet Home, and the End Turn step never read the form, so nothing else
+  changed.
+- **The 8.4 Guard example** is built with the Galleon next to the Guard:
+  from two tiles the Guard's lower Defense against a shot lets the Galleon
+  deal 17 and sink it, and a sunk target is never Splatted. From the next
+  tile it is 14; 5, as the baseline's "Battleship on a Guard". The Guard is
+  then on 3 HP, so the Toffee Trooper's hit kills it with no reply; a
+  surviving Splatted target's no-reply is tested on a Battleship the
+  Galleon shelled and a Tug then rams (`SPLATTED`, 0 taken).
+- **Private research.** Sugar Sails is in no public stat. The public Candy
+  block's `sugarRush` says a ship's role may Rush whatever its owner has
+  researched; the public threat envelope (`queryThreatenedTilesV7`) and
+  the `assumeSugarRush` estimate assume another seat's Sugar Sails, as a
+  hostile Ram is assumed; the viewer's own ships are exact.
+- **The claim checked first.** The text above says the Splat value is
+  "today keyed to the Pie Launcher". It was keyed to the preview's
+  `splatApplied` (which is the `SPLAT` ability, through the engine's
+  land-form gate), so once the engine Splats afloat a Pie Galleon's shot
+  gets the Pie-first offset (`PIE_FIRST_OFFSET_V7`, priority + 3) and the
+  retaliation it saves the own units' adjacent attacks on the same target
+  (`splatSavedHpV7`) with no AI change; the test pins the offset for the
+  Galleon.
+- **Rush at sea (AI).** `planSugarRushV7` and `rushedMovePlanV7` take a
+  ship. The cheap estimate of a Rushed kill adds a ship's Ram bonus against
+  a target afloat (`shipRamCheapBonus2V7`), so a Rushed Ram is considered;
+  the exact Rushed preview then decides. A ship's Rush for a kill is
+  refused when its end tile is in visible lethal reach (the danger without
+  the target it kills, after the reply it takes), whatever the target, the
+  key-role exception of the land rule not applying, unless Home Sweet Home
+  spares it there (`homeSweetHomeSparesAtV7`). The Tug, the Sub (one more
+  tile of Move to a sinking torpedo), and the Galleon (a harder shot from
+  where it stands) are each tested; the Galleon with Sugar Sails Rushes
+  and sinks the coastal Guard outright (17), which is worth more than a
+  Splat, so the "Splat first" scenario is built without Sugar Sails.
+- **Against Sugar Sails (AI).** `src/ai/v7-naval-candy.ts`: a visible
+  hostile Candy ship whose role may Rush and that has no `sugarRush` entry
+  is assumed to Rush on its next turn: one more tile of Move in its threat
+  reach and one more Attack in the danger estimate (with the assumed Ram, a
+  Human Patrol Boat four tiles from a Candy Tug is in lethal reach, 10). A
+  Crashed one is no threat, by the Candy policy's existing reading of the
+  Crash. Splat changes no estimate: the threat estimate already assumes
+  every hostile unit in reach attacks.
+- **Research (AI).** Sugar Sails comes with Seamanship by the naval plan's
+  rules as they are; nothing new.
+- **Text.** The Candy ships list the existing `SUGAR_RUSH` and (the
+  Galleon) `SPLAT` glossary lines (one name, one mechanic; the Sugar Sails
+  card says the Rush needs the technology). The Sugar Sails card says
+  "Sugar Sails: Your ships can Sugar Rush: +1 Move and +1 Attack, then
+  they Crash"; the Pie Galleons card "Pie Galleon: long-range splash
+  damage; whoever it hits cannot strike back this turn". The Candy Help's
+  Splat line names the Pie Galleon and it has an "At sea" line. The dock's
+  Sugar Rush button and the armed Rush (the Rushed reach and the attacks
+  with the bonus on the board) serve a ship as a land unit; the attack
+  preview says "Splat: no strike-back this turn" and "Sugar Rush +1".
+- **Art.** The Sugar Sails card has its own icon
+  (`ICON:TECH:CANDY:SEAMANSHIP`, `chibi-naval-candy-icon-tech-seamanship`,
+  batch `naval-candy`, four jobs); the Gumdrop Tugs and Choco Subs cards
+  show the ships' portraits. The Rush and Crash on a ship are the existing
+  code-drawn markers. No new sound. See
+  [NAVAL_FACTIONS.md](../art/NAVAL_FACTIONS.md#the-candy-sugar-sails-bead-pulp_wars-5ti21).
+
 ## 9. Cult: the Deep Ones
 
 **Theme.** What the Cult sinks feeds the Ancient Ones, and something

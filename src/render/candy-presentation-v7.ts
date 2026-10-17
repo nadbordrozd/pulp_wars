@@ -19,6 +19,7 @@ import {
   roleMechanicsV7,
   standsByOwnCenterV7,
   sugarRushRejectionV7,
+  technologyDisplayNameV7,
   unitFactionV7,
   unitRoleRuleV7,
   type CombatPreviewV7,
@@ -483,8 +484,19 @@ export function sugarRushUnavailableTextV7(
   offered: boolean,
 ): string | null {
   if (offered || unit.ownerId !== view.viewer.id) return null;
-  const rejection = sugarRushRejectionV7(view, unit);
-  if (rejection === null || rejection.code === "UNIT_ROLE_INVALID") return null;
+  const rejection = sugarRushRejectionV7(
+    view,
+    unit,
+    view.viewer.researchedTechs,
+  );
+  // Themed naval branches (`pulp_wars-5ti.21`): a ship without Sugar Sails
+  // has no Rush to explain.
+  if (
+    rejection === null ||
+    rejection.code === "UNIT_ROLE_INVALID" ||
+    rejection.code === "TECH_REQUIRED"
+  )
+    return null;
   if (rejection.code === "UNIT_CRASHED") return SUGAR_RUSH_CRASHED_V7;
   if (rejection.code === "SUGAR_RUSH_NOT_LEGAL")
     return rejection.reason === "RUSHED" ? SUGAR_RUSH_RUSHED_V7 : null;
@@ -646,7 +658,12 @@ export function candyHelpRulesV7(): readonly (readonly [string, string])[] {
     ],
     [
       "Splat",
-      `a unit hit by a ${candyLabelV7("CATAPULT")} can't strike back for the rest of the Candy turn.`,
+      `a unit hit by a ${candyLabelV7("CATAPULT")} or a ${candyLabelV7("BATTLESHIP")} can't strike back for the rest of the Candy turn.`,
+    ],
+    // Themed naval branches, Sugar Sails (`pulp_wars-5ti.21`).
+    [
+      "At sea",
+      `with ${technologyDisplayNameV7("SEAMANSHIP", "CANDY")}, a ${candyLabelV7("PATROL_BOAT")}, ${candyLabelV7("BATTLESHIP")}, or ${candyLabelV7("SUBMARINE")} may Rush too, then Crashes like a land unit; a ${candyLabelV7("BATTLESHIP")} still can't fire after moving, so it Rushes to fire harder from where it stands.`,
     ],
     [
       "Bounce",

@@ -113,10 +113,12 @@ describe("Candy Showcase (section 2.6)", () => {
     expect(
       technologyCapabilitiesV7(player?.researchedTechs ?? [], "CANDY"),
     ).toMatchObject({ homeSweetHome: true, crumbsBite: 3 });
-    // Every land unit may Rush on the first turn; every offer is accepted.
+    // Every land unit may Rush on the first turn, and (themed naval
+    // branches, Sugar Sails, `pulp_wars-5ti.21`) so may the three ships;
+    // every offer is accepted.
     const offered = queryPlayerCommandsV7(viewForV7(state, candy));
     const rushes = offered.filter((command) => command.kind === "SUGAR_RUSH");
-    expect(rushes).toHaveLength(9);
+    expect(rushes).toHaveLength(12);
     for (const command of offered) {
       const result = applyCommandV7(state, candy, command);
       expect(result.accepted, JSON.stringify(command)).toBe(true);
@@ -221,8 +223,9 @@ describe("Candy persistence (section 13)", () => {
       (command) => command.kind === "SUGAR_RUSH",
     );
     for (const command of rushes) play(command);
-    // (Nine with the Jawbreaker, 7r55.)
-    expect(state.sugarRush).toHaveLength(9);
+    // (Nine with the Jawbreaker, 7r55; twelve with the three ships and
+    // Sugar Sails, 7r97.)
+    expect(state.sugarRush).toHaveLength(12);
     // Save mid-Rush.
     const midSave = createSaveEnvelopeV7(
       { state, replay },

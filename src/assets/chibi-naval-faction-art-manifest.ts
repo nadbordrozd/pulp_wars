@@ -622,4 +622,16 @@ export const CHIBI_NAVAL_FACTION_TECH_ICON_ASSETS_V7: readonly ChibiArtAssetV7[]
         "assets/chibi/icons/chibi-naval-dwarf-icon-tech-seamanship.png",
       ),
     },
+    // `pulp_wars-5ti.21`: the Candy Sugar Sails, a candy-cane striped sail
+    // on a small chocolate boat (batch `naval-candy`).
+    {
+      id: "chibi-naval-candy-icon-tech-seamanship",
+      subject: "ICON:TECH:CANDY:SEAMANSHIP",
+      assetClass: "ICON",
+      width: 48,
+      height: 48,
+      url: chibiArtUrl(
+        "assets/chibi/icons/chibi-naval-candy-icon-tech-seamanship.png",
+      ),
+    },
   ];

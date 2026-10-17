@@ -529,11 +529,13 @@ describe("technology cards and Help", () => {
       // trick launches foot units from any beach.)
       // (The Dwarf Ironclads, `pulp_wars-5ti.20`: Sea Tunnels, whose trick
       // lets a Steam Mole tunnel under shallow water; Armoured hulls.)
+      // (The Candy Sugar Sails, `pulp_wars-5ti.21`: the ships Rush.)
       const goblin = faction === "GOBLIN";
       const undead = faction === "UNDEAD";
       const dinosaur = faction === "DINOSAUR";
       const martian = faction === "MARTIAN";
       const dwarf = faction === "DWARF";
+      const candy = faction === "CANDY";
       expect(seamanship.querySelector(".v7-tech-name")?.textContent).toBe(
         goblin
           ? "Powder Kegs"
@@ -545,7 +547,9 @@ describe("technology cards and Help", () => {
                 ? "Hover Pods"
                 : dwarf
                   ? "Sea Tunnels"
-                  : "Boarding",
+                  : candy
+                    ? "Sugar Sails"
+                    : "Boarding",
       );
       seamanship.click();
       const lines = (): string[] =>
@@ -580,10 +584,15 @@ describe("technology cards and Help", () => {
                       "Bow Ram: Steam Launches that moved hit ships with +1 Attack and shove them back",
                       "Sea Tunnels: Your Steam Moles can tunnel under shallow water",
                     ]
-                  : [
-                      "Board: capture an adjacent enemy ship at a third of its HP or less",
-                      "Bow Ram: Patrol Boats that moved hit ships with +1 Attack and shove them back",
-                    ],
+                  : candy
+                    ? [
+                        "Bow Ram: Gumdrop Tugs that moved hit ships with +1 Attack and shove them back",
+                        "Sugar Sails: Your ships can Sugar Rush: +1 Move and +1 Attack, then they Crash",
+                      ]
+                    : [
+                        "Board: capture an adjacent enemy ship at a third of its HP or less",
+                        "Bow Ram: Patrol Boats that moved hit ships with +1 Attack and shove them back",
+                      ],
       );
       const submersibles = requiredButton("tech-submersibles");
       expect(submersibles.querySelector(".v7-tech-name")?.textContent).toBe(
@@ -597,7 +606,9 @@ describe("technology cards and Help", () => {
                 ? "Bathyspheres"
                 : dwarf
                   ? "Diving Bells"
-                  : "Submersibles",
+                  : candy
+                    ? "Choco Subs"
+                    : "Submersibles",
       );
       submersibles.click();
       const unlocks = lines();
@@ -611,7 +622,9 @@ describe("technology cards and Help", () => {
               ? "Bathysphere"
               : dwarf
                 ? "Diving Bell"
-                : "Submarine";
+                : candy
+                  ? "Choco Sub"
+                  : "Submarine";
       expect(unlocks.some((line) => line.includes(sub))).toBe(true);
       expect(unlocks).toContain(
         "Harbours: +1 population from every active Port and Shipyard",

@@ -5,6 +5,8 @@ import {
   HARBOUR_POPULATION_V7,
   RAM_BONUS2_V7,
   RAM_RUN_UP_TILES_V7,
+  SUGAR_RUSH_ATTACK2_V7,
+  SUGAR_RUSH_MOVE_BONUS_V7,
   boardSeaBeastBlockedV7,
   ramBonus2V7,
   roleRamBonus2MaximumV7,
@@ -200,6 +202,11 @@ export function battleshipUnlockNoteV7(faction: FactionIdV7): string {
   // Themed naval branches (`pulp_wars-5ti.17`): the Plague Galleon.
   if (rule.abilities.includes("PLAGUE"))
     return `${rule.label}: long-range splash damage; with ${technologyDisplayNameV7("EXPLOSIVES", faction)} its shot plagues whoever it hits`;
+  // Themed naval branches (`pulp_wars-5ti.21`): the Pie Galleon's Splat.
+  if (rule.abilities.includes("SPLAT"))
+    return `${rule.label}: long-range splash damage; ${pieGalleonSplatRuleV7()
+      .replace(/^Whoever the [A-Za-z ]+ hits/, "whoever it hits")
+      .replace(/\.$/, "")}`;
   // Themed naval branches (`pulp_wars-5ti.20`): the Armoured Ironclad.
   if (navalRoleArmouredV7("BATTLESHIP", faction))
     return `${rule.label}: long-range splash damage; Armoured (${armouredHullRuleV7(
@@ -273,6 +280,25 @@ export function seaTunnelsRuleV7(): string {
 export function seaTunnelsUnlockTextV7(): string {
   return `${technologyDisplayNameV7("SEAMANSHIP", "DWARF")}: ${seaTunnelsRuleV7().replace(/\.$/, "")}`;
 }
+/**
+ * Themed naval branches, Sugar Sails
+ * (docs/product/RULESET_7_NAVAL_FACTIONS.md sections 8.3 and 12,
+ * `pulp_wars-5ti.21`): the Pie Galleon's Splat sentence and the Sugar
+ * Sails sentence, the ships named from the registry and the bonuses read
+ * from the engine constants.
+ */
+export function pieGalleonSplatRuleV7(): string {
+  const galleon = effectiveRoleRuleV7("BATTLESHIP", "CANDY").label;
+  return `Whoever the ${galleon.replace(/^Pie /, "")} hits cannot strike back this turn.`;
+}
+export function sugarSailsRuleV7(): string {
+  return `Your ships can Sugar Rush: +${SUGAR_RUSH_MOVE_BONUS_V7} Move and +${SUGAR_RUSH_ATTACK2_V7 / 2} Attack, then they Crash.`;
+}
+/** The Sugar Sails card line (the Candy `SUGAR_SAILS` unlock). */
+export function sugarSailsUnlockTextV7(): string {
+  return `${technologyDisplayNameV7("SEAMANSHIP", "CANDY")}: ${sugarSailsRuleV7().replace(/\.$/, "")}`;
+}
+
 /**
  * The Sailing card's note of a faction whose Patrol Boat-role ship is
  * Armoured ("Steam Launch: Armoured, every hit of 2 or more does 1 less");

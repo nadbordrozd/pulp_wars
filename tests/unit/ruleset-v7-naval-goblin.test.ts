@@ -228,7 +228,8 @@ describe("the Scrap Fleet registry (section 3.1 and 3.2)", () => {
     // Every other faction has no Fire Rafts; those not yet themed keep
     // Board (the Undead trade it for Drowned Crews, `pulp_wars-5ti.17`, the
     // Martians for Hover Pods, `pulp_wars-5ti.19`, the Dwarves for Sea
-    // Tunnels, `pulp_wars-5ti.20`).
+    // Tunnels, `pulp_wars-5ti.20`, the Candy for Sugar Sails,
+    // `pulp_wars-5ti.21`).
     for (const faction of FACTION_IDS_V7) {
       if (faction === "GOBLIN" || faction === "ICE_FOLK") continue;
       const other = technologyCapabilitiesV7(
@@ -236,7 +237,10 @@ describe("the Scrap Fleet registry (section 3.1 and 3.2)", () => {
         faction,
       );
       expect([other.boarding, other.fireRafts], faction).toEqual([
-        faction !== "UNDEAD" && faction !== "MARTIAN" && faction !== "DWARF",
+        faction !== "UNDEAD" &&
+          faction !== "MARTIAN" &&
+          faction !== "DWARF" &&
+          faction !== "CANDY",
         false,
       ]);
     }

@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r96`, for all nine offered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r97`, for all nine offered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), Candy (`CANDY`), and
 the Cultists (`CULT`). The ninth faction, the Cultists of the Ancient Ones,
@@ -445,6 +445,41 @@ links to another, by Road or by Port. A sea link needs only **Shorecraft**
 the Roads technology, and unexplored water no longer breaks a link. A save,
 replay, or setup of `7r75` is rejected, and the browser autosave has a new
 key.
+`pulp-wars-poc-7r97` (`pulp_wars-5ti.21`, the sixth bead of the
+[themed naval branches](RULESET_7_NAVAL_FACTIONS.md)) is **Sugar Sails**,
+the Candy fleet. The Candy ships are the Human ships' numbers under their
+own names, the **Gumdrop Tug** (`PATROL_BOAT`, 5 Coins), the **Pie
+Galleon** (`BATTLESHIP`, 17), and the **Choco Sub** (`SUBMARINE`, 9), 2
+less at a Shipyard. The Pie Galleon has **Splat** ([section
+23.5](#235-splat)): its primary target, if it survives, joins
+`splattedThisTurn` and strikes back at nothing for the rest of the turn
+(splash victims are not Splatted; `attackSplatsV7` reads land or naval
+form). The three ships have `SUGAR_RUSH`: the Candy Seamanship, shown as
+**Sugar Sails**, is the Ram and the unlock `SUGAR_SAILS` (capability
+`sugarSails`) in place of `COMMAND BOARD`, and with it a ship may Sugar
+Rush afloat ([section 23.2](#232-sugar-rush-and-the-crash), row 3,
+`sugarRushFormBlockV7`, read by the reducer and the command query): +1 Move
+on its ordinary Move and +1 Attack on its first attack (it adds to the
+Ram), then it Crashes at the End Turn as a land unit does (no primary
+action on its owner's next turn; it still moves and strikes back), unless
+Home Sweet Home spares it on or next to an own city center. Without Sugar
+Sails a ship's Rush is `TECH_REQUIRED { tech: "SEAMANSHIP" }`; an icebound
+ship's `SUGAR_RUSH_NOT_LEGAL { reason: "ICEBOUND" }`; an embarked unit
+still never Rushes. A Pie Galleon still cannot fire after a Move, so it
+Rushes to fire harder from where it stands. A ship that dies leaves no
+Crumbs. The five Candy Naval technologies are shown as Gumdrop Tugs,
+Navigation, Pie Galleons, Sugar Sails, and Choco Subs. Sugar Sails is
+private research: the public Candy block says every Candy ship's role may
+Rush, and another seat's estimate and threat reach assume it. The Normal
+AI Rushes a ship for a kill the plain attack does not make (a Ram, a
+torpedo, or a shot after one more tile of Move), never into visible lethal
+reach for its Crashed next turn unless Home Sweet Home spares it, fires a
+Pie Galleon first at the hostile unit its own units are about to attack
+(the Splat value is keyed to the Splat in the preview), and every seat
+counts a hostile Candy ship's Rushed reach and Attack, and reads a Crashed
+one as no threat ([section 16](#16-normal-ai-summary)). The Sugar Sails
+card is new art; no new sound. A save, replay, or setup of `7r96` is
+rejected, and the browser autosave has a new key.
 `pulp-wars-poc-7r96` (`pulp_wars-5ti.20`, the fifth bead of the
 [themed naval branches](RULESET_7_NAVAL_FACTIONS.md)) is **Ironclads and
 Sea Tunnels**, the Dwarf fleet. The Dwarf ships are **Armoured** (the role
@@ -1273,7 +1308,7 @@ the build differs (its sections 20 to 24 list them);
 the values here are current. Where a document and the code disagreed, the
 code's behavior is the rule and is stated below;
 [Known discrepancies](#25-known-discrepancies) lists the open items and the
-resolved ones as of `pulp-wars-poc-7r96`.
+resolved ones as of `pulp-wars-poc-7r97`.
 
 **Terms.** "On the board" means a unit that currently exists (HP above 0).
 **Living** has the narrower revision-13 meaning used by Wail, Plague,
@@ -1376,10 +1411,10 @@ sections here cite.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r96`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Ruleset                                    | `pulp-wars-poc-7r97`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r96.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Browser autosave                           | `pulpWars.save.v7r97.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, `CULT`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`, `CULT_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -4627,11 +4662,11 @@ names every player sees (a cell in bold is the faction's own):
 | `METALLURGY`        | Armoury       | Armoury             | Armoury            | **Triceratops**  | Armoury            | **Mammoths**    | **Steam Tanks**      | **Jawbreakers**         | **Gibbering Masses**    |
 | `FORTIFICATION`     | Fortification | Fortification       | Fortification      | **Nesting**      | **Force Fields**   | **Deep Winter** | **Dig In**           | **Home Sweet Home**     | **Warding Circles**     |
 | `EXPLOSIVES`        | Explosives    | **Pestilence**      | Explosives         | **Wallbreaker**  | **Disintegrator**  | **Brittle**     | **Blasting Charges** | **Peppermint Surprise** | **The Stars Are Right** |
-| `SHORECRAFT`        | Sailing       | **Ghost Ships**     | **Fire Rafts**     | **Dugouts**      | **Skimmers**       | **Rime**        | **Steam Launches**   | Sailing                 | Sailing                 |
+| `SHORECRAFT`        | Sailing       | **Ghost Ships**     | **Fire Rafts**     | **Dugouts**      | **Skimmers**       | **Rime**        | **Steam Launches**   | **Gumdrop Tugs**        | Sailing                 |
 | `NAVIGATION`        | Navigation    | Navigation          | Navigation         | Navigation       | Navigation         | **Pack Ice**    | Navigation           | Navigation              | Navigation              |
-| `NAVAL_ENGINEERING` | Shipbuilding  | **Plague Galleons** | **Dreadnoughts**   | **War Rafts**    | **Hover Cruisers** | **Icebound**    | **Ironclads**        | Shipbuilding            | Shipbuilding            |
-| `SEAMANSHIP`        | Boarding      | **Drowned Crews**   | **Powder Kegs**    | **Horned Prows** | **Hover Pods**     | **Black Ice**   | **Sea Tunnels**      | Boarding                | Boarding                |
-| `SUBMERSIBLES`      | Submersibles  | **Sunken Galleys**  | **Diving Barrels** | **Plesiosaurs**  | **Bathyspheres**   | **Glacier**     | **Diving Bells**     | Submersibles            | Submersibles            |
+| `NAVAL_ENGINEERING` | Shipbuilding  | **Plague Galleons** | **Dreadnoughts**   | **War Rafts**    | **Hover Cruisers** | **Icebound**    | **Ironclads**        | **Pie Galleons**        | Shipbuilding            |
+| `SEAMANSHIP`        | Boarding      | **Drowned Crews**   | **Powder Kegs**    | **Horned Prows** | **Hover Pods**     | **Black Ice**   | **Sea Tunnels**      | **Sugar Sails**         | Boarding                |
+| `SUBMERSIBLES`      | Submersibles  | **Sunken Galleys**  | **Diving Barrels** | **Plesiosaurs**  | **Bathyspheres**   | **Glacier**     | **Diving Bells**     | **Choco Subs**          | Submersibles            |
 
 The rest of this document, the tuning documents, and the faction documents
 name a technology by its ID in title case (Drill, Administration,
@@ -5697,9 +5732,9 @@ an adjacent tile (**Submerged**), and attacking only units afloat, which
 never strike back (**Torpedo**). A Patrol Boat's **Ram** needs Seamanship
 (the interface calls it **Bow Ram**, since the Goblin Scrap Buggy's Overrun
 was displayed as "Ram" until `pulp_wars-2yc.63`). The three ships have the same numbers, names, and
-rules in the Human, Candy, and Cult rosters (each drawn
+rules in the Human and Cult rosters (each drawn
 in its faction's style); the Goblin (`7r92`), Undead (`7r93`), Dinosaur
-(`7r94`), Martian (`7r95`), and Dwarf (`7r96`) ships are their own (the themed naval branches); the Ice Folk
+(`7r94`), Martian (`7r95`), Dwarf (`7r96`), and Candy (`7r97`) ships are their own (the themed naval branches); the Ice Folk
 have none ([section 14](#14-naval-rules)). Public abilities: Patrol Boat `ATTACK`,
 `RAM` (listed whatever its owner has researched); Battleship `ATTACK`;
 Submarine `ATTACK`, `SUBMERGED`, `TORPEDO`.
@@ -6295,11 +6330,18 @@ living, and every Candy land unit is a ground unit:
 | Chocolate Bunny   | `KNIGHT`      | Chivalry          |    9 |  14 |   3 (6) | 1.5 (3) |    2 |     1 |     1 | yes               | yes     | Sugar Rush; Bunny Hop; Thump; no Overrun                    |
 | Jawbreaker        | `SWORDSMAN`   | Metallurgy        |    6 |  16 |   3 (6) | 2.5 (5) |    1 |     1 |     1 | yes               | yes     | Sugar Rush; Rock Hard (`7r55`); Toothache; no Field Defense |
 | Gingerbread Giant | `JUGGERNAUT`  | reward only       |    — |  40 |   4 (8) | 3.5 (7) |    1 |     1 |     1 | yes               | yes     | Sugar Rush; Break Off; Bounce                               |
-| Patrol Boat       | `PATROL_BOAT` | Shorecraft        |    5 |  10 |   2 (4) |   2 (4) |    2 |     1 |     2 | yes               | no      | naval; Ram (Seamanship)                                     |
-| Battleship        | `BATTLESHIP`  | Naval Engineering |   16 |  25 |  5 (10) |   3 (6) |    2 |   1–3 |     3 | no                | no      | naval; splash                                               |
-| Submarine         | `SUBMARINE`   | Submersibles      |    9 |  12 |   4 (8) |   2 (4) |    2 |     1 |     2 | yes               | no      | naval; Submerged; Torpedo                                   |
+| Gumdrop Tug¹⁴     | `PATROL_BOAT` | Shorecraft        |    5 |  10 |   2 (4) |   2 (4) |    2 |     1 |     2 | yes               | no      | naval; Ram and Sugar Rush (Sugar Sails)                     |
+| Pie Galleon¹⁴     | `BATTLESHIP`  | Naval Engineering |   17 |  25 |  5 (10) |   3 (6) |    2 |   1–3 |     3 | no                | no      | naval; splash; Splat; Sugar Rush (Sugar Sails)              |
+| Choco Sub¹⁴       | `SUBMARINE`   | Submersibles      |    9 |  12 |   4 (8) |   2 (4) |    2 |     1 |     2 | yes               | no      | naval; Submerged; Torpedo; Sugar Rush (Sugar Sails)         |
 
 ¹³ Gumball Gunner Sight becomes 2 with Fieldcraft.
+
+¹⁴ Sugar Sails (`pulp-wars-poc-7r97`, `pulp_wars-5ti.21`,
+[themed naval branches section 8](RULESET_7_NAVAL_FACTIONS.md#8-candy-sugar-sails)):
+the Human ships' numbers under their own names, the Pie Galleon 1 Coin
+dearer (15 at a Shipyard) with the Pie Launcher's Splat; with the Candy
+Seamanship, shown as Sugar Sails (the Ram and the ships' Sugar Rush, no
+Board), each ship may Sugar Rush afloat.
 
 - **Toffee Trooper** has Fighter parity (cost, Attack, Defense, Move; capture,
   Pillage with Raiding, Disband, ordinary Promotion, the advance after a
@@ -7712,13 +7754,24 @@ Every rule that names "naval units", "ships", or "boats" covers all three.
   Frozen or shattered, and a Frozen unit cannot embark. `THROW_BOLAS`,
   `COLD_SNAP`, `FROST_BOLT`, and `FREEZE` move no unit and touch no dock,
   so they are not on the blockade-event list below.
-- **Candy boats** are the Human Patrol Boat, Battleship, and Submarine too
-  (drawn in the Candy style): one slot, ordinary Promotion, no Candy rule (no Sugar Rush,
-  and a death afloat leaves no Crumbs). Candy land units embark like Human
-  units; an embarked unit cannot Rush, a Rushed unit that embarks still
-  Crashes, and a Crashed embarked unit may land. A boat that attacks a
-  Marshmallow or a Golem from distance 1 is bounced over water, and Splat
-  applies to boats and embarked units
+- **Candy boats** are the **Sugar Sails fleet** (`7r97`,
+  [themed branches section 8](RULESET_7_NAVAL_FACTIONS.md#8-candy-sugar-sails)):
+  the **Gumdrop Tug** (Patrol Boat, 5 Coins), the **Pie Galleon**
+  (Battleship, 17), and the **Choco Sub** (Submarine, 9), 2 less at a
+  Shipyard, the Human numbers otherwise, drawn in the Candy style, one
+  slot, ordinary Promotion. The Pie Galleon's shot **Splats** its primary
+  target, as the Pie Launcher's does (never a splash victim). Their
+  Seamanship, **Sugar Sails**, is the Ram and `SUGAR_SAILS` (capability
+  `sugarSails`) instead of Board: a Candy ship never boards. With Sugar
+  Sails each ship may **Sugar Rush** afloat (+1 Move, +1 Attack on its
+  first attack, added to the Ram) and Crashes at its owner's End Turn
+  unless Home Sweet Home spares it; a Crashed ship still moves, strikes
+  back, and blockades, and an icebound ship cannot Rush. Sugar Sails is
+  private research. A death afloat leaves no Crumbs. Candy land units
+  embark like Human units; an embarked unit cannot Rush, a Rushed unit
+  that embarks still Crashes, and a Crashed embarked unit may land. A boat
+  that attacks a Marshmallow or a Golem from distance 1 is bounced over
+  water, and Splat applies to boats and embarked units
   ([section 23.9](#239-interactions-with-other-rules)).
 - **Dwarf boats** are the **Ironclad fleet** (`7r96`,
   [themed branches section 7](RULESET_7_NAVAL_FACTIONS.md#7-dwarves-ironclads-and-sea-tunnels)):
@@ -8788,6 +8841,23 @@ Harbours from it.
   on an Armoured hull afloat that does not sink it and deals less than its
   reply takes (a Patrol Boat's Ram on an Ironclad: 6 dealt, 7 taken). A
   mound a sea tunnel leaves on the far coast is read as every mound.
+- **Sugar Sails** (`7r97`, `pulp_wars-5ti.21`, `src/ai/v7-candy.ts`,
+  `src/ai/v7-naval-candy.ts`). The Candy ships are read by role, so a
+  Candy seat trains them as every seat does and its Pie Galleon shells the
+  coast. The Candy Rush plan takes a ship with Sugar Sails: it Rushes
+  (priority 1179, or 1279 for a unit that threatens an own city) when the
+  Rushed exchange, a Ram or a torpedo after one more tile of Move or a
+  harder shot from where it stands, kills a target no plain attack of the
+  ship kills, and never when the ship's end tile is in visible lethal reach
+  for its next turn (when it is Crashed), unless Home Sweet Home spares it
+  there; the Move of the plan is the kill tier. The Splat value of
+  "Pie first" was already keyed to the preview's `splatApplied`, so a Pie
+  Galleon fires before the own units that attack the same hostile unit
+  (`PIE_FIRST_OFFSET_V7`, and the retaliation it saves). Sugar Sails comes
+  with the Seamanship of the naval plan. Every other seat assumes a
+  hostile Candy ship's Sugar Sails (as a hostile Ram): its threat reach
+  counts one more tile of Move and its attack one more Attack, unless it is
+  Rushed already or Crashed (no threat on its next turn).
 - **The frozen sea** (`pulp_wars-5ti.5`, `src/ai/v7-frozen-sea.ts`). An
   Ice Folk seat has no ship and no naval plan; it has an **ice plan**
   where a seafaring seat's naval plan would activate (every known
@@ -13718,14 +13788,14 @@ Candy unit leaves Crumbs as a splash death does.
 **`SUGAR_RUSH { kind, unitId }`** is not a primary action and not a Move;
 it costs nothing. Legality, in order (all rejections atomic):
 
-| #   | Requirement                                                                                              | Rejection                                     |
-| --- | -------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
-| 1   | `unitId` is the actor's own unit on the board.                                                           | the ordinary unit errors                      |
-| 2   | Its role, under its kind, has `SUGAR_RUSH` (every Candy land role).                                      | `UNIT_ROLE_INVALID { role }`                  |
-| 3   | It is in land form.                                                                                      | `SUGAR_RUSH_NOT_LEGAL { reason: "EMBARKED" }` |
-| 4   | It is not Crashed.                                                                                       | `UNIT_CRASHED { unitId }`                     |
-| 5   | It is not already Rushed.                                                                                | `SUGAR_RUSH_NOT_LEGAL { reason: "RUSHED" }`   |
-| 6   | It has not moved (a landing is a Move), has used no primary action, and is not handled (has not Waited). | `UNIT_ALREADY_ACTED`                          |
+| #   | Requirement                                                                                                                            | Rejection                                                                                                                                                                        |
+| --- | -------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | `unitId` is the actor's own unit on the board.                                                                                         | the ordinary unit errors                                                                                                                                                         |
+| 2   | Its role, under its kind, has `SUGAR_RUSH` (every Candy land role and, since `7r97`, the three Candy ships).                           | `UNIT_ROLE_INVALID { role }`                                                                                                                                                     |
+| 3   | It is in land form, or (`7r97`) in `NAVAL` form when its kind's capabilities under its owner have `sugarSails` and it is not icebound. | `SUGAR_RUSH_NOT_LEGAL { reason: "EMBARKED" }`; a ship without Sugar Sails `TECH_REQUIRED { tech: "SEAMANSHIP" }`; an icebound ship `SUGAR_RUSH_NOT_LEGAL { reason: "ICEBOUND" }` |
+| 4   | It is not Crashed.                                                                                                                     | `UNIT_CRASHED { unitId }`                                                                                                                                                        |
+| 5   | It is not already Rushed.                                                                                                              | `SUGAR_RUSH_NOT_LEGAL { reason: "RUSHED" }`                                                                                                                                      |
+| 6   | It has not moved (a landing is a Move), has used no primary action, and is not handled (has not Waited).                               | `UNIT_ALREADY_ACTED`                                                                                                                                                             |
 
 A Frozen unit cannot Rush (`UNIT_FROZEN`). The entry
 `{ unitId, phase: "RUSHED" }` joins `sugarRush`; event
@@ -13739,7 +13809,8 @@ plus 1). Nothing else changes.
   and deep-snow stops, ZOC, a dock that ends the Move by embarking, the
   Glaze, and Stuck's one step).
 - **+1 Attack** (`SUGAR_RUSH_ATTACK2_V7` 2 half-units) on its **first**
-  `ATTACK` of the turn, in land form, at any range, **unless** Charge or
+  `ATTACK` of the turn, in land form or as a ship (`7r97`: it adds to the
+  Ram), at any range, **unless** Charge or
   Inspired applies to that attack. Never on retaliation or on a later
   attack. The combat preview carries `sugarRushApplied`.
 - **No Rush perks** (the Candy redesign): the role mechanic `rushPerk` and
@@ -13882,8 +13953,9 @@ before the landing's `TILES_REVEALED`
 `splattedThisTurn` holds the units Splatted during the active seat's turn;
 it is emptied at that seat's End Turn.
 
-- After an `ATTACK` by a land-form unit whose role, under its kind, has
-  `SPLAT` (the Pie Launcher), the target joins the list if it is still on
+- After an `ATTACK` by a land-form or naval-form unit whose role, under
+  its kind, has `SPLAT` (the Pie Launcher, and since `7r97` the Pie
+  Galleon), the target joins the list if it is still on
   the board, in any form, whether the hit went to HP or wholly to a Shield.
   The Giant Spider is never Splatted. The Pie's own retaliation never
   Splats. The preview carries `splatApplied`.
@@ -14125,7 +14197,7 @@ two events come after the idle-recovery events and before
 | Curiosities, the Giant Spider | Crumbs are never left on a Fountain or a Shrine. The Spider's kills leave Crumbs; it is never Splatted, Stuck, given Toothache, hit by a Ricochet or a Thump, or bounced, and never eats Crumbs; a Re-bake scoops Crumbs from under it.                                                                                                                                                                                                                                                                                                                                                                                           |
 | Missions                      | A `MISSION` setup accepts a Candy seat and starts the seven lists empty; the teaser chapter does not use the Candy.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | Capture, siege, capacity      | Capture is a primary action: a Crashed unit cannot capture, and still besieges. A re-baked unit takes a slot of the Confectioner's home city, which may go one unit over capacity.                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| Boats and embarking           | Candy boats are the Human boats: no Rush, no Crumbs, no redesign ability. An embarked unit cannot Rush; a Rushed unit that embarks still Crashes; a Crashed embarked unit may land. A boat attacking a Marshmallow from distance 1 is bounced onto water. Splat, Stuck, Toothache, Ricochet, and Thump apply to boats and embarked units (a Stuck boat moves one step); a copy is never baked onto water or ice, and Glaze is land only.                                                                                                                                                                                          |
+| Boats and embarking           | Candy boats are the Sugar Sails fleet (`7r97`: Gumdrop Tug, Pie Galleon, Choco Sub): with Sugar Sails they Rush and Crash; the Pie Galleon Splats; no Crumbs, no redesign ability. An embarked unit cannot Rush; a Rushed unit that embarks still Crashes; a Crashed embarked unit may land. A boat attacking a Marshmallow from distance 1 is bounced onto water. Splat, Stuck, Toothache, Ricochet, and Thump apply to boats and embarked units (a Stuck boat moves one step); a copy is never baked onto water or ice, and Glaze is land only.                                                                                 |
 | Achievements                  | Unchanged. Muster counts the Candy trainable roles (a re-baked unit at once); Slayer never counts a Peppermint death.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 
 ### 23.10 Commands, events, errors, and queries

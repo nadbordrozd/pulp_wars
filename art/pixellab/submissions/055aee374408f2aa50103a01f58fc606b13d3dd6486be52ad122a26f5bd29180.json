@@ -1,0 +1,36 @@
+{
+  "id": "icon-tech-sugar-sails-c",
+  "jobId": "207c816b-a41b-462e-b0ee-419ffe189fc1",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-candy",
+    "asset": "chibi-naval-candy-icon-tech-seamanship",
+    "subject": "ICON:TECH:CANDY:SEAMANSHIP",
+    "faction": "CANDY",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 99583,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Make the small hull glossy milk chocolate with a thin caramel gold rim and one hard white highlight on its lower left, and light the whole picture from the lower left: the left edge of the sail brighter, its right edge in a darker cherry pink shade. Add two small white four-pointed sparkle stars beside the sail. Keep the big pink and white candy-cane striped sail, the mast, the caramel ball, the cream pennant, the size, the thick black outline and the style, on a transparent background."
+      }
+    ],
+    "prompt": "Make the small hull glossy milk chocolate with a thin caramel gold rim and one hard white highlight on its lower left, and light the whole picture from the lower left: the left edge of the sail brighter, its right edge in a darker cherry pink shade. Add two small white four-pointed sparkle stars beside the sail. Keep the big pink and white candy-cane striped sail, the mast, the caramel ball, the cream pennant, the size, the thick black outline and the style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Make the small hull glossy milk chocolate with a thin caramel gold rim and one hard white highlight on its lower left, and light the whole picture from the lower left: the left edge of the sail brighter, its right edge in a darker cherry pink shade. Add two small white four-pointed sparkle stars beside the sail. Keep the big pink and white candy-cane striped sail, the mast, the caramel ball, the cream pennant, the size, the thick black outline and the style, on a transparent background.",
+    "editInstruction": "Make the small hull glossy milk chocolate with a thin caramel gold rim and one hard white highlight on its lower left, and light the whole picture from the lower left: the left edge of the sail brighter, its right edge in a darker cherry pink shade. Add two small white four-pointed sparkle stars beside the sail. Keep the big pink and white candy-cane striped sail, the mast, the caramel ball, the cream pennant, the size, the thick black outline and the style, on a transparent background.",
+    "source": {
+      "recipe": "icon-tech-sugar-sails-b",
+      "candidate": 0,
+      "sha256": "ebd13181112a834ce9a8cd55b29949b6a4941e34066f2db2b2e157e8098e1f58"
+    }
+  }
+}

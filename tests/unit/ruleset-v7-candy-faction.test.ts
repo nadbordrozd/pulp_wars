@@ -436,10 +436,23 @@ describe("Candy roster (section 3)", () => {
         roleMechanicsV7(role, "CANDY"),
       );
     }
-    // The boats are the Human boats: no Candy rule applies to them.
+    // Themed naval branches, Sugar Sails (`pulp_wars-5ti.21`): the ships
+    // are the Human ships under their own names, with Sugar Rush (and the
+    // Galleon's Splat, at 17 Coins); no land Candy rule applies to them.
     for (const role of ["PATROL_BOAT", "BATTLESHIP"] as const) {
-      expect(effectiveRoleRuleV7(role, "CANDY")).toEqual(
-        effectiveRoleRuleV7(role, "ORIGINAL"),
+      expect({
+        ...effectiveRoleRuleV7(role, "CANDY"),
+        label: "",
+        cost: 0,
+        abilities: [],
+      }).toEqual({
+        ...effectiveRoleRuleV7(role, "ORIGINAL"),
+        label: "",
+        cost: 0,
+        abilities: [],
+      });
+      expect(effectiveRoleRuleV7(role, "CANDY").abilities).toContain(
+        "SUGAR_RUSH",
       );
       expect(roleMechanicsV7(role, "CANDY")).toMatchObject({
         leavesCrumbs: false,
@@ -447,9 +460,6 @@ describe("Candy roster (section 3)", () => {
         hop: false,
         thumpDamage: 0,
       });
-      expect(effectiveRoleRuleV7(role, "CANDY").abilities).not.toContain(
-        "SUGAR_RUSH",
-      );
     }
   });
 
@@ -714,6 +724,13 @@ describe("Candy technology (section 4)", () => {
           ...human.unlocks,
           { kind: "PEPPERMINT_SURPRISE" },
         ]);
+      // Themed naval branches (`pulp_wars-5ti.21`): Sugar Sails, the Ram
+      // and the ships' Rush instead of Board.
+      else if (human.id === "SEAMANSHIP")
+        expect(candy.unlocks).toEqual([
+          { kind: "RAM" },
+          { kind: "SUGAR_SAILS" },
+        ]);
       else expect(candy.unlocks).toEqual(human.unlocks);
     });
     expect(TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7.CANDY).toEqual({
@@ -724,6 +741,11 @@ describe("Candy technology (section 4)", () => {
       SAWMILLING: "Pie Launchers",
       CHIVALRY: "Chocolate Bunnies",
       METALLURGY: "Jawbreakers",
+      // Themed naval branches, Sugar Sails (`pulp_wars-5ti.21`).
+      SHORECRAFT: "Gumdrop Tugs",
+      NAVAL_ENGINEERING: "Pie Galleons",
+      SEAMANSHIP: "Sugar Sails",
+      SUBMERSIBLES: "Choco Subs",
     });
     expect(technologyNameV7("FORTIFICATION", "CANDY")).toBe("Home Sweet Home");
     expect(technologyNameV7("EXPLOSIVES", "CANDY")).toBe("Peppermint Surprise");
@@ -763,8 +785,11 @@ describe("Candy technology (section 4)", () => {
     const human = technologyCapabilitiesV7(all, "ORIGINAL");
     // (The ninth unit, 7r55: every faction has the heavy line role.)
     expect(candy.trainableRoles).toEqual(human.trainableRoles);
+    // Themed naval branches (`pulp_wars-5ti.21`): no Board (Sugar Sails).
     expect(candy.commands).toEqual(
-      human.commands.filter((command) => command !== "BUILD_FIELD_DEFENSE"),
+      human.commands.filter(
+        (command) => command !== "BUILD_FIELD_DEFENSE" && command !== "BOARD",
+      ),
     );
     expect(candy.commands).toContain("BLAST_MOUNTAIN");
   });

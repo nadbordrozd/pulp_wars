@@ -502,7 +502,7 @@ export type RuleErrorCodeV7 =
   | "BARRICADE_NOT_LEGAL"
   // The Candy revision: a primary action or a Sugar Rush of a Crashed unit
   // (`UNIT_CRASHED { unitId }`), an illegal Sugar Rush (`EMBARKED`,
-  // `RUSHED`), Re-bake (`EMBARKED`, `NO_HOME`, `NO_CRUMBS`, `TILE`), or
+  // `RUSHED`, and for a ship `ICEBOUND`), Re-bake (`EMBARKED`, `NO_HOME`, `NO_CRUMBS`, `TILE`), or
   // Sugar Toss (`EMBARKED`, `OUT_OF_RANGE`, `ALREADY_TOSSED`).
   | "UNIT_CRASHED"
   | "SUGAR_RUSH_NOT_LEGAL"

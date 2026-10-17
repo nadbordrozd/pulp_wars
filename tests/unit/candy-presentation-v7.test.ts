@@ -151,6 +151,8 @@ describe("Candy text (section 15.2)", () => {
       "Crumbs",
       "Re-bake",
       "Splat",
+      // Themed naval branches, Sugar Sails (`pulp_wars-5ti.21`).
+      "At sea",
       "Bounce",
       "Sugar Toss",
       // The Candy redesign (`pulp_wars-jdb.12`): Top-Up replaces Frosting;

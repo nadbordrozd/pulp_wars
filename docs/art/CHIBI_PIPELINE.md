@@ -2186,3 +2186,18 @@ A fresh `icon` for the Dwarf Seamanship in batch `naval-dwarf`
   on the drill like a cap; the seed that drew a separate waterline above a
   drill machine read as "under the sea", and one edit removed the steam
   puffs that floated above its water.
+
+## The Candy Sugar Sails icon (bead `pulp_wars-5ti.21`)
+
+A fresh `icon` for the Candy Seamanship in batch `naval-candy`
+([what and why](NAVAL_FACTIONS.md#the-candy-sugar-sails-bead-pulp_wars-5ti21)).
+
+- **"No hull" draws a hull**: asked for a lone sail on a mast with "no
+  hull, no boat" in the subject and "ship, boat, hull" in the negative,
+  both seeds drew a whole boat; a sail is read as part of a ship.
+- **Sparkles added by an edit come out hollow**: "two small white
+  four-pointed sparkle stars" became black diamond outlines with a
+  transparent inside, invisible on a dark card; a second edit removed them.
+- **Light direction by edit**: "light the whole picture from the lower
+  left" moved the highlight of the sail and the hull in one edit without
+  changing the shapes.

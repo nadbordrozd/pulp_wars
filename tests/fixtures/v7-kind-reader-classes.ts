@@ -569,6 +569,9 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/render/naval-presentation-v7.ts::navalRoleArmouredV7": "SEAT",
   "src/render/naval-presentation-v7.ts::seaTunnelsRuleV7": "SEAT",
   "src/render/naval-presentation-v7.ts::patrolBoatUnlockNotesV7": "SEAT",
+  // Themed naval branches, Sugar Sails (`pulp_wars-5ti.21`): the Pie
+  // Galleon's Splat sentence names the Candy registration's Galleon.
+  "src/render/naval-presentation-v7.ts::pieGalleonSplatRuleV7": "SEAT",
   "src/render/goblin-presentation-v7.ts::<module>": "SEAT",
   // A prize under its new flag: its kind follows its new owner (a ship is
   // never mind-controlled), so the prize's maximum HP is its captor seat's

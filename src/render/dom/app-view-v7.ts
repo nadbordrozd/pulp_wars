@@ -597,6 +597,7 @@ import {
   drownedCrewsUnlockTextV7,
   hoverPodsUnlockTextV7,
   seaTunnelsUnlockTextV7,
+  sugarSailsUnlockTextV7,
   patrolBoatUnlockNotesV7,
   battleshipUnlockNoteV7,
   SHORECRAFT_EMBARK_NOTE_V7,
@@ -14599,7 +14600,7 @@ export class Ruleset7DomAppView {
 
   /**
    * The Candy revision (section 15.1): the Sugar Rush button of an own
-   * Candy land unit, the Re-bake button of an own Confectioner and the
+   * Candy land unit or ship, the Re-bake button of an own Confectioner and the
    * Sugar Toss button of an own Gunner; the Candy redesign's (bead
    * pulp_wars-jdb.14) Top-Up button of an own Confectioner. With a legal
    * choice it arms the Rush or aims the ability on the board (pressed while
@@ -14615,7 +14616,10 @@ export class Ruleset7DomAppView {
     if (
       unit === undefined ||
       unit.ownerId !== view.viewer.id ||
-      unit.form !== "LAND" ||
+      // Themed naval branches (`pulp_wars-5ti.21`): a Candy ship's Rush
+      // (Sugar Sails) has the same button; its role has no other Candy
+      // ability.
+      (unit.form !== "LAND" && unit.form !== "NAVAL") ||
       unitFactionV7(view, unit) !== "CANDY" ||
       this.#snapshot.offeredCommands.length === 0
     )
@@ -16201,7 +16205,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   const aiHeadStartCoins =
     draft.mapType === "SHOWCASE" ? 0 : draft.aiHeadStartCoins;
   return {
-    rulesetId: "pulp-wars-poc-7r96",
+    rulesetId: "pulp-wars-poc-7r97",
     seed,
     width,
     height: width,
@@ -16382,6 +16386,9 @@ function effectDescription(
     // Themed naval branches (`pulp_wars-5ti.20`): the Dwarf Sea Tunnels.
     case "SEA_TUNNELS":
       return seaTunnelsUnlockTextV7();
+    // Themed naval branches (`pulp_wars-5ti.21`): the Candy Sugar Sails.
+    case "SUGAR_SAILS":
+      return sugarSailsUnlockTextV7();
     case "HARBOURS":
       return harboursUnlockTextV7(effect.population);
     // The frozen sea (RULESET_7_NAVAL_BRANCH.md section 8.2).
@@ -16720,6 +16727,7 @@ function technologyEffectGroupIdV7(
     case "DROWNED_CREWS":
     case "HOVER_PODS":
     case "SEA_TUNNELS":
+    case "SUGAR_SAILS":
     case "HARBOURS":
     case "ICEBOUND":
     case "BLACK_ICE":

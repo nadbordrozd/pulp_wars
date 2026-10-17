@@ -17,8 +17,10 @@ import {
   unitRoleMechanicsV7,
   unitRoleRuleV7,
   type EffectiveRoleRuleV7,
+  unitIsIceboundV7,
   type FactionRosterV7,
   type FrozenLookupV7,
+  type IceLookupV7,
 } from "../rules/ruleset-v7";
 import type {
   CoordV7,
@@ -27,6 +29,7 @@ import type {
   FactionIdV7,
   GameStateV7,
   SugarRushStatusV7,
+  TechnologyIdV7,
   TerrainIdV7,
   UnitActivationV7,
   UnitFormV7,
@@ -137,26 +140,67 @@ export type SugarRushRejectionV7 =
   | { readonly code: "UNIT_ROLE_INVALID" }
   | {
       readonly code: "SUGAR_RUSH_NOT_LEGAL";
-      readonly reason: "EMBARKED" | "RUSHED";
+      readonly reason: "EMBARKED" | "RUSHED" | "ICEBOUND";
     }
+  | { readonly code: "TECH_REQUIRED"; readonly tech: "SEAMANSHIP" }
   | { readonly code: "UNIT_CRASHED" }
   | { readonly code: "UNIT_ALREADY_ACTED" };
 
 /**
+ * Themed naval branches (docs/product/RULESET_7_NAVAL_FACTIONS.md section
+ * 8.3 C2, `pulp_wars-5ti.21`): row 3 of the Sugar Rush legality, "in land
+ * form, or in `NAVAL` form when its kind's capabilities under its owner
+ * have `sugarSails`". Null in land form. An embarked unit (or any other
+ * form that is not a ship) is `EMBARKED`; a ship whose kind's capabilities
+ * under its controller lack Sugar Sails needs `SEAMANSHIP`; an icebound ship
+ * is `ICEBOUND` (in that order, as the Kaboom afloat).
+ */
+export function sugarRushFormBlockV7(
+  lookup: FactionRosterV7 & IceLookupV7,
+  unit: CandyUnitFactsV7 & { readonly at: CoordV7 },
+  controllerResearchedTechs: readonly TechnologyIdV7[],
+): SugarRushRejectionV7 | null {
+  if (unit.form === "LAND") return null;
+  if (unit.form !== "NAVAL")
+    return { code: "SUGAR_RUSH_NOT_LEGAL", reason: "EMBARKED" };
+  if (!unitCapabilitiesV7(lookup, unit, controllerResearchedTechs).sugarSails)
+    return { code: "TECH_REQUIRED", tech: "SEAMANSHIP" };
+  if (unitIsIceboundV7(lookup, unit))
+    return { code: "SUGAR_RUSH_NOT_LEGAL", reason: "ICEBOUND" };
+  return null;
+}
+
+/** Whether the unit's form carries the Rush and the Splat (land, or a ship). */
+function rushFormV7(form: UnitFormV7): boolean {
+  return form === "LAND" || form === "NAVAL";
+}
+
+/**
  * THE Sugar Rush legality (section 5.1, rows 2 to 6), shared by the reducer
  * and the public command query: the unit's role, under its kind, has
- * `SUGAR_RUSH`; it is in land form; it is neither Crashed nor Rushed; and it
- * has not moved (a landing is a Move), used a primary action, or been
- * handled. A sluggish unit may Rush.
+ * `SUGAR_RUSH`; it is in land form, or a ship with Sugar Sails that is not
+ * icebound (`sugarRushFormBlockV7`, themed naval branches); it is neither
+ * Crashed nor Rushed; and it has not moved (a landing is a Move), used a
+ * primary action, or been handled. A sluggish unit may Rush.
+ * `controllerResearchedTechs` is the research of the unit's controller (the
+ * reducer's owner, the query's viewer).
  */
 export function sugarRushRejectionV7(
-  lookup: FactionRosterV7 & SugarRushLookupV7,
-  unit: CandyUnitFactsV7 & { readonly activation: UnitActivationV7 },
+  lookup: FactionRosterV7 & SugarRushLookupV7 & IceLookupV7,
+  unit: CandyUnitFactsV7 & {
+    readonly at: CoordV7;
+    readonly activation: UnitActivationV7;
+  },
+  controllerResearchedTechs: readonly TechnologyIdV7[],
 ): SugarRushRejectionV7 | null {
   if (!unitRoleRuleV7(lookup, unit).abilities.includes("SUGAR_RUSH"))
     return { code: "UNIT_ROLE_INVALID" };
-  if (unit.form !== "LAND")
-    return { code: "SUGAR_RUSH_NOT_LEGAL", reason: "EMBARKED" };
+  const formBlock = sugarRushFormBlockV7(
+    lookup,
+    unit,
+    controllerResearchedTechs,
+  );
+  if (formBlock !== null) return formBlock;
   const phase = sugarRushPhaseV7(lookup, unit.id);
   if (phase === "CRASHED") return { code: "UNIT_CRASHED" };
   if (phase === "RUSHED")
@@ -174,7 +218,9 @@ export function sugarRushRejectionV7(
  * Section 5.2: the extra Move of a unit's ordinary `MOVE`: a Rushed
  * land-form unit has `SUGAR_RUSH_MOVE_BONUS_V7`, except on an Escape Move,
  * which has the ordinary budget (no Candy unit has Escape since the Candy
- * redesign; a Rushed unit's entry survives Mind Control).
+ * redesign; a Rushed unit's entry survives Mind Control). Themed naval
+ * branches (`pulp_wars-5ti.21`): a Rushed ship too (its entry exists only
+ * through a legal Rush afloat); never an embarked unit.
  */
 export function sugarRushMoveBonusV7(
   lookup: SugarRushLookupV7,
@@ -184,7 +230,7 @@ export function sugarRushMoveBonusV7(
     readonly activation: { readonly escapeAvailable: boolean };
   },
 ): number {
-  return unit.form === "LAND" &&
+  return rushFormV7(unit.form) &&
     !unit.activation.escapeAvailable &&
     unitIsRushedV7(lookup, unit.id)
     ? SUGAR_RUSH_MOVE_BONUS_V7
@@ -196,7 +242,11 @@ export function sugarRushMoveBonusV7(
  * Rushed unit's first attack this turn, unless Charge or Inspired applies
  * (the Rush bonus never adds to either). `assumeRushed` evaluates a unit
  * that could Rush (its role has `SUGAR_RUSH` and it is not Crashed) as
- * Rushed, for the estimate option `assumeSugarRush`.
+ * Rushed, for the estimate option `assumeSugarRush`. Themed naval
+ * branches (`pulp_wars-5ti.21`): a ship's first attack too (it adds to the
+ * Ram); with `assumeRushed` a ship is evaluated as Rushed when its role has
+ * `SUGAR_RUSH` (another seat's Sugar Sails is private and assumed, as the
+ * Ram is; the AI and the interface ask it only of a Rush that is offered).
  */
 export function sugarRushAttack2V7(
   lookup: FactionRosterV7 & SugarRushLookupV7,
@@ -210,7 +260,7 @@ export function sugarRushAttack2V7(
   },
 ): number {
   if (
-    unit.form !== "LAND" ||
+    !rushFormV7(unit.form) ||
     unit.activation.attacksUsed !== 0 ||
     facts.chargeApplied ||
     facts.inspiredApplied
@@ -235,7 +285,7 @@ function countsAsRushedV7(
   return (
     assumeRushed &&
     phase === null &&
-    unit.form === "LAND" &&
+    rushFormV7(unit.form) &&
     unitRoleRuleV7(lookup, unit).abilities.includes("SUGAR_RUSH")
   );
 }
@@ -264,13 +314,18 @@ export function attackGrantsEscapeV7(
   return unit.form === "LAND" && rule.abilities.includes("ESCAPE");
 }
 
-/** Section 7: whether an `ATTACK` by this unit Splats its target. */
+/**
+ * Section 7: whether an `ATTACK` by this unit Splats its target. Themed
+ * naval branches (docs/product/RULESET_7_NAVAL_FACTIONS.md section 8.3 C1,
+ * `pulp_wars-5ti.21`): by a unit in land or naval form whose role has
+ * `SPLAT` (the Pie Launcher, and the Pie Galleon afloat).
+ */
 export function attackSplatsV7(
   roster: FactionRosterV7,
   unit: CandyUnitFactsV7,
 ): boolean {
   return (
-    unit.form === "LAND" &&
+    rushFormV7(unit.form) &&
     unitRoleRuleV7(roster, unit).abilities.includes("SPLAT")
   );
 }

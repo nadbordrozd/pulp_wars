@@ -312,6 +312,13 @@ export type TechnologyUnlockV7 =
    */
   | { readonly kind: "SEA_TUNNELS" }
   /**
+   * Themed naval branches (docs/product/RULESET_7_NAVAL_FACTIONS.md section
+   * 8.3 C2, `pulp_wars-5ti.21`): Sugar Sails, the Candy `SEAMANSHIP` in
+   * place of Board. The owner's ships (the Gumdrop Tug, the Pie Galleon,
+   * and the Choco Sub) may Sugar Rush afloat (`sugarRushRejectionV7`).
+   */
+  | { readonly kind: "SUGAR_SAILS" }
+  /**
    * The naval branch (section 5.4): Harbours, every active Port and
    * Shipyard of the owner gives `population` more live population.
    */
@@ -3814,25 +3821,39 @@ export const DWARF_BASELINE_V1_TREE: FactionTechnologyTreeV7 = deepFreeze({
  * Chivalry grants no Overrun, Fortification (displayed as Home Sweet Home)
  * grants `HOME_SWEET_HOME` instead of `BUILD_FIELD_DEFENSE`, and Explosives
  * (displayed as Peppermint Surprise) keeps both of its unlocks and adds
- * `PEPPERMINT_SURPRISE`. Raiding keeps `CHARGE_BONUS`.
+ * `PEPPERMINT_SURPRISE`. Raiding keeps `CHARGE_BONUS`. Themed naval
+ * branches (`pulp_wars-5ti.21`): Seamanship (displayed as Sugar Sails) is
+ * the Ram and `SUGAR_SAILS` instead of Board.
  */
 export const CANDY_BASELINE_V1_NODES: readonly TechnologyNodeV7[] = deepFreeze(
-  SHARED_BASELINE_NODES_V7.map((original) =>
-    node(original.id, original.branch, original.tier, original.prerequisites, [
-      ...original.unlocks.flatMap((unlock): TechnologyUnlockV7[] =>
-        unlock.kind === "CAPTAIN_SUPPORT"
-          ? [{ kind: "CONFECTIONER_SUPPORT" }]
-          : unlock.kind === "OVERRUN"
-            ? []
-            : unlock.kind === "COMMAND" &&
-                unlock.command === "BUILD_FIELD_DEFENSE"
-              ? [{ kind: "HOME_SWEET_HOME" }]
-              : [unlock],
+  withSeamanshipUnlocksV7(
+    SHARED_BASELINE_NODES_V7.map((original) =>
+      node(
+        original.id,
+        original.branch,
+        original.tier,
+        original.prerequisites,
+        [
+          ...original.unlocks.flatMap((unlock): TechnologyUnlockV7[] =>
+            unlock.kind === "CAPTAIN_SUPPORT"
+              ? [{ kind: "CONFECTIONER_SUPPORT" }]
+              : unlock.kind === "OVERRUN"
+                ? []
+                : unlock.kind === "COMMAND" &&
+                    unlock.command === "BUILD_FIELD_DEFENSE"
+                  ? [{ kind: "HOME_SWEET_HOME" }]
+                  : [unlock],
+          ),
+          ...(original.id === "EXPLOSIVES"
+            ? [{ kind: "PEPPERMINT_SURPRISE" } as const]
+            : []),
+        ],
       ),
-      ...(original.id === "EXPLOSIVES"
-        ? [{ kind: "PEPPERMINT_SURPRISE" } as const]
-        : []),
-    ]),
+    ),
+    // Themed naval branches (docs/product/RULESET_7_NAVAL_FACTIONS.md
+    // section 8.1, `pulp_wars-5ti.21`): Sugar Sails, the Ram and the ships'
+    // Sugar Rush afloat instead of Board.
+    [{ kind: "SUGAR_SAILS" }],
   ),
 );
 
@@ -3978,9 +3999,31 @@ export const CANDY_ROLE_RULES_V7: Readonly<
     // The giants' signatures (section 6.8): Break Off instead of Push.
     abilities: ["ATTACK", "CAPTURE", "SUGAR_RUSH", "BOUNCE", "BREAK_OFF"],
   }),
-  PATROL_BOAT: role({ ...ORIGINAL_ROLE_RULES_V7.PATROL_BOAT }),
-  BATTLESHIP: role({ ...ORIGINAL_ROLE_RULES_V7.BATTLESHIP }),
-  SUBMARINE: role({ ...ORIGINAL_ROLE_RULES_V7.SUBMARINE }),
+  // Themed naval branches, Sugar Sails (docs/product/RULESET_7_NAVAL_FACTIONS.md
+  // section 8.2, `pulp_wars-5ti.21`): the three ships Sugar Rush afloat
+  // with Sugar Sails (`SUGAR_RUSH`, gated by the capability `sugarSails`),
+  // and the Pie Galleon Splats its target (`SPLAT`) for 17 Coins (15 at a
+  // Shipyard); every other number is the Human ship's.
+  PATROL_BOAT: role({
+    ...ORIGINAL_ROLE_RULES_V7.PATROL_BOAT,
+    label: "Gumdrop Tug",
+    abilities: [...ORIGINAL_ROLE_RULES_V7.PATROL_BOAT.abilities, "SUGAR_RUSH"],
+  }),
+  BATTLESHIP: role({
+    ...ORIGINAL_ROLE_RULES_V7.BATTLESHIP,
+    label: "Pie Galleon",
+    cost: 17,
+    abilities: [
+      ...ORIGINAL_ROLE_RULES_V7.BATTLESHIP.abilities,
+      "SPLAT",
+      "SUGAR_RUSH",
+    ],
+  }),
+  SUBMARINE: role({
+    ...ORIGINAL_ROLE_RULES_V7.SUBMARINE,
+    label: "Choco Sub",
+    abilities: [...ORIGINAL_ROLE_RULES_V7.SUBMARINE.abilities, "SUGAR_RUSH"],
+  }),
   // The ninth unit (`pulp_wars-w49.17`, 7r55): the Jawbreaker, the Candy
   // heavy line unit (Metallurgy). Rock Hard is the role mechanic
   // `immovable`.
@@ -4050,7 +4093,9 @@ export const GLAZE_STEP_COST_V7 = 1;
  * advances. The Candy redesign (`pulp_wars-jdb.12`): the Toffee Trooper is
  * Sticky, the Donut Racer lays a Glaze Trail, the Gumball Gunner
  * ricochets, the Chocolate Bunny hops and thumps, and the Jawbreaker gives
- * Toothache. Every role uses one slot. Boats are Human boats.
+ * Toothache. Every role uses one slot. The ships have the Human ships'
+ * mechanics (themed naval branches, `pulp_wars-5ti.21`: their Sugar Rush
+ * and the Galleon's Splat are role abilities).
  */
 export const CANDY_ROLE_MECHANICS_V7 = mechanics({
   FIGHTER: { buildsFieldDefense: false, leavesCrumbs: true, sticky: true },
@@ -5182,6 +5227,13 @@ export const TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7: Readonly<
     SAWMILLING: "Pie Launchers",
     CHIVALRY: "Chocolate Bunnies",
     METALLURGY: "Jawbreakers",
+    // Themed naval branches, Sugar Sails (`pulp_wars-5ti.21`,
+    // docs/product/RULESET_7_NAVAL_FACTIONS.md section 8.1): Navigation
+    // keeps its shared name.
+    SHORECRAFT: "Gumdrop Tugs",
+    NAVAL_ENGINEERING: "Pie Galleons",
+    SEAMANSHIP: "Sugar Sails",
+    SUBMERSIBLES: "Choco Subs",
   },
   // The Cultists (docs/product/RULESET_7_CULTISTS.md section 11): the nodes
   // named for their rite or unit. Administration stays Leadership, Milling
@@ -7900,6 +7952,12 @@ export interface TechnologyCapabilitiesV7 {
    * (`seaTunnelPassableV7`).
    */
   readonly seaTunnels: boolean;
+  /**
+   * Themed naval branches (docs/product/RULESET_7_NAVAL_FACTIONS.md section
+   * 8.3 C2, `pulp_wars-5ti.21`): Sugar Sails (the Candy `SEAMANSHIP`), a
+   * ship of the tree may Sugar Rush afloat (`sugarRushRejectionV7`).
+   */
+  readonly sugarSails: boolean;
 }
 
 export function technologyCapabilitiesV7(
@@ -7987,6 +8045,7 @@ export function technologyCapabilitiesV7(
   let drownedCrews = false;
   let hoverPods = false;
   let seaTunnels = false;
+  let sugarSails = false;
   for (const unlock of unlocks)
     switch (unlock.kind) {
       case "COMMAND":
@@ -8144,6 +8203,9 @@ export function technologyCapabilitiesV7(
       case "SEA_TUNNELS":
         seaTunnels = true;
         break;
+      case "SUGAR_SAILS":
+        sugarSails = true;
+        break;
       case "SUMMONER_SUPPORT":
       case "CONFECTIONER_SUPPORT":
       case "ENGINEER_SUPPORT":
@@ -8236,6 +8298,7 @@ export function technologyCapabilitiesV7(
     drownedCrews,
     hoverPods,
     seaTunnels,
+    sugarSails,
   });
   TECHNOLOGY_CAPABILITIES_CACHE_V7.set(cacheKey, result);
   if (TECHNOLOGY_CAPABILITIES_CACHE_V7.size > 32) {

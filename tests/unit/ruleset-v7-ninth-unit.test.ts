@@ -402,11 +402,11 @@ const productionOf = (
 
 describe("the ninth unit: identity", () => {
   it("was 7r55 after 7r54, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r96");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r96.current");
-    expect(PRIOR_RULESET_7_IDS.at(-42)).toBe("pulp-wars-poc-7r54");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r97");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r97.current");
+    expect(PRIOR_RULESET_7_IDS.at(-43)).toBe("pulp-wars-poc-7r54");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-42)).toBe(
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-43)).toBe(
       "pulpWars.save.v7r54.current",
     );
     const state = field([]);
@@ -958,6 +958,11 @@ describe("the ninth unit: technology display names", () => {
       SAWMILLING: "Pie Launchers",
       CHIVALRY: "Chocolate Bunnies",
       METALLURGY: "Jawbreakers",
+      // Themed naval branches, Sugar Sails (`pulp_wars-5ti.21`).
+      SHORECRAFT: "Gumdrop Tugs",
+      NAVAL_ENGINEERING: "Pie Galleons",
+      SEAMANSHIP: "Sugar Sails",
+      SUBMERSIBLES: "Choco Subs",
     },
     // The Cultists (`pulp_wars-mch9.3`, RULESET_7_CULTISTS.md section 11).
     CULT: {

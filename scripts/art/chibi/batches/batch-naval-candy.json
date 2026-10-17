@@ -102,6 +102,18 @@
       "ownerColour": false,
       "accent": "candy-pink",
       "subjectKey": "PORTRAIT:CANDY:SUBMARINE/CHOCOLATIER"
+    },
+    {
+      "id": "chibi-naval-candy-icon-tech-seamanship",
+      "subject": "ICON:TECH:CANDY:SEAMANSHIP",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "candy-pink"
     }
   ],
   "recipes": [
@@ -418,6 +430,62 @@
       },
       "editInstruction": "Recolour as a chocolate cake galleon and change no shape: the pale hull becomes layers of dark chocolate sponge #4a2412 with thin cream stripes and a caramel gold #e0a040 rim in place of the pink frosting; the sails stay cream white; the masts and pennants become deep amber caramel #d98a1e. No pink is left. Keep every shape, thick black outline and style the same, on a transparent background.",
       "notes": "Bead pulp_wars-jdb.10: a second seed of the Battleship portrait; the first drew 30 pixels of a yellow gold (#e7b63c) within 12 of the Gold seat colour, which the naval test forbids."
+    },
+    {
+      "id": "icon-tech-sugar-sails-a",
+      "asset": "chibi-naval-candy-icon-tech-seamanship",
+      "endpoint": "create-image-pixen",
+      "seed": 99581,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "person, character, face, ship, boat, hull, water, sea, wave, island, beach, text",
+      "notes": "Bead pulp_wars-5ti.21 (docs/product/RULESET_7_NAVAL_FACTIONS.md section 8.7): the Candy Seamanship card, Sugar Sails (a striped candy sail), a fresh creation with the icon class as the other faction Seamanship icons."
+    },
+    {
+      "id": "icon-tech-sugar-sails-b",
+      "asset": "chibi-naval-candy-icon-tech-seamanship",
+      "endpoint": "create-image-pixen",
+      "seed": 99582,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "person, character, face, ship, boat, hull, water, sea, wave, island, beach, text",
+      "notes": "The request of icon-tech-sugar-sails-a on another seed."
+    },
+    {
+      "id": "icon-tech-sugar-sails-c",
+      "asset": "chibi-naval-candy-icon-tech-seamanship",
+      "endpoint": "edit-image-pixen",
+      "seed": 99583,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-tech-sugar-sails-b",
+        "candidate": 0
+      },
+      "editInstruction": "Make the small hull glossy milk chocolate with a thin caramel gold rim and one hard white highlight on its lower left, and light the whole picture from the lower left: the left edge of the sail brighter, its right edge in a darker cherry pink shade. Add two small white four-pointed sparkle stars beside the sail. Keep the big pink and white candy-cane striped sail, the mast, the caramel ball, the cream pennant, the size, the thick black outline and the style, on a transparent background.",
+      "notes": "icon-tech-sugar-sails-b reads at 1x as a candy-striped sail on a small boat (the hull is drawn though the subject says none; it reads as a sail at sea, so it is kept), but its hull is plain wood and it is lit from the right; icon-tech-sugar-sails-a draws a busy three-masted galleon whose sails do not read as one candy sail at 1x. Both were flagged plate suspected for the flat hull bottom; neither has a backdrop."
+    },
+    {
+      "id": "icon-tech-sugar-sails-d",
+      "asset": "chibi-naval-candy-icon-tech-seamanship",
+      "endpoint": "edit-image-pixen",
+      "seed": 99584,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-tech-sugar-sails-c",
+        "candidate": 0
+      },
+      "editInstruction": "Remove the two small hollow diamond outlines floating beside the mast, leaving that space empty and transparent. Keep everything else exactly the same: the pink and white candy-cane striped sail lit from the lower left, the mast, the caramel ball, the cream pennant, the glossy milk chocolate hull with its caramel gold rim, the size, the thick black outline and the style, on a transparent background.",
+      "notes": "icon-tech-sugar-sails-c (both candidates) gives the hull the Candy chocolate and caramel and lights the picture from the lower left, but its two sparkle stars came out as hollow black diamond outlines that vanish on a dark card."
     }
   ]
 }

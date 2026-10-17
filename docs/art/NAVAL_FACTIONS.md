@@ -774,3 +774,39 @@ machine under a thin waterline, with two steam puffs floating above the
 water) that removed the puffs. At 48 px the icon reads as a drill under the
 sea on light and dark cards. Weak spot: the water is still a thin band
 over the drill rather than a body of sea.
+
+## The Candy Sugar Sails (bead `pulp_wars-5ti.21`)
+
+The Candy ships of the
+[themed naval branches](../product/RULESET_7_NAVAL_FACTIONS.md#87-art-and-sound)
+are the accepted Candy Patrol Boat, Battleship, and Submarine (the
+Chocolatier chocolate-bar boat, chocolate cake galleon, and chocolate
+capsule) under new labels (the **Gumdrop Tug**, the **Pie Galleon**, the
+**Choco Sub**): no unit art changes. The **Sugar Sails** card (the Candy
+Seamanship) shows its own icon, a big cherry pink and white candy-cane
+striped sail on a chocolate mast with a caramel ball and a cream pennant,
+over a small glossy milk chocolate hull with a caramel rim, lit from the
+lower left (registered in the live look by
+`CHIBI_NAVAL_FACTION_TECH_ICON_ASSETS_V7`, falling back to the shared
+ship's wheel); the Gumdrop Tugs and Choco Subs cards show the ships'
+portraits (`NAVAL_FACTION_TECH_SUBJECTS_V7`). The Rush and the Crash on a
+ship are the existing code-drawn Candy markers (the Rushed bolt chip beside
+the mast top, the Crashed swirl and the droopy faded sprite), drawn for any
+form and checked on the Tug and the riding-low Sub; the Splat on the
+Galleon's target is the existing pie.
+
+| Asset                                    | Subject                      | Accepted                              | Rejected                                                                                                                                                                                                          |
+| ---------------------------------------- | ---------------------------- | ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `chibi-naval-candy-icon-tech-seamanship` | `ICON:TECH:CANDY:SEAMANSHIP` | `icon-tech-sugar-sails-d` candidate 0 | `-a`: a busy three-masted galleon whose sails do not read as one candy sail at 1x; `-b`: edit source (a plain wooden hull lit from the right); `-c`: edit source (two sparkles came out as hollow black outlines) |
+
+Four PixelLab jobs (seeds 99581 and 99582, and the edits 99583 and 99584)
+for one accepted piece: two fresh `icon`-class creations in batch
+`naval-candy` (`candy-pink` accent), both of which drew a boat although the
+subject said "no hull"; `-b`'s single striped sail reads best, so two
+`edit-image-pixen` edits gave its hull the Candy chocolate and caramel,
+turned the light to the lower left, and removed the sparkle stars the
+first edit had added as hollow outlines. Every candidate was flagged
+"plate suspected" for the flat hull bottom; none has a backdrop. At 48 px
+the icon reads as a candy sail at sea on light and dark cards. Weak spot:
+the icon is a whole boat, not a lone sail, so it sits close to a ship
+portrait.

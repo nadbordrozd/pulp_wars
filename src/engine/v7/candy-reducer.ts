@@ -3,6 +3,7 @@ import {
   REBAKE_OVER_CAPACITY_V7,
   SUGAR_RUSH_MOVE_BONUS_V7,
   canEnterTerrainV7,
+  ownerResearchedTechsV7,
   rebakeHpV7,
   rebakePriceV7,
   seatRoleMechanicsV7,
@@ -104,11 +105,21 @@ export function applySugarRushV7(
   if (!actorCheck.ok)
     return kit.rejected(original, actorCheck.code, actorCheck.params);
   const unit = actorCheck.unit;
-  const rejection = sugarRushRejectionV7(state, unit);
+  // Themed naval branches (`pulp_wars-5ti.21`): a ship Rushes with its
+  // owner's Sugar Sails.
+  const rejection = sugarRushRejectionV7(
+    state,
+    unit,
+    ownerResearchedTechsV7(state, unit.ownerId),
+  );
   if (rejection !== null)
     switch (rejection.code) {
       case "UNIT_ROLE_INVALID":
         return kit.rejected(original, "UNIT_ROLE_INVALID", { role: unit.role });
+      case "TECH_REQUIRED":
+        return kit.rejected(original, "TECH_REQUIRED", {
+          tech: rejection.tech,
+        });
       case "SUGAR_RUSH_NOT_LEGAL":
         return kit.rejected(original, "SUGAR_RUSH_NOT_LEGAL", {
           reason: rejection.reason,

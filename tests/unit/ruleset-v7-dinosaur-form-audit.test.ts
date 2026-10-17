@@ -519,9 +519,13 @@ describe("ruleset-7 revision-19 form audit: source", () => {
   // (land form). The Candy redesign (`pulp_wars-jdb.12`) removes the
   // Escape perk's gate (candy.ts) and adds the Top-Up target's
   // (candy-abilities.ts: an Egg, an embarked unit, and a boat are never
-  // topped up).
+  // topped up). Themed naval branches, Sugar Sails (`pulp_wars-5ti.21`):
+  // the Rush's form gate (`sugarRushFormBlockV7`: land, or a ship with
+  // Sugar Sails) and the Rush bonus of an attacker (land or a ship) no
+  // longer test for land form alone; the schema's `sugarRush` entry may
+  // name a ship.
   const AUDITED: Readonly<Record<string, number>> = {
-    "src/engine/v7/candy.ts": 5,
+    "src/engine/v7/candy.ts": 3,
     "src/engine/v7/candy-abilities.ts": 1,
     "src/engine/v7/candy-reducer.ts": 1,
     // The Dinosaur pass (`pulp_wars-w49.15`): Pack Hunt counts a dinosaur
@@ -709,7 +713,8 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // never Rushes or Re-bakes, and an embarked unit cannot); the melee
     // unit a Crashed unit steps away from is a land-form unit (an Egg and
     // an embarked unit never attack); the Candy Move rules take a land-form
-    // mover.
+    // mover. Themed naval branches, Sugar Sails (`pulp_wars-5ti.21`): a
+    // Rush plan and a Rushed unit's Move take a ship too.
     // The Candy army seat (`pulp_wars-jdb.13`): the hostile unit a Racer's
     // wave heads for, the own slow unit that follows its Glaze, and the
     // hostile shooters over a Jawbreaker's tile are land-form units (an Egg

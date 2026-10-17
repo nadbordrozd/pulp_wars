@@ -672,6 +672,10 @@ import {
   seaTunnelsTreeV7,
 } from "./v7-naval-dwarf";
 import {
+  navalSugarRushAttack2V7,
+  navalSugarRushMoveBonusV7,
+} from "./v7-naval-candy";
+import {
   BREAK_OFF_FRONT_RADIUS_V7,
   BREAK_OFF_MINIMUM_HP_V7,
   BREAK_OFF_PRIORITY_V7,
@@ -11359,6 +11363,10 @@ function* publicThreatenedTilesWorkV7(
   // entry lasts to the end of its owner's next turn). The list is empty in
   // a match without a Candy seat.
   const stuck = unitIsStuckV7(view, unit.id);
+  // Themed naval branches, Sugar Sails (`pulp_wars-5ti.21`): a hostile Candy
+  // ship is assumed to Rush (its owner's Sugar Sails is private, as the Ram
+  // is): one more tile of Move. 0 for every other unit.
+  const sugarRushMove = navalSugarRushMoveBonusV7(view, unit);
   // The giants' signatures (`pulp_wars-w49.31`, RULESET_7_GIANTS.md section
   // 6.5): a Colossus's Overstride passes units and Eggs of any owner (never
   // ending on one) and ignores hostile zones of control, so a screen does
@@ -11481,7 +11489,7 @@ function* publicThreatenedTilesWorkV7(
           tile.explored &&
           tile.snow === true;
         const spent2 = current.spent2 + (roadCost || glideCost ? 1 : 2);
-        if (spent2 > facts.move * 2) continue;
+        if (spent2 > (facts.move + sugarRushMove) * 2) continue;
         const key = coordKey(tile.at);
         if ((best.get(key) ?? Number.POSITIVE_INFINITY) <= spent2) continue;
         // The shared terrain-stop rule for a ground unit, with the policy's
@@ -26840,7 +26848,14 @@ function computeVisibleImmediateDamage(
         // Revision 20: the Charge! run-up (+1 Attack per tile moved).
         ...(runUp2 > 0 ? { bonusAttack2: runUp2 } : {}),
         // The naval branch: the assumed Ram of a hostile Patrol Boat.
-        ...(naval.ramBonus2 > 0 ? { bonusAttack2: naval.ramBonus2 } : {}),
+        // Themed naval branches, Sugar Sails (`pulp_wars-5ti.21`): and the
+        // assumed Rush of a hostile Candy ship (+1 Attack).
+        ...(naval.ramBonus2 + navalSugarRushAttack2V7(view, hostile) > 0
+          ? {
+              bonusAttack2:
+                naval.ramBonus2 + navalSugarRushAttack2V7(view, hostile),
+            }
+          : {}),
         // The Martian revision: full power only when it need not move and
         // is not Cooling.
         ...(martian === null
