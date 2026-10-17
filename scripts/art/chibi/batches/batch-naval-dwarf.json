@@ -95,6 +95,18 @@
       },
       "ownerColour": false,
       "accent": "dwarf-copper"
+    },
+    {
+      "id": "chibi-naval-dwarf-icon-tech-seamanship",
+      "subject": "ICON:TECH:DWARF:SEAMANSHIP",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "dwarf-copper"
     }
   ],
   "recipes": [
@@ -229,6 +241,46 @@
       },
       "editInstruction": "Turn it into a steam submarine: the hull becomes one closed fat cigar-shaped hull of the same soot-black riveted iron with light grey bands; remove the paddle wheel; the tall smokestack becomes a low square conning tower with a copper hatch wheel and one short copper funnel puffing a little white steam; two round portholes glowing bright green #2bd94a; a small copper propeller at the stern. Keep the size, thick black outline and art style the same, on a transparent background.",
       "notes": "The accepted Dwarf Patrol Boat portrait with the map sprite's change."
+    },
+    {
+      "id": "icon-tech-sea-tunnels-a",
+      "asset": "chibi-naval-dwarf-icon-tech-seamanship",
+      "endpoint": "create-image-pixen",
+      "seed": 99471,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "person, dwarf, character, ship, boat, sail, island, beach, sand, red, green, gold, text",
+      "notes": "Bead pulp_wars-5ti.20 (docs/product/RULESET_7_NAVAL_FACTIONS.md section 7.7): the Dwarf Seamanship card, Sea Tunnels (a drill under a wave), a fresh creation with the icon class as the other faction Seamanship icons."
+    },
+    {
+      "id": "icon-tech-sea-tunnels-b",
+      "asset": "chibi-naval-dwarf-icon-tech-seamanship",
+      "endpoint": "create-image-pixen",
+      "seed": 99472,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "person, dwarf, character, ship, boat, sail, island, beach, sand, red, green, gold, text",
+      "notes": "The request of icon-tech-sea-tunnels-a on another seed."
+    },
+    {
+      "id": "icon-tech-sea-tunnels-c",
+      "asset": "chibi-naval-dwarf-icon-tech-seamanship",
+      "endpoint": "edit-image-pixen",
+      "seed": 99473,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-tech-sea-tunnels-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove the two small white steam puffs. Make the water above the drill one thicker band of rolling pale blue-white waves with a curling white foam crest, spanning the top of the image, so the copper drill machine clearly bores along underneath the sea. Keep the drill machine's shape, its soot-black iron and copper, the size, the thick black outline and the style, on a transparent background.",
+      "notes": "icon-tech-sea-tunnels-a reads at 1x as a drill under a waterline, but the water is a thin line and two steam puffs float above it; icon-tech-sea-tunnels-b wears its wave like a cap and has a stray rainbow cluster (plate suspected)."
     }
   ]
 }

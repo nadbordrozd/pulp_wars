@@ -14,6 +14,11 @@ import type { CoordV7, TechnologyIdV7, UnitRoleIdV7 } from "../engine/v7/types";
 import type { PublicUnitStatsV7 } from "../engine/v7/unit-stats";
 import type { PlayerViewV7, PublicUnitV7 } from "../engine/v7/view";
 import { policyCapturerV7, type CampaignAssignmentV7 } from "./v7-campaign";
+import {
+  SEA_TUNNEL_LANDING_PRIORITY_V7,
+  SEA_TUNNEL_LANDING_VALUE_V7,
+  SEA_TUNNEL_RIDER_VALUE_V7,
+} from "./v7-naval-dwarf";
 
 /**
  * The Steampunk Dwarf Normal AI (`pulp_wars-78i.4`,
@@ -665,6 +670,13 @@ export interface DwarfPolicyToolsV7 {
   holdsMove(unit: PublicUnitV7, to: CoordV7): boolean;
   /** The best HP damage of an own offered attack on the target (0 if none). */
   bestOwnHit(targetId: UnitId, exceptUnitId: UnitId): number;
+  /**
+   * Themed naval branches, Sea Tunnels (`pulp_wars-5ti.20`): the land-route
+   * steps from `to` to the naval plan's target when a tunnel of `mole` to
+   * `to` is a sea landing (`seaTunnelLandingWalkV7`), else null. Absent: no
+   * tunnel is a landing.
+   */
+  seaLanding?(mole: PublicUnitV7, to: CoordV7): number | null;
   /** The exact bombing-run preview (`previewBombRunV7`), or null. */
   previewBomb(command: Extract<CommandV7, { kind: "BOMB_RUN" }>): {
     readonly damage: number;
@@ -865,6 +877,28 @@ export function planTunnelsV7(
           entry,
           eruptionScoreV7(view, hostiles, entry.to).score,
           DEFENCE_TUNNEL_PRIORITY_V7,
+        );
+      }
+    // Rule 6 (themed naval branches, Sea Tunnels, `pulp_wars-5ti.20`,
+    // section 7.6): a tunnel to the naval plan's target landmass is a
+    // landing: with a rider at the priority of a planned DISEMBARK, else
+    // the Pressure tunnel's; the nearer the target and the more it erupts
+    // on, the better; never next to three or more hostile melee units
+    // unless next to the target.
+    if (best === null && tools.seaLanding !== undefined)
+      for (const entry of destinations.values()) {
+        const walk = tools.seaLanding(mole, entry.to);
+        if (walk === null) continue;
+        const eruption = eruptionScoreV7(view, hostiles, entry.to);
+        if (eruption.melee >= TUNNEL_MELEE_LIMIT_V7 && walk > 1) continue;
+        const ridden = entry.ridden.length > 0;
+        consider(
+          entry,
+          SEA_TUNNEL_LANDING_VALUE_V7 +
+            (ridden ? SEA_TUNNEL_RIDER_VALUE_V7 : 0) +
+            eruption.score -
+            walk,
+          ridden ? SEA_TUNNEL_LANDING_PRIORITY_V7 : PRESSURE_TUNNEL_PRIORITY_V7,
         );
       }
     // Rule 2: offence, on a Pressure job only.

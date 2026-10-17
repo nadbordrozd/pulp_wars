@@ -2173,3 +2173,16 @@ A fresh `icon` for the Martian Seamanship in batch `naval-martian`
   candidates without moving the pod or the wave. The other seed wrapped
   the pod in its wave and grew fins: a fresh object over water tends to
   merge with the water.
+
+## The Dwarf Sea Tunnels icon (bead `pulp_wars-5ti.20`)
+
+A fresh `icon` for the Dwarf Seamanship in batch `naval-dwarf`
+([what and why](NAVAL_FACTIONS.md#the-dwarf-sea-tunnels-bead-pulp_wars-5ti20)).
+
+- **The faction negative forbids blue**: the Dwarf negative fragment lists
+  "blue, cyan", yet both seeds drew the requested pale blue-white wave; the
+  subject's own words win over the faction negative for a small area.
+- **A wave asked "above" the subject sits on it**: one seed put the wave
+  on the drill like a cap; the seed that drew a separate waterline above a
+  drill machine read as "under the sea", and one edit removed the steam
+  puffs that floated above its water.

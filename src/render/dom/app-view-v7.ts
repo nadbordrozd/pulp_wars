@@ -596,6 +596,8 @@ import {
   fireRaftsUnlockTextV7,
   drownedCrewsUnlockTextV7,
   hoverPodsUnlockTextV7,
+  seaTunnelsUnlockTextV7,
+  patrolBoatUnlockNotesV7,
   battleshipUnlockNoteV7,
   SHORECRAFT_EMBARK_NOTE_V7,
   submarineUnlockNoteV7,
@@ -16199,7 +16201,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   const aiHeadStartCoins =
     draft.mapType === "SHOWCASE" ? 0 : draft.aiHeadStartCoins;
   return {
-    rulesetId: "pulp-wars-poc-7r95",
+    rulesetId: "pulp-wars-poc-7r96",
     seed,
     width,
     height: width,
@@ -16377,6 +16379,9 @@ function effectDescription(
     // Themed naval branches (`pulp_wars-5ti.19`): the Martian Hover Pods.
     case "HOVER_PODS":
       return hoverPodsUnlockTextV7();
+    // Themed naval branches (`pulp_wars-5ti.20`): the Dwarf Sea Tunnels.
+    case "SEA_TUNNELS":
+      return seaTunnelsUnlockTextV7();
     case "HARBOURS":
       return harboursUnlockTextV7(effect.population);
     // The frozen sea (RULESET_7_NAVAL_BRANCH.md section 8.2).
@@ -16529,7 +16534,9 @@ function navalTechnologyNotesV7(
   }
   // "Board" now names the capture of a ship (Seamanship), so putting a
   // unit to sea is "embark".
-  if (technology === "SHORECRAFT") return [SHORECRAFT_EMBARK_NOTE_V7];
+  // Themed naval branches (`pulp_wars-5ti.20`): an Armoured Steam Launch.
+  if (technology === "SHORECRAFT")
+    return [SHORECRAFT_EMBARK_NOTE_V7, ...patrolBoatUnlockNotesV7(faction)];
   if (technology === "NAVIGATION")
     return ["Ships can sail deep water", SEA_LINK_DEEP_WATER_NOTE_V7];
   // Themed naval branches (`pulp_wars-5ti.16`): each faction's ship by
@@ -16712,6 +16719,7 @@ function technologyEffectGroupIdV7(
     case "FIRE_RAFTS":
     case "DROWNED_CREWS":
     case "HOVER_PODS":
+    case "SEA_TUNNELS":
     case "HARBOURS":
     case "ICEBOUND":
     case "BLACK_ICE":

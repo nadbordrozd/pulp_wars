@@ -474,6 +474,81 @@ export function drawTunnelTetherV7(
   drawPassengerPipV7(context, px, py, zoom, highContrast);
 }
 
+/**
+ * Themed naval branches, Sea Tunnels (`pulp_wars-5ti.20`): the route of a
+ * Steam Mole's tunnel under a strait, drawn while its destination is
+ * focused or chosen: a dashed seam of dug earth through the tile centres
+ * (an outline, an earth band, a copper dash), with a ring of churned
+ * bubbles on each water tile it passes under. Static (no motion), so the
+ * reduced-motion form is the same drawing.
+ */
+export function drawSeaTunnelRouteV7(
+  context: CanvasRenderingContext2D,
+  points: readonly {
+    readonly x: number;
+    readonly y: number;
+    readonly water: boolean;
+  }[],
+  zoom: number,
+  highContrast = false,
+  alpha = 1,
+): void {
+  if (points.length < 2) return;
+  const sink = 10 * zoom;
+  const seam = (): void => {
+    context.beginPath();
+    points.forEach((point, index) => {
+      if (index === 0) context.moveTo(point.x, point.y + sink);
+      else context.lineTo(point.x, point.y + sink);
+    });
+  };
+  context.save();
+  context.globalAlpha = alpha;
+  context.lineCap = "round";
+  context.lineJoin = "round";
+  seam();
+  context.strokeStyle = DWARF_PALETTE_V7.outline;
+  context.lineWidth = Math.max(4, 14 * zoom);
+  context.stroke();
+  seam();
+  context.strokeStyle = highContrast ? "#ffffff" : DWARF_PALETTE_V7.earth;
+  context.lineWidth = Math.max(3, 10 * zoom);
+  context.stroke();
+  seam();
+  context.strokeStyle = highContrast ? "#000000" : DWARF_PALETTE_V7.copper;
+  context.lineWidth = Math.max(1.5, 3.5 * zoom);
+  context.setLineDash([10 * zoom, 8 * zoom]);
+  context.stroke();
+  context.setLineDash([]);
+  // The churned water over the seam: three bubbles round each wet tile.
+  for (const point of points) {
+    if (!point.water) continue;
+    const y = point.y + sink;
+    for (const [dx, dy, r] of [
+      [-18, -14, 7],
+      [16, -18, 5],
+      [4, 16, 6],
+    ] as const) {
+      context.beginPath();
+      context.arc(
+        point.x + dx * zoom,
+        y + dy * zoom,
+        Math.max(1.5, r * zoom),
+        0,
+        Math.PI * 2,
+      );
+      context.fillStyle = highContrast ? "#ffffff" : DWARF_PALETTE_V7.steam;
+      context.globalAlpha = alpha * 0.85;
+      context.fill();
+      context.globalAlpha = alpha;
+      context.strokeStyle = DWARF_PALETTE_V7.outline;
+      context.lineWidth = Math.max(1, 2 * zoom);
+      context.stroke();
+    }
+  }
+  context.restore();
+}
+
 /** The passenger pip: a small hammer head on a leather disc at (x, y). */
 export function drawPassengerPipV7(
   context: CanvasRenderingContext2D,

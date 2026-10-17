@@ -745,3 +745,32 @@ lights and the beam (the faction's rule: magenta only as small lights). At
 48 px the icon reads as a hover pod over a wave on light and dark cards.
 Weak spot: the magenta beam is still a band of glow under the pod, more
 than a small light.
+
+## The Dwarf Sea Tunnels (bead `pulp_wars-5ti.20`)
+
+The Dwarf ships of the
+[themed naval branches](../product/RULESET_7_NAVAL_FACTIONS.md#77-art-and-sound)
+are the accepted Dwarf Patrol Boat, Battleship, and Submarine (soot iron
+and copper) under new labels (the **Steam Launch**, the **Ironclad**, the
+**Diving Bell**): no unit art changes, and no Armoured mark is drawn (none
+exists to reuse; the riveted iron hulls read as armoured). The **Sea
+Tunnels** card (the Dwarf Seamanship) shows its own icon, a copper steam
+drill machine with soot-iron bands boring along under a blue-white
+waterline with a curling wave crest (registered in the live look by
+`CHIBI_NAVAL_FACTION_TECH_ICON_ASSETS_V7`, falling back to the shared
+ship's wheel); the Steam Launches and Diving Bells cards show the ships'
+portraits (`NAVAL_FACTION_TECH_SUBJECTS_V7`). The board draws a tunnel's
+route under a strait in code (a dashed seam of dug earth in the Dwarf
+earth and copper, white bubbles on the wet tiles).
+
+| Asset                                    | Subject                      | Accepted                              | Rejected                                                                                                                         |
+| ---------------------------------------- | ---------------------------- | ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `chibi-naval-dwarf-icon-tech-seamanship` | `ICON:TECH:DWARF:SEAMANSHIP` | `icon-tech-sea-tunnels-c` candidate 0 | `-b`: the wave sits on the drill like a cap, with a stray rainbow pixel cluster (plate suspected); `-a`: kept as the edit source |
+
+Three PixelLab jobs (seeds 99471 and 99472, and the edit 99473) for one
+accepted piece: two fresh `icon`-class creations in batch `naval-dwarf`
+(`dwarf-copper` accent) and an `edit-image-pixen` edit of `-a` (a drill
+machine under a thin waterline, with two steam puffs floating above the
+water) that removed the puffs. At 48 px the icon reads as a drill under the
+sea on light and dark cards. Weak spot: the water is still a thin band
+over the drill rather than a body of sea.

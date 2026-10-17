@@ -77,11 +77,11 @@ import {
 
 describe("ruleset-7 revision-17 identity", () => {
   it("keeps r16 among the prior identities after the r55 identity and cleans the r16 key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r95");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r95.current");
-    expect(PRIOR_RULESET_7_IDS.at(-79)).toBe("pulp-wars-poc-7r16");
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(94);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-79)).toBe(
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r96");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r96.current");
+    expect(PRIOR_RULESET_7_IDS.at(-80)).toBe("pulp-wars-poc-7r16");
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(95);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-80)).toBe(
       "pulpWars.save.v7r16.current",
     );
     const storage = new MemoryStorage([
@@ -876,6 +876,12 @@ describe("ruleset-7 Goblin technology", () => {
         METALLURGY: "Steam Tanks",
         RAIDING: "Dive Bombing",
         ENGINEERING: "Mining",
+        // Themed naval branches, Ironclads and Sea Tunnels
+        // (`pulp_wars-5ti.20`).
+        SHORECRAFT: "Steam Launches",
+        NAVAL_ENGINEERING: "Ironclads",
+        SEAMANSHIP: "Sea Tunnels",
+        SUBMERSIBLES: "Diving Bells",
       },
       CANDY: {
         FORTIFICATION: "Home Sweet Home",

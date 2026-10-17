@@ -527,10 +527,13 @@ describe("technology cards and Help", () => {
       // the Horned Prow, Board stays.)
       // (The Martian Hover Fleet, `pulp_wars-5ti.19`: Hover Pods, whose
       // trick launches foot units from any beach.)
+      // (The Dwarf Ironclads, `pulp_wars-5ti.20`: Sea Tunnels, whose trick
+      // lets a Steam Mole tunnel under shallow water; Armoured hulls.)
       const goblin = faction === "GOBLIN";
       const undead = faction === "UNDEAD";
       const dinosaur = faction === "DINOSAUR";
       const martian = faction === "MARTIAN";
+      const dwarf = faction === "DWARF";
       expect(seamanship.querySelector(".v7-tech-name")?.textContent).toBe(
         goblin
           ? "Powder Kegs"
@@ -540,7 +543,9 @@ describe("technology cards and Help", () => {
               ? "Horned Prows"
               : martian
                 ? "Hover Pods"
-                : "Boarding",
+                : dwarf
+                  ? "Sea Tunnels"
+                  : "Boarding",
       );
       seamanship.click();
       const lines = (): string[] =>
@@ -570,10 +575,15 @@ describe("technology cards and Help", () => {
                     "Bow Ram: Skimmers that moved hit ships with +1 Attack and shove them back",
                     "Hover Pods: Your foot troops can hover off any beach",
                   ]
-                : [
-                    "Board: capture an adjacent enemy ship at a third of its HP or less",
-                    "Bow Ram: Patrol Boats that moved hit ships with +1 Attack and shove them back",
-                  ],
+                : dwarf
+                  ? [
+                      "Bow Ram: Steam Launches that moved hit ships with +1 Attack and shove them back",
+                      "Sea Tunnels: Your Steam Moles can tunnel under shallow water",
+                    ]
+                  : [
+                      "Board: capture an adjacent enemy ship at a third of its HP or less",
+                      "Bow Ram: Patrol Boats that moved hit ships with +1 Attack and shove them back",
+                    ],
       );
       const submersibles = requiredButton("tech-submersibles");
       expect(submersibles.querySelector(".v7-tech-name")?.textContent).toBe(
@@ -585,7 +595,9 @@ describe("technology cards and Help", () => {
               ? "Plesiosaurs"
               : martian
                 ? "Bathyspheres"
-                : "Submersibles",
+                : dwarf
+                  ? "Diving Bells"
+                  : "Submersibles",
       );
       submersibles.click();
       const unlocks = lines();
@@ -597,7 +609,9 @@ describe("technology cards and Help", () => {
             ? "Plesiosaur"
             : martian
               ? "Bathysphere"
-              : "Submarine";
+              : dwarf
+                ? "Diving Bell"
+                : "Submarine";
       expect(unlocks.some((line) => line.includes(sub))).toBe(true);
       expect(unlocks).toContain(
         "Harbours: +1 population from every active Port and Shipyard",
@@ -605,11 +619,17 @@ describe("technology cards and Help", () => {
       expect(unlocks).toContain(
         dinosaur
           ? "Plesiosaur: hit only from the next tile; torpedo with no strike-back; grows; never boarded"
-          : `${sub}: attacked only from the next tile; its torpedo hits ships with no strike-back`,
+          : dwarf
+            ? "Diving Bell: hit only from the next tile; torpedo with no strike-back; Armoured"
+            : `${sub}: attacked only from the next tile; its torpedo hits ships with no strike-back`,
       );
       for (const line of unlocks) expect(line.length).toBeLessThanOrEqual(92);
       requiredButton("tech-shorecraft").click();
       expect(lines()).toContain("Units embark at active Ports");
+      if (dwarf)
+        expect(lines()).toContain(
+          "Steam Launch: Armoured, every hit of 2 or more does 1 less",
+        );
       expect(lines().join(" ")).not.toContain("Board ships");
       app.destroy();
     });

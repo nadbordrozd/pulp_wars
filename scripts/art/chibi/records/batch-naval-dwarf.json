@@ -558,6 +558,243 @@
         "notes": "The barge turned into a steam barge: an iron hull with oars, the cargo under dark leather, a short copper stack with steam and green lamps.",
         "reviewedAt": "2026-10-03T11:01:10.452Z"
       }
+    },
+    "icon-tech-sea-tunnels-a": {
+      "id": "icon-tech-sea-tunnels-a",
+      "asset": "chibi-naval-dwarf-icon-tech-seamanship",
+      "jobId": "sync-ad382d7f-34a4-4b56-a30a-4a7f5a6e6205",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "naval-dwarf",
+        "asset": "chibi-naval-dwarf-icon-tech-seamanship",
+        "subject": "ICON:TECH:DWARF:SEAMANSHIP",
+        "faction": "DWARF",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 99471,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/DWARF.md#prompt-fragment + docs/art/factions/DWARF.md#negative-fragment",
+            "text": "Faction: sturdy cheerful steampunk craft of the deep mountain forges. Its fixed colours: soot-black riveted iron with a thin light warm grey highlight along every lit edge; bright polished copper pipes, boilers and bands, colour #c27c3a; dark brown leather straps and aprons; small puffs of pure white steam from smokestacks; small details of rivets and gears.",
+            "negative": "brass, gold, yellow, bright orange, fire, flames, red, crimson, green, lime, purple, violet, magenta, pink, blue, cyan, glowing lights, white beard, grey beard, blond beard, rust, wooden planks, robe, hood, cloak, magic, skull, medieval knight, sword, bow, scary, horror, realistic"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+            "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/DWARF.json",
+            "text": "Subject: Sea Tunnels: one big cone-shaped copper drill bit with spiral grooves and a soot-black iron collar, pointing sideways from left to right, boring through a thick band of dark brown earth; above the earth band one curling pale blue-white water wave crest with a small white foam curl; the drill is clearly under the wave; nothing else in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "person, dwarf, character, ship, boat, sail, island, beach, sand, red, green, gold, text"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: sturdy cheerful steampunk craft of the deep mountain forges. Its fixed colours: soot-black riveted iron with a thin light warm grey highlight along every lit edge; bright polished copper pipes, boilers and bands, colour #c27c3a; dark brown leather straps and aprons; small puffs of pure white steam from smokestacks; small details of rivets and gears. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Sea Tunnels: one big cone-shaped copper drill bit with spiral grooves and a soot-black iron collar, pointing sideways from left to right, boring through a thick band of dark brown earth; above the earth band one curling pale blue-white water wave crest with a small white foam curl; the drill is clearly under the wave; nothing else in the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, brass, gold, yellow, bright orange, fire, flames, red, crimson, green, lime, purple, violet, magenta, pink, blue, cyan, glowing lights, white beard, grey beard, blond beard, rust, wooden planks, robe, hood, cloak, magic, skull, medieval knight, sword, bow, scary, horror, realistic, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, person, dwarf, character, ship, boat, sail, island, beach, sand",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: sturdy cheerful steampunk craft of the deep mountain forges. Its fixed colours: soot-black riveted iron with a thin light warm grey highlight along every lit edge; bright polished copper pipes, boilers and bands, colour #c27c3a; dark brown leather straps and aprons; small puffs of pure white steam from smokestacks; small details of rivets and gears. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Sea Tunnels: one big cone-shaped copper drill bit with spiral grooves and a soot-black iron collar, pointing sideways from left to right, boring through a thick band of dark brown earth; above the earth band one curling pale blue-white water wave crest with a small white foam curl; the drill is clearly under the wave; nothing else in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, brass, gold, yellow, bright orange, fire, flames, red, crimson, green, lime, purple, violet, magenta, pink, blue, cyan, glowing lights, white beard, grey beard, blond beard, rust, wooden planks, robe, hood, cloak, magic, skull, medieval knight, sword, bow, scary, horror, realistic, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, person, dwarf, character, ship, boat, sail, island, beach, sand."
+      },
+      "submittedAt": "2026-10-17T04:55:11.118Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-dwarf/icon-tech-sea-tunnels-a.png",
+      "rawSheetSha256": "d5e6d1f15611c828df55a70cb207a356f1a3a379fe5104a133852c1aec7fe584",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0.1116,
+          "footprintWidthShare": 0.75,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-17T04:55:31.440Z",
+      "usageUsd": 0.006930170774459839
+    },
+    "icon-tech-sea-tunnels-b": {
+      "id": "icon-tech-sea-tunnels-b",
+      "asset": "chibi-naval-dwarf-icon-tech-seamanship",
+      "jobId": "sync-23d08a56-bc7b-40f0-8731-a83fa59734fb",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "naval-dwarf",
+        "asset": "chibi-naval-dwarf-icon-tech-seamanship",
+        "subject": "ICON:TECH:DWARF:SEAMANSHIP",
+        "faction": "DWARF",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 99472,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/DWARF.md#prompt-fragment + docs/art/factions/DWARF.md#negative-fragment",
+            "text": "Faction: sturdy cheerful steampunk craft of the deep mountain forges. Its fixed colours: soot-black riveted iron with a thin light warm grey highlight along every lit edge; bright polished copper pipes, boilers and bands, colour #c27c3a; dark brown leather straps and aprons; small puffs of pure white steam from smokestacks; small details of rivets and gears.",
+            "negative": "brass, gold, yellow, bright orange, fire, flames, red, crimson, green, lime, purple, violet, magenta, pink, blue, cyan, glowing lights, white beard, grey beard, blond beard, rust, wooden planks, robe, hood, cloak, magic, skull, medieval knight, sword, bow, scary, horror, realistic"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+            "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/DWARF.json",
+            "text": "Subject: Sea Tunnels: one big cone-shaped copper drill bit with spiral grooves and a soot-black iron collar, pointing sideways from left to right, boring through a thick band of dark brown earth; above the earth band one curling pale blue-white water wave crest with a small white foam curl; the drill is clearly under the wave; nothing else in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "person, dwarf, character, ship, boat, sail, island, beach, sand, red, green, gold, text"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: sturdy cheerful steampunk craft of the deep mountain forges. Its fixed colours: soot-black riveted iron with a thin light warm grey highlight along every lit edge; bright polished copper pipes, boilers and bands, colour #c27c3a; dark brown leather straps and aprons; small puffs of pure white steam from smokestacks; small details of rivets and gears. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Sea Tunnels: one big cone-shaped copper drill bit with spiral grooves and a soot-black iron collar, pointing sideways from left to right, boring through a thick band of dark brown earth; above the earth band one curling pale blue-white water wave crest with a small white foam curl; the drill is clearly under the wave; nothing else in the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, brass, gold, yellow, bright orange, fire, flames, red, crimson, green, lime, purple, violet, magenta, pink, blue, cyan, glowing lights, white beard, grey beard, blond beard, rust, wooden planks, robe, hood, cloak, magic, skull, medieval knight, sword, bow, scary, horror, realistic, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, person, dwarf, character, ship, boat, sail, island, beach, sand",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: sturdy cheerful steampunk craft of the deep mountain forges. Its fixed colours: soot-black riveted iron with a thin light warm grey highlight along every lit edge; bright polished copper pipes, boilers and bands, colour #c27c3a; dark brown leather straps and aprons; small puffs of pure white steam from smokestacks; small details of rivets and gears. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Sea Tunnels: one big cone-shaped copper drill bit with spiral grooves and a soot-black iron collar, pointing sideways from left to right, boring through a thick band of dark brown earth; above the earth band one curling pale blue-white water wave crest with a small white foam curl; the drill is clearly under the wave; nothing else in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, brass, gold, yellow, bright orange, fire, flames, red, crimson, green, lime, purple, violet, magenta, pink, blue, cyan, glowing lights, white beard, grey beard, blond beard, rust, wooden planks, robe, hood, cloak, magic, skull, medieval knight, sword, bow, scary, horror, realistic, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, person, dwarf, character, ship, boat, sail, island, beach, sand."
+      },
+      "submittedAt": "2026-10-17T04:55:31.441Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-dwarf/icon-tech-sea-tunnels-b.png",
+      "rawSheetSha256": "bfa0e3bf9a53f65f3006b43eb240f1dcf5958217f7dfc689d143d9bde367e57d",
+      "plateHints": [
+        {
+          "bandRows": 7,
+          "groundShare": 0.2733,
+          "footprintWidthShare": 0.6667,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-17T04:56:02.502Z",
+      "usageUsd": 0.007673780467775133,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The wave sits on the drill like a cap, a stray rainbow pixel cluster on its side, plate suspected; the drill does not read as under the sea at 48 px.",
+        "reviewedAt": "2026-10-17T04:57:42.914Z"
+      }
+    },
+    "icon-tech-sea-tunnels-c": {
+      "id": "icon-tech-sea-tunnels-c",
+      "asset": "chibi-naval-dwarf-icon-tech-seamanship",
+      "jobId": "48626147-6a09-4dae-95c3-754287e7b3d7",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-dwarf",
+        "asset": "chibi-naval-dwarf-icon-tech-seamanship",
+        "subject": "ICON:TECH:DWARF:SEAMANSHIP",
+        "faction": "DWARF",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 99473,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Remove the two small white steam puffs. Make the water above the drill one thicker band of rolling pale blue-white waves with a curling white foam crest, spanning the top of the image, so the copper drill machine clearly bores along underneath the sea. Keep the drill machine's shape, its soot-black iron and copper, the size, the thick black outline and the style, on a transparent background."
+          }
+        ],
+        "prompt": "Remove the two small white steam puffs. Make the water above the drill one thicker band of rolling pale blue-white waves with a curling white foam crest, spanning the top of the image, so the copper drill machine clearly bores along underneath the sea. Keep the drill machine's shape, its soot-black iron and copper, the size, the thick black outline and the style, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Remove the two small white steam puffs. Make the water above the drill one thicker band of rolling pale blue-white waves with a curling white foam crest, spanning the top of the image, so the copper drill machine clearly bores along underneath the sea. Keep the drill machine's shape, its soot-black iron and copper, the size, the thick black outline and the style, on a transparent background.",
+        "editInstruction": "Remove the two small white steam puffs. Make the water above the drill one thicker band of rolling pale blue-white waves with a curling white foam crest, spanning the top of the image, so the copper drill machine clearly bores along underneath the sea. Keep the drill machine's shape, its soot-black iron and copper, the size, the thick black outline and the style, on a transparent background.",
+        "source": {
+          "recipe": "icon-tech-sea-tunnels-a",
+          "candidate": 0,
+          "sha256": "d5e6d1f15611c828df55a70cb207a356f1a3a379fe5104a133852c1aec7fe584"
+        }
+      },
+      "submittedAt": "2026-10-17T04:56:41.279Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-dwarf/icon-tech-sea-tunnels-c.png",
+      "rawSheetSha256": "dd61454d71e4f9143ebc2883eb6c10629ac1922183556f800c5ac59fdab8a1eb",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0.1229,
+          "footprintWidthShare": 0.7083,
+          "suspect": false
+        },
+        {
+          "bandRows": 8,
+          "groundShare": 0.1229,
+          "footprintWidthShare": 0.7083,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-17T04:57:27.832Z",
+      "usageUsd": 0.009507774882846409,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Reads at 48 px as a copper steam drill boring along under a blue-white waterline with a curling wave crest: Sea Tunnels. Soot iron and copper in the fleet's colours, thick black outline, no plate; light from the lower left. Weak spot: the water is a thin band over the drill rather than a body of sea.",
+        "reviewedAt": "2026-10-17T04:57:50.702Z"
+      }
     }
   },
   "assets": {
@@ -620,6 +857,66 @@
       },
       "notes": "The carrack turned into a riveted steam ironclad: a long iron hull with a grey rim and a copper waterline band, a squat iron turret with green lamps, two copper stacks with steam.",
       "acceptedAt": "2026-10-03T11:01:09.993Z"
+    },
+    "chibi-naval-dwarf-icon-tech-seamanship": {
+      "id": "chibi-naval-dwarf-icon-tech-seamanship",
+      "subject": "ICON:TECH:DWARF:SEAMANSHIP",
+      "assetClass": "ICON",
+      "status": "ACCEPTED",
+      "recipe": "icon-tech-sea-tunnels-c",
+      "candidate": 0,
+      "candidateSha256": "abce1c206207ee092d7f39f2501af6414d9f2dd509d70df916ee926f54a282fb",
+      "master": {
+        "path": "public/assets/chibi/icons/chibi-naval-dwarf-icon-tech-seamanship.png",
+        "sha256": "312b6c6609199408fc90aa9fe709abc733703fc65c87eae9459a4e364343c51c",
+        "pixelSha256": "b544782a6beacb0407ff15557ebc5a7dec74ad2a129269cbd0ed6f921d6a06b0",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is",
+        "accent": {
+          "preset": "dwarf-copper",
+          "spec": {
+            "band": {
+              "hueFrom": 340,
+              "hueTo": 9,
+              "saturationMin": 0.45,
+              "valueMin": 0.2,
+              "hueCentre": 4
+            },
+            "hue": 13,
+            "hueSpread": 0.25
+          },
+          "accentPixels": 162,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 8,
+        "groundShare": 0.1229,
+        "footprintWidthShare": 0.7083,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Reads at 48 px as a copper steam drill boring along under a blue-white waterline with a curling wave crest: Sea Tunnels. Soot iron and copper in the fleet's colours, thick black outline, no plate; light from the lower left. Weak spot: the water is a thin band over the drill rather than a body of sea.",
+      "acceptedAt": "2026-10-17T04:57:50.702Z"
     },
     "chibi-naval-dwarf-patrol-boat": {
       "id": "chibi-naval-dwarf-patrol-boat",

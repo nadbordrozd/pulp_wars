@@ -807,14 +807,24 @@ describe("Dwarf roster (section 3)", () => {
           role !== "RAIDER" && mechanics(role).movementMode !== "GROUND",
       ),
     ).toEqual([]);
-    // The boats are the Human boats.
-    for (const role of ["PATROL_BOAT", "BATTLESHIP"] as const) {
-      expect(effectiveRoleRuleV7(role, "DWARF")).toEqual(
-        effectiveRoleRuleV7(role, "ORIGINAL"),
-      );
-      expect(roleMechanicsV7(role, "DWARF")).toEqual(
-        roleMechanicsV7(role, "ORIGINAL"),
-      );
+    // The ships are the Human ships, Armoured and dearer (themed naval
+    // branches, Ironclads, `pulp_wars-5ti.20`): the Steam Launch and the
+    // Ironclad.
+    for (const [role, label, cost] of [
+      ["PATROL_BOAT", "Steam Launch", 6],
+      ["BATTLESHIP", "Ironclad", 18],
+    ] as const) {
+      const human = effectiveRoleRuleV7(role, "ORIGINAL");
+      expect(effectiveRoleRuleV7(role, "DWARF")).toEqual({
+        ...human,
+        label,
+        cost,
+        abilities: [...human.abilities, "ARMOURED"],
+      });
+      expect(roleMechanicsV7(role, "DWARF")).toEqual({
+        ...roleMechanicsV7(role, "ORIGINAL"),
+        armourReduction: 1,
+      });
     }
   });
 
@@ -1042,6 +1052,13 @@ describe("Dwarf technology (section 4)", () => {
           ...human.unlocks,
           { kind: "BLASTING_CHARGES" },
         ]);
+      // Themed naval branches (`pulp_wars-5ti.20`): Sea Tunnels, the Ram
+      // and the tunnel under shallow water instead of Board.
+      else if (human.id === "SEAMANSHIP")
+        expect(dwarf.unlocks).toEqual([
+          { kind: "RAM" },
+          { kind: "SEA_TUNNELS" },
+        ]);
       else expect(dwarf.unlocks).toEqual(human.unlocks);
     });
     expect(TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7.DWARF).toEqual({
@@ -1056,6 +1073,12 @@ describe("Dwarf technology (section 4)", () => {
       CHIVALRY: "Whirligigs",
       ENGINEERING: "Mining",
       METALLURGY: "Steam Tanks",
+      // Themed naval branches (`pulp_wars-5ti.20`): Navigation keeps its
+      // shared name.
+      SHORECRAFT: "Steam Launches",
+      NAVAL_ENGINEERING: "Ironclads",
+      SEAMANSHIP: "Sea Tunnels",
+      SUBMERSIBLES: "Diving Bells",
     });
   });
 
@@ -1107,9 +1130,14 @@ describe("Dwarf technology (section 4)", () => {
     const human = technologyCapabilitiesV7(all, "ORIGINAL");
     // (The ninth unit, 7r55: every faction has the heavy line role.)
     expect(dwarf.trainableRoles).toEqual(human.trainableRoles);
+    // Themed naval branches (`pulp_wars-5ti.20`): Sea Tunnels instead of
+    // Board.
     expect(dwarf.commands).toEqual(
-      human.commands.filter((command) => command !== "BUILD_FIELD_DEFENSE"),
+      human.commands.filter(
+        (command) => command !== "BUILD_FIELD_DEFENSE" && command !== "BOARD",
+      ),
     );
+    expect([dwarf.seaTunnels, human.seaTunnels]).toEqual([true, false]);
     expect(dwarf.commands).toContain("BLAST_MOUNTAIN");
   });
 
@@ -1434,6 +1462,9 @@ describe("Dwarf public unit stats (section 14)", () => {
       digsIn: true,
       shotsLeft: null,
       plated: null,
+      // Themed naval branches (`pulp_wars-5ti.20`): only the ships are
+      // Armoured.
+      armourReduction: 0,
       tunnelRange: 0,
       eruptionDamage: 3,
       bombDamage: 6,

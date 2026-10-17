@@ -107,7 +107,11 @@ export function navalRamUnlockTextV7(faction: FactionIdV7): string {
   const line =
     label === "Patrol Boat"
       ? NAVAL_RAM_UNLOCK_V7
-      : NAVAL_RAM_UNLOCK_V7.replace("Patrol Boats", `${label}s`);
+      : NAVAL_RAM_UNLOCK_V7.replace(
+          "Patrol Boats",
+          // "Steam Launches" (`pulp_wars-5ti.20`), "Fire Rafts".
+          /(?:ch|sh|s|x)$/.test(label) ? `${label}es` : `${label}s`,
+        );
   const runUp = roleRamBonus2MaximumV7("PATROL_BOAT", faction);
   return runUp > RAM_BONUS2_V7
     ? line
@@ -176,13 +180,16 @@ export function submarineUnlockNoteV7(faction: FactionIdV7): string {
   // line as short as the card's others.
   const beast = roleMechanicsV7("SUBMARINE", faction).seaBeast;
   const grows = rule.abilities.includes("GROW");
-  if (!beast && !grows)
+  // Themed naval branches (`pulp_wars-5ti.20`): an Armoured Diving Bell.
+  const armoured = navalRoleArmouredV7("SUBMARINE", faction);
+  if (!beast && !grows && !armoured)
     return SUBMARINE_UNLOCK_NOTE_V7.replace(/^Submarine/, rule.label);
   return [
     `${rule.label}: hit only from the next tile`,
     "torpedo with no strike-back",
     ...(grows ? ["grows"] : []),
     ...(beast ? ["never boarded"] : []),
+    ...(armoured ? ["Armoured"] : []),
   ].join("; ");
 }
 
@@ -193,6 +200,13 @@ export function battleshipUnlockNoteV7(faction: FactionIdV7): string {
   // Themed naval branches (`pulp_wars-5ti.17`): the Plague Galleon.
   if (rule.abilities.includes("PLAGUE"))
     return `${rule.label}: long-range splash damage; with ${technologyDisplayNameV7("EXPLOSIVES", faction)} its shot plagues whoever it hits`;
+  // Themed naval branches (`pulp_wars-5ti.20`): the Armoured Ironclad.
+  if (navalRoleArmouredV7("BATTLESHIP", faction))
+    return `${rule.label}: long-range splash damage; Armoured (${armouredHullRuleV7(
+      faction,
+    )
+      .replace(/^Armoured: /, "")
+      .replace(/\.$/, "")})`;
   return blast === null
     ? `${rule.label}: long-range splash damage`
     : `${rule.label}: long-range splash damage; explodes when it sinks (${blast} to every unit around it)`;
@@ -228,6 +242,52 @@ export const SHIELDED_HULL_RULE_V7 =
 /** The Hover Pods card line (the Martian `HOVER_PODS` unlock). */
 export function hoverPodsUnlockTextV7(): string {
   return `${technologyDisplayNameV7("SEAMANSHIP", "MARTIAN")}: ${HOVER_PODS_RULE_V7.replace(/\.$/, "")}`;
+}
+
+/**
+ * Themed naval branches, Ironclads and Sea Tunnels
+ * (docs/product/RULESET_7_NAVAL_FACTIONS.md sections 7.3 and 12,
+ * `pulp_wars-5ti.20`): the Armoured sentence of an Ironclad hull and the
+ * Sea Tunnels sentence, the Mole named from the registry.
+ */
+export function armouredHullRuleV7(faction: FactionIdV7): string {
+  const reduction = Math.max(
+    0,
+    ...(["PATROL_BOAT", "BATTLESHIP", "SUBMARINE"] as const).map(
+      (role) => roleMechanicsV7(role, faction).armourReduction,
+    ),
+  );
+  return `Armoured: every hit of 2 or more does ${String(reduction)} less.`;
+}
+/** Whether a faction's ship of `role` is Armoured (the Dwarf hulls). */
+export function navalRoleArmouredV7(
+  role: "PATROL_BOAT" | "BATTLESHIP" | "SUBMARINE",
+  faction: FactionIdV7,
+): boolean {
+  return roleMechanicsV7(role, faction).armourReduction > 0;
+}
+export function seaTunnelsRuleV7(): string {
+  return `Your ${effectiveRoleRuleV7("GUARD", "DWARF").label}s can tunnel under shallow water.`;
+}
+/** The Sea Tunnels card line (the Dwarf `SEA_TUNNELS` unlock). */
+export function seaTunnelsUnlockTextV7(): string {
+  return `${technologyDisplayNameV7("SEAMANSHIP", "DWARF")}: ${seaTunnelsRuleV7().replace(/\.$/, "")}`;
+}
+/**
+ * The Sailing card's note of a faction whose Patrol Boat-role ship is
+ * Armoured ("Steam Launch: Armoured, every hit of 2 or more does 1 less");
+ * none for every other faction.
+ */
+export function patrolBoatUnlockNotesV7(
+  faction: FactionIdV7,
+): readonly string[] {
+  if (!navalRoleArmouredV7("PATROL_BOAT", faction)) return [];
+  const label = effectiveRoleRuleV7("PATROL_BOAT", faction).label;
+  return [
+    `${label}: ${armouredHullRuleV7(faction)
+      .replace(/^Armoured: /, "Armoured, ")
+      .replace(/\.$/, "")}`,
+  ];
 }
 
 export function harboursUnlockTextV7(population: number): string {

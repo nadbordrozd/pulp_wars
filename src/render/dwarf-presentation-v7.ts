@@ -20,6 +20,7 @@ import {
   roleMechanicsV7,
   unitIsFrozenV7,
   technologyCapabilitiesV7,
+  unitRoleMechanicsV7,
   unitRoleRuleV7,
   type AssemblePreviewV7,
   type AttackBarricadePreviewV7,
@@ -528,6 +529,11 @@ export function dwarfHelpRulesV7(): readonly (readonly [string, string])[] {
       "Plated",
       `no single hit takes more than ${PLATED_CAP_V7} HP from a ${TANK()}.`,
     ],
+    // Themed naval branches, Ironclads and Sea Tunnels (`pulp_wars-5ti.20`).
+    [
+      "At sea",
+      `the ${dwarfLabelV7("PATROL_BOAT")}, ${dwarfLabelV7("BATTLESHIP")}, and ${dwarfLabelV7("SUBMARINE")} are Armoured: every hit of 2 or more does ${String(roleMechanicsV7("BATTLESHIP", "DWARF").armourReduction)} less; with ${technologyDisplayNameV7("SEAMANSHIP", "DWARF")}, a ${MOLE()} can tunnel under shallow water (never deep water or ice) and surface on the far coast.`,
+    ],
     [
       "Blasting Charges",
       `eruptions deal ${BLASTING_ERUPTION_DAMAGE_V7}, and ${CANNON()} shots ignore Walls and Field Defense.`,
@@ -910,6 +916,22 @@ export function dwarfCombatLinesV7(
   const shooter: string[] = [];
   if (preview.unflinchingApplied) shooter.push(UNFLINCHING_PREVIEW_V7);
   if (preview.platedApplied) notes.push(PLATED_PREVIEW_V7);
+  // Themed naval branches (`pulp_wars-5ti.20`): an Ironclad hull's Armoured
+  // on either side (a Dinosaur match already shows its own Armoured line).
+  if (!view.players.some((player) => player.faction === "DINOSAUR")) {
+    const armour = (unit: PublicUnitV7 | undefined): number =>
+      unit === undefined || unit.form === "EGG"
+        ? 0
+        : unitRoleMechanicsV7(view, unit).armourReduction;
+    if (
+      preview.defenderArmoured &&
+      !preview.platedApplied &&
+      armour(defender) > 0
+    )
+      notes.push(armouredPreviewTextV7(armour(defender)));
+    if (preview.attackerArmoured && armour(attacker) > 0)
+      notes.push(`Your armour −${String(armour(attacker))}`);
+  }
   const attackerAbilities =
     attacker === undefined
       ? []
@@ -945,6 +967,11 @@ export function dwarfCombatLinesV7(
 }
 
 // -------------------------------------------------------- ability previews
+
+/** "Armoured −1": an Armoured defender's line in an attack preview. */
+export function armouredPreviewTextV7(reduction: number): string {
+  return `Armoured −${String(reduction)}`;
+}
 
 /** The short board label of a Tunnel destination. */
 export function tunnelTargetLabelV7(preview: TunnelPreviewV7): string {

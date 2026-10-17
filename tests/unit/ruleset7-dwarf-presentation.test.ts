@@ -158,6 +158,9 @@ describe("Dwarf texts (RULESET_7_DWARVES.md section 16)", () => {
       "Assemble",
       "Knockback",
       "Plated",
+      // Themed naval branches (`pulp_wars-5ti.20`): Ironclads and Sea
+      // Tunnels.
+      "At sea",
       "Blasting Charges",
       // The ninth unit (`pulp_wars-w49.17`, 7r55): the Whirligig's Whirl
       // (`pulp_wars-w49.33`).

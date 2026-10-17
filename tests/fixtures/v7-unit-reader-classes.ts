@@ -221,6 +221,11 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     // The Martian Hover Fleet (`pulp_wars-5ti.19`): a launch tile is free of
     // every visible unit on the board.
     "src/ai/v7-naval-martian.ts::hoverLaunchTilesV7": "BOARD",
+    // The Dwarf Sea Tunnels (`pulp_wars-5ti.20`): the Moles that ask for
+    // Sea Tunnels and that tunnel this turn stand on the board (a burrowed
+    // Mole neither researches nor tunnels).
+    "src/ai/v7-naval-dwarf.ts::seaTunnelsResearchDueV7": "BOARD",
+    "src/ai/v7-naval-dwarf.ts::seaTunnelCrewIdsV7": "BOARD",
     // `pulp_wars-5ti.5`: the frozen sea reads the board: the units that
     // walk to a crossing and Freeze it, the ships a Freeze locks in and the
     // units that can strike them, the units on ice, and the unit that

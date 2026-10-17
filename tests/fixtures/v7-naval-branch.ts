@@ -90,6 +90,13 @@ export interface NavalArenaOptionsV7 {
     readonly faction: FactionIdV7;
     readonly explored?: boolean;
   };
+  /**
+   * Themed naval branches, Sea Tunnels (`pulp_wars-5ti.20`): another
+   * 11 x 11 terrain in the mission legend (`.` Grass, `~` water, Shallow
+   * when orthogonally next to land), with land on both capitals and water
+   * on both Ports. The strait above by default.
+   */
+  readonly terrain?: readonly string[];
 }
 
 /** The bystander seat's capital ({@link NavalArenaOptionsV7.third}). */
@@ -146,7 +153,7 @@ export function navalArenaV7(options: NavalArenaOptionsV7): GameStateV7 {
     hidden: true,
     size: NAVAL_ARENA_SIZE_V7,
     seed: 1,
-    terrain: TERRAIN,
+    terrain: [...(options.terrain ?? TERRAIN)],
     resources: TERRAIN.map(() => ".".repeat(NAVAL_ARENA_SIZE_V7)),
     biome: "PLAINS",
     villages: [],

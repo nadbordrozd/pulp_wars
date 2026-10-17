@@ -1,0 +1,36 @@
+{
+  "id": "icon-tech-sea-tunnels-c",
+  "jobId": "48626147-6a09-4dae-95c3-754287e7b3d7",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-dwarf",
+    "asset": "chibi-naval-dwarf-icon-tech-seamanship",
+    "subject": "ICON:TECH:DWARF:SEAMANSHIP",
+    "faction": "DWARF",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 99473,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove the two small white steam puffs. Make the water above the drill one thicker band of rolling pale blue-white waves with a curling white foam crest, spanning the top of the image, so the copper drill machine clearly bores along underneath the sea. Keep the drill machine's shape, its soot-black iron and copper, the size, the thick black outline and the style, on a transparent background."
+      }
+    ],
+    "prompt": "Remove the two small white steam puffs. Make the water above the drill one thicker band of rolling pale blue-white waves with a curling white foam crest, spanning the top of the image, so the copper drill machine clearly bores along underneath the sea. Keep the drill machine's shape, its soot-black iron and copper, the size, the thick black outline and the style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Remove the two small white steam puffs. Make the water above the drill one thicker band of rolling pale blue-white waves with a curling white foam crest, spanning the top of the image, so the copper drill machine clearly bores along underneath the sea. Keep the drill machine's shape, its soot-black iron and copper, the size, the thick black outline and the style, on a transparent background.",
+    "editInstruction": "Remove the two small white steam puffs. Make the water above the drill one thicker band of rolling pale blue-white waves with a curling white foam crest, spanning the top of the image, so the copper drill machine clearly bores along underneath the sea. Keep the drill machine's shape, its soot-black iron and copper, the size, the thick black outline and the style, on a transparent background.",
+    "source": {
+      "recipe": "icon-tech-sea-tunnels-a",
+      "candidate": 0,
+      "sha256": "d5e6d1f15611c828df55a70cb207a356f1a3a379fe5104a133852c1aec7fe584"
+    }
+  }
+}

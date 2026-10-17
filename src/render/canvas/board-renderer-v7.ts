@@ -317,6 +317,7 @@ import {
   drawDwarfBadgeV7,
   drawEruptionRingV7,
   drawMoundChipV7,
+  drawSeaTunnelRouteV7,
   drawTunnelTetherV7,
   type DwarfBoardArtV7,
 } from "./dwarf-canvas-v7";
@@ -976,6 +977,16 @@ export interface MapCommandTargetV7 {
     readonly staysBehind: boolean;
     /** The destination chosen in the dock or on the board. */
     readonly chosen: boolean;
+    /**
+     * Themed naval branches, Sea Tunnels (`pulp_wars-5ti.20`): the route of
+     * a tunnel under a strait (the Mole's tile to the destination, both
+     * included; `seaTunnelRouteV7`), drawn under the ghosts while the
+     * destination is focused or chosen. Absent for a tunnel under land.
+     */
+    readonly underWater?: readonly {
+      readonly at: CoordV7;
+      readonly water: boolean;
+    }[];
   };
   /**
    * The Dwarf revision: where a Steam Cannon's shot knocks its target back
@@ -2905,6 +2916,18 @@ export function drawBoardV7(input: {
       destinations.find((target) => target.tunnel?.chosen === true);
     const tunnel = shown?.tunnel;
     if (shown === undefined || tunnel === undefined) return;
+    if (tunnel.underWater !== undefined)
+      drawSeaTunnelRouteV7(
+        context,
+        tunnel.underWater.map((step) => ({
+          x: camera.offsetX + step.at.x * TILE_WIDTH * camera.zoom,
+          y: camera.offsetY + step.at.y * TILE_HEIGHT * camera.zoom,
+          water: step.water,
+        })),
+        camera.zoom,
+        input.highContrast ?? false,
+        sceneAlpha,
+      );
     const ghost = (unitId: number, at: CoordV7): void => {
       const source = input.plan.entries.find(
         (entry) => entry.kind === "UNIT" && entry.key === `unit:${unitId}`,

@@ -274,7 +274,10 @@ export interface PublicIceFolkMechanicsV7 {
  * may still fire (this turn on its owner's turn, otherwise on its owner's
  * next turn if it does not move), null for every other role;
  * `eruptionDamage` and `bombDamage` are the owner's (public: they tell
- * Blasting Charges and Dive); `burrowed` marks a mound's record.
+ * Blasting Charges and Dive); `burrowed` marks a mound's record. Themed
+ * naval branches (`pulp_wars-5ti.20`): `armourReduction` is the role's
+ * Armoured reduction (1 for the three Ironclad hulls, 0 for every other
+ * role). Sea Tunnels is private research and is not shown.
  */
 export interface PublicDwarfMechanicsV7 {
   readonly construct: boolean;
@@ -283,6 +286,7 @@ export interface PublicDwarfMechanicsV7 {
   readonly digsIn: boolean;
   readonly shotsLeft: number | null;
   readonly plated: number | null;
+  readonly armourReduction: number;
   readonly tunnelRange: number;
   readonly eruptionDamage: number;
   readonly bombDamage: number;
@@ -979,6 +983,7 @@ export function publicUnitStatsV7(
                   : mechanics.unmovedShots
                 : null,
             plated: mechanics.plated,
+            armourReduction: mechanics.armourReduction,
             tunnelRange: mechanics.tunnelRange,
             eruptionDamage: capabilities.eruptionDamage,
             bombDamage: capabilities.bombDamage,

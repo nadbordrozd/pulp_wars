@@ -28,6 +28,7 @@ import type {
   TechnologyIdV7,
 } from "../engine/v7/types";
 import type { PlayerViewV7, PublicUnitV7 } from "../engine/v7/view";
+import { armouredLosingAttackV7 } from "./v7-naval-dwarf";
 
 /**
  * The naval branch for the seafaring seats (`pulp_wars-5ti.4`,
@@ -658,6 +659,9 @@ export function navalRamApproachV7(
         : 0,
     );
     if (preview.attackerDies) continue;
+    // Themed naval branches (`pulp_wars-5ti.20`): no losing Ram on an
+    // Armoured hull (a Patrol Boat on an Ironclad: 6 dealt, 7 taken).
+    if (armouredLosingAttackV7(view, actor, target, preview)) continue;
     // Themed naval branches (`pulp_wars-5ti.17`): a Ghost Ship rises from
     // what an Undead boat sinks.
     const exchange =

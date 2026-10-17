@@ -67,9 +67,9 @@ const CELLS = [
 
 describe("ruleset-7 revision-16 identity", () => {
   it("keeps rejecting r15 after the r54 identity and cleans the r15 through r53 save keys", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r95");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r95.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-80, -40)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r96");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r96.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-81, -41)).toEqual([
       "pulpWars.save.v7r15.current",
       "pulpWars.save.v7r16.current",
       "pulpWars.save.v7r17.current",
@@ -191,8 +191,9 @@ describe("ruleset-7 prior identities", () => {
     // (`pulp_wars-5ti.16`): 7r92. The Undead Drowned Fleet
     // (`pulp_wars-5ti.17`): 7r93. The Dinosaur Horned Prows and Plesiosaur
     // (`pulp_wars-5ti.18`): 7r94. The Martian Hover Fleet
-    // (`pulp_wars-5ti.19`): 7r95.
-    expect(revision).toBe(95);
+    // (`pulp_wars-5ti.19`): 7r95. The Dwarf Ironclads and Sea Tunnels
+    // (`pulp_wars-5ti.20`): 7r96.
+    expect(revision).toBe(96);
     expect([...PRIOR_RULESET_7_IDS]).toEqual(expectedPrior);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
   });
@@ -227,7 +228,7 @@ describe("ruleset-7 prior identities", () => {
 
   it("still reports an unknown Ruleset 7 identity as INVALID_REPLAY", () => {
     // The next identity after the current one is still unknown.
-    for (const id of ["pulp-wars-poc-7r1", "pulp-wars-poc-7r96", "other"])
+    for (const id of ["pulp-wars-poc-7r1", "pulp-wars-poc-7r97", "other"])
       expect(
         parseReplayFileV7({
           format: "pulp-wars-replay",

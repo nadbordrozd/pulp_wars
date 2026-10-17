@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r95`, for all nine offered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r96`, for all nine offered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), Candy (`CANDY`), and
 the Cultists (`CULT`). The ninth faction, the Cultists of the Ancient Ones,
@@ -445,6 +445,39 @@ links to another, by Road or by Port. A sea link needs only **Shorecraft**
 the Roads technology, and unexplored water no longer breaks a link. A save,
 replay, or setup of `7r75` is rejected, and the browser autosave has a new
 key.
+`pulp-wars-poc-7r96` (`pulp_wars-5ti.20`, the fifth bead of the
+[themed naval branches](RULESET_7_NAVAL_FACTIONS.md)) is **Ironclads and
+Sea Tunnels**, the Dwarf fleet. The Dwarf ships are **Armoured** (the role
+mechanic `armourReduction` 1, the Ankylosaurus's Armoured of
+[section 19.9](#199-acid-and-armoured)): every hit of 2 or more on them
+does 1 less, through `armouredDamageV7` in every form (attack,
+retaliation, splash, blasts, Wail, bombs, eruptions, and Plague), never
+the Ice Folk crush (3); they cost more: the **Steam Launch**
+(`PATROL_BOAT`, 6 Coins), the **Ironclad** (`BATTLESHIP`, 18), and the
+**Diving Bell** (`SUBMARINE`, 10), 2 less at a Shipyard, every other number
+the Human ship's. The Dwarf stats block shows `armourReduction`. The Dwarf
+Seamanship, shown as **Sea Tunnels**, is the Ram and the unlock
+`SEA_TUNNELS` (capability `seaTunnels`) in place of `COMMAND BOARD`: a
+Steam Mole whose kind's capabilities under its controller have Sea Tunnels
+may tunnel under explored Shallow Water that is not ice (row 6 of
+[section 22.2](#222-the-tunnel-and-burrowed-units), `seaTunnelPassableV7`,
+read by the reducer and the command query); the destination and the
+rider's tile stay land, the range stays 3 (a strait of one or two Shallow
+tiles is crossed), and Deep Water and ice are never passed. Everything else
+is the Tunnel, and it still touches no water on the board. The five Dwarf
+Naval technologies are shown as Steam Launches, Navigation, Ironclads, Sea
+Tunnels, and Diving Bells. Sea Tunnels is private research and is in no
+public stat. The Normal AI tunnels a Mole and its rider across a strait to
+the naval plan's target landmass at the priority of a planned landing
+(they board at no Port), asks for Sea Tunnels when the target lies within
+tunnel reach over Shallow Water and it owns a Mole, reads Armoured from the
+exact previews and its threat estimate, and every seat refuses a ship's
+attack on an Armoured hull that does not sink it and deals less than it
+takes (a Patrol Boat's Ram on an Ironclad, 6 dealt and 7 taken)
+([section 16](#16-normal-ai-summary)). The board draws a tunnel's route
+under a strait while its destination is focused or chosen. The Sea Tunnels
+card is new art; no new sound. A save, replay, or setup of `7r95` is
+rejected, and the browser autosave has a new key.
 `pulp-wars-poc-7r95` (`pulp_wars-5ti.19`, the fourth bead of the
 [themed naval branches](RULESET_7_NAVAL_FACTIONS.md)) is **the Martian
 Hover Fleet**. The Martian ships are frail hulls behind **Shields** (the
@@ -1240,7 +1273,7 @@ the build differs (its sections 20 to 24 list them);
 the values here are current. Where a document and the code disagreed, the
 code's behavior is the rule and is stated below;
 [Known discrepancies](#25-known-discrepancies) lists the open items and the
-resolved ones as of `pulp-wars-poc-7r95`.
+resolved ones as of `pulp-wars-poc-7r96`.
 
 **Terms.** "On the board" means a unit that currently exists (HP above 0).
 **Living** has the narrower revision-13 meaning used by Wail, Plague,
@@ -1343,10 +1376,10 @@ sections here cite.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r95`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Ruleset                                    | `pulp-wars-poc-7r96`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r95.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Browser autosave                           | `pulpWars.save.v7r96.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, `CULT`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`, `CULT_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -4594,11 +4627,11 @@ names every player sees (a cell in bold is the faction's own):
 | `METALLURGY`        | Armoury       | Armoury             | Armoury            | **Triceratops**  | Armoury            | **Mammoths**    | **Steam Tanks**      | **Jawbreakers**         | **Gibbering Masses**    |
 | `FORTIFICATION`     | Fortification | Fortification       | Fortification      | **Nesting**      | **Force Fields**   | **Deep Winter** | **Dig In**           | **Home Sweet Home**     | **Warding Circles**     |
 | `EXPLOSIVES`        | Explosives    | **Pestilence**      | Explosives         | **Wallbreaker**  | **Disintegrator**  | **Brittle**     | **Blasting Charges** | **Peppermint Surprise** | **The Stars Are Right** |
-| `SHORECRAFT`        | Sailing       | **Ghost Ships**     | **Fire Rafts**     | **Dugouts**      | **Skimmers**       | **Rime**        | Sailing              | Sailing                 | Sailing                 |
+| `SHORECRAFT`        | Sailing       | **Ghost Ships**     | **Fire Rafts**     | **Dugouts**      | **Skimmers**       | **Rime**        | **Steam Launches**   | Sailing                 | Sailing                 |
 | `NAVIGATION`        | Navigation    | Navigation          | Navigation         | Navigation       | Navigation         | **Pack Ice**    | Navigation           | Navigation              | Navigation              |
-| `NAVAL_ENGINEERING` | Shipbuilding  | **Plague Galleons** | **Dreadnoughts**   | **War Rafts**    | **Hover Cruisers** | **Icebound**    | Shipbuilding         | Shipbuilding            | Shipbuilding            |
-| `SEAMANSHIP`        | Boarding      | **Drowned Crews**   | **Powder Kegs**    | **Horned Prows** | **Hover Pods**     | **Black Ice**   | Boarding             | Boarding                | Boarding                |
-| `SUBMERSIBLES`      | Submersibles  | **Sunken Galleys**  | **Diving Barrels** | **Plesiosaurs**  | **Bathyspheres**   | **Glacier**     | Submersibles         | Submersibles            | Submersibles            |
+| `NAVAL_ENGINEERING` | Shipbuilding  | **Plague Galleons** | **Dreadnoughts**   | **War Rafts**    | **Hover Cruisers** | **Icebound**    | **Ironclads**        | Shipbuilding            | Shipbuilding            |
+| `SEAMANSHIP`        | Boarding      | **Drowned Crews**   | **Powder Kegs**    | **Horned Prows** | **Hover Pods**     | **Black Ice**   | **Sea Tunnels**      | Boarding                | Boarding                |
+| `SUBMERSIBLES`      | Submersibles  | **Sunken Galleys**  | **Diving Barrels** | **Plesiosaurs**  | **Bathyspheres**   | **Glacier**     | **Diving Bells**     | Submersibles            | Submersibles            |
 
 The rest of this document, the tuning documents, and the faction documents
 name a technology by its ID in title case (Drill, Administration,
@@ -5664,9 +5697,9 @@ an adjacent tile (**Submerged**), and attacking only units afloat, which
 never strike back (**Torpedo**). A Patrol Boat's **Ram** needs Seamanship
 (the interface calls it **Bow Ram**, since the Goblin Scrap Buggy's Overrun
 was displayed as "Ram" until `pulp_wars-2yc.63`). The three ships have the same numbers, names, and
-rules in the Human, Dwarf, Candy, and Cult rosters (each drawn
+rules in the Human, Candy, and Cult rosters (each drawn
 in its faction's style); the Goblin (`7r92`), Undead (`7r93`), Dinosaur
-(`7r94`), and Martian (`7r95`) ships are their own (the themed naval branches); the Ice Folk
+(`7r94`), Martian (`7r95`), and Dwarf (`7r96`) ships are their own (the themed naval branches); the Ice Folk
 have none ([section 14](#14-naval-rules)). Public abilities: Patrol Boat `ATTACK`,
 `RAM` (listed whatever its owner has researched); Battleship `ATTACK`;
 Submarine `ATTACK`, `SUBMERGED`, `TORPEDO`.
@@ -6164,9 +6197,9 @@ The Dwarf (`DWARF`) roster, by mechanical role, with the
 | Whirligig        | `KNIGHT`      | Chivalry          |    9 |  12 |     3 (6) | 1.5 (3) |    3 |     1 |     1 | construct; machine | yes                  | yes     | Whirl (hits every adjacent enemy at once, unanswered; `w49.33`, Three Hammers before); never advances; no Overrun |
 | Steam Tank       | `SWORDSMAN`   | Metallurgy        |    9 |  16 |     3 (6) |   2 (4) |    2 |     1 |     1 | living; machine    | yes                  | yes     | Plated 4; no Overrun (the heavy role since `7r55`; `KNIGHT` at Chivalry before)                                   |
 | Brass Titan      | `JUGGERNAUT`  | reward only       |    — |  36 |     4 (8) |   3 (6) |    1 |     1 |     1 | construct; machine | yes                  | yes     | Siege Hammer                                                                                                      |
-| Patrol Boat      | `PATROL_BOAT` | Shorecraft        |    5 |  10 |     2 (4) |   2 (4) |    2 |     1 |     2 | —                  | yes                  | no      | naval; Ram (Seamanship)                                                                                           |
-| Battleship       | `BATTLESHIP`  | Naval Engineering |   16 |  25 |    5 (10) |   3 (6) |    2 |   1–3 |     3 | —                  | no                   | no      | naval; splash                                                                                                     |
-| Submarine        | `SUBMARINE`   | Submersibles      |    9 |  12 |     4 (8) |   2 (4) |    2 |     1 |     2 | —                  | yes                  | no      | naval; Submerged; Torpedo                                                                                         |
+| Steam Launch¹³   | `PATROL_BOAT` | Shorecraft        |    6 |  10 |     2 (4) |   2 (4) |    2 |     1 |     2 | —                  | yes                  | no      | naval; Ram (Sea Tunnels); Armoured                                                                                |
+| Ironclad¹³       | `BATTLESHIP`  | Naval Engineering |   18 |  25 |    5 (10) |   3 (6) |    2 |   1–3 |     3 | —                  | no                   | no      | naval; splash; Armoured                                                                                           |
+| Diving Bell¹³    | `SUBMARINE`   | Submersibles      |   10 |  12 |     4 (8) |   2 (4) |    2 |     1 |     2 | —                  | yes                  | no      | naval; Submerged; Torpedo; Armoured                                                                               |
 
 ¹⁰ Clockwork Gunner Sight becomes 2 with Fieldcraft.
 ¹¹ The Gyrocopter has no `ATTACK` ability: its Attack is used only when it
@@ -6174,6 +6207,11 @@ retaliates, at distance 1 ([section 22.5](#225-gyrocopters-and-the-bombing-run))
 ¹² [Dwarf tuning record](RULESET_7_DWARVES.md#195-tuning-record)
 (`pulp_wars-78i.7`, `pulp-wars-poc-7r31`): the bomb deals 5 and 6 with Dive
 (`BOMB_DAMAGE_V7`, `DIVE_BOMB_DAMAGE_V7`; decided values 4 and 5).
+¹³ Ironclads and Sea Tunnels (`pulp-wars-poc-7r96`, `pulp_wars-5ti.20`,
+[themed naval branches section 7](RULESET_7_NAVAL_FACTIONS.md#7-dwarves-ironclads-and-sea-tunnels)):
+the Human ships' numbers under their own names, Armoured and 1, 2, and 1
+Coins dearer (2 less at a Shipyard); the Dwarf Seamanship is shown as Sea
+Tunnels (the Ram and the Moles' tunnel under shallow water, no Board).
 
 - **Hammerer** has Fighter parity (cost, HP, Attack, Defense, Move; capture,
   Pillage with Raiding, Disband, ordinary Promotion, the advance after a
@@ -7682,9 +7720,20 @@ Every rule that names "naval units", "ships", or "boats" covers all three.
   Marshmallow or a Golem from distance 1 is bounced over water, and Splat
   applies to boats and embarked units
   ([section 23.9](#239-interactions-with-other-rules)).
-- **Dwarf boats** are the Human Patrol Boat, Battleship, and Submarine too
-  (drawn in the Dwarf style): one slot, ordinary Promotion, no Dwarf rule.
-  A Steam Cannon (range 2–3) cannot target a submerged Submarine, so its
+- **Dwarf boats** are the **Ironclad fleet** (`7r96`,
+  [themed branches section 7](RULESET_7_NAVAL_FACTIONS.md#7-dwarves-ironclads-and-sea-tunnels)):
+  the **Steam Launch** (Patrol Boat, 6 Coins), the **Ironclad**
+  (Battleship, 18), and the **Diving Bell** (Submarine, 10), 2 less at a
+  Shipyard, the Human numbers otherwise, drawn in the Dwarf style, one
+  slot, ordinary Promotion. They are **Armoured** (`armourReduction` 1):
+  every hit of 2 or more does 1 less, attack, retaliation, splash, blasts,
+  Wail, bombs, and Plague alike, never the ice crush. Their Seamanship,
+  **Sea Tunnels**, is the Ram and `SEA_TUNNELS` (capability `seaTunnels`)
+  instead of Board: a Dwarf ship never boards. With Sea Tunnels a Steam
+  Mole's tunnel may pass under explored Shallow Water without ice (one or
+  two tiles within its range of 3); its destination and its rider's tile
+  stay land, and Deep Water and ice are never passed. Sea Tunnels is
+  private research. A Steam Cannon (range 2–3) cannot target a submerged Submarine, so its
   Knockback never moves one; a Gyrocopter's bomb is not an attack and
   reaches a Submarine within 2. Dwarf foot
   units and machines other than the Gyrocopter embark at an own active,
@@ -7693,8 +7742,8 @@ Every rule that names "naval units", "ships", or "boats" covers all three.
   where a Move or a bombing run ends on water. Afloat, a Dwarf unit is an
   ordinary embarked unit (Move 2, no bomb, Tunnel, Repair, or Assemble,
   never dug in) and lands with `DISEMBARK`. A tunnel never passes under
-  water; an eruption never hits a naval or embarked unit; a bomb may target
-  one. `TUNNEL` and `ASSEMBLE` never touch water, so they are not on the
+  water but Shallow Water with Sea Tunnels; an eruption never hits a naval
+  or embarked unit; a bomb may target one. `TUNNEL` and `ASSEMBLE` never touch water, so they are not on the
   blockade-event list below; `BOMB_RUN` is.
 - **Blockade events.** `PORT_BLOCKADE_CHANGED` and `SEA_NETWORK_CHANGED` are
   recomputed after `ATTACK`, `BOARD`, `BUILD_PORT`, `BUILD_ROAD`, `CAPTURE`,
@@ -8721,6 +8770,24 @@ Harbours from it.
   as for a land unit. Every other seat reads a hover-launched unit as a
   transport (its boats ram and sink it, Shield first), and its estimates
   assume a hostile Martian foot unit's Hover Pods.
+- **Ironclads and Sea Tunnels** (`7r96`, `pulp_wars-5ti.20`,
+  `src/ai/v7-naval-dwarf.ts`). The Dwarf ships are read by role, so a Dwarf
+  seat trains a Diving Bell against a visible Battleship and a Steam Launch
+  against a visible Submarine, and its Ironclad shells the coast. An
+  offered `TUNNEL` whose destination lies on the naval plan's target
+  landmass, from another landmass, is a **sea landing**: the Mole rules
+  take it at the priority of a planned `DISEMBARK` (1335) with a rider, the
+  Pressure-tunnel priority without, never next to three hostile melee
+  units unless next to the target, nearer the target and on more
+  eruption targets first; the Mole and its rider then board at no Port.
+  Sea Tunnels is the naval plan's next technology (priority 1280, not held
+  for the army's research) once the plan is active, the seat owns a Mole,
+  and the target landmass lies within 3 tunnel steps of its home land over
+  Shallow Water. Every exchange reads the exact previews and the threat
+  estimate, which count Armoured; and every seat refuses a ship's attack
+  on an Armoured hull afloat that does not sink it and deals less than its
+  reply takes (a Patrol Boat's Ram on an Ironclad: 6 dealt, 7 taken). A
+  mound a sea tunnel leaves on the far coast is read as every mound.
 - **The frozen sea** (`pulp_wars-5ti.5`, `src/ai/v7-frozen-sea.ts`). An
   Ice Folk seat has no ship and no naval plan; it has an **ice plan**
   where a seafaring seat's naval plan would activate (every known
@@ -12789,10 +12856,17 @@ Legality, in this order (all rejections atomic):
 | 7   | If `rider` is not null: `rider.unitId` is another own unit on the board whose role has `RIDES_TUNNEL` (a Hammerer), in land form, Chebyshev-adjacent to the Mole, that has not moved, used a primary action, or landed this turn and is not in `surfacedThisTurn`. | `TUNNEL_NOT_LEGAL { reason: "RIDER" }`                           |
 | 8   | If `rider` is not null: `rider.to` is a tunnel tile for the Hammerer, Chebyshev-adjacent to `to`, and not `to`.                                                                                                                                                    | `TUNNEL_NOT_LEGAL { reason: "RIDER_DESTINATION" }`               |
 
+- **Sea Tunnels** (`7r96`, `pulp_wars-5ti.20`): for a Mole whose kind's
+  capabilities under its controller have `seaTunnels` (the Dwarf
+  Seamanship), the tiles of row 6's sequence after the first and before
+  `to` may also be explored Shallow Water that is not ice
+  (`seaTunnelPassableV7`); `to` and the rider's tile stay tunnel tiles
+  (land), and Deep Water and ice are never passed. The range is unchanged,
+  so a strait of one or two Shallow tiles is crossed.
 - **Underground** units, zones of control, terrain stops, Snow, Roads, and
   territory do not matter along the way; each step costs one; passing under
   a Mountain needs no Engineering and passing under a Rift is allowed; water
-  is never part of a tunnel; nothing is revealed along the way. The command
+  is never part of a tunnel (but Shallow Water with Sea Tunnels); nothing is revealed along the way. The command
   carries no path, so the command query offers one entry per destination
   and rider tile (and the rider-less entry).
 - **A Frozen Mole cannot tunnel**, and a Frozen Hammerer cannot ride
@@ -13365,7 +13439,7 @@ empty surfacedThisTurn and bombedThisTurn → income preview → next seat's Sta
 | Ice Folk rules          | [Section 21.14](#2114-interactions-with-other-rules): tunnels ignore Snow; deep snow stops only the Move-2 Steam Tank; every Dwarf unit can be Frozen (the Titan too) and shattered (never the Titan); a Frozen Gyrocopter cannot bomb and a Frozen Mole cannot tunnel; the Shatter test reads a Tank's HP after the cap; the Blizzard halves a Gunner's or Cannon's shot from distance 2 or more, never a bomb or eruption.                                                                                                                                                                                   |
 | Human abilities         | An eruption undermines Field Defense on nine tiles, whoever owns it; Walls are untouched; bombs and eruptions ignore both; Dig In and Field Defense never stack. A Catapult destroys Field Defense, never Dig In, and out-ranges every Dwarf unit but the Steam Cannon. A Juggernaut pushes a Dwarf unit under the ordinary conditions (Dig In read on the new tile), never onto a mound. A Knight's kill of a surfaced Mole may continue its Overrun; the Steam Tank has none. An Escape Move never ends on a mound. Human and Dinosaur healers tend only their own units.                                    |
 | Cities, siege, capacity | Capture-capable: every Dwarf land unit since `pulp_wars-ke95`. A Dwarf unit on a hostile center besieges it, a Gyrocopter as well; a mound never does. The Mole may step onto a center on its surfacing turn and capture on the next; the rider may not. Every Dwarf role uses one slot; a burrowed unit keeps its slot and home; Assemble uses the Engineer's home city's slot; Dwarf cities have no capacity bonus. Dig In counts around the seat's own centers only: a captured city's ring stops counting at once, and a captured one starts at once. Tunnel, Bomb Run, and Assemble spend no city action. |
-| Boats, water            | Dwarf boats are the Human boats. Foot units and machines but the Gyrocopter embark at Ports with Shorecraft; the Gyrocopter flies over water and self-launches. A tunnel never passes under water; eruptions skip naval and embarked units; bombs may target them. An embarked unit is never dug in.                                                                                                                                                                                                                                                                                                           |
+| Boats, water            | Dwarf boats are the Armoured Ironclad fleet (`7r96`: Steam Launch, Ironclad, Diving Bell; every hit of 2 or more does 1 less). Foot units and machines but the Gyrocopter embark at Ports with Shorecraft; the Gyrocopter flies over water and self-launches. A tunnel never passes under water but, with Sea Tunnels, under one or two Shallow Water tiles; eruptions skip naval and embarked units; bombs may target them. An embarked unit is never dug in.                                                                                                                                                 |
 | Rift                    | Tunnels pass under a Rift but never end there, and a rider's tile is never one. A Gyrocopter may stand on a Rift as a flyer (it lands there from a bombing run as from a Move); there it is attacked, bombed, and Frozen like any unit, leaves no Grave, and is immune to Mind Control. No eruption case arises (a unit on a Rift flies). Assemble and Knockback never put a ground unit on a Rift.                                                                                                                                                                                                            |
 | ZOC, Roads              | Tunnels and bombing runs ignore ZOC and Roads; a mound exerts no ZOC; surfaced units exert and suffer it; a Gyrocopter ignores hostile ZOC and exerts none. A Move may pass over a mound tile.                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | Achievements, Promotion | Promotion is the ordinary rule for every Dwarf unit (3 kills, +5 maximum HP, a full heal), constructs included: it is a construct's only full heal. Eruption, bomb, and retaliation kills are credited. Muster counts the Dwarf trainable roles on the board (a burrowed unit when it surfaces; an assembled Gunner at once); Slayer counts eruption and bomb kills.                                                                                                                                                                                                                                           |

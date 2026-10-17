@@ -7,6 +7,7 @@ import {
   previewBuildBarricadeV7,
   previewTunnelV7,
   previewWhirlV7,
+  unitRoleMechanicsV7,
   unitRoleRuleV7,
   type CombatPreviewV7,
   type CommandV7,
@@ -42,6 +43,7 @@ import {
   tunnelTargetLabelV7,
 } from "../dwarf-presentation-v7";
 import {
+  seaTunnelRouteV7,
   tunnelCommandsV7,
   tunnelDestinationsV7,
   tunnelOutcomeV7,
@@ -253,10 +255,19 @@ export function dwarfPickTargetsV7(
           : `${passengerAccessibleNameV7(rider.label, rider.hp, rider.maxHp, false)}. Choose to ride along`,
       });
     }
+    // Themed naval branches, Sea Tunnels (`pulp_wars-5ti.20`): a tunnel
+    // under a strait shows its route under the water.
+    const mole = unitById(pick.unitId);
+    const tunnelRange =
+      mole === undefined ? 0 : unitRoleMechanicsV7(view, mole).tunnelRange;
     for (const to of tunnelDestinationsV7(commands, pick.unitId)) {
       // A landing tile of the chosen destination is the Hammerer's, not
       // another destination.
       if (landingCells.has(key(to))) continue;
+      const underWater =
+        mole === undefined
+          ? null
+          : seaTunnelRouteV7(view, mole.at, to, tunnelRange);
       const outcome = tunnelOutcomeV7(view, commands, pick, to);
       const alone = tunnelCommandsV7(commands, pick.unitId).find(
         (command) => command.rider === null && same(command.to, to),
@@ -297,6 +308,17 @@ export function dwarfPickTargetsV7(
           landing: outcome.landing,
           staysBehind: outcome.staysBehind,
           chosen: isChosen,
+          ...(underWater === null
+            ? {}
+            : {
+                underWater: underWater.map((at) => {
+                  const tile = view.board.tiles[at.y * view.board.width + at.x];
+                  return {
+                    at,
+                    water: tile?.explored === true && tile.biome === null,
+                  };
+                }),
+              }),
         },
         semanticLabel: isChosen
           ? `${name}. Chosen: choose again to tunnel`

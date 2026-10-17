@@ -17,6 +17,7 @@ import {
   unitRoleMechanicsV7,
   unitRoleRuleV7,
   primaryActionBlockedAfterMoveV7,
+  seaTunnelPassableV7,
   type FactionRosterV7,
 } from "../rules/ruleset-v7";
 import { biteOfV7, recordBittenRisingV7 } from "./afflictions";
@@ -231,18 +232,34 @@ export function tunnelReachV7(
   return reached;
 }
 
-/** The canonical tunnel reach of the actor's Mole on `from`. */
+/**
+ * The canonical tunnel reach of the actor's Mole on `from`. Themed naval
+ * branches (`pulp_wars-5ti.20`): with Sea Tunnels (`seaTunnels`, the Mole's
+ * kind's capabilities under its controller) the steps may also pass under
+ * explored Shallow Water that is not ice (`seaTunnelPassableV7`).
+ */
 function canonicalTunnelReachV7(
   state: GameStateV7,
   actor: PlayerId,
   from: CoordV7,
   range: number,
+  seaTunnels: boolean,
 ): ReadonlyMap<string, CoordV7> {
   return tunnelReachV7(
     state.board,
-    (at) =>
-      isExploredBy(state, actor, at) &&
-      tileAtV7(state.board, at)?.biome !== null,
+    (at) => {
+      const tile = tileAtV7(state.board, at);
+      return (
+        tile !== undefined &&
+        isExploredBy(state, actor, at) &&
+        seaTunnelPassableV7({
+          seaTunnels,
+          land: tile.biome !== null,
+          terrain: tile.terrain,
+          ice: isIceAtV7(state, at),
+        })
+      );
+    },
     from,
     range,
   );
@@ -303,9 +320,16 @@ export function applyTunnelV7(
   if (state.surfacedThisTurn.includes(mole.id))
     return kit.rejected(original, "TUNNEL_NOT_LEGAL", { reason: "SURFACED" });
   const range = unitRoleMechanicsV7(state, mole).tunnelRange;
+  const seaTunnels = unitCapabilitiesV7(
+    state,
+    mole,
+    kit.requirePlayer(state, actor).researchedTechs,
+  ).seaTunnels;
   if (
     !tunnelTileLegalV7(state, actor, mole, command.to) ||
-    !canonicalTunnelReachV7(state, actor, mole.at, range).has(key(command.to))
+    !canonicalTunnelReachV7(state, actor, mole.at, range, seaTunnels).has(
+      key(command.to),
+    )
   )
     return kit.rejected(original, "TUNNEL_NOT_LEGAL", {
       reason: "DESTINATION",

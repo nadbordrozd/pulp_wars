@@ -554,6 +554,21 @@ export const KIND_READER_CLASSES_V7: Readonly<
   // launch reads its kind's tree through `unitCapabilitiesV7`).
   "src/ai/v7-naval-martian.ts::hoverPodsTreeV7": "SEAT",
   "src/ai/v7-naval-martian.ts::hoverPodsResearchedV7": "SEAT",
+  // The Dwarf Ironclads and Sea Tunnels (`pulp_wars-5ti.20`): whether the
+  // viewer's own seat's tree grants Sea Tunnels and has them now (a Mole's
+  // tunnel reads its kind's tree through `unitCapabilitiesV7`); the Dwarf
+  // registry's sentences (the Armoured hulls, the Sea Tunnels line, the
+  // "At sea" Help line) and card notes of a seat's faction; and the match
+  // gate of the Dwarf attack preview's Armoured lines (a Dinosaur seat
+  // shows its own).
+  "src/ai/v7-naval-dwarf.ts::seaTunnelsTreeV7": "SEAT",
+  "src/ai/v7-naval-dwarf.ts::seaTunnelsResearchedV7": "SEAT",
+  "src/render/dwarf-presentation-v7.ts::dwarfHelpRulesV7": "SEAT",
+  "src/render/dwarf-presentation-v7.ts::dwarfCombatLinesV7": "SEAT",
+  "src/render/naval-presentation-v7.ts::armouredHullRuleV7": "SEAT",
+  "src/render/naval-presentation-v7.ts::navalRoleArmouredV7": "SEAT",
+  "src/render/naval-presentation-v7.ts::seaTunnelsRuleV7": "SEAT",
+  "src/render/naval-presentation-v7.ts::patrolBoatUnlockNotesV7": "SEAT",
   "src/render/goblin-presentation-v7.ts::<module>": "SEAT",
   // A prize under its new flag: its kind follows its new owner (a ship is
   // never mind-controlled), so the prize's maximum HP is its captor seat's

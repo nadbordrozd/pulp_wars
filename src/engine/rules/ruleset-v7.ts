@@ -304,6 +304,14 @@ export type TechnologyUnlockV7 =
    */
   | { readonly kind: "HOVER_PODS" }
   /**
+   * Themed naval branches (docs/product/RULESET_7_NAVAL_FACTIONS.md section
+   * 7.3 W2, `pulp_wars-5ti.20`): Sea Tunnels, the Dwarf `SEAMANSHIP` in
+   * place of Board. The owner's Steam Moles may tunnel under explored
+   * Shallow Water that is not ice (`seaTunnelPassableV7`); the destination
+   * and the rider's tile stay land.
+   */
+  | { readonly kind: "SEA_TUNNELS" }
+  /**
    * The naval branch (section 5.4): Harbours, every active Port and
    * Shipyard of the owner gives `population` more live population.
    */
@@ -3491,29 +3499,43 @@ export const ICE_FOLK_BASELINE_V1_TREE: FactionTechnologyTreeV7 = deepFreeze({
  * Chivalry grants no Overrun, Fortification (displayed as Dig In) grants
  * `DIG_IN` instead of `BUILD_FIELD_DEFENSE`, and Explosives (displayed as
  * Blasting Charges) keeps both of its unlocks and adds `BLASTING_CHARGES`.
+ * Themed naval branches (`pulp_wars-5ti.20`): Seamanship (displayed as Sea
+ * Tunnels) is the Ram and `SEA_TUNNELS` instead of Board.
  */
 export const DWARF_BASELINE_V1_NODES: readonly TechnologyNodeV7[] = deepFreeze(
-  SHARED_BASELINE_NODES_V7.map((original) =>
-    node(original.id, original.branch, original.tier, original.prerequisites, [
-      ...original.unlocks.flatMap((unlock): TechnologyUnlockV7[] =>
-        unlock.kind === "CAPTAIN_SUPPORT"
-          ? [{ kind: "ENGINEER_SUPPORT" }]
-          : unlock.kind === "OVERRUN"
-            ? []
-            : unlock.kind === "CHARGE_BONUS"
-              ? [{ kind: "DIVE" }]
-              : unlock.kind === "COMMAND" &&
-                  unlock.command === "BUILD_FIELD_DEFENSE"
-                ? [{ kind: "DIG_IN" }]
-                : [unlock],
+  withSeamanshipUnlocksV7(
+    SHARED_BASELINE_NODES_V7.map((original) =>
+      node(
+        original.id,
+        original.branch,
+        original.tier,
+        original.prerequisites,
+        [
+          ...original.unlocks.flatMap((unlock): TechnologyUnlockV7[] =>
+            unlock.kind === "CAPTAIN_SUPPORT"
+              ? [{ kind: "ENGINEER_SUPPORT" }]
+              : unlock.kind === "OVERRUN"
+                ? []
+                : unlock.kind === "CHARGE_BONUS"
+                  ? [{ kind: "DIVE" }]
+                  : unlock.kind === "COMMAND" &&
+                      unlock.command === "BUILD_FIELD_DEFENSE"
+                    ? [{ kind: "DIG_IN" }]
+                    : [unlock],
+          ),
+          ...(original.id === "MARKSMANSHIP"
+            ? [{ kind: "ASSEMBLE" } as const]
+            : []),
+          ...(original.id === "EXPLOSIVES"
+            ? [{ kind: "BLASTING_CHARGES" } as const]
+            : []),
+        ],
       ),
-      ...(original.id === "MARKSMANSHIP"
-        ? [{ kind: "ASSEMBLE" } as const]
-        : []),
-      ...(original.id === "EXPLOSIVES"
-        ? [{ kind: "BLASTING_CHARGES" } as const]
-        : []),
-    ]),
+    ),
+    // Themed naval branches (docs/product/RULESET_7_NAVAL_FACTIONS.md
+    // section 7.1, `pulp_wars-5ti.20`): Sea Tunnels, the Ram and the Steam
+    // Moles' tunnel under shallow water instead of Board.
+    [{ kind: "SEA_TUNNELS" }],
   ),
 );
 
@@ -3658,9 +3680,29 @@ export const DWARF_ROLE_RULES_V7: Readonly<
     // The giants' signatures (section 6.7): Siege Hammer instead of Push.
     abilities: ["ATTACK", "CAPTURE", "CLOCKWORK", "SIEGE_HAMMER"],
   }),
-  PATROL_BOAT: role({ ...ORIGINAL_ROLE_RULES_V7.PATROL_BOAT }),
-  BATTLESHIP: role({ ...ORIGINAL_ROLE_RULES_V7.BATTLESHIP }),
-  SUBMARINE: role({ ...ORIGINAL_ROLE_RULES_V7.SUBMARINE }),
+  // Themed naval branches, Ironclads (docs/product/RULESET_7_NAVAL_FACTIONS.md
+  // section 7.2, `pulp_wars-5ti.20`): Armoured hulls (the role mechanic
+  // `armourReduction` 1) at a higher price: the Steam Launch 6 Coins, the
+  // Ironclad 18, the Diving Bell 10 (2 less at a Shipyard); every other
+  // number is the Human ship's.
+  PATROL_BOAT: role({
+    ...ORIGINAL_ROLE_RULES_V7.PATROL_BOAT,
+    label: "Steam Launch",
+    cost: 6,
+    abilities: [...ORIGINAL_ROLE_RULES_V7.PATROL_BOAT.abilities, "ARMOURED"],
+  }),
+  BATTLESHIP: role({
+    ...ORIGINAL_ROLE_RULES_V7.BATTLESHIP,
+    label: "Ironclad",
+    cost: 18,
+    abilities: [...ORIGINAL_ROLE_RULES_V7.BATTLESHIP.abilities, "ARMOURED"],
+  }),
+  SUBMARINE: role({
+    ...ORIGINAL_ROLE_RULES_V7.SUBMARINE,
+    label: "Diving Bell",
+    cost: 10,
+    abilities: [...ORIGINAL_ROLE_RULES_V7.SUBMARINE.abilities, "ARMOURED"],
+  }),
   // The ninth unit (`pulp_wars-w49.17`, 7r55): the Steam Tank is the
   // Dwarf heavy line unit (Metallurgy; it was the `KNIGHT` role at
   // Chivalry). Its numbers and rules are unchanged (it captures like every
@@ -3700,7 +3742,8 @@ export const TUNNEL_RANGE_V7 = 3;
  * Cannon knocks back; the Tank is Plated; every Dwarf land role but the
  * Hammerer and the Engineer is a machine for Repair, and the Engineer
  * repairs machines by 4. The flyer, the Gunner, and the Cannon never
- * advance. Every role uses one slot. Boats are Human boats.
+ * advance. Every role uses one slot. The three ships are Armoured
+ * (themed naval branches, `pulp_wars-5ti.20`: `armourReduction` 1).
  */
 export const DWARF_ROLE_MECHANICS_V7 = mechanics({
   FIGHTER: { buildsFieldDefense: false, digsIn: true, ridesTunnel: true },
@@ -3745,7 +3788,11 @@ export const DWARF_ROLE_MECHANICS_V7 = mechanics({
     // The giants' signatures (section 6.7): Siege Hammer.
     siegeHammer: true,
   },
-  BATTLESHIP: { splash: true },
+  // Themed naval branches (section 7.3 W1, `pulp_wars-5ti.20`): Ironclad
+  // hulls, every hit of 2 or more does 1 less (`armouredDamageV7`).
+  PATROL_BOAT: { armourReduction: 1 },
+  BATTLESHIP: { splash: true, armourReduction: 1 },
+  SUBMARINE: { armourReduction: 1 },
   // The ninth unit (7r55): the Steam Tank in the heavy slot keeps Plated.
   SWORDSMAN: { plated: PLATED_CAP_V7, repairsAsMachine: true },
 });
@@ -5119,6 +5166,13 @@ export const TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7: Readonly<
     METALLURGY: "Steam Tanks",
     RAIDING: "Dive Bombing",
     ENGINEERING: "Mining",
+    // Themed naval branches, Ironclads and Sea Tunnels (`pulp_wars-5ti.20`,
+    // docs/product/RULESET_7_NAVAL_FACTIONS.md section 7.1): Navigation
+    // keeps its shared name.
+    SHORECRAFT: "Steam Launches",
+    NAVAL_ENGINEERING: "Ironclads",
+    SEAMANSHIP: "Sea Tunnels",
+    SUBMERSIBLES: "Diving Bells",
   },
   // The Candy revision: Fortification and Explosives are renamed.
   CANDY: {
@@ -7514,6 +7568,28 @@ export function hoverLaunchAllowedV7(input: {
 }
 
 /**
+ * The Tunnel's row 6 (current rules section 22.2) with Sea Tunnels
+ * (docs/product/RULESET_7_NAVAL_FACTIONS.md section 7.3 W2,
+ * `pulp_wars-5ti.20`): whether a tile the actor has explored may lie on a
+ * Mole's underground step sequence after its first tile and before `to`.
+ * Land (Grass, Forest, Mountain, or Rift: a tile with a biome) always; with
+ * `seaTunnels` (the Mole's kind's capabilities under its controller) also
+ * Shallow Water that is not ice. Deep Water and ice never. The destination
+ * and the rider's tile are tunnel tiles (land), checked by the caller.
+ * Shared by the reducer and the public command query, so a tunnel under
+ * water is offered exactly when it is accepted.
+ */
+export function seaTunnelPassableV7(input: {
+  readonly seaTunnels: boolean;
+  readonly land: boolean;
+  readonly terrain: TerrainIdV7;
+  readonly ice: boolean;
+}): boolean {
+  if (input.land) return true;
+  return input.seaTunnels && input.terrain === "SHALLOW_WATER" && !input.ice;
+}
+
+/**
  * Whether a unit that avoids foreign sites (`unitAvoidsForeignSitesV7`: a
  * Dwarf rider on its surfacing turn) may END a Move, land, or be placed on a
  * tile with this settlement state: never on a neutral village center or on
@@ -7817,6 +7893,13 @@ export interface TechnologyCapabilitiesV7 {
    * (`hoverLaunchAllowedV7`).
    */
   readonly hoverPods: boolean;
+  /**
+   * Themed naval branches (docs/product/RULESET_7_NAVAL_FACTIONS.md section
+   * 7.3 W2, `pulp_wars-5ti.20`): Sea Tunnels (the Dwarf `SEAMANSHIP`), a
+   * Mole of the tree may tunnel under Shallow Water
+   * (`seaTunnelPassableV7`).
+   */
+  readonly seaTunnels: boolean;
 }
 
 export function technologyCapabilitiesV7(
@@ -7903,6 +7986,7 @@ export function technologyCapabilitiesV7(
   let fireRafts = false;
   let drownedCrews = false;
   let hoverPods = false;
+  let seaTunnels = false;
   for (const unlock of unlocks)
     switch (unlock.kind) {
       case "COMMAND":
@@ -8057,6 +8141,9 @@ export function technologyCapabilitiesV7(
       case "HOVER_PODS":
         hoverPods = true;
         break;
+      case "SEA_TUNNELS":
+        seaTunnels = true;
+        break;
       case "SUMMONER_SUPPORT":
       case "CONFECTIONER_SUPPORT":
       case "ENGINEER_SUPPORT":
@@ -8148,6 +8235,7 @@ export function technologyCapabilitiesV7(
     fireRafts,
     drownedCrews,
     hoverPods,
+    seaTunnels,
   });
   TECHNOLOGY_CAPABILITIES_CACHE_V7.set(cacheKey, result);
   if (TECHNOLOGY_CAPABILITIES_CACHE_V7.size > 32) {

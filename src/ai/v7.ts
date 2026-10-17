@@ -664,6 +664,14 @@ import {
   hoverPodsResearchDueV7,
 } from "./v7-naval-martian";
 import {
+  armouredLosingAttackV7,
+  seaTunnelCrewIdsV7,
+  seaTunnelLandingWalkV7,
+  seaTunnelStraitV7,
+  seaTunnelsResearchDueV7,
+  seaTunnelsTreeV7,
+} from "./v7-naval-dwarf";
+import {
   BREAK_OFF_FRONT_RADIUS_V7,
   BREAK_OFF_MINIMUM_HP_V7,
   BREAK_OFF_PRIORITY_V7,
@@ -1254,6 +1262,12 @@ interface NavalPlanV7 {
   readonly servingLaunchKeys: ReadonlySet<string>;
   /** Own foot capture units with no walk to the target (bound overseas). */
   readonly overseasFootUnits: number;
+  /**
+   * Themed naval branches, Sea Tunnels (`pulp_wars-5ti.20`): the seat's
+   * tree grants Sea Tunnels and the target landmass lies within tunnel
+   * reach of its home land over Shallow Water (`seaTunnelStraitV7`).
+   */
+  readonly seaTunnelStrait: boolean;
 }
 
 const NO_NAVAL_PLAN_V7: NavalPlanV7 = Object.freeze({
@@ -1278,6 +1292,7 @@ const NO_NAVAL_PLAN_V7: NavalPlanV7 = Object.freeze({
   hoverLaunchTiles: [],
   servingLaunchKeys: new Set<string>(),
   overseasFootUnits: 0,
+  seaTunnelStrait: false,
 });
 
 type AiReadyItemV7 = ReturnType<typeof queryAiReadyCommandsV7>[number];
@@ -2349,7 +2364,11 @@ function* tacticalPlanWorkV7(
     seaTarget: context.naval.seaShortcut ? context.naval.target : null,
     // pulp_wars-eru: only the units whose own sea route beats their own
     // walk go without a job on land.
-    sails: (unit) => navalBoardingPortsV7(context, unit.at, unit).length > 0,
+    // Sea Tunnels (`pulp_wars-5ti.20`): a Mole and its rider that tunnel
+    // over the strait this turn go by sea too.
+    sails: (unit) =>
+      navalBoardingPortsV7(context, unit.at, unit).length > 0 ||
+      seaTunnelCrewForPolicyV7(context).has(unit.id),
     isHostile: (ownerId) => isHostile(view, ownerId),
     isAllied: (ownerId) => publicPlayersAllied(view, view.viewer.id, ownerId),
     // The garrison of a threatened center and a defender walking to one
@@ -3308,6 +3327,18 @@ function* navalPlanWorkV7(
     hoverLaunchTiles: hoverLaunches,
     servingLaunchKeys,
     overseasFootUnits,
+    // Sea Tunnels (section 7.6, "Research"): the strait within tunnel reach.
+    seaTunnelStrait:
+      targetComponent !== undefined &&
+      seaTunnelsTreeV7(view) &&
+      seaTunnelStraitV7(
+        view,
+        (at) => {
+          const id = componentByKey.get(coordKey(at));
+          return id !== undefined && homeComponents.has(id);
+        },
+        (at) => componentByKey.get(coordKey(at)) === targetComponent,
+      ),
   };
 }
 
@@ -11653,6 +11684,35 @@ function navalToolsV7(context: PolicyContextV7): NavalToolsV7 {
   return tools;
 }
 
+/**
+ * Themed naval branches, Ironclads (`pulp_wars-5ti.20`, section 7.6): a
+ * ship's attack on an Armoured hull that does not sink it and deals less
+ * than it takes (`armouredLosingAttackV7`), from the exact preview.
+ */
+function navalArmourRefusesAttackV7(
+  context: PolicyContextV7,
+  command: Extract<CommandV7, { kind: "ATTACK" }>,
+): boolean {
+  const actor = context.lookup.unitsById.get(command.unitId);
+  const target = context.lookup.unitsById.get(command.targetUnitId);
+  if (
+    actor === undefined ||
+    target === undefined ||
+    actor.form !== "NAVAL" ||
+    target.form !== "NAVAL"
+  )
+    return false;
+  const preview = queryCombatPreviewV7(
+    context.view,
+    command.unitId,
+    command.targetUnitId,
+  );
+  return (
+    preview !== null &&
+    armouredLosingAttackV7(context.view, actor, target, preview)
+  );
+}
+
 /** The ships of the decision's view (`navalFleetFactsV7`). */
 function navalFactsV7(context: PolicyContextV7): NavalFleetFactsV7 {
   return navalFleetFactsV7(context.view, (ownerId) =>
@@ -11674,7 +11734,10 @@ function navalRejectsV7(context: PolicyContextV7, command: CommandV7): boolean {
   if (!navalShipsInViewV7(facts)) return false;
   const tools = navalToolsV7(context);
   if (command.kind === "ATTACK")
-    return navalRamHoldsAttackV7(context.view, tools, command);
+    return (
+      navalRamHoldsAttackV7(context.view, tools, command) ||
+      navalArmourRefusesAttackV7(context, command)
+    );
   const actor = context.lookup.unitsById.get(command.unitId);
   const to = command.path.at(-1);
   if (actor === undefined || to === undefined) return false;
@@ -12250,7 +12313,9 @@ function isPolicyCandidate(
     !iceSeaCrossingTechV7(context.view, icePlanV7(context), command.tech) &&
     // Hover Pods (`pulp_wars-5ti.19`): nor the shore launch of a seat whose
     // foot units are bound overseas.
-    !(command.tech === "SEAMANSHIP" && hoverPodsDueForPolicyV7(context))
+    !(command.tech === "SEAMANSHIP" && hoverPodsDueForPolicyV7(context)) &&
+    // Sea Tunnels (`pulp_wars-5ti.20`): nor the Moles' tunnel over a strait.
+    !(command.tech === "SEAMANSHIP" && seaTunnelsDueForPolicyV7(context))
   )
     return false;
   // Tuning 6 (`pulp_wars-w49.6`): no research with an enemy at the gates
@@ -18856,6 +18921,11 @@ function navalBoardingPortsV7(
   unit?: PublicUnitV7,
 ): readonly CoordV7[] {
   const plan = context.naval;
+  // Themed naval branches, Sea Tunnels (`pulp_wars-5ti.20`, section 7.6): a
+  // Mole with a sea landing on offer and its rider cross by tunnel, so they
+  // board nowhere.
+  if (unit !== undefined && seaTunnelCrewForPolicyV7(context).has(unit.id))
+    return [];
   const launches =
     unit !== undefined &&
     plan.hoverLaunchTiles.length > 0 &&
@@ -24134,6 +24204,10 @@ function dwarfCacheV7(context: PolicyContextV7): DwarfContextCacheV7 {
         return best;
       },
       previewBomb: (command) => previewBombRunV7(view, command),
+      // Themed naval branches, Sea Tunnels (`pulp_wars-5ti.20`): a tunnel
+      // to the naval plan's target landmass is a landing.
+      seaLanding: (mole, to) =>
+        seaTunnelLandingWalkV7(context.naval, mole.at, to),
     },
   };
   context.dwarfCache = cache;
@@ -26139,6 +26213,49 @@ function hoverPodsDueForPolicyV7(context: PolicyContextV7): boolean {
   );
 }
 
+/**
+ * Themed naval branches, Sea Tunnels (`pulp_wars-5ti.20`): whether the
+ * naval plan asks for the Dwarf Seamanship now (`seaTunnelsResearchDueV7`
+ * with the plan's strait and the offered research).
+ */
+function seaTunnelsDueForPolicyV7(context: PolicyContextV7): boolean {
+  return seaTunnelsResearchDueV7(
+    context.view,
+    context.naval.active,
+    context.naval.seaTunnelStrait,
+    (tech) =>
+      context.commands.some(
+        (offered) => offered.kind === "RESEARCH" && offered.tech === tech,
+      ),
+  );
+}
+
+/** The crew of this decision's sea landings (`seaTunnelCrewIdsV7`), cached. */
+const seaTunnelCrewByPlanV7 = new WeakMap<
+  NavalPlanV7,
+  {
+    readonly commands: readonly CommandV7[];
+    readonly crew: ReadonlySet<number>;
+  }
+>();
+function seaTunnelCrewForPolicyV7(
+  context: Pick<PolicyContextV7, "view" | "commands" | "naval">,
+): ReadonlySet<number> {
+  const cached = seaTunnelCrewByPlanV7.get(context.naval);
+  if (cached !== undefined && cached.commands === context.commands)
+    return cached.crew;
+  const crew = seaTunnelCrewIdsV7(
+    context.view,
+    context.commands,
+    context.naval,
+  );
+  seaTunnelCrewByPlanV7.set(context.naval, {
+    commands: context.commands,
+    crew,
+  });
+  return crew;
+}
+
 function nextNavalTechnologyV7(
   context: PolicyContextV7,
 ): TechnologyIdV7 | null {
@@ -26153,6 +26270,9 @@ function nextNavalTechnologyV7(
   // Themed naval branches (`pulp_wars-5ti.19`, section 6.6): Hover Pods for
   // two or more foot units bound overseas, with or without a warship.
   if (hoverPodsDueForPolicyV7(context)) return "SEAMANSHIP";
+  // Themed naval branches (`pulp_wars-5ti.20`, section 7.6): Sea Tunnels for
+  // a seat with a Mole when the target lies within tunnel reach.
+  if (seaTunnelsDueForPolicyV7(context)) return "SEAMANSHIP";
   const defendedLanding =
     context.naval.target !== null &&
     context.view.units.some(

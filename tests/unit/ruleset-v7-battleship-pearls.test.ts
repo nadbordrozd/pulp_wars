@@ -47,15 +47,15 @@ describe("the identity", () => {
   // Gibbering Mass (`mch9.37`) 7r91, so all of them are retired with their
   // keys.
   it("was 7r86 after 7r85 and 7r84, all their save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r95");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r95.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-11, -7)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r96");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r96.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-12, -8)).toEqual([
       "pulp-wars-poc-7r84",
       "pulp-wars-poc-7r85",
       "pulp-wars-poc-7r86",
       "pulp-wars-poc-7r87",
     ]);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-11, -7)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-12, -8)).toEqual([
       "pulpWars.save.v7r84.current",
       "pulpWars.save.v7r85.current",
       "pulpWars.save.v7r86.current",
@@ -71,7 +71,8 @@ describe("the Battleship", () => {
         effectiveRoleRuleV7("BATTLESHIP", faction as FactionIdV7),
         faction,
       ).toMatchObject({
-        cost: 16,
+        // The Dwarf Ironclad: 18 Coins, Armoured (`pulp_wars-5ti.20`).
+        cost: faction === "DWARF" ? 18 : 16,
         // The Martian Hover Cruiser: 20 HP behind a Shield of 3
         // (`pulp_wars-5ti.19`).
         maxHp: faction === "MARTIAN" ? 20 : 25,

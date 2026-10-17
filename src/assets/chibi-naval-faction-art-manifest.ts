@@ -610,4 +610,16 @@ export const CHIBI_NAVAL_FACTION_TECH_ICON_ASSETS_V7: readonly ChibiArtAssetV7[]
         "assets/chibi/icons/chibi-naval-martian-icon-tech-seamanship.png",
       ),
     },
+    // `pulp_wars-5ti.20`: the Dwarf Sea Tunnels, a copper steam drill
+    // boring along under a waterline (batch `naval-dwarf`).
+    {
+      id: "chibi-naval-dwarf-icon-tech-seamanship",
+      subject: "ICON:TECH:DWARF:SEAMANSHIP",
+      assetClass: "ICON",
+      width: 48,
+      height: 48,
+      url: chibiArtUrl(
+        "assets/chibi/icons/chibi-naval-dwarf-icon-tech-seamanship.png",
+      ),
+    },
   ];

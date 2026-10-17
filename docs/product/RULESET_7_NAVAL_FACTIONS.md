@@ -1114,6 +1114,100 @@ researched when the strait is in reach.
 - **Icons:** Sea Tunnels (a drill under a wave).
 - **Sound:** the existing tunnel and eruption cues.
 
+### 7.8 As built (`pulp_wars-5ti.20`, `pulp-wars-poc-7r96`)
+
+Built as above at identity `7r96` (`7r95` is a prior identity; the
+autosave key is `pulpWars.save.v7r96.current`). Every row of 7.2 is a
+registry value and every row of 7.4 an exact preview equal to its result
+in `tests/unit/ruleset-v7-naval-dwarf.test.ts` (all six held as written;
+the Battleship of the "a Battleship: 3" comparison is the Dinosaur War
+Raft, the Human numbers, since an arena never seats one faction twice);
+the AI scenarios of 7.6 are `tests/unit/ruleset-v7-naval-dwarf-ai.test.ts`.
+Where the build is more precise than the text above:
+
+- **Ironclad hulls.** The three Dwarf ships have `armourReduction: 1` and
+  the `ARMOURED` ability literal; nothing else was needed in the engine,
+  since `armouredDamageV7` already reads any form. Tested on a Ram and its
+  reply, a torpedo pair, a Battleship's shot and its splash, a Fire Raft's
+  Kaboom and the Dreadnought blast it sets off, a Banshee's Wail (against
+  a Human boat at the same tile, one less), Plague (1 instead of 2), and
+  the Ice Folk crush (3, unreduced: the crush never goes through
+  `armouredDamageV7`). A Dwarf bomb cannot meet a Dwarf ship (no match
+  seats two Dwarf seats and a ship is never mind-controlled), so bombs are
+  covered by the shared helper only. The Dwarf stats block gains
+  `armourReduction` (1 on the ships, 0 on every other role).
+- **Sea Tunnels** is the unlock `SEA_TUNNELS` (capability `seaTunnels`)
+  after `RAM` on the Dwarf Seamanship. Row 6 is one helper,
+  `seaTunnelPassableV7` (land always; with Sea Tunnels explored Shallow
+  Water without ice), read by the reducer's tunnel reach and the public
+  command query, so a tunnel under water is offered exactly when it is
+  accepted (a sweep of every land tile in reach is tested). The capability
+  is the Mole's kind's tree under its controller's research
+  (`unitCapabilitiesV7`). A refused tunnel under Deep Water or ice, or one
+  that ends on water, is the existing `TUNNEL_NOT_LEGAL { reason:
+"DESTINATION" }` (`RIDER_DESTINATION` for the rider's tile).
+- **Private research.** Sea Tunnels is in no public stat. No public reader
+  of another seat's tunnel reach exists (a hostile tunnel is seen as its
+  mound, which every seat already reads wherever it lies), so nothing had
+  to be assumed for another seat.
+- **Sea tunnels (AI).** `planTunnelsV7` (`src/ai/v7-dwarf.ts`) has a sixth
+  rule, after the defence rule: an offered `TUNNEL` whose destination
+  is on the naval plan's target landmass and whose Mole is not
+  (`seaTunnelLandingWalkV7`, read from the plan's land-route distances) is
+  a landing, valued 30 (+20 with a rider) plus the eruption score less the
+  walk to the target, at priority `SEA_TUNNEL_LANDING_PRIORITY_V7` (1335,
+  a planned `DISEMBARK`) with a rider and the Pressure-tunnel 875 without;
+  a destination next to three hostile melee units is skipped unless it is
+  next to the target. The Mole and the rider an offered landing names are
+  the plan's crossing capacity (`seaTunnelCrewIdsV7`): they board at no
+  Port and take no land job. A Mole that stands more than three tunnel
+  steps from the far coast sails like any capture unit; walking it to the
+  strait is not built (a follow-up).
+- **Research (AI).** `seaTunnelsResearchDueV7`: the plan is active, the
+  seat's tree grants Sea Tunnels and it lacks them, Seamanship is offered,
+  the seat owns a Mole on the board, and `seaTunnelStraitV7` finds a step
+  sequence of at most 3 from explored home land through explored Shallow
+  Water without ice to the target landmass. It is the plan's next
+  technology after Sailing and a needed Navigation (priority 1280) and is
+  not held for the army's research.
+- **Armour (AI), a correction.** The text above says the ram rule already
+  refuses a losing exchange. It did not: the ram rule and the attack
+  scorer weigh an exchange in Coins, and an Ironclad's 6 HP of 25 at 18
+  Coins outweigh a Patrol Boat's 7 of 10 at 5, so a Patrol Boat rammed an
+  Ironclad. Built as a rule for every seat, `armouredLosingAttackV7`: a
+  ship's attack on an Armoured hull afloat that does not sink it and deals
+  less than its reply takes (Shields counted) is refused, in the ram
+  approach and among the plain attacks (`navalRejectsV7`). It changes no
+  other matchup (no other hull is Armoured), and a Ram on a damaged
+  Ironclad whose reply is weaker is still taken.
+- **Text.** The glossary has a `SEA_TUNNELS` entry on the Mole ("It can
+  tunnel under shallow water too, never under deep water or ice") and the
+  existing `ARMOURED` line on the three ships (one name, one mechanic).
+  The Sea Tunnels card says "Sea Tunnels: Your Steam Moles can tunnel under
+  shallow water"; the Steam Launches card adds "Steam Launch: Armoured,
+  every hit of 2 or more does 1 less", the Ironclads card "Ironclad:
+  long-range splash damage; Armoured (every hit of 2 or more does 1
+  less)", and the Diving Bells card ends in "; Armoured". The Dwarf Help
+  has an "At sea" line. In a match without a Dinosaur seat (which shows
+  its own line) the attack preview says "Armoured −1" on an Armoured
+  defender and "Your armour −1" on an Armoured attacker.
+- **The tunnel's route.** While a Tunnel destination is focused or chosen
+  and its route needs water (`seaTunnelRouteV7`: the fewest water tiles,
+  then the fewest steps, then the straightest), the board draws the route
+  as a dashed seam of dug earth with churned bubbles on each wet tile
+  (`drawSeaTunnelRouteV7`); a tunnel under land draws nothing new. It is
+  static, so the reduced-motion form is the same drawing.
+- **Art.** The Sea Tunnels card has its own icon
+  (`ICON:TECH:DWARF:SEAMANSHIP`, `chibi-naval-dwarf-icon-tech-seamanship`,
+  batch `naval-dwarf`, three candidates); the Steam Launches and Diving
+  Bells cards show the ships' portraits. **No Armoured mark is drawn on the
+  hulls**: the text above names "the existing Armoured mark", but none
+  exists (the Ankylosaurus shows Armoured only in the preview and its
+  info panel), and the riveted soot-iron hulls already read as armoured;
+  the hulls show it in the attack preview, the info panel's glossary, and
+  the cards. No new sound. See
+  [NAVAL_FACTIONS.md](../art/NAVAL_FACTIONS.md#the-dwarf-sea-tunnels-bead-pulp_wars-5ti20).
+
 ## 8. Candy: Sugar Sails
 
 **Theme.** A sugar rush: boats that charge in hyper and then crash, and a

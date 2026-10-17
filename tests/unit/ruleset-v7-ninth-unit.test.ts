@@ -402,11 +402,11 @@ const productionOf = (
 
 describe("the ninth unit: identity", () => {
   it("was 7r55 after 7r54, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r95");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r95.current");
-    expect(PRIOR_RULESET_7_IDS.at(-41)).toBe("pulp-wars-poc-7r54");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r96");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r96.current");
+    expect(PRIOR_RULESET_7_IDS.at(-42)).toBe("pulp-wars-poc-7r54");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-41)).toBe(
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-42)).toBe(
       "pulpWars.save.v7r54.current",
     );
     const state = field([]);
@@ -945,6 +945,11 @@ describe("the ninth unit: technology display names", () => {
       METALLURGY: "Steam Tanks",
       RAIDING: "Dive Bombing",
       ENGINEERING: "Mining",
+      // Themed naval branches (`pulp_wars-5ti.20`).
+      SHORECRAFT: "Steam Launches",
+      NAVAL_ENGINEERING: "Ironclads",
+      SEAMANSHIP: "Sea Tunnels",
+      SUBMERSIBLES: "Diving Bells",
     },
     CANDY: {
       FORTIFICATION: "Home Sweet Home",

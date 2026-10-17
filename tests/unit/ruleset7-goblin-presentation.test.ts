@@ -425,6 +425,7 @@ describe("Revision 17 Goblin presentation text", () => {
       "GOBLIN",
       "DINOSAUR",
       "MARTIAN",
+      "DWARF",
     ] as const) {
       expect(technologyNameV7("NAVAL_ENGINEERING", faction)).toBe(
         faction === "GOBLIN"
@@ -438,7 +439,10 @@ describe("Revision 17 Goblin presentation text", () => {
               : // The Martian Hover Fleet (`pulp_wars-5ti.19`).
                 faction === "MARTIAN"
                 ? "Hover Cruisers"
-                : "Shipbuilding",
+                : // The Dwarf Ironclads (`pulp_wars-5ti.20`).
+                  faction === "DWARF"
+                  ? "Ironclads"
+                  : "Shipbuilding",
       );
       expect(technologyNameV7("NAVIGATION", faction)).toBe("Navigation");
     }

@@ -363,6 +363,13 @@ const ENTRIES = {
     "Hover Pods",
     "It can hover off any beach onto shallow water as a transport, with no Port. Unlocked by a technology.",
   ],
+  // Themed naval branches (section 7.3 W2, `pulp_wars-5ti.20`): the Steam
+  // Mole's tunnel under a shallow strait (the Ironclad hulls list the
+  // shared Armoured line).
+  SEA_TUNNELS: [
+    "Sea Tunnels",
+    "It can tunnel under shallow water too, never under deep water or ice. Unlocked by a technology.",
+  ],
   AT_SEA: [
     "At sea",
     "A transport carries a land unit across water. The unit cannot fight until it lands on a shore.",
@@ -1091,6 +1098,13 @@ export function roleTraitGlossaryIdsV7(
     technologyCapabilitiesV7(["SHORECRAFT", "SEAMANSHIP"], faction).hoverPods
   )
     traits.push("HOVER_PODS");
+  // Themed naval branches (`pulp_wars-5ti.20`): a Mole of a tree with Sea
+  // Tunnels digs under shallow water.
+  if (
+    mechanics.tunnelRange > 0 &&
+    technologyCapabilitiesV7(["SHORECRAFT", "SEAMANSHIP"], faction).seaTunnels
+  )
+    traits.push("SEA_TUNNELS");
   return traits;
 }
 

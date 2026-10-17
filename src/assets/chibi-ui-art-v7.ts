@@ -208,8 +208,9 @@ export const CHIBI_TECH_ART_SUBJECTS_V7 = {
  * Fleet (`pulp_wars-5ti.16`: Fire Rafts, Powder Kegs, Diving Barrels) and
  * the Undead Drowned Fleet (`pulp_wars-5ti.17`: Ghost Ships, Drowned Crews,
  * Sunken Galleys), the Dinosaurs (`pulp_wars-5ti.18`: Dugouts, Horned
- * Prows, Plesiosaurs), and the Martians (`pulp_wars-5ti.19`: Skimmers,
- * Hover Pods, Bathyspheres).
+ * Prows, Plesiosaurs), the Martians (`pulp_wars-5ti.19`: Skimmers,
+ * Hover Pods, Bathyspheres), and the Dwarves (`pulp_wars-5ti.20`: Steam
+ * Launches, Sea Tunnels, Diving Bells).
  */
 export const NAVAL_FACTION_TECH_SUBJECTS_V7: Readonly<
   Partial<Record<FactionIdV7, Partial<Record<TechnologyIdV7, ArtSubjectV7>>>>
@@ -235,6 +236,13 @@ export const NAVAL_FACTION_TECH_SUBJECTS_V7: Readonly<
     SHORECRAFT: "PORTRAIT:MARTIAN:PATROL_BOAT",
     SEAMANSHIP: "ICON:TECH:MARTIAN:SEAMANSHIP",
     SUBMERSIBLES: "PORTRAIT:MARTIAN:SUBMARINE",
+  },
+  // The Dwarf Ironclads (`pulp_wars-5ti.20`: Steam Launches, Sea Tunnels,
+  // Diving Bells).
+  DWARF: {
+    SHORECRAFT: "PORTRAIT:DWARF:PATROL_BOAT",
+    SEAMANSHIP: "ICON:TECH:DWARF:SEAMANSHIP",
+    SUBMERSIBLES: "PORTRAIT:DWARF:SUBMARINE",
   },
 };
 

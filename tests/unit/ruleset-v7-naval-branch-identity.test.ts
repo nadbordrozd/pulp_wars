@@ -81,6 +81,8 @@ const SEAMANSHIP_TRICK: Partial<
   UNDEAD: { kind: "DROWNED_CREWS" },
   // The Martian Hover Fleet (`pulp_wars-5ti.19`).
   MARTIAN: { kind: "HOVER_PODS" },
+  // The Dwarf Sea Tunnels (`pulp_wars-5ti.20`).
+  DWARF: { kind: "SEA_TUNNELS" },
 };
 const THEMED_SUBMARINE: Partial<
   Record<
@@ -109,16 +111,27 @@ const THEMED_SUBMARINE: Partial<
   },
   // The Bathysphere: a frail hull behind a Shield of 2.
   MARTIAN: { label: "Bathysphere", cost: 9, maxHp: 10 },
+  // The Diving Bell: one Coin more, Armoured (`pulp_wars-5ti.20`).
+  DWARF: {
+    label: "Diving Bell",
+    cost: 10,
+    maxHp: 12,
+    abilities: ["ATTACK", "SUBMERGED", "TORPEDO", "ARMOURED"],
+  },
 };
 const THEMED_PATROL_BOAT_ABILITIES: Partial<
   Record<FactionIdV7, readonly string[]>
 > = {
   GOBLIN: ["ATTACK", "RAM", "KABOOM"],
   UNDEAD: ["ATTACK", "RAM", "DROWNED_CREW"],
+  DWARF: ["ATTACK", "RAM", "ARMOURED"],
 };
 const THEMED_BATTLESHIP_ABILITIES: Partial<
   Record<FactionIdV7, readonly string[]>
-> = { UNDEAD: ["ATTACK", "PLAGUE", "DROWNED_CREW"] };
+> = {
+  UNDEAD: ["ATTACK", "PLAGUE", "DROWNED_CREW"],
+  DWARF: ["ATTACK", "ARMOURED"],
+};
 
 const NAVAL_BRANCH = [
   "SHORECRAFT",

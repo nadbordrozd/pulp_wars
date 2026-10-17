@@ -61,6 +61,7 @@ import {
   factionUnlocksRoleV7,
   isEggLaidRoleV7,
   isMindControlledV7,
+  seaTunnelPassableV7,
   seatRoleMechanicsV7,
   seatRoleRuleV7,
   unitCapabilitiesV7,
@@ -2287,11 +2288,26 @@ function publicTunnelCommandsV7(
   mole: PublicUnitV7,
 ): readonly CommandV7[] {
   const range = unitRoleMechanicsV7(view, mole).tunnelRange;
+  // Themed naval branches (`pulp_wars-5ti.20`): with Sea Tunnels the steps
+  // may pass under explored Shallow Water that is not ice, as the reducer.
+  const seaTunnels = unitCapabilitiesV7(
+    view,
+    mole,
+    view.viewer.researchedTechs,
+  ).seaTunnels;
   const reach = tunnelReachV7(
     view.board,
     (at) => {
       const tile = tileAtView(view, at);
-      return tile?.explored === true && tile.biome !== null;
+      return (
+        tile?.explored === true &&
+        seaTunnelPassableV7({
+          seaTunnels,
+          land: tile.biome !== null,
+          terrain: tile.terrain,
+          ice: isIceAtV7(view, at),
+        })
+      );
     },
     mole.at,
     range,

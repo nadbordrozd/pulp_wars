@@ -1,4 +1,5 @@
 import {
+  isIceAtV7,
   unitRoleRuleV7,
   type CommandV7,
   type CoordV7,
@@ -240,4 +241,83 @@ export function tunnelOutcomeV7(
     otherLandings: tiles.filter((tile) => !same(tile, chosen)),
     staysBehind: false,
   };
+}
+
+/**
+ * Themed naval branches, Sea Tunnels (`pulp_wars-5ti.20`,
+ * docs/product/RULESET_7_NAVAL_FACTIONS.md section 7.3 W2): the route a
+ * Mole's offered tunnel to `to` takes under a strait, for the board's
+ * preview: the tiles from the Mole's tile `from` to `to`, both included,
+ * of the step sequence (at most `range` steps between Chebyshev
+ * neighbours, every tile after the first explored land or explored Shallow
+ * Water without ice) that passes under the fewest water tiles, then the
+ * fewest steps, then the straightest (the shortest drawn line), then the
+ * first in reading order. Null when a route under
+ * land alone reaches `to` (an ordinary tunnel draws no route) or no route
+ * does. It is a presentation of an offered command, never a rule: the
+ * command query decides what is legal.
+ */
+export function seaTunnelRouteV7(
+  view: PlayerViewV7,
+  from: CoordV7,
+  to: CoordV7,
+  range: number,
+): readonly CoordV7[] | null {
+  const width = view.board.width;
+  const height = view.board.height;
+  const tileOf = (at: CoordV7) => view.board.tiles[at.y * width + at.x];
+  const water = (at: CoordV7): boolean => {
+    const tile = tileOf(at);
+    return tile?.explored === true && tile.biome === null;
+  };
+  const passable = (at: CoordV7): boolean => {
+    const tile = tileOf(at);
+    if (tile === undefined || !tile.explored) return false;
+    if (tile.biome !== null) return true;
+    return tile.terrain === "SHALLOW_WATER" && !isIceAtV7(view, at);
+  };
+  // The drawn length of a route: a straight route reads best.
+  const drawn = (path: readonly CoordV7[]): number =>
+    path.reduce(
+      (sum, step, index) =>
+        index === 0
+          ? 0
+          : sum +
+            Math.hypot(
+              step.x - (path[index - 1] as CoordV7).x,
+              step.y - (path[index - 1] as CoordV7).y,
+            ),
+      0,
+    );
+  let best: { path: CoordV7[]; wet: number; drawn: number } | null = null;
+  const walk = (path: CoordV7[], wet: number): void => {
+    const at = path[path.length - 1] as CoordV7;
+    if (same(at, to)) {
+      const length = drawn(path);
+      if (
+        best === null ||
+        wet < best.wet ||
+        (wet === best.wet &&
+          (path.length < best.path.length ||
+            (path.length === best.path.length && length < best.drawn - 1e-9)))
+      )
+        best = { path: [...path], wet, drawn: length };
+      return;
+    }
+    if (path.length > range) return;
+    for (let dy = -1; dy <= 1; dy += 1)
+      for (let dx = -1; dx <= 1; dx += 1) {
+        if (dx === 0 && dy === 0) continue;
+        const next = { x: at.x + dx, y: at.y + dy };
+        if (next.x < 0 || next.y < 0 || next.x >= width || next.y >= height)
+          continue;
+        if (path.some((step) => same(step, next)) || !passable(next)) continue;
+        path.push(next);
+        walk(path, wet + (water(next) ? 1 : 0));
+        path.pop();
+      }
+  };
+  walk([from], 0);
+  const found = best as { path: CoordV7[]; wet: number } | null;
+  return found === null || found.wet === 0 ? null : found.path;
 }
