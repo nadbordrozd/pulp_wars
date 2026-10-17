@@ -29,7 +29,11 @@ import {
   drawDinosaurFeedbackV7,
   type DinosaurFeedbackV7,
 } from "./dinosaur-effects-v7";
-import { DINOSAUR_CUE_COLORS_V7 } from "./dinosaur-canvas-v7";
+import {
+  DINOSAUR_CUE_COLORS_V7,
+  growthSpriteScaleV7,
+} from "./dinosaur-canvas-v7";
+import { GINGERBREAD_MAN_SPRITE_SCALE_V7 } from "./giant-canvas-v7";
 import {
   CULT_EFFECT_SUBJECTS_V7,
   cultReducedMotionProgressV7,
@@ -257,6 +261,21 @@ import {
   type FogPuffV7,
 } from "./fog-puff-v7";
 import { starfieldEnabledV7 } from "./starfield-v7";
+import {
+  CombatJuiceV7,
+  DAMAGE_FLOAT_V7,
+  DEATH_POOF_V7,
+  SPAWN_POP_V7,
+  combatJuiceDeathsV7,
+  combatJuiceHitsForStepV7,
+  combatJuiceScaleV7,
+  combatJuiceSpawnsV7,
+  combatJuiceSpriteOfV7,
+  drawCombatJuiceFloatsV7,
+  drawCombatJuiceUnitsV7,
+  type CombatJuiceEntryV7,
+  type CombatJuiceSpriteV7,
+} from "./combat-juice-v7";
 import {
   createWaterBlendArtV7,
   waterBlendStyleV7,
@@ -626,6 +645,32 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
   /** Review tooling only (pinFogPuff): a puff held at a time. */
   #pinnedFogPuff: FogPuffV7 | null = null;
   /**
+   * Combat juice (bead pulp_wars-2yc.80, combat-juice-v7.ts): damage
+   * numbers, death poofs and spawn pops on the effects overlay, on their
+   * own clock. The playback's frames draw them while it plays; otherwise
+   * they ask for frames (a timer with reduced motion) only while they play.
+   */
+  readonly #combatJuice = new CombatJuiceV7();
+  #combatJuiceFrame: number | null = null;
+  #combatJuiceTimer: number | null = null;
+  /** The boundary playing: its deaths and arrivals start with its result. */
+  #juiceBoundary: {
+    readonly before: PlayerViewV7;
+    readonly after: PlayerViewV7;
+    readonly envelope: PlayerEventEnvelopeV7;
+    readonly steps: readonly CorePresentationStepV7[];
+    readonly durationScale: number;
+    fired: boolean;
+  } | null = null;
+  /** The units the board leaves out while a cue draws them. */
+  #juiceHidden: ReadonlySet<number> = new Set();
+  /** Whether a playback frame has drawn the overlay already. */
+  #overlayDrawn = false;
+  /** Review tooling only (pinCombatJuice): cues held at a moment. */
+  #pinnedCombatJuice: readonly CombatJuiceEntryV7[] | null = null;
+  /** The white silhouette of each unit raster, for the death flash. */
+  readonly #juiceSilhouettes = new WeakMap<object, CanvasImageSource | null>();
+  /**
    * Bead pulp_wars-2yc.82 (UI review S1): the puff plays on explored
    * ground, a tap on a plain tile, in the faint dust colours.
    */
@@ -899,8 +944,10 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     if (
       this.#modelInstance !== null &&
       this.#modelInstance !== model.matchInstanceId
-    )
+    ) {
       this.finishPresentations();
+      this.#clearCombatJuice();
+    }
     if (this.#modelInstance !== model.matchInstanceId)
       this.#inspectionCycle = null;
     if (
@@ -1352,6 +1399,8 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     this.#setBoardShake(0);
     this.#unitPulses = [];
     this.#heldUnits = new Map();
+    this.#combatJuice.dropPending(this.#now());
+    this.#juiceBoundary = null;
     this.#drawSupportOverlay();
     this.#crossfade = null;
     this.#selectionJump = null;
@@ -1359,6 +1408,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     this.#animationResolve = null;
     resolve?.();
     if (redraw) this.#draw();
+    this.#pumpCombatJuice();
   }
 
   setPresentationStepListener(
@@ -1380,9 +1430,23 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     const model = this.#model;
     if (model === null) return;
     const steps = corePresentationPlanV7(before, envelope, after);
+    // Combat juice: the boundary's deaths and arrivals start on the frame
+    // that first shows its result.
+    this.#juiceBoundary = {
+      before,
+      after,
+      envelope,
+      steps,
+      durationScale: playbackDurationScaleV7(
+        model.animationSpeed,
+        options.upcoming?.length ?? 0,
+      ),
+      fired: false,
+    };
     if (steps.length === 0) {
       // Nothing to play (a captured city's land ripples on its own): the
       // board shows the result, held while a later boundary waits for it.
+      this.#fireBoundaryJuice();
       if (options.holdResult?.() === true) this.#presentedView = after;
       else this.#draw();
       return;
@@ -1799,6 +1863,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         }
       }
       announce(step);
+      this.#scheduleStepJuice(steps, index, envelope, durationScale);
       if (step.kind === "MOVE") {
         await this.#animatePath(
           step.unitId,
@@ -2157,7 +2222,9 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     this.#animatedUnit = null;
     this.#heldUnits = NO_HELD_UNITS;
     this.#presentedView = options.holdResult?.() === true ? after : null;
+    this.#fireBoundaryJuice();
     this.#draw();
+    this.#pumpCombatJuice();
   }
 
   #resize(container: HTMLElement): void {
@@ -2312,6 +2379,16 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     if (model === null || context === null) return;
     this.#drawSerial += 1;
     const now = this.#now();
+    // Combat juice: the frame that first shows a boundary's result starts
+    // its poofs and pops; a unit a cue draws is left out of the board.
+    const juiceBoundary = this.#juiceBoundary;
+    if (
+      juiceBoundary !== null &&
+      !juiceBoundary.fired &&
+      (this.#crossfade?.after ?? this.#presentedView) === juiceBoundary.after
+    )
+      this.#fireBoundaryJuice();
+    this.#juiceHidden = this.#juiceHiddenAt(now);
     const step =
       this.#atmosphereDrawnAt === null
         ? 0
@@ -2382,12 +2459,20 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       const victoryWave = this.#victoryWave.frame(view, victoryNow);
       const animated = this.#animatedUnit;
       const held = this.#heldUnits;
+      const hidden = this.#juiceHidden;
       const present = (shown: typeof plan): typeof plan =>
-        animated === null && held.size === 0
+        animated === null && held.size === 0 && hidden.size === 0
           ? shown
           : {
               ...shown,
-              entries: shown.entries.map((entry) => {
+              entries: (hidden.size === 0
+                ? shown.entries
+                : shown.entries.filter(
+                    (entry) =>
+                      entry.kind !== "UNIT" ||
+                      !hidden.has(Number(entry.key.slice(5))),
+                  )
+              ).map((entry) => {
                 if (entry.kind !== "UNIT") return entry;
                 if (animated !== null && entry.key === `unit:${animated.id}`)
                   return { ...entry, at: animated.at };
@@ -3069,10 +3154,37 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     const context = this.#effectsContext;
     const canvas = this.#effectsCanvas;
     if (context === null || canvas === null) return;
+    this.#overlayDrawn = true;
     const dpr = this.#document.defaultView?.devicePixelRatio ?? 1;
     context.setTransform(dpr, 0, 0, dpr, 0, 0);
     context.clearRect(0, 0, this.#viewport.width, this.#viewport.height);
     this.#drawFogPuff(context, canvas, dpr);
+    // Combat juice: the poofs and pops under the other cues, the numbers
+    // over every one of them.
+    const now = this.#now();
+    if (this.#pinnedCombatJuice === null) this.#combatJuice.prune(now);
+    const juice = this.#pinnedCombatJuice ?? this.#combatJuice.entries;
+    const juiceNow = this.#pinnedCombatJuice === null ? now : 0;
+    const units =
+      juice.length === 0
+        ? 0
+        : drawCombatJuiceUnitsV7(context, this.#camera, juice, juiceNow);
+    this.#drawSupportCues(context, canvas);
+    const floats =
+      juice.length === 0
+        ? 0
+        : drawCombatJuiceFloatsV7(context, this.#camera, juice, juiceNow);
+    if (units === 0) delete canvas.dataset.combatJuiceUnits;
+    else canvas.dataset.combatJuiceUnits = String(units);
+    if (floats === 0) delete canvas.dataset.combatJuiceFloats;
+    else canvas.dataset.combatJuiceFloats = String(floats);
+  }
+
+  /** The cues of the playback and the pinned review cues, on the overlay. */
+  #drawSupportCues(
+    context: CanvasRenderingContext2D,
+    canvas: HTMLCanvasElement,
+  ): void {
     const effectArt = this.#supportEffectArt();
     for (const pinned of this.#pinnedAttackFeedback)
       drawAttackFeedbackV7(context, this.#camera, pinned, effectArt);
@@ -3830,6 +3942,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     this.#cancelFogPuff();
     this.#fogPuff.reset();
     this.#pinnedFogPuff = null;
+    this.#clearCombatJuice();
     if (this.#victoryWaveFrame !== null)
       this.#document.defaultView?.cancelAnimationFrame(this.#victoryWaveFrame);
     this.#victoryWaveFrame = null;
@@ -4013,6 +4126,367 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       this.#draw();
     });
     this.#impact = null;
+  }
+
+  /**
+   * Combat juice: the boundary's death poofs and spawn pops (and, with
+   * reduced motion, every number at once) start now, once per boundary.
+   */
+  #fireBoundaryJuice(): void {
+    const boundary = this.#juiceBoundary;
+    const model = this.#model;
+    if (boundary === null || boundary.fired || model === null) return;
+    boundary.fired = true;
+    if (!this.#combatJuiceAvailable()) return;
+    const now = this.#now();
+    const still = model.motion === "REDUCED";
+    const scale = combatJuiceScaleV7(boundary.durationScale);
+    const { before, after, envelope, steps } = boundary;
+    for (const death of combatJuiceDeathsV7(before, after, envelope, steps)) {
+      const unit = before.units.find(
+        (candidate) => candidate.id === death.unitId,
+      );
+      this.#combatJuice.addUnitCue(
+        "POOF",
+        death.unitId,
+        death.at,
+        now,
+        still ? DEATH_POOF_V7.reducedHoldMs : DEATH_POOF_V7.durationMs * scale,
+        still,
+        still || unit === undefined
+          ? null
+          : this.#juiceSprite(before, unit, death.at, true),
+      );
+    }
+    for (const spawn of combatJuiceSpawnsV7(before, after, envelope)) {
+      const unit = after.units.find(
+        (candidate) => candidate.id === spawn.unitId,
+      );
+      this.#combatJuice.addUnitCue(
+        "POP",
+        spawn.unitId,
+        spawn.at,
+        now,
+        still ? SPAWN_POP_V7.reducedHoldMs : SPAWN_POP_V7.durationMs * scale,
+        still,
+        still || unit === undefined
+          ? null
+          : this.#juiceSprite(after, unit, spawn.at, false),
+      );
+    }
+    // Reduced motion shows the result at once: every number with it, still.
+    if (still)
+      for (const index of steps.keys())
+        for (const hit of combatJuiceHitsForStepV7(steps, index, envelope))
+          this.#combatJuice.addFloat(
+            hit.at,
+            hit.amount,
+            now,
+            DAMAGE_FLOAT_V7.reducedHoldMs,
+            true,
+          );
+    this.#pumpCombatJuice();
+  }
+
+  /** Combat juice: the numbers of a step that starts playing now. */
+  #scheduleStepJuice(
+    steps: readonly CorePresentationStepV7[],
+    index: number,
+    envelope: PlayerEventEnvelopeV7,
+    durationScale: number,
+  ): void {
+    if (this.#model?.motion === "REDUCED" || !this.#combatJuiceAvailable())
+      return;
+    const hits = combatJuiceHitsForStepV7(steps, index, envelope);
+    if (hits.length === 0) return;
+    const now = this.#now();
+    const length =
+      DAMAGE_FLOAT_V7.durationMs * combatJuiceScaleV7(durationScale);
+    for (const hit of hits)
+      this.#combatJuice.addFloat(
+        hit.at,
+        hit.amount,
+        now + hit.delayMs * durationScale,
+        length,
+        false,
+      );
+  }
+
+  /** Cues need frames: without them (a test stand-in) none plays. */
+  #combatJuiceAvailable(): boolean {
+    const browser = this.#document.defaultView;
+    return (
+      browser !== null &&
+      typeof browser.requestAnimationFrame === "function" &&
+      typeof browser.setTimeout === "function"
+    );
+  }
+
+  /** The units the board leaves out at `nowMs`: a cue draws them. */
+  #juiceHiddenAt(nowMs: number): ReadonlySet<number> {
+    const pinned = this.#pinnedCombatJuice;
+    if (pinned !== null)
+      return new Set(
+        pinned.flatMap((entry) =>
+          entry.kind !== "FLOAT" && entry.sprite !== null && !entry.still
+            ? [entry.unitId]
+            : [],
+        ),
+      );
+    return this.#combatJuice.hiddenUnitIds(nowMs);
+  }
+
+  /**
+   * One frame of the cues: the board again when a unit a cue drew is back
+   * (or a new one is left out), otherwise the overlay alone, unless the
+   * playback's frame drew it already.
+   */
+  #drawCombatJuiceFrame(overlayDrawn: boolean): void {
+    const hidden = this.#juiceHiddenAt(this.#now());
+    const changed =
+      hidden.size !== this.#juiceHidden.size ||
+      [...hidden].some((unitId) => !this.#juiceHidden.has(unitId));
+    if (changed) this.#draw();
+    else if (!overlayDrawn) this.#drawSupportOverlay();
+  }
+
+  /** A playback frame: the cues move with it. */
+  #tickCombatJuice(): void {
+    if (this.#pinnedCombatJuice !== null) return;
+    if (this.#combatJuice.entries.length === 0 && this.#juiceHidden.size === 0)
+      return;
+    this.#drawCombatJuiceFrame(this.#overlayDrawn);
+    this.#overlayDrawn = false;
+  }
+
+  /**
+   * Asks for the next frame while a cue moves and no playback frame draws
+   * it (a timer to the end of a still frame with reduced motion); clears
+   * the overlay once the last one is over.
+   */
+  #pumpCombatJuice(): void {
+    const browser = this.#document.defaultView;
+    if (browser === null || this.#pinnedCombatJuice !== null) return;
+    const now = this.#now();
+    if (!this.#combatJuice.active(now)) {
+      if (this.#combatJuice.entries.length > 0 || this.#juiceHidden.size > 0) {
+        this.#combatJuice.prune(now);
+        this.#drawCombatJuiceFrame(false);
+      }
+      return;
+    }
+    if (this.#combatJuice.moving(now)) {
+      if (
+        this.#animationFrame !== null ||
+        this.#combatJuiceFrame !== null ||
+        typeof browser.requestAnimationFrame !== "function"
+      )
+        return;
+      this.#combatJuiceFrame = browser.requestAnimationFrame(() => {
+        this.#combatJuiceFrame = null;
+        this.#drawCombatJuiceFrame(false);
+        this.#pumpCombatJuice();
+      });
+      return;
+    }
+    const next = this.#combatJuice.nextStillEndMs(now);
+    if (
+      next === null ||
+      this.#combatJuiceTimer !== null ||
+      typeof browser.setTimeout !== "function"
+    )
+      return;
+    this.#combatJuiceTimer = browser.setTimeout(
+      () => {
+        this.#combatJuiceTimer = null;
+        this.#drawCombatJuiceFrame(false);
+        this.#pumpCombatJuice();
+      },
+      Math.max(0, next - now),
+    );
+  }
+
+  #cancelCombatJuiceFrame(): void {
+    if (this.#combatJuiceFrame !== null)
+      this.#document.defaultView?.cancelAnimationFrame(this.#combatJuiceFrame);
+    this.#combatJuiceFrame = null;
+  }
+
+  #clearCombatJuice(): void {
+    this.#cancelCombatJuiceFrame();
+    if (this.#combatJuiceTimer !== null)
+      this.#document.defaultView?.clearTimeout(this.#combatJuiceTimer);
+    this.#combatJuiceTimer = null;
+    this.#combatJuice.clear();
+    this.#juiceBoundary = null;
+    this.#juiceHidden = new Set();
+    this.#pinnedCombatJuice = null;
+  }
+
+  /**
+   * A unit's sprite for a poof or a pop, as the board draws it on `at` in
+   * `view` (with its white silhouette for a poof's flash), or null while
+   * its raster loads or when it has none (the cue is then dust alone).
+   */
+  #juiceSprite(
+    view: PlayerViewV7,
+    unit: PlayerViewV7["units"][number],
+    at: CoordV7,
+    flash: boolean,
+  ): CombatJuiceSpriteV7 | null {
+    const model = this.#model;
+    if (model === null) return null;
+    const art =
+      model.visualDirection === undefined
+        ? this.#chibiArt
+        : this.#directionRuntime(
+            model.visualDirection,
+            model.visualDirectionArt,
+          ).art;
+    const subject = unitArtSubjectV7({
+      ...unit,
+      faction: presentedUnitFactionV7(view, unit),
+    });
+    const resolved = resolveChibiWithFallbackV7(art, {
+      subject,
+      at: unit.at,
+      ownerColor: playerFactionColourV7(view, unit.ownerId),
+      deviceScale:
+        chibiMasterScale(this.#camera) *
+        (this.#document.defaultView?.devicePixelRatio ?? 1),
+    }).resolution;
+    if (resolved.kind !== "READY") return null;
+    const entries = this.#planFor(view, NO_COMMANDS).entries;
+    const entry = entries.find(
+      (candidate) =>
+        candidate.kind === "UNIT" && candidate.key === `unit:${unit.id}`,
+    );
+    const garrison = entries.some(
+      (candidate) =>
+        (candidate.kind === "CITY" ||
+          (candidate.kind === "SITE" &&
+            candidate.artSubject === "SITE:VILLAGE")) &&
+        candidate.at.x === at.x &&
+        candidate.at.y === at.y,
+    );
+    const piece = entry?.kind === "UNIT" ? entry : undefined;
+    return combatJuiceSpriteOfV7({
+      image: resolved.image,
+      silhouette: flash ? this.#juiceSilhouette(resolved.image) : null,
+      asset: resolved.asset,
+      subject,
+      garrison,
+      flyer: piece?.martian?.flyer === true || piece?.dwarf?.flyer === true,
+      growth:
+        growthSpriteScaleV7(piece?.growthStage, resolved.asset.width) *
+        (piece?.gingerbreadMan === true ? GINGERBREAD_MAN_SPRITE_SCALE_V7 : 1),
+    });
+  }
+
+  /** The raster's shape in white (made once per raster), or null. */
+  #juiceSilhouette(image: CanvasImageSource): CanvasImageSource | null {
+    const key = image as object;
+    if (this.#juiceSilhouettes.has(key))
+      return this.#juiceSilhouettes.get(key) ?? null;
+    let silhouette: CanvasImageSource | null = null;
+    try {
+      const { width, height } = image as {
+        readonly width?: number;
+        readonly height?: number;
+      };
+      if (
+        width !== undefined &&
+        height !== undefined &&
+        width > 0 &&
+        height > 0
+      ) {
+        const canvas = this.#document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const context = canvas.getContext("2d");
+        if (context !== null) {
+          context.drawImage(image, 0, 0);
+          context.globalCompositeOperation = "source-in";
+          context.fillStyle = "#ffffff";
+          context.fillRect(0, 0, width, height);
+          silhouette = canvas;
+        }
+      }
+    } catch {
+      silhouette = null;
+    }
+    this.#juiceSilhouettes.set(key, silhouette);
+    return silhouette;
+  }
+
+  /**
+   * Review tooling and tests: holds combat cues at a moment and redraws, or
+   * lets them go with null. A FLOAT floats `amount` on `at`; a POOF or a
+   * POP plays on the unit `unitId` of the game's view (left out of the
+   * board while its sprite is drawn). `elapsedMs` is the time into each;
+   * `still` takes the reduced-motion frame. The game never calls it.
+   */
+  pinCombatJuice(
+    pins:
+      | readonly (
+          | {
+              readonly kind: "FLOAT";
+              readonly at: CoordV7;
+              readonly amount: number;
+              readonly elapsedMs: number;
+              readonly slot?: number;
+              readonly still?: boolean;
+            }
+          | {
+              readonly kind: "POOF" | "POP";
+              readonly unitId: number;
+              readonly elapsedMs: number;
+              readonly still?: boolean;
+            }
+        )[]
+      | null,
+  ): void {
+    const view = this.#model?.view ?? null;
+    this.#pinnedCombatJuice =
+      pins === null
+        ? null
+        : pins.flatMap((pin): CombatJuiceEntryV7[] => {
+            const still = pin.still === true;
+            if (pin.kind === "FLOAT")
+              return [
+                {
+                  kind: "FLOAT",
+                  at: pin.at,
+                  amount: pin.amount,
+                  requestedMs: -pin.elapsedMs,
+                  startMs: -pin.elapsedMs,
+                  durationMs: still
+                    ? DAMAGE_FLOAT_V7.reducedHoldMs
+                    : DAMAGE_FLOAT_V7.durationMs,
+                  still,
+                  slot: pin.slot ?? 0,
+                },
+              ];
+            const unit = view?.units.find(
+              (candidate) => candidate.id === pin.unitId,
+            );
+            if (view === null || unit === undefined) return [];
+            const spec = pin.kind === "POOF" ? DEATH_POOF_V7 : SPAWN_POP_V7;
+            return [
+              {
+                kind: pin.kind,
+                unitId: unit.id,
+                at: unit.at,
+                startMs: -pin.elapsedMs,
+                durationMs: still ? spec.reducedHoldMs : spec.durationMs,
+                still,
+                sprite: still
+                  ? null
+                  : this.#juiceSprite(view, unit, unit.at, pin.kind === "POOF"),
+              },
+            ];
+          });
+    this.#draw();
   }
 
   releaseCursor(at: CoordV7): void {
@@ -4369,6 +4843,8 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       update(1);
       return Promise.resolve();
     }
+    // Combat juice: the playback's frames draw it while it plays.
+    this.#cancelCombatJuiceFrame();
     return new Promise((resolve) => {
       let started = browser.performance.now();
       let pausedAt: number | null = null;
@@ -4377,6 +4853,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         if (this.#model?.presentationPaused) {
           pausedAt ??= now;
           this.#animationFrame = browser.requestAnimationFrame(frame);
+          this.#tickCombatJuice();
           return;
         }
         if (pausedAt !== null) {
@@ -4384,7 +4861,9 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
           pausedAt = null;
         }
         const progress = Math.min(1, (now - started) / duration);
+        this.#overlayDrawn = false;
         update(1 - Math.pow(1 - progress, 3));
+        this.#tickCombatJuice();
         if (progress >= 1) {
           this.#animationFrame = null;
           this.#animationResolve = null;

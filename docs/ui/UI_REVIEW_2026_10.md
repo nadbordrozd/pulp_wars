@@ -127,6 +127,44 @@ close the "moment of result" gap.
 7. **V10 Nothing left glow on End Turn** (S, P2).
 8. **S2 Desktop dock sized to content** (S, P2).
 
+**Built: V1, V2 and V3** (bead `pulp_wars-2yc.80`,
+`src/render/canvas/combat-juice-v7.ts`). One overlay layer with its own
+clock; the playback never waits for it.
+
+- **V1.** A red "−N" with an ink keyline and a hard offset shadow, 16 CSS
+  px at least (30 world units at the camera's zoom). It pops in at 1.45x
+  over the head, holds, and rises to just above the head as it fades,
+  820 ms. The HP bar (at the base, or in the cell's left strip) stays
+  clear. It floats on every hit the viewer sees: the target and the
+  retaliation (110 ms later, on the attacker) when the blow or shot lands,
+  a heat ray, the Siege Hammer, explosions, and every damage step (splash,
+  Ricochet, Plague, Wail, a Gyrocopter's bomb, an eruption, a Whirl, a
+  Stampede, Star-fall). A number its own cue already shows (the Thump, a
+  giant's crush, stomp or trample) is not shown twice. Numbers asked for
+  together on different tiles start 60 ms apart; a second number on one
+  tile stacks above the first.
+- **V2.** On the frame the dead unit leaves the board (the death sound's
+  frame), its own sprite flashes white, squashes flat and sinks while a
+  cream dust puff and three sparks burst from its feet, 460 ms; a flyer
+  falls first. No poof for an Egg, a Shatter, a lost Brain, a digested,
+  sacrificed or consumed unit, a sunk Tentacle, a Kaboom unit or an
+  eliminated seat: each has its own cue or is not a fall in battle.
+- **V3.** A trained or naval-trained unit, a city reward (the giant too)
+  and a summoned daemon drop 18 master px onto their tile, squash on
+  landing with a dust ring and two puffs, and settle, 440 ms; the board
+  leaves the unit out until it lands. Eggs, hatchlings, the risen dead and
+  an assembled Gunner keep their own cues. The ready ring is the board's,
+  as before (it shows when the unit lands).
+- Fast halves each cue (never below half while playback catches up); Fast
+  Forward plays none. Reduced motion: a still number over the head
+  (700 ms), a still dust cloud where the unit fell (340 ms) and a still
+  dust ring under a new unit (300 ms), on timers, no animation frame.
+- Review: `npx tsx scripts/browser-combat-juice-review-v7.ts
+http://localhost:<port>/ --output-dir=<new-dir>` (dev server, muted
+  headless Chrome, a stepped clock, no match played) writes frame sheets
+  of a kill, a hit with its retaliation, training and an enemy Bomb
+  Chucker's shot, at desktop and phone, full and reduced motion.
+
 ## 4. Later
 
 V12 Softer selection, V13 first-turn framing, V5 spend drop, V7 research

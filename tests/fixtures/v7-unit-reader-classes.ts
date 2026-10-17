@@ -715,6 +715,14 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/render/canvas/board-host-v7.ts::CanvasBoardHostV7.presentBoundary":
       "BOARD",
     "src/render/canvas/board-host-v7.ts::CanvasBoardHostV7.update": "BOARD",
+    // Bead pulp_wars-2yc.80: the combat juice reads the views' units for
+    // what the board drew: a unit that left the board in a death, a unit
+    // that arrived on it, and a pinned review cue's unit. A burrowed unit
+    // is not drawn, so it neither poofs nor pops.
+    "src/render/canvas/board-host-v7.ts::CanvasBoardHostV7.pinCombatJuice":
+      "BOARD",
+    "src/render/canvas/combat-juice-v7.ts::combatJuiceDeathsV7": "BOARD",
+    "src/render/canvas/combat-juice-v7.ts::combatJuiceSpawnsV7": "BOARD",
     "src/render/canvas/board-renderer-v7.ts::addAbilityPreviews": "BOARD",
     "src/render/canvas/board-renderer-v7.ts::addKaboomPreview": "BOARD",
     "src/render/canvas/board-renderer-v7.ts::buildBoardRenderPlanV7": "BOARD",

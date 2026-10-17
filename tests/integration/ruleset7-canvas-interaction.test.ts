@@ -658,6 +658,11 @@ describe("Ruleset 7 Canvas interaction", () => {
   it.each(["FULL", "REDUCED"] as const)(
     "renders local recruitment directly with no whole-board frame in %s motion",
     async (motion) => {
+      // Bead pulp_wars-2yc.80: the new unit's spawn pop plays on the
+      // effects overlay alone; the board is drawn once, never faded.
+      vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
+      let now = 0;
+      vi.spyOn(window.performance, "now").mockImplementation(() => now);
       const frames = new Map<number, FrameRequestCallback>();
       Object.defineProperty(window, "requestAnimationFrame", {
         configurable: true,
@@ -672,18 +677,26 @@ describe("Ruleset 7 Canvas interaction", () => {
         value: vi.fn((id: number) => frames.delete(id)),
       });
       const sceneAlphas: number[] = [];
-      const target: Record<PropertyKey, unknown> = { globalAlpha: 1 };
-      const context = new Proxy(target, {
-        get: (object, key) => (key in object ? object[key] : vi.fn()),
-        set: (object, key, value) => {
-          object[key] = value;
-          if (key === "globalAlpha" && typeof value === "number")
-            sceneAlphas.push(value);
-          return true;
-        },
-      }) as unknown as CanvasRenderingContext2D;
-      vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue(
-        context,
+      const recording = (alphas: number[] | null): CanvasRenderingContext2D => {
+        const target: Record<PropertyKey, unknown> = { globalAlpha: 1 };
+        return new Proxy(target, {
+          get: (object, key) => (key in object ? object[key] : vi.fn()),
+          set: (object, key, value) => {
+            object[key] = value;
+            if (key === "globalAlpha" && typeof value === "number")
+              alphas?.push(value);
+            return true;
+          },
+        }) as unknown as CanvasRenderingContext2D;
+      };
+      const context = recording(sceneAlphas);
+      const overlay = recording(null);
+      vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockImplementation(
+        function (this: HTMLCanvasElement) {
+          return this.classList.contains("board-effects-canvas-v7")
+            ? overlay
+            : context;
+        } as unknown as HTMLCanvasElement["getContext"],
       );
       const container = document.createElement("div");
       Object.defineProperty(container, "getBoundingClientRect", {
@@ -721,9 +734,24 @@ describe("Ruleset 7 Canvas interaction", () => {
         boundary.after,
         boundary.envelope,
       );
+      const effects = container.querySelector<HTMLCanvasElement>(
+        "canvas.board-effects-canvas-v7",
+      );
+      expect(effects?.dataset.combatJuiceUnits).toBe("1");
+      // A moving pop asks for overlay frames until it is over; a still one
+      // (reduced motion) none.
+      expect(frames.size).toBe(motion === "FULL" ? 1 : 0);
+      now += 1_000;
+      for (const [id, callback] of [...frames]) {
+        frames.delete(id);
+        callback(now);
+      }
+      vi.advanceTimersByTime(1_000);
       expect(frames.size).toBe(0);
+      expect(effects?.dataset.combatJuiceUnits).toBeUndefined();
       expect(sceneAlphas.some((alpha) => alpha > 0 && alpha < 1)).toBe(false);
       host.destroy();
+      vi.useRealTimers();
     },
   );
 
