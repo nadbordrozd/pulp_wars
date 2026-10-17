@@ -2462,7 +2462,8 @@ the screens it opens (new game, campaign, Settings, save recovery). Ruleset
   its summary: "Turn 7 · 12 coins · 2 players · Continents", or "Mission 2 ·
   The Warrens · Turn 7"), **New game**, **Tutorial** (bead
   `pulp_wars-0yxy`, [Tutorial](#tutorial)), **Campaign**, **Gallery**,
-  **Settings**. Each button is an icon and one or two words. The first
+  **Settings**, **About** (bead `pulp_wars-2yc.92`). Each button is an
+  icon and one or two words. The first
   button is the primary one (Continue, else New game; for a first-time
   player Tutorial comes first and is the primary one). On a wide screen the
   logo is top left and the stack bottom left, and the scene's units stand
@@ -2480,10 +2481,11 @@ the screens it opens (new game, campaign, Settings, save recovery). Ruleset
   starts at once. Arrow Up and Down move through the stack and wrap, Home
   and End go to its ends, Tab moves on as usual, Enter or Space activates.
   A match's shortcuts (T, G, ?, E) do nothing on the front screens.
-- **Screens opened from the menu.** New game, Campaign and Settings each
-  open one panel over the dimmed scene, with the small logo above it. The
-  panel starts with a **Menu** button (accessible name "Main menu") and the
-  screen's title ("New game", "Campaign", "Settings"). Focus moves to the
+- **Screens opened from the menu.** New game, Campaign, Settings and About
+  each open one panel over the dimmed scene, with the small logo above it.
+  The panel starts with a **Menu** button (accessible name "Main menu") and
+  the screen's title ("New game", "Campaign", "Settings", "About"). Focus
+  moves to the
   Menu button on open; Menu or Escape returns to the main menu with focus
   on the button that opened the screen (in a mission briefing Escape first
   steps back to the mission list). Gallery opens the Gallery screen; its
@@ -2505,6 +2507,16 @@ the screens it opens (new game, campaign, Settings, save recovery). Ruleset
   front screens follow UI size and contrast too. The match-only actions
   (Restart, Delete save, the map seed, developer tools) stay in a match's
   Settings.
+- **About** (bead `pulp_wars-2yc.92`). A narrow panel of short plain
+  lines: **Pulp Wars**, "A game by Nadbor Drozd", the email
+  nadbordrozd@gmail.com as a `mailto:` link; then the credits, a list
+  named "Credits": "Made with Claude Opus 5.5", "Graphics generated with
+  PixelLab", "Sound effects generated with ElevenLabs", "Music generated
+  with Suno"; last, the link **More games by Nadbor** to
+  https://nadbordrozd.github.io/projects/, which opens in a new tab
+  (`target="_blank"`, `rel="noopener"`). Tab reaches Menu, the email and
+  the link; Menu or Escape returns to the menu with focus on About. It
+  fits a 320 px phone without scrolling sideways.
 - **Foot of the menu.** Small and out of the stack: **Delete save**, only
   with a saved game (it deletes at once, as before). Without a saved game
   the menu has no foot. There is no link to an earlier ruleset

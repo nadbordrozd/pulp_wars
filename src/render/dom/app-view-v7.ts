@@ -1519,7 +1519,7 @@ const NO_CAMPAIGN_PROGRESS_V7: Ruleset7CampaignProgressV7 = Object.freeze({
  * The front screens (bead pulp_wars-2yc.18): the main menu over the title
  * scene, and the screens its buttons open.
  */
-type FrontPageV7 = "MENU" | "SETUP" | "CAMPAIGN" | "SETTINGS";
+type FrontPageV7 = "MENU" | "SETUP" | "CAMPAIGN" | "SETTINGS" | "ABOUT";
 
 /**
  * The unit dialog (bead pulp_wars-2yc.39): status chips that an ability
@@ -2800,6 +2800,8 @@ export class Ruleset7DomAppView {
         return this.#campaignScreen(resumable);
       case "SETTINGS":
         return this.#frontSettings();
+      case "ABOUT":
+        return this.#frontAbout();
       default:
         return this.#mainMenu(resumable);
     }
@@ -2876,8 +2878,12 @@ export class Ruleset7DomAppView {
     gallery.onclick = () => this.#openGallery();
     const settings = this.#menuButton("Settings", "front-settings", "gear");
     settings.onclick = () => this.#openFrontPage("SETTINGS");
-    if (newcomer) nav.append(tutorial, play, campaign, gallery, settings);
-    else nav.append(play, tutorial, campaign, gallery, settings);
+    // The credits (bead pulp_wars-2yc.92), last in the stack.
+    const about = this.#menuButton("About", "about", "units");
+    about.onclick = () => this.#openFrontPage("ABOUT");
+    if (newcomer)
+      nav.append(tutorial, play, campaign, gallery, settings, about);
+    else nav.append(play, tutorial, campaign, gallery, settings, about);
     main.append(nav);
     if (!resumable) {
       // The setup form is built with the menu and shown by New game, so a
@@ -2941,7 +2947,9 @@ export class Ruleset7DomAppView {
             ? '[data-action="campaign"]'
             : from === "SETTINGS"
               ? '[data-action="front-settings"]'
-              : MENU_FIRST_V7;
+              : from === "ABOUT"
+                ? '[data-action="about"]'
+                : MENU_FIRST_V7;
     this.#render();
   }
 
@@ -2951,7 +2959,7 @@ export class Ruleset7DomAppView {
    * the screen's title.
    */
   #frontPanelScreen(
-    page: "setup" | "campaign" | "settings" | "recovery",
+    page: "setup" | "campaign" | "settings" | "about" | "recovery",
     titleText: string,
   ): { main: HTMLElement; panel: HTMLElement } {
     const main = el(this.#document, "main", "v7-front-screen v7-front-page");
@@ -3573,6 +3581,64 @@ export class Ruleset7DomAppView {
     const body = el(this.#document, "div", "v7-front-settings");
     body.id = "v7-front-settings";
     body.append(this.#displaySettings(), this.#tribeStarsSettings());
+    panel.append(body);
+    return main;
+  }
+
+  /**
+   * The About screen (bead pulp_wars-2yc.92): who made the game and with
+   * what, in short plain lines, the author's email and a link to his other
+   * games (a new tab).
+   */
+  #frontAbout(): HTMLElement {
+    const { main, panel } = this.#frontPanelScreen("about", "About");
+    main.classList.add("v7-about");
+    const body = el(this.#document, "div", "v7-about-body");
+    body.id = "v7-about";
+    const link = (
+      label: string,
+      href: string,
+      action: string,
+      external: boolean,
+    ): HTMLAnchorElement => {
+      const node = this.#document.createElement("a");
+      node.href = href;
+      node.textContent = label;
+      node.dataset.action = action;
+      if (external) {
+        node.target = "_blank";
+        node.rel = "noopener";
+      }
+      return node;
+    };
+    const author = el(this.#document, "div", "v7-about-author");
+    author.append(
+      text(this.#document, "p", "Pulp Wars", "v7-about-game"),
+      text(this.#document, "p", "A game by Nadbor Drozd"),
+      link(
+        "nadbordrozd@gmail.com",
+        "mailto:nadbordrozd@gmail.com",
+        "about-email",
+        false,
+      ),
+    );
+    const credits = el(this.#document, "ul", "v7-about-credits");
+    credits.setAttribute("aria-label", "Credits");
+    for (const line of [
+      "Made with Claude Opus 5.5",
+      "Graphics generated with PixelLab",
+      "Sound effects generated with ElevenLabs",
+      "Music generated with Suno",
+    ])
+      credits.append(text(this.#document, "li", line));
+    const more = link(
+      "More games by Nadbor",
+      "https://nadbordrozd.github.io/projects/",
+      "about-more-games",
+      true,
+    );
+    more.classList.add("v7-about-more");
+    body.append(author, credits, more);
     panel.append(body);
     return main;
   }

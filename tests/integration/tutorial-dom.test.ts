@@ -116,6 +116,7 @@ describe("the Tutorial button of the main menu", () => {
       "campaign",
       "gallery",
       "front-settings",
+      "about",
     ]);
     const tutorial = requiredButton("tutorial");
     expect(tutorial.textContent).toBe("Tutorial");
@@ -162,6 +163,7 @@ describe("the Tutorial button of the main menu", () => {
       "campaign",
       "gallery",
       "front-settings",
+      "about",
     ]);
     expect(requiredButton("tutorial").classList.contains("is-primary")).toBe(
       false,
@@ -194,6 +196,7 @@ describe("the Tutorial button of the main menu", () => {
       "campaign",
       "gallery",
       "front-settings",
+      "about",
     ]);
     requiredButton("tutorial").click();
     await settle();

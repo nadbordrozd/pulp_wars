@@ -264,7 +264,7 @@ try {
     // The Tutorial (pulp_wars-0yxy) is second here: this profile has won
     // a mission, so it is not led with.
     titleScreen.actions.join() !==
-      "new-game,tutorial,campaign,gallery,front-settings" ||
+      "new-game,tutorial,campaign,gallery,front-settings,about" ||
     titleScreen.focused !== "new-game" ||
     !titleScreen.overScene ||
     !titleScreen.inside ||
@@ -281,8 +281,8 @@ try {
     connection,
     `document.activeElement?.dataset?.action ?? null`,
   );
-  if (wrapped !== "front-settings")
-    throw new Error(`menu arrow keys did not wrap to Settings: ${wrapped}`);
+  if (wrapped !== "about")
+    throw new Error(`menu arrow keys did not wrap to About: ${wrapped}`);
   await pressKey(connection, "Home", "Home");
   await connection.send("Input.dispatchKeyEvent", {
     type: "keyDown",

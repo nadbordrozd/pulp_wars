@@ -789,6 +789,66 @@
   box-shadow: var(--pw-shadow-sm);
 }
 
+/* The About screen (pulp_wars-2yc.92): a narrow panel of short lines. */
+.v7-about .v7-front-panel {
+  width: min(28rem, 100%);
+}
+
+.v7-about-body {
+  display: grid;
+  gap: 1rem;
+  justify-items: start;
+}
+
+.v7-about-author {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.v7-about-author p {
+  margin: 0;
+}
+
+.v7-about-game {
+  font-family: var(--pw-display);
+  font-size: var(--pw-fs-xl);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.v7-about-body a {
+  font-weight: var(--pw-fw-bold);
+  overflow-wrap: anywhere;
+}
+
+.v7-about-credits {
+  display: grid;
+  justify-self: stretch;
+  gap: 0.3rem;
+  margin: 0;
+  padding: 0.75rem 0 0;
+  border-top: var(--pw-line-w-sm) solid var(--pw-line-soft);
+  list-style: none;
+  color: var(--pw-text-2);
+}
+
+.v7-about-body .v7-about-more {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 1rem;
+  border: var(--pw-line-w-sm) solid var(--pw-line);
+  border-radius: var(--pw-radius-sm);
+  background: var(--pw-surface-raised);
+  box-shadow: var(--pw-shadow-sm);
+  text-decoration: none;
+}
+
+.v7-about-body .v7-about-more:hover,
+.v7-about-body .v7-about-more:focus-visible {
+  background: var(--pw-yellow);
+}
+
 .v7-setup-heading {
   display: flex;
   grid-column: 1 / -1;

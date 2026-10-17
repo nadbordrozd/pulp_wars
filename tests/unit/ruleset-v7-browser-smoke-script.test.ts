@@ -877,7 +877,7 @@ describe("Ruleset 7 browser smoke script", () => {
     // The opening checks the menu's buttons, focus and place over the scene.
     // The Tutorial is in the stack (`pulp_wars-0yxy`).
     expect(source).toContain(
-      '"new-game,tutorial,campaign,gallery,front-settings" ||',
+      '"new-game,tutorial,campaign,gallery,front-settings,about" ||',
     );
     expect(source).toContain('titleScreen.focused !== "new-game"');
     expect(source).toContain("!titleScreen.overScene");
@@ -886,7 +886,7 @@ describe("Ruleset 7 browser smoke script", () => {
     expect(source).toContain(
       'await pressKey(connection, "ArrowUp", "ArrowUp")',
     );
-    expect(source).toContain('wrapped !== "front-settings"');
+    expect(source).toContain('wrapped !== "about"');
     expect(source).toContain(
       "${SETUP_OPEN_V7} && document.activeElement?.dataset?.action === 'front-back'",
     );

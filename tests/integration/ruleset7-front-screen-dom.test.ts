@@ -127,6 +127,7 @@ describe("Ruleset 7 front screen", () => {
       "campaign",
       "gallery",
       "front-settings",
+      "about",
     ]);
     expect(items.map((item) => item.textContent)).toEqual([
       "Tutorial",
@@ -134,6 +135,7 @@ describe("Ruleset 7 front screen", () => {
       "Campaign",
       "Gallery",
       "Settings",
+      "About",
     ]);
     for (const item of items) {
       expect(item.classList).toContain("v7-menu-button");
@@ -155,6 +157,7 @@ describe("Ruleset 7 front screen", () => {
       "campaign",
       "gallery",
       "front-settings",
+      "about",
     ]);
     // No coordinates on the front screen.
     expect(screen.textContent).not.toMatch(/\(\d+\s*,\s*\d+\)/);
@@ -171,19 +174,21 @@ describe("Ruleset 7 front screen", () => {
     key("ArrowDown");
     key("ArrowDown");
     expect(focused()).toBe("front-settings");
+    key("ArrowDown");
+    expect(focused()).toBe("about");
     // The stack wraps both ways; Home and End go to its ends.
     key("ArrowDown");
     expect(focused()).toBe("tutorial");
     key("ArrowUp");
-    expect(focused()).toBe("front-settings");
+    expect(focused()).toBe("about");
     key("Home");
     expect(focused()).toBe("tutorial");
     key("End");
-    expect(focused()).toBe("front-settings");
+    expect(focused()).toBe("about");
     // With nothing focused the arrows enter the menu.
     (document.activeElement as HTMLElement).blur();
     key("ArrowUp", document.body);
-    expect(focused()).toBe("front-settings");
+    expect(focused()).toBe("about");
     // A match's shortcuts do nothing here.
     key("t");
     key("?");
@@ -197,6 +202,7 @@ describe("Ruleset 7 front screen", () => {
       ["new-game", "setup", "New game"],
       ["campaign", "campaign", "Campaign"],
       ["front-settings", "settings", "Settings"],
+      ["about", "about", "About"],
     ] as const) {
       press(action);
       await settle();
@@ -337,6 +343,64 @@ describe("Ruleset 7 front screen", () => {
     expect(required(".v7-front-shell").dataset.contrast).toBe("high");
   });
 
+  it("opens About from the menu: the credits, the email and the other games", async () => {
+    mount();
+    expect(document.querySelector("#v7-about")).toBeNull();
+    const entry = required('[data-action="about"]');
+    expect(entry.textContent).toBe("About");
+    expect(entry.querySelector("svg")).not.toBeNull();
+    press("about");
+    await settle();
+    expect(required(".v7-front-screen").dataset.v7Front).toBe("about");
+    expect(required("#v7-front-title").textContent).toBe("About");
+    const panel = required("#v7-about");
+    const lines = [...panel.querySelectorAll("p, li, a")].map(
+      (node) => node.textContent,
+    );
+    expect(lines).toEqual([
+      "Pulp Wars",
+      "A game by Nadbor Drozd",
+      "nadbordrozd@gmail.com",
+      "Made with Claude Opus 5.5",
+      "Graphics generated with PixelLab",
+      "Sound effects generated with ElevenLabs",
+      "Music generated with Suno",
+      "More games by Nadbor",
+    ]);
+    const email = required<HTMLAnchorElement>('[data-action="about-email"]');
+    expect(email.getAttribute("href")).toBe("mailto:nadbordrozd@gmail.com");
+    expect(email.hasAttribute("target")).toBe(false);
+    const more = required<HTMLAnchorElement>(
+      '[data-action="about-more-games"]',
+    );
+    expect(more.getAttribute("href")).toBe(
+      "https://nadbordrozd.github.io/projects/",
+    );
+    expect(more.target).toBe("_blank");
+    expect(more.rel).toBe("noopener");
+    // The credits are a list a screen reader announces as one.
+    expect(required(".v7-about-credits").getAttribute("aria-label")).toBe(
+      "Credits",
+    );
+    // Tab reaches every link; no coordinates, nothing else to press.
+    const shown = [
+      ...required(".v7-front-screen").querySelectorAll<HTMLElement>(
+        "button, a, select, input",
+      ),
+    ].map((node) => node.dataset.action);
+    expect(shown).toEqual(["front-back", "about-email", "about-more-games"]);
+    // Escape returns to the menu with About focused; so does Menu.
+    key("Escape");
+    await settle();
+    expect(required(".v7-front-screen").dataset.v7Front).toBe("menu");
+    expect(focused()).toBe("about");
+    press("about");
+    press("front-back");
+    await settle();
+    expect(document.querySelector("#v7-about")).toBeNull();
+    expect(focused()).toBe("about");
+  });
+
   it("leaves the scene when a match starts and shows it again with Continue", async () => {
     const first = mount();
     press("new-game");
@@ -362,6 +426,7 @@ describe("Ruleset 7 front screen", () => {
       "campaign",
       "gallery",
       "front-settings",
+      "about",
     ]);
     const resume = required('[data-action="resume"]');
     expect(resume.classList).toContain("is-primary");

@@ -738,6 +738,7 @@ describe("Ruleset 7 mission dialogs", () => {
         "campaign",
         "gallery",
         "front-settings",
+        "about",
       ]);
       expect(document.activeElement?.getAttribute("data-action")).toBe(
         "tutorial",
