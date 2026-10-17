@@ -636,11 +636,18 @@ import {
   navalThreatFactsV7,
   navalSeaRouteBeatsWalkV7,
   navalTorpedoPriorityV7,
+  navalAttackBlastOnAttackerV7,
   navalTorpedoReachV7,
   navalTransportMoveRejectedV7,
   type NavalFleetFactsV7,
   type NavalToolsV7,
 } from "./v7-naval";
+import {
+  FIRE_RAFT_APPROACH_PRIORITY_V7,
+  fireRaftApproachV7,
+  fireRaftKaboomScoreV7,
+  navalDreadnoughtCrowdRejectedV7,
+} from "./v7-naval-goblin";
 import {
   BREAK_OFF_FRONT_RADIUS_V7,
   BREAK_OFF_MINIMUM_HP_V7,
@@ -11609,6 +11616,10 @@ function navalRejectsV7(context: PolicyContextV7, command: CommandV7): boolean {
   const actor = context.lookup.unitsById.get(command.unitId);
   const to = command.path.at(-1);
   if (actor === undefined || to === undefined) return false;
+  // Themed naval branches (`pulp_wars-5ti.16`): no crowd round an own
+  // Dreadnought a hostile Submarine reaches.
+  if (navalDreadnoughtCrowdRejectedV7(context.view, tools, facts, actor, to))
+    return true;
   if (actor.form === "NAVAL")
     return navalSubmarineMoveRejectedV7(context.view, tools, facts, actor, to);
   return (
@@ -14660,7 +14671,21 @@ function scoreCommandWithContext(
       // moves (a blockader off a dock, a transport off the coast, the
       // target beside another own ship).
       if (targetUnit !== undefined && actor !== undefined) {
-        const torpedo = navalTorpedoPriorityV7(targetUnit, preview);
+        // Themed naval branches (`pulp_wars-5ti.16`): the blast of a
+        // Dreadnought the torpedo sinks counts.
+        const torpedo = navalTorpedoPriorityV7(
+          targetUnit,
+          preview,
+          preview.torpedo &&
+            preview.defenderDies &&
+            navalAttackBlastOnAttackerV7(
+              view,
+              actor.id,
+              targetUnit.id,
+              preview,
+            ) >=
+              actor.hp - preview.damageToAttacker,
+        );
         if (torpedo !== null) priority = Math.max(priority, torpedo);
         strategicValue += navalRamShoveValueV7(
           view,
@@ -15526,6 +15551,21 @@ function scoreCommandWithContext(
         priority = Math.max(priority, NAVAL_RAM_APPROACH_PRIORITY_V7);
         strategicValue += Math.floor(ram.value / 10);
       }
+      // Themed naval branches (`pulp_wars-5ti.16`): a Fire Raft goes where
+      // its blast is worth more than its best Ram.
+      const blast = fireRaftApproachV7(
+        view,
+        tools,
+        actor,
+        resultAt,
+        command.path.length,
+      );
+      if (blast !== null) {
+        priority = Math.max(priority, FIRE_RAFT_APPROACH_PRIORITY_V7);
+        // In fifths of a Coin, so a blast into three units beats one into
+        // two (whole Coins tie them often).
+        strategicValue += Math.floor(blast.value / 2);
+      }
       const screenWorth = navalScreenValueV7(
         view,
         fleet,
@@ -15767,7 +15807,18 @@ function scoreCommandWithContext(
     }
   }
 
-  if (command.kind === "KABOOM" && actor !== undefined && context.goblin) {
+  // Themed naval branches (`pulp_wars-5ti.16`, `src/ai/v7-naval-goblin.ts`):
+  // a Fire Raft's Kaboom afloat, by its blast in Coins against its attacks.
+  if (command.kind === "KABOOM" && actor?.form === "NAVAL") {
+    const raft = fireRaftKaboomScoreV7(view, navalToolsV7(context), actor);
+    priority = raft.priority;
+    strategicValue = raft.strategic;
+    immediateValue = raft.immediate;
+  } else if (
+    command.kind === "KABOOM" &&
+    actor !== undefined &&
+    context.goblin
+  ) {
     // Revision 17: Kaboom by previewed net value (`pulp_wars-0ao.6`).
     const kaboom = kaboomScoreV7(context, actor);
     priority = kaboom.priority;
@@ -26479,8 +26530,11 @@ function computeVisibleImmediateDamage(
     );
     // Revision 17: a goblin-crewed land unit's Kaboom reach (included in its
     // threatened tiles) deals its fixed Kaboom damage, whatever the Defense.
+    // Themed naval branches (`pulp_wars-5ti.16`): a hostile Fire Raft's
+    // Kaboom afloat too (its owner's Powder Kegs is private, so it is
+    // assumed, as the Ram is).
     const kaboomDamage =
-      hostile.form === "LAND"
+      hostile.form === "LAND" || hostile.form === "NAVAL"
         ? (unitRoleMechanicsV7(view, hostile).kaboomDamage ?? 0)
         : 0;
     const damage =

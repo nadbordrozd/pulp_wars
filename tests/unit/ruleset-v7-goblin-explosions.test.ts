@@ -173,12 +173,17 @@ describe("ruleset-7 Goblin Kaboom legality", () => {
       [at(8, 2), "GUARD"],
       [at(9, 2), "CAPTAIN"],
       [at(9, 3), "JUGGERNAUT"],
-      [at(0, 6), "PATROL_BOAT"],
     ] as const)
       expect(reject(unitAtV7(state, where).id)).toEqual({
         code: "UNIT_ROLE_INVALID",
         params: { role },
       });
+    // Themed naval branches (`pulp_wars-5ti.16`): the Goblin Patrol Boat is
+    // the Fire Raft, which Kabooms afloat only with Powder Kegs.
+    expect(reject(unitAtV7(state, at(0, 6)).id)).toEqual({
+      code: "TECH_REQUIRED",
+      params: { tech: "SEAMANSHIP" },
+    });
     const acted = unitAtV7(state, at(6, 3)).id;
     expect(reject(acted)).toEqual({
       code: "UNIT_ALREADY_ACTED",
@@ -1957,7 +1962,12 @@ function blockadeFixture(
     homeCityId: null,
     at: portAt,
     hp: options.blockader.hp,
-    maxHp: 10,
+    // Themed naval branches (`pulp_wars-5ti.16`): the seat's own maximum
+    // (a Goblin Fire Raft has 8).
+    maxHp: effectiveRoleRuleV7(
+      options.blockader.role,
+      factions[1] ?? "ORIGINAL",
+    ).maxHp,
     kills: 0,
     veteran: false,
     captureEligible: false,

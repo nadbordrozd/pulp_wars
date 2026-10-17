@@ -67,9 +67,9 @@ const CELLS = [
 
 describe("ruleset-7 revision-16 identity", () => {
   it("keeps rejecting r15 after the r54 identity and cleans the r15 through r53 save keys", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r91");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r91.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-76, -36)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r92");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r92.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-77, -37)).toEqual([
       "pulpWars.save.v7r15.current",
       "pulpWars.save.v7r16.current",
       "pulpWars.save.v7r17.current",
@@ -187,8 +187,9 @@ describe("ruleset-7 prior identities", () => {
     // (`pulp_wars-ykw.8`): 7r87.
     // The Cult redesign's Favour economy and warden (`pulp_wars-mch9.32`,
     // `pulp_wars-mch9.33`): 7r89. The Imp (`pulp_wars-mch9.36`): 7r90. The
-    // Gibbering Mass (`pulp_wars-mch9.37`): 7r91.
-    expect(revision).toBe(91);
+    // Gibbering Mass (`pulp_wars-mch9.37`): 7r91. The Goblin Scrap Fleet
+    // (`pulp_wars-5ti.16`): 7r92.
+    expect(revision).toBe(92);
     expect([...PRIOR_RULESET_7_IDS]).toEqual(expectedPrior);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
   });
@@ -223,7 +224,7 @@ describe("ruleset-7 prior identities", () => {
 
   it("still reports an unknown Ruleset 7 identity as INVALID_REPLAY", () => {
     // The next identity after the current one is still unknown.
-    for (const id of ["pulp-wars-poc-7r1", "pulp-wars-poc-7r92", "other"])
+    for (const id of ["pulp-wars-poc-7r1", "pulp-wars-poc-7r93", "other"])
       expect(
         parseReplayFileV7({
           format: "pulp-wars-replay",

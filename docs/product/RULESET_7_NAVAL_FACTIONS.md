@@ -340,6 +340,70 @@ a doomed raft with one hostile neighbour Kabooms.
 - **Effects and sound:** the Kaboom effect and its explosion cue on water
   with the existing splash layer; no new clip.
 
+### 3.8 As built (`pulp_wars-5ti.16`, `pulp-wars-poc-7r92`)
+
+Built as above, with the shared plumbing of section 2, at identity `7r92`
+(`7r91` is a prior identity; the autosave key is
+`pulpWars.save.v7r92.current`). Every row of 3.2 is a registry value and
+every row of 3.4 an exact preview or result in
+`tests/unit/ruleset-v7-naval-goblin.test.ts`; the AI scenarios of 3.6 are
+`tests/unit/ruleset-v7-naval-goblin-ai.test.ts`. Where the build is more
+precise than the text above:
+
+- **Shared plumbing.** `withSeamanshipUnlocksV7(nodes, trick)` builds a
+  faction's Seamanship (`RAM` then the trick); the Goblin trick is
+  `FIRE_RAFTS` (capability `fireRafts`); every other seafaring tree keeps
+  `COMMAND BOARD` until its bead. The prize rule is `boardedPrizeHpV7`
+  (reducer and `previewBoardV7`); the sea-beast rule is the role mechanic
+  `seaBeast` (false everywhere) read by `boardSeaBeastBlockedV7`, passed
+  to the shared `boardTargetBlockV7` as its last argument; the ability
+  literal `SEA_BEAST` and its glossary entry exist with no user.
+- **The Kaboom gate** is `kaboomFormBlockV7`, shared by the reducer and the
+  public command query: land form passes; `EMBARKED` stays; a ship without
+  `fireRafts` is `TECH_REQUIRED { tech: "SEAMANSHIP" }`; an icebound ship
+  is `KABOOM_NOT_LEGAL { reason: "ICEBOUND" }` (in that order).
+- **The crush.** The engine did run the death-blast chain for units the
+  ice crushes (an embarked exploding unit explodes with its raft, as
+  current rules section 21.16 says), so "the crush is outside the blast
+  chain" was not true of the code. The decision stands and is built as an
+  explicit exception: a crushed unit in `NAVAL` form never explodes, an
+  embarked one still does.
+- **Death causes tested:** a torpedo (defender), retaliation (attacker),
+  Battleship splash, a blast chain from a Fire Raft's Kaboom, Wail, and
+  Plague at the owner's Start Turn; none when boarded or crushed. A Dwarf
+  bomb runs through the same shared chain and is not tested separately.
+- **The AI test of the Board** uses a Dreadnought at 8 HP (its boarding
+  line): at 9 HP it cannot be boarded, so "a 9-HP Dreadnought" above means
+  the 3.4 example's Dreadnought after one more hit.
+- **Kaboom afloat (AI).** Values are tenths of a Coin; the friendly fire
+  counts twice (`FRIENDLY_FIRE_TRADE_FACTOR_V7`, as every Goblin blast); a
+  taken Kaboom has priority 1349 (above every ordinary attack, below a kill
+  that clears a center and Board), except when the raft's best attack
+  kills and is worth more. The approach Move has priority 1277. The
+  threat estimate counts a hostile Fire Raft's Kaboom (Powder Kegs is
+  private, so it is assumed, as the Ram is).
+- **The Dreadnought from both sides (AI).** `navalAttackBlastOnAttackerV7`
+  reads the blast an attack's kill sets off on the attacker; the torpedo
+  priority is withheld when it would sink the Submarine, and the Ram
+  approach and the Board scorer's best attack count it. The crowd rule is
+  `navalDreadnoughtCrowdRejectedV7` (a Move refused, not only valued); the
+  screen rule skips a boat with `KABOOM` beside a ship with a death blast.
+- **Text.** The glossary keeps one `KABOOM` entry for every goblin-crewed
+  unit, the Fire Raft included (two entries named "Kaboom!" would break
+  the one-name-one-mechanic rule; the Powder Kegs card and the raft's
+  Kaboom! button say it needs the technology), and adds `SINKS_EXPLODING`
+  for the Dreadnought; the Goblin Help has an "At sea" line; the
+  Shipbuilding, Submersibles, and Bow Ram card lines name each faction's
+  own ships (the Submersibles note now says "the next tile", so the
+  Diving Barrel's line fits the card), and the Powder Kegs card says the
+  Kaboom sentence.
+- **Art.** The Fire Raft's sprite and portrait are redrawn in place (same
+  asset IDs and subjects, new subject keys `…/FIRE_RAFT`); the Fire Rafts
+  card shows its portrait, Diving Barrels the Barrel's portrait, and
+  Powder Kegs its own icon (`ICON:TECH:GOBLIN:SEAMANSHIP`,
+  `chibi-naval-goblin-icon-tech-seamanship`, batch `naval-goblin`), which
+  falls back to the shared wheel. No new sound.
+
 ## 4. Undead: the Drowned Fleet
 
 **Theme.** Attrition: what the Undead sink comes back up as theirs, and

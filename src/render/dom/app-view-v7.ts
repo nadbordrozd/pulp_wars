@@ -444,6 +444,7 @@ import {
   goblinFieldDefenseBlockedV7,
   kaboomPreviewTextV7,
   kaboomTooltipV7,
+  fireRaftKaboomTooltipV7,
   rallyIsBerserkV7,
   technologyNameV7,
   type KaboomPreviewTextV7,
@@ -591,9 +592,11 @@ import {
   BOARD_TOOLTIP_V7,
   BOARD_UNLOCK_V7,
   HARBOURS_LABEL_V7,
-  NAVAL_RAM_UNLOCK_V7,
+  navalRamUnlockTextV7,
+  fireRaftsUnlockTextV7,
+  battleshipUnlockNoteV7,
   SHORECRAFT_EMBARK_NOTE_V7,
-  SUBMARINE_UNLOCK_NOTE_V7,
+  submarineUnlockNoteV7,
   SUBMERGED_LABEL_V7,
   SUBMERGED_TOOLTIP_V7,
   boardUnavailableTextV7,
@@ -12061,7 +12064,11 @@ export class Ruleset7DomAppView {
       damage === null
         ? null
         : [
-            kaboomTooltipV7(damage),
+            // Themed naval branches (`pulp_wars-5ti.16`): a Fire Raft
+            // blows up at sea.
+            unit?.form === "NAVAL"
+              ? fireRaftKaboomTooltipV7(damage)
+              : kaboomTooltipV7(damage),
             ...(deathBlast === null ? [] : [deathBlastNoteV7(deathBlast)]),
           ].join(" ");
     const summary =
@@ -16153,7 +16160,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   const aiHeadStartCoins =
     draft.mapType === "SHOWCASE" ? 0 : draft.aiHeadStartCoins;
   return {
-    rulesetId: "pulp-wars-poc-7r91",
+    rulesetId: "pulp-wars-poc-7r92",
     seed,
     width,
     height: width,
@@ -16321,7 +16328,10 @@ function effectDescription(
                       ? title(effect.command)
                       : `Build ${factionBuildCommandV7(effect.command, faction)?.name ?? ""}`;
     case "RAM":
-      return NAVAL_RAM_UNLOCK_V7;
+      // Themed naval branches (`pulp_wars-5ti.16`): the faction's own boats.
+      return navalRamUnlockTextV7(faction);
+    case "FIRE_RAFTS":
+      return fireRaftsUnlockTextV7();
     case "HARBOURS":
       return harboursUnlockTextV7(effect.population);
     // The frozen sea (RULESET_7_NAVAL_BRANCH.md section 8.2).
@@ -16477,10 +16487,12 @@ function navalTechnologyNotesV7(
   if (technology === "SHORECRAFT") return [SHORECRAFT_EMBARK_NOTE_V7];
   if (technology === "NAVIGATION")
     return ["Ships can sail deep water", SEA_LINK_DEEP_WATER_NOTE_V7];
+  // Themed naval branches (`pulp_wars-5ti.16`): each faction's ship by
+  // name, and the Scrap Dreadnought's death blast.
   if (technology === "NAVAL_ENGINEERING")
-    return ["Battleship: long-range splash damage"];
+    return [battleshipUnlockNoteV7(faction)];
   // The naval branch (`pulp_wars-5ti.2`; RULESET_7_NAVAL_BRANCH.md 14.2).
-  if (technology === "SUBMERSIBLES") return [SUBMARINE_UNLOCK_NOTE_V7];
+  if (technology === "SUBMERSIBLES") return [submarineUnlockNoteV7(faction)];
   if (technology === "ROADS")
     return [
       "Your city centers count as Road tiles",
@@ -16652,6 +16664,7 @@ function technologyEffectGroupIdV7(
     case "PEPPERMINT_SURPRISE":
     case "SUMMONER_SUPPORT":
     case "RAM":
+    case "FIRE_RAFTS":
     case "HARBOURS":
     case "ICEBOUND":
     case "BLACK_ICE":

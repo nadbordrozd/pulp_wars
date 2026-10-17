@@ -1135,7 +1135,7 @@ export const UNIT_SHADOW_MEASUREMENTS_V7: Readonly<
     footLeft: 23,
     footRight: 52,
     baseLeft: 13,
-    baseRight: 56,
+    baseRight: 57,
   },
   "UNIT:GOBLIN:BATTLESHIP": {
     assetId: "chibi-naval-goblin-battleship",

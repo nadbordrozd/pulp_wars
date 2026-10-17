@@ -17,7 +17,7 @@
         "height": 88
       },
       "ownerColour": false,
-      "subjectKey": "UNIT:GOBLIN:PATROL_BOAT/LIME",
+      "subjectKey": "UNIT:GOBLIN:PATROL_BOAT/FIRE_RAFT",
       "accent": "goblin-hazard",
       "bottomMargin": 8
     },
@@ -59,7 +59,7 @@
         "height": 48
       },
       "ownerColour": false,
-      "subjectKey": "PORTRAIT:GOBLIN:PATROL_BOAT/LIME",
+      "subjectKey": "PORTRAIT:GOBLIN:PATROL_BOAT/FIRE_RAFT",
       "accent": "goblin-hazard"
     },
     {
@@ -96,6 +96,18 @@
       "id": "chibi-naval-goblin-portrait-submarine",
       "subject": "PORTRAIT:GOBLIN:SUBMARINE",
       "assetClass": "PORTRAIT",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "goblin-hazard"
+    },
+    {
+      "id": "chibi-naval-goblin-icon-tech-seamanship",
+      "subject": "ICON:TECH:GOBLIN:SEAMANSHIP",
+      "assetClass": "ICON",
       "recipeClass": "icon",
       "canvas": {
         "width": 48,
@@ -530,6 +542,78 @@
       },
       "editInstruction": "Turn it into a goblin diving barrel submarine: the boat becomes one big fat closed wooden barrel lying on its side, of the same grey-tan planks with tin hoops and a riveted tin patch, with one round glass porthole and a crooked tin periscope pipe on top; remove the mast and the sail; keep the lime green goblin peeking out of a hatch window; one hazard yellow patch. No water. Keep the size, thick black outline and art style the same, on a transparent background.",
       "notes": "The accepted Goblin Patrol Boat portrait with the map sprite's change."
+    },
+    {
+      "id": "fire-raft-a",
+      "asset": "chibi-naval-goblin-patrol-boat",
+      "endpoint": "edit-image-pixen",
+      "seed": 99101,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "patrol-boat-a-edit-2",
+        "candidate": 0
+      },
+      "editInstruction": "Add two small round powder kegs on the deck at the front, painted with bold diagonal black and hazard yellow (#fdd20f) stripes; a short dark fuse sticks out of the front keg, lit with a small bright yellow-white spark. Do not redraw anything else: keep the hull, tin patches, mast, sail, rocket, goblin, colours, thick black outline and style exactly the same, on a transparent background with nothing under the hull.",
+      "notes": "Bead pulp_wars-5ti.16 (docs/product/RULESET_7_NAVAL_FACTIONS.md section 3.7): the Goblin Patrol Boat is the Fire Raft, the accepted scrap junk-boat with two hazard-striped powder kegs on deck and a lit fuse; subject UNIT:GOBLIN:PATROL_BOAT/FIRE_RAFT."
+    },
+    {
+      "id": "fire-raft-b",
+      "asset": "chibi-naval-goblin-patrol-boat",
+      "endpoint": "edit-image-pixen",
+      "seed": 99102,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "patrol-boat-a-edit-2",
+        "candidate": 0
+      },
+      "editInstruction": "Add two small round powder kegs on the deck at the front, painted with bold diagonal black and hazard yellow (#fdd20f) stripes; a short dark fuse sticks out of the front keg, lit with a small bright yellow-white spark. Do not redraw anything else: keep the hull, tin patches, mast, sail, rocket, goblin, colours, thick black outline and style exactly the same, on a transparent background with nothing under the hull.",
+      "notes": "The request of fire-raft-a on another seed."
+    },
+    {
+      "id": "portrait-fire-raft-a",
+      "asset": "chibi-naval-goblin-portrait-patrol-boat",
+      "endpoint": "edit-image-pixen",
+      "seed": 99111,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-patrol-boat-a",
+        "candidate": 0
+      },
+      "editInstruction": "Add two small round powder kegs on the deck in front of the goblin, painted with bold diagonal black and hazard yellow (#fdd20f) stripes; a short dark fuse sticks out of the front keg, lit with a small bright yellow-white spark. Do not redraw anything else: keep the hull, tin patches, sail, goblin, colours, thick black outline and style exactly the same, with no water, on a transparent background.",
+      "notes": "The accepted Goblin Patrol Boat portrait with the map sprite's change (the Fire Raft); subject PORTRAIT:GOBLIN:PATROL_BOAT/FIRE_RAFT."
+    },
+    {
+      "id": "icon-tech-powder-kegs-a",
+      "asset": "chibi-naval-goblin-icon-tech-seamanship",
+      "endpoint": "create-image-pixen",
+      "seed": 99121,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "goblin, person, hand, ship, boat, water, bomb ball, round black bomb, cannon, red, orange, blue",
+      "notes": "Bead pulp_wars-5ti.16: the Goblin Seamanship card, Powder Kegs (a keg with a fuse), a fresh creation with the icon class as the shared Seamanship icon was."
+    },
+    {
+      "id": "icon-tech-powder-kegs-b",
+      "asset": "chibi-naval-goblin-icon-tech-seamanship",
+      "endpoint": "create-image-pixen",
+      "seed": 99122,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "goblin, person, hand, ship, boat, water, bomb ball, round black bomb, cannon, red, orange, blue",
+      "notes": "The request of icon-tech-powder-kegs-a on another seed."
     }
   ]
 }

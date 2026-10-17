@@ -27,7 +27,10 @@ import {
 import { CHIBI_FACTION_MONUMENT_ART_ASSETS_V7 } from "./chibi-faction-monuments-art-manifest";
 import { CHIBI_MONUMENT_ART_ASSETS_V7 } from "./chibi-monuments-art-manifest";
 import { CHIBI_RANGE_MINED_MOUNTAIN_ART_ASSETS_V7 } from "./chibi-mountain-ranges-manifest";
-import { CHIBI_NAVAL_FACTION_ART_ASSETS_V7 } from "./chibi-naval-faction-art-manifest";
+import {
+  CHIBI_NAVAL_FACTION_ART_ASSETS_V7,
+  CHIBI_NAVAL_FACTION_TECH_ICON_ASSETS_V7,
+} from "./chibi-naval-faction-art-manifest";
 import { CHIBI_SUBMERGED_SUBMARINE_ART_ASSETS_V7 } from "./chibi-naval-submarine-art-manifest";
 
 /**
@@ -636,6 +639,8 @@ export function chibiDirectionArtAssetsV7(): readonly ChibiArtAssetV7[] {
     // --- Naval, every faction (pulp_wars-w5j.2 art, wired in by
     // pulp_wars-w5j.3): the Human entries take the shared ship subjects.
     ...CHIBI_NAVAL_FACTION_ART_ASSETS_V7.map((entry) => entry.asset),
+    // Themed naval branches (`pulp_wars-5ti.16`): the Goblin Powder Kegs.
+    ...CHIBI_NAVAL_FACTION_TECH_ICON_ASSETS_V7,
     // --- The Submarines riding low in the water (pulp_wars-5ti.6): derived
     // from the surfaced sprites, drawn for a submerged Submarine.
     ...CHIBI_SUBMERGED_SUBMARINE_ART_ASSETS_V7.map((entry) => entry.asset),

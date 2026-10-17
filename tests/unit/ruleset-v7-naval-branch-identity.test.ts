@@ -67,6 +67,22 @@ const SEAFARING_FACTIONS = FACTION_IDS_V7.filter(
   (faction) => faction !== "ICE_FOLK",
 );
 
+/**
+ * Themed naval branches (`pulp_wars-5ti.16`,
+ * docs/product/RULESET_7_NAVAL_FACTIONS.md section 2): Seamanship is the Ram
+ * plus one trick, Board for the factions not yet themed, and each themed
+ * faction's ships have their own names and numbers.
+ */
+const SEAMANSHIP_TRICK: Partial<
+  Record<FactionIdV7, { readonly kind: string }>
+> = { GOBLIN: { kind: "FIRE_RAFTS" } };
+const THEMED_SUBMARINE: Partial<
+  Record<FactionIdV7, { label: string; cost: number; maxHp: number }>
+> = { GOBLIN: { label: "Diving Barrel", cost: 8, maxHp: 10 } };
+const THEMED_PATROL_BOAT_ABILITIES: Partial<
+  Record<FactionIdV7, readonly string[]>
+> = { GOBLIN: ["ATTACK", "RAM", "KABOOM"] };
+
 const NAVAL_BRANCH = [
   "SHORECRAFT",
   "NAVIGATION",
@@ -230,7 +246,7 @@ describe("the five-node Naval branch in every tree", () => {
       // Human unlocks.
       expect(node("SEAMANSHIP")?.unlocks, faction).toEqual([
         { kind: "RAM" },
-        { kind: "COMMAND", command: "BOARD" },
+        SEAMANSHIP_TRICK[faction] ?? { kind: "COMMAND", command: "BOARD" },
       ]);
       expect(node("SUBMERSIBLES")?.unlocks, faction).toEqual([
         { kind: "UNIT_ROLE", role: "SUBMARINE" },
@@ -261,10 +277,10 @@ describe("the five-node Naval branch in every tree", () => {
     for (const faction of SEAFARING_FACTIONS) {
       expect(effectiveRoleRuleV7("SUBMARINE", faction), faction).toEqual({
         role: "SUBMARINE",
-        label: "Submarine",
+        label: THEMED_SUBMARINE[faction]?.label ?? "Submarine",
         tacticalRole: "NAVAL_HUNTER",
-        cost: 9,
-        maxHp: 12,
+        cost: THEMED_SUBMARINE[faction]?.cost ?? 9,
+        maxHp: THEMED_SUBMARINE[faction]?.maxHp ?? 12,
         attack2: 8,
         defense2: 4,
         move: 2,
@@ -275,15 +291,15 @@ describe("the five-node Naval branch in every tree", () => {
         mayUsePrimaryActionAfterMove: true,
         abilities: ["ATTACK", "SUBMERGED", "TORPEDO"],
       });
-      expect(effectiveRoleRuleV7("PATROL_BOAT", faction).abilities).toEqual([
-        "ATTACK",
-        "RAM",
-      ]);
+      expect(effectiveRoleRuleV7("PATROL_BOAT", faction).abilities).toEqual(
+        THEMED_PATROL_BOAT_ABILITIES[faction] ?? ["ATTACK", "RAM"],
+      );
       expect(effectiveRoleRuleV7("BATTLESHIP", faction).abilities).toEqual([
         "ATTACK",
       ]);
-      // No faction rule applies to a boat: one slot, no splash, no Shield,
-      // no blast, no growth, no Crumbs.
+      // No faction rule applies to a Submarine yet: one slot, no splash, no
+      // Shield, no blast, no growth, no Crumbs (a faction rule applies to a
+      // ship only where its themed section says so).
       expect(roleMechanicsV7("SUBMARINE", faction), faction).toMatchObject({
         capacitySlots: 1,
         splash: false,
@@ -316,12 +332,16 @@ describe("the five-node Naval branch in every tree", () => {
         ["SHORECRAFT", "SEAMANSHIP"],
         faction,
       );
+      const boards = SEAMANSHIP_TRICK[faction] === undefined;
       expect([
         seamanship.ram,
         seamanship.boarding,
         seamanship.harbourPopulation,
-      ]).toEqual([true, true, 0]);
-      expect(seamanship.commands).toContain("BOARD");
+      ]).toEqual([true, boards, 0]);
+      if (boards) expect(seamanship.commands).toContain("BOARD");
+      else expect(seamanship.commands).not.toContain("BOARD");
+      expect(seamanship.fireRafts, faction).toBe(faction === "GOBLIN");
+      expect(none.fireRafts, faction).toBe(false);
       expect(seamanship.trainableRoles).not.toContain("SUBMARINE");
       const submersibles = technologyCapabilitiesV7(
         ["SHORECRAFT", "SEAMANSHIP", "SUBMERSIBLES"],
@@ -363,7 +383,7 @@ describe("the five-node Naval branch in every tree", () => {
       });
       expect(
         byId.get("SUBMERSIBLES")?.unlockedRoleRules.map((rule) => rule.label),
-      ).toEqual(["Submarine"]);
+      ).toEqual([THEMED_SUBMARINE[faction]?.label ?? "Submarine"]);
       const offered = queryPlayerCommandsV7(
         viewForV7(state, state.humanPlayerId),
       ).flatMap((command) =>

@@ -327,6 +327,8 @@ describe("Revision 17 Goblin presentation text", () => {
       "Gang Up",
       "Kaboom",
       "Death blasts",
+      // Themed naval branches (`pulp_wars-5ti.16`): the Scrap Fleet.
+      "At sea",
       "Chain reactions",
       "Bombs",
       // The Goblin pass (7r50).
@@ -415,9 +417,11 @@ describe("Revision 17 Goblin presentation text", () => {
     // (Shipbuilding for Naval Engineering) and a faction's own (Chivalry is
     // the Vampires' and the Scrap Buggies' node); a name with neither is
     // the ID in sentence case.
+    // Themed naval branches (`pulp_wars-5ti.16`): the Goblin Shipbuilding
+    // is Dreadnoughts; Navigation keeps its shared name.
     for (const faction of ["ORIGINAL", "UNDEAD", "GOBLIN"] as const) {
       expect(technologyNameV7("NAVAL_ENGINEERING", faction)).toBe(
-        "Shipbuilding",
+        faction === "GOBLIN" ? "Dreadnoughts" : "Shipbuilding",
       );
       expect(technologyNameV7("NAVIGATION", faction)).toBe("Navigation");
     }

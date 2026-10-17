@@ -192,6 +192,15 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/ai/v7-naval.ts::navalRamHoldsAttackV7": "BOARD",
     "src/ai/v7-naval.ts::navalRamShoveValueV7": "BOARD",
     "src/ai/v7-naval.ts::navalSubmarineMoveRejectedV7": "BOARD",
+    // Themed naval branches, the Goblin Scrap Fleet (`pulp_wars-5ti.16`):
+    // the Fire Raft's blast (exact and hypothetical), its best attack, its
+    // approach, and the crowd round a hunted Dreadnought read the units on
+    // the board around a ship; nothing burrows at sea.
+    "src/ai/v7-naval-goblin.ts::fireRaftKaboomBlastV7": "BOARD",
+    "src/ai/v7-naval-goblin.ts::fireRaftHypotheticalBlastV7": "BOARD",
+    "src/ai/v7-naval-goblin.ts::navalBestAttackTenthsV7": "BOARD",
+    "src/ai/v7-naval-goblin.ts::fireRaftApproachV7": "BOARD",
+    "src/ai/v7-naval-goblin.ts::navalDreadnoughtCrowdRejectedV7": "BOARD",
     // `pulp_wars-5ti.5`: the frozen sea reads the board: the units that
     // walk to a crossing and Freeze it, the ships a Freeze locks in and the
     // units that can strike them, the units on ice, and the unit that

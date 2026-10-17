@@ -8,11 +8,16 @@ import {
   unitIsIceboundV7,
   unitIsSubmergedV7,
   unitMayActAfterMoveV7,
+  unitRoleMechanicsV7,
   unitRoleRuleV7,
 } from "../engine/rules/ruleset-v7";
 import type { CommandV7 } from "../engine/v7/commands";
 import type { CombatPreviewV7 } from "../engine/v7/events";
-import { previewBoardV7, queryCombatPreviewV7 } from "../engine/v7/query";
+import {
+  previewAttackExplosionsV7,
+  previewBoardV7,
+  queryCombatPreviewV7,
+} from "../engine/v7/query";
 import type {
   CoordV7,
   NavalRoleIdV7,
@@ -369,8 +374,15 @@ export function navalBoardFactsV7(
   for (const offered of tools.commands) {
     if (offered.kind !== "ATTACK" || offered.unitId !== boarder.id) continue;
     const victim = view.units.find((unit) => unit.id === offered.targetUnitId);
-    const combat = queryCombatPreviewV7(view, boarder.id, offered.targetUnitId);
-    if (victim === undefined || combat === null) continue;
+    const plain = queryCombatPreviewV7(view, boarder.id, offered.targetUnitId);
+    if (victim === undefined || plain === null) continue;
+    // Themed naval branches (`pulp_wars-5ti.16`): what a Dreadnought's blast
+    // takes from the ship that sinks it counts against the attack.
+    const combat = withAttackerBlastV7(
+      boarder,
+      plain,
+      navalAttackBlastOnAttackerV7(view, boarder.id, victim.id, plain),
+    );
     const value = exchangeTenthsV7(view, boarder, victim, combat);
     if (bestAttackTenths === null || value > bestAttackTenths)
       bestAttackTenths = value;
@@ -544,7 +556,7 @@ export function navalRamApproachV7(
       unitIsIceboundV7(view, target)
     )
       continue;
-    const preview = navalAttackAfterMoveV7(
+    const plain = navalAttackAfterMoveV7(
       view,
       tools,
       actor,
@@ -552,7 +564,29 @@ export function navalRamApproachV7(
       pathLength,
       target.id,
     );
-    if (preview === null || !preview.ram || preview.attackerDies) continue;
+    if (plain === null || !plain.ram || plain.attackerDies) continue;
+    // Themed naval branches (`pulp_wars-5ti.16`): a Scrap Dreadnought the
+    // ram sinks explodes on the boat beside it.
+    const preview = withAttackerBlastV7(
+      actor,
+      plain,
+      plain.defenderDies
+        ? navalAttackBlastOnAttackerV7(
+            tools.project(view, actor.id, {
+              at: to,
+              activation: {
+                ...actor.activation,
+                moved: true,
+                movedPathLength: Math.max(1, pathLength),
+              },
+            }),
+            actor.id,
+            target.id,
+            plain,
+          )
+        : 0,
+    );
+    if (preview.attackerDies) continue;
     const exchange = exchangeTenthsV7(view, actor, target, preview);
     if (exchange <= 0) continue;
     const value =
@@ -656,6 +690,47 @@ export function navalRamHoldsAttackV7(
   return false;
 }
 
+/**
+ * The damage the attacker itself takes from the death blasts its attack
+ * sets off (a Scrap Dreadnought it sinks from the next tile), from the
+ * exact `previewAttackExplosionsV7`; 0 when the attack kills no exploding
+ * unit.
+ */
+/**
+ * A combat preview with the death-blast damage the attacker takes after it
+ * (`navalAttackBlastOnAttackerV7`) added to what the reply deals it.
+ */
+export function withAttackerBlastV7(
+  attacker: PublicUnitV7,
+  preview: CombatPreviewV7,
+  blast: number,
+): CombatPreviewV7 {
+  if (blast <= 0) return preview;
+  const taken = Math.min(attacker.hp, preview.damageToAttacker + blast);
+  return {
+    ...preview,
+    damageToAttacker: taken,
+    attackerDies: preview.attackerDies || taken >= attacker.hp,
+  };
+}
+
+export function navalAttackBlastOnAttackerV7(
+  view: PlayerViewV7,
+  attackerId: UnitId,
+  targetUnitId: UnitId,
+  preview: CombatPreviewV7,
+): number {
+  if (!preview.defenderDies && preview.splash.every((entry) => !entry.dies))
+    return 0;
+  const chain = previewAttackExplosionsV7(view, attackerId, targetUnitId);
+  if (chain === null) return 0;
+  let damage = 0;
+  for (const explosion of chain.explosions)
+    for (const result of explosion.results)
+      if (result.unitId === attackerId) damage += result.damage;
+  return damage;
+}
+
 // --- Submarines --------------------------------------------------------------------
 
 /** Whether `unit` is the viewer's own Submarine (a ship whose attack is a torpedo). */
@@ -675,8 +750,12 @@ export function navalOwnSubmarineV7(
 export function navalTorpedoPriorityV7(
   target: PublicUnitV7,
   preview: CombatPreviewV7,
+  blastSinksAttacker = false,
 ): number | null {
   if (!preview.torpedo) return null;
+  // Themed naval branches (`pulp_wars-5ti.16`): a torpedo whose kill sets
+  // off a Dreadnought's blast that sinks the Submarine is no free shot.
+  if (blastSinksAttacker) return null;
   if (target.form === "EMBARKED") return NAVAL_TORPEDO_PRIORITIES_V7.TRANSPORT;
   if (target.role === "BATTLESHIP")
     return NAVAL_TORPEDO_PRIORITIES_V7.BATTLESHIP;
@@ -760,8 +839,14 @@ export function navalScreenValueV7(
   const screens = (at: CoordV7, ship: PublicUnitV7, sub: PublicUnitV7) =>
     chebyshev(at, ship.at) === 1 &&
     chebyshev(at, sub.at) < chebyshev(ship.at, sub.at);
+  // Themed naval branches (`pulp_wars-5ti.16`, the screen "accepts any
+  // free own boat but the raft"): a boat that Kabooms (the Fire Raft) never
+  // screens a ship that explodes when it sinks (the Scrap Dreadnought).
+  const raft = unitRoleRuleV7(view, actor).abilities.includes("KABOOM");
   for (const ship of facts.ownBattleships)
     for (const sub of facts.hostileSubmarines) {
+      if (raft && (unitRoleMechanicsV7(view, ship).deathBlastDamage ?? 0) > 0)
+        continue;
       if (chebyshev(ship.at, sub.at) > NAVAL_SCREEN_RADIUS_V7) continue;
       if (!screens(to, ship, sub) || screens(actor.at, ship, sub)) continue;
       if (

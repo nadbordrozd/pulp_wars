@@ -326,8 +326,9 @@ describe("Revision 17 Goblin DOM", () => {
     const shorecraft = requiredButton("tech-shorecraft");
     expect(shorecraft.getAttribute("aria-disabled")).toBe("true");
     expect(shorecraft.getAttribute("aria-label")).toBe(
-      // (The ninth unit, 7r55: Shorecraft is shown as Sailing.)
-      "Naval branch. Sailing, unavailable in this mission",
+      // (The ninth unit, 7r55: Shorecraft is shown as Sailing; the Goblin
+      // Scrap Fleet, `pulp_wars-5ti.16`: as Fire Rafts for a Goblin seat.)
+      "Naval branch. Fire Rafts, unavailable in this mission",
     );
     expect(requiredButton("tech-navigation").getAttribute("aria-label")).toBe(
       "Navigation, unavailable in this mission",

@@ -154,14 +154,19 @@ const chebyshev = (left: CoordV7, right: CoordV7): number =>
 
 describe("the Gibbering Mass: the identity (7r91)", () => {
   // The Gibbering Mass (`pulp_wars-mch9.37`) took 7r91 after the Imp of
-  // `pulp_wars-mch9.36` (7r90).
-  it("is 7r91 after 7r90, its save key obsolete, a 7r90 state refused", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r91");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r91.current");
-    expect(PRIOR_RULESET_7_IDS.at(-1)).toBe("pulp-wars-poc-7r90");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
+  // `pulp_wars-mch9.36` (7r90); the Goblin Scrap Fleet
+  // (`pulp_wars-5ti.16`) took 7r92 after it.
+  it("was 7r91 after 7r90, both save keys obsolete now, a 7r90 state refused", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r92");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r92.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-2)).toEqual([
+      "pulp-wars-poc-7r90",
+      "pulp-wars-poc-7r91",
+    ]);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-2)).toEqual([
       "pulpWars.save.v7r90.current",
-    );
+      "pulpWars.save.v7r91.current",
+    ]);
     const state = cultFieldV7([]);
     expect(
       parseGameStateV7({ ...state, rulesetId: "pulp-wars-poc-7r90" }),

@@ -135,6 +135,11 @@ export const GOBLIN_HELP_RULES_V7: readonly (readonly [string, string])[] = [
     "Death blasts",
     `Bomb Chuckers, Rocket Carts, and Scrap Buggies explode when they die, however they die (${goblinBlastListV7("deathBlastDamage")}).`,
   ],
+  // Themed naval branches (`pulp_wars-5ti.16`, the Scrap Fleet).
+  [
+    "At sea",
+    `with ${technologyDisplayNameV7("SEAMANSHIP", "GOBLIN")}, a ${effectiveRoleRuleV7("PATROL_BOAT", "GOBLIN").label} can blow itself up (${roleMechanicsV7("PATROL_BOAT", "GOBLIN").kaboomDamage ?? 0}), and a ${effectiveRoleRuleV7("BATTLESHIP", "GOBLIN").label} explodes when it sinks (${roleMechanicsV7("BATTLESHIP", "GOBLIN").deathBlastDamage ?? 0}), unless it is boarded.`,
+  ],
   ["Chain reactions", "a blast that kills an exploding unit sets it off too."],
   [
     "Bombs",
@@ -240,14 +245,16 @@ export interface GoblinUnitInfoLineV7 {
 
 /**
  * Unit info lines from the public Goblin mechanics (`stats.goblin`) of a
- * Goblin role. Boats get no Goblin rule.
+ * Goblin role. Themed naval branches (`pulp_wars-5ti.16`): a ship has only
+ * its blasts, the Fire Raft's Kaboom (afloat, with Powder Kegs) and the
+ * Scrap Dreadnought's blast when it sinks; no other Goblin rule.
  */
 export function goblinUnitInfoLinesV7(
   role: UnitRoleIdV7,
   mechanics: PublicGoblinMechanicsV7,
   splashAll: boolean,
 ): readonly GoblinUnitInfoLineV7[] {
-  if (isNavalRoleV7(role)) return [];
+  if (isNavalRoleV7(role)) return goblinShipInfoLinesV7(mechanics);
   const lines: GoblinUnitInfoLineV7[] = [];
   if (mechanics.kaboomDamage !== null)
     lines.push({
@@ -313,6 +320,35 @@ export function goblinUnitInfoLinesV7(
       id: "no-field-defense",
       name: "No Field Defense",
       description: GOBLIN_FIELD_DEFENSE_EXPLANATION_V7,
+    });
+  return lines;
+}
+
+/** The Kaboom! tooltip of a Fire Raft (afloat, with Powder Kegs). */
+export function fireRaftKaboomTooltipV7(damage: number): string {
+  return `With ${technologyDisplayNameV7("SEAMANSHIP", "GOBLIN")} it blows up at sea: ${damage} damage to every other unit in the 3×3 square, yours too. This ship sinks.`;
+}
+
+/** The note of a ship that explodes when it sinks (the Scrap Dreadnought). */
+export function sinkingBlastNoteV7(damage: number): string {
+  return `When it sinks it deals ${damage} damage to every other unit in the 3×3 square, yours too. A boarded ship does not explode.`;
+}
+
+function goblinShipInfoLinesV7(
+  mechanics: PublicGoblinMechanicsV7,
+): readonly GoblinUnitInfoLineV7[] {
+  const lines: GoblinUnitInfoLineV7[] = [];
+  if (mechanics.kaboomDamage !== null)
+    lines.push({
+      id: "kaboom",
+      name: `Kaboom ${mechanics.kaboomDamage}`,
+      description: fireRaftKaboomTooltipV7(mechanics.kaboomDamage),
+    });
+  if (mechanics.deathBlastDamage !== null)
+    lines.push({
+      id: "death-blast",
+      name: `Explodes when it sinks (${mechanics.deathBlastDamage})`,
+      description: sinkingBlastNoteV7(mechanics.deathBlastDamage),
     });
   return lines;
 }

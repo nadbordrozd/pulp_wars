@@ -90,7 +90,14 @@ export type ArtSubjectV7 =
 export type NavalBranchArtSubjectV7 =
   | `ICON:ACTION:${"RAM" | "TORPEDO"}`
   | `TERRAIN:${SeaIceArtIdV7}`
-  | "OVERLAY:ICEBOUND";
+  | "OVERLAY:ICEBOUND"
+  /**
+   * Themed naval branches (docs/product/RULESET_7_NAVAL_FACTIONS.md section
+   * 12, `pulp_wars-5ti.16`): a faction's own Seamanship card, its trick in
+   * place of Board (the Goblin Powder Kegs first). Falls back to the shared
+   * `ICON:TECH:SEAMANSHIP` by the faction rule of chibiFallbackSubjectV7.
+   */
+  | `ICON:TECH:${NavalArtFactionV7}:SEAMANSHIP`;
 
 /** The two looks of sea ice: over Shallow Water and over Deep Water. */
 export type SeaIceArtIdV7 = "ICE_SHALLOW" | "ICE_DEEP";

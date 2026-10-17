@@ -2114,3 +2114,17 @@ new `subjectKey` lines (`…/PORTAL`), so the old recipes keep their records.
 
 The unit shadow measurements were regenerated
 (`npm run art:unit-shadows-measure`).
+
+## The Goblin Fire Raft (bead `pulp_wars-5ti.16`)
+
+The Goblin Patrol Boat and its portrait redrawn in place as the Fire Raft
+([what and why](NAVAL_FACTIONS.md#the-goblin-fire-raft-and-powder-kegs-bead-pulp_wars-5ti16)):
+edits of the accepted `/LIME` pieces through new `subjectKey` lines
+(`…/FIRE_RAFT`), as the portal Tentacle was, and a fresh icon for Powder
+Kegs in the same batch (`naval-goblin`). An edit instruction is capped at
+500 characters: the first wording (the kegs plus the whole "keep the rest"
+list) was refused by the manifest check and cut down.
+
+- **"Add kegs on deck" can repaint the hull**: one seed's two candidates
+  striped the whole hull black and yellow; the other seed put two kegs at
+  the bow as asked.

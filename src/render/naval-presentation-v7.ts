@@ -1,7 +1,10 @@
 import {
   cooperativeAlliesV7,
+  effectiveRoleRuleV7,
+  roleMechanicsV7,
   HARBOUR_POPULATION_V7,
   RAM_BONUS2_V7,
+  boardSeaBeastBlockedV7,
   boardTargetBlockV7,
   isAfloatFormV7,
   knockbackDestinationV7,
@@ -11,6 +14,7 @@ import {
   type BoardTargetBlockV7,
   type CombatPreviewV7,
   type CoordV7,
+  type FactionIdV7,
   type PlayerEventV7,
   type PlayerViewV7,
   type PublicUnitV7,
@@ -59,8 +63,58 @@ export const NAVAL_HELP_RULES_V7: readonly (readonly [string, string])[] = [
 export const NAVAL_RAM_UNLOCK_V7 = `${NAVAL_RAM_LABEL_V7}: Patrol Boats that moved hit ships with +1 Attack and shove them back`;
 export const BOARD_UNLOCK_V7 = `${BOARD_LABEL_V7}: capture an adjacent enemy ship at a third of its HP or less`;
 export const SUBMARINE_UNLOCK_NOTE_V7 =
-  "Submarine: attacked only from an adjacent tile; its torpedo hits ships with no strike-back";
+  "Submarine: attacked only from the next tile; its torpedo hits ships with no strike-back";
 export const SHORECRAFT_EMBARK_NOTE_V7 = "Units embark at active Ports";
+
+/**
+ * Themed naval branches (docs/product/RULESET_7_NAVAL_FACTIONS.md sections
+ * 3.3 and 12, `pulp_wars-5ti.16`): the Goblin Scrap Fleet's two sentences,
+ * with the numbers read from the registry.
+ */
+export function fireRaftKaboomRuleV7(): string {
+  const raft = effectiveRoleRuleV7("PATROL_BOAT", "GOBLIN").label;
+  return `A ${raft} can blow itself up, hitting every unit around it for ${goblinNavalBlastV7("kaboomDamage")}.`;
+}
+export function dreadnoughtBlastRuleV7(): string {
+  const ship = effectiveRoleRuleV7("BATTLESHIP", "GOBLIN").label;
+  return `When the ${ship.replace(/^Scrap /, "")} sinks it explodes, hitting every unit around it for ${goblinNavalBlastV7("deathBlastDamage")}.`;
+}
+/** The Powder Kegs card line (the Goblin `FIRE_RAFTS` unlock). */
+export function fireRaftsUnlockTextV7(): string {
+  return `Powder Kegs: ${fireRaftKaboomRuleV7().replace(/\.$/, "")}`;
+}
+function goblinNavalBlastV7(
+  field: "kaboomDamage" | "deathBlastDamage",
+): number {
+  const role = field === "kaboomDamage" ? "PATROL_BOAT" : "BATTLESHIP";
+  return roleMechanicsV7(role, "GOBLIN")[field] ?? 0;
+}
+
+/**
+ * The Bow Ram card line of a faction: its own Patrol Boat-role ships by
+ * name ("Fire Rafts that moved …" for the Goblins).
+ */
+export function navalRamUnlockTextV7(faction: FactionIdV7): string {
+  const label = effectiveRoleRuleV7("PATROL_BOAT", faction).label;
+  return label === "Patrol Boat"
+    ? NAVAL_RAM_UNLOCK_V7
+    : NAVAL_RAM_UNLOCK_V7.replace("Patrol Boats", `${label}s`);
+}
+
+/** The Submersibles card note of a faction, its Submarine by name. */
+export function submarineUnlockNoteV7(faction: FactionIdV7): string {
+  const label = effectiveRoleRuleV7("SUBMARINE", faction).label;
+  return SUBMARINE_UNLOCK_NOTE_V7.replace(/^Submarine/, label);
+}
+
+/** The Shipbuilding card note of a faction, its Battleship by name. */
+export function battleshipUnlockNoteV7(faction: FactionIdV7): string {
+  const label = effectiveRoleRuleV7("BATTLESHIP", faction).label;
+  const blast = roleMechanicsV7("BATTLESHIP", faction).deathBlastDamage;
+  return blast === null
+    ? `${label}: long-range splash damage`
+    : `${label}: long-range splash damage; explodes when it sinks (${blast} to every unit around it)`;
+}
 
 export function harboursUnlockTextV7(population: number): string {
   return `${HARBOURS_LABEL_V7}: +${population} population from every active Port and Shipyard`;
@@ -138,6 +192,7 @@ export function viewBoardTargetBlockV7(
     target,
     tile?.explored === true ? tile.terrain : undefined,
     view.viewer.researchedTechs.includes("NAVIGATION"),
+    boardSeaBeastBlockedV7(view, view.viewer.id, target),
   );
 }
 

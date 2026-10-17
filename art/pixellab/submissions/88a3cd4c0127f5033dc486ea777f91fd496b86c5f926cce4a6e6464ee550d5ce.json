@@ -1,0 +1,36 @@
+{
+  "id": "fire-raft-b",
+  "jobId": "7493feee-ab9e-442e-bf75-b4e290d771ff",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-goblin",
+    "asset": "chibi-naval-goblin-patrol-boat",
+    "subject": "UNIT:GOBLIN:PATROL_BOAT",
+    "faction": "GOBLIN",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 99102,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Add two small round powder kegs on the deck at the front, painted with bold diagonal black and hazard yellow (#fdd20f) stripes; a short dark fuse sticks out of the front keg, lit with a small bright yellow-white spark. Do not redraw anything else: keep the hull, tin patches, mast, sail, rocket, goblin, colours, thick black outline and style exactly the same, on a transparent background with nothing under the hull."
+      }
+    ],
+    "prompt": "Add two small round powder kegs on the deck at the front, painted with bold diagonal black and hazard yellow (#fdd20f) stripes; a short dark fuse sticks out of the front keg, lit with a small bright yellow-white spark. Do not redraw anything else: keep the hull, tin patches, mast, sail, rocket, goblin, colours, thick black outline and style exactly the same, on a transparent background with nothing under the hull.",
+    "negativePrompt": "",
+    "description": "Add two small round powder kegs on the deck at the front, painted with bold diagonal black and hazard yellow (#fdd20f) stripes; a short dark fuse sticks out of the front keg, lit with a small bright yellow-white spark. Do not redraw anything else: keep the hull, tin patches, mast, sail, rocket, goblin, colours, thick black outline and style exactly the same, on a transparent background with nothing under the hull.",
+    "editInstruction": "Add two small round powder kegs on the deck at the front, painted with bold diagonal black and hazard yellow (#fdd20f) stripes; a short dark fuse sticks out of the front keg, lit with a small bright yellow-white spark. Do not redraw anything else: keep the hull, tin patches, mast, sail, rocket, goblin, colours, thick black outline and style exactly the same, on a transparent background with nothing under the hull.",
+    "source": {
+      "recipe": "patrol-boat-a-edit-2",
+      "candidate": 0,
+      "sha256": "90eac39a2b8d623278a61d8326eb472fee83b3544abff2b23b3d214d4f2c431d"
+    }
+  }
+}

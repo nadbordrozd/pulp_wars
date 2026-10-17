@@ -200,6 +200,20 @@ export const CHIBI_TECH_ART_SUBJECTS_V7 = {
 } as const satisfies Readonly<Record<TechnologyIdV7, ArtSubjectV7>>;
 
 /**
+ * The Goblin Scrap Fleet's cards (`pulp_wars-5ti.16`, see
+ * `technologySubjectV7`): Fire Rafts and Diving Barrels show their ships'
+ * portraits and Powder Kegs its keg; Navigation and Dreadnoughts keep the
+ * shared card (the compass, the faction's Battleship).
+ */
+export const GOBLIN_NAVAL_TECH_SUBJECTS_V7: Readonly<
+  Partial<Record<TechnologyIdV7, ArtSubjectV7>>
+> = {
+  SHORECRAFT: "PORTRAIT:GOBLIN:PATROL_BOAT",
+  SEAMANSHIP: "ICON:TECH:GOBLIN:SEAMANSHIP",
+  SUBMERSIBLES: "PORTRAIT:GOBLIN:SUBMARINE",
+};
+
+/**
  * The Ice Folk cards of the Naval branch (see `technologySubjectV7`): the
  * faction's own icons since bead pulp_wars-5ti.10 (Rime a fur boot on a
  * blade of ice, Pack Ice an iceberg, Icebound a hull gripped by ice, Black
@@ -267,6 +281,12 @@ export function technologySubjectV7(
     (tech === "FORTIFICATION" || tech === "EXPLOSIVES" || tech === "FARMING")
   )
     return `ICON:TECH:CULT:${tech}`;
+  // Themed naval branches (docs/product/RULESET_7_NAVAL_FACTIONS.md
+  // sections 2 rule 3 and 3.7, `pulp_wars-5ti.16`): a Goblin technology that
+  // unlocks a ship shows its portrait (Fire Rafts, Diving Barrels), and
+  // Powder Kegs its own icon.
+  const naval = GOBLIN_NAVAL_TECH_SUBJECTS_V7[tech];
+  if (faction === "GOBLIN" && naval !== undefined) return naval;
   if (subject.startsWith("PORTRAIT:"))
     return portraitSubjectV7(
       subject.slice("PORTRAIT:".length) as UnitRoleIdV7,

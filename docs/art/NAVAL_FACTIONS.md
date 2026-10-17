@@ -608,3 +608,35 @@ composed from the rasters with the functions the board will call.
   size, and the two variants of each ice differ little.
 - **The Seamanship wheel** is brown wood, darker than the pale birch of the
   other shared icons.
+
+## The Goblin Fire Raft and Powder Kegs (bead `pulp_wars-5ti.16`)
+
+The Goblin Patrol Boat is the **Fire Raft** of the
+[themed naval branches](../product/RULESET_7_NAVAL_FACTIONS.md#37-art-and-sound):
+the accepted scrap junk-boat with two powder kegs in bold black and hazard
+yellow stripes at the bow and a lit fuse. The map sprite and its portrait
+are **redrawn in place** (same asset IDs, subjects, canvases, anchor and
+waterline; new subject keys `UNIT:GOBLIN:PATROL_BOAT/FIRE_RAFT` and
+`PORTRAIT:GOBLIN:PATROL_BOAT/FIRE_RAFT`, so the `/LIME` recipes keep their
+records), each an `edit-image-pixen` edit of the accepted `/LIME` piece
+(`patrol-boat-a-edit-2`, `portrait-patrol-boat-a`). The Scrap Dreadnought
+and the Diving Barrel keep the accepted Goblin Battleship and Submarine.
+
+| Asset                                     | Subject                       | Accepted                           | Rejected                                                                         |
+| ----------------------------------------- | ----------------------------- | ---------------------------------- | -------------------------------------------------------------------------------- |
+| `chibi-naval-goblin-patrol-boat`          | `UNIT:GOBLIN:PATROL_BOAT`     | `fire-raft-b` candidate 1          | `fire-raft-a`: both candidates painted the whole hull in hazard stripes          |
+| `chibi-naval-goblin-portrait-patrol-boat` | `PORTRAIT:GOBLIN:PATROL_BOAT` | `portrait-fire-raft-a` candidate 1 | —                                                                                |
+| `chibi-naval-goblin-icon-tech-seamanship` | `ICON:TECH:GOBLIN:SEAMANSHIP` | `icon-tech-powder-kegs-a`          | `icon-tech-powder-kegs-b`: washed-out staves with pink blotches (near the Coral) |
+
+The **Powder Kegs** card (the Goblin Seamanship) shows its own icon, a fat
+keg with tin hoops, hazard stripes and a lit fuse (a fresh `icon`-class
+creation in batch `naval-goblin`, `goblin-hazard` accent; registered in the
+live look by `CHIBI_NAVAL_FACTION_TECH_ICON_ASSETS_V7`, falling back to the
+shared ship's wheel); the Fire Rafts and Diving Barrels cards show their
+ships' portraits (`GOBLIN_NAVAL_TECH_SUBJECTS_V7`). Five PixelLab jobs
+(seeds 99101, 99102, 99111, 99121, 99122) for three accepted pieces. At
+72 px the kegs read as a yellow-black block at the bow, the sail, goblin
+and rocket unchanged; the Fire Raft's mean colour on Deep Water moved from
+ΔE 58.6 to 62.7 (`readability.json`). The unit shadow measurements were
+regenerated. Weak spot: the fuse's spark sits just right of the goblin's
+ear and reads as a small star rather than a burning fuse at 1x.

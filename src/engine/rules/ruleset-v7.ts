@@ -282,6 +282,13 @@ export type TechnologyUnlockV7 =
    */
   | { readonly kind: "RAM" }
   /**
+   * Themed naval branches (docs/product/RULESET_7_NAVAL_FACTIONS.md section
+   * 3.3 G1, `pulp_wars-5ti.16`): Powder Kegs, the Goblin `SEAMANSHIP` in
+   * place of Board. The owner's Fire Rafts (the Goblin `PATROL_BOAT`) may
+   * Kaboom afloat.
+   */
+  | { readonly kind: "FIRE_RAFTS" }
+  /**
    * The naval branch (section 5.4): Harbours, every active Port and
    * Shipyard of the owner gives `population` more live population.
    */
@@ -435,6 +442,11 @@ export type UnitRoleAbilityV7 =
   | "RAM"
   | "SUBMERGED"
   | "TORPEDO"
+  // Themed naval branches (docs/product/RULESET_7_NAVAL_FACTIONS.md section
+  // 2 rule 6, `pulp_wars-5ti.16`): a sea beast (a role whose mechanics have
+  // `seaBeast`) is never boarded. No role carries it yet; the Dinosaur
+  // Plesiosaur and the Cult Kraken will.
+  | "SEA_BEAST"
   // The naval branch, the frozen sea (section 8.4): every Ice Folk land
   // role Freezes.
   | "FREEZE"
@@ -898,6 +910,14 @@ export interface RoleMechanicsV7 {
    * `unmovedShots`, which a Move forfeits).
    */
   readonly ravageAttacks: 1 | 2;
+  /**
+   * Themed naval branches (docs/product/RULESET_7_NAVAL_FACTIONS.md section
+   * 2 rule 6, `pulp_wars-5ti.16`): a living sea beast (the Dinosaur
+   * Plesiosaur and the Cult Kraken, from their beads). It is never a
+   * `BOARD` target, and a seat whose own `SUBMARINE` role is one never
+   * boards a `SUBMARINE`-role ship. False for every role today.
+   */
+  readonly seaBeast: boolean;
 }
 
 export interface FactionTechnologyTreeV7 {
@@ -1535,6 +1555,31 @@ export const SHARED_BASELINE_NODES_V7: readonly TechnologyNodeV7[] = deepFreeze(
   ),
 );
 
+/**
+ * Themed naval branches (docs/product/RULESET_7_NAVAL_FACTIONS.md section 2
+ * rule 2, `pulp_wars-5ti.16`): a seafaring faction's Seamanship is "the Ram
+ * plus one trick". The nodes keep every other unlock; `SEAMANSHIP` becomes
+ * `RAM` followed by `trick` (the faction's own unlock in place of `COMMAND
+ * BOARD`, which the Humans and the Dinosaurs keep). Every trick is read
+ * through a capability of `technologyCapabilitiesV7`.
+ */
+export function withSeamanshipUnlocksV7(
+  nodes: readonly TechnologyNodeV7[],
+  trick: readonly TechnologyUnlockV7[],
+): TechnologyNodeV7[] {
+  return nodes.map((original) =>
+    original.id === "SEAMANSHIP"
+      ? node(
+          original.id,
+          original.branch,
+          original.tier,
+          original.prerequisites,
+          [{ kind: "RAM" }, ...trick],
+        )
+      : original,
+  );
+}
+
 const role = (input: EffectiveRoleRuleV7): EffectiveRoleRuleV7 =>
   deepFreeze(input);
 export const ORIGINAL_ROLE_RULES_V7: Readonly<
@@ -1844,6 +1889,7 @@ const mechanics = (
           robed: false,
           anchorStrands: 0,
           ravageAttacks: 1,
+          seaBeast: false,
           ...overrides[roleId],
         },
       ]),
@@ -2221,20 +2267,26 @@ export const UNDEAD_BASELINE_V1_TREE: FactionTechnologyTreeV7 = deepFreeze({
  * trade. Chivalry keeps Overrun (displayed as Ram).
  */
 export const GOBLIN_BASELINE_V1_NODES: readonly TechnologyNodeV7[] = deepFreeze(
-  SHARED_BASELINE_NODES_V7.map((original) =>
-    node(
-      original.id,
-      original.branch,
-      original.tier,
-      original.prerequisites,
-      original.unlocks.map((unlock): TechnologyUnlockV7 =>
-        unlock.kind === "CAPTAIN_SUPPORT"
-          ? { kind: "BERSERK_SUPPORT" }
-          : unlock.kind === "LAND_TRADE_INCOME"
-            ? { kind: "PLUNDER", coins: PLUNDER_COINS_V7 }
-            : unlock,
+  withSeamanshipUnlocksV7(
+    SHARED_BASELINE_NODES_V7.map((original) =>
+      node(
+        original.id,
+        original.branch,
+        original.tier,
+        original.prerequisites,
+        original.unlocks.map((unlock): TechnologyUnlockV7 =>
+          unlock.kind === "CAPTAIN_SUPPORT"
+            ? { kind: "BERSERK_SUPPORT" }
+            : unlock.kind === "LAND_TRADE_INCOME"
+              ? { kind: "PLUNDER", coins: PLUNDER_COINS_V7 }
+              : unlock,
+        ),
       ),
     ),
+    // Themed naval branches (docs/product/RULESET_7_NAVAL_FACTIONS.md
+    // section 3.1, `pulp_wars-5ti.16`): Powder Kegs, the Ram and Fire Rafts
+    // that Kaboom afloat instead of Board.
+    [{ kind: "FIRE_RAFTS" }],
   ),
 );
 
@@ -2371,9 +2423,29 @@ export const GOBLIN_ROLE_RULES_V7: Readonly<
     // The giants' signatures (section 6.3): Goblin Toss instead of Push.
     abilities: ["ATTACK", "CAPTURE", "REGENERATE", "TOSS"],
   }),
-  PATROL_BOAT: role({ ...ORIGINAL_ROLE_RULES_V7.PATROL_BOAT }),
-  BATTLESHIP: role({ ...ORIGINAL_ROLE_RULES_V7.BATTLESHIP }),
-  SUBMARINE: role({ ...ORIGINAL_ROLE_RULES_V7.SUBMARINE }),
+  // Themed naval branches, the Scrap Fleet
+  // (docs/product/RULESET_7_NAVAL_FACTIONS.md section 3.2,
+  // `pulp_wars-5ti.16`): cheaper, flimsier hulls. The Fire Raft costs 4 and
+  // has 8 HP and Kaboom (afloat with Powder Kegs); the Scrap Dreadnought
+  // keeps the Battleship's numbers and explodes when it sinks; the Diving
+  // Barrel costs 8 and has 10 HP.
+  PATROL_BOAT: role({
+    ...ORIGINAL_ROLE_RULES_V7.PATROL_BOAT,
+    label: "Fire Raft",
+    cost: 4,
+    maxHp: 8,
+    abilities: ["ATTACK", "RAM", "KABOOM"],
+  }),
+  BATTLESHIP: role({
+    ...ORIGINAL_ROLE_RULES_V7.BATTLESHIP,
+    label: "Scrap Dreadnought",
+  }),
+  SUBMARINE: role({
+    ...ORIGINAL_ROLE_RULES_V7.SUBMARINE,
+    label: "Diving Barrel",
+    cost: 8,
+    maxHp: 10,
+  }),
   // The ninth unit (`pulp_wars-w49.17`, 7r55): the Ogre, the Goblin
   // heavy line unit (Metallurgy). No Kaboom, no death blast, not
   // Blast-proof. Heavyweight is the role mechanic `gangUpWeight`.
@@ -2439,7 +2511,13 @@ export const GOBLIN_ROLE_MECHANICS_V7 = mechanics({
   KNIGHT: { kaboomDamage: 5, deathBlastDamage: 7, kaboomAfterAttack: true },
   // The giants' signatures (section 6.3): Goblin Toss.
   JUGGERNAUT: { regeneration: 4, tossRange: TOSS_RANGE_V7 },
-  BATTLESHIP: { splash: true },
+  // Themed naval branches (docs/product/RULESET_7_NAVAL_FACTIONS.md section
+  // 3.3, `pulp_wars-5ti.16`): G1, the Fire Raft's Kaboom of 5 (afloat only
+  // with Powder Kegs; a Fire Raft killed does not explode); G2, the Scrap
+  // Dreadnought's death blast of 7 (the Rocket Cart's and the Scrap
+  // Buggy's).
+  PATROL_BOAT: { kaboomDamage: 5 },
+  BATTLESHIP: { splash: true, deathBlastDamage: 7 },
   // The ninth unit (7r55): the Ogre's Heavyweight.
   SWORDSMAN: { gangUpWeight: OGRE_GANG_UP_WEIGHT_V7 },
 });
@@ -4833,6 +4911,13 @@ export const TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7: Readonly<
     MARKSMANSHIP: "Bomb Chuckers",
     SAWMILLING: "Rocket Carts",
     CHIVALRY: "Scrap Buggies",
+    // Themed naval branches, the Scrap Fleet (`pulp_wars-5ti.16`,
+    // docs/product/RULESET_7_NAVAL_FACTIONS.md section 3.1): Navigation
+    // keeps its shared name.
+    SHORECRAFT: "Fire Rafts",
+    NAVAL_ENGINEERING: "Dreadnoughts",
+    SEAMANSHIP: "Powder Kegs",
+    SUBMERSIBLES: "Diving Barrels",
   },
   // The Dinosaur pass, correction (`pulp_wars-w49.15`, 7r53): Sawmilling is
   // Timber for a Dinosaur player, whose mill is the Chopping Block (the
@@ -6388,6 +6473,39 @@ export function kaboomReadyV7(
 }
 
 /**
+ * Why a unit with the `KABOOM` ability may not Kaboom where it stands, by
+ * its form (current rules section 18.4, row "in land form"; themed naval
+ * branches, docs/product/RULESET_7_NAVAL_FACTIONS.md section 3.3 G1,
+ * `pulp_wars-5ti.16`, read it as "in land form, or in `NAVAL` form with
+ * `fireRafts`"). Null in land form. An embarked unit (or any other form
+ * that is not a ship) is `EMBARKED`; a ship whose kind's capabilities under
+ * its controller lack `fireRafts` (Powder Kegs) needs `SEAMANSHIP`; an
+ * icebound ship is `ICEBOUND`. The reducer and the public command query
+ * share it, so a Kaboom afloat is offered exactly when it is accepted.
+ */
+export function kaboomFormBlockV7(
+  roster: FactionRosterV7 & IceLookupV7,
+  unit: UnitKindRefV7 & {
+    readonly form: UnitFormV7;
+    readonly at: { readonly x: number; readonly y: number };
+  },
+  controllerResearchedTechs: readonly TechnologyIdV7[],
+):
+  | { readonly code: "KABOOM_NOT_LEGAL"; readonly reason: "EMBARKED" }
+  | { readonly code: "KABOOM_NOT_LEGAL"; readonly reason: "ICEBOUND" }
+  | { readonly code: "TECH_REQUIRED"; readonly tech: "SEAMANSHIP" }
+  | null {
+  if (unit.form === "LAND") return null;
+  if (unit.form !== "NAVAL")
+    return { code: "KABOOM_NOT_LEGAL", reason: "EMBARKED" };
+  if (!unitCapabilitiesV7(roster, unit, controllerResearchedTechs).fireRafts)
+    return { code: "TECH_REQUIRED", tech: "SEAMANSHIP" };
+  if (unitIsIceboundV7(roster, unit))
+    return { code: "KABOOM_NOT_LEGAL", reason: "ICEBOUND" };
+  return null;
+}
+
+/**
  * The Goblin pass (`pulp_wars-w49.12`, 7r50): Blast-proof. A land-form unit
  * whose kind's role mechanics say so (the Goblin Orc Brute) is not hit by
  * an explosion or by the splash of an attack on a unit next to it.
@@ -6634,6 +6752,46 @@ export function boardableAtV7(maxHp: number): number {
  */
 export function boardedHpV7(maxHp: number): number {
   return boardableAtV7(maxHp) + 1;
+}
+
+/**
+ * Themed naval branches (docs/product/RULESET_7_NAVAL_FACTIONS.md section 2
+ * rule 5, `pulp_wars-5ti.16`): a prize under its new flag. A boarded ship's
+ * kind follows its new owner, so its maximum HP becomes its new kind's role
+ * maximum (plus `PROMOTION_HP_V7` for a veteran) and its HP
+ * `boardedHpV7` of that maximum. Where both rosters are the Human one this
+ * is the old rule (the maximum is kept).
+ */
+export function boardedPrizeHpV7(
+  newOwnerFaction: FactionIdV7,
+  prize: { readonly role: UnitRoleIdV7; readonly veteran: boolean },
+): { readonly maxHp: number; readonly hp: number } {
+  const maxHp =
+    effectiveRoleRuleV7(prize.role, newOwnerFaction).maxHp +
+    (prize.veteran ? PROMOTION_HP_V7 : 0);
+  return { maxHp, hp: boardedHpV7(maxHp) };
+}
+
+/**
+ * Themed naval branches (section 2 rule 6): whether a sea beast forbids the
+ * Board of `target` by a ship of `boarderOwnerId`. A role whose mechanics,
+ * under the target's kind, have `seaBeast` is never boarded, and a seat
+ * whose own `SUBMARINE` role is a sea beast never boards a
+ * `SUBMARINE`-role ship (a captured hull cannot turn into an animal). Both
+ * are `BOARD_NOT_LEGAL { reason: "TARGET_IMMUNE" }`. False for every
+ * roster today.
+ */
+export function boardSeaBeastBlockedV7(
+  roster: FactionRosterV7,
+  boarderOwnerId: PlayerId,
+  target: UnitKindRefV7 & { readonly role: UnitRoleIdV7 } & SummonedUnitRefV7,
+): boolean {
+  if (unitRoleMechanicsV7(roster, target).seaBeast) return true;
+  return (
+    target.role === "SUBMARINE" &&
+    roleMechanicsV7("SUBMARINE", playerFactionV7(roster, boarderOwnerId))
+      .seaBeast
+  );
 }
 
 /**
@@ -7366,6 +7524,12 @@ export interface TechnologyCapabilitiesV7 {
    * Summoner of the tree may summon a Gibbering Mass.
    */
   readonly summonMass: boolean;
+  /**
+   * Themed naval branches (docs/product/RULESET_7_NAVAL_FACTIONS.md section
+   * 3.3 G1, `pulp_wars-5ti.16`): Powder Kegs (the Goblin `SEAMANSHIP`), a
+   * Fire Raft of the tree may Kaboom afloat.
+   */
+  readonly fireRafts: boolean;
 }
 
 export function technologyCapabilitiesV7(
@@ -7449,6 +7613,7 @@ export function technologyCapabilitiesV7(
   let switcheroo = false;
   let tentacles = false;
   let summonMass = false;
+  let fireRafts = false;
   for (const unlock of unlocks)
     switch (unlock.kind) {
       case "COMMAND":
@@ -7594,6 +7759,9 @@ export function technologyCapabilitiesV7(
       case "SUMMON_MASS":
         summonMass = true;
         break;
+      case "FIRE_RAFTS":
+        fireRafts = true;
+        break;
       case "SUMMONER_SUPPORT":
       case "CONFECTIONER_SUPPORT":
       case "ENGINEER_SUPPORT":
@@ -7682,6 +7850,7 @@ export function technologyCapabilitiesV7(
     switcheroo,
     tentacles,
     summonMass,
+    fireRafts,
   });
   TECHNOLOGY_CAPABILITIES_CACHE_V7.set(cacheKey, result);
   if (TECHNOLOGY_CAPABILITIES_CACHE_V7.size > 32) {

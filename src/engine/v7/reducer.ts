@@ -37,7 +37,10 @@ import {
   ORIGINAL_BASELINE_V5_TREE,
   SPATIAL_ECONOMIC_ACTIONS_V7,
   attackIsTorpedoV7,
-  boardedHpV7,
+  boardedPrizeHpV7,
+  boardSeaBeastBlockedV7,
+  playerFactionV7,
+  roleMechanicsV7,
   dockPopulationV7,
   unitIsSubmergedV7,
   canEnterTerrainV7,
@@ -73,6 +76,7 @@ import {
   playerTechnologyResearchCostV7,
   primaryActionBlockedAfterMoveV7,
   unitIsFrozenV7,
+  kaboomFormBlockV7,
   kaboomReadyV7,
   BLAST_MOUNTAIN_POPULATION_V7,
   BOOM_POPULATION_V7,
@@ -5850,18 +5854,30 @@ function applyBoard(
     target,
     tileAtV7(state.board, target.at)?.terrain,
     ownerResearchedTechsV7(state, actor).includes("NAVIGATION"),
+    boardSeaBeastBlockedV7(state, actor, target),
   );
   if (block !== null)
     return rejected(original, "BOARD_NOT_LEGAL", { reason: block });
   try {
+    // Themed naval branches (`pulp_wars-5ti.16`, section 2 rule 5): the
+    // prize takes its new kind's maximum HP and is patched up to one above
+    // that boarding line.
+    const patched = boardedPrizeHpV7(playerFactionV7(state, actor), target);
     const prize: UnitStateV7 = {
       ...target,
       ownerId: actor,
       homeCityId: null,
-      hp: boardedHpV7(target.maxHp),
+      maxHp: patched.maxHp,
+      hp: patched.hp,
       captureEligible: false,
       activation: exhaustedActivation(),
     };
+    // A prize whose new kind has no Shield loses its Shield entry (one
+    // whose new kind has a Shield gets it at the next recharge).
+    const shields =
+      roleMechanicsV7(target.role, playerFactionV7(state, actor)).shield > 0
+        ? state.shields
+        : state.shields.filter((entry) => entry.unitId !== target.id);
     const events: DomainEventV7[] = [
       {
         kind: "SHIP_BOARDED",
@@ -5906,6 +5922,7 @@ function applyBoard(
         commandIndex: nextSafe(state.commandIndex),
         players: setExplored(state.players, actor, reveal.explored),
         units,
+        shields,
       },
       actor,
       events,
@@ -8941,8 +8958,17 @@ function applyKaboom(
     unitIsFrozenV7(state, exploder)
   )
     return rejected(original, "UNIT_ALREADY_ACTED", { unitId });
-  if (exploder.form !== "LAND")
-    return rejected(original, "KABOOM_NOT_LEGAL", { reason: "EMBARKED" });
+  // Themed naval branches (`pulp_wars-5ti.16`): a Fire Raft with Powder
+  // Kegs may Kaboom afloat; an embarked unit never may.
+  const formBlock = kaboomFormBlockV7(
+    state,
+    exploder,
+    ownerResearchedTechsV7(state, exploder.ownerId),
+  );
+  if (formBlock !== null)
+    return formBlock.code === "TECH_REQUIRED"
+      ? rejected(original, "TECH_REQUIRED", { tech: formBlock.tech })
+      : rejected(original, "KABOOM_NOT_LEGAL", { reason: formBlock.reason });
   try {
     const events: DomainEventV7[] = [];
     let units = state.units.filter((unit) => unit.id !== exploder.id);
@@ -9131,6 +9157,11 @@ function withDeathBlastChainV7(
     const victim = requireValue(
       state.units.find((unit) => unit.id === event.unitId),
     );
+    // Themed naval branches (docs/product/RULESET_7_NAVAL_FACTIONS.md
+    // section 3.3 G2, `pulp_wars-5ti.16`): a ship the ice crushes sinks
+    // quietly (the Scrap Dreadnought); an embarked exploding unit crushed
+    // with its raft still explodes.
+    if (cause === "CRUSHED" && victim.form === "NAVAL") return [];
     return isExplodingUnitV7(state, victim)
       ? [{ unit: { ...victim, hp: 0 }, cause: "DEATH" as const }]
       : [];

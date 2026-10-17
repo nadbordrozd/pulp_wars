@@ -552,3 +552,24 @@ export const CHIBI_NAVAL_FACTION_ART_ASSETS_V7: readonly ChibiNavalFactionArtV7[
     // --- The Submarines of every seafaring faction (pulp_wars-5ti.6) ---
     ...CHIBI_NAVAL_SUBMARINE_ART_ASSETS_V7,
   ];
+
+/**
+ * Themed naval branches (docs/product/RULESET_7_NAVAL_FACTIONS.md section
+ * 12, `pulp_wars-5ti.16`): the Seamanship card of a faction whose
+ * Seamanship trick is its own, in the live look (the faction's batch
+ * `naval-<faction>`). The Goblin Powder Kegs, a keg with a lit fuse. The
+ * Classic look shows the shared ship's wheel.
+ */
+export const CHIBI_NAVAL_FACTION_TECH_ICON_ASSETS_V7: readonly ChibiArtAssetV7[] =
+  [
+    {
+      id: "chibi-naval-goblin-icon-tech-seamanship",
+      subject: "ICON:TECH:GOBLIN:SEAMANSHIP",
+      assetClass: "ICON",
+      width: 48,
+      height: 48,
+      url: chibiArtUrl(
+        "assets/chibi/icons/chibi-naval-goblin-icon-tech-seamanship.png",
+      ),
+    },
+  ];

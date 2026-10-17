@@ -517,9 +517,12 @@ describe("technology cards and Help", () => {
       requiredButton("tech").click();
       const seamanship = requiredButton("tech-seamanship");
       // (The ninth unit, `pulp_wars-w49.17`, 7r55: Seamanship is shown as
-      // Boarding.)
+      // Boarding; the Goblin Scrap Fleet, `pulp_wars-5ti.16`: as Powder
+      // Kegs, whose trick is the Fire Raft's Kaboom afloat, with its own
+      // ships on every card.)
+      const goblin = faction === "GOBLIN";
       expect(seamanship.querySelector(".v7-tech-name")?.textContent).toBe(
-        "Boarding",
+        goblin ? "Powder Kegs" : "Boarding",
       );
       seamanship.click();
       const lines = (): string[] =>
@@ -528,22 +531,30 @@ describe("technology cards and Help", () => {
             ".v7-tech-unlocks li",
           ),
         ].map((item) => item.textContent ?? "");
-      expect(lines()).toEqual([
-        "Board: capture an adjacent enemy ship at a third of its HP or less",
-        "Bow Ram: Patrol Boats that moved hit ships with +1 Attack and shove them back",
-      ]);
+      expect(lines()).toEqual(
+        goblin
+          ? [
+              "Bow Ram: Fire Rafts that moved hit ships with +1 Attack and shove them back",
+              "Powder Kegs: A Fire Raft can blow itself up, hitting every unit around it for 5",
+            ]
+          : [
+              "Board: capture an adjacent enemy ship at a third of its HP or less",
+              "Bow Ram: Patrol Boats that moved hit ships with +1 Attack and shove them back",
+            ],
+      );
       const submersibles = requiredButton("tech-submersibles");
       expect(submersibles.querySelector(".v7-tech-name")?.textContent).toBe(
-        "Submersibles",
+        goblin ? "Diving Barrels" : "Submersibles",
       );
       submersibles.click();
       const unlocks = lines();
-      expect(unlocks.some((line) => /Submarine/.test(line))).toBe(true);
+      const sub = goblin ? "Diving Barrel" : "Submarine";
+      expect(unlocks.some((line) => line.includes(sub))).toBe(true);
       expect(unlocks).toContain(
         "Harbours: +1 population from every active Port and Shipyard",
       );
       expect(unlocks).toContain(
-        "Submarine: attacked only from an adjacent tile; its torpedo hits ships with no strike-back",
+        `${sub}: attacked only from the next tile; its torpedo hits ships with no strike-back`,
       );
       for (const line of unlocks) expect(line.length).toBeLessThanOrEqual(92);
       requiredButton("tech-shorecraft").click();

@@ -403,7 +403,10 @@ describe("BOARD legality, in the spec's order", () => {
 
 describe("BOARD result", () => {
   it("hands the prize over: owner, orphan, exhausted, patched HP, the rest kept; its kind follows its new owner", () => {
-    const fixture = scene({ factions: ["GOBLIN", "ORIGINAL"], targetHp: 2 });
+    // Themed naval branches (`pulp_wars-5ti.16`): the Goblins trade Board
+    // for Powder Kegs, so a Dinosaur seat (which keeps Board) takes it; the
+    // two Patrol Boats have the same numbers.
+    const fixture = scene({ factions: ["DINOSAUR", "ORIGINAL"], targetHp: 2 });
     const veteran = patchNavalUnitV7(fixture.state, fixture.targetId, {
       kills: 4,
       hp: 2,
@@ -449,8 +452,8 @@ describe("BOARD result", () => {
       },
     });
     expect(prize.hp).toBe(preview?.hpAfter);
-    // "Refit under a new flag": it is now a Goblin ship of the same role.
-    expect(unitFactionV7(result.state, prize)).toBe("GOBLIN");
+    // "Refit under a new flag": it is now a Dinosaur ship of the same role.
+    expect(unitFactionV7(result.state, prize)).toBe("DINOSAUR");
     // The boarder used its primary action and is handled.
     expect(navalUnitV7(result.state, fixture.boarderId)).toMatchObject({
       kills: 0,
@@ -486,7 +489,11 @@ describe("BOARD result", () => {
     expect(seatV7(result.state, 1).coins).toBe(former.coins);
   });
 
-  it("pays no Plunder to a Goblin boarder and credits no kill", () => {
+  it("is no Goblin command: Powder Kegs takes its place, so a Goblin ship never boards", () => {
+    // Themed naval branches (`pulp_wars-5ti.16`,
+    // docs/product/RULESET_7_NAVAL_FACTIONS.md section 3.1): the Goblin
+    // Seamanship is the Ram and Fire Rafts, so Board is never offered and a
+    // Goblin `BOARD` needs a technology no Goblin tree has.
     const fixture = scene({
       factions: ["GOBLIN", "ORIGINAL"],
       technologies: [
@@ -495,12 +502,11 @@ describe("BOARD result", () => {
       ],
       targetHp: 3,
     });
-    const result = acceptV7(fixture.state, 0, board(fixture));
-    expect(
-      result.events.some((event) => event.kind === "PLUNDER_AWARDED"),
-    ).toBe(false);
-    expect(seatV7(result.state, 0).coins).toBe(seatV7(fixture.state, 0).coins);
-    expect(navalUnitV7(result.state, fixture.boarderId).kills).toBe(0);
+    expect(offeredBoards(fixture.state, 0)).toEqual([]);
+    expect(rejectV7(fixture.state, 0, board(fixture))).toEqual({
+      code: "TECH_REQUIRED",
+      params: { tech: "SEAMANSHIP" },
+    });
   });
 
   it("cannot be boarded back without a new hit, and then can", () => {

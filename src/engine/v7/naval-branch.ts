@@ -33,8 +33,13 @@ export function boardTargetBlockV7(
   target: BoardUnitFactsV7,
   targetTerrain: string | undefined,
   navigation: boolean,
+  seaBeast = false,
 ): BoardTargetBlockV7 | null {
-  if (target.form !== "NAVAL") return "TARGET_IMMUNE";
+  // Themed naval branches (docs/product/RULESET_7_NAVAL_FACTIONS.md
+  // section 2 rule 6, `pulp_wars-5ti.16`): a sea beast is never boarded,
+  // and a seat whose Submarine is one never boards a Submarine
+  // (`boardSeaBeastBlockedV7`, the caller's `seaBeast`).
+  if (target.form !== "NAVAL" || seaBeast) return "TARGET_IMMUNE";
   if (
     Math.max(
       Math.abs(boarder.at.x - target.at.x),

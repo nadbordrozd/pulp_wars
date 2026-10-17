@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r91`, for all nine offered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r92`, for all nine offered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), Candy (`CANDY`), and
 the Cultists (`CULT`). The ninth faction, the Cultists of the Ancient Ones,
@@ -444,6 +444,34 @@ links to another, by Road or by Port. A sea link needs only **Shorecraft**
 (Navigation lets it cross Deep Water), city centers and docks count without
 the Roads technology, and unexplored water no longer breaks a link. A save,
 replay, or setup of `7r75` is rejected, and the browser autosave has a new
+key.
+`pulp-wars-poc-7r92` (`pulp_wars-5ti.16`, the first bead of the
+[themed naval branches](RULESET_7_NAVAL_FACTIONS.md), approved as the
+user's 2026-10-17 request) is **the Goblin Scrap Fleet** and the shared
+plumbing of the themed branches. The Goblin ships are the **Fire Raft**
+(the `PATROL_BOAT`: 4 Coins, 2 at a Shipyard, 8 HP, Ram, and Kaboom 5),
+the **Scrap Dreadnought** (the `BATTLESHIP`: the Battleship's numbers and
+a **death blast of 7** when it sinks, but not when it is boarded or
+crushed by ice), and the **Diving Barrel** (the `SUBMARINE`: 8 Coins, 6 at
+a Shipyard, 10 HP). The Goblin Seamanship, shown as **Powder Kegs**, is the
+Ram and the unlock `FIRE_RAFTS` (capability `fireRafts`) in place of
+`COMMAND BOARD`: a Fire Raft may `KABOOM` afloat (an icebound one is
+refused with `KABOOM_NOT_LEGAL { reason: "ICEBOUND" }`, one without Powder
+Kegs with `TECH_REQUIRED { tech: "SEAMANSHIP" }`), and a Goblin ship never
+boards. The five Goblin Naval technologies are shown as Fire Rafts,
+Navigation, Dreadnoughts, Powder Kegs, and Diving Barrels. For every
+faction: a boarded prize takes its new kind's maximum HP (plus 5 for a
+veteran) and `floor(max / 3) + 1` HP, and loses a Shield entry its new kind
+has no Shield for; the role mechanic `seaBeast` (no role has it yet) makes
+a ship unboardable, and a seat whose own Submarine is a sea beast never
+boards a Submarine (`BOARD_NOT_LEGAL { reason: "TARGET_IMMUNE" }`; ability
+literal `SEA_BEAST`). The Normal AI blows a raft up where the blast is
+worth its 4 Coins, kills, or the raft is lost anyway, approaches a cluster
+when its blast beats its best Ram, counts the Dreadnought's blast in its
+torpedoes and rams, and keeps own ships from crowding a Dreadnought a
+hostile Submarine reaches ([section 16](#16-normal-ai-summary)). The Fire
+Raft's sprite and portrait and the Powder Kegs card are new art. A save,
+replay, or setup of `7r91` is rejected, and the browser autosave has a new
 key.
 `pulp-wars-poc-7r91` (`pulp_wars-mch9.37`, step E-R7 of the Cult redesign,
 [its section 18](RULESET_7_CULT_REDESIGN.md#18-implementation-beads),
@@ -1116,7 +1144,7 @@ the build differs (its sections 20 to 24 list them);
 the values here are current. Where a document and the code disagreed, the
 code's behavior is the rule and is stated below;
 [Known discrepancies](#25-known-discrepancies) lists the open items and the
-resolved ones as of `pulp-wars-poc-7r91`.
+resolved ones as of `pulp-wars-poc-7r92`.
 
 **Terms.** "On the board" means a unit that currently exists (HP above 0).
 **Living** has the narrower revision-13 meaning used by Wail, Plague,
@@ -1219,10 +1247,10 @@ sections here cite.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r91`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Ruleset                                    | `pulp-wars-poc-7r92`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r91.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Browser autosave                           | `pulpWars.save.v7r92.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, `CULT`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`, `CULT_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -4448,33 +4476,33 @@ sentence case. Eight shared names changed at `7r55`: `DRILL` was **Garrison** an
 `NAVAL_ENGINEERING` **Shipbuilding**, and `SEAMANSHIP` **Boarding**. The
 names every player sees (a cell in bold is the faction's own):
 
-| ID                  | Human         | Undead         | Goblin            | Dinosaur        | Martian           | Ice Folk        | Dwarf                | Candy                   | Cult                    |
-| ------------------- | ------------- | -------------- | ----------------- | --------------- | ----------------- | --------------- | -------------------- | ----------------------- | ----------------------- |
-| `GATHERING`         | Gathering     | Gathering      | Gathering         | Gathering       | Gathering         | Gathering       | Gathering            | Gathering               | Gathering               |
-| `FARMING`           | Farming       | Farming        | Farming           | Farming         | Farming           | Farming         | Farming              | Farming                 | **Harvest Rites**       |
-| `MILLING`           | Milling       | **Bone Mills** | Milling           | **Grinding**    | **Solar Arrays**  | Milling         | **Steam Pumps**      | Milling                 | Milling                 |
-| `ADMINISTRATION`    | Leadership    | Leadership     | Leadership        | Leadership      | Leadership        | Leadership      | Leadership           | Leadership              | Leadership              |
-| `PLANNING`          | Land Grants   | Land Grants    | Land Grants       | Land Grants     | Land Grants       | Land Grants     | Land Grants          | Land Grants             | Land Grants             |
-| `HUNTING`           | Hunting       | Hunting        | Hunting           | Hunting         | Hunting           | Hunting         | Hunting              | Hunting                 | Hunting                 |
-| `FORESTRY`          | Forestry      | Forestry       | Forestry          | Forestry        | Forestry          | Forestry        | Forestry             | Forestry                | Forestry                |
-| `SAWMILLING`        | Sawmilling    | **Liches**     | **Rocket Carts**  | **Timber**      | **Tripods**       | **Boulders**    | **Steam Cannons**    | **Pie Launchers**       | **Stargazers**          |
-| `MARKSMANSHIP`      | Marksmanship  | **Banshees**   | **Bomb Chuckers** | **Spitters**    | **Ray Gunners**   | Marksmanship    | **Clockwork**        | **Gumball Gunners**     | **Hexers**              |
-| `FIELDCRAFT`        | Pathfinding   | Pathfinding    | Pathfinding       | Pathfinding     | **Heat Sinks**    | Pathfinding     | Pathfinding          | Pathfinding             | Pathfinding             |
-| `SCOUTING`          | Scouting      | Scouting       | Scouting          | Scouting        | **Saucers**       | Scouting        | **Gyrocopters**      | Scouting                | **Familiars**           |
-| `ROADS`             | Roads         | Roads          | Roads             | Roads           | Roads             | Roads           | Roads                | Roads                   | Roads                   |
-| `COMMERCE`          | Commerce      | Commerce       | **Plunder**       | Commerce        | Commerce          | Commerce        | Commerce             | Commerce                | Commerce                |
-| `RAIDING`           | Raiding       | Raiding        | Raiding           | Raiding         | Raiding           | Raiding         | **Dive Bombing**     | Raiding                 | Raiding                 |
-| `CHIVALRY`          | Chivalry      | **Vampires**   | **Scrap Buggies** | **T-Rex**       | **Motherships**   | **Sabretooths** | **Whirligigs**       | **Chocolate Bunnies**   | **Tentacles**           |
-| `DRILL`             | Crafting      | Crafting       | Crafting          | Crafting        | Crafting          | Crafting        | Crafting             | Crafting                | Crafting                |
-| `ENGINEERING`       | Engineering   | Engineering    | Engineering       | Engineering     | Engineering       | Engineering     | **Mining**           | Engineering             | Engineering             |
-| `METALLURGY`        | Armoury       | Armoury        | Armoury           | **Triceratops** | Armoury           | **Mammoths**    | **Steam Tanks**      | **Jawbreakers**         | **Gibbering Masses**    |
-| `FORTIFICATION`     | Fortification | Fortification  | Fortification     | **Nesting**     | **Force Fields**  | **Deep Winter** | **Dig In**           | **Home Sweet Home**     | **Warding Circles**     |
-| `EXPLOSIVES`        | Explosives    | **Pestilence** | Explosives        | **Wallbreaker** | **Disintegrator** | **Brittle**     | **Blasting Charges** | **Peppermint Surprise** | **The Stars Are Right** |
-| `SHORECRAFT`        | Sailing       | Sailing        | Sailing           | Sailing         | Sailing           | **Rime**        | Sailing              | Sailing                 | Sailing                 |
-| `NAVIGATION`        | Navigation    | Navigation     | Navigation        | Navigation      | Navigation        | **Pack Ice**    | Navigation           | Navigation              | Navigation              |
-| `NAVAL_ENGINEERING` | Shipbuilding  | Shipbuilding   | Shipbuilding      | Shipbuilding    | Shipbuilding      | **Icebound**    | Shipbuilding         | Shipbuilding            | Shipbuilding            |
-| `SEAMANSHIP`        | Boarding      | Boarding       | Boarding          | Boarding        | Boarding          | **Black Ice**   | Boarding             | Boarding                | Boarding                |
-| `SUBMERSIBLES`      | Submersibles  | Submersibles   | Submersibles      | Submersibles    | Submersibles      | **Glacier**     | Submersibles         | Submersibles            | Submersibles            |
+| ID                  | Human         | Undead         | Goblin             | Dinosaur        | Martian           | Ice Folk        | Dwarf                | Candy                   | Cult                    |
+| ------------------- | ------------- | -------------- | ------------------ | --------------- | ----------------- | --------------- | -------------------- | ----------------------- | ----------------------- |
+| `GATHERING`         | Gathering     | Gathering      | Gathering          | Gathering       | Gathering         | Gathering       | Gathering            | Gathering               | Gathering               |
+| `FARMING`           | Farming       | Farming        | Farming            | Farming         | Farming           | Farming         | Farming              | Farming                 | **Harvest Rites**       |
+| `MILLING`           | Milling       | **Bone Mills** | Milling            | **Grinding**    | **Solar Arrays**  | Milling         | **Steam Pumps**      | Milling                 | Milling                 |
+| `ADMINISTRATION`    | Leadership    | Leadership     | Leadership         | Leadership      | Leadership        | Leadership      | Leadership           | Leadership              | Leadership              |
+| `PLANNING`          | Land Grants   | Land Grants    | Land Grants        | Land Grants     | Land Grants       | Land Grants     | Land Grants          | Land Grants             | Land Grants             |
+| `HUNTING`           | Hunting       | Hunting        | Hunting            | Hunting         | Hunting           | Hunting         | Hunting              | Hunting                 | Hunting                 |
+| `FORESTRY`          | Forestry      | Forestry       | Forestry           | Forestry        | Forestry          | Forestry        | Forestry             | Forestry                | Forestry                |
+| `SAWMILLING`        | Sawmilling    | **Liches**     | **Rocket Carts**   | **Timber**      | **Tripods**       | **Boulders**    | **Steam Cannons**    | **Pie Launchers**       | **Stargazers**          |
+| `MARKSMANSHIP`      | Marksmanship  | **Banshees**   | **Bomb Chuckers**  | **Spitters**    | **Ray Gunners**   | Marksmanship    | **Clockwork**        | **Gumball Gunners**     | **Hexers**              |
+| `FIELDCRAFT`        | Pathfinding   | Pathfinding    | Pathfinding        | Pathfinding     | **Heat Sinks**    | Pathfinding     | Pathfinding          | Pathfinding             | Pathfinding             |
+| `SCOUTING`          | Scouting      | Scouting       | Scouting           | Scouting        | **Saucers**       | Scouting        | **Gyrocopters**      | Scouting                | **Familiars**           |
+| `ROADS`             | Roads         | Roads          | Roads              | Roads           | Roads             | Roads           | Roads                | Roads                   | Roads                   |
+| `COMMERCE`          | Commerce      | Commerce       | **Plunder**        | Commerce        | Commerce          | Commerce        | Commerce             | Commerce                | Commerce                |
+| `RAIDING`           | Raiding       | Raiding        | Raiding            | Raiding         | Raiding           | Raiding         | **Dive Bombing**     | Raiding                 | Raiding                 |
+| `CHIVALRY`          | Chivalry      | **Vampires**   | **Scrap Buggies**  | **T-Rex**       | **Motherships**   | **Sabretooths** | **Whirligigs**       | **Chocolate Bunnies**   | **Tentacles**           |
+| `DRILL`             | Crafting      | Crafting       | Crafting           | Crafting        | Crafting          | Crafting        | Crafting             | Crafting                | Crafting                |
+| `ENGINEERING`       | Engineering   | Engineering    | Engineering        | Engineering     | Engineering       | Engineering     | **Mining**           | Engineering             | Engineering             |
+| `METALLURGY`        | Armoury       | Armoury        | Armoury            | **Triceratops** | Armoury           | **Mammoths**    | **Steam Tanks**      | **Jawbreakers**         | **Gibbering Masses**    |
+| `FORTIFICATION`     | Fortification | Fortification  | Fortification      | **Nesting**     | **Force Fields**  | **Deep Winter** | **Dig In**           | **Home Sweet Home**     | **Warding Circles**     |
+| `EXPLOSIVES`        | Explosives    | **Pestilence** | Explosives         | **Wallbreaker** | **Disintegrator** | **Brittle**     | **Blasting Charges** | **Peppermint Surprise** | **The Stars Are Right** |
+| `SHORECRAFT`        | Sailing       | Sailing        | **Fire Rafts**     | Sailing         | Sailing           | **Rime**        | Sailing              | Sailing                 | Sailing                 |
+| `NAVIGATION`        | Navigation    | Navigation     | Navigation         | Navigation      | Navigation        | **Pack Ice**    | Navigation           | Navigation              | Navigation              |
+| `NAVAL_ENGINEERING` | Shipbuilding  | Shipbuilding   | **Dreadnoughts**   | Shipbuilding    | Shipbuilding      | **Icebound**    | Shipbuilding         | Shipbuilding            | Shipbuilding            |
+| `SEAMANSHIP`        | Boarding      | Boarding       | **Powder Kegs**    | Boarding        | Boarding          | **Black Ice**   | Boarding             | Boarding                | Boarding                |
+| `SUBMERSIBLES`      | Submersibles  | Submersibles   | **Diving Barrels** | Submersibles    | Submersibles      | **Glacier**     | Submersibles         | Submersibles            | Submersibles            |
 
 The rest of this document, the tuning documents, and the faction documents
 name a technology by its ID in title case (Drill, Administration,
@@ -5641,22 +5669,30 @@ Goblin's Kaboom 6, every death blast 3 harder; `GOBLIN_ROLE_RULES_V7` and
 `GOBLIN_ROLE_MECHANICS_V7`). "Kaboom" and "Death blast" are the fixed blast
 damages of [section 18.4](#184-kaboom) and [18.5](#185-death-blasts):
 
-| Unit         | Role          | Tech              | Cost |  HP |  Attack | Defense | Move | Range | Sight | Attack after Move | Capture | Kaboom | Death blast | Abilities                                                       |
-| ------------ | ------------- | ----------------- | ---: | --: | ------: | ------: | ---: | ----: | ----: | ----------------- | ------- | -----: | ----------: | --------------------------------------------------------------- |
-| Goblin       | `FIGHTER`     | start             |    1 |   6 | 1.5 (3) | 0.5 (1) |    1 |     1 |     1 | yes               | yes     |      6 |           — | Kaboom; no Field Defense                                        |
-| Wolf Rider   | `RAIDER`      | Scouting          |    3 |  10 |   2 (4) |   1 (2) |    2 |     1 |     2 | yes               | yes     |      4 |           — | Charge (Raiding); Kaboom; no Escape                             |
-| Bomb Chucker | `MARKSMAN`    | Marksmanship      |    3 |   8 |   2 (4) |   1 (2) |    1 |     2 |    1³ | yes               | yes     |      4 |           5 | bombs (friendly-fire splash, no Gang Up); Kaboom                |
-| Orc Brute    | `GUARD`       | Fortification     |    3 |  15 |   2 (4) | 2.5 (5) |    1 |     1 |     1 | no                | yes     |      — |           — | Field Defense; Blast-proof                                      |
-| Orc Warboss  | `CAPTAIN`     | Administration    |    5 |  12 |   2 (4) |   1 (2) |    1 |     1 |     1 | yes               | yes     |      — |           — | Berserk; no Tend Wounded                                        |
-| Rocket Cart  | `CATAPULT`    | Sawmilling        |    7 |   8 | 3.5 (7) | 0.5 (1) |    1 |   2–3 |     1 | no                | yes     |      5 |           7 | Kaboom; never advances; Gang Up +1 at most                      |
-| Scrap Buggy  | `KNIGHT`      | Chivalry          |    8 |  10 |   3 (6) |   1 (2) |    3 |     1 |     1 | yes               | yes     |      5 |           7 | Ram; Kaboom, also after attacking (Crash)                       |
-| Ogre         | `SWORDSMAN`   | Metallurgy        |    5 |  16 | 2.5 (5) |   2 (4) |    1 |     1 |     1 | yes               | yes     |      — |           — | Heavyweight (two helpers for Gang Up; `7r55`); no Field Defense |
-| Troll        | `JUGGERNAUT`  | reward only       |    — |  40 |   4 (8) |   3 (6) |    1 |     1 |     1 | yes               | yes     |      — |           — | Goblin Toss; Regenerate 4                                       |
-| Patrol Boat  | `PATROL_BOAT` | Shorecraft        |    5 |  10 |   2 (4) |   2 (4) |    2 |     1 |     2 | yes               | no      |      — |           — | naval; Ram (Seamanship)                                         |
-| Battleship   | `BATTLESHIP`  | Naval Engineering |   16 |  25 |  5 (10) |   3 (6) |    2 |   1–3 |     3 | no                | no      |      — |           — | naval; splash                                                   |
-| Submarine    | `SUBMARINE`   | Submersibles      |    9 |  12 |   4 (8) |   2 (4) |    2 |     1 |     2 | yes               | no      |      — |           — | naval; Submerged; Torpedo                                       |
+| Unit              | Role          | Tech              | Cost |  HP |  Attack | Defense | Move | Range | Sight | Attack after Move | Capture | Kaboom | Death blast | Abilities                                                       |
+| ----------------- | ------------- | ----------------- | ---: | --: | ------: | ------: | ---: | ----: | ----: | ----------------- | ------- | -----: | ----------: | --------------------------------------------------------------- |
+| Goblin            | `FIGHTER`     | start             |    1 |   6 | 1.5 (3) | 0.5 (1) |    1 |     1 |     1 | yes               | yes     |      6 |           — | Kaboom; no Field Defense                                        |
+| Wolf Rider        | `RAIDER`      | Scouting          |    3 |  10 |   2 (4) |   1 (2) |    2 |     1 |     2 | yes               | yes     |      4 |           — | Charge (Raiding); Kaboom; no Escape                             |
+| Bomb Chucker      | `MARKSMAN`    | Marksmanship      |    3 |   8 |   2 (4) |   1 (2) |    1 |     2 |    1³ | yes               | yes     |      4 |           5 | bombs (friendly-fire splash, no Gang Up); Kaboom                |
+| Orc Brute         | `GUARD`       | Fortification     |    3 |  15 |   2 (4) | 2.5 (5) |    1 |     1 |     1 | no                | yes     |      — |           — | Field Defense; Blast-proof                                      |
+| Orc Warboss       | `CAPTAIN`     | Administration    |    5 |  12 |   2 (4) |   1 (2) |    1 |     1 |     1 | yes               | yes     |      — |           — | Berserk; no Tend Wounded                                        |
+| Rocket Cart       | `CATAPULT`    | Sawmilling        |    7 |   8 | 3.5 (7) | 0.5 (1) |    1 |   2–3 |     1 | no                | yes     |      5 |           7 | Kaboom; never advances; Gang Up +1 at most                      |
+| Scrap Buggy       | `KNIGHT`      | Chivalry          |    8 |  10 |   3 (6) |   1 (2) |    3 |     1 |     1 | yes               | yes     |      5 |           7 | Ram; Kaboom, also after attacking (Crash)                       |
+| Ogre              | `SWORDSMAN`   | Metallurgy        |    5 |  16 | 2.5 (5) |   2 (4) |    1 |     1 |     1 | yes               | yes     |      — |           — | Heavyweight (two helpers for Gang Up; `7r55`); no Field Defense |
+| Troll             | `JUGGERNAUT`  | reward only       |    — |  40 |   4 (8) |   3 (6) |    1 |     1 |     1 | yes               | yes     |      — |           — | Goblin Toss; Regenerate 4                                       |
+| Fire Raft         | `PATROL_BOAT` | Shorecraft        |    4 |   8 |   2 (4) |   2 (4) |    2 |     1 |     2 | yes               | no      |     5⁴ |           — | naval; Ram (Seamanship); Kaboom afloat with Powder Kegs         |
+| Scrap Dreadnought | `BATTLESHIP`  | Naval Engineering |   16 |  25 |  5 (10) |   3 (6) |    2 |   1–3 |     3 | no                | no      |      — |          7⁴ | naval; splash; explodes when it sinks                           |
+| Diving Barrel     | `SUBMARINE`   | Submersibles      |    8 |  10 |   4 (8) |   2 (4) |    2 |     1 |     2 | yes               | no      |      — |           — | naval; Submerged; Torpedo                                       |
 
 ³ Bomb Chucker Sight becomes 2 with Fieldcraft.
+
+⁴ The Scrap Fleet (`7r92`, `pulp_wars-5ti.16`,
+[themed naval branches section 3](RULESET_7_NAVAL_FACTIONS.md#3-goblins-the-scrap-fleet)):
+a Fire Raft Kabooms afloat only with Powder Kegs (the Goblin Seamanship)
+and does not explode when it is killed; the Dreadnought's blast follows
+[section 18.5](#185-death-blasts), but a boarded Dreadnought is not killed
+and one the ice crushes sinks quietly. At a Shipyard the three ships cost
+2, 14, and 6.
 
 - **Goblin** has Fighter parity (capture, Pillage with Raiding, Disband)
   except that it cannot build Field Defense; it is the 1-Coin horde unit.
@@ -7385,14 +7421,34 @@ Every rule that names "naval units", "ships", or "boats" covers all three.
   ([section 10](#10-recovery-and-support)), projects ZOC onto adjacent
   water it could enter (never onto ice), and blockades a hostile dock it
   stands on.
-- **Undead boats** are the Human ships: a ship leaves no Grave and never
+- **Undead boats** are the Human ships (until their themed bead): a ship leaves no Grave and never
   rises, Restless never applies to it, and a boarded Undead ship simply
   becomes its captor's ship. Wail is not an attack, so it reaches a
   Submarine within its radius.
 - Reward units and treasure units are always land units.
-- **Goblin boats** are the Human Patrol Boat, Battleship, and Submarine: no
-  Gang Up, no Kaboom, and no death blast. Plunder pays for a ship sunk,
-  never for a boarding (it is not a kill). A Bomb Chucker (range exactly 2)
+- **Themed naval branches** (`7r92`,
+  [RULESET_7_NAVAL_FACTIONS.md](RULESET_7_NAVAL_FACTIONS.md)): every
+  seafaring faction keeps the three ship roles and the five technologies,
+  but a faction may have its own ships, numbers, and Seamanship trick (the
+  Ram plus the trick, Board for the factions without one). A faction rule
+  applies to a ship only where its bullet below says so. A boarded prize
+  takes its new kind's maximum HP (plus 5 for a veteran) and
+  `floor(max / 3) + 1` HP, keeps its ID, role, kills, `veteran`, tile, and
+  statuses, and loses a Shield entry its new kind has no Shield for. A
+  role whose mechanics have `seaBeast` (none yet) is never boarded, and a
+  seat whose Submarine is a sea beast never boards a Submarine
+  (`TARGET_IMMUNE`).
+- **Goblin boats** are the **Scrap Fleet** (`7r92`): the **Fire Raft**
+  (Patrol Boat: 4 Coins, 8 HP, Ram), the **Scrap Dreadnought**
+  (Battleship: its numbers, and a **death blast of 7** when it sinks, by
+  any cause of [section 18.5](#185-death-blasts) but the ice crush; a
+  boarded one is not killed), and the **Diving Barrel** (Submarine: 8
+  Coins, 10 HP). Their Seamanship is **Powder Kegs**: the Ram and
+  `FIRE_RAFTS` (capability `fireRafts`) instead of Board, so **a Fire Raft
+  may Kaboom afloat** for 5 ([section 18.4](#184-kaboom)) and a Goblin
+  ship never boards. No Gang Up for a ship. Plunder pays for a ship sunk
+  (a raft's or a Dreadnought's blast kills included), never for a
+  boarding (it is not a kill). A Bomb Chucker (range exactly 2)
   cannot target a submerged Submarine; its splash, a Kaboom, and a death
   blast reach one like any unit. Blasts hit naval and embarked units in the
   blast area like any unit (the embarked Defense 1 is irrelevant to fixed
@@ -8398,6 +8454,26 @@ Harbours from it.
   targets only, threatens a submerged Submarine only from the next tile,
   and assumes a hostile Patrol Boat rams. Every planned attack is read
   from the public preview. None of it is measured in matches yet.
+- **The Goblin Scrap Fleet** (`7r92`, `pulp_wars-5ti.16`,
+  `src/ai/v7-naval-goblin.ts`). Its ships are read by role like every
+  fleet, so it researches Powder Kegs by the Seamanship rule and trains a
+  Diving Barrel against a visible Battleship and a Fire Raft against a
+  visible Submarine. A Fire Raft **Kabooms afloat** (priority 1349, before
+  its attacks) when its exact blast (`previewKaboomV7`, valued in Coins:
+  the cost of a hostile unit killed, the share of it a hit takes, less
+  twice the own and allied share) is worth 4 Coins after the raft's own 4,
+  when it kills without losing, or when the raft would be sunk anyway and
+  the blast hurts the enemy more than its own side; a Ram that kills and
+  is worth more still goes first. A raft that has not acted **moves next
+  to a cluster** (priority 1277) when the blast there beats its best Ram
+  and the blast where it stands, never beside an own Dreadnought. A
+  torpedo or ram whose kill sets off a Dreadnought's blast is valued with
+  it (`previewAttackExplosionsV7`): a Submarine the blast would sink gets
+  no torpedo priority; the Board scorer's best attack counts it too. An
+  own Dreadnought and own ships afloat do not end a Move beside each other
+  where a visible hostile Submarine reaches the Dreadnought, and a raft
+  never screens one. The threat estimate assumes a hostile Fire Raft's
+  Kaboom (its owner's Powder Kegs is private, as the Ram is).
 - **The frozen sea** (`pulp_wars-5ti.5`, `src/ai/v7-frozen-sea.ts`). An
   Ice Folk seat has no ship and no naval plan; it has an **ice plan**
   where a seafaring seat's naval plan would activate (every known
@@ -9349,7 +9425,10 @@ is not an Attack and needs no technology.
   before; Wolf Rider 4, Bomb Chucker 4, Rocket Cart 5, Scrap Buggy 5) and ignores Attack, Defense, HP ratio, cover,
   fortification, Walls, Field Defense, the embarked Defense, Charge, Gang Up,
   and Inspired.
-- **Legality.** The unit is the actor's own, on the board, in land form, has
+- **Legality.** The unit is the actor's own, on the board, in land form
+  (or, since `7r92`, a Goblin **Fire Raft** in `NAVAL` form whose kind's
+  capabilities under its owner have `fireRafts`, Powder Kegs, and that is
+  not icebound; `kaboomFormBlockV7`), has
   the `KABOOM` ability under its owner's registration, and has not used a
   primary action this turn. **Crash** (`7r50`, the role mechanic
   `kaboomAfterAttack`, the Scrap Buggy only): its attacks do not count, so
@@ -9372,12 +9451,16 @@ is not an Attack and needs no technology.
   already used (for a Scrap Buggy: one other than its attacks), the unit
   landed this turn, or, for a unit without Crash, a Ram continuation
   pending → `UNIT_ALREADY_ACTED`;
-  embarked → `KABOOM_NOT_LEGAL { reason: "EMBARKED" }`. A pending city
+  embarked → `KABOOM_NOT_LEGAL { reason: "EMBARKED" }`; a Fire Raft
+  without Powder Kegs → `TECH_REQUIRED { tech: "SEAMANSHIP" }`; an
+  icebound Fire Raft → `KABOOM_NOT_LEGAL { reason: "ICEBOUND" }`. A
+  Fire Raft's Kaboom leaves no Grave (a death afloat). A pending city
   reward blocks it like every command.
 
 ### 18.5 Death blasts
 
-A Bomb Chucker, Rocket Cart, or Scrap Buggy **explodes when it is killed**,
+A Bomb Chucker, Rocket Cart, Scrap Buggy, or (since `7r92`) Scrap
+Dreadnought **explodes when it is killed**,
 whatever killed it and wherever it stands (land, a city or village center,
 embarked on water), with its death-blast damage (Bomb Chucker 5, Rocket Cart
 7, Scrap Buggy 7; each 3 more since `pulp_wars-w49.35`, the user's "make
@@ -9388,9 +9471,12 @@ bomb (`BOMB`) or eruption (`ERUPTION`). A unit
 explodes at most once: a Kaboom is that unit's explosion. Disband, reward
 displacement removal (a `UNIT_DIED` with the cause `DISPLACED` since
 `7r80`), and elimination removal are removals, not deaths, and
-never explode. Goblins and Wolf Riders never explode on death, and neither
-does a shattered exploding unit (`SHATTER`,
-[section 21.4](#214-shatter)).
+never explode. Goblins, Wolf Riders, and Fire Rafts never explode on
+death, and neither does a shattered exploding unit (`SHATTER`,
+[section 21.4](#214-shatter)) or a Scrap Dreadnought the ice crushes
+(`CRUSHED`; an embarked exploding unit crushed with its raft still
+explodes). A boarded Dreadnought is not killed: it becomes its captor's
+Battleship, which has no blast.
 
 ### 18.6 Blast resolution
 
@@ -9631,7 +9717,8 @@ Every death is credited to at most one player:
   `EXPLOSION`; `FIELD_DEFENSE_DESTROYED.reason` gains `EXPLOSION`.
   `CombatPreviewV7` gains `gangUp`; Bomb Chucker `splash` entries may name
   own and allied units.
-- **Error:** `KABOOM_NOT_LEGAL` (reason `EMBARKED`); other Kaboom rejections
+- **Error:** `KABOOM_NOT_LEGAL` (reasons `EMBARKED` and, since `7r92`,
+  `ICEBOUND`); other Kaboom rejections
   reuse existing codes ([section 18.4](#184-kaboom)).
 - **Registration:** faction `GOBLIN`, tree `GOBLIN_BASELINE_V1`, display name
   "Goblin"; unlock kinds `BERSERK_SUPPORT` (`WAAAGH_SUPPORT` before

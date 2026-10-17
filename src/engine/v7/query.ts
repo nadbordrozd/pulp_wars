@@ -40,7 +40,8 @@ import {
   RAM_BONUS2_V7,
   attackIsRamV7,
   attackIsTorpedoV7,
-  boardedHpV7,
+  boardedPrizeHpV7,
+  boardSeaBeastBlockedV7,
   dockPopulationV7,
   unitIsSubmergedV7,
   isIceAtV7,
@@ -70,6 +71,7 @@ import {
   STAMPEDE_RANGE_V7,
   unitMayEnterMountainV7,
   primaryActionBlockedAfterMoveV7,
+  kaboomFormBlockV7,
   kaboomReadyV7,
   unitMovementModeV7,
   unitIsSummonedV7,
@@ -1405,8 +1407,11 @@ function appendPublicUnitCommandsV7(
       unitRoleMechanicsV7(view, unit).kaboomAfterAttack,
     ) &&
     !unitIsFrozenV7(view, unit) &&
-    unit.form === "LAND" &&
-    rule.abilities.includes("KABOOM")
+    rule.abilities.includes("KABOOM") &&
+    // Themed naval branches (`pulp_wars-5ti.16`): in land form, or a Fire
+    // Raft afloat with Powder Kegs that is not icebound (the reducer's own
+    // predicate).
+    kaboomFormBlockV7(view, unit, view.viewer.researchedTechs) === null
   )
     candidates.push({ kind: "KABOOM", unitId: unit.id });
   if (
@@ -2031,6 +2036,7 @@ function publicBoardTargetsV7(
         target,
         tile?.explored === true ? tile.terrain : undefined,
         navigation,
+        boardSeaBeastBlockedV7(view, view.viewer.id, target),
       ) === null
     );
   });
@@ -2207,7 +2213,9 @@ export function previewBoardV7(
     unitId,
     targetUnitId,
     fromPlayerId: target.ownerId,
-    hpAfter: boardedHpV7(target.maxHp),
+    // Themed naval branches (`pulp_wars-5ti.16`): the prize takes the
+    // viewer's own role maximum.
+    hpAfter: boardedPrizeHpV7(view.viewer.faction, target).hp,
   };
 }
 

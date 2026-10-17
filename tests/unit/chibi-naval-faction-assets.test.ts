@@ -16,6 +16,7 @@ import {
 } from "../../src/assets/chibi-direction-art-manifest";
 import {
   CHIBI_NAVAL_FACTION_ART_ASSETS_V7,
+  CHIBI_NAVAL_FACTION_TECH_ICON_ASSETS_V7,
   navalFactionArtSubjectV7,
   type NavalArtRoleV7,
   type NavalPortraitRoleV7,
@@ -214,16 +215,46 @@ describe("faction-styled naval art (pulp_wars-w5j.2)", () => {
       const entries = CHIBI_NAVAL_FACTION_ART_ASSETS_V7.filter(
         (entry) => entry.faction === faction,
       );
+      // Themed naval branches (`pulp_wars-5ti.16`): a faction's own
+      // Seamanship icon is an asset of its naval batch too.
+      const icons = CHIBI_NAVAL_FACTION_TECH_ICON_ASSETS_V7.filter((asset) =>
+        asset.subject.startsWith(`ICON:TECH:${faction}:`),
+      );
+      const ids = [
+        ...entries.map((entry) => entry.asset.id),
+        ...icons.map((asset) => asset.id),
+      ].sort();
       const accepted = Object.values(records.assets);
       expect(accepted.every((record) => record.status === "ACCEPTED")).toBe(
         true,
       );
-      expect(accepted.map((record) => record.id).sort(), batch).toEqual(
-        entries.map((entry) => entry.asset.id).sort(),
-      );
+      expect(accepted.map((record) => record.id).sort(), batch).toEqual(ids);
       expect(manifest.assets.map((asset) => asset.id).sort(), batch).toEqual(
-        entries.map((entry) => entry.asset.id).sort(),
+        ids,
       );
+      for (const icon of icons) {
+        const record = records.assets[icon.id];
+        const asset = manifest.assets.find((spec) => spec.id === icon.id);
+        if (record === undefined || asset === undefined)
+          throw new Error(`${icon.id}: not in batch ${batch}`);
+        expect(asset.subject, icon.id).toBe(icon.subject);
+        expect([asset.assetClass, asset.recipeClass], icon.id).toEqual([
+          "ICON",
+          "icon",
+        ]);
+        expect(
+          icon.url.endsWith(record.master.path.replace(/^public\//, "")),
+          icon.id,
+        ).toBe(true);
+        expect([icon.width, icon.height], icon.id).toEqual([
+          record.master.width,
+          record.master.height,
+        ]);
+        expect(
+          await verifyAssetRecord(ROOT, manifest, record),
+          icon.id,
+        ).toEqual([]);
+      }
       for (const { asset: entry } of entries) {
         const record = records.assets[entry.id];
         const asset = manifest.assets.find((spec) => spec.id === entry.id);

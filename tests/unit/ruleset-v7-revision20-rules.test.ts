@@ -91,16 +91,16 @@ class MemoryStorage {
 // save keys are obsolete, and the scripts perform no Stampede.
 describe("ruleset-7 revision-20 identity", () => {
   it("keeps 7r19 and 7r20 as prior identities after the later bumps", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r91");
-    expect(RULESET_7.id).toBe("pulp-wars-poc-7r91");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r92");
+    expect(RULESET_7.id).toBe("pulp-wars-poc-7r92");
     expect(RULESET_7.version).toBe(7);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r91.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-72, -70)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r92.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-73, -71)).toEqual([
       "pulp-wars-poc-7r19",
       "pulp-wars-poc-7r20",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-72, -70)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-73, -71)).toEqual([
       "pulpWars.save.v7r19.current",
       "pulpWars.save.v7r20.current",
     ]);
@@ -142,7 +142,7 @@ describe("ruleset-7 revision-20 identity", () => {
       const setup = goblinSetupV7(["DINOSAUR", "ORIGINAL"]);
       const created = createPlayableGameV7(setup);
       if (!created.ok) throw new Error(created.error.code);
-      expect(created.state.rulesetId).toBe("pulp-wars-poc-7r91");
+      expect(created.state.rulesetId).toBe("pulp-wars-poc-7r92");
       const oldSetup = { ...setup, rulesetId: oldId };
       expect(parseMatchSetupV7(setup)).not.toBeNull();
       expect(parseMatchSetupV7(oldSetup)).toBeNull();
@@ -592,7 +592,9 @@ describe("ruleset-7 revision-20 role registrations (section 6.1)", () => {
     expect(hp("UNDEAD")).toEqual([
       10, 10, 8, 18, 10, 10, 13, 40, 10, 25, 12, 14,
     ]);
-    expect(hp("GOBLIN")).toEqual([6, 10, 8, 15, 12, 8, 10, 40, 10, 25, 12, 16]);
+    // Themed naval branches (`pulp_wars-5ti.16`): the Fire Raft (8) and the
+    // Diving Barrel (10).
+    expect(hp("GOBLIN")).toEqual([6, 10, 8, 15, 12, 8, 10, 40, 8, 25, 10, 16]);
   });
 });
 

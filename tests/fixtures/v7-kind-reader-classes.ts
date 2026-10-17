@@ -522,6 +522,26 @@ export const KIND_READER_CLASSES_V7: Readonly<
   // follows its new owner, and Harbours is a seat-level economy rule).
   "src/render/naval-presentation-v7.ts::viewerMayBoardV7": "SEAT",
   "src/render/naval-presentation-v7.ts::viewerHarbourPopulationV7": "SEAT",
+  // Themed naval branches (`pulp_wars-5ti.16`): the card and Help lines of
+  // a faction's ships (the Goblin Fire Raft, Scrap Dreadnought, and Diving
+  // Barrel) read its registration (rule texts, no unit); the Goblin Help's
+  // module-level rules likewise.
+  "src/render/naval-presentation-v7.ts::fireRaftKaboomRuleV7": "SEAT",
+  "src/render/naval-presentation-v7.ts::dreadnoughtBlastRuleV7": "SEAT",
+  "src/render/naval-presentation-v7.ts::goblinNavalBlastV7": "SEAT",
+  "src/render/naval-presentation-v7.ts::navalRamUnlockTextV7": "SEAT",
+  "src/render/naval-presentation-v7.ts::submarineUnlockNoteV7": "SEAT",
+  "src/render/naval-presentation-v7.ts::battleshipUnlockNoteV7": "SEAT",
+  "src/render/goblin-presentation-v7.ts::<module>": "SEAT",
+  // A prize under its new flag: its kind follows its new owner (a ship is
+  // never mind-controlled), so the prize's maximum HP is its captor seat's
+  // role rule, in the reducer and the public preview.
+  "src/engine/rules/ruleset-v7.ts::boardedPrizeHpV7": "SEAT",
+  "src/engine/v7/reducer.ts::applyBoard": "SEAT",
+  "src/engine/v7/query.ts::previewBoardV7": "SEAT",
+  // The sea-beast rule: the target's own beast (its kind, through
+  // `unitRoleMechanicsV7`) and the boarder seat's own Submarine role.
+  "src/engine/rules/ruleset-v7.ts::boardSeaBeastBlockedV7": "KIND",
   // The frozen sea interface (`pulp_wars-5ti.7`): Black Ice is the ice
   // owner's own capability, and the Sea Dog goal is the viewer's seat's.
   "src/render/frozen-sea-presentation-v7.ts::viewerHasBlackIceV7": "SEAT",

@@ -77,11 +77,11 @@ import {
 
 describe("ruleset-7 revision-17 identity", () => {
   it("keeps r16 among the prior identities after the r55 identity and cleans the r16 key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r91");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r91.current");
-    expect(PRIOR_RULESET_7_IDS.at(-75)).toBe("pulp-wars-poc-7r16");
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(90);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-75)).toBe(
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r92");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r92.current");
+    expect(PRIOR_RULESET_7_IDS.at(-76)).toBe("pulp-wars-poc-7r16");
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(91);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-76)).toBe(
       "pulpWars.save.v7r16.current",
     );
     const storage = new MemoryStorage([
@@ -455,12 +455,15 @@ describe("ruleset-7 Goblin roster", () => {
       null,
       null,
     ],
+    // Themed naval branches, the Scrap Fleet (`pulp_wars-5ti.16`,
+    // docs/product/RULESET_7_NAVAL_FACTIONS.md section 3.2): the Fire Raft
+    // (4 Coins, 8 HP, Ram, Kaboom 5 afloat with Powder Kegs).
     PATROL_BOAT: [
-      "Patrol Boat",
+      "Fire Raft",
       "NAVAL_SCREEN",
       "SHORECRAFT",
-      5,
-      10,
+      4,
+      8,
       4,
       4,
       2,
@@ -468,13 +471,13 @@ describe("ruleset-7 Goblin roster", () => {
       1,
       2,
       true,
-      // The naval branch (`pulp_wars-5ti.2`): the Ram (with Seamanship).
-      ["ATTACK", "RAM"],
-      null,
+      ["ATTACK", "RAM", "KABOOM"],
+      5,
       null,
     ],
+    // The Scrap Dreadnought: the Battleship's numbers and a death blast of 7.
     BATTLESHIP: [
-      "Battleship",
+      "Scrap Dreadnought",
       "NAVAL_CAPITAL",
       "NAVAL_ENGINEERING",
       16,
@@ -488,15 +491,15 @@ describe("ruleset-7 Goblin roster", () => {
       false,
       ["ATTACK"],
       null,
-      null,
+      7,
     ],
-    // The naval branch (`pulp_wars-5ti.2`): the shared Submarine.
+    // The Diving Barrel (8 Coins, 10 HP).
     SUBMARINE: [
-      "Submarine",
+      "Diving Barrel",
       "NAVAL_HUNTER",
       "SUBMERSIBLES",
-      9,
-      12,
+      8,
+      10,
       8,
       4,
       2,
@@ -574,19 +577,20 @@ describe("ruleset-7 Goblin roster", () => {
       "JUGGERNAUT",
       "SWORDSMAN",
     ]);
-    // Boats are the Human boats.
-    expect(GOBLIN_ROLE_RULES_V7.PATROL_BOAT).toEqual(
-      ORIGINAL_ROLE_RULES_V7.PATROL_BOAT,
-    );
-    expect(GOBLIN_ROLE_RULES_V7.BATTLESHIP).toEqual(
-      ORIGINAL_ROLE_RULES_V7.BATTLESHIP,
-    );
-    expect(GOBLIN_ROLE_MECHANICS_V7.PATROL_BOAT).toEqual(
-      ORIGINAL_ROLE_MECHANICS_V7.PATROL_BOAT,
-    );
-    expect(GOBLIN_ROLE_MECHANICS_V7.BATTLESHIP).toEqual(
-      ORIGINAL_ROLE_MECHANICS_V7.BATTLESHIP,
-    );
+    // Themed naval branches (`pulp_wars-5ti.16`): the boats are the Scrap
+    // Fleet's, with the Human numbers where section 3.2 changes nothing.
+    expect(GOBLIN_ROLE_RULES_V7.BATTLESHIP).toEqual({
+      ...ORIGINAL_ROLE_RULES_V7.BATTLESHIP,
+      label: "Scrap Dreadnought",
+    });
+    expect(GOBLIN_ROLE_MECHANICS_V7.PATROL_BOAT).toEqual({
+      ...ORIGINAL_ROLE_MECHANICS_V7.PATROL_BOAT,
+      kaboomDamage: 5,
+    });
+    expect(GOBLIN_ROLE_MECHANICS_V7.BATTLESHIP).toEqual({
+      ...ORIGINAL_ROLE_MECHANICS_V7.BATTLESHIP,
+      deathBlastDamage: 7,
+    });
   });
 
   it("registers the Goblin role mechanics and keeps Human and Undead mechanics", () => {
@@ -705,7 +709,7 @@ describe("ruleset-7 Goblin roster", () => {
 });
 
 describe("ruleset-7 Goblin technology", () => {
-  it("differs from the Human graph only in the Administration and Commerce unlocks", () => {
+  it("differs from the Human graph only in the Administration, Commerce, and Seamanship unlocks", () => {
     expect(GOBLIN_BASELINE_V1_NODES).toHaveLength(
       SHARED_BASELINE_NODES_V7.length,
     );
@@ -738,6 +742,13 @@ describe("ruleset-7 Goblin technology", () => {
         expect(goblin.unlocks).toEqual([
           { kind: "PLUNDER", coins: 2 },
           { kind: "COMMAND", command: "HIRE" },
+        ]);
+      // Themed naval branches (`pulp_wars-5ti.16`): Powder Kegs, the Ram and
+      // Fire Rafts in place of Board.
+      else if (human.id === "SEAMANSHIP")
+        expect(goblin.unlocks).toEqual([
+          { kind: "RAM" },
+          { kind: "FIRE_RAFTS" },
         ]);
       else expect(goblin.unlocks).toEqual(human.unlocks);
     });
@@ -802,6 +813,11 @@ describe("ruleset-7 Goblin technology", () => {
         MARKSMANSHIP: "Bomb Chuckers",
         SAWMILLING: "Rocket Carts",
         CHIVALRY: "Scrap Buggies",
+        // Themed naval branches (`pulp_wars-5ti.16`).
+        SHORECRAFT: "Fire Rafts",
+        NAVAL_ENGINEERING: "Dreadnoughts",
+        SEAMANSHIP: "Powder Kegs",
+        SUBMERSIBLES: "Diving Barrels",
       },
       DINOSAUR: {
         FORTIFICATION: "Nesting",

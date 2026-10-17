@@ -561,7 +561,10 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // (`pulp_wars-w49.37`): the Ice Witch casts in land form (an Egg, an
     // embarked unit, and a boat must fail both). Found by the Candy
     // redesign's rebase (`pulp_wars-jdb.12`): this pin had been left at 17.
-    "src/engine/v7/reducer.ts": 19,
+    // Themed naval branches (`pulp_wars-5ti.16`): the Kaboom's land-form
+    // gate moved into the shared `kaboomFormBlockV7` (ruleset-v7.ts), which
+    // a Fire Raft afloat passes with Powder Kegs.
+    "src/engine/v7/reducer.ts": 18,
     // Step two of the Martian pass (`pulp_wars-w49.25`, 7r58): City Walls
     // hold a land-form unit on its own center against a Saucer's Tractor
     // Beam (`unitHeldByCityWallsV7`; an Egg, an embarked unit, and a boat

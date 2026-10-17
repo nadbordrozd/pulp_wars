@@ -258,13 +258,13 @@ describe("rituals: identity", () => {
   // took 7r89 after it, and its Imp (`pulp_wars-mch9.36`) 7r90, and its
   // Gibbering Mass (`pulp_wars-mch9.37`) 7r91.
   it("was 7r88 for Star-fall alone and the daemons' advance, 7r87 refused", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r91");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r91.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-4, -2)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r92");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r92.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-5, -3)).toEqual([
       "pulp-wars-poc-7r87",
       "pulp-wars-poc-7r88",
     ]);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-4, -2)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-5, -3)).toEqual([
       "pulpWars.save.v7r87.current",
       "pulpWars.save.v7r88.current",
     ]);

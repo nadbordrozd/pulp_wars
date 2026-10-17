@@ -70,6 +70,9 @@ function attacks(state: GameStateV7, seat: 0 | 1, unitId: number): number[] {
 describe("training a Submarine", () => {
   it("is trained with TRAIN_NAVAL at an active empty dock for 9 Coins by every faction with Submersibles", () => {
     for (const faction of SEAFARING_FACTIONS) {
+      // Themed naval branches (`pulp_wars-5ti.16`): the faction's own
+      // numbers (the Goblin Diving Barrel costs 8 and has 10 HP).
+      const rule = effectiveRoleRuleV7("SUBMARINE", faction);
       const other: FactionIdV7 = faction === "ORIGINAL" ? "UNDEAD" : "ORIGINAL";
       const state = navalArenaV7({ factions: [faction, other], units: [] });
       const actor = seatV7(state, 0);
@@ -92,22 +95,27 @@ describe("training a Submarine", () => {
         homeCityId: city.id,
         role: "SUBMARINE",
         form: "NAVAL",
-        hp: 12,
-        maxHp: 12,
+        hp: rule.maxHp,
+        maxHp: rule.maxHp,
         activation: { handled: true },
       });
+      expect([rule.cost, rule.maxHp], faction).toEqual(
+        faction === "GOBLIN" ? [8, 10] : [9, 12],
+      );
       expect(result.events[0]).toEqual({
         kind: "NAVAL_UNIT_TRAINED",
         playerId: actor.id,
         cityId: city.id,
         unitId: trained.id,
         role: "SUBMARINE",
-        cost: 9,
+        cost: rule.cost,
         at: NAVAL_ARENA_PORTS_V7[0],
         dock: "PORT",
         discountSource: null,
       });
-      expect(seatV7(result.state, 0).coins).toBe(actor.coins - 9);
+      expect(seatV7(result.state, 0).coins).toBe(
+        actor.coins - (rule.cost ?? 0),
+      );
       expect(parseGameStateV7(result.state)).not.toBeNull();
     }
   });

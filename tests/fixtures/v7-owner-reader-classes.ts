@@ -58,6 +58,11 @@ export const OWNER_READER_CLASSES_V7: Readonly<
   // The naval branch (`pulp_wars-5ti.2`): the rammer is a seat's Patrol
   // Boat with Seamanship (the Spider is a land unit with no technology).
   "src/engine/v7/combat.ts::ramShoveDestinationV7": "PLAYER_ONLY",
+  // Themed naval branches (`pulp_wars-5ti.16`): the boarder is the acting
+  // seat's ship, and its seat's roster sets the prize's maximum HP and
+  // whether its Submarine is a sea beast (the Spider never boards).
+  "src/engine/v7/reducer.ts::applyBoard": "PLAYER_ONLY",
+  "src/engine/rules/ruleset-v7.ts::boardSeaBeastBlockedV7": "PLAYER_ONLY",
   "src/engine/v7/dwarf-reducer.ts::applyAssembleV7": "PLAYER_ONLY",
   // The tunnelling Mole is the acting seat's unit.
   "src/engine/v7/dwarf-reducer.ts::tunnelTileLegalV7": "PLAYER_ONLY",

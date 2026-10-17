@@ -333,6 +333,15 @@ const ENTRIES = {
     "Torpedo",
     "Attacks only ships and transports, and they cannot hit back.",
   ],
+  // Themed naval branches (docs/product/RULESET_7_NAVAL_FACTIONS.md
+  // sections 2 and 3, `pulp_wars-5ti.16`): the Goblin Scrap Dreadnought
+  // (the Fire Raft's Kaboom is the Goblins' Kaboom!), and the sea beasts of
+  // later factions.
+  SINKS_EXPLODING: [
+    "Explodes when it sinks",
+    "When it sinks it blows up and hurts every unit next to it, yours too. A boarded ship does not.",
+  ],
+  SEA_BEAST: ["Sea beast", "A living beast: it cannot be boarded."],
   AT_SEA: [
     "At sea",
     "A transport carries a land unit across water. The unit cannot fight until it lands on a shore.",
@@ -1005,6 +1014,8 @@ export function roleTraitGlossaryIdsV7(
     traits.push("SLOW_TO_STRIKE");
   if (ship) {
     if (mechanics.splash) traits.push("SPLASH");
+    // Themed naval branches (`pulp_wars-5ti.16`): the Scrap Dreadnought.
+    if (mechanics.deathBlastDamage !== null) traits.push("SINKS_EXPLODING");
     return traits;
   }
   // A Banshee's Ethereal and a Sabretooth's Prowl list it already.
