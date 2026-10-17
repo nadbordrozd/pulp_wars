@@ -2443,14 +2443,12 @@ html:has(.v7-match-shell) body {
 }
 
 /*
- * A dock with actions is a bottom bar: it spans the viewport less its
- * margins (capped at 90rem on very wide screens) so the action row gets
- * every column the portrait and the compact stat column leave. An
- * information-only dock stays sized to its content.
+ * Bead pulp_wars-2yc.82 (UI review S2): every dock, with actions or
+ * without, is sized to its content and centred on a wide screen, up to the
+ * viewport less its margins (capped at 90rem); its action row wraps when
+ * it would be wider. A phone's dock with actions spans the screen (the
+ * narrow-screen rules below), so its equal-column action grid fills it.
  */
-.v7-selection-dock[data-has-actions="true"] {
-  width: 100%;
-}
 
 .v7-selection-dock[data-selection-kind="tile"] {
   grid-template-columns: auto minmax(0, 1fr);
@@ -4547,6 +4545,14 @@ html:has(.v7-match-shell) body {
   .v7-selection-dock[data-selection-kind="tile"] {
     grid-template-columns: auto minmax(0, 1fr);
     overflow-y: auto;
+  }
+
+  /*
+   * A dock with actions is a bottom bar here: it spans the screen less its
+   * margins, so the action grid gets every column.
+   */
+  .v7-selection-dock[data-has-actions="true"] {
+    width: 100%;
   }
 
   .v7-selection-dock > .v7-context-actions,
@@ -8424,9 +8430,14 @@ body:has(> #app [data-v7-gallery]) {
   height: 16px;
 }
 
-/* The HUD button the coach points at: a yellow ring, and a slow pulse. */
+/*
+ * The HUD button the coach points at: a yellow ring, and a slow pulse.
+ * End Turn takes the same with nothing useful left to do (bead
+ * pulp_wars-2yc.82, end-turn-glow-v7.ts), every turn.
+ */
 .v7-hud-tech[data-first-step],
-.v7-hud-end-turn[data-first-step] {
+.v7-hud-end-turn[data-first-step],
+.v7-hud-end-turn[data-nothing-left="true"] {
   outline: var(--pw-line-w) solid var(--pw-yellow);
   outline-offset: 2px;
 }
@@ -8443,7 +8454,9 @@ body:has(> #app [data-v7-gallery]) {
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .v7-app-shell:not([data-motion="reduced"]) [data-first-step="pulse"] {
+  .v7-app-shell:not([data-motion="reduced"]) [data-first-step="pulse"],
+  .v7-app-shell:not([data-motion="reduced"])
+    .v7-hud-end-turn[data-nothing-left="true"] {
     animation: v7-first-step-pulse 1.1s ease-in-out infinite;
   }
 }

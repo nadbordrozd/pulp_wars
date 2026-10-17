@@ -146,9 +146,11 @@ unexplored tile plays "a little animation, like the fog is sort of
 smoking"; the square selection box Pulp Wars drew there was "inelegant".
 
 [`fog-puff-v7.ts`](../../src/render/canvas/fog-puff-v7.ts). A tap (or Enter)
-on an unexplored tile still selects it (the dock reads "Unexplored"), but
-the board draws no selection box there, and no map cursor while the
-cursor rests on that tile. Instead the cloud stirs for 0.8 s (0.6 s at the
+on an unexplored tile draws no selection box there. Since bead
+`pulp_wars-2yc.82` it opens no dock and keeps no selection either (the
+dock read only "Unexplored"), and after a pointer tap no map cursor is
+drawn while the cursor rests on that tile (the keyboard keeps its cursor).
+Instead the cloud stirs for 0.8 s (0.6 s at the
 fast animation speed): the cell's own cloud swells, four smaller puffs
 leave it, fanned left and right, rising about half a cell, and thin away
 while the swell sinks back, and the fog settles. The puffs are drawn like
@@ -167,6 +169,12 @@ unexplored ground is selected with the box as usual; the keyboard cursor
 shows on the fog again once it moves off the tapped tile. `?fog-puff=0`
 (or `FOG_PUFF_ENABLED_V7`) turns the puff off; the box stays off.
 Frames: `npx tsx scripts/art/terrain-fog/review.ts puff <out-dir>`.
+
+**On plain ground** (bead `pulp_wars-2yc.82`, UI review S1): a tap on an
+explored tile that opens no dock (nothing on it to show or do) plays the
+same puff in a faint cream dust (`GROUND_PUFF_COLOURS_V7`, lit from the
+bottom left like the cloud) at 55 % of its alpha, and, after a pointer
+tap, draws no cursor box on the tile.
 
 ## The night sky
 

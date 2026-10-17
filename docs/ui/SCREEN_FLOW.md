@@ -394,6 +394,44 @@ then the city to train in. Capture and End turn follow the sequence.
   from an offered command, so it never suggests an action a mission
   forbids.
 
+#### Dock and End Turn, streamlined (bead `pulp_wars-2yc.82`)
+
+From the UI review ([UI_REVIEW_2026_10.md](UI_REVIEW_2026_10.md), S1, S2
+and V10).
+
+- **A tile with nothing to show opens no dock.** A plain tile (bare
+  ground, a Forest, water or a road with no building, no resource the
+  viewer knows, no fact chip such as a Grave, a curiosity, ice, Snow,
+  Crumbs, a mound or a Barricade, and no action or research prompt) and an
+  unexplored tile open no dock and are not kept selected; a tap there also
+  lets go of a selected unit or city. The board answers the tap lightly:
+  the fog's puff on the fog, the same puff in a faint dust on explored
+  ground ([ATMOSPHERE.md](../art/ATMOSPHERE.md)), and no cursor box after
+  a pointer tap. The board's description still names the focused cell for
+  a screen reader. A tile with anything to show keeps its dock as before.
+- **A harvest deselects its tile.** When a tile action leaves the selected
+  tile with nothing to show (a Harvest, a Hunt, a Fish), the dock closes
+  and the selection goes.
+- **The desktop dock fits its content.** Above 800 px every dock, with
+  actions or without, is sized to its content and centred, up to the
+  screen less its margins (at most 90rem); its action row wraps when it
+  would be wider. At 800 px and under a dock with actions still spans the
+  screen with its equal-column action grid.
+- **Nothing left glow.** End Turn takes the coach's yellow ring and soft
+  pulse (a still ring under reduced motion) whenever nothing useful is
+  left, every turn (`src/render/end-turn-glow-v7.ts`). It is read from the
+  offered commands alone and is conservative: it stays dark while any of
+  these is offered: a command of an own unit other than Wait, Disband and
+  Recover (End Turn recovers an idle unit by itself), so every move,
+  attack, capture and ability counts; a city command (train, naval
+  training, Land Grant, Hire, Lay Egg, an Offering, a city reward);
+  Research; a harvest or one of the coach's basic buildings (Fruit, Game,
+  Fish, Pearls, Farm, Lumber Camp, Mine) or Build Monument. Roads, forest
+  clearing, replanting and cultivating, blasting, redeveloping and the
+  later buildings (Windmill, Port and the like) do not count: they are on
+  offer whenever Coins last. While the coach points at End Turn, or the
+  tutorial runs, they lead instead.
+
 #### Tutorial
 
 Bead `pulp_wars-0yxy`. The main menu's **Tutorial** starts a guided first

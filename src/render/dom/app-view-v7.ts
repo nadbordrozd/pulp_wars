@@ -851,6 +851,7 @@ import {
   type FirstStepCueV7,
   type FirstStepsProgressV7,
 } from "../first-steps-v7";
+import { nothingUsefulLeftV7 } from "../end-turn-glow-v7";
 import {
   NEW_TUTORIAL_PROGRESS_V7,
   TUTORIAL_FAREWELL_V7,
@@ -1676,6 +1677,11 @@ export class Ruleset7DomAppView {
     map: false,
   };
   #selection: BoardSelectionV7 | null = null;
+  /**
+   * Bead pulp_wars-2yc.82: the tile a board tap selected, until the next
+   * render; a tile that opens no dock gets the board's light tap cue.
+   */
+  #tappedTile: CoordV7 | null = null;
   #screen: ScreenV7 = "MATCH";
   #selectedTech: TechnologyIdV7 | null = null;
   /** The pointers of the gesture on the technology screen, to tell a tap. */
@@ -4842,6 +4848,16 @@ export class Ruleset7DomAppView {
       end.disabled = this.#localBusy() || blocked;
       if (firstStep?.button === "END_TURN")
         end.dataset.firstStep = firstStep.buttonMotion.toLowerCase();
+      // Bead pulp_wars-2yc.82 (UI review V10): with nothing useful left
+      // (end-turn-glow-v7.ts), End Turn takes the coach's soft pulse,
+      // every turn. The coach's own pointer and the tutorial come first.
+      else if (
+        !end.disabled &&
+        tutorial === null &&
+        !tutorialForces &&
+        nothingUsefulLeftV7(this.#snapshot.offeredCommands)
+      )
+        end.dataset.nothingLeft = "true";
       nav.append(end);
     } else if (
       tutorialForces &&
@@ -4935,6 +4951,18 @@ export class Ruleset7DomAppView {
       focusedBefore.matches(".v7-tech-graph");
     const dock =
       this.#selection === null ? null : this.#dock(view, this.#selection);
+    // Bead pulp_wars-2yc.82 (UI review S1): a tile with no dock (a plain
+    // tile, the fog, a tile a harvest has just emptied) is not kept
+    // selected, so the board draws no box on it. A tap there gets the
+    // board's light cue instead.
+    const tapped = this.#tappedTile;
+    this.#tappedTile = null;
+    if (dock === null && this.#selection?.kind === "TILE") {
+      const at = this.#selection.at;
+      this.#selection = null;
+      if (tapped !== null && same(tapped, at)) this.#boardHost.quietTap?.(at);
+      else this.#boardHost.releaseCursor?.(at);
+    }
     if (dock !== null) {
       dock.dataset.v7Region = "dock";
       nextChildren.push(dock);
@@ -7155,7 +7183,10 @@ export class Ruleset7DomAppView {
         same(candidate.at, selection.at),
       );
       if (tile === undefined) return null;
-      if (!tile.explored) dock.append(text(this.#document, "h2", "Unexplored"));
+      // Bead pulp_wars-2yc.82 (UI review S1): a tile that offers nothing
+      // opens no dock; the render then clears the selection and the board
+      // gives the tap its light cue. The fog has nothing to show at all.
+      if (!tile.explored) return null;
       else {
         const asset =
           tile.improvement === null
@@ -7661,6 +7692,18 @@ export class Ruleset7DomAppView {
           (command) => "at" in command && same(command.at, tile.at),
           tileResearchPromptsV7(view, tile.at),
         );
+        // Bead pulp_wars-2yc.82 (UI review S1): a plain tile (bare ground,
+        // a Forest, water or a road, with no building, no resource the
+        // viewer knows, no fact chip and no action) would be a dock that
+        // only names its terrain: none opens. The board still says what
+        // the focused cell is to a screen reader.
+        if (
+          tile.improvement === null &&
+          (tile.resource === null || tile.resource === "UNKNOWN_RESOURCE") &&
+          details.childElementCount === 0 &&
+          dock.dataset.hasActions !== "true"
+        )
+          return null;
       }
     }
     dock.append(close);
@@ -8316,6 +8359,7 @@ export class Ruleset7DomAppView {
   #selectOnBoard(selection: BoardSelectionV7 | null): void {
     if (selection !== null) this.#audio.play("ui.select");
     this.#selection = selection;
+    this.#tappedTile = selection?.kind === "TILE" ? selection.at : null;
     this.#tileChooser = null;
     this.#clearFirstStepOutOfMoves();
     this.#kaboomArmedUnitId = null;

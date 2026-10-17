@@ -188,14 +188,20 @@ describe("Ruleset 7 selection dock layout", () => {
     undeadApp.destroy();
   });
 
-  it("widens a dock with actions into a capped bottom bar", () => {
+  // Bead pulp_wars-2yc.82 (UI review S2): on a wide screen every dock is
+  // sized to its content and centred; only a phone's dock with actions
+  // spans the screen.
+  it("sizes a desktop dock to its content and widens a phone's dock with actions", () => {
     const dockRule = rule(".v7-selection-dock");
     expect(dockRule).toMatch(/\n {2}width: fit-content;/);
+    expect(dockRule).toMatch(/\n {2}margin-inline: auto;/);
     expect(dockRule).toMatch(
       /\n {2}max-width: min\(calc\(100% - 1\.2rem\), 90rem\);/,
     );
-    expect(rule('.v7-selection-dock[data-has-actions="true"]')).toMatch(
-      /\n {2}width: 100%;/,
+    expect(() => rule('.v7-selection-dock[data-has-actions="true"]')).toThrow();
+    const phone = /@media \(max-width: 800px\) \{([\s\S]*?)\n\}/.exec(CSS)?.[1];
+    expect(phone).toMatch(
+      /\.v7-selection-dock\[data-has-actions="true"\] \{\n {4}width: 100%;\n {2}\}/,
     );
   });
 

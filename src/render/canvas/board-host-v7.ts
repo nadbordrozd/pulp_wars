@@ -251,6 +251,8 @@ import {
   fogPuffDurationMsV7,
   fogPuffEnabledV7,
   fogPuffLengthMsV7,
+  GROUND_PUFF_ALPHA_V7,
+  GROUND_PUFF_COLOURS_V7,
   type FogPuffSurfaceV7,
   type FogPuffV7,
 } from "./fog-puff-v7";
@@ -400,6 +402,19 @@ export interface BoardHostV7 {
   mount(container: HTMLElement, callbacks: BoardHostCallbacksV7): void;
   update(model: BoardHostModelV7): void;
   activate(at: CoordV7): void;
+  /**
+   * Bead pulp_wars-2yc.82 (UI review S1): the tile just tapped opens no
+   * dock and is not kept selected. The board answers the tap lightly (the
+   * fog's puff, or a faint dust puff on explored ground) and, after a
+   * pointer tap, draws no cursor box on it until the keyboard moves on.
+   */
+  quietTap?(at: CoordV7): void;
+  /**
+   * Bead pulp_wars-2yc.82: the selected tile `at` was let go without a
+   * tap (a harvest emptied it). After a pointer tap put the cursor there,
+   * no cursor box is drawn on it until the keyboard moves on.
+   */
+  releaseCursor?(at: CoordV7): void;
   resetInspectionCycle?(): void;
   zoom(direction: "IN" | "OUT"): void;
   focus(): void;
@@ -610,6 +625,15 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
   #fogPuffSurface: FogPuffSurfaceV7 | null | undefined;
   /** Review tooling only (pinFogPuff): a puff held at a time. */
   #pinnedFogPuff: FogPuffV7 | null = null;
+  /**
+   * Bead pulp_wars-2yc.82 (UI review S1): the puff plays on explored
+   * ground, a tap on a plain tile, in the faint dust colours.
+   */
+  #fogPuffGround = false;
+  /** A plain tile tapped by pointer: no cursor box on it while it rests. */
+  #quietCursorAt: CoordV7 | null = null;
+  /** Whether a pointer tap (not the keyboard) put the cursor where it is. */
+  #focusedByPointer = false;
   /**
    * The victory wave (pulp_wars-556y, victory-wave-v7.ts): when the viewer
    * wins, every explored cell hops in a widening ring and takes the
@@ -1211,6 +1235,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
 
   activate(at: CoordV7): void {
     this.#focused = at;
+    this.#focusedByPointer = false;
     const serial = this.#drawSerial;
     this.#activate(at);
     this.#describe();
@@ -2195,9 +2220,15 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     const commands = offered.length === 0 ? NO_COMMANDS : offered;
     const model = this.#model;
     if (model === null) throw new Error("Board plan requires a mounted model");
+    const quiet = this.#quietCursorAt;
     const interaction = {
       ...model.interaction,
-      cursor: model.showCursor === false ? null : this.#focused,
+      cursor:
+        model.showCursor === false ||
+        // Bead pulp_wars-2yc.82: a tapped plain tile draws no box at all.
+        (quiet !== null && this.#focused !== null && same(quiet, this.#focused))
+          ? null
+          : this.#focused,
     };
     const interactionKey = JSON.stringify(interaction);
     const cached = this.#planCache.find(
@@ -3203,6 +3234,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
   #activate(at: CoordV7): void {
     const model = this.#model;
     if (model === null) return;
+    this.#quietCursorAt = null;
     if (this.#inspectionCycle !== null && !same(this.#inspectionCycle.at, at))
       this.#inspectionCycle = null;
     // Tile actions (bead pulp_wars-2yc.60): a badged tile's action, or its
@@ -3496,6 +3528,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       const at = pickGridTile(point, this.#camera, model.view.board);
       if (at !== null) {
         this.#focused = at;
+        this.#focusedByPointer = true;
         const serial = this.#drawSerial;
         this.#activate(at);
         this.#describe();
@@ -3612,6 +3645,9 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
   readonly #onKeyDown = (event: KeyboardEvent): void => {
     const model = this.#model;
     if (model === null) return;
+    // Bead pulp_wars-2yc.82: the keyboard shows its cursor again.
+    this.#quietCursorAt = null;
+    this.#focusedByPointer = false;
     if (event.key === "+" || event.key === "=") {
       event.preventDefault();
       this.zoom("IN");
@@ -3979,10 +4015,30 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     this.#impact = null;
   }
 
-  /** Bead pulp_wars-2yc.77: starts (or starts again) the fog puff on `at`. */
-  #startFogPuff(at: CoordV7): void {
+  releaseCursor(at: CoordV7): void {
+    const focused = this.#focused;
+    if (this.#focusedByPointer && focused !== null && same(focused, at))
+      this.#quietCursorAt = { x: at.x, y: at.y };
+  }
+
+  quietTap(at: CoordV7): void {
+    const model = this.#model;
+    if (model === null) return;
+    this.releaseCursor(at);
+    // The fog's own puff plays from the tap itself (`#activate`).
+    if (selectsFogV7(model.view, { kind: "TILE", at })) return;
+    this.#startFogPuff(at, true);
+  }
+
+  /**
+   * Bead pulp_wars-2yc.77: starts (or starts again) the fog puff on `at`;
+   * `ground` (bead pulp_wars-2yc.82) plays it on explored ground, in the
+   * faint dust colours.
+   */
+  #startFogPuff(at: CoordV7, ground = false): void {
     if (!this.#fogPuffEnabled) return;
     this.#cancelFogPuff();
+    this.#fogPuffGround = ground;
     this.#fogPuff.start(at, this.#now());
     this.#drawSupportOverlay();
     this.#pumpFogPuff();
@@ -4057,6 +4113,10 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     }
     canvas.dataset.fogPuff = puff.alphaScale < 1 ? "still" : "playing";
     canvas.dataset.fogPuffProgress = puff.progress.toFixed(3);
+    // Bead pulp_wars-2yc.82: a plain tile's tap is the same puff in dust.
+    const ground = this.#pinnedFogPuff === null && this.#fogPuffGround;
+    if (ground) canvas.dataset.fogPuffGround = "true";
+    else delete canvas.dataset.fogPuffGround;
     if (this.#fogPuffSurface === undefined)
       this.#fogPuffSurface = createFogPuffSurfaceV7(this.#document);
     drawFogPuffV7(
@@ -4066,13 +4126,17 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         devicePixelRatio: dpr,
         viewport: this.#viewport,
       },
-      puff,
-      // The cloud's palette in the live look; the flat fog's otherwise.
-      fogPuffColoursV7(
-        this.#model?.visualDirection === undefined
-          ? "OFF"
-          : (this.#fogArt?.palette ?? "OFF"),
-      ),
+      ground
+        ? { ...puff, alphaScale: puff.alphaScale * GROUND_PUFF_ALPHA_V7 }
+        : puff,
+      ground
+        ? GROUND_PUFF_COLOURS_V7
+        : // The cloud's palette in the live look; the flat fog's otherwise.
+          fogPuffColoursV7(
+            this.#model?.visualDirection === undefined
+              ? "OFF"
+              : (this.#fogArt?.palette ?? "OFF"),
+          ),
       this.#fogPuffSurface,
     );
   }

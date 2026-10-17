@@ -38,12 +38,17 @@ function setUp(motion: "FULL" | "REDUCED") {
   });
   // Every context records what it is asked to draw.
   const drawn: { canvas: unknown; at: number }[] = [];
+  /** How many cursor boxes (dotted white) the board has stroked. */
+  const cursors = { count: 0 };
   vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockImplementation(
     function (this: HTMLCanvasElement) {
       const { classList } = this;
       const target: Record<PropertyKey, unknown> = {
         fillStyle: "",
         strokeStyle: "",
+        strokeRect: vi.fn(() => {
+          if (target.strokeStyle === "#ffffff") cursors.count += 1;
+        }),
         createImageData: (width: number, height: number) => ({
           width,
           height,
@@ -113,14 +118,44 @@ function setUp(motion: "FULL" | "REDUCED") {
   )?.at;
   if (fog === undefined || ground === undefined)
     throw new Error("fixture needs fog and explored ground");
+  const board = container.querySelector<HTMLCanvasElement>(
+    "canvas:not(.board-effects-canvas-v7)",
+  );
+  if (board === null) throw new Error("no board canvas");
+  Object.defineProperty(board, "getBoundingClientRect", {
+    value: () => ({
+      width: 800,
+      height: 600,
+      left: 0,
+      top: 0,
+      right: 800,
+      bottom: 600,
+    }),
+  });
   return {
     host,
+    board,
     effects,
     fog,
     ground,
     selections,
     drawn,
     frames,
+    cursors,
+    /** A pointer tap (down and up in place) on the centre of `at`. */
+    tap(at: { readonly x: number; readonly y: number }) {
+      const centre = host.cellCentreCssPx(at);
+      for (const kind of ["pointerdown", "pointerup"]) {
+        const event = new MouseEvent(kind, {
+          bubbles: true,
+          clientX: centre.x,
+          clientY: centre.y,
+        });
+        Object.defineProperty(event, "pointerId", { value: 1 });
+        Object.defineProperty(event, "pointerType", { value: "touch" });
+        board.dispatchEvent(event);
+      }
+    },
     setNow(time: number) {
       now = time;
     },
@@ -194,6 +229,100 @@ describe("The fog puff on the board host", () => {
     scene.setNow(FOG_PUFF_V7.reducedHoldMs);
     vi.advanceTimersByTime(FOG_PUFF_V7.reducedHoldMs);
     expect(scene.effects.dataset.fogPuff).toBeUndefined();
+    scene.host.destroy();
+  });
+});
+
+/**
+ * Bead pulp_wars-2yc.82 (UI review S1): the app asks for a quiet tap when
+ * the tapped tile opens no dock. On explored ground the same puff plays in
+ * the faint dust colours; on the fog the fog's own puff stays; after a
+ * pointer tap no cursor box is drawn on the tile, while the keyboard keeps
+ * its cursor.
+ */
+describe("The quiet tap on a plain tile", () => {
+  it("plays the puff in dust on explored ground", () => {
+    const scene = setUp("FULL");
+    scene.setNow(0);
+    scene.host.activate(scene.ground);
+    scene.host.quietTap(scene.ground);
+    expect(scene.effects.dataset.fogPuff).toBe("playing");
+    expect(scene.effects.dataset.fogPuffGround).toBe("true");
+    scene.step(FOG_PUFF_V7.durationMs + 1);
+    expect(scene.effects.dataset.fogPuff).toBeUndefined();
+    scene.host.destroy();
+  });
+
+  it("keeps the fog's own puff on the fog", () => {
+    const scene = setUp("FULL");
+    scene.setNow(0);
+    scene.host.activate(scene.fog);
+    scene.host.quietTap(scene.fog);
+    expect(scene.effects.dataset.fogPuff).toBe("playing");
+    expect(scene.effects.dataset.fogPuffGround).toBeUndefined();
+    scene.host.destroy();
+  });
+
+  it("draws no cursor box on a plain tile tapped by pointer, until the keyboard moves", () => {
+    const scene = setUp("REDUCED");
+    // A tap the app keeps selected draws the cursor box as before.
+    scene.cursors.count = 0;
+    scene.tap(scene.ground);
+    expect(scene.cursors.count).toBeGreaterThan(0);
+    // The app answers a tap on a tile with no dock with a quiet tap.
+    scene.selections.mockImplementation(() =>
+      scene.host.quietTap(scene.ground),
+    );
+    scene.cursors.count = 0;
+    scene.tap(scene.ground);
+    expect(scene.selections).toHaveBeenLastCalledWith({
+      kind: "TILE",
+      at: scene.ground,
+    });
+    expect(scene.cursors.count).toBe(0);
+    // The keyboard shows its cursor again.
+    scene.board.dispatchEvent(
+      new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true }),
+    );
+    expect(scene.cursors.count).toBeGreaterThan(0);
+    scene.host.destroy();
+  });
+
+  it("lets the cursor box go from a tapped tile a harvest has emptied", () => {
+    const scene = setUp("REDUCED");
+    scene.tap(scene.ground);
+    // The app lets the tile go (its harvest emptied it); the next draw has
+    // no cursor box there and plays no puff.
+    scene.host.releaseCursor(scene.ground);
+    scene.cursors.count = 0;
+    scene.host.update({
+      matchInstanceId: 1,
+      view: viewForV7(initialV7(71), initialV7(71).humanPlayerId),
+      offeredCommands: [],
+      interactive: true,
+      motion: "REDUCED",
+      animationSpeed: "NORMAL",
+      presentationPaused: false,
+      highContrast: false,
+      interaction: {
+        selection: null,
+        selectedUnitId: null,
+        selectedAchievement: null,
+      },
+    });
+    expect(scene.cursors.count).toBe(0);
+    expect(scene.effects.dataset.fogPuff).toBeUndefined();
+    scene.host.destroy();
+  });
+
+  it("keeps the cursor box when the keyboard activates the tile", () => {
+    const scene = setUp("REDUCED");
+    scene.selections.mockImplementation(() =>
+      scene.host.quietTap(scene.ground),
+    );
+    scene.cursors.count = 0;
+    scene.host.activate(scene.ground);
+    expect(scene.cursors.count).toBeGreaterThan(0);
     scene.host.destroy();
   });
 });
