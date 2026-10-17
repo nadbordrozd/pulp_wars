@@ -1708,6 +1708,12 @@ export class Ruleset7DomAppView {
     readonly achievement: AchievementIdV7;
     /** What the player did, with its number (bead pulp_wars-2yc.70). */
     readonly deed: string;
+    /**
+     * Bead pulp_wars-2yc.84: the boundary that earned it, while the board
+     * has still to play it; the notice opens once it has played, so its
+     * scrim never hides that playback. Null once played (or never held).
+     */
+    playback: Ruleset7AcceptedBoundary | null;
   }[] = [];
   /**
    * The deed line of each achievement this match unlocked while this view
@@ -4560,6 +4566,8 @@ export class Ruleset7DomAppView {
         this.#snapshot.phase === "COMPLETE") &&
       view.pendingChoices.length === 0 &&
       this.#achievementNotices.length > 0 &&
+      // Bead pulp_wars-2yc.84: not over the playback that earned it.
+      this.#achievementNotices[0]?.playback === null &&
       // The victory wave plays before any dialog of the won match.
       this.#victoryHold === null;
     let shell = this.#matchShell;
@@ -11486,6 +11494,7 @@ export class Ruleset7DomAppView {
         this.#achievementNotices.push({
           achievement: event.achievement,
           deed,
+          playback: this.#snapshot.ai.fastForward ? null : boundary,
         });
       }
     const notice = boundaryNoticeV7(
@@ -11535,6 +11544,7 @@ export class Ruleset7DomAppView {
       while (!this.#destroyed && this.#presentationQueue.length > 0) {
         if (this.#snapshot.ai.fastForward) {
           this.#presentationQueue = [];
+          this.#releaseAchievementNotices();
           this.#releaseAiPacing();
           this.#finishFeedback();
           break;
@@ -11577,6 +11587,13 @@ export class Ruleset7DomAppView {
               this.#launchFeedback(next.feedback),
             ),
           );
+        // Its achievement notices may open now (bead pulp_wars-2yc.84).
+        if (
+          this.#releaseAchievementNotices(next.boundary) &&
+          !this.#destroyed &&
+          this.#presentationQueue.length > 0
+        )
+          this.#render();
       }
       if (this.#presentationQueue.length === 0) {
         this.#presentationActive = false;
@@ -11584,7 +11601,27 @@ export class Ruleset7DomAppView {
       }
     });
   }
+  /**
+   * Bead pulp_wars-2yc.84: the notices held for `boundary` (every held one
+   * without it) may open; true when one was held.
+   */
+  #releaseAchievementNotices(
+    boundary: Ruleset7AcceptedBoundary | null = null,
+  ): boolean {
+    let released = false;
+    for (const notice of this.#achievementNotices)
+      if (
+        notice.playback !== null &&
+        (boundary === null || notice.playback === boundary)
+      ) {
+        notice.playback = null;
+        released = true;
+      }
+    return released;
+  }
+
   #cancelPresentations(): void {
+    this.#releaseAchievementNotices();
     this.#presentationQueue = [];
     this.#presentationActive = false;
     this.#boardHost.finishPresentations?.();

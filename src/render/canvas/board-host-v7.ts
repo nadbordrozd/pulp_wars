@@ -523,7 +523,16 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
   } | null = null;
   #wheelDelta = 0;
   #resizeObserver: ResizeObserver | null = null;
-  #animatedUnit: { readonly id: number; readonly at: CoordV7 } | null = null;
+  /**
+   * The unit drawn off its tile this frame. `travels`: it is on its way to
+   * another tile (a Move step), not lunging and coming back, so the
+   * selection box goes with it (bead pulp_wars-2yc.84).
+   */
+  #animatedUnit: {
+    readonly id: number;
+    readonly at: CoordV7;
+    readonly travels?: true;
+  } | null = null;
   #animationFrame: number | null = null;
   #animationResolve: (() => void) | null = null;
   #presentationToken = 0;
@@ -1826,7 +1835,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         // The unit waits on its first tile while the camera comes to it.
         const first = step.path[0];
         if (cells !== undefined && first !== undefined)
-          this.#animatedUnit = { id: step.unitId, at: first };
+          this.#animatedUnit = { id: step.unitId, at: first, travels: true };
       }
       if (cells !== undefined) {
         // The camera moves only for an event outside the comfort zone, and
@@ -2460,6 +2469,21 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       const animated = this.#animatedUnit;
       const held = this.#heldUnits;
       const hidden = this.#juiceHidden;
+      // Bead pulp_wars-2yc.84: a selected unit's box goes where the unit is
+      // drawn: with it while it travels (a forced advance after a kill, a
+      // Move), on its tile while it lunges or waits, so it never arrives on
+      // the far tile before the unit does.
+      const selection = model.interaction.selection;
+      const selectedUnitId =
+        selection?.kind === "UNIT" ? selection.unitId : null;
+      const selectedAt =
+        selectedUnitId === null
+          ? undefined
+          : animated?.id === selectedUnitId
+            ? animated.travels === true
+              ? animated.at
+              : { x: Math.round(animated.at.x), y: Math.round(animated.at.y) }
+            : held.get(selectedUnitId);
       const present = (shown: typeof plan): typeof plan =>
         animated === null && held.size === 0 && hidden.size === 0
           ? shown
@@ -2473,6 +2497,10 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
                       !hidden.has(Number(entry.key.slice(5))),
                   )
               ).map((entry) => {
+                if (entry.kind === "SELECTION")
+                  return selectedAt === undefined
+                    ? entry
+                    : { ...entry, at: selectedAt };
                 if (entry.kind !== "UNIT") return entry;
                 if (animated !== null && entry.key === `unit:${animated.id}`)
                   return { ...entry, at: animated.at };
@@ -4020,6 +4048,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
           x: from.x + (to.x - from.x) * local,
           y: from.y + (to.y - from.y) * local - hop,
         },
+        travels: true,
       };
       this.#draw();
     });

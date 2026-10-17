@@ -366,8 +366,11 @@ then the city to train in. Capture and End turn follow the sequence.
 - **The marker** is a yellow arrow with an ink keyline and a hard shadow,
   drawn by the feedback layer over the city, tile or unit
   (`drawFirstStepMarkerV7`). It hops once about every second in full
-  motion. With Motion set to Reduced it is drawn still and the HUD button
-  has a still yellow ring instead of a pulse. It is drawn only while the
+  motion. A tile just below a city (or a named village) has that name
+  plate in its top strip, so there the arrow points up at the tile from
+  below and hops down, covering neither the plate nor the tile's piece
+  (bead `pulp_wars-2yc.84`). With Motion set to Reduced it is drawn still
+  and the HUD button has a still yellow ring instead of a pulse. It is drawn only while the
   board takes the player's input: never during AI turns, a presentation, or
   behind a dialog or the technology screen.
 - **Aiming.** While an ability, a Kaboom! or an Egg's nest is being aimed
@@ -606,6 +609,10 @@ Nothing here changes a rule, an event or a saved game.
   before it at once. A crossfade (a reveal, a Build, a Disband, and every
   reduced-motion step) lays the view after over the view before, so only
   what changes fades; the rest of the map stays as it is.
+- **The selection box goes with its unit** (bead `pulp_wars-2yc.84`). While
+  a selected unit walks (a Move, the advance after a kill) the box is drawn
+  where the unit is; while it lunges or waits the box stays on its tile. It
+  never reaches the far tile before the unit.
 - **Catching up.** When more than three boundaries wait to play (which the
   waiting AI no longer causes; a hidden page still can), playback shortens
   with the queue, down to 0.375 of Normal (90 ms a tile, the old Normal) at
@@ -2147,7 +2154,9 @@ what changed.
 - **Completion notice.** "{Name} achievement complete", with the display
   name ("Land Baron", "Sea Dog"), then "You can now build a monument on one
   of your tiles." Notices queue in event order and wait for a mandatory
-  city reward.
+  city reward. A notice also waits until the board has played the command
+  that earned it (a Knight's kill and advance, a Move that explores), so
+  its scrim never hides that playback (bead `pulp_wars-2yc.84`).
 - **The deed** (bead `pulp_wars-2yc.70`, the user 2026-10-16). Between the
   heading and the reward line the notice says what the player did, with
   the number that earned it, read from the view right after the unlock

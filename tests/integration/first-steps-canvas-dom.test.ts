@@ -11,10 +11,12 @@ import {
   CanvasBoardHostV7,
   type BoardHostModelV7,
 } from "../../src/render/canvas/board-host-v7";
+import { cityNameLabelLayoutV7 } from "../../src/render/canvas/city-name-label-v7";
 import {
   drawFirstStepMarkerV7,
   firstStepMarkerWidthCssPxV7,
 } from "../../src/render/canvas/feedback-canvas-v7";
+import { firstStepMarkerTipYV7 } from "../../src/render/canvas/feedback-host-v7";
 import {
   FIRST_STEP_HOP_AMPLITUDE_CSS_PX_V7,
   FIRST_STEP_HOP_MS_V7,
@@ -586,6 +588,74 @@ describe("the first-steps marker on the board", () => {
     expect(Math.max(...xs) - Math.min(...xs)).toBeCloseTo(
       firstStepMarkerWidthCssPxV7(1),
     );
+    host.destroy();
+  });
+
+  // Bead pulp_wars-2yc.84: the tile just below a city has the city's name
+  // plate in its top strip; the arrow points up at that tile from below,
+  // so it covers neither the plate nor the tile's piece.
+  it("never covers the name plate of the city just above the tile it points at", () => {
+    const below: CoordV7 = { x: CAPITAL.x, y: CAPITAL.y + 1 };
+    expect(
+      view.cities.some(
+        (city) => city.at.x === CAPITAL.x && city.at.y === CAPITAL.y,
+      ),
+    ).toBe(true);
+    const { host } = mountHost({ kind: "TILE", at: below, motion: "HOP" });
+    // Under the plate the hop goes down, away from the tile and the plate.
+    expect(host.feedback.firstStepMarkerFrame(150)).toMatchObject({
+      kind: "TILE",
+      at: below,
+      underNamePlate: true,
+    });
+    for (const time of [0, 100, 200, 300, 460])
+      expect(
+        host.feedback.firstStepMarkerFrame(time)?.hopCssPx,
+      ).toBeGreaterThanOrEqual(0);
+    expect(host.feedback.firstStepMarkerFrame(150)?.hopCssPx).toBeGreaterThan(
+      0,
+    );
+    let clock = 0;
+    vi.spyOn(window.performance, "now").mockImplementation(() => clock);
+    for (const zoom of [0.625, 1, 1.75])
+      for (const time of [0, 100, 150, 200, 300, 460, 900]) {
+        clock = time;
+        const { context, fills } = recordingContext();
+        const camera = { offsetX: 40, offsetY: 20, zoom };
+        host.feedback.drawAbove(context, camera, () => null);
+        const arrow = fills[1]?.points ?? [];
+        expect(arrow.length).toBeGreaterThan(0);
+        const centre = projectGrid(CAPITAL);
+        const plate = cityNameLabelLayoutV7(
+          {
+            x: camera.offsetX + centre.x * zoom,
+            y: camera.offsetY + centre.y * zoom,
+          },
+          zoom,
+        );
+        const plateBottom = plate.top + plate.height + plate.edgeWidth / 2;
+        const keyline = Math.max(2, firstStepMarkerWidthCssPxV7(zoom) * 0.085);
+        const arrowTop = Math.min(...arrow.map(([, y]) => y)) - keyline / 2;
+        expect(arrowTop).toBeGreaterThan(plateBottom);
+        // It points up, its tip in the lower half of the tile it means.
+        const tip = arrow[0]?.[1] ?? 0;
+        for (const [, y] of arrow.slice(1)) expect(y).toBeGreaterThan(tip);
+        const tileCentre = camera.offsetY + (centre.y + TILE_WIDTH) * zoom;
+        expect(tip).toBeGreaterThan(tileCentre);
+        expect(tip).toBeLessThan(tileCentre + (TILE_WIDTH / 2) * zoom);
+      }
+    host.destroy();
+  });
+
+  it("keeps its place over a tile with no name plate above it", () => {
+    const { host } = mountHost({ kind: "TILE", at: FRUIT, motion: "HOP" });
+    expect(
+      host.feedback.firstStepMarkerFrame(150)?.underNamePlate,
+    ).toBeUndefined();
+    expect(host.feedback.firstStepMarkerFrame(150)?.hopCssPx).toBeLessThan(0);
+    expect(
+      firstStepMarkerTipYV7(500, 1, { kind: "TILE", hopCssPx: 0 }),
+    ).toBeCloseTo(500 - TILE_WIDTH * 0.3);
     host.destroy();
   });
 

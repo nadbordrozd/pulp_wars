@@ -124,6 +124,11 @@ async function mount(
   };
 }
 
+/** Lets the board host play the injected boundaries (they play at once). */
+async function settlePlayback(): Promise<void> {
+  await new Promise((resolve) => setTimeout(resolve, 0));
+}
+
 function requiredButton(selector: string): HTMLButtonElement {
   const node = document.querySelector<HTMLButtonElement>(selector);
   if (node === null) throw new Error(`Missing ${selector}`);
@@ -378,6 +383,8 @@ describe("Ruleset 7 revision-21 achievements UI", () => {
         ],
       },
     });
+    // Bead pulp_wars-2yc.84: a notice waits for its boundary's playback.
+    await settlePlayback();
     const notice = () =>
       document.querySelector<HTMLElement>(
         '[data-v7-region="achievement-notice"]',
@@ -425,6 +432,7 @@ describe("Ruleset 7 revision-21 achievements UI", () => {
           ],
         },
       });
+      await settlePlayback();
       expect(notice()?.querySelector("h2")?.textContent).toBe(
         achievement === "SEA_DOG"
           ? "Sea Dog achievement complete"
@@ -489,6 +497,7 @@ describe("Ruleset 7 revision-21 achievements UI", () => {
         })),
       },
     });
+    await settlePlayback();
     const notice = () =>
       document.querySelector<HTMLElement>(
         '[data-v7-region="achievement-notice"]',

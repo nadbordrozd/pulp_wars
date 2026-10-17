@@ -6,6 +6,7 @@ import {
 } from "../feedback-plan-v7";
 import type { FirstStepMarkerV7 } from "../first-steps-v7";
 import type { MissionMarkerV7 } from "../mission-presentation-v7";
+import { villageStoryNameV7 } from "../city-names-presentation-v7";
 import {
   drawFirstStepMarkerV7,
   drawMissionMarkerV7,
@@ -112,6 +113,71 @@ const MISSION_MARKER_LIFT: Readonly<Record<MissionMarkerV7["on"], number>> = {
 const FIRST_STEP_MARKER_LIFT: Readonly<
   Record<FirstStepMarkerV7["kind"], number>
 > = { CITY: 0.56, UNIT: 0.62, TILE: 0.3 };
+
+/** The first-steps marker of a frame: where it points and its hop. */
+export interface FirstStepMarkerFrameV7 {
+  readonly kind: FirstStepMarkerV7["kind"];
+  readonly at: CoordV7;
+  /** The hop in nominal CSS px: negative is up, positive is down. */
+  readonly hopCssPx: number;
+  /**
+   * Bead pulp_wars-2yc.84: a city's (or a named village's) name plate
+   * hangs in the top strip of the tile pointed at, so the arrow points up
+   * at the tile from below it. Omitted when not.
+   */
+  readonly underNamePlate?: true;
+}
+
+/**
+ * Bead pulp_wars-2yc.84: how far under its tile's centre the tip of an
+ * arrow pointing up at the tile sits, in tiles: at the foot of the tile's
+ * piece, the tail in the free top strip of the tile below.
+ */
+const FIRST_STEP_MARKER_DROP = 0.32;
+
+/**
+ * Whether a name plate hangs over the top of the tile at `at`: the plate
+ * of a city or a named village on the tile just north of it.
+ */
+export function namePlateAboveV7(
+  view: Pick<PlayerViewV7, "cities" | "board" | "setup">,
+  at: CoordV7,
+): boolean {
+  const north = { x: at.x, y: at.y - 1 };
+  if (
+    view.cities.some((city) => city.at.x === north.x && city.at.y === north.y)
+  )
+    return true;
+  const tile = view.board.tiles.find(
+    (candidate) => candidate.at.x === north.x && candidate.at.y === north.y,
+  );
+  return (
+    tile?.explored === true &&
+    tile.site === "VILLAGE" &&
+    villageStoryNameV7(view, north) !== null
+  );
+}
+
+/**
+ * Where the first-steps arrow's tip is drawn this frame, in CSS px, for a
+ * tile whose centre is drawn at `centreY`. Over a plain tile it points
+ * down at the top of the tile's piece; under a name plate (bead
+ * pulp_wars-2yc.84) it points up at the foot of the piece from below, so
+ * it covers neither the plate nor the piece, and its hop (then down) takes
+ * it away from the tile and back.
+ */
+export function firstStepMarkerTipYV7(
+  centreY: number,
+  zoom: number,
+  frame: Pick<FirstStepMarkerFrameV7, "kind" | "hopCssPx" | "underNamePlate">,
+): number {
+  const tile = TILE_WIDTH * zoom;
+  const rest =
+    frame.underNamePlate === true
+      ? centreY + tile * FIRST_STEP_MARKER_DROP
+      : centreY - tile * FIRST_STEP_MARKER_LIFT[frame.kind];
+  return rest + frame.hopCssPx * zoom;
+}
 
 /** When the cues of a launch happen, in real ms from the launch. */
 export interface FeedbackLaunchV7 {
@@ -942,34 +1008,38 @@ export class BoardFeedbackV7 implements BoardFeedbackPortV7 {
     const frame = this.firstStepMarkerFrame(now);
     if (frame === null) return;
     const at = worldToScreen(projectGrid(frame.at), camera);
-    const tile = TILE_WIDTH * camera.zoom;
     drawFirstStepMarkerV7(
       context,
       at.x,
-      at.y -
-        tile * FIRST_STEP_MARKER_LIFT[frame.kind] +
-        frame.hopCssPx * camera.zoom,
+      firstStepMarkerTipYV7(at.y, camera.zoom, frame),
       camera.zoom,
-      { highContrast: this.#model?.highContrast ?? false },
+      {
+        highContrast: this.#model?.highContrast ?? false,
+        pointing: frame.underNamePlate === true ? "UP" : "DOWN",
+      },
     );
   }
 
   /** The first-steps marker of this frame, or null (tests read it too). */
-  firstStepMarkerFrame(now: number = this.timeMs()): {
-    readonly kind: FirstStepMarkerV7["kind"];
-    readonly at: CoordV7;
-    readonly hopCssPx: number;
-  } | null {
+  firstStepMarkerFrame(
+    now: number = this.timeMs(),
+  ): FirstStepMarkerFrameV7 | null {
     const model = this.#model;
     const marker = model?.firstStepMarker ?? null;
     if (model === null || marker === null || !model.interactive) return null;
+    const hop = firstStepHopCssPxV7(
+      now,
+      marker.motion !== "HOP" || model.motion === "REDUCED",
+    );
+    // Bead pulp_wars-2yc.84: under a name plate the arrow points up from
+    // below the tile, and hops down, away from it, like the arrow above.
+    const underNamePlate =
+      marker.kind === "TILE" && namePlateAboveV7(model.view, marker.at);
     return {
       kind: marker.kind,
       at: marker.at,
-      hopCssPx: firstStepHopCssPxV7(
-        now,
-        marker.motion !== "HOP" || model.motion === "REDUCED",
-      ),
+      hopCssPx: underNamePlate ? Math.abs(hop) : hop,
+      ...(underNamePlate ? { underNamePlate } : {}),
     };
   }
 

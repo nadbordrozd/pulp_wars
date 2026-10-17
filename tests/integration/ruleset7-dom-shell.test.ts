@@ -132,6 +132,8 @@ describe("Ruleset 7 DOM shell", () => {
       offeredCommands: source.snapshot().offeredCommands,
     };
     callbacks.snapshot?.(snapshot);
+    // Bead pulp_wars-2yc.84: the notices wait for the boundary's playback.
+    await new Promise((resolve) => setTimeout(resolve, 0));
     expect(
       document.querySelector('[data-v7-region="achievement-notice"]')
         ?.textContent,
@@ -177,6 +179,7 @@ describe("Ruleset 7 DOM shell", () => {
         ],
       },
     });
+    await new Promise((resolve) => setTimeout(resolve, 0));
     expect(
       document.querySelector('[data-v7-region="achievement-notice"]')
         ?.textContent,

@@ -188,21 +188,27 @@ export function firstStepMarkerWidthCssPxV7(zoom: number): number {
 /**
  * First steps (bead pulp_wars-2yc.39): the marker that points at the next
  * useful thing, a fat yellow arrow with an ink keyline and a hard offset
- * shadow (the Newsstand recipe), pointing down at `tipY`. Its hop is the
- * caller's; in reduced motion it is drawn still. It is an arrow in the
- * air, never a tile outline, so it is no Move, Attack, Help or Place mark.
+ * shadow (the Newsstand recipe), pointing down at `tipY` (or, `UP`, up at
+ * it from below, bead pulp_wars-2yc.84). Its hop is the caller's; in
+ * reduced motion it is drawn still. It is an arrow in the air, never a
+ * tile outline, so it is no Move, Attack, Help or Place mark.
  */
 export function drawFirstStepMarkerV7(
   context: CanvasRenderingContext2D,
   x: number,
   tipY: number,
   zoom: number,
-  options: { readonly highContrast?: boolean } = {},
+  options: {
+    readonly highContrast?: boolean;
+    readonly pointing?: "DOWN" | "UP";
+  } = {},
 ): void {
   const width = firstStepMarkerWidthCssPxV7(zoom);
   const half = width / 2;
-  const head = width * 0.62;
-  const shaft = width * 0.5;
+  // The tail is up the screen from the tip (DOWN), or down it (UP).
+  const back = options.pointing === "UP" ? -1 : 1;
+  const head = width * 0.62 * back;
+  const shaft = width * 0.5 * back;
   const shaftHalf = width * 0.2;
   const path = (dx: number, dy: number): void => {
     context.beginPath();
