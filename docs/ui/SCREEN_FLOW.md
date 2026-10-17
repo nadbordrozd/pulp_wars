@@ -88,11 +88,16 @@ are in [BOARD_TARGETING.md](BOARD_TARGETING.md). In short:
   Tunnel's passenger buttons, the Re-bake and Sugar Toss buttons, one
   Hatch button per Egg) or a target outline in a faction's colour, this
   section wins.
-- **Four highlight styles, the same for every faction**, told apart by
-  shape first and colour second, each on a dark casing: **Move** (a
-  dashed teal tile), **Attack** (a solid red tile with corner brackets),
-  **Help** (a green ring with a plus badge, on an own unit) and **Place**
-  (a dotted cream tile with corner pips). The marks do not animate.
+- **Four highlight styles, the same for every faction**, each four corner
+  brackets drawn inside the target tile itself (never on its edges, so a
+  tile that is not a target never looks like one; bead
+  `pulp_wars-2yc.88`), told apart by colour and by what the brackets
+  carry, each on a dark casing: **Move** (light teal corners),
+  **Attack** (heavy red corners in a thin red frame), **Help** (lavender
+  corners with a plus, on an own unit) and **Place** (cream corners with
+  square pips). The marks do not animate; a hovered or focused target is
+  drawn heavier with a soft wash. See
+  [Board targeting, section 2](BOARD_TARGETING.md#2-the-highlight-vocabulary).
 - **No arming where a click cannot be misread.** A selected unit shows its
   Moves, its Attacks and the own units it may heal or hatch together; a
   click on each does what its mark says. An ability whose targets could

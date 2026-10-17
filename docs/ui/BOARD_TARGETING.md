@@ -122,8 +122,8 @@ arming).
   selecting (and cycling to the tile under it).
 - **The badge** is a dark disc with the action's glyph (the dock's own
   icon) in cream, rimmed in the colour of the mark its target wears when
-  armed (red for a harm, green for a help, cream for a place, teal for a
-  Move), on the dark casing every mark has. On a tile with a unit or a city
+  armed (red for a harm, lavender for a help, cream for a place, teal for
+  a Move), on the dark casing every mark has. On a tile with a unit or a city
   the badges stand in a column down the tile's right edge from its upper
   right corner, inside the tile, so the unit stays visible;
   on an empty tile they sit in a row across its middle, so a badge is
@@ -193,56 +193,94 @@ arming).
 
 ## 2. The highlight vocabulary
 
-Four styles, the same for every faction. A style is told apart by its
-**shape** first and its colour second, so it survives colour blindness and
-the high-contrast setting. Every mark is stroked twice: a dark casing
-(`#10131c`, 80%) and the colour over it, so it reads on Grass, on Snow, on
-the Undead gloam ground, over composed forest pieces and over mountains
-(the marks are drawn above terrain, forests, mountains and units). The
-marks do not move, pulse or fade: the reduced-motion still is the mark
-itself.
+Four styles, the same for every faction. Since bead `pulp_wars-2yc.88`
+(the user, 2026-10-17: "I want the legal moves be indicated by some sort
+of target icon on top of the tile itself, not on the border") **every
+mark is drawn inside its own tile**: four corner brackets inset from the
+tile's edges, in the language of the Attack frame. No mark touches a tile
+edge, so a tile that is not a target never looks like one, even when all
+four of its neighbours are (before, the Move mark was a dashed outline on
+the tile's edges that merged with its neighbours' into a grid, and a
+blocked tile among reachable ones looked reachable). A style is told
+apart by its **colour** and by the **weight and furniture** of its
+brackets, so it survives colour blindness and the high-contrast setting.
+Every mark is stroked twice: a dark casing (`#10131c`, 80%) and the
+colour over it, so it reads on Grass, on Snow, on both waters, on the
+Undead gloam ground, over composed forest pieces and over mountains (the
+marks are drawn above terrain, forests, mountains and units). The marks do
+not move, pulse or fade: the reduced-motion still is the mark itself.
 
-| Style      | Meaning                                                    | Shape                                               | Colour    |
-| ---------- | ---------------------------------------------------------- | --------------------------------------------------- | --------- |
-| **Move**   | A tile the unit goes to                                    | Dashed outline on the tile's edges                  | `#64e6cf` |
-| **Attack** | A unit it harms (an attack or a hostile ability)           | Solid outline with an aiming bracket in each corner | `#ff655f` |
-| **Help**   | An own unit it heals, hatches, carries or pulls            | A round ring inside the tile with a plus badge      | `#b6f36a` |
-| **Place**  | A tile where something is put (a building, an Egg, a unit) | Dotted outline with a square pip in each corner     | `#ffe7a3` |
+| Style      | Meaning                                                    | Mark (inside the tile)                                   | Colour             | Weight (world units, normal / high contrast) |
+| ---------- | ---------------------------------------------------------- | -------------------------------------------------------- | ------------------ | -------------------------------------------- |
+| **Move**   | A tile the unit goes to                                    | Four light corner brackets                               | teal `#64e6cf`     | 3 / 4.25 (the lightest)                      |
+| **Attack** | A unit it harms (an attack or a hostile ability or spell)  | Four heavy corner brackets inside a thin solid frame     | red `#ff655f`      | 4.5 / 5.5 (the heaviest); frame 2 / 3        |
+| **Help**   | An own unit it heals, hatches, carries, pulls or casts on  | Four corner brackets with a plus badge on the upper left | lavender `#c49bff` | 4 / 5                                        |
+| **Place**  | A tile where something is put (a building, an Egg, a unit) | Four corner brackets with a square pip on each corner    | cream `#ffe7a3`    | 3.5 / 4.5                                    |
 
-- **Move** and **Attack** keep the looks they had (dashed teal, red); the
-  Attack mark became solid and gained its brackets so it no longer differs
-  from a Move by colour alone.
-- **Help** is deliberately not a tile outline: a ring with a plus cannot be
-  mistaken for a Move or an Attack at any size, and it leaves the Move
-  tiles beside it their whole outline.
-- **Place is needed.** The audit below has four actions that put something
-  on a tile the selected unit does not go to (Lay Egg, Assemble, Re-bake,
-  the Beam Down tile); drawing them as Moves would say the unit goes
-  there. A Monument is not among them: its tile is selected first
-  (section 3.3), so there is no Monument target family.
-- **Neighbouring marks** share an edge once: an Attack mark wins it over a
-  Place mark, a Place mark over a Move mark; a Help ring owns no edge.
-- **Move variants** keep their own stroke, each with a legend in the dock:
-  a machine's Launch tile (dotted pale blue), an Ice Folk Glide tile (pale
-  ice) and a two-step landing (dotted gold). A chosen Tunnel destination is
-  the Move mark drawn solid, and the other landings of a seated Hammerer
-  are small dots.
+The legend of every other kind of target, each a variant of a style:
+
+| Kind                                                                                                                                         | Style  | Mark                                                | Colour                    |
+| -------------------------------------------------------------------------------------------------------------------------------------------- | ------ | --------------------------------------------------- | ------------------------- |
+| Move, Embark (a Move onto a Port), Escape, Disembark "Land now"                                                                              | Move   | Light corner brackets                               | teal `#64e6cf`            |
+| A machine's Launch, a Hover Pods launch                                                                                                      | Move   | Dashed brackets on a whole dark casing              | pale glass blue `#c7e7f5` |
+| An Ice Folk Glide, a slide's or a slip's end                                                                                                 | Move   | Solid brackets                                      | pale ice `#d6f0ff`        |
+| A tile only Glacier's +1 Move reaches                                                                                                        | Move   | Dashed brackets on a dark casing, over its hatching | pale ice `#d6f0ff`        |
+| A two-step landing ("Move 1, then land")                                                                                                     | Move   | Dashed brackets on a dark casing                    | gold `#f4c95d`            |
+| A Bat Escape landing                                                                                                                         | Move   | Dashed brackets on a dark casing, with its bat      | Undead violet `#c9a6ff`   |
+| A chosen Tunnel destination                                                                                                                  | Move   | Solid brackets inside a thin solid frame            | teal `#64e6cf`            |
+| Another landing of a seated Hammerer                                                                                                         | Move   | A small dot                                         | teal `#64e6cf`            |
+| Attack, Mind Control, a hostile Tractor Beam, Bolas, Frost Bolt, Board (capture a ship), Seize, Swallow, Stomp, Proclaim, Ribbit             | Attack | Heavy brackets in a thin frame                      | red `#ff655f`             |
+| Hatch, Sugar Toss, Top-Up, a passenger to beam or tunnel, a Goblin to toss, an own unit to pull, Sacrifice, Channel, Anchor, joining a chant | Help   | Brackets with a plus                                | lavender `#c49bff`        |
+| Lay Egg, Beam Down tile, Assemble, Barricade, Re-bake, Freeze, a Toss landing, Break Off, a Summon, Star-fall, the Great Summoning, Tentacle | Place  | Brackets with corner pips                           | cream `#ffe7a3`           |
+| An area support's recipient (not a target, section 2.1)                                                                                      | Help   | A broken ring with a plus                           | lavender `#c49bff`        |
+| A tile action badge (section 1.1)                                                                                                            | any    | A dark disc rimmed in its target's style colour     | the style's colour        |
+
+- **Move is the lightest.** A unit often has 20 to 40 Move tiles, so its
+  brackets are the thinnest and shortest of the four and carry nothing;
+  the Attack, Help and Place marks on a few tiles stand out among them.
+- **Attack** keeps its red and its brackets; its outline moved from the
+  tile's edges to a thin frame just inside them, so two neighbouring
+  attack targets never share a line.
+- **Help is lavender** (it was the yellow-green `#b6f36a`, which the Cult's
+  neon green border sat beside: [CULT.md](../art/factions/CULT.md), caution
+  1). Lavender is the colour of a cast spell, apart from every faction
+  colour (at least 70 in RGB from each) and from the other three marks. A
+  hostile spell (a Frost Bolt, a Mind Control) harms, so it wears the
+  Attack red: the colour always says what happens to the target.
+- **Place** keeps its cream; its pips sit on the bracket corners.
+- **Variants** of the Move mark keep their own colour and dash (each has a
+  legend in the dock); a dashed variant's brackets are drawn on a whole
+  dark casing, so the pale glass blue of a Launch reads on Shallow Water.
+- **Hover and focus.** The target under the pointer or the keyboard's
+  cursor is drawn 1.4 times heavier with a soft wash of its colour (20%)
+  inside its frame. Nothing pulses, so Reduced motion needs no other
+  still.
+- **High contrast** draws every mark one step thicker (the table's second
+  weight). On a phone's small zoom a bracket stroke never thins below
+  1.5 CSS px.
+- **Territory borders** stay drawn beside every mark: no mark covers a
+  tile edge.
 - **Colour blindness.** The four colours stay apart under simulated
-  protanopia, deuteranopia and tritanopia (unit-tested), but the shapes
-  carry the meaning.
-- **High contrast** draws the same marks one step thicker.
+  protanopia, deuteranopia and tritanopia (unit-tested), and the weight
+  and furniture carry the meaning too.
 - **Help screen.** "How to play" shows the four marks with the words Move,
   Attack, Help and Place.
+- **Cost.** Each mark is one bracket path stroked twice (plus a frame, a
+  disc or four pips) in the existing target pass; the plan computes no
+  edge ownership any more ([performance](../architecture/PERFORMANCE.md)).
+- Older sections and documents call the Help mark "the Help ring"; a
+  pickable target's Help mark is now its brackets with the plus, and only
+  an area support's recipient keeps a (broken) ring.
 
-Until this bead every target was a dashed tile outline in a colour of its
-faction (Martian magenta, pale ice, light earth, copper, steam white, candy
-pink, cream, mint). Those colours no longer mark targets. Effect previews
-that are not targets keep their own looks: ability areas and their "−3"
-cells (Wail, Kaboom!, Raise Dead, Devour, a Cold Snap's or Frost Bolt's
-reach, a Stampede's line and shoves, a Frost Giant's Cold Aura, the Beam
-Down pick-up range, a pull's path, an eruption ring, a splash ring). The
-units an area support would help are the exception: they wear the Help
-mark in its own weight (section 2.1).
+Until bead `pulp_wars-9im` every target was a dashed tile outline in a
+colour of its faction (Martian magenta, pale ice, light earth, copper,
+steam white, candy pink, cream, mint). Those colours no longer mark
+targets. Effect previews that are not targets keep their own looks:
+ability areas and their "−3" cells (Wail, Kaboom!, Raise Dead, Devour, a
+Cold Snap's or Frost Bolt's reach, a Stampede's line and shoves, a Frost
+Giant's Cold Aura, the Beam Down pick-up range, a pull's path, an eruption
+ring, a splash ring). The units an area support would help are the
+exception: they wear the Help mark in its own weight (section 2.1).
 
 ### 2.1 Area support: marked, not picked (bead `pulp_wars-621`)
 
@@ -252,8 +290,8 @@ Frosting) and Rally (Frenzy, Berserk, War Drums, Psychic Command). There
 is nothing to pick, but the player should see who is helped and by how
 much, as with a targeted heal. The Ice Folk have no such ability.
 
-- **The mark** is the Help mark with a **broken ring**: the same green,
-  the same plus badge, the ring drawn in dashes. A whole ring is a unit to
+- **The mark** is the Help mark with a **broken ring**: the same lavender,
+  the same plus badge, the ring drawn in dashes. Brackets with a plus are a unit to
   pick; a broken ring is a unit the button will help.
 - **Heals are marked while the healer is selected** and its button is on
   offer, in every match. Each recipient carries the exact result of the
@@ -262,7 +300,7 @@ much, as with a targeted heal. The Ice Folk have no such ability.
   "+2 · Cure". At rest the ring is thin with a small plus, so it sits
   under the unit's Move and Attack marks rather than competing with them.
 - **Hovering or focusing the button makes its marks prominent**: the ring
-  at a target's full weight with a soft green fill. Nothing in the dock
+  at a target's full weight with a soft lavender fill. Nothing in the dock
   changes. Leaving or blurring returns them to rest.
 - **A Rally is marked only while its button is hovered or focused.** It is
   on offer almost every turn and has no amount to read, so marking it at
@@ -271,7 +309,7 @@ much, as with a targeted heal. The Ice Folk have no such ability.
   prominent ring without a label, and the heal marks step aside for it.
   An Orc Warboss's **Berserk** (`pulp_wars-w49.36`) has an amount to read:
   each recipient's ring carries "+1 Move", and its radius (the 5 × 5
-  square around the Warboss) is outlined in the same green.
+  square around the Warboss) is outlined in the same lavender.
   On a phone, which has no hover, a Rally is therefore not marked; its
   button and tooltip are unchanged.
 - **They are not targets.** A click or tap on a marked unit selects it, as
@@ -767,9 +805,21 @@ for tools; it is never read out.
   The phone review (`scripts/browser-phone-review-v7.ts`) captures the
   `tile-actions-*` scenes.
 - `tests/unit/target-highlight-render-v7.test.ts`: the vocabulary (one
-  style per family, four shapes, the colour-blindness distances, the
-  drawing of each mark) and the style of every family's targets on the UI
-  fixtures, including a healer with Move, Attack and Help marks at once.
+  style per family, four shapes, the colour-blindness distances, the Help
+  lavender apart from every faction colour, the drawing of each mark
+  inside its tile and clear of its edges, high contrast, the hovered or
+  focused weight, the least phone width) and the style of every family's
+  targets on the UI fixtures, including a healer with Move, Attack and Help
+  marks at once, and a Raider (`tests/fixtures/v7-move-targets-ui.ts`)
+  whose reach has a Shallow Water tile and an own Guard in it: those tiles
+  carry no mark, each drawn mark is in its own colour on its own tile.
+- `tests/unit/board-renderer-v7.test.ts`: two neighbouring Move targets
+  draw only inside their own tiles, and a territory border beside a mark
+  stays drawn.
+- The board targeting review (`scripts/browser-board-targeting-review-v7.ts`)
+  captures every style at desktop and phone widths, each with an enlarged
+  crop round the selected unit, including the Raider's holes in normal
+  and high contrast and with a focused target, and a Martian Launch.
 - `tests/integration/ruleset7-no-coordinates-dom.test.ts`: the generic
   guard. Its sweep selects every unit and aims every ability on every
   faction fixture and fails when an aiming panel holds more than its fixed

@@ -612,9 +612,10 @@ const STYLE_COLORS: Readonly<
   DEVOUR: { fill: "rgba(255, 128, 104, 0.2)", stroke: "#ff9a84" },
   SPLASH: { fill: "rgba(255, 170, 70, 0.18)", stroke: "#ffb35c" },
   // Bead pulp_wars-621: the recipients of an area support wear the Help
-  // ring, so their labels take its green (TARGET_HIGHLIGHTS_V7.SUPPORT).
-  TEND: { fill: "rgba(182, 243, 106, 0.18)", stroke: "#b6f36a" },
-  RALLY: { fill: "rgba(182, 243, 106, 0.18)", stroke: "#b6f36a" },
+  // ring, so their labels take its lavender (TARGET_HIGHLIGHTS_V7.SUPPORT;
+  // green until bead pulp_wars-2yc.88).
+  TEND: { fill: "rgba(196, 155, 255, 0.18)", stroke: "#c49bff" },
+  RALLY: { fill: "rgba(196, 155, 255, 0.18)", stroke: "#c49bff" },
   // Revision 17: the blast is unowned (GOBLIN.md), so its preview uses the
   // pale spark cream; friendly fire adds yellow-and-charcoal hazard stripes.
   BLAST: { fill: "rgba(255, 248, 208, 0.24)", stroke: "#fff8d0" },

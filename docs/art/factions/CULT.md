@@ -181,6 +181,9 @@ beads that own the files; nothing is changed by this bead):
   a tile's edge), and the Cult's own Sacrifice marks its victims with it
   inside its own border. If the capture shows them merging, change the mark's
   ring for Cult viewers, not the faction colour.
+  Resolved by bead `pulp_wars-2yc.88`: the help mark is now lavender
+  (`#c49bff`), corner brackets with a plus inside the tile, far from the
+  Cult green.
 - **Caution 2, the Dwarf lamp.** The gauge lamp on Dwarf sprites is a
   yellow-green near `#2bd94a`, 16 from the flame. Both are a few pixels on
   bodies that could not be more different (soot iron and copper against

@@ -137,28 +137,26 @@ describe("the area support mark", () => {
     const target = drawMark({});
     const quiet = drawMark({ weight: "QUIET" });
     const prominent = drawMark({ weight: "PROMINENT" });
-    // A target to pick keeps its whole ring.
-    expect(dashes(target)).toEqual(["", ""]);
+    // Bead pulp_wars-2yc.88: a target to pick is the solid Help brackets
+    // with their plus, no ring at all.
+    expect(dashes(target).every((dash) => dash === "")).toBe(true);
+    expect(count(target, "arc")).toBe(1);
+    expect(count(target, "lineTo")).toBe(4 * 2 + 2);
     expect(dashes(quiet)[0]).toBe(AREA_SUPPORT_DASH_V7.join());
     expect(dashes(prominent)[0]).toBe(AREA_SUPPORT_DASH_V7.join());
-    // The ring and its plus badge, in the Help green, in every weight.
-    for (const log of [target, quiet, prominent]) {
+    // The ring and its plus badge, in the Help lavender, in every weight.
+    for (const log of [target, quiet, prominent])
       expect(sets(log, "strokeStyle")).toContain(
         TARGET_HIGHLIGHTS_V7.SUPPORT.stroke,
       );
-      expect(count(log, "lineTo")).toBe(2);
-    }
-    expect(count(target, "arc")).toBe(2);
+    for (const log of [quiet, prominent]) expect(count(log, "lineTo")).toBe(2);
     expect(count(quiet, "arc")).toBe(2);
     // Prominent adds the filled disc under the ring.
     expect(count(prominent, "arc")).toBe(3);
     expect(sets(prominent, "fillStyle")[0]).toBe(AREA_SUPPORT_FILL_V7);
     expect(sets(quiet, "fillStyle")).not.toContain(AREA_SUPPORT_FILL_V7);
     expect(sets(target, "fillStyle")).not.toContain(AREA_SUPPORT_FILL_V7);
-    // Quiet is thinner than a target; prominent is a target's weight.
-    expect(sets(target, "lineWidth")).toContain(
-      TARGET_HIGHLIGHT_WIDTHS_V7.TARGET[0],
-    );
+    // Quiet is thinner than a prominent ring.
     expect(sets(prominent, "lineWidth")).toContain(
       TARGET_HIGHLIGHT_WIDTHS_V7.TARGET[0],
     );

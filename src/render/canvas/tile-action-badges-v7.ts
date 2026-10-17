@@ -2,7 +2,7 @@
  * The tile action badges (bead pulp_wars-2yc.60; docs/ui/BOARD_TARGETING.md
  * section 1.1): a small round icon on each tile where the selected unit has
  * an action other than a lone Move or Attack. Each badge is a dark disc
- * rimmed in the colour of the mark its target wears (red for a harm, green
+ * rimmed in the colour of the mark its target wears (red for a harm, lavender
  * for a help, cream for a place, teal for a Move) with the action's glyph
  * (the dock's own icon) in cream, or the action's registered icon where it
  * has one (the Cult's join icon), in the order the tile's chooser lists

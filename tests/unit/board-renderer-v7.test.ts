@@ -785,7 +785,7 @@ describe("Ruleset 7 board renderer", () => {
     ).toBe(false);
   });
 
-  it("strokes each physical movement-target edge once", () => {
+  it("draws each movement target inside its own tile, never on a shared tile edge", () => {
     const state = exploredAllV7(initialV7(1520));
     const view = viewForV7(state, state.humanPlayerId);
     const unit = view.units.find(
@@ -807,21 +807,19 @@ describe("Ruleset 7 board renderer", () => {
     const targetEntries = plan.entries.filter(
       (entry) => entry.kind === "TARGET",
     );
-    const physicalEdges = targetEntries.flatMap((entry) =>
-      (entry.targetEdges ?? []).map((edge) => testEdgeKey(entry.at, edge)),
-    );
     expect(plan.targets).toHaveLength(2);
     expect(targetEntries).toHaveLength(2);
-    expect(physicalEdges).toHaveLength(7);
-    expect(new Set(physicalEdges).size).toBe(physicalEdges.length);
+    // Bead pulp_wars-2yc.88: a target owns no tile edge.
+    for (const entry of targetEntries)
+      expect(entry.targetEdges).toBeUndefined();
 
-    const lineTo = vi.fn();
-    const strokeRect = vi.fn();
+    const points: (readonly [number, number])[] = [];
+    const record = vi.fn((x: number, y: number) => points.push([x, y]));
     const lineDashes: number[][] = [];
     drawBoardV7({
       context: drawingContext(vi.fn(), vi.fn(), {
-        lineTo,
-        strokeRect,
+        moveTo: record,
+        lineTo: record,
         setLineDash: vi.fn((dash: number[]) => lineDashes.push(dash)),
       }),
       viewport: { width: 500, height: 300 },
@@ -829,9 +827,27 @@ describe("Ruleset 7 board renderer", () => {
       camera: { offsetX: 100, offsetY: 100, zoom: 1 },
       plan: { ...plan, entries: targetEntries },
     });
-    expect(lineTo).toHaveBeenCalledTimes(7);
-    expect(strokeRect).not.toHaveBeenCalled();
-    expect(lineDashes).toContainEqual([9, 5]);
+    // Four two-armed brackets per tile, all solid.
+    expect(points).toHaveLength(2 * 4 * 3);
+    expect(lineDashes.every((dash) => dash.length === 0)).toBe(true);
+    // Every point lies inside one target's tile, clear of its edges, so two
+    // neighbouring targets never draw one line between them.
+    for (const [x, y] of points) {
+      const owner = plan.targets.find(
+        (target) =>
+          Math.abs(x - (100 + target.at.x * 128)) < 64 &&
+          Math.abs(y - (100 + target.at.y * 128)) < 64,
+      );
+      expect(owner, `${x},${y}`).toBeDefined();
+      if (owner === undefined) continue;
+      const fromEdge =
+        64 -
+        Math.max(
+          Math.abs(x - (100 + owner.at.x * 128)),
+          Math.abs(y - (100 + owner.at.y * 128)),
+        );
+      expect(fromEdge).toBeGreaterThanOrEqual(TARGET_HIGHLIGHTS_V7.MOVE.inset);
+    }
 
     const firstTarget = plan.targets[0];
     if (firstTarget === undefined) throw new Error("Move target missing");
@@ -868,17 +884,17 @@ describe("Ruleset 7 board renderer", () => {
             layer: 7,
             at: { x: 1, y: 1 },
             target: firstTarget,
-            targetEdges: ["EAST"],
           },
         ],
       },
     });
-    // Bead pulp_wars-9im: the Move mark is its dark casing, then its teal
-    // dashes; the territory border under the shared edge is not drawn.
-    expect(strokedStyles).toEqual([
+    // The Move mark is its dark casing, then its teal brackets; the
+    // territory border on the tile's edge stays drawn beside it.
+    expect(strokedStyles.slice(-2)).toEqual([
       TARGET_HIGHLIGHT_CASING_V7,
       TARGET_HIGHLIGHTS_V7.MOVE.stroke,
     ]);
+    expect(strokedStyles.length).toBeGreaterThan(2);
   });
 
   it("wraps the ninth processor pip onto a second row", () => {

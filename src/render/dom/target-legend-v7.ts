@@ -35,60 +35,63 @@ function swatch(
     "aria-hidden": "true",
     fill: "none",
     stroke: spec.stroke,
-    "stroke-width": "2.2",
+    // Bead pulp_wars-2yc.88: the board's weights, light to heavy.
+    "stroke-width":
+      spec.shape === "BRACKETS"
+        ? "1.8"
+        : spec.shape === "BRACKETS_FRAME"
+          ? "2.6"
+          : "2.2",
   });
-  if (spec.shape === "RING_PLUS") {
+  // A thin frame first (an Attack), then the four corner brackets inside
+  // the swatch's tile, as the board draws them.
+  if (spec.shape === "BRACKETS_FRAME")
     svg.append(
-      shape(documentRoot, "circle", { cx: "12", cy: "12", r: "8.5" }),
+      shape(documentRoot, "rect", {
+        x: "2",
+        y: "2",
+        width: "20",
+        height: "20",
+        "stroke-width": "1",
+      }),
+    );
+  svg.append(
+    shape(documentRoot, "path", {
+      d: "M4.5 9.5v-5h5M14.5 4.5h5v5M19.5 14.5v5h-5M9.5 19.5h-5v-5",
+    }),
+  );
+  if (spec.shape === "BRACKETS_PLUS")
+    svg.append(
       shape(documentRoot, "circle", {
-        cx: "18.5",
-        cy: "5.5",
+        cx: "4.5",
+        cy: "4.5",
         r: "4",
         fill: spec.stroke,
         stroke: "#10131c",
         "stroke-width": "1",
       }),
       shape(documentRoot, "path", {
-        d: "M16.5 5.5h4M18.5 3.5v4",
+        d: "M2.5 4.5h4M4.5 2.5v4",
         stroke: "#10131c",
         "stroke-width": "1.4",
       }),
     );
-    return svg;
-  }
-  svg.append(
-    shape(documentRoot, "rect", {
-      x: "3",
-      y: "3",
-      width: "18",
-      height: "18",
-      ...(spec.shape === "DASHED_TILE" ? { "stroke-dasharray": "5 3" } : {}),
-      ...(spec.shape === "DOTTED_PIPS"
-        ? { "stroke-dasharray": "0.5 3.5", "stroke-linecap": "round" }
-        : {}),
-    }),
-  );
-  if (spec.shape === "BRACKET_TILE")
-    svg.append(
-      shape(documentRoot, "path", {
-        d: "M6.5 10V6.5H10M14 6.5h3.5V10M17.5 14v3.5H14M10 17.5H6.5V14",
-      }),
-    );
-  if (spec.shape === "DOTTED_PIPS")
+  if (spec.shape === "BRACKETS_PIPS")
     for (const [x, y] of [
-      [6, 6],
-      [15.5, 6],
-      [15.5, 15.5],
-      [6, 15.5],
+      [4.5, 4.5],
+      [19.5, 4.5],
+      [19.5, 19.5],
+      [4.5, 19.5],
     ] as const)
       svg.append(
         shape(documentRoot, "rect", {
-          x: String(x),
-          y: String(y),
-          width: "2.5",
-          height: "2.5",
+          x: String(x - 1.75),
+          y: String(y - 1.75),
+          width: "3.5",
+          height: "3.5",
           fill: spec.stroke,
-          stroke: "none",
+          stroke: "#10131c",
+          "stroke-width": "0.75",
         }),
       );
   return svg;

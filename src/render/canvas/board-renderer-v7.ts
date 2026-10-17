@@ -329,7 +329,6 @@ import {
 import {
   TARGET_HIGHLIGHTS_V7,
   drawTargetHighlightV7,
-  targetHighlightEdgeRankV7,
   targetHighlightStyleV7,
   type AreaSupportWeightV7,
   type TargetHighlightStyleV7,
@@ -2147,7 +2146,8 @@ export function buildBoardRenderPlanV7(
         targetEdges: [],
       });
   }
-  const targetEdges = mapTargetEdges(targets);
+  // Bead pulp_wars-2yc.88: every target's mark is inside its own tile, so a
+  // target owns no tile edge (the old shared outlines merged into a grid).
   for (const target of targets)
     entries.push({
       key: `target:${target.family}:${target.at.x},${target.at.y}`,
@@ -2155,8 +2155,6 @@ export function buildBoardRenderPlanV7(
       layer: 7,
       at: target.at,
       target,
-      targetEdges:
-        targetEdges.get(`${target.family}:${target.at.x},${target.at.y}`) ?? [],
     });
   const selectedAt = selectionCoord(view, interaction.selection);
   // Bead pulp_wars-2yc.77: a selected unexplored tile draws no box, nor
@@ -5409,15 +5407,8 @@ export function drawBoardV7(input: {
         TILE_WIDTH * camera.zoom,
         input.highContrast ?? false,
       );
-  const targetEdgeKeys = new Set(
-    input.plan.entries.flatMap((entry) =>
-      entry.kind === "TARGET"
-        ? (entry.targetEdges ?? TILE_EDGES).map((edge) =>
-            edgeKey(entry.at, edge),
-          )
-        : [],
-    ),
-  );
+  // Bead pulp_wars-2yc.88: a target's mark is inside its tile, so every
+  // territory border stays drawn beside it.
   const boundaries = input.plan.entries.filter(
     (entry) => entry.kind === "TERRITORY_BOUNDARY",
   );
@@ -5442,11 +5433,6 @@ export function drawBoardV7(input: {
         .map((entry) => `${entry.at.x},${entry.at.y}`),
     );
     for (const boundary of boundaries) {
-      if (
-        boundary.edge !== undefined &&
-        targetEdgeKeys.has(edgeKey(boundary.at, boundary.edge))
-      )
-        continue;
       if (direction?.chrome.borders === "SOLID")
         drawDirectedTerritoryBoundaryV7(context, camera, boundary);
       else drawTerritoryBoundary(context, camera, boundary, roadCells);
@@ -5717,6 +5703,7 @@ export function drawBoardV7(input: {
       focusNoteAt !== undefined && same(focusNoteAt, target.at),
       input.highContrast ?? false,
       hpLossAlpha,
+      focus !== null && same(focus, target.at),
     );
     // Map curiosities: a Move that ends next to the Spider carries the
     // provoked marker in the tile's top-right corner.
@@ -5923,60 +5910,6 @@ function edgeKey(at: CoordV7, edge: TileEdge): string {
   return `v:${at.x + 1}:${at.y}`;
 }
 
-function mapTargetEdges(
-  targets: readonly MapCommandTargetV7[],
-): ReadonlyMap<string, readonly TileEdge[]> {
-  const winners = new Map<
-    string,
-    { readonly target: MapCommandTargetV7; readonly edge: TileEdge }
-  >();
-  for (const target of targets) {
-    // Bead pulp_wars-9im: a Help ring is inside its tile; it owns no edge,
-    // so the Move tiles and the territory border beside it keep theirs.
-    if (targetPriority(target) === 0) continue;
-    for (const edge of TILE_EDGES) {
-      const key = edgeKey(target.at, edge);
-      const winner = winners.get(key);
-      // `pulp_wars-1wy.5`: a Glide tile keeps its whole pale-ice outline
-      // where it touches a plain Move tile.
-      const priority = (candidate: MapCommandTargetV7): number =>
-        targetPriority(candidate) +
-        (candidate.glide === true ||
-        candidate.glacier === true ||
-        candidate.slide !== undefined ||
-        candidate.slip === true
-          ? 0.5
-          : 0);
-      if (winner === undefined || priority(target) > priority(winner.target))
-        winners.set(key, { target, edge });
-    }
-  }
-  const result = new Map<string, TileEdge[]>();
-  for (const { target, edge } of winners.values()) {
-    const key = `${target.family}:${target.at.x},${target.at.y}`;
-    const edges = result.get(key) ?? [];
-    edges.push(edge);
-    result.set(key, edges);
-  }
-  return result;
-}
-
-/**
- * Bead pulp_wars-9im: which target owns a tile edge two targets share, by
- * its highlight style (an attack over a place over a move; a Help ring is
- * inside its tile and owns none).
- */
-function targetPriority(target: MapCommandTargetV7): number {
-  return (
-    targetHighlightEdgeRankV7(
-      targetHighlightStyleV7(target.family, target.highlight),
-    ) +
-    // Revision 16: a two-step landing cell keeps its whole dotted outline
-    // where it touches a "Land now" or Move target.
-    (target.family === "LANDING_AFTER_MOVE" ? 0.75 : 0)
-  );
-}
-
 /** Bead pulp_wars-78i.9: the strength of a Tunnel destination's ghosts. */
 export const TUNNEL_GHOST_ALPHA_V7 = 0.62;
 /** How strongly a Switcheroo's two ghosts are drawn (bead pulp_wars-mch9.19). */
@@ -6065,6 +5998,8 @@ function drawMapTarget(
   highContrast = false,
   /** Bead pulp_wars-2yc.81: the HP chunk's pulse this frame. */
   hpLossAlpha = 1,
+  /** Bead pulp_wars-2yc.88: the target is hovered or has the focus. */
+  emphasis = false,
 ): void {
   const x = camera.offsetX + entry.at.x * TILE_WIDTH * camera.zoom;
   const y = camera.offsetY + entry.at.y * TILE_HEIGHT * camera.zoom;
@@ -6108,18 +6043,20 @@ function drawMapTarget(
     context.stroke();
     context.restore();
   } else {
-    // A chosen Tunnel destination is a whole solid tile. A Hammerer that
-    // can ride and a unit a carrier may beam wear the Help ring under
-    // their "Ride" and "Beam" badges.
+    // A chosen Tunnel destination is solid brackets in a solid frame. A
+    // Hammerer that can ride and a unit a carrier may beam wear the Help
+    // mark under their "Ride" and "Beam" badges.
     const chosen = entry.target?.tunnel?.chosen === true;
     drawTargetHighlightV7(
       context,
       { x, y, size: TILE_WIDTH * camera.zoom, zoom: camera.zoom },
       style,
       {
-        edges: chosen ? TILE_EDGES : (entry.targetEdges ?? TILE_EDGES),
-        ...(chosen ? { dash: [] } : targetVariant(entry.target)),
+        ...(chosen ? { dash: [], frame: true } : targetVariant(entry.target)),
         highContrast,
+        // Bead pulp_wars-2yc.88: the target under the pointer or the
+        // keyboard's focus is drawn heavier, with a soft wash.
+        emphasis,
       },
     );
   }

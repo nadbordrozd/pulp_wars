@@ -72,9 +72,63 @@ interface Shot {
   readonly focus?: string;
   /** The highlight styles the capture is expected to show (for the reader). */
   readonly marks: readonly string[];
+  /** Bead pulp_wars-2yc.88: capture with the High contrast setting on. */
+  readonly highContrast?: boolean;
+  /**
+   * Bead pulp_wars-2yc.88: keys pressed on the board after the selection
+   * (an arrow onto a target shows its focused, heavier mark).
+   */
+  readonly keys?: readonly string[];
 }
 
 const SHOTS: readonly Shot[] = [
+  // Bead pulp_wars-2yc.88: every mark is inside its own tile. A Raider's
+  // Moves on Grass, a Forest and Mountains, with a Shallow Water tile and
+  // an own Guard among them that are no destinations, and its Attack.
+  {
+    name: "moves-blocked-attack",
+    module: "/tests/fixtures/v7-move-targets-ui.ts",
+    fixture: "moveTargetsFixtureV7",
+    coords: "MOVE_TARGETS_UI_V7",
+    unit: "raider",
+    marks: ["MOVE", "ATTACK"],
+  },
+  {
+    name: "moves-blocked-attack-high-contrast",
+    module: "/tests/fixtures/v7-move-targets-ui.ts",
+    fixture: "moveTargetsFixtureV7",
+    coords: "MOVE_TARGETS_UI_V7",
+    unit: "raider",
+    highContrast: true,
+    marks: ["MOVE", "ATTACK"],
+  },
+  {
+    name: "moves-focused-target",
+    module: "/tests/fixtures/v7-move-targets-ui.ts",
+    fixture: "moveTargetsFixtureV7",
+    coords: "MOVE_TARGETS_UI_V7",
+    unit: "raider",
+    keys: ["ArrowLeft"],
+    marks: ["MOVE", "ATTACK"],
+  },
+  // A Martian Grunt's Hover Pods launch tiles (dashed pale-blue corners on
+  // Shallow Water) beside its Moves, and a Saucer's own Launch.
+  {
+    name: "launch-hover-pods",
+    module: "/tests/fixtures/v7-naval-martian-ui.ts",
+    fixture: "martianHoverLaunchFixtureV7",
+    coords: "MARTIAN_FLEET_UI_V7",
+    unit: "grunt",
+    marks: ["MOVE"],
+  },
+  {
+    name: "launch-saucer",
+    module: "/tests/fixtures/v7-naval-martian-ui.ts",
+    fixture: "martianHoverLaunchFixtureV7",
+    coords: "MARTIAN_FLEET_UI_V7",
+    unit: "saucer",
+    marks: ["MOVE"],
+  },
   {
     name: "healer-move-attack-heal",
     module: "/tests/fixtures/v7-candy-ui.ts",
@@ -332,6 +386,7 @@ async function take(
   const unit = at[shot.unit];
   if (unit === undefined) throw new Error(`${shot.name}: no ${shot.unit}`);
   await activate(connection, unit);
+  for (const key of shot.keys ?? []) await press(connection, key);
   if (shot.action !== undefined) {
     await waitFor(
       connection,
@@ -394,6 +449,39 @@ async function take(
   if (seen.panelButtons !== null && seen.panelButtons.length > 5)
     errors.push(`${shot.name} ${size}: ${seen.panelButtons.length} buttons`);
   await capture(connection, `${shot.name}-${size}.png`);
+  // Bead pulp_wars-2yc.88: the selected unit's neighbourhood enlarged three
+  // times, for a pixel-level look at the marks.
+  const centre = (await evaluate(
+    connection,
+    `(() => { const canvas = document.querySelector('canvas.board-canvas-v7'); const box = canvas.getBoundingClientRect(); const at = ${REVIEW}.boardHost.cellCentreCssPx(${JSON.stringify(unit)}); return { x: box.left + at.x, y: box.top + at.y, width: innerWidth, height: innerHeight }; })()`,
+  )) as Coord & { readonly width: number; readonly height: number };
+  const half = size === "desktop" ? 170 : 110;
+  const left = Math.max(0, Math.min(centre.width - half * 2, centre.x - half));
+  const top = Math.max(0, Math.min(centre.height - half * 2, centre.y - half));
+  await capture(connection, `${shot.name}-${size}-enlarged.png`, {
+    x: left,
+    y: top,
+    width: half * 2,
+    height: half * 2,
+    scale: size === "desktop" ? 3 : 2,
+  });
+}
+
+async function press(connection: Connection, key: string): Promise<void> {
+  const codes: Readonly<Record<string, number>> = {
+    ArrowLeft: 37,
+    ArrowUp: 38,
+    ArrowRight: 39,
+    ArrowDown: 40,
+  };
+  for (const type of ["rawKeyDown", "keyUp"] as const)
+    await connection.send("Input.dispatchKeyEvent", {
+      type,
+      key,
+      code: key,
+      windowsVirtualKeyCode: codes[key] ?? 0,
+    });
+  await delay(300);
 }
 
 /** Help: the four marks with their names. */
@@ -438,6 +526,33 @@ async function mount(connection: Connection, shot: Shot): Promise<void> {
     connection,
     `document.querySelector('[data-v7-setup]') !== null && globalThis.__PULP_WARS_APP__ !== undefined`,
   );
+  // Bead pulp_wars-2yc.88: the High contrast setting is read when the app
+  // mounts, so a change of it reloads the page once.
+  const settingsChanged = (await evaluate(
+    connection,
+    `(() => { const key = 'pulpWars.settings.v1'; const before = localStorage.getItem(key); const value = ${JSON.stringify(
+      shot.highContrast === true
+        ? JSON.stringify({
+            format: "pulp-wars-settings",
+            version: 1,
+            settings: {
+              uiScale: 1,
+              motion: "FULL",
+              animationSpeed: "NORMAL",
+              highContrast: true,
+            },
+          })
+        : null,
+    )}; if (value === null) localStorage.removeItem(key); else localStorage.setItem(key, value); return before !== value; })()`,
+  )) as boolean;
+  if (settingsChanged) {
+    await evaluate(connection, `globalThis.__TARGETING_REVIEW_PRIOR__ = true`);
+    await connection.send("Page.reload");
+    await waitFor(
+      connection,
+      `globalThis.__TARGETING_REVIEW_PRIOR__ !== true && document.readyState === 'complete' && document.querySelector('[data-v7-setup]') !== null && globalThis.__PULP_WARS_APP__ !== undefined`,
+    );
+  }
   await evaluate(
     connection,
     ruleset7FixtureMountExpressionV7({
@@ -446,6 +561,9 @@ async function mount(connection: Connection, shot: Shot): Promise<void> {
       artSet: "CHIBI",
       global: "__TARGETING_REVIEW__",
       extras: `at: fixtures.${shot.coords}`,
+      ...(shot.highContrast === true
+        ? { settingsStorage: "localStorage" as const }
+        : {}),
     }),
     true,
   );
@@ -485,9 +603,20 @@ async function viewport(
   await delay(300);
 }
 
-async function capture(connection: Connection, name: string): Promise<void> {
+async function capture(
+  connection: Connection,
+  name: string,
+  clip?: {
+    readonly x: number;
+    readonly y: number;
+    readonly width: number;
+    readonly height: number;
+    readonly scale: number;
+  },
+): Promise<void> {
   const response = (await connection.send("Page.captureScreenshot", {
     format: "png",
+    ...(clip === undefined ? {} : { clip }),
   })) as { readonly data?: string };
   if (response.data === undefined) throw new Error("No screenshot data");
   await writeFile(

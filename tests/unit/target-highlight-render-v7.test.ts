@@ -7,20 +7,25 @@ import {
 } from "../../src/engine/index";
 import {
   buildBoardRenderPlanV7,
+  drawBoardV7,
   type BoardRenderInteractionV7,
   type MapCommandTargetV7,
 } from "../../src/render/canvas/board-renderer-v7";
+import { FACTION_COLOURS_V7 } from "../../src/render/canvas/faction-colours-v7";
 import {
   BOARD_PICK_PANEL_MAX_BUTTONS_V7,
   TARGET_HIGHLIGHTS_V7,
   TARGET_HIGHLIGHT_CASING_V7,
+  TARGET_HIGHLIGHT_EMPHASIS_V7,
   TARGET_HIGHLIGHT_FAMILIES_V7,
+  TARGET_HIGHLIGHT_FRAME_V7,
+  TARGET_HIGHLIGHT_LEAST_WIDTH_PX_V7,
   TARGET_HIGHLIGHT_STYLES_V7,
   UNARMED_TARGET_FAMILIES_V7,
   drawTargetHighlightV7,
-  targetHighlightEdgeRankV7,
   targetHighlightStyleV7,
   targetIsSteppedV7,
+  type TargetHighlightOptionsV7,
   type TargetHighlightStyleV7,
 } from "../../src/render/canvas/target-highlight-v7";
 import {
@@ -42,6 +47,10 @@ import {
   martianMobilityFixtureV7,
   martianUiFixtureV7,
 } from "../fixtures/v7-martian-ui";
+import {
+  MOVE_TARGETS_UI_V7,
+  moveTargetsFixtureV7,
+} from "../fixtures/v7-move-targets-ui";
 
 /**
  * Bead pulp_wars-9im: the board's target highlight vocabulary
@@ -130,38 +139,55 @@ describe("target highlight vocabulary", () => {
     expect(targetHighlightStyleV7(undefined)).toBe("MOVE");
   });
 
-  it("tells the styles apart by shape as well as by colour", () => {
+  it("tells the styles apart by colour and by the furniture of their corner brackets", () => {
     const specs = TARGET_HIGHLIGHT_STYLES_V7.map(
       (style) => TARGET_HIGHLIGHTS_V7[style],
     );
     expect(new Set(specs.map((spec) => spec.shape)).size).toBe(4);
     expect(new Set(specs.map((spec) => spec.stroke)).size).toBe(4);
     expect(new Set(specs.map((spec) => spec.name)).size).toBe(4);
-    // Today's Move look is kept: dashed teal on the tile's edges.
+    // Bead pulp_wars-2yc.88: Move is light teal brackets, the lightest
+    // weight (a unit often has 20 to 40 of them); Attack keeps its red and
+    // is the heaviest; Help is lavender; Place keeps its cream.
     expect(TARGET_HIGHLIGHTS_V7.MOVE).toMatchObject({
-      shape: "DASHED_TILE",
+      shape: "BRACKETS",
       stroke: "#64e6cf",
-      dash: [9, 5],
-      onEdges: true,
+      dash: [],
     });
-    // Today's Attack red is kept; it is solid with brackets now.
     expect(TARGET_HIGHLIGHTS_V7.ATTACK).toMatchObject({
-      shape: "BRACKET_TILE",
+      shape: "BRACKETS_FRAME",
       stroke: "#ff655f",
       dash: [],
     });
-    // The Help mark is a ring inside the tile, never the tile's outline.
     expect(TARGET_HIGHLIGHTS_V7.SUPPORT).toMatchObject({
-      shape: "RING_PLUS",
-      onEdges: false,
+      shape: "BRACKETS_PLUS",
+      stroke: "#c49bff",
     });
-    expect(targetHighlightEdgeRankV7("SUPPORT")).toBe(0);
-    expect(targetHighlightEdgeRankV7("ATTACK")).toBeGreaterThan(
-      targetHighlightEdgeRankV7("PLACE"),
-    );
-    expect(targetHighlightEdgeRankV7("PLACE")).toBeGreaterThan(
-      targetHighlightEdgeRankV7("MOVE"),
-    );
+    expect(TARGET_HIGHLIGHTS_V7.PLACE).toMatchObject({
+      shape: "BRACKETS_PIPS",
+      stroke: "#ffe7a3",
+    });
+    for (const spec of specs) {
+      expect(spec.width[0], spec.style).toBeGreaterThanOrEqual(
+        TARGET_HIGHLIGHTS_V7.MOVE.width[0],
+      );
+      expect(spec.width[0], spec.style).toBeLessThanOrEqual(
+        TARGET_HIGHLIGHTS_V7.ATTACK.width[0],
+      );
+      // High contrast is a step thicker for every style.
+      expect(spec.width[1], spec.style).toBeGreaterThan(spec.width[0]);
+      // The brackets sit well inside the tile (128 world units wide).
+      expect(spec.inset, spec.style).toBeGreaterThanOrEqual(10);
+      expect(spec.inset + spec.arm, spec.style).toBeLessThan(64);
+    }
+  });
+
+  it("keeps the Help lavender apart from every faction colour (the Cult's green sat beside the old green)", () => {
+    for (const [faction, colour] of Object.entries(FACTION_COLOURS_V7))
+      expect(
+        colourDistance(rgb(TARGET_HIGHLIGHTS_V7.SUPPORT.stroke), rgb(colour)),
+        faction,
+      ).toBeGreaterThan(70);
   });
 
   it("keeps the colours apart for red-green and blue-yellow colour blindness, and readable on a dark casing", () => {
@@ -187,35 +213,45 @@ describe("target highlight vocabulary", () => {
     expect(contrast("#ffffff", casing)).toBeGreaterThan(12);
   });
 
-  it("draws each style's own shape, the same every time (no motion)", () => {
+  it("draws each style's own corners inside the tile, never on its edges, the same every time (no motion)", () => {
     const cell = { x: 100, y: 100, size: 80, zoom: 0.625 };
-    const drawn = (style: TargetHighlightStyleV7): readonly string[] => {
+    const drawn = (
+      style: TargetHighlightStyleV7,
+      options: TargetHighlightOptionsV7 = {},
+    ): readonly string[] => {
       const log: string[] = [];
-      drawTargetHighlightV7(recordingContext(log), cell, style);
+      drawTargetHighlightV7(recordingContext(log), cell, style, options);
       return log;
     };
     const count = (log: readonly string[], call: string): number =>
-      log.filter((entry) => entry.startsWith(call)).length;
+      log.filter((entry) => entry === call || entry.startsWith(`${call}:`))
+        .length;
     const move = drawn("MOVE");
-    expect(count(move, "lineTo")).toBe(4);
+    // Four two-armed brackets, solid, in teal on the casing.
+    expect(count(move, "lineTo")).toBe(8);
+    expect(count(move, "moveTo")).toBe(4);
+    expect(count(move, "rect")).toBe(0);
     expect(count(move, "arc")).toBe(0);
-    expect(move).toContain(`setLineDash:${[9 * 0.625, 5 * 0.625].join()}`);
-    expect(move).toContain("strokeStyle:#64e6cf");
-    const attack = drawn("ATTACK");
-    // Four edges and four two-armed brackets, all solid.
-    expect(count(attack, "lineTo")).toBe(4 + 8);
-    expect(attack.filter((entry) => entry.startsWith("setLineDash:"))).toEqual([
+    expect(move.filter((entry) => entry.startsWith("setLineDash:"))).toEqual([
       "setLineDash:",
       "setLineDash:",
     ]);
+    expect(move).toContain("strokeStyle:#64e6cf");
+    const attack = drawn("ATTACK");
+    // A thin solid frame inside the tile, then the four brackets.
+    expect(count(attack, "rect")).toBe(1);
+    expect(count(attack, "lineTo")).toBe(8);
+    expect(attack).toContain("strokeStyle:#ff655f");
     const support = drawn("SUPPORT");
-    // The ring and the plus badge; no tile edge.
-    expect(count(support, "arc")).toBe(2);
-    expect(count(support, "lineTo")).toBe(2);
-    expect(support).toContain("fill");
+    // The brackets and a plus badge; no ring.
+    expect(count(support, "arc")).toBe(1);
+    expect(count(support, "lineTo")).toBe(8 + 2);
+    expect(support).toContain("strokeStyle:#c49bff");
     const place = drawn("PLACE");
+    // The brackets and a square pip on each corner.
     expect(count(place, "fillRect")).toBe(4);
-    expect(place).toContain("lineCap:round");
+    expect(count(place, "lineTo")).toBe(8);
+    expect(place).toContain("strokeStyle:#ffe7a3");
     // Every style is cased, and a mark never depends on time.
     for (const style of TARGET_HIGHLIGHT_STYLES_V7) {
       expect(drawn(style)).toContain(
@@ -223,18 +259,92 @@ describe("target highlight vocabulary", () => {
       );
       expect(drawn(style)).toEqual(drawn(style));
     }
-    // A target that owns no tile edge draws none.
+    // Every point of every mark is inside the tile and clear of its edges,
+    // so two neighbouring targets never share a line.
+    for (const style of TARGET_HIGHLIGHT_STYLES_V7) {
+      const points: (readonly [number, number])[] = [];
+      drawTargetHighlightV7(pointContext(points), cell, style);
+      expect(points.length, style).toBeGreaterThan(0);
+      for (const [x, y] of points) {
+        const fromEdge =
+          cell.size / 2 - Math.max(Math.abs(x - cell.x), Math.abs(y - cell.y));
+        expect(fromEdge, `${style} ${x},${y}`).toBeGreaterThanOrEqual(
+          TARGET_HIGHLIGHT_FRAME_V7.inset * cell.zoom - 0.001,
+        );
+      }
+    }
+    // A variant keeps its own stroke and dash on a whole dark casing.
+    const launch = drawn("MOVE", { stroke: "#c7e7f5", dash: [3, 5] });
+    expect(launch).toContain("strokeStyle:#c7e7f5");
+    expect(launch.filter((entry) => entry.startsWith("setLineDash:"))).toEqual([
+      "setLineDash:",
+      `setLineDash:${[3 * 0.625, 5 * 0.625].join()}`,
+    ]);
+    // A chosen Tunnel destination adds the solid frame to the Move mark.
+    expect(count(drawn("MOVE", { frame: true }), "rect")).toBe(1);
+  });
+
+  it("draws a thicker mark in high contrast, and a heavier one with a soft wash when hovered or focused", () => {
+    const cell = { x: 100, y: 100, size: 128, zoom: 1 };
+    const widths = (
+      style: TargetHighlightStyleV7,
+      options: TargetHighlightOptionsV7 = {},
+    ): number[] => {
+      const log: string[] = [];
+      drawTargetHighlightV7(recordingContext(log), cell, style, options);
+      return log
+        .filter((entry) => entry.startsWith("lineWidth:"))
+        .map((entry) => Number(entry.slice("lineWidth:".length)));
+    };
+    for (const style of TARGET_HIGHLIGHT_STYLES_V7) {
+      const normal = Math.max(...widths(style));
+      expect(
+        Math.max(...widths(style, { highContrast: true })),
+        style,
+      ).toBeCloseTo(
+        (normal / TARGET_HIGHLIGHTS_V7[style].width[0]) *
+          TARGET_HIGHLIGHTS_V7[style].width[1],
+      );
+      expect(Math.max(...widths(style, { emphasis: true })), style).toBeCloseTo(
+        normal * TARGET_HIGHLIGHT_EMPHASIS_V7.widthScale,
+      );
+      const log: string[] = [];
+      drawTargetHighlightV7(recordingContext(log), cell, style, {
+        emphasis: true,
+      });
+      expect(log, style).toContain(
+        `fillStyle:${TARGET_HIGHLIGHTS_V7[style].stroke}${TARGET_HIGHLIGHT_EMPHASIS_V7.washAlpha}`,
+      );
+      // At rest a mark has no wash.
+      const rest: string[] = [];
+      drawTargetHighlightV7(recordingContext(rest), cell, style);
+      expect(
+        rest.some((entry) =>
+          entry.endsWith(TARGET_HIGHLIGHT_EMPHASIS_V7.washAlpha),
+        ),
+      ).toBe(false);
+    }
+    // The Move mark stays the lightest at every setting, so 20 to 40 of
+    // them do not crowd the board.
+    for (const highContrast of [false, true])
+      for (const style of ["ATTACK", "SUPPORT", "PLACE"] as const)
+        expect(
+          Math.max(...widths("MOVE", { highContrast })),
+          style,
+        ).toBeLessThan(Math.max(...widths(style, { highContrast })));
+    // A phone's small zoom keeps a visible stroke.
     const log: string[] = [];
-    drawTargetHighlightV7(recordingContext(log), cell, "MOVE", { edges: [] });
-    expect(count(log, "lineTo")).toBe(0);
-    // A variant keeps its own stroke and dash.
-    const glide: string[] = [];
-    drawTargetHighlightV7(recordingContext(glide), cell, "MOVE", {
-      stroke: "#d6f0ff",
-      dash: [3, 5],
-    });
-    expect(glide).toContain("strokeStyle:#d6f0ff");
-    expect(glide).toContain(`setLineDash:${[3 * 0.625, 5 * 0.625].join()}`);
+    drawTargetHighlightV7(
+      recordingContext(log),
+      { x: 50, y: 50, size: 128 * 0.3, zoom: 0.3 },
+      "MOVE",
+    );
+    const least = log
+      .filter((entry) => entry.startsWith("lineWidth:"))
+      .map((entry) => Number(entry.slice("lineWidth:".length)));
+    expect(Math.min(...least)).toBeGreaterThanOrEqual(
+      TARGET_HIGHLIGHT_LEAST_WIDTH_PX_V7,
+    );
   });
 
   it("steps the keyboard through units and places, not plain Move tiles", () => {
@@ -284,15 +394,120 @@ describe("target plans per action family", () => {
       expect(offered).toContainEqual(target.command);
       expect(target.previewLabel).toMatch(/^(Deal \d+|\+\d+)/);
     }
-    // The Help ring takes no tile edge from the Move tiles beside it.
+    // Bead pulp_wars-2yc.88: no mark takes a tile edge; each is inside
+    // its own tile.
     const entries = buildBoardRenderPlanV7(view, offered, {
       selection: { kind: "UNIT", unitId: unitAt(view, CANDY_HEALER_V7.gunner) },
       selectedUnitId: unitAt(view, CANDY_HEALER_V7.gunner),
       selectedAchievement: null,
     }).entries.filter((entry) => entry.kind === "TARGET");
-    for (const entry of entries)
-      if (entry.target?.family === "SUGAR_TOSS")
-        expect(entry.targetEdges).toEqual([]);
+    expect(entries.length).toBe(targets.length);
+    for (const entry of entries) expect(entry.targetEdges).toBeUndefined();
+  });
+
+  it("marks only the tiles a unit may move to: a water tile and an own unit among its reach carry no mark", () => {
+    const { view, targets } = planOf(
+      moveTargetsFixtureV7(),
+      MOVE_TARGETS_UI_V7.raider,
+    );
+    const byStyle = groupByStyle(targets);
+    const marked = new Set(targets.map((target) => key(target.at)));
+    // The holes in the reach: Shallow Water and the Raider's own Guard.
+    for (const hole of [MOVE_TARGETS_UI_V7.water, MOVE_TARGETS_UI_V7.guard]) {
+      expect(marked.has(key(hole)), key(hole)).toBe(false);
+      // ...while at least three of its four neighbours are marked targets,
+      // the case a shared-border grid made ambiguous.
+      const around = [
+        { x: hole.x, y: hole.y - 1 },
+        { x: hole.x + 1, y: hole.y },
+        { x: hole.x, y: hole.y + 1 },
+        { x: hole.x - 1, y: hole.y },
+      ].filter((at) => marked.has(key(at)));
+      expect(around.length, key(hole)).toBeGreaterThanOrEqual(2);
+    }
+    // A tile beyond the water is reached round it.
+    expect(marked.has(key({ x: 5, y: 3 }))).toBe(true);
+    // Moves over Grass, the Forest and the Mountain, and the Attack.
+    expect(marked.has(key(MOVE_TARGETS_UI_V7.forest))).toBe(true);
+    expect(marked.has(key(MOVE_TARGETS_UI_V7.mountain))).toBe(true);
+    expect(byStyle.MOVE.length).toBeGreaterThan(8);
+    expect(byStyle.ATTACK.map((target) => target.at)).toEqual([
+      MOVE_TARGETS_UI_V7.enemyNear,
+    ]);
+    // Every target is an offered command; the plan's entries own no edges.
+    const offered = queryPlayerCommandsV7(view);
+    for (const target of targets)
+      expect(offered).toContainEqual(target.command);
+    const raider = unitAt(view, MOVE_TARGETS_UI_V7.raider);
+    const entries = buildBoardRenderPlanV7(view, offered, {
+      selection: { kind: "UNIT", unitId: raider },
+      selectedUnitId: raider,
+      selectedAchievement: null,
+    }).entries.filter((entry) => entry.kind === "TARGET");
+    for (const entry of entries) expect(entry.targetEdges).toBeUndefined();
+    // Drawn, each target's mark is in its own colour and inside its tile:
+    // each stroked path's points, with the colour they were stroked in.
+    let stroke = "";
+    let path: (readonly [number, number])[] = [];
+    const drawn: {
+      readonly stroke: string;
+      readonly x: number;
+      readonly y: number;
+    }[] = [];
+    const context = new Proxy(
+      {},
+      {
+        get: (_target, name) =>
+          name === "canvas"
+            ? undefined
+            : name === "measureText"
+              ? () => ({ width: 10 })
+              : name === "createLinearGradient" ||
+                  name === "createRadialGradient"
+                ? () => ({ addColorStop: () => undefined })
+                : name === "beginPath"
+                  ? () => {
+                      path = [];
+                    }
+                  : name === "moveTo" || name === "lineTo"
+                    ? (x: number, y: number) => path.push([x, y])
+                    : name === "stroke"
+                      ? () => {
+                          for (const [x, y] of path)
+                            drawn.push({ stroke, x, y });
+                        }
+                      : () => undefined,
+        set: (_target, name, value) => {
+          if (name === "strokeStyle") stroke = String(value);
+          return true;
+        },
+      },
+    ) as CanvasRenderingContext2D;
+    drawBoardV7({
+      context,
+      viewport: { width: 1400, height: 1400 },
+      devicePixelRatio: 1,
+      camera: { offsetX: 64, offsetY: 64, zoom: 1 },
+      plan: {
+        version: 7,
+        targets,
+        entries,
+      },
+    });
+    const tileOf = (x: number, y: number): string =>
+      key({ x: Math.round((x - 64) / 128), y: Math.round((y - 64) / 128) });
+    for (const style of ["MOVE", "ATTACK"] as const) {
+      const tiles = new Set(
+        drawn
+          .filter(
+            (point) => point.stroke === TARGET_HIGHLIGHTS_V7[style].stroke,
+          )
+          .map((point) => tileOf(point.x, point.y)),
+      );
+      expect([...tiles].sort(), style).toEqual(
+        byStyle[style].map((target) => key(target.at)).sort(),
+      );
+    }
   });
 
   it("Candy: Re-bake places, Sugar Toss and Top-Up help, an armed Rush moves and attacks", () => {
@@ -534,6 +749,26 @@ function recordingContext(log: string[]): CanvasRenderingContext2D {
         log.push(`${String(name)}:${String(value)}`);
         return true;
       },
+    },
+  ) as CanvasRenderingContext2D;
+}
+
+/** A canvas context that records every point a path or rectangle passes. */
+function pointContext(
+  points: (readonly [number, number])[],
+): CanvasRenderingContext2D {
+  return new Proxy(
+    {},
+    {
+      get:
+        (_target, name) =>
+        (...args: number[]) => {
+          const [x = 0, y = 0, width = 0, height = 0] = args;
+          if (name === "moveTo" || name === "lineTo") points.push([x, y]);
+          if (name === "rect" || name === "fillRect" || name === "strokeRect")
+            points.push([x, y], [x + width, y + height]);
+        },
+      set: () => true,
     },
   ) as CanvasRenderingContext2D;
 }
