@@ -323,6 +323,7 @@ import { BoardFeedbackV7, type BoardFeedbackPortV7 } from "./feedback-host-v7";
 import type { FirstStepMarkerV7 } from "../first-steps-v7";
 import type { MissionMarkerV7 } from "../mission-presentation-v7";
 import { cityAccessibleNameV7 } from "../city-names-presentation-v7";
+import { tileSiteDockV7 } from "../tile-site-presentation-v7";
 import { tileActionsAtV7, type TileActionPlanV7 } from "./tile-actions-v7";
 import { drawTileActionBadgesV7 } from "./tile-action-badges-v7";
 
@@ -3549,6 +3550,11 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     this.#description.textContent = [
       aimed ? actions.join(", ") : "",
       title(tile.terrain),
+      // Bead pulp_wars-2yc.89: a neutral village or a treasure chest.
+      ...(() => {
+        const site = tileSiteDockV7(model.view, at);
+        return site === null ? [] : [site.name, site.line.replace(/\.$/, "")];
+      })(),
       // The Ice Folk revision: what Snow and a Blizzard do for the viewer.
       // The frozen sea: the tile's ice, when it melts, and Black Ice.
       ...(() => {

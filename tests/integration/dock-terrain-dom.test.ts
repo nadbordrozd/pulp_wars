@@ -205,14 +205,16 @@ describe("the tile dock's Forest and Mountain pictures", () => {
     );
   };
 
-  it("shows the faction's own trees for a Forest in its territory, with or without a Treasure on it", () => {
+  it("shows the faction's own trees for a Forest in its territory, and the chest for a Treasure on one", () => {
     drawable();
     const { state, forest, treasure, wild } = scene();
     const { app, dockArt } = mount(state);
     expect(dockArt(forest)).toBe(
       "canvas:chibi-forest-goblin-piece-1x1-a:TERRAIN:FOREST",
     );
-    expect(dockArt(treasure)).toBe(dockArt(forest));
+    // Bead pulp_wars-2yc.89: a Treasure is what the tile shows, so its
+    // dock is the chest's, not the Forest's.
+    expect(dockArt(treasure)).toMatch(/treasure/);
     // Outside every territory: the default Forest, as before.
     expect(dockArt(wild)).toMatch(/^image:chibi-forest-/);
     expect(dockArt(wild)).not.toContain("goblin");

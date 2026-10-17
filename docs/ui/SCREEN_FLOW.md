@@ -501,6 +501,18 @@ its name and health, and a row of action buttons.
 - **A tile's dock.** Its chips stay; a faction building's flavour line, a
   curiosity's rule and a Barricade's rule move to the tile's details
   (`?`); a tile without such a line has no `?`.
+- **A village's and a chest's dock** (bead `pulp_wars-2yc.89`, the user,
+  2026-10-17: a village tap read "Grass"). A neutral village is named
+  "Village" (a mission's named village by its name, with "Village" under
+  it) and drawn with the board's village art, with one line in the main
+  view: "Move a unit here, then Capture it to make it your city." A
+  treasure chest is "Treasure", with its chest art and "Move a unit here
+  to open it for Coins or a free unit." The tile's chips stay; the board's
+  screen-reader description names them too
+  (`src/render/tile-site-presentation-v7.ts`). A unit standing on the
+  village still opens its own dock first, with its Capture; a second tap
+  on the tile opens the village's. A captured village is a city and opens
+  the city's dock.
 - **A phone's unit card** (800 px and under): one slim bar. The
   portrait (56 px), the head (the name, the HP over its bar, the `?`) and
   the actions share the first row; the chips run under them across the

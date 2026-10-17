@@ -382,6 +382,7 @@ import {
   dockTerrainSwatchV7,
   type DockTerrainRequestV7,
 } from "../dock-terrain-presentation-v7";
+import { tileSiteDockV7 } from "../tile-site-presentation-v7";
 import {
   factionColourV7,
   playerFactionColourV7,
@@ -7280,12 +7281,17 @@ export class Ruleset7DomAppView {
       // board answers the tap with the fog's puff.
       if (!tile.explored) return null;
       else {
+        // Bead pulp_wars-2yc.89: a neutral village or a treasure chest is
+        // what the tile shows, not its Grass.
+        const site = tileSiteDockV7(view, tile.at);
         const asset =
-          tile.improvement === null
-            ? tile.resource !== null && tile.resource !== "UNKNOWN_RESOURCE"
-              ? resourceMapArtKeyV7(tile.resource, tile.at)
-              : TERRAIN_ART_KEYS_V7[tile.terrain]
-            : IMPROVEMENT_ART_KEYS_V7[tile.improvement];
+          site !== null
+            ? site.assetId
+            : tile.improvement === null
+              ? tile.resource !== null && tile.resource !== "UNKNOWN_RESOURCE"
+                ? resourceMapArtKeyV7(tile.resource, tile.at)
+                : TERRAIN_ART_KEYS_V7[tile.terrain]
+              : IMPROVEMENT_ART_KEYS_V7[tile.improvement];
         // Faction building looks (epic pulp_wars-xdh): the improvement is
         // named and drawn as the faction that owns its territory has it.
         const tileFaction = territoryFactionV7(view, tile.territoryOwnerId);
@@ -7294,6 +7300,7 @@ export class Ruleset7DomAppView {
             ? null
             : factionBuildingV7(tile.improvement, tileFaction);
         const name =
+          site?.name ??
           factionBuilding?.name ??
           title(
             tile.improvement ??
@@ -7301,31 +7308,33 @@ export class Ruleset7DomAppView {
               (tile.road ? "ROAD" : tile.terrain),
           );
         const tileSubject: ArtSubjectV7 =
-          tile.improvement !== null
-            ? tileImprovementSubjectV7(
-                view,
-                tile.at,
-                tile.improvement,
-                tileFaction,
-              )
-            : tile.resource !== null && tile.resource !== "UNKNOWN_RESOURCE"
-              ? `RESOURCE:${tile.resource}`
-              : tile.terrain === "RIFT"
-                ? `TERRAIN:RIFT_${riftPieceV7(tile.at, (at) => {
-                    const near = view.board.tiles.find((candidate) =>
-                      same(candidate.at, at),
+          site !== null
+            ? site.subject
+            : tile.improvement !== null
+              ? tileImprovementSubjectV7(
+                  view,
+                  tile.at,
+                  tile.improvement,
+                  tileFaction,
+                )
+              : tile.resource !== null && tile.resource !== "UNKNOWN_RESOURCE"
+                ? `RESOURCE:${tile.resource}`
+                : tile.terrain === "RIFT"
+                  ? `TERRAIN:RIFT_${riftPieceV7(tile.at, (at) => {
+                      const near = view.board.tiles.find((candidate) =>
+                        same(candidate.at, at),
+                      );
+                      return near === undefined
+                        ? false
+                        : near.explored
+                          ? near.terrain === "RIFT"
+                          : null;
+                    })}`
+                  : // The Undead territory ground (bead pulp_wars-xdh.2).
+                    territoryTerrainSubjectV7(
+                      `TERRAIN:${tile.terrain}`,
+                      territoryGroundV7(tileFaction),
                     );
-                    return near === undefined
-                      ? false
-                      : near.explored
-                        ? near.terrain === "RIFT"
-                        : null;
-                  })}`
-                : // The Undead territory ground (bead pulp_wars-xdh.2).
-                  territoryTerrainSubjectV7(
-                    `TERRAIN:${tile.terrain}`,
-                    territoryGroundV7(tileFaction),
-                  );
         const summary = el(this.#document, "div", "v7-selection-summary");
         summary.append(
           identity(
@@ -7335,7 +7344,8 @@ export class Ruleset7DomAppView {
             null,
             // A Forest, a Mountain or a Mine as the board draws the cell
             // (bead pulp_wars-2yc.41); every other tile its master.
-            (tile.improvement === null || tile.improvement === "MINE"
+            (site === null &&
+            (tile.improvement === null || tile.improvement === "MINE")
               ? this.#dockTerrainArtwork(
                   {
                     terrain:
@@ -7360,7 +7370,25 @@ export class Ruleset7DomAppView {
               )?.element,
           ),
         );
+        if (site?.kindLabel != null)
+          summary
+            .querySelector(".v7-identity")
+            ?.append(
+              text(this.#document, "span", site.kindLabel, "v7-identity-kind"),
+            );
         const details = el(this.#document, "div", "v7-selection-details");
+        // Bead pulp_wars-2yc.89: the village's or chest's one short line,
+        // in the main view (never behind the "?").
+        if (site !== null) {
+          const line = text(
+            this.#document,
+            "p",
+            site.line,
+            "v7-tile-site-line",
+          );
+          line.dataset.tileSite = site.kind.toLowerCase();
+          details.append(line);
+        }
         // One flavour line; it ends "Counts as a Farm." so the generic
         // building of every rules text stays learnable.
         if (factionBuilding !== null) {

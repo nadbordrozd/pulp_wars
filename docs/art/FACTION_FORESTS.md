@@ -219,7 +219,10 @@ its set. The title scene keeps the default Forest.
 **The tile dock** (bead `pulp_wars-2yc.41`). A selected Forest cell inside
 a faction's territory shows a single piece of that faction's set on the
 faction's ground, as a clearing draws it, whatever stands on the cell (a
-Treasure, a Grave, a Field Defense, a curiosity). Until that bead the dock
+Grave, a Field Defense, a curiosity). A Treasure is the exception since
+bead `pulp_wars-2yc.89`: the dock shows the chest, named "Treasure", as it
+shows a neutral village rather than its ground
+([SCREEN_FLOW.md](../ui/SCREEN_FLOW.md)). Until that bead the dock
 showed the default green clump on default Grass for every Forest: the last
 place the default clump stood in for a faction's wood. The board itself has
 drawn such cells in the faction's trees since bead `pulp_wars-2yc.28`
