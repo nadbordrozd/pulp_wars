@@ -245,7 +245,12 @@ import {
   terrainSkeletonOfViewV7,
   type TerrainSkeletonV7,
 } from "./terrain-at-fog-v7";
-import { createFogArtV7, fogStyleV7, type FogArtV7 } from "./fog-of-war-v7";
+import {
+  createFogArtV7,
+  fogStyleV7,
+  type FogArtV7,
+  type FogPaletteIdV7,
+} from "./fog-of-war-v7";
 import {
   createFogPuffClockV7,
   createFogPuffSurfaceV7,
@@ -260,6 +265,19 @@ import {
   type FogPuffSurfaceV7,
   type FogPuffV7,
 } from "./fog-puff-v7";
+import {
+  createFogLiftClockV7,
+  createFogLiftScratchV7,
+  FOG_LIFT_V7,
+  createFogLiftSpritesV7,
+  drawFogLiftV7,
+  fogLiftColoursV7,
+  fogLiftEnabledV7,
+  fogLiftTimingV7,
+  type FogLiftScratchV7,
+  type FogLiftSpritesV7,
+  type FogLiftTimingV7,
+} from "./fog-lift-v7";
 import { starfieldEnabledV7 } from "./starfield-v7";
 import {
   CombatJuiceV7,
@@ -684,6 +702,21 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
    * ground, a tap on a plain tile, in the faint dust colours.
    */
   #fogPuffGround = false;
+  /**
+   * The fog lift (bead pulp_wars-2yc.83, fog-lift-v7.ts): cells the viewer
+   * has just explored keep their cloud on the effects overlay and lift it
+   * away in a wave. It shares the puff's frame pump: frames only while a
+   * lift plays, and only the overlay repaints.
+   */
+  readonly #fogLift = createFogLiftClockV7();
+  readonly #fogLiftEnabled = fogLiftEnabledV7();
+  #fogLiftSprites: FogLiftSpritesV7 | undefined;
+  #fogLiftScratch: FogLiftScratchV7 | undefined;
+  /** The palette whose wisp frames are all built, and the warming timer. */
+  #fogLiftWarmed: string | null = null;
+  #fogLiftWarmTimer: number | null = null;
+  /** Review tooling only (pinFogLift): the lift held this long after it starts. */
+  #pinnedFogLiftMs: number | null = null;
   /** A plain tile tapped by pointer: no cursor box on it while it rests. */
   #quietCursorAt: CoordV7 | null = null;
   /** Whether a pointer tap (not the keyboard) put the cursor where it is. */
@@ -1822,6 +1855,16 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       durationScale = baseDurationScale;
       const cells = cameraCells.get(step);
       if (step.kind === "MOVE") {
+        // Bead pulp_wars-2yc.83: the ground this walk shows lifts its fog
+        // as the unit comes nearest to it.
+        this.#fogLift.walk(
+          {
+            unitId: step.unitId,
+            path: step.path,
+            walkMs: step.durationMs * durationScale,
+          },
+          this.#now(),
+        );
         this.#presentedView = after;
         const unit = before.units.find(
           (candidate) => candidate.id === step.unitId,
@@ -2641,10 +2684,24 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
               },
       });
     };
-    this.#drawnKey = drawnKeyV7(
-      model.matchInstanceId,
-      this.#crossfade?.after ?? this.#presentedView ?? model.view,
-    );
+    const shownView =
+      this.#crossfade?.after ?? this.#presentedView ?? model.view;
+    this.#drawnKey = drawnKeyV7(model.matchInstanceId, shownView);
+    // Bead pulp_wars-2yc.83: cells this view has explored and the last one
+    // drawn had not keep their cloud on the overlay (drawn with this board,
+    // below) and lift it away.
+    if (
+      this.#fogLiftEnabled &&
+      this.#fogLift.observe(
+        shownView,
+        model.matchInstanceId,
+        this.#now(),
+        this.#fogLiftTiming(),
+      ) > 0
+    )
+      this.#pumpFogPuff();
+    if (this.#fogLiftEnabled && model.motion !== "REDUCED")
+      this.#warmFogLift(shownView);
     if (this.#crossfade !== null) {
       // Bead pulp_wars-2yc.62: the view before is drawn whole and the view
       // after, drawn whole apart, is laid over it, so only what changes
@@ -3189,6 +3246,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     const dpr = this.#document.defaultView?.devicePixelRatio ?? 1;
     context.setTransform(dpr, 0, 0, dpr, 0, 0);
     context.clearRect(0, 0, this.#viewport.width, this.#viewport.height);
+    this.#drawFogLift(context, canvas, dpr);
     this.#drawFogPuff(context, canvas, dpr);
     // Combat juice: the poofs and pops under the other cues, the numbers
     // over every one of them.
@@ -3973,6 +4031,11 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     this.#cancelFogPuff();
     this.#fogPuff.reset();
     this.#pinnedFogPuff = null;
+    this.#fogLift.reset();
+    this.#pinnedFogLiftMs = null;
+    if (this.#fogLiftWarmTimer !== null)
+      this.#document.defaultView?.clearTimeout(this.#fogLiftWarmTimer);
+    this.#fogLiftWarmTimer = null;
     this.#clearCombatJuice();
     if (this.#victoryWaveFrame !== null)
       this.#document.defaultView?.cancelAnimationFrame(this.#victoryWaveFrame);
@@ -4562,6 +4625,124 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     };
   }
 
+  /** The fog lift's length, wave and motion, as the model has them. */
+  #fogLiftTiming(): FogLiftTimingV7 {
+    const model = this.#model;
+    return fogLiftTimingV7(
+      model?.animationSpeed ?? "NORMAL",
+      model?.motion === "REDUCED",
+    );
+  }
+
+  /** The fog lift's time: now, or the pinned time after its wave began. */
+  #fogLiftNow(): number {
+    return this.#pinnedFogLiftMs === null
+      ? this.#now()
+      : (this.#fogLift.startedAtMs ?? 0) + this.#pinnedFogLiftMs;
+  }
+
+  /** Draws the cells whose cloud is lifting on the effects overlay. */
+  #drawFogLift(
+    context: CanvasRenderingContext2D,
+    canvas: HTMLCanvasElement,
+    dpr: number,
+  ): void {
+    const lifts = this.#fogLiftEnabled
+      ? this.#fogLift.frame(this.#fogLiftNow(), this.#fogLiftTiming())
+      : [];
+    if (lifts.length === 0) {
+      if (canvas.dataset.fogLift !== undefined) {
+        delete canvas.dataset.fogLift;
+        delete canvas.dataset.fogLiftPuffs;
+      }
+      return;
+    }
+    const model = this.#model;
+    const live = model?.visualDirection !== undefined;
+    const palette = this.#fogLiftPalette();
+    const cost = drawFogLiftV7(
+      context,
+      {
+        camera: this.#camera,
+        devicePixelRatio: dpr,
+        viewport: this.#viewport,
+        timeMs: model?.motion === "REDUCED" ? 0 : this.#atmosphereClockMs,
+      },
+      lifts,
+      {
+        art: live ? (this.#fogArt ?? null) : null,
+        flat: "#1c2a2e",
+        colourKey: palette,
+        colours: fogLiftColoursV7(palette),
+      },
+      this.#fogLiftSpriteCache(),
+      (this.#fogLiftScratch ??= createFogLiftScratchV7(this.#document)),
+      this.#fogLift.fogNeighbours(),
+    );
+    const count = String(lifts.length);
+    const puffs = String(cost.puffs);
+    if (canvas.dataset.fogLift !== count) canvas.dataset.fogLift = count;
+    if (canvas.dataset.fogLiftPuffs !== puffs)
+      canvas.dataset.fogLiftPuffs = puffs;
+  }
+
+  /** The cloud's palette in the live look; the flat fog's otherwise. */
+  #fogLiftPalette(): FogPaletteIdV7 | "OFF" {
+    return this.#model?.visualDirection === undefined
+      ? "OFF"
+      : (this.#fogArt?.palette ?? "OFF");
+  }
+
+  #fogLiftSpriteCache(): FogLiftSpritesV7 {
+    if (this.#fogLiftSprites === undefined) {
+      const environment = browserChibiRasterEnvironmentV7(this.#document);
+      this.#fogLiftSprites = createFogLiftSpritesV7((pixels, width, height) =>
+        environment.createSurface(pixels, width, height),
+      );
+    }
+    return this.#fogLiftSprites;
+  }
+
+  /**
+   * Builds the lift's cached wisp frames a few at a time, apart, while the
+   * board shows fog, so that the first reveal finds them ready.
+   */
+  #warmFogLift(view: PlayerViewV7): void {
+    const palette = this.#fogLiftPalette();
+    if (
+      this.#fogLiftWarmed === palette ||
+      this.#fogLiftWarmTimer !== null ||
+      this.#exploredCells(view).length >= view.board.tiles.length
+    )
+      return;
+    const browser = this.#document.defaultView;
+    if (browser === null || typeof browser.setTimeout !== "function") return;
+    this.#fogLiftWarmTimer = browser.setTimeout(() => {
+      this.#fogLiftWarmTimer = null;
+      if (this.#model === null) return;
+      const current = this.#fogLiftPalette();
+      if (
+        this.#fogLiftSpriteCache().warm(
+          current,
+          fogLiftColoursV7(current),
+          FOG_LIFT_V7.warmPerStep,
+        )
+      )
+        this.#fogLiftWarmed = current;
+      else this.#warmFogLift(this.#model.view);
+    }, FOG_LIFT_V7.warmGapMs);
+  }
+
+  /**
+   * Review tooling and tests: holds the latest fog lift `elapsedMs` after
+   * its wave began (the Motion setting's look), or lets it go with null.
+   */
+  pinFogLift(elapsedMs: number | null): void {
+    this.#pinnedFogLiftMs = elapsedMs;
+    this.#drawSupportOverlay();
+    if (elapsedMs === null) this.#pumpFogPuff();
+  }
+
   /**
    * Repaints the overlay each frame while the puff plays (with reduced
    * motion, once when its still frame is over), then clears it.
@@ -4570,12 +4751,35 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     const browser = this.#document.defaultView;
     if (browser === null) return;
     const { durationMs, reduced } = this.#fogPuffTiming();
-    if (!this.#fogPuff.active(this.#now(), durationMs, reduced)) {
+    const puffing = this.#fogPuff.active(this.#now(), durationMs, reduced);
+    // Bead pulp_wars-2yc.83: the fog lift shares this pump; it plays a
+    // frame at a time (a plain fade with reduced motion).
+    const lifting =
+      this.#pinnedFogLiftMs === null &&
+      this.#fogLift.active(this.#now(), this.#fogLiftTiming());
+    if (!puffing && !lifting) {
       this.#drawSupportOverlay();
       return;
     }
+    if (lifting) {
+      if (
+        this.#fogPuffFrame !== null ||
+        typeof browser.requestAnimationFrame !== "function"
+      )
+        return;
+      this.#fogPuffFrame = browser.requestAnimationFrame(() => {
+        this.#fogPuffFrame = null;
+        this.#drawSupportOverlay();
+        this.#pumpFogPuff();
+      });
+      return;
+    }
     if (reduced) {
-      if (typeof browser.setTimeout !== "function") return;
+      if (
+        this.#fogPuffTimer !== null ||
+        typeof browser.setTimeout !== "function"
+      )
+        return;
       this.#fogPuffTimer = browser.setTimeout(
         () => {
           this.#fogPuffTimer = null;
@@ -4585,7 +4789,11 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       );
       return;
     }
-    if (typeof browser.requestAnimationFrame !== "function") return;
+    if (
+      this.#fogPuffFrame !== null ||
+      typeof browser.requestAnimationFrame !== "function"
+    )
+      return;
     this.#fogPuffFrame = browser.requestAnimationFrame(() => {
       this.#fogPuffFrame = null;
       this.#drawSupportOverlay();

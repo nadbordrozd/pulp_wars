@@ -16,7 +16,9 @@
  * and without the map's skeleton, and a ridge and a wood cut the same
  * way) or `puff` (bead pulp_wars-2yc.77: the fog puff of a tap on an
  * unexplored tile, frame by frame, at the game's size and enlarged, and
- * the still frame of reduced motion). Each shot writes `<name>.png`; `palettes`, `ripple` and `rift`
+ * the still frame of reduced motion) or `lift` (bead pulp_wars-2yc.83: the
+ * fog lifting off about forty newly explored cells, every 60 ms, at the
+ * game's size, zoomed in, on a phone and with reduced motion). Each shot writes `<name>.png`; `palettes`, `ripple` and `rift`
  * also write labelled sheets. No PixelLab call.
  */
 import { spawn } from "node:child_process";
@@ -54,6 +56,8 @@ interface Shot {
   readonly pin?: (ms: number) => string;
   /** Bead pulp_wars-2yc.77: the page as the system's reduced motion has it. */
   readonly reducedMotion?: boolean;
+  /** Bead pulp_wars-2yc.83: another page size (a phone), CSS px. */
+  readonly page?: readonly [number, number];
 }
 
 const delay = (ms: number): Promise<void> =>
@@ -235,6 +239,13 @@ async function open(
   await evaluate(connection, `globalThis.__TF_OLD__ = true`).catch(
     () => undefined,
   );
+  const page = shot.page ?? PAGE;
+  await connection.send("Emulation.setDeviceMetricsOverride", {
+    width: page[0],
+    height: page[1],
+    deviceScaleFactor: 1,
+    mobile: shot.page !== undefined,
+  });
   await connection.send("Emulation.setEmulatedMedia", {
     features: [
       {
@@ -257,7 +268,10 @@ async function open(
   for (let step = 0; step < (shot.zoomIn ?? 0); step += 1)
     await evaluate(connection, `globalThis.tf.boardHost.zoom('IN')`);
   if (shot.drag !== undefined) {
-    const from = { x: 720, y: 520 };
+    const from =
+      shot.page === undefined
+        ? { x: 720, y: 520 }
+        : { x: Math.round(page[0] / 2), y: Math.round(page[1] * 0.6) };
     const mouse = (type: string, x: number, y: number): Promise<unknown> =>
       connection.send("Input.dispatchMouseEvent", {
         type,
@@ -785,7 +799,63 @@ const PUFF: readonly Shot[] = [
   },
 ];
 
+/**
+ * Bead pulp_wars-2yc.83: the fog lift. The viewer's ground from column 6
+ * on is known; the state then swaps to columns 3 on (three columns, about
+ * forty cells, a big reveal) as an accepted command would, and the lift
+ * is held every 60 ms. Its wave runs west from the nearest unit (6, 7).
+ * `lift-near` is zoomed in, `lift-phone` at 390 x 844, `lift-reduced` the
+ * plain fade of reduced motion.
+ */
+const LIFT_FRAMES = [
+  0, 60, 120, 180, 240, 300, 360, 420, 480, 540, 600, 660, 720, 780, 840, 900,
+];
+const REVEAL =
+  "globalThis.tf.show({ cut: { west: 3 } }); globalThis.tf.boardHost.pinFogLift(0);";
+const pinLift = (ms: number): string =>
+  `globalThis.tf.boardHost.pinFogLift(${ms})`;
+const LIFT: readonly Shot[] = [
+  {
+    name: "lift-wave",
+    scene: { cut: { west: 6 } },
+    then: REVEAL,
+    settle: 100,
+    frames: LIFT_FRAMES,
+    pin: pinLift,
+  },
+  {
+    name: "lift-near",
+    scene: { cut: { west: 6 } },
+    zoomIn: 2,
+    drag: [300, 0],
+    then: REVEAL,
+    settle: 100,
+    frames: LIFT_FRAMES,
+    pin: pinLift,
+  },
+  {
+    name: "lift-phone",
+    scene: { cut: { west: 6 } },
+    page: [390, 844],
+    drag: [330, 0],
+    then: REVEAL,
+    settle: 100,
+    frames: LIFT_FRAMES,
+    pin: pinLift,
+  },
+  {
+    name: "lift-reduced",
+    scene: { cut: { west: 6 } },
+    reducedMotion: true,
+    then: REVEAL,
+    settle: 100,
+    frames: [0, 60, 120, 180],
+    pin: pinLift,
+  },
+];
+
 const SETS: Readonly<Record<string, readonly Shot[]>> = {
+  lift: LIFT,
   puff: PUFF,
   rift: RIFT,
   ripple: RIPPLE,
@@ -800,6 +870,7 @@ async function cellBox(
   out: string,
   name: string,
   cells: readonly [number, number, number, number],
+  page?: readonly [number, number],
 ): Promise<readonly [number, number, number, number]> {
   const geometry = JSON.parse(
     await readFile(path.join(out, `${name}.json`), "utf8"),
@@ -815,8 +886,8 @@ async function cellBox(
   if (
     box[0] < 0 ||
     box[1] < 0 ||
-    box[0] + box[2] > PAGE[0] ||
-    box[1] + box[3] > PAGE[1]
+    box[0] + box[2] > (page ?? PAGE)[0] ||
+    box[1] + box[3] > (page ?? PAGE)[1]
   )
     throw new Error(`${name}: cells ${cells.join()} are off the page`);
   return box;
@@ -897,6 +968,40 @@ async function sheets(set: string, out: string): Promise<void> {
           `${name}-strip${suffix}.png`,
           suffix === "" ? PUFF_FRAMES.length : 6,
           PUFF_FRAMES.map((ms) => ({
+            title: `${ms} ms`,
+            from: `${name}-${String(ms).padStart(4, "0")}`,
+            box,
+            scale: factor,
+          })),
+        );
+    }
+  }
+  if (set === "lift") {
+    // The revealed columns and their neighbours, at the game's size and
+    // enlarged (pixels); the phone at its own page size.
+    for (const [name, cells, scale, page] of [
+      ["lift-wave", [2, 1, 6, 11], 2, undefined],
+      ["lift-near", [2, 3, 5, 5], 2, undefined],
+      ["lift-phone", [3, 2, 5, 9], 2, [390, 844]],
+      ["lift-reduced", [2, 1, 6, 11], 1, undefined],
+    ] as const) {
+      const box = await cellBox(
+        out,
+        name,
+        cells,
+        page as readonly [number, number] | undefined,
+      ).catch(() => null);
+      if (box === null) continue;
+      const frames = name === "lift-reduced" ? [0, 60, 120, 180] : LIFT_FRAMES;
+      for (const [suffix, factor] of [
+        ["", 1],
+        ["-enlarged", scale],
+      ] as const)
+        await sheet(
+          out,
+          `${name}-strip${suffix}.png`,
+          suffix === "" ? 8 : 4,
+          frames.map((ms) => ({
             title: `${ms} ms`,
             from: `${name}-${String(ms).padStart(4, "0")}`,
             box,

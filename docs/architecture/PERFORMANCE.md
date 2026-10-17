@@ -167,3 +167,40 @@ time; what changed is the work between frames and the long frames.
   canvas per camera; with 16.7 ms frames everywhere it was not needed.
 - Noise: the machine was shared with other workers throughout; the engine
   ranges above are the spread of the fastest-of-three runs.
+
+## The fog lift (bead `pulp_wars-2yc.83`)
+
+The fog lift on a reveal ([ATMOSPHERE.md](../art/ATMOSPHERE.md#the-fog-lifting-on-a-reveal))
+draws on the effects overlay only. It was measured with
+`scripts/perf/fog-lift-browser.ts` on `advanced-25x25-8seats-r16` (no
+command played, no AI): the board is mounted over the save's state with the
+cells two and three away from the human's capital unexplored, then the state
+as it is is swapped in, as an accepted command would, revealing **33 cells
+at once** (a wave of three rings); 1.5 s of frames, muted headless Chrome,
+1440 x 1000, the same run with `?fog-lift=0`. (The fixture's save is of
+identity 7r91; its state is drawn as it is, since only the board is
+measured.)
+
+| DPR | Lift | Frame interval (mean, max) | rAF work per frame (mean, p95, max) | Long tasks | The swap's task |
+| --- | ---- | -------------------------- | ----------------------------------- | ---------- | --------------- |
+| 1   | on   | 16.67, 16.8 ms             | 1.77, 2.1, 2.6 ms                   | 0          | 27.7 ms         |
+| 1   | off  | 16.67, 16.8 ms             | 1.69, 1.9, 2.8 ms                   | 0          | 27.4 ms         |
+| 2   | on   | 16.67, 16.8 ms             | 1.85, 2.3, 2.8 ms                   | 0          | 27.3 ms         |
+| 2   | off  | 16.67, 16.8 ms             | 1.76, 2.2, 3.0 ms                   | 0          | 32.6 ms         |
+
+- No dropped frame and no long task with the lift; it adds about 0.1 ms of
+  animation-frame work a frame while it plays. The swap's task (the view,
+  its update and first draw) is the same with and without it.
+- One overlay frame of all 33 cells, held with `pinFogLift` at every 30 ms
+  of the wave, costs 0.04 ms of JavaScript on average (0.2 ms at most): two
+  drawImage of a cached frame a cloud, one pattern fill and one drawImage
+  for all their bodies.
+- The cached frames (12 frames of 3 variants, a body mask and the rims
+  each, cropped) take about 4.8 MB in all and about 2 ms each to build; they
+  are built two at a time, 30 ms apart, while the board shows fog, so the
+  first reveal finds them ready (at most three a frame are built during a
+  lift if not).
+- Reading a view with a new tile list (every playback boundary) costs
+  about 0.04 ms (a 25 x 25 board, 85 units); a view with the same tiles
+  costs nothing. Another player's moves do not change the viewer's
+  explored cells, so enemy playback starts no lift.

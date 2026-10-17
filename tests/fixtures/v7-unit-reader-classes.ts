@@ -43,6 +43,10 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/render/canvas/feedback-host-v7.ts::BoardFeedbackV7.wantsAmbientFrames":
       "BOARD",
     "src/render/canvas/unit-turn-state-v7.ts::unitTurnStatesV7": "BOARD",
+    // Bead pulp_wars-2yc.83: the fog lift reads where the viewer's units in
+    // the view stand, to run a reveal's wave out from the one that moved. A
+    // burrowed unit is not in the view and sees nothing new.
+    "src/render/canvas/fog-lift-v7.ts::observe": "BOARD",
     // Bead pulp_wars-2yc.60: the tile actions read the view's units for the
     // selected unit, the own unit or any unit standing on a badged tile, and
     // whether a Freeze is the Ice Witch's ring (her own unit). Each is a

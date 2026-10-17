@@ -176,6 +176,55 @@ same puff in a faint cream dust (`GROUND_PUFF_COLOURS_V7`, lit from the
 bottom left like the cloud) at 55 % of its alpha, and, after a pointer
 tap, draws no cursor box on the tile.
 
+### The fog lifting on a reveal
+
+Bead `pulp_wars-2yc.83` (UI review V4), the same request: when cells
+become explored (a unit walks or is trained and sees new ground, a
+capture, a technology that widens sight) their fog no longer vanishes at
+once. [`fog-lift-v7.ts`](../../src/render/canvas/fog-lift-v7.ts).
+
+- **What it looks like.** The board draws the new ground at once; the
+  effects overlay keeps each new cell's cloud over it. The cloud is the
+  fog itself: nine round lobes that cover the cell and bulge a little past
+  it, filled with the fog's own pattern, anchored to the board as the
+  board's fog, with the cloud's pale rim towards the light (bottom left),
+  its shaded rim and its short cast shadow. While a cell waits it cannot be
+  told from the fog round it. Then it swells a little (8 %) and breaks:
+  each lobe drifts out from the middle and up (the top ones highest, each
+  its own way), shrinks and thins, all fading together, and the ground
+  shows through. One cell takes 0.64 s (0.48 s at the fast animation
+  speed).
+- **The wave.** Each cell starts with the unit (or city) that sees it:
+  the first ring at once, each ring farther 80 ms later (60 ms fast), at
+  most three rings. A walk lifts its ground as the unit comes nearest to
+  it (60 ms before), so the fog clears along the path; a reveal with no
+  unit that moved (a wider sight) runs out from every unit and city, and
+  its first cell starts at once. A big reveal of forty cells lasts about
+  0.9 s.
+- **Where the clouds touch** their bodies cover each other's rims, so only
+  the edge of the whole wave has a rim, as the fog's own edge. Neither a
+  rim nor a body is drawn over a cell still unexplored beside the wave
+  (that is the same fog, or something drawn over it).
+- **Reduced motion:** no cloud and no wave; every new cell's fog fades
+  out together over 0.18 s, as the old crossfade did.
+- **It never shows anything hidden.** It covers cells the viewer has just
+  explored, from their coordinates alone, in the fog's colours. A cell
+  drawn as fog again (the view before a presentation) loses its lift.
+- **Cost.** At most 64 cells play their cloud at once (a cell over the cap
+  only fades as a plain cover, batched by alpha into at most eight
+  fills). A cloud is two drawImage of cached frames (its body's mask and
+  its rims; 12 frames of 3 variants, cropped, about 5 MB, built two at a
+  time in idle time while the board shows fog, so the first reveal finds
+  them ready); every body is filled with the fog in one fill on a scratch
+  canvas the size of the wave, laid on the overlay in one drawImage. Only
+  the overlay repaints while it plays, a frame at a time (the fog puff's
+  pump), and nothing is asked for once it is over. Measured in
+  [PERFORMANCE.md](../architecture/PERFORMANCE.md#the-fog-lift-bead-pulp_wars-2yc83).
+
+`?fog-lift=0` (or `FOG_LIFT_ENABLED_V7`) turns it off: the new ground shows
+at once, as before. Frames (desktop, enlarged, phone, reduced motion):
+`npx tsx scripts/art/terrain-fog/review.ts lift <out-dir>`.
+
 ## The night sky
 
 [`starfield-v7.ts`](../../src/render/canvas/starfield-v7.ts). The canvas
