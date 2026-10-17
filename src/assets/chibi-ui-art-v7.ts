@@ -210,8 +210,9 @@ export const CHIBI_TECH_ART_SUBJECTS_V7 = {
  * Sunken Galleys), the Dinosaurs (`pulp_wars-5ti.18`: Dugouts, Horned
  * Prows, Plesiosaurs), the Martians (`pulp_wars-5ti.19`: Skimmers,
  * Hover Pods, Bathyspheres), the Dwarves (`pulp_wars-5ti.20`: Steam
- * Launches, Sea Tunnels, Diving Bells), and the Candy (`pulp_wars-5ti.21`:
- * Gumdrop Tugs, Sugar Sails, Choco Subs).
+ * Launches, Sea Tunnels, Diving Bells), the Candy (`pulp_wars-5ti.21`:
+ * Gumdrop Tugs, Sugar Sails, Choco Subs), and the Cult (`pulp_wars-5ti.22`:
+ * Black Gondolas, Offerings to the Deep, the Kraken).
  */
 export const NAVAL_FACTION_TECH_SUBJECTS_V7: Readonly<
   Partial<Record<FactionIdV7, Partial<Record<TechnologyIdV7, ArtSubjectV7>>>>
@@ -251,6 +252,13 @@ export const NAVAL_FACTION_TECH_SUBJECTS_V7: Readonly<
     SHORECRAFT: "PORTRAIT:CANDY:PATROL_BOAT",
     SEAMANSHIP: "ICON:TECH:CANDY:SEAMANSHIP",
     SUBMERSIBLES: "PORTRAIT:CANDY:SUBMARINE",
+  },
+  // The Cult Deep Ones (`pulp_wars-5ti.22`: Black Gondolas, Offerings to
+  // the Deep, the Kraken).
+  CULT: {
+    SHORECRAFT: "PORTRAIT:CULT:PATROL_BOAT",
+    SEAMANSHIP: "ICON:TECH:CULT:SEAMANSHIP",
+    SUBMERSIBLES: "PORTRAIT:CULT:SUBMARINE",
   },
 };
 

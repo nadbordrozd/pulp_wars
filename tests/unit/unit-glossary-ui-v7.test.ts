@@ -427,6 +427,9 @@ describe("Ruleset 7 unit glossary", () => {
             ["TRACTOR_BEAM", "TRACTOR_BEAM_HEAVY"],
             // The Troll heals at its turn's start, the Spider after rounds.
             ["REGENERATE", "SPIDER_REGENERATES"],
+            // The Mass drags units on land, the Kraken units afloat
+            // (`pulp_wars-5ti.22`): one Drag, pointed at the sea.
+            ["DRAG", "DRAG_AFLOAT"],
           ].some(([a, b]) => other === a && entry.id === b),
           `${other} and ${entry.id} are both "${entry.name}"`,
         ).toBe(true);

@@ -640,6 +640,7 @@ import {
   navalTorpedoPriorityV7,
   navalAttackBlastOnAttackerV7,
   drownedCrewRisingTenthsV7,
+  deepOfferingTenthsV7,
   navalTorpedoReachV7,
   navalTransportMoveRejectedV7,
   type NavalFleetFactsV7,
@@ -675,6 +676,13 @@ import {
   navalSugarRushAttack2V7,
   navalSugarRushMoveBonusV7,
 } from "./v7-naval-candy";
+import {
+  NAVAL_KRAKEN_HOLD_PRIORITY_V7,
+  deepOfferingTorpedoPriorityV7,
+  navalKrakenDraggedV7,
+  navalKrakenHoldValueV7,
+  navalKrakenTransportMoveRejectedV7,
+} from "./v7-naval-cult";
 import {
   BREAK_OFF_FRONT_RADIUS_V7,
   BREAK_OFF_MINIMUM_HP_V7,
@@ -11362,7 +11370,10 @@ function* publicThreatenedTilesWorkV7(
   // section 6.2): a Stuck unit's Move has one step, whatever its Move (the
   // entry lasts to the end of its owner's next turn). The list is empty in
   // a match without a Candy seat.
-  const stuck = unitIsStuckV7(view, unit.id);
+  // Themed naval branches, the Deep Ones (`pulp_wars-5ti.22`): a unit
+  // afloat beside a visible Kraken hostile to it is Dragged, one tile.
+  const stuck =
+    unitIsStuckV7(view, unit.id) || navalKrakenDraggedV7(view, unit);
   // Themed naval branches, Sugar Sails (`pulp_wars-5ti.21`): a hostile Candy
   // ship is assumed to Rush (its owner's Sugar Sails is private, as the Ram
   // is): one more tile of Move. 0 for every other unit.
@@ -11755,9 +11766,13 @@ function navalRejectsV7(context: PolicyContextV7, command: CommandV7): boolean {
     return true;
   if (actor.form === "NAVAL")
     return navalSubmarineMoveRejectedV7(context.view, tools, facts, actor, to);
+  const embarks = isAutoembarkMoveV7(context, command);
   return (
-    (actor.form === "EMBARKED" || isAutoembarkMoveV7(context, command)) &&
-    navalTransportMoveRejectedV7(context.view, tools, facts, actor, to)
+    ((actor.form === "EMBARKED" || embarks) &&
+      navalTransportMoveRejectedV7(context.view, tools, facts, actor, to)) ||
+    // Themed naval branches (`pulp_wars-5ti.22`): no transport ends a Move
+    // beside a hostile Kraken that would hold it, unless it lands next turn.
+    navalKrakenTransportMoveRejectedV7(context.view, tools, actor, to, embarks)
   );
 }
 
@@ -14914,6 +14929,24 @@ function scoreCommandWithContext(
           );
           if (growth !== null) priority = Math.max(priority, growth);
         }
+        // Themed naval branches (`pulp_wars-5ti.22`): Offerings to the Deep.
+        // A Cult ship's kill afloat pays Favour, worth a Coin each below the
+        // cap (on `targetStrategicValue`'s scale, Coins x 4), and a Kraken's
+        // torpedo kill for Favour goes before a chip on a capital ship.
+        if (preview.defenderDies && actor.form === "NAVAL") {
+          const favour = deepOfferingTenthsV7(view, actor, preview);
+          if (favour > 0) {
+            strategicValue += Math.floor((favour * 4) / 10);
+            const offering = deepOfferingTorpedoPriorityV7(
+              view,
+              navalToolsV7(context),
+              actor,
+              targetUnit,
+              preview,
+            );
+            if (offering !== null) priority = Math.max(priority, offering);
+          }
+        }
         strategicValue += navalRamShoveValueV7(
           view,
           actor,
@@ -15816,6 +15849,13 @@ function scoreCommandWithContext(
       if (station > 0) {
         priority = Math.max(priority, NAVAL_STATION_PRIORITY_V7);
         strategicValue += station;
+      }
+      // Themed naval branches (`pulp_wars-5ti.22`): a Kraken goes beside a
+      // hostile transport or Patrol Boat its Drag holds.
+      const hold = navalKrakenHoldValueV7(view, tools, fleet, actor, resultAt);
+      if (hold > 0) {
+        priority = Math.max(priority, NAVAL_KRAKEN_HOLD_PRIORITY_V7);
+        strategicValue += hold;
       }
     }
     const destinationTile =

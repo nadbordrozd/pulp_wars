@@ -598,6 +598,7 @@ import {
   hoverPodsUnlockTextV7,
   seaTunnelsUnlockTextV7,
   sugarSailsUnlockTextV7,
+  deepOfferingsUnlockTextV7,
   patrolBoatUnlockNotesV7,
   battleshipUnlockNoteV7,
   SHORECRAFT_EMBARK_NOTE_V7,
@@ -16205,7 +16206,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   const aiHeadStartCoins =
     draft.mapType === "SHOWCASE" ? 0 : draft.aiHeadStartCoins;
   return {
-    rulesetId: "pulp-wars-poc-7r97",
+    rulesetId: "pulp-wars-poc-7r98",
     seed,
     width,
     height: width,
@@ -16389,6 +16390,10 @@ function effectDescription(
     // Themed naval branches (`pulp_wars-5ti.21`): the Candy Sugar Sails.
     case "SUGAR_SAILS":
       return sugarSailsUnlockTextV7();
+    // Themed naval branches (`pulp_wars-5ti.22`): the Cult Offerings to
+    // the Deep.
+    case "DEEP_OFFERINGS":
+      return deepOfferingsUnlockTextV7();
     case "HARBOURS":
       return harboursUnlockTextV7(effect.population);
     // The frozen sea (RULESET_7_NAVAL_BRANCH.md section 8.2).
@@ -16728,6 +16733,7 @@ function technologyEffectGroupIdV7(
     case "HOVER_PODS":
     case "SEA_TUNNELS":
     case "SUGAR_SAILS":
+    case "DEEP_OFFERINGS":
     case "HARBOURS":
     case "ICEBOUND":
     case "BLACK_ICE":

@@ -2102,6 +2102,11 @@
       "wanted": "A sea reptile's bite: a wet splash, a short gurgling roar and a snap of jaws, 0.25 to 0.8 s."
     },
     {
+      "id": "attack.kraken",
+      "why": "Added by bead pulp_wars-5ti.22 with ElevenLabs takes; the bundle was not searched for it.",
+      "wanted": "A sea monster's tentacle lash: a deep wet whip-crack slap and a short low gurgle, 0.25 to 0.8 s."
+    },
+    {
       "id": "unit.step.naval",
       "why": "Added by bead pulp_wars-2yc.57 with ElevenLabs takes; the bundle was not searched for it.",
       "wanted": "A soft oar dip or a gentle lap of water on a small hull, 0.25 to 0.6 s."

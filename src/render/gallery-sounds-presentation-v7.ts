@@ -316,6 +316,11 @@ const NOTES: Readonly<Partial<Record<SoundIdV1, SoundNoteV7>>> = {
     when: `${unitName("SUBMARINE", "DINOSAUR")} attacks`,
     picture: unit("SUBMARINE", "DINOSAUR"),
   },
+  // Themed naval branches (`pulp_wars-5ti.22`): the Kraken's lash.
+  "attack.kraken": {
+    when: `${unitName("SUBMARINE", "CULT")} attacks`,
+    picture: unit("SUBMARINE", "CULT"),
+  },
   "impact.hit": { when: "Attack lands", picture: icon("attack") },
   "impact.heavy": { when: "Siege or charge lands", picture: icon("stampede") },
   "impact.explosion": { when: "Bomb or shell bursts", picture: icon("bomb") },

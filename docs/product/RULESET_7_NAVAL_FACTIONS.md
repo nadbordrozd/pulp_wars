@@ -1515,6 +1515,118 @@ choice.
   ElevenLabs clip for the Kraken's torpedo (a deep wet lash), through the
   checked-in script.
 
+### 9.8 As built (`pulp_wars-5ti.22`, `pulp-wars-poc-7r98`)
+
+Built as above at identity `7r98` (`7r97` is a prior identity; the
+autosave key is `pulpWars.save.v7r98.current`). Every row of 9.2 is a
+registry value and every row of 9.4 an exact preview or result in
+`tests/unit/ruleset-v7-naval-cult.test.ts`; the AI scenarios of 9.6 are
+`tests/unit/ruleset-v7-naval-cult-ai.test.ts`. Where the build is more
+precise than the text above:
+
+- **Offerings to the Deep** is the unlock `DEEP_OFFERINGS` (capability
+  `deepOfferings`) after `RAM` on the Cult Seamanship
+  (`withSeamanshipUnlocksV7`). The rule is `deepOfferingFavourV7` (in
+  `src/engine/v7/naval-cult.ts`): the killer is a ship in `NAVAL` form of a
+  seat with Favour whose role has `DEEP_OFFERING` and whose kind's
+  capabilities under its owner have `deepOfferings` (`deepOfferingOfV7`);
+  the victim a unit afloat, no summoned unit, of a player hostile to the
+  killer's; it pays `floor(value / DEEP_OFFERING_DIVISOR_V7)` of the
+  Score's unit value. The reducer reads it for the attack's kill and the
+  retaliation's kill of an `ATTACK` (after the daemon-kill Favour), never
+  for a splash or blast victim, Plague, a bomb, the crush, or a Tentacle.
+  `FAVOUR_GAINED` has the new source `DEEP_OFFERING` (appended to
+  `FAVOUR_SOURCES_V7`), with the part above the cap `forfeited`.
+- **No preview field.** The combat preview (and so `COMBAT_RESOLVED`) is
+  unchanged: the public helper `previewDeepOfferingsV7` reads an attack's
+  Offerings from the preview's deaths, the viewer's own research for its
+  ship, and the public Favour for the cap, and the interface and the AI
+  read it. Its result equals the reducer's (tested on an attack kill, a
+  retaliation kill, and the cap).
+- **Private research.** Offerings to the Deep is in no public stat. Another
+  seat's Cult ship is assumed to have it (`previewDeepOfferingsV7` reads
+  Shorecraft and Seamanship for it), as a hostile Ram is assumed: a Human
+  boat that would sink to a Gondola's reply is told "Enemy Offering +2
+  Favour".
+- **Drag afloat** is `draggingKrakenV7`: a living Kraken (role mechanic
+  `dragsAfloat`, `NAVAL` form, not on ice) beside a unit afloat of a player
+  hostile to the Kraken's owner. Both movement validations read it beside
+  the Mass's Drag (`dragged` is either), so the offered Moves equal the
+  accepted ones; the public one reads the public ice. A Kraken is never
+  Unbound (it is no daemon), so it drags only hostile units. Zones of
+  control often end a Move beside a Kraken anyway; the Drag matters for a
+  first step that leaves them (the 9.4 example is built with both Krakens
+  on one side of the Battleship for that reason). The shove of a Ram and a
+  landing are tested; a Tractor Beam pull is no `MOVE` and is not read.
+- **The Kraken's registration.** The Cult `SUBMARINE` has the abilities
+  `ATTACK`, `SUBMERGED`, `TORPEDO`, `DRAG`, `SEA_BEAST`, `DEEP_OFFERING`
+  and the mechanics `seaBeast` and `dragsAfloat`. It takes the ordinary
+  Promotion (it is trained and living; only a growing beast refuses it).
+  `boardSeaBeastBlockedV7` already refused a Board of it and the Cult had
+  no Board left to refuse.
+- **The AI.** `deepOfferingTenthsV7` (in `src/ai/v7-naval.ts`) values an
+  own ship's Offering at a Coin a Favour (`NAVAL_FAVOUR_TENTHS_V7` 10: the
+  Cult policy turns 2 Coins into 2 Favour with a Sacrificed Initiate), only
+  the part below the cap. The attack scorer adds it on its Coins-x-4 scale;
+  the ram approach and the Galleon's station add it (the station a fifth,
+  as the risen Ghost Ship); `deepOfferingTorpedoPriorityV7` (priority 1280,
+  in `src/ai/v7-naval-cult.ts`) fires a Kraken's torpedo kill for Favour
+  before a chip on a capital ship (a Patrol Boat's 5 Coins and 2 Favour
+  over a Battleship chip's 6.4), unless another of its torpedoes is worth
+  as much or another own Submarine follows. At the cap it torpedoes the
+  Battleship. The integration with the summon and Herald plan needs no
+  rule: that plan reads the seat's Favour at every decision, so what a sea
+  kill pays is spent on the same turn, and the cap rule (spend from 26)
+  sees it.
+- **The Kraken holds (AI).** `navalKrakenHoldValueV7`: a Move of an own
+  Kraken to a tile beside more hostile units afloat that it would hold (a
+  transport 16, a Patrol Boat 10) than it holds where it stands, priority
+  836, never beside a visible hostile Battleship, never on ice, and never
+  where the visible enemy's danger reaches its HP; the Submarine safety
+  rules still refuse what they refused.
+- **Against a Kraken (AI).** The threat reach of a unit afloat beside a
+  visible Kraken hostile to it is one step (`navalKrakenDraggedV7`, the
+  engine's `publicDraggingKrakenV7`, read where Stuck is). An own
+  transport's Move (or an embarking) that ends beside a hostile Kraken it
+  is not already beside is refused unless a free explored land tile is
+  beside the end (`navalKrakenTransportMoveRejectedV7`); a landing is never
+  refused. "The route estimates" are the offered Moves themselves, which
+  the engine already limits to one tile.
+- **Text.** The glossary has a `DEEP_OFFERING` entry ("Offering to the
+  Deep") on the three ships and a `DRAG_AFLOAT` entry ("Drag", the Mass's
+  name: one mechanic pointed at the sea) on the Kraken, and the existing
+  `SEA_BEAST`. The Offerings to the Deep card says "Offerings to the Deep:
+  What your ships sink feeds the Ancient Ones: half its value in Favour",
+  the Black Gondolas card names the Gondola's Bow Ram, and the Kraken card
+  reads "Kraken: hit only from the next tile; torpedo with no strike-back;
+  Drag; never boarded". The attack preview says "Offering +4 Favour" (with
+  "(3 lost)" at the cap) and "Enemy Offering +2 Favour". A unit afloat a
+  Kraken drags has the Mass's "Dragged" chip ("A Kraken beside it: it can
+  move only one tile") and the Dragged ring on its Moves, and every visible
+  Kraken that drags has the Mass's ooze ring drawn on its own tile and the
+  open water beside it. A viewer's Offering is announced as "an Offering to
+  the Deep" in the Favour source labels. The Cult has no faction Help list,
+  so no "At sea" line was added.
+- **Art.** The Kraken's map sprite and portrait are redrawn in place (same
+  asset IDs, subject keys `…/KRAKEN`), edits of the accepted gondola and
+  bathysphere through the `cult-lodge` accent; the submerged Kraken is
+  derived by `submerged.ts`; the bathysphere stays in the batch records as
+  history (the Classic look draws the shared Submarine, so no Classic
+  fallback needed it). Offerings to the Deep has its own icon
+  (`ICON:TECH:CULT:SEAMANSHIP`, `chibi-naval-cult-icon-tech-seamanship`,
+  batch `naval-cult`); the Black Gondolas and The Kraken cards show the
+  ships' portraits. The Cult joins the Submarine sheet and scene of
+  `art:chibi-naval-faction-review`. See
+  [NAVAL_FACTIONS.md](../art/NAVAL_FACTIONS.md#the-cult-kraken-and-offerings-to-the-deep-bead-pulp_wars-5ti22).
+- **Sound.** One new ElevenLabs clip, `attack.kraken` (a deep wet lash of a
+  tentacle), played in place of the melee swing when a Kraken attacks
+  (`seaBeastAttacksV7` now names the beast's own sound); five takes in two
+  rounds, three kept ([ELEVENLABS_SFX.md](../audio/ELEVENLABS_SFX.md)).
+  The text above names "the existing Grab cue for a Drag and the Favour
+  cue": the Drag is no event (as for the Mass), so it has no cue, and a
+  Favour gain has its existing pop (it flies from the sunk unit's tile, as
+  every Favour paid for a death) and no sound of its own.
+
 ## 10. Role coverage at a glance
 
 | Faction  | Transport of land units                         | Coastal support                                  | Naval combat                                                      |

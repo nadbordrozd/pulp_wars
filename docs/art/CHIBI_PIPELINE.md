@@ -2201,3 +2201,21 @@ A fresh `icon` for the Candy Seamanship in batch `naval-candy`
 - **Light direction by edit**: "light the whole picture from the lower
   left" moved the highlight of the sail and the hull in one edit without
   changing the shapes.
+
+## The Cult Kraken and Offerings to the Deep (bead `pulp_wars-5ti.22`)
+
+Edits of the accepted Cult pieces in batch `naval-cult` and a fresh `icon`
+for the Cult Seamanship
+([what and why](NAVAL_FACTIONS.md#the-cult-kraken-and-offerings-to-the-deep-bead-pulp_wars-5ti22)).
+
+- **An edit instruction is at most 500 characters**: the first Kraken
+  request, with hex values for each colour, was refused by `prompts`; the
+  accent recolours to the lodge's indigo anyway, so the colours are named
+  in words.
+- **"One eye" from a round machine draws two**: the edit of the
+  bathysphere (whose porthole sat on its side) drew a second green eye on
+  the head's left side in both candidates; the edit of the gondola drew
+  one.
+- **A wave under a candle can turn into a mound**: one of two seeds drew
+  the wave as a sand heap with a dark hollow; the other drew a curling
+  wave round the candle.

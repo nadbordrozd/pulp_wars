@@ -148,14 +148,14 @@ describe("the Cult registration: identity", () => {
   // 7r74, and the Cult's Unbound (`pulp_wars-mch9.6`) 7r75, so 7r71 is a
   // prior identity.
   it("was 7r71 after 7r70, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r97");
-    expect(PRIOR_RULESET_7_IDS.slice(-27, -25)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r98");
+    expect(PRIOR_RULESET_7_IDS.slice(-28, -26)).toEqual([
       "pulp-wars-poc-7r70",
       "pulp-wars-poc-7r71",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r97.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-27, -25)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r98.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-28, -26)).toEqual([
       "pulpWars.save.v7r70.current",
       "pulpWars.save.v7r71.current",
     ]);
@@ -312,11 +312,27 @@ describe("the Cult registration: the nine land roles (section 4.1)", () => {
     ).toBe(8);
   });
 
-  it("sails the shared ships", () => {
+  it("sails the shared ships under its own names (themed naval branches, `pulp_wars-5ti.22`)", () => {
+    // The Black Gondola, the Galleon of the Eye, and the Kraken: the Human
+    // numbers, Offerings to the Deep on each, and the Kraken a 10-Coin sea
+    // beast that Drags (tests/unit/ruleset-v7-naval-cult.test.ts).
+    const labels = {
+      PATROL_BOAT: "Black Gondola",
+      BATTLESHIP: "Galleon of the Eye",
+      SUBMARINE: "Kraken",
+    } as const;
     for (const role of NAVAL_ROLE_IDS_V7) {
-      expect(effectiveRoleRuleV7(role, "CULT")).toEqual(
-        ORIGINAL_ROLE_RULES_V7[role],
-      );
+      const human = ORIGINAL_ROLE_RULES_V7[role];
+      expect(effectiveRoleRuleV7(role, "CULT")).toEqual({
+        ...human,
+        label: labels[role],
+        cost: role === "SUBMARINE" ? 10 : human.cost,
+        abilities: [
+          ...human.abilities,
+          ...(role === "SUBMARINE" ? (["DRAG", "SEA_BEAST"] as const) : []),
+          "DEEP_OFFERING",
+        ],
+      });
       expect(factionUnlocksRoleV7("CULT", role)).toBe(true);
     }
     expect(roleMechanicsV7("BATTLESHIP", "CULT").splash).toBe(true);
@@ -404,6 +420,9 @@ describe("the Cult registration: the nine land roles (section 4.1)", () => {
           ...NAVAL_ROLE_IDS_V7,
         ].includes(role),
         anchorStrands: role === "JUGGERNAUT" ? 2 : 0,
+        // Themed naval branches (`pulp_wars-5ti.22`): the Kraken.
+        seaBeast: role === "SUBMARINE",
+        dragsAfloat: role === "SUBMARINE",
       });
       expect(mechanics.capacitySlots, role).toBe(1);
       expect(mechanics.movementMode, role).toBe("GROUND");
@@ -550,6 +569,15 @@ describe("the Cult registration: the tree and its names (section 11)", () => {
           // `pulp_wars-mch9.8`: Familiars adds the Switcheroo.
           ...(node.id === "SCOUTING" ? [{ kind: "SWITCHEROO" }] : []),
         ]
+          // Themed naval branches (`pulp_wars-5ti.22`): Offerings to the
+          // Deep in place of Board.
+          .map((unlock) =>
+            unlock.kind === "COMMAND" &&
+            "command" in unlock &&
+            unlock.command === "BOARD"
+              ? { kind: "DEEP_OFFERINGS" }
+              : unlock,
+          )
           .filter(
             // The Cult redesign (`pulp_wars-mch9.31`): the vacant slots are
             // unlocked by nothing.
@@ -621,6 +649,11 @@ describe("the Cult registration: the tree and its names (section 11)", () => {
       METALLURGY: "Gibbering Masses",
       FORTIFICATION: "Warding Circles",
       EXPLOSIVES: "The Stars Are Right",
+      // Themed naval branches (`pulp_wars-5ti.22`): the Deep Ones.
+      SHORECRAFT: "Black Gondolas",
+      NAVAL_ENGINEERING: "Galleons of the Eye",
+      SEAMANSHIP: "Offerings to the Deep",
+      SUBMERSIBLES: "The Kraken",
     };
     for (const tech of TECHNOLOGY_IDS_V7)
       expect(technologyDisplayNameV7(tech, "CULT"), tech).toBe(
@@ -641,9 +674,13 @@ describe("the Cult registration: the tree and its names (section 11)", () => {
     expect(cult).toEqual({
       ...human,
       treeId: "CULT_BASELINE_V1",
+      // Themed naval branches (`pulp_wars-5ti.22`): Offerings to the Deep
+      // in place of Board.
       commands: human.commands.filter(
-        (command) => command !== "BUILD_FIELD_DEFENSE",
+        (command) => command !== "BUILD_FIELD_DEFENSE" && command !== "BOARD",
       ),
+      boarding: false,
+      deepOfferings: true,
       roleBindings: CULT_ROLE_RULES_V7,
       // Harvest Rites (`pulp_wars-mch9.4`).
       offering: true,

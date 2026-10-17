@@ -218,6 +218,12 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     // Horned Prows and the Plesiosaur (`pulp_wars-5ti.18`): the other
     // torpedoes of a Plesiosaur and its fellow Submarines are on the board.
     "src/ai/v7-naval-dinosaur.ts::plesiosaurGrowthTorpedoPriorityV7": "BOARD",
+    // The Deep Ones (`pulp_wars-5ti.22`): a Kraken's other torpedoes, the
+    // units afloat it would hold, and a transport's landing tiles are on
+    // the board.
+    "src/ai/v7-naval-cult.ts::deepOfferingTorpedoPriorityV7": "BOARD",
+    "src/ai/v7-naval-cult.ts::navalKrakenHoldValueV7": "BOARD",
+    "src/ai/v7-naval-cult.ts::landsBesideV7": "BOARD",
     // The Martian Hover Fleet (`pulp_wars-5ti.19`): a launch tile is free of
     // every visible unit on the board.
     "src/ai/v7-naval-martian.ts::hoverLaunchTilesV7": "BOARD",
@@ -1049,6 +1055,14 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     // no Move, and no Mass burrows), for the harness's line (the public
     // movement rules read them from their context's units by position).
     "src/engine/v7/query.ts::publicDraggingMassV7": "BOARD",
+    // Themed naval branches, the Deep Ones (`pulp_wars-5ti.22`): the
+    // Kraken's Drag reads the ships beside a unit afloat (no ship burrows),
+    // and an Offering's preview the attacker and the defender of a public
+    // combat preview, both on the board.
+    "src/engine/v7/query.ts::publicDraggingKrakenV7": "BOARD",
+    "src/engine/v7/query.ts::publicDraggingKrakensV7": "BOARD",
+    "src/engine/v7/query.ts::previewDeepOfferingsV7": "BOARD",
+    "src/render/cult-channel-presentation-v7.ts::unitDraggedAfloatV7": "BOARD",
     "src/engine/v7/query.ts::appendOfferedUnitCommandsV7": "BOARD",
     "src/render/cult-channel-presentation-v7.ts::channelOfV7": "BOARD",
     "src/engine/v7/query.ts::previewBooV7": "BOARD",

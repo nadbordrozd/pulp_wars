@@ -260,6 +260,91 @@
       }
     },
     {
+      "id": "attack.kraken",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A giant sea monster's tentacle lashes a boat from under the water: one deep wet whip-crack slap of a heavy tentacle and a short low gurgle, over fast. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "attack-kraken-101.wav",
+      "date": "2026-10-17",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "attack.kraken",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A giant sea monster's tentacle lashes a boat from under the water: one deep wet whip-crack slap of a heavy tentacle and a short low gurgle, over fast. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "attack-kraken-102.wav",
+      "date": "2026-10-17",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "attack.kraken",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A giant sea monster's tentacle lashes a boat from under the water: one deep wet whip-crack slap of a heavy tentacle and a short low gurgle, over fast. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "attack-kraken-103.wav",
+      "date": "2026-10-17",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "attack.kraken",
+      "n": 104,
+      "round": 2,
+      "take": 1,
+      "prompt": "A heavy wet tentacle whip-cracks onto a boat at once: one sharp deep wet slap right at the start, then a short low gurgle, over fast, nothing after. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 0.7,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "attack-kraken-104.wav",
+      "date": "2026-10-17",
+      "bytes": 119952,
+      "cost": {
+        "character-cost": "8"
+      }
+    },
+    {
+      "id": "attack.kraken",
+      "n": 105,
+      "round": 2,
+      "take": 2,
+      "prompt": "A heavy wet tentacle whip-cracks onto a boat at once: one sharp deep wet slap right at the start, then a short low gurgle, over fast, nothing after. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 0.7,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "attack-kraken-105.wav",
+      "date": "2026-10-17",
+      "bytes": 119952,
+      "cost": {
+        "character-cost": "8"
+      }
+    },
+    {
       "id": "attack.magic",
       "n": 101,
       "round": 1,

@@ -505,6 +505,7 @@ describe("technology cards and Help", () => {
     "MARTIAN",
     "DWARF",
     "CANDY",
+    "CULT",
   ];
 
   for (const faction of FACTIONS)
@@ -530,12 +531,15 @@ describe("technology cards and Help", () => {
       // (The Dwarf Ironclads, `pulp_wars-5ti.20`: Sea Tunnels, whose trick
       // lets a Steam Mole tunnel under shallow water; Armoured hulls.)
       // (The Candy Sugar Sails, `pulp_wars-5ti.21`: the ships Rush.)
+      // (The Cult Deep Ones, `pulp_wars-5ti.22`: Offerings to the Deep, and
+      // the Kraken.)
       const goblin = faction === "GOBLIN";
       const undead = faction === "UNDEAD";
       const dinosaur = faction === "DINOSAUR";
       const martian = faction === "MARTIAN";
       const dwarf = faction === "DWARF";
       const candy = faction === "CANDY";
+      const cult = faction === "CULT";
       expect(seamanship.querySelector(".v7-tech-name")?.textContent).toBe(
         goblin
           ? "Powder Kegs"
@@ -549,7 +553,9 @@ describe("technology cards and Help", () => {
                   ? "Sea Tunnels"
                   : candy
                     ? "Sugar Sails"
-                    : "Boarding",
+                    : cult
+                      ? "Offerings to the Deep"
+                      : "Boarding",
       );
       seamanship.click();
       const lines = (): string[] =>
@@ -589,10 +595,15 @@ describe("technology cards and Help", () => {
                         "Bow Ram: Gumdrop Tugs that moved hit ships with +1 Attack and shove them back",
                         "Sugar Sails: Your ships can Sugar Rush: +1 Move and +1 Attack, then they Crash",
                       ]
-                    : [
-                        "Board: capture an adjacent enemy ship at a third of its HP or less",
-                        "Bow Ram: Patrol Boats that moved hit ships with +1 Attack and shove them back",
-                      ],
+                    : cult
+                      ? [
+                          "Bow Ram: Black Gondolas that moved hit ships with +1 Attack and shove them back",
+                          "Offerings to the Deep: What your ships sink feeds the Ancient Ones: half its value in Favour",
+                        ]
+                      : [
+                          "Board: capture an adjacent enemy ship at a third of its HP or less",
+                          "Bow Ram: Patrol Boats that moved hit ships with +1 Attack and shove them back",
+                        ],
       );
       const submersibles = requiredButton("tech-submersibles");
       expect(submersibles.querySelector(".v7-tech-name")?.textContent).toBe(
@@ -608,7 +619,9 @@ describe("technology cards and Help", () => {
                   ? "Diving Bells"
                   : candy
                     ? "Choco Subs"
-                    : "Submersibles",
+                    : cult
+                      ? "The Kraken"
+                      : "Submersibles",
       );
       submersibles.click();
       const unlocks = lines();
@@ -624,7 +637,9 @@ describe("technology cards and Help", () => {
                 ? "Diving Bell"
                 : candy
                   ? "Choco Sub"
-                  : "Submarine";
+                  : cult
+                    ? "Kraken"
+                    : "Submarine";
       expect(unlocks.some((line) => line.includes(sub))).toBe(true);
       expect(unlocks).toContain(
         "Harbours: +1 population from every active Port and Shipyard",
@@ -634,7 +649,9 @@ describe("technology cards and Help", () => {
           ? "Plesiosaur: hit only from the next tile; torpedo with no strike-back; grows; never boarded"
           : dwarf
             ? "Diving Bell: hit only from the next tile; torpedo with no strike-back; Armoured"
-            : `${sub}: attacked only from the next tile; its torpedo hits ships with no strike-back`,
+            : cult
+              ? "Kraken: hit only from the next tile; torpedo with no strike-back; Drag; never boarded"
+              : `${sub}: attacked only from the next tile; its torpedo hits ships with no strike-back`,
       );
       for (const line of unlocks) expect(line.length).toBeLessThanOrEqual(92);
       requiredButton("tech-shorecraft").click();

@@ -29,6 +29,10 @@ export const FAVOUR_SOURCES_V7 = Object.freeze([
   "DAEMON_KILL",
   "CONSUMPTION",
   "TRICKLE",
+  // Themed naval branches (`pulp_wars-5ti.22`,
+  // docs/product/RULESET_7_NAVAL_FACTIONS.md section 9.3 K1): Offerings to
+  // the Deep, half the value of a unit afloat a Cult ship kills.
+  "DEEP_OFFERING",
 ] as const);
 export type FavourSourceV7 = (typeof FAVOUR_SOURCES_V7)[number];
 

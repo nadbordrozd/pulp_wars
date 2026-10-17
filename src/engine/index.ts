@@ -35,6 +35,7 @@ export * from "./v7/missions/objectives";
 export * from "./v7/ice-folk";
 export * from "./v7/movement";
 export * from "./v7/naval-branch";
+export * from "./v7/naval-cult";
 export * from "./v7/ninth-unit";
 export * from "./v7/ice";
 export * from "./v7/giants";

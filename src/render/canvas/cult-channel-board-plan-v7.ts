@@ -12,6 +12,8 @@ import {
   previewRampageV7,
   previewSummonV7,
   previewWardenV7,
+  publicDraggingKrakensV7,
+  isIceAtV7,
   summonNeedsHelperV7,
   unitIsUnboundV7,
   unitRoleRuleV7,
@@ -358,6 +360,18 @@ export function outlineEntries(
     });
 }
 
+/** Explored open water (Shallow or Deep, not ice). */
+function openWaterAtV7(view: PlayerViewV7, at: CoordV7): boolean {
+  if (at.x < 0 || at.y < 0 || at.x >= view.board.width) return false;
+  const tile = view.board.tiles[at.y * view.board.width + at.x];
+  return (
+    tile !== undefined &&
+    tile.explored &&
+    (tile.terrain === "SHALLOW_WATER" || tile.terrain === "DEEP_WATER") &&
+    !isIceAtV7(view, at)
+  );
+}
+
 function square(centre: CoordV7, radius: number): CoordV7[] {
   const cells: CoordV7[] = [];
   for (let dy = -radius; dy <= radius; dy += 1)
@@ -388,6 +402,22 @@ export function addCultChannelEntriesV7(
         "DRAG_RING",
         `cult-drag:${mass.id}`,
       );
+  // Themed naval branches (`pulp_wars-5ti.22`, RULESET_7_NAVAL_FACTIONS.md
+  // section 9.3 K2): the Mass's ring drawn on the water round each visible
+  // Kraken that drags (not on ice): its own tile and the open water beside
+  // it, where a unit afloat can stand.
+  for (const kraken of publicDraggingKrakensV7(view))
+    outlineEntries(
+      entries,
+      view,
+      square(kraken.at, 1).filter(
+        (at) =>
+          (at.x === kraken.at.x && at.y === kraken.at.y) ||
+          openWaterAtV7(view, at),
+      ),
+      "DRAG_RING",
+      `naval-drag:${kraken.id}`,
+    );
   if (
     channel.strands.length === 0 &&
     channel.grips.length === 0 &&

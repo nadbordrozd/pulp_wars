@@ -249,7 +249,8 @@ describe("the Dinosaur fleet registry (sections 5.1 and 5.2)", () => {
     expect(roleMechanicsV7("BATTLESHIP", "DINOSAUR").splash).toBe(true);
     expect(effectiveRoleRuleV7("SUBMARINE", "DINOSAUR").sightRadius).toBe(2);
     // Every other faction's Ram has no run-up bonus, and only the Dinosaur
-    // Submarine is a sea beast.
+    // and the Cult (the Kraken, `pulp_wars-5ti.22`) Submarines are sea
+    // beasts.
     for (const faction of [
       "ORIGINAL",
       "UNDEAD",
@@ -263,7 +264,9 @@ describe("the Dinosaur fleet registry (sections 5.1 and 5.2)", () => {
         expect(roleMechanicsV7(role, faction).ramRunUpBonus2).toBe(
           RAM_BONUS2_V7,
         );
-        expect(roleMechanicsV7(role, faction).seaBeast).toBe(false);
+        expect(roleMechanicsV7(role, faction).seaBeast).toBe(
+          faction === "CULT" && role === "SUBMARINE",
+        );
       }
   });
 
@@ -1006,8 +1009,9 @@ describe("the Dinosaur fleet's words (sections 5.3 and 12)", () => {
     const view = viewOf(state);
     const beast = navalUnitAtV7(state, { x: 3, y: 5 });
     const submarine = navalUnitAtV7(state, { x: 5, y: 5 });
-    expect(seaBeastAttacksV7([view], beast.id)).toBe(true);
-    expect(seaBeastAttacksV7([view], submarine.id)).toBe(false);
+    // (`pulp_wars-5ti.22`: the helper names the beast's own sound.)
+    expect(seaBeastAttacksV7([view], beast.id)).toBe("attack.plesiosaur");
+    expect(seaBeastAttacksV7([view], submarine.id)).toBeNull();
     expect(SOUND_IDS_V1).toContain("attack.plesiosaur");
     expect(
       SOUND_DEFAULT_CLIPS_V1.find((clip) => clip.id === "attack.plesiosaur")

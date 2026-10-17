@@ -96,6 +96,8 @@ export const FAVOUR_SOURCE_LABELS_V7: Readonly<Record<FavourSourceV7, string>> =
     DAEMON_KILL: "a daemon's kill",
     CONSUMPTION: "the Great Summoning's meal",
     TRICKLE: "the Summoners' channelling",
+    // Themed naval branches (`pulp_wars-5ti.22`).
+    DEEP_OFFERING: "an Offering to the Deep",
   };
 
 /** The Favour of a seat as a viewer knows it (Favour is public). */

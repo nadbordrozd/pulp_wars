@@ -634,4 +634,16 @@ export const CHIBI_NAVAL_FACTION_TECH_ICON_ASSETS_V7: readonly ChibiArtAssetV7[]
         "assets/chibi/icons/chibi-naval-candy-icon-tech-seamanship.png",
       ),
     },
+    // `pulp_wars-5ti.22`: the Cult Offerings to the Deep, a green-flamed
+    // candle on a curling indigo wave (batch `naval-cult`).
+    {
+      id: "chibi-naval-cult-icon-tech-seamanship",
+      subject: "ICON:TECH:CULT:SEAMANSHIP",
+      assetClass: "ICON",
+      width: 48,
+      height: 48,
+      url: chibiArtUrl(
+        "assets/chibi/icons/chibi-naval-cult-icon-tech-seamanship.png",
+      ),
+    },
   ];

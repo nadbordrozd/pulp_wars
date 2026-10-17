@@ -1,0 +1,36 @@
+{
+  "id": "portrait-kraken-a",
+  "jobId": "53c5c5ad-098c-42cc-8547-a8c5c3973fa2",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-cult",
+    "asset": "chibi-naval-cult-portrait-submarine",
+    "subject": "PORTRAIT:CULT:SUBMARINE",
+    "faction": "CULT",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 99711,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Turn the brass bathysphere into a living kraken shown whole: one big round bulbous deep indigo-blue head-body with one single big round glowing bright green eye at the front and five thick curling tentacles with pale cream suckers, two of them each wearing one polished brass ring; lit from the lower left. No brass barrel, porthole or periscope. Keep the size, thick black outline and art style, with no water, on a transparent background."
+      }
+    ],
+    "prompt": "Turn the brass bathysphere into a living kraken shown whole: one big round bulbous deep indigo-blue head-body with one single big round glowing bright green eye at the front and five thick curling tentacles with pale cream suckers, two of them each wearing one polished brass ring; lit from the lower left. No brass barrel, porthole or periscope. Keep the size, thick black outline and art style, with no water, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Turn the brass bathysphere into a living kraken shown whole: one big round bulbous deep indigo-blue head-body with one single big round glowing bright green eye at the front and five thick curling tentacles with pale cream suckers, two of them each wearing one polished brass ring; lit from the lower left. No brass barrel, porthole or periscope. Keep the size, thick black outline and art style, with no water, on a transparent background.",
+    "editInstruction": "Turn the brass bathysphere into a living kraken shown whole: one big round bulbous deep indigo-blue head-body with one single big round glowing bright green eye at the front and five thick curling tentacles with pale cream suckers, two of them each wearing one polished brass ring; lit from the lower left. No brass barrel, porthole or periscope. Keep the size, thick black outline and art style, with no water, on a transparent background.",
+    "source": {
+      "recipe": "cult-portrait-submarine-a",
+      "candidate": 0,
+      "sha256": "86c78d2ccb600cf9314174b32d3d32733e5fb6f718e6f62e4feddc12a1d93a87"
+    }
+  }
+}

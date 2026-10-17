@@ -33,15 +33,15 @@ a listener can say whether it is the right sound.
 
 ## The count
 
-- 79 sound effects, every one of the game's (80) but `impact.rocket`, added later with the user's own recording.
-- 338 takes generated in 8 rounds: 231 in round 1, 76 in round 2, 15 in round 3, 4 in round 4, 4 in round 5, 2 in round 6, 3 in round 7, 3 in round 8.
+- 80 sound effects, every one of the game's (81) but `impact.rocket`, added later with the user's own recording.
+- 343 takes generated in 8 rounds: 234 in round 1, 78 in round 2, 15 in round 3, 4 in round 4, 4 in round 5, 2 in round 6, 3 in round 7, 3 in round 8.
 - 2 takes the user made with ElevenLabs and handed over, brought in by `import` (round 0) and played by default whatever they measure: `unit.hurt.dinosaur` #101 (`dinosaur_taking_dama_#1-1791924507764.wav`, 2026-10-13), `unit.hurt.goblin` #101 (`goblin_taking_damage_#2-1791924587712.wav`, 2026-10-13).
-- 79 of round 1, 33 of round 2, 8 of round 3, 3 of round 4, 3 of round 5, 1 of round 6, 2 of round 7, 2 of round 8 failed their rules. 45 prompts were revised and their failed takes generated again (round 2), and the 6 sounds still short of takes once more (round 3). Bead `pulp_wars-2yc.52` added rounds 4 to 6, new prompts for the sounds whose takes the user heard and did not want (`unit.death`, `village.capture`; their old takes are retired, kept to choose but never the default), and the first two rounds of its new sounds. Bead `pulp_wars-2yc.57` added rounds 7 and 8 for the move sounds: a shuffle of footsteps for `unit.step` (its single thumps retired) and the first two rounds of `unit.step.naval`, both 10 dB under the hit.
-- 199 takes kept: 78 sounds play a new take by default, 74 of them with at least one other to choose.
+- 81 of round 1, 33 of round 2, 8 of round 3, 3 of round 4, 3 of round 5, 1 of round 6, 2 of round 7, 2 of round 8 failed their rules. 46 prompts were revised and their failed takes generated again (round 2), and the 6 sounds still short of takes once more (round 3). Bead `pulp_wars-2yc.52` added rounds 4 to 6, new prompts for the sounds whose takes the user heard and did not want (`unit.death`, `village.capture`; their old takes are retired, kept to choose but never the default), and the first two rounds of its new sounds. Bead `pulp_wars-2yc.57` added rounds 7 and 8 for the move sounds: a shuffle of footsteps for `unit.step` (its single thumps retired) and the first two rounds of `unit.step.naval`, both 10 dB under the hit.
+- 202 takes kept: 79 sounds play a new take by default, 75 of them with at least one other to choose.
 - 1 sound with no passing take, which keeps its old default: `unit.train` (the best 2 failed takes offered to listen to).
 - 16 sounds play the version the user chose by ear ahead of their measured default, which stays a choice ([The user's picks](#the-users-picks)).
-- 209 clips, 3.05 MB together: AAC at 96 kbit/s like the stock clips.
-- The service reported a cost of 2974 credits in all (its `character-cost` header, summed over every take).
+- 212 clips, 3.09 MB together: AAC at 96 kbit/s like the stock clips.
+- The service reported a cost of 3017 credits in all (its `character-cost` header, summed over every take).
 
 ## The user's picks
 
@@ -80,6 +80,7 @@ character a measurement cannot judge.
 | Sound                  | Name             | Default | Why first                              |
 | ---------------------- | ---------------- | ------- | -------------------------------------- |
 | `attack.plesiosaur`    | Plesiosaur bite  | #104    | A voice: measured for shape only.      |
+| `attack.kraken`        | Kraken lash      | #105    | A voice: measured for shape only.      |
 | `unit.hurt`            | Damage           | #102    | A voice: measured for shape only.      |
 | `unit.hurt.human`      | Human hurt       | #101    | A voice: measured for shape only.      |
 | `unit.hurt.undead`     | Undead hurt      | #102    | A voice: measured for shape only.      |
@@ -208,6 +209,7 @@ Its level (`gain`) makes it as loud as the sound's previous default: the
 stock recording at its level, or the synthesised sound, measured the
 same way. A take quieter than that even at full level plays at 1.
 `attack.plesiosaur` is matched instead to `attack.melee`'s reference, 0 dB: Bead pulp_wars-5ti.18: the Plesiosaur's torpedo bite (docs/product/RULESET_7_NAVAL_FACTIONS.md section 5.7) plays where every other melee attack plays its swing, at the swing's level.
+`attack.kraken` is matched instead to `attack.melee`'s reference, 0 dB: Bead pulp_wars-5ti.22: the Kraken's torpedo, a deep wet lash (docs/product/RULESET_7_NAVAL_FACTIONS.md section 9.7), plays where every other melee attack plays its swing, at the swing's level.
 `unit.death` is matched instead to `unit.hurt`'s reference, -6 dB: Bead pulp_wars-2yc.52: units die often, so a death plays 6 dB under the level every hurt sound is matched to (the synthesised hurt sound's), and under the groan it replaces.
 `unit.step` is matched instead to `impact.hit`'s reference, -10 dB: Bead pulp_wars-2yc.57: units move more than anything else happens, every unit of an enemy turn, so a move plays 10 dB under the level the hit sound is matched to.
 `unit.step.naval` is matched instead to `impact.hit`'s reference, -10 dB: Bead pulp_wars-2yc.57: a ship's move, like a land unit's, plays 10 dB under the level the hit sound is matched to.
@@ -236,6 +238,7 @@ are in seconds, onset and tail in ms, loudness in LUFS as stored.
 | `attack.cannon`        | boom     | 0.25–0.9   | 4     | 3    | #104    | 0.9    | 0     | 105  | 156      | 98%         | -14.5    | 0.57  | stock recording #1 (attack-cannon-1.m4a) at level 0.7                                           | medium     |
 | `attack.pop`           | pop      | 0.05–0.35  | 3     | 3    | #101    | 0.35   | 0     | 45   | 3227     | 24%         | -17      | 0.28  | stock recording #1 (attack-pop-1.m4a) at level 0.7                                              | high       |
 | `attack.plesiosaur`    | vocal    | 0.25–0.8   | 5     | 2    | #104    | 0.8    | 0     | 110  | 606      | 93%         | -13.8    | 0.33  | +0 dB against `attack.melee`'s reference, stock recording #1 (attack-melee-1.m4a) at level 0.45 | medium     |
+| `attack.kraken`        | vocal    | 0.25–0.8   | 5     | 3    | #105    | 0.481  | 0     | 220  | 1290     | 76%         | -15.3    | 0.39  | +0 dB against `attack.melee`'s reference, stock recording #1 (attack-melee-1.m4a) at level 0.45 | medium     |
 | `impact.hit`           | hit      | 0.05–0.35  | 3     | 3    | #102    | 0.35   | 0     | 35   | 225      | 90%         | -16.1    | 0.6   | stock recording #1 (impact-hit-1.m4a) at level 0.6                                              | high       |
 | `impact.heavy`         | boom     | 0.15–0.7   | 3     | 3    | #102    | 0.7    | 0     | 95   | 216      | 100%        | -23      | 1     | stock recording #1 (impact-heavy-1.m4a) at level 0.7                                            | high       |
 | `impact.explosion`     | boom     | 0.35–1.2   | 4     | 3    | #101    | 1.2    | 0     | 215  | 74       | 99%         | -16      | 0.6   | stock recording #1 (impact-explosion-1.m4a) at level 0.7                                        | high       |
@@ -318,6 +321,7 @@ are in seconds, onset and tail in ms, loudness in LUFS as stored.
 - `attack.cannon`: #104 scored best (0.582) of 3 kept: 0.9 s for a range of 0.25–0.9 s, onset 0 ms, tail 105 ms, centred near 156 Hz; the next, #101, scored 0.604.
 - `attack.pop`: #101 scored best (0.569) of 3 kept: 0.35 s for a range of 0.05–0.35 s, onset 0 ms, tail 45 ms, centred near 3227 Hz; the next, #102, scored 1.087.
 - `attack.plesiosaur`: #104 scored best (0.57) of 2 kept: 0.8 s for a range of 0.25–0.8 s, onset 0 ms, tail 110 ms, centred near 606 Hz; the next, #103, scored 0.833.
+- `attack.kraken`: #105 scored best (0.309) of 3 kept: 0.481 s for a range of 0.25–0.8 s, onset 0 ms, tail 220 ms, centred near 1290 Hz; the next, #104, scored 0.623.
 - `impact.hit`: #102 scored best (0.596) of 3 kept: 0.35 s for a range of 0.05–0.35 s, onset 0 ms, tail 35 ms, centred near 225 Hz; the next, #101, scored 0.749.
 - `impact.heavy`: #102 scored best (0.584) of 3 kept: 0.7 s for a range of 0.15–0.7 s, onset 0 ms, tail 95 ms, centred near 216 Hz; the next, #101, scored 0.646.
 - `impact.explosion`: #101 scored best (0.593) of 3 kept: 1.2 s for a range of 0.35–1.2 s, onset 0 ms, tail 215 ms, centred near 74 Hz; the next, #103, scored 0.728.
@@ -432,6 +436,11 @@ samples in flat runs at full scale.
 | `attack.plesiosaur`    | #103 | 1     | kept     | 0.833 | 0.8    | 0     | 45   | 761      | 81%         | 13.1  | 0.00%   |                                                                                                                                                                            |
 | `attack.plesiosaur`    | #104 | 2     | default  | 0.57  | 0.8    | 0     | 110  | 606      | 93%         | 13    | 0.06%   |                                                                                                                                                                            |
 | `attack.plesiosaur`    | #105 | 2     | rejected | 0.577 | 0.8    | 0     | 120  | 575      | 91%         | 11.7  | 0.23%   | clipped (0.23% of samples flat at full scale)                                                                                                                              |
+| `attack.kraken`        | #101 | 1     | rejected | 1.59  | 0.8    | 130   | 70   | 737      | 87%         | 12.8  | 0.01%   | slow onset (130 ms, at most 80)                                                                                                                                            |
+| `attack.kraken`        | #102 | 1     | kept     | 1.118 | 0.8    | 70    | 145  | 832      | 88%         | 9.9   | 0.01%   |                                                                                                                                                                            |
+| `attack.kraken`        | #103 | 1     | rejected | 1.721 | 0.8    | 155   | 80   | 592      | 92%         | 7.7   | 0.22%   | clipped (0.22% of samples flat at full scale); slow onset (155 ms, at most 80)                                                                                             |
+| `attack.kraken`        | #104 | 2     | kept     | 0.623 | 0.501  | 60    | 130  | 1051     | 87%         | 9.8   | 0.01%   |                                                                                                                                                                            |
+| `attack.kraken`        | #105 | 2     | default  | 0.309 | 0.481  | 0     | 220  | 1290     | 76%         | 11.1  | 0.03%   |                                                                                                                                                                            |
 | `impact.hit`           | #101 | 1     | kept     | 0.749 | 0.35   | 0     | 170  | 845      | 65%         | 19.2  | 0.00%   |                                                                                                                                                                            |
 | `impact.hit`           | #102 | 1     | default  | 0.596 | 0.35   | 0     | 35   | 225      | 90%         | 11.2  | 0.00%   |                                                                                                                                                                            |
 | `impact.hit`           | #103 | 1     | kept     | 1.092 | 0.35   | 10    | 160  | 600      | 80%         | 11.3  | 0.04%   |                                                                                                                                                                            |

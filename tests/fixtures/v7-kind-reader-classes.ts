@@ -572,6 +572,12 @@ export const KIND_READER_CLASSES_V7: Readonly<
   // Themed naval branches, Sugar Sails (`pulp_wars-5ti.21`): the Pie
   // Galleon's Splat sentence names the Candy registration's Galleon.
   "src/render/naval-presentation-v7.ts::pieGalleonSplatRuleV7": "SEAT",
+  // Themed naval branches, the Deep Ones (`pulp_wars-5ti.22`): the Kraken's
+  // Drag sentence names the Cult registration's Kraken, and an Offering
+  // asks whether the killer's seat has Favour (a seat's rule; the killer's
+  // own Offering is read through its kind, `deepOfferingOfV7`).
+  "src/render/naval-presentation-v7.ts::krakenDragRuleV7": "SEAT",
+  "src/engine/v7/naval-cult.ts::deepOfferingFavourV7": "SEAT",
   "src/render/goblin-presentation-v7.ts::<module>": "SEAT",
   // A prize under its new flag: its kind follows its new owner (a ship is
   // never mind-controlled), so the prize's maximum HP is its captor seat's

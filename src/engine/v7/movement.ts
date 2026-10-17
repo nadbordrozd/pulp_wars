@@ -25,6 +25,7 @@ import {
 import { berserkIgnoresZocV7, berserkMoveBonusV7 } from "./berserk";
 import { grabbingTentacleAtV7, unitIsFrogV7 } from "./cult-hexes";
 import { draggingMassV7, massesOfV7 } from "./cult-mass";
+import { draggingKrakenV7, krakensOfV7 } from "./naval-cult";
 import { sugarRushMoveBonusV7 } from "./candy";
 import {
   glazeStepAppliesV7,
@@ -407,9 +408,13 @@ function validateMovementPathCoreV7(
   const grabbedBy = grabbingTentacleAtV7(state, unit.id);
   // The Cult redesign (`pulp_wars-mch9.37`, section 7.4): Drag. A unit that
   // begins its Move beside a hostile Gibbering Mass moves one tile (one
-  // step, no hop; as for Stuck, an ice slide is no step).
+  // step, no hop; as for Stuck, an ice slide is no step). Themed naval
+  // branches (`pulp_wars-5ti.22`, RULESET_7_NAVAL_FACTIONS.md section 9.3
+  // K2): so does a unit afloat beside a hostile Kraken not on ice.
   const dragged =
-    draggingMassV7(state, massesOfV7(state.units), unit) !== undefined;
+    draggingMassV7(state, massesOfV7(state.units), unit) !== undefined ||
+    draggingKrakenV7(state, krakensOfV7(state, state.units), unit, iceAt) !==
+      undefined;
 
   for (let index = 0; index < path.length; index += 1) {
     const step = path[index];
@@ -1203,6 +1208,8 @@ function publicDraggedV7(
   unit: PublicUnitV7,
 ): boolean {
   const around: PublicUnitV7[] = [];
+  const ships: PublicUnitV7[] = [];
+  const afloat = unit.form === "NAVAL" || unit.form === "EMBARKED";
   for (let dy = -1; dy <= 1; dy += 1)
     for (let dx = -1; dx <= 1; dx += 1) {
       if (dx === 0 && dy === 0) continue;
@@ -1210,8 +1217,18 @@ function publicDraggedV7(
         key({ x: unit.at.x + dx, y: unit.at.y + dy }),
       ) ?? [])
         if (other.summoned === "MASS") around.push(other);
+        else if (afloat && other.form === "NAVAL") ships.push(other);
     }
-  return around.length > 0 && draggingMassV7(view, around, unit) !== undefined;
+  if (around.length > 0 && draggingMassV7(view, around, unit) !== undefined)
+    return true;
+  // Themed naval branches (`pulp_wars-5ti.22`, section 9.3 K2): a Kraken
+  // beside a unit afloat, not on the public ice.
+  return (
+    ships.length > 0 &&
+    draggingKrakenV7(view, krakensOfV7(view, ships), unit, (at) =>
+      context.ice.has(at.y * view.board.width + at.x),
+    ) !== undefined
+  );
 }
 
 function validatePlayerMovementPathWithContextV7(

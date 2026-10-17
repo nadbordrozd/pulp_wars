@@ -315,6 +315,7 @@ import {
   prunedCultV7,
   withDaemonKillFavourV7,
 } from "./cult";
+import { withDeepOfferingFavourV7 } from "./naval-cult";
 import {
   applyAnchorV7,
   applyBooV7,
@@ -6610,6 +6611,16 @@ function resolveAttackExchangeV7(
         );
     if (preview.attackerDies)
       cult = withDaemonKillFavourV7(state, cult, defender, attacker, events);
+  }
+  // Themed naval branches, Offerings to the Deep (`pulp_wars-5ti.22`,
+  // RULESET_7_NAVAL_FACTIONS.md section 9.3 K1): a hostile unit afloat that
+  // a Cult ship kills by its attack or its retaliation pays half its value
+  // in Favour (never a splash victim's).
+  if (attacker.form === "NAVAL" || defender.form === "NAVAL") {
+    if (preview.defenderDies)
+      cult = withDeepOfferingFavourV7(state, cult, attacker, defender, events);
+    if (preview.attackerDies)
+      cult = withDeepOfferingFavourV7(state, cult, defender, attacker, events);
   }
   let players = plunder.players;
   if (preview.advances) {

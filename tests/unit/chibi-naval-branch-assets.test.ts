@@ -300,15 +300,17 @@ describe("naval branch art (pulp_wars-5ti.6)", () => {
       // icons, and Diving Barrels and Sunken Galleys show their ships.
       // Horned Prows and Plesiosaurs (`pulp_wars-5ti.18`) too, Hover Pods
       // and Bathyspheres (`pulp_wars-5ti.19`), Sea Tunnels and Diving
-      // Bells (`pulp_wars-5ti.20`), and Sugar Sails and Choco Subs
-      // (`pulp_wars-5ti.21`).
+      // Bells (`pulp_wars-5ti.20`), Sugar Sails and Choco Subs
+      // (`pulp_wars-5ti.21`), and Offerings to the Deep and the Kraken
+      // (`pulp_wars-5ti.22`).
       const themed =
         faction === "GOBLIN" ||
         faction === "UNDEAD" ||
         faction === "DINOSAUR" ||
         faction === "MARTIAN" ||
         faction === "DWARF" ||
-        faction === "CANDY";
+        faction === "CANDY" ||
+        faction === "CULT";
       expect(technologySubjectV7("SEAMANSHIP", faction), faction).toBe(
         faction === "ICE_FOLK"
           ? "ICON:TECH:ICE_FOLK:SEAMANSHIP"

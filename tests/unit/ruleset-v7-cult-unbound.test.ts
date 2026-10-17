@@ -280,8 +280,9 @@ describe("Unbound: the registration (sections 6.4 and 13.1)", () => {
       "DAEMON_BOUND",
     ]);
     // (A consumption joined after it with `pulp_wars-mch9.7`, the trickle
-    // with `pulp_wars-mch9.32`.)
-    expect(FAVOUR_SOURCES_V7.slice(-3, -1)).toEqual([
+    // with `pulp_wars-mch9.32`, Offerings to the Deep with
+    // `pulp_wars-5ti.22`.)
+    expect(FAVOUR_SOURCES_V7.slice(-4, -2)).toEqual([
       "DAEMON_KILL",
       "CONSUMPTION",
     ]);

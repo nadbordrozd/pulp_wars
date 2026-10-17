@@ -7,7 +7,9 @@ import {
   RAM_RUN_UP_TILES_V7,
   SUGAR_RUSH_ATTACK2_V7,
   SUGAR_RUSH_MOVE_BONUS_V7,
+  DEEP_OFFERING_DIVISOR_V7,
   boardSeaBeastBlockedV7,
+  previewDeepOfferingsV7,
   ramBonus2V7,
   roleRamBonus2MaximumV7,
   boardTargetBlockV7,
@@ -184,12 +186,17 @@ export function submarineUnlockNoteV7(faction: FactionIdV7): string {
   const grows = rule.abilities.includes("GROW");
   // Themed naval branches (`pulp_wars-5ti.20`): an Armoured Diving Bell.
   const armoured = navalRoleArmouredV7("SUBMARINE", faction);
-  if (!beast && !grows && !armoured)
+  // Themed naval branches (`pulp_wars-5ti.22`): the Kraken's Drag afloat.
+  const drags = roleMechanicsV7("SUBMARINE", faction).dragsAfloat;
+  if (!beast && !grows && !armoured && !drags)
     return SUBMARINE_UNLOCK_NOTE_V7.replace(/^Submarine/, rule.label);
   return [
     `${rule.label}: hit only from the next tile`,
     "torpedo with no strike-back",
     ...(grows ? ["grows"] : []),
+    // (The card line is as short as the others: the glossary's Drag line
+    // says the rest.)
+    ...(drags ? ["Drag"] : []),
     ...(beast ? ["never boarded"] : []),
     ...(armoured ? ["Armoured"] : []),
   ].join("; ");
@@ -300,6 +307,45 @@ export function sugarSailsUnlockTextV7(): string {
 }
 
 /**
+ * Themed naval branches, the Deep Ones
+ * (docs/product/RULESET_7_NAVAL_FACTIONS.md sections 9.3 and 12,
+ * `pulp_wars-5ti.22`): the Offerings to the Deep sentence and the Kraken's
+ * Drag sentence, the beast named from the registry and the share read from
+ * the engine constant.
+ */
+export const DEEP_OFFERING_LABEL_V7 = "Offering to the Deep";
+export function deepOfferingRuleV7(): string {
+  return `What your ships sink feeds the Ancient Ones: ${DEEP_OFFERING_DIVISOR_V7 === 2 ? "half" : `a ${numberWordV7(DEEP_OFFERING_DIVISOR_V7)}`} its value in Favour.`;
+}
+/** The Offerings to the Deep card line (the Cult `DEEP_OFFERINGS` unlock). */
+export function deepOfferingsUnlockTextV7(): string {
+  return `${technologyDisplayNameV7("SEAMANSHIP", "CULT")}: ${deepOfferingRuleV7().replace(/\.$/, "")}`;
+}
+export function krakenDragRuleV7(): string {
+  return `Enemies afloat beside the ${effectiveRoleRuleV7("SUBMARINE", "CULT").label} can move only one tile.`;
+}
+/** The word on a unit afloat a Kraken drags, and its chip. */
+export const KRAKEN_DRAGGED_STATUS_V7 =
+  "A Kraken beside it: it can move only one tile";
+
+/**
+ * The attack preview's Offering lines (`previewDeepOfferingsV7`): "Offering
+ * +4 Favour" for the viewer's kill ("+4 Favour (2 lost)" at the cap), and
+ * "Enemy Offering +2 Favour" when another seat's ship would sink the
+ * viewer's unit.
+ */
+export function deepOfferingCombatNotesV7(
+  view: PlayerViewV7,
+  preview: CombatPreviewV7,
+): readonly string[] {
+  return previewDeepOfferingsV7(view, preview).map((side) =>
+    side.playerId === view.viewer.id
+      ? `Offering +${side.favour} Favour${side.forfeited > 0 ? ` (${side.forfeited} lost)` : ""}`
+      : `Enemy Offering +${side.favour} Favour`,
+  );
+}
+
+/**
  * The Sailing card's note of a faction whose Patrol Boat-role ship is
  * Armoured ("Steam Launch: Armoured, every hit of 2 or more does 1 less");
  * none for every other faction.
@@ -352,6 +398,7 @@ export function navalAbilityNameV7(
   faction?: FactionIdV7,
 ): string | null {
   if (ability === "DROWNED_CREW") return "Drowned Crew";
+  if (ability === "DEEP_OFFERING") return DEEP_OFFERING_LABEL_V7;
   if (ability === "SEA_BEAST") return "Sea beast";
   if (ability !== "RAM") return null;
   return faction === undefined ? NAVAL_RAM_LABEL_V7 : navalRamLabelV7(faction);
@@ -548,6 +595,9 @@ export function navalCombatLinesV7(
     }
   }
   if (preview.torpedo && !preview.defenderDies) notes.push(TORPEDO_PREVIEW_V7);
+  // Themed naval branches (`pulp_wars-5ti.22`): the Favour a kill afloat by
+  // a Cult ship pays.
+  notes.push(...deepOfferingCombatNotesV7(view, preview));
   return { notes, shove };
 }
 

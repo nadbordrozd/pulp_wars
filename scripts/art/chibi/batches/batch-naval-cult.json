@@ -58,7 +58,8 @@
       },
       "ownerColour": false,
       "accent": "cult-lodge",
-      "bottomMargin": 8
+      "bottomMargin": 8,
+      "subjectKey": "UNIT:CULT:SUBMARINE/KRAKEN"
     },
     {
       "id": "chibi-naval-cult-portrait-patrol-boat",
@@ -89,6 +90,19 @@
       "subject": "PORTRAIT:CULT:SUBMARINE",
       "assetClass": "PORTRAIT",
       "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "cult-lodge-icon",
+      "subjectKey": "PORTRAIT:CULT:SUBMARINE/KRAKEN"
+    },
+    {
+      "id": "chibi-naval-cult-icon-tech-seamanship",
+      "subject": "ICON:TECH:CULT:SEAMANSHIP",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
       "canvas": {
         "width": 48,
         "height": 48
@@ -216,6 +230,79 @@
       },
       "editInstruction": "Turn it into a small brass bathysphere submarine: remove the mast, the striped sail, the lantern and the curled prow; the hull becomes one closed short fat barrel of polished brass #c9a24a with shade #8a6a2a and rows of rivets, one big round porthole glowing bright green in its side, a short brass periscope on top and an indigo-blue tail fin #4a43b5 at the stern. Nothing red. Keep the size, thick black outline and art style the same, on a transparent background.",
       "notes": "Bead pulp_wars-mch9.23: the accepted Cult Patrol Boat portrait with the map sprite's change (the instruction of cult-submarine-a)."
+    },
+    {
+      "id": "kraken-a",
+      "asset": "chibi-naval-cult-submarine",
+      "endpoint": "edit-image-pixen",
+      "seed": 99701,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "cult-submarine-a",
+        "candidate": 0
+      },
+      "editInstruction": "Turn the brass bathysphere into a living kraken at the surface: one big round deep indigo-blue head-body low in the water with one big glowing green eye at the front, five thick curling tentacles with cream suckers, two of them wearing a brass ring; lit from the lower left. No barrel, porthole, periscope or fin. Keep the size, waterline, thick black outline and style, nothing under the body.",
+      "notes": "Bead pulp_wars-5ti.22 (docs/product/RULESET_7_NAVAL_FACTIONS.md section 9.7): the Cult Submarine is the Kraken, a trained sea beast; an edit of the accepted bathysphere so the canvas, anchor and waterline stay. Subject UNIT:CULT:SUBMARINE/KRAKEN."
+    },
+    {
+      "id": "kraken-b",
+      "asset": "chibi-naval-cult-submarine",
+      "endpoint": "edit-image-pixen",
+      "seed": 99702,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "cult-patrol-boat-a",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Turn the gondola into a living kraken at the surface: one big round deep indigo-blue head-body low in the water with one big glowing green eye at the front, five thick curling tentacles with cream suckers, two of them wearing a brass ring; lit from the lower left. No boat, mast, sail or lantern. Keep the size, waterline, thick black outline and style, nothing under the body.",
+      "notes": "The request of kraken-a from the accepted Black Gondola, whose brass prow already curls like a tentacle tip."
+    },
+    {
+      "id": "portrait-kraken-a",
+      "asset": "chibi-naval-cult-portrait-submarine",
+      "endpoint": "edit-image-pixen",
+      "seed": 99711,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "cult-portrait-submarine-a",
+        "candidate": 0
+      },
+      "editInstruction": "Turn the brass bathysphere into a living kraken shown whole: one big round bulbous deep indigo-blue head-body with one single big round glowing bright green eye at the front and five thick curling tentacles with pale cream suckers, two of them each wearing one polished brass ring; lit from the lower left. No brass barrel, porthole or periscope. Keep the size, thick black outline and art style, with no water, on a transparent background.",
+      "notes": "Bead pulp_wars-5ti.22 (docs/product/RULESET_7_NAVAL_FACTIONS.md section 9.7): the accepted bathysphere portrait with the map sprite's change (the Kraken); subject PORTRAIT:CULT:SUBMARINE/KRAKEN."
+    },
+    {
+      "id": "icon-tech-offerings-a",
+      "asset": "chibi-naval-cult-icon-tech-seamanship",
+      "endpoint": "create-image-pixen",
+      "seed": 99721,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "person, character, face, ship, boat, hull, island, beach, text, red, black flame, skull",
+      "notes": "Bead pulp_wars-5ti.22 (docs/product/RULESET_7_NAVAL_FACTIONS.md section 9.7): the Cult Seamanship card, Offerings to the Deep (a green candle over a wave), a fresh creation with the icon class as the other faction Seamanship icons."
+    },
+    {
+      "id": "icon-tech-offerings-b",
+      "asset": "chibi-naval-cult-icon-tech-seamanship",
+      "endpoint": "create-image-pixen",
+      "seed": 99722,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "person, character, face, ship, boat, hull, island, beach, text, red, black flame, skull",
+      "notes": "The request of icon-tech-offerings-a on another seed."
     }
   ]
 }

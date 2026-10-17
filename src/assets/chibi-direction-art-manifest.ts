@@ -643,7 +643,8 @@ export function chibiDirectionArtAssetsV7(): readonly ChibiArtAssetV7[] {
     // `pulp_wars-5ti.18`, `pulp_wars-5ti.19`, `pulp_wars-5ti.20`,
     // `pulp_wars-5ti.21`): the Goblin Powder Kegs, the Undead Drowned
     // Crews, the Dinosaur Horned Prows, the Martian Hover Pods, the Dwarf
-    // Sea Tunnels and the Candy Sugar Sails.
+    // Sea Tunnels, the Candy Sugar Sails and (`pulp_wars-5ti.22`) the Cult
+    // Offerings to the Deep.
     ...CHIBI_NAVAL_FACTION_TECH_ICON_ASSETS_V7,
     // --- The Submarines riding low in the water (pulp_wars-5ti.6): derived
     // from the surfaced sprites, drawn for a submerged Submarine.

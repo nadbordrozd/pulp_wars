@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r97`, for all nine offered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r98`, for all nine offered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), Candy (`CANDY`), and
 the Cultists (`CULT`). The ninth faction, the Cultists of the Ancient Ones,
@@ -445,6 +445,43 @@ links to another, by Road or by Port. A sea link needs only **Shorecraft**
 the Roads technology, and unexplored water no longer breaks a link. A save,
 replay, or setup of `7r75` is rejected, and the browser autosave has a new
 key.
+`pulp-wars-poc-7r98` (`pulp_wars-5ti.22`, the seventh and last bead of the
+[themed naval branches](RULESET_7_NAVAL_FACTIONS.md)) is **the Deep Ones**,
+the Cult fleet. The **Black Gondola** (`PATROL_BOAT`, 5 Coins) and the
+**Galleon of the Eye** (`BATTLESHIP`, 16) are the Human ships' numbers under
+their own names; the **Kraken** (`SUBMARINE`) is a trained sea beast for
+**10 Coins** (8 at a Shipyard), 12 HP, Attack 4, Defense 2, Move 2,
+Submerged and Torpedo as every Submarine, living, never a daemon, and a
+**sea beast** (role mechanic `seaBeast`: never boarded, and the Cult never
+boards a Submarine). The Kraken **Drags** units afloat (role mechanic
+`dragsAfloat`, ability `DRAG`): a unit afloat (`NAVAL` or `EMBARKED`) of a
+player hostile to the Kraken's owner that begins a `MOVE` beside a living
+Kraken in `NAVAL` form that is not on ice moves one tile in it
+(`MOVEMENT_ILLEGAL { reason: "DRAGGED" }`, never offered;
+`draggingKrakenV7`, read by both movement validations and so by the
+movement query). A landing (`DISEMBARK`), a Ram's shove, and a Tractor Beam
+pull are no Moves and are never dragged. The Cult Seamanship, shown as
+**Offerings to the Deep**, is the Ram and the unlock `DEEP_OFFERINGS`
+(capability `deepOfferings`) in place of `COMMAND BOARD`: a hostile unit
+afloat that a Cult ship in `NAVAL` form kills by its `ATTACK` or its
+retaliation pays the seat `floor(value / 2)` Favour
+(`DEEP_OFFERING_DIVISOR_V7`; a Patrol Boat 2, a Submarine 4, a Battleship
+8, a transported Knight 4), capped at 30 as every gain, with
+`FAVOUR_GAINED` source `DEEP_OFFERING` (ability literal `DEEP_OFFERING` on
+the three ships). Never from splash, blasts, Plague, a bomb, the crush, or a
+Tentacle, and never from a land kill. The five Cult Naval technologies are
+shown as Black Gondolas, Navigation, Galleons of the Eye, Offerings to the
+Deep, and The Kraken. Offerings to the Deep is private research: another
+seat's preview assumes it for a Cult ship (`previewDeepOfferingsV7`). The
+Normal AI counts an Offering's Favour (a Coin each, below the cap) in its
+attack choice, the ram approach, the torpedo targets, and the Galleon's
+station, moves a Kraken beside a hostile transport or Patrol Boat it can
+hold where it is safe, and every seat reads a unit afloat beside a hostile
+Kraken as moving one tile and ends no transport Move beside one it cannot
+land from ([section 16](#16-normal-ai-summary)). The Kraken map sprite,
+portrait, and the Offerings to the Deep card are new art, and the Kraken's
+torpedo has its own sound (`attack.kraken`). A save, replay, or setup of
+`7r97` is rejected, and the browser autosave has a new key.
 `pulp-wars-poc-7r97` (`pulp_wars-5ti.21`, the sixth bead of the
 [themed naval branches](RULESET_7_NAVAL_FACTIONS.md)) is **Sugar Sails**,
 the Candy fleet. The Candy ships are the Human ships' numbers under their
@@ -1308,7 +1345,7 @@ the build differs (its sections 20 to 24 list them);
 the values here are current. Where a document and the code disagreed, the
 code's behavior is the rule and is stated below;
 [Known discrepancies](#25-known-discrepancies) lists the open items and the
-resolved ones as of `pulp-wars-poc-7r97`.
+resolved ones as of `pulp-wars-poc-7r98`.
 
 **Terms.** "On the board" means a unit that currently exists (HP above 0).
 **Living** has the narrower revision-13 meaning used by Wail, Plague,
@@ -1411,10 +1448,10 @@ sections here cite.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r97`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Ruleset                                    | `pulp-wars-poc-7r98`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r97.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Browser autosave                           | `pulpWars.save.v7r98.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, `CULT`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`, `CULT_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -4640,33 +4677,33 @@ sentence case. Eight shared names changed at `7r55`: `DRILL` was **Garrison** an
 `NAVAL_ENGINEERING` **Shipbuilding**, and `SEAMANSHIP` **Boarding**. The
 names every player sees (a cell in bold is the faction's own):
 
-| ID                  | Human         | Undead              | Goblin             | Dinosaur         | Martian            | Ice Folk        | Dwarf                | Candy                   | Cult                    |
-| ------------------- | ------------- | ------------------- | ------------------ | ---------------- | ------------------ | --------------- | -------------------- | ----------------------- | ----------------------- |
-| `GATHERING`         | Gathering     | Gathering           | Gathering          | Gathering        | Gathering          | Gathering       | Gathering            | Gathering               | Gathering               |
-| `FARMING`           | Farming       | Farming             | Farming            | Farming          | Farming            | Farming         | Farming              | Farming                 | **Harvest Rites**       |
-| `MILLING`           | Milling       | **Bone Mills**      | Milling            | **Grinding**     | **Solar Arrays**   | Milling         | **Steam Pumps**      | Milling                 | Milling                 |
-| `ADMINISTRATION`    | Leadership    | Leadership          | Leadership         | Leadership       | Leadership         | Leadership      | Leadership           | Leadership              | Leadership              |
-| `PLANNING`          | Land Grants   | Land Grants         | Land Grants        | Land Grants      | Land Grants        | Land Grants     | Land Grants          | Land Grants             | Land Grants             |
-| `HUNTING`           | Hunting       | Hunting             | Hunting            | Hunting          | Hunting            | Hunting         | Hunting              | Hunting                 | Hunting                 |
-| `FORESTRY`          | Forestry      | Forestry            | Forestry           | Forestry         | Forestry           | Forestry        | Forestry             | Forestry                | Forestry                |
-| `SAWMILLING`        | Sawmilling    | **Liches**          | **Rocket Carts**   | **Timber**       | **Tripods**        | **Boulders**    | **Steam Cannons**    | **Pie Launchers**       | **Stargazers**          |
-| `MARKSMANSHIP`      | Marksmanship  | **Banshees**        | **Bomb Chuckers**  | **Spitters**     | **Ray Gunners**    | Marksmanship    | **Clockwork**        | **Gumball Gunners**     | **Hexers**              |
-| `FIELDCRAFT`        | Pathfinding   | Pathfinding         | Pathfinding        | Pathfinding      | **Heat Sinks**     | Pathfinding     | Pathfinding          | Pathfinding             | Pathfinding             |
-| `SCOUTING`          | Scouting      | Scouting            | Scouting           | Scouting         | **Saucers**        | Scouting        | **Gyrocopters**      | Scouting                | **Familiars**           |
-| `ROADS`             | Roads         | Roads               | Roads              | Roads            | Roads              | Roads           | Roads                | Roads                   | Roads                   |
-| `COMMERCE`          | Commerce      | Commerce            | **Plunder**        | Commerce         | Commerce           | Commerce        | Commerce             | Commerce                | Commerce                |
-| `RAIDING`           | Raiding       | Raiding             | Raiding            | Raiding          | Raiding            | Raiding         | **Dive Bombing**     | Raiding                 | Raiding                 |
-| `CHIVALRY`          | Chivalry      | **Vampires**        | **Scrap Buggies**  | **T-Rex**        | **Motherships**    | **Sabretooths** | **Whirligigs**       | **Chocolate Bunnies**   | **Tentacles**           |
-| `DRILL`             | Crafting      | Crafting            | Crafting           | Crafting         | Crafting           | Crafting        | Crafting             | Crafting                | Crafting                |
-| `ENGINEERING`       | Engineering   | Engineering         | Engineering        | Engineering      | Engineering        | Engineering     | **Mining**           | Engineering             | Engineering             |
-| `METALLURGY`        | Armoury       | Armoury             | Armoury            | **Triceratops**  | Armoury            | **Mammoths**    | **Steam Tanks**      | **Jawbreakers**         | **Gibbering Masses**    |
-| `FORTIFICATION`     | Fortification | Fortification       | Fortification      | **Nesting**      | **Force Fields**   | **Deep Winter** | **Dig In**           | **Home Sweet Home**     | **Warding Circles**     |
-| `EXPLOSIVES`        | Explosives    | **Pestilence**      | Explosives         | **Wallbreaker**  | **Disintegrator**  | **Brittle**     | **Blasting Charges** | **Peppermint Surprise** | **The Stars Are Right** |
-| `SHORECRAFT`        | Sailing       | **Ghost Ships**     | **Fire Rafts**     | **Dugouts**      | **Skimmers**       | **Rime**        | **Steam Launches**   | **Gumdrop Tugs**        | Sailing                 |
-| `NAVIGATION`        | Navigation    | Navigation          | Navigation         | Navigation       | Navigation         | **Pack Ice**    | Navigation           | Navigation              | Navigation              |
-| `NAVAL_ENGINEERING` | Shipbuilding  | **Plague Galleons** | **Dreadnoughts**   | **War Rafts**    | **Hover Cruisers** | **Icebound**    | **Ironclads**        | **Pie Galleons**        | Shipbuilding            |
-| `SEAMANSHIP`        | Boarding      | **Drowned Crews**   | **Powder Kegs**    | **Horned Prows** | **Hover Pods**     | **Black Ice**   | **Sea Tunnels**      | **Sugar Sails**         | Boarding                |
-| `SUBMERSIBLES`      | Submersibles  | **Sunken Galleys**  | **Diving Barrels** | **Plesiosaurs**  | **Bathyspheres**   | **Glacier**     | **Diving Bells**     | **Choco Subs**          | Submersibles            |
+| ID                  | Human         | Undead              | Goblin             | Dinosaur         | Martian            | Ice Folk        | Dwarf                | Candy                   | Cult                      |
+| ------------------- | ------------- | ------------------- | ------------------ | ---------------- | ------------------ | --------------- | -------------------- | ----------------------- | ------------------------- |
+| `GATHERING`         | Gathering     | Gathering           | Gathering          | Gathering        | Gathering          | Gathering       | Gathering            | Gathering               | Gathering                 |
+| `FARMING`           | Farming       | Farming             | Farming            | Farming          | Farming            | Farming         | Farming              | Farming                 | **Harvest Rites**         |
+| `MILLING`           | Milling       | **Bone Mills**      | Milling            | **Grinding**     | **Solar Arrays**   | Milling         | **Steam Pumps**      | Milling                 | Milling                   |
+| `ADMINISTRATION`    | Leadership    | Leadership          | Leadership         | Leadership       | Leadership         | Leadership      | Leadership           | Leadership              | Leadership                |
+| `PLANNING`          | Land Grants   | Land Grants         | Land Grants        | Land Grants      | Land Grants        | Land Grants     | Land Grants          | Land Grants             | Land Grants               |
+| `HUNTING`           | Hunting       | Hunting             | Hunting            | Hunting          | Hunting            | Hunting         | Hunting              | Hunting                 | Hunting                   |
+| `FORESTRY`          | Forestry      | Forestry            | Forestry           | Forestry         | Forestry           | Forestry        | Forestry             | Forestry                | Forestry                  |
+| `SAWMILLING`        | Sawmilling    | **Liches**          | **Rocket Carts**   | **Timber**       | **Tripods**        | **Boulders**    | **Steam Cannons**    | **Pie Launchers**       | **Stargazers**            |
+| `MARKSMANSHIP`      | Marksmanship  | **Banshees**        | **Bomb Chuckers**  | **Spitters**     | **Ray Gunners**    | Marksmanship    | **Clockwork**        | **Gumball Gunners**     | **Hexers**                |
+| `FIELDCRAFT`        | Pathfinding   | Pathfinding         | Pathfinding        | Pathfinding      | **Heat Sinks**     | Pathfinding     | Pathfinding          | Pathfinding             | Pathfinding               |
+| `SCOUTING`          | Scouting      | Scouting            | Scouting           | Scouting         | **Saucers**        | Scouting        | **Gyrocopters**      | Scouting                | **Familiars**             |
+| `ROADS`             | Roads         | Roads               | Roads              | Roads            | Roads              | Roads           | Roads                | Roads                   | Roads                     |
+| `COMMERCE`          | Commerce      | Commerce            | **Plunder**        | Commerce         | Commerce           | Commerce        | Commerce             | Commerce                | Commerce                  |
+| `RAIDING`           | Raiding       | Raiding             | Raiding            | Raiding          | Raiding            | Raiding         | **Dive Bombing**     | Raiding                 | Raiding                   |
+| `CHIVALRY`          | Chivalry      | **Vampires**        | **Scrap Buggies**  | **T-Rex**        | **Motherships**    | **Sabretooths** | **Whirligigs**       | **Chocolate Bunnies**   | **Tentacles**             |
+| `DRILL`             | Crafting      | Crafting            | Crafting           | Crafting         | Crafting           | Crafting        | Crafting             | Crafting                | Crafting                  |
+| `ENGINEERING`       | Engineering   | Engineering         | Engineering        | Engineering      | Engineering        | Engineering     | **Mining**           | Engineering             | Engineering               |
+| `METALLURGY`        | Armoury       | Armoury             | Armoury            | **Triceratops**  | Armoury            | **Mammoths**    | **Steam Tanks**      | **Jawbreakers**         | **Gibbering Masses**      |
+| `FORTIFICATION`     | Fortification | Fortification       | Fortification      | **Nesting**      | **Force Fields**   | **Deep Winter** | **Dig In**           | **Home Sweet Home**     | **Warding Circles**       |
+| `EXPLOSIVES`        | Explosives    | **Pestilence**      | Explosives         | **Wallbreaker**  | **Disintegrator**  | **Brittle**     | **Blasting Charges** | **Peppermint Surprise** | **The Stars Are Right**   |
+| `SHORECRAFT`        | Sailing       | **Ghost Ships**     | **Fire Rafts**     | **Dugouts**      | **Skimmers**       | **Rime**        | **Steam Launches**   | **Gumdrop Tugs**        | **Black Gondolas**        |
+| `NAVIGATION`        | Navigation    | Navigation          | Navigation         | Navigation       | Navigation         | **Pack Ice**    | Navigation           | Navigation              | Navigation                |
+| `NAVAL_ENGINEERING` | Shipbuilding  | **Plague Galleons** | **Dreadnoughts**   | **War Rafts**    | **Hover Cruisers** | **Icebound**    | **Ironclads**        | **Pie Galleons**        | **Galleons of the Eye**   |
+| `SEAMANSHIP`        | Boarding      | **Drowned Crews**   | **Powder Kegs**    | **Horned Prows** | **Hover Pods**     | **Black Ice**   | **Sea Tunnels**      | **Sugar Sails**         | **Offerings to the Deep** |
+| `SUBMERSIBLES`      | Submersibles  | **Sunken Galleys**  | **Diving Barrels** | **Plesiosaurs**  | **Bathyspheres**   | **Glacier**     | **Diving Bells**     | **Choco Subs**          | **The Kraken**            |
 
 The rest of this document, the tuning documents, and the faction documents
 name a technology by its ID in title case (Drill, Administration,
@@ -5731,10 +5768,10 @@ other two (7 Coins at a Shipyard), promoted to 17 HP, attackable only from
 an adjacent tile (**Submerged**), and attacking only units afloat, which
 never strike back (**Torpedo**). A Patrol Boat's **Ram** needs Seamanship
 (the interface calls it **Bow Ram**, since the Goblin Scrap Buggy's Overrun
-was displayed as "Ram" until `pulp_wars-2yc.63`). The three ships have the same numbers, names, and
-rules in the Human and Cult rosters (each drawn
-in its faction's style); the Goblin (`7r92`), Undead (`7r93`), Dinosaur
-(`7r94`), Martian (`7r95`), Dwarf (`7r96`), and Candy (`7r97`) ships are their own (the themed naval branches); the Ice Folk
+was displayed as "Ram" until `pulp_wars-2yc.63`). The three ships have these numbers, names, and
+rules in the Human roster; the Goblin (`7r92`), Undead (`7r93`), Dinosaur
+(`7r94`), Martian (`7r95`), Dwarf (`7r96`), Candy (`7r97`), and Cult
+(`7r98`) ships are their own (the themed naval branches); the Ice Folk
 have none ([section 14](#14-naval-rules)). Public abilities: Patrol Boat `ATTACK`,
 `RAM` (listed whatever its owner has researched); Battleship `ATTACK`;
 Submarine `ATTACK`, `SUBMERGED`, `TORPEDO`.
@@ -6412,22 +6449,32 @@ Gibbering Mass), checked against `CULT_ROLE_RULES_V7`,
 (`pulp_wars-mch9.47`). Every role uses one slot, every trained Cult unit
 is living, and every trained Cult land unit is a ground unit:
 
-| Unit                | Role          | Tech              | Cost |  HP |  Attack | Defense | Move | Range | Sight | Attack after Move | Capture | Abilities                                        |
-| ------------------- | ------------- | ----------------- | ---: | --: | ------: | ------: | ---: | ----: | ----: | ----------------- | ------- | ------------------------------------------------ |
-| Initiate            | `FIGHTER`     | start             |    2 |   7 | 1.5 (3) |   1 (2) |    1 |     1 |     1 | yes               | yes     | Pamphlets; Channel; no Field Defense             |
-| Familiar            | `RAIDER`      | Scouting          |    3 |   8 |   2 (4) |   1 (2) |    2 |     1 |     2 | yes               | yes     | Switcheroo; Charge (Raiding); no Escape          |
-| Hexer               | `MARKSMAN`    | Marksmanship      |    3 |   7 | 1.5 (3) |   1 (2) |    1 |   1–2 |   1¹⁴ | yes               | yes     | Ribbit; Channel; never advances                  |
-| Idol Bearer         | `GUARD`       | Fortification     |    3 |  16 | 1.5 (3) | 2.5 (5) |    1 |     1 |     1 | no                | yes     | Behold!; Channel; no Field Defense               |
-| Summoner            | `CAPTAIN`     | Administration    |    5 |   7 |   1 (2) |   1 (2) |    1 |     1 |     1 | yes               | yes     | Sacrifice; Seize; Summon; Tentacle; Channel      |
-| Stargazer           | `CATAPULT`    | Sawmilling        |    7 |   7 |       — | 0.5 (1) |    1 |     — |     1 | no                | yes     | Star-fall; Channel; no attack and no strike back |
-| (vacant)            | `KNIGHT`      | nothing           |    — |     |         |         |      |       |       |                   |         | the Caller retired (`7r85`)                      |
-| (vacant)            | `SWORDSMAN`   | nothing           |    — |     |         |         |      |       |       |                   |         | the Chosen retired (`7r85`)                      |
-| Thing in the Cellar | `JUGGERNAUT`  | reward only       |    — |  40 |   4 (8) | 3.5 (7) |    1 |     1 |     1 | yes               | yes     | Anchor; no Push                                  |
-| Patrol Boat         | `PATROL_BOAT` | Shorecraft        |    5 |  10 |   2 (4) |   2 (4) |    2 |     1 |     2 | yes               | no      | naval; Ram (Seamanship)                          |
-| Battleship          | `BATTLESHIP`  | Naval Engineering |   16 |  25 |  5 (10) |   3 (6) |    2 |   1–3 |     3 | no                | no      | naval; splash                                    |
-| Submarine           | `SUBMARINE`   | Submersibles      |    9 |  12 |   4 (8) |   2 (4) |    2 |     1 |     2 | yes               | no      | naval; Submerged; Torpedo                        |
+| Unit                 | Role          | Tech              | Cost |  HP |  Attack | Defense | Move | Range | Sight | Attack after Move | Capture | Abilities                                            |
+| -------------------- | ------------- | ----------------- | ---: | --: | ------: | ------: | ---: | ----: | ----: | ----------------- | ------- | ---------------------------------------------------- |
+| Initiate             | `FIGHTER`     | start             |    2 |   7 | 1.5 (3) |   1 (2) |    1 |     1 |     1 | yes               | yes     | Pamphlets; Channel; no Field Defense                 |
+| Familiar             | `RAIDER`      | Scouting          |    3 |   8 |   2 (4) |   1 (2) |    2 |     1 |     2 | yes               | yes     | Switcheroo; Charge (Raiding); no Escape              |
+| Hexer                | `MARKSMAN`    | Marksmanship      |    3 |   7 | 1.5 (3) |   1 (2) |    1 |   1–2 |   1¹⁴ | yes               | yes     | Ribbit; Channel; never advances                      |
+| Idol Bearer          | `GUARD`       | Fortification     |    3 |  16 | 1.5 (3) | 2.5 (5) |    1 |     1 |     1 | no                | yes     | Behold!; Channel; no Field Defense                   |
+| Summoner             | `CAPTAIN`     | Administration    |    5 |   7 |   1 (2) |   1 (2) |    1 |     1 |     1 | yes               | yes     | Sacrifice; Seize; Summon; Tentacle; Channel          |
+| Stargazer            | `CATAPULT`    | Sawmilling        |    7 |   7 |       — | 0.5 (1) |    1 |     — |     1 | no                | yes     | Star-fall; Channel; no attack and no strike back     |
+| (vacant)             | `KNIGHT`      | nothing           |    — |     |         |         |      |       |       |                   |         | the Caller retired (`7r85`)                          |
+| (vacant)             | `SWORDSMAN`   | nothing           |    — |     |         |         |      |       |       |                   |         | the Chosen retired (`7r85`)                          |
+| Thing in the Cellar  | `JUGGERNAUT`  | reward only       |    — |  40 |   4 (8) | 3.5 (7) |    1 |     1 |     1 | yes               | yes     | Anchor; no Push                                      |
+| Black Gondola¹⁶      | `PATROL_BOAT` | Shorecraft        |    5 |  10 |   2 (4) |   2 (4) |    2 |     1 |     2 | yes               | no      | naval; Ram and Offering (Offerings to the Deep)      |
+| Galleon of the Eye¹⁶ | `BATTLESHIP`  | Naval Engineering |   16 |  25 |  5 (10) |   3 (6) |    2 |   1–3 |     3 | no                | no      | naval; splash; Offering                              |
+| Kraken¹⁶             | `SUBMARINE`   | Submersibles      |   10 |  12 |   4 (8) |   2 (4) |    2 |     1 |     2 | yes               | no      | naval; Submerged; Torpedo; Drag; sea beast; Offering |
 
 ¹⁴ Hexer Sight becomes 2 with Fieldcraft.
+
+¹⁶ The Deep Ones (`pulp-wars-poc-7r98`, `pulp_wars-5ti.22`,
+[themed naval branches section 9](RULESET_7_NAVAL_FACTIONS.md#9-cult-the-deep-ones)):
+the Human ships' numbers under their own names, the Kraken 1 Coin dearer (8
+at a Shipyard), a sea beast (never boarded) whose Drag holds a hostile unit
+afloat beside it to one tile; with the Cult Seamanship, shown as Offerings
+to the Deep (the Ram and the Offering, no Board), a hostile unit afloat a
+Cult ship sinks pays half its value in Favour. None of them is robed or a
+daemon: they hold no strand, never channel, and their kills pay no daemon
+Favour.
 
 The Cult's **summoned units** are in no technology and no training list
 (`CULT_SUMMONED_ROLE_RULES_V7`; they are not unit roles, and a unit names
@@ -7798,6 +7845,23 @@ Every rule that names "naval units", "ships", or "boats" covers all three.
   water but Shallow Water with Sea Tunnels; an eruption never hits a naval
   or embarked unit; a bomb may target one. `TUNNEL` and `ASSEMBLE` never touch water, so they are not on the
   blockade-event list below; `BOMB_RUN` is.
+- **Cult boats** are the **Deep Ones** (`7r98`,
+  [themed branches section 9](RULESET_7_NAVAL_FACTIONS.md#9-cult-the-deep-ones)):
+  the **Black Gondola** (Patrol Boat, 5 Coins), the **Galleon of the Eye**
+  (Battleship, 16), and the **Kraken** (Submarine, 10), 2 less at a
+  Shipyard, the Human numbers otherwise, drawn in the lodge's style, one
+  slot, ordinary Promotion (the Kraken too: it is trained, living, and no
+  daemon). The Kraken is a **sea beast** (never boarded; the Cult never
+  boards a Submarine) and **Drags** units afloat: a hostile unit afloat that
+  begins a Move beside a Kraken not on ice moves one tile (`DRAGGED`); a
+  landing, a shove, and a pull are no Moves. Their Seamanship, **Offerings
+  to the Deep**, is the Ram and `DEEP_OFFERINGS` (capability
+  `deepOfferings`) instead of Board: a Cult ship never boards, and a hostile
+  unit afloat a Cult ship kills by its attack or its retaliation pays half
+  its value in Favour (`FAVOUR_GAINED` source `DEEP_OFFERING`, capped at
+  30), never a splash or blast victim. Offerings to the Deep is private
+  research. Cult land units embark like Human units; no summon ever enters
+  water.
 - **Blockade events.** `PORT_BLOCKADE_CHANGED` and `SEA_NETWORK_CHANGED` are
   recomputed after `ATTACK`, `BOARD`, `BUILD_PORT`, `BUILD_ROAD`, `CAPTURE`,
   `DISEMBARK`, `MOVE`, `REDEVELOP`, `WAIL`, `KABOOM`, `MIND_CONTROL`,
@@ -8841,6 +8905,22 @@ Harbours from it.
   on an Armoured hull afloat that does not sink it and deals less than its
   reply takes (a Patrol Boat's Ram on an Ironclad: 6 dealt, 7 taken). A
   mound a sea tunnel leaves on the far coast is read as every mound.
+- **The Deep Ones** (`7r98`, `pulp_wars-5ti.22`, `src/ai/v7-naval-cult.ts`,
+  `src/ai/v7-naval.ts`). The Cult ships are read by role, so a Cult seat
+  trains them as every seat does (a Kraken against a visible hostile
+  Battleship). An Offering's Favour is worth a Coin a Favour below the cap
+  (`deepOfferingTenthsV7`, `NAVAL_FAVOUR_TENTHS_V7`): the attack scorer adds
+  it (Coins x 4), the ram approach and the Galleon of the Eye's station add
+  it, and a Kraken's torpedo kill for Favour is fired first (priority 1280)
+  when it beats each other torpedo of the Kraken and no other own Submarine
+  follows; at the cap it adds nothing, and the summon plan, made again at
+  every decision, spends what the sea paid. A Kraken's routine Move values
+  ending beside a hostile transport (16) or Patrol Boat (10) its Drag would
+  hold (priority 836), never beside a hostile Battleship and never where
+  the visible enemy sinks it. Every seat's threat estimate gives a unit
+  afloat beside a visible hostile Kraken one tile of Move, and an own
+  transport ends no Move beside a hostile Kraken unless it can land on a
+  free explored land tile from there next turn.
 - **Sugar Sails** (`7r97`, `pulp_wars-5ti.21`, `src/ai/v7-candy.ts`,
   `src/ai/v7-naval-candy.ts`). The Candy ships are read by role, so a
   Candy seat trains them as every seat does and its Pie Galleon shells the
@@ -15632,14 +15712,15 @@ not Coins: it is never bought or traded, and it is spent only on
 summoning and on a Herald's Hunger. It is not a Score factor (Favour lost
 to the cap or to Hunger neither). An eliminated seat's Favour is gone.
 
-| Source                | What happens                                                                                       | Favour                           |
-| --------------------- | -------------------------------------------------------------------------------------------------- | -------------------------------- |
-| Sacrifice             | A Summoner removes an own unit beside it                                                           | the unit's value                 |
-| Seize                 | A Summoner removes a broken living enemy beside it that a second cultist holds down                | twice its value                  |
-| Offering              | A city gives up 2 population                                                                       | 6 (3 before `pulp_wars-mch9.32`) |
-| A bound daemon's kill | An Imp, Horror, Mass, or Herald the seat commands kills a hostile unit that is not a summoned unit | the victim's value               |
-| Consumed              | The unit on the Great Summoning's mark is eaten when the Herald arrives                            | as a Sacrifice or a Seizure      |
-| The trickle           | At the check, each own Summoner whose strand held, for a daemon still bound (section 26.5)         | 1 each                           |
+| Source                        | What happens                                                                                       | Favour                                |
+| ----------------------------- | -------------------------------------------------------------------------------------------------- | ------------------------------------- |
+| Sacrifice                     | A Summoner removes an own unit beside it                                                           | the unit's value                      |
+| Seize                         | A Summoner removes a broken living enemy beside it that a second cultist holds down                | twice its value                       |
+| Offering                      | A city gives up 2 population                                                                       | 6 (3 before `pulp_wars-mch9.32`)      |
+| A bound daemon's kill         | An Imp, Horror, Mass, or Herald the seat commands kills a hostile unit that is not a summoned unit | the victim's value                    |
+| Offering to the Deep (`7r98`) | With Offerings to the Deep, a Cult ship's attack or retaliation kills a hostile unit afloat        | half the victim's value, rounded down |
+| Consumed                      | The unit on the Great Summoning's mark is eaten when the Herald arrives                            | as a Sacrifice or a Seizure           |
+| The trickle                   | At the check, each own Summoner whose strand held, for a daemon still bound (section 26.5)         | 1 each                                |
 
 | Spent on                                        | Favour |
 | ----------------------------------------------- | -----: |

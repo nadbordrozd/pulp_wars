@@ -85,6 +85,8 @@ const SEAMANSHIP_TRICK: Partial<
   DWARF: { kind: "SEA_TUNNELS" },
   // The Candy Sugar Sails (`pulp_wars-5ti.21`).
   CANDY: { kind: "SUGAR_SAILS" },
+  // The Cult Offerings to the Deep (`pulp_wars-5ti.22`).
+  CULT: { kind: "DEEP_OFFERINGS" },
 };
 const THEMED_SUBMARINE: Partial<
   Record<
@@ -128,6 +130,21 @@ const THEMED_SUBMARINE: Partial<
     maxHp: 12,
     abilities: ["ATTACK", "SUBMERGED", "TORPEDO", "SUGAR_RUSH"],
   },
+  // The Kraken: one Coin more, a sea beast that Drags units afloat, and
+  // Offerings to the Deep (`pulp_wars-5ti.22`).
+  CULT: {
+    label: "Kraken",
+    cost: 10,
+    maxHp: 12,
+    abilities: [
+      "ATTACK",
+      "SUBMERGED",
+      "TORPEDO",
+      "DRAG",
+      "SEA_BEAST",
+      "DEEP_OFFERING",
+    ],
+  },
 };
 const THEMED_PATROL_BOAT_ABILITIES: Partial<
   Record<FactionIdV7, readonly string[]>
@@ -136,6 +153,7 @@ const THEMED_PATROL_BOAT_ABILITIES: Partial<
   UNDEAD: ["ATTACK", "RAM", "DROWNED_CREW"],
   DWARF: ["ATTACK", "RAM", "ARMOURED"],
   CANDY: ["ATTACK", "RAM", "SUGAR_RUSH"],
+  CULT: ["ATTACK", "RAM", "DEEP_OFFERING"],
 };
 const THEMED_BATTLESHIP_ABILITIES: Partial<
   Record<FactionIdV7, readonly string[]>
@@ -143,6 +161,7 @@ const THEMED_BATTLESHIP_ABILITIES: Partial<
   UNDEAD: ["ATTACK", "PLAGUE", "DROWNED_CREW"],
   DWARF: ["ATTACK", "ARMOURED"],
   CANDY: ["ATTACK", "SPLAT", "SUGAR_RUSH"],
+  CULT: ["ATTACK", "DEEP_OFFERING"],
 };
 
 const NAVAL_BRANCH = [

@@ -810,3 +810,50 @@ first edit had added as hollow outlines. Every candidate was flagged
 the icon reads as a candy sail at sea on light and dark cards. Weak spot:
 the icon is a whole boat, not a lone sail, so it sits close to a ship
 portrait.
+
+## The Cult Kraken and Offerings to the Deep (bead `pulp_wars-5ti.22`)
+
+The Cult ships of the
+[themed naval branches](../product/RULESET_7_NAVAL_FACTIONS.md#97-art-and-sound):
+the Submarine is the **Kraken**, a living indigo sea beast (it replaces the
+brass bathysphere of bead `pulp_wars-mch9.15`); the Patrol Boat and the
+Battleship are the accepted gondola and galleon under new labels (the
+**Black Gondola**, the **Galleon of the Eye**). The Kraken's map sprite and
+portrait are **redrawn in place** (same asset IDs and canvases; subject keys
+`…/KRAKEN`), each an `edit-image-pixen` edit through the lodge's
+`cult-lodge` accent (`cult-lodge-icon` for the portrait), which moves the
+blues to the lodge's indigo and the eye to the eldritch green; the
+submerged Kraken is derived by `submerged.ts` as every Submarine. The
+bathysphere's recipes and records stay in the batch as history; the
+Classic look draws the shared Submarine, so no Classic fallback needs it.
+The **Offerings to the Deep** card has its own icon
+(`ICON:TECH:CULT:SEAMANSHIP`, registered in the live look by
+`CHIBI_NAVAL_FACTION_TECH_ICON_ASSETS_V7`, falling back to the shared
+wheel); the Black Gondolas and The Kraken cards show the ships' portraits
+(`NAVAL_FACTION_TECH_SUBJECTS_V7`). The Kraken's Drag is the Mass's
+code-drawn ooze ring, drawn on the Kraken's tile and the open water beside
+it; an Offering's Favour is the existing Favour pop.
+
+| Asset                                   | Subject                     | Accepted                            | Rejected                                                                                                      |
+| --------------------------------------- | --------------------------- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `chibi-naval-cult-submarine`            | `UNIT:CULT:SUBMARINE`       | `kraken-b` candidate 0              | `kraken-a` (from the bathysphere): both candidates drew a second green eye on the head's left side            |
+| `chibi-naval-cult-portrait-submarine`   | `PORTRAIT:CULT:SUBMARINE`   | `portrait-kraken-a` candidate 0     | —                                                                                                             |
+| `chibi-naval-cult-icon-tech-seamanship` | `ICON:TECH:CULT:SEAMANSHIP` | `icon-tech-offerings-a` candidate 0 | `-b`: the wave is drawn as a sand heap with a brown hollow, so the candle stands on a mound, not over the sea |
+
+Five PixelLab jobs (seeds 99701, 99702, 99711, 99721 and 99722) for three
+accepted pieces. The Kraken is a round indigo head-body low in the water
+with one big glowing green eye, cream suckers, and polished brass rings on
+its two raised tentacles; it faces front and reads at 1x as a sea beast,
+not a boat. Measured (`readability.json`, `submarines`): 66 x 51 px, 75%
+of the Gondola's height, the widest Submarine; body mean ΔE 58.7 on
+Shallow and 21.0 on Deep Water (2.9% of its body within 12 of Deep Water),
+on the shared Submarine anchor (32, 48) and waterline, clear of the seat
+badge strip. The icon is a cream candle with a green flame standing in a
+curling indigo wave with a cream foam edge. The Cult joins the Submarine
+sheet and the SUBMARINES scene of `art:chibi-naval-faction-review` as the
+eighth row.
+
+Weak spots: on Deep Water the indigo body is close to the water (the black
+outline, the cream suckers and the green eye carry it); the Kraken's
+highlight sits on the upper left of the head rather than the lower left;
+and it is the only Submarine seen from the front.

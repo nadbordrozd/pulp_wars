@@ -670,8 +670,10 @@ describe("the Cultists' batches (pulp_wars-mch9.15)", () => {
     const records = await loadRecords(productionLayout(ROOT, batch), batch);
     // The ships; the three ship portraits the batch also holds since bead
     // pulp_wars-mch9.23 are checked in chibi-cult-interface-assets.test.ts.
+    // (The Offerings to the Deep icon of bead pulp_wars-5ti.22 is checked
+    // in tests/unit/chibi-naval-branch-assets.test.ts.)
     const ships = manifest.assets.filter(
-      (asset) => asset.assetClass !== "PORTRAIT",
+      (asset) => asset.assetClass !== "PORTRAIT" && asset.assetClass !== "ICON",
     );
     expect(
       ships.map((asset) => [

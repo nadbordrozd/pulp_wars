@@ -58,6 +58,9 @@ export const OWNER_READER_CLASSES_V7: Readonly<
   // The naval branch (`pulp_wars-5ti.2`): the rammer is a seat's Patrol
   // Boat with Seamanship (the Spider is a land unit with no technology).
   "src/engine/v7/combat.ts::ramShoveDestinationV7": "PLAYER_ONLY",
+  // Themed naval branches, the Deep Ones (`pulp_wars-5ti.22`): an Offering
+  // reads the killer's seat (Favour); a neutral killer pays nothing.
+  "src/engine/v7/naval-cult.ts::deepOfferingFavourV7": "NEUTRAL_AWARE",
   // Themed naval branches (`pulp_wars-5ti.16`): the boarder is the acting
   // seat's ship, and its seat's roster sets the prize's maximum HP and
   // whether its Submarine is a sea beast (the Spider never boards).

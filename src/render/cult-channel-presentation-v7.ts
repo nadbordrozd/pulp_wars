@@ -20,6 +20,7 @@ import {
   previewWardenV7,
   publicAwestruckBearersV7,
   publicDraggingMassV7,
+  publicDraggingKrakenV7,
   summonHelperLegalV7,
   summonNeedsHelperV7,
   summonRejectionV7,
@@ -46,6 +47,7 @@ import {
   type SummonDaemonV7,
   type UnitId,
 } from "../engine/index";
+import { KRAKEN_DRAGGED_STATUS_V7 } from "./naval-presentation-v7";
 import type { CultCommandPresentationV7 } from "./cult-presentation-v7";
 
 /**
@@ -189,8 +191,25 @@ export const DRAGGED_MOVE_V7 = `${DRAGGED_LABEL_V7}: only one tile`;
  */
 export function unitDraggedV7(view: PlayerViewV7, unitId: UnitId): boolean {
   return (
-    view.units.some((unit) => unit.summoned === "MASS") &&
-    publicDraggingMassV7(view, unitId) !== null
+    (view.units.some((unit) => unit.summoned === "MASS") &&
+      publicDraggingMassV7(view, unitId) !== null) ||
+    unitDraggedAfloatV7(view, unitId)
+  );
+}
+
+/**
+ * Themed naval branches (`pulp_wars-5ti.22`, RULESET_7_NAVAL_FACTIONS.md
+ * section 9.3 K2): whether the visible unit afloat `unitId` is dragged by a
+ * Kraken beside it as the board stands.
+ */
+export function unitDraggedAfloatV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+): boolean {
+  return (
+    view.units.some(
+      (unit) => unit.role === "SUBMARINE" && unit.form === "NAVAL",
+    ) && publicDraggingKrakenV7(view, unitId) !== null
   );
 }
 /** Section 8.4, the card text. */
@@ -984,7 +1003,10 @@ export function cultChannelChipsV7(
     chips.push({
       id: "dragged",
       label: DRAGGED_LABEL_V7,
-      status: DRAGGED_STATUS_V7,
+      // Themed naval branches (`pulp_wars-5ti.22`): a Kraken's Drag at sea.
+      status: unitDraggedAfloatV7(view, unit.id)
+        ? KRAKEN_DRAGGED_STATUS_V7
+        : DRAGGED_STATUS_V7,
       icon: "ICON:ACTION:DRAG",
       harm: true,
     });

@@ -1,0 +1,37 @@
+{
+  "id": "kraken-b",
+  "jobId": "650a5077-a46b-4ce7-a2fd-2fe06820528b",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-cult",
+    "asset": "chibi-naval-cult-submarine",
+    "subject": "UNIT:CULT:SUBMARINE",
+    "faction": "CULT",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 99702,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Turn the gondola into a living kraken at the surface: one big round deep indigo-blue head-body low in the water with one big glowing green eye at the front, five thick curling tentacles with cream suckers, two of them wearing a brass ring; lit from the lower left. No boat, mast, sail or lantern. Keep the size, waterline, thick black outline and style, nothing under the body."
+      }
+    ],
+    "prompt": "Turn the gondola into a living kraken at the surface: one big round deep indigo-blue head-body low in the water with one big glowing green eye at the front, five thick curling tentacles with cream suckers, two of them wearing a brass ring; lit from the lower left. No boat, mast, sail or lantern. Keep the size, waterline, thick black outline and style, nothing under the body.",
+    "negativePrompt": "",
+    "description": "Turn the gondola into a living kraken at the surface: one big round deep indigo-blue head-body low in the water with one big glowing green eye at the front, five thick curling tentacles with cream suckers, two of them wearing a brass ring; lit from the lower left. No boat, mast, sail or lantern. Keep the size, waterline, thick black outline and style, nothing under the body.",
+    "editInstruction": "Turn the gondola into a living kraken at the surface: one big round deep indigo-blue head-body low in the water with one big glowing green eye at the front, five thick curling tentacles with cream suckers, two of them wearing a brass ring; lit from the lower left. No boat, mast, sail or lantern. Keep the size, waterline, thick black outline and style, nothing under the body.",
+    "source": {
+      "recipe": "cult-patrol-boat-a",
+      "candidate": 0,
+      "sibling": true,
+      "sha256": "77c2216351631a585e4339b3f39f8242b131c9e3e774f39fce210b442ab6ae1d"
+    }
+  }
+}

@@ -499,8 +499,9 @@ describe("Cult art subjects stand in with the shared art", () => {
     // ship portraits, three technology icons and four HUD icons (the Hunger
     // bowl since `pulp_wars-mch9.42`); and the Imp's and the Gibbering
     // Mass's portraits (the Cult redesign, `pulp_wars-mch9.36` and
-    // `pulp_wars-mch9.37`).
-    expect(cultFiles).toHaveLength(expected.length - 1 + 23 + terrainFiles);
+    // `pulp_wars-mch9.37`); and the Offerings to the Deep icon (themed
+    // naval branches, `pulp_wars-5ti.22`).
+    expect(cultFiles).toHaveLength(expected.length - 1 + 24 + terrainFiles);
     expect(assetInventoryForFactionsV7("LIVE", ["CULT", "ORIGINAL"])).toEqual(
       expect.arrayContaining([...cultFiles]),
     );

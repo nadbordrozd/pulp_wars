@@ -339,6 +339,12 @@ import {
 import { impSwarmsV7 } from "./cult-imp";
 import { draggingMassV7 } from "./cult-mass";
 import {
+  deepOfferingFavourV7,
+  deepOfferingGainV7,
+  draggingKrakenV7,
+  krakensOfV7,
+} from "./naval-cult";
+import {
   awestruckBearersV7,
   awestruckRefusingAttackV7,
   idolShieldsV7,
@@ -4772,6 +4778,99 @@ export function publicDraggingMassV7(
     ? null
     : (draggingMassV7(view, view.units, unit)?.id ?? null);
 }
+
+/**
+ * Themed naval branches, the Kraken (`pulp_wars-5ti.22`,
+ * docs/product/RULESET_7_NAVAL_FACTIONS.md section 9.3 K2): the visible
+ * Kraken that drags the visible unit `unitId` afloat as the board stands (a
+ * Move the unit begins now covers one tile), or null. Every unit beside an
+ * own unit is visible and the ice on explored tiles is public, so it is
+ * exact for the viewer's own units.
+ */
+export function publicDraggingKrakenV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+): UnitId | null {
+  const unit = view.units.find(
+    (candidate) => candidate.id === unitId && candidate.hp > 0,
+  );
+  if (unit === undefined) return null;
+  return (
+    draggingKrakenV7(view, krakensOfV7(view, view.units), unit, (at) =>
+      isIceAtV7(view, at),
+    )?.id ?? null
+  );
+}
+
+/**
+ * The Kraken's Drag ring (section 9.3 K2): the visible Krakens that drag
+ * now (living, afloat, not on the public ice).
+ */
+export function publicDraggingKrakensV7(
+  view: PlayerViewV7,
+): readonly PublicUnitV7[] {
+  return krakensOfV7(view, view.units).filter(
+    (kraken) => !isIceAtV7(view, kraken.at),
+  );
+}
+
+/** One side's Offering to the Deep in an attack preview. */
+export interface DeepOfferingPreviewV7 {
+  /** The seat that would gain the Favour (the killer's owner). */
+  readonly playerId: PlayerId;
+  /** The killer: the attacker, or the defender by its retaliation. */
+  readonly killer: "ATTACKER" | "DEFENDER";
+  readonly favour: number;
+  /** The part the cap of 30 would forfeit. */
+  readonly forfeited: number;
+}
+
+/**
+ * Themed naval branches, Offerings to the Deep (`pulp_wars-5ti.22`,
+ * section 9.3 K1): the Favour the kills of the public combat `preview`
+ * would pay, the attacker's kill first. The viewer's own ship reads the
+ * viewer's research; another seat's Offerings to the Deep is private, so it
+ * is assumed for its ship (as a hostile Ram is). Empty when nobody would
+ * gain (every match without a Cult ship).
+ */
+export function previewDeepOfferingsV7(
+  view: PlayerViewV7,
+  preview: Pick<
+    CombatPreviewV7,
+    "attackerId" | "targetUnitId" | "defenderDies" | "attackerDies"
+  >,
+): readonly DeepOfferingPreviewV7[] {
+  if (!preview.defenderDies && !preview.attackerDies) return [];
+  const attacker = view.units.find((unit) => unit.id === preview.attackerId);
+  const defender = view.units.find((unit) => unit.id === preview.targetUnitId);
+  if (attacker === undefined || defender === undefined) return [];
+  const sides: DeepOfferingPreviewV7[] = [];
+  const add = (
+    killer: PublicUnitV7,
+    victim: PublicUnitV7,
+    side: DeepOfferingPreviewV7["killer"],
+  ): void => {
+    if (killer.form !== "NAVAL") return;
+    const research =
+      killer.ownerId === view.viewer.id
+        ? view.viewer.researchedTechs
+        : ASSUMED_DEEP_OFFERINGS_RESEARCH_V7;
+    const amount = deepOfferingFavourV7(view, killer, victim, research);
+    if (amount <= 0) return;
+    sides.push({
+      playerId: killer.ownerId,
+      killer: side,
+      ...deepOfferingGainV7(view.cult, killer.ownerId, amount),
+    });
+  };
+  if (preview.defenderDies) add(attacker, defender, "ATTACKER");
+  if (preview.attackerDies) add(defender, attacker, "DEFENDER");
+  return sides;
+}
+
+/** Another seat's naval research assumed for its Offering (private). */
+const ASSUMED_DEEP_OFFERINGS_RESEARCH_V7: readonly TechnologyIdV7[] =
+  Object.freeze(["SHORECRAFT", "SEAMANSHIP"]);
 
 /**
  * Section 6.4: the preview of the visible daemon `unitId` (bound or

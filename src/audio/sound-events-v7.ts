@@ -249,20 +249,25 @@ export function moveSoundOfUnitV7(
 }
 
 /**
- * Themed naval branches (`pulp_wars-5ti.18`): whether the attacker of a
- * step is a sea beast afloat (the Dinosaur Plesiosaur), whose torpedo is a
- * bite (`attack.plesiosaur`) and not a swing.
+ * Themed naval branches (`pulp_wars-5ti.18`): the attack sound of a step
+ * whose attacker is a sea beast afloat, or null for every other attacker.
+ * The Dinosaur Plesiosaur's torpedo is a bite (`attack.plesiosaur`); the
+ * Cult Kraken's (`pulp_wars-5ti.22`), the beast that Drags, a lash of a
+ * tentacle (`attack.kraken`).
  */
 export function seaBeastAttacksV7(
   views: readonly PlayerViewV7[],
   unitId: number,
-): boolean {
+): "attack.plesiosaur" | "attack.kraken" | null {
   for (const view of views) {
     const unit = view.units.find((candidate) => candidate.id === unitId);
     if (unit === undefined) continue;
-    return unit.form === "NAVAL" && unitRoleMechanicsV7(view, unit).seaBeast;
+    if (unit.form !== "NAVAL") return null;
+    const mechanics = unitRoleMechanicsV7(view, unit);
+    if (!mechanics.seaBeast) return null;
+    return mechanics.dragsAfloat ? "attack.kraken" : "attack.plesiosaur";
   }
-  return false;
+  return null;
 }
 
 /**
@@ -351,9 +356,8 @@ export function soundCuesForStepV7(
       }
       const launch: SoundIdV1 =
         step.kind === "MELEE"
-          ? seaBeastAttacksV7([cue.before, cue.after], step.unitId)
-            ? "attack.plesiosaur"
-            : "attack.melee"
+          ? (seaBeastAttacksV7([cue.before, cue.after], step.unitId) ??
+            "attack.melee")
           : step.kind === "RANGED"
             ? "attack.ranged"
             : "attack.siege";

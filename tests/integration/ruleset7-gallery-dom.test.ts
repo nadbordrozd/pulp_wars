@@ -212,7 +212,8 @@ describe("Ruleset 7 Gallery", () => {
       "Summoner",
       "Stargazer",
       "Thing in the Cellar",
-      "Patrol Boat",
+      // Themed naval branches (`pulp_wars-5ti.22`): the Cult Patrol Boat.
+      "Black Gondola",
     ]);
     // Nine land units for every faction, each with a name.
     for (const faction of [

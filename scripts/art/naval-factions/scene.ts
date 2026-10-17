@@ -67,9 +67,13 @@ const COLOURS: readonly PlayerColorV7[] = [
   "TEAL",
   "CORAL",
   "GOLD",
+  "VIOLET",
 ];
 
-/** The seven seafaring factions of the SUBMARINES scene, one seat each. */
+/**
+ * The seafaring factions of the SUBMARINES scene, one seat each (the Cult's
+ * Kraken since `pulp_wars-5ti.22`).
+ */
 export const SUBMARINE_SCENE_FACTIONS_V7: readonly FactionIdV7[] = [
   "ORIGINAL",
   "UNDEAD",
@@ -78,6 +82,7 @@ export const SUBMARINE_SCENE_FACTIONS_V7: readonly FactionIdV7[] = [
   "MARTIAN",
   "DWARF",
   "CANDY",
+  "CULT",
 ];
 
 /** The factions of a scene, by seat. */

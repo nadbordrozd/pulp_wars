@@ -608,6 +608,69 @@
       ]
     },
     {
+      "id": "attack.kraken",
+      "default": 105,
+      "confidence": "medium",
+      "why": "#105 scored best (0.309) of 3 kept: 0.481 s for a range of 0.25–0.8 s, onset 0 ms, tail 220 ms, centred near 1290 Hz; the next, #104, scored 0.623.",
+      "reference": {
+        "source": "+0 dB against `attack.melee`'s reference, stock recording #1 (attack-melee-1.m4a) at level 0.45",
+        "lufs": -23.4
+      },
+      "takes": [
+        {
+          "n": 105,
+          "file": "attack-kraken-105.m4a",
+          "generated": "2026-10-17",
+          "round": 2,
+          "take": 2,
+          "model": "eleven_text_to_sound_v2",
+          "prompt": "A heavy wet tentacle whip-cracks onto a boat at once: one sharp deep wet slap right at the start, then a short low gurgle, over fast, nothing after. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+          "durationSeconds": 0.7,
+          "promptInfluence": 0.5,
+          "startSeconds": 0,
+          "endSeconds": 0.481,
+          "gain": 0.39,
+          "lufs": -15.3,
+          "note": "0.481 s, hard attack, centred near 1.3 kHz, 76% of its energy under 1 kHz, crest 11.1 dB.",
+          "passed": true
+        },
+        {
+          "n": 104,
+          "file": "attack-kraken-104.m4a",
+          "generated": "2026-10-17",
+          "round": 2,
+          "take": 1,
+          "model": "eleven_text_to_sound_v2",
+          "prompt": "A heavy wet tentacle whip-cracks onto a boat at once: one sharp deep wet slap right at the start, then a short low gurgle, over fast, nothing after. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+          "durationSeconds": 0.7,
+          "promptInfluence": 0.5,
+          "startSeconds": 0,
+          "endSeconds": 0.501,
+          "gain": 0.31,
+          "lufs": -13.1,
+          "note": "0.501 s, swells over 60 ms, centred near 1.1 kHz, 87% of its energy under 1 kHz, crest 9.8 dB.",
+          "passed": true
+        },
+        {
+          "n": 102,
+          "file": "attack-kraken-102.m4a",
+          "generated": "2026-10-17",
+          "round": 1,
+          "take": 2,
+          "model": "eleven_text_to_sound_v2",
+          "prompt": "A giant sea monster's tentacle lashes a boat from under the water: one deep wet whip-crack slap of a heavy tentacle and a short low gurgle, over fast. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+          "durationSeconds": 0.8,
+          "promptInfluence": 0.5,
+          "startSeconds": 0,
+          "endSeconds": 0.8,
+          "gain": 0.31,
+          "lufs": -13.3,
+          "note": "0.8 s, swells over 70 ms, centred near 832 Hz, 88% of its energy under 1 kHz, crest 9.9 dB.",
+          "passed": true
+        }
+      ]
+    },
+    {
       "id": "impact.hit",
       "default": 102,
       "confidence": "high",

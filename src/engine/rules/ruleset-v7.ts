@@ -319,6 +319,15 @@ export type TechnologyUnlockV7 =
    */
   | { readonly kind: "SUGAR_SAILS" }
   /**
+   * Themed naval branches (docs/product/RULESET_7_NAVAL_FACTIONS.md section
+   * 9.3 K1, `pulp_wars-5ti.22`): Offerings to the Deep, the Cult
+   * `SEAMANSHIP` in place of Board. A hostile unit afloat that an own ship
+   * (the Black Gondola, the Galleon of the Eye, the Kraken) kills by its
+   * attack or its retaliation pays half its value in Favour
+   * (`deepOfferingFavourV7`).
+   */
+  | { readonly kind: "DEEP_OFFERINGS" }
+  /**
    * The naval branch (section 5.4): Harbours, every active Port and
    * Shipyard of the owner gives `population` more live population.
    */
@@ -545,7 +554,13 @@ export type UnitRoleAbilityV7 =
   // standing idol, it needs no strand) and Drag (a hostile unit that begins
   // a Move beside it moves one tile).
   | "DOORSTEP"
-  | "DRAG";
+  | "DRAG"
+  // Themed naval branches (docs/product/RULESET_7_NAVAL_FACTIONS.md section
+  // 9.3 K1, `pulp_wars-5ti.22`): a Cult ship's Offering (with Offerings to
+  // the Deep, a hostile unit afloat it kills pays half its value in
+  // Favour). The Kraken's Drag afloat is the Mass's `DRAG` with the role
+  // mechanic `dragsAfloat`.
+  | "DEEP_OFFERING";
 
 /**
  * The Martian revision (section 7): how a land-form unit moves. `STRIDE`
@@ -963,6 +978,16 @@ export interface RoleMechanicsV7 {
    * bonus). Read only for an attack that is a Ram.
    */
   readonly ramRunUpBonus2: number;
+  /**
+   * Themed naval branches, the Kraken
+   * (docs/product/RULESET_7_NAVAL_FACTIONS.md section 9.3 K2,
+   * `pulp_wars-5ti.22`): the Gibbering Mass's Drag pointed at the sea. A
+   * unit afloat of a player hostile to the owner that begins a Move beside
+   * a living ship of the role in `NAVAL` form that is not icebound moves
+   * one tile (`draggingKrakenV7`). The Cult `SUBMARINE` only; false for
+   * every other role (the Mass drags land-form units by its own rule).
+   */
+  readonly dragsAfloat: boolean;
 }
 
 export interface FactionTechnologyTreeV7 {
@@ -1951,6 +1976,7 @@ const mechanics = (
           ravageAttacks: 1,
           seaBeast: false,
           ramRunUpBonus2: RAM_BONUS2_V7,
+          dragsAfloat: false,
           ...overrides[roleId],
         },
       ]),
@@ -4181,39 +4207,55 @@ export const CULT_VACANT_ROLES_V7: readonly UnitRoleIdV7[] = deepFreeze([
  * a Gibbering Mass).
  */
 export const CULT_BASELINE_V1_NODES: readonly TechnologyNodeV7[] = deepFreeze(
-  SHARED_BASELINE_NODES_V7.map((original) =>
-    node(original.id, original.branch, original.tier, original.prerequisites, [
-      ...original.unlocks.flatMap((unlock): TechnologyUnlockV7[] =>
-        // `pulp_wars-mch9.4`: the Summoner's Sacrifice and Seize take the
-        // place of the Captain's support at Administration.
-        unlock.kind === "CAPTAIN_SUPPORT"
-          ? [{ kind: "SUMMONER_SUPPORT" }]
-          : unlock.kind === "OVERRUN" ||
-              (unlock.kind === "COMMAND" &&
-                unlock.command === "BUILD_FIELD_DEFENSE") ||
-              (unlock.kind === "UNIT_ROLE" &&
-                CULT_VACANT_ROLES_V7.includes(unlock.role))
-            ? []
-            : [unlock],
+  withSeamanshipUnlocksV7(
+    SHARED_BASELINE_NODES_V7.map((original) =>
+      node(
+        original.id,
+        original.branch,
+        original.tier,
+        original.prerequisites,
+        [
+          ...original.unlocks.flatMap((unlock): TechnologyUnlockV7[] =>
+            // `pulp_wars-mch9.4`: the Summoner's Sacrifice and Seize take the
+            // place of the Captain's support at Administration.
+            unlock.kind === "CAPTAIN_SUPPORT"
+              ? [{ kind: "SUMMONER_SUPPORT" }]
+              : unlock.kind === "OVERRUN" ||
+                  (unlock.kind === "COMMAND" &&
+                    unlock.command === "BUILD_FIELD_DEFENSE") ||
+                  (unlock.kind === "UNIT_ROLE" &&
+                    CULT_VACANT_ROLES_V7.includes(unlock.role))
+                ? []
+                : [unlock],
+          ),
+          // `pulp_wars-mch9.31` (redesign section 8.4): Tentacles, the
+          // Summoner's Tentacle.
+          ...(original.id === "CHIVALRY"
+            ? [{ kind: "TENTACLES" } as const]
+            : []),
+          // `pulp_wars-mch9.37` (redesign section 7.4): Gibbering Masses, the
+          // Summoner's Summon a Gibbering Mass.
+          ...(original.id === "METALLURGY"
+            ? [{ kind: "SUMMON_MASS" } as const]
+            : []),
+          // `pulp_wars-mch9.4` (section 5.3): Harvest Rites, the Offering.
+          ...(original.id === "FARMING" ? [{ kind: "OFFERING" } as const] : []),
+          // `pulp_wars-mch9.7` (section 7.3): The Stars Are Right, the Great
+          // Summoning.
+          ...(original.id === "EXPLOSIVES"
+            ? [{ kind: "GREAT_SUMMONING" } as const]
+            : []),
+          // `pulp_wars-mch9.8` (section 9.2): Familiars, the Switcheroo.
+          ...(original.id === "SCOUTING"
+            ? [{ kind: "SWITCHEROO" } as const]
+            : []),
+        ],
       ),
-      // `pulp_wars-mch9.31` (redesign section 8.4): Tentacles, the
-      // Summoner's Tentacle.
-      ...(original.id === "CHIVALRY" ? [{ kind: "TENTACLES" } as const] : []),
-      // `pulp_wars-mch9.37` (redesign section 7.4): Gibbering Masses, the
-      // Summoner's Summon a Gibbering Mass.
-      ...(original.id === "METALLURGY"
-        ? [{ kind: "SUMMON_MASS" } as const]
-        : []),
-      // `pulp_wars-mch9.4` (section 5.3): Harvest Rites, the Offering.
-      ...(original.id === "FARMING" ? [{ kind: "OFFERING" } as const] : []),
-      // `pulp_wars-mch9.7` (section 7.3): The Stars Are Right, the Great
-      // Summoning.
-      ...(original.id === "EXPLOSIVES"
-        ? [{ kind: "GREAT_SUMMONING" } as const]
-        : []),
-      // `pulp_wars-mch9.8` (section 9.2): Familiars, the Switcheroo.
-      ...(original.id === "SCOUTING" ? [{ kind: "SWITCHEROO" } as const] : []),
-    ]),
+    ),
+    // Themed naval branches (docs/product/RULESET_7_NAVAL_FACTIONS.md
+    // section 9.1, `pulp_wars-5ti.22`): Offerings to the Deep, the Ram and
+    // Favour for what the ships sink instead of Board.
+    [{ kind: "DEEP_OFFERINGS" }],
   ),
 );
 
@@ -4391,9 +4433,42 @@ export const CULT_ROLE_RULES_V7: Readonly<
     mayUsePrimaryActionAfterMove: true,
     abilities: ["ATTACK", "CAPTURE", "ANCHOR"],
   }),
-  PATROL_BOAT: role({ ...ORIGINAL_ROLE_RULES_V7.PATROL_BOAT }),
-  BATTLESHIP: role({ ...ORIGINAL_ROLE_RULES_V7.BATTLESHIP }),
-  SUBMARINE: role({ ...ORIGINAL_ROLE_RULES_V7.SUBMARINE }),
+  // Themed naval branches, the Deep Ones
+  // (docs/product/RULESET_7_NAVAL_FACTIONS.md section 9.2,
+  // `pulp_wars-5ti.22`): the Black Gondola and the Galleon of the Eye have
+  // the Human ships' numbers, and the Kraken is a trained sea beast for 10
+  // Coins (8 at a Shipyard), one more than a Submarine: Submerged and
+  // Torpedo, never boarded (`seaBeast`), and it Drags units afloat beside
+  // it (`DRAG` with the role mechanic `dragsAfloat`). With Offerings to the
+  // Deep the three pay Favour for what they sink (`DEEP_OFFERING`). None of
+  // them is robed or a daemon.
+  PATROL_BOAT: role({
+    ...ORIGINAL_ROLE_RULES_V7.PATROL_BOAT,
+    label: "Black Gondola",
+    abilities: [
+      ...ORIGINAL_ROLE_RULES_V7.PATROL_BOAT.abilities,
+      "DEEP_OFFERING",
+    ],
+  }),
+  BATTLESHIP: role({
+    ...ORIGINAL_ROLE_RULES_V7.BATTLESHIP,
+    label: "Galleon of the Eye",
+    abilities: [
+      ...ORIGINAL_ROLE_RULES_V7.BATTLESHIP.abilities,
+      "DEEP_OFFERING",
+    ],
+  }),
+  SUBMARINE: role({
+    ...ORIGINAL_ROLE_RULES_V7.SUBMARINE,
+    label: "Kraken",
+    cost: 10,
+    abilities: [
+      ...ORIGINAL_ROLE_RULES_V7.SUBMARINE.abilities,
+      "DRAG",
+      "SEA_BEAST",
+      "DEEP_OFFERING",
+    ],
+  }),
   // Vacant (the Cult redesign, `pulp_wars-mch9.31`): the Chosen retired,
   // and with it Martyr and Pick Me! (the Idol Bearer's warden aura,
   // Behold!, took Pick Me!'s place: `pulp_wars-mch9.33`).
@@ -4568,7 +4643,9 @@ export function starfallDamageV7(chanters: number): number {
  * Boats are Human boats. `pulp_wars-mch9.4`: the robed cultists (every
  * trained land role but the Familiar; the Thing in the Cellar is not one).
  * The Cult redesign (`pulp_wars-mch9.31`): the vacant `KNIGHT` and
- * `SWORDSMAN` slots are not robed, and Martyr is gone.
+ * `SWORDSMAN` slots are not robed, and Martyr is gone. Themed naval
+ * branches (`pulp_wars-5ti.22`): boats are Human boats but for the Kraken,
+ * a sea beast that Drags units afloat.
  */
 export const CULT_ROLE_MECHANICS_V7 = mechanics({
   FIGHTER: { buildsFieldDefense: false, robed: true },
@@ -4583,6 +4660,9 @@ export const CULT_ROLE_MECHANICS_V7 = mechanics({
   // `pulp_wars-mch9.5` (section 8.4): the Thing's grip adds two strands.
   JUGGERNAUT: { anchorStrands: ANCHOR_STRANDS_V7 },
   BATTLESHIP: { splash: true },
+  // Themed naval branches (section 9.3 K2, `pulp_wars-5ti.22`): the Kraken,
+  // a sea beast that Drags units afloat.
+  SUBMARINE: { seaBeast: true, dragsAfloat: true },
 });
 
 export const CULT_BASELINE_V1_TREE: FactionTechnologyTreeV7 = deepFreeze({
@@ -5249,6 +5329,13 @@ export const TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7: Readonly<
     METALLURGY: "Gibbering Masses",
     FORTIFICATION: "Warding Circles",
     EXPLOSIVES: "The Stars Are Right",
+    // Themed naval branches, the Deep Ones (`pulp_wars-5ti.22`,
+    // docs/product/RULESET_7_NAVAL_FACTIONS.md section 9.1): Navigation
+    // keeps its shared name.
+    SHORECRAFT: "Black Gondolas",
+    NAVAL_ENGINEERING: "Galleons of the Eye",
+    SEAMANSHIP: "Offerings to the Deep",
+    SUBMERSIBLES: "The Kraken",
   },
 });
 
@@ -7100,6 +7187,62 @@ export function drownedCrewRaisesV7(
 }
 
 /**
+ * Themed naval branches, Offerings to the Deep
+ * (docs/product/RULESET_7_NAVAL_FACTIONS.md section 9.3 K1,
+ * `pulp_wars-5ti.22`): a kill afloat pays `floor(value /
+ * DEEP_OFFERING_DIVISOR_V7)` Favour (half the victim's value).
+ */
+export const DEEP_OFFERING_DIVISOR_V7 = 2;
+
+/**
+ * Offerings to the Deep, the killer's side: whether `unit`'s role has the
+ * `DEEP_OFFERING` ability and its kind's capabilities under its controller
+ * have `deepOfferings`. The canonical reader passes the controller's
+ * research; a public reader of another seat's ship assumes it (private
+ * research, as a hostile Ram is assumed).
+ */
+export function deepOfferingOfV7(
+  roster: FactionRosterV7,
+  unit: UnitKindRefV7 & { readonly role: UnitRoleIdV7 } & SummonedUnitRefV7,
+  controllerResearchedTechs: readonly TechnologyIdV7[],
+): boolean {
+  return (
+    unitRoleRuleV7(roster, unit).abilities.includes("DEEP_OFFERING") &&
+    unitCapabilitiesV7(roster, unit, controllerResearchedTechs).deepOfferings
+  );
+}
+
+/**
+ * Offerings to the Deep (section 9.3 K1): the Favour a kill pays before the
+ * cap. The killer is a ship (`NAVAL`) of a seat with Favour whose Offering
+ * holds (`offering`, from `deepOfferingOfV7`); the victim a unit afloat
+ * (`NAVAL` or `EMBARKED`) whose owner is hostile to the killer's (`hostile`)
+ * and that is no summoned unit; it pays `floor(value /
+ * DEEP_OFFERING_DIVISOR_V7)` of its value (`victimValue`, the Score's unit
+ * value). Splash, blasts, Plague, a bomb, the crush, and a Tentacle never
+ * reach this reader (it is read for an attack's or a retaliation's kill).
+ */
+export function deepOfferingAmountV7(
+  killer: {
+    readonly form: UnitFormV7;
+    readonly offering: boolean;
+    readonly hasFavour: boolean;
+  },
+  victim: {
+    readonly form: UnitFormV7;
+    readonly summoned?: SummonedRoleIdV7 | undefined;
+  },
+  hostile: boolean,
+  victimValue: number,
+): number {
+  if (killer.form !== "NAVAL" || !killer.offering || !killer.hasFavour)
+    return 0;
+  if (victim.form !== "NAVAL" && victim.form !== "EMBARKED") return 0;
+  if (victim.summoned !== undefined || !hostile) return 0;
+  return Math.floor(victimValue / DEEP_OFFERING_DIVISOR_V7);
+}
+
+/**
  * The naval branch (section 5.4): THE live population of an active dock: a
  * Port gives 1 and a Shipyard 2, plus the owner's `harbourPopulation`
  * (Harbours). A blockaded dock gives 0 (the caller's rule).
@@ -7958,6 +8101,13 @@ export interface TechnologyCapabilitiesV7 {
    * ship of the tree may Sugar Rush afloat (`sugarRushRejectionV7`).
    */
   readonly sugarSails: boolean;
+  /**
+   * Themed naval branches (docs/product/RULESET_7_NAVAL_FACTIONS.md section
+   * 9.3 K1, `pulp_wars-5ti.22`): Offerings to the Deep (the Cult
+   * `SEAMANSHIP`), a ship of the tree pays Favour for a hostile unit afloat
+   * it kills (`deepOfferingFavourV7`).
+   */
+  readonly deepOfferings: boolean;
 }
 
 export function technologyCapabilitiesV7(
@@ -8046,6 +8196,7 @@ export function technologyCapabilitiesV7(
   let hoverPods = false;
   let seaTunnels = false;
   let sugarSails = false;
+  let deepOfferings = false;
   for (const unlock of unlocks)
     switch (unlock.kind) {
       case "COMMAND":
@@ -8206,6 +8357,9 @@ export function technologyCapabilitiesV7(
       case "SUGAR_SAILS":
         sugarSails = true;
         break;
+      case "DEEP_OFFERINGS":
+        deepOfferings = true;
+        break;
       case "SUMMONER_SUPPORT":
       case "CONFECTIONER_SUPPORT":
       case "ENGINEER_SUPPORT":
@@ -8299,6 +8453,7 @@ export function technologyCapabilitiesV7(
     hoverPods,
     seaTunnels,
     sugarSails,
+    deepOfferings,
   });
   TECHNOLOGY_CAPABILITIES_CACHE_V7.set(cacheKey, result);
   if (TECHNOLOGY_CAPABILITIES_CACHE_V7.size > 32) {

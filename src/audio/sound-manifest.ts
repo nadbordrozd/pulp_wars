@@ -31,6 +31,9 @@ export const SOUND_IDS_V1 = [
   // Themed naval branches (`pulp_wars-5ti.18`): the Plesiosaur's torpedo,
   // a bite with a wet roar.
   "attack.plesiosaur",
+  // Themed naval branches (`pulp_wars-5ti.22`): the Kraken's torpedo, a
+  // deep wet lash of a tentacle.
+  "attack.kraken",
   // Where it lands.
   "impact.hit",
   "impact.heavy",
@@ -490,6 +493,30 @@ const SYNTH_SOUNDS: Readonly<Record<SoundIdV1, SoundEntryV1>> = {
       gain: 0.5,
       attackMs: 20,
       decay: 1.5,
+    },
+  ]),
+  // Bead pulp_wars-5ti.22: a wet slap and a low gurgle, the fallback of
+  // the Kraken's lash.
+  "attack.kraken": synth("Kraken lash", "combat", 2, 60, 0.3, [
+    {
+      wave: "noise",
+      ms: 120,
+      lowpassHz: 3000,
+      lowpassEndHz: 500,
+      highpassHz: 180,
+      attackMs: 2,
+      decay: 2.5,
+    },
+    {
+      wave: "sine",
+      at: 40,
+      ms: 240,
+      hz: 90,
+      hzEnd: 55,
+      lowpassHz: 700,
+      gain: 0.6,
+      attackMs: 15,
+      decay: 1.6,
     },
   ]),
   "impact.hit": synth("Hit", "combat", 2, 70, 0.4, [

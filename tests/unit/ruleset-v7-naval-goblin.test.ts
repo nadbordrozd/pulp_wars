@@ -229,7 +229,8 @@ describe("the Scrap Fleet registry (section 3.1 and 3.2)", () => {
     // Board (the Undead trade it for Drowned Crews, `pulp_wars-5ti.17`, the
     // Martians for Hover Pods, `pulp_wars-5ti.19`, the Dwarves for Sea
     // Tunnels, `pulp_wars-5ti.20`, the Candy for Sugar Sails,
-    // `pulp_wars-5ti.21`).
+    // `pulp_wars-5ti.21`, the Cult for Offerings to the Deep,
+    // `pulp_wars-5ti.22`).
     for (const faction of FACTION_IDS_V7) {
       if (faction === "GOBLIN" || faction === "ICE_FOLK") continue;
       const other = technologyCapabilitiesV7(
@@ -240,7 +241,8 @@ describe("the Scrap Fleet registry (section 3.1 and 3.2)", () => {
         faction !== "UNDEAD" &&
           faction !== "MARTIAN" &&
           faction !== "DWARF" &&
-          faction !== "CANDY",
+          faction !== "CANDY" &&
+          faction !== "CULT",
         false,
       ]);
     }
@@ -881,15 +883,19 @@ describe("a prize under its new flag (section 2 rule 5)", () => {
 });
 
 describe("sea beasts are never boarded (section 2 rule 6)", () => {
-  it("has the Dinosaur Plesiosaur as its only sea beast, and the shared rule refuses one as TARGET_IMMUNE", () => {
+  it("has the Dinosaur Plesiosaur and the Cult Kraken as its only sea beasts, and the shared rule refuses one as TARGET_IMMUNE", () => {
     // Horned Prows and the Plesiosaur (`pulp_wars-5ti.18`): the first
-    // sea beast (RULESET_7_NAVAL_FACTIONS.md section 5.3 D2).
+    // sea beast (RULESET_7_NAVAL_FACTIONS.md section 5.3 D2); the Kraken
+    // the second (`pulp_wars-5ti.22`, section 9.3 K2).
     for (const faction of FACTION_IDS_V7)
       for (const role of UNIT_ROLE_IDS_V7)
         expect(
           roleMechanicsV7(role, faction).seaBeast,
           `${faction} ${role}`,
-        ).toBe(faction === "DINOSAUR" && role === "SUBMARINE");
+        ).toBe(
+          (faction === "DINOSAUR" || faction === "CULT") &&
+            role === "SUBMARINE",
+        );
     const state = strait(
       ["ORIGINAL", "GOBLIN"],
       [

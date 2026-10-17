@@ -194,6 +194,12 @@ const ENTRIES = {
     "Drag",
     "An enemy that starts its move beside it can move only one tile.",
   ],
+  // Themed naval branches (section 9.3 K2, `pulp_wars-5ti.22`): the
+  // Kraken's Drag is the Mass's pointed at the sea.
+  DRAG_AFLOAT: [
+    "Drag",
+    "An enemy ship or transport that starts its move beside it can move only one tile.",
+  ],
   HOLDS_GROUND: [
     "Holds its ground",
     "It never steps forward after a kill, and nothing pushes, pulls or swaps it.",
@@ -355,6 +361,12 @@ const ENTRIES = {
   DROWNED_CREW: [
     "Drowned Crew",
     "A ship your ships sink rises as your Ghost Ship. Unlocked by a technology.",
+  ],
+  // Themed naval branches (section 9.3 K1, `pulp_wars-5ti.22`): the Cult
+  // ships.
+  DEEP_OFFERING: [
+    "Offering to the Deep",
+    "What it sinks feeds the Ancient Ones: half its value in Favour. Unlocked by a technology.",
   ],
   // Themed naval branches (section 6.3 M2, `pulp_wars-5ti.19`): the
   // Martian foot units' shore launch (the Martian ships' Shield is the
@@ -1009,6 +1021,10 @@ export function abilityGlossaryIdV7(
       return mechanics.ramRunUpBonus2 > RAM_BONUS2_V7
         ? "HORNED_PROW"
         : "BOW_RAM";
+    // Themed naval branches (`pulp_wars-5ti.22`): the Kraken drags units
+    // afloat, the Mass units on land.
+    case "DRAG":
+      return mechanics.dragsAfloat ? "DRAG_AFLOAT" : "DRAG";
     case "LINEBREAKER":
       return "CHARGE_BANG";
     case "TRACTOR_BEAM":

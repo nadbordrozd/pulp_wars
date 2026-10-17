@@ -109,7 +109,9 @@ describe("training a Submarine", () => {
               faction === "MARTIAN"
               ? [9, 10]
               : // The Diving Bell (`pulp_wars-5ti.20`): 10 Coins, Armoured.
-                faction === "DWARF"
+                faction === "DWARF" ||
+                  // The Kraken (`pulp_wars-5ti.22`): 10 Coins.
+                  faction === "CULT"
                 ? [10, 12]
                 : [9, 12],
       );

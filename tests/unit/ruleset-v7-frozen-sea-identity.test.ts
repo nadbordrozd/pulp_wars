@@ -72,17 +72,17 @@ const SEAFARERS = FACTION_IDS_V7.filter((faction) => faction !== "ICE_FOLK");
 // identities of tunings 5 and 6).
 describe("the frozen sea identity (7r44, then 7r45 for the ice fortification fix, then 7r46 and 7r47 for tunings 1 and 2)", () => {
   it("is 7r47 with 7r44 to 7r46 last in the gap-free prior list and their save keys obsolete", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r97");
-    expect(PRIOR_RULESET_7_IDS.slice(-54, -50)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r98");
+    expect(PRIOR_RULESET_7_IDS.slice(-55, -51)).toEqual([
       "pulp-wars-poc-7r43",
       "pulp-wars-poc-7r44",
       "pulp-wars-poc-7r45",
       "pulp-wars-poc-7r46",
     ]);
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(96);
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(97);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r97.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-53, -50)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r98.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-54, -51)).toEqual([
       "pulpWars.save.v7r44.current",
       "pulpWars.save.v7r45.current",
       "pulpWars.save.v7r46.current",
@@ -95,7 +95,7 @@ describe("the frozen sea identity (7r44, then 7r45 for the ice fortification fix
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
     const { state } = created;
-    expect(state.rulesetId).toBe("pulp-wars-poc-7r97");
+    expect(state.rulesetId).toBe("pulp-wars-poc-7r98");
     const oldSetup = { ...setup, rulesetId: "pulp-wars-poc-7r44" };
     expect(parseMatchSetupV7(oldSetup)).toBeNull();
     expect(
@@ -326,7 +326,8 @@ describe("the Ice Folk Naval tree (section 2.2)", () => {
       // Goblin Seamanship is Powder Kegs, the Ram and Fire Rafts instead of
       // Board, and the Undead one Drowned Crews; the Martian one Hover Pods
       // (`pulp_wars-5ti.19`); the Dwarf one Sea Tunnels
-      // (`pulp_wars-5ti.20`); the Candy one Sugar Sails (`pulp_wars-5ti.21`).
+      // (`pulp_wars-5ti.20`); the Candy one Sugar Sails (`pulp_wars-5ti.21`);
+      // the Cult one Offerings to the Deep (`pulp_wars-5ti.22`).
       expect(
         [caps.ram, caps.boarding, caps.harbourPopulation],
         faction,
@@ -336,7 +337,8 @@ describe("the Ice Folk Naval tree (section 2.2)", () => {
           faction !== "UNDEAD" &&
           faction !== "MARTIAN" &&
           faction !== "DWARF" &&
-          faction !== "CANDY",
+          faction !== "CANDY" &&
+          faction !== "CULT",
         1,
       ]);
       expect(caps.trainableRoles, faction).toEqual(

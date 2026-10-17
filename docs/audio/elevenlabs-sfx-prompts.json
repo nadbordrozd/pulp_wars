@@ -154,6 +154,31 @@
       ]
     },
     {
+      "id": "attack.kraken",
+      "kind": "vocal",
+      "suffix": "vocal",
+      "prompt": "A giant sea monster's tentacle lashes a boat from under the water: one deep wet whip-crack slap of a heavy tentacle and a short low gurgle, over fast.",
+      "durationSeconds": 0.8,
+      "minSeconds": 0.25,
+      "maxSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "loudness": {
+        "like": "attack.melee",
+        "offsetDb": 0,
+        "reason": "Bead pulp_wars-5ti.22: the Kraken's torpedo, a deep wet lash (docs/product/RULESET_7_NAVAL_FACTIONS.md section 9.7), plays where every other melee attack plays its swing, at the swing's level."
+      },
+      "revisions": [
+        {
+          "round": 2,
+          "takes": 2,
+          "prompt": "A heavy wet tentacle whip-cracks onto a boat at once: one sharp deep wet slap right at the start, then a short low gurgle, over fast, nothing after.",
+          "durationSeconds": 0.7,
+          "promptInfluence": 0.5,
+          "reason": "Two of three round-1 takes started slowly (onsets of 130 and 155 ms, at most 80) and one clipped: asks for the slap at once and a shorter take."
+        }
+      ]
+    },
+    {
       "id": "impact.hit",
       "kind": "hit",
       "suffix": "style",

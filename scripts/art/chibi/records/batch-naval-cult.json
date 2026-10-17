@@ -336,9 +336,9 @@
       "completedAt": "2026-10-10T12:00:29.160Z",
       "usageUsd": 0.007757304430007935,
       "review": {
-        "verdict": "ACCEPTED",
+        "verdict": "REJECTED",
         "candidate": 0,
-        "notes": "The Cult Submarine's portrait at the first sibling edit of the Patrol Boat's: a fat riveted brass bathysphere with one big green porthole, a short periscope and an indigo tail fin, as the map sprite. No red or violet. Reviewed at 1:1 and x6 on the cream plates beside the sprite.",
+        "notes": "The Cult Submarine's portrait at the first sibling edit of the Patrol Boat's: a fat riveted brass bathysphere with one big green porthole, a short periscope and an indigo tail fin, as the map sprite. No red or violet. Reviewed at 1:1 and x6 on the cream plates beside the sprite. Superseded by portrait-kraken-a.",
         "reviewedAt": "2026-10-10T12:01:08.297Z"
       }
     },
@@ -404,9 +404,9 @@
       "completedAt": "2026-10-10T10:18:34.019Z",
       "usageUsd": 0.00699950032764011,
       "review": {
-        "verdict": "ACCEPTED",
+        "verdict": "REJECTED",
         "candidate": 0,
-        "notes": "The Cult Submarine at the first edit of the accepted gondola: a fat riveted brass bathysphere barrel with one big green-lit porthole, a short periscope and an indigo tail fin, no mast and no sail; 61 x 52 px, seated 8 px above the canvas bottom like the other Submarines, 4% green, no red or violet pixel. The periscope carries no painted eye. Reviewed at 1:1 and x4 on both waters and in greyscale beside the Undead and Dwarf Submarines.",
+        "notes": "The Cult Submarine at the first edit of the accepted gondola: a fat riveted brass bathysphere barrel with one big green-lit porthole, a short periscope and an indigo tail fin, no mast and no sail; 61 x 52 px, seated 8 px above the canvas bottom like the other Submarines, 4% green, no red or violet pixel. The periscope carries no painted eye. Reviewed at 1:1 and x4 on both waters and in greyscale beside the Undead and Dwarf Submarines. Superseded by kraken-b.",
         "reviewedAt": "2026-10-10T10:19:57.721Z"
       }
     },
@@ -476,6 +476,384 @@
         "candidate": 0,
         "notes": "The Cult rowing barge at the first edit of the shared barge: an indigo hull with a brass rim, the cargo under an indigo tarp with cream cords, a lantern with a green flame on the pole, the oar kept; 60 x 49 px on the shared hull's rows 10 to 58, 1% green, no red or violet pixel. The tarp's border is cords, not a cream band. Reviewed at 1:1 and x4 on both waters and in greyscale beside the Undead and the shared barge.",
         "reviewedAt": "2026-10-10T10:18:15.661Z"
+      }
+    },
+    "icon-tech-offerings-a": {
+      "id": "icon-tech-offerings-a",
+      "asset": "chibi-naval-cult-icon-tech-seamanship",
+      "jobId": "sync-95a087f2-4312-486c-b77f-67da0a96412c",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "naval-cult",
+        "asset": "chibi-naval-cult-icon-tech-seamanship",
+        "subject": "ICON:TECH:CULT:SEAMANSHIP",
+        "faction": "CULT",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 99721,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/CULT.md#prompt-fragment + docs/art/factions/CULT.md#negative-fragment",
+            "text": "Faction: a pulp-magazine secret society of the 1920s, mock-sinister, silly and never scary. Their fixed colours: soft midnight indigo cloth shaded deeper violet-blue, never black; pale cream candle wax and parchment; small pieces of warm polished brass; and exactly one accent colour, a bright glowing spring green, only as small flames and glows: candle flames, lamp glass, an eye-in-a-spiral sign.",
+            "negative": "blood, gore, guts, dripping, horror, creepy realism, slime, skull, bone, black cloth, grey cloth, torn cloth, ragged hems, purple, violet, magenta, pink, red cloth, red robe, orange flames, yellow flames, blue flames, gold armour, chrome, steel armour, sword, gun, pentagram, cross, large glowing area"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+            "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/CULT.json",
+            "text": "Subject: Offerings to the Deep: one short fat pale cream wax candle with a tall bright green flame, standing on the crest of one big curling deep indigo-blue sea wave with a pale cream foam edge, the wave curling up round the candle; drawn large, filling the square; no boat, no hull; nothing else in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "person, character, face, ship, boat, hull, island, beach, text, red, black flame, skull"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: a pulp-magazine secret society of the 1920s, mock-sinister, silly and never scary. Their fixed colours: soft midnight indigo cloth shaded deeper violet-blue, never black; pale cream candle wax and parchment; small pieces of warm polished brass; and exactly one accent colour, a bright glowing spring green, only as small flames and glows: candle flames, lamp glass, an eye-in-a-spiral sign. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Offerings to the Deep: one short fat pale cream wax candle with a tall bright green flame, standing on the crest of one big curling deep indigo-blue sea wave with a pale cream foam edge, the wave curling up round the candle; drawn large, filling the square; no boat, no hull; nothing else in the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, blood, gore, guts, dripping, horror, creepy realism, slime, skull, bone, black cloth, grey cloth, torn cloth, ragged hems, purple, violet, magenta, pink, red cloth, red robe, orange flames, yellow flames, blue flames, gold armour, chrome, steel armour, sword, gun, pentagram, cross, large glowing area, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, person, character, face, ship, boat, hull, island, beach, red, black flame",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: a pulp-magazine secret society of the 1920s, mock-sinister, silly and never scary. Their fixed colours: soft midnight indigo cloth shaded deeper violet-blue, never black; pale cream candle wax and parchment; small pieces of warm polished brass; and exactly one accent colour, a bright glowing spring green, only as small flames and glows: candle flames, lamp glass, an eye-in-a-spiral sign. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Offerings to the Deep: one short fat pale cream wax candle with a tall bright green flame, standing on the crest of one big curling deep indigo-blue sea wave with a pale cream foam edge, the wave curling up round the candle; drawn large, filling the square; no boat, no hull; nothing else in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, blood, gore, guts, dripping, horror, creepy realism, slime, skull, bone, black cloth, grey cloth, torn cloth, ragged hems, purple, violet, magenta, pink, red cloth, red robe, orange flames, yellow flames, blue flames, gold armour, chrome, steel armour, sword, gun, pentagram, cross, large glowing area, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, person, character, face, ship, boat, hull, island, beach, red, black flame."
+      },
+      "submittedAt": "2026-10-17T06:30:59.254Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-cult/icon-tech-offerings-a.png",
+      "rawSheetSha256": "bef128ffa65815aac3f9ba40914156139c0218ef05b2a6873909593d732a63fd",
+      "plateHints": [
+        {
+          "bandRows": 7,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-17T06:31:21.029Z",
+      "usageUsd": 0.007063338412178887,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Bead pulp_wars-5ti.22: Offerings to the Deep, a cream candle with a green flame on a curling indigo wave; reads at 48 px on light and dark cards.",
+        "reviewedAt": "2026-10-17T06:32:25.165Z"
+      }
+    },
+    "icon-tech-offerings-b": {
+      "id": "icon-tech-offerings-b",
+      "asset": "chibi-naval-cult-icon-tech-seamanship",
+      "jobId": "sync-3aaf1430-2cf6-4147-99c9-9cb9dd13484e",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "naval-cult",
+        "asset": "chibi-naval-cult-icon-tech-seamanship",
+        "subject": "ICON:TECH:CULT:SEAMANSHIP",
+        "faction": "CULT",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 99722,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/CULT.md#prompt-fragment + docs/art/factions/CULT.md#negative-fragment",
+            "text": "Faction: a pulp-magazine secret society of the 1920s, mock-sinister, silly and never scary. Their fixed colours: soft midnight indigo cloth shaded deeper violet-blue, never black; pale cream candle wax and parchment; small pieces of warm polished brass; and exactly one accent colour, a bright glowing spring green, only as small flames and glows: candle flames, lamp glass, an eye-in-a-spiral sign.",
+            "negative": "blood, gore, guts, dripping, horror, creepy realism, slime, skull, bone, black cloth, grey cloth, torn cloth, ragged hems, purple, violet, magenta, pink, red cloth, red robe, orange flames, yellow flames, blue flames, gold armour, chrome, steel armour, sword, gun, pentagram, cross, large glowing area"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+            "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/CULT.json",
+            "text": "Subject: Offerings to the Deep: one short fat pale cream wax candle with a tall bright green flame, standing on the crest of one big curling deep indigo-blue sea wave with a pale cream foam edge, the wave curling up round the candle; drawn large, filling the square; no boat, no hull; nothing else in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "person, character, face, ship, boat, hull, island, beach, text, red, black flame, skull"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: a pulp-magazine secret society of the 1920s, mock-sinister, silly and never scary. Their fixed colours: soft midnight indigo cloth shaded deeper violet-blue, never black; pale cream candle wax and parchment; small pieces of warm polished brass; and exactly one accent colour, a bright glowing spring green, only as small flames and glows: candle flames, lamp glass, an eye-in-a-spiral sign. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Offerings to the Deep: one short fat pale cream wax candle with a tall bright green flame, standing on the crest of one big curling deep indigo-blue sea wave with a pale cream foam edge, the wave curling up round the candle; drawn large, filling the square; no boat, no hull; nothing else in the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, blood, gore, guts, dripping, horror, creepy realism, slime, skull, bone, black cloth, grey cloth, torn cloth, ragged hems, purple, violet, magenta, pink, red cloth, red robe, orange flames, yellow flames, blue flames, gold armour, chrome, steel armour, sword, gun, pentagram, cross, large glowing area, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, person, character, face, ship, boat, hull, island, beach, red, black flame",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: a pulp-magazine secret society of the 1920s, mock-sinister, silly and never scary. Their fixed colours: soft midnight indigo cloth shaded deeper violet-blue, never black; pale cream candle wax and parchment; small pieces of warm polished brass; and exactly one accent colour, a bright glowing spring green, only as small flames and glows: candle flames, lamp glass, an eye-in-a-spiral sign. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Offerings to the Deep: one short fat pale cream wax candle with a tall bright green flame, standing on the crest of one big curling deep indigo-blue sea wave with a pale cream foam edge, the wave curling up round the candle; drawn large, filling the square; no boat, no hull; nothing else in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, blood, gore, guts, dripping, horror, creepy realism, slime, skull, bone, black cloth, grey cloth, torn cloth, ragged hems, purple, violet, magenta, pink, red cloth, red robe, orange flames, yellow flames, blue flames, gold armour, chrome, steel armour, sword, gun, pentagram, cross, large glowing area, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, person, character, face, ship, boat, hull, island, beach, red, black flame."
+      },
+      "submittedAt": "2026-10-17T06:31:21.031Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-cult/icon-tech-offerings-b.png",
+      "rawSheetSha256": "472f89e26d8d00a874a7f57871af4f5a870e29976e7be39e104bbac5c32495de",
+      "plateHints": [
+        {
+          "bandRows": 10,
+          "groundShare": 0.057,
+          "footprintWidthShare": 0.8723,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-17T06:32:12.268Z",
+      "usageUsd": 0.009755145814683702,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The wave is drawn as a heap of sand and a brown hollow like a shell, so the candle stands on a mound rather than over the sea; icon-tech-offerings-a is accepted.",
+        "reviewedAt": "2026-10-17T06:32:25.285Z"
+      }
+    },
+    "kraken-a": {
+      "id": "kraken-a",
+      "asset": "chibi-naval-cult-submarine",
+      "jobId": "9cbd50ee-baf2-4cca-a4a2-8ab6e8533eec",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-cult",
+        "asset": "chibi-naval-cult-submarine",
+        "subject": "UNIT:CULT:SUBMARINE",
+        "faction": "CULT",
+        "recipeClass": "ship",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 99701,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Turn the brass bathysphere into a living kraken at the surface: one big round deep indigo-blue head-body low in the water with one big glowing green eye at the front, five thick curling tentacles with cream suckers, two of them wearing a brass ring; lit from the lower left. No barrel, porthole, periscope or fin. Keep the size, waterline, thick black outline and style, nothing under the body."
+          }
+        ],
+        "prompt": "Turn the brass bathysphere into a living kraken at the surface: one big round deep indigo-blue head-body low in the water with one big glowing green eye at the front, five thick curling tentacles with cream suckers, two of them wearing a brass ring; lit from the lower left. No barrel, porthole, periscope or fin. Keep the size, waterline, thick black outline and style, nothing under the body.",
+        "negativePrompt": "",
+        "description": "Turn the brass bathysphere into a living kraken at the surface: one big round deep indigo-blue head-body low in the water with one big glowing green eye at the front, five thick curling tentacles with cream suckers, two of them wearing a brass ring; lit from the lower left. No barrel, porthole, periscope or fin. Keep the size, waterline, thick black outline and style, nothing under the body.",
+        "editInstruction": "Turn the brass bathysphere into a living kraken at the surface: one big round deep indigo-blue head-body low in the water with one big glowing green eye at the front, five thick curling tentacles with cream suckers, two of them wearing a brass ring; lit from the lower left. No barrel, porthole, periscope or fin. Keep the size, waterline, thick black outline and style, nothing under the body.",
+        "source": {
+          "recipe": "cult-submarine-a",
+          "candidate": 0,
+          "sha256": "1405c22decf9025fcc86cb9ae68bc3e4f9fccb75f2e4cf8601f174167c923551"
+        }
+      },
+      "submittedAt": "2026-10-17T06:28:21.563Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-cult/kraken-a.png",
+      "rawSheetSha256": "8aa3b85aa89452a8dfb4e27e9345431620886d786de91c2a33a7a4af507fdb8f",
+      "plateHints": [
+        {
+          "bandRows": 10,
+          "groundShare": 0.1675,
+          "footprintWidthShare": 0.9853,
+          "suspect": false
+        },
+        {
+          "bandRows": 10,
+          "groundShare": 0.1675,
+          "footprintWidthShare": 0.9853,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-17T06:28:57.744Z",
+      "usageUsd": 0.008111603922314114,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Both candidates draw a second green eye on the left side of the head (the brief is one eye), and the head sits low between the raised tentacles; kraken-b is accepted.",
+        "reviewedAt": "2026-10-17T06:30:50.838Z"
+      }
+    },
+    "kraken-b": {
+      "id": "kraken-b",
+      "asset": "chibi-naval-cult-submarine",
+      "jobId": "650a5077-a46b-4ce7-a2fd-2fe06820528b",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-cult",
+        "asset": "chibi-naval-cult-submarine",
+        "subject": "UNIT:CULT:SUBMARINE",
+        "faction": "CULT",
+        "recipeClass": "ship",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 99702,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Turn the gondola into a living kraken at the surface: one big round deep indigo-blue head-body low in the water with one big glowing green eye at the front, five thick curling tentacles with cream suckers, two of them wearing a brass ring; lit from the lower left. No boat, mast, sail or lantern. Keep the size, waterline, thick black outline and style, nothing under the body."
+          }
+        ],
+        "prompt": "Turn the gondola into a living kraken at the surface: one big round deep indigo-blue head-body low in the water with one big glowing green eye at the front, five thick curling tentacles with cream suckers, two of them wearing a brass ring; lit from the lower left. No boat, mast, sail or lantern. Keep the size, waterline, thick black outline and style, nothing under the body.",
+        "negativePrompt": "",
+        "description": "Turn the gondola into a living kraken at the surface: one big round deep indigo-blue head-body low in the water with one big glowing green eye at the front, five thick curling tentacles with cream suckers, two of them wearing a brass ring; lit from the lower left. No boat, mast, sail or lantern. Keep the size, waterline, thick black outline and style, nothing under the body.",
+        "editInstruction": "Turn the gondola into a living kraken at the surface: one big round deep indigo-blue head-body low in the water with one big glowing green eye at the front, five thick curling tentacles with cream suckers, two of them wearing a brass ring; lit from the lower left. No boat, mast, sail or lantern. Keep the size, waterline, thick black outline and style, nothing under the body.",
+        "source": {
+          "recipe": "cult-patrol-boat-a",
+          "candidate": 0,
+          "sibling": true,
+          "sha256": "77c2216351631a585e4339b3f39f8242b131c9e3e774f39fce210b442ab6ae1d"
+        }
+      },
+      "submittedAt": "2026-10-17T06:28:57.751Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-cult/kraken-b.png",
+      "rawSheetSha256": "16181532f6bfa50f9a4659601bbe563b6f836164d331ded75fb812dd9cf5eb4a",
+      "plateHints": [
+        {
+          "bandRows": 10,
+          "groundShare": 0.1013,
+          "footprintWidthShare": 0.803,
+          "suspect": false
+        },
+        {
+          "bandRows": 10,
+          "groundShare": 0.1013,
+          "footprintWidthShare": 0.803,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-17T06:29:39.152Z",
+      "usageUsd": 0.008610348595513238,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Bead pulp_wars-5ti.22: the Kraken, a deep indigo kraken with one big glowing green eye, cream suckers and brass rings on two raised tentacles; reads at 1x as a sea beast, not a boat. kraken-a (both candidates) shows a second green eye on its left side.",
+        "reviewedAt": "2026-10-17T06:30:41.447Z"
+      }
+    },
+    "portrait-kraken-a": {
+      "id": "portrait-kraken-a",
+      "asset": "chibi-naval-cult-portrait-submarine",
+      "jobId": "53c5c5ad-098c-42cc-8547-a8c5c3973fa2",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-cult",
+        "asset": "chibi-naval-cult-portrait-submarine",
+        "subject": "PORTRAIT:CULT:SUBMARINE",
+        "faction": "CULT",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 99711,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Turn the brass bathysphere into a living kraken shown whole: one big round bulbous deep indigo-blue head-body with one single big round glowing bright green eye at the front and five thick curling tentacles with pale cream suckers, two of them each wearing one polished brass ring; lit from the lower left. No brass barrel, porthole or periscope. Keep the size, thick black outline and art style, with no water, on a transparent background."
+          }
+        ],
+        "prompt": "Turn the brass bathysphere into a living kraken shown whole: one big round bulbous deep indigo-blue head-body with one single big round glowing bright green eye at the front and five thick curling tentacles with pale cream suckers, two of them each wearing one polished brass ring; lit from the lower left. No brass barrel, porthole or periscope. Keep the size, thick black outline and art style, with no water, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Turn the brass bathysphere into a living kraken shown whole: one big round bulbous deep indigo-blue head-body with one single big round glowing bright green eye at the front and five thick curling tentacles with pale cream suckers, two of them each wearing one polished brass ring; lit from the lower left. No brass barrel, porthole or periscope. Keep the size, thick black outline and art style, with no water, on a transparent background.",
+        "editInstruction": "Turn the brass bathysphere into a living kraken shown whole: one big round bulbous deep indigo-blue head-body with one single big round glowing bright green eye at the front and five thick curling tentacles with pale cream suckers, two of them each wearing one polished brass ring; lit from the lower left. No brass barrel, porthole or periscope. Keep the size, thick black outline and art style, with no water, on a transparent background.",
+        "source": {
+          "recipe": "cult-portrait-submarine-a",
+          "candidate": 0,
+          "sha256": "86c78d2ccb600cf9314174b32d3d32733e5fb6f718e6f62e4feddc12a1d93a87"
+        }
+      },
+      "submittedAt": "2026-10-17T06:29:39.159Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-cult/portrait-kraken-a.png",
+      "rawSheetSha256": "aa542eb21ad5fc6dd1cafb235d9e4695a601822c509fb24425f1bca14edd604d",
+      "plateHints": [
+        {
+          "bandRows": 7,
+          "groundShare": 0.0291,
+          "footprintWidthShare": 0.925,
+          "suspect": false
+        },
+        {
+          "bandRows": 7,
+          "groundShare": 0.0291,
+          "footprintWidthShare": 0.925,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-17T06:30:20.247Z",
+      "usageUsd": 0.008427837583753798,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Bead pulp_wars-5ti.22: the Kraken portrait, the map sprite's indigo kraken with one green eye and brass rings on two tentacles; reads at 48 px.",
+        "reviewedAt": "2026-10-17T06:30:50.962Z"
       }
     }
   },
@@ -559,6 +937,113 @@
       },
       "notes": "The Cult galleon at the first edit of the shared carrack: an indigo hull with brass trim, cream sails with indigo spiral signs, a brass dome in place of the stone tower, green lanterns and a green pennant; 71 x 79 px on the shared ship's rows 6 to 84, 3% green, no red or violet pixel. Reviewed at 1:1 and x4 on both waters and in greyscale beside the Undead and the shared ship.",
       "acceptedAt": "2026-10-10T10:17:49.139Z"
+    },
+    "chibi-naval-cult-icon-tech-seamanship": {
+      "id": "chibi-naval-cult-icon-tech-seamanship",
+      "subject": "ICON:TECH:CULT:SEAMANSHIP",
+      "assetClass": "ICON",
+      "status": "ACCEPTED",
+      "recipe": "icon-tech-offerings-a",
+      "candidate": 0,
+      "candidateSha256": "bef128ffa65815aac3f9ba40914156139c0218ef05b2a6873909593d732a63fd",
+      "master": {
+        "path": "public/assets/chibi/icons/chibi-naval-cult-icon-tech-seamanship.png",
+        "sha256": "d2cc1cdc412978bdc4059247f906eb9a55936d9438cee4280c61c3af2c4de157",
+        "pixelSha256": "6daad4899b03486d7d380bab0c7bc4bdeb5a5cb95ab4066d7076d9c6477bd299",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is",
+        "accent": {
+          "preset": "cult-lodge-icon",
+          "spec": {
+            "band": {
+              "hueFrom": 66,
+              "hueTo": 152,
+              "saturationMin": 0.5,
+              "valueMin": 0.45,
+              "hueCentre": 120
+            },
+            "hue": 148,
+            "hueSpread": 0.07,
+            "then": {
+              "band": {
+                "hueFrom": 196,
+                "hueTo": 262,
+                "saturationMin": 0.45,
+                "valueMin": 0.14,
+                "hueCentre": 238
+              },
+              "hue": 244,
+              "hueSpread": 0.3,
+              "saturation": {
+                "scale": 1,
+                "add": 0,
+                "max": 0.6
+              },
+              "value": {
+                "scale": 0.5,
+                "add": 0.42
+              },
+              "then": {
+                "band": {
+                  "hueFrom": 262,
+                  "hueTo": 345,
+                  "saturationMin": 0.3,
+                  "valueMin": 0.14,
+                  "hueCentre": 300
+                },
+                "hue": 244,
+                "hueSpread": 0,
+                "then": {
+                  "band": {
+                    "hueFrom": 345,
+                    "hueTo": 12,
+                    "saturationMin": 0.5,
+                    "valueMin": 0.35,
+                    "hueCentre": 0
+                  },
+                  "hue": 28,
+                  "hueSpread": 0,
+                  "saturation": {
+                    "scale": 0.8,
+                    "add": 0,
+                    "max": 0.8
+                  }
+                }
+              }
+            }
+          },
+          "accentPixels": 33,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 7,
+        "groundShare": 0,
+        "footprintWidthShare": 1,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Bead pulp_wars-5ti.22: Offerings to the Deep, a cream candle with a green flame on a curling indigo wave; reads at 48 px on light and dark cards.",
+      "acceptedAt": "2026-10-17T06:32:25.165Z"
     },
     "chibi-naval-cult-patrol-boat": {
       "id": "chibi-naval-cult-patrol-boat",
@@ -859,13 +1344,13 @@
       "subject": "PORTRAIT:CULT:SUBMARINE",
       "assetClass": "PORTRAIT",
       "status": "ACCEPTED",
-      "recipe": "cult-portrait-submarine-a",
+      "recipe": "portrait-kraken-a",
       "candidate": 0,
-      "candidateSha256": "86c78d2ccb600cf9314174b32d3d32733e5fb6f718e6f62e4feddc12a1d93a87",
+      "candidateSha256": "2ec798d2a665fa164be3bd58bf3ecb98465f90d681823cdc2bb1a366b14e8118",
       "master": {
         "path": "public/assets/chibi/portraits/chibi-naval-cult-portrait-submarine.png",
-        "sha256": "21fcf188cc380f8a21b3c1288c26c9203b650b4330ca906c8754feb264b6a64d",
-        "pixelSha256": "5a7612c35abc4c56ec9e5ac47a2b358ad3e3fa8527007c5e9e5c3974edb93eb2",
+        "sha256": "65b64048228655b244f5fc9bc1ce701c07b378b9bbdaaa53294c84a358144752",
+        "pixelSha256": "7da2190f250829739e4a3cbb513c54e7fbba6acf69e1de0235d9e68cb8a162dd",
         "width": 48,
         "height": 48
       },
@@ -931,7 +1416,7 @@
               }
             }
           },
-          "accentPixels": 50,
+          "accentPixels": 13,
           "trimPixels": 0
         }
       },
@@ -947,9 +1432,9 @@
       },
       "plateCheck": {
         "bandRows": 7,
-        "groundShare": 0.7233,
-        "footprintWidthShare": 0.8537,
-        "suspect": true
+        "groundShare": 0.0291,
+        "footprintWidthShare": 0.925,
+        "suspect": false
       },
       "reviewChecks": {
         "native": true,
@@ -958,21 +1443,21 @@
         "noPlate": true,
         "camera": true
       },
-      "notes": "The Cult Submarine's portrait at the first sibling edit of the Patrol Boat's: a fat riveted brass bathysphere with one big green porthole, a short periscope and an indigo tail fin, as the map sprite. No red or violet. Reviewed at 1:1 and x6 on the cream plates beside the sprite.",
-      "acceptedAt": "2026-10-10T12:01:08.297Z"
+      "notes": "Bead pulp_wars-5ti.22: the Kraken portrait, the map sprite's indigo kraken with one green eye and brass rings on two tentacles; reads at 48 px.",
+      "acceptedAt": "2026-10-17T06:30:50.962Z"
     },
     "chibi-naval-cult-submarine": {
       "id": "chibi-naval-cult-submarine",
       "subject": "UNIT:CULT:SUBMARINE",
       "assetClass": "LARGE_UNIT",
       "status": "ACCEPTED",
-      "recipe": "cult-submarine-a",
+      "recipe": "kraken-b",
       "candidate": 0,
-      "candidateSha256": "1405c22decf9025fcc86cb9ae68bc3e4f9fccb75f2e4cf8601f174167c923551",
+      "candidateSha256": "02245c3f0f90726a8f5127846cb248d907e198139752ac11094ae6f5e151b9f5",
       "master": {
         "path": "public/assets/chibi/units/chibi-naval-cult-submarine.png",
-        "sha256": "863b30bc90d84826cb2fa28fc9e28ffa6bb5136a94d036750b02045bd111ddd4",
-        "pixelSha256": "d8e0a5bf30ca17fb42530e452f4d45c0df205664d645b607c9841357c3d52717",
+        "sha256": "52b63a1000dab22929bf07a39043c2dc2467887f8c3b10180faeb4f7568a0b5d",
+        "pixelSha256": "f573d27f33d0e4dd98c64beb3f6addf87a40ca5ad658ac8c2083e949b2c6ea4a",
         "width": 72,
         "height": 88
       },
@@ -1014,7 +1499,7 @@
               }
             }
           },
-          "accentPixels": 71,
+          "accentPixels": 54,
           "trimPixels": 0
         }
       },
@@ -1035,8 +1520,8 @@
         "noPlate": true,
         "camera": true
       },
-      "notes": "The Cult Submarine at the first edit of the accepted gondola: a fat riveted brass bathysphere barrel with one big green-lit porthole, a short periscope and an indigo tail fin, no mast and no sail; 61 x 52 px, seated 8 px above the canvas bottom like the other Submarines, 4% green, no red or violet pixel. The periscope carries no painted eye. Reviewed at 1:1 and x4 on both waters and in greyscale beside the Undead and Dwarf Submarines.",
-      "acceptedAt": "2026-10-10T10:19:57.721Z"
+      "notes": "Bead pulp_wars-5ti.22: the Kraken, a deep indigo kraken with one big glowing green eye, cream suckers and brass rings on two raised tentacles; reads at 1x as a sea beast, not a boat. kraken-a (both candidates) shows a second green eye on its left side.",
+      "acceptedAt": "2026-10-17T06:30:41.447Z"
     },
     "chibi-naval-cult-transport": {
       "id": "chibi-naval-cult-transport",

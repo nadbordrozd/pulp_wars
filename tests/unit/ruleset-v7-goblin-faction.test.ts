@@ -77,11 +77,11 @@ import {
 
 describe("ruleset-7 revision-17 identity", () => {
   it("keeps r16 among the prior identities after the r55 identity and cleans the r16 key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r97");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r97.current");
-    expect(PRIOR_RULESET_7_IDS.at(-81)).toBe("pulp-wars-poc-7r16");
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(96);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-81)).toBe(
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r98");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r98.current");
+    expect(PRIOR_RULESET_7_IDS.at(-82)).toBe("pulp-wars-poc-7r16");
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(97);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-82)).toBe(
       "pulpWars.save.v7r16.current",
     );
     const storage = new MemoryStorage([
@@ -907,6 +907,11 @@ describe("ruleset-7 Goblin technology", () => {
         METALLURGY: "Gibbering Masses",
         FORTIFICATION: "Warding Circles",
         EXPLOSIVES: "The Stars Are Right",
+        // Themed naval branches, the Deep Ones (`pulp_wars-5ti.22`).
+        SHORECRAFT: "Black Gondolas",
+        NAVAL_ENGINEERING: "Galleons of the Eye",
+        SEAMANSHIP: "Offerings to the Deep",
+        SUBMERSIBLES: "The Kraken",
       },
     });
     const state = goblinArenaV7(

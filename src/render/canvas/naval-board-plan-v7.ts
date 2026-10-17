@@ -214,8 +214,11 @@ export function navalAttackTargetExtrasV7(
    */
   options: { readonly unansweredNoted?: boolean } = {},
 ): NavalAttackTargetExtrasV7 | null {
-  if (preview === null || (!preview.ram && !preview.torpedo)) return null;
+  if (preview === null) return null;
   const lines = navalCombatLinesV7(view, preview);
+  // Themed naval branches (`pulp_wars-5ti.22`): an Offering's Favour is a
+  // naval line of any attack that sinks a unit afloat.
+  if (!preview.ram && !preview.torpedo && lines.notes.length === 0) return null;
   const notes =
     options.unansweredNoted === true
       ? lines.notes.filter((note) => note !== TORPEDO_PREVIEW_V7)

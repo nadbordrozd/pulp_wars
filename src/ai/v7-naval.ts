@@ -4,6 +4,7 @@ import {
   RAM_BONUS2_V7,
   attackIsTorpedoV7,
   attackPlaguesV7,
+  deepOfferingOfV7,
   seatRoleRuleV7,
   isIceAtV7,
   technologyCapabilitiesV7,
@@ -20,6 +21,7 @@ import type { CombatPreviewV7 } from "../engine/v7/events";
 import {
   previewAttackExplosionsV7,
   previewBoardV7,
+  previewDeepOfferingsV7,
   queryCombatPreviewV7,
 } from "../engine/v7/query";
 import type {
@@ -376,6 +378,37 @@ export function drownedCrewRisingTenthsV7(
   return safe ? half : Math.floor((half * NAVAL_BOARD_DOOMED_TENTHS_V7) / 10);
 }
 
+// --- Offerings to the Deep ---------------------------------------------------------
+
+/**
+ * Themed naval branches, the Deep Ones
+ * (docs/product/RULESET_7_NAVAL_FACTIONS.md section 9.6,
+ * `pulp_wars-5ti.22`): what a Favour is worth, in tenths of a Coin. One
+ * Coin: the Cult policy turns spare Coins into Favour at that rate (an
+ * Initiate trained for 2 Coins and Sacrificed pays 2 Favour).
+ */
+export const NAVAL_FAVOUR_TENTHS_V7 = 10;
+
+/**
+ * Offerings to the Deep: what the Favour of an own ship's kill afloat is
+ * worth, in tenths of a Coin (`NAVAL_FAVOUR_TENTHS_V7` a Favour). 0 unless
+ * `preview` (the exact preview of the own `killer`'s attack, in `view`)
+ * pays the viewer an Offering (`previewDeepOfferingsV7`); only the part
+ * below the cap of 30 counts, so a seat at the cap values the kill alone.
+ */
+export function deepOfferingTenthsV7(
+  view: PlayerViewV7,
+  killer: PublicUnitV7,
+  preview: CombatPreviewV7,
+): number {
+  if (killer.ownerId !== view.viewer.id || killer.form !== "NAVAL") return 0;
+  let favour = 0;
+  for (const side of previewDeepOfferingsV7(view, preview))
+    if (side.playerId === view.viewer.id && side.killer === "ATTACKER")
+      favour += side.favour - side.forfeited;
+  return favour * NAVAL_FAVOUR_TENTHS_V7;
+}
+
 // --- Board -----------------------------------------------------------------------
 
 /** The value of an exchange in tenths of a Coin: what the target loses less what the attacker loses. */
@@ -673,7 +706,10 @@ export function navalRamApproachV7(
             { ...actor, at: to },
             preview,
           )
-        : 0);
+        : 0) +
+      // Themed naval branches (`pulp_wars-5ti.22`): what a Cult boat
+      // sinks feeds the deep.
+      deepOfferingTenthsV7(view, actor, preview);
     if (exchange <= 0) continue;
     const value =
       exchange +
@@ -1034,6 +1070,9 @@ export function navalBattleshipStationValueV7(
   const crew =
     rule.abilities.includes("DROWNED_CREW") &&
     unitCapabilitiesV7(view, actor, view.viewer.researchedTechs).drownedCrews;
+  // Themed naval branches (`pulp_wars-5ti.22`): a Galleon of the Eye's kill
+  // afloat pays Favour.
+  const offering = deepOfferingOfV7(view, actor, view.viewer.researchedTechs);
   const station = (at: CoordV7): number => {
     if (facts.hostileSubmarines.some((sub) => tools.reaches(sub, at))) return 0;
     const targets = hostiles.filter((unit) => {
@@ -1061,7 +1100,7 @@ export function navalBattleshipStationValueV7(
         )
       : 0;
     let rising = 0;
-    if (crew) {
+    if (crew || offering) {
       const there = tools.project(view, actor.id, {
         at,
         activation: {
@@ -1074,12 +1113,18 @@ export function navalBattleshipStationValueV7(
       });
       const moved = there.units.find((unit) => unit.id === actor.id);
       for (const target of targets) {
-        if (target.form !== "NAVAL" || moved === undefined) continue;
+        if (
+          moved === undefined ||
+          (target.form !== "NAVAL" && !(offering && target.form === "EMBARKED"))
+        )
+          continue;
         const shot = queryCombatPreviewV7(there, actor.id, target.id);
         if (shot?.defenderInfected === true)
           rising += Math.floor(
             drownedCrewRisingTenthsV7(there, tools, moved, shot) / 5,
           );
+        if (shot !== null && offering)
+          rising += Math.floor(deepOfferingTenthsV7(there, moved, shot) / 5);
       }
     }
     return (
