@@ -49,6 +49,25 @@ The dock never lists one button, portrait or chip per target.
   "Freeze", "Stays Frozen", "Take · 5 HP") come from the engine's public previews and stand
   in the label at the target, as an attack's "Deal 4 · take 2" does. The
   focused or hovered target adds its ghosts, paths and rings.
+- **Lethal preview** (bead `pulp_wars-2yc.81`, UI review V9; code
+  `src/render/canvas/hp-loss-preview-v7.ts`). An attack whose preview kills
+  (`defenderDies`) reads "Deal 3 · KO", with a small pixel skull in front
+  of "KO" and the label on the lethal red of the ability labels; the
+  "take" part stays only when something still hurts the attacker (a Shock
+  Field: "Deal 3 · KO · take 2"). A strike-back that kills the attacker
+  (`attackerDies`) adds "Lost" the same way ("Deal 1 · take 5 · Lost"); a
+  Shatter keeps "Shatters" with the skull. The HP bars show what each unit
+  would lose, from the same preview: a cream segment with loss-red
+  diagonal stripes from the HP left to the HP now (the whole fill for a
+  kill), a 1 px ink divider where the solid remainder ends, pulsing slowly
+  (about 1.2 s; steady under Reduced motion); a bar the look hides at full
+  health shows for it. Every attack target shows its own chunk; the
+  focused or hovered target (or the only one) adds the attacker's
+  strike-back chunk and each splash, Pierce, Sweep and crush victim's. The
+  live look's bar on the base sits under the attack label, so the label
+  carries the target's bar with its chunk in a row above its text. The
+  semantic label adds "The target is knocked out." and "The attacker is
+  lost to the strike-back."
 - **Keyboard.** Tab and Shift+Tab on the board step through the targets in
   reading order: an armed ability's targets, or, with nothing armed, the
   units the selection may attack, heal or hatch (plain Move tiles are

@@ -347,7 +347,8 @@ describe("the Submarine", () => {
     );
     // The Fighter on the shore next to it is not offered.
     expect(attacks.map((target) => target.at)).toEqual([NAVAL_UI_V7.torpedoed]);
-    expect(required(attacks[0]).previewLabel).toMatch(/^Deal \d+ · take 0$/);
+    // Bead pulp_wars-2yc.81: the torpedo kills, so nothing comes back.
+    expect(required(attacks[0]).previewLabel).toMatch(/^Deal \d+ · KO$/);
     app.destroy();
   });
 });

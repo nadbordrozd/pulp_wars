@@ -1,5 +1,18 @@
 import { advanceCombatNotesV7 } from "../technology-unlock-text-v7";
 import {
+  ATTACKER_LOST_LABEL_V7,
+  attackDamageLabelV7,
+  attackHpLossV7,
+  attackLethalSemanticV7,
+  drawFullHpBarV7,
+  drawHpLossChunkV7,
+  hpBarFrameV7,
+  hpLossChunksV7,
+  hpLossPulseAlphaV7,
+  LETHAL_LABEL_FILL_V7,
+  type HpLossPreviewV7,
+} from "./hp-loss-preview-v7";
+import {
   EMBARKED_UNIT_ART_KEY_V7,
   FOREST_TERRAIN_KEY_PREFIX_V7,
   IMPROVEMENT_ART_KEYS_V7,
@@ -795,6 +808,17 @@ export interface MapCommandTargetV7 {
    */
   readonly highlight?: TargetHighlightStyleV7;
   readonly previewLabel?: string;
+  /**
+   * Bead pulp_wars-2yc.81 (UI review V9): the label kills. The ` · ` parts
+   * of `previewLabel` a small skull stands in front of ("KO", "Lost",
+   * "Shatters"); the label is drawn on the lethal red.
+   */
+  readonly previewSkullBefore?: readonly string[];
+  /**
+   * Bead pulp_wars-2yc.81: the HP each unit would lose, from the exact
+   * preview, drawn as a chunk of its HP bar (hp-loss-preview-v7.ts).
+   */
+  readonly hpLoss?: readonly HpLossPreviewV7[];
   readonly semanticLabel?: string;
   /**
    * Map curiosities (bead pulp_wars-737.6): this Move ends next to a
@@ -2782,6 +2806,12 @@ export function drawBoardV7(input: {
    */
   readonly controlPulseTimeMs?: number;
   /**
+   * Bead pulp_wars-2yc.81: the clock of the HP chunks' pulse in ms (the
+   * chunk an aimed attack would take off each HP bar). Reduced motion
+   * draws them steady.
+   */
+  readonly hpLossPulseTimeMs?: number;
+  /**
    * The Candy revision (bead pulp_wars-jdb.6): the faded copy of a Crashed
    * unit's sprite (the host's sprite saturation cache). Omitted, a Crashed
    * unit's sprite is drawn a little fainter instead.
@@ -3083,6 +3113,16 @@ export function drawBoardV7(input: {
   // Shield bar and clockwork gear on it), drawn after every piece's status
   // marks and the Cult's channel marks, so no status art covers it.
   const deferredHpBars: (() => void)[] = [];
+  // Bead pulp_wars-2yc.81 (UI review V9): the chunk an aimed attack would
+  // take off each HP bar, pulsing (steady under reduced motion).
+  const hpLossChunks = hpLossChunksV7(
+    input.plan.targets,
+    input.previewFocus ?? null,
+  );
+  const hpLossAlpha = hpLossPulseAlphaV7(
+    input.hpLossPulseTimeMs ?? 0,
+    input.reducedMotion ?? false,
+  );
   // A Barricade's HP goes over the target marks (bead pulp_wars-eu3r.9).
   const deferredBarricadeHp: (() => void)[] = [];
   // The cells a unit stands on (for a curiosity's corner badge).
@@ -5122,6 +5162,51 @@ export function drawBoardV7(input: {
                 input.highContrast ?? false,
               );
             }
+            // Bead pulp_wars-2yc.81 (UI review V9): the HP this unit would
+            // lose to the aimed attack, a hatched chunk of its bar; a bar
+            // the look hides at full health shows for it.
+            const hpLoss = hpLossChunks.get(entry.key);
+            if (
+              hpLoss !== undefined &&
+              entry.kind === "UNIT" &&
+              entry.hp !== undefined &&
+              entry.maxHp !== undefined
+            ) {
+              const directedBar =
+                directed?.hp === true && direction !== undefined;
+              const look = directedBar
+                ? direction.chrome.hpPlacement === "SIDE"
+                  ? "SIDE"
+                  : "BASE"
+                : chibiPiece
+                  ? "SIDE"
+                  : "LEGACY";
+              const bar = hpBarFrameV7(
+                look,
+                x,
+                y,
+                camera.zoom,
+                directedBar && directedGarrison,
+              );
+              const shown = directedBar
+                ? direction.chrome.hp === "ALWAYS" || entry.hp < entry.maxHp
+                : entry.egg === undefined || entry.hp < entry.maxHp;
+              const shatterBarDrawn =
+                (entry.iceFolk?.shatterWindow ?? null) !== null;
+              if (!shown && !shatterBarDrawn) drawFullHpBarV7(context, bar);
+              drawHpLossChunkV7(
+                context,
+                bar,
+                entry.hp,
+                entry.maxHp,
+                hpLoss.damage,
+                {
+                  alpha: hpLossAlpha,
+                  zoom: camera.zoom,
+                  highContrast: input.highContrast ?? false,
+                },
+              );
+            }
             // The Martian revision (section 13.1): the segmented Shield bar,
             // with the HP bar of the look: under a stand-in's plain bar, beside
             // the classic side bar, or on the live look's base.
@@ -5608,6 +5693,7 @@ export function drawBoardV7(input: {
       defer,
       focusNoteAt !== undefined && same(focusNoteAt, target.at),
       input.highContrast ?? false,
+      hpLossAlpha,
     );
     // Map curiosities: a Move that ends next to the Spider carries the
     // provoked marker in the tile's top-right corner.
@@ -5954,6 +6040,8 @@ function drawMapTarget(
   /** The Martian revision: this target also shows `previewFocusNote`. */
   focused = false,
   highContrast = false,
+  /** Bead pulp_wars-2yc.81: the HP chunk's pulse this frame. */
+  hpLossAlpha = 1,
 ): void {
   const x = camera.offsetX + entry.at.x * TILE_WIDTH * camera.zoom;
   const y = camera.offsetY + entry.at.y * TILE_HEIGHT * camera.zoom;
@@ -6013,12 +6101,30 @@ function drawMapTarget(
     );
   }
   const target = entry.target;
+  // Bead pulp_wars-2yc.81: a label that kills is on the lethal red, with a
+  // skull in front of its "KO" (or "Lost", "Shatters").
+  const skullBefore = target?.previewSkullBefore ?? [];
+  // The label covers the live look's HP bar on the base, so it carries the
+  // target's bar with the chunk the attack would take.
+  const ownLoss = target?.hpLoss?.find((loss) => loss.role === "TARGET");
+  const hpBar =
+    ownLoss?.hp === undefined || ownLoss.maxHp === undefined
+      ? undefined
+      : {
+          hp: ownLoss.hp,
+          maxHp: ownLoss.maxHp,
+          damage: ownLoss.damage,
+          alpha: hpLossAlpha,
+          highContrast,
+        };
   const labelBox = (text: string): PreviewTextBoxV7 => ({
     text,
-    fill: "#171722dd",
+    fill: skullBefore.length > 0 ? LETHAL_LABEL_FILL_V7 : "#171722dd",
     color: "#fff8df",
     lineBox: 1.8,
     baseline: 1.3,
+    ...(skullBefore.length > 0 ? { skullBefore } : {}),
+    ...(hpBar === undefined ? {} : { hpBar }),
   });
   const warningBox = (text: string): PreviewTextBoxV7 => ({
     text,
@@ -7997,26 +8103,70 @@ function commandMapTargets(
           : friendlySplash.size > 0
             ? ` Splash affects ${preview.splash.length} adjacent ${preview.splash.length === 1 ? "unit" : "units"} (${friendlySplash.size} yours) for ${preview.splash.map((item) => `${item.damage}${item.dies ? " lethal" : ""}`).join(" and ")}.`
             : ` Splash affects ${preview.splash.length} adjacent hostile units for ${preview.splash.map((item) => `${item.damage}${item.dies ? " lethal" : ""}`).join(" and ")}.`;
+      // Bead pulp_wars-2yc.81 (UI review V9): "Deal 3 · KO" with a skull
+      // when the hit kills, "Lost" when the strike-back kills the
+      // attacker, and the HP chunk each unit would lose.
+      const damageLabel =
+        preview === null ? null : attackDamageLabelV7(preview);
+      const skullBefore =
+        preview === null
+          ? []
+          : iceFolk?.shatters === true
+            ? [
+                SHATTERS_PREVIEW_V7,
+                ...(preview.attackerDies ? [ATTACKER_LOST_LABEL_V7] : []),
+              ]
+            : (damageLabel?.skullBefore ?? []);
+      const crushVictim =
+        crushBlocker === null
+          ? undefined
+          : view.units.find((unit) => same(unit.at, crushBlocker.at));
+      const hpLoss =
+        preview === null || attacker === undefined
+          ? []
+          : attackHpLossV7(
+              preview,
+              attacker.at,
+              target.at,
+              crushVictim === undefined || preview.collisionDamage <= 0
+                ? []
+                : [
+                    {
+                      unitId: crushVictim.id,
+                      at: crushVictim.at,
+                      damage: Math.min(crushVictim.hp, preview.collisionDamage),
+                      lethal: crushBlocker?.lethal === true,
+                      role: "OTHER",
+                    },
+                  ],
+              { hp: target.hp, maxHp: target.maxHp },
+            );
+      const lethalSemantic =
+        preview === null ? "" : attackLethalSemanticV7(preview);
       return [
         {
           at: target.at,
           command,
           family: "ATTACK",
           previewLabel:
-            preview === null
+            preview === null || damageLabel === null
               ? "Damage uncertain"
               : // The Ice Folk revision: "Shatters" in place of the damage
                 // and retaliation lines; a Sweep's flank hits are "sweep".
                 iceFolk?.shatters === true
-                ? `${SHATTERS_PREVIEW_V7}${iceFolk.sweep === undefined ? "" : ` · sweep ${iceFolk.sweep.length}`}`
+                ? `${SHATTERS_PREVIEW_V7}${preview.attackerDies ? ` · ${ATTACKER_LOST_LABEL_V7}` : ""}${iceFolk.sweep === undefined ? "" : ` · sweep ${iceFolk.sweep.length}`}`
                 : iceFolk?.sweep !== undefined
-                  ? `Deal ${preview.damageToDefender} · take ${preview.damageToAttacker} · sweep ${iceFolk.sweep.length}`
+                  ? `${damageLabel.text} · sweep ${iceFolk.sweep.length}`
                   : // The Martian revision: a Tripod's second hit is "pierce".
-                    `Deal ${preview.damageToDefender} · take ${preview.damageToAttacker}${martian?.pierce !== undefined ? ` · pierce ${preview.splash[0]?.damage ?? 0}` : preview.splash.length > 0 ? ` · splash ${preview.splash.reduce((sum, item) => sum + item.damage, 0)} to ${preview.splash.length}` : ""}`,
+                    `${damageLabel.text}${martian?.pierce !== undefined ? ` · pierce ${preview.splash[0]?.damage ?? 0}` : preview.splash.length > 0 ? ` · splash ${preview.splash.reduce((sum, item) => sum + item.damage, 0)} to ${preview.splash.length}` : ""}`,
+          ...(skullBefore.length === 0
+            ? {}
+            : { previewSkullBefore: skullBefore }),
+          ...(hpLoss.length === 0 ? {} : { hpLoss }),
           ...(preview === null
             ? {}
             : {
-                semanticLabel: `Attack preview. Defender fortification level ${preview.fortificationLevel}. Primary damage ${preview.damageToDefender}.${martian?.pierce === undefined && iceFolk?.sweep === undefined ? splashSentence : martian?.pierce === undefined ? "" : ` ${martian.pierce.note}.`}${semanticNote === null ? "" : ` ${semanticNote}`}${martian === null || martian.notes.length + martian.shooter.length === 0 ? "" : ` ${[...martian.notes, ...martian.shooter].join(". ")}.`}${iceFolk === null || iceFolk.semantic === null ? "" : ` ${iceFolk.semantic}`}${dwarf === null || dwarf.semantic === null ? "" : ` ${dwarf.semantic}`}${candy === null || candy.semantic === null ? "" : ` ${candy.semantic}`}${naval === null || naval.semantic === null ? "" : ` ${naval.semantic}`}`,
+                semanticLabel: `Attack preview. Defender fortification level ${preview.fortificationLevel}. Primary damage ${preview.damageToDefender}.${lethalSemantic === "" ? "" : ` ${lethalSemantic}`}${martian?.pierce === undefined && iceFolk?.sweep === undefined ? splashSentence : martian?.pierce === undefined ? "" : ` ${martian.pierce.note}.`}${semanticNote === null ? "" : ` ${semanticNote}`}${martian === null || martian.notes.length + martian.shooter.length === 0 ? "" : ` ${[...martian.notes, ...martian.shooter].join(". ")}.`}${iceFolk === null || iceFolk.semantic === null ? "" : ` ${iceFolk.semantic}`}${dwarf === null || dwarf.semantic === null ? "" : ` ${dwarf.semantic}`}${candy === null || candy.semantic === null ? "" : ` ${candy.semantic}`}${naval === null || naval.semantic === null ? "" : ` ${naval.semantic}`}`,
               }),
           ...(note === null ? {} : { previewNote: note }),
           // The Dwarf revision: the Gunner's and a construct's shooter

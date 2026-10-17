@@ -2599,6 +2599,9 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         // The Mind Control revision: the control halo's pulse (static for
         // reduced motion).
         controlPulseTimeMs: model.motion === "REDUCED" ? 0 : now,
+        // Bead pulp_wars-2yc.81: the aimed attack's HP chunks pulse (steady
+        // for reduced motion).
+        hpLossPulseTimeMs: model.motion === "REDUCED" ? 0 : now,
         feedback: this.feedback.boardFrame(view),
         selectionJump:
           jump === null
@@ -4907,13 +4910,17 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       if (!jumping) this.#selectionJump = null;
       // The Ice Folk revision: a visible Blizzard keeps its flakes falling
       // with a calm redraw about fifteen times a second (full motion only);
-      // the Mind Control revision: so does a visible controlled unit's halo.
+      // the Mind Control revision: so does a visible controlled unit's halo;
+      // bead pulp_wars-2yc.81: so do the HP chunks of an aimed attack.
       if (
         model.motion === "FULL" &&
         (model.view.board.tiles.some(
           (tile) => tile.explored && tile.blizzard === true,
         ) ||
-          (model.view.mindControlled ?? []).length > 0) &&
+          (model.view.mindControlled ?? []).length > 0 ||
+          this.#planFor(model.view, model.offeredCommands).targets.some(
+            (target) => (target.hpLoss?.length ?? 0) > 0,
+          )) &&
         typeof browser.setTimeout === "function"
       )
         this.#blizzardTimer = browser.setTimeout(() => {

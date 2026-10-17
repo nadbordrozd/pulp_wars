@@ -12,6 +12,14 @@ import {
   type PreviewLabelPlacerV7,
 } from "./preview-label-layout-v7";
 import { BOARD_LABEL_FONT_FAMILY_V7 } from "./board-label-font-v7";
+import {
+  drawLabelHpBarV7,
+  fillLabelLineWithSkullsV7,
+  labelHpBarRowV7,
+  labelSkullAdvanceV7,
+  labelSkullCountV7,
+  type LabelHpBarV7,
+} from "./hp-loss-preview-v7";
 
 export type AbilityPreviewStyleV7 =
   | "WAIL"
@@ -818,6 +826,17 @@ export interface PreviewTextBoxV7 {
   readonly lineBox: number;
   /** First baseline below the box top, in fonts. */
   readonly baseline: number;
+  /**
+   * Bead pulp_wars-2yc.81: the ` · ` parts of the text a small skull is
+   * drawn in front of (a lethal attack's "KO" or "Lost").
+   */
+  readonly skullBefore?: readonly string[];
+  /**
+   * Bead pulp_wars-2yc.81: the HP bar of the target, with the chunk the
+   * attack would take, in a row at the top of the box (the label covers
+   * the live look's bar on the base).
+   */
+  readonly hpBar?: LabelHpBarV7;
 }
 
 /**
@@ -854,14 +873,23 @@ export function drawPreviewTextStackV7(
   // at the smallest zooms a long attack label wraps instead of spanning
   // three cells and colliding with its neighbours' labels.
   const wrapWidth = Math.max(90 * zoom, 1.5 * cell);
+  const barRow = labelHpBarRowV7(font);
   const laidStacks = stacks.map((boxes) => {
     const laid = boxes.map((box) => {
-      const lines = wrapPreviewTextV7(box.text, wrapWidth, measure);
+      // Bead pulp_wars-2yc.81: a skull widens its line.
+      const skulls = box.skullBefore ?? [];
+      const measureBox = (line: string): number =>
+        measure(line) +
+        labelSkullCountV7(line, skulls) * labelSkullAdvanceV7(font);
+      const lines = wrapPreviewTextV7(box.text, wrapWidth, measureBox);
       return {
         box,
         lines,
-        width: Math.max(90 * zoom, Math.max(...lines.map(measure)) + font),
-        height: font * box.lineBox + (lines.length - 1) * lineStep,
+        width: Math.max(90 * zoom, Math.max(...lines.map(measureBox)) + font),
+        height:
+          font * box.lineBox +
+          (lines.length - 1) * lineStep +
+          (box.hpBar === undefined ? 0 : barRow.bar + barRow.gap),
       };
     });
     const width = Math.max(...laid.map((entry) => entry.width));
@@ -895,14 +923,33 @@ export function drawPreviewTextStackV7(
   for (const entry of stack.laid) {
     context.fillStyle = entry.box.fill;
     context.fillRect(centre - entry.width / 2, top, entry.width, entry.height);
+    // Bead pulp_wars-2yc.81: the target's HP bar first, then the text.
+    const bar = entry.box.hpBar;
+    const barHeight = bar === undefined ? 0 : barRow.bar + barRow.gap;
+    if (bar !== undefined)
+      drawLabelHpBarV7(
+        context,
+        {
+          x: centre - entry.width / 2 + font * 0.5,
+          y: top + barRow.gap,
+          width: entry.width - font,
+          height: barRow.bar,
+        },
+        bar,
+        zoom,
+      );
+    top += barHeight;
     context.fillStyle = entry.box.color;
     for (const [index, line] of entry.lines.entries())
-      context.fillText(
+      fillLabelLineWithSkullsV7(
+        context,
         line,
         centre,
         top + font * entry.box.baseline + index * lineStep,
+        font,
+        entry.box.skullBefore ?? [],
       );
-    top += entry.height;
+    top += entry.height - barHeight;
   }
   context.restore();
 }

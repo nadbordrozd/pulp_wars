@@ -444,7 +444,10 @@ describe("Revision 19 board plan", () => {
         unitAt(view, to).id,
       );
       if (preview === null) throw new Error("preview missing");
-      return `Deal ${preview.damageToDefender} · take ${preview.damageToAttacker}`;
+      // Bead pulp_wars-2yc.81: a kill with nothing back reads "KO".
+      return preview.defenderDies && preview.damageToAttacker === 0
+        ? `Deal ${preview.damageToDefender} · KO`
+        : `Deal ${preview.damageToDefender} · take ${preview.damageToAttacker}`;
     };
     expect(acid).toMatchObject({
       previewLabel: label(own, AT.spitter, AT.acidTarget),
@@ -469,7 +472,7 @@ describe("Revision 19 board plan", () => {
         .targets.filter((target) => target.family === "ATTACK")
         .map((target) => [target.at, target.previewLabel]),
     ).toEqual(eggLabels);
-    for (const [, text] of eggLabels) expect(text).toMatch(/ · take 0$/);
+    for (const [, text] of eggLabels) expect(text).toMatch(/ · (take 0|KO)$/);
   });
 });
 

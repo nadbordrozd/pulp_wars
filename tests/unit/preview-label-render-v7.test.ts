@@ -633,8 +633,10 @@ describe("dense Goblin preview labels never overlap (pulp_wars-0ao.12)", () => {
         `Attacker −${chucker + cart}`,
         `−${Math.min(chucker, 2)} · Wave 2`,
         `Yours −${cart}`,
+        // Bead pulp_wars-2yc.81: the hit kills, so the line reads "Deal 2 ·
+        // KO", drawn in parts around its skull.
         "Deal 2",
-        "take 0",
+        "KO",
         "Chain: 2 blasts",
         "3 yours hit",
       ]),
