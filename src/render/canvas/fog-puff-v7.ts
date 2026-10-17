@@ -238,21 +238,6 @@ export function fogPuffColoursV7(
 }
 
 /**
- * Bead pulp_wars-2yc.82 (UI review S1): a tap on a plain explored tile
- * (one that opens no dock) plays the same puff, lighter: a faint cream
- * dust, lit from the bottom left like the cloud, at GROUND_PUFF_ALPHA_V7
- * of the fog puff's alpha.
- */
-export const GROUND_PUFF_COLOURS_V7: FogPuffColoursV7 = {
-  body: [238, 230, 204],
-  lit: [255, 251, 236],
-  shade: [204, 192, 160],
-  cast: [70, 62, 44],
-};
-
-export const GROUND_PUFF_ALPHA_V7 = 0.55;
-
-/**
  * The puff's pixels: FOG_PUFF_RASTER_V7.width x height RGBA, transparent
  * but for the puffs. The puffs are one cloud: where they overlap they
  * merge, with one rim round all of them, and each pixel takes the alpha

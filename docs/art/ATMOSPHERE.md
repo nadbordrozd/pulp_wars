@@ -170,11 +170,12 @@ shows on the fog again once it moves off the tapped tile. `?fog-puff=0`
 (or `FOG_PUFF_ENABLED_V7`) turns the puff off; the box stays off.
 Frames: `npx tsx scripts/art/terrain-fog/review.ts puff <out-dir>`.
 
-**On plain ground** (bead `pulp_wars-2yc.82`, UI review S1): a tap on an
-explored tile that opens no dock (nothing on it to show or do) plays the
-same puff in a faint cream dust (`GROUND_PUFF_COLOURS_V7`, lit from the
-bottom left like the cloud) at 55 % of its alpha, and, after a pointer
-tap, draws no cursor box on the tile.
+**Only on the fog** (bead `pulp_wars-2yc.87`): the puff is the fog's
+alone. A tap on explored ground never puffs, even on a tile with nothing
+to build or outside the borders: it is selected with the box and opens
+its terrain dock. (Bead `pulp_wars-2yc.82` had played the puff in a faint
+cream dust on a plain explored tile and opened no dock there; the user
+asked for the dock back and the smoke kept to the fog.)
 
 ### The fog lifting on a reveal
 

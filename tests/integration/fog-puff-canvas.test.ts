@@ -234,22 +234,23 @@ describe("The fog puff on the board host", () => {
 });
 
 /**
- * Bead pulp_wars-2yc.82 (UI review S1): the app asks for a quiet tap when
- * the tapped tile opens no dock. On explored ground the same puff plays in
- * the faint dust colours; on the fog the fog's own puff stays; after a
- * pointer tap no cursor box is drawn on the tile, while the keyboard keeps
- * its cursor.
+ * Bead pulp_wars-2yc.82 (UI review S1), narrowed by pulp_wars-2yc.87: the
+ * app asks for a quiet tap only when the tapped tile is unexplored (it opens
+ * no dock). The fog's own puff plays; explored ground never puffs (there is
+ * no dust puff); after a pointer tap no cursor box is drawn on the fog tile,
+ * while the keyboard keeps its cursor. An explored tile tapped by pointer
+ * keeps its cursor box.
  */
-describe("The quiet tap on a plain tile", () => {
-  it("plays the puff in dust on explored ground", () => {
+describe("The quiet tap on the fog", () => {
+  it("plays no puff on explored ground, quiet tap or not", () => {
     const scene = setUp("FULL");
     scene.setNow(0);
-    scene.host.activate(scene.ground);
-    scene.host.quietTap(scene.ground);
-    expect(scene.effects.dataset.fogPuff).toBe("playing");
-    expect(scene.effects.dataset.fogPuffGround).toBe("true");
-    scene.step(FOG_PUFF_V7.durationMs + 1);
+    scene.tap(scene.ground);
     expect(scene.effects.dataset.fogPuff).toBeUndefined();
+    scene.host.quietTap(scene.ground);
+    expect(scene.effects.dataset.fogPuff).toBeUndefined();
+    expect(scene.effects.dataset.fogPuffGround).toBeUndefined();
+    expect(scene.frames.size).toBe(0);
     scene.host.destroy();
   });
 
@@ -263,24 +264,31 @@ describe("The quiet tap on a plain tile", () => {
     scene.host.destroy();
   });
 
-  it("draws no cursor box on a plain tile tapped by pointer, until the keyboard moves", () => {
+  it("keeps the cursor box on an explored tile tapped by pointer", () => {
     const scene = setUp("REDUCED");
-    // A tap the app keeps selected draws the cursor box as before.
-    scene.cursors.count = 0;
-    scene.tap(scene.ground);
-    expect(scene.cursors.count).toBeGreaterThan(0);
-    // The app answers a tap on a tile with no dock with a quiet tap.
-    scene.selections.mockImplementation(() =>
-      scene.host.quietTap(scene.ground),
-    );
     scene.cursors.count = 0;
     scene.tap(scene.ground);
     expect(scene.selections).toHaveBeenLastCalledWith({
       kind: "TILE",
       at: scene.ground,
     });
+    expect(scene.cursors.count).toBeGreaterThan(0);
+    scene.host.destroy();
+  });
+
+  it("draws no cursor box on a fog tile tapped by pointer, until the keyboard moves", () => {
+    const scene = setUp("REDUCED");
+    // The app answers a tap on the fog (no dock) with a quiet tap.
+    scene.selections.mockImplementation(() => scene.host.quietTap(scene.fog));
+    scene.cursors.count = 0;
+    scene.tap(scene.fog);
+    expect(scene.selections).toHaveBeenLastCalledWith({
+      kind: "TILE",
+      at: scene.fog,
+    });
     expect(scene.cursors.count).toBe(0);
     // The keyboard shows its cursor again.
+    scene.selections.mockReset();
     scene.board.dispatchEvent(
       new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true }),
     );
@@ -315,13 +323,11 @@ describe("The quiet tap on a plain tile", () => {
     scene.host.destroy();
   });
 
-  it("keeps the cursor box when the keyboard activates the tile", () => {
+  it("keeps the cursor box when the keyboard activates the fog", () => {
     const scene = setUp("REDUCED");
-    scene.selections.mockImplementation(() =>
-      scene.host.quietTap(scene.ground),
-    );
+    scene.selections.mockImplementation(() => scene.host.quietTap(scene.fog));
     scene.cursors.count = 0;
-    scene.host.activate(scene.ground);
+    scene.host.activate(scene.fog);
     expect(scene.cursors.count).toBeGreaterThan(0);
     scene.host.destroy();
   });

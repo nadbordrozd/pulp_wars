@@ -402,19 +402,25 @@ then the city to train in. Capture and End turn follow the sequence.
 From the UI review ([UI_REVIEW_2026_10.md](UI_REVIEW_2026_10.md), S1, S2
 and V10).
 
-- **A tile with nothing to show opens no dock.** A plain tile (bare
-  ground, a Forest, water or a road with no building, no resource the
-  viewer knows, no fact chip such as a Grave, a curiosity, ice, Snow,
-  Crumbs, a mound or a Barricade, and no action or research prompt) and an
-  unexplored tile open no dock and are not kept selected; a tap there also
-  lets go of a selected unit or city. The board answers the tap lightly:
-  the fog's puff on the fog, the same puff in a faint dust on explored
-  ground ([ATMOSPHERE.md](../art/ATMOSPHERE.md)), and no cursor box after
-  a pointer tap. The board's description still names the focused cell for
-  a screen reader. A tile with anything to show keeps its dock as before.
+- **Only the fog opens no dock.** An unexplored tile opens no dock and is
+  not kept selected; a tap there also lets go of a selected unit or city.
+  The board answers the tap with the fog's puff
+  ([ATMOSPHERE.md](../art/ATMOSPHERE.md)) and no cursor box after a
+  pointer tap. The board's description still names the focused cell for a
+  screen reader.
+- **An explored tile always opens its dock** (bead `pulp_wars-2yc.87`,
+  the user, 2026-10-17, partly reverting the first S1). A plain tile (bare
+  ground, a Forest, a Mountain, water or a road with no building, no
+  resource the viewer knows, no fact chip such as a Grave, a curiosity,
+  ice, Snow, Crumbs, a mound or a Barricade, and no action or research
+  prompt), whether the viewer lacks the technology to use it or it lies
+  outside their borders, is selected with the usual box and opens its
+  small dock naming the terrain ("MOUNTAIN", "GRASS"), as before
+  `2yc.82`. No puff plays on explored ground.
 - **A harvest deselects its tile.** When a tile action leaves the selected
   tile with nothing to show (a Harvest, a Hunt, a Fish), the dock closes
-  and the selection goes.
+  and the selection goes without a tap. A new tap on that tile opens its
+  plain terrain dock.
 - **The desktop dock fits its content.** Above 800 px every dock, with
   actions or without, is sized to its content and centred, up to the
   screen less its margins (at most 90rem); its action row wraps when it

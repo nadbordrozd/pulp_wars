@@ -1688,9 +1688,14 @@ export class Ruleset7DomAppView {
   #selection: BoardSelectionV7 | null = null;
   /**
    * Bead pulp_wars-2yc.82: the tile a board tap selected, until the next
-   * render; a tile that opens no dock gets the board's light tap cue.
+   * render; an unexplored tile (no dock) gets the board's fog-puff cue.
    */
   #tappedTile: CoordV7 | null = null;
+  /**
+   * Bead pulp_wars-2yc.87: the selected tile whose dock last showed more
+   * than its terrain, so a harvest that empties it can let it go.
+   */
+  #tileWithContent: CoordV7 | null = null;
   #screen: ScreenV7 = "MATCH";
   #selectedTech: TechnologyIdV7 | null = null;
   /** The pointers of the gesture on the technology screen, to tell a tap. */
@@ -4966,20 +4971,39 @@ export class Ruleset7DomAppView {
     const techGraphFocused =
       focusedBefore instanceof HTMLElement &&
       focusedBefore.matches(".v7-tech-graph");
-    const dock =
+    let dock =
       this.#selection === null ? null : this.#dock(view, this.#selection);
-    // Bead pulp_wars-2yc.82 (UI review S1): a tile with no dock (a plain
-    // tile, the fog, a tile a harvest has just emptied) is not kept
-    // selected, so the board draws no box on it. A tap there gets the
-    // board's light cue instead.
+    // Bead pulp_wars-2yc.82 (UI review S1), narrowed by pulp_wars-2yc.87:
+    // an unexplored tile opens no dock and is not kept selected, so the
+    // board draws no box on it; a tap there gets the fog's puff. An
+    // explored tile always opens its dock (a plain one names its terrain),
+    // except that a tile a tile action has just emptied (a Harvest, a
+    // Hunt, a Fish) is let go without a tap.
     const tapped = this.#tappedTile;
     this.#tappedTile = null;
-    if (dock === null && this.#selection?.kind === "TILE") {
-      const at = this.#selection.at;
+    const selectedTile =
+      this.#selection?.kind === "TILE" ? this.#selection.at : null;
+    const tappedHere =
+      tapped !== null && selectedTile !== null && same(tapped, selectedTile);
+    const emptied =
+      dock !== null &&
+      dock.dataset.plainTile === "true" &&
+      !tappedHere &&
+      selectedTile !== null &&
+      this.#tileWithContent !== null &&
+      same(this.#tileWithContent, selectedTile);
+    if (emptied) dock = null;
+    if (dock === null && selectedTile !== null) {
       this.#selection = null;
-      if (tapped !== null && same(tapped, at)) this.#boardHost.quietTap?.(at);
-      else this.#boardHost.releaseCursor?.(at);
+      if (tappedHere) this.#boardHost.quietTap?.(selectedTile);
+      else this.#boardHost.releaseCursor?.(selectedTile);
     }
+    this.#tileWithContent =
+      dock !== null &&
+      selectedTile !== null &&
+      dock.dataset.plainTile !== "true"
+        ? selectedTile
+        : null;
     if (dock !== null) {
       dock.dataset.v7Region = "dock";
       nextChildren.push(dock);
@@ -7200,9 +7224,9 @@ export class Ruleset7DomAppView {
         same(candidate.at, selection.at),
       );
       if (tile === undefined) return null;
-      // Bead pulp_wars-2yc.82 (UI review S1): a tile that offers nothing
-      // opens no dock; the render then clears the selection and the board
-      // gives the tap its light cue. The fog has nothing to show at all.
+      // Bead pulp_wars-2yc.82 (UI review S1): the fog has nothing to show,
+      // so it opens no dock; the render then clears the selection and the
+      // board answers the tap with the fog's puff.
       if (!tile.explored) return null;
       else {
         const asset =
@@ -7709,18 +7733,18 @@ export class Ruleset7DomAppView {
           (command) => "at" in command && same(command.at, tile.at),
           tileResearchPromptsV7(view, tile.at),
         );
-        // Bead pulp_wars-2yc.82 (UI review S1): a plain tile (bare ground,
-        // a Forest, water or a road, with no building, no resource the
-        // viewer knows, no fact chip and no action) would be a dock that
-        // only names its terrain: none opens. The board still says what
-        // the focused cell is to a screen reader.
+        // Bead pulp_wars-2yc.87 (partly reverting 2yc.82 S1): a plain tile
+        // (bare ground, a Forest, water or a road, with no building, no
+        // resource the viewer knows, no fact chip and no action) still
+        // opens its small dock naming the terrain. It is marked, so the
+        // render can let go of a tile a harvest has just emptied.
         if (
           tile.improvement === null &&
           (tile.resource === null || tile.resource === "UNKNOWN_RESOURCE") &&
           details.childElementCount === 0 &&
           dock.dataset.hasActions !== "true"
         )
-          return null;
+          dock.dataset.plainTile = "true";
       }
     }
     dock.append(close);

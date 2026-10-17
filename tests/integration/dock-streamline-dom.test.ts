@@ -27,9 +27,11 @@ import {
 import { checkedV7, initialV7 } from "../fixtures/v7-builders";
 
 /**
- * Bead pulp_wars-2yc.82 (UI review S1, V10): a tap on a plain tile or the
- * fog opens no dock and keeps no selection (the board gets a quiet tap
- * instead); a tile that has something to show keeps its dock; a harvest
+ * Bead pulp_wars-2yc.82 (UI review S1, V10), narrowed by pulp_wars-2yc.87:
+ * a tap on the fog opens no dock and keeps no selection (the board gets a
+ * quiet tap, its fog puff, instead); a tap on an explored plain tile opens
+ * its small terrain dock and keeps the selection, with no quiet tap (no
+ * dust puff); a tile that has something to show keeps its dock; a harvest
  * that empties the selected tile deselects it; End Turn glows with nothing
  * useful left, whether or not the coach runs.
  */
@@ -204,8 +206,8 @@ function scene(): {
   return { state, plain: plainTile.at, fog: fog.at, fruit: fruitTile.at };
 }
 
-describe("the dock of a tile with nothing to show (S1)", () => {
-  it("opens no dock on a plain tile, keeps no selection and asks for a quiet tap", () => {
+describe("the dock of a tile with nothing to show (S1, 2yc.87)", () => {
+  it("opens the terrain dock on a plain explored tile, keeps it selected and asks for no quiet tap", () => {
     const { state, plain } = scene();
     const view = viewForV7(state, state.humanPlayerId);
     // Nothing is offered on the plain tile (the fixture's own check).
@@ -214,11 +216,51 @@ describe("the dock of a tile with nothing to show (S1)", () => {
         (command) => "at" in command && same(command.at, plain),
       ),
     ).toBe(false);
-    const { app, host } = mount(snapshotOf(state));
+    const { app, host, publish } = mount(snapshotOf(state));
     host.callbacks?.onSelection({ kind: "TILE", at: plain });
-    expect(dock()).toBeNull();
-    expect(host.last?.interaction.selection).toBeNull();
-    expect(host.quiet).toEqual([plain]);
+    expect(dock()?.dataset.selectionKind).toBe("tile");
+    expect(dock()?.textContent?.toLowerCase()).toContain("grass");
+    expect(host.last?.interaction.selection).toEqual({
+      kind: "TILE",
+      at: plain,
+    });
+    expect(host.quiet).toEqual([]);
+    expect(host.released).toEqual([]);
+    // A later render (any accepted command) keeps the plain tile selected.
+    publish(snapshotOf(state));
+    expect(dock()?.dataset.selectionKind).toBe("tile");
+    expect(host.last?.interaction.selection).toEqual({
+      kind: "TILE",
+      at: plain,
+    });
+    expect(host.released).toEqual([]);
+    app.destroy();
+  });
+
+  it("opens the terrain dock on an explored tile outside the borders", () => {
+    const { state, plain } = scene();
+    const human = state.players.find(
+      (player) => player.id === state.humanPlayerId,
+    );
+    const outside = state.board.tiles.find(
+      (tile) =>
+        tile.territoryCityId === null &&
+        tile.site === null &&
+        tile.resource === null &&
+        tile.improvement === null &&
+        !same(tile.at, plain) &&
+        !state.units.some((unit) => same(unit.at, tile.at)) &&
+        human?.explored.some((cell) => same(cell, tile.at)) === true,
+    );
+    if (outside === undefined) throw new Error("no explored outside tile");
+    const { app, host } = mount(snapshotOf(state));
+    host.callbacks?.onSelection({ kind: "TILE", at: outside.at });
+    expect(dock()?.dataset.selectionKind).toBe("tile");
+    expect(host.last?.interaction.selection).toEqual({
+      kind: "TILE",
+      at: outside.at,
+    });
+    expect(host.quiet).toEqual([]);
     app.destroy();
   });
 
@@ -232,7 +274,7 @@ describe("the dock of a tile with nothing to show (S1)", () => {
     app.destroy();
   });
 
-  it("a tap on a plain tile also lets go of a selected unit", () => {
+  it("a tap on a plain tile moves the selection from a unit to the tile", () => {
     const { state, plain } = scene();
     const unit = state.units.find(
       (item) => item.ownerId === state.humanPlayerId,
@@ -242,8 +284,12 @@ describe("the dock of a tile with nothing to show (S1)", () => {
     host.callbacks?.onSelection({ kind: "UNIT", unitId: unit.id });
     expect(dock()).not.toBeNull();
     host.callbacks?.onSelection({ kind: "TILE", at: plain });
-    expect(dock()).toBeNull();
-    expect(host.last?.interaction.selection).toBeNull();
+    expect(dock()?.dataset.selectionKind).toBe("tile");
+    expect(host.last?.interaction.selection).toEqual({
+      kind: "TILE",
+      at: plain,
+    });
+    expect(host.quiet).toEqual([]);
     app.destroy();
   });
 
@@ -274,6 +320,14 @@ describe("the dock of a tile with nothing to show (S1)", () => {
     // Not a tap: the board plays no tap cue for it, but lets its cursor go.
     expect(host.quiet).toEqual([]);
     expect(host.released).toEqual([fruit]);
+    // Tapped again, the emptied tile opens its plain terrain dock.
+    host.callbacks?.onSelection({ kind: "TILE", at: fruit });
+    expect(dock()?.dataset.selectionKind).toBe("tile");
+    expect(host.last?.interaction.selection).toEqual({
+      kind: "TILE",
+      at: fruit,
+    });
+    expect(host.quiet).toEqual([]);
     app.destroy();
   });
 });
