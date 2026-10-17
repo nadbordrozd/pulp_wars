@@ -14,7 +14,9 @@
  * ripple, frame by frame) or `rift` (bead pulp_wars-2yc.37: a Rift in each
  * orientation with one, two or all three of its cells explored, drawn with
  * and without the map's skeleton, and a ridge and a wood cut the same
- * way). Each shot writes `<name>.png`; `palettes`, `ripple` and `rift`
+ * way) or `puff` (bead pulp_wars-2yc.77: the fog puff of a tap on an
+ * unexplored tile, frame by frame, at the game's size and enlarged, and
+ * the still frame of reduced motion). Each shot writes `<name>.png`; `palettes`, `ripple` and `rift`
  * also write labelled sheets. No PixelLab call.
  */
 import { spawn } from "node:child_process";
@@ -45,6 +47,13 @@ interface Shot {
   readonly frames?: readonly number[];
   /** After everything: an expression whose value is written to `<name>.cost.json`. */
   readonly measure?: string;
+  /**
+   * What `frames` holds at each time: the territory ripple (the default),
+   * or an expression of the time in ms (the fog puff's `pinFogPuff`).
+   */
+  readonly pin?: (ms: number) => string;
+  /** Bead pulp_wars-2yc.77: the page as the system's reduced motion has it. */
+  readonly reducedMotion?: boolean;
 }
 
 const delay = (ms: number): Promise<void> =>
@@ -226,6 +235,14 @@ async function open(
   await evaluate(connection, `globalThis.__TF_OLD__ = true`).catch(
     () => undefined,
   );
+  await connection.send("Emulation.setEmulatedMedia", {
+    features: [
+      {
+        name: "prefers-reduced-motion",
+        value: shot.reducedMotion === true ? "reduce" : "no-preference",
+      },
+    ],
+  });
   await connection.send("Page.navigate", { url: url.href });
   await waitFor(
     connection,
@@ -718,7 +735,58 @@ const RIFT: readonly Shot[] = [
   })),
 ];
 
+/**
+ * Bead pulp_wars-2yc.77: a tap on an unexplored tile. The tile is tapped
+ * as the player would (no box is drawn) and the fog puff is then held
+ * every 80 ms. `puff-edge` is a fogged cell beside explored ground, so
+ * its smoke rises over the forest; `puff-deep` one inside the fog, near;
+ * `puff-reduced` the still frame of reduced motion.
+ */
+interface Cell {
+  readonly x: number;
+  readonly y: number;
+}
+const PUFF_FRAMES = [0, 80, 160, 240, 320, 400, 480, 560, 640, 720, 800];
+const PUFF_EDGE: Cell = { x: 5, y: 4 };
+const PUFF_DEEP: Cell = { x: 3, y: 4 };
+const tap = (at: Cell): string =>
+  `globalThis.tf.boardHost.activate(${JSON.stringify(at)});`;
+const pinPuff =
+  (at: Cell) =>
+  (ms: number): string =>
+    `globalThis.tf.boardHost.pinFogPuff(${JSON.stringify(at)}, ${ms})`;
+const PUFF: readonly Shot[] = [
+  {
+    name: "puff-edge",
+    scene: { cut: { west: 6 } },
+    then: tap(PUFF_EDGE),
+    settle: 1200,
+    frames: PUFF_FRAMES,
+    pin: pinPuff(PUFF_EDGE),
+  },
+  {
+    name: "puff-deep",
+    scene: { cut: { west: 6 } },
+    zoomIn: 2,
+    drag: [260, 330],
+    then: tap(PUFF_DEEP),
+    settle: 1200,
+    frames: PUFF_FRAMES,
+    pin: pinPuff(PUFF_DEEP),
+  },
+  {
+    name: "puff-reduced",
+    scene: { cut: { west: 6 } },
+    reducedMotion: true,
+    then: tap(PUFF_EDGE),
+    settle: 60,
+    frames: [0],
+    pin: pinPuff(PUFF_EDGE),
+  },
+];
+
 const SETS: Readonly<Record<string, readonly Shot[]>> = {
+  puff: PUFF,
   rift: RIFT,
   ripple: RIPPLE,
   partial: PARTIAL,
@@ -813,6 +881,30 @@ async function sheets(set: string, out: string): Promise<void> {
       })),
     );
   }
+  if (set === "puff") {
+    // At the size the game draws it, and enlarged three times (pixels).
+    for (const [name, at, scale] of [
+      ["puff-edge", PUFF_EDGE, 3],
+      ["puff-deep", PUFF_DEEP, 2],
+    ] as const) {
+      const box = await cellBox(out, name, [at.x - 1, at.y - 2, 3, 3.5]);
+      for (const [suffix, factor] of [
+        ["", 1],
+        ["-enlarged", scale],
+      ] as const)
+        await sheet(
+          out,
+          `${name}-strip${suffix}.png`,
+          suffix === "" ? PUFF_FRAMES.length : 6,
+          PUFF_FRAMES.map((ms) => ({
+            title: `${ms} ms`,
+            from: `${name}-${String(ms).padStart(4, "0")}`,
+            box,
+            scale: factor,
+          })),
+        );
+    }
+  }
   if (set === "palettes") {
     const chosen = process.env.TERRAIN_FOG_CHOSEN ?? "";
     const title = (name: string): string =>
@@ -902,7 +994,7 @@ async function main(): Promise<void> {
       for (const ms of shot.frames ?? []) {
         await evaluate(
           connection,
-          `globalThis.tf.boardHost.pinTerrainRipple(${ms})`,
+          shot.pin?.(ms) ?? `globalThis.tf.boardHost.pinTerrainRipple(${ms})`,
         );
         await delay(120);
         await screenshot(

@@ -2124,14 +2124,28 @@ export function buildBoardRenderPlanV7(
         targetEdges.get(`${target.family}:${target.at.x},${target.at.y}`) ?? [],
     });
   const selectedAt = selectionCoord(view, interaction.selection);
-  if (selectedAt !== null)
+  // Bead pulp_wars-2yc.77: a selected unexplored tile draws no box, nor
+  // the map cursor while it rests on that tile (a tap puts it there); the
+  // board host plays the fog puff instead (fog-puff-v7.ts). The cursor
+  // shows again on the fog once the keyboard moves it off the tile.
+  const fogSelected = selectsFogV7(view, interaction.selection);
+  if (selectedAt !== null && !fogSelected)
     entries.push({
       key: `selection:${selectedAt.x},${selectedAt.y}`,
       kind: "SELECTION",
       layer: 8,
       at: selectedAt,
     });
-  if (interaction.cursor !== undefined && interaction.cursor !== null)
+  if (
+    interaction.cursor !== undefined &&
+    interaction.cursor !== null &&
+    !(
+      fogSelected &&
+      selectedAt !== null &&
+      interaction.cursor.x === selectedAt.x &&
+      interaction.cursor.y === selectedAt.y
+    )
+  )
     entries.push({
       key: `cursor:${interaction.cursor.x},${interaction.cursor.y}`,
       kind: "CURSOR",
@@ -8685,6 +8699,22 @@ function selectionCoord(
   if (selection.kind === "UNIT")
     return view.units.find((unit) => unit.id === selection.unitId)?.at ?? null;
   return view.cities.find((city) => city.id === selection.cityId)?.at ?? null;
+}
+
+/**
+ * Bead pulp_wars-2yc.77: whether the selection is a tile the viewer has
+ * not explored (a tap on the fog). A unit or a city seen there is
+ * selected with the box as usual.
+ */
+export function selectsFogV7(
+  view: PlayerViewV7,
+  selection: BoardSelectionV7 | null,
+): boolean {
+  if (selection?.kind !== "TILE") return false;
+  const { x, y } = selection.at;
+  if (x < 0 || y < 0 || x >= view.board.width || y >= view.board.height)
+    return false;
+  return view.board.tiles[y * view.board.width + x]?.explored === false;
 }
 
 /**

@@ -139,6 +139,35 @@ and stroked every cell. The edge is one cached 80 px surface a cell beside
 the fog; at most 320 are kept (about 8 MB), the least recently used going
 first as the frontier moves. A canvas without patterns gets a flat fill.
 
+### A tap on the fog
+
+Bead `pulp_wars-2yc.77`. The user, 2026-10-17: in Polytopia a tap on an
+unexplored tile plays "a little animation, like the fog is sort of
+smoking"; the square selection box Pulp Wars drew there was "inelegant".
+
+[`fog-puff-v7.ts`](../../src/render/canvas/fog-puff-v7.ts). A tap (or Enter)
+on an unexplored tile still selects it (the dock reads "Unexplored"), but
+the board draws no selection box there, and no map cursor while the
+cursor rests on that tile. Instead the cloud stirs for 0.8 s (0.6 s at the
+fast animation speed): the cell's own cloud swells, four smaller puffs
+leave it, fanned left and right, rising about half a cell, and thin away
+while the swell sinks back, and the fog settles. The puffs are drawn like
+the cloud's puffs: pixels at the fog's 80-to-a-cell scale, one merged
+silhouette with a pale rim towards the light (bottom left), a shaded rim
+away from it and a short cast shadow up and to the right, in the palette
+in use (a grey-teal of the flat fog in the classic look). They fade
+together with one alpha, so where they merge there is no seam. A new tap
+starts the puff again.
+
+It plays on the effects overlay: only that canvas repaints, a frame at a
+time, while it plays, and nothing is asked for once it is over. With
+reduced motion nothing moves: one still, half-strength frame of the swell
+shows for 0.26 s, then the overlay is clear. A unit or a city seen on
+unexplored ground is selected with the box as usual; the keyboard cursor
+shows on the fog again once it moves off the tapped tile. `?fog-puff=0`
+(or `FOG_PUFF_ENABLED_V7`) turns the puff off; the box stays off.
+Frames: `npx tsx scripts/art/terrain-fog/review.ts puff <out-dir>`.
+
 ## The night sky
 
 [`starfield-v7.ts`](../../src/render/canvas/starfield-v7.ts). The canvas

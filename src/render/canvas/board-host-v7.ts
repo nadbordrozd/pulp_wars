@@ -130,6 +130,7 @@ import {
 import {
   buildBoardRenderPlanV7,
   drawBoardV7,
+  selectsFogV7,
   type BoardRenderInteractionV7,
   type BoardSelectionV7,
   type BoardRenderPlanV7,
@@ -241,6 +242,18 @@ import {
   type TerrainSkeletonV7,
 } from "./terrain-at-fog-v7";
 import { createFogArtV7, fogStyleV7, type FogArtV7 } from "./fog-of-war-v7";
+import {
+  createFogPuffClockV7,
+  createFogPuffSurfaceV7,
+  drawFogPuffV7,
+  fogPuffAtV7,
+  fogPuffColoursV7,
+  fogPuffDurationMsV7,
+  fogPuffEnabledV7,
+  fogPuffLengthMsV7,
+  type FogPuffSurfaceV7,
+  type FogPuffV7,
+} from "./fog-puff-v7";
 import { starfieldEnabledV7 } from "./starfield-v7";
 import {
   createWaterBlendArtV7,
@@ -584,6 +597,19 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
   #terrainRippleFrame: number | null = null;
   /** Review tooling only (pinTerrainRipple): the ripple held at a time. */
   #pinnedTerrainRippleMs: number | null = null;
+  /**
+   * The fog puff (bead pulp_wars-2yc.77, fog-puff-v7.ts): a tap on an
+   * unexplored tile stirs its cloud on the effects overlay. It asks for
+   * frames (a timer with reduced motion) only while it plays, and only the
+   * overlay repaints.
+   */
+  readonly #fogPuff = createFogPuffClockV7();
+  readonly #fogPuffEnabled = fogPuffEnabledV7();
+  #fogPuffFrame: number | null = null;
+  #fogPuffTimer: number | null = null;
+  #fogPuffSurface: FogPuffSurfaceV7 | null | undefined;
+  /** Review tooling only (pinFogPuff): a puff held at a time. */
+  #pinnedFogPuff: FogPuffV7 | null = null;
   /**
    * The victory wave (pulp_wars-556y, victory-wave-v7.ts): when the viewer
    * wins, every explored cell hops in a widening ring and takes the
@@ -3015,6 +3041,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     const dpr = this.#document.defaultView?.devicePixelRatio ?? 1;
     context.setTransform(dpr, 0, 0, dpr, 0, 0);
     context.clearRect(0, 0, this.#viewport.width, this.#viewport.height);
+    this.#drawFogPuff(context, canvas, dpr);
     const effectArt = this.#supportEffectArt();
     for (const pinned of this.#pinnedAttackFeedback)
       drawAttackFeedbackV7(context, this.#camera, pinned, effectArt);
@@ -3222,6 +3249,9 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
           ? { kind: "TILE", at }
           : { kind: "CITY", cityId: city.id },
       );
+      // Bead pulp_wars-2yc.77: a tap on the fog stirs it (and draws no box).
+      if (city === undefined && selectsFogV7(model.view, { kind: "TILE", at }))
+        this.#startFogPuff(at);
       this.#inspectionCycle =
         unit === undefined
           ? null
@@ -3761,6 +3791,9 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       );
     this.#terrainRippleFrame = null;
     this.#terrainRipple.reset();
+    this.#cancelFogPuff();
+    this.#fogPuff.reset();
+    this.#pinnedFogPuff = null;
     if (this.#victoryWaveFrame !== null)
       this.#document.defaultView?.cancelAnimationFrame(this.#victoryWaveFrame);
     this.#victoryWaveFrame = null;
@@ -3944,6 +3977,117 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       this.#draw();
     });
     this.#impact = null;
+  }
+
+  /** Bead pulp_wars-2yc.77: starts (or starts again) the fog puff on `at`. */
+  #startFogPuff(at: CoordV7): void {
+    if (!this.#fogPuffEnabled) return;
+    this.#cancelFogPuff();
+    this.#fogPuff.start(at, this.#now());
+    this.#drawSupportOverlay();
+    this.#pumpFogPuff();
+  }
+
+  /** The puff's length and motion, as the model has them. */
+  #fogPuffTiming(): {
+    readonly durationMs: number;
+    readonly reduced: boolean;
+  } {
+    const model = this.#model;
+    return {
+      durationMs: fogPuffDurationMsV7(model?.animationSpeed ?? "NORMAL"),
+      reduced: model?.motion === "REDUCED",
+    };
+  }
+
+  /**
+   * Repaints the overlay each frame while the puff plays (with reduced
+   * motion, once when its still frame is over), then clears it.
+   */
+  #pumpFogPuff(): void {
+    const browser = this.#document.defaultView;
+    if (browser === null) return;
+    const { durationMs, reduced } = this.#fogPuffTiming();
+    if (!this.#fogPuff.active(this.#now(), durationMs, reduced)) {
+      this.#drawSupportOverlay();
+      return;
+    }
+    if (reduced) {
+      if (typeof browser.setTimeout !== "function") return;
+      this.#fogPuffTimer = browser.setTimeout(
+        () => {
+          this.#fogPuffTimer = null;
+          this.#pumpFogPuff();
+        },
+        fogPuffLengthMsV7(durationMs, true),
+      );
+      return;
+    }
+    if (typeof browser.requestAnimationFrame !== "function") return;
+    this.#fogPuffFrame = browser.requestAnimationFrame(() => {
+      this.#fogPuffFrame = null;
+      this.#drawSupportOverlay();
+      this.#pumpFogPuff();
+    });
+  }
+
+  #cancelFogPuff(): void {
+    const browser = this.#document.defaultView;
+    if (this.#fogPuffFrame !== null)
+      browser?.cancelAnimationFrame(this.#fogPuffFrame);
+    this.#fogPuffFrame = null;
+    if (this.#fogPuffTimer !== null) browser?.clearTimeout(this.#fogPuffTimer);
+    this.#fogPuffTimer = null;
+  }
+
+  /** Draws the fog puff, if one plays, on the effects overlay. */
+  #drawFogPuff(
+    context: CanvasRenderingContext2D,
+    canvas: HTMLCanvasElement,
+    dpr: number,
+  ): void {
+    const { durationMs, reduced } = this.#fogPuffTiming();
+    const puff =
+      this.#pinnedFogPuff ??
+      this.#fogPuff.frame(this.#now(), durationMs, reduced);
+    if (puff === null) {
+      delete canvas.dataset.fogPuff;
+      delete canvas.dataset.fogPuffProgress;
+      return;
+    }
+    canvas.dataset.fogPuff = puff.alphaScale < 1 ? "still" : "playing";
+    canvas.dataset.fogPuffProgress = puff.progress.toFixed(3);
+    if (this.#fogPuffSurface === undefined)
+      this.#fogPuffSurface = createFogPuffSurfaceV7(this.#document);
+    drawFogPuffV7(
+      context,
+      {
+        camera: this.#camera,
+        devicePixelRatio: dpr,
+        viewport: this.#viewport,
+      },
+      puff,
+      // The cloud's palette in the live look; the flat fog's otherwise.
+      fogPuffColoursV7(
+        this.#model?.visualDirection === undefined
+          ? "OFF"
+          : (this.#fogArt?.palette ?? "OFF"),
+      ),
+      this.#fogPuffSurface,
+    );
+  }
+
+  /**
+   * Review tooling and tests: holds a fog puff on `at` `elapsedMs` after
+   * its tap (the Motion setting's frame), or lets it go with null.
+   */
+  pinFogPuff(at: CoordV7, elapsedMs: number | null): void {
+    const { durationMs, reduced } = this.#fogPuffTiming();
+    this.#pinnedFogPuff =
+      elapsedMs === null
+        ? null
+        : fogPuffAtV7(at, elapsedMs, durationMs, reduced, 1);
+    this.#drawSupportOverlay();
   }
 
   /** The ripple's time: the atmosphere's clock, or the pinned time. */
