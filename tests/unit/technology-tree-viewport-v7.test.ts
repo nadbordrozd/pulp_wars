@@ -139,34 +139,6 @@ describe("Ruleset 7 technology tree viewport", () => {
     camera.detach();
   });
 
-  it("reveals a badge under a docked detail without moving the stored camera", () => {
-    const viewport = required<HTMLElement>("#viewport");
-    const stage = required<HTMLElement>("#stage");
-    viewport.getBoundingClientRect = () => rect(340, 600);
-    viewportDimensions(
-      viewport,
-      () => 340,
-      () => 600,
-    );
-    const camera = new TechnologyTreeViewportV7();
-    camera.attach(viewport, stage, { width: 600, height: 600 });
-    const before = stage.style.transform;
-    const at = camera.project(300, 300);
-    expect(at).toEqual({ x: 170, y: 300, width: 340, height: 600 });
-    // A detail over the top 60%: the centre moves into the lower 40%.
-    camera.reveal(300, 300, { left: 8, top: 0, right: 332, bottom: 360 });
-    expect(stage.style.transform).toContain("translate(170px, 480px)");
-    // A badge already clear of the detail does not move.
-    camera.reveal(300, 300, { left: 8, top: 0, right: 332, bottom: 120 });
-    expect(stage.style.transform).toBe(before);
-    // Beside a detail on the right: only the horizontal position moves.
-    camera.reveal(300, 300, { left: 150, top: 100, right: 332, bottom: 500 });
-    expect(stage.style.transform).toContain("translate(75px, 300px)");
-    camera.clearReveal();
-    expect(stage.style.transform).toBe(before);
-    camera.detach();
-  });
-
   it("pans and pinches while suppressing only the click that follows a gesture", async () => {
     const viewport = required<HTMLElement>("#viewport");
     const stage = required<HTMLElement>("#stage");
@@ -225,11 +197,11 @@ describe("Ruleset 7 technology tree viewport", () => {
     camera.detach();
   });
 
-  it("pinches the tree on its shell while a detail makes the graph inert, and leaves the detail alone", () => {
-    // Bead pulp_wars-2yc.72: an inert graph is not hit by touches, so they
-    // land on the shell round it; the tree still zooms and pans there,
-    // while touches and wheels on the detail (its own size on screen) and
-    // on the zoom controls never move the tree.
+  it("pinches the tree on its shell's bare ground, and leaves the detail and controls alone", () => {
+    // Bead pulp_wars-2yc.72: a touch on the shell round the graph (here an
+    // inert graph, so every touch lands there) still zooms and pans the
+    // tree, while touches and wheels on the detail (its own size on screen)
+    // and on the zoom controls never move the tree.
     document.body.innerHTML = `
       <div id="shell">
         <div id="controls"><button>+</button></div>

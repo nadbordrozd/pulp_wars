@@ -99,7 +99,11 @@ tap.
   contained whole in round badges (`object-fit: contain`, never cropped); the
   former 112 x 130 technology-card viewport does not set overview geometry.
   Tech detail opens as a bounded dialog over the tree with the full name, a
-  short unlock list, state, and a Research button that shows the cost.
+  short unlock list, state, and a Research button that shows the cost. It
+  floats over the tree on the side away from the chosen badge and never
+  moves or zooms the tree; the tree stays live under it (another badge
+  switches the detail, a drag pans, a pinch zooms), and a tap anywhere
+  outside it, Escape, or its X closes it (bead `pulp_wars-2yc.78`).
 - **Interface glyphs.** Monochrome SVG glyphs in `src/render/dom/ui-icons-v7.ts`
   are interface chrome, not game art. They must never stand in for unit,
   terrain, building, coin, or population artwork, which stays PixelLab-made.

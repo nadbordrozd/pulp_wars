@@ -76,9 +76,9 @@ export class TechnologyTreeViewportV7 {
   #viewport: HTMLElement | null = null;
   /**
    * Where pans and pinches are read (bead pulp_wars-2yc.72): the viewport,
-   * or a shell round it, so the tree still moves under its pinch while a
-   * technology detail makes the viewport inert. Touches on anything else in
-   * the shell (the detail, the zoom controls) are left alone.
+   * or a shell round it, so a pinch on the shell's bare ground still moves
+   * the tree. Touches on anything else in the shell (the technology detail
+   * floating over the tree, the zoom controls) are left alone.
    */
   #surface: HTMLElement | null = null;
   /** The element holding the pointers of the current gesture. */
@@ -86,12 +86,6 @@ export class TechnologyTreeViewportV7 {
   #stage: HTMLElement | null = null;
   #zoomLabel: HTMLElement | null = null;
   #centre: PointV7 = { x: 0.5, y: 0.5 };
-  /**
-   * A screen offset while a detail covers part of the graph: it moves the
-   * chosen node into the uncovered part without touching the stored camera,
-   * so closing the detail puts the tree back where it was.
-   */
-  #peek: PointV7 = { x: 0, y: 0 };
   #zoom = 1;
   #initialised = false;
   #pointers = new Map<number, ActivePointerV7>();
@@ -164,55 +158,6 @@ export class TechnologyTreeViewportV7 {
 
   centreOn(x: number, y: number): void {
     this.#centre = { x, y };
-    this.#apply();
-  }
-
-  /**
-   * Keeps a graph point (and a margin round it) out from under `cover`, a
-   * box in viewport pixels such as the technology detail, by shifting the
-   * drawing; `clearReveal` undoes it.
-   */
-  reveal(
-    x: number,
-    y: number,
-    cover: {
-      readonly left: number;
-      readonly top: number;
-      readonly right: number;
-      readonly bottom: number;
-    },
-    margin = 48,
-  ): void {
-    const point = this.project(x, y);
-    if (point === null) return;
-    const { width, height } = point;
-    // A detail docked above or below spans most of the width.
-    const coversWidth = cover.right - cover.left > width * 0.6;
-    let free: { left: number; top: number; right: number; bottom: number };
-    if (coversWidth)
-      free =
-        cover.top > height - cover.bottom
-          ? { left: 0, top: 0, right: width, bottom: cover.top }
-          : { left: 0, top: cover.bottom, right: width, bottom: height };
-    else
-      free =
-        cover.left > width - cover.right
-          ? { left: 0, top: 0, right: cover.left, bottom: height }
-          : { left: cover.right, top: 0, right: width, bottom: height };
-    const shift = (at: number, low: number, high: number): number => {
-      if (at - margin >= low && at + margin <= high) return 0;
-      return (low + high) / 2 - at;
-    };
-    this.#peek = {
-      x: coversWidth ? 0 : shift(point.x, free.left, free.right),
-      y: coversWidth ? shift(point.y, free.top, free.bottom) : 0,
-    };
-    this.#apply();
-  }
-
-  clearReveal(): void {
-    if (this.#peek.x === 0 && this.#peek.y === 0) return;
-    this.#peek = { x: 0, y: 0 };
     this.#apply();
   }
 
@@ -310,8 +255,8 @@ export class TechnologyTreeViewportV7 {
 
   /**
    * The element of the tree a gesture starting at `target` belongs to: the
-   * viewport for the tree itself, the surface for its bare ground while the
-   * viewport is inert, and null for the shell's other content.
+   * viewport for the tree itself, the surface for its bare ground, and null
+   * for the shell's other content.
    */
   #gestureOwner(target: EventTarget | null): HTMLElement | null {
     const viewport = this.#viewport;
@@ -530,7 +475,7 @@ export class TechnologyTreeViewportV7 {
     if (width <= 0 || height <= 0) return;
     const scale = this.#scale(width, height);
     this.#clampCentre(width, height, scale);
-    stage.style.transform = `translate(${width / 2 + this.#peek.x}px, ${height / 2 + this.#peek.y}px) scale(${scale}) translate(${-this.#centre.x}px, ${-this.#centre.y}px)`;
+    stage.style.transform = `translate(${width / 2}px, ${height / 2}px) scale(${scale}) translate(${-this.#centre.x}px, ${-this.#centre.y}px)`;
     stage.dataset.zoom = String(this.#zoom);
     // Names and prices keep their size on screen (v7.css reads the inverse).
     stage.style.setProperty("--tech-inverse", String(1 / scale));

@@ -4351,7 +4351,9 @@ html:has(.v7-match-shell) body {
 /*
  * The detail docks on the side of the graph away from the chosen badge
  * (data-dock, set from the camera), so the badge and its neighbours stay
- * in sight above, below or beside it.
+ * in sight above, below or beside it. It floats over the tree and never
+ * moves it (bead pulp_wars-2yc.78); beside the tree it stops short of the
+ * middle, so a badge by the hub stays clear of it.
  */
 .v7-tech-detail[data-dock="top"],
 .v7-tech-detail[data-dock="bottom"] {
@@ -4371,7 +4373,7 @@ html:has(.v7-match-shell) body {
 .v7-tech-detail[data-dock="left"],
 .v7-tech-detail[data-dock="right"] {
   grid-template-columns: minmax(0, 1fr);
-  width: min(24rem, calc(50% - 1.5rem));
+  width: min(24rem, calc(44% - 1rem));
   transform: translateY(-50%);
 }
 

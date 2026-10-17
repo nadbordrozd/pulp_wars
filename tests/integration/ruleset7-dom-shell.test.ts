@@ -551,25 +551,12 @@ describe("Ruleset 7 DOM shell", () => {
     const detail = document.querySelector<HTMLElement>(".v7-tech-detail");
     if (detail === null) throw new Error("Technology detail missing");
     expect(detail.getAttribute("role")).toBe("dialog");
-    expect(document.querySelector<HTMLElement>(".v7-tech-graph")?.inert).toBe(
-      true,
-    );
-    const detailControls = [
-      ...detail.querySelectorAll<HTMLButtonElement>("button:not(:disabled)"),
-    ];
-    const first = detailControls[0];
-    const last = detailControls.at(-1);
-    if (first === undefined || last === undefined)
-      throw new Error("Technology detail controls missing");
-    first.focus();
-    document.dispatchEvent(
-      new KeyboardEvent("keydown", {
-        key: "Tab",
-        shiftKey: true,
-        bubbles: true,
-      }),
-    );
-    expect(document.activeElement).toBe(last);
+    // Bead pulp_wars-2yc.78: the detail floats over a live tree, so it is
+    // not modal and the graph under it is not inert.
+    expect(detail.hasAttribute("aria-modal")).toBe(false);
+    expect(
+      document.querySelector<HTMLElement>(".v7-tech-graph")?.inert,
+    ).not.toBe(true);
 
     graphWidth = 300;
     document.dispatchEvent(
@@ -588,8 +575,8 @@ describe("Ruleset 7 DOM shell", () => {
       document.querySelector<HTMLElement>(".v7-tech-graph")?.dataset.zoom,
     ).toBe("1");
     // Bead pulp_wars-2yc.72: the detail lives outside the zoomed stage and
-    // graph, in screen space, and a pinch on the tree's shell (where the
-    // inert graph's touches land) zooms the tree and not the detail.
+    // graph, in screen space, and a pinch on the tree's shell zooms the
+    // tree and not the detail.
     requiredButton('[data-action="tech-hunting"]').click();
     await flushMicrotasks();
     const reopened = document.querySelector<HTMLElement>(".v7-tech-detail");
@@ -627,6 +614,180 @@ describe("Ruleset 7 DOM shell", () => {
     ).toBeGreaterThan(zoomBefore);
     expect(reopened.isConnected).toBe(true);
     expect(reopened.style.transform).toBe("");
+    rectSpy.mockRestore();
+    clientWidthSpy.mockRestore();
+    clientHeightSpy.mockRestore();
+    app.destroy();
+  });
+
+  it("floats the technology detail over a still tree: another badge switches it, a drag or pinch keeps it, a tap outside or Escape closes it", async () => {
+    // Bead pulp_wars-2yc.78.
+    const rectSpy = vi
+      .spyOn(HTMLElement.prototype, "getBoundingClientRect")
+      .mockImplementation(function (this: HTMLElement) {
+        return this.classList.contains("v7-tech-graph")
+          ? domRect(1200, 700)
+          : domRect(0, 0);
+      });
+    const clientWidthSpy = vi
+      .spyOn(HTMLElement.prototype, "clientWidth", "get")
+      .mockImplementation(function (this: HTMLElement) {
+        return this.classList.contains("v7-tech-graph") ? 1200 : 0;
+      });
+    const clientHeightSpy = vi
+      .spyOn(HTMLElement.prototype, "clientHeight", "get")
+      .mockImplementation(function (this: HTMLElement) {
+        return this.classList.contains("v7-tech-graph") ? 700 : 0;
+      });
+    const app = bootstrapRuleset7App(document, { storage: null });
+    requiredInput("v7-seed").value = "3";
+    chooseSeed();
+    requiredButton('[data-action="launch"]').click();
+    await waitUntil(() => app.controller.snapshot().phase === "ACTIVE");
+    requiredButton('[data-action="tech"]').click();
+    await flushMicrotasks();
+    const stage = (): HTMLElement => {
+      const found = document.querySelector<HTMLElement>(".v7-tech-stage");
+      if (found === null) throw new Error("Technology stage missing");
+      return found;
+    };
+    const graph = (): HTMLElement => {
+      const found = document.querySelector<HTMLElement>(".v7-tech-graph");
+      if (found === null) throw new Error("Technology graph missing");
+      return found;
+    };
+    const detail = (): HTMLElement | null =>
+      document.querySelector<HTMLElement>(".v7-tech-detail");
+    const header = (): Element => {
+      const found = document.querySelector(
+        ".v7-tech-screen > .v7-screen-header",
+      );
+      if (found === null) throw new Error("Technology header missing");
+      return found;
+    };
+    const pointer = (
+      target: Element,
+      type: string,
+      pointerId: number,
+      clientX: number,
+      clientY: number,
+    ): void => {
+      const event = new Event(type, { bubbles: true, cancelable: true });
+      Object.defineProperties(event, {
+        pointerId: { value: pointerId },
+        pointerType: { value: "touch" },
+        button: { value: 0 },
+        clientX: { value: clientX },
+        clientY: { value: clientY },
+      });
+      target.dispatchEvent(event);
+    };
+    const click = (target: Element): void => {
+      target.dispatchEvent(
+        new MouseEvent("click", { bubbles: true, cancelable: true, detail: 1 }),
+      );
+    };
+    const tap = (target: Element, x: number, y: number): void => {
+      pointer(target, "pointerdown", 1, x, y);
+      pointer(target, "pointerup", 1, x, y);
+      click(target);
+    };
+    const fitted = stage().style.transform;
+
+    // Choosing a technology leaves the tree where it is.
+    tap(requiredButton('[data-action="tech-hunting"]'), 600, 300);
+    await flushMicrotasks();
+    expect(detail()?.getAttribute("aria-label")).toBe("Hunting details");
+    expect(stage().style.transform).toBe(fitted);
+    expect(graph().inert).not.toBe(true);
+    expect(
+      document.querySelector<HTMLElement>(".v7-tech-graph-controls")?.inert,
+    ).not.toBe(true);
+
+    // Another badge switches the detail to it; the tree still does not move.
+    tap(requiredButton('[data-action="tech-gathering"]'), 640, 260);
+    await flushMicrotasks();
+    expect(detail()?.getAttribute("aria-label")).toBe("Gathering details");
+    expect(
+      document
+        .querySelector('.v7-tech-card[data-selected="true"]')
+        ?.getAttribute("data-action"),
+    ).toBe("tech-gathering");
+    expect(stage().style.transform).toBe(fitted);
+
+    // A drag on the tree pans it and keeps the detail.
+    pointer(graph(), "pointerdown", 2, 100, 100);
+    pointer(graph(), "pointermove", 2, 160, 130);
+    pointer(graph(), "pointerup", 2, 160, 130);
+    click(graph());
+    await flushMicrotasks();
+    expect(detail()).not.toBeNull();
+    expect(stage().style.transform).not.toBe(fitted);
+
+    // A drag that starts outside the tree (the header) is not a tap either.
+    pointer(header(), "pointerdown", 3, 40, 20);
+    pointer(header(), "pointermove", 3, 90, 60);
+    pointer(header(), "pointerup", 3, 90, 60);
+    click(header());
+    await flushMicrotasks();
+    expect(detail()).not.toBeNull();
+
+    // A pinch zooms the tree and keeps the detail.
+    const zoomBefore = Number(graph().dataset.zoom);
+    pointer(graph(), "pointerdown", 4, 300, 300);
+    pointer(graph(), "pointerdown", 5, 400, 300);
+    pointer(graph(), "pointermove", 5, 460, 300);
+    pointer(graph(), "pointerup", 4, 300, 300);
+    pointer(graph(), "pointerup", 5, 460, 300);
+    click(graph());
+    await flushMicrotasks();
+    expect(Number(graph().dataset.zoom)).toBeGreaterThan(zoomBefore);
+    expect(detail()).not.toBeNull();
+
+    // The zoom buttons work with the detail open and do not close it.
+    const zoomed = Number(graph().dataset.zoom);
+    requiredButton('[data-action="tech-zoom-out"]').click();
+    expect(Number(graph().dataset.zoom)).toBeLessThan(zoomed);
+    expect(detail()).not.toBeNull();
+
+    // A tap inside the detail keeps it.
+    const inside = detail()?.querySelector(".v7-identity");
+    if (inside === null || inside === undefined)
+      throw new Error("Technology detail identity missing");
+    tap(inside, 900, 500);
+    await flushMicrotasks();
+    expect(detail()).not.toBeNull();
+
+    // A tap on the bare tree closes it, and the tree stays where it was.
+    const before = stage().style.transform;
+    tap(graph(), 20, 20);
+    await flushMicrotasks();
+    expect(detail()).toBeNull();
+    expect(stage().style.transform).toBe(before);
+
+    // So does a tap on the header, and Escape; the screen stays open.
+    tap(requiredButton('[data-action="tech-hunting"]'), 600, 300);
+    await flushMicrotasks();
+    expect(detail()).not.toBeNull();
+    tap(header(), 40, 20);
+    await flushMicrotasks();
+    expect(detail()).toBeNull();
+    expect(document.querySelector(".v7-overlay")).not.toBeNull();
+    tap(requiredButton('[data-action="tech-hunting"]'), 600, 300);
+    await flushMicrotasks();
+    expect(detail()).not.toBeNull();
+    document.dispatchEvent(
+      new KeyboardEvent("keydown", { key: "Escape", bubbles: true }),
+    );
+    await flushMicrotasks();
+    expect(detail()).toBeNull();
+    expect(document.querySelector(".v7-overlay")).not.toBeNull();
+    // The X still closes it.
+    tap(requiredButton('[data-action="tech-hunting"]'), 600, 300);
+    await flushMicrotasks();
+    requiredButton('[data-action="close-tech-detail"]').click();
+    await flushMicrotasks();
+    expect(detail()).toBeNull();
     rectSpy.mockRestore();
     clientWidthSpy.mockRestore();
     clientHeightSpy.mockRestore();

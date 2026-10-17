@@ -1526,6 +1526,11 @@ const FIRST_STEP_OUT_OF_MOVES_MS_V7 = 6_000;
 const REWARD_HOLD_LIMIT_MS_V7 = 2_500;
 /** How far into the level-up ring the reward dialog opens. */
 const REWARD_AFTER_LEVEL_UP_MS_V7 = 380;
+/**
+ * How far a pointer may move and still be a tap that closes the technology
+ * detail (the tree's own pan starts at the same distance).
+ */
+const TECH_TAP_SLOP_V7 = 7;
 
 /** Bead pulp_wars-2yc.29: a queued boundary's held feedback animations. */
 interface FeedbackTicketsV7 {
@@ -1673,6 +1678,11 @@ export class Ruleset7DomAppView {
   #selection: BoardSelectionV7 | null = null;
   #screen: ScreenV7 = "MATCH";
   #selectedTech: TechnologyIdV7 | null = null;
+  /** The pointers of the gesture on the technology screen, to tell a tap. */
+  #techTap: {
+    readonly pointers: Map<number, { x: number; y: number }>;
+    moved: boolean;
+  } | null = null;
   /** Pan/zoom survives DOM replacement while technology art settles. */
   readonly #technologyViewport = new TechnologyTreeViewportV7();
   /**
@@ -2249,11 +2259,7 @@ export class Ruleset7DomAppView {
     const target = event.target;
     const modal = this.#root.querySelector<HTMLElement>('[aria-modal="true"]');
     if (modal !== null) {
-      const techDetail =
-        this.#screen === "TECH" && this.#selectedTech !== null
-          ? modal.querySelector<HTMLElement>(".v7-tech-detail")
-          : null;
-      if (event.key === "Tab") this.#trapModalFocus(event, techDetail ?? modal);
+      if (event.key === "Tab") this.#trapModalFocus(event, modal);
       else if (event.key === "Escape") {
         if (modal.dataset.v7Region === "achievement-notice") {
           event.preventDefault();
@@ -5077,34 +5083,10 @@ export class Ruleset7DomAppView {
         },
         popup?.querySelector<HTMLElement>("[data-tech-zoom-label]") ?? null,
         // The tree still pinches and pans under an open detail, which
-        // stays its own size (bead pulp_wars-2yc.72).
+        // stays its own size (bead pulp_wars-2yc.72) and never moves the
+        // tree (bead pulp_wars-2yc.78).
         techGraph.closest<HTMLElement>(".v7-tech-graph-shell") ?? techGraph,
       );
-      // The detail must not hide the badge it describes: shift the drawing
-      // until the badge sits in the part of the graph the detail leaves.
-      const detail = popup?.querySelector<HTMLElement>(".v7-tech-detail");
-      const chosen =
-        detail === null || detail === undefined
-          ? null
-          : techStage.querySelector<HTMLElement>(
-              '.v7-tech-card[data-selected="true"]',
-            );
-      if (detail === null || detail === undefined || chosen === null)
-        this.#technologyViewport.clearReveal();
-      else {
-        const graphBox = techGraph.getBoundingClientRect();
-        const detailBox = detail.getBoundingClientRect();
-        this.#technologyViewport.reveal(
-          Number(chosen.dataset.graphX),
-          Number(chosen.dataset.graphY),
-          {
-            left: detailBox.left - graphBox.left - techGraph.clientLeft,
-            top: detailBox.top - graphBox.top - techGraph.clientTop,
-            right: detailBox.right - graphBox.left - techGraph.clientLeft,
-            bottom: detailBox.bottom - graphBox.top - techGraph.clientTop,
-          },
-        );
-      }
     } else this.#technologyViewport.detach();
     shell.dataset.contrast = this.#highContrast ? "high" : "standard";
     shell.dataset.motion = this.#motion.toLowerCase();
@@ -9087,8 +9069,10 @@ export class Ruleset7DomAppView {
     close.onclick = () => {
       this.#closeOverlay();
     };
-    if (this.#screen === "TECH") overlay.append(this.#technology(view));
-    else if (this.#screen === "LEADERBOARD")
+    if (this.#screen === "TECH") {
+      overlay.append(this.#technology(view));
+      this.#closeTechDetailOnOutsideTap(overlay);
+    } else if (this.#screen === "LEADERBOARD")
       overlay.append(this.#leaderboard(view));
     else if (this.#screen === "ACHIEVEMENTS")
       overlay.append(this.#achievements(view));
@@ -9282,9 +9266,10 @@ export class Ruleset7DomAppView {
     const selected = graphLayout.nodes.find(
       (graphNode) => graphNode.layout.node.id === this.#selectedTech,
     );
+    // The detail floats over the tree (bead pulp_wars-2yc.78): the tree
+    // keeps its place and zoom, stays live under it (another badge switches
+    // the detail, a drag pans), and a tap anywhere else closes it.
     if (selected !== undefined) {
-      controls.inert = true;
-      viewport.inert = true;
       const detail = this.#techDetail(selected.layout.node);
       detail.dataset.dock = this.#techDetailDock(selected);
       graphShell.append(detail);
@@ -9313,7 +9298,6 @@ export class Ruleset7DomAppView {
     const detail = el(this.#document, "aside", "v7-tech-detail");
     detail.dataset.techState = node.state.toLowerCase();
     detail.setAttribute("role", "dialog");
-    detail.setAttribute("aria-modal", "true");
     detail.setAttribute("aria-label", `${name} details`);
     const close = iconButton(
       this.#document,
@@ -9433,6 +9417,70 @@ export class Ruleset7DomAppView {
       detail.append(research);
     }
     return detail;
+  }
+
+  /**
+   * A tap anywhere on the technology screen outside the detail closes it
+   * (bead pulp_wars-2yc.78). A badge switches the detail instead, a button
+   * (zoom, Fit, close) does its own job, and a drag or pinch that pans or
+   * zooms the tree is not a tap, wherever it started.
+   */
+  #closeTechDetailOnOutsideTap(overlay: HTMLElement): void {
+    const track = (event: PointerEvent): void => {
+      const tap = this.#techTap;
+      if (event.type === "pointerdown") {
+        if (tap === null || tap.pointers.size === 0)
+          this.#techTap = {
+            pointers: new Map([
+              [event.pointerId, { x: event.clientX, y: event.clientY }],
+            ]),
+            moved: false,
+          };
+        else {
+          tap.pointers.set(event.pointerId, {
+            x: event.clientX,
+            y: event.clientY,
+          });
+          tap.moved = true;
+        }
+        return;
+      }
+      const start = tap?.pointers.get(event.pointerId);
+      if (tap === null || start === undefined) return;
+      if (event.type === "pointermove") {
+        if (
+          Math.hypot(event.clientX - start.x, event.clientY - start.y) >=
+          TECH_TAP_SLOP_V7
+        )
+          tap.moved = true;
+        return;
+      }
+      tap.pointers.delete(event.pointerId);
+      if (event.type === "pointercancel") tap.moved = true;
+    };
+    for (const type of [
+      "pointerdown",
+      "pointermove",
+      "pointerup",
+      "pointercancel",
+    ] as const)
+      overlay.addEventListener(type, track, true);
+    overlay.addEventListener("click", (event) => {
+      const selected = this.#selectedTech;
+      if (this.#screen !== "TECH" || selected === null) return;
+      const tap = this.#techTap;
+      this.#techTap = null;
+      if (event.detail !== 0 && tap?.moved === true) return;
+      const target = event.target;
+      if (
+        target instanceof Element &&
+        target.closest(
+          ".v7-tech-detail, .v7-tech-card, button, a, input, select, textarea, summary, [role='button']",
+        ) !== null
+      )
+        return;
+      this.#closeTechDetail(selected);
+    });
   }
 
   #closeTechDetail(id: TechnologyIdV7): void {
