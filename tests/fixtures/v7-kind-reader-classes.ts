@@ -76,10 +76,9 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/engine/v7/economy.ts::harbourPopulationForV7": "SEAT",
   "src/engine/v7/eggs.ts::laidEggHpV7": "SEAT",
   "src/engine/v7/eggs.ts::laidEggTurnsV7": "SEAT",
+  // Also a ship's cost since `pulp_wars-2yc.94`: the themed naval branches
+  // price a hull by faction (the Human-only `trainingCost` is retired).
   "src/engine/v7/event-schema.ts::trainingCosts": "SEAT",
-  // The naval branch: a ship's cost is the same in every registration (the
-  // Human one is read).
-  "src/engine/v7/event-schema.ts::trainingCost": "SEAT",
   "src/engine/v7/ice-folk.ts::winterV7": "SEAT",
   "src/engine/v7/map.ts::createPlayers": "SEAT",
   "src/engine/v7/map.ts::createEntities": "SEAT",

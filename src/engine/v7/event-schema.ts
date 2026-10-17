@@ -78,7 +78,6 @@ import {
   isNavalRoleV7,
   type DomainEventKindV7,
   type ImprovementIdV7,
-  type NavalRoleIdV7,
   type RewardIdV7,
   type UnitRoleIdV7,
   MISSION_OUTCOME_CAUSES_V7,
@@ -1535,12 +1534,15 @@ function validPayload(
         id(e.cityId) &&
         id(e.unitId) &&
         isNavalRoleV7(e.role) &&
-        (e.cost === trainingCost(e.role) ||
-          e.cost === Math.max(1, trainingCost(e.role) - 2)) &&
         (e.dock === "PORT" || e.dock === "SHIPYARD") &&
         e.discountSource === (e.dock === "SHIPYARD" ? "SHIPYARD" : null) &&
-        e.cost ===
-          Math.max(1, trainingCost(e.role) - (e.dock === "SHIPYARD" ? 2 : 0)) &&
+        // The themed naval branches (`pulp_wars-5ti.19`) price a hull by
+        // faction, which context-free parsing cannot see: any registered
+        // faction's price, less the Shipyard discount, is accepted.
+        trainingCosts(e.role).some(
+          (cost) =>
+            e.cost === Math.max(1, cost - (e.dock === "SHIPYARD" ? 2 : 0)),
+        ) &&
         parseCoordV7(e.at) !== null
       );
     case "EGG_LAID":
@@ -3566,14 +3568,6 @@ function improvementCost(improvement: ImprovementIdV7): number {
     case "SHIPYARD":
       return 5;
   }
-}
-/**
- * A ship's training cost. Every faction registers the same ships (the naval
- * branch section 7: no faction rule applies to a boat), so the Human
- * registration is every seat's.
- */
-function trainingCost(role: NavalRoleIdV7): number {
-  return effectiveRoleRuleV7(role, "ORIGINAL").cost ?? 0;
 }
 /**
  * Context-free event parsing cannot see the owner's faction, so a land

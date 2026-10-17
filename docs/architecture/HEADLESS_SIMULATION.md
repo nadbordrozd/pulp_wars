@@ -803,3 +803,24 @@ the Showcase stays 16 x 16 with at most three AI seats.
 npm run headless -- match --ruleset pulp-wars-poc-7r98 --map-type dry-land --ai-count 7 --size 11 --seed 1 --max-rounds 12
 npm run headless -- match --ruleset pulp-wars-poc-7r98 --map-type continents --ai-count 5 --seed 2 --max-rounds 12
 ```
+
+## Invariant bug hunt (`pulp_wars-2yc.94`)
+
+`scripts/sim-bug-hunt-v7.ts` plays whole Normal-AI matches, so it runs only
+when the user authorises simulations. It covers all nine factions on 2 to 8
+seats and checks, after every command, what the browser relies on: the
+active seat is offered a command (and END_TURN when no choice is pending);
+every picked command is offered and accepted, and at every turn start a
+sample of other offered commands is accepted too; the replay log appends;
+the canonical and seat-0 projected events parse; the feedback plan builds;
+the state schema round-trips at every End Turn; save and load round-trip to
+the same hash under the size cap; and the seat's queries (views for every
+seat, offered commands, economic and combat previews, selections, tile
+action plans, the dock, the technology tree, scores) do not throw or stall.
+A failure writes a repro save; `--repro <failure.json>` reloads it.
+
+```bash
+node node_modules/.bin/tsx scripts/sim-bug-hunt-v7.ts --batch ai --out <dir> --jobs 8
+node node_modules/.bin/tsx scripts/sim-bug-hunt-v7.ts --batch random --out <dir>
+node node_modules/.bin/tsx scripts/sim-bug-hunt-v7.ts --batch mixed --out <dir> --seed-offset 1000
+```

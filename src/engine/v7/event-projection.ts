@@ -588,10 +588,24 @@ export function projectEventsV7(
               },
             ]
           : [];
+      // The event schema keeps splash entries in tile order (y, x, then
+      // unit ID), so the hit unit is sorted in among its own splash
+      // (`pulp_wars-2yc.94`: it used to lead the list, which the player
+      // event schema refused whenever a splash entry came before it).
       if (ownedTarget.length + ownedSplash.length > 0)
         projected.push({
           kind: "COMBAT_SPLASH_DAMAGE",
-          splash: [...ownedTarget, ...ownedSplash],
+          splash: [
+            ...ownedTarget,
+            ...ownedSplash.filter(
+              (entry) => entry.unitId !== event.preview.targetUnitId,
+            ),
+          ].sort(
+            (left, right) =>
+              left.at.y - right.at.y ||
+              left.at.x - right.at.x ||
+              left.unitId - right.unitId,
+          ),
         });
       continue;
     }
