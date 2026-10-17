@@ -1272,6 +1272,15 @@ const STATUS_IDS: Readonly<Record<string, GlossaryIdV7>> = {
   // A chanter, and a Herald's attacks left (`pulp_wars-mch9.19`).
   chanting: "STATUS_CHANTING",
   attacks: "RAVAGE",
+  // The compact unit card (bead `pulp_wars-2yc.86`): the chips it adds for
+  // a stat term no other chip shows (`modifierChipsV7`).
+  veteran: "TERM_VETERAN",
+  charge: "CHARGE",
+  alpha: "GROW",
+  "half-power": "STATUS_RAY_POWER",
+  "force-field": "FORCE_FIELD",
+  "sugar-rush": "SUGAR_RUSH",
+  "dig-in": "DIG_IN",
 };
 
 /** Every status ID the unit dock can put on a chip (`data-unit-status`). */
@@ -1414,9 +1423,12 @@ export function modifierValueTextV7(
   },
 ): string {
   const value = modifier.value.numerator / modifier.value.denominator;
+  // A term that takes away (half power, Cracked) is "−1.5", never "+-1.5"
+  // (bead pulp_wars-2yc.86).
+  const sign = value < 0 ? "−" : "+";
   if (modifier.source === "SNOW" && base.numerator > 0)
-    return `+${Math.round((value * 100 * base.denominator) / base.numerator)}%`;
-  return `+${String(Math.round(value * 100) / 100)}`;
+    return `${sign}${Math.round((Math.abs(value) * 100 * base.denominator) / base.numerator)}%`;
+  return `${sign}${String(Math.round(Math.abs(value) * 100) / 100)}`;
 }
 
 /** One fact of a tile about the unit standing on it. */

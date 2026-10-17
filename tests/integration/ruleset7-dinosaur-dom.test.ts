@@ -78,6 +78,10 @@ import {
   dinosaurUiFieldV7,
 } from "../fixtures/v7-dinosaur-ui";
 import { goblinShowcaseFixtureV7 } from "../fixtures/v7-goblin-ui";
+import {
+  closeDetailsV7,
+  openUnitDetailsV7,
+} from "../fixtures/v7-unit-card-dom";
 
 // Every Dinosaur number expected below is read from the registry or from a
 // public preview of the same view: the balance bead (`pulp_wars-c87.8`) may
@@ -123,7 +127,7 @@ function boardTarget(host: RecordingBoardHost, family: string, at: CoordV7) {
 function statusChips(): (string | null)[] {
   return [
     ...document.querySelectorAll(
-      ".v7-selection-dock .v7-unit-status-cues .v7-chip",
+      ".v7-selection-dock .v7-unit-status-cues [data-status-line]",
     ),
   ].map((chip) => chip.textContent);
 }
@@ -622,24 +626,32 @@ describe("Revision 19 Egg dock and Shaman Hatch", () => {
       [...dock.querySelectorAll(".v7-identity .v7-chip")].map(
         (chip) => chip.textContent,
       ),
-    ).toEqual([
-      "Dinosaur",
-      eggCountdownTextV7(turns),
-      slotsTextV7(roleSlots("KNIGHT")),
-    ]);
+    ).toEqual([eggCountdownTextV7(turns), slotsTextV7(roleSlots("KNIGHT"))]);
     expect(dock.querySelector(".v7-tactical-role")).toBe(null);
-    expect(dock.querySelector('[data-v7-egg="info"]')?.textContent).toBe(
+    expect(dock.querySelector(".v7-unit-hp")?.textContent).toBe(
+      `${EGG_HP_V7}/${EGG_HP_V7}`,
+    );
+    // Bead pulp_wars-2yc.86: the faction, the Egg's sentence and its stats
+    // are in the details.
+    expect(dock.querySelector(".v7-egg-info")).toBe(null);
+    const details = openUnitDetailsV7();
+    expect(details.querySelector(".v7-faction-chip")?.textContent).toBe(
+      "Dinosaur",
+    );
+    expect(details.querySelector(".v7-tactical-role")).toBe(null);
+    expect(details.querySelector(".v7-egg-info")?.textContent).toBe(
       eggInfoTextV7("T-Rex", turns),
     );
     // Only HP and Defense: an Egg cannot move or fight.
     expect(
-      [...dock.querySelectorAll<HTMLElement>(".v7-unit-stats .v7-stat")].map(
+      [...details.querySelectorAll<HTMLElement>(".v7-unit-stats .v7-stat")].map(
         (row) => row.dataset.stat,
       ),
     ).toEqual(["hp", "defense"]);
     expect(
-      dock.querySelector('[data-stat="hp"] .v7-stat-value')?.textContent,
+      details.querySelector('[data-stat="hp"] .v7-stat-value')?.textContent,
     ).toBe(`${EGG_HP_V7}/${EGG_HP_V7}`);
+    closeDetailsV7();
     // The Egg's own art, no faction badge, and not dimmed as done.
     expect(
       dock.querySelector<HTMLElement>(".v7-identity-art .v7-chibi-art")?.dataset
@@ -674,16 +686,21 @@ describe("Revision 19 Egg dock and Shaman Hatch", () => {
     ).turnsRemaining;
     const dock = requiredElement<HTMLElement>(".v7-selection-dock");
     expect(dock.querySelector("h2")?.textContent).toBe("T-Rex Egg");
-    expect(dock.querySelector(".v7-identity-owner")?.textContent).toBe(
+    expect(dock.querySelector(".v7-unit-hp")?.textContent).toBe(
+      `1/${EGG_HP_V7}`,
+    );
+    expect(actionLabels()).toEqual([]);
+    // Bead pulp_wars-2yc.86: its owner and sentence are in the details.
+    const details = openUnitDetailsV7();
+    expect(details.querySelector(".v7-identity-owner")?.textContent).toBe(
       "Dinosaurs",
     );
     expect(
-      dock.querySelector('[data-stat="hp"] .v7-stat-value')?.textContent,
+      details.querySelector('[data-stat="hp"] .v7-stat-value')?.textContent,
     ).toBe(`1/${EGG_HP_V7}`);
-    expect(dock.querySelector('[data-v7-egg="info"]')?.textContent).toBe(
+    expect(details.querySelector(".v7-egg-info")?.textContent).toBe(
       eggInfoTextV7("T-Rex", turns),
     );
-    expect(actionLabels()).toEqual([]);
     app.destroy();
   });
 
@@ -942,14 +959,14 @@ describe("Revision 19 growth, abilities and labels", () => {
       roleSlots(role) > 1 ? ["Big body"] : [];
     const alpha = selectUnitAt(controller, host, AT.alphaTRex);
     expect(chips()).toEqual([...slotChip("KNIGHT"), ["growth", "Alpha"]]);
-    // The growth HP is shown as a bonus over the role's registry HP.
+    // The growth HP is shown as a bonus over the role's registry HP (in
+    // the details, bead pulp_wars-2yc.86).
     expect(
-      requiredElement('.v7-selection-dock [data-stat="hp"] .v7-stat-value')
-        .textContent,
+      openUnitDetailsV7().querySelector('[data-stat="hp"] .v7-stat-value')
+        ?.textContent,
     ).toBe(
       `${alpha.hp}/${alpha.maxHp}+${alpha.maxHp - effectiveRoleRuleV7("KNIGHT", "DINOSAUR").maxHp}`,
     );
-    requiredButton("unit-help").click();
     expect(
       [
         ...document.querySelectorAll<HTMLElement>(
@@ -1046,8 +1063,11 @@ describe("Revision 19 growth, abilities and labels", () => {
     selectUnitAt(controller, host, { x: 7, y: 8 });
     expect(actionLabels()).toEqual(["Rally", "Disband", "Wait"]);
     expect(
-      requiredElement('.v7-faction-chip[data-faction="dinosaur"]').textContent,
+      openUnitDetailsV7().querySelector(
+        '.v7-faction-chip[data-faction="dinosaur"]',
+      )?.textContent,
     ).toBe("Dinosaur");
+    closeDetailsV7();
     // Its own art carries no Dinosaur badge.
     expect(document.querySelector(".v7-identity-art .v7-dinosaur-badge")).toBe(
       null,

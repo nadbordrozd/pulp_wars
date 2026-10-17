@@ -22,6 +22,10 @@ import {
 } from "../../src/render/dom/app-view-v7";
 import { FACTION_BUILDINGS_HELP_V7 } from "../../src/render/faction-buildings-v7";
 import { undeadUiArenaV7 } from "../fixtures/v7-undead-ui";
+import {
+  closeDetailsV7,
+  openDockDetailsV7,
+} from "../fixtures/v7-unit-card-dom";
 
 /**
  * Faction building looks in the interface (epic pulp_wars-xdh, bead
@@ -137,14 +141,18 @@ describe("Ruleset 7 faction buildings in the interface", () => {
     const { app, host } = open(data);
     host.callbacks?.onSelection({ kind: "TILE", at: data.farm });
     expect(dockTitle()).toBe("Graveyard");
-    const flavour = required(".v7-selection-dock .v7-building-flavour");
-    expect(flavour.textContent).toBe(
+    // Bead pulp_wars-2yc.86: the flavour line is in the tile's details.
+    expect(
+      document.querySelector(".v7-selection-dock .v7-building-flavour"),
+    ).toBeNull();
+    const details = openDockDetailsV7();
+    const flavour = details.querySelector<HTMLElement>(".v7-building-flavour");
+    expect(flavour?.textContent).toBe(
       "Quiet plots, tended for later. Counts as a Farm.",
     );
-    expect(flavour.dataset.factionBuilding).toBe("UNDEAD:FARM");
-    expect(
-      document.querySelectorAll(".v7-selection-dock .v7-building-flavour"),
-    ).toHaveLength(1);
+    expect(flavour?.dataset.factionBuilding).toBe("UNDEAD:FARM");
+    expect(details.querySelectorAll(".v7-building-flavour")).toHaveLength(1);
+    closeDetailsV7();
     // No coordinates anywhere in the dock (the standing UI text rule).
     expect(required(".v7-selection-dock").textContent).not.toMatch(
       /\(\s*\d+\s*,\s*\d+\s*\)|\b\d+\s*,\s*\d+\b/,
@@ -185,9 +193,9 @@ describe("Ruleset 7 faction buildings in the interface", () => {
     const second = open(theirs);
     second.host.callbacks?.onSelection({ kind: "TILE", at: theirs.farm });
     expect(dockTitle()).toBe("Graveyard");
-    expect(required(".v7-building-flavour").textContent).toContain(
-      "Counts as a Farm.",
-    );
+    expect(
+      openDockDetailsV7().querySelector(".v7-building-flavour")?.textContent,
+    ).toContain("Counts as a Farm.");
     second.app.destroy();
   });
 

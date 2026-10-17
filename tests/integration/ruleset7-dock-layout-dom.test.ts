@@ -35,6 +35,11 @@ import {
   mountainV7,
   patchTileV7,
 } from "../fixtures/v7-revision20";
+import {
+  closeDetailsV7,
+  openDockDetailsV7,
+  openUnitDetailsV7,
+} from "../fixtures/v7-unit-card-dom";
 
 /**
  * Bead pulp_wars-3gf: the selection dock is a wide bottom bar. Its children
@@ -50,7 +55,7 @@ beforeEach(() => {
 });
 
 describe("Ruleset 7 selection dock layout", () => {
-  it("lays a city out as portrait, stat column, one action area, then close", () => {
+  it("lays a city out as portrait with its numbers, one action area, then close", () => {
     // Free the capital's unit capacity so it offers every Train command.
     const state = withoutHomeCities(afflictionHumanFixtureV7());
     const host = new RecordingBoardHost();
@@ -65,22 +70,29 @@ describe("Ruleset 7 selection dock layout", () => {
     expect(dock.getAttribute("aria-label")).toBe("Selected map object");
     expect(dock.dataset.selectionKind).toBe("city");
     expect(dock.dataset.hasActions).toBe("true");
+    // Bead pulp_wars-2yc.86: the compact card. The city's numbers sit
+    // beside its portrait, in its identity.
+    expect(dock.dataset.card).toBe("compact");
     expect(regions(dock)).toEqual([
       "v7-identity",
-      "v7-city-stats",
       "v7-context-actions",
       "close-button",
     ]);
-    const stats = requiredElement<HTMLElement>(".v7-city-stats");
+    const stats = requiredElement<HTMLElement>(".v7-identity > .v7-city-stats");
     expect(stats.tagName).toBe("DL");
-    expect(
-      [...stats.children].map(
+    const statIds = (list: Element): string[] =>
+      [...list.children].map(
         (child) =>
           child.getAttribute("data-stat") ??
           // Tunings 2 and 3: with Commerce, the land trade line of a
           // city no Road links to another of the player's cities.
           `land-trade:${child.getAttribute("data-land-trade")}`,
-      ),
+      );
+    expect(statIds(stats)).toEqual(["level", "population", "units", "income"]);
+    // The ready city action and the trade line are in its details.
+    const details = openDockDetailsV7();
+    expect(
+      statIds(requiredValue(details.querySelector(".v7-city-stats"))),
     ).toEqual([
       "level",
       "population",
@@ -89,6 +101,7 @@ describe("Ruleset 7 selection dock layout", () => {
       "city-action",
       "land-trade:not_linked",
     ]);
+    closeDetailsV7();
     const actions = requiredElement<HTMLElement>(
       ".v7-selection-dock > .v7-context-actions",
     );
@@ -101,17 +114,21 @@ describe("Ruleset 7 selection dock layout", () => {
       expect(train.getAttribute("aria-label")).toMatch(
         /^Train [A-Z][a-z]+ for \d+ Coins$/,
       );
-    // Keyboard order: each Train button, then its ?, and Close last.
-    const order = [...dock.querySelectorAll("button")].map(
-      (button) => button.dataset.action ?? "",
-    );
+    // Keyboard order: the city's ?, each Train button, then its ?, and
+    // Close last.
+    const order = [
+      ...requiredElement<HTMLElement>(".v7-selection-dock").querySelectorAll(
+        "button",
+      ),
+    ].map((button) => button.dataset.action ?? "");
     expect(order.at(-1)).toBe("close-dock");
-    expect(order[0]).toBe("command-train");
-    expect(order[1]).toMatch(/^train-help-/);
+    expect(order[0]).toBe("dock-details");
+    expect(order[1]).toBe("command-train");
+    expect(order[2]).toMatch(/^train-help-/);
     app.destroy();
   });
 
-  it("keeps unit stats in a compact column and all actions in the action area", () => {
+  it("keeps a unit's card compact and all actions in the action area", () => {
     const humanState = afflictionHumanFixtureV7();
     const humanHost = new RecordingBoardHost();
     const humanApp = mount(humanState, humanHost);
@@ -119,13 +136,18 @@ describe("Ruleset 7 selection dock layout", () => {
     let dock = requiredElement<HTMLElement>(".v7-selection-dock");
     expect(dock.dataset.selectionKind).toBe("unit");
     expect(dock.dataset.hasActions).toBe("true");
+    // Bead pulp_wars-2yc.86: portrait, name, HP and chips, then actions;
+    // the six stats are in the details.
     expect(regions(dock)).toEqual([
       "v7-identity",
-      "v7-unit-stats",
       "v7-context-actions",
       "close-button",
     ]);
-    expect(dock.querySelectorAll(".v7-unit-stats > .v7-stat")).toHaveLength(6);
+    expect(dock.querySelector(".v7-unit-stats")).toBeNull();
+    expect(
+      openUnitDetailsV7().querySelectorAll(".v7-unit-stats > .v7-stat"),
+    ).toHaveLength(6);
+    closeDetailsV7();
     expect(
       dock.querySelector(
         '.v7-context-actions [data-action="command-tend_wounded"] .v7-undead-preview-chip',
@@ -165,7 +187,6 @@ describe("Ruleset 7 selection dock layout", () => {
     dock = requiredElement<HTMLElement>(".v7-selection-dock");
     expect(regions(dock)).toEqual([
       "v7-identity",
-      "v7-unit-stats",
       "v7-context-actions",
       "close-button",
     ]);
@@ -231,8 +252,14 @@ describe("Ruleset 7 selection dock layout", () => {
       "Training blocked: a unit is on the city center",
     );
     expect(document.querySelector(".v7-train-card")).toBeNull();
-    const trade = requiredElement<HTMLElement>(
-      '.v7-city-stats > [data-land-trade="not_linked"]',
+    // Bead pulp_wars-2yc.86: the trade line is in the city's details.
+    expect(
+      document.querySelector(".v7-selection-dock [data-land-trade]"),
+    ).toBeNull();
+    const trade = requiredValue(
+      openDockDetailsV7().querySelector<HTMLElement>(
+        '.v7-city-stats > [data-land-trade="not_linked"]',
+      ),
     );
     expect(trade.textContent).toBe(
       "No trade: no Road or Port link to another of your cities",

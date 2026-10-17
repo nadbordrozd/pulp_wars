@@ -49,6 +49,10 @@ import {
   waitUntil,
 } from "../fixtures/v7-dom-rig";
 import { at } from "../fixtures/v7-revision20";
+import {
+  closeDetailsV7,
+  openUnitDetailsV7,
+} from "../fixtures/v7-unit-card-dom";
 
 /**
  * Rituals, hexes and tricks in the DOM (bead `pulp_wars-mch9.19`,
@@ -98,9 +102,13 @@ function expectFrogCard(original: string): void {
     ".v7-selection-dock .v7-identity",
   );
   expect(identity.querySelector("h2")?.textContent).toBe("Frog");
+  // Bead pulp_wars-2yc.86: the line of what it was is in the details.
+  expect(identity.querySelector("[data-frog-was]")).toBeNull();
   expect(
-    identity.querySelector<HTMLElement>("[data-frog-was]")?.textContent,
+    openUnitDetailsV7().querySelector<HTMLElement>("[data-frog-was]")
+      ?.textContent,
   ).toBe(original);
+  closeDetailsV7();
   const art = requiredElement<HTMLElement>(
     ".v7-selection-dock .v7-identity-art",
   );
@@ -126,9 +134,21 @@ const panelButtons = (): readonly (string | undefined)[] =>
     ),
   ].map((node) => node.dataset.action);
 
-const stat = (id: string): string | null =>
-  dock().querySelector(`[data-stat="${id}"] .v7-stat-value`)?.textContent ??
-  null;
+/** A stat as the details dialog shows it (bead pulp_wars-2yc.86). */
+const stat = (id: string): string | null => {
+  const value =
+    openUnitDetailsV7().querySelector(`[data-stat="${id}"] .v7-stat-value`)
+      ?.textContent ?? null;
+  closeDetailsV7();
+  return value;
+};
+
+const frogStats = (): number => {
+  const count =
+    openUnitDetailsV7().querySelectorAll('[data-frog="true"]').length;
+  closeDetailsV7();
+  return count;
+};
 
 function escape(): void {
   document.dispatchEvent(
@@ -672,7 +692,7 @@ describe("Ribbit and the frog", () => {
     expect(stat("defense")).toBe("0.5");
     expect(stat("move")).toBe("1");
     expect(stat("attack")).toBe("—");
-    expect(dock().querySelectorAll('[data-frog="true"]')).toHaveLength(3);
+    expect(frogStats()).toBe(3);
     expect(dock().querySelector('[data-stat="defense"] button')).toBeNull();
     expectPlainWords(dock());
 

@@ -30,6 +30,15 @@ import { createTacticalSymbolV7 } from "../../src/render/dom/tactical-symbol-v7"
 import { TECHNOLOGY_WIDE_TREE_MEDIA_V7 } from "../../src/render/dom/technology-tree-layout-v7";
 // pulp_wars-w5j.1: the browser launches only distinct factions.
 import { browserSetupV7 } from "../fixtures/v7-builders";
+import {
+  closeDetailsV7,
+  openDockDetailsV7,
+} from "../fixtures/v7-unit-card-dom";
+import {
+  cardModifiersV7,
+  statSumTextV7,
+  statusModifierSourcesV7,
+} from "../../src/render/unit-card-presentation-v7";
 import { HELP_SECTIONS_V7 } from "../../src/render/help-text-v7";
 import {
   GROUND_MODIFIER_SOURCES_V7,
@@ -2041,9 +2050,13 @@ describe("Ruleset 7 DOM shell", () => {
     expect(document.querySelector(".v7-city-stats")?.textContent).toContain(
       "Units",
     );
+    // Bead pulp_wars-2yc.86: a ready city action is in the city's details.
+    expect(document.querySelector('[data-stat="city-action"]')).toBeNull();
     expect(
-      document.querySelector('[data-stat="city-action"]')?.textContent,
+      openDockDetailsV7().querySelector('[data-stat="city-action"]')
+        ?.textContent,
     ).toContain("City actionReady");
+    closeDetailsV7();
     expect(
       document
         .querySelector(".v7-city-stats .v7-population-value .v7-economy-icon")
@@ -2101,9 +2114,10 @@ describe("Ruleset 7 DOM shell", () => {
     expect(
       document.querySelector(".v7-selection-dock > .v7-identity"),
     ).not.toBeNull();
+    // Bead pulp_wars-2yc.86: the six stats are in the details.
     expect(
-      document.querySelector(".v7-selection-dock > .v7-unit-stats"),
-    ).not.toBeNull();
+      document.querySelector(".v7-selection-dock .v7-unit-stats"),
+    ).toBeNull();
     expect(
       document.querySelector(".v7-selection-dock > .v7-abilities"),
     ).toBeNull();
@@ -2111,20 +2125,42 @@ describe("Ruleset 7 DOM shell", () => {
     expect(
       document.querySelector(".v7-identity-art")?.getAttribute("data-art-set"),
     ).toBe("chibi");
-    const modifier = requiredButton(".v7-stat-modifier");
-    const modifierSource = modifier.getAttribute("aria-label")?.split(":")[0];
-    modifier.focus();
-    modifier.click();
+    // The unit's own term has a status chip; a tap opens its popover with
+    // the change and the stat's exact sum, and the chip keeps the focus.
+    const modifiedStat = statsWithModifier.stats.find(
+      (stat) => cardModifiersV7(stat).length > 0,
+    );
+    const sum = modifiedStat === undefined ? null : statSumTextV7(modifiedStat);
+    if (modifiedStat === undefined || sum === null)
+      throw new Error("Card term missing");
+    const sources: readonly string[] = cardModifiersV7(modifiedStat).map(
+      (term) => term.source,
+    );
+    const chip = [
+      ...document.querySelectorAll<HTMLElement>(
+        '.v7-unit-status-cues [role="button"]',
+      ),
+    ].find((candidate) =>
+      statusModifierSourcesV7(candidate.dataset.unitStatus ?? "").some(
+        (source) => sources.includes(source),
+      ),
+    );
+    if (chip === undefined) throw new Error("Status chip missing");
+    const status = chip.dataset.unitStatus ?? "";
+    chip.focus();
+    chip.click();
     await Promise.resolve();
     expect(
-      requiredButton(".v7-stat-modifier").getAttribute("aria-expanded"),
+      document
+        .querySelector(`.v7-unit-status-cues [data-unit-status="${status}"]`)
+        ?.getAttribute("aria-expanded"),
     ).toBe("true");
-    expect(requiredButton(".v7-stat-modifier").dataset.tooltip).toContain(
-      modifierSource,
+    expect(document.querySelector(".v7-status-popover")?.textContent).toContain(
+      sum,
     );
-    expect(document.activeElement?.classList.contains("v7-stat-modifier")).toBe(
-      true,
-    );
+    expect(
+      (document.activeElement as HTMLElement | null)?.dataset.unitStatus,
+    ).toBe(status);
     requiredButton('[data-action="unit-help"]').click();
     expect(
       document.querySelector('[data-v7-region="unit-help"][aria-modal="true"]'),

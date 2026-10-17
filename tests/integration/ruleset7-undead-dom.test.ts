@@ -45,6 +45,10 @@ import {
   vampireFeastFixtureV7,
 } from "../fixtures/v7-vampire-banshee-ui";
 import {
+  closeDetailsV7,
+  openUnitDetailsV7,
+} from "../fixtures/v7-unit-card-dom";
+import {
   BAT_ESCAPE_REACH_LABEL_V7,
   ETHEREAL_REACH_LABEL_V7,
 } from "../../src/render/undead-presentation-v7";
@@ -227,13 +231,19 @@ describe("Revision 13 Undead DOM", () => {
     selectUnitAt(controller, host, at.banshee);
     const dock = requiredElement<HTMLElement>(".v7-selection-dock");
     expect(dock.querySelector("h2")?.textContent).toBe("Banshee");
-    expect(
-      dock.querySelector('.v7-faction-chip[data-faction="undead"]')
-        ?.textContent,
-    ).toBe("Undead");
     // Its own art carries no Undead badge.
     expect(dock.querySelector(".v7-identity-art .v7-undead-badge")).toBe(null);
-    expect(dock.querySelector('[data-stat="range"] dd')?.textContent).toBe("—");
+    // Bead pulp_wars-2yc.86: the faction chip and the stats are in the
+    // details.
+    const details = openUnitDetailsV7();
+    expect(
+      details.querySelector('.v7-faction-chip[data-faction="undead"]')
+        ?.textContent,
+    ).toBe("Undead");
+    expect(details.querySelector('[data-stat="range"] dd')?.textContent).toBe(
+      "—",
+    );
+    closeDetailsV7();
     const wail = requiredButton("command-wail");
     expect(wail.querySelector(".v7-action-label")?.textContent).toBe("Wail");
     expect(wail.getAttribute("aria-label")).toBe(

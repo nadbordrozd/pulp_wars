@@ -91,6 +91,14 @@ plate.
   the open tab is ink with `--pw-text-inverse`.
 - **Chip** (a stat, a status): `--pw-surface-raised` with a soft rule; a
   status of a faction or an effect uses that hue's ink on its fill.
+  A unit's status chip is a button (bead `pulp_wars-2yc.86`): an ink
+  rule on hover, `--pw-yellow` with ink text while its popover is open.
+  The popover is a Control-like plate (`--pw-surface-raised`, a
+  `--pw-line-w-sm` ink border, `--pw-radius-sm`, `--pw-shadow-sm`): the
+  name heavy, the change in `--pw-gain` (`--pw-loss` when it takes
+  away), the sum in ink, the sentence in
+  `--pw-text-2`. The HP bar of the compact card is `--pw-green` in a
+  `--pw-surface-2` well with an ink rule, `--pw-loss` under a third.
 - **Unavailable but explained** (a locked technology, a disabled action):
   a plain plate and `--pw-text-2`, or `opacity: var(--pw-dim)`. Never an
   opacity that takes text under 4.5:1. A dock action the player cannot

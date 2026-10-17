@@ -40,6 +40,10 @@ import {
   goblinShowcaseFixtureV7,
 } from "../fixtures/v7-goblin-ui";
 import { goblinArenaV7 } from "../fixtures/v7-goblin-arena";
+import {
+  closeDetailsV7,
+  openUnitDetailsV7,
+} from "../fixtures/v7-unit-card-dom";
 import { HELP_SECTIONS_V7 } from "../../src/render/help-text-v7";
 import { uiIconV7 } from "../../src/render/dom/ui-icons-v7";
 
@@ -117,10 +121,14 @@ describe("Revision 17 Goblin DOM", () => {
     const kaboomUnit = selectUnitAt(controller, host, AT.kaboom);
     const dock = requiredElement<HTMLElement>(".v7-selection-dock");
     expect(dock.querySelector("h2")?.textContent).toBe("Goblin");
+    // Bead pulp_wars-2yc.86: the faction chip is in the details.
+    expect(dock.querySelector(".v7-faction-chip")).toBe(null);
     expect(
-      dock.querySelector('.v7-faction-chip[data-faction="goblin"]')
-        ?.textContent,
+      openUnitDetailsV7().querySelector(
+        '.v7-faction-chip[data-faction="goblin"]',
+      )?.textContent,
     ).toBe("Goblin");
+    closeDetailsV7();
     // Its own art carries no Goblin badge.
     expect(dock.querySelector(".v7-identity-art .v7-goblin-badge")).toBe(null);
     expect(actionLabels()).toEqual(["Kaboom!", "Disband", "Wait"]);

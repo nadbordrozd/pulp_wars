@@ -2592,6 +2592,223 @@ html:has(.v7-match-shell) body {
 }
 
 /*
+ * The compact card (bead pulp_wars-2yc.86; Polytopia's slim selected-unit
+ * bar). A unit, city or tile dock is the portrait with the name, a short
+ * line (the unit's HP, the city's numbers) and the status chips beside
+ * it, then the actions. The "?" opens the details: role, faction, the six
+ * stats and every descriptive line.
+ */
+.v7-selection-dock[data-card="compact"] {
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.55rem 0.7rem;
+  padding: 0.45rem 2.9rem 0.45rem 0.55rem;
+}
+
+.v7-identity.v7-identity-compact {
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-areas:
+    "art head"
+    "art chips";
+  align-content: center;
+  align-items: center;
+  justify-items: start;
+  gap: 0.2rem 0.45rem;
+}
+
+.v7-identity-compact > .v7-identity-art {
+  grid-area: art;
+}
+
+.v7-selection-dock .v7-identity-compact > .v7-identity-art {
+  margin: -29px -25px;
+  transform: scale(0.55);
+}
+
+.v7-selection-dock
+  .v7-identity-compact
+  > .v7-identity-art[data-art-set="chibi"] {
+  width: 4.5rem;
+  height: 4.5rem;
+  margin: 0;
+  transform: none;
+}
+
+/* The name with its "?", then the HP (a city: "Capital" or "City"). */
+.v7-identity-head {
+  grid-area: head;
+  display: grid;
+  grid-template-columns: auto auto;
+  grid-template-areas:
+    "name help"
+    "line line";
+  align-items: center;
+  justify-items: start;
+  gap: 0.15rem 0.45rem;
+  min-width: 0;
+}
+
+.v7-identity-head > h2 {
+  grid-area: name;
+  max-width: 13rem;
+  text-align: start;
+}
+
+.v7-identity-head > .v7-unit-help {
+  position: static;
+  grid-area: help;
+  width: 36px;
+  min-width: 36px;
+  height: 36px;
+  margin: -6px 0;
+}
+
+.v7-identity-head > .v7-unit-hp,
+.v7-identity-head > .v7-identity-kind {
+  grid-area: line;
+}
+
+.v7-identity-compact > .v7-unit-status-cues,
+.v7-identity-compact > .v7-city-stats {
+  grid-area: chips;
+  justify-content: flex-start;
+  max-width: 19rem;
+}
+
+.v7-identity-compact > .v7-city-stats {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.v7-unit-hp {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: var(--pw-fs-sm);
+  font-weight: var(--pw-fw-heavy);
+  line-height: 1;
+}
+
+.v7-unit-hp > .v7-ui-icon {
+  width: 1rem;
+  height: 1rem;
+  color: var(--pw-red);
+}
+
+.v7-unit-hp-meter {
+  display: block;
+  width: 3.5rem;
+  height: 0.5rem;
+  overflow: hidden;
+  border: var(--pw-line-w-sm) solid var(--pw-line);
+  border-radius: var(--pw-radius-pill);
+  background: var(--pw-surface-2);
+}
+
+.v7-unit-hp-fill {
+  display: block;
+  height: 100%;
+  background: var(--pw-green);
+}
+
+.v7-unit-hp-fill[data-low="true"] {
+  background: var(--pw-loss);
+}
+
+/* A status chip is a button: a tap opens what it does. */
+.v7-unit-status-cues [role="button"] {
+  min-height: 1.5rem;
+  cursor: pointer;
+}
+
+.v7-unit-status-cues [role="button"]:hover,
+.v7-unit-status-cues [aria-expanded="true"] {
+  border-color: var(--pw-line);
+}
+
+.v7-unit-status-cues [aria-expanded="true"] {
+  color: var(--pw-text);
+  background: var(--pw-yellow);
+}
+
+.v7-unit-status-cues [role="button"]:focus-visible {
+  outline: 2px solid var(--pw-focus);
+  outline-offset: 1px;
+}
+
+.v7-status-popover {
+  position: absolute;
+  z-index: 13;
+  bottom: 50%;
+  left: 0.75rem;
+  display: grid;
+  gap: 0.2rem;
+  width: max-content;
+  max-width: min(20rem, calc(100% - 1.5rem));
+  padding: 0.5rem 0.75rem;
+  border: var(--pw-line-w-sm) solid var(--pw-line);
+  border-radius: var(--pw-radius-sm);
+  color: var(--pw-text);
+  background: var(--pw-surface-raised);
+  box-shadow: var(--pw-shadow-sm);
+  font-size: var(--pw-fs-sm);
+  line-height: 1.25;
+}
+
+.v7-status-popover-title {
+  font-weight: var(--pw-fw-heavy);
+}
+
+.v7-status-popover-effect {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.1rem 0.5rem;
+  margin: 0;
+  font-weight: var(--pw-fw-bold);
+}
+
+.v7-status-popover-change {
+  color: var(--pw-gain);
+}
+
+.v7-status-popover-change[data-loss="true"] {
+  color: var(--pw-loss);
+}
+
+.v7-status-popover-text {
+  margin: 0;
+  color: var(--pw-text-2);
+}
+
+/*
+ * Shorter action tiles: the icon (its art stays at 1x, crisp) over its
+ * name, with no empty row under it.
+ */
+.v7-selection-dock[data-card="compact"] .v7-context-action {
+  min-height: 4.6rem;
+  padding: 0.25rem 0.2rem 0.3rem;
+}
+
+/* The details dialog: the role, faction and owner over the six stats. */
+.v7-unit-card-details {
+  display: grid;
+  gap: 0.6rem;
+  justify-items: start;
+}
+
+.v7-unit-card-facts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.6rem;
+}
+
+.v7-unit-card-facts > .v7-tactical-role,
+.v7-unit-card-facts > .v7-identity-owner,
+.v7-unit-card-facts > .v7-frog-was {
+  font-size: var(--pw-fs-sm);
+}
+
+/*
  * The unit and city stats form a compact column beside the portrait (two
  * narrow columns of small pills) so the action row keeps the dock's width.
  */
@@ -3360,7 +3577,9 @@ html:has(.v7-match-shell) body {
 
 .v7-unit-help-dialog .v7-unit-stats,
 .v7-recruit-help .v7-unit-stats {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  /* Bead pulp_wars-2yc.86: a wide HP pill ("13/18 +5") never runs into
+   * the next column. */
+  grid-template-columns: repeat(3, max-content);
 }
 
 .v7-unit-help-details {
@@ -4559,6 +4778,146 @@ html:has(.v7-match-shell) body {
   .v7-selection-dock[data-selection-kind="tile"] > .v7-context-actions,
   .v7-selection-dock > .v7-dock-hint {
     grid-column: 1 / -1;
+  }
+
+  /* The compact card's portrait row spans the dock (bead pulp_wars-2yc.86). */
+  .v7-selection-dock[data-card="compact"] > .v7-identity {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+
+  .v7-selection-dock[data-card="compact"] > .v7-context-actions {
+    margin-right: -2.3rem;
+  }
+
+  /*
+   * Bead pulp_wars-2yc.86, correction: a phone's unit card is one slim
+   * bar like Polytopia's. The portrait (56 px), the name with its HP, and
+   * the actions share the first row, the chips run under them; a row of
+   * actions too long for the screen scrolls sideways, never wraps.
+   */
+  .v7-selection-dock[data-card="compact"][data-selection-kind="unit"] {
+    grid-template-columns: auto auto minmax(0, 1fr);
+    align-items: center;
+    gap: 0.25rem 0.45rem;
+    padding: 0.35rem 2.4rem 0.35rem 0.4rem;
+  }
+
+  .v7-selection-dock[data-card="compact"][data-selection-kind="unit"]
+    > .v7-identity {
+    display: contents;
+  }
+
+  .v7-selection-dock[data-card="compact"][data-selection-kind="unit"]
+    > .v7-identity
+    > .v7-identity-art {
+    grid-column: 1;
+    grid-row: 1;
+    zoom: 0.78;
+  }
+
+  .v7-selection-dock[data-card="compact"][data-selection-kind="unit"]
+    > .v7-identity
+    > .v7-identity-head {
+    grid-column: 2;
+    grid-row: 1;
+    grid-template-areas:
+      "name name"
+      "line help";
+    column-gap: 0.2rem;
+  }
+
+  .v7-selection-dock[data-card="compact"][data-selection-kind="unit"]
+    .v7-identity-head
+    > h2 {
+    max-width: 7.5rem;
+    font-size: var(--pw-fs-sm);
+  }
+
+  .v7-selection-dock[data-card="compact"][data-selection-kind="unit"]
+    .v7-identity-head
+    > .v7-unit-help {
+    width: 30px;
+    min-width: 30px;
+    height: 30px;
+    margin: -3px 0;
+  }
+
+  .v7-selection-dock[data-card="compact"][data-selection-kind="unit"]
+    .v7-unit-hp {
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 0.2rem 0.25rem;
+  }
+
+  .v7-selection-dock[data-card="compact"][data-selection-kind="unit"]
+    .v7-unit-hp-meter {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+
+  .v7-selection-dock[data-card="compact"][data-selection-kind="unit"]
+    > .v7-identity
+    > .v7-unit-status-cues {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    max-width: none;
+    /* Under the close button's row: the chips may use its gutter. */
+    margin-right: -2rem;
+  }
+
+  .v7-selection-dock[data-card="compact"][data-selection-kind="unit"]
+    > .v7-context-actions {
+    display: flex;
+    flex-wrap: nowrap;
+    grid-column: 3;
+    grid-row: 1;
+    justify-content: flex-start;
+    gap: 0.25rem;
+    width: auto;
+    max-width: none;
+    margin-right: 0;
+    padding: 0.1rem 0.2rem 0.25rem 0.05rem;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: thin;
+  }
+
+  /* A legend, a prompt or an aiming panel takes a row of its own. */
+  .v7-selection-dock[data-card="compact"][data-selection-kind="unit"]
+    > :not(.v7-identity, .v7-context-actions, .close-button) {
+    grid-column: 1 / -1;
+  }
+
+  .v7-selection-dock[data-card="compact"][data-selection-kind="unit"]
+    > .v7-context-actions
+    .v7-context-action {
+    flex: 0 0 auto;
+    grid-template-rows: 2rem auto auto;
+    gap: 0.05rem;
+    width: 3.3rem;
+    min-width: 3.3rem;
+    max-width: 3.3rem;
+    min-height: 0;
+    padding: 0.15rem 0.05rem 0.2rem;
+  }
+
+  /* The icon at two thirds (32 px), the label in one short line. */
+  .v7-selection-dock[data-card="compact"][data-selection-kind="unit"]
+    .v7-context-action
+    > :is(.v7-art-frame, .v7-tactical-symbol, .v7-ui-icon) {
+    zoom: 0.667;
+  }
+
+  .v7-selection-dock[data-card="compact"][data-selection-kind="unit"]
+    .v7-context-action
+    .v7-action-label {
+    max-width: 100%;
+    overflow: hidden;
+    font-size: var(--pw-fs-xs);
+    letter-spacing: -0.02em;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   /*

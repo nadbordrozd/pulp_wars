@@ -70,6 +70,10 @@ import {
   martianFrozenFixtureV7,
 } from "../fixtures/v7-ice-folk-ui";
 import { goblinShowcaseFixtureV7 } from "../fixtures/v7-goblin-ui";
+import {
+  closeDetailsV7,
+  openUnitDetailsV7,
+} from "../fixtures/v7-unit-card-dom";
 import { HELP_SECTIONS_V7 } from "../../src/render/help-text-v7";
 
 // Every Martian number expected below is read from the registry or from a
@@ -146,15 +150,17 @@ describe("Martian unit dock", () => {
     selectUnitAt(controller, host, AT.dentedGrunt);
     expect(chipText("shield")).toBe(shieldTextV7(stats(AT.dentedGrunt)));
     // The Shield stat row: current / maximum.
+    // Bead pulp_wars-2yc.86: in the details.
+    const details = openUnitDetailsV7();
     expect(
-      requiredElement('.v7-selection-dock [data-stat="shield"] .v7-stat-value')
-        .textContent,
+      details.querySelector('[data-stat="shield"] .v7-stat-value')?.textContent,
     ).toBe(
       `${stats(AT.dentedGrunt).shield}/${stats(AT.dentedGrunt).shieldMaximum}`,
     );
-    expect(
-      requiredElement(".v7-selection-dock .v7-faction-chip").textContent,
-    ).toBe("Martian");
+    expect(details.querySelector(".v7-faction-chip")?.textContent).toBe(
+      "Martian",
+    );
+    closeDetailsV7();
     selectUnitAt(controller, host, AT.rayGunner);
     expect(chipText("ray-power")).toBe("Full power");
     selectUnitAt(controller, host, AT.coolingGunner);
@@ -189,9 +195,9 @@ describe("Martian unit dock", () => {
     expect(badge.title).toContain(info.byLine);
     expect(badge.title).toContain(info.fateLine);
     // Its owner line is the badge's: no separate "Player N".
-    expect(
-      document.querySelector(".v7-selection-dock .v7-identity-owner"),
-    ).toBe(null);
+    expect(document.querySelector(".v7-identity-owner")).toBe(null);
+    expect(openUnitDetailsV7().querySelector(".v7-identity-owner")).toBe(null);
+    closeDetailsV7();
     expect(chipText("shield")).toBeNull();
     // The Martian pass's correction (`pulp_wars-w49.14`): a controlled
     // unit is not disbanded, it is released; the button says so. Its

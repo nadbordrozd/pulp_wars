@@ -57,6 +57,7 @@ import {
   navalRamUiFixtureV7,
   navalSubmarineUiFixtureV7,
 } from "../fixtures/v7-naval-ui";
+import { openDockDetailsV7 } from "../fixtures/v7-unit-card-dom";
 
 // The naval branch interface (bead pulp_wars-5ti.7, first part;
 // docs/ui/BOARD_TARGETING.md section 3.4): Board picked on the board, the
@@ -375,7 +376,10 @@ describe("Harbours", () => {
       ),
     );
     host.callbacks?.onSelection({ kind: "CITY", cityId: capital.id });
-    const row = requiredElement<HTMLElement>('[data-stat="harbours"]');
+    // Bead pulp_wars-2yc.86: the row is in the city's details.
+    const row = required(
+      openDockDetailsV7().querySelector<HTMLElement>('[data-stat="harbours"]'),
+    );
     expect(row.querySelector("dt")?.textContent).toBe("Harbours");
     expect(row.querySelector("dd")?.textContent).toBe("+1");
     app.destroy();
@@ -398,6 +402,9 @@ describe("Harbours", () => {
     );
     host.callbacks?.onSelection({ kind: "CITY", cityId: capital.id });
     expect(document.querySelector('[data-stat="harbours"]')).toBeNull();
+    expect(
+      openDockDetailsV7().querySelector('[data-stat="harbours"]'),
+    ).toBeNull();
     app.destroy();
   });
 

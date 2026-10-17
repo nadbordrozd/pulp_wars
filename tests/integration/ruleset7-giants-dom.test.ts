@@ -28,6 +28,11 @@ import {
   giantsSwallowedFixtureV7,
   giantsTossFixtureV7,
 } from "../fixtures/v7-giants-ui";
+import {
+  closeDetailsV7,
+  openDockDetailsV7,
+  openUnitDetailsV7,
+} from "../fixtures/v7-unit-card-dom";
 
 /**
  * The giants' signatures in the DOM (`pulp_wars-w49.32`,
@@ -85,11 +90,16 @@ describe("Swallow: one button, the victim picked on the board", () => {
       "Swallow. Swallow an enemy of 12 HP or less next to it",
     );
     expect(button.getAttribute("aria-pressed")).toBe("false");
-    // The unit card states the signature in one line.
+    // The unit card's details state the signature in one line (bead
+    // pulp_wars-2yc.86: not in the compact card).
     expect(
-      requiredElement<HTMLElement>(".v7-giant-signature").textContent,
+      document.querySelector(".v7-selection-dock .v7-giant-signature"),
+    ).toBeNull();
+    expect(
+      openUnitDetailsV7().querySelector(".v7-giant-signature")?.textContent,
     ).toMatch(/^Swallow: Swallows an enemy of 12 HP or less next to it/);
-    button.click();
+    closeDetailsV7();
+    requiredButton("giant-swallow").click();
     expect(scene.host.lastModel?.interaction.giantPick).toEqual({
       kind: "SWALLOW",
       unitId: abomination,
@@ -274,8 +284,8 @@ describe("Crushing Shove: the attack preview and no new button", () => {
     select(scene, GIANTS_UI_V7.crush.juggernaut);
     expect(document.querySelector('[data-action^="giant-"]')).toBeNull();
     expect(
-      requiredElement<HTMLElement>(".v7-giant-signature").dataset
-        .giantSignature,
+      openUnitDetailsV7().querySelector<HTMLElement>(".v7-giant-signature")
+        ?.dataset.giantSignature,
     ).toBe("Crushing Shove");
     scene.app.destroy();
   });
@@ -295,7 +305,10 @@ describe("the city panel's Walls and the reward dialog's giant", () => {
         ),
       );
       scene.host.callbacks?.onSelection({ kind: "CITY", cityId: city.id });
-      const stat = requiredElement<HTMLElement>('[data-stat="walls"]');
+      // Bead pulp_wars-2yc.86: the Walls are in the city's details.
+      const stat = required(
+        openDockDetailsV7().querySelector<HTMLElement>('[data-stat="walls"]'),
+      );
       expect(stat.dataset.walls).toBe(value);
       expect(stat.textContent).toBe(
         `Walls${value === "razed" ? "Razed" : "Standing"}`,

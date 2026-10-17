@@ -64,6 +64,10 @@ import {
   FROZEN_GLACIER_UI_V7,
   frozenGlacierUiFixtureV7,
 } from "../fixtures/v7-frozen-sea-ui";
+import {
+  closeDetailsV7,
+  openUnitDetailsV7,
+} from "../fixtures/v7-unit-card-dom";
 import { GLACIER_MOVE_LABEL_V7 } from "../../src/render/frozen-sea-presentation-v7";
 import { HELP_SECTIONS_V7 } from "../../src/render/help-text-v7";
 import { roleGlossaryV7 } from "../../src/render/unit-glossary-v7";
@@ -168,9 +172,11 @@ describe("Ice Folk unit dock", () => {
     expect(chipText("planted")).toBe(
       stats.planted === true ? "Planted: Attack 3" : "Moved: Attack 2",
     );
+    // Bead pulp_wars-2yc.86: the faction chip is in the details.
     expect(
-      requiredElement(".v7-selection-dock .v7-faction-chip").textContent,
+      openUnitDetailsV7().querySelector(".v7-faction-chip")?.textContent,
     ).toBe("Ice Folk");
+    closeDetailsV7();
     // Bead pulp_wars-2yc.63: the Blizzard is her tile's (its dock says
     // so); her card shows the unit only.
     host.callbacks?.onSelection({ kind: "TILE", at: AT.witch });

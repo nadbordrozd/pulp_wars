@@ -32,6 +32,7 @@ import {
   round2SaucerUiFixtureV7,
 } from "../fixtures/v7-curiosities-round2-ui";
 import { classicLookStorageV7 } from "../fixtures/v7-board-art";
+import { openDockDetailsV7 } from "../fixtures/v7-unit-card-dom";
 
 /**
  * Map curiosities round 2 in the DOM (bead pulp_wars-737.16,
@@ -225,9 +226,8 @@ describe("Ruleset 7 curiosities round two: a camp and Bigfoot in the dock", () =
       );
       expect(dock.querySelector(".v7-faction-chip")).toBeNull();
       expect(dock.querySelector(".v7-identity-owner")).toBeNull();
-      expect(dock.querySelector('[data-stat="hp"]')?.textContent).toContain(
-        "10/10",
-      );
+      // Bead pulp_wars-2yc.86: the compact card's HP.
+      expect(dock.querySelector(".v7-unit-hp")?.textContent).toContain("10/10");
       expect(dock.dataset.hasActions).toBe("false");
       dock
         .querySelector<HTMLButtonElement>('[data-action="unit-help"]')
@@ -271,9 +271,7 @@ describe("Ruleset 7 curiosities round two: a camp and Bigfoot in the dock", () =
     expect(chips(dock)).toEqual(
       expect.arrayContaining(["Neutral", "Provoked"]),
     );
-    expect(dock?.querySelector('[data-stat="hp"]')?.textContent).toContain(
-      "18/18",
-    );
+    expect(dock?.querySelector(".v7-unit-hp")?.textContent).toContain("18/18");
     app.destroy();
   });
 
@@ -289,9 +287,16 @@ describe("Ruleset 7 curiosities round two: a camp and Bigfoot in the dock", () =
       const info = app.dock()?.querySelector<HTMLElement>(".v7-curiosity-info");
       expect(info?.dataset.curiosity, name).toBe(kind);
       expect(info?.querySelector("strong")?.textContent).toBe(name);
-      expect(info?.querySelector("p")?.textContent?.endsWith(".")).toBe(true);
       expect(info?.querySelector(".v7-curiosity-icon")).not.toBeNull();
       expect(COORDINATE.test(info?.textContent ?? "")).toBe(false);
+      // Bead pulp_wars-2yc.86: its sentence is in the tile's details.
+      expect(info?.querySelector("p:not(.v7-curiosity-status)")).toBeNull();
+      const details =
+        openDockDetailsV7().querySelector<HTMLElement>(".v7-curiosity-info");
+      expect(details?.querySelector("strong")?.textContent).toBe(name);
+      expect(details?.querySelector("p")?.textContent?.endsWith(".")).toBe(
+        true,
+      );
       app.destroy();
     }
   });

@@ -34,6 +34,10 @@ import {
 } from "../fixtures/v7-curiosities-ui";
 import { classicLookStorageV7 } from "../fixtures/v7-board-art";
 import { monsterArenaV7, monsterOfV7 } from "../fixtures/v7-monster-arena";
+import {
+  closeDetailsV7,
+  openDockDetailsV7,
+} from "../fixtures/v7-unit-card-dom";
 
 /**
  * Map curiosities UI in the DOM (bead pulp_wars-737.6,
@@ -217,9 +221,8 @@ describe("Ruleset 7 curiosities in the dock, Help and the notices", () => {
       expect(dock.querySelector(".v7-identity-owner")).toBeNull();
       expect(dock.querySelector("[data-faction]")).toBeNull();
       expect(dock.textContent).not.toContain("Juggernaut");
-      expect(dock.querySelector('[data-stat="hp"]')?.textContent).toContain(
-        "24/24",
-      );
+      // Bead pulp_wars-2yc.86: the compact card's HP.
+      expect(dock.querySelector(".v7-unit-hp")?.textContent).toContain("24/24");
       // No command of the Spider is ever offered.
       expect(dock.dataset.hasActions).toBe("false");
       // Its figure: the portrait in the live look, a code spider in the classic look.
@@ -258,8 +261,15 @@ describe("Ruleset 7 curiosities in the dock, Help and the notices", () => {
       const info = app.dock()?.querySelector<HTMLElement>(".v7-curiosity-info");
       expect(info?.dataset.curiosity, name).toBe(kind);
       expect(info?.querySelector("strong")?.textContent).toBe(name);
-      expect(info?.querySelector("p")?.textContent?.endsWith(".")).toBe(true);
       expect(info?.querySelector(".v7-curiosity-icon")).not.toBeNull();
+      // Bead pulp_wars-2yc.86: its one sentence is in the tile's details.
+      expect(info?.querySelector("p:not(.v7-curiosity-status)")).toBeNull();
+      expect(
+        openDockDetailsV7()
+          .querySelector(".v7-curiosity-info p")
+          ?.textContent?.endsWith("."),
+      ).toBe(true);
+      closeDetailsV7();
     }
     // A plain tile has no curiosity section.
     app.select({ x: 8, y: 8 }, true);

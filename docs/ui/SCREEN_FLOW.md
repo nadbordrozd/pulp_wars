@@ -446,6 +446,80 @@ and V10).
   offer whenever Coins last. While the coach points at End Turn, or the
   tutorial runs, they lead instead.
 
+#### Compact unit card (bead `pulp_wars-2yc.86`)
+
+The user, 2026-10-17: the selected unit's panel was too big. Polytopia's
+selected-unit bar is the benchmark: a slim bar with the unit's portrait,
+its name and health, and a row of action buttons.
+
+- **Main view of a unit's dock.** The portrait (the 72 x 72 card box, the
+  masters at 1.5x), the name with the `?` beside it, the HP as "12/12"
+  with a small bar (red under a third), a row of status chips when the
+  unit has any, and the actions. Nothing else: no role line ("Line",
+  "Support"), no faction chip, no owner line, no six-stat grid, no
+  ability or giant-signature sentence, no Egg sentence, no frog's "was"
+  line (its portrait badge stays). The board's key for the unit's
+  special marks (the landing, launch, Glide, Glacier, ice and Undead
+  reach legends) and the Feast's "attack again" prompt stay in the main
+  view: they explain the board as it is now, and the details dialog
+  would hide the board they describe. The actions are shorter tiles (no
+  empty row under a name), their icons still 1x masters.
+- **Status chips.** Every chip the card had (afflictions, faction
+  statuses, the engine's status lines, Done, Restless, the idle
+  recovery, a Shield) is in one row under the HP, in the same order, and
+  a stat term of the unit that no chip stands for gets a chip of its own
+  (Veteran for a promotion's +5 HP, Charge; `modifierChipsV7`). Each chip
+  is a button (`role="button"`, Enter or Space): a tap opens a small
+  popover over the board just above the dock, at the chip's left edge,
+  with the chip's name, then for each stat it changes the change and the
+  stat's sum ("+1 Attack" and "Attack 3 + 1 = 4"; a term that takes away
+  is "− 1"; the HP term is "Max HP 13 + 5 = 18"), then its one sentence
+  (the chip's own tooltip, or the glossary's). The numbers are the
+  engine's public stat terms (`PublicUnitStatsV7.stats`), the unit's own
+  only (bead `pulp_wars-2yc.63`: cover, Snow, Walls, Field Defense and high
+  ground are the tile's), the sum of the base and every own term of that
+  stat. A chip that changes no number on the card (Toothache, Terror,
+  Frog, Dragged, Awestruck: their effect lands in combat or is not a
+  number) shows its sentence alone. A second tap on the chip, a tap on
+  another chip, a press anywhere outside the popover, Escape, or another
+  selection closes it; Escape returns the focus to the chip.
+  `src/render/unit-card-presentation-v7.ts` holds the chip-to-term table
+  and the sums.
+- **Details.** The `?` opens the unit dialog as before, which now holds
+  everything the main view leaves out: the owner, faction and role, the
+  six stats with their terms (read-only text; the chips explain them),
+  a giant's signature, then the ability lines, what each chip means now,
+  and "What the numbers mean".
+- **A city's dock.** The portrait with the name, "Capital" or "City", the
+  `?`, and its numbers in one wrapping row beside the portrait (level,
+  population, units, income) with the states that stop or change its
+  production (Besieged, Cowed, a spent city action, why it trains
+  nothing), then the train cards as before. Its details (`?`, a dialog
+  like the unit's) hold the whole stat list: the owner of a rival's
+  city, the Walls, the ready city action, the land trade line, Harbours,
+  a Forge's discount and what the center gives a unit standing there.
+- **A tile's dock.** Its chips stay; a faction building's flavour line, a
+  curiosity's rule and a Barricade's rule move to the tile's details
+  (`?`); a tile without such a line has no `?`.
+- **A phone's unit card** (800 px and under): one slim bar. The
+  portrait (56 px), the head (the name, the HP over its bar, the `?`) and
+  the actions share the first row; the chips run under them across the
+  dock. The action tiles are 3.3rem wide with a 32 px icon over a one-line
+  label (cut with an ellipsis when too long; the full name is the
+  button's accessible name) and the price chip under it. A row of actions
+  wider than the room left scrolls sideways and never wraps. A legend, a
+  prompt or an aiming panel takes a row of its own. A city's dock keeps
+  its train-card grid under the compact head.
+- **Heights** (review script `scripts/browser-unit-card-review-v7.ts`,
+  dock height in CSS px, before and after, at 1440 x 900, 390 x 844 and
+  320 x 640): a plain Fighter (three actions, one priced) 140 to 129, 264
+  to 101 and 317 to 101; an Inspired Veteran Knight (three chips, three
+  actions) 183 to 107, 303 to 107 and 312 to 107; an enemy Martian Grunt
+  207 to 98, 207 to 101 and 228 to 101; the capital 140 to 132, 380 to
+  355 and 346 to 346 (its eight train cards are its production and
+  stay). At 390 px about two and a half action tiles show beside the
+  head, at 320 px about one and a half; the rest scroll.
+
 #### Tutorial
 
 Bead `pulp_wars-0yxy`. The main menu's **Tutorial** starts a guided first
@@ -541,7 +615,7 @@ dock, and the terms of a unit card.
   Cover, Fortified, Hitting back, Veteran and Slots.
 - **The recruit `?` dialog** and **the Gallery's unit detail** list the
   same abilities and traits; the Gallery has no second list of notes.
-- The dock itself is unchanged: its chips keep their tooltips, which may
+- The dock's chips keep their tooltips, which may
   be exact where the dialog is plain.
 - **One name per mechanic, no universal lines** (bead
   `pulp_wars-2yc.63`). A line says what sets a unit apart: there is no

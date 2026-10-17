@@ -636,6 +636,13 @@ describe("Snow cover in the Defense row", () => {
         { source: "INSPIRED", value: { numerator: 1, denominator: 1 } },
       ),
     ).toBe("+1");
+    // A term that takes away (bead pulp_wars-2yc.86): never "+-1.5".
+    expect(
+      statModifierTextV7(
+        { numerator: 3, denominator: 1 },
+        { source: "HALF_POWER", value: { numerator: -3, denominator: 2 } },
+      ),
+    ).toBe("−1.5");
     expect(snowChipTooltipV7(true)).toContain("from Snow to Snow");
     expect(snowChipTooltipV7(false)).not.toContain("half");
   });

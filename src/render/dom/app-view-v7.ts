@@ -127,6 +127,8 @@ import {
   type MapTypeV7,
   type PlayerViewV7,
   type PublicTechnologyNodeV7,
+  type PublicUnitStatsV7,
+  type PublicUnitV7,
   type TechnologyIdV7,
   type AchievementIdV7,
   type UnitRoleIdV7,
@@ -885,7 +887,6 @@ import {
   type TutorialProgressV7,
 } from "../tutorial-v7";
 import {
-  GROUND_MODIFIER_SOURCES_V7,
   SPIDER_GLOSSARY_IDS_V7,
   glossaryEntryV7,
   groundBonusChipsV7,
@@ -896,6 +897,11 @@ import {
   statusGlossaryV7,
   unitStatusLineChipV7,
 } from "../unit-glossary-v7";
+import {
+  cardModifiersV7,
+  modifierChipsV7,
+  statusPopoverV7,
+} from "../unit-card-presentation-v7";
 import {
   glossaryListV7,
   glossaryTermsV7,
@@ -1513,6 +1519,22 @@ type FrontPageV7 = "MENU" | "SETUP" | "CAMPAIGN" | "SETTINGS";
  * The unit dialog (bead pulp_wars-2yc.39): status chips that an ability
  * line of the same unit already explains.
  */
+/**
+ * The city stats of the compact city card's main view (bead
+ * pulp_wars-2yc.86): its numbers and the states that stop or change its
+ * production. The rest is in the city's details.
+ */
+const CITY_MAIN_STATS_V7 = [
+  '[data-stat="level"]',
+  '[data-stat="population"]',
+  '[data-stat="units"]',
+  '[data-stat="income"]',
+  '[data-stat="siege"]',
+  '[data-stat="cowed"]',
+  '[data-stat="city-action"][data-spent="true"]',
+  "[data-disabled-reason]",
+].join(", ");
+
 const STATUS_COVERED_BY_ABILITY_V7: Readonly<Record<string, string>> = {
   slots: "BIG_BODY",
 };
@@ -1733,7 +1755,14 @@ export class Ruleset7DomAppView {
    */
   readonly #achievementDeeds = new Map<AchievementIdV7, string>();
   #achievementReturnAction: string | null = null;
-  #selectedModifier: string | null = null;
+  /**
+   * Bead pulp_wars-2yc.86: the status chip of the selected unit whose
+   * popover is open, and the city or tile dock (by its selection key)
+   * whose details dialog is open.
+   */
+  #statusPopover: { readonly unitId: number; readonly status: string } | null =
+    null;
+  #dockDetailsKey: string | null = null;
   #selectedRecruitHelp: UnitRoleIdV7 | null = null;
   #selectedUnitHelpId: number | null = null;
   /**
@@ -2262,6 +2291,7 @@ export class Ruleset7DomAppView {
   #dismissPopup(): boolean {
     if (this.#selectedRecruitHelp !== null) this.#closeRecruitHelp();
     else if (this.#selectedUnitHelpId !== null) this.#closeUnitHelp();
+    else if (this.#dockDetailsKey !== null) this.#closeDockDetails();
     else if (this.#screen !== "MATCH") this.#closeOverlay();
     else return false;
     return true;
@@ -2296,6 +2326,9 @@ export class Ruleset7DomAppView {
         } else if (this.#selectedUnitHelpId !== null) {
           event.preventDefault();
           this.#closeUnitHelp();
+        } else if (this.#dockDetailsKey !== null) {
+          event.preventDefault();
+          this.#closeDockDetails();
         } else if (this.#screen === "TECH" && this.#selectedTech !== null) {
           event.preventDefault();
           this.#closeTechDetail(this.#selectedTech);
@@ -2323,6 +2356,14 @@ export class Ruleset7DomAppView {
         // Tile actions: Escape first closes the tile's chooser.
         this.#closeTileChooser(true);
         this.#queueBoardFocus();
+        return;
+      }
+      if (this.#statusPopover !== null) {
+        // Bead pulp_wars-2yc.86: Escape first closes a status chip's
+        // popover, and the focus goes back to its chip.
+        this.#pendingFocusAction = `status-chip-${this.#statusPopover.status}`;
+        this.#statusPopover = null;
+        this.#render();
         return;
       }
       if (this.#screen !== "MATCH") this.#screen = "MATCH";
@@ -4626,6 +4667,7 @@ export class Ruleset7DomAppView {
     if (view.pendingChoices.length > 0) {
       this.#selectedRecruitHelp = null;
       this.#selectedUnitHelpId = null;
+      this.#dockDetailsKey = null;
     }
     const activeId = view.turnOrder[view.activeSeatIndex];
     const active = view.players.find((player) => player.id === activeId);
@@ -4993,6 +5035,12 @@ export class Ruleset7DomAppView {
       this.#tileWithContent !== null &&
       same(this.#tileWithContent, selectedTile);
     if (emptied) dock = null;
+    // Bead pulp_wars-2yc.86: a city's or tile's details close with its dock.
+    if (
+      this.#dockDetailsKey !== null &&
+      dock?.dataset.selectionKey !== this.#dockDetailsKey
+    )
+      this.#dockDetailsKey = null;
     if (dock === null && selectedTile !== null) {
       this.#selection = null;
       if (tappedHere) this.#boardHost.quietTap?.(selectedTile);
@@ -5008,6 +5056,11 @@ export class Ruleset7DomAppView {
       dock.dataset.v7Region = "dock";
       nextChildren.push(dock);
     }
+    // Bead pulp_wars-2yc.86: a status chip's popover floats over the board
+    // above the dock (the dock itself may scroll, and would clip it).
+    const statusPopover =
+      dock?.querySelector<HTMLElement>(":scope > .v7-status-popover") ?? null;
+    if (statusPopover !== null) nextChildren.push(statusPopover);
     // Tile actions (bead pulp_wars-2yc.60): the chooser of the tapped
     // tile, while the tile still has its actions.
     const chooserState = this.#tileChooser;
@@ -5111,6 +5164,8 @@ export class Ruleset7DomAppView {
     );
     if (popup !== undefined) nextChildren.push(this.#scrim(popup));
     reconcileMatchChildren(main, board, nextChildren);
+    if (statusPopover !== null && dock !== null)
+      this.#placeStatusPopover(main, dock, statusPopover);
     if (chooser !== null) {
       this.#placeTileChooser(main, chooser);
       // A redraw keeps the row that had the focus.
@@ -5277,7 +5332,8 @@ export class Ruleset7DomAppView {
         this.#achievementNotices.length === 0 &&
         view.pendingChoices.length === 0 &&
         this.#selectedRecruitHelp === null &&
-        this.#selectedUnitHelpId === null,
+        this.#selectedUnitHelpId === null &&
+        this.#dockDetailsKey === null,
       technologyOpen: this.#screen === "TECH",
       motion: this.#motion,
     });
@@ -5384,6 +5440,7 @@ export class Ruleset7DomAppView {
       this.#boardInteractive(view) &&
       this.#selectedRecruitHelp === null &&
       this.#selectedUnitHelpId === null &&
+      this.#dockDetailsKey === null &&
       !this.#snapshot.ai.active;
     const watched = this.#firstStepWatchUnitId;
     if (watched !== null && interactive && commands.length > 0) {
@@ -5591,6 +5648,7 @@ export class Ruleset7DomAppView {
     close.classList.add("close-button");
     close.onclick = () => {
       this.#selection = null;
+      this.#statusPopover = null;
       this.#clearFirstStepOutOfMoves();
       this.#layEggPick = null;
       this.#martianPick = null;
@@ -5659,9 +5717,11 @@ export class Ruleset7DomAppView {
               });
       const transportArt = unit.form === "EMBARKED" && !machine;
       const unitColour = this.#playerColour(view, unit.ownerId);
+      // Bead pulp_wars-2yc.86: the compact card's portrait is the card box
+      // (72 x 72), the masters at 1.5x as in the details dialog.
       const dockArt = this.#chibiArt(
         unitSubject,
-        CHIBI_DOM_BOXES_V7.dock,
+        CHIBI_DOM_BOXES_V7.card,
         unitColour,
       );
       // The Egg has no legacy raster: LEGACY (and CHIBI without its sprite)
@@ -6298,6 +6358,8 @@ export class Ruleset7DomAppView {
             const chip = unitStatusLineChipV7(status);
             const cue = text(this.#document, "span", chip.label, "v7-chip");
             cue.dataset.unitStatus = chip.id;
+            // Bead pulp_wars-2yc.86: one of the engine's status lines.
+            cue.dataset.statusLine = "true";
             cue.setAttribute("aria-label", `${chip.label} status`);
             cues.append(cue);
           }
@@ -6361,37 +6423,22 @@ export class Ruleset7DomAppView {
           );
           // Bead pulp_wars-2yc.63: the card shows the unit's own numbers;
           // cover, Snow, Walls, Field Defense and high ground belong to its
-          // tile, whose dock shows them.
-          for (const [index, modifier] of (exact && frogValue === null
-            ? stat.modifiers.filter(
-                (term) => !GROUND_MODIFIER_SOURCES_V7.includes(term.source),
-              )
-            : []
-          ).entries()) {
-            const modifierId = `${unit.id}-${stat.id}-${index}`;
-            const term = button(
+          // tile, whose dock shows them. Bead pulp_wars-2yc.86: the terms
+          // are read in the details view; the main view's status chips
+          // explain them on a tap.
+          for (const modifier of frogValue === null
+            ? cardModifiersV7(stat)
+            : []) {
+            const term = text(
               this.#document,
+              "span",
               statModifierTextV7(stat.base.value, modifier),
-              `stat-${stat.id.toLowerCase()}-${index}`,
               "v7-stat-modifier",
             );
             term.dataset.modifierSource = modifier.source.toLowerCase();
             const presented = presentedModifierV7(modifier);
-            term.setAttribute(
-              "aria-label",
-              `${presented.sourceLabel}: ${presented.description}`,
-            );
+            term.title = `${presented.sourceLabel}: ${presented.description}`;
             term.dataset.tooltip = presented.sourceLabel;
-            term.setAttribute(
-              "aria-expanded",
-              String(this.#selectedModifier === modifierId),
-            );
-            term.onclick = () => {
-              this.#selectedModifier =
-                this.#selectedModifier === modifierId ? null : modifierId;
-              this.#pendingFocusAction = `stat-${stat.id.toLowerCase()}-${index}`;
-              this.#render();
-            };
             value.append(term);
           }
           if (!exact && frogValue === null)
@@ -6742,6 +6789,9 @@ export class Ruleset7DomAppView {
       }
       const kaboomPanel = this.#kaboomPanel(view, unit.id);
       if (kaboomPanel !== null) dock.append(kaboomPanel);
+      // Bead pulp_wars-2yc.86: the main view is the portrait, the name, the
+      // HP, the status chips and the actions; the rest is the details.
+      const cardDetails = this.#compactUnitCard(view, dock, unit, stats);
       if (this.#selectedUnitHelpId === unit.id) {
         const modal = el(this.#document, "section", "v7-unit-help-dialog");
         modal.setAttribute("role", "dialog");
@@ -6780,13 +6830,10 @@ export class Ruleset7DomAppView {
           ),
           text(this.#document, "h2", roleLabel),
         );
-        const statCopy = dock.querySelector(".v7-unit-stats")?.cloneNode(true);
-        modal.append(closeHelp, header);
-        if (statCopy instanceof HTMLElement) {
-          for (const node of statCopy.querySelectorAll("button"))
-            node.replaceWith(text(this.#document, "span", node.textContent));
-          modal.append(statCopy);
-        }
+        // Bead pulp_wars-2yc.86: the details view: what the main view
+        // leaves out (role, faction, the six stats with their terms, a
+        // giant's signature, the board's marker legends).
+        modal.append(closeHelp, header, cardDetails);
         // The unit glossary (bead pulp_wars-2yc.39): what the unit can do,
         // then what its chips mean right now, one plain sentence each.
         const lines: readonly GlossaryLineV7[] =
@@ -6865,7 +6912,7 @@ export class Ruleset7DomAppView {
               faction: view.players.find((player) => player.id === city.ownerId)
                 ?.faction,
             }),
-            CHIBI_DOM_BOXES_V7.dock,
+            CHIBI_DOM_BOXES_V7.card,
             this.#playerColour(view, city.ownerId),
           )?.element,
         ),
@@ -7033,6 +7080,8 @@ export class Ruleset7DomAppView {
               : "Spent · resets next turn",
           ),
         );
+        if (city.cityActionAvailable !== true)
+          cityAction.dataset.spent = "true";
         details.append(units, income, cityAction);
         // 7r76 (pulp_wars-5ti.12): one trade, by Road or Port link.
         for (const [kind, active] of [
@@ -7219,6 +7268,8 @@ export class Ruleset7DomAppView {
           }
         }
       }
+      // Bead pulp_wars-2yc.86: the compact city card.
+      this.#compactCityCard(dock, details, cityNameV7(view, city));
     } else {
       const tile = view.board.tiles.find((candidate) =>
         same(candidate.at, selection.at),
@@ -7745,10 +7796,134 @@ export class Ruleset7DomAppView {
           dock.dataset.hasActions !== "true"
         )
           dock.dataset.plainTile = "true";
+        // Bead pulp_wars-2yc.86: a tile's descriptive lines are details.
+        this.#compactTileCard(dock, details, name);
       }
     }
     dock.append(close);
     return dock;
+  }
+
+  /**
+   * The compact city card (bead pulp_wars-2yc.86): the portrait with the
+   * name, "Capital" or "City", and the city's numbers (level, population,
+   * units, income) and its states (besieged, Cowed, a spent city action,
+   * why it trains nothing) beside it, then its production. The rest (its
+   * owner, Walls, the city action when ready, trade, Harbours, a Forge's
+   * discount, what the center gives a unit) is in its details.
+   */
+  #compactCityCard(dock: HTMLElement, stats: HTMLElement, name: string): void {
+    const identity = dock.querySelector<HTMLElement>(":scope > .v7-identity");
+    if (identity === null) return;
+    dock.dataset.card = "compact";
+    identity.classList.add("v7-identity-compact");
+    const full = stats.cloneNode(true) as HTMLElement;
+    const facts = el(this.#document, "div", "v7-unit-card-facts");
+    for (const node of identity.querySelectorAll<HTMLElement>(
+      ":scope > .v7-identity-owner",
+    ))
+      facts.append(node);
+    for (const child of [...stats.children])
+      if (!child.matches(CITY_MAIN_STATS_V7)) child.remove();
+    // The name and "Capital" or "City" form the card's head.
+    const head = el(this.#document, "div", "v7-identity-head");
+    const title = identity.querySelector(":scope > h2");
+    title?.before(head);
+    head.append(
+      ...[title, identity.querySelector(":scope > .v7-identity-kind")].filter(
+        (node): node is Element => node !== null,
+      ),
+    );
+    identity.append(stats);
+    const content = [...(facts.childElementCount > 0 ? [facts] : []), full];
+    if (
+      full.childElementCount === stats.childElementCount &&
+      facts.childElementCount === 0
+    )
+      return;
+    this.#dockDetails(dock, identity, name, content);
+  }
+
+  /**
+   * The compact tile card (bead pulp_wars-2yc.86): a faction building's
+   * flavour line, a curiosity's rule and a Barricade's rule are details;
+   * the chips stay.
+   */
+  #compactTileCard(
+    dock: HTMLElement,
+    details: HTMLElement,
+    name: string,
+  ): void {
+    const descriptive = [
+      ...details.querySelectorAll<HTMLElement>(
+        ".v7-building-flavour, .v7-curiosity-info > p:not(.v7-curiosity-status), .v7-dwarf-barricade-rule",
+      ),
+    ];
+    if (descriptive.length === 0) return;
+    const identity = dock.querySelector<HTMLElement>(".v7-identity");
+    if (identity === null) return;
+    const full = details.cloneNode(true) as HTMLElement;
+    for (const node of descriptive) node.remove();
+    this.#dockDetails(dock, identity, name, [full]);
+  }
+
+  /**
+   * The "?" of a city or tile dock and, while it is open, its details
+   * dialog: the dock's art and name over `content`.
+   */
+  #dockDetails(
+    dock: HTMLElement,
+    identity: HTMLElement,
+    name: string,
+    content: readonly HTMLElement[],
+  ): void {
+    const key = dock.dataset.selectionKey ?? "";
+    const help = button(this.#document, "", "dock-details", "v7-unit-help");
+    help.append(text(this.#document, "span", "?", "v7-unit-help-glyph"));
+    help.setAttribute("aria-label", `About ${name}`);
+    help.title = `About ${name}`;
+    help.onclick = () => {
+      this.#dockDetailsKey = key;
+      this.#pendingFocusAction = null;
+      this.#render();
+    };
+    (identity.querySelector(":scope > .v7-identity-head") ?? identity).append(
+      help,
+    );
+    if (this.#dockDetailsKey !== key) return;
+    const modal = el(
+      this.#document,
+      "section",
+      "v7-unit-help-dialog v7-dock-details-dialog",
+    );
+    modal.setAttribute("role", "dialog");
+    modal.setAttribute("aria-modal", "true");
+    modal.setAttribute("aria-label", `${name} information`);
+    modal.dataset.v7Region = "dock-details";
+    const closeHelp = iconButton(
+      this.#document,
+      "close",
+      "Close",
+      "close-dock-details",
+    );
+    closeHelp.classList.add("close-button");
+    closeHelp.onclick = () => this.#closeDockDetails();
+    const header = el(this.#document, "div", "v7-dialog-header");
+    const portrait = identity
+      .querySelector(".v7-identity-art")
+      ?.cloneNode(true);
+    if (portrait instanceof Element) header.append(portrait);
+    header.append(text(this.#document, "h2", name));
+    const body = el(this.#document, "div", "v7-unit-card-details");
+    body.append(...content);
+    modal.append(closeHelp, header, body);
+    this.#unitHelpModal = modal;
+  }
+
+  #closeDockDetails(): void {
+    this.#dockDetailsKey = null;
+    this.#pendingFocusAction = "dock-details";
+    this.#render();
   }
 
   #commandButtons(predicate: (command: CommandV7) => boolean): HTMLElement {
@@ -8419,7 +8594,8 @@ export class Ruleset7DomAppView {
     this.#cultPick = null;
     this.#selectedRecruitHelp = null;
     this.#selectedUnitHelpId = null;
-    this.#selectedModifier = null;
+    this.#statusPopover = null;
+    this.#dockDetailsKey = null;
     this.#render();
   }
 
@@ -8494,6 +8670,7 @@ export class Ruleset7DomAppView {
    * tile chooser closes it.
    */
   readonly #onPressOutsideChooser = (event: Event): void => {
+    this.#closeStatusPopoverOutside(event);
     if (this.#tileChooser === null) return;
     const target = event.target;
     if (
@@ -9121,6 +9298,7 @@ export class Ruleset7DomAppView {
     return (
       region.startsWith("overlay-") ||
       region === "unit-help" ||
+      region === "dock-details" ||
       region === "recruit-help"
     );
   }
@@ -12039,6 +12217,236 @@ export class Ruleset7DomAppView {
       });
     }
     return lines;
+  }
+
+  /**
+   * The compact unit card (bead pulp_wars-2yc.86; Polytopia's slim
+   * selected-unit bar is the benchmark). The dock keeps the portrait, the
+   * name, the HP, a row of status chips (each opens a popover on a tap)
+   * and the actions, and the key of any special marks the board shows for
+   * the unit now (the legends, the Feast's prompt), which belong with the
+   * board. The owner, faction and role lines, the six stats and a giant's
+   * signature move to the returned details, which the details dialog (the
+   * "?" button) shows.
+   */
+  #compactUnitCard(
+    view: PlayerViewV7,
+    dock: HTMLElement,
+    unit: PublicUnitV7,
+    stats: PublicUnitStatsV7 | undefined,
+  ): HTMLElement {
+    const documentRoot = this.#document;
+    dock.dataset.card = "compact";
+    const identity = dock.querySelector<HTMLElement>(":scope > .v7-identity");
+    const details = el(documentRoot, "div", "v7-unit-card-details");
+    const facts = el(documentRoot, "div", "v7-unit-card-facts");
+    for (const node of identity?.querySelectorAll<HTMLElement>(
+      ":scope > .v7-identity-owner, :scope > .v7-faction-chip, :scope > .v7-tactical-role, :scope > .v7-frog-was",
+    ) ?? [])
+      facts.append(node);
+    if (facts.childElementCount > 0) details.append(facts);
+    for (const node of dock.querySelectorAll<HTMLElement>(
+      ":scope > .v7-unit-stats, :scope > .v7-giant-signature",
+    ))
+      details.append(node);
+    // The Egg's sentence: the details dialog has its own.
+    dock.querySelector(":scope > .v7-egg-info")?.remove();
+    if (identity === null) return details;
+    identity.classList.add("v7-identity-compact");
+    const hp = el(documentRoot, "div", "v7-unit-hp");
+    hp.dataset.unitHp = `${unit.hp}/${unit.maxHp}`;
+    hp.setAttribute("role", "img");
+    hp.setAttribute("aria-label", `HP ${unit.hp} of ${unit.maxHp}`);
+    hp.title = "HP";
+    const meter = el(documentRoot, "span", "v7-unit-hp-meter");
+    meter.setAttribute("aria-hidden", "true");
+    const fill = el(documentRoot, "span", "v7-unit-hp-fill");
+    fill.style.width = `${Math.round((100 * Math.max(0, unit.hp)) / Math.max(1, unit.maxHp))}%`;
+    if (unit.hp * 3 <= unit.maxHp) fill.dataset.low = "true";
+    meter.append(fill);
+    hp.append(
+      uiIconV7(documentRoot, STAT_ICONS.HP ?? "info"),
+      text(
+        documentRoot,
+        "span",
+        `${unit.hp}/${unit.maxHp}`,
+        "v7-unit-hp-value",
+      ),
+      meter,
+    );
+    // The name with its "?" and the HP form the card's head, beside the
+    // portrait (on a phone, beside it and the actions).
+    const head = el(documentRoot, "div", "v7-identity-head");
+    const name = identity.querySelector(":scope > h2");
+    name?.before(head);
+    head.append(
+      ...[name, identity.querySelector(":scope > .v7-unit-help")].filter(
+        (node): node is Element => node !== null,
+      ),
+      hp,
+    );
+    // Every chip of the card, in its order, in one row under the HP; a
+    // stat term no chip stands for (Veteran, Charge) gets its own chip.
+    const chips = [
+      ...identity.querySelectorAll<HTMLElement>("[data-unit-status]"),
+    ].filter(
+      (chip) => chip.parentElement?.closest("[data-unit-status]") === null,
+    );
+    for (const extra of modifierChipsV7(
+      stats,
+      chips.map((chip) => chip.dataset.unitStatus ?? ""),
+    )) {
+      const chip = text(
+        documentRoot,
+        "span",
+        extra.label,
+        "v7-chip v7-modifier-chip",
+      );
+      chip.dataset.unitStatus = extra.id;
+      chip.title = extra.text;
+      chip.setAttribute("aria-label", `${extra.label}. ${extra.text}`);
+      chips.push(chip);
+    }
+    identity.querySelector(":scope > .v7-unit-status-cues")?.remove();
+    if (chips.length === 0) {
+      this.#statusPopover = null;
+      return details;
+    }
+    const row = el(documentRoot, "div", "v7-unit-status-cues");
+    const popoverStatus =
+      this.#statusPopover?.unitId === unit.id
+        ? this.#statusPopover.status
+        : null;
+    let openChip: HTMLElement | null = null;
+    for (const chip of chips) {
+      const status = chip.dataset.unitStatus ?? "";
+      const open = status === popoverStatus && openChip === null;
+      if (open) openChip = chip;
+      chip.dataset.action = `status-chip-${status}`;
+      chip.tabIndex = 0;
+      chip.setAttribute("role", "button");
+      chip.setAttribute("aria-haspopup", "dialog");
+      chip.setAttribute("aria-expanded", String(open));
+      const toggle = (): void => {
+        this.#statusPopover = open ? null : { unitId: unit.id, status };
+        this.#pendingFocusAction = `status-chip-${status}`;
+        this.#render();
+      };
+      chip.onclick = toggle;
+      chip.onkeydown = (event) => {
+        if (event.key !== "Enter" && event.key !== " ") return;
+        event.preventDefault();
+        toggle();
+      };
+      row.append(chip);
+    }
+    head.after(row);
+    if (openChip === null) {
+      if (popoverStatus !== null) this.#statusPopover = null;
+    } else dock.append(this.#statusPopoverPanel(view, unit, stats, openChip));
+    return details;
+  }
+
+  /**
+   * A status chip's popover (bead pulp_wars-2yc.86): its name, what it
+   * does to the unit's numbers ("+1 Attack" and the sum "Attack 3 + 1 =
+   * 4", from the public stat terms), and its one plain sentence. A press
+   * outside, Escape or a second tap on the chip closes it.
+   */
+  #statusPopoverPanel(
+    view: PlayerViewV7,
+    unit: PublicUnitV7,
+    stats: PublicUnitStatsV7 | undefined,
+    chip: HTMLElement,
+  ): HTMLElement {
+    const status = chip.dataset.unitStatus ?? "";
+    const label = (chip.textContent ?? "").trim();
+    const glossary = statusGlossaryV7(status);
+    const popover = statusPopoverV7(
+      stats,
+      status,
+      label === "" ? (glossary?.name ?? status) : label,
+      chip.title !== "" ? chip.title : (glossary?.text ?? null),
+    );
+    const panel = el(this.#document, "section", "v7-status-popover");
+    panel.dataset.statusPopover = status;
+    panel.dataset.v7Region = "status-popover";
+    panel.setAttribute("role", "dialog");
+    panel.setAttribute("aria-label", popover.title);
+    panel.append(
+      text(this.#document, "strong", popover.title, "v7-status-popover-title"),
+    );
+    for (const effect of popover.effects) {
+      const line = el(this.#document, "p", "v7-status-popover-effect");
+      line.dataset.effectStat = effect.stat.toLowerCase();
+      const change = text(
+        this.#document,
+        "span",
+        effect.effect,
+        "v7-status-popover-change",
+      );
+      if (effect.effect.startsWith("−")) change.dataset.loss = "true";
+      line.append(
+        change,
+        text(this.#document, "span", effect.sum, "v7-status-popover-sum"),
+      );
+      panel.append(line);
+    }
+    if (popover.text !== null)
+      panel.append(
+        text(this.#document, "p", popover.text, "v7-status-popover-text"),
+      );
+    // The unit's owner and the viewer may differ: an enemy's chips explain
+    // themselves the same way.
+    panel.dataset.owner = unit.ownerId === view.viewer.id ? "viewer" : "other";
+    return panel;
+  }
+
+  /**
+   * Puts a status chip's popover just above the dock, its left edge at
+   * its chip's, inside the screen.
+   */
+  #placeStatusPopover(
+    main: HTMLElement,
+    dock: HTMLElement,
+    panel: HTMLElement,
+  ): void {
+    const chip = dock.querySelector<HTMLElement>(
+      '.v7-unit-status-cues [aria-expanded="true"]',
+    );
+    const area = main.getBoundingClientRect();
+    const dockBox = dock.getBoundingClientRect();
+    const box = panel.getBoundingClientRect();
+    if (chip === null || area.width === 0 || dockBox.height === 0) return;
+    const margin = 8;
+    const chipBox = chip.getBoundingClientRect();
+    const left = Math.max(
+      margin,
+      Math.min(chipBox.left - area.left, area.width - box.width - margin),
+    );
+    const top = Math.max(margin, dockBox.top - area.top - box.height - margin);
+    panel.style.left = `${Math.round(left)}px`;
+    panel.style.top = `${Math.round(top)}px`;
+    panel.style.bottom = "auto";
+  }
+
+  /** A press outside an open status popover and its chip closes it. */
+  #closeStatusPopoverOutside(event: Event): void {
+    if (this.#statusPopover === null) return;
+    const target = event.target;
+    if (
+      target instanceof Element &&
+      target.closest(
+        ".v7-status-popover, .v7-unit-status-cues [role='button']",
+      ) !== null
+    )
+      return;
+    this.#statusPopover = null;
+    this.#root.querySelector(".v7-status-popover")?.remove();
+    for (const chip of this.#root.querySelectorAll<HTMLElement>(
+      '.v7-unit-status-cues [aria-expanded="true"]',
+    ))
+      chip.setAttribute("aria-expanded", "false");
   }
 
   /**

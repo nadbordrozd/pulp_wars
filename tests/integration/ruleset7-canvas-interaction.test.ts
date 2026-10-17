@@ -59,7 +59,12 @@ describe("Ruleset 7 Canvas interaction", () => {
     expect(host.mount).toHaveBeenCalledTimes(1);
     expect(host.container).toBe(firstContainer);
     expect(document.querySelector(".v7-selection-dock")).not.toBeNull();
-    expect(document.querySelectorAll(".v7-unit-stats dt")).toHaveLength(6);
+    // Bead pulp_wars-2yc.86: the compact card shows the HP; the six
+    // stats are in the details.
+    expect(document.querySelectorAll(".v7-unit-stats dt")).toHaveLength(0);
+    expect(
+      document.querySelector(".v7-selection-dock .v7-unit-hp"),
+    ).not.toBeNull();
     document
       .querySelector<HTMLButtonElement>('[data-action="unit-help"]')
       ?.click();
