@@ -298,9 +298,13 @@ describe("naval branch art (pulp_wars-5ti.6)", () => {
       // Themed naval branches (`pulp_wars-5ti.16`, `pulp_wars-5ti.17`): the
       // Goblin Powder Kegs and Undead Drowned Crews cards have their own
       // icons, and Diving Barrels and Sunken Galleys show their ships.
-      // Horned Prows and Plesiosaurs (`pulp_wars-5ti.18`) too.
+      // Horned Prows and Plesiosaurs (`pulp_wars-5ti.18`) too, and Hover Pods
+      // and Bathyspheres (`pulp_wars-5ti.19`).
       const themed =
-        faction === "GOBLIN" || faction === "UNDEAD" || faction === "DINOSAUR";
+        faction === "GOBLIN" ||
+        faction === "UNDEAD" ||
+        faction === "DINOSAUR" ||
+        faction === "MARTIAN";
       expect(technologySubjectV7("SEAMANSHIP", faction), faction).toBe(
         faction === "ICE_FOLK"
           ? "ICON:TECH:ICE_FOLK:SEAMANSHIP"

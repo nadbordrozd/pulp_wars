@@ -919,6 +919,99 @@ without its Shield.
 - **Icons:** Hover Pods (a chrome pod over a wave).
 - **Sound:** the existing Shield flare and embark cues; no new clip.
 
+### 6.8 As built (`pulp_wars-5ti.19`, `pulp-wars-poc-7r95`)
+
+Built as above at identity `7r95` (`7r94` is a prior identity; the
+autosave key is `pulpWars.save.v7r95.current`). Every row of 6.2 is a
+registry value and every row of 6.4 an exact preview equal to its result
+in `tests/unit/ruleset-v7-naval-martian.test.ts` (all seven held as
+written: the Battleship of the "a Battleship: 3" comparison is the
+Dinosaur War Raft, the Human numbers, since an arena never seats one
+faction twice); the AI scenarios of 6.6 are
+`tests/unit/ruleset-v7-naval-martian-ai.test.ts`. Where the build is more
+precise than the text above:
+
+- **The claim checked first.** `TRAIN_NAVAL` did **not** create a Shield
+  entry (the land `TRAIN`, Hire, rewards, and the map and mission builders
+  did): the reducer now writes it (`withFullShieldsV7`), as section 6.3
+  says. The recharge, the Force Field cover (a docked ship beside a
+  land-form Projector recharges to 4), combat absorption, the `martian`
+  stats block, and the Board prize rule already read any form, so a
+  Martian ship needed only its role mechanic `shield` (2, 3, 2). The
+  Showcase gives the three ships their full Shields (twelve entries for a
+  Martian seat).
+- **Hover Pods** is the unlock `HOVER_PODS` (capability `hoverPods`) after
+  `RAM` on the Martian Seamanship (`withSeamanshipUnlocksV7`). The launch
+  rule is one helper, `hoverLaunchAllowedV7`, read by the canonical and the
+  public movement validation and so by the movement query: the last step
+  of the path (never a hop), from a land-form unit of the `GROUND` mode
+  that embarks at all (not summoned, not of the Ice Folk kind, not a Bat
+  Escape), onto Shallow Water with no ice and no Port or Shipyard, on a
+  tile the mover had explored **before the command** (a launch onto water
+  revealed by the same Move is refused, so offered equals accepted and a
+  rejection reveals nothing). The step costs 2 half-points even from a
+  Road node and stops the Move; a further step after it is the ordinary
+  `MOVEMENT_ILLEGAL { reason: "ENGINEERING_REQUIRED" }`, and so are Deep
+  Water and a hostile dock; an occupied tile is `OCCUPIED`; an own active
+  dock embarks as ever; ice is ground (the unit walks on and slips). The
+  reducer's self-launch reads the same capability (`EMBARKED`, the
+  exhausted activation, `UNIT_EMBARKED`, the Shield kept).
+- **Thrall rules.** A mind-controlled unit reads its own kind's tree with
+  its controller's research (`unitCapabilitiesV7`): a Human Fighter under
+  a Brain never launches; a Martian foot unit under another Martian seat's
+  Brain launches with its controller's Hover Pods (tested on the roster:
+  no arena seats one faction twice).
+- **Private research.** Another seat's Hover Pods is private, so the public
+  movement validation of a visible unit of another seat assumes them for a
+  Martian foot unit (`publicUnitHoverPodsV7`), and the attack-reach query
+  treats its launch tiles as no attack origins, as a machine's water tiles
+  (`publicUnitLaunchesV7`). The viewer's own units are exact.
+- **Shields at sea (AI).** Nothing new was needed: every exchange reads the
+  exact previews, which count both Shields, and the threat estimate
+  already took the Shield a defender has during the enemy turn off the
+  damage it expects (`enemyTurnShieldV7`) for any Martian unit, ships
+  included. The doc's "a Skimmer rams a Patrol Boat it would not ram
+  without its Shield" is a Skimmer at 4 HP: its Ram deals 6 and the reply
+  of 3 falls on its Shield first (3 HP left); without the Shield the reply
+  of 4 sinks it, and the seat holds the attack.
+- **Hover launches (AI).** `hoverLaunchTilesV7` (in `src/ai/v7-naval-martian.ts`)
+  gives the plan's launch starts: explored Shallow Water beside explored
+  land of a home landmass (one with an own city), with no visible unit, no
+  ice, and no dock. They join the Ports among the plan's starts, the launch
+  tiles with a water route to the landing coast are `servingLaunchKeys`,
+  and a seat with one reserves no Coins for a Port. A launch Move
+  (`hoverLaunchMoveV7`) is an auto-embark for every boarding rule
+  (`isAutoembarkMoveV7`: priority 1300, the wave, the hold, the endgame,
+  the escort rule `navalTransportMoveRejectedV7`), and
+  `navalBoardingPortsV7` lists the launch tiles for a foot unit that
+  launches. The wave of a beach gathers round one launch tile: a sailor
+  whose own nearest launch tile is within the gathering radius (2) of it
+  counts.
+- **Research (AI).** `hoverPodsResearchDueV7`: the plan is active, the
+  seat's tree grants Hover Pods and it lacks them, Seamanship is offered,
+  and two or more own foot capture units have no walk to the plan's target
+  (`overseasFootUnits`). It is then the plan's next technology after
+  Sailing and a needed Navigation (priority 1280) and is not held for the
+  army's research.
+- **The other seats.** A hover-launched unit is a transport: a Human boat
+  rams it and sinks it through its Shield (the 6.4 row), by the existing
+  attack on a transport.
+- **Text.** The glossary has a `HOVER_PODS` entry on the five foot roles
+  ("It can hover off any beach onto shallow water as a transport, with no
+  Port"); the Martian ships list the Martians' `SHIELD` line (one name, one
+  mechanic). The Hover Pods card says "Hover Pods: Your foot troops can
+  hover off any beach"; the Martian Help has an "At sea" line with the
+  Shield sentence. A launch tile is highlighted as a machine's Launch is,
+  with the legend "Hover off: crosses water as a transport".
+- **Art.** The Hover Pods card has its own icon
+  (`ICON:TECH:MARTIAN:SEAMANSHIP`, `chibi-naval-martian-icon-tech-seamanship`,
+  batch `naval-martian`, three candidates); the Skimmers and Bathyspheres
+  cards show the ships' portraits. The "Shield bubble" on the hulls is the
+  existing code-drawn Shield: the segmented Shield bar at the hull's base
+  and the Shield flare on a hit, drawn for any Martian unit whatever its
+  form, checked at the ship anchors and on the riding-low Bathysphere. A
+  hover-launched unit draws the Martian transport. No new sound.
+
 ## 7. Dwarves: Ironclads and Sea Tunnels
 
 **Theme.** Heavy, slow, and built to last; they come from below: armoured

@@ -3180,6 +3180,9 @@ function applyTrainNaval(
             : candidate,
         ),
         units: [...state.units, trained],
+        // Themed naval branches (`pulp_wars-5ti.19`, section 6.3 M1): a
+        // new ship starts with its full Shield (the Martian hulls).
+        shields: withFullShieldsV7(state, state.shields, [trained]),
       }),
       [
         {
@@ -4993,8 +4996,17 @@ function applyMove(
     unit.form === "LAND" ? unitMovementModeV7(state, unit) : "GROUND";
   // The frozen sea (naval branch section 10): a machine that ends its Move
   // on ice stands there (no self-launch).
+  // Themed naval branches, Hover Pods (`pulp_wars-5ti.19`): a foot unit's
+  // Move that ends on Shallow Water is a hover launch (the validation
+  // accepts one only with Hover Pods) and self-launches it the same way.
   const selfLaunches =
-    movementMode !== "GROUND" &&
+    unit.form === "LAND" &&
+    (movementMode !== "GROUND" ||
+      unitCapabilitiesV7(
+        state,
+        unit,
+        ownerResearchedTechsV7(state, unit.ownerId),
+      ).hoverPods) &&
     validation.traversedPath.length > 0 &&
     destinationTile?.biome === null &&
     !isIceAtV7(state, validation.destination);

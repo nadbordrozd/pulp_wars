@@ -216,6 +216,20 @@ export function drownedCrewsUnlockTextV7(): string {
   return `${technologyDisplayNameV7("SEAMANSHIP", "UNDEAD")}: ${drownedCrewRuleV7().replace(/\.$/, "")}`;
 }
 
+/**
+ * Themed naval branches, the Hover Fleet
+ * (docs/product/RULESET_7_NAVAL_FACTIONS.md sections 6.3 and 12,
+ * `pulp_wars-5ti.19`): the Hover Pods sentence and its card line, and the
+ * Shield sentence of a shielded hull.
+ */
+export const HOVER_PODS_RULE_V7 = "Your foot troops can hover off any beach.";
+export const SHIELDED_HULL_RULE_V7 =
+  "Its Shield takes hits first and recharges every turn.";
+/** The Hover Pods card line (the Martian `HOVER_PODS` unlock). */
+export function hoverPodsUnlockTextV7(): string {
+  return `${technologyDisplayNameV7("SEAMANSHIP", "MARTIAN")}: ${HOVER_PODS_RULE_V7.replace(/\.$/, "")}`;
+}
+
 export function harboursUnlockTextV7(population: number): string {
   return `${HARBOURS_LABEL_V7}: +${population} population from every active Port and Shipyard`;
 }

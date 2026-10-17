@@ -99,7 +99,7 @@ import { at, kindsV7, movedV7 } from "../fixtures/v7-revision20";
 // (docs/product/RULESET_7_MARTIANS.md sections 2 to 4, 10.9, 10.10, and 11).
 
 /** The revision number of this identity (`pulp-wars-poc-7rNN`). */
-const REVISION = 94;
+const REVISION = 95;
 const ID = `pulp-wars-poc-7r${REVISION}`;
 const PREVIOUS_ID = `pulp-wars-poc-7r${REVISION - 1}`;
 
@@ -843,14 +843,24 @@ describe("Martian roster (section 3)", () => {
         roleMechanicsV7(role, "MARTIAN"),
       );
     }
-    // The boats are the Human boats: no Shield, one slot.
-    for (const role of ["PATROL_BOAT", "BATTLESHIP"] as const) {
-      expect(effectiveRoleRuleV7(role, "MARTIAN")).toEqual(
-        effectiveRoleRuleV7(role, "ORIGINAL"),
-      );
-      expect(roleMechanicsV7(role, "MARTIAN")).toEqual(
-        roleMechanicsV7(role, "ORIGINAL"),
-      );
+    // Themed naval branches, the Hover Fleet (`pulp_wars-5ti.19`,
+    // RULESET_7_NAVAL_FACTIONS.md section 6.2): the Skimmer, the Hover
+    // Cruiser, and the Bathysphere are the Human ships under their own
+    // names with less HP and a Shield; one slot.
+    for (const [role, label, maxHp, shield] of [
+      ["PATROL_BOAT", "Skimmer", 8, 2],
+      ["BATTLESHIP", "Hover Cruiser", 20, 3],
+      ["SUBMARINE", "Bathysphere", 10, 2],
+    ] as const) {
+      expect(effectiveRoleRuleV7(role, "MARTIAN")).toEqual({
+        ...effectiveRoleRuleV7(role, "ORIGINAL"),
+        label,
+        maxHp,
+      });
+      expect(roleMechanicsV7(role, "MARTIAN")).toEqual({
+        ...roleMechanicsV7(role, "ORIGINAL"),
+        shield,
+      });
     }
   });
 
@@ -1155,6 +1165,13 @@ describe("Martian technology (section 4)", () => {
           ...human.unlocks,
           { kind: "HEAT_SINKS" },
         ]);
+      // Themed naval branches (`pulp_wars-5ti.19`): Seamanship is the Ram
+      // and Hover Pods instead of Board.
+      else if (human.id === "SEAMANSHIP")
+        expect(martian.unlocks).toEqual([
+          { kind: "RAM" },
+          { kind: "HOVER_PODS" },
+        ]);
       else expect(martian.unlocks).toEqual(human.unlocks);
     });
     expect(TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7.MARTIAN).toEqual({
@@ -1167,6 +1184,11 @@ describe("Martian technology (section 4)", () => {
       SAWMILLING: "Tripods",
       SCOUTING: "Saucers",
       CHIVALRY: "Motherships",
+      // Themed naval branches (`pulp_wars-5ti.19`).
+      SHORECRAFT: "Skimmers",
+      NAVAL_ENGINEERING: "Hover Cruisers",
+      SEAMANSHIP: "Hover Pods",
+      SUBMERSIBLES: "Bathyspheres",
     });
   });
 
@@ -1202,15 +1224,19 @@ describe("Martian technology (section 4)", () => {
       shieldsRechargeAtEndTurn: true,
       raysIgnoreFortification: false,
     });
-    // Everything else is the Human table, minus Field Defense.
+    // Everything else is the Human table, minus Field Defense, and minus
+    // Board (Hover Pods instead, `pulp_wars-5ti.19`).
     const martian = technologyCapabilitiesV7(all, "MARTIAN");
     const human = technologyCapabilitiesV7(all, "ORIGINAL");
     // (The ninth unit, 7r55: every faction has the heavy line role.)
     expect(martian.trainableRoles).toEqual(human.trainableRoles);
     expect(martian.roleSightRadius).toEqual(human.roleSightRadius);
     expect(martian.commands).toEqual(
-      human.commands.filter((command) => command !== "BUILD_FIELD_DEFENSE"),
+      human.commands.filter(
+        (command) => command !== "BUILD_FIELD_DEFENSE" && command !== "BOARD",
+      ),
     );
+    expect([martian.hoverPods, human.hoverPods]).toEqual([true, false]);
     expect(martian.mountainMovement).toBe(true);
     expect(martian.landTradeIncomeCoins).toBe(human.landTradeIncomeCoins);
   });
@@ -1542,7 +1568,8 @@ describe("Martian Showcase (section 2.4)", () => {
         veteran: false,
       });
     }
-    // Full Shields for the eight land roles, none for the boats or others.
+    // Full Shields for the land roles and, since the Hover Fleet
+    // (`pulp_wars-5ti.19`), the three ships; none for the other seats.
     expect(state.shields).toEqual(
       own
         .filter((unit) => roleMechanicsV7(unit.role, "MARTIAN").shield > 0)
@@ -1551,8 +1578,9 @@ describe("Martian Showcase (section 2.4)", () => {
           shield: roleMechanicsV7(unit.role, "MARTIAN").shield,
         })),
     );
-    // (The ninth unit, 7r55: nine, with the Shock Trooper.)
-    expect(state.shields).toHaveLength(9);
+    // (The ninth unit, 7r55: nine, with the Shock Trooper; twelve with the
+    // Skimmer, the Hover Cruiser, and the Bathysphere.)
+    expect(state.shields).toHaveLength(12);
     expect([
       state.cooling,
       state.mindControlled,
@@ -1720,10 +1748,11 @@ describe("Martian public unit stats (section 11)", () => {
       capacitySlots: 2,
       movementMode: "FLY",
     });
-    // A boat of a Martian seat has the block with no Shield.
+    // A boat of a Martian seat has the block with its hull's Shield (the
+    // Skimmer's 2 since `pulp_wars-5ti.19`).
     expect(stats(at(9, 2)).martian).toMatchObject({
-      shield: 0,
-      shieldMaximum: 0,
+      shield: 2,
+      shieldMaximum: 2,
     });
     expect(stats(at(1, 1))).not.toHaveProperty("martian");
     // The Attack row lists HALF_POWER; a Shield row follows the HP row.
@@ -1735,10 +1764,13 @@ describe("Martian public unit stats (section 11)", () => {
     ).toEqual(["HALF_POWER"]);
     const ids = tripod.stats.map((stat) => stat.id);
     expect(ids[ids.indexOf("HP") + 1]).toBe("SHIELD");
-    // A controlled Human unit and a boat have no Shield row; a Human unit
-    // has none either.
-    for (const where of [at(5, 5), at(9, 2), at(1, 1)])
+    // A controlled Human unit has no Shield row; a Human unit has none
+    // either. A Martian boat has one since the Hover Fleet
+    // (`pulp_wars-5ti.19`).
+    for (const where of [at(5, 5), at(1, 1)])
       expect(stats(where).stats.map((stat) => stat.id)).not.toContain("SHIELD");
+    const boatIds = stats(at(9, 2)).stats.map((stat) => stat.id);
+    expect(boatIds[boatIds.indexOf("HP") + 1]).toBe("SHIELD");
     // Labels.
     expect(unitRoleRuleV7(state, unitAtV7(state, at(4, 3))).label).toBe(
       "Tripod",

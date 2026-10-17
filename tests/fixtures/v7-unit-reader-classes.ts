@@ -218,6 +218,9 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     // Horned Prows and the Plesiosaur (`pulp_wars-5ti.18`): the other
     // torpedoes of a Plesiosaur and its fellow Submarines are on the board.
     "src/ai/v7-naval-dinosaur.ts::plesiosaurGrowthTorpedoPriorityV7": "BOARD",
+    // The Martian Hover Fleet (`pulp_wars-5ti.19`): a launch tile is free of
+    // every visible unit on the board.
+    "src/ai/v7-naval-martian.ts::hoverLaunchTilesV7": "BOARD",
     // `pulp_wars-5ti.5`: the frozen sea reads the board: the units that
     // walk to a crossing and Freeze it, the ships a Freeze locks in and the
     // units that can strike them, the units on ice, and the unit that

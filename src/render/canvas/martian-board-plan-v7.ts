@@ -1,6 +1,7 @@
 import {
   cooperativeAlliesV7,
   BEAM_DOWN_PICKUP_RANGE_V7,
+  isIceAtV7,
   isMindControlledV7,
   previewBeamDownV7,
   previewMindControlV7,
@@ -18,6 +19,7 @@ import {
   BEAMED_HINT_V7,
   BEAMING_BADGE_V7,
   BEAM_BADGE_V7,
+  HOVER_LAUNCH_LABEL_V7,
   LAUNCH_LABEL_V7,
   beamDownPickupTilesV7,
   beamDownTileLabelV7,
@@ -458,9 +460,15 @@ export function martianMoveLabelV7(
   const at = command.path.at(-1);
   if (unit === undefined || at === undefined || unit.form !== "LAND")
     return null;
-  if (!martianMachineV7(view, unit)) return null;
   const tile = view.board.tiles.find((candidate) => same(candidate.at, at));
-  return tile?.explored === true && tile.biome === null
-    ? LAUNCH_LABEL_V7
+  if (tile?.explored !== true || tile.biome !== null) return null;
+  if (martianMachineV7(view, unit)) return LAUNCH_LABEL_V7;
+  // Themed naval branches, Hover Pods (`pulp_wars-5ti.19`): an offered Move
+  // of a foot unit onto water that is no dock is a hover launch (a Move to
+  // an own dock embarks there as ever).
+  return tile.improvement !== "PORT" &&
+    tile.improvement !== "SHIPYARD" &&
+    !isIceAtV7(view, at)
+    ? HOVER_LAUNCH_LABEL_V7
     : null;
 }

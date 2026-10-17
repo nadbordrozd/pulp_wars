@@ -76,7 +76,12 @@ const SEAFARING_FACTIONS = FACTION_IDS_V7.filter(
  */
 const SEAMANSHIP_TRICK: Partial<
   Record<FactionIdV7, { readonly kind: string }>
-> = { GOBLIN: { kind: "FIRE_RAFTS" }, UNDEAD: { kind: "DROWNED_CREWS" } };
+> = {
+  GOBLIN: { kind: "FIRE_RAFTS" },
+  UNDEAD: { kind: "DROWNED_CREWS" },
+  // The Martian Hover Fleet (`pulp_wars-5ti.19`).
+  MARTIAN: { kind: "HOVER_PODS" },
+};
 const THEMED_SUBMARINE: Partial<
   Record<
     FactionIdV7,
@@ -102,6 +107,8 @@ const THEMED_SUBMARINE: Partial<
     maxHp: 12,
     abilities: ["ATTACK", "SUBMERGED", "TORPEDO", "GROW", "SEA_BEAST"],
   },
+  // The Bathysphere: a frail hull behind a Shield of 2.
+  MARTIAN: { label: "Bathysphere", cost: 9, maxHp: 10 },
 };
 const THEMED_PATROL_BOAT_ABILITIES: Partial<
   Record<FactionIdV7, readonly string[]>
@@ -333,11 +340,12 @@ describe("the five-node Naval branch in every tree", () => {
       );
       // No faction rule applies to a Submarine yet: one slot, no splash, no
       // Shield, no blast, no growth, no Crumbs (a faction rule applies to a
-      // ship only where its themed section says so).
+      // ship only where its themed section says so: the Martian Bathysphere's
+      // Shield of 2, `pulp_wars-5ti.19`).
       expect(roleMechanicsV7("SUBMARINE", faction), faction).toMatchObject({
         capacitySlots: 1,
         splash: false,
-        shield: 0,
+        shield: faction === "MARTIAN" ? 2 : 0,
         kaboomDamage: null,
         deathBlastDamage: null,
         hatchTurns: null,
@@ -588,13 +596,20 @@ describe("the naval branch on Dry Land, in missions, and in the Showcase", () =>
       const coast = state.cities.find(
         (city) => city.ownerId === player.id && city.at.y === 11,
       );
+      // The Martian Bathysphere has 10 HP and a Shield of 2
+      // (`pulp_wars-5ti.19`).
+      const hp = factions[seat] === "MARTIAN" ? 10 : 12;
       expect(submarine).toMatchObject({
         form: "NAVAL",
         at: { x: cx + 1, y: 13 },
-        hp: 12,
-        maxHp: 12,
+        hp,
+        maxHp: hp,
         homeCityId: coast?.id,
       });
+      expect(
+        state.shields.find((entry) => entry.unitId === submarine?.id)?.shield ??
+          0,
+      ).toBe(factions[seat] === "MARTIAN" ? 2 : 0);
       const battleship = state.units.find(
         (unit) => unit.ownerId === player.id && unit.role === "BATTLESHIP",
       );

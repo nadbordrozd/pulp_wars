@@ -77,11 +77,11 @@ import {
 
 describe("ruleset-7 revision-17 identity", () => {
   it("keeps r16 among the prior identities after the r55 identity and cleans the r16 key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r94");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r94.current");
-    expect(PRIOR_RULESET_7_IDS.at(-78)).toBe("pulp-wars-poc-7r16");
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(93);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-78)).toBe(
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r95");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r95.current");
+    expect(PRIOR_RULESET_7_IDS.at(-79)).toBe("pulp-wars-poc-7r16");
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(94);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-79)).toBe(
       "pulpWars.save.v7r16.current",
     );
     const storage = new MemoryStorage([
@@ -847,6 +847,11 @@ describe("ruleset-7 Goblin technology", () => {
         SAWMILLING: "Tripods",
         SCOUTING: "Saucers",
         CHIVALRY: "Motherships",
+        // Themed naval branches (`pulp_wars-5ti.19`).
+        SHORECRAFT: "Skimmers",
+        NAVAL_ENGINEERING: "Hover Cruisers",
+        SEAMANSHIP: "Hover Pods",
+        SUBMERSIBLES: "Bathyspheres",
       },
       ICE_FOLK: {
         FORTIFICATION: "Deep Winter",

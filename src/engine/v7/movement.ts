@@ -6,6 +6,7 @@ import {
   GLACIER_ICE_MOVE_BONUS_V7,
   canCrossWaterV7,
   canEnterTerrainV7,
+  hoverLaunchAllowedV7,
   flyerMayStandOnSiteV7,
   isIceAtV7,
   unitIsIceboundV7,
@@ -56,6 +57,7 @@ import type {
   CoordV7,
   GameStateV7,
   PlayerStateV7,
+  TechnologyIdV7,
   TileStateV7,
   UnitStateV7,
 } from "./types";
@@ -452,6 +454,22 @@ function validateMovementPathCoreV7(
     const wasExplored = contains(explored, step);
     const wasKnownBeforeCommand = contains(knownBeforeCommand, step);
     const stepIce = iceAt(step);
+    // Themed naval branches, Hover Pods (`pulp_wars-5ti.19`): a foot unit
+    // with Hover Pods makes the last step of its Move onto known free
+    // Shallow Water (not ice, not a dock) and launches there; the step
+    // costs a full point and ends the Move.
+    const hoverLaunch = hoverLaunchAllowedV7({
+      hoverPods: capabilities.hoverPods,
+      movementMode: mode,
+      form: unit.form,
+      terrain: tile.terrain,
+      ice: stepIce,
+      improvement: tile.improvement,
+      lastStep: index === path.length - 1,
+      hop: jumped !== null,
+      known: wasKnownBeforeCommand,
+      embarks: !iceFolkKind && !summoned && !batEscape,
+    });
     // The Ice Folk balance revision (`pulp_wars-1wy.3`,
     // RULESET_7_BALANCE_MARTIAN_ICE.md section 6.1): Glide is a step from a
     // Snow tile onto a Snow tile (both ends read from the state before the
@@ -464,7 +482,7 @@ function validateMovementPathCoreV7(
     // A Bat Escape step is always a whole step.
     spentPoints2 += sliding
       ? 0
-      : jumped !== null || batEscape
+      : jumped !== null || batEscape || hoverLaunch
         ? 2
         : currentRoadNode ||
             (glides && currentSnow && stepSnow) ||
@@ -573,6 +591,7 @@ function validateMovementPathCoreV7(
       unit.form === "LAND"
         ? water
           ? (!autoEmbark &&
+              !hoverLaunch &&
               (summoned ||
                 !canCrossWaterV7({
                   terrain: tile.terrain,
@@ -724,7 +743,9 @@ function validateMovementPathCoreV7(
     const gateStops =
       state.curiosities.length > 0 &&
       gateAtV7(state.curiosities, step) !== null;
-    const stops = !wasExplored || terrainStops || entersZoc || gateStops;
+    // Hover Pods: the launch ends the Move.
+    const stops =
+      !wasExplored || terrainStops || entersZoc || gateStops || hoverLaunch;
     // Section 8.6: a step that entered ice the mover knew of continues
     // straight on while the next tile in that direction is on the board,
     // known before the command, ice, and free of units and mounds, and
@@ -1230,6 +1251,49 @@ function validatePlayerMovementPathWithContextV7(
     : result;
 }
 
+/** The research a hostile seat is assumed to have for its Hover Pods. */
+const HOVER_PODS_ASSUMED_TECHS_V7: readonly TechnologyIdV7[] = Object.freeze([
+  "SHORECRAFT",
+  "SEAMANSHIP",
+]);
+
+/**
+ * Themed naval branches, Hover Pods (`pulp_wars-5ti.19`), read from a view:
+ * whether the visible unit's kind's capabilities have `hoverPods`, exactly
+ * for the viewer's own units (the viewer's research through the unit's
+ * kind's tree) and assumed for every other seat's (its research is
+ * private, as the threat estimate assumes a hostile Ram). Only the hover
+ * launch rule (`hoverLaunchAllowedV7`) reads it.
+ */
+export function publicUnitHoverPodsV7(
+  view: PlayerViewV7,
+  unit: PublicUnitV7,
+): boolean {
+  return unitCapabilitiesV7(
+    view,
+    unit,
+    unit.ownerId === view.viewer.id
+      ? view.viewer.researchedTechs
+      : HOVER_PODS_ASSUMED_TECHS_V7,
+  ).hoverPods;
+}
+
+/**
+ * Whether a visible land-form unit can launch onto water by a Move (a
+ * Martian machine, or a foot unit with Hover Pods): its water destinations
+ * are no attack origins (it is afloat there).
+ */
+export function publicUnitLaunchesV7(
+  view: PlayerViewV7,
+  unit: PublicUnitV7,
+): boolean {
+  return (
+    unit.form === "LAND" &&
+    (unitMovementModeV7(view, unit) !== "GROUND" ||
+      publicUnitHoverPodsV7(view, unit))
+  );
+}
+
 function validatePlayerMovementPathCoreV7(
   view: PlayerViewV7,
   unit: PublicUnitV7,
@@ -1291,6 +1355,14 @@ function validatePlayerMovementPathCoreV7(
   const slides = iceSet.size > 0 && unitSlidesV7(view, unit);
   const iceFolkKind = unitKindWalksIceV7(view, unit);
   const summoned = unitIsSummonedV7(unit);
+  // Themed naval branches, Hover Pods (`pulp_wars-5ti.19`): exact for the
+  // viewer's own units (and those it controls); another seat's research is
+  // private, so a unit whose kind's tree grants Hover Pods is assumed to
+  // have them, as the threat estimate assumes a hostile Ram.
+  const hoverPods =
+    unit.ownerId === view.viewer.id
+      ? capabilities.hoverPods
+      : publicUnitHoverPodsV7(view, unit);
   let slide: { readonly dx: number; readonly dy: number } | null = null;
   const traversedPath: CoordV7[] = [];
   // The Candy redesign (sections 6.2 and 7.7): Stuck and the hop, from the
@@ -1344,6 +1416,22 @@ function validatePlayerMovementPathCoreV7(
     const tile = publicTileAt(view, step);
     if (tile === undefined) return { legal: false, reason: "OUT_OF_BOUNDS" };
     const stepIce = tile.explored && iceAt(step);
+    // Themed naval branches, Hover Pods (`pulp_wars-5ti.19`): the same rule
+    // as the canonical validation, on the tiles the viewer has explored.
+    const hoverLaunch =
+      tile.explored &&
+      hoverLaunchAllowedV7({
+        hoverPods,
+        movementMode: mode,
+        form: unit.form,
+        terrain: tile.terrain,
+        ice: stepIce,
+        improvement: tile.improvement,
+        lastStep: index === path.length - 1,
+        hop: jumped !== null,
+        known: true,
+        embarks: !iceFolkKind && !summoned && !batEscape,
+      });
     if (tile.explored) {
       const water =
         (tile.terrain === "SHALLOW_WATER" || tile.terrain === "DEEP_WATER") &&
@@ -1365,6 +1453,7 @@ function validatePlayerMovementPathCoreV7(
         (unit.form === "LAND" &&
           water &&
           !autoEmbark &&
+          !hoverLaunch &&
           (summoned ||
             !canCrossWaterV7({
               terrain: tile.terrain,
@@ -1384,7 +1473,7 @@ function validatePlayerMovementPathCoreV7(
     // tiles); a hop costs one ordinary step.
     spentPoints2 += sliding
       ? 0
-      : jumped !== null || batEscape
+      : jumped !== null || batEscape || hoverLaunch
         ? 2
         : currentRoadNode ||
             (glides && currentSnow && stepSnow) ||
@@ -1489,7 +1578,9 @@ function validatePlayerMovementPathCoreV7(
       tile.explored &&
       view.curiosities.length > 0 &&
       gateAtV7(view.curiosities, step) !== null;
-    const stops = !tile.explored || terrainStops || entersZoc || gateStops;
+    // Hover Pods: the launch ends the Move.
+    const stops =
+      !tile.explored || terrainStops || entersZoc || gateStops || hoverLaunch;
     // Section 8.6: the slide (the same rule as the canonical validation;
     // every tile it reads is explored and every unit on it visible).
     if (slides && stepIce && !stops) {

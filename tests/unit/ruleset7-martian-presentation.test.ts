@@ -245,6 +245,8 @@ describe("Martian texts (section 13.2)", () => {
       "Walkers",
       "Flyers",
       "Launch",
+      // The Hover Fleet (`pulp_wars-5ti.19`).
+      "At sea",
       "Beam Down",
       "Mind Control",
       "Tractor Beam",
@@ -252,6 +254,9 @@ describe("Martian texts (section 13.2)", () => {
       // The ninth unit (`pulp_wars-w49.17`, 7r55): the Shock Trooper.
       "Shock Field",
     ]);
+    expect(rules.get("At sea")).toBe(
+      "the Skimmer, Hover Cruiser, and Bathysphere are frail hulls behind a Shield that takes hits first and recharges every turn; with Hover Pods, foot troops hover off any beach onto Shallow Water as transports, with no Port.",
+    );
     // The Martian pass's correction: a whole field holds one attack.
     expect(rules.get("Force Field")).toBe(
       `with Force Fields, a unit that recharges next to a ${label("GUARD")} recharges to Shield ${FORCE_FIELD_SHIELD_V7}. At full HP with that Shield whole, one attack cannot kill it: it is left at 1 HP.`,

@@ -720,7 +720,10 @@ describe("Martian Shields: recharge (sections 5.2, 5.4, and 5.5)", () => {
     ]);
   });
 
-  it("a controlled Human unit and a boat have no Shield and gain nothing from a Force Field", () => {
+  // Themed naval branches, the Hover Fleet (`pulp_wars-5ti.19`): a Martian
+  // ship has its hull's Shield (the Skimmer's 2), and a Projector beside it
+  // covers it as any unit: it recharges to the field's 4.
+  it("a controlled Human unit has no Shield and gains nothing from a Force Field; a Skimmer beside the Projector recharges to 4", () => {
     const state = martianFieldV7(
       [
         { seat: 0, role: "CAPTAIN", at: at(4, 2) },
@@ -739,7 +742,7 @@ describe("Martian Shields: recharge (sections 5.2, 5.4, and 5.5)", () => {
     );
     const started = endTurnUntilV7(state, seatIdV7(state, 0));
     expect(shieldAtV7(started.state, at(5, 2))).toBe(0);
-    expect(shieldAtV7(started.state, at(6, 3))).toBe(0);
+    expect(shieldAtV7(started.state, at(6, 3))).toBe(4);
     expect(shieldAtV7(started.state, at(4, 2))).toBe(4);
   });
 
@@ -888,10 +891,11 @@ describe("Martian Shields: creation, view, projection, and parsing (sections 5.1
       [{ unitId: grunt, shield: 5 }],
       [{ unitId: projector, shield: 5 }],
       // A unit whose Shield maximum is 0: a Human unit, a controlled Human
-      // unit, a boat.
+      // unit. (A Martian boat has its hull's Shield since the Hover Fleet,
+      // `pulp_wars-5ti.19`: above max(2, 4) it is malformed.)
       [{ unitId: unitAtV7(state, at(1, 1)).id, shield: 1 }],
       [{ unitId: unitAtV7(state, at(4, 5)).id, shield: 1 }],
-      [{ unitId: unitAtV7(state, at(9, 2)).id, shield: 1 }],
+      [{ unitId: unitAtV7(state, at(9, 2)).id, shield: 5 }],
       // Extra keys.
       [{ unitId: grunt, shield: 2, extra: true }],
       "none",
@@ -901,9 +905,14 @@ describe("Martian Shields: creation, view, projection, and parsing (sections 5.1
         parseGameStateV7(withShields(shields)),
         JSON.stringify(shields),
       ).toBeNull();
-    // Up to 4 is legal for a Grunt (a Force Field).
+    // Up to 4 is legal for a Grunt (a Force Field), and for a Skimmer.
     expect(
       parseGameStateV7(withShields([{ unitId: grunt, shield: 4 }])),
+    ).not.toBeNull();
+    expect(
+      parseGameStateV7(
+        withShields([{ unitId: unitAtV7(state, at(9, 2)).id, shield: 1 }]),
+      ),
     ).not.toBeNull();
     // A state without the list is rejected.
     const { shields: _shields, ...without } = state;

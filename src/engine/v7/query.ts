@@ -379,7 +379,11 @@ import type {
   CombatSplashEntryV7,
   DomainEventV7,
 } from "./events";
-import { reachablePlayerMovementPathsV7, unitOverstridesV7 } from "./movement";
+import {
+  publicUnitLaunchesV7,
+  reachablePlayerMovementPathsV7,
+  unitOverstridesV7,
+} from "./movement";
 import {
   spatialContributionAtV7,
   spatialPlacementCountV7,
@@ -7314,9 +7318,9 @@ export function queryThreatenedTilesV7(
   const maximumRange = wail ? WAIL_RADIUS_V7 : rule.range;
   // The Martian revision: a land-form machine that ends a Move on water
   // self-launches and cannot attack from there, so its water destinations
-  // are not attack origins.
-  const machine =
-    unit.form === "LAND" && unitMovementModeV7(view, unit) !== "GROUND";
+  // are not attack origins. Themed naval branches (`pulp_wars-5ti.19`): nor
+  // are a Hover Pods foot unit's (its launch tiles).
+  const machine = publicUnitLaunchesV7(view, unit);
   // The Ice Folk revision section 11: the reach includes Glide on known
   // Snow, Mountain-born paths, and Prowl (the public movement query), and a
   // Yeti reaches 2 from every Mountain origin (Rockfall).

@@ -316,7 +316,7 @@ describe("Ruleset 7 unit glossary", () => {
     ).toEqual(["Rally", "Raise Dead", "Restless"]);
     expect(
       roleGlossaryV7("GUARD", "MARTIAN").map((entry) => entry.name),
-    ).toEqual(["Force Field", "Slow to strike", "Shield"]);
+    ).toEqual(["Force Field", "Slow to strike", "Shield", "Hover Pods"]);
     expect(
       roleGlossaryV7("KNIGHT", "DWARF").map((entry) => entry.name),
     ).toEqual(["Clockwork", "Whirl"]);

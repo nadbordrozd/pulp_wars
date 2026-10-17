@@ -5,6 +5,7 @@ import {
   RAM_BONUS2_V7,
   roleMechanicsV7,
   summonedUnitRoleRuleV7,
+  technologyCapabilitiesV7,
   type FactionIdV7,
   type PlayerViewV7,
   type SummonedRoleIdV7,
@@ -354,6 +355,13 @@ const ENTRIES = {
   DROWNED_CREW: [
     "Drowned Crew",
     "A ship your ships sink rises as your Ghost Ship. Unlocked by a technology.",
+  ],
+  // Themed naval branches (section 6.3 M2, `pulp_wars-5ti.19`): the
+  // Martian foot units' shore launch (the Martian ships' Shield is the
+  // Martians' Shield line).
+  HOVER_PODS: [
+    "Hover Pods",
+    "It can hover off any beach onto shallow water as a transport, with no Port. Unlocked by a technology.",
   ],
   AT_SEA: [
     "At sea",
@@ -1033,6 +1041,8 @@ export function roleTraitGlossaryIdsV7(
     if (mechanics.splash) traits.push("SPLASH");
     // Themed naval branches (`pulp_wars-5ti.16`): the Scrap Dreadnought.
     if (mechanics.deathBlastDamage !== null) traits.push("SINKS_EXPLODING");
+    // Themed naval branches (`pulp_wars-5ti.19`): the Martian hulls.
+    if (mechanics.shield > 0) traits.push("SHIELD");
     return traits;
   }
   // A Banshee's Ethereal and a Sabretooth's Prowl list it already.
@@ -1074,6 +1084,13 @@ export function roleTraitGlossaryIdsV7(
   if (rule.abilities.includes("SUMMON")) traits.push("TRICKLE", "FAVOUR_CAP");
   // The warden (`pulp_wars-mch9.33`): what its aura does to enemies.
   if (rule.abilities.includes("BEHOLD")) traits.push("AWESTRUCK");
+  // Themed naval branches (`pulp_wars-5ti.19`): a foot unit of a tree with
+  // Hover Pods hovers off any beach.
+  if (
+    mechanics.movementMode === "GROUND" &&
+    technologyCapabilitiesV7(["SHORECRAFT", "SEAMANSHIP"], faction).hoverPods
+  )
+    traits.push("HOVER_PODS");
   return traits;
 }
 

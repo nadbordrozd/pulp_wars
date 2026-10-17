@@ -95,6 +95,18 @@
       },
       "ownerColour": false,
       "accent": "martian-magenta"
+    },
+    {
+      "id": "chibi-naval-martian-icon-tech-seamanship",
+      "subject": "ICON:TECH:MARTIAN:SEAMANSHIP",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "martian-magenta"
     }
   ],
   "recipes": [
@@ -291,6 +303,46 @@
       },
       "editInstruction": "Turn it into a chrome bathysphere submarine: the long hull becomes one round ball-shaped hull of the same polished chrome with a dark gunmetal underside; a big clear glass dome on top with a short antenna with a glowing hot magenta tip, one large round glass porthole on the side, two small fins, and a row of small glowing hot magenta lights around its middle. Keep the size, thick black outline and art style the same, on a transparent background.",
       "notes": "The accepted Martian Patrol Boat portrait with the map sprite's change."
+    },
+    {
+      "id": "icon-tech-hover-pods-a",
+      "asset": "chibi-naval-martian-icon-tech-seamanship",
+      "endpoint": "create-image-pixen",
+      "seed": 99461,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "person, alien, creature, ship, boat, sail, island, beach, sand, red, orange, green, gold, text",
+      "notes": "Bead pulp_wars-5ti.19 (docs/product/RULESET_7_NAVAL_FACTIONS.md section 6.7): the Martian Seamanship card, Hover Pods (a chrome pod over a wave), a fresh creation with the icon class as the other faction Seamanship icons."
+    },
+    {
+      "id": "icon-tech-hover-pods-b",
+      "asset": "chibi-naval-martian-icon-tech-seamanship",
+      "endpoint": "create-image-pixen",
+      "seed": 99462,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "person, alien, creature, ship, boat, sail, island, beach, sand, red, orange, green, gold, text",
+      "notes": "The request of icon-tech-hover-pods-a on another seed."
+    },
+    {
+      "id": "icon-tech-hover-pods-c",
+      "asset": "chibi-naval-martian-icon-tech-seamanship",
+      "endpoint": "edit-image-pixen",
+      "seed": 99463,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-tech-hover-pods-b",
+        "candidate": 0
+      },
+      "editInstruction": "Make the big dome on top clear pale lavender-grey glass with one white highlight, not pink, and make the pod's rim polished silver chrome; keep the hot magenta only as the small ring of lights under the pod and the short glowing beam down to the wave. Keep the pod's shape, the blue-white curling wave, the size, the thick black outline and the style, on a transparent background.",
+      "notes": "icon-tech-hover-pods-b reads at 1x as a pod hovering over a wave (icon-tech-hover-pods-a is cluttered with fins), but its dome is a big hot magenta area: the faction keeps magenta to small lights."
     }
   ]
 }

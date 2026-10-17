@@ -598,4 +598,16 @@ export const CHIBI_NAVAL_FACTION_TECH_ICON_ASSETS_V7: readonly ChibiArtAssetV7[]
         "assets/chibi/icons/chibi-naval-dinosaur-icon-tech-seamanship.png",
       ),
     },
+    // `pulp_wars-5ti.19`: the Martian Hover Pods, a chrome pod hovering
+    // over a wave (batch `naval-martian`).
+    {
+      id: "chibi-naval-martian-icon-tech-seamanship",
+      subject: "ICON:TECH:MARTIAN:SEAMANSHIP",
+      assetClass: "ICON",
+      width: 48,
+      height: 48,
+      url: chibiArtUrl(
+        "assets/chibi/icons/chibi-naval-martian-icon-tech-seamanship.png",
+      ),
+    },
   ];

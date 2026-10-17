@@ -296,6 +296,14 @@ export type TechnologyUnlockV7 =
    */
   | { readonly kind: "DROWNED_CREWS" }
   /**
+   * Themed naval branches (docs/product/RULESET_7_NAVAL_FACTIONS.md section
+   * 6.3 M2, `pulp_wars-5ti.19`): Hover Pods, the Martian `SEAMANSHIP` in
+   * place of Board. The owner's foot units (land form, `GROUND` movement)
+   * may make the last step of a Move onto adjacent free Shallow Water and
+   * launch there with no Port.
+   */
+  | { readonly kind: "HOVER_PODS" }
+  /**
    * The naval branch (section 5.4): Harbours, every active Port and
    * Shipyard of the owner gives `population` more live population.
    */
@@ -637,7 +645,8 @@ export interface RoleMechanicsV7 {
   readonly armourReduction: 0 | 1;
   /**
    * The Martian revision (section 5.1): the role's Shield maximum (0 for
-   * every role of every other faction and for boats).
+   * every role of every other faction). The Martian ships have one since
+   * the Hover Fleet (`pulp_wars-5ti.19`).
    */
   readonly shield: 0 | 1 | 2 | 3 | 4;
   /** The Martian revision (section 7): the role's movement mode. */
@@ -2896,33 +2905,39 @@ export const DINOSAUR_BASELINE_V1_TREE: FactionTechnologyTreeV7 = deepFreeze({
  */
 export const MARTIAN_BASELINE_V1_NODES: readonly TechnologyNodeV7[] =
   deepFreeze(
-    SHARED_BASELINE_NODES_V7.map((original) =>
-      node(
-        original.id,
-        original.branch,
-        original.tier,
-        original.prerequisites,
-        [
-          ...original.unlocks.flatMap((unlock): TechnologyUnlockV7[] =>
-            unlock.kind === "CAPTAIN_SUPPORT"
-              ? [{ kind: "BRAIN_SUPPORT" }]
-              : unlock.kind === "OVERRUN"
-                ? []
-                : unlock.kind === "COMMAND" &&
-                    unlock.command === "BUILD_FIELD_DEFENSE"
-                  ? [{ kind: "FORCE_FIELDS" }]
-                  : [unlock],
-          ),
-          ...(original.id === "EXPLOSIVES"
-            ? [{ kind: "DISINTEGRATOR" } as const]
-            : []),
-          // The Martian pass (`pulp_wars-w49.14`, 7r52): Fieldcraft (shown
-          // as Heat Sinks) keeps every Human unlock and adds `HEAT_SINKS`.
-          ...(original.id === "FIELDCRAFT"
-            ? [{ kind: "HEAT_SINKS" } as const]
-            : []),
-        ],
+    withSeamanshipUnlocksV7(
+      SHARED_BASELINE_NODES_V7.map((original) =>
+        node(
+          original.id,
+          original.branch,
+          original.tier,
+          original.prerequisites,
+          [
+            ...original.unlocks.flatMap((unlock): TechnologyUnlockV7[] =>
+              unlock.kind === "CAPTAIN_SUPPORT"
+                ? [{ kind: "BRAIN_SUPPORT" }]
+                : unlock.kind === "OVERRUN"
+                  ? []
+                  : unlock.kind === "COMMAND" &&
+                      unlock.command === "BUILD_FIELD_DEFENSE"
+                    ? [{ kind: "FORCE_FIELDS" }]
+                    : [unlock],
+            ),
+            ...(original.id === "EXPLOSIVES"
+              ? [{ kind: "DISINTEGRATOR" } as const]
+              : []),
+            // The Martian pass (`pulp_wars-w49.14`, 7r52): Fieldcraft (shown
+            // as Heat Sinks) keeps every Human unlock and adds `HEAT_SINKS`.
+            ...(original.id === "FIELDCRAFT"
+              ? [{ kind: "HEAT_SINKS" } as const]
+              : []),
+          ],
+        ),
       ),
+      // Themed naval branches (docs/product/RULESET_7_NAVAL_FACTIONS.md
+      // section 6.1, `pulp_wars-5ti.19`): Hover Pods, the Ram and the shore
+      // launch of foot units instead of Board.
+      [{ kind: "HOVER_PODS" }],
     ),
   );
 
@@ -3080,9 +3095,26 @@ export const MARTIAN_ROLE_RULES_V7: Readonly<
     mayUsePrimaryActionAfterMove: true,
     abilities: ["ATTACK", "CAPTURE", "STRIDE", "HEAT_RAY", "OVERSTRIDE"],
   }),
-  PATROL_BOAT: role({ ...ORIGINAL_ROLE_RULES_V7.PATROL_BOAT }),
-  BATTLESHIP: role({ ...ORIGINAL_ROLE_RULES_V7.BATTLESHIP }),
-  SUBMARINE: role({ ...ORIGINAL_ROLE_RULES_V7.SUBMARINE }),
+  // Themed naval branches, the Hover Fleet
+  // (docs/product/RULESET_7_NAVAL_FACTIONS.md section 6.2,
+  // `pulp_wars-5ti.19`): frail hulls behind Shields (the role mechanic
+  // `shield`, 2 / 3 / 2): the Skimmer 8 HP, the Hover Cruiser 20, the
+  // Bathysphere 10; every other number is the Human ship's.
+  PATROL_BOAT: role({
+    ...ORIGINAL_ROLE_RULES_V7.PATROL_BOAT,
+    label: "Skimmer",
+    maxHp: 8,
+  }),
+  BATTLESHIP: role({
+    ...ORIGINAL_ROLE_RULES_V7.BATTLESHIP,
+    label: "Hover Cruiser",
+    maxHp: 20,
+  }),
+  SUBMARINE: role({
+    ...ORIGINAL_ROLE_RULES_V7.SUBMARINE,
+    label: "Bathysphere",
+    maxHp: 10,
+  }),
   // The ninth unit (`pulp_wars-w49.17`, 7r55): the Shock Trooper, the
   // Martian heavy line unit (Metallurgy) and the faction's only melee
   // unit: range 1, an ordinary attack (no heat ray). Shock Field is the
@@ -3109,8 +3141,9 @@ export const MARTIAN_ROLE_RULES_V7: Readonly<
  * The Martian engine mechanics: no role builds Field Defense; every land
  * role has a Shield maximum; the Saucer and the Mothership fly and the
  * Tripod and the Colossus stride; flyers and the Tripod never advance after
- * a kill; the Mothership and the Colossus use two capacity slots. Boats are
- * Human boats (no Shield).
+ * a kill; the Mothership and the Colossus use two capacity slots. The
+ * three ships are shielded too (themed naval branches, `pulp_wars-5ti.19`:
+ * the Skimmer 2, the Hover Cruiser 3, the Bathysphere 2).
  */
 export const MARTIAN_ROLE_MECHANICS_V7 = mechanics({
   FIGHTER: { buildsFieldDefense: false, shield: 2 },
@@ -3136,7 +3169,11 @@ export const MARTIAN_ROLE_MECHANICS_V7 = mechanics({
     capacitySlots: 2,
     trampleDamage: TRAMPLE_DAMAGE_V7,
   },
-  BATTLESHIP: { splash: true },
+  // Themed naval branches (section 6.3 M1, `pulp_wars-5ti.19`): Shielded
+  // hulls.
+  PATROL_BOAT: { shield: 2 },
+  BATTLESHIP: { splash: true, shield: 3 },
+  SUBMARINE: { shield: 2 },
   // The ninth unit (7r55): the Shock Trooper, Shield 3 and the Shock Field.
   SWORDSMAN: { shield: 3, shockFieldDamage: SHOCK_FIELD_DAMAGE_V7 },
 });
@@ -5048,6 +5085,13 @@ export const TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7: Readonly<
     SAWMILLING: "Tripods",
     SCOUTING: "Saucers",
     CHIVALRY: "Motherships",
+    // Themed naval branches, the Hover Fleet (`pulp_wars-5ti.19`,
+    // docs/product/RULESET_7_NAVAL_FACTIONS.md section 6.1): Navigation
+    // keeps its shared name.
+    SHORECRAFT: "Skimmers",
+    NAVAL_ENGINEERING: "Hover Cruisers",
+    SEAMANSHIP: "Hover Pods",
+    SUBMERSIBLES: "Bathyspheres",
   },
   // The Ice Folk revision: Fortification and Explosives are renamed.
   // The frozen sea (naval branch section 2.2): the five Naval names.
@@ -7431,6 +7475,45 @@ export function canCrossWaterV7(input: {
 }
 
 /**
+ * Themed naval branches, Hover Pods (docs/product/RULESET_7_NAVAL_FACTIONS.md
+ * section 6.3 M2, `pulp_wars-5ti.19`): whether a land-form unit of the
+ * `GROUND` movement mode whose kind's capabilities under its controller
+ * have `hoverPods` (`hoverPods`) may enter this tile as a hover launch:
+ * the **last** step of an ordinary Move (`lastStep`), a single step (not a
+ * hop), onto Shallow Water that is not ice and not a dock (Port or
+ * Shipyard), known to the mover before the command (`known`). The launch
+ * step costs a full point and ends the Move; the unit self-launches there.
+ * A summoned unit, a unit of the Ice Folk kind, and a Bat Escape never
+ * launch (they never embark). Occupancy is the caller's, as for every step.
+ */
+export function hoverLaunchAllowedV7(input: {
+  readonly hoverPods: boolean;
+  readonly movementMode: MovementModeV7;
+  readonly form: UnitFormV7;
+  readonly terrain: TerrainIdV7;
+  readonly ice: boolean;
+  readonly improvement: string | null;
+  readonly lastStep: boolean;
+  readonly hop: boolean;
+  readonly known: boolean;
+  readonly embarks: boolean;
+}): boolean {
+  return (
+    input.hoverPods &&
+    input.embarks &&
+    input.form === "LAND" &&
+    input.movementMode === "GROUND" &&
+    input.terrain === "SHALLOW_WATER" &&
+    !input.ice &&
+    input.improvement !== "PORT" &&
+    input.improvement !== "SHIPYARD" &&
+    input.lastStep &&
+    !input.hop &&
+    input.known
+  );
+}
+
+/**
  * Whether a unit that avoids foreign sites (`unitAvoidsForeignSitesV7`: a
  * Dwarf rider on its surfacing turn) may END a Move, land, or be placed on a
  * tile with this settlement state: never on a neutral village center or on
@@ -7727,6 +7810,13 @@ export interface TechnologyCapabilitiesV7 {
    * the owner's Ghost Ship.
    */
   readonly drownedCrews: boolean;
+  /**
+   * Themed naval branches (docs/product/RULESET_7_NAVAL_FACTIONS.md section
+   * 6.3 M2, `pulp_wars-5ti.19`): Hover Pods (the Martian `SEAMANSHIP`), a
+   * foot unit of the tree may launch from any beach
+   * (`hoverLaunchAllowedV7`).
+   */
+  readonly hoverPods: boolean;
 }
 
 export function technologyCapabilitiesV7(
@@ -7812,6 +7902,7 @@ export function technologyCapabilitiesV7(
   let summonMass = false;
   let fireRafts = false;
   let drownedCrews = false;
+  let hoverPods = false;
   for (const unlock of unlocks)
     switch (unlock.kind) {
       case "COMMAND":
@@ -7963,6 +8054,9 @@ export function technologyCapabilitiesV7(
       case "DROWNED_CREWS":
         drownedCrews = true;
         break;
+      case "HOVER_PODS":
+        hoverPods = true;
+        break;
       case "SUMMONER_SUPPORT":
       case "CONFECTIONER_SUPPORT":
       case "ENGINEER_SUPPORT":
@@ -8053,6 +8147,7 @@ export function technologyCapabilitiesV7(
     summonMass,
     fireRafts,
     drownedCrews,
+    hoverPods,
   });
   TECHNOLOGY_CAPABILITIES_CACHE_V7.set(cacheKey, result);
   if (TECHNOLOGY_CAPABILITIES_CACHE_V7.size > 32) {

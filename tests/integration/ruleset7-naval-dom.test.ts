@@ -525,9 +525,12 @@ describe("technology cards and Help", () => {
       // whose trick raises a Ghost Ship from a ship it sinks.)
       // (Horned Prows and the Plesiosaur, `pulp_wars-5ti.18`: the Ram is
       // the Horned Prow, Board stays.)
+      // (The Martian Hover Fleet, `pulp_wars-5ti.19`: Hover Pods, whose
+      // trick launches foot units from any beach.)
       const goblin = faction === "GOBLIN";
       const undead = faction === "UNDEAD";
       const dinosaur = faction === "DINOSAUR";
+      const martian = faction === "MARTIAN";
       expect(seamanship.querySelector(".v7-tech-name")?.textContent).toBe(
         goblin
           ? "Powder Kegs"
@@ -535,7 +538,9 @@ describe("technology cards and Help", () => {
             ? "Drowned Crews"
             : dinosaur
               ? "Horned Prows"
-              : "Boarding",
+              : martian
+                ? "Hover Pods"
+                : "Boarding",
       );
       seamanship.click();
       const lines = (): string[] =>
@@ -560,10 +565,15 @@ describe("technology cards and Help", () => {
                   "Board: capture an adjacent enemy ship at a third of its HP or less",
                   "Horned Prow: Dugouts that moved hit ships with +1 Attack (+1.5 after 2 tiles) and shove them back",
                 ]
-              : [
-                  "Board: capture an adjacent enemy ship at a third of its HP or less",
-                  "Bow Ram: Patrol Boats that moved hit ships with +1 Attack and shove them back",
-                ],
+              : martian
+                ? [
+                    "Bow Ram: Skimmers that moved hit ships with +1 Attack and shove them back",
+                    "Hover Pods: Your foot troops can hover off any beach",
+                  ]
+                : [
+                    "Board: capture an adjacent enemy ship at a third of its HP or less",
+                    "Bow Ram: Patrol Boats that moved hit ships with +1 Attack and shove them back",
+                  ],
       );
       const submersibles = requiredButton("tech-submersibles");
       expect(submersibles.querySelector(".v7-tech-name")?.textContent).toBe(
@@ -573,7 +583,9 @@ describe("technology cards and Help", () => {
             ? "Sunken Galleys"
             : dinosaur
               ? "Plesiosaurs"
-              : "Submersibles",
+              : martian
+                ? "Bathyspheres"
+                : "Submersibles",
       );
       submersibles.click();
       const unlocks = lines();
@@ -583,7 +595,9 @@ describe("technology cards and Help", () => {
           ? "Sunken Galley"
           : dinosaur
             ? "Plesiosaur"
-            : "Submarine";
+            : martian
+              ? "Bathysphere"
+              : "Submarine";
       expect(unlocks.some((line) => line.includes(sub))).toBe(true);
       expect(unlocks).toContain(
         "Harbours: +1 population from every active Port and Shipyard",

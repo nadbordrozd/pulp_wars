@@ -2159,3 +2159,17 @@ fresh `icon` for the Dinosaur Seamanship
   with a red crest (5.8% in the owner key's band); one edit ("remove the
   red crest, a smooth carved figurehead in the fleet's blue and orange")
   fixed it in both candidates.
+
+## The Martian Hover Pods icon (bead `pulp_wars-5ti.19`)
+
+A fresh `icon` for the Martian Seamanship in batch `naval-martian`
+([what and why](NAVAL_FACTIONS.md#the-martian-hover-pods-bead-pulp_wars-5ti19)).
+
+- **A "glass dome" comes out in the accent colour**: one seed drew a clear
+  pod over a wave with its whole dome hot magenta, against the faction's
+  "magenta only as small lights"; one edit ("make the dome clear pale
+  lavender-grey glass with one white highlight, not pink; keep the
+  magenta only as the ring of lights and the beam") fixed it in both
+  candidates without moving the pod or the wave. The other seed wrapped
+  the pod in its wave and grew fins: a fresh object over water tends to
+  merge with the water.

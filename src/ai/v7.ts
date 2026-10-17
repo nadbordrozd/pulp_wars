@@ -658,6 +658,12 @@ import {
 } from "./v7-naval-undead";
 import { plesiosaurGrowthTorpedoPriorityV7 } from "./v7-naval-dinosaur";
 import {
+  hoverLaunchMoveV7,
+  hoverLaunchTilesV7,
+  hoverLauncherV7,
+  hoverPodsResearchDueV7,
+} from "./v7-naval-martian";
+import {
   BREAK_OFF_FRONT_RADIUS_V7,
   BREAK_OFF_MINIMUM_HP_V7,
   BREAK_OFF_PRIORITY_V7,
@@ -1237,6 +1243,17 @@ interface NavalPlanV7 {
   readonly prospectiveWaterDistanceByKey: ReadonlyMap<string, number>;
   /** Canonical public water-route distance for escort/defense ships. */
   readonly fleetDistanceByKey: ReadonlyMap<string, number>;
+  /**
+   * Themed naval branches, Hover Pods (`pulp_wars-5ti.19`): a seat with
+   * Hover Pods launches its foot units from these Shallow Water tiles
+   * beside its home land (`hoverLaunchTilesV7`), as from a Port; empty for
+   * every other seat.
+   */
+  readonly hoverLaunchTiles: readonly CoordV7[];
+  /** The launch tiles with a public water route to the landing coast. */
+  readonly servingLaunchKeys: ReadonlySet<string>;
+  /** Own foot capture units with no walk to the target (bound overseas). */
+  readonly overseasFootUnits: number;
 }
 
 const NO_NAVAL_PLAN_V7: NavalPlanV7 = Object.freeze({
@@ -1258,6 +1275,9 @@ const NO_NAVAL_PLAN_V7: NavalPlanV7 = Object.freeze({
   waterDistanceByKey: new Map(),
   prospectiveWaterDistanceByKey: new Map(),
   fleetDistanceByKey: new Map(),
+  hoverLaunchTiles: [],
+  servingLaunchKeys: new Set<string>(),
+  overseasFootUnits: 0,
 });
 
 type AiReadyItemV7 = ReturnType<typeof queryAiReadyCommandsV7>[number];
@@ -2329,7 +2349,7 @@ function* tacticalPlanWorkV7(
     seaTarget: context.naval.seaShortcut ? context.naval.target : null,
     // pulp_wars-eru: only the units whose own sea route beats their own
     // walk go without a job on land.
-    sails: (unit) => navalBoardingPortsV7(context, unit.at).length > 0,
+    sails: (unit) => navalBoardingPortsV7(context, unit.at, unit).length > 0,
     isHostile: (ownerId) => isHostile(view, ownerId),
     isAllied: (ownerId) => publicPlayersAllied(view, view.viewer.id, ownerId),
     // The garrison of a threatened center and a defender walking to one
@@ -2935,6 +2955,13 @@ function* navalPlanWorkV7(
     target !== null &&
     (targetLandmassSaturated ||
       visibleObjectiveClaimants.some((unit) => same(unit.at, target)));
+  // Themed naval branches, Hover Pods (`pulp_wars-5ti.19`, section 6.6): a
+  // seat with Hover Pods launches its foot units from any free Shallow
+  // Water beside its home land, so every such tile is a start, as a Port.
+  const hoverLaunches = hoverLaunchTilesV7(view, (at) => {
+    const id = componentByKey.get(coordKey(at));
+    return id !== undefined && homeComponents.has(id);
+  });
   const starts = [
     ...view.naval.ownedPorts
       .filter((port) => port.status === "ACTIVE")
@@ -2945,6 +2972,7 @@ function* navalPlanWorkV7(
     ...view.board.tiles.flatMap((tile) =>
       publicFuturePortSurfaceV7(view, tile, tilesByKey) ? [tile.at] : [],
     ),
+    ...hoverLaunches,
   ];
   const targetComponent =
     target === null ? undefined : componentByKey.get(coordKey(target));
@@ -3209,11 +3237,28 @@ function* navalPlanWorkV7(
       .map(coordKey)
       .filter((key) => prospectiveWaterDistanceByKey.has(key)),
   );
+  // Hover Pods: the launch tiles that serve the landing coast.
+  const servingLaunchKeys = new Set(
+    hoverLaunches
+      .map(coordKey)
+      .filter((key) => prospectiveWaterDistanceByKey.has(key)),
+  );
   const portMissing =
     target !== null &&
     activePorts.length > 0 &&
     servingPortKeys.size === 0 &&
+    servingLaunchKeys.size === 0 &&
     starts.some((at) => prospectiveWaterDistanceByKey.has(coordKey(at)));
+  // Hover Pods (section 6.6, "Research"): the own foot capture units with no
+  // walk to the target, from which Hover Pods is asked for.
+  const overseasFootUnits =
+    target === null
+      ? 0
+      : captureUnits.filter(
+          (unit) =>
+            unitMovementModeV7(view, unit) === "GROUND" &&
+            !targetLandDistances.has(coordKey(unit.at)),
+        ).length;
   const tree = queryTechnologyTreeV7(view);
   const researchCost = (tech: TechnologyIdV7): number =>
     tree.nodes.find((node) => node.id === tech)?.cost ?? 0;
@@ -3225,7 +3270,12 @@ function* navalPlanWorkV7(
     !view.viewer.researchedTechs.includes("NAVIGATION")
   )
     reserveCoins = researchCost("NAVIGATION");
-  else if (activePorts.length === 0 || portMissing) reserveCoins = 4;
+  // A seat that launches from its beaches needs no Port for it.
+  else if (
+    (activePorts.length === 0 && servingLaunchKeys.size === 0) ||
+    portMissing
+  )
+    reserveCoins = 4;
   else if (
     visibleNavalDanger &&
     !view.units.some(
@@ -3255,6 +3305,9 @@ function* navalPlanWorkV7(
       : shallowDistances,
     prospectiveWaterDistanceByKey,
     fleetDistanceByKey,
+    hoverLaunchTiles: hoverLaunches,
+    servingLaunchKeys,
+    overseasFootUnits,
   };
 }
 
@@ -12141,7 +12194,11 @@ function isPolicyCandidate(
       (strandedTransportV7(context, command.unitId) &&
         campaignHasWorkAtV7(context.tactical.campaign, command.at) &&
         // pulp_wars-eru: not onto a tile it would board from again.
-        navalBoardingPortsV7(context, command.at).length === 0)
+        navalBoardingPortsV7(
+          context,
+          command.at,
+          context.lookup.unitsById.get(command.unitId),
+        ).length === 0)
     );
   if (autoembark && context.naval.retainLandedUnitIds.has(command.unitId))
     return false;
@@ -12190,7 +12247,10 @@ function isPolicyCandidate(
     armyResearchHoldsV7(context, command.tech) &&
     // The frozen sea: Rime (or Pack Ice) for a crossing is not held back:
     // without it the seat has no objective it can reach.
-    !iceSeaCrossingTechV7(context.view, icePlanV7(context), command.tech)
+    !iceSeaCrossingTechV7(context.view, icePlanV7(context), command.tech) &&
+    // Hover Pods (`pulp_wars-5ti.19`): nor the shore launch of a seat whose
+    // foot units are bound overseas.
+    !(command.tech === "SEAMANSHIP" && hoverPodsDueForPolicyV7(context))
   )
     return false;
   // Tuning 6 (`pulp_wars-w49.6`): no research with an enemy at the gates
@@ -13981,12 +14041,15 @@ function isAutoembarkMoveV7(
   if (unit?.form !== "LAND" || destination === undefined) return false;
   const tile = findPublicTileV7(view, destination);
   return (
-    tile?.explored === true &&
-    tile.improvement === "PORT" &&
-    tile.territoryOwnerId === view.viewer.id &&
-    view.naval.ownedPorts.some(
-      (port) => port.status === "ACTIVE" && same(port.at, destination),
-    )
+    (tile?.explored === true &&
+      tile.improvement === "PORT" &&
+      tile.territoryOwnerId === view.viewer.id &&
+      view.naval.ownedPorts.some(
+        (port) => port.status === "ACTIVE" && same(port.at, destination),
+      )) ||
+    // Themed naval branches (`pulp_wars-5ti.19`): a hover launch boards
+    // from the beach, under every rule of boarding at a Port.
+    hoverLaunchMoveV7(view, unit, destination)
   );
 }
 
@@ -18785,11 +18848,26 @@ function endgameKeepsAshoreV7(
 function navalBoardingPortsV7(
   context: PolicyContextV7,
   from: CoordV7,
+  /**
+   * Themed naval branches, Hover Pods (`pulp_wars-5ti.19`): the land unit
+   * that boards. A foot unit with Hover Pods boards at the plan's launch
+   * tiles too (`hoverLaunchTiles`), as at Ports.
+   */
+  unit?: PublicUnitV7,
 ): readonly CoordV7[] {
   const plan = context.naval;
-  const ports = context.view.naval.ownedPorts
-    .filter((port) => port.status === "ACTIVE")
-    .map((port) => port.at);
+  const launches =
+    unit !== undefined &&
+    plan.hoverLaunchTiles.length > 0 &&
+    hoverLauncherV7(context.view, { ...unit, form: "LAND" })
+      ? plan.hoverLaunchTiles
+      : [];
+  const ports = [
+    ...context.view.naval.ownedPorts
+      .filter((port) => port.status === "ACTIVE")
+      .map((port) => port.at),
+    ...launches,
+  ];
   const walk =
     plan.target === null
       ? undefined
@@ -18798,8 +18876,10 @@ function navalBoardingPortsV7(
     // pulp_wars-9s0.14: overseas, only at a Port that serves the landing
     // coast; while none does and the seat can build one that would, at none.
     if (plan.target === null) return ports;
-    const serving = ports.filter((port) =>
-      plan.servingPortKeys.has(coordKey(port)),
+    const serving = ports.filter(
+      (port) =>
+        plan.servingPortKeys.has(coordKey(port)) ||
+        plan.servingLaunchKeys.has(coordKey(port)),
     );
     return serving.length > 0 ? serving : plan.portMissing ? [] : ports;
   }
@@ -18848,7 +18928,7 @@ function navalSailorV7(
     (context.undead && fragileCargoV7(context, unit.id))
   )
     return false;
-  const ports = navalBoardingPortsV7(context, unit.at);
+  const ports = navalBoardingPortsV7(context, unit.at, unit);
   let nearest: CoordV7 | null = null;
   for (const at of ports)
     if (
@@ -18858,7 +18938,17 @@ function navalSailorV7(
         (at.y < nearest.y || (at.y === nearest.y && at.x < nearest.x)))
     )
       nearest = at;
-  return nearest !== null && same(nearest, port);
+  if (nearest === null) return false;
+  // Themed naval branches, Hover Pods (`pulp_wars-5ti.19`): a beach has
+  // many launch tiles, so a wave of shore launchers forms round its
+  // nearest one: a sailor whose own launch tile is within the gathering
+  // radius of `port` goes from there.
+  if (
+    hoverLauncherV7(view, unit) &&
+    context.naval.hoverLaunchTiles.some((at) => same(at, port))
+  )
+    return distance(nearest, port) <= NAVAL_WAVE_GATHER_RADIUS_V7;
+  return same(nearest, port);
 }
 
 /**
@@ -18991,7 +19081,7 @@ function navalBoardsAtV7(
   return (
     unit !== undefined &&
     port !== undefined &&
-    navalBoardingPortsV7(context, unit.at).some((at) => same(at, port))
+    navalBoardingPortsV7(context, unit.at, unit).some((at) => same(at, port))
   );
 }
 
@@ -26032,6 +26122,23 @@ function reservedPortCommandV7(
   );
 }
 
+/**
+ * Themed naval branches, Hover Pods (`pulp_wars-5ti.19`): whether the
+ * naval plan asks for the Martian Seamanship now (`hoverPodsResearchDueV7`
+ * with the plan's foot units bound overseas and the offered research).
+ */
+function hoverPodsDueForPolicyV7(context: PolicyContextV7): boolean {
+  return hoverPodsResearchDueV7(
+    context.view,
+    context.naval.active,
+    context.naval.overseasFootUnits,
+    (tech) =>
+      context.commands.some(
+        (offered) => offered.kind === "RESEARCH" && offered.tech === tech,
+      ),
+  );
+}
+
 function nextNavalTechnologyV7(
   context: PolicyContextV7,
 ): TechnologyIdV7 | null {
@@ -26043,6 +26150,9 @@ function nextNavalTechnologyV7(
     !context.view.viewer.researchedTechs.includes("NAVIGATION")
   )
     return "NAVIGATION";
+  // Themed naval branches (`pulp_wars-5ti.19`, section 6.6): Hover Pods for
+  // two or more foot units bound overseas, with or without a warship.
+  if (hoverPodsDueForPolicyV7(context)) return "SEAMANSHIP";
   const defendedLanding =
     context.naval.target !== null &&
     context.view.units.some(
@@ -26339,7 +26449,7 @@ function navalMovementObjectiveValueV7(
   if (context.tactical.campaign?.assignmentByUnitId.has(actor.id) === true)
     return 0;
   // pulp_wars-eru: only to a Port it would board at.
-  const ports = navalBoardingPortsV7(context, actor.at);
+  const ports = navalBoardingPortsV7(context, actor.at, actor);
   return ports.length === 0
     ? 0
     : nearestDistance(actor.at, ports) - nearestDistance(to, ports);

@@ -113,13 +113,13 @@ describe("tuning 1 identity", () => {
   // Tuning 1 took 7r46; tuning 2 (tests/unit/ruleset-v7-tuning-2.test.ts)
   // took 7r47, so 7r46 is the last prior identity.
   it("was 7r46, after 7r45 in the prior list", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r94");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r94.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-49, -47)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r95");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r95.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-50, -48)).toEqual([
       "pulp-wars-poc-7r45",
       "pulp-wars-poc-7r46",
     ]);
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(93);
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(94);
   });
 });
 

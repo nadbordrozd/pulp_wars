@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r94`, for all nine offered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r95`, for all nine offered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), Candy (`CANDY`), and
 the Cultists (`CULT`). The ninth faction, the Cultists of the Ancient Ones,
@@ -445,6 +445,42 @@ links to another, by Road or by Port. A sea link needs only **Shorecraft**
 the Roads technology, and unexplored water no longer breaks a link. A save,
 replay, or setup of `7r75` is rejected, and the browser autosave has a new
 key.
+`pulp-wars-poc-7r95` (`pulp_wars-5ti.19`, the fourth bead of the
+[themed naval branches](RULESET_7_NAVAL_FACTIONS.md)) is **the Martian
+Hover Fleet**. The Martian ships are frail hulls behind **Shields** (the
+role mechanic `shield`): the **Skimmer** (`PATROL_BOAT`, 8 HP, Shield 2),
+the **Hover Cruiser** (`BATTLESHIP`, 20 HP, Shield 3), and the
+**Bathysphere** (`SUBMARINE`, 10 HP, Shield 2), every other number the
+Human ship's. Their Shields follow [section 20.2](#202-shields) in every
+form: a ship trained with `TRAIN_NAVAL` starts with its full Shield (the
+reducer now writes the entry), it recharges at its owner's Start Turn (and
+End Turn with Force Fields), to 4 beside a Shield Projector, and it takes
+every hit first, never Plague; a boarded Skimmer becomes its captor's ship
+and loses its entry. The Martian Seamanship, shown as **Hover Pods**, is
+the Ram and the unlock `HOVER_PODS` (capability `hoverPods`) in place of
+`COMMAND BOARD`: a land-form Martian foot unit (the `GROUND` movement mode:
+Grunt, Ray Gunner, Shield Projector, Brain, Shock Trooper) may make the
+**last step** of an ordinary Move from land onto an adjacent Shallow Water
+tile it knew before the command, that holds no unit and is neither ice nor
+a dock; the step costs a full point, ends the Move, and the unit
+**self-launches** there (it embarks, exhausted) as a machine does
+(`hoverLaunchAllowedV7`, read by both movement validations and the
+movement query). It never crosses water inside a Move and never launches
+onto Deep Water; afloat it is an ordinary transport that keeps its Shield.
+A mind-controlled unit reads its own kind's tree with its controller's
+research. The five Martian Naval technologies are shown as Skimmers,
+Navigation, Hover Cruisers, Hover Pods, and Bathyspheres. Another seat's
+Hover Pods is private, so its public movement validation assumes them for
+a visible Martian foot unit, whose launch tiles are no attack origins.
+The Normal AI treats every free Shallow Water tile beside its home land as
+a launch start of its naval plan once it has Hover Pods (a foot unit bound
+overseas walks to the nearest one that serves the landing coast instead of
+a Port, under every boarding rule of a Port), asks for Hover Pods when two
+or more foot units are bound overseas, reads Shields from the exact
+previews and its threat estimate, and trains the three ships by the
+counter of every seat ([section 16](#16-normal-ai-summary)). The Hover
+Pods card is new art; no new sound. A save, replay, or setup of `7r94` is
+rejected, and the browser autosave has a new key.
 `pulp-wars-poc-7r94` (`pulp_wars-5ti.18`, the third bead of the
 [themed naval branches](RULESET_7_NAVAL_FACTIONS.md)) is **Horned Prows
 and the Plesiosaur**, the Dinosaur fleet. The Dinosaur `PATROL_BOAT` is the
@@ -1204,7 +1240,7 @@ the build differs (its sections 20 to 24 list them);
 the values here are current. Where a document and the code disagreed, the
 code's behavior is the rule and is stated below;
 [Known discrepancies](#25-known-discrepancies) lists the open items and the
-resolved ones as of `pulp-wars-poc-7r94`.
+resolved ones as of `pulp-wars-poc-7r95`.
 
 **Terms.** "On the board" means a unit that currently exists (HP above 0).
 **Living** has the narrower revision-13 meaning used by Wail, Plague,
@@ -1307,10 +1343,10 @@ sections here cite.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r94`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Ruleset                                    | `pulp-wars-poc-7r95`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r94.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Browser autosave                           | `pulpWars.save.v7r95.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, `CULT`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`, `CULT_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -4536,33 +4572,33 @@ sentence case. Eight shared names changed at `7r55`: `DRILL` was **Garrison** an
 `NAVAL_ENGINEERING` **Shipbuilding**, and `SEAMANSHIP` **Boarding**. The
 names every player sees (a cell in bold is the faction's own):
 
-| ID                  | Human         | Undead              | Goblin             | Dinosaur         | Martian           | Ice Folk        | Dwarf                | Candy                   | Cult                    |
-| ------------------- | ------------- | ------------------- | ------------------ | ---------------- | ----------------- | --------------- | -------------------- | ----------------------- | ----------------------- |
-| `GATHERING`         | Gathering     | Gathering           | Gathering          | Gathering        | Gathering         | Gathering       | Gathering            | Gathering               | Gathering               |
-| `FARMING`           | Farming       | Farming             | Farming            | Farming          | Farming           | Farming         | Farming              | Farming                 | **Harvest Rites**       |
-| `MILLING`           | Milling       | **Bone Mills**      | Milling            | **Grinding**     | **Solar Arrays**  | Milling         | **Steam Pumps**      | Milling                 | Milling                 |
-| `ADMINISTRATION`    | Leadership    | Leadership          | Leadership         | Leadership       | Leadership        | Leadership      | Leadership           | Leadership              | Leadership              |
-| `PLANNING`          | Land Grants   | Land Grants         | Land Grants        | Land Grants      | Land Grants       | Land Grants     | Land Grants          | Land Grants             | Land Grants             |
-| `HUNTING`           | Hunting       | Hunting             | Hunting            | Hunting          | Hunting           | Hunting         | Hunting              | Hunting                 | Hunting                 |
-| `FORESTRY`          | Forestry      | Forestry            | Forestry           | Forestry         | Forestry          | Forestry        | Forestry             | Forestry                | Forestry                |
-| `SAWMILLING`        | Sawmilling    | **Liches**          | **Rocket Carts**   | **Timber**       | **Tripods**       | **Boulders**    | **Steam Cannons**    | **Pie Launchers**       | **Stargazers**          |
-| `MARKSMANSHIP`      | Marksmanship  | **Banshees**        | **Bomb Chuckers**  | **Spitters**     | **Ray Gunners**   | Marksmanship    | **Clockwork**        | **Gumball Gunners**     | **Hexers**              |
-| `FIELDCRAFT`        | Pathfinding   | Pathfinding         | Pathfinding        | Pathfinding      | **Heat Sinks**    | Pathfinding     | Pathfinding          | Pathfinding             | Pathfinding             |
-| `SCOUTING`          | Scouting      | Scouting            | Scouting           | Scouting         | **Saucers**       | Scouting        | **Gyrocopters**      | Scouting                | **Familiars**           |
-| `ROADS`             | Roads         | Roads               | Roads              | Roads            | Roads             | Roads           | Roads                | Roads                   | Roads                   |
-| `COMMERCE`          | Commerce      | Commerce            | **Plunder**        | Commerce         | Commerce          | Commerce        | Commerce             | Commerce                | Commerce                |
-| `RAIDING`           | Raiding       | Raiding             | Raiding            | Raiding          | Raiding           | Raiding         | **Dive Bombing**     | Raiding                 | Raiding                 |
-| `CHIVALRY`          | Chivalry      | **Vampires**        | **Scrap Buggies**  | **T-Rex**        | **Motherships**   | **Sabretooths** | **Whirligigs**       | **Chocolate Bunnies**   | **Tentacles**           |
-| `DRILL`             | Crafting      | Crafting            | Crafting           | Crafting         | Crafting          | Crafting        | Crafting             | Crafting                | Crafting                |
-| `ENGINEERING`       | Engineering   | Engineering         | Engineering        | Engineering      | Engineering       | Engineering     | **Mining**           | Engineering             | Engineering             |
-| `METALLURGY`        | Armoury       | Armoury             | Armoury            | **Triceratops**  | Armoury           | **Mammoths**    | **Steam Tanks**      | **Jawbreakers**         | **Gibbering Masses**    |
-| `FORTIFICATION`     | Fortification | Fortification       | Fortification      | **Nesting**      | **Force Fields**  | **Deep Winter** | **Dig In**           | **Home Sweet Home**     | **Warding Circles**     |
-| `EXPLOSIVES`        | Explosives    | **Pestilence**      | Explosives         | **Wallbreaker**  | **Disintegrator** | **Brittle**     | **Blasting Charges** | **Peppermint Surprise** | **The Stars Are Right** |
-| `SHORECRAFT`        | Sailing       | **Ghost Ships**     | **Fire Rafts**     | **Dugouts**      | Sailing           | **Rime**        | Sailing              | Sailing                 | Sailing                 |
-| `NAVIGATION`        | Navigation    | Navigation          | Navigation         | Navigation       | Navigation        | **Pack Ice**    | Navigation           | Navigation              | Navigation              |
-| `NAVAL_ENGINEERING` | Shipbuilding  | **Plague Galleons** | **Dreadnoughts**   | **War Rafts**    | Shipbuilding      | **Icebound**    | Shipbuilding         | Shipbuilding            | Shipbuilding            |
-| `SEAMANSHIP`        | Boarding      | **Drowned Crews**   | **Powder Kegs**    | **Horned Prows** | Boarding          | **Black Ice**   | Boarding             | Boarding                | Boarding                |
-| `SUBMERSIBLES`      | Submersibles  | **Sunken Galleys**  | **Diving Barrels** | **Plesiosaurs**  | Submersibles      | **Glacier**     | Submersibles         | Submersibles            | Submersibles            |
+| ID                  | Human         | Undead              | Goblin             | Dinosaur         | Martian            | Ice Folk        | Dwarf                | Candy                   | Cult                    |
+| ------------------- | ------------- | ------------------- | ------------------ | ---------------- | ------------------ | --------------- | -------------------- | ----------------------- | ----------------------- |
+| `GATHERING`         | Gathering     | Gathering           | Gathering          | Gathering        | Gathering          | Gathering       | Gathering            | Gathering               | Gathering               |
+| `FARMING`           | Farming       | Farming             | Farming            | Farming          | Farming            | Farming         | Farming              | Farming                 | **Harvest Rites**       |
+| `MILLING`           | Milling       | **Bone Mills**      | Milling            | **Grinding**     | **Solar Arrays**   | Milling         | **Steam Pumps**      | Milling                 | Milling                 |
+| `ADMINISTRATION`    | Leadership    | Leadership          | Leadership         | Leadership       | Leadership         | Leadership      | Leadership           | Leadership              | Leadership              |
+| `PLANNING`          | Land Grants   | Land Grants         | Land Grants        | Land Grants      | Land Grants        | Land Grants     | Land Grants          | Land Grants             | Land Grants             |
+| `HUNTING`           | Hunting       | Hunting             | Hunting            | Hunting          | Hunting            | Hunting         | Hunting              | Hunting                 | Hunting                 |
+| `FORESTRY`          | Forestry      | Forestry            | Forestry           | Forestry         | Forestry           | Forestry        | Forestry             | Forestry                | Forestry                |
+| `SAWMILLING`        | Sawmilling    | **Liches**          | **Rocket Carts**   | **Timber**       | **Tripods**        | **Boulders**    | **Steam Cannons**    | **Pie Launchers**       | **Stargazers**          |
+| `MARKSMANSHIP`      | Marksmanship  | **Banshees**        | **Bomb Chuckers**  | **Spitters**     | **Ray Gunners**    | Marksmanship    | **Clockwork**        | **Gumball Gunners**     | **Hexers**              |
+| `FIELDCRAFT`        | Pathfinding   | Pathfinding         | Pathfinding        | Pathfinding      | **Heat Sinks**     | Pathfinding     | Pathfinding          | Pathfinding             | Pathfinding             |
+| `SCOUTING`          | Scouting      | Scouting            | Scouting           | Scouting         | **Saucers**        | Scouting        | **Gyrocopters**      | Scouting                | **Familiars**           |
+| `ROADS`             | Roads         | Roads               | Roads              | Roads            | Roads              | Roads           | Roads                | Roads                   | Roads                   |
+| `COMMERCE`          | Commerce      | Commerce            | **Plunder**        | Commerce         | Commerce           | Commerce        | Commerce             | Commerce                | Commerce                |
+| `RAIDING`           | Raiding       | Raiding             | Raiding            | Raiding          | Raiding            | Raiding         | **Dive Bombing**     | Raiding                 | Raiding                 |
+| `CHIVALRY`          | Chivalry      | **Vampires**        | **Scrap Buggies**  | **T-Rex**        | **Motherships**    | **Sabretooths** | **Whirligigs**       | **Chocolate Bunnies**   | **Tentacles**           |
+| `DRILL`             | Crafting      | Crafting            | Crafting           | Crafting         | Crafting           | Crafting        | Crafting             | Crafting                | Crafting                |
+| `ENGINEERING`       | Engineering   | Engineering         | Engineering        | Engineering      | Engineering        | Engineering     | **Mining**           | Engineering             | Engineering             |
+| `METALLURGY`        | Armoury       | Armoury             | Armoury            | **Triceratops**  | Armoury            | **Mammoths**    | **Steam Tanks**      | **Jawbreakers**         | **Gibbering Masses**    |
+| `FORTIFICATION`     | Fortification | Fortification       | Fortification      | **Nesting**      | **Force Fields**   | **Deep Winter** | **Dig In**           | **Home Sweet Home**     | **Warding Circles**     |
+| `EXPLOSIVES`        | Explosives    | **Pestilence**      | Explosives         | **Wallbreaker**  | **Disintegrator**  | **Brittle**     | **Blasting Charges** | **Peppermint Surprise** | **The Stars Are Right** |
+| `SHORECRAFT`        | Sailing       | **Ghost Ships**     | **Fire Rafts**     | **Dugouts**      | **Skimmers**       | **Rime**        | Sailing              | Sailing                 | Sailing                 |
+| `NAVIGATION`        | Navigation    | Navigation          | Navigation         | Navigation       | Navigation         | **Pack Ice**    | Navigation           | Navigation              | Navigation              |
+| `NAVAL_ENGINEERING` | Shipbuilding  | **Plague Galleons** | **Dreadnoughts**   | **War Rafts**    | **Hover Cruisers** | **Icebound**    | Shipbuilding         | Shipbuilding            | Shipbuilding            |
+| `SEAMANSHIP`        | Boarding      | **Drowned Crews**   | **Powder Kegs**    | **Horned Prows** | **Hover Pods**     | **Black Ice**   | Boarding             | Boarding                | Boarding                |
+| `SUBMERSIBLES`      | Submersibles  | **Sunken Galleys**  | **Diving Barrels** | **Plesiosaurs**  | **Bathyspheres**   | **Glacier**     | Submersibles         | Submersibles            | Submersibles            |
 
 The rest of this document, the tuning documents, and the faction documents
 name a technology by its ID in title case (Drill, Administration,
@@ -5628,9 +5664,9 @@ an adjacent tile (**Submerged**), and attacking only units afloat, which
 never strike back (**Torpedo**). A Patrol Boat's **Ram** needs Seamanship
 (the interface calls it **Bow Ram**, since the Goblin Scrap Buggy's Overrun
 was displayed as "Ram" until `pulp_wars-2yc.63`). The three ships have the same numbers, names, and
-rules in the Human, Martian, Dwarf, Candy, and Cult rosters (each drawn
-in its faction's style); the Goblin (`7r92`), Undead (`7r93`), and
-Dinosaur (`7r94`) ships are their own (the themed naval branches); the Ice Folk
+rules in the Human, Dwarf, Candy, and Cult rosters (each drawn
+in its faction's style); the Goblin (`7r92`), Undead (`7r93`), Dinosaur
+(`7r94`), and Martian (`7r95`) ships are their own (the themed naval branches); the Ice Folk
 have none ([section 14](#14-naval-rules)). Public abilities: Patrol Boat `ATTACK`,
 `RAM` (listed whatever its owner has researched); Battleship `ATTACK`;
 Submarine `ATTACK`, `SUBMERGED`, `TORPEDO`.
@@ -5919,9 +5955,9 @@ is its movement mode ([section 20.6](#206-movement-stride-flying-and-crossing-wa
 | Mothership       | `KNIGHT`      | Chivalry          |   8⁷ |     2 |  16 |      4 | 2.5 (5) |    2 (4) |    2 |     1 |     1 | fly    | yes               | yes     | Beam Down⁷; Heavy Tractor Beam⁷ (free once a turn); no Overrun, Pillage, or advance |
 | Shock Trooper    | `SWORDSMAN`   | Metallurgy        |    6 |     1 |  12 |      3 |   3 (6) |    2 (4) |    1 |     1 |     1 | ground | yes               | yes     | Shock Field 3 (`7r55`); no Field Defense                                            |
 | Colossus         | `JUGGERNAUT`  | reward only       |    — |     2 |  32 |      3 |   4 (8) | 2.5 (5)⁶ |    2 |   1–2 |     1 | stride | yes               | yes     | heat ray; Overstride                                                                |
-| Patrol Boat      | `PATROL_BOAT` | Shorecraft        |    5 |     1 |  10 |      0 |   2 (4) |    2 (4) |    2 |     1 |     2 | —      | yes               | no      | naval; Ram (Seamanship)                                                             |
-| Battleship       | `BATTLESHIP`  | Naval Engineering |   16 |     1 |  25 |      0 |  5 (10) |    3 (6) |    2 |   1–3 |     3 | —      | no                | no      | naval; splash                                                                       |
-| Submarine        | `SUBMARINE`   | Submersibles      |    9 |     1 |  12 |      0 |   4 (8) |    2 (4) |    2 |     1 |     2 | —      | yes               | no      | naval; Submerged; Torpedo                                                           |
+| Skimmer⁹         | `PATROL_BOAT` | Shorecraft        |    5 |     1 |   8 |      2 |   2 (4) |    2 (4) |    2 |     1 |     2 | —      | yes               | no      | naval; Ram (Hover Pods)                                                             |
+| Hover Cruiser⁹   | `BATTLESHIP`  | Naval Engineering |   16 |     1 |  20 |      3 |  5 (10) |    3 (6) |    2 |   1–3 |     3 | —      | no                | no      | naval; splash                                                                       |
+| Bathysphere⁹     | `SUBMARINE`   | Submersibles      |    9 |     1 |  10 |      2 |   4 (8) |    2 (4) |    2 |     1 |     2 | —      | yes               | no      | naval; Submerged; Torpedo                                                           |
 
 ⁵ Ray Gunner Sight becomes 2 with Fieldcraft.
 ⁶ [Martian tuning record](RULESET_7_MARTIANS.md#165-tuning-record)
@@ -5940,6 +5976,11 @@ first step of the balance design's
 [fallback ladder](RULESET_7_BALANCE_MARTIAN_ICE.md#84-tuning-bounds-and-fallback-ladders),
 applied after the Martians won about 75% of the coarse Dry Land games at
 9 HP ([the measurement](RULESET_7_BALANCE_MARTIAN_ICE.md#17-measurement-and-the-grunt-at-8-hp-pulp_wars-1wy6)).
+⁹ The Hover Fleet (`pulp-wars-poc-7r95`, `pulp_wars-5ti.19`,
+[themed naval branches section 6](RULESET_7_NAVAL_FACTIONS.md#6-martians-the-hover-fleet)):
+the Human ships' numbers under their own names, with less HP behind a
+Shield; the Martian Seamanship is shown as Hover Pods (the Ram and the
+shore launch of foot units, no Board).
 
 - **Grunt** has Fighter parity (capture, Pillage with Raiding, Disband,
   ordinary Promotion: 13 HP promoted) except its numbers, its Shield, its
@@ -5991,8 +6032,9 @@ applied after the Martians won about 75% of the coarse Dry Land games at
 - **Mind-controlled units** keep their own kind's statline
   ([section 20.9](#209-mind-controlled-units)); there is no Thrall (retired
   in `7r33`).
-- **Patrol Boat, Battleship, and Submarine** are the Human units. Martian faction rules
-  do not apply to them: no Shield, one slot, the ordinary Promotion.
+- **Skimmer, Hover Cruiser, and Bathysphere** (`7r95`) are the Human
+  ships under their own names with less HP and a Shield (2, 3, 2); one
+  slot, the ordinary Promotion ([section 14](#14-naval-rules)).
 - Martian Disband refunds: Grunt 1 (`floor(3 / 2)`); Saucer, Ray Gunner, Shield Projector,
   and Brain 2; Tripod 4; Mothership 4. The Colossus and a mind-controlled
   unit cannot Disband.
@@ -7584,13 +7626,34 @@ Every rule that names "naval units", "ships", or "boats" covers all three.
   unit embarks like any other, keeping its slots and growth; landing ends
   the activation, so a landed Triceratops cannot Charge! that turn). An Egg
   is never on water or a dock, never embarks, and never blockades.
-- **Martian boats** are the Human Patrol Boat, Battleship, and Submarine
-  too: no Shield, one slot, ordinary Promotion. Mind Control never takes a
+- **Martian boats** are the **Hover Fleet** (`7r95`,
+  [themed branches section 6](RULESET_7_NAVAL_FACTIONS.md#6-martians-the-hover-fleet)):
+  the **Skimmer** (Patrol Boat, 8 HP, Shield 2), the **Hover Cruiser**
+  (Battleship, 20 HP, Shield 3), and the **Bathysphere** (Submarine, 10 HP,
+  Shield 2), the Human numbers otherwise, one slot, ordinary Promotion.
+  Their Shields are the Martian Shields of [section 20.2](#202-shields) in
+  every form: full when trained, recharged at the owner's Start Turn (and
+  End Turn with Force Fields), to 4 beside a land-form Shield Projector,
+  taking every hit, splash, blast, bomb, and the ice crush first, never
+  Plague. A boarded Skimmer becomes its captor's Patrol Boat and loses its
+  Shield entry. Their Seamanship, **Hover Pods**, is the Ram and
+  `HOVER_PODS` (capability `hoverPods`) instead of Board: a Martian ship
+  never boards. With Hover Pods a land-form Martian foot unit (`GROUND`
+  movement) may make the **last step** of an ordinary Move onto an adjacent
+  Shallow Water tile it knew before the command, with no unit, no ice, and
+  no dock; that step costs a full point, ends the Move, and the unit
+  self-launches there (`EMBARKED`, exhausted). It never crosses water
+  inside a Move and never launches onto Deep Water; a refused launch is
+  `MOVEMENT_ILLEGAL` with the terrain reason (`ENGINEERING_REQUIRED`). A
+  mind-controlled unit reads its own kind's tree with its controller's
+  research. Another seat's Hover Pods is private: its public movement
+  validation assumes them for a visible Martian foot unit, and a launch
+  tile is never an attack origin. Mind Control never takes a
   ship; the Tractor Beam may pull a one-slot ship, a submerged Submarine
   included, and never an icebound one (`TARGET_IMMUNE`). A self-launched
-  machine is `EMBARKED`: it can be rammed and torpedoed and is never
-  boarded. A Ray Gunner or a Tripod cannot target a submerged Submarine
-  from 2. Martian foot units embark at an own active,
+  machine or foot unit is `EMBARKED`: it can be rammed and torpedoed and
+  is never boarded. A Ray Gunner or a Tripod cannot target a submerged
+  Submarine from 2. Martian foot units also embark at an own active,
   empty Port or Shipyard with Shorecraft like Human units; machines also
   self-launch. Afloat, a Martian unit is an ordinary embarked unit (Move 2,
   Defense 1, Sight 1, no Attack, retaliation, ZOC, or ability) that keeps its
@@ -8635,6 +8698,29 @@ Harbours from it.
   Submarine. Every other seat's threat estimate assumes a hostile Dugout's
   Horned Prow with its run-up (+1.5), and no seat is offered a Board of a
   Plesiosaur.
+- **The Martian Hover Fleet** (`7r95`, `pulp_wars-5ti.19`,
+  `src/ai/v7-naval-martian.ts`). The Martian ships are read by role, so a
+  Martian seat trains a Bathysphere against a visible Battleship and a
+  Skimmer against a visible Submarine, and its Hover Cruiser shells the
+  coast from its station. With Hover Pods every explored, free Shallow
+  Water tile beside the seat's home land (not ice, not a dock) is a
+  **launch start** of the naval plan, as a Port is: the water routes and
+  the landing coast are computed from them, a foot unit bound overseas
+  walks to the nearest launch tile that serves the landing coast instead
+  of a Port, and its Move onto the water (the engine's offered Move) is
+  scored as boarding at a Port, under every boarding rule (the wave, which
+  gathers round a launch tile, the hold, no boarding unescorted into a
+  hostile Battleship's or Submarine's reach); a seat that launches from
+  its beaches reserves no Coins for a Port. Hover Pods is the naval plan's
+  next technology (priority 1280, not held for the army's research) once
+  the plan is active and two or more own foot capture units have no walk
+  to its target, with or without a warship. Every exchange reads the exact
+  previews, which count both Shields (a Skimmer rams a Patrol Boat its
+  Shield lets it survive), and the threat estimate takes the Shield a
+  defender has during the enemy turn off the damage it expects, for a ship
+  as for a land unit. Every other seat reads a hover-launched unit as a
+  transport (its boats ram and sink it, Shield first), and its estimates
+  assume a hostile Martian foot unit's Hover Pods.
 - **The frozen sea** (`pulp_wars-5ti.5`, `src/ai/v7-frozen-sea.ts`). An
   Ice Folk seat has no ship and no naval plan; it has an **ice plan**
   where a seafaring seat's naval plan would activate (every known
@@ -10605,9 +10691,10 @@ the [Martian overlay](RULESET_7_MARTIANS.md) and the
 | `SWORDSMAN`     | Shock Trooper    | foot; Shock Field (`7r55`) |
 | `JUGGERNAUT`    | Colossus         | machine, walker, ray       |
 
-- **Shielded units** are the eight Martian land roles in land or embarked
-  form. Martian boats (the Human boats) have no Shield, and neither has a
-  mind-controlled unit of another kind (its kind's Shield maximum is 0).
+- **Shielded units** are the Martian land roles in every form and, since
+  the Hover Fleet (`7r95`), the three Martian ships (Skimmer 2, Hover
+  Cruiser 3, Bathysphere 2; a trained ship starts full). A mind-controlled
+  unit of another kind has none (its kind's Shield maximum is 0).
 - **Machines** have the movement mode `STRIDE` (walkers: Tripod, Colossus)
   or `FLY` (flyers: Saucer, Mothership); every other role of every faction
   is `GROUND`. The public abilities `STRIDE` and `FLY` mirror it. Machines
@@ -10730,7 +10817,8 @@ Examples (engine formula, full HP, open Grass):
   Projector gains nothing until then, and killing the Projector removes
   nothing already granted. The covered unit's form does not matter (an
   embarked unit next to a Projector on the shore is covered); the Projector
-  must be in land form. Boats and units of another kind (Shield maximum 0)
+  must be in land form; a Martian ship beside it is covered too (`7r95`).
+  Boats of other factions and units of another kind (Shield maximum 0)
   gain nothing.
 - **The field holds** (the Martian pass's correction, `7r52`;
   `forceFieldHoldsV7`). A unit at full HP whose current Shield is
@@ -11309,7 +11397,7 @@ cost.
 | Dinosaur rules          | Martian attacks, rays, and Pierce hit Eggs; Eggs are never Mind Control or Tractor Beam targets. A Charge! is absorbed by the Shield first and pushes and follows whatever it absorbed. Acid and Wallbreaker matter only for a Martian foot unit. An Ankylosaurus takes 1 less from every Martian hit. The two-slot dinosaurs are immune to Mind Control and the Tractor Beam.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | Human abilities         | Field Defense and Walls give a non-Martian defender their bonus against every Martian attack except a ray fired with the Disintegrator; a Tripod attack destroys Field Defense on the target tile. A Knight that kills a Martian unit advances and may attack again. A Juggernaut-role unit pushes a Martian unit under the ordinary conditions. The Catapult out-ranges every ray.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | Cities, siege, capacity | Capture-capable: every Martian land unit, the Saucer and the Mothership included, and every controlled unit (`pulp_wars-ke95`). Any Martian unit on a hostile center besieges it, a flyer included since `pulp_wars-ke95`. Machines are never fortified. Slots: Mothership and Colossus 2, controlled units none; Martian cities have no capacity bonus. Beam Down, Mind Control, and the Tractor Beam spend no city action.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| Boats, water            | Martian boats are the Human boats. Foot units embark at Ports; machines self-launch on any water they may enter. An embarked Martian unit keeps its Shield, cannot attack, retaliate, or use an ability, and can be pulled from water to water.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Boats, water            | Martian boats are the shielded Hover Fleet (`7r95`: Skimmer, Hover Cruiser, Bathysphere). Foot units embark at Ports, or with Hover Pods launch from any beach onto adjacent Shallow Water as the last step of a Move; machines self-launch on any water they may enter. An embarked Martian unit keeps its Shield, cannot attack, retaliate, or use an ability, and can be pulled from water to water.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | Achievements, Promotion | Muster counts a controlled unit by its role and excludes the Colossus; Sea Dog never counts an afloat machine. Promotion (3 kills, +5 maximum HP, full heal of HP, Shield unchanged) applies to every Martian unit and to a controlled unit by its kind's rules; ray, hostile Pierce, and retaliation kills count; Mind Control is not a kill.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | Ice Folk                | Frozen is not damage and ignores Shields: a shielded unit is Frozen whatever its Shield. Shatter reads the HP after the Shield, so a Frozen unit at 1 to 3 HP is shattered by a hit its full Shield absorbs entirely; a Shield absorbs a Sweep flank hit, a Rockfall, and a Boulder like any damage (since `7r37` a Frozen 9-HP Grunt in a Force Field dies to two Yeti hits: the first costs 1 HP, the second leaves 3 and shatters it; at 10 HP it took three). A ray fired from distance 2 at an Ice Folk unit in its own Witch's Blizzard is halved after its full or half power, and a Pierce hit derives from the halved hit; the Disintegrator leaves an Ice Folk unit on its Walled center with neither fortification nor Snow cover. Martian walkers and flyers ignore deep snow, and flyers ZOC; they are Frozen and shattered like any unit (the Mothership too; the Colossus is Frozen, never shattered). A ray unit that stands still loses nothing to frost; a Frozen Saucer cannot Strafe, and a Frozen Brain or Mothership can use neither Mind Control, Psychic Command, nor the Tractor Beam. A Frozen unit may be mind-controlled (it stays Frozen), a mind-controlled Witch keeps her Blizzard (it now halves ranged hits only for Ice Folk units of her controller and stops the controller's ground units), a shattered Witch takes it with her, a shattered Brain's controlled unit is released, and the Frost Giant is immune to Mind Control and the Tractor Beam (`JUGGERNAUT`). The Tractor Beam pulls an Ice Folk unit off Snow, out of a Blizzard, or off Walls, and a Mountain-born unit onto a Mountain; a pulled or beamed unit stays Frozen. A self-launched machine cannot be Frozen or shattered while afloat. |
 | Dwarves                 | A Shield absorbs an eruption and a bomb first: an eruption of 2 does nothing to a full Shield of 2 (3 puts 1 through); a bomb of 5 puts 3 through a Shield of 2 (Dive 6: 4) and 1 through a Force Field's 4 (Dive: 2); an eruption at the Dwarves' Start Turn strips a Shield for the rest of their turn. Eruptions never hit flyers (Saucer, Mothership) but hit walkers (Tripod, Colossus) and foot units; bombs hit any form. The two constructs are immune to Mind Control (`TARGET_IMMUNE`); every other Dwarf land role is a target under the ordinary conditions (the Gyrocopter not on a Rift), and a controlled Dwarf unit keeps its Dwarf rules but Assemble and tunnel riding (a controlled Mole tunnels alone). A mound is never a Mind Control, Tractor Beam, or Pierce target, and no pull or Beam Down ends on one; a pulled Dwarf unit keeps its `moved` flag, and its Dig In is read on its new tile. The Disintegrator ignores Dig In like all fortification. The Saucer and the Gyrocopter share the flight rule; a Saucer with Strafe kills a landed Gyrocopter (8 of 8).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |

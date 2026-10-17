@@ -714,3 +714,34 @@ of a dark canoe bow. The unit shadow measurements were regenerated.
 Weak spots: the Plesiosaur faces left where the fleet's hulls face right;
 it is the tallest Submarine but the Goblin barrel; and the Horned Prows
 icon's figurehead reads as a horned animal in a boat more than a carving.
+
+## The Martian Hover Pods (bead `pulp_wars-5ti.19`)
+
+The Martian ships of the
+[themed naval branches](../product/RULESET_7_NAVAL_FACTIONS.md#67-art-and-sound)
+are the accepted Martian Patrol Boat, Battleship, and Submarine under new
+labels (the **Skimmer**, the **Hover Cruiser**, the **Bathysphere**): no
+unit art changes. Their Shields are the existing code-drawn Shield: the
+segmented magenta Shield bar at the hull's base (2, 3, and 2 segments) and
+the Shield flare on a hit, checked on the three hulls at their anchors and
+on the riding-low Bathysphere in muted headless Chrome captures. A
+hover-launched foot unit draws the accepted Martian transport. The **Hover
+Pods** card (the Martian Seamanship) shows its own icon, a polished chrome
+pod with a pale lavender glass dome and magenta lights hovering on a short
+magenta beam over a curling blue-white wave (registered in the live look
+by `CHIBI_NAVAL_FACTION_TECH_ICON_ASSETS_V7`, falling back to the shared
+ship's wheel); the Skimmers and Bathyspheres cards show the ships'
+portraits (`NAVAL_FACTION_TECH_SUBJECTS_V7`).
+
+| Asset                                      | Subject                        | Accepted                             | Rejected                                                                                                                                                                     |
+| ------------------------------------------ | ------------------------------ | ------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `chibi-naval-martian-icon-tech-seamanship` | `ICON:TECH:MARTIAN:SEAMANSHIP` | `icon-tech-hover-pods-c` candidate 0 | `-a`: a pod with shark-fin spikes wrapped in its wave, cluttered at 48 px; `-b`: reads as a pod over a wave but its dome is a big hot magenta area (kept as the edit source) |
+
+Three PixelLab jobs (seeds 99461 and 99462, and the edit 99463) for one
+accepted piece: two fresh `icon`-class creations in batch `naval-martian`
+(`martian-magenta` accent) and an `edit-image-pixen` edit of `-b` that made
+the dome clear lavender glass and the rim chrome, keeping magenta to the
+lights and the beam (the faction's rule: magenta only as small lights). At
+48 px the icon reads as a hover pod over a wave on light and dark cards.
+Weak spot: the magenta beam is still a band of glow under the pod, more
+than a small light.

@@ -595,6 +595,7 @@ import {
   navalRamUnlockTextV7,
   fireRaftsUnlockTextV7,
   drownedCrewsUnlockTextV7,
+  hoverPodsUnlockTextV7,
   battleshipUnlockNoteV7,
   SHORECRAFT_EMBARK_NOTE_V7,
   submarineUnlockNoteV7,
@@ -16198,7 +16199,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   const aiHeadStartCoins =
     draft.mapType === "SHOWCASE" ? 0 : draft.aiHeadStartCoins;
   return {
-    rulesetId: "pulp-wars-poc-7r94",
+    rulesetId: "pulp-wars-poc-7r95",
     seed,
     width,
     height: width,
@@ -16373,6 +16374,9 @@ function effectDescription(
     // Themed naval branches (`pulp_wars-5ti.17`): the Undead Drowned Crews.
     case "DROWNED_CREWS":
       return drownedCrewsUnlockTextV7();
+    // Themed naval branches (`pulp_wars-5ti.19`): the Martian Hover Pods.
+    case "HOVER_PODS":
+      return hoverPodsUnlockTextV7();
     case "HARBOURS":
       return harboursUnlockTextV7(effect.population);
     // The frozen sea (RULESET_7_NAVAL_BRANCH.md section 8.2).
@@ -16707,6 +16711,7 @@ function technologyEffectGroupIdV7(
     case "RAM":
     case "FIRE_RAFTS":
     case "DROWNED_CREWS":
+    case "HOVER_PODS":
     case "HARBOURS":
     case "ICEBOUND":
     case "BLACK_ICE":

@@ -549,6 +549,11 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/render/naval-presentation-v7.ts::plesiosaurRuleV7": "SEAT",
   "src/render/naval-presentation-v7.ts::navalRamDescriptionV7": "SEAT",
   "src/engine/rules/ruleset-v7.ts::roleRamBonus2MaximumV7": "SEAT",
+  // The Martian Hover Fleet (`pulp_wars-5ti.19`): whether the viewer's own
+  // seat's tree grants Hover Pods, and whether it has them now (a unit's
+  // launch reads its kind's tree through `unitCapabilitiesV7`).
+  "src/ai/v7-naval-martian.ts::hoverPodsTreeV7": "SEAT",
+  "src/ai/v7-naval-martian.ts::hoverPodsResearchedV7": "SEAT",
   "src/render/goblin-presentation-v7.ts::<module>": "SEAT",
   // A prize under its new flag: its kind follows its new owner (a ship is
   // never mind-controlled), so the prize's maximum HP is its captor seat's

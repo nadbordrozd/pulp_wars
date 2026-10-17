@@ -1,0 +1,36 @@
+{
+  "id": "icon-tech-hover-pods-c",
+  "jobId": "b07d1d9c-3d74-437f-a042-037ec456cdaf",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-martian",
+    "asset": "chibi-naval-martian-icon-tech-seamanship",
+    "subject": "ICON:TECH:MARTIAN:SEAMANSHIP",
+    "faction": "MARTIAN",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 99463,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Make the big dome on top clear pale lavender-grey glass with one white highlight, not pink, and make the pod's rim polished silver chrome; keep the hot magenta only as the small ring of lights under the pod and the short glowing beam down to the wave. Keep the pod's shape, the blue-white curling wave, the size, the thick black outline and the style, on a transparent background."
+      }
+    ],
+    "prompt": "Make the big dome on top clear pale lavender-grey glass with one white highlight, not pink, and make the pod's rim polished silver chrome; keep the hot magenta only as the small ring of lights under the pod and the short glowing beam down to the wave. Keep the pod's shape, the blue-white curling wave, the size, the thick black outline and the style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Make the big dome on top clear pale lavender-grey glass with one white highlight, not pink, and make the pod's rim polished silver chrome; keep the hot magenta only as the small ring of lights under the pod and the short glowing beam down to the wave. Keep the pod's shape, the blue-white curling wave, the size, the thick black outline and the style, on a transparent background.",
+    "editInstruction": "Make the big dome on top clear pale lavender-grey glass with one white highlight, not pink, and make the pod's rim polished silver chrome; keep the hot magenta only as the small ring of lights under the pod and the short glowing beam down to the wave. Keep the pod's shape, the blue-white curling wave, the size, the thick black outline and the style, on a transparent background.",
+    "source": {
+      "recipe": "icon-tech-hover-pods-b",
+      "candidate": 0,
+      "sha256": "0fbd3057afc0d65e9de64b2a26c6c1915e094077c367de6b76f6601a2b808f30"
+    }
+  }
+}

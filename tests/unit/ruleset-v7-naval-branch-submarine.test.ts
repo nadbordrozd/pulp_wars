@@ -105,7 +105,10 @@ describe("training a Submarine", () => {
           : // The Plesiosaur (`pulp_wars-5ti.18`): 10 Coins.
             faction === "DINOSAUR"
             ? [10, 12]
-            : [9, 12],
+            : // The Bathysphere (`pulp_wars-5ti.19`): 10 HP behind a Shield.
+              faction === "MARTIAN"
+              ? [9, 10]
+              : [9, 12],
       );
       expect(result.events[0]).toEqual({
         kind: "NAVAL_UNIT_TRAINED",

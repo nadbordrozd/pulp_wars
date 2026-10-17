@@ -18,6 +18,7 @@ import {
   primaryActionUsedV7,
   roleMechanicsV7,
   seatRoleRuleV7,
+  technologyDisplayNameV7,
   unitIsFrozenV7,
   tractorBeamRuleV7,
   unitFactionV7,
@@ -286,6 +287,11 @@ export const RELEASE_TOOLTIP_V7 =
   "Returns the unit to its owner where it stands.";
 export const DISINTEGRATOR_PREVIEW_V7 = "Disintegrator: ignores fortification";
 export const LAUNCH_LABEL_V7 = "Launch: crosses water as a transport";
+/**
+ * Themed naval branches, Hover Pods (`pulp_wars-5ti.19`): a foot unit's
+ * Move onto Shallow Water off a beach (the board's launch highlight).
+ */
+export const HOVER_LAUNCH_LABEL_V7 = "Hover off: crosses water as a transport";
 
 /** Section 13.2 "Shield row": "Shield 2 / 2", "Shield 4 / 4 (Force Field)". */
 export function shieldTextV7(
@@ -454,6 +460,12 @@ export function martianHelpRulesV7(): readonly (readonly [string, string])[] {
     [
       "Launch",
       "Martian machines need no Port: they enter water from any shore and cross it as transports that cannot fight.",
+    ],
+    // Themed naval branches, the Hover Fleet (`pulp_wars-5ti.19`): the
+    // shielded hulls and Hover Pods.
+    [
+      "At sea",
+      `the ${label("PATROL_BOAT")}, ${label("BATTLESHIP")}, and ${label("SUBMARINE")} are frail hulls behind a Shield that takes hits first and recharges every turn; with ${technologyDisplayNameV7("SEAMANSHIP", "MARTIAN")}, foot troops hover off any beach onto Shallow Water as transports, with no Port.`,
     ],
     [
       BEAM_DOWN_LABEL_V7,
