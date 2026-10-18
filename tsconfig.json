@@ -27,6 +27,7 @@
     "scripts/benchmark-board-presentation-v7.ts",
     "scripts/browser-smoke-v7.ts",
     "scripts/browser-bug-hunt-v7.ts",
+    "scripts/sim-bug-hunt-v7.ts",
     "scripts/ruleset7-undead-balance-matrix.ts",
     "scripts/campaign-playtest-v7.ts",
     "scripts/play-text-v7.ts",

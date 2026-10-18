@@ -47,6 +47,9 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/engine/rules/ruleset-v7.ts::isEggLaidRoleV7": "SEAT",
   "src/engine/rules/ruleset-v7.ts::assertRuleset7Registry": "SEAT",
   "src/engine/v7/afflictions.ts::isLivingOwnerV7": "SEAT",
+  // `pulp_wars-2yc.97`: a Plague source is a unit of the Undead kind (a
+  // boarded Plague Galleon takes its captor's kind and is one no more).
+  "src/engine/v7/afflictions.ts::plagueSourceIdsV7": "KIND",
   "src/engine/v7/dwarf-reducer.ts::applyAssembleV7": "SEAT",
   "src/engine/v7/economy.ts::cityUnitCapacityV7": "SEAT",
   "src/engine/v7/economy.ts::landTradeCityIdsV7": "SEAT",

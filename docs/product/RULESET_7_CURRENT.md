@@ -9646,7 +9646,9 @@ of the Abomination's kills in combat only.
   its source Lich leaves the board for any reason (a Mind Control is not
   one: the Lich stays, and its Plagues keep their source; every unit it
   plagued is
-  cured, `PLAGUE_CLEARED` at the end of the command's events), or when a
+  cured, `PLAGUE_CLEARED` at the end of the command's events; a Plague
+  Galleon boarded by another seat takes its captor's kind and is no source
+  any more, so its Plagues end the same way, `pulp_wars-2yc.97`), or when a
   Human Captain's or Dinosaur Shaman's Tend Wounded or a Dwarf Engineer's
   Repair cures it. A burrowed unit keeps its entry and, surfacing before
   Plague resolves, takes its damage on the board; Plague never spreads to or

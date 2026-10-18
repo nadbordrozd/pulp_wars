@@ -462,6 +462,9 @@ whoever it hits").
   ([section 17.8](RULESET_7_CURRENT.md#178-plague)): 2 a Start Turn for
   three turns, one spread. Nothing else changes: range 1–3, no attack after
   moving, hostile-only splash.
+- A Galleon boarded by another seat is that seat's Battleship: it plagues
+  no more, and the Plagues it gave end at once (`PLAGUE_CLEARED`, as when
+  their source leaves the board; `pulp_wars-2yc.97`).
 - Data only: `attackPlaguesV7` reads the ability and the capability for
   any role.
 

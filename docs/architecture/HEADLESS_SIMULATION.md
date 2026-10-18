@@ -819,8 +819,34 @@ seat, offered commands, economic and combat previews, selections, tile
 action plans, the dock, the technology tree, scores) do not throw or stall.
 A failure writes a repro save; `--repro <failure.json>` reloads it.
 
+Round two (`pulp_wars-2yc.97`) runs the state schema after every command
+(not only at End Turn) and adds the match invariants the schema cannot see
+in one state: the round never goes back, an eliminated seat never returns,
+the active seat is in play, an unlocked or spent achievement stays so,
+`MATCH_ENDED` comes exactly with the outcome, a Domination win leaves no
+hostile seat in play, a Perfection match ends with round 30, and a
+mission's clock never runs past its last round. At command indexes 137,
+611, 1499, 3001 and 6007 (mid-turn, often an AI's) it resumes the
+browser's way: `parseSaveV7` with the replay `DEFER`red, play goes on from
+the loaded state with a fresh AI turn count, and `verifySaveReplayV7` must
+agree. At the match end it builds the summary, the star grade, the tribe
+record, the mission stars and the campaign record (on in-memory storage)
+and checks them against the outcome. The browser's playback plan
+(`corePresentationPlanV7`), the achievement deeds and the mission tracker
+join the per-command and per-turn queries. Slow spots are findings in the
+summary, not failures: an AI turn over 2 s of AI time, a browser query or a
+deferred load over 200 ms. Its batches: `ai2` (30 all-AI skirmishes: nine
+seats on 25 x 25, Perfection, curiosities off, every difficulty, co-op,
+long games, naval Archipelagos, Dry Land, the Showcase), `random2` (20,
+every faction a random seat 0 twice) and `missions2` (the ten campaign
+missions, the tutorial and nine labs, seat 0 the Normal AI with a share of
+random commands).
+
 ```bash
 node node_modules/.bin/tsx scripts/sim-bug-hunt-v7.ts --batch ai --out <dir> --jobs 8
 node node_modules/.bin/tsx scripts/sim-bug-hunt-v7.ts --batch random --out <dir>
 node node_modules/.bin/tsx scripts/sim-bug-hunt-v7.ts --batch mixed --out <dir> --seed-offset 1000
+node node_modules/.bin/tsx scripts/sim-bug-hunt-v7.ts --batch ai2 --out <dir> --jobs 8 --timeout-minutes 60
+node node_modules/.bin/tsx scripts/sim-bug-hunt-v7.ts --batch random2 --out <dir> --jobs 8
+node node_modules/.bin/tsx scripts/sim-bug-hunt-v7.ts --batch missions2 --out <dir> --jobs 8
 ```

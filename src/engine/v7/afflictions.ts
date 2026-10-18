@@ -1,5 +1,6 @@
 import type { PlayerId, UnitId } from "../model/ids";
 import {
+  effectiveRoleRuleV7,
   playerFactionV7,
   seatRoleRuleV7,
   unitFactionV7,
@@ -279,10 +280,34 @@ export function withBittenV7(
 }
 
 /**
+ * The units that can be a Plague's source (section 17.8): on the board,
+ * living, and of the Undead kind with `PLAGUE` (a Lich or a Plague
+ * Galleon). A mind-controlled Lich keeps its kind and stays a source; a
+ * Plague Galleon boarded by another seat (naval branch section 4.2) takes
+ * its captor's kind and is a source no more (`pulp_wars-2yc.97`: its
+ * Plagues stayed and the Board was refused as an invalid state).
+ */
+function plagueSourceIdsV7(state: GameStateV7): ReadonlySet<UnitId> {
+  return new Set(
+    allOwnedUnitsV7(state)
+      .filter((unit) => {
+        if (unit.hp <= 0 || isNeutralOwnerV7(unit.ownerId)) return false;
+        const kind = unitFactionV7(state, unit);
+        return (
+          kind === "UNDEAD" &&
+          effectiveRoleRuleV7(unit.role, kind).abilities.includes("PLAGUE")
+        );
+      })
+      .map((unit) => unit.id),
+  );
+}
+
+/**
  * Drops afflictions that no longer apply (sections 3.5 and 4.4): entries of
- * units that left the board, Plague whose source Lich left the board, and
- * bites whose biter player is no longer active. Every reducer output runs
- * through this before validation, so no code path can leave a stale entry.
+ * units that left the board, Plague whose source Lich left the board (or is
+ * a source no more: a boarded Plague Galleon), and bites whose biter player
+ * is no longer active. Every reducer output runs through this before
+ * validation, so no code path can leave a stale entry.
  */
 export function prunedAfflictionsV7(state: GameStateV7): GameStateV7 {
   if (state.plagued.length === 0 && state.bitten.length === 0) return state;
@@ -297,8 +322,9 @@ export function prunedAfflictionsV7(state: GameStateV7): GameStateV7 {
       .filter((player) => player.status === "ACTIVE")
       .map((player) => player.id),
   );
+  const sources = state.plagued.length === 0 ? alive : plagueSourceIdsV7(state);
   const plagued = state.plagued.filter(
-    (entry) => alive.has(entry.unitId) && alive.has(entry.sourceUnitId),
+    (entry) => alive.has(entry.unitId) && sources.has(entry.sourceUnitId),
   );
   const bitten = state.bitten.filter(
     (entry) => alive.has(entry.unitId) && active.has(entry.biterPlayerId),
@@ -311,7 +337,8 @@ export function prunedAfflictionsV7(state: GameStateV7): GameStateV7 {
 
 /**
  * `PLAGUE_CLEARED` for every unit whose Plague ended between `before` and
- * `after` because its source Lich left the board while the unit survived.
+ * `after` because its source Lich left the board (or is a source no more)
+ * while the unit survived.
  */
 export function plagueClearedEventsV7(
   before: GameStateV7,
@@ -324,12 +351,13 @@ export function plagueClearedEventsV7(
       .map((unit) => unit.id),
   );
   const still = new Set(after.plagued.map((entry) => entry.unitId));
+  const sources = plagueSourceIdsV7(after);
   const unitIds = before.plagued
     .filter(
       (entry) =>
         alive.has(entry.unitId) &&
         !still.has(entry.unitId) &&
-        !alive.has(entry.sourceUnitId),
+        !sources.has(entry.sourceUnitId),
     )
     .map((entry) => entry.unitId);
   return unitIds.length === 0 ? [] : [{ kind: "PLAGUE_CLEARED", unitIds }];

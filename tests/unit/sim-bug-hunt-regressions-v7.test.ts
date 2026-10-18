@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   applyCommandV7,
   parseEventV7,
+  parseGameStateV7,
   parsePlayerEventEnvelopeV7,
   projectEventsV7,
   queryPlayerCommandsV7,
@@ -14,6 +15,9 @@ import { applyOkV7, seatIdV7, unitAtV7 } from "../fixtures/v7-goblin-arena";
 import {
   NAVAL_ARENA_PORTS_V7,
   navalArenaV7,
+  navalUnitAtV7,
+  patchNavalUnitV7,
+  seatV7,
 } from "../fixtures/v7-naval-branch";
 import {
   at,
@@ -125,5 +129,68 @@ describe("an unseen splash attack's damage event keeps tile order", () => {
       at(7, 2),
     ]);
     expect(parsePlayerEventEnvelopeV7(envelope).ok).toBe(true);
+  });
+});
+
+describe("boarding a Plague Galleon ends the Plagues it carries", () => {
+  // Round two (`pulp_wars-2yc.97`), seed 427 (`b27`, the Showcase): a Human
+  // Submarine boarded the Undead Battleship (the Plague Galleon) whose shot
+  // had plagued three Human units. The prize took the Human kind, so its
+  // Plagues named a source that is no Plague source any more; the state
+  // check refused the result, and the offered Board was rejected as
+  // INVALID_STATE.
+  const scene = () => {
+    const base = navalArenaV7({
+      factions: ["ORIGINAL", "UNDEAD"],
+      units: [
+        { seat: 0, role: "PATROL_BOAT", at: at(5, 4) },
+        { seat: 0, role: "PATROL_BOAT", at: at(3, 4) },
+        { seat: 1, role: "BATTLESHIP", at: at(5, 5) },
+      ],
+    });
+    const galleon = navalUnitAtV7(base, at(5, 5));
+    const boarder = navalUnitAtV7(base, at(5, 4));
+    const victim = navalUnitAtV7(base, at(3, 4));
+    const low = patchNavalUnitV7(base, galleon.id, { hp: 8 });
+    const state = parseGameStateV7({
+      ...low,
+      plagued: [
+        { unitId: boarder.id, sourceUnitId: galleon.id, turnsRemaining: 2 },
+        { unitId: victim.id, sourceUnitId: galleon.id, turnsRemaining: 3 },
+      ].sort((left, right) => left.unitId - right.unitId),
+    });
+    if (state === null) throw new Error("the plagued scene is invalid");
+    return { state, galleon, boarder, victim };
+  };
+
+  it("is offered and accepted, and the Plagues are cleared", () => {
+    const { state, galleon, boarder, victim } = scene();
+    const actor = seatV7(state, 0).id;
+    const command: CommandV7 = {
+      kind: "BOARD",
+      unitId: boarder.id,
+      targetUnitId: galleon.id,
+    };
+    expect(queryPlayerCommandsV7(viewForV7(state, actor))).toContainEqual(
+      command,
+    );
+    const result = applyCommandV7(state, actor, command);
+    if (!result.accepted) throw new Error(result.error.code);
+    expect(result.state.plagued).toEqual([]);
+    expect(result.events).toContainEqual({
+      kind: "PLAGUE_CLEARED",
+      unitIds: [boarder.id, victim.id].sort((left, right) => left - right),
+    });
+    expect(
+      result.state.units.find((unit) => unit.id === galleon.id)?.ownerId,
+    ).toBe(actor);
+    expect(parseGameStateV7(JSON.parse(JSON.stringify(result.state)))).not.toBe(
+      null,
+    );
+    expect(
+      parsePlayerEventEnvelopeV7(
+        projectEventsV7(state, result.state, actor, result.events),
+      ).ok,
+    ).toBe(true);
   });
 });
