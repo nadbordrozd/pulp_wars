@@ -2300,8 +2300,15 @@ html:has(.v7-match-shell) body {
   top: calc(100% + 0.4rem);
   right: 0;
   display: grid;
-  min-width: 15rem;
+  /* In em, so a larger UI size widens it with its words (bead 2yc.98:
+     at 200% "Achievements" broke in two and Music ran into its slider). */
+  min-width: min(15em, calc(100vw - 1.5rem));
   max-width: calc(100vw - 1.5rem);
+  /* Bead pulp_wars-2yc.98: on a short screen (a phone turned sideways, a
+     large UI size) the menu scrolls, so Save & quit stays in reach. */
+  max-height: calc(100dvh - 5.5rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
   padding: 0.35rem;
   border: var(--pw-line-w) solid var(--pw-line);
   border-radius: var(--pw-radius);
@@ -4726,8 +4733,13 @@ html:has(.v7-match-shell) body {
 }
 
 .v7-tech-detail[data-dock="right"] {
+  /* Bead pulp_wars-2yc.98: centred in the room under the screen's close
+     button, which sits in this corner; a tall detail (a phone turned
+     sideways) covered it. */
+  top: calc(50% + 1.75rem);
   right: 0.75rem;
   left: auto;
+  max-height: calc(100% - 5rem);
 }
 
 .v7-tech-detail:is([data-dock="left"], [data-dock="right"])
@@ -8135,7 +8147,9 @@ body:has(> #app [data-v7-gallery]) {
    each a toggle with its icon and name and a small volume slider. */
 .v7-menu-audio {
   display: grid;
-  grid-template-columns: 6.5rem minmax(5.5rem, 1fr);
+  /* In em, so the names keep their room at a larger UI size (bead
+     pulp_wars-2yc.98: at 200% "Music" ran under its slider). */
+  grid-template-columns: minmax(6.5rem, auto) minmax(4rem, 1fr);
   gap: 0.4rem;
   align-items: center;
   padding-right: 0.5rem;

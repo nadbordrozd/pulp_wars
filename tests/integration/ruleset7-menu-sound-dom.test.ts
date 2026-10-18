@@ -342,17 +342,22 @@ describe("the match menu's Music and Sound rows", () => {
     };
     const menu = rule(".v7-hud-menu");
     const row = rule(".v7-menu-audio");
-    // 16 px to the rem; the menu is never wider than the screen.
-    expect(rem(menu, "min-width") * 16).toBeLessThanOrEqual(320 - 24);
+    // 16 px to the rem and the em at 100%; the menu is never wider than the
+    // screen (bead pulp_wars-2yc.98: its least width is in em, so it widens
+    // with the UI size, and capped by the screen).
+    const least =
+      /min-width:\s*min\(([0-9.]+)em, calc\(100vw - 1\.5rem\)\)/.exec(menu);
+    const minWidth = Number(required(least)[1]);
+    expect(minWidth * 16).toBeLessThanOrEqual(320 - 24);
     expect(menu).toContain("max-width: calc(100vw - 1.5rem)");
     const columns =
-      /grid-template-columns:\s*([0-9.]+)rem minmax\(([0-9.]+)rem, 1fr\)/.exec(
+      /grid-template-columns:\s*minmax\(([0-9.]+)rem, auto\) minmax\(([0-9.]+)rem, 1fr\)/.exec(
         row,
       );
     const toggleRem = Number(required(columns)[1]);
     const sliderRem = Number(required(columns)[2]);
     expect(toggleRem + sliderRem + rem(row, "gap")).toBeLessThanOrEqual(
-      rem(menu, "min-width"),
+      minWidth,
     );
     // A thumb-sized slider.
     expect(rule(".v7-menu-volume")).toContain("min-height: 44px");

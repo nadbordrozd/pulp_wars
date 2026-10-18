@@ -3866,7 +3866,11 @@ is the initial default unless the player overrides it.
 themes and the effects: each an icon toggle and a volume slider (0–100%,
 default on at 70%). A collapsed **Sound test** below lists every sound
 effect with a play button. The match menu's first two items, **Sound** and
-**Music**, mute and unmute without closing the menu. The Gallery has a
+**Music**, mute and unmute without closing the menu. A press anywhere
+outside the match menu (the board, the HUD) or Escape closes it; on a
+short screen (a phone turned sideways, a large UI size) the menu scrolls,
+so Save & quit stays in reach, and it widens with the UI size
+(`pulp_wars-2yc.98`). The Gallery has a
 **Sounds** tab with every sound and the themes
 ([Sound](SOUND.md#the-gallerys-sounds-tab)). Reduced motion does not turn
 sound off. The preference is stored under `pulpWars.audio.v1` (Sound) and

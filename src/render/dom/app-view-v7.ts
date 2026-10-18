@@ -984,6 +984,7 @@ import {
   recentPresentationFailuresV7,
   reportPresentationFailureV7,
   subscribePresentationFailuresV7,
+  type PresentationFailureRecordV7,
 } from "../presentation-guard-v7";
 import {
   COPIED_LABEL_V7,
@@ -2352,6 +2353,21 @@ export class Ruleset7DomAppView {
   }
 
   /**
+   * Review tooling (the browser bug hunt, bead pulp_wars-2yc.98): how many
+   * presentation failures the guard survived and the ones it remembers, so
+   * a hunt against a production build fails on them. The game never calls it.
+   */
+  presentationFailuresForReview(): {
+    readonly count: number;
+    readonly failures: readonly PresentationFailureRecordV7[];
+  } {
+    return {
+      count: presentationFailureCountV7(),
+      failures: recentPresentationFailuresV7(),
+    };
+  }
+
+  /**
    * Review tooling (the browser bug hunt, bead pulp_wars-2yc.93): what holds
    * the interface busy, read without changing it.
    */
@@ -2456,6 +2472,14 @@ export class Ruleset7DomAppView {
       event.preventDefault();
       this.#clearFirstStepOutOfMoves();
       this.#boardHost.resetInspectionCycle?.();
+      if (this.#compactMenuOpen) {
+        // Bead pulp_wars-2yc.98: Escape first closes the match menu, and
+        // the focus goes back to its toggle.
+        this.#compactMenuOpen = false;
+        this.#pendingFocusAction = "compact-menu";
+        this.#render();
+        return;
+      }
       if (this.#tileChooser !== null) {
         // Tile actions: Escape first closes the tile's chooser.
         this.#closeTileChooser(true);
@@ -4998,10 +5022,14 @@ export class Ruleset7DomAppView {
         child.setAttribute("aria-hidden", "true");
       stats.append(chip);
     }
+    const blocked = view.pendingChoices.length > 0;
+    // Bead pulp_wars-2yc.98: a choice to make (a city's reward) comes up
+    // over the screen and its items are off, so the menu closes rather
+    // than wait behind it, open, for the choice to be made.
+    if (blocked) this.#compactMenuOpen = false;
     const nav = el(this.#document, "nav", "v7-hud-nav");
     nav.setAttribute("aria-label", "Game");
     nav.dataset.compactMenu = this.#compactMenuOpen ? "open" : "closed";
-    const blocked = view.pendingChoices.length > 0;
     const tech = iconButton(this.#document, "tech", "Tech", "tech", true);
     tech.classList.add("v7-hud-tech");
     tech.onclick = () => {
@@ -5355,6 +5383,7 @@ export class Ruleset7DomAppView {
     if (popup !== undefined) nextChildren.push(this.#scrim(popup));
     reconcileMatchChildren(main, board, nextChildren);
     if (this.#failureNotice !== null) this.#placeFailureNotice(main);
+    if (this.#compactMenuOpen) this.#fitCompactMenu(main);
     if (statusPopover !== null && dock !== null)
       this.#placeStatusPopover(main, dock, statusPopover);
     if (chooser !== null) {
@@ -8901,6 +8930,7 @@ export class Ruleset7DomAppView {
    */
   readonly #onPressOutsideChooser = (event: Event): void => {
     this.#closeStatusPopoverOutside(event);
+    this.#closeCompactMenuOutside(event);
     if (this.#tileChooser === null) return;
     const target = event.target;
     if (
@@ -9709,12 +9739,16 @@ export class Ruleset7DomAppView {
       queueMicrotask(() => {
         const detail = this.#root.querySelector<HTMLElement>(".v7-tech-detail");
         if (detail === null) return;
-        if (this.#document.activeElement?.closest(".v7-tech-detail")) return;
-        detail
-          .querySelector<HTMLElement>(
-            '[data-action^="research-"], [data-action="close-tech-detail"]',
-          )
-          ?.focus();
+        if (!this.#document.activeElement?.closest(".v7-tech-detail"))
+          detail
+            .querySelector<HTMLElement>(
+              '[data-action^="research-"], [data-action="close-tech-detail"]',
+            )
+            ?.focus();
+        // Bead pulp_wars-2yc.98: focusing Research scrolled a long detail
+        // to its foot on a short screen, the name and its close button
+        // out of sight; it opens at its head.
+        detail.scrollTop = 0;
       });
     };
     for (const graphNode of graphLayout.nodes)
@@ -12792,6 +12826,30 @@ export class Ruleset7DomAppView {
     panel.style.bottom = "auto";
   }
 
+  /**
+   * Bead pulp_wars-2yc.98: a press outside the open match menu and its
+   * toggle closes the menu (it stayed open over the board until its toggle
+   * was pressed again, so the next tap on the toggle closed it instead of
+   * opening it). The press itself goes on to what it was on.
+   */
+  #closeCompactMenuOutside(event: Event): void {
+    if (!this.#compactMenuOpen) return;
+    const target = event.target;
+    if (
+      target instanceof Element &&
+      target.closest('.v7-hud-menu, [data-action="compact-menu"]') !== null
+    )
+      return;
+    this.#compactMenuOpen = false;
+    this.#root.querySelector(".v7-hud-menu")?.remove();
+    for (const nav of this.#root.querySelectorAll<HTMLElement>(".v7-hud-nav"))
+      nav.dataset.compactMenu = "closed";
+    for (const toggle of this.#root.querySelectorAll<HTMLElement>(
+      '[data-action="compact-menu"]',
+    ))
+      toggle.setAttribute("aria-expanded", "false");
+  }
+
   /** A press outside an open status popover and its chip closes it. */
   #closeStatusPopoverOutside(event: Event): void {
     if (this.#statusPopover === null) return;
@@ -12887,6 +12945,32 @@ export class Ruleset7DomAppView {
       }
     } catch {
       // The notice is a courtesy; play goes on without it.
+    }
+  }
+
+  /**
+   * Bead pulp_wars-2yc.98: the match menu hangs from the HUD's button row,
+   * whose place depends on the width and the faction's chips (a Cultist's
+   * End Turn wraps to a second row), so on a short screen its height is
+   * the room left below that place and it scrolls. Never throws.
+   */
+  #fitCompactMenu(main: HTMLElement): void {
+    try {
+      const menu = main.querySelector<HTMLElement>(".v7-hud-menu");
+      const view = this.#document.defaultView;
+      if (menu === null || view === null) return;
+      // It hangs from the toggle's right edge; when the HUD wraps the
+      // toggle to the left of a narrow screen (320 px), it would run off
+      // the left edge, so it hangs from the left edge of the buttons.
+      if (menu.getBoundingClientRect().left < 8) {
+        menu.style.left = "0";
+        menu.style.right = "auto";
+      }
+      const room = view.innerHeight - menu.getBoundingClientRect().top - 12;
+      if (Number.isFinite(room) && room > 0)
+        menu.style.maxHeight = `${Math.max(120, Math.floor(room))}px`;
+    } catch {
+      // The stylesheet's limit stands.
     }
   }
 

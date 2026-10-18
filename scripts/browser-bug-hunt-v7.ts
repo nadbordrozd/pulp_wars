@@ -19,8 +19,24 @@
  *
  * Options: --factions=ORIGINAL,UNDEAD,... (rotated through the matches),
  * --maps=CONTINENTS,... --opponents=1..3 (rotated), --seed=<n>,
- * --random=<0..1>, --fidget=<0..1> (idle taps on tiles and dock buttons), --speed=NORMAL|FAST, --motion=FULL|REDUCED,
+ * --random=<0..1>, --fidget=<0..1> (idle taps on tiles and dock buttons),
+ * --speed=NORMAL|FAST, --motion=FULL|REDUCED,
  * --save-quit-every=<human turns>, --headed.
+ *
+ * Round 2 (bead pulp_wars-2yc.98): a presentation failure the guard
+ * survived (its notice, its memory, its console line) fails the run, and
+ * a resumed save's background history check must not report a mismatch.
+ * --viewports=phone,small,tablet,desktop (rotated; phone 390x844 and small
+ * 320x640 with touch, tablet 768x1024 with touch, desktop 1440x900 with a
+ * mouse), --speeds=NORMAL,FAST,FF (FF: Fast and the fast-forward button on
+ * every rival turn), --motions=FULL,REDUCED, --antics=<0..1> (per idle
+ * moment: the tech screen and research, the unit card's chips and "?",
+ * the match menu and its screens and settings, rotating the screen,
+ * sending the page to the background and back, pinch or wheel zoom,
+ * double taps), --campaign-every=<n> (every n-th match a campaign mission),
+ * --front=<0..1> (Gallery, Settings or About from the main menu first).
+ * Layout glitches (page overflow, End Turn off screen, the notice over End
+ * Turn) are noted with a screenshot, not failed.
  */
 import { spawn, type ChildProcess } from "node:child_process";
 import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
@@ -58,6 +74,66 @@ const FACTIONS = [
 ] as const;
 const MAPS = ["CONTINENTS", "PANGEA", "ARCHIPELAGO", "DRY_LAND", "LAKES"];
 
+const PHONE_UA =
+  "Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Mobile Safari/537.36";
+const TABLET_UA =
+  "Mozilla/5.0 (Linux; Android 14; SM-X710) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36";
+const DESKTOP_UA =
+  "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36";
+
+interface ViewportProfile {
+  readonly name: string;
+  readonly width: number;
+  readonly height: number;
+  readonly scale: number;
+  readonly touch: boolean;
+  readonly userAgent: string;
+  readonly platform: string;
+}
+const VIEWPORTS: Readonly<Record<string, ViewportProfile>> = {
+  phone: {
+    name: "phone",
+    width: 390,
+    height: 844,
+    scale: 3,
+    touch: true,
+    userAgent: PHONE_UA,
+    platform: "Android",
+  },
+  small: {
+    name: "small",
+    width: 320,
+    height: 640,
+    scale: 2,
+    touch: true,
+    userAgent: PHONE_UA,
+    platform: "Android",
+  },
+  tablet: {
+    name: "tablet",
+    width: 768,
+    height: 1024,
+    scale: 2,
+    touch: true,
+    userAgent: TABLET_UA,
+    platform: "Android",
+  },
+  desktop: {
+    name: "desktop",
+    width: 1440,
+    height: 900,
+    scale: 1,
+    touch: false,
+    userAgent: DESKTOP_UA,
+    platform: "MacIntel",
+  },
+};
+/** The viewport now: taps are touches or mouse clicks by it. */
+let viewport: ViewportProfile = VIEWPORTS.phone as ViewportProfile;
+let landscape = false;
+/** Page loads during a match (its error log and guard start again). */
+let reloads = 0;
+
 const options = parseOptions(process.argv.slice(2));
 const chrome =
   process.env.CHROME_PATH ??
@@ -77,14 +153,11 @@ const browser = spawn(
     "--no-default-browser-check",
     `--remote-debugging-port=${port}`,
     `--user-data-dir=${profile}`,
-    "--window-size=390,844",
+    "--window-size=1440,1024",
     "about:blank",
   ],
   { stdio: "ignore" },
 );
-
-const PHONE_UA =
-  "Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Mobile Safari/537.36";
 
 /** Runs before any page script: no sound or music, counted listeners. */
 const INIT_SCRIPT = `(() => {
@@ -104,9 +177,27 @@ const INIT_SCRIPT = `(() => {
         highContrast: false,
       },
     }));
+    // Every campaign mission open (bead 2yc.98): the hunt plays any of them.
+    if (settings.get('hunt-campaign') === '1') {
+      const completed = {};
+      for (let mission = 1; mission <= 10; mission += 1)
+        completed['FRONTIER_' + mission] = { firstWonAt: '2026-10-01T00:00:00.000Z', bestRounds: 12, stars: 1 };
+      localStorage.setItem('pulpWars.campaign.v1', JSON.stringify({ format: 'pulp-wars-campaign-progress', version: 1, completed }));
+    }
   } catch {}
   const errors = [];
   globalThis.__HUNT_ERRORS__ = errors;
+  // The last clicks and keys, for a failure's log (bead 2yc.98).
+  const inputs = [];
+  globalThis.__HUNT_INPUTS__ = inputs;
+  const noteInput = (event) => {
+    const target = event.target instanceof Element ? event.target : null;
+    inputs.push(event.type + ' ' + (event.key ?? '') + ' ' + (target?.closest('[data-action]')?.dataset.action ?? target?.className ?? '') +
+      (event.clientX === undefined ? '' : ' @' + Math.round(event.clientX) + ',' + Math.round(event.clientY)) + ' t=' + Math.round(performance.now()));
+    if (inputs.length > 30) inputs.shift();
+  };
+  addEventListener('click', noteInput, true);
+  addEventListener('keydown', noteInput, true);
   addEventListener('error', (event) => errors.push('error: ' + (event.error?.stack ?? event.message)));
   addEventListener('unhandledrejection', (event) => errors.push('unhandledrejection: ' + (event.reason?.stack ?? String(event.reason))));
   const consoleError = console.error.bind(console);
@@ -163,6 +254,16 @@ const HELPERS = `(() => {
     return { x: bounds.left + bounds.width / 2, y: bounds.top + bounds.height / 2 };
   };
   let aiModule = null;
+  let guardModule = null;
+  const findFailures = (value) => {
+    if (value === null || typeof value !== 'object') return [];
+    if (Array.isArray(value.presentationFailures)) return value.presentationFailures;
+    for (const child of Object.values(value)) {
+      const found = findFailures(child);
+      if (found.length > 0) return found;
+    }
+    return [];
+  };
   globalThis.__HUNT__ = {
     state() {
       const snapshot = controller.snapshot();
@@ -234,7 +335,14 @@ const HELPERS = `(() => {
     },
     buttonPoint(selector) {
       const found = button(selector);
-      return found === null || found.disabled ? null : centre(found);
+      if (found === null || found.disabled) return null;
+      // A player scrolls a list (the match menu) to reach its button.
+      found.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+      const point = centre(found);
+      if (point.x < 0 || point.y < 0 || point.x > innerWidth || point.y > innerHeight) return null;
+      // Only a button a finger can reach: not under another panel.
+      const hit = document.elementFromPoint(point.x, point.y);
+      return hit !== null && (hit === found || found.contains(hit)) ? point : null;
     },
     clickButton(selector) {
       const found = button(selector);
@@ -246,7 +354,10 @@ const HELPERS = `(() => {
       return view.dispatchForReview(command);
     },
     debugBundle() {
-      const result = controller.exportDebugBundle({ acknowledgeHiddenInformation: true });
+      const result = controller.exportDebugBundle({
+        acknowledgeHiddenInformation: true,
+        presentationFailures: view.presentationFailuresForReview?.().failures ?? [],
+      });
       return result.ok ? result.source : null;
     },
     /** A random explored tile's place on screen (a player's idle tap). */
@@ -267,8 +378,116 @@ const HELPERS = `(() => {
         .filter((candidate) => visible(candidate) && !candidate.disabled)
         .map((candidate) => ({ action: candidate.dataset.action ?? candidate.className, ...centre(candidate) }));
     },
+    /**
+     * What the presentation guard survived (bead 2yc.98): its count and
+     * memory (the dev server's module, the one the game runs), else the
+     * debug bundle's copy; and whether its notice is up.
+     */
+    async guard() {
+      let count = null;
+      let failures = null;
+      if (typeof view.presentationFailuresForReview === 'function') {
+        const read = view.presentationFailuresForReview();
+        count = read.count;
+        failures = read.failures;
+      } else try {
+        const guard = await (guardModule ??= import('/src/render/presentation-guard-v7.ts'));
+        count = guard.presentationFailureCountV7();
+        failures = guard.recentPresentationFailuresV7();
+      } catch {
+        try {
+          const bundle = JSON.parse(this.debugBundle() ?? 'null');
+          failures = JSON.stringify(bundle).includes('presentationFailures') ? findFailures(bundle) : [];
+          count = failures.length;
+        } catch { failures = []; count = 0; }
+      }
+      const notice = document.querySelector('[data-v7-region="failure-notice"]');
+      return { count, failures, notice: notice !== null && visible(notice) };
+    },
+    /** The resumed save's background history check (bead 2yc.95). */
+    historyCheck() {
+      return typeof controller.savedHistoryCheck === 'function' ? controller.savedHistoryCheck() : null;
+    },
+    /** Layout glitches a player would see (bead 2yc.98), by kind. */
+    layout() {
+      const out = [];
+      const width = innerWidth;
+      const height = innerHeight;
+      const doc = document.scrollingElement ?? document.documentElement;
+      if (doc.scrollWidth > width + 1) out.push('page overflows sideways (' + doc.scrollWidth + ' > ' + width + ')');
+      if (doc.scrollHeight > height + 1 && document.querySelector('[data-v7-region="hud"]') !== null) out.push('match page scrolls vertically (' + doc.scrollHeight + ' > ' + height + ')');
+      const end = button('[data-action="end-turn"]');
+      const rect = (node) => node.getBoundingClientRect();
+      const inside = (b) => b.left >= -1 && b.top >= -1 && b.right <= width + 1 && b.bottom <= height + 1;
+      const overlap = (a, b) => Math.min(a.right, b.right) - Math.max(a.left, b.left) > 2 && Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top) > 2;
+      if (end !== null && !inside(rect(end))) out.push('End Turn not fully on screen');
+      const notice = document.querySelector('[data-v7-region="failure-notice"]');
+      if (notice !== null && end !== null && visible(notice) && overlap(rect(notice), rect(end))) out.push('failure notice over End Turn');
+      const hud = document.querySelector('[data-v7-region="hud"]');
+      const dock = document.querySelector('.v7-selection-dock');
+      if (dock instanceof HTMLElement && visible(dock)) {
+        if (!inside(rect(dock))) out.push('dock not fully on screen');
+        if (end !== null && overlap(rect(dock), rect(end))) out.push('dock over End Turn');
+        if (hud instanceof HTMLElement && overlap(rect(dock), rect(hud))) out.push('dock over the HUD');
+      }
+      if (hud instanceof HTMLElement) {
+        const parts = [...hud.querySelectorAll(':scope > *')].filter(visible);
+        for (let i = 0; i < parts.length; i += 1)
+          for (let j = i + 1; j < parts.length; j += 1)
+            if (overlap(rect(parts[i]), rect(parts[j]))) out.push('HUD parts overlap: ' + parts[i].className + ' / ' + parts[j].className);
+      }
+      for (const dialog of [...document.querySelectorAll('[role="dialog"], [role="alertdialog"], .v7-status-popover, .v7-hud-menu, .v7-failure-notice')].filter(visible))
+        if (!inside(rect(dialog))) out.push('dialog not fully on screen: ' + dialog.className);
+      // A screen's close button under another panel.
+      const closeButton = document.querySelector('[data-action="close-overlay"]');
+      if (closeButton instanceof HTMLElement && visible(closeButton)) {
+        const at = centre(closeButton);
+        const hit = document.elementFromPoint(at.x, at.y);
+        if (hit !== null && hit !== closeButton && !closeButton.contains(hit))
+          out.push('screen close button covered: ' + (hit.closest('[class]')?.className ?? hit.nodeName));
+      }
+      // Text cut off in a button (its words wider than the button).
+      for (const node of [...document.querySelectorAll('button')].filter(visible)) {
+        if (node.scrollWidth > node.clientWidth + 2 && getComputedStyle(node).overflowX !== 'visible' && node.textContent.trim() !== '')
+          out.push('button text cut off: ' + (node.dataset.action ?? node.textContent.trim().slice(0, 24)));
+      }
+      return out;
+    },
+    /** The page sent to the background or brought back (visibilitychange). */
+    setHidden(hidden) {
+      if (hidden) {
+        Object.defineProperty(document, 'visibilityState', { configurable: true, get: () => 'hidden' });
+        Object.defineProperty(document, 'hidden', { configurable: true, get: () => true });
+      } else {
+        delete document.visibilityState;
+        delete document.hidden;
+      }
+      document.dispatchEvent(new Event('visibilitychange'));
+      dispatchEvent(new PageTransitionEvent(hidden ? 'pagehide' : 'pageshow', { persisted: true }));
+      return document.visibilityState;
+    },
+    /** Visible enabled buttons matching the CSS scope, with their places. */
+    buttonsIn(scope) {
+      return [...document.querySelectorAll(scope)]
+        .filter((candidate) => visible(candidate) && !candidate.disabled)
+        .map((candidate) => ({ action: candidate.dataset.action ?? candidate.className, ...centre(candidate) }))
+        .filter((point) => point.x >= 0 && point.y >= 0 && point.x <= innerWidth && point.y <= innerHeight);
+    },
+    /** An own unit's tile on screen (or null). */
+    ownUnitPoint(pick) {
+      const v = controller.snapshot().view;
+      const own = v.units.filter((unit) => unit.ownerId === v.viewer.id);
+      for (let attempt = 0; attempt < own.length; attempt += 1) {
+        const unit = own[(Math.floor(pick * own.length) + attempt) % own.length];
+        const point = this.tilePoint(unit.at);
+        if (point !== null) return point;
+      }
+      return null;
+    },
     overlayClose() {
       return this.buttonPoint('[data-action="close-overlay"]') ??
+        this.buttonPoint('[data-action="close-unit-help"]') ??
+        this.buttonPoint('[data-action="close-tech-detail"]') ??
         this.buttonPoint('[role="dialog"] [data-action^="close"]') ??
         this.buttonPoint('[role="dialog"] .close-button') ??
         this.buttonPoint('[data-action="dismiss-achievement"]');
@@ -309,10 +528,21 @@ type Command = Record<string, unknown> & { readonly kind: string };
 
 interface MatchReport {
   readonly index: number;
-  readonly faction: string;
   readonly map: string;
   readonly opponents: number;
   readonly seed: number;
+  readonly viewport: string;
+  readonly speed: string;
+  readonly motion: string;
+  readonly mission: string | null;
+  faction: string;
+  /** What the guard survived (bead 2yc.98: each one is a failure). */
+  presentationFailures: unknown[];
+  /** Layout glitches seen (not failures): kind and where. */
+  glitches: string[];
+  glitchKinds: string[];
+  /** How often each UI antic ran. */
+  antics: Record<string, number>;
   rounds: number;
   humanCommands: number;
   uiTaps: number;
@@ -351,20 +581,6 @@ try {
   });
   await connection.send("Page.enable");
   await connection.send("Runtime.enable");
-  await connection.send("Emulation.setDeviceMetricsOverride", {
-    width: 390,
-    height: 844,
-    deviceScaleFactor: 3,
-    mobile: true,
-  });
-  await connection.send("Emulation.setTouchEmulationEnabled", {
-    enabled: true,
-    maxTouchPoints: 5,
-  });
-  await connection.send("Emulation.setUserAgentOverride", {
-    userAgent: PHONE_UA,
-    platform: "Android",
-  });
   await connection.send("Page.addScriptToEvaluateOnNewDocument", {
     source: INIT_SCRIPT,
   });
@@ -376,12 +592,38 @@ try {
     const map = options.maps[index % options.maps.length] ?? "CONTINENTS";
     const opponents = options.opponents[index % options.opponents.length] ?? 2;
     const seed = 1000 + options.seed * 100 + index;
+    const viewportName =
+      options.viewports[index % options.viewports.length] ?? "phone";
+    viewport = VIEWPORTS[viewportName] ?? (VIEWPORTS.phone as ViewportProfile);
+    landscape = false;
+    // Speeds and motions turn at their own pace, so the mixes vary.
+    const speed =
+      options.speeds[
+        (index + Math.floor(index / options.viewports.length)) %
+          options.speeds.length
+      ] ?? "FAST";
+    const motion =
+      options.motions[Math.floor(index / 2) % options.motions.length] ?? "FULL";
+    const mission =
+      options.campaignEvery > 0 &&
+      index % options.campaignEvery === options.campaignEvery - 1
+        ? `FRONTIER_${(Math.floor(index / options.campaignEvery) % 10) + 1}`
+        : null;
+    await applyViewport(connection);
     const report: MatchReport = {
       index,
       faction,
       map,
       opponents,
       seed,
+      viewport: viewportName,
+      speed,
+      motion,
+      mission,
+      presentationFailures: [],
+      glitches: [],
+      glitchKinds: [],
+      antics: {},
       rounds: 0,
       humanCommands: 0,
       uiTaps: 0,
@@ -409,9 +651,13 @@ try {
     console.log(
       JSON.stringify({
         match: index,
-        faction,
+        faction: report.faction,
+        mission: report.mission,
         map,
         opponents,
+        viewport: report.viewport,
+        speed: report.speed,
+        motion: report.motion,
         rounds: report.rounds,
         humanCommands: report.humanCommands,
         uiTaps: report.uiTaps,
@@ -419,6 +665,9 @@ try {
         failures: report.failures.length,
         pageErrors: report.pageErrors.length,
         notes: report.notes.length,
+        presentationFailures: report.presentationFailures.length,
+        glitches: report.glitches.length,
+        antics: report.antics,
         maxSaveBytes: report.maxSaveBytes,
         seconds: Math.round(report.milliseconds / 1000),
       }),
@@ -442,7 +691,10 @@ try {
 }
 if (primaryFailure !== undefined) throw primaryFailure;
 const failed = reports.filter(
-  (report) => report.failures.length > 0 || report.pageErrors.length > 0,
+  (report) =>
+    report.failures.length > 0 ||
+    report.pageErrors.length > 0 ||
+    report.presentationFailures.length > 0,
 );
 console.log(
   JSON.stringify({
@@ -453,6 +705,11 @@ console.log(
       (sum, report) => sum + report.humanCommands,
       0,
     ),
+    presentationFailures: reports.reduce(
+      (sum, report) => sum + report.presentationFailures.length,
+      0,
+    ),
+    glitches: [...new Set(reports.flatMap((report) => report.glitches))],
     out: options.out,
   }),
 );
@@ -466,8 +723,12 @@ async function playMatch(
 ): Promise<void> {
   const url = new URL(options.base);
   url.searchParams.set("browser-smoke", "1");
-  url.searchParams.set("hunt-speed", options.speed);
-  url.searchParams.set("hunt-motion", options.motion);
+  url.searchParams.set(
+    "hunt-speed",
+    report.speed === "NORMAL" ? "NORMAL" : "FAST",
+  );
+  url.searchParams.set("hunt-motion", report.motion);
+  if (report.mission !== null) url.searchParams.set("hunt-campaign", "1");
   await connection.send("Page.navigate", { url: url.href });
   await waitForExpression(
     connection,
@@ -475,36 +736,9 @@ async function playMatch(
     180_000,
   );
   await evaluate(connection, HELPERS);
-  // The setup form, filled the way a player does.
-  await evaluate(
-    connection,
-    `document.querySelector('[data-action="new-game"]').click()`,
-  );
-  await waitForExpression(
-    connection,
-    `document.querySelector('#v7-map-type') !== null`,
-    10_000,
-  );
-  await evaluate(
-    connection,
-    `(() => {
-      const set = (id, value) => {
-        const field = document.querySelector('#' + id);
-        if (!(field instanceof HTMLSelectElement || field instanceof HTMLInputElement)) return false;
-        if (field instanceof HTMLSelectElement && ![...field.options].some((option) => option.value === value)) return false;
-        field.value = value;
-        field.dispatchEvent(new Event('input', { bubbles: true }));
-        field.dispatchEvent(new Event('change', { bubbles: true }));
-        return true;
-      };
-      set('v7-map-type', ${JSON.stringify(report.map)});
-      set('v7-ai-count', ${JSON.stringify(String(report.opponents))});
-      set('v7-faction-0', ${JSON.stringify(report.faction)});
-      document.querySelector('[data-action="seed-mode-seed"]')?.click();
-      set('v7-seed', ${JSON.stringify(String(report.seed))});
-      document.querySelector('[data-action="launch"]').click();
-    })()`,
-  );
+  if (random() < options.front) await frontAntic(connection, report, random);
+  if (report.mission !== null) await launchMission(connection, report);
+  else await launchQuickStart(connection, report);
   await waitForExpression(
     connection,
     `globalThis.__PULP_WARS_APP__.controller.snapshot().phase === 'ACTIVE'`,
@@ -514,7 +748,8 @@ async function playMatch(
     connection,
     `(() => { const v = globalThis.__PULP_WARS_APP__.controller.snapshot().view; return { faction: v.viewer.faction, map: v.setup.mapType }; })()`,
   );
-  if (launched.faction !== report.faction)
+  if (report.mission !== null) report.faction = launched.faction;
+  else if (launched.faction !== report.faction)
     report.failures.push(
       `setup: launched ${launched.faction} on ${launched.map}, wanted ${report.faction}`,
     );
@@ -527,6 +762,10 @@ async function playMatch(
   let stalls = 0;
   let dismissals = 0;
   let closeAttempts = 0;
+  let guardSeen = 0;
+  let historyWatch: number | null = null;
+  let roundAtEndTurn: number | null = null;
+  let reloadsSeen = reloads;
   const deadline = Date.now() + options.matchMinutes * 60_000;
   for (;;) {
     if (Date.now() > deadline) {
@@ -534,6 +773,12 @@ async function playMatch(
       return;
     }
     const state = await waitForSettled(connection, 90_000);
+    if (reloads !== reloadsSeen) {
+      // A new page: its own error log and guard memory.
+      reloadsSeen = reloads;
+      errorsSeen = 0;
+      guardSeen = 0;
+    }
     const errors = await evaluate<string[]>(
       connection,
       `__HUNT__.errors(${errorsSeen})`,
@@ -549,6 +794,38 @@ async function playMatch(
         commandLog,
       );
     }
+    // Bead 2yc.98: what the presentation guard survived is a bug.
+    const guard = await evaluate<{
+      count: number | null;
+      failures: unknown[] | null;
+      notice: boolean;
+    }>(connection, `__HUNT__.guard()`);
+    const guardCount = guard.count ?? guard.failures?.length ?? 0;
+    if (guardCount > guardSeen || (guard.notice && guardSeen === 0)) {
+      const fresh = (guard.failures ?? []).slice(
+        -Math.max(1, guardCount - guardSeen),
+      );
+      guardSeen = Math.max(guardSeen, guardCount, 1);
+      report.presentationFailures.push(...fresh);
+      report.failures.push(
+        `presentation failure${guard.notice ? " (notice shown)" : ""}: ${fresh
+          .map((record) => {
+            const r = record as Record<string, unknown>;
+            return `${String(r.where)} [${String(r.step)}] ${String(r.name)}: ${String(r.message)}`;
+          })
+          .join(" | ")}`,
+      );
+      await dumpFailure(
+        connection,
+        report,
+        "presentation-failure",
+        consoleLog,
+        commandLog,
+      );
+    }
+    // The notice is dismissed the way a player does.
+    if (guard.notice)
+      await tapIfThere(connection, '[data-action="dismiss-failure-notice"]');
     if (state === null) {
       report.failures.push(
         `freeze: never settled after ${commandLog.at(-1) ?? "launch"}`,
@@ -558,6 +835,62 @@ async function playMatch(
       return;
     }
     report.rounds = state.round ?? report.rounds;
+    if (historyWatch !== null) {
+      // The resumed save's history check, replayed by a Web Worker.
+      const check = await evaluate<{
+        status: string;
+        diagnostic: string | null;
+      } | null>(connection, `__HUNT__.historyCheck()`);
+      if (check === null || check.status === "VERIFIED") {
+        if (check !== null) count(report, "history-verified");
+        historyWatch = null;
+      } else if (
+        check.status === "MISMATCH" ||
+        (check.status === "UNCHECKED" && check.diagnostic !== null)
+      ) {
+        report.failures.push(
+          `saved history check ${check.status}: ${check.diagnostic ?? ""}`,
+        );
+        await dumpFailure(
+          connection,
+          report,
+          "history",
+          consoleLog,
+          commandLog,
+        );
+        historyWatch = null;
+      } else if (check.status !== "PENDING") {
+        // NONE: resumed in the same page, from memory (nothing to check).
+        if (check.status !== "NONE")
+          report.notes.push(`saved history check ${check.status}`);
+        else count(report, "resume-in-memory");
+        historyWatch = null;
+      } else if (Date.now() - historyWatch > 120_000) {
+        report.notes.push("saved history check still PENDING after 2 min");
+        historyWatch = null;
+      }
+    }
+    if (
+      roundAtEndTurn !== null &&
+      state.humanTurn &&
+      state.round !== null &&
+      state.phase === "ACTIVE"
+    ) {
+      // One End Turn (even a double tap) ends one turn.
+      if (state.round > roundAtEndTurn + 1) {
+        report.failures.push(
+          `a turn was skipped: End Turn in round ${roundAtEndTurn}, next human turn in round ${state.round} (after ${commandLog.slice(-3).join(" | ")})`,
+        );
+        await dumpFailure(
+          connection,
+          report,
+          "turn-skipped",
+          consoleLog,
+          commandLog,
+        );
+      }
+      roundAtEndTurn = null;
+    }
     if (state.phase === "COMPLETE" || state.outcome !== null) {
       report.outcome = "COMPLETE";
       return;
@@ -626,6 +959,16 @@ async function playMatch(
       continue;
     }
     closeAttempts = 0;
+    const glitches = await evaluate<string[]>(
+      connection,
+      `[...__HUNT__.layout(), ...(document.querySelector('.v7-hud-menu') !== null ? ['match menu left open after Escape and taps'] : [])]`,
+    );
+    await noteGlitches(
+      connection,
+      report,
+      glitches,
+      `round ${String(state.round)}, after ${commandLog.at(-1)?.slice(0, 80) ?? "launch"}`,
+    );
     const listenerProblem = listenerFailure(state);
     if (listenerProblem !== null) {
       report.failures.push(`listeners: ${listenerProblem}`);
@@ -666,8 +1009,9 @@ async function playMatch(
         humanTurns % options.saveQuitEvery === 0 &&
         state.pendingChoices === 0
       ) {
-        const problem = await saveQuitAndResume(connection);
+        const problem = await saveQuitAndResume(connection, report, random);
         report.saveQuits += 1;
+        historyWatch = Date.now();
         commandLog.push(`SAVE_QUIT_RESUME ${problem ?? "ok"}`);
         if (problem !== null) {
           report.failures.push(`save & quit: ${problem}`);
@@ -721,6 +1065,16 @@ async function playMatch(
         }
         continue;
       }
+    }
+    if (options.antics > 0 && random() < options.antics) {
+      // Bead 2yc.98: more of the interface between commands.
+      const antic = await humanAntic(connection, report, random);
+      commandLog.push(`ANTIC ${antic}`);
+      if (antic.startsWith("FAILED")) {
+        report.failures.push(antic);
+        await dumpFailure(connection, report, "antic", consoleLog, commandLog);
+      }
+      continue;
     }
     if (options.fidget > 0 && random() < options.fidget) {
       // A player's idle taps: a tile, then maybe a dock or HUD button
@@ -780,7 +1134,10 @@ async function playMatch(
       return;
     }
     const before = state.commandIndex ?? 0;
-    const how = await perform(connection, command, state);
+    const double = options.antics > 0 && random() < options.antics * 0.4;
+    if (double) count(report, `double-tap:${command.kind}`);
+    if (command.kind === "END_TURN") roundAtEndTurn = state.round;
+    const how = await perform(connection, command, state, double);
     commandLog.push(`${how} ${JSON.stringify(command)}`);
     report.humanCommands += 1;
     if (how === "TAP") report.uiTaps += 1;
@@ -794,6 +1151,32 @@ async function playMatch(
         () => true,
         () => false,
       );
+      if (
+        passed &&
+        (report.speed === "FF" ||
+          (options.antics > 0 && random() < options.antics * 0.3))
+      ) {
+        // The fast-forward button, tapped while the rivals play.
+        const fast = await waitForExpression(
+          connection,
+          `__HUNT__.buttonPoint('[data-action="fast-forward"]') !== null`,
+          1_500,
+        ).then(
+          () => true,
+          () => false,
+        );
+        if (fast) {
+          await delay(Math.floor(random() * 400));
+          if (await tapIfThere(connection, '[data-action="fast-forward"]')) {
+            count(report, "fast-forward");
+            commandLog.push("FAST_FORWARD");
+          }
+        }
+      }
+      if (passed && options.antics > 0 && random() < options.antics) {
+        const antic = await aiTurnAntic(connection, report, random);
+        commandLog.push(`AI-TURN ANTIC ${antic}`);
+      }
       if (passed && options.fidget > 0 && random() < options.fidget) {
         // While the rivals play: a swipe across the board and a tap on a
         // tile, as an impatient player does.
@@ -842,6 +1225,580 @@ async function playMatch(
       }
       acceptedThisTurn = 0;
     }
+  }
+}
+
+/** The setup form, filled the way a player does. */
+async function launchQuickStart(
+  connection: Connection,
+  report: MatchReport,
+): Promise<void> {
+  await evaluate(
+    connection,
+    `document.querySelector('[data-action="new-game"]').click()`,
+  );
+  await waitForExpression(
+    connection,
+    `document.querySelector('#v7-map-type') !== null`,
+    10_000,
+  );
+  await evaluate(
+    connection,
+    `(() => {
+      const set = (id, value) => {
+        const field = document.querySelector('#' + id);
+        if (!(field instanceof HTMLSelectElement || field instanceof HTMLInputElement)) return false;
+        if (field instanceof HTMLSelectElement && ![...field.options].some((option) => option.value === value)) return false;
+        field.value = value;
+        field.dispatchEvent(new Event('input', { bubbles: true }));
+        field.dispatchEvent(new Event('change', { bubbles: true }));
+        return true;
+      };
+      set('v7-map-type', ${JSON.stringify(report.map)});
+      set('v7-ai-count', ${JSON.stringify(String(report.opponents))});
+      set('v7-faction-0', ${JSON.stringify(report.faction)});
+      document.querySelector('[data-action="seed-mode-seed"]')?.click();
+      set('v7-seed', ${JSON.stringify(String(report.seed))});
+      document.querySelector('[data-action="launch"]').click();
+    })()`,
+  );
+}
+
+/** A campaign mission: Campaign, its card, Start mission (taps). */
+async function launchMission(
+  connection: Connection,
+  report: MatchReport,
+): Promise<void> {
+  const mission = (report.mission ?? "FRONTIER_1").toLowerCase();
+  await tapButton(connection, '[data-action="campaign"]', 10_000);
+  await tapButton(connection, `[data-action="mission-${mission}"]`, 10_000);
+  // A choice of faction: the hunt's own when the mission offers it.
+  await evaluate(
+    connection,
+    `(() => {
+      const field = document.querySelector('.v7-briefing select');
+      if (!(field instanceof HTMLSelectElement)) return false;
+      if (![...field.options].some((option) => option.value === ${JSON.stringify(report.faction)})) return false;
+      field.value = ${JSON.stringify(report.faction)};
+      field.dispatchEvent(new Event('change', { bubbles: true }));
+      return true;
+    })()`,
+  );
+  await tapButton(connection, '[data-action="campaign-start"]', 10_000);
+}
+
+/** Waits for a visible, enabled button and taps it. */
+async function tapButton(
+  connection: Connection,
+  selector: string,
+  timeout: number,
+): Promise<void> {
+  const end = Date.now() + timeout;
+  while (Date.now() < end) {
+    const point = await evaluate<Coord | null>(
+      connection,
+      `__HUNT__.buttonPoint(${JSON.stringify(selector)})`,
+    );
+    if (point !== null) {
+      await tap(connection, point);
+      await delay(250);
+      return;
+    }
+    await delay(100);
+  }
+  throw new Error(`no button ${selector}`);
+}
+
+/** Taps a visible, enabled button now if there is one; reports whether. */
+async function tapIfThere(
+  connection: Connection,
+  selector: string,
+): Promise<boolean> {
+  const point = await evaluate<Coord | null>(
+    connection,
+    `__HUNT__.buttonPoint(${JSON.stringify(selector)})`,
+  );
+  if (point === null) return false;
+  await tap(connection, point);
+  await delay(200);
+  return true;
+}
+
+/** Gallery, Settings or About from the main menu, then back. */
+async function frontAntic(
+  connection: Connection,
+  report: MatchReport,
+  random: () => number,
+): Promise<void> {
+  const pick = random();
+  const kind = pick < 0.5 ? "gallery" : pick < 0.8 ? "front-settings" : "about";
+  count(report, `front:${kind}`);
+  if (!(await tapIfThere(connection, `[data-action="${kind}"]`))) return;
+  await delay(400);
+  if (kind === "gallery") {
+    // A few of the gallery's own buttons (filters, entries), then back.
+    for (let step = 0; step < 4; step += 1) {
+      const loose = await evaluate<(Coord & { action: string })[]>(
+        connection,
+        `[...document.querySelectorAll('main button, main [role="button"]')].filter((node) => {
+          const b = node.getBoundingClientRect();
+          const action = node.dataset.action ?? '';
+          return b.width > 0 && b.height > 0 && !node.disabled && b.top >= 0 && b.bottom <= innerHeight &&
+            !/sound|music|audio|play|back|tribe-stars-reset/.test(action + ' ' + node.className);
+        }).map((node) => { const b = node.getBoundingClientRect(); return { action: node.dataset.action ?? node.className, x: b.left + b.width / 2, y: b.top + b.height / 2 }; })`,
+      );
+      const chosen = loose[Math.floor(random() * loose.length)];
+      if (chosen === undefined) break;
+      await tap(connection, chosen);
+      await delay(300);
+      await tapIfThere(connection, '[data-action="gallery-detail-close"]');
+    }
+    await tapIfThere(connection, '[data-action="gallery-back"]');
+  } else if (kind === "front-settings") {
+    await setSelect(connection, "v7-ui-scale", random() < 0.5 ? "1.25" : "1");
+    await setSelect(connection, "v7-ui-scale", "1");
+  }
+  await tapIfThere(connection, '[data-action="front-back"]');
+  await tapIfThere(connection, '[data-action="gallery-back"]');
+  await waitForExpression(
+    connection,
+    `document.querySelector('[data-action="new-game"]') !== null`,
+    10_000,
+  );
+}
+
+async function setSelect(
+  connection: Connection,
+  id: string,
+  value: string,
+): Promise<boolean> {
+  return evaluate<boolean>(
+    connection,
+    `(() => {
+      const field = document.querySelector('#' + ${JSON.stringify(id)});
+      if (!(field instanceof HTMLSelectElement)) return false;
+      if (![...field.options].some((option) => option.value === ${JSON.stringify(value)})) return false;
+      field.value = ${JSON.stringify(value)};
+      field.dispatchEvent(new Event('change', { bubbles: true }));
+      return true;
+    })()`,
+  );
+}
+
+/** Notes each new kind of layout glitch once per match, with a screenshot. */
+async function noteGlitches(
+  connection: Connection,
+  report: MatchReport,
+  glitches: readonly string[],
+  where: string,
+): Promise<void> {
+  for (const glitch of glitches) {
+    const kind = glitch.replace(/\(.*\)|: .*/, "").trim();
+    if (report.glitchKinds.includes(kind)) continue;
+    report.glitchKinds.push(kind);
+    report.glitches.push(
+      `${glitch} [${viewport.name}${landscape ? " landscape" : ""}, ${where}]`,
+    );
+    await screenshot(
+      connection,
+      `match-${report.index}-${report.faction}-glitch-${report.glitchKinds.length}`,
+    );
+  }
+}
+
+/** Layout glitches with something open (a menu, a screen, a popover). */
+async function checkOpenLayout(
+  connection: Connection,
+  report: MatchReport,
+  where: string,
+): Promise<void> {
+  const glitches = await evaluate<string[]>(connection, `__HUNT__.layout()`);
+  await noteGlitches(connection, report, glitches, where);
+}
+
+function count(report: MatchReport, antic: string): void {
+  report.antics[antic] = (report.antics[antic] ?? 0) + 1;
+}
+
+function weighted<T extends string>(
+  random: () => number,
+  table: readonly (readonly [T, number])[],
+): T {
+  const total = table.reduce((sum, [, weight]) => sum + weight, 0);
+  let pick = random() * total;
+  for (const [name, weight] of table) {
+    pick -= weight;
+    if (pick <= 0) return name;
+  }
+  return (table[0] as readonly [T, number])[0];
+}
+
+/** Closes what is open (popover, dialog, overlay) the way a player does. */
+async function closeEverything(connection: Connection): Promise<void> {
+  for (let close = 0; close < 4; close += 1) {
+    const shut = await evaluate<Coord | null>(
+      connection,
+      `__HUNT__.overlayClose()`,
+    );
+    const open = await evaluate<boolean>(
+      connection,
+      `document.querySelector('[data-v7-region="hud"]') === null || document.querySelector('.v7-status-popover') !== null || document.querySelector('.v7-hud-menu') !== null`,
+    );
+    if (shut !== null) await tap(connection, shut);
+    else if (open) await pressEscape(connection);
+    else break;
+    await delay(200);
+  }
+}
+
+/** One of the match screen's other controls, between commands. */
+async function humanAntic(
+  connection: Connection,
+  report: MatchReport,
+  random: () => number,
+): Promise<string> {
+  const kind = weighted(random, [
+    ["tech", 3],
+    ["card", 3],
+    ["menu", 2],
+    ["settings", 1],
+    ["rotate", 1],
+    ["background", 1],
+    ["pinch", 1],
+    ["double-tap-unit", 1],
+  ] as const);
+  count(report, kind);
+  switch (kind) {
+    case "tech": {
+      if (!(await tapIfThere(connection, '[data-action="tech"]')))
+        return "tech (no button)";
+      await delay(400);
+      await checkOpenLayout(connection, report, "tech screen open");
+      if (random() < 0.3) {
+        const zoom = await evaluate<(Coord & { action: string })[]>(
+          connection,
+          `__HUNT__.buttonsIn('[data-action^="tech-zoom"], [data-action="tech-fit"]')`,
+        );
+        const chosen = zoom[Math.floor(random() * zoom.length)];
+        if (chosen !== undefined) await tap(connection, chosen);
+        await delay(200);
+      }
+      const cards = await evaluate<(Coord & { action: string })[]>(
+        connection,
+        `__HUNT__.buttonsIn('.v7-tech-card')`,
+      );
+      const card = cards[Math.floor(random() * cards.length)];
+      let researched = "";
+      if (card !== undefined) {
+        await tap(connection, card);
+        await delay(300);
+        if (random() < 0.6) {
+          const research = await evaluate<(Coord & { action: string })[]>(
+            connection,
+            `__HUNT__.buttonsIn('.v7-tech-detail [data-action^="research-"]')`,
+          );
+          const first = research[0];
+          if (first !== undefined) {
+            await tap(connection, first);
+            researched = ` research ${first.action}`;
+            await delay(500);
+          }
+        }
+      }
+      await closeEverything(connection);
+      return `tech ${card?.action ?? "-"}${researched}`;
+    }
+    case "card": {
+      const point = await evaluate<Coord | null>(
+        connection,
+        `__HUNT__.ownUnitPoint(${random()})`,
+      );
+      if (point === null) return "card (no unit on screen)";
+      await tap(connection, point);
+      await delay(250);
+      const chips = await evaluate<(Coord & { action: string })[]>(
+        connection,
+        `__HUNT__.buttonsIn('.v7-unit-status-cues [role="button"]')`,
+      );
+      const chip = chips[Math.floor(random() * chips.length)];
+      if (chip !== undefined) {
+        await tap(connection, chip);
+        await delay(250);
+        await checkOpenLayout(connection, report, `chip ${chip.action} open`);
+        // Closed by its chip again or by a tap on the board.
+        if (random() < 0.5) await tap(connection, chip);
+        else {
+          const tile = await evaluate<Coord | null>(
+            connection,
+            `__HUNT__.randomTilePoint(${random()})`,
+          );
+          if (tile !== null) await tap(connection, tile);
+        }
+        await delay(200);
+      }
+      let help = "";
+      if (random() < 0.6) {
+        await tap(connection, point);
+        await delay(200);
+        if (
+          (await tapIfThere(connection, '[data-action="unit-help"]')) ||
+          (await tapIfThere(connection, '[data-action="dock-details"]'))
+        ) {
+          help = " ?";
+          await delay(300);
+          await checkOpenLayout(connection, report, "unit details open");
+        }
+      }
+      await closeEverything(connection);
+      return `card ${chip?.action ?? "-"}${help}`;
+    }
+    case "menu": {
+      if (!(await tapIfThere(connection, '[data-action="compact-menu"]')))
+        return "menu (no button)";
+      const screen = weighted(random, [
+        ["leaderboard", 1],
+        ["achievements", 1],
+        ["help", 1],
+        ["none", 1],
+      ] as const);
+      if (screen === "none") {
+        await tapIfThere(connection, '[data-action="compact-menu"]');
+        return "menu open+close";
+      }
+      await checkOpenLayout(connection, report, "match menu open");
+      await tapIfThere(connection, `[data-action="${screen}"]`);
+      await delay(400);
+      await checkOpenLayout(connection, report, `menu ${screen} open`);
+      await closeEverything(connection);
+      return `menu ${screen}`;
+    }
+    case "settings": {
+      if (!(await tapIfThere(connection, '[data-action="compact-menu"]')))
+        return "settings (no menu)";
+      if (!(await tapIfThere(connection, '[data-action="settings"]'))) {
+        // The item is off while a choice is up: the menu is shut again.
+        await closeEverything(connection);
+        return "settings (no item)";
+      }
+      await delay(300);
+      // Speed, motion, UI size or contrast changed, looked at, put back.
+      const change = weighted(random, [
+        ["v7-animation-speed", 2],
+        ["v7-motion", 2],
+        ["v7-ui-scale", 2],
+        ["high-contrast", 1],
+      ] as const);
+      const speed = report.speed === "NORMAL" ? "NORMAL" : "FAST";
+      if (change === "high-contrast") {
+        await tapIfThere(connection, '[data-action="high-contrast"]');
+        await delay(200);
+        await tapIfThere(connection, '[data-action="high-contrast"]');
+      } else if (change === "v7-ui-scale") {
+        const scale = random() < 0.5 ? "1.5" : "2";
+        await setSelect(connection, change, scale);
+        await delay(400);
+        // The UI at that size, with the match behind it.
+        await closeEverything(connection);
+        await delay(300);
+        const glitches = await evaluate<string[]>(
+          connection,
+          `__HUNT__.layout()`,
+        );
+        if (glitches.length > 0) {
+          report.glitches.push(
+            `UI size ${scale}: ${glitches.join("; ")} [${viewport.name}]`,
+          );
+          await screenshot(
+            connection,
+            `match-${report.index}-${report.faction}-ui-scale-${scale}`,
+          );
+        }
+        await tapIfThere(connection, '[data-action="compact-menu"]');
+        await tapIfThere(connection, '[data-action="settings"]');
+        await delay(300);
+        await setSelect(connection, change, "1");
+      } else {
+        const other =
+          change === "v7-motion"
+            ? report.motion === "FULL"
+              ? "REDUCED"
+              : "FULL"
+            : speed === "FAST"
+              ? "NORMAL"
+              : "FAST";
+        await setSelect(connection, change, other);
+        await delay(300);
+        await setSelect(
+          connection,
+          change,
+          change === "v7-motion" ? report.motion : speed,
+        );
+      }
+      await delay(200);
+      await closeEverything(connection);
+      return `settings ${change}`;
+    }
+    case "rotate": {
+      landscape = !landscape;
+      await applyViewport(connection);
+      await delay(600);
+      return `rotate ${landscape ? "landscape" : "portrait"}`;
+    }
+    case "background": {
+      const hold = 600 + Math.floor(random() * 2400);
+      await background(connection, hold, random() < 0.3);
+      return `background ${hold} ms`;
+    }
+    case "pinch": {
+      const centre = await evaluate<Coord | null>(
+        connection,
+        `__HUNT__.boardCentre()`,
+      );
+      if (centre === null) return "pinch (no board)";
+      const outward = random() < 0.5;
+      await pinch(connection, centre, outward);
+      await delay(250);
+      const problem = await checkSwipe(connection, null);
+      return problem === null
+        ? `pinch ${outward ? "out" : "in"}`
+        : `FAILED swipe after a pinch: ${problem}`;
+    }
+    case "double-tap-unit": {
+      const point = await evaluate<Coord | null>(
+        connection,
+        `__HUNT__.ownUnitPoint(${random()})`,
+      );
+      if (point === null) return "double tap (no unit)";
+      await doubleTap(connection, point);
+      await delay(250);
+      await closeEverything(connection);
+      return "double tap a unit";
+    }
+  }
+  return kind;
+}
+
+/** What an impatient player does while the rivals play. */
+async function aiTurnAntic(
+  connection: Connection,
+  report: MatchReport,
+  random: () => number,
+): Promise<string> {
+  const kind = weighted(random, [
+    ["taps", 3],
+    ["menu", 2],
+    ["unit", 2],
+    ["rotate", 1],
+    ["background", 2],
+    ["pinch", 1],
+    ["tech", 1],
+  ] as const);
+  count(report, `ai-turn:${kind}`);
+  await delay(Math.floor(random() * 500));
+  switch (kind) {
+    case "taps": {
+      for (let index = 0; index < 5; index += 1) {
+        const point = await evaluate<Coord | null>(
+          connection,
+          `__HUNT__.randomTilePoint(${random()})`,
+        );
+        if (point !== null) await tap(connection, point);
+        await delay(60);
+      }
+      return "taps";
+    }
+    case "menu": {
+      await tapIfThere(connection, '[data-action="compact-menu"]');
+      await delay(300 + Math.floor(random() * 600));
+      if (random() < 0.4) {
+        await tapIfThere(connection, '[data-action="help"]');
+        await delay(400);
+      }
+      await closeEverything(connection);
+      return "menu";
+    }
+    case "unit": {
+      const point = await evaluate<Coord | null>(
+        connection,
+        `__HUNT__.ownUnitPoint(${random()})`,
+      );
+      if (point !== null) {
+        await tap(connection, point);
+        await delay(200);
+        const chips = await evaluate<(Coord & { action: string })[]>(
+          connection,
+          `__HUNT__.buttonsIn('.v7-unit-status-cues [role="button"]')`,
+        );
+        const chip = chips[0];
+        if (chip !== undefined) await tap(connection, chip);
+      }
+      await delay(300);
+      await closeEverything(connection);
+      return "unit";
+    }
+    case "rotate": {
+      landscape = !landscape;
+      await applyViewport(connection);
+      return `rotate ${landscape ? "landscape" : "portrait"}`;
+    }
+    case "background": {
+      const hold = 800 + Math.floor(random() * 4000);
+      await background(connection, hold, random() < 0.3);
+      return `background ${hold} ms`;
+    }
+    case "pinch": {
+      const centre = await evaluate<Coord | null>(
+        connection,
+        `__HUNT__.boardCentre()`,
+      );
+      if (centre !== null) await pinch(connection, centre, random() < 0.5);
+      return "pinch";
+    }
+    case "tech": {
+      await tapIfThere(connection, '[data-action="tech"]');
+      await delay(500);
+      await closeEverything(connection);
+      return "tech";
+    }
+  }
+  return kind;
+}
+
+/**
+ * The page sent to the background for `hold` ms, as a phone does when the
+ * player switches apps: another tab comes to the front, so the game's page
+ * is really hidden (visibilitychange, no animation frames), then it comes
+ * back. Now and then a page-only pagehide/pageshow pair is added.
+ */
+async function background(
+  connection: Connection,
+  hold: number,
+  withPageHide = false,
+): Promise<void> {
+  if (withPageHide) await evaluate(connection, `__HUNT__.setHidden(true)`);
+  const created = (await connection.send("Target.createTarget", {
+    url: "about:blank",
+  })) as { targetId: string };
+  await delay(hold);
+  await connection.send("Page.bringToFront");
+  await connection
+    .send("Target.closeTarget", { targetId: created.targetId })
+    .catch(() => undefined);
+  if (withPageHide) await evaluate(connection, `__HUNT__.setHidden(false)`);
+  await delay(200);
+}
+
+async function screenshot(connection: Connection, name: string): Promise<void> {
+  try {
+    const shot = (await connection.send("Page.captureScreenshot", {
+      format: "png",
+    })) as { data: string };
+    await writeFile(
+      path.join(options.out, `${name}.png`),
+      Buffer.from(shot.data, "base64"),
+    );
+  } catch {
+    // Evidence, not a requirement.
   }
 }
 
@@ -897,6 +1854,7 @@ async function perform(
   connection: Connection,
   command: Command,
   state: PageState,
+  double = false,
 ): Promise<"TAP" | "DOCK" | "END_TURN_BUTTON"> {
   const before = state.commandIndex ?? 0;
   if (command.kind === "END_TURN") {
@@ -905,7 +1863,8 @@ async function perform(
       `__HUNT__.buttonPoint('[data-action="end-turn"]')`,
     );
     if (point !== null) {
-      await tap(connection, point);
+      if (double) await doubleTap(connection, point);
+      else await tap(connection, point);
       // The Cultists' End Turn question.
       await delay(150);
       await evaluate(
@@ -946,7 +1905,8 @@ async function perform(
         `__HUNT__.tilePoint(${JSON.stringify(destination)})`,
       );
       if (toPoint !== null) {
-        await tap(connection, toPoint);
+        if (double) await doubleTap(connection, toPoint);
+        else await tap(connection, toPoint);
         const advanced = await waitForExpression(
           connection,
           `__HUNT__.state().commandIndex > ${before}`,
@@ -1034,13 +1994,23 @@ async function checkSwipe(
 
 async function saveQuitAndResume(
   connection: Connection,
+  report: MatchReport,
+  random: () => number,
 ): Promise<string | null> {
   const menu = await evaluate<Coord | null>(
     connection,
     `__HUNT__.buttonPoint('[data-action="compact-menu"]')`,
   );
   if (menu === null) return "no menu button";
-  await tap(connection, menu);
+  // A menu still open (a press outside closes it since bead 2yc.98) is
+  // used as it is; the toggle would close it.
+  if (
+    !(await evaluate<boolean>(
+      connection,
+      `document.querySelector('.v7-hud-menu') !== null`,
+    ))
+  )
+    await tap(connection, menu);
   await delay(200);
   const quit = await evaluate<Coord | null>(
     connection,
@@ -1057,6 +2027,31 @@ async function saveQuitAndResume(
     () => false,
   );
   if (!saved) return "Save & quit did not reach the main menu";
+  if (random() < 0.5) {
+    // Bead 2yc.98: the tab closed and opened again (a phone drops a
+    // background tab), so Continue takes the fast-resume path of bead
+    // 2yc.95 and its background history check.
+    const url = new URL(options.base);
+    url.searchParams.set("browser-smoke", "1");
+    url.searchParams.set(
+      "hunt-speed",
+      report.speed === "NORMAL" ? "NORMAL" : "FAST",
+    );
+    url.searchParams.set("hunt-motion", report.motion);
+    url.hash = "keep-save";
+    await connection.send("Page.navigate", { url: url.href });
+    await waitForExpression(
+      connection,
+      `globalThis.__PULP_WARS_APP__?.view?.dispatchForReview !== undefined && document.querySelector('[data-action="resume"]') !== null`,
+      120_000,
+    );
+    await evaluate(connection, HELPERS);
+    reloads += 1;
+    count(report, "reload-resume");
+  }
+  // Bead 2yc.98: the Gallery, Settings or About before Continue.
+  if (random() < Math.max(options.front, 0.3))
+    await frontAntic(connection, report, random);
   const resume = await evaluate<Coord | null>(
     connection,
     `__HUNT__.buttonPoint('[data-action="resume"]')`,
@@ -1096,9 +2091,13 @@ async function dumpFailure(
     if (bundle !== null) await writeFile(`${stem}-debug.json`, bundle);
     const state = await evaluate<PageState>(connection, `__HUNT__.state()`);
     const errors = await evaluate<string[]>(connection, `__HUNT__.errors(0)`);
+    const inputs = await evaluate<string[]>(
+      connection,
+      `globalThis.__HUNT_INPUTS__ ?? []`,
+    );
     await writeFile(
       `${stem}-log.json`,
-      `${JSON.stringify({ report, state, errors, commandLog, consoleLog }, null, 2)}\n`,
+      `${JSON.stringify({ report, state, errors, inputs, commandLog, consoleLog }, null, 2)}\n`,
     );
   } catch (error) {
     await writeFile(
@@ -1116,7 +2115,38 @@ async function dumpFailure(
   }
 }
 
+/** The viewport now (and its turn when `landscape`), touch or mouse. */
+async function applyViewport(connection: Connection): Promise<void> {
+  // A phone or tablet turns; a desktop window is made smaller.
+  const wide = landscape && viewport.touch;
+  const narrow = landscape && !viewport.touch;
+  await connection.send("Emulation.setDeviceMetricsOverride", {
+    width: wide ? viewport.height : narrow ? 1024 : viewport.width,
+    height: wide ? viewport.width : narrow ? 700 : viewport.height,
+    deviceScaleFactor: viewport.scale,
+    mobile: viewport.touch,
+    screenOrientation: wide
+      ? { type: "landscapePrimary", angle: 90 }
+      : { type: "portraitPrimary", angle: 0 },
+  });
+  await connection.send("Emulation.setTouchEmulationEnabled", {
+    enabled: viewport.touch,
+    maxTouchPoints: 5,
+  });
+  await connection.send("Emulation.setUserAgentOverride", {
+    userAgent: viewport.userAgent,
+    platform: viewport.platform,
+  });
+}
+
 async function tap(connection: Connection, point: Coord): Promise<void> {
+  if (!viewport.touch) {
+    await mouse(connection, "mouseMoved", point, 0);
+    await mouse(connection, "mousePressed", point, 1);
+    await delay(30);
+    await mouse(connection, "mouseReleased", point, 0);
+    return;
+  }
   await connection.send("Input.dispatchTouchEvent", {
     type: "touchStart",
     touchPoints: [{ x: point.x, y: point.y }],
@@ -1126,6 +2156,29 @@ async function tap(connection: Connection, point: Coord): Promise<void> {
     type: "touchEnd",
     touchPoints: [],
   });
+}
+
+async function mouse(
+  connection: Connection,
+  type: "mouseMoved" | "mousePressed" | "mouseReleased",
+  point: Coord,
+  buttons: number,
+): Promise<void> {
+  await connection.send("Input.dispatchMouseEvent", {
+    type,
+    x: point.x,
+    y: point.y,
+    button: type === "mouseMoved" && buttons === 0 ? "none" : "left",
+    buttons,
+    clickCount: type === "mouseMoved" ? 0 : 1,
+  });
+}
+
+/** Two quick taps on one place (a double tap; or a double click). */
+async function doubleTap(connection: Connection, point: Coord): Promise<void> {
+  await tap(connection, point);
+  await delay(40);
+  await tap(connection, point);
 }
 
 async function pressEscape(connection: Connection): Promise<void> {
@@ -1143,11 +2196,29 @@ async function swipe(
   from: Coord,
   to: Coord,
 ): Promise<void> {
+  const steps = 6;
+  if (!viewport.touch) {
+    await mouse(connection, "mouseMoved", from, 0);
+    await mouse(connection, "mousePressed", from, 1);
+    for (let step = 1; step <= steps; step += 1) {
+      await delay(16);
+      await mouse(
+        connection,
+        "mouseMoved",
+        {
+          x: from.x + ((to.x - from.x) * step) / steps,
+          y: from.y + ((to.y - from.y) * step) / steps,
+        },
+        1,
+      );
+    }
+    await mouse(connection, "mouseReleased", to, 0);
+    return;
+  }
   await connection.send("Input.dispatchTouchEvent", {
     type: "touchStart",
     touchPoints: [{ x: from.x, y: from.y }],
   });
-  const steps = 6;
   for (let step = 1; step <= steps; step += 1) {
     await delay(16);
     await connection.send("Input.dispatchTouchEvent", {
@@ -1158,6 +2229,46 @@ async function swipe(
           y: from.y + ((to.y - from.y) * step) / steps,
         },
       ],
+    });
+  }
+  await connection.send("Input.dispatchTouchEvent", {
+    type: "touchEnd",
+    touchPoints: [],
+  });
+}
+
+/** A two-finger pinch about `centre` (or a mouse wheel on a desktop). */
+async function pinch(
+  connection: Connection,
+  centre: Coord,
+  outward: boolean,
+): Promise<void> {
+  if (!viewport.touch) {
+    await connection.send("Input.dispatchMouseEvent", {
+      type: "mouseWheel",
+      x: centre.x,
+      y: centre.y,
+      deltaX: 0,
+      deltaY: outward ? -240 : 240,
+    });
+    return;
+  }
+  const from = outward ? 30 : 110;
+  const to = outward ? 110 : 30;
+  const steps = 8;
+  const points = (gap: number) => [
+    { x: centre.x - gap / 2, y: centre.y, id: 0 },
+    { x: centre.x + gap / 2, y: centre.y, id: 1 },
+  ];
+  await connection.send("Input.dispatchTouchEvent", {
+    type: "touchStart",
+    touchPoints: points(from),
+  });
+  for (let step = 1; step <= steps; step += 1) {
+    await delay(16);
+    await connection.send("Input.dispatchTouchEvent", {
+      type: "touchMove",
+      touchPoints: points(from + ((to - from) * step) / steps),
     });
   }
   await connection.send("Input.dispatchTouchEvent", {
@@ -1182,6 +2293,12 @@ interface Options {
   readonly saveQuitEvery: number;
   readonly matchMinutes: number;
   readonly headed: boolean;
+  readonly viewports: readonly string[];
+  readonly speeds: readonly string[];
+  readonly motions: readonly string[];
+  readonly antics: number;
+  readonly campaignEvery: number;
+  readonly front: number;
 }
 
 function parseOptions(args: readonly string[]): Options {
@@ -1207,6 +2324,18 @@ function parseOptions(args: readonly string[]): Options {
     saveQuitEvery: Number(value("save-quit-every") ?? 4),
     matchMinutes: Number(value("match-minutes") ?? 25),
     headed: args.includes("--headed"),
+    viewports: list("viewports", ["phone"]).filter(
+      (name) => VIEWPORTS[name] !== undefined,
+    ),
+    speeds: list("speeds", [
+      value("speed") === "NORMAL" ? "NORMAL" : "FAST",
+    ]).filter((name) => ["NORMAL", "FAST", "FF"].includes(name)),
+    motions: list("motions", [
+      value("motion") === "REDUCED" ? "REDUCED" : "FULL",
+    ]).filter((name) => ["FULL", "REDUCED"].includes(name)),
+    antics: Number(value("antics") ?? 0),
+    campaignEvery: Number(value("campaign-every") ?? 0),
+    front: Number(value("front") ?? 0),
   };
 }
 
@@ -1319,7 +2448,23 @@ async function connect(url: string): Promise<Connection> {
     send(method, params = {}) {
       const id = nextId++;
       return new Promise((resolve, reject) => {
-        pending.set(id, { method, resolve, reject });
+        // A reply that never comes is a harness error, not a silent hang.
+        const timer = setTimeout(() => {
+          if (!pending.has(id)) return;
+          pending.delete(id);
+          reject(new Error(`${method}: no reply in 120 s`));
+        }, 120_000);
+        pending.set(id, {
+          method,
+          resolve: (value) => {
+            clearTimeout(timer);
+            resolve(value);
+          },
+          reject: (error) => {
+            clearTimeout(timer);
+            reject(error);
+          },
+        });
         socket.send(JSON.stringify({ id, method, params }));
       });
     },

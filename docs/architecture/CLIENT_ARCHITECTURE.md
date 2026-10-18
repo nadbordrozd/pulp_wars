@@ -1687,7 +1687,18 @@ rejects an accepted command. The "Game paused" panel of a failed AI turn
 offers Try again and Main menu. The browser bug hunt
 (`scripts/browser-bug-hunt-v7.ts`) plays matches on a phone viewport
 through the real interface to look for such freezes; it plays matches, so
-it runs only when the user asks for simulations.
+it runs only when the user asks for simulations. Since round 2
+(`pulp_wars-2yc.98`) a failure the guard survives fails the hunt (it reads
+the guard through the app view's `presentationFailuresForReview`, so it
+works against a production build), as does a resumed save's history
+check reporting a mismatch; it mixes phone (390x844, 320x640), tablet and
+desktop viewports with touch or a mouse, Normal, Fast and fast-forward,
+full and reduced motion, campaign missions, and goes through more of the
+interface between commands (the tech screen and research, the unit card's
+chips and details, the match menu's screens and settings, turning the
+screen, a real tab switch to hide the page, pinch and wheel zoom, double
+taps, Save & quit then Continue in the same page or after a reload) and
+notes layout glitches with a screenshot.
 
 A phone has no console, so a survived failure is also shown to the player
 (`pulp_wars-2yc.96`). The guard keeps the last five failures in memory
