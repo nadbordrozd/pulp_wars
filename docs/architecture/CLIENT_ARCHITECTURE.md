@@ -2422,6 +2422,25 @@ and must have fixture tests. Corrupt/incompatible saves remain untouched until
 the user confirms Delete Save; New Match does not silently overwrite a save
 until final setup confirmation.
 
+The command log is replayed in two places (bead `pulp_wars-2yc.95`):
+
+- `parseSaveV7(source)` (every tool, test and headless reader) also replays
+  the whole log from the setup and requires it to rebuild exactly the stored
+  state; a log that does not is `CORRUPT`.
+- The browser resume (`BrowserPersistenceV7.loadSave`) parses with
+  `{ replay: "DEFER" }`: everything above is checked (the full state schema
+  and invariants, the hash, setup, PRNG, the parsed log and its length), the
+  stored state is installed at once, and the log is replayed afterwards in
+  a Web Worker (`src/app/save-history-worker-v7.ts`, through the
+  controller's `savedHistoryVerifier`). The controller's
+  `savedHistoryCheck()` is `PENDING`, then `VERIFIED`, `MISMATCH` or
+  `UNCHECKED` (no worker); a `MISMATCH` shows the save warning "This game's
+  move history does not lead to its saved board. Play goes on from the board
+  as saved." and the safe log's diagnostics carry the verdict. A long game's
+  replay took 1 to 25 s and more of main-thread work before the first frame
+  (docs/architecture/PERFORMANCE.md). The save envelope is unchanged, so
+  every earlier save resumes the same way.
+
 The schema-6 treasure addition has one deliberately narrow persistence-boundary
 compatibility rule: a valid version-6 save whose state predates the
 `treasureChests` field is hash-checked against its untouched source state, then

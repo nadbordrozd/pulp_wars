@@ -204,3 +204,90 @@ measured.)
   about 0.04 ms (a 25 x 25 board, 85 units); a view with the same tiles
   costs nothing. Another player's moves do not change the viewer's
   explored cells, so enemy playback starts no lift.
+
+## Opening a saved game (bead `pulp_wars-2yc.95`)
+
+Resuming a long game froze the page: `parseSaveV7` replayed the whole
+command log from the setup, on the main thread, inside the browser
+controller's constructor, before the main menu could draw. The save
+already holds the full canonical state; the replay only proved that the log
+leads to it.
+
+**Design.** The browser resume now loads the stored state directly and
+checks the history afterwards, off the main thread
+([CLIENT_ARCHITECTURE.md section 10](CLIENT_ARCHITECTURE.md#10-persistence-and-versioning)):
+
+- `parseSaveV7(source, { replay: "DEFER" })` keeps every check but the
+  replay: the size cap, the envelope, the full state schema and its
+  invariants, the canonical hash, the setup and PRNG, the parsed command log
+  and its length. A changed state whose hash was not updated is still
+  `CORRUPT`.
+- The controller hands the save to a Web Worker
+  (`src/app/save-history-worker-v7.ts`), which runs the full
+  `parseSaveV7(source)` and replies. `savedHistoryCheck()` becomes
+  `VERIFIED`, or `MISMATCH` (a save whose state was changed and rehashed, or
+  whose log no longer reproduces it): play goes on from the stored state and
+  a save warning says so. Without a Worker (Node, tests) it stays
+  `UNCHECKED`. Every tool, test and headless reader still calls the strict
+  default and rejects such a save.
+- `runReplayV7` hashes a state only where a checkpoint names it and at the
+  end (it hashed every intermediate state, about half of a long replay, and
+  nothing read those hashes); the result, the checkpoint errors and their
+  indices are unchanged.
+- The save envelope did not change (no version or identity bump), so every
+  earlier save opens the fast way; no slow path is left to time-slice.
+
+Why not store a checkpoint and replay a tail: the stored state already is
+the latest checkpoint, and its hash is checked on load; a tail replay would
+only add work. Why not verify on the main thread in idle slices: one
+command's replay costs 3 to 10 ms on a large board on a desktop, several
+times more on a phone, and a slice cannot stop inside a command.
+
+**Measured** (`scripts/perf/save-load.ts` in Node and
+`scripts/perf/save-resume-browser.ts` in muted headless Chrome against
+`vite preview` builds of the source before and after; no match is played:
+the saves came from the user-authorised bug-hunt simulations of
+`pulp_wars-2yc.94` and four nine-seat 25 x 25 Normal-AI games run for this
+bead, saved every 2,000 commands). Node: one run before, fastest of three
+after, a lightly loaded desktop. Browser: from navigation to the main menu's
+Resume button (the save loaded and checked), with the longest main-thread
+task until then.
+
+| Save                       | Commands | Size   | Node before | Node after | Browser before (longest task) | Browser after (longest task) | Worker's replay (Node) |
+| -------------------------- | -------: | ------ | ----------: | ---------: | ----------------------------- | ---------------------------- | ---------------------: |
+| 9 seats, 25 x 25, round 27 |    2,000 | 288 KB |       9.3 s |      20 ms | 7.4 s (7.1 s)                 | 0.36 s (none over 50 ms)     |                  4.4 s |
+| 6 seats, 20 x 20, round 51 |    3,448 | 331 KB |      13.7 s |      13 ms | 10.9 s (10.6 s)               | 0.38 s (none over 50 ms)     |                  7.0 s |
+| 9 seats, 25 x 25, round 60 |    6,000 | 586 KB |      53.5 s |      18 ms | 36.6 s (36.3 s)               | 0.39 to 0.42 s (56 ms)       |                 27.2 s |
+| 9 seats, 25 x 25, round 91 |   10,000 | 826 KB |      89.3 s |      20 ms | 71.4 s (71.0 s)               | 0.45 s (66 ms)               |                 53.8 s |
+
+The deferred load of every save was compared with the full replay of its
+log: the same canonical state and the same hash (`sameState=true` in
+`save-load.ts`), on these four and the other bug-hunt saves. In the browser,
+the same save with its human's Coins changed and its hash recomputed opens
+in 0.37 s and the menu then shows the mismatch warning from the worker.
+Under load the old path ran 2 to 4 times slower (the 4,000-command save of
+the bug hunt: 18 s unloaded, 28 to 45 s loaded); the new one stays in tens
+of milliseconds.
+
+**Size.** The cap stays 1.5 MiB (`MAX_SAVE_BYTES_V7`). A save is the state
+(150 to 175 KB on 20 x 20, 190 to 275 KB on 25 x 25, growing slowly) plus 49
+to 56 bytes a command (MOVE about half of it):
+
+| Save                        | Commands | State  | Log    | Total  | Share of the cap |
+| --------------------------- | -------: | ------ | ------ | ------ | ---------------: |
+| 4 seats, 20 x 20 (bug hunt) |    4,220 | 165 KB | 233 KB | 399 KB |             25 % |
+| 9 seats, 25 x 25, round 53  |    5,292 | 254 KB | 269 KB | 524 KB |             33 % |
+| 9 seats, 25 x 25, round 91  |   10,000 | 269 KB | 556 KB | 826 KB |             53 % |
+| 9 seats, 25 x 25, round 101 |   11,208 | 275 KB | 628 KB | 904 KB |             57 % |
+
+A nine-seat 25 x 25 game adds about 120 commands (7 KB) a round late on,
+so it reaches the cap near 23,000 commands, around round 200; every game
+measured ended (the human seat defeated) between rounds 17 and 101. No data
+was dropped and the format was not changed for size. If games that long
+matter, the log could be packed (a positional encoding of each command
+kind roughly halves it; deflate shrinks a whole save about elevenfold, but there is
+no synchronous one in the browser and the autosave runs after every
+command), which needs a new envelope field and a loader for both forms.
+`tests/unit/save-resume-deferred-v7.test.ts` checks that the real starting
+save of a nine-seat 25 x 25 game with 120 KB more state and 20,000 commands
+stays under the cap.

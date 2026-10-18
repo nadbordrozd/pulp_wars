@@ -220,11 +220,20 @@ export function runReplayV7(input: unknown): ReplayRunResultV7 {
   // first active seat's income. Hydration never runs that boundary again.
   const created = createPlayableGameV7(parsed.replay.setup);
   if (!created.ok) throw new ReplayErrorV7("CREATE_REJECTED");
+  // A state is hashed only where a checkpoint names it, and the last one
+  // (bead pulp_wars-2yc.95): the hash of every intermediate state was about
+  // a third of a long replay and nothing read it.
+  const checkpoints = new Map(
+    parsed.replay.checkpoints.map((item) => [item.index, item.stateHash]),
+  );
   let state = created.state;
-  let hash = canonicalHash(state);
-  const checkpoint = parsed.replay.checkpoints.find((item) => item.index === 0);
-  if (checkpoint !== undefined && checkpoint.stateHash !== hash)
-    throw new ReplayErrorV7("CHECKPOINT_MISMATCH", 0);
+  /** The hash of `state` once computed, else null. */
+  let hash: string | null = null;
+  const checkpoint = checkpoints.get(0);
+  if (checkpoint !== undefined) {
+    hash = canonicalHash(state);
+    if (checkpoint !== hash) throw new ReplayErrorV7("CHECKPOINT_MISMATCH", 0);
+  }
   for (let index = 0; index < parsed.replay.commands.length; index += 1) {
     const command = parsed.replay.commands[index];
     if (command === undefined) throw new ReplayErrorV7("INVALID_REPLAY");
@@ -235,17 +244,18 @@ export function runReplayV7(input: unknown): ReplayRunResultV7 {
     if (!result.accepted)
       throw new ReplayErrorV7("COMMAND_REJECTED", index + 1);
     state = result.state;
-    hash = canonicalHash(state);
-    const expected = parsed.replay.checkpoints.find(
-      (item) => item.index === index + 1,
-    );
-    if (expected !== undefined && expected.stateHash !== hash)
-      throw new ReplayErrorV7("CHECKPOINT_MISMATCH", index + 1);
+    hash = null;
+    const expected = checkpoints.get(index + 1);
+    if (expected !== undefined) {
+      hash = canonicalHash(state);
+      if (expected !== hash)
+        throw new ReplayErrorV7("CHECKPOINT_MISMATCH", index + 1);
+    }
   }
   return {
     acceptedCommands: parsed.replay.commands.length,
     state,
-    stateHash: hash,
+    stateHash: hash ?? canonicalHash(state),
   };
 }
 

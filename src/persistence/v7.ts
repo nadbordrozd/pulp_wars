@@ -91,8 +91,32 @@ export function createSaveEnvelopeV7(
   };
 }
 
+/**
+ * How `parseSaveV7` treats the command log (bead `pulp_wars-2yc.95`):
+ *
+ * - `VERIFY` (the default; every tool, test and headless reader): the log is
+ *   replayed from the setup and must rebuild exactly the stored state.
+ * - `DEFER` (the browser's resume): the log is parsed but not replayed. The
+ *   stored state still passes the full state schema and its invariants, the
+ *   hash, the setup and PRNG checks; the caller checks the history
+ *   afterwards with `verifySaveReplayV7`, off the main thread. Replaying a
+ *   long game took 1 to 25 s on a desktop (more on a phone), all of it
+ *   before the first frame.
+ */
+export type SaveReplayCheckV7 = "VERIFY" | "DEFER";
+
+export interface ParseSaveOptionsV7 {
+  readonly replay?: SaveReplayCheckV7;
+}
+
+export type SaveReplayVerificationV7 =
+  { readonly ok: true } | { readonly ok: false; readonly diagnostic: string };
+
 /** Pure v7 loader. It never mutates, normalizes, or migrates source bytes. */
-export function parseSaveV7(source: string): SaveLoadResultV7 {
+export function parseSaveV7(
+  source: string,
+  options: ParseSaveOptionsV7 = {},
+): SaveLoadResultV7 {
   if (new TextEncoder().encode(source).byteLength > MAX_SAVE_BYTES_V7)
     return corrupt("Saved match exceeds the size limit.");
   let input: unknown;
@@ -170,29 +194,53 @@ export function parseSaveV7(source: string): SaveLoadResultV7 {
   const parsedReplay = parseReplayFileV7(replay);
   if (parsedReplay.kind !== "VALID")
     return corrupt("Saved command log is invalid.");
+  const save: SaveEnvelopeV7 = {
+    format: "pulp-wars-save",
+    version: 7,
+    rulesetId: RULESET_7_ID,
+    setup,
+    state,
+    randomState: state.random,
+    acceptedCommands: commands,
+    commandIndex: input.commandIndex as number,
+    // Equal to canonicalHash(state): checked above.
+    stateHash: input.stateHash,
+    savedAt: input.savedAt,
+  };
+  if ((options.replay ?? "VERIFY") === "VERIFY") {
+    const verified = verifySaveReplayV7(save);
+    if (!verified.ok) return corrupt(verified.diagnostic);
+  }
+  return { kind: "VALID", save };
+}
+
+/**
+ * Replays a parsed save's command log from its setup and checks that it
+ * rebuilds exactly the stored state (the log's last checkpoint is the
+ * stored state hash). `parseSaveV7` runs it unless told to `DEFER`; the
+ * browser runs it in a worker after a resume (`src/app/save-history-v7.ts`).
+ */
+export function verifySaveReplayV7(
+  save: SaveEnvelopeV7,
+): SaveReplayVerificationV7 {
   let reconstructed: ReturnType<typeof runReplayV7>;
   try {
-    reconstructed = runReplayV7(parsedReplay.replay);
-  } catch {
-    return corrupt("Saved command replay validation failed.");
-  }
-  if (canonicalJson(reconstructed.state) !== canonicalJson(state))
-    return corrupt("Saved state does not match replay reconstruction.");
-  return {
-    kind: "VALID",
-    save: {
-      format: "pulp-wars-save",
+    reconstructed = runReplayV7({
+      format: "pulp-wars-replay",
       version: 7,
-      rulesetId: RULESET_7_ID,
-      setup,
-      state,
-      randomState: state.random,
-      acceptedCommands: commands,
-      commandIndex: input.commandIndex as number,
-      stateHash: canonicalHash(state),
-      savedAt: input.savedAt,
-    },
-  };
+      setup: save.setup,
+      commands: save.acceptedCommands,
+      checkpoints: [{ index: save.commandIndex, stateHash: save.stateHash }],
+    });
+  } catch {
+    return { ok: false, diagnostic: "Saved command replay validation failed." };
+  }
+  if (canonicalJson(reconstructed.state) !== canonicalJson(save.state))
+    return {
+      ok: false,
+      diagnostic: "Saved state does not match replay reconstruction.",
+    };
+  return { ok: true };
 }
 
 function parseCommands(input: unknown): readonly CommandV7[] | null {

@@ -45,8 +45,15 @@ import {
   type TribeStarsV7,
   type PersistenceScheduler,
   type SaveEnvelopeV7,
+  type SaveReplayVerificationV7,
   type StorageAdapter,
 } from "../persistence/index";
+import {
+  SAVED_HISTORY_MISMATCH_WARNING_V7,
+  type SavedHistoryCheckV7,
+  type SavedHistoryVerificationRunV7,
+  type SavedHistoryVerifierV7,
+} from "./save-history-v7";
 import {
   createRuleset7DebugBundle,
   ruleset7DebugBundleFilename,
@@ -237,6 +244,12 @@ export interface Ruleset7BrowserControllerOptions {
   readonly diagnosticNow?: () => string;
   readonly initialSaveWarning?: string | null;
   /**
+   * Checks a resumed save's command log off the main thread (bead
+   * pulp_wars-2yc.95); the browser bootstrap passes the Web Worker one.
+   * Absent or null, the history stays `UNCHECKED`.
+   */
+  readonly savedHistoryVerifier?: SavedHistoryVerifierV7 | null;
+  /**
    * Bead pulp_wars-2yc.96: told what a snapshot or boundary subscriber
    * threw (the controller still swallows it); the browser passes the
    * presentation guard's report, so the player sees the failure notice.
@@ -305,6 +318,9 @@ export class Ruleset7BrowserController {
   #storedSavePresent = false;
   #recovery: Ruleset7SaveRecovery | null = null;
   #saveWarning: string | null = null;
+  readonly #savedHistoryVerifier: SavedHistoryVerifierV7 | null;
+  #savedHistory: SavedHistoryCheckV7 = { status: "NONE", diagnostic: null };
+  #savedHistoryRun: SavedHistoryVerificationRunV7 | null = null;
   #diagnostic: string | null = null;
   #transitioning = false;
   #transitionTail: Promise<void> = Promise.resolve();
@@ -322,6 +338,7 @@ export class Ruleset7BrowserController {
 
   constructor(options: Ruleset7BrowserControllerOptions = {}) {
     this.#saveWarning = options.initialSaveWarning ?? null;
+    this.#savedHistoryVerifier = options.savedHistoryVerifier ?? null;
     this.#readClock = options.policyReadClock ?? defaultReadClockV7;
     this.#policySliceMilliseconds = options.policySliceMilliseconds ?? 4;
     if (
@@ -365,6 +382,11 @@ export class Ruleset7BrowserController {
     });
     const loaded = this.#persistence?.loadSave();
     if (loaded !== undefined) this.#loadInitialSave(loaded);
+  }
+
+  /** Where the resumed save's command-log check stands (bead 2yc.95). */
+  savedHistoryCheck(): SavedHistoryCheckV7 {
+    return this.#savedHistory;
   }
 
   /** Tribe stars for the new-game screen and the end of a match. */
@@ -461,7 +483,11 @@ export class Ruleset7BrowserController {
       savedAt: this.#savedAt,
       hasStoredSave: this.#storedSavePresent,
       recovery: this.#recovery,
-      saveWarning: this.#saveWarning,
+      saveWarning:
+        this.#saveWarning ??
+        (this.#savedHistory.status === "MISMATCH"
+          ? SAVED_HISTORY_MISMATCH_WARNING_V7
+          : null),
       diagnostic: this.#diagnostic,
       transitioning: this.#transitioning,
       ai: {
@@ -669,6 +695,7 @@ export class Ruleset7BrowserController {
         this.#emit();
         return false;
       }
+      this.#stopSavedHistoryCheck();
       this.#match = null;
       this.#replay = null;
       this.#humanViewCache = null;
@@ -742,6 +769,7 @@ export class Ruleset7BrowserController {
             transitioning: this.#transitioning,
             saveWarning: this.#saveWarning,
             controllerDiagnostic: this.#diagnostic,
+            savedHistory: this.#savedHistory,
             presentationFailures: input.presentationFailures ?? [],
           },
         },
@@ -793,6 +821,7 @@ export class Ruleset7BrowserController {
     if (this.#destroyed) return;
     this.flushPersistence();
     this.#destroyed = true;
+    this.#stopSavedHistoryCheck();
     this.#cancelAiWork();
     this.#persistence?.destroy();
     this.#subscribers.clear();
@@ -821,8 +850,9 @@ export class Ruleset7BrowserController {
     }
     try {
       const replay = replayFromSaveV7(loaded.save);
-      // parseSaveV7 already performs strict schema/hash and full replay
-      // reconstruction before returning VALID. Do not replay it a second time.
+      // The stored state passed the full schema, invariant and hash checks;
+      // the command log was not replayed (bead pulp_wars-2yc.95): the
+      // saved-history check replays it off the main thread below.
       this.#match = loaded.save.state;
       this.#replay = replay;
       this.#humanViewCache = viewForV7(
@@ -837,6 +867,7 @@ export class Ruleset7BrowserController {
       // tribe stars of a completed match.
       this.#recordCampaignOutcome(loaded.save.state);
       this.#recordTribeStars(loaded.save.state);
+      this.#startSavedHistoryCheck(loaded.save);
     } catch (error) {
       this.#phase = "RECOVERY";
       this.#recovery = {
@@ -846,7 +877,60 @@ export class Ruleset7BrowserController {
     }
   }
 
+  /**
+   * Replays a resumed save's command log through the verifier (a Web
+   * Worker in the browser) and records the verdict; a mismatch adds a save
+   * warning, play goes on from the stored state.
+   */
+  #startSavedHistoryCheck(save: SaveEnvelopeV7): void {
+    this.#stopSavedHistoryCheck();
+    const verifier = this.#savedHistoryVerifier;
+    if (verifier === null) {
+      this.#savedHistory = { status: "UNCHECKED", diagnostic: null };
+      return;
+    }
+    let run: SavedHistoryVerificationRunV7;
+    try {
+      run = verifier(save);
+    } catch (error) {
+      this.#savedHistory = {
+        status: "UNCHECKED",
+        diagnostic: safeDiagnosticV7(error),
+      };
+      return;
+    }
+    this.#savedHistory = { status: "PENDING", diagnostic: null };
+    this.#savedHistoryRun = run;
+    void run.result.then(
+      (verdict) => this.#finishSavedHistoryCheck(run, verdict),
+      () => this.#finishSavedHistoryCheck(run, null),
+    );
+  }
+
+  #finishSavedHistoryCheck(
+    run: SavedHistoryVerificationRunV7,
+    verdict: SaveReplayVerificationV7 | null,
+  ): void {
+    if (this.#destroyed || this.#savedHistoryRun !== run) return;
+    this.#savedHistoryRun = null;
+    this.#savedHistory =
+      verdict === null
+        ? { status: "UNCHECKED", diagnostic: null }
+        : verdict.ok
+          ? { status: "VERIFIED", diagnostic: null }
+          : { status: "MISMATCH", diagnostic: verdict.diagnostic };
+    if (verdict !== null && !verdict.ok) this.#emit();
+  }
+
+  #stopSavedHistoryCheck(): void {
+    const run = this.#savedHistoryRun;
+    this.#savedHistoryRun = null;
+    this.#savedHistory = { status: "NONE", diagnostic: null };
+    run?.cancel();
+  }
+
   #installCreatedMatch(state: GameStateV7): void {
+    this.#stopSavedHistoryCheck();
     this.#tribeStarsLastAward = null;
     this.#match = state;
     this.#replay = createReplayV7(state.setup);

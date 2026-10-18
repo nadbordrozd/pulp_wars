@@ -235,7 +235,11 @@ export class BrowserPersistenceV7 {
       };
     }
     if (source === null) return { kind: "NONE" };
-    const parsed: SaveLoadResultV7 = parseSaveV7(source);
+    // The command log is not replayed here (bead pulp_wars-2yc.95): the
+    // stored state is checked in full and resumed at once, and the browser
+    // controller checks the history afterwards, off the main thread
+    // (`verifySaveReplayV7`).
+    const parsed: SaveLoadResultV7 = parseSaveV7(source, { replay: "DEFER" });
     return parsed;
   }
 

@@ -10,6 +10,7 @@ import {
 } from "../persistence/index";
 import { reportPresentationFailureV7 } from "../render/presentation-guard-v7";
 import { clearStoredArtSetV7 } from "./art-set-v7";
+import { workerSavedHistoryVerifierV7 } from "./save-history-v7";
 import {
   Ruleset7BrowserController,
   type Ruleset7BrowserControllerOptions,
@@ -46,6 +47,12 @@ export function bootstrapRuleset7App(
     onSubscriberFailure: reportPresentationFailureV7,
     ...options,
     storage,
+    // A resumed save's command log is replayed in a Web Worker
+    // (bead pulp_wars-2yc.95).
+    savedHistoryVerifier:
+      options.savedHistoryVerifier === undefined
+        ? workerSavedHistoryVerifierV7()
+        : options.savedHistoryVerifier,
     initialSaveWarning:
       obsoleteSaveCleanup.warning ?? options.initialSaveWarning ?? null,
   });
