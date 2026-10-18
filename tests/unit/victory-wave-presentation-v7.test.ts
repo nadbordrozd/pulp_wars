@@ -247,10 +247,16 @@ describe("victory wave: the skin of each faction", () => {
     });
   });
 
-  it("keeps water and the Rift as they are, even for the Ice Folk", () => {
+  it("keeps water as it is, even for the Ice Folk", () => {
     for (const faction of ["ICE_FOLK", "MARTIAN", "UNDEAD"] as const)
-      for (const terrain of ["SHALLOW_WATER", "DEEP_WATER", "RIFT"] as const)
+      for (const terrain of ["SHALLOW_WATER", "DEEP_WATER"] as const)
         expect(victoryTerrainSkinV7(terrain, faction)).toEqual({ snow: false });
+    // The Rift's crack lies on the winner's ground (bead pulp_wars-2yc.102,
+    // tests/unit/rift-ground-render-v7.test.ts).
+    expect(victoryTerrainSkinV7("RIFT", "MARTIAN")).toEqual({
+      factionGrass: "MARTIAN",
+      snow: false,
+    });
   });
 });
 

@@ -111,9 +111,24 @@ export function iceFolkTerrainCellsV7(view: PlayerViewV7): {
 } {
   const snowKeys = new Set<string>();
   const blizzard = new Set<string>();
+  // Bead pulp_wars-2yc.102: a Rift is never Snow by rule (section 6.1), but
+  // its crack lies on the ground of its territory, so in Ice Folk land it is
+  // drawn on Snow like the land round it. Drawing only: the tile's flag and
+  // every rule of Snow are unchanged.
+  const iceFolkSeats = new Set(
+    view.players
+      .filter((player) => player.faction === "ICE_FOLK")
+      .map((player) => player.id),
+  );
   for (const tile of view.board.tiles) {
     if (!tile.explored) continue;
     if (tile.snow === true && tile.biome !== null) snowKeys.add(key(tile.at));
+    else if (
+      tile.terrain === "RIFT" &&
+      tile.territoryOwnerId !== null &&
+      iceFolkSeats.has(tile.territoryOwnerId)
+    )
+      snowKeys.add(key(tile.at));
     if (tile.blizzard === true) blizzard.add(key(tile.at));
   }
   const snow = new Map<string, IceFolkSnowCellV7>();

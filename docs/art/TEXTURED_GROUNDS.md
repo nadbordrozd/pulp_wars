@@ -188,14 +188,18 @@ the mottle alone; C, both) and C was taken: the map keeps its colour, and
 a large meadow is no longer the same three tiles.
 
 - **Where it is drawn.** `drawFactionGrassV7` draws it on every Grass,
-  Forest and Mountain cell with no faction ground, over the Grass tile and
-  under the spill of a neighbouring faction ground; a faction ground stays
-  ranked above it, so the borders are as they were. Water, a Rift and fog
-  are untouched.
-- **Left on the old Grass tile:** the Rift pieces (their art carries its
-  own grass), and the pictures of plain Grass outside a live match (the
-  title screen, the Help pages). The Gallery's Grass row and the tile dock
-  show a cell of the texture.
+  Forest, Mountain and Rift cell with no faction ground, over the Grass
+  tile and under the spill of a neighbouring faction ground; a faction
+  ground stays ranked above it, so the borders are as they were. Water and
+  fog are untouched.
+- **The Rift** (bead `pulp_wars-2yc.102`): its pieces carry their own grass
+  in the master, so the art resolver cuts each piece to its crack (every
+  green pixel reached from the piece's edge made transparent), and the
+  board draws the crack over the cell's ground: a faction's ground or this
+  one, sampled by map place like the cells round it.
+- **Left on the old Grass tile:** the pictures of plain Grass outside a
+  live match (the title screen, the Help pages). The Gallery's Grass row
+  and the tile dock show a cell of the texture.
 - **Period.** A 16 x 16 map of neutral Grass shows no repeat at eight
   cells.
 - **Draw time.** One more cached image for each neutral grassy cell, where

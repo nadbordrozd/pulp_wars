@@ -1133,7 +1133,7 @@ describe("Ruleset 7 Gallery: Terrain (pulp_wars-2yc.3)", () => {
     ]);
     expect(rows[1]?.querySelector("td.is-same")).toBeNull();
     // Shared terrain is one cell across the row.
-    for (const index of [2, 3, 5]) {
+    for (const index of [2, 3]) {
       const cells =
         rows[index]?.querySelectorAll<HTMLElement>(".v7-gallery-cell");
       expect(cells).toHaveLength(1);
@@ -1147,6 +1147,10 @@ describe("Ruleset 7 Gallery: Terrain (pulp_wars-2yc.3)", () => {
     expect(rows[4]?.querySelectorAll(".v7-gallery-cell")).toHaveLength(1);
     expect(rows[4]?.querySelectorAll('td[aria-label="None"]')).toHaveLength(8);
     expect(cell("ICE", "ICE_FOLK")).not.toBeNull();
+    // The Rift: a column per faction, its crack on each faction's ground
+    // (pulp_wars-2yc.102).
+    expect(rows[5]?.querySelectorAll(".v7-gallery-cell")).toHaveLength(9);
+    expect(rows[5]?.querySelector("td.is-same")).toBeNull();
     // No coordinates anywhere.
     expect(required("[data-v7-gallery]").textContent).not.toMatch(
       /\d+\s*,\s*\d+/,

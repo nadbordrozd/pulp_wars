@@ -527,6 +527,7 @@ import {
   factionGrassGladeLayersV7,
   factionGrassIdV7,
   factionGrassPlanMemberV7,
+  groundTerrainV7,
   type FactionGrassArtV7,
   type FactionGrassIdV7,
 } from "./faction-grass-v7";
@@ -1469,14 +1470,12 @@ export function buildBoardRenderPlanV7(
     const riftPiece =
       tile.terrain === "RIFT" ? riftPieceV7(tile.at, riftAt) : undefined;
     const tileFaction = territoryFaction(tile.territoryOwnerId);
-    // The Undead territory ground: under Grass, Forest trees and the
-    // Mountain fringe. Water and the Rift keep their own art.
-    const territoryGround =
-      tile.terrain === "GRASS" ||
-      tile.terrain === "FOREST" ||
-      tile.terrain === "MOUNTAIN"
-        ? territoryGroundV7(tileFaction)
-        : null;
+    // The Undead territory ground: under Grass, Forest trees, the Mountain
+    // fringe and the Rift's crack (bead pulp_wars-2yc.102). Water keeps its
+    // own art.
+    const territoryGround = groundTerrainV7(tile.terrain)
+      ? territoryGroundV7(tileFaction)
+      : null;
     entries.push({
       key: `terrain:${tile.at.x},${tile.at.y}`,
       kind: "TERRAIN",
@@ -3256,16 +3255,22 @@ export function drawBoardV7(input: {
         };
   const blizzardTime =
     input.reducedMotion === true ? 0 : (input.blizzardTimeMs ?? 0);
-  /** The Snow overlay and the Blizzard of a terrain cell (ground pass). */
+  /**
+   * The Snow overlay and the Blizzard of a terrain cell (ground pass).
+   * `parts`: everything, or the ground (Snow, sea ice) and the Blizzard
+   * apart, so the Rift's crack goes between them (bead pulp_wars-2yc.102).
+   */
   const drawWinterGround = (
     entry: BoardRenderPlanEntryV7,
     x: number,
     y: number,
+    parts: "ALL" | "GROUND" | "BLIZZARD" = "ALL",
   ): void => {
+    const ground = parts !== "BLIZZARD";
+    const blizzard = parts !== "GROUND" && entry.blizzard === true;
     if (
-      entry.snow === undefined &&
-      entry.blizzard !== true &&
-      entry.seaIce === undefined
+      !blizzard &&
+      (!ground || (entry.snow === undefined && entry.seaIce === undefined))
     )
       return;
     const cell = chibiTerrainPartRect(
@@ -3275,9 +3280,9 @@ export function drawBoardV7(input: {
       devicePixelRatio,
       "CELL",
     );
-    if (entry.snow !== undefined)
+    if (ground && entry.snow !== undefined)
       drawSnowCellV7(context, iceFolkArt, cell, entry.snow, sceneAlpha);
-    if (entry.seaIce !== undefined) {
+    if (ground && entry.seaIce !== undefined) {
       // The frozen sea: the cut ice sheet of the water's depth over it (a
       // code-drawn floe while the sheet loads or is missing), then cracks.
       const sheet = chibiArt.resolve({
@@ -3303,7 +3308,7 @@ export function drawBoardV7(input: {
         highContrast: input.highContrast ?? false,
       });
     }
-    if (entry.blizzard === true)
+    if (blizzard)
       drawBlizzardCellV7(context, entry.at, cell, blizzardTime, sceneAlpha);
   };
   // Bead pulp_wars-2yc.29: the city on each cell, so a unit standing on a
@@ -3746,7 +3751,12 @@ export function drawBoardV7(input: {
             pass !== "GROUND" &&
             fogAt !== null &&
             fogAt(entry.at.x, entry.at.y - 1);
-          const territoryGrass = (): void => {
+          // The Rift (bead pulp_wars-2yc.102): its raster is the crack alone
+          // (chibi-art-resolver-v7.ts), drawn over the cell's ground like
+          // any land cell's: the Grass of its territory, the faction's or
+          // the default ground, Snow; the crack goes on after them.
+          const riftCrack = pass === "GROUND" && entry.riftPiece !== undefined;
+          const territoryGrassTile = (): void => {
             const grass = resolveChibiWithFallbackV7(chibiArt, {
               subject: territoryTerrainSubjectV7(
                 "TERRAIN:GRASS",
@@ -3763,6 +3773,9 @@ export function drawBoardV7(input: {
                 sceneAlpha,
                 part: "CELL",
               });
+          };
+          const territoryGrass = (): void => {
+            territoryGrassTile();
             drawFactionGrassV7(
               context,
               forestFrame,
@@ -3793,6 +3806,7 @@ export function drawBoardV7(input: {
                   edges: fringeEdges,
                 }) ?? null);
           if (meadow) territoryGrass();
+          else if (riftCrack) territoryGrassTile();
           else if (
             fringedGround !== null &&
             chibi.kind === "READY" &&
@@ -3865,8 +3879,20 @@ export function drawBoardV7(input: {
               forestCell,
             );
           // The Ice Folk revision: Snow and the Blizzard over the ground;
-          // the snow caps of the body's overflow over the overflow.
-          if (pass === "GROUND") drawWinterGround(entry, x, y);
+          // the snow caps of the body's overflow over the overflow. The
+          // Rift's crack goes over its ground and under the Blizzard.
+          if (riftCrack) {
+            drawWinterGround(entry, x, y, "GROUND");
+            if (chibi.kind === "READY")
+              drawChibiTerrainV7(context, chibi, {
+                centre: { x, y },
+                camera,
+                devicePixelRatio,
+                sceneAlpha,
+                part: "CELL",
+              });
+            drawWinterGround(entry, x, y, "BLIZZARD");
+          } else if (pass === "GROUND") drawWinterGround(entry, x, y);
           else if (
             entry.snow !== undefined &&
             chibi.kind === "READY" &&

@@ -44,7 +44,9 @@ describe("Gallery terrain presentation", () => {
     expect(galleryTerrainPerFactionV7("GRASS")).toBe(true);
     expect(galleryTerrainPerFactionV7("FOREST")).toBe(true);
     expect(galleryTerrainPerFactionV7("ICE")).toBe(true);
-    for (const row of ["MOUNTAIN", "WATER", "RIFT"] as const) {
+    // The Rift's crack lies on each faction's ground (bead 2yc.102).
+    expect(galleryTerrainPerFactionV7("RIFT")).toBe(true);
+    for (const row of ["MOUNTAIN", "WATER"] as const) {
       expect(galleryTerrainPerFactionV7(row), row).toBe(false);
       const shared = galleryTerrainCellV7(row, null);
       expect(shared.kind).toBe("OWN");
@@ -292,7 +294,7 @@ describe("Gallery terrain sample boards", () => {
     expect(terrain("MOUNTAIN", 6, 5)).toBe("MOUNTAIN");
     expect(terrain("WATER", 5, 3)).toBe("SHALLOW_WATER");
     expect(terrain("WATER", 6, 3)).toBe("DEEP_WATER");
-    expect(terrain("RIFT", 3, 6)).toBe("RIFT");
+    expect(terrain("RIFT", 3, 5)).toBe("RIFT");
     expect(terrain("RIFT", 6, 3)).toBe("RIFT");
     // The Water patch shows every Fish variant on its shallow column.
     const sea = buildGalleryTerrainSampleV7("WATER", null);

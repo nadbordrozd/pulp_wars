@@ -32,7 +32,9 @@ import type { GalleryTerrainRowIdV7 } from "./gallery-terrain-presentation-v7";
  *    6   ...TT
  * ```
  *
- * Grass is the patch itself; the Rift is one crack in each direction. The
+ * Grass is the patch itself; the Rift is one crack in each direction, the
+ * horizontal one inside the capital's borders and the vertical one beyond
+ * them, so each lies on the ground of where it is (bead 2yc.102). The
  * Water patch has Fish on four cells of its shallow column, one for each
  * Fish variant (the board picks a variant from a cell's coordinates).
  */
@@ -62,7 +64,9 @@ function terrainRows(row: GalleryTerrainRowIdV7): string[] {
     // Three columns of water: the middle one has no land beside it (Deep).
     for (let y = 0; y <= 7; y += 1) for (const x of [5, 6, 7]) set(x, y, "~");
   } else if (row === "RIFT") {
-    for (const x of [2, 3, 4]) set(x, 6, "x");
+    // Bead pulp_wars-2yc.102: the horizontal crack inside the borders, on
+    // the faction's ground; the vertical one beyond them, on the default.
+    for (const x of [3, 4, 5]) set(x, 5, "x");
     for (const y of [2, 3, 4]) set(6, y, "x");
   }
   return grid.map((line) => line.join(""));

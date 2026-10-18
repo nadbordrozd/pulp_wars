@@ -358,8 +358,10 @@ overview scenes with `?faction-grass=0`.
 
 ## Known limits
 
-- **A Rift inside a faction's territory keeps default Grass** round its
-  crack: the Rift pieces carry their Grass in the master.
+- ~~A Rift inside a faction's territory keeps default Grass round its
+  crack.~~ Fixed by bead `pulp_wars-2yc.102`: the art resolver draws a Rift
+  piece without its Grass and the board lays the crack over the cell's
+  ground like any land cell's ([the Rift](classes/terrain-tiles.md#ruleset-7-rift-pulp_wars-9s05)).
 - **The glade's edge stays green.** Under a resource in a wood on red dust,
   mint, gravel or ash the glade's rim reads as a greener ring.
 - **A glade does not draw the neighbour's spill to its edge**: its open

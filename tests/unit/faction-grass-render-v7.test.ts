@@ -136,7 +136,7 @@ describe("the faction grass switch", () => {
 });
 
 describe("the faction grass plan member", () => {
-  it("marks Grass, Forest and Mountain cells of a faction with a ground only", () => {
+  it("marks Grass, Forest, Mountain and Rift cells of a faction with a ground only", () => {
     expect(factionGrassPlanMemberV7("GRASS", "GOBLIN")).toEqual({
       factionGrass: "GOBLIN",
     });
@@ -146,7 +146,11 @@ describe("the faction grass plan member", () => {
     expect(factionGrassPlanMemberV7("MOUNTAIN", "UNDEAD")).toEqual({
       factionGrass: "UNDEAD",
     });
-    for (const terrain of ["SHALLOW_WATER", "DEEP_WATER", "RIFT"])
+    // The Rift's crack lies on its territory's ground (bead 2yc.102).
+    expect(factionGrassPlanMemberV7("RIFT", "GOBLIN")).toEqual({
+      factionGrass: "GOBLIN",
+    });
+    for (const terrain of ["SHALLOW_WATER", "DEEP_WATER"])
       expect(factionGrassPlanMemberV7(terrain, "GOBLIN")).toEqual({});
     expect(factionGrassPlanMemberV7("GRASS", "ORIGINAL")).toEqual({});
     expect(factionGrassPlanMemberV7("GRASS", "ICE_FOLK")).toEqual({});
@@ -185,7 +189,8 @@ describe("the faction grass plan member", () => {
         tile.territoryOwnerId !== view.viewer.id &&
         (tile.terrain === "GRASS" ||
           tile.terrain === "FOREST" ||
-          tile.terrain === "MOUNTAIN");
+          tile.terrain === "MOUNTAIN" ||
+          tile.terrain === "RIFT");
       expect(item.factionGrass).toBe(expected ? "GOBLIN" : undefined);
       if (expected) inside += 1;
     }
@@ -273,7 +278,7 @@ describe("the faction grass cells", () => {
     ]);
   });
 
-  it("reads terrain entries with Grass only: no fog, water or Rift", () => {
+  it("reads terrain entries with a ground only: no fog or water", () => {
     const cells = factionGrassCellsV7([
       { kind: "FOG", at: { x: 0, y: 0 } },
       entry(1, 0, "GOBLIN"),
@@ -282,8 +287,11 @@ describe("the faction grass cells", () => {
       entry(0, 1, undefined, "TERRAIN:MOUNTAIN"),
       { kind: "UNIT", at: { x: 1, y: 0 }, artSubject: "UNIT:FIGHTER" },
     ]);
-    expect([...cells.keys()].sort()).toEqual(["0,1", "1,0"]);
+    // The Rift's crack lies on a ground (bead pulp_wars-2yc.102): the
+    // Goblin ground spills onto it as onto Grass.
+    expect([...cells.keys()].sort()).toEqual(["0,1", "1,0", "1,1"]);
     expect(cells.get("0,1")?.mountain).toBe(true);
+    expect(cells.get("1,1")?.mountain).toBe(false);
   });
 });
 
@@ -545,7 +553,7 @@ describe("the faction grass art and drawing", () => {
     // ground alone (docs/art/TEXTURED_GROUNDS.md).
     drawFactionGrassV7(none.context, frame, resolved, farEntry, cells, false);
     expect(none.drawn).toEqual([resolved.tile("NEUTRAL", 0, farEntry.at)]);
-    // Water, fog and a Rift wear nothing.
+    // Water and fog wear nothing.
     for (const other of [
       { kind: "FOG", at: { x: 9, y: 9 } },
       {
@@ -553,14 +561,20 @@ describe("the faction grass art and drawing", () => {
         at: { x: 9, y: 8 },
         artSubject: "TERRAIN:SHALLOW_WATER",
       },
-      {
-        kind: "TERRAIN",
-        at: { x: 9, y: 7 },
-        artSubject: "TERRAIN:RIFT_H_WEST",
-      },
     ])
       drawFactionGrassV7(none.context, frame, resolved, other, cells, false);
     expect(none.drawn).toHaveLength(1);
+    // A far Rift wears the default ground under its crack (bead
+    // pulp_wars-2yc.102), never under a rock.
+    const riftEntry = {
+      kind: "TERRAIN",
+      at: { x: 9, y: 7 },
+      artSubject: "TERRAIN:RIFT_H_WEST",
+    };
+    drawFactionGrassV7(none.context, frame, resolved, riftEntry, cells, true);
+    expect(none.drawn).toHaveLength(1);
+    drawFactionGrassV7(none.context, frame, resolved, riftEntry, cells, false);
+    expect(none.drawn.at(-1)).toBe(resolved.tile("NEUTRAL", 0, riftEntry.at));
     expect(factionGrassGladeLayersV7(null, candyEntry, cells)).toEqual([]);
     // Used: GRASS_S is part of the mask vocabulary.
     expect(GRASS_S).toBe(4);

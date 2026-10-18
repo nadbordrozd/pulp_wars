@@ -311,8 +311,17 @@ describe("Cult art subjects stand in with the shared art", () => {
     expect(victoryTerrainSkinV7("MOUNTAIN", "CULT")).toMatchObject({
       factionGrass: "CULT",
     });
+    // The Rift's crack lies on the moor too (bead pulp_wars-2yc.102).
+    expect(victoryTerrainSkinV7("RIFT", "CULT")).toMatchObject({
+      factionGrass: "CULT",
+    });
     for (const terrain of TERRAIN_IDS_V7)
-      if (terrain !== "GRASS" && terrain !== "FOREST" && terrain !== "MOUNTAIN")
+      if (
+        terrain !== "GRASS" &&
+        terrain !== "FOREST" &&
+        terrain !== "MOUNTAIN" &&
+        terrain !== "RIFT"
+      )
         expect(victoryTerrainSkinV7(terrain, "CULT"), terrain).toEqual(
           victoryTerrainSkinV7(terrain, "ORIGINAL"),
         );

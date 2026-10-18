@@ -172,6 +172,8 @@ describe("the tile dock's terrain picture", () => {
     expect(
       dockTerrainSwatchV7(request("FOREST", "GOBLIN", { live: false })),
     ).toBeNull();
+    // A Rift without its piece too (with it, its crack on the ground:
+    // tests/unit/rift-ground-render-v7.test.ts).
     for (const terrain of ["GRASS", "SHALLOW_WATER", "DEEP_WATER", "RIFT"])
       expect(dockTerrainSwatchV7(request(terrain, "GOBLIN"))).toBeNull();
   });

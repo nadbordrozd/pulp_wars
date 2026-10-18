@@ -338,6 +338,9 @@ export const KIND_READER_CLASSES_V7: Readonly<
   // pulp_wars-2yc.28: the faction of the seat that owns a territory (the
   // forest set a wood in the fog is packed with).
   "src/render/canvas/terrain-at-fog-v7.ts::terrainGhostsV7": "SEAT",
+  // pulp_wars-2yc.102: a Rift in an Ice Folk seat's territory is drawn on
+  // Snow (the territory owner's faction).
+  "src/render/canvas/ice-folk-board-plan-v7.ts::iceFolkTerrainCellsV7": "SEAT",
   // pulp_wars-556y: the victory wave takes the winning seat's faction skin
   // (the winner, the viewer's seat, and the Human win's sparkles).
   "src/render/canvas/victory-wave-v7.ts::victoryWaveTriggerV7": "SEAT",

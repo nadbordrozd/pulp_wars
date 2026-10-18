@@ -118,17 +118,30 @@ export function factionGrassIdV7(
 }
 
 /**
- * The plan member of a terrain entry: `factionGrass` on a Grass, Forest or
- * Mountain cell inside the territory of a faction with a ground, nothing
- * otherwise (and nothing at all with the switch off).
+ * The terrains that stand on a ground: Grass, Forest, Mountain and the Rift,
+ * whose crack lies over its territory's ground like any land cell's (bead
+ * pulp_wars-2yc.102). Water has none.
+ */
+export function groundTerrainV7(terrain: string): boolean {
+  return (
+    terrain === "GRASS" ||
+    terrain === "FOREST" ||
+    terrain === "MOUNTAIN" ||
+    terrain === "RIFT"
+  );
+}
+
+/**
+ * The plan member of a terrain entry: `factionGrass` on a Grass, Forest,
+ * Mountain or Rift cell inside the territory of a faction with a ground,
+ * nothing otherwise (and nothing at all with the switch off).
  */
 export function factionGrassPlanMemberV7(
   terrain: string,
   faction: FactionIdV7 | null | undefined,
 ): { readonly factionGrass?: FactionGrassIdV7 } {
   if (!FACTION_GRASS_ENABLED_V7) return {};
-  if (terrain !== "GRASS" && terrain !== "FOREST" && terrain !== "MOUNTAIN")
-    return {};
+  if (!groundTerrainV7(terrain)) return {};
   const id = factionGrassIdV7(faction);
   return id === null ? {} : { factionGrass: id };
 }
@@ -274,17 +287,26 @@ export interface FactionGrassCellV7 {
   }[];
 }
 
-const GRASSY: ReadonlySet<string> = new Set([
+const GRASSY_SUBJECTS: ReadonlySet<string> = new Set([
   "TERRAIN:GRASS",
   "TERRAIN:FOREST",
   "TERRAIN:MOUNTAIN",
   "TERRAIN:MINED_MOUNTAIN",
 ]);
 
+/** A terrain subject drawn on a ground: the Rift's pieces too (2yc.102). */
+const grassy = (subject: string | undefined): boolean =>
+  subject !== undefined &&
+  (GRASSY_SUBJECTS.has(subject) || subject.startsWith("TERRAIN:RIFT_"));
+
+/** A Mountain: its Grass shows only under its rocky ground's fringe. */
+const rocky = (subject: string | undefined): boolean =>
+  subject === "TERRAIN:MOUNTAIN" || subject === "TERRAIN:MINED_MOUNTAIN";
+
 const modulo = (value: number, by: number): number => ((value % by) + by) % by;
 
 /**
- * The faction grass of every explored Grass, Forest and Mountain cell:
+ * The faction grass of every explored Grass, Forest, Mountain and Rift cell:
  * only cells with something to draw are in the map. A pure function of the
  * plan's terrain entries, so nothing is read from unexplored cells.
  */
@@ -292,17 +314,16 @@ export function factionGrassCellsV7(
   entries: readonly FactionGrassEntryV7[],
 ): ReadonlyMap<string, FactionGrassCellV7> {
   const ground = new Map<string, FactionGrassIdV7>();
-  const grassy: FactionGrassEntryV7[] = [];
+  const grounded: FactionGrassEntryV7[] = [];
   for (const entry of entries) {
-    if (entry.kind !== "TERRAIN" || !GRASSY.has(entry.artSubject ?? ""))
-      continue;
-    grassy.push(entry);
+    if (entry.kind !== "TERRAIN" || !grassy(entry.artSubject)) continue;
+    grounded.push(entry);
     if (entry.factionGrass !== undefined)
       ground.set(`${entry.at.x},${entry.at.y}`, entry.factionGrass);
   }
   const cells = new Map<string, FactionGrassCellV7>();
   if (ground.size === 0) return cells;
-  for (const entry of grassy) {
+  for (const entry of grounded) {
     const { x, y } = entry.at;
     const id = entry.factionGrass ?? null;
     const rank = id === null ? 0 : (RANK.get(id) ?? 0);
@@ -321,9 +342,7 @@ export function factionGrassCellsV7(
       phase:
         modulo(x, FACTION_GRASS_PHASES_V7) +
         FACTION_GRASS_PHASES_V7 * modulo(y, FACTION_GRASS_PHASES_V7),
-      mountain:
-        entry.artSubject !== "TERRAIN:GRASS" &&
-        entry.artSubject !== "TERRAIN:FOREST",
+      mountain: rocky(entry.artSubject),
       spills: [...around.entries()]
         .sort((a, b) => (RANK.get(a[0]) ?? 0) - (RANK.get(b[0]) ?? 0))
         .map(([spill, neighbours]) => ({ id: spill, neighbours })),
@@ -596,16 +615,13 @@ function cellOf(
 ): FactionGrassCellV7 | null {
   const cell = cells.get(`${entry.at.x},${entry.at.y}`);
   if (cell !== undefined) return cell;
-  if (entry.kind !== "TERRAIN" || !GRASSY.has(entry.artSubject ?? ""))
-    return null;
+  if (entry.kind !== "TERRAIN" || !grassy(entry.artSubject)) return null;
   return {
     at: entry.at,
     own: null,
     variant: 0,
     phase: 0,
-    mountain:
-      entry.artSubject !== "TERRAIN:GRASS" &&
-      entry.artSubject !== "TERRAIN:FOREST",
+    mountain: rocky(entry.artSubject),
     spills: [],
   };
 }

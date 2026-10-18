@@ -81,7 +81,8 @@ cell inside the winner's territory, from the same helpers:
 | Ice Folk  | Snow on every land cell (edges cut at water and fog) | The tundra forest    |
 | Cultists  | Heather moor                                         | The lantern wood     |
 
-Water and the Rift are never skinned. Another faction's Snow is cleared,
+Water is never skinned; the Rift's crack lies on the winner's ground,
+Snow included (bead `pulp_wars-2yc.102`). Another faction's Snow is cleared,
 except where a Blizzard still blows. Buildings keep the look of their
 territory's owner, and borders, Roads and units are unchanged.
 

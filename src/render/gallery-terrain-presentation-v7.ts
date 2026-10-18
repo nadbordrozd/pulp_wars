@@ -83,7 +83,9 @@ export function galleryTerrainLookV7(
 ): GalleryTerrainLookV7 {
   if (row === "ICE") return faction === "ICE_FOLK" ? "OWN" : "NONE";
   if (faction === "ORIGINAL") return "OWN";
-  if (row === "GRASS")
+  // The Rift's crack lies on the ground of its territory (bead
+  // pulp_wars-2yc.102): a faction with a ground of its own has its own.
+  if (row === "GRASS" || row === "RIFT")
     return GRASS_TILE_FACTIONS.has(faction) ||
       faction === "ICE_FOLK" ||
       territoryGroundV7(faction) !== null
@@ -411,9 +413,14 @@ export function galleryTerrainPiecesV7(
         ]),
       ),
     );
-  return RIFT_SUBJECTS.flatMap((subject) =>
-    subjectTiles(subject, [subjectLayer("TERRAIN:GRASS")]),
-  );
+  // The Rift (bead pulp_wars-2yc.102): each piece of the crack, which the
+  // art resolver draws without its Grass, on the faction's ground as the
+  // Grass row shows it (the default ground for the cell every faction
+  // shares, Snow for the Ice Folk).
+  const under = galleryTerrainPiecesV7("GRASS", faction)[0]?.layers ?? [
+    subjectLayer("TERRAIN:GRASS"),
+  ];
+  return RIFT_SUBJECTS.flatMap((subject) => subjectTiles(subject, under));
 }
 
 /** Every raster URL a swatch names directly (for the preload inventory). */

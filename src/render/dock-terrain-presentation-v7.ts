@@ -2,6 +2,7 @@ import type { FactionIdV7 } from "../engine/index";
 import {
   territoryGroundV7,
   territoryTerrainSubjectV7,
+  type RiftPieceV7,
 } from "../assets/chibi-art-v7";
 import {
   CHIBI_MOUNTAIN_ART_SET_V7,
@@ -41,7 +42,11 @@ import type {
  * - a Forest of a faction with a forest of its own: one single piece of
  *   that faction's set, as a clearing draws it.
  *
- * Every other cell (the default Forest, Grass, water, the Rift) keeps the
+ * - a Rift (bead pulp_wars-2yc.102): its piece of the crack, which the art
+ *   resolver draws without its Grass, on its territory's ground (Snow in
+ *   Ice Folk land, as the board draws it).
+ *
+ * Every other cell (the default Forest, Grass, water) keeps the
  * registered master: the function returns null. The faction looks are the
  * live look's, so the classic look gets the default ground and Forest; the
  * massifs are drawn in both looks.
@@ -56,6 +61,8 @@ export interface DockTerrainRequestV7 {
   readonly snow: boolean;
   /** The live look (false: the classic look). */
   readonly live: boolean;
+  /** A Rift cell: the piece of the crack it shows. */
+  readonly riftPiece?: RiftPieceV7;
 }
 
 /**
@@ -127,6 +134,22 @@ export function dockTerrainSwatchV7(
     box: { kind: "CELL", rise },
     layers: [...dockTerrainGroundV7(request), piece],
   });
+  if (request.terrain === "RIFT" && request.riftPiece !== undefined) {
+    const subject = `TERRAIN:RIFT_${request.riftPiece}` as const;
+    return {
+      id: subject,
+      box: { kind: "CELL", rise: 0 },
+      layers: [
+        ...dockTerrainGroundV7({
+          ...request,
+          // A Rift is never Snow by rule, but in Ice Folk land its crack
+          // lies on Snow like the land round it.
+          snow: request.snow || request.faction === "ICE_FOLK",
+        }),
+        { kind: "SUBJECT", subject, at: { x: 0, y: 0 } },
+      ],
+    };
+  }
   if (request.terrain === "MOUNTAIN") {
     if (request.mined) {
       const mine = CHIBI_RANGE_MINED_MOUNTAIN_ART_ASSETS_V7[0];

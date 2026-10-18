@@ -12,7 +12,7 @@ import type {
 } from "./board-renderer-v7";
 import { factionColourV7 } from "./faction-colours-v7";
 import { factionForestPlanMemberV7 } from "./faction-forests-v7";
-import { factionGrassPlanMemberV7 } from "./faction-grass-v7";
+import { factionGrassPlanMemberV7, groundTerrainV7 } from "./faction-grass-v7";
 import { TILE_HEIGHT, TILE_WIDTH, type CameraState } from "./geometry";
 import {
   SNOW_EDGE_EAST_V7,
@@ -327,22 +327,20 @@ export interface VictoryTerrainSkinV7 {
  * The look a cell of `terrain` takes in `faction`'s skin: the members the
  * board plan gives a cell inside that faction's territory (the same
  * helpers: faction-grass-v7.ts, faction-forests-v7.ts, territoryGroundV7),
- * and Snow on every land cell of an Ice Folk win (water and the Rift are
- * never Snow). Humans (ORIGINAL) have the default look: no member at all.
+ * and Snow on every land cell of an Ice Folk win (water is never Snow; the
+ * Rift's crack lies on its ground, Snow too, bead pulp_wars-2yc.102).
+ * Humans (ORIGINAL) have the default look: no member at all.
  */
 export function victoryTerrainSkinV7(
   terrain: TerrainIdV7,
   faction: FactionIdV7,
 ): VictoryTerrainSkinV7 {
-  const ground =
-    terrain === "GRASS" || terrain === "FOREST" || terrain === "MOUNTAIN"
-      ? territoryGroundV7(faction)
-      : null;
+  const ground = groundTerrainV7(terrain) ? territoryGroundV7(faction) : null;
   return {
     ...(ground === null ? {} : { territoryGround: ground }),
     ...factionGrassPlanMemberV7(terrain, faction),
     ...factionForestPlanMemberV7(terrain, faction),
-    snow: faction === "ICE_FOLK" && !isWater(terrain) && terrain !== "RIFT",
+    snow: faction === "ICE_FOLK" && !isWater(terrain),
   };
 }
 

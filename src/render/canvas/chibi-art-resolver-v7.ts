@@ -17,6 +17,7 @@ import {
 import type { Point } from "./geometry";
 import { parseHexColourV7, recolourOwnerPixelsV7 } from "./owner-recolour-v7";
 import { noteLazyRasterV7, preloadedRasterV7 } from "./preloaded-rasters-v7";
+import { riftCrackPixelsV7 } from "./rift-presentation-v7";
 
 export type ChibiResolutionV7 =
   /** No usable raster: the subject is drawn in code (missing-art-v7.ts). */
@@ -256,6 +257,32 @@ export function createChibiArtResolverV7(input: {
     slices.set(url, result);
     return result;
   };
+  // The Rift (bead pulp_wars-2yc.102): a piece's crack without its Grass,
+  // by URL, so every caller draws it over the ground of its territory. A
+  // failed readback keeps the whole piece, Grass and all.
+  const cracks = new Map<string, CanvasImageSource>();
+  const riftCrack = (
+    url: string,
+    image: CanvasImageSource,
+    asset: ChibiArtAssetV7,
+    density: number,
+  ): CanvasImageSource => {
+    const cached = cracks.get(url);
+    if (cached !== undefined) return cached;
+    const width = asset.width * density;
+    const height = asset.height * density;
+    const pixels = input.environment.readPixels(image, width, height);
+    const crack =
+      (pixels === null
+        ? null
+        : input.environment.createSurface(
+            riftCrackPixelsV7(pixels, width, height),
+            width,
+            height,
+          )) ?? image;
+    cracks.set(url, crack);
+    return crack;
+  };
   // Fringed ground tiles by ground URL, profile variant and edge set (at
   // most CHIBI_FRINGE_VARIANTS x 15 per ground); null once readback failed.
   const fringed = new Map<string, CanvasImageSource | null>();
@@ -368,7 +395,9 @@ export function createChibiArtResolverV7(input: {
         return {
           kind: "READY",
           asset,
-          image: source.image,
+          image: asset.subject.startsWith("TERRAIN:RIFT_")
+            ? riftCrack(choice.url, source.image, asset, choice.density)
+            : source.image,
           density: choice.density,
           smoothing: choice.smoothing,
           cacheKey: baseKey,

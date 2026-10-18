@@ -73,6 +73,69 @@ export function riftPieceV7(
 }
 
 /**
+ * Bead pulp_wars-2yc.102: whether a pixel of a Rift piece is its Grass. The
+ * pieces are a crack over `chibi-grass-1` (the rift-strip derivation): every
+ * Grass pixel, and the grass Pixen redrew round the crack, is green (green
+ * at least 20 over red and 30 over blue), while the crack's brown rim, grey
+ * walls, black depth and hairline cracks never are.
+ */
+export function riftGrassPixelV7(red: number, green: number, blue: number) {
+  return green - red >= 20 && green - blue >= 30;
+}
+
+/**
+ * The crack of a Rift piece alone (bead pulp_wars-2yc.102): its Grass made
+ * transparent, so the crack lies over the ground of the territory it is in
+ * (a faction's ground, the default ground, Snow) like any land cell's. Only
+ * Grass reached from the piece's edge goes: a green pixel enclosed by the
+ * crack (a speck in the chasm) stays, so no hole shows the ground through.
+ * Pure: `pixels` is read, a new array is returned.
+ */
+export function riftCrackPixelsV7(
+  pixels: Uint8ClampedArray,
+  width: number,
+  height: number,
+): Uint8ClampedArray {
+  const output = new Uint8ClampedArray(pixels);
+  const count = width * height;
+  const grass = new Uint8Array(count);
+  for (let index = 0; index < count; index += 1)
+    grass[index] = riftGrassPixelV7(
+      pixels[index * 4] ?? 0,
+      pixels[index * 4 + 1] ?? 0,
+      pixels[index * 4 + 2] ?? 0,
+    )
+      ? 1
+      : 0;
+  // Flood the Grass from the edge, four-connected.
+  const open: number[] = [];
+  const reach = (index: number): void => {
+    if (grass[index] !== 1) return;
+    grass[index] = 2;
+    open.push(index);
+  };
+  for (let x = 0; x < width; x += 1) {
+    reach(x);
+    reach((height - 1) * width + x);
+  }
+  for (let y = 0; y < height; y += 1) {
+    reach(y * width);
+    reach(y * width + width - 1);
+  }
+  while (open.length > 0) {
+    const index = open.pop() as number;
+    const x = index % width;
+    if (x > 0) reach(index - 1);
+    if (x < width - 1) reach(index + 1);
+    if (index >= width) reach(index - width);
+    if (index + width < count) reach(index + width);
+  }
+  for (let index = 0; index < count; index += 1)
+    if (grass[index] === 2) output[index * 4 + 3] = 0;
+  return output;
+}
+
+/**
  * The LEGACY art set's code-drawn Rift (no legacy raster exists, as for the
  * Ice Folk Snow): over the cell's Grass, one piece of a single crack that
  * runs across the three cells, tapering to points a quarter cell inside the

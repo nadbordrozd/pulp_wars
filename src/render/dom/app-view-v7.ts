@@ -7624,6 +7624,19 @@ export class Ruleset7DomAppView {
               (tile.resource !== "UNKNOWN_RESOURCE" ? tile.resource : null) ??
               (tile.road ? "ROAD" : tile.terrain),
           );
+        const riftPiece =
+          tile.terrain === "RIFT"
+            ? riftPieceV7(tile.at, (at) => {
+                const near = view.board.tiles.find((candidate) =>
+                  same(candidate.at, at),
+                );
+                return near === undefined
+                  ? false
+                  : near.explored
+                    ? near.terrain === "RIFT"
+                    : null;
+              })
+            : null;
         const tileSubject: ArtSubjectV7 =
           site !== null
             ? site.subject
@@ -7636,17 +7649,8 @@ export class Ruleset7DomAppView {
                 )
               : tile.resource !== null && tile.resource !== "UNKNOWN_RESOURCE"
                 ? `RESOURCE:${tile.resource}`
-                : tile.terrain === "RIFT"
-                  ? `TERRAIN:RIFT_${riftPieceV7(tile.at, (at) => {
-                      const near = view.board.tiles.find((candidate) =>
-                        same(candidate.at, at),
-                      );
-                      return near === undefined
-                        ? false
-                        : near.explored
-                          ? near.terrain === "RIFT"
-                          : null;
-                    })}`
+                : riftPiece !== null
+                  ? `TERRAIN:RIFT_${riftPiece}`
                   : // The Undead territory ground (bead pulp_wars-xdh.2).
                     territoryTerrainSubjectV7(
                       `TERRAIN:${tile.terrain}`,
@@ -7673,6 +7677,8 @@ export class Ruleset7DomAppView {
                     faction: tileFaction,
                     snow: tile.snow === true,
                     live: !this.#classicLook,
+                    // The Rift on its territory's ground (2yc.102).
+                    ...(riftPiece === null ? {} : { riftPiece }),
                   },
                   tileSubject,
                 )

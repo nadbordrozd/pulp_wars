@@ -252,6 +252,13 @@ ordinary move choice lands there.
   Grass tile, so the three tiles join into one crack and every outer edge is
   the Grass tile's own edge ([art notes](../art/classes/terrain-tiles.md)).
   The renderer picks the piece from the Rift's neighbours.
+- **Ground** (bead `pulp_wars-2yc.102`; the user, 2026-10-18: "rift appears
+  always on grass. it should appear on whatever the native terrain is"):
+  the crack is drawn without the piece's Grass, over the ground of the
+  territory it lies in, as every land cell's: a faction's ground, the
+  default ground outside territory and in Human land, and Snow in Ice Folk
+  land. The Snow there is drawing only: a Rift is never Snow by rule
+  (section 4.3).
 - **LEGACY:** the Grass tile with a code-drawn crack of the same shape
   (dark chasm, ember line), the precedent of the Ice Folk Snow in LEGACY.
 - The selected-tile panel names the tile "Rift" and says only flyers stand

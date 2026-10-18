@@ -95,6 +95,13 @@ three cells long, horizontal or vertical, on inland ground. Its art is six
   pieces join without a seam and every outer edge is the grass tile's own
   seamless edge. The crack tapers to points 18 px inside the strip's two
   ends and keeps 4 px of plain grass at every outer edge.
+- **On the board** (bead `pulp_wars-2yc.102`): the art resolver cuts a
+  piece to its crack (`riftCrackPixelsV7`: every green pixel reached from
+  the piece's edge made transparent; a green speck inside the chasm stays),
+  and the crack is drawn over the cell's ground like any land cell's: the
+  faction ground of its territory, the default ground outside one, Snow in
+  Ice Folk land. The Gallery's Rift row has a column per faction, and the
+  tile dock shows the crack on the cell's ground.
 - **Neighbours.** A Rift never touches water and is at least three cells
   from another Rift, so only land meets its edges: Grass and the Forest
   ground (the same grass), and Mountains, whose rocky ground is cut back
