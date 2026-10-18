@@ -674,6 +674,19 @@ export class Ruleset7BrowserController {
     });
   }
 
+  /**
+   * Review tooling (the browser bug hunt, bead pulp_wars-2yc.93): the
+   * command the Normal AI would play for the human seat now, from the
+   * human's own view; null when the human cannot act. The game never calls
+   * it.
+   */
+  normalCommandForReview(commandsThisTurn: number): CommandV7 | null {
+    const snapshot = this.snapshot();
+    if (snapshot.view === null || snapshot.offeredCommands.length === 0)
+      return null;
+    return chooseNormalTurnCommandV7(snapshot.view, commandsThisTurn);
+  }
+
   setFastForward(active: boolean): void {
     if (this.#destroyed || this.#fastForward === active) return;
     this.#fastForward = active;
@@ -1219,7 +1232,15 @@ export class Ruleset7BrowserController {
   #emit(): void {
     if (this.#subscribers.size === 0) return;
     const snapshot = this.snapshot();
-    for (const subscriber of this.#subscribers) subscriber(snapshot);
+    for (const subscriber of this.#subscribers) {
+      try {
+        subscriber(snapshot);
+      } catch {
+        // Bead pulp_wars-2yc.93: a subscriber that throws (a render) never
+        // rejects an accepted command, never keeps the snapshot from the
+        // subscribers after it, and never leaves the controller busy.
+      }
+    }
   }
 }
 

@@ -326,6 +326,7 @@ import { cityAccessibleNameV7 } from "../city-names-presentation-v7";
 import { tileSiteDockV7 } from "../tile-site-presentation-v7";
 import { tileActionsAtV7, type TileActionPlanV7 } from "./tile-actions-v7";
 import { drawTileActionBadgesV7 } from "./tile-action-badges-v7";
+import { reportPresentationFailureV7 } from "../presentation-guard-v7";
 
 export interface BoardHostModelV7 {
   readonly matchInstanceId: string | number;
@@ -1238,7 +1239,20 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
           state.startedAt += now - state.pausedAt;
           state.pausedAt = null;
         }
-        const sample = cameraGlideAtV7(state.glide, now - state.startedAt);
+        let sample: ReturnType<typeof cameraGlideAtV7>;
+        try {
+          sample = cameraGlideAtV7(state.glide, now - state.startedAt);
+        } catch (error) {
+          // Bead pulp_wars-2yc.93: a glide that cannot be sampled lands on
+          // its target at once; the playback waiting for it goes on.
+          reportPresentationFailureV7("a camera glide", error);
+          this.#cameraPanFrame = null;
+          this.#cameraGlide = null;
+          this.#camera = target;
+          this.#draw();
+          resolve();
+          return;
+        }
         this.#camera = {
           ...this.#camera,
           offsetX: sample.offset.x,
@@ -1390,8 +1404,14 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
   }
 
   destroy(): void {
-    this.finishPresentations();
-    this.feedback.destroy();
+    // Bead pulp_wars-2yc.93: the canvas and its listeners always go, even
+    // when finishing a playback or the feedback throws.
+    try {
+      this.finishPresentations();
+      this.feedback.destroy();
+    } catch (error) {
+      reportPresentationFailureV7("taking down the board", error);
+    }
     this.#detach();
     this.#model = null;
     this.#planCache.length = 0;
@@ -2418,7 +2438,19 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     if (canvas.dataset.zoomStep !== step) canvas.dataset.zoomStep = step;
   }
 
+  /**
+   * Bead pulp_wars-2yc.93: a frame that throws is logged and skipped; the
+   * board, its input and the playback that asked for it go on.
+   */
   #draw(): void {
+    try {
+      this.#drawFrame();
+    } catch (error) {
+      reportPresentationFailureV7("the board's frame", error);
+    }
+  }
+
+  #drawFrame(): void {
     const model = this.#model;
     this.#syncArtSetDataset();
     this.#requestEffectArt();
@@ -3233,7 +3265,16 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     };
   }
 
+  /** Bead pulp_wars-2yc.93: like `#draw`, an overlay frame that throws is logged. */
   #drawSupportOverlay(): void {
+    try {
+      this.#drawSupportOverlayFrame();
+    } catch (error) {
+      reportPresentationFailureV7("the board's effects frame", error);
+    }
+  }
+
+  #drawSupportOverlayFrame(): void {
     const context = this.#effectsContext;
     const canvas = this.#effectsCanvas;
     if (context === null || canvas === null) return;
@@ -3692,18 +3733,19 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     if (this.#pointer?.id !== event.pointerId) return;
     const dx = next.x - this.#pointer.current.x;
     const dy = next.y - this.#pointer.current.y;
-    if (
-      Math.hypot(
-        next.x - this.#pointer.start.x,
-        next.y - this.#pointer.start.y,
-      ) > 6
-    ) {
+    // Bead pulp_wars-2yc.93: the pointer's place is kept before the board
+    // draws, so a drag never pans by more than the finger moved.
+    const travelled = Math.hypot(
+      next.x - this.#pointer.start.x,
+      next.y - this.#pointer.start.y,
+    );
+    this.#pointer.current = next;
+    if (travelled > 6) {
       this.#camera = this.#limitCamera(
         panCamera(this.#camera, { x: dx, y: dy }),
       );
       this.#draw();
     }
-    this.#pointer.current = next;
   };
   readonly #onPointerUp = (event: PointerEvent): void => {
     const pointer = this.#pointer;
@@ -4017,6 +4059,37 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
   }
 
   #detach(): void {
+    // Bead pulp_wars-2yc.93: the old canvas's listeners go first, whatever
+    // the cleanup after them does, so a board mounted again never has two
+    // sets of input handlers.
+    const mounted = this.#canvas;
+    if (mounted !== null) {
+      mounted.removeEventListener("pointerdown", this.#onPointerDown);
+      mounted.removeEventListener("pointermove", this.#onPointerMove);
+      mounted.removeEventListener("pointerup", this.#onPointerUp);
+      mounted.removeEventListener("pointercancel", this.#onPointerCancel);
+      mounted.removeEventListener("pointerleave", this.#onPointerLeave);
+      mounted.removeEventListener("wheel", this.#onWheel);
+      mounted.removeEventListener("keydown", this.#onKeyDown);
+    }
+    try {
+      this.#detachEffects();
+    } catch (error) {
+      reportPresentationFailureV7("detaching the board", error);
+    }
+    this.#resizeObserver?.disconnect();
+    this.#resizeObserver = null;
+    this.#canvas = null;
+    this.#context = null;
+    this.#effectsCanvas = null;
+    this.#effectsContext = null;
+    this.#description = null;
+    this.#callbacks = null;
+    this.#pointers.clear();
+    this.#detachPointerState();
+  }
+
+  #detachEffects(): void {
     this.#cancelCameraPan();
     if (this.#animationFrame !== null)
       this.#document.defaultView?.cancelAnimationFrame(this.#animationFrame);
@@ -4043,25 +4116,9 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     this.#victoryWave.reset();
     this.#victoryWaveHeard = null;
     this.#victoryFadeContext = null;
-    this.#resizeObserver?.disconnect();
-    this.#resizeObserver = null;
-    const canvas = this.#canvas;
-    if (canvas !== null) {
-      canvas.removeEventListener("pointerdown", this.#onPointerDown);
-      canvas.removeEventListener("pointermove", this.#onPointerMove);
-      canvas.removeEventListener("pointerup", this.#onPointerUp);
-      canvas.removeEventListener("pointercancel", this.#onPointerCancel);
-      canvas.removeEventListener("pointerleave", this.#onPointerLeave);
-      canvas.removeEventListener("wheel", this.#onWheel);
-      canvas.removeEventListener("keydown", this.#onKeyDown);
-    }
-    this.#canvas = null;
-    this.#context = null;
-    this.#effectsCanvas = null;
-    this.#effectsContext = null;
-    this.#description = null;
-    this.#callbacks = null;
-    this.#pointers.clear();
+  }
+
+  #detachPointerState(): void {
     this.#pointer = null;
     this.#hovered = null;
     this.#pinch = null;
@@ -5084,10 +5141,23 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
           started += now - pausedAt;
           pausedAt = null;
         }
-        const progress = Math.min(1, (now - started) / duration);
+        // Bead pulp_wars-2yc.93: a busy phone stamps a frame before the
+        // moment the step started (the frame began before the task that
+        // started it ran); such a frame shows the step's start, never a
+        // progress below 0.
+        const progress =
+          duration > 0
+            ? Math.max(0, Math.min(1, (now - started) / duration))
+            : 1;
         this.#overlayDrawn = false;
-        update(1 - Math.pow(1 - progress, 3));
-        this.#tickCombatJuice();
+        // Bead pulp_wars-2yc.93: a step's frame that throws is logged and
+        // the step still ends, so its playback never waits forever.
+        try {
+          update(1 - Math.pow(1 - progress, 3));
+          this.#tickCombatJuice();
+        } catch (error) {
+          reportPresentationFailureV7("a playback frame", error);
+        }
         if (progress >= 1) {
           this.#animationFrame = null;
           this.#animationResolve = null;

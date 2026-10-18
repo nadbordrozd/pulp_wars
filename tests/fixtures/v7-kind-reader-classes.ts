@@ -342,7 +342,7 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/render/canvas/victory-wave-v7.ts::frame": "SEAT",
   // The Human win's taller hop, and the gold tint of its crossfade.
   "src/render/canvas/victory-wave-v7.ts::hops": "SEAT",
-  "src/render/canvas/board-host-v7.ts::CanvasBoardHostV7.#draw": "SEAT",
+  "src/render/canvas/board-host-v7.ts::CanvasBoardHostV7.#drawFrame": "SEAT",
   "src/render/canvas/victory-wave-v7.ts::faction": "SEAT",
   "src/render/canvas/board-host-v7.ts::CanvasBoardHostV7.victoryWaveState":
     "SEAT",
@@ -390,7 +390,8 @@ export const KIND_READER_CLASSES_V7: Readonly<
   // unit (a Goblin city's Wolf Rider).
   "src/render/dom/app-view-v7.ts::rewardLabel": "SEAT",
   "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#reward": "SEAT",
-  "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#dispatch": "SEAT",
+  "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#dispatchUnguarded":
+    "SEAT",
   "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#layEggCards": "SEAT",
   "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#layEggPickPanel": "SEAT",
   "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#hatchButton": "SEAT",

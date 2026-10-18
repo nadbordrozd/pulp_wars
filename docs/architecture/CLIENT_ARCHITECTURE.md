@@ -1669,6 +1669,26 @@ and builds none for a screen-reader description while no command is
 offered, so each AI command builds one plan; the canvas is sized only when
 its container's size changes.
 
+A failure while the board draws or plays never locks the game
+(`pulp_wars-2yc.93`, the mobile freeze). `presentation-guard-v7.ts` logs
+each distinct failure once to the console and counts it. The board host's
+frame and effects overlay catch what they throw (and a drag records the
+finger's place before it draws, so a failing frame cannot make a swipe pan
+faster and faster); a playback frame or camera glide that throws still
+ends its step; a frame stamped before its step started shows the step's
+start. In the app view each queued boundary plays inside a guard (a throw
+skips it and the playback queue's tail never rejects), a playback that
+never ends is finished by the board after `PLAYBACK_WATCHDOG_MS_V7` (not
+counted while Settings pauses it or the page is hidden), a command whose
+presentation throws releases its locks and lets the AI play on, and taking
+the board down (Save & quit) always detaches its canvas listeners. The
+controller isolates snapshot subscribers, so a render that throws never
+rejects an accepted command. The "Game paused" panel of a failed AI turn
+offers Try again and Main menu. The browser bug hunt
+(`scripts/browser-bug-hunt-v7.ts`) plays matches on a phone viewport
+through the real interface to look for such freezes; it plays matches, so
+it runs only when the user asks for simulations.
+
 Canvas 2D responsibilities:
 
 - camera pan/zoom, device-pixel-ratio backing size, grid projection, stable draw

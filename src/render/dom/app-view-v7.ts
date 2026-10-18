@@ -976,6 +976,10 @@ import {
 } from "./sound-panel-v7";
 import { CoinFlightLayerV7 } from "./coin-flight-layer-v7";
 import { feedbackPlanV7 } from "../feedback-plan-v7";
+import {
+  guardPresentationV7,
+  reportPresentationFailureV7,
+} from "../presentation-guard-v7";
 
 export {
   AT_SEA_MOVE_TEXT_V7,
@@ -1562,7 +1566,13 @@ interface BoardArtWaitV7 {
 const FIRST_STEP_OUT_OF_MOVES_MS_V7 = 6_000;
 /** The longest a level-up's reward dialog waits for its animation. */
 const REWARD_HOLD_LIMIT_MS_V7 = 2_500;
-/** How far into the level-up ring the reward dialog opens. */
+
+/**
+ * Bead pulp_wars-2yc.93: the longest one boundary's playback may take
+ * before the board is told to finish it (the longest real one, a long
+ * Move with its camera glide and juice, takes a few seconds).
+ */
+export const PLAYBACK_WATCHDOG_MS_V7 = 15_000; /** How far into the level-up ring the reward dialog opens. */
 const REWARD_AFTER_LEVEL_UP_MS_V7 = 380;
 /**
  * How far a pointer may move and still be a tap that closes the technology
@@ -1574,6 +1584,16 @@ const TECH_TAP_SLOP_V7 = 7;
 interface FeedbackTicketsV7 {
   readonly coins: number;
   readonly board: number | null;
+}
+
+/** An accepted boundary waiting for the board to play it. */
+interface QueuedBoundaryV7 {
+  readonly matchInstance: number;
+  readonly boundary: Ruleset7AcceptedBoundary;
+  /** Sounds heard once the board has played the boundary. */
+  readonly endSounds: readonly SoundCueV1[];
+  /** Bead pulp_wars-2yc.29: the boundary's held feedback animations. */
+  readonly feedback: FeedbackTicketsV7;
 }
 
 /** When a launch's coins land and its level-up shows, in ms from now. */
@@ -1896,14 +1916,7 @@ export class Ruleset7DomAppView {
   #toastSequence = 0;
   #matchInstance = 0;
   #presentationActive = false;
-  #presentationQueue: {
-    readonly matchInstance: number;
-    readonly boundary: Ruleset7AcceptedBoundary;
-    /** Sounds heard once the board has played the boundary. */
-    readonly endSounds: readonly SoundCueV1[];
-    /** Bead pulp_wars-2yc.29: the boundary's held feedback animations. */
-    readonly feedback: FeedbackTicketsV7;
-  }[] = [];
+  #presentationQueue: QueuedBoundaryV7[] = [];
   /**
    * Bead pulp_wars-2yc.29: the Coins that fly to the counter
    * (coin-flight-layer-v7.ts); the counter shows the true balance less the
@@ -2167,7 +2180,16 @@ export class Ruleset7DomAppView {
       passive: true,
     });
     this.#unsubscribeAcceptedBoundary = controller.subscribeAcceptedBoundary(
-      (boundary) => this.#queueBoundary(boundary),
+      (boundary) => {
+        try {
+          this.#queueBoundary(boundary);
+        } catch (error) {
+          // Bead pulp_wars-2yc.93: the controller swallows what an observer
+          // throws; the playback queue still drains, so its lock ends.
+          reportPresentationFailureV7("queueing a boundary", error);
+          if (!this.#humanDispatchPending) this.#drainPresentationQueue();
+        }
+      },
     );
     // Calm playback (bead pulp_wars-2yc.59): the AI waits for the board.
     controller.setAiPacingGate?.(this.#aiPacingGate);
@@ -2192,13 +2214,17 @@ export class Ruleset7DomAppView {
       )
         this.#holdVictoryDialog(snapshot.view);
       if (this.#humanDispatchPending) return;
-      if (
-        prior.ai.active &&
-        snapshot.ai.active &&
-        prior.view?.commandIndex === snapshot.view?.commandIndex
-      )
-        this.#patchAiProgress();
-      else this.#render();
+      // Bead pulp_wars-2yc.93: a render that throws is logged here, never
+      // thrown into the controller's command.
+      guardPresentationV7("the render of a game update", () => {
+        if (
+          prior.ai.active &&
+          snapshot.ai.active &&
+          prior.view?.commandIndex === snapshot.view?.commandIndex
+        )
+          this.#patchAiProgress();
+        else this.#render();
+      });
     });
   }
 
@@ -2246,7 +2272,9 @@ export class Ruleset7DomAppView {
     this.#titleScene?.destroy();
     this.#technologyViewport.detach();
     this.#releaseMatchGestureGuard();
-    this.#boardHost.destroy();
+    guardPresentationV7("taking down the board", () =>
+      this.#boardHost.destroy(),
+    );
     this.#root.replaceChildren();
   }
 
@@ -2273,6 +2301,45 @@ export class Ruleset7DomAppView {
   /** The game's sound: its preference and the log of what it was asked. */
   get audio(): GameAudioV1 {
     return this.#audio;
+  }
+
+  /**
+   * Review tooling (the browser bug hunt, bead pulp_wars-2yc.93): the board
+   * host, to find a tile's place on screen. The game never calls it.
+   */
+  get boardHostForReview(): BoardHostV7 {
+    return this.#boardHost;
+  }
+
+  /**
+   * Review tooling (the browser bug hunt, bead pulp_wars-2yc.93): sends an
+   * offered command the way a dock or dialog button does, with the same
+   * locks and playback. The game never calls it.
+   */
+  dispatchForReview(command: CommandV7): Promise<boolean> {
+    return this.#dispatch(command);
+  }
+
+  /**
+   * Review tooling (the browser bug hunt, bead pulp_wars-2yc.93): what holds
+   * the interface busy, read without changing it.
+   */
+  busyStateForReview(): {
+    readonly presentationActive: boolean;
+    readonly presentationQueue: number;
+    readonly humanDispatchPending: boolean;
+    readonly humanDispatchSettling: boolean;
+    readonly transitioning: boolean;
+    readonly aiActive: boolean;
+  } {
+    return {
+      presentationActive: this.#presentationActive,
+      presentationQueue: this.#presentationQueue.length,
+      humanDispatchPending: this.#humanDispatchPending,
+      humanDispatchSettling: this.#humanDispatchSettling,
+      transitioning: this.#snapshot.transitioning,
+      aiActive: this.#snapshot.ai.active,
+    };
   }
 
   /**
@@ -2708,7 +2775,12 @@ export class Ruleset7DomAppView {
       this.#renderStableMatch(this.#snapshot.view);
       return;
     }
-    if (this.#matchRoot !== null) this.#boardHost.destroy();
+    // Bead pulp_wars-2yc.93: leaving the match (Save & quit) never fails
+    // on the board it takes down.
+    if (this.#matchRoot !== null)
+      guardPresentationV7("taking down the board", () =>
+        this.#boardHost.destroy(),
+      );
     this.#releaseMatchGestureGuard();
     this.#matchShell = null;
     this.#matchRoot = null;
@@ -11257,7 +11329,34 @@ export class Ruleset7DomAppView {
       );
       panel.append(details);
     }
+    // Bead pulp_wars-2yc.93: the pause is never a dead end. Try again
+    // plays on from the save; Main menu saves and leaves.
+    const answers = el(this.#document, "div", "button-row");
+    const retry = button(
+      this.#document,
+      "Try again",
+      "error-retry",
+      "primary-action",
+    );
+    retry.onclick = () => void this.#resumeMatch();
+    const leave = button(this.#document, "Main menu", "error-main-menu");
+    leave.onclick = () => void this.#leaveErrorToMenu();
+    answers.append(retry, leave);
+    panel.append(answers);
     return panel;
+  }
+
+  /** From the "Game paused" panel: the match is saved and the menu opens. */
+  async #leaveErrorToMenu(): Promise<void> {
+    this.#cancelPresentations();
+    const resumed = await this.#controller.resume();
+    if (this.#destroyed) return;
+    if (!resumed) {
+      this.#error = "Couldn't save the game. Try again.";
+      this.#render();
+      return;
+    }
+    await this.#returnToMenu();
   }
 
   #open(screen: ScreenV7, returnAction: string | null = null): void {
@@ -11471,6 +11570,34 @@ export class Ruleset7DomAppView {
   }
   /** Resolves true when the command was accepted and its presentation ran. */
   async #dispatch(command: CommandV7): Promise<boolean> {
+    try {
+      return await this.#dispatchUnguarded(command);
+    } catch (error) {
+      // Bead pulp_wars-2yc.93: whatever threw after the command was sent
+      // (a render, a playback), the locks it took are released, the
+      // interface is drawn again and a turn it ended is played on.
+      reportPresentationFailureV7("a command's presentation", error);
+      if (this.#destroyed) return false;
+      this.#humanDispatchPending = false;
+      this.#humanDispatchSettling = false;
+      if (this.#presentationQueue.length === 0)
+        this.#presentationActive = false;
+      guardPresentationV7("the render after a failed command", () =>
+        this.#render(),
+      );
+      // A boundary queued while the command was sent still plays, and its
+      // end releases the lock.
+      if (this.#presentationQueue.length > 0) this.#drainPresentationQueue();
+      try {
+        await this.#progressAi();
+      } catch (aiError) {
+        reportPresentationFailureV7("the AI after a failed command", aiError);
+      }
+      return false;
+    }
+  }
+
+  async #dispatchUnguarded(command: CommandV7): Promise<boolean> {
     if (this.#localBusy()) return false;
     // The tutorial (bead pulp_wars-0yxy): only the step's command goes to
     // the engine; anything else is refused here.
@@ -11874,52 +12001,119 @@ export class Ruleset7DomAppView {
         this.#releaseAiPacing();
         if (next === undefined) break;
         if (next.matchInstance !== this.#matchInstance) continue;
-        await this.#boardHost.presentBoundary?.(
-          next.boundary.beforeView,
-          next.boundary.afterView,
-          next.boundary.playerEvents,
-          // Calm playback (bead pulp_wars-2yc.49): the board frames an
-          // event with the queued ones near it and hurries a long queue.
-          {
-            upcoming: this.#presentationQueue
-              .filter((queued) => queued.matchInstance === next.matchInstance)
-              .map((queued) => ({
-                before: queued.boundary.beforeView,
-                after: queued.boundary.afterView,
-                events: queued.boundary.playerEvents,
-              })),
-            // Bead pulp_wars-2yc.62: while the next boundary of this match
-            // waits, the board keeps this result instead of flashing the
-            // game's latest view between the two.
-            holdResult: () =>
-              !this.#destroyed &&
-              !this.#snapshot.ai.fastForward &&
-              this.#presentationQueue[0]?.matchInstance === next.matchInstance,
-          },
-        );
-        if (!this.#destroyed && next.matchInstance === this.#matchInstance)
-          // The boundary has played: its coins and population leave their
-          // tiles, and the coin and level-up sounds wait for them to land.
-          this.#audio.playCues(
-            feedbackSoundCuesV7(
-              next.endSounds,
-              this.#launchFeedback(next.feedback),
-            ),
+        // Bead pulp_wars-2yc.93: a boundary whose playback throws is logged
+        // and skipped (the board shows the game's view); the queue, the
+        // locks and the AI go on. Before, the rejected tail held the
+        // interface busy for good.
+        const disarm = this.#armPlaybackWatchdog();
+        try {
+          await this.#boardHost.presentBoundary?.(
+            next.boundary.beforeView,
+            next.boundary.afterView,
+            next.boundary.playerEvents,
+            // Calm playback (bead pulp_wars-2yc.49): the board frames an
+            // event with the queued ones near it and hurries a long queue.
+            {
+              upcoming: this.#presentationQueue
+                .filter((queued) => queued.matchInstance === next.matchInstance)
+                .map((queued) => ({
+                  before: queued.boundary.beforeView,
+                  after: queued.boundary.afterView,
+                  events: queued.boundary.playerEvents,
+                })),
+              // Bead pulp_wars-2yc.62: while the next boundary of this
+              // match waits, the board keeps this result instead of
+              // flashing the game's latest view between the two.
+              holdResult: () =>
+                !this.#destroyed &&
+                !this.#snapshot.ai.fastForward &&
+                this.#presentationQueue[0]?.matchInstance ===
+                  next.matchInstance,
+            },
           );
-        // Its achievement notices may open now (bead pulp_wars-2yc.84).
-        if (
-          this.#releaseAchievementNotices(next.boundary) &&
-          !this.#destroyed &&
-          this.#presentationQueue.length > 0
-        )
-          this.#render();
+          if (!this.#destroyed && next.matchInstance === this.#matchInstance)
+            // The boundary has played: its coins and population leave
+            // their tiles, and the coin and level-up sounds wait for them
+            // to land.
+            this.#audio.playCues(
+              feedbackSoundCuesV7(
+                next.endSounds,
+                this.#launchFeedback(next.feedback),
+              ),
+            );
+          // Its achievement notices may open now (bead pulp_wars-2yc.84).
+          if (
+            this.#releaseAchievementNotices(next.boundary) &&
+            !this.#destroyed &&
+            this.#presentationQueue.length > 0
+          )
+            this.#render();
+        } catch (error) {
+          reportPresentationFailureV7("a boundary's playback", error);
+          guardPresentationV7("finishing a failed playback", () =>
+            this.#boardHost.finishPresentations?.(),
+          );
+          this.#releaseAchievementNotices(next.boundary);
+        } finally {
+          disarm();
+        }
       }
       if (this.#presentationQueue.length === 0) {
         this.#presentationActive = false;
-        if (!this.#humanDispatchSettling) this.#render();
+        if (!this.#humanDispatchSettling)
+          guardPresentationV7("the render after playback", () =>
+            this.#render(),
+          );
       }
     });
+    // The tail never rejects, so a later drain always runs.
+    this.#presentationTail = this.#presentationTail.catch((error: unknown) => {
+      reportPresentationFailureV7("the playback queue", error);
+      if (this.#presentationQueue.length === 0)
+        this.#presentationActive = false;
+    });
   }
+
+  /**
+   * Bead pulp_wars-2yc.93: a boundary's playback that never ends (a frame
+   * loop that stopped) is finished by the board after
+   * PLAYBACK_WATCHDOG_MS_V7, so the queue and its lock go on. The wait
+   * starts again while the playback is paused on purpose (the Settings
+   * screen) or the page is hidden (no frames are drawn). Returns the
+   * function that disarms it.
+   */
+  #armPlaybackWatchdog(): () => void {
+    const browser = this.#document.defaultView;
+    if (browser === null || typeof browser.setTimeout !== "function")
+      return () => {};
+    let timer: number | null = null;
+    const arm = (): void => {
+      timer = browser.setTimeout(() => {
+        timer = null;
+        if (this.#destroyed) return;
+        if (
+          this.#screen === "SETTINGS" ||
+          this.#document.visibilityState === "hidden"
+        ) {
+          arm();
+          return;
+        }
+        reportPresentationFailureV7(
+          "a boundary's playback",
+          new Error(`it did not end in ${PLAYBACK_WATCHDOG_MS_V7} ms`),
+        );
+        guardPresentationV7("finishing a stuck playback", () =>
+          this.#boardHost.finishPresentations?.(),
+        );
+      }, PLAYBACK_WATCHDOG_MS_V7);
+    };
+    arm();
+    return () => {
+      if (timer !== null) browser.clearTimeout(timer);
+      timer = null;
+    };
+  }
+
   /**
    * Bead pulp_wars-2yc.84: the notices held for `boundary` (every held one
    * without it) may open; true when one was held.
@@ -11943,7 +12137,9 @@ export class Ruleset7DomAppView {
     this.#releaseAchievementNotices();
     this.#presentationQueue = [];
     this.#presentationActive = false;
-    this.#boardHost.finishPresentations?.();
+    guardPresentationV7("finishing the board's playback", () =>
+      this.#boardHost.finishPresentations?.(),
+    );
     this.#finishFeedback();
     this.#releaseAiPacing();
   }
