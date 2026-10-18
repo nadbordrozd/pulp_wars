@@ -541,7 +541,7 @@ describe("W1, Armoured on every damage source but the crush", () => {
       factions: ["ICE_FOLK", "DWARF"],
       technologies: [NAVAL_TECHS_V7, DWARF_NAVAL_TECHS_V7],
       units: [{ seat: 1, role: "PATROL_BOAT", at: { x: 1, y: 5 } }],
-      ice: [{ at: { x: 1, y: 5 }, turnsLeft: 5 }],
+      ice: [{ at: { x: 1, y: 5 } }],
     });
     const launch = navalUnitAtV7(state, { x: 1, y: 5 });
     const first = acceptV7(state, 0, { kind: "END_TURN" });

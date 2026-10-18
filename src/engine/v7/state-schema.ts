@@ -4,7 +4,6 @@ import {
   BARRICADE_CAP_V7,
   BARRICADE_HP_V7,
   FORCE_FIELD_SHIELD_V7,
-  GLACIER_ICE_TURNS_V7,
   GINGERBREAD_MAN_VARIANT_V7,
   GROWTH_HP_V7,
   MIND_CONTROL_COOLDOWN_TURNS_V7,
@@ -24,6 +23,7 @@ import {
   SUMMONED_MECHANICAL_ROLES_V7,
   summonedUnitRoleMechanicsV7,
   summonedUnitRoleRuleV7,
+  technologyCapabilitiesV7,
   unitRoleMechanicsV7,
   unitRoleRuleV7,
   cityRewardCandidatesV7,
@@ -626,13 +626,10 @@ function parseTile(input: unknown): TileStateV7 | null {
       (input.biome === null) ||
     !resourceMatchesTerrain(resource, terrain) ||
     !basicImprovementMatchesTerrain(improvement, terrain) ||
+    // The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 2.6): an
+    // Ice Folk building may stand on ice (`iceValid` checks the ice).
     (input.biome === null &&
-      (input.road ||
-        input.fieldDefense ||
-        input.site !== null ||
-        (improvement !== null &&
-          improvement !== "PORT" &&
-          improvement !== "SHIPYARD"))) ||
+      (input.road || input.fieldDefense || input.site !== null)) ||
     (input.site !== null &&
       (terrain !== "GRASS" ||
         resource !== null ||
@@ -2666,28 +2663,29 @@ function parseSortedCoords(input: unknown): readonly CoordV7[] | null {
 /**
  * The naval branch, the frozen sea
  * (docs/product/RULESET_7_NAVAL_BRANCH.md section 8.3): the ice list,
- * strictly ascending by (y, x) (so no tile holds two), each entry with a
- * `turnsLeft` from 0 to `GLACIER_ICE_TURNS_V7`. The tiles and owners are
- * checked with the cross references (`iceValid`).
+ * strictly ascending by (y, x) (so no tile holds two). The frozen sea
+ * redesign (RULESET_7_ICE_REDESIGN.md section 2.3): each entry is
+ * `{ at, ownerId, cracked }` (no countdown: `turnsLeft` is refused). The
+ * tiles, owners, and cracks are checked with the cross references
+ * (`iceValid`).
  */
 function parseIce(input: unknown): readonly IceTileV7[] | null {
   if (!isDenseArrayV7(input)) return null;
   const values: IceTileV7[] = [];
   for (const candidate of input) {
-    if (!hasExactKeysV7(candidate, ["at", "ownerId", "turnsLeft"])) return null;
+    if (!hasExactKeysV7(candidate, ["at", "cracked", "ownerId"])) return null;
     const at = parseCoordV7(candidate.at);
     const ownerId = parsePlayerIdV7(candidate.ownerId);
-    const turnsLeft = candidate.turnsLeft;
+    const cracked = candidate.cracked;
     if (
       at === null ||
       ownerId === null ||
-      !isNonNegativeSafeIntegerV7(turnsLeft) ||
-      turnsLeft > GLACIER_ICE_TURNS_V7 ||
+      typeof cracked !== "boolean" ||
       (values.length > 0 &&
         compareCoordsV7((values.at(-1) as IceTileV7).at, at) >= 0)
     )
       return null;
-    values.push({ at, ownerId, turnsLeft });
+    values.push({ at, ownerId, cracked });
   }
   return values;
 }
@@ -2695,24 +2693,42 @@ function parseIce(input: unknown): readonly IceTileV7[] | null {
 /**
  * The frozen sea (section 8.3) cross references: the list is empty in a
  * match without an Ice Folk seat; every entry lies on a water tile of the
- * board that is not a dock and is owned by a player of the match; no unit of
- * the Ice Folk kind is afloat, and no Ice Folk seat owns a ship.
+ * board and is owned by a player of the match; no unit of the Ice Folk kind
+ * is afloat, and no Ice Folk seat owns a ship. The frozen sea redesign
+ * (RULESET_7_ICE_REDESIGN.md sections 2.3 and 2.6): an entry is `cracked`
+ * only when its owner has thick ice; a building on water stands on ice,
+ * except a Port or Shipyard on open Shallow Water.
  */
 function iceValid(
   value: CrossInput,
   playerById: ReadonlyMap<PlayerStateV7["id"], PlayerStateV7>,
   kindOf: (unit: UnitStateV7) => FactionIdV7 | undefined,
 ): boolean {
+  const iceKeys = new Set(value.ice.map((entry) => key(entry.at)));
+  for (const tile of value.board.tiles)
+    if (
+      tile.biome === null &&
+      tile.improvement !== null &&
+      !iceKeys.has(key(tile.at)) &&
+      !(
+        (tile.improvement === "PORT" || tile.improvement === "SHIPYARD") &&
+        tile.terrain === "SHALLOW_WATER"
+      )
+    )
+      return false;
   if (!value.setup.factions.includes("ICE_FOLK")) return value.ice.length === 0;
   for (const entry of value.ice) {
     const tile = tileAt(value.board, entry.at);
+    const owner = playerById.get(entry.ownerId);
     if (
       tile === undefined ||
       tile.biome !== null ||
       (tile.terrain !== "SHALLOW_WATER" && tile.terrain !== "DEEP_WATER") ||
-      tile.improvement === "PORT" ||
-      tile.improvement === "SHIPYARD" ||
-      !playerById.has(entry.ownerId)
+      owner === undefined ||
+      (entry.cracked &&
+        (owner.status === "ELIMINATED" ||
+          !technologyCapabilitiesV7(owner.researchedTechs, owner.faction)
+            .thickIce))
     )
       return false;
   }
@@ -3109,6 +3125,7 @@ function validateCrossReferences(value: CrossInput): boolean {
       contributions,
       value.setup,
       value.humanPlayerId,
+      value.ice,
     )
   )
     return false;
@@ -3861,8 +3878,18 @@ function populationLedgerValid(
   contributions: readonly PopulationContributionV7[],
   setup: MatchSetupV7,
   humanPlayerId: PlayerStateV7["id"],
+  ice: readonly IceTileV7[],
 ): boolean {
-  const roadGraph = { board, cities, players, units, setup, humanPlayerId };
+  const roadGraph = {
+    board,
+    cities,
+    players,
+    units,
+    setup,
+    humanPlayerId,
+    ice,
+  };
+  const iceKeys = new Set(ice.map((entry) => key(entry.at)));
   const cityById = new Map(cities.map((city) => [city.id, city]));
   const liveByCoord = new Map<string, PopulationContributionV7>();
   const permanent = new Set<string>();
@@ -3886,7 +3913,12 @@ function populationLedgerValid(
                 (units.some(
                   (unit) =>
                     unit.hp > 0 &&
-                    isAfloatFormV7(unit.form) &&
+                    // The frozen sea redesign (section 2.6): a dock on ice
+                    // is blockaded by a land-form unit, one on water by a
+                    // unit afloat.
+                    (iceKeys.has(key(tile.at))
+                      ? unit.form === "LAND"
+                      : isAfloatFormV7(unit.form)) &&
                     sameCoordV7(unit.at, tile.at) &&
                     unit.ownerId !== city.ownerId &&
                     !cooperativeAlliesV7(
@@ -3959,7 +3991,9 @@ function populationLedgerValid(
     if (
       tile.territoryCityId === null ||
       tile.improvement === null ||
-      ["FARM", "LUMBER_CAMP", "MINE", "PORT"].includes(tile.improvement)
+      ["FARM", "LUMBER_CAMP", "MINE", "PORT", "FISHING_HOLE"].includes(
+        tile.improvement,
+      )
     )
       continue;
     const item = `${tile.territoryCityId}:${tile.improvement}`;
@@ -4047,7 +4081,14 @@ function resourceUnderImprovementAllowed(
     case "LUMBER_CAMP":
       return resource === null;
     default:
-      return resource === null || resource === "FERTILE_GROUND";
+      // The frozen sea redesign (section 2.6): a building on ice may keep a
+      // resource its builder could not see (Fish or Pearls, on water only).
+      return (
+        resource === null ||
+        resource === "FERTILE_GROUND" ||
+        resource === "FISH" ||
+        resource === "PEARLS"
+      );
   }
 }
 function resourceMatchesTerrain(
@@ -4077,7 +4118,11 @@ function basicImprovementMatchesTerrain(
       ? terrain === "FOREST"
       : improvement === "MINE"
         ? terrain === "MOUNTAIN"
-        : improvement === "PORT" || improvement === "SHIPYARD"
-          ? terrain === "SHALLOW_WATER"
+        : // The frozen sea redesign (section 2.6): an Ice Harbour may stand
+          // on Deep ice (`iceValid`), a Fishing Hole only on ice.
+          improvement === "PORT" ||
+            improvement === "SHIPYARD" ||
+            improvement === "FISHING_HOLE"
+          ? terrain === "SHALLOW_WATER" || terrain === "DEEP_WATER"
           : true;
 }

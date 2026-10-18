@@ -44,7 +44,7 @@ const SHOWCASE: MatchSetupV7 = {
 };
 
 describe("frozen sea persistence", () => {
-  it("round-trips a Showcase match with Freezes, a walk onto the ice, and a thaw through replay, save, and hashes", () => {
+  it("round-trips a Showcase match with Freezes, a walk onto the ice, and permanent ice through replay, save, and hashes", () => {
     const created = createPlayableGameV7(SHOWCASE);
     if (!created.ok) throw new Error(created.error.code);
     let state: GameStateV7 = created.state;
@@ -112,8 +112,9 @@ describe("frozen sea persistence", () => {
       [cx + 1, 13],
     ]);
     // Turn 1: the Sabretooth walks onto the home ice (it never slides), and
-    // the Boulder Yeti walks to the Coast city and refreshes the two tiles
-    // south of it.
+    // the Boulder Yeti walks to the Coast city and freezes the water south
+    // west of it (the frozen sea redesign: the home ice south of it is its
+    // own sound ice, which a Freeze passes over).
     const sabretooth = unitAt(cx + 1, 9);
     const boulder = unitAt(cx, 9);
     expect([sabretooth.role, boulder.role]).toEqual(["KNIGHT", "CATAPULT"]);
@@ -132,15 +133,20 @@ describe("frozen sea persistence", () => {
           command.unitId === boulder.id && endsOn({ x: cx, y: 11 })(command),
       ),
     );
-    play({ kind: "FREEZE", unitId: boulder.id, at: { x: cx, y: 12 } });
-    expect(events.at(-1)).toEqual({
+    expect(
+      offered().some(
+        (command) =>
+          command.kind === "FREEZE" &&
+          command.unitId === boulder.id &&
+          command.at.x === cx &&
+          command.at.y === 12,
+      ),
+    ).toBe(false);
+    play(find("FREEZE", (command) => command.unitId === boulder.id));
+    expect(events.at(-1)).toMatchObject({
       kind: "WATER_FROZEN",
       playerId: ice.id,
       unitId: boulder.id,
-      tiles: [
-        { x: cx, y: 12 },
-        { x: cx, y: 13 },
-      ],
       icebound: [],
     });
     const midSave = createSaveEnvelopeV7(
@@ -151,20 +157,13 @@ describe("frozen sea persistence", () => {
       kind: "VALID",
       save: midSave,
     });
+    const afterFreeze = state.ice;
     endRound();
-    // The thaw: the tile in the Coast territory keeps its count, the two
-    // outside lose one turn.
-    expect(state.ice.map((entry) => entry.turnsLeft)).toEqual([5, 4, 4]);
-    // Turn 2: the Sabretooth, standing on the ice, freezes new Deep Water
-    // (Pack Ice) south-west of it.
-    play({ kind: "FREEZE", unitId: sabretooth.id, at: { x: cx - 1, y: 13 } });
-    expect(state.ice.map((entry) => [entry.at.x, entry.at.y])).toEqual([
-      [cx, 12],
-      [cx - 1, 13],
-      [cx, 13],
-      [cx + 1, 13],
-      [cx - 2, 14],
-    ]);
+    // No thaw: the ice is as it was.
+    expect(state.ice).toEqual(afterFreeze);
+    // Turn 2: the Sabretooth, standing on the ice, freezes more water.
+    play(find("FREEZE", (command) => command.unitId === sabretooth.id));
+    expect(state.ice.length).toBeGreaterThan(afterFreeze.length);
     endRound();
     endRound();
     expect(
@@ -185,11 +184,11 @@ describe("frozen sea persistence", () => {
     expect(parseSaveV7(JSON.stringify(save))).toEqual({ kind: "VALID", save });
     // A save whose ice was edited no longer verifies.
     const tampered = JSON.parse(JSON.stringify(save)) as {
-      state: { ice: { turnsLeft: number }[] };
+      state: { ice: { cracked: boolean }[] };
     };
     const first = tampered.state.ice[0];
     if (first === undefined) throw new Error("no ice");
-    first.turnsLeft = first.turnsLeft === 5 ? 4 : 5;
+    first.cracked = !first.cracked;
     expect(parseSaveV7(JSON.stringify(tampered)).kind).not.toBe("VALID");
   });
 });

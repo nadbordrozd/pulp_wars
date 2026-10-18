@@ -54,8 +54,13 @@ describe("Ruleset 7 research prompts", () => {
       data.ore,
       data.fish,
     ].flatMap((at) => tileResearchPromptsV7(data.view, at));
+    // The frozen sea redesign (`pulp_wars-5ti.25`): the Ice Folk Fishing
+    // Hole is no resource of a tile and has no prompt.
+    const basics = Object.keys(BASIC_ECONOMIC_ACTIONS_V7).filter(
+      (kind) => kind !== "BUILD_FISHING_HOLE",
+    );
     expect(prompts.map((prompt) => prompt.command).sort()).toEqual(
-      Object.keys(BASIC_ECONOMIC_ACTIONS_V7).sort(),
+      [...basics].sort(),
     );
     for (const prompt of prompts)
       expect(prompt.tech).toBe(
@@ -64,7 +69,7 @@ describe("Ruleset 7 research prompts", () => {
         ].technology,
       );
     expect([...RESEARCH_PROMPT_COMMANDS_V7].sort()).toEqual(
-      [...Object.keys(BASIC_ECONOMIC_ACTIONS_V7), "GATHER_PEARLS"].sort(),
+      [...basics, "GATHER_PEARLS"].sort(),
     );
   });
 

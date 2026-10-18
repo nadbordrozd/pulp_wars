@@ -130,8 +130,8 @@ function frozen(state: GameStateV7): GameStateV7 {
   const ice = [];
   for (let y = 2; y <= 5; y += 1)
     for (const x of [5, 6])
-      // Outside its owner's borders ice melts: a few turns are left.
-      ice.push({ at: { x, y }, ownerId, turnsLeft: 3 });
+      // The frozen sea redesign: ice is permanent.
+      ice.push({ at: { x, y }, ownerId, cracked: false });
   return { ...state, ice };
 }
 

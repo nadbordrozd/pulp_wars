@@ -78,7 +78,7 @@ const scene = (
     factions: [faction, "ICE_FOLK"],
     technologies: [ALL, technologies],
     units,
-    ice: ice.map((at): FrozenIceV7 => ({ at, seat: 1, turnsLeft: 3 })),
+    ice: ice.map((at): FrozenIceV7 => ({ at, seat: 1 })),
   });
 const commandsOf = (state: GameStateV7, at: CoordV7) => {
   const unitId = navalUnitAtV7(state, at).id;
@@ -351,12 +351,13 @@ describe("a land-form unit is placed on ice like on land (section 8.3)", () => {
     );
   });
 
-  it("no Port is built on ice", () => {
+  it("no Port of another faction is built on ice (the redesign: only an Ice Folk Ice Harbour)", () => {
     const build = (ice: readonly CoordV7[]) =>
       frozenArenaV7({
+        factions: ["ORIGINAL", "ICE_FOLK"],
         ports: [false, true],
         units: [],
-        ice: ice.map((at) => ({ at })),
+        ice: ice.map((at) => ({ at, seat: 1 as const })),
       });
     const port: CommandV7 = { kind: "BUILD_PORT", at: { x: 5, y: 3 } };
     const open = build([]);

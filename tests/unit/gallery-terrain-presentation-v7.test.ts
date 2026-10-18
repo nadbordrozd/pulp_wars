@@ -322,9 +322,7 @@ describe("Gallery terrain sample boards", () => {
       ).toBe(false);
     const ice = buildGalleryTerrainSampleV7("ICE", "ICE_FOLK");
     expect(ice?.ice.length).toBeGreaterThan(0);
-    // Ice inside the borders is permanent; beyond them it melts.
-    expect(new Set(ice?.ice.map((tile) => tile.permanent))).toEqual(
-      new Set([true, false]),
-    );
+    // The frozen sea redesign: ice is permanent and sound.
+    expect(ice?.ice.every((tile) => !tile.cracked)).toBe(true);
   });
 });

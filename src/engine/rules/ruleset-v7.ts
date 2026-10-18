@@ -42,6 +42,9 @@ export type TechnologyUnlockedCommandV7 = Extract<
   | "HUNT_GAME"
   | "BUILD_FARM"
   | "BUILD_LUMBER_CAMP"
+  // The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 2.6): Rime
+  // unlocks the Ice Folk Fishing Hole.
+  | "BUILD_FISHING_HOLE"
   | "BUILD_MINE"
   | "BUILD_WINDMILL"
   | "BUILD_SAWMILL"
@@ -344,16 +347,19 @@ export type TechnologyUnlockV7 =
    */
   | { readonly kind: "ICEBOUND" }
   /**
-   * The frozen sea (section 8.8): Black Ice (the Ice Folk `SEAMANSHIP`),
-   * hostile land units on the owner's ice are Frozen at its Start Turn.
+   * The frozen sea (section 8.8): Black Ice (the Ice Folk `SEAMANSHIP`).
+   * The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 2.8): a
+   * hostile land unit that ends its own Move, landing, or Beam Down on the
+   * owner's ice, coming from off it, is Frozen at once.
    */
   | { readonly kind: "BLACK_ICE" }
   /**
-   * The frozen sea (section 8.10): Glacier (the Ice Folk `SUBMERSIBLES`),
-   * the ice the owner makes lasts `iceTurns` of its turns and its units on
-   * ice have Snow cover.
+   * The frozen sea (section 8.10): Glacier (the Ice Folk `SUBMERSIBLES`).
+   * The frozen sea redesign (section 2.5): the owner's ice is thick (two
+   * Crack Ice break it, and the owner's Freeze mends a crack), and its
+   * units on ice have Snow cover.
    */
-  | { readonly kind: "GLACIER"; readonly iceTurns: 5 }
+  | { readonly kind: "GLACIER" }
   | { readonly kind: "FIRST_HOSTILE_CAPTURE_SPOILS"; readonly coins: 2 };
 
 export interface TechnologyNodeV7 {
@@ -695,6 +701,12 @@ export interface RoleMechanicsV7 {
    */
   readonly glides: boolean;
   /**
+   * The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 2.7):
+   * Runners, the unit's slide on ice is not stopped by a hostile zone of
+   * control (the Sled). A body rule.
+   */
+  readonly runners: boolean;
+  /**
    * The Ice Folk revision (section 7.7): Prowl. Entering hostile zone of
    * control does not end the unit's Move (the Sabretooth).
    */
@@ -1005,7 +1017,9 @@ export type BasicEconomicCommandKindV7 =
   | "HARVEST_FISH"
   | "BUILD_FARM"
   | "BUILD_LUMBER_CAMP"
-  | "BUILD_MINE";
+  | "BUILD_MINE"
+  // The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 2.6).
+  | "BUILD_FISHING_HOLE";
 export interface BasicEconomicActionRuleV7 {
   readonly command: BasicEconomicCommandKindV7;
   readonly technology: TechnologyIdV7;
@@ -1076,6 +1090,21 @@ export const BASIC_ECONOMIC_ACTIONS_V7 = deepFreeze({
     population: 2,
     populationCategory: "LIVE",
     improvement: "MINE",
+  },
+  // The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 2.6): the
+  // Ice Folk Fishing Hole, on the seat's own ice (Shallow or Deep: the
+  // `terrain` here is nominal; `iceBuildableV7` is the placement rule) in
+  // its territory, with no visible resource and no improvement. Unlocked
+  // only by the Ice Folk Rime.
+  BUILD_FISHING_HOLE: {
+    command: "BUILD_FISHING_HOLE",
+    technology: "SHORECRAFT",
+    terrain: "SHALLOW_WATER",
+    resource: null,
+    cost: 3,
+    population: 1,
+    populationCategory: "LIVE",
+    improvement: "FISHING_HOLE",
   },
 } satisfies Readonly<
   Record<BasicEconomicCommandKindV7, BasicEconomicActionRuleV7>
@@ -1921,6 +1950,7 @@ const mechanics = (
           movementMode: "GROUND",
           mountainBorn: false,
           glides: false,
+          runners: false,
           ignoresZocStops: false,
           sweepDamage: 0,
           tramplesFieldDefense: false,
@@ -3253,11 +3283,16 @@ export const MARTIAN_BASELINE_V1_TREE: FactionTechnologyTreeV7 = deepFreeze({
 const ICE_FOLK_NAVAL_UNLOCKS_V7: Readonly<
   Partial<Record<TechnologyIdV7, readonly TechnologyUnlockV7[]>>
 > = deepFreeze({
-  SHORECRAFT: [{ kind: "FREEZE", depth: "SHALLOW" }],
+  // The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 2.5): Rime
+  // also unlocks the Fishing Hole (the Ice Harbour is the Port).
+  SHORECRAFT: [
+    { kind: "FREEZE", depth: "SHALLOW" },
+    { kind: "COMMAND", command: "BUILD_FISHING_HOLE" },
+  ],
   NAVIGATION: [{ kind: "FREEZE", depth: "DEEP" }],
   NAVAL_ENGINEERING: [{ kind: "ICEBOUND" }],
   SEAMANSHIP: [{ kind: "BLACK_ICE" }],
-  SUBMERSIBLES: [{ kind: "GLACIER", iceTurns: 5 }],
+  SUBMERSIBLES: [{ kind: "GLACIER" }],
 });
 /** The Ice Folk technology nodes (see the comment above). */
 export const ICE_FOLK_BASELINE_V1_NODES: readonly TechnologyNodeV7[] =
@@ -3495,7 +3530,9 @@ export const ICE_FOLK_ROLE_MECHANICS_V7 = mechanics({
     glides: true,
     rockfallAttack2: 3,
   },
-  RAIDER: { glides: true },
+  // The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 2.7): the
+  // Sled's Runners.
+  RAIDER: { glides: true, runners: true },
   MARKSMAN: { glides: true, coldBloodBonus2: 1 },
   // The ninth unit (7r55): the Musk Ox (Frostbite).
   GUARD: { buildsFieldDefense: false, glides: true, frostbite: true },
@@ -7275,10 +7312,15 @@ export function dockPopulationV7(
   return (improvement === "SHIPYARD" ? 2 : 1) + harbourPopulation;
 }
 
-/** The frozen sea (section 8.5): the turns ice lasts outside its owner's territory. */
-export const ICE_TURNS_V7 = 3;
-/** The frozen sea (section 8.10): the same with Glacier. */
-export const GLACIER_ICE_TURNS_V7 = 5;
+/**
+ * The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 2.9): the
+ * Crack Ice it takes to break thick ice (Glacier).
+ */
+export const ICE_CRACKS_THICK_V7 = 2;
+/** The frozen sea redesign (section 2.6): the Fishing Hole's price. */
+export const FISHING_HOLE_COST_V7 = 3;
+/** The frozen sea redesign (section 2.6): the Fishing Hole's population. */
+export const FISHING_HOLE_POPULATION_V7 = 1;
 /** The frozen sea (section 8.4): the tiles of a Freeze line. */
 export const FREEZE_LINE_V7 = 2;
 /** The frozen sea (section 8.4): the Ice Witch's Freeze ring (Chebyshev). */
@@ -7309,9 +7351,39 @@ export function isIceAtV7(
 ): boolean {
   const ice = lookup.ice;
   if (ice.length === 0) return false;
-  for (const entry of ice)
-    if (entry.at.x === at.x && entry.at.y === at.y) return true;
-  return false;
+  return iceEntryIndexV7(ice).has(iceTileKeyV7(at));
+}
+
+/**
+ * The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 2.14): the key
+ * of a tile in `iceEntryIndexV7` (boards are far narrower than 2^16).
+ */
+export function iceTileKeyV7(at: {
+  readonly x: number;
+  readonly y: number;
+}): number {
+  return at.y * 65536 + at.x;
+}
+
+const ICE_ENTRY_INDEXES_V7 = new WeakMap<
+  readonly unknown[],
+  ReadonlyMap<number, unknown>
+>();
+
+/**
+ * The frozen sea redesign (section 2.14): permanent ice may hold a few
+ * hundred entries, so its reads go through an index of the (immutable)
+ * list, built once per list: each entry by `iceTileKeyV7` of its tile.
+ */
+export function iceEntryIndexV7<
+  T extends { readonly at: { readonly x: number; readonly y: number } },
+>(ice: readonly T[]): ReadonlyMap<number, T> {
+  const cached = ICE_ENTRY_INDEXES_V7.get(ice);
+  if (cached !== undefined) return cached as ReadonlyMap<number, T>;
+  const index = new Map<number, T>();
+  for (const entry of ice) index.set(iceTileKeyV7(entry.at), entry);
+  ICE_ENTRY_INDEXES_V7.set(ice, index);
+  return index;
 }
 
 /**
@@ -8056,10 +8128,11 @@ export interface TechnologyCapabilitiesV7 {
   /** The frozen sea (section 8.8): Black Ice. */
   readonly blackIce: boolean;
   /**
-   * The frozen sea (sections 8.5 and 8.10): `turnsLeft` of the ice the
-   * player makes (`ICE_TURNS_V7`, or `GLACIER_ICE_TURNS_V7` with Glacier).
+   * The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 2.5): the
+   * player's ice is thick (Glacier): `ICE_CRACKS_THICK_V7` Crack Ice break
+   * it, and a Freeze of the player mends a crack.
    */
-  readonly iceTurns: number;
+  readonly thickIce: boolean;
   /** The frozen sea (section 8.10): Glacier's Snow cover on ice. */
   readonly iceCover: boolean;
   /**
@@ -8205,7 +8278,7 @@ export function technologyCapabilitiesV7(
   let freezeDeep = false;
   let icebound = false;
   let blackIce = false;
-  let iceTurns: number = ICE_TURNS_V7;
+  let thickIce = false;
   let iceCover = false;
   let offering = false;
   let greatSummoning = false;
@@ -8345,7 +8418,7 @@ export function technologyCapabilitiesV7(
         blackIce = true;
         break;
       case "GLACIER":
-        iceTurns = unlock.iceTurns;
+        thickIce = true;
         iceCover = true;
         break;
       case "OFFERING":
@@ -8462,7 +8535,7 @@ export function technologyCapabilitiesV7(
     freezeWater: freezeDeep ? "DEEP" : freezeShallow ? "SHALLOW" : "NONE",
     icebound,
     blackIce,
-    iceTurns,
+    thickIce,
     iceCover,
     offering,
     greatSummoning,
@@ -8541,7 +8614,7 @@ export function assertRuleset7Registry(): void {
     !complete ||
     FACTION_IDS_V7.length !== FACTION_TREE_IDS_V7.length ||
     Reflect.ownKeys(FACTION_TREES_V7).length !== FACTION_IDS_V7.length ||
-    IMPROVEMENT_IDS_V7.length !== 11
+    IMPROVEMENT_IDS_V7.length !== 12
   )
     throw new Error("Ruleset-7 registry is incomplete");
 }

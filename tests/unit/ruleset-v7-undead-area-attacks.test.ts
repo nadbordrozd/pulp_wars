@@ -661,8 +661,9 @@ describe("ruleset-7 revision-13 Wail: events, projection, and persistence", () =
     // 92 (was 88). The Candy redesign (`pulp_wars-jdb.12`) inserts
     // UNIT_TOPPED_UP and TILES_GLAZED before COMBAT_RESOLVED and UNIT_STUCK,
     // TOOTHACHE_GIVEN, RICOCHETED, and THUMPED after BARRICADE_ATTACKED: 98
-    // (was 92), COMBAT_RESOLVED + 8.
-    expect(DOMAIN_EVENT_KIND_ORDER_V7.indexOf("WAIL_RESOLVED")).toBe(98);
+    // (was 92), COMBAT_RESOLVED + 8. The frozen sea redesign
+    // (`pulp_wars-5ti.25`) inserts ICE_CRACKED after WATER_FROZEN: 99.
+    expect(DOMAIN_EVENT_KIND_ORDER_V7.indexOf("WAIL_RESOLVED")).toBe(99);
     expect(DOMAIN_EVENT_KIND_ORDER_V7.indexOf("WAIL_RESOLVED")).toBe(
       DOMAIN_EVENT_KIND_ORDER_V7.indexOf("COMBAT_RESOLVED") + 8,
     );

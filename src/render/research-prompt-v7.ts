@@ -24,7 +24,11 @@ import {
 /** The harvest and extraction commands a research prompt is offered for. */
 export const RESEARCH_PROMPT_COMMANDS_V7: ReadonlySet<CommandV7["kind"]> =
   new Set<CommandV7["kind"]>([
-    ...(Object.keys(BASIC_ECONOMIC_ACTIONS_V7) as CommandV7["kind"][]),
+    // The frozen sea redesign (`pulp_wars-5ti.25`): the Fishing Hole is no
+    // resource of a tile.
+    ...(Object.keys(BASIC_ECONOMIC_ACTIONS_V7).filter(
+      (kind) => kind !== "BUILD_FISHING_HOLE",
+    ) as CommandV7["kind"][]),
     "GATHER_PEARLS",
   ]);
 

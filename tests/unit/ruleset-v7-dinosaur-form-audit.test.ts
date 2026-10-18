@@ -649,6 +649,10 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // Mammoth in land form (an embarked one is refused `EMBARKED`; an Egg
     // never reaches it).
     "src/engine/v7/ice-folk.ts": 1,
+    // The frozen sea redesign (`pulp_wars-5ti.25`): Black Ice on entry
+    // freezes only a unit that ends its Move, landing or Beam Down in land
+    // form (an Egg never moves; a unit that embarked is afloat).
+    "src/engine/v7/ice.ts": 1,
     "src/engine/v7/stampede.ts": 1,
     "src/engine/v7/dwarf-reducer.ts": 5,
     // The ninth unit (`pulp_wars-w49.17`, 7r55): the attacks a unit has in

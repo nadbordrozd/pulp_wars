@@ -191,7 +191,14 @@ export const OWNER_READER_CLASSES_V7: Readonly<
   // The frozen sea (`pulp_wars-5ti.3`): ice is owned by a seat (the Freezing
   // unit's owner), never by the neutral owner; a Freeze is a seat's command.
   // The state check skips the neutral owner's units by name.
-  "src/engine/v7/ice.ts::iceIsPermanentV7": "NEUTRAL_SAFE",
+  // The frozen sea redesign (`pulp_wars-5ti.25`): thick ice and Black Ice
+  // read the ice owner's record; an owner that is no player has neither
+  // (the missing record answers false). A Fishing Hole and a Crack are a
+  // seat's commands.
+  "src/engine/v7/ice.ts::iceIsThickV7": "NEUTRAL_SAFE",
+  "src/engine/v7/ice.ts::resolveBlackIceOnEntryV7": "NEUTRAL_SAFE",
+  "src/engine/v7/reducer.ts::applyBasic": "PLAYER_ONLY",
+  "src/engine/v7/reducer.ts::applyCrackIce": "PLAYER_ONLY",
   "src/engine/v7/reducer.ts::applyFreeze": "PLAYER_ONLY",
   "src/engine/v7/state-schema.ts::iceValid": "NEUTRAL_AWARE",
   // The ninth unit (`pulp_wars-w49.17`, 7r55). A marked Grave belongs to

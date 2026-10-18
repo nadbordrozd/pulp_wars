@@ -183,7 +183,11 @@ describe("ruleset-7 late public query performance", () => {
       // after CHANNEL, moving the kinds from ANCHOR to TENTACLE back by
       // one, and the view's `cult.idols` (was 67e517…7ea5); the
       // revision-12-ordinal value is unchanged.
-      "8bb79a7041746f947fa2c1123ba08154d323dc7c6f66684475e8e5086d189ead",
+      // The frozen sea redesign (`pulp_wars-5ti.25`) inserts CRACK_ICE after
+      // FREEZE and BUILD_FISHING_HOLE after BUILD_LUMBER_CAMP, moving the
+      // later command kinds forward (was 8bb79a…9ead); the revision-12-ordinal
+      // value is unchanged.
+      "b599042999088e5fc86e07063093d33cb6725585aff30ab8ff551c1ec163a328",
     );
     // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
     // (spec section 8); with revision-12 ordinals the value is unchanged.

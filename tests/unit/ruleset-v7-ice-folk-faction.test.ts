@@ -198,7 +198,9 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
     // The Cult redesign's Star-fall (`pulp_wars-mch9.34`) adds
     // JOIN_CHANT after TENTACLE (84), and its warden (`pulp_wars-mch9.33`)
     // removes BEHOLD (83).
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(83);
+    // The frozen sea redesign (`pulp_wars-5ti.25`) adds CRACK_ICE after
+    // FREEZE and BUILD_FISHING_HOLE after BUILD_LUMBER_CAMP (85).
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(85);
     const breakOff = COMMAND_KIND_ORDER_V7.indexOf("BREAK_OFF");
     expect(COMMAND_KIND_ORDER_V7.slice(breakOff, breakOff + 16)).toEqual([
       "BREAK_OFF",
@@ -260,7 +262,9 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
     // The Cult redesign's Star-fall (`pulp_wars-mch9.34`) adds
     // CHANT_JOINED after RITUAL_BEGUN (155), and its warden
     // (`pulp_wars-mch9.33`) removes IDOL_RAISED and IDOL_DROPPED (153).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(153);
+    // The frozen sea redesign (`pulp_wars-5ti.25`) adds ICE_CRACKED after
+    // WATER_FROZEN (154).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(154);
     const after = (order: readonly string[], kind: string) =>
       order[order.indexOf(kind) + 1];
     expect(after(DOMAIN_EVENT_KIND_ORDER_V7, "UNITS_RALLIED")).toBe(
@@ -1052,11 +1056,16 @@ describe("Ice Folk technology (section 4)", () => {
         human.unlockedRoles.filter((role) => !isNavalRoleV7(role)),
       ]);
       const ICE_NAVAL: Readonly<Record<string, readonly unknown[]>> = {
-        SHORECRAFT: [{ kind: "FREEZE", depth: "SHALLOW" }],
+        // The frozen sea redesign (`pulp_wars-5ti.25`): Rime unlocks the
+        // Fishing Hole; Glacier is thick ice (no turns).
+        SHORECRAFT: [
+          { kind: "FREEZE", depth: "SHALLOW" },
+          { kind: "COMMAND", command: "BUILD_FISHING_HOLE" },
+        ],
         NAVIGATION: [{ kind: "FREEZE", depth: "DEEP" }],
         NAVAL_ENGINEERING: [{ kind: "ICEBOUND" }],
         SEAMANSHIP: [{ kind: "BLACK_ICE" }],
-        SUBMERSIBLES: [{ kind: "GLACIER", iceTurns: 5 }],
+        SUBMERSIBLES: [{ kind: "GLACIER" }],
       };
       if (human.branch === "NAVAL") {
         // The five Naval nodes keep their economic unlocks, lose every
@@ -1153,11 +1162,16 @@ describe("Ice Folk technology (section 4)", () => {
     expect(ice.trainableRoles).toEqual(
       human.trainableRoles.filter((role) => !isNavalRoleV7(role)),
     );
-    expect(ice.commands).toEqual(
+    // The frozen sea redesign (`pulp_wars-5ti.25`): and the Fishing Hole.
+    expect(
+      ice.commands.filter((command) => command !== "BUILD_FISHING_HOLE"),
+    ).toEqual(
       human.commands.filter(
         (command) => command !== "BUILD_FIELD_DEFENSE" && command !== "BOARD",
       ),
     );
+    expect(ice.commands).toContain("BUILD_FISHING_HOLE");
+    expect(human.commands).not.toContain("BUILD_FISHING_HOLE");
     expect(ice.commands).toContain("BLAST_MOUNTAIN");
     expect(ice.mountainMovement).toBe(true);
   });
@@ -1504,6 +1518,8 @@ describe("Ice Folk public unit stats (section 11)", () => {
       // The frozen sea (naval branch section 12).
       onIce: false,
       slides: true,
+      // The frozen sea redesign (`pulp_wars-5ti.25`): only the Sled.
+      runners: false,
       iceCover: false,
     });
     expect(stats(at(4, 3)).iceFolk).toMatchObject({

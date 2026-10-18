@@ -264,6 +264,22 @@ export function projectEventsV7(
     // see, and are dropped when no tile is left; a viewer that cannot see
     // the freezing unit gets `unitId` null. UNITS_CRUSHED is projected like
     // Plague damage.
+    // The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 2.9):
+    // ICE_CRACKED likewise, on its one tile.
+    if (event.kind === "ICE_CRACKED") {
+      const seen = (unitId: UnitId): boolean =>
+        ownedBeforeOrAfter(unitId) ||
+        beforeVisible.has(unitId) ||
+        afterVisible.has(unitId);
+      if (!coordVisible(beforeState, afterState, viewerId, event.at)) continue;
+      projected.push({
+        ...event,
+        unitId:
+          event.unitId !== null && seen(event.unitId) ? event.unitId : null,
+        freed: event.freed.filter(seen),
+      });
+      continue;
+    }
     if (event.kind === "WATER_FROZEN" || event.kind === "ICE_MELTED") {
       const seen = (unitId: UnitId): boolean =>
         ownedBeforeOrAfter(unitId) ||
@@ -996,6 +1012,7 @@ function unitIds(event: DomainEventV7): readonly UnitId[] {
       return [event.unitId, event.targetUnitId];
     // The frozen sea: projected before this switch; the freezing unit.
     case "WATER_FROZEN":
+    case "ICE_CRACKED":
       return event.unitId === null ? [] : [event.unitId];
     case "UNIT_SPAWN_DISPLACED":
       return [event.spawnedUnitId, event.displacedUnitId];

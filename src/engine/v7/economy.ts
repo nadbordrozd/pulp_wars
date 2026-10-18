@@ -5,6 +5,7 @@ import {
   cityRewardCandidatesV7,
   cityUnitCapacityForV7,
   dockPopulationV7,
+  isIceAtV7,
   unitCapacitySlotsV7,
   technologyCapabilitiesV7,
   unitRoleMechanicsV7,
@@ -32,7 +33,7 @@ import {
 export function isActivePortV7(
   state: Pick<
     GameStateV7,
-    "board" | "cities" | "units" | "setup" | "humanPlayerId"
+    "board" | "cities" | "units" | "setup" | "humanPlayerId" | "ice"
   >,
   at: { readonly x: number; readonly y: number },
   ownerId: PlayerId,
@@ -48,6 +49,11 @@ export function isActivePortV7(
     (candidate) => candidate.id === tile.territoryCityId,
   );
   if (city?.ownerId !== ownerId) return false;
+  // The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 2.6): a dock
+  // on ice (an Ice Harbour) is blockaded by a hostile land-form unit
+  // standing on it, a dock on open water by a hostile unit afloat (no ship
+  // blockades a dock on ice from the water). Never an Egg (revision 19).
+  const onIce = isIceAtV7(state, at);
   return !state.units.some(
     (unit) =>
       unit.hp > 0 &&
@@ -55,8 +61,7 @@ export function isActivePortV7(
       unit.at.y === at.y &&
       unit.ownerId !== ownerId &&
       arePlayersHostileV7(state, unit.ownerId, ownerId) &&
-      // Only afloat units blockade (revision 19: never an Egg).
-      isAfloatFormV7(unit.form),
+      (onIce ? unit.form === "LAND" : isAfloatFormV7(unit.form)),
   );
 }
 
@@ -543,7 +548,7 @@ export function cityIncomeV7(state: GameStateV7, city: CityStateV7): number {
 
 type NetworkStateV7 = Pick<
   GameStateV7,
-  "board" | "cities" | "players" | "units" | "setup" | "humanPlayerId"
+  "board" | "cities" | "players" | "units" | "setup" | "humanPlayerId" | "ice"
 >;
 const SEA_TRADE_CACHE = new WeakMap<
   object,

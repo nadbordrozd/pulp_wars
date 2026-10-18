@@ -28,7 +28,10 @@ export const FROZEN_UI_V7 = {
   farShore: { x: 1, y: 8 },
   /** Icebound: a Battleship frozen in on Deep Water. */
   frozenShip: { x: 7, y: 5 },
-  /** Melting ice at 3, 2 and 1 turns, and permanent ice by the capital. */
+  /**
+   * Three ice tiles (the frozen sea redesign: the last one cracked), and ice
+   * by the capital.
+   */
   melting: [
     { x: 8, y: 4 },
     { x: 9, y: 4 },
@@ -98,7 +101,6 @@ export function frozenSlideUiFixtureV7(
     ice: FROZEN_UI_V7.bridge.map((at) => ({
       at,
       seat: slipper ? (1 as const) : (0 as const),
-      turnsLeft: 3,
     })),
   });
 }
@@ -125,13 +127,15 @@ export function frozenIceboundUiFixtureV7(
       { seat: shipSeat, role: "BATTLESHIP", at: FROZEN_UI_V7.frozenShip },
     ],
     ice: [
-      { at: FROZEN_UI_V7.frozenShip, seat: iceSeat, turnsLeft: 3 },
+      { at: FROZEN_UI_V7.frozenShip, seat: iceSeat },
+      // The frozen sea redesign: ice is permanent; the last of the row is
+      // cracked thick ice (every technology, so Glacier's).
       ...FROZEN_UI_V7.melting.map((at, index) => ({
         at,
         seat: iceSeat,
-        turnsLeft: 3 - index,
+        cracked: index === FROZEN_UI_V7.melting.length - 1,
       })),
-      { at: permanent, seat: iceSeat, turnsLeft: 3 },
+      { at: permanent, seat: iceSeat },
     ],
   });
 }

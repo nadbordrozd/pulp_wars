@@ -1,15 +1,17 @@
 # Ruleset 7: the frozen sea, redesigned
 
 **Status:** design of bead `pulp_wars-5ti.24` (epic `pulp_wars-5ti`),
-written on 2026-10-18 over the rules as built at `pulp-wars-poc-7r98`. It
-is a design only: nothing here is built yet, and until its engine bead
-lands [current rules section 21.16](RULESET_7_CURRENT.md#2116-the-frozen-sea)
-is right. Once built, it replaces section 8 of the
+written on 2026-10-18 over the rules as built at `pulp-wars-poc-7r98`.
+**Bead A (the engine and rules, `pulp_wars-5ti.25`) is built at
+`pulp-wars-poc-7r100`** ([section 8](#8-bead-a-as-built-pulp_wars-5ti25)):
+[current rules section 21.16](RULESET_7_CURRENT.md#2116-the-frozen-sea)
+now states the game, section 8 of the
 [naval branch overlay](RULESET_7_NAVAL_BRANCH.md#8-ice-folk-the-frozen-sea)
-and section 21.16 of the current rules, and section 11 of the
+is history, and section 11 of the
 [themed naval branches](RULESET_7_NAVAL_FACTIONS.md#11-ice-folk-done)
-("Ice Folk: done") stops being true. No game was played or simulated to
-write it (the user's standing rule); every number is a first guess for
+("Ice Folk: done") is no longer true. Beads B (the AI) and C (interface,
+art, and sound) are open. No game was played or simulated to write or
+build it (the user's standing rule); every number is a first guess for
 hand-play tuning.
 
 The user's request, 2026-10-18, verbatim:
@@ -722,8 +724,9 @@ Freeze, crush and Black Ice keep their sounds.
 ## 5. Migration
 
 - **Ruleset identity:** the next free identity when the engine bead lands
-  (`pulp-wars-poc-7r99` if nothing lands first); `7r98` joins
-  `PRIOR_RULESET_7_IDS`; browser autosave `pulpWars.save.v7r99.current`.
+  (as built: `pulp-wars-poc-7r100`, after the bolder abilities took `7r99`);
+  `7r99` joins `PRIOR_RULESET_7_IDS`; browser autosave
+  `pulpWars.save.v7r100.current`.
   Earlier saves and replays are rejected by the exact-identity dispatch,
   as for every revision; nothing is migrated.
 - **Shapes:** the ice entry (`turnsLeft` out, `cracked` in), the view's ice
@@ -899,3 +902,78 @@ Only one changes the direction; everything else is decided above.
    Ice Folk territory cannot be cracked": stronger and simpler for the Ice
    Folk, but an Ice Folk coast would then be a permanent wall against
    landings from the sea.
+
+## 8. Bead A as built (`pulp_wars-5ti.25`)
+
+Built at `pulp-wars-poc-7r100` on 2026-10-19, with no game played or
+simulated. The root decided the open question of section 7: Ice Folk home
+ice stays crackable (the design's default). Decisions the build made where
+the design was silent or had to be read:
+
+1. **Crack Ice is a kind rule, not a role-table ability.**
+   `unitCracksIceV7`: every unit not of the Ice Folk kind (the slip's
+   rule, so a mind-controlled Ice Folk unit never cracks), in land, naval,
+   or embarked form, not a neutral Monster. No `CRACK_ICE` entry was added
+   to the nine role tables (their pinned ability lists stay); the glossary
+   has a `CRACK_ICE` entry for bead C to show.
+2. **Row 3 of Crack Ice also refuses a Crashed Candy unit** (`UNIT_CRASHED`,
+   as for every primary action), and an Egg and a burrowed unit are refused
+   by the common refusals before the Crack rows (`UNIT_IS_EGG`,
+   `UNIT_ALREADY_HANDLED`), not with `UNIT_ROLE_INVALID`.
+3. **The freeze set:** a dock is freezable only when it is in the actor's
+   own territory (any other dock, ice or not, never freezes); an own dock
+   is open water for the table (no unit: made ice; a hostile ship with
+   Icebound: locked in). A tile that holds a unit afloat ends the line
+   whatever happened to it (passed over or taken). A Freeze over a dock
+   recomputes the live economy, since an icebound blockader no longer
+   blockades it, so `FREEZE` (and `PILLAGE`, which may now remove a dock)
+   joined the blockade-event list.
+4. **The Ice Harbour on open water needs the tile empty** (no unit of any
+   owner: freezing it would lock an allied boat in). It is `INVALID_TILE`
+   otherwise, also for a hostile ship (before the enemy-occupied check).
+5. **A dock's blockade reads the dock's ground form:** on ice a hostile
+   unit in `LAND` form, on open water one afloat; never an Egg. So an
+   icebound hostile ship on an own Ice Harbour blockades nothing, as the
+   design says.
+6. **No ship recovers on a dock on ice** (a ship there is icebound); next
+   to one a ship recovers as beside any dock. Nothing auto-embarks at a
+   dock on ice (the reducer's embark test checks the ice, as the movement
+   validation's does).
+7. **A resource the builder cannot see may stay under a building on ice**
+   (Pearls before Pack Ice), as masked Fertile Ground stays under a land
+   building; the gate is the visible resource. The schema admits Fish and
+   Pearls under any non-basic building on water.
+8. **`BUILD_FISHING_HOLE` is a basic economic action**
+   (`BASIC_ECONOMIC_ACTIONS_V7.BUILD_FISHING_HOLE`, technology Shorecraft,
+   nominal terrain Shallow Water), so the economic preview, the public
+   placement scoring, and the AI's economic chooser see it with no new
+   path; its tile rule is `iceBuildableV7` and the visible resource, and
+   only the Ice Folk Rime unlocks the command.
+9. **On an elimination the eliminated seat's cracks are cleared** (its ice
+   is no longer thick, and state parsing refuses a crack on ice that is
+   not thick), and the release runs after the eliminated units leave the
+   board, so only other seats' icebound ships float free.
+10. **Black Ice on entry** reads the unit's tile before the command (a
+    Beam Down's passenger's own tile), runs before a Frost Giant's Cold
+    Aura, and freezes only through `canBeFrozenV7` of the ice owner (a
+    Martian controller's ice never does).
+11. **Runners** let the slide go on through a hostile zone of control only
+    while the slide itself continues; where it ends (end of the ice, a
+    unit, a mound) a zone stops the Move as for any step. The public
+    movement validation applies the same rule, so the query, the threat
+    estimate, and the AI's attack search follow it.
+12. **The Normal AI** (kept compiling, decisions changed only mechanically):
+    the crossing plan's thaw horizon is infinite (so a near Witch now
+    builds any crossing, `tests/unit/ruleset-v7-frozen-sea-ai.test.ts`
+    adapted), the "refreeze" reason is now a mended or retaken crossing
+    tile, the kill-on-thawing-ice bonus is gone, and no seat picks
+    `CRACK_ICE` yet. The `portSite` guard and everything else of section 3
+    are bead B.
+13. **The interface** only lost the countdown: the ice chip says "Ice",
+    "Ice · thick", or "Ice · cracked"; Freeze labels read "Ice 2",
+    "Ice 1 · mends 1", "Ice 1 · Icebound"; thick ice draws the old
+    permanent dusting and a crack the old stage-2 cracks; the technology
+    cards say the new Black Ice and Glacier lines and the Ice Folk
+    placement lines name their ice. `CRACK_ICE` is classed bar-only until
+    bead C adds its button; the Fishing Hole draws the Fish art until its
+    sprite lands.

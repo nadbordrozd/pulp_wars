@@ -60,6 +60,7 @@ import {
   SLIDE_MOVE_LABEL_V7,
   SLIP_MOVE_LABEL_V7,
   crushWarningV7,
+  freezeOutcomeTextV7,
   freezeOutcomeV7,
   freezeTargetLabelV7,
   freezeUnavailableTextV7,
@@ -184,8 +185,13 @@ describe("Freeze on the board plan", () => {
       if (preview === null) throw new Error("preview missing");
       expect(at(target.at)).toBe(at(target.command.at));
       expect(target.freeze?.tiles).toEqual(preview.tiles);
-      // With Glacier the ice lasts 5 turns; none of it is in territory.
-      expect(target.previewLabel).toBe(`Ice ${preview.tiles.length} · 5 turns`);
+      // The frozen sea redesign: no countdown; a locked ship is named.
+      expect(target.previewLabel).toBe(
+        freezeTargetLabelV7(freezeOutcomeV7(preview)),
+      );
+      expect(target.previewLabel).toMatch(
+        new RegExp(`^Ice ${preview.tiles.length}( · Icebound)?$`),
+      );
       expect(target.semanticLabel).toContain(
         `${preview.tiles.length} ${preview.tiles.length === 1 ? "tile" : "tiles"} of ice`,
       );
@@ -236,23 +242,27 @@ describe("Freeze on the board plan", () => {
       (target) => at(target.at) === at(FROZEN_UI_V7.freezeAt),
     );
     expect(south?.freeze?.tiles.map(at)).toEqual([at(FROZEN_UI_V7.freezeAt)]);
-    expect(south?.previewLabel).toBe("Ice 1 · 3 turns");
+    expect(south?.previewLabel).toBe("Ice 1");
   });
 
-  it("says when the ice stays: a tile in the unit owner's territory", () => {
-    // A Yeti on the capital's shore: the Shallow Water beside the Port is
-    // in its territory, the Deep Water beyond is not.
+  it("names no turns (the ice stays) and counts the cracks a Freeze mends", () => {
+    // A Yeti on the capital's shore (the frozen sea redesign: all ice is
+    // permanent; every technology, so Glacier's thick ice may be cracked).
     const state = frozenArenaV7({
       units: [{ seat: 0, role: "FIGHTER", at: { x: 6, y: 2 } }],
+      ice: [{ at: { x: 6, y: 3 }, cracked: true }],
     });
     const view = viewOf(state);
     const yeti = unitAt(view, { x: 6, y: 2 });
     const preview = previewFreezeV7(view, yeti.id, { x: 6, y: 3 });
     if (preview === null) throw new Error("preview missing");
     const outcome = freezeOutcomeV7(preview);
-    expect(outcome).toMatchObject({ tiles: 2, permanent: 1, icebound: 0 });
-    expect(freezeTargetLabelV7(outcome)).toBe("Ice 2 · 5 turns, 1 stays");
-    // The engine agrees: after the Freeze that tile is permanent.
+    expect(outcome).toEqual({ tiles: 2, mended: 1, icebound: 0 });
+    expect(freezeTargetLabelV7(outcome)).toBe("Ice 2 · mends 1");
+    expect(freezeOutcomeTextV7(outcome)).toBe(
+      "Freeze: 2 tiles of ice. It stays until it is cracked. 1 cracked tile is mended.",
+    );
+    // The engine agrees: after the Freeze both tiles are sound ice.
     const result = applyCommandV7(state, state.humanPlayerId, {
       kind: "FREEZE",
       unitId: yeti.id,
@@ -260,9 +270,9 @@ describe("Freeze on the board plan", () => {
     });
     if (!result.accepted) throw new Error("Freeze rejected");
     expect(
-      viewOf(result.state).ice.map((entry) => [at(entry.at), entry.permanent]),
+      viewOf(result.state).ice.map((entry) => [at(entry.at), entry.cracked]),
     ).toEqual([
-      ["6,3", true],
+      ["6,3", false],
       ["6,4", false],
     ]);
   });
@@ -305,7 +315,7 @@ describe("Freeze on the board plan", () => {
       entry.key.startsWith("ability-target:FREEZE_RING:"),
     );
     expect(at(label?.at ?? { x: -1, y: -1 })).toBe(at(FROZEN_UI_V7.witch));
-    expect(label?.label).toBe(`Ice ${preview.tiles.length} · 5 turns`);
+    expect(label?.label).toBe(`Ice ${preview.tiles.length}`);
     // A line role has no ring.
     expect(ring(plan(view, unitAt(view, FROZEN_UI_V7.yeti).id))).toEqual([]);
   });
@@ -375,17 +385,18 @@ describe("ice on the board plan", () => {
     const view = viewOf(frozenIceboundUiFixtureV7());
     const cells = seaIceCellsV7(view);
     expect(cells.size).toBe(view.ice.length);
-    // Three melting tiles in a row: 3, 2 and 1 turns left.
+    // Three tiles in a row (the frozen sea redesign): sound, sound, and
+    // cracked thick ice.
     const [first, second, third] = FROZEN_UI_V7.melting.map((coord) =>
       cells.get(at(coord)),
     );
-    expect([first?.stage, second?.stage, third?.stage]).toEqual([1, 2, 3]);
+    expect([first?.stage, second?.stage, third?.stage]).toEqual([0, 0, 2]);
     expect(first?.depth).toBe("DEEP");
     // The row is ice east of the first tile and west of the third.
     expect((first?.openWater ?? 0) & SEA_ICE_EDGE_EAST_V7).toBe(0);
     expect((first?.openWater ?? 0) & SEA_ICE_EDGE_WEST_V7).not.toBe(0);
     expect((third?.openWater ?? 0) & SEA_ICE_EDGE_WEST_V7).toBe(0);
-    // Permanent ice in the capital's territory: snow, no cracks.
+    // Thick ice (Glacier) by the capital: snow, no cracks.
     const permanent = cells.get(at(FROZEN_UI_V7.permanent));
     expect(permanent).toMatchObject({
       depth: "SHALLOW",
@@ -401,13 +412,9 @@ describe("ice on the board plan", () => {
     for (const entry of iced) expect(entry.snow).toBeUndefined();
   });
 
-  it("maps the countdown to the crack stage", () => {
-    expect(iceCrackStageV7({ permanent: true, turnsLeft: 1 })).toBe(0);
-    expect(iceCrackStageV7({ permanent: false, turnsLeft: 5 })).toBe(1);
-    expect(iceCrackStageV7({ permanent: false, turnsLeft: 3 })).toBe(1);
-    expect(iceCrackStageV7({ permanent: false, turnsLeft: 2 })).toBe(2);
-    expect(iceCrackStageV7({ permanent: false, turnsLeft: 1 })).toBe(3);
-    expect(iceCrackStageV7({ permanent: false, turnsLeft: 0 })).toBe(3);
+  it("maps a crack to the crack stage (the redesign: no melting stages)", () => {
+    expect(iceCrackStageV7({ cracked: false })).toBe(0);
+    expect(iceCrackStageV7({ cracked: true })).toBe(2);
     for (const stage of [0, 1, 2, 3] as const) {
       const cracks = seaIceCracksV7({ x: 4, y: 6 }, stage);
       expect(cracks).toHaveLength(SEA_ICE_CRACKS_V7.lines[stage]);
@@ -430,7 +437,7 @@ describe("ice on the board plan", () => {
     );
   });
 
-  it("labels the tile's ice with its turns, without coordinates", () => {
+  it("labels the tile's ice with its thickness, without coordinates or turns", () => {
     const view = viewOf(frozenIceboundUiFixtureV7());
     const melting = view.ice.find(
       (entry) => at(entry.at) === at(FROZEN_UI_V7.melting[2]),
@@ -440,14 +447,16 @@ describe("ice on the board plan", () => {
     );
     if (melting === undefined || permanent === undefined)
       throw new Error("ice missing");
-    expect(iceChipLabelV7(melting)).toBe("Ice · 1");
-    expect(iceChipLabelV7(permanent)).toBe("Ice · stays");
+    expect(iceChipLabelV7(melting)).toBe("Ice · cracked");
+    expect(iceChipLabelV7(permanent)).toBe("Ice · thick");
     expect(iceChipTooltipV7(view, melting)).toContain(
-      "It melts in 1 of your turn unless a land unit stands on it",
+      "Cracked: one more Crack breaks it.",
     );
     expect(iceChipTooltipV7(view, permanent)).toContain(
-      "It does not melt in your territory",
+      "Thick: two Cracks break it.",
     );
+    for (const entry of view.ice)
+      expect(iceChipTooltipV7(view, entry)).not.toMatch(/turn|melt/i);
     // The viewer has Black Ice (every technology): its own ice says so.
     expect(iceChipTooltipV7(view, melting)).toContain("Black Ice:");
     // Another seat's ice does not (its research is private).
@@ -455,7 +464,9 @@ describe("ice on the board plan", () => {
     const theirs = victim.ice[0];
     if (theirs === undefined) throw new Error("ice missing");
     expect(iceChipTooltipV7(victim, theirs)).not.toContain("Black Ice");
-    expect(iceChipTooltipV7(victim, theirs)).toContain("its owner's");
+    expect(iceChipTooltipV7(victim, theirs)).toContain(
+      "Ice Folk slide; others stop here.",
+    );
     for (const entry of view.ice)
       expect(iceChipTooltipV7(view, entry)).not.toMatch(COORDINATE);
   });

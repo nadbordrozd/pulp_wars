@@ -28,8 +28,11 @@ import {
 } from "../fixtures/v7-naval-branch";
 
 // The naval branch, engine step II (`pulp_wars-5ti.3`,
-// docs/product/RULESET_7_NAVAL_BRANCH.md sections 8.5, 8.8, 8.9, and 9): the
-// thaw at an End Turn, and Black Ice and the crush at a Start Turn.
+// docs/product/RULESET_7_NAVAL_BRANCH.md sections 8.5, 8.8, 8.9, and 9):
+// the turn steps of the frozen sea. The frozen sea redesign
+// (`pulp_wars-5ti.25`, docs/product/RULESET_7_ICE_REDESIGN.md sections 2.3
+// and 2.8): ice is permanent (no thaw), Black Ice no longer runs at the
+// Start Turn, and the crush stays.
 
 const RIME: readonly TechnologyIdV7[] = ["SHORECRAFT"];
 const ICEBOUND: readonly TechnologyIdV7[] = [
@@ -64,126 +67,91 @@ const round = (
 const kinds = (events: readonly DomainEventV7[]) =>
   events.map((event) => event.kind);
 
-describe("the thaw (section 8.5)", () => {
-  it("counts down at its owner's End Turn only, and melts at 0", () => {
-    const state = frozenArenaV7({
-      technologies: [RIME, ALL],
-      units: [],
-      ice: [{ at: FAR, turnsLeft: 2 }],
-    });
-    expect(inTerritoryOfV7(state, 0, FAR)).toBe(false);
-    const first = endTurn(state, 0);
-    expect(iceEntryV7(first.state, FAR)?.turnsLeft).toBe(1);
-    expect(kinds(first.events)).not.toContain("ICE_MELTED");
-    // The other seat's End Turn does not count it.
-    const other = endTurn(first.state, 1);
-    expect(iceEntryV7(other.state, FAR)?.turnsLeft).toBe(1);
-    const second = endTurn(other.state, 0);
-    expect(second.state.ice).toEqual([]);
-    const melted = second.events.find((event) => event.kind === "ICE_MELTED");
-    expect(melted).toEqual({ kind: "ICE_MELTED", tiles: [FAR], freed: [] });
-    expect(parseEventV7(melted).ok).toBe(true);
-    // After the Chill countdown and before the income preview.
-    expect(kinds(second.events).indexOf("ICE_MELTED")).toBeLessThan(
-      kinds(second.events).indexOf("INCOME_PREVIEWED"),
-    );
-    expect(parseGameStateV7(second.state)).not.toBeNull();
-  });
-
-  it("never counts down in its owner's territory", () => {
-    const home = { x: 5, y: 3 };
+describe("permanent ice (redesign section 2.3)", () => {
+  it("an entry made on a turn is still there after 20 End Turns of every player", () => {
     let state = frozenArenaV7({
       technologies: [RIME, ALL],
       units: [],
-      ice: [{ at: home, turnsLeft: 1 }],
+      ice: [{ at: FAR }, { at: { x: 5, y: 3 } }],
     });
-    expect(inTerritoryOfV7(state, 0, home)).toBe(true);
+    expect(inTerritoryOfV7(state, 0, FAR)).toBe(false);
+    expect(inTerritoryOfV7(state, 0, { x: 5, y: 3 })).toBe(true);
+    const before = state.ice;
+    for (let turn = 0; turn < 20; turn += 1) {
+      const result = round(state);
+      expect(kinds(result.events)).not.toContain("ICE_MELTED");
+      state = result.state;
+    }
+    expect(state.ice).toEqual(before);
+    expect(parseGameStateV7(state)).not.toBeNull();
+  });
+
+  it("the view shows the owner, the crack and whether it is thick, never a countdown", () => {
+    const state = frozenArenaV7({
+      technologies: [ALL, RIME],
+      units: [],
+      ice: [{ at: FAR }, { at: { x: 1, y: 4 }, cracked: true }],
+    });
     expect(viewForV7(state, seatV7(state, 1).id).ice).toEqual([
       {
-        at: home,
+        at: { x: 1, y: 4 },
         ownerId: seatV7(state, 0).id,
-        turnsLeft: 1,
-        permanent: true,
+        cracked: true,
+        thick: true,
       },
+      { at: FAR, ownerId: seatV7(state, 0).id, cracked: false, thick: true },
     ]);
-    for (let turn = 0; turn < 3; turn += 1) state = round(state).state;
-    expect(iceEntryV7(state, home)?.turnsLeft).toBe(1);
+    // Without Glacier the ice is not thick, and a crack is refused.
+    const thin = frozenArenaV7({
+      technologies: [RIME, RIME],
+      units: [],
+      ice: [{ at: FAR }],
+    });
+    expect(viewForV7(thin, seatV7(thin, 0).id).ice).toEqual([
+      { at: FAR, ownerId: seatV7(thin, 0).id, cracked: false, thick: false },
+    ]);
+    expect(() => frozenStateV7(thin, [{ at: FAR, cracked: true }])).toThrow();
   });
 
-  it("is held by a land unit of any owner, and melts once the tile is empty", () => {
+  it("state parsing refuses `turnsLeft` and accepts `cracked`", () => {
     const state = frozenArenaV7({
-      technologies: [RIME, ALL],
-      units: [
-        { seat: 0, role: "FIGHTER", at: FAR },
-        { seat: 1, role: "FIGHTER", at: { x: 1, y: 6 } },
-      ],
-      ice: [
-        { at: FAR, turnsLeft: 1 },
-        { at: { x: 1, y: 6 }, turnsLeft: 1 },
-      ],
+      technologies: [ALL, ALL],
+      units: [],
+      ice: [{ at: FAR, cracked: true }],
     });
-    const after = endTurn(state, 0);
-    expect(after.state.ice.map((entry) => entry.turnsLeft)).toEqual([0, 0]);
-    expect(kinds(after.events)).not.toContain("ICE_MELTED");
-    // Still held a round later; nobody drowns.
-    const later = endTurn(endTurn(endTurn(after.state, 1).state, 0).state, 1);
-    expect(later.state.ice).toHaveLength(2);
-    expect(parseGameStateV7(later.state)).not.toBeNull();
-    // The enemy Fighter leaves its tile: that entry melts at the owner's
-    // next End Turn.
-    const enemy = navalUnitAtV7(later.state, { x: 1, y: 6 });
-    const left = patchFrozenUnitV7(later.state, enemy.id, {
-      at: { x: 0, y: 9 },
-    });
-    const final = endTurn(left, 0);
-    expect(final.state.ice.map((entry) => entry.at)).toEqual([FAR]);
-    expect(final.events).toContainEqual({
-      kind: "ICE_MELTED",
-      tiles: [{ x: 1, y: 6 }],
-      freed: [],
-    });
+    expect(parseGameStateV7(state)).not.toBeNull();
+    const entry = state.ice[0];
+    if (entry === undefined) throw new Error("no ice");
+    expect(
+      parseGameStateV7({
+        ...state,
+        ice: [{ at: entry.at, ownerId: entry.ownerId, turnsLeft: 3 }],
+      }),
+    ).toBeNull();
+    expect(
+      parseGameStateV7({
+        ...state,
+        ice: [{ ...entry, turnsLeft: 3 }],
+      }),
+    ).toBeNull();
   });
 
-  it("an afloat unit does not hold it: an icebound ship floats free", () => {
+  it("no land unit is needed to hold it, and an icebound ship stays icebound", () => {
     const state = frozenArenaV7({
       technologies: [ICEBOUND, ALL],
       units: [{ seat: 1, role: "PATROL_BOAT", at: FAR }],
-      ice: [{ at: FAR, turnsLeft: 1 }],
+      ice: [{ at: FAR }, { at: { x: 1, y: 6 } }],
     });
     const boat = navalUnitAtV7(state, FAR);
     expect(unitIsIceboundV7(state, boat)).toBe(true);
-    const after = endTurn(state, 0);
-    expect(after.events).toContainEqual({
-      kind: "ICE_MELTED",
-      tiles: [FAR],
-      freed: [boat.id],
-    });
-    expect(after.state.ice).toEqual([]);
-    expect(unitIsIceboundV7(after.state, boat)).toBe(false);
-    // Its owner may sail it again.
-    expect(
-      queryPlayerCommandsV7(viewForV7(after.state, seatV7(state, 1).id)).some(
-        (command) => command.kind === "MOVE" && command.unitId === boat.id,
-      ),
-    ).toBe(true);
-    // The owner of the freed ship and a viewer of the tile learn of it.
-    for (const seat of [0, 1] as const) {
-      const envelope = projectEventsV7(
-        state,
-        after.state,
-        seatV7(state, seat).id,
-        after.events,
-      );
-      expect(envelope.events).toContainEqual({
-        kind: "ICE_MELTED",
-        tiles: [FAR],
-        freed: [boat.id],
-      });
-      expect(parsePlayerEventEnvelopeV7(envelope).ok).toBe(true);
-    }
+    const after = round(round(state).state);
+    expect(after.state.ice).toEqual(state.ice);
+    expect(kinds(after.events)).not.toContain("ICE_MELTED");
+    const crushed = navalUnitV7(after.state, boat.id);
+    expect(unitIsIceboundV7(after.state, crushed)).toBe(true);
   });
 
-  it("an eliminated owner's ice counts down at every End Turn", () => {
+  it("an eliminated owner's ice stays", () => {
     const base = frozenArenaV7({
       technologies: [RIME, ALL],
       units: [],
@@ -204,22 +172,17 @@ describe("the thaw (section 8.5)", () => {
       units: base.units.filter((unit) => unit.ownerId !== third.id),
     });
     if (eliminated === null) throw new Error("the eliminated state is invalid");
-    const state = frozenStateV7(eliminated, [
-      { at: FAR, seat: 2, turnsLeft: 2 },
-    ]);
-    const first = endTurn(state, 0);
-    expect(iceEntryV7(first.state, FAR)?.turnsLeft).toBe(1);
-    const second = endTurn(first.state, 1);
-    expect(second.state.ice).toEqual([]);
-    expect(second.events).toContainEqual({
-      kind: "ICE_MELTED",
-      tiles: [FAR],
-      freed: [],
+    const state = frozenStateV7(eliminated, [{ at: FAR, seat: 2 }]);
+    const later = round(round(state).state);
+    expect(iceEntryV7(later.state, FAR)).toEqual({
+      at: FAR,
+      ownerId: third.id,
+      cracked: false,
     });
   });
 });
 
-describe("Black Ice (section 8.8)", () => {
+describe("Black Ice no longer runs at the Start Turn (redesign section 2.8)", () => {
   const scene = (technologies: readonly TechnologyIdV7[]) =>
     frozenArenaV7({
       technologies: [technologies, ALL],
@@ -227,71 +190,43 @@ describe("Black Ice (section 8.8)", () => {
         // A hostile land unit and an own one on the seat's ice.
         { seat: 1, role: "FIGHTER", at: FAR },
         { seat: 0, role: "FIGHTER", at: { x: 1, y: 6 } },
-        // A hostile ship on open water next to it.
-        { seat: 1, role: "PATROL_BOAT", at: { x: 2, y: 5 } },
       ],
-      ice: [
-        { at: FAR, turnsLeft: 3 },
-        { at: { x: 1, y: 6 }, turnsLeft: 3 },
-      ],
+      ice: [{ at: FAR }, { at: { x: 1, y: 6 } }],
     });
 
-  it("freezes every hostile land unit on the seat's ice at its Start Turn", () => {
-    const state = scene(BLACK_ICE);
-    const victim = navalUnitAtV7(state, FAR);
-    const started = round(state);
-    const chilled = started.events.filter(
-      (event) => event.kind === "UNITS_FROZEN",
-    );
-    expect(chilled).toEqual([
-      {
-        kind: "UNITS_FROZEN",
-        playerId: seatV7(state, 0).id,
-        sourceUnitId: null,
-        source: "BLACK_ICE",
-        results: [{ unitId: victim.id, turnsLeft: 1 }],
-      },
-    ]);
-    expect(parseEventV7(chilled[0]).ok).toBe(true);
-    expect(started.state.frozen).toEqual([{ unitId: victim.id, turnsLeft: 1 }]);
-    // After the Start Turn's first events and before the income.
-    const order = kinds(started.events);
-    expect(order.lastIndexOf("TURN_STARTED")).toBeLessThan(
-      order.indexOf("UNITS_FROZEN"),
-    );
-    // Ice Folk Freeze (`pulp_wars-w49.37`): the victim thaws at the end of
-    // its own turn and, still on the ice, is Frozen again at the next Start
-    // Turn of the ice's owner (no thaw immunity).
-    const owners = endTurn(started.state, 0);
-    expect(owners.state.frozen).toEqual([{ unitId: victim.id, turnsLeft: 1 }]);
-    const thawed = endTurn(owners.state, 1);
-    expect(kinds(thawed.events)).toContain("UNITS_FROZEN");
-    expect(thawed.state.frozen).toEqual([{ unitId: victim.id, turnsLeft: 1 }]);
-    // The victim's owner learns of it with no source unit.
-    const envelope = projectEventsV7(
-      state,
-      started.state,
-      seatV7(state, 1).id,
-      started.events,
-    );
-    expect(envelope.events).toContainEqual(chilled[0]);
-    expect(parsePlayerEventEnvelopeV7(envelope).ok).toBe(true);
+  it("a hostile land unit that stands on the seat's ice is not frozen by a Start Turn", () => {
+    for (const technologies of [RIME, BLACK_ICE]) {
+      const state = scene(technologies);
+      const started = round(round(state).state);
+      expect(kinds(started.events)).not.toContain("UNITS_FROZEN");
+      expect(started.state.frozen).toEqual([]);
+    }
   });
 
-  it("needs the technology, and only works on the seat's own ice", () => {
-    const without = round(scene(RIME));
-    expect(kinds(without.events)).not.toContain("UNITS_FROZEN");
-    expect(without.state.frozen).toEqual([]);
-    // Ice that belongs to the other seat does nothing for the Ice Folk.
-    const foreign = frozenStateV7(scene(BLACK_ICE), [
-      { at: FAR, seat: 1, turnsLeft: 3 },
-    ]);
-    expect(round(foreign).state.frozen).toEqual([]);
+  it("a victim of Black Ice that thawed on the ice may act", () => {
+    const base = scene(BLACK_ICE);
+    const victim = navalUnitAtV7(base, FAR);
+    // Frozen during its owner's turn (Black Ice on entry): it thaws after
+    // its owner's next turn and is never frozen again while it stays.
+    const state = { ...base, frozen: [{ unitId: victim.id, turnsLeft: 1 }] };
+    const parsed = parseGameStateV7(state);
+    if (parsed === null) throw new Error("invalid");
+    const thawed = endTurn(endTurn(parsed, 0).state, 1);
+    expect(thawed.state.frozen).toEqual([]);
+    const later = round(thawed.state);
+    expect(later.state.frozen).toEqual([]);
+    // On its owner's turn it may act from the ice (here: attack the Yeti).
+    const own = endTurn(later.state, 0);
+    expect(
+      queryPlayerCommandsV7(viewForV7(own.state, seatV7(base, 1).id)).some(
+        (command) => command.kind === "ATTACK" && command.unitId === victim.id,
+      ),
+    ).toBe(true);
   });
 });
 
 describe("the crush (section 8.9)", () => {
-  it("deals 3 to every icebound unit on the seat's ice at its Start Turn, after Black Ice", () => {
+  it("deals 3 to every icebound unit on the seat's ice at its Start Turn (Black Ice no longer runs there)", () => {
     const state = frozenArenaV7({
       technologies: [ALL, ALL],
       units: [
@@ -301,11 +236,7 @@ describe("the crush (section 8.9)", () => {
         { seat: 1, role: "PATROL_BOAT", at: { x: 3, y: 5 } },
         { seat: 1, role: "FIGHTER", at: { x: 1, y: 6 } },
       ],
-      ice: [
-        { at: FAR, turnsLeft: 5 },
-        { at: { x: 1, y: 4 }, turnsLeft: 5 },
-        { at: { x: 1, y: 6 }, turnsLeft: 5 },
-      ],
+      ice: [{ at: FAR }, { at: { x: 1, y: 4 } }, { at: { x: 1, y: 6 } }],
     });
     const boat = navalUnitAtV7(state, FAR);
     const battleship = navalUnitAtV7(state, { x: 1, y: 4 });
@@ -337,11 +268,8 @@ describe("the crush (section 8.9)", () => {
       battleship.hp - 3,
     );
     expect(navalUnitV7(started.state, free.id).hp).toBe(free.hp);
-    // Black Ice (the Fighter on the ice) comes first.
-    const order = kinds(started.events);
-    expect(order.indexOf("UNITS_FROZEN")).toBeLessThan(
-      order.indexOf("UNITS_CRUSHED"),
-    );
+    // The redesign: the Fighter on the ice is not frozen at the Start Turn.
+    expect(kinds(started.events)).not.toContain("UNITS_FROZEN");
     // The other seat's Start Turn crushes nothing.
     expect(kinds(endTurn(state, 0).events)).not.toContain("UNITS_CRUSHED");
     // The victims' owner learns of it.
@@ -363,7 +291,7 @@ describe("the crush (section 8.9)", () => {
         { seat: 1, role: "PATROL_BOAT", at: FAR },
         { seat: 0, role: "FIGHTER", at: { x: 1, y: 6 } },
       ],
-      ice: [{ at: FAR, turnsLeft: 5 }],
+      ice: [{ at: FAR }],
     });
     const boat = navalUnitAtV7(base, FAR);
     const yeti = navalUnitAtV7(base, { x: 1, y: 6 });
@@ -400,7 +328,7 @@ describe("the crush (section 8.9)", () => {
         at: { x: 1, y: 7 },
         form: "EMBARKED",
       }),
-      [{ at: { x: 1, y: 7 }, turnsLeft: 5 }],
+      [{ at: { x: 1, y: 7 } }],
     );
     const started = round(state);
     expect(started.events).toContainEqual({
@@ -426,7 +354,7 @@ describe("the crush (section 8.9)", () => {
         { seat: 1, role: "MARKSMAN", at: { x: 1, y: 8 } },
         { seat: 0, role: "FIGHTER", at: { x: 1, y: 6 } },
       ],
-      ice: [{ at: { x: 1, y: 6 }, turnsLeft: 5 }],
+      ice: [{ at: { x: 1, y: 6 } }],
     });
     const goblin = navalUnitAtV7(base, { x: 1, y: 8 });
     const yeti = navalUnitAtV7(base, { x: 1, y: 6 });
@@ -436,7 +364,7 @@ describe("the crush (section 8.9)", () => {
         form: "EMBARKED",
         hp: 1,
       }),
-      [{ at: { x: 1, y: 7 }, turnsLeft: 5 }],
+      [{ at: { x: 1, y: 7 } }],
     );
     const started = round(state);
     const order = kinds(started.events);

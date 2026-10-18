@@ -7783,9 +7783,12 @@ export class Ruleset7DomAppView {
           chip.dataset.winter = kind;
           if (kind === "ice" && iceHere !== undefined) {
             chip.prepend(uiIconV7(this.#document, "snowflake"));
-            chip.dataset.iceTurns = iceHere.permanent
-              ? "permanent"
-              : String(iceHere.turnsLeft);
+            // The frozen sea redesign: thickness, not a countdown.
+            chip.dataset.ice = iceHere.cracked
+              ? "cracked"
+              : iceHere.thick
+                ? "thick"
+                : "sound";
           }
           chip.title = tooltip;
           chip.setAttribute("aria-label", tooltip);
@@ -17365,7 +17368,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   const aiHeadStartCoins =
     draft.mapType === "SHOWCASE" ? 0 : draft.aiHeadStartCoins;
   return {
-    rulesetId: "pulp-wars-poc-7r99",
+    rulesetId: "pulp-wars-poc-7r100",
     seed,
     width,
     height: width,
@@ -17565,7 +17568,7 @@ function effectDescription(
     case "BLACK_ICE":
       return BLACK_ICE_UNLOCK_V7;
     case "GLACIER":
-      return glacierUnlockTextV7(effect.iceTurns);
+      return glacierUnlockTextV7();
     case "UNIT_ROLE":
       return label(effect.role);
     case "RESOURCE_REVEAL":

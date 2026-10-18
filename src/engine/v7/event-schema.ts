@@ -148,7 +148,15 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
     "coinsReceived",
     "coinDelta",
   ],
-  PORT_BUILT: ["kind", "playerId", "cityId", "at", "cost", "populationAdded"],
+  PORT_BUILT: [
+    "kind",
+    "playerId",
+    "cityId",
+    "at",
+    "cost",
+    "populationAdded",
+    "iceMade",
+  ],
   SHIPYARD_BUILT: [
     "kind",
     "playerId",
@@ -393,6 +401,7 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
   UNITS_FROZEN: ["kind", "playerId", "sourceUnitId", "source", "results"],
   // The naval branch, the frozen sea (sections 8.4, 8.5, and 8.9).
   WATER_FROZEN: ["kind", "playerId", "unitId", "tiles", "icebound"],
+  ICE_CRACKED: ["kind", "playerId", "unitId", "at", "broken", "freed"],
   ICE_MELTED: ["kind", "tiles", "freed"],
   UNITS_CRUSHED: ["kind", "playerId", "results"],
   WOUNDED_TENDED: ["kind", "captainId", "results"],
@@ -1171,7 +1180,8 @@ function validPayload(
       return (
         playerCityAt(e) &&
         e.cost === 4 &&
-        (e.populationAdded === 1 || e.populationAdded === 2)
+        (e.populationAdded === 1 || e.populationAdded === 2) &&
+        typeof e.iceMade === "boolean"
       );
     case "SHIPYARD_BUILT":
       return (
@@ -1638,6 +1648,17 @@ function validPayload(
         (e.tiles as readonly unknown[]).length > 0 &&
         ascendingIds(e.icebound) &&
         !(e.icebound as readonly unknown[]).includes(e.unitId)
+      );
+    case "ICE_CRACKED":
+      // The frozen sea redesign (section 2.9): a thick crack frees nobody.
+      return (
+        id(e.playerId) &&
+        id(e.unitId) &&
+        parseCoordV7(e.at) !== null &&
+        typeof e.broken === "boolean" &&
+        ascendingIds(e.freed) &&
+        (e.broken === true || (e.freed as readonly unknown[]).length === 0) &&
+        !(e.freed as readonly unknown[]).includes(e.unitId)
       );
     case "ICE_MELTED":
       // Section 8.5: at least one tile; the freed units in unit-ID order.
@@ -3411,6 +3432,17 @@ function parseProjectedUnitsFrozen(input: unknown): PlayerEventV7 | null {
  * (`unitId` null).
  */
 function parseProjectedWaterFrozen(input: unknown): PlayerEventV7 | null {
+  // The frozen sea redesign (section 2.9): so is `ICE_CRACKED`.
+  if (hasExactKeysV7(input, FIELDS.ICE_CRACKED) && input.kind === "ICE_CRACKED")
+    return input.unitId === null &&
+      id(input.playerId) &&
+      parseCoordV7(input.at) !== null &&
+      typeof input.broken === "boolean" &&
+      ascendingIds(input.freed) &&
+      (input.broken === true ||
+        (input.freed as readonly unknown[]).length === 0)
+      ? (input as unknown as PlayerEventV7)
+      : null;
   return hasExactKeysV7(input, FIELDS.WATER_FROZEN) &&
     input.kind === "WATER_FROZEN" &&
     input.unitId === null &&
@@ -3550,6 +3582,7 @@ function improvementCost(improvement: ImprovementIdV7): number {
     case "SAWMILL":
       return 5;
     case "LUMBER_CAMP":
+    case "FISHING_HOLE":
       return 3;
     case "MINE":
       return 5;

@@ -678,7 +678,17 @@ export const KIND_READER_CLASSES_V7: Readonly<
   // seat that owns the ice; Sea Dog counts by the seat's own faction (an Ice
   // Folk seat has no ships); no unit of the Ice Folk kind is afloat
   // (`kindOf`), and no Ice Folk seat owns a boat.
-  "src/engine/v7/ice.ts::resolveBlackIceV7": "SEAT",
+  // The frozen sea redesign (`pulp_wars-5ti.25`): Black Ice on entry and
+  // thick ice are the research of the seat that owns the ice; building on
+  // ice is a seat rule of the builder's own faction (like Snow), so the
+  // reducer's placement checks and the public query read the seat.
+  "src/engine/v7/ice.ts::resolveBlackIceOnEntryV7": "SEAT",
+  "src/engine/v7/ice.ts::iceIsThickV7": "SEAT",
+  "src/engine/v7/query.ts::appendPublicTileCommandsV7": "SEAT",
+  "src/engine/v7/query.ts::publicTileCommandLegal": "SEAT",
+  "src/engine/v7/reducer.ts::applyBasic": "SEAT",
+  "src/engine/v7/reducer.ts::applySpatial": "SEAT",
+  "src/engine/v7/reducer.ts::applyPort": "SEAT",
   "src/engine/v7/achievements.ts::revision21AchievementCountsV7": "SEAT",
   "src/engine/v7/state-schema.ts::iceValid": "KIND",
   // City names (`pulp_wars-2yc.30`): a city is named from the list of a

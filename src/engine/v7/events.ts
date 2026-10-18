@@ -757,6 +757,12 @@ export type DomainEventV7 =
       readonly cost: 4;
       /** 2 for an owner with Harbours (the naval branch section 5.4). */
       readonly populationAdded: 1 | 2;
+      /**
+       * The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 2.6): an
+       * Ice Folk Ice Harbour built on open Shallow Water froze its tile
+       * first (an ice entry of the builder).
+       */
+      readonly iceMade: boolean;
     }
   | {
       readonly kind: "SHIPYARD_BUILT";
@@ -1123,8 +1129,8 @@ export type DomainEventV7 =
   | {
       /**
        * The frozen sea (docs/product/RULESET_7_NAVAL_BRANCH.md section 8.4):
-       * the unit `unitId` of `playerId` froze `tiles` (in (y, x) order; a
-       * tile that was already ice is refreshed) and locked the afloat units
+       * the unit `unitId` of `playerId` froze `tiles` (in (y, x) order; the
+       * redesign: a tile that was ice is taken or mended) and locked the afloat units
        * `icebound` (in unit-ID order) in the ice. A projection keeps the
        * tiles the viewer has explored and the units it can see, and is
        * dropped when no tile is left.
@@ -1138,9 +1144,29 @@ export type DomainEventV7 =
     }
   | {
       /**
+       * The frozen sea redesign (docs/product/RULESET_7_ICE_REDESIGN.md
+       * section 2.9): the unit `unitId` of `playerId` cracked the ice on
+       * `at`. `broken`: the ice broke (the tile is open water again);
+       * otherwise thick ice took its first crack. `freed`: the icebound
+       * units on the broken tile, in unit-ID order. A projection keeps the
+       * event for a viewer that explored `at`, with `unitId` null when it
+       * cannot see the unit and the freed units it can see.
+       */
+      readonly kind: "ICE_CRACKED";
+      readonly playerId: PlayerId;
+      /** Null only in a projection to a viewer that cannot see the unit. */
+      readonly unitId: UnitId | null;
+      readonly at: CoordV7;
+      readonly broken: boolean;
+      readonly freed: readonly UnitId[];
+    }
+  | {
+      /**
        * The frozen sea (section 8.5): the ice on `tiles` (in (y, x) order)
-       * melted at an End Turn, and the icebound units `freed` (in unit-ID
-       * order) float free. Projected like `WATER_FROZEN`.
+       * melted, and the icebound units `freed` (in unit-ID order) float
+       * free. The redesign (section 2.3): only when the ice's owner is
+       * eliminated, and only the tiles that held an icebound unit.
+       * Projected like `WATER_FROZEN`.
        */
       readonly kind: "ICE_MELTED";
       readonly tiles: readonly CoordV7[];

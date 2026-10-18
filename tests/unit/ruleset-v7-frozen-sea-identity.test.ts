@@ -3,11 +3,12 @@ import {
   COMMAND_KIND_ORDER_V7,
   DOMAIN_EVENT_KIND_ORDER_V7,
   FACTION_IDS_V7,
+  FISHING_HOLE_COST_V7,
+  FISHING_HOLE_POPULATION_V7,
   FREEZE_LINE_V7,
-  GLACIER_ICE_TURNS_V7,
+  ICE_CRACKS_THICK_V7,
   ICE_CRUSH_DAMAGE_V7,
   ICE_SEA_DOG_UNITS_V7,
-  ICE_TURNS_V7,
   NAVAL_ROLE_IDS_V7,
   PRIOR_RULESET_7_IDS,
   RULESET_7_ID,
@@ -22,7 +23,6 @@ import {
   factionTreeV7,
   factionUnlocksRoleV7,
   forbiddenTechnologiesV7,
-  iceIsPermanentV7,
   isNavalRoleV7,
   parseCommandV7,
   parseGameStateV7,
@@ -72,17 +72,17 @@ const SEAFARERS = FACTION_IDS_V7.filter((faction) => faction !== "ICE_FOLK");
 // identities of tunings 5 and 6).
 describe("the frozen sea identity (7r44, then 7r45 for the ice fortification fix, then 7r46 and 7r47 for tunings 1 and 2)", () => {
   it("is 7r47 with 7r44 to 7r46 last in the gap-free prior list and their save keys obsolete", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r99");
-    expect(PRIOR_RULESET_7_IDS.slice(-56, -52)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r100");
+    expect(PRIOR_RULESET_7_IDS.slice(-57, -53)).toEqual([
       "pulp-wars-poc-7r43",
       "pulp-wars-poc-7r44",
       "pulp-wars-poc-7r45",
       "pulp-wars-poc-7r46",
     ]);
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(98);
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(99);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r99.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-55, -52)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r100.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-56, -53)).toEqual([
       "pulpWars.save.v7r44.current",
       "pulpWars.save.v7r45.current",
       "pulpWars.save.v7r46.current",
@@ -95,7 +95,7 @@ describe("the frozen sea identity (7r44, then 7r45 for the ice fortification fix
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
     const { state } = created;
-    expect(state.rulesetId).toBe("pulp-wars-poc-7r99");
+    expect(state.rulesetId).toBe("pulp-wars-poc-7r100");
     const oldSetup = { ...setup, rulesetId: "pulp-wars-poc-7r44" };
     expect(parseMatchSetupV7(oldSetup)).toBeNull();
     expect(
@@ -142,13 +142,21 @@ describe("the frozen sea shapes", () => {
     const after = <T>(order: readonly T[], kind: T) =>
       order[order.indexOf(kind) + 1];
     expect(after(COMMAND_KIND_ORDER_V7, "COLD_SNAP")).toBe("FREEZE");
-    expect(after(COMMAND_KIND_ORDER_V7, "FREEZE")).toBe("TUNNEL");
+    // The frozen sea redesign (`pulp_wars-5ti.25`): Crack Ice right after
+    // Freeze, the Fishing Hole after the Lumber Camp, and `ICE_CRACKED`
+    // right after `WATER_FROZEN`.
+    expect(after(COMMAND_KIND_ORDER_V7, "FREEZE")).toBe("CRACK_ICE");
+    expect(after(COMMAND_KIND_ORDER_V7, "CRACK_ICE")).toBe("TUNNEL");
+    expect(after(COMMAND_KIND_ORDER_V7, "BUILD_LUMBER_CAMP")).toBe(
+      "BUILD_FISHING_HOLE",
+    );
     expect(after(DOMAIN_EVENT_KIND_ORDER_V7, "UNITS_FROZEN")).toBe(
       "WATER_FROZEN",
     );
     expect(after(DOMAIN_EVENT_KIND_ORDER_V7, "WATER_FROZEN")).toBe(
-      "ICE_MELTED",
+      "ICE_CRACKED",
     );
+    expect(after(DOMAIN_EVENT_KIND_ORDER_V7, "ICE_CRACKED")).toBe("ICE_MELTED");
     expect(after(DOMAIN_EVENT_KIND_ORDER_V7, "ICE_MELTED")).toBe(
       "UNITS_CRUSHED",
     );
@@ -156,29 +164,34 @@ describe("the frozen sea shapes", () => {
       "UNIT_SUGAR_RUSHED",
     );
     expect([
-      ICE_TURNS_V7,
-      GLACIER_ICE_TURNS_V7,
+      ICE_CRACKS_THICK_V7,
+      FISHING_HOLE_COST_V7,
+      FISHING_HOLE_POPULATION_V7,
       FREEZE_LINE_V7,
       WITCH_FREEZE_RADIUS_V7,
       ICE_CRUSH_DAMAGE_V7,
       ICE_SEA_DOG_UNITS_V7,
       // The economy rejig (`pulp_wars-w49.16`, 7r54): 5 units on the ice (3).
-    ]).toEqual([3, 5, 2, 1, 3, 5]);
+    ]).toEqual([2, 3, 1, 2, 1, 3, 5]);
     expect(ICE_SEA_DOG_UNITS_V7).toBe(SEA_DOG_SHIPS_V7);
     expect(() => assertRuleset7Registry()).not.toThrow();
   });
 
-  it("parses FREEZE with exactly a unit and a tile", () => {
-    const command = { kind: "FREEZE", unitId: 3, at: { x: 2, y: 3 } };
-    expect(parseCommandV7(command)).toEqual({ ok: true, value: command });
-    for (const broken of [
-      { kind: "FREEZE", unitId: 3 },
-      { kind: "FREEZE", at: { x: 2, y: 3 } },
-      { kind: "FREEZE", unitId: 3, at: { x: 2 } },
-      { kind: "FREEZE", unitId: 0, at: { x: 2, y: 3 } },
-      { kind: "FREEZE", unitId: 3, at: { x: 2, y: 3 }, targetUnitId: 4 },
-    ])
-      expect(parseCommandV7(broken).ok).toBe(false);
+  it("parses FREEZE and CRACK_ICE with exactly a unit and a tile", () => {
+    for (const kind of ["FREEZE", "CRACK_ICE"] as const) {
+      const command = { kind, unitId: 3, at: { x: 2, y: 3 } };
+      expect(parseCommandV7(command)).toEqual({ ok: true, value: command });
+      for (const broken of [
+        { kind, unitId: 3 },
+        { kind, at: { x: 2, y: 3 } },
+        { kind, unitId: 3, at: { x: 2 } },
+        { kind, unitId: 0, at: { x: 2, y: 3 } },
+        { kind, unitId: 3, at: { x: 2, y: 3 }, targetUnitId: 4 },
+      ])
+        expect(parseCommandV7(broken).ok).toBe(false);
+    }
+    const hole = { kind: "BUILD_FISHING_HOLE", at: { x: 2, y: 3 } };
+    expect(parseCommandV7(hole)).toEqual({ ok: true, value: hole });
   });
 });
 
@@ -194,6 +207,8 @@ describe("the Ice Folk Naval tree (section 2.2)", () => {
       // 7r76 (`pulp_wars-5ti.12`): the sea link comes with Ports.
       { kind: "SEA_LINK" },
       { kind: "FREEZE", depth: "SHALLOW" },
+      // The frozen sea redesign (`pulp_wars-5ti.25`): the Fishing Hole.
+      { kind: "COMMAND", command: "BUILD_FISHING_HOLE" },
     ]);
     expect(unlocks("NAVIGATION")).toEqual([
       { kind: "COMMAND", command: "GATHER_PEARLS" },
@@ -207,7 +222,7 @@ describe("the Ice Folk Naval tree (section 2.2)", () => {
     expect(unlocks("SEAMANSHIP")).toEqual([{ kind: "BLACK_ICE" }]);
     expect(unlocks("SUBMERSIBLES")).toEqual([
       { kind: "HARBOURS", population: 1 },
-      { kind: "GLACIER", iceTurns: 5 },
+      { kind: "GLACIER" },
     ]);
     for (const tech of NAVAL_BRANCH) {
       const node = tree.nodes.find((entry) => entry.id === tech);
@@ -243,17 +258,17 @@ describe("the Ice Folk Naval tree (section 2.2)", () => {
         caps.freezeWater,
         caps.icebound,
         caps.blackIce,
-        caps.iceTurns,
+        caps.thickIce,
         caps.iceCover,
         caps.harbourPopulation,
       ];
     };
-    expect(facts([])).toEqual(["NONE", false, false, 3, false, 0]);
+    expect(facts([])).toEqual(["NONE", false, false, false, false, 0]);
     expect(facts(["SHORECRAFT"])).toEqual([
       "SHALLOW",
       false,
       false,
-      3,
+      false,
       false,
       0,
     ]);
@@ -261,7 +276,7 @@ describe("the Ice Folk Naval tree (section 2.2)", () => {
       "DEEP",
       false,
       false,
-      3,
+      false,
       false,
       0,
     ]);
@@ -269,7 +284,7 @@ describe("the Ice Folk Naval tree (section 2.2)", () => {
       "DEEP",
       true,
       false,
-      3,
+      false,
       false,
       0,
     ]);
@@ -277,15 +292,16 @@ describe("the Ice Folk Naval tree (section 2.2)", () => {
       "SHALLOW",
       false,
       true,
-      3,
+      false,
       false,
       0,
     ]);
+    // Glacier: thick ice (the redesign), cover, and Harbours.
     expect(facts(["SHORECRAFT", "SEAMANSHIP", "SUBMERSIBLES"])).toEqual([
       "SHALLOW",
       false,
       true,
-      5,
+      true,
       true,
       1,
     ]);
@@ -317,11 +333,11 @@ describe("the Ice Folk Naval tree (section 2.2)", () => {
           caps.freezeWater,
           caps.icebound,
           caps.blackIce,
-          caps.iceTurns,
+          caps.thickIce,
           caps.iceCover,
         ],
         faction,
-      ).toEqual(["NONE", false, false, 3, false]);
+      ).toEqual(["NONE", false, false, false, false]);
       // Themed naval branches (`pulp_wars-5ti.16`, `pulp_wars-5ti.17`): the
       // Goblin Seamanship is Powder Kegs, the Ram and Fire Rafts instead of
       // Board, and the Undead one Drowned Crews; the Martian one Hover Pods
@@ -412,36 +428,48 @@ describe("the ice list of a state (section 8.3)", () => {
     const entry = (
       x: number,
       y: number,
-      turnsLeft = 3,
+      cracked: unknown = false,
       ownerId = owner(state),
     ) => ({
       at: { x, y },
       ownerId,
-      turnsLeft,
+      cracked,
     });
     const keep = entry(2, 3);
+    const below = entry(3, 4);
     const rejected: readonly (readonly [string, readonly unknown[]])[] = [
-      ["off the board", [keep, entry(11, 3)]],
-      ["on a land tile", [entry(2, 2), keep]],
-      ["on a dock", [keep, entry(4, 3)]],
-      ["a duplicate", [keep, keep]],
-      ["unsorted", [entry(3, 4), keep]],
-      ["turnsLeft below 0", [entry(2, 3, -1)]],
-      ["turnsLeft above 5", [entry(2, 3, 6)]],
-      ["a fractional turnsLeft", [entry(2, 3, 1.5)]],
-      ["an owner that is not a player", [entry(2, 3, 3, 99 as never)]],
-      ["an extra key", [{ ...keep, permanent: true }]],
-      ["a missing key", [{ at: keep.at, ownerId: keep.ownerId }]],
+      ["off the board", [keep, below, entry(11, 3)]],
+      ["on a land tile", [entry(2, 2), keep, below]],
+      ["a duplicate", [keep, keep, below]],
+      ["unsorted", [below, keep]],
+      // The frozen sea redesign: no countdown; `cracked` only on thick ice.
+      ["a turnsLeft", [{ ...keep, turnsLeft: 3 }, below]],
+      [
+        "turnsLeft instead of cracked",
+        [{ at: keep.at, ownerId: keep.ownerId, turnsLeft: 3 }, below],
+      ],
+      ["a cracked that is no boolean", [entry(2, 3, 1), below]],
+      // Seat 1 (Human) never has thick ice.
+      [
+        "a crack in ice that is not thick",
+        [entry(2, 3, true, seatV7(state, 1).id), below],
+      ],
+      [
+        "an owner that is not a player",
+        [entry(2, 3, false, 99 as never), below],
+      ],
+      ["an extra key", [{ ...keep, permanent: true }, below]],
+      ["a missing key", [{ at: keep.at, ownerId: keep.ownerId }, below]],
       // A land unit stands on water only on ice.
-      ["no ice under a land unit on water", [entry(3, 4)]],
+      ["no ice under a land unit on water", [below]],
     ];
     for (const [label, ice] of rejected)
       expect(parseGameStateV7(withIce(state, ice)), label).toBeNull();
-    for (const turnsLeft of [0, 1, 5])
-      expect(
-        parseGameStateV7(withIce(state, [entry(2, 3, turnsLeft)])),
-        String(turnsLeft),
-      ).not.toBeNull();
+    expect(parseGameStateV7(withIce(state, [keep, below]))).not.toBeNull();
+    // The redesign (section 2.6): ice may lie on a dock (an Ice Harbour).
+    expect(
+      parseGameStateV7(withIce(state, [keep, entry(4, 3), below])),
+    ).not.toBeNull();
     expect(parseGameStateV7({ ...state, ice: "ice" })).toBeNull();
   });
 
@@ -451,7 +479,7 @@ describe("the ice list of a state (section 8.3)", () => {
     expect(
       parseGameStateV7(
         withIce(state, [
-          { at: { x: 2, y: 3 }, ownerId: owner(state), turnsLeft: 3 },
+          { at: { x: 2, y: 3 }, ownerId: owner(state), cracked: false },
         ]),
       ),
     ).toBeNull();
@@ -483,46 +511,39 @@ describe("the ice list of a state (section 8.3)", () => {
     ).toBeNull();
   });
 
-  it("lists the ice a viewer has explored, with `permanent`", () => {
+  it("lists the ice a viewer has explored, with its crack and whether it is thick", () => {
     const state = frozenArenaV7({
       units: [],
       explored: [true, false],
       ice: [
-        { at: { x: 5, y: 3 }, turnsLeft: 2 },
-        { at: { x: 2, y: 5 }, turnsLeft: 1 },
+        { at: { x: 5, y: 3 } },
+        // Every Naval technology: Glacier's thick ice may be cracked.
+        { at: { x: 2, y: 5 }, cracked: true },
         // Next to seat 1's capital, which seat 1 has explored.
-        { at: { x: 5, y: 7 }, turnsLeft: 3 },
+        { at: { x: 5, y: 7 } },
       ],
     });
-    const home = state.ice.find((entry) => entry.at.y === 3);
-    if (home === undefined) throw new Error("no home ice");
-    expect(iceIsPermanentV7(state, home)).toBe(true);
     expect(viewForV7(state, owner(state)).ice).toEqual([
       {
         at: { x: 5, y: 3 },
         ownerId: owner(state),
-        turnsLeft: 2,
-        permanent: true,
+        cracked: false,
+        thick: true,
       },
-      {
-        at: { x: 2, y: 5 },
-        ownerId: owner(state),
-        turnsLeft: 1,
-        permanent: false,
-      },
+      { at: { x: 2, y: 5 }, ownerId: owner(state), cracked: true, thick: true },
       {
         at: { x: 5, y: 7 },
         ownerId: owner(state),
-        turnsLeft: 3,
-        permanent: false,
+        cracked: false,
+        thick: true,
       },
     ]);
     expect(viewForV7(state, seatV7(state, 1).id).ice).toEqual([
       {
         at: { x: 5, y: 7 },
         ownerId: owner(state),
-        turnsLeft: 3,
-        permanent: false,
+        cracked: false,
+        thick: true,
       },
     ]);
   });
@@ -556,17 +577,15 @@ describe("the Showcase with an Ice Folk seat (section 3.3)", () => {
     // (The ninth unit, 7r55: eight and the Musk Ox.)
     expect(own).toHaveLength(9);
     expect(own.every((unit) => unit.form === "LAND")).toBe(true);
+    // The frozen sea redesign: permanent, sound ice (thick: Glacier).
     expect(state.ice).toEqual([
-      { at: { x: cx, y: 12 }, ownerId: ice.id, turnsLeft: 5 },
-      { at: { x: cx, y: 13 }, ownerId: ice.id, turnsLeft: 5 },
-      { at: { x: cx + 1, y: 13 }, ownerId: ice.id, turnsLeft: 5 },
+      { at: { x: cx, y: 12 }, ownerId: ice.id, cracked: false },
+      { at: { x: cx, y: 13 }, ownerId: ice.id, cracked: false },
+      { at: { x: cx + 1, y: 13 }, ownerId: ice.id, cracked: false },
     ]);
-    // The one in its Coast city's territory is permanent.
-    expect(state.ice.map((entry) => iceIsPermanentV7(state, entry))).toEqual([
+    expect(viewForV7(state, ice.id).ice.every((entry) => entry.thick)).toBe(
       true,
-      false,
-      false,
-    ]);
+    );
     // Every other seat keeps its three ships and its entity IDs.
     for (const seat of [1, 2, 3] as const) {
       const player = state.players.find((entry) => entry.seat === seat);

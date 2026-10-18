@@ -15,7 +15,7 @@ import type { MissionDefinitionV7 } from "./types";
  * already hold three cities and the Baron's port, on a bigger board with a
  * longer clock. The frozen sea is yours to discover (Rime freezes the
  * shallows, Pack Ice the deep water in the middle of the strait, Black Ice
- * freezes whoever steps on your ice, Glacier makes the road last), the
+ * freezes whoever steps on your ice, Glacier makes your ice thick), the
  * island in the north-west is yours to settle first, and the Crater falls
  * to Frost Giants: a city of yours at level 5 sends one, its Cold Aura
  * freezes whatever it stands next to, and its Glacial Smash shatters what

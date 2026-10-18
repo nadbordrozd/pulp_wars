@@ -712,7 +712,7 @@ describe("K2: the Kraken's Drag afloat (section 9.3)", () => {
         { seat: 0, role: "SUBMARINE", at: KRAKEN },
         { seat: 1, role: "PATROL_BOAT", at: BOAT },
       ],
-      ice: [{ at: KRAKEN, seat: 2, turnsLeft: 5 }],
+      ice: [{ at: KRAKEN, seat: 2 }],
       third: { faction: "ICE_FOLK", explored: true },
     });
     const boat = navalUnitAtV7(frozen, BOAT);

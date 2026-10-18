@@ -116,6 +116,10 @@ export const TILE_ACTION_COMMAND_CLASSES_V7: Readonly<
   STAMPEDE: "AIMED",
   // A line role's Freeze is aimed; the Ice Witch's ring is not (bar only).
   FREEZE: "AIMED",
+  // The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 4.1): Crack
+  // Ice will pick its tile on the board (AIMED) once bead pulp_wars-5ti.27
+  // gives it its dock button and icon; until then no interface offers it.
+  CRACK_ICE: "BAR_ONLY",
   TUNNEL: "AIMED",
   BOMB_RUN: "AIMED",
   ASSEMBLE: "AIMED",
@@ -184,6 +188,7 @@ export const TILE_ACTION_COMMAND_CLASSES_V7: Readonly<
   BLAST_MOUNTAIN: "NOT_A_UNIT",
   BUILD_ROAD: "NOT_A_UNIT",
   REDEVELOP: "NOT_A_UNIT",
+  BUILD_FISHING_HOLE: "NOT_A_UNIT",
 };
 
 /** What a tile action is called and drawn with. */

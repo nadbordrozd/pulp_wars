@@ -746,6 +746,7 @@ const BUILDING_DESCRIPTIONS: Readonly<
   MONUMENT: `Each achievement earns a free Monument: +${MONUMENT_POPULATION_V7} population, one per city. It keeps its builder's look when its city is captured.`,
   PORT: "Built on Shallow Water. Puts land units to sea and trains ships.",
   SHIPYARD: "An upgraded Port. Ships cost less.",
+  FISHING_HOLE: "Cut in Ice Folk ice. Counts as a farm.",
 };
 
 /**

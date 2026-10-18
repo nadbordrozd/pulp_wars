@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r99`, for all nine offered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r100`, for all nine offered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), Candy (`CANDY`), and
 the Cultists (`CULT`). The ninth faction, the Cultists of the Ancient Ones,
@@ -445,6 +445,42 @@ links to another, by Road or by Port. A sea link needs only **Shorecraft**
 the Roads technology, and unexplored water no longer breaks a link. A save,
 replay, or setup of `7r75` is rejected, and the browser autosave has a new
 key.
+`pulp-wars-poc-7r100` (`pulp_wars-5ti.25`, bead A of the
+[frozen sea redesign](RULESET_7_ICE_REDESIGN.md); the user, 2026-10-18:
+"the water freezing mechanics by the ice foik are a mess") makes **the
+Ice Folk ice permanent** ([section 21.16](#2116-the-frozen-sea)): no thaw,
+no countdown, no "a land unit holds the ice" (`IceTileV7` is
+`{ at, ownerId, cracked }`; the view's ice entry `{ at, ownerId, cracked,
+thick }`). **Crack Ice** (`CRACK_ICE { kind, unitId, at }`, a free primary
+action of every land unit and ship not of the Ice Folk kind) breaks one
+adjacent ice tile back into water, unless a land unit stands on it or it
+is built on (`CRACK_ICE_NOT_LEGAL`; event `ICE_CRACKED`), and frees a ship
+frozen in, which may act the same turn. **Glacier** makes the ice
+**thick** (capability `thickIce`, `iceTurns` gone): two Cracks break it,
+and the owner's Freeze mends a crack. **Freeze** offers only what changes
+something: it makes open water (the own dock included) ice, takes another
+player's ice, and mends its own cracked ice, and passes over its own
+sound ice (preview `{ unitId, tiles, mended, taken, icebound }`). **The
+Ice Folk build on their own ice**: their Port is the **Ice Harbour**
+(Shipyard: Great Harbour) on their ice or on open Shallow Water, which it
+freezes (`PORT_BUILT.iceMade`); a dock on ice is blockaded by a hostile
+land unit, never by a ship, and trains, embarks, and recovers nothing;
+the Windmill, Sawmill, Forge, Workshop, Market, and Monument may stand on
+their ice in their territory; and the new **Fishing Hole**
+(`BUILD_FISHING_HOLE`, improvement `FISHING_HOLE`, Rime, 3 Coins, +1
+population) counts as a Farm for mills and Markets
+([sections 8.1 to 8.3](#81-common-placement-gates), [14](#14-naval-rules)).
+**Black Ice** freezes an enemy **once, as it steps on** (its own `MOVE`,
+a landing, or a Beam Down onto the seat's ice from off it), never at the
+Start Turn. The Sled has **Runners** (role mechanic `runners`): its slide
+is not stopped by zones of control. On a **capture** the former owner's
+ice in the city's territory passes to the captor; on an **elimination**
+the seat's icebound ships float free (`ICE_MELTED`) and its other ice
+stays, one Crack from breaking. The Normal AI only stops reading the thaw
+(it never picks Crack Ice yet: bead `pulp_wars-5ti.26`), and the
+interface keeps its old Freeze dock without the countdown (the Crack Ice
+button and the new sprites are bead `pulp_wars-5ti.27`). A save, replay,
+or setup of `7r99` is rejected, and the browser autosave has a new key.
 `pulp-wars-poc-7r99` (`pulp_wars-w49.42`) is **bolder abilities**, the
 user's ruling of 2026-10-18 ("all these abilities are too timid"). **Mind
 Control** ([section 20.8](#208-mind-control)) takes **any hostile unit on
@@ -1379,7 +1415,7 @@ the build differs (its sections 20 to 24 list them);
 the values here are current. Where a document and the code disagreed, the
 code's behavior is the rule and is stated below;
 [Known discrepancies](#25-known-discrepancies) lists the open items and the
-resolved ones as of `pulp-wars-poc-7r99`.
+resolved ones as of `pulp-wars-poc-7r100`.
 
 **Terms.** "On the board" means a unit that currently exists (HP above 0).
 **Living** has the narrower revision-13 meaning used by Wail, Plague,
@@ -1482,10 +1518,10 @@ sections here cite.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r99`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Ruleset                                    | `pulp-wars-poc-7r100`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r99.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Browser autosave                           | `pulpWars.save.v7r100.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, `CULT`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`, `CULT_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -5181,17 +5217,42 @@ tile command, and so does a Dwarf mound
 its terrain, Road, improvement, resource, Field Defense, Grave, and Snow,
 and no tile command changes a tile into water, a Rift, or a site.
 
+**Building on ice** (the frozen sea redesign, `pulp_wars-5ti.25`,
+`7r100`; [section 21.16](#2116-the-frozen-sea)). Only an **Ice Folk** seat
+builds on ice (a seat rule read from the seat's faction, like Snow; a
+Martian controlling a Yeti does not), and only on **its own ice**
+(`iceBuildableV7`; another seat's ice is Frozen first). The tile is
+otherwise held to the gates above, plus: no visible resource (Fish or
+Pearls: harvest them first) and no improvement. The Ice Harbour (its Port,
+[section 14](#14-naval-rules)), the **Fishing Hole**
+([section 8.2](#82-resource-and-basic-actions)), the Windmill, Sawmill,
+Forge, Workshop, Market, and Monument may stand on such ice; a Farm, a
+Lumber Camp, and a Mine never do (they need Fertile Ground, Forest, a
+Mountain). Building on ice leaves the ice as it is; a Redevelop or a
+Pillage removes the building and leaves the ice. Every other seat builds
+nothing on ice (`INVALID_TILE`, never offered), even on ice it owns (the
+ice of a city it captured, whose buildings keep working for it).
+
 ### 8.2 Resource and basic actions
 
-| Action            | Tech        | Target                                     | Cost | Result                                |
-| ----------------- | ----------- | ------------------------------------------ | ---: | ------------------------------------- |
-| Harvest Fruit     | Gathering   | Grass + Fruit                              |    2 | remove Fruit; +1 permanent population |
-| Hunt Game         | Hunting     | Forest + Game                              |    2 | remove Game; +1 permanent population  |
-| Harvest Fish      | Shorecraft  | Shallow Water + Fish (Port tile if active) |    2 | remove Fish; +1 permanent population  |
-| Gather Pearls     | Navigation  | any water + Pearls (Port tile if active)   |    0 | remove Pearls; receive 10 Coins¹      |
-| Build Farm        | Farming     | Grass + Fertile Ground                     |    5 | Farm; +2 live population              |
-| Build Lumber Camp | Forestry    | Forest, no resource or improvement         |    3 | Lumber Camp; +1 live population       |
-| Build Mine        | Engineering | Mountain + Ore                             |    5 | Mine; +2 live population              |
+| Action              | Tech                           | Target                                                                   | Cost | Result                                |
+| ------------------- | ------------------------------ | ------------------------------------------------------------------------ | ---: | ------------------------------------- |
+| Harvest Fruit       | Gathering                      | Grass + Fruit                                                            |    2 | remove Fruit; +1 permanent population |
+| Hunt Game           | Hunting                        | Forest + Game                                                            |    2 | remove Game; +1 permanent population  |
+| Harvest Fish        | Shorecraft                     | Shallow Water + Fish (Port tile if active)                               |    2 | remove Fish; +1 permanent population  |
+| Gather Pearls       | Navigation                     | any water + Pearls (Port tile if active)                                 |    0 | remove Pearls; receive 10 Coins¹      |
+| Build Farm          | Farming                        | Grass + Fertile Ground                                                   |    5 | Farm; +2 live population              |
+| Build Lumber Camp   | Forestry                       | Forest, no resource or improvement                                       |    3 | Lumber Camp; +1 live population       |
+| Build Mine          | Engineering                    | Mountain + Ore                                                           |    5 | Mine; +2 live population              |
+| Build Fishing Hole² | Rime (the Ice Folk Shorecraft) | the seat's own ice (Shallow or Deep), no visible resource or improvement |    3 | Fishing Hole; +1 live population      |
+
+² The frozen sea redesign (`pulp_wars-5ti.25`, `7r100`): the Ice Folk
+**Fishing Hole** (`BUILD_FISHING_HOLE`, improvement `FISHING_HOLE`,
+`FISHING_HOLE_COST_V7` 3, `FISHING_HOLE_POPULATION_V7` 1), unlocked only
+by the Ice Folk Rime. No limit per city. It **counts as a Farm** wherever
+a mill, a Workshop, or a Market counts Farms (`spatialContributionAtV7`):
+a Windmill counts it like a Farm, a Workshop counts it as the Farm type,
+and a Market as the agriculture family. Event `ECONOMIC_BUILDING_BUILT`.
 
 ¹ `pulp_wars-5ti.14` (`pulp-wars-poc-7r86`; the user, 2026-10-16:
 "they cost nothing! and instead return 10 coins"): Gather Pearls **costs
@@ -5214,17 +5275,21 @@ reserve holds the gathering back.
 
 "Adjacent" always means the eight surrounding cells.
 
-| Building | Tech           | Cost | Limit    | Placement needs                                             | Live output                                                               |
-| -------- | -------------- | ---: | -------- | ----------------------------------------------------------- | ------------------------------------------------------------------------- |
-| Windmill | Milling        |    5 | one/city | at least one adjacent same-owner Farm                       | +1 per adjacent same-owner Farm, cap 8                                    |
-| Sawmill  | Sawmilling     |    5 | one/city | at least one adjacent same-owner Lumber Camp                | +1 per adjacent same-owner Lumber Camp, cap 8                             |
-| Forge    | Metallurgy     |    6 | one/city | at least one adjacent same-owner Mine                       | +1 per adjacent same-owner Mine, cap 6                                    |
-| Workshop | Drill (`7r56`) |    4 | one/city | at least one adjacent same-owner Farm, Lumber Camp, or Mine | 0 without support; else 1 + number of distinct adjacent basic types (2–4) |
-| Market   | Administration |    6 | one/city | at least one adjacent economic family                       | Coins, not population ([section 9.4](#94-market))                         |
-| Monument | achievement    |    0 | one/city | an unspent achievement entitlement                          | +3                                                                        |
+| Building | Tech           | Cost | Limit    | Placement needs                                                           | Live output                                                                                                |
+| -------- | -------------- | ---: | -------- | ------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| Windmill | Milling        |    5 | one/city | at least one adjacent same-owner Farm (or Fishing Hole)                   | +1 per adjacent same-owner Farm or Fishing Hole, cap 8                                                     |
+| Sawmill  | Sawmilling     |    5 | one/city | at least one adjacent same-owner Lumber Camp                              | +1 per adjacent same-owner Lumber Camp, cap 8                                                              |
+| Forge    | Metallurgy     |    6 | one/city | at least one adjacent same-owner Mine                                     | +1 per adjacent same-owner Mine, cap 6                                                                     |
+| Workshop | Drill (`7r56`) |    4 | one/city | at least one adjacent same-owner Farm, Fishing Hole, Lumber Camp, or Mine | 0 without support; else 1 + number of distinct adjacent basic types (2–4; a Fishing Hole is the Farm type) |
+| Market   | Administration |    6 | one/city | at least one adjacent economic family                                     | Coins, not population ([section 9.4](#94-market))                                                          |
+| Monument | achievement    |    0 | one/city | an unspent achievement entitlement                                        | +3                                                                                                         |
 
 - Buildings target a land tile with no site, visible resource, improvement, or
-  treasure.
+  treasure; an Ice Folk seat may also put them on its own ice in its
+  territory ([section 8.1](#81-common-placement-gates)), and their
+  neighbours are counted across land and ice alike (a Windmill on the ice
+  next to a Frost Garden ashore counts it; a Windmill ashore counts a
+  Fishing Hole on the ice).
 - **Mills count across the owner's cities and share** (the economy rejig,
   `7r54`, [its record](RULESET_7_ECONOMY_REJIG.md#1-mills-and-their-neighbours)).
   A Windmill counts every Farm on its eight neighbouring tiles that stands
@@ -7047,12 +7112,14 @@ uses its own giant's signature and every seat reads a hostile giant's
   (Rally/Frenzy/Berserk/War Drums/Psychic Command, Tend and Repair, Field
   Defense, Pillage, Raise Dead, Devour, Wail, Kaboom, Hatch, Beam Down, Mind
   Control, Tractor Beam, Bolas, Cold Snap, Frost Bolt, Stampede, Freeze,
-  Board, Bomb Run, Assemble). Guard,
+  Crack Ice, Board, Bomb Run, Assemble). Guard,
   Zombie, Orc Brute, Ankylosaurus, Shield Projector, Catapult, Lich, Rocket
   Cart, Steam Cannon, and Battleship cannot attack after moving; the
   Triceratops (revision 20), the Tripod, the Mammoth, the Boulder Yeti, and
-  the Steam Mole can. `BOARD` and `FREEZE` follow the same flag, so a
-  Battleship that moved cannot board. Every read of this role flag for a unit
+  the Steam Mole can. `BOARD`, `FREEZE`, and `CRACK_ICE` (the frozen sea
+  redesign, `7r100`: every land unit and ship of the eight other factions,
+  [section 21.16](#2116-the-frozen-sea)) follow the same flag, so a
+  Battleship that moved cannot board or crack. Every read of this role flag for a unit
   goes through the single rule `unitMayActAfterMoveV7`: the role's
   `mayUsePrimaryActionAfterMove`, and not Frozen.
 - **Frozen** ([section 21.3](#213-what-a-frozen-unit-cannot-do), Ice Folk
@@ -7062,9 +7129,9 @@ uses its own giant's signature and every seat reads a hostile giant's
   so are a Goblin Toss of a Frozen passenger and a Tunnel with a Frozen
   rider. It does not retaliate.
 - **Icebound units** ([section 21.16](#2116-the-frozen-sea)): an afloat
-  unit standing on ice cannot Move, Attack, or Board; it may Recover (a
-  ship on or next to its own active dock), Wait, and Promote, and an
-  icebound embarked unit may still `DISEMBARK`.
+  unit standing on ice cannot Move, Attack, Board, or Crack Ice; it may
+  Recover (a ship next to its own active dock; never on a dock on ice),
+  Wait, and Promote, and an icebound embarked unit may still `DISEMBARK`.
 - **Burrowed units** have no activation on the board: every command naming
   one is rejected with `UNIT_ALREADY_HANDLED` and never offered
   ([section 22.2](#222-the-tunnel-and-burrowed-units)).
@@ -7648,8 +7715,9 @@ Every rule that names "naval units", "ships", or "boats" covers all three.
   ([section 12.1](#121-movement)); pass-through adds no landing cell, it only
   widens where a two-cell water Move can end.
 - **Embarking:** a land unit embarks by ending a Move on an own active, empty
-  Port or Shipyard (Shorecraft); a dock that holds any unit, own or not,
-  cannot be embarked on (`OCCUPIED`). The embark step costs half when the
+  Port or Shipyard (Shorecraft) on open water; a dock that holds any unit,
+  own or not, cannot be embarked on (`OCCUPIED`). Nothing embarks at a dock
+  on ice (the frozen sea redesign, `7r100`): a unit walks onto it. The embark step costs half when the
   tile left is a usable Road node ([section 9.2](#92-road-movement)). The
   unit keeps its identity, HP, kills, and home city and is exhausted for the
   turn.
@@ -7682,17 +7750,34 @@ Every rule that names "naval units", "ships", or "boats" covers all three.
   the same city among its eight neighbours, and with no improvement, site, or
   Road. It may share its tile with Fish or Pearls, has no per-city limit, and
   gives +1 live population while active (+2 with Harbours,
-  [section 14.4](#144-harbours)). No Port is built on an ice tile.
+  [section 14.4](#144-harbours)). Every seafaring seat builds it only on
+  **open** Shallow Water (it may Crack the ice first). **The Ice Harbour**
+  (the frozen sea redesign, `pulp_wars-5ti.25`, `7r100`): an Ice Folk
+  seat's Port (Rime) stands on **its own ice** (Shallow or Deep) or on open
+  Shallow Water with no unit on it, which it **freezes first** (an ice
+  entry of the builder; `PORT_BUILT.iceMade` true), so an Ice Folk dock is
+  always on ice and its units walk and slide across it. A captured dock
+  that its new Ice Folk owner freezes over is an Ice Harbour too.
 - **Shipyard** (Naval Engineering, 5 Coins, one per city): upgrades an active
-  Port in place. It keeps all Port functions, gives +2 live population in
+  Port in place (the Ice Folk **Great Harbour**, Icebound, on its ice). It keeps all Port functions, gives +2 live population in
   total (+3 with Harbours), and makes naval training 2 Coins cheaper
   (minimum 1): Patrol Boat 3, Submarine 7, Battleship 14.
 - **Active and blockaded docks:** a Port or Shipyard is active while its city's
-  owner owns it and no hostile naval or embarked unit stands on it. A
+  owner owns it and no hostile unit stands on it in the dock's ground form:
+  on open water a naval or embarked unit, **on a dock on ice a land-form
+  unit** (the frozen sea redesign, `7r100`; an icebound ship there
+  blockades nothing, so a Freeze that locks a blockader on an own dock
+  lifts the blockade; never an Egg). A
   blockaded dock gives 0 population and cannot train, embark, harvest its
   resource, recover ships, or join the connection network (it is no Road
   node and ends no sea link; [section 9.5](#95-sea-links)) until the
   blockader leaves.
+- **A dock on ice** (an Ice Harbour, or any dock frozen over) keeps every
+  economic function (population, Harvest Fish, sea links, the Shipyard
+  upgrade) and no ship function: nothing trains (`TRAIN_NAVAL` is
+  `INVALID_TILE`, never offered), embarks, or recovers **on** it; next to
+  it a seafaring owner's ships recover as beside any dock. A Pillage
+  removes it (and leaves the ice), as a Redevelop does.
 - **Naval training:** `TRAIN_NAVAL` selects an active, empty dock assigned to
   the city and spends the city action, capacity, and Coins. It trains the
   Patrol Boat (Shorecraft), the Battleship (Naval Engineering), and the
@@ -12546,45 +12631,72 @@ tail.
 ### 21.16 The frozen sea
 
 The Ice Folk Naval branch (`pulp_wars-5ti.3`, `pulp-wars-poc-7r44`; the
-[naval branch overlay](RULESET_7_NAVAL_BRANCH.md), section 8, with the
-records of its sections 22 and 23). An Ice Folk seat never builds a ship.
+[naval branch overlay](RULESET_7_NAVAL_BRANCH.md), section 8), as
+**redesigned** by `pulp_wars-5ti.25` at `pulp-wars-poc-7r100`
+([RULESET_7_ICE_REDESIGN.md](RULESET_7_ICE_REDESIGN.md); the user,
+2026-10-18: "ice should stay by default. other factions should have the
+option to crack ice around them"). An Ice Folk seat never builds a ship.
 With **Rime** its units freeze the water next to them, two tiles out in a
-line (the Ice Witch: every tile around her), and they **slide**: an Ice
-Folk unit that steps onto ice keeps going straight until something stops
-it. Ice in the seat's own territory stays; ice elsewhere melts after three
-of its owner's turns unless refrozen, but never under a land unit. Other
-factions may walk on the ice, slowly (a Move ends on entering it), and
-their ships cannot sail through it. **Pack Ice** freezes the deep sea, **Black Ice** freezes every enemy that stands on the ice, **Icebound**
-freezes enemy ships in place to be crushed, and **Glacier** makes the ice last, shelter the Ice Folk on it, and
-speed their Moves across it. In a match without an Ice Folk seat
+line (the Ice Witch: every tile around her), and **the ice stays**. Their
+units **slide** across it; their cities **build on it** (the Ice Harbour,
+Fishing Holes, and their mills and markets), so frozen home water is new
+land, not lost water. Everyone else may walk on it slowly (a Move ends on
+entering it), and every unit and ship of the other eight factions may
+**Crack** the ice next to it back into open water. **Pack Ice** freezes
+the deep sea, **Black Ice** freezes an enemy that steps onto the ice,
+**Icebound** locks ships in to be crushed, and **Glacier** makes the ice
+thick enough to take two Cracks. In a match without an Ice Folk seat
 nothing here happens: the `ice` list is always empty.
 
-| Rule      | One sentence                                                                                                                        |
-| --------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| Freeze    | A unit turns the water next to it to ice, two tiles out in a straight line; the Witch freezes every tile around her.                |
-| Slide     | An Ice Folk unit that steps onto ice slides straight on until it reaches the end of the ice, a unit, or an enemy's zone of control. |
-| Slip      | Any other unit may walk onto ice, but its Move ends there.                                                                          |
-| Thaw      | Ice melts after 3 of its owner's turns, but never in the owner's territory and never under a land unit.                             |
-| No ships  | Ships cannot enter ice; the Ice Folk have no ships at all.                                                                          |
-| Black Ice | Whoever stands on your ice at the start of your turn is Frozen.                                                                     |
-| Icebound  | Freeze a ship in place: it cannot sail, shoot, board, or strike back, and the ice crushes it for 3 each turn.                       |
-| Glacier   | Your ice lasts 5 turns, your units on it have Snow cover, and a Move of yours across ice gets +1 Move.                              |
+| Rule      | One sentence                                                                                                                      |
+| --------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| Freeze    | A unit turns the water next to it to ice, two tiles out in a line; the Witch freezes every tile around her.                       |
+| Ice stays | Ice never melts; it is gone only when someone cracks it.                                                                          |
+| Slide     | An Ice Folk unit that steps onto ice slides straight on until the ice ends, a unit blocks it, or an enemy's zone of control.      |
+| Runners   | A Sled's slide is not stopped by zones of control.                                                                                |
+| Slip      | Any other unit may walk onto ice, but its Move ends there.                                                                        |
+| Crack Ice | Any other unit or ship next to ice may break one tile of it back into water, unless a unit stands on it or it is built on.        |
+| Build     | The Ice Folk build their Ice Harbour, Fishing Holes, mills, Workshop, Market and Monument on their own ice.                       |
+| No ships  | Ships cannot enter ice; the Ice Folk have no ships at all.                                                                        |
+| Black Ice | An enemy that steps onto your ice is Frozen.                                                                                      |
+| Icebound  | Freeze a ship in place: it cannot sail, shoot, or strike back, and the ice crushes it for 3 each turn until it sinks or is freed. |
+| Glacier   | Your ice is thick (two Cracks to break), your units on it have Snow cover, and a Move across ice gets +1 Move.                    |
 
 **Ice tiles.**
 
-- **State.** `GameStateV7.ice: { at, ownerId, turnsLeft }[]`, sorted by
-  `(y, x)`, hashed, saved, and replayed. An **ice tile** is a water tile
-  (Shallow or Deep) with an entry. Its terrain does not change: ice is a
-  layer, so no command turns water into land and map generation is
-  untouched. State parsing rejects an entry off the board, on a land tile,
-  or on a dock (Port or Shipyard), a duplicate or unsorted entry, a
-  `turnsLeft` outside 0 to 5, an `ownerId` that is not a player of the
-  match, and any entry in a match without an Ice Folk seat. It also rejects
-  a unit of the Ice Folk kind in `NAVAL` or `EMBARKED` form and an Ice Folk
-  seat that owns a unit in `NAVAL` form, and it admits a land-form unit on
-  a water tile only where that tile is ice.
+- **State.** `GameStateV7.ice: { at, ownerId, cracked }[]`, sorted by
+  `(y, x)`, hashed, saved, and replayed (`turnsLeft` is gone with `7r100`).
+  An **ice tile** is a water tile (Shallow or Deep) with an entry. Its
+  terrain does not change: ice is a layer, so no command turns water into
+  land and map generation is untouched. `cracked` is true only on thick
+  ice that has taken one Crack. State parsing rejects an entry off the
+  board or on a land tile, a duplicate or unsorted entry, a `turnsLeft`
+  key, an `ownerId` that is not a player of the match, `cracked` true on
+  ice whose owner has no thick ice (no Glacier, or eliminated), and any
+  entry in a match without an Ice Folk seat. It also rejects a building on
+  water that is not on ice (except a Port or Shipyard on open Shallow
+  Water), a unit of the Ice Folk kind in `NAVAL` or `EMBARKED` form, and
+  an Ice Folk seat that owns a unit in `NAVAL` form, and it admits a
+  land-form unit on a water tile only where that tile is ice. Ice may lie
+  on a dock (an Ice Harbour) and under any Ice Folk building.
 - **View.** `PlayerViewV7.ice` lists the entries on tiles the viewer has
-  explored, each with `permanent` (the tile is in its owner's territory).
+  explored as `{ at, ownerId, cracked, thick }` (`permanent` and
+  `turnsLeft` are gone). `thick` is the owner's Glacier (`thickIce`,
+  through `technologyCapabilitiesV7`; an eliminated owner has none):
+  publishing it reveals the owner's Glacier, which the public `iceCover`
+  unit stat already does, so every Crack preview is exact.
+- **Permanence.** Ice has no countdown and there is no thaw step: an entry
+  leaves the list only by a Crack or by the elimination release below (a
+  Redevelop or a Pillage removes the building and leaves the ice).
+  Nothing anyone does keeps ice alive, so nothing has to be done.
+- **Ownership.** A Freeze makes or takes the tile for the actor's owner.
+  **Capture:** when a city changes owner, every ice entry of the former
+  owner on that city's territory passes to the captor, with `cracked`
+  false; ice elsewhere keeps its owner. **Elimination:** an eliminated
+  seat's ice stays; every icebound unit on it floats free at once (its
+  tile's entry goes: `ICE_MELTED { tiles, freed }`, kept for this one
+  use), its cracks are gone (an eliminated owner has no thick ice), and
+  the rest breaks with one Crack.
 - **Ground for land-form units.** For a land-form unit of every faction and
   movement mode an ice tile is ground (`canEnterTerrainV7`), whatever the
   depth and without Navigation or Engineering: it may be the end of a
@@ -12595,20 +12707,18 @@ nothing here happens: the `ice` list is always empty.
   A land unit projects ZOC onto adjacent ice as onto land.
 - **Water for everything else.** No terrain cover (Glacier gives Ice Folk
   units the Snow cover there), no Walls or Field Defense, never Snow, and
-  no Road, building, improvement, Grave, Egg, mound, Crumbs, chest, reward
-  or treasure unit, rising, Re-bake, Assemble, or tunnel end on it. **A
-  unit on ice has no fortification of any kind:** Walls and Field Defense
-  never exist on water, and since `7r45` (`pulp_wars-5ti.11`) a Dwarf is
-  never dug in on ice, however near its city center
-  ([section 22.7](#227-dig-in)). Glacier's cover is the only shelter on
-  ice. A unit standing on ice acts on the land beside it as usual: a
-  Shaman hatches an Egg ashore, an Engineer assembles a Gunner ashore, and
-  a Confectioner re-bakes Crumbs ashore. **A death on ice is a water death:** no
-  Grave, no Infect or Bitten rising, no Crumbs. The tile's Fish or Pearls
-  stay and may be harvested under the ordinary gates; a Port cannot be
-  built on ice, and ice never forms on a dock. A sea link counts an ice tile
-  as water (a route may run under the ice). A tunnel never passes under it,
-  and an eruption hits a land-form unit standing on it.
+  no Road, Grave, Egg, mound, Crumbs, chest, reward or treasure unit,
+  rising, Re-bake, Assemble, or tunnel end on it; buildings only those of
+  an Ice Folk seat ([section 8.1](#81-common-placement-gates)). **A unit
+  on ice has no fortification of any kind** (since `7r45`, a Dwarf is
+  never dug in on ice; [section 22.7](#227-dig-in)); Glacier's cover is the
+  only shelter on ice. A unit standing on ice acts on the land beside it
+  as usual. **A death on ice is a water death:** no Grave, no Infect or
+  Bitten rising, no Crumbs. The tile's Fish or Pearls stay and may be
+  harvested under the ordinary gates. A sea link counts an ice tile as
+  water. A tunnel never passes under it, and an eruption hits a land-form
+  unit standing on it. Ice is not land for Roads (the slide is the Ice
+  Folk road) nor for the Port's shore rule.
 - **Ships cannot enter ice.** A unit afloat (`NAVAL` or `EMBARKED`) never
   enters, passes, or is pushed, shoved, or pulled onto an ice tile, and a
   naval unit projects no ZOC onto ice. The only afloat unit ever on ice is
@@ -12625,66 +12735,80 @@ Legality, in this order (all rejections atomic):
 | 3   | Its kind's capabilities under its owner have `freezeWater` `SHALLOW` or `DEEP` (Rime).                          | `TECH_REQUIRED { tech: "SHORECRAFT" }`        |
 | 4   | It is not Frozen, and it has not used a primary action.                                                         | `UNIT_FROZEN`; `UNIT_ALREADY_ACTED`           |
 | 5   | For the Ice Witch, `at` is her own tile; for every other role, `at` is one of the eight tiles next to the unit. | `FREEZE_NOT_LEGAL { reason: "OUT_OF_RANGE" }` |
-| 6   | The freeze set (below) is not empty.                                                                            | `FREEZE_NOT_LEGAL { reason: "NO_TARGET" }`    |
+| 6   | The freeze set (below) is not empty: **a Freeze that changes nothing is neither offered nor accepted**.         | `FREEZE_NOT_LEGAL { reason: "NO_TARGET" }`    |
+
+A tile is **freezable** when it is on the board, explored by the actor, and
+water (Shallow, or Deep with `freezeWater` `DEEP`, Pack Ice); a dock that
+is not the actor's own never freezes (so no Port of another player is ever
+frozen shut). Then:
+
+| Tile                                               | Freeze does                                       |
+| -------------------------------------------------- | ------------------------------------------------- |
+| open water with no unit (the actor's own dock too) | makes ice (a frozen dock is an Ice Harbour)       |
+| open water holding a hostile ship, with Icebound   | makes ice and locks the ship in (icebound)        |
+| ice of another player (any occupant)               | takes it for the actor (`cracked` false)          |
+| the actor's own **cracked** ice (any occupant)     | mends the crack                                   |
+| the actor's own sound ice                          | **nothing: passed over** (not taken, not offered) |
 
 - **A line, for every role but the Witch** (`FREEZE_LINE_V7` 2): the tile
-  `at`, then the next tile beyond it in the same direction. The line takes
-  `at` if it is freezable, then the second tile if it is freezable and `at`
-  did not hold a unit afloat. A line never skips a tile: if `at` is not
-  freezable the set is empty.
+  `at` and the one beyond it, outward from the unit. Each is taken if
+  freezable; the actor's own sound ice is passed over and the line goes
+  on; any other tile ends the line, and so does a tile that holds a unit
+  afloat. So a Yeti on a shore with one tile of its ice in front freezes
+  the second tile, and a unit at the tip of a bridge freezes the next two.
 - **A ring, for the Ice Witch** (`WITCH_FREEZE_RADIUS_V7` 1; the role with
   the Blizzard): every freezable tile within Chebyshev 1 of her, her own
-  tile included when she stands on ice.
-- A tile is **freezable** when it is on the board, explored by the actor,
-  water, not a dock, Shallow Water or (with `freezeWater` `DEEP`, Pack Ice)
-  Deep Water, and one of: it holds no unit; it is already ice (whoever
-  stands on it: the ice is refreshed, and it becomes the actor's); or, with
-  the capability `icebound` (the Ice Folk Naval Engineering), it holds a
-  **hostile afloat unit**, which becomes icebound. An own or allied ship is
-  never frozen in.
-- **Result.** Every tile of the set gets the entry
-  `{ at, ownerId: the actor, turnsLeft: iceTurns }` (3, `ICE_TURNS_V7`, or
-  5, `GLACIER_ICE_TURNS_V7`, with Glacier), replacing any earlier entry.
-  The Freezing unit is marked like a unit that used a special action
-  (`specialActed` and `handled`). Event
-  `WATER_FROZEN { playerId, unitId, tiles, icebound }` (tiles in `(y, x)`
-  order, the newly icebound unit IDs in ID order). A Freeze moves no unit
-  and touches no dock, so it is not on the blockade-event list.
+  tile included when she stands on cracked or foreign ice.
+- **Result.** Every tile of the set gets `{ at, ownerId: the actor,
+cracked: false }`, replacing any earlier entry. The Freezing unit is
+  marked like a unit that used a special action (`specialActed` and
+  `handled`). Event `WATER_FROZEN { playerId, unitId, tiles, icebound }`.
+  A Freeze over an own dock recomputes the live economy (an icebound
+  blockader no longer blockades it), so `FREEZE` is on the blockade-event
+  list.
 - **Preview.** `previewFreezeV7(view, unitId, at)` returns null unless the
-  command is offered, otherwise
-  `{ unitId, tiles, refreshed, icebound, turns, permanent }`. Every tile it
-  reads is explored by the actor and every unit on it visible, so it is
-  exact. `turns` is the countdown every tile of the set gets (the unit
-  owner's `iceTurns`), and `permanent` the tiles of the set in that
-  owner's territory, in the order of `tiles`: that ice stays. (The two
-  fields were added by `pulp_wars-5ti.10`; a preview is no rule and no
-  state, so the ruleset identity did not change.)
+  command is offered, otherwise `{ unitId, tiles, mended, taken, icebound }`
+  (`refreshed`, `turns`, and `permanent` are gone): exact.
 
-**Thaw.** At the End Turn of player `P`, after the Frozen countdown:
+**Crack Ice.** `CRACK_ICE { kind, unitId, at }`, a primary action of every
+unit **not of the Ice Folk kind** (a kind rule like the slip, so a
+mind-controlled Ice Folk unit never cracks) in land, naval, or embarked
+form: every land role and every ship of the eight other factions. Free,
+no technology, not an attack. Legality, in this order:
 
-```text
-for each ice entry owned by P, or by an eliminated player:
-    if its tile is not in its owner's territory (an eliminated owner has none):
-        turnsLeft := max(0, turnsLeft − 1)
-then each of those entries with turnsLeft 0, outside its owner's territory,
-     and with no land-form unit on its tile melts
-```
+| #   | Requirement                                                                                                | Rejection                                           |
+| --- | ---------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| 1   | `unitId` is the actor's own unit on the board.                                                             | the ordinary unit errors                            |
+| 2   | It is not of the Ice Folk kind and is in `LAND`, `NAVAL`, or `EMBARKED` form.                              | `UNIT_ROLE_INVALID { role }`                        |
+| 2a  | It is not icebound.                                                                                        | `CRACK_ICE_NOT_LEGAL { reason: "ICEBOUND" }`        |
+| 3   | It is not Frozen or Crashed; it has not used a primary action; if it moved, its role may act after moving. | `UNIT_FROZEN`; `UNIT_CRASHED`; `UNIT_ALREADY_ACTED` |
+| 4   | `at` is one of the eight tiles next to the unit (never its own tile).                                      | `CRACK_ICE_NOT_LEGAL { reason: "OUT_OF_RANGE" }`    |
+| 5   | `at` is explored ice that is not an ally's (hostile, own, or an eliminated player's).                      | `CRACK_ICE_NOT_LEGAL { reason: "NO_ICE" }`          |
+| 6   | No land-form unit stands on it (an icebound ship may).                                                     | `CRACK_ICE_NOT_LEGAL { reason: "OCCUPIED" }`        |
+| 7   | No improvement stands on it (Pillage it instead).                                                          | `CRACK_ICE_NOT_LEGAL { reason: "BUILT" }`           |
 
-- **Own territory keeps the ice:** while the tile is in its owner's
-  territory the entry never counts down and never melts (the view's
-  `permanent`). The water of a captured city starts counting at its former
-  owner's next End Turn.
-- **A land unit holds the ice:** an entry at 0 with a land-form unit of any
-  owner on it stays at 0 and melts at the first of its owner's End Turns on
-  which the tile is empty. No unit ever drowns.
-- **An afloat unit does not hold it:** an icebound unit floats free when
-  its ice melts.
-- An eliminated owner's ice counts down at every End Turn, of every player.
-- So ice made on the owner's turn `N` with 3 turns is there for the rest of
-  turn `N` and through its turns `N + 1` and `N + 2`, and melts at the end
-  of turn `N + 2` unless it was refrozen or a land unit stands on it.
-- Event `ICE_MELTED { tiles, freed }` (the melted tiles, and the icebound
-  units that floated free), dropped when nothing melted.
+An Egg and a burrowed unit are refused before these rows by the common
+refusals (`UNIT_IS_EGG`, `UNIT_ALREADY_HANDLED`).
+
+- **Result.** Thick ice (its owner has Glacier) that is not cracked
+  becomes `cracked: true`: still ice in every way; the next Crack breaks
+  it, and a Freeze of its owner mends it (`ICE_CRACKS_THICK_V7` 2). Any
+  other ice **breaks**: the entry goes and the tile is open water again
+  (its Fish, Pearls, or Wreck as before). An icebound unit on a broken tile
+  floats free at once; its activation is untouched, so if it belongs to the
+  active player and has not acted it may sail and act this turn. The
+  cracking unit has used its primary action and is handled. Event
+  `ICE_CRACKED { playerId, unitId, at, broken, freed }` (`freed` the freed
+  unit IDs in ID order, empty for a crack), right after `WATER_FROZEN` in
+  `DOMAIN_EVENT_KIND_ORDER_V7`; projected to every viewer that explored
+  `at`, with `unitId` null when it cannot see the unit.
+- **Preview.** `previewCrackIceV7(view, unitId, at)` returns null unless
+  offered, otherwise `{ unitId, at, broken, freed }`: exact, since
+  `thick`, `cracked`, and the occupants are public.
+- **Why these limits:** a crack under a land unit would be a free kill by
+  any Warrior; the Ice Folk economy on the ice must not be one free action
+  from deletion (Pillage is the paid-for way); a navy must be able to cut
+  its own lane; the Ice Folk make ice and never need to break their own.
 
 **Slide.** A land-form unit of the Ice Folk kind whose role mechanic
 `glides` is true (every Ice Folk land role but the Sabretooth) slides; it
@@ -12697,7 +12821,14 @@ controller.
   command, an ice tile (read from the state before the command, like
   Snow), and holds no unit and no mound (the mover's own units included),
   and while the tile it is on is not in a hostile ZOC. It stops on the last
-  tile so entered.
+  tile so entered. With permanent ice the slide is the Ice Folk road
+  network: a bridge built once is used for the rest of the match.
+- **Runners** (the Sled, role mechanic `runners`, `7r100`): a Sled's slide
+  **goes on through a hostile zone of control**; it still stops at a unit,
+  a mound, and the end of the ice, and where its slide ends in a zone the
+  Move ends there, as any step's. Slid tiles count for its Charge and its
+  Bolas reach after the Move. A body rule (a mind-controlled Sled keeps
+  it); public stat `iceFolk.runners`.
 - Its Move then continues with the half-points it has left: another step
   (onto land, or onto ice in a new direction, which starts a new slide) or
   nothing. Entering ice costs the ordinary step cost (half from a usable
@@ -12714,10 +12845,6 @@ controller.
   on ice, its owner's included.
 - The **Sabretooth** never slides: on ice it walks at the ordinary cost,
   and, being of the Ice Folk kind, it does not slip.
-- Reach: a Yeti (Move 1) on the shore of a straight four-tile bridge
-  crosses it in one Move and stops on its far tile; a Sled (Move 2) does
-  the same and still has a full point to step ashore, and it may Charge at
-  the end.
 
 **Slip.** For a land-form unit of every other kind in movement mode
 `GROUND`, **a Move ends on entering an ice tile** (`terrainStopsMoveV7`; a
@@ -12730,177 +12857,198 @@ turn. A slipping unit that steps onto ice on a tile it had not explored
 before the command stops there, and its Move is interrupted with reason
 `ICE`, as for Snow.
 
-**Black Ice.** At the Start Turn of an Ice Folk seat with the capability
-`blackIce` (its Seamanship), after the Cold Aura, every land-form unit
-**hostile to that player standing on that player's ice** is Frozen
-([section 21.2](#212-frozen), Ice Folk Freeze, `pulp_wars-w49.37`). One
-`UNITS_FROZEN` (source `BLACK_ICE`, `sourceUnitId` null) with every
-result, dropped when empty. So an enemy that lands on, or walks onto, the
-ice is Shatter-eligible on the Ice Folk turn that follows and cannot move
-or act on its owner's next turn; since there is no thaw immunity, a unit
-that stays on the ice is Frozen again at every Start Turn of the ice's
-owner, so it never leaves the ice by itself until the ice melts or a Tend
-Wounded (or Repair) thaws it on its owner's turn. Martian flyers and
-walkers standing on the ice are Frozen like anyone. Black Ice is read from
-the seat's own faction and research, so the ice of a Martian controller
-(below) never freezes units.
+**Black Ice** (the redesign, `7r100`). With the capability `blackIce` (the
+Ice Folk Seamanship), a land-form unit hostile to the seat that **ends its
+own `MOVE`, a `DISEMBARK` landing, or a `BEAM_DOWN` on that seat's ice,
+having started off that seat's ice**, is Frozen at once
+([section 21.2](#212-frozen)): frozen during its owner's own turn, so it
+gets `turnsLeft` 2 (Shatter-eligible on the next Ice Folk turn, Frozen
+through its owner's next turn, thawed after it). One `UNITS_FROZEN`
+(source `BLACK_ICE`, `sourceUnitId` null) right after the command's events
+(before a Frost Giant's Cold Aura). A unit already on the seat's ice that
+walks along it, a unit pushed, pulled, or knocked onto it, a unit that
+advances onto it after an attack, and a unit standing on ice the seat
+newly takes are not frozen, and **nothing happens at the Start Turn** (the
+old step is deleted). So stepping onto the ice costs a unit about two
+turns and a Shatter risk, and it is never trapped: once thawed it may
+attack from the ice, walk on, or crack the ice in front of it. Black Ice
+is read from the ice owner's own faction and research, so the ice of a
+Martian controller never freezes units.
 
 **Icebound and the crush.** An afloat unit (`NAVAL` or `EMBARKED`) standing
-on an ice tile is **icebound** (`unitIsIceboundV7`). That is derived, never
-stored: the only way an afloat unit is on ice is a Freeze of its tile with
-the capability `icebound`.
+on an ice tile is **icebound** (`unitIsIceboundV7`), derived, never stored:
+the only way an afloat unit is on ice is a Freeze of its tile with the
+capability `icebound`.
 
 - **Frozen solid.** An icebound unit cannot `MOVE`
   (`MOVEMENT_ILLEGAL { reason: "ICEBOUND" }`), `ATTACK`
-  (`ATTACK_NOT_LEGAL { reason: "ICEBOUND" }`), or `BOARD`
-  (`BOARD_NOT_LEGAL { reason: "ICEBOUND" }`), none of them offered, and it
-  never retaliates (`noRetaliationReason: "ICEBOUND"`, preview field
-  `icebound`). It projects no ZOC and threatens no tile. An icebound
-  embarked unit may still `DISEMBARK` under the ordinary landing rules
-  (the crew climbs out, onto land or onto ice). It may Recover (a ship on
-  or next to its own active dock), Wait, and Promote. No ram's shove,
-  Push, Charge! push, Knockback, or Tractor Beam moves it (the Tractor
-  Beam is refused with `TARGET_IMMUNE`), and an attack on it is never a
-  Ram. An icebound Submarine is not submerged. It may be attacked,
-  torpedoed, and boarded like any ship; a boarded prize stays icebound.
-- **The crush.** At the Start Turn of the ice tile's owner, right after
-  Black Ice, every icebound unit on that player's ice, whoever owns the
-  unit, takes `ICE_CRUSH_DAMAGE_V7` **3**, in unit-ID order: fixed damage,
-  not an attack (no cover, Defense, or HP ratio); a Shield absorbs first
-  (an icebound self-launched Martian machine); capped at its HP. The crush
-  needs no technology of its own. Event
-  `UNITS_CRUSHED { playerId, results: [{ unitId, damage, shieldDamage, hpAfter }] }`,
-  dropped when empty; a death has cause `CRUSHED`, credits no unit, leaves
-  no Grave, releases the controlled unit of a crushed Brain, and an
+  (`ATTACK_NOT_LEGAL { reason: "ICEBOUND" }`), `BOARD`
+  (`BOARD_NOT_LEGAL { reason: "ICEBOUND" }`), or `CRACK_ICE`
+  (`CRACK_ICE_NOT_LEGAL { reason: "ICEBOUND" }`), none of them offered,
+  and it never retaliates (`noRetaliationReason: "ICEBOUND"`). It projects
+  no ZOC and threatens no tile. An icebound embarked unit may still
+  `DISEMBARK` (the crew climbs out, onto land or onto ice). It may Recover
+  (a ship next to its own active dock), Wait, and Promote. No ram's shove,
+  Push, Charge! push, Knockback, or Tractor Beam moves it, and an attack on
+  it is never a Ram. An icebound Submarine is not submerged. It may be
+  attacked, torpedoed, and boarded like any ship; a boarded prize stays
+  icebound.
+- **The crush.** At the Start Turn of the ice tile's owner, every icebound
+  unit on that player's ice, whoever owns the unit, takes
+  `ICE_CRUSH_DAMAGE_V7` **3**, in unit-ID order: fixed damage, not an
+  attack; a Shield absorbs first; never reduced by Armoured; capped at its
+  HP. Event `UNITS_CRUSHED { playerId, results }`; a death has cause
+  `CRUSHED`, credits no unit, leaves no Grave, releases the controlled unit
+  of a crushed Brain, never explodes a ship in `NAVAL` form, and an
   embarked exploding Goblin unit explodes on its tile.
-- **Release.** It floats free when its ice melts. Ice in the freezing
-  seat's own territory never melts, so a ship frozen in Ice Folk home
-  waters stays until it sinks.
-- Docks never freeze, so an icebound unit is never on a dock and never
-  blockades one. Frozen never applies to afloat units, so an icebound ship
-  is crushed, never shattered.
+- **Release** is only by Crack Ice (an own or allied unit or ship next to
+  it cracks its tile; thick ice twice) or by the elimination of the
+  freezing seat. An icebound ship cannot crack its own way out.
+- A hostile dock never freezes, so a ship is icebound on a dock only on an
+  own dock frozen over by its Ice Folk owner, where it blockades nothing.
 
-**Glacier.** The capability `iceTurns` becomes 5 for the ice the seat makes
-from then on (existing entries keep their count), and `iceCover`: a
-land-form unit of the Ice Folk kind on ice whose own fortification level is
-0 has the Snow cover, **× 1.25** (`SNOW_COVER_V7`; never added to anything
-else; the preview's `iceCover` is true, and the unit's public `iceCover`
-stat makes every preview exact). **+1 Move on ice** (Ice Folk Freeze,
-`pulp_wars-w49.37`): a `MOVE` of a land-form unit of the Ice Folk kind
+**Glacier.** The capability `thickIce` (`7r100`; `iceTurns` before): the
+seat's ice takes two Cracks to break, and a Freeze of the seat mends a
+crack. And `iceCover`: a land-form unit of the Ice Folk kind on ice whose
+own fortification level is 0 has the Snow cover, **× 1.25**
+(`SNOW_COVER_V7`; the preview's `iceCover`, and the public `iceCover`
+stat). **+1 Move on ice**: a `MOVE` of a land-form unit of the Ice Folk kind
 whose capabilities have `iceCover` gets `GLACIER_ICE_MOVE_BONUS_V7` (1)
-Move more when its path (the tiles it enters, slid tiles included)
-includes an ice tile; a Move that never touches ice gets nothing, and a
-unit that only starts on ice gets nothing. The movement query offers the
-endpoints the bonus reaches (`glacierBonus2V7`); for a unit of another
-seat, `queryThreatenedTilesV7` reads the viewer's own capabilities (an
-approximation; [section 25](#25-known-discrepancies)). Glacier also grants Harbours
+Move more when its path includes an ice tile. Glacier also grants Harbours
 ([section 14.4](#144-harbours)).
+
+**Building on ice and the Ice Harbour.** An Ice Folk seat builds on its own
+ice in its territory: the Ice Harbour (its Port; the Great Harbour its
+Shipyard), the Fishing Hole, the Windmill, Sawmill, Forge, Workshop,
+Market, and Monument ([sections 8.1 to 8.3](#81-common-placement-gates);
+[section 14](#14-naval-rules)). An Ice Harbour built on open Shallow Water
+freezes its tile first. A dock on ice is blockaded by a hostile land-form
+unit standing on it and never by a ship; nothing trains, embarks, or
+recovers on it. Built ice cannot be cracked; an enemy that wants a
+building on ice gone stands on it and **Pillages** it (Raiding, as on
+land), and the ice under it is then plain ice. A captured city's buildings
+on ice keep working for the captor, and its ice becomes the captor's; the
+captor builds no new ones on ice.
 
 **No ships, no embarking.**
 
 - The Ice Folk tree unlocks no naval role: `TRAIN_NAVAL` is never offered
-  to an Ice Folk seat and is rejected with `UNIT_ROLE_INVALID { role }`,
-  and no rule gives the seat a ship ([section 11](#11-unit-roster)).
-- **A unit of the Ice Folk kind never embarks** (a body rule, so a
-  mind-controlled Yeti does not either): a Move never ends on a dock for
-  it, and a dock is never ice, so it cannot stand on one.
-- **Ports** keep their economic functions for the Ice Folk: +1 population
-  (2 with Harbours), Harvest Fish on the dock tile, sea links, and the
-  Shipyard upgrade (+2, 3 with Harbours). An enemy ship can still blockade
-  an Ice Folk dock it can reach.
+  to an Ice Folk seat and is rejected with `UNIT_ROLE_INVALID { role }`.
+- **A unit of the Ice Folk kind never embarks** (a body rule): a Move never
+  ends embarked for it; it walks onto its own docks, which are ice.
 - **Sea Dog** for an Ice Folk seat counts its land-form units standing on
-  ice instead of its ships: 5 at once (`ICE_SEA_DOG_UNITS_V7`;
-  [section 5](#5-achievements-and-monuments); 3 when the frozen sea came
-  at `7r44`, raised with every other achievement by the economy rejig,
-  `7r54`).
-- **The Sunken Wreck:** on an ice tile, the first land-form unit (of any
-  faction) that ends a `MOVE` on it, having moved onto it (a slide's end
-  included), salvages it; afloat units cannot reach it while it is ice
-  ([section 2.7](#27-map-curiosities)).
+  ice instead of its ships: 5 at once (`ICE_SEA_DOG_UNITS_V7`).
+- **The Sunken Wreck:** on an ice tile, the first land-form unit that ends
+  a `MOVE` on it salvages it; on cracked-open water it is a water Wreck
+  again ([section 2.7](#27-map-curiosities)).
 
-**Why ice cannot wall off a sea.** Outside its owner's territory ice melts
-after 3 (Glacier 5) of its owner's turns, so keeping a strait frozen costs
-a unit's action every turn or two, on exposed ice; docks never freeze, so
-no dock can be frozen shut; ice is walkable by everyone, so a frozen strait
-is a bridge for the enemy's land units too (one tile per turn), and a
-transport may always land on the edge of the ice. What stays for good is
-ice in the Ice Folk's own territory: their home waters, like land they
-own, and a ship frozen there stays until crushed.
+**The themed ships meet the ice** by the rules above, with no special
+case: every ship may Crack Ice next to it, is icebound by an Icebound
+Freeze, and takes the crush; a Plesiosaur and a Kraken are frozen at the
+surface like any Submarine (an icebound Kraken does not Drag); Martian
+Shields absorb the crush first and a Hover Pod never launches onto ice;
+Dwarf Armoured does not reduce the crush and Sea Tunnels never pass under
+ice; an icebound Fire Raft cannot Kaboom and an icebound Candy ship cannot
+Rush (a crushed Dreadnought does not explode); Drowned Crews never raise a
+ship on ice; a submerged Submarine may crack (cracking is no attack and
+does not surface it).
+
+**Why ice cannot wall off a sea.** Every unit of every other faction next
+to the ice, and every ship, can open it, one tile per action (thick: two);
+hostile docks never freeze, and a ship on a dock surrounded by ice cracks
+its way out; ice is walkable by everyone (one tile per turn), and a
+transport may land on its edge; Black Ice freezes once and never traps; an
+icebound ship's owner can free it with any unit beside it. There is
+deliberately no uncrackable ice, Ice Folk home waters included (the root's
+decision on the redesign's open question): the counter is tempo and
+technology (Freeze outpaces Crack; a unit on a tile or a building holds
+it; Glacier's thick ice), not immunity.
 
 **Interactions.**
 
-| Rule                 | Interaction                                                                                                                                                                                                                                                                                                                                                                              |
-| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Graves, risings      | No death afloat or on ice leaves a Grave or rises, and Raise Dead never reaches the sea. A shattered unit on ice leaves nothing, as everywhere.                                                                                                                                                                                                                                          |
-| Plague, Bitten, Wail | Unchanged on ships and on ice. A Black Ice freeze and a bite coexist.                                                                                                                                                                                                                                                                                                                    |
-| Kaboom, blasts       | Hit ships, Submarines, icebound ships, and units on ice like any unit. A blast never melts or makes ice.                                                                                                                                                                                                                                                                                 |
-| Dinosaurs            | A Triceratops may Charge! along land and onto ice (a Dinosaur ground unit slips, so its run-up ends on the first ice tile), and its push moves a land-form target onto ice. Eggs are never on ice.                                                                                                                                                                                       |
-| Martians             | Flyers and walkers cross ice like land; a machine that ends a Move on ice stands (no self-launch). Shields absorb the crush. Mind Control works on a unit on ice (land form). A controlled Ice Folk unit slides and Freezes for its controller, with the controller's research read through the Ice Folk tree; its ice belongs to the controller, who has the crush but never Black Ice. |
-| Dwarves              | Tunnels never run under ice and a mound is never on ice; a bomb run may land on ice; eruptions hit land-form units on ice. A Hammerer or Steam Mole on ice next to its own city center may be dug in.                                                                                                                                                                                    |
-| Candy                | A Candy unit that dies on ice leaves no Crumbs, and nothing is Re-baked onto ice. Candy ground units slip like any other.                                                                                                                                                                                                                                                                |
-| Ice Folk (the rest)  | Ice is never Snow. The Blizzard's ranged halving protects Ice Folk units on ice within 1 of their seat's Witch. Shatter applies on ice (land form).                                                                                                                                                                                                                                      |
-| Push and pulls       | A land-form unit may be pushed, knocked back, or pulled onto ice; an afloat unit never; an icebound unit never moves.                                                                                                                                                                                                                                                                    |
-| Embarking, landing   | A transport may land on adjacent ice (landing ends the activation as always). A unit of the Ice Folk kind never embarks.                                                                                                                                                                                                                                                                 |
-| Blockade, sea links  | Docks never freeze; sea links run under ice.                                                                                                                                                                                                                                                                                                                                             |
-| Elimination          | Units are removed as always; an eliminated seat's ice counts down at every End Turn.                                                                                                                                                                                                                                                                                                     |
-| Map generation       | Unchanged; faction choice never affects any draw.                                                                                                                                                                                                                                                                                                                                        |
+| Rule                   | Interaction                                                                                                                                                                                                                                                              |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Graves, risings        | No death afloat or on ice leaves a Grave or rises, and Raise Dead never reaches the sea. A shattered unit on ice leaves nothing, as everywhere.                                                                                                                          |
+| Plague, Bitten, Wail   | Unchanged on ships and on ice. A Black Ice freeze and a bite coexist.                                                                                                                                                                                                    |
+| Kaboom, blasts, bombs  | Hit ships, Submarines, icebound ships, and units on ice like any unit. A blast never cracks or makes ice (cracking is an action).                                                                                                                                        |
+| Dinosaurs              | A Triceratops may Charge! onto ice (it slips there); its push moves a land-form target onto ice and never triggers Black Ice. Eggs are never on ice.                                                                                                                     |
+| Martians               | Flyers and walkers cross ice like land; a machine that ends a Move on ice stands. Shields absorb the crush. A controlled Ice Folk unit slides and Freezes for its controller (its ice is the controller's: crush yes, Black Ice and building on it no) and never cracks. |
+| Dwarves                | Tunnels never run under ice and a mound is never on ice; a burrowed unit cannot crack; a bomb run may land on ice; eruptions hit land-form units on ice.                                                                                                                 |
+| Candy                  | A Candy unit that dies on ice leaves no Crumbs, and nothing is Re-baked onto ice. A Crashed unit cannot crack.                                                                                                                                                           |
+| Push, Knockback, pulls | A land-form unit may be pushed, knocked back, or pulled onto ice; an afloat unit never; an icebound unit never moves; none of it triggers Black Ice.                                                                                                                     |
+| Embarking, landing     | A transport may land on adjacent ice (Black Ice freezes the crew). A unit of the Ice Folk kind never embarks; nothing embarks at a dock on ice.                                                                                                                          |
+| Blockade, sea links    | Hostile docks never freeze; a dock on ice is blockaded by land units only; sea links run under ice.                                                                                                                                                                      |
+| Capture, elimination   | The former owner's ice in the captured city's territory passes to the captor, uncracked; an eliminated seat's ice stays, its icebound ships float free, and its cracks are gone.                                                                                         |
+| Land Grant             | Claims ice tiles as it claims water; their owner does not change.                                                                                                                                                                                                        |
+| Map generation         | Unchanged; faction choice never affects any draw.                                                                                                                                                                                                                        |
 
 **Worked examples** (full HP unless stated):
 
-| Situation                                                         | Result                                                                                                                                                |
-| ----------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| A Yeti on the shore freezes toward an island 4 Shallow tiles away | turn 1: tiles 1 and 2; turn 2: it steps onto tile 1, slides to tile 2, freezes 3 and 4; turn 3: it steps onto 3, slides to 4, and is ashore next turn |
-| The army follows on turn 3                                        | each unit steps onto tile 1 and slides to the first occupied or last tile; tiles 1 and 2 melt at the end of turn 3 unless someone stands on them      |
-| An Ice Witch walks out onto the bridge head and freezes           | her ring (up to 8 tiles, and her own) becomes ice                                                                                                     |
-| A Patrol Boat (10 HP) is frozen in on permanent ice               | the crush alone sinks it at the fourth Start Turn of the ice's owner (3, 3, 3, then its last HP)                                                      |
-| A Battleship (25 HP) is frozen in                                 | it cannot sail, shoot, board, or reply; every attack on it is free, and the crush adds 3 at each Start Turn of the ice's owner                        |
+| Situation                                                                             | Result                                                                                                                                                          |
+| ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| A Yeti on the shore freezes toward an island 4 Shallow tiles away                     | turn 1: tiles 1 and 2; turn 2: it steps on, slides to 2, freezes 3 and 4; turn 3: it slides to 4. The bridge stays for the rest of the match; nobody refreezes  |
+| A Human Swordsman on the island shore cracks tile 4 (no Glacier)                      | tile 4 is water again; next Ice Folk turn a Yeti on tile 3 freezes 4 (and 5 if it is water)                                                                     |
+| The same with Glacier                                                                 | tile 4 is cracked; the Ice Folk mend it with any Freeze over it before the second Crack                                                                         |
+| A Patrol Boat is icebound; an allied Patrol Boat is next to it                        | the ally cracks its tile; the freed boat sails and attacks on the same turn                                                                                     |
+| A Knight lands on Ice Folk ice from a transport (Black Ice)                           | Frozen at once; on the Ice Folk turn two hits Shatter it; if it lives, it thaws after its next turn and may then ride off, attack, or crack                     |
+| An Ice Folk coastal city with five shallow tiles in its footprint, Rime, Milling      | the Witch freezes them in one action; three Fishing Holes (9 Coins, +3) and a Windmill on the ice beside them and one Frost Garden (5 Coins, +4): +7 population |
+| A Sled on a long ice sheet, a Human Guard's zone of control between it and a Marksman | it slides through the zone (Runners) to the tile beside the Marksman and attacks with Charge                                                                    |
+| The Ice Folk capture a Human port city                                                | its Port is theirs; any Freeze over it puts ice under it, making it an Ice Harbour their units can walk on                                                      |
 
 **Commands, events, errors, and queries.**
 
-- **Command:** `FREEZE { kind, unitId, at }`, right after `COLD_SNAP` in
-  `COMMAND_KIND_ORDER_V7`. `MOVE` validates slides and slips. A pending
-  city reward blocks `FREEZE` like every command.
-- **Events:** `WATER_FROZEN`, `ICE_MELTED`, and `UNITS_CRUSHED`, in that
-  order right after `UNITS_FROZEN` in `DOMAIN_EVENT_KIND_ORDER_V7`;
-  `UNIT_DIED.cause` gains `CRUSHED`; `UNITS_FROZEN.source` gains
-  `BLACK_ICE`; `UNIT_MOVE_INTERRUPTED.reason` gains `ICE`. Projection:
-  [section 15](#15-fog-and-observation).
+- **Commands:** `FREEZE { kind, unitId, at }` right after `COLD_SNAP`,
+  `CRACK_ICE { kind, unitId, at }` right after `FREEZE`, and
+  `BUILD_FISHING_HOLE { kind, at }` right after `BUILD_LUMBER_CAMP` in
+  `COMMAND_KIND_ORDER_V7`. `MOVE` validates slides, Runners, and slips. A
+  pending city reward blocks them like every command.
+- **Events:** `WATER_FROZEN`, `ICE_CRACKED`, `ICE_MELTED` (the
+  elimination release only), and `UNITS_CRUSHED`, in that order right
+  after `UNITS_FROZEN` in `DOMAIN_EVENT_KIND_ORDER_V7`; `PORT_BUILT` has
+  `iceMade`; `ECONOMIC_BUILDING_BUILT` covers the Fishing Hole;
+  `UNIT_DIED.cause` has `CRUSHED`; `UNITS_FROZEN.source` `BLACK_ICE` fires
+  inside a Move, a landing, or a Beam Down; `UNIT_MOVE_INTERRUPTED.reason`
+  has `ICE`. Projection: [section 15](#15-fog-and-observation).
 - **Errors:** `FREEZE_NOT_LEGAL` (`OUT_OF_RANGE`, `NO_TARGET`);
-  `MOVEMENT_ILLEGAL` reasons `SLIDE_FORCED`, `ICE_STOPS_MOVE`, and
-  `ICEBOUND`; `ATTACK_NOT_LEGAL` and `BOARD_NOT_LEGAL` reason `ICEBOUND`;
-  `noRetaliationReason` gains `ICEBOUND`.
-- **Combat preview** (so also `COMBAT_RESOLVED`): `iceCover` and
-  `icebound`, false where they do not apply.
-- **Registration:** ability `FREEZE` on every Ice Folk land role; unlock
-  kinds `FREEZE { depth }`, `ICEBOUND`, `BLACK_ICE`, and `GLACIER`;
-  capabilities `freezeWater`, `icebound`, `blackIce`, `iceTurns`, and
-  `iceCover`; constants `ICE_TURNS_V7` 3, `GLACIER_ICE_TURNS_V7` 5,
+  `CRACK_ICE_NOT_LEGAL` (`ICEBOUND`, `OUT_OF_RANGE`, `NO_ICE`, `OCCUPIED`,
+  `BUILT`); `MOVEMENT_ILLEGAL` reasons `SLIDE_FORCED`, `ICE_STOPS_MOVE`, and
+  `ICEBOUND`; `ATTACK_NOT_LEGAL` and `BOARD_NOT_LEGAL` reason `ICEBOUND`.
+- **Registration:** ability `FREEZE` on every Ice Folk land role; Crack Ice
+  is a kind rule (`unitCracksIceV7`: every unit not of the Ice Folk kind in
+  land, naval, or embarked form) rather than a role-table ability; role
+  mechanic `runners` (the Ice Folk Sled); improvement `FISHING_HOLE`
+  (appended to `IMPROVEMENT_IDS_V7`); unlock kinds `FREEZE { depth }`,
+  `ICEBOUND`, `BLACK_ICE`, and `GLACIER` (no field), and the Ice Folk Rime's
+  `COMMAND BUILD_FISHING_HOLE`; capabilities `freezeWater`, `icebound`,
+  `blackIce`, `thickIce`, and `iceCover`; constants `ICE_CRACKS_THICK_V7` 2,
+  `FISHING_HOLE_COST_V7` 3, `FISHING_HOLE_POPULATION_V7` 1,
   `FREEZE_LINE_V7` 2, `WITCH_FREEZE_RADIUS_V7` 1, `ICE_CRUSH_DAMAGE_V7` 3,
-  and `ICE_SEA_DOG_UNITS_V7` 5 (3 until the economy rejig, `7r54`); the five display names of
-  [section 6.2](#62-technology-tree).
-- **Shared rules** extended, never paralleled: `canEnterTerrainV7` (ice for
-  land form, never for afloat), `terrainStopsMoveV7` (the slip), the one
-  occupancy predicate, and `unitMayActAfterMoveV7`, with the helpers
-  `isIceAtV7` and `iceAtV7`, `unitIsIceboundV7`, `unitSlidesV7`,
-  `freezeSetV7`, and `iceIsPermanentV7`. The slide is part of the one
-  movement validation, not a separate helper.
-- **`queryPlayerCommandsV7`** offers `FREEZE` for every legal `at` (one per
-  Witch) and `MOVE` endpoints after slides; it offers an icebound unit no
-  Move, Attack, or Board. `queryThreatenedTilesV7` gives a visible Ice
-  Folk unit its slide reach on known ice and an icebound unit nothing.
-  Every offered command is accepted, and every preview equals the
-  resolution.
-- **Public unit stats:** `icebound` (on every unit, exactly in a match
-  with an Ice Folk seat) and, in the `iceFolk` block, `onIce`, `slides`,
-  and `iceCover`.
-- **Normal AI, presentation, and balance:** an Ice Folk seat's Normal AI
-  crosses water by an ice plan and every seat plays against the ice
-  ([section 16](#16-normal-ai-summary)); the interface is described in
-  [board targeting section 3.5](../ui/BOARD_TARGETING.md#35-the-frozen-sea-freeze-the-slide-icebound-bead-pulp_wars-5ti7)
-  and the art in
-  [NAVAL_FACTIONS.md](../art/NAVAL_FACTIONS.md#the-naval-branch-art-bead-pulp_wars-5ti6);
-  the frozen sea has not been balance-checked
-  ([section 25](#25-known-discrepancies)).
+  `GLACIER_ICE_MOVE_BONUS_V7` 1, and `ICE_SEA_DOG_UNITS_V7` 5
+  (`ICE_TURNS_V7` and `GLACIER_ICE_TURNS_V7` are gone).
+- **Helpers:** `isIceAtV7` and `iceAtV7` read through an index of the
+  immutable list (`iceEntryIndexV7`), `unitIsIceboundV7`, `unitSlidesV7`,
+  `unitHasRunnersV7`, `unitCracksIceV7`, `iceIsThickV7`, `iceBuildableV7`,
+  `freezeSetV7`, `crackIceResultV7`, `resolveBlackIceOnEntryV7`, and
+  `releaseEliminatedIceV7` (`resolveThawV7`, `resolveBlackIceV7`, and
+  `iceIsPermanentV7` are gone).
+- **`queryPlayerCommandsV7`** offers `FREEZE` for every `at` that changes
+  something, `CRACK_ICE` for every legal `at`, every build on own ice
+  (`BUILD_FISHING_HOLE` among them), and `MOVE` endpoints after slides and
+  Runners; `queryThreatenedTilesV7` follows them. Every offered command is
+  accepted, and every preview equals the resolution.
+- **Public unit stats:** `icebound` (on every unit, exactly in a match with
+  an Ice Folk seat) and, in the `iceFolk` block, `onIce`, `slides`,
+  `runners`, and `iceCover`.
+- **Normal AI, presentation, and balance:** the engine bead keeps the AI
+  compiling with the thaw logic neutralised (a crossing is built once, a
+  mended or retaken crossing tile is the old refreeze reason, and no seat
+  picks `CRACK_ICE` yet); its rules for and against permanent ice are bead
+  `pulp_wars-5ti.26`, and the interface, art, and sound (the Crack Ice
+  button, the snow pad under buildings on ice, the Fishing Hole and Ice
+  Harbour sprites) bead `pulp_wars-5ti.27`
+  ([section 25](#25-known-discrepancies)). The interface already shows ice
+  without a countdown, thick and cracked ice, and the new Freeze labels;
+  the frozen sea has not been balance-checked.
 
 ### 21.17 The Musk Ox: Frostbite
 
@@ -15123,6 +15271,19 @@ items left after the fold, and the pending balance steps below.
 
 **Open.**
 
+- **The frozen sea redesign: what is open** (`pulp_wars-5ti.25`, `7r100`;
+  [RULESET_7_ICE_REDESIGN.md](RULESET_7_ICE_REDESIGN.md)). The engine and
+  rules are built; the Normal AI still plays the old crossing plan with
+  the thaw neutralised, never picks Crack Ice, still keeps its Port sites
+  clear of home ice, and builds Fishing Holes only where its ordinary
+  economic chooser ranks them (its rules are bead `pulp_wars-5ti.26`). No
+  interface offers Crack Ice yet (`CRACK_ICE` is classed bar-only in
+  `TILE_ACTION_COMMAND_CLASSES_V7` until bead `pulp_wars-5ti.27` gives it
+  its dock button and icon), buildings on ice have no snow pad, and the
+  Fishing Hole draws the Fish resource art until its own sprite lands. No
+  game was played or simulated (the standing rule): every number of the
+  redesign is a first guess, and Frontier 7 is replayed by hand in bead
+  `pulp_wars-v642.10`.
 - **The Human tuning, round 6: what is open** (`pulp_wars-w49.6`, `7r49`;
   [round 6](RULESET_7_TUNING_HUMAN.md#13-round-6)). Nothing of round 6 was
   played by hand yet; its forks for the user are in its section 13.8 and

@@ -385,7 +385,7 @@ describe("G1, the Fire Raft's Kaboom afloat", () => {
         { seat: 0, role: "PATROL_BOAT", at: RAFT },
         { seat: 1, role: "PATROL_BOAT", at: { x: 4, y: 5 } },
       ],
-      ice: [{ at: RAFT, seat: 2, turnsLeft: 5 }],
+      ice: [{ at: RAFT, seat: 2 }],
       third: { faction: "ICE_FOLK", explored: true },
     });
     const raft = navalUnitAtV7(state, RAFT);
@@ -787,7 +787,7 @@ describe("G2, the Scrap Dreadnought's death blast, by every cause", () => {
         { seat: 1, role: "BATTLESHIP", at: { x: 1, y: 5 } },
         { seat: 1, role: "PATROL_BOAT", at: { x: 2, y: 5 } },
       ],
-      ice: [{ at: { x: 1, y: 5 }, turnsLeft: 5 }],
+      ice: [{ at: { x: 1, y: 5 } }],
     });
     const dreadnought = navalUnitAtV7(base, { x: 1, y: 5 });
     const raft = navalUnitAtV7(base, { x: 2, y: 5 });

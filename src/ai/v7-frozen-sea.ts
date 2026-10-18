@@ -658,7 +658,9 @@ function computeIcePlan(
   // Builders (section 13.2): the Witch when she is near and her pace (one
   // tile a turn, three wide) finishes before the first tile thaws; otherwise
   // the cheapest line units, one, or two when the thaw outruns the builder.
-  const iceTurns = capabilities.iceTurns;
+  // The frozen sea redesign (`pulp_wars-5ti.25`): ice is permanent, so no
+  // thaw outruns a builder (bead `pulp_wars-5ti.26` removes the thaw logic).
+  const iceTurns = Number.POSITIVE_INFINITY;
   const rime =
     technologyCapabilitiesV7(view.viewer.researchedTechs, view.viewer.faction)
       .freezeWater !== "NONE";
@@ -998,8 +1000,11 @@ export function iceFreezeScoreV7(
       };
     }
   }
+  // The frozen sea redesign: the tiles newly made ice (not mended or taken).
   const fresh = preview.tiles.filter(
-    (at) => !preview.refreshed.some((tile) => same(tile, at)),
+    (at) =>
+      !preview.mended.some((tile) => same(tile, at)) &&
+      !preview.taken.some((tile) => same(tile, at)),
   );
   if (plan !== null && !plan.complete) {
     const nextTile = plan.crossing[plan.next];
@@ -1017,16 +1022,12 @@ export function iceFreezeScoreV7(
     }
   }
   if (plan !== null) {
-    const kept = preview.refreshed.filter((at) => {
-      if (!plan.crossing.some((tile) => same(tile, at))) return false;
-      const entry = iceEntry(view, at);
-      return (
-        entry !== undefined &&
-        !entry.permanent &&
-        (entry.turnsLeft <= 1 || entry.ownerId !== view.viewer.id) &&
-        waveBehind(view, plan, at, actor.id)
-      );
-    }).length;
+    // The frozen sea redesign: a mended or retaken crossing tile.
+    const kept = [...preview.mended, ...preview.taken].filter(
+      (at) =>
+        plan.crossing.some((tile) => same(tile, at)) &&
+        waveBehind(view, plan, at, actor.id),
+    ).length;
     if (kept > 0)
       return {
         reason: "REFREEZE",
@@ -1419,13 +1420,10 @@ export function iceTargetBonusV7(
   if (view.ice.length === 0 || target.form !== "LAND") return 0;
   const entry = iceEntry(view, target.at);
   if (entry === undefined) return 0;
-  return (
-    ICE_EXPOSED_TARGET_VALUE_V7 +
-    (preview.defenderDies &&
-    !entry.permanent &&
-    entry.turnsLeft <= 1 &&
-    tools.isHostile(entry.ownerId)
-      ? ICE_BRIDGE_BREAK_VALUE_V7
-      : 0)
-  );
+  // The frozen sea redesign (`pulp_wars-5ti.25`): ice no longer thaws, so a
+  // kill on it breaks no bridge (`ICE_BRIDGE_BREAK_VALUE_V7` is unused until
+  // the AI bead reworks this).
+  void tools;
+  void preview;
+  return ICE_EXPOSED_TARGET_VALUE_V7;
 }

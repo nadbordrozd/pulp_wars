@@ -580,7 +580,7 @@ describe("U1, Drowned Crews: where nothing rises", () => {
         { seat: 0, role: "SUBMARINE", at: { x: 3, y: 5 } },
         { seat: 1, role: "PATROL_BOAT", at: { x: 4, y: 5 } },
       ],
-      ice: [{ at: { x: 4, y: 5 }, seat: 2, turnsLeft: 5 }],
+      ice: [{ at: { x: 4, y: 5 }, seat: 2 }],
       third: { faction: "ICE_FOLK", explored: true },
     });
     const galley = navalUnitAtV7(state, { x: 3, y: 5 });

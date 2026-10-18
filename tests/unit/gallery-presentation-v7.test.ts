@@ -313,6 +313,8 @@ describe("Gallery presentation", () => {
       "MARKET",
       "PORT",
       "SHIPYARD",
+      // The frozen sea redesign (`pulp_wars-5ti.25`): the Fishing Hole.
+      "FISHING_HOLE",
     ]);
   });
 

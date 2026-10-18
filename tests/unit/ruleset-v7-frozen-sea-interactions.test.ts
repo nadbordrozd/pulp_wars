@@ -66,7 +66,7 @@ const scene = (
     technologies: [technologies, ALL],
     units,
     ice: ice.map((entry): FrozenIceV7 =>
-      "at" in entry ? entry : { at: entry, seat: 1, turnsLeft: 3 },
+      "at" in entry ? entry : { at: entry, seat: 1 },
     ),
   });
 const offered = (state: GameStateV7, seat: 0 | 1): readonly CommandV7[] =>
@@ -317,7 +317,6 @@ describe("Dinosaur Eggs at ice (section 21.16)", () => {
       ice: [HOME_ICE, { x: 6, y: 3 }].map((at): FrozenIceV7 => ({
         at,
         seat: 1,
-        turnsLeft: 3,
       })),
     });
     const lays = offered(state, 0).flatMap((command) =>
@@ -493,10 +492,12 @@ describe("a mind-controlled Ice Folk unit (section 21.16)", () => {
     const freeze: CommandV7 = { kind: "FREEZE", unitId: yeti.id, at: ICE1 };
     expect(offered(state, 0)).toContainEqual(freeze);
     const frozen = acceptV7(state, 0, freeze);
+    // The frozen sea redesign: permanent, sound ice of the controller (its
+    // thickness is the controller's own Glacier, which a Martian tree has
+    // not).
     expect(frozen.state.ice).toEqual([
-      // Glacier (the controller's Submersibles through the Ice Folk tree).
-      { at: ICE1, ownerId: seatV7(state, 0).id, turnsLeft: 5 },
-      { at: ICE2, ownerId: seatV7(state, 0).id, turnsLeft: 5 },
+      { at: ICE1, ownerId: seatV7(state, 0).id, cracked: false },
+      { at: ICE2, ownerId: seatV7(state, 0).id, cracked: false },
     ]);
     // Without the controller's Rime the Yeti cannot, whatever its own
     // seat researched.
@@ -534,32 +535,43 @@ describe("a mind-controlled Ice Folk unit (section 21.16)", () => {
   });
 
   it("Black Ice follows the seat that owns the ice: a Martian seat has none", () => {
-    // The Martian seat owns the ice under an Ice Folk Sled and has
-    // researched Seamanship; the Ice Folk seat owns the ice under a
-    // Martian Grunt.
+    // The Martian seat owns ice and has researched Seamanship (Hover Pods
+    // in its tree); the Ice Folk seat owns ice with Black Ice. The frozen
+    // sea redesign (`pulp_wars-5ti.25`): Black Ice freezes on entry.
     const state = controlled(
       NAVAL_TECHS_V7,
       [
         { at: { x: 7, y: 3 }, seat: 0 },
+        { at: { x: 6, y: 4 }, seat: 1 },
+        { at: { x: 8, y: 6 }, seat: 0 },
         { at: { x: 8, y: 7 }, seat: 1 },
       ],
       [
-        { seat: 1, role: "RAIDER", at: { x: 7, y: 3 } },
-        { seat: 0, role: "FIGHTER", at: { x: 8, y: 7 } },
+        { seat: 1, role: "RAIDER", at: { x: 6, y: 4 } },
+        { seat: 0, role: "FIGHTER", at: { x: 8, y: 6 } },
       ],
     );
-    const grunt = navalUnitAtV7(state, { x: 8, y: 7 });
-    const mine = acceptV7(state, 0, END);
-    // The Ice Folk Start Turn: its Black Ice chills the Grunt.
-    expect(mine.events).toContainEqual(
+    const grunt = navalUnitAtV7(state, { x: 8, y: 6 });
+    const sled = navalUnitAtV7(state, { x: 6, y: 4 });
+    // The Grunt steps from its seat's ice onto the Ice Folk ice: Frozen.
+    const stepped = acceptV7(state, 0, {
+      kind: "MOVE",
+      unitId: grunt.id,
+      path: [{ x: 8, y: 7 }],
+    });
+    expect(stepped.events).toContainEqual(
       expect.objectContaining({
         kind: "UNITS_FROZEN",
         source: "BLACK_ICE",
         results: [expect.objectContaining({ unitId: grunt.id })],
       }),
     );
-    // The Martian Start Turn: nothing, although the Sled stands on its ice.
-    const theirs = acceptV7(mine.state, 1, END);
+    // The Sled steps onto the Martian ice: nothing.
+    const theirs = acceptV7(acceptV7(stepped.state, 0, END).state, 1, {
+      kind: "MOVE",
+      unitId: sled.id,
+      path: [{ x: 7, y: 3 }],
+    });
     expect(
       theirs.events.some(
         (event) =>

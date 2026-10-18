@@ -7,7 +7,6 @@ import {
   scoreCommandV7,
 } from "../../src/ai/v7";
 import {
-  ICE_BRIDGE_BREAK_VALUE_V7,
   ICE_BRIDGE_FREEZE_PRIORITY_V7,
   ICE_BUILD_MOVE_PRIORITY_V7,
   ICE_CREW_LANDING_PRIORITY_V7,
@@ -392,11 +391,12 @@ describe("the ice plan of an Ice Folk seat: the crossing", () => {
         { seat: 0, role: "FIGHTER", at: { x: 8, y: 1 } },
       ],
     });
-    // Five tiles left: at her pace the first would thaw; a Yeti's two tiles
-    // a turn finish in three turns.
+    // Five tiles left: the frozen sea redesign (`pulp_wars-5ti.25`) makes
+    // ice permanent, so no thaw outruns her and the near Witch builds any
+    // crossing (before: a Yeti, two tiles a turn, beat the thaw).
     expect(requiredPlan(long.view)).toMatchObject({
       unfrozen: 5,
-      builders: [idAt(long.state, { x: 8, y: 1 })],
+      builders: [idAt(long.state, { x: 2, y: 1 })],
       thawSafe: true,
     });
     // Without Rime nobody is bound to the job.
@@ -676,9 +676,12 @@ describe("the builders: a bridge frozen toward the far shore", () => {
     ).toEqual([]);
   });
 
-  it("refreezes a crossing tile about to thaw while a unit still has to pass it", () => {
+  // The frozen sea redesign (`pulp_wars-5ti.25`): ice no longer thaws, so
+  // the old "about to thaw" refreeze is adapted minimally to its successor,
+  // mending cracked crossing tiles (bead `pulp_wars-5ti.26` reworks it).
+  it("mends cracked crossing tiles while a unit still has to pass them", () => {
     const options = (wave: boolean): FrozenArenaOptionsV7 => ({
-      technologies: [PACK_ICE, PACK_ICE],
+      technologies: [GLACIER, PACK_ICE],
       units: [
         { seat: 0, role: "FIGHTER", at: { x: 3, y: 5 } },
         ...(wave
@@ -686,9 +689,9 @@ describe("the builders: a bridge frozen toward the far shore", () => {
           : []),
       ],
       ice: [
-        ...column(3, { turnsLeft: 3 }),
-        { at: { x: 3, y: 6 }, turnsLeft: 1 },
-        { at: { x: 3, y: 7 }, turnsLeft: 1 },
+        ...column(3),
+        { at: { x: 3, y: 6 }, cracked: true },
+        { at: { x: 3, y: 7 }, cracked: true },
       ],
     });
     const waiting = scene(options(true));
@@ -709,13 +712,13 @@ describe("the builders: a bridge frozen toward the far shore", () => {
       priority: ICE_REFREEZE_PRIORITY_V7,
       strategic: 12,
     });
-    expect(scored?.preview.refreshed).toEqual(COLUMN.slice(3, 5));
+    expect(scored?.preview.mended).toEqual(COLUMN.slice(3, 5));
     expect(candidates(waiting.view).map((item) => item.command)).toContainEqual(
       command,
     );
     const result = acceptV7(waiting.state, 0, command);
     expect(frozenEvent(result.events).tiles).toEqual(scored?.preview.tiles);
-    expect(iceEntryV7(result.state, { x: 3, y: 6 })?.turnsLeft).toBe(3);
+    expect(iceEntryV7(result.state, { x: 3, y: 6 })?.cracked).toBe(false);
     // The same ice with nobody left behind it is let go.
     const alone = scene(options(false));
     expect(
@@ -961,15 +964,15 @@ describe("Icebound and home ice", () => {
     const result = acceptV7(state, 0, best?.command as CommandV7);
     const made = frozenEvent(result.events).tiles;
     expect(made).toEqual(scored?.preview.tiles);
-    // Ice in the seat's own territory never melts.
+    // The seat's own sound ice (the redesign: all ice is permanent).
     const home = made.filter((at) => inTerritoryOfV7(result.state, 0, at));
     expect(home.length).toBeGreaterThan(0);
     for (const at of home)
       expect(
         viewOf(result.state).ice.find(
           (entry) => entry.at.x === at.x && entry.at.y === at.y,
-        )?.permanent,
-      ).toBe(true);
+        )?.cracked,
+      ).toBe(false);
     // A city without a dock keeps its Port sites clear: a Port cannot be
     // built on ice, and this ice would stay for good.
     const dockless = scene({
@@ -1163,15 +1166,16 @@ describe("every seat against the ice", () => {
         { x: 3, y: 3 },
       ),
     ).toBe(true);
-    // Why: a unit that stands there at the Ice Folk Start Turn is Frozen.
-    const stepped = acceptV7(state, 0, {
+    // Why: the frozen sea redesign (`pulp_wars-5ti.25`): a unit that steps
+    // onto it is Frozen at once by Black Ice.
+    const step = acceptV7(state, 0, {
       kind: "MOVE",
       unitId: fighter,
       path: [{ x: 3, y: 3 }],
-    }).state;
-    const turn = acceptV7(stepped, 0, { kind: "END_TURN" });
+    });
+    const stepped = step.state;
     expect(
-      turn.events.some(
+      step.events.some(
         (event) =>
           event.kind === "UNITS_FROZEN" &&
           event.source === "BLACK_ICE" &&
@@ -1289,7 +1293,9 @@ describe("every seat against the ice", () => {
     expect(iceEntryV7(landed, navalUnitV7(landed, cargo).at)).toBeUndefined();
   });
 
-  it("values the kill of the unit that holds thawing ice: the bridge breaks", () => {
+  // The frozen sea redesign (`pulp_wars-5ti.25`): ice never melts, so a
+  // kill on it breaks no bridge; only the exposure on the ice is valued.
+  it("values a unit on ice as exposed, and no kill breaks a bridge any more", () => {
     const { state, view } = scene(
       against(
         [
@@ -1297,8 +1303,8 @@ describe("every seat against the ice", () => {
           { seat: 1, role: "FIGHTER", at: { x: 3, y: 3 } },
         ],
         [
-          { at: { x: 3, y: 3 }, seat: 1, turnsLeft: 1 },
-          { at: { x: 3, y: 4 }, seat: 1, turnsLeft: 3 },
+          { at: { x: 3, y: 3 }, seat: 1 },
+          { at: { x: 3, y: 4 }, seat: 1 },
         ],
       ),
     );
@@ -1318,8 +1324,8 @@ describe("every seat against the ice", () => {
         publicUnit(weakView, holder),
         kill,
       ),
-    ).toBe(ICE_EXPOSED_TARGET_VALUE_V7 + ICE_BRIDGE_BREAK_VALUE_V7);
-    // A hit that does not kill leaves the holder on its tile.
+    ).toBe(ICE_EXPOSED_TARGET_VALUE_V7);
+    // A hit that does not kill is worth the same.
     expect(
       iceTargetBonusV7(view, toolsOf(view), publicUnit(view, holder), chip),
     ).toBe(ICE_EXPOSED_TARGET_VALUE_V7);
@@ -1343,28 +1349,16 @@ describe("every seat against the ice", () => {
     expect(
       scoreCommandV7(weakView, attack).strategicValue -
         scoreCommandV7(viewOf(onLand), attack).strategicValue,
-    ).toBeGreaterThanOrEqual(
-      ICE_EXPOSED_TARGET_VALUE_V7 + ICE_BRIDGE_BREAK_VALUE_V7,
-    );
-    // Why: the unit held the tile (ice never melts under a land unit); with
-    // it dead the tile melts at its owner's End Turn, and the tile behind
-    // it, with turns left, does not.
+    ).toBeGreaterThanOrEqual(ICE_EXPOSED_TARGET_VALUE_V7);
+    // Why there is no bridge-break value: with the unit dead the ice stays.
     const killed = acceptV7(weak, 0, attack);
     expect(killed.state.units.some((unit) => unit.id === holder)).toBe(false);
     const ended = acceptV7(killed.state, 0, { kind: "END_TURN" });
-    const melt = acceptV7(ended.state, 1, { kind: "END_TURN" });
-    expect(
-      melt.events.flatMap((event) =>
-        event.kind === "ICE_MELTED" ? event.tiles : [],
-      ),
-    ).toEqual([{ x: 3, y: 3 }]);
-    // With the holder alive the same End Turn melts nothing.
-    const held = acceptV7(acceptV7(weak, 0, { kind: "END_TURN" }).state, 1, {
-      kind: "END_TURN",
-    });
-    expect(held.events.some((event) => event.kind === "ICE_MELTED")).toBe(
+    const after = acceptV7(ended.state, 1, { kind: "END_TURN" });
+    expect(after.events.some((event) => event.kind === "ICE_MELTED")).toBe(
       false,
     );
+    expect(after.state.ice).toHaveLength(2);
   });
 
   it("changes nothing in a match without an Ice Folk seat", () => {

@@ -9,7 +9,6 @@ import {
   dockPopulationV7,
   effectiveRoleRuleV7,
   factionFieldsRoleV7,
-  technologyCapabilitiesV7,
 } from "../rules/ruleset-v7";
 import {
   growthSpentV7,
@@ -538,8 +537,8 @@ export function createShowcaseEntitiesV7(
   // The naval branch, the frozen sea
   // (docs/product/RULESET_7_NAVAL_BRANCH.md section 3.3): an Ice Folk seat
   // has no ship. The water tiles where its boats would stand are its ice
-  // instead, with the countdown of the ice it makes (every technology is
-  // researched, so Glacier's); the one in its Coast territory is permanent.
+  // instead (the frozen sea redesign, RULESET_7_ICE_REDESIGN.md section 5:
+  // permanent and sound; every technology is researched, so it is thick).
   // The seat still takes the three entity IDs, so every other unit of the
   // Showcase keeps its ID whatever the factions.
   const ice: IceTileV7[] = [];
@@ -557,10 +556,7 @@ export function createShowcaseEntitiesV7(
         ice.push({
           at: { x: (centers[seat] as number) + template.dx, y: template.y },
           ownerId: player.id,
-          turnsLeft: technologyCapabilitiesV7(
-            player.researchedTechs,
-            player.faction,
-          ).iceTurns,
+          cracked: false,
         });
         continue;
       }
@@ -593,6 +589,7 @@ export function createShowcaseEntitiesV7(
     players,
     units,
     setup,
+    ice,
     humanPlayerId: (players[0] as PlayerStateV7).id,
   };
   const cities = draftCities.map((city) => {

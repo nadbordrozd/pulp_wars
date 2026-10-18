@@ -919,9 +919,16 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     // crushes what stands on the board; a Freeze and its preview read the
     // board. No Ice Folk unit is afloat anywhere, a mound included, so the
     // state check also reads the `burrowed` list.
-    "src/engine/v7/ice.ts::resolveThawV7": "BOARD",
-    "src/engine/v7/ice.ts::resolveBlackIceV7": "BOARD",
     "src/engine/v7/ice.ts::resolveIceCrushV7": "BOARD",
+    // The frozen sea redesign (`pulp_wars-5ti.25`): Black Ice on entry
+    // freezes the unit that stepped on; Crack Ice and its preview read who
+    // stands on the ice; an Ice Harbour on open water needs no unit there.
+    "src/engine/v7/ice.ts::resolveBlackIceOnEntryV7": "BOARD",
+    "src/engine/v7/reducer.ts::withBlackIceResultV7": "BOARD",
+    "src/engine/v7/query.ts::publicCrackIceTargetsV7": "BOARD",
+    "src/engine/v7/query.ts::previewCrackIceV7": "BOARD",
+    "src/engine/v7/reducer.ts::applyCrackIce": "BOARD",
+    "src/engine/v7/reducer.ts::applyPort": "BOARD",
     "src/engine/v7/query.ts::publicFreezeSetV7": "BOARD",
     "src/engine/v7/query.ts::previewFreezeV7": "BOARD",
     "src/engine/v7/reducer.ts::applyFreeze": "BOARD",

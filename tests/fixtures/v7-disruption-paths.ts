@@ -117,6 +117,8 @@ export const DISRUPTION_EVENT_PATHS_V7: Readonly<
   TILES_GLAZED: NONE,
   TILES_REVEALED: NONE,
   WATER_FROZEN: NONE,
+  // The frozen sea redesign: a Crack frees a ship, it disrupts nothing.
+  ICE_CRACKED: NONE,
   // Only units afloat are icebound; a watched unit is in land form.
   ICE_MELTED: NONE,
   PLAGUE_EXPIRED: NONE,

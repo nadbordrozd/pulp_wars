@@ -100,7 +100,7 @@ function coast(
           .map((tile) => ({
             at: tile.at,
             ownerId: state.humanPlayerId,
-            turnsLeft: 3,
+            cracked: false,
           }))
           .sort((a, b) => a.at.y - b.at.y || a.at.x - b.at.x)
       : state.ice,

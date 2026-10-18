@@ -67,7 +67,8 @@ describe("ruleset-7 revision-4 AI headless runner", () => {
     const metrics = collectAcceptedTelemetryV7(initialV7(0), [], []);
     expect(TECHNOLOGY_IDS_V7).toHaveLength(25);
     expect(UNIT_ROLE_IDS_V7).toHaveLength(12);
-    expect(IMPROVEMENT_IDS_V7).toHaveLength(11);
+    // The frozen sea redesign (`pulp_wars-5ti.25`): the Fishing Hole (12).
+    expect(IMPROVEMENT_IDS_V7).toHaveLength(12);
     expect(Object.keys(metrics.commandsByKind)).toEqual(COMMAND_KIND_ORDER_V7);
     expect(Object.keys(metrics.eventsByKind)).toEqual(
       DOMAIN_EVENT_KIND_ORDER_V7,

@@ -34,6 +34,7 @@ export type TileCommandKindV7 =
   | "GATHER_PEARLS"
   | "BUILD_FARM"
   | "BUILD_LUMBER_CAMP"
+  | "BUILD_FISHING_HOLE"
   | "BUILD_MINE"
   | "BUILD_WINDMILL"
   | "BUILD_SAWMILL"
@@ -157,6 +158,17 @@ export type CommandV7 =
        * Witch, every tile around her (`at` is her own tile).
        */
       readonly kind: "FREEZE";
+      readonly unitId: UnitId;
+      readonly at: CoordV7;
+    }
+  | {
+      /**
+       * The frozen sea redesign (docs/product/RULESET_7_ICE_REDESIGN.md
+       * section 2.9): a unit or ship of any kind but the Ice Folk breaks
+       * (or, thick ice, cracks) the ice on `at`, one of the eight tiles
+       * around it.
+       */
+      readonly kind: "CRACK_ICE";
       readonly unitId: UnitId;
       readonly at: CoordV7;
     }
@@ -504,6 +516,7 @@ const TILE_KINDS = new Set<CommandKindV7>([
   "GATHER_PEARLS",
   "BUILD_FARM",
   "BUILD_LUMBER_CAMP",
+  "BUILD_FISHING_HOLE",
   "BUILD_MINE",
   "BUILD_WINDMILL",
   "BUILD_SAWMILL",
@@ -796,7 +809,12 @@ export function parseCommandV7(input: unknown): CommandParseResultV7 {
       ? invalid(kind)
       : { ok: true, value: { kind, unitId: unit, targetUnitId: target, to } };
   }
-  if (kind === "FREEZE" || kind === "STAMPEDE" || kind === "TENTACLE") {
+  if (
+    kind === "FREEZE" ||
+    kind === "CRACK_ICE" ||
+    kind === "STAMPEDE" ||
+    kind === "TENTACLE"
+  ) {
     if (!hasExactKeysV7(input, ["at", "kind", "unitId"])) return invalid(kind);
     const unit = parseUnitIdV7(candidate.unitId);
     const at = parseCoordV7(candidate.at);

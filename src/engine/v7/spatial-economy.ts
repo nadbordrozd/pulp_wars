@@ -80,6 +80,17 @@ function economyGraphIndexV7(graph: EconomyGraphV7): EconomyGraphIndexV7 {
 }
 const BASIC = ["FARM", "LUMBER_CAMP", "MINE"] as const;
 const PROCESSORS = ["WINDMILL", "SAWMILL", "FORGE"] as const;
+/**
+ * The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 2.6): the
+ * Fishing Hole counts as a Farm wherever a mill, a Workshop, or a Market
+ * counts Farms; it is the Farm type and the agriculture family.
+ */
+const CONTRIBUTORS = ["FARM", "LUMBER_CAMP", "MINE", "FISHING_HOLE"] as const;
+function basicTypeOfV7(
+  improvement: ImprovementIdV7 | null,
+): ImprovementIdV7 | null {
+  return improvement === "FISHING_HOLE" ? "FARM" : improvement;
+}
 
 export function spatialContributionAtV7(
   graph: EconomyGraphV7,
@@ -108,6 +119,7 @@ function calculateSpatialContributionAtV7(
   if (center === undefined || city === undefined) return result({});
   if (improvement === "FARM") return fixed(2, at, improvement);
   if (improvement === "LUMBER_CAMP") return fixed(1, at, improvement);
+  if (improvement === "FISHING_HOLE") return fixed(1, at, improvement);
   if (improvement === "MINE") return fixed(2, at, improvement);
   if (improvement === "MONUMENT")
     return fixed(MONUMENT_POPULATION_V7, at, improvement);
@@ -216,7 +228,7 @@ function spatialPlacementSupportV7(
       graph,
       at,
       city.ownerId,
-      [type],
+      type === "FARM" ? ["FARM", "FISHING_HOLE"] : [type],
       cityById,
     );
     return {
@@ -233,7 +245,7 @@ function spatialPlacementSupportV7(
       graph,
       at,
       city.ownerId,
-      BASIC,
+      CONTRIBUTORS,
       cityById,
     );
     const types = orderedTypes(contributors, BASIC);
@@ -249,7 +261,7 @@ function spatialPlacementSupportV7(
       graph,
       at,
       city.ownerId,
-      [...BASIC, ...PROCESSORS],
+      [...CONTRIBUTORS, ...PROCESSORS],
       cityById,
     ).filter((tile) =>
       contributorServesV7(graph, tile, improvement, at, city, cityById),
@@ -383,11 +395,12 @@ function orderedTypes<T extends ImprovementIdV7>(
   order: readonly T[],
 ): readonly T[] {
   return order.filter((type) =>
-    tiles.some((tile) => tile.improvement === type),
+    tiles.some((tile) => basicTypeOfV7(tile.improvement) === type),
   );
 }
 function familyFor(value: ImprovementIdV7 | null): EconomicFamilyV7 | null {
-  if (value === "FARM" || value === "WINDMILL") return "AGRICULTURE";
+  if (value === "FARM" || value === "FISHING_HOLE" || value === "WINDMILL")
+    return "AGRICULTURE";
   if (value === "LUMBER_CAMP" || value === "SAWMILL") return "TIMBER";
   if (value === "MINE" || value === "FORGE") return "METAL";
   return null;

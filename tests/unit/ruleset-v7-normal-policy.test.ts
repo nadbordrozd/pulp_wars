@@ -431,7 +431,11 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       // after CHANNEL, moving the kinds from ANCHOR to TENTACLE back by
       // one, and the view's `cult.idols` (was 341e85…7a81); the
       // revision-12-ordinal value is unchanged.
-      "80c6b9e8b3a4fce9fabcfd5d84232a37d7df22eb0d80b9113bfacf1426a7b5e9",
+      // The frozen sea redesign (`pulp_wars-5ti.25`) inserts CRACK_ICE after
+      // FREEZE and BUILD_FISHING_HOLE after BUILD_LUMBER_CAMP, moving the
+      // later command kinds forward (was 80c6b9…b5e9); the revision-12-ordinal
+      // value is unchanged.
+      "081027934ebfac8c51cd9919f49e9d45074ad324549b3adc0e2d65f02545f2cb",
     );
     // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
     // (spec section 8); this is the value with revision-12 ordinals
@@ -1275,7 +1279,11 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       // after CHANNEL, moving the kinds from ANCHOR to TENTACLE back by
       // one, and the view's `cult.idols` (was fd2fd5…da67); the
       // revision-12-ordinal value is unchanged.
-      "3c36948f1d3aff2d3dfbebabb6017d5d2094fbcadfef34c4a5adf6b46b504f25",
+      // The frozen sea redesign (`pulp_wars-5ti.25`) inserts CRACK_ICE after
+      // FREEZE and BUILD_FISHING_HOLE after BUILD_LUMBER_CAMP, moving the
+      // later command kinds forward (was 3c3694…4f25); the revision-12-ordinal
+      // value is unchanged.
+      "0c43d9dd6114051921d0d2d7ac2b0a28a6b7a9efae1d91bfca33b91a4f463462",
     );
     expect(
       canonicalHash(withRevision12CandidateOrdinalsV7(revision4Candidates)),
@@ -1296,7 +1304,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     const source = upgradeRetainedPublicViewV7(retained);
 
     expect(canonicalJson(retained)).toBe(retainedBytes);
-    expect(source.rulesetId).toBe("pulp-wars-poc-7r99");
+    expect(source.rulesetId).toBe("pulp-wars-poc-7r100");
     expect(source.viewer.factionTreeId).toBe("ORIGINAL_BASELINE_V5");
     expect(
       source.players.every(

@@ -178,10 +178,13 @@ describe("Dwarf faction registration (sections 2 and 14)", () => {
     // The Cult redesign's Star-fall (`pulp_wars-mch9.34`) adds
     // JOIN_CHANT after TENTACLE (84), and its warden (`pulp_wars-mch9.33`)
     // removes BEHOLD (83).
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(83);
+    // The frozen sea redesign (`pulp_wars-5ti.25`) adds CRACK_ICE after
+    // FREEZE and BUILD_FISHING_HOLE after BUILD_LUMBER_CAMP (85).
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(85);
     const snap = COMMAND_KIND_ORDER_V7.indexOf("FREEZE");
-    expect(COMMAND_KIND_ORDER_V7.slice(snap, snap + 7)).toEqual([
+    expect(COMMAND_KIND_ORDER_V7.slice(snap, snap + 8)).toEqual([
       "FREEZE", // the frozen sea (pulp_wars-5ti.3), after COLD_SNAP
+      "CRACK_ICE", // the frozen sea redesign (pulp_wars-5ti.25)
       "TUNNEL",
       "BOMB_RUN",
       "ASSEMBLE",
@@ -219,7 +222,9 @@ describe("Dwarf faction registration (sections 2 and 14)", () => {
     // The Cult redesign's Star-fall (`pulp_wars-mch9.34`) adds
     // CHANT_JOINED after RITUAL_BEGUN (155), and its warden
     // (`pulp_wars-mch9.33`) removes IDOL_RAISED and IDOL_DROPPED (153).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(153);
+    // The frozen sea redesign (`pulp_wars-5ti.25`) adds ICE_CRACKED after
+    // WATER_FROZEN (154).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(154);
     const after = (order: readonly string[], kind: string) =>
       order[order.indexOf(kind) + 1];
     for (const order of [

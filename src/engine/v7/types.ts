@@ -5,7 +5,7 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r99" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r100" as const;
 /**
  * Every earlier Ruleset 7 identity, oldest first. Readers report these as
  * incompatible (never invalid). An identity bump must append the outgoing
@@ -110,8 +110,9 @@ export const PRIOR_RULESET_7_IDS = Object.freeze([
   "pulp-wars-poc-7r96",
   "pulp-wars-poc-7r97",
   "pulp-wars-poc-7r98",
+  "pulp-wars-poc-7r99",
 ] as const);
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r99.current" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r100.current" as const;
 /**
  * The map generator a setup names (docs/product/RULESET_7_MAP_SCALE.md
  * section 8.8): `V4` is the many-seats generator of `pulp_wars-ykw.3`
@@ -206,6 +207,10 @@ export const IMPROVEMENT_IDS_V7 = Object.freeze([
   "MONUMENT",
   "PORT",
   "SHIPYARD",
+  // The frozen sea redesign (docs/product/RULESET_7_ICE_REDESIGN.md section
+  // 2.6): the Ice Folk Fishing Hole on their ice (last, so no earlier
+  // improvement moves).
+  "FISHING_HOLE",
 ] as const);
 export const ACHIEVEMENT_IDS_V7 = Object.freeze([
   "EXPLORER",
@@ -347,6 +352,9 @@ export const COMMAND_KIND_ORDER_V7 = Object.freeze([
   // The naval branch (docs/product/RULESET_7_NAVAL_BRANCH.md section 8.4):
   // an Ice Folk land unit turns the water next to it to ice.
   "FREEZE",
+  // The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 2.9): any
+  // other faction's unit or ship breaks the ice next to it.
+  "CRACK_ICE",
   // The Dwarf revision: the Steam Mole's Tunnel, the Gyrocopter's bombing
   // run, and the Engineer's Assemble.
   "TUNNEL",
@@ -419,6 +427,8 @@ export const COMMAND_KIND_ORDER_V7 = Object.freeze([
   "HUNT_GAME",
   "BUILD_FARM",
   "BUILD_LUMBER_CAMP",
+  // The frozen sea redesign (section 2.6): the Ice Folk Fishing Hole.
+  "BUILD_FISHING_HOLE",
   "BUILD_MINE",
   "BUILD_WINDMILL",
   "BUILD_SAWMILL",
@@ -549,6 +559,9 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   // The naval branch (sections 8.4, 8.5, and 8.9): a Freeze made ice; ice
   // melted at an End Turn; icebound units were crushed at a Start Turn.
   "WATER_FROZEN",
+  // The frozen sea redesign (section 2.9): a Crack Ice broke or cracked a
+  // tile. `ICE_MELTED` is kept for the elimination release (section 2.3).
+  "ICE_CRACKED",
   "ICE_MELTED",
   "UNITS_CRUSHED",
   // The Candy revision: a unit went on a Sugar Rush.
@@ -1378,8 +1391,10 @@ export interface GameStateV7 {
   /**
    * The naval branch (docs/product/RULESET_7_NAVAL_BRANCH.md section 8.3):
    * the ice tiles, sorted by (y, x), at most one entry per tile. An ice
-   * tile is a water tile (never a dock) with an entry; its terrain does not
-   * change. Always empty in a match whose setup has no ICE_FOLK seat.
+   * tile is a water tile with an entry; its terrain does not change. The
+   * frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 2.3): ice is
+   * permanent and may carry an Ice Folk building (a dock among them).
+   * Always empty in a match whose setup has no ICE_FOLK seat.
    */
   readonly ice: readonly IceTileV7[];
   /**
@@ -1804,14 +1819,16 @@ export interface BarricadeV7 {
 
 /**
  * The naval branch (docs/product/RULESET_7_NAVAL_BRANCH.md section 8.3): one
- * ice tile. `ownerId` is the player whose unit froze it last; `turnsLeft`
- * (0 to 5) counts that owner's End Turns before it melts, and does not
- * count down while the tile is in its owner's territory.
+ * ice tile. `ownerId` is the player whose unit froze it last (or who took
+ * the city whose territory it lies in). The frozen sea redesign
+ * (docs/product/RULESET_7_ICE_REDESIGN.md section 2.3): ice is permanent
+ * (no countdown); `cracked` is true only on thick ice (its owner has
+ * Glacier) that has taken one Crack Ice.
  */
 export interface IceTileV7 {
   readonly at: CoordV7;
   readonly ownerId: PlayerId;
-  readonly turnsLeft: number;
+  readonly cracked: boolean;
 }
 
 /**

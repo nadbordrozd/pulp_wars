@@ -91,16 +91,16 @@ class MemoryStorage {
 // save keys are obsolete, and the scripts perform no Stampede.
 describe("ruleset-7 revision-20 identity", () => {
   it("keeps 7r19 and 7r20 as prior identities after the later bumps", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r99");
-    expect(RULESET_7.id).toBe("pulp-wars-poc-7r99");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r100");
+    expect(RULESET_7.id).toBe("pulp-wars-poc-7r100");
     expect(RULESET_7.version).toBe(7);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r99.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-80, -78)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r100.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-81, -79)).toEqual([
       "pulp-wars-poc-7r19",
       "pulp-wars-poc-7r20",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-80, -78)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-81, -79)).toEqual([
       "pulpWars.save.v7r19.current",
       "pulpWars.save.v7r20.current",
     ]);
@@ -142,7 +142,7 @@ describe("ruleset-7 revision-20 identity", () => {
       const setup = goblinSetupV7(["DINOSAUR", "ORIGINAL"]);
       const created = createPlayableGameV7(setup);
       if (!created.ok) throw new Error(created.error.code);
-      expect(created.state.rulesetId).toBe("pulp-wars-poc-7r99");
+      expect(created.state.rulesetId).toBe("pulp-wars-poc-7r100");
       const oldSetup = { ...setup, rulesetId: oldId };
       expect(parseMatchSetupV7(setup)).not.toBeNull();
       expect(parseMatchSetupV7(oldSetup)).toBeNull();
@@ -243,7 +243,9 @@ describe("ruleset-7 revision-20 Stampede removal", () => {
     // The Cult redesign's Star-fall (`pulp_wars-mch9.34`) adds
     // JOIN_CHANT after TENTACLE (84), and its warden (`pulp_wars-mch9.33`)
     // removes BEHOLD (83).
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(83);
+    // The frozen sea redesign (`pulp_wars-5ti.25`) adds CRACK_ICE after
+    // FREEZE and BUILD_FISHING_HOLE after BUILD_LUMBER_CAMP (85).
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(85);
     // The Mammoth's Stampede of Ice Folk Freeze is a new command with the
     // old name, after BREAK_OFF; the Dinosaur's revision-19 slot is gone.
     expect(COMMAND_KIND_ORDER_V7.indexOf("STAMPEDE")).toBe(
@@ -287,7 +289,9 @@ describe("ruleset-7 revision-20 Stampede removal", () => {
     // The Cult redesign's Star-fall (`pulp_wars-mch9.34`) adds
     // CHANT_JOINED after RITUAL_BEGUN (155), and its warden
     // (`pulp_wars-mch9.33`) removes IDOL_RAISED and IDOL_DROPPED (153).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(153);
+    // The frozen sea redesign (`pulp_wars-5ti.25`) adds ICE_CRACKED after
+    // WATER_FROZEN (154).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(154);
   });
 
   it("fails to parse a revision-19 STAMPEDE command", () => {

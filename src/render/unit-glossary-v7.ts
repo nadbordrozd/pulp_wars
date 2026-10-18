@@ -607,6 +607,16 @@ const ENTRIES = {
     "Frostbite",
     "An enemy that hits it from the next tile and survives is Frozen.",
   ],
+  // The frozen sea redesign (RULESET_7_ICE_REDESIGN.md sections 2.7 and
+  // 2.9): the Sled's Runners, and every other faction's Crack Ice.
+  RUNNERS: [
+    "Runners",
+    "Its slide across ice does not stop beside enemies; it still stops at a unit or where the ice ends.",
+  ],
+  CRACK_ICE: [
+    "Crack Ice",
+    "Any unit or ship that is not Ice Folk can break the ice next to it back into water, unless a unit stands on it or it is built on.",
+  ],
 
   // ----------------------------------------------------------------- Dwarves
   RIDES_TUNNEL: [
@@ -1096,6 +1106,7 @@ export function roleTraitGlossaryIdsV7(
   if (mechanics.shield > 0) traits.push("SHIELD");
   if (mechanics.shockFieldDamage > 0) traits.push("SHOCK_FIELD");
   if (mechanics.glides) traits.push("GLIDE");
+  if (mechanics.runners) traits.push("RUNNERS");
   if (mechanics.frostbite) traits.push("FROSTBITE");
   if (mechanics.repairsAsMachine && !mechanics.construct)
     traits.push("MACHINE");

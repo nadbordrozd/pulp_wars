@@ -39,7 +39,7 @@ const setup: MatchSetupV7 = {
 
 describe("ruleset-7 revision-8 deterministic foundation", () => {
   it("freezes the exact identity and registries", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r99");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r100");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
@@ -83,6 +83,8 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
       "MONUMENT",
       "PORT",
       "SHIPYARD",
+      // The frozen sea redesign (`pulp_wars-5ti.25`).
+      "FISHING_HOLE",
     ]);
     expect(ACHIEVEMENT_IDS_V7).toEqual([
       "EXPLORER",
@@ -143,7 +145,9 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
     // The Cult redesign's Star-fall (`pulp_wars-mch9.34`) adds
     // JOIN_CHANT after TENTACLE (84), and its warden (`pulp_wars-mch9.33`)
     // removes BEHOLD (83).
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(83);
+    // The frozen sea redesign (`pulp_wars-5ti.25`) adds CRACK_ICE after
+    // FREEZE and BUILD_FISHING_HOLE after BUILD_LUMBER_CAMP (85).
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(85);
     // The revision-19 Dinosaur STAMPEDE stays gone; Ice Folk Freeze's
     // Mammoth STAMPEDE is a new command after BREAK_OFF.
     expect(COMMAND_KIND_ORDER_V7.indexOf("STAMPEDE")).toBe(
@@ -180,7 +184,9 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
     // The Cult redesign's Star-fall (`pulp_wars-mch9.34`) adds
     // CHANT_JOINED after RITUAL_BEGUN (155), and its warden
     // (`pulp_wars-mch9.33`) removes IDOL_RAISED and IDOL_DROPPED (153).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(153);
+    // The frozen sea redesign (`pulp_wars-5ti.25`) adds ICE_CRACKED after
+    // WATER_FROZEN (154).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(154);
     // Revision 19 inserts HATCH after KABOOM (and, until revision 20,
     // STAMPEDE between them), LAY_EGG after TRAIN_NAVAL, EGG_LAID and
     // EGG_HATCHED after NAVAL_UNIT_TRAINED, and UNIT_GREW after

@@ -1130,6 +1130,10 @@ export function chibiFallbackSubjectV7(
   // Classic look) is the shared Monument.
   if (subject.startsWith("IMPROVEMENT:MONUMENT:"))
     return "IMPROVEMENT:MONUMENT";
+  // The frozen sea redesign (`pulp_wars-5ti.25`): STAND-IN. The Fishing
+  // Hole is drawn as the Fish until bead pulp_wars-5ti.27 registers its
+  // own raster.
+  if (subject === "IMPROVEMENT:FISHING_HOLE") return "RESOURCE:FISH";
   if (subject === "UNIT:DINOSAUR:EGG") return null;
   if (subject === "UNIT:DWARF:MOUND" || subject === "UNIT:DWARF:MOUND_RIDER")
     return null;

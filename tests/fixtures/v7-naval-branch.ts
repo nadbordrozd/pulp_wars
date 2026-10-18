@@ -11,6 +11,7 @@ import {
   type GameStateV7,
   type MatchSetupV7,
   type MissionDefinitionV7,
+  type MissionImprovementV7,
   type TechnologyIdV7,
   type UnitRoleIdV7,
   type UnitStateV7,
@@ -97,6 +98,12 @@ export interface NavalArenaOptionsV7 {
    * on both Ports. The strait above by default.
    */
   readonly terrain?: readonly string[];
+  /**
+   * The frozen sea redesign (`pulp_wars-5ti.25`): the resource layer (the
+   * mission legend; none by default) and improvements beside the Ports.
+   */
+  readonly resources?: readonly string[];
+  readonly improvements?: readonly MissionImprovementV7[];
 }
 
 /** The bystander seat's capital ({@link NavalArenaOptionsV7.third}). */
@@ -154,14 +161,20 @@ export function navalArenaV7(options: NavalArenaOptionsV7): GameStateV7 {
     size: NAVAL_ARENA_SIZE_V7,
     seed: 1,
     terrain: [...(options.terrain ?? TERRAIN)],
-    resources: TERRAIN.map(() => ".".repeat(NAVAL_ARENA_SIZE_V7)),
+    resources: [
+      ...(options.resources ??
+        TERRAIN.map(() => ".".repeat(NAVAL_ARENA_SIZE_V7))),
+    ],
     biome: "PLAINS",
     villages: [],
-    improvements: ([0, 1] as const).flatMap((index) =>
-      ports[index]
-        ? [{ at: NAVAL_ARENA_PORTS_V7[index], improvement: "PORT" as const }]
-        : [],
-    ),
+    improvements: [
+      ...([0, 1] as const).flatMap((index) =>
+        ports[index]
+          ? [{ at: NAVAL_ARENA_PORTS_V7[index], improvement: "PORT" as const }]
+          : [],
+      ),
+      ...(options.improvements ?? []),
+    ],
     aiMode,
     seats: [
       seat(0),

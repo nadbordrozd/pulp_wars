@@ -45,12 +45,13 @@ export interface SeaIceCellV7 {
   readonly openWater: number;
   /** The edge's stable variant (0 or 1). */
   readonly variant: number;
-  /** Ice in its owner's territory: dusted with snow, it never melts. */
+  /**
+   * Thick ice (its owner has Glacier; the frozen sea redesign,
+   * RULESET_7_ICE_REDESIGN.md section 4.1): dusted with snow.
+   */
   readonly permanent: boolean;
-  /** Melting cracks: 0 (none) to 3 (wide), from the countdown. */
+  /** Cracks: 0 (sound) or 2 (cracked thick ice). */
   readonly stage: 0 | 1 | 2 | 3;
-  /** The countdown itself, for the cursor description. */
-  readonly turnsLeft: number;
 }
 
 /** UNIT only: a ship locked in the ice, and the crush it takes next. */
@@ -105,9 +106,8 @@ export function seaIceCellsV7(
       depth: under === "SHALLOW_WATER" ? "SHALLOW" : "DEEP",
       openWater,
       variant: (entry.at.x * 7 + entry.at.y * 13) & 1,
-      permanent: entry.permanent,
+      permanent: entry.thick,
       stage: iceCrackStageV7(entry),
-      turnsLeft: entry.turnsLeft,
     });
   }
   return cells;

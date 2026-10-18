@@ -428,6 +428,17 @@ Ice Folk: [section 8](#8-ice-folk-the-frozen-sea).
 
 ## 8. Ice Folk: the frozen sea
 
+> **Superseded by the frozen sea redesign** (`pulp_wars-5ti.25`,
+> `pulp-wars-poc-7r100`; [RULESET_7_ICE_REDESIGN.md](RULESET_7_ICE_REDESIGN.md)):
+> ice is permanent (no thaw, no countdown), every other faction's units and
+> ships may Crack Ice, the Ice Folk build their Ice Harbour, Fishing Holes,
+> mills, Workshop, Market, and Monument on their own ice, Glacier makes the
+> ice thick (two Cracks), Black Ice freezes once on entry, and the Sled has
+> Runners. The thaw, the refresh, "a land unit holds the ice", "docks never
+> freeze", and the Start Turn Black Ice below are history;
+> [current rules section 21.16](RULESET_7_CURRENT.md#2116-the-frozen-sea)
+> states the game.
+
 ### 8.1 The idea in one paragraph
 
 An Ice Folk seat never builds a ship. With **Rime** its units freeze the

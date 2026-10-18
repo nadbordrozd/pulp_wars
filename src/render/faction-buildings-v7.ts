@@ -37,6 +37,7 @@ const GENERIC_NAMES: Readonly<Record<ImprovementIdV7, string>> = {
   MONUMENT: "Monument",
   PORT: "Port",
   SHIPYARD: "Shipyard",
+  FISHING_HOLE: "Fishing hole",
 };
 
 const article = (name: string): string =>

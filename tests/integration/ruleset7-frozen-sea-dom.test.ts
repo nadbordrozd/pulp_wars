@@ -94,7 +94,8 @@ describe("Freeze, a line role: armed and picked on the board", () => {
     ]);
     for (const target of targets) {
       expect(targetHighlightStyleV7(target.family)).toBe("PLACE");
-      expect(target.previewLabel).toMatch(/^Ice [12] · 5 turns$/);
+      // The frozen sea redesign (`pulp_wars-5ti.25`): no countdown.
+      expect(target.previewLabel).toMatch(/^Ice [12]( · Icebound)?$/);
       expect(target.semanticLabel).not.toMatch(COORDINATE);
     }
     for (const text of [panel.textContent ?? "", panel.title])
@@ -232,7 +233,7 @@ describe("Freeze, the Ice Witch: her ring, one button", () => {
       boardPlan(host).entries.find((entry) =>
         entry.key.startsWith("ability-target:FREEZE_RING:"),
       )?.label,
-    ).toBe("Ice 3 · 5 turns");
+    ).toBe("Ice 3");
     freeze.dispatchEvent(new FocusEvent("blur"));
     expect(
       host.lastModel?.interaction.freezeRingFocusUnitId ?? null,
@@ -273,7 +274,7 @@ describe("Freeze, the Ice Witch: her ring, one button", () => {
     tap();
     expect(controller.accepted).toEqual([]);
     expect(host.lastModel?.interaction.freezeRingFocusUnitId).toBe(witch.id);
-    expect(label()).toBe("Ice 3 · 5 turns");
+    expect(label()).toBe("Ice 3");
     const panel = requiredElement<HTMLElement>("[data-v7-freeze-pick]");
     expect(panel.dataset.v7FreezePick).toBe("ring");
     expect(panel.classList.contains("v7-board-pick")).toBe(true);
@@ -333,9 +334,9 @@ describe("Freeze, the Ice Witch: her ring, one button", () => {
       kind: "UNIT",
       unitId: rime.unitAt({ x: 2, y: 3 }).id,
     });
-    // Rime: the two Shallow tiles beside her (her own tile is ice already
-    // and is refreshed).
-    expect(requiredButton("freeze").dataset.boardTiles).toBe("3");
+    // Rime: the two Shallow tiles beside her (the frozen sea redesign: her
+    // own tile is her sound ice, which the ring passes over).
+    expect(requiredButton("freeze").dataset.boardTiles).toBe("2");
     rime.app.destroy();
     document.body.innerHTML = '<div id="app"></div>';
     const packIce = scene(["SHORECRAFT", "NAVIGATION"]);
@@ -344,13 +345,13 @@ describe("Freeze, the Ice Witch: her ring, one button", () => {
       unitId: packIce.unitAt({ x: 2, y: 3 }).id,
     });
     // Pack Ice: the three Deep Water tiles south of her too.
-    expect(requiredButton("freeze").dataset.boardTiles).toBe("6");
+    expect(requiredButton("freeze").dataset.boardTiles).toBe("5");
     expect(
       boardPlan(packIce.host)
         .entries.filter((entry) => entry.key.startsWith("ability-area:FREEZE:"))
         .map((entry) => at(entry.at))
         .sort(),
-    ).toEqual(["1,3", "1,4", "2,3", "2,4", "3,3", "3,4"]);
+    ).toEqual(["1,3", "1,4", "2,4", "3,3", "3,4"]);
     packIce.app.destroy();
   });
 });
@@ -533,25 +534,27 @@ describe("an icebound ship", () => {
 });
 
 describe("the ice chip of a tile", () => {
-  it("shows the countdown, and that ice stays in its owner's territory", () => {
+  it("shows whether the ice is thick or cracked, never a countdown", () => {
+    // The frozen sea redesign (`pulp_wars-5ti.25`): ice is permanent; with
+    // Glacier it is thick, and the last tile of the row is cracked.
     const { host, app } = rig(frozenIceboundUiFixtureV7());
     const chip = (): HTMLElement =>
       requiredElement<HTMLElement>('.v7-selection-dock [data-winter="ice"]');
-    for (const [index, turns] of [3, 2, 1].entries()) {
+    for (const [index, kind] of ["thick", "thick", "cracked"].entries()) {
       host.callbacks?.onSelection({
         kind: "TILE",
         at: required(FROZEN_UI_V7.melting[index]),
       });
-      expect(chip().dataset.iceTurns).toBe(String(turns));
-      expect(chip().textContent).toBe(`Ice · ${turns}`);
+      expect(chip().dataset.ice).toBe(kind);
+      expect(chip().textContent).toBe(`Ice · ${kind}`);
       expect(chip().querySelector('[data-icon="snowflake"]')).not.toBeNull();
       expect(chip().title).not.toMatch(COORDINATE);
+      expect(chip().title).not.toMatch(/melt|turns/i);
     }
     host.callbacks?.onSelection({ kind: "TILE", at: FROZEN_UI_V7.permanent });
-    expect(chip().dataset.iceTurns).toBe("permanent");
-    expect(chip().textContent).toBe("Ice · stays");
-    expect(chip().title).toContain("It does not melt in your territory");
-    // The plan draws snow on the permanent tile and cracks on the others.
+    expect(chip().dataset.ice).toBe("thick");
+    expect(chip().title).toContain("Thick: two Cracks break it.");
+    // The plan draws snow on thick ice and cracks on the cracked tile.
     const cells = new Map(
       boardPlan(host)
         .entries.filter((entry) => entry.seaIce !== undefined)
@@ -563,7 +566,7 @@ describe("the ice chip of a tile", () => {
     });
     expect(
       FROZEN_UI_V7.melting.map((tile) => cells.get(at(tile))?.stage),
-    ).toEqual([1, 2, 3]);
+    ).toEqual([0, 0, 2]);
     app.destroy();
   });
 });
@@ -611,11 +614,11 @@ describe("Ice Folk technology cards, Help, achievements and Gallery", () => {
     );
     expect(icebound.join(" ")).not.toContain("Battleship");
     expect(lines("seamanship")).toEqual([
-      "Black Ice: enemies standing on your ice are Frozen at the start of your turn",
+      "Black Ice: an enemy that steps onto your ice is Frozen",
     ]);
     const glacier = lines("submersibles");
     expect(glacier).toContain(
-      "Glacier: your ice lasts 5 turns, gives your units on it cover, and gives a Move across it +1 Move",
+      "Glacier: your ice is thick (two Cracks break it), covers your units, and gives +1 Move across it",
     );
     expect(glacier.join(" ")).not.toContain("Submarine");
     expect(

@@ -52,6 +52,7 @@ const NAMES: Readonly<Record<ImprovementIdV7, string>> = {
   MONUMENT: "Monument",
   PORT: "Port",
   SHIPYARD: "Shipyard",
+  FISHING_HOLE: "Fishing Hole",
 };
 
 /** "FERTILE_GROUND" as "Fertile Ground". */
@@ -99,6 +100,12 @@ export function buildingRuleTextV7(
   const name = nameV7(improvement, faction);
   const farm = nameV7("FARM", faction);
   const population = (amount: number): string => `+${amount} population`;
+  // The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 2.6): the Ice
+  // Folk build on their own ice too, and a Fishing Hole counts as a Farm.
+  if (faction === "ICE_FOLK") {
+    const ice = iceFolkBuildingRuleTextV7(improvement, name, farm);
+    if (ice !== null) return ice;
+  }
   switch (improvement) {
     case "FARM":
     case "LUMBER_CAMP":
@@ -134,6 +141,38 @@ export function buildingRuleTextV7(
       return `${name}: on Shallow Water in your borders, next to its city's land, not ice; ${population(dockPopulationV7("PORT", 0))}`;
     case "SHIPYARD":
       return `${name}: one per city, upgrades one of your active Ports; +${dockPopulationV7("SHIPYARD", 0) - dockPopulationV7("PORT", 0)} more population`;
+    case "FISHING_HOLE":
+      return `${name}: on your own ice in your borders; counts as a ${farm}; ${population(BASIC_ECONOMIC_ACTIONS_V7.BUILD_FISHING_HOLE.population)}`;
+  }
+}
+
+/**
+ * The Ice Folk lines of the buildings they may also put on their own ice
+ * (the frozen sea redesign, section 2.6), or null for a building whose line
+ * is the shared one.
+ */
+function iceFolkBuildingRuleTextV7(
+  improvement: ImprovementIdV7,
+  name: string,
+  farm: string,
+): string | null {
+  const hole = NAMES.FISHING_HOLE;
+  switch (improvement) {
+    case "WINDMILL":
+      return `${name}: one per city, land or ice, by your ${farm}s or ${hole}s; +1 each, max ${MILL_POPULATION_CAPS_V7.WINDMILL}`;
+    case "SAWMILL":
+    case "FORGE":
+      return `${name}: one per city, land or ice, next to your ${improvement === "SAWMILL" ? NAMES.LUMBER_CAMP : NAMES.MINE}s; +1 each, max ${MILL_POPULATION_CAPS_V7[improvement]}`;
+    case "WORKSHOP":
+      return `${name}: one per city, land or ice, by a ${farm}, ${hole}, ${NAMES.LUMBER_CAMP} or ${NAMES.MINE}`;
+    case "MARKET":
+      return `${name}: one per city, land or ice, by a farm, ${hole}, camp, mine or mill; 1–${MARKET_INCOME_CAP_V7} Coins`;
+    case "MONUMENT":
+      return `${name}: one per city, on land or your ice, built with an achievement; +${MONUMENT_POPULATION_V7} population`;
+    case "PORT":
+      return `${name}: on your ice or Shallow Water (it freezes) by its city's land; +${dockPopulationV7("PORT", 0)} population`;
+    default:
+      return null;
   }
 }
 

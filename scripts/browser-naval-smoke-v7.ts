@@ -1279,12 +1279,12 @@ async function captureFrozenSeaEvidence(
       };
     })()`,
   );
-  // The ice chip of a melting tile.
+  // The ice chip of a cracked tile (the frozen sea redesign).
   const melting = icebound.melting as readonly unknown[];
   await activate(melting[2]);
   await waitForExpression(
     connection,
-    `document.querySelector('.v7-selection-dock [data-winter="ice"]')?.dataset.iceTurns === '1'`,
+    `document.querySelector('.v7-selection-dock [data-winter="ice"]')?.dataset.ice === 'cracked'`,
   );
   await delay(200);
   await capture(connection, "frozen-melting-ice.png", directory);
@@ -1336,7 +1336,7 @@ async function mountVisual(
       globalThis.__PULP_WARS_APP__?.destroy();
       const aiCount = ${size} === 11 ? 1 : 3;
       const setup = {
-        rulesetId: 'pulp-wars-poc-7r99', mapGenerationRevision: 'REGIONAL_BIOMES_NAVAL_V4', curiosities: false, seed: 42,
+        rulesetId: 'pulp-wars-poc-7r100', mapGenerationRevision: 'REGIONAL_BIOMES_NAVAL_V4', curiosities: false, seed: 42,
         width: ${size}, height: ${size}, aiCount, aiDifficulty: 'NORMAL', aiMode: 'RIVAL',
         humanColor: 'CORAL', factions: Array.from({ length: aiCount + 1 }, () => 'ORIGINAL'), mapType: 'ARCHIPELAGO',
         // A Human mirror presentation scene: the headless and test only

@@ -343,6 +343,7 @@ export const FIRST_STEP_RESOURCE_LINES_V7: Readonly<
   BUILD_FARM: "Tap this field to build a farm",
   BUILD_MINE: "Tap the ore to build a mine",
   BUILD_LUMBER_CAMP: "Tap this forest to build a lumber camp",
+  BUILD_FISHING_HOLE: "Tap this ice to cut a fishing hole",
 };
 
 /** The cheapest and plainest first: a harvest before a building. */

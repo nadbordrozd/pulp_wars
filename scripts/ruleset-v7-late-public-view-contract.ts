@@ -198,7 +198,11 @@ export const RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION = Object.freeze({
     // after CHANNEL, moving the kinds from ANCHOR to TENTACLE back by
     // one, and the view's `cult.idols` (was 9dd794…8639); the
     // revision-12-ordinal value is unchanged.
-    "ed9ce4dcbd4f5e2b60e8ca80fa3ff297953b6a0c2c841362702c0b0172e78c11",
+    // The frozen sea redesign (`pulp_wars-5ti.25`) inserts CRACK_ICE after
+    // FREEZE and BUILD_FISHING_HOLE after BUILD_LUMBER_CAMP, moving the
+    // later command kinds forward (was ed9ce4…8c11); the revision-12-ordinal
+    // value is unchanged.
+    "60a2ff1ef94b51ec285f820182ef89a5d00d99ce06d0c8e47a6cae1848748f89",
   command: Object.freeze({
     kind: "RESEARCH",
     tech: "MARKSMANSHIP",
@@ -290,10 +294,10 @@ export function upgradeRetainedPublicViewV7(
   });
   return {
     ...retained,
-    rulesetId: "pulp-wars-poc-7r99",
+    rulesetId: "pulp-wars-poc-7r100",
     setup: {
       ...retained.setup,
-      rulesetId: "pulp-wars-poc-7r99",
+      rulesetId: "pulp-wars-poc-7r100",
       mapType: "DRY_LAND",
       mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
       curiosities: false,

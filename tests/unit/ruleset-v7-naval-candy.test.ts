@@ -586,7 +586,7 @@ describe("Sugar Sails: the Rush afloat (section 8.3 C2)", () => {
     const frozen = frozenArenaV7({
       factions: ["CANDY", "ORIGINAL"],
       units: [{ seat: 0, role: "PATROL_BOAT", at: TUG }],
-      ice: [{ at: TUG, seat: 2, turnsLeft: 5 }],
+      ice: [{ at: TUG, seat: 2 }],
       third: { faction: "ICE_FOLK", explored: true },
     });
     const tug = navalUnitAtV7(frozen, TUG);

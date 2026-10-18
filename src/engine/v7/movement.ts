@@ -52,7 +52,12 @@ import {
   isUnitVisibleToPlayerV7,
   withUnitAtForObservationV7,
 } from "./observation";
-import { iceIndexSetV7, unitKindWalksIceV7, unitSlidesV7 } from "./ice";
+import {
+  iceIndexSetV7,
+  unitHasRunnersV7,
+  unitKindWalksIceV7,
+  unitSlidesV7,
+} from "./ice";
 import { tileAtV7 } from "./spatial-economy";
 import type {
   CoordV7,
@@ -392,6 +397,9 @@ function validateMovementPathCoreV7(
   if (unit.form !== "LAND" && iceAt(unit.at))
     return { legal: false, reason: "ICEBOUND" };
   const slides = iceSet.size > 0 && unitSlidesV7(state, unit);
+  // The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 2.7): the
+  // Sled's Runners, a slide that a hostile zone of control does not stop.
+  const runners = slides && unitHasRunnersV7(state, unit);
   const iceFolkKind = unitKindWalksIceV7(state, unit);
   const summoned = unitIsSummonedV7(unit);
   /** The direction the next step must take: the slide continues. */
@@ -749,13 +757,21 @@ function validateMovementPathCoreV7(
       state.curiosities.length > 0 &&
       gateAtV7(state.curiosities, step) !== null;
     // Hover Pods: the launch ends the Move.
-    const stops =
-      !wasExplored || terrainStops || entersZoc || gateStops || hoverLaunch;
+    const otherStops = !wasExplored || terrainStops || gateStops || hoverLaunch;
+    let stops = otherStops || entersZoc;
     // Section 8.6: a step that entered ice the mover knew of continues
     // straight on while the next tile in that direction is on the board,
     // known before the command, ice, and free of units and mounds, and
-    // while the tile it is on is not in a hostile zone of control.
-    if (slides && stepIce && wasKnownBeforeCommand && !stops) {
+    // while the tile it is on is not in a hostile zone of control. The
+    // redesign's Runners (section 2.7): a Sled's slide goes on through a
+    // zone of control; where it ends, the zone stops the Move as ever.
+    if (
+      slides &&
+      stepIce &&
+      wasKnownBeforeCommand &&
+      !otherStops &&
+      (!entersZoc || runners)
+    ) {
       const dx = step.x - current.x;
       const dy = step.y - current.y;
       const next = { x: step.x + dx, y: step.y + dy };
@@ -764,8 +780,10 @@ function validateMovementPathCoreV7(
         contains(knownBeforeCommand, next) &&
         iceAt(next) &&
         !tileOccupiedV7(state, next, unit.id)
-      )
+      ) {
         slide = { dx, dy };
+        stops = otherStops;
+      }
     }
     traversedPath.push(step);
     current = step;
@@ -1370,6 +1388,8 @@ function validatePlayerMovementPathCoreV7(
   if (unit.form !== "LAND" && iceAt(unit.at))
     return { legal: false, reason: "ICEBOUND" };
   const slides = iceSet.size > 0 && unitSlidesV7(view, unit);
+  // The frozen sea redesign (section 2.7): Runners.
+  const runners = slides && unitHasRunnersV7(view, unit);
   const iceFolkKind = unitKindWalksIceV7(view, unit);
   const summoned = unitIsSummonedV7(unit);
   // Themed naval branches, Hover Pods (`pulp_wars-5ti.19`): exact for the
@@ -1596,11 +1616,13 @@ function validatePlayerMovementPathCoreV7(
       view.curiosities.length > 0 &&
       gateAtV7(view.curiosities, step) !== null;
     // Hover Pods: the launch ends the Move.
-    const stops =
-      !tile.explored || terrainStops || entersZoc || gateStops || hoverLaunch;
+    const otherStops =
+      !tile.explored || terrainStops || gateStops || hoverLaunch;
+    let stops = otherStops || entersZoc;
     // Section 8.6: the slide (the same rule as the canonical validation;
-    // every tile it reads is explored and every unit on it visible).
-    if (slides && stepIce && !stops) {
+    // every tile it reads is explored and every unit on it visible), with
+    // the redesign's Runners (section 2.7).
+    if (slides && stepIce && !otherStops && (!entersZoc || runners)) {
       const dx = step.x - current.x;
       const dy = step.y - current.y;
       const next = { x: step.x + dx, y: step.y + dy };
@@ -1617,8 +1639,10 @@ function validatePlayerMovementPathCoreV7(
           ?.some((other) => other.id !== unit.id) !== true &&
         moundAtV7(view, next) === undefined &&
         barricadeAtV7(view, next) === undefined
-      )
+      ) {
         slide = { dx, dy };
+        stops = otherStops;
+      }
     }
     traversedPath.push(step);
     current = step;

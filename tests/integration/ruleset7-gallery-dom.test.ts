@@ -738,6 +738,8 @@ describe("Ruleset 7 Gallery", () => {
       "MONUMENT_SLAYER",
       "PORT",
       "SHIPYARD",
+      // The frozen sea redesign (`pulp_wars-5ti.25`): the Fishing Hole.
+      "FISHING_HOLE",
     ]);
     // Bead pulp_wars-2yc.44: every Monument and the obelisk in every
     // faction's skin, one cell per faction on that faction's ground.
@@ -859,11 +861,12 @@ describe("Ruleset 7 Gallery", () => {
     expect(
       cell("MARKET", "ORIGINAL").querySelector("canvas")?.dataset.subject,
     ).toBe("IMPROVEMENT:MARKET");
-    // Only the Village and the Mine are still one shared cell.
-    for (const row of [3, 6])
+    // Only the Village and the Mine are still one shared cell, and (the
+    // frozen sea redesign, `pulp_wars-5ti.25`) the Fishing Hole, last.
+    for (const row of [3, 6, rows.length - 1])
       expect(rows[row]?.querySelectorAll(".v7-gallery-cell")).toHaveLength(1);
     expect(document.querySelectorAll(".v7-gallery-cell")).toHaveLength(
-      20 * 9 + 2,
+      20 * 9 + 3,
     );
     // Bead pulp_wars-2yc.68: every faction's buildings stand on that
     // faction's own ground, as the board draws its territory; a Port and a

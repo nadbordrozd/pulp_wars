@@ -11969,6 +11969,10 @@ function isPolicyCandidate(
         command,
       ) !== null
     );
+  // The frozen sea redesign (`pulp_wars-5ti.25`): Crack Ice is never picked
+  // by a general rule; bead `pulp_wars-5ti.26` gives it its reasons (free a
+  // frozen ship, break a threatening bridge, open a ship's way).
+  if (command.kind === "CRACK_ICE") return false;
   // The Candy revision (`pulp_wars-jdb.4`, RULESET_7_CANDY.md section 14):
   // a Rush only with a plan, and the one Re-bake and the one Toss per unit
   // the Candy rules chose (their scores reject the others). With a group

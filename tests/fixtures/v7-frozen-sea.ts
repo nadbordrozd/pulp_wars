@@ -14,6 +14,7 @@ import {
   navalArenaV7,
   navalUnitAtV7,
   seatV7,
+  type NavalArenaOptionsV7,
 } from "./v7-naval-branch";
 
 /**
@@ -38,8 +39,8 @@ export interface FrozenIceV7 {
   readonly at: CoordV7;
   /** The owning seat (0 by default). */
   readonly seat?: 0 | 1 | 2;
-  /** 3 by default (`ICE_TURNS_V7`). */
-  readonly turnsLeft?: number;
+  /** The frozen sea redesign: a crack in thick ice (false by default). */
+  readonly cracked?: boolean;
 }
 
 export interface FrozenArenaOptionsV7 {
@@ -57,6 +58,10 @@ export interface FrozenArenaOptionsV7 {
     readonly faction: FactionIdV7;
     readonly explored?: boolean;
   };
+  /** The frozen sea redesign (`pulp_wars-5ti.25`): passed to the arena. */
+  readonly terrain?: readonly string[];
+  readonly resources?: readonly string[];
+  readonly improvements?: NavalArenaOptionsV7["improvements"];
 }
 
 const NAVAL_ROLES: readonly UnitRoleIdV7[] = [
@@ -65,8 +70,10 @@ const NAVAL_ROLES: readonly UnitRoleIdV7[] = [
   "SUBMARINE",
 ];
 const LAND_ROWS = new Set([0, 1, 2, 8, 9, 10]);
-const isLandTile = (at: CoordV7): boolean =>
-  LAND_ROWS.has(at.y) || (at.x === 9 && at.y === 5);
+const isLandTile = (at: CoordV7, terrain?: readonly string[]): boolean =>
+  terrain === undefined
+    ? LAND_ROWS.has(at.y) || (at.x === 9 && at.y === 5)
+    : terrain[at.y]?.[at.x] !== "~";
 
 /** Every Ice Folk Naval technology and nothing else. */
 export const ICE_NAVAL_TECHS_V7 = NAVAL_TECHS_V7;
@@ -77,7 +84,8 @@ export function frozenArenaV7(options: FrozenArenaOptionsV7): GameStateV7 {
   const parked: { readonly from: CoordV7; readonly to: CoordV7 }[] = [];
   const counters = [0, 0];
   const units = options.units.map((unit) => {
-    if (NAVAL_ROLES.includes(unit.role) || isLandTile(unit.at)) return unit;
+    if (NAVAL_ROLES.includes(unit.role) || isLandTile(unit.at, options.terrain))
+      return unit;
     const index = counters[unit.seat] as number;
     counters[unit.seat] = index + 1;
     const from = { x: index, y: unit.seat === 0 ? 0 : 10 };
@@ -92,6 +100,13 @@ export function frozenArenaV7(options: FrozenArenaOptionsV7): GameStateV7 {
     ...(options.ports === undefined ? {} : { ports: options.ports }),
     ...(options.aiMode === undefined ? {} : { aiMode: options.aiMode }),
     ...(options.third === undefined ? {} : { third: options.third }),
+    ...(options.terrain === undefined ? {} : { terrain: options.terrain }),
+    ...(options.resources === undefined
+      ? {}
+      : { resources: options.resources }),
+    ...(options.improvements === undefined
+      ? {}
+      : { improvements: options.improvements }),
   });
   const moved = new Map(
     parked.map(({ from, to }) => [navalUnitAtV7(base, from).id, to] as const),
@@ -131,7 +146,7 @@ export function frozenStateV7(
     entries.set(`${entry.at.y},${entry.at.x}`, {
       at: { x: entry.at.x, y: entry.at.y },
       ownerId: seatV7(state, entry.seat ?? 0).id,
-      turnsLeft: entry.turnsLeft ?? 3,
+      cracked: entry.cracked ?? false,
     });
   const next: GameStateV7 = {
     ...state,

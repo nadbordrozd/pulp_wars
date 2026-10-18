@@ -88,6 +88,10 @@ export const IMPROVEMENT_ART_KEYS_V7 = {
   MONUMENT: "building-square-monument",
   PORT: "v7-improvement-port",
   SHIPYARD: "v7-improvement-shipyard",
+  // The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 4.2): the
+  // Fishing Hole draws the Fish resource art until its own sprite lands
+  // (bead pulp_wars-5ti.27).
+  FISHING_HOLE: "v7-resource-fish",
 } as const satisfies Readonly<Record<ImprovementIdV7, string>>;
 
 export const RESOURCE_ART_KEYS_V7 = {

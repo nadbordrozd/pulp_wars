@@ -38,6 +38,10 @@ const LATER_COMMAND_KINDS: readonly string[] = [
   "THROW_BOLAS",
   "COLD_SNAP",
   "FREEZE",
+  // The frozen sea redesign (`pulp_wars-5ti.25`) inserts CRACK_ICE after
+  // FREEZE and BUILD_FISHING_HOLE after BUILD_LUMBER_CAMP.
+  "CRACK_ICE",
+  "BUILD_FISHING_HOLE",
   "TUNNEL",
   "BOMB_RUN",
   "ASSEMBLE",

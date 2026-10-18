@@ -430,6 +430,7 @@ export function buildMissionStateV7(
     players,
     units: draftUnits.map((entry) => entry.unit),
     setup,
+    ice: [],
     humanPlayerId: (players[0] as PlayerStateV7).id,
   };
   const ledger: PopulationContributionV7[] = [];

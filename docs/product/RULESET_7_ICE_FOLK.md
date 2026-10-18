@@ -1,5 +1,19 @@
 # Ruleset 7: Ice Folk faction
 
+> **The frozen sea redesign** (`pulp_wars-5ti.25`, `pulp-wars-poc-7r100`,
+> user request of 2026-10-18;
+> [RULESET_7_ICE_REDESIGN.md](RULESET_7_ICE_REDESIGN.md)): the Ice Folk
+> ice is permanent; their Port is the **Ice Harbour** (Shipyard: Great
+> Harbour), built on their own ice or on open Shallow Water, which it
+> freezes; their Windmill, Sawmill, Forge, Workshop, Market, and Monument
+> may stand on their own ice in their territory; the **Fishing Hole**
+> (Rime, 3 Coins, +1 population, counts as a Farm) is the ice's own
+> building; Glacier makes their ice thick; Black Ice freezes an enemy once
+> as it steps on; the Sled has **Runners** (its slide is not stopped by
+> zones of control). Every other faction may Crack Ice.
+> [Current rules section 21.16](RULESET_7_CURRENT.md#2116-the-frozen-sea)
+> states the game.
+
 > **Superseded by Ice Folk Freeze** (`pulp_wars-w49.37`, user requests of
 > 2026-10-09): Chill and Sluggish are replaced by one status, **Frozen** (a
 > Frozen unit cannot move or act on its owner's next turn, does not

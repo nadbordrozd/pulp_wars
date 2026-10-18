@@ -44,7 +44,7 @@ const scene = (
   frozenArenaV7({
     factions,
     units,
-    ice: ice.map((at): FrozenIceV7 => ({ at, seat: 2, turnsLeft: 5 })),
+    ice: ice.map((at): FrozenIceV7 => ({ at, seat: 2 })),
     third: { faction: "ICE_FOLK", explored: true },
   });
 const commandsOf = (state: GameStateV7, unitId: number, seat: 0 | 1 = 0) =>
@@ -298,8 +298,8 @@ describe("an icebound Submarine and an icebound transport (section 8.9)", () => 
     const state = frozenStateV7(
       patchFrozenUnitV7(base, fighter.id, { at: AFLOAT, form: "EMBARKED" }),
       [
-        { at: AFLOAT, seat: 2, turnsLeft: 5 },
-        { at: { x: 2, y: 6 }, seat: 2, turnsLeft: 5 },
+        { at: AFLOAT, seat: 2 },
+        { at: { x: 2, y: 6 }, seat: 2 },
       ],
     );
     expect(unitIsIceboundV7(state, navalUnitV7(state, fighter.id))).toBe(true);

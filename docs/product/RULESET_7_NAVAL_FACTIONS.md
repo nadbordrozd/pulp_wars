@@ -1651,6 +1651,13 @@ for all of them.
 
 ## 11. Ice Folk: done
 
+> **No longer true** since the frozen sea redesign (`pulp_wars-5ti.25`,
+> `pulp-wars-poc-7r100`; [RULESET_7_ICE_REDESIGN.md](RULESET_7_ICE_REDESIGN.md)):
+> ice is permanent, every ship and every land unit of the eight other
+> factions may Crack Ice, and an icebound ship is released only by a Crack
+> (or the elimination of the freezing seat). How each themed ship meets the
+> ice is the redesign's section 2.10; the list below still holds.
+
 The frozen sea ([current rules section 21.16](RULESET_7_CURRENT.md#2116-the-frozen-sea))
 already gives the Ice Folk the three roles in their own way and was built,
 AI included (`pulp_wars-5ti.3`, `5ti.5`). Nothing small is clearly worth

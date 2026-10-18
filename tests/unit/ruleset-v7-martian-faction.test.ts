@@ -99,7 +99,7 @@ import { at, kindsV7, movedV7 } from "../fixtures/v7-revision20";
 // (docs/product/RULESET_7_MARTIANS.md sections 2 to 4, 10.9, 10.10, and 11).
 
 /** The revision number of this identity (`pulp-wars-poc-7rNN`). */
-const REVISION = 99;
+const REVISION = 100;
 const ID = `pulp-wars-poc-7r${REVISION}`;
 const PREVIOUS_ID = `pulp-wars-poc-7r${REVISION - 1}`;
 
@@ -287,7 +287,9 @@ describe("Martian faction registration (sections 2 and 11)", () => {
     // The Cult redesign's Star-fall (`pulp_wars-mch9.34`) adds
     // JOIN_CHANT after TENTACLE (84), and its warden (`pulp_wars-mch9.33`)
     // removes BEHOLD (83).
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(83);
+    // The frozen sea redesign (`pulp_wars-5ti.25`) adds CRACK_ICE after
+    // FREEZE and BUILD_FISHING_HOLE after BUILD_LUMBER_CAMP (85).
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(85);
     const hatch = COMMAND_KIND_ORDER_V7.indexOf("HATCH");
     expect(COMMAND_KIND_ORDER_V7.slice(hatch, hatch + 4)).toEqual([
       "HATCH",
@@ -323,7 +325,9 @@ describe("Martian faction registration (sections 2 and 11)", () => {
     // The Cult redesign's Star-fall (`pulp_wars-mch9.34`) adds
     // CHANT_JOINED after RITUAL_BEGUN (155), and its warden
     // (`pulp_wars-mch9.33`) removes IDOL_RAISED and IDOL_DROPPED (153).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(153);
+    // The frozen sea redesign (`pulp_wars-5ti.25`) adds ICE_CRACKED after
+    // WATER_FROZEN (154).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(154);
     const after = (kind: string) =>
       DOMAIN_EVENT_KIND_ORDER_V7[
         DOMAIN_EVENT_KIND_ORDER_V7.indexOf(kind as never) + 1

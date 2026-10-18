@@ -44,7 +44,7 @@ import {
 import { isUnitVisibleToPlayerV7 } from "./observation";
 import { spatialContributionAtV7 } from "./spatial-economy";
 import { knownWinterV7 } from "./ice-folk";
-import { iceIsPermanentV7 } from "./ice";
+import { iceIsThickV7 } from "./ice";
 import { crumbsBiteV7 } from "./candy";
 import type {
   BoardSizeV7,
@@ -644,11 +644,13 @@ export interface PublicCrumbsV7 extends CrumbsV7 {
 
 /**
  * The frozen sea (naval branch section 8.3): an ice tile in a player's
- * view. `permanent`: the tile is in its owner's territory, where the ice
- * never counts down.
+ * view. The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 2.3):
+ * `cracked` as stored, and `thick`: its owner has Glacier (two Crack Ice
+ * break it), public like the `iceCover` unit stat, so every Crack preview
+ * is exact.
  */
 export interface PublicIceTileV7 extends IceTileV7 {
-  readonly permanent: boolean;
+  readonly thick: boolean;
 }
 
 /** The Dwarf revision (section 5.2): a mound in a player's view. */
@@ -1166,14 +1168,15 @@ export function viewForV7(
             : { kind: curiosity.kind, at: curiosity.at },
       ),
     // The frozen sea (naval branch section 8.3): ice is public on an
-    // explored tile, with its owner, its countdown, and `permanent`.
+    // explored tile, with its owner; the redesign (section 2.3): with its
+    // crack and whether it is thick.
     ice: state.ice
       .filter((entry) => explored.has(key(entry.at)))
       .map((entry) => ({
         at: entry.at,
         ownerId: entry.ownerId,
-        turnsLeft: entry.turnsLeft,
-        permanent: iceIsPermanentV7(state, entry),
+        cracked: entry.cracked,
+        thick: iceIsThickV7(state.players, entry.ownerId),
       })),
     monsters: state.monsters
       .filter((entry) => visibleUnitIds.has(entry.unitId))

@@ -74,7 +74,7 @@ import {
   shieldOfV7,
   unitShieldMaximumV7,
 } from "./martian";
-import { unitSlidesV7 } from "./ice";
+import { unitHasRunnersV7, unitSlidesV7 } from "./ice";
 import {
   batEscapeTilesV7,
   feastReadyV7,
@@ -260,6 +260,11 @@ export interface PublicIceFolkMechanicsV7 {
   readonly onIce: boolean;
   /** The frozen sea (section 8.6): the unit slides on ice. */
   readonly slides: boolean;
+  /**
+   * The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 2.7): the
+   * Sled's Runners, its slide is not stopped by a zone of control.
+   */
+  readonly runners: boolean;
   /**
    * The frozen sea (section 8.10): Glacier's cover applies to the unit now
    * (on ice, with the capability, fortification 0). Public on a visible
@@ -1040,6 +1045,7 @@ export function publicUnitStatsV7(
               unit.form === "LAND" && role.abilities.includes("BLIZZARD"),
             onIce: unit.form === "LAND" && isIceAtV7(state, unit.at),
             slides: unitSlidesV7(state, unit),
+            runners: unitHasRunnersV7(state, unit),
             iceCover,
           },
         }

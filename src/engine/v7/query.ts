@@ -232,7 +232,14 @@ import {
   withinBolasRangeV7,
   withinFrostBoltRangeV7,
 } from "./ice-folk";
-import { freezeSetV7, unitFreezesRingV7, type FreezeSetV7 } from "./ice";
+import {
+  freezeSetV7,
+  iceAtV7,
+  iceBuildableV7,
+  unitCracksIceV7,
+  unitFreezesRingV7,
+  type FreezeSetV7,
+} from "./ice";
 import {
   absorbHitV7,
   forceFieldHoldsV7,
@@ -580,6 +587,15 @@ const TILE_KINDS = [
   "BUILD_ROAD",
   "REDEVELOP",
 ] as const;
+/**
+ * The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 2.6): the tile
+ * commands an Ice Folk seat may give on its own ice (besides the dock and
+ * harvest commands every water tile allows).
+ */
+const ICE_TILE_KINDS_V7: ReadonlySet<string> = new Set([
+  "BUILD_FISHING_HOLE",
+  ...SPATIAL_KINDS,
+]);
 const COMMAND_CACHE = new WeakMap<PlayerViewV7, readonly CommandV7[]>();
 
 /** PlayerView-only enumeration for the implemented v7 slice. */
@@ -732,7 +748,13 @@ function appendPublicTileCommandsV7(
     !publicTileEnemyOccupiedV7(view, tile.at) &&
     publicCityDevelopmentFootprintKnown(view, monumentCity) &&
     !view.pendingChoices.some((choice) => choice.cityId === monumentCity.id) &&
-    tile.biome !== null &&
+    // The frozen sea redesign (section 2.6): or the Ice Folk seat's own ice.
+    (tile.biome !== null ||
+      iceBuildableV7(
+        view.viewer.faction,
+        view.viewer.id,
+        iceAtV7(view, tile.at),
+      )) &&
     tile.terrain !== "RIFT" &&
     (tile.terrain !== "MOUNTAIN" ||
       view.viewer.researchedTechs.includes("ENGINEERING")) &&
@@ -947,6 +969,8 @@ function appendPublicCityCommandsV7(
           publicActiveOwnedPort(view, port, player.id) &&
           port.explored &&
           port.territoryCityId === city.id &&
+          // The frozen sea redesign (section 2.6): never at a dock on ice.
+          !isIceAtV7(view, port.at) &&
           !view.units.some((unit) => same(unit.at, port.at)) &&
           rule.cost - (port.improvement === "SHIPYARD" ? 2 : 0) <= player.coins
         )
@@ -1335,6 +1359,11 @@ function appendPublicUnitCommandsV7(
       for (const at of publicFreezeTargetsV7(view, unit))
         candidates.push({ kind: "FREEZE", unitId: unit.id, at });
   }
+  // The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 2.9): Crack
+  // Ice, for every tile around the unit it may crack, in (y, x) order.
+  if (!overrun && primaryReady)
+    for (const at of publicCrackIceTargetsV7(view, unit))
+      candidates.push({ kind: "CRACK_ICE", unitId: unit.id, at });
   // The Dwarf revision: the Steam Mole's Tunnel, the Gyrocopter's bombing
   // run, and the Engineer's Assemble, each offered exactly when legal.
   if (!overrun && unit.form === "LAND") {
@@ -2090,17 +2119,26 @@ function publicFreezeSetV7(
           explored: false,
           terrain: "GRASS",
           improvement: null,
-          ice: false,
+          ownTerritory: false,
+          ice: null,
           unit: null,
         };
       const occupant = view.units.find(
         (candidate) => candidate.hp > 0 && same(candidate.at, target),
       );
+      const entry = iceAtV7(view, target);
       return {
         explored: true,
         terrain: tile.terrain,
         improvement: tile.improvement,
-        ice: isIceAtV7(view, target),
+        ownTerritory: tile.territoryOwnerId === view.viewer.id,
+        ice:
+          entry === undefined
+            ? null
+            : {
+                own: entry.ownerId === view.viewer.id,
+                cracked: entry.cracked,
+              },
         unit:
           occupant === undefined
             ? null
@@ -2140,21 +2178,19 @@ function publicFreezeTargetsV7(
 }
 
 /**
- * Section 8.4: the exact result of an offered `FREEZE`: every tile that
- * becomes (or stays) ice, the ones of them that were already ice and are
- * refreshed, the afloat units locked in the ice, the countdown every tile
- * of the set gets (`turns`: the actor's `iceTurns`, in its owner's turns),
- * and the tiles of the set in the actor's owner's territory (`permanent`,
- * in the order of `tiles`): that ice does not count down while the
- * territory is the owner's (section 8.5).
+ * Section 8.4: the exact result of an offered `FREEZE`. The frozen sea
+ * redesign (RULESET_7_ICE_REDESIGN.md section 2.4): every tile that gets a
+ * sound entry of the actor (`tiles`), the actor's own cracked ones of them
+ * that are mended (`mended`), the other players' ice of them that is taken
+ * (`taken`), and the afloat units locked in the ice (`icebound`). Ice is
+ * permanent: there is no countdown.
  */
 export interface FreezePreviewV7 {
   readonly unitId: UnitId;
   readonly tiles: readonly CoordV7[];
-  readonly refreshed: readonly CoordV7[];
+  readonly mended: readonly CoordV7[];
+  readonly taken: readonly CoordV7[];
   readonly icebound: readonly UnitId[];
-  readonly turns: number;
-  readonly permanent: readonly CoordV7[];
 }
 
 /**
@@ -2181,15 +2217,98 @@ export function previewFreezeV7(
   return {
     unitId,
     tiles: frozen.tiles,
-    refreshed: frozen.refreshed,
+    mended: frozen.mended,
+    taken: frozen.taken,
     icebound: frozen.icebound,
-    turns: unitCapabilitiesV7(view, unit, view.viewer.researchedTechs).iceTurns,
-    // An offered Freeze is the viewer's own unit's, and every tile of the
-    // set is explored, so its territory owner is public.
-    permanent: frozen.tiles.filter((target) => {
-      const tile = tileAtView(view, target);
-      return tile?.explored === true && tile.territoryOwnerId === unit.ownerId;
-    }),
+  };
+}
+
+/**
+ * The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 2.9): the `at`
+ * of every `CRACK_ICE` the viewer's unit may make now, in (y, x) order:
+ * each of the eight tiles around it that is explored ice not of an ally of
+ * the viewer, with no visible land-form unit and no improvement on it. The
+ * actor rows: a unit of any kind but the Ice Folk, in land, naval, or
+ * embarked form, not icebound. The caller has checked that the unit may use
+ * a primary action (and the generic Frozen filter drops a Frozen unit).
+ */
+function publicCrackIceTargetsV7(
+  view: PlayerViewV7,
+  unit: PlayerViewV7["units"][number],
+): readonly CoordV7[] {
+  if (
+    view.ice.length === 0 ||
+    unit.ownerId !== view.viewer.id ||
+    !unitCracksIceV7(view, unit) ||
+    unitIsIceboundV7(view, unit)
+  )
+    return [];
+  return adjacentPublicTiles(view, unit.at)
+    .filter((tile) => {
+      if (!tile.explored || tile.improvement !== null) return false;
+      const entry = iceAtV7(view, tile.at);
+      return (
+        entry !== undefined &&
+        (entry.ownerId === view.viewer.id ||
+          !publicAllied(view, view.viewer.id, entry.ownerId)) &&
+        !view.units.some(
+          (other) =>
+            other.hp > 0 &&
+            same(other.at, tile.at) &&
+            !isAfloatFormV7(other.form),
+        )
+      );
+    })
+    .map((tile) => tile.at);
+}
+
+/**
+ * The frozen sea redesign (section 2.9): the exact result of an offered
+ * `CRACK_ICE`: whether the ice breaks (`broken`; otherwise thick ice takes
+ * its first crack), and the icebound units a break frees, in unit-ID order.
+ */
+export interface CrackIcePreviewV7 {
+  readonly unitId: UnitId;
+  readonly at: CoordV7;
+  readonly broken: boolean;
+  readonly freed: readonly UnitId[];
+}
+
+/**
+ * The frozen sea redesign (section 2.9): the preview of `CRACK_ICE` by the
+ * viewer's unit `unitId` on `at`, or null unless that command is offered.
+ * Exact: the ice's `thick` and `cracked` and the icebound units are public.
+ */
+export function previewCrackIceV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+  at: CoordV7,
+): CrackIcePreviewV7 | null {
+  if (
+    !queryPlayerCommandsV7(view).some(
+      (command) =>
+        command.kind === "CRACK_ICE" &&
+        command.unitId === unitId &&
+        same(command.at, at),
+    )
+  )
+    return null;
+  const entry = iceAtV7(view, at);
+  if (entry === undefined) return null;
+  const broken = !entry.thick || entry.cracked;
+  return {
+    unitId,
+    at: { x: at.x, y: at.y },
+    broken,
+    freed: broken
+      ? view.units
+          .filter(
+            (other) =>
+              other.hp > 0 && same(other.at, at) && isAfloatFormV7(other.form),
+          )
+          .map((other) => other.id)
+          .sort((left, right) => left - right)
+      : [],
   };
 }
 
@@ -5810,6 +5929,9 @@ function publicActiveOwnedPort(
   tile: PlayerTileViewV7,
   ownerId: PlayerId,
 ): boolean {
+  // The frozen sea redesign (section 2.6): a dock on ice is blockaded by a
+  // hostile land-form unit, one on water by a hostile unit afloat.
+  const onIce = isIceAtV7(view, tile.at);
   return (
     tile.explored &&
     (tile.improvement === "PORT" || tile.improvement === "SHIPYARD") &&
@@ -5817,7 +5939,7 @@ function publicActiveOwnedPort(
     !view.units.some(
       (unit) =>
         same(unit.at, tile.at) &&
-        isAfloatFormV7(unit.form) &&
+        (onIce ? unit.form === "LAND" : isAfloatFormV7(unit.form)) &&
         publicHostile(view, ownerId, unit.ownerId),
     )
   );
@@ -8875,7 +8997,13 @@ function economicOutputTransitionsV7(
 }
 
 const ECONOMIC_POTENTIAL_KINDS_V7 = [
-  ...(Object.keys(BASIC_ECONOMIC_ACTIONS_V7) as BasicEconomicCommandKindV7[]),
+  // The frozen sea redesign (`pulp_wars-5ti.25`): the Fishing Hole is not
+  // planned here yet; bead `pulp_wars-5ti.26` adds it with the Ice Folk
+  // AI's building on ice (the planning output of every other match stays
+  // as it was).
+  ...(Object.keys(BASIC_ECONOMIC_ACTIONS_V7).filter(
+    (kind) => kind !== "BUILD_FISHING_HOLE",
+  ) as Exclude<BasicEconomicCommandKindV7, "BUILD_FISHING_HOLE">[]),
   ...(Object.keys(
     SPATIAL_ECONOMIC_ACTIONS_V7,
   ) as SpatialEconomicCommandKindV7[]),
@@ -9658,9 +9786,11 @@ function appendPublicPlacementsForTileV7(
   )
     return;
   {
-    for (const kind of Object.keys(
-      BASIC_ECONOMIC_ACTIONS_V7,
-    ) as BasicEconomicCommandKindV7[]) {
+    for (const kind of Object.keys(BASIC_ECONOMIC_ACTIONS_V7).filter(
+      // The frozen sea redesign: the Fishing Hole is not planned yet (its
+      // terrain is nominal; bead `pulp_wars-5ti.26`).
+      (candidate) => candidate !== "BUILD_FISHING_HOLE",
+    ) as Exclude<BasicEconomicCommandKindV7, "BUILD_FISHING_HOLE">[]) {
       const rule = BASIC_ECONOMIC_ACTIONS_V7[kind];
       if (
         tile.site === null &&
@@ -10543,7 +10673,10 @@ function publicRecoveryFactsV7(
       [tile, ...adjacentPublicTiles(view, unit.at)].some(
         (candidate) =>
           candidate !== undefined &&
-          publicActiveOwnedPort(view, candidate, unit.ownerId),
+          publicActiveOwnedPort(view, candidate, unit.ownerId) &&
+          // The frozen sea redesign (section 2.6): nothing recovers on a
+          // dock on ice.
+          !(candidate === tile && isIceAtV7(view, unit.at)),
       ),
     deepWinter:
       inOwnTerritory &&
@@ -10785,15 +10918,22 @@ function publicTileCommandLegal(
   if (!unlocked.has(kind)) return false;
   // The Rift (RULESET_7_RIFT.md section 3): no tile command targets a Rift.
   if (tile.terrain === "RIFT") return false;
+  // The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 2.6): an Ice
+  // Folk seat builds on its own ice; any improvement on water (a dock, or a
+  // building on ice) may be redeveloped.
+  const ownIce =
+    tile.biome === null &&
+    iceBuildableV7(view.viewer.faction, view.viewer.id, iceAtV7(view, tile.at));
   if (
     tile.biome === null &&
     !["HARVEST_FISH", "GATHER_PEARLS", "BUILD_PORT", "BUILD_SHIPYARD"].includes(
       kind,
     ) &&
-    (kind !== "REDEVELOP" ||
-      (tile.improvement !== "PORT" && tile.improvement !== "SHIPYARD"))
+    kind !== "REDEVELOP" &&
+    !(ownIce && ICE_TILE_KINDS_V7.has(kind))
   )
     return false;
+  if (kind === "BUILD_FISHING_HOLE" && !ownIce) return false;
   const city = view.cities.find(
     (candidate) => candidate.id === tile.territoryCityId,
   );
@@ -10841,7 +10981,8 @@ function publicTileCommandLegal(
       view.viewer.coins >= basic.cost &&
       !view.treasureChests.some((chest) => same(chest, tile.at)) &&
       tile.site === null &&
-      tile.terrain === basic.terrain &&
+      // The Fishing Hole: any terrain of its own ice (checked above).
+      (kind === "BUILD_FISHING_HOLE" || tile.terrain === basic.terrain) &&
       tile.resource === basic.resource &&
       (kind === "HARVEST_FISH"
         ? tile.improvement === null ||
@@ -10862,9 +11003,16 @@ function publicTileCommandLegal(
   if (kind === "BUILD_PORT")
     return (
       view.viewer.coins >= 4 &&
-      tile.terrain === "SHALLOW_WATER" &&
-      // The frozen sea (naval branch section 8.3): no Port on ice.
-      !isIceAtV7(view, tile.at) &&
+      // The frozen sea redesign (section 2.6): the Ice Folk Ice Harbour on
+      // the seat's own ice, or on open Shallow Water with no unit on it
+      // (which it freezes); every other seat's Port on open Shallow Water.
+      (iceAtV7(view, tile.at) === undefined
+        ? tile.terrain === "SHALLOW_WATER" &&
+          !(
+            view.viewer.faction === "ICE_FOLK" &&
+            view.units.some((unit) => unit.hp > 0 && same(unit.at, tile.at))
+          )
+        : ownIce) &&
       tile.improvement === null &&
       tile.site === null &&
       !tile.road &&

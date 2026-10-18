@@ -66,16 +66,20 @@ export const ICE_HELP_RULES_V7: readonly (readonly [string, string])[] = [
 /** Help "At sea", one line for every other faction in a match with ice. */
 export const ICE_FOR_SHIPS_HELP_V7: readonly [string, string] = [
   ICE_LABEL_V7,
-  "The Ice Folk freeze the sea. Ships cannot enter ice; land units may walk onto it, one tile a turn; it melts after a few turns outside Ice Folk territory.",
+  "The Ice Folk freeze the sea. Ships cannot enter ice; land units may walk onto it, one tile a turn; any unit or ship beside it may crack it open.",
 ];
 
 /** The technology card's lines (no trailing full stop, as its other lines). */
 export const FREEZE_SHALLOW_UNLOCK_V7 = `${FREEZE_LABEL_V7}: units turn Shallow Water next to them to ice, two tiles in a line (the Ice Witch: all around her), and slide across it`;
 export const FREEZE_DEEP_UNLOCK_V7 = `${FREEZE_LABEL_V7}: Deep Water freezes too`;
 export const ICEBOUND_UNLOCK_V7 = `${ICEBOUND_LABEL_V7}: Freeze locks an enemy ship in; it cannot sail, shoot or strike back, and takes ${ICE_CRUSH_DAMAGE_V7} each turn`;
-export const BLACK_ICE_UNLOCK_V7 = `${BLACK_ICE_LABEL_V7}: enemies standing on your ice are Frozen at the start of your turn`;
-export function glacierUnlockTextV7(iceTurns: number): string {
-  return `${GLACIER_LABEL_V7}: your ice lasts ${iceTurns} turns, gives your units on it cover, and gives a Move across it +${GLACIER_ICE_MOVE_BONUS_V7} Move`;
+export const BLACK_ICE_UNLOCK_V7 = `${BLACK_ICE_LABEL_V7}: an enemy that steps onto your ice is Frozen`;
+/**
+ * The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 2.5): Glacier
+ * makes the ice thick instead of lasting longer.
+ */
+export function glacierUnlockTextV7(): string {
+  return `${GLACIER_LABEL_V7}: your ice is thick (two Cracks break it), covers your units, and gives +${GLACIER_ICE_MOVE_BONUS_V7} Move across it`;
 }
 export const ICE_NO_SHIPS_NOTE_V7 = "The Ice Folk build no ships";
 
@@ -182,88 +186,88 @@ export function freezeUnavailableTextV7(
 
 /** What a Freeze does, tile by tile, for labels and assistive text. */
 export interface FreezeOutcomeV7 {
-  /** Every tile that becomes or stays ice. */
+  /** Every tile that becomes the unit owner's sound ice. */
   readonly tiles: number;
-  /** The tiles of them in the unit owner's territory: that ice never melts. */
-  readonly permanent: number;
-  /** The countdown of the others, in the owner's turns. */
-  readonly turns: number;
+  /** The owner's cracked tiles of them, mended. */
+  readonly mended: number;
   /** The ships locked in the ice. */
   readonly icebound: number;
 }
 
 /**
- * The exact outcome of an offered Freeze, counted from `previewFreezeV7`,
- * which carries the countdown and the tiles that stay (ice in its owner's
- * territory does not melt, section 8.5).
+ * The exact outcome of an offered Freeze, counted from `previewFreezeV7`.
+ * The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 4.1): ice is
+ * permanent, so there is no countdown to show.
  */
 export function freezeOutcomeV7(preview: FreezePreviewV7): FreezeOutcomeV7 {
   return {
     tiles: preview.tiles.length,
-    permanent: preview.permanent.length,
-    turns: preview.turns,
+    mended: preview.mended.length,
     icebound: preview.icebound.length,
   };
 }
 
-/** The board label of a Freeze: "Ice 2 · 3 turns", "Ice 2 · stays". */
+/** The board label of a Freeze: "Ice 2", "Ice 1 · mends 1", "Ice 1 · Icebound". */
 export function freezeTargetLabelV7(outcome: FreezeOutcomeV7): string {
-  const lasting =
-    outcome.permanent === outcome.tiles
-      ? "stays"
-      : outcome.permanent === 0
-        ? `${outcome.turns} turns`
-        : `${outcome.turns} turns, ${outcome.permanent} stays`;
-  return `${ICE_LABEL_V7} ${outcome.tiles} · ${lasting}`;
+  const extra = [
+    ...(outcome.mended > 0 ? [`mends ${outcome.mended}`] : []),
+    ...(outcome.icebound > 0 ? [ICEBOUND_LABEL_V7] : []),
+  ];
+  return [`${ICE_LABEL_V7} ${outcome.tiles}`, ...extra].join(" · ");
 }
 
 /** The sentence of a Freeze for the cursor description and the button. */
 export function freezeOutcomeTextV7(outcome: FreezeOutcomeV7): string {
   const tiles = `${outcome.tiles} ${outcome.tiles === 1 ? "tile" : "tiles"}`;
-  const lasting =
-    outcome.permanent === outcome.tiles
-      ? "It does not melt in your territory"
-      : outcome.permanent === 0
-        ? `It melts after ${outcome.turns} of your turns`
-        : `${outcome.permanent} in your territory ${outcome.permanent === 1 ? "does" : "do"} not melt; the rest melts after ${outcome.turns} of your turns`;
+  const mended =
+    outcome.mended === 0
+      ? ""
+      : ` ${outcome.mended} cracked ${outcome.mended === 1 ? "tile is" : "tiles are"} mended.`;
   const ships =
     outcome.icebound === 0
       ? ""
       : ` ${outcome.icebound} ${outcome.icebound === 1 ? "ship is" : "ships are"} locked in the ice.`;
-  return `${FREEZE_LABEL_V7}: ${tiles} of ice. ${lasting}.${ships}`;
+  return `${FREEZE_LABEL_V7}: ${tiles} of ice. It stays until it is cracked.${mended}${ships}`;
 }
 
-/** The ice chip of the tile dock: "Ice · 3" or "Ice · stays". */
+/** The ice chip of the tile dock: "Ice", "Ice · thick" or "Ice · cracked". */
 export function iceChipLabelV7(ice: PublicIceTileV7): string {
-  return ice.permanent
-    ? `${ICE_LABEL_V7} · stays`
-    : `${ICE_LABEL_V7} · ${ice.turnsLeft}`;
+  return ice.cracked
+    ? `${ICE_LABEL_V7} · cracked`
+    : ice.thick
+      ? `${ICE_LABEL_V7} · thick`
+      : ICE_LABEL_V7;
 }
 
-/** The ice chip's tooltip: what ice is, when it melts, and Black Ice. */
+/**
+ * The ice chip's tooltip (the frozen sea redesign, section 4.1): what ice
+ * is, how thick it is, and Black Ice. No countdown: ice is permanent.
+ */
 export function iceChipTooltipV7(
   view: PlayerViewV7,
   ice: PublicIceTileV7,
 ): string {
   const own = ice.ownerId === view.viewer.id;
-  const melt = ice.permanent
-    ? `It does not melt in ${own ? "your" : "its owner's"} territory`
-    : ice.turnsLeft === 0
-      ? "It melts when no land unit stands on it"
-      : `It melts in ${ice.turnsLeft} of ${own ? "your" : "its owner's"} ${ice.turnsLeft === 1 ? "turn" : "turns"} unless a land unit stands on it`;
+  const thickness = ice.cracked
+    ? " Cracked: one more Crack breaks it."
+    : ice.thick
+      ? " Thick: two Cracks break it."
+      : "";
   const blackIce =
     own && viewerHasBlackIceV7(view)
-      ? ` ${BLACK_ICE_LABEL_V7}: enemies standing here are Frozen at the start of your turn.`
+      ? ` ${BLACK_ICE_LABEL_V7}: an enemy that steps onto it is Frozen.`
       : "";
-  return `${ICE_LABEL_V7}: land units stand here and ships cannot enter. ${melt}.${blackIce}`;
+  return `${ICE_LABEL_V7}: land units stand here; ships cannot enter. Ice Folk slide; others stop here.${thickness}${blackIce}`;
 }
 
-/** The melting stage of an ice tile: 0 (none) to 3 (wide cracks). */
+/**
+ * The cracks of an ice tile (the frozen sea redesign, section 4.1): 0 for
+ * sound ice, 2 for cracked thick ice (no melting stages: ice is permanent).
+ */
 export function iceCrackStageV7(
-  ice: Pick<PublicIceTileV7, "permanent" | "turnsLeft">,
+  ice: Pick<PublicIceTileV7, "cracked">,
 ): 0 | 1 | 2 | 3 {
-  if (ice.permanent) return 0;
-  return ice.turnsLeft >= 3 ? 1 : ice.turnsLeft === 2 ? 2 : 3;
+  return ice.cracked ? 2 : 0;
 }
 
 /** Whether the viewer's own ice is Black Ice (a seat-level capability). */

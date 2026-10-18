@@ -113,13 +113,13 @@ describe("tuning 1 identity", () => {
   // Tuning 1 took 7r46; tuning 2 (tests/unit/ruleset-v7-tuning-2.test.ts)
   // took 7r47, so 7r46 is the last prior identity.
   it("was 7r46, after 7r45 in the prior list", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r99");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r99.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-54, -52)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r100");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r100.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-55, -53)).toEqual([
       "pulp-wars-poc-7r45",
       "pulp-wars-poc-7r46",
     ]);
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(98);
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(99);
   });
 });
 
@@ -217,7 +217,7 @@ describe("A: retaliation uses the base Defense, without fortification or cover",
         { seat: 0, role: "FIGHTER", at: at(2, 2) },
         { seat: 1, role: "FIGHTER", at: at(2, 3) },
       ],
-      ice: [{ at: at(2, 3), seat: 1, turnsLeft: 3 }],
+      ice: [{ at: at(2, 3), seat: 1 }],
     });
     const fighter = navalUnitAtV7(frozen, at(2, 2));
     const yeti = navalUnitAtV7(frozen, at(2, 3));
