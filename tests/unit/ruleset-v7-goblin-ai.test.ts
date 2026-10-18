@@ -537,7 +537,8 @@ describe("ruleset-7 revision-17 Normal AI: Gang Up", () => {
     const goblin = unitAtV7(state, at(4, 3)).id;
     const helped = unitAtV7(state, at(3, 2)).id;
     const alone = unitAtV7(state, at(5, 4)).id;
-    expect(queryCombatPreviewV7(view, goblin, helped)?.gangUp).toBe(1);
+    // Bolder abilities (7r99): +2 for its one helper.
+    expect(queryCombatPreviewV7(view, goblin, helped)?.gangUp).toBe(2);
     expect(queryCombatPreviewV7(view, goblin, alone)?.gangUp).toBe(0);
     const candidates = unitCandidates(chooseNormalCommandV7(view), goblin);
     const helpedIndex = candidates.findIndex(

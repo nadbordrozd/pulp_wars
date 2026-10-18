@@ -365,7 +365,6 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     // `pulp_wars-1wy.4`: a carrier extracts the units on the board (a
     // burrowed unit is no passenger).
     "src/ai/v7.ts::martianRescueUnitsV7": "BOARD",
-    "src/ai/v7.ts::martianConvertibleAfterV7": "BOARD",
     "src/ai/v7.ts::martianMoveValueV7": "BOARD",
     "src/ai/v7.ts::martianProjectedKillersV7": "BOARD",
     "src/ai/v7.ts::martianSoleDefenderBesideV7": "BOARD",
@@ -584,6 +583,10 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/engine/v7/query.ts::previewBoardV7": "BOARD",
     "src/engine/v7/query.ts::publicBoardTargetsV7": "BOARD",
     "src/engine/v7/reducer.ts::applyBoard": "BOARD",
+    // Bolder abilities (`pulp_wars-w49.42`): an Abomination a Brain just
+    // took spits its victim out beside it, read from the board (the holder
+    // stands there).
+    "src/engine/v7/reducer.ts::spitOutVictimV7": "BOARD",
     // Map curiosities round 2: the visible exit occupant of a gate.
     "src/engine/v7/query.ts::previewGateV7": "BOARD",
     "src/engine/v7/query.ts::previewMonsterV7": "BOARD",

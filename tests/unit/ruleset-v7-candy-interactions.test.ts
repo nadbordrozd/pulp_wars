@@ -163,7 +163,9 @@ describe("no Candy rule exists without a Candy seat (section 17)", () => {
 describe("Mind Control (section 12.5)", () => {
   const BRAIN = at(5, 4);
 
-  it("takes a Candy unit at 6 HP or less with its Rush entry, and never the Golem", () => {
+  // Bolder abilities (`pulp_wars-w49.42`, 7r99): any adjacent unit, the
+  // Golem and a 7-HP Knight included (6 HP or less and no giant before).
+  it("takes a Candy unit with its Rush entry, and the Golem and any other unit beside the Brain too", () => {
     const state = candyFieldV7(
       [
         { seat: 0, role: "CAPTAIN", at: BRAIN },
@@ -175,14 +177,21 @@ describe("Mind Control (section 12.5)", () => {
     );
     const brain = idAt(state, BRAIN);
     const offered = expectOfferedAcceptedV7(state, "MIND_CONTROL");
-    expect(offered).toEqual([
-      {
-        kind: "MIND_CONTROL",
-        unitId: brain,
-        targetUnitId: idAt(state, at(5, 3)),
-      },
-    ]);
-    const taken = playV7(state, offered[0] as CommandV7);
+    expect(offered).toHaveLength(3);
+    expect(offered).toEqual(
+      expect.arrayContaining(
+        [at(5, 3), at(4, 3), at(6, 3)].map((where) => ({
+          kind: "MIND_CONTROL",
+          unitId: brain,
+          targetUnitId: idAt(state, where),
+        })),
+      ),
+    );
+    const taken = playV7(state, {
+      kind: "MIND_CONTROL",
+      unitId: brain,
+      targetUnitId: idAt(state, at(5, 3)),
+    });
     expect(unitAtV7(taken.state, at(5, 3)).ownerId).toBe(seatIdV7(state, 0));
     // The entry belongs to the unit: it survives the change of owner, and
     // ends at the End Turn of whoever owns the unit then.

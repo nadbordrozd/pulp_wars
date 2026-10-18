@@ -775,7 +775,9 @@ function goblinTelemetry(
         const defenderSeat =
           defender === undefined ? undefined : seats.get(defender.ownerId);
         if (attacker !== undefined && attackerSeat !== undefined) {
-          attackerSeat.gangUp[preview.gangUp] += 1;
+          // Bolder abilities (7r99): +2 Attack a helper; the histogram
+          // counts the helpers (0, 1, or 2).
+          attackerSeat.gangUp[(preview.gangUp / 2) as 0 | 1 | 2] += 1;
           if (preview.gangUp > 0 && preview.defenderDies)
             attackerSeat.gangUpKills += 1;
           bump(
@@ -3034,7 +3036,7 @@ function buildCells(): MatrixCell[] {
 export function runCell(cell: MatrixCell): MatrixEntry {
   const factions = PAIRINGS[cell.pairing];
   const setup: MatchSetupV7 = {
-    rulesetId: "pulp-wars-poc-7r98",
+    rulesetId: "pulp-wars-poc-7r99",
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
     curiosities: false,
     seed: cell.seed,
@@ -3708,7 +3710,7 @@ async function runMain(): Promise<void> {
         JSON.stringify({
           format: "pulp-wars-ruleset7-undead-balance-matrix",
           version: 1,
-          rulesetId: "pulp-wars-poc-7r98",
+          rulesetId: "pulp-wars-poc-7r99",
           parameters,
           summary,
           games: ordered.map(compactEntry),

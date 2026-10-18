@@ -402,11 +402,11 @@ const productionOf = (
 
 describe("the ninth unit: identity", () => {
   it("was 7r55 after 7r54, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r98");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r98.current");
-    expect(PRIOR_RULESET_7_IDS.at(-44)).toBe("pulp-wars-poc-7r54");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r99");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r99.current");
+    expect(PRIOR_RULESET_7_IDS.at(-45)).toBe("pulp-wars-poc-7r54");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-44)).toBe(
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-45)).toBe(
       "pulpWars.save.v7r54.current",
     );
     const state = field([]);
@@ -1166,6 +1166,8 @@ describe("the Ogre: Heavyweight", () => {
   const goblins = (pieces: readonly CandyPieceV7[]) =>
     field(pieces, { factions: ["GOBLIN", "ORIGINAL"] });
 
+  // Bolder abilities (`pulp_wars-w49.42`, 7r99): Gang Up is +2 Attack a
+  // counted unit, so an Ogre's two give +4 and an ordinary helper +2.
   it("counts as two units for the Gang Up of another Goblin attack", () => {
     // A Goblin attacks a Guard; an Ogre stands beside the Guard.
     const state = goblins([
@@ -1173,44 +1175,44 @@ describe("the Ogre: Heavyweight", () => {
       { seat: 0, role: "SWORDSMAN", at: at(5, 1) },
       { seat: 1, role: "GUARD", at: at(5, 2) },
     ]);
-    expect(previewOf(state, at(4, 2), at(5, 2)).gangUp).toBe(2);
-    // One ordinary helper gives 1.
+    expect(previewOf(state, at(4, 2), at(5, 2)).gangUp).toBe(4);
+    // One ordinary helper gives 2.
     const plain = goblins([
       { seat: 0, role: "FIGHTER", at: at(4, 2) },
       { seat: 0, role: "FIGHTER", at: at(5, 1) },
       { seat: 1, role: "GUARD", at: at(5, 2) },
     ]);
-    expect(previewOf(plain, at(4, 2), at(5, 2)).gangUp).toBe(1);
+    expect(previewOf(plain, at(4, 2), at(5, 2)).gangUp).toBe(2);
     // The resolution agrees with the preview.
-    expect(attackV7(state, at(4, 2), at(5, 2)).combat.gangUp).toBe(2);
+    expect(attackV7(state, at(4, 2), at(5, 2)).combat.gangUp).toBe(4);
   });
 
-  it("keeps the role limits: a rocket takes +1 at most and a bomb none", () => {
+  it("keeps the role limits: a rocket takes +2 at most and a bomb none", () => {
     const state = goblins([
       { seat: 0, role: "CATAPULT", at: at(3, 2) },
       { seat: 0, role: "MARKSMAN", at: at(5, 4) },
       { seat: 0, role: "SWORDSMAN", at: at(6, 2) },
       { seat: 1, role: "GUARD", at: at(5, 2) },
     ]);
-    expect(previewOf(state, at(3, 2), at(5, 2)).gangUp).toBe(1);
+    expect(previewOf(state, at(3, 2), at(5, 2)).gangUp).toBe(2);
     expect(previewOf(state, at(5, 4), at(5, 2)).gangUp).toBe(0);
   });
 
-  it("takes Gang Up itself like any Goblin unit, and no more than +2", () => {
+  it("takes Gang Up itself like any Goblin unit, and no more than +4", () => {
     const one = goblins([
       { seat: 0, role: "SWORDSMAN", at: at(4, 2) },
       { seat: 0, role: "FIGHTER", at: at(5, 1) },
       { seat: 1, role: "GUARD", at: at(5, 2) },
     ]);
-    expect(previewOf(one, at(4, 2), at(5, 2)).gangUp).toBe(1);
-    // Two Ogres beside the target are still +2 for a third unit.
+    expect(previewOf(one, at(4, 2), at(5, 2)).gangUp).toBe(2);
+    // Two Ogres beside the target are still +4 for a third unit.
     const many = goblins([
       { seat: 0, role: "FIGHTER", at: at(4, 2) },
       { seat: 0, role: "SWORDSMAN", at: at(5, 1) },
       { seat: 0, role: "SWORDSMAN", at: at(6, 2) },
       { seat: 1, role: "GUARD", at: at(5, 2) },
     ]);
-    expect(previewOf(many, at(4, 2), at(5, 2)).gangUp).toBe(2);
+    expect(previewOf(many, at(4, 2), at(5, 2)).gangUp).toBe(4);
     // The engine helper says the same for the canonical state.
     expect(
       gangUpBonusV7(
@@ -1219,7 +1221,7 @@ describe("the Ogre: Heavyweight", () => {
         unitAtV7(many, at(4, 2)),
         unitAtV7(many, at(5, 2)),
       ),
-    ).toBe(2);
+    ).toBe(4);
   });
 
   it("is not Blast-proof and has no Kaboom or death blast", () => {

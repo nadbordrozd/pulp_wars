@@ -388,12 +388,14 @@ describe("tile actions: the factions' scenes", () => {
   });
 
   it("badges the enemy a Martian Brain may take with Mind Control", () => {
+    // Bolder abilities (7r99): the target is beside the Brain, which may
+    // also hit it.
     const plan = planOf(tileActionsBrainFixtureV7(), A.brain);
     expect(
       tileActionsAtV7(plan, A.controlTarget)?.actions.map(
         (action) => action.id,
       ),
-    ).toEqual(["MIND_CONTROL"]);
+    ).toEqual(["ATTACK", "MIND_CONTROL"]);
   });
 
   it("shrinks a Stargazer's many star tiles and offers Select on its own Initiate", () => {

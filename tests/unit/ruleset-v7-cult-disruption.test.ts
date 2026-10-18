@@ -458,12 +458,13 @@ const PATH_CASES: readonly PathCaseV7[] = [
     proves: ["UNIT_MIND_CONTROLLED"],
     cause: "OWNER",
     build: () => {
-      const state = rig("MARTIAN", [{ role: "CAPTAIN", at: at(5, 8) }], {
+      // Bolder abilities (7r99): the Brain stands beside the channeller.
+      const state = rig("MARTIAN", [{ role: "CAPTAIN", at: at(5, 7) }], {
         martian: true,
         role: "FIGHTER",
         hp: 4,
       });
-      return { state, command: targeted("MIND_CONTROL", state, at(5, 8)) };
+      return { state, command: targeted("MIND_CONTROL", state, at(5, 7)) };
     },
   },
   {

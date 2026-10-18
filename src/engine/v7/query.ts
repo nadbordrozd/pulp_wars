@@ -3621,10 +3621,10 @@ function publicBeamDownDestinationsV7(
  * while it has a cooldown entry or controls `MIND_CONTROL_LIMIT_V7` units
  * (its controlled units are its owner's, so the view lists them all);
  * otherwise every visible hostile unit that `mindControlTargetBlockV7` (the
- * reducer's own per-target check) accepts: land-form, one-slot under its
- * kind, non-`JUGGERNAUT`, not a construct, not already controlled, within
- * range, wounded with at most `MIND_CONTROL_HP_V7` HP, and not on a
- * settlement site or a Rift.
+ * reducer's own per-target check) accepts: since bolder abilities
+ * (`pulp_wars-w49.42`, 7r99) any adjacent one that is not an Egg, a
+ * neutral unit, or already controlled, at any HP, size, or form (afloat on
+ * Deep Water only with the viewer's Navigation).
  */
 function publicMindControlTargetsV7(
   view: PlayerViewV7,
@@ -3644,7 +3644,13 @@ function publicMindControlTargetsV7(
         publicHostile(view, brain.ownerId, target.ownerId) &&
         tile?.explored === true &&
         // The per-target conditions the reducer enforces, shared with it.
-        mindControlTargetBlockV7(view, brain, target, tile) === null
+        mindControlTargetBlockV7(
+          view,
+          brain,
+          target,
+          tile,
+          view.viewer.researchedTechs.includes("NAVIGATION"),
+        ) === null
       );
     })
     .sort((left, right) => left.id - right.id);

@@ -556,7 +556,7 @@ const ENTRIES = {
   ],
   MIND_CONTROL: [
     "Mind Control",
-    "Takes over a badly wounded enemy nearby. It fights for you until this unit is lost.",
+    "Takes over any enemy next to it, up to three at a time. They fight for you until this unit is lost.",
   ],
   SHOCK_FIELD: [
     "Shock Field",

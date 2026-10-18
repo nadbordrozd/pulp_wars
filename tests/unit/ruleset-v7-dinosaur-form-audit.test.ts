@@ -556,7 +556,9 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // `pulp_wars-b5f.6`: the Mind Control target gate moved from the
     // reducer into the shared `mindControlTargetBlockV7` (martian.ts), which
     // the reducer and the public query both call; the Brain gate stays in
-    // the reducer. An Egg, an embarked unit, and a boat must still fail it.
+    // the reducer. Bolder abilities (`pulp_wars-w49.42`, 7r99): the target
+    // gate tests no land form any more (any form is a target but an Egg,
+    // which it names).
     // `pulp_wars-5ti.3`: Freeze is used by a land-form unit only (an Egg, an
     // embarked unit, and a boat must fail it).
     // Tuning 5 (`pulp_wars-w49.4`) removed Drill and its land-form gate.
@@ -572,8 +574,10 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // Step two of the Martian pass (`pulp_wars-w49.25`, 7r58): City Walls
     // hold a land-form unit on its own center against a Saucer's Tractor
     // Beam (`unitHeldByCityWallsV7`; an Egg, an embarked unit, and a boat
-    // are never held: Walls fortify land-form units only).
-    "src/engine/v7/martian.ts": 2,
+    // are never held: Walls fortify land-form units only). Bolder abilities
+    // (`pulp_wars-w49.42`): the Mind Control target gate no longer tests the
+    // land form (2 before).
+    "src/engine/v7/martian.ts": 1,
     // `pulp_wars-9s0.5`: only a land-form flyer stands on a Rift (an Egg,
     // an embarked unit, and a boat must fail the state check).
     // `pulp_wars-737.3`: a Giant Spider is a land-form unit (an Egg, an
@@ -591,7 +595,10 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // Egg, an embarked unit, and a boat must fail the unit and the `cult`
     // checks). (A raised idol's bearer was one more until the Cult
     // redesign removed the list, `pulp_wars-mch9.33`.)
-    "src/engine/v7/state-schema.ts": 15,
+    // Bolder abilities (`pulp_wars-w49.42`): a mind-controlled unit may be
+    // in any form but an Egg (named), so its land-or-embarked test went (15
+    // before).
+    "src/engine/v7/state-schema.ts": 14,
     // The Vampire and Banshee rework: only a land-form unit's Escape Move
     // is a Bat Escape (`batEscapeTilesV7`; the state check allows
     // `escapeAvailable` in land form only, so an Egg, an embarked unit, and
@@ -706,7 +713,9 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // `gangUpBonusV7`; an Egg makes no attack).
     "src/ai/v7-goblin.ts": 2,
     "src/ai/v7-ice-folk.ts": 7,
-    "src/ai/v7-martian.ts": 2,
+    // Bolder abilities (`pulp_wars-w49.42`): the legacy Mind Control
+    // exposure test (land form only) went with the HP limit (2 before).
+    "src/ai/v7-martian.ts": 1,
     "src/ai/v7-undead.ts": 1,
     // `pulp_wars-jdb.4`: a Rush plan, the Move of a Rushed unit's plan, and
     // a Confectioner's walk to Crumbs take a land-form own unit (an Egg

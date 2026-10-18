@@ -46,12 +46,13 @@ const HELPER_CELLS = [
 ] as const;
 
 describe("ruleset-7 Goblin Gang Up", () => {
-  it("adds +1 Attack per other own unit next to the target, up to +2", () => {
+  // Bolder abilities (`pulp_wars-w49.42`, 7r99): +2 a helper (+1 before).
+  it("adds +2 Attack per other own unit next to the target, up to +4", () => {
     for (const [helpers, gangUp] of [
       [0, 0],
-      [1, 1],
-      [2, 2],
-      [3, 2],
+      [1, 2],
+      [2, 4],
+      [3, 4],
     ] as const) {
       const state = goblinArenaV7(
         ["GOBLIN", "ORIGINAL"],
@@ -90,8 +91,8 @@ describe("ruleset-7 Goblin Gang Up", () => {
       { water },
     );
     expect(resolvedAttack(state, ATTACKER, TARGET)).toMatchObject({
-      gangUp: 2,
-      attack2: GOBLIN_ATTACK2 + 4,
+      gangUp: 4,
+      attack2: GOBLIN_ATTACK2 + 8,
     });
 
     // Cooperative AIs are allied: seat 2's unit next to the target is no
@@ -109,8 +110,8 @@ describe("ruleset-7 Goblin Gang Up", () => {
       { aiMode: "COOPERATIVE", activeSeat: 1 },
     );
     expect(resolvedAttack(allied, at(5, 6), at(6, 6))).toMatchObject({
-      gangUp: 1,
-      attack2: GOBLIN_ATTACK2 + 2,
+      gangUp: 2,
+      attack2: GOBLIN_ATTACK2 + 4,
     });
   });
 
@@ -179,11 +180,11 @@ describe("ruleset-7 Goblin Gang Up", () => {
       ],
     );
     const rocket = resolvedAttack(ranged, { x: 2, y: 2 }, TARGET);
-    // The Goblin pass, correction (`pulp_wars-w49.12`): a rocket gets +1 at
-    // most (two helpers stand beside the target).
+    // The Goblin pass, correction (`pulp_wars-w49.12`): a rocket counts one
+    // helper at most (two stand beside the target): +2 since 7r99.
     expect([rocket.gangUp, rocket.attack2, rocket.retaliation]).toEqual([
-      1,
-      9,
+      2,
+      11,
       false,
     ]);
 
@@ -211,7 +212,7 @@ describe("ruleset-7 Goblin Gang Up", () => {
       wolf.inspiredApplied,
       wolf.gangUp,
       wolf.attack2,
-    ]).toEqual([true, true, 2, 4 + 2 + 2 + 4]);
+    ]).toEqual([true, true, 4, 4 + 2 + 2 + 8]);
     expect(publicCharged).toEqual(wolf);
   });
 });

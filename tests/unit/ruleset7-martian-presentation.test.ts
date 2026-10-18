@@ -1,8 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
   FORCE_FIELD_SHIELD_V7,
-  MIND_CONTROL_HP_V7,
-  MIND_CONTROL_RANGE_V7,
   MIND_CONTROL_LIMIT_V7,
   applyCommandV7,
   effectiveRoleRuleV7,
@@ -122,9 +120,13 @@ describe("Martian texts (section 13.2)", () => {
     );
     const controller = statsAt(view, AT.controller).mindControl;
     if (controller === null) throw new Error("no Mind Control block");
-    expect(brainControlTextV7(controller)).toBe("Controls 1 / 1");
-    expect(mindControlUnavailableTextV7(controller)).toBe(
-      "Controls a unit already",
+    // Bolder abilities (`pulp_wars-w49.42`, 7r99): three at a time.
+    expect(brainControlTextV7(controller)).toBe("Controls 1 / 3");
+    expect(mindControlUnavailableTextV7(controller)).toBeNull();
+    const full = { ...controller, controlled: 3 };
+    expect(brainControlTextV7(full)).toBe("Controls 3 / 3");
+    expect(mindControlUnavailableTextV7(full)).toBe(
+      "Controls three units already",
     );
   });
 
@@ -175,9 +177,10 @@ describe("Martian texts (section 13.2)", () => {
       unitAt(view, AT.controller),
       statsAt(view, AT.controller),
     );
+    // Bolder abilities (7r99): one of three, so Mind Control is ready.
     expect(brainLines.find((line) => line.id === "brain")).toMatchObject({
-      name: "Controls 1 / 1",
-      description: "Controls a unit already",
+      name: "Controls 1 / 3",
+      description: "Mind Control is ready.",
     });
     const projector = martianUnitInfoLinesV7(
       unitAt(view, AT.projector),
@@ -261,12 +264,14 @@ describe("Martian texts (section 13.2)", () => {
     expect(rules.get("Force Field")).toBe(
       `with Force Fields, a unit that recharges next to a ${label("GUARD")} recharges to Shield ${FORCE_FIELD_SHIELD_V7}. At full HP with that Shield whole, one attack cannot kill it: it is left at 1 HP.`,
     );
+    // Bolder abilities (`pulp_wars-w49.42`, 7r99): any enemy next to it,
+    // three at a time.
     expect(rules.get("Mind Control")).toContain(
-      `with ${MIND_CONTROL_HP_V7} HP or less within ${MIND_CONTROL_RANGE_V7} tiles`,
+      "takes control of any enemy unit next to it (giants and ships too, at any HP), up to three at a time",
     );
     // The Mind Control revision: the unit keeps its type and goes home.
     expect(rules.get("Mind Control")).toContain(
-      "keeps its type and abilities but cannot be disbanded or create units",
+      "keeps its type and abilities but cannot create units",
     );
     // `pulp_wars-b5f.2`: the Grunt's ray pistol and the Tripod's range.
     expect(rules.get("Ranges")).toBe(

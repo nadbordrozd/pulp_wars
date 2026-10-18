@@ -97,7 +97,7 @@ import {
   withoutTechsV7,
 } from "../fixtures/v7-revision20";
 
-// The Martian pass (`pulp_wars-w49.14`, `pulp-wars-poc-7r98`,
+// The Martian pass (`pulp_wars-w49.14`, `pulp-wars-poc-7r99`,
 // docs/product/RULESET_7_TUNING_MARTIAN.md): a unit pulled by the Tractor
 // Beam explores for its owner from the tile it lands on; Scouts for a
 // Martian city (a free Saucer); the Shield Projector's Force Field needs
@@ -205,13 +205,13 @@ describe("the Martian pass: identity", () => {
   // The Dinosaur pass (tests/unit/ruleset-v7-dinosaur-pass.test.ts) took
   // 7r53 and the economy rejig 7r54, so 7r52 is a prior identity.
   it("was 7r52 after 7r51, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r98");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r98.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-47, -45)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r99");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r99.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-48, -46)).toEqual([
       "pulp-wars-poc-7r51",
       "pulp-wars-poc-7r52",
     ]);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-47, -45)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-48, -46)).toEqual([
       "pulpWars.save.v7r51.current",
       "pulpWars.save.v7r52.current",
     ]);
@@ -1600,16 +1600,17 @@ describe("the Martian pass: the Normal AI's units", () => {
       (candidate) => candidate.command.kind === "TRACTOR_BEAM",
     );
     expect(tractor?.score.priority).toBe(TRACTOR_KILL_SETUP_PRIORITY_V7);
-    // A wounded Fighter and a wounded Knight in a Brain's range: the Knight.
+    // A wounded Fighter and a wounded Knight beside a Brain (the reach is 1
+    // since bolder abilities, 7r99): the Knight.
     const control = asMartian([
       own("CAPTAIN", 5, 4),
-      foe("FIGHTER", 4, 2, { hp: 4 }),
-      foe("KNIGHT", 6, 2, { hp: 4 }),
+      foe("FIGHTER", 4, 3, { hp: 4 }),
+      foe("KNIGHT", 6, 3, { hp: 4 }),
     ]);
     const best = unitScored(control, at(5, 4))[0];
     expect(best?.command).toMatchObject({
       kind: "MIND_CONTROL",
-      targetUnitId: unitAtV7(control, at(6, 2)).id,
+      targetUnitId: unitAtV7(control, at(6, 3)).id,
     });
     expect(best?.score.priority).toBe(MIND_CONTROL_PRIORITY_V7);
   });

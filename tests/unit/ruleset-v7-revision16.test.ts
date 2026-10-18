@@ -67,9 +67,9 @@ const CELLS = [
 
 describe("ruleset-7 revision-16 identity", () => {
   it("keeps rejecting r15 after the r54 identity and cleans the r15 through r53 save keys", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r98");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r98.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-83, -43)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r99");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r99.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-84, -44)).toEqual([
       "pulpWars.save.v7r15.current",
       "pulpWars.save.v7r16.current",
       "pulpWars.save.v7r17.current",
@@ -194,8 +194,9 @@ describe("ruleset-7 prior identities", () => {
     // (`pulp_wars-5ti.19`): 7r95. The Dwarf Ironclads and Sea Tunnels
     // (`pulp_wars-5ti.20`): 7r96. The Candy Sugar Sails (`pulp_wars-5ti.21`):
     // 7r97. The Cult Offerings to the Deep and Kraken (`pulp_wars-5ti.22`):
-    // 7r98.
-    expect(revision).toBe(98);
+    // 7r98. Bolder abilities (`pulp_wars-w49.42`: Mind Control takes any
+    // adjacent unit, three at a time; Gang Up +2 a helper): 7r99.
+    expect(revision).toBe(99);
     expect([...PRIOR_RULESET_7_IDS]).toEqual(expectedPrior);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
   });
@@ -230,7 +231,7 @@ describe("ruleset-7 prior identities", () => {
 
   it("still reports an unknown Ruleset 7 identity as INVALID_REPLAY", () => {
     // The next identity after the current one is still unknown.
-    for (const id of ["pulp-wars-poc-7r1", "pulp-wars-poc-7r99", "other"])
+    for (const id of ["pulp-wars-poc-7r1", "pulp-wars-poc-7r100", "other"])
       expect(
         parseReplayFileV7({
           format: "pulp-wars-replay",

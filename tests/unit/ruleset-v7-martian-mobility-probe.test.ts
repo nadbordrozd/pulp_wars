@@ -544,16 +544,17 @@ describe("Martian mobility probe: carriers", () => {
 
 describe("Martian mobility probe: Mind Control", () => {
   it("takes the most valuable offered target first", () => {
+    // Bolder abilities (7r99): both beside the Brain (the reach is 1).
     const state = martianFieldV7([
       own("CAPTAIN", 5, 3),
-      foe("KNIGHT", 3, 3, { hp: 4 }),
-      foe("FIGHTER", 4, 5, { hp: 4 }),
+      foe("KNIGHT", 4, 3, { hp: 4 }),
+      foe("FIGHTER", 4, 4, { hp: 4 }),
     ]);
     const choice = tactics(state)[0];
     expect(choice?.tool).toBe("MIND_CONTROL");
     expect(choice?.command).toMatchObject({
       kind: "MIND_CONTROL",
-      targetUnitId: unitIdAtV7(state, at(3, 3)),
+      targetUnitId: unitIdAtV7(state, at(4, 3)),
     });
   });
 });

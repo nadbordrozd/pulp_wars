@@ -120,11 +120,12 @@ export interface CombatPreviewV7 {
   readonly inspiredApplied: boolean;
   readonly inspiredConsumed: boolean;
   /**
-   * Revision 17 Gang Up: whole Attack (0, 1, or 2) a Goblin land-form
-   * attacker gains from other own units adjacent to the target; included in
-   * `attack2`. Always 0 for every non-Goblin or naval attacker.
+   * Revision 17 Gang Up: whole Attack (0, 2, or 4 since bolder abilities,
+   * 7r99; 0, 1, or 2 before) a Goblin land-form attacker gains from other
+   * own units adjacent to the target; included in `attack2`. Always 0 for
+   * every non-Goblin or naval attacker.
    */
-  readonly gangUp: 0 | 1 | 2;
+  readonly gangUp: 0 | 2 | 4;
   readonly breachApplied: boolean;
   readonly defenseBonusNumerator: number;
   readonly defenseBonusDenominator: number;

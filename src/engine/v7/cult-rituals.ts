@@ -1269,6 +1269,8 @@ function completeGreatSummoningV7(
       mindControlled,
       state.players,
       events,
+      null,
+      state.board,
     );
     units = release.units;
     burrowed = release.burrowed;

@@ -4,7 +4,6 @@ import {
   FORCE_FIELD_SHIELD_V7,
   HEAVY_TRACTOR_PULL_V7,
   HEAVY_TRACTOR_RANGE_V7,
-  MIND_CONTROL_HP_V7,
   MIND_CONTROL_RANGE_V7,
   TRACTOR_BEAM_PULL_V7,
   TRACTOR_BEAM_RANGE_V7,
@@ -25,10 +24,10 @@ import {
   type MartianUnitFactsV7,
   type FrozenLookupV7,
 } from "../rules/ruleset-v7";
-import { unitIsConstructV7 } from "./afflictions";
 import type { DomainEventV7 } from "./events";
 import { isAfloatFormV7, isNeutralOwnerV7 } from "./types";
 import type {
+  BoardStateV7,
   BurrowedEntryV7,
   CoolingStatusV7,
   CoordV7,
@@ -41,7 +40,7 @@ import type {
   UnitRoleIdV7,
   UnitStateV7,
 } from "./types";
-import { allOwnedUnitsV7 } from "./units";
+import { allOwnedUnitsV7, tileOccupiedV7 } from "./units";
 
 /**
  * The Martian revision (docs/product/RULESET_7_MARTIANS.md): Shields
@@ -403,27 +402,33 @@ export function controlledByBrainV7(
 
 /** Why a living, visible, hostile unit is not a legal Mind Control target. */
 export type MindControlTargetBlockV7 =
-  "TARGET_IMMUNE" | "OUT_OF_RANGE" | "TARGET_HEALTHY";
+  "TARGET_IMMUNE" | "OUT_OF_RANGE" | "DEEP_WATER";
 
 /**
- * The Mind Control revision (section 3): the per-target Mind Control
- * conditions, shared by the reducer and the public command query so that
- * every offered target is accepted and every rejected one is not offered.
- * `roster` is the state or the viewer's view (its `mindControlled` list
- * resolves the target's kind and tells an already-controlled target).
- * `target` is a living unit the Brain's owner sees and is hostile to (each
- * caller checks that against its own data); `targetTile` is the tile it
- * stands on, undefined when unknown. Returns null when the target is legal,
- * otherwise the first failing condition in the reducer's rejection order:
+ * The Mind Control revision (section 3), as made bolder by
+ * `pulp_wars-w49.42` (7r99): the per-target Mind Control conditions,
+ * shared by the reducer and the public command query so that every offered
+ * target is accepted and every rejected one is not offered. A Brain takes
+ * **any adjacent hostile unit**: a giant, a two-slot unit, a construct or
+ * a daemon, a unit afloat (embarked or naval, a sea beast included), a
+ * unit on a city, a village, or a Rift, at any HP. `roster` is the state or
+ * the viewer's view (its `mindControlled` list tells an already-controlled
+ * target). `target` is a living unit the Brain's owner sees and is hostile
+ * to (each caller checks that against its own data); `targetTile` is the
+ * tile it stands on, undefined when unknown; `navigation` is whether the
+ * Brain's owner has researched Navigation. Returns null when the target is
+ * legal, otherwise the first failing condition in the reducer's rejection
+ * order:
  *
- * - `TARGET_IMMUNE` (row 9): not in land form, a `JUGGERNAUT`-role or
- *   two-slot unit under its kind, on a settlement site (or an unknown
- *   tile), on a Rift (RULESET_7_RIFT.md section 4), a construct (the Dwarf
- *   revision section 7.2), or already mind-controlled (by any Brain);
- * - `OUT_OF_RANGE` (row 10): more than `MIND_CONTROL_RANGE_V7` from the
- *   Brain;
- * - `TARGET_HEALTHY` (rows 11 and 12): more than `MIND_CONTROL_HP_V7` HP,
- *   or unwounded (`hp` equal to `maxHp`).
+ * - `TARGET_IMMUNE` (row 9): an Egg, a neutral unit (the Spider, a camp
+ *   guard, Bigfoot, an Unbound daemon, a Tentacle: no seat to return to),
+ *   a unit on an unknown tile, or a unit already mind-controlled (by any
+ *   Brain);
+ * - `OUT_OF_RANGE` (row 10): not on one of the eight tiles around the
+ *   Brain (`MIND_CONTROL_RANGE_V7` 1);
+ * - `DEEP_WATER` (row 11): afloat on Deep Water while the Brain's owner
+ *   lacks Navigation (no seat owns a unit afloat there without it, the
+ *   rule a Board follows).
  */
 export function mindControlTargetBlockV7(
   roster: FactionRosterV7,
@@ -431,31 +436,22 @@ export function mindControlTargetBlockV7(
   target: {
     readonly id: UnitId;
     readonly ownerId: PlayerId;
-    readonly role: UnitRoleIdV7;
     readonly form: UnitStateV7["form"];
     readonly at: CoordV7;
-    readonly hp: number;
-    readonly maxHp: number;
   },
   targetTile:
     | {
-        readonly site: unknown;
         readonly terrain: TerrainIdV7 | null;
       }
     | undefined,
+  navigation: boolean,
 ): MindControlTargetBlockV7 | null {
   if (
-    target.form !== "LAND" ||
-    target.role === "JUGGERNAUT" ||
+    target.form === "EGG" ||
     // Map curiosities round 2 (section 31): Mind Control never takes a
-    // neutral unit (the Spider was immune by its role; a guard or Bigfoot
-    // is not a Juggernaut).
+    // neutral unit.
     isNeutralOwnerV7(target.ownerId) ||
-    unitCapacitySlotsV7(roster, target) !== 1 ||
     targetTile === undefined ||
-    targetTile.site !== null ||
-    targetTile.terrain === "RIFT" ||
-    unitIsConstructV7(roster, target) ||
     isMindControlledV7(roster, target.id)
   )
     return "TARGET_IMMUNE";
@@ -466,8 +462,43 @@ export function mindControlTargetBlockV7(
     ) > MIND_CONTROL_RANGE_V7
   )
     return "OUT_OF_RANGE";
-  if (target.hp > MIND_CONTROL_HP_V7 || target.hp >= target.maxHp)
-    return "TARGET_HEALTHY";
+  if (
+    isAfloatFormV7(target.form) &&
+    targetTile.terrain === "DEEP_WATER" &&
+    !navigation
+  )
+    return "DEEP_WATER";
+  return null;
+}
+
+/**
+ * Bolder abilities (`pulp_wars-w49.42`, 7r99): where an Abomination a Brain
+ * just took spits out the victim it holds: the first of the eight tiles
+ * around `at` in (y, x) order that is land (not a Rift), holds no unit,
+ * Egg, mound, or treasure chest. Null when there is none.
+ */
+export function mindControlSpitTileV7(
+  state: GameStateV7,
+  at: CoordV7,
+): CoordV7 | null {
+  for (let dy = -1; dy <= 1; dy += 1)
+    for (let dx = -1; dx <= 1; dx += 1) {
+      if (dx === 0 && dy === 0) continue;
+      const x = at.x + dx;
+      const y = at.y + dy;
+      if (x < 0 || y < 0 || x >= state.board.width || y >= state.board.height)
+        continue;
+      const tile = state.board.tiles[y * state.board.width + x];
+      if (
+        tile === undefined ||
+        tile.biome === null ||
+        tile.terrain === "RIFT" ||
+        state.treasureChests.some((chest) => chest.x === x && chest.y === y) ||
+        tileOccupiedV7(state, { x, y })
+      )
+        continue;
+      return { x, y };
+    }
   return null;
 }
 
@@ -484,11 +515,18 @@ export function mayCreateUnitsV7(
   return !isMindControlledV7(roster, unitId);
 }
 
-/** The players a release reads: who is still in the game. */
+/**
+ * The players a release reads: who is still in the game, and (bolder
+ * abilities, 7r99) whether the original owner has Navigation.
+ */
 export interface ReleasePlayerV7 {
   readonly id: PlayerId;
   readonly status: "ACTIVE" | "ELIMINATED";
+  readonly researchedTechs: readonly TechnologyIdV7[];
 }
+
+/** The board a release reads: the terrain under a unit afloat. */
+export type ReleaseBoardV7 = Pick<BoardStateV7, "width" | "height" | "tiles">;
 
 /**
  * The Mind Control revision (section 4.2) release: every controlled unit
@@ -499,7 +537,10 @@ export interface ReleasePlayerV7 {
  * exhausted activation; it keeps HP, kills, statuses, form, and tile; event
  * `UNIT_RELEASED`. To an eliminated original owner: it is removed with
  * `UNIT_DIED { cause: "BRAIN_LOST" }` (a removal: no kill credit, Plunder,
- * Grave, rising, or growth). An entry whose unit is gone or was already
+ * Grave, rising, or growth). Bolder abilities (`pulp_wars-w49.42`, 7r99): a
+ * unit afloat (embarked or naval) on Deep Water whose original owner has no
+ * Navigation is lost the same way (no seat holds a unit afloat there
+ * without Navigation); `seaBoard` is the board it stands on. An entry whose unit is gone or was already
  * released earlier in the same command is skipped; `prunedMartianV7` drops
  * such entries. Returns the units, the burrowed list, the list after the
  * release, and the released and removed units.
@@ -514,7 +555,8 @@ export function releaseControlledV7<U extends UnitStateV7>(
    * The Martian pass, correction: a controlled unit its controller lets go
    * (`DISBAND` on it), released although its Brain lives.
    */
-  letGo: UnitId | null = null,
+  letGo: UnitId | null,
+  seaBoard: ReleaseBoardV7,
 ): {
   readonly units: readonly U[];
   readonly burrowed: readonly BurrowedEntryV7[];
@@ -558,7 +600,12 @@ export function releaseControlledV7<U extends UnitStateV7>(
     const original = players.find(
       (player) => player.id === entry.originalOwnerId,
     );
-    if (original?.status === "ACTIVE") {
+    const stranded =
+      isAfloatFormV7(unit.form) &&
+      seaBoard.tiles[unit.at.y * seaBoard.width + unit.at.x]?.terrain ===
+        "DEEP_WATER" &&
+      original?.researchedTechs.includes("NAVIGATION") !== true;
+    if (original?.status === "ACTIVE" && !stranded) {
       releasedById.set(unit.id, {
         ...unit,
         ownerId: entry.originalOwnerId,

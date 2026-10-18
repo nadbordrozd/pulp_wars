@@ -1,6 +1,7 @@
 import {
   cooperativeAlliesV7,
   BEAM_DOWN_PICKUP_RANGE_V7,
+  MIND_CONTROL_RANGE_V7,
   isIceAtV7,
   isMindControlledV7,
   previewBeamDownV7,
@@ -195,7 +196,10 @@ export function martianPickTargetsV7(
           command,
           family: "MIND_CONTROL",
           previewLabel: mindControlTargetLabelV7(preview),
-          previewNote: lines.slice(1).join(" · "),
+          // Bolder abilities (`pulp_wars-w49.42`): every enemy beside the
+          // Brain is a target, so the note every target shares (the
+          // cooldown, the return) is no longer drawn on each of them (up to
+          // eight); it stays in the spoken label and the tooltip.
           // Bead pulp_wars-b5f.8: the target is named, never placed.
           semanticLabel: `Take the ${name}, ${preview.hp} of ${preview.maxHp} HP. ${lines.slice(1).join(". ")}`,
         },
@@ -256,10 +260,12 @@ export function addMartianPickEntriesV7(
       if (
         unit.ownerId === actor.ownerId ||
         targets.some((target) => same(target.at, unit.at)) ||
+        // Bolder abilities (7r99): the Brain reaches the eight tiles
+        // around it.
         Math.max(
           Math.abs(unit.at.x - actor.at.x),
           Math.abs(unit.at.y - actor.at.y),
-        ) > 2
+        ) > MIND_CONTROL_RANGE_V7
       )
         continue;
       if (

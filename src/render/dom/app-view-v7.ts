@@ -17365,7 +17365,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   const aiHeadStartCoins =
     draft.mapType === "SHOWCASE" ? 0 : draft.aiHeadStartCoins;
   return {
-    rulesetId: "pulp-wars-poc-7r98",
+    rulesetId: "pulp-wars-poc-7r99",
     seed,
     width,
     height: width,

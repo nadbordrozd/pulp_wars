@@ -45,7 +45,7 @@ import {
 } from "../../src/ai/v7-campaign";
 
 /**
- * Tuning 7 (`pulp_wars-w49.10`, identity unchanged at `pulp-wars-poc-7r98`;
+ * Tuning 7 (`pulp_wars-w49.10`, identity unchanged at `pulp-wars-poc-7r99`;
  * docs/product/RULESET_7_TUNING_HUMAN.md section 14, the Normal AI of a
  * Human, Undead, or Goblin seat): it commits against the enemy in front of
  * it and keeps committing after the line breaks, every faction's seat
@@ -189,7 +189,7 @@ const whereIs = (state: GameStateV7, id: UnitId): CoordV7 => {
 
 describe("tuning 7 identity", () => {
   it("is still 7r49: no rule, command, state, or event shape changed", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r98");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r99");
   });
 });
 
@@ -505,6 +505,24 @@ describe("1. commit: a position is local, and numbers are numbers", () => {
         if (unit.ownerId !== own || unit.at.x >= 8) continue;
         const after = played.state.units.find((item) => item.id === unit.id);
         if (after === undefined) continue;
+        // Bolder abilities (7r99, Gang Up +2): a unit that killed and
+        // advanced onto its victim's tile (the forced advance) did not walk
+        // away either (a Wolf Rider's charge does now).
+        const advanced = played.commands.some(
+          (command) =>
+            command.kind === "ATTACK" &&
+            command.unitId === unit.id &&
+            !played.state.units.some(
+              (item) => item.id === command.targetUnitId,
+            ) &&
+            current.units.some(
+              (item) =>
+                item.id === command.targetUnitId &&
+                item.at.x === after.at.x &&
+                item.at.y === after.at.y,
+            ),
+        );
+        if (advanced) continue;
         expect(
           gap(played.state, after.at),
           `turn ${turn} unit ${unit.id}`,

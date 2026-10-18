@@ -402,7 +402,7 @@ describe("Martian abilities", () => {
     app.destroy();
   });
 
-  it("takes a weakened enemy with Mind Control, and names why the others cannot be taken", async () => {
+  it("takes an enemy next to the Brain with Mind Control, picked on the board", async () => {
     const controller = new FixtureController(martianUiFixtureV7());
     const host = new RecordingBoardHost();
     const app = mount(controller, host);
@@ -439,13 +439,14 @@ describe("Martian abilities", () => {
     expect(targetHighlightStyleV7(choice.family, choice.highlight)).toBe(
       "ATTACK",
     );
+    // Bolder abilities (`pulp_wars-w49.42`, 7r99): the full-HP Fighter
+    // beside the Brain is a target too.
     expect(
-      boardPlan(host).entries.some(
-        (entry) =>
-          entry.kind === "ABILITY_TARGET" &&
-          entry.abilityStyle === "MARTIAN_BLOCKED" &&
-          entry.label ===
-            `Too healthy (${unitAt(controller, AT.healthyTarget).hp} HP)`,
+      boardPlan(host).targets.some(
+        (target) =>
+          target.family === "MIND_CONTROL" &&
+          target.at.x === AT.healthyTarget.x &&
+          target.at.y === AT.healthyTarget.y,
       ),
     ).toBe(true);
     host.callbacks?.onCommand(choice);

@@ -262,10 +262,13 @@ describe("the neutral registration by breed (sections 25.2, 29.1, 32.3)", () => 
       const juggernaut = round2UnitAtV7(arena, at(standOn.x - 1, standOn.y));
       expect(canBeFrozenV7(arena, P1, neutral), breed).toBe(false);
       expect(
-        mindControlTargetBlockV7(arena, { at: juggernaut.at }, neutral, {
-          site: null,
-          terrain: "GRASS",
-        }),
+        mindControlTargetBlockV7(
+          arena,
+          { at: juggernaut.at },
+          neutral,
+          { terrain: "GRASS" },
+          true,
+        ),
         breed,
       ).toBe("TARGET_IMMUNE");
       const preview = calculateCombatPreviewV7(

@@ -191,9 +191,14 @@ export const MARTIAN_UI_V7 = {
   /** Two tiles south: an enemy Fighter with an own Grunt behind it. */
   friendlyTarget: { x: 2, y: 4 },
   friendlyVictim: { x: 2, y: 5 },
-  /** Brain with a weakened enemy in reach, a healthy one, one on a village. */
+  /**
+   * Brain with enemies beside it: a wounded Marksman, a full-HP Fighter, and
+   * the Marksman behind the pierce target (bolder abilities,
+   * `pulp_wars-w49.42`: any adjacent unit is a target), and a wounded
+   * Fighter on a village two tiles away (out of reach).
+   */
   brain: { x: 5, y: 6 },
-  weakTarget: { x: 3, y: 6 },
+  weakTarget: { x: 4, y: 6 },
   healthyTarget: { x: 4, y: 5 },
   protectedTarget: { x: 5, y: 8 },
   /**
@@ -347,6 +352,58 @@ export function martianMobilityFixtureV7(): GameStateV7 {
       { seat: 0, role: "KNIGHT", at: at.mothership },
       { seat: 1, role: "FIGHTER", at: at.lightTarget },
       { seat: 1, role: "RAIDER", at: at.heavyTarget },
+    ],
+    { factions: ["MARTIAN", "ORIGINAL"] },
+  );
+}
+
+/**
+ * Bolder abilities (`pulp_wars-w49.42`, 7r99): a Brain with enemies of
+ * several kinds beside it, every one a Mind Control target: a full-HP
+ * Juggernaut (a giant), a full-HP Knight on the village (5, 5), a Battleship
+ * and a Patrol Boat afloat; a Fighter two tiles away is out of reach.
+ */
+export const MARTIAN_BOLDER_V7 = {
+  brain: { x: 4, y: 5 },
+  giant: { x: 3, y: 4 },
+  villageKnight: { x: 5, y: 5 },
+  battleship: { x: 4, y: 6 },
+  boat: { x: 3, y: 6 },
+  far: { x: 6, y: 4 },
+  /** The capped scene: the three units the Brain holds. */
+  held: [
+    { x: 3, y: 4 },
+    { x: 5, y: 4 },
+    { x: 3, y: 5 },
+  ],
+} as const;
+
+export function martianBolderTargetsFixtureV7(): GameStateV7 {
+  const at = MARTIAN_BOLDER_V7;
+  return martianUiFieldV7(
+    [
+      { seat: 0, role: "CAPTAIN", at: at.brain },
+      { seat: 1, role: "JUGGERNAUT", at: at.giant },
+      { seat: 1, role: "KNIGHT", at: at.villageKnight },
+      { seat: 1, role: "BATTLESHIP", at: at.battleship, form: "NAVAL" },
+      { seat: 1, role: "PATROL_BOAT", at: at.boat, form: "NAVAL" },
+      { seat: 1, role: "FIGHTER", at: at.far },
+    ],
+    { factions: ["MARTIAN", "ORIGINAL"], water: [at.battleship, at.boat] },
+  );
+}
+
+/** The same Brain holding three units (the limit): no Mind Control. */
+export function martianBolderCapFixtureV7(): GameStateV7 {
+  const at = MARTIAN_BOLDER_V7;
+  return martianUiFieldV7(
+    [
+      { seat: 0, role: "CAPTAIN", at: at.brain },
+      { seat: 1, role: "JUGGERNAUT", at: at.held[0], controlledBy: at.brain },
+      { seat: 1, role: "KNIGHT", at: at.held[1], controlledBy: at.brain },
+      { seat: 1, role: "SWORDSMAN", at: at.held[2], controlledBy: at.brain },
+      { seat: 1, role: "KNIGHT", at: at.villageKnight },
+      { seat: 1, role: "FIGHTER", at: at.far },
     ],
     { factions: ["MARTIAN", "ORIGINAL"] },
   );

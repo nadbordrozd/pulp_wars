@@ -281,16 +281,17 @@ describe("Martian Normal AI: Saucer, Brain, and Mothership", () => {
     // (The third pass, `pulp_wars-9s0.14`: the Marksman has 6 HP, so that
     // it lives through the Fighter's hit once it is taken. At 4 HP it
     // would be killed at once, and the Brain takes the unit it keeps.)
+    // Bolder abilities (7r99): both beside the Brain (the reach is 1).
     const state = asMartian([
       own("CAPTAIN", 5, 5),
       foe("FIGHTER", 4, 4, { hp: 5 }),
-      foe("MARKSMAN", 6, 3, { hp: 6 }),
+      foe("MARKSMAN", 6, 4, { hp: 6 }),
     ]);
     const best = unitCandidatesV7(state, at(5, 5))[0];
     expect(best?.command).toEqual({
       kind: "MIND_CONTROL",
       unitId: unitIdAtV7(state, at(5, 5)),
-      targetUnitId: unitIdAtV7(state, at(6, 3)),
+      targetUnitId: unitIdAtV7(state, at(6, 4)),
     });
     expect(best?.score.priority).toBe(MIND_CONTROL_PRIORITY_V7);
   });
@@ -510,7 +511,7 @@ describe("Normal AI against Martians", () => {
     expect(best?.score.priority).toBe(SHIELD_BREAK_PRIORITY_V7);
   });
 
-  it("keeps a wounded unit out of a ready Brain's reach", () => {
+  it("keeps a unit, wounded or not, out of a ready Brain's reach", () => {
     const state = againstMartian([
       own("FIGHTER", 6, 3, { hp: 5 }),
       foe("CAPTAIN", 4, 3),
@@ -520,16 +521,15 @@ describe("Normal AI against Martians", () => {
     expect(best?.score.priority).toBe(MIND_CONTROL_ESCAPE_PRIORITY_V7);
     const end = best === undefined ? undefined : endOf(best.command);
     expect(end === undefined ? 0 : Math.abs(end.x - 4)).toBeGreaterThan(2);
-    // A healthy unit does not care.
+    // Bolder abilities (`pulp_wars-w49.42`, 7r99): a Brain takes a healthy
+    // unit too, so it steps away as well (it did not care before).
     const healthy = againstMartian([
       own("FIGHTER", 6, 3),
       foe("CAPTAIN", 4, 3),
     ]);
-    expect(
-      unitCandidatesV7(healthy, at(6, 3)).every(
-        (item) => item.score.priority !== MIND_CONTROL_ESCAPE_PRIORITY_V7,
-      ),
-    ).toBe(true);
+    expect(unitCandidatesV7(healthy, at(6, 3))[0]?.score.priority).toBe(
+      MIND_CONTROL_ESCAPE_PRIORITY_V7,
+    );
   });
 
   it("puts a second unit next to a center a Mothership could empty", () => {

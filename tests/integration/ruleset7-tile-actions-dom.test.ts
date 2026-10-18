@@ -148,10 +148,15 @@ describe("tile actions in the DOM", () => {
     });
   });
 
-  it("does a tile's one action at once: a Brain's Mind Control", async () => {
+  it("chooses a Brain's Mind Control from the chooser of the enemy beside it", async () => {
+    // Bolder abilities (`pulp_wars-w49.42`, 7r99): Mind Control reaches the
+    // eight tiles around the Brain, so its target can be hit too: the tile
+    // opens a chooser with both.
     const scene = rig(tileActionsBrainFixtureV7());
     select(scene, A.brain);
     tap(scene, A.controlTarget);
+    expect(rows()).toEqual(["attack", "mind_control"]);
+    requiredButton("tile-choice-mind-control").click();
     await waitUntil(() => scene.controller.accepted.length === 1);
     expect(scene.controller.accepted[0]?.kind).toBe("MIND_CONTROL");
   });

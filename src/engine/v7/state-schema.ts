@@ -1145,10 +1145,11 @@ function parseUnit(
   const summonedRole = summoned
     ? (input.summoned as SummonedRoleIdV7)
     : undefined;
+  // Bolder abilities (`pulp_wars-w49.42`, 7r99): a daemon may be
+  // mind-controlled; its kind (its original owner's faction) has Favour.
   if (
     summonedRole !== undefined &&
     (!factionHasFavourV7(faction) ||
-      kindOwner !== owner ||
       role !== SUMMONED_MECHANICAL_ROLES_V7[summonedRole] ||
       input.form !== "LAND" ||
       input.homeCityId !== null ||
@@ -3357,11 +3358,13 @@ function validateCrossReferences(value: CrossInput): boolean {
   // entry needs a role that only the Martian registration has, so all of
   // them are empty in a match without a Martian seat.
   // The Mind Control revision (section 2.1): each controlled unit is a
-  // living one-slot land-form or embarked unit, on the board or burrowed,
-  // with no home, of a kind role that may be a target, owned by a Martian
-  // seat other than its original owner; its Brain is a living unit on the
-  // board of the same owner, not itself controlled, whose role under its
-  // kind has Mind Control, and no Brain holds more than the limit.
+  // living unit that is not an Egg, on the board or burrowed, with no home,
+  // owned by a Martian seat other than its original owner; its Brain is a
+  // living unit on the board of the same owner, not itself controlled,
+  // whose role under its kind has Mind Control, and no Brain holds more
+  // than the limit. Bolder abilities (`pulp_wars-w49.42`, 7r99): any kind
+  // role, size, and form but an Egg (a giant, a two-slot unit, a construct,
+  // a daemon, a ship); 1 to 3 per Brain.
   if (mindControlled.length > 0 && !value.setup.factions.includes("MARTIAN"))
     return false;
   const controlledByBrain = new Map<number, number>();
@@ -3376,14 +3379,11 @@ function validateCrossReferences(value: CrossInput): boolean {
       unit === undefined ||
       kind === undefined ||
       unit.hp <= 0 ||
-      (unit.form !== "LAND" && unit.form !== "EMBARKED") ||
+      unit.form === "EGG" ||
       unit.homeCityId !== null ||
       entry.originalOwnerId === unit.ownerId ||
       !playerById.has(entry.originalOwnerId) ||
       playerById.get(unit.ownerId)?.faction !== "MARTIAN" ||
-      unit.role === "JUGGERNAUT" ||
-      roleMechanicsV7(unit.role, kind).capacitySlots !== 1 ||
-      roleMechanicsV7(unit.role, kind).construct ||
       brain === undefined ||
       brainKind === undefined ||
       brain.hp <= 0 ||

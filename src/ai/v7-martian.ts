@@ -1,7 +1,6 @@
 import type { CityId, PlayerId, UnitId } from "../engine/model/ids";
 import {
   FORCE_FIELD_SHIELD_V7,
-  MIND_CONTROL_HP_V7,
   MIND_CONTROL_RANGE_V7,
   MIND_CONTROL_LIMIT_V7,
   MIND_CONTROLLED_LOST_ABILITIES_V7,
@@ -10,7 +9,6 @@ import {
   isMindControlledV7,
   playerFactionV7,
   technologyCapabilitiesV7,
-  unitCapacitySlotsV7,
   unitFactionV7,
   unitMayActAfterMoveV7,
   unitMovementModeV7,
@@ -31,6 +29,7 @@ import {
   unitHeldByCityWallsV7,
 } from "../engine/v7/martian";
 import { queryTractorBeamPathV7 } from "../engine/v7/query";
+import { unitScoreValueV7 } from "../engine/v7/score";
 import type { CoordV7, TechnologyIdV7, UnitRoleIdV7 } from "../engine/v7/types";
 import type { PlayerViewV7, PublicUnitV7 } from "../engine/v7/view";
 
@@ -164,17 +163,9 @@ export function mobilityPlayV7(): boolean {
 
 /** Mind Control: above every ordinary kill (a conversion beats a kill). */
 export const MIND_CONTROL_PRIORITY_V7 = 1186;
-/** A hit that leaves its target convertible by a ready own Brain. */
-export const MIND_CONTROL_SETUP_PRIORITY_V7 = 1182;
-/**
- * `pulp_wars-b5f.3` AI pass: the first of two own hits that together leave
- * a valuable target convertible by a ready own Brain (focus fire to wound,
- * then convert): above the chips (900) and the Shield-break hits (1178,
- * 1179 stay above it), below every kill.
- */
-export const MIND_CONTROL_FOCUS_PRIORITY_V7 = 1177;
-/** The focus-fire setup is only for targets worth at least this much. */
-export const MIND_CONTROL_FOCUS_MINIMUM_VALUE_V7 = 3;
+// (Bolder abilities, `pulp_wars-w49.42`, 7r99: the setup hit (1182) and
+// the focus-fire hits (1177) that wounded a target into control are gone:
+// a Brain takes any adjacent unit at any HP.)
 /** Strategic weight of one point of Mind Control value. */
 export const MIND_CONTROL_VALUE_WEIGHT_V7 = 10;
 /**
@@ -541,11 +532,14 @@ export function readyHostileBrainsV7(
 
 /**
  * Whether a unit on `at` with `hp` could be Mind Controlled by a Brain
- * within `MIND_CONTROL_THREAT_RADIUS_V7`. With `mindControlPlay` the
- * engine's own per-target test (`mindControlTargetBlockV7`) decides
- * immunity and health: a construct, a unit on a Rift, an already
- * controlled unit, and an unwounded unit (`hp` equal to its maximum) are
- * not exposed.
+ * within `MIND_CONTROL_THREAT_RADIUS_V7` (its Move and then the adjacent
+ * Mind Control). Bolder abilities (`pulp_wars-w49.42`, 7r99): a Brain
+ * takes any adjacent unit at any HP, so the engine's own per-target test
+ * (`mindControlTargetBlockV7`) only rules out an Egg, a neutral unit, and
+ * an already controlled unit; every other living unit near a ready
+ * hostile Brain is exposed, a giant and a ship included (Navigation is
+ * assumed, the worst case). The legacy options read the same rule (the
+ * HP limit they once read is gone).
  */
 export function mindControlExposedV7(
   view: PlayerViewV7,
@@ -554,27 +548,12 @@ export function mindControlExposedV7(
   hp: number,
   brains: readonly PublicUnitV7[],
 ): boolean {
-  if (brains.length === 0) return false;
-  if (martianPolicyOptions.mindControlPlay) {
-    if (hp <= 0) return false;
-    const tile = view.board.tiles[at.y * view.board.width + at.x];
-    if (tile?.explored !== true) return false;
-    // The Brain on the target's own tile: only immunity and health count.
-    if (mindControlTargetBlockV7(view, { at }, { ...unit, at, hp }, tile))
-      return false;
-    return brains.some(
-      (brain) => chebyshev(brain.at, at) <= MIND_CONTROL_THREAT_RADIUS_V7,
-    );
-  }
-  if (
-    hp > MIND_CONTROL_HP_V7 ||
-    unit.form !== "LAND" ||
-    unit.role === "JUGGERNAUT" ||
-    unitCapacitySlotsV7(view, unit) !== 1
-  )
-    return false;
+  if (brains.length === 0 || hp <= 0) return false;
   const tile = view.board.tiles[at.y * view.board.width + at.x];
-  if (tile?.explored === true && tile.site !== null) return false;
+  if (tile?.explored !== true) return false;
+  // The Brain on the target's own tile: only immunity counts.
+  if (mindControlTargetBlockV7(view, { at }, { ...unit, at }, tile, true))
+    return false;
   return brains.some(
     (brain) => chebyshev(brain.at, at) <= MIND_CONTROL_THREAT_RADIUS_V7,
   );
@@ -692,14 +671,25 @@ export function controlledUnitValueV7(
   view: PlayerViewV7,
   unit: PublicUnitV7,
 ): number {
-  return (unitRoleRuleV7(view, unit).cost ?? 2) * 4 + unit.hp + unit.kills * 2;
+  return unitWorthV7(view, unit) * 4 + unit.hp + unit.kills * 2;
+}
+
+/**
+ * Bolder abilities (`pulp_wars-w49.42`): what a unit is worth by its kind,
+ * its printed cost, or for a unit without one (a giant, a daemon, a reward
+ * unit) its Score value (`unitScoreValueV7`: a giant 12, a Horror 6, a
+ * Herald 24), so the most valuable adjacent unit is the one taken (it was
+ * 2 for every unit without a cost).
+ */
+function unitWorthV7(view: PlayerViewV7, unit: PublicUnitV7): number {
+  return unitRoleRuleV7(view, unit).cost ?? unitScoreValueV7(view, unit);
 }
 
 /**
  * The Mind Control value of a target (section 8): what it becomes, the
- * kind cost of its role (2 if it has none) plus its kills, less 1 for each
- * ability it would lose under control (Raise Dead, Infect, Bite, Hatch,
- * Assemble, Mind Control, tunnel riding), at least 1.
+ * kind cost of its role (its Score value if it has none, `unitWorthV7`)
+ * plus its kills, less 1 for each ability it would lose under control
+ * (`MIND_CONTROLLED_LOST_ABILITIES_V7`), at least 1.
  */
 export function mindControlValueV7(
   view: PlayerViewV7,
@@ -713,7 +703,9 @@ export function mindControlValueV7(
       ).length;
   return Math.max(
     1,
-    (rule.cost ?? 2) + unit.kills - MIND_CONTROL_LOST_ABILITY_VALUE_V7 * lost,
+    unitWorthV7(view, unit) +
+      unit.kills -
+      MIND_CONTROL_LOST_ABILITY_VALUE_V7 * lost,
   );
 }
 

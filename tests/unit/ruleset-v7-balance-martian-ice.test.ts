@@ -383,14 +383,15 @@ describe("M1: Beam Down, freed (section 5.1)", () => {
     const brain = martianFieldV7([
       { seat: 0, role: "RAIDER", at: at(4, 3) },
       { seat: 0, role: "CAPTAIN", at: CAPITAL },
-      { seat: 1, role: "FIGHTER", at: at(7, 3), hp: 5 },
+      // Bolder abilities (7r99): beside the beamed Brain (the reach is 1).
+      { seat: 1, role: "FIGHTER", at: at(6, 3), hp: 5 },
       FAR,
     ]);
     const taken = playV7(brain, beam(brain, at(4, 3), CAPITAL, at(5, 3)));
     const control: CommandV7 = {
       kind: "MIND_CONTROL",
       unitId: idAt(taken.state, at(5, 3)),
-      targetUnitId: idAt(taken.state, at(7, 3)),
+      targetUnitId: idAt(taken.state, at(6, 3)),
     };
     expect(offeredV7(taken.state, "MIND_CONTROL")).toEqual([control]);
     playV7(taken.state, control);

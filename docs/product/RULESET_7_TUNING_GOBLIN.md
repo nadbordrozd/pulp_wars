@@ -1,5 +1,14 @@
 # Ruleset 7: the Goblin faction pass
 
+**Bolder abilities** (`pulp_wars-w49.42`, `pulp-wars-poc-7r99`, user
+direction 2026-10-18: "make it +2 instead of +1"): Gang Up adds **+2
+Attack** for each own unit beside the target (`GANG_UP_ATTACK_PER_HELPER_V7`),
+still counting at most two (an Ogre counts two; a Rocket Cart's rocket one;
+a bomb none), so up to +4. Wherever this document says +1 a helper, up to
++2, or a rocket's +1, read +2 a helper, up to +4, and a rocket's +2; the
+combat preview's `gangUp` is the whole Attack (0, 2, or 4).
+[Current rules section 18.2](RULESET_7_CURRENT.md#182-gang-up).
+
 **Status:** implemented on `pulp-wars-poc-7r50` (bead `pulp_wars-w49.12`),
 then played by hand in three games and corrected
 ([section 1.2](#12-the-correction-after-hand-play)): a rocket's Gang Up is

@@ -227,6 +227,7 @@ import {
   coolingStepV7,
   isCoolingV7,
   mindControlCooldownStepV7,
+  mindControlSpitTileV7,
   mindControlTargetBlockV7,
   prunedMartianV7,
   rechargeShieldsAtEndTurnV7,
@@ -4019,14 +4020,18 @@ function applyBeamDown(
 
 /**
  * The Mind Control revision `MIND_CONTROL` (docs/product/RULESET_7_MIND_CONTROL.md
- * section 3): a primary action of a Brain that is not itself controlled and
- * controls fewer than `MIND_CONTROL_LIMIT_V7` units. A visible, hostile,
- * wounded land-form one-slot unit with at most `MIND_CONTROL_HP_V7` HP
- * within `MIND_CONTROL_RANGE_V7`, not on a settlement site or a Rift, not a
- * construct, and not already controlled, comes under the actor's control:
- * it keeps its ID, role, kind, HP, kills, statuses, form, and tile; its
- * home is cleared (its old city's slot frees), it is not capture-eligible,
- * and it is exhausted. A controlled Brain's own units are released.
+ * section 3; bolder abilities, `pulp_wars-w49.42`, 7r99): a primary action
+ * of a Brain that is not itself controlled and controls fewer than
+ * `MIND_CONTROL_LIMIT_V7` (3) units. Any visible hostile unit next to it
+ * (`MIND_CONTROL_RANGE_V7` 1) that is not an Egg, a neutral unit, or
+ * already controlled, at any HP, of any size or form (afloat on Deep Water
+ * only with the actor's Navigation), comes under the actor's control: it
+ * keeps its ID, role, kind, HP, kills, statuses, form, and tile; its home
+ * is cleared (its old city's slot frees), it is not capture-eligible, and
+ * it is exhausted. A controlled Brain's own units are released. A
+ * controlled Abomination has no Swallow: the victim it holds is spat out on
+ * the first free land tile around it (`mindControlSpitTileV7`), or digested
+ * when there is none.
  */
 function applyMindControl(
   original: GameStateV7,
@@ -4078,6 +4083,7 @@ function applyMindControl(
     brain,
     target,
     tileAtV7(state.board, target.at),
+    ownerResearchedTechsV7(state, actor).includes("NAVIGATION"),
   );
   if (block !== null)
     return rejected(original, "MIND_CONTROL_NOT_LEGAL", { reason: block });
@@ -4133,8 +4139,18 @@ function applyMindControl(
       entries,
       state.players,
       events,
+      null,
+      state.board,
     );
-    const units = [...release.units].sort((left, right) => left.id - right.id);
+    // Bolder abilities (7r99): a controlled Abomination loses Swallow, so
+    // the victim it holds is spat out beside it (its release event and
+    // sight follow from `withSwallowedOutcomesResultV7`); with no free tile
+    // the prune digests it.
+    const spat = spitOutVictimV7(
+      { ...state, units: release.units } as GameStateV7,
+      target.id,
+    );
+    const units = [...spat.units].sort((left, right) => left.id - right.id);
     const mindControlled = release.mindControlled;
     const sightState = { ...state, units, mindControlled } as GameStateV7;
     const reveal = revealRadius(
@@ -4155,6 +4171,7 @@ function applyMindControl(
         commandIndex: nextSafe(state.commandIndex),
         players: setExplored(state.players, actor, reveal.explored),
         units,
+        giants: spat.giants,
         burrowed: release.burrowed,
         mindControlled,
         mindControlCooldowns: [
@@ -4169,6 +4186,45 @@ function applyMindControl(
   } catch (cause) {
     return arithmeticFailure(original, cause);
   }
+}
+
+/**
+ * Bolder abilities (`pulp_wars-w49.42`, 7r99): the units and the giants
+ * block after the Abomination `holderId`, just taken by a Brain, spits out
+ * the victim it holds onto `mindControlSpitTileV7`: the victim stands
+ * there in land form, exhausted and not capture-eligible, keeping its
+ * owner, HP, and home. Unchanged when it holds none or no tile is free.
+ */
+function spitOutVictimV7(
+  state: GameStateV7,
+  holderId: UnitId,
+): Pick<GameStateV7, "units" | "giants"> {
+  const entry = state.giants.swallowed.find(
+    (candidate) => candidate.holderUnitId === holderId,
+  );
+  const holder = state.units.find((unit) => unit.id === holderId);
+  if (entry === undefined || holder === undefined)
+    return { units: state.units, giants: state.giants };
+  const at = mindControlSpitTileV7(state, holder.at);
+  if (at === null) return { units: state.units, giants: state.giants };
+  return {
+    units: [
+      ...state.units,
+      {
+        ...entry.unit,
+        at,
+        form: "LAND",
+        captureEligible: false,
+        activation: exhaustedActivation(),
+      },
+    ],
+    giants: {
+      ...state.giants,
+      swallowed: state.giants.swallowed.filter(
+        (candidate) => candidate !== entry,
+      ),
+    },
+  };
 }
 
 /**
@@ -5936,6 +5992,12 @@ function applyBoard(
         players: setExplored(state.players, actor, reveal.explored),
         units,
         shields,
+        // Bolder abilities (`pulp_wars-w49.42`, 7r99): a Brain may hold a
+        // ship; a prize boarded from its controller is the boarder's now,
+        // of the boarder's kind, and no Brain holds it any more.
+        mindControlled: state.mindControlled.filter(
+          (entry) => entry.unitId !== target.id,
+        ),
       },
       actor,
       events,
@@ -6281,6 +6343,8 @@ function resolveAttackExchangeV7(
     state.mindControlled,
     state.players,
     events,
+    null,
+    state.board,
   );
   units = [...release.units];
   // Sections 5.3 and 6.2: the Shields the exchange spent, and the Cooling
@@ -7494,6 +7558,7 @@ function applyDisband(
       state.players,
       events,
       unitId,
+      state.board,
     );
     return accepted(
       checked({
@@ -7542,6 +7607,8 @@ function applyDisband(
       state.mindControlled,
       state.players,
       events,
+      null,
+      state.board,
     );
     const afterRemoval = {
       ...state,
@@ -7733,6 +7800,8 @@ function applyCapture(
         mindControlled,
         players,
         releaseEvents,
+        null,
+        state.board,
       );
       const releasedById = new Map(
         release.released.map((item) => [item.id, item] as const),
@@ -8821,6 +8890,8 @@ function applyWail(
       state.mindControlled,
       state.players,
       events,
+      null,
+      state.board,
     );
     units = [...release.units];
     // Revision 17 section 6.7: Wail kills of exploding units set off a chain,
@@ -9121,6 +9192,8 @@ function resolveStartTurnIceV7(
     crush.state.mindControlled,
     crush.state.players,
     events,
+    null,
+    crush.state.board,
   );
   const released: GameStateV7 = {
     ...crush.state,
@@ -9743,6 +9816,8 @@ function resolveCityCenterSpawnV7(
       state.mindControlled,
       state.players,
       events,
+      null,
+      state.board,
     );
     units = [...release.units];
     burrowed = release.burrowed;

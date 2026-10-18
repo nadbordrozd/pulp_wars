@@ -5456,6 +5456,24 @@ matches without a Martian seat are unchanged.
 
 ### Mind Control play (`pulp_wars-b5f.3`)
 
+**Bolder abilities** (`pulp_wars-w49.42`, `7r99`): a Brain takes any unit
+beside it at any HP, three at a time, so the play changed where the rule
+did. The setup hit (1182) and the focus-fire hits (1177) that wounded a
+target to 6 HP or less are gone (a hit only damages the unit the Brain
+takes); a target's worth is its kind cost or, for a unit without one (a
+giant, a daemon, a reward unit), its Score value (`unitWorthV7`: a giant
+12, a Horror 6, a Herald 24; 2 before), so the Brain takes the most valuable
+unit beside it, a giant or a ship included; the approach and the safe step
+read every visible hostile (afloat too); a Brain at three is neither ready
+nor a threat. Against Martians every seat's exposure test
+(`mindControlExposedV7`) is the engine's target test, so every living unit
+but an Egg, a neutral one, and a controlled one within two tiles of a ready
+hostile Brain is exposed (Navigation assumed). Gang Up is read from the rule
+(`gangUpForPolicyV7`, `gangUpWithHelpersV7`, `gangUpMaximumAttackV7`:
++2 a helper), and an attack already at its most Gang Up is no setup.
+Tests: `tests/unit/ruleset-v7-mind-control-ai.test.ts` and
+`tests/unit/ruleset-v7-bolder-abilities.test.ts`.
+
 The AI step of the [Mind Control revision](../product/RULESET_7_MIND_CONTROL.md#8-normal-ai)
 (identity `7r33`, no identity change): a Mind-Controlled unit keeps its kind,
 so the policy values a target by what it becomes and plays a controlled unit

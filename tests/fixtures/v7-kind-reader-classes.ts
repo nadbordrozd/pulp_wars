@@ -584,6 +584,9 @@ export const KIND_READER_CLASSES_V7: Readonly<
   // own Offering is read through its kind, `deepOfferingOfV7`).
   "src/render/naval-presentation-v7.ts::krakenDragRuleV7": "SEAT",
   "src/engine/v7/naval-cult.ts::deepOfferingFavourV7": "SEAT",
+  // Bolder abilities (`pulp_wars-w49.42`): whether the killer's seat has
+  // Favour (a seat's rule: a daemon a Brain holds feeds its controller none).
+  "src/engine/v7/cult.ts::daemonKillFavourV7": "SEAT",
   "src/render/goblin-presentation-v7.ts::<module>": "SEAT",
   // A prize under its new flag: its kind follows its new owner (a ship is
   // never mind-controlled), so the prize's maximum HP is its captor seat's

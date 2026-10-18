@@ -647,6 +647,8 @@ export function resolveStartTurnSurfacingV7(
         mindControlled,
         current.players,
         events,
+        null,
+        current.board,
       );
       units = [...release.units];
       burrowed = release.burrowed;
@@ -924,6 +926,8 @@ export function applyBombRunV7(
         mindControlled,
         state.players,
         events,
+        null,
+        state.board,
       );
       units = [...release.units];
       burrowed = release.burrowed;

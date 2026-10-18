@@ -67,12 +67,13 @@ export const BITTEN_KABOOM_WARNING_V7 =
   "Bitten: this unit will rise as an enemy Zombie";
 export const GOBLIN_FIELD_DEFENSE_EXPLANATION_V7 =
   "Goblins cannot build Field Defense; use an Orc Brute";
+// Bolder abilities (`pulp_wars-w49.42`, 7r99): +2 a helper (+1 before).
 export const GANG_UP_DESCRIPTION_V7 =
-  "+1 Attack per ally next to the target (max +2)";
+  "+2 Attack per ally next to the target (max +4)";
 
 /** The Goblin pass (`pulp_wars-w49.12`): the three unit rules of 7r50. */
 export const GANG_UP_ONE_DESCRIPTION_V7 =
-  "+1 Attack with an ally next to the target (max +1)";
+  "+2 Attack with an ally next to the target (max +2)";
 export const NO_GANG_UP_NAME_V7 = "No Gang Up";
 export const NO_GANG_UP_DESCRIPTION_V7 = "Its bombs get no Gang Up.";
 export const BLAST_PROOF_NAME_V7 = "Blast-proof";
@@ -125,7 +126,7 @@ export const GOBLIN_HELP_RULES_V7: readonly (readonly [string, string])[] = [
   ],
   [
     "Gang Up",
-    "a Goblin unit gets +1 Attack for each other unit of yours next to its target, up to +2. A Rocket Cart gets at most +1 and a Bomb Chucker's bomb none.",
+    "a Goblin unit gets +2 Attack for each other unit of yours next to its target, up to +4. A Rocket Cart gets at most +2 and a Bomb Chucker's bomb none.",
   ],
   [
     "Kaboom",

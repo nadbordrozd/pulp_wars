@@ -32,7 +32,7 @@ const args = process.argv.slice(2);
 const mode = args[0] ?? "match";
 // Ruleset 7 is the only game (pulp_wars-lky5); the flag stays so a command
 // line written for an earlier identity fails loudly instead of playing 7r81.
-const ruleset = stringArg("--ruleset", "pulp-wars-poc-7r98");
+const ruleset = stringArg("--ruleset", "pulp-wars-poc-7r99");
 
 if (mode === "replay") {
   const file = args[1];
@@ -45,10 +45,10 @@ if (mode === "replay") {
   const result = await headlessV7.run(replay as ReplayFileV7);
   process.stdout.write(`${canonicalJson(result)}\n`);
 } else if (mode === "match") {
-  if (ruleset === "pulp-wars-poc-7r98") await runV7Match();
+  if (ruleset === "pulp-wars-poc-7r99") await runV7Match();
   else invalidRuleset();
 } else if (mode === "batch") {
-  if (ruleset === "pulp-wars-poc-7r98") await runV7Batch();
+  if (ruleset === "pulp-wars-poc-7r99") await runV7Batch();
   else invalidRuleset();
 } else {
   throw new Error(`Unknown mode: ${mode}`);
@@ -67,7 +67,7 @@ async function runV7Match(): Promise<void> {
   const aiCount = aiCountArgV7();
   const size = boardSizeArgV7(aiCount, mapType);
   const setup: MatchSetupV7 = {
-    rulesetId: "pulp-wars-poc-7r98",
+    rulesetId: "pulp-wars-poc-7r99",
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
     seed: numberArg("--seed", 0),
     width: size,
@@ -444,5 +444,5 @@ function factionsArgV7(aiCount: number): readonly FactionIdV7[] {
 }
 
 function invalidRuleset(): never {
-  throw new Error("--ruleset must be pulp-wars-poc-7r98");
+  throw new Error("--ruleset must be pulp-wars-poc-7r99");
 }

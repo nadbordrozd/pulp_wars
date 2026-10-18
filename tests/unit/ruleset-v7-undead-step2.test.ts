@@ -184,14 +184,14 @@ describe("step two of the Undead pass: the identity", () => {
   it("was 7r57 after 7r56, with both save keys obsolete now", () => {
     // (Step two of the Martian pass, `pulp_wars-w49.25`, took 7r58, and
     // step two of the Ice Folk pass, `pulp_wars-w49.27`, 7r59.)
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r98");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r98.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-42, -40)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r99");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r99.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-43, -41)).toEqual([
       "pulp-wars-poc-7r56",
       "pulp-wars-poc-7r57",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-42, -40)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-43, -41)).toEqual([
       "pulpWars.save.v7r56.current",
       "pulpWars.save.v7r57.current",
     ]);
@@ -303,8 +303,9 @@ describe("step two of the Undead pass: a Zombie that rises has 12 HP", () => {
       true,
     );
     expect(blow("GOBLIN", "RAIDER", 10, ["FIGHTER"]).kills).toBe(true);
-    // At 12 HP: a Champion 11, a Catapult 9, a Goblin with two helpers 11,
-    // a Wolf Rider with one helper 9.
+    // At 12 HP: a Champion 11, a Catapult 9 (and, until bolder abilities
+    // made Gang Up +2 a helper in 7r99, a Goblin with two helpers 11 and a
+    // Wolf Rider with one helper 9; both kill it now).
     expect(blow("ORIGINAL", "SWORDSMAN", 12)).toEqual({
       dealt: 11,
       kills: false,
@@ -313,13 +314,16 @@ describe("step two of the Undead pass: a Zombie that rises has 12 HP", () => {
       dealt: 9,
       kills: false,
     });
+    // Bolder abilities (7r99, Gang Up +2 a helper): a Goblin with two
+    // helpers kills it now (11 before).
     expect(blow("GOBLIN", "FIGHTER", 12, ["FIGHTER", "FIGHTER"])).toEqual({
-      dealt: 11,
-      kills: false,
+      dealt: 12,
+      kills: true,
     });
+    // And a Wolf Rider with one helper (9 before).
     expect(blow("GOBLIN", "RAIDER", 12, ["FIGHTER"])).toEqual({
-      dealt: 9,
-      kills: false,
+      dealt: 12,
+      kills: true,
     });
     // Two ordinary hits no longer kill (6 and 4 killed a rising of 10): a
     // Fighter and a Marksman deal 5 each, a bomb 5.

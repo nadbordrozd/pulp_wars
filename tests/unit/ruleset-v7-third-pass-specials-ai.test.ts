@@ -83,16 +83,18 @@ describe("Mind Control on purpose (pulp_wars-9s0.14)", () => {
   const mindControlOf = (state: GameStateV7) =>
     unitCandidatesV7(state, BRAIN, "MIND_CONTROL")[0];
 
-  // A wounded Champion two tiles from the Brain with two of its own side's
+  // A wounded Champion beside the Brain with two of its own side's
   // Fighters beside it, and a wounded Marksman on the other side with
-  // nobody near (no unit of the enemy reaches it in one turn).
-  const DEAR = at(6, 3);
-  const CHEAP = at(3, 5);
+  // nobody near (no unit of the enemy reaches it in one turn). Bolder
+  // abilities (`pulp_wars-w49.42`, 7r99): both beside the Brain, its reach
+  // (the Champion was two tiles away on (6, 3), the Marksman on (3, 5)).
+  const DEAR = at(6, 4);
+  const CHEAP = at(4, 6);
   const pieces = (fighters: boolean, hp = 3): MartianPieceV7[] => [
     own("CAPTAIN", BRAIN.x, BRAIN.y),
     foe("SWORDSMAN", DEAR.x, DEAR.y, { hp }),
     foe("MARKSMAN", CHEAP.x, CHEAP.y, { hp: 4 }),
-    ...(fighters ? [foe("FIGHTER", 7, 2), foe("FIGHTER", 6, 2)] : []),
+    ...(fighters ? [foe("FIGHTER", 7, 3), foe("FIGHTER", 6, 3)] : []),
   ];
 
   it("takes the dearest unit when it keeps it", () => {
@@ -157,7 +159,8 @@ describe("Mind Control on purpose (pulp_wars-9s0.14)", () => {
     [2, 3, 4, 5, 6].map((y) => foe("MARKSMAN", 8, y));
 
   it("steps out of lethal reach first, to a tile that keeps the target in range, and takes it from there", () => {
-    const TARGET = at(4, 3);
+    // 7r99: the target beside the Brain (two tiles away before, on (4, 3)).
+    const TARGET = at(4, 4);
     const state = asMartian([
       own("CAPTAIN", BRAIN.x, BRAIN.y),
       foe("FIGHTER", TARGET.x, TARGET.y, { hp: 4 }),
@@ -170,7 +173,7 @@ describe("Mind Control on purpose (pulp_wars-9s0.14)", () => {
     expect(first?.score.priority).toBe(MIND_CONTROL_SAFE_STEP_PRIORITY_V7);
     const end = endOf(first?.command);
     expect(end?.x).toBe(4);
-    expect(chebyshev(end ?? BRAIN, TARGET)).toBeLessThanOrEqual(2);
+    expect(chebyshev(end ?? BRAIN, TARGET)).toBeLessThanOrEqual(1);
     // Then the Mind Control, from the safe tile.
     const moved = step(state);
     expect(moved.command).toEqual(first?.command);
@@ -184,7 +187,7 @@ describe("Mind Control on purpose (pulp_wars-9s0.14)", () => {
   it("takes the unit where it stands when it is safe there", () => {
     const state = asMartian([
       own("CAPTAIN", BRAIN.x, BRAIN.y),
-      foe("FIGHTER", 4, 3, { hp: 4 }),
+      foe("FIGHTER", 4, 4, { hp: 4 }),
     ]);
     expect(unitCandidatesV7(state, BRAIN)[0]?.command.kind).toBe(
       "MIND_CONTROL",

@@ -1612,7 +1612,8 @@ without a Martian seat looks as before apart from the extra faction option.
 - **Dock and unit info.** Chips beside the name: "Shield 2 / 2" ("Shield 4 /
   4 (Force Field)" when raised), the ray's power ("Full power" or "Half
   power: moved"), "Cooling" (with the Cooling tooltip), a Brain's
-  "Controls 1 / 1" (with the small portrait of the unit it controls) and
+  "Controls 1 / 3" (with the small portrait of each unit it controls;
+  three at a time since `7r99`) and
   "Recovering: 2 turns", and "2 slots". Two per-turn chips come from the
   public lists `beamedThisTurn` and `tractorUsedThisTurn`
   (`pulp_wars-1wy.5`): **"Beamed"** on a unit of any kind that a carrier
@@ -1684,13 +1685,17 @@ without a Martian seat looks as before apart from the extra faction option.
     After landing it can attack but not move"); the chosen passenger is
     marked "Beaming"; a tile performs it. The beamed unit then shows the
     "Beamed" chip, its attack targets, and no Move.
-  - **Mind Control**: the legal targets, wounded hostile units ("Take · 5
-    HP", with "Mind Control recovers for 2 turns · Returns if this Brain is
-    lost"; named "Take the Marksman, 5 of 12 HP" with no tile); the dock
-    lists no targets (bead `pulp_wars-9im`); a hostile unit in reach
-    that cannot be taken is marked grey with why: "Too healthy (10 HP)",
-    "Unhurt", "Immune", "Already controlled", "Protected on a city or
-    village center". A target performs it, like an attack.
+  - **Mind Control**: the legal targets, since bolder abilities
+    (`pulp_wars-w49.42`, `7r99`) every hostile unit beside the Brain at
+    any HP ("Take · 5 HP", with "Mind Control recovers for 2 turns ·
+    Returns if this Brain is lost"; named "Take the Marksman, 5 of 12 HP"
+    with no tile); the dock lists no targets (bead `pulp_wars-9im`); a
+    hostile unit beside it that cannot be taken is marked grey with why:
+    "Immune" (an Egg or a neutral unit), "Already controlled", "Deep
+    Water: needs Navigation" (the old "Too healthy", "Unhurt", and
+    "Protected on a city or village center" are gone). A target performs
+    it, like an attack; a target the Brain may also hit opens the tile's
+    chooser (Attack, Mind Control).
   - **Tractor Beam**: the targets two tiles away (a Mothership's: two or
     three), a hostile unit as an Attack mark and an own unit as a Help
     ring (bead `pulp_wars-9im`); the focused one shows its **path**

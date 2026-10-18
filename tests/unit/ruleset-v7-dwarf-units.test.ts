@@ -132,7 +132,9 @@ describe("clockwork (section 7)", () => {
     }
   });
 
-  it("is immune to Mind Control (TARGET_IMMUNE)", () => {
+  // Bolder abilities (`pulp_wars-w49.42`, 7r99): a construct is a Mind
+  // Control target like any unit beside the Brain (it was immune).
+  it("is taken by Mind Control like any unit (7r99)", () => {
     const state = enemyTurn(
       dwarfFieldV7(
         [
@@ -145,15 +147,12 @@ describe("clockwork (section 7)", () => {
       ),
     );
     expect(
-      refusalV7(state, {
+      applyCommandV7(state, activeIdV7(state), {
         kind: "MIND_CONTROL",
         unitId: unitAtV7(state, at(5, 4)).id,
         targetUnitId: unitAtV7(state, at(5, 3)).id,
-      }),
-    ).toMatchObject({
-      code: "MIND_CONTROL_NOT_LEGAL",
-      params: { reason: "TARGET_IMMUNE" },
-    });
+      }).accepted,
+    ).toBe(true);
   });
 
   it("never mends itself: no Recover, no idle recovery; Repair heals a machine 4 and a Hammerer 2", () => {

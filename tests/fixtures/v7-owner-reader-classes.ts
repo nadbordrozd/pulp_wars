@@ -61,6 +61,10 @@ export const OWNER_READER_CLASSES_V7: Readonly<
   // Themed naval branches, the Deep Ones (`pulp_wars-5ti.22`): an Offering
   // reads the killer's seat (Favour); a neutral killer pays nothing.
   "src/engine/v7/naval-cult.ts::deepOfferingFavourV7": "NEUTRAL_AWARE",
+  // Bolder abilities (`pulp_wars-w49.42`): a daemon's kill feeds Favour only
+  // to a seat that has Favour (a daemon a Brain holds feeds none); an
+  // Unbound (neutral) daemon's kill pays nothing, checked first.
+  "src/engine/v7/cult.ts::daemonKillFavourV7": "NEUTRAL_AWARE",
   // Themed naval branches (`pulp_wars-5ti.16`): the boarder is the acting
   // seat's ship, and its seat's roster sets the prize's maximum HP and
   // whether its Submarine is a sea beast (the Spider never boards).

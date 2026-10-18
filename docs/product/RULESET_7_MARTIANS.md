@@ -1,5 +1,22 @@
 # Ruleset 7: Martian faction
 
+**Bolder abilities** (`pulp_wars-w49.42`, `pulp-wars-poc-7r99`, user
+direction 2026-10-18: "any adjacent unit gets mind controlled. limit 3 at a
+time"): a Brain takes **any hostile unit on one of the eight tiles around
+it**, at any HP, of any size or form, and holds **three** at a time.
+Wherever this document gives Mind Control an HP limit (6), a wounded test,
+a reach of 2, a limit of one unit, or an immunity for a unit not in land
+form, a `JUGGERNAUT`-role or two-slot unit, a giant, a construct, a daemon,
+a ship or sea beast, an embarked unit, or a unit on a settlement site or a
+Rift, read that only an Egg, a neutral unit, and an already controlled unit
+are immune, the reach is 1, a unit afloat on Deep Water needs the Brain
+owner's Navigation, and the limit is three (at the limit Mind Control is
+not offered). The cooldown, the release, and the presentation rules stand.
+[Current rules sections 20.8 and 20.9](RULESET_7_CURRENT.md#208-mind-control)
+state the rule and its edge cases (a controlled Abomination spits out its
+victim; a controlled daemon loses its strands and is never Unbound by the
+check; a held ship boarded by another seat is the boarder's).
+
 **Any unit can capture** (`pulp_wars-ke95`, user direction 2026-10-09):
 every land unit of every faction now has `CAPTURE`, so wherever this
 document says a unit has no capture, cannot capture, or lists the

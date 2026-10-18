@@ -437,11 +437,14 @@ describe("combat and abilities (section 4.3)", () => {
     ).toEqual({ code: "INVALID_TILE", params: { action: "BEAM_DOWN" } });
   });
 
-  it("Mind Control: a unit on a Rift is immune", () => {
+  // Bolder abilities (`pulp_wars-w49.42`, 7r99): a Brain takes any unit
+  // beside it, a flyer on a Rift too (it was immune: the Thrall could not
+  // stand there); it stays where it is, a flyer on its Rift.
+  it("Mind Control: a flyer on a Rift is taken like any unit beside the Brain", () => {
     const control = (target: CoordV7) => {
       const state = field(
         [
-          { seat: 0, role: "CAPTAIN", at: at(5, 4) },
+          { seat: 0, role: "CAPTAIN", at: at(5, 3) },
           { seat: 1, role: "RAIDER", at: target, hp: 5 },
         ],
         ["MARTIAN", "MARTIAN"],
@@ -450,18 +453,23 @@ describe("combat and abilities (section 4.3)", () => {
         state,
         command: {
           kind: "MIND_CONTROL",
-          unitId: idAt(state, at(5, 4)),
+          unitId: idAt(state, at(5, 3)),
           targetUnitId: idAt(state, target),
         } as CommandV7,
       };
     };
-    const immune = control(at(5, 2));
-    expect(rejectedV7(immune.state, immune.command)).toEqual({
-      code: "MIND_CONTROL_NOT_LEGAL",
-      params: { reason: "TARGET_IMMUNE" },
-    });
-    const open = control(at(4, 3));
-    expect(offeredV7(open.state, "MIND_CONTROL")).toContainEqual(open.command);
+    for (const target of [at(5, 2), at(4, 3)]) {
+      const case_ = control(target);
+      expect(offeredV7(case_.state, "MIND_CONTROL")).toContainEqual(
+        case_.command,
+      );
+      const result = applyCommandV7(
+        case_.state,
+        activeIdV7(case_.state),
+        case_.command,
+      );
+      expect(result.accepted, `${target.x},${target.y}`).toBe(true);
+    }
   });
 
   it("a Zombie's kill on a Rift does not rise and leaves no Grave", () => {

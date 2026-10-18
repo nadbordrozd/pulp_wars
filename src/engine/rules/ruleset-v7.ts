@@ -2030,6 +2030,13 @@ export const BAT_ESCAPE_TILES_V7 = 2 as const;
  * climbs out of its own Grave (half its 14).
  */
 export const WIGHT_RISE_AGAIN_HP_V7 = 7 as const;
+/**
+ * Bolder abilities (`pulp_wars-w49.42`, 7r99): the whole Attack Gang Up adds
+ * for each unit counted beside the target (it was 1). The count is still
+ * the smallest of the faction's `gangUpMaximum`, the role's `gangUpLimit`,
+ * and the helpers, so an attack gets at most +4 (a rocket +2).
+ */
+export const GANG_UP_ATTACK_PER_HELPER_V7 = 2 as const;
 /** The ninth unit: the Ogre counts as this many units for Gang Up. */
 export const OGRE_GANG_UP_WEIGHT_V7 = 2 as const;
 /** The ninth unit: what a Shock Field deals a melee attacker. */
@@ -5382,8 +5389,9 @@ export interface FactionRulesV7 {
   /** Revision 17 Warrens: extra unit capacity of every city the seat owns. */
   readonly cityCapacityBonus: 0 | 1;
   /**
-   * Revision 17 Gang Up: a land-form attack gains +1 Attack for each other
-   * own unit adjacent to its target, up to this maximum (0 disables it).
+   * Revision 17 Gang Up: a land-form attack gains Attack for each other own
+   * unit adjacent to its target (`GANG_UP_ATTACK_PER_HELPER_V7`, +2 each
+   * since 7r99), counting at most this many units (0 disables it).
    */
   readonly gangUpMaximum: 0 | 2;
   /**
@@ -6293,7 +6301,8 @@ export function ownerResearchedTechsV7(
  * tunnel riding. The Steam Mole's `TUNNEL` stays (it tunnels alone). The
  * Candy revision (section 12.5): Re-bake. The Cultists (`pulp_wars-mch9.4`):
  * and the abilities that pay Favour (Sacrifice and Seize), which need a
- * Cult seat.
+ * Cult seat. Bolder abilities (7r99): Swallow, Break Off, Drowned Crew, and
+ * Offerings to the Deep.
  */
 export const MIND_CONTROLLED_LOST_ABILITIES_V7: readonly UnitRoleAbilityV7[] =
   deepFreeze([
@@ -6325,6 +6334,16 @@ export const MIND_CONTROLLED_LOST_ABILITIES_V7: readonly UnitRoleAbilityV7[] =
     // The Cult redesign (`pulp_wars-mch9.34`, section 8.2): joining a
     // chant is a ritual's, so it needs a Cult seat.
     "JOIN_CHANT",
+    // Bolder abilities (`pulp_wars-w49.42`, 7r99): a Brain takes any
+    // adjacent unit, giants and ships included, so the giant signatures and
+    // naval rules that make a unit or pay Favour are lost under control
+    // too: Swallow (a digested victim raises a Zombie of the holder's seat),
+    // Break Off (Gingerbread Men), Drowned Crew (a Ghost Ship), and
+    // Offerings to the Deep (Favour needs a Cult seat).
+    "SWALLOW",
+    "BREAK_OFF",
+    "DROWNED_CREW",
+    "DEEP_OFFERING",
   ]);
 
 const CONTROLLED_ROLE_RULES_V7 = new WeakMap<
@@ -6894,17 +6913,19 @@ export const FORCE_FIELD_SHIELD_V7 = 4;
  * value, so a hit of 5 always costs HP.
  */
 export const SHIELD_CAP_V7 = 4;
-/** The Martian revision (section 8.2): the most HP a Mind Control target has. */
-export const MIND_CONTROL_HP_V7 = 6;
-/** The Martian revision (section 8.2): Mind Control reach (Chebyshev). */
-export const MIND_CONTROL_RANGE_V7 = 2;
+/**
+ * The Martian revision (section 8.2): Mind Control reach (Chebyshev). Bolder
+ * abilities (`pulp_wars-w49.42`, 7r99): any adjacent unit, so 1 (it was 2,
+ * and only for a wounded target with at most 6 HP; the HP limit is gone).
+ */
+export const MIND_CONTROL_RANGE_V7 = 1;
 /** The Martian revision (section 8.2): the cooldown a Mind Control starts. */
 export const MIND_CONTROL_COOLDOWN_TURNS_V7 = 2;
 /**
  * The Mind Control revision (section 4.4): the units one Brain controls at
- * most.
+ * most. Bolder abilities (`pulp_wars-w49.42`, 7r99): 3 (it was 1).
  */
-export const MIND_CONTROL_LIMIT_V7 = 1;
+export const MIND_CONTROL_LIMIT_V7 = 3;
 /**
  * The Martian revision (section 8.4): the Tractor Beam distance: the exact
  * distance of the Saucer's pull and the minimum of the Heavy Tractor Beam.

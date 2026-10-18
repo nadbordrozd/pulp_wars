@@ -28,7 +28,6 @@ import {
   REPAIR_MACHINE_V7,
   SHIELD_CAP_V7,
   SNOW_COVER_V7,
-  MIND_CONTROL_HP_V7,
   PEPPERMINT_DAMAGE_V7,
   SUGAR_TOSS_HEAL_V7,
   THUMP_DAMAGE_V7,
@@ -2437,8 +2436,8 @@ function validPayload(
       );
     }
     case "UNIT_MIND_CONTROLLED":
-      // The Mind Control revision (section 3): the target keeps its ID and
-      // has 1 to `MIND_CONTROL_HP_V7` HP.
+      // The Mind Control revision (section 3): the target keeps its ID.
+      // Bolder abilities (7r99): any role (a giant too) at any HP.
       return (
         id(e.playerId) &&
         id(e.unitId) &&
@@ -2446,11 +2445,9 @@ function validPayload(
         id(e.targetOwnerId) &&
         e.targetOwnerId !== e.playerId &&
         UNIT_ROLE_IDS_V7.includes(e.targetRole as never) &&
-        e.targetRole !== "JUGGERNAUT" &&
         e.unitId !== e.targetUnitId &&
         parseCoordV7(e.at) !== null &&
-        pos(e.hp) &&
-        (e.hp as number) <= MIND_CONTROL_HP_V7
+        pos(e.hp)
       );
     case "SHIP_BOARDED":
       // The naval branch (section 4.2): the prize keeps its ID and is
@@ -2630,7 +2627,8 @@ function combat(input: unknown): boolean {
       input.maximumRange,
     ].every(pos) &&
     isPositiveSafeIntegerV7(input.attacksUsed) &&
-    (input.gangUp === 0 || input.gangUp === 1 || input.gangUp === 2) &&
+    // Bolder abilities (7r99): +2 Attack a helper, so 0, 2, or 4.
+    (input.gangUp === 0 || input.gangUp === 2 || input.gangUp === 4) &&
     // Revision 20: the Charge! run-up and the fortification levels removed
     // by Charge! (up to 4 since tuning 4, when a Field Defense became two
     // levels; 3 before) or Wallbreaker (2); Acid reports none.

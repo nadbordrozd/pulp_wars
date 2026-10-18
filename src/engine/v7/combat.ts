@@ -42,6 +42,7 @@ import {
   type FactionRosterV7,
   type SummonedUnitRefV7,
   FIELD_DEFENSE_FORTIFICATION_LEVELS_V7,
+  GANG_UP_ATTACK_PER_HELPER_V7,
 } from "../rules/ruleset-v7";
 import {
   afflictionCombatEffectsV7,
@@ -337,10 +338,12 @@ export function attackFortificationV7(
 
 /**
  * Revision 17 Gang Up (section 5.2): a land-form attacker whose kind (the
- * Mind Control revision: a body rule) has Gang Up gains +1 Attack for each
- * other unit its owner (its controller) has on
+ * Mind Control revision: a body rule) has Gang Up gains
+ * `GANG_UP_ATTACK_PER_HELPER_V7` Attack (+2 since bolder abilities,
+ * `pulp_wars-w49.42`, 7r99; +1 before) for each other unit its owner (its
+ * controller) has on
  * the eight cells around the target (any role and form; allies never count),
- * up to the faction maximum. The Goblin pass (`pulp_wars-w49.12`): a role
+ * counting up to the faction maximum. Returns the whole Attack (0, 2, or 4). The Goblin pass (`pulp_wars-w49.12`): a role
  * has its own `gangUpLimit` (the Bomb Chucker 0, the Rocket Cart 1). Own units are always visible to their owner, so
  * the public preview passes its visible units and is exact.
  *
@@ -357,7 +360,7 @@ export function gangUpBonusV7(
   >[],
   attacker: Pick<UnitStateV7, "id" | "ownerId" | "form" | "role">,
   target: Pick<UnitStateV7, "id" | "at">,
-): 0 | 1 | 2 {
+): GangUpAttackV7 {
   if (attacker.form !== "LAND") return 0;
   const maximum = factionRulesV7(unitFactionV7(roster, attacker)).gangUpMaximum;
   if (maximum === 0) return 0;
@@ -381,8 +384,12 @@ export function gangUpBonusV7(
           : 1),
       0,
     );
-  return Math.min(maximum, limit, helpers) as 0 | 1 | 2;
+  return (GANG_UP_ATTACK_PER_HELPER_V7 *
+    Math.min(maximum, limit, helpers)) as GangUpAttackV7;
 }
+
+/** The whole Attack an attack gains from Gang Up (`gangUpBonusV7`). */
+export type GangUpAttackV7 = 0 | 2 | 4;
 
 /**
  * The Dinosaur pass (`pulp_wars-w49.15`, 7r53): Pack Hunt. The `attack2` a

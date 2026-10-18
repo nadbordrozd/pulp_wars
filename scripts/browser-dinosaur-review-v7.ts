@@ -83,7 +83,7 @@ const browser = spawn(
 const errors: string[] = [];
 const evidence: Record<string, unknown> = {};
 const REVIEW = "globalThis.__DINOSAUR_REVIEW__";
-const SAVE_KEY = "pulpWars.save.v7r98.current";
+const SAVE_KEY = "pulpWars.save.v7r99.current";
 
 try {
   const target = await waitForTarget();

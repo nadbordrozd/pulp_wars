@@ -2,21 +2,21 @@ import { describe, expect, it } from "vitest";
 import { scoreCommandV7 } from "../../src/ai/v7";
 import { KABOOM_MULTI_KILL_PRIORITY_V7 } from "../../src/ai/v7-goblin";
 import {
+  MIND_CONTROL_APPROACH_PRIORITY_V7,
   MIND_CONTROL_ESCAPE_PRIORITY_V7,
-  MIND_CONTROL_FOCUS_PRIORITY_V7,
   MIND_CONTROL_PRIORITY_V7,
-  MIND_CONTROL_SETUP_PRIORITY_V7,
   CONTROLLED_CHIP_PRIORITY_V7,
   controlledRetainedValueV7,
   controlledUnitValueV7,
   martianFactsV7,
   martianRetainedValueV7,
   martianTargetBonusV7,
+  mindControlExposedV7,
   mindControlValueV7,
+  readyHostileBrainsV7,
   setMartianPolicyOptionsV7,
 } from "../../src/ai/v7-martian";
 import {
-  queryCombatPreviewV7,
   queryPlayerCommandsV7,
   viewForV7,
   type CommandV7,
@@ -175,88 +175,120 @@ describe("Mind Control AI: targets by what they become", () => {
   });
 });
 
-describe("Mind Control AI: the setup", () => {
-  // A Grunt hits a wounded Fighter that a ready Brain can reach.
-  const setupField = (controlled: boolean): GameStateV7 =>
-    asMartian([
-      own("CAPTAIN", 5, 5),
-      own("FIGHTER", 3, 4),
-      foe("FIGHTER", 2, 4, { hp: 8 }),
-      ...(controlled ? [foe("FIGHTER", 6, 6, { controlledBy: at(5, 5) })] : []),
-    ]);
-
-  it("wounds a target into the Brain's reach, but not at the limit", () => {
-    const state = setupField(false);
-    const grunt = unitIdAtV7(state, at(3, 4));
-    const target = unitIdAtV7(state, at(2, 4));
-    const preview = queryCombatPreviewV7(viewerViewV7(state), grunt, target);
-    expect(preview?.defenderDies).toBe(false);
-    expect(8 - (preview?.damageToDefender ?? 0)).toBeLessThanOrEqual(6);
-    const hit: CommandV7 = {
-      kind: "ATTACK",
-      unitId: grunt,
-      targetUnitId: target,
-    };
-    expect(scoreCommandV7(viewerViewV7(state), hit).priority).toBe(
-      MIND_CONTROL_SETUP_PRIORITY_V7,
-    );
-    // The Brain already controls a unit (limit 1): no setup hit.
-    const limited = setupField(true);
-    expect(
-      scoreCommandV7(viewerViewV7(limited), {
-        kind: "ATTACK",
-        unitId: unitIdAtV7(limited, at(3, 4)),
-        targetUnitId: unitIdAtV7(limited, at(2, 4)),
-      }).priority,
-    ).toBeLessThan(MIND_CONTROL_SETUP_PRIORITY_V7);
-  });
-
-  it("focuses two hits on a valuable target to wound it into control", () => {
-    // A full-HP Guard (17 HP, worth 3): no single Grunt hit leaves it at
-    // 6 or less, but two do; the Brain stands within reach.
+describe("Mind Control AI: no setup hit (bolder abilities, 7r99)", () => {
+  // `pulp_wars-w49.42`: a Brain takes any adjacent unit at any HP, so the
+  // setup and focus-fire hits (1182, 1177) that wounded a target to 6 HP
+  // are gone: a Grunt's hit on a unit the Brain takes this turn is never
+  // ranked above the Mind Control, and the Brain takes the unit whole.
+  it("takes a full-HP unit next to the Brain rather than hitting it first", () => {
     const state = asMartian([
       own("CAPTAIN", 5, 4),
-      own("FIGHTER", 3, 3),
-      own("FIGHTER", 3, 5),
-      foe("GUARD", 3, 4, { hp: 12 }),
+      own("FIGHTER", 3, 4),
+      foe("KNIGHT", 4, 4),
     ]);
     const view = viewerViewV7(state);
-    const target = unitIdAtV7(state, at(3, 4));
-    const first = unitIdAtV7(state, at(3, 3));
-    const second = unitIdAtV7(state, at(3, 5));
-    const one = queryCombatPreviewV7(view, first, target);
-    const two = queryCombatPreviewV7(view, second, target);
-    const left =
-      12 - (one?.damageToDefender ?? 0) - (two?.damageToDefender ?? 0);
-    expect(12 - (one?.damageToDefender ?? 0)).toBeGreaterThan(6);
-    expect(left).toBeGreaterThan(0);
-    expect(left).toBeLessThanOrEqual(6);
+    const brain = unitIdAtV7(state, at(5, 4));
+    const knight = unitIdAtV7(state, at(4, 4));
+    const take: CommandV7 = {
+      kind: "MIND_CONTROL",
+      unitId: brain,
+      targetUnitId: knight,
+    };
+    expect(queryPlayerCommandsV7(view)).toContainEqual(take);
+    expect(scoreCommandV7(view, take).priority).toBe(MIND_CONTROL_PRIORITY_V7);
     const hit: CommandV7 = {
       kind: "ATTACK",
-      unitId: first,
-      targetUnitId: target,
+      unitId: unitIdAtV7(state, at(3, 4)),
+      targetUnitId: knight,
     };
-    expect(scoreCommandV7(view, hit).priority).toBe(
-      MIND_CONTROL_FOCUS_PRIORITY_V7,
+    expect(scoreCommandV7(view, hit).priority).toBeLessThan(
+      MIND_CONTROL_PRIORITY_V7,
     );
-    baseline(() =>
-      expect(scoreCommandV7(view, hit).priority).toBeLessThan(
-        MIND_CONTROL_FOCUS_PRIORITY_V7,
-      ),
-    );
+    expect(unitCandidatesV7(state, at(5, 4))[0]?.command).toEqual(take);
   });
 
-  it("does not approach or set up an unwounded unit", () => {
-    // A full-HP Goblin (6 / 6 HP) is not a Mind Control target.
+  it("approaches an unwounded unit to take it", () => {
+    // A full-HP Goblin (6 / 6 HP) is a target now; the Brain on (7, 4)
+    // steps beside it.
     const state = asMartian(
-      [own("CAPTAIN", 7, 5), foe("FIGHTER", 3, 5)],
+      [own("CAPTAIN", 7, 4), foe("FIGHTER", 5, 4)],
       "GOBLIN",
     );
     expect(
-      unitCandidatesV7(state, at(7, 5), "MOVE").some(
-        (item) => item.score.priority >= 1183,
+      unitCandidatesV7(state, at(7, 4), "MOVE").some(
+        (item) => item.score.priority >= MIND_CONTROL_APPROACH_PRIORITY_V7,
+      ),
+    ).toBe(true);
+  });
+});
+
+describe("Mind Control AI: the most valuable adjacent unit, three at a time (7r99)", () => {
+  it("takes a full-HP giant over a wounded Knight and a Fighter", () => {
+    const state = asMartian([
+      own("CAPTAIN", 5, 5),
+      foe("FIGHTER", 4, 4, { hp: 3 }),
+      foe("KNIGHT", 6, 4, { hp: 5 }),
+      foe("JUGGERNAUT", 5, 6),
+    ]);
+    const view = viewerViewV7(state);
+    // A giant has no cost: its Score value (12) is what it is worth.
+    expect(mindControlValueV7(view, unitAt(view, at(5, 6)))).toBeGreaterThan(
+      mindControlValueV7(view, unitAt(view, at(6, 4))),
+    );
+    expect(mindControlOf(state, at(5, 5))?.command).toEqual({
+      kind: "MIND_CONTROL",
+      unitId: unitIdAtV7(state, at(5, 5)),
+      targetUnitId: unitIdAtV7(state, at(5, 6)),
+    });
+  });
+
+  it("takes a ship next to the Brain", () => {
+    const state = martianFieldV7(
+      [
+        own("CAPTAIN", 4, 3),
+        foe("BATTLESHIP", 5, 3, { form: "NAVAL" }),
+        foe("FIGHTER", 1, 1),
+      ],
+      { factions: ["MARTIAN", "ORIGINAL"], water: [at(5, 3)] },
+    );
+    expect(mindControlOf(state, at(4, 3))?.command).toEqual({
+      kind: "MIND_CONTROL",
+      unitId: unitIdAtV7(state, at(4, 3)),
+      targetUnitId: unitIdAtV7(state, at(5, 3)),
+    });
+  });
+
+  it("a Brain holding three neither takes nor approaches, and is no threat to others", () => {
+    const pieces = [
+      own("CAPTAIN", 7, 4),
+      foe("FIGHTER", 7, 3, { controlledBy: at(7, 4) }),
+      foe("FIGHTER", 8, 3, { controlledBy: at(7, 4) }),
+      foe("FIGHTER", 8, 4, { controlledBy: at(7, 4) }),
+      foe("KNIGHT", 5, 4),
+    ];
+    const state = asMartian(pieces);
+    expect(mindControlOf(state, at(7, 4))).toBeUndefined();
+    expect(
+      unitCandidatesV7(state, at(7, 4), "MOVE").some(
+        (item) => item.score.priority >= MIND_CONTROL_APPROACH_PRIORITY_V7,
       ),
     ).toBe(false);
+    // Against Martians: the full Brain is not a ready hostile Brain.
+    const human = againstMartian([
+      foe("CAPTAIN", 7, 4),
+      own("FIGHTER", 7, 3, { controlledBy: at(7, 4) }),
+      own("FIGHTER", 8, 3, { controlledBy: at(7, 4) }),
+      own("FIGHTER", 8, 4, { controlledBy: at(7, 4) }),
+      own("KNIGHT", 5, 4),
+    ]);
+    const view = viewerViewV7(human);
+    expect(
+      readyHostileBrainsV7(
+        view,
+        martianFactsV7(view),
+        (owner) => owner !== view.viewer.id,
+      ),
+    ).toEqual([]);
   });
 });
 
@@ -413,7 +445,7 @@ describe("Mind Control AI: against Martians", () => {
     );
   });
 
-  it("steps the most valuable wounded unit out of a ready Brain's reach first", () => {
+  it("steps the most valuable unit out of a ready Brain's reach first", () => {
     const state = againstMartian([
       own("KNIGHT", 6, 3, { hp: 5 }),
       own("FIGHTER", 6, 5, { hp: 5 }),
@@ -428,27 +460,45 @@ describe("Mind Control AI: against Martians", () => {
     ).toBe(unitIdAtV7(state, at(6, 3)));
   });
 
-  it("leaves an unwounded unit alone (the wounded test)", () => {
-    // A full-HP Goblin (6 / 6) cannot be Mind Controlled.
+  it("treats every unit as exposed, unwounded, a giant, or a ship (7r99)", () => {
+    // `pulp_wars-w49.42`: a full-HP Goblin (6 / 6) next to a ready Brain's
+    // reach steps away too (the wounded test is gone).
     const state = againstMartian(
       [own("FIGHTER", 6, 3), foe("CAPTAIN", 4, 3)],
       "GOBLIN",
     );
-    const escapes = (): number =>
-      unitCandidatesV7(state, at(6, 3)).filter(
-        (item) => item.score.priority === MIND_CONTROL_ESCAPE_PRIORITY_V7,
-      ).length;
-    expect(escapes()).toBe(0);
-    baseline(() => expect(escapes()).toBeGreaterThan(0));
-    // Wounded, it steps away.
-    const wounded = againstMartian(
-      [own("FIGHTER", 6, 3, { hp: 5 }), foe("CAPTAIN", 4, 3)],
-      "GOBLIN",
-    );
     expect(
-      unitCandidatesV7(wounded, at(6, 3)).some(
+      unitCandidatesV7(state, at(6, 3)).some(
         (item) => item.score.priority === MIND_CONTROL_ESCAPE_PRIORITY_V7,
       ),
     ).toBe(true);
+    const sea = martianFieldV7(
+      [
+        own("JUGGERNAUT", 6, 3),
+        own("BATTLESHIP", 6, 5, { form: "NAVAL" }),
+        foe("CAPTAIN", 4, 4),
+        foe("FIGHTER", 1, 1),
+      ],
+      { factions: ["ORIGINAL", "MARTIAN"], water: [at(6, 5)] },
+    );
+    const view = viewerViewV7(sea);
+    const brains = readyHostileBrainsV7(
+      view,
+      martianFactsV7(view),
+      (owner) => owner !== view.viewer.id,
+    );
+    expect(brains).toHaveLength(1);
+    for (const where of [at(6, 3), at(6, 5)]) {
+      const unit = unitAt(view, where);
+      expect(unit.hp).toBe(unit.maxHp);
+      expect(
+        mindControlExposedV7(view, unit, unit.at, unit.hp, brains),
+        `${where.x},${where.y}`,
+      ).toBe(true);
+      // Three tiles from the Brain it is safe.
+      expect(
+        mindControlExposedV7(view, unit, at(7, where.y), unit.hp, brains),
+      ).toBe(false);
+    }
   });
 });

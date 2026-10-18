@@ -141,7 +141,7 @@ function without(...missing: readonly TechnologyIdV7[]): TechnologyIdV7[] {
 
 describe("step two of the Goblin pass: no rule changed", () => {
   it("kept the identity (7r56 then; 7r57 since step two of the Undead pass)", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r98");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r99");
   });
 });
 
@@ -164,22 +164,23 @@ describe("step two of the Goblin pass: the mob", () => {
     expect(gangUpAttackerV7(view, unit(5, 2))).toBe(false);
     expect(gangUpHelperWeightV7(view, unit(4, 2))).toBe(1);
     expect(gangUpHelperWeightV7(view, unit(4, 3))).toBe(2);
+    // Bolder abilities (`pulp_wars-w49.42`, 7r99): +2 Attack a helper.
     expect(gangUpWithHelpersV7(view, unit(4, 2), 0)).toBe(0);
-    expect(gangUpWithHelpersV7(view, unit(4, 2), 1)).toBe(1);
-    expect(gangUpWithHelpersV7(view, unit(4, 2), 3)).toBe(2);
+    expect(gangUpWithHelpersV7(view, unit(4, 2), 1)).toBe(2);
+    expect(gangUpWithHelpersV7(view, unit(4, 2), 3)).toBe(4);
     expect(gangUpWithHelpersV7(view, unit(7, 2), 2)).toBe(0);
     // The engine agrees: the Goblin beside the Fighter with the Ogre there.
     expect(
       queryCombatPreviewV7(view, unit(4, 2).id, unit(5, 2).id)?.gangUp,
-    ).toBe(2);
+    ).toBe(4);
   });
 
   it("brings the second Goblin beside the target before the first one strikes", () => {
     // A full Fighter in the open; one Goblin beside it and one two tiles
     // away. Alone each deals 3 and takes 5. Together, each with the other
-    // beside the target, they deal 6 and 6 and the Fighter is dead. Before
-    // this pass the first Goblin struck alone and the second walked up
-    // afterwards.
+    // beside the target, they deal 10 and the last 2 (6 and 6 before bolder
+    // abilities, 7r99) and the Fighter is dead. Before this pass the first
+    // Goblin struck alone and the second walked up afterwards.
     const { state } = arena([
       { seat: 0, role: "FIGHTER", at: at(4, 2) },
       { seat: 0, role: "FIGHTER", at: at(7, 2) },
@@ -200,17 +201,19 @@ describe("step two of the Goblin pass: the mob", () => {
     expect(struck).toBeGreaterThan(moved);
     const attacks = attacksOf(turn.played);
     expect(attacks).toHaveLength(2);
-    expect(attacks.map((entry) => entry.gangUp)).toEqual([1, 1]);
-    expect(attacks.map((entry) => entry.dealt)).toEqual([6, 6]);
+    // Bolder abilities (7r99): +2 each (+1 before).
+    expect(attacks.map((entry) => entry.gangUp)).toEqual([2, 2]);
+    expect(attacks.map((entry) => entry.dealt)).toEqual([10, 2]);
     expect(attacks[1]?.kills).toBe(true);
     expect(turn.state.units.some((unit) => unit.id === fighter)).toBe(false);
   });
 
-  it("brings the Ogre beside a Champion: the Goblin strikes at +2, the Ogre kills", () => {
+  it("brings the Ogre beside a Champion: the Goblin strikes at +4 and kills", () => {
     // A full Champion (15 HP); a Goblin beside it and an Ogre two tiles
     // away. Alone the Goblin deals 3 and dies. With the Ogre beside the
-    // target (Heavyweight: it counts as two helpers) the Goblin deals 9
-    // and lives, and the Ogre, with the Goblin as its helper, kills.
+    // target (Heavyweight: it counts as two helpers) the Goblin strikes at
+    // +4 since bolder abilities (7r99) and kills it alone (before, at +2 it
+    // dealt 9 and the Ogre, with the Goblin as its helper, killed).
     const { state } = arena(
       [
         { seat: 0, role: "FIGHTER", at: at(4, 2) },
@@ -231,8 +234,8 @@ describe("step two of the Goblin pass: the mob", () => {
     expect(moved).toBeGreaterThanOrEqual(0);
     expect(struck).toBeGreaterThan(moved);
     const attacks = attacksOf(turn.played);
-    expect(attacks.map((entry) => entry.gangUp)).toEqual([2, 1]);
-    expect(attacks.map((entry) => entry.dealt)).toEqual([9, 6]);
+    expect(attacks.map((entry) => entry.gangUp)).toEqual([4]);
+    expect(attacks.map((entry) => entry.dealt)).toEqual([15]);
     expect(turn.state.units.some((unit) => unit.id === champion)).toBe(false);
   });
 
@@ -259,8 +262,9 @@ describe("step two of the Goblin pass: the mob", () => {
         entry.command.kind === "ATTACK" &&
         entry.command.targetUnitId === holder.id,
     );
-    expect(onHolder.map((entry) => entry.gangUp)).toEqual([1, 1]);
-    expect(onHolder.map((entry) => entry.dealt)).toEqual([6, 6]);
+    // Bolder abilities (7r99): +2 a helper (+1 before: 6 and 6).
+    expect(onHolder.map((entry) => entry.gangUp)).toEqual([2, 2]);
+    expect(onHolder.map((entry) => entry.dealt)).toEqual([10, 2]);
     expect(turn.state.units.some((unit) => unit.id === holder.id)).toBe(false);
     // A Goblin stands on the center again.
     expect(unitAtV7(turn.state, at(8, 9)).ownerId).toBe(actor);

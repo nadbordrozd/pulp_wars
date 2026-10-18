@@ -927,6 +927,8 @@ export function applySwallowV7(
       state.mindControlled,
       state.players,
       events,
+      null,
+      state.board,
     );
     const staged = kit.graveActionTail(
       {
@@ -1380,6 +1382,8 @@ export function resolveFixedHitsV7(
     state.mindControlled,
     state.players,
     events,
+    null,
+    state.board,
   );
   const chain = resolveStateExplosionChainV7(
     state,

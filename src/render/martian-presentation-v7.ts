@@ -6,8 +6,6 @@ import {
   HEAVY_TRACTOR_RANGE_V7,
   beamDownPassengerLegalV7,
   MIND_CONTROL_COOLDOWN_TURNS_V7,
-  MIND_CONTROL_HP_V7,
-  MIND_CONTROL_RANGE_V7,
   MIND_CONTROL_LIMIT_V7,
   TRACTOR_BEAM_RANGE_V7,
   UNIT_ROLE_IDS_V7,
@@ -15,6 +13,7 @@ import {
   effectiveRoleRuleV7,
   forceFieldHoldsV7,
   isMindControlledV7,
+  isNeutralOwnerV7,
   primaryActionUsedV7,
   roleMechanicsV7,
   seatRoleRuleV7,
@@ -22,7 +21,6 @@ import {
   unitIsFrozenV7,
   tractorBeamRuleV7,
   unitFactionV7,
-  unitRoleMechanicsV7,
   unitRoleRuleV7,
   type BeamDownPreviewV7,
   type CombatPreviewV7,
@@ -162,11 +160,13 @@ export const MARTIAN_FROZEN_MOVED_V7 = "Frozen: it cannot act this turn";
 /** `pulp_wars-1wy.5`: the tag on a Mothership's Tractor Beam button. */
 export const TRACTOR_FREE_TAG_V7 = "Free";
 export const MIND_CONTROL_LABEL_V7 = "Mind Control";
-export const MIND_CONTROL_TOOLTIP_V7 = `Take a wounded hostile unit with ${MIND_CONTROL_HP_V7} HP or less within ${MIND_CONTROL_RANGE_V7} tiles. It fights for you as itself until this Brain is lost.`;
-export const MIND_CONTROL_PICK_V7 = "Choose a weakened enemy to take";
+// Bolder abilities (`pulp_wars-w49.42`, 7r99): any enemy next to the
+// Brain, at any HP, up to three at a time.
+export const MIND_CONTROL_TOOLTIP_V7 = `Take any enemy unit next to this Brain, up to ${numberWord(MIND_CONTROL_LIMIT_V7)} at a time. It fights for you as itself until this Brain is lost.`;
+export const MIND_CONTROL_PICK_V7 = "Choose an enemy next to the Brain";
 export const MIND_CONTROL_IMMUNE_V7 = "Immune";
-export const MIND_CONTROL_PROTECTED_V7 =
-  "Protected on a city or village center";
+/** An enemy afloat on Deep Water while the viewer lacks Navigation. */
+export const MIND_CONTROL_DEEP_WATER_V7 = "Deep Water: needs Navigation";
 export const TRACTOR_BEAM_LABEL_V7 = "Tractor Beam";
 // `pulp_wars-1wy.3`: the Saucer's pull and the Mothership's Heavy Tractor
 // Beam, in one text, for a reader without a unit (the per-unit texts are
@@ -212,7 +212,7 @@ export const MARTIAN_FIELD_DEFENSE_EXPLANATION_V7 =
 export const MIND_CONTROLLED_LABEL_V7 = "Controlled";
 export const MIND_CONTROLLED_NO_SLOT_V7 = "Mind-controlled units use no slot";
 /** The short reason on a Mind Control button without a legal target. */
-export const MIND_CONTROL_NO_TARGET_V7 = "No wounded enemy in reach";
+export const MIND_CONTROL_NO_TARGET_V7 = "No enemy next to it";
 
 /** "You" for the viewer, otherwise "Martians" (a chip's owner name). */
 export function playerShortNameV7(
@@ -473,7 +473,7 @@ export function martianHelpRulesV7(): readonly (readonly [string, string])[] {
     ],
     [
       MIND_CONTROL_LABEL_V7,
-      `a ${joinOr(brains)} takes control of ${MIND_CONTROL_LIMIT_V7 === 1 ? "one" : `up to ${numberWord(MIND_CONTROL_LIMIT_V7)}`} wounded hostile unit${MIND_CONTROL_LIMIT_V7 === 1 ? "" : "s"} with ${MIND_CONTROL_HP_V7} HP or less within ${MIND_CONTROL_RANGE_V7} tiles, not on a city or village, and needs ${numberWord(MIND_CONTROL_COOLDOWN_TURNS_V7)} turns before the next. The unit keeps its type and abilities but cannot be disbanded or create units. When the ${joinOr(brains)} is lost, the unit returns to its owner.`,
+      `a ${joinOr(brains)} takes control of any enemy unit next to it (giants and ships too, at any HP), up to ${numberWord(MIND_CONTROL_LIMIT_V7)} at a time, and needs ${numberWord(MIND_CONTROL_COOLDOWN_TURNS_V7)} turns before the next. The unit keeps its type and abilities but cannot create units. When the ${joinOr(brains)} is lost, the unit returns to its owner.`,
     ],
     [
       TRACTOR_BEAM_LABEL_V7,
@@ -851,32 +851,31 @@ export function martianCombatLinesV7(
 
 // -------------------------------------------------------- ability previews
 
-/** Section 13.2 "Mind Control target reasons" for a target not offered. */
+/**
+ * Section 13.2 "Mind Control target reasons" for a target not offered.
+ * Bolder abilities (`pulp_wars-w49.42`, 7r99): an Egg or a neutral unit is
+ * "Immune", a controlled unit "Already controlled", and a unit afloat on
+ * Deep Water without the viewer's Navigation needs it; every other enemy
+ * next to the Brain is a target (null), at any HP, size, or place.
+ */
 export function mindControlTargetReasonV7(
   view: PlayerViewV7,
   target: PublicUnitV7,
 ): string | null {
+  if (target.form === "EGG" || isNeutralOwnerV7(target.ownerId))
+    return MIND_CONTROL_IMMUNE_V7;
+  if (isMindControlledV7(view, target.id)) return "Already controlled";
   const tile = view.board.tiles.find(
     (candidate) =>
       candidate.at.x === target.at.x && candidate.at.y === target.at.y,
   );
-  const onSite =
-    view.cities.some(
-      (city) => city.at.x === target.at.x && city.at.y === target.at.y,
-    ) ||
-    (tile?.explored === true && tile.site === "VILLAGE");
-  if (onSite) return MIND_CONTROL_PROTECTED_V7;
-  const mechanics = unitRoleMechanicsV7(view, target);
   if (
-    target.form !== "LAND" ||
-    target.role === "JUGGERNAUT" ||
-    mechanics.capacitySlots !== 1 ||
-    mechanics.construct
+    (target.form === "NAVAL" || target.form === "EMBARKED") &&
+    tile?.explored === true &&
+    tile.terrain === "DEEP_WATER" &&
+    !view.viewer.researchedTechs.includes("NAVIGATION")
   )
-    return MIND_CONTROL_IMMUNE_V7;
-  if (isMindControlledV7(view, target.id)) return "Already controlled";
-  if (target.hp > MIND_CONTROL_HP_V7) return `Too healthy (${target.hp} HP)`;
-  if (target.hp >= target.maxHp) return "Unhurt";
+    return MIND_CONTROL_DEEP_WATER_V7;
   return null;
 }
 
@@ -1229,7 +1228,7 @@ export function martianFieldDefenseBlockedV7(
 }
 
 /** The Martian technology unlock texts of section 4. */
-export const BRAIN_SUPPORT_UNLOCK_TEXT_V7 = `${martianLabelV7("CAPTAIN")}s give ${PSYCHIC_COMMAND_LABEL_V7} or take ${MIND_CONTROL_LABEL_V7} of weakened enemies`;
+export const BRAIN_SUPPORT_UNLOCK_TEXT_V7 = `${martianLabelV7("CAPTAIN")}s give ${PSYCHIC_COMMAND_LABEL_V7} or take ${MIND_CONTROL_LABEL_V7} of any enemy next to them, up to ${numberWord(MIND_CONTROL_LIMIT_V7)} at a time`;
 // The Martian pass (`pulp_wars-w49.14`, 7r52): the Force Field itself is
 // this technology's.
 export const FORCE_FIELDS_UNLOCK_TEXT_V7 = `${martianLabelV7("GUARD")}s raise the Shields of units next to them to ${FORCE_FIELD_SHIELD_V7}, and at full HP one attack cannot kill such a unit; Shields also recharge at the end of your turn`;

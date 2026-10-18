@@ -254,9 +254,10 @@ describe("Revision 17 Goblin presentation text", () => {
       shot,
       previewAttackExplosionsV7(view, cart.id, fighter.id),
     );
-    expect(text.gangUp).toBe("Gang Up +1");
+    // Bolder abilities (7r99): a rocket's one helper is +2 (+1 before).
+    expect(text.gangUp).toBe("Gang Up +2");
     expect(text.semantic).toContain(
-      "Gang Up adds 1 Attack from your units next to the target.",
+      "Gang Up adds 2 Attack from your units next to the target.",
     );
   });
 
@@ -662,7 +663,8 @@ describe("Revision 17 Goblin board previews", () => {
     expect(target.semanticLabel).toContain(
       "Splash affects 1 adjacent unit (1 yours) for 3.",
     );
-    // A Rocket Cart's shot still shows it.
+    // A Rocket Cart's shot still shows it (+2 since 7r99, and the shot now
+    // kills: a Rocket Cart never advances, so it stays).
     const cart = unitAt(view, AT.rocketCart);
     const cartPlan = buildBoardRenderPlanV7(view, queryPlayerCommandsV7(view), {
       ...NO_INTERACTION,
@@ -675,7 +677,7 @@ describe("Revision 17 Goblin board previews", () => {
           same(candidate.at, AT.enemyFighter),
         ),
       ).previewNote,
-    ).toBe("Gang Up +1");
+    ).toBe("Gang Up +2 · Stays");
   });
 
   it("carries the death-blast chain of a Human attack on an exploding unit", () => {

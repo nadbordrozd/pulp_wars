@@ -462,10 +462,13 @@ describe("provocation, damage, death, and the bounty (sections 8.4, 8.6, 8.7)", 
     // Frozen and Mind Control never apply.
     expect(canBeFrozenV7(state, P1, spider)).toBe(false);
     expect(
-      mindControlTargetBlockV7(state, { at: at(8, 7) }, spider, {
-        site: null,
-        terrain: "GRASS",
-      }),
+      mindControlTargetBlockV7(
+        state,
+        { at: at(8, 7) },
+        spider,
+        { terrain: "GRASS" },
+        true,
+      ),
     ).toBe("TARGET_IMMUNE");
   });
 });

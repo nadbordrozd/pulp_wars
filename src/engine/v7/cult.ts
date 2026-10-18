@@ -7,7 +7,9 @@ import {
   OFFERING_POPULATION_V7,
   SEIZE_BROKEN_HP_V7,
   SEIZE_FAVOUR_MULTIPLIER_V7,
+  factionHasFavourV7,
   isMindControlledV7,
+  playerFactionV7,
   primaryActionBlockedAfterMoveV7,
   technologyCapabilitiesV7,
   unitCapacitySlotsV7,
@@ -235,6 +237,9 @@ export function daemonKillFavourV7(
     killer.summoned === undefined ||
     CULT_SUMMONED_ROLE_RULES_V7[killer.summoned].control === null ||
     isNeutralOwnerV7(killer.ownerId) ||
+    // Bolder abilities (7r99): a daemon a Brain controls feeds no Favour
+    // (Favour needs a Cult seat).
+    !factionHasFavourV7(playerFactionV7(lookup, killer.ownerId)) ||
     victim.summoned !== undefined ||
     !arePlayersHostileV7(lookup, killer.ownerId, victim.ownerId)
   )
@@ -625,6 +630,8 @@ export function applySacrificeV7(
       state.mindControlled,
       state.players,
       events,
+      null,
+      state.board,
     );
     const staged = kit.graveActionTail(
       {
@@ -717,6 +724,8 @@ export function applySeizeV7(
       state.mindControlled,
       state.players,
       events,
+      null,
+      state.board,
     );
     const staged = kit.graveActionTail(
       {

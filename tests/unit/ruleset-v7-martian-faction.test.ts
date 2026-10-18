@@ -99,7 +99,7 @@ import { at, kindsV7, movedV7 } from "../fixtures/v7-revision20";
 // (docs/product/RULESET_7_MARTIANS.md sections 2 to 4, 10.9, 10.10, and 11).
 
 /** The revision number of this identity (`pulp-wars-poc-7rNN`). */
-const REVISION = 98;
+const REVISION = 99;
 const ID = `pulp-wars-poc-7r${REVISION}`;
 const PREVIOUS_ID = `pulp-wars-poc-7r${REVISION - 1}`;
 
@@ -1734,7 +1734,7 @@ describe("Martian public unit stats (section 11)", () => {
     expect(stats(at(4, 5)).martian?.mindControl).toEqual({
       cooldown: 1,
       controlled: 1,
-      controlLimit: 1,
+      controlLimit: 3,
     });
     // A controlled Human unit has no Martian block; its control is public.
     expect(stats(at(5, 5))).not.toHaveProperty("martian");
@@ -1876,8 +1876,7 @@ describe("Martian persistence (section 15)", () => {
       targetUnitId: enemyAt(at(5, 5)),
     });
     expect(unitAtV7(state, at(5, 5)).hp).toBeLessThanOrEqual(6);
-    // The Mothership pulls the Brain toward the front; the Brain walks on
-    // and takes the weakened Raider.
+    // The Mothership pulls the Brain toward the front; the Brain walks on.
     play({
       kind: "TRACTOR_BEAM",
       unitId: own("KNIGHT"),
@@ -1892,21 +1891,40 @@ describe("Martian persistence (section 15)", () => {
     );
     if (brainMove === undefined) throw new Error("Brain Move missing");
     play(brainMove);
-    play({
-      kind: "MIND_CONTROL",
-      unitId: own("CAPTAIN"),
-      targetUnitId: enemyAt(at(5, 5)),
-    });
     // Everyone ends the turn; the Martian seat's second turn starts.
     for (let seat = 0; seat < 4; seat += 1) play({ kind: "END_TURN" });
     expect(state.turnOrder[state.activeSeatIndex]).toBe(martianId);
+    expect(state.cooling).toEqual([
+      { unitId: own("JUGGERNAUT"), firedThisTurn: false },
+    ]);
+    // Bolder abilities (`pulp_wars-w49.42`, 7r99): Mind Control reaches
+    // the eight tiles around the Brain (it took the weakened Raider from
+    // (3, 7), two tiles away, in the first turn before). In its second turn
+    // the Brain walks up beside a unit and takes it.
+    const brainId = own("CAPTAIN");
+    const takeFrom = (after: GameStateV7): CommandV7 | undefined =>
+      queryPlayerCommandsV7(viewForV7(after, martianId)).find(
+        (command) =>
+          command.kind === "MIND_CONTROL" && command.unitId === brainId,
+      );
+    const walk = queryPlayerCommandsV7(viewForV7(state, martianId)).find(
+      (command) => {
+        if (command.kind !== "MOVE" || command.unitId !== brainId) return false;
+        const moved = applyCommandV7(state, martianId, command);
+        return moved.accepted && takeFrom(moved.state) !== undefined;
+      },
+    );
+    play(must(walk, "the Brain's walk"));
+    play(must(takeFrom(state), "Mind Control"));
+    // Every Martian list is non-empty now: the Colossus still Cooling, the
+    // unit just taken, and the Brain's cooldown.
     expect(state.shields.length).toBeGreaterThan(0);
     expect(state.cooling).toEqual([
       { unitId: own("JUGGERNAUT"), firedThisTurn: false },
     ]);
     expect(state.mindControlled).toHaveLength(1);
     expect(state.mindControlCooldowns).toEqual([
-      { unitId: own("CAPTAIN"), turnsRemaining: 1 },
+      { unitId: own("CAPTAIN"), turnsRemaining: 2 },
     ]);
     for (const kind of [
       "UNIT_BEAMED",

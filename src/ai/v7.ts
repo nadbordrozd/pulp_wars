@@ -12,7 +12,6 @@ import {
   GROWTH_KILLS_V7,
   BOLAS_RANGE_V7,
   COLD_SNAP_RANGE_V7,
-  MIND_CONTROL_HP_V7,
   FORCE_FIELD_SHIELD_V7,
   MIND_CONTROL_RANGE_V7,
   MIND_CONTROL_LIMIT_V7,
@@ -393,6 +392,7 @@ import {
   gangUpAttackerV7,
   gangUpForPolicyV7,
   gangUpHelperWeightV7,
+  gangUpMaximumAttackV7,
   gangUpWithHelpersV7,
   goblinMatchForPolicyV7,
   hostileKaboomExposureV7,
@@ -466,13 +466,10 @@ import {
   SHIELD_BREAK_VALUE_V7,
   STRIPPED_SHIELD_VALUE_V7,
   CONTROLLED_CHIP_PRIORITY_V7,
-  MIND_CONTROL_SETUP_PRIORITY_V7,
   MIND_CONTROL_FIRST_CEILING_V7,
-  MIND_CONTROL_FOCUS_MINIMUM_VALUE_V7,
   MIND_CONTROL_PRIORITY_V7,
   MIND_CONTROL_SAFE_STEP_PRIORITY_V7,
   MIND_CONTROL_UNHELD_VALUE_WEIGHT_V7,
-  MIND_CONTROL_FOCUS_PRIORITY_V7,
   MIND_CONTROL_VALUE_WEIGHT_V7,
   RAY_SIEGE_PRIORITY_V7,
   MOTHERSHIP_GUARD_PRIORITY_V7,
@@ -20394,7 +20391,15 @@ function gangUpSetupValueV7(
     for (const attack of goblinAttacksOnV7(context, hostile.id)) {
       if (attack.unitId === mover.id) continue;
       const before = queryCombatPreviewV7(view, attack.unitId, hostile.id);
-      if (before === null || before.gangUp >= 2 || before.defenderDies)
+      // Bolder abilities (7r99): an attack already at its most Gang Up
+      // gains nothing from another helper.
+      const actor = context.lookup.unitsById.get(attack.unitId);
+      if (
+        before === null ||
+        actor === undefined ||
+        before.gangUp >= gangUpMaximumAttackV7(view, actor) ||
+        before.defenderDies
+      )
         continue;
       const after = queryCombatPreviewV7(
         projected(),
@@ -22114,36 +22119,10 @@ function martianAttackAdjustmentV7(
       }
     }
   }
-  if (
-    facts.viewerMartian &&
-    actor.ownerId === view.viewer.id &&
-    !preview.defenderDies &&
-    next < MIND_CONTROL_SETUP_PRIORITY_V7 &&
-    martianConvertibleAfterV7(
-      context,
-      target,
-      target.hp - preview.damageToDefender,
-    )
-  ) {
-    next = MIND_CONTROL_SETUP_PRIORITY_V7;
-    // `pulp_wars-b5f.3`: among setups, the most valuable conversion first.
-    strategic += mindControlPlayV7()
-      ? MIND_CONTROL_VALUE_WEIGHT_V7 * mindControlValueV7(view, target)
-      : targetStrategicValue(view, target.id, context.lookup);
-  } else if (
-    mindControlPlayV7() &&
-    facts.viewerMartian &&
-    actor.ownerId === view.viewer.id &&
-    !preview.defenderDies &&
-    next < MIND_CONTROL_FOCUS_PRIORITY_V7
-  ) {
-    // `pulp_wars-b5f.3`: focus fire to wound, then convert.
-    const focus = martianFocusSetupValueV7(context, actor, target, preview);
-    if (focus > 0) {
-      next = MIND_CONTROL_FOCUS_PRIORITY_V7;
-      strategic += focus;
-    }
-  }
+  // Bolder abilities (`pulp_wars-w49.42`, 7r99): a Brain takes any
+  // adjacent unit at any HP, so no hit sets a Mind Control up (the setup
+  // and focus-fire hits of `pulp_wars-b5f.3` wounded a target to 6 HP or
+  // less; a hit now only damages the unit the Brain would take).
   // `pulp_wars-b5f.3`: Mind Control keeps priority over an attack on the
   // same target (a threat or a kill alike: the conversion removes it too),
   // unless the attack clears or captures a city.
@@ -22240,36 +22219,6 @@ function martianShieldBreakExceptionV7(
 }
 
 /**
- * As Martians: whether a hostile unit left with `hp` is a Mind Control target
- * of an own Brain that can still act this turn (no cooldown, below the
- * control limit, primary action unused) and stands within its range, or can
- * step there (one tile) this turn.
- */
-function martianConvertibleAfterV7(
-  context: PolicyContextV7,
-  target: PublicUnitV7,
-  hp: number,
-): boolean {
-  if (hp <= 0 || !isHostile(context.view, target.ownerId)) return false;
-  const view = context.view;
-  const facts = martianCacheV7(context).facts;
-  const brains = view.units.filter(
-    (unit) =>
-      unit.ownerId === view.viewer.id &&
-      unit.form === "LAND" &&
-      !unit.activation.handled &&
-      !unit.activation.attacked &&
-      hasAbilityV7(view, unit, "MIND_CONTROL") &&
-      !facts.cooldownBrains.has(unit.id) &&
-      (facts.controlledOfBrain.get(unit.id)?.length ?? 0) <
-        MIND_CONTROL_LIMIT_V7 &&
-      distance(unit.at, target.at) <=
-        MIND_CONTROL_RANGE_V7 + (unit.activation.moved ? 0 : 1),
-  );
-  return mindControlExposedV7(view, target, target.at, hp, brains);
-}
-
-/**
  * The third pass (`pulp_wars-9s0.14`): whether a hostile unit, once taken
  * by Mind Control, lives through the enemy's turn where it stands (it is
  * exhausted when taken and does not move): the visible hostile units other
@@ -22360,42 +22309,6 @@ function mindControlBrainDangerV7(
       (unit) => unit.id !== taken.id,
     ),
   });
-}
-
-/**
- * `pulp_wars-b5f.3` (RULESET_7_MIND_CONTROL.md section 8, the setup): the
- * first of two own hits that leave a hostile unit convertible. This hit
- * leaves it above `MIND_CONTROL_HP_V7`, another own unit's offered attack
- * on it (its best whole hit, through the Shield this hit leaves) then
- * brings it to 1 to 6 HP, a ready own Brain can reach it this turn, and it
- * is worth at least `MIND_CONTROL_FOCUS_MINIMUM_VALUE_V7`. Returns the
- * setup's strategic value, 0 when the hit is not one.
- */
-function martianFocusSetupValueV7(
-  context: PolicyContextV7,
-  actor: PublicUnitV7,
-  target: PublicUnitV7,
-  preview: CombatPreviewV7,
-): number {
-  const view = context.view;
-  if (preview.attackerDies || !isHostile(view, target.ownerId)) return 0;
-  const hp = target.hp - preview.damageToDefender;
-  if (hp <= MIND_CONTROL_HP_V7) return 0;
-  const value = mindControlValueV7(view, target);
-  if (value < MIND_CONTROL_FOCUS_MINIMUM_VALUE_V7) return 0;
-  // A ready Brain in reach of a convertible unit on the target's tile.
-  if (!martianConvertibleAfterV7(context, target, MIND_CONTROL_HP_V7)) return 0;
-  const facts = martianCacheV7(context).facts;
-  const shieldLeft = Math.max(
-    0,
-    (facts.shieldByUnit.get(target.id) ?? 0) - preview.defenderShieldDamage,
-  );
-  const follows = martianAttacksOnTargetV7(context, target.id).some((other) => {
-    if (other.attackerId === actor.id) return false;
-    const damage = Math.max(0, wholeHitV7(other) - shieldLeft);
-    return damage > 0 && hp - damage > 0 && hp - damage <= MIND_CONTROL_HP_V7;
-  });
-  return follows ? MIND_CONTROL_VALUE_WEIGHT_V7 * value : 0;
 }
 
 /** A visible hostile land unit stands fortified (Walls or Field Defense). */
@@ -23260,8 +23173,12 @@ function martianMoveValueV7(
         MIND_CONTROL_LIMIT_V7 &&
       !actor.activation.handled &&
       !cache.mindControllers.has(actor.id);
+    // Bolder abilities (7r99): any adjacent unit, afloat too, at any HP.
+    const takeable = context.lookup.visibleHostiles.filter(
+      (unit) => unit.hp > 0,
+    );
     if (ready) {
-      const convertible = hostileLand.filter(
+      const convertible = takeable.filter(
         (unit) =>
           distance(unit.at, to) <= MIND_CONTROL_RANGE_V7 &&
           mindControlExposedV7(view, unit, unit.at, unit.hp, [
@@ -23296,7 +23213,7 @@ function martianMoveValueV7(
             actor.at,
             mindControlBestTargetV7(
               context,
-              hostileLand.filter((unit) =>
+              takeable.filter((unit) =>
                 context.commands.some(
                   (command) =>
                     command.kind === "MIND_CONTROL" &&
@@ -23309,7 +23226,7 @@ function martianMoveValueV7(
         ) {
           const best = mindControlBestTargetV7(
             context,
-            hostileLand.filter(
+            takeable.filter(
               (unit) =>
                 distance(unit.at, to) <= MIND_CONTROL_RANGE_V7 &&
                 mindControlExposedV7(view, unit, unit.at, unit.hp, [

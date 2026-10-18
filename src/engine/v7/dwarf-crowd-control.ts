@@ -246,6 +246,8 @@ export function applyWhirlV7(
       state.mindControlled,
       state.players,
       events,
+      null,
+      state.board,
     );
     units = [...release.units];
     const chain = resolveStateExplosionChainV7(

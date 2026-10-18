@@ -8,6 +8,7 @@ import {
   SUMMONER_TRICKLE_FAVOUR_V7,
   SUMMONED_MECHANICAL_ROLES_V7,
   canEnterTerrainV7,
+  isMindControlledV7,
   primaryActionBlockedAfterMoveV7,
   summonedUnitRoleMechanicsV7,
   summonedUnitRoleRuleV7,
@@ -1039,10 +1040,16 @@ export function resolveStartTurnChannelV7(
     state.cult.grips.length > 0 ||
     original.cult.strands.length > 0 ||
     original.cult.grips.length > 0;
+  // Bolder abilities (`pulp_wars-w49.42`, 7r99): a mind-controlled daemon
+  // is held by its Brain, not by strands: it is never checked, never
+  // Unbound by the check, and owes no Hunger.
   const daemons = state.units
     .filter(
       (unit) =>
-        unit.hp > 0 && unit.ownerId === playerId && daemonIsBoundV7(unit),
+        unit.hp > 0 &&
+        unit.ownerId === playerId &&
+        daemonIsBoundV7(unit) &&
+        !isMindControlledV7(state, unit.id),
     )
     .sort((left, right) => left.id - right.id);
   if (!hasChannel && daemons.length === 0)

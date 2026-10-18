@@ -679,6 +679,8 @@ export function resolveCrumbsEatingV7(
     eaten.mindControlled,
     eaten.players,
     events,
+    null,
+    eaten.board,
   );
   units = [...release.units];
   const chain = resolveStateExplosionChainV7(

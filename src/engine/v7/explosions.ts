@@ -444,6 +444,8 @@ export function resolveStateExplosionChainV7(
               mindControlled,
               lookup.players,
               events,
+              null,
+              work.board,
             );
             mindControlled = release.mindControlled;
             burrowed = release.burrowed;

@@ -332,9 +332,9 @@ function setupFor(faction: FactionIdV7): MatchSetupV7 {
 }
 
 /**
- * Wounds the units a cue needs wounded: Mind Control takes only a wounded
- * unit, and Tend, Repair and a Sugar Toss heal only one. A Re-bake's scene
- * gets the Crumbs it bakes back.
+ * Wounds the units a cue needs wounded: Tend, Repair and a Sugar Toss heal
+ * only a wounded unit (Mind Control takes any adjacent unit since bolder
+ * abilities, 7r99). A Re-bake's scene gets the Crumbs it bakes back.
  */
 function wounded(
   state: GameStateV7,
@@ -356,14 +356,11 @@ function wounded(
         },
       ],
     };
-  if (cue !== "MIND_CONTROL" && cue !== "TEND_WOUNDED" && cue !== "SUGAR_TOSS")
-    return state;
+  if (cue !== "TEND_WOUNDED" && cue !== "SUGAR_TOSS") return state;
   return {
     ...state,
     units: state.units.map((unit) => {
-      const enemy = unit.ownerId !== viewerId;
       const companion = unit.ownerId === viewerId && unit.id !== unitId;
-      if (cue === "MIND_CONTROL" && enemy) return { ...unit, hp: 5 };
       // A Sugar Toss heals only a wounded unit, like Tend and Repair.
       if ((cue === "TEND_WOUNDED" || cue === "SUGAR_TOSS") && companion)
         return { ...unit, hp: Math.max(1, unit.maxHp - 4) };

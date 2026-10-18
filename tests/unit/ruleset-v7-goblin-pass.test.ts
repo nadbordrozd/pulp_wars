@@ -139,13 +139,13 @@ describe("the Goblin pass: identity", () => {
   // pass 7r53 (tests/unit/ruleset-v7-dinosaur-pass.test.ts), and the
   // economy rejig 7r54, so 7r50 is a prior identity.
   it("was 7r50 after 7r49, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r98");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r98.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-49, -47)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r99");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r99.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-50, -48)).toEqual([
       "pulp-wars-poc-7r49",
       "pulp-wars-poc-7r50",
     ]);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-49, -47)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-50, -48)).toEqual([
       "pulpWars.save.v7r49.current",
       "pulpWars.save.v7r50.current",
     ]);
@@ -223,7 +223,9 @@ describe("the Goblin pass: identity", () => {
 });
 
 describe("the Goblin pass: a bomb gets no Gang Up", () => {
-  it("gives a Bomb Chucker no Gang Up where a Rocket Cart and a Goblin get +2", () => {
+  // Bolder abilities (`pulp_wars-w49.42`, 7r99): +2 Attack a helper, so a
+  // Rocket Cart gets +2 and a Goblin +4 (+1 and +2 before).
+  it("gives a Bomb Chucker no Gang Up where a Rocket Cart gets +2 and a Goblin +4", () => {
     const chucker = previewAt(
       ganged("MARKSMAN", at(7, 2), "FIGHTER"),
       at(7, 2),
@@ -236,21 +238,22 @@ describe("the Goblin pass: a bomb gets no Gang Up", () => {
       at(8, 2),
       at(5, 2),
     );
-    // The correction pass: +1 at most for a rocket, whatever stands there.
-    expect(cart.gangUp).toBe(1);
-    expect(cart.attack2).toBe(9);
+    // The correction pass: one helper at most for a rocket, whatever
+    // stands there (+2 since 7r99).
+    expect(cart.gangUp).toBe(2);
+    expect(cart.attack2).toBe(11);
     const goblin = previewAt(
       ganged("FIGHTER", at(6, 2), "FIGHTER"),
       at(6, 2),
       at(5, 2),
     );
-    expect(goblin.gangUp).toBe(2);
+    expect(goblin.gangUp).toBe(4);
     const buggy = previewAt(
       ganged("KNIGHT", at(6, 2), "FIGHTER"),
       at(6, 2),
       at(5, 2),
     );
-    expect(buggy.gangUp).toBe(2);
+    expect(buggy.gangUp).toBe(4);
   });
 
   it("keeps the numbers the change was made for", () => {
@@ -287,10 +290,11 @@ describe("the Goblin pass: a bomb gets no Gang Up", () => {
       );
       return [preview.damageToDefender, preview.defenderDies];
     };
-    // The correction pass (Gang Up +1 for a rocket): no longer a Swordsman
-    // in one shot (15 and a kill at +2). A Guard in the open still dies,
-    // because it is open to ranged attacks (Defense 1).
-    expect(cart("SWORDSMAN")).toEqual([13, false]);
+    // The correction pass (Gang Up +1 for a rocket) made a Swordsman live
+    // through one shot (13); bolder abilities (7r99, +2 a helper) kill it in
+    // one shot again (15). A Guard in the open dies, because it is open to
+    // ranged attacks (Defense 1).
+    expect(cart("SWORDSMAN")).toEqual([15, true]);
     expect(cart("GUARD")).toEqual([17, true]);
     expect(cart("FIGHTER")).toEqual([12, true]);
   });
@@ -323,7 +327,8 @@ describe("the Goblin pass: a bomb gets no Gang Up", () => {
     );
     if (chucker === undefined || goblin === undefined) throw new Error("units");
     expect(gangUpForPolicyV7(view, chucker, at(5, 2))).toBe(0);
-    expect(gangUpForPolicyV7(view, goblin, at(5, 2))).toBe(1);
+    // Bolder abilities (7r99): +2 for its one helper.
+    expect(gangUpForPolicyV7(view, goblin, at(5, 2))).toBe(2);
   });
 });
 
@@ -1040,7 +1045,8 @@ function policyTurn(start: GameStateV7): {
 }
 
 describe("the Goblin pass, correction: rules", () => {
-  it("caps a rocket's Gang Up at +1: the numbers by ground", () => {
+  // Bolder abilities (`pulp_wars-w49.42`, 7r99): one helper is +2 now.
+  it("caps a rocket's Gang Up at one helper (+2 since 7r99): the numbers by ground", () => {
     // Rows of `scripts/goblin-tuning-analysis-v7.ts rocket`: alone, and
     // with one Goblin beside the target, in the open.
     const shot = (target: UnitRoleIdV7, helper: boolean): [number, boolean] => {
@@ -1055,13 +1061,13 @@ describe("the Goblin pass, correction: rules", () => {
         ],
       );
       const preview = previewAt(state, at(8, 2), at(5, 2));
-      expect(preview.gangUp).toBe(helper ? 1 : 0);
+      expect(preview.gangUp).toBe(helper ? 2 : 0);
       return [preview.damageToDefender, preview.defenderDies];
     };
     expect(shot("GUARD", false)).toEqual([12, false]);
     expect(shot("GUARD", true)).toEqual([17, true]);
     expect(shot("SWORDSMAN", false)).toEqual([9, false]);
-    expect(shot("SWORDSMAN", true)).toEqual([13, false]);
+    expect(shot("SWORDSMAN", true)).toEqual([15, true]);
     expect(shot("KNIGHT", true)).toEqual([13, true]);
   });
 
@@ -1273,7 +1279,8 @@ describe("the Goblin pass, correction: the Normal AI", () => {
 
   it("steps a Goblin beside the target of its Rocket Cart", () => {
     // A Swordsman in the open three tiles from the Cart: the rocket deals 9
-    // alone and 13 with one Goblin beside the target (the most it gets).
+    // alone and 15, a kill, with one Goblin beside the target (the most it
+    // gets: +2 since bolder abilities, 7r99; 13 before).
     const { state, view } = arena(
       ["GOBLIN", "ORIGINAL"],
       [
@@ -1290,7 +1297,7 @@ describe("the Goblin pass, correction: the Normal AI", () => {
     expect(Math.max(Math.abs(end.x - 5), Math.abs(end.y - 2))).toBe(1);
     const moved = applyOkV7(state, seatIdV7(state, 0), top);
     expect(previewAt(moved.state, at(5, 5), at(5, 2)).damageToDefender).toBe(
-      13,
+      15,
     );
   });
 

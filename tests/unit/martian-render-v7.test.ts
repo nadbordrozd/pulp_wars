@@ -70,7 +70,6 @@ import { corePresentationPlanV7 } from "../../src/render/canvas/presentation-pla
 import {
   DISINTEGRATOR_PREVIEW_V7,
   LEAVES_COOLING_V7,
-  MIND_CONTROL_PROTECTED_V7,
 } from "../../src/render/martian-presentation-v7";
 import {
   MARTIAN_DUEL_V7,
@@ -471,37 +470,40 @@ describe("Martian board plan", () => {
     ).toBe(true);
   });
 
-  it("aims Mind Control: the legal target with its preview, and why the others cannot be taken", () => {
+  it("aims Mind Control: every enemy next to the Brain with its preview, none farther", () => {
+    // Bolder abilities (`pulp_wars-w49.42`, 7r99): the wounded Marksman,
+    // the full-HP Fighter, and the pierce target's Marksman beside the Brain
+    // are all targets; the wounded Fighter on the village two tiles away is
+    // out of reach and gets no label (the reach is the eight tiles around).
     const view = humanView(martianUiFixtureV7());
     const brain = unitAt(view, AT.brain);
     const plan = planFor(view, AT.brain, {
       martianPick: { kind: "MIND_CONTROL", unitId: brain.id },
     });
-    const weak = unitAt(view, AT.weakTarget);
-    const preview = previewMindControlV7(view, brain.id, weak.id);
-    if (preview === null) throw new Error("Mind Control not offered");
-    expect(plan.targets).toHaveLength(1);
-    expect(plan.targets[0]).toMatchObject({
-      family: "MIND_CONTROL",
-      at: weak.at,
-      previewLabel: `Take · ${preview.hp} HP`,
-    });
-    const reasons = plan.entries
-      .filter(
+    const adjacent = [AT.weakTarget, AT.healthyTarget, AT.pierceVictim];
+    expect(plan.targets).toHaveLength(adjacent.length);
+    for (const where of adjacent) {
+      const unit = unitAt(view, where);
+      const preview = previewMindControlV7(view, brain.id, unit.id);
+      if (preview === null) throw new Error("Mind Control not offered");
+      expect(
+        plan.targets.find(
+          (target) => target.at.x === where.x && target.at.y === where.y,
+        ),
+      ).toMatchObject({
+        family: "MIND_CONTROL",
+        previewLabel: `Take · ${preview.hp} HP`,
+      });
+    }
+    const healthy = unitAt(view, AT.healthyTarget);
+    expect(healthy.hp).toBe(healthy.maxHp);
+    expect(
+      plan.entries.filter(
         (entry) =>
           entry.kind === "ABILITY_TARGET" &&
           entry.abilityStyle === "MARTIAN_BLOCKED",
-      )
-      .map((entry) => [`${entry.at.x},${entry.at.y}`, entry.label]);
-    const healthy = unitAt(view, AT.healthyTarget);
-    expect(reasons).toContainEqual([
-      `${AT.healthyTarget.x},${AT.healthyTarget.y}`,
-      `Too healthy (${healthy.hp} HP)`,
-    ]);
-    expect(reasons).toContainEqual([
-      `${AT.protectedTarget.x},${AT.protectedTarget.y}`,
-      MIND_CONTROL_PROTECTED_V7,
-    ]);
+      ),
+    ).toEqual([]);
   });
 
   it("aims the Tractor Beam with each target's pull destination", () => {
