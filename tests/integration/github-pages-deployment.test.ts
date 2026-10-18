@@ -54,6 +54,33 @@ describe("GitHub Pages deployment", () => {
     ).resolves.not.toHaveLength(0);
   });
 
+  it("carries the Google Analytics loader in its code, not as a page tag", async () => {
+    // Bead pulp_wars-2yc.101 (docs/ANALYTICS.md): the build's code holds
+    // the tag, which it loads only on the real site once the player
+    // accepts; neither the page source nor the built page names Google.
+    const builtFiles = await readdir(outputRoot, { recursive: true });
+    const moduleSource = (
+      await Promise.all(
+        builtFiles
+          .filter((file) => file.endsWith(".js"))
+          .map((file) => readFile(path.join(outputRoot, file), "utf8")),
+      )
+    ).join("\n");
+    expect(moduleSource).toContain("G-3BEWEP1Y27");
+    expect(moduleSource).toContain("https://www.googletagmanager.com/gtag/js");
+    expect(moduleSource).toContain("analytics_storage");
+    const builtHtml = await readFile(
+      path.join(outputRoot, "index.html"),
+      "utf8",
+    );
+    const sourceHtml = await readFile(
+      path.join(PROJECT_ROOT, "index.html"),
+      "utf8",
+    );
+    for (const html of [builtHtml, sourceHtml])
+      expect(html).not.toMatch(/googletagmanager|gtag|G-3BEWEP1Y27/);
+  });
+
   it("publishes only the Vite dist artifact after validation", async () => {
     const workflow = await readFile(
       path.join(PROJECT_ROOT, ".github/workflows/deploy-pages.yml"),

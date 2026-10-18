@@ -329,6 +329,94 @@
   border-left-color: var(--pw-yellow);
 }
 
+/*
+ * The play statistics banner (pulp_wars-2yc.101): a panel strip at the
+ * foot of the front screens until it is answered. It covers nothing it
+ * does not have to and holds no focus.
+ */
+.v7-front-shell > .v7-consent-banner {
+  position: fixed;
+  z-index: 4;
+  bottom: 0.75rem;
+  left: 50%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: max-content;
+  max-width: min(44rem, calc(100vw - 2rem));
+  margin: 0;
+  padding: 0.6rem 0.8rem 0.6rem 1rem;
+  border: var(--pw-line-w) solid var(--pw-line);
+  border-radius: var(--pw-radius);
+  background: var(--pw-surface);
+  box-shadow: var(--pw-shadow);
+  color: var(--pw-text);
+  font-size: var(--pw-fs-sm);
+  translate: -50% 0;
+}
+
+.v7-consent-text {
+  flex: 1 1 18rem;
+  margin: 0;
+  font-weight: var(--pw-fw-semi);
+  line-height: 1.35;
+}
+
+.v7-consent-actions {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 0.5rem;
+}
+
+.v7-consent-actions > button {
+  min-width: 6.5em;
+  min-height: 44px;
+}
+
+/* A wide screen: in the corner, clear of the menu down the left. */
+@media (min-width: 900px) and (orientation: landscape) {
+  .v7-front-shell > .v7-consent-banner {
+    right: 1rem;
+    bottom: 1rem;
+    left: auto;
+    max-width: min(40rem, calc(100vw - 30rem));
+    translate: none;
+  }
+}
+
+@media (max-width: 520px) {
+  .v7-front-shell > .v7-consent-banner {
+    bottom: 0.5rem;
+    width: calc(100vw - 2rem);
+  }
+
+  .v7-consent-actions {
+    flex: 1 1 100%;
+  }
+
+  .v7-consent-actions > button {
+    flex: 1 1 0;
+  }
+}
+
+.v7-analytics-settings {
+  display: grid;
+  gap: 0.35rem;
+  justify-items: start;
+  margin-top: 0.6rem;
+  padding-top: 1rem;
+  border-top: var(--pw-line-w-sm) solid var(--pw-line);
+}
+
+.v7-analytics-note {
+  margin: 0;
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-xs);
+}
+
 /* ---------- Loading screen (asset preload) ---------- */
 
 /*

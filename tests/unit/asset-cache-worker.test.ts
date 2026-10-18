@@ -403,6 +403,16 @@ describe("service worker asset cache", () => {
       ask("x", { url: "https://elsewhere.test/pulp_wars/index.html" }),
     ).toBeNull();
     expect(ask("x", { url: "https://example.test/other/a.png" })).toBeNull();
+    // Play statistics (pulp_wars-2yc.101): Google's tag and its hits are
+    // the browser's, never cached or answered by the worker.
+    for (const url of [
+      "https://www.googletagmanager.com/gtag/js?id=G-3BEWEP1Y27",
+      "https://region1.google-analytics.com/g/collect?v=2&tid=G-3BEWEP1Y27",
+      "https://www.google-analytics.com/g/collect?v=2",
+    ]) {
+      expect(ask("x", { url })).toBeNull();
+      expect(ask("x", { url, method: "POST" })).toBeNull();
+    }
     expect(ask("x", { url: `${SCOPE}assets/chibi/knight.png?v=2` })).toBeNull();
     expect(ask("x", { url: `${SCOPE}%E0%A4%A.png` })).toBeNull();
     expect(

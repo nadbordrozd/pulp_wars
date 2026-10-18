@@ -36,7 +36,15 @@ const app =
     ? // The look's art is preloaded behind the loading screen first.
       await (
         await import("./app/v7-preload-boot")
-      ).bootstrapPreloadedRuleset7App(document)
+      ).bootstrapPreloadedRuleset7App(document, {
+        // Play statistics (bead pulp_wars-2yc.101, docs/ANALYTICS.md):
+        // Consent Mode defaults to denied before the tag is configured;
+        // Google's script loads only on the deployed site, and only once
+        // the player accepts.
+        analytics: (await import("./app/analytics-v7")).browserGameAnalyticsV7(
+          import.meta.env.PROD,
+        ),
+      })
     : renderUnsupportedRuleset(route.value);
 export { app };
 void assetCache.pageLoaded();

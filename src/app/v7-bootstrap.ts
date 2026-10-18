@@ -70,6 +70,8 @@ export function bootstrapRuleset7App(
         }),
     settingsStorage,
   });
+  // Play statistics (bead pulp_wars-2yc.101): the end of each match.
+  const detachAnalytics = options.analytics?.attach(controller);
   const flush = (): void => {
     controller.flushPersistence();
   };
@@ -86,6 +88,7 @@ export function bootstrapRuleset7App(
       documentRoot.removeEventListener("visibilitychange", onVisibilityChange);
       browser?.removeEventListener("pagehide", flush);
       flush();
+      detachAnalytics?.();
       view.destroy();
       controller.destroy();
     },

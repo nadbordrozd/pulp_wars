@@ -39,6 +39,12 @@ import type {
   Ruleset7TribeStarsV7,
 } from "../../app/v7-controller";
 import {
+  ANALYTICS_CONSENT_TEXT_V7,
+  NO_ANALYTICS_V7,
+  type GameAnalyticsV7,
+  type MatchSourceV7,
+} from "../../app/analytics-v7";
+import {
   CAMPAIGN_FORMAT_LABELS_V7,
   CHAPTER_ONE_V7,
 } from "../../campaign/chapter-1";
@@ -1479,6 +1485,12 @@ export interface MountRuleset7AppOptions {
    * destroy.
    */
   readonly audio?: GameAudioV1;
+  /**
+   * Play statistics (bead pulp_wars-2yc.101, docs/ANALYTICS.md): the
+   * consent banner, the Settings toggle and the match events. Absent (the
+   * tests, the development server): none of them.
+   */
+  readonly analytics?: GameAnalyticsV7;
 }
 
 /** A fresh unsigned 32-bit map seed from the browser. */
@@ -2078,6 +2090,8 @@ export class Ruleset7DomAppView {
   /** Sound effects (bead pulp_wars-2yc.10, docs/ui/SOUND.md). */
   readonly #audio: GameAudioV1;
   readonly #ownsAudio: boolean;
+  /** Play statistics (bead pulp_wars-2yc.101); off unless the host passes one. */
+  readonly #analytics: GameAnalyticsV7;
   #soundTestOpen = false;
   /**
    * The faction the player last chose as their own on this visit to New
@@ -2116,6 +2130,7 @@ export class Ruleset7DomAppView {
     this.#ensureLookAssets = options.ensureLookAssets;
     this.#ensureFactionAssets = options.ensureFactionAssets;
     this.#ownsAudio = options.audio === undefined;
+    this.#analytics = options.analytics ?? NO_ANALYTICS_V7;
     this.#audio =
       options.audio ??
       createBrowserGameAudioV1(documentRoot, this.#settingsStorage);
@@ -2869,6 +2884,14 @@ export class Ruleset7DomAppView {
         ? this.#recovery()
         : this.#front(this.#snapshot.phase === "RESUMABLE"),
     );
+    // Play statistics (bead pulp_wars-2yc.101): asked once, on the front
+    // screens only, never over a match.
+    if (
+      this.#analytics.available &&
+      this.#analytics.consent() === "UNSET" &&
+      this.#snapshot.phase !== "RECOVERY"
+    )
+      shell.append(this.#consentBanner());
     // A front screen is rebuilt whole (a settled portrait re-renders it
     // too): keep keyboard focus on the same control.
     const active = this.#document.activeElement;
@@ -3593,7 +3616,7 @@ export class Ruleset7DomAppView {
         this.#render();
         return;
       }
-      void this.#launch(setup, replace);
+      void this.#launch(setup, replace, "campaign");
     };
     const back = button(this.#document, "Back", "campaign-back");
     back.onclick = () => {
@@ -3708,8 +3731,74 @@ export class Ruleset7DomAppView {
     const body = el(this.#document, "div", "v7-front-settings");
     body.id = "v7-front-settings";
     body.append(this.#displaySettings(), this.#tribeStarsSettings());
+    if (this.#analytics.available) body.append(this.#analyticsSettings());
     panel.append(body);
     return main;
+  }
+
+  /**
+   * The play statistics banner (bead pulp_wars-2yc.101): a strip at the
+   * foot of a front screen until Accept or Decline. It blocks nothing and
+   * takes no focus.
+   */
+  #consentBanner(): HTMLElement {
+    const banner = el(this.#document, "aside", "v7-consent-banner");
+    banner.dataset.v7Region = "consent-banner";
+    banner.setAttribute("aria-label", "Play statistics");
+    const actions = el(this.#document, "div", "v7-consent-actions");
+    const accept = button(
+      this.#document,
+      "Accept",
+      "analytics-accept",
+      "primary-action",
+    );
+    const decline = button(this.#document, "Decline", "analytics-decline");
+    const choose = (granted: boolean): void => {
+      this.#analytics.setConsent(granted);
+      // The banner goes; focus moves on to the menu's first button.
+      if (this.#frontPage === "MENU") this.#frontFocus = MENU_FIRST_V7;
+      this.#notice = granted ? "Play statistics on." : "Play statistics off.";
+      this.#render();
+    };
+    accept.onclick = () => choose(true);
+    decline.onclick = () => choose(false);
+    actions.append(accept, decline);
+    banner.append(
+      text(this.#document, "p", ANALYTICS_CONSENT_TEXT_V7, "v7-consent-text"),
+      actions,
+    );
+    return banner;
+  }
+
+  /** Settings: the play statistics choice, changeable at any time. */
+  #analyticsSettings(): HTMLElement {
+    const group = el(this.#document, "div", "v7-analytics-settings");
+    group.dataset.v7Region = "analytics-settings";
+    const on = this.#analytics.consent() === "GRANTED";
+    const toggle = button(
+      this.#document,
+      on
+        ? "Share anonymous play statistics: on"
+        : "Share anonymous play statistics: off",
+      "analytics-consent",
+      "v7-toggle",
+    );
+    toggle.setAttribute("aria-pressed", String(on));
+    toggle.onclick = () => {
+      this.#analytics.setConsent(!on);
+      this.#frontFocus = '[data-action="analytics-consent"]';
+      this.#render();
+    };
+    group.append(
+      toggle,
+      text(
+        this.#document,
+        "p",
+        "Google Analytics counts plays and factions. No ads, no names.",
+        "v7-analytics-note",
+      ),
+    );
+    return group;
   }
 
   /**
@@ -3952,7 +4041,14 @@ export class Ruleset7DomAppView {
         this.#render();
         return;
       }
-      void this.#launch(setup, replace, () =>
+      // Play statistics (2yc.101): a game set up under Advanced settings.
+      const source =
+        this.#setupAdvancedOpen ||
+        this.#setupPins.size ||
+        this.#setupPins.headStart
+          ? "advanced"
+          : "quick_start";
+      void this.#launch(setup, replace, source, () =>
         this.#quickGameStarted(setup.mapType),
       );
     });
@@ -5586,6 +5682,8 @@ export class Ruleset7DomAppView {
       );
       next.onclick = () => {
         this.#setTutorial(acknowledgeTutorialV7(this.#tutorial));
+        // Play statistics (2yc.101): Next on the last step finishes it.
+        if (this.#tutorial.step === null) this.#analytics.tutorialCompleted();
         this.#render();
         this.#queueBoardFocus();
       };
@@ -11559,6 +11657,7 @@ export class Ruleset7DomAppView {
   async #launch(
     setup: MatchSetupV7,
     replace: boolean,
+    source: MatchSourceV7,
     onStarted?: () => void,
   ): Promise<void> {
     this.#cancelPresentations();
@@ -11566,6 +11665,8 @@ export class Ruleset7DomAppView {
     this.#achievementNotices = [];
     this.#achievementDeeds.clear();
     this.#error = "";
+    // The match a launch replaces, for the play statistics (2yc.101).
+    const before = this.#controller.snapshot();
     const result = await this.#controller.launch(setup, {
       replaceStoredMatch: replace,
     });
@@ -11575,6 +11676,7 @@ export class Ruleset7DomAppView {
       this.#render();
       return;
     }
+    this.#analytics.matchStarted(setup, source, before);
     onStarted?.();
     this.#matchInstance += 1;
     this.#frontPage = "MENU";
@@ -11605,7 +11707,7 @@ export class Ruleset7DomAppView {
     this.#tutorialFarewell = false;
     this.#tutorial = startTutorialV7(before);
     this.#persistTutorial();
-    await this.#launch(setup, replace);
+    await this.#launch(setup, replace, "tutorial");
     if (this.#destroyed) return;
     if (!isTutorialMatchV7(this.#controllerSnapshot.view)) {
       this.#tutorial = before;
@@ -11745,7 +11847,10 @@ export class Ruleset7DomAppView {
       this.#setTutorial(
         advanceTutorialV7(this.#tutorial, tutorialView, command),
       );
-      if (this.#tutorial.step === null) this.#tutorialFarewell = true;
+      if (this.#tutorial.step === null) {
+        this.#tutorialFarewell = true;
+        this.#analytics.tutorialCompleted();
+      }
       // The technology screen closes on the tutorial's research, so the
       // next step is seen on the board.
       if (command.kind === "RESEARCH") {
@@ -11859,12 +11964,24 @@ export class Ruleset7DomAppView {
       this.#tutorial = startTutorialV7(tutorialBefore);
       this.#persistTutorial();
     }
+    const before = this.#controller.snapshot();
     const result = await this.#controller.restart();
     if (this.#destroyed) return;
     if (!result.ok) {
       this.#error = result.diagnostic;
       if (tutorialRestart) this.#setTutorial(tutorialBefore);
     } else {
+      const setup = before.view?.setup;
+      if (setup !== undefined)
+        this.#analytics.matchStarted(
+          setup,
+          tutorialRestart
+            ? "tutorial"
+            : setup.mapType === "MISSION"
+              ? "campaign"
+              : "restart",
+          before,
+        );
       this.#matchInstance += 1;
       this.#selection = null;
       this.#screen = "MATCH";
