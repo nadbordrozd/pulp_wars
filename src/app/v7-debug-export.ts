@@ -13,6 +13,23 @@ export const RULESET7_DEBUG_BUNDLE_FORMAT =
   "pulp-wars-ruleset7-debug-bundle" as const;
 export const RULESET7_DEBUG_BUNDLE_VERSION = 1 as const;
 
+/**
+ * A presentation failure the game survived (bead pulp_wars-2yc.96), as
+ * `src/render/presentation-guard-v7.ts` remembers it: no game state, only
+ * the error, where it happened, the playback step and the last few command
+ * and event kinds.
+ */
+export interface Ruleset7PresentationFailureV7 {
+  readonly at: string;
+  readonly where: string;
+  readonly step: string | null;
+  readonly name: string;
+  readonly message: string;
+  readonly stack: string | null;
+  readonly recent: readonly string[];
+  readonly count: number;
+}
+
 export type Ruleset7DiagnosticPhase =
   "EMPTY" | "RESUMABLE" | "ACTIVE" | "COMPLETE" | "RECOVERY" | "ERROR";
 
@@ -39,6 +56,8 @@ export interface Ruleset7DebugPayloadV1 {
     readonly diagnostic: string | null;
     readonly transitioning: boolean;
   };
+  /** The last few presentation failures survived this session. */
+  readonly presentationFailures: readonly Ruleset7PresentationFailureV7[];
   readonly context: {
     readonly commandIndex: number;
     readonly activeSeatIndex: number;
@@ -64,6 +83,7 @@ export interface Ruleset7DebugBundleInput {
   readonly transitioning: boolean;
   readonly exportedAt: string;
   readonly acknowledgeHiddenInformation: true;
+  readonly presentationFailures?: readonly Ruleset7PresentationFailureV7[];
 }
 
 /** The sole browser-facing authority path for raw v7 reproduction data. */
@@ -99,6 +119,10 @@ export function createRuleset7DebugBundle(
       diagnostic: input.diagnostic,
       transitioning: input.transitioning,
     },
+    presentationFailures: (input.presentationFailures ?? []).map((failure) => ({
+      ...failure,
+      recent: [...failure.recent],
+    })),
     context: {
       commandIndex: input.state.commandIndex,
       activeSeatIndex: input.state.activeSeatIndex,

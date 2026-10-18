@@ -978,8 +978,25 @@ import { CoinFlightLayerV7 } from "./coin-flight-layer-v7";
 import { feedbackPlanV7 } from "../feedback-plan-v7";
 import {
   guardPresentationV7,
+  notePresentationActivityV7,
+  notePresentationStepV7,
+  presentationFailureCountV7,
+  recentPresentationFailuresV7,
   reportPresentationFailureV7,
+  subscribePresentationFailuresV7,
 } from "../presentation-guard-v7";
+import {
+  COPIED_LABEL_V7,
+  COPY_DETAILS_LABEL_V7,
+  COPY_ERROR_REPORT_LABEL_V7,
+  COPY_FAILED_LABEL_V7,
+  ERROR_REPORT_COPIED_V7,
+  FAILURE_NOTICE_TEXT_V7,
+  copyTextV7,
+  failureReportBuildForThisAppV7,
+  failureReportEnvironmentV7,
+  formatFailureReportV7,
+} from "../failure-report-v7";
 
 export {
   AT_SEA_MOVE_TEXT_V7,
@@ -1914,6 +1931,14 @@ export class Ruleset7DomAppView {
     readonly kind: "info" | "error";
   } | null = null;
   #toastSequence = 0;
+  /**
+   * Bead pulp_wars-2yc.96: the failure notice, shown at the first failure
+   * the presentation guard survives this session (one element, kept
+   * across renders), until the player dismisses it.
+   */
+  #failureNotice: HTMLElement | null = null;
+  #failureNoticeShown = false;
+  #unsubscribeFailures: (() => void) | null = null;
   #matchInstance = 0;
   #presentationActive = false;
   #presentationQueue: QueuedBoundaryV7[] = [];
@@ -2179,6 +2204,9 @@ export class Ruleset7DomAppView {
       capture: true,
       passive: true,
     });
+    this.#unsubscribeFailures = subscribePresentationFailuresV7(() =>
+      this.#onPresentationFailure(),
+    );
     this.#unsubscribeAcceptedBoundary = controller.subscribeAcceptedBoundary(
       (boundary) => {
         try {
@@ -2256,6 +2284,9 @@ export class Ruleset7DomAppView {
     this.#unsubscribe?.();
     this.#unsubscribeAcceptedBoundary?.();
     this.#unsubscribeAcceptedBoundary = null;
+    this.#unsubscribeFailures?.();
+    this.#unsubscribeFailures = null;
+    this.#failureNotice = null;
     this.#controller.setAiPacingGate?.(null);
     this.#document.removeEventListener(
       "visibilitychange",
@@ -5013,6 +5044,20 @@ export class Ruleset7DomAppView {
         item.disabled = blocked;
         menu.append(item);
       }
+      // Bead pulp_wars-2yc.96: only after a failure was survived.
+      if (recentPresentationFailuresV7().length > 0) {
+        const report = button(
+          this.#document,
+          COPY_ERROR_REPORT_LABEL_V7,
+          "copy-error-report",
+          "v7-menu-item",
+        );
+        report.onclick = () => {
+          this.#compactMenuOpen = false;
+          void this.#copyErrorReportFromMenu();
+        };
+        menu.append(report);
+      }
       if (this.#snapshot.phase === "ACTIVE") {
         const mainMenu = button(
           this.#document,
@@ -5127,6 +5172,7 @@ export class Ruleset7DomAppView {
       toast.dataset.toastId = String(toastMessage.id);
       nextChildren.push(toast);
     }
+    if (this.#failureNotice !== null) nextChildren.push(this.#failureNotice);
     // Every render rebuilds the dock. On narrow screens it can exceed its
     // height cap and scroll vertically, so remember where the outgoing dock
     // was scrolled and put the new one back there while the same selection
@@ -5308,6 +5354,7 @@ export class Ruleset7DomAppView {
     );
     if (popup !== undefined) nextChildren.push(this.#scrim(popup));
     reconcileMatchChildren(main, board, nextChildren);
+    if (this.#failureNotice !== null) this.#placeFailureNotice(main);
     if (statusPopover !== null && dock !== null)
       this.#placeStatusPopover(main, dock, statusPopover);
     if (chooser !== null) {
@@ -11599,6 +11646,7 @@ export class Ruleset7DomAppView {
 
   async #dispatchUnguarded(command: CommandV7): Promise<boolean> {
     if (this.#localBusy()) return false;
+    notePresentationActivityV7(`command ${command.kind}`);
     // The tutorial (bead pulp_wars-0yxy): only the step's command goes to
     // the engine; anything else is refused here.
     const tutorialView = this.#controllerSnapshot.view;
@@ -11805,7 +11853,9 @@ export class Ruleset7DomAppView {
     this.#render();
   }
   #exportSafeLog(): void {
-    const result = this.#controller.exportSafeLog();
+    const result = this.#controller.exportSafeLog({
+      presentationFailures: recentPresentationFailuresV7(),
+    });
     if (result === null) return;
     this.#downloadSafeLog(result.source, result.filename);
     this.#notice = "Game log downloaded.";
@@ -11814,6 +11864,7 @@ export class Ruleset7DomAppView {
   #exportDebug(): void {
     const result = this.#controller.exportDebugBundle({
       acknowledgeHiddenInformation: true,
+      presentationFailures: recentPresentationFailuresV7(),
     });
     if (!result.ok) return;
     this.#downloadDebugBundle(result.source, result.filename);
@@ -11919,6 +11970,9 @@ export class Ruleset7DomAppView {
 
   #queueBoundary(boundary: Ruleset7AcceptedBoundary): void {
     if (this.#destroyed) return;
+    notePresentationActivityV7(
+      `${boundary.actor} events ${eventKindsSummaryV7(boundary)}`,
+    );
     if (this.#achievementNotices.length === 0)
       this.#achievementReturnAction =
         this.#document.activeElement instanceof HTMLElement
@@ -12006,6 +12060,7 @@ export class Ruleset7DomAppView {
         // locks and the AI go on. Before, the rejected tail held the
         // interface busy for good.
         const disarm = this.#armPlaybackWatchdog();
+        notePresentationStepV7(null);
         try {
           await this.#boardHost.presentBoundary?.(
             next.boundary.beforeView,
@@ -12812,6 +12867,150 @@ export class Ruleset7DomAppView {
       )
         this.#boardHost.focus();
     });
+  }
+
+  /**
+   * Bead pulp_wars-2yc.96: the first failure the guard survives this
+   * session opens the failure notice. It is added to the match in place,
+   * without a render (the render may be what failed); never throws.
+   */
+  #onPresentationFailure(): void {
+    if (this.#destroyed || this.#failureNoticeShown) return;
+    this.#failureNoticeShown = true;
+    try {
+      const notice = this.#buildFailureNotice();
+      this.#failureNotice = notice;
+      const main = this.#matchRoot;
+      if (main !== null && main.isConnected && !main.contains(notice)) {
+        main.append(notice);
+        this.#placeFailureNotice(main);
+      }
+    } catch {
+      // The notice is a courtesy; play goes on without it.
+    }
+  }
+
+  /**
+   * The notice sits just under the HUD, whose height depends on the width
+   * (a phone wraps End Turn to a second row) and on the coach's line, so
+   * it never covers End Turn; the dock is at the bottom. Never throws.
+   */
+  #placeFailureNotice(main: HTMLElement): void {
+    try {
+      const notice = this.#failureNotice;
+      const hud = main.querySelector<HTMLElement>(
+        ':scope > [data-v7-region="hud"]',
+      );
+      if (notice === null || hud === null) return;
+      // The coach's line hangs under the HUD on a wide screen (positioned
+      // on its own), so the lowest of the HUD and its rows counts.
+      let lowest = hud.getBoundingClientRect().bottom;
+      for (const row of hud.children)
+        lowest = Math.max(lowest, row.getBoundingClientRect().bottom);
+      const bottom = lowest - main.getBoundingClientRect().top;
+      if (Number.isFinite(bottom) && bottom > 0)
+        notice.style.top = `${Math.round(bottom + 8)}px`;
+    } catch {
+      // The stylesheet's place stands.
+    }
+  }
+
+  #buildFailureNotice(): HTMLElement {
+    const notice = el(this.#document, "section", "v7-failure-notice");
+    notice.dataset.v7Region = "failure-notice";
+    notice.setAttribute("role", "status");
+    notice.setAttribute("aria-live", "polite");
+    const message = text(
+      this.#document,
+      "p",
+      FAILURE_NOTICE_TEXT_V7,
+      "v7-failure-notice-text",
+    );
+    const copy = button(
+      this.#document,
+      COPY_DETAILS_LABEL_V7,
+      "copy-failure-details",
+      "v7-failure-notice-copy",
+    );
+    copy.onclick = () => void this.#copyFailureDetails(copy);
+    const dismiss = iconButton(
+      this.#document,
+      "close",
+      "Dismiss",
+      "dismiss-failure-notice",
+    );
+    dismiss.onclick = () => {
+      this.#failureNotice = null;
+      notice.remove();
+    };
+    const actions = el(this.#document, "div", "v7-failure-notice-actions");
+    actions.append(copy, dismiss);
+    notice.append(message, actions);
+    return notice;
+  }
+
+  /** The plain-text error report of this session's failures. */
+  #failureReportText(): string {
+    return formatFailureReportV7(
+      recentPresentationFailuresV7(),
+      failureReportEnvironmentV7(
+        this.#document,
+        this.#snapshot.view?.rulesetId ?? null,
+        failureReportBuildForThisAppV7(),
+      ),
+      presentationFailureCountV7(),
+    );
+  }
+
+  async #copyFailureDetails(copy: HTMLButtonElement): Promise<void> {
+    try {
+      const report = this.#failureReportText();
+      const copied = await copyTextV7(this.#document, report);
+      if (this.#destroyed) return;
+      copy.textContent = copied ? COPIED_LABEL_V7 : COPY_FAILED_LABEL_V7;
+      if (!copied) this.#showFailureReportText(report);
+    } catch {
+      // Never a new failure from the notice itself.
+    }
+  }
+
+  /**
+   * When neither the clipboard nor the copy command works, the report
+   * shows in the notice, selected, for the player to copy by hand.
+   */
+  #showFailureReportText(report: string): void {
+    const notice = this.#failureNotice;
+    if (notice === null) return;
+    let area = notice.querySelector<HTMLTextAreaElement>(
+      ".v7-failure-notice-report",
+    );
+    if (area === null) {
+      area = this.#document.createElement("textarea");
+      area.className = "v7-failure-notice-report";
+      area.readOnly = true;
+      area.rows = 6;
+      area.setAttribute("aria-label", "Error report");
+      notice.append(area);
+    }
+    area.value = report;
+    area.focus();
+    area.select();
+  }
+
+  async #copyErrorReportFromMenu(): Promise<void> {
+    try {
+      const report = this.#failureReportText();
+      const copied = await copyTextV7(this.#document, report);
+      if (this.#destroyed) return;
+      if (copied) this.#showToast(ERROR_REPORT_COPIED_V7);
+      else {
+        this.#failureNotice ??= this.#buildFailureNotice();
+      }
+      this.#render();
+      if (!copied) this.#showFailureReportText(report);
+    } catch {
+      // Never a new failure from the report itself.
+    }
   }
 
   #showToast(message: string): void {
@@ -16484,6 +16683,20 @@ function dockScrollPosition(
   if (dock === null || key === undefined) return null;
   const saved = Number(dock.dataset.scrollTop);
   return { key, top: Number.isFinite(saved) ? saved : dock.scrollTop };
+}
+
+/**
+ * A boundary's event kinds for the error report's breadcrumbs (bead
+ * pulp_wars-2yc.96): distinct kinds in order, at most six.
+ */
+function eventKindsSummaryV7(boundary: Ruleset7AcceptedBoundary): string {
+  const kinds: string[] = [];
+  for (const event of boundary.playerEvents.events)
+    if (!kinds.includes(event.kind)) kinds.push(event.kind);
+  if (kinds.length === 0) return "none";
+  return kinds.length > 6
+    ? `${kinds.slice(0, 6).join(",")},+${kinds.length - 6}`
+    : kinds.join(",");
 }
 
 function reconcileMatchChildren(

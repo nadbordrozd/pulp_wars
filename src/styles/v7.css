@@ -2375,6 +2375,55 @@ html:has(.v7-match-shell) body {
   background: var(--pw-accent);
 }
 
+/*
+ * Bead pulp_wars-2yc.96: the failure notice. Under the HUD (the view sets
+ * its top to the HUD's bottom), clear of End Turn and of the dock; the
+ * match menu and the dialogs open over it.
+ */
+.v7-failure-notice {
+  position: absolute;
+  z-index: 9;
+  top: calc(max(0.6rem, env(safe-area-inset-top)) + 3.6rem);
+  left: max(0.75rem, env(safe-area-inset-left));
+  display: grid;
+  gap: 0.45rem;
+  width: min(22rem, calc(100% - 1.5rem));
+  padding: 0.6rem 0.7rem;
+  border: var(--pw-line-w) solid var(--pw-line);
+  border-radius: var(--pw-radius-sm);
+  background: var(--pw-surface-raised);
+  box-shadow: var(--pw-shadow);
+  color: var(--pw-text);
+  animation: v7-toast-in 180ms ease-out;
+}
+
+.v7-failure-notice-text {
+  margin: 0;
+  font-weight: var(--pw-fw-bold);
+}
+
+.v7-failure-notice-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.v7-failure-notice-report {
+  width: 100%;
+  min-height: 6rem;
+  font: inherit;
+  font-size: var(--pw-fs-sm);
+  color: var(--pw-text);
+  background: var(--pw-surface);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .v7-failure-notice {
+    animation: none;
+  }
+}
+
 .v7-fast-forward {
   position: absolute;
   z-index: 11;

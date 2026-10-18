@@ -326,7 +326,10 @@ import { cityAccessibleNameV7 } from "../city-names-presentation-v7";
 import { tileSiteDockV7 } from "../tile-site-presentation-v7";
 import { tileActionsAtV7, type TileActionPlanV7 } from "./tile-actions-v7";
 import { drawTileActionBadgesV7 } from "./tile-action-badges-v7";
-import { reportPresentationFailureV7 } from "../presentation-guard-v7";
+import {
+  notePresentationStepV7,
+  reportPresentationFailureV7,
+} from "../presentation-guard-v7";
 
 export interface BoardHostModelV7 {
   readonly matchInstanceId: string | number;
@@ -1566,6 +1569,8 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     const announce = (step: CorePresentationStepV7): void => {
       if (announced.has(step)) return;
       announced.add(step);
+      // Bead pulp_wars-2yc.96: a failure from here on names this step.
+      notePresentationStepV7(step.kind);
       try {
         this.#stepListener?.({ step, before, after, envelope, durationScale });
       } catch {

@@ -1689,6 +1689,23 @@ offers Try again and Main menu. The browser bug hunt
 through the real interface to look for such freezes; it plays matches, so
 it runs only when the user asks for simulations.
 
+A phone has no console, so a survived failure is also shown to the player
+(`pulp_wars-2yc.96`). The guard keeps the last five failures in memory
+(error name, message, a trimmed stack, where it failed, the playback step
+the board announced last, and the last eight commands and event kinds;
+a failure repeated every frame is one entry with a count) and tells its
+listeners of each one; the controller passes a throwing subscriber to the
+same report (`onSubscriberFailure`). The first failure of a session opens
+a small dismissible notice under the HUD ("Something went wrong showing
+that move. The game recovered.") that never covers End Turn or the dock
+and never blocks play; its "Copy details" copies the plain-text report of
+`failure-report-v7.ts` (the failures, ruleset, build, screen size and
+pixel ratio, user agent and time; no save, no map) with the Clipboard API,
+then the copy command, then shows the text selected for copying by hand.
+After a failure the match menu also offers "Copy error report", and the
+exported game log and debug bundle carry the failures
+(`presentationFailures`).
+
 Canvas 2D responsibilities:
 
 - camera pan/zoom, device-pixel-ratio backing size, grid projection, stable draw

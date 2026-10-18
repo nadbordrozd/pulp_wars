@@ -8,6 +8,7 @@ import {
   clearRetiredRulesetSavesV7,
   type ObsoleteSaveCleanupResultV7,
 } from "../persistence/index";
+import { reportPresentationFailureV7 } from "../render/presentation-guard-v7";
 import { clearStoredArtSetV7 } from "./art-set-v7";
 import {
   Ruleset7BrowserController,
@@ -41,6 +42,8 @@ export function bootstrapRuleset7App(
   // (pulp_wars-lky5).
   clearRetiredRulesetSavesV7(storage);
   const controller = new Ruleset7BrowserController({
+    // Bead pulp_wars-2yc.96: what a subscriber throws reaches the notice.
+    onSubscriberFailure: reportPresentationFailureV7,
     ...options,
     storage,
     initialSaveWarning:

@@ -52,6 +52,7 @@ import {
   ruleset7DebugBundleFilename,
   ruleset7SafeLogFilename,
   type Ruleset7DebugBundleV1,
+  type Ruleset7PresentationFailureV7,
 } from "./v7-debug-export";
 
 export type Ruleset7BrowserPhase =
@@ -235,6 +236,12 @@ export interface Ruleset7BrowserControllerOptions {
   readonly policyReadClock?: () => number;
   readonly diagnosticNow?: () => string;
   readonly initialSaveWarning?: string | null;
+  /**
+   * Bead pulp_wars-2yc.96: told what a snapshot or boundary subscriber
+   * threw (the controller still swallows it); the browser passes the
+   * presentation guard's report, so the player sees the failure notice.
+   */
+  readonly onSubscriberFailure?: (where: string, error: unknown) => void;
 }
 
 type SnapshotSubscriberV7 = (snapshot: Ruleset7BrowserSnapshot) => void;
@@ -281,6 +288,8 @@ export class Ruleset7BrowserController {
   readonly #policySliceMilliseconds: number;
   readonly #readClock: () => number;
   readonly #diagnosticNow: () => string;
+  readonly #onSubscriberFailure:
+    ((where: string, error: unknown) => void) | null;
   readonly #campaign: CampaignProgressStoreV7;
   #campaignLastWin: Ruleset7CampaignProgressV7["lastWin"] = null;
   #campaignDiagnostic: string | null = null;
@@ -328,6 +337,7 @@ export class Ruleset7BrowserController {
       options.aiProgressScheduler ?? defaultAiProgressSchedulerV7;
     this.#diagnosticNow =
       options.diagnosticNow ?? (() => new Date().toISOString());
+    this.#onSubscriberFailure = options.onSubscriberFailure ?? null;
     this.#persistence =
       options.storage === undefined || options.storage === null
         ? null
@@ -705,7 +715,15 @@ export class Ruleset7BrowserController {
     if (gate === null) this.#aiPacingResume?.();
   }
 
-  exportSafeLog(): Ruleset7SafeLogExportResult | null {
+  /**
+   * The player-safe log; `presentationFailures` (bead pulp_wars-2yc.96)
+   * are the failures the interface survived this session.
+   */
+  exportSafeLog(
+    input: {
+      readonly presentationFailures?: readonly Ruleset7PresentationFailureV7[];
+    } = {},
+  ): Ruleset7SafeLogExportResult | null {
     const view = this.#humanView();
     if (view === null) return null;
     const exportedAt = this.#diagnosticNow();
@@ -724,6 +742,7 @@ export class Ruleset7BrowserController {
             transitioning: this.#transitioning,
             saveWarning: this.#saveWarning,
             controllerDiagnostic: this.#diagnostic,
+            presentationFailures: input.presentationFailures ?? [],
           },
         },
         null,
@@ -734,6 +753,7 @@ export class Ruleset7BrowserController {
 
   exportDebugBundle(input: {
     readonly acknowledgeHiddenInformation: true;
+    readonly presentationFailures?: readonly Ruleset7PresentationFailureV7[];
   }): Ruleset7DebugExportResult {
     if (this.#match === null || this.#replay === null)
       return { ok: false, reason: "NO_ACTIVE_MATCH" };
@@ -747,6 +767,9 @@ export class Ruleset7BrowserController {
       transitioning: this.#transitioning,
       exportedAt,
       acknowledgeHiddenInformation: input.acknowledgeHiddenInformation,
+      ...(input.presentationFailures === undefined
+        ? {}
+        : { presentationFailures: input.presentationFailures }),
     });
     return freezeBrowserValueV7({
       ok: true,
@@ -901,8 +924,9 @@ export class Ruleset7BrowserController {
     for (const subscriber of this.#acceptedBoundarySubscribers) {
       try {
         subscriber(boundary);
-      } catch {
+      } catch (error) {
         // Presentation observers cannot reject or perturb an accepted boundary.
+        this.#reportSubscriberFailure("a boundary subscriber", error);
       }
     }
     return result;
@@ -1229,13 +1253,22 @@ export class Ruleset7BrowserController {
     return result;
   }
 
+  #reportSubscriberFailure(where: string, error: unknown): void {
+    try {
+      this.#onSubscriberFailure?.(where, error);
+    } catch {
+      // Reporting never disturbs the controller.
+    }
+  }
+
   #emit(): void {
     if (this.#subscribers.size === 0) return;
     const snapshot = this.snapshot();
     for (const subscriber of this.#subscribers) {
       try {
         subscriber(snapshot);
-      } catch {
+      } catch (error) {
+        this.#reportSubscriberFailure("a game update subscriber", error);
         // Bead pulp_wars-2yc.93: a subscriber that throws (a render) never
         // rejects an accepted command, never keeps the snapshot from the
         // subscribers after it, and never leaves the controller busy.
