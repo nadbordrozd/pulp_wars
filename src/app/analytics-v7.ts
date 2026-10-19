@@ -65,7 +65,8 @@ export interface AnalyticsEnvironmentV7 {
 
 const LOCAL_HOSTS = new Set(["localhost", "127.0.0.1", "[::1]", "::1", ""]);
 
-function localHostV7(hostname: string): boolean {
+/** A local or LAN host: the development server, a preview, a review script. */
+export function localHostV7(hostname: string): boolean {
   const host = hostname.toLowerCase();
   return (
     LOCAL_HOSTS.has(host) ||

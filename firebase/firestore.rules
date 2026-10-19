@@ -1,0 +1,124 @@
+// Firestore security rules for the vibe-crawler Firebase project, shared by
+// Vibe Crawler (collection `leaderboard`) and Pulp Wars (collection
+// `pulpWarsScores`, bead pulp_wars-2yc.104, docs/LEADERBOARD.md).
+//
+// Paste the WHOLE file into Firebase Console > Firestore Database > Rules and
+// press Publish: the console keeps one rules file per database, so it must
+// hold both games' rules. The Vibe Crawler block below is copied unchanged
+// from the crawl repository's firestore-security-rules.txt (only trailing
+// spaces were dropped).
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Leaderboard collection rules
+    match /leaderboard/{scoreId} {
+      // Anyone can read leaderboard entries (for displaying scores)
+      allow read: if true;
+
+      // Allow writes only if the data is valid
+      allow create: if isValidLeaderboardEntry(request.resource.data);
+
+      // Don't allow updates or deletes (scores should be permanent)
+      allow update: if false;
+      allow delete: if false;
+    }
+
+    // Helper function to validate leaderboard entries
+    function isValidLeaderboardEntry(data) {
+      return data.keys().hasAll(['name', 'score', 'level', 'turns', 'steps', 'coinsCollected', 'totalEnemiesDefeated', 'timestamp']) &&
+             data.keys().hasOnly(['name', 'score', 'level', 'turns', 'steps', 'coinsCollected', 'totalEnemiesDefeated', 'timestamp']) &&
+
+             // Name validation
+             data.name is string &&
+             data.name.size() > 0 &&
+             data.name.size() <= 20 &&
+
+             // Score validation - reasonable limits (allow higher scores for game winners)
+             data.score is number &&
+             data.score >= 0 &&
+             data.score <= 5000000 &&
+
+             // Level validation - reasonable max level
+             data.level is number &&
+             data.level >= 1 &&
+             data.level <= 50 &&
+
+             // Turns validation - must be positive
+             data.turns is number &&
+             data.turns >= 1 &&
+             data.turns <= 100000 &&
+
+             // Steps validation - must be positive
+             data.steps is number &&
+             data.steps >= 0 &&
+             data.steps <= 200000 &&
+
+             // Coins validation - reasonable limit
+             data.coinsCollected is number &&
+             data.coinsCollected >= 0 &&
+             data.coinsCollected <= 10000 &&
+
+             // Enemies validation - reasonable limit
+             data.totalEnemiesDefeated is number &&
+             data.totalEnemiesDefeated >= 0 &&
+             data.totalEnemiesDefeated <= 5000 &&
+
+             // Timestamp must be server timestamp
+             data.timestamp == request.time;
+    }
+
+    // ---- Pulp Wars (bead pulp_wars-2yc.104) ----
+    // The public leaderboard: one score per document. Anyone may read; a
+    // score may only be created, with exactly these seven fields, each
+    // checked; nobody may change or delete one from a browser (the owner
+    // deletes bad entries in the console).
+    match /pulpWarsScores/{scoreId} {
+      allow read: if true;
+      allow create: if isValidPulpWarsScore(request.resource.data);
+      allow update: if false;
+      allow delete: if false;
+    }
+
+    function isValidPulpWarsScore(data) {
+      return data.keys().hasAll(['name', 'faction', 'score', 'mode', 'rounds', 'version', 'timestamp']) &&
+             data.keys().hasOnly(['name', 'faction', 'score', 'mode', 'rounds', 'version', 'timestamp']) &&
+
+             // A name of 1 to 16 letters, digits, spaces and . , ! ? ' - _
+             // that starts and ends with a non-space.
+             data.name is string &&
+             data.name.size() >= 1 &&
+             data.name.size() <= 16 &&
+             data.name.matches("^[A-Za-z0-9.,!?'_-]([A-Za-z0-9 .,!?'_-]{0,14}[A-Za-z0-9.,!?'_-])?$") &&
+
+             // One of the nine factions.
+             data.faction in ['ORIGINAL', 'UNDEAD', 'GOBLIN', 'DINOSAUR', 'MARTIAN', 'ICE_FOLK', 'DWARF', 'CANDY', 'CULT'] &&
+
+             // A whole score from 0 to 100000.
+             data.score is int &&
+             data.score >= 0 &&
+             data.score <= 100000 &&
+
+             // The two boards.
+             data.mode in ['DOMINATION', 'PERFECTION'] &&
+
+             // Rounds played; Perfection ends at round 30.
+             data.rounds is int &&
+             data.rounds >= 1 &&
+             data.rounds <= 1000 &&
+             (data.mode == 'DOMINATION' || data.rounds <= 30) &&
+
+             // The ruleset id, such as 'pulp-wars-poc-7r100'.
+             data.version is string &&
+             data.version.matches('^pulp-wars-[a-z0-9-]{1,24}$') &&
+
+             // The server's time of the write (a REQUEST_TIME transform).
+             data.timestamp == request.time;
+    }
+
+    // Deny access to all other collections
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

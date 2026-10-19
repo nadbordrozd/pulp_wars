@@ -45,6 +45,21 @@ import {
   type MatchSourceV7,
 } from "../../app/analytics-v7";
 import {
+  LEADERBOARD_NAME_MAX_V7,
+  LEADERBOARD_TOP_V7,
+  NO_LEADERBOARD_V7,
+  leaderboardClaimV7,
+  leaderboardFailureTextV7,
+  leaderboardModeLabelV7,
+  leaderboardNameProblemTextV7,
+  leaderboardRankV7,
+  type GameLeaderboardV7,
+  type LeaderboardClaimV7,
+  type LeaderboardFailureV7,
+  type LeaderboardLoadV7,
+  type LeaderboardModeV7,
+} from "../../app/leaderboard-v7";
+import {
   CAMPAIGN_FORMAT_LABELS_V7,
   CHAPTER_ONE_V7,
 } from "../../campaign/chapter-1";
@@ -1508,6 +1523,13 @@ export interface MountRuleset7AppOptions {
    * tests, the development server): none of them.
    */
   readonly analytics?: GameAnalyticsV7;
+  /**
+   * The public leaderboard (bead pulp_wars-2yc.104, docs/LEADERBOARD.md):
+   * the menu's Leaderboard screen and the end screen's submit. Absent (the
+   * tests): neither. The page passes the real store on the deployed site
+   * and a board in memory everywhere else.
+   */
+  readonly leaderboard?: GameLeaderboardV7;
 }
 
 /** A fresh unsigned 32-bit map seed from the browser. */
@@ -1570,7 +1592,19 @@ const NO_CAMPAIGN_PROGRESS_V7: Ruleset7CampaignProgressV7 = Object.freeze({
  * The front screens (bead pulp_wars-2yc.18): the main menu over the title
  * scene, and the screens its buttons open.
  */
-type FrontPageV7 = "MENU" | "SETUP" | "CAMPAIGN" | "SETTINGS" | "ABOUT";
+type FrontPageV7 =
+  "MENU" | "SETUP" | "CAMPAIGN" | "SETTINGS" | "ABOUT" | "LEADERBOARD";
+
+/** The end screen's leaderboard form of one match (bead pulp_wars-2yc.104). */
+interface BoardSubmitStateV7 {
+  readonly claim: LeaderboardClaimV7;
+  status: "IDLE" | "SENDING" | "SENT" | "FAILED";
+  /** The line under the form: a name problem or a failure. */
+  message: string;
+  /** The rank on the board once sent (null when it could not be read). */
+  rank: number | null;
+  panel: HTMLElement | null;
+}
 
 /**
  * The unit dialog (bead pulp_wars-2yc.39): status chips that an ability
@@ -2122,6 +2156,17 @@ export class Ruleset7DomAppView {
   readonly #ownsAudio: boolean;
   /** Play statistics (bead pulp_wars-2yc.101); off unless the host passes one. */
   readonly #analytics: GameAnalyticsV7;
+  /** The public leaderboard (bead pulp_wars-2yc.104); none unless passed. */
+  readonly #publicBoard: GameLeaderboardV7;
+  /** The Leaderboard screen's open tab. */
+  #boardTab: LeaderboardModeV7 = "DOMINATION";
+  /** Each tab's last answer; "LOADING" while a request is out. */
+  readonly #boardLoads = new Map<
+    LeaderboardModeV7,
+    LeaderboardLoadV7 | "LOADING"
+  >();
+  /** The end screen's submit form, for the match on screen. */
+  #boardSubmit: BoardSubmitStateV7 | null = null;
   #soundTestOpen = false;
   /**
    * The faction the player last chose as their own on this visit to New
@@ -2161,6 +2206,7 @@ export class Ruleset7DomAppView {
     this.#ensureFactionAssets = options.ensureFactionAssets;
     this.#ownsAudio = options.audio === undefined;
     this.#analytics = options.analytics ?? NO_ANALYTICS_V7;
+    this.#publicBoard = options.leaderboard ?? NO_LEADERBOARD_V7;
     this.#audio =
       options.audio ??
       createBrowserGameAudioV1(documentRoot, this.#settingsStorage);
@@ -2982,6 +3028,8 @@ export class Ruleset7DomAppView {
         return this.#frontSettings();
       case "ABOUT":
         return this.#frontAbout();
+      case "LEADERBOARD":
+        return this.#frontLeaderboard();
       default:
         return this.#mainMenu(resumable);
     }
@@ -3054,6 +3102,17 @@ export class Ruleset7DomAppView {
     };
     const campaign = this.#menuButton("Campaign", "campaign", "flag");
     campaign.onclick = () => this.#openFrontPage("CAMPAIGN");
+    // The public leaderboard (bead pulp_wars-2yc.104), after the campaign.
+    const boardItems: HTMLButtonElement[] = [];
+    if (this.#publicBoard.available) {
+      const board = this.#menuButton(
+        "Leaderboard",
+        "public-leaderboard",
+        "trophy",
+      );
+      board.onclick = () => this.#openFrontPage("LEADERBOARD");
+      boardItems.push(board);
+    }
     const gallery = this.#menuButton("Gallery", "gallery", "sight");
     gallery.onclick = () => this.#openGallery();
     const settings = this.#menuButton("Settings", "front-settings", "gear");
@@ -3062,8 +3121,25 @@ export class Ruleset7DomAppView {
     const about = this.#menuButton("About", "about", "units");
     about.onclick = () => this.#openFrontPage("ABOUT");
     if (newcomer)
-      nav.append(tutorial, play, campaign, gallery, settings, about);
-    else nav.append(play, tutorial, campaign, gallery, settings, about);
+      nav.append(
+        tutorial,
+        play,
+        campaign,
+        ...boardItems,
+        gallery,
+        settings,
+        about,
+      );
+    else
+      nav.append(
+        play,
+        tutorial,
+        campaign,
+        ...boardItems,
+        gallery,
+        settings,
+        about,
+      );
     main.append(nav);
     if (!resumable) {
       // The setup form is built with the menu and shown by New game, so a
@@ -3112,6 +3188,9 @@ export class Ruleset7DomAppView {
   #openFrontPage(page: FrontPageV7): void {
     const from = this.#frontPage;
     this.#frontPage = page;
+    if (page === "LEADERBOARD")
+      for (const [mode, load] of [...this.#boardLoads])
+        if (load !== "LOADING" && !load.ok) this.#boardLoads.delete(mode);
     this.#setupThemeFaction = null;
     this.#briefingMissionId = null;
     this.#confirmCampaignReset = false;
@@ -3129,7 +3208,9 @@ export class Ruleset7DomAppView {
               ? '[data-action="front-settings"]'
               : from === "ABOUT"
                 ? '[data-action="about"]'
-                : MENU_FIRST_V7;
+                : from === "LEADERBOARD"
+                  ? '[data-action="public-leaderboard"]'
+                  : MENU_FIRST_V7;
     this.#render();
   }
 
@@ -3139,7 +3220,8 @@ export class Ruleset7DomAppView {
    * the screen's title.
    */
   #frontPanelScreen(
-    page: "setup" | "campaign" | "settings" | "about" | "recovery",
+    page:
+      "setup" | "campaign" | "settings" | "about" | "leaderboard" | "recovery",
     titleText: string,
   ): { main: HTMLElement; panel: HTMLElement } {
     const main = el(this.#document, "main", "v7-front-screen v7-front-page");
@@ -3887,6 +3969,188 @@ export class Ruleset7DomAppView {
     body.append(author, credits, more);
     panel.append(body);
     return main;
+  }
+
+  /**
+   * The public leaderboard (bead pulp_wars-2yc.104, docs/LEADERBOARD.md):
+   * two tabs, Domination and Perfection, each the top scores as rank,
+   * faction emblem, name and score. A line says when it is loading, when
+   * the player is offline or the request failed (with Try again), and when
+   * a board is empty. Rows sent from this browser are marked.
+   */
+  #frontLeaderboard(): HTMLElement {
+    const { main, panel } = this.#frontPanelScreen(
+      "leaderboard",
+      "Leaderboard",
+    );
+    main.classList.add("v7-public-board-screen");
+    const mode = this.#boardTab;
+    const tabs = el(this.#document, "div", "v7-public-board-tabs");
+    tabs.setAttribute("role", "tablist");
+    tabs.setAttribute("aria-label", "Leaderboards");
+    const modes: readonly LeaderboardModeV7[] = ["DOMINATION", "PERFECTION"];
+    for (const candidate of modes) {
+      const action = `public-leaderboard-${candidate.toLowerCase()}`;
+      const tab = button(
+        this.#document,
+        leaderboardModeLabelV7(candidate),
+        action,
+        "v7-public-board-tab",
+      );
+      tab.id = `v7-${action}`;
+      tab.setAttribute("role", "tab");
+      tab.setAttribute("aria-selected", String(candidate === mode));
+      tab.setAttribute("aria-controls", "v7-public-board");
+      tab.tabIndex = candidate === mode ? 0 : -1;
+      tab.onclick = () => this.#openBoardTab(candidate);
+      tab.onkeydown = (event) => {
+        if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+        event.preventDefault();
+        this.#openBoardTab(
+          candidate === "DOMINATION" ? "PERFECTION" : "DOMINATION",
+        );
+      };
+      tabs.append(tab);
+    }
+    const body = el(this.#document, "div", "v7-public-board");
+    body.id = "v7-public-board";
+    body.dataset.v7Region = "public-leaderboard";
+    body.dataset.mode = mode.toLowerCase();
+    body.setAttribute("role", "tabpanel");
+    body.setAttribute(
+      "aria-labelledby",
+      `v7-public-leaderboard-${mode.toLowerCase()}`,
+    );
+    body.append(
+      text(
+        this.#document,
+        "p",
+        mode === "DOMINATION"
+          ? "Wins by conquest: every rival out."
+          : "Wins on score: first after round 30.",
+        "v7-public-board-lede",
+      ),
+    );
+    const load = this.#boardLoad(mode);
+    const status = (line: string): HTMLElement => {
+      const node = text(this.#document, "p", line, "v7-public-board-status");
+      node.setAttribute("role", "status");
+      return node;
+    };
+    if (load === "LOADING") {
+      body.dataset.state = "loading";
+      body.setAttribute("aria-busy", "true");
+      body.append(status("Loading the leaderboard…"));
+    } else if (!load.ok) {
+      body.dataset.state = load.reason === "OFFLINE" ? "offline" : "error";
+      const retry = button(
+        this.#document,
+        "Try again",
+        "public-leaderboard-retry",
+      );
+      retry.onclick = () => {
+        this.#frontFocus = '[data-action="public-leaderboard-retry"]';
+        this.#boardLoad(mode, true);
+        this.#render();
+      };
+      body.append(status(leaderboardFailureTextV7(load.reason)), retry);
+    } else if (load.entries.length === 0) {
+      body.dataset.state = "empty";
+      body.append(status("No scores yet. Win a game to be the first."));
+    } else {
+      body.dataset.state = "ready";
+      const list = el(this.#document, "ol", "v7-public-board-rows");
+      list.setAttribute(
+        "aria-label",
+        `${leaderboardModeLabelV7(mode)}: top ${LEADERBOARD_TOP_V7}`,
+      );
+      for (const entry of load.entries) {
+        const rank = leaderboardRankV7(load.entries, entry.score);
+        const row = el(this.#document, "li", "v7-public-board-row");
+        row.dataset.rank = String(rank);
+        row.dataset.faction = entry.faction;
+        row.style.setProperty("--player", factionColourV7(entry.faction));
+        if (rank <= 3) row.dataset.podium = String(rank);
+        if (this.#publicBoard.own(entry.id)) row.dataset.own = "true";
+        const place = el(this.#document, "span", "v7-public-board-rank");
+        place.textContent = String(rank);
+        const emblem = this.#factionEmblem(entry.faction, "small");
+        const faction = FACTION_LABELS[entry.faction] ?? title(entry.faction);
+        const who = el(this.#document, "span", "v7-public-board-name");
+        // The name is the player's own text: never parsed, never markup.
+        who.textContent = entry.name;
+        who.title = `${entry.name} · ${faction}`;
+        const score = el(this.#document, "span", "v7-public-board-score");
+        score.textContent = String(entry.score);
+        row.append(
+          place,
+          emblem,
+          text(this.#document, "span", `${faction}: `, "v7-sr-only"),
+          who,
+          text(this.#document, "span", ", score ", "v7-sr-only"),
+          score,
+        );
+        list.append(row);
+      }
+      body.append(list);
+    }
+    panel.append(tabs, body);
+    if (!this.#publicBoard.live)
+      panel.append(
+        text(
+          this.#document,
+          "p",
+          "Practice board: scores stay in this browser tab.",
+          "v7-public-board-note",
+        ),
+      );
+    return main;
+  }
+
+  #openBoardTab(mode: LeaderboardModeV7): void {
+    this.#boardTab = mode;
+    this.#frontFocus = `[data-action="public-leaderboard-${mode.toLowerCase()}"]`;
+    this.#render();
+  }
+
+  /**
+   * A board's state, asking the store when it has no fresh answer: the
+   * cache's rows, "LOADING" while the request is out, or the failure until
+   * Try again (`fresh`). The screen is drawn again when the answer comes.
+   */
+  #boardLoad(
+    mode: LeaderboardModeV7,
+    fresh = false,
+  ): LeaderboardLoadV7 | "LOADING" {
+    const known = this.#boardLoads.get(mode);
+    if (known === "LOADING") return known;
+    if (!fresh) {
+      const cached = this.#publicBoard.cached(mode);
+      if (cached !== null) return cached;
+      if (known !== undefined && !known.ok) return known;
+    }
+    this.#boardLoads.set(mode, "LOADING");
+    void this.#publicBoard
+      .load(mode, { fresh })
+      .catch((): LeaderboardLoadV7 => ({ ok: false, reason: "ERROR" }))
+      .then((result) => {
+        this.#boardLoads.set(mode, result);
+        if (
+          !this.#destroyed &&
+          this.#frontPage === "LEADERBOARD" &&
+          this.#snapshot.phase !== "ACTIVE" &&
+          this.#snapshot.phase !== "COMPLETE"
+        ) {
+          // Keep the focus where it was (a tab, Try again).
+          const active = this.#document.activeElement;
+          const action =
+            active instanceof HTMLElement ? active.dataset.action : undefined;
+          if (action !== undefined)
+            this.#frontFocus = `[data-action="${action}"]`;
+          this.#render();
+        }
+      });
+    return "LOADING";
   }
 
   /**
@@ -11276,6 +11540,9 @@ export class Ruleset7DomAppView {
       if (record !== null) panel.append(record);
       result.append(panel);
     }
+    // The public leaderboard (bead pulp_wars-2yc.104): a Regular win.
+    const board = this.#boardSubmitPanel(view);
+    if (board !== null) result.append(board);
     result.append(this.#resultSeats(view, score));
     const actions = el(this.#document, "div", "button-row");
     const restart = button(
@@ -11609,6 +11876,187 @@ export class Ruleset7DomAppView {
     return unsaved;
   }
 
+  /**
+   * The end screen's "Submit to the leaderboard" (bead pulp_wars-2yc.104,
+   * docs/LEADERBOARD.md): offered for a Regular game the player won, once
+   * per match. A name field (the last name sent from this browser) and
+   * Submit; then the rank on that board and a way to see it. Null when the
+   * match may not be sent or there is no board.
+   *
+   * The panel is one element per match, kept across redraws, so a name
+   * being typed survives them; the focus inside it is given back.
+   */
+  #boardSubmitPanel(view: PlayerViewV7): HTMLElement | null {
+    if (!this.#publicBoard.available) return null;
+    const claim = leaderboardClaimV7(view);
+    if (claim === null) return null;
+    let state = this.#boardSubmit;
+    if (state === null || state.claim.matchKey !== claim.matchKey) {
+      const sent = this.#publicBoard.sent(claim.matchKey);
+      state = {
+        claim,
+        status: sent === null ? "IDLE" : "SENT",
+        message: "",
+        rank: sent?.rank ?? null,
+        panel: null,
+      };
+      this.#boardSubmit = state;
+    }
+    const panel = state.panel ?? this.#buildBoardSubmitPanel(state);
+    state.panel = panel;
+    for (const marked of panel.querySelectorAll("[data-v7-initial-focus]"))
+      marked.removeAttribute("data-v7-initial-focus");
+    // A redraw moves the panel into the new dialog, which drops the focus:
+    // the dialog's first focus goes back to where it was.
+    const active = this.#document.activeElement;
+    if (active instanceof HTMLElement && panel.contains(active))
+      active.dataset.v7InitialFocus = "true";
+    return panel;
+  }
+
+  #buildBoardSubmitPanel(state: BoardSubmitStateV7): HTMLElement {
+    const panel = el(this.#document, "section", "v7-board-submit");
+    panel.dataset.v7Region = "board-submit";
+    panel.dataset.mode = state.claim.mode.toLowerCase();
+    panel.setAttribute("aria-labelledby", "v7-board-submit-title");
+    this.#fillBoardSubmitPanel(state, panel);
+    return panel;
+  }
+
+  /** Draws the panel's contents for its state, in place. */
+  #fillBoardSubmitPanel(state: BoardSubmitStateV7, panel: HTMLElement): void {
+    const { claim } = state;
+    const board = leaderboardModeLabelV7(claim.mode);
+    panel.dataset.state = state.status.toLowerCase();
+    const heading = text(
+      this.#document,
+      "h3",
+      state.status === "SENT"
+        ? "On the leaderboard"
+        : "Submit to the leaderboard",
+      "v7-board-submit-title",
+    );
+    heading.id = "v7-board-submit-title";
+    heading.prepend(uiIconV7(this.#document, "trophy"));
+    if (state.status === "SENT") {
+      const line = text(
+        this.#document,
+        "p",
+        state.rank === null
+          ? `Score ${claim.score} sent to the ${board} leaderboard.`
+          : `You're #${state.rank} on the ${board} leaderboard with ${claim.score}.`,
+        "v7-board-submit-result",
+      );
+      line.setAttribute("role", "status");
+      const see = button(
+        this.#document,
+        "See the leaderboard",
+        "board-submit-open",
+      );
+      see.onclick = () => {
+        this.#boardTab = claim.mode;
+        this.#boardLoads.delete(claim.mode);
+        void this.#leaveFinishedMatch("LEADERBOARD");
+      };
+      panel.replaceChildren(heading, line, see);
+      return;
+    }
+    const form = this.#document.createElement("form");
+    form.className = "v7-board-submit-form";
+    form.noValidate = true;
+    const label = this.#document.createElement("label");
+    label.className = "v7-board-submit-label";
+    label.htmlFor = "v7-board-name";
+    label.textContent = "Your name";
+    const field = this.#document.createElement("input");
+    field.id = "v7-board-name";
+    field.type = "text";
+    field.name = "name";
+    field.maxLength = LEADERBOARD_NAME_MAX_V7;
+    field.setAttribute("autocomplete", "nickname");
+    field.spellcheck = false;
+    field.setAttribute("autocapitalize", "words");
+    field.setAttribute("enterkeyhint", "send");
+    field.value =
+      panel.querySelector<HTMLInputElement>("#v7-board-name")?.value ??
+      this.#publicBoard.lastName();
+    field.disabled = state.status === "SENDING";
+    const send = button(
+      this.#document,
+      state.status === "SENDING" ? "Sending…" : "Submit",
+      "board-submit",
+      "primary-action",
+    );
+    send.type = "submit";
+    send.disabled = state.status === "SENDING";
+    const message = text(
+      this.#document,
+      "p",
+      state.message,
+      "v7-board-submit-message",
+    );
+    message.id = "v7-board-submit-message";
+    message.setAttribute("aria-live", "polite");
+    if (state.message !== "") {
+      field.setAttribute("aria-describedby", message.id);
+      if (state.status === "IDLE") field.setAttribute("aria-invalid", "true");
+    }
+    form.append(label, field, send);
+    form.onsubmit = (event) => {
+      event.preventDefault();
+      void this.#sendBoardScore(state, field.value);
+    };
+    panel.replaceChildren(
+      heading,
+      text(
+        this.#document,
+        "p",
+        `Score ${claim.score} · ${board}`,
+        "v7-board-submit-lede",
+      ),
+      form,
+      message,
+    );
+  }
+
+  async #sendBoardScore(
+    state: BoardSubmitStateV7,
+    typed: string,
+  ): Promise<void> {
+    if (state.status === "SENDING" || state.status === "SENT") return;
+    const panel = state.panel;
+    state.status = "SENDING";
+    state.message = "";
+    if (panel !== null) this.#fillBoardSubmitPanel(state, panel);
+    const result = await this.#publicBoard.submit(state.claim, typed);
+    if (this.#destroyed) return;
+    if (result.ok) {
+      state.status = "SENT";
+      state.rank = result.rank;
+    } else {
+      state.status = result.reason === "NAME" ? "IDLE" : "FAILED";
+      state.message =
+        result.reason === "NAME"
+          ? leaderboardNameProblemTextV7(result.problem)
+          : result.reason === "BUSY"
+            ? ""
+            : `${leaderboardFailureTextV7(result.reason as LeaderboardFailureV7)} Try again later.`;
+    }
+    if (panel === null || !panel.isConnected) return;
+    // The name keeps what was typed after a refusal.
+    const typedField = panel.querySelector<HTMLInputElement>("#v7-board-name");
+    const kept = typedField?.value ?? typed;
+    this.#fillBoardSubmitPanel(state, panel);
+    const next = panel.querySelector<HTMLInputElement>("#v7-board-name");
+    if (next !== null) {
+      next.value = kept;
+      next.focus();
+    } else
+      panel
+        .querySelector<HTMLElement>('[data-action="board-submit-open"]')
+        ?.focus();
+  }
+
   /** "Main menu" on every end dialog (bead pulp_wars-2yc.18). */
   #resultsMenuButton(): HTMLButtonElement {
     const menu = button(this.#document, "Main menu", "results-menu");
@@ -11621,10 +12069,11 @@ export class Ruleset7DomAppView {
    * left for the campaign, the match is cleared from the autosave slot:
    * there is nothing in it to continue.
    */
-  async #leaveFinishedMatch(): Promise<void> {
+  async #leaveFinishedMatch(page: FrontPageV7 = "MENU"): Promise<void> {
     this.#cancelPresentations();
     this.#scoreBreakdownFor = null;
-    this.#frontPage = "MENU";
+    this.#boardSubmit = null;
+    this.#frontPage = page;
     this.#confirmCampaignReset = false;
     this.#briefingMissionId = null;
     this.#briefingFaction = null;
@@ -11641,7 +12090,10 @@ export class Ruleset7DomAppView {
       this.#render();
       return;
     }
-    this.#frontFocus = MENU_FIRST_V7;
+    this.#frontFocus =
+      page === "LEADERBOARD"
+        ? `[data-action="public-leaderboard-${this.#boardTab.toLowerCase()}"]`
+        : MENU_FIRST_V7;
     this.#render();
   }
 

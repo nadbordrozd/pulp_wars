@@ -674,6 +674,18 @@
   height: 1.05em;
 }
 
+/* "Leaderboard" (pulp_wars-2yc.104), the longest word of the stack, is set
+   a little tighter so it stays on one line on a phone. */
+.v7-menu-button[data-action="public-leaderboard"] .v7-menu-button-label {
+  letter-spacing: 0.015em;
+}
+
+@media (max-width: 359px) {
+  .v7-menu-button[data-action="public-leaderboard"] .v7-menu-button-label {
+    font-size: 0.93em;
+  }
+}
+
 .v7-menu-button.is-primary {
   border-color: var(--pw-line);
   background: var(--pw-accent);
@@ -935,6 +947,145 @@
 .v7-about-body .v7-about-more:hover,
 .v7-about-body .v7-about-more:focus-visible {
   background: var(--pw-yellow);
+}
+
+/* The public leaderboard (pulp_wars-2yc.104): two tabs over one list of
+   rank, emblem, name and score. */
+.v7-public-board-screen .v7-front-panel {
+  width: min(32rem, 100%);
+}
+
+.v7-public-board-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border: var(--pw-line-w-sm) solid var(--pw-line);
+  border-radius: var(--pw-radius-sm);
+  box-shadow: var(--pw-shadow-sm);
+  overflow: hidden;
+}
+
+.v7-public-board-tabs .v7-public-board-tab {
+  min-height: 44px;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  background: var(--pw-surface-raised);
+  font-weight: var(--pw-fw-heavy);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.v7-public-board-tabs .v7-public-board-tab + .v7-public-board-tab {
+  border-left: var(--pw-line-w-sm) solid var(--pw-line);
+}
+
+.v7-public-board-tabs .v7-public-board-tab:hover {
+  background: var(--pw-yellow);
+}
+
+.v7-public-board-tabs .v7-public-board-tab[aria-selected="true"] {
+  background: var(--pw-ink);
+  color: var(--pw-text-inverse);
+}
+
+.v7-public-board {
+  display: grid;
+  gap: 0.6rem;
+  justify-items: stretch;
+}
+
+.v7-public-board-lede,
+.v7-public-board-status,
+.v7-public-board-note {
+  margin: 0;
+}
+
+.v7-public-board-lede,
+.v7-public-board-note {
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-sm);
+}
+
+.v7-public-board-status {
+  padding: 1rem 0;
+  font-weight: var(--pw-fw-semi);
+  text-align: center;
+}
+
+.v7-public-board > [data-action="public-leaderboard-retry"] {
+  justify-self: center;
+  min-height: 44px;
+  padding: 0 1.2rem;
+}
+
+.v7-public-board-rows {
+  display: grid;
+  gap: 0.3rem;
+  max-height: min(60dvh, 34rem);
+  margin: 0;
+  padding: 0 0.15rem 0.15rem 0;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.v7-public-board-row {
+  /* Set per row to the faction colour (faction-colours-v7.ts). */
+  --player: var(--pw-line-soft);
+
+  display: grid;
+  grid-template-columns: 2.2rem max-content minmax(0, 1fr) max-content;
+  gap: 0.6rem;
+  align-items: center;
+  min-height: 2.6rem;
+  padding: 0.15rem 0.7rem 0.15rem 0.3rem;
+  border: 1px solid var(--pw-line-soft);
+  border-left: 4px solid var(--player);
+  border-radius: var(--pw-radius-sm);
+  background: var(--pw-tint-1);
+}
+
+.v7-public-board-row[data-own="true"] {
+  background: var(--pw-tint-3);
+}
+
+.v7-public-board-rank {
+  font-weight: var(--pw-fw-heavy);
+  text-align: right;
+}
+
+.v7-public-board-row[data-podium] .v7-public-board-rank {
+  font-family: var(--pw-display);
+  font-size: var(--pw-fs-lg);
+  color: var(--pw-accent);
+}
+
+.v7-public-board-name {
+  overflow: hidden;
+  font-weight: var(--pw-fw-bold);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.v7-public-board-score {
+  font-size: var(--pw-fs-lg);
+  font-weight: var(--pw-fw-heavy);
+}
+
+@media (max-width: 520px) {
+  .v7-public-board-row {
+    grid-template-columns: 1.6rem max-content minmax(0, 1fr) max-content;
+    gap: 0.45rem;
+    padding-right: 0.5rem;
+  }
+
+  .v7-public-board-row .v7-faction-emblem[data-size="small"] {
+    width: 1.9rem;
+    height: 1.9rem;
+  }
+
+  .v7-public-board-rows {
+    max-height: calc(100dvh - 17rem);
+  }
 }
 
 .v7-setup-heading {
@@ -8000,7 +8151,8 @@ body:has(> #app [data-v7-gallery]) {
 
 /* The end of match: the list, the verdict, and the grade span the dialog. */
 .v7-results .v7-result-seats,
-.v7-results .v7-grade {
+.v7-results .v7-grade,
+.v7-results .v7-board-submit {
   justify-self: stretch;
 }
 
@@ -8095,6 +8247,89 @@ body:has(> #app [data-v7-gallery]) {
   margin: 0;
   font-size: var(--pw-fs-lg);
   font-weight: var(--pw-fw-heavy);
+}
+
+/* The end screen's "Submit to the leaderboard" (pulp_wars-2yc.104). */
+.v7-board-submit {
+  display: grid;
+  gap: 0.45rem;
+  padding: 0.6rem 0.75rem 0.7rem;
+  border: var(--pw-line-w-sm) solid var(--pw-line);
+  border-radius: var(--pw-radius-sm);
+  background: var(--pw-surface-raised);
+}
+
+.v7-board-submit-title {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+  margin: 0;
+  font-family: var(--pw-ui);
+  font-size: var(--pw-fs-sm);
+  font-weight: var(--pw-fw-heavy);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.v7-board-submit-title .v7-ui-icon {
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+.v7-board-submit-lede,
+.v7-board-submit-result,
+.v7-board-submit-message {
+  margin: 0;
+}
+
+.v7-board-submit-lede {
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-sm);
+}
+
+.v7-board-submit-result {
+  font-weight: var(--pw-fw-bold);
+}
+
+.v7-board-submit-message:empty {
+  display: none;
+}
+
+.v7-board-submit[data-state="idle"] .v7-board-submit-message,
+.v7-board-submit[data-state="failed"] .v7-board-submit-message {
+  color: var(--pw-loss);
+  font-size: var(--pw-fs-sm);
+  font-weight: var(--pw-fw-semi);
+}
+
+.v7-board-submit-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) max-content;
+  gap: 0.25rem 0.5rem;
+  align-items: end;
+}
+
+.v7-board-submit-label {
+  grid-column: 1 / -1;
+  font-size: var(--pw-fs-sm);
+  font-weight: var(--pw-fw-semi);
+}
+
+.v7-board-submit-form input {
+  min-width: 0;
+  min-height: 44px;
+  padding: 0 0.6rem;
+  font-size: var(--pw-fs-base);
+}
+
+.v7-board-submit-form button,
+.v7-board-submit > [data-action="board-submit-open"] {
+  min-height: 44px;
+  padding: 0 1rem;
+}
+
+.v7-board-submit > [data-action="board-submit-open"] {
+  justify-self: start;
 }
 
 .v7-grade-conditions {

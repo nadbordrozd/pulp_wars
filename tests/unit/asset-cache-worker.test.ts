@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { describe, expect, it } from "vitest";
 import {
   ASSET_CACHE_NAME_V1,
+  NEVER_CACHED_HOSTS_V1,
   createAssetCacheWorkerV1,
   type AssetCacheEnvironmentV1,
   type AssetCacheStorageV1,
@@ -426,6 +427,34 @@ describe("service worker asset cache", () => {
     expect(
       network.calls.filter((call) => !call.startsWith("asset-manifest")),
     ).toEqual([]);
+  });
+
+  it("never answers, fetches or keeps the leaderboard's Firestore requests", async () => {
+    // The public leaderboard (pulp_wars-2yc.104) talks to Firestore's REST
+    // API; its answers must always be the store's, never a cached copy.
+    expect(NEVER_CACHED_HOSTS_V1).toContain("firestore.googleapis.com");
+    const network = fakeNetwork(SITE);
+    const caches = fakeCaches();
+    const { ask, worker, passed } = workerOn(network, caches);
+    const base =
+      "https://firestore.googleapis.com/v1/projects/vibe-crawler/databases/(default)/documents";
+    const urls = [
+      `${base}:runQuery?key=AIza`,
+      `${base}:runAggregationQuery?key=AIza`,
+      `${base}:commit?key=AIza`,
+      `${base}/pulpWarsScores/abc?key=AIza`,
+    ];
+    for (const url of urls) {
+      expect(ask("x", { url })).toBeNull();
+      expect(ask("x", { url, method: "POST" })).toBeNull();
+      expect(ask("x", { url, mode: "cors" })).toBeNull();
+    }
+    expect(await worker.warm(urls)).toBe(0);
+    expect(passed).toEqual([]);
+    expect(
+      network.calls.filter((call) => !call.startsWith("asset-manifest")),
+    ).toEqual([]);
+    expect(caches.kept()).toEqual([]);
   });
 
   it("hands every request to the network while no manifest can be had", async () => {

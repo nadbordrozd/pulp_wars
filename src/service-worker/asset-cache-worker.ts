@@ -52,6 +52,15 @@ const STORED_MANIFEST = "?stored-asset-manifest";
 export const ASSET_CACHE_RETIRE_MESSAGE_V1 = "pulp-wars-asset-cache-retire";
 /** The page's message asking the worker to fill its cache. */
 export const ASSET_CACHE_WARM_MESSAGE_V1 = "pulp-wars-asset-cache-warm";
+/**
+ * Hosts the worker never answers for or keeps, whatever the request: the
+ * public leaderboard's store (bead pulp_wars-2yc.104), whose answers must
+ * always be new. They are on another origin, which the worker already
+ * leaves alone; this names them so that stays true.
+ */
+export const NEVER_CACHED_HOSTS_V1: readonly string[] = Object.freeze([
+  "firestore.googleapis.com",
+]);
 const WARM_LANES = 6;
 
 /** The part of `Cache` the worker uses. */
@@ -371,6 +380,7 @@ export function createAssetCacheWorkerV1(
 
   /** The manifest path of a URL in scope, or null. */
   const pathOf = (url: URL, navigation: boolean): string | null => {
+    if (NEVER_CACHED_HOSTS_V1.includes(url.hostname)) return null;
     if (url.origin !== origin || !url.href.startsWith(scope)) return null;
     let path: string;
     try {

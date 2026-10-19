@@ -44,6 +44,13 @@ const app =
         analytics: (await import("./app/analytics-v7")).browserGameAnalyticsV7(
           import.meta.env.PROD,
         ),
+        // The public leaderboard (bead pulp_wars-2yc.104,
+        // docs/LEADERBOARD.md): Firestore on the deployed site only; a
+        // board in memory on the development server, a local preview and
+        // every review or smoke run.
+        leaderboard: (
+          await import("./app/leaderboard-v7")
+        ).browserGameLeaderboardV7(import.meta.env.PROD),
       })
     : renderUnsupportedRuleset(route.value);
 export { app };

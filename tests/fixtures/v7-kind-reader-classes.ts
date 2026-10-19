@@ -432,6 +432,9 @@ export const KIND_READER_CLASSES_V7: Readonly<
     "SEAT",
   "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#factionFields": "SEAT",
   "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#resultSeats": "SEAT",
+  // The public leaderboard (pulp_wars-2yc.104): a stored score's faction,
+  // the faction the player played.
+  "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#frontLeaderboard": "SEAT",
   // Players named by tribe (pulp_wars-2yc.56): a seat's name is its own
   // faction's plural.
   "src/render/player-names-v7.ts::tribeLabelV7": "SEAT",
