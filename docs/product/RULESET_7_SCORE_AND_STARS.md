@@ -508,6 +508,48 @@ arithmetic; the rating is shown for the records only).
   after the rating moment that counts for nothing.
 - The **difficulty caps** the stars, so no board and no score earns more
   than one star on Normal, or three anywhere but Brutal.
+- Since `pulp_wars-2yc.103` only a **regular** game earns stars at all
+  (section 5.8): a board chosen by hand is a custom game.
+
+### 5.8 Regular and custom games
+
+**Added by `pulp_wars-2yc.103`** (the user, 2026-10-19): "the gaining of
+stars after a skirmish game should be available when you play with the
+default settings but not when you play a custom game and arbitrarily
+change settings ... Should be regular game vs custom game or something
+like that."
+
+- **Regular.** A skirmish launched from the new-game screen with only the
+  quick choices made (game mode, tribe, number of opponents, difficulty)
+  and every option under **Custom game** at the default those choices give
+  it: the map of the cycle, its quick size, the difficulty's AI head start,
+  Free-for-all, Curiosities on, a new random map, and the opponents'
+  factions as drawn. The exact rule and the screen are in
+  [QUICK_START.md](../ui/QUICK_START.md#regular-and-custom-games).
+- **Custom.** Anything else: another map (the Showcase included), size,
+  head start, Alliances, Curiosities, a chosen seed, or an opponent's
+  faction chosen by hand.
+- **Stars.** Only a regular game earns and records tribe stars. A custom
+  game is scored and ranked as usual; its end screen shows the score and,
+  instead of the grade, one line: "Custom game: no stars". The grade is
+  still computed (the summary carries it) and earns nothing.
+- **Recorded on the setup.** `MatchSetupV7.gameKind`, an optional key,
+  `REGULAR` or `CUSTOM`; the new-game screen writes it on every launch.
+  Setup validation refuses any other value, `REGULAR` on the Showcase or a
+  mirror setup, and the key on a mission. No ruleset identity change: a
+  setup without the key keeps its exact shape (as `gameMode` and
+  `aiDifficulty` did).
+- **Setups without the key** (saves and replays made before, headless and
+  text-play setups): `gameKindOfV7` reads them as `REGULAR` exactly when
+  their shape is a regular game's (`regularSetupShapeV7`: a map of the
+  cycle at its quick size for the opponents, Free-for-all, Curiosities on,
+  and the head start of its difficulty, named or read back), else
+  `CUSTOM`. The seed and the opponents' factions cannot be told from a
+  setup, so an old game on regular settings keeps earning stars.
+- **Never regular:** the Showcase, a mission, a mirror setup.
+- **The query.** `isRegularGameV7(setup)` (`src/engine/v7/game-kind.ts`)
+  is the one test the tribe stars use and the public leaderboard
+  (`pulp_wars-2yc.104`) is to use.
 
 ## 6. Records
 
@@ -545,8 +587,9 @@ arithmetic; the rating is shown for the records only).
 - **Never lowered.** Recording a result sets `stars` to the larger,
   `glow` to either, and `bestRating` to the larger; `updatedAt` changes
   only when something improved. Recording is idempotent.
-- **What records.** A human victory in a generated match (not `SHOWCASE`,
-  not `MISSION`, never a setup with `allowDuplicateFactions`), under the
+- **What records.** A human victory in a regular game (section 5.8, so a
+  generated match, not `SHOWCASE`, not `MISSION`, never a setup with
+  `allowDuplicateFactions`), under the
   human seat's faction and the match's `gameMode`. A defeat records
   nothing. The controller records before the end-of-match dialog renders
   and again when a completed save is resumed, as the campaign does.
@@ -583,7 +626,8 @@ becomes, top to bottom:
 4. **How stars are earned.** An info button beside the heading opens the
    rules in words, with no numbers (`pulp_wars-2yc.69`): "★ Win. ★★ Win on
    Hard or harder with a high score. ★★★ Win on Brutal with a great
-   score."
+   score." and, since `pulp_wars-2yc.103`, "Only regular games earn stars:
+   change nothing under Custom game." (section 5.8).
 5. **The existing options**, unchanged: Players (Opponents and the AI
    mode select), Map, Size, Curiosities, seed, the opponents' faction
    selects (seats 1 and up; the human's tribe is the grid's), and Play.
@@ -611,7 +655,9 @@ becomes, top to bottom:
   "Score 687 or more"; where the difficulty cannot earn a star, "Play on
   Hard or harder" or "Play on Brutal" instead), and "New best for the
   Goblins in Domination" when the record improved. The glow appears only
-  when earned. Perfection names the winner by score.
+  when earned. Perfection names the winner by score. A custom game
+  (section 5.8, the Showcase included) shows no grade, won or lost, but
+  the line "Custom game: no stars" (`pulp_wars-2yc.103`).
 
 ## 9. Engine impact
 

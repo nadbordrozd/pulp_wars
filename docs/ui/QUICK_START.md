@@ -3,10 +3,12 @@
 Beads `pulp_wars-2yc.54` (quick start) and `pulp_wars-2yc.65` (styled
 pickers). A developer note: none of the numbers or formulas below appear in
 the game. The player sees only the result (the map and its size under the
-quick choices, and the values pre-filled under Advanced settings). Every
-number is a first guess, meant to be tuned. The code is
-`src/render/quick-start-v7.ts` (pure, unit-tested in
-`tests/unit/quick-start-v7.test.ts`).
+quick choices, and the values pre-filled under Custom game, called
+Advanced settings before `pulp_wars-2yc.103`). Every number is a first
+guess, meant to be tuned. The code is `src/render/quick-start-v7.ts` (pure,
+unit-tested in `tests/unit/quick-start-v7.test.ts`); the map cycle and the
+board size live in the engine since `pulp_wars-2yc.103`
+(`src/engine/v7/game-kind.ts`, re-exported under the quick start's names).
 
 ## The screen
 
@@ -21,10 +23,11 @@ New game asks, in order:
    starting Coins.
 
 Under them one line names the map and its size ("Continents · 11 × 11").
-Then **Advanced settings** (closed by default, open or closed for the page
-session) and **Play**.
+Then **Custom game** (closed by default, open or closed for the page
+session) and the start button, **Start regular game** or **Start custom
+game** (see [Regular and custom games](#regular-and-custom-games)).
 
-Advanced settings hold every other option, pre-filled with what the quick
+Custom game holds every other option, pre-filled with what the quick
 choices picked: Players (Alliances, AI head start), Map (Map, Size, the
 village and Crowded line, the map's sentence, Curiosities, New map / Use
 seed) and Factions (each opponent's faction). Editing one overrides the
@@ -43,6 +46,50 @@ opens and after every game started from this screen. Starting a game
 unpins Size and AI head start, draws new opponents and moves the map cycle
 on.
 
+## Regular and custom games
+
+Bead `pulp_wars-2yc.103` (the user: stars "should be available when you
+play with the default settings but not when you play a custom game and
+arbitrarily change settings"). Only a **regular** game earns tribe stars
+([score and stars section 5.8](../product/RULESET_7_SCORE_AND_STARS.md#58-regular-and-custom-games)).
+
+**The rule.** A game is regular when the player chose only the quick
+choices, **Game mode** (Domination or Perfection), **Your tribe**,
+**Opponents** and **Difficulty**, and everything under Custom game is the
+default those choices give it:
+
+- **Map**: the map of the cycle for this game (Continents, Lakes, Pangea);
+- **Size**: the quick size for that map and the opponents;
+- **AI head start**: the difficulty's head start on that board;
+- **Alliances**: Free-for-all; **Curiosities**: on;
+- **New map** (a random seed), not Use seed;
+- **Opponents' factions**: as drawn (picking your tribe in the grid, which
+  moves an opponent off it, keeps the game regular).
+
+Anything else is a **custom** game: another map (the Showcase included), a
+size, head start, Alliances or Curiosities other than the default, Use
+seed, or an opponent's faction chosen by hand. The comparison is by value
+(`quickGameKindV7`): a Size set back to the quick size is regular again;
+an opponent's faction chosen by hand stays custom (the default is a random
+draw) until **Back to regular**. Opening Custom game changes nothing.
+
+**On the screen.** The start button reads **Start regular game** or
+**Start custom game** (also when it replaces a saved game; it read "Play"
+and "Start new game" before). While the game is custom a small **No
+stars** chip shows beside the Custom game button, open or closed. Inside
+Custom game one line says "Any change here makes a custom game. No stars
+in custom games.", followed while the game is custom by **Back to
+regular**, which sets every option there back to its default (the quick
+map and size, the difficulty's head start, Free-for-all, Curiosities, New
+map, newly drawn opponents) and keeps the quick choices. The star rules
+behind the info button end with "Only regular games earn stars: change
+nothing under Custom game."
+
+**Recorded.** The launched setup carries `gameKind: "REGULAR"` or
+`"CUSTOM"`; Play again keeps it (the same setup). Alliances, Curiosities
+and Use seed stay as set for the next game, as before, so a custom game
+stays custom (the chip says so) until they are set back.
+
 ## Defaults that are not asked
 
 - **Alliances**: Free-for-all.
@@ -57,14 +104,14 @@ on.
   per game started. A first visit starts on Continents (the long-standing
   default). The last map of the cycle started is remembered per browser
   (`pulpWars.ruleset7.quickStart.lastMap.v1`), and in the page when storage
-  is blocked. A game started on another map (chosen under Advanced) does not
+  is blocked. A game started on another map (chosen under Custom game) does not
   move the cycle.
 
 ## Board size
 
 For the map type and the players (`opponents + 1`), among the sizes the
 engine allows (`allowedBoardSizesV7`) and **at most 20 × 20** (performance;
-25 × 25 stays available under Advanced), take the smallest size that
+25 × 25 stays available under Custom game), take the smallest size that
 
 - gives every player at least **L** land tiles (`landTileCountV7(size) /
 players ≥ L`), and
@@ -123,7 +170,7 @@ The Continents reference is 33, the 40 scaled to its 46% land since `7r87`
 On the quick boards (25 to 55 land tiles per player, 20 to 37 on
 Continents) this is +5, +10 and +20 almost everywhere; seven or eight
 opponents on Continents 20 × 20 (20 to 23 land tiles each) get +5, +5 and
-+10. A board chosen larger under Advanced
++10. A board chosen larger under Custom game
 raises it: one opponent on Pangea 20 × 20 (144 land tiles each) is +20 even
 on Hard. The Showcase never has a head start.
 
@@ -132,8 +179,10 @@ win can earn: Normal 1, Hard and Harder 2, Brutal 3
 ([score and stars section 5](../product/RULESET_7_SCORE_AND_STARS.md#5-stars)).
 The launched setup names it in `aiDifficulty` when the head start is the
 one the difficulty gives on that board; a head start set by hand under
-Advanced launches as `NORMAL`, and the stars read its level back from the
-head start (the hardest level whose head start it reaches). The base head
+Custom game launches as `NORMAL`, and the stars read its level back from the
+head start (the hardest level whose head start it reaches); since
+`pulp_wars-2yc.103` such a game is custom and earns no stars unless the
+head start is the difficulty's own. The base head
 starts and their scaling live in the engine
 (`src/engine/v7/difficulty.ts`), which the quick start re-exports.
 

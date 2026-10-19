@@ -289,7 +289,9 @@ describe("Ruleset 7 front screen", () => {
       "v7-faction-1-control",
       "launch",
     ]);
-    expect(required('[data-action="launch"]').textContent).toBe("Play");
+    expect(required('[data-action="launch"]').textContent).toBe(
+      "Start regular game",
+    );
     expect(required('[data-action="launch"]').classList).toContain(
       "primary-action",
     );
@@ -442,7 +444,7 @@ describe("Ruleset 7 front screen", () => {
     // New game opens the setup, which replaces the save only on Play.
     press("new-game");
     expect(required('[data-action="launch"]').textContent).toBe(
-      "Start new game",
+      "Start regular game",
     );
     expect(second.controller.snapshot().phase).toBe("RESUMABLE");
     press("front-back");

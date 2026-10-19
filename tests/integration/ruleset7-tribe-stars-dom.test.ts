@@ -271,6 +271,7 @@ function wonMatch(
   flawless: boolean,
   difficulty: DifficultyV7 = "NORMAL",
   killValue = 0,
+  gameKind: "REGULAR" | "CUSTOM" = "REGULAR",
 ): GameStateV7 {
   const at = (x: number, y: number) => ({ x, y });
   const base = goblinArenaV7(
@@ -292,6 +293,8 @@ function wonMatch(
       ...base.setup,
       aiDifficulty: difficulty,
       ...(coins === 0 ? {} : { aiHeadStart: { coins } }),
+      // pulp_wars-2yc.103: only a regular game shows stars.
+      gameKind,
     },
     round: 12,
     scoreLedger: base.scoreLedger.map((entry) =>
@@ -427,6 +430,7 @@ describe("Ruleset 7 new game: mode toggle and tribe grid", () => {
       "★ Win.",
       "★★ Win on Hard or harder with a high score.",
       "★★★ Win on Brutal with a great score.",
+      "Only regular games earn stars: change nothing under Custom game.",
     ]);
   });
 
@@ -663,5 +667,39 @@ describe("Ruleset 7 game end: the tribe record in the grade panel", () => {
     );
     expect(document.querySelector('[data-v7-region="grade"]')).toBeNull();
     expect(document.querySelector('[data-v7-region="star-record"]')).toBeNull();
+    expect(document.querySelector('[data-v7-region="custom-game"]')).toBeNull();
+  });
+
+  it("shows a custom game's score and no stars, won or lost (pulp_wars-2yc.103)", () => {
+    const won = wonMatch(20, true, "BRUTAL", 400, "CUSTOM");
+    const graded = queryStarGradeV7(viewForV7(won, won.humanPlayerId));
+    expect(graded).toMatchObject({ gameKind: "CUSTOM", recordable: false });
+    mount(null, { finished: won });
+    const results = required('[data-v7-region="results"]');
+    expect(results.dataset.outcome).toBe("victory");
+    expect(required('[data-v7-region="custom-game"]').textContent).toBe(
+      "Custom game: no stars",
+    );
+    expect(document.querySelector('[data-v7-region="grade"]')).toBeNull();
+    expect(results.querySelectorAll(".v7-grade-stars")).toHaveLength(0);
+    // The score is still shown, in the players' list.
+    expect(results.querySelector(".v7-result-seats")?.textContent).toMatch(
+      /\d/,
+    );
+    const rival = won.players.find((player) => player.id !== won.humanPlayerId);
+    if (rival === undefined) throw new Error("no rival");
+    mount(null, {
+      finished: {
+        ...won,
+        outcome: {
+          kind: "DEFEAT",
+          humanId: won.humanPlayerId,
+          defeatedByPlayerId: rival.id,
+        },
+      },
+    });
+    expect(required('[data-v7-region="custom-game"]').textContent).toBe(
+      "Custom game: no stars",
+    );
   });
 });

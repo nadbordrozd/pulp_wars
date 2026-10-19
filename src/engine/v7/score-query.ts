@@ -5,7 +5,7 @@ import type {
   StarGradeInputsV7,
   StarGradeV7,
 } from "./star-grade";
-import type { FactionIdV7, GameModeV7 } from "./types";
+import type { FactionIdV7, GameKindV7, GameModeV7 } from "./types";
 import type { PlayerViewV7 } from "./view";
 
 /**
@@ -68,6 +68,8 @@ export function queryScoreV7(view: PlayerViewV7): ScoreQueryV7 {
 export interface StarGradeQueryV7 {
   readonly gameMode: GameModeV7;
   readonly faction: FactionIdV7;
+  /** A regular or custom game (section 5.8); a custom game has no stars. */
+  readonly gameKind: GameKindV7;
   readonly recordable: boolean;
   readonly inputs: StarGradeInputsV7;
   readonly grade: StarGradeV7;
@@ -81,6 +83,7 @@ export function queryStarGradeV7(view: PlayerViewV7): StarGradeQueryV7 | null {
   return {
     gameMode: summary.gameMode,
     faction: human.faction,
+    gameKind: summary.gameKind,
     recordable: summary.recordable,
     inputs: summary.gradeInputs,
     grade: summary.grade,

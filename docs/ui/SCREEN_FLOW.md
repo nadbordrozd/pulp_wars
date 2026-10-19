@@ -2498,13 +2498,16 @@ the screens it opens (new game, campaign, Settings, save recovery). Ruleset
 - **New game.** Since the quick start (`pulp_wars-2yc.54`, the
   [quick start overlay](#current-ruleset-7-quick-start-overlay)): Game mode,
   Your tribe, Opponents, Difficulty, one line naming the map and its size,
-  then **Advanced settings** (closed) holding **Players** (Alliances, AI head
+  then **Custom game** (closed; Advanced settings before
+  `pulp_wars-2yc.103`) holding **Players** (Alliances, AI head
   start), **Map** (Map, Size, the village and Crowded line, the map's
   sentence, Curiosities, New map / Use seed) and **Factions**, where each
   seat is a card in its faction's colour with a
-  large emblem. **Play** is the one primary button, full width; it reads
-  **Start new game** when it replaces a saved game, which stays untouched
-  until then. While the menu is shown the form is already built and kept
+  large emblem. The start button is the one primary button, full width; it
+  reads **Start regular game** or **Start custom game** (the
+  [regular and custom games](QUICK_START.md#regular-and-custom-games) of
+  `pulp_wars-2yc.103`; "Play" and "Start new game" before), and a saved
+  game it replaces stays untouched until then. While the menu is shown the form is already built and kept
   hidden, so opening it is instant.
 - **Settings.** Motion, Animation speed, UI size, High contrast, Hints
   (bead `pulp_wars-2yc.39`) and the
@@ -2901,7 +2904,7 @@ both art sets. Where an older section below disagrees, this overlay wins.
   Players group, under Alliances, one picker labelled **AI head start**:
   None, +5 Coins, +10 Coins, +20 Coins; its tooltip and
   accessible description say "Every AI player starts with extra Coins."
-  Since the quick start it sits under Advanced settings, the Difficulty
+  Since the quick start it sits under Advanced settings (Custom game since `pulp_wars-2yc.103`), the Difficulty
   sets it unless it is set by hand, and it is no longer remembered per
   browser (the Difficulty is). It is hidden
   while Showcase is selected (a Showcase launches without a head start)
@@ -3001,6 +3004,16 @@ them is shown in the game.
   the village and Crowded line, the map's sentence, Curiosities, New map /
   Use seed) and Factions (the opponents' pickers). A Size or AI head start
   set there stays as set; a new Difficulty sets the AI head start again.
+- **Custom game** (`pulp_wars-2yc.103`). The button above is labelled
+  **Custom game**. A game whose options there all hold their quick default
+  is a **regular** game and earns tribe stars; any change makes a
+  **custom** game, which does not
+  ([QUICK_START.md](QUICK_START.md#regular-and-custom-games)). The start
+  button reads **Start regular game** or **Start custom game**; a **No
+  stars** chip beside Custom game shows while the game is custom; inside,
+  one line ("Any change here makes a custom game. No stars in custom
+  games.") with **Back to regular** while it is custom. A custom game's end
+  screen shows "Custom game: no stars" instead of the grade.
 - **Pickers.** No menu shows the browser's dropdown. A list is a button in
   the Control recipe with the value and a caret (`role="combobox"`) that
   opens a styled list (`role="listbox"`, options 44 CSS px tall, scrolling

@@ -21,6 +21,7 @@ export * from "./v7/explosions";
 export * from "./v7/curiosities";
 export * from "./v7/difficulty";
 export * from "./v7/forbidden-technologies";
+export * from "./v7/game-kind";
 export * from "./v7/graves";
 export * from "./v7/rift";
 export * from "./v7/growth";

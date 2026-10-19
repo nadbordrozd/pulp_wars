@@ -104,6 +104,8 @@ export function scoreUiStateV7(
     ...browserSetupV7(SCORE_UI_SEED_V7, 3),
     gameMode,
     aiMode,
+    // A regular game, so a win shows its grade (pulp_wars-2yc.103).
+    gameKind: "REGULAR",
   });
   if (!created.ok) throw new Error("score UI fixture setup failed");
   const base = created.state;

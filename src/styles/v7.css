@@ -1374,6 +1374,56 @@
   grid-column: 1 / -1;
 }
 
+/*
+ * Regular and custom games (pulp_wars-2yc.103): the Custom game button
+ * with a "No stars" chip beside it while the game is custom, and one line
+ * at the top of its options with Back to regular.
+ */
+.v7-custom-bar {
+  display: flex;
+  grid-column: 1 / -1;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.7rem;
+  align-items: center;
+}
+
+.v7-custom-chip {
+  color: var(--pw-text-2);
+}
+
+.v7-custom-chip[hidden] {
+  display: none;
+}
+
+.v7-custom-chip .v7-ui-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.v7-custom-note {
+  display: flex;
+  grid-column: 1 / -1;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.7rem;
+  align-items: center;
+}
+
+.v7-custom-note-text {
+  margin: 0;
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-sm);
+}
+
+.v7-custom-reset {
+  min-height: 44px;
+  padding: 0.3rem 0.8rem;
+  font-size: var(--pw-fs-sm);
+}
+
+.v7-custom-reset[hidden] {
+  display: none;
+}
+
 /* On a phone a row of buttons (Alliances) takes the whole width. */
 @media (max-width: 599px) {
   .v7-setup-advanced > .v7-picker-field[data-picker="segmented"] {
@@ -9453,6 +9503,22 @@ body:has(> #app [data-v7-gallery]) {
 .v7-grade-unsaved {
   color: var(--pw-text-2);
   font-size: var(--pw-fs-sm);
+}
+
+/* pulp_wars-2yc.103: a custom game's end screen, "Custom game: no stars". */
+.v7-grade-custom {
+  display: inline-flex;
+  gap: 0.35rem;
+  align-items: center;
+  justify-self: center;
+  margin: 0;
+  color: var(--pw-text-2);
+  font-weight: var(--pw-fw-semi);
+}
+
+.v7-grade-custom .v7-ui-icon {
+  width: 1.1rem;
+  height: 1.1rem;
 }
 
 /*

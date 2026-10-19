@@ -248,7 +248,7 @@ describe("Ruleset 7 application route", () => {
     count.value = "2";
     count.dispatchEvent(new Event("change", { bubbles: true }));
     expect(document.querySelector("[data-v7-setup]")).not.toBeNull();
-    expect(document.body.textContent).toContain("Start new game");
+    expect(document.body.textContent).toContain("Start regular game");
     resumed.destroy();
 
     window.localStorage.clear();

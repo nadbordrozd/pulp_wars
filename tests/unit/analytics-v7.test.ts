@@ -102,6 +102,7 @@ const SKIRMISH: MatchSetupV7 = {
   mapGenerationRevision: 1,
   curiosities: true,
   gameMode: "PERFECTION",
+  gameKind: "REGULAR",
 } as unknown as MatchSetupV7;
 
 const MISSION: MatchSetupV7 = {
@@ -112,6 +113,7 @@ const MISSION: MatchSetupV7 = {
   mapType: "MISSION",
   gameMode: undefined,
   curiosities: false,
+  gameKind: undefined,
   mission: { id: "FRONTIER_1" },
 } as unknown as MatchSetupV7;
 
@@ -344,9 +346,15 @@ describe("events", () => {
           difficulty: "hard",
           mode: "perfection",
           source: "advanced",
+          game_kind: "regular",
         },
       },
     ]);
+    // pulp_wars-2yc.103: a custom game says so.
+    expect(
+      matchStartEventsV7({ ...SKIRMISH, gameKind: "CUSTOM" }, "advanced")[0]
+        ?.params.game_kind,
+    ).toBe("custom");
     expect(matchStartEventsV7(MISSION, "campaign")).toEqual([
       {
         name: "match_start",
@@ -355,6 +363,7 @@ describe("events", () => {
           map_type: "mission",
           mode: "domination",
           source: "campaign",
+          game_kind: "mission",
         }),
       },
       {
@@ -381,9 +390,19 @@ describe("events", () => {
           faction: "undead",
           difficulty: "hard",
           mode: "perfection",
+          game_kind: "regular",
         },
       },
     ]);
+    // pulp_wars-2yc.103: a custom game's win earns no stars.
+    expect(
+      matchEndEventsV7(
+        view(
+          { ...SKIRMISH, gameKind: "CUSTOM" },
+          { outcome: WIN, round: 12, stars: 2 },
+        ),
+      )[0]?.params,
+    ).toEqual(expect.objectContaining({ stars: 0, game_kind: "custom" }));
     expect(
       matchEndEventsV7(view(MISSION, { outcome: WIN, missionStars: 3 })),
     ).toEqual([

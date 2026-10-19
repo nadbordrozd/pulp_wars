@@ -2418,6 +2418,7 @@ player per offered faction (`OFFERED_FACTION_IDS_V7`).
 | Curiosities   | `true` (the setup screen's and the headless default) or `false`; `false` on a mission ([section 2.7](#27-map-curiosities))                                                                                                                                                                                                     |
 | Game mode     | `gameMode`: `DOMINATION` or `PERFECTION`, optional; a setup without it is Domination; never `PERFECTION` on the Showcase or a mission ([section 3.1](#31-score-play-modes-and-stars))                                                                                                                                          |
 | AI head start | `aiHeadStart`: `{ coins }` with `coins` 5, 10, or 20, optional; a setup without it has no head start; never on the Showcase or a mission (the bullet below)                                                                                                                                                                    |
+| Game kind     | `gameKind`: `REGULAR` or `CUSTOM`, optional, read only by the tribe stars (`pulp_wars-2yc.103`, [section 3.1](#31-score-play-modes-and-stars)); never on a mission, never `REGULAR` on the Showcase or a mirror setup; a setup without it keeps its shape                                                                      |
 
 - **Seats a width holds.** A generated board holds
   `P(w, type) = min(floor((w − 2) / 3)², floor(L / 9))` players (a 3 x 3
@@ -2510,7 +2511,7 @@ player per offered faction (`OFFERED_FACTION_IDS_V7`).
   [section 3.1](#31-score-play-modes-and-stars)). The object leaves room for further kinds of
   head start (technology, starting cities: `pulp_wars-w49.7`) as further
   keys; only `coins` exists. **Setup screen:** a picker "AI head start"
-  under Advanced settings (None, +5 Coins, +10 Coins, +20 Coins), hidden
+  under Custom game (Advanced settings before `pulp_wars-2yc.103`; None, +5 Coins, +10 Coins, +20 Coins), hidden
   for the Showcase. Since the quick start (`pulp_wars-2yc.54`,
   [docs/ui/QUICK_START.md](../ui/QUICK_START.md)) the Difficulty sets it
   (Normal: None) unless it is set by hand, and it is no longer remembered
@@ -4065,8 +4066,12 @@ the UI beads `pulp_wars-kaw6.3` and `kaw6.4`.
   (every player's once the match is over), every player's `peakScore`, and,
   at the end, the summary (`matchSummaryV7`): every player's final
   breakdown in rank order, `round30`, `eliminatedBy`, `flawless`, the human
-  seat's grade inputs and grade, and whether the setup may record stars (a
-  generated map without the mirror option). `queryScoreV7(view)` and
+  seat's grade inputs and grade, the game's kind, and whether the setup may
+  record stars (a regular game, `pulp_wars-2yc.103`: a generated map
+  without the mirror option whose `gameKind` is `REGULAR`, or, without the
+  key, whose shape is a regular game's, `gameKindOfV7`;
+  [score and stars section 5.8](RULESET_7_SCORE_AND_STARS.md#58-regular-and-custom-games)).
+  `queryScoreV7(view)` and
   `queryStarGradeV7(view)` read only the view.
 - **Grade** (`starGradeV7`, pure; inputs `starGradeInputsV7`;
   `pulp_wars-2yc.69`, to be tuned). The grade reads the human's score at

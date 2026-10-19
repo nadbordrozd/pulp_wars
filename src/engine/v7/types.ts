@@ -846,7 +846,28 @@ export interface MatchSetupV7 {
    * {@link aiHeadStartCoinsV7}.
    */
   readonly aiHeadStart?: AiHeadStartV7;
+  /**
+   * Regular or custom game (`pulp_wars-2yc.103`,
+   * docs/product/RULESET_7_SCORE_AND_STARS.md section 5.8): `REGULAR` when
+   * the new-game screen launched it with only the quick choices (mode,
+   * tribe, opponents, difficulty) and every other option at its default,
+   * `CUSTOM` when anything under Custom game was changed. Only a regular
+   * game earns tribe stars. An optional key: a setup without it (a save,
+   * replay or fixture made before the kinds, a headless setup) keeps its
+   * exact shape and is read with `gameKindOfV7`
+   * (`src/engine/v7/game-kind.ts`), which derives the kind from the setup.
+   * Never `REGULAR` on the Showcase, a mission, or a mirror setup; never on
+   * a mission at all. Nothing in play reads it.
+   */
+  readonly gameKind?: GameKindV7;
 }
+
+/**
+ * Regular or custom game (`pulp_wars-2yc.103`): only a regular game earns
+ * tribe stars (and, later, a leaderboard place).
+ */
+export const GAME_KINDS_V7 = Object.freeze(["REGULAR", "CUSTOM"] as const);
+export type GameKindV7 = (typeof GAME_KINDS_V7)[number];
 
 /**
  * Difficulty (`pulp_wars-2yc.54`, `pulp_wars-2yc.69`): the levels the

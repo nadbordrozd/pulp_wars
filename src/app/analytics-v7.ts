@@ -1,5 +1,6 @@
 import { campaignMissionV7 } from "../campaign/progress-v7";
 import { matchDifficultyV7 } from "../engine/v7/difficulty";
+import { gameKindOfV7 } from "../engine/v7/game-kind";
 import {
   gameModeOfV7,
   type FactionIdV7,
@@ -160,6 +161,15 @@ function campaignMissionIdV7(setup: MatchSetupV7): string | null {
   return campaignMissionV7(id) === null ? null : id;
 }
 
+/**
+ * Regular and custom games (`pulp_wars-2yc.103`): `regular` or `custom` for
+ * a skirmish, `mission` for a campaign mission or the tutorial.
+ */
+export function analyticsGameKindV7(setup: MatchSetupV7): string {
+  if (setup.mapType === "MISSION") return "mission";
+  return gameKindOfV7(setup).toLowerCase();
+}
+
 /** `match_start`'s parameters. */
 export function matchStartParamsV7(
   setup: MatchSetupV7,
@@ -173,6 +183,7 @@ export function matchStartParamsV7(
     difficulty: matchDifficultyV7(setup).toLowerCase(),
     mode: gameModeOfV7(setup).toLowerCase(),
     source,
+    game_kind: analyticsGameKindV7(setup),
   };
 }
 
@@ -187,10 +198,14 @@ export function matchResultV7(view: PlayerViewV7): MatchResultV7 {
     : "loss";
 }
 
-/** The stars of a finished match: the mission's, or the skirmish grade. */
+/**
+ * The stars of a finished match: the mission's, or the skirmish grade (0
+ * for a custom game, which earns none).
+ */
 export function matchStarsV7(view: PlayerViewV7): number {
   if (matchResultV7(view) !== "win") return 0;
   if (view.mission !== undefined) return view.mission.stars ?? 0;
+  if (gameKindOfV7(view.setup) !== "REGULAR") return 0;
   return view.score.summary?.grade.stars ?? 0;
 }
 
@@ -203,6 +218,7 @@ export function matchEndParamsV7(view: PlayerViewV7): AnalyticsParamsV7 {
     faction: analyticsFactionV7(humanFactionV7(view)),
     difficulty: matchDifficultyV7(view.setup).toLowerCase(),
     mode: gameModeOfV7(view.setup).toLowerCase(),
+    game_kind: analyticsGameKindV7(view.setup),
   };
 }
 

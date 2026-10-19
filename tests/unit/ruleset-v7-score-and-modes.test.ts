@@ -1247,7 +1247,11 @@ describe("score and modes: the view and the public queries (section 3.4)", () =>
   });
 
   it("shows every breakdown and the grade once the match is over", () => {
-    const state = lastTurnOfRound30(created(perfectionSetup(80)));
+    // A regular game records (pulp_wars-2yc.103); the Dry Land fixture
+    // would read as custom without the key.
+    const state = lastTurnOfRound30(
+      created({ ...perfectionSetup(80), gameKind: "REGULAR" }),
+    );
     const over = endTurn(state).state;
     const view = viewForV7(over, over.humanPlayerId);
     expect(view.score.breakdowns).toHaveLength(over.players.length);
@@ -1256,6 +1260,7 @@ describe("score and modes: the view and the public queries (section 3.4)", () =>
     expect(graded?.gameMode).toBe("PERFECTION");
     expect(graded?.faction).toBe("ORIGINAL");
     expect(graded?.recordable).toBe(true);
+    expect(graded?.gameKind).toBe("REGULAR");
     expect(view.score.summary?.ranking).toEqual(
       over.outcome?.kind === "HEADLESS_VICTORY" ? [] : over.outcome?.ranking,
     );

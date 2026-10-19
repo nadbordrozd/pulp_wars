@@ -54,15 +54,26 @@ export function tribeCardLabelV7(
  * Section 7, item 4: how stars are earned (section 5.3), in words: the
  * difficulty decides how many stars a win can earn, a high score earns
  * them. No numbers (the thresholds are on the end screen). The glow is
- * never explained.
+ * never explained. The last line (`pulp_wars-2yc.103`): only a regular
+ * game earns stars.
  */
 export function starRulesV7(): readonly string[] {
   return [
     "★ Win.",
     "★★ Win on Hard or harder with a high score.",
     "★★★ Win on Brutal with a great score.",
+    CUSTOM_GAME_RULE_V7,
   ];
 }
+
+/**
+ * Regular and custom games (`pulp_wars-2yc.103`): the stars rule, the note
+ * under Custom game, and the end screen's line.
+ */
+export const CUSTOM_GAME_RULE_V7 =
+  "Only regular games earn stars: change nothing under Custom game.";
+export const CUSTOM_GAME_NOTE_V7 = "Any change here makes a custom game.";
+export const CUSTOM_GAME_NO_STARS_V7 = "Custom game: no stars";
 
 /** Section 8: "New best for the Goblins in Domination". */
 export function starAwardNewBestV7(

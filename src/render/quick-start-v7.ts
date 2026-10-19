@@ -3,13 +3,14 @@ import {
   DIFFICULTY_BASE_HEAD_START_V7,
   DIFFICULTY_CONTINENTS_REFERENCE_LAND_PER_PLAYER_V7,
   DIFFICULTY_REFERENCE_LAND_PER_PLAYER_V7,
-  allowedBoardSizesV7,
-  crowdedBoardV7,
+  REGULAR_LAND_PER_PLAYER_V7,
+  REGULAR_MAP_CYCLE_V7,
+  REGULAR_MAX_BOARD_SIZE_V7,
   difficultyHeadStartCoinsV7,
-  isGeneratedMapTypeV7,
-  landTileCountV7,
+  regularBoardSizeV7,
   type BoardSizeV7,
   type DifficultyV7,
+  type GameKindV7,
   type FactionIdV7,
   type MapTypeV7,
 } from "../engine/index";
@@ -45,15 +46,13 @@ export const QUICK_DIFFICULTY_LABELS_V7: Readonly<
 });
 
 /**
- * The map types a new game cycles through, one per game, in this order
- * and starting from Continents (the long-standing default): Continents,
- * Lakes, Pangea, Continents...
+ * The map cycle and the board size of a quick start: the engine's regular
+ * game defaults (`src/engine/v7/game-kind.ts`, `pulp_wars-2yc.103`) under
+ * the quick start's names. The map cycles Continents, Lakes, Pangea, one
+ * per game; the size is the smallest legal board up to 20 x 20 that is not
+ * crowded and gives every player its land share.
  */
-export const QUICK_MAP_CYCLE_V7: readonly MapTypeV7[] = Object.freeze([
-  "CONTINENTS",
-  "LAKES",
-  "PANGEA",
-]);
+export const QUICK_MAP_CYCLE_V7 = REGULAR_MAP_CYCLE_V7;
 
 /** The map after `last` in the cycle; the first when there is none. */
 export function nextQuickMapTypeV7(last: MapTypeV7 | null): MapTypeV7 {
@@ -63,47 +62,9 @@ export function nextQuickMapTypeV7(last: MapTypeV7 | null): MapTypeV7 {
   );
 }
 
-/** The largest board the quick start picks (performance). */
-export const QUICK_MAX_BOARD_SIZE_V7: BoardSizeV7 = 20;
-
-/**
- * The land tiles each player should have to themselves, by map type: the
- * quick start picks the smallest board giving every player at least this
- * much land. The land counts of the map types already differ; Continents
- * asks less so that one opponent still plays the long-standing 11 x 11
- * board (56 land tiles since the natural water of `7r87`, `pulp_wars-ykw.8`;
- * 34 of 68 before, and 28 of 56 picks the same size for every count of
- * opponents: the wider sea is crossed by boat, not lost room).
- */
-export const QUICK_LAND_PER_PLAYER_V7: Readonly<Record<string, number>> =
-  Object.freeze({ PANGEA: 35, CONTINENTS: 28, LAKES: 35 });
-/** The target for any other generated map type (from Advanced). */
-const DEFAULT_LAND_PER_PLAYER = 35;
-
-/**
- * The board size of a quick start: among the sizes the engine allows for
- * the players on this map type, up to 20 x 20, the smallest that is not
- * crowded and gives each player its land share; else the largest allowed
- * one up to 20 x 20 (else the smallest allowed, should every legal size be
- * larger). Non-decreasing in `opponents`.
- */
-export function quickBoardSizeV7(
-  mapType: MapTypeV7,
-  opponents: number,
-): BoardSizeV7 {
-  const seats = opponents + 1;
-  const allowed = allowedBoardSizesV7(mapType, seats);
-  const capped = allowed.filter((size) => size <= QUICK_MAX_BOARD_SIZE_V7);
-  if (!isGeneratedMapTypeV7(mapType))
-    return capped[0] ?? allowed[0] ?? QUICK_MAX_BOARD_SIZE_V7;
-  const target = QUICK_LAND_PER_PLAYER_V7[mapType] ?? DEFAULT_LAND_PER_PLAYER;
-  const roomy = capped.find(
-    (size) =>
-      landTileCountV7(size, mapType) >= target * seats &&
-      !crowdedBoardV7(size, mapType, seats),
-  );
-  return roomy ?? capped.at(-1) ?? allowed[0] ?? QUICK_MAX_BOARD_SIZE_V7;
-}
+export const QUICK_MAX_BOARD_SIZE_V7 = REGULAR_MAX_BOARD_SIZE_V7;
+export const QUICK_LAND_PER_PLAYER_V7 = REGULAR_LAND_PER_PLAYER_V7;
+export const quickBoardSizeV7 = regularBoardSizeV7;
 
 /**
  * The AI head start of each difficulty and its scaling by crowding: the
@@ -140,4 +101,54 @@ export function randomOpponentFactionsV7(
     others[draw] = here;
   }
   return others;
+}
+
+/**
+ * The new-game screen's choices that decide whether its game is regular
+ * (bead `pulp_wars-2yc.103`): everything under Custom game, the quick map
+ * the screen picked, and whether an opponent's faction was set by hand.
+ */
+export interface QuickGameKindInputV7 {
+  /** The map the quick start picked for this game (the cycle's). */
+  readonly quickMapType: MapTypeV7;
+  readonly mapType: MapTypeV7;
+  readonly boardSize: BoardSizeV7;
+  readonly aiCount: number;
+  readonly difficulty: DifficultyV7;
+  readonly aiHeadStartCoins: number;
+  readonly aiMode: "RIVAL" | "COOPERATIVE";
+  readonly curiosities: boolean;
+  /** "New map" (a random seed at launch) or "Use seed". */
+  readonly seedMode: "NEW" | "SEED";
+  /** An opponent's faction was chosen by hand under Custom game. */
+  readonly opponentFactionsChosen: boolean;
+}
+
+/**
+ * Regular or custom (`pulp_wars-2yc.103`, docs/ui/QUICK_START.md): a game
+ * is regular when everything under Custom game is what the quick choices
+ * (mode, tribe, opponents, difficulty) give it: the quick map, its quick
+ * size, the difficulty's AI head start on that board, Free-for-all,
+ * Curiosities on, a new random map and the opponents' factions as drawn.
+ * A value set by hand that equals the default keeps the game regular; an
+ * opponent's faction chosen by hand makes it custom (the default is a
+ * random draw).
+ */
+export function quickGameKindV7(input: QuickGameKindInputV7): GameKindV7 {
+  const regular =
+    input.mapType === input.quickMapType &&
+    QUICK_MAP_CYCLE_V7.includes(input.mapType) &&
+    input.boardSize === quickBoardSizeV7(input.mapType, input.aiCount) &&
+    input.aiHeadStartCoins ===
+      quickHeadStartCoinsV7(
+        input.difficulty,
+        input.mapType,
+        input.boardSize,
+        input.aiCount,
+      ) &&
+    input.aiMode === "RIVAL" &&
+    input.curiosities &&
+    input.seedMode === "NEW" &&
+    !input.opponentFactionsChosen;
+  return regular ? "REGULAR" : "CUSTOM";
 }

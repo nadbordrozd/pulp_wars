@@ -129,6 +129,7 @@ import {
   type MatchSetupV7,
   aiHeadStartCoinsV7,
   type AiHeadStartCoinsV7,
+  type GameKindV7,
   type GameModeV7,
   type MapTypeV7,
   type PlayerEventV7,
@@ -252,6 +253,7 @@ import {
   QUICK_MAP_CYCLE_V7,
   nextQuickMapTypeV7,
   quickBoardSizeV7,
+  quickGameKindV7,
   quickHeadStartCoinsV7,
   randomOpponentFactionsV7,
   type QuickDifficultyV7,
@@ -270,6 +272,8 @@ import {
   aiHeadStartOfMatchV7,
 } from "../ai-head-start-presentation-v7";
 import {
+  CUSTOM_GAME_NOTE_V7,
+  CUSTOM_GAME_NO_STARS_V7,
   GAME_MODE_LABELS_V7,
   gameModeLineV7,
   starAwardNewBestV7,
@@ -1755,11 +1759,17 @@ export class Ruleset7DomAppView {
    * head start), which the quick defaults then leave alone. A new game
    * after a launch starts unpinned.
    */
-  #setupPins: { size: boolean; headStart: boolean } = {
+  #setupPins: { size: boolean; headStart: boolean; factions: boolean } = {
     size: false,
     headStart: false,
+    factions: false,
   };
-  /** Whether the new-game screen's Advanced settings are open. */
+  /**
+   * Regular and custom games (`pulp_wars-2yc.103`): the map the quick
+   * defaults picked for this game; another map makes a custom game.
+   */
+  #quickMap: MapTypeV7 = "CONTINENTS";
+  /** Whether the new-game screen's Custom game options are open. */
   #setupAdvancedOpen = false;
   /**
    * The last map of the quick cycle started on this page, for a browser
@@ -3989,9 +3999,11 @@ export class Ruleset7DomAppView {
       this.#quickMapLine(),
       ...advanced,
     );
+    // Regular and custom games (`pulp_wars-2yc.103`): the button names the
+    // kind ("Start regular game", "Start custom game"); #syncGameKind sets it.
     const launch = button(
       this.#document,
-      replace ? "Start new game" : "Play",
+      "Start regular game",
       "launch",
       "primary-action v7-launch",
     );
@@ -4002,6 +4014,7 @@ export class Ruleset7DomAppView {
     const syncShowcase = (): void => {
       this.#syncSetupFields(form);
       this.#syncStarFields(form);
+      this.#syncGameKind(form);
     };
     syncShowcase();
     form.addEventListener("change", (event) => {
@@ -4012,6 +4025,10 @@ export class Ruleset7DomAppView {
       if (changed === "v7-board-size") this.#setupPins.size = true;
       if (changed === "v7-ai-head-start") this.#setupPins.headStart = true;
       if (changed === "v7-difficulty") this.#setupPins.headStart = false;
+      // An opponent's faction chosen by hand makes a custom game (the
+      // tribe grid sets seat 0, which keeps it regular).
+      if (/^v7-faction-[1-9]\d*$/.test(changed))
+        this.#setupPins.factions = true;
       const own = this.#draft.factions[0];
       const level = this.#draft.difficulty;
       this.#readDraft(form);
@@ -4055,6 +4072,7 @@ export class Ruleset7DomAppView {
           : this.#draft.seedMode === "NEW"
             ? { ...this.#draft, seedText: String(this.#randomSeed() >>> 0) }
             : this.#draft,
+        this.#setupGameKind(),
       );
       if (setup === null) {
         this.#error = "Seed must be a whole number (0–4294967295).";
@@ -4094,7 +4112,8 @@ export class Ruleset7DomAppView {
       boardSize: base.boardSize,
     });
     const boardSize = quickBoardSizeV7(resolved.mapType, resolved.opponents);
-    this.#setupPins = { size: false, headStart: false };
+    this.#setupPins = { size: false, headStart: false, factions: false };
+    this.#quickMap = resolved.mapType;
     return {
       ...base,
       aiCount: resolved.opponents,
@@ -4137,10 +4156,100 @@ export class Ruleset7DomAppView {
   }
 
   /**
-   * Advanced settings: a disclosure button and every other option of the
-   * setup in its groups, Players (Alliances, AI head start), Map (Size,
-   * Map, the village line, the map's sentence, Curiosities, the seed) and
-   * Factions. Closed by default; open or closed for the page session.
+   * Regular and custom games (`pulp_wars-2yc.103`, docs/ui/QUICK_START.md):
+   * the kind the draft launches as. Regular while everything under Custom
+   * game is what the quick choices give it; the Showcase is always custom.
+   */
+  #setupGameKind(): GameKindV7 {
+    const draft = this.#draft;
+    return quickGameKindV7({
+      quickMapType: this.#quickMap,
+      mapType: draft.mapType,
+      boardSize: effectiveBoardSize(draft),
+      aiCount: draft.aiCount,
+      difficulty: draft.difficulty,
+      aiHeadStartCoins: draft.aiHeadStartCoins,
+      aiMode: draft.aiMode,
+      curiosities: draft.curiosities,
+      seedMode: draft.seedMode,
+      opponentFactionsChosen: this.#setupPins.factions,
+    });
+  }
+
+  /**
+   * Shows the kind in place: the launch button's words, the "No stars"
+   * chip beside Custom game, and Back to regular inside it.
+   */
+  #syncGameKind(form: HTMLElement): void {
+    const kind = this.#setupGameKind();
+    form.dataset.gameKind = kind.toLowerCase();
+    const launch = form.querySelector<HTMLButtonElement>(
+      '[data-action="launch"]',
+    );
+    const words =
+      kind === "REGULAR" ? "Start regular game" : "Start custom game";
+    if (launch !== null && launch.textContent !== words)
+      launch.textContent = words;
+    if (launch !== null) launch.dataset.gameKind = kind.toLowerCase();
+    const chip = form.querySelector<HTMLElement>(".v7-custom-chip");
+    if (chip !== null) chip.hidden = kind === "REGULAR";
+    const reset = form.querySelector<HTMLElement>(".v7-custom-reset");
+    if (reset !== null) reset.hidden = kind === "REGULAR";
+  }
+
+  /**
+   * Back to regular: every option under Custom game returns to what the
+   * quick choices give it (the quick map and size, the difficulty's AI head
+   * start, Free-for-all, Curiosities on, a new random map and newly drawn
+   * opponents' factions). The quick choices themselves stay.
+   */
+  #resetToRegular(): void {
+    const own = this.#draft.factions[0] ?? "ORIGINAL";
+    const resolved = resolveSetupChoiceV7({
+      mapType: this.#quickMap,
+      opponents: this.#draft.aiCount,
+      boardSize: this.#draft.boardSize,
+    });
+    const boardSize = quickBoardSizeV7(resolved.mapType, resolved.opponents);
+    this.#setupPins = { size: false, headStart: false, factions: false };
+    this.#setupNote = "";
+    this.#setupMoved = { size: false, map: false };
+    this.#draft = {
+      ...this.#draft,
+      aiCount: resolved.opponents,
+      mapType: resolved.mapType,
+      boardSize,
+      aiMode: "RIVAL",
+      curiosities: true,
+      seedMode: "NEW",
+      factions: [
+        own,
+        ...randomOpponentFactionsV7(FACTIONS, own, this.#randomDraw),
+      ],
+      aiHeadStartCoins: quickHeadStartCoinsV7(
+        this.#draft.difficulty,
+        resolved.mapType,
+        boardSize,
+        resolved.opponents,
+      ),
+    };
+    this.#render();
+    queueMicrotask(() => {
+      if (this.#destroyed) return;
+      this.#root
+        .querySelector<HTMLElement>('[data-action="setup-advanced"]')
+        ?.focus();
+    });
+  }
+
+  /**
+   * Custom game (Advanced settings before `pulp_wars-2yc.103`): a
+   * disclosure button and every other option of the setup in its groups,
+   * Players (Alliances, AI head start), Map (Size, Map, the village line,
+   * the map's sentence, Curiosities, the seed) and Factions. Closed by
+   * default; open or closed for the page session. A "No stars" chip beside
+   * the button shows while the game is custom; inside, one line says that
+   * any change makes a custom game, with Back to regular while it is one.
    */
   #advancedSettings(): readonly HTMLElement[] {
     const body = el(this.#document, "div", "v7-setup-advanced");
@@ -4149,7 +4258,7 @@ export class Ruleset7DomAppView {
     body.hidden = !this.#setupAdvancedOpen;
     const toggle = button(
       this.#document,
-      "Advanced settings",
+      "Custom game",
       "setup-advanced",
       "v7-advanced-toggle",
     );
@@ -4160,7 +4269,36 @@ export class Ruleset7DomAppView {
       body.hidden = !this.#setupAdvancedOpen;
       toggle.setAttribute("aria-expanded", String(this.#setupAdvancedOpen));
     };
+    const bar = el(this.#document, "div", "v7-custom-bar");
+    bar.dataset.v7Region = "game-kind";
+    const chip = el(this.#document, "span", "v7-chip v7-custom-chip");
+    chip.setAttribute("role", "status");
+    chip.append(
+      uiIconV7(this.#document, "star-outline"),
+      text(this.#document, "span", "No stars"),
+    );
+    chip.hidden = true;
+    bar.append(toggle, chip);
+    const note = el(this.#document, "div", "v7-custom-note");
+    const reset = button(
+      this.#document,
+      "Back to regular",
+      "setup-regular",
+      "v7-custom-reset",
+    );
+    reset.hidden = true;
+    reset.onclick = () => this.#resetToRegular();
+    note.append(
+      text(
+        this.#document,
+        "p",
+        `${CUSTOM_GAME_NOTE_V7} No stars in custom games.`,
+        "v7-custom-note-text",
+      ),
+      reset,
+    );
     body.append(
+      note,
       setupHeading(this.#document, "units", "Players"),
       // Section 7, item 5: "Alliances", so the screen has one "mode".
       select(
@@ -4201,7 +4339,7 @@ export class Ruleset7DomAppView {
       this.#seedChoice(),
       this.#factionFields(),
     );
-    return [toggle, body];
+    return [bar, body];
   }
 
   /** Tribe stars as the controller keeps them (none without the port). */
@@ -4704,6 +4842,9 @@ export class Ruleset7DomAppView {
       option.onclick = () => {
         this.#draft = { ...this.#draft, seedMode: mode };
         sync();
+        // "Use seed" makes a custom game (pulp_wars-2yc.103).
+        const form = group.closest("form");
+        if (form !== null) this.#syncGameKind(form);
         if (mode === "SEED") field.querySelector("input")?.focus();
       };
       return [mode, option] as const;
@@ -11115,7 +11256,17 @@ export class Ruleset7DomAppView {
     const verdict = this.#scoreVerdict(view, score);
     if (verdict !== null) result.append(verdict);
     const grade = queryStarGradeV7(view);
-    if (grade !== null && grade.grade.conditions.victory) {
+    if (grade !== null && grade.gameKind === "CUSTOM") {
+      // Regular and custom games (`pulp_wars-2yc.103`): a custom game shows
+      // its score (in the players' list) and no stars.
+      const custom = el(this.#document, "p", "v7-grade-custom");
+      custom.dataset.v7Region = "custom-game";
+      custom.append(
+        uiIconV7(this.#document, "star-outline"),
+        text(this.#document, "span", CUSTOM_GAME_NO_STARS_V7),
+      );
+      result.append(custom);
+    } else if (grade !== null && grade.grade.conditions.victory) {
       const panel = this.#gradePanel(
         grade.grade,
         score.summary?.endRound ?? view.round,
@@ -17515,7 +17666,7 @@ function mapTypeDescriptionV7(mapType: MapTypeV7): string {
     return "A fixed demo map: three developed cities, every unit, all technology, map revealed.";
   return "Mostly land, broken up by lakes.";
 }
-function setupFrom(draft: DraftV7): MatchSetupV7 | null {
+function setupFrom(draft: DraftV7, gameKind: GameKindV7): MatchSetupV7 | null {
   if (!/^\d+$/.test(draft.seedText)) return null;
   const seed = Number(draft.seedText);
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
@@ -17564,6 +17715,9 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
     ...(aiHeadStartCoins === 0
       ? {}
       : { aiHeadStart: { coins: aiHeadStartCoins } }),
+    // Regular and custom games (`pulp_wars-2yc.103`): every new setup
+    // writes its kind; the Showcase is always custom.
+    gameKind: draft.mapType === "SHOWCASE" ? "CUSTOM" : gameKind,
   };
 }
 /** The mode a launch uses; the draft keeps the player's own choice. */

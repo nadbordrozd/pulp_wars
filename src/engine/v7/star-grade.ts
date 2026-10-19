@@ -1,10 +1,12 @@
 import type { PlayerId } from "../model/ids";
 import { matchDifficultyV7 } from "./difficulty";
+import { gameKindOfV7 } from "./game-kind";
 import { scoreRankingV7, scoresV7, type PlayerScoreV7 } from "./score";
 import {
   PERFECTION_ROUNDS_V7,
   gameModeOfV7,
   type DifficultyV7,
+  type GameKindV7,
   type GameModeV7,
   type GameStateV7,
   type ScoreRound30SnapshotV7,
@@ -205,8 +207,14 @@ export interface MatchSummaryV7 {
   readonly gradeInputs: StarGradeInputsV7;
   readonly grade: StarGradeV7;
   /**
-   * Section 6: whether a win may be recorded in the tribe stars (a generated
-   * map, not the Showcase or a mission, and never a mirror setup).
+   * Section 5.8 (`pulp_wars-2yc.103`): a regular or a custom game
+   * (`gameKindOfV7`). A custom game earns no stars.
+   */
+  readonly gameKind: GameKindV7;
+  /**
+   * Section 6: whether a win may be recorded in the tribe stars: a regular
+   * game (section 5.8), so a generated map, not the Showcase or a mission,
+   * and never a mirror setup.
    */
   readonly recordable: boolean;
 }
@@ -272,6 +280,7 @@ export function matchSummaryV7(state: GameStateV7): MatchSummaryV7 | null {
       ? outcome.ranking
       : scoreRankingV7(state, scores);
   const gradeInputs = starGradeInputsV7(state, scores);
+  const gameKind = gameKindOfV7(state.setup);
   return {
     gameMode: gradeInputs.gameMode,
     endRound: state.round,
@@ -298,7 +307,9 @@ export function matchSummaryV7(state: GameStateV7): MatchSummaryV7 | null {
     }),
     gradeInputs,
     grade: starGradeV7(gradeInputs),
+    gameKind,
     recordable:
+      gameKind === "REGULAR" &&
       state.setup.mapType !== "SHOWCASE" &&
       state.setup.mapType !== "MISSION" &&
       state.setup.allowDuplicateFactions !== true,

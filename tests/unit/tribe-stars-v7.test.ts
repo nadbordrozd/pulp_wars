@@ -332,6 +332,8 @@ describe("tribe stars: what a finished game records (section 6)", () => {
       readonly rivalPeak?: number;
       readonly flawless?: boolean;
       readonly mapType?: "SHOWCASE";
+      /** Regular unless said (pulp_wars-2yc.103); `null` drops the key. */
+      readonly gameKind?: "REGULAR" | "CUSTOM" | null;
     } = {},
   ): GameStateV7 {
     const base = goblinArenaV7(
@@ -354,9 +356,18 @@ describe("tribe stars: what a finished game records (section 6)", () => {
       kind: "CAPTURE",
       unitId: unitAtV7(state, at(2, 8)).id,
     }).state;
-    return options.mapType === undefined
-      ? after
-      : { ...after, setup: { ...after.setup, mapType: options.mapType } };
+    const kind = options.gameKind === undefined ? "REGULAR" : options.gameKind;
+    const keyless = Object.fromEntries(
+      Object.entries(after.setup).filter(([key]) => key !== "gameKind"),
+    ) as GameStateV7["setup"];
+    const setup = kind === null ? keyless : { ...after.setup, gameKind: kind };
+    return {
+      ...after,
+      setup:
+        options.mapType === undefined
+          ? setup
+          : { ...setup, mapType: options.mapType },
+    };
   }
 
   it("records the human's tribe, the mode, and the grade of a win", () => {
@@ -387,6 +398,14 @@ describe("tribe stars: what a finished game records (section 6)", () => {
       }),
     ).toBeNull();
     expect(tribeStarResultV7(won({ mapType: "SHOWCASE" }))).toBeNull();
+  });
+
+  it("records nothing for a custom game (pulp_wars-2yc.103)", () => {
+    expect(tribeStarResultV7(won({ gameKind: "CUSTOM" }))).toBeNull();
+    // The arena is not a regular setup's shape, so without the key (a save
+    // made before the kinds) it reads as custom too.
+    expect(tribeStarResultV7(won({ gameKind: null }))).toBeNull();
+    expect(tribeStarResultV7(won())).not.toBeNull();
   });
 });
 
@@ -453,6 +472,7 @@ describe("tribe stars text (sections 7 and 8)", () => {
       "★ Win.",
       "★★ Win on Hard or harder with a high score.",
       "★★★ Win on Brutal with a great score.",
+      "Only regular games earn stars: change nothing under Custom game.",
     ]);
     expect(starAwardNewBestV7("GOBLIN", "DOMINATION")).toBe(
       "New best for the Goblins in Domination",

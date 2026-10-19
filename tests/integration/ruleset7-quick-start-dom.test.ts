@@ -179,7 +179,7 @@ describe("Quick start on the new-game screen", () => {
       '[data-action="setup-advanced"]',
     );
     const advanced = required("#v7-setup-advanced");
-    expect(toggle.textContent).toBe("Advanced settings");
+    expect(toggle.textContent).toBe("Custom game");
     expect(toggle.getAttribute("aria-expanded")).toBe("false");
     expect(toggle.getAttribute("aria-controls")).toBe(advanced.id);
     expect(advanced.hidden).toBe(true);
@@ -328,7 +328,7 @@ describe("Quick start on the new-game screen", () => {
     );
     expect(draws).toBeGreaterThan(drawn);
     expect(required('[data-action="launch"]').textContent).toBe(
-      "Start new game",
+      "Start regular game",
     );
   });
 

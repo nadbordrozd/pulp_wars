@@ -11,6 +11,7 @@ import {
   type BoardSizeV7,
   type DifficultyV7,
   type FactionIdV7,
+  type GameKindV7,
   type GameModeV7,
   type MatchSetupV7,
   type PlayerColorV7,
@@ -65,6 +66,31 @@ function splitGameModeV7(input: unknown): {
     rest,
     gameMode:
       gameMode === "DOMINATION" || gameMode === "PERFECTION" ? gameMode : null,
+  };
+}
+
+/**
+ * Regular and custom games (`pulp_wars-2yc.103`): the optional `gameKind`
+ * key, `REGULAR` or `CUSTOM`. A setup without it was made before the kinds
+ * and keeps that exact shape (`gameKindOfV7` derives its kind).
+ */
+const GAME_KIND_KEY_V7 = "gameKind";
+
+/** The setup's keys without `gameKind`, and its kind (null when invalid). */
+function splitGameKindV7(input: unknown): {
+  readonly rest: unknown;
+  readonly gameKind: GameKindV7 | undefined | null;
+} {
+  if (
+    typeof input !== "object" ||
+    input === null ||
+    !Object.prototype.hasOwnProperty.call(input, GAME_KIND_KEY_V7)
+  )
+    return { rest: input, gameKind: undefined };
+  const { gameKind, ...rest } = input as { readonly gameKind?: unknown };
+  return {
+    rest,
+    gameKind: gameKind === "REGULAR" || gameKind === "CUSTOM" ? gameKind : null,
   };
 }
 
@@ -231,12 +257,19 @@ export function allowDuplicateFactionsV7(setup: MatchSetupV7): MatchSetupV7 {
  * head start and is returned without the key. `aiDifficulty`
  * (`pulp_wars-2yc.69`) is `NORMAL`, or `HARD`, `HARDER`, or `BRUTAL` only on
  * a generated map with exactly that level's head start on the board
- * (`setupDifficultyAllowedV7`).
+ * (`setupDifficultyAllowedV7`). The optional `gameKind`
+ * (`pulp_wars-2yc.103`) is `REGULAR` or `CUSTOM`, never on a mission and
+ * `REGULAR` only on a generated map without the mirror flag; a setup
+ * without it is returned without the key.
  */
 export function validateMatchSetupV7(input: unknown): MatchSetupValidationV7 {
+  // Regular and custom games (`pulp_wars-2yc.103`): `gameKind` is optional,
+  // never on a `MISSION` setup, and `REGULAR` only on a generated map
+  // without the mirror flag.
+  const { rest: withoutKind, gameKind } = splitGameKindV7(input);
   // Score and modes (section 4.3): `gameMode` is optional; a `SHOWCASE` or
   // `MISSION` setup is never `PERFECTION`.
-  const { rest: withoutMode, gameMode } = splitGameModeV7(input);
+  const { rest: withoutMode, gameMode } = splitGameModeV7(withoutKind);
   // AI head start (`pulp_wars-w49.39`): `aiHeadStart` is optional and never
   // on a `SHOWCASE` or `MISSION` setup, which fix their own start.
   const { rest: withoutHeadStart, aiHeadStart } =
@@ -244,10 +277,23 @@ export function validateMatchSetupV7(input: unknown): MatchSetupValidationV7 {
   // Difficulty (`pulp_wars-2yc.69`): a harder name is checked against the
   // head start once the rest of the setup is valid.
   const { rest, difficulty } = splitDifficultyV7(withoutHeadStart);
-  if (gameMode === null || aiHeadStart === null || difficulty === null)
+  if (
+    gameKind === null ||
+    gameMode === null ||
+    aiHeadStart === null ||
+    difficulty === null
+  )
     return { ok: false, error: { code: "INVALID_SETUP", params: {} } };
   const result = validateSetupWithoutModeV7(rest);
   if (!result.ok) return result;
+  if (
+    gameKind !== undefined &&
+    (result.setup.mapType === "MISSION" ||
+      (gameKind === "REGULAR" &&
+        (result.setup.mapType === "SHOWCASE" ||
+          result.setup.allowDuplicateFactions === true)))
+  )
+    return { ok: false, error: { code: "INVALID_SETUP", params: {} } };
   if (
     !setupDifficultyAllowedV7(
       {
@@ -261,7 +307,8 @@ export function validateMatchSetupV7(input: unknown): MatchSetupValidationV7 {
   if (
     gameMode === undefined &&
     aiHeadStart === undefined &&
-    difficulty === "NORMAL"
+    difficulty === "NORMAL" &&
+    gameKind === undefined
   )
     return result;
   const fixed =
@@ -275,6 +322,7 @@ export function validateMatchSetupV7(input: unknown): MatchSetupValidationV7 {
       aiDifficulty: difficulty,
       ...(gameMode === undefined ? {} : { gameMode }),
       ...(aiHeadStart === undefined ? {} : { aiHeadStart }),
+      ...(gameKind === undefined ? {} : { gameKind }),
     },
   };
 }
