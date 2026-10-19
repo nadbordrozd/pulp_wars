@@ -4596,6 +4596,172 @@ The danger moments, and what each mission's hand play changed:
 - **Extensions.** E1 (the Moon Gun) was already built; E7 was not needed
   (G3's full reveal stands in for it).
 
+## 20. The Dwarf campaign, "The Bottomless" (`pulp_wars-hmyk.9`)
+
+The fourth tier-2 faction campaign, after the Goblins (section 19): six
+missions, `DWARF_1` to `DWARF_6` (`src/engine/v7/missions/dwarf-*.ts`), in
+the chapter `src/campaign/chapter-dwarves.ts`, which the campaign map's
+Dwarf plate opens once the Humans and the Undead campaigns are done (or
+with the testing cheat, section 14.5). The briefings and closings are the
+saga bible's ([SAGA.md](SAGA.md) sections 2.4 and 3.4), trimmed to the
+card. Each mission was hand played through `play-text` (the thoughtful
+run, using the hints) and run by the scripted autopilot of section 15; from
+mission 3 on the autopilot must lose or miss the clock, and missions 1 and
+2 were meant to fall to a first thoughtful attempt. Every mission seats
+you as the Dwarves with no choice, so the chapter's starting factions are
+empty.
+
+### 20.1 The missions
+
+| Mission                  | Board (generator, seats, seed)  | Match seed | Seats                                               | Format and clock                                  | Stars                        |
+| ------------------------ | ------------------------------- | ---------- | --------------------------------------------------- | ------------------------------------------------- | ---------------------------- |
+| D1 Tremors               | Dry Land 11, 2 seats, seed 7    | 20261501   | Dwarves; Undead                                     | Hold Copperstep for 12 rounds                     | no city lost; Tobbin lives   |
+| D2 The Iron Peak         | Dry Land 14, 2 seats, seed 7    | 20261502   | Dwarves; Ice Folk                                   | Capture the clan's three camps by round 20        | by round 16; no city lost    |
+| D3 Down the Bottomless   | Dry Land 16, 3 seats, seed 30   | 20261503   | Dwarves; Undead and Cult (teamed)                   | Escort the Thane to the Bell's Rest by round 20   | by round 16; Tobbin lives    |
+| D4 Saucers over the Hold | Dry Land 16, 2 seats, seed 1933 | 20261504   | Dwarves; Martians                                   | Kill the Mothership by round 18                   | by round 14; no city lost    |
+| D5 Iron on the Water     | Continents 16, 3 seats, seed 6  | 20261505   | Dwarves; Cult and Goblins (teamed)                  | Escort the Anvil to the River Landing by round 22 | by round 18; no city lost    |
+| D6 The Great Seal        | Dry Land 16, 4 seats, seed 2208 | 20261506   | Dwarves and Humans (ally); Undead and Cult (teamed) | Capture the Deep Gate by round 20                 | by round 16; the Thane lives |
+
+### 20.2 Hand play
+
+| Mission | Thoughtful run                                                          | Autopilot                          |
+| ------- | ----------------------------------------------------------------------- | ---------------------------------- |
+| D1      | Win (held), 12 rounds, 3 stars (first attempt on the final definition)  | Defeat, round 9 (Copperstep fell)  |
+| D2      | Win, round 13, 3 stars (first attempt on the final definition)          | Defeat, out of time (round 21)     |
+| D3      | Win, round 14, 3 stars (second attempt)                                 | Defeat, round 8 (the Thane killed) |
+| D4      | Win, round 10, 3 stars (second attempt on the final board)              | Defeat, out of time (round 19)     |
+| D5      | Win, round 17, 3 stars (seventh attempt, first on the final definition) | Defeat, round 21 (the Anvil sunk)  |
+| D6      | Win, round 8, 3 stars (second attempt on the final board)               | Defeat, out of time (round 21)     |
+
+On the final definitions each winning run was replayed from its command
+log (your moves, the Normal AI replying) and ended exactly as above, and
+each autopilot result held.
+
+The danger moments, and what each mission's hand play changed:
+
+- **D1.** The Grey Shift with Drill and Fortification built Field
+  Defenses on their mine mouths and never came; with no technologies under
+  `RUSH` they stood off out of the Gunners' reach. Under `ASSAULT` on
+  Copperstep, mostly Zombies (Bones would shrug off the Gunners), they
+  come. The winning line: the Explorer monument (level 4, Boom), a
+  Workshop at Slagheap (a Militia Hammerer), Gunners assembled and trained
+  and shooting twice standing still, Tobbin repairing every turn and
+  curing bites. In rounds 10 to 12 the Necromancer's wave inspired two
+  Zombies that killed a dug-in Hammerer and raised it as a Zombie, which
+  bit Tobbin on the walls.
+- **D2.** With Crafting, Mining and Deep Winter the clan's camps grew to
+  level 3 and walled themselves by round 3, a frozen Hammerer was
+  shattered and a Steam Mole killed by Cold Blood after meleeing a Musk Ox.
+  The clan now learns nothing: Yetis on the peaks, Snow Hunters on the
+  grass, Gnash a Mammoth. The winning line: the Explorer monument and
+  fruit (level 4, Boom), Mining in round 1; a Mole and its rider
+  tunnelled under the peaks onto Tusk Camp, the Hammerer killed the Musk
+  Ox but was frozen and shattered by a Yeti and the Mole killed by a Snow
+  Hunter; a second Mole took Tusk Camp in round 5; the Gunners shot
+  Gnash's Mammoth from range (it had swept a Mole) and the Musk Oxen (no
+  frostbite from range); both other camps fell in round 13.
+- **D3.** With every unit homed to a full Gate no Gunner could be
+  assembled, and with 4 Favour the Lodge's Horror stood over the gallery
+  from round 1: abandoned in round 6. The Gate is now level 4 with a free
+  slot, Lanternhall holds the Moles, and the Lodge has the usual 2 Favour.
+  The winning line: eight Gunners by round 11, Moles and riders tunnelled
+  to the gallery's mouth, Engineers cured bites (two Hammerers and a Mole
+  still died bitten and rose); the Imp went Unbound and killed its own
+  Summoner and Bearer; a Gyrocopter bombed the Bearer; a Mole took the
+  diggers' cave in round 9 (the Lodge eliminated); the last Mole tunnelled
+  out of the gallery's final tile so the Thane could step in beside the
+  Bell's Rest in round 14. The clock was then cut from 24 (star 20) to 20
+  (star 16).
+- **D4.** On the first board the Mothership flew ahead of its escort and
+  was shot down at the walls in round 4; at the far side of the board
+  nothing could reach it; with Ray Gunners and Force Fields the landing
+  party shot every dwarf in the open. It now hangs over its landing field
+  with a garrison (`GUARD`), the rest go for the Hold, and waves beam down
+  in rounds 5 and 9. On the final board no Martian on foot can cross the
+  peaks and the Rift into the dwarves' valley, so the fight is all at the
+  field: with four Grunts there a Brass Titan beside the field was shot
+  from 29 HP to nothing in one enemy phase, and two Gyrocopters staged two
+  tiles from the Mothership were shot down; the field now keeps two. The
+  winning line: the Explorer monument and two Game made the Hold level 5
+  in round 1 (a Brass Titan), a Forge made Copperstep level 5 in round 3
+  (the second); the Titans' Siege Hammer killed the wave's Grunts and
+  Saucers one blow each; in round 7 a Titan stood beside the field and was
+  shot from 32 to 12, but the Mothership spent its Shield striking it; in
+  round 8 the Siege Hammer took the Mothership from 15 to 3 and the Titan
+  died; three Gyrocopters bombed the Grunts and the Projector and landed
+  round the Mothership, which moved two tiles and shot one down; in round
+  10 a Bomb Run (7: the Shield's 4, then 3) brought it down.
+- **D5.** With Anvil Bay beside the Redcaps' reed camp the Anvil sank the
+  camp's Goblin and both rafts in round 1. With the Lodge's fleet at sea
+  south of the marsh it either wandered off or camped at the Landing and
+  sank the Anvil in one enemy phase; with Leadership and Harbours Greyhood
+  grew to level 3 and summoned; with five ships it earned the Sea Dog
+  monument; with a Shipyard it launched a second Galleon. The Lodge now
+  has four ships stationed in the strait off Greyhood and nothing else to
+  learn; the dwarves have Diving Bells and Anvil Bay keeps a free berth.
+  The winning line: pearls and the Sea Dog monument (Anvil Bay level 5);
+  a Diving Bell a turn; the Anvil held out of the Galleon's reach and shot
+  whatever came within 3; the Kraken was rammed and finished; the Galleon
+  (promoted to 30 HP) shot the Anvil to 2 HP in round 9 and died to
+  torpedoes in round 10; the Anvil sailed east inside a ring of five ships
+  (no water tile beside it free, so nothing could ram it) and arrived in
+  round 17.
+- **D6.** Six layouts on the first board. With 17 Coins in hand on round 1
+  Copperstep made a Brass Titan at once; with three Liches and 8 Favour
+  the Lodge summoned an Imp a turn and a Horror, and the Titan beside the
+  Gate was shot to pieces in round 9; with two Liches a 33 HP Titan beside
+  the Gate died in one enemy phase (two Liches, the Wight, two Imps) and
+  the plague's splash killed the Engineer beside it. The winning line on
+  the final board: the Explorer monument (one Gyrocopter flight) made
+  Copperstep level 5 in round 2 (a Titan), a treasure chest paid 5,
+  Blasting Charges in round 2, a Steam Mole for the Muster monument; a Tank
+  and a blast took the Lodge's Horror apart; a Gyrocopter bombed an Imp and
+  landed out of reach; in round 6 a Tank took back Vesperine (the village
+  the Lodge had settled), the Gyrocopter flew beside the Lich and two Blast
+  Mountains (6 Coins) killed it and wore the Gate's Wight, two Zombies, a
+  Skeleton and the Necromancer, and two more killed a Skeleton; a Tank and the Titan killed the Wight outside and the Titan
+  stood beside the Gate; in round 7 it killed the Gate's Wight and walked
+  in (28 HP); the second Lich shot it for 8 and a Zombie for 5; captured in
+  round 8. Both Steam Tanks and the Gyrocopter died (a Tank rose as a
+  Zombie). The clock was then cut from 24 (star 20) to 20 (star 16).
+
+### 20.3 Deviations and follow-ups
+
+- **The natural-map seat rule.** D4 and D6 were first built and played on
+  boards generated for three seats (Dry Land 16, seeds 17 and 25); the
+  natural-maps test wants a board generated for the mission's own seat
+  count, so both moved to new boards found by searching for the same
+  geometry (D4: seed 1933, two seats; D6: seed 2208, four seats), were
+  retuned and hand played again.
+- **D1's Grey Shift assaults Copperstep** (the bible's `RUSH` left them
+  standing off) and knows nothing; the three mine mouths are small
+  Unquiet towns.
+- **D2's clan learns nothing**; Gnash's Camp is level 1.
+- **D3: the Thane walks.** A Steam Mole's rider is a Hammerer, so the
+  Thane goes down the gallery on foot behind Moles and riders that tunnel
+  past the dead; Mining and Steam Tanks are forbidden to every seat so
+  nobody climbs the peaks. The diggers' cave is the one Terrain edit. The
+  clock is 20 and the star 16 (the bible's 24 and 20).
+- **D4's Mothership guards its field** with two Grunts and a Shield
+  Projector instead of assaulting the Hold; its clock is 18 and its star
+  14 (the bible's 20 and 16). The Martians' ground troops cannot reach the
+  dwarves' cities on this board.
+- **D5: E6 and E7.** The escort of a tagged ship needs nothing new (the
+  `ESCORT` objective takes the tagged Ironclad). E7 (a navy that keeps to
+  its reach) is not built: the Lodge's four ships start on station in the
+  strait off Greyhood, out of the Landing's reach, and the AI's ships
+  ignore directives.
+- **D6** has two Liches (one beside the Gate, one behind it), a Lodge with
+  4 Favour, and the clock 20 and star 16 (the bible's 24 and 20). The
+  hint names the key tool, Blasting Charges.
+- **Extensions.** None was needed; E1 was already built and unused here.
+- **Observations for balance work (not changed here).** Blast Mountain (3
+  Coins, 5 to every unit round a mountain) decides D6 and is strong
+  wherever an enemy garrison stands among mountains; a `GUARD` garrison
+  never leaves its zone, so it can be worn down from outside its reach;
+  Martian Grunts cannot climb, so a Martian assault on a mountain hold
+  stalls at the foot.
+
 ## Appendix A: critique of the first draft
 
 The first draft was reviewed as a skeptical designer and engineer. Each item

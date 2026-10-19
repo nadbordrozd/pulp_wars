@@ -1,6 +1,7 @@
 import type { FactionIdV7, UnitRoleIdV7 } from "../engine/v7/types";
 import { CHAPTER_ONE_V7, type CampaignChapterV7 } from "./chapter-1";
 import { CHAPTER_DINOSAURS_V7 } from "./chapter-dinosaurs";
+import { CHAPTER_DWARVES_V7 } from "./chapter-dwarves";
 import { CHAPTER_GOBLINS_V7 } from "./chapter-goblins";
 import { CHAPTER_HUMANS_V7 } from "./chapter-humans";
 import { CHAPTER_MARTIANS_V7 } from "./chapter-martians";
@@ -151,7 +152,13 @@ export const CAMPAIGNS_V7: readonly CampaignDefinitionV7[] = Object.freeze([
     subtitle: "Grubnak robs the Baron",
     chapter: CHAPTER_GOBLINS_V7,
   } satisfies CampaignDefinitionV7),
-  factionCampaign("DWARVES", "DWARF", "Dwarves", "Dwarf", 2),
+  // The Dwarf campaign (`pulp_wars-hmyk.9`, docs/product/SAGA.md 2.4).
+  Object.freeze({
+    ...factionCampaign("DWARVES", "DWARF", "Dwarves", "Dwarf", 2),
+    title: "The Bottomless",
+    subtitle: "The Thane puts a lid on it",
+    chapter: CHAPTER_DWARVES_V7,
+  } satisfies CampaignDefinitionV7),
   factionCampaign("ICE_FOLK", "ICE_FOLK", "Ice Folk", "Ice Folk", 3),
   // The saga culminates with the Cult: the middle of the last row.
   factionCampaign("CULT", "CULT", "Cultists", "Cultist", 3),

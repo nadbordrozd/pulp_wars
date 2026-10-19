@@ -210,6 +210,19 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
     "60f70023f2e507c80819feb1c14cee55e5e1689d33a77339ff0c32ad6de1e19b",
   "GOBLIN_6@1:GOBLIN":
     "c58d1b0a9c2535d7af4a13b4b6bae69fc4978eb9ff413e35a1099371bf7bdd9d",
+  // The Dwarf campaign, "The Bottomless" (`pulp_wars-hmyk.9`).
+  "DWARF_1@1:DWARF":
+    "a0bb401b2f20df29125b8a8d3c45d4a02ee6d418a03cf45ce258a19ea0417ebc",
+  "DWARF_2@1:DWARF":
+    "6280a5c8886887d513551d77652aa64121cf3bc09e9715d11d6adb1ee79f7dc9",
+  "DWARF_3@1:DWARF":
+    "f5fa4aa8411ff22ca2537e1314387011ec585beaa3d5f058b5bf33487fe524dc",
+  "DWARF_4@1:DWARF":
+    "1e2dcc20bd29b117e3c2f5b4bfc46433f8ac584906ee3d2b8e88a896f7d17b73",
+  "DWARF_5@1:DWARF":
+    "d2c993f3dfda0c3fd26d2b4d5257ea21b71d6cbb69d45d7e65c0e1e451bbdeb3",
+  "DWARF_6@1:DWARF":
+    "bf8032333567a3843bb24f8f1e55a0af551ed7c61c6e2ad88f9bd1eec2e2c83b",
   // The siege fixture of the Normal AI (`pulp_wars-68k.6`).
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 2.
   "TEST_NECK@2:ORIGINAL":
@@ -574,6 +587,19 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
     "539e56d85ed631199c600bf6089282a6ac7c4a2a943fc9c1ce7fb3a326c51111",
   "GOBLIN_6@1:GOBLIN":
     "4c6fb734162d49bb4ef77fb8642e18b254ccf9304dd7322815572808f1315e17",
+  // The Dwarf campaign, "The Bottomless" (`pulp_wars-hmyk.9`).
+  "DWARF_1@1:DWARF":
+    "fde7575e484f73ade3c7891f091121f4322002e4c1b047259cf9bb29afc36976",
+  "DWARF_2@1:DWARF":
+    "27323833aaa3e9eff1e9bc64fec3d044bbf35bfd32b549c360c3e8b6c3497e14",
+  "DWARF_3@1:DWARF":
+    "0d4b6cb44239b45a9ac6cf94c8fc06782d9fd5888d102d97b55ecb207d422469",
+  "DWARF_4@1:DWARF":
+    "5ce147e0765c4a240b325e610da6f7b9ee7196017fefb005d3d4e7331568730e",
+  "DWARF_5@1:DWARF":
+    "f29ab8e611c536bd6065c376380aa8e971d3156db72c4719108bd74f6b7c35db",
+  "DWARF_6@1:DWARF":
+    "62ed9a9959332e399e204208997a7056f335f11c52f5337f18a09b45da6bc86e",
 
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 2.
   "TEST_NECK@2:ORIGINAL":

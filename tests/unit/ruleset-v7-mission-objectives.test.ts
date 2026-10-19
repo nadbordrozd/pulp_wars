@@ -1015,6 +1015,13 @@ describe("natural maps", () => {
       "GOBLIN_4",
       "GOBLIN_5",
       "GOBLIN_6",
+      // The Dwarf campaign (`pulp_wars-hmyk.9`).
+      "DWARF_1",
+      "DWARF_2",
+      "DWARF_3",
+      "DWARF_4",
+      "DWARF_5",
+      "DWARF_6",
     ]);
     for (const mission of MISSION_REGISTRY_V7)
       expect(missionMapDriftV7(mission), mission.id).toEqual([]);
@@ -1050,6 +1057,8 @@ describe("natural maps", () => {
       UNDEAD_6: 3,
       // The Rift between Saucer Field and the scrap camps (`pulp_wars-hmyk.7`).
       MARTIAN_1: 3,
+      // The diggers' cave cleared in the shaft wall (`pulp_wars-hmyk.9`).
+      DWARF_3: 1,
     };
     for (const mission of natural) {
       const source = mission.source as NonNullable<

@@ -47,6 +47,12 @@ import { GOBLIN_3_V7 } from "./goblin-3";
 import { GOBLIN_4_V7 } from "./goblin-4";
 import { GOBLIN_5_V7 } from "./goblin-5";
 import { GOBLIN_6_V7 } from "./goblin-6";
+import { DWARF_1_V7 } from "./dwarf-1";
+import { DWARF_2_V7 } from "./dwarf-2";
+import { DWARF_3_V7 } from "./dwarf-3";
+import { DWARF_4_V7 } from "./dwarf-4";
+import { DWARF_5_V7 } from "./dwarf-5";
+import { DWARF_6_V7 } from "./dwarf-6";
 import {
   LAB_BREAKTHROUGH_GOBLIN_V7,
   LAB_BREAKTHROUGH_UNDEAD_V7,
@@ -159,6 +165,13 @@ export const MISSION_REGISTRY_V7: readonly MissionDefinitionV7[] = deepFreeze([
   GOBLIN_4_V7,
   GOBLIN_5_V7,
   GOBLIN_6_V7,
+  // The Dwarf campaign, "The Bottomless" (`pulp_wars-hmyk.9`).
+  DWARF_1_V7,
+  DWARF_2_V7,
+  DWARF_3_V7,
+  DWARF_4_V7,
+  DWARF_5_V7,
+  DWARF_6_V7,
   // The Human tuning labs (`pulp_wars-w49.3`): hidden mirror fixtures of
   // the text harness (docs/validation/TEXT_PLAY.md).
   LAB_SIEGE_V7,
