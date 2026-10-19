@@ -178,7 +178,7 @@ describe("the Curiosities setup option (section 3)", () => {
       });
   });
 
-  it("never gives the Showcase or a mission any curiosity; a mission setup is always `false`", () => {
+  it("never gives the Showcase any curiosity, nor a mission that places none; such a mission setup is `false`", () => {
     for (const curiosities of [true, false]) {
       const showcase = createInitialMapStateV7({
         ...generatedSetup(0, "SHOWCASE", 16, 3, curiosities),

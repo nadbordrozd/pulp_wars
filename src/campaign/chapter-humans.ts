@@ -106,7 +106,7 @@ export const CHAPTER_HUMANS_V7: CampaignChapterV7 = Object.freeze({
       name: "Broadsides at Saltmarsh",
       format: "KILL",
       briefing:
-        "Kessler's blockade sits at the mouth of the river: Redcap fire rafts, a diving barrel, and his treasure ship, the Golden Goose, a scrap-iron dreadnought carrying the Frontier's stolen taxes and his good cutlery. The Crown keeps no navy up here, so Steele is building one. Sink the Golden Goose and the blockade loses its paymaster.",
+        "Kessler's blockade sits at the mouth of the river: Redcap fire rafts, a diving barrel, and his treasure ship, the Golden Goose, a scrap-iron dreadnought carrying the Frontier's stolen taxes and his good cutlery. The Crown keeps no navy up here, so Steele is building one. Sink the Golden Goose and the blockade loses its paymaster. Mind the old serpent in the deep water: it has no politics.",
       objective: "Sink the Golden Goose by turn 20.",
       hints: Object.freeze([
         "Ships need Navigation to cross the deep sea.",
@@ -124,11 +124,11 @@ export const CHAPTER_HUMANS_V7: CampaignChapterV7 = Object.freeze({
       name: "Kessler Hall",
       format: "CAPTURE",
       briefing:
-        "Kessler Hall stands on its hill above the Baron's lands, with the last of the Redcaps in the yard, his circus beasts in the cellars and the Grey Lodge chanting in the chapel. Every road to it is a toll road. Take the Hall before midsummer. Grubnak has offered help, the Marquis has offered help, and Steele has said no to both: this one belongs to the Frontier.",
+        "Kessler Hall stands on its hill above the Baron's lands, with a lightning tower on the lawn, the last of the Redcaps in the yard, his circus beasts in the cellars and the Grey Lodge chanting in the chapel. Every road to it is a toll road. Take the Hall before midsummer. Grubnak has offered help, the Marquis has offered help, and Steele has said no to both: this one belongs to the Frontier.",
       objective: "Take Kessler Hall by turn 22.",
       hints: Object.freeze([
         "Goblins Gang Up: never leave a Knight alone by a fort.",
-        "The Troll on the Hall's gate needs four lances at once.",
+        "The tower's zap and three lances at once fell the Troll.",
         "Kill the Lodge's channellers and its daemon turns on it.",
       ]),
       closing:

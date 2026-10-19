@@ -11,6 +11,7 @@ import {
 import { randomState } from "../../random/random";
 import {
   GROWTH_HP_V7,
+  NEUTRAL_ROLE_RULES_V7,
   ORIGINAL_BASELINE_V5_TREE,
   cityRewardRecordMatchesLevelV7,
   canEnterTerrainV7,
@@ -28,6 +29,19 @@ import {
   technologyCapabilitiesV7,
 } from "../../rules/ruleset-v7";
 import { initialAchievementEntitlementsV7 } from "../achievements";
+import {
+  BIGFOOT_HABITAT_MINIMUM_V7,
+  CAMP_RADIUS_V7,
+  CURIOSITY_CENTER_DISTANCE_V7,
+  CURIOSITY_DANGER_KINDS_V7,
+  CURIOSITY_PLACEMENT_KINDS_V7,
+  GOLD_CLAIM_TOTAL_V7,
+  SEA_SERPENT_AREA_MINIMUM_V7,
+  bigfootHabitatV7,
+  curiosityTerrainLegalV7,
+  seaSerpentAreaV7,
+  type CuriosityPlacementKindV7,
+} from "../curiosities";
 import { eggActivationV7, laidEggHpV7 } from "../eggs";
 import {
   growthSpentV7,
@@ -41,6 +55,7 @@ import { parseGameStateV7 } from "../state-schema";
 import {
   IMPROVEMENT_IDS_V7,
   NAVAL_ROLE_IDS_V7,
+  NEUTRAL_OWNER_ID_V7,
   REWARD_IDS_V7,
   RULESET_7_ID,
   TECHNOLOGY_IDS_V7,
@@ -52,8 +67,11 @@ import {
   type BoardStateV7,
   type CityStateV7,
   type CoordV7,
+  type CuriosityV7,
   type FactionIdV7,
   type GameStateV7,
+  type MonsterStateV7,
+  type NeutralBreedV7,
   type MatchSetupV7,
   PLAYER_COLORS_V7,
   type PlayerColorV7,
@@ -66,6 +84,7 @@ import {
   type UnitRoleIdV7,
   type UnitStateV7,
 } from "../types";
+import { missionDirectiveProblemV7 } from "./directives";
 import { missionDefinitionV7, missionSeatFactionsV7 } from "./index";
 import type { MissionDefinitionV7, MissionSeatV7, RectV7 } from "./types";
 
@@ -435,6 +454,11 @@ export function buildMissionStateV7(
   };
   const ledger: PopulationContributionV7[] = [];
   const harvestedFruit = new Set<string>();
+  // Mission curiosities (E1): no harvest record on a curiosity's tile.
+  const placed = missionCuriositiesV7(mission);
+  const curiosityKeys = new Set(
+    [...placed.markers, ...placed.neutrals].map((item) => coordText(item.at)),
+  );
   const settledCities = new Map<CityId, CityStateV7>();
   mission.seats.forEach((seat, seatIndex) =>
     seat.cities.forEach((written, cityIndex) => {
@@ -480,6 +504,7 @@ export function buildMissionStateV7(
       const bareGrass = board.tiles.filter(
         (tile) =>
           tile.territoryCityId === id &&
+          !curiosityKeys.has(coordText(tile.at)) &&
           tile.terrain === "GRASS" &&
           tile.site === null &&
           tile.resource === null &&
@@ -590,6 +615,34 @@ export function buildMissionStateV7(
             laidThisTurn: false,
           });
       }
+  // Mission curiosities (E1): the neutral units come after every other
+  // initial entity, in definition order, as on a generated board.
+  const monsters: MonsterStateV7[] = [];
+  for (const neutral of placed.neutrals) {
+    const allocated = allocateUnitId(nextEntityId);
+    nextEntityId = allocated.nextEntityId;
+    const rule = NEUTRAL_ROLE_RULES_V7[neutral.breed];
+    units.push({
+      id: allocated.id,
+      ownerId: NEUTRAL_OWNER_ID_V7,
+      homeCityId: null,
+      role: rule.role,
+      form: neutral.breed === "SEA_SERPENT" ? "NAVAL" : "LAND",
+      at: neutral.at,
+      hp: rule.maxHp,
+      maxHp: rule.maxHp,
+      kills: 0,
+      veteran: false,
+      captureEligible: false,
+      activation: freshActivationV7(),
+    });
+    monsters.push({
+      unitId: allocated.id,
+      breed: neutral.breed,
+      home: neutral.home,
+      provokedBy: [],
+    });
+  }
 
   const draft: Omit<GameStateV7, "scoreLedger"> = {
     schemaVersion: 7,
@@ -608,11 +661,12 @@ export function buildMissionStateV7(
     populationContributions: ledger,
     units,
     treasureChests: chests,
-    // RULESET_7_MAP_CURIOSITIES.md section 3: never on an authored board.
-    curiosities: [],
+    // RULESET_7_MAP_CURIOSITIES.md section 3: an authored board has only
+    // the curiosities its definition places (E1, `pulp_wars-hmyk.14`).
+    curiosities: placed.markers,
     // The frozen sea: an authored board starts without ice.
     ice: [],
-    monsters: [],
+    monsters,
     graves: sortedCoords(mission.graves ?? []),
     plagued: [],
     bitten: [],
@@ -922,6 +976,12 @@ export function validateMissionDefinitionV7(
       );
   }
   validateMissionGoalsV7(mission, fail);
+  // Directives (`pulp_wars-hmyk.14`): the engine never reads them, but a
+  // malformed one is refused rather than ignored in silence.
+  const directiveProblem = missionDirectiveProblemV7(mission);
+  if (directiveProblem !== null) fail(directiveProblem);
+  // Mission curiosities (E1): each kind's tile rules.
+  validateMissionCuriositiesV7(mission, fail);
   // Forbidden technologies: known IDs, closed under prerequisites, and the
   // whole Naval branch on a board without water.
   const forbidden = new Set(mission.forbiddenTechnologies);
@@ -1350,4 +1410,239 @@ function sameCoord(left: CoordV7, right: CoordV7): boolean {
 /** Engine diagnostics only (thrown at build time, never shown in the UI). */
 function coordText(at: CoordV7): string {
   return `(${String(at.x)}, ${String(at.y)})`;
+}
+
+// ------------------------------------------------ Mission curiosities ---
+
+/** E1: the neutral breed a lone neutral kind places on its home. */
+const LONE_NEUTRAL_BREEDS_V7 = {
+  MONSTER: "GIANT_SPIDER",
+  BIGFOOT: "BIGFOOT",
+  SEA_SERPENT: "SEA_SERPENT",
+} as const satisfies Partial<Record<CuriosityPlacementKindV7, NeutralBreedV7>>;
+
+/** E1: the guard breeds each camp may list. */
+const CAMP_GUARD_BREEDS_V7: Readonly<
+  Record<"DOWNED_SAUCER" | "GRAVEYARD", readonly NeutralBreedV7[]>
+> = {
+  DOWNED_SAUCER: ["GRUNT", "RAY_GUNNER", "SHIELD_PROJECTOR"],
+  GRAVEYARD: ["ZOMBIE"],
+};
+
+/**
+ * Mission curiosities (`pulp_wars-hmyk.14`, docs/product/SAGA.md section 4,
+ * E1): the tile rules of every hand-placed curiosity. The generator's site
+ * rules (the distances to capitals, villages, centres and other curiosities,
+ * the board widths, the landmass rules) do not apply; these do:
+ *
+ * - a known placement kind, at most one of each, at most one danger (the
+ *   Spider, a camp, the Serpent: `CURIOSITY_DANGER_KINDS_V7`);
+ * - every tile (a marker, a gate, a lone neutral's home, a camp centre, a
+ *   guard) on the board off its edge ring, on its kind's terrain, and not on
+ *   a settlement, treasure chest, resource, improvement, Grave, starting
+ *   unit, or another curiosity's tile;
+ * - a neutral unit (the Spider, Bigfoot, the Serpent, a guard) where it may
+ *   stand: 3 or more from every settlement centre;
+ * - the Serpent's home on Deep Water with at least
+ *   `SEA_SERPENT_AREA_MINIMUM_V7` water tiles within 3 (room to prowl);
+ *   Bigfoot's home in a habitat of at least `BIGFOOT_HABITAT_MINIMUM_V7`
+ *   Forest tiles; a gate pair on two tiles; a camp's guards (one or more)
+ *   of its breeds, within 2 of its centre and on land;
+ * - no Downed Saucer with a Martian seat, no Graveyard with an Undead seat
+ *   (any faction a seat may play).
+ */
+function validateMissionCuriositiesV7(
+  mission: MissionDefinitionV7,
+  fail: (reason: string) => never,
+): void {
+  const list = mission.curiosities ?? [];
+  if (list.length === 0) return;
+  const size = mission.size;
+  const board = bareBoard(mission);
+  const centres = board.tiles
+    .filter((tile) => tile.site !== null)
+    .map((tile) => tile.at);
+  const units = mission.seats.flatMap((seat) =>
+    seat.units.map((unit) => unit.at),
+  );
+  const factions = mission.seats.flatMap((seat) => missionSeatFactionsV7(seat));
+  const taken: CoordV7[] = [];
+  const tile = (
+    at: CoordV7,
+    what: string,
+    terrain: CuriosityPlacementKindV7 | "GATE",
+  ): void => {
+    const where = `the ${what} at ${coordText(at)}`;
+    if (
+      !Number.isSafeInteger(at.x) ||
+      !Number.isSafeInteger(at.y) ||
+      at.x < 1 ||
+      at.y < 1 ||
+      at.x > size - 2 ||
+      at.y > size - 2
+    )
+      fail(`${where} is off the board or on its edge ring`);
+    const here = board.tiles[at.y * size + at.x] as TileStateV7;
+    if (!curiosityTerrainLegalV7(terrain, here.terrain))
+      fail(`${where} is not on its kind's terrain`);
+    if (here.site !== null) fail(`${where} is on a settlement`);
+    if (here.resource !== null) fail(`${where} is on a resource`);
+    if (here.improvement !== null) fail(`${where} is on an improvement`);
+    if ((mission.treasureChests ?? []).some((chest) => sameCoord(chest, at)))
+      fail(`${where} is on a treasure chest`);
+    if ((mission.graves ?? []).some((grave) => sameCoord(grave, at)))
+      fail(`${where} is on a Grave`);
+    if (units.some((unit) => sameCoord(unit, at)))
+      fail(`${where} is on a starting unit`);
+    if (taken.some((other) => sameCoord(other, at)))
+      fail(`${where} shares its tile with another curiosity`);
+    taken.push(at);
+  };
+  const stands = (at: CoordV7, what: string): void => {
+    if (
+      centres.some(
+        (centre) =>
+          Math.max(Math.abs(centre.x - at.x), Math.abs(centre.y - at.y)) <
+          CURIOSITY_CENTER_DISTANCE_V7,
+      )
+    )
+      fail(
+        `the ${what} at ${coordText(at)} stands within 2 of a settlement centre`,
+      );
+  };
+  const kinds = new Set<string>();
+  for (const entry of list) {
+    const kind: unknown = (entry as { readonly kind?: unknown }).kind;
+    if (
+      typeof kind !== "string" ||
+      !CURIOSITY_PLACEMENT_KINDS_V7.includes(kind as CuriosityPlacementKindV7)
+    )
+      fail(`the curiosity kind ${String(kind)} is unknown`);
+    if (kinds.has(entry.kind)) fail(`two curiosities of kind ${entry.kind}`);
+    kinds.add(entry.kind);
+    if (entry.kind === "DOWNED_SAUCER" && factions.includes("MARTIAN"))
+      fail("a Downed Saucer cannot stand on a board with a Martian seat");
+    if (entry.kind === "GRAVEYARD" && factions.includes("UNDEAD"))
+      fail("a Graveyard cannot stand on a board with an Undead seat");
+    const what = entry.kind.toLowerCase().replaceAll("_", " ");
+    if (entry.kind === "GATES") {
+      tile(entry.at, "gate", "GATE");
+      tile(entry.partner, "gate", "GATE");
+    } else if (entry.kind === "DOWNED_SAUCER" || entry.kind === "GRAVEYARD") {
+      tile(entry.at, what, entry.kind);
+      if (entry.guards.length === 0) fail(`the ${what} has no guard`);
+      for (const guard of entry.guards) {
+        if (!CAMP_GUARD_BREEDS_V7[entry.kind].includes(guard.breed))
+          fail(`the ${what} cannot be guarded by a ${guard.breed}`);
+        if (
+          Math.max(
+            Math.abs(guard.at.x - entry.at.x),
+            Math.abs(guard.at.y - entry.at.y),
+          ) > CAMP_RADIUS_V7
+        )
+          fail(
+            `the ${what}'s guard at ${coordText(guard.at)} is not within 2 of it`,
+          );
+        tile(guard.at, `${what}'s guard`, "MONSTER");
+        stands(guard.at, `${what}'s guard`);
+      }
+    } else {
+      tile(entry.at, what, entry.kind);
+      if (Object.hasOwn(LONE_NEUTRAL_BREEDS_V7, entry.kind))
+        stands(entry.at, what);
+    }
+    if (
+      entry.kind === "SEA_SERPENT" &&
+      seaSerpentAreaV7(board, entry.at).length < SEA_SERPENT_AREA_MINIMUM_V7
+    )
+      fail(
+        `the sea serpent at ${coordText(entry.at)} has fewer than ${String(SEA_SERPENT_AREA_MINIMUM_V7)} water tiles within 3`,
+      );
+  }
+  if (
+    list.filter((entry) => CURIOSITY_DANGER_KINDS_V7.includes(entry.kind))
+      .length > 1
+  )
+    fail("a board has one danger: the Spider, a camp, or the Serpent");
+  // Bigfoot last: its habitat keeps clear of every other curiosity tile.
+  for (const entry of list)
+    if (entry.kind === "BIGFOOT") {
+      const habitat = bigfootHabitatV7(
+        board,
+        entry.at,
+        centres,
+        taken.filter((at) => !sameCoord(at, entry.at)),
+      );
+      if (
+        !habitat.some((at) => sameCoord(at, entry.at)) ||
+        habitat.length < BIGFOOT_HABITAT_MINIMUM_V7
+      )
+        fail(
+          `Bigfoot at ${coordText(entry.at)} has a habitat of fewer than ${String(BIGFOOT_HABITAT_MINIMUM_V7)} Forest tiles`,
+        );
+    }
+}
+
+/**
+ * E1: the tile markers of a mission's curiosities, fresh and sorted by
+ * (y, x), and its neutral units (the lone neutrals on their homes, then a
+ * camp's guards) in definition order.
+ */
+function missionCuriositiesV7(mission: MissionDefinitionV7): {
+  readonly markers: readonly CuriosityV7[];
+  readonly neutrals: readonly {
+    readonly breed: NeutralBreedV7;
+    readonly home: CoordV7;
+    readonly at: CoordV7;
+  }[];
+} {
+  const markers: CuriosityV7[] = [];
+  const neutrals: { breed: NeutralBreedV7; home: CoordV7; at: CoordV7 }[] = [];
+  for (const entry of mission.curiosities ?? [])
+    switch (entry.kind) {
+      case "MONSTER":
+      case "BIGFOOT":
+      case "SEA_SERPENT":
+        neutrals.push({
+          breed: LONE_NEUTRAL_BREEDS_V7[entry.kind],
+          home: entry.at,
+          at: entry.at,
+        });
+        break;
+      case "GATES":
+        markers.push(
+          { kind: "GATE", at: entry.at, partner: entry.partner },
+          { kind: "GATE", at: entry.partner, partner: entry.at },
+        );
+        break;
+      case "DOWNED_SAUCER":
+      case "GRAVEYARD":
+        markers.push({ kind: entry.kind, at: entry.at });
+        for (const guard of entry.guards)
+          neutrals.push({ breed: guard.breed, home: entry.at, at: guard.at });
+        break;
+      case "WISHING_WELL":
+        markers.push({ kind: entry.kind, at: entry.at, tossedBy: [] });
+        break;
+      case "MOON_GUN":
+        markers.push({ kind: entry.kind, at: entry.at, lastFired: null });
+        break;
+      case "GOLD_CLAIM":
+        markers.push({
+          kind: entry.kind,
+          at: entry.at,
+          ownerId: null,
+          left: GOLD_CLAIM_TOTAL_V7,
+        });
+        break;
+      case "LOST_EXPEDITION":
+        markers.push({ kind: entry.kind, at: entry.at, foundBy: null });
+        break;
+      default:
+        markers.push({ kind: entry.kind, at: entry.at });
+    }
+  markers.sort(
+    (left, right) => left.at.y - right.at.y || left.at.x - right.at.x,
+  );
+  return { markers, neutrals };
 }

@@ -19,7 +19,11 @@ import {
 import { hasExactKeysV7, isDenseArrayV7, isUint32V7 } from "./schema";
 import { seatCountAllowedV7 } from "./map-scale";
 import { setupDifficultyAllowedV7 } from "./difficulty";
-import { missionDefinitionV7, missionSeatFactionsV7 } from "./missions/index";
+import {
+  missionDefinitionV7,
+  missionHasCuriositiesV7,
+  missionSeatFactionsV7,
+} from "./missions/index";
 
 const SETUP_KEYS_V7 = [
   "aiCount",
@@ -247,8 +251,9 @@ export function allowDuplicateFactionsV7(setup: MatchSetupV7): MatchSetupV7 {
  * the pair must be registered (`UNKNOWN_MISSION`) and every other field must
  * match the definition (docs/product/CAMPAIGN.md section 2.4). The required
  * `curiosities` boolean (docs/product/RULESET_7_MAP_CURIOSITIES.md section
- * 3) is free on a generated map and the Showcase (which never has any) and
- * always `false` on a mission. The optional `gameMode`
+ * 3) is free on a generated map and the Showcase (which never has any) and,
+ * on a mission, whether its definition places curiosities (E1,
+ * `pulp_wars-hmyk.14`). The optional `gameMode`
  * (docs/product/RULESET_7_SCORE_AND_STARS.md section 4.3) is `DOMINATION`
  * or `PERFECTION`, and never `PERFECTION` on the Showcase or a mission; a
  * setup without it is a Domination setup and is returned without the key.
@@ -429,9 +434,7 @@ function validateMissionSetupV7(input: unknown): MatchSetupValidationV7 {
     input.aiDifficulty !== "NORMAL" ||
     (input.aiMode !== "RIVAL" && input.aiMode !== "COOPERATIVE") ||
     !isColor(input.humanColor) ||
-    // Map curiosities (RULESET_7_MAP_CURIOSITIES.md section 3): an authored
-    // mission board never has curiosities, so its setup is always `false`.
-    input.curiosities !== false ||
+    typeof input.curiosities !== "boolean" ||
     !isDenseArrayV7(input.factions) ||
     !input.factions.every((faction) =>
       FACTION_IDS_V7.includes(faction as FactionIdV7),
@@ -448,6 +451,10 @@ function validateMissionSetupV7(input: unknown): MatchSetupValidationV7 {
     input.aiCount !== mission.seats.length - 1 ||
     input.aiMode !== mission.aiMode ||
     input.seed !== mission.seed ||
+    // Map curiosities (RULESET_7_MAP_CURIOSITIES.md section 3): an authored
+    // board has only the curiosities its definition places (E1,
+    // `pulp_wars-hmyk.14`), so the key says whether it places any.
+    input.curiosities !== missionHasCuriositiesV7(mission) ||
     factions.length !== mission.seats.length ||
     mission.seats.some(
       (seat, index) =>
@@ -481,7 +488,7 @@ function validateMissionSetupV7(input: unknown): MatchSetupValidationV7 {
       mapType: "MISSION",
       mapGenerationRevision: MAP_GENERATION_REVISION_V7,
       mission: ref,
-      curiosities: false,
+      curiosities: input.curiosities,
     },
   };
 }

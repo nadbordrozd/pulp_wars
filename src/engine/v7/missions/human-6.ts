@@ -15,9 +15,11 @@ import type { MissionDefinitionV7 } from "./types";
  * the middle, the Lodge's chapel town west of it and the menagerie east of
  * it. The Redcaps hold their forts and the Hall and send the rest at you;
  * the beasts keep to the Hall's grounds; the Lodge keeps its chapel and
- * the Hall's west lawn. The saga's lightning tower before the Hall's gate
- * waits for the round-3 curiosities (`pulp_wars-737.20`) and mission
- * curiosities (SAGA.md section 4, E1).
+ * the Hall's west lawn. The saga's lightning tower, a Tesla Tower (mission
+ * curiosities, SAGA.md section 4, E1; `pulp_wars-hmyk.14`), stands on the
+ * Hall's lawn two tiles before its gate, so whoever holds it zaps the
+ * gate's Troll (hand play: one zap and three Knights took the Troll in
+ * round 11, where four Knights were needed without it).
  *
  * Hand play (CAMPAIGN.md section 15) set the numbers: a Troll holds the
  * Hall's gate and one Redcap the gate of each fort (with an Orc Brute on
@@ -34,7 +36,7 @@ import type { MissionDefinitionV7 } from "./types";
  *    3   ~~^...ff^........f~~
  *    4   ~~....^f..K....f^.~~      K: Kessler Hall
  *    5   ~.f..fC...f...ff$..~      C: Greyfriars, the Lodge's chapel
- *    6   ~.^...^......ff.ff.~
+ *    6   ~.^...^...Z..ff.ff.~      Z: the Tesla Tower
  *    7   ~f........^..^M.fff~      M: the Menagerie
  *    8   ~f.......$...ff.ff^~
  *    9   ~.f..........f.fff^~
@@ -52,7 +54,8 @@ import type { MissionDefinitionV7 } from "./types";
  */
 export const HUMAN_6_V7: MissionDefinitionV7 = {
   id: "HUMAN_6",
-  revision: 1,
+  // Revision 2 (`pulp_wars-hmyk.14`): the Tesla Tower on the Hall's lawn.
+  revision: 2,
   seed: 20261206,
   // <map>
   size: 20,
@@ -161,6 +164,9 @@ export const HUMAN_6_V7: MissionDefinitionV7 = {
     { x: 3, y: 10 },
   ],
   // </map>
+  // The lightning tower on the Hall's lawn (E1, `pulp_wars-hmyk.14`):
+  // within two of the gate, so whoever stands on it zaps the gate too.
+  curiosities: [{ kind: "TESLA_TOWER", at: { x: 10, y: 6 } }],
   improvements: [
     // Kessler's Toll's Lumber Camp.
     { at: { x: 14, y: 14 }, improvement: "LUMBER_CAMP" },

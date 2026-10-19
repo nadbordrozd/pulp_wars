@@ -2021,6 +2021,15 @@ played (`HOLD` until round 6, then `RUSH`). The kinds are those of
 `pulp_wars-v642.5`, used by missions 6 and 8. Since `pulp_wars-v642.10` a
 `GUARD` may send the rest of its army out (`others`, section 2.5), used by
 missions 3 to 5.
+**Strict shapes** (`pulp_wars-hmyk.14`). The builder refuses a malformed
+directive like any other definition fault (`missionDirectiveProblemV7`,
+run by `validateMissionDefinitionV7` and by the AI's
+`validateMissionDirectivesV7`): a known kind with no key that kind does
+not take, rounds that are integers of at least 2, zones of rectangles on
+the board, a positive garrison, a target on the board, and a `GUARD`'s
+`others` absent, `{ kind: "RUSH" }` or `{ kind: "ASSAULT", target }`.
+Before, a `GUARD` written with `others: "RUSH"` (the bare word, a slip
+made while building `HUMAN_6`) was accepted and played as `NORMAL`.
 An allied AI seat needs no directive of its own: with `teams` it treats the
 human as an ally in every rule and plays its ordinary game against the
 rest.
@@ -2173,6 +2182,58 @@ list a kind, and the alliance rule a case (teams). A match that is not a
 mission plays exactly as at `7r81`, but its saves are refused like any
 other identity change. Mission content added later (missions 5 to 10) does
 not change the identity again unless it needs a new rule.
+
+### 10.9 Mission curiosities (`pulp_wars-hmyk.14`)
+
+The saga's extension E1 ([SAGA.md section 4](SAGA.md#4-mission-system-extensions)):
+a definition may place curiosities by hand, `curiosities: [{ kind, at }]`,
+of any kind map generation places, named by the generator's placement
+kind:
+
+- the tile markers `FOUNTAIN`, `SHRINE`, `WRECK`, `WISHING_WELL` and the
+  round-3 `TESLA_TOWER`, `MOON_GUN`, `GOLD_CLAIM`, `LOST_EXPEDITION`, each
+  fresh (the Gun unfired, the Claim unstaked with its 30 Coins, the
+  Expedition unfound, the Well untossed);
+- the lone neutral units `MONSTER` (the Giant Spider), `BIGFOOT` and
+  `SEA_SERPENT`, each starting on `at`, its home;
+- `GATES`, a pair of Dimensional Gates: `at` and its `partner`;
+- a camp, `DOWNED_SAUCER` or `GRAVEYARD`, with its `guards`
+  (`[{ breed, at }]`).
+
+**Rules on.** A `MISSION` setup's `curiosities` key is `true` exactly when
+its definition places any (setup validation refuses any other value), and
+then the rules of every placed kind are on, round 3's `ZAP`,
+`FIRE_MOON_GUN`, the Claim's payout and the Serpent's neutral turn
+included: those rules act on what stands on the board, so nothing else
+changes. Nothing is placed by the generator on a mission board, so a
+mission without `curiosities` runs with them off, its setup key `false`
+and its state exactly as before (every pin of such a mission is
+unchanged). The builder creates the neutral units after every other
+initial entity, in definition order, as map generation does, and writes no
+harvest record on a curiosity's tile.
+
+**Tile rules, not site rules.** The generator's site rules (the distances
+to capitals, villages, settlement centres and other curiosities, the
+board widths, the landmass and cut-tile rules) do not apply to an authored
+tile; the state schema skips the centre distance and the widths for a
+mission board. Each kind's tile rules do, and the builder refuses a
+definition that breaks one, with the tile in the message: every tile on
+the board off its edge ring, on its kind's terrain, and on no settlement,
+chest, resource, improvement, Grave, starting unit or other curiosity; a
+neutral unit (Spider, Bigfoot, Serpent, guard) 3 or more from every
+settlement centre, where it may stand; the Serpent's home on Deep Water
+with at least 16 water tiles within 3; Bigfoot's home in a habitat of 12
+Forest tiles; a camp's guards of its breeds within 2 of it; one of each
+kind and one danger per board (the Spider, a camp or the Serpent); no
+Downed Saucer with a Martian seat and no Graveyard with an Undead seat.
+
+**Identity.** No ruleset identity change: no rule of play changed, every
+existing setup and state parses as before, and a mission that places
+curiosities is a new `(id, revision)`, which an older build refuses as
+`UNKNOWN_MISSION`. The hidden fixture `TEST_CURIOSITIES` (TEST_GROUNDS
+with nine kinds on an 11 x 11 board, next to the settlements) and
+`tests/unit/ruleset-v7-mission-curiosities.test.ts` cover it. Used by
+`HUMAN_5` (the Sea Serpent) and `HUMAN_6` (the Tesla Tower), section 15.
 
 ## 11. Hand-play record: missions 1 to 4
 
@@ -3805,7 +3866,7 @@ the clock.
 | H2 The Lord Protector's Writ | Dry Land 14, seed 9     | 20261202   | Humans; Goblins                              | Capture the three toll forts by round 18        | by round 14; no city lost         |
 | H3 Outlaws of the Greenwood  | Pangea 16, seed 21      | 20261203   | Humans; Goblins; Dinosaurs                   | Escort Mr. Pettigrew to Kingsbridge by round 20 | by round 16; no city lost         |
 | H4 The Siege of Fort Hollow  | Dry Land 16, seed 19    | 20261204   | Humans and Undead (ally); Cult; Ice Folk     | Hold Fort Hollow for 12 rounds                  | no city lost; Mr. Pettigrew lives |
-| H5 Broadsides at Saltmarsh   | Continents 16, seed 1   | 20261205   | Humans; Goblins                              | Sink the Golden Goose by round 20               | by round 16; no city lost         |
+| H5 Broadsides at Saltmarsh   | Continents 16, seed 1   | 20261205   | Humans; Goblins; the Sea Serpent (neutral)   | Sink the Golden Goose by round 20               | by round 16; no city lost         |
 | H6 Kessler Hall              | Pangea 20, seed 16      | 20261206   | Humans; Goblins, Dinosaurs and Cult (teamed) | Capture Kessler Hall by round 22                | by round 18; no city lost         |
 
 ### 15.2 Hand play
@@ -3878,10 +3939,10 @@ The danger moments, and what each mission's hand play changed:
 
 ### 15.3 Deviations and follow-ups
 
-- **No curiosities.** The saga's Sea Serpent (H5) and lightning tower (H6)
-  wait for the round-3 curiosities (`pulp_wars-737.20`, `737.21`) and
-  mission curiosities (SAGA.md section 4, E1); the missions play without
-  them, and the briefings do not mention them.
+- **Curiosities, since `pulp_wars-hmyk.14`.** Built at first without the
+  saga's Sea Serpent (H5) and lightning tower (H6), which waited for the
+  round-3 curiosities and mission curiosities (section 10.9); both are in
+  now (section 15.4), each mission at revision 2.
 - **E6 and E7 were not built.** A tag on a ship works as it is (the Golden
   Goose is a tagged Dreadnought afloat). Directives still lead land units
   only; moving the fleet off the channel gave H5 its opening rounds, and
@@ -3893,6 +3954,52 @@ The danger moments, and what each mission's hand play changed:
   fall to plain play.
 - **H4's second star is hard**: Mr. Pettigrew died in the last enemy
   phase of the only winning run.
+
+### 15.4 The Sea Serpent and the Tesla Tower (`pulp_wars-hmyk.14`)
+
+Mission curiosities (section 10.9) put the saga's two curiosities on the
+boards; each mission went to revision 2 and was played again, a
+thoughtful run with `play-text` and the scripted autopilot.
+
+- **H5, the Sea Serpent.** Its home is the deep water north of the
+  narrows (the generator would never put it there: 4 from Saltmarsh and
+  from a village). The briefing ends "Mind the old serpent in the deep
+  water: it has no politics." Thoughtful run: **win, round 15, 3 stars**
+  (Seamanship r1; workshop, Boom and Treasury made Saltmarsh level 5 by
+  r4; Submersibles r4, Navigation r5, a Submarine most turns, three land
+  units disbanded for slots; a Fire Raft killed a turn at the Anchorage's
+  Shipyard; the Golden Goose came round the south cape and three
+  torpedoes, 10, 12 and 3, sank her in round 15, her death blast taking 7
+  from each Submarine beside her). The Serpent never bit: it wandered to
+  the channel's north mouth by round 8 and kept near it, beside the Port's
+  exit and the Troll on the Anchorage's shore, so a Submarine had to sail
+  off (the Troll walked away too); it kept the pearl water closed and
+  pushed the fleet south, towards the Goose's road. Danger: a damaged
+  Submarine sent scouting round the south cape was rammed by a raft (r12),
+  and an escort raft's Kaboom took 5 off the Patrol Boat (r8). Autopilot:
+  **defeat, out of time (round 21)**, as at revision 1. The mission needs
+  no re-tuning.
+- **H6, the Tesla Tower.** It stands on the Hall's lawn two tiles before
+  the gate (the saga's "three tiles" would put the gate out of the zap's
+  reach, which the saga's tactic needs), inside the Hall's land,
+  where the generator could never place it. The briefing gains "a lightning
+  tower on the lawn", and the Troll hint became "The tower's zap and three
+  lances at once fell the Troll." Thoughtful run: **win, round 12, 3
+  stars** (Explosives r1; Explorer monument, Boom and fruit made Fort
+  Steele level 5 and a Juggernaut by r2; Overrun chains ending on the
+  gates took Gallows Toll (r3, captured r4) and Weir Toll (r5, captured
+  r6); the Raptors and the Lodge's channellers fell to Knight chains in r7
+  and r8, and the Horror, Unbound, killed the Lodge's Idol Bearer before
+  Knights finished it in r9; Greyfriars, captured in r10, eliminated the
+  Lodge; a veteran Knight held the tower from
+  r8; in r11 one zap and three Knights, 4, 11, 12 and 13, killed the Troll
+  and the third stood on the Hall). The tower is the player's lever: the
+  Normal AI never stood on it in eight rounds (the Redcaps' garrison is
+  leashed to the gate, the beasts kept to its east), and a zap alone does
+  nothing to a Troll that heals 4 a turn on its walls; with the assault it
+  replaces the fourth lance. One Knight was lost (the Triceratops, r7).
+  Autopilot: **defeat, out of time (round 23)**, as at revision 1. The
+  clock and stars stay.
 
 ## Appendix A: critique of the first draft
 

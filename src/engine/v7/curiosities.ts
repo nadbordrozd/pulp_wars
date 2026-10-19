@@ -388,16 +388,26 @@ export type WellOutcomeV7 = (typeof WELL_OUTCOMES_V7)[number];
 
 /**
  * Section 3: whether a setup's map can carry curiosities: the option is on
- * and the map is generated (the Showcase and mission boards never have any).
+ * and the map is not the Showcase (which never has any). A `MISSION` setup
+ * has the option on exactly when its definition places curiosities by hand
+ * (E1, `pulp_wars-hmyk.14`); see {@link authoredCuriositiesV7}.
  */
 export function setupHasCuriositiesV7(
   setup: Pick<MatchSetupV7, "curiosities" | "mapType">,
 ): boolean {
-  return (
-    setup.curiosities &&
-    setup.mapType !== "SHOWCASE" &&
-    setup.mapType !== "MISSION"
-  );
+  return setup.curiosities && setup.mapType !== "SHOWCASE";
+}
+
+/**
+ * Mission curiosities (`pulp_wars-hmyk.14`, docs/product/SAGA.md section 4,
+ * E1): whether the setup's curiosities were placed by hand (a mission board),
+ * so the generator's site rules (the distance to every settlement centre,
+ * the board widths) do not bind them; each kind's tile rules still do.
+ */
+export function authoredCuriositiesV7(
+  setup: Pick<MatchSetupV7, "mapType">,
+): boolean {
+  return setup.mapType === "MISSION";
 }
 
 // ------------------------------------------------------- Generation ---

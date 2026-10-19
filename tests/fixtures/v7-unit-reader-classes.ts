@@ -546,6 +546,9 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     // of `LAB_LATE`, on a board where nothing is burrowed.
     "src/engine/v7/missions/lab-human.ts::<module>": "BOARD",
     "src/engine/v7/missions/build.ts::validateMissionDefinitionV7": "BOARD",
+    // Mission curiosities (`pulp_wars-hmyk.14`): no hand-placed curiosity
+    // on a definition's starting unit, which stands on the board.
+    "src/engine/v7/missions/build.ts::validateMissionCuriositiesV7": "BOARD",
     "src/engine/v7/martian.ts::coolingStepV7": "BOARD",
     "src/engine/v7/martian.ts::mindControlCooldownStepV7": "BOARD",
     // `pulp_wars-1wy.3`: the per-turn Martian lists name units on the board

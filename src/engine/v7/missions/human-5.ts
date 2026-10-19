@@ -19,9 +19,11 @@ import type { MissionDefinitionV7 } from "./types";
  * Rafts and a Diving Barrel; the Normal AI keeps her there for some rounds
  * and then brings her round the south cape into the channel, where a
  * waiting pack of Submarines can sink her. The Anchorage builds a Fire
- * Raft a turn at its Shipyard. The saga's old Sea Serpent in the deep
- * channel waits for the round-3 curiosities (`pulp_wars-737.21`) and
- * mission curiosities (SAGA.md section 4, E1).
+ * Raft a turn at its Shipyard. The saga's old Sea Serpent (mission
+ * curiosities, SAGA.md section 4, E1; `pulp_wars-hmyk.14`) prowls the deep
+ * water north of the narrows and bites whoever sails beside it, Redcap or
+ * Ranger (hand play: it parked at the channel's north mouth for rounds and
+ * pushed the Submarines south, out of the pearl water).
  *
  * Hand play (CAMPAIGN.md section 15) set the numbers: the Redcaps' shore
  * keeps no villages and the Anchorage no pearls, and the Redcaps learn
@@ -35,7 +37,7 @@ import type { MissionDefinitionV7 } from "./types";
  *    2   ~~~.v~~~f~~.ff.~      v: villages
  *    3   ~~$.ff~~~~~^f.f~      $: treasure chests
  *    4   ~~.fff~~~~~~...~
- *    5   ~fv^ff~~~~~~f..~
+ *    5   ~fv^ff~~@~~~f..~      @: the Sea Serpent's home
  *    6   ~~^.ff~~~~~f.f^~
  *    7   ~f.....~~~....~~
  *    8   ~vf....~~~f..W~~      W: Wreckers' Cove (the Redcaps' capital)
@@ -50,7 +52,8 @@ import type { MissionDefinitionV7 } from "./types";
  */
 export const HUMAN_5_V7: MissionDefinitionV7 = {
   id: "HUMAN_5",
-  revision: 1,
+  // Revision 2 (`pulp_wars-hmyk.14`): the old Sea Serpent in the deep water.
+  revision: 2,
   seed: 20261205,
   // <map>
   size: 16,
@@ -133,6 +136,9 @@ export const HUMAN_5_V7: MissionDefinitionV7 = {
     { x: 10, y: 12 },
   ],
   // </map>
+  // The saga's old serpent (E1, `pulp_wars-hmyk.14`): it has bitten both
+  // sides for a hundred years, in the deep water north of the narrows.
+  curiosities: [{ kind: "SEA_SERPENT", at: { x: 8, y: 5 } }],
   improvements: [
     // Saltmarsh's Port and Farms.
     { at: { x: 7, y: 9 }, improvement: "PORT" },

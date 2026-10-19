@@ -31,6 +31,7 @@ export * from "./v7/map-scale";
 export * from "./v7/martian";
 export * from "./v7/missions/index";
 export * from "./v7/missions/build";
+export * from "./v7/missions/directives";
 export * from "./v7/missions/generated-map";
 export * from "./v7/missions/objectives";
 export * from "./v7/ice-folk";

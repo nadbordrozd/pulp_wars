@@ -2,6 +2,7 @@ import type { PlayerId, UnitId } from "../engine/model/ids";
 import type { CommandV7 } from "../engine/v7/commands";
 import { unitMayEnterMountainV7 } from "../engine/rules/ruleset-v7";
 import { cooperativeAlliesV7 } from "../engine/v7/economy";
+import { missionDirectiveProblemV7 } from "../engine/v7/missions/directives";
 import {
   missionDefinitionV7,
   missionSeatDirectivesV7,
@@ -432,78 +433,16 @@ export function leashReadyCommandsV7<T extends { readonly command: CommandV7 }>(
 
 /**
  * Build-free checks of a mission's directives (the engine never reads
- * them): only AI seats carry one; zones are non-empty rectangles on the
- * board; a `GUARD` garrison is a positive integer; `untilRound` is an
- * integer of at least 2.
+ * them): the strict shape check the builder also runs
+ * (`missionDirectiveProblemV7`, `pulp_wars-hmyk.14`): only AI seats carry
+ * one; known kinds without stray keys; zones are non-empty rectangles on
+ * the board; a `GUARD` garrison is a positive integer and its `others` a
+ * `RUSH` or an `ASSAULT` on a tile of the board; `untilRound` is an integer
+ * of at least 2. Throws a `RangeError` naming the mission and the seat.
  */
 export function validateMissionDirectivesV7(
   mission: MissionDefinitionV7,
 ): void {
-  for (const [index, seat] of mission.seats.entries())
-    for (const directive of missionSeatDirectivesV7(seat))
-      validateDirective(mission, index, directive);
-}
-
-function validateDirective(
-  mission: MissionDefinitionV7,
-  index: number,
-  directive: MissionDirectiveV7,
-): void {
-  {
-    const where = `${mission.id} seat ${String(index)}`;
-    if (index === 0)
-      throw new RangeError(`${where}: the human seat takes no directive`);
-    if (
-      directive.untilRound !== undefined &&
-      (!Number.isSafeInteger(directive.untilRound) || directive.untilRound < 2)
-    )
-      throw new RangeError(`${where}: untilRound must be an integer >= 2`);
-    if (
-      directive.fromRound !== undefined &&
-      (!Number.isSafeInteger(directive.fromRound) ||
-        directive.fromRound < 2 ||
-        (directive.untilRound !== undefined &&
-          directive.fromRound >= directive.untilRound))
-    )
-      throw new RangeError(
-        `${where}: fromRound must be an integer >= 2 and below untilRound`,
-      );
-    if (directive.kind === "NORMAL" || directive.kind === "RUSH") return;
-    const onBoard = (target: CoordV7): boolean =>
-      Number.isSafeInteger(target.x) &&
-      Number.isSafeInteger(target.y) &&
-      target.x >= 0 &&
-      target.y >= 0 &&
-      target.x < mission.size &&
-      target.y < mission.size;
-    if (directive.kind === "ASSAULT") {
-      if (!onBoard(directive.target))
-        throw new RangeError(`${where}: the assault target is off the board`);
-      return;
-    }
-    if (
-      directive.kind === "GUARD" &&
-      directive.others?.kind === "ASSAULT" &&
-      !onBoard(directive.others.target)
-    )
-      throw new RangeError(`${where}: the assault target is off the board`);
-    if (directive.zone.length === 0)
-      throw new RangeError(`${where}: the zone is empty`);
-    for (const rect of directive.zone)
-      if (
-        ![rect.x0, rect.y0, rect.x1, rect.y1].every(Number.isSafeInteger) ||
-        rect.x0 < 0 ||
-        rect.y0 < 0 ||
-        rect.x1 >= mission.size ||
-        rect.y1 >= mission.size ||
-        rect.x0 > rect.x1 ||
-        rect.y0 > rect.y1
-      )
-        throw new RangeError(`${where}: a zone rectangle is off the board`);
-    if (
-      directive.kind === "GUARD" &&
-      (!Number.isSafeInteger(directive.garrison) || directive.garrison < 1)
-    )
-      throw new RangeError(`${where}: the garrison must be a positive integer`);
-  }
+  const problem = missionDirectiveProblemV7(mission);
+  if (problem !== null) throw new RangeError(`${mission.id} ${problem}`);
 }

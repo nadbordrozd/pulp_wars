@@ -3,10 +3,12 @@ import type {
   CoordV7,
   FactionIdV7,
   ImprovementIdV7,
+  NeutralBreedV7,
   RewardIdV7,
   TechnologyIdV7,
   UnitRoleIdV7,
 } from "../types";
+import type { CuriosityPlacementKindV7 } from "../curiosities";
 import type { MapGenerationRulesV7 } from "../map";
 
 /**
@@ -66,6 +68,19 @@ export interface MissionDefinitionV7 {
   readonly treasureChests?: readonly CoordV7[];
   /** Only with an Undead seat. */
   readonly graves?: readonly CoordV7[];
+  /**
+   * Mission curiosities (`pulp_wars-hmyk.14`, docs/product/SAGA.md section
+   * 4, E1; CAMPAIGN.md section 10.9): curiosities placed by hand, of any
+   * kind map generation places. A mission without them runs with
+   * curiosities off (its setup's `curiosities` is `false`); a mission with
+   * them runs with that key `true`, so the rules of every kind it places
+   * are on (round 3's `ZAP`, `FIRE_MOON_GUN`, the Claim's payout and the
+   * Serpent's turn included), and nothing else is placed. The generator's
+   * site rules (distances to capitals, villages, centres and other
+   * curiosities, the board widths, the landmass rules) do not apply to an
+   * authored tile; each kind's tile rules do (`validateMissionDefinitionV7`).
+   */
+  readonly curiosities?: readonly MissionCuriosityV7[];
   /** `aiMode` as in a normal setup. */
   readonly aiMode: "RIVAL" | "COOPERATIVE";
   /** Seat 0 is the human; 2–4 seats. */
@@ -85,6 +100,39 @@ export interface MissionDefinitionV7 {
   readonly forbiddenTechnologies: readonly TechnologyIdV7[];
   readonly objective: MissionObjectiveV7;
 }
+
+/**
+ * One hand-placed curiosity (E1), named by the generator's placement kind:
+ * a tile marker (`FOUNTAIN`, `SHRINE`, `WRECK`, `WISHING_WELL`,
+ * `TESLA_TOWER`, `MOON_GUN`, `GOLD_CLAIM`, `LOST_EXPEDITION`), a lone
+ * neutral unit that starts on its home (`MONSTER`, the Giant Spider;
+ * `BIGFOOT`; `SEA_SERPENT`), the pair of Dimensional Gates (`GATES`: `at`
+ * and its `partner`), or a camp centre with its guards (`DOWNED_SAUCER`,
+ * `GRAVEYARD`). Markers start fresh: the Gun unfired, the Claim unstaked
+ * with all its Coins, the Expedition unfound, the Well untossed.
+ */
+export type MissionCuriosityV7 =
+  | {
+      readonly kind: Exclude<
+        CuriosityPlacementKindV7,
+        "GATES" | "DOWNED_SAUCER" | "GRAVEYARD"
+      >;
+      readonly at: CoordV7;
+    }
+  | {
+      readonly kind: "GATES";
+      readonly at: CoordV7;
+      readonly partner: CoordV7;
+    }
+  | {
+      readonly kind: "DOWNED_SAUCER" | "GRAVEYARD";
+      readonly at: CoordV7;
+      /** The camp's guards, of the camp's breeds, within 2 of its centre. */
+      readonly guards: readonly {
+        readonly breed: NeutralBreedV7;
+        readonly at: CoordV7;
+      }[];
+    };
 
 export interface MissionImprovementV7 {
   readonly at: CoordV7;

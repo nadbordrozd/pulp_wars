@@ -131,6 +131,7 @@ import {
   guardCampKindV7,
   isGuardBreedV7,
   setupHasCuriositiesV7,
+  authoredCuriositiesV7,
 } from "./curiosities";
 import { parseMatchSetupV7 } from "./setup";
 import { legacyScoreLedgerV7, scoreLedgerShapeValidV7 } from "./score";
@@ -1375,8 +1376,12 @@ function parseMonsters(
   setup: MatchSetupV7,
 ): readonly MonsterStateV7[] | null {
   if (!isDenseArrayV7(input)) return null;
+  // Mission curiosities (E1, `pulp_wars-hmyk.14`): an authored board's
+  // neutral units keep no board width.
+  const authored = authoredCuriositiesV7(setup);
   const curiosityBoard =
-    setupHasCuriositiesV7(setup) && setup.width >= MONSTER_MINIMUM_WIDTH_V7;
+    setupHasCuriositiesV7(setup) &&
+    (authored || setup.width >= MONSTER_MINIMUM_WIDTH_V7);
   const values: MonsterStateV7[] = [];
   for (const candidate of input) {
     const loose =
@@ -1422,11 +1427,13 @@ function parseMonsters(
       breed === null ||
       provokedBy === null ||
       provokedBy.includes(unitId) ||
-      (breed === "BIGFOOT" && setup.width < BIGFOOT_MINIMUM_WIDTH_V7) ||
+      (breed === "BIGFOOT" &&
+        !authored &&
+        setup.width < BIGFOOT_MINIMUM_WIDTH_V7) ||
       // Round 3, bead B (section 10.2): a Serpent is never on Dry Land or
-      // below width 16.
+      // below width 16 (a mission's anywhere its board has room).
       (breed === "SEA_SERPENT" &&
-        (setup.width < SEA_SERPENT_MINIMUM_WIDTH_V7 ||
+        ((!authored && setup.width < SEA_SERPENT_MINIMUM_WIDTH_V7) ||
           setup.mapType === "DRY_LAND")) ||
       ((breed === "GIANT_SPIDER" ||
         breed === "BIGFOOT" ||
@@ -2775,6 +2782,9 @@ function iceValid(
  * are exactly one pair (or none) on a board of width 20 or more; the Well
  * lists the seats that tossed, strictly ascending; no Downed Saucer with a
  * Martian seat, no Graveyard with an Undead seat, and at most one camp.
+ * Mission curiosities (E1, `pulp_wars-hmyk.14`): on a mission board (whose
+ * setup's `curiosities` is true when its definition places any) neither the
+ * distance to the centres nor a board width applies.
  */
 function parseCuriosities(
   input: unknown,
@@ -2784,6 +2794,10 @@ function parseCuriosities(
 ): readonly CuriosityV7[] | null {
   if (!isDenseArrayV7(input)) return null;
   if (input.length > 0 && !setupHasCuriositiesV7(setup)) return null;
+  // Mission curiosities (E1, `pulp_wars-hmyk.14`): a hand-placed tile keeps
+  // its kind's tile rules but not the generator's distance to the centres
+  // or the board widths.
+  const authored = authoredCuriositiesV7(setup);
   const centers = board.tiles
     .filter((tile) => tile.site !== null)
     .map((tile) => tile.at);
@@ -2835,18 +2849,20 @@ function parseCuriosities(
       tile.terrain === "RIFT" ||
       !curiosityTerrainLegalV7(kind, tile.terrain) ||
       treasureChests.some((chest) => sameCoordV7(chest, at)) ||
-      centers.some(
-        (center) =>
-          Math.max(Math.abs(center.x - at.x), Math.abs(center.y - at.y)) <
-          CURIOSITY_CENTER_DISTANCE_V7,
-      ) ||
+      (!authored &&
+        centers.some(
+          (center) =>
+            Math.max(Math.abs(center.x - at.x), Math.abs(center.y - at.y)) <
+            CURIOSITY_CENTER_DISTANCE_V7,
+        )) ||
       (kind === "DOWNED_SAUCER" && setup.factions.includes("MARTIAN")) ||
       (kind === "GRAVEYARD" && setup.factions.includes("UNDEAD")) ||
-      (kind === "GATE" && setup.width < GATES_MINIMUM_WIDTH_V7) ||
-      // Round 3 (`pulp_wars-737.20`, section 3.1): the board widths.
-      (kind === "TESLA_TOWER" && setup.width < TESLA_MINIMUM_WIDTH_V7) ||
-      (kind === "MOON_GUN" && setup.width < MOON_GUN_MINIMUM_WIDTH_V7) ||
-      (kind === "GOLD_CLAIM" && setup.width < GOLD_CLAIM_MINIMUM_WIDTH_V7)
+      (!authored &&
+        // Round 3 (`pulp_wars-737.20`, section 3.1): the board widths.
+        ((kind === "GATE" && setup.width < GATES_MINIMUM_WIDTH_V7) ||
+          (kind === "TESLA_TOWER" && setup.width < TESLA_MINIMUM_WIDTH_V7) ||
+          (kind === "MOON_GUN" && setup.width < MOON_GUN_MINIMUM_WIDTH_V7) ||
+          (kind === "GOLD_CLAIM" && setup.width < GOLD_CLAIM_MINIMUM_WIDTH_V7)))
     )
       return null;
     if (kind === "MOON_GUN") {

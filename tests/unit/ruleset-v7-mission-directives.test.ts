@@ -25,6 +25,7 @@ import {
   queryAiReadyCommandsV7,
   randomState,
   unitId,
+  validateMissionDefinitionV7,
   viewForV7,
   type CommandV7,
   type CoordV7,
@@ -132,6 +133,66 @@ describe("directive resolution", () => {
         }),
       ),
     ).toThrow(/garrison/);
+    // `pulp_wars-hmyk.14`: a malformed shape is refused, never ignored. A
+    // GUARD whose `others` is the bare word (the HUMAN_6 slip) played plain
+    // NORMAL; an unknown kind or a stray key did nothing at all.
+    const loose = (directive: unknown) =>
+      withDirective(
+        1,
+        directive as NonNullable<
+          MissionDefinitionV7["seats"][number]["directive"]
+        >,
+      );
+    const guard = { kind: "GUARD", zone: [{ x0: 4, y0: 4, x1: 6, y1: 6 }] };
+    expect(() =>
+      validateMissionDirectivesV7(
+        loose({ ...guard, garrison: 2, others: "RUSH" }),
+      ),
+    ).toThrow(
+      'TEST_GUARD seat 1: GUARD others must be { kind: "RUSH" } or { kind: "ASSAULT", target }, not "RUSH"',
+    );
+    expect(() =>
+      validateMissionDirectivesV7(
+        loose({ ...guard, garrison: 2, others: { kind: "HOLD" } }),
+      ),
+    ).toThrow(/GUARD others must be/);
+    expect(() =>
+      validateMissionDirectivesV7(
+        loose({
+          ...guard,
+          garrison: 2,
+          others: { kind: "ASSAULT", target: { x: 40, y: 1 } },
+        }),
+      ),
+    ).toThrow(/assault target .* is off the board/);
+    expect(() =>
+      validateMissionDirectivesV7(loose({ kind: "CHARGE" })),
+    ).toThrow(/directive kind "CHARGE" is unknown/);
+    expect(() =>
+      validateMissionDirectivesV7(loose({ kind: "RUSH", untilRond: 4 })),
+    ).toThrow(/RUSH directive takes no key "untilRond"/);
+    expect(() =>
+      validateMissionDirectivesV7(loose({ kind: "ASSAULT", target: "HALL" })),
+    ).toThrow(/assault target "HALL" is off the board/);
+    expect(() => validateMissionDirectivesV7(loose([]))).toThrow(
+      /schedule is empty/,
+    );
+    expect(() =>
+      validateMissionDirectivesV7(loose({ ...guard, zone: [{ x0: 4 }] })),
+    ).toThrow(/zone rectangle/);
+    // The builder refuses the same definition (the engine never reads a
+    // directive, but a broken one is a definition fault).
+    expect(() =>
+      validateMissionDefinitionV7(
+        loose({ ...guard, garrison: 2, others: "RUSH" }),
+      ),
+    ).toThrow(/Mission TEST_GUARD: seat 1: GUARD others must be/);
+    // A well-formed GUARD with its others still passes.
+    expect(() =>
+      validateMissionDefinitionV7(
+        loose({ ...guard, garrison: 2, others: { kind: "RUSH" } }),
+      ),
+    ).not.toThrow();
   });
 
   it("is NORMAL outside missions, for seat 0, and without a directive", () => {

@@ -36,6 +36,7 @@ import { LAB_BACKLINE_V7, LAB_LATE_V7, LAB_SIEGE_V7 } from "./lab-human";
 import { LAB_ICE_FOLK_MID_V7 } from "./lab-ice-folk";
 import { LAB_MARTIAN_MID_V7 } from "./lab-martian";
 import { LAB_UNDEAD_MID_V7 } from "./lab-undead";
+import { TEST_CURIOSITIES_V7 } from "./test-curiosities";
 import { TEST_GROUNDS_V7 } from "./test-grounds";
 import {
   TEST_ASSAULT_V7,
@@ -83,6 +84,8 @@ export const MISSION_REGISTRY_V7: readonly MissionDefinitionV7[] = deepFreeze([
   TEST_SURVIVE_V7,
   TEST_CAPTURE_V7,
   TEST_KILL_V7,
+  // The mission-curiosities fixture (`pulp_wars-hmyk.14`, SAGA.md E1).
+  TEST_CURIOSITIES_V7,
   // Chapter One, "The Hollow Frontier" (`pulp_wars-68k.4`, section 6).
   FRONTIER_1_V7,
   FRONTIER_2_V7,
@@ -237,7 +240,17 @@ export function missionMatchSetupV7(
     mapType: "MISSION",
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
     mission: { id: mission.id, revision: mission.revision },
-    // RULESET_7_MAP_CURIOSITIES.md section 3: never on an authored board.
-    curiosities: false,
+    // RULESET_7_MAP_CURIOSITIES.md section 3: an authored board has only
+    // the curiosities its definition places (E1, `pulp_wars-hmyk.14`).
+    curiosities: missionHasCuriositiesV7(mission),
   };
+}
+
+/**
+ * Mission curiosities (`pulp_wars-hmyk.14`, docs/product/SAGA.md section 4,
+ * E1): whether the definition places any curiosity, which is the `MISSION`
+ * setup's `curiosities` key (a mission without one runs with them off).
+ */
+export function missionHasCuriositiesV7(mission: MissionDefinitionV7): boolean {
+  return (mission.curiosities ?? []).length > 0;
 }

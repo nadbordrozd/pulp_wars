@@ -148,10 +148,16 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
     "66bdfcf29e63994de029611e0e7f351714a85ed3500a29fa5c15de48e4838eab",
   "HUMAN_4@1:ORIGINAL":
     "1271ca63142a0272dd7a402f47460d89028dd0f1b0ded04c8f49ed964af6f984",
-  "HUMAN_5@1:ORIGINAL":
-    "1c5ed5d356f0af55e50e583b3e494579f1d8a77350f8fe4ba277379b8fc49680",
-  "HUMAN_6@1:ORIGINAL":
-    "c94b6abbec360a3d37d2cdac72a36fc9471f47f531874a1bddb2d205813fc21f",
+  // Mission curiosities (`pulp_wars-hmyk.14`): revision 2 of each, the Sea
+  // Serpent in H5 and the Tesla Tower in H6, and the hidden fixture.
+  "TEST_CURIOSITIES@1:ORIGINAL":
+    "9b6a41cf850a6551d45396582fe72045f56ce02f4c4b970b247e9afb71dac4d4",
+  "TEST_CURIOSITIES@1:GOBLIN":
+    "ed95462583b0f54b4a3ffd614617928995af2452bb4dc78049fc6bacf57d3a04",
+  "HUMAN_5@2:ORIGINAL":
+    "6278f634c5bf0b19aa3f9efeaa17db38051fdb372e5045841d4ec712485eb5d1",
+  "HUMAN_6@2:ORIGINAL":
+    "e4bf04b3bb6d110fde3d56746ccfacd5e0ffda9264a684bf60d223edcbad5de1",
   // The siege fixture of the Normal AI (`pulp_wars-68k.6`).
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 2.
   "TEST_NECK@2:ORIGINAL":
@@ -345,7 +351,14 @@ function missionStateHash(state: GameStateV7): string {
   expect(huntedThisTurn).toEqual([]);
   expect(berserkThisTurn).toEqual([]);
   expect([terrorThisTurn, feastedThisTurn]).toEqual([[], []]);
-  expect([monsters, beamedThisTurn, tractorUsedThisTurn]).toEqual([[], [], []]);
+  expect([beamedThisTurn, tractorUsedThisTurn]).toEqual([[], []]);
+  // Mission curiosities (`pulp_wars-hmyk.14`, E1): a mission that places a
+  // neutral unit (the Sea Serpent) hashes its `monsters` list; every other
+  // mission has none and hashes as before.
+  const placed = missionDefinitionV7(
+    state.setup.mission ?? { id: "", revision: 0 },
+  )?.curiosities;
+  if (placed === undefined) expect(monsters).toEqual([]);
   // The frozen sea (`pulp_wars-5ti.3`) added the `ice` list, empty in every
   // initial mission state and left out too.
   expect(ice).toEqual([]);
@@ -358,6 +371,7 @@ function missionStateHash(state: GameStateV7): string {
   expect([stuck, toothache, glazedThisTurn]).toEqual([[], [], []]);
   return canonicalHash({
     ...rest,
+    ...(monsters.length === 0 ? {} : { monsters }),
     chilled: frozen,
     rulesetId: "*",
     setup: {
@@ -458,10 +472,7 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
     "dc6f40e41a918df3198bc9d2bcff5c7bc8bafe34e71d7a4afee4d028bc0febcb",
   "HUMAN_4@1:ORIGINAL":
     "a91220876d04c2802bbe523e120a8beeed87099677255527ccdc186880112803",
-  "HUMAN_5@1:ORIGINAL":
-    "ad134da1a54dbd6b32f4e463159dd3c855d2a97807da297805f6829d45293122",
-  "HUMAN_6@1:ORIGINAL":
-    "cad347dca9c00e391df1c14dc289f8b9d428ec305bee4ab6443cae2147383c0c",
+
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 2.
   "TEST_NECK@2:ORIGINAL":
     "32595babd0a4d5371b260320b8d360786ba69b01808d2716eaadec332213500e",
@@ -681,7 +692,10 @@ describe("the mission registry", () => {
         if (!raw.ok) throw new Error(raw.error.code);
         const label = `${mission.id}@${String(mission.revision)}:${faction}`;
         actual[label] = missionStateHash(raw.state);
-        preCuriosity[label] = preCuriosityMissionStateHash(raw.state);
+        // A mission that places curiosities (`pulp_wars-hmyk.14`) was never
+        // built before them, so it has no pre-curiosity pin.
+        if (mission.curiosities === undefined)
+          preCuriosity[label] = preCuriosityMissionStateHash(raw.state);
       }
     // A mismatch: bump the edited mission's revision (section 2.4).
     expect(actual).toEqual(PINNED_MISSION_HASHES);
