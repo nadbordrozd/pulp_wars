@@ -4,8 +4,10 @@
 to 3 of the user's plan, that is the world and how the nine faction campaigns
 interlock ([section 1](#1-the-world-and-the-saga)), each campaign's narrative
 ([section 2](#2-the-nine-campaigns)), and the briefing of every one of the 54
-missions ([section 3](#3-the-missions)). The independent consistency review is
-`pulp_wars-hmyk.2`; the campaign screen is `pulp_wars-hmyk.3`; each campaign
+missions ([section 3](#3-the-missions)). Step 4, the independent
+consistency review, is `pulp_wars-hmyk.2`, recorded in
+[section 6](#6-editors-review); the campaign screen is `pulp_wars-hmyk.3`
+(built); each campaign
 is built and hand-played by its own bead (`pulp_wars-hmyk.4` to
 `pulp_wars-hmyk.12`) on the mission framework of
 [CAMPAIGN.md section 10](CAMPAIGN.md#10-the-mission-framework), following
@@ -32,7 +34,8 @@ different pov. These are supposed to be complementing each other."
 stays on the campaign screen as the **prologue**. The saga follows on from
 it: its outro already promises "Part Two: The Thing in the Shaft", and that
 is this saga's title. Nothing here contradicts the prologue's briefings or
-closing lines; [section 5](#5-consistency-review) records the checks.
+closing lines; [section 5](#5-consistency-review) records the author's
+checks and [section 6](#6-editors-review) the independent editor's.
 
 ## 0. Conventions
 
@@ -74,7 +77,17 @@ closing lines; [section 5](#5-consistency-review) records the checks.
     poachers and circus hands (a Human seat that is not Steele's, until the
     Baron is eaten in DN4);
   - **the Crown**: the Lowland court, its officials, its Harvest Wardens and
-    its lake navy (a Human seat that is not Steele's either).
+    its lake navy (a Human seat that is not Steele's either);
+  - **the island's tribes**: the beasts and cavemen of the Island That Time
+    Forgot, who bite every stranger who lands or sails past (a Dinosaur
+    seat in G3, G4, M3 and CU3; the Old Queen leads them only in her own
+    campaign).
+- **Named characters.** A hero whose star is "X lives" and who falls in a
+  mission is carried off the field, not killed: the story goes on as
+  written (the prologue's convention for the Thane, the Old Queen and
+  Queen Praline). A character the saga kills later is never a unit the
+  player can kill earlier: Kessler is never on the field before DN4, and
+  the Marquis and the Thane stand at the bell, not on the field, in CU6.
 - **Formats** use the prologue's labels: Conquest, Capture (against the
   clock), Escort, Hold out, Hunt, Rescue (hold an ally's city). "Naval" and
   "build-up" describe the board and the situation, not a different
@@ -92,20 +105,20 @@ closing lines; [section 5](#5-consistency-review) records the checks.
 A compass of the places the saga uses. Every place named in the prologue
 keeps its owner and its side of the map; the new ones are marked _new_.
 
-| Region                    | Where      | Who                                                | Places                                                                                                                                                                                                      |
-| ------------------------- | ---------- | -------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| The Lowland Crown         | far south  | the Crown and its court at Kingsport (_new_)       | offstage: writs, debts and Commissioners come from here                                                                                                                                                     |
-| The Frontier              | centre     | Marshal Steele and the Frontier Rangers            | Fort Hollow, Northwatch, Millford and its observatory, Fort Steele, Camp Concord, Ferry Rest; Kingsbridge where the Royal Assizes sit (_new_); Saltmarsh at the river mouth (_new_)                         |
-| Kessler's lands           | west march | Baron Otto Kessler                                 | Kessler Hall (_new_), Kessler's Toll in the pass, Fort Bullion; the King's Road and its toll forts (_new_)                                                                                                  |
-| The Hollow Hills          | east       | Grubnak the Loud's goblins                         | Grubnak's Hall, the Warrens, Muckgate, Stinkwell, Drum Camp, Wolfden; Wreckers' Cove on the coast (_new_)                                                                                                   |
-| The Barrowlands           | north-west | the Ashen Marquis                                  | the Ashen Tower, the Bone Gate on Bone Neck, Hollow Barrow, Cinderfield and its archive, Gravesend on its grey bay, Lantern Hill and Gallows Cross on the Dead Men's Road; the Abbey of Saint Ashes (_new_) |
-| The Hollow Mountain       | north      | Thane Brunhild Ironbraid's dwarves                 | Ironbraid Hold and its Gate, the Hall of the Thanes (_new_), Copperstep, the Iron Peak (_new_), the Deep Gate over the shaft the dwarves call the Bottomless; Anvil Bay on the coast (_new_)                |
-| The summit and its slopes | north      | the Rangers' post, and the towns that knelt        | the ruins of the Lodge of the Unblinking Eye on the summit, Candlewick on the slope, Greyhood in the marsh below; the Ember Lodge on the mountain's shoulder (_new_)                                        |
-| The White Peaks           | far north  | Mother Rime's Ice Folk                             | Rime Camp, Whitefang, the Glacier Tomb (_new_); Coldharbour on the Lost Sea; the Grey Strait between the peaks and Anvil Bay (_new_)                                                                        |
-| The Rift Lakes            | north-east | Queen Praline's Sugarcrest, Captain Quaxx's colony | Sugarcrest, Gumdrop, Riftwatch on the edge of the crack; Saucer Field and Red Dust; the goblin squats of Spitewood and Sourmash                                                                             |
-| The Lost Sea              | west       | the Old Queen's dinosaurs                          | the Island That Time Forgot: Thunder Nest, Fernmaw, Tarpit, Egg Rock, the Crater and its Glass Ship, Ray Hollow, Port Kessler; Smuggler's Rock and Lamplight Cove (_new_)                                   |
+| Region                    | Where      | Who                                                | Places                                                                                                                                                                                                                                            |
+| ------------------------- | ---------- | -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| The Lowland Crown         | far south  | the Crown and its court at Kingsport (_new_)       | offstage: writs, debts and Commissioners come from here                                                                                                                                                                                           |
+| The Frontier              | centre     | Marshal Steele and the Frontier Rangers            | Fort Hollow, Northwatch, Millford and its observatory, Fort Steele, Camp Concord, Ferry Rest; Hollow Barrow, the Unquiet's barrow-town north of Northwatch; Kingsbridge where the Royal Assizes sit (_new_); Saltmarsh at the river mouth (_new_) |
+| Kessler's lands           | west march | Baron Otto Kessler                                 | Kessler Hall (_new_), Kessler's Toll in the pass, Fort Bullion; the King's Road and its toll forts (_new_); Wreckers' Cove on the Lost Sea shore (_new_)                                                                                          |
+| The Hollow Hills          | east       | Grubnak the Loud's goblins                         | Grubnak's Hall, the Warrens, Muckgate, Stinkwell, Drum Camp, Wolfden                                                                                                                                                                              |
+| The Barrowlands           | north-west | the Ashen Marquis                                  | the Ashen Tower, the Bone Gate on Bone Neck, Cinderfield and its archive, Gravesend on its grey bay, Lantern Hill and Gallows Cross on the Dead Men's Road; the Abbey of Saint Ashes (_new_)                                                      |
+| The Hollow Mountain       | north      | Thane Brunhild Ironbraid's dwarves                 | Ironbraid Hold and its Gate, the Hall of the Thanes (_new_), Copperstep, the Iron Peak (_new_), the Deep Gate over the shaft the dwarves call the Bottomless; Anvil Bay and Lamplight Cove under the sea cliffs, on the Lost Sea (_new_)          |
+| The summit and its slopes | north      | the Rangers' post, and the towns that knelt        | the ruins of the Lodge of the Unblinking Eye on the summit, Candlewick on the slope, Greyhood in the marsh below; the Ember Lodge on the mountain's shoulder (_new_)                                                                              |
+| The White Peaks           | far north  | Mother Rime's Ice Folk                             | Rime Camp, Whitefang, the Glacier Tomb (_new_); Coldharbour on the Lost Sea; the Grey Strait between the peaks and Anvil Bay (_new_)                                                                                                              |
+| The Rift Lakes            | north-east | Queen Praline's Sugarcrest, Captain Quaxx's colony | Sugarcrest, Gumdrop, Riftwatch on the edge of the crack; Saucer Field and Red Dust; the goblin squats of Spitewood and Sourmash                                                                                                                   |
+| The Lost Sea              | west       | the Old Queen's dinosaurs                          | the Island That Time Forgot: Thunder Nest, Fernmaw, Tarpit, Egg Rock, the Crater and its Glass Ship, Ray Hollow, Port Kessler; Smuggler's Rock (_new_)                                                                                            |
 
-The smaller places a single mission names (Chapel Rock, the Summit Stair,
+The smaller places only the missions name (Chapel Rock, the Summit Stair,
 the Bell's Rest, the River Landing, the Seal-works, Big Top Bay, the Mire's
 Edge, the Wick Chapel, Hood Hollow, the Dreaming Palace) are described with
 their missions in [section 3](#3-the-missions); every one is new.
@@ -181,19 +194,19 @@ All nine campaigns happen in one year, Year 1, the year after the prologue.
 They overlap, the way HoMM campaigns do; the table says when each mission
 falls, and the dependencies run only forward in time.
 
-| When                      | Campaigns                                                                   | What happens                                                                                                                                           |
-| ------------------------- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| 300 years ago             | (backstory)                                                                 | the Marquis founds the Lodge, rings the bell, dies; writes the Lullaby; the dwarves hang the bell in the Deep Gate                                     |
-| Year 0, autumn            | prologue, The Hollow Frontier                                               | the bell rings, everything answers, the Lodge falls one toll short; the clapper is stolen; the bell falls; one eye opens                               |
-| Year 1, end of winter     | Humans H1, Undead U1                                                        | the thaw: the Unquiet rise across the north; Kessler's grave-robbers dig                                                                               |
-| spring                    | Humans H2 to H6, Undead U2 to U6, Cult CU1                                  | Kessler's war on the Frontier and his flight to the island; the Marquis finds the Lullaby and himself; Pettigrew's first meeting (between H2 and H3)   |
-| start of summer           | (both openers done)                                                         | **the Pact of Northwatch**: Steele, Grubnak, the Marquis, the Thane; the Marquis's warning goes out to the hills, the mountain, the island and the sky |
-| early summer              | Goblins G1 to G4; Dwarves D1 to D3; Martians M1 to M3                       | the heist on Port Kessler; the descent to the bell; the Martians' core recovered                                                                       |
-| midsummer                 | Goblins G5; Dwarves D4; Martians M4; Dinosaurs DN1 to DN3; Cult CU2         | the Martians want the bell and its tongue (seen in D4 and G5); Kessler, ruined, steals the Old Queen's eggs; the wrong note is written                 |
-| late summer               | Goblins G6; Dwarves D5, D6; Martians M5, M6; Dinosaurs DN4 to DN6; Cult CU3 | the clapper sold to the Thane; the Seal lowered; the date and the truth about Mars; Kessler eaten; the eggs saved but one, which sails                 |
-| autumn                    | Ice Folk I1 to I5; Candy C1 to C6; Cult CU4                                 | the winter comes down early; the Frost Treaty; Sugarcrest learns what it is; the Seal's bolts turn to wax                                              |
-| early winter              | Ice Folk I6, Cult CU5                                                       | Mother Rime becomes the Winter Crown; a star breaks it                                                                                                 |
-| midwinter, the Long Night | Cult CU6                                                                    | the climax                                                                                                                                             |
+| When                      | Campaigns                                                                   | What happens                                                                                                                                                    |
+| ------------------------- | --------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 300 years ago             | (backstory)                                                                 | the Marquis founds the Lodge, rings the bell, dies; writes the Lullaby; the dwarves hang the bell in the Deep Gate                                              |
+| Year 0, autumn            | prologue, The Hollow Frontier                                               | the bell rings, everything answers, the Lodge falls one toll short; the clapper is stolen; the bell falls; one eye opens                                        |
+| Year 1, end of winter     | Humans H1, Undead U1                                                        | the thaw: the Unquiet rise across the north; Kessler's grave-robbers dig                                                                                        |
+| spring                    | Humans H2 to H6, Undead U2 to U6, Cult CU1                                  | Kessler's war on the Frontier and his flight to the island; the Marquis finds the Lullaby and himself; the Grey Lodge's spring meeting (CU1, between H2 and H3) |
+| start of summer           | (both openers done)                                                         | **the Pact of Northwatch**: Steele, Grubnak, the Marquis, the Thane; the Marquis's warning goes out to the hills, the mountain, the island and the sky          |
+| early summer              | Goblins G1 to G4; Dwarves D1 to D3; Martians M1 to M3                       | the heist on Port Kessler; the descent to the bell; the Martians' core recovered                                                                                |
+| midsummer                 | Goblins G5; Dwarves D4; Martians M4; Dinosaurs DN1 to DN3; Cult CU2         | the Martians want the bell and its tongue (seen in D4 and G5); Kessler, ruined, steals the Old Queen's eggs; the wrong note is written                          |
+| late summer               | Goblins G6; Dwarves D5, D6; Martians M5, M6; Dinosaurs DN4 to DN6; Cult CU3 | the clapper sold to the Thane; the Seal lowered; the date and the truth about Mars; Kessler eaten; the eggs saved but one, which sails                          |
+| autumn                    | Ice Folk I1 to I5; Candy C1 to C6; Cult CU4                                 | the winter comes down early; the Frost Treaty; Sugarcrest learns what it is; the Seal's bolts turn to wax                                                       |
+| early winter              | Ice Folk I6, Cult CU5                                                       | Mother Rime becomes the Winter Crown; a star breaks it                                                                                                          |
+| midwinter, the Long Night | Cult CU6                                                                    | the climax                                                                                                                                                      |
 
 ### 1.4 The cast
 
@@ -202,28 +215,28 @@ keeps its names, roles and unit types (Steele leads Humans, Grubnak Goblins,
 the Thane is a tagged Engineer, Doctor Crane a tagged Necromancer, the Old
 Queen a tagged T-Rex, Queen Praline a tagged Gingerbread Giant).
 
-| Character                                                  | Faction (unit)                                   | Appears in                                                                                                             | Fate                                                                                 |
-| ---------------------------------------------------------- | ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| Marshal Vera Steele                                        | Humans (Knight)                                  | prologue; Humans (lead); Undead U6, Dwarves D6, Martians M6 (ally); Cult CU6 (enemy)                                   | lives; pays the Lodge's tithe in the epilogue                                        |
-| Silas Pettigrew, Steele's clerk                            | Humans (Captain); Cult (Initiate, then Summoner) | Humans H1 to H6 (in the background), Martians M6 and Candy C3 (in passing); Cult (lead)                                | rises from junior clerk to Hierophant of the Deep Gate                               |
-| Baron Otto Kessler                                         | Humans (Captain)                                 | prologue; Humans (villain); Undead U1, U5; Goblins G1, G4, G5; Dinosaurs DN1 to DN4                                    | eaten by the Old Queen (DN4); only his hat is found                                  |
-| Brother Mallory, Hierophant of the Grey Lodge              | Cult (Summoner)                                  | Undead U5; Cult CU2 (mentioned)                                                                                        | killed by the Marquis's dead (U5)                                                    |
-| Grubnak the Loud                                           | Goblins (Orc Warboss)                            | prologue; Humans H6 (mentioned); Goblins (lead); Cult CU4 (enemy)                                                      | Honorary Dwarf (G6); pays the tithe in beer                                          |
-| Snikkit and Mogga, Grubnak's crew                          | Goblins (Goblin; Ogre)                           | Goblins                                                                                                                | Snikkit keeps notes on "the polite man in grey" (a thread for a later part)          |
-| The Ashen Marquis (Lucien of Ashby)                        | Undead (Vampire)                                 | prologue; Humans H4 (ally); Undead (lead); Candy C6 (arrives); Cult CU6 (enemy)                                        | learns he founded the Lodge (U6); rings the Lullaby (CU6); finally rests (epilogue)  |
-| Doctor Mortimer Crane, his archivist                       | Undead (Necromancer), a living man               | prologue; Undead                                                                                                       | files the torn page that the Cult steals (U6, CU2)                                   |
-| Thane Brunhild Ironbraid                                   | Dwarves (Engineer)                               | prologue; Undead U4 (mentioned); Dwarves (lead); Goblins G6, Ice Folk I6 (ally); Cult CU4, CU6 (enemy)                 | lives; holds the chain on the Long Night                                             |
-| Master Engineer Tobbin Copperstep                          | Dwarves (Engineer)                               | Dwarves; Cult CU4 (fooled)                                                                                             | lives                                                                                |
-| Mother Rime                                                | Ice Folk (Ice Witch)                             | prologue; Ice Folk (lead); Cult CU5 (target)                                                                           | becomes the Winter Crown (I6); shattered by a star (CU5); "back with the first snow" |
-| Chief Gnash of Whitefang                                   | Ice Folk (Mammoth)                               | Humans H4 (Kessler's hireling); Undead U6 (the Grey Lodge's); Dwarves D2 (beaten); Ice Folk I1 (comes home)            | rejoins Rime                                                                         |
-| The Old Queen, and Shaman Oona                             | Dinosaurs (T-Rex; Shaman)                        | prologue; Dinosaurs (lead)                                                                                             | the Queen gets seven of eight eggs home; Oona tells the Pact "it sleeps in cold"     |
-| Major Basil Thornbury, Kessler's hunter                    | Humans (Marksman)                                | Dinosaurs DN2                                                                                                          | stuffed (DN2)                                                                        |
-| Captain Quaxx                                              | Martians (Brain)                                 | prologue (unnamed, the captain who saluted); Martians (lead); Dinosaurs DN5 (ally)                                     | stays on Earth: "it does not happen twice"                                           |
-| Professor Ambrose Haddock of Millford                      | Humans (a living guest of the Martians)          | Martians                                                                                                               | stays at Red Dust with his telescope                                                 |
-| Queen Praline, and Madame Nougat                           | Candy (Gingerbread Giant; Confectioner)          | prologue; Martians M4 (ally); Ice Folk I4 (enemy, then treaty); Candy (lead); Cult CU5 (her soldiers), CU6 (her choir) | sings on the Long Night; pays the tithe in sugar                                     |
-| Sister Agatha Vole                                         | Cult (Stargazer)                                 | Cult                                                                                                                   | drops the star that breaks the Winter Crown (CU5)                                    |
-| Sergeant Hobb of the Rangers                               | Humans (Raider)                                  | Cult CU1                                                                                                               | "lost in the marsh" (CU1)                                                            |
-| The Sleeper (the Guest; the Unblinking Eye) and its Herald | (the Cult's summons)                             | every campaign, felt; the Herald in CU6                                                                                | the Herald sits on the shaft; the Eye blinks                                         |
+| Character                                                  | Faction (unit)                                   | Appears in                                                                                                                                                       | Fate                                                                                       |
+| ---------------------------------------------------------- | ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| Marshal Vera Steele                                        | Humans (Knight)                                  | prologue; Humans (lead); Undead U6, Dwarves D6, Martians M6 (ally); Cult CU6 (enemy)                                                                             | lives; pays the Lodge's tithe in the epilogue                                              |
+| Silas Pettigrew, Steele's clerk                            | Humans (Captain); Cult (Initiate, then Summoner) | Humans H1 to H6 (in the background; in H3 the man to escort); Goblins G5, G6 and Candy C3 (the polite man in grey), Martians M6 (named, in passing); Cult (lead) | rises from junior clerk to Hierophant of the Deep Gate                                     |
+| Baron Otto Kessler                                         | Humans (Captain)                                 | prologue; Humans (villain); Undead U1, U5; Goblins G1, G4, G5; Dinosaurs DN1 to DN4                                                                              | eaten by the Old Queen (DN4); only his hat is found                                        |
+| Brother Mallory, Hierophant of the Grey Lodge              | Cult (Summoner)                                  | Undead U5; Cult CU1 (presides), CU2 (mourned)                                                                                                                    | killed by the Marquis's dead (U5)                                                          |
+| Grubnak the Loud                                           | Goblins (Orc Warboss)                            | prologue; Humans H6 (mentioned); Goblins (lead); Cult CU4 (enemy)                                                                                                | Honorary Dwarf (G6); pays the tithe in beer                                                |
+| Snikkit and Mogga, Grubnak's crew                          | Goblins (Goblin; Ogre)                           | Goblins                                                                                                                                                          | Snikkit keeps notes on "the polite man in grey" (a thread for a later part)                |
+| The Ashen Marquis (Lucien of Ashby)                        | Undead (Vampire)                                 | prologue; Humans H4 (ally); Undead (lead); Candy C6 (arrives); Cult CU2 (his archive), CU6 (his dead the enemy, he at the bell)                                  | learns he founded the Lodge (U6); rings the Lullaby (CU6); finally rests (epilogue)        |
+| Doctor Mortimer Crane, his archivist                       | Undead (Necromancer), a living man               | prologue; Undead                                                                                                                                                 | files the torn page that the Cult steals (U6, CU2)                                         |
+| Thane Brunhild Ironbraid                                   | Dwarves (Engineer)                               | prologue; Undead U4 (mentioned); Dwarves (lead); Goblins G6, Ice Folk I6 (ally); Cult CU4, CU6 (enemy)                                                           | lives; holds the chain on the Long Night                                                   |
+| Master Engineer Tobbin Copperstep                          | Dwarves (Engineer)                               | Dwarves; Cult CU4 (fooled)                                                                                                                                       | lives                                                                                      |
+| Mother Rime                                                | Ice Folk (Ice Witch)                             | prologue; Ice Folk (lead); Cult CU5 (target)                                                                                                                     | becomes the Winter Crown (I6); shattered by a star (CU5); "back with the first snow"       |
+| Chief Gnash of Whitefang                                   | Ice Folk (Mammoth)                               | Humans H4 (Kessler's hireling); Undead U6 (the Grey Lodge's); Dwarves D2 (beaten); Ice Folk I1 (comes home)                                                      | rejoins Rime                                                                               |
+| The Old Queen, and Shaman Oona                             | Dinosaurs (T-Rex; Shaman)                        | prologue; Dinosaurs (lead)                                                                                                                                       | the Queen gets seven of her first eight eggs home; Oona tells the Pact "it sleeps in cold" |
+| Major Basil Thornbury, Kessler's hunter                    | Humans (Marksman)                                | Dinosaurs DN2                                                                                                                                                    | stuffed (DN2)                                                                              |
+| Captain Quaxx                                              | Martians (Brain)                                 | prologue (unnamed, the captain who saluted); Martians (lead); Dinosaurs DN5 (ally)                                                                               | stays on Earth: "it does not happen twice"                                                 |
+| Professor Ambrose Haddock of Millford                      | Humans (a living guest of the Martians)          | Martians                                                                                                                                                         | stays at Red Dust with his telescope                                                       |
+| Queen Praline, and Madame Nougat                           | Candy (Gingerbread Giant; Confectioner)          | prologue; Martians M4 (ally); Ice Folk I4 (enemy, then treaty); Candy (lead); Cult CU5 (her soldiers), CU6 (her choir)                                           | sings on the Long Night; pays the tithe in sugar                                           |
+| Sister Agatha Vole                                         | Cult (Stargazer)                                 | Cult                                                                                                                                                             | drops the star that breaks the Winter Crown (CU5)                                          |
+| Sergeant Hobb of the Rangers                               | Humans (Raider)                                  | Cult CU1                                                                                                                                                         | "lost in the marsh" (CU1)                                                                  |
+| The Sleeper (the Guest; the Unblinking Eye) and its Herald | (the Cult's summons)                             | every campaign, felt; the Herald in CU6                                                                                                                          | the Herald sits on the shaft; the Eye blinks                                               |
 
 ### 1.5 How the nine campaigns interlock
 
@@ -247,12 +260,12 @@ same event is never played twice from two sides.
 | The Martians decide to ring the bell and call home (M4, off-screen)                                                    | a mothership raids the Hold (D4); saucers hunt the humming crate (G5); the Martians change their minds (M6)                      |
 | The Thane finds the bell on the Sleeper's eyelid (D3) and seals the shaft (D6)                                         | the Cult waxes the Seal's bolts (CU4); they melt on the Long Night (CU6)                                                         |
 | The Grey Lodge's navy shows itself on the river (D5)                                                                   | its Galleon of the Eye escapes Greyhood with the last egg (DN6); the Cult brings it home (CU3)                                   |
-| The Martians remember the Old Queen's teeth (prologue, F8)                                                             | Quaxx lends saucers to the Queen (DN5)                                                                                           |
+| The Old Queen eats the Overmind and frees the Martians (prologue, F8)                                                  | Quaxx lends saucers to the Queen (DN5)                                                                                           |
 | The Old Queen remembers the first star and the cold (DN6)                                                              | the Ice Folk's giants confirm it (I2); Rime brings the winter (I3 to I6); the Cult thaws it (CU5)                                |
 | The Martians compute the Long Night (M5) and send the star-chart via the Crown's courier, a clerk named Pettigrew (M6) | the Cult knows the hour (CU3 to CU6)                                                                                             |
 | Sugarcrest helps hold Red Dust (M4)                                                                                    | the Martians help hold Sugarcrest (C6); both echo the prologue's F9                                                              |
-| The Crown's Commissioner, a mild man in grey, says the choir "will sing on the date regardless" (C3)                   | it does (CU6)                                                                                                                    |
-| Sugarcrest is the Sleeper's sweet dream (C5)                                                                           | explains why the Unquiet besiege it (C6) and why the dead rose "on the other side too" (prologue, F9)                            |
+| The Crown's Commissioner, a mild man in grey, says the choir "will sing on the date regardless" (C3)                   | it does (CU6); the Cult's minutes name him (CU4)                                                                                 |
+| Sugarcrest is the Sleeper's sweet dream (C5)                                                                           | explains why the Unquiet besiege it (C6) and why the dead rose "there too" in the prologue (F9)                                  |
 | The Frost Treaty between Rime and Praline (I4)                                                                         | Sugarcrest's troops guard the Winter Crown beside the Ice Folk (CU5)                                                             |
 | The Pact's first promise: Steele's Rangers march for the dwarves (D6)                                                  | Steele brings every Ranger in the north to the Deep Gate (CU6)                                                                   |
 
@@ -268,8 +281,9 @@ player who has met the other side reads a second meaning.
    Cult campaign opens with him taking the minutes.
 2. **The founder.** The Undead campaign ends with the Marquis learning he
    founded the Lodge and cast the bell (U6). In the Cult campaign the Grey
-   Book is the Lodge's scripture and its missing last page is the key to the
-   ending; it is his book, and his page.
+   Book is the Lodge's scripture (CU3) and its missing last page, "in the
+   Founder's own hand" (CU2), is the key to the ending; it is his book, and
+   his page.
 3. **The torn page.** "It eats the door first" is filed by Crane (U6),
    pocketed unread by Pettigrew (CU2), and read on the Long Night (CU6). It
    is the turn of the saga's ending.
@@ -277,7 +291,10 @@ player who has met the other side reads a second meaning.
    Cult player wrote it (CU2).
 5. **The polite man in grey.** He waits at the quay for Grubnak (G5, G6), is
    the Crown's Commissioner on Sugarcrest's lake (C3), and carries the
-   Martians' star-chart to the Pact (M6). It is Pettigrew every time.
+   Martians' star-chart to the Pact (M6). It is Pettigrew every time, and
+   the Cult's minutes own up to it: "lately Commissioner for
+   Confectionery", "the goblin who refused the Hierophant's gold" (CU4),
+   "the Martians' star-chart, kindly lent" (CU6).
 6. **The voices.** The Martians learn the call that brought them used the
    voices of dead Mars (M5, M6); the Old Queen remembers a star that fell
    and a long cold (DN6); the Ice Folk's giants remember putting a hungry
@@ -299,37 +316,40 @@ player who has met the other side reads a second meaning.
                         \                     /
                          +---- both won -----+
                         /      |       |      \
-   GOBLINS:       DWARVES:        DINOSAURS:      MARTIANS:
-   The Big Score  The Bottomless  The Egg Thief   Signal from Home
+   DINOSAURS:     MARTIANS:          GOBLINS:       DWARVES:
+   The Egg Thief  Signal from Home   The Big Score  The Bottomless
                         \      |       |      /
                          +-- all four won ---+
                         /           |          \
-        ICE FOLK:            CANDY:             CULTISTS:
-        The Long Winter      Sweet Dreams       The Long Night
-                                             (the culmination)
+        ICE FOLK:            CULTISTS:          CANDY:
+        The Long Winter      The Long Night     Sweet Dreams
+                           (the culmination)
 ```
 
 | Tier                                     | Opens when            | The in-world reason                                                                                                                                                                                                                                                                                                                                                                                              |
 | ---------------------------------------- | --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 1: Humans, Undead                        | from the start        | The morning after the Lodge fell, two people refuse to go to sleep: Marshal Steele, who has a frontier to keep, and the Ashen Marquis, who would very much like to and cannot.                                                                                                                                                                                                                                   |
-| 2: Goblins, Dwarves, Dinosaurs, Martians | Humans and Undead won | Steele's war ends in the **Pact of Northwatch** (H6) and the Marquis's in the knowledge of what is under the mountain (U6). The Pact sends the Marquis's warning to the four neighbours, the hills, the mountain, the island and the sky, and Kessler's flight to the island sets the hills and the island moving.                                                                                               |
-| 3: Ice Folk, Candy, Cultists             | all four won          | Now the heroes' plan exists: the clapper is in the Hold (G6), the Seal is set (D6), the cold is known to be the cure (DN6), and the night is known (M6). The Pact calls for the cold, so the Ice Folk come down; Sugarcrest, going stale as the Sleeper stirs toward the Long Night, goes looking for the reason; and the Grey Lodge, which has read every letter of the Pact through its clerk, makes its move. |
+| 2: Dinosaurs, Martians, Goblins, Dwarves | Humans and Undead won | Steele's war ends in the **Pact of Northwatch** (H6) and the Marquis's in the knowledge of what is under the mountain (U6). Grubnak and the Thane carry the Marquis's warning home to the hills and the mountain; Kessler's flight to his island sets the goblins and the dinosaurs moving; and the Martians, who answered the same call the Marquis now fears, go looking for where it came from.               |
+| 3: Ice Folk, Cultists, Candy             | all four won          | Now the heroes' plan exists: the clapper is in the Hold (G6), the Seal is set (D6), the cold is known to be the cure (DN6), and the night is known (M6). The Pact calls for the cold, so the Ice Folk come down; Sugarcrest, going stale as the Sleeper stirs toward the Long Night, goes looking for the reason; and the Grey Lodge, which has read every letter of the Pact through its clerk, makes its move. |
 
 **Play order inside a tier is free**, and every campaign stands alone once
 it is unlocked: its intro says what the player needs to know, its first
 mission teaches the faction, and nothing in it depends on progress elsewhere.
 The third tier is meant to be played Ice Folk and Candy first, Cultists last
-(the campaign screen should say so: the Cult card reads "The finale"); a
+(the screen should say so: the Cult bead gives its plate the subtitle
+"The finale"); a
 player who plays the Cult first loses only the second meaning of reveals 4,
 5 and 8 and the weight of Mother Rime's sacrifice, which the Candy and Ice
 Folk campaigns then give back as dramatic irony.
 
-**On the campaign screen** (bead `pulp_wars-hmyk.3`), the prologue sits at
-the foot, the two openers above it, the four of tier 2 above them, and tier
-3 at the top with the Cult in the centre, as the summit of the mountain. A
-geographic hint helps the eye: within a row, a campaign stands roughly where
-its people live (Dinosaurs west, Undead north-west, Humans south, Goblins
-east, Martians and Candy north-east, Dwarves and Ice Folk north).
+**On the campaign screen**, as built by `pulp_wars-hmyk.3`
+([CAMPAIGN.md section 14](CAMPAIGN.md#14-the-campaign-map-and-the-faction-campaigns-pulp_wars-hmyk3)):
+the prologue's wide plate on top, then three rows joined by lock knots:
+the two openers, the four of tier 2 (Dinosaurs, Martians, Goblins,
+Dwarves) and the three of tier 3 (Ice Folk, Cultists, Candy), with the
+Cult in the middle of the last row, where the saga culminates. Each
+campaign bead replaces its plate's placeholder title and subtitle with
+the title above.
 
 ## 2. The nine campaigns
 
@@ -400,9 +420,10 @@ end.
   living until the bell fell silent. Now he would like to lie down. But the
   dead of the whole north are walking again, his and not his, and something
   under the mountain will not let them rest."
-- **Outro.** "The Lullaby is whole. It can be sung once only, on the Long
-  Night, on the bell at the bottom of the Bottomless. After that, the
-  Marquis says, he would very much like to rest."
+- **Outro.** "The Lullaby is whole. On the Long Night it must be rung on
+  the bell at the bottom of the Bottomless, the only voice the thing below
+  will hear. After that, the Marquis says, he would very much like to
+  rest."
 
 | #   | Mission                | Enemies                                              | Allies                      | Format         |
 | --- | ---------------------- | ---------------------------------------------------- | --------------------------- | -------------- |
@@ -528,19 +549,21 @@ end.
 
 ### 2.5 Dinosaurs: The Egg Thief
 
-- **Protagonist and voice.** The Old Queen, a T-Rex who outlived the
-  Overmind in the prologue and would like to outlive the Baron. She does not
-  speak; Shaman Oona of Fernmaw speaks for her, in short sentences. Cheerful,
-  primal, a toy box of big friendly monsters with one very bad mood.
-- **Goal.** Get the eggs back. The Old Queen laid her last clutch this
+- **Protagonist and voice.** The Old Queen, the young T-Rex of the
+  prologue's Brain Wave (the title belongs to her line, the oldest blood on
+  the island, not to her years), who outlived the Overmind and would like
+  to outlive the Baron. She does not speak; Shaman Oona of Fernmaw speaks
+  for her, in short sentences. Cheerful, primal, a toy box of big friendly
+  monsters with one very bad mood.
+- **Goal.** Get the eggs back. The Old Queen laid her first clutch this
   summer, and the Baron, ruined by the goblins and owing money to men in
   hoods, stole it.
 - **Intro.** "On the Island That Time Forgot the Old Queen has outlived the
-  Overmind, the Baron's ships and most of a century. This summer she laid
-  her last clutch. Then the Baron, ruined by goblins and owing money to men
-  in hoods, came back for it."
+  Overmind and the Baron's ships. This summer she laid her first clutch.
+  Then the Baron, ruined by goblins and owing money to men in hoods, came
+  back for it."
 - **Outro.** "Seven eggs come home to Thunder Nest. The eighth is gone with
-  a black sail. And the Pact has learned from the oldest queen in the world
+  a black sail. And the Pact has learned from the oldest blood in the world
   the one thing that ever put the hunger to sleep: cold."
 
 | #   | Mission                    | Enemies                                                      | Allies                   | Format        |
@@ -558,7 +581,7 @@ end.
   sea (DN3); the Baron's travelling circus on the mainland, cages and all,
   and the Baron himself in a ringmaster's coat (DN4). His pocket-book says
   the eggs were sold to the Grey Lodge "for the Long Night". The Martians,
-  who still remember the Queen's teeth, lend saucers for the march across
+  who have not forgotten who ate the Overmind, lend saucers for the march across
   the Barrowlands (DN5), and the Queen storms the Lodge's marsh town of
   Greyhood before the last egg is offered (DN6).
 - **Ending and twist.** Seven eggs saved; the eighth sails off on the Galleon
@@ -601,8 +624,8 @@ end.
 | M6  | Starfall over Red Dust      | Cult (three Stargazers), Undead (the Unquiet) | Humans (the Pact's Rangers) | Hunt          |
 
 - **Arc.** Goblins are stripping crashed saucers for hats (M1). The Martians
-  abduct a laughed-at professor who has written four papers on the summer's
-  falling stars (M2), carry the star-drive core out of the dinosaurs' crater
+  abduct a laughed-at professor who has written four papers on last
+  autumn's falling stars (M2), carry the star-drive core out of the dinosaurs' crater
   (M3), and point a dish at the mountain; every dead thing in the Rift
   Lakes walks toward it, and Sugarcrest, which the Martians saved in the
   prologue, comes to hold the walls (M4). Quaxx sends a mothership to the
@@ -663,8 +686,8 @@ end.
   keeps the mountain warm with a three-hundred-year bonfire, fed by the
   Redcaps (I5). Rime carries the Heart of Winter to the summit (I6).
 - **Ending and twist.** Rime sets the Heart in the snow, lays her hands on
-  it, and does not take them away. By evening she is ice to the crown. "Some
-  one has to stay with it," she said, before she couldn't.
+  it, and does not take them away. By evening she is ice to the crown.
+  "Someone has to stay with it," she said, before she couldn't.
 - **Picks up:** the cure (Dinosaurs DN6); the date (Martians M5); the
   Whitefang (Humans, Dwarves); the dwarves' iron fleet (Dwarves D5).
 - **Hands on:** the Winter Crown, which the Cult must break (CU5); the Frost
@@ -751,7 +774,7 @@ end.
 | CU5 | Thaw                        | Ice Folk (the Winter Crown's guard), Candy (the Frost Treaty)         | Goblins (Redcaps, hired) | Hunt          |
 | CU6 | The Long Night              | Dwarves (the Deep Gate), Humans (Steele's army), Undead (the Marquis) | none                     | Capture       |
 
-- **Arc.** One spring evening a Ranger watches the reconstituted Lodge meet
+- **Arc.** One spring evening a Ranger watches the Grey Lodge meet
   from a hedge, and is lost in the marsh (CU1). Brother Mallory is dead
   (Undead U5), the Lodge elects a new Hierophant by a show of one hand, and
   Mr. Pettigrew has a better idea than burning the Marquis's Lullaby:
@@ -928,20 +951,22 @@ extension the framework lacks is flagged **(E*n*)** and listed in
 - **Seats:** you, Humans (Saltmarsh, a port town with a Port, and Ferry Rest
   upriver; Shorecraft known); enemy, Goblins (the Redcap navy: Fire Rafts,
   Diving Barrels and two Scrap Dreadnoughts, one tagged `GOLDEN_GOOSE`,
-  which `GUARD`s the barrier island; the rafts `RUSH` the river).
+  which keeps to the barrier island's anchorage; the rafts go up the
+  river; both need **E7**).
 - **Format:** Hunt, naval (`KILL` `GOLDEN_GOOSE`, `byRound` 22). **Stars:**
   by turn 18; lose no city.
 - **Difficulty:** 5 of 6.
-- **Tactical problem:** build a fleet under fire. Fire Rafts blow up when
-  they sink and hurt every ship beside them, so a tight fleet dies to one
-  raft; a Submarine torpedoes the Goose without reply, but only after a
-  screen of rafts is cleared.
-- **Hint:** "Fire Rafts blow up when sunk: keep ships apart."
+- **Tactical problem:** build a fleet under fire. A Fire Raft sails up and
+  Kabooms, hurting every ship around it, so a tight fleet dies to one raft;
+  and the Golden Goose, a Scrap Dreadnought, blows up when it sinks. A
+  Submarine torpedoes the Goose without reply, but only after the screen of
+  rafts is cleared, and it should not be sitting beside her when she goes.
+- **Hint:** "Fire Rafts Kaboom: never bunch your ships."
 - **Map:** Continents 16. The Frontier's shore in the south with Saltmarsh
   at the river mouth; a barrier island across it with the Redcap anchorage;
   a deep channel between.
 - **Mechanics:** a Sea Serpent in the deep channel **(E1)**; a tagged ship
-  as the target **(E6, verify)**.
+  as the target **(E6, verify)**; ships that keep their posts **(E7)**.
 - **Closing:** "The Golden Goose goes down with a sound like a dropped till.
   Unpaid, the Redcap fleet scatters, and every hired sword on the Frontier
   falls back on the one place still paying: Kessler Hall."
@@ -949,7 +974,7 @@ extension the framework lacks is flagged **(E*n*)** and listed in
 #### H6. Kessler Hall
 
 > Kessler Hall stands on its hill above the Baron's lands, with a lightning
-> tower on the roof, the last of the Redcaps in the yard, his circus beasts
+> tower on the lawn, the last of the Redcaps in the yard, his circus beasts
 > in the cellars and the Grey Lodge chanting in the chapel. Every road to it
 > is a toll road. Take the Hall before midsummer and put the Baron in irons.
 > Grubnak has offered help, the Marquis has offered help, and Steele has
@@ -959,18 +984,19 @@ extension the framework lacks is flagged **(E*n*)** and listed in
   with Knights and Catapults); enemies, Goblins (the Redcaps: the toll forts
   on the three roads, `GUARD` with `others` `RUSH`), Dinosaurs (Kessler's
   war beasts: `HOLD` the Hall's grounds) and Cult (the Grey Lodge: the
-  chapel town beside the Hall, `GUARD`), teamed. Kessler is a tagged Captain
-  `KESSLER` in the Hall.
+  chapel town beside the Hall, `GUARD`), teamed. Kessler is not on the
+  field: he is in his wine cellar, packing.
 - **Format:** Capture against the clock, multi-front (`CAPTURE`
   `KESSLER_HALL`, `byRound` 26). **Stars:** by turn 22; lose no city.
 - **Difficulty:** 6 of 6.
 - **Tactical problem:** three armies with three kinds of trouble: Gang Up in
   the forts, Charge! on the lawns, daemons in the chapel. The lightning
-  tower on the Hall's hill zaps any unit in reach for whoever stands on it,
-  so taking the tower first turns the Hall's best defence against it.
+  tower on the knoll before the Hall zaps an enemy within two for whoever
+  stands on it, the Hall's gate included, so taking the tower first turns
+  the Hall's best defence against it.
 - **Hint:** "Whoever holds the tower zaps whoever comes near."
 - **Map:** Pangea 20, Plains. Kessler Hall on a central hill with the Tesla
-  Tower beside it; three approaches, each through a walled toll fort; a river
+  Tower on a knoll three tiles before its gate; three approaches, each through a walled toll fort; a river
   on the west side down which the Baron will escape.
 - **Mechanics:** a Tesla Tower **(E1)**; four seats (existing).
 - **Closing:** "The Hall falls, but the Baron has gone out through the wine
@@ -1010,8 +1036,9 @@ extension the framework lacks is flagged **(E*n*)** and listed in
 
 #### U2. The Drowned Library
 
-> Crane believes the Marquis kept a diary three hundred years ago, before he
-> was ashen. The Abbey of Saint Ashes, where it was shelved, has been under a
+> Doctor Crane, who read the bell's score last autumn, believes it has a
+> counter-score, and that the Marquis wrote of it in a diary before he was
+> ashen. The Abbey of Saint Ashes, where the diary was shelved, has been under a
 > lake since a dam broke, and the Bonepicker goblins use its bell tower as a
 > lair. Hold the abbey isle for fourteen days while Crane reads with a
 > lantern and a pair of tongs. Bonepickers, the Marquis notes, pick bones. He
@@ -1057,7 +1084,7 @@ extension the framework lacks is flagged **(E*n*)** and listed in
 - **Difficulty:** 3 of 6.
 - **Tactical problem:** Martian Shields soak damage and refill every turn,
   so spreading fire wastes it; focus one ship a turn. The Undead fleet grows
-  from the enemy's: what a Sunken Galley or a Plague Galleon sinks rises as
+  from the enemy's: with Drowned Crews, what an Undead ship sinks rises as
   a Ghost Ship.
 - **Hint:** "Shields refill each turn: sink one ship at a time."
 - **Map:** Continents 16. Gravesend on the western landmass at the head of a
@@ -1214,21 +1241,23 @@ extension the framework lacks is flagged **(E*n*)** and listed in
 > Snapjaw and the way to Egg Rock lies open. Fire rafts are very good at
 > sinking things, including themselves.
 
-- **Seats:** you, Goblins (a raft-camp on an islet with a Port; the Goblin
-  naval branch's first technologies); enemy, Dinosaurs (the coast tribes:
-  fishing villages, Dugouts, Plesiosaurs; the tagged Alpha Plesiosaur
-  `SNAPJAW`, `GUARD` the strait).
+- **Seats:** you, Goblins (a raft-camp on an islet with a Port; Fire Rafts
+  and Powder Kegs known); enemy, Dinosaurs (the island's tribes: fishing
+  villages, Dugouts, Plesiosaurs; the tagged Plesiosaur `SNAPJAW`, Big,
+  with two kills, which keeps to the strait **(E7)**).
 - **Format:** Hunt, naval (`KILL` `SNAPJAW`, `byRound` 20). **Stars:** by
   turn 16; lose no city.
 - **Difficulty:** 3 of 6.
-- **Tactical problem:** a plesiosaur grows with every kill, so feeding it
-  rafts makes it worse; Fire Rafts Kaboom afloat and Diving Barrels torpedo
-  without reply. Strike Snapjaw all at once, not one raft at a time.
-- **Hint:** "Don't feed Snapjaw: every kill makes it bigger."
+- **Tactical problem:** Snapjaw is one kill from Alpha, and growing heals a
+  plesiosaur whole, so a raft fed to it one at a time undoes all the
+  damage done; Fire Rafts Kaboom afloat and Diving Barrels torpedo without
+  reply. Strike Snapjaw all at once, not one raft at a time.
+- **Hint:** "Don't feed Snapjaw: its next kill heals it whole."
 - **Map:** Archipelago 16. The goblins' islet in the east; a strait of deep
   water; the dinosaur fishing villages on the islands around; Egg Rock and,
   beyond, the main island in the west.
-- **Mechanics:** a tagged sea-beast as the target **(E6, verify)**.
+- **Mechanics:** a tagged sea-beast with kills as the target **(E6,
+  verify)**; a sea-beast that keeps to its strait **(E7)**.
 - **Closing:** "Snapjaw sinks with a burp. On Egg Rock, Snikkit stands on a
   barrel and looks across the bay at Port Kessler: walls, guns, and on the
   hill above the town a cannon pointed at the moon."
@@ -1244,19 +1273,22 @@ extension the framework lacks is flagged **(E*n*)** and listed in
 
 - **Seats:** you, Goblins (Egg Rock, a beachhead; `SNIKKIT`); enemies,
   Humans (Kessler's island garrison: Port Kessler, walled, level 3, `GUARD`
-  with a garrison of six; Kessler is there) and Dinosaurs (the natives:
-  jungle villages, `NORMAL`), **rival**: the beasts raid the port too.
+  with a garrison of six; the Baron hides in his counting-house, never on
+  the field) and Dinosaurs (the island's tribes: jungle villages,
+  `NORMAL`), **rival**: the beasts raid the port too.
 - **Format:** Capture (`CAPTURE` `PORT_KESSLER`, `byRound` 20). **Stars:**
   by turn 16; Snikkit lives.
 - **Difficulty:** 4 of 6.
-- **Tactical problem:** walls you cannot climb and a gun that can throw you
-  over them. A unit on the Moon Gun may be fired to any empty land tile
-  within five, once a turn; a Troll throws a Goblin two or three more.
-  Landing three goblins inside at once is the job; landing one is a funeral.
+- **Tactical problem:** a walled port on a headland with one guarded neck,
+  and a gun that skips the neck. A unit on the Moon Gun is fired to any
+  empty land tile within five, once a turn, and lands spent until its next
+  turn. Drop the sturdiest first, one a turn, onto the headland behind the
+  garrison, and time the last drop with the assault up the neck: one goblin
+  alone under the walls is a funeral.
 - **Hint:** "The Moon Gun fires a unit to any empty tile within 5."
 - **Map:** Archipelago 16. Egg Rock in the east; Port Kessler on a headland
-  of the main island; the Moon Gun on the hill above it; jungle villages
-  inland.
+  of the main island, joined to it by one narrow neck; the Moon Gun on the
+  hill above the neck, four tiles from the walls; jungle villages inland.
 - **Mechanics:** a Moon Gun **(E1)**.
 - **Closing:** "The vault is full: gold, silver, the good cutlery, and a long
   iron crate marked 'bell-tongue'. The Baron escapes into the jungle with
@@ -1284,9 +1316,10 @@ extension the framework lacks is flagged **(E*n*)** and listed in
 - **Map:** Archipelago 16. Smuggler's Rock off the main island's coast;
   Port Kessler's ruins and the loyalists' camp ashore; the Martian outpost
   of Ray Hollow on an islet.
-- **Mechanics:** a goblin wave on turn 12, the getaway rafts arriving early
-  (a player reinforcement, existing), with a story line **(E4, optional)**.
-- **Closing:** "On the sixteenth night the rafts come, and the crew sails
+- **Mechanics:** a goblin wave on turn 12, the crew of the getaway rafts
+  come early to help dig in (a player reinforcement, existing), with a
+  story line **(E4, optional)**.
+- **Closing:** "On the sixteenth night the rafts are ready, and the crew sails
   home with the gold, the crate, and three saucer pilots who surrendered to
   Mogga. On the quay at home a polite man in a grey coat is waiting with an
   offer."
@@ -1303,20 +1336,23 @@ extension the framework lacks is flagged **(E*n*)** and listed in
 
 - **Seats:** you, Goblins (the river quay and Grubnak's Hall; the tagged
   Scrap Buggy `GETAWAY` carries the crate); enemies, Cult (the Grey Lodge's
-  Candlewick brethren, `ASSAULT` the cart's road) and Undead (the Unquiet,
-  `RUSH` from the barrows), teamed; ally, Dwarves (the Thane's escort,
-  holding the Ironbraid Gate, `HOLD`).
-- **Format:** Escort (`ESCORT` `GETAWAY` to `IRONBRAID_GATE`, `within` 1,
-  `byRound` 24). **Stars:** by turn 20; lose no city.
+  Candlewick brethren: camps beside the road, `GUARD` with `others`
+  `ASSAULT` Grubnak's Hall) and Undead (the Unquiet, `RUSH` from the
+  barrows), teamed; ally, Dwarves (the Thane's escort, holding the
+  Ironbraid Gate, `HOLD` its land).
+- **Format:** Escort (`ESCORT` `GETAWAY` to `IRONBRAID_GATE`, `within` 2:
+  no unit may enter an ally's land, so the cart arrives at the edge of the
+  Gate's, `byRound` 24). **Stars:** by turn 20; lose no city.
 - **Difficulty:** 6 of 6.
 - **Tactical problem:** a fast, fragile cart through a gauntlet. A Hexer
   turns the best escort into a frog, a Familiar swaps the cart out of its
   convoy, a daemon blocks the road. Kill the Hexers first, keep the cart
-  inside the mob, and let the dwarves come down to meet it.
+  inside the mob, and bring it in under the dwarves' guns.
 - **Hint:** "A Hexer turns your best unit into a frog: kill it first."
 - **Map:** Pangea 20, Highlands. From the river quay in the south-east,
-  through the Hollow Hills, past Greyhood's marsh, to the Ironbraid Gate at
-  the foot of the mountain in the north-west.
+  through the Hollow Hills and the barrow country, under Candlewick's
+  slope, to the Ironbraid Gate at the foot of the mountain in the
+  north-west.
 - **Closing:** "Thane Ironbraid pays in gold, in beer, and in a title:
   Grubnak the Loud, Honorary Dwarf. She takes the clapper down into the Deep
   Gate. Grubnak takes the beer. Snikkit, for no reason he can name, starts a
@@ -1355,7 +1391,7 @@ extension the framework lacks is flagged **(E*n*)** and listed in
 > feet across. The best iron in the north is in the Iron Peak, and the Iron
 > Peak belongs to the Whitefang clan, who have been in a temper since
 > Marshal Steele beat them at Fort Hollow. Mother Rime has disowned them.
-> Take the Peak's three mine-camps before the snow closes the pass. Their
+> Take the Peak's three mine-camps before the clan can wall them in. Their
 > Yetis walk over mountains; your Steam Moles go under them.
 
 - **Seats:** you, Dwarves (Copperstep at the valley mouth); enemy, Ice Folk
@@ -1387,15 +1423,16 @@ extension the framework lacks is flagged **(E*n*)** and listed in
 - **Seats:** you, Dwarves (the Deep Gate at the top of the shaft; the tagged
   Engineer `THANE`, `TOBBIN`); enemies, Undead (the deep dead, `GUARD` the
   galleries) and Cult (the Grey Lodge's diggers: a camp in a side cave,
-  `HOLD`, then `ASSAULT` the Thane's road from turn 8), teamed.
+  `HOLD` their cave, then `RUSH` from turn 8, striking whatever stands
+  between them and the Deep Gate), teamed.
 - **Format:** Escort (`ESCORT` `THANE` to `BELLS_REST`, `within` 1,
   `byRound` 24). **Stars:** by turn 20; Tobbin lives.
 - **Difficulty:** 3 of 6.
 - **Tactical problem:** a maze of narrow galleries where one Zombie blocks a
-  corridor. The Tunnel is the key: any unit beside a Steam Mole can go
-  underground with it, so the Thane can skip a choke point instead of
+  corridor. The Tunnel is the key: a Steam Mole takes one unit beside it
+  underground as its rider, so the Thane can skip a choke point instead of
   fighting through it.
-- **Hint:** "Units beside a Steam Mole can go underground too."
+- **Hint:** "A Steam Mole can carry one unit under the rock."
 - **Map:** Dry Land 16, Highlands, mostly Mountain: a spiral of Grass
   galleries cut through the rock from the Deep Gate in the north down to the
   Bell's Rest, a village landmark in the south; side caves with Graves.
@@ -1442,20 +1479,22 @@ extension the framework lacks is flagged **(E*n*)** and listed in
 - **Seats:** you, Dwarves (Anvil Bay, a port with a Shipyard, and the Deep
   Gate's river landing; the Dwarf naval branch; the tagged Ironclad
   `ANVIL`); enemies, Cult (the Grey Lodge navy: Black Gondolas, the Galleon
-  of the Eye, a Kraken; `GUARD` the marsh reach) and Goblins (the Redcaps:
-  Fire Rafts from a reed camp, `RUSH`), teamed.
+  of the Eye, a Kraken, keeping to the marsh reach **(E7)**) and Goblins
+  (the Redcaps: Fire Rafts from a reed camp), teamed.
 - **Format:** Escort, naval (`ESCORT` `ANVIL` to `RIVER_LANDING`, `within`
   1, `byRound` 22). **Stars:** by turn 18; lose no city.
 - **Difficulty:** 5 of 6.
 - **Tactical problem:** a slow, precious ship up a narrow river. The Kraken
   holds any ship beside it to one tile a turn; what the gondolas sink feeds
-  the Lodge's Favour. Dwarf ships are Armoured: lead with the Steam Launches
-  and keep the Anvil in their wake.
-- **Hint:** "Ironclads shrug off small hits: lead with them."
-- **Map:** Continents 16. Anvil Bay on the coast in the south-west; a long
-  river estuary winding north-east past Greyhood's marsh to the landing
+  the Lodge's Favour. Dwarf ships are Armoured (every hit of 2 or more
+  does 1 less): lead with the Steam Launches and keep the Anvil in their
+  wake.
+- **Hint:** "Dwarf hulls take 1 less a hit: screen the Anvil."
+- **Map:** Continents 16. Anvil Bay on the Lost Sea coast in the west; a
+  long river estuary winding east past Greyhood's marsh to the landing
   below the mountain.
-- **Mechanics:** escort of a tagged ship **(E6, verify)**.
+- **Mechanics:** escort of a tagged ship **(E6, verify)**; a navy that
+  keeps to its reach **(E7)**.
 - **Closing:** "The bolts come ashore. In the reeds a hooded man writes the
   ship's name in a small notebook."
 
@@ -1605,8 +1644,8 @@ extension the framework lacks is flagged **(E*n*)** and listed in
 > Greyhood lies across the Barrowlands, and the eggs are giving off a smell
 > of old blood that wakes every corpse for miles. The Unquiet are rising all
 > along the road, and the Redcaps, unpaid since the Baron's unfortunate
-> accident, have taken service with the hoods. The Martians, who still
-> remember the Queen's teeth, have offered saucers. Get the Queen to the edge
+> accident, have taken service with the hoods. The Martians, who have not
+> forgotten who ate the Overmind, have offered saucers. Get the Queen to the edge
 > of the marsh.
 
 - **Seats:** you, Dinosaurs (a camp at the circus ground and the herd freed
@@ -1666,7 +1705,7 @@ extension the framework lacks is flagged **(E*n*)** and listed in
 > the saucers, Captain. Teach the natives to respect the Shield.
 
 - **Seats:** you, Martians (Saucer Field; the tagged Brain `QUAXX`); enemy,
-  Goblins (scrap-raiders: Spitewood and Sourmash, `NORMAL`).
+  Goblins (scrap-raiders: two scrap camps across the Rift, `NORMAL`).
 - **Format:** Conquest (`DOMINATION`). **Stars:** by turn 12; Quaxx lives.
 - **Difficulty:** 1 of 6.
 - **Tactical problem:** the Martian basics. Shields soak a hit and refill at
@@ -1702,7 +1741,8 @@ extension the framework lacks is flagged **(E*n*)** and listed in
 - **Map:** Pangea 14, Plains. Red Dust in the north-east; farmland; Millford
   on a hill in the south-west, its observatory dome on the walls.
 - **Closing:** "Professor Haddock steps aboard in his slippers and asks to
-  see the engine. Marshal Steele sends a letter of complaint. The Professor
+  see the engine. The Martians hand Millford back with an apology, and
+  Marshal Steele sends a letter of complaint. The Professor
   has a theory about the bell under the mountain, and to test it he needs
   the star-drive core of the Glass Ship."
 
@@ -1717,16 +1757,16 @@ extension the framework lacks is flagged **(E*n*)** and listed in
 - **Seats:** you, Martians (Ray Hollow on an islet, and a landing camp in
   the Crater; the tagged Tripod `CORE_WALKER` in the Crater; the Martian
   naval branch's first technologies, with Hover Pods); enemy, Dinosaurs (the
-  island's tribes: Fernmaw and Tarpit, Raptors, Triceratops, Plesiosaurs in
-  the strait; `ASSAULT` the Crater).
+  island's tribes: Tarpit and a jungle camp, Raptors, Triceratops,
+  Plesiosaurs in the strait; `ASSAULT` the Crater).
 - **Format:** Escort, naval (`ESCORT` `CORE_WALKER` to `RAY_HOLLOW`,
   `within` 1, `byRound` 20). **Stars:** by turn 16; lose no city.
 - **Difficulty:** 3 of 6.
 - **Tactical problem:** a slow walker through a jungle of charging beasts,
-  then a strait full of torpedoes. With Hover Pods a unit launches from any
-  beach as a transport, no Port needed, so the crossing can start wherever
-  the beasts are not.
-- **Hint:** "With Hover Pods, units launch from any beach."
+  then a strait full of torpedoes. A Tripod wades into the shallows and
+  launches anywhere, and with Hover Pods its foot escort can too, no Port
+  needed, so the crossing can start wherever the beasts are not.
+- **Hint:** "With Hover Pods, foot units launch from any beach."
 - **Map:** Archipelago 16. The main island with the Crater in its heart and
   jungle around; a strait; Ray Hollow on an islet to the east.
 - **Mechanics:** escort of a unit that crosses embarked **(E6, verify)**.
@@ -1750,8 +1790,8 @@ extension the framework lacks is flagged **(E*n*)** and listed in
   no city; Sugarcrest stands (`HOLD_PLACE`).
 - **Difficulty:** 4 of 6.
 - **Tactical problem:** attrition against an enemy that grows from its own
-  dead. Shields stop everything but Plague, so the Liches die first; Force
-  Fields strengthen the Shields beside them.
+  dead. Shields stop everything but Plague, so the Liches die first; with
+  Force Fields a Shield Projector raises the Shields beside it to 4.
 - **Hint:** "Plague goes through Shields: kill the Liches first."
 - **Map:** Lakes 16. Red Dust and Saucer Field beside the Rift; Sugarcrest
   across the lake; barrow fields to the west.
@@ -1865,9 +1905,9 @@ extension the framework lacks is flagged **(E*n*)** and listed in
 - **Difficulty:** 2 of 6.
 - **Tactical problem:** a Lich behind walls that outranges your line. On
   the tenth turn a Frost Giant joins you beside the tomb; a giant's blow
-  shatters a badly hurt Frozen enemy, so the plan is to freeze the Abbot's
-  guard and save the walls for the giant.
-- **Hint:** "A Frost Giant wakes on turn 10. Save the walls for it."
+  shatters a badly hurt Frozen enemy, so the plan is to wear down and
+  freeze the Abbot's guard before the tenth turn and let the giant smash it.
+- **Hint:** "A Frost Giant joins you on turn 10: freeze, then smash."
 - **Map:** Dry Land 14, Highlands. Rime Camp and Whitefang in the south;
   ice fields; the Glacier Tomb in a cirque in the north.
 - **Mechanics:** a player wave on turn 10, one Frost Giant (existing), with
@@ -1921,10 +1961,10 @@ extension the framework lacks is flagged **(E*n*)** and listed in
   no city; Rime lives.
 - **Difficulty:** 4 of 6.
 - **Tactical problem:** two fronts and two very different enemies. Rushed
-  sweets come fast and hit hard, then Crash and cannot act next turn, which
-  is the moment to strike back; the Wardens' Knights Overrun anything left
-  alone in the open.
-- **Hint:** "A Rushed sweet Crashes next turn: strike it then."
+  sweets come fast and hit hard, then Crash and cannot attack on their next
+  turn, which is the moment to push them back; the Wardens' Knights
+  Overrun anything left alone in the open.
+- **Hint:** "A Crashed sweet cannot attack on its next turn."
 - **Map:** Lakes 16, Plains. A river with three fords across the middle; the
   Snow Line towns on its north bank; the Wardens' camp in the south,
   Sugarcrest's column in the east.
@@ -1971,9 +2011,10 @@ extension the framework lacks is flagged **(E*n*)** and listed in
 
 - **Seats:** you, Ice Folk (Rime Camp, Whitefang and the Ember Lodge;
   `RIME`); enemies, Cult (the Grey Lodge: camps on the eastern slopes,
-  `ASSAULT` Rime's road) and Undead (the Unquiet: waves from the barrows on
-  the western slopes on turns 6, 10 and 14), teamed; ally, Dwarves (the Deep
-  Gate, `HOLD` the road).
+  `HOLD` the slopes beside the road, an ambush that strikes whatever
+  passes) and Undead (the Unquiet: waves from the barrows on the western
+  slopes on turns 6, 10 and 14), teamed; ally, Dwarves (the Deep Gate,
+  `HOLD` its land).
 - **Format:** Escort (`ESCORT` `RIME` to `SUMMIT`, `within` 0, `byRound`
   24). **Stars:** by turn 20; lose no city.
 - **Difficulty:** 6 of 6.
@@ -1983,8 +2024,9 @@ extension the framework lacks is flagged **(E*n*)** and listed in
   sides of its target; Rime's Cold Snap freezes every enemy beside her.
 - **Hint:** "Musk Oxen freeze whoever strikes them up close."
 - **Map:** Dry Land 20, Highlands. The long climb from Rime Camp in the
-  north-west across the snowfields, past the Deep Gate (allied), to the
-  summit in the centre: the Lodge's ruins, empty since the Rangers came down
+  north-west across the snowfields, past the Deep Gate (allied: no unit
+  may enter an ally's land, so the road skirts its walls), to the summit in
+  the centre: the Lodge's ruins, empty since the Rangers came down
   for the winter, a village landmark.
 - **Closing:** "On the summit Rime sets the Heart of Winter in the snow and
   lays her hands on it, and does not take them away. By morning she is ice
@@ -2002,16 +2044,17 @@ extension the framework lacks is flagged **(E*n*)** and listed in
 > volunteered. Drive them out.
 
 - **Seats:** you, Candy (Sugarcrest and Gumdrop; the tagged Gingerbread
-  Giant `PRALINE`); enemy, Goblins (the Sweet-tooth Boys: Sourmash and a camp
-  under Gumdrop's walls, `RUSH`).
+  Giant `PRALINE`); enemy, Goblins (the Sweet-tooth Boys: a camp under
+  Gumdrop's walls and a raiders' camp in the hills, `RUSH`; Sourmash
+  itself stays off the board, for C6).
 - **Format:** Conquest (`DOMINATION`). **Stars:** by turn 12; Praline lives.
 - **Difficulty:** 1 of 6.
 - **Tactical problem:** the Candy basics. Sugar Rush before a move sends a
   sweet farther and harder, then it Crashes for a turn; a fallen sweet
   leaves Crumbs, and a Confectioner bakes it back from them.
 - **Hint:** "Rush, strike, then guard the Crashed until it wakes."
-- **Map:** Lakes 11. Sugarcrest and Gumdrop on the lake shore; Sourmash in
-  the hills to the east.
+- **Map:** Lakes 11. Sugarcrest and Gumdrop on the lake shore; the
+  raiders' camp in the hills to the east, on the road from Sourmash.
 - **Closing:** "The goblins flee with their spoons. In the ruins of the
   pantry Madame Nougat finds something worse than goblins: the nougat is
   stale. All of it. All over the kingdom."
@@ -2055,19 +2098,22 @@ extension the framework lacks is flagged **(E*n*)** and listed in
 - **Seats:** you, Candy (Sugarcrest and Gumdrop, ports; the Candy naval
   branch's first technologies); enemy, Humans (the Crown's lake squadron: an
   island fort at the lake's outflow, Patrol Boats, a Submarine and the
-  tagged Battleship `SOVEREIGN`, `GUARD` the outflow with `others` `RUSH`).
+  tagged Battleship `SOVEREIGN`; the fort `GUARD`s the outflow and the
+  ships keep to it **(E7)**).
 - **Format:** Hunt, naval (`KILL` `SOVEREIGN`, `byRound` 22). **Stars:** by
   turn 18; lose no city.
 - **Difficulty:** 3 of 6.
 - **Tactical problem:** a Battleship that outranges everything on the lake.
-  A Rushed Gumdrop Tug rams harder, then drifts a turn; a ship hit by a Pie
+  A Rushed Gumdrop Tug rams harder, then Crashes and cannot attack for a
+  turn; a ship hit by a Pie
   Galleon's pie cannot hit back for the rest of the turn; a Choco Sub
   torpedoes without reply. Strike together, then pull the Crashed boats
   back.
-- **Hint:** "A Rushed Tug rams harder, then drifts a turn."
+- **Hint:** "A Rushed Tug rams harder, then sits a turn out."
 - **Map:** Lakes 16. The great lake with Sugarcrest and Gumdrop on its shore;
   the Crown's island fort at the outflow in the south.
-- **Mechanics:** a tagged ship as the target **(E6, verify)**.
+- **Mechanics:** a tagged ship as the target **(E6, verify)**; a squadron
+  that keeps to its post **(E7)**.
 - **Closing:** "The Sovereign goes down. The Commissioner rows ashore, bows,
   and says it is no matter: the choir will sing on the date regardless. He
   seems very sure. Praline sets her Confectioners to finding out what the
@@ -2167,16 +2213,19 @@ extension the framework lacks is flagged **(E*n*)** and listed in
 
 #### CU1. Minutes of the Last Meeting
 
-> Minutes of the first meeting of the reconstituted Lodge, Greyhood, spring.
-> Present: eleven brethren, one Summoner, Mr. Pettigrew (minutes). Item one:
+> Minutes of the spring meeting of the Grey Lodge, Greyhood. Present:
+> Brother Mallory (Hierophant), eleven brethren, Mr. Pettigrew (minutes,
+> on his afternoon off from the Marshal's office). Item one:
 > Sergeant Hobb of the Rangers observed the meeting from a hedge and is
 > riding for Northwatch. Item two: Sergeant Hobb is not to reach Northwatch.
 > Item three: refreshments.
 
 - **Seats:** you, Cult (Greyhood, level 2; the tagged Initiate `PETTIGREW`,
-  a Summoner, a Familiar, a Hexer, a little Favour); enemy, Humans (a Ranger
-  patrol: a camp at the marsh road and the tagged Raider `HOBB`, `HOLD`
-  until turn 4, then `ASSAULT` Greyhood).
+  a Summoner, a Familiar, a Hexer, a little Favour; Familiars known);
+  enemy, Humans (a Ranger patrol: a camp at the marsh road and the tagged
+  Raider `HOBB` on the south road; `GUARD` the south road with a garrison
+  of one, which is Hobb, who starts on it, and from turn 4 `others`
+  `ASSAULT` Greyhood).
 - **Format:** Hunt (`KILL` `HOBB`, `byRound` 10: on the tenth day he is in
   Northwatch). **Stars:** by turn 8; Pettigrew lives.
 - **Difficulty:** 1 of 6.
@@ -2198,10 +2247,11 @@ extension the framework lacks is flagged **(E*n*)** and listed in
 > Ashen Marquis has found a Lullaby that would put the Guest back to sleep.
 > Item three: the Lodge will not burn it. The Lodge will borrow it from the
 > Marquis's archive at Cinderfield, change one note, and put it back exactly
-> where it was. Item four: nobody is to know we were there.
+> where it was. Item four: the Marquis is to believe we came for the
+> silver.
 
 - **Seats:** you, Cult (Greyhood and a hidden camp; the tagged Summoner
-  `PETTIGREW`); enemy, Undead (the Marquis's archive guard: Cinderfield,
+  `PETTIGREW`; Gibbering Masses known); enemy, Undead (the Marquis's archive guard: Cinderfield,
   walled, and a barrow camp; Skeletons, Zombies, a Banshee; `GUARD`).
 - **Format:** Capture against the clock (`CAPTURE` `CINDERFIELD`, `byRound`
   18). **Stars:** by turn 15; lose no city.
@@ -2220,18 +2270,20 @@ extension the framework lacks is flagged **(E*n*)** and listed in
 
 #### CU3. Old Blood
 
-> Item one: when the Guest wakes, the first thing up the shaft will be its
-> Herald, and a Herald is paid for in old blood. Item two: the oldest blood
-> in the world is a dinosaur egg. Item three: the brethren at Greyhood were
-> overrun by dinosaurs, and only one egg got away, aboard the Galleon of the
-> Eye. Item four: the Galleon must cross the Lost Sea to Lamplight Cove, past
-> the sea-beasts and the Martian skimmers. Item five: it is not to sink.
+> Item one: the Grey Book says that when the Guest wakes, the first thing
+> up the shaft will be its Herald, and a Herald is paid for in old blood.
+> Item two: the oldest blood in the world is a dinosaur egg. Item three: the
+> brethren at Greyhood were overrun by dinosaurs, and only one egg got away,
+> aboard the Galleon of the Eye. Item four: the Galleon must sail up the
+> coast of the Lost Sea to Lamplight Cove, under the mountain, past the
+> sea-beasts and the Martian skimmers. Item five: it is not to sink.
 
 - **Seats:** you, Cult (a fishing hamlet at the marsh mouth and Lamplight
   Cove, ports; the Cult naval branch; the tagged Galleon of the Eye
-  `GALLEON`); enemies, Dinosaurs (the sea tribes: Dugouts, Plesiosaurs, a
-  War Raft, from island villages, `ASSAULT` the Galleon's lane) and Martians
-  (Skimmers from Ray Hollow, `NORMAL`), teamed.
+  `GALLEON`); enemies, Dinosaurs (the island's tribes, come after the egg:
+  Dugouts, Plesiosaurs, a War Raft, from island villages, hunting the
+  Galleon's lane **(E7)**) and Martians (Skimmers out of Ray Hollow,
+  `NORMAL`), teamed.
 - **Format:** Escort, naval (`ESCORT` `GALLEON` to `LAMPLIGHT_COVE`,
   `within` 1, `byRound` 20). **Stars:** by turn 16; lose no city.
 - **Difficulty:** 3 of 6.
@@ -2239,25 +2291,29 @@ extension the framework lacks is flagged **(E*n*)** and listed in
   Kraken holds any enemy ship beside it to one tile a turn, so it clears the
   lane ahead; what the Black Gondolas sink is an Offering that pays Favour.
 - **Hint:** "Beside the Kraken, an enemy ship moves only one tile."
-- **Map:** Archipelago 16. The marsh mouth in the east; the island chain in
-  the middle; Lamplight Cove under the cliffs of the western shore.
-- **Mechanics:** escort of a tagged ship **(E6, verify)**.
+- **Map:** Archipelago 16. The marsh mouth in the south; a chain of
+  islets along the coast in the middle; Lamplight Cove under the sea
+  cliffs in the north, at the foot of the mountain.
+- **Mechanics:** escort of a tagged ship **(E6, verify)**; a navy that
+  hunts a lane **(E7)**.
 - **Closing:** "The egg comes ashore at Lamplight Cove, warm and humming. Mr.
   Pettigrew has it put in a basket by the fire, and knits it a small cosy."
 
 #### CU4. The Inspector Calls
 
-> Item one: Mr. Pettigrew has been appointed the Crown's Inspector of Works,
-> by himself, with a very good stamp. Item two: the Inspector will inspect
-> the Great Seal at the Deep Gate with a survey team of twelve brethren with
-> toolbags. Item three: the survey team will replace each of the Seal's bolts
-> with a bolt of black wax. Item four: the dwarves will notice on the third
-> day, and the goblin who is now an honorary dwarf on the fourth. Item five:
-> hold the Seal-works until the last bolt is waxed.
+> Item one: Mr. Pettigrew, lately the Crown's Commissioner for
+> Confectionery, has been appointed the Crown's Inspector of Works, by
+> himself, with a very good stamp. Item two: the Inspector will inspect the
+> Great Seal at the Deep Gate with a survey team of twelve brethren with
+> toolbags. Item three: the survey team will replace each of the Seal's
+> bolts with a bolt of black wax. Item four: the dwarves will notice on the
+> third day, and on the fourth the goblin who refused the Hierophant's gold
+> for the clapper, now an honorary dwarf. Item five: hold the Seal-works
+> until the last bolt is waxed.
 
 - **Seats:** you, Cult (the Seal-works, a town over the Seal, taken at the
-  start, and a hidden camp; `PETTIGREW`; Favour enough for a daemon or
-  two); enemies, Dwarves (Copperstep and the Deep Gate: `NORMAL` until turn
+  start, and a hidden camp; `PETTIGREW`; Gibbering Masses known, Favour
+  enough for a daemon or two); enemies, Dwarves (Copperstep and the Deep Gate: `NORMAL` until turn
   3, then `ASSAULT` the Seal-works) and Goblins (Grubnak's horde, Honorary
   Dwarves: a camp on the eastern road, `RUSH` from turn 4), teamed.
 - **Format:** Hold out (`SURVIVE` 14, `protect` the Seal-works). **Stars:**
@@ -2295,10 +2351,10 @@ extension the framework lacks is flagged **(E*n*)** and listed in
   Vole lives.
 - **Difficulty:** 5 of 6.
 - **Tactical problem:** reach a target at the top of a defended mountain
-  with casters who freeze when touched. A Stargazer's star needs no line of
-  march, only a tile in reach and chanters beside her: every chanter makes
-  the star hit harder, and every chanter hurt or moved drops out. The Redcaps
-  are the shield; the circle is the sword.
+  with frail casters, against an enemy that freezes whatever comes close.
+  A Stargazer's star needs no road, only a tile two to four tiles from her;
+  every chanter who joins her makes it hit 3 harder, and every chanter hurt
+  or moved drops out. The Redcaps are the shield; the circle is the sword.
 - **Hint:** "Chanters beside a Stargazer make its star hit harder."
 - **Map:** Dry Land 16, Highlands, snow. The summit with the Lodge's ruins
   and the Winter Crown in the north; the Ice Folk's camps on the snowfields;
@@ -2320,17 +2376,18 @@ extension the framework lacks is flagged **(E*n*)** and listed in
 > every Ranger in the north. Item three: the Lullaby has a wrong note, the
 > Seal has wax bolts, and the mountain is warm. Item four: when the Guest
 > wakes, whoever holds the Deep Gate holds the leash of whatever comes up
-> first. Item five: take the Deep Gate before dawn. Item six: Mr. Pettigrew
+> first; the Martians' star-chart, kindly lent, gives the hour to the
+> minute. Item five: take the Deep Gate before dawn. Item six: Mr. Pettigrew
 > has still not read the page in his pocket.
 
 - **Seats:** you, Cult (Hood Hollow and the Seal-works' ruins, a large army
   with Summoners, Stargazers and Idol Bearers, The Stars Are Right known,
   starting Favour, the egg's worth; `PETTIGREW`); enemies, Dwarves (the Deep
-  Gate, walled, level 4, `GUARD` with a large garrison; the tagged Engineer
-  `THANE`), Humans (Steele's army: camps on the southern road, `RUSH` from
-  turn 3, waves on turns 8 and 14) and Undead (the Marquis's dead: camps
-  over the western ridge, `NORMAL`, then `ASSAULT` Hood Hollow from turn 6;
-  the tagged Vampire `MARQUIS`), teamed.
+  Gate, walled, level 4, `GUARD` with a large garrison), Humans (Steele's
+  army: camps on the southern road, `RUSH` from turn 3, waves on turns 8
+  and 14) and Undead (the Marquis's dead: camps over the western ridge,
+  `NORMAL`, then `ASSAULT` Hood Hollow from turn 6), teamed. The Thane and
+  the Marquis are at the bell, below, and never on the field.
 - **Format:** Capture against the clock, multi-front (`CAPTURE`
   `DEEP_GATE`, `byRound` 24). **Stars:** by turn 20; Pettigrew lives (or,
   with **E3**, the Herald was summoned).
@@ -2371,30 +2428,38 @@ Almost all 54 missions use only what the framework of
 [CAMPAIGN.md section 10](CAMPAIGN.md#10-the-mission-framework) already has:
 the five objective kinds with `byRound`, `protect` and two bonus goals;
 teams and rival seats; reinforcement waves for any seat, the player's
-included; directive schedules; pre-placed Graves and Eggs; tagged units;
-starting Favour for a Cult seat; and natural maps with recorded edits. Six
-small extensions are flagged in the entries. None changes the rules of a
+included; directive schedules; pre-placed Graves and Eggs; tagged units
+(with kills, for a unit that grows); starting Favour for a Cult seat; and
+natural maps of sizes 11 to 20 with recorded edits. Six small extensions
+are flagged in the entries (E1 to E4, E6, E7; E5, the campaign screen,
+is done). None changes the rules of a
 match that is not a mission; E1 and E2 add legal mission setups (a ruleset
 identity bump for the bead that builds them, per
 [CAMPAIGN.md section 2.4](CAMPAIGN.md#24-identity-saves-and-replays)); E3
-is an objective change (also an identity bump); E4 is presentation only; E5
-is campaign data; E6 is a check that may need nothing.
+is an objective change (also an identity bump); E4 is presentation only;
+E6 is a check that may need nothing; E7 is AI only (directives sit outside
+the state hash, so no bump).
 
-| #   | Extension                                                                                                                                                                                                                                                                                                                                                                                                                                                            | Needed by                                                          | Required?                                                                                             |
-| --- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------- |
-| E1  | **Mission curiosities.** A definition may list curiosities by kind and tile (`curiosities: [{ kind, at }]`); the builder places them instead of the empty list it writes today (`build.ts`), with the kinds' ordinary rules. Kinds used: the Sea Serpent, the Tesla Tower, the Moon Gun, a pair of Dimensional Gates. The Gates are built (round 2); the other three are designed ([curiosities round 3](RULESET_7_CURIOSITIES_ROUND_3.md)) and must be built first. | H5, DN3 (Sea Serpent); H6 (Tesla Tower); G4 (Moon Gun); C5 (Gates) | yes for G4 and C5, whose stories turn on them; the others play without (drop the line from the blurb) |
-| E2  | **A unit that never moves.** A starting unit flag (`rooted: true`) under which the unit may act and attack but never move or be moved: Mother Rime frozen in the Winter Crown.                                                                                                                                                                                                                                                                                       | CU5                                                                | only if a one-tile `GUARD` zone does not hold her in place in hand play                               |
-| E3  | **A bonus goal for a summoning.** `MissionBonusGoalV7` gains `{ kind: "HERALD_SUMMONED" }`: seat 0 completed a Great Summoning during the match.                                                                                                                                                                                                                                                                                                                     | CU6                                                                | no: without it the star is "Pettigrew lives"                                                          |
-| E4  | **A story line on a wave.** A reinforcement may carry a short `line` that the toast and the log show when it arrives ("The dead are here. They apologise for the delay."). Presentation only, outside the state hash.                                                                                                                                                                                                                                                | H4, G5, DN4, I2, CU6                                               | no: the hints can announce the waves instead, as in the prologue                                      |
-| E5  | **Nine chapters and the unlock graph.** `src/campaign/` holds one `CampaignChapterV7` per campaign (intro, outro, six missions) plus the prologue, and the campaign screen derives the tiers of [section 1.7](#17-the-unlock-graph) from completed chapters. Not a mission-system change: bead `pulp_wars-hmyk.3`.                                                                                                                                                   | every campaign                                                     | yes                                                                                                   |
-| E6  | **Tagged ships and embarked escorts (verify).** A `KILL` target or an `ESCORT` unit that is a ship (the Golden Goose, Snapjaw, the Sovereign, the Anvil, the Galleon of the Eye), or a land unit that crosses the sea embarked (the Old Queen, the Core-Walker). Check that a tag resolves through embarking and that the builder seats a naval unit afloat; fix if not.                                                                                             | H5, G3, C3, D5, CU3 (ships); DN3, M3 (embarked)                    | yes, if the check finds a gap                                                                         |
+| #   | Extension                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | Needed by                                                          | Required?                                                                                                                                |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| E1  | **Mission curiosities.** A definition may list curiosities by kind and tile (`curiosities: [{ kind, at }]`); the builder places them instead of the empty list it writes today (`build.ts`). The generator's site rules (distances to capitals, villages and other curiosities, board size) do not apply to an authored tile; each kind's tile rules do (terrain, never a settlement centre, the Serpent's home on open Deep Water). A mission that places a round-3 kind turns that kind's rules on (missions otherwise run with round 3 off: no `ZAP`, no `FIRE_MOON_GUN`, no Serpent turn). Kinds used: the Sea Serpent, the Tesla Tower, the Moon Gun, a pair of Dimensional Gates. The Gates are built (round 2); the other three are designed ([curiosities round 3](RULESET_7_CURIOSITIES_ROUND_3.md), its beads A and B, `7r103` and `7r104`) and must be built first. | H5, DN3 (Sea Serpent); H6 (Tesla Tower); G4 (Moon Gun); C5 (Gates) | yes for G4 and C5, whose stories turn on them; the others play without (drop the line from the blurb)                                    |
+| E2  | **A unit that never moves.** A starting unit flag (`rooted: true`) under which the unit may act and attack but never move or be moved: Mother Rime frozen in the Winter Crown.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | CU5                                                                | only if a `GUARD` whose zone is her tile alone (garrison 1: she starts inside it, so she is the garrison) does not hold her in hand play |
+| E3  | **A bonus goal for a summoning.** `MissionBonusGoalV7` gains `{ kind: "HERALD_SUMMONED" }`: seat 0 completed a Great Summoning during the match.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | CU6                                                                | no: without it the star is "Pettigrew lives"                                                                                             |
+| E4  | **A story line on a wave.** A reinforcement may carry a short `line` that the toast and the log show when it arrives ("The dead are here. They apologise for the delay."). Presentation only, outside the state hash.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | H4, G5, DN4, I2, CU6                                               | no: the hints can announce the waves instead, as in the prologue                                                                         |
+| E5  | **Nine chapters and the unlock graph.** Done by `pulp_wars-hmyk.3` ([CAMPAIGN.md section 14](CAMPAIGN.md#14-the-campaign-map-and-the-faction-campaigns-pulp_wars-hmyk3)): the registry, the tiers and the screen exist; each campaign bead fills in its entry's chapter, title and subtitle. Not a mission-system change.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | every campaign                                                     | done                                                                                                                                     |
+| E6  | **Tagged ships and embarked escorts (verify).** A `KILL` target or an `ESCORT` unit that is a ship (the Golden Goose, Snapjaw, the Sovereign, the Anvil, the Galleon of the Eye), or a land unit that crosses the sea embarked (the Old Queen, the Core-Walker). Check that a tag resolves through embarking, that the builder seats a naval unit afloat, and that a starting sea beast may carry `kills` (Snapjaw); fix if not.                                                                                                                                                                                                                                                                                                                                                                                                                                               | H5, G3, C3, D5, CU3 (ships); DN3, M3 (embarked)                    | yes, if the check finds a gap                                                                                                            |
+| E7  | **Directives for ships.** The directives steer land and embarked units only (`src/ai/v7-directives.ts`): a `GUARD` garrison and a `HOLD` leash never hold a ship, and `RUSH` and `ASSAULT` never send one. Let a `GUARD` or `HOLD` zone drawn on water leash the seat's ships to it (a flagship at its anchorage, a squadron at its strait), and let `RUSH` and `ASSAULT` send them at the target. AI only.                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | H5, G3, C3, D5, CU3                                                | only if hand play shows the Normal AI's naval plan pulling the flagship off its post or leaving the lane empty                           |
 
 Not extensions, but every building bead should keep in mind: a campaign's
 missions keep the prologue's conventions (every city named, landmarks named
 in capitals, hints at most 60 characters, no coordinates); the mission IDs
-follow the campaign (`HUMAN_1` to `HUMAN_6`, `UNDEAD_1`, ..., `CULT_6`); and
-the "Mechanics" a mission lists as existing should still be confirmed by the
-hand play the builder's guide requires.
+follow the campaign (`HUMAN_1` to `HUMAN_6`, `UNDEAD_1`, ..., `CULT_6`); a
+seat starts with the technologies its tactical problem names (Familiars for
+a Switcheroo, Gibbering Masses for a Mass, Powder Kegs for a raft's
+Kaboom); no unit may enter an ally's land, so an escort to an allied city
+uses `within` 2 and a road past one skirts it; and the "Mechanics" a
+mission lists as existing should still be confirmed by the hand play the
+builder's guide requires.
 
 ## 5. Consistency review
 
@@ -2470,3 +2535,105 @@ formats, has its intro at step 1 and its finale at step 6, and grows from
 an 11 board to a 16 or 20 board. The Rescue format appears once (U6); the
 allied seat appears in ten missions (H4, U6, G6, D6, DN5, M4, M6, I6, C6,
 CU5), twice as a pair of reciprocal favours (M4 and C6; H4 and U6).
+
+## 6. Editor's review
+
+The independent review of `pulp_wars-hmyk.2`, by an editor who did not
+write the saga. Checked against the prologue (`src/campaign/chapter-1.ts`,
+CAMPAIGN.md sections 2, 9, 10, 12 and 14), the current rules
+(RULESET_7_CURRENT.md: rosters, themed navies, the frozen sea, the Cult),
+the [curiosities round 3](RULESET_7_CURIOSITIES_ROUND_3.md) design, the
+directive code (`src/ai/v7-directives.ts`) and the campaign registry
+(`src/campaign/campaigns.ts`). The verdict: the spine holds. The nine
+campaigns complement each other rather than retell one battle, every
+reveal of section 1.6 is set up and paid, and every seat rule holds (no
+mission seats one faction twice). 47 smaller faults were fixed in place.
+
+**Rules a briefing misstated (12).** Fire Rafts never explode when sunk;
+they Kaboom, and it is the Golden Goose, a Scrap Dreadnought, that blows
+up (H5). An Alpha Plesiosaur cannot grow, so Snapjaw is now Big with two
+kills, one kill from healing whole (G3). The Moon Gun fires once a turn
+and its passenger lands spent, so "three goblins at once" became a drop
+a turn timed with the assault (G4). A Steam Mole carries one rider (D3).
+D5's hint said to lead with the Ironclads while its tactics led with the
+Launches. A Tripod self-launches without Hover Pods; the Pods are for its
+foot escort (M3). Force Fields work through a Shield Projector (M4). A
+Crashed sweet still moves and strikes back, it only cannot attack (I4,
+C3). "Save the walls for the giant" meant nothing (I2). Every Undead ship
+has Drowned Crews, not only two (U3). A star needs no chanters; they only
+add to it (CU5). Seats now start with the technology their lesson needs
+(Familiars in CU1, Gibbering Masses in CU2 and CU4, Powder Kegs in G3).
+
+**Missions the framework could not build as written (7).** `ASSAULT`
+needs a city to march on; five seats were told to assault a road or a
+lane (G6, D3, I6, CU1, CU3). The directives move land units only, so no
+flagship could keep its post: that is the new **E7** (H5, G3, C3, D5,
+CU3). No unit may enter an ally's land, so G6's escort to within 1 of the
+allied Ironbraid Gate was impossible (now `within` 2) and I6's road
+skirts the allied Deep Gate. CU1's fleeing Hobb was told to assault
+Greyhood; he is now the one-unit garrison of the south road. E1 now says
+that authored curiosity tiles skip the generator's site rules (H6's tower
+stands three tiles before the Hall's gate) and that a mission placing a
+round-3 kind must turn its rules on, which missions otherwise run
+without. E5 was built by `pulp_wars-hmyk.3`.
+
+**Continuity (13).** The Undead outro said the Lullaby could be sung
+once only, on the Long Night, and then the choir sang it in C6; it is now
+the bell on which it must be rung. The prologue's Brain Wave calls the Old
+Queen "a young queen", so the saga no longer gives her a century: the
+title is her line's, her clutch is her first, and the Pact learns from
+"the oldest blood in the world". Towns taken in one mission came back
+under their old owners: Spitewood and Sourmash (M1, then C1 and C6) and
+Sourmash again (C1, then C6) are no longer on those boards, and Millford,
+taken in M2, is handed back before the Rangers hold it in M6. Kessler was
+a tagged unit the player could kill in H6, before G4 and DN4; he is off
+the field until DN4, and the Marquis and the Thane are at the bell, not on
+the field, in CU6 (a named-character convention is now in section 0).
+CU1 called the spring meeting the Lodge's first, though hooded buyers and
+Brother Mallory were already at work; it is the Grey Lodge's spring
+meeting, and Mallory presides, which brings him into the Cult campaign
+before his death in U5. G5's rafts came on turn 12 and again "on the
+sixteenth night". Haddock's papers were on "the summer's" stars in one
+place and "last autumn's" in another. D2's pass was closing with snow in
+early summer. CU2 captured Cinderfield while ordering that "nobody is to
+know"; now the Marquis is to believe the Lodge came for the silver. M3
+fought Fernmaw, Oona's own town, a season before the Martians help the
+Queen; the island's tribes are now a named seat kind, and the Martians'
+help in DN5 is gratitude for the Overmind, not fear of the Queen's teeth.
+H6's lightning tower stood on the roof in the blurb and beside the Hall
+on the map.
+
+**Geography (5).** Wreckers' Cove sat on the Hollow Hills' coast, the far
+side of the land from the Lost Sea it sails across; it is on the Lost Sea
+shore of Kessler's lands. Hollow Barrow was filed under the Marquis though
+its dead "were never his" and H1 puts it by Northwatch; it is the
+Frontier's. Lamplight Cove was across the Lost Sea, so the egg sailed away
+from the mountain it was needed at; it is under the mountain's sea cliffs,
+and CU3 sails up the coast. D5's estuary and G6's road now run the way
+section 1.1 points them.
+
+**Interlocking and the screen (8).** Reveal 5, the polite man in grey,
+had no payoff in the Cult campaign; CU4's minutes now name the
+Commissioner and the goblin who refused the gold, and CU6's the
+star-chart. Reveal 2's Grey Book was in no Cult player text; CU3 now
+quotes it. The unlock graph and the screen paragraph described a screen
+with the prologue at the foot and the Cult on the right; the built screen
+has the prologue on top and the Cult in the middle of the last row, and
+the text now says so. Tier 2's reason sent the Pact's warning to the
+Pact's own members. A prologue quote was wrong (F9 says the dead rise
+"there too"). U2 now ties Crane's reading of the bell's score (F5) to his
+hunt for a counter-score. The cast table missed appearances (Pettigrew in
+G5 and G6, the Marquis in CU2, Mallory in CU1).
+
+**Tone (2).** A typo ("Some one") and a confusing line in CU5 ("casters
+who freeze when touched").
+
+**Deliberately left.** Pettigrew's many offices (Steele's clerk, the
+Crown's courier, the Commissioner, the self-made Inspector) are the joke,
+not a hole. How the clapper's chain passes the Seal is left to pulp. The
+two old serpents (H5, DN3) are two serpents. The world's compass is right
+in section 1.1 and in the map sketches that name it; a board may still be
+turned to suit its seed. Blurbs run longer than the prologue's three
+sentences; each building bead trims to the card. The difficulty steps and
+clocks are reasoned, not played: each campaign bead confirms them in hand
+play (no simulations were run for this review).
