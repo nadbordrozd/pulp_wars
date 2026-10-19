@@ -137,6 +137,10 @@ export const OWNER_READER_CLASSES_V7: Readonly<
   "src/engine/v7/reducer.ts::applyReward": "PLAYER_ONLY",
   // Map curiosities round 2 (`pulp_wars-737.14`): the tossing seat.
   "src/engine/v7/reducer.ts::applyTossCoin": "PLAYER_ONLY",
+  // Map curiosities round 3 (`pulp_wars-737.20`): the zapping or firing
+  // seat (a seat's command; a neutral unit never commands).
+  "src/engine/v7/reducer.ts::applyZap": "PLAYER_ONLY",
+  "src/engine/v7/reducer.ts::applyFireMoonGun": "PLAYER_ONLY",
   "src/engine/v7/reducer.ts::applyShipyard": "PLAYER_ONLY",
   "src/engine/v7/reducer.ts::applySpatial": "PLAYER_ONLY",
   "src/engine/v7/reducer.ts::applyTractorBeam": "PLAYER_ONLY",

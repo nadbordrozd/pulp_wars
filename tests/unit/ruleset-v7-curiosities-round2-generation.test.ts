@@ -232,11 +232,17 @@ describe("round-2 generation (section 24)", () => {
     return { kinds, placed, guards };
   }
 
+  // Round 3 (`pulp_wars-737.20`, RULESET_7_CURIOSITIES_ROUND_3.md section
+  // 15.4): the new count table and the fourteen-kind draw moved the pins;
+  // each seed still draws a camp (Pangea 20 seeds 9 and 15 a Downed Saucer,
+  // seed 5 a Graveyard beside a Moon Gun, Dry Land 25 seed 12 a Downed
+  // Saucer, the gates, and a Lost Expedition). Round 2's seeds were 0, 30,
+  // 1, and 17.
   for (const [seed, mapType, width] of [
-    [0, "PANGEA", 20],
-    [30, "PANGEA", 20],
-    [1, "PANGEA", 20],
-    [17, "DRY_LAND", 25],
+    [9, "PANGEA", 20],
+    [15, "PANGEA", 20],
+    [5, "PANGEA", 20],
+    [12, "DRY_LAND", 25],
   ] as const)
     it(`draws in the stream order of section 24.1: ${mapType} ${width} seed ${seed}`, () => {
       const setup = setupOf(seed, mapType, width, ["ORIGINAL", "GOBLIN"]);
@@ -259,13 +265,11 @@ describe("round-2 generation (section 24)", () => {
           )
           .map((entry) => ({ breed: entry.breed, at: entry.at })),
       ).toEqual(expected.guards);
-      expect(generated.map.neutrals.length).toBeGreaterThan(
-        seed === 17 ? 0 : 1,
-      );
+      expect(generated.map.neutrals.length).toBeGreaterThan(1);
     });
 
-  it("places a Graveyard with two Zombies on its neighbours: PANGEA 20 seed 1", () => {
-    const setup = setupOf(1, "PANGEA", 20, ["ORIGINAL", "GOBLIN"]);
+  it("places a Graveyard with two Zombies on its neighbours: PANGEA 20 seed 5", () => {
+    const setup = setupOf(5, "PANGEA", 20, ["ORIGINAL", "GOBLIN"]);
     const generated = generateInitialMapV7(setup);
     if (!generated.ok) throw new Error("map");
     const graveyard = generated.map.curiosities.find(
@@ -283,7 +287,7 @@ describe("round-2 generation (section 24)", () => {
   });
 
   it("sets the gates on opposite sides, fair to every start", () => {
-    const setup = setupOf(17, "DRY_LAND", 25, ["ORIGINAL", "GOBLIN"]);
+    const setup = setupOf(12, "DRY_LAND", 25, ["ORIGINAL", "GOBLIN"]);
     const generated = generateInitialMapV7(setup);
     if (!generated.ok) throw new Error("map");
     const gates = generated.map.curiosities.filter(

@@ -2,11 +2,22 @@ import type { PlayerId } from "../model/ids";
 import type { RandomState } from "../random/random";
 import { nextBounded, randomState, seedFromText } from "../random/random";
 import {
+  ORIGINAL_BASELINE_V5_TREE,
   PROMOTION_HP_V7,
+  armouredDamageV7,
+  canEnterTerrainV7,
+  isIceAtV7,
   unitGrowsV7,
+  unitIsMountainBornV7,
+  unitMovementModeV7,
   unitRoleMechanicsV7,
+  type FactionRosterV7,
+  type IceLookupV7,
 } from "../rules/ruleset-v7";
 import type { DomainEventV7 } from "./events";
+import { forbiddenTechnologiesV7 } from "./forbidden-technologies";
+import { blizzardHalvedDamageV7, blizzardProtectsV7 } from "./ice-folk";
+import { absorbHitV7 } from "./martian";
 import { compareCoordsV7, sameCoordV7 } from "./schema";
 import {
   isAfloatFormV7,
@@ -21,10 +32,11 @@ import {
   type MatchSetupV7,
   type MonsterStateV7,
   type NeutralBreedV7,
+  type TechnologyIdV7,
   type TerrainIdV7,
   type UnitStateV7,
 } from "./types";
-import { tileOccupiedV7 } from "./units";
+import { tileOccupiedV7, type UnitListsV7 } from "./units";
 
 /**
  * Map curiosities (`pulp_wars-737.2` and `pulp_wars-737.3`,
@@ -68,6 +80,12 @@ export const CURIOSITY_PLACEMENT_KINDS_V7 = Object.freeze([
   "GATES",
   "BIGFOOT",
   "WISHING_WELL",
+  // Round 3 (`pulp_wars-737.20`, RULESET_7_CURIOSITIES_ROUND_3.md section
+  // 3.1): appended, so the order of the nine earlier kinds is unchanged.
+  "TESLA_TOWER",
+  "MOON_GUN",
+  "GOLD_CLAIM",
+  "LOST_EXPEDITION",
 ] as const);
 export type CuriosityPlacementKindV7 =
   (typeof CURIOSITY_PLACEMENT_KINDS_V7)[number];
@@ -85,6 +103,11 @@ export const CURIOSITY_WEIGHTS_V7: Readonly<
   GATES: 2,
   BIGFOOT: 1,
   WISHING_WELL: 1,
+  // Round 3 (section 3.1).
+  TESLA_TOWER: 2,
+  MOON_GUN: 2,
+  GOLD_CLAIM: 2,
+  LOST_EXPEDITION: 2,
 });
 
 /**
@@ -108,6 +131,11 @@ const CURIOSITY_TERRAINS_V7: Readonly<
   GATE: ["GRASS", "FOREST"],
   BIGFOOT: ["FOREST"],
   WISHING_WELL: ["GRASS"],
+  // Round 3 (section 3.1).
+  TESLA_TOWER: ["GRASS", "FOREST"],
+  MOON_GUN: ["GRASS"],
+  GOLD_CLAIM: ["GRASS", "FOREST"],
+  LOST_EXPEDITION: ["GRASS", "FOREST"],
 });
 
 /** Whether a curiosity of `kind` may stand on `terrain` (section 4.4). */
@@ -188,6 +216,36 @@ export const GATE_FAIRNESS_V7 = 4;
 export const WELL_TOSS_COST_V7 = 1;
 export const WELL_COINS_V7 = 5;
 export const WELL_VISION_RADIUS_V7 = 5;
+
+// ------------------------------------------------- Round 3 constants ---
+
+/**
+ * Round 3 (`pulp_wars-737.20`, RULESET_7_CURIOSITIES_ROUND_3.md sections 3
+ * to 7): the Tesla Tower, the Moon Gun, the Gold Claim, and the Lost
+ * Expedition.
+ */
+/** Section 4.2: the fixed damage of a zap. */
+export const TESLA_ZAP_DAMAGE_V7 = 4;
+/** Section 4.1 row 4: a zap reaches every tile within this of the Tower. */
+export const TESLA_ZAP_RANGE_V7 = 2;
+/** Section 3.4: the Tower keeps the Spider's lair distances. */
+export const TESLA_CAPITAL_DISTANCE_V7 = 5;
+export const TESLA_VILLAGE_DISTANCE_V7 = 4;
+/** Section 3.1: the smallest board width with a Tower or a Moon Gun. */
+export const TESLA_MINIMUM_WIDTH_V7 = 16;
+export const MOON_GUN_MINIMUM_WIDTH_V7 = 16;
+/** Section 5.1 row 5: the Gun fires to a tile within this of it. */
+export const MOON_GUN_RANGE_V7 = 5;
+/** Section 3.4: of the tiles within 5 of the Gun, at least this many are land. */
+export const MOON_GUN_LAND_MINIMUM_V7 = 20;
+/** Section 3.1: the smallest board width with a Gold Claim. */
+export const GOLD_CLAIM_MINIMUM_WIDTH_V7 = 14;
+/** Section 6.2: what an owned Claim pays at its owner's Start Turn. */
+export const GOLD_CLAIM_COINS_V7 = 2;
+/** Section 6.2: the Coins in a Claim at placement. */
+export const GOLD_CLAIM_TOTAL_V7 = 30;
+/** Section 7.1: the Coins a finder with nothing to research gains. */
+export const EXPEDITION_COINS_V7 = 10;
 
 /**
  * Section 24.4: the smallest Chebyshev distance between the two gates,
@@ -309,14 +367,16 @@ export function curiosityRandomStateV7(seed: number): RandomState {
 /**
  * Section 4.2: the number of curiosities a board of this width aims for,
  * from the stream's first draw. 11: one with probability 1/3; 14: one with
- * probability 1/2; 16: one (no draw); 20: two with probability 1/2,
- * otherwise one; 25: two (no draw). Fewer are placed when no kind has a
+ * probability 1/2; 16: one (no draw). Round 3 (`pulp_wars-737.20`,
+ * RULESET_7_CURIOSITIES_ROUND_3.md section 3.2): 20: two (no draw; was two
+ * with probability 1/2, otherwise one); 25: three with probability 1/2,
+ * otherwise two (was two, no draw). Fewer are placed when no kind has a
  * legal site left.
  */
 export function curiosityTargetCountV7(
   width: number,
   random: RandomState,
-): { readonly count: 0 | 1 | 2; readonly random: RandomState } {
+): { readonly count: 0 | 1 | 2 | 3; readonly random: RandomState } {
   if (width === 11) {
     const draw = nextBounded(random, 3);
     return { count: draw.value === 0 ? 1 : 0, random: draw.random };
@@ -326,11 +386,11 @@ export function curiosityTargetCountV7(
     return { count: draw.value === 0 ? 1 : 0, random: draw.random };
   }
   if (width === 16) return { count: 1, random };
-  if (width === 20) {
+  if (width === 20) return { count: 2, random };
+  if (width === 25) {
     const draw = nextBounded(random, 2);
-    return { count: draw.value === 0 ? 2 : 1, random: draw.random };
+    return { count: draw.value === 0 ? 3 : 2, random: draw.random };
   }
-  if (width === 25) return { count: 2, random };
   return { count: 0, random };
 }
 
@@ -556,17 +616,23 @@ function siteLegalV7(
     return false;
   // Rule 3: 3 or more from every settlement center; section 4.4: a lair (a
   // camp centre too, section 24.3) 5 or more from every capital and 4 or
-  // more from every village.
+  // more from every village. Round 3 (section 3.4): the Tesla Tower keeps
+  // the lair's distances, so its zap never reaches a centre's first ring.
+  const lairDistances = lairLike || kind === "TESLA_TOWER";
   if (
     context.capitals.some(
       (center) =>
         chebyshevV7(center, at) <
-        (lairLike ? MONSTER_CENTER_DISTANCE_V7 : CURIOSITY_CENTER_DISTANCE_V7),
+        (lairDistances
+          ? MONSTER_CENTER_DISTANCE_V7
+          : CURIOSITY_CENTER_DISTANCE_V7),
     ) ||
     context.villages.some(
       (center) =>
         chebyshevV7(center, at) <
-        (lairLike ? MONSTER_VILLAGE_DISTANCE_V7 : CURIOSITY_CENTER_DISTANCE_V7),
+        (lairDistances
+          ? MONSTER_VILLAGE_DISTANCE_V7
+          : CURIOSITY_CENTER_DISTANCE_V7),
     )
   )
     return false;
@@ -618,6 +684,9 @@ function siteLegalV7(
   if (kind === "GATE") return !connectivity.cutTiles.has(index);
   if (kind === "BIGFOOT")
     return bigfootSiteLegalV7(context, connectivity, placed, at);
+  // Round 3 (section 3.4): the Moon Gun always has somewhere to fire.
+  if (kind === "MOON_GUN")
+    return moonGunLandAroundV7(board, at) >= MOON_GUN_LAND_MINIMUM_V7;
   if (!lairLike) return true;
   if (!monsterAreaLegalV7(board, connectivity, at)) return false;
   if (kind === "MONSTER") return true;
@@ -626,6 +695,29 @@ function siteLegalV7(
     campGuardTilesAtGenerationV7(context, at).length >=
     CAMP_GUARD_TILES_MINIMUM_V7[kind as "DOWNED_SAUCER" | "GRAVEYARD"]
   );
+}
+
+/**
+ * Round 3 (section 3.4): the tiles within {@link MOON_GUN_RANGE_V7} of the
+ * Gun on `at`, other than its own, that are land (neither water nor a
+ * Rift).
+ */
+export function moonGunLandAroundV7(
+  board: Pick<BoardStateV7, "width" | "height" | "tiles">,
+  at: CoordV7,
+): number {
+  let land = 0;
+  for (let dy = -MOON_GUN_RANGE_V7; dy <= MOON_GUN_RANGE_V7; dy += 1)
+    for (let dx = -MOON_GUN_RANGE_V7; dx <= MOON_GUN_RANGE_V7; dx += 1) {
+      if (dx === 0 && dy === 0) continue;
+      const x = at.x + dx;
+      const y = at.y + dy;
+      if (x < 0 || y < 0 || x >= board.width || y >= board.height) continue;
+      const tile = board.tiles[y * board.width + x];
+      if (tile !== undefined && tile.biome !== null && tile.terrain !== "RIFT")
+        land += 1;
+    }
+  return land;
 }
 
 /**
@@ -791,6 +883,13 @@ function curiosityKindAllowedV7(
       return width >= GATES_MINIMUM_WIDTH_V7;
     case "BIGFOOT":
       return width >= BIGFOOT_MINIMUM_WIDTH_V7;
+    // Round 3 (section 3.1).
+    case "TESLA_TOWER":
+      return width >= TESLA_MINIMUM_WIDTH_V7;
+    case "MOON_GUN":
+      return width >= MOON_GUN_MINIMUM_WIDTH_V7;
+    case "GOLD_CLAIM":
+      return width >= GOLD_CLAIM_MINIMUM_WIDTH_V7;
     default:
       return true;
   }
@@ -986,6 +1085,21 @@ export function placeCuriositiesV7(
       }
       case "WISHING_WELL":
         curiosities.push({ kind: "WISHING_WELL", at, tossedBy: [] });
+        break;
+      // Round 3 (sections 5.3, 6.3, and 7.3): markers with their state.
+      case "MOON_GUN":
+        curiosities.push({ kind: "MOON_GUN", at, lastFired: null });
+        break;
+      case "GOLD_CLAIM":
+        curiosities.push({
+          kind: "GOLD_CLAIM",
+          at,
+          ownerId: null,
+          left: GOLD_CLAIM_TOTAL_V7,
+        });
+        break;
+      case "LOST_EXPEDITION":
+        curiosities.push({ kind: "LOST_EXPEDITION", at, foundBy: null });
         break;
       case "DOWNED_SAUCER":
       case "GRAVEYARD": {
@@ -1603,6 +1717,11 @@ export function monsterDamageSourcesV7(
     } else if (event.kind === "UNIT_BOMBED") {
       if (event.damage + event.shieldDamage > 0)
         add(event.targetUnitId, event.unitId);
+    } else if (event.kind === "TESLA_ZAPPED") {
+      // Map curiosities round 3 (section 4.2): a zap provokes like any
+      // damage.
+      if (event.damage + event.shieldDamage > 0)
+        add(event.targetUnitId, event.unitId);
     } else if (event.kind === "UNIT_SURFACED") {
       for (const entry of event.results)
         if (entry.damage + entry.shieldDamage > 0)
@@ -1770,12 +1889,75 @@ export function resolveCuriosityClaimV7(
   actor: PlayerId,
   unit: UnitStateV7,
   at: CoordV7,
+  allied: (left: PlayerId, right: PlayerId) => boolean = () => false,
 ): {
   readonly state: GameStateV7;
   readonly events: readonly DomainEventV7[];
 } | null {
   const curiosity = curiosityAtV7(state, at);
   if (curiosity === null) return null;
+  // Round 3 (`pulp_wars-737.20`, sections 6.1 and 7.1): the Gold Claim is
+  // staked and the Lost Expedition found, in land form.
+  if (curiosity.kind === "GOLD_CLAIM") {
+    if (
+      unit.form !== "LAND" ||
+      curiosity.left <= 0 ||
+      curiosity.ownerId === actor ||
+      (curiosity.ownerId !== null && allied(actor, curiosity.ownerId))
+    )
+      return null;
+    return {
+      state: {
+        ...state,
+        curiosities: state.curiosities.map((entry) =>
+          entry === curiosity ? { ...curiosity, ownerId: actor } : entry,
+        ),
+      },
+      events: [
+        {
+          kind: "GOLD_CLAIM_STAKED",
+          playerId: actor,
+          unitId: unit.id,
+          at,
+          previousOwnerId: curiosity.ownerId,
+        },
+      ],
+    };
+  }
+  if (curiosity.kind === "LOST_EXPEDITION") {
+    if (unit.form !== "LAND" || curiosity.foundBy !== null) return null;
+    const notes = researchableTechnologiesV7(state, actor).length > 0;
+    const coins = notes ? 0 : EXPEDITION_COINS_V7;
+    return {
+      state: {
+        ...state,
+        curiosities: notes
+          ? state.curiosities.map((entry) =>
+              entry === curiosity ? { ...curiosity, foundBy: actor } : entry,
+            )
+          : state.curiosities.filter((entry) => entry !== curiosity),
+        players: notes
+          ? state.players
+          : state.players.map((player) => {
+              if (player.id !== actor) return player;
+              const total = player.coins + coins;
+              if (!Number.isSafeInteger(total))
+                throw new RangeError("INTEGER_OVERFLOW");
+              return { ...player, coins: total };
+            }),
+      },
+      events: [
+        {
+          kind: "EXPEDITION_FOUND",
+          playerId: actor,
+          unitId: unit.id,
+          at,
+          notes,
+          coins,
+        },
+      ],
+    };
+  }
   const remaining = state.curiosities.filter(
     (entry) => !sameCoordV7(entry.at, at),
   );
@@ -1827,6 +2009,355 @@ export function resolveCuriosityClaimV7(
     };
   }
   return null;
+}
+
+// ------------------------------------------------- Round 3: the rules ---
+
+/** Round 3 (section 4): the Tesla Tower on `at`, if any. */
+export function teslaTowerAtV7(
+  curiosities: readonly CuriosityV7[],
+  at: CoordV7,
+): { readonly kind: "TESLA_TOWER"; readonly at: CoordV7 } | null {
+  for (const curiosity of curiosities)
+    if (curiosity.kind === "TESLA_TOWER" && sameCoordV7(curiosity.at, at))
+      return { kind: "TESLA_TOWER", at: curiosity.at };
+  return null;
+}
+
+/** Round 3 (section 5): the Moon Gun on `at`, if any. */
+export function moonGunAtV7(
+  curiosities: readonly CuriosityV7[],
+  at: CoordV7,
+): Extract<CuriosityV7, { readonly kind: "MOON_GUN" }> | null {
+  for (const curiosity of curiosities)
+    if (curiosity.kind === "MOON_GUN" && sameCoordV7(curiosity.at, at))
+      return curiosity;
+  return null;
+}
+
+/**
+ * Section 4.1 row 4: whether a zap from the Tower on `tower` reaches a unit
+ * on `target`: within {@link TESLA_ZAP_RANGE_V7}, and a submerged
+ * Submarine only from next to it.
+ */
+export function zapReachesV7(
+  tower: CoordV7,
+  target: CoordV7,
+  submerged: boolean,
+): boolean {
+  const distance = chebyshevV7(tower, target);
+  return (
+    distance >= 1 &&
+    distance <= TESLA_ZAP_RANGE_V7 &&
+    (distance <= 1 || !submerged)
+  );
+}
+
+/**
+ * Section 4.2: the zap on `target` from the Tower on `tower`: the fixed
+ * {@link TESLA_ZAP_DAMAGE_V7}, halved (rounded up) for a land-form Ice Folk
+ * unit in its own Blizzard when the Tower is 2 or more away, then Armoured
+ * (1 off) and Plated (the cap), then taken from the Shield first; the HP
+ * part is capped at the unit's HP. Every fact it reads is public, so a
+ * view computes the same hit.
+ */
+export function zapHitV7(
+  lookup: FactionRosterV7,
+  witches: readonly Pick<UnitStateV7, "ownerId" | "at">[],
+  tower: CoordV7,
+  target: Pick<UnitStateV7, "id" | "ownerId" | "role" | "form" | "at" | "hp">,
+  shield: number,
+): {
+  readonly damage: number;
+  readonly shieldDamage: number;
+  readonly hpAfter: number;
+  readonly dies: boolean;
+} {
+  const halved =
+    chebyshevV7(tower, target.at) >= 2 &&
+    blizzardProtectsV7(lookup, witches, target);
+  const raw = halved
+    ? blizzardHalvedDamageV7(TESLA_ZAP_DAMAGE_V7)
+    : TESLA_ZAP_DAMAGE_V7;
+  const hit = absorbHitV7(
+    shield,
+    target.hp,
+    armouredDamageV7(lookup, target, raw),
+  );
+  return {
+    damage: hit.hpDamage,
+    shieldDamage: hit.shieldDamage,
+    hpAfter: target.hp - hit.hpDamage,
+    dies: hit.hpDamage >= target.hp,
+  };
+}
+
+/**
+ * Section 5.1 row 4: whether the Gun may fire in `playerId`'s turn of
+ * `round` (it has not fired in that player-turn).
+ */
+export function moonGunLoadedV7(
+  gun: Extract<CuriosityV7, { readonly kind: "MOON_GUN" }>,
+  round: number,
+  playerId: PlayerId,
+): boolean {
+  return (
+    gun.lastFired === null ||
+    gun.lastFired.round !== round ||
+    gun.lastFired.playerId !== playerId
+  );
+}
+
+/** The board facts a Moon Gun landing reads (a state or a view). */
+export interface MoonGunFactsV7
+  extends
+    FactionRosterV7,
+    IceLookupV7,
+    UnitListsV7<Pick<UnitStateV7, "id" | "at" | "hp">> {
+  readonly board: Pick<BoardStateV7, "width" | "height">;
+  readonly treasureChests: readonly CoordV7[];
+  readonly curiosities: readonly CuriosityV7[];
+}
+
+/**
+ * A tile as the actor knows it (undefined when unexplored): its terrain and
+ * whether it is a settlement site.
+ */
+export type MoonGunKnownTileV7 = (at: CoordV7) =>
+  | {
+      readonly terrain: TerrainIdV7;
+      readonly site: unknown;
+    }
+  | undefined;
+
+/**
+ * Section 5.1 rows 5 to 8: why the unit on the Gun on `gun` may not be
+ * fired to `at`, or null when it may: `OUT_OF_RANGE` (more than 5 away, or
+ * the Gun's own tile), `UNEXPLORED` (not explored by the actor), `BLOCKED`
+ * (a tile the unit may not stand on in land form under the actor's
+ * research, or one holding a unit, mound, Barricade, treasure chest,
+ * settlement centre, or curiosity tile marker).
+ */
+export function moonGunLandingRejectionV7(
+  facts: MoonGunFactsV7,
+  unit: Pick<UnitStateV7, "id" | "ownerId" | "role" | "form">,
+  researched: readonly TechnologyIdV7[],
+  gun: CoordV7,
+  at: CoordV7,
+  knownTile: MoonGunKnownTileV7,
+): "OUT_OF_RANGE" | "UNEXPLORED" | "BLOCKED" | null {
+  const distance = chebyshevV7(gun, at);
+  const { board } = facts;
+  if (
+    distance < 1 ||
+    distance > MOON_GUN_RANGE_V7 ||
+    at.x < 0 ||
+    at.y < 0 ||
+    at.x >= board.width ||
+    at.y >= board.height
+  )
+    return "OUT_OF_RANGE";
+  const tile = knownTile(at);
+  if (tile === undefined) return "UNEXPLORED";
+  if (
+    !canEnterTerrainV7({
+      terrain: tile.terrain,
+      movementMode: unitMovementModeV7(facts, unit),
+      afloat: false,
+      engineering: researched.includes("ENGINEERING"),
+      navigation: researched.includes("NAVIGATION"),
+      mountainBorn: unitIsMountainBornV7(facts, { ...unit, form: "LAND" }),
+      ice: isIceAtV7(facts, at),
+    }) ||
+    tile.site !== null ||
+    tileOccupiedV7(facts, at) ||
+    facts.treasureChests.some((chest) => sameCoordV7(chest, at)) ||
+    facts.curiosities.some((curiosity) => sameCoordV7(curiosity.at, at))
+  )
+    return "BLOCKED";
+  return null;
+}
+
+/**
+ * Section 5.1: every tile the unit on the Gun on `gun` may be fired to, in
+ * (y, x) order.
+ */
+export function moonGunTargetsV7(
+  facts: MoonGunFactsV7,
+  unit: Pick<UnitStateV7, "id" | "ownerId" | "role" | "form">,
+  researched: readonly TechnologyIdV7[],
+  gun: CoordV7,
+  knownTile: MoonGunKnownTileV7,
+): readonly CoordV7[] {
+  const targets: CoordV7[] = [];
+  for (
+    let y = gun.y - MOON_GUN_RANGE_V7;
+    y <= gun.y + MOON_GUN_RANGE_V7;
+    y += 1
+  )
+    for (
+      let x = gun.x - MOON_GUN_RANGE_V7;
+      x <= gun.x + MOON_GUN_RANGE_V7;
+      x += 1
+    ) {
+      const at = { x, y };
+      if (
+        moonGunLandingRejectionV7(
+          facts,
+          unit,
+          researched,
+          gun,
+          at,
+          knownTile,
+        ) === null
+      )
+        targets.push(at);
+    }
+  return targets;
+}
+
+/**
+ * Section 7.1: the technologies `playerId` could research now: not owned,
+ * every prerequisite owned, and not forbidden in the match (the free first
+ * technology included).
+ */
+export function researchableTechnologiesV7(
+  state: Pick<GameStateV7, "setup" | "players">,
+  playerId: PlayerId,
+): readonly TechnologyIdV7[] {
+  const player = state.players.find((candidate) => candidate.id === playerId);
+  if (player === undefined) return [];
+  const forbidden = forbiddenTechnologiesV7(state.setup, player.seat);
+  return ORIGINAL_BASELINE_V5_TREE.nodes
+    .filter(
+      (node) =>
+        !player.researchedTechs.includes(node.id) &&
+        !forbidden.has(node.id) &&
+        node.prerequisites.every((tech) =>
+          player.researchedTechs.includes(tech),
+        ),
+    )
+    .map((node) => node.id);
+}
+
+/**
+ * Section 7.2: the Lost Expedition whose notes `playerId` holds (found by
+ * it and not yet used), or null.
+ */
+export function expeditionNotesOfV7(
+  curiosities: readonly CuriosityV7[],
+  playerId: PlayerId,
+): Extract<CuriosityV7, { readonly kind: "LOST_EXPEDITION" }> | null {
+  if (curiosities.length === 0) return null;
+  for (const curiosity of curiosities)
+    if (curiosity.kind === "LOST_EXPEDITION" && curiosity.foundBy === playerId)
+      return curiosity;
+  return null;
+}
+
+/**
+ * Section 7.2: the price of a research whose ordinary price is `price` for
+ * `playerId`: 0 while it holds notes (a price of 0 stays 0 and does not use
+ * them).
+ */
+export function researchPriceWithNotesV7(
+  curiosities: readonly CuriosityV7[],
+  playerId: PlayerId,
+  price: number,
+): number {
+  return price > 0 && expeditionNotesOfV7(curiosities, playerId) !== null
+    ? 0
+    : price;
+}
+
+/**
+ * Section 6.2: the Gold Claim step of `playerId`'s Start Turn, right after
+ * the income: each Claim it owns pays `min(GOLD_CLAIM_COINS_V7, left)`, in
+ * (y, x) order; a Claim whose `left` reaches 0 is played out (its owner is
+ * cleared).
+ */
+export function resolveGoldClaimPayoutV7(
+  state: GameStateV7,
+  playerId: PlayerId,
+): {
+  readonly state: GameStateV7;
+  readonly events: readonly Extract<
+    DomainEventV7,
+    { readonly kind: "GOLD_CLAIM_PAID" }
+  >[];
+} {
+  if (state.curiosities.length === 0) return { state, events: [] };
+  const events: Extract<DomainEventV7, { readonly kind: "GOLD_CLAIM_PAID" }>[] =
+    [];
+  let paid = 0;
+  const curiosities = state.curiosities.map((curiosity) => {
+    if (
+      curiosity.kind !== "GOLD_CLAIM" ||
+      curiosity.ownerId !== playerId ||
+      curiosity.left <= 0
+    )
+      return curiosity;
+    const coins = Math.min(GOLD_CLAIM_COINS_V7, curiosity.left);
+    const left = curiosity.left - coins;
+    paid += coins;
+    events.push({
+      kind: "GOLD_CLAIM_PAID",
+      playerId,
+      at: curiosity.at,
+      coins,
+      left,
+    });
+    return { ...curiosity, left, ownerId: left === 0 ? null : playerId };
+  });
+  if (events.length === 0) return { state, events };
+  return {
+    state: {
+      ...state,
+      curiosities,
+      players: state.players.map((player) => {
+        if (player.id !== playerId) return player;
+        const coins = player.coins + paid;
+        if (!Number.isSafeInteger(coins))
+          throw new RangeError("INTEGER_OVERFLOW");
+        return { ...player, coins };
+      }),
+    },
+    events,
+  };
+}
+
+/**
+ * Sections 6.2 and 7.2: an eliminated owner's Gold Claim becomes unowned,
+ * and an eliminated finder's notes leave the board. Returns `state` itself
+ * when nothing changes.
+ */
+export function prunedCuriositiesV7(state: GameStateV7): GameStateV7 {
+  if (state.curiosities.length === 0) return state;
+  const gone = new Set(
+    state.players
+      .filter((player) => player.status !== "ACTIVE")
+      .map((player) => player.id),
+  );
+  if (gone.size === 0) return state;
+  let changed = false;
+  const curiosities: CuriosityV7[] = [];
+  for (const curiosity of state.curiosities) {
+    if (
+      curiosity.kind === "GOLD_CLAIM" &&
+      curiosity.ownerId !== null &&
+      gone.has(curiosity.ownerId)
+    ) {
+      changed = true;
+      curiosities.push({ ...curiosity, ownerId: null });
+    } else if (
+      curiosity.kind === "LOST_EXPEDITION" &&
+      curiosity.foundBy !== null &&
+      gone.has(curiosity.foundBy)
+    )
+      changed = true;
+    else curiosities.push(curiosity);
+  }
+  return changed ? { ...state, curiosities } : state;
 }
 
 // ---------------------------------------------------------- Helpers ---

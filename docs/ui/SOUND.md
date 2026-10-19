@@ -218,6 +218,9 @@ economy is silent.
 | Sweep                                                           | `attack.melee`                                                             |
 | Ice melting                                                     | `impact.splash`                                                            |
 | Crack Ice, a crack or a break (`pulp_wars-5ti.27`)              | `special.ice-crack`                                                        |
+| Tesla Tower zap (`pulp_wars-737.20`)                            | `special.zap`, then the target's hurt sound or `unit.death`                |
+| Moon Gun shot and landing (`pulp_wars-737.20`)                  | `attack.cannon`, then `impact.heavy` as the unit lands                     |
+| Lost Expedition found (`pulp_wars-737.20`)                      | `economy.treasure` as the notes rise                                       |
 | Lich splash                                                     | `impact.splash`                                                            |
 | Prize flag, Rally, Hatch call                                   | `support.rally`                                                            |
 | Tend, Cure, Regenerate, Recover, Fountain, Windmill, Sugar Toss | `support.heal`                                                             |
@@ -412,6 +415,9 @@ the viewer's.
 | Own city linked to the capital by Road            | as its icon lands    | `special.sparkle`      |
 | Own unit promoted                                 | after the animations | `unit.levelup`         |
 | Own treasure                                      | after the animations | `economy.treasure`     |
+| Own Gold Claim staked                             | after the animations | `economy.treasure`     |
+| Own Gold Claim payout                             | after the animations | `economy.coin`         |
+| Own Lost Expedition found                         | after the animations | `special.sparkle`      |
 | Own spoils, plunder, automatic reward, income     | after the animations | `economy.coin`         |
 | Own achievement                                   | after the animations | `achievement.unlocked` |
 | The viewer's turn starts                          | after the animations | `turn.start`           |
@@ -756,6 +762,7 @@ full scale). A unit test compares this table with the manifest.
 | `special.mind`         | Mind control     | combat   | sine                             | 520–780    | 472         | 0.22 |
 | `special.freeze`       | Freeze           | combat   | triangle + noise                 | 1047–1568  | 392         | 0.2  |
 | `special.ice-crack`    | Crack Ice        | combat   | noise                            | noise only | 262         | 0.26 |
+| `special.zap`          | Zap              | combat   | noise + saw                      | 90–120     | 232         | 0.22 |
 | `special.burrow`       | Burrow           | combat   | noise + sine                     | 50–70      | 352         | 0.34 |
 | `special.hatch`        | Egg crack        | combat   | noise + sine                     | 500–900    | 212         | 0.26 |
 | `special.pop`          | Pop              | combat   | sine + noise                     | 300–900    | 67          | 0.24 |

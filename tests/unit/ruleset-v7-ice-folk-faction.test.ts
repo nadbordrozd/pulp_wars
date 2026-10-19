@@ -200,9 +200,11 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
     // removes BEHOLD (83).
     // The frozen sea redesign (`pulp_wars-5ti.25`) adds CRACK_ICE after
     // FREEZE and BUILD_FISHING_HOLE after BUILD_LUMBER_CAMP (85).
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(85);
+    // Map curiosities round 3 (`pulp_wars-737.20`) adds ZAP and
+    // FIRE_MOON_GUN after JOIN_CHANT (87).
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(87);
     const breakOff = COMMAND_KIND_ORDER_V7.indexOf("BREAK_OFF");
-    expect(COMMAND_KIND_ORDER_V7.slice(breakOff, breakOff + 16)).toEqual([
+    expect(COMMAND_KIND_ORDER_V7.slice(breakOff, breakOff + 18)).toEqual([
       "BREAK_OFF",
       "FROST_BOLT",
       "STAMPEDE",
@@ -225,6 +227,9 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
       // (PICK_ME retired with the Chosen, `pulp_wars-mch9.31`.)
       // The Cult redesign's Star-fall (`pulp_wars-mch9.34`).
       "JOIN_CHANT",
+      // Map curiosities round 3 (`pulp_wars-737.20`).
+      "ZAP",
+      "FIRE_MOON_GUN",
       "CAPTURE",
     ]);
     const tractor = COMMAND_KIND_ORDER_V7.indexOf("TRACTOR_BEAM");
@@ -264,7 +269,10 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
     // (`pulp_wars-mch9.33`) removes IDOL_RAISED and IDOL_DROPPED (153).
     // The frozen sea redesign (`pulp_wars-5ti.25`) adds ICE_CRACKED after
     // WATER_FROZEN (154).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(154);
+    // Map curiosities round 3 (`pulp_wars-737.20`) adds GOLD_CLAIM_PAID,
+    // EXPEDITION_NOTES_USED, MOON_GUN_FIRED, TESLA_ZAPPED,
+    // GOLD_CLAIM_STAKED, and EXPEDITION_FOUND (160).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(160);
     const after = (order: readonly string[], kind: string) =>
       order[order.indexOf(kind) + 1];
     expect(after(DOMAIN_EVENT_KIND_ORDER_V7, "UNITS_RALLIED")).toBe(

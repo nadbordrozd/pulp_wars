@@ -67,9 +67,9 @@ const CELLS = [
 
 describe("ruleset-7 revision-16 identity", () => {
   it("keeps rejecting r15 after the r54 identity and cleans the r15 through r53 save keys", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r102");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r102.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-87, -47)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r103");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r103.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-88, -48)).toEqual([
       "pulpWars.save.v7r15.current",
       "pulpWars.save.v7r16.current",
       "pulpWars.save.v7r17.current",
@@ -200,7 +200,9 @@ describe("ruleset-7 prior identities", () => {
     // Harbour and buildings on ice): 7r100. Gang Up back to +1 a helper
     // (`pulp_wars-w49.43`): 7r101. The Gyrocopter pass (`pulp_wars-w49.44`:
     // the Bomb Run lands home or anywhere its Move reaches, bomb 6): 7r102.
-    expect(revision).toBe(102);
+    // Map curiosities round 3 A (`pulp_wars-737.20`: the Tesla Tower, the
+    // Moon Gun, the Gold Claim, and the Lost Expedition): 7r103.
+    expect(revision).toBe(103);
     expect([...PRIOR_RULESET_7_IDS]).toEqual(expectedPrior);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
   });
@@ -235,7 +237,7 @@ describe("ruleset-7 prior identities", () => {
 
   it("still reports an unknown Ruleset 7 identity as INVALID_REPLAY", () => {
     // The next identity after the current one is still unknown.
-    for (const id of ["pulp-wars-poc-7r1", "pulp-wars-poc-7r103", "other"])
+    for (const id of ["pulp-wars-poc-7r1", "pulp-wars-poc-7r104", "other"])
       expect(
         parseReplayFileV7({
           format: "pulp-wars-replay",

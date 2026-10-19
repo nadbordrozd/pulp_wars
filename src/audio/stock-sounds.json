@@ -2112,6 +2112,11 @@
       "wanted": "A sharp crack of thick lake ice, a short splintering and a small splash, 0.2 to 0.8 s."
     },
     {
+      "id": "special.zap",
+      "why": "Added by bead pulp_wars-737.20 with ElevenLabs takes; the bundle was not searched for it.",
+      "wanted": "A short electric zap: a sharp crackle and snap of a spark, a brief buzz, 0.2 to 0.8 s."
+    },
+    {
       "id": "unit.step.naval",
       "why": "Added by bead pulp_wars-2yc.57 with ElevenLabs takes; the bundle was not searched for it.",
       "wanted": "A soft oar dip or a gentle lap of water on a small hull, 0.25 to 0.6 s."

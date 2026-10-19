@@ -433,6 +433,27 @@ export type CommandV7 =
     }
   | {
       /**
+       * Map curiosities round 3 (`pulp_wars-737.20`,
+       * RULESET_7_CURIOSITIES_ROUND_3.md section 4.1): the unit `unitId`
+       * standing on the Tesla Tower zaps the hostile unit `targetUnitId`
+       * within 2 tiles of it for 4 damage, as its primary action.
+       */
+      readonly kind: "ZAP";
+      readonly unitId: UnitId;
+      readonly targetUnitId: UnitId;
+    }
+  | {
+      /**
+       * Map curiosities round 3 (section 5.1): the unit `unitId` standing
+       * on the Moon Gun is fired to the empty land tile `at` within 5 tiles
+       * of it, as its primary action (its activation is spent).
+       */
+      readonly kind: "FIRE_MOON_GUN";
+      readonly unitId: UnitId;
+      readonly at: CoordV7;
+    }
+  | {
+      /**
        * The Cultists (section 8.6): the bound Herald `unitId` spends one of
        * its attacks to Cow the hostile city `cityId` within 3 tiles.
        */
@@ -640,7 +661,9 @@ export function parseCommandV7(input: unknown): CommandParseResultV7 {
     kind === "SWALLOW" ||
     // The Cultists (`pulp_wars-mch9.8`).
     kind === "RIBBIT" ||
-    kind === "SWITCHEROO"
+    kind === "SWITCHEROO" ||
+    // Map curiosities round 3 (`pulp_wars-737.20`): the Tesla Tower's zap.
+    kind === "ZAP"
   ) {
     if (!hasExactKeysV7(input, ["kind", "unitId", "targetUnitId"]))
       return invalid(kind);
@@ -813,7 +836,9 @@ export function parseCommandV7(input: unknown): CommandParseResultV7 {
     kind === "FREEZE" ||
     kind === "CRACK_ICE" ||
     kind === "STAMPEDE" ||
-    kind === "TENTACLE"
+    kind === "TENTACLE" ||
+    // Map curiosities round 3 (`pulp_wars-737.20`): the Moon Gun's landing.
+    kind === "FIRE_MOON_GUN"
   ) {
     if (!hasExactKeysV7(input, ["at", "kind", "unitId"])) return invalid(kind);
     const unit = parseUnitIdV7(candidate.unitId);

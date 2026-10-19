@@ -153,14 +153,14 @@ describe("the Cult's Favour: identity", () => {
   // (`pulp_wars-mch9.5`) 7r74, and the Cult's Unbound (`pulp_wars-mch9.6`)
   // 7r75, so 7r72 is a prior identity.
   it("was 7r72 after 7r71, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r102");
-    expect(PRIOR_RULESET_7_IDS.slice(-31, -29)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r103");
+    expect(PRIOR_RULESET_7_IDS.slice(-32, -30)).toEqual([
       "pulp-wars-poc-7r71",
       "pulp-wars-poc-7r72",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r102.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-31, -29)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r103.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-32, -30)).toEqual([
       "pulpWars.save.v7r71.current",
       "pulpWars.save.v7r72.current",
     ]);
@@ -420,6 +420,9 @@ describe("the Cult's Favour: the registry (sections 4, 5, 8.2, and 11)", () => {
       "TENTACLE",
       // The Cult redesign (`pulp_wars-mch9.34`).
       "JOIN_CHANT",
+      // Map curiosities round 3 (`pulp_wars-737.20`).
+      "ZAP",
+      "FIRE_MOON_GUN",
       "CAPTURE",
     ]);
     expect(order[order.indexOf("LAY_EGG") + 1]).toBe("OFFERING");

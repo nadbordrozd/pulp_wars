@@ -1,0 +1,2074 @@
+{
+  "schemaVersion": 1,
+  "batch": "curiosities-3",
+  "recipes": {
+    "effect-expedition-notes-a": {
+      "id": "effect-expedition-notes-a",
+      "asset": "chibi-curiosity-effect-expedition-notes",
+      "jobId": "sync-7b29308e-4026-4c26-b7aa-3e99074791a1",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "curiosities-3",
+        "asset": "chibi-curiosity-effect-expedition-notes",
+        "subject": "EFFECT:EXPEDITION_NOTES",
+        "faction": "ORIGINAL",
+        "recipeClass": "curiosity-item",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 73720073,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "side"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-curiosity-item.txt + scripts/art/chibi/fragments/class-curiosity-item.negative.txt",
+            "text": "Class: one bold chunky item sprite of a single small thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. It belongs to no faction and has no team colour.",
+            "negative": "icon frame, round badge, medallion, emblem, button, border, circular background, square background, vignette, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, character, person, text, letters, numbers, red, crimson, orange, lime, purple, violet, magenta, pink, translucent, see-through, soft glow"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: an old explorer's journal: one small open brown leather-bound book with bone-white pages showing a few scribbled lines and a tiny sketched map, with three small four-pointed white sparkles above it; brown leather and bone-white paper with a darker shadow tone; the journal is the only thing in the image."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one bold chunky item sprite of a single small thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. It belongs to no faction and has no team colour. Subject: an old explorer's journal: one small open brown leather-bound book with bone-white pages showing a few scribbled lines and a tiny sketched map, with three small four-pointed white sparkles above it; brown leather and bone-white paper with a darker shadow tone; the journal is the only thing in the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, vignette, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, character, person, red, crimson, orange, lime, purple, violet, magenta, pink, translucent, see-through, soft glow",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one bold chunky item sprite of a single small thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. It belongs to no faction and has no team colour. Subject: an old explorer's journal: one small open brown leather-bound book with bone-white pages showing a few scribbled lines and a tiny sketched map, with three small four-pointed white sparkles above it; brown leather and bone-white paper with a darker shadow tone; the journal is the only thing in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, vignette, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, character, person, red, crimson, orange, lime, purple, violet, magenta, pink, translucent, see-through, soft glow."
+      },
+      "submittedAt": "2026-10-19T13:28:01.449Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-curiosities-3/effect-expedition-notes-a.png",
+      "rawSheetSha256": "32561d819826682b889498cc7d8ef61ebfbde46c7fd0681813438092293dcfb2",
+      "plateHints": [
+        {
+          "bandRows": 7,
+          "groundShare": 0.0976,
+          "footprintWidthShare": 0.5,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-19T13:28:40.359Z",
+      "usageUsd": 0.008200190756056044,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "open leather journal with white sparkles",
+        "reviewedAt": "2026-10-19T13:39:49.673Z"
+      }
+    },
+    "effect-moon-gun-blast-a": {
+      "id": "effect-moon-gun-blast-a",
+      "asset": "chibi-curiosity-effect-moon-gun-blast",
+      "jobId": "sync-24a06541-0f94-42ea-a504-f7b5a30ba5f2",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "curiosities-3",
+        "asset": "chibi-curiosity-effect-moon-gun-blast",
+        "subject": "EFFECT:MOON_GUN_BLAST",
+        "faction": "ORIGINAL",
+        "recipeClass": "curiosity-item",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 73720072,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "side"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-curiosity-item.txt + scripts/art/chibi/fragments/class-curiosity-item.negative.txt",
+            "text": "Class: one bold chunky item sprite of a single small thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. It belongs to no faction and has no team colour.",
+            "negative": "icon frame, round badge, medallion, emblem, button, border, circular background, square background, vignette, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, character, person, text, letters, numbers, red, crimson, orange, lime, purple, violet, magenta, pink, translucent, see-through, soft glow"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: a cannon blast: one round ring of puffy pale grey smoke clouds around a bright white and pale cream flash in the middle, with four short white rays; pale grey smoke with a darker grey shadow tone; no fire and no orange; the blast is the only thing in the image."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one bold chunky item sprite of a single small thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. It belongs to no faction and has no team colour. Subject: a cannon blast: one round ring of puffy pale grey smoke clouds around a bright white and pale cream flash in the middle, with four short white rays; pale grey smoke with a darker grey shadow tone; no fire and no orange; the blast is the only thing in the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, vignette, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, character, person, red, crimson, orange, lime, purple, violet, magenta, pink, translucent, see-through, soft glow",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one bold chunky item sprite of a single small thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. It belongs to no faction and has no team colour. Subject: a cannon blast: one round ring of puffy pale grey smoke clouds around a bright white and pale cream flash in the middle, with four short white rays; pale grey smoke with a darker grey shadow tone; no fire and no orange; the blast is the only thing in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, vignette, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, character, person, red, crimson, orange, lime, purple, violet, magenta, pink, translucent, see-through, soft glow."
+      },
+      "submittedAt": "2026-10-19T13:27:34.580Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-curiosities-3/effect-moon-gun-blast-a.png",
+      "rawSheetSha256": "6bc33ace0fb60aeab17480c2c64991239a7f0d4088c0b88efb64cf17cbc4449c",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0.1373,
+          "footprintWidthShare": 0.6667,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-19T13:28:01.446Z",
+      "usageUsd": 0.007428382661607531,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "a whole cannon object inside the smoke ring, with a red flash and a green band",
+        "reviewedAt": "2026-10-19T13:39:48.179Z"
+      }
+    },
+    "effect-moon-gun-blast-b": {
+      "id": "effect-moon-gun-blast-b",
+      "asset": "chibi-curiosity-effect-moon-gun-blast",
+      "jobId": "sync-a4987361-9ff3-4b2d-86c8-af16d2d746d3",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "curiosities-3",
+        "asset": "chibi-curiosity-effect-moon-gun-blast",
+        "subject": "EFFECT:MOON_GUN_BLAST",
+        "faction": "ORIGINAL",
+        "recipeClass": "curiosity-item",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 73720074,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "side"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-curiosity-item.txt + scripts/art/chibi/fragments/class-curiosity-item.negative.txt",
+            "text": "Class: one bold chunky item sprite of a single small thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. It belongs to no faction and has no team colour.",
+            "negative": "icon frame, round badge, medallion, emblem, button, border, circular background, square background, vignette, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, character, person, text, letters, numbers, red, crimson, orange, lime, purple, violet, magenta, pink, translucent, see-through, soft glow"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: a cannon blast: one round ring of puffy pale grey smoke clouds around a bright white and pale cream flash in the middle, with four short white rays; pale grey smoke with a darker grey shadow tone; no fire and no orange; the blast is the only thing in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "It is only smoke and light: a ring of round puffy pale grey smoke clouds with an empty bright white flash in its middle; there is no cannon, no gun, no object and no fire inside it; never red and never green.",
+            "negative": "cannon, gun, barrel, object, fire, flame, red, crimson, orange, green, explosion debris"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one bold chunky item sprite of a single small thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. It belongs to no faction and has no team colour. Subject: a cannon blast: one round ring of puffy pale grey smoke clouds around a bright white and pale cream flash in the middle, with four short white rays; pale grey smoke with a darker grey shadow tone; no fire and no orange; the blast is the only thing in the image. It is only smoke and light: a ring of round puffy pale grey smoke clouds with an empty bright white flash in its middle; there is no cannon, no gun, no object and no fire inside it; never red and never green.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, vignette, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, character, person, red, crimson, orange, lime, purple, violet, magenta, pink, translucent, see-through, soft glow, cannon, gun, barrel, object, fire, flame, green, explosion debris",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one bold chunky item sprite of a single small thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. It belongs to no faction and has no team colour. Subject: a cannon blast: one round ring of puffy pale grey smoke clouds around a bright white and pale cream flash in the middle, with four short white rays; pale grey smoke with a darker grey shadow tone; no fire and no orange; the blast is the only thing in the image. It is only smoke and light: a ring of round puffy pale grey smoke clouds with an empty bright white flash in its middle; there is no cannon, no gun, no object and no fire inside it; never red and never green. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, vignette, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, character, person, red, crimson, orange, lime, purple, violet, magenta, pink, translucent, see-through, soft glow, cannon, gun, barrel, object, fire, flame, green, explosion debris."
+      },
+      "submittedAt": "2026-10-19T13:33:55.722Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-curiosities-3/effect-moon-gun-blast-b.png",
+      "rawSheetSha256": "927b2a29bed84efddd4cf06bc91308244d6f7cf27ed7ac68d76f92e731eef68e",
+      "plateHints": [
+        {
+          "bandRows": 7,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8824,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-19T13:34:25.238Z",
+      "usageUsd": 0.007484014087253146,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "orange flame core near the Goblin red-orange; recoloured in effect-moon-gun-blast-b-edit",
+        "reviewedAt": "2026-10-19T13:39:48.301Z"
+      }
+    },
+    "effect-moon-gun-blast-b-edit": {
+      "id": "effect-moon-gun-blast-b-edit",
+      "asset": "chibi-curiosity-effect-moon-gun-blast",
+      "jobId": "0fc53010-2237-48dd-9963-c98643a90e32",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "curiosities-3",
+        "asset": "chibi-curiosity-effect-moon-gun-blast",
+        "subject": "EFFECT:MOON_GUN_BLAST",
+        "faction": "ORIGINAL",
+        "recipeClass": "curiosity-item",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 73720075,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Recolour only the orange flame in the middle: make it pale cream #fff2c8 with a warm grey #c9b9a0 shadow tone, so the middle is a white and pale cream flash with no orange. Keep the ring of grey smoke puffs, the white spikes, the outline and the art style exactly the same."
+          }
+        ],
+        "prompt": "Recolour only the orange flame in the middle: make it pale cream #fff2c8 with a warm grey #c9b9a0 shadow tone, so the middle is a white and pale cream flash with no orange. Keep the ring of grey smoke puffs, the white spikes, the outline and the art style exactly the same.",
+        "negativePrompt": "",
+        "description": "Recolour only the orange flame in the middle: make it pale cream #fff2c8 with a warm grey #c9b9a0 shadow tone, so the middle is a white and pale cream flash with no orange. Keep the ring of grey smoke puffs, the white spikes, the outline and the art style exactly the same.",
+        "editInstruction": "Recolour only the orange flame in the middle: make it pale cream #fff2c8 with a warm grey #c9b9a0 shadow tone, so the middle is a white and pale cream flash with no orange. Keep the ring of grey smoke puffs, the white spikes, the outline and the art style exactly the same.",
+        "source": {
+          "recipe": "effect-moon-gun-blast-b",
+          "candidate": 0,
+          "sha256": "927b2a29bed84efddd4cf06bc91308244d6f7cf27ed7ac68d76f92e731eef68e"
+        }
+      },
+      "submittedAt": "2026-10-19T13:37:16.767Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-curiosities-3/effect-moon-gun-blast-b-edit.png",
+      "rawSheetSha256": "9a34571301f3f9f6cdfa5805419bbac78c7593b991f75a4c33313781176b15c1",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6471,
+          "suspect": false
+        },
+        {
+          "bandRows": 8,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6471,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-19T13:38:16.272Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "ring of grey smoke puffs round a white and pale cream flash, no orange",
+        "reviewedAt": "2026-10-19T13:39:49.546Z"
+      }
+    },
+    "effect-tesla-arc-a": {
+      "id": "effect-tesla-arc-a",
+      "asset": "chibi-curiosity-effect-tesla-arc",
+      "jobId": "sync-854f8e34-11b3-4091-859e-fc7ba3fbb007",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "curiosities-3",
+        "asset": "chibi-curiosity-effect-tesla-arc",
+        "subject": "EFFECT:TESLA_ARC",
+        "faction": "ORIGINAL",
+        "recipeClass": "curiosity-item",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 73720071,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "side"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-curiosity-item.txt + scripts/art/chibi/fragments/class-curiosity-item.negative.txt",
+            "text": "Class: one bold chunky item sprite of a single small thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. It belongs to no faction and has no team colour.",
+            "negative": "icon frame, round badge, medallion, emblem, button, border, circular background, square background, vignette, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, character, person, text, letters, numbers, red, crimson, orange, lime, purple, violet, magenta, pink, translucent, see-through, soft glow"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: a crackling bolt of electricity: one bright pure white zig-zag lightning arc running from the top-left to the bottom-right, with two thinner white forks and four small four-pointed white sparks; white with a pale grey shadow tone; never blue; the arc is the only thing in the image."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one bold chunky item sprite of a single small thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. It belongs to no faction and has no team colour. Subject: a crackling bolt of electricity: one bright pure white zig-zag lightning arc running from the top-left to the bottom-right, with two thinner white forks and four small four-pointed white sparks; white with a pale grey shadow tone; never blue; the arc is the only thing in the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, vignette, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, character, person, red, crimson, orange, lime, purple, violet, magenta, pink, translucent, see-through, soft glow",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one bold chunky item sprite of a single small thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. It belongs to no faction and has no team colour. Subject: a crackling bolt of electricity: one bright pure white zig-zag lightning arc running from the top-left to the bottom-right, with two thinner white forks and four small four-pointed white sparks; white with a pale grey shadow tone; never blue; the arc is the only thing in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, vignette, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, character, person, red, crimson, orange, lime, purple, violet, magenta, pink, translucent, see-through, soft glow."
+      },
+      "submittedAt": "2026-10-19T13:26:45.605Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-curiosities-3/effect-tesla-arc-a.png",
+      "rawSheetSha256": "aff8ca08930653ad1ad52e4dd41d22406fd97661984d55c8bfb6a601ae4ed19d",
+      "plateHints": [
+        {
+          "bandRows": 7,
+          "groundShare": 0,
+          "footprintWidthShare": 0.4839,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-19T13:27:34.579Z",
+      "usageUsd": 0.007459059026506213,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "white zig-zag bolt with sparks, a pale grey shadow, no blue",
+        "reviewedAt": "2026-10-19T13:39:49.423Z"
+      }
+    },
+    "gold-claim-a": {
+      "id": "gold-claim-a",
+      "asset": "chibi-curiosity-gold-claim",
+      "jobId": "sync-e51b6e51-930a-4b96-9773-49ed0de8fa34",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "curiosities-3",
+        "asset": "chibi-curiosity-gold-claim",
+        "subject": "CURIOSITY:GOLD_CLAIM",
+        "faction": "ORIGINAL",
+        "recipeClass": "curiosity-site",
+        "requestSize": {
+          "width": 80,
+          "height": 80
+        },
+        "seed": 73720021,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-curiosity-site.txt + scripts/art/chibi/fragments/class-curiosity-site.negative.txt",
+            "text": "Class: one small ancient map landmark that belongs to no faction, a single compact feature with a simple clear silhouette that reads at a glance, calmer and less saturated than a unit, thick single-colour black outline, big simple shapes and flat colours with one shadow tone. It stands directly on the empty transparent background with nothing drawn under it: no ground, no grass, no soil, no water, no slab and no platform. Materials: weathered pale grey stone, bone white, old grey-brown driftwood and a little dull moss. No flag, no banner, no heraldry and nothing painted in a team colour.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, island, scenery, background, people, person, character, soldier, crowd, building, house, flag, banner, pennant, heraldry, red, crimson, orange, bright yellow, lime, purple, violet, magenta, pink, neon"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: a small old gold mine claim: the dark mouth of a mine tunnel framed by three thick weathered grey-brown timber beams, set into the side of one big rounded pale grey boulder, one wooden stake with a frayed rope driven in beside it, and a small tipped wooden ore cart in front spilling a heap of shiny gold nuggets; weathered grey-brown wood and pale grey stone, the nuggets warm gold with a darker amber shadow tone; no flag; the claim is the only thing in the image."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small ancient map landmark that belongs to no faction, a single compact feature with a simple clear silhouette that reads at a glance, calmer and less saturated than a unit, thick single-colour black outline, big simple shapes and flat colours with one shadow tone. It stands directly on the empty transparent background with nothing drawn under it: no ground, no grass, no soil, no water, no slab and no platform. Materials: weathered pale grey stone, bone white, old grey-brown driftwood and a little dull moss. No flag, no banner, no heraldry and nothing painted in a team colour. Subject: a small old gold mine claim: the dark mouth of a mine tunnel framed by three thick weathered grey-brown timber beams, set into the side of one big rounded pale grey boulder, one wooden stake with a frayed rope driven in beside it, and a small tipped wooden ore cart in front spilling a heap of shiny gold nuggets; weathered grey-brown wood and pale grey stone, the nuggets warm gold with a darker amber shadow tone; no flag; the claim is the only thing in the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, island, scenery, background, people, person, character, soldier, crowd, building, house, flag, banner, pennant, heraldry, red, crimson, orange, bright yellow, lime, purple, violet, magenta, pink, neon",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small ancient map landmark that belongs to no faction, a single compact feature with a simple clear silhouette that reads at a glance, calmer and less saturated than a unit, thick single-colour black outline, big simple shapes and flat colours with one shadow tone. It stands directly on the empty transparent background with nothing drawn under it: no ground, no grass, no soil, no water, no slab and no platform. Materials: weathered pale grey stone, bone white, old grey-brown driftwood and a little dull moss. No flag, no banner, no heraldry and nothing painted in a team colour. Subject: a small old gold mine claim: the dark mouth of a mine tunnel framed by three thick weathered grey-brown timber beams, set into the side of one big rounded pale grey boulder, one wooden stake with a frayed rope driven in beside it, and a small tipped wooden ore cart in front spilling a heap of shiny gold nuggets; weathered grey-brown wood and pale grey stone, the nuggets warm gold with a darker amber shadow tone; no flag; the claim is the only thing in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, island, scenery, background, people, person, character, soldier, crowd, building, house, flag, banner, pennant, heraldry, red, crimson, orange, bright yellow, lime, purple, violet, magenta, pink, neon."
+      },
+      "submittedAt": "2026-10-19T13:22:47.691Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 80,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-curiosities-3/gold-claim-a.png",
+      "rawSheetSha256": "cba05d1bbe9973a11122872da7acb2d24b6fb8dc5cf4bff18389719974ab8bf5",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0.213,
+          "footprintWidthShare": 0.8261,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-19T13:23:38.857Z",
+      "usageUsd": 0.009956883483462863,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "pale boulder with a timber-framed mine mouth, a stake and a tipped cart of gold nuggets (gold only on the nuggets), nothing under it; compact but every part reads at 1x",
+        "reviewedAt": "2026-10-19T13:39:48.676Z"
+      }
+    },
+    "gold-claim-b": {
+      "id": "gold-claim-b",
+      "asset": "chibi-curiosity-gold-claim",
+      "jobId": "sync-451ba28f-b53c-4a63-a5a2-435f76b07761",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "curiosities-3",
+        "asset": "chibi-curiosity-gold-claim",
+        "subject": "CURIOSITY:GOLD_CLAIM",
+        "faction": "ORIGINAL",
+        "recipeClass": "curiosity-site",
+        "requestSize": {
+          "width": 80,
+          "height": 80
+        },
+        "seed": 73720022,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-curiosity-site.txt + scripts/art/chibi/fragments/class-curiosity-site.negative.txt",
+            "text": "Class: one small ancient map landmark that belongs to no faction, a single compact feature with a simple clear silhouette that reads at a glance, calmer and less saturated than a unit, thick single-colour black outline, big simple shapes and flat colours with one shadow tone. It stands directly on the empty transparent background with nothing drawn under it: no ground, no grass, no soil, no water, no slab and no platform. Materials: weathered pale grey stone, bone white, old grey-brown driftwood and a little dull moss. No flag, no banner, no heraldry and nothing painted in a team colour.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, island, scenery, background, people, person, character, soldier, crowd, building, house, flag, banner, pennant, heraldry, red, crimson, orange, bright yellow, lime, purple, violet, magenta, pink, neon"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: a small old gold mine claim: the dark mouth of a mine tunnel framed by three thick weathered grey-brown timber beams, set into the side of one big rounded pale grey boulder, one wooden stake with a frayed rope driven in beside it, and a small tipped wooden ore cart in front spilling a heap of shiny gold nuggets; weathered grey-brown wood and pale grey stone, the nuggets warm gold with a darker amber shadow tone; no flag; the claim is the only thing in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The claim is big and wide: the boulder and the ore cart together touch the left edge and the right edge of the image. The boulder is weathered mid grey stone with a darker grey shadow tone, not white. The stake is a tall thin wooden post with a frayed rope tied round it. Nothing is drawn under it: no grass, no soil and no ground block.",
+            "negative": "grass, ground block, dirt block, soil, island, platform, white boulder, snow, flag, person"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small ancient map landmark that belongs to no faction, a single compact feature with a simple clear silhouette that reads at a glance, calmer and less saturated than a unit, thick single-colour black outline, big simple shapes and flat colours with one shadow tone. It stands directly on the empty transparent background with nothing drawn under it: no ground, no grass, no soil, no water, no slab and no platform. Materials: weathered pale grey stone, bone white, old grey-brown driftwood and a little dull moss. No flag, no banner, no heraldry and nothing painted in a team colour. Subject: a small old gold mine claim: the dark mouth of a mine tunnel framed by three thick weathered grey-brown timber beams, set into the side of one big rounded pale grey boulder, one wooden stake with a frayed rope driven in beside it, and a small tipped wooden ore cart in front spilling a heap of shiny gold nuggets; weathered grey-brown wood and pale grey stone, the nuggets warm gold with a darker amber shadow tone; no flag; the claim is the only thing in the image. The claim is big and wide: the boulder and the ore cart together touch the left edge and the right edge of the image. The boulder is weathered mid grey stone with a darker grey shadow tone, not white. The stake is a tall thin wooden post with a frayed rope tied round it. Nothing is drawn under it: no grass, no soil and no ground block.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, island, scenery, background, people, person, character, soldier, crowd, building, house, flag, banner, pennant, heraldry, red, crimson, orange, bright yellow, lime, purple, violet, magenta, pink, neon, ground block, dirt block, white boulder, snow",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small ancient map landmark that belongs to no faction, a single compact feature with a simple clear silhouette that reads at a glance, calmer and less saturated than a unit, thick single-colour black outline, big simple shapes and flat colours with one shadow tone. It stands directly on the empty transparent background with nothing drawn under it: no ground, no grass, no soil, no water, no slab and no platform. Materials: weathered pale grey stone, bone white, old grey-brown driftwood and a little dull moss. No flag, no banner, no heraldry and nothing painted in a team colour. Subject: a small old gold mine claim: the dark mouth of a mine tunnel framed by three thick weathered grey-brown timber beams, set into the side of one big rounded pale grey boulder, one wooden stake with a frayed rope driven in beside it, and a small tipped wooden ore cart in front spilling a heap of shiny gold nuggets; weathered grey-brown wood and pale grey stone, the nuggets warm gold with a darker amber shadow tone; no flag; the claim is the only thing in the image. The claim is big and wide: the boulder and the ore cart together touch the left edge and the right edge of the image. The boulder is weathered mid grey stone with a darker grey shadow tone, not white. The stake is a tall thin wooden post with a frayed rope tied round it. Nothing is drawn under it: no grass, no soil and no ground block. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, island, scenery, background, people, person, character, soldier, crowd, building, house, flag, banner, pennant, heraldry, red, crimson, orange, bright yellow, lime, purple, violet, magenta, pink, neon, ground block, dirt block, white boulder, snow."
+      },
+      "submittedAt": "2026-10-19T13:32:24.001Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 80,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-curiosities-3/gold-claim-b.png",
+      "rawSheetSha256": "280e575d995162c33dbe17f54b5cb6680667bb762d90e612a1d2172a6c328094",
+      "plateHints": [
+        {
+          "bandRows": 11,
+          "groundShare": 0.3488,
+          "footprintWidthShare": 0.9516,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-19T13:33:27.911Z",
+      "usageUsd": 0.010432731204562718,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "bigger claim but stands on a grass and soil block (a plate)",
+        "reviewedAt": "2026-10-19T13:39:47.581Z"
+      }
+    },
+    "gold-claim-b-edit": {
+      "id": "gold-claim-b-edit",
+      "asset": "chibi-curiosity-gold-claim",
+      "jobId": "cf1a3278-217e-457e-82bf-bd58e137c800",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "curiosities-3",
+        "asset": "chibi-curiosity-gold-claim",
+        "subject": "CURIOSITY:GOLD_CLAIM",
+        "faction": "ORIGINAL",
+        "recipeClass": "curiosity-site",
+        "requestSize": {
+          "width": 80,
+          "height": 80
+        },
+        "seed": 73720023,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Remove only the ground: erase the green grass and the brown soil block under the boulder, the mine mouth and the ore cart, so they stand directly on a transparent background with nothing at all under them. Keep the grey boulder, the timber beams, the dark mine mouth, the wooden stake, the ore cart, every gold nugget, the outline and the art style exactly the same."
+          }
+        ],
+        "prompt": "Remove only the ground: erase the green grass and the brown soil block under the boulder, the mine mouth and the ore cart, so they stand directly on a transparent background with nothing at all under them. Keep the grey boulder, the timber beams, the dark mine mouth, the wooden stake, the ore cart, every gold nugget, the outline and the art style exactly the same.",
+        "negativePrompt": "",
+        "description": "Remove only the ground: erase the green grass and the brown soil block under the boulder, the mine mouth and the ore cart, so they stand directly on a transparent background with nothing at all under them. Keep the grey boulder, the timber beams, the dark mine mouth, the wooden stake, the ore cart, every gold nugget, the outline and the art style exactly the same.",
+        "editInstruction": "Remove only the ground: erase the green grass and the brown soil block under the boulder, the mine mouth and the ore cart, so they stand directly on a transparent background with nothing at all under them. Keep the grey boulder, the timber beams, the dark mine mouth, the wooden stake, the ore cart, every gold nugget, the outline and the art style exactly the same.",
+        "source": {
+          "recipe": "gold-claim-b",
+          "candidate": 0,
+          "sha256": "280e575d995162c33dbe17f54b5cb6680667bb762d90e612a1d2172a6c328094"
+        }
+      },
+      "submittedAt": "2026-10-19T13:35:00.665Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 80,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-curiosities-3/gold-claim-b-edit.png",
+      "rawSheetSha256": "2adbadf07acb9dbdc60d041495fce5618749a7034be4bd52a1b7ab0b242f1b9b",
+      "plateHints": [
+        {
+          "bandRows": 10,
+          "groundShare": 0.3948,
+          "footprintWidthShare": 0.8704,
+          "suspect": true
+        },
+        {
+          "bandRows": 10,
+          "groundShare": 0.3948,
+          "footprintWidthShare": 0.8704,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-19T13:35:57.897Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "the edit erased the ore cart and every gold nugget with the ground: no claim left",
+        "reviewedAt": "2026-10-19T13:39:47.698Z"
+      }
+    },
+    "icon-gold-claim-a": {
+      "id": "icon-gold-claim-a",
+      "asset": "chibi-curiosity-icon-gold-claim",
+      "jobId": "sync-40044b08-9548-4c6f-93ad-ce500fb59d3f",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "curiosities-3",
+        "asset": "chibi-curiosity-icon-gold-claim",
+        "subject": "ICON:CURIOSITY:GOLD_CLAIM",
+        "faction": "ORIGINAL",
+        "recipeClass": "curiosity-item",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 73720063,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-curiosity-item.txt + scripts/art/chibi/fragments/class-curiosity-item.negative.txt",
+            "text": "Class: one bold chunky item sprite of a single small thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. It belongs to no faction and has no team colour.",
+            "negative": "icon frame, round badge, medallion, emblem, button, border, circular background, square background, vignette, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, character, person, text, letters, numbers, red, crimson, orange, lime, purple, violet, magenta, pink, translucent, see-through, soft glow"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: a small tipped wooden ore cart spilling a heap of shiny gold nuggets, with a wooden pickaxe leaning on it; weathered grey-brown wood, warm gold nuggets with a darker amber shadow tone; the cart and the nuggets are the only things in the image."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one bold chunky item sprite of a single small thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. It belongs to no faction and has no team colour. Subject: a small tipped wooden ore cart spilling a heap of shiny gold nuggets, with a wooden pickaxe leaning on it; weathered grey-brown wood, warm gold nuggets with a darker amber shadow tone; the cart and the nuggets are the only things in the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, vignette, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, character, person, red, crimson, orange, lime, purple, violet, magenta, pink, translucent, see-through, soft glow",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one bold chunky item sprite of a single small thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. It belongs to no faction and has no team colour. Subject: a small tipped wooden ore cart spilling a heap of shiny gold nuggets, with a wooden pickaxe leaning on it; weathered grey-brown wood, warm gold nuggets with a darker amber shadow tone; the cart and the nuggets are the only things in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, vignette, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, character, person, red, crimson, orange, lime, purple, violet, magenta, pink, translucent, see-through, soft glow."
+      },
+      "submittedAt": "2026-10-19T13:25:33.135Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-curiosities-3/icon-gold-claim-a.png",
+      "rawSheetSha256": "3fc6e96d523a41c9adf569e02ce843b3a5d1d821a41d6f29d7b239b8be13579d",
+      "plateHints": [
+        {
+          "bandRows": 5,
+          "groundShare": 0.4559,
+          "footprintWidthShare": 0.6176,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-19T13:26:07.809Z",
+      "usageUsd": 0.008030469099680583,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "tipped ore cart spilling gold nuggets; gold on the nuggets only",
+        "reviewedAt": "2026-10-19T13:39:49.176Z"
+      }
+    },
+    "icon-lost-expedition-a": {
+      "id": "icon-lost-expedition-a",
+      "asset": "chibi-curiosity-icon-lost-expedition",
+      "jobId": "sync-3b189c2f-395c-4930-b5d2-e64725986f01",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "curiosities-3",
+        "asset": "chibi-curiosity-icon-lost-expedition",
+        "subject": "ICON:CURIOSITY:LOST_EXPEDITION",
+        "faction": "ORIGINAL",
+        "recipeClass": "curiosity-item",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 73720064,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-curiosity-item.txt + scripts/art/chibi/fragments/class-curiosity-item.negative.txt",
+            "text": "Class: one bold chunky item sprite of a single small thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. It belongs to no faction and has no team colour.",
+            "negative": "icon frame, round badge, medallion, emblem, button, border, circular background, square background, vignette, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, character, person, text, letters, numbers, red, crimson, orange, lime, purple, violet, magenta, pink, translucent, see-through, soft glow"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: an old explorer's khaki pith helmet lying on a rolled paper map, with a small brown leather journal beside it; khaki canvas, bone-white paper and brown leather with a darker shadow tone; the helmet, map and journal are the only things in the image."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one bold chunky item sprite of a single small thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. It belongs to no faction and has no team colour. Subject: an old explorer's khaki pith helmet lying on a rolled paper map, with a small brown leather journal beside it; khaki canvas, bone-white paper and brown leather with a darker shadow tone; the helmet, map and journal are the only things in the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, vignette, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, character, person, red, crimson, orange, lime, purple, violet, magenta, pink, translucent, see-through, soft glow",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one bold chunky item sprite of a single small thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. It belongs to no faction and has no team colour. Subject: an old explorer's khaki pith helmet lying on a rolled paper map, with a small brown leather journal beside it; khaki canvas, bone-white paper and brown leather with a darker shadow tone; the helmet, map and journal are the only things in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, vignette, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, character, person, red, crimson, orange, lime, purple, violet, magenta, pink, translucent, see-through, soft glow."
+      },
+      "submittedAt": "2026-10-19T13:26:07.838Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-curiosities-3/icon-lost-expedition-a.png",
+      "rawSheetSha256": "85b86a983528eb5679c353fd581e2df09b7c539001bbb2ecc11682cd48ad52c2",
+      "plateHints": [
+        {
+          "bandRows": 6,
+          "groundShare": 0.3373,
+          "footprintWidthShare": 0.6667,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-19T13:26:45.603Z",
+      "usageUsd": 0.007936525424321493,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "khaki pith helmet on a rolled map beside a brown journal",
+        "reviewedAt": "2026-10-19T13:39:49.299Z"
+      }
+    },
+    "icon-moon-gun-a": {
+      "id": "icon-moon-gun-a",
+      "asset": "chibi-curiosity-icon-moon-gun",
+      "jobId": "sync-bfda090c-acc5-4764-8bd0-598c949abee2",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "curiosities-3",
+        "asset": "chibi-curiosity-icon-moon-gun",
+        "subject": "ICON:CURIOSITY:MOON_GUN",
+        "faction": "ORIGINAL",
+        "recipeClass": "curiosity-item",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 73720062,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-curiosity-item.txt + scripts/art/chibi/fragments/class-curiosity-item.negative.txt",
+            "text": "Class: one bold chunky item sprite of a single small thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. It belongs to no faction and has no team colour.",
+            "negative": "icon frame, round badge, medallion, emblem, button, border, circular background, square background, vignette, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, character, person, text, letters, numbers, red, crimson, orange, lime, purple, violet, magenta, pink, translucent, see-through, soft glow"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: a fat old Victorian cannon of dark riveted iron on a small round grey stone mount, its barrel cocked steeply up at the sky, with dull bronze bands and a small puff of pale grey smoke at its muzzle; charcoal iron with a darker shadow tone; the cannon is the only thing in the image."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one bold chunky item sprite of a single small thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. It belongs to no faction and has no team colour. Subject: a fat old Victorian cannon of dark riveted iron on a small round grey stone mount, its barrel cocked steeply up at the sky, with dull bronze bands and a small puff of pale grey smoke at its muzzle; charcoal iron with a darker shadow tone; the cannon is the only thing in the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, vignette, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, character, person, red, crimson, orange, lime, purple, violet, magenta, pink, translucent, see-through, soft glow",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one bold chunky item sprite of a single small thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. It belongs to no faction and has no team colour. Subject: a fat old Victorian cannon of dark riveted iron on a small round grey stone mount, its barrel cocked steeply up at the sky, with dull bronze bands and a small puff of pale grey smoke at its muzzle; charcoal iron with a darker shadow tone; the cannon is the only thing in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, vignette, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, character, person, red, crimson, orange, lime, purple, violet, magenta, pink, translucent, see-through, soft glow."
+      },
+      "submittedAt": "2026-10-19T13:25:03.508Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-curiosities-3/icon-moon-gun-a.png",
+      "rawSheetSha256": "1e1f13519f124b37b36ee36a4b25222f7fe6a051312b35dad915c1026ba7b189",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8293,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-19T13:25:33.123Z",
+      "usageUsd": 0.007342886447906495,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "fat iron cannon on its round stone mount, smoke puff; the mount is the subject, not a plate",
+        "reviewedAt": "2026-10-19T13:39:49.052Z"
+      }
+    },
+    "icon-tesla-tower-a": {
+      "id": "icon-tesla-tower-a",
+      "asset": "chibi-curiosity-icon-tesla-tower",
+      "jobId": "sync-bf17d3dc-3c18-4700-b1a5-c5546cbe2dc5",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "curiosities-3",
+        "asset": "chibi-curiosity-icon-tesla-tower",
+        "subject": "ICON:CURIOSITY:TESLA_TOWER",
+        "faction": "ORIGINAL",
+        "recipeClass": "curiosity-item",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 73720061,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-curiosity-item.txt + scripts/art/chibi/fragments/class-curiosity-item.negative.txt",
+            "text": "Class: one bold chunky item sprite of a single small thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. It belongs to no faction and has no team colour.",
+            "negative": "icon frame, round badge, medallion, emblem, button, border, circular background, square background, vignette, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, character, person, text, letters, numbers, red, crimson, orange, lime, purple, violet, magenta, pink, translucent, see-through, soft glow"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: a small rusty iron lattice tower of crossed girders with one big round copper-brown ball on top and two zig-zag arcs of pure white electricity jumping from the ball; charcoal and rust-brown iron with a darker shadow tone; the tower is the only thing in the image."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one bold chunky item sprite of a single small thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. It belongs to no faction and has no team colour. Subject: a small rusty iron lattice tower of crossed girders with one big round copper-brown ball on top and two zig-zag arcs of pure white electricity jumping from the ball; charcoal and rust-brown iron with a darker shadow tone; the tower is the only thing in the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, vignette, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, character, person, red, crimson, orange, lime, purple, violet, magenta, pink, translucent, see-through, soft glow",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one bold chunky item sprite of a single small thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. It belongs to no faction and has no team colour. Subject: a small rusty iron lattice tower of crossed girders with one big round copper-brown ball on top and two zig-zag arcs of pure white electricity jumping from the ball; charcoal and rust-brown iron with a darker shadow tone; the tower is the only thing in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, vignette, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, character, person, red, crimson, orange, lime, purple, violet, magenta, pink, translucent, see-through, soft glow."
+      },
+      "submittedAt": "2026-10-19T13:24:26.617Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-curiosities-3/icon-tesla-tower-a.png",
+      "rawSheetSha256": "6dcf2fe97c5ef159b23ea3cf0f797788d4a9986d7b217a051b43aa71f0449ee5",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0.4295,
+          "footprintWidthShare": 1,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-19T13:25:03.505Z",
+      "usageUsd": 0.008183308442433675,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "arcs are violet (a faction colour) and the tower stands on a grass block",
+        "reviewedAt": "2026-10-19T13:39:47.817Z"
+      }
+    },
+    "icon-tesla-tower-a-edit": {
+      "id": "icon-tesla-tower-a-edit",
+      "asset": "chibi-curiosity-icon-tesla-tower",
+      "jobId": "c7b7a04c-59bd-4d19-846d-7a70248574f6",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "curiosities-3",
+        "asset": "chibi-curiosity-icon-tesla-tower",
+        "subject": "ICON:CURIOSITY:TESLA_TOWER",
+        "faction": "ORIGINAL",
+        "recipeClass": "curiosity-item",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 73720066,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Recolour only the two electric arcs above the copper ball: make them pure white #ffffff with a pale grey #c4c4c4 shadow tone, not purple and not violet. Keep the rusty lattice tower, the copper ball, the outline and the art style exactly the same."
+          }
+        ],
+        "prompt": "Recolour only the two electric arcs above the copper ball: make them pure white #ffffff with a pale grey #c4c4c4 shadow tone, not purple and not violet. Keep the rusty lattice tower, the copper ball, the outline and the art style exactly the same.",
+        "negativePrompt": "",
+        "description": "Recolour only the two electric arcs above the copper ball: make them pure white #ffffff with a pale grey #c4c4c4 shadow tone, not purple and not violet. Keep the rusty lattice tower, the copper ball, the outline and the art style exactly the same.",
+        "editInstruction": "Recolour only the two electric arcs above the copper ball: make them pure white #ffffff with a pale grey #c4c4c4 shadow tone, not purple and not violet. Keep the rusty lattice tower, the copper ball, the outline and the art style exactly the same.",
+        "source": {
+          "recipe": "icon-tesla-tower-a",
+          "candidate": 0,
+          "sha256": "6dcf2fe97c5ef159b23ea3cf0f797788d4a9986d7b217a051b43aa71f0449ee5"
+        }
+      },
+      "submittedAt": "2026-10-19T13:35:57.902Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-curiosities-3/icon-tesla-tower-a-edit.png",
+      "rawSheetSha256": "5521c3e42128bffa45135de94234327599b8e02590f8918d996cfbf02a31a594",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0.4295,
+          "footprintWidthShare": 1,
+          "suspect": true
+        },
+        {
+          "bandRows": 9,
+          "groundShare": 0.4295,
+          "footprintWidthShare": 1,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-19T13:36:36.361Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "arcs recoloured white but the grass block under the tower stayed",
+        "reviewedAt": "2026-10-19T13:39:48.059Z"
+      }
+    },
+    "icon-tesla-tower-b": {
+      "id": "icon-tesla-tower-b",
+      "asset": "chibi-curiosity-icon-tesla-tower",
+      "jobId": "sync-d558ef68-ff00-4dd5-93e5-2f079ae68f2a",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "curiosities-3",
+        "asset": "chibi-curiosity-icon-tesla-tower",
+        "subject": "ICON:CURIOSITY:TESLA_TOWER",
+        "faction": "ORIGINAL",
+        "recipeClass": "curiosity-item",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 73720065,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-curiosity-item.txt + scripts/art/chibi/fragments/class-curiosity-item.negative.txt",
+            "text": "Class: one bold chunky item sprite of a single small thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. It belongs to no faction and has no team colour.",
+            "negative": "icon frame, round badge, medallion, emblem, button, border, circular background, square background, vignette, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, character, person, text, letters, numbers, red, crimson, orange, lime, purple, violet, magenta, pink, translucent, see-through, soft glow"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: a small rusty iron lattice tower of crossed girders with one big round copper-brown ball on top and two zig-zag arcs of pure white electricity jumping from the ball; charcoal and rust-brown iron with a darker shadow tone; the tower is the only thing in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The arcs of electricity are pure white zig-zag lines with a pale grey shadow tone, never purple, never violet and never blue. Nothing is drawn under the tower: no grass, no soil and no ground block.",
+            "negative": "purple, violet, lilac, blue, cyan, grass, ground block, soil, plate, island"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one bold chunky item sprite of a single small thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. It belongs to no faction and has no team colour. Subject: a small rusty iron lattice tower of crossed girders with one big round copper-brown ball on top and two zig-zag arcs of pure white electricity jumping from the ball; charcoal and rust-brown iron with a darker shadow tone; the tower is the only thing in the image. The arcs of electricity are pure white zig-zag lines with a pale grey shadow tone, never purple, never violet and never blue. Nothing is drawn under the tower: no grass, no soil and no ground block.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, vignette, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, character, person, red, crimson, orange, lime, purple, violet, magenta, pink, translucent, see-through, soft glow, lilac, blue, cyan, ground block, soil",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one bold chunky item sprite of a single small thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. It belongs to no faction and has no team colour. Subject: a small rusty iron lattice tower of crossed girders with one big round copper-brown ball on top and two zig-zag arcs of pure white electricity jumping from the ball; charcoal and rust-brown iron with a darker shadow tone; the tower is the only thing in the image. The arcs of electricity are pure white zig-zag lines with a pale grey shadow tone, never purple, never violet and never blue. Nothing is drawn under the tower: no grass, no soil and no ground block. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, vignette, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, character, person, red, crimson, orange, lime, purple, violet, magenta, pink, translucent, see-through, soft glow, lilac, blue, cyan, ground block, soil."
+      },
+      "submittedAt": "2026-10-19T13:33:27.912Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-curiosities-3/icon-tesla-tower-b.png",
+      "rawSheetSha256": "1f3c3572c6f6b427cf41707287c717d0683f9080b575fbd5ef72e025125c9282",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0.2948,
+          "footprintWidthShare": 0.6522,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-19T13:33:55.720Z",
+      "usageUsd": 0.00733240967326694,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "arcs keep a violet outline and the tower stands on a grass block",
+        "reviewedAt": "2026-10-19T13:39:47.936Z"
+      }
+    },
+    "icon-tesla-tower-c": {
+      "id": "icon-tesla-tower-c",
+      "asset": "chibi-curiosity-icon-tesla-tower",
+      "jobId": "sync-dee8a388-a13f-429e-971e-fa105c3471c6",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "curiosities-3",
+        "asset": "chibi-curiosity-icon-tesla-tower",
+        "subject": "ICON:CURIOSITY:TESLA_TOWER",
+        "faction": "ORIGINAL",
+        "recipeClass": "curiosity-item",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 73720067,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "side"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-curiosity-item.txt + scripts/art/chibi/fragments/class-curiosity-item.negative.txt",
+            "text": "Class: one bold chunky item sprite of a single small thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. It belongs to no faction and has no team colour.",
+            "negative": "icon frame, round badge, medallion, emblem, button, border, circular background, square background, vignette, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, character, person, text, letters, numbers, red, crimson, orange, lime, purple, violet, magenta, pink, translucent, see-through, soft glow"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: a small rusty iron lattice tower of crossed girders with one big round copper-brown ball on top and two zig-zag arcs of pure white electricity jumping from the ball; charcoal and rust-brown iron with a darker shadow tone; the tower is the only thing in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Seen from the side. The tower's legs end in the empty air: nothing is drawn under it, no grass, no soil and no block. The two arcs of electricity are pure white #ffffff zig-zag lines with a pale grey #c4c4c4 shadow tone and a thin black outline, never purple, never violet and never blue.",
+            "negative": "purple, violet, lilac, blue, cyan, magenta, grass, ground block, soil, plate, island, pedestal"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one bold chunky item sprite of a single small thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. It belongs to no faction and has no team colour. Subject: a small rusty iron lattice tower of crossed girders with one big round copper-brown ball on top and two zig-zag arcs of pure white electricity jumping from the ball; charcoal and rust-brown iron with a darker shadow tone; the tower is the only thing in the image. Seen from the side. The tower's legs end in the empty air: nothing is drawn under it, no grass, no soil and no block. The two arcs of electricity are pure white #ffffff zig-zag lines with a pale grey #c4c4c4 shadow tone and a thin black outline, never purple, never violet and never blue.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, vignette, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, character, person, red, crimson, orange, lime, purple, violet, magenta, pink, translucent, see-through, soft glow, lilac, blue, cyan, ground block, soil",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one bold chunky item sprite of a single small thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. It belongs to no faction and has no team colour. Subject: a small rusty iron lattice tower of crossed girders with one big round copper-brown ball on top and two zig-zag arcs of pure white electricity jumping from the ball; charcoal and rust-brown iron with a darker shadow tone; the tower is the only thing in the image. Seen from the side. The tower's legs end in the empty air: nothing is drawn under it, no grass, no soil and no block. The two arcs of electricity are pure white #ffffff zig-zag lines with a pale grey #c4c4c4 shadow tone and a thin black outline, never purple, never violet and never blue. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, vignette, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, character, person, red, crimson, orange, lime, purple, violet, magenta, pink, translucent, see-through, soft glow, lilac, blue, cyan, ground block, soil."
+      },
+      "submittedAt": "2026-10-19T13:36:36.363Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-curiosities-3/icon-tesla-tower-c.png",
+      "rawSheetSha256": "fa98c1ce30963b6a988ecd5986baae6366c98666e093e39c970e13556320ce74",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0.119,
+          "footprintWidthShare": 0.5,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-19T13:37:16.765Z",
+      "usageUsd": 0.008350520769755046,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "side view lattice tower with copper ball and white zig-zag arcs, no plate",
+        "reviewedAt": "2026-10-19T13:39:48.926Z"
+      }
+    },
+    "lost-expedition-a": {
+      "id": "lost-expedition-a",
+      "asset": "chibi-curiosity-lost-expedition",
+      "jobId": "sync-7ae2c22e-3c6e-4b0c-9e12-57cd014a29cf",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "curiosities-3",
+        "asset": "chibi-curiosity-lost-expedition",
+        "subject": "CURIOSITY:LOST_EXPEDITION",
+        "faction": "ORIGINAL",
+        "recipeClass": "curiosity-site",
+        "requestSize": {
+          "width": 80,
+          "height": 80
+        },
+        "seed": 73720031,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-curiosity-site.txt + scripts/art/chibi/fragments/class-curiosity-site.negative.txt",
+            "text": "Class: one small ancient map landmark that belongs to no faction, a single compact feature with a simple clear silhouette that reads at a glance, calmer and less saturated than a unit, thick single-colour black outline, big simple shapes and flat colours with one shadow tone. It stands directly on the empty transparent background with nothing drawn under it: no ground, no grass, no soil, no water, no slab and no platform. Materials: weathered pale grey stone, bone white, old grey-brown driftwood and a little dull moss. No flag, no banner, no heraldry and nothing painted in a team colour.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, island, scenery, background, people, person, character, soldier, crowd, building, house, flag, banner, pennant, heraldry, red, crimson, orange, bright yellow, lime, purple, violet, magenta, pink, neon"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: a small abandoned explorers' camp: one torn khaki canvas tent sagging on two wooden poles, two stacked wooden supply crates beside it with an old khaki pith helmet lying on top, and a rolled paper map and a small leather journal lying in front; khaki canvas, old grey-brown driftwood and bone-white paper with a darker shadow tone; nobody is there; no flag and no fire; the camp is the only thing in the image."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small ancient map landmark that belongs to no faction, a single compact feature with a simple clear silhouette that reads at a glance, calmer and less saturated than a unit, thick single-colour black outline, big simple shapes and flat colours with one shadow tone. It stands directly on the empty transparent background with nothing drawn under it: no ground, no grass, no soil, no water, no slab and no platform. Materials: weathered pale grey stone, bone white, old grey-brown driftwood and a little dull moss. No flag, no banner, no heraldry and nothing painted in a team colour. Subject: a small abandoned explorers' camp: one torn khaki canvas tent sagging on two wooden poles, two stacked wooden supply crates beside it with an old khaki pith helmet lying on top, and a rolled paper map and a small leather journal lying in front; khaki canvas, old grey-brown driftwood and bone-white paper with a darker shadow tone; nobody is there; no flag and no fire; the camp is the only thing in the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, island, scenery, background, people, person, character, soldier, crowd, building, house, flag, banner, pennant, heraldry, red, crimson, orange, bright yellow, lime, purple, violet, magenta, pink, neon",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small ancient map landmark that belongs to no faction, a single compact feature with a simple clear silhouette that reads at a glance, calmer and less saturated than a unit, thick single-colour black outline, big simple shapes and flat colours with one shadow tone. It stands directly on the empty transparent background with nothing drawn under it: no ground, no grass, no soil, no water, no slab and no platform. Materials: weathered pale grey stone, bone white, old grey-brown driftwood and a little dull moss. No flag, no banner, no heraldry and nothing painted in a team colour. Subject: a small abandoned explorers' camp: one torn khaki canvas tent sagging on two wooden poles, two stacked wooden supply crates beside it with an old khaki pith helmet lying on top, and a rolled paper map and a small leather journal lying in front; khaki canvas, old grey-brown driftwood and bone-white paper with a darker shadow tone; nobody is there; no flag and no fire; the camp is the only thing in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, island, scenery, background, people, person, character, soldier, crowd, building, house, flag, banner, pennant, heraldry, red, crimson, orange, bright yellow, lime, purple, violet, magenta, pink, neon."
+      },
+      "submittedAt": "2026-10-19T13:23:38.859Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 80,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-curiosities-3/lost-expedition-a.png",
+      "rawSheetSha256": "dfc3b9750618c185ad99b3948ef50ec5b85dd3727a48364a141083320c0c59f9",
+      "plateHints": [
+        {
+          "bandRows": 11,
+          "groundShare": 0.5206,
+          "footprintWidthShare": 0.6462,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-19T13:24:26.615Z",
+      "usageUsd": 0.009964266830020482,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "camp stands on a grass and soil block (a plate); crates read as red bricks",
+        "reviewedAt": "2026-10-19T13:39:47.345Z"
+      }
+    },
+    "lost-expedition-a-edit": {
+      "id": "lost-expedition-a-edit",
+      "asset": "chibi-curiosity-lost-expedition",
+      "jobId": "6c86886a-bcff-4fe0-ac8a-58cfd6586ca3",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "curiosities-3",
+        "asset": "chibi-curiosity-lost-expedition",
+        "subject": "CURIOSITY:LOST_EXPEDITION",
+        "faction": "ORIGINAL",
+        "recipeClass": "curiosity-site",
+        "requestSize": {
+          "width": 80,
+          "height": 80
+        },
+        "seed": 73720032,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Erase everything except the khaki tent, the crates, the pith helmet, the rolled map and the journal: remove the green grass and the brown soil block under them completely, so the camp stands directly on a transparent background with nothing at all under it. Keep the tent, the crates, the helmet, the map, the journal, the outline and the art style exactly the same."
+          }
+        ],
+        "prompt": "Erase everything except the khaki tent, the crates, the pith helmet, the rolled map and the journal: remove the green grass and the brown soil block under them completely, so the camp stands directly on a transparent background with nothing at all under it. Keep the tent, the crates, the helmet, the map, the journal, the outline and the art style exactly the same.",
+        "negativePrompt": "",
+        "description": "Erase everything except the khaki tent, the crates, the pith helmet, the rolled map and the journal: remove the green grass and the brown soil block under them completely, so the camp stands directly on a transparent background with nothing at all under it. Keep the tent, the crates, the helmet, the map, the journal, the outline and the art style exactly the same.",
+        "editInstruction": "Erase everything except the khaki tent, the crates, the pith helmet, the rolled map and the journal: remove the green grass and the brown soil block under them completely, so the camp stands directly on a transparent background with nothing at all under it. Keep the tent, the crates, the helmet, the map, the journal, the outline and the art style exactly the same.",
+        "source": {
+          "recipe": "lost-expedition-a",
+          "candidate": 0,
+          "sha256": "dfc3b9750618c185ad99b3948ef50ec5b85dd3727a48364a141083320c0c59f9"
+        }
+      },
+      "submittedAt": "2026-10-19T13:30:47.802Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 80,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-curiosities-3/lost-expedition-a-edit.png",
+      "rawSheetSha256": "004d9a4089b5866e083a783f7fab1a783369aac5b86572107f9210fcce7fbbe7",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0.2667,
+          "footprintWidthShare": 0.4222,
+          "suspect": false
+        },
+        {
+          "bandRows": 8,
+          "groundShare": 0.2667,
+          "footprintWidthShare": 0.4222,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-19T13:31:38.620Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "the edit erased the crates, helmet, map and journal with the ground: only the tent is left",
+        "reviewedAt": "2026-10-19T13:39:47.463Z"
+      }
+    },
+    "lost-expedition-b": {
+      "id": "lost-expedition-b",
+      "asset": "chibi-curiosity-lost-expedition",
+      "jobId": "sync-499480e1-e3f1-4dbd-8983-17b284ca18b8",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "curiosities-3",
+        "asset": "chibi-curiosity-lost-expedition",
+        "subject": "CURIOSITY:LOST_EXPEDITION",
+        "faction": "ORIGINAL",
+        "recipeClass": "curiosity-site",
+        "requestSize": {
+          "width": 80,
+          "height": 80
+        },
+        "seed": 73720033,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-curiosity-site.txt + scripts/art/chibi/fragments/class-curiosity-site.negative.txt",
+            "text": "Class: one small ancient map landmark that belongs to no faction, a single compact feature with a simple clear silhouette that reads at a glance, calmer and less saturated than a unit, thick single-colour black outline, big simple shapes and flat colours with one shadow tone. It stands directly on the empty transparent background with nothing drawn under it: no ground, no grass, no soil, no water, no slab and no platform. Materials: weathered pale grey stone, bone white, old grey-brown driftwood and a little dull moss. No flag, no banner, no heraldry and nothing painted in a team colour.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, island, scenery, background, people, person, character, soldier, crowd, building, house, flag, banner, pennant, heraldry, red, crimson, orange, bright yellow, lime, purple, violet, magenta, pink, neon"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: a small abandoned explorers' camp: one torn khaki canvas tent sagging on two wooden poles, two stacked wooden supply crates beside it with an old khaki pith helmet lying on top, and a rolled paper map and a small leather journal lying in front; khaki canvas, old grey-brown driftwood and bone-white paper with a darker shadow tone; nobody is there; no flag and no fire; the camp is the only thing in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The camp is wide: the tent and the crates together touch the left edge and the right edge of the image. The crates are pale weathered grey-brown wooden boxes with plank lines, not bricks and not red. Nothing is drawn under the camp: no grass, no soil, no ground block and no platform.",
+            "negative": "grass, ground block, dirt block, soil, island, platform, bricks, red, campfire, fire, flag, person"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small ancient map landmark that belongs to no faction, a single compact feature with a simple clear silhouette that reads at a glance, calmer and less saturated than a unit, thick single-colour black outline, big simple shapes and flat colours with one shadow tone. It stands directly on the empty transparent background with nothing drawn under it: no ground, no grass, no soil, no water, no slab and no platform. Materials: weathered pale grey stone, bone white, old grey-brown driftwood and a little dull moss. No flag, no banner, no heraldry and nothing painted in a team colour. Subject: a small abandoned explorers' camp: one torn khaki canvas tent sagging on two wooden poles, two stacked wooden supply crates beside it with an old khaki pith helmet lying on top, and a rolled paper map and a small leather journal lying in front; khaki canvas, old grey-brown driftwood and bone-white paper with a darker shadow tone; nobody is there; no flag and no fire; the camp is the only thing in the image. The camp is wide: the tent and the crates together touch the left edge and the right edge of the image. The crates are pale weathered grey-brown wooden boxes with plank lines, not bricks and not red. Nothing is drawn under the camp: no grass, no soil, no ground block and no platform.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, island, scenery, background, people, person, character, soldier, crowd, building, house, flag, banner, pennant, heraldry, red, crimson, orange, bright yellow, lime, purple, violet, magenta, pink, neon, ground block, dirt block, bricks, campfire, fire",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small ancient map landmark that belongs to no faction, a single compact feature with a simple clear silhouette that reads at a glance, calmer and less saturated than a unit, thick single-colour black outline, big simple shapes and flat colours with one shadow tone. It stands directly on the empty transparent background with nothing drawn under it: no ground, no grass, no soil, no water, no slab and no platform. Materials: weathered pale grey stone, bone white, old grey-brown driftwood and a little dull moss. No flag, no banner, no heraldry and nothing painted in a team colour. Subject: a small abandoned explorers' camp: one torn khaki canvas tent sagging on two wooden poles, two stacked wooden supply crates beside it with an old khaki pith helmet lying on top, and a rolled paper map and a small leather journal lying in front; khaki canvas, old grey-brown driftwood and bone-white paper with a darker shadow tone; nobody is there; no flag and no fire; the camp is the only thing in the image. The camp is wide: the tent and the crates together touch the left edge and the right edge of the image. The crates are pale weathered grey-brown wooden boxes with plank lines, not bricks and not red. Nothing is drawn under the camp: no grass, no soil, no ground block and no platform. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, island, scenery, background, people, person, character, soldier, crowd, building, house, flag, banner, pennant, heraldry, red, crimson, orange, bright yellow, lime, purple, violet, magenta, pink, neon, ground block, dirt block, bricks, campfire, fire."
+      },
+      "submittedAt": "2026-10-19T13:31:38.628Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 80,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-curiosities-3/lost-expedition-b.png",
+      "rawSheetSha256": "fea762cc50310ea29e8d6e43971455d87e7f936a1e888ee2442f6f1356118163",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0.12,
+          "footprintWidthShare": 0.4225,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-19T13:32:23.997Z",
+      "usageUsd": 0.009371276087231106,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "khaki tent with two stacked crates, a pith helmet on top, a map and journal in front; spans the cell, nothing under it, no people",
+        "reviewedAt": "2026-10-19T13:39:48.800Z"
+      }
+    },
+    "moon-gun-a": {
+      "id": "moon-gun-a",
+      "asset": "chibi-curiosity-moon-gun",
+      "jobId": "sync-e008e494-7992-4612-a540-a84bf353d5dc",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "curiosities-3",
+        "asset": "chibi-curiosity-moon-gun",
+        "subject": "CURIOSITY:MOON_GUN",
+        "faction": "ORIGINAL",
+        "recipeClass": "curiosity-site",
+        "requestSize": {
+          "width": 80,
+          "height": 80
+        },
+        "seed": 73720011,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-curiosity-site.txt + scripts/art/chibi/fragments/class-curiosity-site.negative.txt",
+            "text": "Class: one small ancient map landmark that belongs to no faction, a single compact feature with a simple clear silhouette that reads at a glance, calmer and less saturated than a unit, thick single-colour black outline, big simple shapes and flat colours with one shadow tone. It stands directly on the empty transparent background with nothing drawn under it: no ground, no grass, no soil, no water, no slab and no platform. Materials: weathered pale grey stone, bone white, old grey-brown driftwood and a little dull moss. No flag, no banner, no heraldry and nothing painted in a team colour.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, island, scenery, background, people, person, character, soldier, crowd, building, house, flag, banner, pennant, heraldry, red, crimson, orange, bright yellow, lime, purple, violet, magenta, pink, neon"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: an enormous old Victorian cannon aimed at the sky: one huge fat barrel of dark riveted iron cocked steeply upward toward the top-right corner, resting on a squat round mount of weathered pale grey stone blocks, with dull bronze bands around the barrel and its muzzle and a small puff of pale grey smoke curling from the muzzle; charcoal iron with a darker shadow tone and dull bronze bands; no bright yellow, no paint and no colour; the cannon is the only thing in the image."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small ancient map landmark that belongs to no faction, a single compact feature with a simple clear silhouette that reads at a glance, calmer and less saturated than a unit, thick single-colour black outline, big simple shapes and flat colours with one shadow tone. It stands directly on the empty transparent background with nothing drawn under it: no ground, no grass, no soil, no water, no slab and no platform. Materials: weathered pale grey stone, bone white, old grey-brown driftwood and a little dull moss. No flag, no banner, no heraldry and nothing painted in a team colour. Subject: an enormous old Victorian cannon aimed at the sky: one huge fat barrel of dark riveted iron cocked steeply upward toward the top-right corner, resting on a squat round mount of weathered pale grey stone blocks, with dull bronze bands around the barrel and its muzzle and a small puff of pale grey smoke curling from the muzzle; charcoal iron with a darker shadow tone and dull bronze bands; no bright yellow, no paint and no colour; the cannon is the only thing in the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, island, scenery, background, people, person, character, soldier, crowd, building, house, flag, banner, pennant, heraldry, red, crimson, orange, bright yellow, lime, purple, violet, magenta, pink, neon",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small ancient map landmark that belongs to no faction, a single compact feature with a simple clear silhouette that reads at a glance, calmer and less saturated than a unit, thick single-colour black outline, big simple shapes and flat colours with one shadow tone. It stands directly on the empty transparent background with nothing drawn under it: no ground, no grass, no soil, no water, no slab and no platform. Materials: weathered pale grey stone, bone white, old grey-brown driftwood and a little dull moss. No flag, no banner, no heraldry and nothing painted in a team colour. Subject: an enormous old Victorian cannon aimed at the sky: one huge fat barrel of dark riveted iron cocked steeply upward toward the top-right corner, resting on a squat round mount of weathered pale grey stone blocks, with dull bronze bands around the barrel and its muzzle and a small puff of pale grey smoke curling from the muzzle; charcoal iron with a darker shadow tone and dull bronze bands; no bright yellow, no paint and no colour; the cannon is the only thing in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, island, scenery, background, people, person, character, soldier, crowd, building, house, flag, banner, pennant, heraldry, red, crimson, orange, bright yellow, lime, purple, violet, magenta, pink, neon."
+      },
+      "submittedAt": "2026-10-19T13:22:03.889Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 80,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-curiosities-3/moon-gun-a.png",
+      "rawSheetSha256": "e0ca4fe5138538253cbc3683351bfc65bfe17a691f4c58491cf5fc4b28dc51f0",
+      "plateHints": [
+        {
+          "bandRows": 13,
+          "groundShare": 0.1811,
+          "footprintWidthShare": 0.7429,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-19T13:22:47.690Z",
+      "usageUsd": 0.00912647024790446,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "cannon stands on a brown soil block with a grass rim (a plate); edited in moon-gun-a-edit",
+        "reviewedAt": "2026-10-19T13:39:47.228Z"
+      }
+    },
+    "moon-gun-a-edit": {
+      "id": "moon-gun-a-edit",
+      "asset": "chibi-curiosity-moon-gun",
+      "jobId": "728263fa-b09f-4124-a2c6-35376e069e12",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "curiosities-3",
+        "asset": "chibi-curiosity-moon-gun",
+        "subject": "CURIOSITY:MOON_GUN",
+        "faction": "ORIGINAL",
+        "recipeClass": "curiosity-site",
+        "requestSize": {
+          "width": 80,
+          "height": 80
+        },
+        "seed": 73720012,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Remove only the ground: erase the brown soil and the green grass edge under the grey stone mount, so the cannon and its stone mount stand directly on a transparent background with nothing at all under them. Keep the dark iron barrel, the bronze bands, the stone mount, the smoke puff, the outline and the art style exactly the same."
+          }
+        ],
+        "prompt": "Remove only the ground: erase the brown soil and the green grass edge under the grey stone mount, so the cannon and its stone mount stand directly on a transparent background with nothing at all under them. Keep the dark iron barrel, the bronze bands, the stone mount, the smoke puff, the outline and the art style exactly the same.",
+        "negativePrompt": "",
+        "description": "Remove only the ground: erase the brown soil and the green grass edge under the grey stone mount, so the cannon and its stone mount stand directly on a transparent background with nothing at all under them. Keep the dark iron barrel, the bronze bands, the stone mount, the smoke puff, the outline and the art style exactly the same.",
+        "editInstruction": "Remove only the ground: erase the brown soil and the green grass edge under the grey stone mount, so the cannon and its stone mount stand directly on a transparent background with nothing at all under them. Keep the dark iron barrel, the bronze bands, the stone mount, the smoke puff, the outline and the art style exactly the same.",
+        "source": {
+          "recipe": "moon-gun-a",
+          "candidate": 0,
+          "sha256": "e0ca4fe5138538253cbc3683351bfc65bfe17a691f4c58491cf5fc4b28dc51f0"
+        }
+      },
+      "submittedAt": "2026-10-19T13:30:09.609Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 80,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-curiosities-3/moon-gun-a-edit.png",
+      "rawSheetSha256": "0ae3c1cced3b7ee2ebc72480cca723310cef44d4219eaf7025cb65b2c6565fc8",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0.0052,
+          "footprintWidthShare": 0.6471,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0052,
+          "footprintWidthShare": 0.6471,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-19T13:30:47.791Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "the plate edit: dark iron barrel cocked up-right with bronze bands on a stone mount and a grey smoke puff, nothing under it",
+        "reviewedAt": "2026-10-19T13:39:48.550Z"
+      }
+    },
+    "tesla-tower-a": {
+      "id": "tesla-tower-a",
+      "asset": "chibi-curiosity-tesla-tower",
+      "jobId": "sync-52f788f9-2e43-4b56-9635-85eb41d258bb",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "curiosities-3",
+        "asset": "chibi-curiosity-tesla-tower",
+        "subject": "CURIOSITY:TESLA_TOWER",
+        "faction": "ORIGINAL",
+        "recipeClass": "curiosity-site",
+        "requestSize": {
+          "width": 80,
+          "height": 80
+        },
+        "seed": 73720001,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-curiosity-site.txt + scripts/art/chibi/fragments/class-curiosity-site.negative.txt",
+            "text": "Class: one small ancient map landmark that belongs to no faction, a single compact feature with a simple clear silhouette that reads at a glance, calmer and less saturated than a unit, thick single-colour black outline, big simple shapes and flat colours with one shadow tone. It stands directly on the empty transparent background with nothing drawn under it: no ground, no grass, no soil, no water, no slab and no platform. Materials: weathered pale grey stone, bone white, old grey-brown driftwood and a little dull moss. No flag, no banner, no heraldry and nothing painted in a team colour.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, island, scenery, background, people, person, character, soldier, crowd, building, house, flag, banner, pennant, heraldry, red, crimson, orange, bright yellow, lime, purple, violet, magenta, pink, neon"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: a small old electric tower: a tall narrow lattice tower of crossed rusty iron girders standing on a squat block of weathered pale grey stone, with one big round copper-brown ball on its top, and three crackling zig-zag arcs of pure white electricity jumping out from the ball with a few tiny white sparks; rust-brown and charcoal iron with a darker shadow tone and a dull copper-brown ball; no lamps, no blue light and no colour; the tower is nearly as tall as the image; the tower is the only thing in the image."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small ancient map landmark that belongs to no faction, a single compact feature with a simple clear silhouette that reads at a glance, calmer and less saturated than a unit, thick single-colour black outline, big simple shapes and flat colours with one shadow tone. It stands directly on the empty transparent background with nothing drawn under it: no ground, no grass, no soil, no water, no slab and no platform. Materials: weathered pale grey stone, bone white, old grey-brown driftwood and a little dull moss. No flag, no banner, no heraldry and nothing painted in a team colour. Subject: a small old electric tower: a tall narrow lattice tower of crossed rusty iron girders standing on a squat block of weathered pale grey stone, with one big round copper-brown ball on its top, and three crackling zig-zag arcs of pure white electricity jumping out from the ball with a few tiny white sparks; rust-brown and charcoal iron with a darker shadow tone and a dull copper-brown ball; no lamps, no blue light and no colour; the tower is nearly as tall as the image; the tower is the only thing in the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, island, scenery, background, people, person, character, soldier, crowd, building, house, flag, banner, pennant, heraldry, red, crimson, orange, bright yellow, lime, purple, violet, magenta, pink, neon",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small ancient map landmark that belongs to no faction, a single compact feature with a simple clear silhouette that reads at a glance, calmer and less saturated than a unit, thick single-colour black outline, big simple shapes and flat colours with one shadow tone. It stands directly on the empty transparent background with nothing drawn under it: no ground, no grass, no soil, no water, no slab and no platform. Materials: weathered pale grey stone, bone white, old grey-brown driftwood and a little dull moss. No flag, no banner, no heraldry and nothing painted in a team colour. Subject: a small old electric tower: a tall narrow lattice tower of crossed rusty iron girders standing on a squat block of weathered pale grey stone, with one big round copper-brown ball on its top, and three crackling zig-zag arcs of pure white electricity jumping out from the ball with a few tiny white sparks; rust-brown and charcoal iron with a darker shadow tone and a dull copper-brown ball; no lamps, no blue light and no colour; the tower is nearly as tall as the image; the tower is the only thing in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, island, scenery, background, people, person, character, soldier, crowd, building, house, flag, banner, pennant, heraldry, red, crimson, orange, bright yellow, lime, purple, violet, magenta, pink, neon."
+      },
+      "submittedAt": "2026-10-19T13:21:14.925Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 80,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-curiosities-3/tesla-tower-a.png",
+      "rawSheetSha256": "343325cab7bf63b0abac4da3ba05a5b86de5dcde94562fcca8d922f74a8569ce",
+      "plateHints": [
+        {
+          "bandRows": 14,
+          "groundShare": 0.244,
+          "footprintWidthShare": 0.5714,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-19T13:22:03.877Z",
+      "usageUsd": 0.009511524200439454,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "rusty red-brown lattice tower on a grey stone footing, copper ball, three white arcs; reads at 1x and x4; the footing is part of the tower, not a terrain plate",
+        "reviewedAt": "2026-10-19T13:39:48.425Z"
+      }
+    }
+  },
+  "assets": {
+    "chibi-curiosity-effect-expedition-notes": {
+      "id": "chibi-curiosity-effect-expedition-notes",
+      "subject": "EFFECT:EXPEDITION_NOTES",
+      "assetClass": "EFFECT",
+      "status": "ACCEPTED",
+      "recipe": "effect-expedition-notes-a",
+      "candidate": 0,
+      "candidateSha256": "32561d819826682b889498cc7d8ef61ebfbde46c7fd0681813438092293dcfb2",
+      "master": {
+        "path": "public/assets/chibi/effects/chibi-curiosity-effect-expedition-notes.png",
+        "sha256": "32561d819826682b889498cc7d8ef61ebfbde46c7fd0681813438092293dcfb2",
+        "pixelSha256": "e4c065aaa03754f06e937a5b48fc9b557c40b3c755ec3462a2535ce664f4690d",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 7,
+        "groundShare": 0.0976,
+        "footprintWidthShare": 0.5,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "open leather journal with white sparkles",
+      "acceptedAt": "2026-10-19T13:39:49.673Z"
+    },
+    "chibi-curiosity-effect-moon-gun-blast": {
+      "id": "chibi-curiosity-effect-moon-gun-blast",
+      "subject": "EFFECT:MOON_GUN_BLAST",
+      "assetClass": "EFFECT",
+      "status": "ACCEPTED",
+      "recipe": "effect-moon-gun-blast-b-edit",
+      "candidate": 0,
+      "candidateSha256": "eb8d3122815e41c20de4bc49a646cb667c3cb9904afa0595f90d0b2bed871f01",
+      "master": {
+        "path": "public/assets/chibi/effects/chibi-curiosity-effect-moon-gun-blast.png",
+        "sha256": "eb8d3122815e41c20de4bc49a646cb667c3cb9904afa0595f90d0b2bed871f01",
+        "pixelSha256": "92c973c8a46015ed7bd802a90f2e63b21fcc104cdab15926e1ea298df50556df",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 8,
+        "groundShare": 0,
+        "footprintWidthShare": 0.6471,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "ring of grey smoke puffs round a white and pale cream flash, no orange",
+      "acceptedAt": "2026-10-19T13:39:49.546Z"
+    },
+    "chibi-curiosity-effect-tesla-arc": {
+      "id": "chibi-curiosity-effect-tesla-arc",
+      "subject": "EFFECT:TESLA_ARC",
+      "assetClass": "EFFECT",
+      "status": "ACCEPTED",
+      "recipe": "effect-tesla-arc-a",
+      "candidate": 0,
+      "candidateSha256": "aff8ca08930653ad1ad52e4dd41d22406fd97661984d55c8bfb6a601ae4ed19d",
+      "master": {
+        "path": "public/assets/chibi/effects/chibi-curiosity-effect-tesla-arc.png",
+        "sha256": "aff8ca08930653ad1ad52e4dd41d22406fd97661984d55c8bfb6a601ae4ed19d",
+        "pixelSha256": "4856ff9789a8280c19cd4e605d5f74c374e9696c793cb1143765fb264bc1cc59",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 7,
+        "groundShare": 0,
+        "footprintWidthShare": 0.4839,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "white zig-zag bolt with sparks, a pale grey shadow, no blue",
+      "acceptedAt": "2026-10-19T13:39:49.423Z"
+    },
+    "chibi-curiosity-gold-claim": {
+      "id": "chibi-curiosity-gold-claim",
+      "subject": "CURIOSITY:GOLD_CLAIM",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "gold-claim-a",
+      "candidate": 0,
+      "candidateSha256": "cba05d1bbe9973a11122872da7acb2d24b6fb8dc5cf4bff18389719974ab8bf5",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-curiosity-gold-claim.png",
+        "sha256": "cba05d1bbe9973a11122872da7acb2d24b6fb8dc5cf4bff18389719974ab8bf5",
+        "pixelSha256": "78d8bd90e3cff47644bbe01510f2994e2739d586e9c38fe56c9d4b59730f791b",
+        "width": 80,
+        "height": 80
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 40,
+        "y": 40
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 9,
+        "groundShare": 0.213,
+        "footprintWidthShare": 0.8261,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "pale boulder with a timber-framed mine mouth, a stake and a tipped cart of gold nuggets (gold only on the nuggets), nothing under it; compact but every part reads at 1x",
+      "acceptedAt": "2026-10-19T13:39:48.676Z"
+    },
+    "chibi-curiosity-icon-gold-claim": {
+      "id": "chibi-curiosity-icon-gold-claim",
+      "subject": "ICON:CURIOSITY:GOLD_CLAIM",
+      "assetClass": "ICON",
+      "status": "ACCEPTED",
+      "recipe": "icon-gold-claim-a",
+      "candidate": 0,
+      "candidateSha256": "3fc6e96d523a41c9adf569e02ce843b3a5d1d821a41d6f29d7b239b8be13579d",
+      "master": {
+        "path": "public/assets/chibi/icons/chibi-curiosity-icon-gold-claim.png",
+        "sha256": "3fc6e96d523a41c9adf569e02ce843b3a5d1d821a41d6f29d7b239b8be13579d",
+        "pixelSha256": "bf7a00f3b23791cef93217dd0ad33f23df23104c506318031670966351dc2b41",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 5,
+        "groundShare": 0.4559,
+        "footprintWidthShare": 0.6176,
+        "suspect": true
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "tipped ore cart spilling gold nuggets; gold on the nuggets only",
+      "acceptedAt": "2026-10-19T13:39:49.176Z"
+    },
+    "chibi-curiosity-icon-lost-expedition": {
+      "id": "chibi-curiosity-icon-lost-expedition",
+      "subject": "ICON:CURIOSITY:LOST_EXPEDITION",
+      "assetClass": "ICON",
+      "status": "ACCEPTED",
+      "recipe": "icon-lost-expedition-a",
+      "candidate": 0,
+      "candidateSha256": "85b86a983528eb5679c353fd581e2df09b7c539001bbb2ecc11682cd48ad52c2",
+      "master": {
+        "path": "public/assets/chibi/icons/chibi-curiosity-icon-lost-expedition.png",
+        "sha256": "85b86a983528eb5679c353fd581e2df09b7c539001bbb2ecc11682cd48ad52c2",
+        "pixelSha256": "f8f830b9892398e47cdcb92cf89b18daff45c45c0545b246baf72438e70ad965",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 6,
+        "groundShare": 0.3373,
+        "footprintWidthShare": 0.6667,
+        "suspect": true
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "khaki pith helmet on a rolled map beside a brown journal",
+      "acceptedAt": "2026-10-19T13:39:49.299Z"
+    },
+    "chibi-curiosity-icon-moon-gun": {
+      "id": "chibi-curiosity-icon-moon-gun",
+      "subject": "ICON:CURIOSITY:MOON_GUN",
+      "assetClass": "ICON",
+      "status": "ACCEPTED",
+      "recipe": "icon-moon-gun-a",
+      "candidate": 0,
+      "candidateSha256": "1e1f13519f124b37b36ee36a4b25222f7fe6a051312b35dad915c1026ba7b189",
+      "master": {
+        "path": "public/assets/chibi/icons/chibi-curiosity-icon-moon-gun.png",
+        "sha256": "1e1f13519f124b37b36ee36a4b25222f7fe6a051312b35dad915c1026ba7b189",
+        "pixelSha256": "8a806e67bcde0febc1f6e0fc3d140a770f2d0d6b7fcb085c96b50d2c37d477bc",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 9,
+        "groundShare": 0,
+        "footprintWidthShare": 0.8293,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "fat iron cannon on its round stone mount, smoke puff; the mount is the subject, not a plate",
+      "acceptedAt": "2026-10-19T13:39:49.052Z"
+    },
+    "chibi-curiosity-icon-tesla-tower": {
+      "id": "chibi-curiosity-icon-tesla-tower",
+      "subject": "ICON:CURIOSITY:TESLA_TOWER",
+      "assetClass": "ICON",
+      "status": "ACCEPTED",
+      "recipe": "icon-tesla-tower-c",
+      "candidate": 0,
+      "candidateSha256": "fa98c1ce30963b6a988ecd5986baae6366c98666e093e39c970e13556320ce74",
+      "master": {
+        "path": "public/assets/chibi/icons/chibi-curiosity-icon-tesla-tower.png",
+        "sha256": "fa98c1ce30963b6a988ecd5986baae6366c98666e093e39c970e13556320ce74",
+        "pixelSha256": "ed78188694c31b4488b8da514b09ec77d2ad9f0bf17359668ff17618ae0f9512",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 8,
+        "groundShare": 0.119,
+        "footprintWidthShare": 0.5,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "side view lattice tower with copper ball and white zig-zag arcs, no plate",
+      "acceptedAt": "2026-10-19T13:39:48.926Z"
+    },
+    "chibi-curiosity-lost-expedition": {
+      "id": "chibi-curiosity-lost-expedition",
+      "subject": "CURIOSITY:LOST_EXPEDITION",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "lost-expedition-b",
+      "candidate": 0,
+      "candidateSha256": "fea762cc50310ea29e8d6e43971455d87e7f936a1e888ee2442f6f1356118163",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-curiosity-lost-expedition.png",
+        "sha256": "fea762cc50310ea29e8d6e43971455d87e7f936a1e888ee2442f6f1356118163",
+        "pixelSha256": "98bc3e8c24eab4d521e14508166379e69a69de7e735bdcfb5df3b93c270513a3",
+        "width": 80,
+        "height": 80
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 40,
+        "y": 40
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 12,
+        "groundShare": 0.12,
+        "footprintWidthShare": 0.4225,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "khaki tent with two stacked crates, a pith helmet on top, a map and journal in front; spans the cell, nothing under it, no people",
+      "acceptedAt": "2026-10-19T13:39:48.800Z"
+    },
+    "chibi-curiosity-moon-gun": {
+      "id": "chibi-curiosity-moon-gun",
+      "subject": "CURIOSITY:MOON_GUN",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "moon-gun-a-edit",
+      "candidate": 0,
+      "candidateSha256": "278dfd19c88b7bcb1b0371fef56537b63b3062c037b7504b4cfeff899bad06bc",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-curiosity-moon-gun.png",
+        "sha256": "278dfd19c88b7bcb1b0371fef56537b63b3062c037b7504b4cfeff899bad06bc",
+        "pixelSha256": "2b2b85eb0c7762592ec5207aef61552653e3bc2655fde13aec379a2c781c60ee",
+        "width": 80,
+        "height": 80
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 40,
+        "y": 40
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 12,
+        "groundShare": 0.0052,
+        "footprintWidthShare": 0.6471,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "the plate edit: dark iron barrel cocked up-right with bronze bands on a stone mount and a grey smoke puff, nothing under it",
+      "acceptedAt": "2026-10-19T13:39:48.550Z"
+    },
+    "chibi-curiosity-tesla-tower": {
+      "id": "chibi-curiosity-tesla-tower",
+      "subject": "CURIOSITY:TESLA_TOWER",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "tesla-tower-a",
+      "candidate": 0,
+      "candidateSha256": "343325cab7bf63b0abac4da3ba05a5b86de5dcde94562fcca8d922f74a8569ce",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-curiosity-tesla-tower.png",
+        "sha256": "343325cab7bf63b0abac4da3ba05a5b86de5dcde94562fcca8d922f74a8569ce",
+        "pixelSha256": "f1e4991e27633adfbb056edc2ad6114c362a24d84b82df0ed3746d0645c97463",
+        "width": 80,
+        "height": 80
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 40,
+        "y": 40
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 14,
+        "groundShare": 0.244,
+        "footprintWidthShare": 0.5714,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "rusty red-brown lattice tower on a grey stone footing, copper ball, three white arcs; reads at 1x and x4; the footing is part of the tower, not a terrain plate",
+      "acceptedAt": "2026-10-19T13:39:48.425Z"
+    }
+  }
+}

@@ -3541,6 +3541,57 @@
       }
     },
     {
+      "id": "special.zap",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A short electric zap: a sharp crackle and snap of a spark of electricity jumping, a brief buzz, no thunder. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.7,
+      "promptInfluence": 0.45,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "special-zap-101.wav",
+      "date": "2026-10-19",
+      "bytes": 119952,
+      "cost": {
+        "character-cost": "8"
+      }
+    },
+    {
+      "id": "special.zap",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A short electric zap: a sharp crackle and snap of a spark of electricity jumping, a brief buzz, no thunder. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.7,
+      "promptInfluence": 0.45,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "special-zap-102.wav",
+      "date": "2026-10-19",
+      "bytes": 119952,
+      "cost": {
+        "character-cost": "8"
+      }
+    },
+    {
+      "id": "special.zap",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A short electric zap: a sharp crackle and snap of a spark of electricity jumping, a brief buzz, no thunder. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.7,
+      "promptInfluence": 0.45,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "special-zap-103.wav",
+      "date": "2026-10-19",
+      "bytes": 119952,
+      "cost": {
+        "character-cost": "8"
+      }
+    },
+    {
       "id": "support.dark",
       "n": 101,
       "round": 1,

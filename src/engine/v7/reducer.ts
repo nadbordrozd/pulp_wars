@@ -23,10 +23,19 @@ import {
   neutralAttackChoiceV7,
   neutralBountyV7,
   neutralStepsV7,
+  moonGunAtV7,
+  moonGunLandingRejectionV7,
+  moonGunLoadedV7,
+  prunedCuriositiesV7,
   prunedMonstersV7,
+  researchPriceWithNotesV7,
+  expeditionNotesOfV7,
   resolveCuriosityClaimV7,
+  teslaTowerAtV7,
   wellOutcomeV7,
   withMonsterProvocationsV7,
+  zapHitV7,
+  zapReachesV7,
   type NeutralBoardFactsV7,
 } from "./curiosities";
 import { forbiddenTechnologiesV7 } from "./forbidden-technologies";
@@ -126,6 +135,7 @@ import {
   withinBolasRangeV7,
   withinFrostBoltRangeV7,
   frozenUnitNamedV7,
+  winterV7,
 } from "./ice-folk";
 import {
   ACHIEVEMENT_REQUIRED_TECH_V7,
@@ -544,6 +554,11 @@ export type RuleErrorCodeV7 =
   // Map curiosities round 2 (section 30.1): an illegal toss at the Wishing
   // Well (`NOT_ON_WELL`, `ALREADY_TOSSED`).
   | "TOSS_COIN_NOT_LEGAL"
+  // Map curiosities round 3 (`pulp_wars-737.20`, sections 4.1 and 5.1): an
+  // illegal zap (`NOT_ON_TOWER`, `OUT_OF_RANGE`) or Moon Gun shot
+  // (`NOT_ON_GUN`, `RELOADING`, `OUT_OF_RANGE`, `UNEXPLORED`, `BLOCKED`).
+  | "ZAP_NOT_LEGAL"
+  | "MOON_GUN_NOT_LEGAL"
   // The Cultists (docs/product/RULESET_7_CULTISTS.md section 5): an illegal
   // Sacrifice (`EMBARKED`, `VICTIM`, `CONTROLLED`, `PLAGUED`, `BITTEN`),
   // Seizure (`EMBARKED`, `VICTIM`, `IMMUNE`, `HEALTHY`, `NO_HOLDER`), or
@@ -1233,6 +1248,220 @@ function applyTossCoin(
 }
 
 /**
+ * Map curiosities round 3 (`pulp_wars-737.20`,
+ * RULESET_7_CURIOSITIES_ROUND_3.md section 4): `ZAP`. Legality in order: the
+ * actor's own unit on the board; in land form on the Tesla Tower
+ * (`NOT_ON_TOWER`); a primary action left (not Crashed, not already acted,
+ * may act after its Move); the target a visible unit hostile to the actor
+ * on an explored tile within 2 of the Tower, a submerged Submarine only
+ * next to it (`OUT_OF_RANGE`). The target takes the fixed zap (never
+ * answered); the kill is credited to the zapper (Promotion, growth, Slayer,
+ * Plunder, a neutral unit's bounty), deaths are ordinary, and the unit's
+ * primary action is spent.
+ */
+function applyZap(
+  original: GameStateV7,
+  state: GameStateV7,
+  actor: PlayerId,
+  command: Extract<CommandV7, { readonly kind: "ZAP" }>,
+): ApplyCommandResultV7 {
+  if (state.commandIndex === Number.MAX_SAFE_INTEGER)
+    return rejected(original, "INTEGER_OVERFLOW");
+  const actorCheck = validateUnitActor(state, actor, command.unitId);
+  if (!actorCheck.ok)
+    return rejected(original, actorCheck.code, actorCheck.params);
+  const unit = actorCheck.unit;
+  if (
+    unit.form !== "LAND" ||
+    teslaTowerAtV7(state.curiosities, unit.at) === null
+  )
+    return rejected(original, "ZAP_NOT_LEGAL", { reason: "NOT_ON_TOWER" });
+  if (unitIsCrashedV7(state, unit.id))
+    return rejected(original, "UNIT_CRASHED", { unitId: unit.id });
+  if (
+    unit.activation.overrunActive ||
+    primaryUsed(unit) ||
+    primaryActionBlockedAfterMoveV7(state, unit)
+  )
+    return rejected(original, "UNIT_ALREADY_ACTED", { unitId: unit.id });
+  const player = requirePlayer(state, actor);
+  const target = state.units.find(
+    (candidate) => candidate.id === command.targetUnitId && candidate.hp > 0,
+  );
+  if (
+    target === undefined ||
+    !isExplored(player, target.at) ||
+    !isUnitVisibleToPlayerV7(state, actor, target) ||
+    !arePlayersHostileV7(state, actor, target.ownerId) ||
+    !zapReachesV7(unit.at, target.at, unitIsSubmergedV7(state, target))
+  )
+    return rejected(original, "ZAP_NOT_LEGAL", { reason: "OUT_OF_RANGE" });
+  try {
+    const hit = zapHitV7(
+      state,
+      winterV7(state).witches,
+      unit.at,
+      target,
+      shieldOfV7(state.shields, target.id),
+    );
+    const events: DomainEventV7[] = [
+      {
+        kind: "TESLA_ZAPPED",
+        playerId: actor,
+        unitId: unit.id,
+        at: { x: unit.at.x, y: unit.at.y },
+        targetUnitId: target.id,
+        targetAt: { x: target.at.x, y: target.at.y },
+        damage: hit.damage,
+        shieldDamage: hit.shieldDamage,
+        hpAfter: hit.hpAfter,
+      },
+    ];
+    const spent: GameStateV7 = {
+      ...state,
+      commandIndex: nextSafe(state.commandIndex),
+      units: state.units.map((candidate) =>
+        candidate.id === unit.id
+          ? {
+              ...candidate,
+              activation: {
+                ...candidate.activation,
+                specialActed: true,
+                handled: true,
+              },
+            }
+          : candidate,
+      ),
+    };
+    const hitState = resolveFixedHitsV7(
+      DWARF_KIT_V7,
+      spent,
+      unit.id,
+      [
+        {
+          unitId: target.id,
+          at: { x: target.at.x, y: target.at.y },
+          damage: hit.damage,
+          dies: hit.dies,
+          shieldDamage: hit.shieldDamage,
+        },
+      ],
+      "ATTACK",
+      events,
+    );
+    const staged = graveActionTail(hitState, actor, events);
+    return accepted(checked(staged), events);
+  } catch (cause) {
+    return arithmeticFailure(original, cause);
+  }
+}
+
+/**
+ * Map curiosities round 3 (section 5): `FIRE_MOON_GUN`. Legality in order:
+ * the actor's own unit on the board; in land form on the Moon Gun
+ * (`NOT_ON_GUN`); a primary action left (as for `ZAP`); the Gun has not
+ * fired in this player-turn (`RELOADING`); the landing tile within 5 of the
+ * Gun and not its tile (`OUT_OF_RANGE`), explored (`UNEXPLORED`), one the
+ * unit may stand on in land form, and empty of units, mounds, Barricades,
+ * chests, settlement centres, and curiosity markers (`BLOCKED`). The unit is
+ * placed on the tile (a placement, not a Move: no zone of control, capture,
+ * chest, claim, Crumbs, gate, or Black Ice), its activation is spent, the
+ * Gun records the shot, and the unit reveals around its landing.
+ */
+function applyFireMoonGun(
+  original: GameStateV7,
+  state: GameStateV7,
+  actor: PlayerId,
+  command: Extract<CommandV7, { readonly kind: "FIRE_MOON_GUN" }>,
+): ApplyCommandResultV7 {
+  if (state.commandIndex === Number.MAX_SAFE_INTEGER)
+    return rejected(original, "INTEGER_OVERFLOW");
+  const actorCheck = validateUnitActor(state, actor, command.unitId);
+  if (!actorCheck.ok)
+    return rejected(original, actorCheck.code, actorCheck.params);
+  const unit = actorCheck.unit;
+  const gun =
+    unit.form === "LAND" ? moonGunAtV7(state.curiosities, unit.at) : null;
+  if (gun === null)
+    return rejected(original, "MOON_GUN_NOT_LEGAL", { reason: "NOT_ON_GUN" });
+  if (unitIsCrashedV7(state, unit.id))
+    return rejected(original, "UNIT_CRASHED", { unitId: unit.id });
+  if (
+    unit.activation.overrunActive ||
+    primaryUsed(unit) ||
+    primaryActionBlockedAfterMoveV7(state, unit)
+  )
+    return rejected(original, "UNIT_ALREADY_ACTED", { unitId: unit.id });
+  if (!moonGunLoadedV7(gun, state.round, actor))
+    return rejected(original, "MOON_GUN_NOT_LEGAL", { reason: "RELOADING" });
+  const player = requirePlayer(state, actor);
+  const reason = moonGunLandingRejectionV7(
+    state,
+    unit,
+    player.researchedTechs,
+    gun.at,
+    command.at,
+    (at) =>
+      isExplored(player, at)
+        ? state.board.tiles[at.y * state.board.width + at.x]
+        : undefined,
+  );
+  if (reason !== null)
+    return rejected(original, "MOON_GUN_NOT_LEGAL", { reason });
+  try {
+    const from = { x: unit.at.x, y: unit.at.y };
+    const to = { x: command.at.x, y: command.at.y };
+    const landed: UnitStateV7 = {
+      ...unit,
+      at: to,
+      captureEligible: false,
+      activation: {
+        ...exhaustedActivation(),
+        movedPathLength: unit.activation.movedPathLength,
+      },
+    };
+    const placed: GameStateV7 = {
+      ...state,
+      commandIndex: nextSafe(state.commandIndex),
+      units: state.units.map((candidate) =>
+        candidate.id === unit.id ? landed : candidate,
+      ),
+      curiosities: state.curiosities.map((curiosity) =>
+        curiosity === gun
+          ? { ...gun, lastFired: { round: state.round, playerId: actor } }
+          : curiosity,
+      ),
+    };
+    const events: DomainEventV7[] = [
+      { kind: "MOON_GUN_FIRED", playerId: actor, unitId: unit.id, from, to },
+    ];
+    const sight = revealRadius(
+      placed,
+      actor,
+      to,
+      unitSightRadiusAtV7(placed, landed),
+    );
+    if (sight.revealed.length > 0)
+      events.push({
+        kind: "TILES_REVEALED",
+        playerId: actor,
+        tiles: sight.revealed,
+      });
+    const staged = graveActionTail(
+      {
+        ...placed,
+        players: setExplored(placed.players, actor, sight.explored),
+      },
+      actor,
+      events,
+    );
+    return accepted(checked(staged), events);
+  } catch (cause) {
+    return arithmeticFailure(original, cause);
+  }
+}
+
+/**
  * Map curiosities round 2 (section 28.5): whenever a gate tile becomes
  * explored for a player, by any reveal, its partner becomes explored for
  * that player in the same reveal. Run on every accepted command: each
@@ -1651,6 +1880,9 @@ function navalFactsMayChangeV7(
   // The Dwarf revision section 6.3: a bomb can kill an embarked blockader,
   // and a self-launch can start a blockade.
   if (command.kind === "BOMB_RUN") return true;
+  // Map curiosities round 3 (`pulp_wars-737.20`): a zap can kill an
+  // embarked blockader, and a Moon Gun landing places a unit (as a Move).
+  if (command.kind === "ZAP" || command.kind === "FIRE_MOON_GUN") return true;
   if (command.kind === "DISBAND")
     return (
       Array.isArray(state.mindControlled) && state.mindControlled.length > 0
@@ -1848,6 +2080,12 @@ function applyCommandCoreV7(
     return applyWait(stateInput, state, actor, command.unitId);
   if (command.kind === "TOSS_COIN")
     return applyTossCoin(stateInput, state, actor, command.unitId);
+  // Map curiosities round 3 (`pulp_wars-737.20`): the Tesla Tower's zap and
+  // the Moon Gun's shot.
+  if (command.kind === "ZAP")
+    return applyZap(stateInput, state, actor, command);
+  if (command.kind === "FIRE_MOON_GUN")
+    return applyFireMoonGun(stateInput, state, actor, command);
   if (command.kind === "CAPTURE")
     return applyCapture(stateInput, state, actor, command.unitId);
   if (command.kind === "PILLAGE")
@@ -2083,11 +2321,17 @@ function applyResearch(
   try {
     // The economy rejig (`pulp_wars-w49.16`, 7r54): the price grows with
     // the cities the player owns now, not with its technologies.
-    const cost = playerTechnologyResearchCostV7(
+    const ordinary = playerTechnologyResearchCostV7(
       node.tier,
       player.researchedTechs.length,
       state.cities.filter((city) => city.ownerId === actor).length,
     );
+    // Map curiosities round 3 (`pulp_wars-737.20`, section 7.2): the Lost
+    // Expedition's notes make a research above 0 free and are then used up
+    // (the free first technology does not use them).
+    const cost = researchPriceWithNotesV7(state.curiosities, actor, ordinary);
+    const notes =
+      cost < ordinary ? expeditionNotesOfV7(state.curiosities, actor) : null;
     if (player.coins < cost)
       return rejected(original, "INSUFFICIENT_COINS", { cost });
     const commandIndex = nextSafe(state.commandIndex);
@@ -2102,6 +2346,10 @@ function applyResearch(
           ? { ...item, coins: item.coins - cost, researchedTechs }
           : item,
       ),
+      curiosities:
+        notes === null
+          ? state.curiosities
+          : state.curiosities.filter((curiosity) => curiosity !== notes),
     };
     const recalculation = recomputeLiveEconomyV7(
       researched,
@@ -2117,6 +2365,15 @@ function applyResearch(
     const achievements = evaluateAchievementsV7(settlement.state, actor);
     return accepted(checked(achievements.state), [
       { kind: "TECH_RESEARCHED", playerId: actor, tech, cost },
+      ...(notes === null
+        ? []
+        : [
+            {
+              kind: "EXPEDITION_NOTES_USED" as const,
+              playerId: actor,
+              at: notes.at,
+            },
+          ]),
       ...economyAndGrowth(recalculation.changes),
       ...settlement.events,
       ...achievements.events,
@@ -5349,6 +5606,8 @@ function applyMove(
             actor,
             moved,
             validation.destination,
+            // Round 3 (section 6.1): allies never take each other's Claim.
+            (left, right) => arePlayersAlliedV7(state, left, right),
           );
     if (claim !== null) {
       players = claim.state.players;
@@ -10371,11 +10630,16 @@ function checked(state: GameStateV7): GameStateV7 {
             prunedNinthUnitV7(
               prunedCandyV7(
                 prunedMonstersV7(
-                  prunedDwarfV7(
-                    prunedIceFolkV7(
-                      prunedMartianV7(
-                        prunedEggsV7(
-                          prunedAfflictionsV7(prunedGiantsV7(state)),
+                  // Map curiosities round 3 (sections 6.2 and 7.2): an
+                  // eliminated owner's Claim is unowned and an eliminated
+                  // finder's notes are gone.
+                  prunedCuriositiesV7(
+                    prunedDwarfV7(
+                      prunedIceFolkV7(
+                        prunedMartianV7(
+                          prunedEggsV7(
+                            prunedAfflictionsV7(prunedGiantsV7(state)),
+                          ),
                         ),
                       ),
                     ),

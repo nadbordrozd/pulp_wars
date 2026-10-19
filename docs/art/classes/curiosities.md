@@ -377,3 +377,98 @@ Bigfoot in its Forest and the Well), `contact-sheet-{x2,1x}.png` (every
 master of both rounds), Bigfoot in the scale sheet, and the round-2
 masters, guards, Bigfoot and overlays in `readability.json`. `--preview`
 finds a recipe in either batch.
+
+## 9. Round 3 (`pulp_wars-737.20`)
+
+[The round-3 design, section 12](../../product/RULESET_7_CURIOSITIES_ROUND_3.md#12-ui-art-and-sound)
+asks for the four land curiosities of bead A: the Tesla Tower, the Moon
+Gun, the Gold Claim, and the Lost Expedition, their icons, and three
+effects. Sections 1 to 3 apply with **one amendment of rule 2: gold is also
+allowed on the Gold Claim's nuggets** (the coin colour; the Claim's icon
+is mostly nuggets). The Tesla arcs are white, never ice blue; the Moon
+Gun's metal is dark iron and dull bronze, never hazard yellow; the
+Expedition has no people.
+
+### 9.1 Assets
+
+Batch `curiosities-3` (faction `ORIGINAL`, never sent;
+`fixedFactionColours`), subjects in
+[`SHARED.json`](../../../scripts/art/chibi/subjects/SHARED.json), the type
+`CuriosityRound3ArtSubjectV7` in
+[`chibi-art-v7.ts`](../../../src/assets/chibi-art-v7.ts), the registry lines
+`CHIBI_CURIOSITIES_ROUND3_ART_ASSETS_V7` in
+[`chibi-curiosities-art-manifest.ts`](../../../src/assets/chibi-curiosities-art-manifest.ts).
+
+| Subject                          | Class      |  Canvas | Accepted recipe                | What it is                                                                                      |
+| -------------------------------- | ---------- | ------: | ------------------------------ | ----------------------------------------------------------------------------------------------- |
+| `CURIOSITY:TESLA_TOWER`          | `BUILDING` | 80 x 80 | `tesla-tower-a`                | a rusty iron lattice tower on a stone footing, a copper ball crackling with white arcs, 56 x 70 |
+| `CURIOSITY:MOON_GUN`             | `BUILDING` | 80 x 80 | `moon-gun-a-edit`              | a huge dark riveted cannon on a stone mount, cocked at the sky, 68 x 61                         |
+| `CURIOSITY:GOLD_CLAIM`           | `BUILDING` | 80 x 80 | `gold-claim-a`                 | a timber mine mouth in a grey boulder with an ore cart of gold nuggets, 46 x 44                 |
+| `CURIOSITY:LOST_EXPEDITION`      | `BUILDING` | 80 x 80 | `lost-expedition-b`            | a torn khaki tent, crates, a rolled map, 71 x 62                                                |
+| `ICON:CURIOSITY:TESLA_TOWER`     | `ICON`     | 48 x 48 | `icon-tesla-tower-c`           | a small lattice tower with its copper ball and white sparks                                     |
+| `ICON:CURIOSITY:MOON_GUN`        | `ICON`     | 48 x 48 | `icon-moon-gun-a`              | the cannon on its mount                                                                         |
+| `ICON:CURIOSITY:GOLD_CLAIM`      | `ICON`     | 48 x 48 | `icon-gold-claim-a`            | the ore cart heaped with gold nuggets                                                           |
+| `ICON:CURIOSITY:LOST_EXPEDITION` | `ICON`     | 48 x 48 | `icon-lost-expedition-a`       | a khaki pith helmet on a rolled map                                                             |
+| `EFFECT:TESLA_ARC`               | `EFFECT`   | 48 x 48 | `effect-tesla-arc-a`           | a white forked arc                                                                              |
+| `EFFECT:MOON_GUN_BLAST`          | `EFFECT`   | 48 x 48 | `effect-moon-gun-blast-b-edit` | a ring of grey smoke puffs round a white flash                                                  |
+| `EFFECT:EXPEDITION_NOTES`        | `EFFECT`   | 48 x 48 | `effect-expedition-notes-a`    | an open leather journal with white sparkles                                                     |
+
+21 recipes, 21 PixelLab calls (12 creations, 9 edits), $0.14 in all
+(`usageUsd` in
+[`records/batch-curiosities-3.json`](../../../scripts/art/chibi/records/batch-curiosities-3.json),
+which keeps every rejected recipe's reason).
+
+### 9.2 What worked and what did not
+
+- **Plates again.** The first Moon Gun, both Gold Claims and the first
+  Expedition stood on a grass or soil block; "erase everything except …"
+  removed the Gun's (`moon-gun-a-edit`).
+- **An edit may erase the subject.** The Claim's plate edit erased the
+  cart and nuggets, and the Expedition's erased its crates; the clean
+  second Expedition and the first Claim (no plate at 46 x 44) were kept
+  instead.
+- **Violet creeps into arcs.** Two Tower icons drew violet arcs or a
+  violet outline (toward the Undead and Martian colours); the third,
+  asked for "white sparks, a copper ball, no purple anywhere", passed.
+- **"Blast" draws a cannon.** The first blast effect drew a small red
+  cannon and the second an orange fireball core; "only a burst of
+  grey-white smoke, no fire, no object" and an edit gave a neutral puff.
+
+### 9.3 Measurements (`readability.json`)
+
+- **Faction colours:** no board master has more than 1.1% of its pixels
+  within CIE76 25 of a faction colour (the Claim's nuggets, toward the
+  Goblin yellow); the Tower 0%, the Gun 0.3% (Dinosaur), the Expedition
+  0%. The Claim's icon is gold by design (7.3% near the Goblin yellow,
+  12.1% near the Dinosaur orange), under the amendment above; every other
+  icon and effect is at most 1.5% (the Tower icon's copper and the notes'
+  leather, toward the Candy pink).
+- **Under a unit:** 37% of the Moon Gun shows beside a Fighter, 22% of the
+  Expedition, 15% of the Tower, **7% of the Gold Claim** (it is small and
+  low). So the four kinds join `CURIOSITY_CORNER_BADGE_KINDS_V7`: with a
+  unit on the tile the live look adds the kind's icon as a corner badge;
+  a staked Claim's pennant in its owner's colour is drawn over the unit.
+
+### 9.4 Weak spots and notes
+
+- **The Gold Claim is small** (46 x 44): it reads by its nuggets and the
+  pennant; under a unit only the badge and the pennant show.
+- **The Tesla Tower under its holder** is mostly hidden (a unit stands on
+  it to zap); the badge and the Zap button are the cue. The classic look's
+  code marker is wholly hidden under a unit (no badge there).
+- **The Moon Gun's barrel** points up and right in every view; a unit on
+  it covers the mount, not the barrel.
+- **The notes effect** is a brown journal, small on the dark dock; it is a
+  board effect over the Expedition.
+- A played-out Claim and a found Expedition are drawn dimmed (alpha 0.55),
+  not as separate sprites.
+
+### 9.5 Review
+
+`npm run art:curiosities-review` reads all three batches and also writes
+`pieces3-{x4,1x}.png` and `pieces3-zoom-0.75.png` (each overlay on Grass
+and Forest, with a Fighter and a Juggernaut, and on the dark panel),
+`interface3-{x4,1x}.png` (the icons and effects on the dock and a light
+page, the arc over a Fighter, the blast over the Gun, the notes over the
+Expedition); the masters join the contact sheet and `readability.json`,
+with the four "beside a Fighter" shares.

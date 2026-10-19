@@ -39,7 +39,7 @@ const setup: MatchSetupV7 = {
 
 describe("ruleset-7 revision-8 deterministic foundation", () => {
   it("freezes the exact identity and registries", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r102");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r103");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
@@ -147,7 +147,9 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
     // removes BEHOLD (83).
     // The frozen sea redesign (`pulp_wars-5ti.25`) adds CRACK_ICE after
     // FREEZE and BUILD_FISHING_HOLE after BUILD_LUMBER_CAMP (85).
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(85);
+    // Map curiosities round 3 (`pulp_wars-737.20`) adds ZAP and
+    // FIRE_MOON_GUN after JOIN_CHANT (87).
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(87);
     // The revision-19 Dinosaur STAMPEDE stays gone; Ice Folk Freeze's
     // Mammoth STAMPEDE is a new command after BREAK_OFF.
     expect(COMMAND_KIND_ORDER_V7.indexOf("STAMPEDE")).toBe(
@@ -186,7 +188,10 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
     // (`pulp_wars-mch9.33`) removes IDOL_RAISED and IDOL_DROPPED (153).
     // The frozen sea redesign (`pulp_wars-5ti.25`) adds ICE_CRACKED after
     // WATER_FROZEN (154).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(154);
+    // Map curiosities round 3 (`pulp_wars-737.20`) adds GOLD_CLAIM_PAID,
+    // EXPEDITION_NOTES_USED, MOON_GUN_FIRED, TESLA_ZAPPED,
+    // GOLD_CLAIM_STAKED, and EXPEDITION_FOUND (160).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(160);
     // Revision 19 inserts HATCH after KABOOM (and, until revision 20,
     // STAMPEDE between them), LAY_EGG after TRAIN_NAVAL, EGG_LAID and
     // EGG_HATCHED after NAVAL_UNIT_TRAINED, and UNIT_GREW after

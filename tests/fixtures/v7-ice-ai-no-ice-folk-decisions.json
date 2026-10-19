@@ -46,7 +46,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-52, 1, 1, 0, -5]
+            "deterministicTieBreak": [-54, 1, 1, 0, -5]
           }
         },
         {
@@ -133,7 +133,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-52, 1, 1, 0, -5]
+            "deterministicTieBreak": [-54, 1, 1, 0, -5]
           }
         },
         {
@@ -149,7 +149,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-76, -2, -7, -3, 0]
+            "deterministicTieBreak": [-78, -2, -7, -3, 0]
           }
         },
         {
@@ -163,7 +163,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-84, 1, 1, 0, 0]
+            "deterministicTieBreak": [-86, 1, 1, 0, 0]
           }
         }
       ]
@@ -193,7 +193,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-56, -1, -6, 0, 0]
+            "deterministicTieBreak": [-58, -1, -6, 0, 0]
           }
         },
         {
@@ -211,7 +211,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-56, -3, -7, 0, 0]
+            "deterministicTieBreak": [-58, -3, -7, 0, 0]
           }
         },
         {
@@ -226,7 +226,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-52, 1, 1, 0, -6]
+            "deterministicTieBreak": [-54, 1, 1, 0, -6]
           }
         },
         {
@@ -242,7 +242,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-76, -2, -7, -3, 0]
+            "deterministicTieBreak": [-78, -2, -7, -3, 0]
           }
         },
         {
@@ -256,7 +256,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-84, 1, 1, 0, 0]
+            "deterministicTieBreak": [-86, 1, 1, 0, 0]
           }
         }
       ]
@@ -286,7 +286,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-56, -3, -7, 0, 0]
+            "deterministicTieBreak": [-58, -3, -7, 0, 0]
           }
         },
         {
@@ -301,7 +301,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-52, 1, 1, 0, -6]
+            "deterministicTieBreak": [-54, 1, 1, 0, -6]
           }
         },
         {
@@ -317,7 +317,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-76, -2, -7, -3, 0]
+            "deterministicTieBreak": [-78, -2, -7, -3, 0]
           }
         },
         {
@@ -331,7 +331,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-84, 1, 1, 0, 0]
+            "deterministicTieBreak": [-86, 1, 1, 0, 0]
           }
         }
       ]
@@ -359,7 +359,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-83, -2, -7, -3, -3]
+            "deterministicTieBreak": [-85, -2, -7, -3, -3]
           }
         }
       ]
@@ -383,7 +383,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-52, 1, 1, 0, -6]
+            "deterministicTieBreak": [-54, 1, 1, 0, -6]
           }
         },
         {
@@ -397,7 +397,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-84, 1, 1, 0, 0]
+            "deterministicTieBreak": [-86, 1, 1, 0, 0]
           }
         }
       ]
@@ -423,7 +423,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-52, 1, 1, 0, -5]
+            "deterministicTieBreak": [-54, 1, 1, 0, -5]
           }
         },
         {
@@ -537,7 +537,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-56, -10, -2, 0, 0]
+            "deterministicTieBreak": [-58, -10, -2, 0, 0]
           }
         },
         {
@@ -555,7 +555,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-56, -11, -2, 0, 0]
+            "deterministicTieBreak": [-58, -11, -2, 0, 0]
           }
         },
         {
@@ -611,7 +611,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-84, 1, 1, 0, 0]
+            "deterministicTieBreak": [-86, 1, 1, 0, 0]
           }
         }
       ]
@@ -641,7 +641,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-56, -11, -2, 0, 0]
+            "deterministicTieBreak": [-58, -11, -2, 0, 0]
           }
         },
         {
@@ -697,7 +697,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-84, 1, 1, 0, 0]
+            "deterministicTieBreak": [-86, 1, 1, 0, 0]
           }
         }
       ]
@@ -725,7 +725,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-83, -11, -3, -3, -3]
+            "deterministicTieBreak": [-85, -11, -3, -3, -3]
           }
         }
       ]
@@ -838,7 +838,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-84, 1, 1, 0, 0]
+            "deterministicTieBreak": [-86, 1, 1, 0, 0]
           }
         }
       ]
@@ -860,7 +860,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-84, 1, 1, 0, 0]
+            "deterministicTieBreak": [-86, 1, 1, 0, 0]
           }
         }
       ]
@@ -913,7 +913,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-52, 1, 1, 0, 0]
+            "deterministicTieBreak": [-54, 1, 1, 0, 0]
           }
         },
         {
@@ -1000,7 +1000,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-52, 1, 1, 0, 0]
+            "deterministicTieBreak": [-54, 1, 1, 0, 0]
           }
         },
         {
@@ -1016,7 +1016,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-76, -2, -3, -1, 0]
+            "deterministicTieBreak": [-78, -2, -3, -1, 0]
           }
         },
         {
@@ -1030,7 +1030,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-84, 1, 1, 0, 0]
+            "deterministicTieBreak": [-86, 1, 1, 0, 0]
           }
         }
       ]
@@ -1060,7 +1060,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-55, -2, -2, 0, 0]
+            "deterministicTieBreak": [-57, -2, -2, 0, 0]
           }
         },
         {
@@ -1078,7 +1078,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-55, -2, -4, 0, 0]
+            "deterministicTieBreak": [-57, -2, -4, 0, 0]
           }
         },
         {
@@ -1096,7 +1096,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-55, -3, -3, 0, 0]
+            "deterministicTieBreak": [-57, -3, -3, 0, 0]
           }
         },
         {
@@ -1111,7 +1111,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-52, 1, 1, 0, -5]
+            "deterministicTieBreak": [-54, 1, 1, 0, -5]
           }
         },
         {
@@ -1127,7 +1127,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-76, -2, -3, -1, 0]
+            "deterministicTieBreak": [-78, -2, -3, -1, 0]
           }
         }
       ]
@@ -1157,7 +1157,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-55, -2, -4, 0, 0]
+            "deterministicTieBreak": [-57, -2, -4, 0, 0]
           }
         },
         {
@@ -1175,7 +1175,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-55, -3, -3, 0, 0]
+            "deterministicTieBreak": [-57, -3, -3, 0, 0]
           }
         },
         {
@@ -1190,7 +1190,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-52, 1, 1, 0, -5]
+            "deterministicTieBreak": [-54, 1, 1, 0, -5]
           }
         },
         {
@@ -1206,7 +1206,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-76, -2, -3, -1, 0]
+            "deterministicTieBreak": [-78, -2, -3, -1, 0]
           }
         },
         {
@@ -1220,7 +1220,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-84, 1, 1, 0, 0]
+            "deterministicTieBreak": [-86, 1, 1, 0, 0]
           }
         }
       ]
@@ -1248,7 +1248,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-83, -2, -3, -1, -3]
+            "deterministicTieBreak": [-85, -2, -3, -1, -3]
           }
         }
       ]
@@ -1272,7 +1272,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-52, 1, 1, 0, -5]
+            "deterministicTieBreak": [-54, 1, 1, 0, -5]
           }
         },
         {
@@ -1290,7 +1290,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-55, -3, -3, 0, 0]
+            "deterministicTieBreak": [-57, -3, -3, 0, 0]
           }
         },
         {
@@ -1304,7 +1304,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-84, 1, 1, 0, 0]
+            "deterministicTieBreak": [-86, 1, 1, 0, 0]
           }
         }
       ]
@@ -1330,7 +1330,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-52, 1, 1, 0, -20]
+            "deterministicTieBreak": [-54, 1, 1, 0, -20]
           }
         },
         {
@@ -1386,7 +1386,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-84, 1, 1, 0, 0]
+            "deterministicTieBreak": [-86, 1, 1, 0, 0]
           }
         }
       ]
@@ -1416,7 +1416,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-53, -10, -9, 0, 0]
+            "deterministicTieBreak": [-55, -10, -9, 0, 0]
           }
         },
         {
@@ -1434,7 +1434,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-53, -12, -10, 0, 0]
+            "deterministicTieBreak": [-55, -12, -10, 0, 0]
           }
         },
         {
@@ -1449,7 +1449,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-52, 1, 1, 0, -5]
+            "deterministicTieBreak": [-54, 1, 1, 0, -5]
           }
         },
         {
@@ -1467,7 +1467,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-67, -10, -9, 0, 0]
+            "deterministicTieBreak": [-69, -10, -9, 0, 0]
           }
         },
         {
@@ -1485,7 +1485,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-67, -10, -10, 0, 0]
+            "deterministicTieBreak": [-69, -10, -10, 0, 0]
           }
         }
       ]
@@ -1515,7 +1515,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-53, -12, -10, 0, 0]
+            "deterministicTieBreak": [-55, -12, -10, 0, 0]
           }
         },
         {
@@ -1550,7 +1550,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-84, 1, 1, 0, 0]
+            "deterministicTieBreak": [-86, 1, 1, 0, 0]
           }
         }
       ]
@@ -1578,7 +1578,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-83, -11, -9, -1, -3]
+            "deterministicTieBreak": [-85, -11, -9, -1, -3]
           }
         }
       ]
@@ -1691,7 +1691,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-84, 1, 1, 0, 0]
+            "deterministicTieBreak": [-86, 1, 1, 0, 0]
           }
         }
       ]
@@ -1715,7 +1715,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-52, 1, 1, 0, -5]
+            "deterministicTieBreak": [-54, 1, 1, 0, -5]
           }
         },
         {
@@ -1733,7 +1733,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-67, -10, -9, 0, 0]
+            "deterministicTieBreak": [-69, -10, -9, 0, 0]
           }
         },
         {
@@ -1751,7 +1751,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-67, -10, -10, 0, 0]
+            "deterministicTieBreak": [-69, -10, -10, 0, 0]
           }
         },
         {
@@ -1769,7 +1769,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-67, -12, -10, 0, 0]
+            "deterministicTieBreak": [-69, -12, -10, 0, 0]
           }
         },
         {
@@ -1783,7 +1783,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-84, 1, 1, 0, 0]
+            "deterministicTieBreak": [-86, 1, 1, 0, 0]
           }
         }
       ]
@@ -1809,7 +1809,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-52, 1, 1, 0, 0]
+            "deterministicTieBreak": [-54, 1, 1, 0, 0]
           }
         },
         {
@@ -1923,7 +1923,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-55, -10, -5, 0, 0]
+            "deterministicTieBreak": [-57, -10, -5, 0, 0]
           }
         },
         {
@@ -1941,7 +1941,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-55, -11, -4, 0, 0]
+            "deterministicTieBreak": [-57, -11, -4, 0, 0]
           }
         },
         {
@@ -1959,7 +1959,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-55, -11, -5, 0, 0]
+            "deterministicTieBreak": [-57, -11, -5, 0, 0]
           }
         },
         {
@@ -1974,7 +1974,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-52, 1, 1, 0, -5]
+            "deterministicTieBreak": [-54, 1, 1, 0, -5]
           }
         },
         {
@@ -2025,7 +2025,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-55, -11, -4, 0, 0]
+            "deterministicTieBreak": [-57, -11, -4, 0, 0]
           }
         },
         {
@@ -2043,7 +2043,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-55, -11, -5, 0, 0]
+            "deterministicTieBreak": [-57, -11, -5, 0, 0]
           }
         },
         {
@@ -2099,7 +2099,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-84, 1, 1, 0, 0]
+            "deterministicTieBreak": [-86, 1, 1, 0, 0]
           }
         }
       ]
@@ -2127,7 +2127,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-83, -10, -4, -1, -3]
+            "deterministicTieBreak": [-85, -10, -4, -1, -3]
           }
         }
       ]
@@ -2177,7 +2177,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-84, 1, 1, 0, 0]
+            "deterministicTieBreak": [-86, 1, 1, 0, 0]
           }
         }
       ]
@@ -2199,7 +2199,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-84, 1, 1, 0, 0]
+            "deterministicTieBreak": [-86, 1, 1, 0, 0]
           }
         }
       ]
@@ -2314,7 +2314,7 @@
             "futureValue": -29,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-66, -1, -4, 0, 0]
+            "deterministicTieBreak": [-68, -1, -4, 0, 0]
           }
         },
         {
@@ -2333,7 +2333,7 @@
             "futureValue": -29,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-66, -1, -5, 0, 0]
+            "deterministicTieBreak": [-68, -1, -5, 0, 0]
           }
         }
       ]
@@ -2365,7 +2365,7 @@
             "futureValue": -29,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-66, -1, -4, 0, 0]
+            "deterministicTieBreak": [-68, -1, -4, 0, 0]
           }
         },
         {
@@ -2384,7 +2384,7 @@
             "futureValue": -29,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-66, -1, -5, 0, 0]
+            "deterministicTieBreak": [-68, -1, -5, 0, 0]
           }
         },
         {
@@ -2403,7 +2403,7 @@
             "futureValue": -29,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-66, -1, -6, 0, 0]
+            "deterministicTieBreak": [-68, -1, -6, 0, 0]
           }
         },
         {
@@ -2422,7 +2422,7 @@
             "futureValue": -29,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-66, -2, -4, 0, 0]
+            "deterministicTieBreak": [-68, -2, -4, 0, 0]
           }
         },
         {
@@ -2441,7 +2441,7 @@
             "futureValue": -29,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-66, -2, -6, 0, 0]
+            "deterministicTieBreak": [-68, -2, -6, 0, 0]
           }
         }
       ]
@@ -2469,7 +2469,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-83, -2, -5, -1, 0]
+            "deterministicTieBreak": [-85, -2, -5, -1, 0]
           }
         }
       ]
@@ -2510,7 +2510,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-52, 1, 1, 0, -10]
+            "deterministicTieBreak": [-54, 1, 1, 0, -10]
           }
         },
         {
@@ -2528,7 +2528,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-67, -3, -5, 0, 0]
+            "deterministicTieBreak": [-69, -3, -5, 0, 0]
           }
         },
         {
@@ -2546,7 +2546,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-67, -3, -6, 0, 0]
+            "deterministicTieBreak": [-69, -3, -6, 0, 0]
           }
         },
         {
@@ -2564,7 +2564,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-68, -3, -4, 0, 0]
+            "deterministicTieBreak": [-70, -3, -4, 0, 0]
           }
         }
       ]
@@ -2588,7 +2588,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-52, 1, 1, 0, -10]
+            "deterministicTieBreak": [-54, 1, 1, 0, -10]
           }
         },
         {
@@ -2606,7 +2606,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-67, -3, -5, 0, 0]
+            "deterministicTieBreak": [-69, -3, -5, 0, 0]
           }
         },
         {
@@ -2624,7 +2624,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-67, -3, -6, 0, 0]
+            "deterministicTieBreak": [-69, -3, -6, 0, 0]
           }
         },
         {
@@ -2642,7 +2642,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-68, -3, -4, 0, 0]
+            "deterministicTieBreak": [-70, -3, -4, 0, 0]
           }
         },
         {
@@ -2657,7 +2657,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-52, 1, 1, 0, 0]
+            "deterministicTieBreak": [-54, 1, 1, 0, 0]
           }
         }
       ]
@@ -2681,7 +2681,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-52, 1, 1, 0, -11]
+            "deterministicTieBreak": [-54, 1, 1, 0, -11]
           }
         },
         {
@@ -2699,7 +2699,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-67, -3, -5, 0, 0]
+            "deterministicTieBreak": [-69, -3, -5, 0, 0]
           }
         },
         {
@@ -2717,7 +2717,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-67, -3, -6, 0, 0]
+            "deterministicTieBreak": [-69, -3, -6, 0, 0]
           }
         },
         {
@@ -2735,7 +2735,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-68, -3, -4, 0, 0]
+            "deterministicTieBreak": [-70, -3, -4, 0, 0]
           }
         },
         {
@@ -2750,7 +2750,7 @@
             "futureValue": 0,
             "safetyValue": 0,
             "objectiveValue": 0,
-            "deterministicTieBreak": [-52, 1, 1, 0, 0]
+            "deterministicTieBreak": [-54, 1, 1, 0, 0]
           }
         }
       ]

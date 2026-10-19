@@ -135,7 +135,7 @@ export interface AiCommandRecordV7 {
 }
 
 export interface HeadlessMetricsV7 {
-  readonly rulesetId: "pulp-wars-poc-7r102";
+  readonly rulesetId: "pulp-wars-poc-7r103";
   readonly setupHash: string;
   readonly mapHash: string;
   readonly postGenerationPrngHash: string;
@@ -178,6 +178,16 @@ export interface HeadlessMetricsV7 {
   readonly well: {
     readonly tosses: Record<WellOutcomeV7, number>;
   };
+  /**
+   * Round 3 (`pulp_wars-737.20`, RULESET_7_CURIOSITIES_ROUND_3.md section
+   * 10.4): the Tesla Tower's zaps and the kills they made, the Moon Gun's
+   * shots, the Gold Claim's stakes and the Coins it paid, and the Lost
+   * Expedition's finds and notes used.
+   */
+  readonly tesla: { zaps: number; kills: number };
+  readonly moonGun: { shots: number };
+  readonly goldClaim: { stakes: number; paid: number };
+  readonly expedition: { found: number; notesUsed: number };
   finalPrngHash: string;
   commandHash: string;
   eventHash: string;
@@ -1101,7 +1111,7 @@ export async function runAiBatchV7(
           const factions = options.factions ?? distinctFactionsV7(aiCount + 1);
           const result = runAiMatchInternalV7(
             {
-              rulesetId: "pulp-wars-poc-7r102",
+              rulesetId: "pulp-wars-poc-7r103",
               mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
               seed,
               width: size,
@@ -1222,7 +1232,7 @@ function createMetricsV7(state: GameStateV7): HeadlessMetricsV7 {
   for (const tile of state.board.tiles)
     if (tile.resource !== null) generated[tile.resource] += 1;
   return {
-    rulesetId: "pulp-wars-poc-7r102",
+    rulesetId: "pulp-wars-poc-7r103",
     setupHash: canonicalHash(state.setup),
     mapHash: canonicalHash({
       board: state.board,
@@ -1241,6 +1251,10 @@ function createMetricsV7(state: GameStateV7): HeadlessMetricsV7 {
     },
     gates: { traversals: 0, displacements: 0, blocked: 0 },
     well: { tosses: { SPLASH: 0, COINS: 0, HEAL: 0, VISION: 0 } },
+    tesla: { zaps: 0, kills: 0 },
+    moonGun: { shots: 0 },
+    goldClaim: { stakes: 0, paid: 0 },
+    expedition: { found: 0, notesUsed: 0 },
     finalPrngHash: "",
     commandHash: "",
     eventHash: "",
@@ -1702,6 +1716,17 @@ function recordEventsV7(
     if (event.kind === "GATE_DISPLACED") metrics.gates.displacements += 1;
     if (event.kind === "GATE_BLOCKED") metrics.gates.blocked += 1;
     if (event.kind === "COIN_TOSSED") metrics.well.tosses[event.outcome] += 1;
+    // Round 3 (section 10.4).
+    if (event.kind === "TESLA_ZAPPED") {
+      metrics.tesla.zaps += 1;
+      if (event.hpAfter === 0) metrics.tesla.kills += 1;
+    }
+    if (event.kind === "MOON_GUN_FIRED") metrics.moonGun.shots += 1;
+    if (event.kind === "GOLD_CLAIM_STAKED") metrics.goldClaim.stakes += 1;
+    if (event.kind === "GOLD_CLAIM_PAID") metrics.goldClaim.paid += event.coins;
+    if (event.kind === "EXPEDITION_FOUND") metrics.expedition.found += 1;
+    if (event.kind === "EXPEDITION_NOTES_USED")
+      metrics.expedition.notesUsed += 1;
     if (event.kind === "COMBAT_RESOLVED") {
       const preview = event.preview;
       const attacker = before.units.find(

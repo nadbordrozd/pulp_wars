@@ -343,6 +343,9 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/render/canvas/board-renderer-v7.ts::drawBoardV7": "KIND_RESOLVED",
   "src/render/canvas/board-renderer-v7.ts::ownerPresentation": "SEAT",
   "src/render/canvas/faction-colours-v7.ts::playerFactionColourV7": "SEAT",
+  // Map curiosities round 3 (`pulp_wars-737.20`): a staked Gold Claim's
+  // pennant is its owner seat's colour.
+  "src/render/canvas/curiosity-canvas-v7.ts::addCuriosityEntriesV7": "SEAT",
   "src/render/canvas/martian-board-plan-v7.ts::martianMachineV7": "SEAT",
   // pulp_wars-2yc.28: the faction of the seat that owns a territory (the
   // forest set a wood in the fog is packed with).

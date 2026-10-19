@@ -70,6 +70,7 @@ export type ArtSubjectV7 =
   | DwarfArtSubjectV7
   | CuriosityArtSubjectV7
   | CuriosityRound2ArtSubjectV7
+  | CuriosityRound3ArtSubjectV7
   | CandyArtSubjectV7
   | CultArtSubjectV7
   | CultInterfaceArtSubjectV7
@@ -169,6 +170,32 @@ export type CuriosityRound2OverlayIdV7 =
  * traverses) and COIN_SPLASH (a Coin tossed into the Wishing Well).
  */
 export type CuriosityRound2EffectIdV7 = "GATE_TRAVERSE" | "COIN_SPLASH";
+
+/**
+ * Round-3 map curiosity art subjects (bead pulp_wars-737.20,
+ * docs/product/RULESET_7_CURIOSITIES_ROUND_3.md section 12.2,
+ * docs/art/classes/curiosities.md section 9): the four 80 x 80 tile
+ * overlays (the Tesla Tower, the Moon Gun, the Gold Claim, the Lost
+ * Expedition), their legend icons, and three effect sprites. The assets are
+ * in chibi-curiosities-art-manifest.ts
+ * (CHIBI_CURIOSITIES_ROUND3_ART_ASSETS_V7).
+ */
+export type CuriosityRound3ArtSubjectV7 =
+  | `CURIOSITY:${CuriosityRound3OverlayIdV7}`
+  | `ICON:CURIOSITY:${CuriosityRound3OverlayIdV7}`
+  | `EFFECT:${CuriosityRound3EffectIdV7}`;
+
+/** The round-3 tile overlays. */
+export type CuriosityRound3OverlayIdV7 =
+  "TESLA_TOWER" | "MOON_GUN" | "GOLD_CLAIM" | "LOST_EXPEDITION";
+
+/**
+ * Round-3 effect sprites: TESLA_ARC (the zap's arc from the Tower to its
+ * target), MOON_GUN_BLAST (the Gun's muzzle blast and the landing puff) and
+ * EXPEDITION_NOTES (the journal over a unit that finds the Expedition).
+ */
+export type CuriosityRound3EffectIdV7 =
+  "TESLA_ARC" | "MOON_GUN_BLAST" | "EXPEDITION_NOTES";
 
 /**
  * The naval sprites a player sees (bead pulp_wars-w5j.2, NAVAL_FACTIONS.md):

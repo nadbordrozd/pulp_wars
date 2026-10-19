@@ -1,0 +1,36 @@
+{
+  "id": "lost-expedition-a-edit",
+  "jobId": "6c86886a-bcff-4fe0-ac8a-58cfd6586ca3",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "curiosities-3",
+    "asset": "chibi-curiosity-lost-expedition",
+    "subject": "CURIOSITY:LOST_EXPEDITION",
+    "faction": "ORIGINAL",
+    "recipeClass": "curiosity-site",
+    "requestSize": {
+      "width": 80,
+      "height": 80
+    },
+    "seed": 73720032,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Erase everything except the khaki tent, the crates, the pith helmet, the rolled map and the journal: remove the green grass and the brown soil block under them completely, so the camp stands directly on a transparent background with nothing at all under it. Keep the tent, the crates, the helmet, the map, the journal, the outline and the art style exactly the same."
+      }
+    ],
+    "prompt": "Erase everything except the khaki tent, the crates, the pith helmet, the rolled map and the journal: remove the green grass and the brown soil block under them completely, so the camp stands directly on a transparent background with nothing at all under it. Keep the tent, the crates, the helmet, the map, the journal, the outline and the art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Erase everything except the khaki tent, the crates, the pith helmet, the rolled map and the journal: remove the green grass and the brown soil block under them completely, so the camp stands directly on a transparent background with nothing at all under it. Keep the tent, the crates, the helmet, the map, the journal, the outline and the art style exactly the same.",
+    "editInstruction": "Erase everything except the khaki tent, the crates, the pith helmet, the rolled map and the journal: remove the green grass and the brown soil block under them completely, so the camp stands directly on a transparent background with nothing at all under it. Keep the tent, the crates, the helmet, the map, the journal, the outline and the art style exactly the same.",
+    "source": {
+      "recipe": "lost-expedition-a",
+      "candidate": 0,
+      "sha256": "dfc3b9750618c185ad99b3948ef50ec5b85dd3727a48364a141083320c0c59f9"
+    }
+  }
+}

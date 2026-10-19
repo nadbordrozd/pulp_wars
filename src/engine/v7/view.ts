@@ -1149,24 +1149,48 @@ export function viewForV7(
       explored.has(key(chest)),
     ),
     // Round 2 (section 32.5): a gate with its partner, the Well with the
-    // seats that tossed (public on an explored tile).
+    // seats that tossed (public on an explored tile). Round 3
+    // (`pulp_wars-737.20`, section 10.4): the Gun's last shot, the Claim's
+    // owner and Coins left, and the Expedition's finder are public too.
     curiosities: state.curiosities
       .filter((curiosity) => explored.has(key(curiosity.at)))
-      .map((curiosity) =>
-        curiosity.kind === "GATE"
-          ? {
+      .map((curiosity): CuriosityV7 => {
+        switch (curiosity.kind) {
+          case "GATE":
+            return {
               kind: curiosity.kind,
               at: curiosity.at,
               partner: curiosity.partner,
-            }
-          : curiosity.kind === "WISHING_WELL"
-            ? {
-                kind: curiosity.kind,
-                at: curiosity.at,
-                tossedBy: curiosity.tossedBy,
-              }
-            : { kind: curiosity.kind, at: curiosity.at },
-      ),
+            };
+          case "WISHING_WELL":
+            return {
+              kind: curiosity.kind,
+              at: curiosity.at,
+              tossedBy: curiosity.tossedBy,
+            };
+          case "MOON_GUN":
+            return {
+              kind: curiosity.kind,
+              at: curiosity.at,
+              lastFired: curiosity.lastFired,
+            };
+          case "GOLD_CLAIM":
+            return {
+              kind: curiosity.kind,
+              at: curiosity.at,
+              ownerId: curiosity.ownerId,
+              left: curiosity.left,
+            };
+          case "LOST_EXPEDITION":
+            return {
+              kind: curiosity.kind,
+              at: curiosity.at,
+              foundBy: curiosity.foundBy,
+            };
+          default:
+            return { kind: curiosity.kind, at: curiosity.at };
+        }
+      }),
     // The frozen sea (naval branch section 8.3): ice is public on an
     // explored tile, with its owner; the redesign (section 2.3): with its
     // crack and whether it is thick.

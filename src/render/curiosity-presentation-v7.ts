@@ -2,12 +2,18 @@ import {
   BIGFOOT_ALERT_RADIUS_V7,
   BIGFOOT_BOUNTY_V7,
   CAMP_RADIUS_V7,
+  EXPEDITION_COINS_V7,
   FOUNTAIN_HEAL_V7,
+  GOLD_CLAIM_COINS_V7,
+  GOLD_CLAIM_TOTAL_V7,
   MONSTER_BOUNTY_V7,
   MONSTER_REGENERATION_V7,
+  MOON_GUN_RANGE_V7,
   NEUTRAL_BOUNTIES_V7,
   NEUTRAL_MONSTER_ROLE_RULE_V7,
   NEUTRAL_ROLE_RULES_V7,
+  TESLA_ZAP_DAMAGE_V7,
+  TESLA_ZAP_RANGE_V7,
   WELL_COINS_V7,
   WELL_TOSS_COST_V7,
   WELL_VISION_RADIUS_V7,
@@ -15,6 +21,7 @@ import {
   guardCampKindV7,
   isDaemonBreedV7,
   isNeutralOwnerV7,
+  moonGunLoadedV7,
   neutralBreedOfV7,
   previewGateV7,
   previewMonsterV7,
@@ -41,6 +48,7 @@ import {
   type ArtSubjectV7,
   type CuriosityOverlayIdV7,
   type CuriosityRound2OverlayIdV7,
+  type CuriosityRound3OverlayIdV7,
 } from "../assets/chibi-art-v7";
 import { portraitSubjectV7 } from "../assets/chibi-ui-art-v7";
 import { glossaryEntryV7 } from "./unit-glossary-v7";
@@ -90,7 +98,11 @@ export const LAIR_LABEL_V7 = "Spider's lair";
  * curiosity kind of the view is its own overlay id.
  */
 export type CuriosityTileIdV7 =
-  CuriosityOverlayIdV7 | CuriosityRound2OverlayIdV7;
+  | CuriosityOverlayIdV7
+  | CuriosityRound2OverlayIdV7
+  // Round 3 (bead pulp_wars-737.20): the Tesla Tower, the Moon Gun, the
+  // Gold Claim and the Lost Expedition.
+  | CuriosityRound3OverlayIdV7;
 
 export const CURIOSITY_LABELS_V7: Readonly<Record<CuriosityTileIdV7, string>> =
   {
@@ -102,6 +114,10 @@ export const CURIOSITY_LABELS_V7: Readonly<Record<CuriosityTileIdV7, string>> =
     GRAVEYARD: "Graveyard",
     GATE: "Dimensional Gate",
     WISHING_WELL: "Wishing Well",
+    TESLA_TOWER: "Tesla Tower",
+    MOON_GUN: "Moon Gun",
+    GOLD_CLAIM: "Gold Claim",
+    LOST_EXPEDITION: "Lost Expedition",
   };
 
 export const BIGFOOT_LABEL_V7 = NEUTRAL_ROLE_RULES_V7.BIGFOOT.label;
@@ -119,6 +135,12 @@ export const CURIOSITY_RULES_V7: Readonly<Record<CuriosityTileIdV7, string>> = {
   GATE: "A unit that steps onto a gate comes out of the other one, shoving aside any unit standing there.",
   WISHING_WELL:
     "Once per match, each player may have a unit standing on the Well toss a Coin into it for a small surprise.",
+  // Round 3 (RULESET_7_CURIOSITIES_ROUND_3.md section 1).
+  TESLA_TOWER: `A unit standing on the Tesla Tower may zap an enemy within ${TESLA_ZAP_RANGE_V7} of it for ${TESLA_ZAP_DAMAGE_V7} damage instead of attacking.`,
+  MOON_GUN: `A unit standing on the Moon Gun may be fired to any empty land tile within ${MOON_GUN_RANGE_V7} of it; the Gun fires once a turn.`,
+  GOLD_CLAIM: `A unit that ends a Move on the Gold Claim stakes it for its owner; the Claim pays its owner ${GOLD_CLAIM_COINS_V7} Coins each turn until its ${GOLD_CLAIM_TOTAL_V7} Coins run out.`,
+  LOST_EXPEDITION:
+    "The first unit that ends a Move on the Lost Expedition finds its notes: its owner's next technology costs nothing.",
 };
 
 /** Bigfoot's one sentence (section 23). */
@@ -129,7 +151,7 @@ export const CURIOSITIES_OPTION_RULE_V7 =
   "Rare. Switch them off with Curiosities when you set up a game.";
 /** The setup checkbox's hint (section 3). */
 export const CURIOSITIES_SETUP_HINT_V7 =
-  "Rare sights on the map: monsters, camps, gates, a well, and more.";
+  "Rare sights on the map: monsters, camps, gates, a moon gun, and more.";
 
 export const NEUTRAL_TURN_BANNER_V7 = "The wilds stir";
 export const PROVOKED_LABEL_V7 = "Provoked";
@@ -821,6 +843,91 @@ export function wellOutcomeTextV7(
   }
 }
 
+// ------------------------------------------------------------ Round 3 ---
+
+/** Round 3 (section 12.1): the Tesla Tower's command, its tooltip and pick. */
+export const ZAP_LABEL_V7 = "Zap";
+export const ZAP_TOOLTIP_V7 = `Zap an enemy within ${TESLA_ZAP_RANGE_V7} of the ${CURIOSITY_LABELS_V7.TESLA_TOWER} for ${TESLA_ZAP_DAMAGE_V7} damage instead of attacking. It is never answered`;
+export const ZAP_PICK_V7 = "Pick an enemy to zap";
+/** Round 3 (section 12.1): the Moon Gun's command, its tooltip and pick. */
+export const FIRE_MOON_GUN_LABEL_V7 = "Fire";
+export const FIRE_MOON_GUN_TOOLTIP_V7 = `Fire this unit from the ${CURIOSITY_LABELS_V7.MOON_GUN} to an empty land tile within ${MOON_GUN_RANGE_V7}. It lands spent: no attack or capture until your next turn`;
+export const FIRE_MOON_GUN_PICK_V7 = "Pick where to land";
+/** Round 3 (section 12.1): a Move target that stakes or finds. */
+export const STAKE_LABEL_V7 = "Stake";
+export const FIND_LABEL_V7 = "Find";
+export const STAKE_SENTENCE_V7 = `Ends on the ${CURIOSITY_LABELS_V7.GOLD_CLAIM}: it is staked for you and pays you ${GOLD_CLAIM_COINS_V7} Coins each turn.`;
+export const FIND_SENTENCE_V7 = `Ends on the ${CURIOSITY_LABELS_V7.LOST_EXPEDITION}: you find its notes and your next technology costs nothing.`;
+/** The label a Zap target wears: "Zap −4", "Zap −4 · KO". */
+export function zapTargetLabelV7(hit: {
+  readonly damage: number;
+  readonly shieldDamage: number;
+  readonly kills: boolean;
+}): string {
+  const shield = hit.shieldDamage > 0 ? ` · Shield −${hit.shieldDamage}` : "";
+  return `Zap −${hit.damage}${shield}${hit.kills ? " · KO" : ""}`;
+}
+
+/**
+ * Round 3 (section 12.1): the tile dock's status line of a round-3
+ * curiosity: the Gun loaded or reloading, the Claim's owner and Coins left
+ * (or played out), the Expedition found or not. Null for any other tile.
+ */
+export function curiosityStatusLineV7(
+  view: PlayerViewV7,
+  at: CoordV7,
+): string | null {
+  const curiosity = view.curiosities.find((entry) => same(entry.at, at));
+  if (curiosity === undefined) return null;
+  switch (curiosity.kind) {
+    case "TESLA_TOWER":
+      return `Stand a unit on it to zap an enemy within ${TESLA_ZAP_RANGE_V7} for ${TESLA_ZAP_DAMAGE_V7}.`;
+    case "MOON_GUN":
+      return `${moonGunLoadedV7(curiosity, view.round, view.viewer.id) ? "Loaded" : "Reloading"} · Stand a unit on it to fire it up to ${MOON_GUN_RANGE_V7} tiles.`;
+    case "GOLD_CLAIM":
+      if (curiosity.left <= 0) return "Played out";
+      if (curiosity.ownerId === null)
+        return `Unclaimed · ${curiosity.left} Coins left`;
+      return curiosity.ownerId === view.viewer.id
+        ? `Yours · ${curiosity.left} Coins left`
+        : `${capitalized(playerPossessiveV7(view, curiosity.ownerId))} · ${curiosity.left} Coins left`;
+    case "LOST_EXPEDITION":
+      return curiosity.foundBy === null
+        ? "The first to arrive gets a free technology."
+        : curiosity.foundBy === view.viewer.id
+          ? "Notes taken by you: your next technology is free."
+          : `Notes taken by ${playerObjectV7(view, curiosity.foundBy)}.`;
+    default:
+      return null;
+  }
+}
+
+/**
+ * Round 3 (section 12.1): how a round-3 overlay is drawn: a Claim's
+ * pennant in its owner's colour, and dimmed when it is played out or (the
+ * Expedition) found.
+ */
+export function curiosityLookV7(
+  view: PlayerViewV7,
+  at: CoordV7,
+): { readonly dimmed: boolean; readonly ownerId: number | null } | null {
+  const curiosity = view.curiosities.find((entry) => same(entry.at, at));
+  if (curiosity?.kind === "GOLD_CLAIM")
+    return { dimmed: curiosity.left <= 0, ownerId: curiosity.ownerId };
+  if (curiosity?.kind === "LOST_EXPEDITION")
+    return { dimmed: curiosity.foundBy !== null, ownerId: null };
+  return null;
+}
+
+/** Whether the viewer holds the Lost Expedition's notes (section 12.1). */
+export function viewerHoldsExpeditionNotesV7(view: PlayerViewV7): boolean {
+  return view.curiosities.some(
+    (curiosity) =>
+      curiosity.kind === "LOST_EXPEDITION" &&
+      curiosity.foundBy === view.viewer.id,
+  );
+}
+
 /**
  * Section 12.1 Help (round 2, section 34.1): the sentences of every
  * curiosity, the bounty, and the setup option, each with its legend icon.
@@ -854,6 +961,14 @@ export function curiosityHelpRulesV7(): readonly {
       name: CURIOSITY_LABELS_V7.WISHING_WELL,
       rule: CURIOSITY_RULES_V7.WISHING_WELL,
     },
+    // Round 3 (bead pulp_wars-737.20).
+    ...(
+      ["TESLA_TOWER", "MOON_GUN", "GOLD_CLAIM", "LOST_EXPEDITION"] as const
+    ).map((id) => ({
+      icon: id,
+      name: CURIOSITY_LABELS_V7[id],
+      rule: CURIOSITY_RULES_V7[id],
+    })),
     { icon: "BOUNTY", name: "Bounty", rule: SPIDER_BOUNTY_RULE_V7 },
     { icon: null, name: "Setup", rule: CURIOSITIES_OPTION_RULE_V7 },
   ];
@@ -934,6 +1049,56 @@ export function curiosityBoundaryNoticeV7(
     } else if (event.kind === "COIN_TOSSED") {
       if (event.playerId === viewerId) toast = true;
       parts.push(wellOutcomeTextV7(after, event, unitById(event.unitId)));
+      // Round 3 (bead pulp_wars-737.20, section 12.1).
+    } else if (event.kind === "TESLA_ZAPPED") {
+      const unit = unitById(event.unitId);
+      const target = unitById(event.targetUnitId);
+      if (target?.ownerId === viewerId || event.playerId === viewerId)
+        toast = target?.ownerId === viewerId;
+      parts.push(
+        `${unit === undefined ? "A unit" : capitalized(ownedUnitName(after, unit))} zapped ${target === undefined ? "a unit" : isNeutralOwnerV7(target.ownerId) ? `the ${neutralName(target.id)}` : ownedUnitName(after, target)} (−${event.damage + event.shieldDamage})${event.hpAfter === 0 ? ", killing it" : ""}`,
+      );
+    } else if (event.kind === "MOON_GUN_FIRED") {
+      const unit = unitById(event.unitId);
+      parts.push(
+        `${unit === undefined ? "A unit" : capitalized(ownedUnitName(after, unit))} was fired from the ${CURIOSITY_LABELS_V7.MOON_GUN}`,
+      );
+    } else if (event.kind === "GOLD_CLAIM_STAKED") {
+      if (event.playerId === viewerId) {
+        toast = true;
+        parts.push(`${CURIOSITY_LABELS_V7.GOLD_CLAIM} staked`);
+      } else
+        parts.push(
+          event.previousOwnerId === viewerId
+            ? `${playerSubjectV7(after, event.playerId)} took your ${CURIOSITY_LABELS_V7.GOLD_CLAIM}`
+            : `${playerSubjectV7(after, event.playerId)} staked the ${CURIOSITY_LABELS_V7.GOLD_CLAIM}`,
+        );
+    } else if (event.kind === "GOLD_CLAIM_PAID") {
+      if (event.playerId !== viewerId) continue;
+      parts.push(
+        event.left === 0
+          ? `+${event.coins} Coins (${CURIOSITY_LABELS_V7.GOLD_CLAIM}, played out)`
+          : `+${event.coins} Coins (${CURIOSITY_LABELS_V7.GOLD_CLAIM})`,
+      );
+    } else if (event.kind === "EXPEDITION_FOUND") {
+      if (event.playerId === viewerId) {
+        toast = true;
+        parts.push(
+          event.notes
+            ? "Expedition notes: your next technology is free"
+            : `${CURIOSITY_LABELS_V7.LOST_EXPEDITION}: +${EXPEDITION_COINS_V7} Coins`,
+        );
+      } else
+        parts.push(
+          `${playerSubjectV7(after, event.playerId)} found the ${CURIOSITY_LABELS_V7.LOST_EXPEDITION}`,
+        );
+    } else if (event.kind === "EXPEDITION_NOTES_USED") {
+      if (event.playerId === viewerId)
+        parts.push("Expedition notes used: that technology was free");
+      else
+        parts.push(
+          `${playerSubjectV7(after, event.playerId)} used the Expedition notes`,
+        );
     } else if (event.kind === "UNIT_DIED" && breeds.has(event.unitId)) {
       toast = true;
       const bounty = events.find(

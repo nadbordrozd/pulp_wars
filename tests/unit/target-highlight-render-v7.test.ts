@@ -120,6 +120,9 @@ const EVERY_FAMILY: Readonly<
   SWITCHEROO: "ATTACK",
   // The Cult redesign (`pulp_wars-mch9.34`): the Stargazer a cultist joins.
   JOIN_CHANT: "SUPPORT",
+  // Map curiosities round 3 (bead pulp_wars-737.20).
+  ZAP: "ATTACK",
+  MOON_GUN: "MOVE",
 };
 
 describe("target highlight vocabulary", () => {

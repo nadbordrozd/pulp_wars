@@ -5,7 +5,7 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r102" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r103" as const;
 /**
  * Every earlier Ruleset 7 identity, oldest first. Readers report these as
  * incompatible (never invalid). An identity bump must append the outgoing
@@ -113,8 +113,9 @@ export const PRIOR_RULESET_7_IDS = Object.freeze([
   "pulp-wars-poc-7r99",
   "pulp-wars-poc-7r100",
   "pulp-wars-poc-7r101",
+  "pulp-wars-poc-7r102",
 ] as const);
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r102.current" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r103.current" as const;
 /**
  * The map generator a setup names (docs/product/RULESET_7_MAP_SCALE.md
  * section 8.8): `V4` is the many-seats generator of `pulp_wars-ykw.3`
@@ -417,6 +418,11 @@ export const COMMAND_KIND_ORDER_V7 = Object.freeze([
   // The Cult redesign (`pulp_wars-mch9.34`, RULESET_7_CULT_REDESIGN.md
   // section 8.2): a robed cultist joins a pending Star-fall's chant.
   "JOIN_CHANT",
+  // Map curiosities round 3 (`pulp_wars-737.20`,
+  // RULESET_7_CURIOSITIES_ROUND_3.md sections 4.1 and 5.1): a unit on the
+  // Tesla Tower zaps an enemy; a unit on the Moon Gun is fired.
+  "ZAP",
+  "FIRE_MOON_GUN",
   "CAPTURE",
   "PROMOTE",
   "PILLAGE",
@@ -499,6 +505,9 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   "MONSTER_REGENERATED",
   "SHIELDS_RECHARGED",
   "INCOME_AWARDED",
+  // Map curiosities round 3 (section 6.2): an owned Gold Claim paid its
+  // owner at Start Turn, right after the income.
+  "GOLD_CLAIM_PAID",
   // The Candy revision: the Crash step and the Crumbs countdown of an End
   // Turn.
   "UNITS_CRASHED",
@@ -510,6 +519,9 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   "NEUTRAL_TURN_STARTED",
   "NEUTRAL_TURN_ENDED",
   "TECH_RESEARCHED",
+  // Map curiosities round 3 (section 7.2): the Lost Expedition's notes made
+  // a research free and left the board.
+  "EXPEDITION_NOTES_USED",
   "FISH_HARVESTED",
   "PEARLS_GATHERED",
   "PORT_BUILT",
@@ -551,6 +563,8 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   "UNIT_EMBARKED",
   "UNIT_DISEMBARKED",
   "UNIT_BEAMED",
+  // Map curiosities round 3 (section 5.2): a unit fired from the Moon Gun.
+  "MOON_GUN_FIRED",
   "UNIT_REWARD_GRANTED",
   "UNIT_SPAWN_DISPLACED",
   "UNITS_RALLIED",
@@ -610,6 +624,9 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   "TILES_GLAZED",
   "TILES_REVEALED",
   "COMBAT_RESOLVED",
+  // Map curiosities round 3 (section 4.2): a unit on the Tesla Tower zapped
+  // an enemy.
+  "TESLA_ZAPPED",
   // The Dwarf revision: a Gyrocopter's bombing run.
   "UNIT_BOMBED",
   // Dwarf crowd control: a Whirligig's Whirl; an attack on a Barricade.
@@ -681,6 +698,10 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   "COIN_TOSSED",
   // Map curiosities (section 6): a Move ended on a Shrine promoted the unit.
   "SHRINE_CLAIMED",
+  // Map curiosities round 3 (sections 6.1 and 7.1): a Move ended on the
+  // Gold Claim staked it; a Move ended on the Lost Expedition found it.
+  "GOLD_CLAIM_STAKED",
+  "EXPEDITION_FOUND",
   "UNIT_PROMOTED",
   "UNIT_GREW",
   "UNIT_DIED",
@@ -960,12 +981,19 @@ export const CURIOSITY_KINDS_V7 = Object.freeze([
   "GRAVEYARD",
   "GATE",
   "WISHING_WELL",
+  // Round 3 (`pulp_wars-737.20`, RULESET_7_CURIOSITIES_ROUND_3.md sections
+  // 4 to 7): the Tesla Tower, the Moon Gun, the Gold Claim, and the Lost
+  // Expedition.
+  "TESLA_TOWER",
+  "MOON_GUN",
+  "GOLD_CLAIM",
+  "LOST_EXPEDITION",
 ] as const);
 export type CuriosityKindV7 = (typeof CURIOSITY_KINDS_V7)[number];
 /** The tile markers that carry nothing but their kind and tile. */
 export type PlainCuriosityKindV7 = Exclude<
   CuriosityKindV7,
-  "GATE" | "WISHING_WELL"
+  "GATE" | "WISHING_WELL" | "MOON_GUN" | "GOLD_CLAIM" | "LOST_EXPEDITION"
 >;
 
 /**
@@ -992,6 +1020,37 @@ export type CuriosityV7 =
       readonly at: CoordV7;
       /** The seats that tossed a Coin, sorted (once per player per match). */
       readonly tossedBy: readonly PlayerId[];
+    }
+  | {
+      /**
+       * Round 3 (section 5.3): the Moon Gun and the player-turn it last
+       * fired in (`round` and the firing seat), or null.
+       */
+      readonly kind: "MOON_GUN";
+      readonly at: CoordV7;
+      readonly lastFired: {
+        readonly round: number;
+        readonly playerId: PlayerId;
+      } | null;
+    }
+  | {
+      /**
+       * Round 3 (section 6.3): the Gold Claim, its owner (null while
+       * unclaimed or played out) and the Coins `left` in it (0 to 30).
+       */
+      readonly kind: "GOLD_CLAIM";
+      readonly at: CoordV7;
+      readonly ownerId: PlayerId | null;
+      readonly left: number;
+    }
+  | {
+      /**
+       * Round 3 (section 7.3): the Lost Expedition, and the seat whose unit
+       * found it and holds its notes (null while unfound).
+       */
+      readonly kind: "LOST_EXPEDITION";
+      readonly at: CoordV7;
+      readonly foundBy: PlayerId | null;
     };
 
 /**

@@ -113,6 +113,13 @@ const SUPPORT_SOUNDS: Readonly<Record<SupportEffectV7, SoundIdV1>> = {
   // Map curiosities round 2: the gate burst and the Coin in the Well.
   GATE: "special.sparkle",
   WELL: "economy.coin",
+  // Map curiosities round 3 (`pulp_wars-737.20`): the Tesla Tower's zap,
+  // the Moon Gun's blast and the unit's landing, and the Expedition's
+  // find (the treasure; its sparkle follows the boundary).
+  ZAP: "special.zap",
+  MOON_GUN: "attack.cannon",
+  MOON_GUN_LANDING: "impact.heavy",
+  EXPEDITION: "economy.treasure",
   // The Vampire and Banshee rework (`pulp_wars-iqhp`): the bats' flutter,
   // the Feast's drain, and the Terror's dark sting.
   BAT_SWIRL: "special.puff",
@@ -759,6 +766,18 @@ export function soundCuesForBoundaryV7(
         break;
       case "TREASURE_CAPTURED":
         if (event.playerId === viewer) end.push("economy.treasure");
+        break;
+      // Map curiosities round 3 (`pulp_wars-737.20`): a Claim staked (the
+      // treasure), its payout (a coin), and the Expedition's notes found
+      // (a sparkle after the treasure of its find).
+      case "GOLD_CLAIM_STAKED":
+        if (event.playerId === viewer) end.push("economy.treasure");
+        break;
+      case "GOLD_CLAIM_PAID":
+        if (event.playerId === viewer) end.push("economy.coin");
+        break;
+      case "EXPEDITION_FOUND":
+        if (event.playerId === viewer) end.push("special.sparkle");
         break;
       case "SPOILS_AWARDED":
       case "PLUNDER_AWARDED":

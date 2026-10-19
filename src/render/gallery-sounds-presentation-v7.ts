@@ -334,6 +334,11 @@ const NOTES: Readonly<Partial<Record<SoundIdV1, SoundNoteV7>>> = {
     when: "A unit cracks ice",
     picture: icon("ice-pick"),
   },
+  // Map curiosities round 3 (`pulp_wars-737.20`): the Tesla Tower's zap.
+  "special.zap": {
+    when: "Tesla Tower zaps",
+    picture: icon("range"),
+  },
   "impact.splat": {
     when: "Pie or acid lands",
     picture: unit("CATAPULT", "CANDY"),

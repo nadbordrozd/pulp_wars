@@ -9,6 +9,7 @@ import {
   CURIOSITY_LABELS_V7,
   GATE_PARTNER_LABEL_V7,
   campAtV7,
+  curiosityLookV7,
   gatePartnerV7,
   matchHasCuriositiesV7,
   monsterPreviewsV7,
@@ -21,6 +22,8 @@ import type {
 } from "./board-renderer-v7";
 import type { TileEdge } from "./geometry";
 import { BOARD_LABEL_FONT_FAMILY_V7 } from "./board-label-font-v7";
+import { addCuriosityRangeEntriesV7 } from "./curiosity-board-plan-v7";
+import { factionColourV7 } from "./faction-colours-v7";
 
 /**
  * Map curiosities on the board (bead pulp_wars-737.6,
@@ -97,6 +100,14 @@ export function addCuriosityEntriesV7(
     });
   for (const curiosity of view.curiosities) {
     const kind = curiosity.kind;
+    // Round 3 (bead pulp_wars-737.20, section 12.1): a staked Claim flies
+    // a pennant in its owner's colour; a played-out Claim and a found
+    // Expedition are drawn dimmed.
+    const look = curiosityLookV7(view, curiosity.at);
+    const owner =
+      look?.ownerId === null || look === null
+        ? undefined
+        : view.players.find((player) => player.id === look.ownerId);
     entries.push({
       key: `curiosity:${kind}:${key(curiosity.at)}`,
       kind: "CURIOSITY",
@@ -105,6 +116,10 @@ export function addCuriosityEntriesV7(
       artSubject: `CURIOSITY:${kind}`,
       curiosity: kind,
       label: CURIOSITY_LABELS_V7[kind],
+      ...(owner === undefined
+        ? {}
+        : { ownerColor: factionColourV7(owner.faction) }),
+      ...(look?.dimmed === true ? { curiosityDimmed: true as const } : {}),
     });
   }
   if (selection === null || selection.kind === "CITY") return;
@@ -145,6 +160,10 @@ export function addCuriosityEntriesV7(
         });
       }
   };
+  // Round 3 (bead pulp_wars-737.20): a selected Tesla Tower outlines its
+  // zap range and a selected Moon Gun its landing range.
+  if (selection.kind === "TILE")
+    addCuriosityRangeEntriesV7(entries, view, selection.at);
   // A selected gate (its tile) marks its partner (section 34.1).
   if (selection.kind === "TILE") {
     const partner = gatePartnerV7(view, selection.at);
@@ -272,7 +291,17 @@ const DRIFTWOOD = "#8c7a66";
  * Grave's corner marker.
  */
 export const CURIOSITY_CORNER_BADGE_KINDS_V7: ReadonlySet<CuriosityTileIdV7> =
-  new Set(["WISHING_WELL", "FOUNTAIN", "SHRINE"]);
+  new Set([
+    "WISHING_WELL",
+    "FOUNTAIN",
+    "SHRINE",
+    // Round 3 (bead pulp_wars-737.20): a unit holds the Tower and the Gun
+    // to use them, and stands on the Claim and the camp it staked or found.
+    "TESLA_TOWER",
+    "MOON_GUN",
+    "GOLD_CLAIM",
+    "LOST_EXPEDITION",
+  ]);
 
 /** The corner badge, in world units from the cell's centre (128 = a cell). */
 export const CURIOSITY_CORNER_BADGE_FRAME_V7 = {
@@ -413,6 +442,14 @@ export function drawCuriosityMarkerV7(
     drawGateMarker(context, x, y, u, highContrast);
   } else if (id === "WISHING_WELL") {
     drawWellMarker(context, x, y, u, highContrast);
+  } else if (id === "TESLA_TOWER") {
+    drawTeslaMarker(context, x, y, u, ink, highContrast);
+  } else if (id === "MOON_GUN") {
+    drawMoonGunMarker(context, x, y, u, highContrast);
+  } else if (id === "GOLD_CLAIM") {
+    drawClaimMarker(context, x, y, u, ink, highContrast);
+  } else if (id === "LOST_EXPEDITION") {
+    drawExpeditionMarker(context, x, y, u, highContrast);
   } else {
     // A leaning broken mast with a torn sail over hull ribs: the whole
     // wreck lists, its stern under the water.
@@ -668,6 +705,220 @@ function drawWellMarker(
   context.arc(x + 8 * u, y + 8 * u, 4 * u, 0, Math.PI * 2);
   context.fill();
   context.stroke();
+}
+
+const RUST = "#8a4b33";
+const COPPER = "#b06a3a";
+const IRON = "#45464c";
+const BRONZE = "#9a7a4a";
+const KHAKI = "#b9a578";
+const NUGGET = "#e8b947";
+
+/**
+ * Round 3 (bead pulp_wars-737.20, section 12.1): the Tesla Tower's code
+ * marker, a rusty lattice tower with a copper ball and a white spark.
+ */
+function drawTeslaMarker(
+  context: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  u: number,
+  ink: string,
+  highContrast: boolean,
+): void {
+  const base = y + 40 * u;
+  const top = y - 26 * u;
+  context.fillStyle = highContrast ? "#ffffff" : STONE;
+  context.fillRect(x - 18 * u, base - 10 * u, 36 * u, 10 * u);
+  context.strokeRect(x - 18 * u, base - 10 * u, 36 * u, 10 * u);
+  context.strokeStyle = highContrast ? "#000000" : RUST;
+  context.lineWidth = Math.max(1, 4 * u);
+  context.beginPath();
+  context.moveTo(x - 14 * u, base - 10 * u);
+  context.lineTo(x - 5 * u, top);
+  context.moveTo(x + 14 * u, base - 10 * u);
+  context.lineTo(x + 5 * u, top);
+  // The lattice.
+  for (const [from, to] of [
+    [0, 0.35],
+    [0.35, 0.7],
+    [0.7, 1],
+  ] as const) {
+    const ya = base - 10 * u - (base - 10 * u - top) * from;
+    const yb = base - 10 * u - (base - 10 * u - top) * to;
+    const wa = 14 - 9 * from;
+    const wb = 14 - 9 * to;
+    context.moveTo(x - wa * u, ya);
+    context.lineTo(x + wb * u, yb);
+    context.moveTo(x + wa * u, ya);
+    context.lineTo(x - wb * u, yb);
+  }
+  context.stroke();
+  context.strokeStyle = ink;
+  context.lineWidth = Math.max(1, 3 * u);
+  context.fillStyle = highContrast ? "#ffffff" : COPPER;
+  context.beginPath();
+  context.arc(x, top - 6 * u, 11 * u, 0, Math.PI * 2);
+  context.fill();
+  context.stroke();
+  // A white zig-zag spark.
+  context.strokeStyle = highContrast ? "#000000" : "#ffffff";
+  context.lineWidth = Math.max(1, 3 * u);
+  context.beginPath();
+  context.moveTo(x + 12 * u, top - 14 * u);
+  context.lineTo(x + 22 * u, top - 20 * u);
+  context.lineTo(x + 18 * u, top - 26 * u);
+  context.lineTo(x + 30 * u, top - 34 * u);
+  context.stroke();
+}
+
+/**
+ * The Moon Gun's code marker: a fat dark iron barrel cocked at the sky on
+ * a stone mount, with bronze bands.
+ */
+function drawMoonGunMarker(
+  context: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  u: number,
+  highContrast: boolean,
+): void {
+  context.fillStyle = highContrast ? "#ffffff" : STONE;
+  context.beginPath();
+  context.ellipse(x - 4 * u, y + 30 * u, 34 * u, 12 * u, 0, 0, Math.PI * 2);
+  context.fill();
+  context.stroke();
+  context.save();
+  context.translate(x - 6 * u, y + 22 * u);
+  context.rotate(-0.85);
+  context.fillStyle = highContrast ? "#ffffff" : IRON;
+  context.beginPath();
+  context.roundRect(-8 * u, -16 * u, 70 * u, 32 * u, 10 * u);
+  context.fill();
+  context.stroke();
+  context.fillStyle = highContrast ? "#000000" : BRONZE;
+  for (const band of [12, 34, 54])
+    context.fillRect(band * u, -16 * u, 5 * u, 32 * u);
+  context.fillStyle = highContrast ? "#000000" : INK;
+  context.beginPath();
+  context.ellipse(62 * u, 0, 5 * u, 12 * u, 0, 0, Math.PI * 2);
+  context.fill();
+  context.restore();
+}
+
+/**
+ * The Gold Claim's code marker: a pick and a pan of gold nuggets.
+ */
+function drawClaimMarker(
+  context: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  u: number,
+  ink: string,
+  highContrast: boolean,
+): void {
+  // The pan.
+  context.fillStyle = highContrast ? "#ffffff" : STONE_SHADE;
+  context.beginPath();
+  context.ellipse(x + 6 * u, y + 24 * u, 32 * u, 13 * u, 0, 0, Math.PI * 2);
+  context.fill();
+  context.stroke();
+  context.fillStyle = highContrast ? "#000000" : NUGGET;
+  for (const [dx, dy, r] of [
+    [-6, 20, 6],
+    [6, 18, 7],
+    [18, 22, 5],
+    [2, 27, 5],
+  ] as const) {
+    context.beginPath();
+    context.arc(x + dx * u, y + dy * u, r * u, 0, Math.PI * 2);
+    context.fill();
+    context.stroke();
+  }
+  // The pick: a handle and a curved head.
+  context.save();
+  context.strokeStyle = ink;
+  context.lineWidth = Math.max(2, 8 * u);
+  context.beginPath();
+  context.moveTo(x - 30 * u, y + 20 * u);
+  context.lineTo(x - 2 * u, y - 30 * u);
+  context.stroke();
+  context.strokeStyle = highContrast ? "#ffffff" : DRIFTWOOD;
+  context.lineWidth = Math.max(1, 4 * u);
+  context.stroke();
+  context.strokeStyle = ink;
+  context.lineWidth = Math.max(2, 7 * u);
+  context.beginPath();
+  context.moveTo(x - 20 * u, y - 34 * u);
+  context.quadraticCurveTo(x - 2 * u, y - 40 * u, x + 16 * u, y - 24 * u);
+  context.stroke();
+  context.strokeStyle = highContrast ? "#ffffff" : STONE;
+  context.lineWidth = Math.max(1, 3.5 * u);
+  context.stroke();
+  context.restore();
+}
+
+/**
+ * The Lost Expedition's code marker: a khaki canvas tent with a dark door.
+ */
+function drawExpeditionMarker(
+  context: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  u: number,
+  highContrast: boolean,
+): void {
+  context.fillStyle = highContrast ? "#ffffff" : KHAKI;
+  context.beginPath();
+  context.moveTo(x - 40 * u, y + 34 * u);
+  context.lineTo(x, y - 30 * u);
+  context.lineTo(x + 40 * u, y + 34 * u);
+  context.closePath();
+  context.fill();
+  context.stroke();
+  context.fillStyle = highContrast ? "#000000" : "#4a3a28";
+  context.beginPath();
+  context.moveTo(x - 12 * u, y + 34 * u);
+  context.lineTo(x, y + 6 * u);
+  context.lineTo(x + 12 * u, y + 34 * u);
+  context.closePath();
+  context.fill();
+  context.stroke();
+}
+
+/**
+ * Round 3 (section 12.1): the pennant of a staked Gold Claim, a small
+ * code-drawn flag on a pole in its owner's colour in the cell's upper left.
+ */
+export function drawClaimPennantV7(
+  context: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  zoom: number,
+  colour: string,
+  highContrast = false,
+): void {
+  const u = zoom;
+  const left = x - 40 * u;
+  const top = y - 52 * u;
+  context.save();
+  context.lineJoin = "round";
+  context.lineCap = "round";
+  context.strokeStyle = highContrast ? "#000000" : INK;
+  context.lineWidth = Math.max(1, 3 * u);
+  context.beginPath();
+  context.moveTo(left, top);
+  context.lineTo(left, top + 44 * u);
+  context.stroke();
+  context.fillStyle = colour;
+  context.beginPath();
+  context.moveTo(left, top);
+  context.lineTo(left + 26 * u, top + 8 * u);
+  context.lineTo(left, top + 16 * u);
+  context.closePath();
+  context.fill();
+  context.stroke();
+  context.restore();
 }
 
 /**

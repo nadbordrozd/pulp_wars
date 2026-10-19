@@ -670,6 +670,19 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     // Map curiosities round 2: the toss's actor, a gate traversal's mover
     // and exit occupant, and a dead neutral unit's breed are on the board.
     "src/engine/v7/reducer.ts::applyTossCoin": "BOARD",
+    // Map curiosities round 3 (`pulp_wars-737.20`): the zapper and its
+    // target, the fired unit, a landing's occupant, and a Move's mover are
+    // on the board (a burrowed unit is never on a Tower or a Gun, never a
+    // zap target, and never stands on a landing tile: a mound blocks it).
+    "src/engine/v7/reducer.ts::applyZap": "BOARD",
+    "src/engine/v7/reducer.ts::applyFireMoonGun": "BOARD",
+    "src/engine/v7/query.ts::publicZapTargetsV7": "BOARD",
+    "src/engine/v7/query.ts::previewZapV7": "BOARD",
+    "src/engine/v7/query.ts::previewMoonGunV7": "BOARD",
+    "src/engine/v7/query.ts::queryMoonGunLandingsV7": "BOARD",
+    "src/engine/v7/query.ts::queryCuriosityMoveEffectV7": "BOARD",
+    "src/render/canvas/curiosity-board-plan-v7.ts::curiosityPickTargetsV7":
+      "BOARD",
     "src/engine/v7/reducer.ts::neutralVictimBreedV7": "BOARD",
     "src/engine/v7/reducer.ts::resolveGateTraversalV7": "BOARD",
     "src/engine/v7/reducer.ts::evaluateAchievementsV7": "BOARD",

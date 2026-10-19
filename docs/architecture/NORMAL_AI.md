@@ -7154,6 +7154,71 @@ once, with the Coins, the reach, the preference, and the units not sent.
 No match was played (the user's rule); the simulation pins that may move
 are listed in section 41 of the spec.
 
+### Map curiosities, round 3 (`pulp_wars-737.20`)
+
+[Section 11 of the round-3 design](../product/RULESET_7_CURIOSITIES_ROUND_3.md#11-normal-ai)
+for the four land kinds (bead A, `pulp-wars-poc-7r103`; the Sea Serpent's
+rules come with bead B). The facts and errands are in
+`src/ai/v7-curiosities.ts` (`towers`, `guns`, `claims`, `expeditions` in
+`curiosityFactsV7`; errand kinds `TESLA`, `MOON_GUN`, `CLAIM`,
+`EXPEDITION`, the Moon Gun's with its `landing`); the scores of `ZAP` and
+`FIRE_MOON_GUN` and the Tower holder's stay are in `src/ai/v7.ts`. Each
+rule runs only when the view has its curiosity, so a match without one
+decides as before. Every errand skips a sole city defender, a unit with an
+offered attack on a seat's unit, and a unit whose visible danger on the
+tile is its HP or more.
+
+**Tesla Tower: hold it when there is something to zap.** While a visible
+hostile unit (a seat's, or a neutral one) stands within
+`TESLA_WATCH_RADIUS_V7` (4) of a free visible Tower, the nearest own land
+unit within `TESLA_ERRAND_STEPS_V7` (4) route steps walks onto it
+(`TESLA_ARRIVE_PRIORITY_V7` 952, above the Well; a Move closer has the
+routine 725). The unit on the Tower makes no routine Move (735 or less)
+while there is something to zap. A `ZAP` is scored like an unanswered
+ranged attack from `previewZapV7`: priority 1280 for a kill of a unit that
+threatens the seat, 1180 for another kill, 1240 for a hit on a threat,
+900 otherwise; immediate value 20 per kill plus 10 per damage plus the
+bounty; strategic value the target's value (with 4 times the bounty) on a
+kill, else its share by damage. A neutral unit is zapped only for the
+kill (a hit provokes it). `TESLA_ZAP_DAMAGE_FOR_POLICY_V7` (4) is pinned to
+the engine.
+
+**Moon Gun: a shortcut, like the gates.** A unit with a campaign goal
+(not `EXPLORE`, its tile explored) takes the Gun when walking to the Gun,
+firing to the legal landing nearest the goal, and walking on is at least
+`MOON_GUN_TURNS_SAVED_V7` (3) turns shorter than walking, or the only
+route. The landing must have visible danger below the unit's HP and lie on
+no neutral unit's provoke tiles. Never a scout, a sole defender, or a wave
+that forms at home (`campaignHoldsMoveV7`). The Move onto the Gun has
+`MOON_GUN_ARRIVE_PRIORITY_V7` (728), the shot to the errand's landing
+`MOON_GUN_FIRE_PRIORITY_V7` (729), the gate traversal tier; no other
+`FIRE_MOON_GUN` is a candidate.
+
+**Gold Claim: stake it like a chest.** The nearest own land unit within
+`CLAIM_ERRAND_STEPS_V7` (6) route steps goes for a visible Claim that is
+not played out and is neither its seat's nor an ally's; the Move that
+stakes it has the chest tier (`CURIOSITY_CLAIM_PRIORITY_V7`, 1330) and a
+Move closer the routine 725. A Move onto a Claim is scored at its stake.
+
+**Lost Expedition: a race, like the Shrine.** The nearest own land unit
+within `EXPEDITION_ERRAND_STEPS_V7` (6) route steps, any role, goes for an
+unfound visible Expedition (find 1330, approach 725). The research picker
+is unchanged: with notes in hand the seat's ordinary next pick is offered
+at price 0, so it is researched even with no Coins.
+
+**Tests** (`tests/unit/ruleset-v7-curiosities-round3-ai.test.ts`,
+hand-built boards on the 20 x 20 round-3 arena): "pins the policy's
+copies and the errand bounds"; "knows the Towers, Guns, stakeable Claims,
+and unfound Expeditions"; "decides as before on a board without round-3
+curiosities"; "walks the nearest free unit onto the Tower while an enemy
+is within 4"; "holds the Tower (no routine Move) and zaps an enemy in
+range"; "walks onto the Gun when the shot saves 3 turns, and fires toward
+the goal"; "does not take the Gun when walking is about as fast"; "never
+lands where the visible enemies would kill it"; "stakes a Claim like a
+chest and walks toward one from farther away"; "races for an unfound
+Expedition, any role"; "researches with the notes in hand even with no
+Coins". No match was played (the user's rule).
+
 ### Curiosity measurements
 
 A small check, as the user asked (no balance testing): scratch harnesses at

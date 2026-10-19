@@ -1,11 +1,13 @@
 {
   "beads": [
     "pulp_wars-737.5",
-    "pulp_wars-737.13"
+    "pulp_wars-737.13",
+    "pulp_wars-737.20"
   ],
   "batches": [
     "curiosities",
-    "curiosities-2"
+    "curiosities-2",
+    "curiosities-3"
   ],
   "command": "npm run art:curiosities-review",
   "accepted": {
@@ -36,7 +38,18 @@
     "chibi-curiosity-icon-bigfoot": "ICON:CURIOSITY:BIGFOOT",
     "chibi-curiosity-icon-wishing-well": "ICON:CURIOSITY:WISHING_WELL",
     "chibi-curiosity-effect-gate-traverse": "EFFECT:GATE_TRAVERSE",
-    "chibi-curiosity-effect-coin-splash": "EFFECT:COIN_SPLASH"
+    "chibi-curiosity-effect-coin-splash": "EFFECT:COIN_SPLASH",
+    "chibi-curiosity-tesla-tower": "CURIOSITY:TESLA_TOWER",
+    "chibi-curiosity-moon-gun": "CURIOSITY:MOON_GUN",
+    "chibi-curiosity-gold-claim": "CURIOSITY:GOLD_CLAIM",
+    "chibi-curiosity-lost-expedition": "CURIOSITY:LOST_EXPEDITION",
+    "chibi-curiosity-icon-tesla-tower": "ICON:CURIOSITY:TESLA_TOWER",
+    "chibi-curiosity-icon-moon-gun": "ICON:CURIOSITY:MOON_GUN",
+    "chibi-curiosity-icon-gold-claim": "ICON:CURIOSITY:GOLD_CLAIM",
+    "chibi-curiosity-icon-lost-expedition": "ICON:CURIOSITY:LOST_EXPEDITION",
+    "chibi-curiosity-effect-tesla-arc": "EFFECT:TESLA_ARC",
+    "chibi-curiosity-effect-moon-gun-blast": "EFFECT:MOON_GUN_BLAST",
+    "chibi-curiosity-effect-expedition-notes": "EFFECT:EXPEDITION_NOTES"
   },
   "files": [
     "pieces-x4.png",
@@ -57,10 +70,15 @@
     "scene2-x2.png",
     "scene2-1x.png",
     "scene2-zoom-0.75.png",
+    "pieces3-x4.png",
+    "pieces3-1x.png",
+    "interface3-x4.png",
+    "interface3-1x.png",
     "contact-sheet-x2.png",
     "contact-sheet-1x.png",
     "pieces-zoom-0.75.png",
     "pieces2-zoom-0.75.png",
+    "pieces3-zoom-0.75.png",
     "readability.json"
   ]
 }

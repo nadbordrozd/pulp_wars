@@ -237,10 +237,15 @@ import {
   CURIOSITIES_SETUP_HINT_V7,
   CURIOSITY_LABELS_V7,
   CURIOSITY_RULES_V7,
+  FIRE_MOON_GUN_LABEL_V7,
+  FIRE_MOON_GUN_TOOLTIP_V7,
   NEUTRAL_LABEL_V7,
   TOSS_COIN_LABEL_V7,
   TOSS_COIN_TOOLTIP_V7,
+  ZAP_LABEL_V7,
+  ZAP_TOOLTIP_V7,
   curiosityBoundaryNoticeV7,
+  curiosityStatusLineV7,
   curiosityIconSubjectV7,
   curiosityOverlayOnTileV7,
   isMonsterUnitV7,
@@ -657,6 +662,10 @@ import {
   viewerHarbourPopulationV7,
 } from "../naval-presentation-v7";
 import type { NavalPickV7 } from "../canvas/naval-board-plan-v7";
+import {
+  curiosityPickPromptV7,
+  type CuriosityPickV7,
+} from "../canvas/curiosity-board-plan-v7";
 import {
   BLACK_ICE_UNLOCK_V7,
   CRACK_ICE_LABEL_V7,
@@ -1252,6 +1261,12 @@ const NON_BUTTON_COMMANDS = new Set<CommandV7["kind"]>([
   "CHANNEL",
   "ANCHOR",
   "BOO",
+  // Map curiosities round 3 (bead pulp_wars-737.20): a unit on the Tesla
+  // Tower has one Zap button and a unit on the Moon Gun one Fire button
+  // (`#curiosityActionButtons`); the target and the landing (up to dozens
+  // of commands) are picked on the board (BOARD_TARGETING.md section 3.10).
+  "ZAP",
+  "FIRE_MOON_GUN",
   // Rituals and Proclaim (engine bead pulp_wars-mch9.7): a Star-fall alone
   // is one command per tile in reach, so neither is ever a generic button.
   // Their buttons, marks, and board targeting are bead pulp_wars-mch9.19.
@@ -1951,6 +1966,12 @@ export class Ruleset7DomAppView {
    * nothing).
    */
   #navalPick: NavalPickV7 | null = null;
+  /**
+   * Map curiosities round 3 (bead pulp_wars-737.20): the Zap or the Moon
+   * Gun shot the selected unit is aiming on the board (Escape, Cancel or
+   * another selection leaves it and sends nothing).
+   */
+  #curiosityPick: CuriosityPickV7 | null = null;
   /**
    * The frozen sea: the Freeze a line role is aiming on the board (Escape,
    * Cancel or another selection leaves it and sends nothing), and the Ice
@@ -2659,6 +2680,10 @@ export class Ruleset7DomAppView {
       } else if (this.#navalPick !== null) {
         // The naval branch interface: Escape first disarms Board.
         this.#cancelNavalPick();
+        return;
+      } else if (this.#curiosityPick !== null) {
+        // Map curiosities round 3: Escape first disarms the Zap or Fire.
+        this.#cancelCuriosityPick();
         return;
       } else if (this.#freezePick !== null) {
         // The frozen sea: Escape first disarms Freeze.
@@ -6682,6 +6707,7 @@ export class Ruleset7DomAppView {
       this.#candyPick !== null ||
       this.#giantPick !== null ||
       this.#navalPick !== null ||
+      this.#curiosityPick !== null ||
       this.#freezePick !== null ||
       this.#freezeRingArmedUnitId !== null ||
       this.#cultPick !== null
@@ -6809,6 +6835,11 @@ export class Ruleset7DomAppView {
         this.#navalPick.unitId === selectedUnitId
           ? { navalPick: this.#navalPick }
           : {}),
+        // Map curiosities round 3: the Zap or Moon Gun shot being aimed.
+        ...(this.#curiosityPick !== null &&
+        this.#curiosityPick.unitId === selectedUnitId
+          ? { curiosityPick: this.#curiosityPick }
+          : {}),
         // The frozen sea: the Freeze being aimed, and the Witch whose
         // Freeze button is hovered or focused, or armed by a touch.
         ...(this.#freezePick !== null &&
@@ -6847,6 +6878,7 @@ export class Ruleset7DomAppView {
       this.#candyPick = null;
       this.#giantPick = null;
       this.#navalPick = null;
+      this.#curiosityPick = null;
       this.#freezePick = null;
       this.#freezeHoverUnitId = null;
       this.#freezeRingArmedUnitId = null;
@@ -7843,6 +7875,9 @@ export class Ruleset7DomAppView {
         ...this.#giantActionButtons(view, unit.id),
         // The naval branch interface: Board likewise.
         ...this.#navalActionButtons(view, unit.id),
+        // Map curiosities round 3: the Tesla Tower's Zap and the Moon
+        // Gun's Fire likewise.
+        ...this.#curiosityActionButtons(unit.id),
         // The frozen sea: Freeze likewise, and every other faction's Crack
         // Ice (the frozen sea redesign, bead pulp_wars-5ti.27).
         ...this.#freezeActionButtons(view, unit.id),
@@ -7966,6 +8001,7 @@ export class Ruleset7DomAppView {
         this.#candyPickPanel(unit.id) ??
         this.#giantPickPanel(view, unit.id) ??
         this.#navalPickPanel(unit.id) ??
+        this.#curiosityPickPanel(unit.id) ??
         this.#freezePickPanel(unit.id) ??
         this.#freezeRingPanel(view, unit.id) ??
         this.#cultPickPanel(unit.id);
@@ -8693,6 +8729,19 @@ export class Ruleset7DomAppView {
           if (well !== null) {
             const line = text(this.#document, "p", well, "v7-curiosity-status");
             line.dataset.wellStatus = "true";
+            info.append(line);
+          }
+          // Round 3 (bead pulp_wars-737.20): the Gun loaded or reloading,
+          // the Claim's owner and Coins left, the Expedition's finder.
+          const status = curiosityStatusLineV7(view, tile.at);
+          if (status !== null) {
+            const line = text(
+              this.#document,
+              "p",
+              status,
+              "v7-curiosity-status",
+            );
+            line.dataset.curiosityStatus = curiosity.toLowerCase();
             info.append(line);
           }
           details.append(info);
@@ -9837,6 +9886,7 @@ export class Ruleset7DomAppView {
     this.#candyPick = null;
     this.#giantPick = null;
     this.#navalPick = null;
+    this.#curiosityPick = null;
     this.#freezePick = null;
     this.#freezeHoverUnitId = null;
     this.#freezeRingArmedUnitId = null;
@@ -10012,6 +10062,10 @@ export class Ruleset7DomAppView {
         return;
       case "BOARD":
         this.#startNavalPick(unitId);
+        return;
+      case "ZAP":
+      case "FIRE_MOON_GUN":
+        this.#startCuriosityPick(id, unitId);
         return;
       case "SACRIFICE":
       case "SEIZE":
@@ -12946,6 +13000,7 @@ export class Ruleset7DomAppView {
     this.#candyPick = null;
     this.#giantPick = null;
     this.#navalPick = null;
+    this.#curiosityPick = null;
     this.#freezePick = null;
     this.#freezeHoverUnitId = null;
     this.#freezeRingArmedUnitId = null;
@@ -16159,6 +16214,136 @@ export class Ruleset7DomAppView {
   }
 
   /**
+   * Map curiosities round 3 (bead pulp_wars-737.20; BOARD_TARGETING.md
+   * section 3.10): the one Zap button of a unit on the Tesla Tower and the
+   * one Fire button of a unit on the Moon Gun, while the engine offers the
+   * command. A Zap's targets are units the unit could also attack, and a
+   * landing a tile it could also move to, so each button arms its aiming
+   * (pressed while aiming) and the target is picked on the board.
+   */
+  #curiosityActionButtons(unitId: UnitId): readonly HTMLButtonElement[] {
+    const buttons: HTMLButtonElement[] = [];
+    for (const [kind, label, tooltip, subject, icon, dataAction] of [
+      [
+        "ZAP",
+        ZAP_LABEL_V7,
+        ZAP_TOOLTIP_V7,
+        "ICON:CURIOSITY:TESLA_TOWER",
+        "range",
+        "curiosity-zap",
+      ],
+      [
+        "FIRE_MOON_GUN",
+        FIRE_MOON_GUN_LABEL_V7,
+        FIRE_MOON_GUN_TOOLTIP_V7,
+        "ICON:CURIOSITY:MOON_GUN",
+        "move",
+        "curiosity-fire",
+      ],
+    ] as const) {
+      if (
+        !this.#snapshot.offeredCommands.some(
+          (command) => command.kind === kind && command.unitId === unitId,
+        )
+      )
+        continue;
+      const action = button(
+        this.#document,
+        "",
+        dataAction,
+        "v7-context-action",
+      );
+      action.append(
+        this.#chibiArt(subject, CHIBI_DOM_BOXES_V7.action)?.element ??
+          uiIconV7(this.#document, icon, "v7-ui-icon v7-command-icon"),
+        text(this.#document, "span", label, "v7-action-label"),
+      );
+      action.dataset.curiosityAbility = kind.toLowerCase();
+      const aiming = this.#curiosityPick?.kind === kind;
+      action.title = tooltip;
+      action.setAttribute("aria-label", `${label}. ${tooltip}`);
+      action.setAttribute("aria-pressed", String(aiming));
+      action.disabled = this.#localBusy();
+      action.onclick = () =>
+        aiming
+          ? this.#cancelCuriosityPick()
+          : this.#startCuriosityPick(kind, unitId);
+      buttons.push(action);
+    }
+    return buttons;
+  }
+
+  /** Starts aiming the selected unit's Zap or Moon Gun shot. */
+  #startCuriosityPick(kind: CuriosityPickV7["kind"], unitId: UnitId): void {
+    if (this.#localBusy()) return;
+    this.#curiosityPick = { kind, unitId };
+    this.#notice = `${curiosityPickPromptV7(this.#curiosityPick)}.`;
+    this.#pendingFocusAction = null;
+    this.#render();
+    // The board takes the keyboard, so Tab and Enter pick.
+    this.#queueBoardFocus();
+  }
+
+  /** Leaves the aiming, and returns focus to its button. */
+  #cancelCuriosityPick(): void {
+    const pick = this.#curiosityPick;
+    this.#curiosityPick = null;
+    this.#pendingFocusAction =
+      pick === null
+        ? null
+        : pick.kind === "ZAP"
+          ? "curiosity-zap"
+          : "curiosity-fire";
+    this.#render();
+  }
+
+  /**
+   * The Zap or Fire aiming panel in the dock: the action's icon and name,
+   * its "?" and Cancel. The targets are highlighted and picked on the
+   * board, a Zap's with its damage; the dock lists none. Null (and the
+   * aiming ends) when nothing is offered any more.
+   */
+  #curiosityPickPanel(unitId: UnitId): HTMLElement | null {
+    const pick = this.#curiosityPick;
+    if (pick === null || pick.unitId !== unitId) return null;
+    const commands = this.#snapshot.offeredCommands.filter(
+      (command) => command.kind === pick.kind && command.unitId === unitId,
+    );
+    if (commands.length === 0) {
+      this.#curiosityPick = null;
+      return null;
+    }
+    const zap = pick.kind === "ZAP";
+    const panel = el(
+      this.#document,
+      "section",
+      "v7-kaboom-preview v7-martian-pick v7-curiosity-pick",
+    );
+    panel.dataset.v7CuriosityPick = zap ? "zap" : "fire";
+    panel.dataset.curiosityTargets = String(commands.length);
+    panel.setAttribute("aria-label", curiosityPickPromptV7(pick));
+    panel.append(
+      this.#pickHead(
+        zap ? "ICON:CURIOSITY:TESLA_TOWER" : "ICON:CURIOSITY:MOON_GUN",
+        zap ? "range" : "move",
+        zap ? ZAP_LABEL_V7 : FIRE_MOON_GUN_LABEL_V7,
+        `${curiosityPickPromptV7(pick)}. ${zap ? ZAP_TOOLTIP_V7 : FIRE_MOON_GUN_TOOLTIP_V7}`,
+      ),
+    );
+    const buttons = el(this.#document, "div", "button-row v7-kaboom-actions");
+    const cancel = button(
+      this.#document,
+      "Cancel",
+      "curiosity-pick-cancel",
+      "v7-kaboom-cancel",
+    );
+    cancel.onclick = () => this.#cancelCuriosityPick();
+    buttons.append(cancel);
+    panel.append(buttons);
+    return panel;
+  }
+
+  /**
    * The Cultists (bead pulp_wars-mch9.17; BOARD_TARGETING.md section 3.7):
    * the one Sacrifice button and the one Seize button of an own Summoner,
    * whatever the number of victims. A victim of either could be claimed by
@@ -18666,7 +18851,7 @@ function setupFrom(draft: DraftV7, gameKind: GameKindV7): MatchSetupV7 | null {
   const aiHeadStartCoins =
     draft.mapType === "SHOWCASE" ? 0 : draft.aiHeadStartCoins;
   return {
-    rulesetId: "pulp-wars-poc-7r102",
+    rulesetId: "pulp-wars-poc-7r103",
     seed,
     width,
     height: width,
@@ -19493,6 +19678,9 @@ const TECH_BRANCH_LABELS: Readonly<Record<string, string>> = {
 };
 const COMMAND_LABELS: Partial<Record<CommandV7["kind"], string>> = {
   TOSS_COIN: TOSS_COIN_LABEL_V7,
+  // Map curiosities round 3 (bead pulp_wars-737.20).
+  ZAP: ZAP_LABEL_V7,
+  FIRE_MOON_GUN: FIRE_MOON_GUN_LABEL_V7,
   // The Cultists (`pulp_wars-mch9.4`).
   SACRIFICE: SACRIFICE_LABEL_V7,
   SEIZE: SEIZE_LABEL_V7,

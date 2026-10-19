@@ -187,7 +187,11 @@ describe("ruleset-7 late public query performance", () => {
       // FREEZE and BUILD_FISHING_HOLE after BUILD_LUMBER_CAMP, moving the
       // later command kinds forward (was 8bb79a…9ead); the revision-12-ordinal
       // value is unchanged.
-      "b599042999088e5fc86e07063093d33cb6725585aff30ab8ff551c1ec163a328",
+      // Map curiosities round 3 (`pulp_wars-737.20`) insert ZAP and
+      // FIRE_MOON_GUN after JOIN_CHANT, moving the later command kinds
+      // forward by two (was b59904…a328); the revision-12-ordinal value is
+      // unchanged.
+      "fd52366948dd1195dee074fedaf3d3b5dbc86a44305334cf15425f58b1c3e3ec",
     );
     // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
     // (spec section 8); with revision-12 ordinals the value is unchanged.

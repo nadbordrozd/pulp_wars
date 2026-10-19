@@ -1297,7 +1297,10 @@ export function resolveFixedHitsV7(
     | "THUMP"
     // The Cultists (`pulp_wars-mch9.7`): a star (RULESET_7_CULTISTS.md
     // section 7.4), which also hits the units of its own seat.
-    | "STARFALL",
+    | "STARFALL"
+    // Map curiosities round 3 (`pulp_wars-737.20`, section 4.2): a Tesla
+    // Tower's zap, whose deaths are ordinary attack deaths.
+    | "ATTACK",
   events: DomainEventV7[],
 ): GameStateV7 {
   if (results.length === 0) return state;

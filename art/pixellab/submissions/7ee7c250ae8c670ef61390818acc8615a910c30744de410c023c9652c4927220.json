@@ -1,0 +1,36 @@
+{
+  "id": "icon-tesla-tower-a-edit",
+  "jobId": "c7b7a04c-59bd-4d19-846d-7a70248574f6",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "curiosities-3",
+    "asset": "chibi-curiosity-icon-tesla-tower",
+    "subject": "ICON:CURIOSITY:TESLA_TOWER",
+    "faction": "ORIGINAL",
+    "recipeClass": "curiosity-item",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 73720066,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the two electric arcs above the copper ball: make them pure white #ffffff with a pale grey #c4c4c4 shadow tone, not purple and not violet. Keep the rusty lattice tower, the copper ball, the outline and the art style exactly the same."
+      }
+    ],
+    "prompt": "Recolour only the two electric arcs above the copper ball: make them pure white #ffffff with a pale grey #c4c4c4 shadow tone, not purple and not violet. Keep the rusty lattice tower, the copper ball, the outline and the art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Recolour only the two electric arcs above the copper ball: make them pure white #ffffff with a pale grey #c4c4c4 shadow tone, not purple and not violet. Keep the rusty lattice tower, the copper ball, the outline and the art style exactly the same.",
+    "editInstruction": "Recolour only the two electric arcs above the copper ball: make them pure white #ffffff with a pale grey #c4c4c4 shadow tone, not purple and not violet. Keep the rusty lattice tower, the copper ball, the outline and the art style exactly the same.",
+    "source": {
+      "recipe": "icon-tesla-tower-a",
+      "candidate": 0,
+      "sha256": "6dcf2fe97c5ef159b23ea3cf0f797788d4a9986d7b217a051b43aa71f0449ee5"
+    }
+  }
+}

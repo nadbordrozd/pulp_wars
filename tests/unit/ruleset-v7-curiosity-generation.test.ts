@@ -62,14 +62,14 @@ describe("generation, option on against off (section 4)", () => {
               ).length,
           );
         }
-    // Every kind of both rounds but the Graveyard, which these 150 boards
-    // happen not to draw (round 2, `pulp_wars-737.14`: the nine kinds share
-    // the old counts); the round-2 generation test places one (Pangea
-    // 20 x 20 seed 1).
+    // Every kind of the three rounds but the Graveyard and Bigfoot, which
+    // these 150 boards happen not to draw (round 3, `pulp_wars-737.20`: the
+    // thirteen kinds share the new counts); the round-2 generation test
+    // places a Graveyard (Pangea 20 x 20 seed 5) and the curiosity map
+    // validator meets Bigfoot.
     expect([...seen].sort()).toEqual(
       [
         "MONSTER",
-        "BIGFOOT",
         ...CURIOSITY_KINDS_V7.filter((kind) => kind !== "GRAVEYARD"),
       ].sort(),
     );
@@ -79,7 +79,9 @@ describe("generation, option on against off (section 4)", () => {
     expect(Math.max(...(counts[11] ?? []))).toBeLessThanOrEqual(1);
     expect(mean(counts[11] ?? [])).toBeLessThan(0.5);
     expect(Math.max(...(counts[16] ?? []))).toBeLessThanOrEqual(1);
-    expect(Math.max(...(counts[25] ?? []))).toBeLessThanOrEqual(2);
+    // Round 3 (`pulp_wars-737.20`, RULESET_7_CURIOSITIES_ROUND_3.md section
+    // 3.2): 25 x 25 boards aim for 2 or 3.
+    expect(Math.max(...(counts[25] ?? []))).toBeLessThanOrEqual(3);
     expect(mean(counts[25] ?? [])).toBeGreaterThan(mean(counts[11] ?? []));
   }, 600_000);
 });

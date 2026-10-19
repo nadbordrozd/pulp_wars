@@ -986,7 +986,7 @@ describe("Ruleset 7 Gallery", () => {
 });
 
 describe("Ruleset 7 Gallery: Curiosities (pulp_wars-737.6)", () => {
-  it("lists the Giant Spider, Bigfoot and the eight curiosities on their own tab, without filters", () => {
+  it("lists the Giant Spider, Bigfoot and the twelve curiosities on their own tab, without filters", () => {
     mount();
     openGallery();
     const tabs = [...document.querySelectorAll<HTMLElement>('[role="tab"]')];
@@ -1025,10 +1025,19 @@ describe("Ruleset 7 Gallery: Curiosities (pulp_wars-737.6)", () => {
       ["GRAVEYARD", "CURIOSITY:GRAVEYARD", "Graveyard, neutral"],
       ["GATE", "CURIOSITY:GATE", "Dimensional Gate, neutral"],
       ["WISHING_WELL", "CURIOSITY:WISHING_WELL", "Wishing Well, neutral"],
+      // Round 3 (bead pulp_wars-737.20): a third row.
+      ["TESLA_TOWER", "CURIOSITY:TESLA_TOWER", "Tesla Tower, neutral"],
+      ["MOON_GUN", "CURIOSITY:MOON_GUN", "Moon Gun, neutral"],
+      ["GOLD_CLAIM", "CURIOSITY:GOLD_CLAIM", "Gold Claim, neutral"],
+      [
+        "LOST_EXPEDITION",
+        "CURIOSITY:LOST_EXPEDITION",
+        "Lost Expedition, neutral",
+      ],
     ]);
     expect(
       document.querySelectorAll(".v7-gallery-curiosities tbody tr"),
-    ).toHaveLength(2);
+    ).toHaveLength(3);
     // The keyboard grid: Right and End walk the row, Down the column.
     cells()[0]?.focus();
     key(required('.v7-gallery-cell[data-row="SPIDER"]'), "ArrowRight");

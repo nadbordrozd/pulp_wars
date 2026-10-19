@@ -212,6 +212,11 @@ const FAMILY_STYLES_V7: Readonly<Record<string, TargetHighlightStyleV7>> = {
   // The Cult redesign (`pulp_wars-mch9.34`): the Stargazer a cultist joins
   // in its chant is the Cult's own unit (the Help ring).
   JOIN_CHANT: "SUPPORT",
+  // Map curiosities round 3 (bead pulp_wars-737.20): an enemy a Tesla
+  // Tower's Zap hits is harmed; a Moon Gun's landing is a tile the unit
+  // goes to (a Move).
+  ZAP: "ATTACK",
+  MOON_GUN: "MOVE",
 };
 
 /** Every family the vocabulary knows, for the audit and its tests. */

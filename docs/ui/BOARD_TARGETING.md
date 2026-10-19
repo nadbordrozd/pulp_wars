@@ -221,7 +221,7 @@ The legend of every other kind of target, each a variant of a style:
 
 | Kind                                                                                                                                                                         | Style  | Mark                                                | Colour                    |
 | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | --------------------------------------------------- | ------------------------- |
-| Move, Embark (a Move onto a Port), Escape, Disembark "Land now"                                                                                                              | Move   | Light corner brackets                               | teal `#64e6cf`            |
+| Move, Embark (a Move onto a Port), Escape, Disembark "Land now", a Moon Gun landing                                                                                          | Move   | Light corner brackets                               | teal `#64e6cf`            |
 | A machine's Launch, a Hover Pods launch                                                                                                                                      | Move   | Dashed brackets on a whole dark casing              | pale glass blue `#c7e7f5` |
 | An Ice Folk Glide, a slide's or a slip's end                                                                                                                                 | Move   | Solid brackets                                      | pale ice `#d6f0ff`        |
 | A tile only Glacier's +1 Move reaches                                                                                                                                        | Move   | Dashed brackets on a dark casing, over its hatching | pale ice `#d6f0ff`        |
@@ -229,7 +229,7 @@ The legend of every other kind of target, each a variant of a style:
 | A Bat Escape landing                                                                                                                                                         | Move   | Dashed brackets on a dark casing, with its bat      | Undead violet `#c9a6ff`   |
 | A chosen Tunnel destination                                                                                                                                                  | Move   | Solid brackets inside a thin solid frame            | teal `#64e6cf`            |
 | Another landing of a seated Hammerer                                                                                                                                         | Move   | A small dot                                         | teal `#64e6cf`            |
-| Attack, Mind Control, a hostile Tractor Beam, Bolas, Frost Bolt, Board (capture a ship), Seize, Swallow, Stomp, Proclaim, Ribbit, Crack Ice                                  | Attack | Heavy brackets in a thin frame                      | red `#ff655f`             |
+| Attack, Mind Control, a hostile Tractor Beam, Bolas, Frost Bolt, Board (capture a ship), Seize, Swallow, Stomp, Proclaim, Ribbit, Crack Ice, a Tesla Tower Zap               | Attack | Heavy brackets in a thin frame                      | red `#ff655f`             |
 | Hatch, Sugar Toss, Top-Up, a passenger to beam or tunnel, a Goblin to toss, an own unit to pull, Sacrifice, Channel, Anchor, joining a chant, free a frozen ship (Crack Ice) | Help   | Brackets with a plus                                | lavender `#c49bff`        |
 | Lay Egg, Beam Down tile, Assemble, Barricade, Re-bake, Freeze, a Toss landing, Break Off, a Summon, Star-fall, the Great Summoning, Tentacle                                 | Place  | Brackets with corner pips                           | cream `#ffe7a3`           |
 | An area support's recipient (not a target, section 2.1)                                                                                                                      | Help   | A broken ring with a plus                           | lavender `#c49bff`        |
@@ -395,6 +395,8 @@ area fixed by the rules, or it opens a screen).
 | Ships: Move, Attack, Disembark, Recover                                                            | (a)   | As for every unit                                                                                      |
 | Ships: Board (Seamanship)                                                                          | (a)   | One Board button arms it; the enemy ship to capture is picked on the board (section 3.4)               |
 | Fountain of Youth, Shrine, Sunken Wreck, Spider's lair                                             | (c)   | No action: a unit moves onto or next to it                                                             |
+| Gold Claim, Lost Expedition                                                                        | (c)   | No action: a unit's Move onto it, labelled "Stake" or "Find" (section 3.10)                            |
+| Tesla Tower Zap, Moon Gun Fire                                                                     | (b)   | One button arms it; the target or landing is picked on the board (section 3.10)                        |
 | Giant Spider                                                                                       | (a)   | An ordinary attack target                                                                              |
 
 No action of class (b) remains. The tile actions are of class (a) by
@@ -821,6 +823,34 @@ tiles: 3 units there now, 1 would die. Disrupt its circle and nothing
 happens"), a tile beside it ("In a star's path: 9 damage ..."), a Cowed
 city and each chip of the unit on the tile.
 
+### 3.10 Map curiosities, round 3 (bead `pulp_wars-737.20`)
+
+The Tesla Tower's Zap and the Moon Gun's Fire are commands of the unit
+standing on the curiosity
+([rules](../product/RULESET_7_CURRENT.md#round-3-the-tesla-tower-the-moon-gun-the-gold-claim-and-the-lost-expedition)).
+Each gets **one button** in the dock that arms an aiming panel; a Zap
+target is a unit the unit might also attack, and a landing a tile it might
+also move to, so neither is ever a generic per-command button (a loaded
+Gun offers up to 120 landings). The Gold Claim and the Lost Expedition
+have no action: an ordinary Move onto them is labelled. Code:
+`src/render/curiosity-presentation-v7.ts` (the words) and
+`src/render/canvas/curiosity-board-plan-v7.ts` (the targets).
+
+| Curiosity       | Action | Class | How it is chosen                                                                                                                                                                                                                                                                                                  | Style  |
+| --------------- | ------ | ----- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| Tesla Tower     | Zap    | (b)   | One Zap button; each hostile unit within 2 of the Tower is a target labelled with the exact damage, "Zap −4" (or "Zap −3 · KO" with the skull when it dies; "· Shield −2" when a Shield takes part of it; the HP bar shows the HP lost), and the Tower's range is outlined; the cursor says it cannot strike back | Attack |
+| Moon Gun        | Fire   | (b)   | One Fire button (only while the Gun is loaded); every legal landing within 5 is a Move mark and the Gun's range is outlined. A landing in a visible enemy's reach or on a neutral monster's provoke tiles carries the threat marker (the provoked corner badge), not a label; the cursor says "In enemy reach"    | Move   |
+| Gold Claim      | Stake  | (c)   | No button: the Move that ends on a Claim the unit's owner would stake is labelled "Stake", and its cursor says it pays 2 Coins each turn                                                                                                                                                                          | Move   |
+| Lost Expedition | Find   | (c)   | No button: the Move that ends on an unfound Expedition is labelled "Find", and its cursor says the next technology costs nothing                                                                                                                                                                                  | Move   |
+
+The aiming panel holds the action's icon and name, its "?" and Cancel;
+Escape disarms. The review of the first pass replaced a Moon Gun
+landing's "In enemy reach" label box by the threat marker: beside an
+enemy the row of labels covered the landings themselves. Selecting the
+Tower or the Gun tile outlines its range, and its dock carries its state
+line ("Loaded" or "Reloading"; the Claim's owner and Coins left; who
+holds the Expedition's notes).
+
 ## 4. The aiming panel
 
 While an ability is armed the dock shows its aiming panel in place of the
@@ -873,6 +903,13 @@ for tools; it is never read out.
   `-dwarf-dom`, `-candy-dom`, `-dinosaur-dom`): arm, the targets of the
   right style, a board pick sends the offered command, Escape disarms, no
   list in the dock.
+- Map curiosities round 3 (section 3.10):
+  `tests/integration/ruleset7-curiosities-round3-dom.test.ts` (one Zap and
+  one Fire button, their targets and landings on the board, a pick sends
+  the offered command, Cancel and Escape, Stake and Find labels) and
+  `tests/unit/target-highlight-render-v7.test.ts` (Zap in the Attack
+  style, a landing in the Move style); the review
+  `npm run review:ruleset7-curiosities-round3-ui` captures them.
 - `tests/integration/ruleset7-dinosaur-canvas.test.ts`: the keyboard path
   on the real board host (Tab through unarmed and armed targets, Enter).
 - The browser smoke (`scripts/browser-smoke-v7.ts` and

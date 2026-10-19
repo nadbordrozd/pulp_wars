@@ -93,6 +93,7 @@ import {
   previewAttackExplosionsV7,
   previewAssembleV7,
   previewBombRunV7,
+  previewZapV7,
   previewEconomicV7,
   previewGateV7,
   previewWhirlV7,
@@ -759,6 +760,7 @@ import {
   BIGFOOT_HUNT_MOVE_PRIORITY_V7,
   CAMP_ANSWER_HP_DIVISOR_V7,
   MONSTER_STEP_AWAY_PRIORITY_V7,
+  MOON_GUN_FIRE_PRIORITY_V7,
   WELL_TOSS_PRIORITY_V7,
   campMatesV7,
   curiosityErrandMoveV7,
@@ -15702,6 +15704,67 @@ function scoreCommandWithContext(
     }
   }
 
+  // Map curiosities round 3 (`pulp_wars-737.20`,
+  // RULESET_7_CURIOSITIES_ROUND_3.md section 11): a zap is scored like an
+  // unanswered ranged attack (its fixed damage, plus the kill value and a
+  // neutral unit's bounty when it kills); a neutral unit is zapped only for
+  // the kill. The Moon Gun fires the unit its errand picked, to the landing
+  // the errand chose.
+  if (
+    command.kind === "ZAP" &&
+    actor !== undefined &&
+    context.curiosities !== null
+  ) {
+    const hit = previewZapV7(view, actor.id)?.targets.find(
+      (entry) => entry.targetUnitId === command.targetUnitId,
+    );
+    const target = context.lookup.unitsById.get(command.targetUnitId);
+    if (
+      hit !== undefined &&
+      target !== undefined &&
+      (hit.kills || !isNeutralOwnerV7(target.ownerId))
+    ) {
+      const threatening = context.threats.some(
+        (item) => item.unitId === command.targetUnitId,
+      );
+      priority = hit.kills
+        ? threatening
+          ? 1280
+          : 1180
+        : threatening
+          ? 1240
+          : 900;
+      const bounty =
+        context.curiosities.monsterById.get(command.targetUnitId)?.bounty ?? 0;
+      immediateValue = 20 * Number(hit.kills) + 10 * hit.damage + bounty;
+      const value = targetStrategicValue(view, target.id, context.lookup);
+      strategicValue += hit.kills
+        ? value + 4 * bounty
+        : target.hp > 0
+          ? Math.floor((value * hit.damage) / target.hp)
+          : 0;
+    }
+  }
+  if (
+    command.kind === "FIRE_MOON_GUN" &&
+    actor !== undefined &&
+    context.curiosities !== null
+  ) {
+    const errand = curiosityErrandsV7(context, context.curiosities).get(
+      actor.id,
+    );
+    if (
+      errand?.kind === "MOON_GUN" &&
+      same(errand.at, actor.at) &&
+      errand.landing !== undefined &&
+      same(errand.landing, command.at) &&
+      !campaignHoldsMoveV7(context.tactical.campaign, actor, command.at)
+    ) {
+      priority = MOON_GUN_FIRE_PRIORITY_V7;
+      strategicValue += 1;
+    }
+  }
+
   if (command.kind === "RECOVER") {
     priority = (actor?.hp ?? 0) * 2 < (actor?.maxHp ?? 0) ? 400 : 300;
     immediateValue =
@@ -18582,6 +18645,9 @@ function curiosityErrandsV7(
         steps: (from) => assignment.field.get(from),
       };
     },
+    // Round 3 (`pulp_wars-737.20`): the Tesla Tower watches seats' units.
+    hostileSeat: (ownerId) =>
+      !isNeutralOwnerV7(ownerId) && isHostile(view, ownerId),
   });
   context.curiosityErrands = errands;
   return errands;
@@ -18732,15 +18798,28 @@ function curiosityMoveValueV7(
   const errand = curiosityErrandsV7(context, facts).get(actor.id);
   const value =
     errand === undefined ||
-    // A wave that forms at home is not sent out through a gate.
+    // A wave that forms at home is not sent out through a gate, nor (round
+    // 3) to the Moon Gun.
     (errand.kind === "GATE" &&
-      campaignHoldsMoveV7(context.tactical.campaign, actor, to))
+      campaignHoldsMoveV7(context.tactical.campaign, actor, to)) ||
+    (errand.kind === "MOON_GUN" &&
+      errand.landing !== undefined &&
+      campaignHoldsMoveV7(context.tactical.campaign, actor, errand.landing))
       ? null
       : curiosityErrandMoveV7(errand, actor.at, end);
   if (value !== null) {
     priority = Math.max(priority, value.priority);
     strategic += value.strategic;
   }
+  // Round 3 (`pulp_wars-737.20`, section 11): the unit holding a Tesla
+  // Tower makes no routine Move while there is something to zap.
+  if (
+    errand?.kind === "TESLA" &&
+    same(errand.at, actor.at) &&
+    !same(end, actor.at) &&
+    priority <= ARMY_ROUTINE_MOVE_MAXIMUM_V7
+  )
+    priority = -1;
   // The exit holds an own unit: no routine Move leaves the gate.
   if (
     errand !== undefined &&

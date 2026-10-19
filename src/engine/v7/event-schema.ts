@@ -91,9 +91,13 @@ import {
   parseCoordV7,
 } from "./schema";
 import {
+  EXPEDITION_COINS_V7,
   FOUNTAIN_HEAL_V7,
+  GOLD_CLAIM_COINS_V7,
+  GOLD_CLAIM_TOTAL_V7,
   MONSTER_REGENERATION_V7,
   NEUTRAL_BOUNTIES_V7,
+  TESLA_ZAP_DAMAGE_V7,
   WELL_COINS_V7,
   WELL_OUTCOMES_V7,
   WRECK_COINS_V7,
@@ -110,11 +114,15 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
   MONSTER_REGENERATED: ["kind", "unitId", "amount", "hpAfter"],
   SHIELDS_RECHARGED: ["kind", "playerId", "results"],
   INCOME_AWARDED: ["kind", "playerId", "totalCoins", "cities"],
+  // Map curiosities round 3 (section 6.2).
+  GOLD_CLAIM_PAID: ["kind", "playerId", "at", "coins", "left"],
   INCOME_PREVIEWED: ["kind", "playerId", "totalCoins", "cities"],
   TURN_ENDED: ["kind", "playerId"],
   NEUTRAL_TURN_STARTED: ["kind", "round"],
   NEUTRAL_TURN_ENDED: ["kind", "round"],
   TECH_RESEARCHED: ["kind", "playerId", "tech", "cost"],
+  // Map curiosities round 3 (section 7.2).
+  EXPEDITION_NOTES_USED: ["kind", "playerId", "at"],
   FRUIT_HARVESTED: [
     "kind",
     "playerId",
@@ -380,6 +388,8 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
     "to",
   ],
   UNIT_BEAMED: ["kind", "playerId", "unitId", "passengerUnitId", "from", "to"],
+  // Map curiosities round 3 (section 5.2).
+  MOON_GUN_FIRED: ["kind", "playerId", "unitId", "from", "to"],
   UNIT_REWARD_GRANTED: [
     "kind",
     "playerId",
@@ -437,6 +447,18 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
   UNIT_MOVE_INTERRUPTED: ["kind", "unitId", "at", "reason"],
   TILES_REVEALED: ["kind", "playerId", "tiles"],
   COMBAT_RESOLVED: ["kind", "preview"],
+  // Map curiosities round 3 (section 4.2).
+  TESLA_ZAPPED: [
+    "kind",
+    "playerId",
+    "unitId",
+    "at",
+    "targetUnitId",
+    "targetAt",
+    "damage",
+    "shieldDamage",
+    "hpAfter",
+  ],
   UNIT_BOMBED: [
     "kind",
     "playerId",
@@ -627,6 +649,9 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
     "hpAfter",
   ],
   SHRINE_CLAIMED: ["kind", "playerId", "unitId", "at"],
+  // Map curiosities round 3 (sections 6.1 and 7.1).
+  GOLD_CLAIM_STAKED: ["kind", "playerId", "unitId", "at", "previousOwnerId"],
+  EXPEDITION_FOUND: ["kind", "playerId", "unitId", "at", "notes", "coins"],
   UNIT_PROMOTED: ["kind", "unitId", "maxHp"],
   UNIT_GREW: ["kind", "unitId", "stage", "maxHp", "hp"],
   UNIT_DIED: ["kind", "unitId", "cause"],
@@ -1156,6 +1181,19 @@ function validPayload(
     case "TURN_ENDED":
     case "PLAYER_ELIMINATED":
       return id(e.playerId);
+    // Map curiosities round 3 (section 6.2): 1 or 2 Coins, 0 to 28 left.
+    case "GOLD_CLAIM_PAID":
+      return (
+        id(e.playerId) &&
+        parseCoordV7(e.at) !== null &&
+        pos(e.coins) &&
+        (e.coins as number) <= GOLD_CLAIM_COINS_V7 &&
+        nn(e.left) &&
+        (e.left as number) + (e.coins as number) <= GOLD_CLAIM_TOTAL_V7
+      );
+    // Map curiosities round 3 (section 7.2).
+    case "EXPEDITION_NOTES_USED":
+      return id(e.playerId) && parseCoordV7(e.at) !== null;
     case "TECH_RESEARCHED":
       return (
         id(e.playerId) &&
@@ -1599,6 +1637,18 @@ function validPayload(
         parseCoordV7(e.from) !== null &&
         parseCoordV7(e.to) !== null
       );
+    // Map curiosities round 3 (section 5.2).
+    case "MOON_GUN_FIRED": {
+      const from = parseCoordV7(e.from);
+      const to = parseCoordV7(e.to);
+      return (
+        id(e.playerId) &&
+        id(e.unitId) &&
+        from !== null &&
+        to !== null &&
+        (from.x !== to.x || from.y !== to.y)
+      );
+    }
     case "UNIT_REWARD_GRANTED":
       return (
         id(e.playerId) &&
@@ -1747,6 +1797,22 @@ function validPayload(
       return id(e.playerId) && sortedCoords(e.tiles);
     case "COMBAT_RESOLVED":
       return combat(e.preview);
+    // Map curiosities round 3 (section 4.2): a fixed 4, split between HP and
+    // a Shield (Armoured takes 1 off, the Blizzard halves it).
+    case "TESLA_ZAPPED":
+      return (
+        id(e.playerId) &&
+        id(e.unitId) &&
+        id(e.targetUnitId) &&
+        e.unitId !== e.targetUnitId &&
+        parseCoordV7(e.at) !== null &&
+        parseCoordV7(e.targetAt) !== null &&
+        nn(e.damage) &&
+        nn(e.shieldDamage) &&
+        Number(e.shieldDamage) <= SHIELD_CAP_V7 &&
+        Number(e.damage) + Number(e.shieldDamage) <= TESLA_ZAP_DAMAGE_V7 &&
+        nn(e.hpAfter)
+      );
     case "UNIT_BOMBED":
       // The Dwarf revision (section 6.3): a bomb of at most 5 (Dive), split
       // between HP and a Shield; a kill needs HP damage.
@@ -2255,6 +2321,23 @@ function validPayload(
     // Map curiosities (section 6).
     case "SHRINE_CLAIMED":
       return id(e.playerId) && id(e.unitId) && parseCoordV7(e.at) !== null;
+    // Map curiosities round 3 (sections 6.1 and 7.1).
+    case "GOLD_CLAIM_STAKED":
+      return (
+        id(e.playerId) &&
+        id(e.unitId) &&
+        parseCoordV7(e.at) !== null &&
+        (e.previousOwnerId === null ||
+          (id(e.previousOwnerId) && e.previousOwnerId !== e.playerId))
+      );
+    case "EXPEDITION_FOUND":
+      return (
+        id(e.playerId) &&
+        id(e.unitId) &&
+        parseCoordV7(e.at) !== null &&
+        typeof e.notes === "boolean" &&
+        e.coins === (e.notes ? 0 : EXPEDITION_COINS_V7)
+      );
     case "UNIT_PROMOTED":
       return id(e.unitId) && pos(e.maxHp);
     case "UNIT_GREW":

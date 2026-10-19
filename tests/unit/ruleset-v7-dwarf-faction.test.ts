@@ -181,7 +181,9 @@ describe("Dwarf faction registration (sections 2 and 14)", () => {
     // removes BEHOLD (83).
     // The frozen sea redesign (`pulp_wars-5ti.25`) adds CRACK_ICE after
     // FREEZE and BUILD_FISHING_HOLE after BUILD_LUMBER_CAMP (85).
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(85);
+    // Map curiosities round 3 (`pulp_wars-737.20`) adds ZAP and
+    // FIRE_MOON_GUN after JOIN_CHANT (87).
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(87);
     const snap = COMMAND_KIND_ORDER_V7.indexOf("FREEZE");
     expect(COMMAND_KIND_ORDER_V7.slice(snap, snap + 8)).toEqual([
       "FREEZE", // the frozen sea (pulp_wars-5ti.3), after COLD_SNAP
@@ -225,7 +227,10 @@ describe("Dwarf faction registration (sections 2 and 14)", () => {
     // (`pulp_wars-mch9.33`) removes IDOL_RAISED and IDOL_DROPPED (153).
     // The frozen sea redesign (`pulp_wars-5ti.25`) adds ICE_CRACKED after
     // WATER_FROZEN (154).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(154);
+    // Map curiosities round 3 (`pulp_wars-737.20`) adds GOLD_CLAIM_PAID,
+    // EXPEDITION_NOTES_USED, MOON_GUN_FIRED, TESLA_ZAPPED,
+    // GOLD_CLAIM_STAKED, and EXPEDITION_FOUND (160).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(160);
     const after = (order: readonly string[], kind: string) =>
       order[order.indexOf(kind) + 1];
     for (const order of [
@@ -235,7 +240,10 @@ describe("Dwarf faction registration (sections 2 and 14)", () => {
       expect(after(order, "UNIT_TRAINED")).toBe("UNIT_ASSEMBLED");
       expect(after(order, "UNIT_PULLED")).toBe("UNIT_TUNNELLED");
       expect(after(order, "UNIT_TUNNELLED")).toBe("UNIT_SURFACED");
-      expect(after(order, "COMBAT_RESOLVED")).toBe("UNIT_BOMBED");
+      // Map curiosities round 3 (`pulp_wars-737.20`) puts TESLA_ZAPPED
+      // between COMBAT_RESOLVED and UNIT_BOMBED.
+      expect(after(order, "COMBAT_RESOLVED")).toBe("TESLA_ZAPPED");
+      expect(after(order, "TESLA_ZAPPED")).toBe("UNIT_BOMBED");
       expect(after(order, "UNIT_BOMBED")).toBe("WHIRL_RESOLVED");
       expect(after(order, "WHIRL_RESOLVED")).toBe("BARRICADE_ATTACKED");
       expect(after(order, "FIELD_DEFENSE_DESTROYED")).toBe("BARRICADE_BUILT");

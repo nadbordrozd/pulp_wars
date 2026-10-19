@@ -722,6 +722,29 @@ export type DomainEventV7 =
       readonly cost: number;
     }
   | {
+      /**
+       * Map curiosities round 3 (section 7.2): the notes `playerId` found at
+       * the Lost Expedition on `at` made its research free; the Expedition
+       * left the board.
+       */
+      readonly kind: "EXPEDITION_NOTES_USED";
+      readonly playerId: PlayerId;
+      readonly at: CoordV7;
+    }
+  | {
+      /**
+       * Map curiosities round 3 (section 6.2): at its owner's Start Turn,
+       * right after the income, the Gold Claim on `at` paid `playerId`
+       * `coins` (2, or what was left); `left` Coins remain in it.
+       * Owner-only, like the income.
+       */
+      readonly kind: "GOLD_CLAIM_PAID";
+      readonly playerId: PlayerId;
+      readonly at: CoordV7;
+      readonly coins: number;
+      readonly left: number;
+    }
+  | {
       readonly kind: "FRUIT_HARVESTED" | "GAME_HUNTED";
       readonly playerId: PlayerId;
       readonly cityId: CityId;
@@ -1071,6 +1094,18 @@ export type DomainEventV7 =
       readonly to: CoordV7;
     }
   | {
+      /**
+       * Map curiosities round 3 (section 5.2): the unit `unitId` of
+       * `playerId` was fired from the Moon Gun on `from` to `to` (a
+       * placement, not a Move; its activation is spent).
+       */
+      readonly kind: "MOON_GUN_FIRED";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly from: CoordV7;
+      readonly to: CoordV7;
+    }
+  | {
       readonly kind: "UNIT_REWARD_GRANTED";
       readonly playerId: PlayerId;
       readonly cityId: CityId;
@@ -1367,6 +1402,25 @@ export type DomainEventV7 =
       readonly tiles: readonly CoordV7[];
     }
   | { readonly kind: "COMBAT_RESOLVED"; readonly preview: CombatPreviewV7 }
+  | {
+      /**
+       * Map curiosities round 3 (`pulp_wars-737.20`,
+       * RULESET_7_CURIOSITIES_ROUND_3.md section 4.2): the unit `unitId` of
+       * `playerId` on the Tesla Tower at `at` zapped `targetUnitId` on
+       * `targetAt` (`damage` is HP damage, `shieldDamage` what its Shield
+       * absorbed, `hpAfter` its HP afterwards; 0 when it died). Never
+       * answered; the deaths follow as `UNIT_DIED` cause `ATTACK`.
+       */
+      readonly kind: "TESLA_ZAPPED";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly at: CoordV7;
+      readonly targetUnitId: UnitId;
+      readonly targetAt: CoordV7;
+      readonly damage: number;
+      readonly shieldDamage: number;
+      readonly hpAfter: number;
+    }
   | {
       /**
        * The Dwarf revision (section 6.3): the Gyrocopter `unitId` flew from
@@ -1934,6 +1988,33 @@ export type DomainEventV7 =
       readonly playerId: PlayerId;
       readonly unitId: UnitId;
       readonly at: CoordV7;
+    }
+  | {
+      /**
+       * Map curiosities round 3 (section 6.1): `unitId` of `playerId` ended
+       * a Move on the Gold Claim at `at` and staked it for its owner;
+       * `previousOwnerId` is the seat it took the Claim from (null when it
+       * was unclaimed).
+       */
+      readonly kind: "GOLD_CLAIM_STAKED";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly at: CoordV7;
+      readonly previousOwnerId: PlayerId | null;
+    }
+  | {
+      /**
+       * Map curiosities round 3 (section 7.1): `unitId` of `playerId` ended
+       * a Move on the Lost Expedition at `at` and found it: `notes` true
+       * when its owner keeps the notes (its next technology is free), else
+       * `coins` (10) and the Expedition left the board. Owner-only Coins.
+       */
+      readonly kind: "EXPEDITION_FOUND";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly at: CoordV7;
+      readonly notes: boolean;
+      readonly coins: number;
     }
   | {
       readonly kind: "UNIT_PROMOTED";

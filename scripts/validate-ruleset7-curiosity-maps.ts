@@ -25,7 +25,11 @@ import { checkCuriosityPlacementV7 } from "../tests/fixtures/v7-curiosity-checke
 // no Downed Saucer with a Martian seat, no Graveyard with an Undead seat,
 // no gates or Bigfoot below width 20, never two dangers); the same setup
 // gives the same curiosities. Prints the curiosity count per map type, size,
-// and mix and the kind frequencies (the Rift table precedent).
+// and mix and the kind frequencies (the Rift table precedent). Round 3
+// (`pulp_wars-737.20`, RULESET_7_CURIOSITIES_ROUND_3.md section 3.5): the
+// Tesla Tower, Moon Gun, Gold Claim, and Lost Expedition, the counts of
+// section 3.2 (20 x 20: 2; 25 x 25: 2 or 3), no Tower or Gun below width 16
+// and no Claim below 14.
 const seeds = Number(
   process.argv.find((value) => value.startsWith("--seeds="))?.slice(8) ?? 32,
 );
@@ -68,7 +72,7 @@ const MIXES: Readonly<
     4: ["MARTIAN", "UNDEAD", "ORIGINAL", "DWARF"],
   },
 };
-const counts: Record<string, [number, number, number]> = {};
+const counts: Record<string, [number, number, number, number]> = {};
 const kinds: Record<string, Record<CuriosityPlacementKindV7, number>> = {};
 const totals = Object.fromEntries(
   CURIOSITY_PLACEMENT_KINDS_V7.map((kind) => [kind, 0]),
@@ -118,7 +122,7 @@ for (const mix of ["PLAIN", "MARTIAN_UNDEAD"] as const)
         );
         // The gate pair is one curiosity.
         const placedCount = new Set(placed.map((entry) => entry.kind)).size;
-        const tally = (counts[label] ??= [0, 0, 0]);
+        const tally = (counts[label] ??= [0, 0, 0, 0]);
         tally[placedCount] = (tally[placedCount] ?? 0) + 1;
         const kindTally = (kinds[label] ??= Object.fromEntries(
           CURIOSITY_PLACEMENT_KINDS_V7.map((kind) => [kind, 0]),
@@ -131,10 +135,12 @@ for (const mix of ["PLAIN", "MARTIAN_UNDEAD"] as const)
       }
 assert.equal(cases, 2 * mapTypes.length * setups.length * seeds);
 // Pillar 2: no board has two of a kind (checked per map), and the targets
-// of section 4.2 bound the counts: 11 and 14 at most 1, 25 at most 2.
+// of section 4.2 (round 3, section 3.2) bound the counts: 11 to 16 at most
+// 1, 20 at most 2, 25 at most 3.
 for (const [label, tally] of Object.entries(counts)) {
   const width = Number(label.split("/")[2]);
   if (width <= 16) assert.equal(tally[2], 0, `${label} has two`);
+  if (width <= 20) assert.equal(tally[3], 0, `${label} has three`);
 }
 // Sections 4.4 and 24.1: the Spider and the camps only on boards of width
 // 16 and up, the gates and Bigfoot on 20 and up; no camp in the
@@ -147,6 +153,11 @@ for (const [label, kindTally] of Object.entries(kinds)) {
   if (width < 20)
     for (const kind of ["GATES", "BIGFOOT"] as const)
       assert.equal(kindTally[kind], 0, `${label} has ${kind}`);
+  // Round 3 (section 3.5).
+  if (width < 16)
+    for (const kind of ["TESLA_TOWER", "MOON_GUN"] as const)
+      assert.equal(kindTally[kind], 0, `${label} has a ${kind}`);
+  if (width < 14) assert.equal(kindTally.GOLD_CLAIM, 0, `${label} has a Claim`);
   if (label.startsWith("MARTIAN_UNDEAD/"))
     for (const kind of ["DOWNED_SAUCER", "GRAVEYARD"] as const)
       assert.equal(kindTally[kind], 0, `${label} has a ${kind}`);

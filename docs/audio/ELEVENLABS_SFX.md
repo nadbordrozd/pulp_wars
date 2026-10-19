@@ -33,15 +33,15 @@ a listener can say whether it is the right sound.
 
 ## The count
 
-- 81 sound effects, every one of the game's (82) but `impact.rocket`, added later with the user's own recording.
-- 346 takes generated in 8 rounds: 237 in round 1, 78 in round 2, 15 in round 3, 4 in round 4, 4 in round 5, 2 in round 6, 3 in round 7, 3 in round 8.
+- 82 sound effects, every one of the game's (83) but `impact.rocket`, added later with the user's own recording.
+- 349 takes generated in 8 rounds: 240 in round 1, 78 in round 2, 15 in round 3, 4 in round 4, 4 in round 5, 2 in round 6, 3 in round 7, 3 in round 8.
 - 2 takes the user made with ElevenLabs and handed over, brought in by `import` (round 0) and played by default whatever they measure: `unit.hurt.dinosaur` #101 (`dinosaur_taking_dama_#1-1791924507764.wav`, 2026-10-13), `unit.hurt.goblin` #101 (`goblin_taking_damage_#2-1791924587712.wav`, 2026-10-13).
 - 81 of round 1, 33 of round 2, 8 of round 3, 3 of round 4, 3 of round 5, 1 of round 6, 2 of round 7, 2 of round 8 failed their rules. 46 prompts were revised and their failed takes generated again (round 2), and the 6 sounds still short of takes once more (round 3). Bead `pulp_wars-2yc.52` added rounds 4 to 6, new prompts for the sounds whose takes the user heard and did not want (`unit.death`, `village.capture`; their old takes are retired, kept to choose but never the default), and the first two rounds of its new sounds. Bead `pulp_wars-2yc.57` added rounds 7 and 8 for the move sounds: a shuffle of footsteps for `unit.step` (its single thumps retired) and the first two rounds of `unit.step.naval`, both 10 dB under the hit.
-- 205 takes kept: 80 sounds play a new take by default, 76 of them with at least one other to choose.
+- 208 takes kept: 81 sounds play a new take by default, 77 of them with at least one other to choose.
 - 1 sound with no passing take, which keeps its old default: `unit.train` (the best 2 failed takes offered to listen to).
 - 16 sounds play the version the user chose by ear ahead of their measured default, which stays a choice ([The user's picks](#the-users-picks)).
-- 215 clips, 3.13 MB together: AAC at 96 kbit/s like the stock clips.
-- The service reported a cost of 3044 credits in all (its `character-cost` header, summed over every take).
+- 218 clips, 3.17 MB together: AAC at 96 kbit/s like the stock clips.
+- The service reported a cost of 3068 credits in all (its `character-cost` header, summed over every take).
 
 ## The user's picks
 
@@ -211,6 +211,7 @@ same way. A take quieter than that even at full level plays at 1.
 `attack.plesiosaur` is matched instead to `attack.melee`'s reference, 0 dB: Bead pulp_wars-5ti.18: the Plesiosaur's torpedo bite (docs/product/RULESET_7_NAVAL_FACTIONS.md section 5.7) plays where every other melee attack plays its swing, at the swing's level.
 `attack.kraken` is matched instead to `attack.melee`'s reference, 0 dB: Bead pulp_wars-5ti.22: the Kraken's torpedo, a deep wet lash (docs/product/RULESET_7_NAVAL_FACTIONS.md section 9.7), plays where every other melee attack plays its swing, at the swing's level.
 `special.ice-crack` is matched instead to `impact.ice`'s reference, 0 dB: Bead pulp_wars-5ti.27: Crack Ice breaking or cracking a tile (docs/product/RULESET_7_ICE_REDESIGN.md section 4.3), at the level of the ice shatter.
+`special.zap` is matched instead to `attack.ray`'s reference, 0 dB: Bead pulp_wars-737.20: the Tesla Tower's zap (docs/product/RULESET_7_CURIOSITIES_ROUND_3.md section 12.4), at the level of a ray attack.
 `unit.death` is matched instead to `unit.hurt`'s reference, -6 dB: Bead pulp_wars-2yc.52: units die often, so a death plays 6 dB under the level every hurt sound is matched to (the synthesised hurt sound's), and under the groan it replaces.
 `unit.step` is matched instead to `impact.hit`'s reference, -10 dB: Bead pulp_wars-2yc.57: units move more than anything else happens, every unit of an enemy turn, so a move plays 10 dB under the level the hit sound is matched to.
 `unit.step.naval` is matched instead to `impact.hit`'s reference, -10 dB: Bead pulp_wars-2yc.57: a ship's move, like a land unit's, plays 10 dB under the level the hit sound is matched to.
@@ -245,6 +246,7 @@ are in seconds, onset and tail in ms, loudness in LUFS as stored.
 | `impact.explosion`     | boom     | 0.35–1.2   | 4     | 3    | #101    | 1.2    | 0     | 215  | 74       | 99%         | -16      | 0.6   | stock recording #1 (impact-explosion-1.m4a) at level 0.7                                        | high       |
 | `impact.ice`           | bright   | 0.12–0.7   | 3     | 3    | #101    | 0.7    | 0     | 286  | 4775     | 5%          | -22.1    | 0.81  | stock recording #1 (impact-ice-1.m4a) at level 0.4                                              | high       |
 | `special.ice-crack`    | burst    | 0.2–0.8    | 3     | 3    | #103    | 0.374  | 10    | 60   | 967      | 80%         | -20      | 0.64  | +0 dB against `impact.ice`'s reference, stock recording #1 (impact-ice-1.m4a) at level 0.4      | high       |
+| `special.zap`          | burst    | 0.2–0.8    | 3     | 3    | #103    | 0.8    | 0     | 55   | 5449     | 18%         | -11.8    | 0.3   | +0 dB against `attack.ray`'s reference, stock recording #1 (attack-ray-1.m4a) at level 0.55     | medium     |
 | `impact.splat`         | hit      | 0.08–0.5   | 5     | 3    | #105    | 0.406  | 0     | 210  | 2048     | 32%         | -24.4    | 1     | stock recording #1 (impact-splat-1.m4a) at level 0.7                                            | high       |
 | `impact.shield`        | clang    | 0.1–0.6    | 4     | 3    | #101    | 0.6    | 0     | 95   | 1103     | 35%         | -18.5    | 0.68  | stock recording #1 (impact-shield-1.m4a) at level 0.6                                           | medium     |
 | `impact.splash`        | hit      | 0.08–0.5   | 3     | 3    | #102    | 0.5    | 0     | 150  | 2762     | 43%         | -24.1    | 1     | stock recording #1 (impact-splash-1.m4a) at level 0.5                                           | high       |
@@ -329,6 +331,7 @@ are in seconds, onset and tail in ms, loudness in LUFS as stored.
 - `impact.explosion`: #101 scored best (0.593) of 3 kept: 1.2 s for a range of 0.35–1.2 s, onset 0 ms, tail 215 ms, centred near 74 Hz; the next, #103, scored 0.728.
 - `impact.ice`: #101 scored best (0.727) of 3 kept: 0.7 s for a range of 0.12–0.7 s, onset 0 ms, tail 286 ms, centred near 4775 Hz; the next, #102, scored 0.833.
 - `special.ice-crack`: #103 scored best (0.509) of 3 kept: 0.374 s for a range of 0.2–0.8 s, onset 10 ms, tail 60 ms, centred near 967 Hz; the next, #101, scored 0.782.
+- `special.zap`: #103 scored best (0.552) of 3 kept: 0.8 s for a range of 0.2–0.8 s, onset 0 ms, tail 55 ms, centred near 5449 Hz; the next, #101, scored 0.574.
 - `impact.splat`: #105 scored best (0.535) of 3 kept: 0.406 s for a range of 0.08–0.5 s, onset 0 ms, tail 210 ms, centred near 2048 Hz; the next, #104, scored 0.717.
 - `impact.shield`: #101 scored best (0.586) of 3 kept: 0.6 s for a range of 0.1–0.6 s, onset 0 ms, tail 95 ms, centred near 1103 Hz; the next, #102, scored 0.617.
 - `impact.splash`: #102 scored best (0.652) of 3 kept: 0.5 s for a range of 0.08–0.5 s, onset 0 ms, tail 150 ms, centred near 2762 Hz; the next, #103, scored 1.09.
@@ -460,6 +463,9 @@ samples in flat runs at full scale.
 | `special.ice-crack`    | #101 | 1     | kept     | 0.782 | 0.8    | 10    | 110  | 5244     | 40%         | 24.4  | 0.00%   |                                                                                                                                                                            |
 | `special.ice-crack`    | #102 | 1     | kept     | 0.966 | 0.8    | 10    | 331  | 6526     | 13%         | 26.5  | 0.00%   |                                                                                                                                                                            |
 | `special.ice-crack`    | #103 | 1     | default  | 0.509 | 0.374  | 10    | 60   | 967      | 80%         | 17.1  | 0.06%   |                                                                                                                                                                            |
+| `special.zap`          | #101 | 1     | kept     | 0.574 | 0.8    | 0     | 40   | 4987     | 33%         | 10.1  | 0.00%   |                                                                                                                                                                            |
+| `special.zap`          | #102 | 1     | kept     | 0.581 | 0.8    | 0     | 130  | 5424     | 35%         | 11.5  | 0.01%   |                                                                                                                                                                            |
+| `special.zap`          | #103 | 1     | default  | 0.552 | 0.8    | 0     | 55   | 5449     | 18%         | 12    | 0.00%   |                                                                                                                                                                            |
 | `impact.splat`         | #101 | 1     | rejected | 0.208 | 0.266  | 0     | 80   | 2102     | 65%         | 10    | 0.16%   | clipped (0.16% of samples flat at full scale)                                                                                                                              |
 | `impact.splat`         | #102 | 1     | rejected | 0.811 | 0.444  | 10    | 215  | 1195     | 59%         | 14.7  | 0.13%   | clipped (0.13% of samples flat at full scale)                                                                                                                              |
 | `impact.splat`         | #103 | 1     | kept     | 1.046 | 0.479  | 10    | 200  | 996      | 74%         | 14.4  | 0.05%   |                                                                                                                                                                            |

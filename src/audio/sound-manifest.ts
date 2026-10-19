@@ -44,6 +44,9 @@ export const SOUND_IDS_V1 = [
   // The frozen sea redesign (`pulp_wars-5ti.27`): Crack Ice, a sharp
   // crack of lake ice with a small splash.
   "special.ice-crack",
+  // Map curiosities round 3 (`pulp_wars-737.20`): the Tesla Tower's zap, a
+  // short crackle of electricity.
+  "special.zap",
   "impact.splat",
   "impact.shield",
   "impact.splash",
@@ -802,6 +805,32 @@ const SYNTH_SOUNDS: Readonly<Record<SoundIdV1, SoundEntryV1>> = {
       gain: 0.5,
       attackMs: 8,
       decay: 2.2,
+    },
+  ]),
+  // Bead pulp_wars-737.20: a crackle of noise ticks over a buzzing saw, the
+  // fallback of the Tesla Tower's zap takes.
+  "special.zap": synth("Zap", "combat", 2, 40, 0.22, [
+    tick(0, 1),
+    tick(30, 0.8),
+    tick(70, 0.7),
+    {
+      wave: "saw",
+      ms: 220,
+      hz: 120,
+      hzEnd: 90,
+      gain: 0.35,
+      attackMs: 4,
+      decay: 2,
+    },
+    {
+      wave: "noise",
+      at: 20,
+      ms: 200,
+      highpassHz: 900,
+      lowpassHz: 3600,
+      gain: 0.3,
+      attackMs: 4,
+      decay: 2.4,
     },
   ]),
   "special.freeze": synth("Freeze", "combat", 2, 30, 0.2, [

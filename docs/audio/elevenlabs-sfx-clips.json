@@ -986,6 +986,69 @@
       ]
     },
     {
+      "id": "special.zap",
+      "default": 103,
+      "confidence": "medium",
+      "why": "#103 scored best (0.552) of 3 kept: 0.8 s for a range of 0.2–0.8 s, onset 0 ms, tail 55 ms, centred near 5449 Hz; the next, #101, scored 0.574.",
+      "reference": {
+        "source": "+0 dB against `attack.ray`'s reference, stock recording #1 (attack-ray-1.m4a) at level 0.55",
+        "lufs": -22.2
+      },
+      "takes": [
+        {
+          "n": 103,
+          "file": "special-zap-103.m4a",
+          "generated": "2026-10-19",
+          "round": 1,
+          "take": 3,
+          "model": "eleven_text_to_sound_v2",
+          "prompt": "A short electric zap: a sharp crackle and snap of a spark of electricity jumping, a brief buzz, no thunder. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+          "durationSeconds": 0.7,
+          "promptInfluence": 0.45,
+          "startSeconds": 0,
+          "endSeconds": 0.8,
+          "gain": 0.3,
+          "lufs": -11.8,
+          "note": "0.8 s, hard attack, centred near 5.4 kHz, 18% of its energy under 1 kHz, crest 12 dB.",
+          "passed": true
+        },
+        {
+          "n": 101,
+          "file": "special-zap-101.m4a",
+          "generated": "2026-10-19",
+          "round": 1,
+          "take": 1,
+          "model": "eleven_text_to_sound_v2",
+          "prompt": "A short electric zap: a sharp crackle and snap of a spark of electricity jumping, a brief buzz, no thunder. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+          "durationSeconds": 0.7,
+          "promptInfluence": 0.45,
+          "startSeconds": 0,
+          "endSeconds": 0.8,
+          "gain": 0.27,
+          "lufs": -10.7,
+          "note": "0.8 s, hard attack, centred near 5.0 kHz, 33% of its energy under 1 kHz, crest 10.1 dB.",
+          "passed": true
+        },
+        {
+          "n": 102,
+          "file": "special-zap-102.m4a",
+          "generated": "2026-10-19",
+          "round": 1,
+          "take": 2,
+          "model": "eleven_text_to_sound_v2",
+          "prompt": "A short electric zap: a sharp crackle and snap of a spark of electricity jumping, a brief buzz, no thunder. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+          "durationSeconds": 0.7,
+          "promptInfluence": 0.45,
+          "startSeconds": 0,
+          "endSeconds": 0.8,
+          "gain": 0.27,
+          "lufs": -10.7,
+          "note": "0.8 s, hard attack, centred near 5.4 kHz, 35% of its energy under 1 kHz, crest 11.5 dB.",
+          "passed": true
+        }
+      ]
+    },
+    {
       "id": "impact.splat",
       "default": 105,
       "confidence": "high",

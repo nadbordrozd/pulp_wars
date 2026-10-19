@@ -202,7 +202,11 @@ export const RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION = Object.freeze({
     // FREEZE and BUILD_FISHING_HOLE after BUILD_LUMBER_CAMP, moving the
     // later command kinds forward (was ed9ce4…8c11); the revision-12-ordinal
     // value is unchanged.
-    "60a2ff1ef94b51ec285f820182ef89a5d00d99ce06d0c8e47a6cae1848748f89",
+    // Map curiosities round 3 (`pulp_wars-737.20`) insert ZAP and
+    // FIRE_MOON_GUN after JOIN_CHANT, moving the later command kinds
+    // forward by two (was 60a2ff…8f89); the revision-12-ordinal value is
+    // unchanged.
+    "526c6c8066e2fad8fad8f7e89750af47f539d7429625e28f267065b1a96a2b4a",
   command: Object.freeze({
     kind: "RESEARCH",
     tech: "MARKSMANSHIP",
@@ -294,10 +298,10 @@ export function upgradeRetainedPublicViewV7(
   });
   return {
     ...retained,
-    rulesetId: "pulp-wars-poc-7r102",
+    rulesetId: "pulp-wars-poc-7r103",
     setup: {
       ...retained.setup,
-      rulesetId: "pulp-wars-poc-7r102",
+      rulesetId: "pulp-wars-poc-7r103",
       mapType: "DRY_LAND",
       mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
       curiosities: false,

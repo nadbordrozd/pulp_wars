@@ -458,6 +458,13 @@ import {
   gateAtV7,
   gateDisplacementTileV7,
   monsterAreaV7,
+  moonGunAtV7,
+  moonGunLoadedV7,
+  moonGunTargetsV7,
+  researchPriceWithNotesV7,
+  teslaTowerAtV7,
+  zapHitV7,
+  zapReachesV7,
 } from "./curiosities";
 import {
   viewForV7,
@@ -532,13 +539,20 @@ export function queryTechnologyTreeV7(
               : "BLOCKED";
       // The free opener applies only to researchable offers; a forbidden
       // (Dry Land Naval or mission) node keeps its ordinary cost.
+      // Map curiosities round 3 (`pulp_wars-737.20`, section 7.2): every
+      // offer above 0 is free while the viewer holds the Lost Expedition's
+      // notes.
       const cost =
         nodeState === "DISABLED"
           ? technologyResearchCostV7(node.tier, ownedCityCount)
-          : playerTechnologyResearchCostV7(
-              node.tier,
-              player.researchedTechs.length,
-              ownedCityCount,
+          : researchPriceWithNotesV7(
+              view.curiosities,
+              player.id,
+              playerTechnologyResearchCostV7(
+                node.tier,
+                player.researchedTechs.length,
+                ownedCityCount,
+              ),
             );
       return {
         id: node.id,
@@ -1522,6 +1536,28 @@ function appendPublicUnitCommandsV7(
     player.coins >= 1
   )
     candidates.push({ kind: "TOSS_COIN", unitId: unit.id });
+  // Map curiosities round 3 (`pulp_wars-737.20`, sections 4.1 and 5.1): a
+  // zap from the Tesla Tower (every legal target) and a shot of the Moon Gun
+  // (every legal landing tile), offered exactly when the reducer accepts it.
+  if (primaryReady && unit.form === "LAND" && view.curiosities.length > 0) {
+    if (teslaTowerAtV7(view.curiosities, unit.at) !== null)
+      for (const target of publicZapTargetsV7(view, unit))
+        candidates.push({
+          kind: "ZAP",
+          unitId: unit.id,
+          targetUnitId: target.id,
+        });
+    const gun = moonGunAtV7(view.curiosities, unit.at);
+    if (gun !== null && moonGunLoadedV7(gun, view.round, player.id))
+      for (const at of moonGunTargetsV7(
+        view,
+        unit,
+        view.viewer.researchedTechs,
+        gun.at,
+        (tile) => publicKnownTileV7(view, tile),
+      ))
+        candidates.push({ kind: "FIRE_MOON_GUN", unitId: unit.id, at });
+  }
   // Section 10: the predicate End Turn idle recovery uses. The Candy
   // revision: a Crashed unit recovers idle at End Turn but cannot `RECOVER`.
   if (!crashed && recoverEligibleV7(publicRecoveryFactsV7(view, unit)))
@@ -2730,6 +2766,196 @@ export interface BombRunPreviewV7 {
 }
 
 /** The Dwarf revision (section 14): null unless that `BOMB_RUN` is offered. */
+/**
+ * Map curiosities round 3 (section 4.1 row 4): the units a zap from the
+ * Tower under `unit` may hit: visible units hostile to the viewer within 2
+ * of it, a submerged Submarine only next to it, in unit-ID order.
+ */
+function publicZapTargetsV7(
+  view: PlayerViewV7,
+  unit: PublicUnitV7,
+): readonly PublicUnitV7[] {
+  return view.units
+    .filter(
+      (target) =>
+        target.hp > 0 &&
+        publicHostile(view, view.viewer.id, target.ownerId) &&
+        publicExploredV7(view, target.at) &&
+        zapReachesV7(unit.at, target.at, unitIsSubmergedV7(view, target)),
+    )
+    .sort((left, right) => left.id - right.id);
+}
+
+/** Whether the viewer has explored `at`. */
+function publicExploredV7(view: PlayerViewV7, at: CoordV7): boolean {
+  return publicKnownTileV7(view, at) !== undefined;
+}
+
+/** The tile on `at` when the viewer has explored it. */
+function publicKnownTileV7(
+  view: PlayerViewV7,
+  at: CoordV7,
+): Extract<PlayerTileViewV7, { readonly explored: true }> | undefined {
+  if (at.x < 0 || at.y < 0 || at.x >= view.board.width) return undefined;
+  const tile = view.board.tiles[at.y * view.board.width + at.x];
+  return tile?.explored === true ? tile : undefined;
+}
+
+/** Map curiosities round 3 (section 10.4): one target of a zap. */
+export interface ZapTargetPreviewV7 {
+  readonly targetUnitId: UnitId;
+  /** HP damage; `shieldDamage` is what its Shield absorbs. */
+  readonly damage: number;
+  readonly shieldDamage: number;
+  readonly hpAfter: number;
+  readonly kills: boolean;
+}
+
+/** Map curiosities round 3 (section 10.4): every legal zap of a unit. */
+export interface ZapPreviewV7 {
+  readonly unitId: UnitId;
+  /** The Tower the unit stands on. */
+  readonly tower: CoordV7;
+  /** In target-ID order. */
+  readonly targets: readonly ZapTargetPreviewV7[];
+  /** Always true: every modifier a zap reads is public. */
+  readonly exact: true;
+}
+
+/**
+ * Map curiosities round 3 (section 10.4): for a unit that may zap now,
+ * every legal target with its damage, Shield damage, HP after, and whether
+ * it dies; null when the unit may not zap. Exact.
+ */
+export function previewZapV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+): ZapPreviewV7 | null {
+  const unit = view.units.find((candidate) => candidate.id === unitId);
+  if (unit === undefined) return null;
+  const targets = queryPlayerCommandsV7(view).flatMap((command) => {
+    if (command.kind !== "ZAP" || command.unitId !== unitId) return [];
+    const target = view.units.find(
+      (candidate) => candidate.id === command.targetUnitId,
+    );
+    if (target === undefined) return [];
+    const hit = zapHitV7(
+      view,
+      publicWitchesV7(view),
+      unit.at,
+      target,
+      shieldOfV7(view.shields, target.id),
+    );
+    return [
+      {
+        targetUnitId: target.id,
+        damage: hit.damage,
+        shieldDamage: hit.shieldDamage,
+        hpAfter: hit.hpAfter,
+        kills: hit.dies,
+      },
+    ];
+  });
+  if (targets.length === 0) return null;
+  return { unitId, tower: unit.at, targets, exact: true };
+}
+
+/** Map curiosities round 3 (section 10.4): the Moon Gun under a unit. */
+export interface MoonGunPreviewV7 {
+  readonly unitId: UnitId;
+  /** The Gun the unit stands on. */
+  readonly gun: CoordV7;
+  /** Whether the Gun may fire in the viewer's turn (it has not fired). */
+  readonly loaded: boolean;
+  /** Every legal landing tile, in (y, x) order (empty when it may not fire). */
+  readonly targets: readonly CoordV7[];
+}
+
+/**
+ * Map curiosities round 3 (section 10.4): for the viewer's unit standing on
+ * a Moon Gun, whether the Gun is loaded and every tile it may be fired to
+ * now (exactly the offered `FIRE_MOON_GUN` commands); null when the unit is
+ * not the viewer's or not on a Gun.
+ */
+export function previewMoonGunV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+): MoonGunPreviewV7 | null {
+  const unit = view.units.find((candidate) => candidate.id === unitId);
+  if (unit === undefined || unit.ownerId !== view.viewer.id) return null;
+  const gun = moonGunAtV7(view.curiosities, unit.at);
+  if (gun === null || unit.form !== "LAND") return null;
+  return {
+    unitId,
+    gun: gun.at,
+    loaded: moonGunLoadedV7(gun, view.round, view.viewer.id),
+    targets: queryPlayerCommandsV7(view).flatMap((command) =>
+      command.kind === "FIRE_MOON_GUN" && command.unitId === unitId
+        ? [command.at]
+        : [],
+    ),
+  };
+}
+
+/**
+ * Map curiosities round 3 (sections 5.1 and 11): the tiles the Moon Gun on
+ * `gunAt` could fire the viewer's unit `unitId` to once it stands there
+ * (rows 5 to 8 of section 5.1, as the board stands; whether the Gun is
+ * loaded and the unit may act are not asked), in (y, x) order. Empty when
+ * there is no explored Gun on `gunAt` or the unit is not the viewer's land
+ * unit. The Normal AI's Moon Gun errand reads it.
+ */
+export function queryMoonGunLandingsV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+  gunAt: CoordV7,
+): readonly CoordV7[] {
+  const unit = view.units.find((candidate) => candidate.id === unitId);
+  if (
+    unit === undefined ||
+    unit.ownerId !== view.viewer.id ||
+    unit.form !== "LAND" ||
+    moonGunAtV7(view.curiosities, gunAt) === null
+  )
+    return [];
+  return moonGunTargetsV7(
+    view,
+    unit,
+    view.viewer.researchedTechs,
+    gunAt,
+    (tile) => publicKnownTileV7(view, tile),
+  ).filter((tile) => !same(tile, unit.at));
+}
+
+/**
+ * Map curiosities round 3 (section 10.4): what an offered `MOVE` of the
+ * viewer's unit does at a round-3 curiosity it ends on: `STAKE` when it
+ * would stake the Gold Claim there (not played out, not the viewer's or an
+ * ally's), `FIND` when it would find the unfound Lost Expedition there;
+ * null otherwise. A Move ends in land form on these land tiles.
+ */
+export function queryCuriosityMoveEffectV7(
+  view: PlayerViewV7,
+  command: Extract<CommandV7, { readonly kind: "MOVE" }>,
+): "STAKE" | "FIND" | null {
+  const end = command.path.at(-1);
+  if (end === undefined || view.curiosities.length === 0) return null;
+  const unit = view.units.find((candidate) => candidate.id === command.unitId);
+  if (unit === undefined || unit.ownerId !== view.viewer.id) return null;
+  if (same(end, unit.at)) return null;
+  const curiosity = view.curiosities.find((entry) => same(entry.at, end));
+  if (curiosity?.kind === "GOLD_CLAIM")
+    return curiosity.left > 0 &&
+      curiosity.ownerId !== view.viewer.id &&
+      (curiosity.ownerId === null ||
+        publicHostile(view, view.viewer.id, curiosity.ownerId))
+      ? "STAKE"
+      : null;
+  if (curiosity?.kind === "LOST_EXPEDITION")
+    return curiosity.foundBy === null ? "FIND" : null;
+  return null;
+}
+
 export function previewBombRunV7(
   view: PlayerViewV7,
   command: Extract<CommandV7, { kind: "BOMB_RUN" }>,

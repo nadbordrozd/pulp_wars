@@ -543,7 +543,10 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     "src/engine/v7/movement.ts": 4,
     // `pulp_wars-5ti.3`: a Wreck is salvaged by an afloat unit or by a
     // land-form unit standing on ice (an Egg never moves onto one).
-    "src/engine/v7/curiosities.ts": 1,
+    // Map curiosities round 3 (`pulp_wars-737.20`): a Gold Claim is staked
+    // and the Lost Expedition found only by a Move that ends in land form
+    // (an Egg makes no Move, and a unit afloat stakes and finds nothing).
+    "src/engine/v7/curiosities.ts": 3,
     // Revision 20 removed the Stampede resolution and preview (two tests
     // each in the reducer and the queries).
     // `pulp_wars-v3w`: the public Restless test moved to the shared Recover
@@ -552,7 +555,10 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // Dwarf crowd control (`pulp_wars-w49.33`): the public Barricade tiles
     // and the unavailable reason are an Engineer's in land form (an
     // embarked Engineer builds nothing; an Egg is not an Engineer).
-    "src/engine/v7/query.ts": 4,
+    // Map curiosities round 3 (`pulp_wars-737.20`): the public Zap and
+    // Moon Gun previews are a land-form unit's on the Tower or the Gun (an
+    // Egg never acts, and an embarked unit never stands on either).
+    "src/engine/v7/query.ts": 6,
     // `pulp_wars-b5f.6`: the Mind Control target gate moved from the
     // reducer into the shared `mindControlTargetBlockV7` (martian.ts), which
     // the reducer and the public query both call; the Brain gate stays in
@@ -570,7 +576,10 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // Themed naval branches (`pulp_wars-5ti.16`): the Kaboom's land-form
     // gate moved into the shared `kaboomFormBlockV7` (ruleset-v7.ts), which
     // a Fire Raft afloat passes with Powder Kegs.
-    "src/engine/v7/reducer.ts": 18,
+    // Map curiosities round 3 (`pulp_wars-737.20`): ZAP and FIRE_MOON_GUN
+    // are commands of a unit in land form on the Tower or the Gun (an Egg
+    // and an embarked unit are refused NOT_ON_TOWER and NOT_ON_GUN).
+    "src/engine/v7/reducer.ts": 19,
     // Step two of the Martian pass (`pulp_wars-w49.25`, 7r58): City Walls
     // hold a land-form unit on its own center against a Saucer's Tractor
     // Beam (`unitHeldByCityWallsV7`; an Egg, an embarked unit, and a boat
@@ -710,7 +719,10 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // defends no center).
     // `pulp_wars-737.15`: a gate route is planned for a land-form unit (an
     // Egg never moves, and an afloat unit never reaches a gate).
-    "src/ai/v7-curiosities.ts": 2,
+    // `pulp_wars-737.20`: a Tesla Tower, Moon Gun, Gold Claim, or Lost
+    // Expedition errand is a land-form unit's (an Egg never moves, and an
+    // afloat unit never stands on one).
+    "src/ai/v7-curiosities.ts": 3,
     "src/ai/v7-dinosaur.ts": 2,
     // Step two of the Goblin pass (`pulp_wars-w49.23`): only a land-form
     // attacker has Gang Up (`gangUpWithHelpersV7`, as the engine's

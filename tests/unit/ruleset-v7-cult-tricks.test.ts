@@ -157,14 +157,14 @@ describe("tricks: identity and registration", () => {
   // The spread villages (`pulp_wars-9s0.12`) took 7r79, so 7r78 is a prior
   // identity.
   it("was 7r78 after 7r77, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r102");
-    expect(PRIOR_RULESET_7_IDS.slice(-25, -23)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r103");
+    expect(PRIOR_RULESET_7_IDS.slice(-26, -24)).toEqual([
       "pulp-wars-poc-7r77",
       "pulp-wars-poc-7r78",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r102.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-25, -23)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r103.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-26, -24)).toEqual([
       "pulpWars.save.v7r77.current",
       "pulpWars.save.v7r78.current",
     ]);
@@ -178,13 +178,16 @@ describe("tricks: identity and registration", () => {
   it("orders the three commands and the five events after the rituals'", () => {
     const commands = COMMAND_KIND_ORDER_V7 as readonly string[];
     const from = commands.indexOf("PROCLAIM");
-    expect(commands.slice(from, from + 6)).toEqual([
+    expect(commands.slice(from, from + 8)).toEqual([
       "PROCLAIM",
       "RIBBIT",
       "SWITCHEROO",
       "TENTACLE",
       // The Cult redesign (`pulp_wars-mch9.34`): joining a star's chant.
       "JOIN_CHANT",
+      // Map curiosities round 3 (`pulp_wars-737.20`).
+      "ZAP",
+      "FIRE_MOON_GUN",
       "CAPTURE",
     ]);
     const events = DOMAIN_EVENT_KIND_ORDER_V7 as readonly string[];

@@ -1059,7 +1059,11 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
           // FREEZE and BUILD_FISHING_HOLE after BUILD_LUMBER_CAMP, moving the
           // later command kinds forward (was 52a07c…1d52); the revision-12-ordinal
           // value is unchanged.
-          "0729cde1924e762e4f27e6a5194d24e44768a6626def4f3bae1081ee821538e6",
+          // Map curiosities round 3 (`pulp_wars-737.20`) insert ZAP and
+          // FIRE_MOON_GUN after JOIN_CHANT, moving the later command kinds
+          // forward by two (was 0729cd…38e6); the revision-12-ordinal value is
+          // unchanged.
+          "f122ff13fac19f7f643099b79f68192ea6a3430c21fed1bb8210ef0f58561f00",
         );
         // Revision 13 shifts the command-kind ordinals in AI tie-break
         // tuples (spec section 8); this is the value with revision-12
@@ -1193,7 +1197,11 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
           // FREEZE and BUILD_FISHING_HOLE after BUILD_LUMBER_CAMP, moving the
           // later command kinds forward (was 741724…b9de); the revision-12-ordinal
           // value is unchanged.
-          "fc35f1f71e6a3b400bf3b52b47ee523c13c1c5aa44fea97def00697e92d2afc2",
+          // Map curiosities round 3 (`pulp_wars-737.20`) insert ZAP and
+          // FIRE_MOON_GUN after JOIN_CHANT, moving the later command kinds
+          // forward by two (was fc35f1…afc2); the revision-12-ordinal value is
+          // unchanged.
+          "4633b343d597687e14e375496c25ecc843e16cfb57954eb8586fc6d12b62d578",
         );
         // With revision-12 ordinals (pulp_wars-9s0.1: was c56f00…73c1;
         // pulp_wars-0hi.3: was 091615…054b).

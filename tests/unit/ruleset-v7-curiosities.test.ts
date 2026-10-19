@@ -252,7 +252,7 @@ describe("generation (section 4)", () => {
 
   it("draws the target count from its own stream (section 4.2)", () => {
     const tally = (width: number) => {
-      const result = [0, 0, 0];
+      const result = [0, 0, 0, 0];
       for (let seed = 0; seed < 300; seed += 1) {
         const { count } = curiosityTargetCountV7(
           width,
@@ -264,17 +264,21 @@ describe("generation (section 4)", () => {
     };
     const eleven = tally(11);
     expect(eleven[2]).toBe(0);
+    expect(eleven[3]).toBe(0);
     expect((eleven[1] ?? 0) / 300).toBeGreaterThan(0.25);
     expect((eleven[1] ?? 0) / 300).toBeLessThan(0.42);
     const fourteen = tally(14);
     expect((fourteen[1] ?? 0) / 300).toBeGreaterThan(0.4);
     expect((fourteen[1] ?? 0) / 300).toBeLessThan(0.6);
-    expect(tally(16)).toEqual([0, 300, 0]);
-    const twenty = tally(20);
-    expect(twenty[0]).toBe(0);
-    expect((twenty[2] ?? 0) / 300).toBeGreaterThan(0.4);
-    expect((twenty[2] ?? 0) / 300).toBeLessThan(0.6);
-    expect(tally(25)).toEqual([0, 0, 300]);
+    expect(tally(16)).toEqual([0, 300, 0, 0]);
+    // Round 3 (`pulp_wars-737.20`, RULESET_7_CURIOSITIES_ROUND_3.md section
+    // 3.2): 20 x 20 aims for 2 with no draw; 25 x 25 for 3 with probability
+    // 1/2, otherwise 2 (round 2: 20 drew 1 or 2, 25 aimed for 2).
+    expect(tally(20)).toEqual([0, 0, 300, 0]);
+    const twentyFive = tally(25);
+    expect((twentyFive[0] ?? 0) + (twentyFive[1] ?? 0)).toBe(0);
+    expect((twentyFive[3] ?? 0) / 300).toBeGreaterThan(0.4);
+    expect((twentyFive[3] ?? 0) / 300).toBeLessThan(0.6);
   });
 });
 

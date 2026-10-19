@@ -10,10 +10,12 @@ import {
   BIGFOOT_SHADOW_MEASUREMENT_V7,
   CHIBI_CURIOSITIES_ART_ASSETS_V7,
   CHIBI_CURIOSITIES_ROUND2_ART_ASSETS_V7,
+  CHIBI_CURIOSITIES_ROUND3_ART_ASSETS_V7,
   GIANT_SPIDER_SHADOW_MEASUREMENT_V7,
 } from "../../src/assets/chibi-curiosities-art-manifest";
 import { chibiDirectionArtRegistryV7 } from "../../src/assets/chibi-direction-art-manifest";
 import { UNIT_SHADOW_MEASUREMENTS_V7 } from "../../src/render/canvas/unit-shadow-measurements-v7.generated";
+import { CURIOSITY_CORNER_BADGE_KINDS_V7 } from "../../src/render/canvas/curiosity-canvas-v7";
 import {
   batchManifestProblems,
   CHIBI_CLASS_RECIPES,
@@ -406,3 +408,157 @@ describe("map curiosity art, round 2 (pulp_wars-737.13)", () => {
     ).toBeGreaterThanOrEqual(0.3);
   });
 });
+
+/** Round 3 (bead pulp_wars-737.20, batch `curiosities-3`). */
+const BATCH_3 = "curiosities-3";
+const EXPECTED_3: readonly (readonly [string, string])[] = [
+  ["CURIOSITY:TESLA_TOWER", "chibi-curiosity-tesla-tower"],
+  ["CURIOSITY:MOON_GUN", "chibi-curiosity-moon-gun"],
+  ["CURIOSITY:GOLD_CLAIM", "chibi-curiosity-gold-claim"],
+  ["CURIOSITY:LOST_EXPEDITION", "chibi-curiosity-lost-expedition"],
+  ["ICON:CURIOSITY:TESLA_TOWER", "chibi-curiosity-icon-tesla-tower"],
+  ["ICON:CURIOSITY:MOON_GUN", "chibi-curiosity-icon-moon-gun"],
+  ["ICON:CURIOSITY:GOLD_CLAIM", "chibi-curiosity-icon-gold-claim"],
+  ["ICON:CURIOSITY:LOST_EXPEDITION", "chibi-curiosity-icon-lost-expedition"],
+  ["EFFECT:TESLA_ARC", "chibi-curiosity-effect-tesla-arc"],
+  ["EFFECT:MOON_GUN_BLAST", "chibi-curiosity-effect-moon-gun-blast"],
+  ["EFFECT:EXPEDITION_NOTES", "chibi-curiosity-effect-expedition-notes"],
+];
+/**
+ * Gold is allowed on the Gold Claim's nuggets (curiosities.md section 9,
+ * the amendment of rule 2), the colour of the HUD coin.
+ */
+const GOLD_3 = new Set([
+  "chibi-curiosity-gold-claim",
+  "chibi-curiosity-icon-gold-claim",
+]);
+
+describe("map curiosity art, round 3 (pulp_wars-737.20)", () => {
+  const byId = new Map(
+    CHIBI_CURIOSITIES_ROUND3_ART_ASSETS_V7.map((asset) => [asset.id, asset]),
+  );
+
+  it("lists four overlays, four icons and three effects", () => {
+    expect(
+      CHIBI_CURIOSITIES_ROUND3_ART_ASSETS_V7.map((asset) => [
+        asset.subject,
+        asset.id,
+      ]),
+    ).toEqual(EXPECTED_3);
+    const { problems } = buildChibiArtRegistryV7([
+      ...CHIBI_CURIOSITIES_ART_ASSETS_V7,
+      ...CHIBI_CURIOSITIES_ROUND2_ART_ASSETS_V7,
+      ...CHIBI_CURIOSITIES_ROUND3_ART_ASSETS_V7,
+    ]);
+    expect(problems).toEqual([]);
+  });
+
+  it("is registered in the live look only; the classic look has none", () => {
+    const live = chibiDirectionArtRegistryV7();
+    const classic = new Set(CHIBI_ART_ASSETS_V7.map((asset) => asset.id));
+    for (const asset of CHIBI_CURIOSITIES_ROUND3_ART_ASSETS_V7) {
+      expect(
+        live.variants(asset.subject).map((variant) => variant.id),
+        asset.id,
+      ).toEqual([asset.id]);
+      expect(classic.has(asset.id), asset.id).toBe(false);
+    }
+  });
+
+  it("has a valid batch whose recipes send no faction and no owner layer", async () => {
+    const manifest = await loadBatchManifest(ROOT, BATCH_3);
+    const fragments = await loadFragments(ROOT);
+    expect(batchManifestProblems(manifest, fragments, BATCH_3)).toEqual([]);
+    expect(
+      manifest.assets.every((asset) =>
+        (CLASSES as readonly string[]).includes(asset.recipeClass),
+      ),
+    ).toBe(true);
+    const records = await loadRecords(productionLayout(ROOT, BATCH_3), BATCH_3);
+    for (const recipe of Object.values(records.recipes))
+      for (const layer of recipe.request.layers)
+        expect(["faction", "owner"], recipe.id).not.toContain(layer.layer);
+  });
+
+  it("registers every accepted asset exactly as its record says", async () => {
+    const manifest = await loadBatchManifest(ROOT, BATCH_3);
+    const records = await loadRecords(productionLayout(ROOT, BATCH_3), BATCH_3);
+    const accepted = Object.values(records.assets).filter(
+      (record) => record.status === "ACCEPTED",
+    );
+    expect(accepted.map((record) => record.id).sort()).toEqual(
+      EXPECTED_3.map(([, id]) => id).sort(),
+    );
+    for (const record of accepted) {
+      const entry = byId.get(record.id);
+      const asset = manifest.assets.find((spec) => spec.id === record.id);
+      if (entry === undefined || asset === undefined)
+        throw new Error(`${record.id}: not registered`);
+      const line = registryEntry(asset, record);
+      expect(line, record.id).toContain(`subject: "${entry.subject}"`);
+      expect(line, record.id).toContain(`width: ${entry.width}`);
+      expect(line, record.id).toContain(`height: ${entry.height}`);
+      expect(entry.ownerMaskUrl, record.id).toBeUndefined();
+      expect(masterFile(entry), record.id).toBe(
+        path.join(ROOT, record.master.path),
+      );
+      expect(
+        await verifyAssetRecord(ROOT, manifest, record),
+        record.id,
+      ).toEqual([]);
+    }
+  });
+
+  it("draws each tile overlay on exactly one cell", () => {
+    for (const asset of CHIBI_CURIOSITIES_ROUND3_ART_ASSETS_V7) {
+      if (!asset.subject.startsWith("CURIOSITY:")) continue;
+      expect([asset.width, asset.height], asset.id).toEqual([80, 80]);
+      expect(chibiAnchorV7(asset), asset.id).toEqual({ x: 40, y: 40 });
+      expect(chibiOverflowV7(asset), asset.id).toEqual({
+        left: 0,
+        right: 0,
+        up: 0,
+        down: 0,
+      });
+    }
+  });
+
+  it("keeps the faction colours out of every piece but the Claim's gold", async () => {
+    for (const asset of CHIBI_CURIOSITIES_ROUND3_ART_ASSETS_V7) {
+      const report = paletteReport(await readRaster(masterFile(asset)));
+      if (GOLD_3.has(asset.id)) continue;
+      expect(report.nearestFaction.share, asset.id).toBeLessThanOrEqual(
+        ROUND3_FACTION_SHARE_MAXIMUM,
+      );
+    }
+  });
+
+  it("keeps every overlay findable under a unit: a corner badge", async () => {
+    // A unit holds the Tower and the Gun to use them and stands on the
+    // Claim and the camp it staked or found, so each draws its corner
+    // badge over the unit (the compact Claim shows only 7% beside a
+    // Fighter; the others between 12% and 30%).
+    const fighter = await readRaster(unitFile("chibi-direction-fighter"));
+    for (const asset of CHIBI_CURIOSITIES_ROUND3_ART_ASSETS_V7) {
+      if (!asset.subject.startsWith("CURIOSITY:")) continue;
+      const id = asset.subject.slice("CURIOSITY:".length);
+      expect(
+        CURIOSITY_CORNER_BADGE_KINDS_V7.has(
+          id as Parameters<typeof CURIOSITY_CORNER_BADGE_KINDS_V7.has>[0],
+        ),
+        asset.id,
+      ).toBe(true);
+      expect(
+        visibleBesideUnit(await readRaster(masterFile(asset)), fighter).share,
+        asset.id,
+      ).toBeGreaterThan(0.05);
+    }
+  });
+});
+
+/**
+ * The most of a round-3 master's pixels within CIE76 25 of a faction colour
+ * (the rusty Tower and the Gun's bronze bands sit nearest the Goblin
+ * red-orange; measured in readability.json).
+ */
+const ROUND3_FACTION_SHARE_MAXIMUM = 0.06;

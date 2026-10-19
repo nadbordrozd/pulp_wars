@@ -402,11 +402,11 @@ const productionOf = (
 
 describe("the ninth unit: identity", () => {
   it("was 7r55 after 7r54, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r102");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r102.current");
-    expect(PRIOR_RULESET_7_IDS.at(-48)).toBe("pulp-wars-poc-7r54");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r103");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r103.current");
+    expect(PRIOR_RULESET_7_IDS.at(-49)).toBe("pulp-wars-poc-7r54");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-48)).toBe(
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-49)).toBe(
       "pulpWars.save.v7r54.current",
     );
     const state = field([]);
@@ -456,7 +456,10 @@ describe("the ninth unit: identity", () => {
     // (`pulp_wars-mch9.33`) removes IDOL_RAISED and IDOL_DROPPED (153).
     // The frozen sea redesign (`pulp_wars-5ti.25`) adds ICE_CRACKED after
     // WATER_FROZEN (154).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(154);
+    // Map curiosities round 3 (`pulp_wars-737.20`) adds GOLD_CLAIM_PAID,
+    // EXPEDITION_NOTES_USED, MOON_GUN_FIRED, TESLA_ZAPPED,
+    // GOLD_CLAIM_STAKED, and EXPEDITION_FOUND (160).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(160);
   });
 });
 

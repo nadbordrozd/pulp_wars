@@ -1115,6 +1115,8 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       model.interaction.navalPick ??
       model.interaction.freezePick ??
       model.interaction.cultPick ??
+      // Map curiosities round 3: an aimed Zap or Moon Gun shot likewise.
+      model.interaction.curiosityPick ??
       null;
     const subject =
       unitId !== null
@@ -3594,6 +3596,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         (interaction.martianPick ?? null) !== null ||
         (interaction.iceFolkPick ?? null) !== null ||
         (interaction.navalPick ?? null) !== null ||
+        (interaction.curiosityPick ?? null) !== null ||
         (interaction.freezePick ?? null) !== null ||
         (interaction.cultPick ?? null) !== null ||
         (interaction.layEgg ?? null) !== null);
@@ -3876,6 +3879,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       (interaction.martianPick ?? null) !== null ||
       (interaction.iceFolkPick ?? null) !== null ||
       (interaction.navalPick ?? null) !== null ||
+      (interaction.curiosityPick ?? null) !== null ||
       (interaction.freezePick ?? null) !== null ||
       (interaction.cultPick ?? null) !== null ||
       (interaction.layEgg ?? null) !== null;

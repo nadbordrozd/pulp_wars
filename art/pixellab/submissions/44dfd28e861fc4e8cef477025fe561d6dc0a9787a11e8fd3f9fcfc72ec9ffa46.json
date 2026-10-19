@@ -1,0 +1,36 @@
+{
+  "id": "effect-moon-gun-blast-b-edit",
+  "jobId": "0fc53010-2237-48dd-9963-c98643a90e32",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "curiosities-3",
+    "asset": "chibi-curiosity-effect-moon-gun-blast",
+    "subject": "EFFECT:MOON_GUN_BLAST",
+    "faction": "ORIGINAL",
+    "recipeClass": "curiosity-item",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 73720075,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the orange flame in the middle: make it pale cream #fff2c8 with a warm grey #c9b9a0 shadow tone, so the middle is a white and pale cream flash with no orange. Keep the ring of grey smoke puffs, the white spikes, the outline and the art style exactly the same."
+      }
+    ],
+    "prompt": "Recolour only the orange flame in the middle: make it pale cream #fff2c8 with a warm grey #c9b9a0 shadow tone, so the middle is a white and pale cream flash with no orange. Keep the ring of grey smoke puffs, the white spikes, the outline and the art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Recolour only the orange flame in the middle: make it pale cream #fff2c8 with a warm grey #c9b9a0 shadow tone, so the middle is a white and pale cream flash with no orange. Keep the ring of grey smoke puffs, the white spikes, the outline and the art style exactly the same.",
+    "editInstruction": "Recolour only the orange flame in the middle: make it pale cream #fff2c8 with a warm grey #c9b9a0 shadow tone, so the middle is a white and pale cream flash with no orange. Keep the ring of grey smoke puffs, the white spikes, the outline and the art style exactly the same.",
+    "source": {
+      "recipe": "effect-moon-gun-blast-b",
+      "candidate": 0,
+      "sha256": "927b2a29bed84efddd4cf06bc91308244d6f7cf27ed7ac68d76f92e731eef68e"
+    }
+  }
+}

@@ -455,6 +455,11 @@ describe("the curiosity texts", () => {
       "GATE",
       "BIGFOOT",
       "WISHING_WELL",
+      // Round 3 (bead pulp_wars-737.20).
+      "TESLA_TOWER",
+      "MOON_GUN",
+      "GOLD_CLAIM",
+      "LOST_EXPEDITION",
       "BOUNTY",
       null,
     ]);
@@ -471,6 +476,10 @@ describe("the curiosity texts", () => {
       "GRAVEYARD",
       "GATE",
       "WISHING_WELL",
+      "TESLA_TOWER",
+      "MOON_GUN",
+      "GOLD_CLAIM",
+      "LOST_EXPEDITION",
     ] as const) {
       expect(CURIOSITY_LABELS_V7[id].length).toBeGreaterThan(0);
       expect(CURIOSITY_RULES_V7[id].endsWith(".")).toBe(true);

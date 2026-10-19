@@ -276,6 +276,7 @@ import {
   previewBooV7,
   previewChannelV7,
   previewJoinChantV7,
+  previewZapV7,
   previewProclaimV7,
   previewRampageV7,
   previewRitualV7,
@@ -1114,6 +1115,11 @@ export function textPlayCommandIdV7(command: CommandV7): string {
     // The Cult redesign (`pulp_wars-mch9.34`): join a Star-fall's chant.
     case "JOIN_CHANT":
       return `u${command.unitId}.join.u${command.leaderUnitId}`;
+    // Map curiosities round 3 (`pulp_wars-737.20`).
+    case "ZAP":
+      return `u${command.unitId}.zap.u${command.targetUnitId}`;
+    case "FIRE_MOON_GUN":
+      return `u${command.unitId}.moongun.${xyV7(command.at)}`;
     case "HATCH":
       return `u${command.unitId}.hatch.u${command.eggUnitId}`;
     case "BEAM_DOWN":
@@ -2157,6 +2163,15 @@ function describeCommandV7(
               : "as the board stands the unit on the mark BLOCKS the arrival (the Favour would be lost)";
       return `THE GREAT SUMMONING, the Herald on ${xyV7(command.at)}${chanters}${preview === null ? "" : `: -${preview.favour} Favour now (favour ${preview.favourAfter + preview.favour}->${preview.favourAfter}), never refunded | ${mark} | the Herald (hp ${CULT_SUMMONED_ROLE_RULES_V7.HERALD.maxHp}, Control ${summoning?.control ?? 3}) arrives next turn and every participant channels it at once (strands ${summoning?.strands ?? 0}/${summoning?.control ?? 3}), which spends their whole turn`} | ${frame}; it fizzles without its Summoner or with fewer than three chanters, and a healthy enemy that stands on the mark blocks it | uses the action of every participant`;
     }
+    // Map curiosities round 3 (`pulp_wars-737.20`).
+    case "ZAP": {
+      const hit = previewZapV7(view, command.unitId)?.targets.find(
+        (entry) => entry.targetUnitId === command.targetUnitId,
+      );
+      return `ZAP ${context.memory.tag(command.targetUnitId)} from the Tesla Tower${hit === undefined ? "" : `: -${hit.damage}${hit.shieldDamage > 0 ? ` (shield -${hit.shieldDamage})` : ""}${hit.kills ? " KILLS" : ` -> ${hit.hpAfter} hp`}`} | never answered | uses its action`;
+    }
+    case "FIRE_MOON_GUN":
+      return `FIRE from the Moon Gun to ${xyV7(command.at)} (${tileBriefV7(view, command.at)}) | the unit lands exhausted: no attack, capture, or action until next turn | the Gun fires once a turn`;
     // The Cult redesign (`pulp_wars-mch9.34`, RULESET_7_CULT_REDESIGN.md
     // section 8.2).
     case "JOIN_CHANT": {

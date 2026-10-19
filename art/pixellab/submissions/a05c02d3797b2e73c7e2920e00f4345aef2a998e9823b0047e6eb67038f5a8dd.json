@@ -1,0 +1,36 @@
+{
+  "id": "gold-claim-b-edit",
+  "jobId": "cf1a3278-217e-457e-82bf-bd58e137c800",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "curiosities-3",
+    "asset": "chibi-curiosity-gold-claim",
+    "subject": "CURIOSITY:GOLD_CLAIM",
+    "faction": "ORIGINAL",
+    "recipeClass": "curiosity-site",
+    "requestSize": {
+      "width": 80,
+      "height": 80
+    },
+    "seed": 73720023,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove only the ground: erase the green grass and the brown soil block under the boulder, the mine mouth and the ore cart, so they stand directly on a transparent background with nothing at all under them. Keep the grey boulder, the timber beams, the dark mine mouth, the wooden stake, the ore cart, every gold nugget, the outline and the art style exactly the same."
+      }
+    ],
+    "prompt": "Remove only the ground: erase the green grass and the brown soil block under the boulder, the mine mouth and the ore cart, so they stand directly on a transparent background with nothing at all under them. Keep the grey boulder, the timber beams, the dark mine mouth, the wooden stake, the ore cart, every gold nugget, the outline and the art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove only the ground: erase the green grass and the brown soil block under the boulder, the mine mouth and the ore cart, so they stand directly on a transparent background with nothing at all under them. Keep the grey boulder, the timber beams, the dark mine mouth, the wooden stake, the ore cart, every gold nugget, the outline and the art style exactly the same.",
+    "editInstruction": "Remove only the ground: erase the green grass and the brown soil block under the boulder, the mine mouth and the ore cart, so they stand directly on a transparent background with nothing at all under them. Keep the grey boulder, the timber beams, the dark mine mouth, the wooden stake, the ore cart, every gold nugget, the outline and the art style exactly the same.",
+    "source": {
+      "recipe": "gold-claim-b",
+      "candidate": 0,
+      "sha256": "280e575d995162c33dbe17f54b5cb6680667bb762d90e612a1d2172a6c328094"
+    }
+  }
+}

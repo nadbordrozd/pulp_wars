@@ -14,6 +14,7 @@ import {
   WELL_COINS_V7,
   WELL_TOSS_COST_V7,
   WELL_VISION_RADIUS_V7,
+  EXPEDITION_COINS_V7,
   SPATIAL_ECONOMIC_ACTIONS_V7,
   UNIT_ROLE_IDS_V7,
   effectiveRoleRuleV7,
@@ -116,12 +117,15 @@ export type GalleryCuriosityRowIdV7 = "SPIDER" | "BIGFOOT" | CuriosityTileIdV7;
 /**
  * The Curiosities tab's grid: round 1 (the Spider, its lair, the
  * Fountain, the Shrine, the Wreck) over round 2 (Bigfoot, the Downed
- * Saucer, the Graveyard, the gate, the Well; bead pulp_wars-737.16).
+ * Saucer, the Graveyard, the gate, the Well; bead pulp_wars-737.16) over
+ * round 3 (the Tesla Tower, the Moon Gun, the Gold Claim, the Lost
+ * Expedition; bead pulp_wars-737.20, the Sea Serpent to follow).
  */
 export const GALLERY_CURIOSITY_GRID_V7: readonly (readonly GalleryCuriosityRowIdV7[])[] =
   [
     ["SPIDER", "WEB", "FOUNTAIN", "SHRINE", "WRECK"],
     ["BIGFOOT", "DOWNED_SAUCER", "GRAVEYARD", "GATE", "WISHING_WELL"],
+    ["TESLA_TOWER", "MOON_GUN", "GOLD_CLAIM", "LOST_EXPEDITION"],
   ];
 
 /** Every Curiosities cell in reading order (the detail's arrows). */
@@ -186,6 +190,19 @@ const CURIOSITY_GALLERY_NOTES_V7: Partial<
   GATE: ["A Move ends on a gate. Two gates, on opposite sides of a big map."],
   WISHING_WELL: [
     `A toss costs ${WELL_TOSS_COST_V7} Coin: a splash, ${WELL_COINS_V7} Coins, a full heal, or the land within ${WELL_VISION_RADIUS_V7} revealed.`,
+  ],
+  // Round 3 (bead pulp_wars-737.20).
+  TESLA_TOWER: [
+    "The zap is never answered and counts as a kill for the unit that zaps.",
+  ],
+  MOON_GUN: [
+    "The unit lands spent: no attack or capture until its owner's next turn. A unit on the Gun keeps everyone else from firing it.",
+  ],
+  GOLD_CLAIM: [
+    "Any unit of another player takes it with a Move that ends on it. Nobody needs to stand on it.",
+  ],
+  LOST_EXPEDITION: [
+    `With nothing left to research, the finder gets ${EXPEDITION_COINS_V7} Coins instead.`,
   ],
 };
 
@@ -332,6 +349,10 @@ const ROW_LABELS: Readonly<Record<string, string>> = {
   GRAVEYARD: CURIOSITY_LABELS_V7.GRAVEYARD,
   GATE: CURIOSITY_LABELS_V7.GATE,
   WISHING_WELL: CURIOSITY_LABELS_V7.WISHING_WELL,
+  TESLA_TOWER: CURIOSITY_LABELS_V7.TESLA_TOWER,
+  MOON_GUN: CURIOSITY_LABELS_V7.MOON_GUN,
+  GOLD_CLAIM: CURIOSITY_LABELS_V7.GOLD_CLAIM,
+  LOST_EXPEDITION: CURIOSITY_LABELS_V7.LOST_EXPEDITION,
 };
 
 /** The row's name: the mechanical role, building, form or curiosity. */

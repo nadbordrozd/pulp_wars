@@ -1,0 +1,383 @@
+{
+  "schemaVersion": 1,
+  "batch": "curiosities-3",
+  "title": "Map curiosities, round 3 A: the Tesla Tower, the Moon Gun, the Gold Claim and the Lost Expedition as tile overlays, their legend icons, and the Tesla arc, Moon Gun blast and Expedition notes effects",
+  "bead": "pulp_wars-737.20",
+  "faction": "ORIGINAL",
+  "dryRun": false,
+  "fixedFactionColours": true,
+  "assets": [
+    {
+      "id": "chibi-curiosity-tesla-tower",
+      "subject": "CURIOSITY:TESLA_TOWER",
+      "assetClass": "BUILDING",
+      "recipeClass": "curiosity-site",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      }
+    },
+    {
+      "id": "chibi-curiosity-moon-gun",
+      "subject": "CURIOSITY:MOON_GUN",
+      "assetClass": "BUILDING",
+      "recipeClass": "curiosity-site",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      }
+    },
+    {
+      "id": "chibi-curiosity-gold-claim",
+      "subject": "CURIOSITY:GOLD_CLAIM",
+      "assetClass": "BUILDING",
+      "recipeClass": "curiosity-site",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      }
+    },
+    {
+      "id": "chibi-curiosity-lost-expedition",
+      "subject": "CURIOSITY:LOST_EXPEDITION",
+      "assetClass": "BUILDING",
+      "recipeClass": "curiosity-site",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      }
+    },
+    {
+      "id": "chibi-curiosity-icon-tesla-tower",
+      "subject": "ICON:CURIOSITY:TESLA_TOWER",
+      "assetClass": "ICON",
+      "recipeClass": "curiosity-item",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-curiosity-icon-moon-gun",
+      "subject": "ICON:CURIOSITY:MOON_GUN",
+      "assetClass": "ICON",
+      "recipeClass": "curiosity-item",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-curiosity-icon-gold-claim",
+      "subject": "ICON:CURIOSITY:GOLD_CLAIM",
+      "assetClass": "ICON",
+      "recipeClass": "curiosity-item",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-curiosity-icon-lost-expedition",
+      "subject": "ICON:CURIOSITY:LOST_EXPEDITION",
+      "assetClass": "ICON",
+      "recipeClass": "curiosity-item",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-curiosity-effect-tesla-arc",
+      "subject": "EFFECT:TESLA_ARC",
+      "assetClass": "EFFECT",
+      "recipeClass": "curiosity-item",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-curiosity-effect-moon-gun-blast",
+      "subject": "EFFECT:MOON_GUN_BLAST",
+      "assetClass": "EFFECT",
+      "recipeClass": "curiosity-item",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-curiosity-effect-expedition-notes",
+      "subject": "EFFECT:EXPEDITION_NOTES",
+      "assetClass": "EFFECT",
+      "recipeClass": "curiosity-item",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    }
+  ],
+  "recipes": [
+    {
+      "id": "tesla-tower-a",
+      "asset": "chibi-curiosity-tesla-tower",
+      "endpoint": "create-image-pixen",
+      "seed": 73720001,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      }
+    },
+    {
+      "id": "moon-gun-a",
+      "asset": "chibi-curiosity-moon-gun",
+      "endpoint": "create-image-pixen",
+      "seed": 73720011,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      }
+    },
+    {
+      "id": "gold-claim-a",
+      "asset": "chibi-curiosity-gold-claim",
+      "endpoint": "create-image-pixen",
+      "seed": 73720021,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      }
+    },
+    {
+      "id": "lost-expedition-a",
+      "asset": "chibi-curiosity-lost-expedition",
+      "endpoint": "create-image-pixen",
+      "seed": 73720031,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      }
+    },
+    {
+      "id": "icon-tesla-tower-a",
+      "asset": "chibi-curiosity-icon-tesla-tower",
+      "endpoint": "create-image-pixen",
+      "seed": 73720061,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "icon-moon-gun-a",
+      "asset": "chibi-curiosity-icon-moon-gun",
+      "endpoint": "create-image-pixen",
+      "seed": 73720062,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "icon-gold-claim-a",
+      "asset": "chibi-curiosity-icon-gold-claim",
+      "endpoint": "create-image-pixen",
+      "seed": 73720063,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "icon-lost-expedition-a",
+      "asset": "chibi-curiosity-icon-lost-expedition",
+      "endpoint": "create-image-pixen",
+      "seed": 73720064,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "effect-tesla-arc-a",
+      "asset": "chibi-curiosity-effect-tesla-arc",
+      "endpoint": "create-image-pixen",
+      "seed": 73720071,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "options": {
+        "view": "side"
+      }
+    },
+    {
+      "id": "effect-moon-gun-blast-a",
+      "asset": "chibi-curiosity-effect-moon-gun-blast",
+      "endpoint": "create-image-pixen",
+      "seed": 73720072,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "options": {
+        "view": "side"
+      }
+    },
+    {
+      "id": "effect-expedition-notes-a",
+      "asset": "chibi-curiosity-effect-expedition-notes",
+      "endpoint": "create-image-pixen",
+      "seed": 73720073,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "options": {
+        "view": "side"
+      }
+    },
+    {
+      "id": "moon-gun-a-edit",
+      "asset": "chibi-curiosity-moon-gun",
+      "endpoint": "edit-image-pixen",
+      "seed": 73720012,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "source": {
+        "recipe": "moon-gun-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove only the ground: erase the brown soil and the green grass edge under the grey stone mount, so the cannon and its stone mount stand directly on a transparent background with nothing at all under them. Keep the dark iron barrel, the bronze bands, the stone mount, the smoke puff, the outline and the art style exactly the same."
+    },
+    {
+      "id": "lost-expedition-a-edit",
+      "asset": "chibi-curiosity-lost-expedition",
+      "endpoint": "edit-image-pixen",
+      "seed": 73720032,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "source": {
+        "recipe": "lost-expedition-a",
+        "candidate": 0
+      },
+      "editInstruction": "Erase everything except the khaki tent, the crates, the pith helmet, the rolled map and the journal: remove the green grass and the brown soil block under them completely, so the camp stands directly on a transparent background with nothing at all under it. Keep the tent, the crates, the helmet, the map, the journal, the outline and the art style exactly the same."
+    },
+    {
+      "id": "lost-expedition-b",
+      "asset": "chibi-curiosity-lost-expedition",
+      "endpoint": "create-image-pixen",
+      "seed": 73720033,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "promptAddendum": "The camp is wide: the tent and the crates together touch the left edge and the right edge of the image. The crates are pale weathered grey-brown wooden boxes with plank lines, not bricks and not red. Nothing is drawn under the camp: no grass, no soil, no ground block and no platform.",
+      "negativeAddendum": "grass, ground block, dirt block, soil, island, platform, bricks, red, campfire, fire, flag, person"
+    },
+    {
+      "id": "gold-claim-b",
+      "asset": "chibi-curiosity-gold-claim",
+      "endpoint": "create-image-pixen",
+      "seed": 73720022,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "promptAddendum": "The claim is big and wide: the boulder and the ore cart together touch the left edge and the right edge of the image. The boulder is weathered mid grey stone with a darker grey shadow tone, not white. The stake is a tall thin wooden post with a frayed rope tied round it. Nothing is drawn under it: no grass, no soil and no ground block.",
+      "negativeAddendum": "grass, ground block, dirt block, soil, island, platform, white boulder, snow, flag, person"
+    },
+    {
+      "id": "icon-tesla-tower-b",
+      "asset": "chibi-curiosity-icon-tesla-tower",
+      "endpoint": "create-image-pixen",
+      "seed": 73720065,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The arcs of electricity are pure white zig-zag lines with a pale grey shadow tone, never purple, never violet and never blue. Nothing is drawn under the tower: no grass, no soil and no ground block.",
+      "negativeAddendum": "purple, violet, lilac, blue, cyan, grass, ground block, soil, plate, island"
+    },
+    {
+      "id": "effect-moon-gun-blast-b",
+      "asset": "chibi-curiosity-effect-moon-gun-blast",
+      "endpoint": "create-image-pixen",
+      "seed": 73720074,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "options": {
+        "view": "side"
+      },
+      "promptAddendum": "It is only smoke and light: a ring of round puffy pale grey smoke clouds with an empty bright white flash in its middle; there is no cannon, no gun, no object and no fire inside it; never red and never green.",
+      "negativeAddendum": "cannon, gun, barrel, object, fire, flame, red, crimson, orange, green, explosion debris"
+    },
+    {
+      "id": "gold-claim-b-edit",
+      "asset": "chibi-curiosity-gold-claim",
+      "endpoint": "edit-image-pixen",
+      "seed": 73720023,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "source": {
+        "recipe": "gold-claim-b",
+        "candidate": 0
+      },
+      "editInstruction": "Remove only the ground: erase the green grass and the brown soil block under the boulder, the mine mouth and the ore cart, so they stand directly on a transparent background with nothing at all under them. Keep the grey boulder, the timber beams, the dark mine mouth, the wooden stake, the ore cart, every gold nugget, the outline and the art style exactly the same."
+    },
+    {
+      "id": "icon-tesla-tower-a-edit",
+      "asset": "chibi-curiosity-icon-tesla-tower",
+      "endpoint": "edit-image-pixen",
+      "seed": 73720066,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-tesla-tower-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the two electric arcs above the copper ball: make them pure white #ffffff with a pale grey #c4c4c4 shadow tone, not purple and not violet. Keep the rusty lattice tower, the copper ball, the outline and the art style exactly the same."
+    },
+    {
+      "id": "icon-tesla-tower-c",
+      "asset": "chibi-curiosity-icon-tesla-tower",
+      "endpoint": "create-image-pixen",
+      "seed": 73720067,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "options": {
+        "view": "side"
+      },
+      "promptAddendum": "Seen from the side. The tower's legs end in the empty air: nothing is drawn under it, no grass, no soil and no block. The two arcs of electricity are pure white #ffffff zig-zag lines with a pale grey #c4c4c4 shadow tone and a thin black outline, never purple, never violet and never blue.",
+      "negativeAddendum": "purple, violet, lilac, blue, cyan, magenta, grass, ground block, soil, plate, island, pedestal"
+    },
+    {
+      "id": "effect-moon-gun-blast-b-edit",
+      "asset": "chibi-curiosity-effect-moon-gun-blast",
+      "endpoint": "edit-image-pixen",
+      "seed": 73720075,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "effect-moon-gun-blast-b",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the orange flame in the middle: make it pale cream #fff2c8 with a warm grey #c9b9a0 shadow tone, so the middle is a white and pale cream flash with no orange. Keep the ring of grey smoke puffs, the white spikes, the outline and the art style exactly the same."
+    }
+  ]
+}

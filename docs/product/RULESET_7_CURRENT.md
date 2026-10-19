@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r102`, for all nine offered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r103`, for all nine offered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), Candy (`CANDY`), and
 the Cultists (`CULT`). The ninth faction, the Cultists of the Ancient Ones,
@@ -445,6 +445,21 @@ links to another, by Road or by Port. A sea link needs only **Shorecraft**
 the Roads technology, and unexplored water no longer breaks a link. A save,
 replay, or setup of `7r75` is rejected, and the browser autosave has a new
 key.
+`pulp-wars-poc-7r103` (`pulp_wars-737.20`, map curiosities round 3, bead
+A; the user, 2026-10-19: "come up with and implement 5 more curiosities on
+the map including 1 naval one") adds four land curiosities
+([section 2.7, round 3](#round-3-the-tesla-tower-the-moon-gun-the-gold-claim-and-the-lost-expedition)):
+the **Tesla Tower** (a unit on it may zap an enemy within 2 for 4, never
+answered), the **Moon Gun** (a unit on it may be fired to an empty land
+tile within 5, once a turn), the **Gold Claim** (staked by a Move, pays
+its owner 2 Coins a turn up to 30), and the **Lost Expedition** (the first
+finder's next technology is free). Boards of width 20 now get 2
+curiosities and boards of width 25 get 2 or 3. New commands `ZAP` and
+`FIRE_MOON_GUN`; new events `TESLA_ZAPPED`, `MOON_GUN_FIRED`,
+`GOLD_CLAIM_STAKED`, `GOLD_CLAIM_PAID`, `EXPEDITION_FOUND`, and
+`EXPEDITION_NOTES_USED`; new curiosity state markers. A save, replay, or
+setup of `7r102` is rejected, and the browser autosave has a new key. With
+curiosities off, boards and matches are as at `7r102`.
 `pulp-wars-poc-7r102` (`pulp_wars-w49.44`, the Gyrocopter pass; the user,
 2026-10-19: "the dwarf gyrocopter is really weak ... the big problem with
 the bomb run is that it forces you to land somewhere in enemy territory")
@@ -1552,10 +1567,10 @@ sections here cite.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r102`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Ruleset                                    | `pulp-wars-poc-7r103`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r102.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Browser autosave                           | `pulpWars.save.v7r103.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, `CULT`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`, `CULT_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -3876,6 +3891,135 @@ and `slain` count in `monsters` (its `slainRound` is the Spider's) and
 the `gates` and `well` blocks. The measured distribution is in
 [section 39](RULESET_7_MAP_CURIOSITIES.md#39-implementation-notes-pulp_wars-73714)
 of the spec.
+
+#### Round 3: the Tesla Tower, the Moon Gun, the Gold Claim, and the Lost Expedition
+
+**Round 3, bead A** (`pulp_wars-737.20`, the
+[map curiosities round 3](RULESET_7_CURIOSITIES_ROUND_3.md) design,
+sections 3 to 7 and the notes of
+[section 17](RULESET_7_CURIOSITIES_ROUND_3.md#17-implementation-notes-bead-a-pulp_wars-73720);
+`pulp-wars-poc-7r103`) adds four land kinds, tile markers that create no
+entity. The Normal AI knows them
+([Normal AI, round 3](../architecture/NORMAL_AI.md#map-curiosities-round-3-pulp_wars-73720)),
+and the browser draws and explains them (below). The Sea Serpent is bead B
+(`pulp-wars-poc-7r104`).
+
+| Curiosity           | Where                             | Rule                                                                                                                                      |
+| ------------------- | --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| **Tesla Tower**     | Grass or Forest, boards 16 and up | A unit standing on the Tesla Tower may zap an enemy within 2 of it for 4 damage instead of attacking.                                     |
+| **Moon Gun**        | Grass, boards 16 and up           | A unit standing on the Moon Gun may be fired to any empty land tile within 5 of it; the Gun fires once a turn.                            |
+| **Gold Claim**      | Grass or Forest, boards 14 and up | A unit that ends a Move on the Gold Claim stakes it for its owner; the Claim pays its owner 2 Coins each turn until its 30 Coins run out. |
+| **Lost Expedition** | Grass or Forest, any board        | The first unit that ends a Move on the Lost Expedition finds its notes: its owner's next technology costs nothing.                        |
+
+**Generation.** The four kinds are appended to the frozen draw order with
+weight 2 each (Tesla Tower, Moon Gun, Gold Claim, Lost Expedition); the
+order and weights of the nine earlier kinds are unchanged, and each new
+kind draws nothing after its site draw. The **count table changes on the
+two largest sizes**: width 20 places **2** (no draw; it was 2 or 1 on a
+coin flip) and width 25 places **3 with probability 1/2, otherwise 2** (it
+was 2, no draw); widths 11, 14, and 16 are unchanged. Every new tile obeys
+the round-1 site rules 1 to 6 (off the edge ring, no settlement site,
+chest, resource, improvement, or Rift; 3 or more from every settlement
+centre; the capital distances; 5 or more from every other curiosity tile;
+a shared or neutral landmass). The **Tesla Tower** also keeps the Spider's
+lair distances (5 or more from every capital, 4 or more from every village
+centre); the **Moon Gun** needs at least **20** land tiles (not water, not
+a Rift) within 5 (`MOON_GUN_LAND_MINIMUM_V7`). None of the four is a
+danger. With the option off, nothing is drawn and boards and matches are
+as at `7r102`; with it on, boards of width 20 and 25 (and boards whose
+draws reach a new kind) differ from `7r102`.
+
+**Tesla Tower.** `ZAP { unitId, targetUnitId }` is a primary action of
+the actor's own unit in land form on the Tower (else
+`ZAP_NOT_LEGAL { reason: "NOT_ON_TOWER" }`), under the ordinary activation
+rules; the target is a hostile unit (a neutral one included) on an
+explored tile within Chebyshev 2 of the Tower (`TESLA_ZAP_RANGE_V7`), a
+submerged Submarine only next to it (else `OUT_OF_RANGE`). The target takes
+`TESLA_ZAP_DAMAGE_V7` = **4**: fixed damage, not an attack (no Gang Up,
+Charge, cover, or fortification), never answered; a Shield absorbs first,
+Armoured takes 3, Plated caps at 4, and an Ice Folk unit in its own
+Witch's Blizzard halves a hit from distance 2. The zapper gets the kill
+credit (Promotion, growth, Slayer, Plunder, a neutral unit's bounty), a
+neutral unit it hurts is provoked, and deaths are ordinary. Event
+`TESLA_ZAPPED { playerId, unitId, at, targetUnitId, targetAt, damage,
+shieldDamage, hpAfter }`, projected to the actor and to every viewer that
+sees the zapper or the target.
+
+**Moon Gun.** `FIRE_MOON_GUN { unitId, at }` is a primary action of the
+actor's own unit in land form on the Gun (else
+`MOON_GUN_NOT_LEGAL { reason: "NOT_ON_GUN" }`); the Gun must not have fired
+in this player's current turn (`RELOADING`); `at` is within Chebyshev 5
+and not the Gun's tile (`OUT_OF_RANGE`), explored by the actor
+(`UNEXPLORED`), enterable by the unit in land form with its owner's
+research, and free of units, mounds, Barricades, chests, settlement
+centres, and curiosity tile markers (`BLOCKED`). Zones of control,
+territory, and enemy cities do not matter. The unit is **placed** on `at`
+(no zone of control, capture, chest, claim, Crumbs, gate, or Black Ice)
+with its activation fully spent; the Gun's `lastFired` becomes
+`{ round, playerId }`. Event `MOON_GUN_FIRED { playerId, unitId, from, to }`
+then `TILES_REVEALED`, projected to the actor, to viewers that see the
+unit, and to viewers that have explored `from` or `to`.
+
+**Gold Claim.** A unit **stakes** it exactly when a Shrine would be
+claimed: its own `MOVE` ends on the tile in land form. Only an unplayed
+Claim whose owner is neither the mover's owner nor its ally is staked; the
+Claim's `ownerId` becomes the mover's owner (event
+`GOLD_CLAIM_STAKED { playerId, unitId, at, previousOwnerId }` after
+`UNIT_MOVED`). At its owner's Start Turn, right after `INCOME_AWARDED`,
+an owned Claim pays `min(2, left)` Coins (`GOLD_CLAIM_COINS_V7`) and
+`left` drops by that much from `GOLD_CLAIM_TOTAL_V7` = 30 (event
+`GOLD_CLAIM_PAID { playerId, at, coins, left }`, owner-only). At `left` 0
+its owner is cleared and it stays as scenery; an eliminated owner's Claim
+becomes unowned.
+
+**Lost Expedition.** The first unit that ends a `MOVE` on it in land form
+finds it. If its owner has a technology it could research, the entry gains
+`foundBy` (the **notes**); otherwise its owner gains
+`EXPEDITION_COINS_V7` = 10 Coins and the Expedition leaves the board.
+Event `EXPEDITION_FOUND { playerId, unitId, at, notes, coins }` after
+`UNIT_MOVED`. The finder's next `RESEARCH` whose price is above 0 costs 0
+(its legality reads the price as 0, and `TECH_RESEARCHED` reports cost 0),
+then the entry leaves the board with `EXPEDITION_NOTES_USED { playerId,
+at }` after `TECH_RESEARCHED`; an eliminated finder's notes leave the
+board.
+
+**State, views, queries.** `curiosities` entries are
+`{ kind: "TESLA_TOWER", at }`,
+`{ kind: "MOON_GUN", at, lastFired: { round, playerId } | null }`,
+`{ kind: "GOLD_CLAIM", at, ownerId, left }` (`left` 0 to 30, no owner when
+played out), and `{ kind: "LOST_EXPEDITION", at, foundBy }`; parsing
+admits at most one of each, the board widths above, a `lastFired` seat
+and round no later than the current one, and an active owner or finder.
+The view copies the explored markers with their fields. Command kinds
+`ZAP` and `FIRE_MOON_GUN` follow `JOIN_CHANT` in `COMMAND_KIND_ORDER_V7`;
+the new events follow `INCOME_AWARDED` (`GOLD_CLAIM_PAID`),
+`TECH_RESEARCHED` (`EXPEDITION_NOTES_USED`), `UNIT_BEAMED`
+(`MOON_GUN_FIRED`), `COMBAT_RESOLVED` (`TESLA_ZAPPED`), and
+`SHRINE_CLAIMED` (`GOLD_CLAIM_STAKED`, `EXPEDITION_FOUND`) in
+`DOMAIN_EVENT_KIND_ORDER_V7`. The public queries offer every legal `ZAP`
+and `FIRE_MOON_GUN` (offered equals accepted), price the technology tree
+with the notes, and add `previewZapV7` (each target's damage, Shield
+damage, HP after, and kill; exact, equal to the result),
+`previewMoonGunV7` (the Gun, whether it is loaded, and the landings),
+`queryMoonGunLandingsV7`, and `queryCuriosityMoveEffectV7` (whether a Move
+stakes or finds). The headless metrics gain the `tesla` (zaps, kills),
+`moonGun` (shots), `goldClaim` (stakes, Coins paid), and `expedition`
+(found, notes used) blocks.
+
+**Presentation.** Each kind has its chibi overlay (batch `curiosities-3`)
+and a code marker in the classic look; a staked Claim flies its owner's
+pennant, and a played-out Claim and a found Expedition are dimmed. Each
+tile's dock names it with one state line ("Loaded" or "Reloading"; "Yours ·
+18 Coins left", "Unclaimed", "Played out"; who took the notes). A unit on
+the Tower has one **Zap** button and a unit on the loaded Gun one **Fire**
+button; each arms its aiming and the target or landing is picked on the
+board (a Zap target labelled "Zap −4", "· KO" when it dies; each landing a
+Move mark, a landing in a visible enemy's reach or a monster's provoke
+tiles with the threat marker;
+[board targeting section 3.10](../ui/BOARD_TARGETING.md#310-map-curiosities-round-3-bead-pulp_wars-73720)).
+A Move onto the Claim is labelled **Stake** and onto the Expedition
+**Find**. The zap plays an arc and `special.zap`, the shot a muzzle blast,
+a flight, and a landing puff, and the find the notes effect.
 
 ## 3. Players, turns, and victory
 

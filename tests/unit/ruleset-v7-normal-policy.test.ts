@@ -435,7 +435,11 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       // FREEZE and BUILD_FISHING_HOLE after BUILD_LUMBER_CAMP, moving the
       // later command kinds forward (was 80c6b9…b5e9); the revision-12-ordinal
       // value is unchanged.
-      "081027934ebfac8c51cd9919f49e9d45074ad324549b3adc0e2d65f02545f2cb",
+      // Map curiosities round 3 (`pulp_wars-737.20`) insert ZAP and
+      // FIRE_MOON_GUN after JOIN_CHANT, moving the later command kinds
+      // forward by two (was 081027…f2cb); the revision-12-ordinal value is
+      // unchanged.
+      "bb0395354ae75e9992d9d81b8df718b2f8e3bda41f6c39aba3d729b46a7ce575",
     );
     // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
     // (spec section 8); this is the value with revision-12 ordinals
@@ -1283,7 +1287,11 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       // FREEZE and BUILD_FISHING_HOLE after BUILD_LUMBER_CAMP, moving the
       // later command kinds forward (was 3c3694…4f25); the revision-12-ordinal
       // value is unchanged.
-      "0c43d9dd6114051921d0d2d7ac2b0a28a6b7a9efae1d91bfca33b91a4f463462",
+      // Map curiosities round 3 (`pulp_wars-737.20`) insert ZAP and
+      // FIRE_MOON_GUN after JOIN_CHANT, moving the later command kinds
+      // forward by two (was 0c43d9…3462); the revision-12-ordinal value is
+      // unchanged.
+      "f12214cc7788f5ed8cd11ee201077cadd07fc68a4d83b4a7a87e11f63b1b9c33",
     );
     expect(
       canonicalHash(withRevision12CandidateOrdinalsV7(revision4Candidates)),
@@ -1304,7 +1312,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     const source = upgradeRetainedPublicViewV7(retained);
 
     expect(canonicalJson(retained)).toBe(retainedBytes);
-    expect(source.rulesetId).toBe("pulp-wars-poc-7r102");
+    expect(source.rulesetId).toBe("pulp-wars-poc-7r103");
     expect(source.viewer.factionTreeId).toBe("ORIGINAL_BASELINE_V5");
     expect(
       source.players.every(

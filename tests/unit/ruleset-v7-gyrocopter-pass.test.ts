@@ -61,10 +61,14 @@ function runsOf(
 }
 
 describe("the Gyrocopter pass: identity", () => {
-  it("is pulp-wars-poc-7r102, with 7r101 a prior identity", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r102");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r102.current");
-    expect(PRIOR_RULESET_7_IDS.at(-1)).toBe("pulp-wars-poc-7r101");
+  // Map curiosities round 3 A (`pulp_wars-737.20`) took 7r103 after it.
+  it("was pulp-wars-poc-7r102, after 7r101 in the prior list", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r103");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r103.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-2)).toEqual([
+      "pulp-wars-poc-7r101",
+      "pulp-wars-poc-7r102",
+    ]);
   });
 });
 

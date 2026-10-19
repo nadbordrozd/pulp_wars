@@ -15,7 +15,13 @@ export type CheckedCuriosityKindV7 =
   | "GRAVEYARD"
   | "GATES"
   | "BIGFOOT"
-  | "WISHING_WELL";
+  | "WISHING_WELL"
+  // Round 3 (`pulp_wars-737.20`, RULESET_7_CURIOSITIES_ROUND_3.md section
+  // 3.1).
+  | "TESLA_TOWER"
+  | "MOON_GUN"
+  | "GOLD_CLAIM"
+  | "LOST_EXPEDITION";
 
 /**
  * A placed curiosity tile of any kind: the Spider's lair (kind `MONSTER`),
@@ -36,6 +42,10 @@ const KINDS: readonly CheckedCuriosityKindV7[] = [
   "GATES",
   "BIGFOOT",
   "WISHING_WELL",
+  "TESLA_TOWER",
+  "MOON_GUN",
+  "GOLD_CLAIM",
+  "LOST_EXPEDITION",
 ];
 const DANGERS: readonly CheckedCuriosityKindV7[] = [
   "MONSTER",
@@ -124,7 +134,8 @@ export function checkCuriosityPlacementV7(
   if (curiosities.length !== kindsPlaced.length + (gates.length > 0 ? 1 : 0))
     fail("two curiosities of one kind");
   const count = kindsPlaced.length;
-  const maximum = width >= 20 ? 2 : 1;
+  // Round 3 (section 3.2): 20 x 20 places 2 and 25 x 25 up to 3.
+  const maximum = width >= 25 ? 3 : width >= 20 ? 2 : 1;
   if (count > maximum) fail(`${count} on ${width}`);
   if (target !== undefined && count > target)
     fail(`${count} above the target ${target}`);
@@ -138,6 +149,24 @@ export function checkCuriosityPlacementV7(
     (kindsPlaced.includes("GATES") || kindsPlaced.includes("BIGFOOT"))
   )
     fail("gates or Bigfoot below width 20");
+  // Round 3 (section 3.5): no Moon Gun or Tesla Tower below width 16 and no
+  // Gold Claim below width 14.
+  if (
+    width < 16 &&
+    (kindsPlaced.includes("TESLA_TOWER") || kindsPlaced.includes("MOON_GUN"))
+  )
+    fail("a Tesla Tower or a Moon Gun below width 16");
+  if (width < 14 && kindsPlaced.includes("GOLD_CLAIM"))
+    fail("a Gold Claim below width 14");
+  // Round 3 (sections 5.3, 6.3, and 7.3): each new marker starts unused.
+  for (const marker of markers)
+    if (
+      (marker.kind === "MOON_GUN" && marker.lastFired !== null) ||
+      (marker.kind === "GOLD_CLAIM" &&
+        (marker.ownerId !== null || marker.left !== 30)) ||
+      (marker.kind === "LOST_EXPEDITION" && marker.foundBy !== null)
+    )
+      fail(`${marker.kind} placed already used`);
   if (kindsPlaced.filter((kind) => DANGERS.includes(kind)).length > 1)
     fail("two dangers on one board");
   const site = curiositySiteCheckerV7(map, mapType);
@@ -389,6 +418,10 @@ export function curiositySiteCheckerV7(
       return "is on a board below 16";
     if ((kind === "GATES" || kind === "BIGFOOT") && width < 20)
       return "is on a board below 20";
+    // Round 3 (section 3.1).
+    if ((kind === "TESLA_TOWER" || kind === "MOON_GUN") && width < 16)
+      return "is on a board below 16";
+    if (kind === "GOLD_CLAIM" && width < 14) return "is on a board below 14";
     // Rule 2.
     if (
       tile.site !== null ||
@@ -409,6 +442,10 @@ export function curiositySiteCheckerV7(
       GATES: ["GRASS", "FOREST"],
       BIGFOOT: ["FOREST"],
       WISHING_WELL: ["GRASS"],
+      TESLA_TOWER: ["GRASS", "FOREST"],
+      MOON_GUN: ["GRASS"],
+      GOLD_CLAIM: ["GRASS", "FOREST"],
+      LOST_EXPEDITION: ["GRASS", "FOREST"],
     };
     if (!terrains[kind].includes(tile.terrain)) return `is on ${tile.terrain}`;
     if (kind === "WRECK" && mapType === "DRY_LAND") return "is on Dry Land";
@@ -416,8 +453,9 @@ export function curiositySiteCheckerV7(
     // capital and 4 or more from every village.
     if (centers.some((center) => chebyshev(center, at) < 3))
       return "is within 2 of a settlement center";
+    // Round 3 (section 3.4): the Tesla Tower keeps the lair's distances.
     if (
-      lairLike(kind) &&
+      (lairLike(kind) || kind === "TESLA_TOWER") &&
       (map.capitals.some((center) => chebyshev(center, at) < 5) ||
         map.villages.some((center) => chebyshev(center, at) < 4))
     )
@@ -488,6 +526,16 @@ export function curiositySiteCheckerV7(
           habitat += 1;
         }
       return habitat < 12 ? `has ${habitat} habitat tiles` : null;
+    }
+    if (kind === "MOON_GUN") {
+      // Round 3 (section 3.4): 20 or more land tiles within 5 of it (its own
+      // tile apart), so it always has somewhere to fire.
+      let land = 0;
+      for (let dy = -5; dy <= 5; dy += 1)
+        for (let dx = -5; dx <= 5; dx += 1)
+          if ((dx !== 0 || dy !== 0) && isLand({ x: at.x + dx, y: at.y + dy }))
+            land += 1;
+      return land < 20 ? `has ${land} land tiles within 5` : null;
     }
     if (!lairLike(kind)) return null;
     // Section 4.4: 12 or more of the 24 tiles around are Grass, Forest, or

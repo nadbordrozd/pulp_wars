@@ -70,6 +70,10 @@ import {
   TOSS_LABEL_V7,
 } from "../giant-presentation-v7";
 import { BOARD_LABEL_V7 } from "../naval-presentation-v7";
+import {
+  FIRE_MOON_GUN_LABEL_V7,
+  ZAP_LABEL_V7,
+} from "../curiosity-presentation-v7";
 import { SACRIFICE_LABEL_V7, SEIZE_LABEL_V7 } from "../cult-presentation-v7";
 import {
   ANCHOR_BUTTON_LABEL_V7,
@@ -143,6 +147,10 @@ export const TILE_ACTION_COMMAND_CLASSES_V7: Readonly<
   SWITCHEROO: "AIMED",
   TENTACLE: "AIMED",
   JOIN_CHANT: "AIMED",
+  // Map curiosities round 3 (bead pulp_wars-737.20): a Zap's target and a
+  // Moon Gun's landing are picked on the board.
+  ZAP: "AIMED",
+  FIRE_MOON_GUN: "AIMED",
   RALLY: "BAR_ONLY",
   TEND_WOUNDED: "BAR_ONLY",
   RAISE_DEAD: "BAR_ONLY",
@@ -503,6 +511,28 @@ export const TILE_ABILITIES_V7: readonly TileAbilityV7[] = [
     families: ["BOARD"],
     offered: kind("BOARD"),
     pick: (unitId) => ({ navalPick: { kind: "BOARD", unitId } }),
+  },
+  // Map curiosities round 3 (bead pulp_wars-737.20): the Tesla Tower's Zap
+  // and the Moon Gun's shot.
+  {
+    id: "ZAP",
+    label: ZAP_LABEL_V7,
+    icon: "range",
+    raster: "ICON:CURIOSITY:TESLA_TOWER",
+    dockAction: "curiosity-zap",
+    families: ["ZAP"],
+    offered: kind("ZAP"),
+    pick: (unitId) => ({ curiosityPick: { kind: "ZAP", unitId } }),
+  },
+  {
+    id: "FIRE_MOON_GUN",
+    label: FIRE_MOON_GUN_LABEL_V7,
+    icon: "move",
+    raster: "ICON:CURIOSITY:MOON_GUN",
+    dockAction: "curiosity-fire",
+    families: ["MOON_GUN"],
+    offered: kind("FIRE_MOON_GUN"),
+    pick: (unitId) => ({ curiosityPick: { kind: "FIRE_MOON_GUN", unitId } }),
   },
   // The Cultists: offerings, the channel, rites, hexes and tricks.
   {

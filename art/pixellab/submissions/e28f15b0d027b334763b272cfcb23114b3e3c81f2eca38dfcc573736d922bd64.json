@@ -1,0 +1,36 @@
+{
+  "id": "moon-gun-a-edit",
+  "jobId": "728263fa-b09f-4124-a2c6-35376e069e12",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "curiosities-3",
+    "asset": "chibi-curiosity-moon-gun",
+    "subject": "CURIOSITY:MOON_GUN",
+    "faction": "ORIGINAL",
+    "recipeClass": "curiosity-site",
+    "requestSize": {
+      "width": 80,
+      "height": 80
+    },
+    "seed": 73720012,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove only the ground: erase the brown soil and the green grass edge under the grey stone mount, so the cannon and its stone mount stand directly on a transparent background with nothing at all under them. Keep the dark iron barrel, the bronze bands, the stone mount, the smoke puff, the outline and the art style exactly the same."
+      }
+    ],
+    "prompt": "Remove only the ground: erase the brown soil and the green grass edge under the grey stone mount, so the cannon and its stone mount stand directly on a transparent background with nothing at all under them. Keep the dark iron barrel, the bronze bands, the stone mount, the smoke puff, the outline and the art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove only the ground: erase the brown soil and the green grass edge under the grey stone mount, so the cannon and its stone mount stand directly on a transparent background with nothing at all under them. Keep the dark iron barrel, the bronze bands, the stone mount, the smoke puff, the outline and the art style exactly the same.",
+    "editInstruction": "Remove only the ground: erase the brown soil and the green grass edge under the grey stone mount, so the cannon and its stone mount stand directly on a transparent background with nothing at all under them. Keep the dark iron barrel, the bronze bands, the stone mount, the smoke puff, the outline and the art style exactly the same.",
+    "source": {
+      "recipe": "moon-gun-a",
+      "candidate": 0,
+      "sha256": "e0ca4fe5138538253cbc3683351bfc65bfe17a691f4c58491cf5fc4b28dc51f0"
+    }
+  }
+}

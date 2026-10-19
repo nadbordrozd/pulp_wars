@@ -662,10 +662,13 @@ describe("ruleset-7 revision-13 Wail: events, projection, and persistence", () =
     // UNIT_TOPPED_UP and TILES_GLAZED before COMBAT_RESOLVED and UNIT_STUCK,
     // TOOTHACHE_GIVEN, RICOCHETED, and THUMPED after BARRICADE_ATTACKED: 98
     // (was 92), COMBAT_RESOLVED + 8. The frozen sea redesign
-    // (`pulp_wars-5ti.25`) inserts ICE_CRACKED after WATER_FROZEN: 99.
-    expect(DOMAIN_EVENT_KIND_ORDER_V7.indexOf("WAIL_RESOLVED")).toBe(99);
+    // (`pulp_wars-5ti.25`) inserts ICE_CRACKED after WATER_FROZEN: 99. Map
+    // curiosities round 3 (`pulp_wars-737.20`) inserts GOLD_CLAIM_PAID,
+    // EXPEDITION_NOTES_USED, MOON_GUN_FIRED, and TESLA_ZAPPED before it (the
+    // last right after COMBAT_RESOLVED): 103, COMBAT_RESOLVED + 9.
+    expect(DOMAIN_EVENT_KIND_ORDER_V7.indexOf("WAIL_RESOLVED")).toBe(103);
     expect(DOMAIN_EVENT_KIND_ORDER_V7.indexOf("WAIL_RESOLVED")).toBe(
-      DOMAIN_EVENT_KIND_ORDER_V7.indexOf("COMBAT_RESOLVED") + 8,
+      DOMAIN_EVENT_KIND_ORDER_V7.indexOf("COMBAT_RESOLVED") + 9,
     );
     expect(
       DOMAIN_EVENT_KIND_ORDER_V7.slice(
@@ -680,8 +683,9 @@ describe("ruleset-7 revision-13 Wail: events, projection, and persistence", () =
       "RICOCHETED",
       "THUMPED",
     ]);
+    // Round 3's TESLA_ZAPPED sits between them (`pulp_wars-737.20`).
     expect(DOMAIN_EVENT_KIND_ORDER_V7.indexOf("UNIT_BOMBED")).toBe(
-      DOMAIN_EVENT_KIND_ORDER_V7.indexOf("COMBAT_RESOLVED") + 1,
+      DOMAIN_EVENT_KIND_ORDER_V7.indexOf("COMBAT_RESOLVED") + 2,
     );
     expect(parseCommandV7({ kind: "WAIL", unitId: 3 })).toEqual({
       ok: true,

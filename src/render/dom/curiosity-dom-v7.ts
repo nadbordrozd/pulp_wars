@@ -261,6 +261,66 @@ export function curiosityGlyphV7(
       ...stroke,
     });
     shape("circle", { cx: "19", cy: "22", r: "1.8", fill: "#ffd75a" });
+  } else if (id === "TESLA_TOWER") {
+    // Round 3 (bead pulp_wars-737.20): a lattice tower, a copper ball and
+    // a white spark.
+    shape("path", {
+      d: "M9 29 14 11H18L23 29ZM11 23H21M12 17H20M10 29 20 17M22 29 12 17",
+      fill: "none",
+      stroke: "#8a4b33",
+      "stroke-width": "2",
+    });
+    shape("circle", { cx: "16", cy: "8", r: "4", fill: "#b06a3a", ...stroke });
+    shape("path", {
+      d: "M20 6 24 4 22 2 28 1",
+      fill: "none",
+      stroke: "#ffffff",
+      "stroke-width": "1.6",
+    });
+  } else if (id === "MOON_GUN") {
+    shape("ellipse", {
+      cx: "13",
+      cy: "26",
+      rx: "10",
+      ry: "4",
+      fill: STONE,
+      ...stroke,
+    });
+    shape("path", {
+      d: "M7 25 24 5 29 10 13 28Z",
+      fill: "#45464c",
+      ...stroke,
+    });
+    shape("path", {
+      d: "M11 21 16 25M16 15 21 19",
+      fill: "none",
+      stroke: "#9a7a4a",
+      "stroke-width": "2",
+    });
+  } else if (id === "GOLD_CLAIM") {
+    shape("ellipse", {
+      cx: "18",
+      cy: "24",
+      rx: "11",
+      ry: "4.5",
+      fill: STONE,
+      ...stroke,
+    });
+    for (const [cx, cy] of [
+      ["14", "22"],
+      ["19", "21"],
+      ["23", "23"],
+    ] as const)
+      shape("circle", { cx, cy, r: "2.5", fill: "#e8b947", ...stroke });
+    shape("path", {
+      d: "M5 23 15 5M9 4Q15 2 20 8",
+      fill: "none",
+      stroke: INK,
+      "stroke-width": "2.4",
+    });
+  } else if (id === "LOST_EXPEDITION") {
+    shape("path", { d: "M3 28 16 5 29 28Z", fill: "#b9a578", ...stroke });
+    shape("path", { d: "M12 28 16 19 20 28Z", fill: "#4a3a28", ...stroke });
   } else if (id === "BIGFOOT") footprint(shape, 16, 17, 1.05);
   else
     for (const [cx, cy] of [

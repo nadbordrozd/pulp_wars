@@ -155,6 +155,14 @@ export const DISRUPTION_EVENT_PATHS_V7: Readonly<
   UNIT_WAITED: NONE,
   COIN_TOSSED: NONE,
   SHRINE_CLAIMED: NONE,
+  // Map curiosities round 3 (`pulp_wars-737.20`): a stake, a find, a
+  // payout, and the notes used touch no unit; a Moon Gun shot is the fired
+  // unit's own action (a strand holder has spent its action).
+  GOLD_CLAIM_STAKED: NONE,
+  GOLD_CLAIM_PAID: NONE,
+  EXPEDITION_FOUND: NONE,
+  EXPEDITION_NOTES_USED: NONE,
+  MOON_GUN_FIRED: NONE,
   UNIT_PROMOTED: NONE,
   UNIT_GREW: NONE,
   // Heals and cures: Hit Points go up, statuses come off.
@@ -198,6 +206,8 @@ export const DISRUPTION_EVENT_PATHS_V7: Readonly<
   THUMPED: ["HP_LOSS"],
   RICOCHETED: ["HP_LOSS"],
   UNIT_BOMBED: ["HP_LOSS", "STATUS"],
+  // Map curiosities round 3 (`pulp_wars-737.20`): a Tesla Tower's zap.
+  TESLA_ZAPPED: ["HP_LOSS"],
   // Crushing Shove on a unit that cannot be pushed.
   UNIT_CRUSHED: ["HP_LOSS"],
   THUNDER_STOMP: ["HP_LOSS"],
@@ -281,6 +291,8 @@ export const UNPROVEN_DISRUPTION_PATHS_V7: Readonly<
     "a surfacing eruption needs a burrowed Mole from an earlier turn; it is fixed damage like a Stomp",
   UNIT_BOMBED:
     "a bombing run needs a flight path; it is fixed damage like a Stomp",
+  TESLA_ZAPPED:
+    "needs a Tesla Tower (a generated curiosity board); it is fixed damage like a Stomp",
   UNIT_CONSUMED:
     "a consumption happens in its seat's Start Turn after that seat's strands were cleared, so only a broken channeller of another Cult seat on the mark could lose a strand to it (two Cult seats, which only headless tools allow); a chanter consumed on the mark leaves its ritual in tests/unit/ruleset-v7-cult-rituals.test.ts",
 };

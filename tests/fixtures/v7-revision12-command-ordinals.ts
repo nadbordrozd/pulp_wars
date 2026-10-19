@@ -91,6 +91,10 @@ const LATER_COMMAND_KINDS: readonly string[] = [
   // The Cult redesign's Star-fall (`pulp_wars-mch9.34`) inserts JOIN_CHANT
   // after TENTACLE.
   "JOIN_CHANT",
+  // Map curiosities round 3 (`pulp_wars-737.20`) insert ZAP and
+  // FIRE_MOON_GUN after JOIN_CHANT.
+  "ZAP",
+  "FIRE_MOON_GUN",
   "LAY_EGG",
   "OFFERING",
   // Tuning 3 (`pulp_wars-w49.3`) inserts HIRE after TRAIN_NAVAL.

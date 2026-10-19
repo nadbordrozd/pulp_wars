@@ -2,8 +2,9 @@
 
 **Status:** design (`pulp_wars-737.19`, epic `pulp_wars-737`), written on
 2026-10-19 over the rules as built at `pulp-wars-poc-7r101`, with the Dwarf
-Gyrocopter change of `pulp-wars-poc-7r102` landing in parallel. Nothing
-here is built yet. Two implementation beads build it (section 15): bead A
+Gyrocopter change of `pulp-wars-poc-7r102` landing in parallel. Bead A
+is built (`pulp-wars-poc-7r103`, notes in section 17); the Sea Serpent is
+not yet. Two implementation beads build it (section 15): bead A
 (the four land curiosities, `pulp-wars-poc-7r103`) and bead B (the naval
 one, `pulp-wars-poc-7r104`). No game was played or simulated to write it
 (the user's standing rule); every number is a first guess for hand-play
@@ -949,6 +950,115 @@ Tuning bounds for a later coarse check: zap 3–5 and radius 2–3; Gun range
 4–6; Claim 1–3 a turn and 20–40 in all; Expedition fallback 6–12 Coins;
 Serpent HP 26–36, Attack 3–4, regeneration 2–4, bounty 10–18, area radius
 2–3; every new weight 1–3; the count table by at most one step per size.
+
+## 17. Implementation notes, bead A (`pulp_wars-737.20`)
+
+Built at `pulp-wars-poc-7r103`, chained after the Gyrocopter pass's
+`7r102`. The rules of sections 3 to 7 are in
+[current rules section 2.7, round 3](RULESET_7_CURRENT.md#round-3-the-tesla-tower-the-moon-gun-the-gold-claim-and-the-lost-expedition);
+the AI in
+[Normal AI, round 3](../architecture/NORMAL_AI.md#map-curiosities-round-3-pulp_wars-73720);
+the targeting in
+[board targeting section 3.10](../ui/BOARD_TARGETING.md#310-map-curiosities-round-3-bead-pulp_wars-73720);
+the art in
+[the curiosity class, section 9](../art/classes/curiosities.md#9-round-3-pulp_wars-73720).
+No game was played or simulated.
+
+**Choices the design left open.**
+
+- `ZAP` names its target `targetUnitId` (the field of every other
+  unit-targeted command), not `targetId`; `TESLA_ZAPPED` carries
+  `targetUnitId` and `targetAt`.
+- The zap's fixed hit goes through the giants' `resolveFixedHitsV7` with
+  cause `ATTACK`, so kill credit, Plunder, the bounty, growth, and the
+  grave tail are those of an attack, and a neutral unit it hurts is
+  provoked.
+- The Moon Gun's landing rejection is one function
+  (`moonGunLandingRejectionV7`) shared by the reducer and the public query,
+  so on a visible board the offered landings are exactly the accepted
+  ones; a landing on a unit hidden in fog is offered by the view and
+  refused `BLOCKED` by the reducer, as a Beam Down tile is.
+- The Moon Gun's 20-land rule counts land tiles within 5 that are not
+  water and not a Rift (`MOON_GUN_LAND_MINIMUM_V7`).
+- A played-out Claim keeps `left` 0 and no owner; at most one marker of
+  each new kind is parsed.
+- The Normal AI's Gold Claim and Lost Expedition errands use the round-1
+  claim priority (1330, the chest tier); the Tesla Tower's holder makes no
+  routine Move while the watch radius has a hostile unit.
+
+**Interface review.** The first review pass found the Knight on the Gun
+showing one generic "Fire" button per landing (105) and the Tower's
+holder three "Zap" buttons: `ZAP` and `FIRE_MOON_GUN` joined the
+commands that are never generic buttons (a DOM test pins one button
+each). It also replaced the Moon Gun's "In enemy reach" label boxes by the
+threat marker (section 3.10 of board targeting).
+
+**Measured distribution** (`npm run validate:ruleset7-curiosity-maps`,
+seeds 0 to 31, every map type, size, AI count, and both faction mixes:
+3840 boards, `PASS`). Boards with 0 / 1 / 2 / 3 curiosities, and the
+boards with each new kind (Tesla Tower, Moon Gun, Gold Claim, Lost
+Expedition), by map type and width:
+
+| Map type    | Width | Boards | 0 / 1 / 2 / 3    | Tower | Gun | Claim | Expedition |
+| ----------- | ----: | -----: | ---------------- | ----: | --: | ----: | ---------: |
+| Dry Land    |    14 |    128 | 60 / 68 / 0 / 0  |     0 |   0 |    14 |         12 |
+| Dry Land    |    16 |    192 | 48 / 144 / 0 / 0 |    22 |   8 |    19 |         19 |
+| Dry Land    |    20 |    192 | 2 / 102 / 88 / 0 |    21 |  24 |    48 |         36 |
+| Dry Land    |    25 |    192 | 0 / 53 / 82 / 57 |    39 |  47 |    37 |         42 |
+| Pangea      |    20 |    192 | 4 / 76 / 112 / 0 |    25 |  24 |    50 |         35 |
+| Pangea      |    25 |    192 | 2 / 69 / 66 / 55 |    32 |  46 |    39 |         46 |
+| Lakes       |    20 |    192 | 8 / 95 / 89 / 0  |    20 |  21 |    31 |         31 |
+| Lakes       |    25 |    192 | 0 / 65 / 71 / 56 |    36 |  40 |    34 |         42 |
+| Continents  |    20 |    192 | 2 / 96 / 94 / 0  |     6 |   2 |    34 |         36 |
+| Continents  |    25 |    192 | 0 / 76 / 96 / 20 |     4 |  14 |    26 |         28 |
+| Archipelago |    20 |    192 | 0 / 152 / 40 / 0 |     6 |   0 |    12 |         10 |
+| Archipelago |    25 |    192 | 0 / 154 / 34 / 4 |     2 |   2 |    12 |          6 |
+
+Totals over the 3840 boards: Tesla Tower 246, Moon Gun 253, Gold Claim
+452, Lost Expedition 421 (the Wreck 1296, the Fountain 524). On widths 20
+and 25 the count is a target, not a guarantee: when no eligible site is
+left a slot stays empty (no board is ever rejected), which is why many
+20 x 20 boards still have one. On Dry Land, Pangea, and Lakes boards of
+width 20 a given new kind is on one board in four (the Claim) to one in
+ten (the Tower on Lakes), against the design's "one in seven"; on Continents and Archipelago the Tower and the Gun are
+rare (rule 6 and the Gun's 20 land tiles), as expected.
+
+**Pins.** The unit-tier generation pins moved as section 15.4 says and
+were re-pinned: the round-2 generation streams (Pangea 20 seeds 9, 15, and
+5; Dry Land 25 seed 12; the Graveyard seed 5; the gates seed 12; were 0,
+30, 1, and 17), the count-draw table (width 20 always 2; width 25 3 on
+about half), the generation test's "at most 3 on 25", and the disruption
+paths. Command and event kind counts and positions (`ZAP` and
+`FIRE_MOON_GUN` after `JOIN_CHANT`, 87 commands; 160 events), the
+revision-12 ordinal table, the AI decision hashes whose tie-break tuples
+hold command ordinals (each re-pinned only where its revision-12-ordinal
+twin stayed equal), the recorded no-Ice-Folk decisions (only the ordinal
+of kinds after `JOIN_CHANT` moved, by two), the reader classifications,
+and the form audit were updated. The simulation tier was not run (the
+user's rule). Expected to move there: every simulation with curiosities
+on (`ruleset-v7-curiosities.sim`, `ruleset-v7-monster.sim`,
+`ruleset-v7-monster-headless.sim`, `ruleset7-curiosities-dom.sim`,
+`ruleset-v7-tuning-7.sim`, `ruleset-v7-tuning-8.sim`: the new kinds join
+the draw on 14 and 16 too), and any simulation that hashes Normal AI
+decision tuples (the command ordinals after `JOIN_CHANT` moved by two).
+With curiosities off, boards are those of the generator without
+curiosities and no Zap or shot is offered
+(`tests/unit/ruleset-v7-curiosities-round3-generation.test.ts`, "the
+option off"), the `7r34` initial-state pins of
+`tests/unit/ruleset-v7-curiosities.test.ts` hold, and the Normal AI
+decides as before on a board without a round-3 curiosity
+(`tests/unit/ruleset-v7-curiosities-round3-ai.test.ts`).
+
+**Notes for bead B (the Sea Serpent).** Append `SEA_SERPENT` to the
+placement kinds after `LOST_EXPEDITION` and to
+`CURIOSITY_DANGER_KINDS_V7`; the count table already gives 20 and 25 their
+new counts. The setup hint ("Rare sights on the map: monsters, camps,
+gates, a moon gun, and more.") may name the Serpent; the Gallery's third
+curiosity row has a free fifth cell (its row separator stops at the fourth
+column until then); the support effects and `sound-events-v7.ts` take a
+`attack.serpent` cue the way `special.zap` was added; the identity is
+`7r104` with the same bump steps. The Serpent is a neutral unit, so it
+needs no `CuriosityV7` marker.
 
 ## Appendix A. Ideas weighed and rejected
 

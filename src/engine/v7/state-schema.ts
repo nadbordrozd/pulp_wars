@@ -117,8 +117,12 @@ import {
   BIGFOOT_MINIMUM_WIDTH_V7,
   CURIOSITY_CENTER_DISTANCE_V7,
   GATES_MINIMUM_WIDTH_V7,
+  GOLD_CLAIM_MINIMUM_WIDTH_V7,
+  GOLD_CLAIM_TOTAL_V7,
   MONSTER_HOME_RADIUS_V7,
   MONSTER_MINIMUM_WIDTH_V7,
+  MOON_GUN_MINIMUM_WIDTH_V7,
+  TESLA_MINIMUM_WIDTH_V7,
   bigfootHabitatV7,
   curiosityTerrainLegalV7,
   curiosityTilesV7,
@@ -2788,7 +2792,13 @@ function parseCuriosities(
           ? ["at", "kind", "partner"]
           : kind === "WISHING_WELL"
             ? ["at", "kind", "tossedBy"]
-            : ["at", "kind"],
+            : kind === "MOON_GUN"
+              ? ["at", "kind", "lastFired"]
+              : kind === "GOLD_CLAIM"
+                ? ["at", "kind", "left", "ownerId"]
+                : kind === "LOST_EXPEDITION"
+                  ? ["at", "foundBy", "kind"]
+                  : ["at", "kind"],
       )
     )
       return null;
@@ -2819,10 +2829,53 @@ function parseCuriosities(
       ) ||
       (kind === "DOWNED_SAUCER" && setup.factions.includes("MARTIAN")) ||
       (kind === "GRAVEYARD" && setup.factions.includes("UNDEAD")) ||
-      (kind === "GATE" && setup.width < GATES_MINIMUM_WIDTH_V7)
+      (kind === "GATE" && setup.width < GATES_MINIMUM_WIDTH_V7) ||
+      // Round 3 (`pulp_wars-737.20`, section 3.1): the board widths.
+      (kind === "TESLA_TOWER" && setup.width < TESLA_MINIMUM_WIDTH_V7) ||
+      (kind === "MOON_GUN" && setup.width < MOON_GUN_MINIMUM_WIDTH_V7) ||
+      (kind === "GOLD_CLAIM" && setup.width < GOLD_CLAIM_MINIMUM_WIDTH_V7)
     )
       return null;
-    if (kind === "GATE") {
+    if (kind === "MOON_GUN") {
+      // Round 3 (section 5.3): the player-turn of the Gun's last shot.
+      const lastFired: unknown = candidate.lastFired;
+      if (lastFired === null) values.push({ kind, at, lastFired: null });
+      else {
+        if (!hasExactKeysV7(lastFired, ["playerId", "round"])) return null;
+        const playerId = parsePlayerIdV7(lastFired.playerId);
+        if (
+          playerId === null ||
+          !isSafeIntegerV7(lastFired.round) ||
+          (lastFired.round as number) < 1
+        )
+          return null;
+        values.push({
+          kind,
+          at,
+          lastFired: { round: lastFired.round as number, playerId },
+        });
+      }
+    } else if (kind === "GOLD_CLAIM") {
+      // Round 3 (section 6.3): 0 to 30 Coins left; a played-out Claim has
+      // no owner.
+      const ownerId =
+        candidate.ownerId === null ? null : parsePlayerIdV7(candidate.ownerId);
+      if (
+        (candidate.ownerId !== null && ownerId === null) ||
+        !isSafeIntegerV7(candidate.left) ||
+        (candidate.left as number) < 0 ||
+        (candidate.left as number) > GOLD_CLAIM_TOTAL_V7 ||
+        (candidate.left === 0 && ownerId !== null)
+      )
+        return null;
+      values.push({ kind, at, ownerId, left: candidate.left as number });
+    } else if (kind === "LOST_EXPEDITION") {
+      // Round 3 (section 7.3).
+      const foundBy =
+        candidate.foundBy === null ? null : parsePlayerIdV7(candidate.foundBy);
+      if (candidate.foundBy !== null && foundBy === null) return null;
+      values.push({ kind, at, foundBy });
+    } else if (kind === "GATE") {
       const partner = parseCoordV7(candidate.partner);
       if (partner === null || sameCoordV7(partner, at)) return null;
       values.push({ kind, at, partner });
@@ -2850,7 +2903,11 @@ function parseCuriosities(
     values.filter(
       (value) => value.kind === "DOWNED_SAUCER" || value.kind === "GRAVEYARD",
     ).length > 1 ||
-    values.filter((value) => value.kind === "WISHING_WELL").length > 1
+    values.filter((value) => value.kind === "WISHING_WELL").length > 1 ||
+    // Round 3 (section 10.2): at most one of each new kind.
+    (
+      ["TESLA_TOWER", "MOON_GUN", "GOLD_CLAIM", "LOST_EXPEDITION"] as const
+    ).some((kind) => values.filter((value) => value.kind === kind).length > 1)
   )
     return null;
   return values;
@@ -2997,6 +3054,23 @@ function validateCrossReferences(value: CrossInput): boolean {
       (curiosity) =>
         curiosity.kind === "WISHING_WELL" &&
         curiosity.tossedBy.some((id) => !playerById.has(id)),
+    ) ||
+    // Round 3 (section 10.2): the Gun's firer is a seat and its shot is no
+    // later than the current round; a Claim's owner and the Expedition's
+    // finder are seats still in the game (an eliminated owner's Claim is
+    // unowned and an eliminated finder's notes are gone).
+    value.curiosities.some(
+      (curiosity) =>
+        (curiosity.kind === "MOON_GUN" &&
+          curiosity.lastFired !== null &&
+          (!playerById.has(curiosity.lastFired.playerId) ||
+            curiosity.lastFired.round > value.round)) ||
+        (curiosity.kind === "GOLD_CLAIM" &&
+          curiosity.ownerId !== null &&
+          playerById.get(curiosity.ownerId)?.status !== "ACTIVE") ||
+        (curiosity.kind === "LOST_EXPEDITION" &&
+          curiosity.foundBy !== null &&
+          playerById.get(curiosity.foundBy)?.status !== "ACTIVE"),
     ) ||
     board.tiles.some(
       (tile) =>

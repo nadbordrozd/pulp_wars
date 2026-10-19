@@ -13,7 +13,10 @@ import {
   cityEconomicMiracleIncomeV7,
 } from "../rules/ruleset-v7";
 import { hasAcceptedStateCertificateV7 } from "./accepted-state-certificate";
-import { resolveFountainHealingV7 } from "./curiosities";
+import {
+  resolveFountainHealingV7,
+  resolveGoldClaimPayoutV7,
+} from "./curiosities";
 import type { DomainEventV7 } from "./events";
 import { missionDefinitionV7 } from "./missions/index";
 import { spatialContributionAtV7 } from "./spatial-economy";
@@ -1365,13 +1368,19 @@ export function startTurnEconomyV7(
   if (current === undefined) throw new RangeError("INVALID_STATE");
   const coins = current.coins + income.totalCoins;
   if (!Number.isSafeInteger(coins)) throw new RangeError("INTEGER_OVERFLOW");
-  return {
-    state: {
+  // Map curiosities round 3 (`pulp_wars-737.20`, section 6.2): each Gold
+  // Claim the player owns pays right after the income.
+  const claims = resolveGoldClaimPayoutV7(
+    {
       ...regeneration.state,
       players: regeneration.state.players.map((item) =>
         item.id === player.id ? { ...item, coins } : item,
       ),
     },
+    player.id,
+  );
+  return {
+    state: claims.state,
     events: [
       { kind: "TURN_STARTED", playerId: player.id, coins },
       ...afflicted.events,
@@ -1384,6 +1393,7 @@ export function startTurnEconomyV7(
         totalCoins: income.totalCoins,
         cities: income.cities,
       },
+      ...claims.events,
     ],
   };
 }

@@ -242,6 +242,21 @@
       }
     },
     {
+      "id": "special.zap",
+      "kind": "burst",
+      "suffix": "style",
+      "prompt": "A short electric zap: a sharp crackle and snap of a spark of electricity jumping, a brief buzz, no thunder.",
+      "durationSeconds": 0.7,
+      "minSeconds": 0.2,
+      "maxSeconds": 0.8,
+      "promptInfluence": 0.45,
+      "loudness": {
+        "like": "attack.ray",
+        "offsetDb": 0,
+        "reason": "Bead pulp_wars-737.20: the Tesla Tower's zap (docs/product/RULESET_7_CURIOSITIES_ROUND_3.md section 12.4), at the level of a ray attack."
+      }
+    },
+    {
       "id": "impact.splat",
       "kind": "hit",
       "suffix": "style",

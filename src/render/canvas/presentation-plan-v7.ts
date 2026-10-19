@@ -398,6 +398,17 @@ export type SupportEffectV7 =
   | "GATE"
   | "WELL"
   /**
+   * Map curiosities round 3 (bead pulp_wars-737.20): a Tesla Tower's zap (a
+   * white arc from the Tower, the actor, to its target, the recipient), the
+   * Moon Gun's muzzle blast and landing puff (the actor at the Gun, the
+   * recipient at the landing), and the Lost Expedition's notes over the
+   * unit that found them.
+   */
+  | "ZAP"
+  | "MOON_GUN"
+  | "MOON_GUN_LANDING"
+  | "EXPEDITION"
+  /**
    * The Vampire and Banshee rework, interface (`pulp_wars-iqhp`): bats
    * swirl round a Vampire and stream to its Bat Escape landing (the actor
    * at the take-off, the recipient at the landing), before its Move; a
@@ -770,6 +781,76 @@ export function corePresentationPlanV7(
           durationMs: 480,
         });
       origins.set(event.unitId, event.to);
+    } else if (event.kind === "TESLA_ZAPPED") {
+      // Round 3: a white arc from the Tower to its target, which shows its
+      // damage; nothing strikes back.
+      if (isExplored(event.at) || isExplored(event.targetAt)) {
+        steps.push({
+          kind: "SUPPORT",
+          effect: "ZAP",
+          actor: { unitId: event.unitId, at: event.at },
+          recipients: [{ unitId: event.targetUnitId, at: event.targetAt }],
+          durationMs: 480,
+        });
+        if (isExplored(event.targetAt))
+          steps.push({
+            kind: "DAMAGE",
+            unitId: event.targetUnitId,
+            at: event.targetAt,
+            damage: event.damage + event.shieldDamage,
+            lethal: event.hpAfter === 0,
+            durationMs: 100,
+          });
+      }
+    } else if (event.kind === "MOON_GUN_FIRED") {
+      // Round 3: the muzzle blast, the unit's flight, and the landing puff.
+      if (isExplored(event.from) || isExplored(event.to)) {
+        steps.push({
+          kind: "SUPPORT",
+          effect: "MOON_GUN",
+          actor: { unitId: event.unitId, at: event.from },
+          recipients: [],
+          durationMs: 320,
+        });
+        if (isExplored(event.from) && isExplored(event.to))
+          steps.push({
+            kind: "MOVE",
+            unitId: event.unitId,
+            path: bombFlightPathV7(event.from, event.to),
+            durationMs: moveDurationMsV7(
+              Math.max(
+                Math.abs(event.to.x - event.from.x),
+                Math.abs(event.to.y - event.from.y),
+              ),
+            ),
+            flight: true,
+            ...(enemyTurn ? { followCamera: true as const } : {}),
+          });
+        if (isExplored(event.to))
+          steps.push({
+            kind: "SUPPORT",
+            effect: "MOON_GUN_LANDING",
+            actor: { unitId: event.unitId, at: event.to },
+            recipients: [],
+            durationMs: 320,
+          });
+      }
+      origins.set(event.unitId, event.to);
+    } else if (event.kind === "EXPEDITION_FOUND") {
+      // Round 3: the journal rises over the finder (its Coins as a gold
+      // "+N" when there was nothing to research).
+      if (isExplored(event.at))
+        steps.push({
+          kind: "SUPPORT",
+          effect: "EXPEDITION",
+          actor: {
+            unitId: event.unitId,
+            at: event.at,
+            ...(event.coins > 0 ? { amount: event.coins } : {}),
+          },
+          recipients: [],
+          durationMs: 640,
+        });
     } else if (event.kind === "COIN_TOSSED") {
       // A Coin splashes into the Well; its Coins rise as a gold "+N", and a
       // full heal plays the heal ring on the unit.

@@ -7,6 +7,8 @@ import {
 import {
   previewGateV7,
   previewMonsterV7,
+  queryAlliedV7,
+  queryMoonGunLandingsV7,
   type GatePreviewV7,
   type MonsterPreviewV7,
 } from "../engine/v7/query";
@@ -17,7 +19,10 @@ import type { PlayerViewV7, PublicUnitV7 } from "../engine/v7/view";
  * docs/product/RULESET_7_MAP_CURIOSITIES.md section 11): the Giant Spider,
  * the Fountain of Youth, the Shrine, and the Sunken Wreck; and of round 2
  * (`pulp_wars-737.15`, section 33): the camp guards of a Downed Saucer or a
- * Graveyard, the Dimensional Gates, Bigfoot, and the Wishing Well.
+ * Graveyard, the Dimensional Gates, Bigfoot, and the Wishing Well; and of
+ * round 3 (`pulp_wars-737.20`, RULESET_7_CURIOSITIES_ROUND_3.md section
+ * 11): the Tesla Tower, the Moon Gun, the Gold Claim, and the Lost
+ * Expedition.
  *
  * Every input is public: the explored curiosities and the visible Monsters
  * of the view, `previewMonsterV7`, the visible units, and the explored
@@ -154,6 +159,36 @@ export const GATE_TRAVERSE_PRIORITY_V7 = 728;
 export const GATE_APPROACH_PRIORITY_V7 = 725;
 /** The gate route counts when it saves at least this many turns. */
 export const GATE_ROUTE_TURNS_SAVED_V7 = 3;
+/**
+ * Round 3 (section 11), the Tesla Tower: a unit walks onto a free Tower, or
+ * holds it, while a visible hostile seat's unit stands within
+ * `TESLA_WATCH_RADIUS_V7` of it; it is sent from within
+ * `TESLA_ERRAND_STEPS_V7` route steps. The arrival ranks above the Well's
+ * (950); the approach is the routine tier of a Shrine's.
+ */
+export const TESLA_ARRIVE_PRIORITY_V7 = 952;
+export const TESLA_ERRAND_STEPS_V7 = 4;
+export const TESLA_WATCH_RADIUS_V7 = 4;
+/**
+ * Round 3 (section 4.2): the zap's fixed damage, the policy's copy, pinned
+ * to the engine's `TESLA_ZAP_DAMAGE_V7` by the round-3 AI test.
+ */
+export const TESLA_ZAP_DAMAGE_FOR_POLICY_V7 = 4;
+/**
+ * Round 3, the Moon Gun (section 11): the gate traversal's tier. The Move
+ * onto the Gun of a unit whose Gun route saves `MOON_GUN_TURNS_SAVED_V7`
+ * turns, and its shot to the landing nearest its goal.
+ */
+export const MOON_GUN_ARRIVE_PRIORITY_V7 = 728;
+export const MOON_GUN_FIRE_PRIORITY_V7 = 729;
+export const MOON_GUN_TURNS_SAVED_V7 = 3;
+/**
+ * Round 3, the Gold Claim and the Lost Expedition (section 11): sent from
+ * within this many route steps; the stake and the find take the chest tier
+ * (`CURIOSITY_CLAIM_PRIORITY_V7`), the approach the routine tier.
+ */
+export const CLAIM_ERRAND_STEPS_V7 = 6;
+export const EXPEDITION_ERRAND_STEPS_V7 = 6;
 /** A sole city defender: no other own land unit within this of its center. */
 export const SOLE_DEFENDER_RADIUS_V7 = 2;
 /** A capturer this close to a center it can take keeps to its capture. */
@@ -221,6 +256,17 @@ export interface CuriosityFactsV7 {
   readonly gateByKey: ReadonlyMap<string, GateFactsV7>;
   /** Round 2: the visible Wishing Wells. */
   readonly wells: readonly WellFactsV7[];
+  /** Round 3: the visible Tesla Towers. */
+  readonly towers: readonly CoordV7[];
+  /** Round 3: the visible Moon Guns. */
+  readonly guns: readonly CoordV7[];
+  /**
+   * Round 3: the visible Gold Claims the viewer may stake (not its own, not
+   * an ally's, not played out).
+   */
+  readonly claims: readonly CoordV7[];
+  /** Round 3: the visible Lost Expeditions nobody has found. */
+  readonly expeditions: readonly CoordV7[];
 }
 
 const key = (at: CoordV7): string => `${at.y},${at.x}`;
@@ -291,6 +337,10 @@ export function curiosityFactsV7(view: PlayerViewV7): CuriosityFactsV7 | null {
   }
   const gates: GateFactsV7[] = [];
   const wells: WellFactsV7[] = [];
+  const towers: CoordV7[] = [];
+  const guns: CoordV7[] = [];
+  const claims: CoordV7[] = [];
+  const expeditions: CoordV7[] = [];
   for (const curiosity of view.curiosities) {
     if (curiosity.kind === "GATE")
       gates.push({ at: curiosity.at, exit: curiosity.partner });
@@ -299,6 +349,19 @@ export function curiosityFactsV7(view: PlayerViewV7): CuriosityFactsV7 | null {
         at: curiosity.at,
         tossed: curiosity.tossedBy.includes(view.viewer.id),
       });
+    // Round 3 (section 11).
+    else if (curiosity.kind === "TESLA_TOWER") towers.push(curiosity.at);
+    else if (curiosity.kind === "MOON_GUN") guns.push(curiosity.at);
+    else if (
+      curiosity.kind === "GOLD_CLAIM" &&
+      curiosity.left > 0 &&
+      curiosity.ownerId !== view.viewer.id &&
+      (curiosity.ownerId === null ||
+        !queryAlliedV7(view, view.viewer.id, curiosity.ownerId))
+    )
+      claims.push(curiosity.at);
+    else if (curiosity.kind === "LOST_EXPEDITION" && curiosity.foundBy === null)
+      expeditions.push(curiosity.at);
   }
   const of = (kind: "FOUNTAIN" | "SHRINE" | "WRECK"): readonly CoordV7[] =>
     view.curiosities
@@ -313,6 +376,10 @@ export function curiosityFactsV7(view: PlayerViewV7): CuriosityFactsV7 | null {
     gates,
     gateByKey: new Map(gates.map((gate) => [key(gate.at), gate])),
     wells,
+    towers,
+    guns,
+    claims,
+    expeditions,
   };
   factsByView.set(view, facts);
   return facts;
@@ -425,7 +492,17 @@ export function soleCityDefenderV7(
 // --- Errands -----------------------------------------------------------------
 
 export interface CuriosityErrandV7 {
-  readonly kind: "FOUNTAIN" | "SHRINE" | "WRECK" | "WELL" | "GATE";
+  readonly kind:
+    | "FOUNTAIN"
+    | "SHRINE"
+    | "WRECK"
+    | "WELL"
+    | "GATE"
+    // Round 3 (section 11).
+    | "TESLA"
+    | "MOON_GUN"
+    | "CLAIM"
+    | "EXPEDITION";
   /** The curiosity's tile (for a gate errand: the entry gate). */
   readonly at: CoordV7;
   /** Route steps to `at` from every tile within the errand's bound. */
@@ -438,6 +515,8 @@ export interface CuriosityErrandV7 {
    * gate.
    */
   readonly held?: boolean;
+  /** A Moon Gun errand: the landing tile nearest the unit's goal. */
+  readonly landing?: CoordV7;
 }
 
 /** A unit's route goal and the land-route steps to it from a tile. */
@@ -474,6 +553,11 @@ export interface CuriosityPolicyToolsV7 {
    * Absent: the gates get no errand.
    */
   readonly goal?: (unit: PublicUnitV7) => CuriosityRouteGoalV7 | null;
+  /**
+   * Round 3. Whether a unit of `ownerId` is hostile to the viewer (a seat's
+   * unit; never a neutral one). Absent: the Tesla Tower gets no errand.
+   */
+  readonly hostileSeat?: (ownerId: PublicUnitV7["ownerId"]) => boolean;
 }
 
 /**
@@ -681,6 +765,26 @@ export function planCuriosityErrandsV7(
       errands.set(salvager.id, { kind: "WRECK", at, steps });
   }
 
+  // Round 3 (section 11): the Gold Claim, staked like a chest, and the Lost
+  // Expedition, a race like the Shrine.
+  for (const [kind, sites, limit] of [
+    ["CLAIM", facts.claims, CLAIM_ERRAND_STEPS_V7],
+    ["EXPEDITION", facts.expeditions, EXPEDITION_ERRAND_STEPS_V7],
+  ] as const)
+    for (const at of sites) {
+      const steps = curiosityRouteStepsV7(view, at, limit, false);
+      const runner = nearest(
+        steps,
+        (unit, distance) =>
+          distance > 0 &&
+          unit.form === "LAND" &&
+          !soleCityDefenderV7(view, unit) &&
+          !plannedCapturerV7(tools, unit) &&
+          (kind === "EXPEDITION" || tools.danger(unit, at) < unit.hp),
+      );
+      if (runner !== undefined) errands.set(runner.id, { kind, at, steps });
+    }
+
   const { otherTargets, reaches, goal } = tools;
   if (
     otherTargets !== undefined &&
@@ -733,6 +837,51 @@ export function planCuriosityErrandsV7(
       }
       if (tosser !== undefined)
         errands.set(tosser.id, { kind: "WELL", at: well.at, steps });
+    }
+
+  // Round 3 (section 11): hold a Tesla Tower while there is something to
+  // zap.
+  const { hostileSeat } = tools;
+  if (otherTargets !== undefined && hostileSeat !== undefined)
+    for (const at of facts.towers) {
+      const watched = view.units.some(
+        (unit) =>
+          unit.hp > 0 &&
+          hostileSeat(unit.ownerId) &&
+          chebyshev(unit.at, at) <= TESLA_WATCH_RADIUS_V7,
+      );
+      if (!watched) continue;
+      const steps = curiosityRouteStepsV7(
+        view,
+        at,
+        TESLA_ERRAND_STEPS_V7,
+        false,
+      );
+      const occupant = view.units.find(
+        (unit) => unit.hp > 0 && same(unit.at, at),
+      );
+      if (occupant !== undefined) {
+        // The own unit on it stays; nobody else is sent.
+        if (
+          occupant.ownerId === view.viewer.id &&
+          occupant.form === "LAND" &&
+          !errands.has(occupant.id)
+        )
+          errands.set(occupant.id, { kind: "TESLA", at, steps });
+        continue;
+      }
+      const gunner = nearest(
+        steps,
+        (unit, distance) =>
+          distance > 0 &&
+          unit.form === "LAND" &&
+          !soleCityDefenderV7(view, unit) &&
+          !plannedCapturerV7(tools, unit) &&
+          !otherTargets(unit) &&
+          tools.danger(unit, at) < unit.hp,
+      );
+      if (gunner !== undefined)
+        errands.set(gunner.id, { kind: "TESLA", at, steps });
     }
 
   if (goal !== undefined && facts.gates.length > 0) {
@@ -794,6 +943,72 @@ export function planCuriosityErrandsV7(
       });
     }
   }
+
+  // Round 3 (section 11): the Moon Gun, a shortcut like the gates. Per Gun,
+  // the own land unit whose Gun route (the walk to the Gun, the shot, the
+  // walk on from its landing) saves the most turns, at least
+  // `MOON_GUN_TURNS_SAVED_V7`, landing on the legal tile nearest its goal
+  // where the visible enemies would not kill it and off every neutral
+  // unit's provoke tiles.
+  if (goal !== undefined && facts.guns.length > 0) {
+    const limit = view.board.width * view.board.height;
+    for (const gun of facts.guns) {
+      const occupant = view.units.find(
+        (unit) => unit.hp > 0 && same(unit.at, gun),
+      );
+      if (occupant !== undefined && occupant.ownerId !== view.viewer.id)
+        continue;
+      const stepsToGun = curiosityRouteStepsV7(view, gun, limit, false);
+      let best:
+        | {
+            readonly unit: PublicUnitV7;
+            readonly landing: CoordV7;
+            readonly saved: number;
+          }
+        | undefined;
+      for (const unit of own) {
+        if (
+          unit.form !== "LAND" ||
+          errands.has(unit.id) ||
+          soleCityDefenderV7(view, unit) ||
+          (occupant !== undefined && occupant.id !== unit.id)
+        )
+          continue;
+        const route = goal(unit);
+        const toGun = stepsToGun.get(key(unit.at));
+        if (route === null || toGun === undefined) continue;
+        const move = Math.max(1, tools.move(unit));
+        const turns = (steps: number): number => Math.ceil(steps / move);
+        let landing: { readonly at: CoordV7; readonly onward: number } | null =
+          null;
+        for (const at of queryMoonGunLandingsV7(view, unit.id, gun)) {
+          const onward = route.steps(at);
+          if (
+            onward === undefined ||
+            tools.danger(unit, at) >= unit.hp ||
+            facts.monsters.some((monster) => monster.avoidKeys.has(key(at)))
+          )
+            continue;
+          if (landing === null || onward < landing.onward)
+            landing = { at, onward };
+        }
+        if (landing === null) continue;
+        const through = turns(toGun) + 1 + turns(landing.onward);
+        const direct = route.steps(unit.at);
+        const saved = direct === undefined ? limit : turns(direct) - through;
+        if (saved < MOON_GUN_TURNS_SAVED_V7) continue;
+        if (best === undefined || saved > best.saved)
+          best = { unit, landing: landing.at, saved };
+      }
+      if (best !== undefined)
+        errands.set(best.unit.id, {
+          kind: "MOON_GUN",
+          at: gun,
+          steps: stepsToGun,
+          landing: best.landing,
+        });
+    }
+  }
   return errands;
 }
 
@@ -820,7 +1035,11 @@ export function curiosityErrandMoveV7(
               ? WELL_ARRIVE_PRIORITY_V7
               : gate
                 ? GATE_TRAVERSE_PRIORITY_V7
-                : CURIOSITY_CLAIM_PRIORITY_V7,
+                : errand.kind === "TESLA"
+                  ? TESLA_ARRIVE_PRIORITY_V7
+                  : errand.kind === "MOON_GUN"
+                    ? MOON_GUN_ARRIVE_PRIORITY_V7
+                    : CURIOSITY_CLAIM_PRIORITY_V7,
           strategic: 1,
         };
   // The Well's unit reaches it this turn: no approach.

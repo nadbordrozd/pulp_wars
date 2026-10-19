@@ -855,10 +855,13 @@ function eventVisible(
     case "NEUTRAL_TURN_STARTED":
     case "NEUTRAL_TURN_ENDED":
       return true;
+    // Map curiosities round 3 (section 6.2): a Claim's payout is owner-only
+    // like the income.
     case "TURN_STARTED":
     case "INCOME_AWARDED":
     case "INCOME_PREVIEWED":
     case "TECH_RESEARCHED":
+    case "GOLD_CLAIM_PAID":
       return event.playerId === viewerId;
     case "TILES_REVEALED":
       return event.playerId === viewerId;
@@ -935,6 +938,37 @@ function eventVisible(
       );
     case "WRECK_SALVAGED":
       return event.playerId === viewerId;
+    // Map curiosities round 3 (sections 6.1, 7.1, and 7.2): a stake, a find,
+    // and the notes used reach the actor and every viewer that explored the
+    // tile (the Coins stay owner-only on the player; which technology was
+    // researched stays private).
+    case "GOLD_CLAIM_STAKED":
+    case "EXPEDITION_FOUND":
+    case "EXPEDITION_NOTES_USED":
+      return (
+        event.playerId === viewerId ||
+        coordVisible(before, after, viewerId, event.at)
+      );
+    // Map curiosities round 3 (section 4.2): the ordinary unit-visibility
+    // rule, to every viewer that sees the zapper or the target.
+    case "TESLA_ZAPPED":
+      return (
+        event.playerId === viewerId ||
+        beforeVisible.has(event.unitId) ||
+        afterVisible.has(event.unitId) ||
+        beforeVisible.has(event.targetUnitId) ||
+        afterVisible.has(event.targetUnitId)
+      );
+    // Map curiosities round 3 (section 5.2): every viewer that explored the
+    // Gun or the landing tile, or sees the unit.
+    case "MOON_GUN_FIRED":
+      return (
+        event.playerId === viewerId ||
+        beforeVisible.has(event.unitId) ||
+        afterVisible.has(event.unitId) ||
+        coordVisible(before, after, viewerId, event.from) ||
+        coordVisible(before, after, viewerId, event.to)
+      );
     // Map curiosities round 2 (sections 28.4 and 30.2): a gate event and a
     // toss reach the actor and every viewer that sees the unit (a unit on an
     // explored gate is visible, and a gate's partner is explored with it).

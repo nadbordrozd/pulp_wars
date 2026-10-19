@@ -4,6 +4,7 @@ import type {
   CultEffectIdV7,
   CuriosityEffectIdV7,
   CuriosityRound2EffectIdV7,
+  CuriosityRound3EffectIdV7,
   DwarfEffectIdV7,
   IceFolkEffectIdV7,
   MartianEffectIdV7,
@@ -62,7 +63,9 @@ export type SupportEffectSubjectV7 =
   /** The map curiosity effect sprites (bead pulp_wars-737.6). */
   | `EFFECT:${CuriosityEffectIdV7}`
   /** The round-2 curiosity effect sprites (bead pulp_wars-737.16). */
-  | `EFFECT:${CuriosityRound2EffectIdV7}`;
+  | `EFFECT:${CuriosityRound2EffectIdV7}`
+  /** The round-3 curiosity effect sprites (bead pulp_wars-737.20). */
+  | `EFFECT:${CuriosityRound3EffectIdV7}`;
 
 /** The curiosity cues' sprites, loaded only in a match with the option on. */
 export const CURIOSITY_EFFECT_SUBJECTS_V7: readonly SupportEffectSubjectV7[] = [
@@ -72,6 +75,10 @@ export const CURIOSITY_EFFECT_SUBJECTS_V7: readonly SupportEffectSubjectV7[] = [
   // Round 2 (bead pulp_wars-737.16).
   "EFFECT:GATE_TRAVERSE",
   "EFFECT:COIN_SPLASH",
+  // Round 3 (bead pulp_wars-737.20).
+  "EFFECT:TESLA_ARC",
+  "EFFECT:MOON_GUN_BLAST",
+  "EFFECT:EXPEDITION_NOTES",
 ];
 
 export const SUPPORT_EFFECT_SUBJECTS_V7: readonly SupportEffectSubjectV7[] = [
@@ -202,6 +209,27 @@ export function drawSupportFeedbackV7(
         fade,
         unit.amount,
       );
+    return;
+  }
+  // Map curiosities round 3 (bead pulp_wars-737.20): the zap's arc, the
+  // Moon Gun's blast and the Expedition's notes.
+  if (
+    feedback.effect === "ZAP" ||
+    feedback.effect === "MOON_GUN" ||
+    feedback.effect === "MOON_GUN_LANDING" ||
+    feedback.effect === "EXPEDITION"
+  ) {
+    drawRound3CuriosityCue(
+      context,
+      worldToScreen(projectGrid(feedback.actor.at), camera),
+      recipients.map((at) => worldToScreen(projectGrid(at), camera)),
+      camera.zoom,
+      feedback.effect === "MOON_GUN_LANDING" ? "MOON_GUN" : feedback.effect,
+      progress,
+      fade,
+      feedback.actor.amount,
+      sprites,
+    );
     return;
   }
   // Map curiosities: the Fountain's droplets, the Shrine's star and the
@@ -451,6 +479,10 @@ const UNDEAD_PULSE_COLORS: Readonly<
       | "BOUNTY"
       | "GATE"
       | "WELL"
+      | "ZAP"
+      | "MOON_GUN"
+      | "MOON_GUN_LANDING"
+      | "EXPEDITION"
       | "BAT_SWIRL"
       | "FEAST"
       | "TERROR"
@@ -831,6 +863,101 @@ function drawRound2CuriosityCue(
     context.stroke();
     context.restore();
   }
+  if (amount !== undefined && amount > 0)
+    drawFloat(
+      context,
+      center,
+      zoom,
+      progress,
+      fade,
+      `+${amount}`,
+      CURIOSITY_COIN_TEXT_COLOR_V7,
+      "#3a2a08",
+    );
+}
+
+/**
+ * Map curiosities round 3 (bead pulp_wars-737.20). ZAP: a white zig-zag
+ * arc from the Tower to each target, with the arc sprite flaring on the
+ * target. MOON_GUN: the smoke-and-flash ring of the Gun's blast (or the
+ * landing puff) over the cell. EXPEDITION: the journal rising over the
+ * finder, and a gold "+N" when it paid Coins. Without the sprites (LEGACY,
+ * the classic look, still loading) the code-drawn arc and rings are the
+ * cue.
+ */
+function drawRound3CuriosityCue(
+  context: CanvasRenderingContext2D,
+  center: { readonly x: number; readonly y: number },
+  targets: readonly { readonly x: number; readonly y: number }[],
+  zoom: number,
+  effect: "ZAP" | "MOON_GUN" | "EXPEDITION",
+  rawProgress: number,
+  fade: number,
+  amount: number | undefined,
+  sprites: SpriteDrawer | null,
+): void {
+  const unit = sprites?.step ?? zoom * 1.6;
+  const progress = Math.max(0, Math.min(1, rawProgress));
+  if (effect === "ZAP") {
+    const from = { x: center.x, y: center.y - 44 * zoom };
+    for (const target of targets) {
+      // A jagged white arc from the Tower's ball to the target.
+      context.save();
+      context.globalAlpha = fade;
+      context.lineJoin = "round";
+      context.lineCap = "round";
+      const zigzag = (width: number, colour: string): void => {
+        context.strokeStyle = colour;
+        context.lineWidth = Math.max(1, width * zoom);
+        context.beginPath();
+        context.moveTo(from.x, from.y);
+        const steps = 6;
+        for (let step = 1; step < steps; step += 1) {
+          const t = step / steps;
+          const side = step % 2 === 0 ? 1 : -1;
+          const dx = target.x - from.x;
+          const dy = target.y - from.y;
+          const length = Math.max(1, Math.hypot(dx, dy));
+          context.lineTo(
+            from.x + dx * t + (-dy / length) * side * 9 * zoom,
+            from.y + dy * t + (dx / length) * side * 9 * zoom,
+          );
+        }
+        context.lineTo(target.x, target.y);
+        context.stroke();
+      };
+      zigzag(7, "rgba(27, 27, 31, 0.8)");
+      zigzag(3.5, "#ffffff");
+      context.restore();
+      sprites?.draw("EFFECT:TESLA_ARC", target, 1, fade);
+    }
+    return;
+  }
+  if (effect === "MOON_GUN") {
+    if (sprites?.draw("EFFECT:MOON_GUN_BLAST", center, 1, fade) !== true) {
+      context.save();
+      context.globalAlpha = fade;
+      context.strokeStyle = "#d8d4cc";
+      context.lineWidth = Math.max(2, 5 * zoom);
+      context.beginPath();
+      context.arc(
+        center.x,
+        center.y,
+        (12 + 30 * easeOut(progress)) * zoom,
+        0,
+        Math.PI * 2,
+      );
+      context.stroke();
+      context.restore();
+    }
+    return;
+  }
+  const at = {
+    x: center.x,
+    y: center.y - (10 + 18 * easeOut(progress)) * unit,
+  };
+  if (sprites?.draw("EFFECT:EXPEDITION_NOTES", at, 1, fade) !== true)
+    drawCodeStar(context, at, 10 * zoom, fade);
   if (amount !== undefined && amount > 0)
     drawFloat(
       context,

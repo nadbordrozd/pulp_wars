@@ -47,6 +47,7 @@ import {
   previewTendWoundedV7,
   previewWailV7,
   queryCombatPreviewV7,
+  queryCuriosityMoveEffectV7,
   queryLandingPreviewV7,
   seatRoleRuleV7,
   unitGrowthStageV7,
@@ -69,9 +70,13 @@ import {
   trampleLabelV7,
 } from "../giant-presentation-v7";
 import {
+  FIND_LABEL_V7,
+  FIND_SENTENCE_V7,
   GATE_BLOCKED_LABEL_V7,
   GATE_EXIT_LABEL_V7,
   GATE_SHOVED_LABEL_V7,
+  STAKE_LABEL_V7,
+  STAKE_SENTENCE_V7,
   gateMovePreviewV7,
   isMonsterUnitV7,
   monsterProvokedV7,
@@ -89,6 +94,7 @@ import {
   SPIDER_CODE_ART_ID_V7,
   WRECK_WATERLINE_ROW_V7,
   addCuriosityEntriesV7,
+  drawClaimPennantV7,
   drawCodeBigfootV7,
   drawCodeSpiderV7,
   drawCuriosityCornerBadgeV7,
@@ -218,6 +224,11 @@ import {
   type NavalUnitMarkersV7,
 } from "./naval-board-plan-v7";
 import { drawNavalUnitMarkersV7 } from "./naval-canvas-v7";
+import {
+  addCuriosityRangeEntriesV7,
+  curiosityPickTargetsV7,
+  type CuriosityPickV7,
+} from "./curiosity-board-plan-v7";
 import {
   addCultPickEntriesV7,
   cultPickTargetsV7,
@@ -636,6 +647,12 @@ export interface BoardRenderInteractionV7 {
    */
   readonly navalPick?: NavalPickV7 | null;
   /**
+   * Map curiosities round 3 (bead pulp_wars-737.20): the Zap or the Moon
+   * Gun shot being aimed by the selected unit. Its targets become the only
+   * map targets; null or omitted aims none.
+   */
+  readonly curiosityPick?: CuriosityPickV7 | null;
+  /**
    * The frozen sea (bead pulp_wars-5ti.7): the Freeze a line role is
    * aiming. The tiles it may freeze toward become the only map targets;
    * null or omitted aims none.
@@ -797,7 +814,13 @@ export interface MapCommandTargetV7 {
      * The Cult redesign (`pulp_wars-mch9.34`): the Stargazer whose pending
      * Star-fall an aimed Join the chant joins.
      */
-    | "JOIN_CHANT";
+    | "JOIN_CHANT"
+    /**
+     * Map curiosities round 3 (bead pulp_wars-737.20): an enemy an aimed
+     * Zap hits, and a tile an aimed Moon Gun shot lands on.
+     */
+    | "ZAP"
+    | "MOON_GUN";
   /**
    * The Cultists (bead `pulp_wars-mch9.19`): what this target also shows
    * while it is focused (or is the only one): the ghosts and arrows of a
@@ -1328,6 +1351,12 @@ export interface BoardRenderPlanEntryV7 {
    * which tile overlay this is.
    */
   readonly curiosity?: CuriosityTileIdV7;
+  /**
+   * CURIOSITY only, round 3 (bead pulp_wars-737.20): a played-out Gold
+   * Claim or a found Lost Expedition, drawn dimmed. A staked Claim carries
+   * its owner's colour in `ownerColor` (its pennant).
+   */
+  readonly curiosityDimmed?: true;
   /**
    * UNIT only: a neutral unit (the Giant Spider, a camp guard, Bigfoot),
    * its breed and its provoked marker.
@@ -2080,8 +2109,17 @@ export function buildBoardRenderPlanV7(
     navalPick,
     freezePick,
     cultPick,
+    curiosityPick,
   } = activeBoardPicksV7(commands, interaction);
   const targets = boardMapTargetsV7(view, commands, interaction);
+  // Map curiosities round 3: the range of the Tower or Gun an aimed Zap or
+  // shot reaches from.
+  if (curiosityPick !== null)
+    addCuriosityRangeEntriesV7(
+      entries,
+      view,
+      view.units.find((unit) => unit.id === curiosityPick.unitId)?.at ?? null,
+    );
   if (martianPick !== null)
     addMartianPickEntriesV7(entries, view, targets, martianPick);
   if (iceFolkPick !== null) addIceFolkPickEntriesV7(entries, view, iceFolkPick);
@@ -2111,7 +2149,8 @@ export function buildBoardRenderPlanV7(
     candyPick === null &&
     giantPick === null &&
     navalPick === null &&
-    cultPick === null
+    cultPick === null &&
+    curiosityPick === null
   ) {
     // The Ice Witch's ring: quiet while she is selected, prominent while
     // her Freeze button is hovered or focused.
@@ -2133,7 +2172,8 @@ export function buildBoardRenderPlanV7(
     candyPick === null &&
     giantPick === null &&
     freezePick === null &&
-    cultPick === null
+    cultPick === null &&
+    curiosityPick === null
   ) {
     // A Submarine the selected unit cannot attack from where it stands.
     addSubmergedReasonEntriesV7(entries, view, commands, selectedUnitId);
@@ -2318,6 +2358,14 @@ function activeBoardPicksV7(
     interaction.cultPick.unitId === interaction.selectedUnitId
       ? interaction.cultPick
       : null;
+  // Map curiosities round 3: likewise while a Zap or a Moon Gun shot is
+  // aimed.
+  const curiosityPick =
+    interaction.curiosityPick !== undefined &&
+    interaction.curiosityPick !== null &&
+    interaction.curiosityPick.unitId === interaction.selectedUnitId
+      ? interaction.curiosityPick
+      : null;
   return {
     kaboomPreview,
     layEgg,
@@ -2329,6 +2377,7 @@ function activeBoardPicksV7(
     navalPick,
     freezePick,
     cultPick,
+    curiosityPick,
   };
 }
 
@@ -2355,6 +2404,7 @@ export function boardMapTargetsV7(
     navalPick,
     freezePick,
     cultPick,
+    curiosityPick,
   } = activeBoardPicksV7(commands, interaction);
   const selectedUnitId =
     interaction.selection?.kind === "UNIT"
@@ -2395,72 +2445,77 @@ export function boardMapTargetsV7(
             ? dwarfPickTargetsV7(view, commands, dwarfPick)
             : navalPick !== null
               ? navalPickTargetsV7(view, commands, navalPick)
-              : cultPick !== null
-                ? isCultOfferingPickV7(cultPick)
-                  ? cultPickTargetsV7(view, commands, cultPick)
-                  : isCultTrickPickV7(cultPick)
-                    ? cultTrickPickTargetsV7(view, commands, cultPick)
-                    : cultChannelPickTargetsV7(view, commands, cultPick)
-                : freezePick !== null
-                  ? freezePick.kind === "CRACK_ICE"
-                    ? crackIcePickTargetsV7(view, commands, freezePick)
-                    : freezePickTargetsV7(view, commands, freezePick)
-                  : giantPick !== null
-                    ? giantPickTargetsV7(
-                        view,
-                        commands,
-                        giantPick,
-                        interaction.cursor ?? null,
-                      )
-                    : candyPick !== null
-                      ? candyPickTargetsV7(
+              : curiosityPick !== null
+                ? curiosityPickTargetsV7(view, commands, curiosityPick)
+                : cultPick !== null
+                  ? isCultOfferingPickV7(cultPick)
+                    ? cultPickTargetsV7(view, commands, cultPick)
+                    : isCultTrickPickV7(cultPick)
+                      ? cultTrickPickTargetsV7(view, commands, cultPick)
+                      : cultChannelPickTargetsV7(view, commands, cultPick)
+                  : freezePick !== null
+                    ? freezePick.kind === "CRACK_ICE"
+                      ? crackIcePickTargetsV7(view, commands, freezePick)
+                      : freezePickTargetsV7(view, commands, freezePick)
+                    : giantPick !== null
+                      ? giantPickTargetsV7(
                           view,
                           commands,
-                          candyPick,
-                          // An armed Rush shows the unit's attacks with the bonus.
-                          candyPick.kind === "SUGAR_RUSH"
-                            ? commandMapTargets(
-                                view,
-                                commands.filter(
-                                  (command) => command.kind === "ATTACK",
-                                ),
-                                candyPick.unitId,
-                                { assumeSugarRush: true },
-                              )
-                            : [],
-                          candyGhost,
+                          giantPick,
+                          interaction.cursor ?? null,
                         )
-                      : dedupeMapTargets([
-                          ...mapTargets(
+                      : candyPick !== null
+                        ? candyPickTargetsV7(
                             view,
                             commands,
-                            interaction.selectedUnitId,
-                          ),
-                          // Bead pulp_wars-9im: a selected Gunner shows the units
-                          // it may heal beside its Moves and Attacks, unarmed: an
-                          // own unit is never a Move or an Attack target.
-                          ...(unarmedToss === undefined
-                            ? []
-                            : candyPickTargetsV7(
-                                view,
-                                commands,
-                                {
-                                  kind: "SUGAR_TOSS",
-                                  unitId: unarmedToss.unitId,
-                                },
-                                [],
-                                candyGhost,
-                              )),
-                          ...(unarmedTopUp === undefined
-                            ? []
-                            : candyPickTargetsV7(
-                                view,
-                                commands,
-                                { kind: "TOP_UP", unitId: unarmedTopUp.unitId },
-                                [],
-                                candyGhost,
-                              )),
-                        ]);
+                            candyPick,
+                            // An armed Rush shows the unit's attacks with the bonus.
+                            candyPick.kind === "SUGAR_RUSH"
+                              ? commandMapTargets(
+                                  view,
+                                  commands.filter(
+                                    (command) => command.kind === "ATTACK",
+                                  ),
+                                  candyPick.unitId,
+                                  { assumeSugarRush: true },
+                                )
+                              : [],
+                            candyGhost,
+                          )
+                        : dedupeMapTargets([
+                            ...mapTargets(
+                              view,
+                              commands,
+                              interaction.selectedUnitId,
+                            ),
+                            // Bead pulp_wars-9im: a selected Gunner shows the units
+                            // it may heal beside its Moves and Attacks, unarmed: an
+                            // own unit is never a Move or an Attack target.
+                            ...(unarmedToss === undefined
+                              ? []
+                              : candyPickTargetsV7(
+                                  view,
+                                  commands,
+                                  {
+                                    kind: "SUGAR_TOSS",
+                                    unitId: unarmedToss.unitId,
+                                  },
+                                  [],
+                                  candyGhost,
+                                )),
+                            ...(unarmedTopUp === undefined
+                              ? []
+                              : candyPickTargetsV7(
+                                  view,
+                                  commands,
+                                  {
+                                    kind: "TOP_UP",
+                                    unitId: unarmedTopUp.unitId,
+                                  },
+                                  [],
+                                  candyGhost,
+                                )),
+                          ]);
 }
 
 /** The Ice Folk revision: the `snow` member of a terrain entry, if any. */
@@ -4017,7 +4072,9 @@ export function drawBoardV7(input: {
             rect.y +
             (rect.height * WRECK_WATERLINE_ROW_V7) / chibi.asset.height;
           context.save();
-          context.globalAlpha = sceneAlpha;
+          // Round 3: a played-out Claim or a found Expedition is dimmed.
+          context.globalAlpha =
+            entry.curiosityDimmed === true ? sceneAlpha * 0.55 : sceneAlpha;
           context.imageSmoothingEnabled = chibi.smoothing;
           if (wreck) {
             // The hull's lowest rows are cut at a waterline.
@@ -4073,7 +4130,8 @@ export function drawBoardV7(input: {
           }
         } else if (chibi === null || chibi.kind === "MISSING") {
           context.save();
-          context.globalAlpha = sceneAlpha;
+          context.globalAlpha =
+            entry.curiosityDimmed === true ? sceneAlpha * 0.55 : sceneAlpha;
           drawCuriosityMarkerV7(
             context,
             x,
@@ -4083,6 +4141,26 @@ export function drawBoardV7(input: {
             input.highContrast ?? false,
           );
           context.restore();
+        }
+        // Round 3: a staked Gold Claim's pennant in its owner's colour.
+        if (
+          entry.curiosity === "GOLD_CLAIM" &&
+          entry.ownerColor !== undefined
+        ) {
+          const colour = entry.ownerColor;
+          deferredGraveMarkers.push(() => {
+            context.save();
+            context.globalAlpha = sceneAlpha;
+            drawClaimPennantV7(
+              context,
+              x,
+              y,
+              camera.zoom,
+              colour,
+              input.highContrast ?? false,
+            );
+            context.restore();
+          });
         }
         continue;
       }
@@ -7799,6 +7877,12 @@ function commandMapTargets(
   const gateMatch = view.curiosities.some(
     (curiosity) => curiosity.kind === "GATE",
   );
+  // Map curiosities round 3 (bead pulp_wars-737.20): a Gold Claim or a
+  // Lost Expedition the viewer knows of.
+  const stakeMatch = view.curiosities.some(
+    (curiosity) =>
+      curiosity.kind === "GOLD_CLAIM" || curiosity.kind === "LOST_EXPEDITION",
+  );
   // The Cult redesign's Drag (bead pulp_wars-mch9.44): a unit a Gibbering
   // Mass beside it drags has one tile a Move, and each Move says why.
   const dragged =
@@ -7868,6 +7952,11 @@ function commandMapTargets(
       // tramples each enemy it steps over (the exact public preview, asked
       // only for a path that passes a hostile unit).
       const trample = overstrideTrampleV7(view, command);
+      // Map curiosities round 3 (section 12.1): a Move that would stake
+      // the Gold Claim, or find the Lost Expedition.
+      const claim = stakeMatch
+        ? queryCuriosityMoveEffectV7(view, command)
+        : null;
       return at === undefined
         ? []
         : [
@@ -7962,6 +8051,18 @@ function commandMapTargets(
                       displaces: gate.preview.displaces !== null,
                       blocked: gate.preview.blocked,
                     },
+                  }),
+              ...(claim === null
+                ? {}
+                : {
+                    previewLabel:
+                      claim === "STAKE" ? STAKE_LABEL_V7 : FIND_LABEL_V7,
+                    semanticLabel: [
+                      claim === "STAKE" ? STAKE_SENTENCE_V7 : FIND_SENTENCE_V7,
+                      provokes ? provokeWarning : null,
+                    ]
+                      .filter((part): part is string => part !== null)
+                      .join(" "),
                   }),
             }),
           ];

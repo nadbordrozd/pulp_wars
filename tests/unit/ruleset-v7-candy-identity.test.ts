@@ -42,7 +42,7 @@ import { goblinSetupV7 } from "../fixtures/v7-goblin-arena";
 // tier 3 technology base cost 9) 7r41.
 
 /** The revision number of the current identity (`pulp-wars-poc-7rNN`). */
-const REVISION = 102;
+const REVISION = 103;
 const ID = `pulp-wars-poc-7r${REVISION}`;
 const PREVIOUS_ID = `pulp-wars-poc-7r${REVISION - 1}`;
 
@@ -215,7 +215,10 @@ describe("the Candy revision identity (section 2.2)", () => {
     const events: readonly string[] = DOMAIN_EVENT_KIND_ORDER_V7;
     const after = (kind: string): string | undefined =>
       events[events.indexOf(kind) + 1];
-    expect(after("INCOME_AWARDED")).toBe("UNITS_CRASHED");
+    // Map curiosities round 3 (`pulp_wars-737.20`) puts GOLD_CLAIM_PAID
+    // right after INCOME_AWARDED.
+    expect(after("INCOME_AWARDED")).toBe("GOLD_CLAIM_PAID");
+    expect(after("GOLD_CLAIM_PAID")).toBe("UNITS_CRASHED");
     expect(after("UNITS_CRASHED")).toBe("CRUMBS_STALE");
     expect(after("CRUMBS_STALE")).toBe("INCOME_PREVIEWED");
     expect(after("UNIT_ASSEMBLED")).toBe("UNIT_REBAKED");

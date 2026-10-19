@@ -306,6 +306,124 @@ export const CHIBI_CURIOSITIES_ROUND2_ART_ASSETS_V7: readonly ChibiArtAssetV7[] 
   ];
 
 /**
+ * Round-3 map curiosity art (bead pulp_wars-737.20, batch `curiosities-3`;
+ * docs/art/classes/curiosities.md section 9): the Tesla Tower, the Moon
+ * Gun, the Gold Claim and the Lost Expedition as 80 x 80 tile overlays,
+ * their four legend icons, and the Tesla arc, Moon Gun blast and
+ * Expedition notes effects. Faction-less: no owner area and no mask (a
+ * staked Claim's owner is a code-drawn pennant). Registered in the live
+ * direction registry and drawn by the board, the dock, the Gallery and the
+ * effects.
+ */
+export const CHIBI_CURIOSITIES_ROUND3_ART_ASSETS_V7: readonly ChibiArtAssetV7[] =
+  [
+    {
+      id: "chibi-curiosity-tesla-tower",
+      subject: "CURIOSITY:TESLA_TOWER",
+      assetClass: "BUILDING",
+      width: 80,
+      height: 80,
+      url: chibiArtUrl(
+        "assets/chibi/buildings/chibi-curiosity-tesla-tower.png",
+      ),
+    },
+    {
+      id: "chibi-curiosity-moon-gun",
+      subject: "CURIOSITY:MOON_GUN",
+      assetClass: "BUILDING",
+      width: 80,
+      height: 80,
+      url: chibiArtUrl("assets/chibi/buildings/chibi-curiosity-moon-gun.png"),
+    },
+    {
+      id: "chibi-curiosity-gold-claim",
+      subject: "CURIOSITY:GOLD_CLAIM",
+      assetClass: "BUILDING",
+      width: 80,
+      height: 80,
+      url: chibiArtUrl("assets/chibi/buildings/chibi-curiosity-gold-claim.png"),
+    },
+    {
+      id: "chibi-curiosity-lost-expedition",
+      subject: "CURIOSITY:LOST_EXPEDITION",
+      assetClass: "BUILDING",
+      width: 80,
+      height: 80,
+      url: chibiArtUrl(
+        "assets/chibi/buildings/chibi-curiosity-lost-expedition.png",
+      ),
+    },
+    {
+      id: "chibi-curiosity-icon-tesla-tower",
+      subject: "ICON:CURIOSITY:TESLA_TOWER",
+      assetClass: "ICON",
+      width: 48,
+      height: 48,
+      url: chibiArtUrl(
+        "assets/chibi/icons/chibi-curiosity-icon-tesla-tower.png",
+      ),
+    },
+    {
+      id: "chibi-curiosity-icon-moon-gun",
+      subject: "ICON:CURIOSITY:MOON_GUN",
+      assetClass: "ICON",
+      width: 48,
+      height: 48,
+      url: chibiArtUrl("assets/chibi/icons/chibi-curiosity-icon-moon-gun.png"),
+    },
+    {
+      id: "chibi-curiosity-icon-gold-claim",
+      subject: "ICON:CURIOSITY:GOLD_CLAIM",
+      assetClass: "ICON",
+      width: 48,
+      height: 48,
+      url: chibiArtUrl(
+        "assets/chibi/icons/chibi-curiosity-icon-gold-claim.png",
+      ),
+    },
+    {
+      id: "chibi-curiosity-icon-lost-expedition",
+      subject: "ICON:CURIOSITY:LOST_EXPEDITION",
+      assetClass: "ICON",
+      width: 48,
+      height: 48,
+      url: chibiArtUrl(
+        "assets/chibi/icons/chibi-curiosity-icon-lost-expedition.png",
+      ),
+    },
+    {
+      id: "chibi-curiosity-effect-tesla-arc",
+      subject: "EFFECT:TESLA_ARC",
+      assetClass: "EFFECT",
+      width: 48,
+      height: 48,
+      url: chibiArtUrl(
+        "assets/chibi/effects/chibi-curiosity-effect-tesla-arc.png",
+      ),
+    },
+    {
+      id: "chibi-curiosity-effect-moon-gun-blast",
+      subject: "EFFECT:MOON_GUN_BLAST",
+      assetClass: "EFFECT",
+      width: 48,
+      height: 48,
+      url: chibiArtUrl(
+        "assets/chibi/effects/chibi-curiosity-effect-moon-gun-blast.png",
+      ),
+    },
+    {
+      id: "chibi-curiosity-effect-expedition-notes",
+      subject: "EFFECT:EXPEDITION_NOTES",
+      assetClass: "EFFECT",
+      width: 48,
+      height: 48,
+      url: chibiArtUrl(
+        "assets/chibi/effects/chibi-curiosity-effect-expedition-notes.png",
+      ),
+    },
+  ];
+
+/**
  * Where Bigfoot touches the ground, measured on its master by
  * scripts/art/unit-shadows/measure.ts (a test checks it), the shadow
  * table entry of the board: both huge feet sit on the contact line, so
