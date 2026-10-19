@@ -181,6 +181,8 @@ describe("the neutral registration by breed (sections 25.2, 29.1, 32.3)", () => 
       IMP: ["RAIDER", "Unbound Imp", 6, 4, 2, 1],
       // `pulp_wars-mch9.37`: an Unbound Gibbering Mass.
       MASS: ["GUARD", "Unbound Gibbering Mass", 30, 4, 6, 1],
+      // Map curiosities round 3, bead B (`pulp_wars-737.21`).
+      SEA_SERPENT: ["BATTLESHIP", "Sea Serpent", 32, 7, 5, 1],
     };
     for (const breed of NEUTRAL_BREEDS_V7) {
       const rule = NEUTRAL_ROLE_RULES_V7[breed];
@@ -238,8 +240,10 @@ describe("the neutral registration by breed (sections 25.2, 29.1, 32.3)", () => 
     // An Unbound daemon needs a Cult seat; its immunities are proved in
     // `tests/unit/ruleset-v7-cult-unbound.test.ts`, and a Tentacle's (a
     // summoned unit too) in `tests/unit/ruleset-v7-cult-tricks.test.ts`.
+    // The Sea Serpent (round 3, bead B) lives afloat; its immunities are
+    // proved on a sea in `tests/unit/ruleset-v7-curiosities-round3-serpent.test.ts`.
     for (const breed of NEUTRAL_BREEDS_V7.filter(
-      (candidate) => !isWildBreedV7(candidate),
+      (candidate) => !isWildBreedV7(candidate) && candidate !== "SEA_SERPENT",
     )) {
       const home = breed === "BIGFOOT" ? at(15, 10) : SAUCER;
       const standOn =

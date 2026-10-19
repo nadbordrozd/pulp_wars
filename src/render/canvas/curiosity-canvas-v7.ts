@@ -14,6 +14,7 @@ import {
   matchHasCuriositiesV7,
   monsterPreviewsV7,
   visibleLairsV7,
+  visibleSerpentLairsV7,
   type CuriosityTileIdV7,
 } from "../curiosity-presentation-v7";
 import type {
@@ -41,6 +42,8 @@ import { factionColourV7 } from "./faction-colours-v7";
 export const SPIDER_CODE_ART_ID_V7 = "unit-neutral-giant-spider-code";
 /** LEGACY has no Bigfoot raster either (round 2, section 34.2). */
 export const BIGFOOT_CODE_ART_ID_V7 = "unit-neutral-bigfoot-code";
+/** Nor a Sea Serpent raster (round 3, bead B, `pulp_wars-737.21`). */
+export const SERPENT_CODE_ART_ID_V7 = "unit-neutral-sea-serpent-code";
 
 /** UNIT entries of a neutral unit (the Spider, a camp guard, Bigfoot). */
 export interface MonsterUnitMarkerV7 {
@@ -97,6 +100,18 @@ export function addCuriosityEntriesV7(
       artSubject: "CURIOSITY:WEB",
       curiosity: "WEB",
       label: CURIOSITY_LABELS_V7.WEB,
+    });
+  // Round 3, bead B (`pulp_wars-737.21`, section 12.1): the Sea Serpent's
+  // lair of rocks lies on its home, under the Serpent itself.
+  for (const home of visibleSerpentLairsV7(view))
+    entries.push({
+      key: `curiosity:SERPENT_LAIR:${key(home)}`,
+      kind: "CURIOSITY",
+      layer: 3.5,
+      at: home,
+      artSubject: "CURIOSITY:SERPENT_LAIR",
+      curiosity: "SERPENT_LAIR",
+      label: CURIOSITY_LABELS_V7.SERPENT_LAIR,
     });
   for (const curiosity of view.curiosities) {
     const kind = curiosity.kind;
@@ -229,13 +244,16 @@ export function selectedNeutralV7(
     return selection.kind === "UNIT"
       ? selection.unitId === candidate.unitId
       : same(selection.at, unit.at) ||
-          (candidate.breed === "GIANT_SPIDER" &&
+          ((candidate.breed === "GIANT_SPIDER" ||
+            candidate.breed === "SEA_SERPENT") &&
             same(selection.at, candidate.home));
   });
   const centre =
     preview !== undefined
       ? preview.breed === "GIANT_SPIDER" ||
         preview.breed === "BIGFOOT" ||
+        // Round 3, bead B: the Sea Serpent has no camp either.
+        preview.breed === "SEA_SERPENT" ||
         // The Cultists: an Unbound daemon has no camp.
         preview.breed === "HORROR" ||
         preview.breed === "HERALD" ||
@@ -363,7 +381,25 @@ export function drawCuriosityMarkerV7(
   context.lineCap = "round";
   context.strokeStyle = ink;
   context.lineWidth = Math.max(1, 3 * u);
-  if (id === "WEB") {
+  if (id === "SERPENT_LAIR") {
+    // Round 3, bead B: a ring of low slate rocks awash, with a bone.
+    for (let rock = 0; rock < 7; rock += 1) {
+      const angle = (rock * Math.PI * 2) / 7 - Math.PI / 2;
+      const rx = x + Math.cos(angle) * 34 * u;
+      const ry = y + Math.sin(angle) * 26 * u;
+      context.fillStyle = highContrast ? "#ffffff" : STONE_SHADE;
+      context.beginPath();
+      context.ellipse(rx, ry, 11 * u, 8 * u, 0, 0, Math.PI * 2);
+      context.fill();
+      context.stroke();
+    }
+    context.strokeStyle = highContrast ? "#ffffff" : BONE;
+    context.lineWidth = Math.max(1, 3 * u);
+    context.beginPath();
+    context.moveTo(x - 8 * u, y + 2 * u);
+    context.lineTo(x + 8 * u, y - 2 * u);
+    context.stroke();
+  } else if (id === "WEB") {
     // A wheel of silk strands to the cell's edges.
     const radius = 52 * u;
     context.strokeStyle = highContrast ? "#ffffff" : BONE;
@@ -958,6 +994,76 @@ export function drawCodeBigfootV7(
     context.arc(x + dx * u, cy + dy * u, r * u, 0, Math.PI * 2);
     context.fill();
   }
+  context.restore();
+}
+
+/**
+ * Round 3, bead B (`pulp_wars-737.21`): the code-drawn Sea Serpent
+ * (LEGACY and the classic look): a neutral disc (no owner colour) with a
+ * wave and a slate serpent's head and two humps rising out of it.
+ */
+export function drawCodeSerpentV7(
+  context: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  zoom: number,
+  highContrast = false,
+): void {
+  const u = zoom;
+  const ink = highContrast ? "#000000" : INK;
+  const cy = y - 2 * u;
+  context.save();
+  context.lineJoin = "round";
+  context.lineCap = "round";
+  context.strokeStyle = ink;
+  context.lineWidth = Math.max(1, 3 * u);
+  context.fillStyle = highContrast ? "#ffffff" : "#b9a58a";
+  context.beginPath();
+  context.arc(x, cy, 30 * u, 0, Math.PI * 2);
+  context.fill();
+  context.stroke();
+  // Two humps and a neck with a round head, slate grey-brown.
+  context.fillStyle = highContrast ? "#000000" : "#6b6258";
+  for (const [dx, radius] of [
+    [8, 7],
+    [19, 5],
+  ] as const) {
+    context.beginPath();
+    context.arc(x + dx * u, cy + 6 * u, radius * u, Math.PI, 0);
+    context.closePath();
+    context.fill();
+    context.stroke();
+  }
+  context.beginPath();
+  context.moveTo(x - 4 * u, cy + 6 * u);
+  context.quadraticCurveTo(x - 6 * u, cy - 10 * u, x - 12 * u, cy - 12 * u);
+  context.lineTo(x - 18 * u, cy - 4 * u);
+  context.quadraticCurveTo(x - 12 * u, cy - 2 * u, x - 12 * u, cy + 6 * u);
+  context.closePath();
+  context.fill();
+  context.stroke();
+  // A round head at the top of the neck, with a pale eye.
+  context.beginPath();
+  context.arc(x - 13 * u, cy - 12 * u, 7 * u, 0, Math.PI * 2);
+  context.fill();
+  context.stroke();
+  context.fillStyle = "#ffffff";
+  context.beginPath();
+  context.arc(x - 15 * u, cy - 13 * u, 2.2 * u, 0, Math.PI * 2);
+  context.fill();
+  // The wave the serpent swims in.
+  context.strokeStyle = highContrast ? "#000000" : "#ffffff";
+  context.lineWidth = Math.max(1, 2.5 * u);
+  context.beginPath();
+  context.moveTo(x - 24 * u, cy + 8 * u);
+  for (let step = 0; step < 4; step += 1)
+    context.quadraticCurveTo(
+      x + (-18 + step * 12) * u,
+      cy + (step % 2 === 0 ? 2 : 14) * u,
+      x + (-12 + step * 12) * u,
+      cy + 8 * u,
+    );
+  context.stroke();
   context.restore();
 }
 

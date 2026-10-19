@@ -29,6 +29,7 @@ import type {
   NavalRoleIdV7,
   TechnologyIdV7,
 } from "../engine/v7/types";
+import { isNeutralOwnerV7 } from "../engine/v7/types";
 import type { PlayerViewV7, PublicUnitV7 } from "../engine/v7/view";
 import { armouredLosingAttackV7 } from "./v7-naval-dwarf";
 
@@ -182,6 +183,10 @@ export function navalFleetFactsV7(
         unit.form === "NAVAL" &&
         unit.role === role &&
         isHostile(unit.ownerId) &&
+        // Map curiosities round 3, bead B (`pulp_wars-737.21`): the Sea
+        // Serpent (a neutral `BATTLESHIP`) is no seat's fleet; the
+        // curiosity rules steer around it.
+        !isNeutralOwnerV7(unit.ownerId) &&
         !unitIsIceboundV7(view, unit),
     );
   const facts: NavalFleetFactsV7 = {

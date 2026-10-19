@@ -186,8 +186,9 @@ describe("Unbound: the registration (sections 6.4 and 13.1)", () => {
   it("registers the daemons as neutral breeds with their own numbers", () => {
     // (`pulp_wars-mch9.8` adds the Tentacle after them, the Cult redesign
     // the Imp, `pulp_wars-mch9.36`, and the Gibbering Mass,
-    // `pulp_wars-mch9.37`.)
-    expect(NEUTRAL_BREEDS_V7.slice(-5)).toEqual([
+    // `pulp_wars-mch9.37`; map curiosities round 3 B, `pulp_wars-737.21`,
+    // the Sea Serpent after them.)
+    expect(NEUTRAL_BREEDS_V7.slice(-6, -1)).toEqual([
       "HORROR",
       "HERALD",
       "TENTACLE",

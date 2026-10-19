@@ -472,3 +472,72 @@ and Forest, with a Fighter and a Juggernaut, and on the dark panel),
 page, the arc over a Fighter, the blast over the Gun, the notes over the
 Expedition); the masters join the contact sheet and `readability.json`,
 with the four "beside a Fighter" shares.
+
+## 10. Round 3 B: the Sea Serpent (`pulp_wars-737.21`)
+
+[The round-3 design, section 12.2](../../product/RULESET_7_CURIOSITIES_ROUND_3.md#122-art-pixellab-chibi-direction-curiosity-class)
+asks for the Sea Serpent (a giant unit afloat), its portrait, its lair (an
+overlay on water under its home) and its icon. Sections 1 to 3 apply; the
+Serpent avoids violet, signal green and ice blue, and like the Wreck it
+shows only what is above the water: its neck and humps end in a flat line
+of white foam, with no water plate.
+
+### 10.1 Assets
+
+Batch `curiosities-4` (faction `ORIGINAL`, never sent;
+`fixedFactionColours`), subjects in
+[`SHARED.json`](../../../scripts/art/chibi/subjects/SHARED.json), the type
+`CuriositySerpentArtSubjectV7` in
+[`chibi-art-v7.ts`](../../../src/assets/chibi-art-v7.ts), the registry lines
+`CHIBI_CURIOSITIES_SERPENT_ART_ASSETS_V7` in
+[`chibi-curiosities-art-manifest.ts`](../../../src/assets/chibi-curiosities-art-manifest.ts).
+
+| Subject                        | Class        |  Canvas | Accepted recipe           | What it is                                                                                                                    |
+| ------------------------------ | ------------ | ------: | ------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `UNIT:NEUTRAL_SEA_SERPENT`     | `GIANT_UNIT` | 88 x 72 | `sea-serpent-b-edit`      | a charcoal-slate serpent from the side: a tall neck, cream belly and fin crest, two humps and a tail over white foam, 81 x 66 |
+| `PORTRAIT:NEUTRAL_SEA_SERPENT` | `PORTRAIT`   | 48 x 48 | `sea-serpent-portrait-a`  | its slate head with a bone-white crest, glossy eyes and a toothy grin                                                         |
+| `CURIOSITY:SERPENT_LAIR`       | `BUILDING`   | 80 x 80 | `serpent-lair-a-edit`     | a ring of seven barnacled slate rocks with moss and bones, foam at their feet, the middle open, 74 x 56                       |
+| `ICON:CURIOSITY:SEA_SERPENT`   | `ICON`       | 48 x 48 | `icon-sea-serpent-a-edit` | the serpent's head, crest and a hump over a foam line                                                                         |
+
+10 recipes, 10 PixelLab calls (6 creations, 4 edits; every rejected
+recipe keeps its reason in
+[`records/batch-curiosities-4.json`](../../../scripts/art/chibi/records/batch-curiosities-4.json)).
+The design's "submerged or idle variant" was not asked for and none was
+made.
+
+### 10.2 What worked and what did not
+
+- **A sea monster comes on a water plate.** The first Serpent lay flat on
+  a turquoise diamond of water with an orange head; the plate edit removed
+  the water but it still lay flat.
+- **"Seen straight from the side, like a sea monster on an old sea chart"**
+  gave the rising neck and humps over a foam line at once (`sea-serpent-b`),
+  but again with an orange head, although slate was asked for twice; a
+  colour-only edit with hex values made it slate (`sea-serpent-b-edit`).
+  A third creation that asked for slate "its head and its face too" drew a
+  four-legged red-brown lizard.
+- **The lair drew a pool of light blue water** inside its ring (near the
+  Ice Folk ice blue); "erase the light blue water … keep the thin white
+  foam" left the middle open, so the board's own water shows through.
+- **The icon stood on a soil island**; "erase everything except the sea
+  serpent" removed it.
+
+### 10.3 Measurements (`readability.json`)
+
+- **Faction colours:** every one of the four masters has 0% of its pixels
+  within CIE76 25 of a faction colour.
+- **The lair under the Serpent:** 32.5% of the lair shows beside the
+  Serpent standing on it, 36.6% beside a Fighter.
+- **The Serpent's footprint** (scripts/art/unit-shadows/measure.ts): its
+  waterline at row 68 of 72, 81 px wide; it has no ground shadow (it is
+  afloat) and no entry in the unit shadow table.
+
+### 10.4 Review
+
+`npm run art:curiosities-review` reads all four batches and also writes
+`pieces4-{x4,1x}.png` and `pieces4-zoom-0.75.png` (the Serpent on Deep and
+Shallow Water and on its lair, the lair alone and under a Fighter, on the
+dark panel) and `interface4-{x4,1x}.png` (the portrait and the icon on the
+dock and a light page); the masters join the contact sheet and
+`readability.json`. `npm run review:ruleset7-curiosities-serpent-ui` captures
+the Serpent in the game (section 12.1 of the design).

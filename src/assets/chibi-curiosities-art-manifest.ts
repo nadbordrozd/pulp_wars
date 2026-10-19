@@ -424,6 +424,59 @@ export const CHIBI_CURIOSITIES_ROUND3_ART_ASSETS_V7: readonly ChibiArtAssetV7[] 
   ];
 
 /**
+ * Round-3 B map curiosity art (bead pulp_wars-737.21, batch `curiosities-4`;
+ * docs/art/classes/curiosities.md section 10): the neutral Sea Serpent
+ * afloat (a giant unit cut at its waterline), its portrait, its lair of
+ * barnacled rocks (an 80 x 80 overlay on water under its home), and its
+ * legend icon. Faction-less: no owner area and no mask. Registered in the
+ * live direction registry and drawn by the board, the dock, the Gallery and
+ * Help.
+ */
+export const CHIBI_CURIOSITIES_SERPENT_ART_ASSETS_V7: readonly ChibiArtAssetV7[] =
+  [
+    {
+      id: "chibi-curiosity-sea-serpent",
+      subject: "UNIT:NEUTRAL_SEA_SERPENT",
+      assetClass: "GIANT_UNIT",
+      width: 88,
+      height: 72,
+      url: chibiArtUrl("assets/chibi/units/chibi-curiosity-sea-serpent.png"),
+      fixedColours: true,
+    },
+    {
+      id: "chibi-curiosity-portrait-sea-serpent",
+      subject: "PORTRAIT:NEUTRAL_SEA_SERPENT",
+      assetClass: "PORTRAIT",
+      width: 48,
+      height: 48,
+      url: chibiArtUrl(
+        "assets/chibi/portraits/chibi-curiosity-portrait-sea-serpent.png",
+      ),
+      fixedColours: true,
+    },
+    {
+      id: "chibi-curiosity-serpent-lair",
+      subject: "CURIOSITY:SERPENT_LAIR",
+      assetClass: "BUILDING",
+      width: 80,
+      height: 80,
+      url: chibiArtUrl(
+        "assets/chibi/buildings/chibi-curiosity-serpent-lair.png",
+      ),
+    },
+    {
+      id: "chibi-curiosity-icon-sea-serpent",
+      subject: "ICON:CURIOSITY:SEA_SERPENT",
+      assetClass: "ICON",
+      width: 48,
+      height: 48,
+      url: chibiArtUrl(
+        "assets/chibi/icons/chibi-curiosity-icon-sea-serpent.png",
+      ),
+    },
+  ];
+
+/**
  * Where Bigfoot touches the ground, measured on its master by
  * scripts/art/unit-shadows/measure.ts (a test checks it), the shadow
  * table entry of the board: both huge feet sit on the contact line, so

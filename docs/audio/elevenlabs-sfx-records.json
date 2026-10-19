@@ -787,6 +787,57 @@
       }
     },
     {
+      "id": "attack.serpent",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A giant sea serpent bites a boat: a sharp angry reptile hiss, a splash of water and one snap of big jaws, over fast. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "attack-serpent-101.wav",
+      "date": "2026-10-19",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "attack.serpent",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A giant sea serpent bites a boat: a sharp angry reptile hiss, a splash of water and one snap of big jaws, over fast. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "attack-serpent-102.wav",
+      "date": "2026-10-19",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "attack.serpent",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A giant sea serpent bites a boat: a sharp angry reptile hiss, a splash of water and one snap of big jaws, over fast. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "attack-serpent-103.wav",
+      "date": "2026-10-19",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
       "id": "attack.siege",
       "n": 101,
       "round": 1,

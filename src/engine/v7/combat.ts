@@ -1006,20 +1006,24 @@ export function calculateCombatPreviewV7(
     attackerOnRift: noRisingAtV7(state.board, attacker.at),
     defenderOnRift: noRisingAtV7(state.board, defender.at),
     // Themed naval branches (`pulp_wars-5ti.17`): Drowned Crews, from each
-    // owner's research.
-    attackerDrowns: drownedCrewRaisesV7(
-      {
-        form: defender.form,
-        drownedCrew: drownedCrewOfV7(
-          state,
-          defender,
-          ownerResearchedTechsV7(state, defender.ownerId),
-        ),
-      },
-      attacker,
-      tileAtV7(state.board, attacker.at)?.terrain,
-      isIceAtV7(state, attacker.at),
-    ),
+    // owner's research. Map curiosities round 3, bead B (section 8.6): the
+    // Sea Serpent never rises as a Ghost Ship, also when an Undead ship's
+    // retaliation kills it in its own bite.
+    attackerDrowns:
+      unitTakesStatusV7(attacker) &&
+      drownedCrewRaisesV7(
+        {
+          form: defender.form,
+          drownedCrew: drownedCrewOfV7(
+            state,
+            defender,
+            ownerResearchedTechsV7(state, defender.ownerId),
+          ),
+        },
+        attacker,
+        tileAtV7(state.board, attacker.at)?.terrain,
+        isIceAtV7(state, attacker.at),
+      ),
     defenderDrowns:
       unitTakesStatusV7(defender) &&
       drownedCrewRaisesV7(
@@ -1381,6 +1385,10 @@ export function ramShoveDestinationV7(
   attacker: UnitStateV7,
   defender: UnitStateV7,
 ): CoordV7 | null {
+  // Map curiosities round 3, bead B (section 8.6): nothing moves a neutral
+  // unit; a Ram on the Sea Serpent deals its damage and the shove is
+  // `BLOCKED`.
+  if (isNeutralOwnerV7(defender.ownerId)) return null;
   const destination = {
     x: defender.at.x + Math.sign(defender.at.x - attacker.at.x),
     y: defender.at.y + Math.sign(defender.at.y - attacker.at.y),

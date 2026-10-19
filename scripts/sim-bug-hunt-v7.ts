@@ -1731,7 +1731,7 @@ function setupFor(spec: MatchSpecV7): MatchSetupV7 {
   }
   const seats = spec.factions.length;
   const base = {
-    rulesetId: "pulp-wars-poc-7r103",
+    rulesetId: "pulp-wars-poc-7r104",
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
     seed: spec.seed,
     aiCount: (seats - 1) as MatchSetupV7["aiCount"],

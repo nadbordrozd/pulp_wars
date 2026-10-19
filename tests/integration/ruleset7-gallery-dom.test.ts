@@ -1034,6 +1034,8 @@ describe("Ruleset 7 Gallery: Curiosities (pulp_wars-737.6)", () => {
         "CURIOSITY:LOST_EXPEDITION",
         "Lost Expedition, neutral",
       ],
+      // Round 3 B (bead pulp_wars-737.21): its fifth cell.
+      ["SEA_SERPENT", "UNIT:NEUTRAL_SEA_SERPENT", "Sea Serpent, neutral"],
     ]);
     expect(
       document.querySelectorAll(".v7-gallery-curiosities tbody tr"),

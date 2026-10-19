@@ -1,0 +1,195 @@
+{
+  "schemaVersion": 1,
+  "batch": "curiosities-4",
+  "title": "Map curiosities, round 3 B: the Sea Serpent as a giant neutral unit afloat with its portrait, its lair of barnacled rocks as a tile overlay on water, and its legend icon",
+  "bead": "pulp_wars-737.21",
+  "faction": "ORIGINAL",
+  "dryRun": false,
+  "fixedFactionColours": true,
+  "assets": [
+    {
+      "id": "chibi-curiosity-sea-serpent",
+      "subject": "UNIT:NEUTRAL_SEA_SERPENT",
+      "assetClass": "GIANT_UNIT",
+      "recipeClass": "curiosity-monster",
+      "canvas": {
+        "width": 88,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-curiosity-portrait-sea-serpent",
+      "subject": "PORTRAIT:NEUTRAL_SEA_SERPENT",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "curiosity-portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-curiosity-serpent-lair",
+      "subject": "CURIOSITY:SERPENT_LAIR",
+      "assetClass": "BUILDING",
+      "recipeClass": "curiosity-site",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      }
+    },
+    {
+      "id": "chibi-curiosity-icon-sea-serpent",
+      "subject": "ICON:CURIOSITY:SEA_SERPENT",
+      "assetClass": "ICON",
+      "recipeClass": "curiosity-item",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    }
+  ],
+  "recipes": [
+    {
+      "id": "sea-serpent-a",
+      "asset": "chibi-curiosity-sea-serpent",
+      "endpoint": "create-image-pixen",
+      "seed": 73721001,
+      "requestSize": {
+        "width": 88,
+        "height": 72
+      },
+      "options": {
+        "view": "side"
+      },
+      "negativeAddendum": "violet, purple, lilac, green, lime, blue, cyan, turquoise, teal, water, sea, waves, water plate, blue water, island, rock under it, sand, legs, feet, claws"
+    },
+    {
+      "id": "sea-serpent-portrait-a",
+      "asset": "chibi-curiosity-portrait-sea-serpent",
+      "endpoint": "create-image-pixen",
+      "seed": 73721011,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "violet, purple, lilac, green, lime, blue, cyan, turquoise, teal, water, sea, waves, water plate, blue water, island, rock under it, sand"
+    },
+    {
+      "id": "serpent-lair-a",
+      "asset": "chibi-curiosity-serpent-lair",
+      "endpoint": "create-image-pixen",
+      "seed": 73721021,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "negativeAddendum": "violet, purple, lilac, green, lime, blue, cyan, turquoise, teal, water, sea, waves, water plate, blue water, island, rock under it, sand, skull pile, cave, arch"
+    },
+    {
+      "id": "icon-sea-serpent-a",
+      "asset": "chibi-curiosity-icon-sea-serpent",
+      "endpoint": "create-image-pixen",
+      "seed": 73721031,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "options": {
+        "view": "side"
+      },
+      "negativeAddendum": "violet, purple, lilac, green, lime, blue, cyan, turquoise, teal, water, sea, waves, water plate, blue water, island, rock under it, sand"
+    },
+    {
+      "id": "sea-serpent-a-edit",
+      "asset": "chibi-curiosity-sea-serpent",
+      "endpoint": "edit-image-pixen",
+      "seed": 73721002,
+      "requestSize": {
+        "width": 88,
+        "height": 72
+      },
+      "source": {
+        "recipe": "sea-serpent-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove only the water: erase the turquoise water plate, the pale blue water and the white ripples around and under the serpent, so the serpent stands directly on a transparent background with nothing at all under or around it. Keep the serpent's head, its fin crest, its eyes, its scaly humps, its tail, the moss, the outline and the art style exactly the same."
+    },
+    {
+      "id": "sea-serpent-b",
+      "asset": "chibi-curiosity-sea-serpent",
+      "endpoint": "create-image-pixen",
+      "seed": 73721003,
+      "requestSize": {
+        "width": 88,
+        "height": 72
+      },
+      "options": {
+        "view": "side"
+      },
+      "promptAddendum": "Seen straight from the side, like a sea monster on an old sea chart: the head and neck rise tall on the left, and the three humps arch up out of the sea like three round loops in a row behind it. The whole serpent is slate grey-brown, the head too: never orange. Its bottom edge is one flat straight horizontal line: nothing is drawn under it, no water plate, no tile and no platform.",
+      "negativeAddendum": "violet, purple, lilac, green, lime, blue, cyan, turquoise, teal, water, sea, waves, water plate, blue water, island, rock under it, sand, orange, red-brown, diamond, tile, platform, isometric plate, legs, feet, claws, lying flat"
+    },
+    {
+      "id": "icon-sea-serpent-a-edit",
+      "asset": "chibi-curiosity-icon-sea-serpent",
+      "endpoint": "edit-image-pixen",
+      "seed": 73721032,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-sea-serpent-a",
+        "candidate": 0
+      },
+      "editInstruction": "Erase everything except the sea serpent: remove the brown soil block, the green grass and the blue water under it completely, so the serpent's neck and hump stand directly on a transparent background with only a thin line of white foam at their bottom. Keep the serpent's head, its eye, its fin crest, its hump, the outline and the art style exactly the same."
+    },
+    {
+      "id": "serpent-lair-a-edit",
+      "asset": "chibi-curiosity-serpent-lair",
+      "endpoint": "edit-image-pixen",
+      "seed": 73721022,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "source": {
+        "recipe": "serpent-lair-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only one thing: erase the light blue water inside and around the ring of rocks, so the middle of the ring and the space around it are transparent; keep the thin white foam lines at the foot of each rock. Keep every grey rock, the barnacles, the moss, the bones, the outline and the art style exactly the same."
+    },
+    {
+      "id": "sea-serpent-b-edit",
+      "asset": "chibi-curiosity-sea-serpent",
+      "endpoint": "edit-image-pixen",
+      "seed": 73721004,
+      "requestSize": {
+        "width": 88,
+        "height": 72
+      },
+      "source": {
+        "recipe": "sea-serpent-b",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the colours: recolour the orange-brown head, face and back of the neck to slate grey-brown #6b6258 with the shadow tone #4a433c, the same as the scaly humps, not orange and not red-brown. Keep the cream belly, the bone-white fin crest and spikes, the big black eyes with white shine, the white foam, the shape, the outline and the art style exactly the same."
+    },
+    {
+      "id": "sea-serpent-c",
+      "asset": "chibi-curiosity-sea-serpent",
+      "endpoint": "create-image-pixen",
+      "seed": 73721005,
+      "requestSize": {
+        "width": 88,
+        "height": 72
+      },
+      "options": {
+        "view": "side"
+      },
+      "promptAddendum": "Seen straight from the side, like a sea monster on an old sea chart: the head and neck rise tall on the left, and the three humps arch up out of the sea like three round loops in a row behind it. The whole serpent, its head and its face too, is slate grey-brown #6b6258 with a darker #4a433c shadow tone; only its belly and fins are bone white. Its bottom edge is one flat straight horizontal line with a thin line of white foam: nothing is drawn under it, no water plate, no tile and no platform.",
+      "negativeAddendum": "violet, purple, lilac, green, lime, blue, cyan, turquoise, teal, water, sea, waves, water plate, blue water, island, rock under it, sand, orange, red-brown, brown face, tan, diamond, tile, platform, isometric plate, legs, feet, claws, lying flat"
+    }
+  ]
+}

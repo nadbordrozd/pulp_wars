@@ -3,6 +3,7 @@ import {
   deepOfferingAmountV7,
   deepOfferingOfV7,
   factionHasFavourV7,
+  neutralBreedOfV7,
   ownerResearchedTechsV7,
   playerFactionV7,
   unitRoleMechanicsV7,
@@ -15,6 +16,7 @@ import {
   favourOfV7,
   withFavourGainedV7,
 } from "./cult";
+import { SEA_SERPENT_OFFERING_VALUE_V7 } from "./curiosities";
 import { arePlayersHostileV7 } from "./economy";
 import type { DomainEventV7 } from "./events";
 import { unitScoreValueV7 } from "./score";
@@ -169,7 +171,12 @@ export function deepOfferingFavourV7(
     },
     victim,
     arePlayersHostileV7(lookup, killer.ownerId, victim.ownerId),
-    unitScoreValueV7(lookup, victim),
+    // Map curiosities round 3, bead B (section 8.6): the Sea Serpent pays
+    // as a victim of value 8 (4 Favour), whatever its bounty.
+    isNeutralOwnerV7(victim.ownerId) &&
+      neutralBreedOfV7(lookup, victim) === "SEA_SERPENT"
+      ? SEA_SERPENT_OFFERING_VALUE_V7
+      : unitScoreValueV7(lookup, victim),
   );
 }
 

@@ -1,0 +1,36 @@
+{
+  "id": "sea-serpent-a-edit",
+  "jobId": "2a0c8213-b1cb-4afc-b839-a8752a1ec917",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "curiosities-4",
+    "asset": "chibi-curiosity-sea-serpent",
+    "subject": "UNIT:NEUTRAL_SEA_SERPENT",
+    "faction": "ORIGINAL",
+    "recipeClass": "curiosity-monster",
+    "requestSize": {
+      "width": 88,
+      "height": 72
+    },
+    "seed": 73721002,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove only the water: erase the turquoise water plate, the pale blue water and the white ripples around and under the serpent, so the serpent stands directly on a transparent background with nothing at all under or around it. Keep the serpent's head, its fin crest, its eyes, its scaly humps, its tail, the moss, the outline and the art style exactly the same."
+      }
+    ],
+    "prompt": "Remove only the water: erase the turquoise water plate, the pale blue water and the white ripples around and under the serpent, so the serpent stands directly on a transparent background with nothing at all under or around it. Keep the serpent's head, its fin crest, its eyes, its scaly humps, its tail, the moss, the outline and the art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove only the water: erase the turquoise water plate, the pale blue water and the white ripples around and under the serpent, so the serpent stands directly on a transparent background with nothing at all under or around it. Keep the serpent's head, its fin crest, its eyes, its scaly humps, its tail, the moss, the outline and the art style exactly the same.",
+    "editInstruction": "Remove only the water: erase the turquoise water plate, the pale blue water and the white ripples around and under the serpent, so the serpent stands directly on a transparent background with nothing at all under or around it. Keep the serpent's head, its fin crest, its eyes, its scaly humps, its tail, the moss, the outline and the art style exactly the same.",
+    "source": {
+      "recipe": "sea-serpent-a",
+      "candidate": 0,
+      "sha256": "29a319eba26657a6cad304b952dcfdb945ba22cefbf8babb2a2e12776436057f"
+    }
+  }
+}

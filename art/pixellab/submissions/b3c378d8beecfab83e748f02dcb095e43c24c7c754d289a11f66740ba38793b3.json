@@ -1,0 +1,57 @@
+{
+  "id": "icon-sea-serpent-a",
+  "jobId": "sync-5fd06c6c-b5fc-4720-8dfe-f32fa5ad3cf3",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "curiosities-4",
+    "asset": "chibi-curiosity-icon-sea-serpent",
+    "subject": "ICON:CURIOSITY:SEA_SERPENT",
+    "faction": "ORIGINAL",
+    "recipeClass": "curiosity-item",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 73721031,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "side"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-icon.txt",
+        "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-curiosity-item.txt + scripts/art/chibi/fragments/class-curiosity-item.negative.txt",
+        "text": "Class: one bold chunky item sprite of a single small thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. It belongs to no faction and has no team colour.",
+        "negative": "icon frame, round badge, medallion, emblem, button, border, circular background, square background, vignette, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, character, person, text, letters, numbers, red, crimson, orange, lime, purple, violet, magenta, pink, translucent, see-through, soft glow"
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/SHARED.json",
+        "text": "Subject: a sea serpent's head and one arched hump rising out of the sea side by side: a round scaly head on a curved neck with a big round glossy black eye with a white shine dot and a fan-shaped bone-white fin crest, and one round arched hump behind it; slate grey-brown scales with a darker grey-brown shadow tone and a bone-white belly; the neck and the hump end in one flat straight line at the bottom with a thin line of white foam; no water is drawn; the serpent is the only thing in the image."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "",
+        "negative": "violet, purple, lilac, green, lime, blue, cyan, turquoise, teal, water, sea, waves, water plate, blue water, island, rock under it, sand"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one bold chunky item sprite of a single small thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. It belongs to no faction and has no team colour. Subject: a sea serpent's head and one arched hump rising out of the sea side by side: a round scaly head on a curved neck with a big round glossy black eye with a white shine dot and a fan-shaped bone-white fin crest, and one round arched hump behind it; slate grey-brown scales with a darker grey-brown shadow tone and a bone-white belly; the neck and the hump end in one flat straight line at the bottom with a thin line of white foam; no water is drawn; the serpent is the only thing in the image.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, vignette, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, character, person, red, crimson, orange, lime, purple, violet, magenta, pink, translucent, see-through, soft glow, lilac, green, blue, cyan, turquoise, teal, water, sea, waves, water plate, blue water, rock under it, sand",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one bold chunky item sprite of a single small thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. It belongs to no faction and has no team colour. Subject: a sea serpent's head and one arched hump rising out of the sea side by side: a round scaly head on a curved neck with a big round glossy black eye with a white shine dot and a fan-shaped bone-white fin crest, and one round arched hump behind it; slate grey-brown scales with a darker grey-brown shadow tone and a bone-white belly; the neck and the hump end in one flat straight line at the bottom with a thin line of white foam; no water is drawn; the serpent is the only thing in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, vignette, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, character, person, red, crimson, orange, lime, purple, violet, magenta, pink, translucent, see-through, soft glow, lilac, green, blue, cyan, turquoise, teal, water, sea, waves, water plate, blue water, rock under it, sand."
+  }
+}

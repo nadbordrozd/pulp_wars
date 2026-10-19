@@ -8,7 +8,6 @@ import { deepFreeze } from "../model/freeze";
 import { nextBounded } from "../random/random";
 import type { JsonValue } from "../replay/canonical";
 import {
-  MONSTER_REGENERATION_V7,
   WELL_COINS_V7,
   WELL_TOSS_COST_V7,
   WELL_VISION_RADIUS_V7,
@@ -22,6 +21,7 @@ import {
   monsterWanderV7,
   neutralAttackChoiceV7,
   neutralBountyV7,
+  neutralRegenerationV7,
   neutralStepsV7,
   moonGunAtV7,
   moonGunLandingRejectionV7,
@@ -31,6 +31,7 @@ import {
   researchPriceWithNotesV7,
   expeditionNotesOfV7,
   resolveCuriosityClaimV7,
+  seaSerpentBiteChoiceV7,
   teslaTowerAtV7,
   wellOutcomeV7,
   withMonsterProvocationsV7,
@@ -4979,6 +4980,7 @@ function applyFreeze(
                 id: occupant.id,
                 form: occupant.form,
                 hostile: arePlayersHostileV7(state, actor, occupant.ownerId),
+                neutral: isNeutralOwnerV7(occupant.ownerId),
               },
       };
     },
@@ -8843,6 +8845,57 @@ function resolveNeutralTurnV7(
         events.push({ kind: "UNIT_MOVED", unitId: monster.id, path });
       continue;
     }
+    // Map curiosities round 3, bead B (`pulp_wars-737.21`, section 8.4):
+    // the Sea Serpent swims up to 2 steps to bite the weakest provoker in
+    // its reach, or wanders one step.
+    if (entry.breed === "SEA_SERPENT") {
+      const bite = seaSerpentBiteChoiceV7(
+        facts,
+        monster,
+        entry,
+        monsterProvokersV7(facts, monster, entry.provokedBy),
+      );
+      const path =
+        bite === null
+          ? (() => {
+              const to = monsterWanderV7(
+                current.setup.seed,
+                round,
+                monster.id,
+                steps,
+              );
+              return to === null ? [] : [to];
+            })()
+          : bite.path;
+      monster = {
+        ...monster,
+        at: path.at(-1) ?? monster.at,
+        activation: {
+          ...monster.activation,
+          moved: path.length > 0,
+          movedPathLength: path.length,
+          handled: bite === null,
+        },
+      };
+      replace(monster);
+      if (path.length > 0)
+        events.push({ kind: "UNIT_MOVED", unitId: monster.id, path });
+      if (bite === null) continue;
+      const target = requireValue(
+        current.units.find((unit) => unit.id === bite.target.id),
+      );
+      const exchange = resolveAttackExchangeV7(
+        current,
+        NEUTRAL_OWNER_ID_V7,
+        monster,
+        target,
+        unitRoleRuleV7(current, monster),
+        chebyshev(monster.at, target.at),
+      );
+      current = exchange.state;
+      events.push(...exchange.events);
+      continue;
+    }
     // Sections 8.4 and 25.4: the Spider's provokers (next to it or in its
     // `provokedBy`), or the camp's provokers for a guard.
     const rule = unitRoleRuleV7(current, monster);
@@ -8901,16 +8954,18 @@ function resolveNeutralTurnV7(
     current = exchange.state;
     events.push(...exchange.events);
   }
-  // Step 3: regeneration (round 2, section 25.5: the Spider alone) and the
-  // cleared provocation list.
+  // Step 3: regeneration (round 2, section 25.5: the Spider alone; round 3,
+  // bead B, section 8.5: every breed with a regeneration above 0, the
+  // Spider and the Sea Serpent) and the cleared provocation list.
   const pruned = prunedMonstersV7(current);
   const regenerated = new Map<number, number>();
   for (const entry of pruned.monsters) {
-    if (entry.breed !== "GIANT_SPIDER") continue;
+    const regeneration = neutralRegenerationV7(entry.breed);
+    if (regeneration <= 0) continue;
     const unit = requireValue(
       pruned.units.find((candidate) => candidate.id === entry.unitId),
     );
-    const amount = Math.min(MONSTER_REGENERATION_V7, unit.maxHp - unit.hp);
+    const amount = Math.min(regeneration, unit.maxHp - unit.hp);
     if (amount <= 0) continue;
     regenerated.set(unit.id, unit.hp + amount);
     events.push({

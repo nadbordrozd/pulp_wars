@@ -21,7 +21,10 @@ export type CheckedCuriosityKindV7 =
   | "TESLA_TOWER"
   | "MOON_GUN"
   | "GOLD_CLAIM"
-  | "LOST_EXPEDITION";
+  | "LOST_EXPEDITION"
+  // Round 3, bead B (`pulp_wars-737.21`, section 3.1): the Sea Serpent's
+  // home.
+  | "SEA_SERPENT";
 
 /**
  * A placed curiosity tile of any kind: the Spider's lair (kind `MONSTER`),
@@ -46,11 +49,13 @@ const KINDS: readonly CheckedCuriosityKindV7[] = [
   "MOON_GUN",
   "GOLD_CLAIM",
   "LOST_EXPEDITION",
+  "SEA_SERPENT",
 ];
 const DANGERS: readonly CheckedCuriosityKindV7[] = [
   "MONSTER",
   "DOWNED_SAUCER",
   "GRAVEYARD",
+  "SEA_SERPENT",
 ];
 const COMPOSITIONS: readonly string[] = [
   "GRUNT",
@@ -100,8 +105,10 @@ export function checkCuriosityPlacementV7(
   const same = (a: CoordV7, b: CoordV7) => a.x === b.x && a.y === b.y;
   const spiders = neutrals.filter((entry) => entry.breed === "GIANT_SPIDER");
   const bigfeet = neutrals.filter((entry) => entry.breed === "BIGFOOT");
-  if (spiders.length > 1 || bigfeet.length > 1) fail("two Spiders or Bigfeet");
-  for (const entry of [...spiders, ...bigfeet])
+  const serpents = neutrals.filter((entry) => entry.breed === "SEA_SERPENT");
+  if (spiders.length > 1 || bigfeet.length > 1 || serpents.length > 1)
+    fail("two Spiders, Bigfeet, or Serpents");
+  for (const entry of [...spiders, ...bigfeet, ...serpents])
     if (!same(entry.at, entry.home)) fail(`${entry.breed} away from home`);
   const curiosities: readonly CheckedCuriosityV7[] = [
     ...markers.map((marker) => ({
@@ -112,6 +119,10 @@ export function checkCuriosityPlacementV7(
     })),
     ...spiders.map((entry) => ({ kind: "MONSTER" as const, at: entry.home })),
     ...bigfeet.map((entry) => ({ kind: "BIGFOOT" as const, at: entry.home })),
+    ...serpents.map((entry) => ({
+      kind: "SEA_SERPENT" as const,
+      at: entry.home,
+    })),
   ].sort((a, b) => a.at.y - b.at.y || a.at.x - b.at.x);
   const width = map.board.width;
   // Section 4.2: the counts (the gate pair is one curiosity) and one of
@@ -158,6 +169,11 @@ export function checkCuriosityPlacementV7(
     fail("a Tesla Tower or a Moon Gun below width 16");
   if (width < 14 && kindsPlaced.includes("GOLD_CLAIM"))
     fail("a Gold Claim below width 14");
+  // Round 3, bead B (section 3.5): no Serpent below width 16 or on Dry Land.
+  if (kindsPlaced.includes("SEA_SERPENT") && width < 16)
+    fail("a Sea Serpent below width 16");
+  if (kindsPlaced.includes("SEA_SERPENT") && mapType === "DRY_LAND")
+    fail("a Sea Serpent on Dry Land");
   // Round 3 (sections 5.3, 6.3, and 7.3): each new marker starts unused.
   for (const marker of markers)
     if (
@@ -189,7 +205,10 @@ export function checkCuriosityPlacementV7(
   }
   // Section 24.1: the camps' guards.
   const guards = neutrals.filter(
-    (entry) => entry.breed !== "GIANT_SPIDER" && entry.breed !== "BIGFOOT",
+    (entry) =>
+      entry.breed !== "GIANT_SPIDER" &&
+      entry.breed !== "BIGFOOT" &&
+      entry.breed !== "SEA_SERPENT",
   );
   const camps = markers.filter(
     (marker) => marker.kind === "DOWNED_SAUCER" || marker.kind === "GRAVEYARD",
@@ -222,7 +241,8 @@ export function checkCuriosityPlacementV7(
         kindsPlaced.includes(kind) ||
         (danger && DANGERS.includes(kind)) ||
         (kind === "DOWNED_SAUCER" && factions.includes("MARTIAN")) ||
-        (kind === "GRAVEYARD" && factions.includes("UNDEAD"))
+        (kind === "GRAVEYARD" && factions.includes("UNDEAD")) ||
+        (kind === "SEA_SERPENT" && mapType === "DRY_LAND")
       )
         continue;
       if (kind === "GATES") {
@@ -394,19 +414,45 @@ export function curiositySiteCheckerV7(
   };
   const lairLike = (kind: CheckedCuriosityKindV7) =>
     kind === "MONSTER" || kind === "DOWNED_SAUCER" || kind === "GRAVEYARD";
+  // Round 3, bead B (section 3.4): a cut tile of the eight-connected water
+  // graph splits its water component when removed.
+  const waterCutCache = new Map<string, boolean>();
+  const isWaterCut = (at: CoordV7): boolean => {
+    const cached = waterCutCache.get(key(at));
+    if (cached !== undefined) return cached;
+    let cut = false;
+    if (isWater(at)) {
+      const component = flood([at], isWater);
+      const rest = (near: CoordV7) => key(near) !== key(at) && isWater(near);
+      const start = [...component]
+        .map((cell) => {
+          const [x, y] = cell.split(",").map(Number) as [number, number];
+          return { x, y };
+        })
+        .find((cell) => key(cell) !== key(at));
+      if (
+        start !== undefined &&
+        flood([start], rest).size !== component.size - 1
+      )
+        cut = true;
+    }
+    waterCutCache.set(key(at), cut);
+    return cut;
+  };
   return (kind, at, placed) => {
     const tile = tileAt(at);
     if (tile === undefined) return "is off the board";
+    const serpent = kind === "SEA_SERPENT";
     // Rule 1; sections 4.4 and 24.3: a lair's or camp's whole area is on
-    // the board.
-    const margin = lairLike(kind) ? 2 : 1;
+    // the board (round 3: every tile within 3 of the Serpent's home).
+    const margin = serpent ? 3 : lairLike(kind) ? 2 : 1;
     if (
       at.x < margin ||
       at.y < margin ||
       at.x > width - 1 - margin ||
       at.y > width - 1 - margin
     )
-      return lairLike(kind)
+      return lairLike(kind) || serpent
         ? "has part of its area off the board"
         : "is on the edge ring";
     if (
@@ -422,6 +468,8 @@ export function curiositySiteCheckerV7(
     if ((kind === "TESLA_TOWER" || kind === "MOON_GUN") && width < 16)
       return "is on a board below 16";
     if (kind === "GOLD_CLAIM" && width < 14) return "is on a board below 14";
+    if (serpent && width < 16) return "is on a board below 16";
+    if (serpent && mapType === "DRY_LAND") return "is on Dry Land";
     // Rule 2.
     if (
       tile.site !== null ||
@@ -446,6 +494,7 @@ export function curiositySiteCheckerV7(
       MOON_GUN: ["GRASS"],
       GOLD_CLAIM: ["GRASS", "FOREST"],
       LOST_EXPEDITION: ["GRASS", "FOREST"],
+      SEA_SERPENT: ["DEEP_WATER"],
     };
     if (!terrains[kind].includes(tile.terrain)) return `is on ${tile.terrain}`;
     if (kind === "WRECK" && mapType === "DRY_LAND") return "is on Dry Land";
@@ -460,15 +509,30 @@ export function curiositySiteCheckerV7(
         map.villages.some((center) => chebyshev(center, at) < 4))
     )
       return "is within 4 of a capital or 3 of a village center";
+    // Round 3, bead B (section 3.4, as built in section 18): the Serpent's
+    // home keeps the lair's distances, 5 from every capital and 4 from every
+    // village centre.
+    if (
+      serpent &&
+      (map.capitals.some((center) => chebyshev(center, at) < 5) ||
+        map.villages.some((center) => chebyshev(center, at) < 4))
+    )
+      return "is within 4 of a capital or 3 of a village center";
     // Rule 4 (a gate keeps its first half only).
     const distances = map.capitals.map((capital) => chebyshev(capital, at));
     if (Math.min(...distances) < 5) return "is within 4 of a capital";
     if (kind !== "GATES" && Math.max(...distances) - Math.min(...distances) > 4)
       return "is not between the capitals";
-    // Rule 5.
-    if (placed.some((other) => chebyshev(other.at, at) < 5))
-      return "is within 4 of another curiosity";
-    if (kind === "WRECK") {
+    // Rule 5 (round 3, bead B: 6 when one of the two is the Serpent's home).
+    if (
+      placed.some(
+        (other) =>
+          chebyshev(other.at, at) <
+          (serpent || other.kind === "SEA_SERPENT" ? 6 : 5),
+      )
+    )
+      return "is too near another curiosity";
+    if (kind === "WRECK" || serpent) {
       // Rule 7: its water touches every capital's landmass orthogonally.
       let water = waterCache.get(key(at));
       if (water === undefined) {
@@ -488,7 +552,22 @@ export function curiositySiteCheckerV7(
         });
         if (!touches) return "cannot be sailed to from every capital";
       }
-      return null;
+      if (!serpent) return null;
+      // Round 3, bead B (section 3.4): 16 or more water tiles within 3 of
+      // home, none of them a cut tile of the water graph.
+      let waterTiles = 0;
+      for (let dy = -3; dy <= 3; dy += 1)
+        for (let dx = -3; dx <= 3; dx += 1) {
+          const near = { x: at.x + dx, y: at.y + dy };
+          const terrain = tileAt(near)?.terrain;
+          if (terrain !== "SHALLOW_WATER" && terrain !== "DEEP_WATER") continue;
+          if (isWaterCut(near))
+            return `has the water cut tile ${near.x},${near.y} in its area`;
+          waterTiles += 1;
+        }
+      return waterTiles < 16
+        ? `has ${waterTiles} water tiles in its area`
+        : null;
     }
     // Rule 6: a shared landmass reached without Mountains, or no capital.
     const capitalsHere = capitalLandmasses.filter((landmass) =>

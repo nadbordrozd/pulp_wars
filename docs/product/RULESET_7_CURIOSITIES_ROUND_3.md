@@ -3,8 +3,8 @@
 **Status:** design (`pulp_wars-737.19`, epic `pulp_wars-737`), written on
 2026-10-19 over the rules as built at `pulp-wars-poc-7r101`, with the Dwarf
 Gyrocopter change of `pulp-wars-poc-7r102` landing in parallel. Bead A
-is built (`pulp-wars-poc-7r103`, notes in section 17); the Sea Serpent is
-not yet. Two implementation beads build it (section 15): bead A
+is built (`pulp-wars-poc-7r103`, notes in section 17), and so is bead B,
+the Sea Serpent (`pulp-wars-poc-7r104`, notes in section 18). Two implementation beads build it (section 15): bead A
 (the four land curiosities, `pulp-wars-poc-7r103`) and bead B (the naval
 one, `pulp-wars-poc-7r104`). No game was played or simulated to write it
 (the user's standing rule); every number is a first guess for hand-play
@@ -137,6 +137,11 @@ landmass reached over land without Mountains.
 | `GOLD_CLAIM`      | Nothing more.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | `LOST_EXPEDITION` | Nothing more.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | `SEA_SERPENT`     | Its **home** is Deep Water with no Fish or Pearls; every tile within 3 of home is on the board; home is **6 or more from every capital and 5 or more from every village centre**; its **area** (section 8.3) has at least **16** tiles at placement; no tile of the area is a cut tile of the eight-connected water graph (so it never closes a strait); its water component touches the landmass of every capital (the Wreck's rule 7); and home keeps **6** from every other curiosity tile, placed before or after it. |
+
+**As built** (section 18): the Serpent's home keeps the Spider's lair
+distances, **5** from every capital and **4** from every village centre
+(`SEA_SERPENT_CAPITAL_DISTANCE_V7`, `SEA_SERPENT_VILLAGE_DISTANCE_V7`), not
+6 and 5: with 6 and 5 almost no water board had a legal home.
 
 The Serpent ignores rule 6 (it is not a land kind) and keeps rules 1 to 5.
 Rule 5's distance 6 for the Serpent covers its reach (4 from home:
@@ -1059,6 +1064,109 @@ column until then); the support effects and `sound-events-v7.ts` take a
 `attack.serpent` cue the way `special.zap` was added; the identity is
 `7r104` with the same bump steps. The Serpent is a neutral unit, so it
 needs no `CuriosityV7` marker.
+
+## 18. Implementation notes, bead B (`pulp_wars-737.21`)
+
+Built at `pulp-wars-poc-7r104`, after bead A's `7r103`. The rules are in
+[current rules section 2.7, round 3 B](RULESET_7_CURRENT.md#round-3-b-the-sea-serpent);
+the AI in
+[Normal AI, round 3 B](../architecture/NORMAL_AI.md#map-curiosities-round-3-b-the-sea-serpent-pulp_wars-73721);
+the art in
+[the curiosity class, section 10](../art/classes/curiosities.md#10-round-3-b-the-sea-serpent-pulp_wars-73721).
+No game was played or simulated.
+
+**Choices the design left open, and one change.**
+
+- **The home's distances are the lair's, 5 and 4** (section 3.4 asked for
+  6 and 5). Measured on the validator's boards before the change, 6 and 5
+  left **no** legal home on any Lakes board and on all but one of eight
+  Continents boards of widths 20 and 25 (the village-density counts put a
+  village within 4 of almost every deep tile, as they did for the Spider
+  before `pulp_wars-ykw.7` lowered its village distance to 4). The Serpent
+  still never stands within 2 of a centre, so it never bites a unit on a
+  centre; the spacing of 6 to every other curiosity is kept. The constants
+  keep their names; one line each brings 6 and 5 back.
+- **Offerings.** Section 8.6 says a Cult ship's kill pays Offerings "as a
+  Battleship's value (8, so 4 Favour)"; a Battleship's value is its cost,
+  16, which would pay 8. The explicit numbers were kept: the Serpent is a
+  victim of value `SEA_SERPENT_OFFERING_VALUE_V7` = 8 (4 Favour).
+- The Serpent is created in `NAVAL` form (the only neutral unit afloat;
+  parsing pins the form by breed). Its move is a breadth-first search over
+  its standable tiles in (y, x) order, so the path to each tile is the
+  first shortest path in (y, x) order of its steps; a bite's `UNIT_MOVED`
+  carries the whole path.
+- Nothing moves it because it is neutral: the Ram's shove gained the
+  neutral check (`ramShoveDestinationV7` and the public preview), as
+  Knockback and Push had.
+- A neutral attacker never drowns into a Ghost Ship either
+  (`attackerDrowns` now checks `unitTakesStatusV7`, as `defenderDrowns`
+  did), so a Serpent killed by an Undead ship's answer to its bite sinks.
+- The Freeze set reads `neutral` on the occupant of a tile: a neutral
+  unit's tile is never taken (the line stops there), so the Serpent is
+  never icebound or crushed. No other ice effect needed a change (every
+  status already skipped neutral units).
+- The lair is drawn as the overlay `SERPENT_LAIR` under the Serpent at its
+  home (like the Spider's web), and its legend icon is the Serpent's.
+- The Normal AI: ships join the kill plan for the Serpent only, and the
+  naval plan's fleet facts leave neutral ships out (section 11).
+
+**Measured distribution** (`npm run validate:ruleset7-curiosity-maps`,
+seeds 0 to 31, every map type, size, AI count, and both faction mixes:
+3840 boards, `PASS`). Boards with a Sea Serpent, by map type and width
+(192 boards a row; none below 16, none on Dry Land):
+
+| Map type    |  16 |  20 |  25 |
+| ----------- | --: | --: | --: |
+| Archipelago |  40 | 112 | 154 |
+| Continents  |  14 |  42 |  52 |
+| Lakes       |   4 |   8 |  12 |
+| Pangea      |   0 |   0 |   1 |
+| Dry Land    |   0 |   0 |   0 |
+
+Totals: the Sea Serpent 439 (the Wreck 1122, which shares its water; the
+Spider 257, the Fountain 503, the Tesla Tower 265, the Moon Gun 255, the
+Gold Claim 455, the Lost Expedition 403). An Archipelago of width 20 meets
+it on 58% of its seeds (the design guessed about half of the water boards
+of width 20), a Continents board on 22%; Lakes and Pangea rarely have
+deep water 3 tiles from the edge with 16 water tiles around it.
+
+**Pins.** The unit tier moved only where the new breed, kind, sound, or
+cell is listed: the breed tables and orders (`ruleset-v7-curiosities-round2`,
+`ruleset-v7-cult-unbound`, `ruleset-v7-cult-tricks`), the land-arena breed
+loops that now skip the Serpent (`ruleset-v7-curiosities-round2`,
+`ruleset-v7-ice-folk-freeze`; it is proved on a sea), the kind and danger
+lists (`ruleset-v7-curiosities-round3-generation`), the Help icons, the
+Gallery's cells, the sound lists and the synth table, the unit-reader
+classes (`previewSeaSerpentV7`), and the identity pins (`7r104`). No
+generation seed pin of the unit tier moved (none of their seeds has a
+legal Serpent home), and no AI decision hash moved (no command or event
+kind was added). **Simulation pins, not run** (the user's rule), expected
+to move: every simulation with curiosities on whose board is a
+Continents, Archipelago, Lakes, or Pangea board of width 16 or more (the
+Serpent joins the draw there), so `ruleset-v7-curiosities.sim`,
+`ruleset-v7-curiosities-ai.sim`, `ruleset-v7-monster.sim`,
+`ruleset-v7-monster-headless.sim`, `ruleset7-curiosities-dom.sim`, and
+`ruleset-v7-tuning-7.sim` and `ruleset-v7-tuning-8.sim` where they use
+such boards; Dry Land boards and every match with curiosities off are as
+at `7r103`. The monster fuzz contract (`ruleset-v7-monster-fuzz.sim`) was
+not extended; the Serpent's immunities against every navy and the ice are
+proved on hand-built seas in
+`tests/unit/ruleset-v7-curiosities-round3-serpent.test.ts`.
+
+**Tests.** `tests/unit/ruleset-v7-curiosities-round3-serpent.test.ts`
+(registration, standable tiles, the two-step reach, the wander, the bite,
+the swim, regeneration, provocation from range, a shore unit, every row of
+section 8.6 with each themed navy, the frozen sea, the bounty, the
+preview, parsing),
+`tests/unit/ruleset-v7-curiosities-round3-serpent-generation.test.ts`
+(the kind, its boards and sites, the spacing both ways, the stream on
+three pinned seeds, the created unit, the option off),
+`tests/unit/ruleset-v7-curiosities-round3-serpent-ai.test.ts` (section
+11), `tests/unit/ruleset7-curiosities-serpent-render.test.ts` (words,
+board, canvas, Gallery, sound), and the Serpent block of
+`tests/unit/chibi-curiosities-assets.test.ts`; the hand-built boards are
+`tests/fixtures/v7-serpent-arena.ts` and
+`tests/fixtures/v7-curiosities-serpent-ui.ts`.
 
 ## Appendix A. Ideas weighed and rejected
 

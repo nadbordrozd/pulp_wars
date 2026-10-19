@@ -2,12 +2,14 @@
   "beads": [
     "pulp_wars-737.5",
     "pulp_wars-737.13",
-    "pulp_wars-737.20"
+    "pulp_wars-737.20",
+    "pulp_wars-737.21"
   ],
   "batches": [
     "curiosities",
     "curiosities-2",
-    "curiosities-3"
+    "curiosities-3",
+    "curiosities-4"
   ],
   "command": "npm run art:curiosities-review",
   "accepted": {
@@ -49,7 +51,11 @@
     "chibi-curiosity-icon-lost-expedition": "ICON:CURIOSITY:LOST_EXPEDITION",
     "chibi-curiosity-effect-tesla-arc": "EFFECT:TESLA_ARC",
     "chibi-curiosity-effect-moon-gun-blast": "EFFECT:MOON_GUN_BLAST",
-    "chibi-curiosity-effect-expedition-notes": "EFFECT:EXPEDITION_NOTES"
+    "chibi-curiosity-effect-expedition-notes": "EFFECT:EXPEDITION_NOTES",
+    "chibi-curiosity-sea-serpent": "UNIT:NEUTRAL_SEA_SERPENT",
+    "chibi-curiosity-portrait-sea-serpent": "PORTRAIT:NEUTRAL_SEA_SERPENT",
+    "chibi-curiosity-serpent-lair": "CURIOSITY:SERPENT_LAIR",
+    "chibi-curiosity-icon-sea-serpent": "ICON:CURIOSITY:SEA_SERPENT"
   },
   "files": [
     "pieces-x4.png",
@@ -74,11 +80,16 @@
     "pieces3-1x.png",
     "interface3-x4.png",
     "interface3-1x.png",
+    "pieces4-x4.png",
+    "pieces4-1x.png",
+    "interface4-x4.png",
+    "interface4-1x.png",
     "contact-sheet-x2.png",
     "contact-sheet-1x.png",
     "pieces-zoom-0.75.png",
     "pieces2-zoom-0.75.png",
     "pieces3-zoom-0.75.png",
+    "pieces4-zoom-0.75.png",
     "readability.json"
   ]
 }

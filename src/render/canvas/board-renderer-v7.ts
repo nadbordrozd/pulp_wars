@@ -90,6 +90,8 @@ import {
 } from "../curiosity-presentation-v7";
 import {
   BIGFOOT_CODE_ART_ID_V7,
+  SERPENT_CODE_ART_ID_V7,
+  drawCodeSerpentV7,
   CURIOSITY_CORNER_BADGE_KINDS_V7,
   SPIDER_CODE_ART_ID_V7,
   WRECK_WATERLINE_ROW_V7,
@@ -1850,11 +1852,13 @@ export function buildBoardRenderPlanV7(
           ? SPIDER_CODE_ART_ID_V7
           : breed === "BIGFOOT"
             ? BIGFOOT_CODE_ART_ID_V7
-            : egg
-              ? EGG_CODE_ART_ID_V7
-              : unit.form === "EMBARKED" && !machine
-                ? "unit-shared-embarked-transport"
-                : UNIT_ART_KEYS_V7[unit.role],
+            : breed === "SEA_SERPENT"
+              ? SERPENT_CODE_ART_ID_V7
+              : egg
+                ? EGG_CODE_ART_ID_V7
+                : unit.form === "EMBARKED" && !machine
+                  ? "unit-shared-embarked-transport"
+                  : UNIT_ART_KEYS_V7[unit.role],
       // Undead and Goblin land units ask for their own art first
       // (UNIT:<FACTION>:<ROLE>); without it the renderer falls back to the
       // Human sprite plus the faction badge.
@@ -4712,6 +4716,9 @@ export function drawBoardV7(input: {
           drawCodeSpiderV7(context, x, y, camera.zoom, input.highContrast);
         else if (entry.monster.breed === "BIGFOOT")
           drawCodeBigfootV7(context, x, y, camera.zoom, input.highContrast);
+        // Round 3, bead B (`pulp_wars-737.21`): the Sea Serpent.
+        else if (entry.monster.breed === "SEA_SERPENT")
+          drawCodeSerpentV7(context, x, y, camera.zoom, input.highContrast);
       }
       // Any other piece without a raster (none registered, or its load
       // failed): the lettered marker of missing-art-v7.ts.
@@ -4723,7 +4730,8 @@ export function drawBoardV7(input: {
         !(
           entry.monster !== undefined &&
           (entry.monster.breed === undefined ||
-            entry.monster.breed === "BIGFOOT")
+            entry.monster.breed === "BIGFOOT" ||
+            entry.monster.breed === "SEA_SERPENT")
         )
       ) {
         context.save();

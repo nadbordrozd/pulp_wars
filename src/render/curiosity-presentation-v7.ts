@@ -9,6 +9,7 @@ import {
   MONSTER_BOUNTY_V7,
   MONSTER_REGENERATION_V7,
   MOON_GUN_RANGE_V7,
+  SEA_SERPENT_REGENERATION_V7,
   NEUTRAL_BOUNTIES_V7,
   NEUTRAL_MONSTER_ROLE_RULE_V7,
   NEUTRAL_ROLE_RULES_V7,
@@ -49,6 +50,7 @@ import {
   type CuriosityOverlayIdV7,
   type CuriosityRound2OverlayIdV7,
   type CuriosityRound3OverlayIdV7,
+  type CuriositySerpentOverlayIdV7,
 } from "../assets/chibi-art-v7";
 import { portraitSubjectV7 } from "../assets/chibi-ui-art-v7";
 import { glossaryEntryV7 } from "./unit-glossary-v7";
@@ -102,7 +104,9 @@ export type CuriosityTileIdV7 =
   | CuriosityRound2OverlayIdV7
   // Round 3 (bead pulp_wars-737.20): the Tesla Tower, the Moon Gun, the
   // Gold Claim and the Lost Expedition.
-  | CuriosityRound3OverlayIdV7;
+  | CuriosityRound3OverlayIdV7
+  // Round 3, bead B (bead pulp_wars-737.21): the Sea Serpent's lair.
+  | CuriositySerpentOverlayIdV7;
 
 export const CURIOSITY_LABELS_V7: Readonly<Record<CuriosityTileIdV7, string>> =
   {
@@ -118,9 +122,14 @@ export const CURIOSITY_LABELS_V7: Readonly<Record<CuriosityTileIdV7, string>> =
     MOON_GUN: "Moon Gun",
     GOLD_CLAIM: "Gold Claim",
     LOST_EXPEDITION: "Lost Expedition",
+    SERPENT_LAIR: "Serpent's lair",
   };
 
 export const BIGFOOT_LABEL_V7 = NEUTRAL_ROLE_RULES_V7.BIGFOOT.label;
+/** Round 3, bead B (bead pulp_wars-737.21): the Sea Serpent's name. */
+export const SEA_SERPENT_LABEL_V7 = NEUTRAL_ROLE_RULES_V7.SEA_SERPENT.label;
+/** The Sea Serpent's one sentence (RULESET_7_CURIOSITIES_ROUND_3.md section 1). */
+export const SEA_SERPENT_RULE_V7 = `A ${SEA_SERPENT_LABEL_V7} owned by nobody prowls its waters and, after every round, swims up to 2 tiles to bite the weakest unit that came next to it or hurt it.`;
 
 /** The one sentence of each curiosity (sections 1 and 23; the Help text). */
 export const CURIOSITY_RULES_V7: Readonly<Record<CuriosityTileIdV7, string>> = {
@@ -141,6 +150,8 @@ export const CURIOSITY_RULES_V7: Readonly<Record<CuriosityTileIdV7, string>> = {
   GOLD_CLAIM: `A unit that ends a Move on the Gold Claim stakes it for its owner; the Claim pays its owner ${GOLD_CLAIM_COINS_V7} Coins each turn until its ${GOLD_CLAIM_TOTAL_V7} Coins run out.`,
   LOST_EXPEDITION:
     "The first unit that ends a Move on the Lost Expedition finds its notes: its owner's next technology costs nothing.",
+  // Round 3, bead B (bead pulp_wars-737.21): the lair names its Serpent.
+  SERPENT_LAIR: SEA_SERPENT_RULE_V7,
 };
 
 /** Bigfoot's one sentence (section 23). */
@@ -151,16 +162,22 @@ export const CURIOSITIES_OPTION_RULE_V7 =
   "Rare. Switch them off with Curiosities when you set up a game.";
 /** The setup checkbox's hint (section 3). */
 export const CURIOSITIES_SETUP_HINT_V7 =
-  "Rare sights on the map: monsters, camps, gates, a moon gun, and more.";
+  "Rare sights on the map: monsters, camps, gates, a sea serpent, and more.";
 
 export const NEUTRAL_TURN_BANNER_V7 = "The wilds stir";
 export const PROVOKED_LABEL_V7 = "Provoked";
 
-/** The legend icons: every tile overlay, the bounty and Bigfoot. */
-export type CuriosityIconIdV7 = CuriosityTileIdV7 | "BOUNTY" | "BIGFOOT";
+/**
+ * The legend icons: every tile overlay, the bounty, Bigfoot, and (round 3,
+ * bead B) the Sea Serpent, which is also its lair's icon.
+ */
+export type CuriosityIconIdV7 =
+  CuriosityTileIdV7 | "BOUNTY" | "BIGFOOT" | "SEA_SERPENT";
 
 export const curiosityIconSubjectV7 = (id: CuriosityIconIdV7): ArtSubjectV7 =>
-  `ICON:CURIOSITY:${id}`;
+  id === "SERPENT_LAIR" || id === "SEA_SERPENT"
+    ? "ICON:CURIOSITY:SEA_SERPENT"
+    : `ICON:CURIOSITY:${id}`;
 
 const same = (left: CoordV7, right: CoordV7): boolean =>
   left.x === right.x && left.y === right.y;
@@ -195,6 +212,11 @@ export function neutralUnitLabelV7(breed: NeutralBreedV7): string {
   return breed === "GIANT_SPIDER"
     ? SPIDER_LABEL_V7
     : NEUTRAL_ROLE_RULES_V7[breed].label;
+}
+
+/** Whether `breed` is the Sea Serpent (round 3, bead B). */
+export function isSeaSerpentBreedV7(breed: NeutralBreedV7): boolean {
+  return breed === "SEA_SERPENT";
 }
 
 /** The Cultists (RULESET_7_CULTISTS.md section 14.1): the failure state. */
@@ -234,6 +256,12 @@ export function neutralArtSubjectsV7(
     return {
       unit: "UNIT:NEUTRAL_BIGFOOT",
       portrait: "PORTRAIT:NEUTRAL_BIGFOOT",
+    };
+  // Round 3, bead B (bead pulp_wars-737.21).
+  if (breed === "SEA_SERPENT")
+    return {
+      unit: "UNIT:NEUTRAL_SEA_SERPENT",
+      portrait: "PORTRAIT:NEUTRAL_SEA_SERPENT",
     };
   // The Cultists (section 14.3, "Unbound and Furious"): an Unbound daemon
   // wears its Unbound look (red eyes, the collar cracked), on the board and
@@ -283,6 +311,22 @@ export function visibleLairsV7(
   });
 }
 
+/**
+ * Round 3, bead B (bead pulp_wars-737.21, section 12.1): the Sea Serpent's
+ * lair, the `home` of a visible Serpent on an explored tile. A dead
+ * Serpent's lair goes with it (section 8.8).
+ */
+export function visibleSerpentLairsV7(
+  view: Pick<PlayerViewV7, "monsters" | "board">,
+): readonly CoordV7[] {
+  return view.monsters.flatMap((entry) => {
+    if (entry.breed !== "SEA_SERPENT") return [];
+    const tile =
+      view.board.tiles[entry.home.y * view.board.width + entry.home.x];
+    return tile?.explored === true ? [entry.home] : [];
+  });
+}
+
 /** What a tile shows of the curiosities: an overlay id, or null. */
 export function curiosityOverlayOnTileV7(
   view: Pick<PlayerViewV7, "curiosities" | "monsters" | "board">,
@@ -290,7 +334,11 @@ export function curiosityOverlayOnTileV7(
 ): CuriosityTileIdV7 | null {
   return (
     curiosityOnTileV7(view, at) ??
-    (visibleLairsV7(view).some((home) => same(home, at)) ? "WEB" : null)
+    (visibleLairsV7(view).some((home) => same(home, at))
+      ? "WEB"
+      : visibleSerpentLairsV7(view).some((home) => same(home, at))
+        ? "SERPENT_LAIR"
+        : null)
   );
 }
 
@@ -322,6 +370,8 @@ export function hostileBreedV7(breed: NeutralBreedV7): boolean {
 
 /** Section 12.1: the warning of a Move that ends next to the Spider. */
 export const PROVOKE_MOVE_WARNING_V7 = `Ends next to the ${SPIDER_LABEL_V7}: it will attack after this round.`;
+/** Round 3, bead B (section 12.1): the same warning for the Sea Serpent. */
+export const SERPENT_PROVOKE_WARNING_V7 = `Ends next to the ${SEA_SERPENT_LABEL_V7}: it will bite after this round.`;
 /** Section 34.1: the same warning for a Downed Saucer's guards. */
 export const SAUCER_PROVOKE_WARNING_V7 = `Ends too close to the ${CURIOSITY_LABELS_V7.DOWNED_SAUCER}: its guards will attack after this round.`;
 /** Section 34.1: the same warning for a Graveyard's Zombies. */
@@ -364,6 +414,7 @@ export function provokeMoveWarningV7(
   if (end === undefined || view.monsters.length === 0) return null;
   const breeds = new Set(provokedAt(view, end).map((preview) => preview.breed));
   if (breeds.has("GIANT_SPIDER")) return PROVOKE_MOVE_WARNING_V7;
+  if (breeds.has("SEA_SERPENT")) return SERPENT_PROVOKE_WARNING_V7;
   if (breeds.has("ZOMBIE")) return GRAVEYARD_PROVOKE_WARNING_V7;
   if (
     breeds.has("HORROR") ||
@@ -388,6 +439,9 @@ export const MONSTER_RETALIATES_V7 = "The spider will strike back next round";
 /** `monsterRetaliates` false: the attacker stays out of its reach. */
 export const MONSTER_OUT_OF_REACH_V7 = "Out of the spider's reach";
 export const BIGFOOT_NEVER_FIGHTS_V7 = "Bigfoot never fights back";
+/** Round 3, bead B (section 12.1): the Sea Serpent's notes. */
+export const SERPENT_RETALIATES_V7 = "The serpent will strike back next round";
+export const SERPENT_OUT_OF_REACH_V7 = "Out of the serpent's reach";
 
 /**
  * The combat preview's note on an attack on a visible neutral unit: whether
@@ -416,6 +470,10 @@ export function monsterRetaliationNoteV7(
     return preview.monsterRetaliates
       ? MONSTER_RETALIATES_V7
       : MONSTER_OUT_OF_REACH_V7;
+  if (breed === "SEA_SERPENT")
+    return preview.monsterRetaliates
+      ? SERPENT_RETALIATES_V7
+      : SERPENT_OUT_OF_REACH_V7;
   if (isDaemonBreedV7(breed))
     return preview.monsterRetaliates
       ? "The daemon may come for it after this round"
@@ -471,9 +529,11 @@ export function neutralRuleV7(breed: NeutralBreedV7): string {
     ? BIGFOOT_RULE_V7
     : breed === "TENTACLE"
       ? TENTACLE_RULE_V7
-      : camp === null
-        ? CURIOSITY_RULES_V7.WEB
-        : CURIOSITY_RULES_V7[camp];
+      : breed === "SEA_SERPENT"
+        ? SEA_SERPENT_RULE_V7
+        : camp === null
+          ? CURIOSITY_RULES_V7.WEB
+          : CURIOSITY_RULES_V7[camp];
 }
 
 /** The Cultists (section 9.3): the one sentence of a Tentacle's dock. */
@@ -581,12 +641,12 @@ export function monsterInfoLinesV7(
   const provoked = visibleProvokers(preview).length > 0;
   return [
     neutral,
-    ...(breed === "GIANT_SPIDER"
+    ...(breed === "GIANT_SPIDER" || breed === "SEA_SERPENT"
       ? [
           {
             id: "regeneration" as const,
             name: "Regenerates",
-            description: `+${MONSTER_REGENERATION_V7} HP after every round.`,
+            description: `+${breed === "SEA_SERPENT" ? SEA_SERPENT_REGENERATION_V7 : MONSTER_REGENERATION_V7} HP after every round.`,
           },
         ]
       : []),
@@ -615,7 +675,7 @@ export function monsterInfoLinesV7(
       : {
           id: "provoked",
           name: PROVOKED_LABEL_V7,
-          description: `Will attack ${ownedUnitName(view, target)} after this round${preview.exact ? "" : ", unless something weaker hides nearby"}.`,
+          description: `Will ${breed === "SEA_SERPENT" ? "bite" : "attack"} ${ownedUnitName(view, target)} after this round${preview.exact ? "" : ", unless something weaker hides nearby"}.`,
         },
   ];
 }
@@ -969,6 +1029,12 @@ export function curiosityHelpRulesV7(): readonly {
       name: CURIOSITY_LABELS_V7[id],
       rule: CURIOSITY_RULES_V7[id],
     })),
+    // Round 3, bead B (bead pulp_wars-737.21).
+    {
+      icon: "SEA_SERPENT",
+      name: SEA_SERPENT_LABEL_V7,
+      rule: SEA_SERPENT_RULE_V7,
+    },
     { icon: "BOUNTY", name: "Bounty", rule: SPIDER_BOUNTY_RULE_V7 },
     { icon: null, name: "Setup", rule: CURIOSITIES_OPTION_RULE_V7 },
   ];
@@ -1127,8 +1193,13 @@ export function curiosityBoundaryNoticeV7(
       const target = unitById(event.preview.targetUnitId);
       if (target === undefined) continue;
       if (target.ownerId === viewerId) toast = true;
+      // Round 3, bead B (section 12.1): "Sea Serpent bit your Battleship".
+      const verb =
+        breeds.get(event.preview.attackerId) === "SEA_SERPENT"
+          ? "bit"
+          : "attacked";
       parts.push(
-        `${neutralName(event.preview.attackerId)} attacked ${ownedUnitName(after, target)}${event.preview.defenderDies ? ", killing it" : ""}`,
+        `${neutralName(event.preview.attackerId)} ${verb} ${ownedUnitName(after, target)}${event.preview.defenderDies ? ", killing it" : ""}`,
       );
     }
   }

@@ -76,6 +76,7 @@
     "review:ruleset7-curiosities-ui": "tsx scripts/browser-curiosities-review-v7.ts",
     "review:ruleset7-curiosities-round2-ui": "tsx scripts/browser-curiosities-round2-review-v7.ts",
     "review:ruleset7-curiosities-round3-ui": "tsx scripts/browser-curiosities-round3-review-v7.ts",
+    "review:ruleset7-curiosities-serpent-ui": "tsx scripts/browser-curiosities-serpent-review-v7.ts",
     "review:ruleset7-phone-ui": "tsx scripts/browser-phone-review-v7.ts",
     "validate:ruleset7-release": "tsx scripts/validate-ruleset7-current-release.ts",
     "validate:ruleset7-biome": "tsx scripts/validate-ruleset7-biome.ts",

@@ -766,6 +766,7 @@ import {
   curiosityErrandMoveV7,
   curiosityFactsV7,
   gateErrandWaitsV7,
+  monsterEmbarkedAvoidAtV7,
   monsterHoldsOffV7,
   monsterProvokedAtV7,
   monsterThreatensV7,
@@ -17401,10 +17402,17 @@ function huntPlansV7(context: PolicyContextV7): readonly HuntPlanV7[] {
       /** The tiles of `tiles`, as coordinates (a hunter that moves in). */
       readonly places: readonly CoordV7[];
     }[] = [];
+    // Map curiosities (`pulp_wars-737.4`): a Monster is not worth a unit.
+    // A hunter its retaliation would kill takes no part (judged against
+    // the Monster as it stands, so a late hitter is judged cautiously).
+    const monster = monsters?.get(target.id);
     for (const unit of view.units) {
       if (
         unit.ownerId !== view.viewer.id ||
-        unit.form !== "LAND" ||
+        // Round 3, bead B (`pulp_wars-737.21`, section 11): ships hunt the
+        // Sea Serpent too (the kill plan of every navy).
+        (unit.form !== "LAND" &&
+          !(unit.form === "NAVAL" && monster?.breed === "SEA_SERPENT")) ||
         unit.hp <= 0 ||
         !primaryReadyForPolicyV7(unit) ||
         armyHunters.has(unit.id)
@@ -17412,10 +17420,6 @@ function huntPlansV7(context: PolicyContextV7): readonly HuntPlanV7[] {
         continue;
       const facts = publicCombatFacts(view, unit, context.lookup);
       if (!facts.abilities.includes("ATTACK") || facts.attack2 <= 0) continue;
-      // Map curiosities (`pulp_wars-737.4`): a Monster is not worth a unit.
-      // A hunter its retaliation would kill takes no part (judged against
-      // the Monster as it stands, so a late hitter is judged cautiously).
-      const monster = monsters?.get(target.id);
       // Round 2 (`pulp_wars-737.15`): Bigfoot is hunted only by a unit with
       // no offered attack on a seat's unit.
       if (
@@ -18754,6 +18758,14 @@ function curiosityRejectsV7(
         facts.monsterById.has(plan.target.id) &&
         plan.tiles.get(actor.id) === coordKey(to),
     )
+  )
+    return true;
+  // Map curiosities round 3, bead B (`pulp_wars-737.21`, section 11): an
+  // embarked unit's Move (or a land unit's Move that boards) never ends in
+  // a Sea Serpent's reach: one bite sinks it.
+  if (
+    (actor.form === "EMBARKED" || isAutoembarkMoveV7(context, command)) &&
+    monsterEmbarkedAvoidAtV7(facts, to) !== undefined
   )
     return true;
   const errand = curiosityErrandsV7(context, facts).get(actor.id);

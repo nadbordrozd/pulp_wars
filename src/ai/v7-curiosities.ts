@@ -82,6 +82,14 @@ export function setCuriosityPolicyOptionsV7(
 export const MONSTER_REGENERATION_FOR_POLICY_V7 = 4;
 export const MONSTER_BOUNTY_FOR_POLICY_V7 = 10;
 /**
+ * Round 3, bead B (`pulp_wars-737.21`, section 8): the Sea Serpent's
+ * regeneration and bounty, the policy's copies, pinned to the engine's
+ * `SEA_SERPENT_REGENERATION_V7` and `SEA_SERPENT_BOUNTY_V7` by the round-3
+ * Serpent AI test.
+ */
+export const SEA_SERPENT_REGENERATION_FOR_POLICY_V7 = 4;
+export const SEA_SERPENT_BOUNTY_FOR_POLICY_V7 = 15;
+/**
  * Round 2 (sections 25.2 and 29.1): the Coins each neutral breed's kill
  * pays, pinned to the engine's `NEUTRAL_BOUNTIES_V7` by the round-2 AI
  * test. Only the Spider regenerates. The Cultists (`pulp_wars-mch9.6`): an
@@ -104,6 +112,8 @@ export const NEUTRAL_BOUNTY_FOR_POLICY_V7: Readonly<
   IMP: 0,
   // So is an Unbound Gibbering Mass (`pulp_wars-mch9.37`).
   MASS: 0,
+  // Round 3, bead B (`pulp_wars-737.21`).
+  SEA_SERPENT: SEA_SERPENT_BOUNTY_FOR_POLICY_V7,
 });
 /**
  * Section 33, "avoid unless strong": a unit strikes a camp guard only when
@@ -228,8 +238,17 @@ export interface MonsterFactsV7 {
   readonly threatKeys: ReadonlySet<string>;
   /** The Coins its kill pays. */
   readonly bounty: number;
-  /** The HP it regenerates each neutral turn (only the Spider's is not 0). */
+  /**
+   * The HP it regenerates each neutral turn (the Spider's and, round 3, the
+   * Sea Serpent's; 0 for every other breed).
+   */
   readonly regeneration: number;
+  /**
+   * Round 3, bead B (section 11): the tiles where no routine Move leaves an
+   * embarked unit (one bite sinks it): the Sea Serpent's reach. Empty for
+   * every other breed.
+   */
+  readonly embarkedAvoidKeys: ReadonlySet<string>;
 }
 
 /** Round 2 (section 28): a visible gate and where it leads. */
@@ -332,7 +351,12 @@ export function curiosityFactsV7(view: PlayerViewV7): CuriosityFactsV7 | null {
           : provokeKeys,
       bounty: NEUTRAL_BOUNTY_FOR_POLICY_V7[breed],
       regeneration:
-        breed === "GIANT_SPIDER" ? MONSTER_REGENERATION_FOR_POLICY_V7 : 0,
+        breed === "GIANT_SPIDER"
+          ? MONSTER_REGENERATION_FOR_POLICY_V7
+          : breed === "SEA_SERPENT"
+            ? SEA_SERPENT_REGENERATION_FOR_POLICY_V7
+            : 0,
+      embarkedAvoidKeys: breed === "SEA_SERPENT" ? reachKeys : new Set(),
     });
   }
   const gates: GateFactsV7[] = [];
@@ -395,6 +419,18 @@ export function monsterProvokedAtV7(
 ): MonsterFactsV7 | undefined {
   const where = key(at);
   return facts.monsters.find((monster) => monster.avoidKeys.has(where));
+}
+
+/**
+ * Round 3, bead B (section 11): the first visible Sea Serpent whose reach
+ * keeps an embarked unit's routine Move off `at`.
+ */
+export function monsterEmbarkedAvoidAtV7(
+  facts: CuriosityFactsV7,
+  at: CoordV7,
+): MonsterFactsV7 | undefined {
+  const where = key(at);
+  return facts.monsters.find((monster) => monster.embarkedAvoidKeys.has(where));
 }
 
 /**

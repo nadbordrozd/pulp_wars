@@ -1,0 +1,58 @@
+{
+  "id": "sea-serpent-portrait-a",
+  "jobId": "sync-39f5085d-d9d6-4aac-8b94-05bf416688d6",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "curiosities-4",
+    "asset": "chibi-curiosity-portrait-sea-serpent",
+    "subject": "PORTRAIT:NEUTRAL_SEA_SERPENT",
+    "faction": "ORIGINAL",
+    "recipeClass": "curiosity-portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 73721011,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "side",
+      "direction": "south-east"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-portrait.txt",
+        "text": "Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image."
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-curiosity-portrait.txt + scripts/art/chibi/fragments/class-curiosity-portrait.negative.txt",
+        "text": "Class: one chunky cute monster portrait with a huge round head and big round eyes, the same creature as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Its colours are earthy neutrals only: dusty umber brown, taupe, charcoal and bone white.",
+        "negative": "pedestal, base, plinth, frame, border, circle background, badge, medallion, vignette, background scenery, second creature, crowd, text, armour, helmet, weapon, cloth, red, crimson, orange, yellow, gold, green, lime, cyan, blue, purple, violet, magenta, pink, glowing eyes, horror, gore, realistic"
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/SHARED.json",
+        "text": "Subject: the head of a sea serpent close up: a big round scaly head on a thick neck, two big round glossy black eyes with white shine dots, a wide toothy grin with small bone-white teeth, a fan-shaped bone-white fin crest on top and two small bone-white side fins; slate grey-brown scales with a darker grey-brown shadow tone and a bone-white throat; the head and neck are the only thing in the image."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "",
+        "negative": "violet, purple, lilac, green, lime, blue, cyan, turquoise, teal, water, sea, waves, water plate, blue water, island, rock under it, sand"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Class: one chunky cute monster portrait with a huge round head and big round eyes, the same creature as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Its colours are earthy neutrals only: dusty umber brown, taupe, charcoal and bone white. Subject: the head of a sea serpent close up: a big round scaly head on a thick neck, two big round glossy black eyes with white shine dots, a wide toothy grin with small bone-white teeth, a fan-shaped bone-white fin crest on top and two small bone-white side fins; slate grey-brown scales with a darker grey-brown shadow tone and a bone-white throat; the head and neck are the only thing in the image.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second creature, crowd, armour, helmet, weapon, cloth, red, crimson, orange, yellow, gold, green, lime, cyan, blue, purple, violet, magenta, pink, glowing eyes, horror, gore, realistic, lilac, turquoise, teal, water, sea, waves, water plate, blue water, island, rock under it, sand",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Class: one chunky cute monster portrait with a huge round head and big round eyes, the same creature as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Its colours are earthy neutrals only: dusty umber brown, taupe, charcoal and bone white. Subject: the head of a sea serpent close up: a big round scaly head on a thick neck, two big round glossy black eyes with white shine dots, a wide toothy grin with small bone-white teeth, a fan-shaped bone-white fin crest on top and two small bone-white side fins; slate grey-brown scales with a darker grey-brown shadow tone and a bone-white throat; the head and neck are the only thing in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second creature, crowd, armour, helmet, weapon, cloth, red, crimson, orange, yellow, gold, green, lime, cyan, blue, purple, violet, magenta, pink, glowing eyes, horror, gore, realistic, lilac, turquoise, teal, water, sea, waves, water plate, blue water, island, rock under it, sand."
+  }
+}

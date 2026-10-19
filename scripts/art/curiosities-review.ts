@@ -78,6 +78,8 @@ const BATCH = "curiosities";
 const BATCH_2 = "curiosities-2";
 /** Round 3 (bead pulp_wars-737.20): the Tower, the Gun, the Claim, the camp. */
 const BATCH_3 = "curiosities-3";
+/** Round 3 B (bead pulp_wars-737.21): the Sea Serpent, its lair and icon. */
+const BATCH_4 = "curiosities-4";
 const OUT = path.join(ROOT, "art/pixellab/reviews/chibi-batch-curiosities");
 const CELL = 80;
 type Rgb = readonly [number, number, number];
@@ -216,11 +218,29 @@ const ROUND3_IDS = {
   gunBlast: "chibi-curiosity-effect-moon-gun-blast",
   notes: "chibi-curiosity-effect-expedition-notes",
 } as const;
+/** Round 3 B (bead pulp_wars-737.21, batch `curiosities-4`), by sheet key. */
+const ROUND4_IDS = {
+  serpent: "chibi-curiosity-sea-serpent",
+  serpentPortrait: "chibi-curiosity-portrait-sea-serpent",
+  serpentLair: "chibi-curiosity-serpent-lair",
+  iconSerpent: "chibi-curiosity-icon-sea-serpent",
+} as const;
 /** Asset id slugs of every batch, by what the sheets call them. */
-const IDS = { ...ROUND1_IDS, ...ROUND2_IDS, ...ROUND3_IDS } as const;
+const IDS = {
+  ...ROUND1_IDS,
+  ...ROUND2_IDS,
+  ...ROUND3_IDS,
+  ...ROUND4_IDS,
+} as const;
 type PieceKey = keyof typeof IDS;
 const batchOf = (key: PieceKey): string =>
-  key in ROUND3_IDS ? BATCH_3 : key in ROUND2_IDS ? BATCH_2 : BATCH;
+  key in ROUND4_IDS
+    ? BATCH_4
+    : key in ROUND3_IDS
+      ? BATCH_3
+      : key in ROUND2_IDS
+        ? BATCH_2
+        : BATCH;
 
 /**
  * The camp guards of round 2 have no sprite of their own (spec section
@@ -615,6 +635,33 @@ function boardStages(
       ),
       { label: `${name} · dark`, fill: DOCK, things: [overlay] },
     ];
+  // Round 3 B (bead pulp_wars-737.21): the Sea Serpent afloat, on its
+  // lair, beside a Battleship-class Juggernaut for scale; the lair alone
+  // and under a Fighter (a ship's cell).
+  if (key === "serpent") {
+    const unit: Thing = { kind: "unit", raster };
+    return [
+      on("DEEP", [unit]),
+      on("SHALLOW", [unit]),
+      ...(pieces.serpentLair === undefined
+        ? []
+        : [
+            on(
+              "DEEP",
+              [{ kind: "overlay", raster: pieces.serpentLair }, unit],
+              " + lair",
+            ),
+          ]),
+      { label: `${name} · dark`, fill: DOCK, things: [unit] },
+    ];
+  }
+  if (key === "serpentLair")
+    return [
+      on("DEEP", [overlay]),
+      on("SHALLOW", [overlay]),
+      on("DEEP", [overlay, { kind: "unit", raster: fighter }], " + Fighter"),
+      { label: `${name} · dark`, fill: DOCK, things: [overlay] },
+    ];
   // Interface and effect pieces.
   const centre: Thing = { kind: "centre", raster };
   const stages: Stage[] = [
@@ -747,12 +794,21 @@ const NAMES: Readonly<Record<PieceKey, string>> = {
   teslaArc: "Tesla arc",
   gunBlast: "Moon Gun blast",
   notes: "Expedition notes",
+  serpent: "Sea Serpent",
+  serpentPortrait: "Serpent portrait",
+  serpentLair: "Serpent's lair",
+  iconSerpent: "Icon serpent",
 };
 const ROUND3_BOARD_KEYS: readonly PieceKey[] = [
   "tower",
   "gun",
   "claim",
   "expedition",
+];
+const ROUND4_BOARD_KEYS: readonly PieceKey[] = ["serpent", "serpentLair"];
+const ROUND4_INTERFACE_KEYS: readonly PieceKey[] = [
+  "serpentPortrait",
+  "iconSerpent",
 ];
 const ROUND3_INTERFACE_KEYS: readonly PieceKey[] = [
   "iconTower",
@@ -1336,7 +1392,21 @@ async function readability(library: Library): Promise<unknown> {
       gunBesideFighter: beside("gun", library.fighter),
       claimBesideFighter: beside("claim", library.fighter),
       expeditionBesideFighter: beside("expedition", library.fighter),
+      // Round 3 B: the lair under the Serpent and under a ship's cell.
+      serpentLairBesideSerpent:
+        pieces.serpentLair === undefined || pieces.serpent === undefined
+          ? null
+          : visibleBesideUnit(pieces.serpentLair, pieces.serpent),
+      serpentLairBesideFighter: beside("serpentLair", library.fighter),
     },
+    serpent:
+      pieces.serpent === undefined
+        ? null
+        : {
+            opaqueSize: size(pieces.serpent),
+            fighter: size(library.fighter),
+            footprint: measureUnitFootprintV7(pieces.serpent),
+          },
   };
 }
 
@@ -1393,6 +1463,7 @@ async function main(): Promise<void> {
     await loadSource(BATCH),
     await loadSource(BATCH_2),
     await loadSource(BATCH_3),
+    await loadSource(BATCH_4),
   ];
   const accepted = await acceptedPieces(sources);
   const preview = option("--preview");
@@ -1434,7 +1505,11 @@ async function main(): Promise<void> {
         console.log(
           `  visible beside a Fighter: ${JSON.stringify(visibleBesideUnit(candidate.raster, library.fighter))}`,
         );
-      if (candidate.key === "spider" || candidate.key === "bigfoot")
+      if (
+        candidate.key === "spider" ||
+        candidate.key === "bigfoot" ||
+        candidate.key === "serpent"
+      )
         console.log(
           `  footprint: ${JSON.stringify(measureUnitFootprintV7(candidate.raster))}`,
         );
@@ -1473,9 +1548,18 @@ async function main(): Promise<void> {
       "interface3",
       [4, 1],
     )),
+    // Round 3 B (bead pulp_wars-737.21).
+    ...(await pieceSheets(library, ROUND4_BOARD_KEYS, OUT, "pieces4", [4, 1])),
+    ...(await pieceSheets(
+      library,
+      ROUND4_INTERFACE_KEYS,
+      OUT,
+      "interface4",
+      [4, 1],
+    )),
     ...(await contactSheet(library, OUT)),
   ];
-  for (const name of ["pieces", "pieces2", "pieces3"])
+  for (const name of ["pieces", "pieces2", "pieces3", "pieces4"])
     if (written.includes(`${name}-1x.png`)) {
       await writeZoomed(
         path.join(OUT, `${name}-zoom-0.75.png`),
@@ -1501,8 +1585,13 @@ async function main(): Promise<void> {
     path.join(OUT, "index.json"),
     `${JSON.stringify(
       {
-        beads: ["pulp_wars-737.5", "pulp_wars-737.13", "pulp_wars-737.20"],
-        batches: [BATCH, BATCH_2, BATCH_3],
+        beads: [
+          "pulp_wars-737.5",
+          "pulp_wars-737.13",
+          "pulp_wars-737.20",
+          "pulp_wars-737.21",
+        ],
+        batches: [BATCH, BATCH_2, BATCH_3, BATCH_4],
         command: "npm run art:curiosities-review",
         accepted: subjects,
         files: written,

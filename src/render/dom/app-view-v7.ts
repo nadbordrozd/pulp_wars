@@ -230,6 +230,7 @@ import {
 import { presentedUnitFactionV7 } from "../neutral-presentation-v7";
 import {
   bigfootFigureV7,
+  serpentFigureV7,
   curiosityGlyphV7,
   spiderFigureV7,
 } from "./curiosity-dom-v7";
@@ -6921,7 +6922,9 @@ export class Ruleset7DomAppView {
           ? spiderFigureV7(this.#document)
           : breed === "BIGFOOT"
             ? bigfootFigureV7(this.#document)
-            : undefined;
+            : breed === "SEA_SERPENT"
+              ? serpentFigureV7(this.#document)
+              : undefined;
       // Bead pulp_wars-mch9.26: a frog (on land) is shown as the frog, with
       // a small badge and one line for what it was.
       const frogLook = frogLookV7(view, unit);
@@ -18851,7 +18854,7 @@ function setupFrom(draft: DraftV7, gameKind: GameKindV7): MatchSetupV7 | null {
   const aiHeadStartCoins =
     draft.mapType === "SHOWCASE" ? 0 : draft.aiHeadStartCoins;
   return {
-    rulesetId: "pulp-wars-poc-7r103",
+    rulesetId: "pulp-wars-poc-7r104",
     seed,
     width,
     height: width,

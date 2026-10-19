@@ -5775,6 +5775,27 @@ export const NEUTRAL_ROLE_RULES_V7: Readonly<
     mayUsePrimaryActionAfterMove: true,
     abilities: ["ATTACK", "DRAG", "STRIDE"],
   },
+  // Map curiosities round 3, bead B (`pulp_wars-737.21`,
+  // RULESET_7_CURIOSITIES_ROUND_3.md section 8.2): the Sea Serpent, a
+  // neutral unit afloat whose mechanical role is `BATTLESHIP`. It attacks
+  // (after its move), and nothing else: no splash, Ram, Torpedo, Submerged,
+  // Board, or Sight, no cost, and no technology.
+  SEA_SERPENT: {
+    role: "BATTLESHIP",
+    label: "Sea Serpent",
+    tacticalRole: "MYTHIC",
+    cost: null,
+    maxHp: 32,
+    attack2: 7,
+    defense2: 5,
+    move: 2,
+    range: 1,
+    minimumRange: 1,
+    sightRadius: 0,
+    technology: null,
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK"],
+  },
 });
 
 /**
@@ -5858,6 +5879,16 @@ export const NEUTRAL_ROLE_MECHANICS_V7: Readonly<
   // The Cult redesign (`pulp_wars-mch9.37`): an Unbound Gibbering Mass
   // keeps its body's mechanics (it never advances, and nothing moves it).
   MASS: MASS_ROLE_MECHANICS_V7,
+  // Map curiosities round 3, bead B (section 8.2): the Sea Serpent is a
+  // living sea beast (`seaBeast`: never a `BOARD` target) with none of the
+  // Battleship's splash; it never advances. Nothing moves it because it is
+  // neutral (the displacement and shove rules).
+  SEA_SERPENT: {
+    ...ORIGINAL_ROLE_MECHANICS_V7.BATTLESHIP,
+    ...NEUTRAL_GUARD_MECHANICS_V7,
+    splash: false,
+    seaBeast: true,
+  },
 });
 
 /** Section 8.1: the faction-wide rules of the neutral registration. */
@@ -6504,6 +6535,9 @@ export function neutralBreedOfV7(
       // The Cult redesign (`pulp_wars-mch9.36`): an Unbound Imp is a
       // `RAIDER` of the Imp's 6 HP.
       return unit.maxHp === NEUTRAL_ROLE_RULES_V7.IMP.maxHp ? "IMP" : "BIGFOOT";
+    // Map curiosities round 3, bead B (section 8.2): the Sea Serpent.
+    case "BATTLESHIP":
+      return "SEA_SERPENT";
     default:
       throw new RangeError(`Unknown v7 neutral role: ${String(unit.role)}`);
   }

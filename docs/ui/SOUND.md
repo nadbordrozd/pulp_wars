@@ -199,6 +199,7 @@ economy is silent.
 | Gumball Gunner                                                  | `attack.pop`, then `impact.hit`                                            |
 | Plesiosaur torpedo (`pulp_wars-5ti.18`)                         | `attack.plesiosaur` (a bite with a wet roar), then `impact.hit`            |
 | Kraken torpedo (`pulp_wars-5ti.22`)                             | `attack.kraken` (a deep wet lash of a tentacle), then `impact.hit`         |
+| Sea Serpent bite (`pulp_wars-737.21`)                           | `attack.serpent` (a hiss and a splash), then `impact.hit`                  |
 | Martian heat ray and ray pistol                                 | `attack.ray`, then `impact.hit`                                            |
 | Any attack that kills either side                               | `unit.death` just after the hit                                            |
 | An attack whose target lives (melee, ranged, siege, ray)        | the target's hurt sound, 40 ms after the hit ([Hurt sounds](#hurt-sounds)) |
@@ -728,6 +729,7 @@ full scale). A unit test compares this table with the manifest.
 | `attack.pop`           | Gumball pop      | combat   | sine + triangle                  | 420–1500   | 82          | 0.26 |
 | `attack.plesiosaur`    | Plesiosaur bite  | combat   | noise + saw                      | 70–110     | 292         | 0.3  |
 | `attack.kraken`        | Kraken lash      | combat   | noise + sine                     | 55–90      | 292         | 0.3  |
+| `attack.serpent`       | Serpent bite     | combat   | noise + sine                     | 70–140     | 302         | 0.3  |
 | `impact.hit`           | Hit              | combat   | sine + noise                     | 70–190     | 122         | 0.4  |
 | `impact.heavy`         | Heavy hit        | combat   | sine + noise + square            | 45–120     | 232         | 0.46 |
 | `impact.explosion`     | Explosion        | combat   | noise + sine                     | 36–90      | 432         | 0.5  |

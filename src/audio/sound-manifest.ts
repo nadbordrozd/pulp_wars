@@ -34,6 +34,9 @@ export const SOUND_IDS_V1 = [
   // Themed naval branches (`pulp_wars-5ti.22`): the Kraken's torpedo, a
   // deep wet lash of a tentacle.
   "attack.kraken",
+  // Map curiosities round 3 B (`pulp_wars-737.21`): the Sea Serpent's
+  // bite, a hiss and a splash.
+  "attack.serpent",
   // Where it lands.
   "impact.hit",
   "impact.heavy",
@@ -523,6 +526,40 @@ const SYNTH_SOUNDS: Readonly<Record<SoundIdV1, SoundEntryV1>> = {
       gain: 0.6,
       attackMs: 15,
       decay: 1.6,
+    },
+  ]),
+  // Bead pulp_wars-737.21: a hiss of filtered noise over a splash and a
+  // low snap, the fallback of the Sea Serpent's bite.
+  "attack.serpent": synth("Serpent bite", "combat", 2, 60, 0.3, [
+    {
+      wave: "noise",
+      ms: 180,
+      highpassHz: 1800,
+      lowpassHz: 4200,
+      gain: 0.35,
+      attackMs: 30,
+      decay: 1.8,
+    },
+    {
+      wave: "noise",
+      at: 120,
+      ms: 150,
+      lowpassHz: 2600,
+      lowpassEndHz: 500,
+      highpassHz: 200,
+      attackMs: 3,
+      decay: 2.4,
+    },
+    {
+      wave: "sine",
+      at: 130,
+      ms: 160,
+      hz: 140,
+      hzEnd: 70,
+      lowpassHz: 800,
+      gain: 0.5,
+      attackMs: 6,
+      decay: 2,
     },
   ]),
   "impact.hit": synth("Hit", "combat", 2, 70, 0.4, [

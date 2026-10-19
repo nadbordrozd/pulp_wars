@@ -179,6 +179,21 @@
       ]
     },
     {
+      "id": "attack.serpent",
+      "kind": "vocal",
+      "suffix": "vocal",
+      "prompt": "A giant sea serpent bites a boat: a sharp angry reptile hiss, a splash of water and one snap of big jaws, over fast.",
+      "durationSeconds": 0.8,
+      "minSeconds": 0.25,
+      "maxSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "loudness": {
+        "like": "attack.melee",
+        "offsetDb": 0,
+        "reason": "Bead pulp_wars-737.21: the Sea Serpent's bite (docs/product/RULESET_7_CURIOSITIES_ROUND_3.md section 12.4) plays where every other melee attack plays its swing, at the swing's level."
+      }
+    },
+    {
       "id": "impact.hit",
       "kind": "hit",
       "suffix": "style",

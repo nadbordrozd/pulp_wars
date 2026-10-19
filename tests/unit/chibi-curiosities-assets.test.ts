@@ -11,6 +11,7 @@ import {
   CHIBI_CURIOSITIES_ART_ASSETS_V7,
   CHIBI_CURIOSITIES_ROUND2_ART_ASSETS_V7,
   CHIBI_CURIOSITIES_ROUND3_ART_ASSETS_V7,
+  CHIBI_CURIOSITIES_SERPENT_ART_ASSETS_V7,
   GIANT_SPIDER_SHADOW_MEASUREMENT_V7,
 } from "../../src/assets/chibi-curiosities-art-manifest";
 import { chibiDirectionArtRegistryV7 } from "../../src/assets/chibi-direction-art-manifest";
@@ -562,3 +563,120 @@ describe("map curiosity art, round 3 (pulp_wars-737.20)", () => {
  * red-orange; measured in readability.json).
  */
 const ROUND3_FACTION_SHARE_MAXIMUM = 0.06;
+
+const BATCH_4 = "curiosities-4";
+/** Round 3 B (bead pulp_wars-737.21), in the order of the manifest module. */
+const EXPECTED_4: readonly (readonly [string, string])[] = [
+  ["UNIT:NEUTRAL_SEA_SERPENT", "chibi-curiosity-sea-serpent"],
+  ["PORTRAIT:NEUTRAL_SEA_SERPENT", "chibi-curiosity-portrait-sea-serpent"],
+  ["CURIOSITY:SERPENT_LAIR", "chibi-curiosity-serpent-lair"],
+  ["ICON:CURIOSITY:SEA_SERPENT", "chibi-curiosity-icon-sea-serpent"],
+];
+
+describe("map curiosity art, round 3 B: the Sea Serpent (pulp_wars-737.21)", () => {
+  const byId = new Map(
+    CHIBI_CURIOSITIES_SERPENT_ART_ASSETS_V7.map((asset) => [asset.id, asset]),
+  );
+  const master = (id: string): string => {
+    const asset = byId.get(id);
+    if (asset === undefined) throw new Error(`${id}: not registered`);
+    return masterFile(asset);
+  };
+
+  it("lists the Serpent, its portrait, its lair and its icon", () => {
+    expect(
+      CHIBI_CURIOSITIES_SERPENT_ART_ASSETS_V7.map((asset) => [
+        asset.subject,
+        asset.id,
+      ]),
+    ).toEqual(EXPECTED_4);
+    const { problems } = buildChibiArtRegistryV7([
+      ...CHIBI_CURIOSITIES_ART_ASSETS_V7,
+      ...CHIBI_CURIOSITIES_ROUND2_ART_ASSETS_V7,
+      ...CHIBI_CURIOSITIES_ROUND3_ART_ASSETS_V7,
+      ...CHIBI_CURIOSITIES_SERPENT_ART_ASSETS_V7,
+    ]);
+    expect(problems).toEqual([]);
+  });
+
+  it("is registered in the live look only; the classic look has none", () => {
+    const live = chibiDirectionArtRegistryV7();
+    const classic = new Set(CHIBI_ART_ASSETS_V7.map((asset) => asset.id));
+    for (const asset of CHIBI_CURIOSITIES_SERPENT_ART_ASSETS_V7) {
+      expect(
+        live.variants(asset.subject).map((variant) => variant.id),
+        asset.id,
+      ).toEqual([asset.id]);
+      expect(classic.has(asset.id), asset.id).toBe(false);
+    }
+  });
+
+  it("has a valid batch whose recipes send no faction and no owner layer", async () => {
+    const manifest = await loadBatchManifest(ROOT, BATCH_4);
+    const fragments = await loadFragments(ROOT);
+    expect(batchManifestProblems(manifest, fragments, BATCH_4)).toEqual([]);
+    const records = await loadRecords(productionLayout(ROOT, BATCH_4), BATCH_4);
+    for (const recipe of Object.values(records.recipes))
+      for (const layer of recipe.request.layers)
+        expect(["faction", "owner"], recipe.id).not.toContain(layer.layer);
+  });
+
+  it("registers every accepted asset exactly as its record says", async () => {
+    const manifest = await loadBatchManifest(ROOT, BATCH_4);
+    const records = await loadRecords(productionLayout(ROOT, BATCH_4), BATCH_4);
+    const accepted = Object.values(records.assets).filter(
+      (record) => record.status === "ACCEPTED",
+    );
+    expect(accepted.map((record) => record.id).sort()).toEqual(
+      EXPECTED_4.map(([, id]) => id).sort(),
+    );
+    for (const record of accepted) {
+      const entry = byId.get(record.id);
+      const asset = manifest.assets.find((spec) => spec.id === record.id);
+      if (entry === undefined || asset === undefined)
+        throw new Error(`${record.id}: not registered`);
+      const line = registryEntry(asset, record);
+      expect(line, record.id).toContain(`subject: "${entry.subject}"`);
+      expect(entry.ownerMaskUrl, record.id).toBeUndefined();
+      expect(masterFile(entry), record.id).toBe(
+        path.join(ROOT, record.master.path),
+      );
+      expect(
+        await verifyAssetRecord(ROOT, manifest, record),
+        record.id,
+      ).toEqual([]);
+    }
+  });
+
+  it("is a giant as wide as the Spider, and its lair is one cell", async () => {
+    const serpent = byId.get("chibi-curiosity-sea-serpent");
+    expect([serpent?.assetClass, serpent?.width, serpent?.height]).toEqual([
+      "GIANT_UNIT",
+      88,
+      72,
+    ]);
+    const bounds = opaqueBounds(
+      await readRaster(master("chibi-curiosity-sea-serpent")),
+    );
+    expect((bounds?.right ?? 0) - (bounds?.left ?? 0) + 1).toBeGreaterThan(70);
+    const lair = byId.get("chibi-curiosity-serpent-lair");
+    if (lair === undefined) throw new Error("lair");
+    expect(chibiAnchorV7(lair)).toEqual({ x: 40, y: 40 });
+    expect(chibiOverflowV7(lair)).toEqual({
+      left: 0,
+      right: 0,
+      up: 0,
+      down: 0,
+    });
+  });
+
+  it("keeps every faction colour out, and the lair shows under the Serpent", async () => {
+    for (const asset of CHIBI_CURIOSITIES_SERPENT_ART_ASSETS_V7) {
+      const report = paletteReport(await readRaster(masterFile(asset)));
+      expect(report.nearestFaction.share, asset.id).toBeLessThanOrEqual(0.02);
+    }
+    const lair = await readRaster(master("chibi-curiosity-serpent-lair"));
+    const serpent = await readRaster(master("chibi-curiosity-sea-serpent"));
+    expect(visibleBesideUnit(lair, serpent).share).toBeGreaterThan(0.2);
+  });
+});

@@ -1,0 +1,945 @@
+{
+  "schemaVersion": 1,
+  "batch": "curiosities-4",
+  "recipes": {
+    "icon-sea-serpent-a": {
+      "id": "icon-sea-serpent-a",
+      "asset": "chibi-curiosity-icon-sea-serpent",
+      "jobId": "sync-5fd06c6c-b5fc-4720-8dfe-f32fa5ad3cf3",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "curiosities-4",
+        "asset": "chibi-curiosity-icon-sea-serpent",
+        "subject": "ICON:CURIOSITY:SEA_SERPENT",
+        "faction": "ORIGINAL",
+        "recipeClass": "curiosity-item",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 73721031,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "side"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-curiosity-item.txt + scripts/art/chibi/fragments/class-curiosity-item.negative.txt",
+            "text": "Class: one bold chunky item sprite of a single small thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. It belongs to no faction and has no team colour.",
+            "negative": "icon frame, round badge, medallion, emblem, button, border, circular background, square background, vignette, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, character, person, text, letters, numbers, red, crimson, orange, lime, purple, violet, magenta, pink, translucent, see-through, soft glow"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: a sea serpent's head and one arched hump rising out of the sea side by side: a round scaly head on a curved neck with a big round glossy black eye with a white shine dot and a fan-shaped bone-white fin crest, and one round arched hump behind it; slate grey-brown scales with a darker grey-brown shadow tone and a bone-white belly; the neck and the hump end in one flat straight line at the bottom with a thin line of white foam; no water is drawn; the serpent is the only thing in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "violet, purple, lilac, green, lime, blue, cyan, turquoise, teal, water, sea, waves, water plate, blue water, island, rock under it, sand"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one bold chunky item sprite of a single small thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. It belongs to no faction and has no team colour. Subject: a sea serpent's head and one arched hump rising out of the sea side by side: a round scaly head on a curved neck with a big round glossy black eye with a white shine dot and a fan-shaped bone-white fin crest, and one round arched hump behind it; slate grey-brown scales with a darker grey-brown shadow tone and a bone-white belly; the neck and the hump end in one flat straight line at the bottom with a thin line of white foam; no water is drawn; the serpent is the only thing in the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, vignette, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, character, person, red, crimson, orange, lime, purple, violet, magenta, pink, translucent, see-through, soft glow, lilac, green, blue, cyan, turquoise, teal, water, sea, waves, water plate, blue water, rock under it, sand",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one bold chunky item sprite of a single small thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. It belongs to no faction and has no team colour. Subject: a sea serpent's head and one arched hump rising out of the sea side by side: a round scaly head on a curved neck with a big round glossy black eye with a white shine dot and a fan-shaped bone-white fin crest, and one round arched hump behind it; slate grey-brown scales with a darker grey-brown shadow tone and a bone-white belly; the neck and the hump end in one flat straight line at the bottom with a thin line of white foam; no water is drawn; the serpent is the only thing in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, vignette, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, character, person, red, crimson, orange, lime, purple, violet, magenta, pink, translucent, see-through, soft glow, lilac, green, blue, cyan, turquoise, teal, water, sea, waves, water plate, blue water, rock under it, sand."
+      },
+      "submittedAt": "2026-10-19T15:02:21.165Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-curiosities-4/icon-sea-serpent-a.png",
+      "rawSheetSha256": "7094c07058aa4d58c96af8a54c55cfb449d5efcff5ba987a3a82f800e2cc5c6e",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0.4731,
+          "footprintWidthShare": 1,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-19T15:02:43.320Z",
+      "usageUsd": 0.006976892100440132,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Stands on a brown soil and grass island (a plate); its edit kept.",
+        "reviewedAt": "2026-10-19T15:09:20.681Z"
+      }
+    },
+    "icon-sea-serpent-a-edit": {
+      "id": "icon-sea-serpent-a-edit",
+      "asset": "chibi-curiosity-icon-sea-serpent",
+      "jobId": "d060b6d1-eb6d-4ffb-9f89-ac826f253361",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "curiosities-4",
+        "asset": "chibi-curiosity-icon-sea-serpent",
+        "subject": "ICON:CURIOSITY:SEA_SERPENT",
+        "faction": "ORIGINAL",
+        "recipeClass": "curiosity-item",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 73721032,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Erase everything except the sea serpent: remove the brown soil block, the green grass and the blue water under it completely, so the serpent's neck and hump stand directly on a transparent background with only a thin line of white foam at their bottom. Keep the serpent's head, its eye, its fin crest, its hump, the outline and the art style exactly the same."
+          }
+        ],
+        "prompt": "Erase everything except the sea serpent: remove the brown soil block, the green grass and the blue water under it completely, so the serpent's neck and hump stand directly on a transparent background with only a thin line of white foam at their bottom. Keep the serpent's head, its eye, its fin crest, its hump, the outline and the art style exactly the same.",
+        "negativePrompt": "",
+        "description": "Erase everything except the sea serpent: remove the brown soil block, the green grass and the blue water under it completely, so the serpent's neck and hump stand directly on a transparent background with only a thin line of white foam at their bottom. Keep the serpent's head, its eye, its fin crest, its hump, the outline and the art style exactly the same.",
+        "editInstruction": "Erase everything except the sea serpent: remove the brown soil block, the green grass and the blue water under it completely, so the serpent's neck and hump stand directly on a transparent background with only a thin line of white foam at their bottom. Keep the serpent's head, its eye, its fin crest, its hump, the outline and the art style exactly the same.",
+        "source": {
+          "recipe": "icon-sea-serpent-a",
+          "candidate": 0,
+          "sha256": "7094c07058aa4d58c96af8a54c55cfb449d5efcff5ba987a3a82f800e2cc5c6e"
+        }
+      },
+      "submittedAt": "2026-10-19T15:05:34.010Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-curiosities-4/icon-sea-serpent-a-edit.png",
+      "rawSheetSha256": "3ef8b36b99263bac0083bada412d9c9aea742446d5f2e595ca372dcd14d49ed2",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0,
+          "footprintWidthShare": 0.85,
+          "suspect": false
+        },
+        {
+          "bandRows": 8,
+          "groundShare": 0,
+          "footprintWidthShare": 0.85,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-19T15:07:34.595Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "The serpent's head with its fin crest and a hump over a thin white foam line; the edit removed the soil and grass island; slate grey-brown, bone-white belly.",
+        "reviewedAt": "2026-10-19T15:09:10.018Z"
+      }
+    },
+    "sea-serpent-a": {
+      "id": "sea-serpent-a",
+      "asset": "chibi-curiosity-sea-serpent",
+      "jobId": "sync-4e6d88d7-b387-4532-a2f4-3ef6f6ebe3f5",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "curiosities-4",
+        "asset": "chibi-curiosity-sea-serpent",
+        "subject": "UNIT:NEUTRAL_SEA_SERPENT",
+        "faction": "ORIGINAL",
+        "recipeClass": "curiosity-monster",
+        "requestSize": {
+          "width": 88,
+          "height": 72
+        },
+        "seed": 73721001,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "side",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-curiosity-monster.txt + scripts/art/chibi/fragments/class-curiosity-monster.negative.txt",
+            "text": "Class: one chunky cute wild monster map piece that belongs to nobody, a single creature with a big simple body, big round eyes and a clear silhouette that reads at a glance, thick single-colour black outline; the whole creature is visible and its feet are the lowest thing in the image. It wears nothing and carries nothing. Its colours are earthy neutrals only: dusty umber brown, taupe, charcoal and bone white.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple creatures, crowd, armour, helmet, saddle, rider, weapon, flag, banner, cloth, red, crimson, orange, yellow, gold, green, lime, cyan, blue, purple, violet, magenta, pink, glowing eyes, horror, gore, realistic"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: a huge sea serpent swimming at the surface of the sea, chunky and cute and a little menacing, seen from the side: its long scaly body shows above the water as three round arched humps in a row, from the right to the middle of the image, and at the left front a big round head on a thick raised curved neck, with two big round glossy black eyes with white shine dots, a wide closed smiling mouth, a fan-shaped bone-white fin crest on top of its head and two small bone-white side fins; slate grey-brown scales with a darker grey-brown shadow tone, a bone-white belly along the underside of the neck, a little dull moss on the humps; only the parts above the water are drawn: the neck and every hump end in one flat straight horizontal line at the bottom with a thin line of white foam along it; no water, no sea and no waves are drawn; the serpent is much wider than it is tall and nearly as wide as the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "violet, purple, lilac, green, lime, blue, cyan, turquoise, teal, water, sea, waves, water plate, blue water, island, rock under it, sand, legs, feet, claws"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one chunky cute wild monster map piece that belongs to nobody, a single creature with a big simple body, big round eyes and a clear silhouette that reads at a glance, thick single-colour black outline; the whole creature is visible and its feet are the lowest thing in the image. It wears nothing and carries nothing. Its colours are earthy neutrals only: dusty umber brown, taupe, charcoal and bone white. Subject: a huge sea serpent swimming at the surface of the sea, chunky and cute and a little menacing, seen from the side: its long scaly body shows above the water as three round arched humps in a row, from the right to the middle of the image, and at the left front a big round head on a thick raised curved neck, with two big round glossy black eyes with white shine dots, a wide closed smiling mouth, a fan-shaped bone-white fin crest on top of its head and two small bone-white side fins; slate grey-brown scales with a darker grey-brown shadow tone, a bone-white belly along the underside of the neck, a little dull moss on the humps; only the parts above the water are drawn: the neck and every hump end in one flat straight horizontal line at the bottom with a thin line of white foam along it; no water, no sea and no waves are drawn; the serpent is much wider than it is tall and nearly as wide as the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple creatures, crowd, armour, helmet, saddle, rider, weapon, flag, banner, cloth, red, crimson, orange, yellow, gold, green, lime, cyan, blue, purple, violet, magenta, pink, glowing eyes, horror, gore, realistic, lilac, turquoise, teal, water, sea, waves, water plate, blue water, island, rock under it, sand, legs, feet, claws",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one chunky cute wild monster map piece that belongs to nobody, a single creature with a big simple body, big round eyes and a clear silhouette that reads at a glance, thick single-colour black outline; the whole creature is visible and its feet are the lowest thing in the image. It wears nothing and carries nothing. Its colours are earthy neutrals only: dusty umber brown, taupe, charcoal and bone white. Subject: a huge sea serpent swimming at the surface of the sea, chunky and cute and a little menacing, seen from the side: its long scaly body shows above the water as three round arched humps in a row, from the right to the middle of the image, and at the left front a big round head on a thick raised curved neck, with two big round glossy black eyes with white shine dots, a wide closed smiling mouth, a fan-shaped bone-white fin crest on top of its head and two small bone-white side fins; slate grey-brown scales with a darker grey-brown shadow tone, a bone-white belly along the underside of the neck, a little dull moss on the humps; only the parts above the water are drawn: the neck and every hump end in one flat straight horizontal line at the bottom with a thin line of white foam along it; no water, no sea and no waves are drawn; the serpent is much wider than it is tall and nearly as wide as the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple creatures, crowd, armour, helmet, saddle, rider, weapon, flag, banner, cloth, red, crimson, orange, yellow, gold, green, lime, cyan, blue, purple, violet, magenta, pink, glowing eyes, horror, gore, realistic, lilac, turquoise, teal, water, sea, waves, water plate, blue water, island, rock under it, sand, legs, feet, claws."
+      },
+      "submittedAt": "2026-10-19T15:00:00.044Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 88,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-curiosities-4/sea-serpent-a.png",
+      "rawSheetSha256": "29a319eba26657a6cad304b952dcfdb945ba22cefbf8babb2a2e12776436057f",
+      "plateHints": [
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.494,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-19T15:00:46.691Z",
+      "usageUsd": 0.009100209342108832,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Lies flat on a turquoise water plate with an orange-brown head (toward the Dinosaur orange); no humps rising.",
+        "reviewedAt": "2026-10-19T15:09:20.804Z"
+      }
+    },
+    "sea-serpent-a-edit": {
+      "id": "sea-serpent-a-edit",
+      "asset": "chibi-curiosity-sea-serpent",
+      "jobId": "2a0c8213-b1cb-4afc-b839-a8752a1ec917",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "curiosities-4",
+        "asset": "chibi-curiosity-sea-serpent",
+        "subject": "UNIT:NEUTRAL_SEA_SERPENT",
+        "faction": "ORIGINAL",
+        "recipeClass": "curiosity-monster",
+        "requestSize": {
+          "width": 88,
+          "height": 72
+        },
+        "seed": 73721002,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Remove only the water: erase the turquoise water plate, the pale blue water and the white ripples around and under the serpent, so the serpent stands directly on a transparent background with nothing at all under or around it. Keep the serpent's head, its fin crest, its eyes, its scaly humps, its tail, the moss, the outline and the art style exactly the same."
+          }
+        ],
+        "prompt": "Remove only the water: erase the turquoise water plate, the pale blue water and the white ripples around and under the serpent, so the serpent stands directly on a transparent background with nothing at all under or around it. Keep the serpent's head, its fin crest, its eyes, its scaly humps, its tail, the moss, the outline and the art style exactly the same.",
+        "negativePrompt": "",
+        "description": "Remove only the water: erase the turquoise water plate, the pale blue water and the white ripples around and under the serpent, so the serpent stands directly on a transparent background with nothing at all under or around it. Keep the serpent's head, its fin crest, its eyes, its scaly humps, its tail, the moss, the outline and the art style exactly the same.",
+        "editInstruction": "Remove only the water: erase the turquoise water plate, the pale blue water and the white ripples around and under the serpent, so the serpent stands directly on a transparent background with nothing at all under or around it. Keep the serpent's head, its fin crest, its eyes, its scaly humps, its tail, the moss, the outline and the art style exactly the same.",
+        "source": {
+          "recipe": "sea-serpent-a",
+          "candidate": 0,
+          "sha256": "29a319eba26657a6cad304b952dcfdb945ba22cefbf8babb2a2e12776436057f"
+        }
+      },
+      "submittedAt": "2026-10-19T15:04:14.866Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 88,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-curiosities-4/sea-serpent-a-edit.png",
+      "rawSheetSha256": "b5c36b419322205659f267bff91e2acc8cd583778a3eaf79477041a7e5228919",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0.3228,
+          "footprintWidthShare": 0.6582,
+          "suspect": true
+        },
+        {
+          "bandRows": 8,
+          "groundShare": 0.3228,
+          "footprintWidthShare": 0.6582,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-19T15:04:53.313Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The plate is gone but the serpent still lies flat with an orange-brown head; the side-view creation reads better.",
+        "reviewedAt": "2026-10-19T15:09:20.927Z"
+      }
+    },
+    "sea-serpent-b": {
+      "id": "sea-serpent-b",
+      "asset": "chibi-curiosity-sea-serpent",
+      "jobId": "sync-2617813a-7d98-495d-a0ae-e22e02bbe72b",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "curiosities-4",
+        "asset": "chibi-curiosity-sea-serpent",
+        "subject": "UNIT:NEUTRAL_SEA_SERPENT",
+        "faction": "ORIGINAL",
+        "recipeClass": "curiosity-monster",
+        "requestSize": {
+          "width": 88,
+          "height": 72
+        },
+        "seed": 73721003,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "side",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-curiosity-monster.txt + scripts/art/chibi/fragments/class-curiosity-monster.negative.txt",
+            "text": "Class: one chunky cute wild monster map piece that belongs to nobody, a single creature with a big simple body, big round eyes and a clear silhouette that reads at a glance, thick single-colour black outline; the whole creature is visible and its feet are the lowest thing in the image. It wears nothing and carries nothing. Its colours are earthy neutrals only: dusty umber brown, taupe, charcoal and bone white.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple creatures, crowd, armour, helmet, saddle, rider, weapon, flag, banner, cloth, red, crimson, orange, yellow, gold, green, lime, cyan, blue, purple, violet, magenta, pink, glowing eyes, horror, gore, realistic"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: a huge sea serpent swimming at the surface of the sea, chunky and cute and a little menacing, seen from the side: its long scaly body shows above the water as three round arched humps in a row, from the right to the middle of the image, and at the left front a big round head on a thick raised curved neck, with two big round glossy black eyes with white shine dots, a wide closed smiling mouth, a fan-shaped bone-white fin crest on top of its head and two small bone-white side fins; slate grey-brown scales with a darker grey-brown shadow tone, a bone-white belly along the underside of the neck, a little dull moss on the humps; only the parts above the water are drawn: the neck and every hump end in one flat straight horizontal line at the bottom with a thin line of white foam along it; no water, no sea and no waves are drawn; the serpent is much wider than it is tall and nearly as wide as the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Seen straight from the side, like a sea monster on an old sea chart: the head and neck rise tall on the left, and the three humps arch up out of the sea like three round loops in a row behind it. The whole serpent is slate grey-brown, the head too: never orange. Its bottom edge is one flat straight horizontal line: nothing is drawn under it, no water plate, no tile and no platform.",
+            "negative": "violet, purple, lilac, green, lime, blue, cyan, turquoise, teal, water, sea, waves, water plate, blue water, island, rock under it, sand, orange, red-brown, diamond, tile, platform, isometric plate, legs, feet, claws, lying flat"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one chunky cute wild monster map piece that belongs to nobody, a single creature with a big simple body, big round eyes and a clear silhouette that reads at a glance, thick single-colour black outline; the whole creature is visible and its feet are the lowest thing in the image. It wears nothing and carries nothing. Its colours are earthy neutrals only: dusty umber brown, taupe, charcoal and bone white. Subject: a huge sea serpent swimming at the surface of the sea, chunky and cute and a little menacing, seen from the side: its long scaly body shows above the water as three round arched humps in a row, from the right to the middle of the image, and at the left front a big round head on a thick raised curved neck, with two big round glossy black eyes with white shine dots, a wide closed smiling mouth, a fan-shaped bone-white fin crest on top of its head and two small bone-white side fins; slate grey-brown scales with a darker grey-brown shadow tone, a bone-white belly along the underside of the neck, a little dull moss on the humps; only the parts above the water are drawn: the neck and every hump end in one flat straight horizontal line at the bottom with a thin line of white foam along it; no water, no sea and no waves are drawn; the serpent is much wider than it is tall and nearly as wide as the image. Seen straight from the side, like a sea monster on an old sea chart: the head and neck rise tall on the left, and the three humps arch up out of the sea like three round loops in a row behind it. The whole serpent is slate grey-brown, the head too: never orange. Its bottom edge is one flat straight horizontal line: nothing is drawn under it, no water plate, no tile and no platform.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple creatures, crowd, armour, helmet, saddle, rider, weapon, flag, banner, cloth, red, crimson, orange, yellow, gold, green, lime, cyan, blue, purple, violet, magenta, pink, glowing eyes, horror, gore, realistic, lilac, turquoise, teal, water, sea, waves, water plate, blue water, island, rock under it, sand, red-brown, diamond, tile, isometric plate, legs, feet, claws, lying flat",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one chunky cute wild monster map piece that belongs to nobody, a single creature with a big simple body, big round eyes and a clear silhouette that reads at a glance, thick single-colour black outline; the whole creature is visible and its feet are the lowest thing in the image. It wears nothing and carries nothing. Its colours are earthy neutrals only: dusty umber brown, taupe, charcoal and bone white. Subject: a huge sea serpent swimming at the surface of the sea, chunky and cute and a little menacing, seen from the side: its long scaly body shows above the water as three round arched humps in a row, from the right to the middle of the image, and at the left front a big round head on a thick raised curved neck, with two big round glossy black eyes with white shine dots, a wide closed smiling mouth, a fan-shaped bone-white fin crest on top of its head and two small bone-white side fins; slate grey-brown scales with a darker grey-brown shadow tone, a bone-white belly along the underside of the neck, a little dull moss on the humps; only the parts above the water are drawn: the neck and every hump end in one flat straight horizontal line at the bottom with a thin line of white foam along it; no water, no sea and no waves are drawn; the serpent is much wider than it is tall and nearly as wide as the image. Seen straight from the side, like a sea monster on an old sea chart: the head and neck rise tall on the left, and the three humps arch up out of the sea like three round loops in a row behind it. The whole serpent is slate grey-brown, the head too: never orange. Its bottom edge is one flat straight horizontal line: nothing is drawn under it, no water plate, no tile and no platform. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple creatures, crowd, armour, helmet, saddle, rider, weapon, flag, banner, cloth, red, crimson, orange, yellow, gold, green, lime, cyan, blue, purple, violet, magenta, pink, glowing eyes, horror, gore, realistic, lilac, turquoise, teal, water, sea, waves, water plate, blue water, island, rock under it, sand, red-brown, diamond, tile, isometric plate, legs, feet, claws, lying flat."
+      },
+      "submittedAt": "2026-10-19T15:04:53.316Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 88,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-curiosities-4/sea-serpent-b.png",
+      "rawSheetSha256": "705fe1605c862cde4a1f434c8af65bf83da03b7f5658971ffbd6b5126c320b51",
+      "plateHints": [
+        {
+          "bandRows": 13,
+          "groundShare": 0.1176,
+          "footprintWidthShare": 0.8519,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-19T15:05:34.006Z",
+      "usageUsd": 0.008864138046900432,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The right serpent from the side, but its head and neck are orange-brown (toward the Dinosaur orange) although asked for slate; its recolour edit kept.",
+        "reviewedAt": "2026-10-19T15:11:04.180Z"
+      }
+    },
+    "sea-serpent-b-edit": {
+      "id": "sea-serpent-b-edit",
+      "asset": "chibi-curiosity-sea-serpent",
+      "jobId": "421c73c6-3cb1-403d-bb97-94b59da3e2c4",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "curiosities-4",
+        "asset": "chibi-curiosity-sea-serpent",
+        "subject": "UNIT:NEUTRAL_SEA_SERPENT",
+        "faction": "ORIGINAL",
+        "recipeClass": "curiosity-monster",
+        "requestSize": {
+          "width": 88,
+          "height": 72
+        },
+        "seed": 73721004,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only the colours: recolour the orange-brown head, face and back of the neck to slate grey-brown #6b6258 with the shadow tone #4a433c, the same as the scaly humps, not orange and not red-brown. Keep the cream belly, the bone-white fin crest and spikes, the big black eyes with white shine, the white foam, the shape, the outline and the art style exactly the same."
+          }
+        ],
+        "prompt": "Change only the colours: recolour the orange-brown head, face and back of the neck to slate grey-brown #6b6258 with the shadow tone #4a433c, the same as the scaly humps, not orange and not red-brown. Keep the cream belly, the bone-white fin crest and spikes, the big black eyes with white shine, the white foam, the shape, the outline and the art style exactly the same.",
+        "negativePrompt": "",
+        "description": "Change only the colours: recolour the orange-brown head, face and back of the neck to slate grey-brown #6b6258 with the shadow tone #4a433c, the same as the scaly humps, not orange and not red-brown. Keep the cream belly, the bone-white fin crest and spikes, the big black eyes with white shine, the white foam, the shape, the outline and the art style exactly the same.",
+        "editInstruction": "Change only the colours: recolour the orange-brown head, face and back of the neck to slate grey-brown #6b6258 with the shadow tone #4a433c, the same as the scaly humps, not orange and not red-brown. Keep the cream belly, the bone-white fin crest and spikes, the big black eyes with white shine, the white foam, the shape, the outline and the art style exactly the same.",
+        "source": {
+          "recipe": "sea-serpent-b",
+          "candidate": 0,
+          "sha256": "705fe1605c862cde4a1f434c8af65bf83da03b7f5658971ffbd6b5126c320b51"
+        }
+      },
+      "submittedAt": "2026-10-19T15:09:00.744Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 88,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-curiosities-4/sea-serpent-b-edit.png",
+      "rawSheetSha256": "45f5b7375b6fda99643e3cd104af16d962ecc93943b4ef65017038a71120a5c2",
+      "plateHints": [
+        {
+          "bandRows": 13,
+          "groundShare": 0.0062,
+          "footprintWidthShare": 0.8519,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0062,
+          "footprintWidthShare": 0.8519,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-19T15:09:55.095Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Charcoal slate serpent seen from the side: a tall neck with a cream belly and fin crest, glossy black eyes, two scaly humps and a tail rising from a flat white-foam waterline; the edit recoloured the orange head of sea-serpent-b; no plate; reads against Deep and Shallow Water at 1x and x4.",
+        "reviewedAt": "2026-10-19T15:11:04.061Z"
+      }
+    },
+    "sea-serpent-c": {
+      "id": "sea-serpent-c",
+      "asset": "chibi-curiosity-sea-serpent",
+      "jobId": "sync-46a0ee13-2918-4d99-b4d1-1594ce701813",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "curiosities-4",
+        "asset": "chibi-curiosity-sea-serpent",
+        "subject": "UNIT:NEUTRAL_SEA_SERPENT",
+        "faction": "ORIGINAL",
+        "recipeClass": "curiosity-monster",
+        "requestSize": {
+          "width": 88,
+          "height": 72
+        },
+        "seed": 73721005,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "side",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-curiosity-monster.txt + scripts/art/chibi/fragments/class-curiosity-monster.negative.txt",
+            "text": "Class: one chunky cute wild monster map piece that belongs to nobody, a single creature with a big simple body, big round eyes and a clear silhouette that reads at a glance, thick single-colour black outline; the whole creature is visible and its feet are the lowest thing in the image. It wears nothing and carries nothing. Its colours are earthy neutrals only: dusty umber brown, taupe, charcoal and bone white.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple creatures, crowd, armour, helmet, saddle, rider, weapon, flag, banner, cloth, red, crimson, orange, yellow, gold, green, lime, cyan, blue, purple, violet, magenta, pink, glowing eyes, horror, gore, realistic"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: a huge sea serpent swimming at the surface of the sea, chunky and cute and a little menacing, seen from the side: its long scaly body shows above the water as three round arched humps in a row, from the right to the middle of the image, and at the left front a big round head on a thick raised curved neck, with two big round glossy black eyes with white shine dots, a wide closed smiling mouth, a fan-shaped bone-white fin crest on top of its head and two small bone-white side fins; slate grey-brown scales with a darker grey-brown shadow tone, a bone-white belly along the underside of the neck, a little dull moss on the humps; only the parts above the water are drawn: the neck and every hump end in one flat straight horizontal line at the bottom with a thin line of white foam along it; no water, no sea and no waves are drawn; the serpent is much wider than it is tall and nearly as wide as the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Seen straight from the side, like a sea monster on an old sea chart: the head and neck rise tall on the left, and the three humps arch up out of the sea like three round loops in a row behind it. The whole serpent, its head and its face too, is slate grey-brown #6b6258 with a darker #4a433c shadow tone; only its belly and fins are bone white. Its bottom edge is one flat straight horizontal line with a thin line of white foam: nothing is drawn under it, no water plate, no tile and no platform.",
+            "negative": "violet, purple, lilac, green, lime, blue, cyan, turquoise, teal, water, sea, waves, water plate, blue water, island, rock under it, sand, orange, red-brown, brown face, tan, diamond, tile, platform, isometric plate, legs, feet, claws, lying flat"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one chunky cute wild monster map piece that belongs to nobody, a single creature with a big simple body, big round eyes and a clear silhouette that reads at a glance, thick single-colour black outline; the whole creature is visible and its feet are the lowest thing in the image. It wears nothing and carries nothing. Its colours are earthy neutrals only: dusty umber brown, taupe, charcoal and bone white. Subject: a huge sea serpent swimming at the surface of the sea, chunky and cute and a little menacing, seen from the side: its long scaly body shows above the water as three round arched humps in a row, from the right to the middle of the image, and at the left front a big round head on a thick raised curved neck, with two big round glossy black eyes with white shine dots, a wide closed smiling mouth, a fan-shaped bone-white fin crest on top of its head and two small bone-white side fins; slate grey-brown scales with a darker grey-brown shadow tone, a bone-white belly along the underside of the neck, a little dull moss on the humps; only the parts above the water are drawn: the neck and every hump end in one flat straight horizontal line at the bottom with a thin line of white foam along it; no water, no sea and no waves are drawn; the serpent is much wider than it is tall and nearly as wide as the image. Seen straight from the side, like a sea monster on an old sea chart: the head and neck rise tall on the left, and the three humps arch up out of the sea like three round loops in a row behind it. The whole serpent, its head and its face too, is slate grey-brown #6b6258 with a darker #4a433c shadow tone; only its belly and fins are bone white. Its bottom edge is one flat straight horizontal line with a thin line of white foam: nothing is drawn under it, no water plate, no tile and no platform.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple creatures, crowd, armour, helmet, saddle, rider, weapon, flag, banner, cloth, red, crimson, orange, yellow, gold, green, lime, cyan, blue, purple, violet, magenta, pink, glowing eyes, horror, gore, realistic, lilac, turquoise, teal, water, sea, waves, water plate, blue water, island, rock under it, sand, red-brown, brown face, tan, diamond, tile, isometric plate, legs, feet, claws, lying flat",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one chunky cute wild monster map piece that belongs to nobody, a single creature with a big simple body, big round eyes and a clear silhouette that reads at a glance, thick single-colour black outline; the whole creature is visible and its feet are the lowest thing in the image. It wears nothing and carries nothing. Its colours are earthy neutrals only: dusty umber brown, taupe, charcoal and bone white. Subject: a huge sea serpent swimming at the surface of the sea, chunky and cute and a little menacing, seen from the side: its long scaly body shows above the water as three round arched humps in a row, from the right to the middle of the image, and at the left front a big round head on a thick raised curved neck, with two big round glossy black eyes with white shine dots, a wide closed smiling mouth, a fan-shaped bone-white fin crest on top of its head and two small bone-white side fins; slate grey-brown scales with a darker grey-brown shadow tone, a bone-white belly along the underside of the neck, a little dull moss on the humps; only the parts above the water are drawn: the neck and every hump end in one flat straight horizontal line at the bottom with a thin line of white foam along it; no water, no sea and no waves are drawn; the serpent is much wider than it is tall and nearly as wide as the image. Seen straight from the side, like a sea monster on an old sea chart: the head and neck rise tall on the left, and the three humps arch up out of the sea like three round loops in a row behind it. The whole serpent, its head and its face too, is slate grey-brown #6b6258 with a darker #4a433c shadow tone; only its belly and fins are bone white. Its bottom edge is one flat straight horizontal line with a thin line of white foam: nothing is drawn under it, no water plate, no tile and no platform. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple creatures, crowd, armour, helmet, saddle, rider, weapon, flag, banner, cloth, red, crimson, orange, yellow, gold, green, lime, cyan, blue, purple, violet, magenta, pink, glowing eyes, horror, gore, realistic, lilac, turquoise, teal, water, sea, waves, water plate, blue water, island, rock under it, sand, red-brown, brown face, tan, diamond, tile, isometric plate, legs, feet, claws, lying flat."
+      },
+      "submittedAt": "2026-10-19T15:09:55.098Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 88,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-curiosities-4/sea-serpent-c.png",
+      "rawSheetSha256": "ee6b4a2697b8e1c10ed82e6982288ff3295790e7695463783d9f14ebbbbb9b47",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0.1758,
+          "footprintWidthShare": 0.9167,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-19T15:10:43.392Z",
+      "usageUsd": 0.009233838399251303,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Drew four legs and a red-brown body: a lizard, not a serpent in the sea.",
+        "reviewedAt": "2026-10-19T15:11:04.302Z"
+      }
+    },
+    "sea-serpent-portrait-a": {
+      "id": "sea-serpent-portrait-a",
+      "asset": "chibi-curiosity-portrait-sea-serpent",
+      "jobId": "sync-39f5085d-d9d6-4aac-8b94-05bf416688d6",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "curiosities-4",
+        "asset": "chibi-curiosity-portrait-sea-serpent",
+        "subject": "PORTRAIT:NEUTRAL_SEA_SERPENT",
+        "faction": "ORIGINAL",
+        "recipeClass": "curiosity-portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 73721011,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "side",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-portrait.txt",
+            "text": "Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-curiosity-portrait.txt + scripts/art/chibi/fragments/class-curiosity-portrait.negative.txt",
+            "text": "Class: one chunky cute monster portrait with a huge round head and big round eyes, the same creature as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Its colours are earthy neutrals only: dusty umber brown, taupe, charcoal and bone white.",
+            "negative": "pedestal, base, plinth, frame, border, circle background, badge, medallion, vignette, background scenery, second creature, crowd, text, armour, helmet, weapon, cloth, red, crimson, orange, yellow, gold, green, lime, cyan, blue, purple, violet, magenta, pink, glowing eyes, horror, gore, realistic"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: the head of a sea serpent close up: a big round scaly head on a thick neck, two big round glossy black eyes with white shine dots, a wide toothy grin with small bone-white teeth, a fan-shaped bone-white fin crest on top and two small bone-white side fins; slate grey-brown scales with a darker grey-brown shadow tone and a bone-white throat; the head and neck are the only thing in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "violet, purple, lilac, green, lime, blue, cyan, turquoise, teal, water, sea, waves, water plate, blue water, island, rock under it, sand"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Class: one chunky cute monster portrait with a huge round head and big round eyes, the same creature as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Its colours are earthy neutrals only: dusty umber brown, taupe, charcoal and bone white. Subject: the head of a sea serpent close up: a big round scaly head on a thick neck, two big round glossy black eyes with white shine dots, a wide toothy grin with small bone-white teeth, a fan-shaped bone-white fin crest on top and two small bone-white side fins; slate grey-brown scales with a darker grey-brown shadow tone and a bone-white throat; the head and neck are the only thing in the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second creature, crowd, armour, helmet, weapon, cloth, red, crimson, orange, yellow, gold, green, lime, cyan, blue, purple, violet, magenta, pink, glowing eyes, horror, gore, realistic, lilac, turquoise, teal, water, sea, waves, water plate, blue water, island, rock under it, sand",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Class: one chunky cute monster portrait with a huge round head and big round eyes, the same creature as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Its colours are earthy neutrals only: dusty umber brown, taupe, charcoal and bone white. Subject: the head of a sea serpent close up: a big round scaly head on a thick neck, two big round glossy black eyes with white shine dots, a wide toothy grin with small bone-white teeth, a fan-shaped bone-white fin crest on top and two small bone-white side fins; slate grey-brown scales with a darker grey-brown shadow tone and a bone-white throat; the head and neck are the only thing in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second creature, crowd, armour, helmet, weapon, cloth, red, crimson, orange, yellow, gold, green, lime, cyan, blue, purple, violet, magenta, pink, glowing eyes, horror, gore, realistic, lilac, turquoise, teal, water, sea, waves, water plate, blue water, island, rock under it, sand."
+      },
+      "submittedAt": "2026-10-19T15:00:46.703Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-curiosities-4/sea-serpent-portrait-a.png",
+      "rawSheetSha256": "50bc752914b8d000c70ffc3fa39b6a87533eec3836dabdfb94c98289aa0399c2",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0.2953,
+          "footprintWidthShare": 0.4872,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-19T15:01:25.810Z",
+      "usageUsd": 0.007642590443293254,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Slate grey-brown head with a bone-white fin crest, glossy black eyes and a toothy grin; no plate; reads at 48 px and x4 on the dark dock and a light page; neutral colours only (a small pink mouth).",
+        "reviewedAt": "2026-10-19T15:09:09.742Z"
+      }
+    },
+    "serpent-lair-a": {
+      "id": "serpent-lair-a",
+      "asset": "chibi-curiosity-serpent-lair",
+      "jobId": "sync-352e6653-a709-40be-bf01-c33f096f728c",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "curiosities-4",
+        "asset": "chibi-curiosity-serpent-lair",
+        "subject": "CURIOSITY:SERPENT_LAIR",
+        "faction": "ORIGINAL",
+        "recipeClass": "curiosity-site",
+        "requestSize": {
+          "width": 80,
+          "height": 80
+        },
+        "seed": 73721021,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-curiosity-site.txt + scripts/art/chibi/fragments/class-curiosity-site.negative.txt",
+            "text": "Class: one small ancient map landmark that belongs to no faction, a single compact feature with a simple clear silhouette that reads at a glance, calmer and less saturated than a unit, thick single-colour black outline, big simple shapes and flat colours with one shadow tone. It stands directly on the empty transparent background with nothing drawn under it: no ground, no grass, no soil, no water, no slab and no platform. Materials: weathered pale grey stone, bone white, old grey-brown driftwood and a little dull moss. No flag, no banner, no heraldry and nothing painted in a team colour.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, island, scenery, background, people, person, character, soldier, crowd, building, house, flag, banner, pennant, heraldry, red, crimson, orange, bright yellow, lime, purple, violet, magenta, pink, neon"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: a ring of low barnacled rocks sticking out of the sea, seen from above at an angle: seven rounded dark slate-grey rocks with pale grey barnacles and a little dull moss set in a loose wide ring with an empty middle, with two old bone-white rib bones and one small bone lying on the rocks, and thin lines of white foam around the foot of each rock; no water, no sea and no waves are drawn between them; the ring of rocks touches the left edge and the right edge of the image; the rocks are the only thing in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "violet, purple, lilac, green, lime, blue, cyan, turquoise, teal, water, sea, waves, water plate, blue water, island, rock under it, sand, skull pile, cave, arch"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small ancient map landmark that belongs to no faction, a single compact feature with a simple clear silhouette that reads at a glance, calmer and less saturated than a unit, thick single-colour black outline, big simple shapes and flat colours with one shadow tone. It stands directly on the empty transparent background with nothing drawn under it: no ground, no grass, no soil, no water, no slab and no platform. Materials: weathered pale grey stone, bone white, old grey-brown driftwood and a little dull moss. No flag, no banner, no heraldry and nothing painted in a team colour. Subject: a ring of low barnacled rocks sticking out of the sea, seen from above at an angle: seven rounded dark slate-grey rocks with pale grey barnacles and a little dull moss set in a loose wide ring with an empty middle, with two old bone-white rib bones and one small bone lying on the rocks, and thin lines of white foam around the foot of each rock; no water, no sea and no waves are drawn between them; the ring of rocks touches the left edge and the right edge of the image; the rocks are the only thing in the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, island, scenery, background, people, person, character, soldier, crowd, building, house, flag, banner, pennant, heraldry, red, crimson, orange, bright yellow, lime, purple, violet, magenta, pink, neon, lilac, green, blue, cyan, turquoise, teal, water, sea, waves, water plate, blue water, rock under it, sand, skull pile, cave, arch",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small ancient map landmark that belongs to no faction, a single compact feature with a simple clear silhouette that reads at a glance, calmer and less saturated than a unit, thick single-colour black outline, big simple shapes and flat colours with one shadow tone. It stands directly on the empty transparent background with nothing drawn under it: no ground, no grass, no soil, no water, no slab and no platform. Materials: weathered pale grey stone, bone white, old grey-brown driftwood and a little dull moss. No flag, no banner, no heraldry and nothing painted in a team colour. Subject: a ring of low barnacled rocks sticking out of the sea, seen from above at an angle: seven rounded dark slate-grey rocks with pale grey barnacles and a little dull moss set in a loose wide ring with an empty middle, with two old bone-white rib bones and one small bone lying on the rocks, and thin lines of white foam around the foot of each rock; no water, no sea and no waves are drawn between them; the ring of rocks touches the left edge and the right edge of the image; the rocks are the only thing in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, island, scenery, background, people, person, character, soldier, crowd, building, house, flag, banner, pennant, heraldry, red, crimson, orange, bright yellow, lime, purple, violet, magenta, pink, neon, lilac, green, blue, cyan, turquoise, teal, water, sea, waves, water plate, blue water, rock under it, sand, skull pile, cave, arch."
+      },
+      "submittedAt": "2026-10-19T15:01:25.813Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 80,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-curiosities-4/serpent-lair-a.png",
+      "rawSheetSha256": "05bedf58223501380c555903f006916fbf56d790734ab34f91ae8228c7f57ebd",
+      "plateHints": [
+        {
+          "bandRows": 11,
+          "groundShare": 0.1264,
+          "footprintWidthShare": 0.7973,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-19T15:02:21.163Z",
+      "usageUsd": 0.009483371204800077,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Draws a light blue pool of water inside the ring (the class asks for nothing under a piece; light blue sits near the Ice Folk colour); its edit kept.",
+        "reviewedAt": "2026-10-19T15:09:20.557Z"
+      }
+    },
+    "serpent-lair-a-edit": {
+      "id": "serpent-lair-a-edit",
+      "asset": "chibi-curiosity-serpent-lair",
+      "jobId": "214b64da-d502-470f-9663-1fa00dfd4f7b",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "curiosities-4",
+        "asset": "chibi-curiosity-serpent-lair",
+        "subject": "CURIOSITY:SERPENT_LAIR",
+        "faction": "ORIGINAL",
+        "recipeClass": "curiosity-site",
+        "requestSize": {
+          "width": 80,
+          "height": 80
+        },
+        "seed": 73721022,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only one thing: erase the light blue water inside and around the ring of rocks, so the middle of the ring and the space around it are transparent; keep the thin white foam lines at the foot of each rock. Keep every grey rock, the barnacles, the moss, the bones, the outline and the art style exactly the same."
+          }
+        ],
+        "prompt": "Change only one thing: erase the light blue water inside and around the ring of rocks, so the middle of the ring and the space around it are transparent; keep the thin white foam lines at the foot of each rock. Keep every grey rock, the barnacles, the moss, the bones, the outline and the art style exactly the same.",
+        "negativePrompt": "",
+        "description": "Change only one thing: erase the light blue water inside and around the ring of rocks, so the middle of the ring and the space around it are transparent; keep the thin white foam lines at the foot of each rock. Keep every grey rock, the barnacles, the moss, the bones, the outline and the art style exactly the same.",
+        "editInstruction": "Change only one thing: erase the light blue water inside and around the ring of rocks, so the middle of the ring and the space around it are transparent; keep the thin white foam lines at the foot of each rock. Keep every grey rock, the barnacles, the moss, the bones, the outline and the art style exactly the same.",
+        "source": {
+          "recipe": "serpent-lair-a",
+          "candidate": 0,
+          "sha256": "05bedf58223501380c555903f006916fbf56d790734ab34f91ae8228c7f57ebd"
+        }
+      },
+      "submittedAt": "2026-10-19T15:07:34.601Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 80,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-curiosities-4/serpent-lair-a-edit.png",
+      "rawSheetSha256": "309e38ffa1e4a7b16d250850fba0d658d730b29dc84b67355c530a58dfb79138",
+      "plateHints": [
+        {
+          "bandRows": 11,
+          "groundShare": 0.1264,
+          "footprintWidthShare": 0.7973,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.1264,
+          "footprintWidthShare": 0.7973,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-19T15:08:19.841Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Ring of seven slate rocks with barnacles, moss and three bone-white bones; the edit erased the light blue pool so the board's water shows through the middle; pale foam rims each rock; 64 px wide, under the Serpent.",
+        "reviewedAt": "2026-10-19T15:09:09.865Z"
+      }
+    }
+  },
+  "assets": {
+    "chibi-curiosity-icon-sea-serpent": {
+      "id": "chibi-curiosity-icon-sea-serpent",
+      "subject": "ICON:CURIOSITY:SEA_SERPENT",
+      "assetClass": "ICON",
+      "status": "ACCEPTED",
+      "recipe": "icon-sea-serpent-a-edit",
+      "candidate": 0,
+      "candidateSha256": "c2167ce7fd6fdb93c45c7cdeed9b715ee10e7e6c133121b055aa166d38e0433b",
+      "master": {
+        "path": "public/assets/chibi/icons/chibi-curiosity-icon-sea-serpent.png",
+        "sha256": "c2167ce7fd6fdb93c45c7cdeed9b715ee10e7e6c133121b055aa166d38e0433b",
+        "pixelSha256": "947fc41ff1b273b809356ac00025602035f6df0256e43e6e8480ab33edfe3b45",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 8,
+        "groundShare": 0,
+        "footprintWidthShare": 0.85,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "The serpent's head with its fin crest and a hump over a thin white foam line; the edit removed the soil and grass island; slate grey-brown, bone-white belly.",
+      "acceptedAt": "2026-10-19T15:09:10.018Z"
+    },
+    "chibi-curiosity-portrait-sea-serpent": {
+      "id": "chibi-curiosity-portrait-sea-serpent",
+      "subject": "PORTRAIT:NEUTRAL_SEA_SERPENT",
+      "assetClass": "PORTRAIT",
+      "status": "ACCEPTED",
+      "recipe": "sea-serpent-portrait-a",
+      "candidate": 0,
+      "candidateSha256": "50bc752914b8d000c70ffc3fa39b6a87533eec3836dabdfb94c98289aa0399c2",
+      "master": {
+        "path": "public/assets/chibi/portraits/chibi-curiosity-portrait-sea-serpent.png",
+        "sha256": "50bc752914b8d000c70ffc3fa39b6a87533eec3836dabdfb94c98289aa0399c2",
+        "pixelSha256": "91a55c04815bc398390d5238482104717b83c81d8eba94c4c83aac24739d0529",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 9,
+        "groundShare": 0.2953,
+        "footprintWidthShare": 0.4872,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Slate grey-brown head with a bone-white fin crest, glossy black eyes and a toothy grin; no plate; reads at 48 px and x4 on the dark dock and a light page; neutral colours only (a small pink mouth).",
+      "acceptedAt": "2026-10-19T15:09:09.742Z"
+    },
+    "chibi-curiosity-sea-serpent": {
+      "id": "chibi-curiosity-sea-serpent",
+      "subject": "UNIT:NEUTRAL_SEA_SERPENT",
+      "assetClass": "GIANT_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "sea-serpent-b-edit",
+      "candidate": 0,
+      "candidateSha256": "0b845144616be9c58ab36bf9d3711d980fd87f57ce97c56edeadcf89580d06d7",
+      "master": {
+        "path": "public/assets/chibi/units/chibi-curiosity-sea-serpent.png",
+        "sha256": "0b845144616be9c58ab36bf9d3711d980fd87f57ce97c56edeadcf89580d06d7",
+        "pixelSha256": "f5b374ae3eb02e7e7cc184929045f26d995fef8101f46e9795ad3f87348178de",
+        "width": 88,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 44,
+        "y": 32
+      },
+      "overflow": {
+        "left": 4,
+        "right": 4,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 13,
+        "groundShare": 0.0062,
+        "footprintWidthShare": 0.8519,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Charcoal slate serpent seen from the side: a tall neck with a cream belly and fin crest, glossy black eyes, two scaly humps and a tail rising from a flat white-foam waterline; the edit recoloured the orange head of sea-serpent-b; no plate; reads against Deep and Shallow Water at 1x and x4.",
+      "acceptedAt": "2026-10-19T15:11:04.061Z"
+    },
+    "chibi-curiosity-serpent-lair": {
+      "id": "chibi-curiosity-serpent-lair",
+      "subject": "CURIOSITY:SERPENT_LAIR",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "serpent-lair-a-edit",
+      "candidate": 0,
+      "candidateSha256": "4c3ae16253cda25bd5883f4697f2ba83c7765d70fb8fab53bb85bcbd27a5598e",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-curiosity-serpent-lair.png",
+        "sha256": "4c3ae16253cda25bd5883f4697f2ba83c7765d70fb8fab53bb85bcbd27a5598e",
+        "pixelSha256": "c2ad8a3d9cc839ecddbc326e232f073d7d3a72b0958073770abffc2ccd5fa03e",
+        "width": 80,
+        "height": 80
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 40,
+        "y": 40
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 11,
+        "groundShare": 0.1264,
+        "footprintWidthShare": 0.7973,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Ring of seven slate rocks with barnacles, moss and three bone-white bones; the edit erased the light blue pool so the board's water shows through the middle; pale foam rims each rock; 64 px wide, under the Serpent.",
+      "acceptedAt": "2026-10-19T15:09:09.865Z"
+    }
+  }
+}

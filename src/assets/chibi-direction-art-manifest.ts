@@ -9,6 +9,7 @@ import {
   CHIBI_CURIOSITIES_ART_ASSETS_V7,
   CHIBI_CURIOSITIES_ROUND2_ART_ASSETS_V7,
   CHIBI_CURIOSITIES_ROUND3_ART_ASSETS_V7,
+  CHIBI_CURIOSITIES_SERPENT_ART_ASSETS_V7,
 } from "./chibi-curiosities-art-manifest";
 import { CHIBI_DIRECTION_CANDY_ART_ASSETS_V7 } from "./chibi-direction-candy-art-manifest";
 import { CHIBI_DIRECTION_CULT_INTERFACE_ART_ASSETS_V7 } from "./chibi-direction-cult-interface-art-manifest";
@@ -670,6 +671,9 @@ export function chibiDirectionArtAssetsV7(): readonly ChibiArtAssetV7[] {
     // --- Map curiosities, round 3 (pulp_wars-737.20): the Tesla Tower, the
     // Moon Gun, the Gold Claim, the Lost Expedition, icons and effects.
     ...CHIBI_CURIOSITIES_ROUND3_ART_ASSETS_V7,
+    // --- Map curiosities, round 3 B (pulp_wars-737.21): the Sea Serpent,
+    // its portrait, its lair and its icon.
+    ...CHIBI_CURIOSITIES_SERPENT_ART_ASSETS_V7,
   ];
 }
 

@@ -122,6 +122,8 @@ import {
   MONSTER_HOME_RADIUS_V7,
   MONSTER_MINIMUM_WIDTH_V7,
   MOON_GUN_MINIMUM_WIDTH_V7,
+  SEA_SERPENT_AREA_RADIUS_V7,
+  SEA_SERPENT_MINIMUM_WIDTH_V7,
   TESLA_MINIMUM_WIDTH_V7,
   bigfootHabitatV7,
   curiosityTerrainLegalV7,
@@ -1299,7 +1301,7 @@ function parseNeutralUnit(
       ...(summoned ? ["summoned"] : []),
     ]) ||
     input.ownerId !== NEUTRAL_OWNER_ID_V7 ||
-    input.form !== "LAND" ||
+    (input.form !== "LAND" && input.form !== "NAVAL") ||
     input.homeCityId !== null ||
     !isPositiveSafeIntegerV7(input.hp) ||
     !isPositiveSafeIntegerV7(input.maxHp) ||
@@ -1317,9 +1319,13 @@ function parseNeutralUnit(
   const daemon = breed !== undefined && isDaemonBreedV7(breed) ? breed : null;
   const wild: SummonedRoleIdV7 | null =
     daemon ?? (breed === "TENTACLE" ? breed : null);
+  // Map curiosities round 3, bead B (section 10.2): the Sea Serpent is in
+  // `NAVAL` form, every other neutral unit in `LAND` form.
+  const form: UnitStateV7["form"] = breed === "SEA_SERPENT" ? "NAVAL" : "LAND";
   if (
     id === null ||
     rule === undefined ||
+    input.form !== form ||
     input.role !== rule.role ||
     input.maxHp !== rule.maxHp ||
     at === null ||
@@ -1337,7 +1343,7 @@ function parseNeutralUnit(
     ownerId: NEUTRAL_OWNER_ID_V7,
     homeCityId: null,
     role: rule.role,
-    form: "LAND",
+    form,
     at,
     hp: input.hp,
     maxHp: input.maxHp,
@@ -1417,7 +1423,14 @@ function parseMonsters(
       provokedBy === null ||
       provokedBy.includes(unitId) ||
       (breed === "BIGFOOT" && setup.width < BIGFOOT_MINIMUM_WIDTH_V7) ||
-      ((breed === "GIANT_SPIDER" || breed === "BIGFOOT") &&
+      // Round 3, bead B (section 10.2): a Serpent is never on Dry Land or
+      // below width 16.
+      (breed === "SEA_SERPENT" &&
+        (setup.width < SEA_SERPENT_MINIMUM_WIDTH_V7 ||
+          setup.mapType === "DRY_LAND")) ||
+      ((breed === "GIANT_SPIDER" ||
+        breed === "BIGFOOT" ||
+        breed === "SEA_SERPENT") &&
         values.some((entry) => entry.breed === breed)) ||
       (values.length > 0 && (values.at(-1) as MonsterStateV7).unitId >= unitId)
     )
@@ -3599,12 +3612,17 @@ function monstersValid(
   const neutral = units.filter((unit) => isNeutralOwnerV7(unit.ownerId));
   if (neutral.length !== monsters.length) return false;
   const centers = board.tiles.filter((tile) => tile.site !== null);
+  const camp = curiosities.some(
+    (curiosity) =>
+      curiosity.kind === "DOWNED_SAUCER" || curiosity.kind === "GRAVEYARD",
+  );
+  if (monsters.some((entry) => entry.breed === "GIANT_SPIDER") && camp)
+    return false;
+  // Round 3, bead B (section 10.2): the Sea Serpent is the board's one
+  // danger: never with a Spider or a camp.
   if (
-    monsters.some((entry) => entry.breed === "GIANT_SPIDER") &&
-    curiosities.some(
-      (curiosity) =>
-        curiosity.kind === "DOWNED_SAUCER" || curiosity.kind === "GRAVEYARD",
-    )
+    monsters.some((entry) => entry.breed === "SEA_SERPENT") &&
+    (camp || monsters.some((entry) => entry.breed === "GIANT_SPIDER"))
   )
     return false;
   for (const entry of monsters) {
@@ -3654,6 +3672,30 @@ function monstersValid(
         unit.summoned !== "TENTACLE" ||
         tile.site !== null ||
         tile.terrain === "RIFT"
+      )
+        return false;
+      continue;
+    }
+    // Round 3, bead B (section 8.3): the Sea Serpent stands on open water
+    // (no ice, no dock) within 3 of home, 3 or more from every centre.
+    if (entry.breed === "SEA_SERPENT") {
+      if (
+        tile.site !== null ||
+        (tile.terrain !== "SHALLOW_WATER" && tile.terrain !== "DEEP_WATER") ||
+        tile.improvement === "PORT" ||
+        tile.improvement === "SHIPYARD" ||
+        iceKeys.has(key(unit.at)) ||
+        Math.max(
+          Math.abs(unit.at.x - entry.home.x),
+          Math.abs(unit.at.y - entry.home.y),
+        ) > SEA_SERPENT_AREA_RADIUS_V7 ||
+        centers.some(
+          (center) =>
+            Math.max(
+              Math.abs(center.at.x - unit.at.x),
+              Math.abs(center.at.y - unit.at.y),
+            ) < CURIOSITY_CENTER_DISTANCE_V7,
+        )
       )
         return false;
       continue;

@@ -29,7 +29,8 @@ import { checkCuriosityPlacementV7 } from "../tests/fixtures/v7-curiosity-checke
 // (`pulp_wars-737.20`, RULESET_7_CURIOSITIES_ROUND_3.md section 3.5): the
 // Tesla Tower, Moon Gun, Gold Claim, and Lost Expedition, the counts of
 // section 3.2 (20 x 20: 2; 25 x 25: 2 or 3), no Tower or Gun below width 16
-// and no Claim below 14.
+// and no Claim below 14. Round 3, bead B (`pulp_wars-737.21`): the Sea
+// Serpent, never below width 16 or on Dry Land, never with another danger.
 const seeds = Number(
   process.argv.find((value) => value.startsWith("--seeds="))?.slice(8) ?? 32,
 );
@@ -158,6 +159,9 @@ for (const [label, kindTally] of Object.entries(kinds)) {
     for (const kind of ["TESLA_TOWER", "MOON_GUN"] as const)
       assert.equal(kindTally[kind], 0, `${label} has a ${kind}`);
   if (width < 14) assert.equal(kindTally.GOLD_CLAIM, 0, `${label} has a Claim`);
+  // Round 3, bead B (section 3.5).
+  if (width < 16 || label.includes("/DRY_LAND/"))
+    assert.equal(kindTally.SEA_SERPENT, 0, `${label} has a Sea Serpent`);
   if (label.startsWith("MARTIAN_UNDEAD/"))
     for (const kind of ["DOWNED_SAUCER", "GRAVEYARD"] as const)
       assert.equal(kindTally[kind], 0, `${label} has a ${kind}`);

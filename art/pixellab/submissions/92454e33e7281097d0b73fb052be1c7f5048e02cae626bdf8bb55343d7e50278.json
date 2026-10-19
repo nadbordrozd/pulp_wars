@@ -1,0 +1,36 @@
+{
+  "id": "icon-sea-serpent-a-edit",
+  "jobId": "d060b6d1-eb6d-4ffb-9f89-ac826f253361",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "curiosities-4",
+    "asset": "chibi-curiosity-icon-sea-serpent",
+    "subject": "ICON:CURIOSITY:SEA_SERPENT",
+    "faction": "ORIGINAL",
+    "recipeClass": "curiosity-item",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 73721032,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Erase everything except the sea serpent: remove the brown soil block, the green grass and the blue water under it completely, so the serpent's neck and hump stand directly on a transparent background with only a thin line of white foam at their bottom. Keep the serpent's head, its eye, its fin crest, its hump, the outline and the art style exactly the same."
+      }
+    ],
+    "prompt": "Erase everything except the sea serpent: remove the brown soil block, the green grass and the blue water under it completely, so the serpent's neck and hump stand directly on a transparent background with only a thin line of white foam at their bottom. Keep the serpent's head, its eye, its fin crest, its hump, the outline and the art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Erase everything except the sea serpent: remove the brown soil block, the green grass and the blue water under it completely, so the serpent's neck and hump stand directly on a transparent background with only a thin line of white foam at their bottom. Keep the serpent's head, its eye, its fin crest, its hump, the outline and the art style exactly the same.",
+    "editInstruction": "Erase everything except the sea serpent: remove the brown soil block, the green grass and the blue water under it completely, so the serpent's neck and hump stand directly on a transparent background with only a thin line of white foam at their bottom. Keep the serpent's head, its eye, its fin crest, its hump, the outline and the art style exactly the same.",
+    "source": {
+      "recipe": "icon-sea-serpent-a",
+      "candidate": 0,
+      "sha256": "7094c07058aa4d58c96af8a54c55cfb449d5efcff5ba987a3a82f800e2cc5c6e"
+    }
+  }
+}

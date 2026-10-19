@@ -86,6 +86,9 @@ export const CURIOSITY_PLACEMENT_KINDS_V7 = Object.freeze([
   "MOON_GUN",
   "GOLD_CLAIM",
   "LOST_EXPEDITION",
+  // Round 3, bead B (`pulp_wars-737.21`, section 3.1): the Sea Serpent's
+  // home, appended after the four land kinds.
+  "SEA_SERPENT",
 ] as const);
 export type CuriosityPlacementKindV7 =
   (typeof CURIOSITY_PLACEMENT_KINDS_V7)[number];
@@ -108,14 +111,16 @@ export const CURIOSITY_WEIGHTS_V7: Readonly<
   MOON_GUN: 2,
   GOLD_CLAIM: 2,
   LOST_EXPEDITION: 2,
+  SEA_SERPENT: 2,
 });
 
 /**
  * Section 23 pillar 6 and section 24.1: the hostile neutral groups. Once one
- * is placed, the other two are not eligible (one danger per board).
+ * is placed, the others are not eligible (one danger per board). Round 3,
+ * bead B (section 3.1): the Sea Serpent is one.
  */
 export const CURIOSITY_DANGER_KINDS_V7: readonly CuriosityPlacementKindV7[] =
-  Object.freeze(["MONSTER", "DOWNED_SAUCER", "GRAVEYARD"]);
+  Object.freeze(["MONSTER", "DOWNED_SAUCER", "GRAVEYARD", "SEA_SERPENT"]);
 
 /** The terrains a kind may stand on (sections 4.4 and 24.1). */
 const CURIOSITY_TERRAINS_V7: Readonly<
@@ -136,6 +141,8 @@ const CURIOSITY_TERRAINS_V7: Readonly<
   MOON_GUN: ["GRASS"],
   GOLD_CLAIM: ["GRASS", "FOREST"],
   LOST_EXPEDITION: ["GRASS", "FOREST"],
+  // Round 3, bead B (section 3.4): the Serpent's home is Deep Water.
+  SEA_SERPENT: ["DEEP_WATER"],
 });
 
 /** Whether a curiosity of `kind` may stand on `terrain` (section 4.4). */
@@ -248,6 +255,44 @@ export const GOLD_CLAIM_TOTAL_V7 = 30;
 export const EXPEDITION_COINS_V7 = 10;
 
 /**
+ * Round 3, bead B (`pulp_wars-737.21`, RULESET_7_CURIOSITIES_ROUND_3.md
+ * sections 3.4 and 8): the Sea Serpent. Its stats are its registration's
+ * (`NEUTRAL_ROLE_RULES_V7.SEA_SERPENT`); these copies are pinned to it.
+ */
+export const SEA_SERPENT_HP_V7 = 32;
+export const SEA_SERPENT_ATTACK2_V7 = 7;
+export const SEA_SERPENT_DEFENSE2_V7 = 5;
+/** Section 8.3: the steps of its move in the neutral turn. */
+export const SEA_SERPENT_MOVE_V7 = 2;
+/** Section 8.3: its area is the water within this Chebyshev distance of home. */
+export const SEA_SERPENT_AREA_RADIUS_V7 = 3;
+/** Section 8.5: HP it regenerates at the end of each neutral turn. */
+export const SEA_SERPENT_REGENERATION_V7 = 4;
+/** Section 8.8: the Coins its credited killer's owner gains. */
+export const SEA_SERPENT_BOUNTY_V7 = 15;
+/** Section 3.1: the smallest board width with a Serpent. */
+export const SEA_SERPENT_MINIMUM_WIDTH_V7 = 16;
+/**
+ * Section 3.4: home keeps this far from every capital and village centre.
+ * As built (section 18): the Giant Spider's lair distances, 5 and 4 (the
+ * design's 6 and 5 left almost no legal home on a Continents or Lakes board
+ * of the village-density counts, as the Spider's 5 from a village did
+ * before `pulp_wars-ykw.7`). The Serpent still never stands within 2 of a
+ * centre, so it never bites a unit on a centre.
+ */
+export const SEA_SERPENT_CAPITAL_DISTANCE_V7 = 5;
+export const SEA_SERPENT_VILLAGE_DISTANCE_V7 = 4;
+/** Section 3.4: the fewest tiles of its area at placement. */
+export const SEA_SERPENT_AREA_MINIMUM_V7 = 16;
+/** Section 3.4: home keeps this far from every other curiosity tile. */
+export const SEA_SERPENT_SPACING_V7 = 6;
+/**
+ * Section 8.6: a Cult ship's kill of the Serpent pays Offerings to the Deep
+ * as a victim of this value (half of it in Favour: 4), whatever its bounty.
+ */
+export const SEA_SERPENT_OFFERING_VALUE_V7 = 8;
+
+/**
  * Section 24.4: the smallest Chebyshev distance between the two gates,
  * `ceil(2 x width / 3)` (14 on 20 x 20, 17 on 25 x 25).
  */
@@ -276,6 +321,8 @@ export const NEUTRAL_BOUNTIES_V7: Readonly<Record<NeutralBreedV7, number>> =
     IMP: 0,
     // An Unbound Gibbering Mass (`pulp_wars-mch9.37`): a daemon.
     MASS: 0,
+    // Round 3, bead B (section 8.8).
+    SEA_SERPENT: SEA_SERPENT_BOUNTY_V7,
   });
 
 /** The guard breeds of a camp (section 25). */
@@ -431,6 +478,11 @@ interface CuriosityConnectivityV7 {
    * land graph (Rifts excluded), and of the same graph without Mountains.
    */
   readonly cutTiles: ReadonlySet<number>;
+  /**
+   * Round 3, bead B (section 3.4): the cut tiles of the eight-connected
+   * water graph, computed on first use (only the Sea Serpent reads them).
+   */
+  readonly waterCutTiles: () => ReadonlySet<number>;
 }
 
 function connectivityV7(
@@ -490,6 +542,7 @@ function connectivityV7(
     ...articulationTilesV7(board, isLand),
     ...articulationTilesV7(board, lowland),
   ]);
+  let waterCutTiles: ReadonlySet<number> | null = null;
   return {
     land,
     lowlandFromCapital,
@@ -499,6 +552,10 @@ function connectivityV7(
     ),
     waterTouches,
     cutTiles,
+    waterCutTiles: () => {
+      waterCutTiles ??= new Set(articulationTilesV7(board, isWater));
+      return waterCutTiles;
+    },
   };
 }
 
@@ -590,9 +647,15 @@ function siteLegalV7(
 ): boolean {
   const { board } = context;
   const lairLike = lairLikeKindV7(kind);
+  const serpent = kind === "SEA_SERPENT";
   // Rule 1: off the edge ring. Section 4.4: the Spider's whole area is on
-  // the board; section 24.3: so is a camp's.
-  const margin = lairLike ? MONSTER_HOME_RADIUS_V7 : 1;
+  // the board; section 24.3: so is a camp's. Round 3, bead B (section 3.4):
+  // every tile within 3 of the Serpent's home is on the board.
+  const margin = serpent
+    ? SEA_SERPENT_AREA_RADIUS_V7
+    : lairLike
+      ? MONSTER_HOME_RADIUS_V7
+      : 1;
   if (
     at.x < margin ||
     at.y < margin ||
@@ -617,23 +680,24 @@ function siteLegalV7(
   // Rule 3: 3 or more from every settlement center; section 4.4: a lair (a
   // camp centre too, section 24.3) 5 or more from every capital and 4 or
   // more from every village. Round 3 (section 3.4): the Tesla Tower keeps
-  // the lair's distances, so its zap never reaches a centre's first ring.
+  // the lair's distances, so its zap never reaches a centre's first ring;
+  // the Serpent's home keeps 6 from every capital and 5 from every village.
   const lairDistances = lairLike || kind === "TESLA_TOWER";
+  const capitalDistance = serpent
+    ? SEA_SERPENT_CAPITAL_DISTANCE_V7
+    : lairDistances
+      ? MONSTER_CENTER_DISTANCE_V7
+      : CURIOSITY_CENTER_DISTANCE_V7;
+  const villageDistance = serpent
+    ? SEA_SERPENT_VILLAGE_DISTANCE_V7
+    : lairDistances
+      ? MONSTER_VILLAGE_DISTANCE_V7
+      : CURIOSITY_CENTER_DISTANCE_V7;
   if (
     context.capitals.some(
-      (center) =>
-        chebyshevV7(center, at) <
-        (lairDistances
-          ? MONSTER_CENTER_DISTANCE_V7
-          : CURIOSITY_CENTER_DISTANCE_V7),
+      (center) => chebyshevV7(center, at) < capitalDistance,
     ) ||
-    context.villages.some(
-      (center) =>
-        chebyshevV7(center, at) <
-        (lairDistances
-          ? MONSTER_VILLAGE_DISTANCE_V7
-          : CURIOSITY_CENTER_DISTANCE_V7),
-    )
+    context.villages.some((center) => chebyshevV7(center, at) < villageDistance)
   )
     return false;
   // Rule 4: 5 or more from every capital, and roughly between them (a gate
@@ -647,11 +711,21 @@ function siteLegalV7(
         CURIOSITY_CAPITAL_SPREAD_V7)
   )
     return false;
-  // Rule 5: 5 or more from every curiosity tile already placed.
-  if (placed.some((other) => chebyshevV7(other.at, at) < CURIOSITY_SPACING_V7))
+  // Rule 5: 5 or more from every curiosity tile already placed; round 3,
+  // bead B (section 3.4): 6 when one of the two is the Serpent's home.
+  if (
+    placed.some(
+      (other) =>
+        chebyshevV7(other.at, at) <
+        (serpent || other.kind === "SEA_SERPENT"
+          ? SEA_SERPENT_SPACING_V7
+          : CURIOSITY_SPACING_V7),
+    )
+  )
     return false;
-  if (kind === "WRECK") {
-    // Rule 7: the water component touches every capital's landmass.
+  // Rule 7: the water component touches every capital's landmass (the
+  // Wreck's, and the Serpent's home's).
+  const touchesEveryCapital = (): boolean => {
     const touched = connectivity.waterTouches.get(
       connectivity.water[index] ?? -1,
     );
@@ -661,7 +735,12 @@ function siteLegalV7(
         (landmass) => landmass >= 0 && touched.has(landmass),
       )
     );
-  }
+  };
+  if (kind === "WRECK") return touchesEveryCapital();
+  if (serpent)
+    return (
+      touchesEveryCapital() && seaSerpentAreaLegalV7(board, connectivity, at)
+    );
   // Rule 6: a shared landmass reached from a capital without Mountains, or
   // a neutral island (reached by sea). A Monster's Mountain home is reached
   // when a tile next to it is (implementation note, section 17).
@@ -695,6 +774,52 @@ function siteLegalV7(
     campGuardTilesAtGenerationV7(context, at).length >=
     CAMP_GUARD_TILES_MINIMUM_V7[kind as "DOWNED_SAUCER" | "GRAVEYARD"]
   );
+}
+
+/**
+ * Round 3, bead B (section 3.4): the Serpent's area at placement (the water
+ * within {@link SEA_SERPENT_AREA_RADIUS_V7} of home, home included) has at
+ * least {@link SEA_SERPENT_AREA_MINIMUM_V7} tiles, and none of them is a cut
+ * tile of the eight-connected water graph, so it never closes a strait.
+ * (The area is on the board: the caller checked the margin.)
+ */
+function seaSerpentAreaLegalV7(
+  board: BoardStateV7,
+  connectivity: CuriosityConnectivityV7,
+  home: CoordV7,
+): boolean {
+  const area = seaSerpentAreaV7(board, home);
+  if (area.length < SEA_SERPENT_AREA_MINIMUM_V7) return false;
+  const cut = connectivity.waterCutTiles();
+  return !area.some((at) => cut.has(at.y * board.width + at.x));
+}
+
+/**
+ * Round 3, bead B (section 8.3): the Sea Serpent's area, every Shallow or
+ * Deep Water tile on the board within {@link SEA_SERPENT_AREA_RADIUS_V7} of
+ * `home`, in (y, x) order (ice or not: ice only closes a tile to it).
+ */
+export function seaSerpentAreaV7(
+  board: Pick<BoardStateV7, "width" | "height" | "tiles">,
+  home: CoordV7,
+): readonly CoordV7[] {
+  const area: CoordV7[] = [];
+  for (
+    let y = home.y - SEA_SERPENT_AREA_RADIUS_V7;
+    y <= home.y + SEA_SERPENT_AREA_RADIUS_V7;
+    y += 1
+  )
+    for (
+      let x = home.x - SEA_SERPENT_AREA_RADIUS_V7;
+      x <= home.x + SEA_SERPENT_AREA_RADIUS_V7;
+      x += 1
+    ) {
+      if (x < 0 || y < 0 || x >= board.width || y >= board.height) continue;
+      const terrain = board.tiles[y * board.width + x]?.terrain;
+      if (terrain === "SHALLOW_WATER" || terrain === "DEEP_WATER")
+        area.push({ x, y });
+    }
+  return area;
 }
 
 /**
@@ -890,6 +1015,11 @@ function curiosityKindAllowedV7(
       return width >= MOON_GUN_MINIMUM_WIDTH_V7;
     case "GOLD_CLAIM":
       return width >= GOLD_CLAIM_MINIMUM_WIDTH_V7;
+    // Round 3, bead B (section 3.1): never on Dry Land.
+    case "SEA_SERPENT":
+      return (
+        width >= SEA_SERPENT_MINIMUM_WIDTH_V7 && context.mapType !== "DRY_LAND"
+      );
     default:
       return true;
   }
@@ -1074,6 +1204,10 @@ export function placeCuriositiesV7(
         break;
       case "BIGFOOT":
         neutrals.push({ breed: "BIGFOOT", home: at, at });
+        break;
+      // Round 3, bead B (section 3.1): the Serpent is created on its home.
+      case "SEA_SERPENT":
+        neutrals.push({ breed: "SEA_SERPENT", home: at, at });
         break;
       case "GATES": {
         const partner = site[1] as CoordV7;
@@ -1318,6 +1452,11 @@ export interface NeutralBoardFactsV7 extends MonsterBoardFactsV7 {
   readonly monsters: GameStateV7["monsters"];
   /** Naval branch section 5.2: a submerged unit is hit only from next to it. */
   readonly submerged?: (unit: UnitStateV7) => boolean;
+  /**
+   * Round 3, bead B (section 8.3): the ice on the board; the Sea Serpent
+   * never stands on ice. Absent, the board has none.
+   */
+  readonly ice?: GameStateV7["ice"];
 }
 
 /**
@@ -1331,7 +1470,12 @@ export function curiosityTilesV7(
   return [
     ...facts.curiosities.map((curiosity) => curiosity.at),
     ...facts.monsters
-      .filter((entry) => entry.breed === "GIANT_SPIDER")
+      .filter(
+        (entry) =>
+          entry.breed === "GIANT_SPIDER" ||
+          // Round 3, bead B (section 3.4): the Serpent's home is its site.
+          entry.breed === "SEA_SERPENT",
+      )
       .map((entry) => entry.home),
   ];
 }
@@ -1361,6 +1505,9 @@ export function neutralStandableV7(
   if (isWildBreedV7(entry.breed)) return false;
   if (entry.breed === "GIANT_SPIDER")
     return monsterStandableV7(facts, entry.home, at, exceptUnitId);
+  // Round 3, bead B (section 8.3).
+  if (entry.breed === "SEA_SERPENT")
+    return seaSerpentStandableV7(facts, entry.home, at, exceptUnitId);
   if (entry.breed !== "BIGFOOT")
     return (
       !sameCoordV7(at, entry.home) &&
@@ -1389,6 +1536,131 @@ export function neutralStandableV7(
     !tileOccupiedV7(facts, at, exceptUnitId) &&
     !facts.treasureChests.some((chest) => sameCoordV7(chest, at))
   );
+}
+
+/**
+ * Round 3, bead B (`pulp_wars-737.21`, RULESET_7_CURIOSITIES_ROUND_3.md
+ * section 8.3): whether the Sea Serpent whose home is `home` may stand on
+ * `at`: on the board, within {@link SEA_SERPENT_AREA_RADIUS_V7} of home,
+ * Shallow or Deep Water that is open (no ice) and no dock, 3 or more from
+ * every settlement centre, with no unit (any form, other than
+ * `exceptUnitId`) and no mound.
+ */
+export function seaSerpentStandableV7(
+  facts: NeutralBoardFactsV7,
+  home: CoordV7,
+  at: CoordV7,
+  exceptUnitId?: UnitStateV7["id"],
+): boolean {
+  if (chebyshevV7(home, at) > SEA_SERPENT_AREA_RADIUS_V7) return false;
+  const { board } = facts;
+  if (at.x < 0 || at.y < 0 || at.x >= board.width || at.y >= board.height)
+    return false;
+  const tile = board.tiles[at.y * board.width + at.x];
+  if (
+    tile === undefined ||
+    tile.site !== null ||
+    (tile.terrain !== "SHALLOW_WATER" && tile.terrain !== "DEEP_WATER") ||
+    tile.improvement === "PORT" ||
+    tile.improvement === "SHIPYARD" ||
+    (facts.ice !== undefined &&
+      facts.ice.some((entry) => sameCoordV7(entry.at, at)))
+  )
+    return false;
+  for (const center of board.tiles)
+    if (
+      center.site !== null &&
+      chebyshevV7(center.at, at) < CURIOSITY_CENTER_DISTANCE_V7
+    )
+      return false;
+  return (
+    !tileOccupiedV7(facts, at, exceptUnitId) &&
+    !facts.treasureChests.some((chest) => sameCoordV7(chest, at))
+  );
+}
+
+/** A tile the Sea Serpent can reach this turn and the steps there. */
+export interface SeaSerpentReachV7 {
+  readonly at: CoordV7;
+  /** The steps, in order (empty for its own tile). */
+  readonly path: readonly CoordV7[];
+}
+
+/**
+ * Round 3, bead B (section 8.3): every tile the Sea Serpent on `unit.at` can
+ * reach in 0 to {@link SEA_SERPENT_MOVE_V7} steps, each step to a Chebyshev
+ * neighbour it may stand on, never passing a unit. Breadth first with the
+ * neighbours in (y, x) order, so each tile's path is its first shortest
+ * path in (y, x) order of its steps; listed in the order reached (its own
+ * tile first).
+ */
+export function seaSerpentReachV7(
+  facts: NeutralBoardFactsV7,
+  unit: Pick<UnitStateV7, "id" | "at">,
+  entry: Pick<MonsterStateV7, "home">,
+): readonly SeaSerpentReachV7[] {
+  const keyOf = (at: CoordV7): string => `${at.y},${at.x}`;
+  const reached = new Map<string, SeaSerpentReachV7>([
+    [keyOf(unit.at), { at: unit.at, path: [] }],
+  ]);
+  let frontier: SeaSerpentReachV7[] = [{ at: unit.at, path: [] }];
+  for (let step = 0; step < SEA_SERPENT_MOVE_V7; step += 1) {
+    const next: SeaSerpentReachV7[] = [];
+    for (const node of frontier)
+      for (let dy = -1; dy <= 1; dy += 1)
+        for (let dx = -1; dx <= 1; dx += 1) {
+          if (dx === 0 && dy === 0) continue;
+          const near = { x: node.at.x + dx, y: node.at.y + dy };
+          if (
+            reached.has(keyOf(near)) ||
+            !seaSerpentStandableV7(facts, entry.home, near, unit.id)
+          )
+            continue;
+          const reach = { at: near, path: [...node.path, near] };
+          reached.set(keyOf(near), reach);
+          next.push(reach);
+        }
+    frontier = next;
+  }
+  return [...reached.values()];
+}
+
+/**
+ * Round 3, bead B (section 8.4): the bite the Sea Serpent makes this turn,
+ * or null when no provoker is in its reach. Its candidates are the
+ * `provokers` next to a tile it can reach in 0 to 2 steps (a submerged
+ * Submarine too: range 1 is next to it); the target is the one with the
+ * lowest HP, ties by the lowest unit ID (a Shield does not count). `path`
+ * is empty when the target is next to it; otherwise it leads by the fewest
+ * steps to a tile next to the target, the first such tile in (y, x) order,
+ * along the first shortest path in (y, x) order of its steps.
+ */
+export function seaSerpentBiteChoiceV7(
+  facts: NeutralBoardFactsV7,
+  unit: Pick<UnitStateV7, "id" | "at">,
+  entry: Pick<MonsterStateV7, "home">,
+  provokers: readonly UnitStateV7[],
+): {
+  readonly target: UnitStateV7;
+  readonly path: readonly CoordV7[];
+} | null {
+  const reach = seaSerpentReachV7(facts, unit, entry);
+  const candidates = provokers.filter((target) =>
+    reach.some((tile) => chebyshevV7(tile.at, target.at) === 1),
+  );
+  const target = [...candidates].sort(
+    (left, right) => left.hp - right.hp || left.id - right.id,
+  )[0];
+  if (target === undefined) return null;
+  if (chebyshevV7(unit.at, target.at) === 1) return { target, path: [] };
+  const best = reach
+    .filter((tile) => chebyshevV7(tile.at, target.at) === 1)
+    .sort(
+      (left, right) =>
+        left.path.length - right.path.length ||
+        compareCoordsV7(left.at, right.at),
+    )[0];
+  return best === undefined ? null : { target, path: best.path };
 }
 
 /**
@@ -1552,6 +1824,17 @@ export function bigfootFleeV7(
       compareCoordsV7(left.at, right.at),
   )[0];
   return { path: best?.path ?? [] };
+}
+
+/**
+ * Section 8.5 and round 3, bead B (section 8.5): the HP a neutral unit of
+ * `breed` regenerates at the end of each neutral turn: the Giant Spider and
+ * the Sea Serpent 4, every other breed nothing.
+ */
+export function neutralRegenerationV7(breed: NeutralBreedV7): number {
+  if (breed === "GIANT_SPIDER") return MONSTER_REGENERATION_V7;
+  if (breed === "SEA_SERPENT") return SEA_SERPENT_REGENERATION_V7;
+  return 0;
 }
 
 /**

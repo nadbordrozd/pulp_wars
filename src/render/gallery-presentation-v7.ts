@@ -6,6 +6,7 @@ import {
   OFFERED_FACTION_IDS_V7,
   IMPROVEMENT_IDS_V7,
   MONSTER_REGENERATION_V7,
+  SEA_SERPENT_REGENERATION_V7,
   MONUMENT_POPULATION_V7,
   NEUTRAL_BOUNTIES_V7,
   NEUTRAL_MONSTER_ROLE_RULE_V7,
@@ -59,6 +60,8 @@ import { slotsTextV7 } from "./dinosaur-presentation-v7";
 import {
   BIGFOOT_LABEL_V7,
   BIGFOOT_RULE_V7,
+  SEA_SERPENT_LABEL_V7,
+  SEA_SERPENT_RULE_V7,
   CURIOSITY_LABELS_V7,
   CURIOSITY_RULES_V7,
   NEUTRAL_LABEL_V7,
@@ -112,20 +115,26 @@ export type GalleryTabV7 =
  * A Curiosities cell: a neutral unit with a sprite of its own (the Giant
  * Spider, round 2's Bigfoot) or a tile overlay.
  */
-export type GalleryCuriosityRowIdV7 = "SPIDER" | "BIGFOOT" | CuriosityTileIdV7;
+export type GalleryCuriosityRowIdV7 =
+  | "SPIDER"
+  | "BIGFOOT"
+  // Round 3, bead B (bead pulp_wars-737.21): the Sea Serpent.
+  | "SEA_SERPENT"
+  | CuriosityTileIdV7;
 
 /**
  * The Curiosities tab's grid: round 1 (the Spider, its lair, the
  * Fountain, the Shrine, the Wreck) over round 2 (Bigfoot, the Downed
  * Saucer, the Graveyard, the gate, the Well; bead pulp_wars-737.16) over
  * round 3 (the Tesla Tower, the Moon Gun, the Gold Claim, the Lost
- * Expedition; bead pulp_wars-737.20, the Sea Serpent to follow).
+ * Expedition; bead pulp_wars-737.20; and the Sea Serpent, bead
+ * pulp_wars-737.21).
  */
 export const GALLERY_CURIOSITY_GRID_V7: readonly (readonly GalleryCuriosityRowIdV7[])[] =
   [
     ["SPIDER", "WEB", "FOUNTAIN", "SHRINE", "WRECK"],
     ["BIGFOOT", "DOWNED_SAUCER", "GRAVEYARD", "GATE", "WISHING_WELL"],
-    ["TESLA_TOWER", "MOON_GUN", "GOLD_CLAIM", "LOST_EXPEDITION"],
+    ["TESLA_TOWER", "MOON_GUN", "GOLD_CLAIM", "LOST_EXPEDITION", "SEA_SERPENT"],
   ];
 
 /** Every Curiosities cell in reading order (the detail's arrows). */
@@ -159,11 +168,24 @@ export function galleryCuriosityCellV7(
       ground: "TERRAIN:GRASS",
       portrait: "PORTRAIT:NEUTRAL_BIGFOOT",
     };
+  if (row === "SEA_SERPENT")
+    return {
+      row,
+      name: SEA_SERPENT_LABEL_V7,
+      subject: "UNIT:NEUTRAL_SEA_SERPENT",
+      ground: "TERRAIN:DEEP_WATER",
+      portrait: "PORTRAIT:NEUTRAL_SEA_SERPENT",
+    };
   return {
     row,
     name: CURIOSITY_LABELS_V7[row],
     subject: `CURIOSITY:${row}`,
-    ground: row === "WRECK" ? "TERRAIN:SHALLOW_WATER" : "TERRAIN:GRASS",
+    ground:
+      row === "WRECK"
+        ? "TERRAIN:SHALLOW_WATER"
+        : row === "SERPENT_LAIR"
+          ? "TERRAIN:DEEP_WATER"
+          : "TERRAIN:GRASS",
     portrait: null,
   };
 }
@@ -223,6 +245,26 @@ export function galleryCuriosityDetailsV7(
         { label: "Move", value: String(rule.move) },
       ],
       notes: ["It never attacks and never strikes back."],
+    };
+  }
+  if (row === "SEA_SERPENT") {
+    const rule = NEUTRAL_ROLE_RULES_V7.SEA_SERPENT;
+    return {
+      name: cell.name,
+      kicker: NEUTRAL_LABEL_V7,
+      description: SEA_SERPENT_RULE_V7,
+      stats: [
+        { label: "HP", value: String(rule.maxHp) },
+        { label: "Attack", value: String(rule.attack2 / 2) },
+        { label: "Defense", value: String(rule.defense2 / 2) },
+        { label: "Move", value: String(rule.move) },
+        { label: "Range", value: String(rule.range) },
+      ],
+      notes: [
+        `Regenerates ${SEA_SERPENT_REGENERATION_V7} HP after every round.`,
+        `Killing it pays ${NEUTRAL_BOUNTIES_V7.SEA_SERPENT} Coins.`,
+        "It never stands on ice: ice fences it in. Nothing moves it and nobody boards it.",
+      ],
     };
   }
   if (row !== "SPIDER")
@@ -353,6 +395,8 @@ const ROW_LABELS: Readonly<Record<string, string>> = {
   MOON_GUN: CURIOSITY_LABELS_V7.MOON_GUN,
   GOLD_CLAIM: CURIOSITY_LABELS_V7.GOLD_CLAIM,
   LOST_EXPEDITION: CURIOSITY_LABELS_V7.LOST_EXPEDITION,
+  SEA_SERPENT: SEA_SERPENT_LABEL_V7,
+  SERPENT_LAIR: CURIOSITY_LABELS_V7.SERPENT_LAIR,
 };
 
 /** The row's name: the mechanical role, building, form or curiosity. */

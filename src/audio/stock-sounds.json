@@ -2107,6 +2107,11 @@
       "wanted": "A sea monster's tentacle lash: a deep wet whip-crack slap and a short low gurgle, 0.25 to 0.8 s."
     },
     {
+      "id": "attack.serpent",
+      "why": "Added by bead pulp_wars-737.21 with ElevenLabs takes; the bundle was not searched for it.",
+      "wanted": "A sea serpent's bite: a sharp reptile hiss, a splash and a snap of jaws, 0.25 to 0.8 s."
+    },
+    {
       "id": "special.ice-crack",
       "why": "Added by bead pulp_wars-5ti.27 with ElevenLabs takes; the bundle was not searched for it.",
       "wanted": "A sharp crack of thick lake ice, a short splintering and a small splash, 0.2 to 0.8 s."

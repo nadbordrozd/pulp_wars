@@ -219,6 +219,11 @@ export interface FreezeTileFactsV7 {
     readonly id: UnitId;
     readonly form: UnitFormV7;
     readonly hostile: boolean;
+    /**
+     * Map curiosities round 3, bead B (section 8.6): the unit is neutral.
+     * The tile under the Sea Serpent is never freezable.
+     */
+    readonly neutral: boolean;
   } | null;
 }
 
@@ -266,6 +271,9 @@ function freezeTakeV7(
   if (tile.ice !== null)
     return !tile.ice.own ? "TAKE" : tile.ice.cracked ? "MEND" : "PASS";
   if (tile.unit === null) return "MAKE";
+  // Map curiosities round 3, bead B (section 8.6): the Sea Serpent's tile is
+  // never freezable, so it is never icebound or crushed.
+  if (tile.unit.neutral) return "NO";
   return icebound && tile.unit.hostile && isAfloatFormV7(tile.unit.form)
     ? "LOCK"
     : "NO";

@@ -7219,6 +7219,50 @@ chest and walks toward one from farther away"; "races for an unfound
 Expedition, any role"; "researches with the notes in hand even with no
 Coins". No match was played (the user's rule).
 
+### Map curiosities, round 3 B: the Sea Serpent (`pulp_wars-737.21`)
+
+[The round-3 design, section 11](../product/RULESET_7_CURIOSITIES_ROUND_3.md#11-normal-ai):
+**avoid unless strong**, the Spider's rules
+([above](#map-curiosities-pulp_wars-7374)) pointed at the sea.
+`curiosityFactsV7` reads a visible Serpent like a lone monster: its
+`avoidKeys` and `threatKeys` are its provoke tiles (the eight tiles next
+to it), its `regeneration` is `SEA_SERPENT_REGENERATION_FOR_POLICY_V7` (4)
+and its `bounty` `SEA_SERPENT_BOUNTY_FOR_POLICY_V7` (15, also in
+`NEUTRAL_BOUNTY_FOR_POLICY_V7`), both pinned to the engine.
+
+- **No routine Move ends next to it**, a ship's or a unit's on the shore
+  or on ice, and a unit there with no attack on a seat's unit steps away
+  (`MONSTER_STEP_AWAY_PRIORITY_V7`, 1176).
+- **An embarked unit never ends a routine Move in its reach**
+  (`embarkedAvoidKeys`, the preview's `reachTiles`; a land unit's Move that
+  boards at a Port counts too): one bite sinks a transport. A ship may
+  sail there (only the tiles next to it are closed).
+- **Attacks:** only (a) in this turn's kill plan, in which ships take part
+  for the Serpent (the hunt plan admits a `NAVAL` hunter when the target is
+  a Sea Serpent; every other target keeps land hunters only), or a kill
+  outside the plans, or (b) from outside its reach (`monsterRetaliates`
+  false) with more damage than its regeneration, by a unit with no attack
+  on a seat's unit: a Battleship shelling it from beyond its shaded reach.
+- **No seat's fleet:** the naval plan's `navalFleetFactsV7` leaves neutral
+  ships out of its hostile lists, so the Serpent (a neutral `BATTLESHIP`)
+  never makes a seat research or train counters to it.
+- The Ice Folk follow the same avoidance on ice.
+
+A view without a Serpent decides exactly as before.
+
+**Tests** (`tests/unit/ruleset-v7-curiosities-round3-serpent-ai.test.ts`,
+on the lake of `tests/fixtures/v7-serpent-arena.ts`): "pins the policy's
+copies to the engine"; "reads the Serpent like a lone monster, its reach
+closed to embarked units"; "is no seat's fleet: the naval plan does not
+count it as a hostile Battleship"; "never ends a ship's routine Move next
+to it"; "steps a ship with no attack on a seat's unit away from it";
+"never ends an embarked unit's routine Move in its reach"; "does not chip
+a healthy Serpent from inside its reach"; "shells it from outside its
+reach when the hit beats its regeneration"; "kills a weakened Serpent with
+the ships beside it (the hunt plan of every navy)"; "has no facts without
+a curiosity or a neutral unit, and the same decision either way". No match
+was played (the user's rule).
+
 ### Curiosity measurements
 
 A small check, as the user asked (no balance testing): scratch harnesses at

@@ -1,0 +1,36 @@
+{
+  "id": "serpent-lair-a-edit",
+  "jobId": "214b64da-d502-470f-9663-1fa00dfd4f7b",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "curiosities-4",
+    "asset": "chibi-curiosity-serpent-lair",
+    "subject": "CURIOSITY:SERPENT_LAIR",
+    "faction": "ORIGINAL",
+    "recipeClass": "curiosity-site",
+    "requestSize": {
+      "width": 80,
+      "height": 80
+    },
+    "seed": 73721022,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only one thing: erase the light blue water inside and around the ring of rocks, so the middle of the ring and the space around it are transparent; keep the thin white foam lines at the foot of each rock. Keep every grey rock, the barnacles, the moss, the bones, the outline and the art style exactly the same."
+      }
+    ],
+    "prompt": "Change only one thing: erase the light blue water inside and around the ring of rocks, so the middle of the ring and the space around it are transparent; keep the thin white foam lines at the foot of each rock. Keep every grey rock, the barnacles, the moss, the bones, the outline and the art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Change only one thing: erase the light blue water inside and around the ring of rocks, so the middle of the ring and the space around it are transparent; keep the thin white foam lines at the foot of each rock. Keep every grey rock, the barnacles, the moss, the bones, the outline and the art style exactly the same.",
+    "editInstruction": "Change only one thing: erase the light blue water inside and around the ring of rocks, so the middle of the ring and the space around it are transparent; keep the thin white foam lines at the foot of each rock. Keep every grey rock, the barnacles, the moss, the bones, the outline and the art style exactly the same.",
+    "source": {
+      "recipe": "serpent-lair-a",
+      "candidate": 0,
+      "sha256": "05bedf58223501380c555903f006916fbf56d790734ab34f91ae8228c7f57ebd"
+    }
+  }
+}

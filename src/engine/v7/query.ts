@@ -454,7 +454,10 @@ import {
   BIGFOOT_ALERT_RADIUS_V7,
   BIGFOOT_CURIOSITY_DISTANCE_V7,
   BIGFOOT_HABITAT_RADIUS_V7,
+  CURIOSITY_CENTER_DISTANCE_V7,
   MONSTER_HOME_RADIUS_V7,
+  SEA_SERPENT_AREA_RADIUS_V7,
+  SEA_SERPENT_MOVE_V7,
   gateAtV7,
   gateDisplacementTileV7,
   monsterAreaV7,
@@ -2187,6 +2190,7 @@ function publicFreezeSetV7(
                 id: occupant.id,
                 form: occupant.form,
                 hostile: publicHostile(view, view.viewer.id, occupant.ownerId),
+                neutral: isNeutralOwnerV7(occupant.ownerId),
               },
       };
     },
@@ -6597,6 +6601,8 @@ export function previewMonsterV7(
       exact: ring.every((tile) => tile.explored),
     };
   }
+  // Map curiosities round 3, bead B (`pulp_wars-737.21`, section 10.4).
+  if (breed === "SEA_SERPENT") return previewSeaSerpentV7(view, monster, entry);
   const onBoard = (at: CoordV7): boolean =>
     at.x >= 0 &&
     at.y >= 0 &&
@@ -6619,7 +6625,10 @@ export function previewMonsterV7(
   const curiosityTiles = [
     ...view.curiosities.map((curiosity) => curiosity.at),
     ...view.monsters
-      .filter((other) => other.breed === "GIANT_SPIDER")
+      .filter(
+        (other) =>
+          other.breed === "GIANT_SPIDER" || other.breed === "SEA_SERPENT",
+      )
       .map((other) => other.home),
   ];
   // Whether the unit may stand on `at` by terrain and position: true,
@@ -6777,6 +6786,131 @@ export function previewMonsterV7(
     provokers: provokers.map((unit) => unit.id),
     likelyTarget: likely?.id ?? null,
     exact,
+  };
+}
+
+/**
+ * Map curiosities round 3, bead B (`pulp_wars-737.21`,
+ * RULESET_7_CURIOSITIES_ROUND_3.md section 10.4): the public preview of the
+ * visible Sea Serpent. `area` is its standable water as explored (within 3
+ * of home, open water, no dock, 3 or more from every known centre, whoever
+ * stands there now); `provokeTiles` the tiles next to it; `reachTiles`
+ * every tile next to a tile it can reach in 0 to 2 steps (an unexplored
+ * tile of its area counts as a possible step; it passes no visible unit);
+ * `provokers` the visible units next to it or in its `provokedBy`;
+ * `likelyTarget` the weakest of them in its reach (the neutral turn's
+ * choice); `exact` false when an unexplored tile lies within 3 of it.
+ */
+function previewSeaSerpentV7(
+  view: PlayerViewV7,
+  monster: PublicUnitV7,
+  entry: PlayerViewV7["monsters"][number],
+): MonsterPreviewV7 {
+  const onBoard = (at: CoordV7): boolean =>
+    at.x >= 0 &&
+    at.y >= 0 &&
+    at.x < view.board.width &&
+    at.y < view.board.height;
+  const centers = view.board.tiles.filter(
+    (tile) => tile.explored && tile.site !== null,
+  );
+  // True, false, or null when the tile is unexplored.
+  const standableTerrain = (at: CoordV7): boolean | null => {
+    if (!onBoard(at) || chebyshev(at, entry.home) > SEA_SERPENT_AREA_RADIUS_V7)
+      return false;
+    const tile = tileAtView(view, at);
+    if (tile?.explored !== true) return null;
+    return (
+      tile.site === null &&
+      (tile.terrain === "SHALLOW_WATER" || tile.terrain === "DEEP_WATER") &&
+      tile.improvement !== "PORT" &&
+      tile.improvement !== "SHIPYARD" &&
+      !isIceAtV7(view, at) &&
+      !centers.some(
+        (center) => chebyshev(center.at, at) < CURIOSITY_CENTER_DISTANCE_V7,
+      )
+    );
+  };
+  const area: CoordV7[] = [];
+  for (
+    let y = entry.home.y - SEA_SERPENT_AREA_RADIUS_V7;
+    y <= entry.home.y + SEA_SERPENT_AREA_RADIUS_V7;
+    y += 1
+  )
+    for (
+      let x = entry.home.x - SEA_SERPENT_AREA_RADIUS_V7;
+      x <= entry.home.x + SEA_SERPENT_AREA_RADIUS_V7;
+      x += 1
+    )
+      if (standableTerrain({ x, y }) === true) area.push({ x, y });
+  const stepTo = (at: CoordV7): boolean => {
+    const standable = standableTerrain(at);
+    if (standable === null) return true;
+    return (
+      standable &&
+      !tileOccupiedV7(view, at, monster.id) &&
+      !view.treasureChests.some((chest) => same(chest, at))
+    );
+  };
+  const keyOf = (at: CoordV7): string => `${at.y},${at.x}`;
+  const reached = new Map<string, CoordV7>([[keyOf(monster.at), monster.at]]);
+  let frontier: CoordV7[] = [monster.at];
+  for (let step = 0; step < SEA_SERPENT_MOVE_V7; step += 1) {
+    const next: CoordV7[] = [];
+    for (const from of frontier)
+      for (let dy = -1; dy <= 1; dy += 1)
+        for (let dx = -1; dx <= 1; dx += 1) {
+          if (dx === 0 && dy === 0) continue;
+          const at = { x: from.x + dx, y: from.y + dy };
+          if (reached.has(keyOf(at)) || !stepTo(at)) continue;
+          reached.set(keyOf(at), at);
+          next.push(at);
+        }
+    frontier = next;
+  }
+  const origins = [...reached.values()];
+  const reach = new Map<string, CoordV7>();
+  for (const origin of origins)
+    for (let dy = -1; dy <= 1; dy += 1)
+      for (let dx = -1; dx <= 1; dx += 1) {
+        const at = { x: origin.x + dx, y: origin.y + dy };
+        if ((dx === 0 && dy === 0) || !onBoard(at) || same(at, monster.at))
+          continue;
+        reach.set(keyOf(at), at);
+      }
+  const reachTiles = [...reach.values()].sort(
+    (left, right) => left.y - right.y || left.x - right.x,
+  );
+  const provokeTiles = adjacentPublicTiles(view, monster.at).map(
+    (tile) => tile.at,
+  );
+  const provokers = view.units.filter(
+    (unit) =>
+      unit.hp > 0 &&
+      unit.id !== monster.id &&
+      !isNeutralOwnerV7(unit.ownerId) &&
+      (chebyshev(unit.at, monster.at) === 1 ||
+        entry.provokedBy.includes(unit.id)),
+  );
+  const likely = provokers
+    .filter((unit) =>
+      origins.some((origin) => chebyshev(origin, unit.at) === 1),
+    )
+    .sort((left, right) => left.hp - right.hp || left.id - right.id)[0];
+  return {
+    unitId: monster.id,
+    breed: "SEA_SERPENT",
+    home: entry.home,
+    area,
+    provokeTiles,
+    reachTiles,
+    provokers: provokers.map((unit) => unit.id),
+    likelyTarget: likely?.id ?? null,
+    exact: view.board.tiles.every(
+      (tile) =>
+        tile.explored ||
+        chebyshev(tile.at, monster.at) > SEA_SERPENT_AREA_RADIUS_V7,
+    ),
   };
 }
 
@@ -7131,7 +7265,10 @@ export function queryCombatPreviewV7(
       : // The Cultists (`pulp_wars-mch9.6`): an Unbound daemon answers
         // alone, like the Spider (its reach is its next rampage's).
         // (`pulp_wars-mch9.8`: and so does a Tentacle.)
-        entry.breed === "GIANT_SPIDER" || isWildBreedV7(entry.breed)
+        // Round 3, bead B (section 10.4): the Sea Serpent answers alone.
+        entry.breed === "GIANT_SPIDER" ||
+          entry.breed === "SEA_SERPENT" ||
+          isWildBreedV7(entry.breed)
         ? [entry]
         : view.monsters.filter(
             (other) =>
@@ -7778,7 +7915,9 @@ export function queryThreatenedTilesV7(
   if (isNeutralOwnerV7(unit.ownerId)) {
     const preview = previewMonsterV7(view, unit.id);
     if (preview === null || preview.breed === "BIGFOOT") return [];
-    if (preview.breed === "GIANT_SPIDER") return preview.provokeTiles;
+    // Round 3, bead B (section 10.4): the Sea Serpent, like the Spider.
+    if (preview.breed === "GIANT_SPIDER" || preview.breed === "SEA_SERPENT")
+      return preview.provokeTiles;
     return preview.provokeTiles.filter((at) =>
       preview.reachTiles.some((tile) => same(tile, at)),
     );
@@ -12396,7 +12535,9 @@ function publicRamShoveState(
   defender: PlayerViewV7["units"][number],
   survives: boolean,
 ): CombatPreviewV7["push"] {
-  if (!survives) return "BLOCKED";
+  // Map curiosities round 3, bead B (section 8.6): the Sea Serpent is never
+  // shoved.
+  if (!survives || isNeutralOwnerV7(defender.ownerId)) return "BLOCKED";
   const behind = {
     x: defender.at.x + Math.sign(defender.at.x - attacker.at.x),
     y: defender.at.y + Math.sign(defender.at.y - attacker.at.y),

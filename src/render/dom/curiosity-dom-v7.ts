@@ -16,6 +16,7 @@ const INK = "#1d1a17";
 const BONE = "#efe6d0";
 const STONE = "#a9a59a";
 const UMBER = "#8a5a33";
+const SLATE = "#6b6258";
 
 function svgV7(
   documentRoot: Document,
@@ -110,6 +111,69 @@ export function bigfootFigureV7(documentRoot: Document): SVGSVGElement {
   });
   footprint(shape, 32, 34, 1.4);
   return svg;
+}
+
+/**
+ * Round 3, bead B (bead pulp_wars-737.21): the code-drawn Sea Serpent of the
+ * dock and the unit dialog, a neutral disc with a slate serpent rising from
+ * a white wave (the board's code-drawn Serpent).
+ */
+export function serpentFigureV7(documentRoot: Document): SVGSVGElement {
+  const { svg, shape } = svgV7(
+    documentRoot,
+    "0 0 64 64",
+    "v7-art-frame v7-serpent-figure",
+    "unit-neutral-sea-serpent-code",
+  );
+  shape("circle", {
+    cx: "32",
+    cy: "32",
+    r: "29",
+    fill: "#b9a58a",
+    stroke: INK,
+    "stroke-width": "3",
+  });
+  serpent(shape, 32, 34, 1.4);
+  return svg;
+}
+
+/** A serpent's head on its neck and two humps over a wave, about (cx, cy). */
+function serpent(
+  shape: ReturnType<typeof svgV7>["shape"],
+  cx: number,
+  cy: number,
+  scale: number,
+): void {
+  const at = (dx: number, dy: number): string =>
+    `${cx + dx * scale} ${cy + dy * scale}`;
+  const stroke = { stroke: INK, "stroke-width": String(1.6 * scale) } as const;
+  shape("path", {
+    d: `M${at(-4, 4)}Q${at(-6, -10)} ${at(-12, -12)}L${at(-18, -4)}Q${at(-12, -2)} ${at(-12, 4)}Z`,
+    fill: SLATE,
+    ...stroke,
+  });
+  for (const [dx, radius] of [
+    [6, 6],
+    [16, 4.5],
+  ] as const)
+    shape("path", {
+      d: `M${at(dx - radius, 4)}A${radius * scale} ${radius * scale} 0 0 1 ${at(dx + radius, 4)}Z`,
+      fill: SLATE,
+      ...stroke,
+    });
+  shape("circle", {
+    cx: String(cx - 12 * scale),
+    cy: String(cy - 8 * scale),
+    r: String(1.4 * scale),
+    fill: "#ffffff",
+  });
+  shape("path", {
+    d: `M${at(-20, 5)}Q${at(-14, 0)} ${at(-8, 5)}T${at(4, 5)}T${at(16, 5)}T${at(24, 5)}`,
+    fill: "none",
+    stroke: "#ffffff",
+    "stroke-width": String(1.8 * scale),
+    "stroke-linecap": "round",
+  });
 }
 
 /** One big five-toed footprint centred on (cx, cy). */
@@ -322,6 +386,9 @@ export function curiosityGlyphV7(
     shape("path", { d: "M3 28 16 5 29 28Z", fill: "#b9a578", ...stroke });
     shape("path", { d: "M12 28 16 19 20 28Z", fill: "#4a3a28", ...stroke });
   } else if (id === "BIGFOOT") footprint(shape, 16, 17, 1.05);
+  // Round 3, bead B: the Sea Serpent, also its lair's glyph.
+  else if (id === "SEA_SERPENT" || id === "SERPENT_LAIR")
+    serpent(shape, 17, 18, 0.75);
   else
     for (const [cx, cy] of [
       ["12", "20"],

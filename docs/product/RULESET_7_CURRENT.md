@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r103`, for all nine offered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r104`, for all nine offered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), Candy (`CANDY`), and
 the Cultists (`CULT`). The ninth faction, the Cultists of the Ancient Ones,
@@ -445,6 +445,17 @@ links to another, by Road or by Port. A sea link needs only **Shorecraft**
 the Roads technology, and unexplored water no longer breaks a link. A save,
 replay, or setup of `7r75` is rejected, and the browser autosave has a new
 key.
+`pulp-wars-poc-7r104` (`pulp_wars-737.21`, map curiosities round 3, bead
+B, the naval one of the user's five) adds the **Sea Serpent**
+([section 2.7, round 3 B](#round-3-b-the-sea-serpent)): a neutral sea
+monster afloat on Deep Water (boards 16 and up, never Dry Land) that, after
+every round, swims up to 2 tiles to bite the weakest unit that came next to
+it or hurt it; it regenerates 4, pays a bounty of 15, is never shoved,
+boarded, frozen, or raised as a Ghost Ship, and counts as the board's one
+danger. No new command or event (it acts in the neutral turn); new breed
+`SEA_SERPENT`. A save, replay, or setup of `7r103` is rejected, and the
+browser autosave has a new key. With curiosities off, boards and matches
+are as at `7r103`.
 `pulp-wars-poc-7r103` (`pulp_wars-737.20`, map curiosities round 3, bead
 A; the user, 2026-10-19: "come up with and implement 5 more curiosities on
 the map including 1 naval one") adds four land curiosities
@@ -1567,10 +1578,10 @@ sections here cite.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r103`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Ruleset                                    | `pulp-wars-poc-7r104`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r103.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Browser autosave                           | `pulpWars.save.v7r104.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, `CULT`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`, `CULT_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -3902,7 +3913,7 @@ sections 3 to 7 and the notes of
 entity. The Normal AI knows them
 ([Normal AI, round 3](../architecture/NORMAL_AI.md#map-curiosities-round-3-pulp_wars-73720)),
 and the browser draws and explains them (below). The Sea Serpent is bead B
-(`pulp-wars-poc-7r104`).
+(`pulp-wars-poc-7r104`, [below](#round-3-b-the-sea-serpent)).
 
 | Curiosity           | Where                             | Rule                                                                                                                                      |
 | ------------------- | --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
@@ -4020,6 +4031,99 @@ tiles with the threat marker;
 A Move onto the Claim is labelled **Stake** and onto the Expedition
 **Find**. The zap plays an arc and `special.zap`, the shot a muzzle blast,
 a flight, and a landing puff, and the find the notes effect.
+
+#### Round 3 B: the Sea Serpent
+
+**Round 3, bead B** (`pulp_wars-737.21`, the
+[round-3 design](RULESET_7_CURIOSITIES_ROUND_3.md) sections 3 and 8 to 12
+and the notes of
+[section 18](RULESET_7_CURIOSITIES_ROUND_3.md#18-implementation-notes-bead-b-pulp_wars-73721);
+`pulp-wars-poc-7r104`): **a Sea Serpent owned by nobody prowls its waters
+and, after every round, swims up to 2 tiles to bite the weakest unit that
+came next to it or hurt it.**
+
+**Generation.** `SEA_SERPENT` is the fourteenth kind of the frozen draw
+order (weight 2), on boards of width 16 and up that are not Dry Land, and
+a **danger** (`CURIOSITY_DANGER_KINDS_V7`: never with the Spider or a
+camp). Its home, where it is created (after every other initial entity,
+in placement order with the other neutral units), is a **Deep Water** tile
+with no resource and every tile within 3 on the board; it keeps rules 1 to
+5 of the round-1 sites (rule 3 with the Spider's lair distances as built:
+**5** or more from every capital and **4** or more from every village
+centre), and **6** from every other curiosity tile placed before or after
+it (`SEA_SERPENT_SPACING_V7`); its **area** (the Shallow and Deep Water
+within 3 of home) has at least **16** tiles, none a cut tile of the
+eight-connected water graph; and its water touches the landmass of every
+capital (the Wreck's rule). With the option off nothing changes: boards
+and matches are as at `7r103`.
+
+**The unit.** A neutral unit of breed `SEA_SERPENT` in **`NAVAL` form**:
+mechanical role `BATTLESHIP`, "Sea Serpent", 32 HP, Attack 3.5, Defense
+2.5, Move 2, range 1, `ATTACK` only (no splash, Ram, Torpedo, Submerged,
+Board, or Sight), a sea beast (`seaBeast`), and it never advances. It
+stands only on **open water** (no ice, no dock) within 3 of home, 3 or
+more from every settlement centre, with no unit or mound on it.
+
+**The neutral turn.** In unit-ID order with the other neutral units: its
+provokers are the units of a player next to it (any form: a ship, a
+transport, a unit on the shore or on ice) and those in its `provokedBy`
+(it was hurt since its previous turn). Of the provokers next to a tile it
+can reach in 0 to 2 steps (each step to a tile it may stand on, never
+passing a unit), it bites the **lowest HP**, ties by the lowest unit ID;
+when the target is not next to it, it first swims by the fewest steps to
+the first tile next to it in (y, x) order, along the first shortest path
+in (y, x) order of its steps (one `UNIT_MOVED` with the whole path). The
+bite is the ordinary attack exchange (retaliation, kill credit, deaths,
+blasts, Plunder, the bounty). With no candidate it **wanders** (stay or one
+step, the Spider's stateless draw). After the units have acted, the
+Spider and the Serpent **regenerate** `min(4, maxHp − hp)`
+(`MONSTER_REGENERATED`) and every `provokedBy` is cleared. A provoker
+beyond its reach is never bitten.
+
+**What affects it.** Every damage applies; no status sticks; nothing moves
+it; no healing. A **Ram** deals its damage and its shove is `BLOCKED`;
+**Board** is refused (`BOARD_NOT_LEGAL { reason: "TARGET_IMMUNE" }`); it
+never rises as a **Ghost Ship** (killed, or killed by an Undead ship's
+answer to its bite) and is never plagued; the **Kraken's Drag** never
+applies (it never makes a Move); a **Cult** ship's kill pays Offerings to
+the Deep as a victim of value 8 (`SEA_SERPENT_OFFERING_VALUE_V7`: 4
+Favour) and the bounty; a **Plesiosaur** that kills it grows; a Martian
+**Shield** absorbs its bite, and the **Tractor Beam** and **Mind
+Control** never take it; **Armoured** takes its bite at 1 less. **Ice:**
+the tile under it is never freezable (a Freeze's set stops there; it is
+never icebound or crushed), it never stands on ice (ice shrinks its area:
+fenced in, it stays put and still bites a unit on the ice beside it), and
+ice on its home simply keeps it away.
+
+**Death.** Its credited killer's owner gains `SEA_SERPENT_BOUNTY_V7` =
+**15** Coins (`MONSTER_BOUNTY_AWARDED`); the kill counts (Promotion,
+growth, Slayer, Plunder, score worth its bounty); no Grave, no respawn;
+its lair goes with it.
+
+**State, views, queries.** `monsters` admits one `SEA_SERPENT` entry, its
+unit in `NAVAL` form with the breed's role and maximum HP, standing as
+above, on a board of width 16 or more that is not Dry Land and has no
+Spider or camp. `previewMonsterV7` covers it: `area` (its standable water
+as explored), `provokeTiles` (the tiles next to it), `reachTiles` (every
+tile next to a tile it can reach in 0 to 2 steps; an unexplored tile of
+its area counts as a possible step), `provokers`, `likelyTarget` (the
+neutral turn's choice), and `exact` (false when an unexplored tile lies
+within 3); `monsterRetaliates` and `queryThreatenedTilesV7` read its
+provoke tiles like the Spider's. The headless metrics' `monsters.breeds`
+lists it.
+
+**Presentation.** Its chibi sprite (a charcoal-slate serpent rising from a
+white-foam waterline) stands on its **lair** of barnacled rocks (batch
+`curiosities-4`); the classic look draws a neutral disc with a serpent
+over a wave, and a ring of rocks. Its dock and "?" card show "Neutral"
+and "Provoked", HP, Attack, Defense, Move 2, "Regenerates +4 HP", "Bounty
+15", and whom it will bite; selecting it (or its lair) outlines its area
+and shades its reach. A Move that ends next to it warns "Ends next to the
+Sea Serpent: it will bite after this round."; an attack on it says "The
+serpent will strike back next round" or "Out of the serpent's reach". The
+log says "Sea Serpent bit your Battleship" and "Sea Serpent slain: +15
+Coins bounty"; the bite plays `attack.serpent` (a hiss and a splash). The
+Gallery's Curiosities tab shows it in the fifth cell of its third row.
 
 ## 3. Players, turns, and victory
 

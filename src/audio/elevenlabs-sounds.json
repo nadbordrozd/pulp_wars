@@ -392,6 +392,33 @@
       ]
     },
     {
+      "id": "attack.serpent",
+      "default": 103,
+      "confidence": "medium",
+      "takes": [
+        {
+          "n": 103,
+          "file": "attack-serpent-103.m4a",
+          "generated": "2026-10-19",
+          "seconds": 0.8,
+          "gain": 0.22,
+          "passed": true,
+          "prompt": "A giant sea serpent bites a boat: a sharp angry reptile hiss, a splash of water and one snap of big jaws, over fast.",
+          "note": "0.8 s, hard attack, centred near 1.7 kHz, 57% of its energy under 1 kHz, crest 9.2 dB."
+        },
+        {
+          "n": 102,
+          "file": "attack-serpent-102.m4a",
+          "generated": "2026-10-19",
+          "seconds": 0.8,
+          "gain": 0.23,
+          "passed": true,
+          "prompt": "A giant sea serpent bites a boat: a sharp angry reptile hiss, a splash of water and one snap of big jaws, over fast.",
+          "note": "0.8 s, hard attack, centred near 1.8 kHz, 71% of its energy under 1 kHz, crest 9.3 dB."
+        }
+      ]
+    },
+    {
       "id": "impact.hit",
       "default": 102,
       "confidence": "high",

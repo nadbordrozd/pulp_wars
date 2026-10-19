@@ -157,14 +157,14 @@ describe("tricks: identity and registration", () => {
   // The spread villages (`pulp_wars-9s0.12`) took 7r79, so 7r78 is a prior
   // identity.
   it("was 7r78 after 7r77, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r103");
-    expect(PRIOR_RULESET_7_IDS.slice(-26, -24)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r104");
+    expect(PRIOR_RULESET_7_IDS.slice(-27, -25)).toEqual([
       "pulp-wars-poc-7r77",
       "pulp-wars-poc-7r78",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r103.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-26, -24)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r104.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-27, -25)).toEqual([
       "pulpWars.save.v7r77.current",
       "pulpWars.save.v7r78.current",
     ]);
@@ -298,8 +298,9 @@ describe("tricks: identity and registration", () => {
 
   it("registers the Tentacle as a neutral breed: rooted, no living thing, and nobody's", () => {
     // (The Unbound Imp and Gibbering Mass follow it: the Cult redesign,
-    // `pulp_wars-mch9.36` and `pulp_wars-mch9.37`.)
-    expect(NEUTRAL_BREEDS_V7.at(-3)).toBe("TENTACLE");
+    // `pulp_wars-mch9.36` and `pulp_wars-mch9.37`; then the Sea Serpent,
+    // `pulp_wars-737.21`.)
+    expect(NEUTRAL_BREEDS_V7.at(-4)).toBe("TENTACLE");
     expect(isWildBreedV7("TENTACLE")).toBe(true);
     expect(isWildBreedV7("GIANT_SPIDER")).toBe(false);
     const rule = NEUTRAL_ROLE_RULES_V7.TENTACLE;

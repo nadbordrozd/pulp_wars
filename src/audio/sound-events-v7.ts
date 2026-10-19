@@ -1,6 +1,7 @@
 import {
   NEUTRAL_KIND_V7,
   isAfloatFormV7,
+  isNeutralOwnerV7,
   unitFactionV7,
   unitFliesV7,
   unitRoleMechanicsV7,
@@ -265,11 +266,14 @@ export function moveSoundOfUnitV7(
 export function seaBeastAttacksV7(
   views: readonly PlayerViewV7[],
   unitId: number,
-): "attack.plesiosaur" | "attack.kraken" | null {
+): "attack.plesiosaur" | "attack.kraken" | "attack.serpent" | null {
   for (const view of views) {
     const unit = view.units.find((candidate) => candidate.id === unitId);
     if (unit === undefined) continue;
     if (unit.form !== "NAVAL") return null;
+    // Map curiosities round 3 B (`pulp_wars-737.21`): the Sea Serpent, the
+    // one neutral unit afloat, bites with a hiss and a splash.
+    if (isNeutralOwnerV7(unit.ownerId)) return "attack.serpent";
     const mechanics = unitRoleMechanicsV7(view, unit);
     if (!mechanics.seaBeast) return null;
     return mechanics.dragsAfloat ? "attack.kraken" : "attack.plesiosaur";

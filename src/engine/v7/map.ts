@@ -5053,7 +5053,9 @@ function createNeutralUnitsV7(
       ownerId: NEUTRAL_OWNER_ID_V7,
       homeCityId: null,
       role: rule.role,
-      form: "LAND",
+      // Map curiosities round 3, bead B (section 8.1): the Sea Serpent is
+      // afloat.
+      form: placement.breed === "SEA_SERPENT" ? "NAVAL" : "LAND",
       at: placement.at,
       hp: rule.maxHp,
       maxHp: rule.maxHp,

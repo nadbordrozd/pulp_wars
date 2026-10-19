@@ -460,6 +460,8 @@ describe("the curiosity texts", () => {
       "MOON_GUN",
       "GOLD_CLAIM",
       "LOST_EXPEDITION",
+      // Round 3 B (bead pulp_wars-737.21).
+      "SEA_SERPENT",
       "BOUNTY",
       null,
     ]);

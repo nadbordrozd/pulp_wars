@@ -239,7 +239,7 @@ try {
     await click(connection, '[data-action="gallery-tab-curiosities"]');
     await waitFor(
       connection,
-      `document.querySelectorAll('.v7-gallery-curiosities .v7-gallery-tile').length === 14 && [...document.querySelectorAll('.v7-gallery-curiosities .v7-gallery-tile')].every((tile) => tile.dataset.state === 'ready')`,
+      `document.querySelectorAll('.v7-gallery-curiosities .v7-gallery-tile').length === 15 && [...document.querySelectorAll('.v7-gallery-curiosities .v7-gallery-tile')].every((tile) => tile.dataset.state === 'ready')`,
     );
     await evaluate(
       connection,

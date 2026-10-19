@@ -1182,6 +1182,126 @@
           "share": 0.015
         }
       }
+    },
+    "chibi-curiosity-sea-serpent": {
+      "canvas": "88 x 72",
+      "opaqueBounds": {
+        "left": 4,
+        "right": 84,
+        "top": 2,
+        "bottom": 67
+      },
+      "opaqueSize": "81 x 66",
+      "palette": {
+        "opaque": 2825,
+        "mean": "#6c615b",
+        "saturatedShare": 0.096,
+        "nearFaction": {
+          "ORIGINAL": 0,
+          "UNDEAD": 0,
+          "GOBLIN": 0,
+          "DINOSAUR": 0,
+          "MARTIAN": 0,
+          "ICE_FOLK": 0,
+          "DWARF": 0,
+          "CANDY": 0,
+          "CULT": 0
+        },
+        "nearestFaction": {
+          "faction": "ORIGINAL",
+          "share": 0
+        }
+      }
+    },
+    "chibi-curiosity-portrait-sea-serpent": {
+      "canvas": "48 x 48",
+      "opaqueBounds": {
+        "left": 4,
+        "right": 42,
+        "top": 0,
+        "bottom": 46
+      },
+      "opaqueSize": "39 x 47",
+      "palette": {
+        "opaque": 1207,
+        "mean": "#705d53",
+        "saturatedShare": 0.008,
+        "nearFaction": {
+          "ORIGINAL": 0,
+          "UNDEAD": 0,
+          "GOBLIN": 0,
+          "DINOSAUR": 0,
+          "MARTIAN": 0,
+          "ICE_FOLK": 0,
+          "DWARF": 0,
+          "CANDY": 0,
+          "CULT": 0
+        },
+        "nearestFaction": {
+          "faction": "ORIGINAL",
+          "share": 0
+        }
+      }
+    },
+    "chibi-curiosity-serpent-lair": {
+      "canvas": "80 x 80",
+      "opaqueBounds": {
+        "left": 3,
+        "right": 76,
+        "top": 13,
+        "bottom": 68
+      },
+      "opaqueSize": "74 x 56",
+      "palette": {
+        "opaque": 2584,
+        "mean": "#5c6465",
+        "saturatedShare": 0.075,
+        "nearFaction": {
+          "ORIGINAL": 0,
+          "UNDEAD": 0,
+          "GOBLIN": 0,
+          "DINOSAUR": 0,
+          "MARTIAN": 0,
+          "ICE_FOLK": 0,
+          "DWARF": 0,
+          "CANDY": 0,
+          "CULT": 0
+        },
+        "nearestFaction": {
+          "faction": "ORIGINAL",
+          "share": 0
+        }
+      }
+    },
+    "chibi-curiosity-icon-sea-serpent": {
+      "canvas": "48 x 48",
+      "opaqueBounds": {
+        "left": 4,
+        "right": 43,
+        "top": 3,
+        "bottom": 42
+      },
+      "opaqueSize": "40 x 40",
+      "palette": {
+        "opaque": 992,
+        "mean": "#756662",
+        "saturatedShare": 0.002,
+        "nearFaction": {
+          "ORIGINAL": 0,
+          "UNDEAD": 0,
+          "GOBLIN": 0,
+          "DINOSAUR": 0,
+          "MARTIAN": 0,
+          "ICE_FOLK": 0,
+          "DWARF": 0,
+          "CANDY": 0,
+          "CULT": 0
+        },
+        "nearestFaction": {
+          "faction": "ORIGINAL",
+          "share": 0
+        }
+      }
     }
   },
   "spider": {
@@ -1416,6 +1536,34 @@
     "expeditionBesideFighter": {
       "share": 0.224,
       "pixels": 495
+    },
+    "serpentLairBesideSerpent": {
+      "share": 0.325,
+      "pixels": 839
+    },
+    "serpentLairBesideFighter": {
+      "share": 0.366,
+      "pixels": 945
+    }
+  },
+  "serpent": {
+    "opaqueSize": {
+      "width": 81,
+      "height": 66
+    },
+    "fighter": {
+      "width": 53,
+      "height": 72
+    },
+    "footprint": {
+      "contactY": 68,
+      "footLeft": 18,
+      "footRight": 53,
+      "baseLeft": 12,
+      "baseRight": 82,
+      "top": 2,
+      "left": 4,
+      "right": 85
     }
   }
 }

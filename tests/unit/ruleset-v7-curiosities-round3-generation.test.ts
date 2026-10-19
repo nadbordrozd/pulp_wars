@@ -73,7 +73,7 @@ const chebyshev = (a: CoordV7, b: CoordV7) =>
   Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y));
 
 describe("round-3 generation (section 3)", () => {
-  it("appends the four land kinds to the frozen order with weight 2", () => {
+  it("appends the four land kinds, then the Sea Serpent, to the frozen order with weight 2", () => {
     expect(CURIOSITY_PLACEMENT_KINDS_V7).toEqual([
       "MONSTER",
       "FOUNTAIN",
@@ -88,19 +88,22 @@ describe("round-3 generation (section 3)", () => {
       "MOON_GUN",
       "GOLD_CLAIM",
       "LOST_EXPEDITION",
+      "SEA_SERPENT",
     ]);
     for (const kind of [
       "TESLA_TOWER",
       "MOON_GUN",
       "GOLD_CLAIM",
       "LOST_EXPEDITION",
+      "SEA_SERPENT",
     ] as const)
       expect(CURIOSITY_WEIGHTS_V7[kind]).toBe(2);
-    // None of them is a danger.
+    // None of the land kinds is a danger; the Serpent (bead B) is.
     expect(CURIOSITY_DANGER_KINDS_V7).toEqual([
       "MONSTER",
       "DOWNED_SAUCER",
       "GRAVEYARD",
+      "SEA_SERPENT",
     ]);
   });
 

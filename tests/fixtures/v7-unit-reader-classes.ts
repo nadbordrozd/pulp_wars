@@ -599,6 +599,9 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     // Map curiosities round 2: the visible exit occupant of a gate.
     "src/engine/v7/query.ts::previewGateV7": "BOARD",
     "src/engine/v7/query.ts::previewMonsterV7": "BOARD",
+    // Map curiosities round 3 B (`pulp_wars-737.21`): the Sea Serpent's
+    // preview reads the units on the board, as the Monster's does.
+    "src/engine/v7/query.ts::previewSeaSerpentV7": "BOARD",
     "src/engine/v7/query.ts::previewTendWoundedV7": "BOARD",
     "src/engine/v7/query.ts::previewTractorBeamV7": "BOARD",
     "src/engine/v7/query.ts::previewTunnelV7": "BOARD",

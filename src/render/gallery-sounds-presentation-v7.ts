@@ -321,6 +321,11 @@ const NOTES: Readonly<Partial<Record<SoundIdV1, SoundNoteV7>>> = {
     when: `${unitName("SUBMARINE", "CULT")} attacks`,
     picture: unit("SUBMARINE", "CULT"),
   },
+  // Map curiosities round 3 B (`pulp_wars-737.21`): the Sea Serpent bites.
+  "attack.serpent": {
+    when: "Sea Serpent bites",
+    picture: art("PORTRAIT:NEUTRAL_SEA_SERPENT"),
+  },
   "impact.hit": { when: "Attack lands", picture: icon("attack") },
   "impact.heavy": { when: "Siege or charge lands", picture: icon("stampede") },
   "impact.explosion": { when: "Bomb or shell bursts", picture: icon("bomb") },

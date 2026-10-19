@@ -832,9 +832,11 @@ describe("Ice Folk Freeze with any-unit capture and the round-2 curiosities", ()
   it("never freezes a neutral unit of any breed: Cold Snap passes it over and a Frost Bolt cannot take it", () => {
     // An Unbound daemon needs a Cult seat; its immunity to Freeze is proved
     // in `tests/unit/ruleset-v7-cult-unbound.test.ts`, and a Tentacle's in
-    // `tests/unit/ruleset-v7-cult-tricks.test.ts`.
+    // `tests/unit/ruleset-v7-cult-tricks.test.ts`. The Sea Serpent (round 3
+    // B) lives afloat: its ice rules are proved on a sea in
+    // `tests/unit/ruleset-v7-curiosities-round3-serpent.test.ts`.
     for (const breed of NEUTRAL_BREEDS_V7.filter(
-      (candidate) => !isWildBreedV7(candidate),
+      (candidate) => !isWildBreedV7(candidate) && candidate !== "SEA_SERPENT",
     )) {
       const home = breed === "BIGFOOT" ? at(15, 10) : SAUCER;
       const standOn =
