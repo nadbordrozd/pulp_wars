@@ -1,12 +1,17 @@
 # Ruleset 7 revision 17: Goblin faction
 
-**Bolder abilities** (`pulp_wars-w49.42`, `pulp-wars-poc-7r99`, user
-direction 2026-10-18: "make it +2 instead of +1"): Gang Up adds **+2
-Attack** for each own unit beside the target (`GANG_UP_ATTACK_PER_HELPER_V7`),
-still counting at most two (an Ogre counts two; a Rocket Cart's rocket one;
-a bomb none), so up to +4. Wherever this document says +1 a helper, up to
-+2, or a rocket's +1, read +2 a helper, up to +4, and a rocket's +2; the
-combat preview's `gangUp` is the whole Attack (0, 2, or 4).
+**Gang Up is +1 an ally, up to +3** (`pulp_wars-w49.43`,
+`pulp-wars-poc-7r101`, user direction 2026-10-19: "I think i overdid it
+with the gang up bonus for goblins. Make it +1 per ally again", then
+"let's do +1 per ally (+2 for ogres) but up to +3"): Gang Up adds **+1
+Attack** for each own unit beside the target
+(`GANG_UP_ATTACK_PER_HELPER_V7` 1; an Ogre +2), summed and capped at **+3**
+(`GANG_UP_MAX_ATTACK_V7`); a Rocket Cart's rocket gets +1 at most and a
+bomb none. Wherever this document says Gang Up counts at most two helpers,
+up to +2, read up to +3; the combat preview's `gangUp` is the whole Attack
+(0 to 3). Bolder abilities (`pulp_wars-w49.42`, user direction 2026-10-18:
+"make it +2 instead of +1") made it +2 a helper, up to +4 (a rocket's +2),
+in `7r99` and `7r100` only.
 [Current rules section 18.2](RULESET_7_CURRENT.md#182-gang-up).
 
 **Any unit can capture** (`pulp_wars-ke95`, user direction 2026-10-09):

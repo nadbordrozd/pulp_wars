@@ -644,13 +644,15 @@ export interface RoleMechanicsV7 {
   /** Revision 17: HP regenerated at its owner's Start Turn (the Troll). */
   readonly regeneration: number;
   /**
-   * The Goblin pass (`pulp_wars-w49.12`, 7r50): the most Gang Up the role's
-   * attacks get, under its faction's maximum: 0 for the Goblin Bomb Chucker
-   * (a bomb is thrown before the mob closes in), 1 for the Rocket Cart (the
-   * correction pass: one spotter), 2 for every other role. Irrelevant for a
-   * faction without Gang Up.
+   * The Goblin pass (`pulp_wars-w49.12`, 7r50): the most Gang Up, in whole
+   * Attack, the role's attacks get, under its faction's maximum: 0 for the
+   * Goblin Bomb Chucker (a bomb is thrown before the mob closes in), 1 for
+   * the Rocket Cart (the correction pass: one spotter), and
+   * `GANG_UP_MAX_ATTACK_V7` (3 since `pulp_wars-w49.43`, 7r101; it counted
+   * two helpers before) for every other role. Irrelevant for a faction
+   * without Gang Up.
    */
-  readonly gangUpLimit: 0 | 1 | 2;
+  readonly gangUpLimit: 0 | 1 | 3;
   /**
    * The Goblin pass: Blast-proof (the Orc Brute). In land form the unit is
    * not hit by an explosion (Kaboom, death blast, Blast Mountain) or by the
@@ -1939,7 +1941,7 @@ const mechanics = (
           kaboomDamage: null,
           deathBlastDamage: null,
           regeneration: 0,
-          gangUpLimit: 2,
+          gangUpLimit: GANG_UP_MAX_ATTACK_V7,
           blastProof: false,
           kaboomAfterAttack: false,
           capacitySlots: 1,
@@ -2061,12 +2063,20 @@ export const BAT_ESCAPE_TILES_V7 = 2 as const;
  */
 export const WIGHT_RISE_AGAIN_HP_V7 = 7 as const;
 /**
- * Bolder abilities (`pulp_wars-w49.42`, 7r99): the whole Attack Gang Up adds
- * for each unit counted beside the target (it was 1). The count is still
- * the smallest of the faction's `gangUpMaximum`, the role's `gangUpLimit`,
- * and the helpers, so an attack gets at most +4 (a rocket +2).
+ * The whole Attack Gang Up adds for each own unit beside the target (an
+ * Ogre counts as `OGRE_GANG_UP_WEIGHT_V7` units). The sum is capped by the
+ * smallest of the faction's `gangUpMaximum` (`GANG_UP_MAX_ATTACK_V7`) and
+ * the role's `gangUpLimit` (a rocket 1, a bomb 0). Bolder abilities
+ * (`pulp_wars-w49.42`, 7r99) made it 2 a helper, up to +4; `pulp_wars-w49.43`
+ * (7r101; the user: "let's do +1 per ally (+2 for ogres) but up to +3") made
+ * it 1 again, up to +3.
  */
-export const GANG_UP_ATTACK_PER_HELPER_V7 = 2 as const;
+export const GANG_UP_ATTACK_PER_HELPER_V7 = 1 as const;
+/**
+ * `pulp_wars-w49.43` (7r101): the most whole Attack Gang Up adds to one
+ * attack (+2 from `7r17` to `7r98`, +4 in `7r99` and `7r100`).
+ */
+export const GANG_UP_MAX_ATTACK_V7 = 3 as const;
 /** The ninth unit: the Ogre counts as this many units for Gang Up. */
 export const OGRE_GANG_UP_WEIGHT_V7 = 2 as const;
 /** The ninth unit: what a Shock Field deals a melee attacker. */
@@ -5427,10 +5437,12 @@ export interface FactionRulesV7 {
   readonly cityCapacityBonus: 0 | 1;
   /**
    * Revision 17 Gang Up: a land-form attack gains Attack for each other own
-   * unit adjacent to its target (`GANG_UP_ATTACK_PER_HELPER_V7`, +2 each
-   * since 7r99), counting at most this many units (0 disables it).
+   * unit adjacent to its target (`GANG_UP_ATTACK_PER_HELPER_V7`, +1 each, an
+   * Ogre +2), up to this much whole Attack (0 disables it). Since
+   * `pulp_wars-w49.43` (7r101) the Goblin `GANG_UP_MAX_ATTACK_V7` (3); it
+   * counted at most two units before (+2, or +4 in 7r99 and 7r100).
    */
-  readonly gangUpMaximum: 0 | 2;
+  readonly gangUpMaximum: 0 | 3;
   /**
    * Revision 19: the mechanical role of the treasure chest unit (`KNIGHT`
    * for Human, Undead, and Goblin; `RAIDER` for Dinosaur, the Raptor, and
@@ -5465,7 +5477,7 @@ export const FACTION_RULES_V7: Readonly<Record<FactionIdV7, FactionRulesV7>> =
     GOBLIN: {
       restless: false,
       cityCapacityBonus: 1,
-      gangUpMaximum: 2,
+      gangUpMaximum: GANG_UP_MAX_ATTACK_V7,
       treasureUnitRole: "KNIGHT",
       snow: false,
     },

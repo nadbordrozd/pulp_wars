@@ -67,9 +67,9 @@ const CELLS = [
 
 describe("ruleset-7 revision-16 identity", () => {
   it("keeps rejecting r15 after the r54 identity and cleans the r15 through r53 save keys", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r100");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r100.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-85, -45)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r101");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r101.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-86, -46)).toEqual([
       "pulpWars.save.v7r15.current",
       "pulpWars.save.v7r16.current",
       "pulpWars.save.v7r17.current",
@@ -197,8 +197,9 @@ describe("ruleset-7 prior identities", () => {
     // 7r98. Bolder abilities (`pulp_wars-w49.42`: Mind Control takes any
     // adjacent unit, three at a time; Gang Up +2 a helper): 7r99. The frozen
     // sea redesign (`pulp_wars-5ti.25`: permanent ice, Crack Ice, the Ice
-    // Harbour and buildings on ice): 7r100.
-    expect(revision).toBe(100);
+    // Harbour and buildings on ice): 7r100. Gang Up back to +1 a helper
+    // (`pulp_wars-w49.43`): 7r101.
+    expect(revision).toBe(101);
     expect([...PRIOR_RULESET_7_IDS]).toEqual(expectedPrior);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
   });
@@ -233,7 +234,7 @@ describe("ruleset-7 prior identities", () => {
 
   it("still reports an unknown Ruleset 7 identity as INVALID_REPLAY", () => {
     // The next identity after the current one is still unknown.
-    for (const id of ["pulp-wars-poc-7r1", "pulp-wars-poc-7r101", "other"])
+    for (const id of ["pulp-wars-poc-7r1", "pulp-wars-poc-7r102", "other"])
       expect(
         parseReplayFileV7({
           format: "pulp-wars-replay",

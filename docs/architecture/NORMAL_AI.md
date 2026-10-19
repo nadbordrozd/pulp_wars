@@ -5470,7 +5470,10 @@ nor a threat. Against Martians every seat's exposure test
 but an Egg, a neutral one, and a controlled one within two tiles of a ready
 hostile Brain is exposed (Navigation assumed). Gang Up is read from the rule
 (`gangUpForPolicyV7`, `gangUpWithHelpersV7`, `gangUpMaximumAttackV7`:
-+2 a helper), and an attack already at its most Gang Up is no setup.
+`GANG_UP_ATTACK_PER_HELPER_V7` a helper, +2 in `7r99` and `7r100`; since
+`pulp_wars-w49.43`, `7r101`, +1 a helper, an Ogre two, up to
+`GANG_UP_MAX_ATTACK_V7` +3, and the policy estimate counts an Ogre two as
+the engine does), and an attack already at its most Gang Up is no setup.
 Tests: `tests/unit/ruleset-v7-mind-control-ai.test.ts` and
 `tests/unit/ruleset-v7-bolder-abilities.test.ts`.
 

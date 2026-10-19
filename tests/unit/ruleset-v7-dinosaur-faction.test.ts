@@ -121,22 +121,22 @@ const EGG_LAID_ROLES: readonly UnitRoleIdV7[] = [
 
 describe("ruleset-7 revision-19 identity", () => {
   it("keeps r18 among the gap-free prior identities after the r55 identity, and the save key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r100");
-    expect(RULESET_7.id).toBe("pulp-wars-poc-7r100");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r100.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r101");
+    expect(RULESET_7.id).toBe("pulp-wars-poc-7r101");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r101.current");
     expect([...PRIOR_RULESET_7_IDS]).toEqual([
       "pulp-wars-poc-7",
       ...Array.from(
-        { length: 98 },
+        { length: 99 },
         (_, index) => `pulp-wars-poc-7r${index + 2}`,
       ),
     ]);
-    expect(PRIOR_RULESET_7_IDS.at(-82)).toBe("pulp-wars-poc-7r18");
+    expect(PRIOR_RULESET_7_IDS.at(-83)).toBe("pulp-wars-poc-7r18");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
     expect([...OBSOLETE_SAVE_STORAGE_KEYS_V7]).toEqual([
       "pulpWars.save.v7.current",
       ...Array.from(
-        { length: 98 },
+        { length: 99 },
         (_, index) => `pulpWars.save.v7r${index + 2}.current`,
       ),
     ]);
@@ -174,7 +174,7 @@ describe("ruleset-7 revision-19 identity", () => {
     const setup = goblinSetupV7(["DINOSAUR", "ORIGINAL"]);
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
-    expect(created.state.rulesetId).toBe("pulp-wars-poc-7r100");
+    expect(created.state.rulesetId).toBe("pulp-wars-poc-7r101");
     const oldSetup = { ...setup, rulesetId: "pulp-wars-poc-7r18" };
     expect(parseMatchSetupV7(setup)).not.toBeNull();
     expect(parseMatchSetupV7(oldSetup)).toBeNull();
@@ -266,7 +266,8 @@ describe("ruleset-7 Dinosaur faction registration", () => {
     ).toEqual([
       ["ORIGINAL", "KNIGHT", 0, 0, false],
       ["UNDEAD", "KNIGHT", 0, 0, true],
-      ["GOBLIN", "KNIGHT", 1, 2, false],
+      // `pulp_wars-w49.43` (7r101): the Gang Up maximum is whole Attack, 3.
+      ["GOBLIN", "KNIGHT", 1, 3, false],
       ["DINOSAUR", "RAIDER", 0, 0, false],
       ["MARTIAN", "RAIDER", 0, 0, false],
       ["ICE_FOLK", "RAIDER", 0, 0, false],

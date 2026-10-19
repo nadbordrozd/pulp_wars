@@ -339,18 +339,22 @@ export function attackFortificationV7(
 /**
  * Revision 17 Gang Up (section 5.2): a land-form attacker whose kind (the
  * Mind Control revision: a body rule) has Gang Up gains
- * `GANG_UP_ATTACK_PER_HELPER_V7` Attack (+2 since bolder abilities,
- * `pulp_wars-w49.42`, 7r99; +1 before) for each other unit its owner (its
- * controller) has on
- * the eight cells around the target (any role and form; allies never count),
- * counting up to the faction maximum. Returns the whole Attack (0, 2, or 4). The Goblin pass (`pulp_wars-w49.12`): a role
- * has its own `gangUpLimit` (the Bomb Chucker 0, the Rocket Cart 1). Own units are always visible to their owner, so
- * the public preview passes its visible units and is exact.
+ * `GANG_UP_ATTACK_PER_HELPER_V7` Attack (+1) for each other unit its owner
+ * (its controller) has on the eight cells around the target (any role and
+ * form; allies never count), up to the faction maximum
+ * (`GANG_UP_MAX_ATTACK_V7`, +3). Returns the whole Attack (0 to 3). The
+ * Goblin pass (`pulp_wars-w49.12`): a role has its own `gangUpLimit` (the
+ * Bomb Chucker 0, the Rocket Cart 1). Own units are always visible to their
+ * owner, so the public preview passes its visible units and is exact.
+ * History: +1 a helper counting at most two (up to +2) until `7r98`, +2 a
+ * helper (up to +4) in `7r99` and `7r100` (bolder abilities,
+ * `pulp_wars-w49.42`), and +1 a helper up to +3 since `pulp_wars-w49.43`
+ * (`7r101`).
  *
  * The ninth unit (`pulp_wars-w49.17`, 7r55): Heavyweight. A helper counts
  * as its kind's role `gangUpWeight` units in land form (the Goblin Ogre 2,
- * so one Ogre gives the whole +2), and as 1 otherwise. A mind-controlled
- * Ogre is its controller's unit, so it helps no Goblin seat.
+ * so one Ogre gives +2), and as 1 otherwise. A mind-controlled Ogre is its
+ * controller's unit, so it helps no Goblin seat.
  */
 export function gangUpBonusV7(
   roster: FactionRosterV7,
@@ -384,12 +388,15 @@ export function gangUpBonusV7(
           : 1),
       0,
     );
-  return (GANG_UP_ATTACK_PER_HELPER_V7 *
-    Math.min(maximum, limit, helpers)) as GangUpAttackV7;
+  return Math.min(
+    maximum,
+    limit,
+    GANG_UP_ATTACK_PER_HELPER_V7 * helpers,
+  ) as GangUpAttackV7;
 }
 
 /** The whole Attack an attack gains from Gang Up (`gangUpBonusV7`). */
-export type GangUpAttackV7 = 0 | 2 | 4;
+export type GangUpAttackV7 = 0 | 1 | 2 | 3;
 
 /**
  * The Dinosaur pass (`pulp_wars-w49.15`, 7r53): Pack Hunt. The `attack2` a

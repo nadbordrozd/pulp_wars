@@ -2648,8 +2648,12 @@ function combat(input: unknown): boolean {
       input.maximumRange,
     ].every(pos) &&
     isPositiveSafeIntegerV7(input.attacksUsed) &&
-    // Bolder abilities (7r99): +2 Attack a helper, so 0, 2, or 4.
-    (input.gangUp === 0 || input.gangUp === 2 || input.gangUp === 4) &&
+    // +1 Attack a helper (an Ogre +2), up to +3 since 7r101 (0, 2, or 4 in
+    // 7r99 and 7r100; 0, 1, or 2 before).
+    (input.gangUp === 0 ||
+      input.gangUp === 1 ||
+      input.gangUp === 2 ||
+      input.gangUp === 3) &&
     // Revision 20: the Charge! run-up and the fortification levels removed
     // by Charge! (up to 4 since tuning 4, when a Field Defense became two
     // levels; 3 before) or Wallbreaker (2); Acid reports none.

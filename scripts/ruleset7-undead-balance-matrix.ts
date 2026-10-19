@@ -581,7 +581,7 @@ interface GoblinSeatStats {
   bombFriendlyKills: number;
   plunderCoins: number;
   /** Attacks by this seat's units by Gang Up bonus 0, +1, +2. */
-  gangUp: [number, number, number];
+  gangUp: [number, number, number, number];
   /** Attacks with a Gang Up bonus that killed their target. */
   gangUpKills: number;
   waaaghs: number;
@@ -651,7 +651,7 @@ function emptyGoblinSeat(seat: number): GoblinSeatStats {
     bombFriendlyDamage: 0,
     bombFriendlyKills: 0,
     plunderCoins: 0,
-    gangUp: [0, 0, 0],
+    gangUp: [0, 0, 0, 0],
     gangUpKills: 0,
     waaaghs: 0,
     waaaghUnits: 0,
@@ -775,9 +775,7 @@ function goblinTelemetry(
         const defenderSeat =
           defender === undefined ? undefined : seats.get(defender.ownerId);
         if (attacker !== undefined && attackerSeat !== undefined) {
-          // Bolder abilities (7r99): +2 Attack a helper; the histogram
-          // counts the helpers (0, 1, or 2).
-          attackerSeat.gangUp[(preview.gangUp / 2) as 0 | 1 | 2] += 1;
+          attackerSeat.gangUp[preview.gangUp] += 1;
           if (preview.gangUp > 0 && preview.defenderDies)
             attackerSeat.gangUpKills += 1;
           bump(
@@ -3036,7 +3034,7 @@ function buildCells(): MatrixCell[] {
 export function runCell(cell: MatrixCell): MatrixEntry {
   const factions = PAIRINGS[cell.pairing];
   const setup: MatchSetupV7 = {
-    rulesetId: "pulp-wars-poc-7r100",
+    rulesetId: "pulp-wars-poc-7r101",
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
     curiosities: false,
     seed: cell.seed,
@@ -3710,7 +3708,7 @@ async function runMain(): Promise<void> {
         JSON.stringify({
           format: "pulp-wars-ruleset7-undead-balance-matrix",
           version: 1,
-          rulesetId: "pulp-wars-poc-7r100",
+          rulesetId: "pulp-wars-poc-7r101",
           parameters,
           summary,
           games: ordered.map(compactEntry),
@@ -4432,7 +4430,7 @@ function goblinAggregate(group: readonly MatrixEntry[]) {
     plunderCoins: total("plunderCoins"),
     plunderPerSeatGame: perSeat(total("plunderCoins")),
     plunderShareOfIncome: share(total("plunderCoins"), income),
-    gangUp: [0, 1, 2].map((bonus) =>
+    gangUp: [0, 1, 2, 3].map((bonus) =>
       sum(seats.map(({ seatStats }) => seatStats.gangUp[bonus] ?? 0)),
     ),
     gangUpKills: total("gangUpKills"),
@@ -5913,7 +5911,7 @@ function goblinMarkdown(
       .join(", ")}; worst excess ${caps.worstExcessPoints} points`,
     `Kaboom (1v1): ${all.kabooms} in ${all.seatGamesWithKaboom}/${all.seatGames} seat-games; chain damage hostile ${all.kaboomChain.hostileDamage} vs friendly ${all.kaboomChain.friendlyDamage}`,
     `Goblin explosion deaths (1v1): hostile ${all.blast.hostileKills}, own ${all.blast.ownKills}, allied ${all.blast.alliedKills}; friendly share ${all.blast.friendlyDeathShare}; bomb friendly share ${all.bomb.friendlyDeathShare}`,
-    `Chains (1v1): ${all.chains.count}, sizes 1/2/3/4/5+ ${all.chains.sizes.join("/")}, longest ${all.chains.longest}; Plunder ${all.plunderCoins} (${all.plunderShareOfIncome} of income); Gang Up 0/1/2 ${all.gangUp.join("/")}; WAAAGH! ${all.waaaghs}; Trolls ${all.trolls}`,
+    `Chains (1v1): ${all.chains.count}, sizes 1/2/3/4/5+ ${all.chains.sizes.join("/")}, longest ${all.chains.longest}; Plunder ${all.plunderCoins} (${all.plunderShareOfIncome} of income); Gang Up 0/1/2/3 ${all.gangUp.join("/")}; WAAAGH! ${all.waaaghs}; Trolls ${all.trolls}`,
     "",
   ];
 }

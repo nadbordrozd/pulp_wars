@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
   GANG_UP_ATTACK_PER_HELPER_V7,
+  GANG_UP_MAX_ATTACK_V7,
+  OGRE_GANG_UP_WEIGHT_V7,
   MIND_CONTROL_LIMIT_V7,
   MIND_CONTROL_RANGE_V7,
   TECHNOLOGY_IDS_V7,
@@ -50,7 +52,11 @@ import { at, kindsV7, withoutTechsV7 } from "../fixtures/v7-revision20";
 // Bolder abilities (`pulp_wars-w49.42`, 7r99; the user, 2026-10-18: "any
 // adjacent unit gets mind controlled. limit 3 at a time ... make it +2
 // instead of +1"). The Brain takes any hostile unit next to it, at any HP,
-// of any size or form, three at a time; Gang Up adds +2 Attack a helper.
+// of any size or form, three at a time; Gang Up added +2 Attack a helper.
+// The user, 2026-10-19 (`pulp_wars-w49.43`, 7r101): "I think i overdid it
+// with the gang up bonus for goblins. Make it +1 per ally again", then
+// "let's do +1 per ally (+2 for ogres) but up to +3", so Gang Up is +1 an
+// ally (an Ogre +2), up to +3; the Brain change stays.
 
 const BRAIN = at(4, 3);
 
@@ -444,7 +450,7 @@ describe("bolder abilities: the browser review fixtures (7r99)", () => {
   });
 });
 
-describe("bolder abilities: Gang Up +2 Attack a helper (7r99)", () => {
+describe("Gang Up is +1 Attack an ally (an Ogre +2), up to +3 (7r101)", () => {
   const goblins = (helpers: readonly CoordV7[], role = "FIGHTER" as const) =>
     martianFieldV7(
       [
@@ -460,13 +466,16 @@ describe("bolder abilities: Gang Up +2 Attack a helper (7r99)", () => {
       { factions: ["GOBLIN", "ORIGINAL"] },
     );
 
-  it("adds 2 Attack for each own unit beside the target, up to two of them (+4)", () => {
-    expect(GANG_UP_ATTACK_PER_HELPER_V7).toBe(2);
+  it("adds 1 Attack for each own unit beside the target, up to +3", () => {
+    expect(GANG_UP_ATTACK_PER_HELPER_V7).toBe(1);
+    expect(GANG_UP_MAX_ATTACK_V7).toBe(3);
+    expect(OGRE_GANG_UP_WEIGHT_V7).toBe(2);
     const cases: readonly [readonly CoordV7[], number][] = [
       [[], 0],
-      [[at(5, 3)], 2],
-      [[at(5, 3), at(5, 5)], 4],
-      [[at(5, 3), at(5, 5), at(6, 4)], 4],
+      [[at(5, 3)], 1],
+      [[at(5, 3), at(5, 5)], 2],
+      [[at(5, 3), at(5, 5), at(6, 4)], 3],
+      [[at(5, 3), at(5, 5), at(6, 4), at(6, 3)], 3],
     ];
     for (const [helpers, gangUp] of cases) {
       const state = goblins(helpers);
@@ -486,12 +495,48 @@ describe("bolder abilities: Gang Up +2 Attack a helper (7r99)", () => {
     }
   });
 
-  it("a Rocket Cart gets at most +2 and a Bomb Chucker's bomb none", () => {
+  it("an Ogre beside the target is +2: alone +2, with an ally +3, two Ogres +3", () => {
+    // The Goblin Ogre is the kind's `SWORDSMAN` (Heavyweight).
+    const cases: readonly [readonly ("SWORDSMAN" | "FIGHTER")[], number][] = [
+      [["SWORDSMAN"], 2],
+      [["SWORDSMAN", "FIGHTER"], 3],
+      [["SWORDSMAN", "SWORDSMAN"], 3],
+    ];
+    const cells = [at(5, 3), at(5, 5)];
+    for (const [helpers, gangUp] of cases) {
+      const state = martianFieldV7(
+        [
+          { seat: 0, role: "FIGHTER", at: at(4, 4) },
+          ...helpers.map((role, index) => ({
+            seat: 0,
+            role,
+            at: cells[index] ?? at(6, 4),
+          })),
+          { seat: 1, role: "GUARD", at: at(5, 4) },
+          { seat: 1, role: "FIGHTER", at: at(1, 1) },
+        ],
+        { factions: ["GOBLIN", "ORIGINAL"] },
+      );
+      const attacker = unitAtV7(state, at(4, 4));
+      const target = unitAtV7(state, at(5, 4));
+      expect(gangUpBonusV7(state, state.units, attacker, target)).toBe(gangUp);
+      expect(
+        calculateCombatPreviewV7(state, attacker.id, target.id).gangUp,
+      ).toBe(gangUp);
+      // The AI's estimate counts the Ogre the same way.
+      const view = viewForV7(state, seatIdV7(state, 0));
+      const own = view.units.find((unit) => unit.id === attacker.id);
+      if (own === undefined) throw new Error("no attacker");
+      expect(gangUpForPolicyV7(view, own, at(5, 4))).toBe(gangUp);
+    }
+  });
+
+  it("a Rocket Cart gets at most +1 and a Bomb Chucker's bomb none", () => {
     const rocket = goblins([at(5, 3), at(5, 5)], "CATAPULT" as never);
     const cart = unitAtV7(rocket, at(4, 4));
     expect(
       gangUpBonusV7(rocket, rocket.units, cart, unitAtV7(rocket, at(5, 4))),
-    ).toBe(2);
+    ).toBe(1);
     const bombs = goblins([at(5, 3), at(5, 5)], "MARKSMAN" as never);
     expect(
       gangUpBonusV7(
@@ -504,7 +549,7 @@ describe("bolder abilities: Gang Up +2 Attack a helper (7r99)", () => {
   });
 });
 
-describe("bolder abilities: the AI reads Gang Up +2 from the rules (7r99)", () => {
+describe("the AI reads Gang Up +1 an ally, up to +3, from the rules (7r101)", () => {
   /** A Goblin seat's attacker on (4, 4), helpers on (5, 3) and (5, 5). */
   const mob = (
     role: "FIGHTER" | "CATAPULT" | "MARKSMAN",
@@ -530,11 +575,11 @@ describe("bolder abilities: the AI reads Gang Up +2 from the rules (7r99)", () =
     return unit;
   };
 
-  it("every seat's estimate of a Goblin's hit, its own or a hostile one, is +2 a helper", () => {
+  it("every seat's estimate of a Goblin's hit, its own or a hostile one, is +1 a helper up to +3", () => {
     for (const viewer of [0, 1]) {
       const { state, view } = mob("FIGHTER", viewer);
       const goblin = attackerOf(view);
-      expect(gangUpForPolicyV7(view, goblin, at(5, 4))).toBe(4);
+      expect(gangUpForPolicyV7(view, goblin, at(5, 4))).toBe(2);
       expect(
         gangUpForPolicyV7(
           view,
@@ -542,17 +587,19 @@ describe("bolder abilities: the AI reads Gang Up +2 from the rules (7r99)", () =
           at(5, 4),
           new Set([idAt(state, at(5, 5))]),
         ),
-      ).toBe(2);
-      expect(gangUpWithHelpersV7(view, goblin, 1)).toBe(2);
-      expect(gangUpWithHelpersV7(view, goblin, 5)).toBe(4);
-      expect(gangUpMaximumAttackV7(view, goblin)).toBe(4);
+      ).toBe(1);
+      expect(gangUpWithHelpersV7(view, goblin, 1)).toBe(1);
+      expect(gangUpWithHelpersV7(view, goblin, 2)).toBe(2);
+      expect(gangUpWithHelpersV7(view, goblin, 3)).toBe(3);
+      expect(gangUpWithHelpersV7(view, goblin, 5)).toBe(3);
+      expect(gangUpMaximumAttackV7(view, goblin)).toBe(3);
     }
   });
 
-  it("the most a rocket gets is +2 and a bomb +0", () => {
+  it("the most a rocket gets is +1 and a bomb +0", () => {
     const rockets = mob("CATAPULT", 0).view;
-    expect(gangUpMaximumAttackV7(rockets, attackerOf(rockets))).toBe(2);
-    expect(gangUpForPolicyV7(rockets, attackerOf(rockets), at(5, 4))).toBe(2);
+    expect(gangUpMaximumAttackV7(rockets, attackerOf(rockets))).toBe(1);
+    expect(gangUpForPolicyV7(rockets, attackerOf(rockets), at(5, 4))).toBe(1);
     const bombs = mob("MARKSMAN", 0).view;
     expect(gangUpMaximumAttackV7(bombs, attackerOf(bombs))).toBe(0);
   });

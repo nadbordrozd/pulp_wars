@@ -206,9 +206,7 @@ describe("Candy battle analysis, re-run by the engine (section 11)", () => {
       ["Raider", "8 / 4", { attackerExtra: CHARGE }],
       ["Wolf Rider", "8 / 4", { attackerExtra: CHARGE }],
       ["Raptor", "10, kill", { attackerExtra: CHARGE }],
-      // Bolder abilities (7r99): Gang Up +2 a helper (6 / 4 with one
-      // before).
-      ["Goblin", "10, kill", { helpers: 1 }],
+      ["Goblin", "6 / 4", { helpers: 1 }],
       ["Goblin", "10, kill", { helpers: 2 }],
       ["Catapult", "8 / -", { distance: 2 }],
       ["Lich", "8 / -", { distance: 2 }],
@@ -265,8 +263,7 @@ describe("Candy battle analysis, re-run by the engine (section 11)", () => {
       ["Guard", "3 / 7"],
       ["Knight", "11 / 4"],
       ["Raptor", "9 / 5", { attackerExtra: CHARGE }],
-      // Bolder abilities (7r99): Gang Up +4 with two helpers (9 / 5 at +2).
-      ["Goblin", "17 / 4", { helpers: 2 }],
+      ["Goblin", "9 / 5", { helpers: 2 }],
       ["Mammoth", "6 / 6"],
       ["T-Rex", "11 / 4"],
       ["Catapult", "7 / -", { distance: 2 }],

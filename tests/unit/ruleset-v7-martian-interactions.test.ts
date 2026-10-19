@@ -124,8 +124,7 @@ describe("Goblin rules (section 10.2)", () => {
       ],
       { activeSeat: 1, factions: ["MARTIAN", "GOBLIN"] },
     );
-    // Bolder abilities (7r99): two helpers, +2 Attack each.
-    expect(attackV7(state, at(5, 3), at(4, 3)).combat.gangUp).toBe(4);
+    expect(attackV7(state, at(5, 3), at(4, 3)).combat.gangUp).toBe(2);
     // No Martian attack has Gang Up.
     const martian = martianFieldV7(
       [

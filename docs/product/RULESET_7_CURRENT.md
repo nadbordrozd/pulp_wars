@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r100`, for all nine offered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r101`, for all nine offered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), Candy (`CANDY`), and
 the Cultists (`CULT`). The ninth faction, the Cultists of the Ancient Ones,
@@ -445,6 +445,22 @@ links to another, by Road or by Port. A sea link needs only **Shorecraft**
 the Roads technology, and unexplored water no longer breaks a link. A save,
 replay, or setup of `7r75` is rejected, and the browser autosave has a new
 key.
+`pulp-wars-poc-7r101` (`pulp_wars-w49.43`; the user, 2026-10-19: "I think
+i overdid it with the gang up bonus for goblins. Make it +1 per ally
+again", then "let's do +1 per ally (+2 for ogres) but up to +3") sets
+**Gang Up** ([section 18.2](#182-gang-up)) to **+1 Attack** for each own
+unit beside the target (`GANG_UP_ATTACK_PER_HELPER_V7` 1; 2 in `7r99` and
+`7r100`) and **+2 for an Ogre** (`OGRE_GANG_UP_WEIGHT_V7`), summed and
+capped at **+3** (`GANG_UP_MAX_ATTACK_V7`; the faction's `gangUpMaximum`
+and the role's `gangUpLimit` are now whole Attack: Goblin 3, other roles 3,
+a Rocket Cart's rocket 1, a bomb 0). It no longer stops counting at two
+helpers: three allies give +3, an Ogre and an ally +3, an Ogre alone +2,
+two Ogres +3, four allies still +3. The combat preview's `gangUp` (and the
+attack event's) stays the whole Attack it adds, now 0 to 3. The Martian
+Brain's Mind Control of `7r99` is unchanged. The Normal AI reads Gang Up
+from the rule; its estimate (`gangUpForPolicyV7`) now counts an Ogre two,
+as the engine does. A save, replay, or setup of `7r100` is rejected, and
+the browser autosave has a new key.
 `pulp-wars-poc-7r100` (`pulp_wars-5ti.25`, bead A of the
 [frozen sea redesign](RULESET_7_ICE_REDESIGN.md); the user, 2026-10-18:
 "the water freezing mechanics by the ice foik are a mess") makes **the
@@ -505,10 +521,10 @@ its kills feed no Favour; a ship a Brain holds that another seat boards is
 the boarder's and no longer held; a unit afloat on Deep Water released to
 an owner without Navigation is lost (`BRAIN_LOST`). **Gang Up** ([section
 18.2](#182-gang-up)) adds **+2 Attack** for each own unit beside the
-target (`GANG_UP_ATTACK_PER_HELPER_V7`; +1 before), still counting at most
-two (an Ogre counts two), so up to +4; a Rocket Cart's rocket counts one
-(+2) and a bomb none. The combat preview's `gangUp` is the whole Attack
-(0, 2, or 4). The Normal AI takes the most valuable unit beside a ready
+target (`GANG_UP_ATTACK_PER_HELPER_V7`; +1 before, and +1 again from
+`7r101`), still counting at most two (an Ogre counts two), so up to +4; a
+Rocket Cart's rocket counts one (+2) and a bomb none. The combat preview's
+`gangUp` is the whole Attack (0, 2, or 4). The Normal AI takes the most valuable unit beside a ready
 Brain (its kind cost, or its Score value for a unit without one: a giant
 12, a Horror 6, a Herald 24), approaches any unit, no longer wounds a
 target into control, and against Martians every seat keeps every unit (not
@@ -1415,7 +1431,7 @@ the build differs (its sections 20 to 24 list them);
 the values here are current. Where a document and the code disagreed, the
 code's behavior is the rule and is stated below;
 [Known discrepancies](#25-known-discrepancies) lists the open items and the
-resolved ones as of `pulp-wars-poc-7r100`.
+resolved ones as of `pulp-wars-poc-7r101`.
 
 **Terms.** "On the board" means a unit that currently exists (HP above 0).
 **Living** has the narrower revision-13 meaning used by Wail, Plague,
@@ -1518,10 +1534,10 @@ sections here cite.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r100`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Ruleset                                    | `pulp-wars-poc-7r101`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r100.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Browser autosave                           | `pulpWars.save.v7r101.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, `CULT`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`, `CULT_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -9994,12 +10010,19 @@ decisions, and the tuning record:
 ### 18.2 Gang Up
 
 - When a Goblin unit in land form makes an `ATTACK` (any accepted attack,
-  melee or ranged, including Ram continuations), it gets **+2 Attack for each
-  other unit its owner has on the eight cells around the target, counting at
-  most two of them, so up to +4** (`GANG_UP_ATTACK_PER_HELPER_V7` 2,
-  `gangUpMaximum` 2). Bolder abilities (`pulp_wars-w49.42`, `7r99`, the
-  user's "make it +2 instead of +1"): it was +1 a helper, up to +2. The
-  combat preview's `gangUp` is the whole Attack it adds (0, 2, or 4).
+  melee or ranged, including Ram continuations), it gets **+1 Attack for each
+  other unit its owner has on the eight cells around the target (+2 for an
+  Ogre, [section 18.13](#1813-the-ogre-heavyweight)), up to +3 in all**
+  (`GANG_UP_ATTACK_PER_HELPER_V7` 1, `OGRE_GANG_UP_WEIGHT_V7` 2,
+  `gangUpMaximum` `GANG_UP_MAX_ATTACK_V7` 3). Three allies give +3, an Ogre
+  and an ally +3, an Ogre alone +2, two Ogres +3, and four or more allies
+  still +3. History: +1 a helper counting at most two (up to +2) from `7r17`
+  to `7r98`; +2 a helper, up to +4, in `7r99` and `7r100` (bolder
+  abilities, `pulp_wars-w49.42`, the user's "make it +2 instead of +1");
+  since `7r101` (`pulp_wars-w49.43`, the user's "I think i overdid it ...
+  Make it +1 per ally again", then "let's do +1 per ally (+2 for ogres) but
+  up to +3") the rule above. The combat preview's `gangUp` is the whole
+  Attack it adds (0 to 3).
 - Helpers are units on the board owned by the attacker's owner, of any role
   and form (land, embarked, naval), other than the attacker. Allied units
   never count. Own units are always visible to their owner, so the public
@@ -10010,15 +10033,14 @@ decisions, and the tuning record:
   [the Goblin pass](RULESET_7_TUNING_GOBLIN.md#61-a-bomb-gets-no-gang-up)):
   **a Bomb Chucker's bomb gets no Gang Up** (the role mechanic
   `gangUpLimit: 0`; every other Goblin land role but the Rocket Cart has
-  2). Its `gangUp` is 0 whatever stands beside the target; Inspired still
-  adds +1, and the splash derives from that hit. **A Rocket Cart's rocket
-  counts one helper at most** (`gangUpLimit: 1`, the correction of the
-  pass): its `gangUp` is 2 with one or more helpers since `7r99` (1
-  before). An attack's Gang Up is `GANG_UP_ATTACK_PER_HELPER_V7` times the
-  smallest of the faction's maximum, the role's limit, and the helpers.
-  Since `7r99` a rocket from three tiles deals a full-HP Swordsman 15 with
-  one helper (a kill; 13 before), a Guard 17 (a kill) and a Knight 13 (a
-  kill); the numbers below are those of `7r50` to `7r98`.
+  3, `GANG_UP_MAX_ATTACK_V7`, since `7r101`; 2 helpers before). Its `gangUp`
+  is 0 whatever stands beside the target; Inspired still adds +1, and the
+  splash derives from that hit. **A Rocket Cart's rocket gets +1 at most**
+  (`gangUpLimit: 1`, the correction of the pass): its `gangUp` is 1 with
+  one or more helpers (2 in `7r99` and `7r100`). An attack's Gang Up is
+  `GANG_UP_ATTACK_PER_HELPER_V7` times the summed helpers (an Ogre two),
+  capped by the smallest of the faction's maximum and the role's limit
+  (both whole Attack since `7r101`).
   From three tiles at a full-HP unit a rocket deals a Guard 12 alone and 17
   (a kill) with one helper (or with WAAAGH! before `pulp_wars-w49.35`), and on a walled center or a
   Field Defense 8, 12, and 16 with both; a Swordsman 9, 13, and 15 (a kill)
@@ -10406,9 +10428,10 @@ Blast-proof, and builds no Field Defense. Its numbers are first guesses.
 - **Heavyweight** (`gangUpWeight` 2, `OGRE_GANG_UP_WEIGHT_V7`). In the
   Gang Up count of another Goblin attack ([section 18.2](#182-gang-up)) a
   land-form Ogre next to the target counts as two helpers. One Ogre beside
-  the target gives +2, the faction's maximum, where two Goblins were
-  needed. The maximum (+2) and the limits of a role stand: a Rocket Cart
-  takes +1 at most and a Bomb Chucker's bomb none.
+  the target gives +2, where two Goblins are needed; since `7r101`
+  (`pulp_wars-w49.43`) an Ogre and an ally give +3, the maximum, and so do
+  two Ogres (+2, the maximum then, until `7r100`). The limits of a role
+  stand: a Rocket Cart takes +1 at most and a Bomb Chucker's bomb none.
 - The Ogre's own attack takes Gang Up like any Goblin unit's, from the
   other Goblin units next to its target.
 - An embarked Ogre is no helper (Gang Up counts land-form helpers).

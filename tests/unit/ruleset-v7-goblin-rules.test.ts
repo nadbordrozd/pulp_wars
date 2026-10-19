@@ -44,25 +44,60 @@ const HELPER_CELLS = [
   { x: 5, y: 1 },
   { x: 5, y: 3 },
 ] as const;
+// `pulp_wars-w49.43` (7r101): a fourth cell beside the target, to show the
+// +3 cap.
+const FOUR_HELPER_CELLS = [...HELPER_CELLS, { x: 6, y: 1 }] as const;
 
 describe("ruleset-7 Goblin Gang Up", () => {
-  // Bolder abilities (`pulp_wars-w49.42`, 7r99): +2 a helper (+1 before).
-  it("adds +2 Attack per other own unit next to the target, up to +4", () => {
+  // `pulp_wars-w49.43` (7r101; the user: "let's do +1 per ally (+2 for
+  // ogres) but up to +3"): +1 a helper up to +3 (it counted two, up to +2,
+  // until 7r98, and was +2 a helper, up to +4, in 7r99 and 7r100).
+  it("adds +1 Attack per other own unit next to the target, up to +3", () => {
     for (const [helpers, gangUp] of [
       [0, 0],
-      [1, 2],
-      [2, 4],
-      [3, 4],
+      [1, 1],
+      [2, 2],
+      [3, 3],
+      [4, 3],
     ] as const) {
       const state = goblinArenaV7(
         ["GOBLIN", "ORIGINAL"],
         [
           { seat: 0, role: "FIGHTER", at: ATTACKER },
           { seat: 1, role: "GUARD", at: TARGET },
-          ...HELPER_CELLS.slice(0, helpers).map((at): GoblinPieceV7 => ({
+          ...FOUR_HELPER_CELLS.slice(0, helpers).map((at): GoblinPieceV7 => ({
             seat: 0,
             role: "GUARD",
             at,
+          })),
+        ],
+      );
+      const preview = resolvedAttack(state, ATTACKER, TARGET);
+      expect([preview.gangUp, preview.attack2]).toEqual([
+        gangUp,
+        GOBLIN_ATTACK2 + 2 * gangUp,
+      ]);
+      expect(publicPreview(state, ATTACKER, TARGET)).toEqual(preview);
+    }
+  });
+
+  it("counts an Ogre as +2: alone +2, with an ally +3, two Ogres +3", () => {
+    // The Goblin Ogre is the kind's `SWORDSMAN` (Heavyweight).
+    for (const [helpers, gangUp] of [
+      [["SWORDSMAN"], 2],
+      [["SWORDSMAN", "GUARD"], 3],
+      [["SWORDSMAN", "SWORDSMAN"], 3],
+      [["SWORDSMAN", "GUARD", "GUARD"], 3],
+    ] as const) {
+      const state = goblinArenaV7(
+        ["GOBLIN", "ORIGINAL"],
+        [
+          { seat: 0, role: "FIGHTER", at: ATTACKER },
+          { seat: 1, role: "GUARD", at: TARGET },
+          ...helpers.map((role, index): GoblinPieceV7 => ({
+            seat: 0,
+            role,
+            at: FOUR_HELPER_CELLS[index] ?? TARGET,
           })),
         ],
       );
@@ -91,8 +126,8 @@ describe("ruleset-7 Goblin Gang Up", () => {
       { water },
     );
     expect(resolvedAttack(state, ATTACKER, TARGET)).toMatchObject({
-      gangUp: 4,
-      attack2: GOBLIN_ATTACK2 + 8,
+      gangUp: 2,
+      attack2: GOBLIN_ATTACK2 + 4,
     });
 
     // Cooperative AIs are allied: seat 2's unit next to the target is no
@@ -110,8 +145,8 @@ describe("ruleset-7 Goblin Gang Up", () => {
       { aiMode: "COOPERATIVE", activeSeat: 1 },
     );
     expect(resolvedAttack(allied, at(5, 6), at(6, 6))).toMatchObject({
-      gangUp: 2,
-      attack2: GOBLIN_ATTACK2 + 4,
+      gangUp: 1,
+      attack2: GOBLIN_ATTACK2 + 2,
     });
   });
 
@@ -180,11 +215,11 @@ describe("ruleset-7 Goblin Gang Up", () => {
       ],
     );
     const rocket = resolvedAttack(ranged, { x: 2, y: 2 }, TARGET);
-    // The Goblin pass, correction (`pulp_wars-w49.12`): a rocket counts one
-    // helper at most (two stand beside the target): +2 since 7r99.
+    // The Goblin pass, correction (`pulp_wars-w49.12`): a rocket gets +1 at
+    // most (two helpers stand beside the target).
     expect([rocket.gangUp, rocket.attack2, rocket.retaliation]).toEqual([
-      2,
-      11,
+      1,
+      9,
       false,
     ]);
 
@@ -212,7 +247,7 @@ describe("ruleset-7 Goblin Gang Up", () => {
       wolf.inspiredApplied,
       wolf.gangUp,
       wolf.attack2,
-    ]).toEqual([true, true, 4, 4 + 2 + 2 + 8]);
+    ]).toEqual([true, true, 2, 4 + 2 + 2 + 4]);
     expect(publicCharged).toEqual(wolf);
   });
 });

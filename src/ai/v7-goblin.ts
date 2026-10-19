@@ -145,12 +145,13 @@ export function regenerationV7(view: PlayerViewV7, unit: PublicUnitV7): number {
 
 /**
  * Gang Up (section 5.2) a land-form `attacker` would get against a target at
- * `targetAt`, in whole Attack: `GANG_UP_ATTACK_PER_HELPER_V7` (2 since
- * bolder abilities, 7r99) for each other unit of its owner on the eight
- * cells around the target, not counting `ignore` (the target, a unit that
- * is moving away), counting up to the owner's faction maximum and the
- * role's limit. Own units are always visible to their owner, and the
- * viewer's estimate of a hostile Goblin uses the units it can see.
+ * `targetAt`, in whole Attack: `GANG_UP_ATTACK_PER_HELPER_V7` (1) for each
+ * other unit of its owner on the eight cells around the target (an Ogre in
+ * land form counts two, `gangUpHelperWeightV7`, as in the engine since
+ * `pulp_wars-w49.43`), not counting `ignore` (the target, a unit that is
+ * moving away), up to the owner's faction maximum and the role's limit
+ * (`gangUpWithHelpersV7`). Own units are always visible to their owner, and
+ * the viewer's estimate of a hostile Goblin uses the units it can see.
  */
 export function gangUpForPolicyV7(
   view: PlayerViewV7,
@@ -172,25 +173,23 @@ export function gangUpForPolicyV7(
       !ignore.has(unit.id) &&
       chebyshev(unit.at, targetAt) === 1
     )
-      helpers += 1;
-  return GANG_UP_ATTACK_PER_HELPER_V7 * Math.min(maximum, limit, helpers);
+      helpers += gangUpHelperWeightV7(view, unit);
+  return Math.min(maximum, limit, GANG_UP_ATTACK_PER_HELPER_V7 * helpers);
 }
 
 /**
  * Bolder abilities (`pulp_wars-w49.42`): the most Gang Up, in whole Attack,
- * an attack of `unit` can get (4 for most Goblin land roles, 2 for a
- * rocket, 0 for a bomb or a unit of another kind).
+ * an attack of `unit` can get (3 for most Goblin land roles since
+ * `pulp_wars-w49.43`, 1 for a rocket, 0 for a bomb or a unit of another
+ * kind).
  */
 export function gangUpMaximumAttackV7(
   view: PlayerViewV7,
   unit: PublicUnitV7,
 ): number {
-  return (
-    GANG_UP_ATTACK_PER_HELPER_V7 *
-    Math.min(
-      factionRulesV7(unitFactionV7(view, unit)).gangUpMaximum,
-      unitRoleMechanicsV7(view, unit).gangUpLimit,
-    )
+  return Math.min(
+    factionRulesV7(unitFactionV7(view, unit)).gangUpMaximum,
+    unitRoleMechanicsV7(view, unit).gangUpLimit,
   );
 }
 
@@ -227,8 +226,8 @@ export function gangUpHelperWeightV7(
 /**
  * The Gang Up `attacker` gets, in whole Attack, with helpers of the summed
  * weight `helperWeight` beside its target: `GANG_UP_ATTACK_PER_HELPER_V7`
- * times the smallest of the faction's maximum, the role's limit, and the
- * helpers.
+ * times the weight, capped by the faction's maximum and the role's limit
+ * (`pulp_wars-w49.43`: both in whole Attack).
  */
 export function gangUpWithHelpersV7(
   view: PlayerViewV7,
@@ -236,16 +235,13 @@ export function gangUpWithHelpersV7(
   helperWeight: number,
 ): number {
   if (attacker.form !== "LAND") return 0;
-  return (
-    GANG_UP_ATTACK_PER_HELPER_V7 *
-    Math.max(
-      0,
-      Math.min(
-        factionRulesV7(unitFactionV7(view, attacker)).gangUpMaximum,
-        unitRoleMechanicsV7(view, attacker).gangUpLimit,
-        helperWeight,
-      ),
-    )
+  return Math.max(
+    0,
+    Math.min(
+      factionRulesV7(unitFactionV7(view, attacker)).gangUpMaximum,
+      unitRoleMechanicsV7(view, attacker).gangUpLimit,
+      GANG_UP_ATTACK_PER_HELPER_V7 * helperWeight,
+    ),
   );
 }
 
