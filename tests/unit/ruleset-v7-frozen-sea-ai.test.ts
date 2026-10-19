@@ -14,7 +14,7 @@ import {
   ICE_EXPOSED_TARGET_VALUE_V7,
   ICE_HOME_FREEZE_PRIORITY_V7,
   ICE_ICEBOUND_PRIORITY_V7,
-  ICE_REFREEZE_PRIORITY_V7,
+  ICE_MEND_PRIORITY_V7,
   ICE_SEA_DUE_RESEARCH_PRIORITY_V7,
   ICE_SEA_GLACIER_RESEARCH_PRIORITY_V7,
   ICE_SEA_PLAN_RESEARCH_PRIORITY_V7,
@@ -133,6 +133,8 @@ function toolsOf(view: PlayerViewV7): FrozenSeaToolsV7 {
     standTiles: (hostile) => publicStandTilesForPolicyV7(view, hostile),
     objective: () => undefined,
     commands: queryPlayerCommandsV7(view),
+    route: () => null,
+    plannedThrough: () => false,
   };
 }
 
@@ -221,7 +223,6 @@ describe("the ice plan of an Ice Folk seat: the crossing", () => {
       complete: false,
       ready: false,
       needsPackIce: false,
-      thawSafe: true,
       stand: HEAD,
       builders: [idAt(state, { x: 2, y: 2 })],
     });
@@ -378,11 +379,10 @@ describe("the ice plan of an Ice Folk seat: the crossing", () => {
       ],
       ice: column(3),
     });
-    // Two tiles left: her one tile a turn finishes inside the 3 turns.
+    // Two tiles left.
     expect(requiredPlan(short.view)).toMatchObject({
       unfrozen: 2,
       builders: [idAt(short.state, { x: 2, y: 1 })],
-      thawSafe: true,
     });
     const long = scene({
       technologies: [PACK_ICE, PACK_ICE],
@@ -391,14 +391,14 @@ describe("the ice plan of an Ice Folk seat: the crossing", () => {
         { seat: 0, role: "FIGHTER", at: { x: 8, y: 1 } },
       ],
     });
-    // Five tiles left: the frozen sea redesign (`pulp_wars-5ti.25`) makes
-    // ice permanent, so no thaw outruns her and the near Witch builds any
-    // crossing (before: a Yeti, two tiles a turn, beat the thaw).
+    // Five tiles left: the frozen sea redesign makes ice permanent, so no
+    // thaw outruns her and the near Witch builds any crossing (before: a
+    // Yeti, two tiles a turn, beat the thaw), alone.
     expect(requiredPlan(long.view)).toMatchObject({
       unfrozen: 5,
       builders: [idAt(long.state, { x: 2, y: 1 })],
-      thawSafe: true,
     });
+    expect(requiredPlan(long.view)).not.toHaveProperty("thawSafe");
     // Without Rime nobody is bound to the job.
     const none = scene({
       technologies: [NO_RIME, PACK_ICE],
@@ -639,9 +639,11 @@ describe("the builders: a bridge frozen toward the far shore", () => {
 
   it("never Freezes without a reason", () => {
     // A Yeti on the shore away from the crossing: every Freeze it is
-    // offered makes ice nobody needs.
+    // offered makes ice nobody needs (the seat has no Coins for a building
+    // on that ice: the frozen sea redesign's home ice for building).
     const idle = scene({
       technologies: [PACK_ICE, PACK_ICE],
+      coins: [0, 60],
       units: [
         { seat: 0, role: "FIGHTER", at: HEAD },
         { seat: 0, role: "FIGHTER", at: { x: 9, y: 2 } },
@@ -658,9 +660,10 @@ describe("the builders: a bridge frozen toward the far shore", () => {
       ),
     ).toEqual([]);
     // A complete crossing with fresh ice and a unit beside it: a Freeze
-    // would only refresh it.
+    // would only refresh it (and no Coins for a building on new ice).
     const complete = scene({
       technologies: [PACK_ICE, PACK_ICE],
+      coins: [0, 60],
       units: [{ seat: 0, role: "FIGHTER", at: HEAD }],
       ice: column(5),
     });
@@ -676,10 +679,10 @@ describe("the builders: a bridge frozen toward the far shore", () => {
     ).toEqual([]);
   });
 
-  // The frozen sea redesign (`pulp_wars-5ti.25`): ice no longer thaws, so
-  // the old "about to thaw" refreeze is adapted minimally to its successor,
-  // mending cracked crossing tiles (bead `pulp_wars-5ti.26` reworks it).
-  it("mends cracked crossing tiles while a unit still has to pass them", () => {
+  // The frozen sea redesign (`pulp_wars-5ti.26`): ice no longer thaws, so
+  // the old "about to thaw" refreeze is gone; a cracked crossing tile is
+  // mended, whoever still has to pass it (the crossing is the seat's road).
+  it("mends cracked crossing tiles", () => {
     const options = (wave: boolean): FrozenArenaOptionsV7 => ({
       technologies: [GLACIER, PACK_ICE],
       units: [
@@ -708,8 +711,8 @@ describe("the builders: a bridge frozen toward the far shore", () => {
       command,
     );
     expect(scored).toMatchObject({
-      reason: "REFREEZE",
-      priority: ICE_REFREEZE_PRIORITY_V7,
+      reason: "MEND",
+      priority: ICE_MEND_PRIORITY_V7,
       strategic: 12,
     });
     expect(scored?.preview.mended).toEqual(COLUMN.slice(3, 5));
@@ -719,14 +722,15 @@ describe("the builders: a bridge frozen toward the far shore", () => {
     const result = acceptV7(waiting.state, 0, command);
     expect(frozenEvent(result.events).tiles).toEqual(scored?.preview.tiles);
     expect(iceEntryV7(result.state, { x: 3, y: 6 })?.cracked).toBe(false);
-    // The same ice with nobody left behind it is let go.
+    // The same ice with nobody left behind it is mended too (before the
+    // redesign it was let go to thaw).
     const alone = scene(options(false));
     expect(
       iceFreezeScoreV7(alone.view, toolsOf(alone.view), planOf(alone.view), {
         ...command,
         unitId: idAt(alone.state, { x: 3, y: 5 }),
       }),
-    ).toBeNull();
+    ).toMatchObject({ reason: "MEND", priority: ICE_MEND_PRIORITY_V7 });
   });
 });
 
@@ -944,11 +948,23 @@ describe("Icebound and home ice", () => {
   });
 
   it("Freezes its own waters beside a center a hostile ship has come near", () => {
-    const { state, view } = scene({
+    // No Coins for a building on the ice: the wall is the only reason. The
+    // Yeti beside the capital is the crossing's builder, so the garrison
+    // makes the home ice (the frozen sea redesign: never the builder).
+    const options = (
+      ports: readonly [boolean, boolean] = [true, true],
+    ): FrozenArenaOptionsV7 => ({
       technologies: [RIME, GLACIER],
-      units: [{ seat: 1, role: "PATROL_BOAT", at: { x: 6, y: 5 } }],
+      coins: [0, 60],
+      ports,
+      units: [
+        { seat: 0, role: "FIGHTER", at: { x: 6, y: 1 } },
+        { seat: 1, role: "PATROL_BOAT", at: { x: 6, y: 5 } },
+      ],
     });
+    const { state, view } = scene(options());
     const garrison = idAt(state, { x: 5, y: 2 });
+    expect(requiredPlan(view).builders).toEqual([idAt(state, { x: 6, y: 1 })]);
     const best = candidates(view).find(
       (item) =>
         item.command.kind === "FREEZE" && item.command.unitId === garrison,
@@ -973,25 +989,42 @@ describe("Icebound and home ice", () => {
           (entry) => entry.at.x === at.x && entry.at.y === at.y,
         )?.cracked,
       ).toBe(false);
-    // A city without a dock keeps its Port sites clear: a Port cannot be
-    // built on ice, and this ice would stay for good.
-    const dockless = scene({
-      technologies: [RIME, GLACIER],
-      ports: [false, true],
-      units: [{ seat: 1, role: "PATROL_BOAT", at: { x: 6, y: 5 } }],
+    // The redesign: a city without a dock no longer keeps its Port sites
+    // clear, since its Ice Harbour may stand on the ice.
+    const dockless = scene(options([false, true]));
+    const wall = candidates(dockless.view).find(
+      (item) =>
+        item.command.kind === "FREEZE" &&
+        item.command.unitId === idAt(dockless.state, { x: 5, y: 2 }),
+    );
+    expect(wall?.score.priority).toBe(ICE_HOME_FREEZE_PRIORITY_V7);
+    const walled = acceptV7(dockless.state, 0, wall?.command as CommandV7);
+    // With the Coins for it, an Ice Harbour is offered on that ice.
+    const funded = parseGameStateV7({
+      ...walled.state,
+      players: walled.state.players.map((player) =>
+        player.id === seatV7(walled.state, 0).id
+          ? { ...player, coins: 10 }
+          : player,
+      ),
     });
-    expect(
-      queryPlayerCommandsV7(dockless.view).some(
-        (command) => command.kind === "BUILD_PORT",
+    if (funded === null) throw new Error("the funded state is invalid");
+    const harbour = frozenEvent(walled.events).tiles.find((at) =>
+      queryPlayerCommandsV7(viewOf(funded)).some(
+        (command) =>
+          command.kind === "BUILD_PORT" &&
+          command.at.x === at.x &&
+          command.at.y === at.y,
       ),
-    ).toBe(true);
-    expect(
-      candidates(dockless.view).filter(
-        (item) => item.command.kind === "FREEZE",
-      ),
-    ).toEqual([]);
-    // With no ship near, the same Freeze has no reason.
-    const calm = scene({ technologies: [RIME, GLACIER], units: [] });
+    );
+    expect(harbour).toBeDefined();
+    // With no ship near (and no Coins for a building), the same Freeze has
+    // no reason.
+    const calm = scene({
+      technologies: [RIME, GLACIER],
+      coins: [0, 60],
+      units: [],
+    });
     expect(
       candidates(calm.view).filter(
         (item) =>
@@ -1317,18 +1350,13 @@ describe("every seat against the ice", () => {
     if (kill === null || chip === null) throw new Error("no preview");
     expect(kill.defenderDies).toBe(true);
     expect(chip.defenderDies).toBe(false);
-    expect(
-      iceTargetBonusV7(
-        weakView,
-        toolsOf(weakView),
-        publicUnit(weakView, holder),
-        kill,
-      ),
-    ).toBe(ICE_EXPOSED_TARGET_VALUE_V7);
+    expect(iceTargetBonusV7(weakView, publicUnit(weakView, holder))).toBe(
+      ICE_EXPOSED_TARGET_VALUE_V7,
+    );
     // A hit that does not kill is worth the same.
-    expect(
-      iceTargetBonusV7(view, toolsOf(view), publicUnit(view, holder), chip),
-    ).toBe(ICE_EXPOSED_TARGET_VALUE_V7);
+    expect(iceTargetBonusV7(view, publicUnit(view, holder))).toBe(
+      ICE_EXPOSED_TARGET_VALUE_V7,
+    );
     // The score of the attack carries it.
     const attack: CommandV7 = {
       kind: "ATTACK",

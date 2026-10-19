@@ -786,7 +786,10 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // The third pass (`pulp_wars-9s0.14`): a sailor of a wave is a
     // land-form unit beside a Port (an Egg does not board, and an embarked
     // unit is counted as a transport).
-    "src/ai/v7.ts": 56,
+    // The frozen sea redesign (`pulp_wars-5ti.26`): the units whose Moves
+    // keep the ice they pass under from a Crack are land-form movers (an
+    // Egg makes no Move, and a unit afloat never enters ice).
+    "src/ai/v7.ts": 57,
     // The giants' signatures (`pulp_wars-w49.31`): a giant has its
     // signature in land form only (section 6.0, G2), and so has a Troll
     // that throws; the unit a crush is added to, the unit lined up behind
@@ -808,9 +811,10 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // valued for and the unit kept off hostile ice are land-form movers (an
     // Egg makes no Move, and an embarked unit keeps the naval rules); the
     // own units counted as able to strike an icebound ship are land-form
-    // units (an Egg and an embarked unit strike nobody); and the unit that
-    // holds thawing ice is a land-form unit (an Egg is never on ice, and a
-    // unit afloat on ice is icebound and holds nothing).
+    // units (an Egg and an embarked unit strike nobody); and the target
+    // exposed on the ice is a land-form unit (an Egg is never on ice, and a
+    // unit afloat on ice is icebound; the redesign, `pulp_wars-5ti.26`,
+    // took away the value of the kill that broke thawing ice).
     "src/ai/v7-frozen-sea.ts": 4,
   };
 

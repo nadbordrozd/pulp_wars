@@ -599,6 +599,7 @@ import {
 import { ninthUnitMoveValueV7, ownWightGraveHeldV7 } from "./v7-ninth-unit";
 import {
   ICE_CREW_LANDING_PRIORITY_V7,
+  iceCrackScoreV7,
   iceCrossingMoveV7,
   iceFreezeScoreV7,
   iceLandingRejectedV7,
@@ -612,6 +613,7 @@ import {
   iceSliderV7,
   iceTargetBonusV7,
   iceboundCrewLandingV7,
+  iceRouteStepCostV7,
   type FrozenSeaToolsV7,
   type IcePlanV7,
 } from "./v7-frozen-sea";
@@ -3412,6 +3414,16 @@ function* publicWaterRouteDistancesV7(
         : [],
     ),
   );
+  // The frozen sea redesign (`pulp_wars-5ti.26`, section 3.2): ice a ship
+  // may Crack is passable at extra steps (`iceRouteStepCostV7`), an ally's
+  // or built ice is not. Without ice the search is the plain one below.
+  if (view.ice.length > 0)
+    return yield* publicIceWaterRouteDistancesV7(
+      view,
+      targets,
+      water,
+      pathWork,
+    );
   const distances = new Map<string, number>();
   const queue = targets
     .filter((at) => water.has(coordKey(at)))
@@ -3428,6 +3440,67 @@ function* publicWaterRouteDistancesV7(
       queue.push({ at: next, steps: item.steps + 1 });
     }
     yield;
+  }
+  return distances;
+}
+
+/**
+ * The frozen sea redesign (`pulp_wars-5ti.26`): the water route steps of
+ * `publicWaterRouteDistancesV7` on a board with ice, from the targets
+ * outward. A step onto open water costs 1; onto ice `iceRouteStepCostV7`
+ * (crackable ice 3, thick ice not yet cracked 5, an ally's or built ice
+ * closed), so a ship's route crosses ice only where going round is longer.
+ * The steps of a tile are those of the cheapest way from it to a target
+ * (the cost of each tile entered on the way). A bucket queue, in (y, x)
+ * order within a bucket: deterministic.
+ */
+function* publicIceWaterRouteDistancesV7(
+  view: PlayerViewV7,
+  targets: readonly CoordV7[],
+  water: ReadonlySet<string>,
+  pathWork?: MutablePolicyPathDiagnosticsV7,
+): Generator<void, ReadonlyMap<string, number>> {
+  const allied = (ownerId: PlayerId): boolean =>
+    ownerId !== view.viewer.id &&
+    publicPlayersAllied(view, view.viewer.id, ownerId);
+  const costOf = new Map<string, number | undefined>();
+  const stepCost = (at: CoordV7): number | undefined => {
+    const key = coordKey(at);
+    if (!costOf.has(key)) costOf.set(key, iceRouteStepCostV7(view, allied, at));
+    return costOf.get(key);
+  };
+  const distances = new Map<string, number>();
+  const buckets: CoordV7[][] = [];
+  for (const at of targets)
+    if (water.has(coordKey(at)) && !distances.has(coordKey(at))) {
+      distances.set(coordKey(at), 0);
+      (buckets[0] ??= []).push(at);
+    }
+  const settled = new Set<string>();
+  for (let steps = 0; steps < buckets.length; steps += 1) {
+    const bucket = buckets[steps];
+    if (bucket === undefined) continue;
+    bucket.sort((left, right) => left.y - right.y || left.x - right.x);
+    for (const at of bucket) {
+      const key = coordKey(at);
+      if (settled.has(key) || distances.get(key) !== steps) continue;
+      settled.add(key);
+      if (pathWork !== undefined) pathWork.navalPathExpansions += 1;
+      // Entering `at` from a neighbour costs `at`'s step; a target is free.
+      const enter = steps === 0 ? 1 : stepCost(at);
+      if (enter === undefined) continue;
+      for (const next of neighbors8V7(view, at)) {
+        const nextKey = coordKey(next);
+        if (!water.has(nextKey) || settled.has(nextKey)) continue;
+        if (stepCost(next) === undefined) continue;
+        const total = steps + enter;
+        if (total >= (distances.get(nextKey) ?? Number.POSITIVE_INFINITY))
+          continue;
+        distances.set(nextKey, total);
+        (buckets[total] ??= []).push(next);
+      }
+      yield;
+    }
   }
   return distances;
 }
@@ -5434,7 +5507,7 @@ function armyEconomyFirstV7(context: PolicyContextV7): boolean {
     view.viewer.researchedTechs.includes(second)
   )
     return false;
-  for (const kind of ARMY_GROWTH_KINDS_V7) {
+  for (const kind of armyGrowthKindsV7(view)) {
     if (kind === "HARVEST_FRUIT" || kind === "HUNT_GAME") continue;
     // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): the Workshop is
     // at the root, which a seat buys on the way to its defender, and is
@@ -9627,10 +9700,11 @@ function armyGrowthOfferedV7(context: PolicyContextV7): boolean {
   return offered;
 }
 
+type ArmyGrowthKindV7 =
+  BasicEconomicCommandKindV7 | SpatialEconomicCommandKindV7;
+
 /** The growth a seat buys with population: what a stalled seat researches. */
-const ARMY_GROWTH_KINDS_V7: readonly (
-  BasicEconomicCommandKindV7 | SpatialEconomicCommandKindV7
-)[] = Object.freeze([
+const ARMY_GROWTH_KINDS_V7: readonly ArmyGrowthKindV7[] = Object.freeze([
   "HARVEST_FRUIT",
   "HUNT_GAME",
   "BUILD_FARM",
@@ -9641,6 +9715,32 @@ const ARMY_GROWTH_KINDS_V7: readonly (
   "BUILD_WORKSHOP",
   "BUILD_MARKET",
 ] as const);
+
+/**
+ * The frozen sea redesign (`pulp_wars-5ti.26`, RULESET_7_ICE_REDESIGN.md
+ * section 3.1): an Ice Folk seat also buys population with the Fishing
+ * Hole, its Lumber Camp of the ice (its sites are the seat's own ice and the
+ * water of its territory, `queryPublicEconomicPotentialsV7`). Only an Ice
+ * Folk seat builds on ice, so every other seat's list is unchanged.
+ */
+const ARMY_ICE_GROWTH_KINDS_V7: readonly ArmyGrowthKindV7[] = Object.freeze([
+  "HARVEST_FRUIT",
+  "HUNT_GAME",
+  "BUILD_FARM",
+  "BUILD_LUMBER_CAMP",
+  "BUILD_FISHING_HOLE",
+  "BUILD_MINE",
+  "BUILD_WINDMILL",
+  "BUILD_SAWMILL",
+  "BUILD_WORKSHOP",
+  "BUILD_MARKET",
+] as const);
+
+function armyGrowthKindsV7(view: PlayerViewV7): readonly ArmyGrowthKindV7[] {
+  return view.viewer.faction === "ICE_FOLK"
+    ? ARMY_ICE_GROWTH_KINDS_V7
+    : ARMY_GROWTH_KINDS_V7;
+}
 
 /** The growth an Undead seat's economy-first research looks at. */
 const ARMY_ECONOMY_FIRST_KINDS_V7: readonly string[] = Object.freeze([
@@ -9691,9 +9791,7 @@ function armyGrowthResearchV7(
   for (const landOnly of economyFirst ? [true, false] : [false]) {
     if (chosen !== null || (!landOnly && !stalled)) break;
     const forbidden = forbiddenTechnologiesV7(view.setup, view.viewer.seat);
-    const technologyOf = (
-      kind: (typeof ARMY_GROWTH_KINDS_V7)[number],
-    ): TechnologyIdV7 =>
+    const technologyOf = (kind: ArmyGrowthKindV7): TechnologyIdV7 =>
       kind in BASIC_ECONOMIC_ACTIONS_V7
         ? BASIC_ECONOMIC_ACTIONS_V7[kind as BasicEconomicCommandKindV7]
             .technology
@@ -9706,7 +9804,7 @@ function armyGrowthResearchV7(
       readonly cost: number;
     } | null = null;
     for (const potential of queryPublicEconomicPotentialsV7(view)) {
-      const kind = ARMY_GROWTH_KINDS_V7.find(
+      const kind = armyGrowthKindsV7(view).find(
         (item) => item === potential.command,
       );
       if (kind === undefined || potential.targets <= 0) continue;
@@ -10162,7 +10260,7 @@ function armyWarGrowthDueV7(context: PolicyContextV7): boolean {
   const faction = view.viewer.faction;
   // One: not while it owns a technology that builds population (a Farm, a
   // Lumber Camp, a Mine, a building), whatever its land still offers.
-  for (const kind of ARMY_GROWTH_KINDS_V7) {
+  for (const kind of armyGrowthKindsV7(view)) {
     if (kind === "HARVEST_FRUIT" || kind === "HUNT_GAME") continue;
     // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): the Workshop is
     // at the root, which a seat buys on the way to its defender, and is
@@ -11386,6 +11484,10 @@ function* publicThreatenedTilesWorkV7(
   // without ice. Glacier's extra Move on ice is its owner's private
   // research and is left out.
   const slides = iceSliderV7(view, unit);
+  // The frozen sea redesign (`pulp_wars-5ti.26`, section 2.7): a Sled's
+  // Runners: no zone of control stops its slide (where the slide ends, one
+  // stops the Move as for any step, below).
+  const runners = slides && unitRoleMechanicsV7(view, unit).runners;
   const zocAt = (target: PlayerViewV7["board"]["tiles"][number]): boolean =>
     mode !== "FLY" &&
     !prowls &&
@@ -11480,7 +11582,7 @@ function* publicThreatenedTilesWorkV7(
                 (lookup.occupantsByKey.get(coordKey(at)) ?? []).some(
                   (occupant) => occupant.id !== unit.id && occupant.hp > 0,
                 ),
-              (at) => zocAt(tileAtPublicV7(view, at)),
+              (at) => !runners && zocAt(tileAtPublicV7(view, at)),
             ),
           );
         }
@@ -11589,7 +11691,12 @@ function publicProjectsZocForThreatV7(
   // Revision 19: an Egg projects no zone of control.
   if (projector.form === "EGG") return false;
   if (!tile.explored) return true;
-  if (tile.biome !== null) return projector.form !== "NAVAL";
+  // The frozen sea (`pulp_wars-5ti.26`, as the engine's
+  // `publicProjectsZocV7`): ice takes zones of control like land. (The
+  // estimate read ice as water, so a hostile slide ran through the zone of
+  // a unit standing beside the ice.) False at once in a view without ice.
+  if (tile.biome !== null || isIceAtV7(view, tile.at))
+    return projector.form !== "NAVAL";
   if (projector.form === "NAVAL") return true;
   const rule = unitRoleRuleV7(view, projector);
   return (
@@ -11789,6 +11896,7 @@ function frozenSeaToolsV7(context: PolicyContextV7): FrozenSeaToolsV7 {
   if (cached !== undefined) return cached;
   const view = context.view;
   const stands = new Map<UnitId, readonly CoordV7[]>();
+  let planned: Set<string> | undefined;
   const tools: FrozenSeaToolsV7 = {
     isHostile: (ownerId) => isHostile(view, ownerId),
     isAllied: (ownerId) =>
@@ -11816,6 +11924,47 @@ function frozenSeaToolsV7(context: PolicyContextV7): FrozenSeaToolsV7 {
     },
     objective: (unitId) => context.tactical.objectiveByUnitId.get(unitId),
     commands: context.commands,
+    // The frozen sea redesign (`pulp_wars-5ti.26`): the route a unit afloat
+    // follows (`navalMovementObjectiveValueV7`): a ship the fleet's, a
+    // transport the plan's.
+    route: (unit) => {
+      const distances =
+        unit.form === "NAVAL"
+          ? context.naval.fleetDistanceByKey
+          : unit.form === "EMBARKED"
+            ? context.naval.waterDistanceByKey
+            : undefined;
+      return distances === undefined || distances.size === 0
+        ? null
+        : (at) => distances.get(coordKey(at));
+    },
+    plannedThrough: (at) => {
+      if (planned === undefined) {
+        planned = new Set();
+        for (const command of context.commands) {
+          if (command.kind !== "MOVE") continue;
+          const actor = context.lookup.unitsById.get(command.unitId);
+          if (
+            actor === undefined ||
+            actor.form !== "LAND" ||
+            frozenSeaRejectsV7(context, command)
+          )
+            continue;
+          for (const step of command.path) planned.add(coordKey(step));
+        }
+        for (const unit of view.units)
+          if (
+            unit.hp > 0 &&
+            unit.form === "LAND" &&
+            unit.ownerId !== view.viewer.id &&
+            publicPlayersAllied(view, view.viewer.id, unit.ownerId) &&
+            isIceAtV7(view, unit.at)
+          )
+            for (const near of neighbors8V7(view, unit.at))
+              planned.add(coordKey(near));
+      }
+      return planned.has(coordKey(at));
+    },
   };
   FROZEN_SEA_TOOLS_CACHE_V7.set(context, tools);
   return tools;
@@ -11969,10 +12118,14 @@ function isPolicyCandidate(
         command,
       ) !== null
     );
-  // The frozen sea redesign (`pulp_wars-5ti.25`): Crack Ice is never picked
-  // by a general rule; bead `pulp_wars-5ti.26` gives it its reasons (free a
-  // frozen ship, break a threatening bridge, open a ship's way).
-  if (command.kind === "CRACK_ICE") return false;
+  // The frozen sea redesign (`pulp_wars-5ti.26`, RULESET_7_ICE_REDESIGN.md
+  // section 3.2): a Crack only with a reason (free an own or allied frozen
+  // ship, break a bridge that threatens a center, open a ship's way):
+  // `iceCrackScoreV7`. The command is offered only in a match with ice.
+  if (command.kind === "CRACK_ICE")
+    return (
+      iceCrackScoreV7(context.view, frozenSeaToolsV7(context), command) !== null
+    );
   // The Candy revision (`pulp_wars-jdb.4`, RULESET_7_CANDY.md section 14):
   // a Rush only with a plan, and the one Re-bake and the one Toss per unit
   // the Candy rules chose (their scores reject the others). With a group
@@ -14954,14 +15107,8 @@ function scoreCommandWithContext(
           targetUnit,
           preview,
         );
-        // The frozen sea (`pulp_wars-5ti.5`): a unit on ice has no cover,
-        // and the kill of the unit that holds thawing ice breaks a bridge.
-        strategicValue += iceTargetBonusV7(
-          view,
-          frozenSeaToolsV7(context),
-          targetUnit,
-          preview,
-        );
+        // The frozen sea (`pulp_wars-5ti.5`): a unit on ice has no cover.
+        strategicValue += iceTargetBonusV7(view, targetUnit);
       }
       if (
         actor?.role === "KNIGHT" &&
@@ -15239,6 +15386,16 @@ function scoreCommandWithContext(
       priority = freeze.priority;
       strategicValue = freeze.strategic;
       immediateValue = freeze.immediate;
+    }
+  }
+
+  // The frozen sea redesign (`pulp_wars-5ti.26`): a Crack by its reason.
+  if (command.kind === "CRACK_ICE") {
+    const crack = iceCrackScoreV7(view, frozenSeaToolsV7(context), command);
+    if (crack !== null) {
+      priority = crack.priority;
+      strategicValue = crack.strategic;
+      immediateValue = crack.immediate;
     }
   }
 

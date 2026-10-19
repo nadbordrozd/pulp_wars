@@ -243,7 +243,13 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/ai/v7-frozen-sea.ts::iceHostileFreezersV7": "BOARD",
     "src/ai/v7-frozen-sea.ts::iceSeaResearchV7": "BOARD",
     "src/ai/v7-frozen-sea.ts::iceboundCrewLandingV7": "BOARD",
-    "src/ai/v7-frozen-sea.ts::waveBehind": "BOARD",
+    // The frozen sea redesign (`pulp_wars-5ti.26`): the units on a tile
+    // the seat sees cracked open, on a building site on its ice, and on a
+    // tile to Crack (its own icebound ships, a hostile ship, the cracker's
+    // kill), and the Ice Folk units near a bridge: what stands on the board.
+    "src/ai/v7-frozen-sea.ts::iceCrackedOpenTilesV7": "BOARD",
+    "src/ai/v7-frozen-sea.ts::iceBuildSiteV7": "BOARD",
+    "src/ai/v7-frozen-sea.ts::iceCrackScoreV7": "BOARD",
     // The exploration plan (`pulp_wars-nc6`): the reach of the hostile units
     // on the board (a burrowed unit threatens nobody).
     "src/ai/v7-exploration.ts::explorationSurveyV7": "BOARD",
@@ -300,6 +306,9 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/ai/v7.ts::endgameRoutedUnitsV7": "BOARD",
     "src/ai/v7.ts::exploderSpacingLossV7": "BOARD",
     "src/ai/v7.ts::fallbackTie": "BOARD",
+    // `pulp_wars-5ti.26`: the allied units standing on ice whose way the
+    // policy keeps from a Crack.
+    "src/ai/v7.ts::frozenSeaToolsV7": "BOARD",
     "src/ai/v7.ts::freeCapacity": "BOARD",
     "src/ai/v7.ts::freshCapturerNextToV7": "BOARD",
     "src/ai/v7.ts::friendlySplashUnitV7": "BOARD",

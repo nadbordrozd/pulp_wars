@@ -977,3 +977,80 @@ the design was silent or had to be read:
     placement lines name their ice. `CRACK_ICE` is classed bar-only until
     bead C adds its button; the Fishing Hole draws the Fish art until its
     sprite lands.
+
+## 9. Bead B as built (`pulp_wars-5ti.26`)
+
+Built on `pulp-wars-poc-7r100` on 2026-10-19 with no ruleset change (no
+identity bump), no game played and no simulation run. Every behaviour of
+section 3 is proven on a small hand-built state in
+`tests/unit/ruleset-v7-ice-redesign-ai.test.ts` (and the adapted
+`tests/unit/ruleset-v7-frozen-sea-ai.test.ts`). Decisions the build made
+where the design was silent or had to be read:
+
+1. **Glacier's evidence is read from the board.** The Normal AI is
+   stateless and the player view carries no event history, so "seen
+   `ICE_CRACKED` events in the last 3 rounds" is read from what a Crack
+   leaves (`iceCrackedOpenTilesV7`): a crossing tile that is not ice with
+   the seat's ice farther along the crossing, an open water tile of the
+   seat's territory whose explored water neighbours (two at least) are
+   all its ice, and a crack in its thick ice. Two such tiles raise Glacier
+   to 1170. A gap that is still open is a recent one (the crossing's own
+   Freeze fills it at 1110).
+2. **One builder.** With no thaw the second, refreezing builder is gone:
+   the Witch when near, else the cheapest line unit. The plan lost
+   `thawSafe`.
+3. **Mending is unconditional.** A cracked crossing tile is mended, and a
+   crossing tile another seat holds is taken back, at 1109 whoever still
+   has to pass it (the crossing is the seat's road for the rest of the
+   match); the old "a unit still has to pass it" test is gone.
+4. **Home ice for building** counts a tile that would host a Fishing Hole
+   the seat can afford (Rime, 3 Coins, own territory of an own city with
+   no pending reward, no visible resource, improvement, chest, or hostile
+   unit): 3 a tile, one more beside an own Farm, Fishing Hole, Lumber Camp,
+   or Mine (where a mill, Workshop, or Market can follow). Every mill,
+   Workshop, and Market on ice needs such a tile anyway, so the Fishing Hole
+   test is the gate. A taken tile of another seat's ice in own territory
+   counts the same; a mended crack of the home ice 2; the old wall beside a
+   threatened center 5 a tile. Never by the crossing's builder.
+5. **Building** needed one engine fix: the public economic preview of
+   `BUILD_FISHING_HOLE` reported no population (the command was missing
+   from the live-graph kinds of `query.ts`) while the build gives +1; the
+   preview now equals the resolution, so the chooser rates a Fishing Hole
+   as it rates a Lumber Camp. The public planning counts a Fishing Hole
+   site on every water tile of an Ice Folk seat's territory (with no
+   resource, improvement, or chest; the gates of Rime and Pack Ice
+   ignored as every potential ignores technology), and only an Ice Folk
+   seat is told of that potential, so the planning output of every other
+   seat is unchanged (its pinned hashes hold).
+6. **Crack Ice is a reason or nothing.** Free (1296), Bridge (1108), and
+   Lane (1107) as section 3.2. Thick ice that is not cracked yet is a
+   reason only when another own unit is offered the second Crack of the
+   same tile this turn (the policy picks one command at a time, so the two
+   Cracks follow each other), or on a ship's route (two Cracks are
+   priced into the route). A tile with another seat's ship on it is never
+   cracked (it would free it). "Planned Move" is read as an offered Move of
+   an own land unit that the frozen-sea filter does not refuse and whose
+   path passes the tile, or an allied land unit on ice beside it; "a kill"
+   as an offered attack whose preview kills.
+7. **The bridge rule's line preference** is ten a step nearer the city
+   center plus five when the ice joins the tile, over ice, to a tile beside
+   the hostile Ice Folk unit in range.
+8. **The lane** is the next step of the route the ship already follows
+   (the fleet's route for a ship, the plan's for a transport): the water
+   route search passes crackable ice at 1 + 2 steps (thick, uncracked:
+   1 + 4), an ally's and built ice never; a bucket search runs only when
+   the view has ice, so every board without ice routes exactly as before.
+   A ship cracks only when no open water around it leads on as cheaply.
+9. **The threat estimate** now follows a Sled's Runners through zones of
+   control, and takes zones of control on ice like land, as the engine
+   does (it read ice as water, so a slide ran through the zone of a unit
+   beside the ice).
+10. **Black Ice and Sleds** needed no new rule: a unit frozen on entry is
+    the Ice Folk policy's Frozen target as before (its Shatter and kill
+    values), and the attack search enumerates the offered Moves, whose
+    ends already follow Runners.
+11. **No Ice Folk seat, no change:** the first six decisions of a new
+    match on each generated map type and of the naval strait (no Ice Folk
+    seat) were recorded before the change
+    (`tests/fixtures/v7-ice-ai-no-ice-folk-decisions.json`) and are
+    unchanged.

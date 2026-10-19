@@ -9062,7 +9062,8 @@ Harbours from it.
   hostile Candy ship's Sugar Sails (as a hostile Ram): its threat reach
   counts one more tile of Move and its attack one more Attack, unless it is
   Rushed already or Crashed (no threat on its next turn).
-- **The frozen sea** (`pulp_wars-5ti.5`, `src/ai/v7-frozen-sea.ts`). An
+- **The frozen sea** (`pulp_wars-5ti.5`, `src/ai/v7-frozen-sea.ts`; the
+  permanent ice of `pulp_wars-5ti.26`). An
   Ice Folk seat has no ship and no naval plan; it has an **ice plan**
   where a seafaring seat's naval plan would activate (every known
   objective is overseas, or the way over the water is more than three
@@ -9070,28 +9071,43 @@ Harbours from it.
   shortest chain of water tiles from its shore to the objective's,
   straight where it can be, out of a visible Battleship's reach, over
   Deep Water only with Pack Ice. A **builder** (the Witch when she is
-  near and the crossing short, otherwise a Yeti) walks to its head,
-  Freezes two tiles, steps onto the newest ice, and Freezes again; **the
-  wave** waits at the head until the crossing is complete or one Freeze
-  short and then crosses by the offered Moves, sliding. The seat Freezes
-  only with a reason: the next tile of the crossing, a crossing tile about
-  to thaw that a unit still has to pass, a hostile ship to lock in
-  (Icebound, before the attacks on it, which are then unanswered), or its
-  own waters beside a center a hostile ship has come within 3 of. It
+  near, otherwise the cheapest Yeti) walks to its head, Freezes two
+  tiles, steps onto the newest ice, and Freezes again; **the wave** waits
+  at the head until the crossing is complete or one Freeze short and then
+  crosses by the offered Moves, sliding. Ice is permanent, so a crossing
+  is built once: a tile a Crack broke out of it is the next tile to
+  freeze, a cracked tile of it is mended, and a tile of it another seat
+  holds is taken back. The seat Freezes only with a reason: the crossing,
+  a hostile ship to lock in (Icebound, before the attacks on it, which
+  are then unanswered), or **home ice**: its own waters beside a center a
+  hostile ship has come within 3 of, water of its territory that a
+  building it can afford would then stand on (a Fishing Hole, a mill, a
+  Workshop or a Market beside a contributor; never by the crossing's
+  builder), and a mended crack of its home ice. The economic chooser then
+  builds its Fishing Holes, Ice Harbour and mills on the ice by their
+  previews, and a stalled seat counts its Fishing Hole sites as growth. It
   researches Rime for a crossing or against a ship near a center, Pack Ice
   for a Deep Water crossing, Icebound against a Battleship or Submarine
   within 4 of a unit, Black Ice once an enemy stands on its ice or a
-  transport nears its land, and Glacier last. **Every seat** plays against
-  the ice: its threat estimate follows a slide; a ship does not end a Move
-  where a unit of a seat that has been seen to Freeze can lock it in this
-  turn; a land unit does not end a Move on the ice of a hostile Ice Folk
-  seat (Black Ice is assumed, research being private) and a transport
-  lands beside such ice; an own icebound ship is written off and the crew
-  of an icebound transport lands; and the kill of a unit that holds
-  thawing ice is valued, since the tile then melts. An icebound unit
-  threatens nothing, a slipping unit's reach ends on the first ice tile,
-  and Dry Land decisions are unchanged. None of it is measured in matches
-  yet ([section 25](#25-known-discrepancies);
+  transport nears its land, Glacier as due research once two of its ice
+  tiles are seen cracked open, and Glacier last otherwise. **Every other
+  seat** cracks the ice where it gains: an own or allied icebound ship
+  free (before routine actions; thick ice when two units can crack it
+  this turn), a hostile bridge tile within 3 of its center while an Ice
+  Folk unit is within 6 of it, and the ice that is the next step of a
+  ship's route (its water routes pass ice at two steps more, four for
+  thick ice); never under ice its own units' Moves pass, never instead
+  of a kill. **Every seat** plays against the ice: its threat estimate
+  follows a slide (a Sled's Runners through zones of control; ice takes
+  zones of control like land); a ship does not end a Move where a unit of
+  a seat that has been seen to Freeze can lock it in this turn; a land
+  unit does not end a Move on the ice of a hostile Ice Folk seat (Black
+  Ice is assumed, research being private) and a transport lands beside
+  such ice; the crew of an icebound transport lands; and a unit on ice is
+  worth 3 more to an attack (no cover). An icebound unit threatens
+  nothing, a slipping unit's reach ends on the first ice tile, and
+  decisions without an Ice Folk seat are unchanged. None of it is measured
+  in matches yet ([section 25](#25-known-discrepancies);
   [Normal AI, the frozen sea](../architecture/NORMAL_AI.md#the-frozen-sea-pulp_wars-5ti5)).
 - **Undead play.** In a match with an Undead seat (and only there, so
   decisions elsewhere are unchanged), Normal plays as and against the Undead
@@ -13039,11 +13055,9 @@ it; Glacier's thick ice), not immunity.
 - **Public unit stats:** `icebound` (on every unit, exactly in a match with
   an Ice Folk seat) and, in the `iceFolk` block, `onIce`, `slides`,
   `runners`, and `iceCover`.
-- **Normal AI, presentation, and balance:** the engine bead keeps the AI
-  compiling with the thaw logic neutralised (a crossing is built once, a
-  mended or retaken crossing tile is the old refreeze reason, and no seat
-  picks `CRACK_ICE` yet); its rules for and against permanent ice are bead
-  `pulp_wars-5ti.26`, and the interface, art, and sound (the Crack Ice
+- **Normal AI, presentation, and balance:** the Normal AI's rules for and
+  against permanent ice are bead `pulp_wars-5ti.26`
+  ([section 16](#16-normal-ai-summary)), and the interface, art, and sound (the Crack Ice
   button, the snow pad under buildings on ice, the Fishing Hole and Ice
   Harbour sprites) bead `pulp_wars-5ti.27`
   ([section 25](#25-known-discrepancies)). The interface already shows ice
@@ -15273,10 +15287,9 @@ items left after the fold, and the pending balance steps below.
 
 - **The frozen sea redesign: what is open** (`pulp_wars-5ti.25`, `7r100`;
   [RULESET_7_ICE_REDESIGN.md](RULESET_7_ICE_REDESIGN.md)). The engine and
-  rules are built; the Normal AI still plays the old crossing plan with
-  the thaw neutralised, never picks Crack Ice, still keeps its Port sites
-  clear of home ice, and builds Fishing Holes only where its ordinary
-  economic chooser ranks them (its rules are bead `pulp_wars-5ti.26`). No
+  rules are built, and the Normal AI plays for and against permanent ice
+  (`pulp_wars-5ti.26`, [section 16](#16-normal-ai-summary)), proven on
+  hand-built states only. No
   interface offers Crack Ice yet (`CRACK_ICE` is classed bar-only in
   `TILE_ACTION_COMMAND_CLASSES_V7` until bead `pulp_wars-5ti.27` gives it
   its dock button and icon), buildings on ice have no snow pad, and the

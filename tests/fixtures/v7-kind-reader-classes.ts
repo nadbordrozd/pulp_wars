@@ -72,6 +72,10 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/ai/v7-exploration.ts::explorationProfileV7": "SEAT",
   "src/engine/v7/query.ts::appendPublicHireCommandsV7": "SEAT",
   "src/engine/v7/query.ts::publicHireCostV7": "SEAT",
+  // `pulp_wars-5ti.26`: the planned Fishing Hole is the viewer seat's own
+  // (only an Ice Folk seat builds on ice).
+  "src/engine/v7/query.ts::appendPublicPlacementsForTileV7": "SEAT",
+  "src/engine/v7/query.ts::publicEconomicPotentialKindsV7": "SEAT",
   "src/engine/v7/reducer.ts::applyHire": "SEAT",
   "src/ai/v7.ts::policyForestCoverV7": "SEAT",
   // The naval branch (`pulp_wars-5ti.2`): Harbours is the dock owner's own
@@ -190,6 +194,11 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/ai/v7-frozen-sea.ts::iceSeaSeatV7": "SEAT",
   "src/ai/v7-frozen-sea.ts::computeIcePlan": "SEAT",
   "src/ai/v7-frozen-sea.ts::blackIceSeat": "SEAT",
+  // `pulp_wars-5ti.26`: only an Ice Folk seat builds on ice (a seat rule,
+  // as in the engine's `iceBuildableV7`), and only it buys growth with a
+  // Fishing Hole.
+  "src/ai/v7-frozen-sea.ts::iceBuildSiteV7": "SEAT",
+  "src/ai/v7.ts::armyGrowthKindsV7": "SEAT",
   "src/ai/v7-martian.ts::martianMatchForPolicyV7": "SEAT",
   "src/ai/v7-martian.ts::martianFactsV7": "SEAT",
   "src/ai/v7-martian.ts::martianProductionAdjustmentV7": "SEAT",

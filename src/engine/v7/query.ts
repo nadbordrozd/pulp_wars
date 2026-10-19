@@ -8018,6 +8018,9 @@ function publicEconomicPreviewExact(
     command.kind === "BUILD_ROAD" ||
     command.kind === "BUILD_FARM" ||
     command.kind === "BUILD_LUMBER_CAMP" ||
+    // The frozen sea redesign (`pulp_wars-5ti.26`): the Fishing Hole is a
+    // contributor like the Lumber Camp.
+    command.kind === "BUILD_FISHING_HOLE" ||
     command.kind === "BUILD_MINE" ||
     command.kind in SPATIAL_ECONOMIC_ACTIONS_V7;
   const ownedCities = view.cities.filter(
@@ -8042,6 +8045,10 @@ function economicCommandChangesLiveGraphV7(kind: CommandV7["kind"]): boolean {
   return (
     kind === "BUILD_FARM" ||
     kind === "BUILD_LUMBER_CAMP" ||
+    // The frozen sea redesign (`pulp_wars-5ti.26`): the Fishing Hole's +1
+    // live population (the preview reported none before, while the build
+    // gave it).
+    kind === "BUILD_FISHING_HOLE" ||
     kind === "BUILD_MINE" ||
     kind === "BUILD_PORT" ||
     kind === "BUILD_SHIPYARD" ||
@@ -8997,13 +9004,12 @@ function economicOutputTransitionsV7(
 }
 
 const ECONOMIC_POTENTIAL_KINDS_V7 = [
-  // The frozen sea redesign (`pulp_wars-5ti.25`): the Fishing Hole is not
-  // planned here yet; bead `pulp_wars-5ti.26` adds it with the Ice Folk
-  // AI's building on ice (the planning output of every other match stays
-  // as it was).
-  ...(Object.keys(BASIC_ECONOMIC_ACTIONS_V7).filter(
-    (kind) => kind !== "BUILD_FISHING_HOLE",
-  ) as Exclude<BasicEconomicCommandKindV7, "BUILD_FISHING_HOLE">[]),
+  // The frozen sea redesign (`pulp_wars-5ti.26`): the Fishing Hole is
+  // planned too; only an Ice Folk seat has a place for one
+  // (`appendPublicPlacementsForTileV7`) and a potential of it
+  // (`publicEconomicPotentialKindsV7`), so every other seat's planning is
+  // unchanged.
+  ...(Object.keys(BASIC_ECONOMIC_ACTIONS_V7) as BasicEconomicCommandKindV7[]),
   ...(Object.keys(
     SPATIAL_ECONOMIC_ACTIONS_V7,
   ) as SpatialEconomicCommandKindV7[]),
@@ -9015,6 +9021,17 @@ const ECONOMIC_POTENTIAL_KINDS_V7 = [
 ] as const;
 type PublicEconomicPotentialKindV7 =
   (typeof ECONOMIC_POTENTIAL_KINDS_V7)[number];
+const NON_ICE_ECONOMIC_POTENTIAL_KINDS_V7: readonly PublicEconomicPotentialKindV7[] =
+  ECONOMIC_POTENTIAL_KINDS_V7.filter((kind) => kind !== "BUILD_FISHING_HOLE");
+
+/** The potentials a viewer is told of: the Fishing Hole for an Ice Folk seat only. */
+function publicEconomicPotentialKindsV7(
+  view: PlayerViewV7,
+): readonly PublicEconomicPotentialKindV7[] {
+  return view.viewer.faction === "ICE_FOLK"
+    ? ECONOMIC_POTENTIAL_KINDS_V7
+    : NON_ICE_ECONOMIC_POTENTIAL_KINDS_V7;
+}
 interface PublicPlacementV7 {
   readonly cityId: CityId;
   readonly at: CoordV7;
@@ -9053,7 +9070,7 @@ export function queryPublicEconomicPotentialsV7(
   const placements = publicPlanningGraphExact(view)
     ? enumeratePublicPlacementsIgnoringGatesV7(view, graph)
     : [];
-  const result = ECONOMIC_POTENTIAL_KINDS_V7.map((command) => {
+  const result = publicEconomicPotentialKindsV7(view).map((command) => {
     const matching = placements.filter(
       (placement) => placement.kind === command,
     );
@@ -9786,15 +9803,20 @@ function appendPublicPlacementsForTileV7(
   )
     return;
   {
-    for (const kind of Object.keys(BASIC_ECONOMIC_ACTIONS_V7).filter(
-      // The frozen sea redesign: the Fishing Hole is not planned yet (its
-      // terrain is nominal; bead `pulp_wars-5ti.26`).
-      (candidate) => candidate !== "BUILD_FISHING_HOLE",
-    ) as Exclude<BasicEconomicCommandKindV7, "BUILD_FISHING_HOLE">[]) {
+    for (const kind of Object.keys(
+      BASIC_ECONOMIC_ACTIONS_V7,
+    ) as BasicEconomicCommandKindV7[]) {
       const rule = BASIC_ECONOMIC_ACTIONS_V7[kind];
       if (
         tile.site === null &&
-        tile.terrain === rule.terrain &&
+        // The frozen sea redesign (`pulp_wars-5ti.26`, section 2.6): the
+        // Fishing Hole's terrain is nominal. An Ice Folk seat cuts one in
+        // its own ice, Shallow or Deep, and with the gates ignored (Rime
+        // and Pack Ice make or take the ice) in any water of its territory.
+        (kind === "BUILD_FISHING_HOLE"
+          ? view.viewer.faction === "ICE_FOLK" &&
+            (tile.terrain === "SHALLOW_WATER" || tile.terrain === "DEEP_WATER")
+          : tile.terrain === rule.terrain) &&
         tile.resource === rule.resource &&
         tile.improvement === null &&
         !treasureKeys.has(coordKeyV7(tile.at))
@@ -10220,13 +10242,15 @@ class IncrementalPublicPlanningWorkV7 implements PublicPlanningWorkV7 {
   }
 
   private finish(): void {
-    const potentials = ECONOMIC_POTENTIAL_KINDS_V7.map((command) => ({
-      command,
-      ...(this.potentialStats.get(command) ?? {
-        targets: 0,
-        bestSpatialScore: 0,
+    const potentials = publicEconomicPotentialKindsV7(this.view).map(
+      (command) => ({
+        command,
+        ...(this.potentialStats.get(command) ?? {
+          targets: 0,
+          bestSpatialScore: 0,
+        }),
       }),
-    }));
+    );
     PUBLIC_ECONOMIC_POTENTIALS.set(this.view, potentials);
     this.completed = { potentials, scores: this.scores };
     if (this.factKey === null)

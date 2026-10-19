@@ -62,6 +62,12 @@ export interface FrozenArenaOptionsV7 {
   readonly terrain?: readonly string[];
   readonly resources?: readonly string[];
   readonly improvements?: NavalArenaOptionsV7["improvements"];
+  /**
+   * The frozen sea redesign, the AI (`pulp_wars-5ti.26`): each seat's Coins
+   * in the built state (after its start-of-turn income); as built (60 and
+   * more) by default.
+   */
+  readonly coins?: readonly [number, number];
 }
 
 const NAVAL_ROLES: readonly UnitRoleIdV7[] = [
@@ -111,9 +117,18 @@ export function frozenArenaV7(options: FrozenArenaOptionsV7): GameStateV7 {
   const moved = new Map(
     parked.map(({ from, to }) => [navalUnitAtV7(base, from).id, to] as const),
   );
+  const coins = options.coins;
   return frozenStateV7(
     {
       ...base,
+      players:
+        coins === undefined
+          ? base.players
+          : base.players.map((player) =>
+              player.seat === 0 || player.seat === 1
+                ? { ...player, coins: coins[player.seat] }
+                : player,
+            ),
       units: base.units.map((unit) => {
         const to = moved.get(unit.id);
         return to === undefined ? unit : { ...unit, at: to };
