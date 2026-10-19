@@ -130,7 +130,7 @@ const firestoreDoc = (
   fields: Record<string, string | number>,
 ): unknown => ({
   document: {
-    name: `projects/vibe-crawler/databases/(default)/documents/pulpWarsScores/${id}`,
+    name: `projects/pulp-wars/databases/(default)/documents/pulpWarsScores/${id}`,
     fields: Object.fromEntries(
       Object.entries(fields).map(([key, value]) => [
         key,
@@ -297,7 +297,7 @@ describe("Firestore REST requests", () => {
     expect(calls).toHaveLength(1);
     const call = calls[0];
     expect(call?.url).toBe(
-      `https://firestore.googleapis.com/v1/projects/vibe-crawler/databases/(default)/documents:commit?key=${FIREBASE_CONFIG_V7.apiKey}`,
+      `https://firestore.googleapis.com/v1/projects/pulp-wars/databases/(default)/documents:commit?key=${FIREBASE_CONFIG_V7.apiKey}`,
     );
     expect(call?.init.method).toBe("POST");
     expect(call?.init.cache).toBe("no-store");
@@ -307,7 +307,7 @@ describe("Firestore REST requests", () => {
       writes: [
         {
           update: {
-            name: `projects/vibe-crawler/databases/(default)/documents/${LEADERBOARD_COLLECTION_V7}/${id}`,
+            name: `projects/pulp-wars/databases/(default)/documents/${LEADERBOARD_COLLECTION_V7}/${id}`,
             fields: {
               name: { stringValue: "Captain Nova" },
               faction: { stringValue: "MARTIAN" },
@@ -674,17 +674,12 @@ describe("where the real store is used", () => {
 
 describe("the security rules", () => {
   const rules = readFileSync("firebase/firestore.rules", "utf8");
-  const crawl = rules.slice(
-    rules.indexOf("// Leaderboard collection rules"),
-    rules.indexOf("// ---- Pulp Wars"),
-  );
 
-  it("keep Vibe Crawler's leaderboard block and the catch-all deny", () => {
-    expect(crawl).toContain("match /leaderboard/{scoreId} {");
-    expect(crawl).toContain(
-      "allow create: if isValidLeaderboardEntry(request.resource.data);",
-    );
-    expect(crawl).toContain("data.timestamp == request.time;");
+  it("hold only the Pulp Wars block and the catch-all deny", () => {
+    expect(rules).toContain("pulp-wars Firebase project");
+    expect(rules).not.toMatch(/vibe.crawler/i);
+    expect(rules).not.toContain("match /leaderboard/");
+    expect(rules.match(/^\s*match \//gm)).toHaveLength(3);
     expect(rules).toMatch(
       /match \/\{document=\*\*\} \{\s+allow read, write: if false;/,
     );

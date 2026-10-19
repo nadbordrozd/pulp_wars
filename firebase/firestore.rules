@@ -1,74 +1,13 @@
-// Firestore security rules for the vibe-crawler Firebase project, shared by
-// Vibe Crawler (collection `leaderboard`) and Pulp Wars (collection
-// `pulpWarsScores`, bead pulp_wars-2yc.104, docs/LEADERBOARD.md).
+// Firestore security rules for the pulp-wars Firebase project: the Pulp Wars
+// public leaderboard, collection `pulpWarsScores` (beads pulp_wars-2yc.104
+// and pulp_wars-2yc.105, docs/LEADERBOARD.md).
 //
-// Paste the WHOLE file into Firebase Console > Firestore Database > Rules and
-// press Publish: the console keeps one rules file per database, so it must
-// hold both games' rules. The Vibe Crawler block below is copied unchanged
-// from the crawl repository's firestore-security-rules.txt (only trailing
-// spaces were dropped).
+// Paste the whole file into Firebase Console > Firestore Database > Rules and
+// press Publish.
 
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Leaderboard collection rules
-    match /leaderboard/{scoreId} {
-      // Anyone can read leaderboard entries (for displaying scores)
-      allow read: if true;
-
-      // Allow writes only if the data is valid
-      allow create: if isValidLeaderboardEntry(request.resource.data);
-
-      // Don't allow updates or deletes (scores should be permanent)
-      allow update: if false;
-      allow delete: if false;
-    }
-
-    // Helper function to validate leaderboard entries
-    function isValidLeaderboardEntry(data) {
-      return data.keys().hasAll(['name', 'score', 'level', 'turns', 'steps', 'coinsCollected', 'totalEnemiesDefeated', 'timestamp']) &&
-             data.keys().hasOnly(['name', 'score', 'level', 'turns', 'steps', 'coinsCollected', 'totalEnemiesDefeated', 'timestamp']) &&
-
-             // Name validation
-             data.name is string &&
-             data.name.size() > 0 &&
-             data.name.size() <= 20 &&
-
-             // Score validation - reasonable limits (allow higher scores for game winners)
-             data.score is number &&
-             data.score >= 0 &&
-             data.score <= 5000000 &&
-
-             // Level validation - reasonable max level
-             data.level is number &&
-             data.level >= 1 &&
-             data.level <= 50 &&
-
-             // Turns validation - must be positive
-             data.turns is number &&
-             data.turns >= 1 &&
-             data.turns <= 100000 &&
-
-             // Steps validation - must be positive
-             data.steps is number &&
-             data.steps >= 0 &&
-             data.steps <= 200000 &&
-
-             // Coins validation - reasonable limit
-             data.coinsCollected is number &&
-             data.coinsCollected >= 0 &&
-             data.coinsCollected <= 10000 &&
-
-             // Enemies validation - reasonable limit
-             data.totalEnemiesDefeated is number &&
-             data.totalEnemiesDefeated >= 0 &&
-             data.totalEnemiesDefeated <= 5000 &&
-
-             // Timestamp must be server timestamp
-             data.timestamp == request.time;
-    }
-
-    // ---- Pulp Wars (bead pulp_wars-2yc.104) ----
     // The public leaderboard: one score per document. Anyone may read; a
     // score may only be created, with exactly these seven fields, each
     // checked; nobody may change or delete one from a browser (the owner

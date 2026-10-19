@@ -45,8 +45,8 @@ replayed that way still counts (a new match with its own result).
 
 ## What is stored
 
-Firebase project `vibe-crawler` (shared with Vibe Crawler, whose collection is
-`leaderboard`), Cloud Firestore database `(default)`, collection
+Firebase project `pulp-wars` (a project of its own, used only by Pulp Wars;
+bead `pulp_wars-2yc.105`), Cloud Firestore database `(default)`, collection
 **`pulpWarsScores`**, one document per submitted score with a random
 20-character id and exactly these fields:
 
@@ -74,7 +74,7 @@ No Firebase SDK is bundled: the game calls Firestore's REST API with `fetch`
 and the project's public web API key (the config in
 `FIREBASE_CONFIG_V7`):
 
-- **Submit:** `POST https://firestore.googleapis.com/v1/projects/vibe-crawler/databases/(default)/documents:commit?key=…`
+- **Submit:** `POST https://firestore.googleapis.com/v1/projects/pulp-wars/databases/(default)/documents:commit?key=…`
   with one write: the six fields, an `updateTransforms` entry
   `{fieldPath: "timestamp", setToServerValue: "REQUEST_TIME"}` (the server
   sets the time; the rules require `timestamp == request.time`) and
@@ -108,18 +108,23 @@ Until then the game shows "The leaderboard turned the request down." or
 
 ### 1. Publish the security rules
 
-The console keeps one rules file per database, so it must hold both games'
-rules. `firebase/firestore.rules` is the combined file: Vibe Crawler's
-`leaderboard` block copied unchanged (trailing spaces dropped), the new
-`pulpWarsScores` block, and the catch-all deny.
+`firebase/firestore.rules` holds the `pulpWarsScores` block, its validation
+function and a catch-all deny for every other collection.
 
-1. Open https://console.firebase.google.com/project/vibe-crawler/firestore
-   (Firebase Console > project **vibe-crawler** > Build > **Firestore
+1. Open https://console.firebase.google.com/project/pulp-wars/firestore
+   (Firebase Console > project **pulp-wars** > Build > **Firestore
    Database** > **Rules** tab).
 2. Select everything in the editor and delete it.
 3. Paste the whole of [`firebase/firestore.rules`](../firebase/firestore.rules).
 4. Press **Publish**. (The Rules Playground on the same page can try a
    `create` on `/pulpWarsScores/test` before publishing, if wanted.)
+
+If the rules pasted earlier were the older combined file (written when the
+leaderboard shared Vibe Crawler's Firebase project, with an extra
+`match /leaderboard/{scoreId}` block for Vibe Crawler), they work too: the
+`pulpWarsScores` block is the same and the extra block only governs a
+collection Pulp Wars never uses. The current file is cleaner, so paste it the
+next time the rules are edited.
 
 What the `pulpWarsScores` rules allow: anyone may read; a document may be
 created only with exactly the seven fields above (`hasAll` and `hasOnly`),
@@ -136,7 +141,7 @@ Firestore needs one composite index:
 | ---------------- | -------------------- | ---------------------- | ----------- |
 | `pulpWarsScores` | `mode` **Ascending** | `score` **Descending** | Collection  |
 
-1. Open https://console.firebase.google.com/project/vibe-crawler/firestore
+1. Open https://console.firebase.google.com/project/pulp-wars/firestore
    (Firestore Database > **Indexes** tab > **Composite**).
 2. **Create index** (or **Add index**): Collection ID `pulpWarsScores`;
    field `mode` Ascending; field `score` Descending; Query scope
@@ -150,8 +155,9 @@ this index.
 
 ### 3. If the API key is restricted
 
-The game uses the web API key of the vibe-crawler web app
-(`AIzaSyCdblzJof77xBB-ofOYuPavGgUZef8XM1s`). If that key has restrictions in
+The game uses the web API key of the pulp-wars web app
+(`AIzaSyCO5yfBepnhE7eL9Ljkn0NcOueoN6FhJo8`, a public client identifier). If
+that key has restrictions in
 Google Cloud Console > APIs & Services > Credentials:
 
 - **Website restrictions:** add `https://nadbordrozd.github.io/*`. A
@@ -176,7 +182,7 @@ console setup.
 
 To delete a bad entry:
 
-1. Open https://console.firebase.google.com/project/vibe-crawler/firestore
+1. Open https://console.firebase.google.com/project/pulp-wars/firestore
    (Firestore Database > **Data** tab) and open the `pulpWarsScores`
    collection.
 2. Find the document (the panel's filter can match `name`, or sort by

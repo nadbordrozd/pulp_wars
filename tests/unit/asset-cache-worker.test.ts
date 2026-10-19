@@ -437,7 +437,7 @@ describe("service worker asset cache", () => {
     const caches = fakeCaches();
     const { ask, worker, passed } = workerOn(network, caches);
     const base =
-      "https://firestore.googleapis.com/v1/projects/vibe-crawler/databases/(default)/documents";
+      "https://firestore.googleapis.com/v1/projects/pulp-wars/databases/(default)/documents";
     const urls = [
       `${base}:runQuery?key=AIza`,
       `${base}:runAggregationQuery?key=AIza`,

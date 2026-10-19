@@ -38,12 +38,12 @@ import type { StorageAdapter } from "../persistence/index";
 
 /** The user's Firebase web app (public client identifiers). */
 export const FIREBASE_CONFIG_V7 = Object.freeze({
-  apiKey: "AIzaSyCdblzJof77xBB-ofOYuPavGgUZef8XM1s",
-  authDomain: "vibe-crawler.firebaseapp.com",
-  projectId: "vibe-crawler",
-  storageBucket: "vibe-crawler.firebasestorage.app",
-  messagingSenderId: "211284148853",
-  appId: "1:211284148853:web:062f7fdf69726c147cae3c",
+  apiKey: "AIzaSyCO5yfBepnhE7eL9Ljkn0NcOueoN6FhJo8",
+  authDomain: "pulp-wars.firebaseapp.com",
+  projectId: "pulp-wars",
+  storageBucket: "pulp-wars.firebasestorage.app",
+  messagingSenderId: "701245626627",
+  appId: "1:701245626627:web:868265ca3d227f536ff136",
 });
 
 export const LEADERBOARD_COLLECTION_V7 = "pulpWarsScores";
