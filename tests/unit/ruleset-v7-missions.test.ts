@@ -184,6 +184,19 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
     "4ee8d9e4fd568ebb2f21b7adb189d0fbe1b94a6fc14fe2222ad91e8f1f14a328",
   "DINOSAUR_6@1:DINOSAUR":
     "675bbd846d017ff0e1e00604c8f49be1eabf0333621b2c8ef06bd993ae1ea850",
+  // The Martian campaign, "Signal from Home" (`pulp_wars-hmyk.7`).
+  "MARTIAN_1@1:MARTIAN":
+    "2ea1bb3f1cb5f07e8217af2f9ab6fec80b1efdad1b9b2873b31b910405c47784",
+  "MARTIAN_2@1:MARTIAN":
+    "b321fc9d9e1d4e49e908188dc09103210107d1ed0e6b386677ac430d099cd079",
+  "MARTIAN_3@1:MARTIAN":
+    "a77b10a172dacd2ebcc10c2a6799b89e8ad8228729bcce7d2e1801874fdf8c35",
+  "MARTIAN_4@1:MARTIAN":
+    "5717d65020471f2dce8b42127f989fc6285eec9b00fc7ed475f7d17c56cbe1e0",
+  "MARTIAN_5@1:MARTIAN":
+    "b536a412d010aa5f7623a0d9c09dc9d293321785ebc9d299f33c83eadfe349da",
+  "MARTIAN_6@1:MARTIAN":
+    "e0f6a063d1ac167990766b10e41fae7f229a9767ba50e5b0fcce91c23f6f80b9",
   // The siege fixture of the Normal AI (`pulp_wars-68k.6`).
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 2.
   "TEST_NECK@2:ORIGINAL":
@@ -523,6 +536,19 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
     "e9aeb59d229ff10252b86b2d1863f694e2aaf257e132c2e9e5f0c629c02cca8a",
   "DINOSAUR_6@1:DINOSAUR":
     "44972bbd18d4d58cfa06bf465779fe736b3c4b3d9f0ffaba0b4451863ea84900",
+  // The Martian campaign, "Signal from Home" (`pulp_wars-hmyk.7`).
+  "MARTIAN_1@1:MARTIAN":
+    "e3c9bec3e10b47cdffbfbdf8e2063c7955c9409e8f6f8254feb93c6538edbbdd",
+  "MARTIAN_2@1:MARTIAN":
+    "00bdac1aea7f297c485297a57a4a0a11dd8066b377d5f1c55cbc9b5f94bc6fdb",
+  "MARTIAN_3@1:MARTIAN":
+    "ca57c2de0c9515c07f84488a5d5618a755da46df054359f8faf3dbbff546eaee",
+  "MARTIAN_4@1:MARTIAN":
+    "e5a7d24e34e012ff120791f0d93a2d298f7a35661b8df6e8381a7bfbc248d71f",
+  "MARTIAN_5@1:MARTIAN":
+    "6abd8486abcd0bce5d7a90c0c2d773700153fd5731239bcda1bdc7ecac083205",
+  "MARTIAN_6@1:MARTIAN":
+    "5d21a6ed7335a806f76708054f00aa56ebbd8a153aed9c0369005472714ce701",
 
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 2.
   "TEST_NECK@2:ORIGINAL":

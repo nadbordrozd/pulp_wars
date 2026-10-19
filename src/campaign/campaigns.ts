@@ -2,6 +2,7 @@ import type { FactionIdV7, UnitRoleIdV7 } from "../engine/v7/types";
 import { CHAPTER_ONE_V7, type CampaignChapterV7 } from "./chapter-1";
 import { CHAPTER_DINOSAURS_V7 } from "./chapter-dinosaurs";
 import { CHAPTER_HUMANS_V7 } from "./chapter-humans";
+import { CHAPTER_MARTIANS_V7 } from "./chapter-martians";
 import { CHAPTER_UNDEAD_V7 } from "./chapter-undead";
 
 /**
@@ -135,7 +136,13 @@ export const CAMPAIGNS_V7: readonly CampaignDefinitionV7[] = Object.freeze([
     subtitle: "The Old Queen wants her eggs back",
     chapter: CHAPTER_DINOSAURS_V7,
   } satisfies CampaignDefinitionV7),
-  factionCampaign("MARTIANS", "MARTIAN", "Martians", "Martian", 2),
+  // The Martian campaign (`pulp_wars-hmyk.7`, docs/product/SAGA.md 2.6).
+  Object.freeze({
+    ...factionCampaign("MARTIANS", "MARTIAN", "Martians", "Martian", 2),
+    title: "Signal from Home",
+    subtitle: "Quaxx would like to call home",
+    chapter: CHAPTER_MARTIANS_V7,
+  } satisfies CampaignDefinitionV7),
   factionCampaign("GOBLINS", "GOBLIN", "Goblins", "Goblin", 2),
   factionCampaign("DWARVES", "DWARF", "Dwarves", "Dwarf", 2),
   factionCampaign("ICE_FOLK", "ICE_FOLK", "Ice Folk", "Ice Folk", 3),

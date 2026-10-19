@@ -35,6 +35,12 @@ import { DINOSAUR_3_V7 } from "./dinosaur-3";
 import { DINOSAUR_4_V7 } from "./dinosaur-4";
 import { DINOSAUR_5_V7 } from "./dinosaur-5";
 import { DINOSAUR_6_V7 } from "./dinosaur-6";
+import { MARTIAN_1_V7 } from "./martian-1";
+import { MARTIAN_2_V7 } from "./martian-2";
+import { MARTIAN_3_V7 } from "./martian-3";
+import { MARTIAN_4_V7 } from "./martian-4";
+import { MARTIAN_5_V7 } from "./martian-5";
+import { MARTIAN_6_V7 } from "./martian-6";
 import {
   LAB_BREAKTHROUGH_GOBLIN_V7,
   LAB_BREAKTHROUGH_UNDEAD_V7,
@@ -133,6 +139,13 @@ export const MISSION_REGISTRY_V7: readonly MissionDefinitionV7[] = deepFreeze([
   DINOSAUR_4_V7,
   DINOSAUR_5_V7,
   DINOSAUR_6_V7,
+  // The Martian campaign, "Signal from Home" (`pulp_wars-hmyk.7`).
+  MARTIAN_1_V7,
+  MARTIAN_2_V7,
+  MARTIAN_3_V7,
+  MARTIAN_4_V7,
+  MARTIAN_5_V7,
+  MARTIAN_6_V7,
   // The Human tuning labs (`pulp_wars-w49.3`): hidden mirror fixtures of
   // the text harness (docs/validation/TEXT_PLAY.md).
   LAB_SIEGE_V7,

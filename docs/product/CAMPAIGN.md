@@ -4309,6 +4309,146 @@ what each mission's hand play changed:
 - **The Old Queen** is an Alpha from DN5 on (the `kills` of a mission
   unit), as the story has grown her.
 
+## 18. The Martian campaign, "Signal from Home" (`pulp_wars-hmyk.7`)
+
+The second tier-2 faction campaign, after the Dinosaurs (section 17): six missions, `MARTIAN_1` to
+`MARTIAN_6` (`src/engine/v7/missions/martian-*.ts`), in the chapter
+`src/campaign/chapter-martians.ts`, which the campaign map's Martian plate
+opens once the Humans and the Undead campaigns are done (or with the
+testing cheat, section 14.5). The briefings and closings are the saga
+bible's ([SAGA.md](SAGA.md) sections 2.6 and 3.6), trimmed to the card.
+Each mission was hand played through `play-text` (the thoughtful run,
+using the hint) and run by the scripted autopilot of section 15; from
+mission 3 on the autopilot must lose or miss the clock, and missions 1 and
+2 were meant to fall to a first thoughtful attempt. Every mission seats
+you as the Martians with no choice, so the chapter's starting factions are
+empty.
+
+### 18.1 The missions
+
+| Mission                        | Board (generator, seed) | Match seed | Seats                                                | Format and clock                                 | Stars                         |
+| ------------------------------ | ----------------------- | ---------- | ---------------------------------------------------- | ------------------------------------------------ | ----------------------------- |
+| M1 Strangers in a Strange Land | Lakes 11, seed 16       | 20261601   | Martians; Goblins                                    | Conquest of the two scrap camps                  | by round 12; Quaxx lives      |
+| M2 Abduction at Millford       | Pangea 14, seed 13      | 20261602   | Martians; Humans                                     | Capture Millford by round 18                     | by round 15; no city lost     |
+| M3 The Glass Ship              | Archipelago 16, seed 22 | 20261603   | Martians; Dinosaurs                                  | Escort the Core-Walker to Ray Hollow by round 16 | by round 12; no city lost     |
+| M4 Red Dust                    | Lakes 16, seed 13       | 20261604   | Martians and Candy (ally); Undead                    | Hold Red Dust for 16 rounds                      | no city lost; Sugarcrest held |
+| M5 The Orrery at Candlewick    | Pangea 16, seed 23      | 20261605   | Martians; Cult and Goblins (teamed)                  | Capture Candlewick by round 18                   | by round 14; no city lost     |
+| M6 Starfall over Red Dust      | Lakes 16, seed 13       | 20261606   | Martians and Humans (ally); Cult and Undead (teamed) | Kill the three Stargazers by round 16            | by round 12; no city lost     |
+
+### 18.2 Hand play
+
+| Mission | Thoughtful run                                                 | Autopilot                                            |
+| ------- | -------------------------------------------------------------- | ---------------------------------------------------- |
+| M1      | Win, round 9, 3 stars (second attempt)                         | Unfinished at round 41 (no clock; allowed at step 1) |
+| M2      | Win, round 12, 3 stars (first attempt on the final definition) | Defeat, out of time (round 19)                       |
+| M3      | Win, round 5, 3 stars (eighth attempt)                         | Defeat, round 3 (the Core-Walker torpedoed)          |
+| M4      | Win (held), round 16, 3 stars (third attempt)                  | Defeat, round 11 (Red Dust lost)                     |
+| M5      | Win, round 13, 3 stars (third attempt)                         | Defeat, out of time (round 19)                       |
+| M6      | Win, round 8, 3 stars (eighth attempt)                         | Defeat, out of time (round 17)                       |
+
+On the final definitions each winning run was replayed from its command
+log (your moves, the Normal AI replying) and ended exactly as above, and
+each autopilot result held.
+
+The danger moments, and what each mission's hand play changed:
+
+- **M1.** With the southern village free the goblins took it as a third,
+  hidden camp, and a Saucer landed alone on Scrapheap's empty centre died
+  to two goblins ganging up: the village is gone. The winning line: the
+  Explorer monument in round 1 (level 3, a free Saucer), three villages by
+  round 3, then a Grunt beamed from Saucer Field to the eastern strip each
+  turn (a beamed Grunt kills a 6-HP goblin outright); Scrapheap fell in
+  round 6, Tinhat Camp in round 9. A goblin Kaboom killed a Grunt and hurt
+  three more units.
+- **M2.** Millford's militia with Drill built Workshops by its Mines, a
+  chest by Ploughby gave it a Raider, and five towns trained a unit a turn
+  (eleven by round 5): the militia learns nothing, and two villages and
+  the chest are gone. The winning line: a Saucer beamed Quaxx beside the
+  Fighter on a village the militia had taken, Mind Control, and the
+  controlled Fighter captured it; a Shield Projector beamed beside the
+  Brain (Shield 4, the field holds); Psychic Command; in round 11 a Saucer
+  on the mountain beside Millford beamed Quaxx into the pocket beside the
+  centre, he took the Fighter on it, and in round 12 that Fighter captured
+  Millford. A controlled Fighter that advanced after a kill into
+  Haybridge's ring died; both Saucers were mobbed and one was lost.
+- **M3.** Eight attempts. A Saucer beams a unit, Tripods too, from beside
+  any town of yours, so with the Crater a Martian town (or a beasts' town
+  by the ford, once taken) the core crossed the strait in one Beam Down
+  and won in round 4: the Crater is a camp of units, the beasts' southern
+  town is gone and Ray Hollow stands at the eastern end of the shallow
+  ford. The Triceratops and the Spitter killed the Tripod in round 2, so
+  the camp has Force Fields and a Shield Projector with every unit
+  starting beside it; with two Plesiosaurs a Tripod afloat in the ford
+  (11 HP, Shield 4) died to one torpedo (15), so the second comes as a wave
+  in round 7. The winning line: the column kept beside the Projector, the
+  Raptor and the Caveman by the ford killed, and in round 4 the Tripod
+  waded the ford's two steps out of the Plesiosaur's reach; in round 5 it
+  landed and a Saucer beamed it beside Ray Hollow. The clock was then cut
+  from 20 to 16.
+- **M4.** With growth technologies the Unquiet's camps reached levels 3
+  and 4 in two rounds and trained Liches, and three Liches (range 3,
+  splash, and Plague that goes through Shields) wiped out the Projector's
+  cluster by round 6: the dead learn only Drill and Fortification (and so
+  Pestilence). Sent to `ASSAULT` Red Dust they dug in round their camps
+  on Field Defenses and never came, so they `RUSH`, and the round-9 wave
+  comes at Sugarcrest. The winning line: every Lich killed the turn it came
+  in reach by two Grunts beamed beside it (rounds 2, 6, 11 and 14), the
+  beamed units brought home by the next Beam Down when they lived. Both
+  first Saucers, a replacement, the Tripod, three Grunts and a Ray Gunner
+  were lost; a Grunt held Red Dust's centre beside the Projector
+  throughout, a Zombie stood beside it in round 14, and the Vampire's
+  Breach hit it twice through the walls.
+- **M5.** The first run won in round 8 on its first attempt: a Brain beamed
+  into the gap beside the centre took the Idol Bearer on it, and the
+  controlled idol awestruck every cultist beside it, so they could attack
+  only it; the hall's ring is now full and the Redcaps stronger. With a
+  Summoner and 10 Favour the Lodge called three Horrors and an Imp by round
+  5: there is no Summoner and the Lodge has 6 Favour. The winning line: the
+  Redcaps ground down in rounds 2 to 6, Redcap Hollow taken as a forward
+  town in round 8, a Hexer beside the centre killed and the Brain beamed
+  into its tile; the Lodge killed the controlled Bearer and a second Bearer
+  took the centre, the ring was picked off, a fresh Initiate stood on the
+  centre, and in round 12 the Brain (just out of a marked star's area: it
+  would have died to the 9) took it; it captured in round 13. Hexers frogged
+  the Brain twice and the Brain ended at 3 HP.
+- **M6.** Eight attempts. With the camps on the villages beside Red Dust two
+  shots killed a Stargazer in round 1, and with lone Stargazers on the hills
+  beamed Grunts and a charging Saucer won by round 8: each Stargazer stands
+  in a full circle (an Idol Bearer, a Hexer, Initiates), the Bearers stand
+  off the centres (a level-up reward pushed one off) and with their
+  Stargazers hold two tiles each (a wider leash let a Bearer wander), the
+  Martians have no Raiding (no Charge), the Lodge learns nothing and the
+  clock is 16. The winning line still won in round 8: Grunts beamed beside
+  Owl Hill's idol were awestruck and killed it, then the Mothership the
+  Stargazer; a Grunt and a Ray Gunner beamed at Cairn Top hit for 4 and 3
+  under the idol; Quaxx beamed beside Hob's Knoll's idol and took it, and
+  its circle could attack only it while it hit its Stargazer for 5. Hexers
+  frogged a Saucer and Quaxx; the Tripod held Red Dust's centre against the
+  dead in rounds 7 and 8.
+
+### 18.3 Deviations and follow-ups
+
+- **M3's Crater is a camp of units**, not a Martian town, the bible's
+  beasts' town by the ford (Fangwood) is not built (its hunting party is),
+  and Ray Hollow stands at the eastern end of the ford. One Plesiosaur
+  starts in the strait and a second arrives in round 7; the clock is 16,
+  not the bible's 20.
+- **M4's dead `RUSH`** instead of assaulting Red Dust, and learn no growth
+  technologies; their round-9 wave goes for Sugarcrest.
+- **M5's clock is 18** (the bible's 22) and the Lodge has no Summoner;
+  **M6's is 16** (the bible's 22), the Martians there have no Raiding, and
+  Candlewick is a Martian level-1 town.
+- **M6 is still won in round 8 by expert play** (beamed Grunts and a
+  mind-controlled idol); the clock and the star hold the autopilot, not a
+  thoughtful player. A later pass may want a harder finale.
+- **Names.** The text harness deals random names to captured villages; in
+  one M6 run an Undead-captured village was dealt "Candlewick", a name a
+  mission also uses. A presentation follow-up, not a rules one.
+- **No mission-system extensions.** None of the six missions needed
+  mission curiosities (E1); the escort tag was checked through embarking
+  and Beam Down (E6: the escort is lost when sunk afloat and arrives after
+  a Beam Down).
+
 ## Appendix A: critique of the first draft
 
 The first draft was reviewed as a skeptical designer and engineer. Each item

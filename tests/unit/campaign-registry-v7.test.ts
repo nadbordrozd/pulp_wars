@@ -7,6 +7,7 @@ import {
 import { CHAPTER_ONE_V7 } from "../../src/campaign/chapter-1";
 import { CHAPTER_DINOSAURS_V7 } from "../../src/campaign/chapter-dinosaurs";
 import { CHAPTER_HUMANS_V7 } from "../../src/campaign/chapter-humans";
+import { CHAPTER_MARTIANS_V7 } from "../../src/campaign/chapter-martians";
 import { CHAPTER_UNDEAD_V7 } from "../../src/campaign/chapter-undead";
 import {
   CAMPAIGN_CHEAT_STORAGE_KEY_V7,
@@ -60,6 +61,7 @@ describe("campaign registry", () => {
       CHAPTER_HUMANS_V7,
       CHAPTER_UNDEAD_V7,
       CHAPTER_DINOSAURS_V7,
+      CHAPTER_MARTIANS_V7,
     ]);
     expect(campaignMissionV7("FRONTIER_4")).toMatchObject({
       campaign: { id: "FRONTIER" },
@@ -90,10 +92,18 @@ describe("campaign registry", () => {
       chapter: CHAPTER_DINOSAURS_V7,
       entry: { number: 6 },
     });
+    const martians = campaignByIdV7("MARTIANS");
+    expect(martians?.chapter).toBe(CHAPTER_MARTIANS_V7);
+    expect(martians?.title).toBe("Signal from Home");
+    expect(campaignMissionV7("MARTIAN_6")).toMatchObject({
+      campaign: { id: "MARTIANS" },
+      chapter: CHAPTER_MARTIANS_V7,
+      entry: { number: 6 },
+    });
     expect(campaignByIdV7("NOWHERE")).toBeNull();
   });
 
-  it("shows the prologue and the openers open, the Dinosaurs locked, and every unwritten campaign as coming soon", () => {
+  it("shows the prologue and the openers open, the Dinosaurs and the Martians locked until the cheat, and every unwritten campaign as coming soon", () => {
     for (const cheat of [false, true]) {
       const plates = campaignPlatesV7({}, cheat);
       expect(plates.map((plate) => [plate.campaign.id, plate.status])).toEqual([
@@ -107,7 +117,10 @@ describe("campaign registry", () => {
         // The Dinosaur campaign (`pulp_wars-hmyk.6`): tier 2, locked until
         // the Humans and the Undead are finished; the cheat opens it.
         ["DINOSAURS", cheat ? "OPEN" : "LOCKED"],
-        ...CAMPAIGN_IDS_V7.slice(4).map((id) => [id, "SOON"]),
+        // The Martian campaign (`pulp_wars-hmyk.7`): tier 2, locked the
+        // same way.
+        ["MARTIANS", cheat ? "OPEN" : "LOCKED"],
+        ...CAMPAIGN_IDS_V7.slice(5).map((id) => [id, "SOON"]),
       ]);
       expect(plates[1]).toMatchObject({
         missionsWon: 0,

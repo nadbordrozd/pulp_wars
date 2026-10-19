@@ -1001,6 +1001,13 @@ describe("natural maps", () => {
       "DINOSAUR_4",
       "DINOSAUR_5",
       "DINOSAUR_6",
+      // The Martian campaign (`pulp_wars-hmyk.7`).
+      "MARTIAN_1",
+      "MARTIAN_2",
+      "MARTIAN_3",
+      "MARTIAN_4",
+      "MARTIAN_5",
+      "MARTIAN_6",
     ]);
     for (const mission of MISSION_REGISTRY_V7)
       expect(missionMapDriftV7(mission), mission.id).toEqual([]);
@@ -1034,6 +1041,8 @@ describe("natural maps", () => {
       FRONTIER_10: 2,
       // The Rangers' fields on the summit and Ashby Camp's cleared wood.
       UNDEAD_6: 3,
+      // The Rift between Saucer Field and the scrap camps (`pulp_wars-hmyk.7`).
+      MARTIAN_1: 3,
     };
     for (const mission of natural) {
       const source = mission.source as NonNullable<
