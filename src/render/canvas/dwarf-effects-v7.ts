@@ -55,7 +55,7 @@ export interface DwarfFeedbackV7 {
    * SPLINTERS the Barricade hit.
    */
   readonly cells: readonly CoordV7[];
-  /** The source: the Engineer (ASSEMBLE), the Gyrocopter's landing (BOMB). */
+  /** The source: the Engineer (ASSEMBLE), where the Gyrocopter hovers (BOMB). */
   readonly from?: CoordV7;
   readonly progress: number;
 }

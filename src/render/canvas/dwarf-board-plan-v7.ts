@@ -29,6 +29,8 @@ import {
   RIDING_BADGE_V7,
   passengerAccessibleNameV7,
   assembleSummaryV7,
+  BOMB_RUN_FLY_BACK_LABEL_V7,
+  BOMB_RUN_FLY_BACK_V7,
   bombPreviewLinesV7,
   bombTargetLabelV7,
   dwarfCityNameV7,
@@ -77,7 +79,9 @@ export const TUNNEL_TETHER_LINK_V7 = "TUNNEL_TETHER";
  * the Mole tunnels alone). Choosing a destination (`to`) shows the whole
  * tunnel, the Hammerer's ghost on its default landing or on `riderTo`
  * when the player moved it; choosing `to` again digs it.
- * BOMB_RUN: first the target (`targetUnitId` null), then the landing.
+ * BOMB_RUN: first the target (`targetUnitId` null), then the landing:
+ * choosing a landing (`to`) shows its label, choosing it again bombs (the
+ * Gyrocopter pass, `pulp_wars-w49.44`, like the Tunnel's destination).
  * Dwarf crowd control (`pulp_wars-w49.34`): WHIRL marks every enemy the
  * Whirligig would hit (choosing any of them, or the dock's Whirl, whirls);
  * BUILD_BARRICADE marks the Engineer's legal tiles (choosing one builds).
@@ -88,6 +92,8 @@ export type DwarfPickV7 =
       readonly kind: "BOMB_RUN";
       readonly unitId: UnitId;
       readonly targetUnitId: UnitId | null;
+      /** The chosen landing, waiting for its confirmation. */
+      readonly to?: CoordV7 | null;
     }
   | { readonly kind: "ASSEMBLE"; readonly unitId: UnitId }
   | { readonly kind: "WHIRL"; readonly unitId: UnitId }
@@ -332,13 +338,27 @@ export function dwarfPickTargetsV7(
       (command): command is Extract<CommandV7, { kind: "BOMB_RUN" }> =>
         command.kind === "BOMB_RUN" && command.unitId === pick.unitId,
     );
+    // The Gyrocopter pass (`pulp_wars-w49.44`): every run may fly back to
+    // the Gyrocopter's own tile, so a target is previewed with that landing.
+    const gyro = unitById(pick.unitId);
+    const home = (command: Extract<CommandV7, { kind: "BOMB_RUN" }>) =>
+      gyro !== undefined &&
+      command.to.x === gyro.at.x &&
+      command.to.y === gyro.at.y;
     if (pick.targetUnitId === null) {
       const seen = new Set<number>();
       return runs.flatMap((command): MapCommandTargetV7[] => {
         if (seen.has(command.targetUnitId)) return [];
         seen.add(command.targetUnitId);
         const target = unitById(command.targetUnitId);
-        const preview = previewBombRunV7(view, command);
+        const preview = previewBombRunV7(
+          view,
+          runs.find(
+            (candidate) =>
+              candidate.targetUnitId === command.targetUnitId &&
+              home(candidate),
+          ) ?? command,
+        );
         if (target === undefined || preview === null) return [];
         const name = unitRoleRuleV7(view, target).label;
         return [
@@ -352,23 +372,39 @@ export function dwarfPickTargetsV7(
         ];
       });
     }
+    // The Gyrocopter pass (`pulp_wars-w49.44`): every tile of its Move is
+    // a landing, so the board stays calm, like the Tunnel: only the
+    // landing back home is labelled ("Fly back"), a landing shows its
+    // threat while it is focused, and a chosen one keeps its label until
+    // it is chosen again (the bomb) or the pick steps back.
+    const chosen = pick.to ?? null;
     return runs.flatMap((command): MapCommandTargetV7[] => {
       if (command.targetUnitId !== pick.targetUnitId) return [];
       const preview = previewBombRunV7(view, command);
       if (preview === null) return [];
+      const isHome = home(command);
+      const isChosen =
+        chosen !== null &&
+        command.to.x === chosen.x &&
+        command.to.y === chosen.y;
+      const label = landingLabelV7(preview, isHome);
+      const name = `${isHome ? BOMB_RUN_FLY_BACK_V7 : "Land here"}. ${landingHintV7(preview)}`;
       return [
         {
           at: command.to,
           command,
           family: "BOMB_RUN",
-          // Calm, like the Tunnel (bead pulp_wars-eu3r.9): only a landing
-          // an enemy can hit next turn has a label; a safe one is the
-          // plain outline, still named "Land here. Safe ..." for the
-          // cursor and assistive technology.
-          ...(preview.landingThreat > 0
-            ? { previewLabel: landingLabelV7(preview) }
-            : {}),
-          semanticLabel: `Land here. ${landingHintV7(preview)}`,
+          ...(isChosen
+            ? { previewLabel: label }
+            : isHome
+              ? {
+                  previewLabel: BOMB_RUN_FLY_BACK_LABEL_V7,
+                  previewFocusNote: label.split(" · ").slice(1).join(" · "),
+                }
+              : { previewFocusNote: label }),
+          semanticLabel: isChosen
+            ? `${name}. Chosen: choose again to bomb`
+            : name,
         },
       ];
     });
@@ -492,12 +528,20 @@ export function addDwarfPickEntriesV7(
   // drawn from it while nothing else is focused.
   if (pick.kind === "BOMB_RUN") {
     if (pick.targetUnitId !== null) {
-      const command = commands.find(
+      const runs = commands.filter(
         (candidate): candidate is Extract<CommandV7, { kind: "BOMB_RUN" }> =>
           candidate.kind === "BOMB_RUN" &&
           candidate.unitId === pick.unitId &&
           candidate.targetUnitId === pick.targetUnitId,
       );
+      // The Gyrocopter pass: the damage and the blast with the landing back
+      // home (the blast's victims do not depend on the landing but for the
+      // Gyrocopter itself, which the landing labels show).
+      const command =
+        runs.find(
+          (candidate) =>
+            candidate.to.x === actor.at.x && candidate.to.y === actor.at.y,
+        ) ?? runs[0];
       const preview =
         command === undefined ? null : previewBombRunV7(view, command);
       const target = view.units.find((unit) => unit.id === pick.targetUnitId);

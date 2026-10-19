@@ -199,7 +199,7 @@ export type TechnologyUnlockV7 =
   | { readonly kind: "ENGINEER_SUPPORT" }
   /** The Dwarf revision: Engineers Assemble Gunners (`MARKSMANSHIP`). */
   | { readonly kind: "ASSEMBLE" }
-  /** The Dwarf revision: Dive, a bomb deals 6 instead of 5 (the Dwarf `RAIDING`). */
+  /** The Dwarf revision: Dive, a bomb deals 7 instead of 6 (the Dwarf `RAIDING`). */
   | { readonly kind: "DIVE" }
   /** The Dwarf revision: Dig In (the Dwarf `FORTIFICATION`). */
   | { readonly kind: "DIG_IN" }
@@ -7116,14 +7116,12 @@ export const BLASTING_ERUPTION_DAMAGE_V7 = 3;
 /** The Dwarf revision (section 6.2): the bombing-run reach (Chebyshev). */
 export const BOMB_RANGE_V7 = 2;
 /**
- * Dwarf crowd control (`pulp_wars-w49.33`): the farthest (Chebyshev) a
- * bombing run lands from its target (1 before).
+ * The Dwarf revision (section 6.3): the fixed bomb; 6 since the Gyrocopter
+ * pass (`pulp_wars-w49.44`, `pulp-wars-poc-7r102`; 5 before, 4 decided).
  */
-export const BOMB_LANDING_RANGE_V7 = 2;
-/** The Dwarf revision (section 6.3): the fixed bomb. */
-export const BOMB_DAMAGE_V7 = 5;
-/** The Dwarf revision (section 6.3): the bomb with Dive. */
-export const DIVE_BOMB_DAMAGE_V7 = 6;
+export const BOMB_DAMAGE_V7 = 6;
+/** The Dwarf revision (section 6.3): the bomb with Dive (6 before 7r102). */
+export const DIVE_BOMB_DAMAGE_V7 = 7;
 /** The Dwarf revision (section 8): Dig In reach from an own city center. */
 export const DIG_IN_RADIUS_V7 = 1;
 /** The Dwarf revision (section 9.2): the Coins an Assemble costs. */

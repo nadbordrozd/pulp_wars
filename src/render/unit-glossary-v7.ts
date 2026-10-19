@@ -629,7 +629,7 @@ const ENTRIES = {
   ],
   BOMB_RUN: [
     "Bomb Run",
-    "Flies over an enemy within 2 tiles, bombs it and lands on its far side, beside it or a tile beyond. Nothing hits back.",
+    "Flies over an enemy within 2 tiles and bombs it, then flies back or lands anywhere else its Move reaches. Nothing hits back.",
   ],
   CLOCKWORK: [
     "Clockwork",

@@ -3,7 +3,6 @@ import {
   ASSEMBLE_COST_V7,
   BLASTING_ERUPTION_DAMAGE_V7,
   BOMB_DAMAGE_V7,
-  BOMB_LANDING_RANGE_V7,
   BOMB_RANGE_V7,
   BARRICADE_CAP_V7,
   BARRICADE_COST_V7,
@@ -183,8 +182,9 @@ describe("Dwarf texts (RULESET_7_DWARVES.md section 16)", () => {
       `an ${label("CAPTAIN")} heals adjacent machines by ${REPAIR_MACHINE_V7} and other units by 2.`,
     );
     expect(rules.get("Assemble")).toContain(`for ${ASSEMBLE_COST_V7} Coins`);
+    // The Gyrocopter pass (`pulp_wars-w49.44`): it may fly back home.
     expect(rules.get("Bomb Run")).toContain(
-      `lands up to ${BOMB_LANDING_RANGE_V7} tiles beyond it`,
+      "then flies back to where it started or lands anywhere else its Move reaches",
     );
     expect(rules.get("Barricade")).toBe(
       `an ${label("CAPTAIN")} builds a Barricade next to itself for ${BARRICADE_COST_V7} Coins (at most ${BARRICADE_CAP_V7} at a time); its ${BARRICADE_HP_V7} HP block every unit until attacks break it, and Repair mends it.`,
@@ -236,8 +236,8 @@ describe("Dwarf texts (RULESET_7_DWARVES.md section 16)", () => {
     expect(tunnelTooltipV7(3)).toBe(
       `Dig up to ${TUNNEL_RANGE_V7} tiles under anything. Enemies next to the Mole take 3 when it surfaces`,
     );
-    expect(bombRunTooltipV7(5)).toBe(
-      `Fly over an enemy within ${BOMB_RANGE_V7} tiles, bomb it for 5, and land up to ${BOMB_LANDING_RANGE_V7} tiles past it. No reply`,
+    expect(bombRunTooltipV7(6)).toBe(
+      `Fly over an enemy within ${BOMB_RANGE_V7} tiles, bomb it for 6, then fly back or land anywhere your Move reaches. No reply`,
     );
     expect(STAYS_BEHIND_V7).toBe("Hammerer stays behind");
     // Bead pulp_wars-b5f.8: no text names a tile; the hints and the

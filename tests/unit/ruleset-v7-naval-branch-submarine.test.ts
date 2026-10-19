@@ -443,7 +443,9 @@ describe("Submerged", () => {
     );
     expect(bombs.length).toBeGreaterThan(0);
     const bombed = acceptV7(dwarves, 0, bombs[0] as CommandV7);
-    expect(navalUnitV7(bombed.state, target.id).hp).toBe(7);
+    // The Dive bomb of 7 (the Gyrocopter pass, `pulp_wars-w49.44`; 6
+    // before), 1 off for Armoured: 12 - 6.
+    expect(navalUnitV7(bombed.state, target.id).hp).toBe(6);
   });
 });
 

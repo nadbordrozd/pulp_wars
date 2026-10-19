@@ -400,6 +400,18 @@ function cueCommand(
           chebyshev(left.to, target) - chebyshev(right.to, target) ||
           Math.abs(left.to.y - target.y) - Math.abs(right.to.y - target.y),
       )[0];
+  if (cue === "BOMB_RUN")
+    // The Gyrocopter pass (`pulp_wars-w49.44`): it flies over the target
+    // and back to its own tile.
+    return (
+      own.find(
+        (command) =>
+          command.kind === "BOMB_RUN" &&
+          command.targetUnitId === targetId &&
+          command.to.x === UNIT.x &&
+          command.to.y === UNIT.y,
+      ) ?? own[0]
+    );
   return (
     own.find(
       (command) =>

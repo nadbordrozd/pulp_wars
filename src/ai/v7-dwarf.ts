@@ -1074,7 +1074,10 @@ function expansionVillagesV7(
  * the landing threat is 8 or more unless the bomb kills a `CATAPULT` or
  * `CAPTAIN`-role unit. A bomb that sets up a kill this turn (a target at
  * most the bomb plus one offered hit) goes before every kill; one that
- * kills goes after the chips.
+ * kills goes after the chips. The Gyrocopter pass (`pulp_wars-w49.44`):
+ * a run may land on any tile of the Gyrocopter's Move or back on its own
+ * tile, so among runs of equal value the lowest landing threat wins, then
+ * the landing nearest the start: it drops the bomb and returns to safety.
  */
 export function planBombRunsV7(
   tools: DwarfPolicyToolsV7,
@@ -1127,25 +1130,29 @@ export function planBombRunsV7(
       .map((command) => {
         const target = tools.unit(command.targetUnitId);
         if (target === undefined)
-          return { command, value: Number.NEGATIVE_INFINITY };
+          return { command, threat: 0, value: Number.NEGATIVE_INFINITY };
         const damage = Math.max(
           0,
           Math.min(target.hp, bombDamage - shieldOf(target.id)),
         );
+        const threat = Math.min(gyro.hp, tools.danger(gyro, command.to));
         return {
           command,
-          value: score(
-            command,
-            damage,
-            damage >= target.hp,
-            Math.min(gyro.hp, tools.danger(gyro, command.to)),
-          ),
+          threat,
+          value: score(command, damage, damage >= target.hp, threat),
         };
       })
       .filter((entry) => entry.value > Number.NEGATIVE_INFINITY)
+      // The Gyrocopter pass (`pulp_wars-w49.44`): every landing of the
+      // Move is offered, so among equal runs the safest landing comes
+      // first, then the one nearest the start (it keeps the front in sight
+      // for the next run).
       .sort(
         (left, right) =>
           right.value - left.value ||
+          left.threat - right.threat ||
+          chebyshev(left.command.to, gyro.at) -
+            chebyshev(right.command.to, gyro.at) ||
           left.command.targetUnitId - right.command.targetUnitId ||
           left.command.to.y - right.command.to.y ||
           left.command.to.x - right.command.to.x,
@@ -1153,6 +1160,7 @@ export function planBombRunsV7(
     let best: {
       command: BombCommandV7;
       value: number;
+      threat: number;
       kills: boolean;
       damage: number;
     } | null = null;
@@ -1166,10 +1174,15 @@ export function planBombRunsV7(
         preview.landingThreat,
       );
       if (value <= 0) continue;
-      if (best === null || value > best.value)
+      if (
+        best === null ||
+        value > best.value ||
+        (value === best.value && preview.landingThreat < best.threat)
+      )
         best = {
           command: entry.command,
           value,
+          threat: preview.landingThreat,
           kills: preview.kills,
           damage: preview.damage,
         };

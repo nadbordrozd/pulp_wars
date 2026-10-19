@@ -91,7 +91,7 @@ const browser = spawn(
 const errors: string[] = [];
 const evidence: Record<string, unknown> = {};
 const REVIEW = "globalThis.__DWARF_REVIEW__";
-const SAVE_KEY = "pulpWars.save.v7r101.current";
+const SAVE_KEY = "pulpWars.save.v7r102.current";
 const only = process.argv
   .slice(2)
   .find((argument) => argument.startsWith("--only="))
@@ -610,10 +610,15 @@ async function fixtureTour(
     `document.querySelector('[data-v7-dwarf-pick]')?.textContent ?? null`,
   );
   await capture(connection, `bomb-landings-${suffix}.png`);
-  await evaluate(
-    connection,
-    `${REVIEW}.boardHost.activate(${JSON.stringify({ x: 1, y: 1 })})`,
-  );
+  // The Gyrocopter pass (`pulp_wars-w49.44`): a landing is chosen (its
+  // label shows), then chosen again to bomb.
+  for (let tap = 0; tap < 2; tap += 1) {
+    await evaluate(
+      connection,
+      `${REVIEW}.boardHost.activate(${JSON.stringify({ x: 1, y: 1 })})`,
+    );
+    await delay(300);
+  }
   await waitFor(
     connection,
     `${REVIEW}.traces.some((trace) => trace.command.kind === 'BOMB_RUN')`,

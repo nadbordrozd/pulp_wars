@@ -6059,7 +6059,11 @@ As the Dwarves:
   landing threat; the best three by the policy's own danger estimate are
   previewed exactly (`previewBombRunV7`), and the best above zero is taken.
   It never lands where `landingThreat` is 8 or more unless the bomb kills a
-  `CATAPULT` or `CAPTAIN`-role unit. A bomb that leaves its target within one
+  `CATAPULT` or `CAPTAIN`-role unit. Since the Gyrocopter pass
+  (`pulp_wars-w49.44`, `7r102`) every tile of the Gyrocopter's Move and its
+  own tile are landings, so among runs of equal value the lowest landing
+  threat goes first, then the landing nearest its start: it drops the bomb
+  and returns to safety. A bomb that leaves its target within one
   offered hit of death goes before every kill (1185); one that kills goes
   after the chips (895); any other at 880. A Gyrocopter never ends a routine
   Move on water or into visible lethal reach that is worse than where it

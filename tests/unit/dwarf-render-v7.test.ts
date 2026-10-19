@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
   BARRICADE_HP_V7,
-  BOMB_LANDING_RANGE_V7,
   applyCommandV7,
   previewAssembleV7,
   previewBombRunV7,
@@ -663,7 +662,7 @@ describe("Dwarf targets and previews on the board (section 16.1)", () => {
     ).toHaveLength(1);
   });
 
-  it("aims a Bomb Run: the targets, then the landings, labelled only where threatened", () => {
+  it("aims a Bomb Run: the targets, then calm landings, then a chosen landing with its threat", () => {
     const targets = aim(AT.gyrocopter, {
       kind: "BOMB_RUN",
       unitId: id(AT.gyrocopter),
@@ -682,22 +681,48 @@ describe("Dwarf targets and previews on the board (section 16.1)", () => {
       targetUnitId: id(AT.bombTarget),
     });
     expect(landings.targets.length).toBeGreaterThan(0);
-    // Bead pulp_wars-eu3r.9: like the Tunnel, a safe landing is the plain
-    // outline (still named for the cursor); a threatened one keeps its
-    // "Land · up to N".
+    // The Gyrocopter pass (`pulp_wars-w49.44`): every tile of its Move is a
+    // landing, so the board stays calm like the Tunnel's: only the landing
+    // back home has a label ("Fly back"); each landing shows its threat
+    // while it is focused (a focus note), and is named for the cursor.
     for (const landing of landings.targets) {
       expect(landing.family).toBe("BOMB_RUN");
       const command = landing.command;
       if (command.kind !== "BOMB_RUN") throw new Error("not a Bomb Run");
-      const threat = previewBombRunV7(view, command)?.landingThreat ?? 0;
-      if (threat > 0)
-        expect(landing.previewLabel).toBe(`Land · up to ${threat}`);
-      else expect(landing.previewLabel).toBeUndefined();
-      expect(landing.semanticLabel).toMatch(/^Land here\. /);
+      const preview = previewBombRunV7(view, command);
+      if (preview === null) throw new Error("no preview");
+      const home = same(landing.at, AT.gyrocopter);
+      const threat = preview.landingThreat;
+      const tail = threat > 0 ? `up to ${threat}` : "safe";
+      if (home) {
+        expect(landing.previewLabel).toBe("Fly back");
+        expect(landing.previewFocusNote).toBe(tail);
+        expect(landing.semanticLabel).toMatch(/^Fly back here\. Landing: /);
+      } else {
+        expect(landing.previewLabel).toBeUndefined();
+        expect(landing.previewFocusNote).toBe(`Land · ${tail}`);
+        expect(landing.semanticLabel).toMatch(/^Land here\. Landing: /);
+      }
     }
+    expect(
+      landings.targets.some((landing) => same(landing.at, AT.gyrocopter)),
+    ).toBe(true);
     expect(
       landings.entries.find((entry) => entry.abilityStyle === "BOMB")?.at,
     ).toEqual(AT.bombTarget);
+    // A chosen landing keeps its label until it is chosen again.
+    const away = landings.targets.find(
+      (landing) => !same(landing.at, AT.gyrocopter),
+    );
+    if (away === undefined) throw new Error("no landing away");
+    const chosen = aim(AT.gyrocopter, {
+      kind: "BOMB_RUN",
+      unitId: id(AT.gyrocopter),
+      targetUnitId: id(AT.bombTarget),
+      to: away.at,
+    }).targets.find((landing) => same(landing.at, away.at));
+    expect(chosen?.previewLabel).toBe(away.previewFocusNote);
+    expect(chosen?.semanticLabel).toMatch(/Chosen: choose again to bomb$/);
   });
 
   it("aims an Assemble at the free tiles, without the Repair targets", () => {
@@ -803,17 +828,54 @@ describe("Dwarf cues (section 16.1, DWARF.md effects)", () => {
     ]);
   });
 
-  it("flies the Gyrocopter beyond its target, then drops the bomb", () => {
-    const steps = boundary(
+  it("flies the Gyrocopter over its target, drops the bomb, then flies on to its landing", () => {
+    // The Gyrocopter pass (`pulp_wars-w49.44`): two legs, the bomb and its
+    // damage between them (it flew straight to its landing before).
+    const home = boundary(
       state,
       human,
       (command) =>
         command.kind === "BOMB_RUN" &&
-        command.targetUnitId === id(AT.bombTarget),
+        command.targetUnitId === id(AT.bombTarget) &&
+        same(command.to, AT.gyrocopter),
     );
-    expect(steps.map((step) => step.kind)).toEqual(["MOVE", "DWARF", "DAMAGE"]);
-    expect(steps[0]).toMatchObject({ unitId: id(AT.gyrocopter) });
-    expect(steps[1]).toMatchObject({ effect: "BOMB", cells: [AT.bombTarget] });
+    expect(home.map((step) => step.kind)).toEqual([
+      "MOVE",
+      "DWARF",
+      "DAMAGE",
+      "MOVE",
+    ]);
+    // (4, 0) to (2, 2) and back, one tile a step.
+    expect(home[0]).toMatchObject({
+      unitId: id(AT.gyrocopter),
+      path: [AT.gyrocopter, { x: 3, y: 1 }, AT.bombTarget],
+      flight: true,
+    });
+    expect(home[1]).toMatchObject({ effect: "BOMB", cells: [AT.bombTarget] });
+    expect(home[2]).toMatchObject({ at: AT.bombTarget });
+    expect(home[3]).toMatchObject({
+      unitId: id(AT.gyrocopter),
+      path: [AT.bombTarget, { x: 3, y: 1 }, AT.gyrocopter],
+      flight: true,
+    });
+    // A landing elsewhere: the second leg ends there.
+    const away = boundary(
+      state,
+      human,
+      (command) =>
+        command.kind === "BOMB_RUN" &&
+        command.targetUnitId === id(AT.bombTarget) &&
+        !same(command.to, AT.gyrocopter),
+    );
+    expect(away.map((step) => step.kind)).toEqual([
+      "MOVE",
+      "DWARF",
+      "DAMAGE",
+      "MOVE",
+    ]);
+    const last = away[3];
+    if (last?.kind !== "MOVE") throw new Error("no second leg");
+    expect(last.path[0]).toEqual(AT.bombTarget);
   });
 
   it("winds up an assembled Gunner, sparks a Repair and slides a Knockback", () => {
@@ -1051,7 +1113,7 @@ describe("Dwarf crowd control on the board (pulp_wars-w49.34)", () => {
     ]);
   });
 
-  it("lands a Bomb Run up to 2 tiles from its target", () => {
+  it("lands a Bomb Run back home or anywhere its Move reaches (pulp_wars-w49.44)", () => {
     const gyro = id(CC.gyrocopter);
     const target = id(CC.bombTarget);
     const plan = aim(CC.gyrocopter, {
@@ -1065,16 +1127,24 @@ describe("Dwarf crowd control on the board (pulp_wars-w49.34)", () => {
         : [],
     );
     expect(plan.targets.map((landing) => landing.at)).toEqual(offered);
+    // The Gyrocopter's own tile is a landing ("Fly back here"), and so is
+    // a tile 3 from its start on the far side from the target.
+    const home = plan.targets.find(
+      (landing) =>
+        landing.at.x === CC.gyrocopter.x && landing.at.y === CC.gyrocopter.y,
+    );
+    expect(home?.family).toBe("BOMB_RUN");
+    expect(home?.semanticLabel).toMatch(/^Fly back here\. Landing: /);
     const reach = plan.targets.map((landing) =>
       Math.max(
-        Math.abs(landing.at.x - CC.bombTarget.x),
-        Math.abs(landing.at.y - CC.bombTarget.y),
+        Math.abs(landing.at.x - CC.gyrocopter.x),
+        Math.abs(landing.at.y - CC.gyrocopter.y),
       ),
     );
-    expect(Math.max(...reach)).toBe(BOMB_LANDING_RANGE_V7);
-    expect(reach).toContain(1);
+    expect(Math.max(...reach)).toBe(3);
     for (const landing of plan.targets)
-      expect(landing.semanticLabel).toMatch(/^Land here\. Landing: /);
+      if (landing !== home)
+        expect(landing.semanticLabel).toMatch(/^Land here\. Landing: /);
   });
 
   it("names the commands and why a Whirl or a Barricade is unavailable", () => {

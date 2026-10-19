@@ -53,6 +53,13 @@ export type CorePresentationStepV7 =
        * boundary wait where that slide starts.
        */
       readonly pushSlide?: true;
+      /**
+       * The Gyrocopter pass (`pulp_wars-w49.44`): one leg of a bombing
+       * run's flight, out over the target or on to the landing. The
+       * Gyrocopter waits over its target between the legs while its bomb
+       * falls.
+       */
+      readonly flight?: true;
     }
   | {
       /**
@@ -1631,20 +1638,25 @@ export function corePresentationPlanV7(
             durationMs: 100,
           });
     } else if (event.kind === "UNIT_BOMBED") {
-      // The Dwarf revision: the Gyrocopter flies over its target and lands
-      // beyond it, then the bomb falls and blasts; the target shows its
-      // damage.
-      if (isExplored(event.from) && isExplored(event.to))
-        steps.push({
-          kind: "MOVE",
-          unitId: event.unitId,
-          path: [event.from, event.to],
-          durationMs: 360,
-          ...(enemyTurn ? { followCamera: true as const } : {}),
-        });
-      origins.set(event.unitId, event.to);
+      // The Gyrocopter pass (`pulp_wars-w49.44`): the Gyrocopter flies out
+      // over its target, the bomb falls and blasts while it hovers there,
+      // the target shows its damage, and then it flies on to its landing
+      // (back to its start, or anywhere its Move reaches). A target on a
+      // tile the viewer has not explored keeps the one flight.
+      const flight = (
+        path: readonly CoordV7[],
+      ): Extract<CorePresentationStepV7, { readonly kind: "MOVE" }> => ({
+        kind: "MOVE",
+        unitId: event.unitId,
+        path,
+        durationMs: moveDurationMsV7(path.length - 1),
+        flight: true,
+        ...(enemyTurn ? { followCamera: true as const } : {}),
+      });
       if (isExplored(event.at)) {
-        pushDwarf({ effect: "BOMB", cells: [event.at], from: event.to });
+        if (isExplored(event.from) && !same(event.from, event.at))
+          steps.push(flight(bombFlightPathV7(event.from, event.at)));
+        pushDwarf({ effect: "BOMB", cells: [event.at], from: event.at });
         steps.push({
           kind: "DAMAGE",
           unitId: event.targetUnitId,
@@ -1653,7 +1665,11 @@ export function corePresentationPlanV7(
           lethal: event.killed,
           durationMs: 100,
         });
-      }
+        if (isExplored(event.to))
+          steps.push(flight(bombFlightPathV7(event.at, event.to)));
+      } else if (isExplored(event.from) && isExplored(event.to))
+        steps.push(flight(bombFlightPathV7(event.from, event.to)));
+      origins.set(event.unitId, event.to);
     } else if (event.kind === "UNIT_ASSEMBLED") {
       // The Dwarf revision: a key turns and steam puffs as the Gunner is
       // wound up next to its Engineer.
@@ -2430,4 +2446,23 @@ function knocksBack(
 
 function same(left: CoordV7, right: CoordV7): boolean {
   return left.x === right.x && left.y === right.y;
+}
+
+/**
+ * The Gyrocopter pass (`pulp_wars-w49.44`): a straight flight from `from`
+ * to `to`, one tile a step (diagonal while both axes differ), so a flight
+ * glides at the walking pace and never hops. Both ends included.
+ */
+export function bombFlightPathV7(
+  from: CoordV7,
+  to: CoordV7,
+): readonly CoordV7[] {
+  const path: CoordV7[] = [{ x: from.x, y: from.y }];
+  let { x, y } = from;
+  while (x !== to.x || y !== to.y) {
+    x += Math.sign(to.x - x);
+    y += Math.sign(to.y - y);
+    path.push({ x, y });
+  }
+  return path;
 }

@@ -31,7 +31,10 @@ implemented** (`pulp_wars-78i.4`,
 [section 15.1](#151-implementation-status-pulp_wars-78i4)). **Coarse
 balance is done** (`pulp_wars-78i.7`, identity `pulp-wars-poc-7r31`: the
 bomb deals 5, 6 with Dive; [section 19.5](#195-tuning-record) and the
-[Dwarf balance report](../validation/RULESET_7_DWARF_BALANCE.md)). The
+[Dwarf balance report](../validation/RULESET_7_DWARF_BALANCE.md)). **The
+Gyrocopter pass** (`pulp_wars-w49.44`, `pulp-wars-poc-7r102`) changed the
+Bomb Run: it lands back home or anywhere the Gyrocopter's Move reaches, and
+the bomb deals 6, 7 with Dive ([section 6.5](#65-the-gyrocopter-pass-pulp_wars-w4944)). The
 engine (`pulp_wars-78i.3`), the Normal AI (`pulp_wars-78i.4`), the art
 (`pulp_wars-78i.5`), the UI (`pulp_wars-78i.6`), and the coarse balance
 (`pulp_wars-78i.7`) follow it; `pulp_wars-78i.8` folds it into
@@ -768,9 +771,12 @@ Mole loss next turn unless the Dwarf line follows up.
 ## 6. Gyrocopters and the bombing run
 
 **One sentence:** a Gyrocopter flies over an enemy and drops a bomb on it,
-5 damage (6 with Dive), landing beyond it (up to 2 tiles past it since
-`pulp_wars-w49.33`); nothing can hit back at the bomb, and no unit is bombed
-twice in a turn.
+6 damage (7 with Dive), then flies back to where it started or lands
+anywhere else its Move reaches (since the Gyrocopter pass,
+`pulp_wars-w49.44`; before, it landed beyond the target, up to 2 tiles
+past it since `pulp_wars-w49.33`); nothing can hit back at the bomb, and no
+unit is bombed twice in a turn. Sections 6.1 to 6.4 are the design record;
+[section 6.5](#65-the-gyrocopter-pass-pulp_wars-w4944) states what changed.
 
 ### 6.1 Flight and no ordinary attack
 
@@ -912,6 +918,77 @@ Hammerer kills a Catapult, Captain, Lich, Knight, or Caveman with no reply;
 after a Dive bomb, one moved Gunner shot kills a Catapult, Captain, Lich, or
 Knight. A fresh Fighter needs a bomb and two more hits. (The bomb was 4, 5
 with Dive, until `pulp_wars-78i.7`; this table is re-computed for 5 and 6.)
+
+### 6.5 The Gyrocopter pass (`pulp_wars-w49.44`)
+
+The user, 2026-10-19: "the dwarf gyrocopter is really weak. It's mainly
+for recon but the attack should do something. the big problem with the
+bomb run is that it forces you to land somewhere in enemy territory ... it
+never lets me land back where i started or anywhere close. that means you
+die straight after. make is slightly more useful." Identity
+`pulp-wars-poc-7r102`.
+
+**The old rule.** The target: a visible hostile unit within 2 (Chebyshev)
+of the Gyrocopter, not bombed this turn. The landing: within 2 of the
+target (`BOMB_LANDING_RANGE_V7`; next to it before `pulp_wars-w49.33`),
+**strictly farther from the Gyrocopter's start than the target**, and a
+tile an ordinary Move (3) could end on. A target 2 away left only the far
+side 1 tile past it; a target 1 away, tiles 2 to 3 from the start beyond
+it. The start and every tile on the near side were never landings, so a
+run always ended among the enemy, where a wounded Fighter hit the 8-HP,
+Defense-1 Gyrocopter for 5 and any second hit killed it.
+
+**The new rule.** The target is unchanged (within 2, once per target per
+turn across the seat's Gyrocopters). The landing is **the Gyrocopter's own
+tile or any tile its ordinary Move could end on this turn** (Move 3 under
+the flyer rules, measured from its start; explored, free, no treasure
+chest), whatever the target: it flies out over the target and back, or on
+to any tile within its Move, its own land included. The engine row 10 of
+[section 6.2](#62-the-bomb-run-command) reads so; `BOMB_LANDING_RANGE_V7`
+is gone. Considered and not taken: a single flight budget (start to target
+to landing within Move 3), which still leaves a run against a target 2 away
+within 1 of it.
+
+**The buff.** The bomb deals **6** (`BOMB_DAMAGE_V7`; 5 before) and **7**
+with Dive (`DIVE_BOMB_DAMAGE_V7`; 6 before); nothing else changes it. One
+readable number: half a fresh Fighter. A fresh Human Fighter bombed to 6
+dies to one fresh Hammerer hit on open ground (round(2 / (2 + 2 × 6 / 12) × 9) = 6; at 7 the same hit left 1); a 10-HP back-liner at 4 dies to any
+one more hit; a fresh Goblin or Egg (6) dies to one bomb. A unit still
+loses at most one bomb a turn, so a swarm kills no fresh unit of 8 HP or
+more. The Gyrocopter stays a scout: 4 Coins, 8 HP, Defense 1, Sight 2,
+Move 3, no ordinary attack; the change is that it now survives its run
+when it chooses a safe landing.
+
+**Board and playback.** The target is picked first (attack frames with
+"Bomb −6" and "Kills"), then the landing (move frames over every landing,
+its own tile named "Fly back here"; a landing an enemy can reach is
+labelled with the threat, one in an exploding target's blast "Land · in
+the blast"). The playback flies the Gyrocopter from its start to over the
+target (one tile a step at the walking pace), holds it there while the
+bomb falls and the damage shows, then flies it on to the landing; Fast
+playback halves it and reduced motion shows the held frames only.
+
+**AI.** The Normal AI scores runs as before (damage, kill and back-liner
+bonuses, minus half the landing threat, never a landing threat of 8 or
+more unless it kills a Catapult or Engineer role); among runs of equal
+value it takes the lowest landing threat and then the landing nearest its
+start, so it drops the bomb and returns to safety. Other seats' threat
+estimates are unchanged: a Gyrocopter threatens every tile within 2 of it
+with its owner's bomb (7 with Dive).
+
+HP left after one bomb on a fresh target at `7r102`:
+
+| Target (HP)                                                                                                                          | Bomb 6 | Dive 7 |
+| ------------------------------------------------------------------------------------------------------------------------------------ | ------ | ------ |
+| Fighter, Marksman, Raptor (12)                                                                                                       | 6      | 5      |
+| Guard (17)                                                                                                                           | 11     | 10     |
+| Captain, Catapult, Knight, Skeleton, Ghoul, Necromancer, Lich, Vampire, Wolf Rider, Scrap Buggy, Caveman, Spitter, Shaman, Sled (10) | 4      | 3      |
+| Banshee, Bomb Chucker, Rocket Cart, Snow Hunter (8)                                                                                  | 2      | 1      |
+| Goblin (6), Egg (6)                                                                                                                  | killed | killed |
+| Ankylosaurus (20, Armoured)                                                                                                          | 15     | 14     |
+| Ray Gunner, Brain, Saucer (8, Shield 2)                                                                                              | 4 (2)  | 3 (2)  |
+| Yeti (9)                                                                                                                             | 3      | 2      |
+| Mammoth (20)                                                                                                                         | 14     | 13     |
 
 ## 7. Clockwork
 

@@ -23,6 +23,7 @@ import {
 import type { CampaignAssignmentV7 } from "../../src/ai/v7-campaign";
 import {
   TECHNOLOGY_IDS_V7,
+  previewBombRunV7,
   queryCombatPreviewV7,
   queryPlayerCommandsV7,
   type CommandV7,
@@ -234,35 +235,48 @@ describe("Dwarf Normal AI: the Mole", () => {
 });
 
 describe("Dwarf Normal AI: the Gyrocopter", () => {
-  it("bombs the wounded Catapult and lands on the safe side", () => {
+  it("bombs the wounded Catapult and lands on the safe tile nearest its start", () => {
     const state = asDwarf([
       own("RAIDER", 5, 3),
       foe("CATAPULT", 5, 1, { hp: 4 }),
       foe("FIGHTER", 3, 0),
     ]);
     const best = unitCandidatesV7(state, at(5, 3))[0];
+    // The Gyrocopter pass (`pulp_wars-w49.44`): it may land anywhere its
+    // Move reaches; (6, 2) is 3 from the Fighter (out of its reach of 2)
+    // and next to its start (was (6, 0), beyond the target).
     expect(best?.command).toEqual({
       kind: "BOMB_RUN",
       unitId: unitIdAtV7(state, at(5, 3)),
       targetUnitId: unitIdAtV7(state, at(5, 1)),
-      to: at(6, 0),
+      to: at(6, 2),
     });
     expect(best?.score.priority).toBe(BOMB_FINISH_PRIORITY_V7);
   });
 
-  it("does not land between two Fighters", () => {
+  it("does not land between two Fighters: it bombs and flies back out of every reach", () => {
     const state = asDwarf([
       own("RAIDER", 5, 4),
       foe("MARKSMAN", 5, 2),
       foe("FIGHTER", 3, 1),
       foe("FIGHTER", 7, 1),
     ]);
-    expect(
-      queryPlayerCommandsV7(viewerViewV7(state)).some(
-        (command) => command.kind === "BOMB_RUN",
-      ),
-    ).toBe(true);
-    expect(unitCandidatesV7(state, at(5, 4), "BOMB_RUN")).toEqual([]);
+    // The Gyrocopter pass (`pulp_wars-w49.44`): before it, every landing
+    // was beyond the Marksman, between the Fighters, and the AI did not
+    // bomb. Now it lands 4 from the Marksman (range 2 and Move 1), out of
+    // every reach, two tiles back from its start.
+    const runs = unitCandidatesV7(state, at(5, 4), "BOMB_RUN");
+    expect(runs[0]?.command).toEqual({
+      kind: "BOMB_RUN",
+      unitId: unitIdAtV7(state, at(5, 4)),
+      targetUnitId: unitIdAtV7(state, at(5, 2)),
+      to: at(3, 6),
+    });
+    const command = runs[0]?.command;
+    if (command?.kind !== "BOMB_RUN") throw new Error("no Bomb Run");
+    expect(previewBombRunV7(viewerViewV7(state), command)?.landingThreat).toBe(
+      0,
+    );
   });
 });
 

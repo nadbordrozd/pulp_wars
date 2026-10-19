@@ -509,15 +509,42 @@ describe("Dwarf abilities through the dock and the board", () => {
       requiredElement("[data-v7-dwarf-pick] .v7-kaboom-summary").textContent,
     ).toBe("Bomb Run");
     const landing = required(
-      boardPlan(host).targets.find((target) => target.family === "BOMB_RUN"),
+      boardPlan(host).targets.find(
+        (target) =>
+          target.family === "BOMB_RUN" && !same(target.at, AT.gyrocopter),
+      ),
     );
     expect(landing.semanticLabel).toMatch(/^Land here\. Landing:/);
+    // The Gyrocopter pass (`pulp_wars-w49.44`): its own tile is a landing
+    // ("Fly back"), and a landing is chosen first (its label shows), then
+    // bombs when chosen again or with the dock's Bomb Run.
+    expect(
+      boardPlan(host).targets.find(
+        (target) =>
+          target.family === "BOMB_RUN" && same(target.at, AT.gyrocopter),
+      )?.previewLabel,
+    ).toBe("Fly back");
+    host.callbacks?.onCommand(landing);
+    await waitUntil(() => {
+      const pick = host.lastModel?.interaction.dwarfPick;
+      return pick?.kind === "BOMB_RUN" && pick.to != null;
+    });
+    expect(controller.accepted).toHaveLength(0);
+    expect(
+      boardPlan(host).targets.find((target) => same(target.at, landing.at))
+        ?.previewLabel,
+    ).toMatch(/^Land · /);
+    expect(
+      requiredElement('[data-v7-dwarf-pick] [data-action="bomb-run-confirm"]')
+        .textContent,
+    ).toBe("Bomb Run");
     host.callbacks?.onCommand(landing);
     await waitUntil(() => controller.accepted.length === 1);
     expect(controller.accepted[0]).toMatchObject({
       kind: "BOMB_RUN",
       unitId: gyro.id,
       targetUnitId: target.id,
+      to: landing.at,
     });
     await waitUntil(() =>
       live().includes(`Your ${label("RAIDER")} bombed a Marksman for`),

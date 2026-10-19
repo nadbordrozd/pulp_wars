@@ -11,7 +11,6 @@ import {
   NEUTRAL_KIND_V7,
   NEUTRAL_ROLE_RULES_V7,
   BASIC_ECONOMIC_ACTIONS_V7,
-  BOMB_LANDING_RANGE_V7,
   BOMB_RANGE_V7,
   SPATIAL_ECONOMIC_ACTIONS_V7,
   TECHNOLOGY_BRANCH_IDS_V7,
@@ -1379,15 +1378,21 @@ function appendPublicUnitCommandsV7(
       !unit.activation.moved &&
       !primaryUsedForQuery(unit) &&
       !unitIsFrozenV7(view, unit)
-    )
-      for (const target of publicBombTargetsV7(view, unit))
-        for (const to of publicBombLandingsV7(view, unit, target))
+    ) {
+      // The Gyrocopter pass (`pulp_wars-w49.44`): the landings do not
+      // depend on the target.
+      const targets = publicBombTargetsV7(view, unit);
+      const landings =
+        targets.length === 0 ? [] : publicBombLandingsV7(view, unit);
+      for (const target of targets)
+        for (const to of landings)
           candidates.push({
             kind: "BOMB_RUN",
             unitId: unit.id,
             targetUnitId: target.id,
             to,
           });
+    }
     if (rule.abilities.includes("ASSEMBLE") && primaryReady)
       for (const to of publicAssembleTilesV7(view, unit))
         candidates.push({ kind: "ASSEMBLE", unitId: unit.id, to });
@@ -2498,29 +2503,29 @@ function publicBombTargetsV7(
 }
 
 /**
- * The Dwarf revision section 6.2 row 10: the landings of a bombing run on
- * `target`, in (y, x) order: within `BOMB_LANDING_RANGE_V7` (2; Dwarf crowd
- * control, `pulp_wars-w49.33`) of the target, strictly farther from the
- * Gyrocopter, explored, no treasure chest, and an offered Move destination
- * of the Gyrocopter.
+ * The Dwarf revision section 6.2 row 10: the landings of a bombing run, in
+ * (y, x) order. The Gyrocopter pass (`pulp_wars-w49.44`): the
+ * Gyrocopter's own tile (it flies over the target and back) and every
+ * offered Move destination of it that is explored and holds no treasure
+ * chest, whatever the target.
  */
 function publicBombLandingsV7(
   view: PlayerViewV7,
   gyro: PublicUnitV7,
-  target: PublicUnitV7,
 ): readonly CoordV7[] {
-  return reachablePlayerMovementPathsV7(view, gyro)
-    .map((path) => path.destination)
-    .filter((at) => {
-      const tile = tileAtView(view, at);
-      return (
-        tile?.explored === true &&
-        chebyshev(at, target.at) <= BOMB_LANDING_RANGE_V7 &&
-        chebyshev(at, gyro.at) > chebyshev(target.at, gyro.at) &&
-        !view.treasureChests.some((chest) => same(chest, at))
-      );
-    })
-    .sort((left, right) => left.y - right.y || left.x - right.x);
+  return [
+    { x: gyro.at.x, y: gyro.at.y },
+    ...reachablePlayerMovementPathsV7(view, gyro)
+      .map((path) => path.destination)
+      .filter((at) => {
+        const tile = tileAtView(view, at);
+        return (
+          !same(at, gyro.at) &&
+          tile?.explored === true &&
+          !view.treasureChests.some((chest) => same(chest, at))
+        );
+      }),
+  ].sort((left, right) => left.y - right.y || left.x - right.x);
 }
 
 /**
@@ -2787,6 +2792,35 @@ export function previewBombRunV7(
   };
 }
 
+/**
+ * The Gyrocopter pass (`pulp_wars-w49.44`): the threatened tiles of each
+ * unit of a view, kept while the view lives, because a run now offers
+ * every tile of the Gyrocopter's Move as a landing and each is previewed.
+ */
+const LANDING_THREAT_CACHE = new WeakMap<
+  PlayerViewV7,
+  Map<UnitId, ReadonlySet<string>>
+>();
+
+function threatenedTileKeysV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+): ReadonlySet<string> {
+  let byUnit = LANDING_THREAT_CACHE.get(view);
+  if (byUnit === undefined) {
+    byUnit = new Map();
+    LANDING_THREAT_CACHE.set(view, byUnit);
+  }
+  let keys = byUnit.get(unitId);
+  if (keys === undefined) {
+    keys = new Set(
+      queryThreatenedTilesV7(view, unitId).map((tile) => `${tile.x},${tile.y}`),
+    );
+    byUnit.set(unitId, keys);
+  }
+  return keys;
+}
+
 /** See {@link BombRunPreviewV7.landingThreat}. */
 function publicLandingThreatV7(
   view: PlayerViewV7,
@@ -2794,13 +2828,14 @@ function publicLandingThreatV7(
   at: CoordV7,
 ): number {
   const gyroRule = unitRoleRuleV7(view, gyro);
+  const atKey = `${at.x},${at.y}`;
   let total = 0;
   for (const enemy of view.units) {
     if (
       enemy.hp <= 0 ||
       enemy.form === "EGG" ||
       !publicHostile(view, gyro.ownerId, enemy.ownerId) ||
-      !queryThreatenedTilesV7(view, enemy.id).some((tile) => same(tile, at))
+      !threatenedTileKeysV7(view, enemy.id).has(atKey)
     )
       continue;
     const rule = unitRoleRuleV7(view, enemy);

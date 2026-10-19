@@ -5,7 +5,6 @@ import {
   BARRICADE_HP_V7,
   BLASTING_ERUPTION_DAMAGE_V7,
   BOMB_DAMAGE_V7,
-  BOMB_LANDING_RANGE_V7,
   BOMB_RANGE_V7,
   DIVE_BOMB_DAMAGE_V7,
   ERUPTION_DAMAGE_V7,
@@ -182,15 +181,24 @@ export const RIDER_SURFACED_V7 =
   "Just surfaced: cannot enter a city or village this turn";
 export const BOMB_RUN_LABEL_V7 = "Bomb Run";
 /**
- * "Fly over an enemy within 2 tiles, bomb it for {n}, and land up to 2
- * tiles past it. No reply" (Dwarf crowd control, `pulp_wars-w49.33`: the
- * landing may be up to `BOMB_LANDING_RANGE_V7` from the target).
+ * "Fly over an enemy within 2 tiles, bomb it for {n}, then fly back or land
+ * anywhere your Move reaches. No reply" (the Gyrocopter pass,
+ * `pulp_wars-w49.44`: the landing is any tile of the Gyrocopter's Move or
+ * its own tile, whatever the target).
  */
 export function bombRunTooltipV7(bombDamage: number): string {
-  return `Fly over an enemy within ${BOMB_RANGE_V7} tiles, bomb it for ${bombDamage}, and land up to ${BOMB_LANDING_RANGE_V7} tiles past it. No reply`;
+  return `Fly over an enemy within ${BOMB_RANGE_V7} tiles, bomb it for ${bombDamage}, then fly back or land anywhere your Move reaches. No reply`;
 }
 export const BOMB_RUN_PICK_TARGET_V7 = "Choose an enemy to bomb";
 export const BOMB_RUN_PICK_LANDING_V7 = "Choose where the Gyrocopter lands";
+/** The Gyrocopter pass: the landing on the Gyrocopter's own tile. */
+export const BOMB_RUN_FLY_BACK_V7 = "Fly back here";
+/** The Gyrocopter pass: the board label of the landing back home. */
+export const BOMB_RUN_FLY_BACK_LABEL_V7 = "Fly back";
+/** The Gyrocopter pass: a landing is chosen, then confirmed. */
+export const BOMB_RUN_CONFIRM_HINT_V7 = `Tap the tile again or press ${BOMB_RUN_LABEL_V7}`;
+/** The Gyrocopter pass: a landing in the blast of an exploding target. */
+export const LANDING_BLAST_V7 = "its death blast hits the Gyrocopter here";
 /** "Bomb: {n} damage, no reply". */
 export function bombPreviewTextV7(damage: number): string {
   return `Bomb: ${damage} damage, no reply`;
@@ -416,7 +424,7 @@ export function eruptionDamageOfV7(
   );
 }
 
-/** The viewer's own bomb damage (4, or 5 with Dive). */
+/** The viewer's own bomb damage (6, or 7 with Dive). */
 export function viewerBombDamageV7(view: PlayerViewV7): number {
   return technologyCapabilitiesV7(
     view.viewer.researchedTechs,
@@ -494,7 +502,7 @@ export function dwarfHelpRulesV7(): readonly (readonly [string, string])[] {
     ],
     [
       BOMB_RUN_LABEL_V7,
-      `a ${GYROCOPTER()} flies over an enemy within ${BOMB_RANGE_V7} tiles, bombs it for ${BOMB_DAMAGE_V7} (${DIVE_BOMB_DAMAGE_V7} with Dive), and lands up to ${BOMB_LANDING_RANGE_V7} tiles beyond it; nothing hits back, and no unit is bombed twice in a turn.`,
+      `a ${GYROCOPTER()} flies over an enemy within ${BOMB_RANGE_V7} tiles, bombs it for ${BOMB_DAMAGE_V7} (${DIVE_BOMB_DAMAGE_V7} with Dive), and then flies back to where it started or lands anywhere else its Move reaches; nothing hits back, and no unit is bombed twice in a turn.`,
     ],
     [
       CLOCKWORK_LABEL_V7,
@@ -605,7 +613,7 @@ export function dwarfAbilityDescriptionV7(
     case "FLY":
       return "Flies over any terrain and any unit and ignores zones of control.";
     case "BOMB_RUN":
-      return `Flies over an enemy within ${BOMB_RANGE_V7} tiles, bombs it for ${BOMB_DAMAGE_V7} (${DIVE_BOMB_DAMAGE_V7} with Dive) and lands up to ${BOMB_LANDING_RANGE_V7} tiles beyond it. Nothing hits back, and no unit is bombed twice in a turn. It has no ordinary attack.`;
+      return `Flies over an enemy within ${BOMB_RANGE_V7} tiles, bombs it for ${BOMB_DAMAGE_V7} (${DIVE_BOMB_DAMAGE_V7} with Dive), then flies back to where it started or lands anywhere else its Move reaches. Nothing hits back, and no unit is bombed twice in a turn. It has no ordinary attack.`;
     case "CLOCKWORK":
       return `${CLOCKWORK_INFO_V7}. Immune to Plague, bites, Wail, and Mind Control; leaves no Grave.`;
     case "TWIN_SHOT":
@@ -1022,10 +1030,21 @@ export function bombPreviewLinesV7(
       ? [`Shield absorbs ${preview.shieldDamage}`]
       : []),
     ...(preview.kills ? [BOMB_KILLS_V7] : []),
-    ...(preview.blast.length > 0
+    ...(bombBlastHitsGyrocopterV7(preview)
       ? ["Its death blast hits the Gyrocopter"]
       : []),
   ];
+}
+
+/**
+ * The Gyrocopter pass (`pulp_wars-w49.44`): whether the death blast of the
+ * bombed target reaches the Gyrocopter on this run's landing (a landing
+ * next to an exploding target that dies).
+ */
+export function bombBlastHitsGyrocopterV7(preview: BombRunPreviewV7): boolean {
+  return preview.blast.some((blast) =>
+    blast.results.some((result) => result.unitId === preview.unitId),
+  );
 }
 
 /** The short board label of a bomb target. */
@@ -1035,18 +1054,30 @@ export function bombTargetLabelV7(preview: BombRunPreviewV7): string {
     : `Bomb −${preview.damage + preview.shieldDamage}`;
 }
 
-/** The short board label of a landing tile. */
-export function landingLabelV7(preview: BombRunPreviewV7): string {
+/**
+ * The short board label of a landing tile ("Fly back · safe" on the
+ * Gyrocopter's own tile since the Gyrocopter pass).
+ */
+export function landingLabelV7(
+  preview: BombRunPreviewV7,
+  home = false,
+): string {
+  const head = home ? BOMB_RUN_FLY_BACK_LABEL_V7 : "Land";
+  if (bombBlastHitsGyrocopterV7(preview)) return `${head} · in the blast`;
   return preview.landingThreat > 0
-    ? `Land · up to ${preview.landingThreat}`
-    : "Land · safe";
+    ? `${head} · up to ${preview.landingThreat}`
+    : `${head} · safe`;
 }
 
-/** The landing hint (section 16.2). */
+/** The landing hint (section 16.2), with the blast when it reaches it. */
 export function landingHintV7(preview: BombRunPreviewV7): string {
-  return preview.landingThreat > 0
-    ? landingHintTextV7(preview.landingThreat)
-    : LANDING_SAFE_V7;
+  const hint =
+    preview.landingThreat > 0
+      ? landingHintTextV7(preview.landingThreat)
+      : LANDING_SAFE_V7;
+  return bombBlastHitsGyrocopterV7(preview)
+    ? `${hint}; ${LANDING_BLAST_V7}`
+    : hint;
 }
 
 /**

@@ -8,7 +8,6 @@ import {
   BARRICADE_CAP_V7,
   BARRICADE_COST_V7,
   BARRICADE_HP_V7,
-  BOMB_LANDING_RANGE_V7,
   barricadeDamageV7,
   estimateCombatV7,
   parseCommandV7,
@@ -51,8 +50,8 @@ import {
 // Dwarf crowd control (`pulp_wars-w49.33`; docs/product/RULESET_7_CURRENT.md
 // sections 22.5, 22.8, and 22.15; docs/product/RULESET_7_DWARVES.md
 // sections 6.2 and 9.3): the Whirligig's Whirl (which replaced Three
-// Hammers), the Engineer's Barricade, and the Bomb Run landing up to two
-// tiles from its target. The field is tests/fixtures/v7-dwarf.ts: an
+// Hammers) and the Engineer's Barricade (the Bomb Run landing of this
+// bead was replaced by the Gyrocopter pass, `pulp_wars-w49.44`). The field is tests/fixtures/v7-dwarf.ts: an
 // 11 x 11 board, seat 0 (Dwarf) capital (8, 8) with territory x 7-9,
 // y 7-9; seat 1 capital (2, 8) with territory x 1-3, y 7-9; villages
 // (5, 5), (8, 5), (5, 8); open Grass elsewhere; every technology, 100
@@ -691,8 +690,8 @@ describe("the Engineer's Barricade (section 22.8)", () => {
       code: "TUNNEL_NOT_LEGAL",
       params: { reason: "RIDER_DESTINATION" },
     });
-    // (6, 3) is within 2 of the target and farther from the Gyrocopter, but
-    // a Barricade stands there.
+    // (6, 3) is within the Gyrocopter's Move (a landing since the
+    // Gyrocopter pass), but a Barricade stands there.
     expect(
       offeredOfV7(state, at(5, 2), "BOMB_RUN").some(
         (command) =>
@@ -1044,89 +1043,6 @@ describe("the Engineer's Barricade (section 22.8)", () => {
 });
 
 // ---------------------------------------------------------- Bomb Run ---
-
-describe("the Bomb Run lands up to two tiles from its target (section 6.2 rule 10)", () => {
-  const GYRO = at(5, 2);
-  const state = dwarfFieldV7([
-    { seat: 0, role: "RAIDER", at: GYRO },
-    { seat: 1, role: "FIGHTER", at: at(5, 3) },
-    { seat: 1, role: "FIGHTER", at: at(1, 1) },
-  ]);
-
-  it("offers every reachable landing within 2 of the target and farther from the start", () => {
-    expect(BOMB_LANDING_RANGE_V7).toBe(2);
-    const landings = offeredOfV7(state, GYRO, "BOMB_RUN")
-      .filter(
-        (command) =>
-          command.kind === "BOMB_RUN" &&
-          command.targetUnitId === unitAtV7(state, at(5, 3)).id,
-      )
-      .map((command) => (command.kind === "BOMB_RUN" ? command.to : null));
-    // Distance 2 from the start (row 4 and columns 3 and 7), within 2 of
-    // (5, 3); and distance 3 (row 5 and beyond) within 2 of (5, 3). The
-    // village (5, 5) is a landing too since any unit can capture
-    // (`pulp_wars-ke95`: a flyer may end on a village center).
-    for (const to of [
-      at(5, 4),
-      at(3, 4),
-      at(7, 4),
-      at(4, 5),
-      at(5, 5),
-      at(6, 5),
-    ])
-      expect(landings, `${to.x},${to.y}`).toContainEqual(to);
-    for (const to of landings) {
-      if (to === null) throw new Error("no landing");
-      expect(
-        Math.max(Math.abs(to.x - 5), Math.abs(to.y - 3)),
-      ).toBeLessThanOrEqual(2);
-      expect(Math.max(Math.abs(to.x - 5), Math.abs(to.y - 2))).toBeGreaterThan(
-        1,
-      );
-    }
-  });
-
-  it("lands at distance 1 and at distance 2 from the target", () => {
-    const near = playV7(state, bombV7(state, GYRO, at(5, 3), at(5, 4)));
-    expect(unitAtV7(near.state, at(5, 4)).id).toBe(unitAtV7(state, GYRO).id);
-    const far = playV7(state, bombV7(state, GYRO, at(5, 3), at(4, 5)));
-    expect(
-      far.events.find((event) => event.kind === "UNIT_BOMBED"),
-    ).toMatchObject({ from: GYRO, to: at(4, 5), at: at(5, 3) });
-    expect(unitAtV7(far.state, at(4, 5)).id).toBe(unitAtV7(state, GYRO).id);
-  });
-
-  it("refuses a landing 3 from the target, one not farther from the start, and one a Move cannot reach", () => {
-    const refusal = (to: CoordV7) =>
-      refusalV7(state, bombV7(state, GYRO, at(5, 3), to));
-    const landing = {
-      code: "BOMB_RUN_NOT_LEGAL",
-      params: { reason: "LANDING" },
-    };
-    // 3 from the target.
-    expect(refusal(at(2, 5))).toEqual(landing);
-    // Within 2 of the target but no farther from the start than it is.
-    expect(refusal(at(4, 3))).toEqual(landing);
-    expect(refusal(at(6, 1))).toEqual(landing);
-    // Within 2 and farther, but 4 from the start (beyond Move 3).
-    const longRange = dwarfFieldV7([
-      { seat: 0, role: "RAIDER", at: GYRO },
-      { seat: 1, role: "FIGHTER", at: at(5, 4) },
-      { seat: 1, role: "FIGHTER", at: at(1, 1) },
-    ]);
-    expect(
-      refusalV7(longRange, bombV7(longRange, GYRO, at(5, 4), at(5, 6))),
-    ).toEqual(landing);
-    // An occupied tile within 2 and farther (the village (5, 5) was the
-    // example here before `pulp_wars-ke95`; a flyer may now land on it).
-    const occupied = dwarfFieldV7([
-      { seat: 0, role: "RAIDER", at: GYRO },
-      { seat: 1, role: "FIGHTER", at: at(5, 3) },
-      { seat: 1, role: "FIGHTER", at: at(1, 1) },
-      { seat: 0, role: "FIGHTER", at: at(6, 5) },
-    ]);
-    expect(
-      refusalV7(occupied, bombV7(occupied, GYRO, at(5, 3), at(6, 5))),
-    ).toEqual(landing);
-  });
-});
+// The landing rule of `pulp_wars-w49.33` (up to two tiles past the target)
+// was replaced by the Gyrocopter pass (`pulp_wars-w49.44`): see
+// tests/unit/ruleset-v7-gyrocopter-pass.test.ts.

@@ -113,6 +113,7 @@ import {
   previewBreakOffV7,
   previewStompV7,
   previewAssembleV7,
+  previewBombRunV7,
   previewBuildBarricadeV7,
   previewWhirlV7,
   queryBarricadeUnavailableReasonV7,
@@ -707,6 +708,7 @@ import {
   whirlTargetLinesV7,
   BLASTING_CHARGES_UNLOCK_TEXT_V7,
   BOMBED_MARK_V7,
+  BOMB_RUN_CONFIRM_HINT_V7,
   BOMB_RUN_LABEL_V7,
   BOMB_RUN_PICK_LANDING_V7,
   BOMB_RUN_PICK_TARGET_V7,
@@ -734,7 +736,10 @@ import {
   assembleCostLineV7,
   assembleSummaryV7,
   assembleTooltipV7,
+  bombPreviewLinesV7,
   bombRunTooltipV7,
+  landingHintV7,
+  landingLabelV7,
   clockworkRecoverBlockedV7,
   digInChipV7,
   dwarfAbilityUnavailableTextV7,
@@ -9818,6 +9823,26 @@ export class Ruleset7DomAppView {
       this.#queueBoardFocus();
       return;
     }
+    // The Gyrocopter pass (`pulp_wars-w49.44`): a landing is chosen first
+    // (its label says its threat) and bombs when chosen again, like the
+    // Tunnel's destination.
+    const bombPick =
+      this.#dwarfPick?.kind === "BOMB_RUN" ? this.#dwarfPick : null;
+    if (
+      bombPick !== null &&
+      target.family === "BOMB_RUN" &&
+      command.kind === "BOMB_RUN"
+    ) {
+      if (bombPick.to != null && same(bombPick.to, command.to)) {
+        void this.#dispatch(command);
+        return;
+      }
+      this.#dwarfPick = { ...bombPick, to: command.to };
+      this.#notice = `${target.semanticLabel ?? BOMB_RUN_LABEL_V7}. ${BOMB_RUN_CONFIRM_HINT_V7}.`;
+      this.#render();
+      this.#queueBoardFocus();
+      return;
+    }
     // The Cultists (bead pulp_wars-mch9.18): choosing the cultist that
     // helps a Summon moves on to the Horror's tiles; nothing is sent yet.
     if (target.family === "SUMMON_HELPER" && command.kind === "SUMMON") {
@@ -17241,8 +17266,14 @@ export class Ruleset7DomAppView {
       this.#render();
       return;
     }
+    if (stepBack && pick?.kind === "BOMB_RUN" && pick.to != null) {
+      this.#dwarfPick = { ...pick, to: null };
+      this.#notice = `${BOMB_RUN_PICK_LANDING_V7}.`;
+      this.#render();
+      return;
+    }
     if (stepBack && pick?.kind === "BOMB_RUN" && pick.targetUnitId !== null) {
-      this.#dwarfPick = { ...pick, targetUnitId: null };
+      this.#dwarfPick = { ...pick, targetUnitId: null, to: null };
       this.#notice = `${BOMB_RUN_PICK_TARGET_V7}.`;
       this.#render();
       return;
@@ -17468,8 +17499,43 @@ export class Ruleset7DomAppView {
         info = BOMB_RUN_PICK_TARGET_V7;
       } else {
         back = true;
-        prompt = `${BOMB_RUN_PICK_LANDING_V7} after bombing the ${nameOf(pick.targetUnitId)}`;
-        info = BOMB_RUN_PICK_LANDING_V7;
+        const to = pick.to ?? null;
+        const chosen =
+          to === null
+            ? undefined
+            : commands.find(
+                (
+                  command,
+                ): command is Extract<CommandV7, { kind: "BOMB_RUN" }> =>
+                  command.kind === "BOMB_RUN" &&
+                  command.targetUnitId === pick.targetUnitId &&
+                  same(command.to, to),
+              );
+        const preview =
+          chosen === undefined ? null : previewBombRunV7(view, chosen);
+        const gyro = unitById(unitId);
+        if (chosen === undefined || preview === null) {
+          prompt = `${BOMB_RUN_PICK_LANDING_V7} after bombing the ${nameOf(pick.targetUnitId)}`;
+          info = BOMB_RUN_PICK_LANDING_V7;
+        } else {
+          // The Gyrocopter pass: the chosen landing, confirmed here or by
+          // choosing it again on the board.
+          const home = gyro !== undefined && same(gyro.at, chosen.to);
+          prompt = `${BOMB_RUN_LABEL_V7}: ${landingLabelV7(preview, home)}`;
+          info = `${BOMB_RUN_CONFIRM_HINT_V7}. ${landingHintV7(preview)}`;
+          confirm = button(
+            this.#document,
+            BOMB_RUN_LABEL_V7,
+            "bomb-run-confirm",
+            "primary-action v7-dwarf-confirm",
+          );
+          confirm.setAttribute(
+            "aria-label",
+            `${BOMB_RUN_LABEL_V7}. Bomb the ${nameOf(pick.targetUnitId)}: ${bombPreviewLinesV7(preview).join(", ")}. ${landingHintV7(preview)}`,
+          );
+          confirm.disabled = this.#localBusy();
+          confirm.onclick = () => void this.#dispatch(chosen);
+        }
       }
     } else if (pick.kind === "WHIRL") {
       // Dwarf crowd control (`pulp_wars-w49.34`): every enemy the Whirl
@@ -18127,7 +18193,7 @@ function setupFrom(draft: DraftV7, gameKind: GameKindV7): MatchSetupV7 | null {
   const aiHeadStartCoins =
     draft.mapType === "SHOWCASE" ? 0 : draft.aiHeadStartCoins;
   return {
-    rulesetId: "pulp-wars-poc-7r101",
+    rulesetId: "pulp-wars-poc-7r102",
     seed,
     width,
     height: width,

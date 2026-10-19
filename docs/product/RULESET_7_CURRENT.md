@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r101`, for all nine offered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r102`, for all nine offered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), Candy (`CANDY`), and
 the Cultists (`CULT`). The ninth faction, the Cultists of the Ancient Ones,
@@ -445,6 +445,24 @@ links to another, by Road or by Port. A sea link needs only **Shorecraft**
 the Roads technology, and unexplored water no longer breaks a link. A save,
 replay, or setup of `7r75` is rejected, and the browser autosave has a new
 key.
+`pulp-wars-poc-7r102` (`pulp_wars-w49.44`, the Gyrocopter pass; the user,
+2026-10-19: "the dwarf gyrocopter is really weak ... the big problem with
+the bomb run is that it forces you to land somewhere in enemy territory")
+changes the Dwarf **Bomb Run**
+([section 22.5](#225-gyrocopters-and-the-bombing-run)): the landing no
+longer depends on the target (it was within 2 of the target and strictly
+farther from the start, so a run always ended among the enemy); the
+Gyrocopter lands **back on its own tile or on any tile an ordinary Move of
+it could end on** (Move 3 under the flyer rules, from its start). The
+bomb is **6** (`BOMB_DAMAGE_V7`; 5 before) and **7 with Dive**
+(`DIVE_BOMB_DAMAGE_V7`; 6 before). The board picks the target, then the
+landing (its own tile is "Fly back here"), and the playback flies the
+Gyrocopter out over the target, drops the bomb, and flies on to the
+landing. The Normal AI prefers, among runs of equal value, the landing
+with the least threat and then the one nearest the start. No command,
+event, state, or view shape changed. A save, replay, or setup of `7r101`
+is rejected, and the browser autosave has a new key. A match without a
+Dwarf seat plays as at `7r101`.
 `pulp-wars-poc-7r101` (`pulp_wars-w49.43`; the user, 2026-10-19: "I think
 i overdid it with the gang up bonus for goblins. Make it +1 per ally
 again", then "let's do +1 per ally (+2 for ogres) but up to +3") sets
@@ -1431,7 +1449,7 @@ the build differs (its sections 20 to 24 list them);
 the values here are current. Where a document and the code disagreed, the
 code's behavior is the rule and is stated below;
 [Known discrepancies](#25-known-discrepancies) lists the open items and the
-resolved ones as of `pulp-wars-poc-7r101`.
+resolved ones as of `pulp-wars-poc-7r102`.
 
 **Terms.** "On the board" means a unit that currently exists (HP above 0).
 **Living** has the narrower revision-13 meaning used by Wail, Plague,
@@ -1534,10 +1552,10 @@ sections here cite.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r101`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Ruleset                                    | `pulp-wars-poc-7r102`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r101.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Browser autosave                           | `pulpWars.save.v7r102.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, `CULT`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`, `CULT_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -3073,7 +3091,7 @@ the neutral rows `y = 5` and `y = 9` stand on Snow with cover
 ([section 21.5](#215-snow)). A Dwarf seat's units are on the board (nothing
 is burrowed, and `surfacedThisTurn` and `bombedThisTurn` are empty); with
 every technology known, Dig In, Blasting Charges (eruption 3, the Steam
-Cannon ignores fortification), Dive (bomb 6), and Assemble apply from the
+Cannon ignores fortification), Dive (bomb 7), and Assemble apply from the
 first turn. Its Hammerer on the Walled capital center has not moved, so it
 is dug in with fortification 3 (Walls 2, Dig In 1) from the first enemy
 turn if it stays, while its Steam Mole on `(cx + 1, 5)`, two tiles from the
@@ -5032,7 +5050,7 @@ Rally). **Marksmanship** also grants `ASSEMBLE`: the player's Engineers may
 Assemble Clockwork Gunners
 ([section 22.8](#228-engineer-repair-and-assemble)). **Raiding** grants
 `DIVE` instead of the Charge bonus and keeps Pillage: the player's bombs
-deal 6 instead of 5 ([section 22.5](#225-gyrocopters-and-the-bombing-run)).
+deal 7 instead of 6 ([section 22.5](#225-gyrocopters-and-the-bombing-run)).
 **Chivalry** grants no Overrun (the Undead, Martian, and Ice Folk
 precedent). **Fortification**, displayed as **Dig In**, grants `DIG_IN`
 instead of the Field Defense command: an unmoved Hammerer or Steam Mole on
@@ -5060,7 +5078,7 @@ Human table are:
 | Marksmanship   | same             | Clockwork Gunner (two shots standing still); Engineers Assemble Gunners                                          |
 | Fieldcraft     | same             | Replant Forest; Gunners ignore Forest movement stops; Gunner Sight 2                                             |
 | Scouting       | same             | Gyrocopter (Bomb Run); Gyrocopter Sight 2                                                                        |
-| Raiding        | same             | Pillage; Dive: bombs deal 6                                                                                      |
+| Raiding        | same             | Pillage; Dive: bombs deal 7                                                                                      |
 | Chivalry       | same             | Whirligig (Whirl, `w49.33`; Three Hammers at `7r55`; the Steam Tank before, now at Metallurgy); Cultivate Forest |
 | Drill          | same             | reveal Ore; Workshop; first-hostile-capture Spoils (2 Coins)                                                     |
 | Fortification  | Dig In           | Steam Mole (Tunnel; `7r56`); Hammerers and Moles that stand still on or next to your city centers are dug in     |
@@ -6383,7 +6401,7 @@ The Dwarf (`DWARF`) roster, by mechanical role, with the
 | Unit             | Role          | Tech              | Cost |  HP |    Attack | Defense | Move | Range | Sight | Kind               | Attack after Move    | Capture | Abilities                                                                                                         |
 | ---------------- | ------------- | ----------------- | ---: | --: | --------: | ------: | ---: | ----: | ----: | ------------------ | -------------------- | ------- | ----------------------------------------------------------------------------------------------------------------- |
 | Hammerer         | `FIGHTER`     | start             |    2 |  12 |     2 (4) |   2 (4) |    1 |     1 |     1 | living             | yes                  | yes     | rides the tunnel; Dig In; no Field Defense                                                                        |
-| Gyrocopter       | `RAIDER`      | Scouting          |    4 |   8 | 1.5 (3)¹¹ |   1 (2) |    3 |  bomb |     2 | living; machine    | the bomb is its Move | yes     | flies; Bomb Run (5, Dive 6¹²), once per target per turn                                                           |
+| Gyrocopter       | `RAIDER`      | Scouting          |    4 |   8 | 1.5 (3)¹¹ |   1 (2) |    3 |  bomb |     2 | living; machine    | the bomb is its Move | yes     | flies; Bomb Run (6, Dive 7¹²), once per target per turn                                                           |
 | Clockwork Gunner | `MARKSMAN`    | Marksmanship      |    3 |  10 |   1.5 (3) |   1 (2) |    1 |   1–2 |   1¹⁰ | construct; machine | yes, one shot        | yes     | two shots if it has not moved; never moves after firing                                                           |
 | Steam Mole       | `GUARD`       | Fortification     |    5 |  16 |     2 (4) | 2.5 (5) |    1 |     1 |     1 | living; machine    | yes                  | yes     | Tunnel 3 with a rider; Eruption 2 (3); Dig In; no Field Defense                                                   |
 | Engineer         | `CAPTAIN`     | Administration    |    5 |  10 |     1 (2) |   1 (2) |    1 |     1 |     1 | living             | yes                  | yes     | Repair; Assemble; no Rally                                                                                        |
@@ -6399,8 +6417,9 @@ The Dwarf (`DWARF`) roster, by mechanical role, with the
 ¹¹ The Gyrocopter has no `ATTACK` ability: its Attack is used only when it
 retaliates, at distance 1 ([section 22.5](#225-gyrocopters-and-the-bombing-run)).
 ¹² [Dwarf tuning record](RULESET_7_DWARVES.md#195-tuning-record)
-(`pulp_wars-78i.7`, `pulp-wars-poc-7r31`): the bomb deals 5 and 6 with Dive
-(`BOMB_DAMAGE_V7`, `DIVE_BOMB_DAMAGE_V7`; decided values 4 and 5).
+(`pulp_wars-78i.7`, `pulp-wars-poc-7r31`): the bomb dealt 5 and 6 with Dive
+(the Gyrocopter pass, `pulp_wars-w49.44`, `pulp-wars-poc-7r102`: 6 and 7,
+`BOMB_DAMAGE_V7`, `DIVE_BOMB_DAMAGE_V7`) instead of the decided values 4 and 5.
 ¹³ Ironclads and Sea Tunnels (`pulp-wars-poc-7r96`, `pulp_wars-5ti.20`,
 [themed naval branches section 7](RULESET_7_NAVAL_FACTIONS.md#7-dwarves-ironclads-and-sea-tunnels)):
 the Human ships' numbers under their own names, Armoured and 1, 2, and 1
@@ -9447,7 +9466,10 @@ Harbours from it.
   offered bombing run by the damage, a kill bonus, and a `CATAPULT`,
   `MARKSMAN`, or `CAPTAIN` bonus minus half the preview's `landingThreat`,
   and never lands where that threat is 8 or more unless the bomb kills a
-  `CATAPULT` or `CAPTAIN`-role unit; holds an unmoved Gunner that has a
+  `CATAPULT` or `CAPTAIN`-role unit; among runs of equal value it takes the
+  lowest landing threat, then the landing nearest its start (the
+  Gyrocopter pass, `pulp_wars-w49.44`: it bombs and returns to safety);
+  holds an unmoved Gunner that has a
   target so that it fires twice; Assembles at the front (on a Pressure job
   or within 3 of a visible hostile unit, on the offered tile nearest the
   target that is not next to a hostile melee unit) at the land-production
@@ -10889,7 +10911,7 @@ Attack 3, Defense 2). The rows with two tiles need Wallbreaker since
 | Achievements, Promotion | Muster counts hatched Dinosaur roles, never an Egg; Slayer counts a dinosaur's kills (growth does not reset them); a destroyed Egg is a kill for its killer. Promotion stays for the Caveman, the Shaman, and the boats.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | Martians                | Martian attacks, rays, and Pierce hit an Egg like any unit (Defense 1, no retaliation); an Egg is never a Mind Control or Tractor Beam target, and its tile never a Beam Down or pull destination. A Charge! on a Martian unit is absorbed by the Shield first and pushes and follows whatever it absorbed; Acid and Wallbreaker reach only a Martian foot unit's cover and Walls (machines have neither). An Ankylosaurus takes 1 less from every Martian hit. The two-slot Triceratops, T-Rex, and Brontosaurus are immune to the Tractor Beam; since `7r99` a Brain takes any dinosaur beside it, and it keeps growing under its controller (it has no Hatch). A Mind Control and a `BRAIN_LOST` removal are no kill for growth.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | Ice Folk                | An Egg cannot be Frozen (a Bolas or Frost Bolt on it is `TARGET_IMMUNE`; every other freeze source skips it) and is never shattered; it is an ordinary target of Ice Folk attacks (Defense 1, no retaliation), and a Sweep flank hit deals it 2. Dinosaurs are Frozen and shattered like any unit, the two-slot ones included (a Frozen T-Rex only by the hit that leaves it at 1 to 3 of its HP); a Brontosaurus (`JUGGERNAUT`) never. Growth from killing Ice Folk units is ordinary; its full heal takes a unit out of the Shatter window but does not thaw it. A Triceratops's Move ends on its first Snow tile, so its run-up inside Snow is at most the tiles up to that one; its Charge! ignores an Ice Folk defender's fortification, not its Snow cover, and a pushed unit stays Frozen (a Mountain-born one may be pushed onto a Mountain). A Raptor's Pounce needs its first tile off Snow (Fieldcraft waives deep snow); a Frozen Raptor cannot Pounce, and a Frozen T-Rex cannot attack. Acid ignores Snow cover; a Spitter's shot from distance 2 at an Ice Folk unit in its own Witch's Blizzard is halved. An Ankylosaurus takes 1 from a Sweep flank hit, Armoured applying before the Shatter test. Wallbreaker removes Walls levels, and the Ice Folk defender on that center still has no Snow cover. The Shaman's Tend Wounded thaws a Frozen unit; a Frozen Shaman can use neither War Drums nor Hatch. |
-| Dwarves                 | Dinosaur-faction units and Eggs on the eight tiles around a surfacing Steam Mole take its eruption (2, 3 with Blasting Charges): an Ankylosaurus 1 (2), a 6-HP Egg is left at 4 (3), a 10-HP Egg with Nesting at 8 (7). A bomb hits any form: it leaves a 6-HP Egg at 1 (a Dive bomb destroys it) and takes 4 (Dive 5) from an Ankylosaurus. A destroyed Egg is the Mole's or the Gyrocopter's kill; a dinosaur grows from killing Dwarf units as from any kill. No Egg is laid, and no hatching, Push, Charge! push or follow, or Rampage ends, on a mound tile. The Triceratops's Charge! and Acid ignore Dig In with the rest of the fortification; Wallbreaker removes only the Walls levels, so Dig In stays. A two-slot dinosaur and an Egg are never knocked back by the Steam Cannon.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| Dwarves                 | Dinosaur-faction units and Eggs on the eight tiles around a surfacing Steam Mole take its eruption (2, 3 with Blasting Charges): an Ankylosaurus 1 (2), a 6-HP Egg is left at 4 (3), a 10-HP Egg with Nesting at 8 (7). A bomb hits any form: it destroys a 6-HP Egg (6 since `7r102`; 5 left it at 1) and takes 5 (Dive 6) from an Ankylosaurus. A destroyed Egg is the Mole's or the Gyrocopter's kill; a dinosaur grows from killing Dwarf units as from any kill. No Egg is laid, and no hatching, Push, Charge! push or follow, or Rampage ends, on a mound tile. The Triceratops's Charge! and Acid ignore Dig In with the rest of the fortification; Wallbreaker removes only the Walls levels, so Dig In stays. A two-slot dinosaur and an Egg are never knocked back by the Steam Cannon.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 
 ### 19.13 Commands, events, errors, and queries
 
@@ -11833,7 +11855,7 @@ cost.
 | Boats, water            | Martian boats are the shielded Hover Fleet (`7r95`: Skimmer, Hover Cruiser, Bathysphere). Foot units embark at Ports, or with Hover Pods launch from any beach onto adjacent Shallow Water as the last step of a Move; machines self-launch on any water they may enter. An embarked Martian unit keeps its Shield, cannot attack, retaliate, or use an ability, and can be pulled from water to water.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | Achievements, Promotion | Muster counts a controlled unit by its role and excludes the Colossus; Sea Dog never counts an afloat machine. Promotion (3 kills, +5 maximum HP, full heal of HP, Shield unchanged) applies to every Martian unit and to a controlled unit by its kind's rules; ray, hostile Pierce, and retaliation kills count; Mind Control is not a kill.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | Ice Folk                | Frozen is not damage and ignores Shields: a shielded unit is Frozen whatever its Shield. Shatter reads the HP after the Shield, so a Frozen unit at 1 to 3 HP is shattered by a hit its full Shield absorbs entirely; a Shield absorbs a Sweep flank hit, a Rockfall, and a Boulder like any damage (since `7r37` a Frozen 9-HP Grunt in a Force Field dies to two Yeti hits: the first costs 1 HP, the second leaves 3 and shatters it; at 10 HP it took three). A ray fired from distance 2 at an Ice Folk unit in its own Witch's Blizzard is halved after its full or half power, and a Pierce hit derives from the halved hit; the Disintegrator leaves an Ice Folk unit on its Walled center with neither fortification nor Snow cover. Martian walkers and flyers ignore deep snow, and flyers ZOC; they are Frozen and shattered like any unit (the Mothership too; the Colossus is Frozen, never shattered). A ray unit that stands still loses nothing to frost; a Frozen Saucer cannot Strafe, and a Frozen Brain or Mothership can use neither Mind Control, Psychic Command, nor the Tractor Beam. A Frozen unit may be mind-controlled (it stays Frozen), a mind-controlled Witch keeps her Blizzard (it now halves ranged hits only for Ice Folk units of her controller and stops the controller's ground units), a shattered Witch takes it with her, a shattered Brain's controlled unit is released, and the Frost Giant is immune to Mind Control and the Tractor Beam (`JUGGERNAUT`). The Tractor Beam pulls an Ice Folk unit off Snow, out of a Blizzard, or off Walls, and a Mountain-born unit onto a Mountain; a pulled or beamed unit stays Frozen. A self-launched machine cannot be Frozen or shattered while afloat. |
-| Dwarves                 | A Shield absorbs an eruption and a bomb first: an eruption of 2 does nothing to a full Shield of 2 (3 puts 1 through); a bomb of 5 puts 3 through a Shield of 2 (Dive 6: 4) and 1 through a Force Field's 4 (Dive: 2); an eruption at the Dwarves' Start Turn strips a Shield for the rest of their turn. Eruptions never hit flyers (Saucer, Mothership) but hit walkers (Tripod, Colossus) and foot units; bombs hit any form. The two constructs are immune to Mind Control (`TARGET_IMMUNE`); every other Dwarf land role is a target under the ordinary conditions (the Gyrocopter not on a Rift), and a controlled Dwarf unit keeps its Dwarf rules but Assemble and tunnel riding (a controlled Mole tunnels alone). A mound is never a Mind Control, Tractor Beam, or Pierce target, and no pull or Beam Down ends on one; a pulled Dwarf unit keeps its `moved` flag, and its Dig In is read on its new tile. The Disintegrator ignores Dig In like all fortification. The Saucer and the Gyrocopter share the flight rule; a Saucer with Strafe kills a landed Gyrocopter (8 of 8).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| Dwarves                 | A Shield absorbs an eruption and a bomb first: an eruption of 2 does nothing to a full Shield of 2 (3 puts 1 through); a bomb of 6 puts 4 through a Shield of 2 (Dive 7: 5) and 2 through a Force Field's 4 (Dive: 3); an eruption at the Dwarves' Start Turn strips a Shield for the rest of their turn. Eruptions never hit flyers (Saucer, Mothership) but hit walkers (Tripod, Colossus) and foot units; bombs hit any form. The two constructs are immune to Mind Control (`TARGET_IMMUNE`); every other Dwarf land role is a target under the ordinary conditions (the Gyrocopter not on a Rift), and a controlled Dwarf unit keeps its Dwarf rules but Assemble and tunnel riding (a controlled Mole tunnels alone). A mound is never a Mind Control, Tractor Beam, or Pierce target, and no pull or Beam Down ends on one; a pulled Dwarf unit keeps its `moved` flag, and its Dig In is read on its new tile. The Disintegrator ignores Dig In like all fortification. The Saucer and the Gyrocopter share the flight rule; a Saucer with Strafe kills a landed Gyrocopter (8 of 8).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 
 ### 20.12 Commands, events, errors, and queries
 
@@ -13465,34 +13487,41 @@ its units (`UNIT_DIED` cause `ELIMINATION`, no Grave, no blast).
 its primary action at once. It is not an `ATTACK` and costs no Coins.
 Legality, in this order (all rejections atomic):
 
-| #   | Requirement                                                                                                                                                                                                                                                                                                                                                                                        | Rejection                                         |
-| --- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
-| 1   | `unitId` is the actor's own unit on the board.                                                                                                                                                                                                                                                                                                                                                     | the ordinary unit errors                          |
-| 2   | Its role has `BOMB_RUN`.                                                                                                                                                                                                                                                                                                                                                                           | `UNIT_ROLE_INVALID { role }`                      |
-| 3   | It has not moved, has not used a primary action, and has not landed this turn.                                                                                                                                                                                                                                                                                                                     | `UNIT_ALREADY_ACTED`                              |
-| 4   | It is in land form.                                                                                                                                                                                                                                                                                                                                                                                | `BOMB_RUN_NOT_LEGAL { reason: "EMBARKED" }`       |
-| 5   | (removed by `pulp_wars-w49.37`: a Frozen Gyrocopter is refused with `UNIT_FROZEN` before this table)                                                                                                                                                                                                                                                                                               | —                                                 |
-| 6   | `targetUnitId` is a unit on the board the actor can see.                                                                                                                                                                                                                                                                                                                                           | `TARGET_NOT_FOUND`                                |
-| 7   | It is hostile to the actor.                                                                                                                                                                                                                                                                                                                                                                        | `TARGET_ALLIED`                                   |
-| 8   | It is within Chebyshev distance `BOMB_RANGE_V7` (2) of the Gyrocopter; distance 1 is legal.                                                                                                                                                                                                                                                                                                        | `BOMB_RUN_NOT_LEGAL { reason: "OUT_OF_RANGE" }`   |
-| 9   | It is not in `bombedThisTurn`.                                                                                                                                                                                                                                                                                                                                                                     | `BOMB_RUN_NOT_LEGAL { reason: "ALREADY_BOMBED" }` |
-| 10  | `to` is within Chebyshev distance `BOMB_LANDING_RANGE_V7` (2) of the target, strictly farther (Chebyshev) from the Gyrocopter's tile than the target is, explored, holds no treasure chest, and is a tile on which an ordinary `MOVE` of this Gyrocopter could end this turn (within Move 3 under the flyer rules: no unit, no mound, no Barricade, not a forbidden center, not allied territory). | `BOMB_RUN_NOT_LEGAL { reason: "LANDING" }`        |
+| #   | Requirement                                                                                                                                                                                                                                                                                                                                                      | Rejection                                         |
+| --- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
+| 1   | `unitId` is the actor's own unit on the board.                                                                                                                                                                                                                                                                                                                   | the ordinary unit errors                          |
+| 2   | Its role has `BOMB_RUN`.                                                                                                                                                                                                                                                                                                                                         | `UNIT_ROLE_INVALID { role }`                      |
+| 3   | It has not moved, has not used a primary action, and has not landed this turn.                                                                                                                                                                                                                                                                                   | `UNIT_ALREADY_ACTED`                              |
+| 4   | It is in land form.                                                                                                                                                                                                                                                                                                                                              | `BOMB_RUN_NOT_LEGAL { reason: "EMBARKED" }`       |
+| 5   | (removed by `pulp_wars-w49.37`: a Frozen Gyrocopter is refused with `UNIT_FROZEN` before this table)                                                                                                                                                                                                                                                             | —                                                 |
+| 6   | `targetUnitId` is a unit on the board the actor can see.                                                                                                                                                                                                                                                                                                         | `TARGET_NOT_FOUND`                                |
+| 7   | It is hostile to the actor.                                                                                                                                                                                                                                                                                                                                      | `TARGET_ALLIED`                                   |
+| 8   | It is within Chebyshev distance `BOMB_RANGE_V7` (2) of the Gyrocopter; distance 1 is legal.                                                                                                                                                                                                                                                                      | `BOMB_RUN_NOT_LEGAL { reason: "OUT_OF_RANGE" }`   |
+| 9   | It is not in `bombedThisTurn`.                                                                                                                                                                                                                                                                                                                                   | `BOMB_RUN_NOT_LEGAL { reason: "ALREADY_BOMBED" }` |
+| 10  | `to` is the Gyrocopter's own tile, or an explored tile without a treasure chest on which an ordinary `MOVE` of this Gyrocopter could end this turn (within Move 3 under the flyer rules, from its start: no unit, no mound, no Barricade, not a forbidden center, not allied territory). The target does not limit it (the Gyrocopter pass, `pulp_wars-w49.44`). | `BOMB_RUN_NOT_LEGAL { reason: "LANDING" }`        |
 
 The target may be in any form (a land unit, a flyer, an Egg, an embarked
-unit, or a boat). "Beyond the target" is the whole geometry rule: the
-landing is within 2 of the target and farther from the start; no flight
-path is fixed. Dwarf crowd control (`pulp_wars-w49.33`) widened the landing
-from the eight tiles next to the target to every tile within 2 of it, so a
-Gyrocopter can bomb and land out of the target's reach; a landing still
-needs Move 3, so a target 2 away is bombed from at most 1 tile past it on
-the far side. **Result,** in order:
+unit, or a boat). **The landing** (the Gyrocopter pass, `pulp_wars-w49.44`,
+`pulp-wars-poc-7r102`; the user: "it never lets me land back where i
+started or anywhere close. that means you die straight after"): the
+Gyrocopter flies out over the target and then lands back where it started
+or anywhere else its Move reaches, measured from its start, whatever the
+target. Before it the landing was within 2 of the target and strictly
+farther from the start (Dwarf crowd control, `pulp_wars-w49.33`, widened
+it from the eight tiles next to the target), so a run always ended beyond
+its target, among the enemy, and a Gyrocopter rarely survived the reply.
+The flight's way is not a rule: nothing between the start, the target,
+and the landing matters. **Result,** in order:
 
-1. **The flight.** The Gyrocopter stands on `to`. It is not a `MOVE`: the
-   event carries `from` and `to` and no path, nothing about the way
-   matters, it takes no chest, and it reveals its sight from `to`.
-2. **The bomb** hits the target for the owner's `bombDamage`: **5**
-   (`BOMB_DAMAGE_V7`), **6** with Dive (`DIVE_BOMB_DAMAGE_V7`, Raiding; the
-   `pulp_wars-78i.7` values). Nothing else changes it: no Inspired, Gang Up,
+1. **The flight.** The Gyrocopter stands on `to` (its own tile when it
+   flies back). It is not a `MOVE`: the event carries `from` and `to` and
+   no path, nothing about the way matters, it takes no chest, and it
+   reveals its sight from `to`. The playback flies it from `from` over the
+   target, where the bomb falls, and on to `to`.
+2. **The bomb** hits the target for the owner's `bombDamage`: **6**
+   (`BOMB_DAMAGE_V7`), **7** with Dive (`DIVE_BOMB_DAMAGE_V7`, Raiding;
+   the Gyrocopter pass, `pulp_wars-w49.44`; 5 and 6 from `pulp_wars-78i.7`
+   to `7r101`). Nothing else changes it: no Inspired, Gang Up,
    Charge, cover, fortification, Walls, Field Defense, Dig In, Snow,
    Blizzard, Defense, or HP ratio. Armoured takes 1 off, then Plated caps
    it, then a Shield absorbs first; it is capped at the target's HP. **It is
@@ -13503,8 +13532,9 @@ the far side. **Result,** in order:
    under the ordinary rules, and a dead Brain's controlled unit is released. There is no
    advance.
 5. **A death blast** of an exploding target resolves as a chain: the
-   Gyrocopter is in the blast when it landed next to the target (a landing
-   2 away is outside the 3 × 3 blast area).
+   Gyrocopter is in the blast when it landed next to the target (its own
+   tile too, when it started next to it); the landing's board label says
+   so ("Land · in the blast").
 6. **Water.** If `to` is water and the Gyrocopter survived, it self-launches
    there (form `EMBARKED`, `UNIT_EMBARKED`).
 7. The Gyrocopter has used its Move and its primary action and is handled.
@@ -13523,24 +13553,36 @@ player's End Turn, and an entry leaves it when its unit leaves the board;
 state parsing rejects a duplicate or unsorted entry, an ID that is not a
 unit on the board, and any entry while the active player is not a Dwarf
 seat. The limit is **per target and per turn across all of the seat's
-Gyrocopters**: a unit loses at most 5 HP a turn to bombs (6 with Dive),
+Gyrocopters**: a unit loses at most 6 HP a turn to bombs (7 with Dive),
 however many Gyrocopters there are, so no swarm of bombs kills a fresh unit
-of 7 HP or more.
+of 8 HP or more (a Goblin or an Egg, 6 HP, dies to one bomb).
 
-HP left after one bomb on a fresh target (Shield absorbed in brackets):
+HP left after one bomb on a fresh target (Shield absorbed in brackets; the
+`7r102` bomb of 6, and 7 with Dive):
 
-| Target (HP)                                                                                                                          | Bomb 5 | Dive 6 |
+| Target (HP)                                                                                                                          | Bomb 6 | Dive 7 |
 | ------------------------------------------------------------------------------------------------------------------------------------ | ------ | ------ |
-| Fighter, Marksman, Raptor (12)                                                                                                       | 7      | 6      |
-| Guard (17)                                                                                                                           | 12     | 11     |
-| Captain, Catapult, Knight, Skeleton, Ghoul, Necromancer, Lich, Vampire, Wolf Rider, Scrap Buggy, Caveman, Spitter, Shaman, Sled (10) | 5      | 4      |
-| Banshee, Bomb Chucker, Rocket Cart, Snow Hunter (8)                                                                                  | 3      | 2      |
-| Goblin (6), Egg (6)                                                                                                                  | 1      | killed |
-| Ankylosaurus (20, Armoured)                                                                                                          | 16     | 15     |
-| Grunt (8, Shield 2)                                                                                                                  | 5 (2)  | 4 (2)  |
-| Ray Gunner, Brain, Saucer (8, Shield 2)                                                                                              | 5 (2)  | 4 (2)  |
-| Grunt in a Force Field (8, Shield 4)                                                                                                 | 7 (4)  | 6 (4)  |
-| Yeti (9)                                                                                                                             | 4      | 3      |
+| Fighter, Marksman, Raptor (12)                                                                                                       | 6      | 5      |
+| Guard (17)                                                                                                                           | 11     | 10     |
+| Captain, Catapult, Knight, Skeleton, Ghoul, Necromancer, Lich, Vampire, Wolf Rider, Scrap Buggy, Caveman, Spitter, Shaman, Sled (10) | 4      | 3      |
+| Banshee, Bomb Chucker, Rocket Cart, Snow Hunter (8)                                                                                  | 2      | 1      |
+| Goblin (6), Egg (6)                                                                                                                  | killed | killed |
+| Ankylosaurus (20, Armoured)                                                                                                          | 15     | 14     |
+| Grunt (8, Shield 2)                                                                                                                  | 4 (2)  | 3 (2)  |
+| Ray Gunner, Brain, Saucer (8, Shield 2)                                                                                              | 4 (2)  | 3 (2)  |
+| Grunt in a Force Field (8, Shield 4)                                                                                                 | 6 (4)  | 5 (4)  |
+| Yeti (9)                                                                                                                             | 3      | 2      |
+
+**The exchange** (the Gyrocopter pass, `pulp_wars-w49.44`). A fresh Human
+Fighter (12 HP, Defense 2) bombed for 6 is at 6, and one fresh Hammerer hit
+on open ground then deals round(2 / (2 + 2 × 6 / 12) × 2 × 4.5) = 6 and
+kills it; after the old bomb of 5 the same hit dealt 6 of its 7 and left
+it at 1. A 10-HP back-liner bombed to 4 dies to any one more hit. The
+Gyrocopter that bombs that Fighter from 2 tiles and flies 3 back ends 5
+from it, out of its reach (Move 1, range 1); before, it landed within 2 of
+the Fighter, which hit it for 5 of its 8 HP (Defense 1), and any second
+hit killed it. It stays a scout: 4 Coins, 8 HP, Sight 2, Move 3, one bomb
+a target a turn, and no ordinary attack.
 
 ### 22.6 Clockwork
 

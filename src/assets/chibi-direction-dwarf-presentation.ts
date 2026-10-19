@@ -143,8 +143,10 @@ export const DWARF_ERUPTION_TIMELINE_V7 = {
 } as const;
 
 /**
- * The bombing run (spec 6 and 16.1): the Gyrocopter flies over the target
- * and lands beyond it, then the bomb falls (spec 20.3 item 14).
+ * The bombing run (spec 6 and 16.1): the Gyrocopter flies over the target,
+ * the bomb falls (spec 20.3 item 14), and it flies on to its landing (the
+ * Gyrocopter pass, `pulp_wars-w49.44`: the flight is two Move legs at the
+ * walking pace, `flight` here only the first leg's nominal time).
  */
 export const DWARF_BOMB_TIMELINE_V7 = {
   flight: { from: 0, to: 360 },

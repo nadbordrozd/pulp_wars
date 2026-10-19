@@ -1863,13 +1863,17 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       this.#settlePresentation(after, options);
       return;
     }
-    const pushBoundary = steps.some(
-      (step) => step.kind === "MOVE" && step.pushSlide === true,
+    const holdBoundary = steps.some(
+      (step) =>
+        step.kind === "MOVE" &&
+        (step.pushSlide === true || step.flight === true),
     );
     for (const [index, step] of steps.entries()) {
       // Revision 20: in a Charge! boundary with a Push, a unit with a later
-      // slide waits where that slide starts.
-      this.#heldUnits = pushBoundary
+      // slide waits where that slide starts. The Gyrocopter pass
+      // (`pulp_wars-w49.44`): a bombing Gyrocopter likewise waits over its
+      // target, where its second leg starts, while the bomb falls.
+      this.#heldUnits = holdBoundary
         ? heldUnitsAfterV7(steps, index)
         : NO_HELD_UNITS;
       durationScale = baseDurationScale;
@@ -5442,7 +5446,7 @@ const NO_HELD_UNITS: ReadonlyMap<number, CoordV7> = new Map();
  * Revision 19: where each unit with a later slide in `steps` waits: the
  * start of its next `MOVE` step after `index`.
  */
-function heldUnitsAfterV7(
+export function heldUnitsAfterV7(
   steps: readonly CorePresentationStepV7[],
   index: number,
 ): ReadonlyMap<number, CoordV7> {

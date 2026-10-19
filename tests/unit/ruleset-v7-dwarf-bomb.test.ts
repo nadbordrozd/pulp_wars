@@ -27,13 +27,16 @@ import {
   kindsV7,
   patchTileV7,
   tileV7,
+  unexploreV7,
 } from "../fixtures/v7-revision20";
 
 // The Dwarf revision (`pulp_wars-78i.3`): the Gyrocopter and its bombing
 // run (docs/product/RULESET_7_DWARVES.md section 6). The field is the one of
-// ruleset-v7-dwarf-tunnel.test.ts; every technology (Dive: a bomb deals 6)
+// ruleset-v7-dwarf-tunnel.test.ts; every technology (Dive: a bomb deals 7)
 // unless a test removes Raiding. The coarse balance (`pulp_wars-78i.7`)
-// raised the bomb from 4 to 5 and the Dive bomb from 5 to 6.
+// raised the bomb from 4 to 5 and the Dive bomb from 5 to 6; the
+// Gyrocopter pass (`pulp_wars-w49.44`) to 6 and 7, and the run lands back
+// home or anywhere the Gyrocopter's Move reaches.
 
 const ENEMY: IcePieceV7 = { seat: 1, role: "FIGHTER", at: at(1, 1) };
 const NO_DIVE = TECHNOLOGY_IDS_V7.filter(
@@ -73,7 +76,7 @@ function bombRun(
 }
 
 describe("the Bomb Run command (section 6.2)", () => {
-  it("bombs a target at range 2 and 1, landing beyond it, unanswered, for the fixed damage", () => {
+  it("bombs a target at range 2 and 1, landing back home or anywhere its Move reaches, unanswered, for the fixed damage", () => {
     const state = dwarfFieldV7(
       [
         { seat: 0, role: "RAIDER", at: at(5, 2) },
@@ -88,15 +91,33 @@ describe("the Bomb Run command (section 6.2)", () => {
       (command) =>
         command.kind === "BOMB_RUN" && command.targetUnitId === target.id,
     );
-    // Within 2 of (5, 4) (Dwarf crowd control, `pulp_wars-w49.33`: was
-    // next to it) and at distance 3 from (5, 2), the Move's reach; the
-    // village (5, 5) is a landing too since any unit can capture
-    // (`pulp_wars-ke95`: a flyer may end on a village center).
-    expect(
-      offered.map((command) =>
-        command.kind === "BOMB_RUN" ? command.to : null,
+    // The Gyrocopter pass (`pulp_wars-w49.44`): its own tile and every
+    // Move destination, whatever the target (was: within 2 of the target
+    // and farther from the start). The village (5, 5) is a landing too
+    // since any unit can capture (`pulp_wars-ke95`).
+    const moves = offeredOfV7(state, at(5, 2), "MOVE").map((command) =>
+      command.kind === "MOVE" ? command.path.at(-1) : null,
+    );
+    const landings = offered.map((command) =>
+      command.kind === "BOMB_RUN" ? command.to : null,
+    );
+    expect(landings).toEqual(
+      [at(5, 2), ...moves].sort(
+        (left, right) =>
+          (left?.y ?? 0) - (right?.y ?? 0) || (left?.x ?? 0) - (right?.x ?? 0),
       ),
-    ).toEqual([at(3, 5), at(4, 5), at(5, 5), at(6, 5), at(7, 5)]);
+    );
+    for (const to of [at(5, 2), at(5, 0), at(2, 2), at(4, 3), at(5, 5)])
+      expect(landings, JSON.stringify(to)).toContainEqual(to);
+    // The same landings for the other target in reach.
+    expect(
+      offeredOfV7(state, at(5, 2), "BOMB_RUN").flatMap((command) =>
+        command.kind === "BOMB_RUN" &&
+        command.targetUnitId === unitAtV7(state, at(6, 3)).id
+          ? [command.to]
+          : [],
+      ),
+    ).toEqual(landings);
     const result = bombRun(state, bombV7(state, at(5, 2), at(5, 4), at(4, 5)));
     expect(bombed(result.events)).toEqual({
       kind: "UNIT_BOMBED",
@@ -106,11 +127,11 @@ describe("the Bomb Run command (section 6.2)", () => {
       to: at(4, 5),
       targetUnitId: target.id,
       at: at(5, 4),
-      damage: 5,
+      damage: 6,
       shieldDamage: 0,
       killed: false,
     });
-    expect(unitAtV7(result.state, at(5, 4)).hp).toBe(target.hp - 5);
+    expect(unitAtV7(result.state, at(5, 4)).hp).toBe(target.hp - 6);
     expect(unitAtV7(result.state, at(4, 5))).toMatchObject({
       id: gyro.id,
       hp: gyro.hp,
@@ -118,16 +139,33 @@ describe("the Bomb Run command (section 6.2)", () => {
     });
     expect(result.state.bombedThisTurn).toEqual([target.id]);
     expect(kindsV7(result.events)).not.toContain("COMBAT_RESOLVED");
-    // Range 1: the landing is two tiles from the start.
+    // Range 1, landing two tiles from the start.
     const near = unitAtV7(state, at(6, 3));
     const close = bombRun(state, bombV7(state, at(5, 2), at(6, 3), at(7, 4)));
     expect(bombed(close.events)).toMatchObject({
       targetUnitId: near.id,
-      damage: 5,
+      damage: 6,
     });
+    // Back home: it flies over the target and lands where it started, has
+    // used its Move and its action, and the target keeps the damage.
+    const home = bombRun(state, bombV7(state, at(5, 2), at(5, 4), at(5, 2)));
+    expect(bombed(home.events)).toMatchObject({
+      from: at(5, 2),
+      to: at(5, 2),
+      at: at(5, 4),
+      damage: 6,
+    });
+    expect(unitAtV7(home.state, at(5, 2))).toMatchObject({
+      id: gyro.id,
+      activation: { moved: true, handled: true, movedPathLength: 0 },
+    });
+    expect(unitAtV7(home.state, at(5, 4)).hp).toBe(target.hp - 6);
+    // And behind its start, 3 tiles away and 5 from the target.
+    const behind = bombRun(state, bombV7(state, at(5, 2), at(5, 4), at(2, 0)));
+    expect(unitAtV7(behind.state, at(2, 0)).id).toBe(gyro.id);
   });
 
-  it("deals 6 with Dive; Armoured takes 1 off; a Shield absorbs first", () => {
+  it("deals 7 with Dive; Armoured takes 1 off; a Shield absorbs first", () => {
     const dive = dwarfFieldV7([
       { seat: 0, role: "RAIDER", at: at(5, 2) },
       { seat: 1, role: "FIGHTER", at: at(5, 3) },
@@ -136,7 +174,7 @@ describe("the Bomb Run command (section 6.2)", () => {
     expect(
       bombed(bombRun(dive, bombV7(dive, at(5, 2), at(5, 3), at(5, 4))).events)
         .damage,
-    ).toBe(6);
+    ).toBe(7);
     const anky = dwarfFieldV7(
       [
         { seat: 0, role: "RAIDER", at: at(5, 2) },
@@ -148,7 +186,7 @@ describe("the Bomb Run command (section 6.2)", () => {
     expect(
       bombed(bombRun(anky, bombV7(anky, at(5, 2), at(5, 3), at(5, 4))).events)
         .damage,
-    ).toBe(5);
+    ).toBe(6);
     const grunt = dwarfFieldV7(
       [
         { seat: 0, role: "RAIDER", at: at(5, 2) },
@@ -161,7 +199,7 @@ describe("the Bomb Run command (section 6.2)", () => {
       bombed(
         bombRun(grunt, bombV7(grunt, at(5, 2), at(5, 3), at(5, 4))).events,
       ),
-    ).toMatchObject({ damage: 4, shieldDamage: 2, killed: false });
+    ).toMatchObject({ damage: 5, shieldDamage: 2, killed: false });
   });
 
   it("ignores Field Defense and destroys none; kills with cause BOMB and credit to the Gyrocopter", () => {
@@ -302,17 +340,23 @@ describe("the Bomb Run command (section 6.2)", () => {
       code: "BOMB_RUN_NOT_LEGAL",
       params: { reason: "OUT_OF_RANGE" },
     });
-    // Row 10: the landing: next to the target, farther, free, no chest.
+    // Row 10: the landing: its own tile or a tile its Move could end on
+    // (free, explored), and no chest (the Gyrocopter pass,
+    // `pulp_wars-w49.44`: the target no longer limits it).
     const landing = {
       code: "BOMB_RUN_NOT_LEGAL",
       params: { reason: "LANDING" },
     };
-    // (The village (5, 5) was refused too before `pulp_wars-ke95`.)
-    for (const to of [at(5, 3), at(4, 3), at(5, 6)])
+    // 4 from the start; an own unit; an enemy unit (3 from the start).
+    for (const to of [at(5, 6), at(4, 1), at(8, 2)])
       expect(
         refusalV7(state, bombV7(state, at(5, 2), at(5, 4), to)),
         JSON.stringify(to),
       ).toEqual(landing);
+    const hidden = unexploreV7(state, 0, [at(4, 3)]);
+    expect(
+      refusalV7(hidden, bombV7(hidden, at(5, 2), at(5, 4), at(4, 3))),
+    ).toEqual(landing);
     const chest = checkedV7({ ...state, treasureChests: [at(4, 5)] });
     expect(
       refusalV7(chest, bombV7(chest, at(5, 2), at(5, 4), at(4, 5))),

@@ -2,7 +2,6 @@ import { allocateUnitId, type PlayerId, type UnitId } from "../model/ids";
 import type { JsonValue } from "../replay/canonical";
 import {
   ASSEMBLE_COST_V7,
-  BOMB_LANDING_RANGE_V7,
   BOMB_RANGE_V7,
   armouredDamageV7,
   canEnterTerrainV7,
@@ -767,21 +766,22 @@ export function resolveStartTurnSurfacingV7(
 
 /**
  * Section 6.2 row 10: whether `to` is a legal landing of `gyro`'s bombing
- * run on `target`: within `BOMB_LANDING_RANGE_V7` (2; Dwarf crowd control,
- * `pulp_wars-w49.33`, was next to it) of the target, strictly farther from
- * the Gyrocopter than the target, explored, no treasure chest, and a tile
- * on which an ordinary `MOVE` of the Gyrocopter could end this turn.
+ * run. The Gyrocopter pass (`pulp_wars-w49.44`, `pulp-wars-poc-7r102`):
+ * the landing no longer depends on the target (it was within 2 of the
+ * target and strictly farther from the start, so a run always ended deep
+ * among the enemy): it is the Gyrocopter's own tile (it flies over the
+ * target and back), or any explored tile without a treasure chest on which
+ * an ordinary `MOVE` of the Gyrocopter could end this turn (Move 3 under
+ * the flyer rules, measured from its start).
  */
 export function bombLandingLegalV7(
   state: GameStateV7,
   actor: PlayerId,
   gyro: UnitStateV7,
-  target: Pick<UnitStateV7, "at">,
   to: CoordV7,
 ): boolean {
+  if (same(to, gyro.at)) return true;
   if (
-    chebyshev(to, target.at) > BOMB_LANDING_RANGE_V7 ||
-    chebyshev(to, gyro.at) <= chebyshev(target.at, gyro.at) ||
     !isExploredBy(state, actor, to) ||
     state.treasureChests.some((chest) => same(chest, to))
   )
@@ -833,7 +833,7 @@ export function applyBombRunV7(
     return kit.rejected(original, "BOMB_RUN_NOT_LEGAL", {
       reason: "ALREADY_BOMBED",
     });
-  if (!bombLandingLegalV7(state, actor, gyro, target, command.to))
+  if (!bombLandingLegalV7(state, actor, gyro, command.to))
     return kit.rejected(original, "BOMB_RUN_NOT_LEGAL", { reason: "LANDING" });
   try {
     // The Mind Control revision section 5.2: the bomb damage is a
