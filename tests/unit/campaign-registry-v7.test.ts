@@ -6,6 +6,7 @@ import {
 } from "../../src/campaign/campaigns";
 import { CHAPTER_ONE_V7 } from "../../src/campaign/chapter-1";
 import { CHAPTER_DINOSAURS_V7 } from "../../src/campaign/chapter-dinosaurs";
+import { CHAPTER_GOBLINS_V7 } from "../../src/campaign/chapter-goblins";
 import { CHAPTER_HUMANS_V7 } from "../../src/campaign/chapter-humans";
 import { CHAPTER_MARTIANS_V7 } from "../../src/campaign/chapter-martians";
 import { CHAPTER_UNDEAD_V7 } from "../../src/campaign/chapter-undead";
@@ -62,6 +63,7 @@ describe("campaign registry", () => {
       CHAPTER_UNDEAD_V7,
       CHAPTER_DINOSAURS_V7,
       CHAPTER_MARTIANS_V7,
+      CHAPTER_GOBLINS_V7,
     ]);
     expect(campaignMissionV7("FRONTIER_4")).toMatchObject({
       campaign: { id: "FRONTIER" },
@@ -100,10 +102,18 @@ describe("campaign registry", () => {
       chapter: CHAPTER_MARTIANS_V7,
       entry: { number: 6 },
     });
+    const goblins = campaignByIdV7("GOBLINS");
+    expect(goblins?.chapter).toBe(CHAPTER_GOBLINS_V7);
+    expect(goblins?.title).toBe("The Big Score");
+    expect(campaignMissionV7("GOBLIN_6")).toMatchObject({
+      campaign: { id: "GOBLINS" },
+      chapter: CHAPTER_GOBLINS_V7,
+      entry: { number: 6 },
+    });
     expect(campaignByIdV7("NOWHERE")).toBeNull();
   });
 
-  it("shows the prologue and the openers open, the Dinosaurs and the Martians locked until the cheat, and every unwritten campaign as coming soon", () => {
+  it("shows the prologue and the openers open, the Dinosaurs, the Martians and the Goblins locked until the cheat, and every unwritten campaign as coming soon", () => {
     for (const cheat of [false, true]) {
       const plates = campaignPlatesV7({}, cheat);
       expect(plates.map((plate) => [plate.campaign.id, plate.status])).toEqual([
@@ -120,7 +130,10 @@ describe("campaign registry", () => {
         // The Martian campaign (`pulp_wars-hmyk.7`): tier 2, locked the
         // same way.
         ["MARTIANS", cheat ? "OPEN" : "LOCKED"],
-        ...CAMPAIGN_IDS_V7.slice(5).map((id) => [id, "SOON"]),
+        // The Goblin campaign (`pulp_wars-hmyk.8`): tier 2, locked the
+        // same way.
+        ["GOBLINS", cheat ? "OPEN" : "LOCKED"],
+        ...CAMPAIGN_IDS_V7.slice(6).map((id) => [id, "SOON"]),
       ]);
       expect(plates[1]).toMatchObject({
         missionsWon: 0,

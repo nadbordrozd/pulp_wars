@@ -1008,6 +1008,13 @@ describe("natural maps", () => {
       "MARTIAN_4",
       "MARTIAN_5",
       "MARTIAN_6",
+      // The Goblin campaign (`pulp_wars-hmyk.8`).
+      "GOBLIN_1",
+      "GOBLIN_2",
+      "GOBLIN_3",
+      "GOBLIN_4",
+      "GOBLIN_5",
+      "GOBLIN_6",
     ]);
     for (const mission of MISSION_REGISTRY_V7)
       expect(missionMapDriftV7(mission), mission.id).toEqual([]);

@@ -197,6 +197,19 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
     "b536a412d010aa5f7623a0d9c09dc9d293321785ebc9d299f33c83eadfe349da",
   "MARTIAN_6@1:MARTIAN":
     "e0f6a063d1ac167990766b10e41fae7f229a9767ba50e5b0fcce91c23f6f80b9",
+  // The Goblin campaign, "The Big Score" (`pulp_wars-hmyk.8`).
+  "GOBLIN_1@1:GOBLIN":
+    "adbd943983769a053f5f50ef6e85b44cf4fc483ea7db4bbf9a1adfd4001ff3e8",
+  "GOBLIN_2@1:GOBLIN":
+    "f854ac34f6fbb30fd7798a21b1854055d6638cfd6cf6a364965b121246b23d32",
+  "GOBLIN_3@1:GOBLIN":
+    "a9d191e3974dd964e22c9a13fe2ad7b21b858adc630f54a6eb184b93c4008038",
+  "GOBLIN_4@1:GOBLIN":
+    "a79f412c09dfa11a52432cbe6dd124701be3207c967e45add3817cccb93db82e",
+  "GOBLIN_5@1:GOBLIN":
+    "60f70023f2e507c80819feb1c14cee55e5e1689d33a77339ff0c32ad6de1e19b",
+  "GOBLIN_6@1:GOBLIN":
+    "c58d1b0a9c2535d7af4a13b4b6bae69fc4978eb9ff413e35a1099371bf7bdd9d",
   // The siege fixture of the Normal AI (`pulp_wars-68k.6`).
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 2.
   "TEST_NECK@2:ORIGINAL":
@@ -549,6 +562,18 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
     "6abd8486abcd0bce5d7a90c0c2d773700153fd5731239bcda1bdc7ecac083205",
   "MARTIAN_6@1:MARTIAN":
     "5d21a6ed7335a806f76708054f00aa56ebbd8a153aed9c0369005472714ce701",
+  // The Goblin campaign, "The Big Score" (`pulp_wars-hmyk.8`).
+  // GOBLIN_4 places the Moon Gun, so it has no pre-curiosity pin.
+  "GOBLIN_1@1:GOBLIN":
+    "80f075e3b0ac47532799ee1af67dbeced03f85aff32d8d613819a2114f67e711",
+  "GOBLIN_2@1:GOBLIN":
+    "056a10afef40450c9a3908f43aeefed958bbcdf76c6daeb7fc3fcf2884b4e9da",
+  "GOBLIN_3@1:GOBLIN":
+    "8543173b80512f9040d582a44a9252cab79c6b62812aa56d54e806fe69c8e105",
+  "GOBLIN_5@1:GOBLIN":
+    "539e56d85ed631199c600bf6089282a6ac7c4a2a943fc9c1ce7fb3a326c51111",
+  "GOBLIN_6@1:GOBLIN":
+    "4c6fb734162d49bb4ef77fb8642e18b254ccf9304dd7322815572808f1315e17",
 
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 2.
   "TEST_NECK@2:ORIGINAL":

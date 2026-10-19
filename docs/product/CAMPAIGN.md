@@ -4449,6 +4449,153 @@ The danger moments, and what each mission's hand play changed:
   and Beam Down (E6: the escort is lost when sunk afloat and arrives after
   a Beam Down).
 
+## 19. The Goblin campaign, "The Big Score" (`pulp_wars-hmyk.8`)
+
+The third tier-2 faction campaign, after the Martians (section 18): six
+missions, `GOBLIN_1` to `GOBLIN_6` (`src/engine/v7/missions/goblin-*.ts`),
+in the chapter `src/campaign/chapter-goblins.ts`, which the campaign map's
+Goblin plate opens once the Humans and the Undead campaigns are done (or
+with the testing cheat, section 14.5). The briefings and closings are the
+saga bible's ([SAGA.md](SAGA.md) sections 2.3 and 3.3), trimmed to the
+card. Each mission was hand played through `play-text` (the thoughtful
+run, using the hint) and run by the scripted autopilot of section 15; from
+mission 3 on the autopilot must lose or miss the clock, and missions 1 and
+2 were meant to fall to a first thoughtful attempt. Every mission seats
+you as the Goblins with no choice, so the chapter's starting factions are
+empty.
+
+### 19.1 The missions
+
+| Mission                       | Board (generator, seed) | Match seed | Seats                                                | Format and clock                                | Stars                      |
+| ----------------------------- | ----------------------- | ---------- | ---------------------------------------------------- | ----------------------------------------------- | -------------------------- |
+| G1 Grubnak Gets Bored         | Dry Land 11, seed 1     | 20261501   | Goblins; Humans                                      | Conquest of Fort Bullion and its toll           | by round 12; Snikkit lives |
+| G2 Boats for Bones            | Pangea 14, seed 6       | 20261502   | Goblins; Undead                                      | Capture Wreckers' Cove by round 18              | by round 15; no city lost  |
+| G3 Here Be Monsters           | Archipelago 16, seed 2  | 20261503   | Goblins; Dinosaurs                                   | Kill Snapjaw by round 16                        | by round 12; no city lost  |
+| G4 The Inside Job             | Archipelago 16, seed 74 | 20261504   | Goblins; Humans; Dinosaurs (rivals)                  | Capture Port Kessler by round 20 (the Moon Gun) | by round 16; Snikkit lives |
+| G5 Everybody Wants the Tongue | Archipelago 16, seed 10 | 20261505   | Goblins; Humans; Martians (rivals)                   | Hold Smuggler's Rock for 16 rounds              | no city lost; Mogga lives  |
+| G6 The Big Getaway            | Pangea 20, seed 5       | 20261506   | Goblins and Dwarves (ally); Cult and Undead (teamed) | Escort the Getaway to the Ironbraid Gate by 20  | by round 16; no city lost  |
+
+### 19.2 Hand play
+
+| Mission | Thoughtful run                                                          | Autopilot                            |
+| ------- | ----------------------------------------------------------------------- | ------------------------------------ |
+| G1      | Win, round 11, 3 stars (first attempt)                                  | Defeat, round 12                     |
+| G2      | Win, round 11, 3 stars (fourth attempt, first on the final board)       | Defeat, round 11                     |
+| G3      | Win, round 6, 3 stars (fifth attempt, first on the final definition)    | Defeat, out of time (round 17)       |
+| G4      | Win, round 12, 3 stars (seventh attempt, first on the final definition) | Defeat, round 8 (the tribes)         |
+| G5      | Win (held), round 16, 2 stars: Mogga died (first attempt)               | Defeat, round 13 (the Rock lost)     |
+| G6      | Win, round 14, 3 stars (first attempt)                                  | Defeat, round 3 (the Getaway killed) |
+
+On the final definitions each winning run was replayed from its command
+log (your moves, the Normal AI replying) and ended exactly as above, and
+each autopilot result held.
+
+The danger moments, and what each mission's hand play changed:
+
+- **G1.** The winning line: Hunting in round 1, a monument and a Militia,
+  the toll taken in round 5 by the Ogre after a Gang Up kill; the fort's
+  Marksmen killed a goblin a turn and sniped Grubnak to 6 HP in round 3; a
+  goblin's Kaboom at the fort hit the Marksman and the walled Guard for 6
+  each, two Bomb Chuckers killed both by splash in round 9, and a gang kill
+  and the capture followed in rounds 10 and 11. The crew has Land Grants.
+- **G2.** Three boards before the final one. With the camp on the northern
+  headland, ten rows of coast road from the cove, the dead made a conga
+  line of it; with a second Unquiet town (the bible's wreck camp, the
+  Hulks) beside the cove, both towns put a fresh Skeleton on their centres
+  every turn and the crew never reached the cove's centre in time. The
+  final board: the camp on the western downs six rows from the cove, the
+  Unquiet with one town and no Leadership or Land Grants. The winning
+  line: Gathering and three fruit in round 1 (level 3, a Wolf Rider), two
+  villages by round 4, Orc Brutes; a Bomb Chucker killed two Skeletons from
+  two tiles and splashed Mogga for 3 and 1 (the lesson); bomb and Mogga
+  killed the Necromancer in round 6; Skeletons killed lone goblins; chucker
+  bombs on the cove's Zombie, a three-way gang (+3) kill and the capture in
+  round 11.
+- **G3.** With the rafts starting on the strait beside Snapjaw and a
+  second Plesiosaur, both rafts were eaten in two rounds (a port gives no
+  cover) and Snapjaw became an Alpha; a submerged Plesiosaur is seen only
+  on explored water, so out of sight it is never found. With three rafts
+  and two Diving Barrels Snapjaw came south and died in round 4, and the
+  autopilot won in round 3. The final definition: two Fire Rafts and one
+  Diving Barrel at Tarry Wharf, Submersibles known, the whole sea revealed,
+  and the tribes' Dugouts with Horned Prows sailing with a young
+  Plesiosaur. The winning line: Pearls and the Explorer monument in round
+  1, a barrel a turn and a raft; a Dugout's ram (10) killed a barrel in
+  each of rounds 3 and 4 after one torpedoed the other Dugout; a raft's
+  ram (8) and a raft's Kaboom (5 each on the Dugout and the young
+  Plesiosaur) cleared the escort; Snapjaw ate the rammed raft (an Alpha,
+  20 HP) and two fresh barrels torpedoed it (12 and 8) in round 6.
+- **G4.** Seven attempts on two boards. The first board (Archipelago 16,
+  seed 9, two seats, one flooded tile to make the neck) won in round 15,
+  but the natural-map rule wants a board's capitals to match its seats, so
+  the mission moved to seed 74, three seats, whose north-western island
+  has a headland on a one-tile neck with no edit. With the tribes' Tarpit
+  in the middle of the island and nothing else, the crew took it in round
+  2 and the tribes were gone; with Tarpit training Raptors the Ogre died in
+  round 3. The tribes now have Fernhollow, their home, on the north-eastern
+  island, and their hunters land in two waves of two (rounds 5 and 10):
+  waves of three in rounds 4, 8 and 12 retook Tarpit and swamped the crew.
+  With free slots Port Kessler put a fresh Fighter on its centre whenever
+  it emptied, and with 60 Coins and no free slot the crew could not answer:
+  the garrison is six, one over the port's slots, and the crew has Land
+  Grants. Snikkit starts on Egg Rock: beside the Bomb Chucker its death
+  blast left him at 1 HP in round 1. The winning line: Explosives in round
+  1 (the Brutes' Breach); bomb, Goblin, Ogre and Brute killed Tarpit's
+  Raptor and Cavemen and Tarpit fell in round 3 (Militia from a blasted
+  mountain, Stockpile); bombs killed the neck's Guard and both Fighters;
+  the Ogre killed the first wave; bombs splashed the crew's own Chuckers
+  twice; the first Brute on the neck died to the Marksman, a Fighter and
+  the Guard in round 9; the port trained a Fighter, then a Guard, on its
+  emptied centre; in round 10 a bomb and the second Brute (gang +2) killed
+  the Guard on the neck, a splash killed the centre's Fighter, and the
+  Moon Gun fired the Ogre beside the centre; in round 11 the Brute's Breach
+  (10) and the Ogre (Breach, gang +1) killed the centre's new Guard and
+  the Ogre advanced onto it; captured in round 12.
+- **G5.** The winning line: a Workshop, a farm and Boom made the Rock level
+  4 by round 3 and Snagrot fell; the first Brain (round 5) died to Mogga
+  and a gang (+2) in round 6; a Chucker's death blast took 5 from two
+  goblins; the second Brain (round 9) died to a bomb and Mogga; the Ray
+  Gunner (heat ray 8 to 9) and a beamed-down Grunt killed Mogga in the
+  open in round 11 and a Brute off its Field Defense; the loyalists'
+  landing parties (seven men) never charged the walls but shot the
+  centre's Brute for 2 to 3 a turn; the raft crews (round 12) held the
+  Rock to the end with Brutes on Field Defenses.
+- **G6.** The winning line: the Lodge's others came at the Hall in
+  Familiars, Imps and Initiates; the Ogre and the Warboss killed a Familiar
+  and an Imp (the Ogre died in round 5); two Scrap Buggies in round 6; in
+  round 8 a Buggy's Overrun chain killed two Initiates and a Hexer and
+  ended beside Wick Chapel's Idol (frogged that night); its Kaboom hit five
+  units for 5 in round 10; a Bomb Chucker shot the pass's Hexer down
+  (rounds 11 and 12); the second Buggy's Overrun killed the new Hexer on
+  Hood Camp's centre (round 13; Hood Camp captured in round 14); the
+  Unquiet's Necromancers and Ghouls raided the Hall's road from round 11;
+  the Getaway waited at the Hall, crossed the open middle in round 12,
+  stopped once in the forest and ran the pass to two tiles from the Gate
+  in round 14. The clock was then cut from the bible's 24 (star 20) to 20
+  (star 16).
+
+### 19.3 Deviations and follow-ups
+
+- **G2 has one Unquiet town** (the bible's wreck camp is not built) and the
+  camp stands on the western downs, not the headland.
+- **G3: Snapjaw does not keep to its strait (E7 is not built).** The crew
+  sees the whole sea instead, so it can find a submerged Plesiosaur; the
+  tribes have no Submersibles. The crew starts with Fire Rafts and a Diving
+  Barrel and knows Submersibles; the clock is 16 and the star 12 (the
+  bible's 20 and 16). The tagged sea-beast with kills as the target (E6)
+  works: Snapjaw is a Plesiosaur with two kills.
+- **G4's tribes** have a home town on another island and two hunters'
+  waves; Egg Rock is the crew's camp on the eastern shore of the Baron's
+  island, not a separate rock. The Moon Gun (E1) stands four tiles from
+  the walls, as the bible has it.
+- **G5's waves:** the loyalists land in rounds 3, 7 and 11, the Martians'
+  Brains in rounds 5 and 9, the raft crews in round 12; no story line for
+  the crews' wave (E4 is optional and not built). The thoughtful run won
+  two stars; Mogga's star is the hard one.
+- **G6's clock is 20** and its star 16 (the bible's 24 and 20).
+- **Extensions.** E1 (the Moon Gun) was already built; E7 was not needed
+  (G3's full reveal stands in for it).
+
 ## Appendix A: critique of the first draft
 
 The first draft was reviewed as a skeptical designer and engineer. Each item

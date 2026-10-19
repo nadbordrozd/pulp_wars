@@ -41,6 +41,12 @@ import { MARTIAN_3_V7 } from "./martian-3";
 import { MARTIAN_4_V7 } from "./martian-4";
 import { MARTIAN_5_V7 } from "./martian-5";
 import { MARTIAN_6_V7 } from "./martian-6";
+import { GOBLIN_1_V7 } from "./goblin-1";
+import { GOBLIN_2_V7 } from "./goblin-2";
+import { GOBLIN_3_V7 } from "./goblin-3";
+import { GOBLIN_4_V7 } from "./goblin-4";
+import { GOBLIN_5_V7 } from "./goblin-5";
+import { GOBLIN_6_V7 } from "./goblin-6";
 import {
   LAB_BREAKTHROUGH_GOBLIN_V7,
   LAB_BREAKTHROUGH_UNDEAD_V7,
@@ -146,6 +152,13 @@ export const MISSION_REGISTRY_V7: readonly MissionDefinitionV7[] = deepFreeze([
   MARTIAN_4_V7,
   MARTIAN_5_V7,
   MARTIAN_6_V7,
+  // The Goblin campaign, "The Big Score" (`pulp_wars-hmyk.8`).
+  GOBLIN_1_V7,
+  GOBLIN_2_V7,
+  GOBLIN_3_V7,
+  GOBLIN_4_V7,
+  GOBLIN_5_V7,
+  GOBLIN_6_V7,
   // The Human tuning labs (`pulp_wars-w49.3`): hidden mirror fixtures of
   // the text harness (docs/validation/TEXT_PLAY.md).
   LAB_SIEGE_V7,

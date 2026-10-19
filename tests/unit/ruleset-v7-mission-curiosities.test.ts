@@ -25,8 +25,9 @@ import { testGrounds } from "./ruleset-v7-missions.shared";
 // curiosities by hand; the generator's site rules do not bind them, each
 // kind's tile rules do; the setup's `curiosities` key says whether a
 // mission places any; HUMAN_5 and DINOSAUR_3 (`pulp_wars-hmyk.6`) have
-// the Sea Serpent and HUMAN_6 the Tesla Tower; every other mission is
-// built without curiosities as before.
+// the Sea Serpent, HUMAN_6 the Tesla Tower and GOBLIN_4
+// (`pulp_wars-hmyk.8`) the Moon Gun; every other mission is built without
+// curiosities as before.
 
 /** TEST_GROUNDS (11 x 11, Humans or Goblins against the Undead) with these. */
 function grounds(
@@ -115,6 +116,7 @@ describe("mission curiosities", () => {
         "HUMAN_5",
         "HUMAN_6",
         "DINOSAUR_3",
+        "GOBLIN_4",
         "TEST_CURIOSITIES",
       ].includes(mission.id);
       expect(missionHasCuriositiesV7(mission), mission.id).toBe(placed);
