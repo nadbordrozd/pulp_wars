@@ -171,6 +171,19 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
     "71462e1d05c7632b5b316ea653ecac47b1e16b6caddf95e37645695edd6d25f3",
   "UNDEAD_6@1:UNDEAD":
     "15b2622590f1bca7e807580a56ad4da9922813272e6623569e79183cf6a121f2",
+  // The Dinosaur campaign, "The Egg Thief" (`pulp_wars-hmyk.6`).
+  "DINOSAUR_1@1:DINOSAUR":
+    "0a7f9e870ebfbbaf8fe35864564811889142c42ffa85b858b99ddc8de02cf56f",
+  "DINOSAUR_2@1:DINOSAUR":
+    "6b424c29ef3cae703ae565e9c49fb9d3bd8f87041683054b9ede27b904870707",
+  "DINOSAUR_3@1:DINOSAUR":
+    "3ac154cc3a9602ac982c0a0c07a122e248c5d997f27d96bbb49654c55647f4a9",
+  "DINOSAUR_4@1:DINOSAUR":
+    "7a748c1c31972b3141e6197b013deca4d5003a3481f500fbf66392170e3388d7",
+  "DINOSAUR_5@1:DINOSAUR":
+    "4ee8d9e4fd568ebb2f21b7adb189d0fbe1b94a6fc14fe2222ad91e8f1f14a328",
+  "DINOSAUR_6@1:DINOSAUR":
+    "675bbd846d017ff0e1e00604c8f49be1eabf0333621b2c8ef06bd993ae1ea850",
   // The siege fixture of the Normal AI (`pulp_wars-68k.6`).
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 2.
   "TEST_NECK@2:ORIGINAL":
@@ -498,6 +511,18 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
     "bdfa9ae6651c9a2dbc9335a9839267fc20bd83c6b75bf75be9e83948c1c207b3",
   "UNDEAD_6@1:UNDEAD":
     "169c3a83b647ca7274d2a578f7272269d9e4e682c035f61ba7eb75436c898b94",
+  // The Dinosaur campaign, "The Egg Thief" (`pulp_wars-hmyk.6`); the Sea
+  // Road (`DINOSAUR_3`) places the Sea Serpent and has no pin here.
+  "DINOSAUR_1@1:DINOSAUR":
+    "7e23043cb8c6e4d11385cc48466da0e044be30c106b81cc0545b6a52b16aeffb",
+  "DINOSAUR_2@1:DINOSAUR":
+    "357d433f7cbbbd2b574c8d14d4e8a909aef68ed7f5df3d25acbcbb294180d682",
+  "DINOSAUR_4@1:DINOSAUR":
+    "e73e3994d80a9e3a951e2dd082e2ca32c9d611261848655c8513755edcff8411",
+  "DINOSAUR_5@1:DINOSAUR":
+    "e9aeb59d229ff10252b86b2d1863f694e2aaf257e132c2e9e5f0c629c02cca8a",
+  "DINOSAUR_6@1:DINOSAUR":
+    "44972bbd18d4d58cfa06bf465779fe736b3c4b3d9f0ffaba0b4451863ea84900",
 
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 2.
   "TEST_NECK@2:ORIGINAL":

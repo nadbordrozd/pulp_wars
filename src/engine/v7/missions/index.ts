@@ -29,6 +29,12 @@ import { UNDEAD_3_V7 } from "./undead-3";
 import { UNDEAD_4_V7 } from "./undead-4";
 import { UNDEAD_5_V7 } from "./undead-5";
 import { UNDEAD_6_V7 } from "./undead-6";
+import { DINOSAUR_1_V7 } from "./dinosaur-1";
+import { DINOSAUR_2_V7 } from "./dinosaur-2";
+import { DINOSAUR_3_V7 } from "./dinosaur-3";
+import { DINOSAUR_4_V7 } from "./dinosaur-4";
+import { DINOSAUR_5_V7 } from "./dinosaur-5";
+import { DINOSAUR_6_V7 } from "./dinosaur-6";
 import {
   LAB_BREAKTHROUGH_GOBLIN_V7,
   LAB_BREAKTHROUGH_UNDEAD_V7,
@@ -120,6 +126,13 @@ export const MISSION_REGISTRY_V7: readonly MissionDefinitionV7[] = deepFreeze([
   UNDEAD_4_V7,
   UNDEAD_5_V7,
   UNDEAD_6_V7,
+  // The Dinosaur campaign, "The Egg Thief" (`pulp_wars-hmyk.6`).
+  DINOSAUR_1_V7,
+  DINOSAUR_2_V7,
+  DINOSAUR_3_V7,
+  DINOSAUR_4_V7,
+  DINOSAUR_5_V7,
+  DINOSAUR_6_V7,
   // The Human tuning labs (`pulp_wars-w49.3`): hidden mirror fixtures of
   // the text harness (docs/validation/TEXT_PLAY.md).
   LAB_SIEGE_V7,

@@ -2233,7 +2233,8 @@ curiosities is a new `(id, revision)`, which an older build refuses as
 `UNKNOWN_MISSION`. The hidden fixture `TEST_CURIOSITIES` (TEST_GROUNDS
 with nine kinds on an 11 x 11 board, next to the settlements) and
 `tests/unit/ruleset-v7-mission-curiosities.test.ts` cover it. Used by
-`HUMAN_5` (the Sea Serpent) and `HUMAN_6` (the Tesla Tower), section 15.
+`HUMAN_5` (the Sea Serpent) and `HUMAN_6` (the Tesla Tower), section 15,
+and by `DINOSAUR_3` (the Sea Serpent), section 17.
 
 ## 11. Hand-play record: missions 1 to 4
 
@@ -4138,6 +4139,175 @@ The danger moments, and what each mission's hand play changed:
   `pulp_wars-hmyk.14`) landed while this campaign was built; none of the
   six missions needs one, and they were tuned without. U3's bay could
   hold a Sea Serpent in a later revision.
+
+## 17. The Dinosaur campaign, "The Egg Thief" (`pulp_wars-hmyk.6`)
+
+The third faction campaign: six missions, `DINOSAUR_1` to `DINOSAUR_6`
+(`src/engine/v7/missions/dinosaur-*.ts`), in the chapter
+`src/campaign/chapter-dinosaurs.ts`, which the campaign map's Dinosaur
+plate opens (tier 2: locked until the Humans and the Undead are finished;
+the cheat of section 14.5 opens it). The briefings and closings are the
+saga bible's ([SAGA.md](SAGA.md) sections 2.5 and 3.5), trimmed to the
+card. Each mission was hand played through `play-text` (the thoughtful
+run, using the hint) and run by the scripted autopilot of section 15; from
+mission 3 on the autopilot must lose or miss the clock. Every mission
+seats you as the Dinosaurs with no choice, so the chapter's starting
+factions are empty.
+
+### 17.1 The missions
+
+| Mission                        | Board (generator, seed) | Match seed | Seats                                                      | Format and clock                               | Stars                            |
+| ------------------------------ | ----------------------- | ---------- | ---------------------------------------------------------- | ---------------------------------------------- | -------------------------------- |
+| DN1 The Empty Nest             | Pangea 11, seed 16      | 20261401   | Dinosaurs; Humans                                          | Conquest of the two poacher camps              | by round 12; the Old Queen lives |
+| DN2 Big Game                   | Pangea 14, seed 4       | 20261402   | Dinosaurs; Humans and Goblins (teamed)                     | Kill Major Thornbury by round 20               | by round 16; the Old Queen lives |
+| DN3 The Sea Road               | Archipelago 16, seed 9  | 20261403   | Dinosaurs; Humans; the Sea Serpent (neutral)               | Bring the Old Queen to Big Top Bay by round 22 | by round 18; no city lost        |
+| DN4 The Greatest Show on Earth | Pangea 16, seed 12      | 20261404   | Dinosaurs; Humans and Goblins (teamed)                     | Kill Baron Kessler by round 18                 | by round 14; the Old Queen lives |
+| DN5 Through the Barrowlands    | Dry Land 16, seed 16    | 20261405   | Dinosaurs and Martians (ally); Undead and Goblins (teamed) | Bring the Old Queen to Mire's Edge by round 18 | by round 14; no city lost        |
+| DN6 Old Blood                  | Lakes 16, seed 16       | 20261406   | Dinosaurs; Cult and Undead (teamed)                        | Capture Greyhood by round 18                   | by round 14; the Old Queen lives |
+
+The Old Queen is a tagged T-Rex in every mission (an Alpha, three kills,
+from DN5 on); Shaman Oona is tagged in DN1 and DN6.
+
+### 17.2 Hand play
+
+| Mission | Thoughtful run                                                    | Autopilot                                  |
+| ------- | ----------------------------------------------------------------- | ------------------------------------------ |
+| DN1     | Win, round 10, 3 stars (third layout, first run on it)            | Defeat, round 16 (eliminated)              |
+| DN2     | Win, round 12, 2 stars (the Queen died in round 11; third layout) | Defeat, round 17 (eliminated)              |
+| DN3     | Win, round 16, 3 stars (sixth layout)                             | Defeat, round 5 (the Queen sunk, embarked) |
+| DN4     | Win, round 9, 3 stars (fourth layout)                             | Defeat, out of time (round 19)             |
+| DN5     | Win, round 7, 3 stars (third layout; two defeats on the second)   | Defeat, round 1 (the Queen killed)         |
+| DN6     | Win, round 7, 3 stars (third layout; one run lost the Queen)      | Defeat, round 16 (eliminated)              |
+
+On the final definitions each winning run was replayed from its command
+log (your moves, the Normal AI replying) and ended exactly as above, and
+each autopilot result held.
+
+What the hand play taught first: **an Alpha T-Rex eats whatever has little
+HP.** Her Rampage has no limit and every kill advances her, so against
+Fighters, Goblins, Skeletons, Initiates or a 10-HP Captain she walks
+through a line and into the target in one turn (DN1's first layout fell to
+the Queen alone in round 4, DN2's in round 4, DN4's to the autopilot in
+round 3, DN6's first Lodge by round 5). Every mission therefore puts
+something she cannot one-shot or cannot reach between her and the
+objective: Guards on Field Defenses, rifles that shoot her to pieces,
+peaks, the sea, the bite of the dead, a daemon. The danger moments, and
+what each mission's hand play changed:
+
+- **DN1.** With three Fighters and a rifle per camp the Queen ate both
+  camps alone by round 4; with two rifles, a Guard and two Fighters per
+  camp she walked to the village in round 3, took 19 in one enemy phase and
+  died in round 4. Now each camp keeps a Guard and a rifle (seven
+  poachers), and you start with a Raptor and Land Grants (one free slot
+  for an Egg). The winning line: Hunting and a Raptor Egg in round 1, the
+  Queen kept in the jungle by the nest, War Drums and the Queen on the
+  village's Guard with a Raptor finishing it (Big), the Explorer monument
+  for a Scouts Raptor, two Fighters eaten by the nest (Big, a full heal),
+  the Queen an Alpha in round 7, Raptors on Tusker's Landing's rifle and
+  Fighter, both camps in round 10. Oona died on the nest to two Fighters;
+  every Raptor left in a rifle's reach died (Defense 1).
+- **DN2.** With Thornbury on the ridge over the lodge and Engineering
+  yours, the Queen fed on the Redcaps and rampaged into him in round 4.
+  Now he stands on the highest peak of the ridge, every tile beside him a
+  Mountain, leashed to it (`GUARD` on his tile alone, garrison 1), and
+  your seat may not research Engineering, Armoury or Wallbreaker: only
+  range reaches him. A Guard on the peak before him, Redcap packs in
+  rounds 5 and 9. The winning line: a Spitter Egg a turn (eight laid),
+  Land Grants in round 6, the Redcaps fed to the Spitters and the Queen
+  (Alpha in round 5), Caveman Pack Hunt after Spitter shots on two Guards,
+  Thornbury shot from the forest below the ridge (12 to 6, then dead, in
+  rounds 11 and 12). Danger: the level-3 lodge sent a Fighter a turn over
+  the peaks; Wolf Rider pairs (Gang Up) killed a Raptor and a Big Spitter;
+  the Queen, rampaging through the Redcaps to the western shore at 14 HP,
+  had no way back and died in round 11 (Raider, rifle and Fighter).
+- **DN3.** Fernmaw was over its unit limit (the Queen fills two slots), so
+  the Shaman is homed to the Crater and you have Land Grants; the Dugout's
+  Ram needs Horned Prows (Seamanship), which you own. With Hunting, Drill
+  and the naval tree the Baron's Gullrock and Wharf grew two levels a turn
+  (fish, pearls, Ports, Workshops), took Big Top Bay as a town and launched
+  a Patrol Boat a turn; with Sailing and Navigation alone they still did,
+  and ferried Guards across to Fernmaw. Now the Baron learns nothing: his
+  Battleship, Submarine and two Patrol Boats keep to the shallows (no
+  Navigation), the Battleship's guns covering the whole northern lane;
+  Gullrock has no pearls, fruit or fish; landing parties come ashore in
+  rounds 4, 8 and 12. The winning line: a Dugout's two-tile run sank a
+  Patrol Boat at once (10) and the Queen bit the other off the shore;
+  Plesiosaurs researched in round 1; Gullrock's islet is joined to the
+  island by a diagonal step, so the Queen took it, a Port built there let
+  her embark at once (round 13), the Battleship hit her embarked for 17,
+  two Plesiosaurs torpedoed the Battleship (12) and sank the Submarine
+  (12) in round 15, and she sailed into Big Top Bay in round 16. The
+  Battleship sank a staged Dugout and a Plesiosaur that had torpedoed it
+  (it is seen once it fires). The Sea Serpent kept to the south.
+- **DN4.** With the big top in the middle of the dunes and two Fighters in
+  its ring, the autopilot's Queen ran through a Fighter into the 10-HP
+  Baron in round 3; with eight Guards and a 5 x 5 zone the garrison walked
+  to the side facing you and left the far side empty; with the zone the
+  3 x 3 ring (full: nothing in it moves) the autopilot wore one Guard down
+  over three turns and won in round 4. Now the big top stands under the
+  northern peaks with half its ring on the Mountains (the Baron's men have
+  Engineering), the Redcaps have Orc Brutes and packs in rounds 4 and 8,
+  and the clock is 18 rounds (the saga's 20). The winning line: Wallbreaker
+  in round 1 (Breach, the two-tile run), the Queen an Alpha on the eastern
+  Redcaps by round 4 and Sawdust Camp taken, a Triceratops's two-tile
+  Charge! killing a rifle (11), and in round 9 a Spitter's Acid (6) and
+  the Queen's Breach (11) killed the ring's southern Guard, her Rampage
+  carried her in and the Baron died. Kessler's War Drums on two rifles took
+  a Triceratops from 20 to 2 in one turn; a Brute and a Goblin (Gang Up)
+  killed a Triceratops left beside them.
+- **DN5.** With small barrows and three-unit waves the Redcaps fell in
+  round 5 and the dead hardly came south. With twelve Graves (the first
+  Raise put eight Skeletons on the fields), Ghouls and waves of four the
+  Queen died twice: rampaging fourteen kills deep into the barrow fields
+  alone (round 6), and two tiles from Mire's Edge to a Ghoul's Carrion (11
+  on the bitten Queen, round 10) after two Triceratops and a Raptor had
+  been bitten and risen as Zombies. Now there are eight Graves and no
+  Ghouls, and the clock is 18 rounds (the saga's 22). The winning line:
+  Spitters and a Raptor killed the Brutes in the gaps, the Queen went
+  through the ford on Overrun and took Redcap Ford (the Redcaps' capital,
+  round 5), climbed onto the ridge, rampaged over two Skeletons and a Ghoul
+  into Barrow Hill out of the dead's reach (round 6) and walked to Mire's
+  Edge in round 7. The Unquiet took Mire's Edge as a town in round 4; the
+  escort still counts beside it.
+- **DN6.** With two Summoners and 12 Favour the Lodge never reached 20 and
+  the Queen ate it by round 5; with three Summoners, Hexers and 16 Favour
+  the Great Summoning began in round 2 and the Herald stood on the eastern
+  shore from round 3, but with the whole Lodge leashed to the island it
+  never left it and the autopilot won in round 14. Now eight hold the
+  island and every other unit, the daemons included, assaults Mire's Edge
+  (`others: ASSAULT`), and the clock is 18 rounds (the saga's 22). One
+  thoughtful run killed two of the Herald's channellers in round 5: it went
+  Unbound, ate the Lodge's last Summoner, Initiate and Bearer and then the
+  Queen on Greyhood's centre (26 in one blow). The winning line, replayed
+  from round 4: the Queen held back a turn out of the Herald's reach, then
+  killed the Imp's Summoner and the Summoner on Greyhood's centre while
+  three channellers still held the Herald (it stayed bound and still), and
+  captured Greyhood in round 7.
+
+### 17.3 Deviations and follow-ups
+
+- **Clocks.** DN4, DN5 and DN6 run 18 rounds (star 14), not the saga's 20
+  and 22 (stars 16 and 18): every thoughtful win came by round 9.
+- **DN2 handicaps your seat.** It may not research Engineering, Armoury or
+  Wallbreaker (section 10.2 says the human seat is never handicapped in the
+  built missions; the tar peaks are the mission's lesson: only Acid reaches
+  the Major).
+- **DN3's Baron learns nothing** and his fleet keeps to the shallows; the
+  saga's "fort on a mid-sea islet" is joined to the island by a diagonal
+  step. **E6** needed nothing: an escorted unit keeps its ID embarked, and
+  the Queen arrived afloat within a tile of Big Top Bay. **E7** was not
+  built.
+- **DN4's big top** stands under the northern peaks, not in the middle of
+  the dunes; the Redcaps' second camp is on the western shore. **E4** (a
+  story line on a wave) was not built: a hint announces the freed beasts.
+- **DN5's ford** is a gap in a ridge of peaks (a Dry Land board has no
+  river); the Unquiet have no Ghouls.
+- **DN6's bound Herald idles.** Under `GUARD` with `others: ASSAULT` the
+  Herald, once called, stayed on its summoning tile for every round of
+  every run, bound, and attacked only after it went Unbound (follow-up:
+  the Normal AI's play of a bound Herald under a directive).
+- **The Old Queen** is an Alpha from DN5 on (the `kills` of a mission
+  unit), as the story has grown her.
 
 ## Appendix A: critique of the first draft
 

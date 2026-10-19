@@ -994,6 +994,13 @@ describe("natural maps", () => {
       "UNDEAD_4",
       "UNDEAD_5",
       "UNDEAD_6",
+      // The Dinosaur campaign (`pulp_wars-hmyk.6`).
+      "DINOSAUR_1",
+      "DINOSAUR_2",
+      "DINOSAUR_3",
+      "DINOSAUR_4",
+      "DINOSAUR_5",
+      "DINOSAUR_6",
     ]);
     for (const mission of MISSION_REGISTRY_V7)
       expect(missionMapDriftV7(mission), mission.id).toEqual([]);

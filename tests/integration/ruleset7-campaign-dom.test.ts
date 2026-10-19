@@ -84,7 +84,7 @@ describe("Ruleset 7 campaign front screen", () => {
       ["FRONTIER", "open"],
       ["HUMANS", "open"],
       ["UNDEAD", "open"],
-      ["DINOSAURS", "soon"],
+      ["DINOSAURS", "locked"],
       ["MARTIANS", "soon"],
       ["GOBLINS", "soon"],
       ["DWARVES", "soon"],

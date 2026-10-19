@@ -5,6 +5,7 @@ import {
   type CampaignIdV7,
 } from "../../src/campaign/campaigns";
 import { CHAPTER_ONE_V7 } from "../../src/campaign/chapter-1";
+import { CHAPTER_DINOSAURS_V7 } from "../../src/campaign/chapter-dinosaurs";
 import { CHAPTER_HUMANS_V7 } from "../../src/campaign/chapter-humans";
 import { CHAPTER_UNDEAD_V7 } from "../../src/campaign/chapter-undead";
 import {
@@ -58,6 +59,7 @@ describe("campaign registry", () => {
       CHAPTER_ONE_V7,
       CHAPTER_HUMANS_V7,
       CHAPTER_UNDEAD_V7,
+      CHAPTER_DINOSAURS_V7,
     ]);
     expect(campaignMissionV7("FRONTIER_4")).toMatchObject({
       campaign: { id: "FRONTIER" },
@@ -80,10 +82,18 @@ describe("campaign registry", () => {
       chapter: CHAPTER_UNDEAD_V7,
       entry: { number: 6 },
     });
+    const dinosaurs = campaignByIdV7("DINOSAURS");
+    expect(dinosaurs?.chapter).toBe(CHAPTER_DINOSAURS_V7);
+    expect(dinosaurs?.title).toBe("The Egg Thief");
+    expect(campaignMissionV7("DINOSAUR_6")).toMatchObject({
+      campaign: { id: "DINOSAURS" },
+      chapter: CHAPTER_DINOSAURS_V7,
+      entry: { number: 6 },
+    });
     expect(campaignByIdV7("NOWHERE")).toBeNull();
   });
 
-  it("shows the prologue and the Humans open and every unwritten campaign as coming soon, cheat or not", () => {
+  it("shows the prologue and the openers open, the Dinosaurs locked, and every unwritten campaign as coming soon", () => {
     for (const cheat of [false, true]) {
       const plates = campaignPlatesV7({}, cheat);
       expect(plates.map((plate) => [plate.campaign.id, plate.status])).toEqual([
@@ -94,7 +104,10 @@ describe("campaign registry", () => {
         // The Undead campaign (`pulp_wars-hmyk.5`): tier 1, open from the
         // start.
         ["UNDEAD", "OPEN"],
-        ...CAMPAIGN_IDS_V7.slice(3).map((id) => [id, "SOON"]),
+        // The Dinosaur campaign (`pulp_wars-hmyk.6`): tier 2, locked until
+        // the Humans and the Undead are finished; the cheat opens it.
+        ["DINOSAURS", cheat ? "OPEN" : "LOCKED"],
+        ...CAMPAIGN_IDS_V7.slice(4).map((id) => [id, "SOON"]),
       ]);
       expect(plates[1]).toMatchObject({
         missionsWon: 0,
@@ -102,6 +115,11 @@ describe("campaign registry", () => {
         stars: 0,
       });
       expect(plates[2]).toMatchObject({
+        missionsWon: 0,
+        missionCount: 6,
+        stars: 0,
+      });
+      expect(plates[3]).toMatchObject({
         missionsWon: 0,
         missionCount: 6,
         stars: 0,

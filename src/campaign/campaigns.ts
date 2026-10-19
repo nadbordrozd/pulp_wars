@@ -1,5 +1,6 @@
 import type { FactionIdV7, UnitRoleIdV7 } from "../engine/v7/types";
 import { CHAPTER_ONE_V7, type CampaignChapterV7 } from "./chapter-1";
+import { CHAPTER_DINOSAURS_V7 } from "./chapter-dinosaurs";
 import { CHAPTER_HUMANS_V7 } from "./chapter-humans";
 import { CHAPTER_UNDEAD_V7 } from "./chapter-undead";
 
@@ -127,7 +128,13 @@ export const CAMPAIGNS_V7: readonly CampaignDefinitionV7[] = Object.freeze([
     subtitle: "The Marquis would like to rest",
     chapter: CHAPTER_UNDEAD_V7,
   } satisfies CampaignDefinitionV7),
-  factionCampaign("DINOSAURS", "DINOSAUR", "Dinosaurs", "Dinosaur", 2),
+  // The Dinosaur campaign (`pulp_wars-hmyk.6`, docs/product/SAGA.md 2.5).
+  Object.freeze({
+    ...factionCampaign("DINOSAURS", "DINOSAUR", "Dinosaurs", "Dinosaur", 2),
+    title: "The Egg Thief",
+    subtitle: "The Old Queen wants her eggs back",
+    chapter: CHAPTER_DINOSAURS_V7,
+  } satisfies CampaignDefinitionV7),
   factionCampaign("MARTIANS", "MARTIAN", "Martians", "Martian", 2),
   factionCampaign("GOBLINS", "GOBLIN", "Goblins", "Goblin", 2),
   factionCampaign("DWARVES", "DWARF", "Dwarves", "Dwarf", 2),

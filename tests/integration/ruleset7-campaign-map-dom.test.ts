@@ -151,7 +151,7 @@ describe("Ruleset 7 campaign map", () => {
     );
     // Locked says what to finish; coming soon says so; both are greyed.
     expect(plate("DINOSAURS").getAttribute("aria-label")).toBe(
-      "The Dinosaur Campaign, Locked: finish Humans and Undead",
+      "The Egg Thief, Locked: finish Humans and Undead",
     );
     expect(plate("CULT").getAttribute("aria-label")).toBe(
       "The Cultist Campaign, Locked: finish Dinosaurs, Martians, Goblins and Dwarves",
@@ -177,7 +177,7 @@ describe("Ruleset 7 campaign map", () => {
     expect(document.querySelector(".v7-mission-card")).toBeNull();
     expect(
       document.querySelector("[data-v7-region='campaign-note']")?.textContent,
-    ).toBe("The Dinosaur Campaign opens when you finish Humans and Undead.");
+    ).toBe("The Egg Thief opens when you finish Humans and Undead.");
     // The note stands under the tapped plate's row.
     expect(
       document
@@ -201,7 +201,7 @@ describe("Ruleset 7 campaign map", () => {
     await openMap();
     expect(plates()).toMatchObject({ HUMANS: "done", DINOSAURS: "locked" });
     expect(plate("DINOSAURS").getAttribute("aria-label")).toBe(
-      "The Dinosaur Campaign, Locked: finish Undead",
+      "The Egg Thief, Locked: finish Undead",
     );
     expect(document.querySelector(".v7-campaign-link")?.textContent).toBe(
       "Finish both · 1/2",
