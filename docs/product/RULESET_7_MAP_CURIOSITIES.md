@@ -43,6 +43,12 @@ to 21, that part is a live spec; see
 and the engine (`pulp_wars-737.14`, with the notes of
 [section 39](#39-implementation-notes-pulp_wars-73714)) are implemented.
 
+**Round 3** (`pulp_wars-737.19`, design): five more kinds (the Tesla
+Tower, the Moon Gun, the Gold Claim, the Lost Expedition, and the naval
+Sea Serpent) are designed in
+[map curiosities, round 3](RULESET_7_CURIOSITIES_ROUND_3.md), with its own
+implementation beads; it overlays this document.
+
 **Source.** The user, 2026-10-03: "figure out some more interesting random
 things on the map. they are there to add color and occasional extra
 tactical consideration. like random neutral monster roaming the map minding
