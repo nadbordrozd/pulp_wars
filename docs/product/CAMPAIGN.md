@@ -1307,10 +1307,10 @@ the two secondary goals (the first star is the win).
 | 4   | Bone Neck (`FRONTIER_4`)                   | Humans or Goblins | Undead (guards the gate; the dead rise in your fields)             | Capture against the clock            | Continents 16, one land bridge | capture the gate city by turn 14 / time runs out                                | a front rank: siege engines dent it, a rider's Overrun sweeps behind it; a guard at home      | Undead    | 8–12   | Hard        | by turn 9; lose no city           |
 | 5   | Dead Men's Road (`FRONTIER_5`)             | Undead            | Humans (toll fort), Ice Folk (raiders), one side                   | Escort                               | Dry Land 16, a mountain wall   | bring Doctor Crane to the Ironbraid gate by turn 24 / he dies, or time runs out | a fort in the pass: a Lich outranges it, Pestilence rots it; the Doctor walks behind the dead | Dwarves   | 19–24  | Hard        | by turn 20; lose no city          |
 | 6   | The Deep Gate (`FRONTIER_6`)               | Dwarves           | Ice Folk (north, over the peaks), Humans (east, through the doors) | Hold out                             | Dry Land 14, a mountain pocket | 14 turns pass / the Deep Gate falls                                             | hold from inside; Blasting Charges bring the peaks down on the Yetis; relief on turn 9        | Ice Folk  | 14     | Medium–hard | lose no city; the Thane lives     |
-| 7   | The Island That Time Forgot (`FRONTIER_7`) | Ice Folk          | Dinosaurs (natives, three towns), Humans (the Baron)               | Capture against the clock (build-up) | Archipelago 20                 | capture the Crater by turn 30 / time runs out                                   | build up from one town; freeze a road over the sea; Frost Giants shatter the frozen           | Dinosaurs | 22–28  | Hard        | by turn 24; lose no city          |
-| 8   | Brain Wave (`FRONTIER_8`)                  | Dinosaurs         | Martians (guard), Humans (thralls)                                 | Hunt (build-up)                      | Pangea 16                      | kill the Overmind by turn 26 / time runs out                                    | build up from one nest; climb where they cannot; grow the Queen on prey                       | Martians  | 15–22  | Hard        | by turn 18; the Old Queen lives   |
-| 9   | Sugar and Spite (`FRONTIER_9`)             | Martians          | Undead, Goblins; ally: Candy                                       | Rescue (hold out)                    | Lakes 16 with a Rift           | 16 turns pass / Sugarcrest (the ally's capital) falls                           | defend someone else's city; Saucers hunt the siege engines                                    | Candy     | 16     | Hard        | Praline lives; Riftwatch is yours |
-| 10  | The Stars Are Right (`FRONTIER_10`)        | Humans            | Cultists (guard), Undead (thralls); ally: Goblins                  | Capture against the clock            | Pangea 20                      | capture the Lodge by turn 24 / time runs out                                    | the finale: crack the ring with Catapults, then the Knights; starve the rite                  | Cultists  | 20–24  | Very hard   | by turn 20; lose no city          |
+| 7   | The Island That Time Forgot (`FRONTIER_7`) | Ice Folk          | Dinosaurs (natives, three towns), Humans (the Baron, raids)        | Capture against the clock (build-up) | Archipelago 20                 | capture the Crater by turn 30 / time runs out                                   | beat off a raid; build up; freeze a road over the sea; Frost Giants shatter the frozen        | Dinosaurs | 26–28  | Hard        | by turn 24; lose no city          |
+| 8   | Brain Wave (`FRONTIER_8`)                  | Dinosaurs         | Martians (guard), Humans (thralls, march at once)                  | Hunt (build-up)                      | Pangea 16                      | kill the Overmind by turn 26 / time runs out                                    | build up from one nest; feed the Queen on the thralls; climb where they cannot                | Martians  | 20–24  | Hard        | by turn 18; the Old Queen lives   |
+| 9   | Sugar and Spite (`FRONTIER_9`)             | Martians          | Undead (also behind you), Goblins (storm); ally: Candy             | Rescue (hold out)                    | Lakes 16 with a Rift           | 16 turns pass / Sugarcrest (the ally's capital) falls                           | defend someone else's city and your own; Saucers hunt the siege engines                       | Candy     | 16     | Hard        | Praline lives; Riftwatch is yours |
+| 10  | The Stars Are Right (`FRONTIER_10`)        | Humans            | Cultists (guard), Undead (thralls, assault); ally: Goblins         | Capture against the clock            | Pangea 20                      | capture the Lodge by turn 24 / time runs out                                    | the finale: hold Northwatch, take the barrow, crack the ring; slay the gazer                  | Cultists  | 20–22  | Very hard   | by turn 20; lose no city          |
 
 Formats covered: classic conquest (1), capture a place (2), escort (5),
 survive N rounds (6, 9), capture against a clock (3, 4, 7, 10), kill or
@@ -1484,6 +1484,20 @@ water.", "Whoever steps on your ice freezes. Giants shatter them." and
 "Level 5 cities send Frost Giants. The Baron lands turn 14."; the briefing
 says to grow and cross.
 
+**Revision 3, the danger pass** (`pulp_wars-v642.10`; the record is
+[section 11.19](#1119-the-danger-pass-b-missions-7-to-10-pulp_wars-v64210)). The build-up stays a build-up, but it is no longer quiet: in round 7
+a landing party of the Baron (a Fighter and a Marksman) comes ashore on
+your spur beside Hjorna, and from round 7 to 11 the Baron `ASSAULT`s
+Coldharbour (he now knows it from the start); in round 12 he holds his
+island again, and from round 16 he races you for the Crater as before. A
+Musk Ox on the village's center (Fortification, "Deep Winter") freezes
+whoever strikes it, and a frozen raider shatters under a Yeti. The hints
+now say "Raiders land on turn 7. A Musk Ox freezes its attackers." and
+"Level 5 cities send Frost Giants. They shatter the frozen." beside the
+frozen sea; the briefing says to hold the shore first. Board, natives,
+clock and stars are unchanged. Played on `7r100`, the ice redesign
+(permanent ice, ice roads the Ice Folk slide along).
+
 **8, Brain Wave** (built, `pulp_wars-v642.3`; the record is
 [section 11.9](#119-brain-wave)). Pangea 16, seed 2; three seats, teams
 `[0, 1, 1]`: the Martians and their thralls are one side. You (Dinosaurs,
@@ -1554,6 +1568,16 @@ grow.", "The crater has one gate. Climbers have more." and "Feed the Queen
 small prey: an Alpha bites through walls."; the briefing warns to keep the
 wounded away from the brain.
 
+**Revision 3, the danger pass** (`pulp_wars-v642.10`; [section 11.19](#1119-the-danger-pass-b-missions-7-to-10-pulp_wars-v64210)): the thralls hold their camps only until round 3 and then `ASSAULT`
+the nest, and their waves of three come in rounds 6, 12 and 18 (were 10,
+16 and 22). The nest is threatened from round 6, and the young Queen
+feeds on the marchers: in the hand play she was an Alpha in round 8. The
+Bolder abilities (`7r99`) let a Brain take over any unit beside it, the
+Old Queen too, so the hint for the bite became "Beside the brain, strike
+to kill or be taken.", and "The thralls march at once. Let the Queen eat
+them." replaces the hint about villages. Board, seats, clock and stars
+are unchanged.
+
 **9, Sugar and Spite** (built by `pulp_wars-v642.4`,
 `src/engine/v7/missions/frontier-9.ts`; its hand play is in
 [section 11.10](#1110-sugar-and-spite)). Lakes 16, seed 5, with seven tiles
@@ -1596,6 +1620,17 @@ Carts, Bomb Chuckers, Liches) unless someone hunts them, and only your
 flyers reach them in time; the hints say "Only flyers cross the Rift.
 Saucers carry the rest over." and "Siege engines outrange walls: hunt
 them with Saucers." Board, seats, waves and stars are unchanged.
+
+**Revision 3, the danger pass** (`pulp_wars-v642.10`; [section 11.19](#1119-the-danger-pass-b-missions-7-to-10-pulp_wars-v64210)): on `7r99` an autopilot held the kingdom to the end (one star): the
+kingdom baked a Gingerbread Man from every trooper it lost and its walls
+held. So the kingdom loses its Confectioner; the Goblins `ASSAULT`
+Sugarcrest from round 4 instead of rushing past the walls; both besiegers
+send two more waves with siege engines (rounds 9 and 11, two Catapults
+each); and the dead rise on your side of the Rift too, in the north of
+your strip behind its peaks (three in round 5, four in round 10), and
+march on your towns. The second hint reads "The dead rise behind you too:
+keep a guard at home." and the briefing warns that your side is not safe.
+Board, clock and stars are unchanged.
 
 **10, The Stars Are Right** (built by `pulp_wars-v642.4`,
 `src/engine/v7/missions/frontier-10.ts`; its hand play is in
@@ -1691,6 +1726,17 @@ marked star falls at dawn: scatter, or slay the gazer.", beside the
 countdown ("The Lodge's Favour is the countdown: at 18, the Herald."); the
 briefing's "every soldier a Horror takes" reads "every soldier its daemons
 take".
+
+**Revision 5, the danger pass** (`pulp_wars-v642.10`; [section 11.19](#1119-the-danger-pass-b-missions-7-to-10-pulp_wars-v64210)): the finale gave three stars in round 16 to a player who knew it, so
+the dead now come first. The thralls `ASSAULT` Northwatch from round 1
+(they rushed), the barrow keeps a second Zombie (a Knight's Overrun took
+it in round 3 in the first trial), the dead rise in rounds 5 and 10
+(were 6, 12 and 18; the second rising with a Bone Catapult), and the four
+villages within an easy walk of your towns are gone (Northwatch's, Fort
+Steele's and Millford's two). Your start, the Cult, the clock and the
+stars are those of revision 4: a smaller start (Fort Steele at level 3 or
+4, no Captain) was lost four times by hand. The briefing now says the
+dead of Hollow Barrow are already marching on Northwatch.
 
 ### 9.4 Unlock order, and free play
 
@@ -3343,6 +3389,163 @@ thoughtful games of all four missions, replayed command for command,
 played out identically (mission 3 won in round 18 with three stars,
 mission 4 in round 10 with two, mission 5 in round 22 with two, mission 6
 held with two).
+
+### 11.19 The danger pass B: missions 7 to 10 (`pulp_wars-v642.10`)
+
+The user, 2026-10-18: "the missions are too easy. aside from the first
+few they should get harder ... There should be some danger involved."
+The targets: a thoughtful player feels threatened in the first five to
+eight rounds and can lose cities or the mission if careless; the
+autopilot of [section 11.14](#1114-campaign-difficulty-pass-c-missions-8-to-10-pulp_wars-v6429)
+loses; a thoughtful first win is usually one or two stars. Missions 8 to
+10 were played on `pulp-wars-poc-7r99` (the Bolder abilities), mission 7
+on `7r100` (the ice redesign, `pulp_wars-5ti.25` and `5ti.26`, merged
+during the pass). Only mission data, the chapter text and their tests
+changed: no rule, AI or framework code, and no new directive lever (the
+`ASSAULT` of `pulp_wars-v642.5`, schedules and waves were enough). The
+sessions, the autopilot script, the compact view, the attack lister and
+the replay helper are in `scratchpad/pulp_wars-v642.10b/`.
+
+#### Mission 7, The Island That Time Forgot: revision 3
+
+Archipelago 20, seed 2; mission seed 20261107. Revision 2 never
+threatened the player: nothing could reach the island before the
+crossing. Four configurations:
+
+1. A raid of three (two Fighters and a Marksman) on the spur in round 6
+   and four more in round 11, the Baron storming Coldharbour from round 5
+   to 15: abandoned in round 10. The raiders took Hjorna in round 8 and
+   trained in it, and five Baron units stood on the island.
+2. A raid of three in round 8, the assault until round 16: abandoned in
+   round 16. Hjorna surrounded, the Baron shipping Raiders and a Guard
+   over, no crossing begun.
+3. A raid of three in round 7, the assault until round 12 and then his
+   island again: abandoned in round 18, four rounds behind the old line
+   (the first Frost Giant in round 16).
+4. **Final.** A raid of two (a Fighter and a Marksman) in round 7, the
+   assault on Coldharbour until round 12. **Autopilot: lost, out of time**
+   (round 30 ended, one city). **By hand: won in round 28, two stars**
+   (no city lost; not by round 24).
+
+The line: Rime and Hunting in round 1; Brisund in round 2, Hjorna in 4,
+Mjolka in 5, Glimra in 14; Crafting (3), Deep Winter (7: a Musk Ox on
+Hjorna's center in round 8), Pack Ice (10), Black Ice (11), Gathering
+(12), Forestry (14), Glacier (20); Frost Giants from Brisund (16),
+Coldharbour and Hjorna (20); the ice road down column 6 in rounds 19 to
+23, which the giants slid along; a giant killed the Spitter beside the
+Crater (25) and two the Ankylosaurus on its center (26); a giant stepped
+on in round 27 and captured in round 28. **The danger moments:** in
+round 8 the raiders struck the Musk Ox on Hjorna, whose Frostbite froze
+the Fighter for a Yeti to shatter; the Marksman sniped Yetis until round
+16; from round 17 the Baron's flotilla (a Guard, a Fighter, two Raiders,
+the Marksman, a Juggernaut and Patrol Boats) passed the spur on its way
+to the Crater, and in round 21 a Fighter stepped onto Hjorna's center
+(the Ox and a Sled killed it); a native Spitter killed the Yeti that
+froze the road (23) and a Caveman the Yeti on the Crater (26). On
+`7r100` the road is permanent and the Ice Folk slide along it, which is
+what made the late crossing possible.
+
+#### Mission 8, Brain Wave: revision 3
+
+Pangea 16, seed 2. **Autopilot: eliminated in round 19** (the thralls
+took the nest). **By hand: won in round 22, two stars** (the Old Queen
+alive on 6 of 36; not by round 18).
+
+The line: Gathering free and three fruit for the Scouts' Raptor in round
+1; Grumba and Thogga in round 2, Rokku and Gronda in 5; Crafting (3),
+Engineering (5), Hunting (8), Spitters (10), Forestry (13), Leadership
+(17); Mines on the peaks, the Explorer's Monument and a Boom in round 9,
+the Brontosaurus in round 14. The thralls marched from round 3 and the
+Queen ate them: six kills in one Overrun in round 8 (an Alpha), eleven by
+round 13. The finish was a climb: Spitters on the Rim took the Overmind
+from 8 to 1 with Acid through its walls, and the Brontosaurus stepped
+onto the peak beside it and killed it in the same turn. **The danger
+moments:** the thralls on Rokku and Gronda from round 6; Saucers, a Ray
+Gunner and the Tripod on Grumba from round 8 (a Caveman lost, and two
+Spitters to the Tripod later); the thralls' waves wore the Queen from 36
+to 6 by round 21; whatever ended a turn beside the Brain would have been
+taken.
+
+#### Mission 9, Sugar and Spite: revision 3
+
+Lakes 16, seed 5. Revision 2 on `7r99` was **won on autopilot with one
+star**: the kingdom held alone. Six configurations, each judged by the
+autopilot first: the dead rising in your strip (rounds 5 and 10) and a
+last wave of both besiegers in round 14, then the Goblins storming
+Sugarcrest (`ASSAULT`), the last waves in round 13, no Confectioner, and
+a second last push in round 15 were all still won on autopilot (once a
+Goblin Wolf Rider stood on Sugarcrest's center when the last round
+ended). **Final:** the two extra waves of both besiegers in rounds 9 and 11. **Autopilot: lost in round 15** (Sugarcrest fell). **By hand: won
+when round 16 ended, two stars** (Riftwatch held; Praline dead in round
+10).
+
+The line: Raiding and two hunts for Red Dust in round 1; Riftwatch by
+Saucer in round 2, a Shield Projector and a Ray Gunner beamed beside it
+in round 3; Crafting (2), Force Fields (3), Gathering (7), Leadership and
+Forestry (10), Land Grants (12); Fudgley taken in round 4. **The danger
+moments:** the Goblins' Gang Up killed a Saucer that charged their line
+(round 6); Bomb Chuckers killed both Ray Gunners (rounds 9 and 11); a
+Rocket Cart killed Praline (round 10) and Sugarcrest's center stood empty
+with an Orc Brute beside it (round 11); in round 12 a Saucer killed a
+Rocket Cart whose blast took two Bomb Chuckers, two Goblins and two more
+Rocket Carts (and the Saucer); the dead of the strip came over the
+northern peaks in round 12, took Fudgley in round 14 and killed two
+Grunts and a Saucer. Sugarcrest ended the mission with two defenders.
+
+#### Mission 10, The Stars Are Right: revision 5
+
+Pangea 20, seed 23; mission seed 20261110. Seven configurations:
+
+1. The thralls storming Northwatch from round 1, waves of four every four
+   rounds from round 4, Fort Steele at level 4 without a Captain, the
+   four near villages removed: autopilot lost (out of time, two cities
+   lost). By hand abandoned in round 3: a Knight's Overrun had emptied
+   the barrow and stood on its center.
+2. The barrow walled (level 3) and waves of five or six every three
+   rounds: abandoned in round 12 (thirteen dead on Northwatch).
+3. Waves every four rounds, the barrow walled: abandoned in round 15
+   (the barrow's center killed every unit that stood on it).
+4. The barrow unwalled with a second Zombie, Fort Steele at level 3:
+   abandoned in round 12.
+5. Waves in rounds 5, 10 and 15: abandoned in round 15.
+6. Waves in rounds 5 and 10, Fort Steele at level 4: abandoned in round
+   14 (twice, the second a replay of the first nine rounds).
+7. **Final:** revision 4's start (Fort Steele at level 5, the Captain)
+   with the thralls' assault, the second Zombie, the waves of rounds 5
+   and 10 and the four villages gone. **Autopilot: eliminated in round
+   20** (Northwatch fell, then Fort Steele and Millford). **By hand: won
+   in round 21, two stars** (no city lost; not by round 20).
+
+The line: the Muster Monument, a Farm and a fruit for a Juggernaut in
+round 1; Northwatch walled in round 2 and at level 5 for a second
+Juggernaut in round 3; Engineering (4), Explosives (5), Land Grants (9);
+the barrow emptied by a Knight's Overrun in round 5 and captured in
+round 6, the Conqueror's Monument and a Farm there for a third
+Juggernaut; Fort Steele to level 7 (round 9) and 8 (round 12) for a
+fourth and a fifth. **The danger moments:** from round 2 the thralls
+struck Northwatch's walls (a Fighter died and rose as a Zombie in round
+3); in round 6 a Star-fall of three chanters killed the Knight on the
+barrow; Imps and Idol Bearers ground the barrow's Juggernaut down to 13;
+Knights died to the Things in rounds 10, 11 and 13; in round 14 a Knight
+killed an Initiate, an Idol Bearer, an Initiate, the Stargazer and a
+Summoner in one Overrun; in rounds 19 and 20 the Goblins' Gang Up and
+Kaboom broke the Things and the last Bearer, and in round 21 a Goblin
+Orc Brute captured the Lodge for the alliance.
+
+#### What the pass taught
+
+- `ASSAULT` from the first round gives the early threat, but the Normal
+  AI sends the units one by one; a seat whose home is weak loses it to
+  one Knight's Overrun. The attacker's own home needs a sturdy center.
+- Waves are the lever for danger near the player, but in a build-up a
+  raid must stay small: three raiders with an assault of eight rounds
+  took a village and starved the build-up every time.
+- A `RUSH` seat stood off walls a giant held; `ASSAULT` on the place
+  made the siege of mission 9 real.
+- The Bolder abilities changed two missions by themselves: Goblin Gang Up
+  (+4 with two helpers) made both Goblin seats lethal, the ally of mission
+  10 included, and a Brain now takes the Old Queen if she stands beside
+  it.
 
 ## 12. The mission builder's guide
 

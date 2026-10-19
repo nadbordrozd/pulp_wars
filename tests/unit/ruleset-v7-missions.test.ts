@@ -119,22 +119,26 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
     "068ff4950c6d5135c522b9702a9bd7a38205b8d0bc7519cdcbd7b1389d6975e2",
   // Missions 7 and 8 (`pulp_wars-v642.3`).
   // Campaign difficulty pass B (`pulp_wars-v642.8`): revision 2.
-  "FRONTIER_7@2:ICE_FOLK":
-    "9d95e75fe45953164c434238f317d24329aea8d7648b72c17383d8b51a37bccf",
+  // Campaign danger pass B (`pulp_wars-v642.10`): revision 3.
+  "FRONTIER_7@3:ICE_FOLK":
+    "75201de1799d7aa763e360f8020a13dcf682e660cbe7d885b178aba20bbf2a29",
   // Mission 8 as a build-up (`pulp_wars-v642.9`): revision 2.
-  "FRONTIER_8@2:DINOSAUR":
-    "ffac8c79a235a46a3f6d08f748929a36f51d1d355e8bb45438f0a472f7b1cfb4",
+  // Campaign danger pass B (`pulp_wars-v642.10`): revision 3.
+  "FRONTIER_8@3:DINOSAUR":
+    "a5f58a38b09118b18f395e377b5f542d0d7ad44b3a8037565b6458cc77e0e121",
   // Missions 9 and 10 (`pulp_wars-v642.4`); mission 9 with less
   // pre-research (`pulp_wars-v642.9`): revision 2.
-  "FRONTIER_9@2:MARTIAN":
-    "413a8bdae4f1733fb4f67625837aa5d6297bc02a7fe37db68d9c405a851a226f",
+  // Campaign danger pass B (`pulp_wars-v642.10`): revision 3.
+  "FRONTIER_9@3:MARTIAN":
+    "1a31f9ca8bb14117a1bbbab42863f7dd4e004b7c8bb37d687748de5e7dcc3159",
   // Mission 10 replayed on the corrected Cult AI (`pulp_wars-v642.6`): revision 2.
   // The Cult redesign's roster (`pulp_wars-mch9.31`): revision 3 (the Chosen
   // and the Caller of the ring are an Idol Bearer, an Initiate, and a Hexer).
   // Its retune (`pulp_wars-mch9.46`): revision 4 (the lodge owns
   // Engineering and Gibbering Masses and starts with 8 Favour).
-  "FRONTIER_10@4:ORIGINAL":
-    "24b8a05369bbeac09fc714cb1a5029878ce7e430a5d44aa46845664e08206f6f",
+  // Campaign danger pass B (`pulp_wars-v642.10`): revision 5.
+  "FRONTIER_10@5:ORIGINAL":
+    "f24c78997288b4f81b604f45d50f3a5dfd919c01bf01d6bc2bc0c39b3536f9c4",
   // The siege fixture of the Normal AI (`pulp_wars-68k.6`).
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 2.
   "TEST_NECK@2:ORIGINAL":
@@ -414,20 +418,24 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
     "d7ec6a39b5209bfcb5e2c6afa1ad440af61a939f8dfe1f8b049f3d7643ed02b4",
   // Missions 7 and 8 (`pulp_wars-v642.3`).
   // Campaign difficulty pass B (`pulp_wars-v642.8`): revision 2.
-  "FRONTIER_7@2:ICE_FOLK":
-    "77c8587644ad72da15b43b0f3f0b18cc539e707830266c0a94d113f660600903",
+  // Campaign danger pass B (`pulp_wars-v642.10`): revision 3.
+  "FRONTIER_7@3:ICE_FOLK":
+    "a73a79dcea4f0704cc57831f4911cffe7702f81b7d1136fe5d69769d44bc082a",
   // Mission 8 as a build-up (`pulp_wars-v642.9`): revision 2.
-  "FRONTIER_8@2:DINOSAUR":
-    "753db292217b431598e51169f082a5edc4dfba57db2ddf629c6370d022687c75",
+  // Campaign danger pass B (`pulp_wars-v642.10`): revision 3.
+  "FRONTIER_8@3:DINOSAUR":
+    "05d0bf468f3143c7bee6f2dc17b77987daecab0777dc7ff87c43d5c9297d1cda",
   // Missions 9 and 10 (`pulp_wars-v642.4`); mission 9 with less
   // pre-research (`pulp_wars-v642.9`): revision 2.
-  "FRONTIER_9@2:MARTIAN":
-    "82e2e17c0f8e0a6f37ffdaf99f6b514d9e081892d6a7f12e80f7452aea9fc720",
+  // Campaign danger pass B (`pulp_wars-v642.10`): revision 3.
+  "FRONTIER_9@3:MARTIAN":
+    "a9309053ee3b9608d6fc6626be686e6ee54db50d5f5aed266d3ddb3e30b8dddd",
   // Mission 10 replayed on the corrected Cult AI (`pulp_wars-v642.6`): revision 2.
   // The Cult redesign's roster (`pulp_wars-mch9.31`): revision 3.
   // Its retune (`pulp_wars-mch9.46`): revision 4.
-  "FRONTIER_10@4:ORIGINAL":
-    "e7f12c627772ba0f133b5dc67a1088edb0237712609b779cda348b48ba591eef",
+  // Campaign danger pass B (`pulp_wars-v642.10`): revision 5.
+  "FRONTIER_10@5:ORIGINAL":
+    "3261b98b1428331de3091102077772814e219b150055d67d2e0625d45e3274fd",
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 2.
   "TEST_NECK@2:ORIGINAL":
     "32595babd0a4d5371b260320b8d360786ba69b01808d2716eaadec332213500e",

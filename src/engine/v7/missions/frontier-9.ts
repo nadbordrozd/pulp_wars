@@ -15,6 +15,17 @@ import type { MissionDefinitionV7 } from "./types";
  * revision 2 an autopilot that only flies its Saucers at the kingdom loses
  * Sugarcrest in the last round.
  *
+ * Revision 3 (the danger pass, `pulp_wars-v642.10`, CAMPAIGN.md section
+ * 11.19): on `7r99` the kingdom held alone (an autopilot won with one
+ * star), so it loses its Confectioner (who baked a Gingerbread Man from
+ * every trooper it lost), the Goblins storm Sugarcrest itself (`ASSAULT`
+ * from round 4, where they had played `RUSH` and stood off the walls), both
+ * besiegers send two more waves with siege engines (rounds 9 and 11), and
+ * the dead rise on your side of the Rift too, in the north of your strip
+ * (rounds 5 and 10), and march on your towns. Hand-played: lost on
+ * autopilot (Sugarcrest fell in round 15), won with two stars (Riftwatch
+ * held, Praline dead in round 10, Fudgley lost to the dead).
+ *
  * The board is the map generator's (Lakes, seed 5): a western strip, two
  * long lakes, the kingdom between them, and the enemy camps in the east.
  * Seven tiles of the western lake's line are turned to Rift, north and
@@ -28,11 +39,13 @@ import type { MissionDefinitionV7 } from "./types";
  *   garrison on the walls. Your units may not enter an ally's land, so you
  *   fight in front of the kingdom, never in its streets.
  * - **The Undead** (north-east) `RUSH` from the first round; **the
- *   Goblins** (south-east) hold their camp until round 4, then `RUSH`.
- *   Six waves muster in the enemy camps, out of your sight: rounds 4, 8,
- *   and 12 for the Undead and 6, 10, and 12 for the Goblins, the later ones
- *   with siege engines (Liches and Rocket Carts), which outrange the walls
- *   and are what your Saucers are for.
+ *   Goblins** (south-east) hold their camp until round 4, then storm
+ *   Sugarcrest (`ASSAULT`). Ten waves muster in the enemy camps, out of
+ *   your sight: rounds 4, 8, 9, 11, and 12 for the Undead and 6, 9, 10,
+ *   11, and 12 for the Goblins, the later ones with siege engines (Bone
+ *   Catapults and Rocket Carts), which outrange the walls and are what
+ *   your Saucers are for; and two risings of the dead in your own strip
+ *   (rounds 5 and 10).
  * - **Riftwatch** is a neutral village just east of the Rift. Taking it
  *   and still holding it at the end is the third star; it is also the one
  *   place east of the Rift where you can train.
@@ -59,7 +72,7 @@ import type { MissionDefinitionV7 } from "./types";
  */
 export const FRONTIER_9_V7: MissionDefinitionV7 = {
   id: "FRONTIER_9",
-  revision: 2,
+  revision: 3,
   seed: 20261109,
   // <map>
   size: 16,
@@ -219,7 +232,8 @@ export const FRONTIER_9_V7: MissionDefinitionV7 = {
         { role: "FIGHTER", at: { x: 7, y: 7 } },
         { role: "FIGHTER", at: { x: 7, y: 9 } },
         { role: "MARKSMAN", at: { x: 6, y: 8 } },
-        { role: "CAPTAIN", at: { x: 6, y: 7 } },
+        // Revision 3: no Confectioner (with one the kingdom baked a
+        // Gingerbread Man from every trooper it lost and held alone).
         { role: "GUARD", at: { x: 8, y: 5 }, home: 1 },
       ],
       // The kingdom watches every approach: its sentries see a besieger
@@ -322,7 +336,9 @@ export const FRONTIER_9_V7: MissionDefinitionV7 = {
           zone: [{ x0: 10, y0: 12, x1: 15, y1: 15 }],
           untilRound: 4,
         },
-        { kind: "RUSH" },
+        // Revision 3: they storm Sugarcrest itself (as RUSH they stood off
+        // the walls the Queen held, and an autopilot kept the kingdom).
+        { kind: "ASSAULT", target: { x: 7, y: 8 } },
       ],
     },
   ],
@@ -397,6 +413,74 @@ export const FRONTIER_9_V7: MissionDefinitionV7 = {
         { role: "FIGHTER", at: { x: 13, y: 13 } },
         { role: "GUARD", at: { x: 13, y: 12 } },
         { role: "CATAPULT", at: { x: 12, y: 15 } },
+      ],
+    },
+    // Revision 3 (`pulp_wars-v642.10`, the danger pass): the dead rise on
+    // your side of the Rift too, in the north of your strip, and march on
+    // your towns (rounds 5 and 10); and both besiegers send two more waves
+    // with siege engines, in rounds 9 and 11.
+    {
+      seat: 2,
+      round: 5,
+      units: [
+        { role: "FIGHTER", at: { x: 1, y: 1 } },
+        { role: "FIGHTER", at: { x: 2, y: 1 } },
+        { role: "GUARD", at: { x: 2, y: 2 } },
+      ],
+    },
+    {
+      seat: 2,
+      round: 10,
+      units: [
+        { role: "FIGHTER", at: { x: 1, y: 1 } },
+        { role: "FIGHTER", at: { x: 2, y: 1 } },
+        { role: "GUARD", at: { x: 2, y: 2 } },
+        { role: "RAIDER", at: { x: 1, y: 2 } },
+      ],
+    },
+    {
+      seat: 2,
+      round: 9,
+      units: [
+        { role: "FIGHTER", at: { x: 11, y: 1 } },
+        { role: "FIGHTER", at: { x: 12, y: 1 } },
+        { role: "GUARD", at: { x: 13, y: 2 } },
+        { role: "CATAPULT", at: { x: 12, y: 0 } },
+        { role: "CATAPULT", at: { x: 13, y: 0 } },
+      ],
+    },
+    {
+      seat: 3,
+      round: 9,
+      units: [
+        { role: "FIGHTER", at: { x: 12, y: 13 } },
+        { role: "FIGHTER", at: { x: 12, y: 14 } },
+        { role: "GUARD", at: { x: 13, y: 12 } },
+        { role: "CATAPULT", at: { x: 12, y: 15 } },
+        { role: "CATAPULT", at: { x: 13, y: 15 } },
+      ],
+    },
+    // Revision 3: and in round 11.
+    {
+      seat: 2,
+      round: 11,
+      units: [
+        { role: "FIGHTER", at: { x: 11, y: 1 } },
+        { role: "FIGHTER", at: { x: 12, y: 1 } },
+        { role: "FIGHTER", at: { x: 11, y: 2 } },
+        { role: "CATAPULT", at: { x: 12, y: 0 } },
+        { role: "CATAPULT", at: { x: 13, y: 0 } },
+      ],
+    },
+    {
+      seat: 3,
+      round: 11,
+      units: [
+        { role: "FIGHTER", at: { x: 12, y: 13 } },
+        { role: "FIGHTER", at: { x: 12, y: 14 } },
+        { role: "FIGHTER", at: { x: 13, y: 13 } },
+        { role: "CATAPULT", at: { x: 12, y: 15 } },
+        { role: "CATAPULT", at: { x: 13, y: 15 } },
       ],
     },
   ],

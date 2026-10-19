@@ -34,6 +34,15 @@ import type { MissionDefinitionV7 } from "./types";
  * with three stars by breaking the idols' Bearers, stepping out from
  * under the Stargazer's mark, and riding Knights through the 7-HP robes.
  *
+ * Revision 5 (the danger pass, `pulp_wars-v642.10`, CAMPAIGN.md section
+ * 11.19): the thralls storm Northwatch from the first round (`ASSAULT`,
+ * where they had played `RUSH`), the barrow holds a second Zombie, the dead
+ * rise in rounds 5 and 10 (were 6, 12 and 18; the second rising with a Bone
+ * Catapult), and the four villages within an easy walk of your towns are
+ * gone. Hand-played: lost on autopilot (eliminated by the thralls in round
+ * 20), won in round 21 with two stars; a start of level 3 or 4 for Fort
+ * Steele and no Captain (tried first) was lost four times by hand.
+ *
  * The board is the map generator's (Pangea, seed 23). The Lodge stands in
  * the northern highlands with Mountains on three sides: a wooded slope
  * leads up to it from the south and a goat path from the west. Two
@@ -54,9 +63,10 @@ import type { MissionDefinitionV7 } from "./types";
  *   and is kept up by three waves that arrive behind the Lodge (rounds 8,
  *   12, and 17), the last two with a fresh Summoner.
  * - **The Undead** (the thralls) hold the barrow on your road and a town in
- *   the east, and `RUSH`. Three waves rise at the barrow (rounds 6, 12, and
- *   18) for as long as the seat lives: take both towns and the dead stop
- *   rising.
+ *   the east, and storm Northwatch from the first round (`ASSAULT`; once it
+ *   falls, the nearest of your cities). Two waves rise at the barrow
+ *   (rounds 5 and 10) for as long as the seat lives: take both towns and
+ *   the dead stop rising.
  * - **The Goblins** are your ally (teams): they play their ordinary game
  *   until round 10 and `RUSH` from then on, which brings the horde up the
  *   eastern side to the Lodge about when you arrive.
@@ -87,7 +97,7 @@ import type { MissionDefinitionV7 } from "./types";
  */
 export const FRONTIER_10_V7: MissionDefinitionV7 = {
   id: "FRONTIER_10",
-  revision: 4,
+  revision: 5,
   seed: 20261110,
   // <map>
   size: 20,
@@ -108,6 +118,12 @@ export const FRONTIER_10_V7: MissionDefinitionV7 = {
       { kind: "VILLAGE", at: { x: 18, y: 14 }, present: false },
       { kind: "VILLAGE", at: { x: 18, y: 5 }, present: false },
       { kind: "VILLAGE", at: { x: 16, y: 8 }, present: false },
+      // Revision 5 (`pulp_wars-v642.10`, the danger pass): the four
+      // villages within an easy walk of your towns.
+      { kind: "VILLAGE", at: { x: 1, y: 8 }, present: false },
+      { kind: "VILLAGE", at: { x: 3, y: 16 }, present: false },
+      { kind: "VILLAGE", at: { x: 7, y: 17 }, present: false },
+      { kind: "VILLAGE", at: { x: 10, y: 14 }, present: false },
       { kind: "TERRAIN", at: { x: 8, y: 1 }, terrain: "." },
       { kind: "TERRAIN", at: { x: 11, y: 1 }, terrain: "." },
     ],
@@ -181,12 +197,8 @@ export const FRONTIER_10_V7: MissionDefinitionV7 = {
   ],
   villages: [
     { x: 1, y: 5 },
-    { x: 1, y: 8 },
     { x: 13, y: 11 },
     { x: 16, y: 11 },
-    { x: 10, y: 14 },
-    { x: 3, y: 16 },
-    { x: 7, y: 17 },
     { x: 10, y: 17 },
     { x: 13, y: 17 },
   ],
@@ -396,9 +408,10 @@ export const FRONTIER_10_V7: MissionDefinitionV7 = {
       ],
       units: [
         // A Zombie on the barrow's center (revision 2: a Skeleton fell to
-        // one Juggernaut's blow in round 4).
+        // one Juggernaut's blow in round 4) and a second beside it
+        // (revision 5: a Knight's Overrun took the barrow in round 3).
         { role: "GUARD", at: { x: 7, y: 5 } },
-        { role: "FIGHTER", at: { x: 6, y: 5 } },
+        { role: "GUARD", at: { x: 6, y: 5 } },
         { role: "FIGHTER", at: { x: 7, y: 4 } },
         { role: "RAIDER", at: { x: 6, y: 6 } },
         { role: "FIGHTER", at: { x: 8, y: 5 } },
@@ -418,15 +431,19 @@ export const FRONTIER_10_V7: MissionDefinitionV7 = {
         "METALLURGY",
         "EXPLOSIVES",
       ],
-      directive: { kind: "RUSH" },
+      // Revision 5: they storm Northwatch, the town on their road, from the
+      // first round, and the nearest of your cities once it falls.
+      directive: { kind: "ASSAULT", target: { x: 4, y: 8 } },
     },
   ],
   // The dead rise around the barrow; the lodge's waves come up behind the
   // summit, out of reach of an army on the slope.
   reinforcements: [
+    // Revision 5: the dead rise in rounds 5 and 10 (were 6, 12, and 18),
+    // the second rising with a Bone Catapult.
     {
       seat: 3,
-      round: 6,
+      round: 5,
       units: [
         { role: "FIGHTER", at: { x: 7, y: 4 } },
         { role: "FIGHTER", at: { x: 6, y: 4 } },
@@ -436,22 +453,13 @@ export const FRONTIER_10_V7: MissionDefinitionV7 = {
     },
     {
       seat: 3,
-      round: 12,
+      round: 10,
       units: [
         { role: "FIGHTER", at: { x: 7, y: 4 } },
         { role: "FIGHTER", at: { x: 6, y: 4 } },
         { role: "GUARD", at: { x: 8, y: 5 } },
         { role: "RAIDER", at: { x: 7, y: 3 } },
-      ],
-    },
-    {
-      seat: 3,
-      round: 18,
-      units: [
-        { role: "FIGHTER", at: { x: 7, y: 4 } },
-        { role: "FIGHTER", at: { x: 6, y: 4 } },
-        { role: "GUARD", at: { x: 8, y: 5 } },
-        { role: "RAIDER", at: { x: 7, y: 3 } },
+        { role: "CATAPULT", at: { x: 6, y: 3 } },
       ],
     },
     {

@@ -256,20 +256,38 @@ describe("mission 9, Sugar and Spite", () => {
     );
     const waves = mission.reinforcements ?? [];
     expect(waves.length).toBeGreaterThan(0);
+    // Revision 3 (`pulp_wars-v642.10`, the danger pass): the dead also rise
+    // on your side of the Rift, in the north of your strip behind its
+    // peaks (rounds 5 and 10), and march on your towns.
+    const behindYou = waves.filter((wave) =>
+      wave.units.every((unit) => unit.at.x <= 3),
+    );
+    expect(behindYou.map((wave) => [wave.seat, wave.round])).toEqual([
+      [2, 5],
+      [2, 10],
+    ]);
     for (const wave of waves) {
       expect([2, 3]).toContain(wave.seat);
       for (const unit of wave.units) {
         expect(explored.has(key(unit.at)), key(unit.at)).toBe(false);
+        if (behindYou.includes(wave)) {
+          // The north of your strip, beyond the peaks of its third row.
+          expect(unit.at.y).toBeLessThanOrEqual(2);
+          continue;
+        }
         // East of the eastern lake: nine tiles or more from your capital.
         expect(unit.at.x).toBeGreaterThanOrEqual(11);
       }
     }
     // The later waves bring the siege engines.
     expect(
-      waves.map(
-        (wave) => wave.units.filter((unit) => unit.role === "CATAPULT").length,
-      ),
-    ).toEqual([1, 1, 2, 2, 2, 1]);
+      waves
+        .filter((wave) => !behindYou.includes(wave))
+        .map(
+          (wave) =>
+            wave.units.filter((unit) => unit.role === "CATAPULT").length,
+        ),
+    ).toEqual([1, 1, 2, 2, 2, 1, 2, 2, 2, 2]);
   });
 });
 

@@ -602,7 +602,7 @@ describe("Chapter One data", () => {
     // three native cities and the Baron's port, on a bigger board with a
     // longer clock.
     const island = mission("FRONTIER_7");
-    expect(island.revision).toBe(2);
+    expect(island.revision).toBe(3);
     expect(island.size).toBe(20);
     expect(island.source?.mapType).toBe("ARCHIPELAGO");
     expect(island.source?.seed).toBe(2);
@@ -633,8 +633,10 @@ describe("Chapter One data", () => {
     expect(seat(island, 2).forbiddenTechnologies).toContain(
       "NAVAL_ENGINEERING",
     );
-    // The Baron has a Port and a ship, holds his island until round 16 and
-    // then makes for the Crater; his landing of round 14 brings another.
+    // The Baron has a Port and a ship. Revision 3 (`pulp_wars-v642.10`, the
+    // danger pass): he raids Coldharbour from round 7 to 11 with a landing
+    // party on your spur, holds his island again until round 16, and then
+    // makes for the Crater; his landing of round 14 brings another ship.
     expect(island.improvements).toContainEqual({
       at: { x: 15, y: 6 },
       improvement: "PORT",
@@ -646,16 +648,37 @@ describe("Chapter One data", () => {
       {
         kind: "HOLD",
         zone: [{ x0: 12, y0: 0, x1: 19, y1: 7 }],
+        untilRound: 7,
+      },
+      { kind: "ASSAULT", target: { x: 4, y: 5 }, untilRound: 12 },
+      {
+        kind: "HOLD",
+        zone: [{ x0: 12, y0: 0, x1: 19, y1: 7 }],
         untilRound: 16,
       },
       { kind: "ASSAULT", target: { x: 7, y: 15 } },
     ]);
-    expect(island.reinforcements).toHaveLength(1);
-    expect(island.reinforcements?.[0]?.seat).toBe(2);
-    expect(island.reinforcements?.[0]?.round).toBe(14);
+    // He knows Coldharbour from the start (an assault marches only on a
+    // known city).
+    expect(seat(island, 2).reveal.rects).toContainEqual({
+      x0: 3,
+      y0: 4,
+      x1: 5,
+      y1: 6,
+    });
     expect(
-      island.reinforcements?.[0]?.units.map((unit) => unit.role),
-    ).toContain("PATROL_BOAT");
+      island.reinforcements?.map((wave) => [
+        wave.seat,
+        wave.round,
+        wave.units.map((unit) => unit.role),
+      ]),
+    ).toEqual([
+      [2, 7, ["FIGHTER", "MARKSMAN"]],
+      [2, 14, ["FIGHTER", "FIGHTER", "MARKSMAN", "GUARD", "PATROL_BOAT"]],
+    ]);
+    // The raiders come ashore on your spur, beside Hjorna's village.
+    for (const unit of island.reinforcements?.[0]?.units ?? [])
+      expect(unit.at.y).toBeLessThanOrEqual(8);
     // The Crater is the Dinosaur town on the shore that faces you, kept by
     // a garrison of three, and the strait is water on every column.
     const crater = island.landmarks?.find((mark) => mark.tag === "CRATER");
@@ -732,13 +755,15 @@ describe("Chapter One data", () => {
       "FORESTRY",
     ] as const)
       expect(martians.forbiddenTechnologies).toContain(technology);
-    // The thralls keep their camps until round 10, then assault the nest;
-    // three waves of three follow them.
+    // Revision 3 (`pulp_wars-v642.10`, the danger pass): the thralls keep
+    // their camps only until round 3, then assault the nest; three waves of
+    // three follow them, from round 6.
+    expect(hunt.revision).toBe(3);
     expect(seat(hunt, 2).directive).toEqual([
       {
         kind: "HOLD",
         zone: [{ x0: 2, y0: 12, x1: 12, y1: 14 }],
-        untilRound: 10,
+        untilRound: 3,
       },
       { kind: "ASSAULT", target: { x: 4, y: 3 } },
     ]);
@@ -749,9 +774,9 @@ describe("Chapter One data", () => {
         wave.units.length,
       ]),
     ).toEqual([
-      [2, 10, 3],
-      [2, 16, 3],
-      [2, 22, 3],
+      [2, 6, 3],
+      [2, 12, 3],
+      [2, 18, 3],
     ]);
     expect(() => validateMissionDirectivesV7(hunt)).not.toThrow();
   });
@@ -785,8 +810,9 @@ describe("Chapter One data", () => {
     ).toBe("JUGGERNAUT");
     // Riftwatch is a neutral village at the start.
     expect(rescue.villages).toContainEqual({ x: 5, y: 14 });
-    // The ally holds the land of its two cities; the besiegers rush, the
-    // Goblins from round 4.
+    // The ally holds the land of its two cities; the Undead rush, and the
+    // Goblins storm Sugarcrest from round 4 (revision 3, `pulp_wars-v642.10`:
+    // they rushed, and stood off the walls).
     expect(seat(rescue, 1).directive).toEqual({
       kind: "HOLD",
       zone: [
@@ -795,9 +821,19 @@ describe("Chapter One data", () => {
       ],
     });
     expect(seat(rescue, 2).directive).toEqual({ kind: "RUSH" });
-    expect(
-      missionSeatDirectivesV7(seat(rescue, 3)).map((entry) => entry.kind),
-    ).toEqual(["HOLD", "RUSH"]);
+    expect(missionSeatDirectivesV7(seat(rescue, 3))).toEqual([
+      {
+        kind: "HOLD",
+        zone: [{ x0: 10, y0: 12, x1: 15, y1: 15 }],
+        untilRound: 4,
+      },
+      { kind: "ASSAULT", target: { x: 7, y: 8 } },
+    ]);
+    // Revision 3: no Confectioner in the kingdom.
+    expect(rescue.revision).toBe(3);
+    expect(seat(rescue, 1).units.map((unit) => unit.role)).not.toContain(
+      "CAPTAIN",
+    );
     // A band of Rift cuts your strip off: seven tiles in one column.
     const rift = rescue.terrain.flatMap((row, y) =>
       [...row].flatMap((cell, x) =>
@@ -814,6 +850,14 @@ describe("Chapter One data", () => {
       [3, 10],
       [2, 12],
       [3, 12],
+      // Revision 3: the dead rise in your strip, and two more waves of
+      // both besiegers come with siege engines.
+      [2, 5],
+      [2, 10],
+      [2, 9],
+      [3, 9],
+      [2, 11],
+      [3, 11],
     ]);
 
     // Mission 10: the Humans and the Goblins against the Cultists and the
@@ -851,7 +895,25 @@ describe("Chapter One data", () => {
       zone: [{ x0: 8, y0: 0, x1: 12, y1: 4 }],
       garrison: 8,
     });
-    expect(seat(finale, 3).directive).toEqual({ kind: "RUSH" });
+    // Revision 5 (`pulp_wars-v642.10`, the danger pass): the thralls storm
+    // Northwatch from the first round.
+    expect(finale.revision).toBe(5);
+    expect(seat(finale, 3).directive).toEqual({
+      kind: "ASSAULT",
+      target: { x: 4, y: 8 },
+    });
+    expect(seat(finale, 0).cities[1]).toMatchObject({
+      name: "Northwatch",
+      at: { x: 4, y: 8 },
+    });
+    // The four villages within an easy walk of your towns are gone.
+    for (const at of [
+      { x: 1, y: 8 },
+      { x: 3, y: 16 },
+      { x: 7, y: 17 },
+      { x: 10, y: 14 },
+    ])
+      expect(finale.villages).not.toContainEqual(at);
     // The Cult meets the player with what makes it the Cult: Favour for
     // the first summons, two Summoners, the Great Summoning known, and no
     // Offering (its Favour is paid in blood). Revision 4 (the Cult
@@ -884,9 +946,8 @@ describe("Chapter One data", () => {
     expect(
       finale.reinforcements?.map((wave) => [wave.seat, wave.round]),
     ).toEqual([
-      [3, 6],
-      [3, 12],
-      [3, 18],
+      [3, 5],
+      [3, 10],
       [2, 8],
       [2, 12],
       [2, 17],

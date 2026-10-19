@@ -216,12 +216,12 @@ export const CHAPTER_ONE_V7: CampaignChapterV7 = Object.freeze({
       name: "The Island That Time Forgot",
       format: "CAPTURE",
       briefing:
-        "A star fell on an island no chart admits to, and the Baron's ships are already under sail. The Ice Folk have one cold town and no ships, but they walk on the sea they freeze. Grow, cross, and take the crater before the Baron does. Mind the natives. They have teeth.",
+        "A star fell on an island no chart admits to, and the Baron's ships are already under sail. The Ice Folk have one cold town and no ships, but they walk on the sea they freeze. Hold your shore when his raiders land, then grow, cross, and take the crater before the Baron does. Mind the natives. They have teeth.",
       objective: "Capture the Crater by turn 30.",
       hints: Object.freeze([
         "Rime freezes the shallows; Pack Ice the deep water.",
-        "Whoever steps on your ice freezes. Giants shatter them.",
-        "Level 5 cities send Frost Giants. The Baron lands turn 14.",
+        "Raiders land on turn 7. A Musk Ox freezes its attackers.",
+        "Level 5 cities send Frost Giants. They shatter the frozen.",
       ]),
       closing:
         "In the crater lies a ship of glass and brass, and around it the great beasts keep watch like dogs at a door. They let you pass. Whatever is inside, they hate it more than they hate you.",
@@ -234,12 +234,12 @@ export const CHAPTER_ONE_V7: CampaignChapterV7 = Object.freeze({
       name: "Brain Wave",
       format: "KILL",
       briefing:
-        "The thing in the glass ship is awake. It calls itself the Overmind, its saucers hold the crater, and the Baron's men march in step for it. All the island has left is one nest and a young queen. Hatch an army first, then hunt it down before it finishes its signal, and keep your wounded away from that brain.",
+        "The thing in the glass ship is awake. It calls itself the Overmind, its saucers hold the crater, and the Baron's men are already marching on your nest. All the island has left is one nest and a young queen. Let her feed on the marchers, then hunt the Overmind down before it finishes its signal. Never leave anyone standing beside that brain.",
       objective: "Kill the Overmind by turn 26.",
       hints: Object.freeze([
-        "One nest won't do it: take the villages, then grow.",
+        "The thralls march at once. Let the Queen eat them.",
         "The crater has one gate. Climbers have more.",
-        "Feed the Queen small prey: an Alpha bites through walls.",
+        "Beside the brain, strike to kill or be taken.",
       ]),
       closing:
         "The Overmind bursts like a wet lantern, and every Martian on the island blinks. Their captain salutes with three hands. 'We were not invading. We were answering. Someone here has been calling the stars.'",
@@ -255,11 +255,11 @@ export const CHAPTER_ONE_V7: CampaignChapterV7 = Object.freeze({
       name: "Sugar and Spite",
       format: "ALLY",
       briefing:
-        "The call tore a hole in the world, and a kingdom fell out of it: Sugarcrest, soft, sweet and besieged. The Rift is closing. If Sugarcrest falls before it shuts, whatever is on the other side comes through instead. Only wings cross a Rift, and the Martians have saucers.",
+        "The call tore a hole in the world, and a kingdom fell out of it: Sugarcrest, soft, sweet and besieged. The Rift is closing. If Sugarcrest falls before it shuts, whatever is on the other side comes through instead. Only wings cross a Rift, and the Martians have saucers. Even your side is not safe: the dead are rising there too.",
       objective: "Hold Sugarcrest for 16 turns.",
       hints: Object.freeze([
         "Sugarcrest's land is closed to you: fight in front of it.",
-        "Only flyers cross the Rift. Saucers carry the rest over.",
+        "The dead rise behind you too: keep a guard at home.",
         "Siege engines outrange walls: hunt them with Saucers.",
       ]),
       closing:
@@ -277,7 +277,7 @@ export const CHAPTER_ONE_V7: CampaignChapterV7 = Object.freeze({
       name: "The Stars Are Right",
       format: "CAPTURE",
       briefing:
-        "The Lodge of the Unblinking Eye stands on the summit where the bell was cast, and tonight the stars are right. Every toll, every soldier its daemons take and every cultist offered up feeds the Great Summoning. At the twenty-fourth toll the door opens. Steele has her army, Grubnak his horde, and the dead still rise at Hollow Barrow. Take the Lodge first.",
+        "The Lodge of the Unblinking Eye stands on the summit where the bell was cast, and tonight the stars are right. Every toll, every soldier its daemons take and every cultist offered up feeds the Great Summoning. At the twenty-fourth toll the door opens. Steele has her army, Grubnak his horde, and the dead of Hollow Barrow are already marching on Northwatch. Take the Lodge first.",
       objective: "Capture the Lodge by turn 24.",
       hints: Object.freeze([
         "The Lodge's Favour is the countdown: at 18, the Herald.",

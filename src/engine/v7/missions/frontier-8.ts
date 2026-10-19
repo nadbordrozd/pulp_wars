@@ -15,6 +15,16 @@ import type { MissionDefinitionV7 } from "./types";
  * rounds. Revision 1 was won on autopilot in round 7: its Brontosaurus
  * walked the Rim alone and stepped on the Overmind.
  *
+ * Revision 3 (the danger pass, `pulp_wars-v642.10`, CAMPAIGN.md section
+ * 11.19): the thralls march on the nest from round 3 (they held their camps
+ * until round 10), and their waves of three come in rounds 6, 12 and 18
+ * (were 10, 16 and 22). The early assault is the young Queen's food: fed on
+ * it she is an Alpha by round 8. Since the Bolder abilities (`7r99`) a
+ * Brain takes over any unit beside it, the Old Queen included, so whoever
+ * steps next to the Overmind must kill it in the same turn. Hand-played:
+ * lost on autopilot (eliminated in round 19), won in round 22 with two
+ * stars.
+ *
  * The board is the map generator's (Pangea, seed 2): the crater is the
  * basin in the eastern mountains, and for anything that cannot climb it
  * has one gate, in the south. The Rim (the peaks north of the crater; the
@@ -56,7 +66,7 @@ import type { MissionDefinitionV7 } from "./types";
  */
 export const FRONTIER_8_V7: MissionDefinitionV7 = {
   id: "FRONTIER_8",
-  revision: 2,
+  revision: 3,
   seed: 20261108,
   // <map>
   size: 16,
@@ -278,12 +288,14 @@ export const FRONTIER_8_V7: MissionDefinitionV7 = {
         "SAWMILLING",
         "PLANNING",
       ],
-      // They keep the south first; from round 10 they march on the nest.
+      // Revision 3 (`pulp_wars-v642.10`, the danger pass): they march on the
+      // nest from round 3 (it was 10), and their waves come in rounds 6, 12
+      // and 18 (were 10, 16 and 22).
       directive: [
         {
           kind: "HOLD",
           zone: [{ x0: 2, y0: 12, x1: 12, y1: 14 }],
-          untilRound: 10,
+          untilRound: 3,
         },
         { kind: "ASSAULT", target: { x: 4, y: 3 } },
       ],
@@ -301,7 +313,7 @@ export const FRONTIER_8_V7: MissionDefinitionV7 = {
   reinforcements: [
     {
       seat: 2,
-      round: 10,
+      round: 6,
       units: [
         { role: "FIGHTER", at: { x: 6, y: 12 } },
         { role: "FIGHTER", at: { x: 6, y: 12 } },
@@ -310,7 +322,7 @@ export const FRONTIER_8_V7: MissionDefinitionV7 = {
     },
     {
       seat: 2,
-      round: 16,
+      round: 12,
       units: [
         { role: "FIGHTER", at: { x: 6, y: 12 } },
         { role: "FIGHTER", at: { x: 6, y: 12 } },
@@ -319,7 +331,7 @@ export const FRONTIER_8_V7: MissionDefinitionV7 = {
     },
     {
       seat: 2,
-      round: 22,
+      round: 18,
       units: [
         { role: "FIGHTER", at: { x: 6, y: 12 } },
         { role: "FIGHTER", at: { x: 6, y: 12 } },

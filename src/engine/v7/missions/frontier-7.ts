@@ -22,6 +22,15 @@ import type { MissionDefinitionV7 } from "./types";
  * is frozen. The Baron holds his island until round 16 and then races you
  * for the Crater; his landing party comes ashore beside it in round 14.
  *
+ * Revision 3 (the danger pass, `pulp_wars-v642.10`, CAMPAIGN.md section
+ * 11.19) adds a raid: in round 7 a landing party of the Baron (a Fighter
+ * and a Marksman) comes ashore on your spur, beside Hjorna, and the Baron
+ * storms Coldharbour until round 12 before he holds his island again.
+ * Hand-played on `7r100` (the ice redesign): lost on autopilot (out of
+ * time), won in round 28 with two stars. A raid of three with a second
+ * landing in round 11, or an assault until round 16, took Hjorna and
+ * starved the build-up (two games abandoned).
+ *
  * The board is the map generator's (Archipelago 20, seed 2): your island in
  * the north-west, the Baron's in the north-east, and the island of the
  * Dinosaurs in the south. A spur of your island runs down to the strait;
@@ -57,7 +66,7 @@ import type { MissionDefinitionV7 } from "./types";
  */
 export const FRONTIER_7_V7: MissionDefinitionV7 = {
   id: "FRONTIER_7",
-  revision: 2,
+  revision: 3,
   seed: 20261107,
   // <map>
   size: 20,
@@ -300,7 +309,14 @@ export const FRONTIER_7_V7: MissionDefinitionV7 = {
       ],
       // The Baron's charts: the Crater (an ASSAULT marches only on a city
       // its seat knows).
-      reveal: { radius: 2, rects: [{ x0: 6, y0: 14, x1: 8, y1: 16 }] },
+      // Revision 3: and Coldharbour, which he raids first.
+      reveal: {
+        radius: 2,
+        rects: [
+          { x0: 6, y0: 14, x1: 8, y1: 16 },
+          { x0: 3, y0: 4, x1: 5, y1: 6 },
+        ],
+      },
       // Patrol Boats and transports, no Battleship; and no giant: no Lumber
       // Camp, Farm, Land Grant or Blast Mountain (hand play: with four
       // cities and Lumber Camps the expedition shipped two Juggernauts to
@@ -317,7 +333,18 @@ export const FRONTIER_7_V7: MissionDefinitionV7 = {
       // whole expedition sailed for your island, the nearest hostile city,
       // and blockaded your ports from round 13 on): he holds his island
       // until round 16 and then storms the Crater.
+      // Revision 3 (`pulp_wars-v642.10`, the danger pass): a raid. A
+      // landing party comes ashore on your spur in round 7 (below) and
+      // storms Coldharbour until round 12; then he holds his island again
+      // until round 16 (hand play: an assault until round 16 shipped his
+      // whole garrison to your island and starved the build-up).
       directive: [
+        {
+          kind: "HOLD",
+          zone: [{ x0: 12, y0: 0, x1: 19, y1: 7 }],
+          untilRound: 7,
+        },
+        { kind: "ASSAULT", target: { x: 4, y: 5 }, untilRound: 12 },
         {
           kind: "HOLD",
           zone: [{ x0: 12, y0: 0, x1: 19, y1: 7 }],
@@ -329,8 +356,18 @@ export const FRONTIER_7_V7: MissionDefinitionV7 = {
   ],
   forbiddenTechnologies: [],
   landmarks: [{ tag: "CRATER", at: { x: 7, y: 15 } }],
-  // The Baron's landing party, on the shore east of the Crater.
+  // The Baron's landing parties: on your spur, and on the shore east of
+  // the Crater.
   reinforcements: [
+    // Revision 3: the Baron's raiders land on the spur of your island.
+    {
+      seat: 2,
+      round: 7,
+      units: [
+        { role: "FIGHTER", at: { x: 7, y: 7 } },
+        { role: "MARKSMAN", at: { x: 8, y: 8 } },
+      ],
+    },
     {
       seat: 2,
       round: 14,

@@ -987,13 +987,15 @@ describe("natural maps", () => {
     // since missions 5 and 6, `pulp_wars-v642.2`: a three-seat board has
     // more villages to take away from the AI seats; it was eight.) The
     // four-seat boards (`pulp_wars-v642.4`) remove a village under each of
-    // their six or seven cities, and mission 9 has its band of Rift.
+    // their six or seven cities, and mission 9 has its band of Rift. The
+    // danger pass (`pulp_wars-v642.10`) takes from mission 10 the four
+    // villages within an easy walk of your towns.
     const mostEdits: Readonly<Record<string, number>> = {
       // The danger pass (`pulp_wars-v642.10`): five more villages gone, so
       // the Goblins walk for their slots and the dead do not snowball.
       FRONTIER_3: 11,
       FRONTIER_9: 17,
-      FRONTIER_10: 13,
+      FRONTIER_10: 17,
     };
     const terrainEdits: Readonly<Record<string, number>> = {
       // Bone Neck.
