@@ -72,7 +72,8 @@
         "width": 72,
         "height": 72
       },
-      "ownerColour": false
+      "ownerColour": false,
+      "subjectKey": "IMPROVEMENT:ICE_FOLK:PORT/HARBOUR"
     },
     {
       "id": "chibi-ice-folk-shipyard",
@@ -83,11 +84,23 @@
         "width": 72,
         "height": 72
       },
-      "ownerColour": false
+      "ownerColour": false,
+      "subjectKey": "IMPROVEMENT:ICE_FOLK:SHIPYARD/HARBOUR"
     },
     {
       "id": "chibi-ice-folk-market",
       "subject": "IMPROVEMENT:ICE_FOLK:MARKET",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-ice-folk-fishing-hole",
+      "subject": "IMPROVEMENT:ICE_FOLK:FISHING_HOLE",
       "assetClass": "BUILDING",
       "recipeClass": "calm-feature",
       "canvas": {
@@ -202,6 +215,78 @@
         "height": 72
       },
       "notes": "Bead pulp_wars-eu3r.1 (the user, 2026-10-08: faction Markets in the polish batch). First sample of the ICE FOLK Market: class calm-feature at the 72 x 72 canvas of the shared building, two open stalls heaped with goods in the faction's materials, like the shared Market."
+    },
+    {
+      "id": "ice-harbour-a",
+      "asset": "chibi-ice-folk-port",
+      "endpoint": "generate-image-v2",
+      "seed": 27101,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "negativeAddendum": "pier, jetty, wooden posts, water, waves, boat, ship, people",
+      "notes": "Bead pulp_wars-5ti.27 (RULESET_7_ICE_REDESIGN.md section 4.2): the Ice Harbour, the Ice Folk Port redrawn to stand on its own ice: a low ice-block boathouse, a sled and a fish rack, no pier on water."
+    },
+    {
+      "id": "ice-harbour-b",
+      "asset": "chibi-ice-folk-port",
+      "endpoint": "generate-image-v2",
+      "seed": 27102,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "negativeAddendum": "pier, jetty, wooden posts, water, waves, boat, ship, people",
+      "notes": "A second seed of ice-harbour-a."
+    },
+    {
+      "id": "great-harbour-a",
+      "asset": "chibi-ice-folk-shipyard",
+      "endpoint": "generate-image-v2",
+      "seed": 27111,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "negativeAddendum": "pier, jetty, wooden posts, water, waves, boat, ship, people, crane",
+      "notes": "Bead pulp_wars-5ti.27 (RULESET_7_ICE_REDESIGN.md section 4.2): the Great Harbour, the Ice Folk Shipyard redrawn to stand on its own ice: a bigger ice hall with fur banners and a crystal on the ridge."
+    },
+    {
+      "id": "great-harbour-b",
+      "asset": "chibi-ice-folk-shipyard",
+      "endpoint": "generate-image-v2",
+      "seed": 27112,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "negativeAddendum": "pier, jetty, wooden posts, water, waves, boat, ship, people, crane",
+      "notes": "A second seed of great-harbour-a."
+    },
+    {
+      "id": "fishing-hole-a",
+      "asset": "chibi-ice-folk-fishing-hole",
+      "endpoint": "generate-image-v2",
+      "seed": 27121,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "negativeAddendum": "grass, soil, sand, boat, ship, people, igloo, house",
+      "notes": "Bead pulp_wars-5ti.27 (RULESET_7_ICE_REDESIGN.md section 4.2): the Fishing Hole, the Ice Folk's new basic building on ice: a round hole in a slab, a drying rack with two fish and a fur stool."
+    },
+    {
+      "id": "fishing-hole-b",
+      "asset": "chibi-ice-folk-fishing-hole",
+      "endpoint": "generate-image-v2",
+      "seed": 27122,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "negativeAddendum": "grass, soil, sand, boat, ship, people, igloo, house",
+      "notes": "A second seed of fishing-hole-a."
     }
   ]
 }

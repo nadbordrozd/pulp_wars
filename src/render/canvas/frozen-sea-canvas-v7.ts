@@ -204,6 +204,68 @@ export function drawSeaIceCellV7(
 }
 
 /**
+ * The packed-snow pad under a building on ice (the frozen sea redesign,
+ * RULESET_7_ICE_REDESIGN.md section 4.1, bead pulp_wars-5ti.27): a flat
+ * ellipse of snow with a blue-grey rim, so the building sits on the sheet
+ * instead of floating over it. In world units of the 128-unit tile.
+ */
+export const ICE_BUILDING_PAD_V7 = {
+  fill: "#eef4f7",
+  rim: "#b9c9d3",
+  /** Its shadow side (the light comes from the south-west). */
+  shade: "#d5e1e8",
+  radiusX: 52,
+  radiusY: 26,
+  /** Below the cell's centre, where a building's foot stands. */
+  offsetY: 22,
+  rimWidth: 3,
+} as const;
+
+/** The packed-snow pad of a building on ice, centred on the cell (x, y). */
+export function drawIceBuildingPadV7(
+  context: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  zoom: number,
+  options: { readonly sceneAlpha?: number; readonly highContrast?: boolean },
+): void {
+  const pad = ICE_BUILDING_PAD_V7;
+  const cx = x;
+  const cy = y + pad.offsetY * zoom;
+  const rx = pad.radiusX * zoom;
+  const ry = pad.radiusY * zoom;
+  context.save();
+  context.globalAlpha = options.sceneAlpha ?? 1;
+  context.setLineDash([]);
+  context.fillStyle = pad.fill;
+  context.beginPath();
+  context.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+  context.fill();
+  // The side away from the light (north-east) a shade darker.
+  context.fillStyle = pad.shade;
+  context.beginPath();
+  context.ellipse(cx, cy, rx, ry, 0, Math.PI * 1.25, Math.PI * 1.95);
+  context.ellipse(
+    cx + rx * 0.12,
+    cy - ry * 0.12,
+    rx * 0.82,
+    ry * 0.72,
+    0,
+    Math.PI * 1.95,
+    Math.PI * 1.25,
+    true,
+  );
+  context.closePath();
+  context.fill();
+  context.strokeStyle = options.highContrast === true ? "#10131c" : pad.rim;
+  context.lineWidth = Math.max(1, pad.rimWidth * zoom);
+  context.beginPath();
+  context.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+  context.stroke();
+  context.restore();
+}
+
+/**
  * The slide arrow's weight (`pulp_wars-5ti.10`): the casing's width in
  * world units and its floor in canvas pixels. At the desktop's zoom steps
  * (a camera zoom of 0.47 and 0.625) the first arrow was a 4 to 7 px

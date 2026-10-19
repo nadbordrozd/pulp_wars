@@ -1892,6 +1892,112 @@
       "maxSeconds": 0.7
     },
     {
+      "id": "special.ice-crack",
+      "takes": [
+        {
+          "n": 101,
+          "round": 1,
+          "take": 1,
+          "measured": {
+            "rawSeconds": 1.6,
+            "rawPeakDbfs": 0,
+            "clippedShare": 0.00017,
+            "clippedRunShare": 0,
+            "leadMs": 45,
+            "leadInShare": 0.0031,
+            "trimStartSeconds": 0.085,
+            "trimEndSeconds": 1.017,
+            "trimmedSeconds": 0.932,
+            "onsetMs": 10,
+            "tailMs": 110,
+            "energyPastLength": 0.0002,
+            "clipSeconds": 0.8,
+            "storedLufs": -22.9,
+            "crestDb": 24.4,
+            "centroidHz": 5244,
+            "bands": [0.001, 0.398, 0.254, 0.346],
+            "shape": [
+              -8, -37, -38, -44, -26, 0, -17, -33, -26, -26, -32, -10, -31, -18,
+              -43, -60
+            ]
+          },
+          "failures": [],
+          "pass": true,
+          "score": 0.782
+        },
+        {
+          "n": 102,
+          "round": 1,
+          "take": 2,
+          "measured": {
+            "rawSeconds": 1.6,
+            "rawPeakDbfs": 0,
+            "clippedShare": 0.00001,
+            "clippedRunShare": 0,
+            "leadMs": 0,
+            "leadInShare": 0.0139,
+            "trimStartSeconds": 0.105,
+            "trimEndSeconds": 1.208,
+            "trimmedSeconds": 1.102,
+            "onsetMs": 10,
+            "tailMs": 331,
+            "energyPastLength": 0.001,
+            "clipSeconds": 0.8,
+            "storedLufs": -23.9,
+            "crestDb": 26.5,
+            "centroidHz": 6526,
+            "bands": [0.001, 0.129, 0.459, 0.41],
+            "shape": [
+              -3, 0, -4, -13, -6, -25, -23, -2, -27, -11, -28, -24, -32, -43,
+              -33, -47
+            ]
+          },
+          "failures": [],
+          "pass": true,
+          "score": 0.966
+        },
+        {
+          "n": 103,
+          "round": 1,
+          "take": 3,
+          "measured": {
+            "rawSeconds": 1.6,
+            "rawPeakDbfs": 0,
+            "clippedShare": 0.00075,
+            "clippedRunShare": 0.00058,
+            "leadMs": 55,
+            "leadInShare": 0.0046,
+            "trimStartSeconds": 0.1,
+            "trimEndSeconds": 0.471,
+            "trimmedSeconds": 0.371,
+            "onsetMs": 10,
+            "tailMs": 60,
+            "energyPastLength": 0,
+            "clipSeconds": 0.374,
+            "storedLufs": -20,
+            "crestDb": 17.1,
+            "centroidHz": 967,
+            "bands": [0.038, 0.764, 0.155, 0.043],
+            "shape": [
+              0, -1, -16, -33, -39, -46, -48, -45, -39, -39, -36, -31, -33, -8,
+              -28, -36
+            ]
+          },
+          "failures": [],
+          "pass": true,
+          "score": 0.509
+        }
+      ],
+      "kept": [103, 101, 102],
+      "offered": [],
+      "retired": [],
+      "confidence": "high",
+      "why": "#103 scored best (0.509) of 3 kept: 0.374 s for a range of 0.2–0.8 s, onset 10 ms, tail 60 ms, centred near 967 Hz; the next, #101, scored 0.782.",
+      "kind": "burst",
+      "minSeconds": 0.2,
+      "maxSeconds": 0.8
+    },
+    {
       "id": "impact.splat",
       "takes": [
         {

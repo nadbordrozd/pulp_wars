@@ -108,6 +108,8 @@ const BRANCH_IDS = [
   "chibi-ice-deep-1",
   "chibi-ice-deep-2",
   "chibi-overlay-icebound",
+  // The frozen sea redesign (bead pulp_wars-5ti.27): the Crack Ice icon.
+  "chibi-icon-action-crack-ice",
 ] as const;
 
 describe("naval branch art (pulp_wars-5ti.6)", () => {
@@ -340,6 +342,7 @@ describe("naval branch art (pulp_wars-5ti.6)", () => {
       ["ICON:ACTION:RAM", "chibi-icon-action-ram"],
       ["ICON:ACTION:BOARD", "chibi-icon-action-board"],
       ["ICON:ACTION:TORPEDO", "chibi-icon-action-torpedo"],
+      ["ICON:ACTION:CRACK_ICE", "chibi-icon-action-crack-ice"],
     ];
     for (const [subject, id] of icons) {
       expect(

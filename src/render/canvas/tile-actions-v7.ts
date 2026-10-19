@@ -48,7 +48,10 @@ import {
   FROST_BOLT_LABEL_V7,
   STAMPEDE_LABEL_V7,
 } from "../ice-folk-presentation-v7";
-import { FREEZE_LABEL_V7 } from "../frozen-sea-presentation-v7";
+import {
+  CRACK_ICE_LABEL_V7,
+  FREEZE_LABEL_V7,
+} from "../frozen-sea-presentation-v7";
 import {
   ASSEMBLE_LABEL_V7,
   BARRICADE_LABEL_V7,
@@ -116,10 +119,10 @@ export const TILE_ACTION_COMMAND_CLASSES_V7: Readonly<
   STAMPEDE: "AIMED",
   // A line role's Freeze is aimed; the Ice Witch's ring is not (bar only).
   FREEZE: "AIMED",
-  // The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 4.1): Crack
-  // Ice will pick its tile on the board (AIMED) once bead pulp_wars-5ti.27
-  // gives it its dock button and icon; until then no interface offers it.
-  CRACK_ICE: "BAR_ONLY",
+  // The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 4.1, bead
+  // pulp_wars-5ti.27): Crack Ice has one dock button; its tile is picked on
+  // the board.
+  CRACK_ICE: "AIMED",
   TUNNEL: "AIMED",
   BOMB_RUN: "AIMED",
   ASSEMBLE: "AIMED",
@@ -369,6 +372,18 @@ export const TILE_ABILITIES_V7: readonly TileAbilityV7[] = [
       const unit = view.units.find((candidate) => candidate.id === unitId);
       return unit !== undefined && !freezesRingV7(view, unit);
     },
+  },
+  // The frozen sea redesign (bead pulp_wars-5ti.27): every other faction's
+  // unit or ship cracks the ice next to it.
+  {
+    id: "CRACK_ICE",
+    label: CRACK_ICE_LABEL_V7,
+    icon: "ice-pick",
+    raster: "ICON:ACTION:CRACK_ICE",
+    dockAction: "crack-ice",
+    families: ["CRACK_ICE"],
+    offered: kind("CRACK_ICE"),
+    pick: (unitId) => ({ freezePick: { kind: "CRACK_ICE", unitId } }),
   },
   // The Dwarves.
   {

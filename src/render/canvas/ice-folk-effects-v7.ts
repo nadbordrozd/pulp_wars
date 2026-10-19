@@ -50,6 +50,13 @@ export type IceFolkFeedbackEffectV7 =
   | "ICE_MELT"
   | "ICE_CRUSH"
   /**
+   * The frozen sea redesign (bead pulp_wars-5ti.27): Crack Ice. A crack
+   * flashes across thick ice that holds (ICE_CRACK); ice that breaks gives
+   * way into floes after the flash (ICE_BREAK).
+   */
+  | "ICE_CRACK"
+  | "ICE_BREAK"
+  /**
    * The naval branch: a boarded ship's flag changes from its former
    * owner's colour to its captor's (code-drawn, like the cues above; it
    * rides the same overlay step).
@@ -87,6 +94,8 @@ export const ICE_FOLK_EFFECT_DURATIONS_V7: Readonly<
   ICE_FREEZE: 520,
   ICE_MELT: 480,
   ICE_CRUSH: 460,
+  ICE_CRACK: 360,
+  ICE_BREAK: 560,
   PRIZE_FLAG: 560,
 };
 
@@ -662,6 +671,119 @@ export function drawIceFolkFeedbackV7(
       }
       context.restore();
     });
+  } else if (
+    feedback.effect === "ICE_CRACK" ||
+    feedback.effect === "ICE_BREAK"
+  ) {
+    // Crack Ice (the frozen sea redesign): a white flash at the tile's
+    // heart, a jagged crack racing across it, two chips flung up; ice that
+    // breaks then drifts apart into floes, as ICE_MELT draws them.
+    const size = 128 * zoom;
+    const breaks = feedback.effect === "ICE_BREAK";
+    const crackEnd = breaks ? 0.45 : 1;
+    const local = clamp01(progress / crackEnd);
+    for (const at of feedback.cells) {
+      const point = centre(at);
+      context.save();
+      // The flash.
+      context.globalAlpha *= (1 - local) * 0.8;
+      context.fillStyle = "#ffffff";
+      context.beginPath();
+      context.arc(
+        point.x,
+        point.y,
+        size * (0.12 + 0.18 * local),
+        0,
+        Math.PI * 2,
+      );
+      context.fill();
+      context.restore();
+      // The crack: a zigzag from one side of the tile to the other, drawn
+      // out over the first part of the cue, then fading.
+      const zig: readonly (readonly [number, number])[] = [
+        [-0.42, -0.1],
+        [-0.22, 0.06],
+        [-0.06, -0.08],
+        [0.1, 0.1],
+        [0.26, -0.04],
+        [0.42, 0.12],
+      ];
+      const reach = clamp01(local / 0.5) * (zig.length - 1);
+      const whole = Math.floor(reach);
+      const crack = zig.slice(0, whole + 1).map(([zx, zy]) => [zx, zy]);
+      const from = zig[whole];
+      const to = zig[whole + 1];
+      if (from !== undefined && to !== undefined && reach > whole)
+        crack.push([
+          from[0] + (to[0] - from[0]) * (reach - whole),
+          from[1] + (to[1] - from[1]) * (reach - whole),
+        ]);
+      context.save();
+      context.globalAlpha *= breaks
+        ? 1 - clamp01((progress - crackEnd * 0.8) / 0.25)
+        : 1 - clamp01((local - 0.6) / 0.4);
+      context.lineCap = "round";
+      context.lineJoin = "round";
+      for (const [colour, width] of [
+        ["#ffffff", 7],
+        [iceDark, 3.5],
+      ] as const) {
+        context.strokeStyle = colour;
+        context.lineWidth = Math.max(1, width * zoom);
+        context.beginPath();
+        crack.forEach(([px = 0, py = 0], index) => {
+          const x = point.x + px * size;
+          const y = point.y + py * size;
+          if (index === 0) context.moveTo(x, y);
+          else context.lineTo(x, y);
+        });
+        context.stroke();
+      }
+      // Two chips flung up and to the sides.
+      context.fillStyle = icePale;
+      context.strokeStyle = iceDark;
+      context.lineWidth = Math.max(1, 1.5 * zoom);
+      for (const side of [-1, 1] as const) {
+        const lift = Math.sin(local * Math.PI) * 26 * zoom;
+        const chip = 7 * zoom;
+        const cx = point.x + side * (8 + 22 * local) * zoom;
+        const cy = point.y - lift;
+        context.beginPath();
+        context.moveTo(cx, cy - chip);
+        context.lineTo(cx + chip, cy);
+        context.lineTo(cx, cy + chip * 0.6);
+        context.lineTo(cx - chip * 0.8, cy);
+        context.closePath();
+        context.fill();
+        context.stroke();
+      }
+      context.restore();
+      if (breaks && progress > crackEnd * 0.8) {
+        // The ice gives way: floes drift apart over the open water.
+        const melt = clamp01(
+          (progress - crackEnd * 0.8) / (1 - crackEnd * 0.8),
+        );
+        context.save();
+        context.globalAlpha *= (1 - melt) * 0.7;
+        context.fillStyle = icePale;
+        const drift = melt * 14 * zoom;
+        for (const [dx, dy] of [
+          [-1, -1],
+          [1, -1],
+          [-1, 1],
+          [1, 1],
+        ] as const) {
+          const floe = size * (0.4 - 0.18 * melt);
+          context.fillRect(
+            point.x + dx * (size * 0.22 + drift) - floe / 2,
+            point.y + dy * (size * 0.22 + drift) - floe / 2,
+            floe,
+            floe,
+          );
+        }
+        context.restore();
+      }
+    }
   } else if (feedback.effect === "ICE_MELT") {
     // The ice gives way: a fading pale sheet that breaks into drifting
     // floes over the open water.

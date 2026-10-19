@@ -9,8 +9,10 @@ now states the game, section 8 of the
 [naval branch overlay](RULESET_7_NAVAL_BRANCH.md#8-ice-folk-the-frozen-sea)
 is history, and section 11 of the
 [themed naval branches](RULESET_7_NAVAL_FACTIONS.md#11-ice-folk-done)
-("Ice Folk: done") is no longer true. Beads B (the AI) and C (interface,
-art, and sound) are open. No game was played or simulated to write or
+("Ice Folk: done") is no longer true. Bead B (the AI,
+[section 9](#9-bead-b-as-built-pulp_wars-5ti26)) and bead C (interface,
+art, and sound, [section 10](#10-bead-c-as-built-pulp_wars-5ti27)) are
+built. No game was played or simulated to write or
 build it (the user's standing rule); every number is a first guess for
 hand-play tuning.
 
@@ -1054,3 +1056,50 @@ where the design was silent or had to be read:
     seat) were recorded before the change
     (`tests/fixtures/v7-ice-ai-no-ice-folk-decisions.json`) and are
     unchanged.
+
+## 10. Bead C as built (`pulp_wars-5ti.27`)
+
+The interface, art and sound of section 4, on 2026-10-19, with no game
+played or simulated. No rule or number changed (the identity stays
+`pulp-wars-poc-7r100`). Decisions the build made where section 4 was
+silent or had to be read:
+
+1. **Crack Ice shares the Freeze pick.** The board interaction's
+   `freezePick` names its kind (`FREEZE` or `CRACK_ICE`), so Escape, a new
+   selection and the dock's aiming panel treat both alike; the targets are
+   the family `CRACK_ICE` (Attack), with a Help override on a tile that
+   holds an own or allied frozen ship. The tile badge is the
+   `ICON:ACTION:CRACK_ICE` raster (a code glyph `ice-pick` while it loads).
+2. **Labels.** "Break", "Crack · 1 more breaks it", "Free the ship" and,
+   on thick ice over a frozen ship, the shorter "Crack · 1 more frees it"
+   (two neighbouring long labels collided on a phone).
+3. **Reasons.** The first failing row of section 2.9 among: Frozen,
+   already acted (an Attack, a primary action, a Recover or a Capture; a
+   Wait or a Move alone leaves the action unused), "It moved this turn"
+   for a role that cannot act after moving, a unit on the ice, a building
+   on it. An icebound ship keeps only its "Sail" button.
+4. **Every other unit's "?" lists Crack Ice** in a match with an Ice
+   Folk seat (the unit glossary); the Ice Folk Freeze line now says the ice
+   stays and is built on. Building and terrain words (Ice Harbour, Great
+   Harbour, Fishing Hole, thick ice, Black Ice) are on the technology cards,
+   the building lines, the ice chip and `ICE_HELP_RULES_V7`, since the unit
+   glossary is about units.
+5. **The Freeze preview** names the tiles a Freeze takes from another
+   player: "Ice 2 · takes 1" (with mended and Icebound as before).
+6. **Black Ice on the slip legend**: "Ice: your Move ends here (Black Ice
+   freezes)" once the viewer has seen that seat's Black Ice freeze a unit
+   in this match (the public `UNITS_FROZEN` of source `BLACK_ICE`; the
+   memory is per match seed and per session).
+7. **The snow pad** is drawn under every Ice Folk building on ice but the
+   Fishing Hole, which is cut in its own slab of ice.
+8. **Art.** The Ice Harbour and Great Harbour replace the Ice Folk Port
+   and Shipyard masters in place (subject keys `PORT/HARBOUR` and
+   `SHIPYARD/HARBOUR`); the Fishing Hole is `IMPROVEMENT:ICE_FOLK:FISHING_HOLE`
+   and the shared `IMPROVEMENT:FISHING_HOLE` (a captor's) falls back to it.
+   The Crack Ice icon is in batch `naval-branch`.
+9. **Sound.** `special.ice-crack` (the doc's `ice-crack`, named like the
+   other effects), three ElevenLabs takes of the section 4.3 prompt, all
+   passing; the measured default is #103 (0.37 s, a crack with a low
+   splash). It plays on both cues of `ICE_CRACKED`: `ICE_CRACK` (a white
+   flash, a zigzag crack and two chips) for thick ice that holds, and
+   `ICE_BREAK` (the same, then drifting floes) for ice that breaks.

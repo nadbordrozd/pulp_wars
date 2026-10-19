@@ -896,8 +896,11 @@ describe("Ruleset 7 Gallery", () => {
         expect(tileOf(row, faction).ground, `${row} ${faction}`).toBe(
           grounds[faction],
         );
-      expect(tileOf("PORT", faction).ground).toBe("SHALLOW_WATER");
-      expect(tileOf("SHIPYARD", faction).ground).toBe("SHALLOW_WATER");
+      // The frozen sea redesign (bead pulp_wars-5ti.27): the Ice Harbour
+      // and the Great Harbour stand on ice.
+      const dock = faction === "ICE_FOLK" ? "SHALLOW_ICE" : "SHALLOW_WATER";
+      expect(tileOf("PORT", faction).ground).toBe(dock);
+      expect(tileOf("SHIPYARD", faction).ground).toBe(dock);
       expect(tileOf("FARM", faction).fade).toBe("true");
       expect(tileOf("PORT", faction).fade).toBe("true");
       expect(tileOf("CITY_3", faction).fade).toBe("false");

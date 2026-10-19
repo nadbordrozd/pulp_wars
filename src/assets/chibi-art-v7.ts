@@ -718,7 +718,9 @@ export const FACTION_IMPROVEMENT_LOOKS_V7: Readonly<
   GOBLIN: FOREST_AND_TRADE_LOOKS,
   DINOSAUR: ["WINDMILL", ...FOREST_AND_TRADE_LOOKS],
   MARTIAN: ["FARM", "WINDMILL", ...FOREST_AND_TRADE_LOOKS],
-  ICE_FOLK: ["FARM", ...FOREST_AND_TRADE_LOOKS],
+  // The frozen sea redesign (bead pulp_wars-5ti.27): the Fishing Hole is
+  // theirs alone (another faction's falls back to it).
+  ICE_FOLK: ["FARM", ...FOREST_AND_TRADE_LOOKS, "FISHING_HOLE"],
   DWARF: ["FARM", "WINDMILL", ...FOREST_AND_TRADE_LOOKS],
   CANDY: FOREST_AND_TRADE_LOOKS,
   // Bead pulp_wars-mch9.16 (docs/art/factions/CULT.md, Buildings): the
@@ -1130,10 +1132,10 @@ export function chibiFallbackSubjectV7(
   // Classic look) is the shared Monument.
   if (subject.startsWith("IMPROVEMENT:MONUMENT:"))
     return "IMPROVEMENT:MONUMENT";
-  // The frozen sea redesign (`pulp_wars-5ti.25`): STAND-IN. The Fishing
-  // Hole is drawn as the Fish until bead pulp_wars-5ti.27 registers its
-  // own raster.
-  if (subject === "IMPROVEMENT:FISHING_HOLE") return "RESOURCE:FISH";
+  // The frozen sea redesign (bead pulp_wars-5ti.27): only the Ice Folk cut
+  // a Fishing Hole, so a captor's (the shared subject) is drawn in theirs.
+  if (subject === "IMPROVEMENT:FISHING_HOLE")
+    return "IMPROVEMENT:ICE_FOLK:FISHING_HOLE";
   if (subject === "UNIT:DINOSAUR:EGG") return null;
   if (subject === "UNIT:DWARF:MOUND" || subject === "UNIT:DWARF:MOUND_RIDER")
     return null;

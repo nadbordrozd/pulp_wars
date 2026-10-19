@@ -94,6 +94,7 @@ const EVERY_FAMILY: Readonly<
   REBAKE_CRUMBS: "PLACE",
   TOP_UP: "SUPPORT",
   FREEZE: "PLACE",
+  CRACK_ICE: "ATTACK",
   // The giants' signatures (`pulp_wars-w49.32`).
   SWALLOW: "ATTACK",
   STOMP: "ATTACK",

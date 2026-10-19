@@ -257,7 +257,7 @@ describe("Freeze on the board plan", () => {
     const preview = previewFreezeV7(view, yeti.id, { x: 6, y: 3 });
     if (preview === null) throw new Error("preview missing");
     const outcome = freezeOutcomeV7(preview);
-    expect(outcome).toEqual({ tiles: 2, mended: 1, icebound: 0 });
+    expect(outcome).toEqual({ tiles: 2, mended: 1, taken: 0, icebound: 0 });
     expect(freezeTargetLabelV7(outcome)).toBe("Ice 2 · mends 1");
     expect(freezeOutcomeTextV7(outcome)).toBe(
       "Freeze: 2 tiles of ice. It stays until it is cracked. 1 cracked tile is mended.",
@@ -998,7 +998,11 @@ describe("frozen-sea words", () => {
     expect(ICE_HELP_RULES_V7.map(([name]) => name)).toEqual([
       "Freeze",
       "Slide",
-      "Thaw",
+      // The frozen sea redesign (bead pulp_wars-5ti.27): the ice stays,
+      // other factions crack it, the Ice Folk build on it.
+      "Ice stays",
+      "Crack Ice",
+      "Build",
       "No ships",
       "Black Ice",
       "Icebound",

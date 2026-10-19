@@ -1,6 +1,6 @@
 {
   "provider": "ElevenLabs sound effects",
-  "provenance": "ElevenLabs sound effects, generated 2026-10-13, 2026-10-14, 2026-10-16, 2026-10-17",
+  "provenance": "ElevenLabs sound effects, generated 2026-10-13, 2026-10-14, 2026-10-16, 2026-10-17, 2026-10-19",
   "bead": "pulp_wars-2yc.51",
   "model": "eleven_text_to_sound_v2",
   "sounds": [
@@ -536,6 +536,43 @@
           "passed": true,
           "prompt": "Ice shattering: a sharp crack and tinkling crystal shards falling, short.",
           "note": "0.7 s, quick attack, centred near 4.7 kHz, 5% of its energy under 1 kHz, crest 24.8 dB."
+        }
+      ]
+    },
+    {
+      "id": "special.ice-crack",
+      "default": 103,
+      "confidence": "high",
+      "takes": [
+        {
+          "n": 103,
+          "file": "special-ice-crack-103.m4a",
+          "generated": "2026-10-19",
+          "seconds": 0.374,
+          "gain": 0.64,
+          "passed": true,
+          "prompt": "A sharp crack of thick lake ice, a short splintering, a small splash.",
+          "note": "0.374 s, hard attack, centred near 967 Hz, 80% of its energy under 1 kHz, crest 17.1 dB."
+        },
+        {
+          "n": 101,
+          "file": "special-ice-crack-101.m4a",
+          "generated": "2026-10-19",
+          "seconds": 0.8,
+          "gain": 0.89,
+          "passed": true,
+          "prompt": "A sharp crack of thick lake ice, a short splintering, a small splash.",
+          "note": "0.8 s, hard attack, centred near 5.2 kHz, 40% of its energy under 1 kHz, crest 24.4 dB."
+        },
+        {
+          "n": 102,
+          "file": "special-ice-crack-102.m4a",
+          "generated": "2026-10-19",
+          "seconds": 0.8,
+          "gain": 1,
+          "passed": true,
+          "prompt": "A sharp crack of thick lake ice, a short splintering, a small splash.",
+          "note": "0.8 s, hard attack, centred near 6.5 kHz, 13% of its energy under 1 kHz, crest 26.5 dB."
         }
       ]
     },

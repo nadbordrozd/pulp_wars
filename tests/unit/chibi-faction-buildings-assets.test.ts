@@ -133,7 +133,12 @@ describe("faction building batches", () => {
     for (const entry of CHIBI_FACTION_BUILDING_ART_ASSETS_V7) {
       expect(chibiAssetProblemsV7(entry), entry.id).toEqual([]);
       const improvement = entry.subject.split(":")[2];
-      const today = shared.variants(`IMPROVEMENT:${improvement}` as never)[0];
+      // The frozen sea redesign (bead pulp_wars-5ti.27): the Fishing Hole
+      // has no shared building; it is the Lumber Camp of the ice and sits
+      // on its footprint.
+      const today = shared.variants(
+        `IMPROVEMENT:${improvement === "FISHING_HOLE" ? "LUMBER_CAMP" : improvement}` as never,
+      )[0];
       if (today === undefined) throw new Error(`${entry.subject}: no shared`);
       // Same role, same placement: inside its own cell like the shared one.
       expect(chibiOverflowV7(entry), entry.id).toEqual(chibiOverflowV7(today));

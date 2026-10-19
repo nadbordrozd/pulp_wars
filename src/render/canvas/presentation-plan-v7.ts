@@ -1542,6 +1542,20 @@ export function corePresentationPlanV7(
     } else if (event.kind === "ICE_MELTED") {
       const cells = event.tiles.filter(isExplored);
       if (cells.length > 0) pushIceFolk({ effect: "ICE_MELT", cells });
+    } else if (event.kind === "ICE_CRACKED") {
+      // The frozen sea redesign (bead pulp_wars-5ti.27): a crack flashes
+      // across the tile; a break then gives way into floes.
+      if (isExplored(event.at)) {
+        const source =
+          event.unitId === null ? undefined : unitAnywhere(event.unitId);
+        pushIceFolk({
+          effect: event.broken ? "ICE_BREAK" : "ICE_CRACK",
+          cells: [event.at],
+          ...(source === undefined || !isExplored(source.at)
+            ? {}
+            : { from: source.at }),
+        });
+      }
     } else if (event.kind === "UNITS_CRUSHED") {
       // The crush: the ice closes on each frozen ship, then its hit shows.
       const hits = event.results.flatMap((result) => {

@@ -21,6 +21,11 @@
  *   rime on the hull's top edges) over the Patrol Boat, the Battleship and
  *   the Submarine of the seven seafaring factions, each beside the free
  *   ship;
+ * - `ice-buildings-{1x,x3}.png` (the frozen sea redesign, bead
+ *   pulp_wars-5ti.27): the Ice Harbour, the Great Harbour, a Workshop on
+ *   the packed-snow pad and the Fishing Hole in its own slab, on plain and
+ *   thick ice over both waters, beside Snow on Grass, and the Crack Ice
+ *   icon on the dock's dark disc;
  * - `readability.json`: how far each ice is from both waters, from Grass,
  *   from Snow on Grass and from the other ice (CIE76), and the seam
  *   mismatch of each tile against every tile of its ice;
@@ -48,6 +53,7 @@ import {
   SEA_ICE_EDGE_WEST_V7,
   seaIceTileV7,
 } from "../../src/assets/sea-ice-v7";
+import { ICE_BUILDING_PAD_V7 } from "../../src/render/canvas/frozen-sea-canvas-v7";
 
 const ROOT = process.cwd();
 const OUT = path.join(ROOT, "art/pixellab/reviews/naval-branch-ice");
@@ -661,8 +667,138 @@ async function readability(): Promise<void> {
   console.log("wrote readability.json");
 }
 
+/**
+ * The frozen sea redesign (bead pulp_wars-5ti.27): a filled ellipse with a
+ * rim, the packed-snow pad the board draws under a building on ice
+ * (ICE_BUILDING_PAD_V7, in an 80 px tile's units).
+ */
+function pad(target: Raster, left: number, top: number): void {
+  const [fill, shade, rim] = [
+    hexRgb(ICE_BUILDING_PAD_V7.fill),
+    hexRgb(ICE_BUILDING_PAD_V7.shade),
+    hexRgb(ICE_BUILDING_PAD_V7.rim),
+  ];
+  const unit = TILE / 128;
+  const cx = left + TILE / 2;
+  const cy = top + TILE / 2 + ICE_BUILDING_PAD_V7.offsetY * unit;
+  const rx = ICE_BUILDING_PAD_V7.radiusX * unit;
+  const ry = ICE_BUILDING_PAD_V7.radiusY * unit;
+  const rimShare = 1 - (ICE_BUILDING_PAD_V7.rimWidth * unit) / ry;
+  for (let y = Math.floor(cy - ry); y <= Math.ceil(cy + ry); y += 1)
+    for (let x = Math.floor(cx - rx); x <= Math.ceil(cx + rx); x += 1) {
+      const d = ((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2;
+      if (d > 1 || x < 0 || y < 0 || x >= target.width || y >= target.height)
+        continue;
+      const colour =
+        d > rimShare ** 2
+          ? rim
+          : x - cx > 0 && y - cy < 0 && d > 0.45
+            ? shade
+            : fill;
+      target.data.set([...colour, 255], (y * target.width + x) * 4);
+    }
+}
+
+function hexRgb(value: string): Rgb {
+  return [1, 3, 5].map((index) =>
+    Number.parseInt(value.slice(index, index + 2), 16),
+  ) as unknown as Rgb;
+}
+
+/**
+ * `ice-buildings-{1x,x3}.png`: the Ice Harbour, the Great Harbour, a
+ * Workshop on its snow pad and the Fishing Hole in its own slab, on plain
+ * and thick ice over both waters, beside Snow on Grass; and the Crack Ice
+ * icon on the dock's dark disc.
+ */
+async function iceBuildingsSheet(scale: number, name: string): Promise<void> {
+  const pieces = [
+    ["Ice Harbour", "buildings/chibi-ice-folk-port", true],
+    ["Great Harbour", "buildings/chibi-ice-folk-shipyard", true],
+    ["Workshop", "buildings/chibi-ice-folk-workshop", true],
+    ["Fishing Hole", "buildings/chibi-ice-folk-fishing-hole", false],
+  ] as const;
+  const rows = [
+    ["Shallow, plain", "SHALLOW", false],
+    ["Shallow, thick", "SHALLOW", true],
+    ["Deep, plain", "DEEP", false],
+    ["Deep, thick", "DEEP", true],
+  ] as const;
+  const gap = 8;
+  const head = 18;
+  const cell = TILE + gap;
+  const columns = pieces.length + 2;
+  const canvas = blank(
+    gap + columns * cell,
+    2 * head + gap + rows.length * (cell + head),
+    PAPER,
+  );
+  const labels: Label[] = [];
+  const grass = await chibi("terrain/chibi-grass-1");
+  for (const [index, [title, depth, thick]] of rows.entries()) {
+    const top = 2 * head + gap + index * (cell + head);
+    labels.push({ text: title, left: gap, top: top - head + 2, size: 11 });
+    for (const [column, [label, file, onPad]] of pieces.entries()) {
+      const left = gap + column * cell;
+      blit(canvas, await iceTile(depth, 0, 0, thick), left, top);
+      if (onPad) pad(canvas, left, top);
+      const sprite = await chibi(file);
+      blit(
+        canvas,
+        sprite,
+        left + Math.round((TILE - sprite.width) / 2),
+        top + TILE - sprite.height - 2,
+      );
+      if (index === 0) labels.push({ text: label, left, top: 2, size: 11 });
+    }
+    // Snow on Grass beside the ice, and the icon on its disc.
+    const snowLeft = gap + pieces.length * cell;
+    blit(canvas, grass, snowLeft, top);
+    blit(
+      canvas,
+      iceFolkSnowTileV7(
+        { north: false, east: false, south: false, west: false },
+        0,
+      ),
+      snowLeft,
+      top,
+    );
+    const iconLeft = gap + (pieces.length + 1) * cell;
+    const disc = hexRgb("#10131c");
+    for (let y = 0; y < TILE; y += 1)
+      for (let x = 0; x < TILE; x += 1)
+        if ((x - TILE / 2) ** 2 + (y - TILE / 2) ** 2 <= 30 ** 2)
+          canvas.data.set(
+            [...disc, 255],
+            ((top + y) * canvas.width + iconLeft + x) * 4,
+          );
+    blit(
+      canvas,
+      await chibi("icons/chibi-icon-action-crack-ice"),
+      iconLeft + 16,
+      top + 16,
+    );
+    if (index === 0) {
+      labels.push({ text: "Snow", left: snowLeft, top: 2, size: 11 });
+      labels.push({ text: "Crack Ice", left: iconLeft, top: 2, size: 11 });
+    }
+  }
+  await writeSheet(
+    name,
+    scaled(canvas, scale),
+    labels.map((label) => ({
+      ...label,
+      left: label.left * scale,
+      top: label.top * scale,
+      size: (label.size ?? 13) * Math.min(2, scale),
+    })),
+  );
+}
+
 async function main(): Promise<void> {
   await mkdir(OUT, { recursive: true });
+  await iceBuildingsSheet(1, "ice-buildings-1x.png");
+  await iceBuildingsSheet(3, "ice-buildings-x3.png");
   await tileSheet();
   await tilingSheet();
   const scene = await sceneRaster();
@@ -694,7 +830,7 @@ async function main(): Promise<void> {
         bead: "pulp_wars-5ti.6",
         batch: "naval-branch",
         command: "npm run art:naval-branch-ice-review",
-        note: "Composed from the checked-in rasters with the pure functions the board will call (seaIceTileV7 for the edge at open water and the snow dusting of permanent ice, iceFolkSnowCapsV7 for the rime of an icebound hull). The engine has no ice state yet, so the board host draws none of this.",
+        note: "Composed from the checked-in rasters with the pure functions the board will call (seaIceTileV7 for the edge at open water and the snow dusting of permanent ice, iceFolkSnowCapsV7 for the rime of an icebound hull). Since bead pulp_wars-5ti.27 the dusting marks thick ice (Glacier), and ice-buildings-* shows the Ice Folk buildings on ice with the snow pad of ICE_BUILDING_PAD_V7 and the Crack Ice icon.",
         files,
       },
       null,

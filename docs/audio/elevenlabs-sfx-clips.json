@@ -1,6 +1,6 @@
 {
   "provider": "ElevenLabs sound effects",
-  "provenance": "ElevenLabs sound effects, generated 2026-10-13, 2026-10-14, 2026-10-16, 2026-10-17",
+  "provenance": "ElevenLabs sound effects, generated 2026-10-13, 2026-10-14, 2026-10-16, 2026-10-17, 2026-10-19",
   "bead": "pulp_wars-2yc.51",
   "output": {
     "folder": "public/assets/audio",
@@ -918,6 +918,69 @@
           "gain": 0.85,
           "lufs": -22.5,
           "note": "0.7 s, quick attack, centred near 4.7 kHz, 5% of its energy under 1 kHz, crest 24.8 dB.",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "special.ice-crack",
+      "default": 103,
+      "confidence": "high",
+      "why": "#103 scored best (0.509) of 3 kept: 0.374 s for a range of 0.2–0.8 s, onset 10 ms, tail 60 ms, centred near 967 Hz; the next, #101, scored 0.782.",
+      "reference": {
+        "source": "+0 dB against `impact.ice`'s reference, stock recording #1 (impact-ice-1.m4a) at level 0.4",
+        "lufs": -23.9
+      },
+      "takes": [
+        {
+          "n": 103,
+          "file": "special-ice-crack-103.m4a",
+          "generated": "2026-10-19",
+          "round": 1,
+          "take": 3,
+          "model": "eleven_text_to_sound_v2",
+          "prompt": "A sharp crack of thick lake ice, a short splintering, a small splash. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+          "durationSeconds": 0.8,
+          "promptInfluence": 0.4,
+          "startSeconds": 0.097,
+          "endSeconds": 0.471,
+          "gain": 0.64,
+          "lufs": -20,
+          "note": "0.374 s, hard attack, centred near 967 Hz, 80% of its energy under 1 kHz, crest 17.1 dB.",
+          "passed": true
+        },
+        {
+          "n": 101,
+          "file": "special-ice-crack-101.m4a",
+          "generated": "2026-10-19",
+          "round": 1,
+          "take": 1,
+          "model": "eleven_text_to_sound_v2",
+          "prompt": "A sharp crack of thick lake ice, a short splintering, a small splash. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+          "durationSeconds": 0.8,
+          "promptInfluence": 0.4,
+          "startSeconds": 0.082,
+          "endSeconds": 0.882,
+          "gain": 0.89,
+          "lufs": -22.9,
+          "note": "0.8 s, hard attack, centred near 5.2 kHz, 40% of its energy under 1 kHz, crest 24.4 dB.",
+          "passed": true
+        },
+        {
+          "n": 102,
+          "file": "special-ice-crack-102.m4a",
+          "generated": "2026-10-19",
+          "round": 1,
+          "take": 2,
+          "model": "eleven_text_to_sound_v2",
+          "prompt": "A sharp crack of thick lake ice, a short splintering, a small splash. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+          "durationSeconds": 0.8,
+          "promptInfluence": 0.4,
+          "startSeconds": 0.102,
+          "endSeconds": 0.902,
+          "gain": 1,
+          "lufs": -23.9,
+          "note": "0.8 s, hard attack, centred near 6.5 kHz, 13% of its energy under 1 kHz, crest 26.5 dB.",
           "passed": true
         }
       ]

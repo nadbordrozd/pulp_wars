@@ -156,11 +156,23 @@ describe("faction building subjects and names", () => {
       GOBLIN: SIX,
       DINOSAUR: ["WINDMILL", ...SIX],
       MARTIAN: ["FARM", "WINDMILL", ...SIX],
-      ICE_FOLK: ["FARM", ...SIX],
+      // The frozen sea redesign (bead pulp_wars-5ti.27): the Fishing Hole.
+      ICE_FOLK: ["FARM", ...SIX, "FISHING_HOLE"],
       DWARF: ["FARM", "WINDMILL", ...SIX],
       CANDY: SIX,
       CULT: SIX,
     });
+    // Only the Ice Folk cut a Fishing Hole: another faction's (a captor's)
+    // asks for the shared subject, which falls back to theirs.
+    expect(factionImprovementSubjectV7("FISHING_HOLE", "ICE_FOLK")).toBe(
+      "IMPROVEMENT:ICE_FOLK:FISHING_HOLE",
+    );
+    expect(factionImprovementSubjectV7("FISHING_HOLE", "ORIGINAL")).toBe(
+      "IMPROVEMENT:FISHING_HOLE",
+    );
+    expect(chibiFallbackSubjectV7("IMPROVEMENT:FISHING_HOLE")).toBe(
+      "IMPROVEMENT:ICE_FOLK:FISHING_HOLE",
+    );
     // Bead pulp_wars-2yc.38: the Lumber Camp and the Sawmill are every
     // faction's own but the Humans', who keep the shared pair. The
     // Cultists have theirs since their art bead (`pulp_wars-mch9.16`).
@@ -212,7 +224,12 @@ describe("faction building subjects and names", () => {
         .filter(
           (key) =>
             key === "DINOSAUR:SAWMILL" ||
-            !/:(?:LUMBER_CAMP|SAWMILL|FORGE|WORKSHOP|PORT|SHIPYARD|MARKET)$/.test(
+            // The frozen sea redesign (`pulp_wars-5ti.27`): the Ice Folk
+            // dock is the Ice Harbour and the Great Harbour; their Fishing
+            // Hole is theirs alone and keeps its name.
+            key === "ICE_FOLK:PORT" ||
+            key === "ICE_FOLK:SHIPYARD" ||
+            !/:(?:LUMBER_CAMP|SAWMILL|FORGE|WORKSHOP|PORT|SHIPYARD|MARKET|FISHING_HOLE)$/.test(
               key,
             ),
         )
@@ -223,8 +240,7 @@ describe("faction building subjects and names", () => {
         "LUMBER_CAMP",
         "FORGE",
         "WORKSHOP",
-        "PORT",
-        "SHIPYARD",
+        ...(faction === "ICE_FOLK" ? [] : (["PORT", "SHIPYARD"] as const)),
         "MARKET",
       ] as const)
         expect(factionBuildingV7(kept, faction)).toBeNull();
@@ -246,6 +262,8 @@ describe("faction building subjects and names", () => {
       "MARTIAN:FARM": "Hydroponic Farm",
       "MARTIAN:WINDMILL": "Solar Array",
       "ICE_FOLK:FARM": "Frost Garden",
+      "ICE_FOLK:PORT": "Ice Harbour",
+      "ICE_FOLK:SHIPYARD": "Great Harbour",
       "DWARF:FARM": "Mushroom Farm",
       "DWARF:WINDMILL": "Steam Pump",
     });

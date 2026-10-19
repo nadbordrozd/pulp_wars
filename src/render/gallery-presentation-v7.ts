@@ -581,6 +581,10 @@ export function galleryBuildingSubjectV7(
   const improvement = galleryRowImprovement(row);
   if (improvement === null || improvement === "MONUMENT")
     return monumentArtSubjectV7(galleryMonumentAchievementV7(row), faction);
+  // The frozen sea redesign (bead pulp_wars-5ti.27): only the Ice Folk cut
+  // a Fishing Hole, so its one cell is theirs.
+  if (improvement === "FISHING_HOLE")
+    return factionImprovementSubjectV7(improvement, "ICE_FOLK");
   return factionImprovementSubjectV7(improvement, faction);
 }
 
@@ -628,7 +632,12 @@ export function galleryBuildingNameV7(
  * (`NEUTRAL` the default Grass, `SNOW` the Ice Folk's), or the water of a
  * Port or Shipyard.
  */
-export type GalleryBuildingGroundIdV7 = GroundIdV7 | "SNOW" | "SHALLOW_WATER";
+export type GalleryBuildingGroundIdV7 =
+  | GroundIdV7
+  | "SNOW"
+  | "SHALLOW_WATER"
+  /** The frozen sea redesign: the Ice Folk's ice over Shallow Water. */
+  | "SHALLOW_ICE";
 
 export interface GalleryBuildingGroundV7 {
   readonly id: GalleryBuildingGroundIdV7;
@@ -653,6 +662,23 @@ export function galleryBuildingGroundV7(
   row: GalleryBuildingRowIdV7,
   faction: FactionIdV7 | null = null,
 ): GalleryBuildingGroundV7 {
+  // The frozen sea redesign (bead pulp_wars-5ti.27): an Ice Folk dock (the
+  // Ice Harbour, the Great Harbour) and the Fishing Hole stand on ice.
+  if (
+    row === "FISHING_HOLE" ||
+    (faction === "ICE_FOLK" && (row === "PORT" || row === "SHIPYARD"))
+  )
+    return {
+      id: "SHALLOW_ICE",
+      layers: [
+        {
+          kind: "SUBJECT",
+          subject: "TERRAIN:SHALLOW_WATER",
+          at: { x: 0, y: 0 },
+        },
+        { kind: "SUBJECT", subject: "TERRAIN:ICE_SHALLOW", at: { x: 0, y: 0 } },
+      ],
+    };
   if (row === "PORT" || row === "SHIPYARD")
     return {
       id: "SHALLOW_WATER",

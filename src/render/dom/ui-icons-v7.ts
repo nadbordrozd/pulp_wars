@@ -61,6 +61,9 @@ export type UiIconIdV7 =
   // (Board, Boardable) and a periscope over a wave (Submerged).
   | "grapple"
   | "periscope"
+  // The frozen sea redesign (bead pulp_wars-5ti.27): a pick striking a
+  // cracked slab (Crack Ice), the stand-in of its raster.
+  | "ice-pick"
   // Sound (bead pulp_wars-2yc.10): a loudspeaker with waves, the same
   // crossed out, and a play triangle for the sound test.
   | "sound"
@@ -212,6 +215,8 @@ const PATHS: Readonly<Record<UiIconIdV7, string>> = {
     "M14.5 2.8a1.6 1.6 0 1 0 0 3.2 1.6 1.6 0 0 0 0-3.2ZM14.5 6v9a4.5 4.5 0 0 1-9 0v-3M5.5 12l-2.2 2.6M5.5 12l2.4 2.4",
   periscope:
     "M10 15V5.5h6V9M3 17.5c1.5-1.6 3-1.6 4.5 0s3 1.6 4.5 0 3-1.6 4.5 0 3 1.6 4.5 0",
+  "ice-pick":
+    "M19.5 3.5 11 12M7.5 8.5c2.5-.5 5 2 4.5 4.5M3 17.5h16l-1.5 3h-13ZM9.5 17.5l1.5 1.5-1 1.5M13 13.5l1.5-1.5M6 13.5l-1.5-1.5",
   sound:
     "M4 9.5h3.5L12 5.5v13l-4.5-4H4ZM15.5 9a4.2 4.2 0 0 1 0 6M18 6.5a7.8 7.8 0 0 1 0 11",
   "sound-off": "M4 9.5h3.5L12 5.5v13l-4.5-4H4ZM16 9.5l5 5M21 9.5l-5 5",

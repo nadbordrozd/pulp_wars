@@ -174,6 +174,10 @@ const FAMILY_STYLES_V7: Readonly<Record<string, TargetHighlightStyleV7>> = {
   TOP_UP: "SUPPORT",
   // The frozen sea: the tile a line role's Freeze starts on.
   FREEZE: "PLACE",
+  // The frozen sea redesign (bead pulp_wars-5ti.27): an ice tile Crack Ice
+  // breaks harms its owner's work (Attack); over an own or allied frozen
+  // ship the target says its own Help style.
+  CRACK_ICE: "ATTACK",
   // The giants' signatures (`pulp_wars-w49.32`): a victim to swallow and an
   // enemy a Stomp hits are harmed; a Goblin to throw is helped; a landing
   // tile and a Gingerbread Man's tile are places.

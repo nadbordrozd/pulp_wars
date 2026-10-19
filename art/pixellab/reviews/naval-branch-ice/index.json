@@ -2,8 +2,10 @@
   "bead": "pulp_wars-5ti.6",
   "batch": "naval-branch",
   "command": "npm run art:naval-branch-ice-review",
-  "note": "Composed from the checked-in rasters with the pure functions the board will call (seaIceTileV7 for the edge at open water and the snow dusting of permanent ice, iceFolkSnowCapsV7 for the rime of an icebound hull). The engine has no ice state yet, so the board host draws none of this.",
+  "note": "Composed from the checked-in rasters with the pure functions the board will call (seaIceTileV7 for the edge at open water and the snow dusting of permanent ice, iceFolkSnowCapsV7 for the rime of an icebound hull). Since bead pulp_wars-5ti.27 the dusting marks thick ice (Glacier), and ice-buildings-* shows the Ice Folk buildings on ice with the snow pad of ICE_BUILDING_PAD_V7 and the Crack Ice icon.",
   "files": [
+    "ice-buildings-1x.png",
+    "ice-buildings-x3.png",
     "ice-scene-1x.png",
     "ice-scene-x2.png",
     "ice-tiles-x3.png",

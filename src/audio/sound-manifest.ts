@@ -41,6 +41,9 @@ export const SOUND_IDS_V1 = [
   // The Rocket Cart's rocket landing: the user's own recording (2026-10-14).
   "impact.rocket",
   "impact.ice",
+  // The frozen sea redesign (`pulp_wars-5ti.27`): Crack Ice, a sharp
+  // crack of lake ice with a small splash.
+  "special.ice-crack",
   "impact.splat",
   "impact.shield",
   "impact.splash",
@@ -781,6 +784,24 @@ const SYNTH_SOUNDS: Readonly<Record<SoundIdV1, SoundEntryV1>> = {
       attackMs: 60,
       vibrato: { hz: 9, cents: 180 },
       decay: 1.2,
+    },
+  ]),
+  // Bead pulp_wars-5ti.27: a crack of ticks and a short splash, the
+  // fallback of the Crack Ice take.
+  "special.ice-crack": synth("Crack Ice", "combat", 2, 60, 0.26, [
+    tick(0, 1),
+    tick(25, 0.9),
+    tick(60, 0.6),
+    {
+      wave: "noise",
+      at: 90,
+      ms: 160,
+      lowpassHz: 2600,
+      lowpassEndHz: 700,
+      highpassHz: 300,
+      gain: 0.5,
+      attackMs: 8,
+      decay: 2.2,
     },
   ]),
   "special.freeze": synth("Freeze", "combat", 2, 30, 0.2, [

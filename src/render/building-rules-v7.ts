@@ -171,6 +171,8 @@ function iceFolkBuildingRuleTextV7(
       return `${name}: one per city, on land or your ice, built with an achievement; +${MONUMENT_POPULATION_V7} population`;
     case "PORT":
       return `${name}: on your ice or Shallow Water (it freezes) by its city's land; +${dockPopulationV7("PORT", 0)} population`;
+    case "SHIPYARD":
+      return `${name}: one per city, upgrades one of your active ${nameV7("PORT", "ICE_FOLK")}s; +${dockPopulationV7("SHIPYARD", 0) - dockPopulationV7("PORT", 0)} more population`;
     default:
       return null;
   }

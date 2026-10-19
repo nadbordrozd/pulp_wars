@@ -3167,6 +3167,57 @@
       }
     },
     {
+      "id": "special.ice-crack",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A sharp crack of thick lake ice, a short splintering, a small splash. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.4,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "special-ice-crack-101.wav",
+      "date": "2026-10-19",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "special.ice-crack",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A sharp crack of thick lake ice, a short splintering, a small splash. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.4,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "special-ice-crack-102.wav",
+      "date": "2026-10-19",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "special.ice-crack",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A sharp crack of thick lake ice, a short splintering, a small splash. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.4,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "special-ice-crack-103.wav",
+      "date": "2026-10-19",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
       "id": "special.mind",
       "n": 101,
       "round": 1,

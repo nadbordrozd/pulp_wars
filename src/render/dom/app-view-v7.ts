@@ -131,6 +131,7 @@ import {
   type AiHeadStartCoinsV7,
   type GameModeV7,
   type MapTypeV7,
+  type PlayerEventV7,
   type PlayerViewV7,
   type PublicTechnologyNodeV7,
   type PublicUnitStatsV7,
@@ -628,6 +629,12 @@ import {
 import type { NavalPickV7 } from "../canvas/naval-board-plan-v7";
 import {
   BLACK_ICE_UNLOCK_V7,
+  CRACK_ICE_LABEL_V7,
+  CRACK_ICE_PICK_V7,
+  CRACK_ICE_RULE_V7,
+  CRACK_ICE_TOOLTIP_V7,
+  SLIP_BLACK_ICE_MOVE_LABEL_V7,
+  crackIceUnavailableTextV7,
   FREEZE_DEEP_UNLOCK_V7,
   FREEZE_LABEL_V7,
   FREEZE_LINE_TOOLTIP_V7,
@@ -654,6 +661,8 @@ import {
   glacierUnlockTextV7,
   iceChipLabelV7,
   iceChipTooltipV7,
+  iceOnTileV7,
+  unitHasCrackIceV7,
   unitHasFreezeV7,
 } from "../frozen-sea-presentation-v7";
 import {
@@ -1225,6 +1234,10 @@ const NON_BUTTON_COMMANDS = new Set<CommandV7["kind"]>([
   // chant" button and the badge on the Stargazer, never a second generic
   // button (bead pulp_wars-mch9.43).
   "JOIN_CHANT",
+  // The frozen sea redesign (bead pulp_wars-5ti.27): one Crack Ice button
+  // arms it; the ice tile is picked on the board (BOARD_TARGETING.md
+  // section 3.5).
+  "CRACK_ICE",
 ]);
 /**
  * The Cultists' channel (bead pulp_wars-mch9.18): each action's button
@@ -1896,6 +1909,13 @@ export class Ruleset7DomAppView {
   #freezeRingArmedUnitId: number | null = null;
   /** The pointer type of the last press on the Witch's Freeze button. */
   #freezeRingPointerType: string | null = null;
+  /**
+   * The frozen sea redesign (bead pulp_wars-5ti.27): the seats whose Black
+   * Ice the viewer has seen freeze a unit in this match (research is
+   * private; the public `UNITS_FROZEN` of source `BLACK_ICE` shows it), by
+   * the match's seed.
+   */
+  #blackIceSeen: { seed: number; players: Set<number> } | null = null;
   /**
    * The Cultists (bead pulp_wars-mch9.17): the Sacrifice or the Seize the
    * selected Summoner is aiming on the board (Escape, Cancel or another
@@ -6971,8 +6991,10 @@ export class Ruleset7DomAppView {
         ...this.#giantActionButtons(view, unit.id),
         // The naval branch interface: Board likewise.
         ...this.#navalActionButtons(view, unit.id),
-        // The frozen sea: Freeze likewise.
+        // The frozen sea: Freeze likewise, and every other faction's Crack
+        // Ice (the frozen sea redesign, bead pulp_wars-5ti.27).
         ...this.#freezeActionButtons(view, unit.id),
+        ...this.#crackIceActionButtons(view, unit.id),
         // The Cultists: Sacrifice and Seize likewise, and the channel:
         // Summon, Channel, Behold!, Anchor and Boo!.
         ...this.#cultActionButtons(view, unit.id),
@@ -7186,7 +7208,16 @@ export class Ruleset7DomAppView {
                     // own lines (its `role` is a mechanical one).
                     unit.summoned !== undefined
                     ? summonedGlossaryV7(unit.summoned)
-                    : roleGlossaryV7(unit.role, unitFaction);
+                    : [
+                        ...roleGlossaryV7(unit.role, unitFaction),
+                        // The frozen sea redesign (bead pulp_wars-5ti.27):
+                        // in a match with the Ice Folk, every other unit
+                        // and ship may crack their ice.
+                        ...(matchHasIceFolkSeatV7(view) &&
+                        unitHasCrackIceV7(view, unit)
+                          ? [glossaryEntryV7("CRACK_ICE")]
+                          : []),
+                      ];
         if (lines.length > 0)
           unitDetails.append(
             glossaryListV7(this.#document, lines, (line, entry) =>
@@ -9108,6 +9139,9 @@ export class Ruleset7DomAppView {
         return;
       case "FREEZE":
         this.#startFreezePick(unitId);
+        return;
+      case "CRACK_ICE":
+        this.#startFreezePick(unitId, "CRACK_ICE");
         return;
       case "TUNNEL":
       case "BOMB_RUN":
@@ -11876,6 +11910,7 @@ export class Ruleset7DomAppView {
       }
       this.#firstStepWatchUnitId = couldMove ? commandUnitId : null;
     }
+    this.#noteBlackIce(result.playerEvents.events, result.afterView);
     const notice = boundaryNoticeV7(
       result.playerEvents.events,
       result.beforeView,
@@ -12157,6 +12192,7 @@ export class Ruleset7DomAppView {
           playback: this.#snapshot.ai.fastForward ? null : boundary,
         });
       }
+    this.#noteBlackIce(boundary.playerEvents.events, boundary.afterView);
     const notice = boundaryNoticeV7(
       boundary.playerEvents.events,
       boundary.beforeView,
@@ -12689,7 +12725,9 @@ export class Ruleset7DomAppView {
             glossaryId === "BROOD" ||
             glossaryId === "SWARM" ||
             glossaryId === "DOORSTEP" ||
-            glossaryId === "DRAG"
+            glossaryId === "DRAG" ||
+            // The frozen sea redesign (bead pulp_wars-5ti.27).
+            glossaryId === "CRACK_ICE"
           ? glossaryId
           : null;
     if (iconed === null) return;
@@ -14595,56 +14633,140 @@ export class Ruleset7DomAppView {
     return [action];
   }
 
-  /** Starts aiming the selected unit's Freeze. */
-  #startFreezePick(unitId: UnitId): void {
+  /**
+   * The frozen sea redesign (bead pulp_wars-5ti.27; RULESET_7_ICE_REDESIGN.md
+   * section 4.1, BOARD_TARGETING.md section 3.5): the one Crack Ice button of
+   * an own unit or ship of another faction than the Ice Folk that stands
+   * next to ice. It arms the aiming (pressed while aiming) and the ice tile
+   * is picked on the board. Without an offered Crack Ice, a unit next to
+   * crackable ice shows the button disabled with the first failing rule;
+   * every other unit shows none.
+   */
+  #crackIceActionButtons(
+    view: PlayerViewV7,
+    unitId: UnitId,
+  ): readonly HTMLButtonElement[] {
+    const unit = view.units.find((candidate) => candidate.id === unitId);
+    if (
+      unit === undefined ||
+      unit.ownerId !== view.viewer.id ||
+      view.ice.length === 0 ||
+      this.#snapshot.offeredCommands.length === 0
+    )
+      return [];
+    const offered = this.#snapshot.offeredCommands.some(
+      (command) => command.kind === "CRACK_ICE" && command.unitId === unit.id,
+    );
+    const reason = crackIceUnavailableTextV7(view, unit, offered);
+    if (!offered && reason === null) return [];
+    const action = button(this.#document, "", "crack-ice", "v7-context-action");
+    action.append(
+      this.#chibiArt("ICON:ACTION:CRACK_ICE", CHIBI_DOM_BOXES_V7.action)
+        ?.element ??
+        uiIconV7(this.#document, "ice-pick", "v7-ui-icon v7-command-icon"),
+      text(this.#document, "span", CRACK_ICE_LABEL_V7, "v7-action-label"),
+    );
+    action.dataset.freezeAbility = "crack";
+    if (reason !== null) {
+      // aria-disabled keeps the reason reachable by keyboard and touch.
+      action.setAttribute("aria-disabled", "true");
+      action.dataset.disabledReason = reason;
+      action.title = reason;
+      action.setAttribute(
+        "aria-label",
+        `${CRACK_ICE_LABEL_V7} unavailable. ${reason}`,
+      );
+      action.onclick = () => {
+        this.#notice = `${reason}.`;
+        this.#showToast(`${reason}.`);
+        this.#pendingFocusAction = "crack-ice";
+        this.#render();
+      };
+      return [action];
+    }
+    const aiming = this.#freezePick?.kind === "CRACK_ICE";
+    action.title = CRACK_ICE_TOOLTIP_V7;
+    action.setAttribute(
+      "aria-label",
+      `${CRACK_ICE_LABEL_V7}. ${CRACK_ICE_TOOLTIP_V7}`,
+    );
+    action.setAttribute("aria-pressed", String(aiming));
+    action.disabled = this.#localBusy();
+    action.onclick = () =>
+      aiming
+        ? this.#cancelFreezePick()
+        : this.#startFreezePick(unit.id, "CRACK_ICE");
+    return [action];
+  }
+
+  /**
+   * Starts aiming the selected unit's Freeze, or (the frozen sea redesign,
+   * bead pulp_wars-5ti.27) its Crack Ice.
+   */
+  #startFreezePick(
+    unitId: UnitId,
+    kind: FreezePickV7["kind"] = "FREEZE",
+  ): void {
     if (this.#localBusy()) return;
-    this.#freezePick = { kind: "FREEZE", unitId };
-    this.#notice = `${FREEZE_PICK_V7}.`;
+    this.#freezePick = { kind, unitId };
+    this.#notice = `${kind === "CRACK_ICE" ? CRACK_ICE_PICK_V7 : FREEZE_PICK_V7}.`;
     this.#pendingFocusAction = null;
     this.#render();
     // The board takes the keyboard, so Tab and Enter pick.
     this.#queueBoardFocus();
   }
 
-  /** Leaves the aiming, and returns focus to the Freeze button. */
+  /** Leaves the aiming, and returns focus to the Freeze (or Crack) button. */
   #cancelFreezePick(): void {
     const pick = this.#freezePick;
     this.#freezePick = null;
-    this.#pendingFocusAction = pick === null ? null : "freeze";
+    this.#pendingFocusAction =
+      pick === null ? null : pick.kind === "CRACK_ICE" ? "crack-ice" : "freeze";
     this.#render();
   }
 
   /**
-   * The Freeze aiming panel in the dock: the action's icon and name, its
-   * "?" and Cancel. The tiles are highlighted and picked on the board,
-   * each with what freezes and for how long; the dock lists none. Null
-   * (and the aiming ends) when nothing is offered any more.
+   * The Freeze (or Crack Ice) aiming panel in the dock: the action's icon
+   * and name, its "?" and Cancel. The tiles are highlighted and picked on
+   * the board, each with what freezes (or breaks); the dock lists none.
+   * Null (and the aiming ends) when nothing is offered any more.
    */
   #freezePickPanel(unitId: UnitId): HTMLElement | null {
     const pick = this.#freezePick;
     if (pick === null || pick.unitId !== unitId) return null;
     const commands = this.#snapshot.offeredCommands.filter(
-      (command) => command.kind === "FREEZE" && command.unitId === unitId,
+      (command) => command.kind === pick.kind && command.unitId === unitId,
     );
     if (commands.length === 0) {
       this.#freezePick = null;
       return null;
     }
+    const crack = pick.kind === "CRACK_ICE";
     const panel = el(
       this.#document,
       "section",
       "v7-kaboom-preview v7-martian-pick v7-ice-folk-pick v7-freeze-pick v7-board-pick",
     );
-    panel.dataset.v7FreezePick = "line";
+    panel.dataset.v7FreezePick = crack ? "crack" : "line";
     panel.dataset.boardTargets = String(commands.length);
-    panel.setAttribute("aria-label", FREEZE_PICK_V7);
+    panel.setAttribute(
+      "aria-label",
+      crack ? CRACK_ICE_PICK_V7 : FREEZE_PICK_V7,
+    );
     panel.append(
-      this.#pickHead(
-        "ICON:ACTION:FREEZE",
-        "snowflake",
-        FREEZE_LABEL_V7,
-        `${FREEZE_PICK_V7}. ${FREEZE_LINE_TOOLTIP_V7}`,
-      ),
+      crack
+        ? this.#pickHead(
+            "ICON:ACTION:CRACK_ICE",
+            "ice-pick",
+            CRACK_ICE_LABEL_V7,
+            `${CRACK_ICE_PICK_V7}. ${CRACK_ICE_RULE_V7}`,
+          )
+        : this.#pickHead(
+            "ICON:ACTION:FREEZE",
+            "snowflake",
+            FREEZE_LABEL_V7,
+            `${FREEZE_PICK_V7}. ${FREEZE_LINE_TOOLTIP_V7}`,
+          ),
     );
     const buttons = el(this.#document, "div", "button-row v7-kaboom-actions");
     const cancel = button(
@@ -14736,28 +14858,62 @@ export class Ruleset7DomAppView {
     return panel;
   }
 
+  /** The seats whose Black Ice the viewer has seen in this match. */
+  #blackIceSeenPlayers(view: PlayerViewV7): ReadonlySet<number> {
+    const seen = this.#blackIceSeen;
+    return seen === null || seen.seed !== view.setup.seed
+      ? new Set()
+      : seen.players;
+  }
+
+  /** Remembers the seats a boundary's events show to have Black Ice. */
+  #noteBlackIce(events: readonly PlayerEventV7[], view: PlayerViewV7): void {
+    for (const event of events) {
+      if (event.kind !== "UNITS_FROZEN" || event.source !== "BLACK_ICE")
+        continue;
+      if (this.#blackIceSeen?.seed !== view.setup.seed)
+        this.#blackIceSeen = { seed: view.setup.seed, players: new Set() };
+      this.#blackIceSeen.players.add(event.playerId);
+    }
+  }
+
   /**
    * The frozen sea: the legend of a unit's Moves on ice, shown while it has
    * any: "Slide" for a unit that slides to where the ice ends, "Ice: your
-   * Move ends here" for a unit that slips.
+   * Move ends here" for a unit that slips (with "Black Ice freezes" when
+   * the ice's owner is known to have it).
    */
   #iceMoveLegend(view: PlayerViewV7, unitId: UnitId): HTMLElement | null {
     if (view.ice.length === 0) return null;
     let slide = false;
     let slip = false;
+    // The frozen sea redesign (section 4.1): a slip onto ice whose owner's
+    // Black Ice has been seen this match says that it freezes.
+    let blackIce = false;
+    const seen = this.#blackIceSeenPlayers(view);
     for (const command of this.#snapshot.offeredCommands) {
       if (command.kind !== "MOVE" || command.unitId !== unitId) continue;
       const onIce = moveOnIceV7(view, command);
       if (onIce === null) continue;
-      if (onIce.slip) slip = true;
-      else slide = true;
+      if (onIce.slip) {
+        slip = true;
+        const end = command.path.at(-1);
+        const owner =
+          end === undefined ? undefined : iceOnTileV7(view, end)?.ownerId;
+        if (owner !== undefined && owner !== view.viewer.id && seen.has(owner))
+          blackIce = true;
+      } else slide = true;
     }
     if (!slide && !slip) return null;
     const legend = el(this.#document, "ul", "v7-landing-legend");
     legend.setAttribute("aria-label", "Ice markers");
     for (const [shown, marker, label] of [
       [slide, "slide", SLIDE_MOVE_LABEL_V7],
-      [slip, "slip", SLIP_MOVE_LABEL_V7],
+      [
+        slip,
+        "slip",
+        blackIce ? SLIP_BLACK_ICE_MOVE_LABEL_V7 : SLIP_MOVE_LABEL_V7,
+      ],
     ] as const) {
       if (!shown) continue;
       const item = el(this.#document, "li", "v7-landing-legend-item");
@@ -17530,11 +17686,14 @@ function effectDescription(
                           ? label("RAIDER")
                           : null,
                       )
-                    : // The Dinosaur pass, correction: a faction's own
-                      // building under its own name ("Build Chopping Block").
-                      factionBuildCommandV7(effect.command, faction) === null
-                      ? title(effect.command)
-                      : `Build ${factionBuildCommandV7(effect.command, faction)?.name ?? ""}`;
+                    : // The frozen sea redesign (bead pulp_wars-5ti.27).
+                      effect.command === "BUILD_FISHING_HOLE"
+                      ? "Build Fishing Hole"
+                      : // The Dinosaur pass, correction: a faction's own
+                        // building under its own name ("Build Chopping Block").
+                        factionBuildCommandV7(effect.command, faction) === null
+                        ? title(effect.command)
+                        : `Build ${factionBuildCommandV7(effect.command, faction)?.name ?? ""}`;
     case "RAM":
       // Themed naval branches (`pulp_wars-5ti.16`): the faction's own boats.
       return navalRamUnlockTextV7(faction);
@@ -17557,7 +17716,7 @@ function effectDescription(
     case "DEEP_OFFERINGS":
       return deepOfferingsUnlockTextV7();
     case "HARBOURS":
-      return harboursUnlockTextV7(effect.population);
+      return harboursUnlockTextV7(effect.population, faction);
     // The frozen sea (RULESET_7_NAVAL_BRANCH.md section 8.2).
     case "FREEZE":
       return effect.depth === "DEEP"
@@ -17606,7 +17765,14 @@ function effectDescription(
     case "MARKET_INCOME_MULTIPLIER":
       return `Markets earn ${effect.multiplier}× income`;
     case "SEA_LINK":
-      return SEA_LINK_UNLOCK_TEXT_V7;
+      // The frozen sea redesign (bead pulp_wars-5ti.27): the Ice Folk dock
+      // is the Ice Harbour.
+      return faction === "ICE_FOLK"
+        ? SEA_LINK_UNLOCK_TEXT_V7.replace(
+            /^Ports/,
+            `${factionBuildingV7("PORT", faction)?.name ?? "Port"}s`,
+          )
+        : SEA_LINK_UNLOCK_TEXT_V7;
     case "CAPTAIN_SUPPORT":
       // Bead pulp_wars-2yc.63: the Rally of every faction is Rally.
       return faction === "DINOSAUR"
@@ -17793,6 +17959,10 @@ export function technologyEffectGroupsV7(
   );
   for (const effect of effects) {
     if (effect.kind === "CONNECTED_FARM_VISUALS" && options.farmsJoin === false)
+      continue;
+    // The frozen sea redesign (bead pulp_wars-5ti.27): the Ice Folk train
+    // no ships, so a discount on naval training is not theirs.
+    if (effect.kind === "NAVAL_TRAINING_DISCOUNT" && faction === "ICE_FOLK")
       continue;
     // The placement line says what the building gives too, so its formula
     // line would repeat it.
@@ -18201,6 +18371,8 @@ const COMMAND_LABELS: Partial<Record<CommandV7["kind"], string>> = {
   BUILD_MARKET: "Market",
   BUILD_PORT: "Port",
   BUILD_SHIPYARD: "Shipyard",
+  // The frozen sea redesign (bead pulp_wars-5ti.27).
+  BUILD_FISHING_HOLE: "Fishing Hole",
   CLEAR_FOREST: "Clear forest",
   REPLANT_FOREST: "Plant forest",
   CULTIVATE_FOREST: "Clear for farming",

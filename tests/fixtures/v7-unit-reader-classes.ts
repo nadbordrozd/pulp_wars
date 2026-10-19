@@ -757,6 +757,12 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/render/canvas/frozen-sea-board-plan-v7.ts::moveOnIceV7": "BOARD",
     "src/render/frozen-sea-presentation-v7.ts::frozenSeaBoundaryNoticeV7":
       "BOARD",
+    // Bead pulp_wars-5ti.27: Crack Ice's reasons (a land unit standing on
+    // the ice beside it) and its Help mark (an own or allied ship frozen in
+    // the tile) read what stands on the board; nothing burrows under ice.
+    "src/render/frozen-sea-presentation-v7.ts::crackIceUnavailableTextV7":
+      "BOARD",
+    "src/render/frozen-sea-presentation-v7.ts::crackIceOutcomeV7": "BOARD",
     // Bead pulp_wars-2yc.70: the Slayer deed names the unit on the board
     // with the most kills, as Slayer reads it (a burrowed unit is off the
     // board and does not count).

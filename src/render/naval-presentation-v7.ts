@@ -29,6 +29,7 @@ import {
   type PublicUnitV7,
 } from "../engine/index";
 import { playerPossessiveV7, playerSubjectV7 } from "./player-names-v7";
+import { factionBuildingV7 } from "./faction-buildings-v7";
 
 /**
  * The naval branch interface (bead pulp_wars-5ti.7, first part;
@@ -362,8 +363,15 @@ export function patrolBoatUnlockNotesV7(
   ];
 }
 
-export function harboursUnlockTextV7(population: number): string {
-  return `${HARBOURS_LABEL_V7}: +${population} population from every active Port and Shipyard`;
+export function harboursUnlockTextV7(
+  population: number,
+  faction: FactionIdV7 | null = null,
+): string {
+  // The frozen sea redesign (bead pulp_wars-5ti.27): the Ice Folk docks
+  // are the Ice Harbour and the Great Harbour.
+  const port = factionBuildingV7("PORT", faction)?.name ?? "Port";
+  const shipyard = factionBuildingV7("SHIPYARD", faction)?.name ?? "Shipyard";
+  return `${HARBOURS_LABEL_V7}: +${population} population from every active ${port} and ${shipyard}`;
 }
 
 /** The dock's Board button and its aiming panel. */

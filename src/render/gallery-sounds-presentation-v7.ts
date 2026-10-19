@@ -329,6 +329,11 @@ const NOTES: Readonly<Partial<Record<SoundIdV1, SoundNoteV7>>> = {
     picture: unit("CATAPULT", "GOBLIN"),
   },
   "impact.ice": { when: "Ice breaks", picture: icon("ice-peak") },
+  // The frozen sea redesign (`pulp_wars-5ti.27`): Crack Ice.
+  "special.ice-crack": {
+    when: "A unit cracks ice",
+    picture: icon("ice-pick"),
+  },
   "impact.splat": {
     when: "Pie or acid lands",
     picture: unit("CATAPULT", "CANDY"),

@@ -217,6 +217,7 @@ economy is silent.
 | Stampede                                                        | `impact.heavy`, then `impact.hit` as it reaches each unit in its way       |
 | Sweep                                                           | `attack.melee`                                                             |
 | Ice melting                                                     | `impact.splash`                                                            |
+| Crack Ice, a crack or a break (`pulp_wars-5ti.27`)              | `special.ice-crack`                                                        |
 | Lich splash                                                     | `impact.splash`                                                            |
 | Prize flag, Rally, Hatch call                                   | `support.rally`                                                            |
 | Tend, Cure, Regenerate, Recover, Fountain, Windmill, Sugar Toss | `support.heal`                                                             |
@@ -754,6 +755,7 @@ full scale). A unit test compares this table with the manifest.
 | `special.beam`         | Beam             | combat   | sine + triangle                  | 380–1800   | 392         | 0.22 |
 | `special.mind`         | Mind control     | combat   | sine                             | 520–780    | 472         | 0.22 |
 | `special.freeze`       | Freeze           | combat   | triangle + noise                 | 1047–1568  | 392         | 0.2  |
+| `special.ice-crack`    | Crack Ice        | combat   | noise                            | noise only | 262         | 0.26 |
 | `special.burrow`       | Burrow           | combat   | noise + sine                     | 50–70      | 352         | 0.34 |
 | `special.hatch`        | Egg crack        | combat   | noise + sine                     | 500–900    | 212         | 0.26 |
 | `special.pop`          | Pop              | combat   | sine + noise                     | 300–900    | 67          | 0.24 |

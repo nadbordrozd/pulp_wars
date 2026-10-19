@@ -3,13 +3,17 @@ import {
   ICE_CRUSH_DAMAGE_V7,
   ICE_SEA_DOG_UNITS_V7,
   isAfloatFormV7,
+  queryAlliedV7,
   seatRoleRuleV7,
+  unitCracksIceV7,
   unitIsFrozenV7,
+  unitMayActAfterMoveV7,
   technologyCapabilitiesV7,
   unitCapabilitiesV7,
   unitRoleRuleV7,
   type CombatPreviewV7,
   type CoordV7,
+  type CrackIcePreviewV7,
   type FreezePreviewV7,
   type PlayerEventV7,
   type PlayerViewV7,
@@ -36,27 +40,36 @@ export const BLACK_ICE_LABEL_V7 = "Black Ice";
 export const GLACIER_LABEL_V7 = "Glacier";
 export const ICE_COVER_LABEL_V7 = "Ice cover";
 
-/** Section 8.2, one short sentence each. */
+/**
+ * One short sentence each (RULESET_7_ICE_REDESIGN.md section 2.2, the
+ * frozen sea redesign: the ice stays until it is cracked).
+ */
 export const FREEZE_RULE_V7 =
   "A unit turns the water next to it to ice, two tiles out in a straight line; the Ice Witch freezes every tile around her.";
 export const SLIDE_RULE_V7 =
   "An Ice Folk unit that steps onto ice slides straight on until the ice ends or a unit or an enemy's zone of control stops it.";
 export const SLIP_RULE_V7 =
   "Any other unit may walk onto ice, but its Move ends there.";
-export const THAW_RULE_V7 =
-  "Ice melts after 3 of its owner's turns, but never in its owner's territory and never under a land unit.";
+export const ICE_STAYS_RULE_V7 =
+  "Ice never melts; it is gone only when someone cracks it.";
 export const NO_SHIPS_RULE_V7 =
   "Ships cannot enter ice; the Ice Folk have no ships at all.";
-export const BLACK_ICE_RULE_V7 =
-  "Whoever stands on your ice at the start of your turn is Frozen.";
+export const BLACK_ICE_RULE_V7 = "An enemy that steps onto your ice is Frozen.";
 export const ICEBOUND_RULE_V7 = `Freeze a ship in place: it cannot sail, shoot or strike back, and the ice crushes it for ${ICE_CRUSH_DAMAGE_V7} each turn.`;
-export const GLACIER_RULE_V7 = `Your ice lasts 5 turns, your units on it have cover, and a Move of yours across ice gets +${GLACIER_ICE_MOVE_BONUS_V7} Move.`;
+export const GLACIER_RULE_V7 = `Your ice is thick (two Cracks break it), your units on it have cover, and a Move of yours across ice gets +${GLACIER_ICE_MOVE_BONUS_V7} Move.`;
+export const CRACK_ICE_LABEL_V7 = "Crack Ice";
+export const CRACK_ICE_RULE_V7 =
+  "Any other unit or ship next to ice may break one tile of it back into water, unless a unit stands on it or it is built on.";
+export const ICE_BUILD_RULE_V7 =
+  "The Ice Folk build their Ice Harbour, Fishing Holes, mills, Workshop, Market and Monument on their own ice.";
 
-/** Help "On the ice": the Ice Folk viewer's rules, in reading order. */
+/** The frozen sea's rules, in reading order (the Ice Folk tech cards' "?"). */
 export const ICE_HELP_RULES_V7: readonly (readonly [string, string])[] = [
   [FREEZE_LABEL_V7, FREEZE_RULE_V7],
   [SLIDE_LABEL_V7, SLIDE_RULE_V7],
-  ["Thaw", THAW_RULE_V7],
+  ["Ice stays", ICE_STAYS_RULE_V7],
+  [CRACK_ICE_LABEL_V7, CRACK_ICE_RULE_V7],
+  ["Build", ICE_BUILD_RULE_V7],
   ["No ships", NO_SHIPS_RULE_V7],
   [BLACK_ICE_LABEL_V7, BLACK_ICE_RULE_V7],
   [ICEBOUND_LABEL_V7, ICEBOUND_RULE_V7],
@@ -190,6 +203,8 @@ export interface FreezeOutcomeV7 {
   readonly tiles: number;
   /** The owner's cracked tiles of them, mended. */
   readonly mended: number;
+  /** Another player's ice of them, taken for the unit's owner. */
+  readonly taken: number;
   /** The ships locked in the ice. */
   readonly icebound: number;
 }
@@ -203,13 +218,18 @@ export function freezeOutcomeV7(preview: FreezePreviewV7): FreezeOutcomeV7 {
   return {
     tiles: preview.tiles.length,
     mended: preview.mended.length,
+    taken: preview.taken.length,
     icebound: preview.icebound.length,
   };
 }
 
-/** The board label of a Freeze: "Ice 2", "Ice 1 · mends 1", "Ice 1 · Icebound". */
+/**
+ * The board label of a Freeze: "Ice 2", "Ice 1 · mends 1", "Ice 2 · takes
+ * 1", "Ice 1 · Icebound".
+ */
 export function freezeTargetLabelV7(outcome: FreezeOutcomeV7): string {
   const extra = [
+    ...(outcome.taken > 0 ? [`takes ${outcome.taken}`] : []),
     ...(outcome.mended > 0 ? [`mends ${outcome.mended}`] : []),
     ...(outcome.icebound > 0 ? [ICEBOUND_LABEL_V7] : []),
   ];
@@ -223,11 +243,170 @@ export function freezeOutcomeTextV7(outcome: FreezeOutcomeV7): string {
     outcome.mended === 0
       ? ""
       : ` ${outcome.mended} cracked ${outcome.mended === 1 ? "tile is" : "tiles are"} mended.`;
+  const taken =
+    outcome.taken === 0
+      ? ""
+      : ` ${outcome.taken} ${outcome.taken === 1 ? "tile" : "tiles"} of another player's ice ${outcome.taken === 1 ? "becomes" : "become"} yours.`;
   const ships =
     outcome.icebound === 0
       ? ""
       : ` ${outcome.icebound} ${outcome.icebound === 1 ? "ship is" : "ships are"} locked in the ice.`;
-  return `${FREEZE_LABEL_V7}: ${tiles} of ice. It stays until it is cracked.${mended}${ships}`;
+  return `${FREEZE_LABEL_V7}: ${tiles} of ice. It stays until it is cracked.${taken}${mended}${ships}`;
+}
+
+/**
+ * Crack Ice (the frozen sea redesign, RULESET_7_ICE_REDESIGN.md sections
+ * 2.9 and 4.1): the dock's one button of every unit and ship of another
+ * faction that stands next to ice, its aiming, its targets' labels and its
+ * reasons.
+ */
+export const CRACK_ICE_TOOLTIP_V7 =
+  "Break the ice next to this unit back into open water";
+export const CRACK_ICE_PICK_V7 = "Choose a highlighted ice tile to crack";
+export const CRACK_ICE_BREAK_LABEL_V7 = "Break";
+export const CRACK_ICE_CRACK_LABEL_V7 = "Crack · 1 more breaks it";
+export const CRACK_ICE_FREE_LABEL_V7 = "Free the ship";
+export const CRACK_ICE_FREE_LATER_LABEL_V7 = "Crack · 1 more frees it";
+export const CRACK_ICE_FROZEN_V7 = FREEZE_FROZEN_MOVED_V7;
+export const CRACK_ICE_ALREADY_ACTED_V7 = FREEZE_ALREADY_ACTED_V7;
+export const CRACK_ICE_MOVED_V7 = "It moved this turn";
+export const CRACK_ICE_OCCUPIED_V7 = "A unit stands on that ice";
+export const CRACK_ICE_BUILT_V7 = "Built on: Pillage it instead";
+
+/** Whether the unit is of a kind that cracks ice (not an Ice Folk unit). */
+export function unitHasCrackIceV7(
+  view: PlayerViewV7,
+  unit: PublicUnitV7,
+): boolean {
+  return unitCracksIceV7(view, unit);
+}
+
+/**
+ * The ice tiles beside a unit it could crack but for what stands on them:
+ * explored ice that is the viewer's own or not an ally's.
+ */
+function crackableIceBesideV7(
+  view: PlayerViewV7,
+  unit: PublicUnitV7,
+): readonly PublicIceTileV7[] {
+  return view.ice.filter(
+    (entry) =>
+      chebyshev(entry.at, unit.at) === 1 &&
+      (entry.ownerId === view.viewer.id ||
+        !queryAlliedV7(view, view.viewer.id, entry.ownerId)),
+  );
+}
+
+/**
+ * Why an own unit next to crackable ice has no Crack Ice to use, from the
+ * rejection rows of section 2.9 in order: Frozen, already acted (or moved,
+ * for a role that cannot act after moving), a unit on the ice, a building
+ * on it. Null when Crack Ice is offered, for an Ice Folk unit, an icebound
+ * ship (its "Sail" button says why), off the viewer's turn, and for a unit
+ * with no such ice beside it (no button is shown then).
+ */
+export function crackIceUnavailableTextV7(
+  view: PlayerViewV7,
+  unit: PublicUnitV7,
+  offered: boolean,
+): string | null {
+  if (
+    offered ||
+    view.ice.length === 0 ||
+    unit.ownerId !== view.viewer.id ||
+    view.turnOrder[view.activeSeatIndex] !== view.viewer.id ||
+    !unitHasCrackIceV7(view, unit) ||
+    crushWarningV7(view, unit) !== null
+  )
+    return null;
+  const beside = crackableIceBesideV7(view, unit);
+  if (beside.length === 0) return null;
+  if (unitIsFrozenV7(view, unit)) return CRACK_ICE_FROZEN_V7;
+  // `handled` alone (a Wait, a Move) leaves the primary action unused.
+  if (
+    unit.activation.attacked ||
+    unit.activation.specialActed ||
+    unit.activation.recovered ||
+    unit.activation.captured
+  )
+    return CRACK_ICE_ALREADY_ACTED_V7;
+  if (unit.activation.moved && !unitMayActAfterMoveV7(view, unit))
+    return CRACK_ICE_MOVED_V7;
+  const occupied = (at: CoordV7): boolean =>
+    view.units.some(
+      (other) =>
+        other.hp > 0 &&
+        other.at.x === at.x &&
+        other.at.y === at.y &&
+        !isAfloatFormV7(other.form),
+    );
+  if (beside.some((entry) => occupied(entry.at))) return CRACK_ICE_OCCUPIED_V7;
+  const built = (at: CoordV7): boolean =>
+    view.board.tiles.some(
+      (tile) =>
+        tile.at.x === at.x &&
+        tile.at.y === at.y &&
+        tile.explored &&
+        tile.improvement !== null,
+    );
+  if (beside.some((entry) => built(entry.at))) return CRACK_ICE_BUILT_V7;
+  return CRACK_ICE_ALREADY_ACTED_V7;
+}
+
+/** What an offered Crack Ice does, for its board label and its sentence. */
+export interface CrackIceOutcomeV7 {
+  /** The ice breaks into open water (else thick ice takes its first crack). */
+  readonly broken: boolean;
+  /** The icebound units a break frees. */
+  readonly freed: number;
+  /**
+   * An own or allied icebound unit stands on the tile: the target wears the
+   * Help mark (freed now, or by the next crack of thick ice).
+   */
+  readonly frees: boolean;
+}
+
+/** The exact outcome of an offered Crack Ice (`previewCrackIceV7`). */
+export function crackIceOutcomeV7(
+  view: PlayerViewV7,
+  preview: CrackIcePreviewV7,
+): CrackIceOutcomeV7 {
+  const friendly = (owner: number): boolean =>
+    owner === view.viewer.id || queryAlliedV7(view, view.viewer.id, owner);
+  const frees = view.units.some(
+    (unit) =>
+      unit.hp > 0 &&
+      unit.at.x === preview.at.x &&
+      unit.at.y === preview.at.y &&
+      isAfloatFormV7(unit.form) &&
+      friendly(unit.ownerId),
+  );
+  return { broken: preview.broken, freed: preview.freed.length, frees };
+}
+
+/**
+ * The board label of a Crack Ice: "Break", "Crack · 1 more breaks it", and
+ * over an own or allied frozen ship "Free the ship" or "Crack · 1 more
+ * frees it".
+ */
+export function crackIceTargetLabelV7(outcome: CrackIceOutcomeV7): string {
+  if (outcome.frees)
+    return outcome.broken
+      ? CRACK_ICE_FREE_LABEL_V7
+      : CRACK_ICE_FREE_LATER_LABEL_V7;
+  return outcome.broken ? CRACK_ICE_BREAK_LABEL_V7 : CRACK_ICE_CRACK_LABEL_V7;
+}
+
+/** The sentence of a Crack Ice for the cursor description. */
+export function crackIceOutcomeTextV7(outcome: CrackIceOutcomeV7): string {
+  const result = outcome.broken
+    ? "The ice breaks into open water"
+    : "The thick ice cracks; one more Crack breaks it";
+  const ships =
+    outcome.freed === 0
+      ? ""
+      : `: ${outcome.freed === 1 ? "the ship floats" : `${outcome.freed} ships float`} free`;
+  return `${CRACK_ICE_LABEL_V7}: ${result}${ships}.`;
 }
 
 /** The ice chip of the tile dock: "Ice", "Ice · thick" or "Ice · cracked". */
@@ -286,6 +465,11 @@ export const SLIDE_MOVE_LABEL_V7 = "Slide: it stops where the ice ends";
  */
 export const GLACIER_MOVE_LABEL_V7 = `${GLACIER_LABEL_V7}: +${GLACIER_ICE_MOVE_BONUS_V7} Move across ice`;
 export const SLIP_MOVE_LABEL_V7 = "Ice: your Move ends here";
+/**
+ * The frozen sea redesign (section 4.1): the slip's legend when the ice's
+ * owner is known to have Black Ice (its freeze has been seen this match).
+ */
+export const SLIP_BLACK_ICE_MOVE_LABEL_V7 = `${SLIP_MOVE_LABEL_V7} (${BLACK_ICE_LABEL_V7} freezes)`;
 
 /** The chips and warnings of an icebound unit. */
 export const ICEBOUND_TOOLTIP_V7 = `${ICEBOUND_LABEL_V7}: cannot sail, shoot, board or strike back`;
@@ -395,6 +579,24 @@ export function frozenSeaBoundaryNoticeV7(
       );
       if (
         event.icebound.some((id) => unitById(id)?.ownerId === after.viewer.id)
+      )
+        toast = true;
+    } else if (event.kind === "ICE_CRACKED") {
+      // The frozen sea redesign (section 4.1): a Crack broke or cracked a
+      // tile, and freed the ships frozen in it.
+      const freed =
+        event.freed.length === 0
+          ? ""
+          : `: ${event.freed.length === 1 ? "the ship floats" : `${event.freed.length} ships float`} free`;
+      parts.push(
+        `${event.broken ? "The ice broke" : "The ice cracked"}${freed}`,
+      );
+      const owner = before.ice.find(
+        (entry) => entry.at.x === event.at.x && entry.at.y === event.at.y,
+      )?.ownerId;
+      if (
+        (owner === after.viewer.id && event.playerId !== after.viewer.id) ||
+        event.freed.some((id) => unitById(id)?.ownerId === after.viewer.id)
       )
         toast = true;
     } else if (event.kind === "ICE_MELTED") {

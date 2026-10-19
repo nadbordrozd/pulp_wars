@@ -284,17 +284,37 @@ describe("Gallery presentation", () => {
           galleryBuildingGroundV7("FARM", faction),
         );
       for (const row of ["PORT", "SHIPYARD"] as const)
-        expect(galleryBuildingGroundV7(row, faction)).toEqual({
-          id: "SHALLOW_WATER",
-          layers: [
-            {
-              kind: "SUBJECT",
-              subject: "TERRAIN:SHALLOW_WATER",
-              at: { x: 0, y: 0 },
-            },
-          ],
-        });
+        expect(galleryBuildingGroundV7(row, faction)).toEqual(
+          faction === "ICE_FOLK"
+            ? galleryBuildingGroundV7("FISHING_HOLE")
+            : {
+                id: "SHALLOW_WATER",
+                layers: [
+                  {
+                    kind: "SUBJECT",
+                    subject: "TERRAIN:SHALLOW_WATER",
+                    at: { x: 0, y: 0 },
+                  },
+                ],
+              },
+        );
     }
+    // The frozen sea redesign (bead pulp_wars-5ti.27): the Ice Folk docks
+    // and the Fishing Hole stand on their ice over Shallow Water.
+    expect(galleryBuildingGroundV7("FISHING_HOLE")).toEqual({
+      id: "SHALLOW_ICE",
+      layers: [
+        {
+          kind: "SUBJECT",
+          subject: "TERRAIN:SHALLOW_WATER",
+          at: { x: 0, y: 0 },
+        },
+        { kind: "SUBJECT", subject: "TERRAIN:ICE_SHALLOW", at: { x: 0, y: 0 } },
+      ],
+    });
+    expect(galleryBuildingSubjectV7("FISHING_HOLE", "ORIGINAL")).toBe(
+      "IMPROVEMENT:ICE_FOLK:FISHING_HOLE",
+    );
   });
 
   it("fades the tile improvements as the board does", () => {

@@ -592,6 +592,16 @@ The Ice Folk have no ships and never embark, but they build both docks (a Port k
 
 Record: [faction buildings, section 13](../FACTION_BUILDINGS.md#13-a-forge-a-workshop-a-port-and-a-shipyard-per-faction-bead-pulp_wars-2yc38-stage-2). Names unchanged; drawn by the owner of the territory; the shared four in the Classic look and the LEGACY art set.
 
+## The Ice Harbour, the Great Harbour and the Fishing Hole (bead `pulp_wars-5ti.27`)
+
+The frozen sea redesign ([RULESET_7_ICE_REDESIGN.md section 4.2](../../product/RULESET_7_ICE_REDESIGN.md#42-new-art-pixellab-the-checked-in-pipeline)) puts every Ice Folk dock on ice, so the Port and the Shipyard above (piers on water) were redrawn in place, and the new Fishing Hole got its own piece. Batch `buildings-ice-folk`, class `calm-feature`, 72 x 72, `generate-image-v2` (nine candidates per recipe), two seeds each; every candidate reviewed at 1:1 and x3 on both ice sheets.
+
+- **Ice Harbour** (`chibi-ice-folk-port`, subject `IMPROVEMENT:ICE_FOLK:PORT`, subject key `PORT/HARBOUR`, `ice-harbour-b` candidate 0): a low round boathouse of white ice blocks under a snow roof with a dark arch, an ice-blue pennant on the ridge, a fur-laden sled and a fish rack. `ice-harbour-a` was rejected: nine clean boathouses with no ice-blue accent, which read as plain igloos beside the Ice Folk houses. Supersedes `port-a`.
+- **Great Harbour** (`chibi-ice-folk-shipyard`, subject key `SHIPYARD/HARBOUR`, `great-harbour-b` candidate 3): a bigger round hall of ice blocks with a wide arch, a tall ice-blue crystal on the ridge and cream fur banners on bone poles, the round Ice Harbour's big sibling. `great-harbour-a` was rejected: good halls, but pointed gables that do not match the round harbour. Supersedes `shipyard-a`.
+- **Fishing Hole** (`chibi-ice-folk-fishing-hole`, subject `IMPROVEMENT:ICE_FOLK:FISHING_HOLE`, `fishing-hole-b` candidate 0): a round slab of sea ice with a dark round hole, a bone-and-hide rack with two hanging fish and a cream fur stool. `fishing-hole-a` was rejected: pale bone racks on the pale slab, and the fish nearly vanish at 1:1. Only the Ice Folk cut one, so a captor's Fishing Hole (the shared subject `IMPROVEMENT:FISHING_HOLE`) falls back to this piece.
+
+On the board every Ice Folk building on ice stands on a code-drawn packed-snow pad (an ellipse `#eef4f7` with a `#b9c9d3` rim, its north-east side a shade darker), so it sits on the sheet; the Fishing Hole is cut in its own slab and has none. Names: the Port is the **Ice Harbour** and the Shipyard the **Great Harbour** (`src/render/faction-buildings-v7.ts`).
+
 ## Market (bead `pulp_wars-eu3r.1`)
 
 - **Market** (`chibi-ice-folk-market`, `market-a` candidate 2): two pale timber stalls under snow-heaped cream hide awnings, rows of silver fish and blocks of ice-blue ice, a small sled of sacks.

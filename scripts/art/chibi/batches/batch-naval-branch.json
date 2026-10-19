@@ -161,6 +161,16 @@
       },
       "ownerColour": false,
       "bottomMargin": 2
+    },
+    {
+      "id": "chibi-icon-action-crack-ice",
+      "subject": "ICON:ACTION:CRACK_ICE",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
     }
   ],
   "recipes": [
@@ -703,6 +713,32 @@
       "promptAddendum": "The strip is short: it fills the full width of the image but only the lower third of its height.",
       "negativeAddendum": "tall iceberg, mountain range, tall peaks, spikes taller than they are wide",
       "notes": "overlay-icebound-a is a good ridge but 28 px tall: over a ship it hides two thirds of a Patrol Boat's hull and nearly all of a Submarine's. This asks for a strip about a third as tall."
+    },
+    {
+      "id": "icon-action-crack-ice-a",
+      "asset": "chibi-icon-action-crack-ice",
+      "endpoint": "create-image-pixen",
+      "seed": 27131,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The item is drawn large and fills most of the image.",
+      "negativeAddendum": "person, hand, arm, ship, boat, water, waves, axe, hammer, snowflake, mountain",
+      "notes": "Bead pulp_wars-5ti.27 (RULESET_7_ICE_REDESIGN.md section 4.2): the Crack Ice action of every faction but the Ice Folk: a pick striking an ice slab, a crack and two chips."
+    },
+    {
+      "id": "icon-action-crack-ice-b",
+      "asset": "chibi-icon-action-crack-ice",
+      "endpoint": "create-image-pixen",
+      "seed": 27132,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The item is drawn large and fills most of the image.",
+      "negativeAddendum": "person, hand, arm, ship, boat, water, waves, axe, hammer, snowflake, mountain",
+      "notes": "A second seed of icon-action-crack-ice-a."
     }
   ]
 }

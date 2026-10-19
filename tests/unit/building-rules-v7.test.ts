@@ -127,7 +127,8 @@ describe("building placement lines (pulp_wars-2yc.90)", () => {
         ] as const
       ).map((id) => buildingRuleTextV7(id, "ICE_FOLK")),
     ).toEqual([
-      "Port: on your ice or Shallow Water (it freezes) by its city's land; +1 population",
+      // Bead pulp_wars-5ti.27: the Ice Folk Port is the Ice Harbour.
+      "Ice Harbour: on your ice or Shallow Water (it freezes) by its city's land; +1 population",
       "Windmill: one per city, land or ice, by your Frost Gardens or Fishing Holes; +1 each, max 8",
       "Sawmill: one per city, land or ice, next to your Lumber Camps; +1 each, max 8",
       "Forge: one per city, land or ice, next to your Mines; +1 each, max 6",
@@ -136,6 +137,10 @@ describe("building placement lines (pulp_wars-2yc.90)", () => {
       "Monument: one per city, on land or your ice, built with an achievement; +3 population",
       "Fishing Hole: on your own ice in your borders; counts as a Frost Garden; +1 population",
     ]);
+    // Bead pulp_wars-5ti.27: and its Shipyard the Great Harbour.
+    expect(buildingRuleTextV7("SHIPYARD", "ICE_FOLK")).toBe(
+      "Great Harbour: one per city, upgrades one of your active Ice Harbours; +1 more population",
+    );
     // A faction names its own buildings, and the Farms a mill counts.
     expect(buildingRuleTextV7("WINDMILL", "UNDEAD")).toBe(
       "Bone Mill: one per city, next to your Graveyards; +1 population for each, max 8",

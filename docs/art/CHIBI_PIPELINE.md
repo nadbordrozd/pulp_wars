@@ -2254,3 +2254,32 @@ What PixelLab did, added to the prompt notes of the earlier batches:
 - **A blade recolour edit shifts the cloth warmer**: asking for a steel
   blade with blood moved the Summoner's oxblood cowl to a crimson-orange.
 - **"Stubble" drew a full beard**, and a negative "beard" did not stop it.
+
+## The frozen sea redesign (bead `pulp_wars-5ti.27`)
+
+Four subjects for the permanent ice
+([what and why](factions/ICE_FOLK.md#the-ice-harbour-the-great-harbour-and-the-fishing-hole-bead-pulp_wars-5ti27),
+[the icon](NAVAL_FACTIONS.md#the-sea-ice)): the Crack Ice icon in batch
+`naval-branch` (a fresh `icon`, two seeds) and, in batch
+`buildings-ice-folk`, the Ice Harbour and Great Harbour redrawn in place
+(new recipes on the existing assets, which supersede `port-a` and
+`shipyard-a`) and the new Fishing Hole (`calm-feature`, two seeds of nine
+candidates each). Review: `npm run art:naval-branch-ice-review`
+(`ice-buildings-{1x,x3}.png`: every piece on plain and thick ice over both
+waters beside Snow, the icon on the dock's dark disc).
+
+- **A subject key may change on a generated asset.** The redrawn docks
+  keep their asset IDs and take the subject keys
+  `IMPROVEMENT:ICE_FOLK:PORT/HARBOUR` and `SHIPYARD/HARBOUR`; the older
+  recipes keep the request stored in their records, and the batch plan only
+  needs every live description within the endpoint's 2000 characters, so
+  the new subject lines were cut to the length of the old ones.
+- **A subject renamed after acceptance is accepted again.** The Fishing
+  Hole was first accepted under the shared subject and moved to
+  `IMPROVEMENT:ICE_FOLK:FISHING_HOLE` (every faction building of the batch
+  is a faction subject); `accept` of the same candidate rewrote the asset
+  record with the new subject, and the stored request keeps the old one.
+- **"No accent" reads as an igloo.** The first seed of the Ice Harbour
+  drew nine clean ice boathouses, none with the ice-blue accent; beside
+  the Ice Folk houses they read as igloos. The second seed's pennant on
+  the ridge is what says "dock".

@@ -572,7 +572,7 @@ const ENTRIES = {
   ROCKFALL: ["Rockfall", "From a mountain it can attack 2 tiles away."],
   FREEZE: [
     "Freeze",
-    "Turns the water next to it to ice, which your units slide across. Unlocked by a technology.",
+    "Turns the water next to it to ice that stays until it is cracked: your units slide across it and your cities build on it. Unlocked by a technology.",
   ],
   COLD_BLOOD: ["Cold Blood", "Hits a Frozen unit harder."],
   BLIZZARD: [

@@ -489,6 +489,19 @@ shore is left whole, so ice joins ice without a seam and reaches the land.
 wash, four small snow drifts and a few sparkles, all inside the tile's
 margin: snow where melting ice has cracks.
 
+**The frozen sea redesign** (bead `pulp_wars-5ti.27`,
+[RULESET_7_ICE_REDESIGN.md section 4.1](../product/RULESET_7_ICE_REDESIGN.md#41-board-and-dock)):
+ice no longer melts, so the melting stages are gone. The `permanent`
+dusting is now **thick ice** (its owner has Glacier), and a **cracked**
+thick tile adds the old stage-2 crack lines over the dusting. No ice tile
+art changed. **Crack Ice** has its icon in this batch,
+`ICON:ACTION:CRACK_ICE` (`chibi-icon-action-crack-ice`,
+`icon-action-crack-ice-a` candidate 0): an ice pick with a wooden handle
+driven into a thick pale slab that splits with dark cracks while two chips
+fly, on the dock's dark button beside the Freeze wave and the Board
+grapnel. `icon-action-crack-ice-b` (an axe head in a small block) was
+rejected: it read as chopping wood.
+
 **Icebound.** `OVERLAY:ICEBOUND` (`chibi-overlay-icebound`, 80 x 40, anchor
 (40, 0): the lower half of the ship's cell, drawn over the hull) is a low
 strip of pack ice 66 px wide and 18 px tall with a jagged crest. With the

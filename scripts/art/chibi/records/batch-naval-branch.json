@@ -1659,6 +1659,182 @@
         "reviewedAt": "2026-10-05T10:09:21.786Z"
       }
     },
+    "icon-action-crack-ice-a": {
+      "id": "icon-action-crack-ice-a",
+      "asset": "chibi-icon-action-crack-ice",
+      "jobId": "sync-0b4616de-44e5-4c4d-b94e-5182a0d96e3d",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "naval-branch",
+        "asset": "chibi-icon-action-crack-ice",
+        "subject": "ICON:ACTION:CRACK_ICE",
+        "faction": "ORIGINAL",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 27131,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/ORIGINAL.md#prompt-fragment + docs/art/factions/ORIGINAL.md#negative-fragment",
+            "text": "Faction: cheerful, practical storybook medieval. Everything is made of woven cloth, light steel, pale birch wood, cream plaster and beige cobblestone, with stitched hems, steel rivets and carved trims as details; cloth is shaded with a deeper tone of its own colour, steel with darker blue-grey, wood with darker straw yellow, plaster and stone with cool grey, never brown.",
+            "negative": "gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, steel plate full armour, magic glow, glowing runes, wings, bronze, copper, rust, brown boots, brown leather, dark brown shading, red-brown"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+            "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/ORIGINAL.json",
+            "text": "Subject: one big chunky ice pick with a pale birch-wood handle and a light steel head, at the upper right, striking down into one thick flat slab of pale blue-white ice at the lower left; a bold dark zigzag crack runs across the slab from where the pick hits, and two small sharp pale ice chips fly up and away; only the pick, the slab and the chips; nothing else in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The item is drawn large and fills most of the image.",
+            "negative": "person, hand, arm, ship, boat, water, waves, axe, hammer, snowflake, mountain"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: cheerful, practical storybook medieval. Everything is made of woven cloth, light steel, pale birch wood, cream plaster and beige cobblestone, with stitched hems, steel rivets and carved trims as details; cloth is shaded with a deeper tone of its own colour, steel with darker blue-grey, wood with darker straw yellow, plaster and stone with cool grey, never brown. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one big chunky ice pick with a pale birch-wood handle and a light steel head, at the upper right, striking down into one thick flat slab of pale blue-white ice at the lower left; a bold dark zigzag crack runs across the slab from where the pick hits, and two small sharp pale ice chips fly up and away; only the pick, the slab and the chips; nothing else in the image. The item is drawn large and fills most of the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, steel plate full armour, magic glow, glowing runes, wings, bronze, copper, rust, brown boots, brown leather, dark brown shading, red-brown, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, person, hand, arm, ship, boat, water, waves, axe, hammer, snowflake, mountain",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: cheerful, practical storybook medieval. Everything is made of woven cloth, light steel, pale birch wood, cream plaster and beige cobblestone, with stitched hems, steel rivets and carved trims as details; cloth is shaded with a deeper tone of its own colour, steel with darker blue-grey, wood with darker straw yellow, plaster and stone with cool grey, never brown. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one big chunky ice pick with a pale birch-wood handle and a light steel head, at the upper right, striking down into one thick flat slab of pale blue-white ice at the lower left; a bold dark zigzag crack runs across the slab from where the pick hits, and two small sharp pale ice chips fly up and away; only the pick, the slab and the chips; nothing else in the image. The item is drawn large and fills most of the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, steel plate full armour, magic glow, glowing runes, wings, bronze, copper, rust, brown boots, brown leather, dark brown shading, red-brown, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, person, hand, arm, ship, boat, water, waves, axe, hammer, snowflake, mountain."
+      },
+      "submittedAt": "2026-10-19T00:03:54.647Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-branch/icon-action-crack-ice-a.png",
+      "rawSheetSha256": "e5b0123c6a725e4a169dce9db06886902b2b0b81e75290d9ca1d521fc091819d",
+      "plateHints": [
+        {
+          "bandRows": 10,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8333,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-19T00:04:32.230Z",
+      "usageUsd": 0.008124390496148003,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "An ice pick driven into a thick pale slab that splits with dark cracks while chips fly: reads as breaking ice at 48 px and on the dock's dark button; the wooden handle and steel head stay apart from the Freeze wave and the Board grapnel. Reviewed at 1:1 and x4.",
+        "reviewedAt": "2026-10-19T00:05:42.489Z"
+      }
+    },
+    "icon-action-crack-ice-b": {
+      "id": "icon-action-crack-ice-b",
+      "asset": "chibi-icon-action-crack-ice",
+      "jobId": "sync-ffcf5524-1907-428f-865d-9d2404d848a2",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "naval-branch",
+        "asset": "chibi-icon-action-crack-ice",
+        "subject": "ICON:ACTION:CRACK_ICE",
+        "faction": "ORIGINAL",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 27132,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/ORIGINAL.md#prompt-fragment + docs/art/factions/ORIGINAL.md#negative-fragment",
+            "text": "Faction: cheerful, practical storybook medieval. Everything is made of woven cloth, light steel, pale birch wood, cream plaster and beige cobblestone, with stitched hems, steel rivets and carved trims as details; cloth is shaded with a deeper tone of its own colour, steel with darker blue-grey, wood with darker straw yellow, plaster and stone with cool grey, never brown.",
+            "negative": "gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, steel plate full armour, magic glow, glowing runes, wings, bronze, copper, rust, brown boots, brown leather, dark brown shading, red-brown"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+            "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/ORIGINAL.json",
+            "text": "Subject: one big chunky ice pick with a pale birch-wood handle and a light steel head, at the upper right, striking down into one thick flat slab of pale blue-white ice at the lower left; a bold dark zigzag crack runs across the slab from where the pick hits, and two small sharp pale ice chips fly up and away; only the pick, the slab and the chips; nothing else in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The item is drawn large and fills most of the image.",
+            "negative": "person, hand, arm, ship, boat, water, waves, axe, hammer, snowflake, mountain"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: cheerful, practical storybook medieval. Everything is made of woven cloth, light steel, pale birch wood, cream plaster and beige cobblestone, with stitched hems, steel rivets and carved trims as details; cloth is shaded with a deeper tone of its own colour, steel with darker blue-grey, wood with darker straw yellow, plaster and stone with cool grey, never brown. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one big chunky ice pick with a pale birch-wood handle and a light steel head, at the upper right, striking down into one thick flat slab of pale blue-white ice at the lower left; a bold dark zigzag crack runs across the slab from where the pick hits, and two small sharp pale ice chips fly up and away; only the pick, the slab and the chips; nothing else in the image. The item is drawn large and fills most of the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, steel plate full armour, magic glow, glowing runes, wings, bronze, copper, rust, brown boots, brown leather, dark brown shading, red-brown, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, person, hand, arm, ship, boat, water, waves, axe, hammer, snowflake, mountain",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: cheerful, practical storybook medieval. Everything is made of woven cloth, light steel, pale birch wood, cream plaster and beige cobblestone, with stitched hems, steel rivets and carved trims as details; cloth is shaded with a deeper tone of its own colour, steel with darker blue-grey, wood with darker straw yellow, plaster and stone with cool grey, never brown. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one big chunky ice pick with a pale birch-wood handle and a light steel head, at the upper right, striking down into one thick flat slab of pale blue-white ice at the lower left; a bold dark zigzag crack runs across the slab from where the pick hits, and two small sharp pale ice chips fly up and away; only the pick, the slab and the chips; nothing else in the image. The item is drawn large and fills most of the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, musket, rifle, pistol, cannon, gunpowder, top hat, bicorne, tricorne, Napoleonic uniform, modern clothing, steel plate full armour, magic glow, glowing runes, wings, bronze, copper, rust, brown boots, brown leather, dark brown shading, red-brown, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, person, hand, arm, ship, boat, water, waves, axe, hammer, snowflake, mountain."
+      },
+      "submittedAt": "2026-10-19T00:04:32.233Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-branch/icon-action-crack-ice-b.png",
+      "rawSheetSha256": "882cccd483875b8d082f44fab300c11e3f7a80770b76e134875b963d1bf9ba06",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7805,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-19T00:05:12.919Z",
+      "usageUsd": 0.008748815695444744,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "An axe head in a small block: reads as chopping wood more than breaking ice; the slab is small and the crack hardly shows at 48 px.",
+        "reviewedAt": "2026-10-19T00:05:42.339Z"
+      }
+    },
     "icon-action-ram-a": {
       "id": "icon-action-ram-a",
       "asset": "chibi-icon-action-ram",
@@ -3171,6 +3347,50 @@
       },
       "notes": "A three-pronged steel grappling hook on a trailing rope.",
       "acceptedAt": "2026-10-05T10:09:21.010Z"
+    },
+    "chibi-icon-action-crack-ice": {
+      "id": "chibi-icon-action-crack-ice",
+      "subject": "ICON:ACTION:CRACK_ICE",
+      "assetClass": "ICON",
+      "status": "ACCEPTED",
+      "recipe": "icon-action-crack-ice-a",
+      "candidate": 0,
+      "candidateSha256": "e5b0123c6a725e4a169dce9db06886902b2b0b81e75290d9ca1d521fc091819d",
+      "master": {
+        "path": "public/assets/chibi/icons/chibi-icon-action-crack-ice.png",
+        "sha256": "e5b0123c6a725e4a169dce9db06886902b2b0b81e75290d9ca1d521fc091819d",
+        "pixelSha256": "c545983bf9aa6a04d367131f4be9074e80abfe67fcc8d9b07430c0784d86c04d",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 10,
+        "groundShare": 0,
+        "footprintWidthShare": 0.8333,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "An ice pick driven into a thick pale slab that splits with dark cracks while chips fly: reads as breaking ice at 48 px and on the dock's dark button; the wooden handle and steel head stay apart from the Freeze wave and the Board grapnel. Reviewed at 1:1 and x4.",
+      "acceptedAt": "2026-10-19T00:05:42.489Z"
     },
     "chibi-icon-action-ram": {
       "id": "chibi-icon-action-ram",

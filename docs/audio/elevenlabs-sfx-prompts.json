@@ -227,6 +227,21 @@
       "promptInfluence": 0.5
     },
     {
+      "id": "special.ice-crack",
+      "kind": "burst",
+      "suffix": "style",
+      "prompt": "A sharp crack of thick lake ice, a short splintering, a small splash.",
+      "durationSeconds": 0.8,
+      "minSeconds": 0.2,
+      "maxSeconds": 0.8,
+      "promptInfluence": 0.4,
+      "loudness": {
+        "like": "impact.ice",
+        "offsetDb": 0,
+        "reason": "Bead pulp_wars-5ti.27: Crack Ice breaking or cracking a tile (docs/product/RULESET_7_ICE_REDESIGN.md section 4.3), at the level of the ice shatter."
+      }
+    },
+    {
       "id": "impact.splat",
       "kind": "hit",
       "suffix": "style",

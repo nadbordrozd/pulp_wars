@@ -78,6 +78,10 @@ const FACTION_BUILDINGS: Readonly<
   ]),
   ICE_FOLK: new Map([
     building("FARM", "Frost Garden", "Frost flowers that like the cold."),
+    // The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 2.6, bead
+    // pulp_wars-5ti.27): the Ice Folk dock stands on their ice.
+    building("PORT", "Ice Harbour", "A boathouse on the ice; no ship docks."),
+    building("SHIPYARD", "Great Harbour", "An ice hall for a frozen bay."),
   ]),
   DWARF: new Map([
     building("FARM", "Mushroom Farm", "Grown in the dark, eaten with ale."),

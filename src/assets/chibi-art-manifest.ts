@@ -1762,6 +1762,16 @@ export const CHIBI_ART_ASSETS_V7: readonly ChibiArtAssetV7[] = [
     height: 48,
     url: chibiArtUrl("assets/chibi/icons/chibi-icon-action-torpedo.png"),
   },
+  // The frozen sea redesign (bead pulp_wars-5ti.27, the same batch): Crack
+  // Ice, the action of every faction's unit and ship but the Ice Folk's.
+  {
+    id: "chibi-icon-action-crack-ice",
+    subject: "ICON:ACTION:CRACK_ICE",
+    assetClass: "ICON",
+    width: 48,
+    height: 48,
+    url: chibiArtUrl("assets/chibi/icons/chibi-icon-action-crack-ice.png"),
+  },
   // --- The Ice Folk sea ice (bead pulp_wars-5ti.6, the same batch): the ice
   // over Shallow and Deep Water, two windows of one field each, and the
   // Icebound pack ice at the foot of a ship frozen in (the lower half of

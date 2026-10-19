@@ -1,4 +1,5 @@
 import {
+  previewCrackIceV7,
   previewFreezeV7,
   unitMovementModeV7,
   type CommandV7,
@@ -13,10 +14,14 @@ import {
   SEA_ICE_EDGE_WEST_V7,
 } from "../../assets/sea-ice-v7";
 import {
+  CRACK_ICE_PICK_V7,
   FREEZE_PICK_V7,
   ICEBOUND_LABEL_V7,
   SLIDE_MOVE_LABEL_V7,
   SLIP_MOVE_LABEL_V7,
+  crackIceOutcomeTextV7,
+  crackIceOutcomeV7,
+  crackIceTargetLabelV7,
   crushWarningV7,
   freezeOutcomeTextV7,
   freezeOutcomeV7,
@@ -61,9 +66,13 @@ export interface IceboundMarkerV7 {
   readonly lethal: boolean;
 }
 
-/** A line role's Freeze being aimed: its tiles are the only map targets. */
+/**
+ * A line role's Freeze being aimed, or (the frozen sea redesign, bead
+ * pulp_wars-5ti.27) another faction's Crack Ice: its tiles are the only map
+ * targets.
+ */
 export interface FreezePickV7 {
-  readonly kind: "FREEZE";
+  readonly kind: "FREEZE" | "CRACK_ICE";
   readonly unitId: UnitId;
 }
 
@@ -151,6 +160,37 @@ export function freezePickTargetsV7(
           : { previewNote: `${ICEBOUND_LABEL_V7} ${outcome.icebound}` }),
         semanticLabel: `${freezeOutcomeTextV7(outcome)} ${FREEZE_PICK_V7}.`,
         freeze: { tiles: preview.tiles },
+      },
+    ];
+  });
+}
+
+/**
+ * The map targets of an armed Crack Ice (the frozen sea redesign,
+ * RULESET_7_ICE_REDESIGN.md section 4.1): one per offered `CRACK_ICE` of
+ * the unit, on its ice tile, labelled with the exact outcome of
+ * `previewCrackIceV7`. It harms the owner's work, so it wears the Attack
+ * mark; over an own or allied frozen ship it wears the Help mark.
+ */
+export function crackIcePickTargetsV7(
+  view: PlayerViewV7,
+  commands: readonly CommandV7[],
+  pick: FreezePickV7,
+): MapCommandTargetV7[] {
+  return commands.flatMap((command): MapCommandTargetV7[] => {
+    if (command.kind !== "CRACK_ICE" || command.unitId !== pick.unitId)
+      return [];
+    const preview = previewCrackIceV7(view, command.unitId, command.at);
+    if (preview === null) return [];
+    const outcome = crackIceOutcomeV7(view, preview);
+    return [
+      {
+        at: command.at,
+        command,
+        family: "CRACK_ICE",
+        ...(outcome.frees ? { highlight: "SUPPORT" as const } : {}),
+        previewLabel: crackIceTargetLabelV7(outcome),
+        semanticLabel: `${crackIceOutcomeTextV7(outcome)} ${CRACK_ICE_PICK_V7}.`,
       },
     ];
   });

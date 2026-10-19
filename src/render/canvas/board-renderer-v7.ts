@@ -269,6 +269,7 @@ import { COWED_BANNER_V7, frogNameV7 } from "../cult-ritual-presentation-v7";
 import {
   addFreezePickEntriesV7,
   addFreezeRingEntriesV7,
+  crackIcePickTargetsV7,
   freezePickTargetsV7,
   iceboundMarkerV7,
   moveOnIceLabelV7,
@@ -281,6 +282,7 @@ import {
   type SeaIceCellV7,
 } from "./frozen-sea-board-plan-v7";
 import {
+  drawIceBuildingPadV7,
   drawIceboundMarkerV7,
   drawSeaIceCellV7,
   drawSlideArrowV7,
@@ -759,6 +761,11 @@ export interface MapCommandTargetV7 {
      * on (its line runs on from there).
      */
     | "FREEZE"
+    /**
+     * The frozen sea redesign (bead pulp_wars-5ti.27): an ice tile next to
+     * the unit that an aimed Crack Ice breaks or cracks.
+     */
+    | "CRACK_ICE"
     /**
      * The Cultists (bead `pulp_wars-mch9.17`): an own unit an aiming
      * Summoner may Sacrifice, and a broken enemy it may Seize.
@@ -1305,6 +1312,11 @@ export interface BoardRenderPlanEntryV7 {
   readonly naval?: NavalUnitMarkersV7;
   /** TERRAIN only, the frozen sea: the sea ice over this water cell. */
   readonly seaIce?: SeaIceCellV7;
+  /**
+   * IMPROVEMENT only, the frozen sea redesign (bead pulp_wars-5ti.27): the
+   * building stands on ice, so it is drawn on a packed-snow pad.
+   */
+  readonly onIce?: true;
   /** UNIT only, the frozen sea: a ship locked in the ice, and its crush. */
   readonly icebound?: IceboundMarkerV7;
   /** CRUMBS only, the Candy revision: the role, the turns left, the bite. */
@@ -1619,6 +1631,12 @@ export function buildBoardRenderPlanV7(
           : { sourceCrop: farm.sourceCrop }),
         ...(farm?.partner === undefined ? {} : { farmPartner: farm.partner }),
         ...(fadeGround === null ? {} : { factionGrass: fadeGround }),
+        // The frozen sea redesign (bead pulp_wars-5ti.27): a building on
+        // ice stands on a packed-snow pad; a Fishing Hole is cut in its own
+        // slab of ice, which is its pad.
+        ...(seaIce.has(coordKey(tile.at)) && tile.improvement !== "FISHING_HOLE"
+          ? { onIce: true as const }
+          : {}),
         label:
           factionBuildingV7(tile.improvement, tileFaction)?.name ??
           title(tile.improvement),
@@ -2079,9 +2097,10 @@ export function buildBoardRenderPlanV7(
       targets,
       interaction.cursor ?? null,
     );
-  if (freezePick !== null)
-    addFreezePickEntriesV7(entries, view, commands, targets, freezePick);
-  else if (
+  if (freezePick !== null) {
+    if (freezePick.kind === "FREEZE")
+      addFreezePickEntriesV7(entries, view, commands, targets, freezePick);
+  } else if (
     iceFolkMatch &&
     selectedUnitId !== null &&
     !kaboomPreview &&
@@ -2383,7 +2402,9 @@ export function boardMapTargetsV7(
                     ? cultTrickPickTargetsV7(view, commands, cultPick)
                     : cultChannelPickTargetsV7(view, commands, cultPick)
                 : freezePick !== null
-                  ? freezePickTargetsV7(view, commands, freezePick)
+                  ? freezePick.kind === "CRACK_ICE"
+                    ? crackIcePickTargetsV7(view, commands, freezePick)
+                    : freezePickTargetsV7(view, commands, freezePick)
                   : giantPick !== null
                     ? giantPickTargetsV7(
                         view,
@@ -4168,6 +4189,13 @@ export function drawBoardV7(input: {
       }
       if (entry.kind === "RESOURCE" && entry.coveredByImprovement === true)
         continue;
+      // The frozen sea redesign (bead pulp_wars-5ti.27): a building on ice
+      // sits on a packed-snow pad, not floating on the sheet.
+      if (entry.kind === "IMPROVEMENT" && entry.onIce === true)
+        drawIceBuildingPadV7(context, x, y, camera.zoom, {
+          sceneAlpha,
+          highContrast: input.highContrast ?? false,
+        });
       if (entry.kind === "FIELD_DEFENSE") {
         // Deferred with the piece overlays so a tall piece in the row below
         // never hides it.
