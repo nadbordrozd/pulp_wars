@@ -980,6 +980,13 @@ describe("natural maps", () => {
       "FRONTIER_8",
       "FRONTIER_9",
       "FRONTIER_10",
+      // The Humans campaign (`pulp_wars-hmyk.4`).
+      "HUMAN_1",
+      "HUMAN_2",
+      "HUMAN_3",
+      "HUMAN_4",
+      "HUMAN_5",
+      "HUMAN_6",
     ]);
     for (const mission of MISSION_REGISTRY_V7)
       expect(missionMapDriftV7(mission), mission.id).toEqual([]);
@@ -996,6 +1003,10 @@ describe("natural maps", () => {
       FRONTIER_3: 11,
       FRONTIER_9: 17,
       FRONTIER_10: 17,
+      // Kessler Hall (`pulp_wars-hmyk.4`): the Baron's plain keeps no
+      // villages (thirteen gone, six of them under cities) and the Hall's
+      // tile loses its Game.
+      HUMAN_6: 15,
     };
     const terrainEdits: Readonly<Record<string, number>> = {
       // Bone Neck.
@@ -1015,7 +1026,9 @@ describe("natural maps", () => {
       expect(source.size).toBe(mission.size);
       expect(source.seats).toBe(mission.seats.length);
       // Terrain is changed where a mission's story needs it (a neck, a
-      // Rift, a clearing); every other edit removes a village or a chest.
+      // Rift, a clearing); every other edit removes a village, a chest or a
+      // resource (`pulp_wars-hmyk.4`: the Pearls the Redcaps cashed in H5,
+      // the Game under Kessler Hall in H6).
       expect(
         source.edits.filter((edit) => edit.kind === "TERRAIN").length,
         mission.id,
@@ -1024,6 +1037,7 @@ describe("natural maps", () => {
         source.edits.every(
           (edit) =>
             edit.kind === "TERRAIN" ||
+            (edit.kind === "RESOURCE" && edit.resource === ".") ||
             ((edit.kind === "VILLAGE" || edit.kind === "CHEST") &&
               !edit.present),
         ),

@@ -4,6 +4,7 @@ import {
   CAMPAIGN_FORMAT_LABELS_V7,
   CHAPTER_ONE_V7,
 } from "../../src/campaign/chapter-1";
+import { CAMPAIGN_CHAPTERS_V7 } from "../../src/campaign/progress-v7";
 import {
   FACTION_IDS_V7,
   MISSION_REGISTRY_V7,
@@ -125,9 +126,13 @@ describe("Chapter One data", () => {
       );
       if (definition !== null) expect(definition.hidden).toBeUndefined();
     }
-    // Every registered mission outside the chapter is a hidden fixture.
+    // Every registered mission outside the campaigns' chapters is a hidden
+    // fixture (the faction campaigns' chapters, `pulp_wars-hmyk.4`, are
+    // tested in campaign-humans-v7.test.ts and the like).
     const chapter = new Set(
-      CHAPTER_ONE_V7.missions.map((entry) => entry.missionId),
+      CAMPAIGN_CHAPTERS_V7.flatMap((item) =>
+        item.missions.map((entry) => entry.missionId),
+      ),
     );
     for (const definition of MISSION_REGISTRY_V7)
       if (!chapter.has(definition.id)) expect(definition.hidden).toBe(true);

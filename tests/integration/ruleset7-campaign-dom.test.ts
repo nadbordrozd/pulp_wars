@@ -74,15 +74,15 @@ describe("Ruleset 7 campaign front screen", () => {
     expect(document.querySelector("#v7-front-title")?.textContent).toBe(
       "Campaign",
     );
-    // The campaign map (pulp_wars-hmyk.3): the prologue open, the nine
-    // faction campaigns not written yet.
+    // The campaign map (pulp_wars-hmyk.3): the prologue open, the Humans
+    // campaign open (pulp_wars-hmyk.4), the other eight not written yet.
     expect(
       [...document.querySelectorAll<HTMLElement>(".v7-campaign-plate")].map(
         (plate) => [plate.dataset.campaign, plate.dataset.status],
       ),
     ).toEqual([
       ["FRONTIER", "open"],
-      ["HUMANS", "soon"],
+      ["HUMANS", "open"],
       ["UNDEAD", "soon"],
       ["DINOSAURS", "soon"],
       ["MARTIANS", "soon"],
@@ -101,7 +101,12 @@ describe("Ruleset 7 campaign front screen", () => {
       document
         .querySelector('[data-action="campaign-open-humans"]')
         ?.getAttribute("aria-label"),
-    ).toBe("The Human Campaign, Coming soon");
+    ).toBe("The Marshal's Law, open, 0 of 6 missions won");
+    expect(
+      document
+        .querySelector('[data-action="campaign-open-undead"]')
+        ?.getAttribute("aria-label"),
+    ).toBe("The Undead Campaign, Coming soon");
     requiredButton('[data-action="campaign-open-frontier"]').click();
     await settle();
     expect(document.activeElement?.getAttribute("data-action")).toBe(

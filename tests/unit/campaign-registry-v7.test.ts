@@ -5,6 +5,7 @@ import {
   type CampaignIdV7,
 } from "../../src/campaign/campaigns";
 import { CHAPTER_ONE_V7 } from "../../src/campaign/chapter-1";
+import { CHAPTER_HUMANS_V7 } from "../../src/campaign/chapter-humans";
 import {
   CAMPAIGN_CHEAT_STORAGE_KEY_V7,
   CampaignCheatGestureV7,
@@ -48,26 +49,42 @@ describe("campaign registry", () => {
     expect(Object.isFrozen(CAMPAIGNS_V7)).toBe(true);
   });
 
-  it("keeps the ten-mission chapter as the prologue, with its missions", () => {
+  it("keeps the ten-mission chapter as the prologue, with its missions, and the Humans campaign after it", () => {
     const frontier = campaignByIdV7("FRONTIER");
     expect(frontier?.chapter).toBe(CHAPTER_ONE_V7);
     expect(frontier?.title).toBe("The Hollow Frontier");
-    expect(CAMPAIGN_CHAPTERS_V7).toEqual([CHAPTER_ONE_V7]);
+    expect(CAMPAIGN_CHAPTERS_V7).toEqual([CHAPTER_ONE_V7, CHAPTER_HUMANS_V7]);
     expect(campaignMissionV7("FRONTIER_4")).toMatchObject({
       campaign: { id: "FRONTIER" },
       chapter: CHAPTER_ONE_V7,
       entry: { number: 4 },
     });
+    const humans = campaignByIdV7("HUMANS");
+    expect(humans?.chapter).toBe(CHAPTER_HUMANS_V7);
+    expect(humans?.title).toBe("The Marshal's Law");
+    expect(campaignMissionV7("HUMAN_6")).toMatchObject({
+      campaign: { id: "HUMANS" },
+      chapter: CHAPTER_HUMANS_V7,
+      entry: { number: 6 },
+    });
     expect(campaignByIdV7("NOWHERE")).toBeNull();
   });
 
-  it("shows the prologue open and every unwritten campaign as coming soon, cheat or not", () => {
+  it("shows the prologue and the Humans open and every unwritten campaign as coming soon, cheat or not", () => {
     for (const cheat of [false, true]) {
       const plates = campaignPlatesV7({}, cheat);
       expect(plates.map((plate) => [plate.campaign.id, plate.status])).toEqual([
         ["FRONTIER", "OPEN"],
-        ...CAMPAIGN_IDS_V7.slice(1).map((id) => [id, "SOON"]),
+        // The Humans campaign (`pulp_wars-hmyk.4`): tier 1, open from the
+        // start.
+        ["HUMANS", "OPEN"],
+        ...CAMPAIGN_IDS_V7.slice(2).map((id) => [id, "SOON"]),
       ]);
+      expect(plates[1]).toMatchObject({
+        missionsWon: 0,
+        missionCount: 6,
+        stars: 0,
+      });
       expect(plates[0]).toMatchObject({
         missionsWon: 0,
         missionCount: 10,

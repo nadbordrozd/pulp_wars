@@ -139,6 +139,19 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
   // Campaign danger pass B (`pulp_wars-v642.10`): revision 5.
   "FRONTIER_10@5:ORIGINAL":
     "f24c78997288b4f81b604f45d50f3a5dfd919c01bf01d6bc2bc0c39b3536f9c4",
+  // The Humans campaign, "The Marshal's Law" (`pulp_wars-hmyk.4`).
+  "HUMAN_1@1:ORIGINAL":
+    "ba75ade202d005fe8a6cd1db656371bf6404054dd8698435cc76acf92498a8a4",
+  "HUMAN_2@1:ORIGINAL":
+    "871e3f7498024c189f529ddb82925834f8fef4cd49150c5b1e79f73f0443e22a",
+  "HUMAN_3@1:ORIGINAL":
+    "66bdfcf29e63994de029611e0e7f351714a85ed3500a29fa5c15de48e4838eab",
+  "HUMAN_4@1:ORIGINAL":
+    "1271ca63142a0272dd7a402f47460d89028dd0f1b0ded04c8f49ed964af6f984",
+  "HUMAN_5@1:ORIGINAL":
+    "1c5ed5d356f0af55e50e583b3e494579f1d8a77350f8fe4ba277379b8fc49680",
+  "HUMAN_6@1:ORIGINAL":
+    "c94b6abbec360a3d37d2cdac72a36fc9471f47f531874a1bddb2d205813fc21f",
   // The siege fixture of the Normal AI (`pulp_wars-68k.6`).
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 2.
   "TEST_NECK@2:ORIGINAL":
@@ -436,6 +449,19 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
   // Campaign danger pass B (`pulp_wars-v642.10`): revision 5.
   "FRONTIER_10@5:ORIGINAL":
     "3261b98b1428331de3091102077772814e219b150055d67d2e0625d45e3274fd",
+  // The Humans campaign, "The Marshal's Law" (`pulp_wars-hmyk.4`).
+  "HUMAN_1@1:ORIGINAL":
+    "3ee8bb1f6f874afa324696dbb3060091f24308cc62b748ef5ce2bfc8ac4e7e3f",
+  "HUMAN_2@1:ORIGINAL":
+    "0e8d2e5846f0f5367cba7b470d1a510b16533810e3224ed483811d5d4fce054a",
+  "HUMAN_3@1:ORIGINAL":
+    "dc6f40e41a918df3198bc9d2bcff5c7bc8bafe34e71d7a4afee4d028bc0febcb",
+  "HUMAN_4@1:ORIGINAL":
+    "a91220876d04c2802bbe523e120a8beeed87099677255527ccdc186880112803",
+  "HUMAN_5@1:ORIGINAL":
+    "ad134da1a54dbd6b32f4e463159dd3c855d2a97807da297805f6829d45293122",
+  "HUMAN_6@1:ORIGINAL":
+    "cad347dca9c00e391df1c14dc289f8b9d428ec305bee4ab6443cae2147383c0c",
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 2.
   "TEST_NECK@2:ORIGINAL":
     "32595babd0a4d5371b260320b8d360786ba69b01808d2716eaadec332213500e",

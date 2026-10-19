@@ -1,5 +1,6 @@
 import type { FactionIdV7, UnitRoleIdV7 } from "../engine/v7/types";
 import { CHAPTER_ONE_V7, type CampaignChapterV7 } from "./chapter-1";
+import { CHAPTER_HUMANS_V7 } from "./chapter-humans";
 
 /**
  * The campaign registry (`pulp_wars-hmyk.3`, docs/product/CAMPAIGN.md
@@ -111,7 +112,13 @@ export const CAMPAIGNS_V7: readonly CampaignDefinitionV7[] = Object.freeze([
     placeholderRole: "GUARD",
     chapter: CHAPTER_ONE_V7,
   } satisfies CampaignDefinitionV7),
-  factionCampaign("HUMANS", "ORIGINAL", "Humans", "Human", 1),
+  // The Humans campaign (`pulp_wars-hmyk.4`, docs/product/SAGA.md 2.1).
+  Object.freeze({
+    ...factionCampaign("HUMANS", "ORIGINAL", "Humans", "Human", 1),
+    title: "The Marshal's Law",
+    subtitle: "Steele against the Baron",
+    chapter: CHAPTER_HUMANS_V7,
+  } satisfies CampaignDefinitionV7),
   factionCampaign("UNDEAD", "UNDEAD", "Undead", "Undead", 1),
   factionCampaign("DINOSAURS", "DINOSAUR", "Dinosaurs", "Dinosaur", 2),
   factionCampaign("MARTIANS", "MARTIAN", "Martians", "Martian", 2),

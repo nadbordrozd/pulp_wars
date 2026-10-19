@@ -3784,6 +3784,116 @@ A cheat for testing, **"All missions unlocked"**:
 - The switch is stored in localStorage (`pulpWars.campaignCheat`), so it
   survives a reload.
 
+## 15. The Humans campaign, "The Marshal's Law" (`pulp_wars-hmyk.4`)
+
+The first faction campaign: six missions, `HUMAN_1` to `HUMAN_6`
+(`src/engine/v7/missions/human-*.ts`), in the chapter
+`src/campaign/chapter-humans.ts`, which the campaign map's Humans plate
+opens (tier 1, open from the start). The briefings and closings are the
+saga bible's ([SAGA.md](SAGA.md) sections 2.1 and 3.1), trimmed to the
+card. Each mission was hand played through `play-text` (the "thoughtful"
+run, using the hint) and run by a scripted autopilot (research the
+cheapest technology, train Fighters, attack or capture what is in reach,
+march on the objective); from mission 3 on the autopilot must lose or miss
+the clock.
+
+### 15.1 The missions
+
+| Mission                      | Board (generator, seed) | Match seed | Seats                                        | Format and clock                                | Stars                             |
+| ---------------------------- | ----------------------- | ---------- | -------------------------------------------- | ----------------------------------------------- | --------------------------------- |
+| H1 Thaw at Northwatch        | Dry Land 11, seed 2     | 20261201   | Humans; Undead                               | Conquest of Hollow Barrow and the Barrow Camp   | by round 12; no city lost         |
+| H2 The Lord Protector's Writ | Dry Land 14, seed 9     | 20261202   | Humans; Goblins                              | Capture the three toll forts by round 18        | by round 14; no city lost         |
+| H3 Outlaws of the Greenwood  | Pangea 16, seed 21      | 20261203   | Humans; Goblins; Dinosaurs                   | Escort Mr. Pettigrew to Kingsbridge by round 20 | by round 16; no city lost         |
+| H4 The Siege of Fort Hollow  | Dry Land 16, seed 19    | 20261204   | Humans and Undead (ally); Cult; Ice Folk     | Hold Fort Hollow for 12 rounds                  | no city lost; Mr. Pettigrew lives |
+| H5 Broadsides at Saltmarsh   | Continents 16, seed 1   | 20261205   | Humans; Goblins                              | Sink the Golden Goose by round 20               | by round 16; no city lost         |
+| H6 Kessler Hall              | Pangea 20, seed 16      | 20261206   | Humans; Goblins, Dinosaurs and Cult (teamed) | Capture Kessler Hall by round 22                | by round 18; no city lost         |
+
+### 15.2 Hand play
+
+| Mission | Thoughtful run                                                             | Autopilot                                                                 |
+| ------- | -------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| H1      | Win, round 9, 3 stars                                                      | Defeat, round 12                                                          |
+| H2      | Win, round 15, 2 stars (missed the round-14 star)                          | Victory, round 12, 3 stars (allowed at step 2: a stream of Fighters wins) |
+| H3      | Win, round 15, 3 stars                                                     | Defeat, round 4                                                           |
+| H4      | Win (held), round 12, 2 stars (Mr. Pettigrew died in the last enemy phase) | Defeat, round 10                                                          |
+| H5      | Win, round 14, 3 stars                                                     | Defeat, out of time (round 21)                                            |
+| H6      | Win, round 13, 3 stars                                                     | Defeat, out of time (round 23)                                            |
+
+The danger moments, and what each mission's hand play changed:
+
+- **H1.** Rallied Skeletons (Attack 3) killed the Fighter trained on the
+  town's center twice; the Knight's Overrun killed five of the dead in round 6. The Undead lost Fortification (Zombies dug in on Field Defenses made a
+  slog) and the Banshees (two wails hit the whole front).
+- **H2.** Every lone unit on Mudford's center was mobbed (Gang Up 2 to 3,
+  10 to 12 damage); the Goblins refill each fort's center every turn.
+  Explosives' Breach and a Chivalry Knight's Overrun chain won. The Redcaps
+  lost Brutes on Field Defenses (they turtled), Bomb Chuckers and Rocket
+  Carts, Wolf Riders, and the farming and hunting trees (Kingsgate reached
+  level 5 and a Troll by round 4); the garrison is one unit per fort.
+- **H3.** Five attempts. The beasts' Triceratops chained kills out of a
+  hold zone that touched the camp, and Redcap riders ran the escort down
+  once the beasts were dead: the Redcaps lost Scouting and the Chuckers,
+  the Rookery moved south-east, the beasts got stronger and a smaller zone,
+  and the player sees more of the board. The winning route waits three
+  rounds while the Redcaps and the beasts fight, then goes along the south
+  edge two tiles clear of the wood and north up the far side.
+- **H4.** Nine attempts. The Lodge's Hexers and the Whitefang's Snow Hunters
+  shot Mr. Pettigrew off the walls; the Lodge summoned Imps at its chapel
+  for five rounds instead of coming; the enemies took six villages round
+  the fort and trained from them. Now: 12 rounds (the saga's 16 fell every
+  time), waves within two or three tiles of the walls (round 5 the Lodge,
+  6 and 9 the Whitefang, 7 the Marquis's relief column), Hollow Mill as a
+  second place to train, no villages near the fort, no enemy ranged units,
+  3 Favour, and a fort with three Farms (a fourth Farm and a Workshop make
+  it level 5 and send a Juggernaut in round 1). An Imp went Unbound when
+  its Summoner died and killed an Initiate: the hint's lesson.
+- **H5.** With the Redcap fleet anchored in the channel, two Dreadnoughts
+  shelled Saltmarsh flat in round 1. The fleet now rides on the open sea
+  east of the Redcaps' shore; the Normal AI keeps it there for some rounds
+  and then brings the Golden Goose round the south cape into the channel.
+  The Redcaps then took three villages, cashed the channel's Pearls, built
+  Farms and Workshops, grew five towns and two Trolls, and launched a Fire
+  Raft from every port each turn: the Redcaps' shore keeps no villages, the
+  Anchorage no Pearls, the Redcaps learn only the sea, and the second
+  Dreadnought is gone (the Goose sails with two Fire Rafts and a Diving
+  Barrel). The winning line: Seamanship, Submersibles and Navigation (the
+  deep water needs it), a Submarine a turn, a Fire Raft killed a turn at
+  the Anchorage's Shipyard, and three torpedoes (10, 12 and 3, unanswered)
+  when the Goose came within reach. A damaged Submarine sent scouting alone
+  was rammed; a Fire Raft's Kaboom and the Goose's broadside sank another.
+  The clock came down from the saga's 22 rounds (star 18) to 20 (star 16).
+- **H6.** With Drill the Redcaps researched Engineering, and Workshops and
+  Mines raised Gallows Toll from level 3 to 6 in seven rounds, two Trolls
+  on its gate: the Redcaps learn nothing. With an Orc Brute on the Hall's
+  gate, two Knights' Overrun chains took the Hall in round 10: a Troll holds
+  it now, and the Redcaps' garrison stands on the gates (one-tile zones).
+  The winning line: Explosives in round 1; an Explorer monument, Boom and
+  Fruit make Fort Steele level 5 and a Juggernaut in round 3; Knights take
+  Gallows and Weir Toll by Overrun chains that kill the gate's neighbours
+  first and end on the gate; Catapults and Knights break the Raptors and
+  the Lodge's Horrors (a Horror kills a Knight in one blow; killing its
+  channellers frees it); four Knights on four sides kill the Troll (10,
+  12, 13 and 5) and the fourth stands on the Hall. Five Knights were lost.
+  The clock came down from the saga's 26 rounds (star 22) to 22 (star 18).
+
+### 15.3 Deviations and follow-ups
+
+- **No curiosities.** The saga's Sea Serpent (H5) and lightning tower (H6)
+  wait for the round-3 curiosities (`pulp_wars-737.20`, `737.21`) and
+  mission curiosities (SAGA.md section 4, E1); the missions play without
+  them, and the briefings do not mention them.
+- **E6 and E7 were not built.** A tag on a ship works as it is (the Golden
+  Goose is a tagged Dreadnought afloat). Directives still lead land units
+  only; moving the fleet off the channel gave H5 its opening rounds, and
+  the Normal AI brings the Goose in on its own.
+- **Resource edits.** H5 removes the Pearls by the Anchorage and H6 the
+  Game under Kessler Hall; the natural-map test now allows an edit that
+  removes a resource beside those that remove a village or a chest.
+- **H2's autopilot wins** (round 12, 3 stars): step 2 of 6 is allowed to
+  fall to plain play.
+- **H4's second star is hard**: Mr. Pettigrew died in the last enemy
+  phase of the only winning run.
+
 ## Appendix A: critique of the first draft
 
 The first draft was reviewed as a skeptical designer and engineer. Each item

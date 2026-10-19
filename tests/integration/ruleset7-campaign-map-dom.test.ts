@@ -16,7 +16,8 @@ import {
 } from "./ruleset7-campaign-dom.shared";
 
 // The faction campaigns built from fixture missions (Candy stays unbuilt):
-// the real registry has none built yet.
+// the real registry builds only the Humans so far (pulp_wars-hmyk.4), and
+// the fixture keeps each campaign's real title.
 vi.mock("../../src/campaign/campaigns", async (importOriginal) => {
   const original = await importOriginal<typeof CampaignsModule>();
   const { fixtureCampaignsV7 } = await import("../fixtures/v7-campaign-graph");
@@ -168,7 +169,7 @@ describe("Ruleset 7 campaign map", () => {
     }
     expect(plate("HUMANS").getAttribute("aria-disabled")).toBeNull();
     expect(plate("HUMANS").getAttribute("aria-label")).toBe(
-      "The Human Campaign, open, 0 of 2 missions won",
+      "The Marshal's Law, open, 0 of 2 missions won",
     );
     // A tap on a closed plate says why and opens nothing.
     plate("DINOSAURS").click();
@@ -206,7 +207,7 @@ describe("Ruleset 7 campaign map", () => {
       "Finish both · 1/2",
     );
     expect(plate("HUMANS").getAttribute("aria-label")).toBe(
-      "The Human Campaign, completed, 1 of 2 stars",
+      "The Marshal's Law, completed, 1 of 2 stars",
     );
     one.destroy();
 
@@ -258,7 +259,7 @@ describe("Ruleset 7 campaign map", () => {
       "campaign-map",
     );
     expect(document.querySelector(".v7-campaign-title")?.textContent).toBe(
-      "The Human Campaign",
+      "The Marshal's Law",
     );
     expect(
       [...document.querySelectorAll<HTMLElement>(".v7-mission-card")].map(

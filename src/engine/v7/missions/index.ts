@@ -17,6 +17,12 @@ import { FRONTIER_6_V7 } from "./frontier-6";
 import { FRONTIER_7_V7 } from "./frontier-7";
 import { FRONTIER_8_V7 } from "./frontier-8";
 import { FRONTIER_9_V7 } from "./frontier-9";
+import { HUMAN_1_V7 } from "./human-1";
+import { HUMAN_2_V7 } from "./human-2";
+import { HUMAN_3_V7 } from "./human-3";
+import { HUMAN_4_V7 } from "./human-4";
+import { HUMAN_5_V7 } from "./human-5";
+import { HUMAN_6_V7 } from "./human-6";
 import {
   LAB_BREAKTHROUGH_GOBLIN_V7,
   LAB_BREAKTHROUGH_UNDEAD_V7,
@@ -91,6 +97,13 @@ export const MISSION_REGISTRY_V7: readonly MissionDefinitionV7[] = deepFreeze([
   // Missions 9 and 10 (`pulp_wars-v642.4`).
   FRONTIER_9_V7,
   FRONTIER_10_V7,
+  // The Humans campaign, "The Marshal's Law" (`pulp_wars-hmyk.4`).
+  HUMAN_1_V7,
+  HUMAN_2_V7,
+  HUMAN_3_V7,
+  HUMAN_4_V7,
+  HUMAN_5_V7,
+  HUMAN_6_V7,
   // The Human tuning labs (`pulp_wars-w49.3`): hidden mirror fixtures of
   // the text harness (docs/validation/TEXT_PLAY.md).
   LAB_SIEGE_V7,

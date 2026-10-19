@@ -9,9 +9,10 @@ import type {
 
 /**
  * A campaign registry with the faction campaigns built
- * (`pulp_wars-hmyk.3`): the real registry has none built yet, so the
- * tests of the campaign graph give each a chapter of the hidden fixture
- * missions (`TEST_*`, registered and in no campaign). Candy stays unbuilt
+ * (`pulp_wars-hmyk.3`): the real registry builds only the Humans so far
+ * (`pulp_wars-hmyk.4`), so the tests of the campaign graph give each a
+ * chapter of the hidden fixture missions (`TEST_*`, registered and in no
+ * campaign), the Humans' included. Candy stays unbuilt
  * ("Coming soon"). Use it through `vi.mock` of `src/campaign/campaigns`.
  */
 export const FIXTURE_CAMPAIGN_MISSIONS_V7: Readonly<
