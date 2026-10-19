@@ -987,6 +987,13 @@ describe("natural maps", () => {
       "HUMAN_4",
       "HUMAN_5",
       "HUMAN_6",
+      // The Undead campaign (`pulp_wars-hmyk.5`).
+      "UNDEAD_1",
+      "UNDEAD_2",
+      "UNDEAD_3",
+      "UNDEAD_4",
+      "UNDEAD_5",
+      "UNDEAD_6",
     ]);
     for (const mission of MISSION_REGISTRY_V7)
       expect(missionMapDriftV7(mission), mission.id).toEqual([]);
@@ -1007,6 +1014,9 @@ describe("natural maps", () => {
       // villages (thirteen gone, six of them under cities) and the Hall's
       // tile loses its Game.
       HUMAN_6: 15,
+      // The Founder's Tomb (`pulp_wars-hmyk.5`): eleven villages gone (two
+      // under towns), a chest, and the Lodge's and Ashby Camp's fields.
+      UNDEAD_6: 16,
     };
     const terrainEdits: Readonly<Record<string, number>> = {
       // Bone Neck.
@@ -1015,6 +1025,8 @@ describe("natural maps", () => {
       FRONTIER_9: 7,
       // The clearing on the Lodge's summit.
       FRONTIER_10: 2,
+      // The Rangers' fields on the summit and Ashby Camp's cleared wood.
+      UNDEAD_6: 3,
     };
     for (const mission of natural) {
       const source = mission.source as NonNullable<

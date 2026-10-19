@@ -23,6 +23,12 @@ import { HUMAN_3_V7 } from "./human-3";
 import { HUMAN_4_V7 } from "./human-4";
 import { HUMAN_5_V7 } from "./human-5";
 import { HUMAN_6_V7 } from "./human-6";
+import { UNDEAD_1_V7 } from "./undead-1";
+import { UNDEAD_2_V7 } from "./undead-2";
+import { UNDEAD_3_V7 } from "./undead-3";
+import { UNDEAD_4_V7 } from "./undead-4";
+import { UNDEAD_5_V7 } from "./undead-5";
+import { UNDEAD_6_V7 } from "./undead-6";
 import {
   LAB_BREAKTHROUGH_GOBLIN_V7,
   LAB_BREAKTHROUGH_UNDEAD_V7,
@@ -107,6 +113,13 @@ export const MISSION_REGISTRY_V7: readonly MissionDefinitionV7[] = deepFreeze([
   HUMAN_4_V7,
   HUMAN_5_V7,
   HUMAN_6_V7,
+  // The Undead campaign, "The Long Sleep" (`pulp_wars-hmyk.5`).
+  UNDEAD_1_V7,
+  UNDEAD_2_V7,
+  UNDEAD_3_V7,
+  UNDEAD_4_V7,
+  UNDEAD_5_V7,
+  UNDEAD_6_V7,
   // The Human tuning labs (`pulp_wars-w49.3`): hidden mirror fixtures of
   // the text harness (docs/validation/TEXT_PLAY.md).
   LAB_SIEGE_V7,

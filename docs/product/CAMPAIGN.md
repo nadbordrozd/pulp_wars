@@ -4001,6 +4001,144 @@ thoughtful run with `play-text` and the scripted autopilot.
   Autopilot: **defeat, out of time (round 23)**, as at revision 1. The
   clock and stars stay.
 
+## 16. The Undead campaign, "The Long Sleep" (`pulp_wars-hmyk.5`)
+
+The second faction campaign: six missions, `UNDEAD_1` to `UNDEAD_6`
+(`src/engine/v7/missions/undead-*.ts`), in the chapter
+`src/campaign/chapter-undead.ts`, which the campaign map's Undead plate
+opens (tier 1, open from the start). The briefings and closings are the
+saga bible's ([SAGA.md](SAGA.md) sections 2.2 and 3.2), trimmed to the
+card. Each mission was hand played through `play-text` (the thoughtful
+run, using the hint) and run by the scripted autopilot of section 15; from
+mission 3 on the autopilot must lose or miss the clock. Every mission
+seats you as the Undead with no choice, so the chapter's starting
+factions are empty: it unlocks nothing for the prologue's faction choices.
+
+### 16.1 The missions
+
+| Mission                   | Board (generator, seed) | Match seed | Seats                                                | Format and clock                                    | Stars                           |
+| ------------------------- | ----------------------- | ---------- | ---------------------------------------------------- | --------------------------------------------------- | ------------------------------- |
+| U1 Resurrection Men       | Dry Land 11, seed 13    | 20261301   | Undead; Humans                                       | Conquest of the Company's two camps                 | by round 12; the Marquis lives  |
+| U2 The Drowned Library    | Lakes 14, seed 22       | 20261302   | Undead; Goblins                                      | Hold Saint Ashes and keep Crane alive for 12 rounds | no city lost; the Marquis lives |
+| U3 The Ship of the Dead   | Continents 16, seed 15  | 20261303   | Undead; Martians                                     | Capture Chapel Rock by round 22                     | by round 18; no city lost       |
+| U4 The Hall of the Thanes | Dry Land 16, seed 3     | 20261304   | Undead; Dwarves                                      | Escort Crane to the Summit Stair by round 22        | by round 18; no city lost       |
+| U5 Bedtime Reading        | Lakes 16, seed 9        | 20261305   | Undead; Cult and Humans (teamed)                     | Kill Brother Mallory by round 20                    | by round 16; no city lost       |
+| U6 The Founder's Tomb     | Dry Land 16, seed 23    | 20261306   | Undead and Humans (ally); Cult and Ice Folk (teamed) | Hold the Rangers' Lodge for 16 rounds               | Crane lives; no city lost       |
+
+### 16.2 Hand play
+
+| Mission | Thoughtful run                                                  | Autopilot                                                        |
+| ------- | --------------------------------------------------------------- | ---------------------------------------------------------------- |
+| U1      | Win, round 10, 3 stars (sixth attempt)                          | Unfinished at round 41 (no clock; allowed at step 1)             |
+| U2      | Win (held), round 12, 3 stars (eleventh attempt)                | Defeat, round 4 (Crane killed)                                   |
+| U3      | Win, round 12, 3 stars (seventh attempt)                        | Defeat, out of time (round 23)                                   |
+| U4      | Win, round 16, 3 stars (seventh attempt)                        | Defeat, round 8 (Crane killed)                                   |
+| U5      | Win, round 15, 3 stars (first run after the autopilot won)      | Defeat, out of time (round 21); before hardening, a round-18 win |
+| U6      | Win (held), round 16, 2 stars (Cinderwick lost; fourth attempt) | Defeat, round 15 (the Lodge fell)                                |
+
+On the final definitions, after the merge with mission curiosities, each
+winning run was replayed from its command log (your moves, the Normal AI
+replying) and ended exactly as above, and each autopilot result held.
+
+The danger moments, and what each mission's hand play changed:
+
+- **U1.** Two Fighters hit the Vampire for 6 and 7 in round 2 (13 to 3
+  HP); every half-raised (5 HP) Skeleton left in reach died. The Company
+  grew a Fighter a turn from each camp and its Marksmen shot every raised
+  Skeleton on the fields: it now learns nothing, the camps hold no
+  Marksmen, there are seven old Graves (the first Raise gives four
+  Skeletons), and the chest by Grimsditch Camp (a free Raider) is gone.
+  The winning line: Raise in round 1, then a rallied Vampire kill, Feast's
+  second strike and Bat Escape back every other turn; the camps fell in
+  rounds 8 and 10.
+- **U2.** Ten attempts. On an island reached only by the causeway the
+  goblins sat at its foot for five rounds, so they have Engineering and
+  climb the peaks; their camps reached level 4 in four rounds on Mines, a
+  Workshop and monuments, a reward Wolf Rider a level, so the camps are
+  level 1 with no ore, no growth technologies, no Wolf Riders and Bomb
+  Chuckers only in the waves; Crane twice died to a Chucker's splash in the
+  last enemy phase, so the clock is 12 rounds (the saga's 14) and the
+  round-9 Chucker is gone. The winning line: Wail and Terror, then Zombies
+  and Skeletons strike without reply; Infect turned eight goblins into
+  Zombies; Raise refilled the ring every turn; Pestilence and Blast
+  Mountain on the mob; the Vampire hid on the west shore from round 4 for
+  its star. Kabooms killed three raised units at once, twice. The
+  goblins then got Fortification from the start (the Industry rule: a
+  seat with Drill and a defender owns it; they had learned it in round 4
+  of every run and trained a Brute a turn), and the mission was played
+  once more: the same line won, the Vampire feeding on the Brutes once
+  Wails had terrified them; a goblin stood on Ashwater Landing's center
+  in round 11 until a Zombie killed it and Infect raised it as one of
+  yours, and in round 12 the Vampire filled the last gap beside Crane.
+- **U3.** Gravesend over its unit limit trained nothing, so it has
+  Planning and Lychgate a port. With naval technology the Martians built a
+  Port on every water tile round the Rock and rode the monuments to level
+  4; a starting Hover Cruiser, then one beside a Shield Projector (Force
+  Field, Shield 4), sank the whole fleet: they learn no naval technology
+  and no Fortification, and the waves are two Skimmers (round 5) and a
+  Cruiser and a Skimmer (round 9). The winning line: Navigation and the
+  Pearls in round 1, Sunken Galleys from round 3 (a torpedo a turn sinks a
+  Skimmer unanswered, and Drowned Crews raise it as a Ghost Ship), the Sea
+  Dog monument and Boom took Gravesend to level 5, and its Abomination
+  sailed to the Rock, swallowed the Shield Projector and infected the next
+  Grunt into a Zombie, which captured. The Necromancer landed on the Rock
+  was shot dead from the Rig.
+- **U4.** Mines and Workshops took Cairn Hall to level 4 in two rounds, a
+  reward Gyrocopter a level: the wardens have no Engineering or growth
+  technologies (they never climb the peaks; you may). Three Gyrocopters
+  bombed Crane and the Steam Cannon (12 and a knock-back) took the Vampire
+  to 1 HP in one shot; a Clockwork Gunner killed Crane; the wardens took
+  the stair (then a village) as a fourth hall. Now the stair is bare
+  ground, Cairn Hall stands on the road, the garrison holds ten, and a
+  patrol on the peaks (a Hammerer and a Gunner) keeps the goat path from
+  being free. The winning line: Engineering in round 1, up the western
+  woods and over the peaks, the Vampire killing both Gyrocopters and the
+  patrol in Feast chains and Bat-Escaping out of the Cannon's reach.
+- **U5.** With a level 1 chapel and a smaller ring the autopilot won by
+  round 18; Greyhood is level 2, four Initiates and four Bearers hold the
+  strip, and the Lodge has 8 Favour. The toll-men fell by round 7 to Wail,
+  the Vampire's Feast chains and a Wail on the fort's last Guard; the
+  captured fort's free monument made Lantern Hill level 3. Blast Mountain
+  turned the peak at the causeway's foot into grass. A Horror hit the
+  Vampire for 13 on that peak (6 HP left, pinned by its zone of control:
+  only an attack and Bat Escape got it out). Wails do nothing to daemons.
+  A Lich's halved shots still spread Plague through the Lodge; with their
+  channellers dead a Horror and the Imps came unbound, killed both of the
+  chapel's Bearers and then Mallory himself.
+- **U6.** Four attempts. Ashby Camp was over its unit limit with no second
+  town, and the Vampire sent east alone died to a Horror and an Imp
+  (13 and 5): Ashby is level 3 (two fields cleared), the Undead have
+  Planning, Cinderwick is a second town on the eastern slope, and three old
+  Graves lie by the camp. With the Whitefang camp beside Ashby and
+  `RUSH`ing, the clan went for the camp and lost it in round 4: the camp is
+  in the north-western corner and the clan assaults the Lodge. A Sled's
+  bolas froze the Vampire two rounds running on the western front and the
+  Yetis killed it. The winning line: Liches do the work (splash and Plague
+  killed a Sled, a Mammoth and three Yetis; a Lich shoots into the Rangers'
+  land over the walls), the Vampire only finishes wounded units and
+  escapes home, and killing Initiates and a Bearer unbinds the Lodge's
+  daemons. A Horror killed both Liches trained at Cinderwick and an
+  Initiate took the town (round 8); the Lodge's center stood empty for a
+  moment twice with Imps beside it.
+
+### 16.3 Deviations and follow-ups
+
+- **U2 holds 12 rounds**, not the bible's 14, and its goblins climb the
+  peaks (Engineering) instead of keeping to the causeway.
+- **U4's summit stair is bare ground**, not a village, and Cairn Hall
+  stands on the tunnel road; a patrol walks the peaks.
+- **U3's Martians** learn no naval technology and no Fortification (no
+  Force Fields); their fleet is fixed plus two waves.
+- **U5 and U6 name the Cult's town Greyhood** in both missions; U6's
+  Undead have a second town, Cinderwick, that the bible does not name.
+- **The chapter's starting factions are empty** (every Undead mission
+  seats a fixed faction), so the Undead are still unlocked for the
+  prologue's choices in its fourth mission.
+- **No mission curiosities.** Mission curiosities (E1, section 10.9,
+  `pulp_wars-hmyk.14`) landed while this campaign was built; none of the
+  six missions needs one, and they were tuned without. U3's bay could
+  hold a Sea Serpent in a later revision.
+
 ## Appendix A: critique of the first draft
 
 The first draft was reviewed as a skeptical designer and engineer. Each item

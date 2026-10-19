@@ -83,7 +83,7 @@ describe("Ruleset 7 campaign front screen", () => {
     ).toEqual([
       ["FRONTIER", "open"],
       ["HUMANS", "open"],
-      ["UNDEAD", "soon"],
+      ["UNDEAD", "open"],
       ["DINOSAURS", "soon"],
       ["MARTIANS", "soon"],
       ["GOBLINS", "soon"],
@@ -106,7 +106,7 @@ describe("Ruleset 7 campaign front screen", () => {
       document
         .querySelector('[data-action="campaign-open-undead"]')
         ?.getAttribute("aria-label"),
-    ).toBe("The Undead Campaign, Coming soon");
+    ).toBe("The Long Sleep, open, 0 of 6 missions won");
     requiredButton('[data-action="campaign-open-frontier"]').click();
     await settle();
     expect(document.activeElement?.getAttribute("data-action")).toBe(

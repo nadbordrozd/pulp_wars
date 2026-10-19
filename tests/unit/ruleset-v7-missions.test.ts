@@ -158,6 +158,19 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
     "6278f634c5bf0b19aa3f9efeaa17db38051fdb372e5045841d4ec712485eb5d1",
   "HUMAN_6@2:ORIGINAL":
     "e4bf04b3bb6d110fde3d56746ccfacd5e0ffda9264a684bf60d223edcbad5de1",
+  // The Undead campaign, "The Long Sleep" (`pulp_wars-hmyk.5`).
+  "UNDEAD_1@1:UNDEAD":
+    "ce571acb28e5b3c1bb4f0e4558600cc36f84e96f228462e8fa8ac5de36eae6e3",
+  "UNDEAD_2@1:UNDEAD":
+    "a91553831cc2562cf5e8d0a992541fce60fa15f33c88f664fad5151d0e2fba0c",
+  "UNDEAD_3@1:UNDEAD":
+    "56fbd754294b168f46dee6058362e29b0361e8638b47a7e0ca85db272a1fb080",
+  "UNDEAD_4@1:UNDEAD":
+    "1a6aa87a5ad364d20eed80105f855aad065230a54f608f2e1d0e22ac26b6ea2b",
+  "UNDEAD_5@1:UNDEAD":
+    "71462e1d05c7632b5b316ea653ecac47b1e16b6caddf95e37645695edd6d25f3",
+  "UNDEAD_6@1:UNDEAD":
+    "15b2622590f1bca7e807580a56ad4da9922813272e6623569e79183cf6a121f2",
   // The siege fixture of the Normal AI (`pulp_wars-68k.6`).
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 2.
   "TEST_NECK@2:ORIGINAL":
@@ -472,6 +485,19 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
     "dc6f40e41a918df3198bc9d2bcff5c7bc8bafe34e71d7a4afee4d028bc0febcb",
   "HUMAN_4@1:ORIGINAL":
     "a91220876d04c2802bbe523e120a8beeed87099677255527ccdc186880112803",
+  // The Undead campaign, "The Long Sleep" (`pulp_wars-hmyk.5`).
+  "UNDEAD_1@1:UNDEAD":
+    "91212cd0f2e147f1eb345bda1f080004823a8dfd1cb88165c2af554349f7a016",
+  "UNDEAD_2@1:UNDEAD":
+    "8570030b6495fc68e045926a031f164c3d65bcdd3b5a6f6837fb054e358c5605",
+  "UNDEAD_3@1:UNDEAD":
+    "cdd41e238efd30432d610bcd80151b21e5c51062b890fecd7b4b7dfcff6b81b2",
+  "UNDEAD_4@1:UNDEAD":
+    "ef9b0b8b606f4278384846aafc4969e54f517557503630655a3f9202255cd14f",
+  "UNDEAD_5@1:UNDEAD":
+    "bdfa9ae6651c9a2dbc9335a9839267fc20bd83c6b75bf75be9e83948c1c207b3",
+  "UNDEAD_6@1:UNDEAD":
+    "169c3a83b647ca7274d2a578f7272269d9e4e682c035f61ba7eb75436c898b94",
 
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 2.
   "TEST_NECK@2:ORIGINAL":

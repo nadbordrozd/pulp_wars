@@ -6,6 +6,7 @@ import {
 } from "../../src/campaign/campaigns";
 import { CHAPTER_ONE_V7 } from "../../src/campaign/chapter-1";
 import { CHAPTER_HUMANS_V7 } from "../../src/campaign/chapter-humans";
+import { CHAPTER_UNDEAD_V7 } from "../../src/campaign/chapter-undead";
 import {
   CAMPAIGN_CHEAT_STORAGE_KEY_V7,
   CampaignCheatGestureV7,
@@ -53,7 +54,11 @@ describe("campaign registry", () => {
     const frontier = campaignByIdV7("FRONTIER");
     expect(frontier?.chapter).toBe(CHAPTER_ONE_V7);
     expect(frontier?.title).toBe("The Hollow Frontier");
-    expect(CAMPAIGN_CHAPTERS_V7).toEqual([CHAPTER_ONE_V7, CHAPTER_HUMANS_V7]);
+    expect(CAMPAIGN_CHAPTERS_V7).toEqual([
+      CHAPTER_ONE_V7,
+      CHAPTER_HUMANS_V7,
+      CHAPTER_UNDEAD_V7,
+    ]);
     expect(campaignMissionV7("FRONTIER_4")).toMatchObject({
       campaign: { id: "FRONTIER" },
       chapter: CHAPTER_ONE_V7,
@@ -67,6 +72,14 @@ describe("campaign registry", () => {
       chapter: CHAPTER_HUMANS_V7,
       entry: { number: 6 },
     });
+    const undead = campaignByIdV7("UNDEAD");
+    expect(undead?.chapter).toBe(CHAPTER_UNDEAD_V7);
+    expect(undead?.title).toBe("The Long Sleep");
+    expect(campaignMissionV7("UNDEAD_6")).toMatchObject({
+      campaign: { id: "UNDEAD" },
+      chapter: CHAPTER_UNDEAD_V7,
+      entry: { number: 6 },
+    });
     expect(campaignByIdV7("NOWHERE")).toBeNull();
   });
 
@@ -78,9 +91,17 @@ describe("campaign registry", () => {
         // The Humans campaign (`pulp_wars-hmyk.4`): tier 1, open from the
         // start.
         ["HUMANS", "OPEN"],
-        ...CAMPAIGN_IDS_V7.slice(2).map((id) => [id, "SOON"]),
+        // The Undead campaign (`pulp_wars-hmyk.5`): tier 1, open from the
+        // start.
+        ["UNDEAD", "OPEN"],
+        ...CAMPAIGN_IDS_V7.slice(3).map((id) => [id, "SOON"]),
       ]);
       expect(plates[1]).toMatchObject({
+        missionsWon: 0,
+        missionCount: 6,
+        stars: 0,
+      });
+      expect(plates[2]).toMatchObject({
         missionsWon: 0,
         missionCount: 6,
         stars: 0,
