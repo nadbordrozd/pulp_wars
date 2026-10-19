@@ -33,6 +33,7 @@ import { LAB_UNDEAD_MID_V7 } from "./lab-undead";
 import { TEST_GROUNDS_V7 } from "./test-grounds";
 import {
   TEST_ASSAULT_V7,
+  TEST_GUARD_RAID_V7,
   TEST_GUARD_V7,
   TEST_HOLD_V7,
   TEST_RUSH_V7,
@@ -67,6 +68,8 @@ export const MISSION_REGISTRY_V7: readonly MissionDefinitionV7[] = deepFreeze([
   TEST_GUARD_V7,
   // The ASSAULT fixture (`pulp_wars-v642.5`).
   TEST_ASSAULT_V7,
+  // A GUARD whose others assault (`pulp_wars-v642.10`).
+  TEST_GUARD_RAID_V7,
   // The siege fixture of the Normal AI (`pulp_wars-68k.6`).
   TEST_NECK_V7,
   // The objective fixtures (`pulp_wars-v642.1`): one per objective kind.

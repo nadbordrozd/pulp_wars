@@ -336,6 +336,8 @@ export type MissionDirectiveV7 =
       readonly target: CoordV7;
       readonly untilRound?: number;
     };
+// pulp_wars-v642.10: GUARD may also carry
+//   readonly others?: { kind: "RUSH" } | { kind: "ASSAULT"; target: CoordV7 };
 ```
 
 The AI finds its directive from its own public view: `view.setup.mission`
@@ -386,6 +388,21 @@ plays `NORMAL`. Nothing reads hidden state, the clock, or the PRNG.
   (`armyAssaultV7`) and the siege of a single-file front
   (`chokepointAssaultOnV7`), and like the other two it is the identity
   for every other directive and every non-mission match.
+- **`GUARD` with `others`** (`pulp_wars-v642.10`, the danger pass). The
+  user, 2026-10-18: missions where "you gather the army and roll over
+  them" against "not very aggressive ai". A `GUARD` seat kept its garrison
+  home and left every other unit to `NORMAL`, which masses and waits
+  before a prepared line; `RUSH` and `ASSAULT` had no garrison and
+  emptied the seat's own cities. `others: RUSH` or `others: ASSAULT(target)`
+  gives the units outside the garrison that play: the garrison keeps its
+  `RETURN` job and its leash, and every other free unit marches on the
+  nearest known hostile city (or the target, which is then assaulted
+  whatever it weighs) with no village, chest, or exploration job. It is the
+  same two hooks and the same assault weight as `RUSH` and `ASSAULT`, read
+  off the `GUARD` plan (`CampaignDirectiveV7.others`,
+  `assaultHoldsTargetV7`); without `others` a `GUARD` is unchanged. The
+  hidden fixture `TEST_GUARD_RAID` (TEST_GUARD with a garrison of one and
+  `others: ASSAULT` on the Human capital) tests it.
 - **Revealing the target is data, not cheating.** A `RUSH` seat knows where
   to go because the mission's `reveal` rectangles include the human's
   capital, exactly as if its scouts had been there; the AI still reads only
@@ -1286,9 +1303,9 @@ the two secondary goals (the first star is the win).
 | --- | ------------------------------------------ | ----------------- | ------------------------------------------------------------------ | ------------------------------------ | ------------------------------ | ------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- | --------- | ------ | ----------- | --------------------------------- |
 | 1   | Goblins at the Gate (`FRONTIER_1`)         | Humans            | Goblins (rush)                                                     | Conquest                             | Dry Land 11                    | capture the Goblin camp                                                         | hold a wall against a rush, then counter-attack; your first giant                             | none      | 10–12  | Easy        | by turn 12; lose no city          |
 | 2   | The Warrens (`FRONTIER_2`)                 | Humans            | Goblins (three cities)                                             | Capture                              | Dry Land 14                    | capture the Warrens (their capital)                                             | Gang Up: an army that sticks together and shoots first; a giant                               | Goblins   | 15–18  | Easy–medium | by turn 18; lose no city          |
-| 3   | Green Tide (`FRONTIER_3`)                  | Goblins           | Undead (three towns; hold their plain until turn 12)               | Capture against the clock            | Dry Land 16                    | capture the Barrow by turn 26 / time runs out                                   | a build-up from one camp: Mines, Trolls, then Troll toss and Kaboom                           | none      | 17–22  | Medium–hard | by turn 20; lose no city          |
-| 4   | Bone Neck (`FRONTIER_4`)                   | Humans or Goblins | Undead (guards the gate)                                           | Capture against the clock            | Continents 16, one land bridge | capture the gate city by turn 14 / time runs out                                | a front rank: siege engines dent it, a rider's Overrun sweeps behind it                       | Undead    | 6–12   | Hard        | by turn 9; lose no city           |
-| 5   | Dead Men's Road (`FRONTIER_5`)             | Undead            | Humans (toll fort), Ice Folk (raiders), one side                   | Escort                               | Dry Land 16, a mountain wall   | bring Doctor Crane to the Ironbraid gate by turn 20 / he dies, or time runs out | a fort in the pass: a Lich outranges it, Pestilence rots it; the Doctor walks behind the dead | Dwarves   | 13–16  | Medium–hard | by turn 16; lose no city          |
+| 3   | Green Tide (`FRONTIER_3`)                  | Goblins           | Undead (three towns; raid the camp from turn 4, waves 5 and 9)     | Capture against the clock            | Dry Land 16                    | capture the Barrow by turn 26 / time runs out                                   | a build-up under raids: Mines, Trolls on your hills, then Troll toss and Kaboom               | none      | 18–22  | Hard        | by turn 20; lose no city          |
+| 4   | Bone Neck (`FRONTIER_4`)                   | Humans or Goblins | Undead (guards the gate; the dead rise in your fields)             | Capture against the clock            | Continents 16, one land bridge | capture the gate city by turn 14 / time runs out                                | a front rank: siege engines dent it, a rider's Overrun sweeps behind it; a guard at home      | Undead    | 8–12   | Hard        | by turn 9; lose no city           |
+| 5   | Dead Men's Road (`FRONTIER_5`)             | Undead            | Humans (toll fort), Ice Folk (raiders), one side                   | Escort                               | Dry Land 16, a mountain wall   | bring Doctor Crane to the Ironbraid gate by turn 24 / he dies, or time runs out | a fort in the pass: a Lich outranges it, Pestilence rots it; the Doctor walks behind the dead | Dwarves   | 19–24  | Hard        | by turn 20; lose no city          |
 | 6   | The Deep Gate (`FRONTIER_6`)               | Dwarves           | Ice Folk (north, over the peaks), Humans (east, through the doors) | Hold out                             | Dry Land 14, a mountain pocket | 14 turns pass / the Deep Gate falls                                             | hold from inside; Blasting Charges bring the peaks down on the Yetis; relief on turn 9        | Ice Folk  | 14     | Medium–hard | lose no city; the Thane lives     |
 | 7   | The Island That Time Forgot (`FRONTIER_7`) | Ice Folk          | Dinosaurs (natives, three towns), Humans (the Baron)               | Capture against the clock (build-up) | Archipelago 20                 | capture the Crater by turn 30 / time runs out                                   | build up from one town; freeze a road over the sea; Frost Giants shatter the frozen           | Dinosaurs | 22–28  | Hard        | by turn 24; lose no city          |
 | 8   | Brain Wave (`FRONTIER_8`)                  | Dinosaurs         | Martians (guard), Humans (thralls)                                 | Hunt (build-up)                      | Pangea 16                      | kill the Overmind by turn 26 / time runs out                                    | build up from one nest; climb where they cannot; grow the Queen on prey                       | Martians  | 15–22  | Hard        | by turn 18; the Old Queen lives   |
@@ -1768,6 +1785,103 @@ every Skeleton it kills, onto the gate's center. The briefing says "crack
 the front rank with stones, then send riders through the gap before the
 tower sends more"; the hints say the same in short.
 
+### 9.6 Missions 3 to 6 after the danger pass (`pulp_wars-v642.10`)
+
+The user, 2026-10-18: "the missions are too easy. aside from the first few
+they should get harder. right now there are a bunch of missions where you
+have 2 or 3 cities to start with and like 5 more villages within easy reach
+and you are to defeat an enemy with 2 or 3 cities and not very aggressive
+ai. naturally, you gather the army and roll over them. There should be some
+danger involved." The targets of this pass: from mission 3 on a thoughtful
+player is threatened in the first five to eight rounds, has to defend, and
+can lose cities or the mission; the autopilot of
+[section 9.5](#95-missions-2-to-4-after-the-difficulty-pass-pulp_wars-v6427)
+loses; a first thoughtful win is usually one or two stars. The levers:
+fewer free villages near the player, an enemy that attacks early and keeps
+attacking (the `GUARD` directive's new `others`,
+[section 2.5](#25-ai-directives)), scripted waves, and handicaps only where
+one enemy unit made a mission unwinnable. Pass A changed missions 3 to 5;
+mission 6 was replayed on `7r99` and left as it is. The hand play is in
+[section 11.18](#1118-the-danger-pass-missions-3-to-6-pulp_wars-v64210).
+
+**3, Green Tide** (revision 5). The board is revision 4's with five more
+villages removed (eleven edits): the three nearest Wolfden and the two by
+the dead towns, so the horde walks for its slots and the dead do not grow
+an empire (with them the dead reached six cities and twenty-five units by
+round 15). Four villages are left on your side, none next to the camp.
+The dead: the walled level 3 Barrow and Gravesend and Cairnholm at level 1
+(were level 2), six units, no Coins; they know where Wolfden is (their
+reveal). Their schedule: `HOLD` the plain until round 4; from round 4 to
+round 10 three keep the Barrow and every other unit storms Wolfden
+(`GUARD` with `others: ASSAULT`); from the new moon, round 11, `HOLD` the
+plain again. Waves: three out of the hills' old graves in round 5 and three
+more in round 9 (both join the storm), and the Barrow's last crypts in
+round 16 (a Lich among them). Their seat may not research Liches,
+Pestilence, Wights or Lumber Camps (Sawmilling, Explosives, Metallurgy,
+Forestry) besides revision 4's list: hand play lost a Troll a turn to two
+Liches out of sight and the plague, and Wights refilled the Barrow's
+center. The clock (round 26) and the stars (round 20, lose no city) are
+revision 4's. **The problem:** the raids reach the camp in rounds 6 to 9,
+before it has grown; a Goblin (Defense 0.5) that stands alone in the open
+is killed and rises on their side, and a Troll that chases the dead into
+the open, carried forward by its kills, is eaten by the pack. **The
+answer:** Mines and a Workshop for a Troll by round 6 and a second by round
+9, the raids broken on your own hills by the Trolls and Goblins that gang
+up from beside them, Explosives by round 12, then the march while the dead
+sulk on their plain, a thrown Goblin's Kaboom on the ring and a Troll's
+Breach kill on the center at full Hit Points (one that lands there hurt
+dies the same night). The hints: "The hills are full of ore: Mines grow
+the camp.", "The dead raid from turn 5. Fight them on your hills." and "A
+Troll can throw a Goblin. Then: Kaboom."
+
+**4, Bone Neck** (revision 6). Two of the four villages on your side are
+gone (seven edits). The dead now come from two sides: three rise in your
+fields south of Camp Concord in round 3 and three north of Ferry Rest in
+round 7, and they take the villages beside your towns and march on Camp
+Concord (their reveal). The gate and the tower keep seven (`GUARD` of both
+zones, garrison 7) and every other bone-man, the tower's restock of round 6
+included, storms Camp Concord (`others: ASSAULT`). The dead may not
+research Wights (Metallurgy) besides revision 5's list: hand play found
+four Wights refilling the gate's center faster than any Knight could empty
+it. Clock and stars are revision 5's (round 14; round 9, lose no city).
+**The problem:** a Knight sent alone at the risen is killed by two of them,
+and a Knight that lands on the gate's center beside two bone-men (13 Hit
+Points of attackers) dies there that night; Explosives' Breach is needed
+once the gate has grown Walls. **The answer:** the Catapults and the
+Marksman on the near shore strip the Field Defenses and leave the ring
+wounded, a Knight's Overrun chain kills the ring first and lands on the
+center last, and a Guard and a second Knight stay home for the risen. The
+briefing adds "his dead are already rising in your own fields" and "leave
+a guard at home"; the hints are "One way in: the Neck. Walk it alone and
+you rise dead.", "The dead rise in your fields too: keep a guard home."
+and "A rider who kills keeps charging: let him run."
+
+**5, Dead Men's Road** (revision 3). The raiders come out of their camp in
+round 3 (was 6) and storm Gallows Cross, the Doctor's town, until round 10
+(`GUARD` of the camp with a Musk Ox, `others: ASSAULT`), then hunt the
+nearest town (`RUSH`); both seats know where the dead live (their
+reveals), and what the fort trains beyond its seven sallies out (`others:
+RUSH`). The raiders may not research Scouting and what follows it: no Sled
+but the one at home and no Sabretooth (a Sled's Bolas froze the Doctor
+beside the pass and its charge killed him in two hand plays), and the
+waves of rounds 9 and 13 bring a Yeti for their Sled. The clock is round
+24 and the star round 20 (were 20 and 16): defending Gallows Cross costs
+the column about four rounds. **The problem:** two fights at once; the
+Liches that kill the raiders from behind the Zombies are the Liches the
+fort needs, a Lich that stands in front is killed by a charging Sled, and
+the fort refills its center every turn. **The answer:** Liches and
+Pestilence as before, behind a screen of Zombies, the raiders first (rounds
+5 to 9), then the fort, then the Doctor walks the pass behind the dead
+with the gate side cleared ahead of him. The briefing's "something white
+is already hunting your towns" and the hint "White raiders hit Gallows
+Cross from turn 3." say it.
+
+**6, The Deep Gate** (revision 2, unchanged). Replayed on `7r99` and on
+`7r100` with the new Ice Folk AI: the autopilot lost the Deep Gate in round 5, and a thoughtful defence held to
+the end with two stars, the Thane killed in round 9 by a Boulder Yeti and
+Copperstep's center taken twice and retaken, with one Brass Titan and one
+Gunner left at the end. It already carries the danger this pass asks for.
+
 ## 10. The mission framework
 
 Built by `pulp_wars-v642.1` on the engine of [section 2](#2-architecture).
@@ -1854,7 +1968,9 @@ A seat's `directive` may be a list; each entry may carry `fromRound` and
 `untilRound`, and the first entry whose rounds hold the current round is
 played (`HOLD` until round 6, then `RUSH`). The kinds are those of
 [section 2.5](#25-ai-directives): the first four, and `ASSAULT` since
-`pulp_wars-v642.5`, used by missions 6 and 8.
+`pulp_wars-v642.5`, used by missions 6 and 8. Since `pulp_wars-v642.10` a
+`GUARD` may send the rest of its army out (`others`, section 2.5), used by
+missions 3 to 5.
 An allied AI seat needs no directive of its own: with `teams` it treats the
 human as an ally in every rule and plays its ordinary game against the
 rest.
@@ -3075,6 +3191,158 @@ by a player who knew the board, as in section 11.13.
 the redesigned roster, and a test now shows that on its first turn the
 Summoners offer an Imp, a Horror, and a Mass and a star begun alone can be
 joined. Its state did not change, so it stays at revision 2.
+
+### 11.18 The danger pass: missions 3 to 6 (`pulp_wars-v642.10`)
+
+Pass A of the danger pass ([section 9.6](#96-missions-3-to-6-after-the-danger-pass-pulp_wars-v64210)).
+Played on `7r99` through the text harness (`scripts/play-text mission`);
+the sessions and logs are in `scratchpad/pulp_wars-v642.10a/s/` (`m3a*`,
+`m4a*`, `m5a*`, `m6a*` thoughtful, `*auto*` autopilot) with the helpers in
+`bin/` (`autopilot.py` plays the brief's autopilot unattended: the
+cheapest research, the line unit in every city, every unit attacks what is
+in reach, a kill first, or steps to the offered tile nearest the
+objective). The ruleset identity stays `7r99`: the only code change is the
+directive lever (`GUARD`'s `others`), in the AI layer. Every rejected
+draft is listed; "thoughtful" is a player who reads the briefing and
+hints, makes ordinary mistakes, and learns from the previous attempt.
+
+**Mission 3, Green Tide** (Dry Land 16, seed 23; revision 5).
+
+1. First draft (three villages near the camp removed; the dead at eight
+   units and 5 Coins with level 2 towns, `GUARD` with `others: ASSAULT`
+   from round 1, waves in rounds 5, 12 and 16). The raid reached the camp
+   in round 4 (a Skeleton killed a scouting Goblin) and the dead massed at
+   the hills' edge from round 6; two Trolls (rounds 6 and 9) broke the
+   first raids, but the dead took the two villages by their towns and a
+   third, reached six cities and twenty-five units, and two Liches out of
+   sight with the plague killed a Troll in round 15: abandoned in round 17.
+2. The two villages by the dead towns removed, no Liches or Pestilence:
+   eighteen units by round 13; a Troll carried forward by its kills into
+   the western pack died in round 9; abandoned in round 14.
+3. The dead at six units and no Coins, `HOLD` until round 4, raids in
+   rounds 5 and 9, no Wights: the march started in round 13, the ring was
+   broken by a thrown Goblin's Kaboom in round 19, but a fresh Zombie was
+   trained onto the center every turn; abandoned in round 21.
+4. The dead fall back to their plain at the new moon: the Troll that
+   landed on the center at 27 Hit Points in round 17 was killed there
+   that night (a Lich, two Zombies, a Skeleton); abandoned in round 19.
+5. **Final** (the dead towns at level 1, no Lumber Camps, no round 12
+   wave). **Autopilot: eliminated in round 9** (Gathering, Hunting,
+   Scouting, Farming, Forestry and Roads; no Mines, no Troll; the raid of
+   round 5 killed its three units in rounds 7 and 8 and took Wolfden).
+   **Thoughtful: won in round 18, three stars** (the fifth attempt, with
+   the lessons of the four before). Engineering on turn 1, the chest for 5
+   Coins, Mines and a Workshop: the first Troll in round 6, the second in
+   round 9. **Danger:** the round 5 raid came down to the hills' edge;
+   in round 7 it killed two Goblins standing on the front, in round 8 a
+   Zombie's bite killed a third and it rose on their side; in rounds 8 and
+   9 the Trolls (from the walled center and the mine hills) and Goblins
+   ganging up beside them killed four raiders without loss. Fortification
+   in round 10, Explosives in round 12, the march from round 10 by the
+   eastern hills (the village on the way taken in round 14, a Goblin lost
+   to the reserve north of the Barrow in round 16). In round 15 a Troll's
+   kill on the ring carried it beside the center; in round 16 its Breach
+   blow left the fresh Zombie on the center at 6 Hit Points (the push
+   failed), and in round 17 it killed it and stood on the center at full
+   Hit Points, held the night, and captured the Barrow in round 18. The
+   thrown Goblin's Kaboom was the key in attempts 3 and 4 (two kills and
+   two Field Defenses in one throw) and was not needed in the final.
+
+**Mission 4, Bone Neck** (Continents 16, seed 6; revision 6; as the
+Humans).
+
+1. First draft (the dead free to research Wights). **Danger:** the risen of
+   round 3 took the village south of Camp Concord in round 4 and attacked
+   the Fighter beside the capital; a Knight's Overrun chain went over the
+   neck in round 5 (four kills) and onto the gate's center, and a Ghoul and
+   a Skeleton killed it that night; the risen of round 7 took the village
+   north of Ferry Rest in round 9; four Wights refilled the gate's center.
+   Abandoned in round 11.
+2. **Final** (no Metallurgy for the dead). **Autopilot: eliminated in round
+   11** (Gathering, Hunting, Farming, Forestry, Marksmanship, Roads; its
+   units walked the neck one by one, the risen took Camp Concord in round
+   9 and Ferry Rest in round 10). **Thoughtful: won in round 10, two stars**
+   (the round 9 star missed). Chivalry on turn 1, Knights in rounds 2, 4
+   and 7, the Muster's Monument and Walls at Ferry Rest in round 3, the
+   Catapults three tiles from the exit. **Danger:** the risen of round 3
+   killed the home Knight sent at them alone (round 4); in round 6 a
+   Knight's chain (four kills) landed on the center and was killed there
+   that night by a Ghoul and a Skeleton from the gate's reserve; the
+   second home Knight retook the risen village (round 8); the gate grew
+   Walls (round 8), so Explosives' Breach (round 9); in round 9 a Knight's
+   Overrun chain killed six (the ring and the reserve north of the gate)
+   and landed on the center last, held the night, captured in round 10.
+   The village north of Ferry Rest stayed with the risen.
+
+**Mission 5, Dead Men's Road** (Dry Land 16, seed 9; revision 3).
+
+1. First draft (raiders out in round 3 with a hunting party of three on
+   the south road in round 4; the fort's others `RUSH`; the clock round
+   20). **Danger:** the raiders reached Gallows Cross in rounds 5 to 7 and
+   pinned both Liches there; a Sled froze units with its Bolas every turn;
+   the fort fell in round 12 and the Doctor was four steps short when the
+   clock was out of reach (round 18). Lost on time.
+2. The same: a Lich pushed forward was charged by a Sled and killed in
+   round 7, the other the same night; abandoned in round 8.
+3. Clock round 22, star round 20 → 18: the Doctor, walking ahead of his
+   column past the fort, was frozen by a Sled's Bolas and killed by the
+   Sled and an unseen Snow Hunter in round 16.
+4. The same configuration, the opening of 3 replayed to round 14, then the
+   fort taken (round 15) and the escort ahead of the Doctor: **won in round
+   22, two stars**, the last round.
+5. The hunting party removed: the Doctor slipped past the fort while it
+   stood, was frozen by a Sled and killed by it and a Guard in round 16.
+6. **Final** (no Scouting for the raiders, so no Sled but the one at home
+   and no Sabretooth; the waves' Sleds are Yetis; the clock round 24 and
+   the star round 20). **Autopilot: lost in round 12** (the Doctor walked
+   into the pass with the column and was killed). **Thoughtful: won in
+   round 22, two stars** (on the clock of round 22, before it was set to
+   24). **Danger:** the raiders at Gallows Cross in rounds 5 to 8 (a Sled
+   charged and killed a Lich that stepped out from behind the Zombies in
+   round 8); the fort refilled its center with a Guard every turn until
+   round 16; Yetis of the round 13 wave killed three Zombies around the
+   fort in round 17 and stood beside the Doctor's path; a Snow Hunter
+   brought the Doctor to 4 Hit Points in round 19. The line: Forestry and
+   Liches on turn 1, the Muster's Monument and Walls at Gallows Cross,
+   Crafting, Fortification and Pestilence by round 6; the raiders killed
+   by round 9; the fort shelled from round 10 and taken in round 17 (a
+   bitten Marksman rose on its center); the Doctor from round 17 to round
+   22 behind the Zombies.
+
+**Mission 6, The Deep Gate** (Dry Land 14, seed 18; revision 2, not
+changed). **Autopilot: lost in round 5** (the garrison marched out and the
+Deep Gate fell). **Thoughtful: held to the end of round 14, two stars**
+(the Thane lost). Blasting Charges and Gyrocopters on turn 1, a Workshop
+in round 2, the Explorer's Monument and a Brass Titan in round 4; blasts
+on the peaks killed or wounded six Yetis in rounds 3 to 6. **Danger:** the
+Baron's wave killed the south door's Hammerer in round 6 and a Fighter
+stood on Copperstep's center in round 8 and again in round 9 (killed each
+time); the Ice Folk wave of round 7 (a Boulder Yeti) killed the Steam Mole
+and, in round 9, the Thane; by round 12 one Brass Titan, two Gunners and a
+Hammerer were left, and the Deep Gate held with the Titan alone on its
+center. It needs no change for this pass.
+
+**What the pass taught.** The Normal AI with `others: ASSAULT` attacks
+early and keeps coming, but it masses before it commits, so the first
+contact comes two or three rounds after a wave arrives; the danger is
+then real for a slow build-up (missions 3 and 5) and an escort. What tips
+a mission from dangerous to unwinnable is the enemy's economy (villages
+and city levels: mission 3) and one unit kind that breaks the trick
+(Wights on mission 4's center, Sleds against mission 5's Doctor); those
+are removed by forbidden technologies and edits, not by softening the
+attacks. A unit that lands on a city center beside the enemy's reserve
+dies that night in every mission of this pass: the tricks have to clear
+the ring before they land.
+
+**On the ice redesign (`7r100`).** The frozen sea redesign
+(`pulp_wars-5ti.25`, `7r100`) and its AI (`pulp_wars-5ti.26`) landed on
+`main` during this pass. Missions 5 and 6 use the Ice Folk only as enemies
+on dry land; both were replayed on the new rules and AI: the autopilot lost
+both again (mission 5 in round 12, mission 6 in round 5), and the final
+thoughtful games of all four missions, replayed command for command,
+played out identically (mission 3 won in round 18 with three stars,
+mission 4 in round 10 with two, mission 5 in round 22 with two, mission 6
+held with two).
 
 ## 12. The mission builder's guide
 

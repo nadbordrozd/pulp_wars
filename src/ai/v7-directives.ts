@@ -20,8 +20,10 @@ import { RouteFieldV7, type CampaignDirectiveV7 } from "./v7-campaign";
  * docs/product/CAMPAIGN.md section 2.5).
  *
  * A mission's AI seat may carry one directive (plain data on the seat
- * definition): `NORMAL`, `RUSH`, `HOLD(zone)`, `GUARD(zone, garrison)`,
- * or `ASSAULT(target)` (`pulp_wars-v642.5`), each optionally
+ * definition): `NORMAL`, `RUSH`, `HOLD(zone)`, `GUARD(zone, garrison)`
+ * (whose units outside the garrison may play `RUSH` or `ASSAULT`,
+ * `others`, `pulp_wars-v642.10`), or `ASSAULT(target)`
+ * (`pulp_wars-v642.5`), each optionally
  * `untilRound`. The policy finds its directive from its own
  * public view (`view.setup.mission` names the mission, `view.viewer.seat`
  * the seat) and plays it while `view.round < untilRound` (always without
@@ -107,10 +109,17 @@ export function assaultHoldsTargetV7(
   plan: DirectivePlanV7 | null,
   at: CoordV7,
 ): boolean {
+  if (plan === null) return false;
+  const campaign = plan.campaign;
+  // `pulp_wars-v642.10`: a GUARD seat whose others ASSAULT a target.
+  const assault =
+    campaign.kind === "ASSAULT"
+      ? campaign
+      : campaign.kind === "GUARD" && campaign.others?.kind === "ASSAULT"
+        ? campaign.others
+        : null;
   return (
-    plan !== null &&
-    plan.campaign.kind === "ASSAULT" &&
-    chebyshev(plan.campaign.target, at) <= ASSAULT_HOLD_RADIUS_V7
+    assault !== null && chebyshev(assault.target, at) <= ASSAULT_HOLD_RADIUS_V7
   );
 }
 
@@ -335,6 +344,10 @@ export function directivePlanForViewV7(
     directive,
     campaign: {
       kind: directive.kind,
+      // `pulp_wars-v642.10`: the units outside a GUARD garrison attack.
+      ...(directive.kind === "GUARD" && directive.others !== undefined
+        ? { others: directive.others }
+        : {}),
       inZone: (at) => zoneContainsV7(zone, at),
       zoneField,
       nearestZoneTile: (at) => nearestZoneTileV7(view, zone, at),
@@ -456,19 +469,24 @@ function validateDirective(
         `${where}: fromRound must be an integer >= 2 and below untilRound`,
       );
     if (directive.kind === "NORMAL" || directive.kind === "RUSH") return;
+    const onBoard = (target: CoordV7): boolean =>
+      Number.isSafeInteger(target.x) &&
+      Number.isSafeInteger(target.y) &&
+      target.x >= 0 &&
+      target.y >= 0 &&
+      target.x < mission.size &&
+      target.y < mission.size;
     if (directive.kind === "ASSAULT") {
-      const target = directive.target;
-      if (
-        !Number.isSafeInteger(target.x) ||
-        !Number.isSafeInteger(target.y) ||
-        target.x < 0 ||
-        target.y < 0 ||
-        target.x >= mission.size ||
-        target.y >= mission.size
-      )
+      if (!onBoard(directive.target))
         throw new RangeError(`${where}: the assault target is off the board`);
       return;
     }
+    if (
+      directive.kind === "GUARD" &&
+      directive.others?.kind === "ASSAULT" &&
+      !onBoard(directive.others.target)
+    )
+      throw new RangeError(`${where}: the assault target is off the board`);
     if (directive.zone.length === 0)
       throw new RangeError(`${where}: the zone is empty`);
     for (const rect of directive.zone)

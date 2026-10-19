@@ -387,3 +387,29 @@ export const TEST_ASSAULT_V7: MissionDefinitionV7 = {
   forbiddenTechnologies: [...DRY_NAVAL_V7],
   objective: { kind: "DOMINATION" },
 };
+
+/**
+ * `TEST_GUARD_RAID` (`pulp_wars-v642.10`): `TEST_GUARD`'s board and seats,
+ * but the units outside the garrison of one `ASSAULT` the Human capital
+ * (`others`) instead of playing `NORMAL`: the gate keeps its Zombie, and
+ * the rest of the army marches on the capital, past the village a `NORMAL`
+ * seat would take.
+ */
+export const TEST_GUARD_RAID_V7: MissionDefinitionV7 = {
+  ...TEST_GUARD_V7,
+  id: "TEST_GUARD_RAID",
+  seed: 20261018,
+  seats: TEST_GUARD_V7.seats.map((seat, index) =>
+    index === 1
+      ? {
+          ...seat,
+          directive: {
+            kind: "GUARD",
+            zone: [{ x0: 4, y0: 4, x1: 6, y1: 6 }],
+            garrison: 1,
+            others: { kind: "ASSAULT", target: { x: 2, y: 8 } },
+          },
+        }
+      : seat,
+  ),
+};

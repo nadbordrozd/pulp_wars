@@ -339,6 +339,13 @@ export type MissionDirectiveV7 = MissionDirectiveWindowV7 &
         readonly kind: "GUARD";
         readonly zone: readonly RectV7[];
         readonly garrison: number;
+        /**
+         * `pulp_wars-v642.10`: what every unit outside the garrison plays.
+         * Absent: `NORMAL`. `RUSH` or `ASSAULT` (with its target): the
+         * garrison holds the zone while the rest of the army attacks, so a
+         * seat keeps its home and never turtles.
+         */
+        readonly others?: MissionGuardOthersV7;
       }
     /**
      * `pulp_wars-v642.5`: the seat commits its army to the city on
@@ -350,6 +357,15 @@ export type MissionDirectiveV7 = MissionDirectiveWindowV7 &
      */
     | { readonly kind: "ASSAULT"; readonly target: CoordV7 }
   );
+
+/**
+ * `pulp_wars-v642.10`: the play of a `GUARD` seat's units outside its
+ * garrison: `RUSH` (every free unit marches on the nearest known hostile
+ * city at once) or `ASSAULT` on `target` (as the `ASSAULT` directive).
+ */
+export type MissionGuardOthersV7 =
+  | { readonly kind: "RUSH" }
+  | { readonly kind: "ASSAULT"; readonly target: CoordV7 };
 
 /**
  * When a directive is played: from `fromRound` (absent: the start) while

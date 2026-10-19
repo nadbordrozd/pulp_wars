@@ -385,6 +385,13 @@ export type CampaignDirectiveV7 =
   | { readonly kind: "ASSAULT"; readonly target: CoordV7 }
   | {
       readonly kind: "HOLD" | "GUARD";
+      /**
+       * `pulp_wars-v642.10`: `GUARD` only: what the units outside the
+       * garrison play, `RUSH` or `ASSAULT` on a target (absent: `NORMAL`).
+       */
+      readonly others?:
+        | { readonly kind: "RUSH" }
+        | { readonly kind: "ASSAULT"; readonly target: CoordV7 };
       readonly inZone: (at: CoordV7) => boolean;
       /** A unit's land-route steps to the nearest zone tile. */
       readonly zoneField: (unit: PublicUnitV7) => RouteFieldV7;
@@ -579,15 +586,19 @@ export function campaignPlanForPolicyV7(
   // pulp_wars-68k.3: a RUSH seat that knows a hostile city only attacks.
   // pulp_wars-v642.5: so does an ASSAULT seat, on its target alone while
   // that is a known hostile city.
+  // pulp_wars-v642.10: and so do the units outside a GUARD garrison whose
+  // others play RUSH or ASSAULT (the garrison keeps its RETURN job).
+  const attacking =
+    directive?.kind === "GUARD" ? (directive.others ?? null) : directive;
   const rush =
-    (directive?.kind === "RUSH" || directive?.kind === "ASSAULT") &&
+    (attacking?.kind === "RUSH" || attacking?.kind === "ASSAULT") &&
     targets.length > 0;
   const assaulted =
-    directive?.kind === "ASSAULT"
+    attacking?.kind === "ASSAULT"
       ? (targets.find(
           (city) =>
-            city.at.x === directive.target.x &&
-            city.at.y === directive.target.y,
+            city.at.x === attacking.target.x &&
+            city.at.y === attacking.target.y,
         ) ?? null)
       : null;
   // A visible hostile unit is a lead too while no enemy city is known: its

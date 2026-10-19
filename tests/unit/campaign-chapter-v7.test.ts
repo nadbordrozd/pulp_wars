@@ -185,8 +185,9 @@ describe("Chapter One data", () => {
       unit: "ARCHIVIST",
       to: "IRONBRAID_GATE",
       within: 1,
-      byRound: 20,
-      bonus: [{ kind: "WITHIN_ROUNDS", rounds: 16 }, { kind: "KEEP_CITIES" }],
+      // Revision 3 (`pulp_wars-v642.10`): four rounds more for the raids.
+      byRound: 24,
+      bonus: [{ kind: "WITHIN_ROUNDS", rounds: 20 }, { kind: "KEEP_CITIES" }],
     });
     // The Doctor is a Necromancer of seat 0, and the gate a neutral village.
     expect(
@@ -204,11 +205,15 @@ describe("Chapter One data", () => {
     // of seven that cannot grow (no Fruit), and the Undead research their
     // way to the Lich's range and Pestilence instead of starting with nine
     // technologies.
-    expect(road.revision).toBe(2);
+    // Revision 3 (`pulp_wars-v642.10`, the danger pass): what the fort
+    // trains beyond its seven rushes your towns, and the raiders storm
+    // Gallows Cross from round 3.
+    expect(road.revision).toBe(3);
     expect(seat(road, 1).directive).toEqual({
       kind: "GUARD",
       zone: [{ x0: 9, y0: 7, x1: 11, y1: 9 }],
       garrison: 7,
+      others: { kind: "RUSH" },
     });
     expect(
       seat(road, 1)
@@ -236,7 +241,14 @@ describe("Chapter One data", () => {
       {
         kind: "HOLD",
         zone: [{ x0: 13, y0: 13, x1: 15, y1: 15 }],
-        untilRound: 6,
+        untilRound: 3,
+      },
+      {
+        kind: "GUARD",
+        zone: [{ x0: 13, y0: 13, x1: 15, y1: 15 }],
+        garrison: 1,
+        others: { kind: "ASSAULT", target: { x: 5, y: 11 } },
+        untilRound: 10,
       },
       { kind: "RUSH" },
     ]);
@@ -453,6 +465,8 @@ describe("Chapter One data", () => {
       FRONTIER_3: {
         human: ["GOBLIN"],
         ai: "UNDEAD",
+        // Revision 5 (`pulp_wars-v642.10`): the plain for three rounds,
+        // then the raids.
         directive: "HOLD",
         size: 16,
         map: "DRY_LAND",
@@ -478,6 +492,11 @@ describe("Chapter One data", () => {
           "COMMERCE",
           "RAIDING",
           "CHIVALRY",
+          // The danger pass (`pulp_wars-v642.10`).
+          "SAWMILLING",
+          "EXPLOSIVES",
+          "METALLURGY",
+          "FORESTRY",
         ],
       },
       // The difficulty pass: a front rank to break, against a clock.
@@ -509,6 +528,8 @@ describe("Chapter One data", () => {
           "FIELDCRAFT",
           "FORTIFICATION",
           "EXPLOSIVES",
+          // The danger pass (`pulp_wars-v642.10`): no Wights.
+          "METALLURGY",
         ],
       },
     };
@@ -538,22 +559,39 @@ describe("Chapter One data", () => {
         [...NAVAL].sort(),
       );
     }
-    // Mission 3 holds the plain around the Barrow until the new moon.
-    expect(seat(mission("FRONTIER_3"), 1).directive).toEqual({
-      kind: "HOLD",
-      zone: [{ x0: 0, y0: 0, x1: 15, y1: 5 }],
-      untilRound: 12,
-    });
+    // Mission 3 (revision 5, `pulp_wars-v642.10`): the dead hold the plain
+    // for three rounds, then three keep the Barrow while the rest storm
+    // Wolfden until round 11, and from the new moon they hold the plain.
+    expect(missionSeatDirectivesV7(seat(mission("FRONTIER_3"), 1))).toEqual([
+      {
+        kind: "HOLD",
+        zone: [{ x0: 0, y0: 0, x1: 15, y1: 5 }],
+        untilRound: 4,
+      },
+      {
+        kind: "GUARD",
+        zone: [{ x0: 11, y0: 3, x1: 13, y1: 5 }],
+        garrison: 3,
+        others: { kind: "ASSAULT", target: { x: 10, y: 13 } },
+        untilRound: 11,
+      },
+      { kind: "HOLD", zone: [{ x0: 0, y0: 0, x1: 15, y1: 6 }] },
+    ]);
     // Mission 3 is a build-up: one camp, three units, no technology.
     expect(seat(mission("FRONTIER_3"), 0).cities).toHaveLength(1);
     expect(seat(mission("FRONTIER_3"), 0).units).toHaveLength(3);
     expect(seat(mission("FRONTIER_3"), 0).technologies).toEqual([]);
     expect(seat(mission("FRONTIER_3"), 1).cities).toHaveLength(3);
-    // Mission 4 guards the gate with five.
+    // Mission 4 (revision 6, `pulp_wars-v642.10`): the gate and the tower
+    // keep seven; every other bone-man storms Camp Concord.
     expect(seat(mission("FRONTIER_4"), 1).directive).toEqual({
       kind: "GUARD",
-      zone: [{ x0: 9, y0: 5, x1: 11, y1: 7 }],
-      garrison: 5,
+      zone: [
+        { x0: 9, y0: 5, x1: 11, y1: 7 },
+        { x0: 10, y0: 9, x1: 12, y1: 11 },
+      ],
+      garrison: 7,
+      others: { kind: "ASSAULT", target: { x: 2, y: 9 } },
     });
   });
 

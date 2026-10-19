@@ -897,10 +897,10 @@ describe("Ruleset 7 mission objective in a match", () => {
     const roadShown = shown(roadView);
     expect([roadShown.icon, roadShown.line, roadShown.counter]).toEqual([
       "move",
-      "Get Doctor Crane to the gate by turn 20.",
-      "20 turns",
+      "Get Doctor Crane to the gate by turn 24.",
+      "24 turns",
     ]);
-    expect(roadShown.said).toContain("20 turns left.");
+    expect(roadShown.said).toContain("24 turns left.");
     expect(roadShown.said).toContain("8 steps to go.");
     expect(roadShown.said).not.toMatch(/\d\s*,\s*\d/);
     // A flag on the gate, a star on the Doctor.
@@ -910,7 +910,7 @@ describe("Ruleset 7 mission objective in a match", () => {
     ]);
     expect(
       missionStarGoalsV7("FRONTIER_5", null).map((goal) => goal.text),
-    ).toEqual(["Win the mission", "Win by turn 16", "Lose no city"]);
+    ).toEqual(["Win the mission", "Win by turn 20", "Lose no city"]);
     expect(ended(roadView, "VICTORY", "ESCORT_ARRIVED")).toBe(
       "Doctor Crane made it.",
     );

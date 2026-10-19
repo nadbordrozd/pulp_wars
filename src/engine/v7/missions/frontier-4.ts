@@ -22,6 +22,18 @@ import type { MissionDefinitionV7 } from "./types";
  * Undead seat may not train Liches, Ghouls, Banshees or new Zombies, and
  * builds no Field Defenses.
  *
+ * Revision 6 (`pulp_wars-v642.10`, the danger pass, CAMPAIGN.md sections
+ * 9.6 and 11.18): two fronts. The dead rise in your own fields, south of
+ * Camp Concord in round 3 and north of Ferry Rest in round 7, take the
+ * villages beside your towns and march on Camp Concord: the gate and the
+ * tower keep seven (`GUARD` of both, garrison 7) and every other bone-man,
+ * the tower's restock of round 6 included, storms Camp Concord (`others:
+ * ASSAULT`). Two of the four villages on your side are gone, and the dead
+ * may not research Wights (Metallurgy). A Knight sent alone dies; one that
+ * lands on the gate's center beside two bone-men dies that night. The
+ * answer is still the front rank broken by stones and an Overrun chain,
+ * now one that clears the ring before it lands, with a guard at home.
+ *
  * Revision 4 (`pulp_wars-v642.1`): the board is the map generator's
  * (Continents, seed 6): two lands and the channel between them, with two
  * water tiles of the channel turned to land: Bone Neck. The village at its
@@ -50,7 +62,7 @@ import type { MissionDefinitionV7 } from "./types";
  */
 export const FRONTIER_4_V7: MissionDefinitionV7 = {
   id: "FRONTIER_4",
-  revision: 5,
+  revision: 6,
   seed: 20261104,
   // <map>
   size: 16,
@@ -68,6 +80,10 @@ export const FRONTIER_4_V7: MissionDefinitionV7 = {
       { kind: "VILLAGE", at: { x: 5, y: 7 }, present: false },
       { kind: "VILLAGE", at: { x: 10, y: 6 }, present: false },
       { kind: "VILLAGE", at: { x: 13, y: 5 }, present: false },
+      // Revision 6 (`pulp_wars-v642.10`): two of the four villages on your
+      // side of the water, so the start is not a free empire.
+      { kind: "VILLAGE", at: { x: 6, y: 4 }, present: false },
+      { kind: "VILLAGE", at: { x: 5, y: 10 }, present: false },
     ],
   },
   terrain: [
@@ -128,9 +144,7 @@ export const FRONTIER_4_V7: MissionDefinitionV7 = {
   villages: [
     { x: 10, y: 3 },
     { x: 3, y: 4 },
-    { x: 6, y: 4 },
     { x: 14, y: 8 },
-    { x: 5, y: 10 },
     { x: 2, y: 12 },
     { x: 10, y: 13 },
   ],
@@ -214,8 +228,15 @@ export const FRONTIER_4_V7: MissionDefinitionV7 = {
         { role: "FIGHTER", at: { x: 11, y: 7 }, home: 1 },
         { role: "FIGHTER", at: { x: 13, y: 5 }, home: 2 },
       ],
-      // Bone Neck, watched from the gate.
-      reveal: { radius: 2, rects: [{ x0: 6, y0: 6, x1: 8, y1: 6 }] },
+      // Bone Neck, watched from the gate, and (revision 6) Camp Concord,
+      // which the risen march on.
+      reveal: {
+        radius: 2,
+        rects: [
+          { x0: 6, y0: 6, x1: 8, y1: 6 },
+          { x0: 1, y0: 8, x1: 3, y1: 10 },
+        ],
+      },
       // No Necromancers (hand play, CAMPAIGN.md section 11.4): three of
       // them raised a Skeleton on every Grave of the gate every turn, and
       // the siege never ended. The difficulty pass (section 11.15) took
@@ -238,16 +259,46 @@ export const FRONTIER_4_V7: MissionDefinitionV7 = {
         "FIELDCRAFT",
         "FORTIFICATION",
         "EXPLOSIVES",
+        // Revision 6: no Wights (hand play: four of them refilled the
+        // gate's center faster than any Knight could empty it).
+        "METALLURGY",
       ],
+      // Revision 6 (`pulp_wars-v642.10`): the gate and the tower keep
+      // their seven; every other bone-man (the risen in your fields, the
+      // tower's restock once the garrison is full) marches on Camp Concord.
       directive: {
         kind: "GUARD",
-        zone: [{ x0: 9, y0: 5, x1: 11, y1: 7 }],
-        garrison: 5,
+        zone: [
+          { x0: 9, y0: 5, x1: 11, y1: 7 },
+          { x0: 10, y0: 9, x1: 12, y1: 11 },
+        ],
+        garrison: 7,
+        others: { kind: "ASSAULT", target: { x: 2, y: 9 } },
       },
     },
   ],
-  // The tower restocks the gate.
+  // The tower restocks the gate; and (revision 6) the dead rise in your
+  // own fields, south of Camp Concord in round 3 and north of Ferry Rest in
+  // round 7.
   reinforcements: [
+    {
+      seat: 1,
+      round: 3,
+      units: [
+        { role: "FIGHTER", at: { x: 4, y: 12 } },
+        { role: "FIGHTER", at: { x: 5, y: 12 } },
+        { role: "GUARD", at: { x: 2, y: 13 } },
+      ],
+    },
+    {
+      seat: 1,
+      round: 7,
+      units: [
+        { role: "FIGHTER", at: { x: 1, y: 4 } },
+        { role: "FIGHTER", at: { x: 2, y: 4 } },
+        { role: "GUARD", at: { x: 0, y: 5 } },
+      ],
+    },
     {
       seat: 1,
       round: 6,

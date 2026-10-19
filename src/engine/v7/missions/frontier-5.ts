@@ -5,7 +5,7 @@ import type { MissionDefinitionV7 } from "./types";
  * mission 5; `pulp_wars-v642.2`). You lead the Undead on a 16 x 16 board and
  * bring Doctor Crane, the Marquis's archivist (a Necromancer), from your
  * town in the south-west to the Ironbraid gate, a village in the far
- * north-east, by round 20. Medium. An escort: the mission is lost when the
+ * north-east, by round 24 (20 before revision 3). An escort: it is lost when the
  * Doctor dies. He is a Necromancer like any other (10 Hit Points, Attack
  * 1, one step a turn): he can Rally the column and Raise the dead of the
  * road's Graves, and each of those costs him his step.
@@ -46,6 +46,16 @@ import type { MissionDefinitionV7 } from "./types";
  * itself to level 5 (no Gathering), so taking it no longer hands you a
  * giant, and the round 9 raiders bring a Musk Ox.
  *
+ * Revision 3 (`pulp_wars-v642.10`, the danger pass, CAMPAIGN.md sections
+ * 9.6 and 11.18): the raiders come out in round 3 and storm Gallows Cross,
+ * the Doctor's town, until round 10 (`GUARD` of their camp with a Musk Ox,
+ * `others: ASSAULT`), then hunt the nearest town (`RUSH`); what the fort
+ * trains beyond its seven goes out too (`others: RUSH`). The raiders have
+ * no Scouting (no Sled but the one at home, no Sabretooth): a Sled's Bolas
+ * froze the Doctor beside the pass and its charge killed him. The clock is
+ * round 24 and the star round 20 (were 20 and 16): the raids cost the
+ * column four rounds.
+ *
  * ```text
  *      x 0123456789012345
  * y  0   f.^.^.^^ff^.....
@@ -68,7 +78,7 @@ import type { MissionDefinitionV7 } from "./types";
  */
 export const FRONTIER_5_V7: MissionDefinitionV7 = {
   id: "FRONTIER_5",
-  revision: 2,
+  revision: 3,
   seed: 20261105,
   // <map>
   size: 16,
@@ -243,7 +253,15 @@ export const FRONTIER_5_V7: MissionDefinitionV7 = {
         { role: "FIGHTER", at: { x: 9, y: 9 } },
         { role: "FIGHTER", at: { x: 10, y: 9 } },
       ],
-      reveal: { radius: 2 },
+      // Revision 3 (`pulp_wars-v642.10`): the Baron's men know where the
+      // dead live.
+      reveal: {
+        radius: 2,
+        rects: [
+          { x0: 1, y0: 7, x1: 3, y1: 9 },
+          { x0: 4, y0: 10, x1: 6, y1: 12 },
+        ],
+      },
       // No Knights and no siege; no Fruit (revision 2: the fort harvested
       // itself to level 4 on round 1 and handed its captor a giant); and no
       // Lumber Camp, Farm, or Blast Mountain
@@ -264,23 +282,23 @@ export const FRONTIER_5_V7: MissionDefinitionV7 = {
       ],
       // Every toll-man guards the fort: in the first hand play two of them
       // roamed, took a village, and killed the column's scout on round 1.
+      // Revision 3 (`pulp_wars-v642.10`): what the fort trains beyond its
+      // seven goes out to collect the toll.
       directive: {
         kind: "GUARD",
         zone: [{ x0: 9, y0: 7, x1: 11, y1: 9 }],
         garrison: 7,
+        others: { kind: "RUSH" },
       },
     },
     {
       // The Ice Folk raiders.
       faction: "ICE_FOLK",
       coins: 5,
-      technologies: [
-        "HUNTING",
-        "MARKSMANSHIP",
-        "SCOUTING",
-        "DRILL",
-        "FORTIFICATION",
-      ],
+      // Revision 3: no Scouting, so no Sled but the one at home (hand play:
+      // a Sled's Bolas froze the Doctor beside the pass and its charge
+      // killed him, twice).
+      technologies: ["HUNTING", "MARKSMANSHIP", "DRILL", "FORTIFICATION"],
       // Walled, in the corner, with a Musk Ox at home. Taking the camp ends
       // the raiders and their waves: it is the south road's fight, and the
       // column that wins it walks the rest of the way.
@@ -300,7 +318,8 @@ export const FRONTIER_5_V7: MissionDefinitionV7 = {
         { role: "RAIDER", at: { x: 13, y: 15 } },
         { role: "MARKSMAN", at: { x: 15, y: 13 } },
       ],
-      reveal: { radius: 2 },
+      // Revision 3: and the raiders know where Gallows Cross is.
+      reveal: { radius: 2, rects: [{ x0: 4, y0: 10, x1: 6, y1: 12 }] },
       // The camp stays small too: no Lumber Camp, Farm, Boulder Yeti, or
       // Blast Mountain.
       forbiddenTechnologies: [
@@ -309,12 +328,28 @@ export const FRONTIER_5_V7: MissionDefinitionV7 = {
         "FARMING",
         "MILLING",
         "EXPLOSIVES",
+        // Revision 3: no Sleds and no Sabretooths.
+        "SCOUTING",
+        "ROADS",
+        "COMMERCE",
+        "RAIDING",
+        "CHIVALRY",
       ],
+      // Revision 3 (`pulp_wars-v642.10`): the raiders come out in round 3,
+      // not 6, and storm Gallows Cross (the Doctor's town) until round 10,
+      // a Musk Ox keeping the camp; then they hunt the nearest town.
       directive: [
         {
           kind: "HOLD",
           zone: [{ x0: 13, y0: 13, x1: 15, y1: 15 }],
-          untilRound: 6,
+          untilRound: 3,
+        },
+        {
+          kind: "GUARD",
+          zone: [{ x0: 13, y0: 13, x1: 15, y1: 15 }],
+          garrison: 1,
+          others: { kind: "ASSAULT", target: { x: 5, y: 11 } },
+          untilRound: 10,
         },
         { kind: "RUSH" },
       ],
@@ -330,7 +365,7 @@ export const FRONTIER_5_V7: MissionDefinitionV7 = {
       units: [
         { role: "FIGHTER", at: { x: 15, y: 7 } },
         { role: "FIGHTER", at: { x: 15, y: 8 } },
-        { role: "RAIDER", at: { x: 14, y: 8 } },
+        { role: "FIGHTER", at: { x: 14, y: 8 } },
         { role: "GUARD", at: { x: 15, y: 6 } },
       ],
     },
@@ -341,7 +376,7 @@ export const FRONTIER_5_V7: MissionDefinitionV7 = {
         { role: "FIGHTER", at: { x: 15, y: 5 } },
         { role: "FIGHTER", at: { x: 15, y: 6 } },
         { role: "MARKSMAN", at: { x: 15, y: 4 } },
-        { role: "RAIDER", at: { x: 14, y: 6 } },
+        { role: "FIGHTER", at: { x: 14, y: 6 } },
       ],
     },
   ],
@@ -360,13 +395,14 @@ export const FRONTIER_5_V7: MissionDefinitionV7 = {
     { tag: "IRONBRAID_GATE", at: { x: 14, y: 2 }, name: "Ironbraid Gate" },
   ],
   // The Doctor stands next to the gate: the Dwarves open it. He must get
-  // there by round 20; the stars are for round 16 and for losing no city.
+  // there by round 24 (revision 3: four rounds for the raids); the stars are
+  // for round 20 and for losing no city.
   objective: {
     kind: "ESCORT",
     unit: "ARCHIVIST",
     to: "IRONBRAID_GATE",
     within: 1,
-    byRound: 20,
-    bonus: [{ kind: "WITHIN_ROUNDS", rounds: 16 }, { kind: "KEEP_CITIES" }],
+    byRound: 24,
+    bonus: [{ kind: "WITHIN_ROUNDS", rounds: 20 }, { kind: "KEEP_CITIES" }],
   },
 };

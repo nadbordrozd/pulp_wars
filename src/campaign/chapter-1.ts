@@ -135,11 +135,11 @@ export const CHAPTER_ONE_V7: CampaignChapterV7 = Object.freeze({
       name: "Green Tide",
       format: "CAPTURE",
       briefing:
-        "The dead hold the high plain where the goblins grazed their wolves, and Grubnak wants it back. All he has left is one camp in the hills and a handful of goblins. Dig in, dig deep and grow a Troll before the new moon, when the dead march. And remember: a goblin's best weapon is his last one, and a Troll can throw it a long way.",
+        "The dead hold the high plain where the goblins grazed their wolves, and Grubnak wants it back. All he has left is one camp in the hills, and the dead know where it is. Dig deep, grow a Troll and break their raids on your own hills; at the new moon they crawl back to the plain. And remember: a goblin's best weapon is his last one, and a Troll can throw it a long way.",
       objective: "Capture the Barrow by turn 26.",
       hints: Object.freeze([
         "The hills are full of ore: Mines grow the camp.",
-        "The dead stay on their plain until turn 12.",
+        "The dead raid from turn 5. Fight them on your hills.",
         "A Troll can throw a Goblin. Then: Kaboom.",
       ]),
       closing:
@@ -153,11 +153,11 @@ export const CHAPTER_ONE_V7: CampaignChapterV7 = Object.freeze({
       name: "Bone Neck",
       format: "CAPTURE",
       briefing:
-        "The Ashen Marquis waits beyond Bone Neck, a strip of land one cart wide. No boat will cross that water. Two Zombies hold the far end, and behind them his bone-men stand thick as a hedge. Crack the front rank with stones, then send riders through the gap before the tower sends more. Who leads the charge: Steele's Rangers or Grubnak's horde?",
+        "The Ashen Marquis waits beyond Bone Neck, a strip of land one cart wide. Two Zombies hold the far end, bone-men thick as a hedge behind them, and his dead are already rising in your own fields. Crack the front rank with stones, send riders through the gap, and leave a guard at home. Who leads the charge: Steele's Rangers or Grubnak's horde?",
       objective: "Capture the Bone Gate by turn 14.",
       hints: Object.freeze([
         "One way in: the Neck. Walk it alone and you rise dead.",
-        "Siege engines break the front rank from the shore.",
+        "The dead rise in your fields too: keep a guard home.",
         "A rider who kills keeps charging: let him run.",
       ]),
       closing:
@@ -174,10 +174,10 @@ export const CHAPTER_ONE_V7: CampaignChapterV7 = Object.freeze({
       name: "Dead Men's Road",
       format: "ESCORT",
       briefing:
-        "Only the Marquis's archivist, Doctor Mortimer Crane, can read the bell's score, and only the Dwarves of Ironbraid Hold know the mountain. Walk him to their gate before the snows close it, twenty days from now. Baron Kessler's toll-men hold the pass, and something white hunts the long way round.",
-      objective: "Get Doctor Crane to the gate by turn 20.",
+        "Only the Marquis's archivist, Doctor Mortimer Crane, can read the bell's score, and only the Dwarves of Ironbraid Hold know the mountain. Walk him to their gate before the snows close it, twenty-four days from now. Baron Kessler's toll-men hold the pass, and something white is already hunting your towns.",
+      objective: "Get Doctor Crane to the gate by turn 24.",
       hints: Object.freeze([
-        "If the Doctor dies, the mission is lost.",
+        "White raiders hit Gallows Cross from turn 3.",
         "A Lich outranges Kessler's Toll. Pestilence rots it.",
         "Keep the Doctor behind the dead. He can raise more.",
       ]),

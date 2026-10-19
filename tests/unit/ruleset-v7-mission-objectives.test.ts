@@ -989,6 +989,9 @@ describe("natural maps", () => {
     // four-seat boards (`pulp_wars-v642.4`) remove a village under each of
     // their six or seven cities, and mission 9 has its band of Rift.
     const mostEdits: Readonly<Record<string, number>> = {
+      // The danger pass (`pulp_wars-v642.10`): five more villages gone, so
+      // the Goblins walk for their slots and the dead do not snowball.
+      FRONTIER_3: 11,
       FRONTIER_9: 17,
       FRONTIER_10: 13,
     };

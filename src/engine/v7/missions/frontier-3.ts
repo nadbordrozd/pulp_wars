@@ -5,9 +5,7 @@ import type { MissionDefinitionV7 } from "./types";
  * 3). You lead the Goblins against the Undead on a dry 16 x 16 board. A
  * build-up mission: you start with one camp in the hills, three units and
  * no technology, and the Undead are established on the high plain with
- * three towns. They `HOLD` the plain until the new moon (round 12), then
- * march (`NORMAL`); a wave leaves the Barrow in round 16. Taking the Barrow
- * by round 26 wins the mission.
+ * three towns. Taking the Barrow by round 26 wins the mission.
  *
  * Revision 4 (`pulp_wars-v642.7`, the campaign difficulty pass,
  * CAMPAIGN.md section 11.15): the board is the map generator's (Dry Land
@@ -19,6 +17,19 @@ import type { MissionDefinitionV7 } from "./types";
  * camp in the hills, a level 5 camp sends a Troll), the march of the dead
  * at the new moon, and then the Barrow's ring, which a thrown Goblin's
  * Kaboom breaks open for the Trolls.
+ *
+ * Revision 5 (`pulp_wars-v642.10`, the danger pass, CAMPAIGN.md sections
+ * 9.6 and 11.18): no quiet build-up. The dead hold their plain for three
+ * rounds; from round 4 three keep the Barrow (`GUARD` with `others:
+ * ASSAULT`) and everything else comes down the hills for Wolfden, with
+ * raiding parties out of the hills' old graves in rounds 5 and 9; from the
+ * new moon (round 11) they fall back to the plain (`HOLD`), and the Barrow's
+ * last crypts open in round 16. Five more villages are gone (the three
+ * nearest the camp and the two by the dead towns), the dead towns are
+ * level 1, and the dead may not research Liches, Pestilence, Wights or
+ * Lumber Camps. The problem: break the raids on your own hills (a Goblin
+ * alone in the open is killed and rises on their side, and a Troll that
+ * chases the dead into the open is eaten), then march.
  *
  * ```text
  *      x 0123456789012345
@@ -42,7 +53,7 @@ import type { MissionDefinitionV7 } from "./types";
  */
 export const FRONTIER_3_V7: MissionDefinitionV7 = {
   id: "FRONTIER_3",
-  revision: 4,
+  revision: 5,
   seed: 20261103,
   // <map>
   size: 16,
@@ -58,6 +69,15 @@ export const FRONTIER_3_V7: MissionDefinitionV7 = {
       { kind: "VILLAGE", at: { x: 7, y: 2 }, present: false },
       { kind: "VILLAGE", at: { x: 10, y: 1 }, present: false },
       { kind: "VILLAGE", at: { x: 13, y: 1 }, present: false },
+      // Revision 5 (`pulp_wars-v642.10`): the three villages nearest the
+      // camp, so the horde has to walk for its slots.
+      { kind: "VILLAGE", at: { x: 13, y: 11 }, present: false },
+      { kind: "VILLAGE", at: { x: 7, y: 14 }, present: false },
+      { kind: "VILLAGE", at: { x: 10, y: 8 }, present: false },
+      // And the two by the dead towns: with them the Undead reached six
+      // cities and twenty-five units by round 15.
+      { kind: "VILLAGE", at: { x: 1, y: 5 }, present: false },
+      { kind: "VILLAGE", at: { x: 4, y: 5 }, present: false },
     ],
   },
   terrain: [
@@ -116,14 +136,9 @@ export const FRONTIER_3_V7: MissionDefinitionV7 = {
     "PPPHHHHHHHHHHHHH",
   ],
   villages: [
-    { x: 1, y: 5 },
-    { x: 4, y: 5 },
-    { x: 10, y: 8 },
     { x: 13, y: 8 },
-    { x: 13, y: 11 },
     { x: 1, y: 14 },
     { x: 4, y: 14 },
-    { x: 7, y: 14 },
     { x: 14, y: 14 },
   ],
   treasureChests: [
@@ -175,24 +190,26 @@ export const FRONTIER_3_V7: MissionDefinitionV7 = {
         {
           name: "Gravesend",
           at: { x: 7, y: 5 },
-          level: 2,
-          rewards: ["STOCKPILE"],
+          level: 1,
+          rewards: [],
         },
         {
           name: "Cairnholm",
           at: { x: 4, y: 2 },
-          level: 2,
-          rewards: ["STOCKPILE"],
+          level: 1,
+          rewards: [],
         },
       ],
       units: [
         { role: "GUARD", at: { x: 12, y: 4 } },
         { role: "FIGHTER", at: { x: 11, y: 5 } },
         { role: "FIGHTER", at: { x: 13, y: 5 } },
+        { role: "FIGHTER", at: { x: 12, y: 5 } },
         { role: "GUARD", at: { x: 7, y: 5 }, home: 1 },
         { role: "FIGHTER", at: { x: 4, y: 2 }, home: 2 },
       ],
-      reveal: { radius: 2 },
+      // Revision 5: the dead know where the camp is.
+      reveal: { radius: 2, rects: [{ x0: 9, y0: 12, x1: 11, y1: 14 }] },
       // Hand play (CAMPAIGN.md section 11.15): the Necromancer's Rally, the
       // Banshees' Wail and the Ghouls' charges won every skirmish at the
       // plain's edge before the horde could grow, and a Barrow that grew
@@ -211,17 +228,60 @@ export const FRONTIER_3_V7: MissionDefinitionV7 = {
         "COMMERCE",
         "RAIDING",
         "CHIVALRY",
+        // Revision 5: no new Liches and no Pestilence (hand play: two
+        // Liches out of sight and the plague killed a Troll a turn).
+        "SAWMILLING",
+        "EXPLOSIVES",
+        "METALLURGY",
+        "FORESTRY",
       ],
-      // The high plain until the new moon; then the dead march.
-      directive: {
-        kind: "HOLD",
-        zone: [{ x0: 0, y0: 0, x1: 15, y1: 5 }],
-        untilRound: 12,
-      },
+      // Revision 5 (`pulp_wars-v642.10`): no quiet build-up. Three of the
+      // dead keep the Barrow; everything else comes down the hills for
+      // Wolfden from the first night, and from the new moon (round 12) for
+      // the nearest goblin town.
+      directive: [
+        {
+          kind: "HOLD",
+          zone: [{ x0: 0, y0: 0, x1: 15, y1: 5 }],
+          untilRound: 4,
+        },
+        {
+          kind: "GUARD",
+          zone: [{ x0: 11, y0: 3, x1: 13, y1: 5 }],
+          garrison: 3,
+          others: { kind: "ASSAULT", target: { x: 10, y: 13 } },
+          untilRound: 11,
+        },
+        // The new moon: the dead fall back to their plain and wait.
+        {
+          kind: "HOLD",
+          zone: [{ x0: 0, y0: 0, x1: 15, y1: 6 }],
+        },
+      ],
     },
   ],
-  // The new moon: the Barrow empties its crypts.
+  // Revision 5 (`pulp_wars-v642.10`): a raiding party out of the hills'
+  // old graves in round 5, the new moon's host in round 12, and the
+  // Barrow's last crypts in round 16.
   reinforcements: [
+    {
+      seat: 1,
+      round: 5,
+      units: [
+        { role: "FIGHTER", at: { x: 9, y: 9 } },
+        { role: "FIGHTER", at: { x: 11, y: 9 } },
+        { role: "GUARD", at: { x: 10, y: 9 } },
+      ],
+    },
+    {
+      seat: 1,
+      round: 9,
+      units: [
+        { role: "FIGHTER", at: { x: 8, y: 9 } },
+        { role: "FIGHTER", at: { x: 12, y: 9 } },
+        { role: "GUARD", at: { x: 10, y: 8 } },
+      ],
+    },
     {
       seat: 1,
       round: 16,

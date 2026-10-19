@@ -484,8 +484,9 @@ describe("the Industry reshuffle: the missions", () => {
       ["FRONTIER_1", 3],
       // The campaign difficulty pass (`pulp_wars-v642.7`): one more.
       ["FRONTIER_2", 4],
-      ["FRONTIER_3", 4],
-      ["FRONTIER_4", 5],
+      // The danger pass (`pulp_wars-v642.10`): one more.
+      ["FRONTIER_3", 5],
+      ["FRONTIER_4", 6],
       ["TEST_NECK", 2],
       // Unchanged: both seats owned Fortification already.
       ["LAB_SIEGE", 1],

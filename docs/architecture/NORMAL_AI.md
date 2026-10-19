@@ -6607,7 +6607,9 @@ A mission's AI seat may carry one directive
 `HOLD(zone)`, `GUARD(zone, garrison)`, or `ASSAULT(target)`
 (`pulp_wars-v642.5`: as `RUSH` on the target city alone, and the
 position that holds it is assaulted whatever it weighs), each optionally
-`untilRound`.
+`untilRound`. A `GUARD` may name what its units outside the garrison play,
+`others: RUSH | ASSAULT(target)` (`pulp_wars-v642.10`): the garrison keeps
+the zone and the rest of the army attacks.
 `src/ai/v7-directives.ts` resolves it from the public view
 (`view.setup.mission` names the mission, `view.viewer.seat` the seat) and
 plays it while `view.round < untilRound`; from that round on, and for seat 0,

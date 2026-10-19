@@ -402,6 +402,78 @@ describe("ASSAULT", () => {
   });
 });
 
+// A GUARD whose others attack (`pulp_wars-v642.10`): TEST_GUARD_RAID is
+// TEST_GUARD with a garrison of one and `others: ASSAULT` on the Human
+// capital.
+describe("GUARD with others", () => {
+  const target = { x: 2, y: 8 };
+
+  it("keeps the garrison home and sends every other unit at the target", () => {
+    const { view } = aiTurn("TEST_GUARD_RAID", exploredAll);
+    const plan = directivePlanForViewV7(view);
+    expect(plan?.campaign).toMatchObject({
+      kind: "GUARD",
+      others: { kind: "ASSAULT", target },
+    });
+    const zone = zoneOf("TEST_GUARD_RAID");
+    const garrison = guardGarrisonV7(view, zone, 1);
+    expect(plan?.garrison).toEqual(garrison);
+    expect([...(plan?.leashed ?? [])]).toEqual(garrison);
+    const raid = jobs(view);
+    const others = ownLand(view).filter((unit) => !garrison.includes(unit.id));
+    expect(others.length).toBeGreaterThanOrEqual(2);
+    for (const unit of others)
+      expect(
+        raid.assignments.find((item) => item.unitId === unit.id),
+      ).toMatchObject({ job: "ATTACK", at: target });
+    // TEST_GUARD's others (NORMAL) scout or take the village instead.
+    const normal = jobs(aiTurn("TEST_GUARD", exploredAll).view);
+    expect(
+      normal.assignments.some(
+        (item) => item.job !== "ATTACK" && item.job !== "RETURN",
+      ),
+    ).toBe(true);
+    expect(
+      raid.assignments.some(
+        (item) => item.job !== "ATTACK" && item.job !== "RETURN",
+      ),
+    ).toBe(false);
+  });
+
+  it("assaults the position that holds the target, and validates it", () => {
+    const { view } = aiTurn("TEST_GUARD_RAID");
+    const plan = directivePlanForViewV7(view);
+    expect(assaultHoldsTargetV7(plan, { x: 3, y: 7 })).toBe(true);
+    expect(assaultHoldsTargetV7(plan, { x: 9, y: 1 })).toBe(false);
+    // TEST_GUARD (others NORMAL) holds no target.
+    expect(
+      assaultHoldsTargetV7(
+        directivePlanForViewV7(aiTurn("TEST_GUARD").view),
+        target,
+      ),
+    ).toBe(false);
+    const base = mission("TEST_GUARD_RAID");
+    expect(() =>
+      validateMissionDirectivesV7({
+        ...base,
+        seats: base.seats.map((item, index) =>
+          index === 1
+            ? {
+                ...item,
+                directive: {
+                  kind: "GUARD",
+                  zone: [{ x0: 4, y0: 4, x1: 6, y1: 6 }],
+                  garrison: 1,
+                  others: { kind: "ASSAULT", target: { x: 0, y: 11 } },
+                },
+              }
+            : item,
+        ),
+      }),
+    ).toThrow(/off the board/);
+  });
+});
+
 describe("the leash", () => {
   it("lists the units a command relocates", () => {
     const at = { x: 1, y: 1 };
