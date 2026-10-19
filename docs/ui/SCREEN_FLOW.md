@@ -3135,6 +3135,33 @@ above differs, this is current:
 - **Glossary.** A mission adds no ability; "turn" in these texts is the
   rules' round, as on the top bar.
 
+**The campaign map (`pulp_wars-hmyk.3`).** The faction campaigns and their
+unlock graph ([Campaign mode](../product/CAMPAIGN.md) section 14). Where the
+lists above differ, this is current:
+
+- **Campaign** opens the **campaign map**, not a mission list: the
+  prologue's wide plate ("Prologue", "The Hollow Frontier") set apart, then
+  three rows of plates (Humans and Undead; Dinosaurs, Martians, Goblins and
+  Dwarves; Ice Folk, Cultists and Candy) joined by lines through a knot
+  between rows ("Finish both", "Finish all 4", a lock until the gate opens,
+  then a flag and "Open"). A plate is the campaign's picture (its faction's
+  portrait on a framed plate until the art is drawn), its title and its
+  progress (Open; stars and "N of M"; a trophy when completed). Locked and
+  Coming soon plates are greyed with a lock and focusable; a tap says why in
+  a line under the map and opens nothing. Settings (Reset progress) is at
+  the foot. On a phone the middle four are two rows of two.
+- An open plate opens its **mission list**: **Campaigns** (back to the
+  map, focus on that plate), the picture, subtitle and title, the story and
+  the mission cards. The prologue's list keeps its Factions row. Escape
+  steps back: briefing, list, map, main menu.
+- **Testing cheat.** Seven quick taps of the "Campaign" title, typing
+  `pulpwars`, or `?campaign-cheat=1` turn on "All missions unlocked": a
+  yellow chip beside the title (a tap turns it off) and every built
+  campaign and mission open.
+- **Victory** adds "New campaigns: Dinosaurs, Martians, Goblins and
+  Dwarves" (a flag notice) for the win that opened them. Campaign and Next
+  mission return to the finished mission's own campaign.
+
 ## 0. Ruleset-6 replacement contract
 
 > **Historical (`pulp_wars-lky5`).** Ruleset 6 and ruleset 5 are retired.

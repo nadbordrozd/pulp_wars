@@ -14,8 +14,10 @@ import {
   BrowserPersistenceV7,
   CAMPAIGN_PROGRESS_STORAGE_KEY_V7,
   CampaignProgressStoreV7,
+  LEGACY_CAMPAIGN_PROGRESS_STORAGE_KEY_V7,
   OBSOLETE_SAVE_STORAGE_KEYS_V7,
   SAVE_STORAGE_KEY_V7,
+  campaignCompletionsV7,
   cleanupObsoleteRuleset7Saves,
   parseCampaignProgressV7,
   type StorageAdapter,
@@ -23,12 +25,14 @@ import {
 
 /**
  * Campaign progress and its derived state (`pulp_wars-68k.5`,
- * docs/product/CAMPAIGN.md sections 4 and 7.2).
+ * docs/product/CAMPAIGN.md sections 4 and 7.2), per campaign since
+ * `pulp_wars-hmyk.3` (section 14.4).
  */
 const AT = "2026-10-03T12:00:00.000Z";
 const won = (bestRounds = 12) => ({ firstWonAt: AT, bestRounds });
 
-function stored(completed: CampaignCompletedV7): string {
+/** Version 1, as builds before `pulp_wars-hmyk.3` wrote it. */
+function storedV1(completed: CampaignCompletedV7): string {
   return JSON.stringify({
     format: "pulp-wars-campaign-progress",
     version: 1,
@@ -36,72 +40,195 @@ function stored(completed: CampaignCompletedV7): string {
   });
 }
 
+function storedV2(
+  campaigns: Readonly<Record<string, CampaignCompletedV7>>,
+): string {
+  return JSON.stringify({
+    format: "pulp-wars-campaign-progress",
+    version: 2,
+    campaigns: Object.fromEntries(
+      Object.entries(campaigns).map(([id, completed]) => [id, { completed }]),
+    ),
+  });
+}
+
+/** The completions of one campaign as last written. */
+function written(
+  storage: StorageAdapter,
+  campaign = "FRONTIER",
+): Record<string, unknown> {
+  return JSON.parse(storage.getItem(CAMPAIGN_PROGRESS_STORAGE_KEY_V7) ?? "")
+    .campaigns[campaign].completed;
+}
+
 describe("campaign progress store", () => {
-  it("owns its own key, which is never a save key", () => {
-    expect(CAMPAIGN_PROGRESS_STORAGE_KEY_V7).toBe("pulpWars.campaign.v1");
-    expect(
-      (OBSOLETE_SAVE_STORAGE_KEYS_V7 as readonly string[]).includes(
-        CAMPAIGN_PROGRESS_STORAGE_KEY_V7,
-      ),
-    ).toBe(false);
-    expect(SAVE_STORAGE_KEY_V7).not.toBe(CAMPAIGN_PROGRESS_STORAGE_KEY_V7);
+  it("owns its own keys, which are never save keys", () => {
+    expect(CAMPAIGN_PROGRESS_STORAGE_KEY_V7).toBe("pulpWars.campaign.v2");
+    expect(LEGACY_CAMPAIGN_PROGRESS_STORAGE_KEY_V7).toBe(
+      "pulpWars.campaign.v1",
+    );
+    for (const key of [
+      CAMPAIGN_PROGRESS_STORAGE_KEY_V7,
+      LEGACY_CAMPAIGN_PROGRESS_STORAGE_KEY_V7,
+    ]) {
+      expect(
+        (OBSOLETE_SAVE_STORAGE_KEYS_V7 as readonly string[]).includes(key),
+      ).toBe(false);
+      expect(SAVE_STORAGE_KEY_V7).not.toBe(key);
+    }
   });
 
-  it("starts empty, records a win, and parses what it wrote", () => {
+  it("starts empty, records a win under its campaign, and parses what it wrote", () => {
     const storage = new MemoryStorage();
     const store = new CampaignProgressStoreV7(storage, { now: () => AT });
     expect(store.load()).toEqual({
       kind: "VALID",
       progress: {
         format: "pulp-wars-campaign-progress",
-        version: 1,
-        completed: {},
+        version: 2,
+        campaigns: {},
       },
     });
-    const recorded = store.recordWin("FRONTIER_1", 14);
+    const recorded = store.recordWin("FRONTIER", "FRONTIER_1", 14);
     expect(recorded).toMatchObject({ ok: true, firstWin: true });
+    store.recordWin("HUMANS", "HUMANS_1", 9, 2);
     const source = storage.getItem(CAMPAIGN_PROGRESS_STORAGE_KEY_V7);
     expect(JSON.parse(source ?? "")).toEqual({
       format: "pulp-wars-campaign-progress",
-      version: 1,
-      completed: { FRONTIER_1: { firstWonAt: AT, bestRounds: 14, stars: 1 } },
+      version: 2,
+      campaigns: {
+        FRONTIER: {
+          completed: {
+            FRONTIER_1: { firstWonAt: AT, bestRounds: 14, stars: 1 },
+          },
+        },
+        HUMANS: {
+          completed: { HUMANS_1: { firstWonAt: AT, bestRounds: 9, stars: 2 } },
+        },
+      },
     });
     expect(parseCampaignProgressV7(source ?? "")).toEqual(store.load());
+    const loaded = store.load();
+    if (loaded.kind !== "VALID") throw new Error(loaded.kind);
+    // Every campaign's completions in one record, for the derived state.
+    expect(campaignCompletionsV7(loaded.progress)).toEqual({
+      FRONTIER_1: { firstWonAt: AT, bestRounds: 14, stars: 1 },
+      HUMANS_1: { firstWonAt: AT, bestRounds: 9, stars: 2 },
+    });
+    expect(storage.getItem(LEGACY_CAMPAIGN_PROGRESS_STORAGE_KEY_V7)).toBeNull();
+  });
+
+  it("migrates version 1 into the prologue without losing a win, and leaves the old key alone", () => {
+    const storage = new MemoryStorage();
+    const legacy = storedV1({
+      FRONTIER_1: { ...won(14), stars: 3 },
+      FRONTIER_2: won(20),
+    });
+    storage.setItem(LEGACY_CAMPAIGN_PROGRESS_STORAGE_KEY_V7, legacy);
+    const store = new CampaignProgressStoreV7(storage, {
+      now: () => "2026-10-19T08:00:00.000Z",
+    });
+    // Read as version 2, with nothing written on load.
+    storage.writes = 0;
+    expect(store.load()).toEqual({
+      kind: "VALID",
+      progress: {
+        format: "pulp-wars-campaign-progress",
+        version: 2,
+        campaigns: {
+          FRONTIER: {
+            completed: {
+              FRONTIER_1: { firstWonAt: AT, bestRounds: 14, stars: 3 },
+              FRONTIER_2: { firstWonAt: AT, bestRounds: 20 },
+            },
+          },
+        },
+      },
+    });
+    expect(storage.writes).toBe(0);
+    // The next win writes version 2, with every earlier win in it.
+    store.recordWin("FRONTIER", "FRONTIER_3", 17, 2);
+    expect(written(storage)).toEqual({
+      FRONTIER_1: { firstWonAt: AT, bestRounds: 14, stars: 3 },
+      FRONTIER_2: { firstWonAt: AT, bestRounds: 20 },
+      FRONTIER_3: {
+        firstWonAt: "2026-10-19T08:00:00.000Z",
+        bestRounds: 17,
+        stars: 2,
+      },
+    });
+    // An older build still reads the old key as it was.
+    expect(storage.getItem(LEGACY_CAMPAIGN_PROGRESS_STORAGE_KEY_V7)).toBe(
+      legacy,
+    );
+    // Version 2 wins over version 1 from then on.
+    storage.setItem(
+      LEGACY_CAMPAIGN_PROGRESS_STORAGE_KEY_V7,
+      storedV1({ FRONTIER_9: won() }),
+    );
+    const loaded = store.load();
+    if (loaded.kind !== "VALID") throw new Error(loaded.kind);
+    expect(Object.keys(campaignCompletionsV7(loaded.progress))).toEqual([
+      "FRONTIER_1",
+      "FRONTIER_2",
+      "FRONTIER_3",
+    ]);
+    // Empty version 1 progress migrates to no campaigns at all.
+    expect(parseCampaignProgressV7(storedV1({}))).toEqual({
+      kind: "VALID",
+      progress: {
+        format: "pulp-wars-campaign-progress",
+        version: 2,
+        campaigns: {},
+      },
+    });
   });
 
   it("keeps the most stars of any win, and reads progress written before stars as one star", () => {
     const storage = new MemoryStorage();
     // What a build before stars wrote: still valid, never rewritten on load.
     storage.setItem(
-      CAMPAIGN_PROGRESS_STORAGE_KEY_V7,
-      stored({ FRONTIER_1: won(14) }),
+      LEGACY_CAMPAIGN_PROGRESS_STORAGE_KEY_V7,
+      storedV1({ FRONTIER_1: won(14) }),
     );
     const store = new CampaignProgressStoreV7(storage, { now: () => AT });
     expect(store.load()).toMatchObject({
       kind: "VALID",
-      progress: { completed: { FRONTIER_1: { bestRounds: 14 } } },
+      progress: {
+        campaigns: {
+          FRONTIER: { completed: { FRONTIER_1: { bestRounds: 14 } } },
+        },
+      },
     });
-    const best = (): unknown =>
-      JSON.parse(storage.getItem(CAMPAIGN_PROGRESS_STORAGE_KEY_V7) ?? "")
-        .completed.FRONTIER_1;
+    const best = (): unknown => written(storage).FRONTIER_1;
     expect(
       campaignMissionCardsV7(CHAPTER_ONE_V7, { FRONTIER_1: won(14) })[0],
     ).toMatchObject({ stars: 1, maxStars: 3 });
     // A slower win with more stars raises the stars and keeps the rounds.
-    store.recordWin("FRONTIER_1", 20, 3);
+    store.recordWin("FRONTIER", "FRONTIER_1", 20, 3);
     expect(best()).toEqual({ firstWonAt: AT, bestRounds: 14, stars: 3 });
     // A faster win with fewer stars lowers the rounds and keeps the stars.
-    store.recordWin("FRONTIER_1", 9, 2);
+    store.recordWin("FRONTIER", "FRONTIER_1", 9, 2);
     expect(best()).toEqual({ firstWonAt: AT, bestRounds: 9, stars: 3 });
     storage.writes = 0;
-    store.recordWin("FRONTIER_1", 12, 1);
+    store.recordWin("FRONTIER", "FRONTIER_1", 12, 1);
     expect(storage.writes).toBe(0);
-    expect(() => store.recordWin("FRONTIER_1", 12, 4)).toThrow(RangeError);
-    expect(() => store.recordWin("FRONTIER_1", 12, 0)).toThrow(RangeError);
+    expect(() => store.recordWin("FRONTIER", "FRONTIER_1", 12, 4)).toThrow(
+      RangeError,
+    );
+    expect(() => store.recordWin("FRONTIER", "FRONTIER_1", 12, 0)).toThrow(
+      RangeError,
+    );
+    expect(() => store.recordWin("frontier", "FRONTIER_1", 12)).toThrow(
+      RangeError,
+    );
     const loaded = store.load();
     if (loaded.kind !== "VALID") throw new Error(loaded.kind);
     expect(
-      campaignMissionCardsV7(CHAPTER_ONE_V7, loaded.progress.completed)[0],
+      campaignMissionCardsV7(
+        CHAPTER_ONE_V7,
+        campaignCompletionsV7(loaded.progress),
+      )[0],
     ).toMatchObject({ status: "DONE", stars: 3, maxStars: 3, bestRounds: 9 });
   });
 
@@ -109,41 +236,52 @@ describe("campaign progress store", () => {
     const storage = new MemoryStorage();
     let now = AT;
     const store = new CampaignProgressStoreV7(storage, { now: () => now });
-    store.recordWin("FRONTIER_1", 14);
+    store.recordWin("FRONTIER", "FRONTIER_1", 14);
     now = "2026-10-05T09:30:00.000Z";
-    const slower = store.recordWin("FRONTIER_1", 20);
+    const slower = store.recordWin("FRONTIER", "FRONTIER_1", 20);
     expect(slower).toMatchObject({ ok: true, firstWin: false });
-    const before = storage.getItem(CAMPAIGN_PROGRESS_STORAGE_KEY_V7);
-    expect(JSON.parse(before ?? "").completed.FRONTIER_1).toEqual({
+    expect(written(storage).FRONTIER_1).toEqual({
       firstWonAt: AT,
       bestRounds: 14,
       stars: 1,
     });
     // Recording the same win again writes nothing new.
     storage.writes = 0;
-    store.recordWin("FRONTIER_1", 14);
+    store.recordWin("FRONTIER", "FRONTIER_1", 14);
     expect(storage.writes).toBe(0);
-    store.recordWin("FRONTIER_1", 9);
+    store.recordWin("FRONTIER", "FRONTIER_1", 9);
+    expect(written(storage).FRONTIER_1).toEqual({
+      firstWonAt: AT,
+      bestRounds: 9,
+      stars: 1,
+    });
+    // A mission's wins stay with the campaign that first filed it.
+    store.recordWin("HUMANS", "FRONTIER_1", 8);
+    expect(written(storage).FRONTIER_1).toMatchObject({ bestRounds: 8 });
     expect(
       JSON.parse(storage.getItem(CAMPAIGN_PROGRESS_STORAGE_KEY_V7) ?? "")
-        .completed.FRONTIER_1,
-    ).toEqual({ firstWonAt: AT, bestRounds: 9, stars: 1 });
+        .campaigns.HUMANS,
+    ).toBeUndefined();
   });
 
-  it("keeps unknown mission IDs (a mission removed from a later build)", () => {
+  it("keeps unknown mission and campaign IDs (removed from a later build)", () => {
     const storage = new MemoryStorage();
     storage.setItem(
       CAMPAIGN_PROGRESS_STORAGE_KEY_V7,
-      stored({ GONE_MISSION: won(7) }),
+      storedV2({
+        FRONTIER: { GONE_MISSION: won(7) },
+        GONE_CAMPAIGN: { GONE_TOO: won(5) },
+      }),
     );
     const store = new CampaignProgressStoreV7(storage, { now: () => AT });
-    store.recordWin("FRONTIER_1", 11);
-    expect(
-      Object.keys(
-        JSON.parse(storage.getItem(CAMPAIGN_PROGRESS_STORAGE_KEY_V7) ?? "")
-          .completed,
-      ),
-    ).toEqual(["FRONTIER_1", "GONE_MISSION"]);
+    store.recordWin("FRONTIER", "FRONTIER_1", 11);
+    expect(Object.keys(written(storage))).toEqual([
+      "FRONTIER_1",
+      "GONE_MISSION",
+    ]);
+    expect(Object.keys(written(storage, "GONE_CAMPAIGN"))).toEqual([
+      "GONE_TOO",
+    ]);
     expect(campaignUnlockedFactionsV7({ GONE_MISSION: won() })).toEqual([
       "ORIGINAL",
     ]);
@@ -154,6 +292,7 @@ describe("campaign progress store", () => {
       "{ not json",
       "[]",
       JSON.stringify({ format: "other", version: 1, completed: {} }),
+      JSON.stringify({ format: "other", version: 2, campaigns: {} }),
       JSON.stringify({
         format: "pulp-wars-campaign-progress",
         version: 2,
@@ -161,35 +300,57 @@ describe("campaign progress store", () => {
       }),
       JSON.stringify({
         format: "pulp-wars-campaign-progress",
+        version: 3,
+        campaigns: {},
+      }),
+      JSON.stringify({
+        format: "pulp-wars-campaign-progress",
         version: 1,
         completed: {},
         extra: true,
       }),
-      stored({ FRONTIER_1: { firstWonAt: AT, bestRounds: 0 } }),
-      stored({ FRONTIER_1: { firstWonAt: "yesterday", bestRounds: 3 } }),
-      stored({
+      JSON.stringify({
+        format: "pulp-wars-campaign-progress",
+        version: 2,
+        campaigns: { FRONTIER: { completed: {}, extra: true } },
+      }),
+      storedV2({ frontier: { FRONTIER_1: won() } }),
+      storedV2({
+        FRONTIER: { FRONTIER_1: won() },
+        HUMANS: { FRONTIER_1: won() },
+      }),
+      storedV1({ FRONTIER_1: { firstWonAt: AT, bestRounds: 0 } }),
+      storedV2({ FRONTIER: { FRONTIER_1: { firstWonAt: AT, bestRounds: 0 } } }),
+      storedV1({ FRONTIER_1: { firstWonAt: "yesterday", bestRounds: 3 } }),
+      storedV1({
         FRONTIER_1: { firstWonAt: AT, bestRounds: 3, stars: 4 },
       }),
-      stored({
+      storedV1({
         FRONTIER_1: { firstWonAt: AT, bestRounds: 3, stars: 0 },
       }),
-      stored({
+      storedV1({
         FRONTIER_1: { firstWonAt: AT, bestRounds: 3, glow: true },
       } as never),
-      stored({ "frontier one": won() }),
-      stored({ ["__proto__"]: won() }),
+      storedV1({ "frontier one": won() }),
+      storedV1({ ["__proto__"]: won() }),
     ]) {
-      const storage = new MemoryStorage();
-      storage.setItem(CAMPAIGN_PROGRESS_STORAGE_KEY_V7, source);
-      const store = new CampaignProgressStoreV7(storage);
-      expect(store.load().kind, source).toBe("UNREADABLE");
-      expect(store.recordWin("FRONTIER_1", 5)).toMatchObject({
-        ok: false,
-        kind: "UNREADABLE",
-      });
-      expect(storage.getItem(CAMPAIGN_PROGRESS_STORAGE_KEY_V7)).toBe(source);
-      expect(store.reset()).toEqual({ ok: true });
-      expect(store.load().kind).toBe("VALID");
+      for (const key of [
+        CAMPAIGN_PROGRESS_STORAGE_KEY_V7,
+        LEGACY_CAMPAIGN_PROGRESS_STORAGE_KEY_V7,
+      ]) {
+        const storage = new MemoryStorage();
+        storage.setItem(key, source);
+        const store = new CampaignProgressStoreV7(storage);
+        expect(store.load().kind, source).toBe("UNREADABLE");
+        expect(store.recordWin("FRONTIER", "FRONTIER_1", 5)).toMatchObject({
+          ok: false,
+          kind: "UNREADABLE",
+        });
+        expect(storage.getItem(key)).toBe(source);
+        expect(store.reset()).toEqual({ ok: true });
+        expect(storage.getItem(key)).toBeNull();
+        expect(store.load().kind).toBe("VALID");
+      }
     }
   });
 
@@ -207,7 +368,7 @@ describe("campaign progress store", () => {
     };
     const store = new CampaignProgressStoreV7(failing);
     expect(store.load()).toMatchObject({ kind: "STORAGE_ERROR" });
-    expect(store.recordWin("FRONTIER_1", 5)).toMatchObject({
+    expect(store.recordWin("FRONTIER", "FRONTIER_1", 5)).toMatchObject({
       ok: false,
       kind: "STORAGE_ERROR",
     });
@@ -217,21 +378,27 @@ describe("campaign progress store", () => {
       throw new Error("quota");
     };
     expect(
-      new CampaignProgressStoreV7(readOnly).recordWin("FRONTIER_1", 5),
+      new CampaignProgressStoreV7(readOnly).recordWin(
+        "FRONTIER",
+        "FRONTIER_1",
+        5,
+      ),
     ).toMatchObject({ ok: false, kind: "STORAGE_ERROR" });
     // No storage at all: an empty campaign that keeps nothing.
     const none = new CampaignProgressStoreV7(null);
     expect(none.load().kind).toBe("VALID");
-    expect(none.recordWin("FRONTIER_1", 5)).toMatchObject({ ok: true });
+    expect(none.recordWin("FRONTIER", "FRONTIER_1", 5)).toMatchObject({
+      ok: true,
+    });
     expect(none.reset()).toEqual({ ok: true });
   });
 
   it("survives save deletion and obsolete-save cleanup", () => {
     const storage = new MemoryStorage();
-    storage.setItem(
-      CAMPAIGN_PROGRESS_STORAGE_KEY_V7,
-      stored({ FRONTIER_1: won() }),
-    );
+    const progress = storedV2({ FRONTIER: { FRONTIER_1: won() } });
+    const legacy = storedV1({ FRONTIER_1: won() });
+    storage.setItem(CAMPAIGN_PROGRESS_STORAGE_KEY_V7, progress);
+    storage.setItem(LEGACY_CAMPAIGN_PROGRESS_STORAGE_KEY_V7, legacy);
     storage.setItem(SAVE_STORAGE_KEY_V7, "save");
     for (const key of OBSOLETE_SAVE_STORAGE_KEYS_V7)
       storage.setItem(key, "old");
@@ -240,8 +407,9 @@ describe("campaign progress store", () => {
       ok: true,
     });
     expect(storage.getItem(SAVE_STORAGE_KEY_V7)).toBeNull();
-    expect(storage.getItem(CAMPAIGN_PROGRESS_STORAGE_KEY_V7)).toBe(
-      stored({ FRONTIER_1: won() }),
+    expect(storage.getItem(CAMPAIGN_PROGRESS_STORAGE_KEY_V7)).toBe(progress);
+    expect(storage.getItem(LEGACY_CAMPAIGN_PROGRESS_STORAGE_KEY_V7)).toBe(
+      legacy,
     );
   });
 });

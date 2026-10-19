@@ -16,7 +16,10 @@ import {
   type MatchOutcomeV7,
   type PlayerViewV7,
 } from "../../src/engine/index";
-import { CAMPAIGN_PROGRESS_STORAGE_KEY_V7 } from "../../src/persistence/index";
+import {
+  CAMPAIGN_PROGRESS_STORAGE_KEY_V7,
+  LEGACY_CAMPAIGN_PROGRESS_STORAGE_KEY_V7,
+} from "../../src/persistence/index";
 import type { BoardHostV7 } from "../../src/render/canvas/board-host-v7";
 import {
   missionOutcomeLineV7,
@@ -45,6 +48,13 @@ async function openCampaign(): Promise<void> {
   await settle();
 }
 
+/** The campaign map, then the prologue's mission list (pulp_wars-hmyk.3). */
+async function openFrontier(): Promise<void> {
+  await openCampaign();
+  requiredButton('[data-action="campaign-open-frontier"]').click();
+  await settle();
+}
+
 describe("Ruleset 7 campaign front screen", () => {
   it("opens from the main menu's Campaign button; Menu returns, keeping focus", async () => {
     const app = bootstrapRuleset7App(document);
@@ -64,8 +74,44 @@ describe("Ruleset 7 campaign front screen", () => {
     expect(document.querySelector("#v7-front-title")?.textContent).toBe(
       "Campaign",
     );
+    // The campaign map (pulp_wars-hmyk.3): the prologue open, the nine
+    // faction campaigns not written yet.
+    expect(
+      [...document.querySelectorAll<HTMLElement>(".v7-campaign-plate")].map(
+        (plate) => [plate.dataset.campaign, plate.dataset.status],
+      ),
+    ).toEqual([
+      ["FRONTIER", "open"],
+      ["HUMANS", "soon"],
+      ["UNDEAD", "soon"],
+      ["DINOSAURS", "soon"],
+      ["MARTIANS", "soon"],
+      ["GOBLINS", "soon"],
+      ["DWARVES", "soon"],
+      ["ICE_FOLK", "soon"],
+      ["CULT", "soon"],
+      ["CANDY", "soon"],
+    ]);
+    expect(
+      document
+        .querySelector('[data-action="campaign-open-frontier"]')
+        ?.getAttribute("aria-label"),
+    ).toBe("The Hollow Frontier, open, 0 of 10 missions won");
+    expect(
+      document
+        .querySelector('[data-action="campaign-open-humans"]')
+        ?.getAttribute("aria-label"),
+    ).toBe("The Human Campaign, Coming soon");
+    requiredButton('[data-action="campaign-open-frontier"]').click();
+    await settle();
+    expect(document.activeElement?.getAttribute("data-action")).toBe(
+      "campaign-map",
+    );
     expect(document.querySelector(".v7-campaign-title")?.textContent).toBe(
-      "Part One: The Hollow Frontier",
+      "The Hollow Frontier",
+    );
+    expect(document.querySelector(".v7-campaign-kicker")?.textContent).toBe(
+      "Prologue",
     );
     // Ten missions (`pulp_wars-v642.1`); the ones not built yet say so.
     expect(document.querySelectorAll(".v7-mission-card")).toHaveLength(10);
@@ -74,6 +120,13 @@ describe("Ruleset 7 campaign front screen", () => {
     ).toHaveLength(
       CHAPTER_ONE_V7.missions.filter((entry) => entry.planned !== undefined)
         .length,
+    );
+    // Campaigns returns to the map, on the prologue's plate.
+    requiredButton('[data-action="campaign-map"]').click();
+    await settle();
+    expect(document.querySelector(".v7-mission-card")).toBeNull();
+    expect(document.activeElement?.getAttribute("data-action")).toBe(
+      "campaign-open-frontier",
     );
     requiredButton('[data-action="front-back"]').click();
     await settle();
@@ -88,7 +141,7 @@ describe("Ruleset 7 campaign front screen", () => {
   it("shows each mission's state, emblems and accessible name from stored progress", async () => {
     seedProgress({ FRONTIER_1: { ...won(14), stars: 2 } });
     const app = bootstrapRuleset7App(document);
-    await openCampaign();
+    await openFrontier();
     const cards = [
       ...document.querySelectorAll<HTMLButtonElement>(".v7-mission-card"),
     ];
@@ -220,13 +273,14 @@ describe("Ruleset 7 campaign front screen", () => {
 
   it("keeps the way back, the cards and the briefing in keyboard reading order", async () => {
     const app = bootstrapRuleset7App(document);
-    await openCampaign();
+    await openFrontier();
     const order = focusables().map(
       (node) => node.getAttribute("data-action") ?? node.tagName.toLowerCase(),
     );
     // Gallery and Settings are on the main menu (pulp_wars-2yc.18).
     expect(order).toEqual([
       "front-back",
+      "campaign-map",
       "mission-frontier_1",
       "mission-frontier_2",
       "mission-frontier_3",
@@ -237,14 +291,13 @@ describe("Ruleset 7 campaign front screen", () => {
       "mission-frontier_8",
       "mission-frontier_9",
       "mission-frontier_10",
-      "summary",
     ]);
     app.destroy();
   });
 
   it("opens the briefing with focus on its heading, and Back returns focus to the card", async () => {
     const app = bootstrapRuleset7App(document);
-    await openCampaign();
+    await openFrontier();
     requiredButton('[data-action="mission-frontier_1"]').click();
     await settle();
     const briefing = required(
@@ -312,13 +365,29 @@ describe("Ruleset 7 campaign front screen", () => {
     expect(document.activeElement?.getAttribute("data-action")).toBe(
       "mission-frontier_1",
     );
+    // Escape from the list goes to the campaign map, then to the menu.
+    document.activeElement?.dispatchEvent(
+      new KeyboardEvent("keydown", { key: "Escape", bubbles: true }),
+    );
+    await settle();
+    expect(
+      document.querySelector("[data-v7-region='campaign-map']"),
+    ).not.toBeNull();
+    expect(document.activeElement?.getAttribute("data-action")).toBe(
+      "campaign-open-frontier",
+    );
+    document.activeElement?.dispatchEvent(
+      new KeyboardEvent("keydown", { key: "Escape", bubbles: true }),
+    );
+    await settle();
+    expect(document.querySelector(".v7-main-menu")).not.toBeNull();
     app.destroy();
   });
 
   it("offers mission 4's choice filtered to unlocked factions and launches the chosen one", async () => {
     seedProgress({ FRONTIER_1: won(), FRONTIER_3: won() });
     const first = bootstrapRuleset7App(document);
-    await openCampaign();
+    await openFrontier();
     requiredButton('[data-action="mission-frontier_4"]').click();
     await settle();
     // Goblin is not unlocked yet (mission 2 was never won): Human only.
@@ -331,7 +400,7 @@ describe("Ruleset 7 campaign front screen", () => {
     document.body.innerHTML = '<div id="app"></div>';
     seedProgress({ FRONTIER_1: won(), FRONTIER_2: won(), FRONTIER_3: won() });
     const app = bootstrapRuleset7App(document);
-    await openCampaign();
+    await openFrontier();
     requiredButton('[data-action="mission-frontier_4"]').click();
     await settle();
     expect(
@@ -371,7 +440,7 @@ describe("Ruleset 7 campaign front screen", () => {
 
   it("starts a mission; Settings and the resume screen name the mission, not the seed", async () => {
     const app = bootstrapRuleset7App(document);
-    await openCampaign();
+    await openFrontier();
     requiredButton('[data-action="mission-frontier_1"]').click();
     await settle();
     requiredButton('[data-action="campaign-start"]').click();
@@ -418,6 +487,8 @@ describe("Ruleset 7 campaign front screen", () => {
     requiredButton('[data-action="campaign"]').click();
     await settle();
     expect(document.querySelector("[data-v7-campaign]")).not.toBeNull();
+    requiredButton('[data-action="campaign-open-frontier"]').click();
+    await settle();
     requiredButton('[data-action="mission-frontier_1"]').click();
     await settle();
     requiredButton('[data-action="campaign-start"]').click();
@@ -547,6 +618,43 @@ describe("Ruleset 7 mission dialogs", () => {
     requiredButton('[data-action="mission-retry"]').click();
     await settle();
     expect(fake.calls).toEqual(["restart"]);
+    view.destroy();
+  });
+
+  it("Victory names the campaigns the win opened; Campaign returns to the mission's own list", async () => {
+    const fake = new FakeController(
+      completeView("FRONTIER_2", "ORIGINAL", (view) => ({
+        kind: "VICTORY",
+        winnerId: view.humanPlayerId,
+        cause: "PLACES_CAPTURED",
+      })),
+      {
+        status: "OK",
+        completed: { FRONTIER_1: won(), FRONTIER_2: won() },
+        lastWin: {
+          missionId: "FRONTIER_2",
+          firstWin: true,
+          unlocked: ["GOBLIN"],
+          opened: ["DINOSAURS", "MARTIANS", "GOBLINS", "DWARVES"],
+        },
+        diagnostic: null,
+      },
+    );
+    const view = mount(fake);
+    const opened = required(
+      document.querySelector<HTMLElement>("[data-v7-region='campaign-opened']"),
+    );
+    expect(opened.textContent).toBe(
+      "New campaigns: Dinosaurs, Martians, Goblins and Dwarves",
+    );
+    expect(opened.getAttribute("role")).toBe("status");
+    requiredButton('[data-action="campaign-menu"]').click();
+    await settle();
+    expect(
+      document.querySelector<HTMLElement>(".v7-campaign-chapter")?.dataset
+        .v7Campaign,
+    ).toBe("FRONTIER");
+    expect(document.querySelectorAll(".v7-mission-card")).toHaveLength(10);
     view.destroy();
   });
 
@@ -969,6 +1077,10 @@ describe("Ruleset 7 campaign progress recovery and reset", () => {
     expect(
       window.localStorage.getItem(CAMPAIGN_PROGRESS_STORAGE_KEY_V7),
     ).toBeNull();
+    // The campaign map again, and the prologue from its start.
+    expect(document.querySelectorAll(".v7-campaign-plate")).toHaveLength(10);
+    requiredButton('[data-action="campaign-open-frontier"]').click();
+    await settle();
     expect(document.querySelectorAll(".v7-mission-card")).toHaveLength(10);
     app.destroy();
   });
@@ -988,7 +1100,7 @@ describe("Ruleset 7 campaign progress recovery and reset", () => {
     requiredButton('[data-action="campaign-reset-cancel"]').click();
     await settle();
     expect(
-      window.localStorage.getItem(CAMPAIGN_PROGRESS_STORAGE_KEY_V7),
+      window.localStorage.getItem(LEGACY_CAMPAIGN_PROGRESS_STORAGE_KEY_V7),
     ).not.toBeNull();
     requiredButton('[data-action="campaign-reset"]').click();
     await settle();
@@ -997,6 +1109,11 @@ describe("Ruleset 7 campaign progress recovery and reset", () => {
     expect(
       window.localStorage.getItem(CAMPAIGN_PROGRESS_STORAGE_KEY_V7),
     ).toBeNull();
+    expect(
+      window.localStorage.getItem(LEGACY_CAMPAIGN_PROGRESS_STORAGE_KEY_V7),
+    ).toBeNull();
+    requiredButton('[data-action="campaign-open-frontier"]').click();
+    await settle();
     expect(
       [...document.querySelectorAll<HTMLElement>(".v7-mission-card")].map(
         (card) => card.dataset.status,

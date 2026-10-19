@@ -59,10 +59,17 @@ import {
   type LeaderboardLoadV7,
   type LeaderboardModeV7,
 } from "../../app/leaderboard-v7";
+import { CAMPAIGN_FORMAT_LABELS_V7 } from "../../campaign/chapter-1";
+import type {
+  CampaignDefinitionV7,
+  CampaignIdV7,
+} from "../../campaign/campaigns";
 import {
-  CAMPAIGN_FORMAT_LABELS_V7,
-  CHAPTER_ONE_V7,
-} from "../../campaign/chapter-1";
+  CampaignCheatGestureV7,
+  campaignCheatFromSearchV7,
+  loadCampaignCheatV7,
+  saveCampaignCheatV7,
+} from "../../campaign/cheat-v7";
 import {
   missionMarkersV7,
   missionObjectiveIconV7,
@@ -71,13 +78,16 @@ import {
   missionTrackerV7,
 } from "../mission-presentation-v7";
 import {
+  campaignByIdV7,
   campaignFactionChoicesV7,
   campaignMissionCardsV7,
   campaignMissionStatusV7,
   campaignMissionV7,
   campaignNextMissionV7,
+  campaignPlatesV7,
   campaignUnlockedFactionsV7,
   type CampaignMissionCardV7,
+  type CampaignPlateV7,
 } from "../../campaign/progress-v7";
 import {
   missionByIdV7,
@@ -2115,6 +2125,17 @@ export class Ruleset7DomAppView {
   #menuClearWidth = 0;
   #briefingMissionId: string | null = null;
   #briefingFaction: FactionIdV7 | null = null;
+  /**
+   * The campaign map (pulp_wars-hmyk.3): the campaign whose mission list
+   * is open (null: the map), a line the map says after a tap on a closed
+   * plate, the testing cheat "All missions unlocked", and its gestures.
+   */
+  #campaignId: CampaignIdV7 | null = null;
+  #campaignNote = "";
+  /** The tier of the plate the note is about: it stands under that row. */
+  #campaignNoteTier = 0;
+  #campaignCheat = false;
+  readonly #cheatGesture = new CampaignCheatGestureV7();
   #confirmCampaignReset = false;
   /** Front Settings: "Reset tribe stars" is waiting for confirmation. */
   #confirmStarsReset = false;
@@ -2284,6 +2305,19 @@ export class Ruleset7DomAppView {
       );
     } catch {
       // Without storage the tutorial is offered as new on every visit.
+    }
+    // The campaign's testing cheat: stored, or set by the address.
+    this.#campaignCheat = loadCampaignCheatV7(this.#settingsStorage);
+    let search = "";
+    try {
+      search = documentRoot.defaultView?.location.search ?? "";
+    } catch {
+      // No address: the stored switch stands.
+    }
+    const fromAddress = campaignCheatFromSearchV7(search);
+    if (fromAddress !== null && fromAddress !== this.#campaignCheat) {
+      this.#campaignCheat = fromAddress;
+      saveCampaignCheatV7(this.#settingsStorage, fromAddress);
     }
     this.#controllerSnapshot = controller.snapshot();
     this.#snapshot = this.#tutorialSnapshot(this.#controllerSnapshot);
@@ -3198,6 +3232,8 @@ export class Ruleset7DomAppView {
         if (load !== "LOADING" && !load.ok) this.#boardLoads.delete(mode);
     this.#setupThemeFaction = null;
     this.#briefingMissionId = null;
+    this.#campaignId = null;
+    this.#campaignNote = "";
     this.#confirmCampaignReset = false;
     this.#confirmStarsReset = false;
     this.#confirmTutorialReplace = false;
@@ -3270,7 +3306,21 @@ export class Ruleset7DomAppView {
         this.#briefingMissionId = null;
         this.#frontFocus = `[data-action="mission-${missionId.toLowerCase()}"]`;
         this.#render();
-      } else this.#openFrontPage("MENU");
+      } else if (this.#frontPage === "CAMPAIGN" && this.#campaignId !== null)
+        // A mission list steps back to the campaign map.
+        this.#openCampaignMap();
+      else this.#openFrontPage("MENU");
+      return;
+    }
+    // The campaign's testing cheat: "pulpwars" typed on its screen.
+    if (
+      this.#frontPage === "CAMPAIGN" &&
+      !(target instanceof HTMLInputElement) &&
+      !(target instanceof HTMLTextAreaElement) &&
+      !(target instanceof HTMLSelectElement) &&
+      this.#cheatGesture.key(event.key)
+    ) {
+      this.#toggleCampaignCheat();
       return;
     }
     const menu = this.#root.querySelector<HTMLElement>(".v7-main-menu");
@@ -3319,13 +3369,347 @@ export class Ruleset7DomAppView {
     const { main, panel } = this.#frontPanelScreen("campaign", "Campaign");
     main.classList.add("v7-campaign");
     main.dataset.v7Campaign = "true";
+    // The testing cheat (pulp_wars-hmyk.3): seven quick taps of the title.
+    const heading = panel.querySelector<HTMLElement>("#v7-front-title");
+    heading?.addEventListener("click", () => {
+      const now = this.#document.defaultView?.performance.now() ?? Date.now();
+      if (this.#cheatGesture.tap(now)) this.#toggleCampaignCheat();
+    });
+    if (this.#campaignCheat) {
+      const badge = button(
+        this.#document,
+        "All missions unlocked",
+        "campaign-cheat-off",
+        "v7-campaign-cheat",
+      );
+      badge.setAttribute(
+        "aria-label",
+        "All missions unlocked (testing). Turn off",
+      );
+      badge.title = "Testing: every mission can be picked. Tap to turn off.";
+      badge.onclick = () => this.#toggleCampaignCheat();
+      heading?.after(badge);
+    }
     const progress = this.#campaignProgress();
+    const campaign =
+      this.#campaignId === null ? null : campaignByIdV7(this.#campaignId);
     if (progress.status === "UNREADABLE")
       panel.append(this.#campaignUnreadable(progress));
     else if (this.#briefingMissionId !== null)
       panel.append(this.#briefing(this.#briefingMissionId, progress, replace));
-    else panel.append(this.#campaignList(progress));
+    else if (campaign?.chapter != null)
+      panel.append(this.#campaignList(progress, campaign));
+    else panel.append(this.#campaignMap(progress));
     return main;
+  }
+
+  /** Turns "All missions unlocked" on or off, and remembers it. */
+  #toggleCampaignCheat(): void {
+    this.#campaignCheat = !this.#campaignCheat;
+    saveCampaignCheatV7(this.#settingsStorage, this.#campaignCheat);
+    this.#campaignNote = "";
+    this.#notice = this.#campaignCheat
+      ? "All missions unlocked."
+      : "Missions locked again.";
+    this.#render();
+  }
+
+  /** Back from a mission list to the map, on that campaign's plate. */
+  #openCampaignMap(): void {
+    const from = this.#campaignId;
+    this.#campaignId = null;
+    this.#briefingMissionId = null;
+    this.#campaignNote = "";
+    this.#error = "";
+    this.#frontFocus =
+      from === null
+        ? '[data-action="front-back"]'
+        : `[data-action="campaign-open-${from.toLowerCase()}"]`;
+    this.#render();
+  }
+
+  /** Opens a campaign's mission list from its plate. */
+  #openCampaign(id: CampaignIdV7): void {
+    this.#campaignId = id;
+    this.#briefingMissionId = null;
+    this.#campaignNote = "";
+    this.#confirmCampaignReset = false;
+    this.#error = "";
+    this.#frontFocus = '[data-action="campaign-map"]';
+    this.#render();
+  }
+
+  /**
+   * The campaign map (pulp_wars-hmyk.3, CAMPAIGN.md section 14.3): the
+   * prologue set apart, then the campaigns in three tiers joined by the
+   * lines of what unlocks what: two openers, the middle four, the last
+   * three. A plate is the campaign's picture (its faction's portrait until
+   * the art is drawn), its title, and its progress; a closed plate is
+   * greyed with a lock and says why.
+   */
+  #campaignMap(progress: Ruleset7CampaignProgressV7): HTMLElement {
+    const plates = campaignPlatesV7(progress.completed, this.#campaignCheat);
+    const section = el(this.#document, "section", "v7-campaign-map");
+    section.dataset.v7Region = "campaign-map";
+    section.setAttribute("aria-label", "Campaigns");
+    // Why a tapped plate is closed, under its own row, so a phone shows it
+    // beside the plate.
+    const note = el(this.#document, "p", "v7-campaign-note");
+    note.dataset.v7Region = "campaign-note";
+    note.setAttribute("role", "status");
+    note.textContent = this.#campaignNote;
+    note.hidden = this.#campaignNote === "";
+    const prologue = plates.filter((plate) => plate.campaign.tier === 0);
+    if (prologue.length > 0) {
+      const row = el(this.#document, "ul", "v7-campaign-prologue");
+      row.setAttribute("aria-label", "Prologue");
+      for (const plate of prologue) {
+        const item = el(this.#document, "li", "v7-campaign-plate-item");
+        item.append(this.#campaignPlate(plate, true));
+        row.append(item);
+      }
+      section.append(row);
+    }
+    const graph = el(this.#document, "div", "v7-campaign-graph");
+    const tiers = ([1, 2, 3] as const).map((tier) =>
+      plates.filter((plate) => plate.campaign.tier === tier),
+    );
+    const tierNames = ["First campaigns", "Second campaigns", "Last campaigns"];
+    tiers.forEach((row, index) => {
+      if (row.length === 0) return;
+      const previous = index > 0 ? tiers[index - 1] : undefined;
+      if (previous !== undefined && previous.length > 0)
+        graph.append(this.#campaignLink(previous, row));
+      const list = el(this.#document, "ul", "v7-campaign-tier");
+      list.dataset.tier = String(index + 1);
+      list.dataset.count = String(row.length);
+      list.setAttribute("aria-label", tierNames[index] ?? "Campaigns");
+      for (const plate of row) {
+        const item = el(this.#document, "li", "v7-campaign-plate-item");
+        item.append(this.#campaignPlate(plate, false));
+        list.append(item);
+      }
+      graph.append(list);
+      if (this.#campaignNoteTier === index + 1) graph.append(note);
+    });
+    section.append(graph);
+    if (note.parentElement === null) section.append(note);
+    section.append(this.#campaignSettings());
+    return section;
+  }
+
+  /** "Humans and Undead"; "Dinosaurs, Martians, Goblins and Dwarves". */
+  #campaignNames(campaigns: readonly CampaignDefinitionV7[]): string {
+    const names = campaigns.map((campaign) => campaign.name);
+    return names.length < 2
+      ? (names[0] ?? "")
+      : `${names.slice(0, -1).join(", ")} and ${names.at(-1) ?? ""}`;
+  }
+
+  /**
+   * The lines between two tiers: every plate above joins one knot, and the
+   * knot fans out to every plate below, since every campaign above opens
+   * every one below. The knot is a lock until all above are completed.
+   * The lines are drawn in a box stretched to the row's width, so they
+   * meet the plates' centres at any width without measuring the layout;
+   * a narrow screen sets the middle tier in two rows of two, so there is
+   * a second drawing for it.
+   */
+  #campaignLink(
+    above: readonly CampaignPlateV7[],
+    below: readonly CampaignPlateV7[],
+  ): HTMLElement {
+    const open = above.every((plate) => plate.status === "DONE");
+    const link = el(this.#document, "div", "v7-campaign-link");
+    link.dataset.open = String(open);
+    link.setAttribute("aria-hidden", "true");
+    const columns = (count: number, narrow: boolean): number =>
+      narrow && count === 4 ? 2 : count;
+    for (const narrow of [false, true]) {
+      const svg = this.#document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "svg",
+      );
+      svg.setAttribute("class", "v7-campaign-link-lines");
+      svg.dataset.layout = narrow ? "narrow" : "wide";
+      svg.setAttribute("viewBox", "0 0 120 40");
+      svg.setAttribute("preserveAspectRatio", "none");
+      const top = columns(above.length, narrow);
+      const bottom = columns(below.length, narrow);
+      const line = (x1: number, y1: number, x2: number, y2: number): void => {
+        const segment = this.#document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "line",
+        );
+        segment.setAttribute("x1", String(x1));
+        segment.setAttribute("y1", String(y1));
+        segment.setAttribute("x2", String(x2));
+        segment.setAttribute("y2", String(y2));
+        segment.setAttribute("vector-effect", "non-scaling-stroke");
+        svg.append(segment);
+      };
+      for (let index = 0; index < top; index += 1)
+        line(((index + 0.5) * 120) / top, 0, 60, 20);
+      for (let index = 0; index < bottom; index += 1)
+        line(60, 20, ((index + 0.5) * 120) / bottom, 40);
+      link.append(svg);
+    }
+    const knot = el(this.#document, "span", "v7-campaign-knot");
+    knot.append(uiIconV7(this.#document, open ? "flag" : "lock"));
+    const won = above.filter((plate) => plate.status === "DONE").length;
+    const label = text(
+      this.#document,
+      "span",
+      open
+        ? "Open"
+        : above.length === 2
+          ? "Finish both"
+          : `Finish all ${String(above.length)}`,
+      "v7-campaign-knot-label",
+    );
+    if (!open && won > 0)
+      label.textContent += ` · ${String(won)}/${String(above.length)}`;
+    link.append(knot, label);
+    return link;
+  }
+
+  /**
+   * One campaign's plate: a button with its picture, title and progress.
+   * Locked and coming-soon plates are greyed with a lock, focusable, and
+   * say why on a tap instead of opening.
+   */
+  #campaignPlate(plate: CampaignPlateV7, wide: boolean): HTMLButtonElement {
+    const { campaign, status } = plate;
+    const node = this.#document.createElement("button");
+    node.type = "button";
+    node.className = wide
+      ? "v7-campaign-plate v7-campaign-plate-wide"
+      : "v7-campaign-plate";
+    node.dataset.action = `campaign-open-${campaign.id.toLowerCase()}`;
+    node.dataset.campaign = campaign.id;
+    node.dataset.status = status.toLowerCase();
+    node.dataset.faction = campaign.faction;
+    const closed = status === "LOCKED" || status === "SOON";
+    if (closed) node.setAttribute("aria-disabled", "true");
+    const why =
+      status === "SOON"
+        ? "Coming soon"
+        : status === "LOCKED"
+          ? `Locked: finish ${this.#campaignNames(plate.waitingFor)}`
+          : null;
+    const picture = el(this.#document, "span", "v7-campaign-picture");
+    picture.setAttribute("aria-hidden", "true");
+    picture.append(this.#campaignPicture(campaign));
+    if (closed)
+      picture.append(
+        uiIconV7(this.#document, "lock", "v7-ui-icon v7-campaign-lock"),
+      );
+    else if (status === "DONE")
+      picture.append(
+        uiIconV7(this.#document, "trophy", "v7-ui-icon v7-campaign-done"),
+      );
+    const body = el(this.#document, "span", "v7-campaign-plate-body");
+    body.setAttribute("aria-hidden", "true");
+    // The subtitle on the prologue's wide plate; a tier's plate is
+    // picture, title and progress only.
+    if (wide)
+      body.append(
+        text(
+          this.#document,
+          "span",
+          campaign.subtitle,
+          "v7-campaign-plate-kicker",
+        ),
+      );
+    body.append(
+      text(this.#document, "span", campaign.title, "v7-campaign-plate-title"),
+    );
+    const state = el(this.#document, "span", "v7-campaign-plate-state");
+    if (why !== null)
+      state.append(
+        text(
+          this.#document,
+          "span",
+          status === "SOON" ? "Coming soon" : "Locked",
+        ),
+      );
+    else if (plate.missionsWon === 0 && status === "OPEN")
+      state.append(text(this.#document, "span", "Open"));
+    else {
+      state.append(
+        uiIconV7(this.#document, "star", "v7-ui-icon v7-campaign-star"),
+        text(
+          this.#document,
+          "span",
+          `${String(plate.stars)}/${String(plate.maxStars)}`,
+        ),
+        text(
+          this.#document,
+          "span",
+          `${String(plate.missionsWon)} of ${String(plate.missionCount)}`,
+          "v7-campaign-plate-count",
+        ),
+      );
+    }
+    body.append(state);
+    node.append(picture, body);
+    node.setAttribute(
+      "aria-label",
+      `${campaign.title}, ${
+        why ??
+        (status === "DONE"
+          ? `completed, ${String(plate.stars)} of ${String(plate.maxStars)} stars`
+          : `open, ${String(plate.missionsWon)} of ${String(plate.missionCount)} missions won`)
+      }`,
+    );
+    if (why !== null) node.title = why;
+    node.onclick = () => {
+      if (!closed) {
+        this.#openCampaign(campaign.id);
+        return;
+      }
+      this.#campaignNote =
+        status === "SOON"
+          ? `${campaign.title}: coming soon.`
+          : `${campaign.title} opens when you finish ${this.#campaignNames(plate.waitingFor)}.`;
+      this.#campaignNoteTier = campaign.tier;
+      this.#frontFocus = `[data-action="${node.dataset.action ?? ""}"]`;
+      this.#render();
+    };
+    return node;
+  }
+
+  /**
+   * A campaign's picture: its art once drawn (pulp_wars-hmyk.13), until
+   * then its faction's portrait on a framed plate.
+   */
+  #campaignPicture(campaign: CampaignDefinitionV7): HTMLElement {
+    const frame = el(this.#document, "span", "v7-campaign-portrait");
+    frame.dataset.faction = campaign.faction;
+    frame.style.setProperty(
+      "--v7-campaign-faction",
+      factionColourV7(campaign.faction),
+    );
+    const chibi =
+      this.#chibiArt(
+        portraitSubjectV7(campaign.placeholderRole, campaign.faction),
+        CHIBI_DOM_BOXES_V7.card,
+        factionColourV7(campaign.faction),
+      ) ??
+      this.#chibiArt(
+        portraitSubjectV7("FIGHTER", campaign.faction),
+        CHIBI_DOM_BOXES_V7.card,
+        factionColourV7(campaign.faction),
+      );
+    frame.append(
+      chibi?.element ??
+        factionBadgeArt(
+          this.#document,
+          art(this.#document, UNIT_ART_KEYS_V7.FIGHTER, ""),
+          factionBadgeV7(campaign.faction),
+        ),
+    );
+    return frame;
   }
 
   /** Unreadable progress: the save-recovery pattern with a Reset button. */
@@ -3360,23 +3744,68 @@ export class Ruleset7DomAppView {
     return section;
   }
 
-  #campaignList(progress: Ruleset7CampaignProgressV7): HTMLElement {
-    const chapter = CHAPTER_ONE_V7;
+  /**
+   * A campaign's mission list (CAMPAIGN.md section 5, item 2; section
+   * 14.3): the way back to the map, the campaign's title and story, and
+   * one card per mission in order.
+   */
+  #campaignList(
+    progress: Ruleset7CampaignProgressV7,
+    campaign: CampaignDefinitionV7,
+  ): HTMLElement {
     const section = el(this.#document, "section", "v7-campaign-chapter");
+    const chapter = campaign.chapter;
+    section.dataset.v7Campaign = campaign.id;
+    if (chapter === null) return section;
     section.dataset.v7Chapter = chapter.id;
+    const back = button(
+      this.#document,
+      "",
+      "campaign-map",
+      "v7-front-back v7-campaign-map-back",
+    );
+    back.append(
+      uiIconV7(this.#document, "back"),
+      text(this.#document, "span", "Campaigns"),
+    );
+    back.setAttribute("aria-label", "All campaigns");
+    back.onclick = () => this.#openCampaignMap();
+    const head = el(this.#document, "div", "v7-campaign-head");
+    const picture = el(this.#document, "span", "v7-campaign-picture");
+    picture.setAttribute("aria-hidden", "true");
+    picture.append(this.#campaignPicture(campaign));
+    const heading = el(this.#document, "div", "v7-campaign-heading");
+    heading.append(
+      text(
+        this.#document,
+        "p",
+        campaign.subtitle,
+        "v7-briefing-kicker v7-campaign-kicker",
+      ),
+      text(this.#document, "h2", campaign.title, "v7-campaign-title"),
+    );
+    head.append(picture, heading);
     section.append(
-      text(this.#document, "h2", chapter.title, "v7-campaign-title"),
+      back,
+      head,
       text(this.#document, "p", chapter.intro, "v7-campaign-story"),
     );
     const list = el(this.#document, "ol", "v7-mission-list");
     list.setAttribute("aria-label", "Missions");
-    for (const card of campaignMissionCardsV7(chapter, progress.completed)) {
+    for (const card of campaignMissionCardsV7(
+      chapter,
+      progress.completed,
+      this.#campaignCheat,
+    )) {
       const item = el(this.#document, "li", "v7-mission-item");
       item.append(this.#missionCard(card));
       list.append(item);
     }
     section.append(list);
-    // Every faction, dimmed until the campaign unlocks it.
+    // The factions the campaign's wins unlock, dimmed until unlocked: the
+    // prologue's reward.
+    if (chapter.missions.every((entry) => entry.unlocks.length === 0))
+      return section;
     const unlocked = campaignUnlockedFactionsV7(progress.completed);
     const roster = el(this.#document, "div", "v7-campaign-roster");
     const rosterTitle = text(this.#document, "h3", "Factions");
@@ -3395,7 +3824,7 @@ export class Ruleset7DomAppView {
       factions.append(entry);
     }
     roster.append(rosterTitle, factions);
-    section.append(roster, this.#campaignSettings());
+    section.append(roster);
     return section;
   }
 
@@ -3567,6 +3996,8 @@ export class Ruleset7DomAppView {
   }
 
   #openBriefing(missionId: string): void {
+    this.#campaignId =
+      campaignMissionV7(missionId)?.campaign.id ?? this.#campaignId;
     this.#briefingMissionId = missionId;
     this.#confirmCampaignReset = false;
     this.#error = "";
@@ -3624,9 +4055,11 @@ export class Ruleset7DomAppView {
       section.append(hints);
     }
     const facts = el(this.#document, "div", "v7-briefing-facts");
-    const card = campaignMissionCardsV7(chapter, progress.completed).find(
-      (candidate) => candidate.entry === entry,
-    );
+    const card = campaignMissionCardsV7(
+      chapter,
+      progress.completed,
+      this.#campaignCheat,
+    ).find((candidate) => candidate.entry === entry);
     const opponents = card?.opponents ?? [];
     const allies = card?.allies ?? [];
     const map = text(
@@ -3675,7 +4108,11 @@ export class Ruleset7DomAppView {
         );
       section.append(reward);
     }
-    const choices = campaignFactionChoicesV7(missionId, progress.completed);
+    const choices = campaignFactionChoicesV7(
+      missionId,
+      progress.completed,
+      this.#campaignCheat,
+    );
     const chosen =
       this.#briefingFaction !== null && choices.includes(this.#briefingFaction)
         ? this.#briefingFaction
@@ -3722,7 +4159,12 @@ export class Ruleset7DomAppView {
       "campaign-start",
       "primary-action",
     );
-    const status = campaignMissionStatusV7(chapter, entry, progress.completed);
+    const status = campaignMissionStatusV7(
+      chapter,
+      entry,
+      progress.completed,
+      this.#campaignCheat,
+    );
     start.disabled = chosen === null || status === "LOCKED";
     start.onclick = () => {
       const faction = this.#briefingFaction;
@@ -11834,6 +12276,27 @@ export class Ruleset7DomAppView {
           );
           result.append(notice);
         }
+      // The campaigns this win opened on the map (pulp_wars-hmyk.3).
+      const opened = (
+        lastWin?.missionId === entry.missionId ? (lastWin.opened ?? []) : []
+      ).flatMap((id) => {
+        const campaign = campaignByIdV7(id);
+        return campaign === null ? [] : [campaign];
+      });
+      if (opened.length > 0) {
+        const notice = el(this.#document, "div", "v7-unlock-notice");
+        notice.dataset.v7Region = "campaign-opened";
+        notice.setAttribute("role", "status");
+        notice.append(
+          uiIconV7(this.#document, "flag"),
+          text(
+            this.#document,
+            "p",
+            `New ${opened.length === 1 ? "campaign" : "campaigns"}: ${this.#campaignNames(opened)}`,
+          ),
+        );
+        result.append(notice);
+      }
       const next = campaignNextMissionV7(entry.missionId);
       if (next === null) {
         const found = campaignMissionV7(entry.missionId);
@@ -11848,14 +12311,16 @@ export class Ruleset7DomAppView {
           "campaign-next",
           "primary-action",
         );
-        proceed.onclick = () => void this.#leaveFinishedMission(next.missionId);
+        proceed.onclick = () =>
+          void this.#leaveFinishedMission(next.missionId, entry.missionId);
         actions.append(proceed);
       }
       // A win short of every star can be played again for the rest.
       actions.append(retry(next === null));
     } else actions.append(retry(true));
     const campaign = button(this.#document, "Campaign", "campaign-menu");
-    campaign.onclick = () => void this.#leaveFinishedMission(null);
+    campaign.onclick = () =>
+      void this.#leaveFinishedMission(null, entry.missionId);
     actions.append(campaign, this.#resultsMenuButton());
     result.append(actions);
     return result;
@@ -12128,12 +12593,20 @@ export class Ruleset7DomAppView {
    * autosave slot: its win is already recorded, and a mission is always
    * started again from the campaign.
    */
-  async #leaveFinishedMission(nextMissionId: string | null): Promise<void> {
+  async #leaveFinishedMission(
+    nextMissionId: string | null,
+    finishedMissionId: string,
+  ): Promise<void> {
     this.#cancelPresentations();
     // Set before the controller empties the slot, so its snapshot already
     // renders the campaign screen.
     this.#frontPage = "CAMPAIGN";
     this.#confirmCampaignReset = false;
+    // Back on the finished mission's campaign (pulp_wars-hmyk.3): its
+    // mission list, or the next mission's briefing.
+    this.#campaignId =
+      campaignMissionV7(finishedMissionId)?.campaign.id ?? null;
+    this.#campaignNote = "";
     this.#briefingMissionId = nextMissionId;
     this.#briefingFaction = null;
     this.#selection = null;

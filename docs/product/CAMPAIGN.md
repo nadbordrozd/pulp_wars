@@ -455,6 +455,10 @@ the teaser.
 
 ### 4.1 Storage
 
+(Superseded in part by the campaign map, `pulp_wars-hmyk.3`: progress is
+version 2, grouped by campaign, under `pulpWars.campaign.v2`, and the
+version 1 below is migrated; see [section 14.4](#144-progress-version-2).)
+
 - Key `pulpWars.campaign.v1` in localStorage, owned by
   `CampaignProgressStoreV7` (`src/persistence/campaign-v7.ts`). It is not a
   save key: it is never in `OBSOLETE_SAVE_STORAGE_KEYS_V7`, so ruleset
@@ -3638,6 +3642,147 @@ How to add a mission.
   [section 10.4](#104-directive-schedules).)
 - Mid-mission story beats (a line when a wave arrives) and portraits of the
   named characters.
+
+## 14. The campaign map and the faction campaigns (`pulp_wars-hmyk.3`)
+
+**Request (user, 2026-10-19, epic `pulp_wars-hmyk`, summarized):** one
+campaign per faction, about six missions each, unlocking one another as a
+graph shown on a campaign screen "sort of like in HoMM 3": each campaign a
+picture, the unavailable ones greyed out, arranged in a logical way; a cheat
+code to pick any mission of any campaign; the campaigns deployed one at a
+time under the main menu's Campaign button. Where this section differs from
+sections 4, 5 and 10.6, it is current.
+
+### 14.1 The registry
+
+`src/campaign/campaigns.ts` lists every campaign (`CAMPAIGNS_V7`) in map
+order. An entry has an ID, its faction, a short name for sentences
+("Humans"), a title and a subtitle, a tier, its prerequisites, a picture
+(an asset ID, null until the art bead `pulp_wars-hmyk.13` draws it), the
+portrait shown while there is no picture, and its chapter (the missions,
+story and unlocks of `src/campaign/chapter-1.ts`'s shape), null until the
+campaign is written. The titles and subtitles of the faction campaigns are
+placeholders ("The Human Campaign", "Six missions") until the saga bible
+(`pulp_wars-hmyk.1`) names them; each campaign bead (`pulp_wars-hmyk.4` to
+`.12`) fills in its entry there.
+
+The ten-mission chapter of part one is the **prologue**, "The Hollow
+Frontier" (`FRONTIER`): always open, no one's prerequisite, its missions
+and progress unchanged. A mission belongs to exactly one campaign; its ID is
+unique across them.
+
+### 14.2 The unlock graph
+
+| Tier | Campaigns                             | Open when                       |
+| ---- | ------------------------------------- | ------------------------------- |
+| 0    | The Hollow Frontier (prologue)        | always                          |
+| 1    | Humans, Undead                        | always                          |
+| 2    | Dinosaurs, Martians, Goblins, Dwarves | Humans **and** Undead completed |
+| 3    | Ice Folk, Cultists, Candy             | all four of tier 2 completed    |
+
+- A campaign is **completed** when its last mission is won.
+- A campaign with no registered mission is **Coming soon**: on the map,
+  greyed with a lock, never started, whatever its prerequisites. A campaign
+  that is built but waits for prerequisites is **Locked** and says which
+  ("Locked: finish Humans and Undead"). The two are distinct.
+- Inside a campaign the missions open in order, as before (section 4.2).
+- The Cult is the middle of the last row: the saga culminates there.
+- Skirmish stays ungated (section 4.3). The faction unlocks of the
+  prologue are unchanged.
+
+The derived state is in `src/campaign/progress-v7.ts`: `campaignPlatesV7`
+(each campaign's status, the prerequisites it still waits for, missions won
+and stars), `campaignCompletedV7`, `campaignBuiltV7`, and
+`campaignNewlyOpenedV7` (the campaigns a win opened, for the Victory
+dialog's "New campaigns: …" notice).
+
+### 14.3 The screen
+
+The main menu's **Campaign** opens the **campaign map** (the panel titled
+"Campaign"):
+
+- The prologue's wide plate on top, set apart by a dashed rule.
+- Below, three rows: the two openers, the middle four, the last three.
+  Between two rows, the lines of what unlocks what: every plate above joins
+  one knot that fans out to every plate below (every campaign above opens
+  every one below). The knot is a lock with "Finish both" / "Finish all 4"
+  (and "· 1/2" once some are done) until the gate opens, then a yellow flag
+  with "Open"; the lines are dashed and soft while closed, ink when open.
+  The lines are drawn in a box stretched to the row, so they meet the
+  plates' centres at any width without measuring the layout.
+- A **plate** is a button: the picture (the faction's portrait on a framed
+  plate with a stripe of the faction's colour, until the art is drawn), the
+  title, and the progress ("Open"; or a star with "4/18" and "2 of 6"; a
+  trophy badge once completed). Locked and Coming soon plates are greyed with
+  a lock badge, `aria-disabled`, focusable; a tap writes why in a status
+  line under the map ("The Dinosaur Campaign opens when you finish Humans
+  and Undead.", "…: coming soon.") and opens nothing. The accessible name
+  carries the state ("The Human Campaign, open, 0 of 6 missions won";
+  "…, Locked: finish Humans and Undead"; "…, Coming soon").
+- **Settings** (Reset progress) is at the foot of the map.
+- On a phone (narrower than 30rem) the middle four are two rows of two, and
+  the lines follow; the map scrolls with the page.
+- An open plate opens the campaign's **mission list**: a **Campaigns** back
+  button, the picture with the subtitle and title, the story, and the
+  mission cards of section 10.6; the prologue keeps its Factions row. A card
+  opens its briefing as before; Back returns to the list. Escape steps
+  back: briefing, list, map, menu.
+- Leaving a finished mission (Next mission, Campaign) returns to that
+  mission's own campaign.
+
+### 14.4 Progress, version 2
+
+Progress is grouped by campaign under a new key, `pulpWars.campaign.v2`:
+
+```json
+{
+  "format": "pulp-wars-campaign-progress",
+  "version": 2,
+  "campaigns": {
+    "FRONTIER": {
+      "completed": {
+        "FRONTIER_1": {
+          "firstWonAt": "2026-10-03T12:00:00.000Z",
+          "bestRounds": 14,
+          "stars": 2
+        }
+      }
+    }
+  }
+}
+```
+
+- **Migration.** While there is no version 2, the store reads version 1
+  (`pulpWars.campaign.v1`) and files its missions under `FRONTIER`; no win
+  is lost. Nothing is written on load; the first win recorded writes
+  version 2 under the new key. The old key is left alone, so an older
+  build (a cached tab) still reads its progress, until **Reset** erases
+  both keys.
+- A win is filed under its mission's campaign; a mission already filed
+  elsewhere stays there. Unknown campaign and mission IDs are kept. A
+  mission listed under two campaigns is unreadable.
+- The controller still hands the screens every completion in one record
+  (mission IDs are unique), so the derived state reads as before.
+
+Analytics: `mission_start` and `mission_end` carry `campaign_id`
+(`frontier`, `humans`, …; [ANALYTICS.md](../ANALYTICS.md)).
+
+### 14.5 Testing: pick any mission
+
+A cheat for testing, **"All missions unlocked"**:
+
+- On the campaign screen, **tap the "Campaign" title seven times quickly**
+  (each tap within 0.8 s of the last), or **type `pulpwars`** on a
+  keyboard. Doing it again turns it off.
+- Or open the game with **`?campaign-cheat=1`** in the address
+  (`?campaign-cheat=0` turns it off).
+- While it is on, a yellow **All missions unlocked** chip stands beside the
+  title (tap it to turn the cheat off); every built campaign is open
+  whatever its prerequisites, every mission of it can be picked, and a
+  choice of faction offers the mission's whole list. Coming soon stays
+  Coming soon. Wins are recorded as usual.
+- The switch is stored in localStorage (`pulpWars.campaignCheat`), so it
+  survives a reload.
 
 ## Appendix A: critique of the first draft
 

@@ -60,7 +60,7 @@ describe("Ruleset 7 mission dialogs", () => {
     expect(
       JSON.parse(
         window.localStorage.getItem(CAMPAIGN_PROGRESS_STORAGE_KEY_V7) ?? "",
-      ).completed,
+      ).campaigns.FRONTIER.completed,
     ).toMatchObject({ FRONTIER_1: won(20), FRONTIER_2: {} });
     requiredButton('[data-action="campaign-next"]').click();
     await waitUntil(() => app.controller.snapshot().phase === "EMPTY");
@@ -101,7 +101,7 @@ describe("Ruleset 7 mission dialogs", () => {
     expect(
       JSON.parse(
         window.localStorage.getItem(CAMPAIGN_PROGRESS_STORAGE_KEY_V7) ?? "",
-      ).completed.FRONTIER_1.bestRounds,
+      ).campaigns.FRONTIER.completed.FRONTIER_1.bestRounds,
     ).toBe(fixture.after.state.round);
     requiredButton('[data-action="campaign-menu"]').click();
     await waitUntil(() => next.controller.snapshot().phase === "EMPTY");

@@ -108,7 +108,10 @@ export type UiIconIdV7 =
   | "swap"
   // The leaderboard's alliance setting (bead pulp_wars-2yc.45): two linked
   // rings, the mark of "AIs allied" and of every allied AI row.
-  | "allied";
+  | "allied"
+  // The campaign map (bead pulp_wars-hmyk.3): a padlock on a campaign or
+  // a gate between tiers that is still closed.
+  | "lock";
 
 /** The star of the grade (shared by its filled and outlined forms). */
 const STAR =
@@ -229,6 +232,7 @@ const PATHS: Readonly<Record<UiIconIdV7, string>> = {
   back: "M14.5 5 7.5 12l7 7",
   allied:
     "M3.5 12a5 5 0 1 0 10 0 5 5 0 1 0-10 0M10.5 12a5 5 0 1 0 10 0 5 5 0 1 0-10 0",
+  lock: "M6.5 11h11a1 1 0 0 1 1 1v7.5a1 1 0 0 1-1 1h-11a1 1 0 0 1-1-1V12a1 1 0 0 1 1-1ZM8.5 11V8a3.5 3.5 0 0 1 7 0v3M12 14.5v2.5",
   // A fat candle on a dish, a short wick and a teardrop flame.
   candle:
     "M8.5 11.5h7V20h-7ZM5.5 20.5h13M12 11.5V9.8M12 2.6c1.9 2 2.7 3.3 2.7 4.5a2.7 2.7 0 0 1-5.4 0c0-1.2.8-2.5 2.7-4.5Z",

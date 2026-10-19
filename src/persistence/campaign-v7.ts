@@ -2,14 +2,26 @@ import type { StorageAdapter } from "./index";
 
 /**
  * Campaign progress (`pulp_wars-68k.5`, docs/product/CAMPAIGN.md section
- * 4.1). Its own localStorage key, never a save key: it is not in
+ * 4.1; per campaign since `pulp_wars-hmyk.3`, section 14.4). Its own
+ * localStorage key, never a save key: it is not in
  * `OBSOLETE_SAVE_STORAGE_KEYS_V7`, so a ruleset identity change leaves it
  * alone, and deleting the autosave never touches it. Only completed
- * missions are stored; which missions are open and which factions are
- * unlocked are derived from them (`src/campaign/progress-v7.ts`).
+ * missions are stored, grouped by campaign; which missions and campaigns
+ * are open and which factions are unlocked are derived from them
+ * (`src/campaign/progress-v7.ts`).
+ *
+ * Version 2 lives under its own key. Progress of version 1 (one flat
+ * record of the prologue's missions, under the old key) is read while there
+ * is no version 2 and migrated into the campaign `FRONTIER`; the first win
+ * recorded afterwards writes version 2 under the new key. The old key is
+ * left alone (an older build still reads it) until Reset erases both.
  */
-export const CAMPAIGN_PROGRESS_STORAGE_KEY_V7 = "pulpWars.campaign.v1";
+export const CAMPAIGN_PROGRESS_STORAGE_KEY_V7 = "pulpWars.campaign.v2";
+/** Where version 1 lived (`pulp_wars-68k.5` until `pulp_wars-hmyk.3`). */
+export const LEGACY_CAMPAIGN_PROGRESS_STORAGE_KEY_V7 = "pulpWars.campaign.v1";
 export const CAMPAIGN_PROGRESS_FORMAT_V7 = "pulp-wars-campaign-progress";
+/** The campaign version 1's missions belong to: the prologue. */
+export const LEGACY_CAMPAIGN_ID_V7 = "FRONTIER";
 /** Progress is a handful of missions; anything larger is not ours. */
 export const MAX_CAMPAIGN_PROGRESS_BYTES_V7 = 64 * 1024;
 
@@ -25,11 +37,19 @@ export interface CampaignCompletionV7 {
   readonly stars?: number;
 }
 
+/** One campaign's progress: its completed missions by mission ID. */
+export interface CampaignRecordV7 {
+  readonly completed: Readonly<Record<string, CampaignCompletionV7>>;
+}
+
 export interface CampaignProgressV7 {
   readonly format: typeof CAMPAIGN_PROGRESS_FORMAT_V7;
-  readonly version: 1;
-  /** Mission ID to completion; unknown IDs are kept and ignored. */
-  readonly completed: Readonly<Record<string, CampaignCompletionV7>>;
+  readonly version: 2;
+  /**
+   * Campaign ID to its progress. Unknown campaign and mission IDs are kept
+   * and ignored (a campaign removed from a later build wipes nothing).
+   */
+  readonly campaigns: Readonly<Record<string, CampaignRecordV7>>;
 }
 
 export type CampaignProgressLoadV7 =
@@ -56,19 +76,37 @@ export type CampaignRecordResultV7 =
 export type CampaignWriteResultV7 =
   { readonly ok: true } | { readonly ok: false; readonly diagnostic: string };
 
-const MISSION_ID_PATTERN = /^[A-Z][A-Z0-9_]{0,63}$/;
+type CompletedV7 = Readonly<Record<string, CampaignCompletionV7>>;
+
+const ID_PATTERN = /^[A-Z][A-Z0-9_]{0,63}$/;
 const ISO_INSTANT_PATTERN =
   /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?Z$/;
 
 export function emptyCampaignProgressV7(): CampaignProgressV7 {
   return Object.freeze({
     format: CAMPAIGN_PROGRESS_FORMAT_V7,
-    version: 1,
-    completed: Object.freeze({}),
+    version: 2,
+    campaigns: Object.freeze({}),
   });
 }
 
-/** Strict parse of the stored progress; anything else is unreadable. */
+/**
+ * Every campaign's completions in one record. Mission IDs are unique
+ * across campaigns (a mission belongs to one campaign), so nothing is lost.
+ */
+export function campaignCompletionsV7(
+  progress: CampaignProgressV7,
+): CompletedV7 {
+  const all: Record<string, CampaignCompletionV7> = {};
+  for (const record of Object.values(progress.campaigns))
+    Object.assign(all, record.completed);
+  return Object.freeze(all);
+}
+
+/**
+ * Strict parse of stored progress of either version; version 1 is migrated
+ * into the prologue (`LEGACY_CAMPAIGN_ID_V7`). Anything else is unreadable.
+ */
 export function parseCampaignProgressV7(
   source: string,
 ): CampaignProgressLoadV7 {
@@ -80,20 +118,59 @@ export function parseCampaignProgressV7(
   } catch {
     return unreadable("Campaign progress is not valid JSON.");
   }
-  if (
-    !isRecord(value) ||
-    !hasExactKeys(value, ["format", "version", "completed"])
-  )
+  if (!isRecord(value))
     return unreadable("Campaign progress has an unknown shape.");
-  if (value.format !== CAMPAIGN_PROGRESS_FORMAT_V7 || value.version !== 1)
+  if (value.version === 1) {
+    if (!hasExactKeys(value, ["format", "version", "completed"]))
+      return unreadable("Campaign progress has an unknown shape.");
+    if (value.format !== CAMPAIGN_PROGRESS_FORMAT_V7)
+      return unreadable("Campaign progress has an unknown format or version.");
+    const completed = parseCompleted(value.completed);
+    if (typeof completed === "string") return unreadable(completed);
+    return {
+      kind: "VALID",
+      progress: freezeProgress(
+        Object.keys(completed).length === 0
+          ? {}
+          : { [LEGACY_CAMPAIGN_ID_V7]: completed },
+      ),
+    };
+  }
+  if (!hasExactKeys(value, ["format", "version", "campaigns"]))
+    return unreadable("Campaign progress has an unknown shape.");
+  if (value.format !== CAMPAIGN_PROGRESS_FORMAT_V7 || value.version !== 2)
     return unreadable("Campaign progress has an unknown format or version.");
-  const completed = value.completed;
+  const campaigns = value.campaigns;
+  if (!isRecord(campaigns))
+    return unreadable("Campaign progress has no campaigns record.");
+  const parsed: Record<string, CompletedV7> = {};
+  const seen = new Set<string>();
+  for (const [id, record] of Object.entries(campaigns)) {
+    if (!ID_PATTERN.test(id))
+      return unreadable("Campaign progress names an invalid campaign.");
+    if (!isRecord(record) || !hasExactKeys(record, ["completed"]))
+      return unreadable("Campaign progress has an invalid campaign.");
+    const completed = parseCompleted(record.completed);
+    if (typeof completed === "string") return unreadable(completed);
+    for (const missionId of Object.keys(completed)) {
+      // A mission belongs to one campaign.
+      if (seen.has(missionId))
+        return unreadable("Campaign progress lists a mission twice.");
+      seen.add(missionId);
+    }
+    parsed[id] = completed;
+  }
+  return { kind: "VALID", progress: freezeProgress(parsed) };
+}
+
+/** A record of completions, or why it is unreadable. */
+function parseCompleted(completed: unknown): CompletedV7 | string {
   if (!isRecord(completed))
-    return unreadable("Campaign progress has no completed missions record.");
+    return "Campaign progress has no completed missions record.";
   const entries: [string, CampaignCompletionV7][] = [];
   for (const [id, entry] of Object.entries(completed)) {
-    if (!MISSION_ID_PATTERN.test(id))
-      return unreadable("Campaign progress names an invalid mission.");
+    if (!ID_PATTERN.test(id))
+      return "Campaign progress names an invalid mission.";
     if (
       !isRecord(entry) ||
       !(
@@ -109,22 +186,19 @@ export function parseCampaignProgressV7(
       !Number.isSafeInteger(entry.bestRounds) ||
       (entry.bestRounds as number) < 1
     )
-      return unreadable("Campaign progress has an invalid completion.");
+      return "Campaign progress has an invalid completion.";
     entries.push([
       id,
-      Object.freeze({
+      {
         firstWonAt: entry.firstWonAt,
         bestRounds: entry.bestRounds as number,
         ...(Object.hasOwn(entry, "stars")
           ? { stars: entry.stars as number }
           : {}),
-      }),
+      },
     ]);
   }
-  return {
-    kind: "VALID",
-    progress: freezeProgress(Object.fromEntries(entries)),
-  };
+  return Object.fromEntries(entries);
 }
 
 /**
@@ -144,12 +218,15 @@ export class CampaignProgressStoreV7 {
     this.#now = options.now ?? (() => new Date().toISOString());
   }
 
+  /** Version 2; else version 1, migrated; else empty progress. */
   load(): CampaignProgressLoadV7 {
     if (this.#storage === null)
       return { kind: "VALID", progress: emptyCampaignProgressV7() };
     let source: string | null;
     try {
-      source = this.#storage.getItem(CAMPAIGN_PROGRESS_STORAGE_KEY_V7);
+      source =
+        this.#storage.getItem(CAMPAIGN_PROGRESS_STORAGE_KEY_V7) ??
+        this.#storage.getItem(LEGACY_CAMPAIGN_PROGRESS_STORAGE_KEY_V7);
     } catch (error) {
       return {
         kind: "STORAGE_ERROR",
@@ -162,16 +239,19 @@ export class CampaignProgressStoreV7 {
   }
 
   /**
-   * Records a won mission. Idempotent: a later win keeps `firstWonAt`, only
-   * ever lowers `bestRounds`, and only ever raises `stars`. Unreadable
-   * progress records nothing until it is reset.
+   * Records a won mission of a campaign. Idempotent: a later win keeps
+   * `firstWonAt`, only ever lowers `bestRounds`, and only ever raises
+   * `stars`. Unreadable progress records nothing until it is reset.
    */
   recordWin(
+    campaignId: string,
     missionId: string,
     rounds: number,
     stars = 1,
   ): CampaignRecordResultV7 {
-    if (!MISSION_ID_PATTERN.test(missionId))
+    if (!ID_PATTERN.test(campaignId))
+      throw new RangeError(`Invalid campaign ID ${campaignId}`);
+    if (!ID_PATTERN.test(missionId))
       throw new RangeError(`Invalid mission ID ${missionId}`);
     if (!Number.isSafeInteger(rounds) || rounds < 1)
       throw new RangeError("rounds must be a positive integer");
@@ -180,7 +260,12 @@ export class CampaignProgressStoreV7 {
     const loaded = this.load();
     if (loaded.kind !== "VALID") return { ok: false, ...loaded };
     const before = loaded.progress;
-    const prior = before.completed[missionId];
+    // A mission's wins stay where its first was filed.
+    const home =
+      Object.entries(before.campaigns).find(([, record]) =>
+        Object.hasOwn(record.completed, missionId),
+      )?.[0] ?? campaignId;
+    const prior = before.campaigns[home]?.completed[missionId];
     const completion: CampaignCompletionV7 =
       prior === undefined
         ? { firstWonAt: this.#now(), bestRounds: rounds, stars }
@@ -189,10 +274,6 @@ export class CampaignProgressStoreV7 {
             bestRounds: Math.min(prior.bestRounds, rounds),
             stars: Math.max(prior.stars ?? 1, stars),
           };
-    const progress = freezeProgress({
-      ...before.completed,
-      [missionId]: completion,
-    });
     // A win that does not beat the best changes nothing: no write.
     if (
       prior !== undefined &&
@@ -200,6 +281,14 @@ export class CampaignProgressStoreV7 {
       (prior.stars ?? 1) === completion.stars
     )
       return { ok: true, firstWin: false, before, progress: before };
+    const campaigns: Record<string, CompletedV7> = Object.fromEntries(
+      Object.entries(before.campaigns).map(([id, record]) => [
+        id,
+        record.completed,
+      ]),
+    );
+    campaigns[home] = { ...campaigns[home], [missionId]: completion };
+    const progress = freezeProgress(campaigns);
     if (this.#storage !== null) {
       try {
         this.#storage.setItem(
@@ -217,11 +306,15 @@ export class CampaignProgressStoreV7 {
     return { ok: true, firstWin: prior === undefined, before, progress };
   }
 
-  /** Erases all campaign progress (the reset and the unreadable recovery). */
+  /**
+   * Erases all campaign progress of both versions (the reset and the
+   * unreadable recovery).
+   */
   reset(): CampaignWriteResultV7 {
     if (this.#storage === null) return { ok: true };
     try {
       this.#storage.removeItem(CAMPAIGN_PROGRESS_STORAGE_KEY_V7);
+      this.#storage.removeItem(LEGACY_CAMPAIGN_PROGRESS_STORAGE_KEY_V7);
       return { ok: true };
     } catch (error) {
       return {
@@ -232,17 +325,37 @@ export class CampaignProgressStoreV7 {
   }
 }
 
+/** Frozen progress with campaigns and missions in ID order. */
 function freezeProgress(
-  completed: Readonly<Record<string, CampaignCompletionV7>>,
+  campaigns: Readonly<Record<string, CompletedV7>>,
 ): CampaignProgressV7 {
-  const entries = Object.entries(completed)
-    .sort(([left], [right]) => (left < right ? -1 : left > right ? 1 : 0))
-    .map(([id, entry]) => [id, Object.freeze({ ...entry })] as const);
   return Object.freeze({
     format: CAMPAIGN_PROGRESS_FORMAT_V7,
-    version: 1,
-    completed: Object.freeze(Object.fromEntries(entries)),
+    version: 2,
+    campaigns: Object.freeze(
+      Object.fromEntries(
+        sortedEntries(campaigns).map(([id, completed]) => [
+          id,
+          Object.freeze({
+            completed: Object.freeze(
+              Object.fromEntries(
+                sortedEntries(completed).map(([missionId, entry]) => [
+                  missionId,
+                  Object.freeze({ ...entry }),
+                ]),
+              ),
+            ),
+          }),
+        ]),
+      ),
+    ),
   });
+}
+
+function sortedEntries<T>(record: Readonly<Record<string, T>>): [string, T][] {
+  return Object.entries(record).sort(([left], [right]) =>
+    left < right ? -1 : left > right ? 1 : 0,
+  );
 }
 
 function unreadable(diagnostic: string): CampaignProgressLoadV7 {

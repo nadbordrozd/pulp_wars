@@ -122,6 +122,7 @@ import {
   CampaignProgressStoreV7,
   MAX_SAVE_BYTES_V7,
   TribeStarsStoreV7,
+  campaignCompletionsV7,
   createSaveEnvelopeV7,
   parseSaveV7,
   tribeStarResultV7,
@@ -1385,10 +1386,12 @@ function runChild(id: string, out: string): void {
         } else if (status?.stars !== null && status?.stars !== undefined)
           broken.push(`mission loss with stars ${status.stars}`);
         const missionId = state.setup.mission?.id ?? "";
-        if (human && campaignMissionV7(missionId) !== null) {
+        const found = campaignMissionV7(missionId);
+        if (human && found !== null) {
           const store = new CampaignProgressStoreV7(memoryStorageV7());
           const stars = Math.min(3, Math.max(1, status?.stars ?? 1));
           const recorded = store.recordWin(
+            found.campaign.id,
             missionId,
             state.round,
             stars as 1 | 2 | 3,
@@ -1398,8 +1401,8 @@ function runChild(id: string, out: string): void {
             campaign = {
               firstWin: recorded.firstWin,
               unlocked: campaignNewlyUnlockedV7(
-                recorded.before.completed,
-                recorded.progress.completed,
+                campaignCompletionsV7(recorded.before),
+                campaignCompletionsV7(recorded.progress),
               ),
               stars,
             };

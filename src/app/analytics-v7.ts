@@ -156,10 +156,16 @@ function humanFactionV7(view: PlayerViewV7): FactionIdV7 | undefined {
   );
 }
 
-function campaignMissionIdV7(setup: MatchSetupV7): string | null {
+/** The campaign and mission of a campaign mission's setup, or null. */
+function campaignMissionIdV7(
+  setup: MatchSetupV7,
+): { readonly campaignId: string; readonly missionId: string } | null {
   const id = setup.mission?.id;
   if (id === undefined || setup.mapType !== "MISSION") return null;
-  return campaignMissionV7(id) === null ? null : id;
+  const found = campaignMissionV7(id);
+  return found === null
+    ? null
+    : { campaignId: found.campaign.id, missionId: id };
 }
 
 /**
@@ -236,12 +242,13 @@ export function matchStartEventsV7(
   const events: AnalyticsEventV7[] = [
     { name: "match_start", params: matchStartParamsV7(setup, source) },
   ];
-  const missionId = campaignMissionIdV7(setup);
-  if (missionId !== null)
+  const mission = campaignMissionIdV7(setup);
+  if (mission !== null)
     events.push({
       name: "mission_start",
       params: {
-        mission_id: missionId.toLowerCase(),
+        mission_id: mission.missionId.toLowerCase(),
+        campaign_id: mission.campaignId.toLowerCase(),
         faction: analyticsFactionV7(setup.factions[0]),
       },
     });
@@ -252,12 +259,13 @@ export function matchStartEventsV7(
 export function matchEndEventsV7(view: PlayerViewV7): AnalyticsEventV7[] {
   const params = matchEndParamsV7(view);
   const events: AnalyticsEventV7[] = [{ name: "match_end", params }];
-  const missionId = campaignMissionIdV7(view.setup);
-  if (missionId !== null)
+  const mission = campaignMissionIdV7(view.setup);
+  if (mission !== null)
     events.push({
       name: "mission_end",
       params: {
-        mission_id: missionId.toLowerCase(),
+        mission_id: mission.missionId.toLowerCase(),
+        campaign_id: mission.campaignId.toLowerCase(),
         result: params.result as MatchResultV7,
         stars: params.stars as number,
       },

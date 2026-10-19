@@ -534,12 +534,20 @@ describe("Ruleset 7 player-facing text names no tile coordinates", () => {
         .querySelector<HTMLButtonElement>('[data-action="campaign"]')
         ?.click();
       await settle();
-      check("campaign list");
+      check("campaign map");
       document
         .querySelector<HTMLButtonElement>('[data-action="campaign-reset"]')
         ?.click();
       await settle();
       check("campaign reset");
+      // The prologue's list, from its plate on the map (pulp_wars-hmyk.3).
+      document
+        .querySelector<HTMLButtonElement>(
+          '[data-action="campaign-open-frontier"]',
+        )
+        ?.click();
+      await settle();
+      check("campaign list");
       for (const entry of CHAPTER_ONE_V7.missions) {
         const card = document.querySelector<HTMLButtonElement>(
           `[data-action="mission-${entry.missionId.toLowerCase()}"]`,
@@ -574,6 +582,12 @@ describe("Ruleset 7 player-facing text names no tile coordinates", () => {
     const app = bootstrapRuleset7App(document);
     document
       .querySelector<HTMLButtonElement>('[data-action="campaign"]')
+      ?.click();
+    await settle();
+    document
+      .querySelector<HTMLButtonElement>(
+        '[data-action="campaign-open-frontier"]',
+      )
       ?.click();
     await settle();
     document

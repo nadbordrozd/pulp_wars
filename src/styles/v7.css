@@ -1912,6 +1912,342 @@
   font-style: italic;
 }
 
+/* ---------- Campaign map (pulp_wars-hmyk.3) ---------- */
+
+/*
+ * The prologue set apart, then three tiers of plates joined by the lines
+ * of what unlocks what. A plate is a Control: the campaign's picture on a
+ * framed plate, its title and its progress. A closed plate is greyed with
+ * a lock (Unavailable but explained).
+ */
+.v7-campaign-map {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.v7-campaign-prologue,
+.v7-campaign-tier {
+  display: grid;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.v7-campaign-prologue {
+  padding-bottom: 0.9rem;
+  border-bottom: var(--pw-line-w-sm) dashed var(--pw-line-soft);
+}
+
+.v7-campaign-tier {
+  grid-template-columns: repeat(var(--v7-tier-columns, 2), minmax(0, 1fr));
+}
+
+.v7-campaign-tier[data-count="3"] {
+  --v7-tier-columns: 3;
+}
+
+.v7-campaign-tier[data-count="4"] {
+  --v7-tier-columns: 4;
+}
+
+.v7-campaign-graph {
+  display: grid;
+}
+
+.v7-campaign-plate-item {
+  display: grid;
+}
+
+.v7-campaign-plate {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: 0.4rem;
+  justify-items: center;
+  min-width: 0;
+  padding: 0.55rem 0.45rem 0.5rem;
+  border: var(--pw-line-w-sm) solid var(--pw-line);
+  border-radius: var(--pw-radius-sm);
+  background: var(--pw-surface-raised);
+  box-shadow: var(--pw-shadow-sm);
+  color: var(--pw-text);
+  text-align: center;
+}
+
+.v7-campaign-plate:is([data-status="open"], [data-status="done"]):hover {
+  background: var(--pw-yellow);
+}
+
+.v7-campaign-plate[data-status="done"] {
+  background: var(--pw-teal-fill);
+}
+
+.v7-campaign-plate:is([data-status="locked"], [data-status="soon"]) {
+  cursor: not-allowed;
+  border-color: var(--pw-line-soft);
+  background: var(--pw-surface-2);
+  box-shadow: none;
+  color: var(--pw-text-2);
+}
+
+.v7-campaign-plate[data-status="soon"] {
+  border-style: dashed;
+}
+
+.v7-campaign-plate-wide {
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-rows: auto;
+  gap: 0.8rem;
+  align-items: center;
+  justify-items: start;
+  padding: 0.55rem 0.8rem 0.55rem 0.55rem;
+  text-align: left;
+}
+
+/* The picture: a framed plate in the faction's colour (a stripe of it). */
+.v7-campaign-picture {
+  position: relative;
+  display: grid;
+}
+
+.v7-campaign-portrait {
+  display: grid;
+  place-items: center;
+  width: 4.5rem;
+  height: 4.5rem;
+  overflow: hidden;
+  border: var(--pw-line-w-sm) solid var(--pw-line);
+  border-radius: var(--pw-radius-xs);
+  background: linear-gradient(
+    180deg,
+    var(--pw-sky-high) 0 62%,
+    var(--pw-surface-2) 62% 100%
+  );
+  box-shadow: inset 0 -5px 0 var(--v7-campaign-faction, var(--pw-line-soft));
+}
+
+.v7-campaign-portrait > * {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.v7-campaign-plate:is([data-status="locked"], [data-status="soon"])
+  .v7-campaign-portrait {
+  filter: grayscale(1);
+  opacity: 0.55;
+}
+
+.v7-campaign-lock,
+.v7-campaign-done {
+  position: absolute;
+  right: -0.45rem;
+  bottom: -0.35rem;
+  width: 1.7rem;
+  height: 1.7rem;
+  padding: 0.25rem;
+  border: var(--pw-line-w-sm) solid var(--pw-line);
+  border-radius: 50%;
+  background: var(--pw-surface-raised);
+  color: var(--pw-text);
+}
+
+.v7-campaign-done {
+  background: var(--pw-yellow);
+}
+
+.v7-campaign-plate-body {
+  display: grid;
+  gap: 0.15rem;
+  align-content: start;
+  min-width: 0;
+}
+
+.v7-campaign-plate-kicker {
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-xs);
+  font-weight: var(--pw-fw-bold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.v7-campaign-plate-title {
+  font-size: var(--pw-fs-sm);
+  font-weight: var(--pw-fw-heavy);
+  line-height: 1.2;
+  overflow-wrap: break-word;
+}
+
+.v7-campaign-graph > .v7-campaign-note {
+  margin-top: 0.6rem;
+}
+
+.v7-campaign-plate-wide .v7-campaign-plate-title {
+  font-size: var(--pw-fs-lg);
+}
+
+.v7-campaign-plate-state {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.1rem 0.35rem;
+  align-items: center;
+  justify-content: center;
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-xs);
+}
+
+.v7-campaign-plate-wide .v7-campaign-plate-state {
+  justify-content: start;
+}
+
+.v7-campaign-plate[data-status="done"] .v7-campaign-plate-state {
+  color: var(--pw-teal);
+}
+
+.v7-campaign-star {
+  width: 1rem;
+  height: 1rem;
+  color: var(--pw-coin);
+}
+
+/* The lines between two tiers, and the knot where they meet. */
+.v7-campaign-link {
+  position: relative;
+  display: grid;
+  place-items: center;
+  height: 3rem;
+}
+
+.v7-campaign-link-lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  stroke: var(--pw-line);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+}
+
+.v7-campaign-link[data-open="false"] .v7-campaign-link-lines {
+  stroke: var(--pw-line-soft);
+  stroke-width: 2;
+  stroke-dasharray: 5 5;
+}
+
+.v7-campaign-link-lines[data-layout="narrow"] {
+  display: none;
+}
+
+.v7-campaign-knot {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 1.9rem;
+  height: 1.9rem;
+  border: var(--pw-line-w-sm) solid var(--pw-line);
+  border-radius: 50%;
+  background: var(--pw-surface-raised);
+  box-shadow: var(--pw-shadow-sm);
+}
+
+.v7-campaign-knot .v7-ui-icon {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.v7-campaign-link[data-open="true"] .v7-campaign-knot {
+  background: var(--pw-yellow);
+}
+
+.v7-campaign-knot-label {
+  position: absolute;
+  left: calc(50% + 1.35rem);
+  top: 50%;
+  translate: 0 -50%;
+  padding: 0 0.4rem;
+  border-radius: var(--pw-radius-pill);
+  background: var(--pw-surface);
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-xs);
+  font-weight: var(--pw-fw-bold);
+  white-space: nowrap;
+}
+
+.v7-campaign-note {
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  border: var(--pw-line-w-sm) solid var(--pw-line);
+  border-radius: var(--pw-radius-sm);
+  background: var(--pw-surface-raised);
+  font-weight: var(--pw-fw-semi);
+}
+
+/* The testing cheat: a small chip beside the screen's title. */
+.v7-app-shell .v7-campaign-cheat {
+  min-height: 0;
+  padding: 0.15rem 0.6rem;
+  border-radius: var(--pw-radius-pill);
+  background: var(--pw-yellow);
+  font-size: var(--pw-fs-xs);
+  font-weight: var(--pw-fw-heavy);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* A campaign's mission list: the way back to the map, the head. */
+.v7-campaign-map-back {
+  justify-self: start;
+}
+
+.v7-campaign-head {
+  display: flex;
+  gap: 0.8rem;
+  align-items: center;
+}
+
+.v7-campaign-heading {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.v7-campaign-heading .v7-campaign-kicker {
+  margin: 0;
+}
+
+@media (width < 30rem) {
+  /* The middle four in two rows of two; their lines follow. */
+  .v7-campaign-tier[data-count="4"] {
+    --v7-tier-columns: 2;
+  }
+
+  .v7-campaign-link-lines[data-layout="wide"] {
+    display: none;
+  }
+
+  .v7-campaign-link-lines[data-layout="narrow"] {
+    display: block;
+  }
+
+  .v7-campaign-portrait {
+    width: 3.5rem;
+    height: 3.5rem;
+  }
+
+  .v7-campaign-plate-wide .v7-campaign-portrait {
+    width: 4rem;
+    height: 4rem;
+  }
+
+  .v7-campaign-plate {
+    padding-inline: 0.3rem;
+  }
+
+  /* Three across a phone: a smaller title keeps "Campaign" whole. */
+  .v7-campaign-tier[data-count="3"] .v7-campaign-plate-title {
+    font-size: var(--pw-fs-xs);
+  }
+}
+
 /* ---------- Campaign: formats, stars, objectives (pulp_wars-v642.1) ---------- */
 
 .v7-mission-card {

@@ -29,6 +29,7 @@ import {
 } from "../engine/index";
 import {
   campaignMissionV7,
+  campaignNewlyOpenedV7,
   campaignNewlyUnlockedV7,
   type CampaignCompletedV7,
 } from "../campaign/progress-v7";
@@ -36,7 +37,7 @@ import {
   BrowserPersistenceV7,
   CampaignProgressStoreV7,
   TribeStarsStoreV7,
-  emptyCampaignProgressV7,
+  campaignCompletionsV7,
   emptyTribeStarsV7,
   tribeStarResultV7,
   type BrowserSaveLoadResultV7,
@@ -106,6 +107,8 @@ export interface Ruleset7CampaignProgressV7 {
     readonly missionId: string;
     readonly firstWin: boolean;
     readonly unlocked: readonly FactionIdV7[];
+    /** Campaigns the win opened on the campaign map (`pulp_wars-hmyk.3`). */
+    readonly opened?: readonly string[];
   } | null;
   /** Why progress could not be read or written, for the details view. */
   readonly diagnostic: string | null;
@@ -431,8 +434,8 @@ export class Ruleset7BrowserController {
         loaded.kind === "VALID" ? ("OK" as const) : ("UNREADABLE" as const),
       completed:
         loaded.kind === "VALID"
-          ? loaded.progress.completed
-          : emptyCampaignProgressV7().completed,
+          ? campaignCompletionsV7(loaded.progress)
+          : Object.freeze({}),
       lastWin: this.#campaignLastWin,
       diagnostic:
         loaded.kind === "VALID" ? this.#campaignDiagnostic : loaded.diagnostic,
@@ -1225,12 +1228,14 @@ export class Ruleset7BrowserController {
       outcome?.kind !== "VICTORY" ||
       outcome.winnerId !== state.humanPlayerId ||
       state.setup.mapType !== "MISSION" ||
-      missionId === undefined ||
-      campaignMissionV7(missionId) === null
+      missionId === undefined
     )
       return;
+    const found = campaignMissionV7(missionId);
+    if (found === null) return;
     const stars = Math.min(3, Math.max(1, missionStatusV7(state)?.stars ?? 1));
     const recorded = this.#campaign.recordWin(
+      found.campaign.id,
       missionId,
       state.round,
       stars as 1 | 2 | 3,
@@ -1240,13 +1245,13 @@ export class Ruleset7BrowserController {
       return;
     }
     this.#campaignDiagnostic = null;
+    const before = campaignCompletionsV7(recorded.before);
+    const after = campaignCompletionsV7(recorded.progress);
     this.#campaignLastWin = {
       missionId,
       firstWin: recorded.firstWin,
-      unlocked: campaignNewlyUnlockedV7(
-        recorded.before.completed,
-        recorded.progress.completed,
-      ),
+      unlocked: campaignNewlyUnlockedV7(before, after),
+      opened: campaignNewlyOpenedV7(before, after),
     };
   }
 

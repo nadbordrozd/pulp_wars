@@ -59,8 +59,17 @@ describe("Ruleset 7 browser controller campaign progress", () => {
       JSON.parse(storage.getItem(CAMPAIGN_PROGRESS_STORAGE_KEY_V7) ?? ""),
     ).toEqual({
       format: "pulp-wars-campaign-progress",
-      version: 1,
-      completed: { FRONTIER_1: { firstWonAt: savedAt, bestRounds: rounds } },
+      version: 2,
+      campaigns: {
+        FRONTIER: {
+          completed: {
+            FRONTIER_1: expect.objectContaining({
+              firstWonAt: savedAt,
+              bestRounds: rounds,
+            }),
+          },
+        },
+      },
     });
     // Mission 1 unlocks nothing; the win is reported for the dialog.
     expect(controller.campaignProgress()).toMatchObject({

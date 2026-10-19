@@ -2,7 +2,7 @@
 // whole-game simulations in ruleset7-campaign-dom.sim.test.ts
 // (`pulp_wars-bwry`).
 
-import { CAMPAIGN_PROGRESS_STORAGE_KEY_V7 } from "../../src/persistence/index";
+import { LEGACY_CAMPAIGN_PROGRESS_STORAGE_KEY_V7 } from "../../src/persistence/index";
 
 /**
  * The campaign screens (`pulp_wars-68k.5`, docs/product/CAMPAIGN.md
@@ -15,9 +15,13 @@ export const AT = "2026-10-03T12:00:00.000Z";
 
 export const won = (bestRounds = 12) => ({ firstWonAt: AT, bestRounds });
 
+/**
+ * Progress as builds before `pulp_wars-hmyk.3` wrote it (version 1 under
+ * the old key): every test that seeds it also exercises the migration.
+ */
 export function seedProgress(completed: Record<string, unknown>): void {
   window.localStorage.setItem(
-    CAMPAIGN_PROGRESS_STORAGE_KEY_V7,
+    LEGACY_CAMPAIGN_PROGRESS_STORAGE_KEY_V7,
     JSON.stringify({
       format: "pulp-wars-campaign-progress",
       version: 1,

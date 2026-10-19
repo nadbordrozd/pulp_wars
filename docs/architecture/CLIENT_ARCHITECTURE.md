@@ -505,6 +505,13 @@ the browser builds a mission setup only from the campaign briefing
 
 ### Campaign progress and screens (`pulp_wars-68k.5`)
 
+(Since the campaign map, `pulp_wars-hmyk.3`: the campaigns are a registry,
+`src/campaign/campaigns.ts`; progress is version 2, grouped by campaign,
+under `pulpWars.campaign.v2`, read from version 1 under the old key until
+the first win writes it; `recordWin` takes the campaign ID; and the
+testing cheat's switch is `pulpWars.campaignCheat` in localStorage. See
+[Campaign mode](../product/CAMPAIGN.md) section 14.)
+
 The campaign UI ([design](../product/CAMPAIGN.md) sections 4 and 5; screens
 in the [screen flow overlay](../ui/SCREEN_FLOW.md#current-ruleset-7-campaign-overlay))
 adds one browser key and no ruleset change.

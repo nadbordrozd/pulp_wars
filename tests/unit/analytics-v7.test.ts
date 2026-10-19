@@ -368,7 +368,11 @@ describe("events", () => {
       },
       {
         name: "mission_start",
-        params: { mission_id: "frontier_1", faction: "human" },
+        params: {
+          mission_id: "frontier_1",
+          campaign_id: "frontier",
+          faction: "human",
+        },
       },
     ]);
     // The tutorial is not a campaign mission.
@@ -412,12 +416,22 @@ describe("events", () => {
       },
       {
         name: "mission_end",
-        params: { mission_id: "frontier_1", result: "win", stars: 3 },
+        params: {
+          mission_id: "frontier_1",
+          campaign_id: "frontier",
+          result: "win",
+          stars: 3,
+        },
       },
     ]);
     expect(
       matchEndEventsV7(view(MISSION, { outcome: LOSS }))[1]?.params,
-    ).toEqual({ mission_id: "frontier_1", result: "loss", stars: 0 });
+    ).toEqual({
+      mission_id: "frontier_1",
+      campaign_id: "frontier",
+      result: "loss",
+      stars: 0,
+    });
     expect(matchEndEventsV7(view(SKIRMISH))[0]?.params).toEqual(
       expect.objectContaining({ result: "abandoned", stars: 0 }),
     );
@@ -494,7 +508,15 @@ describe("events", () => {
         "match_end",
         expect.objectContaining({ result: "win", rounds: 7, stars: 2 }),
       ],
-      ["mission_end", { mission_id: "frontier_1", result: "win", stars: 2 }],
+      [
+        "mission_end",
+        {
+          mission_id: "frontier_1",
+          campaign_id: "frontier",
+          result: "win",
+          stars: 2,
+        },
+      ],
     ]);
     port.emit(snapshot("RESUMABLE", view(SKIRMISH, { round: 3 })));
     port.emit(snapshot("EMPTY", null));

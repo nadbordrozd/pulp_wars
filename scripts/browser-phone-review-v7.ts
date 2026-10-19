@@ -308,12 +308,41 @@ const SCENES: readonly Scene[] = [
     },
   },
   {
+    // The campaign map with the testing cheat on (`pulp_wars-hmyk.3`): its
+    // badge beside the title, and a tapped closed plate's note.
+    name: "campaign-map-cheat",
+    match: false,
+    full: true,
+    run: async (c) => {
+      await front(c);
+      await click(c, "campaign");
+      // The cheat's word, typed on the campaign screen.
+      await evaluate(
+        c,
+        `[...'pulpwars'].forEach((key) => document.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true })))`,
+      );
+      await click(c, "campaign-open-candy");
+    },
+  },
+  {
+    // The prologue's mission list, opened from its plate on the map.
+    name: "campaign-frontier",
+    match: false,
+    full: true,
+    run: async (c) => {
+      await front(c);
+      await click(c, "campaign");
+      await click(c, "campaign-open-frontier");
+    },
+  },
+  {
     name: "campaign-briefing",
     match: false,
     full: true,
     run: async (c) => {
       await front(c);
       await click(c, "campaign");
+      await click(c, "campaign-open-frontier");
       await click(c, "mission-frontier_4");
       await click(c, "mission-frontier_1");
     },
@@ -328,6 +357,7 @@ const SCENES: readonly Scene[] = [
       await front(c);
       await evaluate(c, CAMPAIGN_PROGRESS);
       await click(c, "campaign");
+      await click(c, "campaign-open-frontier");
     },
   },
   {
@@ -339,6 +369,7 @@ const SCENES: readonly Scene[] = [
       await front(c);
       await evaluate(c, CAMPAIGN_PROGRESS);
       await click(c, "campaign");
+      await click(c, "campaign-open-frontier");
       await click(c, "mission-frontier_4");
     },
   },
@@ -358,6 +389,7 @@ const SCENES: readonly Scene[] = [
       await front(c);
       await evaluate(c, campaignProgressThrough(won));
       await click(c, "campaign");
+      await click(c, "campaign-open-frontier");
       await click(c, `mission-${card}`);
     },
   })),
@@ -398,6 +430,7 @@ const SCENES: readonly Scene[] = [
       await front(c);
       await evaluate(c, CAMPAIGN_PROGRESS_NINE);
       await click(c, "campaign");
+      await click(c, "campaign-open-frontier");
       await click(c, `mission-${mission}`);
     },
   })),
@@ -463,6 +496,7 @@ const SCENES: readonly Scene[] = [
         await front(c);
         await evaluate(c, campaignProgressThrough(wonBefore));
         await click(c, "campaign");
+        await click(c, "campaign-open-frontier");
         await click(c, `mission-${mission.toLowerCase()}`);
       },
     },

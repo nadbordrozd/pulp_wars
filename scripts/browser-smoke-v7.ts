@@ -102,7 +102,8 @@ const FACTION_OPTIONS_V7 = [
  */
 /** The setup form is open (the main menu's New game, pulp_wars-2yc.18). */
 const SETUP_OPEN_V7 = `document.querySelector('[data-v7-front="setup"] .v7-front-panel .v7-setup-form') !== null && document.querySelector('.v7-main-menu') === null && document.querySelector('.v7-setup-form').closest('[hidden]') === null`;
-const CAMPAIGN_KEY_V7 = "pulpWars.campaign.v1";
+// Version 2 (pulp_wars-hmyk.3); version 1 written under it still reads.
+const CAMPAIGN_KEY_V7 = "pulpWars.campaign.v2";
 const SEEDED_CAMPAIGN_PROGRESS_V7 = JSON.stringify({
   format: "pulp-wars-campaign-progress",
   version: 1,
@@ -2884,6 +2885,13 @@ async function probeCampaign(connection: Connection): Promise<string> {
       connection,
       `document.querySelector('[data-v7-campaign] .v7-front-panel') !== null && document.querySelector('.v7-main-menu') === null && document.activeElement?.dataset?.action === 'front-back'`,
     );
+    // The campaign map (pulp_wars-hmyk.3): the prologue's plate opens its
+    // mission list.
+    await pointerClick(connection, '[data-action="campaign-open-frontier"]');
+    await waitForExpression(
+      connection,
+      `document.querySelector('.v7-mission-card') !== null && document.activeElement?.dataset?.action === 'campaign-map'`,
+    );
   };
   await evaluate(
     connection,
@@ -2991,7 +2999,7 @@ async function probeCampaign(connection: Connection): Promise<string> {
     );
     const recorded = await evaluate<number | null>(
       connection,
-      `JSON.parse(localStorage.getItem(${JSON.stringify(CAMPAIGN_KEY_V7)}) ?? 'null')?.completed?.FRONTIER_1?.bestRounds ?? null`,
+      `JSON.parse(localStorage.getItem(${JSON.stringify(CAMPAIGN_KEY_V7)}) ?? 'null')?.campaigns?.FRONTIER?.completed?.FRONTIER_1?.bestRounds ?? null`,
     );
     if (recorded === null) throw new Error("Campaign win was not recorded");
     await capture(connection, "campaign-victory-desktop.png");

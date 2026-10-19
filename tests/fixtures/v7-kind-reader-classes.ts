@@ -420,6 +420,10 @@ export const KIND_READER_CLASSES_V7: Readonly<
   // seats and of the unlock table; no unit is involved.
   "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#campaignList": "SEAT",
   "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#factionEmblem": "SEAT",
+  // The campaign map (pulp_wars-hmyk.3): a campaign's faction, for its
+  // plate and placeholder portrait; no unit is involved.
+  "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#campaignPlate": "SEAT",
+  "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#campaignPicture": "SEAT",
   // Asset tiers (`pulp_wars-2yc.42`): the factions seated in the match,
   // whose art a board waits for. A mind-controlled unit's kind is the
   // faction of another seat of the same match, so the seats cover it.

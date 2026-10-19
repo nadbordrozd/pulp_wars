@@ -4,6 +4,7 @@ import {
   type StockSoundPicksV1,
 } from "../audio/stock-sound-picks";
 import { soundCandidateUrlV1, soundCandidateV1 } from "../audio/sound-choices";
+import { CAMPAIGNS_V7 } from "../campaign/campaigns";
 import { FACTION_IDS_V7, type FactionIdV7 } from "../engine/index";
 import { CHIBI_ART_ASSETS_V7 } from "./chibi-art-manifest";
 import { navalArtRoleOfSubjectV7, type ChibiArtAssetV7 } from "./chibi-art-v7";
@@ -58,9 +59,14 @@ export interface AssetInventoryEntryV7 {
  * leaderboard: its Fighter portrait (`#factionEmblem` in
  * src/render/dom/app-view-v7.ts).
  */
-const EMBLEM_SUBJECTS: ReadonlySet<string> = new Set(
-  FACTION_IDS_V7.map((faction) => portraitSubjectV7("FIGHTER", faction)),
-);
+const EMBLEM_SUBJECTS: ReadonlySet<string> = new Set([
+  ...FACTION_IDS_V7.map((faction) => portraitSubjectV7("FIGHTER", faction)),
+  // The campaign map's plates (pulp_wars-hmyk.3): each campaign's
+  // placeholder portrait until its picture is drawn (`#campaignPicture`).
+  ...CAMPAIGNS_V7.map((campaign) =>
+    portraitSubjectV7(campaign.placeholderRole, campaign.faction),
+  ),
+]);
 
 /**
  * True for a faction's art subject that is asked for whoever plays, so it

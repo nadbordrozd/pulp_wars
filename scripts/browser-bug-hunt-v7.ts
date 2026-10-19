@@ -182,7 +182,7 @@ const INIT_SCRIPT = `(() => {
       const completed = {};
       for (let mission = 1; mission <= 10; mission += 1)
         completed['FRONTIER_' + mission] = { firstWonAt: '2026-10-01T00:00:00.000Z', bestRounds: 12, stars: 1 };
-      localStorage.setItem('pulpWars.campaign.v1', JSON.stringify({ format: 'pulp-wars-campaign-progress', version: 1, completed }));
+      localStorage.setItem('pulpWars.campaign.v2', JSON.stringify({ format: 'pulp-wars-campaign-progress', version: 1, completed }));
     }
   } catch {}
   const errors = [];
@@ -1271,6 +1271,9 @@ async function launchMission(
 ): Promise<void> {
   const mission = (report.mission ?? "FRONTIER_1").toLowerCase();
   await tapButton(connection, '[data-action="campaign"]', 10_000);
+  // The campaign map (pulp_wars-hmyk.3): the hunt's missions are the
+  // prologue's.
+  await tapButton(connection, '[data-action="campaign-open-frontier"]', 10_000);
   await tapButton(connection, `[data-action="mission-${mission}"]`, 10_000);
   // A choice of faction: the hunt's own when the mission offers it.
   await evaluate(
