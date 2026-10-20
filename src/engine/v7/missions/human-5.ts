@@ -12,7 +12,7 @@ import type { MissionDefinitionV7 } from "./types";
  * when it sinks.
  *
  * The board is the map generator's (Continents 16, seed 1): the Frontier's
- * shore in the west with Saltmarsh on the channel and Ferry Rest inland;
+ * shore in the west with Saltmarsh on the channel;
  * the Redcaps' shore in the east with the Anchorage on the channel and
  * Wreckers' Cove behind it; a channel of deep water between. The Golden
  * Goose rides on the open sea east of the Redcaps' shore with two Fire
@@ -30,6 +30,14 @@ import type { MissionDefinitionV7 } from "./types";
  * nothing but the sea (with villages, pearls, farms and workshops they
  * grew to five towns, two Trolls and a Fire Raft from every port).
  *
+ * The second retune (`pulp_wars-hmyk.19`, CAMPAIGN.md section 15.5):
+ * Steele builds her navy from nothing. Saltmarsh alone (Ferry Rest is
+ * gone), a Guard, a Fighter and the one Patrol Boat, Sailing and Boarding,
+ * and the map unexplored; the Redcaps start with 10 Coins. Pearls are only
+ * gathered in your own land, and Saltmarsh has none: the Submarines are
+ * paid for by the town and the village up the coast. (A level 2 Saltmarsh
+ * with a Fighter, a boat and Sailing alone could not pay for a fleet.)
+ *
  * ```text
  *      x 0123456789012345
  * y  0   ~~~~~~~~~~~~~~~~
@@ -44,7 +52,7 @@ import type { MissionDefinitionV7 } from "./types";
  *    9   ~...f.SP~~f...fG      S: Saltmarsh; P: its Port; G: the Goose
  *   10   ~.....f~~~A....~      A: the Anchorage
  *   11   ~.....f~~P.....~      P: the Anchorage's Port
- *   12   ~~..F..~~~$....~      F: Ferry Rest
+ *   12   ~~.....~~~$....~
  *   13   ~~..^f.~~~.....~
  *   14   ~~~~~~~~~~.ff..~
  *   15   ~~~~~~~~~~~~~~~~
@@ -54,7 +62,9 @@ export const HUMAN_5_V7: MissionDefinitionV7 = {
   id: "HUMAN_5",
   // Revision 2 (`pulp_wars-hmyk.14`): the old Sea Serpent in the deep water.
   // Revision 3 (`pulp_wars-hmyk.17`): each seat explores its units' sight.
-  revision: 3,
+  // Revision 4 (`pulp_wars-hmyk.19`, the second retune): a skirmish start,
+  // Ferry Rest gone, a richer blockade.
+  revision: 4,
   seed: 20261205,
   // <map>
   size: 16,
@@ -152,15 +162,11 @@ export const HUMAN_5_V7: MissionDefinitionV7 = {
   seats: [
     {
       faction: "ORIGINAL",
-      coins: 10,
-      technologies: [
-        "GATHERING",
-        "HUNTING",
-        "MARKSMANSHIP",
-        "DRILL",
-        "FORTIFICATION",
-        "SHORECRAFT",
-      ],
+      // Retune 2 (`pulp_wars-hmyk.19`): the Crown keeps no navy up here.
+      // One walled port town, a Guard, a Fighter, the one patrol boat the
+      // Rangers own, and the shipwrights' first lessons; no Ferry Rest.
+      coins: 8,
+      technologies: ["SHORECRAFT", "SEAMANSHIP"],
       cities: [
         {
           name: "Saltmarsh",
@@ -168,26 +174,18 @@ export const HUMAN_5_V7: MissionDefinitionV7 = {
           level: 3,
           rewards: ["STOCKPILE", "WALLS"],
         },
-        {
-          name: "Ferry Rest",
-          at: { x: 4, y: 12 },
-          level: 2,
-          rewards: ["STOCKPILE"],
-        },
       ],
       units: [
         { role: "GUARD", at: { x: 6, y: 9 } },
-        { role: "MARKSMAN", at: { x: 6, y: 8 } },
         { role: "FIGHTER", at: { x: 5, y: 9 } },
         { role: "PATROL_BOAT", at: { x: 7, y: 10 } },
-        { role: "FIGHTER", at: { x: 4, y: 12 }, home: 1 },
       ],
-      reveal: { radius: 2, rects: [{ x0: 7, y0: 6, x1: 12, y1: 12 }] },
+      reveal: { radius: 1 },
     },
     {
       // The Redcap navy, Baron Kessler's blockade.
       faction: "GOBLIN",
-      coins: 6,
+      coins: 10,
       technologies: [
         "HUNTING",
         "SHORECRAFT",

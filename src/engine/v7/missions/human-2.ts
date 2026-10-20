@@ -11,9 +11,17 @@ import type { MissionDefinitionV7 } from "./types";
  * that the King's Road joins. Fort Steele stands at the southern end of the
  * road; the three toll forts stand on it, three tiles apart, the Redcaps'
  * capital, Kingsgate, at the far end. Each fort keeps one of its own at
- * home; from round 6 every other Redcap marches on your nearest town. The
- * problem: walls and Gang Up. Marksmen and the Catapult crack a wall; an
- * army that advances in a block gives the Redcaps no lone unit to mob.
+ * home; from round 4 every other Redcap marches on Fort Steele. The
+ * problem: walls, Gang Up and Kaboom, and a gate the Goblins refill every
+ * turn: the Catapult kills the gate's Goblin and a Fighter beside it steps
+ * in the same turn.
+ *
+ * The second retune (`pulp_wars-hmyk.19`, CAMPAIGN.md section 15.5): a
+ * skirmish start. The Rangers are disbanded: Fort Steele alone (level 2),
+ * two Fighters and the old Catapult nobody can build until Sawmilling, no
+ * technology; Haywick is gone. Mudford is an unwalled level 2 fort, the
+ * Redcaps keep no field army and march from round 4 (with a field army and
+ * a round-3 march the skirmish start was lost by round 7).
  *
  * ```text
  *      x 01234567890123
@@ -27,7 +35,7 @@ import type { MissionDefinitionV7 } from "./types";
  *    7   ....v...#f^.^f
  *    8   ^..f....M.f..^      M: Mudford Toll
  *    9   ^.......#....f
- *   10   .v..t..f#.f..^      t: Haywick, your town
+ *   10   .v.....f#.f..^
  *   11   f...f^^fS.^.^f      S: Fort Steele
  *   12   .....^f^^^^^^.
  *   13   ....^.ff^^..f^
@@ -36,7 +44,9 @@ import type { MissionDefinitionV7 } from "./types";
 export const HUMAN_2_V7: MissionDefinitionV7 = {
   id: "HUMAN_2",
   // Revision 2 (`pulp_wars-hmyk.17`): each seat explores its units' sight.
-  revision: 2,
+  // Revision 3 (`pulp_wars-hmyk.19`, the second retune): a skirmish start
+  // against Redcaps that march from round 3.
+  revision: 3,
   seed: 20261202,
   // <map>
   size: 14,
@@ -140,41 +150,38 @@ export const HUMAN_2_V7: MissionDefinitionV7 = {
   seats: [
     {
       faction: "ORIGINAL",
-      coins: 6,
-      // Fortification is in hand, so Explosives' Breach (melee that
-      // ignores Walls) is one technology away.
-      technologies: [
-        "GATHERING",
-        "HUNTING",
-        "MARKSMANSHIP",
-        "DRILL",
-        "FORTIFICATION",
-      ],
+      // Retune 2 (`pulp_wars-hmyk.19`): a skirmish start. The Rangers are
+      // disbanded: one fort, two Fighters, no technology, and the old
+      // Catapult nobody can build again until Sawmilling.
+      coins: 5,
+      technologies: [],
       cities: [
         {
           name: "Fort Steele",
           at: { x: 8, y: 11 },
-          level: 3,
-          rewards: ["STOCKPILE", "WALLS"],
-          landGrant: true,
+          level: 2,
+          rewards: ["STOCKPILE"],
         },
-        { name: "Haywick", at: { x: 4, y: 10 }, level: 1, rewards: [] },
       ],
       units: [
         { role: "FIGHTER", at: { x: 8, y: 10 } },
-        { role: "FIGHTER", at: { x: 7, y: 10 }, home: 1 },
-        { role: "MARKSMAN", at: { x: 9, y: 10 } },
-        { role: "MARKSMAN", at: { x: 8, y: 11 } },
-        { role: "CATAPULT", at: { x: 9, y: 11 } },
-        { role: "FIGHTER", at: { x: 4, y: 10 }, home: 1 },
+        { role: "FIGHTER", at: { x: 7, y: 10 } },
+        { role: "CATAPULT", at: { x: 9, y: 10 } },
       ],
-      // The road and its three forts.
-      reveal: { radius: 2, rects: [{ x0: 7, y0: 1, x1: 9, y1: 10 }] },
+      // The three forts' gates, and nothing else.
+      reveal: {
+        radius: 1,
+        rects: [
+          { x0: 8, y0: 8, x1: 8, y1: 8 },
+          { x0: 8, y0: 5, x1: 8, y1: 5 },
+          { x0: 8, y0: 2, x1: 8, y1: 2 },
+        ],
+      },
     },
     {
       // The Redcaps: Baron Kessler's goblin mercenaries.
       faction: "GOBLIN",
-      coins: 4,
+      coins: 3,
       technologies: ["DRILL"],
       cities: [
         {
@@ -192,8 +199,8 @@ export const HUMAN_2_V7: MissionDefinitionV7 = {
         {
           name: "Mudford Toll",
           at: { x: 8, y: 8 },
-          level: 3,
-          rewards: ["STOCKPILE", "WALLS"],
+          level: 2,
+          rewards: ["STOCKPILE"],
         },
       ],
       // The three holders first: a garrison is chosen by unit ID among the
@@ -205,10 +212,6 @@ export const HUMAN_2_V7: MissionDefinitionV7 = {
         { role: "FIGHTER", at: { x: 7, y: 2 } },
         { role: "FIGHTER", at: { x: 9, y: 5 }, home: 1 },
         { role: "FIGHTER", at: { x: 9, y: 8 }, home: 2 },
-        // The field army, camped between the forts.
-        { role: "FIGHTER", at: { x: 6, y: 5 }, home: 1 },
-        { role: "FIGHTER", at: { x: 6, y: 6 }, home: 1 },
-        { role: "FIGHTER", at: { x: 7, y: 4 } },
       ],
       reveal: { radius: 2, rects: [{ x0: 7, y0: 9, x1: 9, y1: 12 }] },
       // Step 2 is walls and Gang Up (hand play, CAMPAIGN.md section 15):
@@ -240,7 +243,7 @@ export const HUMAN_2_V7: MissionDefinitionV7 = {
         "METALLURGY",
       ],
       // One Redcap holds each fort. The rest play their ordinary game for
-      // five rounds, then march on the nearest town of yours.
+      // three rounds, then march on the nearest town of yours.
       directive: [
         {
           kind: "GUARD",
@@ -250,7 +253,7 @@ export const HUMAN_2_V7: MissionDefinitionV7 = {
             { x0: 7, y0: 7, x1: 9, y1: 9 },
           ],
           garrison: 3,
-          untilRound: 6,
+          untilRound: 4,
         },
         {
           kind: "GUARD",

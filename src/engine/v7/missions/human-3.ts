@@ -5,7 +5,7 @@ import type { MissionDefinitionV7 } from "./types";
  * H3; `pulp_wars-hmyk.4`). You lead the Humans, outlawed by the Baron's
  * writ, and must walk Mr. Pettigrew (a tagged Captain, frail) and the
  * Baron's ledgers from the outlaw camp in the south-west to Kingsbridge in
- * the north-east by round 20. Step 3 of 6.
+ * the north-east by round 16. Step 3 of 6.
  *
  * The board is the map generator's (Pangea 16, seed 21): a forest from the
  * outlaw camp to the middle of the island, where Kessler's runaway circus
@@ -18,12 +18,19 @@ import type { MissionDefinitionV7 } from "./types";
  * clever route lets the Redcaps chase you into the wood and meet the
  * beasts there.
  *
+ * The second retune (`pulp_wars-hmyk.19`, CAMPAIGN.md section 15.5): a
+ * 16-round clock (the walk is 8 steps through the wood and about 12
+ * round it), a Redcap post at the village by Kingsbridge whose three
+ * Goblins hold the bridge (`GUARD`) while the rest hunt the camp, and a
+ * smaller band with three technologies. The camp is the band's only town:
+ * leave it empty and a Wolf Rider takes it, and the band with it.
+ *
  * ```text
  *      x 0123456789012345
  * y  0   ~~~~~~~~~~~~~~~~
  *    1   ~~~~^..^..f.~~~~
  *    2   ~~~^.^..^.^f.K~~      K: Kingsbridge (a village)
- *    3   ~~f^..fv^^v...f~      v: villages
+ *    3   ~~f^..fv^^P...f~      v: villages; P: Bridgewatch
  *    4   ~v..ff^f.f...ff~
  *    5   ~f...ffff...f.f~
  *    6   ~f..R.fBf^..f.f~      R: Cutthroat Camp; B: the Circus Wreck
@@ -41,7 +48,9 @@ import type { MissionDefinitionV7 } from "./types";
 export const HUMAN_3_V7: MissionDefinitionV7 = {
   id: "HUMAN_3",
   // Revision 2 (`pulp_wars-hmyk.17`): each seat explores its units' sight.
-  revision: 2,
+  // Revision 3 (`pulp_wars-hmyk.19`, the second retune): a small band, a
+  // 16-round clock, and a Redcap post that guards Kingsbridge.
+  revision: 3,
   seed: 20261203,
   // <map>
   size: 16,
@@ -56,6 +65,8 @@ export const HUMAN_3_V7: MissionDefinitionV7 = {
       { kind: "VILLAGE", at: { x: 13, y: 8 }, present: false },
       { kind: "VILLAGE", at: { x: 7, y: 9 }, present: false },
       { kind: "VILLAGE", at: { x: 10, y: 6 }, present: false },
+      // Retune 2: the Redcaps' post at the bridge stands on a village.
+      { kind: "VILLAGE", at: { x: 10, y: 3 }, present: false },
     ],
   },
   terrain: [
@@ -116,7 +127,6 @@ export const HUMAN_3_V7: MissionDefinitionV7 = {
   villages: [
     { x: 13, y: 2 },
     { x: 7, y: 3 },
-    { x: 10, y: 3 },
     { x: 1, y: 4 },
     { x: 1, y: 7 },
     { x: 7, y: 12 },
@@ -141,16 +151,10 @@ export const HUMAN_3_V7: MissionDefinitionV7 = {
   seats: [
     {
       faction: "ORIGINAL",
+      // Retune 2 (`pulp_wars-hmyk.19`): an outlaw band, not an army: a
+      // small camp, two Fighters, a Raider, and the woodcraft of outlaws.
       coins: 5,
-      // Land Grants: one more slot in the camp, for the escort.
-      technologies: [
-        "GATHERING",
-        "ADMINISTRATION",
-        "PLANNING",
-        "HUNTING",
-        "MARKSMANSHIP",
-        "SCOUTING",
-      ],
+      technologies: ["HUNTING", "MARKSMANSHIP", "SCOUTING"],
       cities: [
         {
           name: "Outlaw Camp",
@@ -196,8 +200,20 @@ export const HUMAN_3_V7: MissionDefinitionV7 = {
           level: 2,
           rewards: ["STOCKPILE"],
         },
+        // Retune 2: the Redcaps' post on the road to the bridge.
+        {
+          name: "Bridgewatch",
+          at: { x: 10, y: 3 },
+          level: 2,
+          rewards: ["STOCKPILE"],
+        },
       ],
+      // The post's three holders first (a garrison is chosen by unit ID
+      // among the units inside the zone).
       units: [
+        { role: "FIGHTER", at: { x: 10, y: 3 }, home: 2 },
+        { role: "FIGHTER", at: { x: 12, y: 2 }, home: 2 },
+        { role: "FIGHTER", at: { x: 12, y: 4 }, home: 2 },
         { role: "FIGHTER", at: { x: 4, y: 6 } },
         { role: "FIGHTER", at: { x: 3, y: 6 } },
         { role: "FIGHTER", at: { x: 3, y: 7 } },
@@ -225,7 +241,14 @@ export const HUMAN_3_V7: MissionDefinitionV7 = {
         "CHIVALRY",
         "METALLURGY",
       ],
-      directive: { kind: "RUSH" },
+      // Retune 2: three hold the road at the bridge; the rest hunt the
+      // outlaws' camp from the first round.
+      directive: {
+        kind: "GUARD",
+        zone: [{ x0: 10, y0: 1, x1: 14, y1: 4 }],
+        garrison: 3,
+        others: { kind: "RUSH" },
+      },
     },
     {
       // Kessler's runaway menagerie, in the wood around the circus wreck:
@@ -264,14 +287,14 @@ export const HUMAN_3_V7: MissionDefinitionV7 = {
     "SUBMERSIBLES",
   ],
   landmarks: [{ tag: "KINGSBRIDGE", at: { x: 13, y: 2 }, name: "Kingsbridge" }],
-  // Pettigrew beside Kingsbridge by round 20, alive. The stars: by round
-  // 16, and the outlaw camp never falls.
+  // Pettigrew beside Kingsbridge by round 16, alive. The stars: by round
+  // 13, and the outlaw camp never falls.
   objective: {
     kind: "ESCORT",
     unit: "PETTIGREW",
     to: "KINGSBRIDGE",
     within: 1,
-    byRound: 20,
-    bonus: [{ kind: "WITHIN_ROUNDS", rounds: 16 }, { kind: "KEEP_CITIES" }],
+    byRound: 16,
+    bonus: [{ kind: "WITHIN_ROUNDS", rounds: 13 }, { kind: "KEEP_CITIES" }],
   },
 };

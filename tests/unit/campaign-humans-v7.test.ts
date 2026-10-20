@@ -116,7 +116,7 @@ describe("The Marshal's Law", () => {
     expect(summary).toEqual([
       {
         kind: "DOMINATION",
-        byRound: undefined,
+        byRound: 15,
         rounds: undefined,
         bonus: ["WITHIN_ROUNDS", "KEEP_CITIES"],
       },
@@ -128,7 +128,7 @@ describe("The Marshal's Law", () => {
       },
       {
         kind: "ESCORT",
-        byRound: 20,
+        byRound: 16,
         rounds: undefined,
         bonus: ["WITHIN_ROUNDS", "KEEP_CITIES"],
       },
@@ -177,6 +177,49 @@ describe("The Marshal's Law", () => {
     expect(goblins.technologies).toEqual([]);
     for (const tech of ["DRILL", "ENGINEERING"])
       expect(goblins.forbiddenTechnologies, tech).toContain(tech);
+  });
+
+  it("keeps the second retune's lean starts and established enemies", () => {
+    // `pulp_wars-hmyk.19` (CAMPAIGN.md section 15.5): H2 and H5 start like
+    // a skirmish (one town, a few units, two technologies at most), and no
+    // Human start holds more than one town but H4's fort and mill.
+    const seat0 = (id: string) =>
+      mission(id).seats[0] as MissionDefinitionV7["seats"][number];
+    for (const id of ["HUMAN_2", "HUMAN_5"]) {
+      expect(seat0(id).cities, id).toHaveLength(1);
+      expect(seat0(id).units.length, id).toBeLessThanOrEqual(3);
+      expect(seat0(id).technologies.length, id).toBeLessThanOrEqual(2);
+      expect(seat0(id).reveal.radius, id).toBe(1);
+    }
+    expect(seat0("HUMAN_2").technologies).toEqual([]);
+    for (const id of ORDER)
+      expect(seat0(id).cities.length, id).toBeLessThanOrEqual(
+        id === "HUMAN_4" ? 2 : 1,
+      );
+    // Every enemy starts with more towns than you (H4's besiegers come in
+    // six waves instead).
+    for (const id of ORDER.filter((item) => item !== "HUMAN_4")) {
+      const definition = mission(id);
+      const teams = definition.teams;
+      const enemyTowns = definition.seats
+        .slice(1)
+        .filter((_, index) => teams === undefined || teams[index + 1] !== 0)
+        .reduce((sum, item) => sum + item.cities.length, 0);
+      expect(enemyTowns, id).toBeGreaterThan(seat0(id).cities.length);
+    }
+    // The Baron holds the toll on the Frontier's side of the ridge, and
+    // every wave carries its story line.
+    const hall = mission("HUMAN_6");
+    expect(
+      (hall.seats[1] as MissionDefinitionV7["seats"][number]).cities.map(
+        (city) => city.name,
+      ),
+    ).toContain("Kessler's Toll");
+    for (const id of ["HUMAN_4", "HUMAN_6"])
+      for (const wave of mission(id).reinforcements ?? [])
+        expect(wave.line, `${id} round ${String(wave.round)}`).toBeTypeOf(
+          "string",
+        );
   });
 
   it("names every place and unit an objective talks about", () => {

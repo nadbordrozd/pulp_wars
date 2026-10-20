@@ -3952,6 +3952,8 @@ the clock.
 
 ### 15.1 The missions
 
+The first pass; section 15.5 has the second retune's starts and clocks.
+
 | Mission                      | Board (generator, seed) | Match seed | Seats                                        | Format and clock                                | Stars                             |
 | ---------------------------- | ----------------------- | ---------- | -------------------------------------------- | ----------------------------------------------- | --------------------------------- |
 | H1 Thaw at Northwatch        | Dry Land 11, seed 2     | 20261201   | Humans; Undead                               | Conquest of Hollow Barrow and the Barrow Camp   | by round 12; no city lost         |
@@ -4092,6 +4094,108 @@ thoughtful run with `play-text` and the scripted autopilot.
   replaces the fourth lance. One Knight was lost (the Triceratops, r7).
   Autopilot: **defeat, out of time (round 23)**, as at revision 1. The
   clock and stars stay.
+
+### 15.5 Retune 2: much harder (`pulp_wars-hmyk.19`)
+
+The user, 2026-10-20, after playing the campaign: "still way too easy.
+even the final missions i beat in less than half the time without even
+trying. you start with too many cities, too many technologies and too
+many units. there are too many unclaimed villages within reach. the
+opponent is just sitting there wating to be beaten." The first pass
+counted careful, repeated attempts as hard; this pass measures a
+thoughtful **first** attempt against the clock (it must take at least
+about 60% of the clock, or be a real loss risk) and wants the autopilot
+(section 15) to lose from mission 2 on. Every mission is one revision
+higher (H1 2, H2 3, H3 3, H4 3, H5 4, H6 4) and re-pinned; the tables of
+section 15.1 and 15.2 are the first pass's.
+
+| Mission | Start now                                                                                                                                                         | Enemies now                                                                                                                                                               | Clock and stars                      |
+| ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
+| H1      | Northwatch (level 2), the Knight and two Fighters, three technologies; the barrow unseen; no village at Northwatch's door                                         | as the first pass; the dead march from round 3, not 4                                                                                                                     | Conquest by round 15; by 12, no loss |
+| H2      | **Skirmish start**: Fort Steele (level 2), two Fighters and the old Catapult (no Sawmilling), no technology, the forts' gates seen                                | three forts (Mudford unwalled level 2), a holder each and a Goblin each; the rest march from round 4                                                                      | by 18; by 14, no loss                |
+| H3      | the walled camp, Pettigrew, two Fighters, a Marksman and a Raider, three technologies                                                                             | a third Redcap post, Bridgewatch, on the village by Kingsbridge: three Goblins `GUARD` the bridge and the rest `RUSH` the camp                                            | by 16 (was 20); by 13, no loss       |
+| H4      | Fort Hollow level 3 with two Farms and no Farming (no giant), two Guards, a Marksman, a Catapult, five technologies                                               | six waves (Lodge rounds 3, 6, 10; Whitefang 4, 8; the dead 7), each with its story line and a heads-up; the Whitefang rush from round 2                                   | hold 12; no loss, Pettigrew lives    |
+| H5      | **Skirmish-like**: Saltmarsh alone (walled, level 3, a Port, two Farms), a Guard, a Fighter, the Patrol Boat, Sailing and Boarding, map unexplored; no Ferry Rest | the blockade as before, 10 Coins                                                                                                                                          | by 20; by 16, no loss                |
+| H6      | Fort Steele alone, three Knights, a Catapult (no Sawmilling), two Fighters, a Marksman, eight technologies                                                        | Kessler's Toll is the Baron's (five gated tolls), three more Goblins marching from round 4, hired-sword waves in rounds 5, 9 and 13, two more Raptors; four villages gone | by 22; by 18, no loss                |
+
+H2 and H5 start like a skirmish (one town, a few units, at most two
+technologies, the map unexplored); H5's town is level 3 because a level 2
+port with Sailing alone could not pay for a fleet. H6's Knights can be
+replaced (Chivalry), its Catapult and H2's cannot.
+
+**Hand play** (thoughtful attempts are first attempts on the final
+definition; earlier definitions are listed as tried):
+
+| Mission | Autopilot                      | Thoughtful first attempt                                                              | Tried and dropped                                                                                                                                                       |
+| ------- | ------------------------------ | ------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| H1      | defeat, round 8                | win, round 11 of 15 (73%), 3 stars                                                    | five skirmish starts (one town, the Knight and a Fighter or two, no technology): the Necromancer's free Skeletons snowballed every time, lost or losing by round 6 to 9 |
+| H2      | defeat, out of time (round 19) | win, round 17 of 18 (94%), 2 stars                                                    | a field army of three and a march from round 3: 0 forts and 3 units against 7 Goblins in round 7                                                                        |
+| H3      | defeat, round 3 (escort lost)  | loss, round 5 (camp left empty, eliminated); then win, round 16 of 16 (100%), 2 stars | a camp at level 2 and two technologies: Kabooms killed Pettigrew at the wood's edge (round 9), or the escort was gone by round 3                                        |
+| H4      | defeat, round 6 (fort lost)    | win (held), round 12, 1 star                                                          | Favour 5: a Horror a turn, lost by round 7; the first pass's army and waves: nothing came for six rounds; Favour 4: lost by round 5                                     |
+| H5      | defeat, round 14               | win, round 17 of 20 (85%), 2 stars                                                    | level 2 Saltmarsh, a Fighter, a boat and Sailing: no money for a fleet, losing in round 12                                                                              |
+| H6      | defeat, round 17 (on 7r105)    | win, round 14 of 22 (64%), 3 stars (on 7r105)                                         | no Chivalry and the Lodge hunting from round 6: both columns died by round 7 (two tries)                                                                                |
+
+The danger moments:
+
+- **H1.** Two rallied Skeletons killed the Fighter that stood on the middle
+  village (round 2); Knight chains killed two raised Skeletons (round 3),
+  then a Skeleton, the barrow's defender and the Necromancer with an
+  Overrun onto the barrow (round 4); the Knight died on the barrow's center
+  in round 6 and rose as a Zombie; the camp's Skeletons killed the Fighter
+  that took the camp, but the capture held (round 10).
+- **H2.** Mudford fell in round 3 (the Catapult kills the gate's Goblin, a
+  Fighter steps in); in round 5 three Kabooms killed both Fighters and the
+  Raider at once; Gang Up killed a lone Fighter beside each fort (rounds 9
+  and 14). The Goblins refill each gate every turn, so a gate is taken by a
+  kill and a step in the same turn; Halfway fell in round 12 and Kingsgate
+  in round 17.
+- **H3.** The Raider and the Marksman killed the Rookery's Goblins one by
+  one as they came, always two from Pettigrew (a Goblin moves one and
+  Kabooms); the empty Rookery was captured in round 8 and trained Raiders;
+  the route went east along the tenth row and north up the twelfth column,
+  two clear of the beasts' wood (the leashed beasts never attacked). At the
+  bridge (rounds 13 to 16) Raiders killed the post's Goblins and a
+  Warboss, a Kaboom and Gang Up killed two Raiders, and a Goblin hit
+  Pettigrew down to 3 HP; he stepped beside Kingsbridge in the last round.
+  The lost attempt left the camp empty: a Wolf Rider took it and the band,
+  homeless, died with it.
+- **H4.** A Guard dug in on the gate (Field Defense, Defense 7) held all
+  game; the Catapult killed channellers until a Horror reached it (round
+  6); killing the Brood Imp unbound two Imps that turned on the Lodge;
+  round 6's enemy phase killed four of the garrison; Pettigrew, moved onto
+  the gate, died there in round 7 (a Horror for 8, then an Imp), an Imp
+  stood on the gate and was killed by a Marksman and the Guard, which
+  stepped back on; the Mill fell in round 10; the last two rounds one
+  frozen Guard on the gate.
+- **H5.** Submersibles in round 1, two ports and a Boom (round 2), the
+  Fighter took Cobbleton up the coast (round 5); the Anchorage's Shipyard
+  put a Fire Raft beside Saltmarsh's port every turn from round 8 and a
+  Submarine sank one a turn; a Kaboom hit the boat and a Submarine; two
+  Submarines went round the south cape, sank the Diving Barrel and the
+  Goose's raft; torpedoes for 8 (the Goose sank that Submarine), 12 and 5
+  (the death blast took 7).
+- **H6.** Weir Toll in rounds 2 and 3 (a Knight's chain, 11 on the Brute
+  with Breach, a second Knight finishing it onto the gate); a Knight a turn
+  from Weir, Corwick and later Greyfriars; the round 5 band and a Familiar
+  died to Knights, a Lodge Horror killed a Knight in one blow, two Knights
+  killed it (12 and 6); two Knights broke Greyfriars' Idol Bearer (11 and 4) and its capture in round 10 ended the Lodge; three Knights took the
+  Troll from 40 to 6 in round 12 (10, 12, 12; it healed to 14), two more
+  killed it in round 13 and the second Overran onto the Hall, captured in
+  round 14. Six Knights died in all (Gang Up near Fort Steele, the Raptors'
+  leash, the Horrors). **On the chain-lightning tower (7r105)**: neither
+  side used it; the Knights' Breach (Defense 3 for the Troll) was enough.
+
+**Deviations from the saga.** H1 has a 15-round clock (the saga's Conquest
+has stars only); H3's Assizes sit in sixteen days (the briefing says so)
+and a Redcap post holds the bridge; H6 adds Kessler's Toll to the Baron's
+tolls and the hired swords' waves (the H5 closing's "every hired sword
+falls back on Kessler Hall", now on the board). Wave lines and heads-ups
+(`pulp_wars-hmyk.18`) are set on H4's and H6's waves.
+
+**Follow-ups.** H2's thoughtful win took 17 of 18 rounds: if players find
+it too tight, the star (round 14) is the first thing to move. H6's tower
+went unused by both sides; the Normal AI never stands on a tower it does
+not need.
 
 ## 16. The Undead campaign, "The Long Sleep" (`pulp_wars-hmyk.5`)
 

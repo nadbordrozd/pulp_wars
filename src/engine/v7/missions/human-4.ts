@@ -16,19 +16,21 @@ import type { MissionDefinitionV7 } from "./types";
  * Whitefang camp in the north-east hills, the Lodge's chapel down the
  * south-western road, and the Marquis's camp behind the ridge in the far
  * north-west. The Lodge assaults the fort from the start; the Whitefang
- * forage for two rounds and then rush. The Lodge brings up a second band
- * in round 5, the Whitefang theirs in rounds 6 and 9. The Marquis's camp
- * keeps to itself until his column comes down the north road in round 7;
- * then the dead march on the Lodge's chapel.
+ * forage for a round and then rush. Six waves: the Lodge in rounds 3, 6
+ * and 10, the Whitefang in rounds 4 and 8, and the Marquis's column down
+ * the north road in round 7; then the dead march on the Lodge's chapel.
  *
- * Hand play (CAMPAIGN.md section 15) set the numbers: Fort Hollow is a
- * level 4 town with three Farms, so a fourth Farm and a Workshop make it
- * level 5 and send a Juggernaut in round 1; Hollow Mill east of it is a
- * second place to train, since the fort's center is where Mr. Pettigrew
- * shelters; the villages around the fort are gone (taken by the Lodge and
- * the Whitefang, each one was a camp training against you), and the
- * enemies field no ranged units (Hexers and Snow Hunters shot the clerk
- * off the walls).
+ * Hand play (CAMPAIGN.md section 15) set the numbers: Hollow Mill east of
+ * the fort is a second place to train, since the fort's center is where
+ * Mr. Pettigrew shelters; the villages around the fort are gone (taken by
+ * the Lodge and the Whitefang, each one was a camp training against you),
+ * and the enemies field no ranged units (Hexers and Snow Hunters shot the
+ * clerk off the walls). The second retune (`pulp_wars-hmyk.19`, section
+ * 15.5): Fort Hollow is a level 3 town with two Farms and no Farming (the
+ * first pass's fort farmed itself to level 5 and a Juggernaut in round
+ * 1), the garrison is two Guards, a Marksman and a Catapult, and the waves
+ * come every round or two (with 5 Favour the Lodge raised a Horror a turn
+ * and the fort fell; with 3 and the old waves nothing came for six rounds).
  *
  * ```text
  *      x 0123456789012345
@@ -53,7 +55,9 @@ import type { MissionDefinitionV7 } from "./types";
 export const HUMAN_4_V7: MissionDefinitionV7 = {
   id: "HUMAN_4",
   // Revision 2 (`pulp_wars-hmyk.17`): each seat explores its units' sight.
-  revision: 2,
+  // Revision 3 (`pulp_wars-hmyk.19`, the second retune): a level 3 fort
+  // with a thin garrison and no Farming, against more Favour and waves.
+  revision: 3,
   seed: 20261204,
   // <map>
   size: 16,
@@ -144,18 +148,14 @@ export const HUMAN_4_V7: MissionDefinitionV7 = {
   improvements: [
     { at: { x: 11, y: 8 }, improvement: "FARM" },
     { at: { x: 9, y: 9 }, improvement: "FARM" },
-    { at: { x: 11, y: 9 }, improvement: "FARM" },
   ],
   aiMode: "RIVAL",
   seats: [
     {
       faction: "ORIGINAL",
-      coins: 8,
+      coins: 6,
       technologies: [
         "GATHERING",
-        "FARMING",
-        "ADMINISTRATION",
-        "PLANNING",
         "HUNTING",
         "MARKSMANSHIP",
         "DRILL",
@@ -165,8 +165,8 @@ export const HUMAN_4_V7: MissionDefinitionV7 = {
         {
           name: "Fort Hollow",
           at: { x: 10, y: 9 },
-          level: 4,
-          rewards: ["STOCKPILE", "WALLS", "BOOM"],
+          level: 3,
+          rewards: ["STOCKPILE", "WALLS"],
         },
         // The mill town east of the fort: a second place to train, so the
         // fort can keep Mr. Pettigrew on its walled center (hand play).
@@ -178,7 +178,6 @@ export const HUMAN_4_V7: MissionDefinitionV7 = {
         { role: "GUARD", at: { x: 9, y: 9 } },
         { role: "GUARD", at: { x: 11, y: 9 } },
         { role: "MARKSMAN", at: { x: 10, y: 8 } },
-        { role: "MARKSMAN", at: { x: 10, y: 10 } },
         { role: "CATAPULT", at: { x: 9, y: 10 } },
       ],
       reveal: {
@@ -269,7 +268,7 @@ export const HUMAN_4_V7: MissionDefinitionV7 = {
         "SAWMILLING",
         "CHIVALRY",
       ],
-      directive: [{ kind: "NORMAL", untilRound: 3 }, { kind: "RUSH" }],
+      directive: [{ kind: "NORMAL", untilRound: 2 }, { kind: "RUSH" }],
     },
     {
       // The Ashen Marquis's dead: a camp behind the ridge, then a column.
@@ -292,25 +291,30 @@ export const HUMAN_4_V7: MissionDefinitionV7 = {
   ],
   teams: [0, 1, 1, 0],
   // The waves arrive within two or three steps of the walls (the Normal AI
-  // does not walk a column up to a walled town): the Lodge's in round 5 up
-  // the south-western road, the Whitefang's in rounds 6 and 9 down from
-  // the northern hills, and the Marquis's column down the north road in
-  // round 7. (Hand play, CAMPAIGN.md section 15: with two waves each and
-  // 16 rounds, the fort fell every time.)
+  // does not walk a column up to a walled town): the Lodge's in rounds 3, 6
+  // and 10 up the south-western road, the Whitefang's in rounds 4 and 8
+  // down from the northern hills, and the Marquis's column down the north
+  // road in round 7, each with its story line and a heads-up the turn
+  // before (`pulp_wars-hmyk.18`). (Hand play, CAMPAIGN.md section 15: with
+  // two waves each and 16 rounds, the fort fell every time; the second
+  // retune's twelve rounds came with a wave every round or two.)
   reinforcements: [
     {
       seat: 1,
-      round: 5,
+      round: 3,
+      line: "More grey hoods come up the chapel road, singing.",
+      announce: true,
       units: [
         { role: "CAPTAIN", at: { x: 7, y: 12 } },
         { role: "FIGHTER", at: { x: 8, y: 12 } },
         { role: "FIGHTER", at: { x: 7, y: 11 } },
-        { role: "GUARD", at: { x: 6, y: 11 } },
       ],
     },
     {
       seat: 2,
-      round: 6,
+      round: 4,
+      line: "The Whitefang come down off the ridge, howling.",
+      announce: true,
       units: [
         { role: "FIGHTER", at: { x: 11, y: 6 } },
         { role: "FIGHTER", at: { x: 12, y: 6 } },
@@ -319,8 +323,22 @@ export const HUMAN_4_V7: MissionDefinitionV7 = {
       ],
     },
     {
+      seat: 1,
+      round: 6,
+      line: "The Lodge brings up its idol and its second choir.",
+      announce: true,
+      units: [
+        { role: "CAPTAIN", at: { x: 7, y: 12 } },
+        { role: "FIGHTER", at: { x: 8, y: 12 } },
+        { role: "FIGHTER", at: { x: 7, y: 11 } },
+        { role: "GUARD", at: { x: 6, y: 11 } },
+      ],
+    },
+    {
       seat: 3,
       round: 7,
+      line: "The dead are here. They apologise for the delay.",
+      announce: true,
       units: [
         { role: "KNIGHT", at: { x: 7, y: 4 } },
         { role: "SWORDSMAN", at: { x: 7, y: 5 } },
@@ -331,11 +349,26 @@ export const HUMAN_4_V7: MissionDefinitionV7 = {
     },
     {
       seat: 2,
-      round: 9,
+      round: 8,
+      line: "Chief Gnash's own warband joins the siege.",
+      announce: true,
       units: [
         { role: "SWORDSMAN", at: { x: 11, y: 6 } },
         { role: "FIGHTER", at: { x: 12, y: 6 } },
         { role: "FIGHTER", at: { x: 9, y: 6 } },
+        { role: "FIGHTER", at: { x: 13, y: 6 } },
+      ],
+    },
+    {
+      seat: 1,
+      round: 10,
+      line: "The Lodge's last choir: every hood it has left.",
+      announce: true,
+      units: [
+        { role: "CAPTAIN", at: { x: 7, y: 12 } },
+        { role: "FIGHTER", at: { x: 8, y: 12 } },
+        { role: "FIGHTER", at: { x: 7, y: 11 } },
+        { role: "FIGHTER", at: { x: 6, y: 11 } },
       ],
     },
   ],

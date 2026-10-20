@@ -12,8 +12,15 @@ import type { MissionDefinitionV7 } from "./types";
  * The board is the map generator's (Dry Land 11, seed 2). Northwatch stands
  * on the southern farmland; Hollow Barrow sits in the northern hills inside
  * a ring of peaks, with the barrow camp beside it. Six old Graves lie on the
- * fields between. The dead mill about for three rounds and march on
- * Northwatch from round 4.
+ * fields between. The dead mill about for two rounds and march on
+ * Northwatch from round 3; the barrow is to be found, not seen, and the
+ * clearing must be done by round 15.
+ *
+ * The second retune (`pulp_wars-hmyk.19`, CAMPAIGN.md section 15.5): a
+ * skirmish start (one young town, a Fighter and the Knight) was tried and
+ * snowballed every time (the Necromancer's free Skeletons), so step 1 keeps
+ * the first pass's start, loses the village at Northwatch's door, and gains
+ * the clock.
  *
  * ```text
  *      x 0123456789A
@@ -25,14 +32,17 @@ import type { MissionDefinitionV7 } from "./types";
  *    5   ^v^+v++.+.f      +: old Graves; v: villages
  *    6   ^ff^+^+....
  *    7   .f^........
- *    8   .v$.N......      N: Northwatch
+ *    8   ..$.N......      N: Northwatch
  *    9   .^^.ff.....
  *   10   .ff.ff.....
  * ```
  */
 export const HUMAN_1_V7: MissionDefinitionV7 = {
   id: "HUMAN_1",
-  revision: 1,
+  // Revision 2 (`pulp_wars-hmyk.19`, the second retune): a 15-round clock,
+  // no free village at Northwatch's door, the barrow unseen, and the dead
+  // march from round 3.
+  revision: 2,
   seed: 20261201,
   // <map>
   size: 11,
@@ -46,6 +56,8 @@ export const HUMAN_1_V7: MissionDefinitionV7 = {
     edits: [
       { kind: "VILLAGE", at: { x: 7, y: 2 }, present: false },
       { kind: "VILLAGE", at: { x: 1, y: 2 }, present: false },
+      // Retune 2: no free town at Northwatch's door.
+      { kind: "VILLAGE", at: { x: 1, y: 8 }, present: false },
     ],
   },
   terrain: [
@@ -92,7 +104,6 @@ export const HUMAN_1_V7: MissionDefinitionV7 = {
     { x: 1, y: 5 },
     { x: 4, y: 5 },
     { x: 7, y: 5 },
-    { x: 1, y: 8 },
   ],
   treasureChests: [
     { x: 8, y: 4 },
@@ -127,14 +138,9 @@ export const HUMAN_1_V7: MissionDefinitionV7 = {
         { role: "FIGHTER", at: { x: 3, y: 7 } },
         { role: "FIGHTER", at: { x: 5, y: 7 } },
       ],
-      // The farms, the fields of Graves, and the barrow in its ring.
-      reveal: {
-        radius: 2,
-        rects: [
-          { x0: 2, y0: 4, x1: 8, y1: 6 },
-          { x0: 3, y0: 1, x1: 8, y1: 3 },
-        ],
-      },
+      // The farms and the fields of Graves; the barrow is for the scouts
+      // to find (retune 2).
+      reveal: { radius: 2, rects: [{ x0: 2, y0: 4, x1: 8, y1: 6 }] },
     },
     {
       // The Unquiet of Hollow Barrow.
@@ -171,8 +177,9 @@ export const HUMAN_1_V7: MissionDefinitionV7 = {
         "FORTIFICATION",
         "EXPLOSIVES",
       ],
-      // The dead mill about, then march from round 4.
-      directive: [{ kind: "NORMAL", untilRound: 4 }, { kind: "RUSH" }],
+      // The dead mill about for two rounds, then march (retune 2: from
+      // round 3, not 4).
+      directive: [{ kind: "NORMAL", untilRound: 3 }, { kind: "RUSH" }],
     },
   ],
   // A dry board.
@@ -183,10 +190,12 @@ export const HUMAN_1_V7: MissionDefinitionV7 = {
     "SEAMANSHIP",
     "SUBMERSIBLES",
   ],
-  // Clear the barrow: every dead town. The stars: by round 12, and
-  // Northwatch never falls.
+  // Clear the barrow: every dead town, by round 15 (retune 2: a clock;
+  // the first pass's thoughtful win took 9 rounds). The stars: by round
+  // 12, and Northwatch never falls.
   objective: {
     kind: "DOMINATION",
+    byRound: 15,
     bonus: [{ kind: "WITHIN_ROUNDS", rounds: 12 }, { kind: "KEEP_CITIES" }],
   },
 };

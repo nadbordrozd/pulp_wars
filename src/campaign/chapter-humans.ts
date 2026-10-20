@@ -26,11 +26,11 @@ export const CHAPTER_HUMANS_V7: CampaignChapterV7 = Object.freeze({
       format: "CONQUEST",
       briefing:
         "Marshal Steele's first spring of peace begins with an earthquake and a knock on the barrow doors. The dead of Hollow Barrow are walking again, and this time nobody gave the order: the Ashen Marquis swears they are none of his. Mr. Pettigrew, your clerk, has already filed the incident report. Clear the barrow before the farmers start burying each other.",
-      objective: "Take Hollow Barrow and the Barrow Camp.",
+      objective: "Take the barrow and its camp by turn 15.",
       hints: Object.freeze([
         "Stand on Graves: the dead rise only from free ones.",
         "The Necromancer raises them. Ride him down first.",
-        "The dead march on Northwatch from turn 4.",
+        "The dead march on Northwatch from turn 3.",
       ]),
       closing:
         "The barrow is quiet. In the mud a Ranger finds a grey hood, neatly folded. Mr. Pettigrew files it under Lost Property.",
@@ -46,8 +46,8 @@ export const CHAPTER_HUMANS_V7: CampaignChapterV7 = Object.freeze({
       objective: "Take the three toll forts by turn 18.",
       hints: Object.freeze([
         "Redcaps mob a lone unit: advance in a block.",
-        "Explosives' Breach: melee ignores Walls.",
-        "Win the gate in melee: the victor steps inside.",
+        "A Goblin's Kaboom hurts all around it: shoot first.",
+        "Kill the gate's Goblin and step in the same turn.",
       ]),
       closing:
         "The forts are yours, and the Crown has declared you an outlaw. Mr. Pettigrew has kept copies of everything. 'The Baron's accounts, Marshal. They do not add up.'",
@@ -64,12 +64,12 @@ export const CHAPTER_HUMANS_V7: CampaignChapterV7 = Object.freeze({
       name: "Outlaws of the Greenwood",
       format: "ESCORT",
       briefing:
-        "An outlaw cannot hang a baron, but a judge can. The Royal Assizes sit at Kingsbridge in twenty days, and Mr. Pettigrew carries the Baron's ledgers in a box chained to his wrist. Redcaps comb the Greenwood for him, and something large that escaped the Baron's circus has been eating Redcaps ever since. Get your clerk to court alive.",
-      objective: "Get Mr. Pettigrew to Kingsbridge by turn 20.",
+        "An outlaw cannot hang a baron, but a judge can. The Royal Assizes sit at Kingsbridge in sixteen days, and Mr. Pettigrew carries the Baron's ledgers in a box chained to his wrist. Redcaps comb the Greenwood and hold the bridge, and something large that escaped the Baron's circus has been eating Redcaps ever since. Get your clerk to court alive.",
+      objective: "Get Mr. Pettigrew to Kingsbridge by turn 16.",
       hints: Object.freeze([
-        "Lead the Redcaps into the beasts' wood.",
+        "Goblins Kaboom: keep them two steps from Mr. Pettigrew.",
         "The beasts keep to their wood: pass two steps clear.",
-        "Mr. Pettigrew walks one step a turn. Keep him moving.",
+        "Lose the camp and you lose the band: leave a guard.",
       ]),
       closing:
         "The judge reads the ledgers and signs a warrant for the Baron. Kessler answers it as he answers everything: he hires more men, and a grey-hooded lodge, it seems, is for hire.",
@@ -89,7 +89,7 @@ export const CHAPTER_HUMANS_V7: CampaignChapterV7 = Object.freeze({
       objective: "Hold Fort Hollow for 12 turns.",
       hints: Object.freeze([
         "Shoot the robed men, and their daemon turns on them.",
-        "Farm the fort to level 5 and it sends a giant.",
+        "A Guard dug in on the gate holds even a Horror.",
         "Keep Mr. Pettigrew on the walls; train at the Mill.",
       ]),
       closing:

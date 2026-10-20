@@ -9,8 +9,9 @@ import type { MissionDefinitionV7 } from "./types";
  * multi-front siege; take the armies apart one at a time.
  *
  * The board is the map generator's (Pangea 20, seed 16): the Frontier's
- * highlands in the south with Fort Steele and Kessler's Toll; a band of
- * peaks across the middle crossed by three roads, each held by a walled
+ * highlands in the south with Fort Steele and the Redcaps' Kessler's
+ * Toll; a band of peaks across the middle crossed by three roads, each
+ * held by a walled
  * Redcap toll fort; and the Baron's plain in the north, with the Hall in
  * the middle, the Lodge's chapel town west of it and the menagerie east of
  * it. The Redcaps hold their forts and the Hall and send the rest at you;
@@ -28,6 +29,16 @@ import type { MissionDefinitionV7 } from "./types";
  * fort from level 3 to 6 and two Trolls in seven rounds); and the clock is
  * 22 rounds, not the saga's 26 (a thoughtful run took the Hall in round 13).
  *
+ * The second retune (`pulp_wars-hmyk.19`, CAMPAIGN.md section 15.5): Fort
+ * Steele alone and a column of three Knights, a Catapult nobody can build
+ * again, two Fighters and a Marksman, eight technologies; Kessler's Toll
+ * is the Baron's again (five gates to hold, five Redcaps on them), the
+ * rest of the Redcaps march from round 4 with three more Goblins, three
+ * bands of hired swords come behind the tolls (rounds 5, 9 and 13), the
+ * menagerie has two more Raptors, and four of the six villages on the
+ * Frontier's side are gone. With the Lodge hunting from round 6 and no
+ * Chivalry the column died by round 7 in two tries.
+ *
  * ```text
  *      x 01234567890123456789
  * y  0   ~~~~~~~~~~~~~~~~~~~~
@@ -44,10 +55,10 @@ import type { MissionDefinitionV7 } from "./types";
  *   11   ~ff.W...^^^.G^^.^.R~      W, G, R: Weir, Gallows and Ridge Toll
  *   12   ~ffff..^^^^^f^f^^.^~
  *   13   ~fffff.^^^^..^^.^f.~
- *   14   ~~fvf.vf^vf^^Tf^...~      T: Kessler's Toll; v: villages
+ *   14   ~~f.f.vf^.f^^Tf^...~      T: Kessler's Toll (Redcap); v: villages
  *   15   ~~ff.f.^..f.^fffff~~
  *   16   ~~^f..^..^f..fff^.~~
- *   17   ~~~~.fS.fv^^v^^v~~~~      S: Fort Steele
+ *   17   ~~~~.fS.f.^^v^^.~~~~      S: Fort Steele
  *   18   ~~~~~..^.f^^f^.~~~~~
  *   19   ~~~~~~~~~~~~~~~~~~~~
  * ```
@@ -56,7 +67,10 @@ export const HUMAN_6_V7: MissionDefinitionV7 = {
   id: "HUMAN_6",
   // Revision 2 (`pulp_wars-hmyk.14`): the Tesla Tower on the Hall's lawn.
   // Revision 3 (`pulp_wars-hmyk.17`): each seat explores its units' sight.
-  revision: 3,
+  // Revision 4 (`pulp_wars-hmyk.19`, the second retune): one fort and a
+  // veteran column against five walled tolls, rushing Redcaps, waves of
+  // hired swords and fewer free villages.
+  revision: 4,
   seed: 20261206,
   // <map>
   size: 20,
@@ -81,6 +95,12 @@ export const HUMAN_6_V7: MissionDefinitionV7 = {
       { kind: "VILLAGE", at: { x: 18, y: 11 }, present: false },
       { kind: "VILLAGE", at: { x: 13, y: 14 }, present: false },
       { kind: "RESOURCE", at: { x: 10, y: 4 }, resource: "." },
+      // Retune 2: no free towns on the Frontier's side of the ridge but
+      // two.
+      { kind: "VILLAGE", at: { x: 3, y: 14 }, present: false },
+      { kind: "VILLAGE", at: { x: 9, y: 14 }, present: false },
+      { kind: "VILLAGE", at: { x: 9, y: 17 }, present: false },
+      { kind: "VILLAGE", at: { x: 15, y: 17 }, present: false },
     ],
   },
   terrain: [
@@ -151,12 +171,8 @@ export const HUMAN_6_V7: MissionDefinitionV7 = {
     "PPPPPPPPPPPPPPPPPPPP",
   ],
   villages: [
-    { x: 3, y: 14 },
     { x: 6, y: 14 },
-    { x: 9, y: 14 },
-    { x: 9, y: 17 },
     { x: 12, y: 17 },
-    { x: 15, y: 17 },
   ],
   treasureChests: [
     { x: 11, y: 2 },
@@ -180,13 +196,14 @@ export const HUMAN_6_V7: MissionDefinitionV7 = {
   seats: [
     {
       faction: "ORIGINAL",
-      coins: 10,
+      // Retune 2 (`pulp_wars-hmyk.19`): Fort Steele alone, and the column
+      // that took the forts on the King's Road: three Knights, a Catapult
+      // the Rangers cannot build again (no Sawmilling), two Fighters and a
+      // Marksman.
+      coins: 8,
       technologies: [
         "GATHERING",
-        "ADMINISTRATION",
         "HUNTING",
-        "FORESTRY",
-        "SAWMILLING",
         "MARKSMANSHIP",
         "SCOUTING",
         "RAIDING",
@@ -202,37 +219,29 @@ export const HUMAN_6_V7: MissionDefinitionV7 = {
           rewards: ["STOCKPILE", "WALLS"],
           landGrant: true,
         },
-        {
-          name: "Kessler's Toll",
-          at: { x: 13, y: 14 },
-          level: 2,
-          rewards: ["STOCKPILE"],
-        },
       ],
       units: [
-        // The Frontier's army, camped at the toll it took last month.
-        { role: "KNIGHT", at: { x: 13, y: 15 } },
-        { role: "KNIGHT", at: { x: 5, y: 15 }, home: 0 },
-        { role: "CATAPULT", at: { x: 11, y: 15 }, home: 1 },
-        { role: "CATAPULT", at: { x: 4, y: 16 } },
-        { role: "FIGHTER", at: { x: 15, y: 13 }, home: 1 },
-        { role: "FIGHTER", at: { x: 6, y: 14 } },
-        { role: "FIGHTER", at: { x: 4, y: 14 } },
-        { role: "MARKSMAN", at: { x: 14, y: 14 }, home: 1 },
-        { role: "MARKSMAN", at: { x: 5, y: 16 } },
+        { role: "KNIGHT", at: { x: 6, y: 15 } },
+        { role: "KNIGHT", at: { x: 5, y: 15 } },
+        { role: "KNIGHT", at: { x: 6, y: 14 } },
+        { role: "CATAPULT", at: { x: 5, y: 16 } },
+        { role: "FIGHTER", at: { x: 7, y: 16 } },
+        { role: "FIGHTER", at: { x: 4, y: 16 } },
+        { role: "MARKSMAN", at: { x: 4, y: 15 } },
       ],
+      // The ridge, its tolls and the Hall on its hill.
       reveal: {
         radius: 2,
         rects: [
-          { x0: 2, y0: 9, x1: 18, y1: 13 },
-          { x0: 5, y0: 2, x1: 15, y1: 8 },
+          { x0: 2, y0: 10, x1: 18, y1: 14 },
+          { x0: 9, y0: 3, x1: 11, y1: 6 },
         ],
       },
     },
     {
       // The Redcaps: the last of Kessler's goblins, in his forts and yard.
       faction: "GOBLIN",
-      coins: 4,
+      coins: 8,
       technologies: [],
       cities: [
         {
@@ -263,6 +272,14 @@ export const HUMAN_6_V7: MissionDefinitionV7 = {
           rewards: ["STOCKPILE", "WALLS"],
           landGrant: true,
         },
+        // Retune 2: the toll on the Frontier's side of the ridge is the
+        // Baron's again.
+        {
+          name: "Kessler's Toll",
+          at: { x: 13, y: 14 },
+          level: 2,
+          rewards: ["STOCKPILE"],
+        },
       ],
       // The four holders first (a garrison is chosen by unit ID among the
       // units inside the zones), then the forts' Goblins and the field army.
@@ -273,14 +290,18 @@ export const HUMAN_6_V7: MissionDefinitionV7 = {
         { role: "GUARD", at: { x: 4, y: 11 }, home: 1 },
         { role: "GUARD", at: { x: 12, y: 11 }, home: 2 },
         { role: "GUARD", at: { x: 18, y: 11 }, home: 3 },
+        { role: "GUARD", at: { x: 13, y: 14 }, home: 4 },
         { role: "FIGHTER", at: { x: 5, y: 10 }, home: 1 },
         { role: "FIGHTER", at: { x: 11, y: 10 }, home: 2 },
         { role: "FIGHTER", at: { x: 17, y: 10 }, home: 3 },
         { role: "FIGHTER", at: { x: 8, y: 8 } },
         { role: "FIGHTER", at: { x: 12, y: 9 } },
         { role: "FIGHTER", at: { x: 6, y: 9 } },
+        { role: "FIGHTER", at: { x: 14, y: 15 }, home: 4 },
+        { role: "FIGHTER", at: { x: 12, y: 13 }, home: 4 },
+        { role: "FIGHTER", at: { x: 4, y: 10 }, home: 1 },
       ],
-      reveal: { radius: 2, rects: [{ x0: 2, y0: 12, x1: 18, y1: 16 }] },
+      reveal: { radius: 2, rects: [{ x0: 2, y0: 12, x1: 18, y1: 18 }] },
       // Mercenaries field Goblins, which mob (H2's lesson: no farms, no
       // riders, no Brutes on Field Defenses). Hand play: with Drill and
       // Engineering the forts' Workshops and Mines took Gallows Toll from
@@ -307,7 +328,7 @@ export const HUMAN_6_V7: MissionDefinitionV7 = {
         "CHIVALRY",
         "METALLURGY",
       ],
-      // One Redcap stands on the gate of the Hall and of each fort; the
+      // One Redcap stands on the gate of the Hall and of each toll; the
       // rest march on you from round 4.
       directive: [
         {
@@ -317,8 +338,9 @@ export const HUMAN_6_V7: MissionDefinitionV7 = {
             { x0: 4, y0: 11, x1: 4, y1: 11 },
             { x0: 12, y0: 11, x1: 12, y1: 11 },
             { x0: 18, y0: 11, x1: 18, y1: 11 },
+            { x0: 13, y0: 14, x1: 13, y1: 14 },
           ],
-          garrison: 4,
+          garrison: 5,
           untilRound: 4,
         },
         {
@@ -328,8 +350,9 @@ export const HUMAN_6_V7: MissionDefinitionV7 = {
             { x0: 4, y0: 11, x1: 4, y1: 11 },
             { x0: 12, y0: 11, x1: 12, y1: 11 },
             { x0: 18, y0: 11, x1: 18, y1: 11 },
+            { x0: 13, y0: 14, x1: 13, y1: 14 },
           ],
-          garrison: 4,
+          garrison: 5,
           others: { kind: "RUSH" },
         },
       ],
@@ -353,6 +376,9 @@ export const HUMAN_6_V7: MissionDefinitionV7 = {
         { role: "RAIDER", at: { x: 13, y: 5 } },
         { role: "RAIDER", at: { x: 9, y: 6 } },
         { role: "FIGHTER", at: { x: 14, y: 7 } },
+        // Retune 2: two more of the Baron's raptors.
+        { role: "RAIDER", at: { x: 12, y: 3 }, kills: 1 },
+        { role: "RAIDER", at: { x: 15, y: 5 } },
       ],
       reveal: { radius: 3 },
       forbiddenTechnologies: [
@@ -410,6 +436,46 @@ export const HUMAN_6_V7: MissionDefinitionV7 = {
     },
   ],
   teams: [0, 1, 1, 1],
+  // Retune 2: every hired sword on the Frontier falls back on the one place
+  // still paying, in three bands behind the tolls.
+  reinforcements: [
+    {
+      seat: 1,
+      round: 5,
+      line: "Hired swords off the river road fall in behind Weir Toll.",
+      announce: true,
+      units: [
+        { role: "FIGHTER", at: { x: 3, y: 9 } },
+        { role: "FIGHTER", at: { x: 4, y: 9 } },
+        { role: "FIGHTER", at: { x: 2, y: 10 } },
+      ],
+    },
+    {
+      seat: 1,
+      round: 9,
+      line: "The Baron's last payroll buys a new band at Gallows Toll.",
+      announce: true,
+      units: [
+        { role: "FIGHTER", at: { x: 11, y: 9 } },
+        { role: "FIGHTER", at: { x: 12, y: 9 } },
+        { role: "FIGHTER", at: { x: 13, y: 9 } },
+        { role: "FIGHTER", at: { x: 11, y: 8 } },
+        { role: "FIGHTER", at: { x: 13, y: 8 } },
+      ],
+    },
+    {
+      seat: 1,
+      round: 13,
+      line: "Redcaps from the far marches come over the ridge road.",
+      announce: true,
+      units: [
+        { role: "FIGHTER", at: { x: 17, y: 9 } },
+        { role: "FIGHTER", at: { x: 18, y: 9 } },
+        { role: "FIGHTER", at: { x: 16, y: 9 } },
+        { role: "FIGHTER", at: { x: 17, y: 8 } },
+      ],
+    },
+  ],
   forbiddenTechnologies: [
     "SHORECRAFT",
     "NAVIGATION",

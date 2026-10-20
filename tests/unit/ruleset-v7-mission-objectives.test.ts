@@ -1110,8 +1110,9 @@ describe("natural maps", () => {
       FRONTIER_10: 17,
       // Kessler Hall (`pulp_wars-hmyk.4`): the Baron's plain keeps no
       // villages (thirteen gone, six of them under cities) and the Hall's
-      // tile loses its Game.
-      HUMAN_6: 15,
+      // tile loses its Game; the second retune (`pulp_wars-hmyk.19`) takes
+      // four of the six villages on the Frontier's side of the ridge.
+      HUMAN_6: 19,
       // The Founder's Tomb (`pulp_wars-hmyk.5`): eleven villages gone (two
       // under towns), a chest, and the Lodge's and Ashby Camp's fields.
       UNDEAD_6: 16,

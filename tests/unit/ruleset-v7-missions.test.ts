@@ -147,24 +147,24 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
   "FRONTIER_10@6:ORIGINAL":
     "2f3915324a118a83c806e256e8ceb3d2b1a41d5b80b043e7b492c4374c5494c5",
   // The Humans campaign, "The Marshal's Law" (`pulp_wars-hmyk.4`).
-  "HUMAN_1@1:ORIGINAL":
-    "ba75ade202d005fe8a6cd1db656371bf6404054dd8698435cc76acf92498a8a4",
-  "HUMAN_2@2:ORIGINAL":
-    "d0d5bbea630a8d8ff65de26217b9f0ae25ebd4464ba135ab0e6fb2746a0ae02c",
-  "HUMAN_3@2:ORIGINAL":
-    "650cca831bc048d76fac8faae3e037175c2c34ee8a5ee86d5d26817b93e57ce0",
-  "HUMAN_4@2:ORIGINAL":
-    "6bc84c212f80cb900ef34554476c5ad09ab0f4e29633789e06d405502c469c4b",
+  "HUMAN_1@2:ORIGINAL":
+    "1c6a08e73893246b76e06aa3d98ee59b05ec5c9a31eeabef3f97cbd9c04219b1",
+  "HUMAN_2@3:ORIGINAL":
+    "31da3b1aa8b4f0bcbae2adcdd9d21b4fcd49c3135d38a90dbc8f50bea0ed960f",
+  "HUMAN_3@3:ORIGINAL":
+    "030ad52e5d14807f379a04bb5fe7c9579908d4a7c1033aeb8fe1b8a9b8b1c649",
+  "HUMAN_4@3:ORIGINAL":
+    "80184eeaf7a381041b7828d918a5d4b4797d038419621833b6df66958ad5f90c",
   // Mission curiosities (`pulp_wars-hmyk.14`): revision 2 of each, the Sea
   // Serpent in H5 and the Tesla Tower in H6, and the hidden fixture.
   "TEST_CURIOSITIES@1:ORIGINAL":
     "9b6a41cf850a6551d45396582fe72045f56ce02f4c4b970b247e9afb71dac4d4",
   "TEST_CURIOSITIES@1:GOBLIN":
     "ed95462583b0f54b4a3ffd614617928995af2452bb4dc78049fc6bacf57d3a04",
-  "HUMAN_5@3:ORIGINAL":
-    "e9e32eb797822002ece1bf424d2513e613513b6c4339ea982e80941ab11fcfa8",
-  "HUMAN_6@3:ORIGINAL":
-    "63fd349ac8c5d2729927a65c57c148e5387643472471d8a11384d6101b1bc643",
+  "HUMAN_5@4:ORIGINAL":
+    "06a10817bb215ac646f1303dc548260c6457a996e7b45360077eaf5ff7c1b23c",
+  "HUMAN_6@4:ORIGINAL":
+    "00a77c49a4e876a3e2c80181cc33f4e4baa82f2e3b2f8ed789a6277467f6c594",
   // The Undead campaign, "The Long Sleep" (`pulp_wars-hmyk.5`).
   "UNDEAD_1@2:UNDEAD":
     "858de9b7deb0a732afbb6a6f565f4bed14f1a3fa8e791d6f456238910a95e222",
@@ -578,14 +578,14 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
   "FRONTIER_10@6:ORIGINAL":
     "843fe7ac1602a90022a9c9cfa02a6cc3052e2e92134af0445026a8c125aa1e4a",
   // The Humans campaign, "The Marshal's Law" (`pulp_wars-hmyk.4`).
-  "HUMAN_1@1:ORIGINAL":
-    "3ee8bb1f6f874afa324696dbb3060091f24308cc62b748ef5ce2bfc8ac4e7e3f",
-  "HUMAN_2@2:ORIGINAL":
-    "9da81f28d3124c62af1b1178c9dba4d5fd82c51a9f3706cc512601ee022d7426",
-  "HUMAN_3@2:ORIGINAL":
-    "f0ff6af1a24c1f5fcc51a6e57df3b0f348f52173d031e61e5a1b8f088861e586",
-  "HUMAN_4@2:ORIGINAL":
-    "8be19bfb3048920372f27f4edd804bbb16b6e56f372ecf201f3e169111e41597",
+  "HUMAN_1@2:ORIGINAL":
+    "1cb8533b4c23820e7f425ce0b1fbc6ab39955839b36eec20f00c4dc7577daea2",
+  "HUMAN_2@3:ORIGINAL":
+    "d208c3fbfa41efcf799a9b2dbc28e4aa9909b88bc5169527b3aedccc25153b82",
+  "HUMAN_3@3:ORIGINAL":
+    "5fab8f5f6f3ef6856f6a24e9edd3c147c2f8e7d32259e5a734b5681b07b4727e",
+  "HUMAN_4@3:ORIGINAL":
+    "bca30b660662b6cee69b885b73f1f480cddcdecbae9c7f4f49f43a85ecd149b0",
   // The Undead campaign, "The Long Sleep" (`pulp_wars-hmyk.5`).
   "UNDEAD_1@2:UNDEAD":
     "d9d4aaef60c1c1fb5c5f633bc08dbca3f88b60630edac7eab8a19e956ef24f90",
