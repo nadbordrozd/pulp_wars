@@ -19,7 +19,7 @@
       "ownerColour": false,
       "accent": "cult-robe",
       "remap": {
-        "preset": "cult-royal-aqua",
+        "preset": "cult-royal-teal",
         "rules": {
           "kind": "robed",
           "protect": [
@@ -71,7 +71,7 @@
       "ownerColour": false,
       "accent": "cult-lodge",
       "remap": {
-        "preset": "cult-royal-aqua",
+        "preset": "cult-royal-teal",
         "rules": {
           "kind": "lodge",
           "noGlow": true
@@ -90,7 +90,7 @@
       "ownerColour": false,
       "accent": "cult-robe",
       "remap": {
-        "preset": "cult-royal-aqua",
+        "preset": "cult-royal-teal",
         "rules": {
           "kind": "robed",
           "protect": [
@@ -118,10 +118,11 @@
       "ownerColour": false,
       "accent": "cult-lodge",
       "remap": {
-        "preset": "cult-royal-aqua",
+        "preset": "cult-royal-teal",
         "rules": {
           "kind": "lodge",
-          "lodgeHue": [190, 268]
+          "lodgeHue": [190, 268],
+          "body": "summon"
         }
       },
       "bottomMargin": 6
@@ -138,7 +139,7 @@
       "ownerColour": false,
       "accent": "cult-robe",
       "remap": {
-        "preset": "cult-royal-aqua",
+        "preset": "cult-royal-teal",
         "rules": {
           "kind": "robed",
           "keep": ["#31171b"],
@@ -167,7 +168,7 @@
       "ownerColour": false,
       "accent": "cult-robe",
       "remap": {
-        "preset": "cult-royal-aqua",
+        "preset": "cult-royal-teal",
         "rules": {
           "kind": "robed",
           "protect": [
@@ -214,7 +215,7 @@
       "ownerColour": false,
       "accent": "cult-robe",
       "remap": {
-        "preset": "cult-royal-aqua",
+        "preset": "cult-royal-teal",
         "rules": {
           "kind": "robed",
           "keep": ["#3e0d10"],
@@ -290,7 +291,7 @@
       "ownerColour": false,
       "accent": "cult-lodge",
       "remap": {
-        "preset": "cult-royal-aqua",
+        "preset": "cult-royal-teal",
         "rules": {
           "kind": "lodge",
           "noGlow": true

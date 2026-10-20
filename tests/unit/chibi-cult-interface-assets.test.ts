@@ -24,7 +24,10 @@ import {
   cultGreenPalettePng,
   cultPurplePalettePng,
 } from "../../scripts/art/cult-direction/green-palette";
-import { CULT_REMAP_ASSETS } from "../../scripts/art/cult-palette-mch959/assets";
+import {
+  CULT_REMAP_ASSETS,
+  CULT_REMAP_PRESET,
+} from "../../scripts/art/cult-palette-mch959/assets";
 import {
   chibiFallbackSubjectV7,
   cultSummonedPortraitSubjectV7,
@@ -155,8 +158,9 @@ const isGreen = (p: Hsv): boolean =>
   p.hue >= 80 && p.hue <= 152 && p.saturation >= 0.5 && p.value >= 0.45;
 /**
  * Palette 1 (bead pulp_wars-mch9.59): the busts, the lodge's icons and
- * creatures' busts and the ship portraits went through the
- * `cult-royal-aqua` remap; its royal purple is hue 271 to 277.
+ * creatures' busts and the ship portraits went through the palette remap
+ * (`cult-royal-teal` since the tweak of bead pulp_wars-mch9.60); its royal
+ * purple is hue 271 to 277.
  */
 const PALETTE_ONE = new Set(CULT_REMAP_ASSETS.map((asset) => asset.id));
 const isPurple = (p: Hsv): boolean =>
@@ -457,7 +461,7 @@ describe("the Cultists' interface art (pulp_wars-mch9.23)", () => {
         // Round 2 under palette 1 (pulp_wars-mch9.59): royal purple cloth,
         // the blood on a blade or an eye still red, no lodge indigo.
         expect(record.derivation.remap?.preset, record.id).toBe(
-          "cult-royal-aqua",
+          CULT_REMAP_PRESET,
         );
         expect(pixels.filter(isPurple).length, record.id).toBeGreaterThan(50);
         expect(
@@ -576,10 +580,21 @@ describe("the Cultists' interface art (pulp_wars-mch9.23)", () => {
         await readRaster(path.join(ROOT, record.master.path)),
       );
       expect(pixels.filter(isRed).length, id).toBe(0);
-      // Palette 1 (pulp_wars-mch9.59): the hull is royal purple.
+      // Palette 1 (pulp_wars-mch9.59) as tweaked by pulp_wars-mch9.60: the
+      // Galleon's and the Gondola's hulls are wood under purple sails and
+      // sigils; the Kraken is royal purple.
       expect(pixels.filter(isMagenta).length, id).toBe(0);
       expect(pixels.filter(isIndigo).length, id).toBe(0);
-      expect(pixels.filter(isPurple).length, id).toBeGreaterThan(100);
+      const wood = pixels.filter(
+        (p) =>
+          p.hue >= 12 && p.hue <= 32 && p.saturation >= 0.4 && p.value >= 0.15,
+      ).length;
+      if (name === "submarine")
+        expect(pixels.filter(isPurple).length, id).toBeGreaterThan(100);
+      else {
+        expect(pixels.filter(isPurple).length, id).toBeGreaterThan(25);
+        expect(wood, id).toBeGreaterThan(100);
+      }
       const entry = registered.find((candidate) => candidate.asset.id === id);
       expect(entry?.asset.subject, id).toBe(record.subject);
       expect(

@@ -32,6 +32,10 @@ unchanged. **The faction wears palette 1, royal purple and aquamarine**
 scheme 1."): a deterministic remap in place of the robed cultists, the
 lodge's places, ships and creatures, the lodge icons, the effects and the
 campaign picture, under [Palette 1 in production](#palette-1-in-production).
+**Palette 1 was tweaked** (bead `pulp_wars-mch9.60`, under
+[The tweak](#the-tweak-teal-accent-teal-familiar-wooden-hulls)): the accent
+is the summons' teal instead of the mint, the Familiar is the summoned
+teal, and the Galleon, the Gondola and the barge have wooden hulls.
 Where an older section below names blood red robes, indigo roofs or green
 lights, that section is history; the palette is the one under
 [Palette](#palette).
@@ -233,22 +237,38 @@ beads that own the files; nothing is changed by this bead):
 
 ## Palette
 
-**Palette 1, royal purple + aquamarine** (bead `pulp_wars-mch9.59`, the
-production pass of option 1 of bead `pulp_wars-mch9.58`). It is the
-`cult-royal-aqua` preset of the pipeline's `remap` step
-(`scripts/art/chibi/remap.ts`): each class of pixel goes through a ramp
-keyed by the source pixel's CIE L\*, so the drawn shading is kept.
+**Palette 1, royal purple + the summons' teal** (bead `pulp_wars-mch9.59`,
+the production pass of option 1 of bead `pulp_wars-mch9.58`, tweaked by
+bead `pulp_wars-mch9.60`). It is the `cult-royal-teal` preset of the
+pipeline's `remap` step (`scripts/art/chibi/remap.ts`; `cult-royal-aqua`,
+the mint accent, is kept there as history): each class of pixel goes
+through a ramp keyed by the source pixel's CIE L\*, so the drawn shading
+is kept.
 
-| Role                    | Ramp (source L\* : colour)                                                                                                      | Used for                                                                                                               |
-| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| **Royal purple** (main) | swatch `#6a2f93`; 0 `#0c0612`, 10 `#1f0e2e`, 18 `#33184b`, 26 `#4a2269`, 34 `#62308a`, 44 `#7f43ab`, 56 `#a266cc`, 70 `#c79be3` | the robes' cloth (was blood red), the roofs, hulls, sails, tarps, drapes, the Familiar, the Herald's robe (was indigo) |
-| Near-black second cloth | 0 `#060508`, 10 `#121016`, 20 `#1e1b24`, 30 `#2e2a36`, 45 `#48424f`                                                             | the Hexer's cowl, the Stargazer's lining (was deep purple)                                                             |
-| **Aquamarine** (accent) | swatch `#4fe3c1`; trim 15 `#124a42` to 90 `#d4fff4`; lights 30 `#0f5f53` to 92 `#c8fff2`                                        | the robes' embroidery (was gold), candle flames, windows, lamps, lanterns, the campaign picture's Eye (was green)      |
-| Kept                    | exactly as drawn                                                                                                                | skin, blood, steel, wood, stone, cream wax and paper, brass, a gold hilt or telescope, the summoned teal               |
+| Role                       | Ramp (source L\* : colour)                                                                                                                                                                           | Used for                                                                                                                                                                                                      |
+| -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Royal purple** (main)    | swatch `#6a2f93`; 0 `#0c0612`, 10 `#1f0e2e`, 18 `#33184b`, 26 `#4a2269`, 34 `#62308a`, 44 `#7f43ab`, 56 `#a266cc`, 70 `#c79be3`                                                                      | the robes' cloth (was blood red), the roofs, sails, tarps, drapes, the Kraken, the Herald's robe (was indigo)                                                                                                 |
+| Near-black second cloth    | 0 `#060508`, 10 `#121016`, 20 `#1e1b24`, 30 `#2e2a36`, 45 `#48424f`                                                                                                                                  | the Hexer's cowl, the Stargazer's lining (was deep purple)                                                                                                                                                    |
+| **Summons' teal** (accent) | swatch `#46ada9`; trim 15 `#1b464a`, 30 `#287b7c`, 45 `#46ada9`, 60 `#6cd1c9`, 75 `#a6ede3`, 90 `#dbfaf5`; lights 12 `#073639`, 30 `#176163`, 50 `#369f9c`, 65 `#5acdc4`, 80 `#92ede2`, 92 `#d4fcf5` | the robes' embroidery (was gold), candle flames and their dark rims, windows, lamps, lanterns, the ships' banners, the campaign picture's Eye (was green; the mint `#4fe3c1` before bead `pulp_wars-mch9.60`) |
+| Summoned teal (body)       | 0 `#061619`, 10 `#0c252b`, 22 `#19484e`, 30 `#255f65`, 37 `#2d7d7d`, 44 `#2f9496`, 52 `#43aaa7`, 62 `#59c7bd`, 72 `#83dfd4`, 84 `#afefe5`                                                            | the Familiar and its bust (was indigo-blue, then purple)                                                                                                                                                      |
+| Hull wood                  | 0 `#150c08`, 10 `#2a170f`, 18 `#412215`, 26 `#562f1b`, 34 `#6b3e23`, 44 `#845231`, 56 `#a36d44`, 70 `#c49160`                                                                                        | the hulls of the Galleon, the Gondola and the barge and of the two ship busts (was indigo, then purple)                                                                                                       |
+| Kept                       | exactly as drawn                                                                                                                                                                                     | skin, blood, steel, wood, stone, cream wax and paper, brass, a gold hilt or telescope, the summons' own teal                                                                                                  |
 
-- **Lifted above the summons' teal.** The aquamarine is a light mint
-  (hue 160 to 175, L\* 50 and more for the lights) and the summoned a mid
-  teal body (`#2c7e7d`, hue 180, L\* 47): the summons are never remapped.
+- **The accent is the summons' hue** (bead `pulp_wars-mch9.60`; the user,
+  2026-10-20: "make the familiar match the color of the other summons and
+  have the accents on the robes match that hue as well. I want this to be
+  consistent."). The trim and the lights keep the old mint's lightness, so
+  a lit line still reads on the purple (a gold of L\* 60 becomes a teal
+  more than 30 L\* above the cloth beside it), but take the summoned
+  bodies' CIE hue (185 to 208, the darker stops bluer as the summons'
+  shading is; HSV hue 172 to 186) and their chroma (about 30, not the
+  mint's 40 to 46). The summons themselves are never remapped; the
+  Familiar's body goes through their measured ramp (the Imp's body
+  `#2f9194` at L\* 55, its shade `#245e66`). The cultists and the
+  Familiar are told from the summons by shape, not colour (a robed man, a
+  frog-cat with a cream face and belly and a gold bell; a one-eyed imp, a
+  heap of eyes): the review's measure calls them "colour too close", which
+  is the consistency the user asked for.
 - **Clear of the player colours.** The ramps pass near two of the four
   owner-recolouring colours (`RULESET7_PLAYER_COLORS` TEAL `#28b7a4` and
   VIOLET `#a277d2`); a remapped pixel that would land within 14 (RGB) of
@@ -318,7 +338,10 @@ Rules:
   telescope). Round 1 had two round cream eyes in a dark hood instead.
 - **Teal belongs to the summoned.** No cultist, building or ship has a teal
   area, except a tentacle that is itself a summoned thing (the Market's
-  joke, the Anchor grip). Teal on Grass is 56, on Deep Water 31 and on
+  joke, the Anchor grip). Since palette 1's tweak (bead
+  `pulp_wars-mch9.60`) the accent lines and lights are in the summons'
+  hue and the Familiar wears the summoned teal; a teal body is still only
+  a summon's or the Familiar's. Teal on Grass is 56, on Deep Water 31 and on
   Shallow Water 28: the Tentacle on water leans on its outline, its cream
   suckers and its yellow eye.
 - **Red eyes mean broken.** No summoned or bound piece has a red pixel; the
@@ -1729,7 +1752,9 @@ Initiate's bust as the faction emblem, captured in muted headless Chrome).
   robe reaches the ground.
 - **Dark robes.** The Initiate is 64% dark pixels (round 1: 22%); the bog's
   mid value carries it, and the face and the blade are the lightest shapes.
-- **The Familiar** keeps round 1's indigo look beside red-robed masters.
+- **The Familiar** keeps round 1's indigo look beside red-robed masters
+  (purple under palette 1, the summoned teal since bead
+  `pulp_wars-mch9.60`).
 
 ## Palette 1 in production
 
@@ -1819,9 +1844,58 @@ the Cult hulls are further from Deep Water than the indigo was (body mean
 
 **Weak spots.** The royal purple is the nearest any faction's cloth has
 come to the Undead violet (28, 23 simulated): the Undead keep near-black
-cloth with a bright violet glow, the Cult a dull plum cloth with mint
+cloth with a bright violet glow, the Cult a dull plum cloth with teal
 trim, which holds on the board mock, but a lighter purple sprite would not.
 The Herald's tentacle crown keeps its teal with purple shadows.
+
+### The tweak: teal accent, teal Familiar, wooden hulls
+
+Bead `pulp_wars-mch9.60`. The user (2026-10-20): "make the familiar match
+the color of the other summons and have the accents on the robes match
+that hue as well. I want this to be consistent. -- the purple body of the
+cultist galleon and gondola is slightly nonsensical. make it wood colored
+and keep the purple on teal/aquamarine accents on the sails and other
+elements." Still no PixelLab call; ids, canvases, anchors and alpha are
+unchanged, so both shadow tables pass `--check`.
+
+- **The preset** `cult-royal-teal` keeps the purple and the near-black and
+  replaces the accent (the trim and light ramps of the table above), adds
+  the `summon` and `wood` ramps, and takes a saturated dark green (value
+  0.15 to 0.45) as a light too (`glowMinValue`), so a teal flame or lantern
+  has no green rim left.
+- **Two lodge rules** (`scripts/art/cult-palette-mch959/assets.ts`):
+  `body: "summon"` sends the indigo of the Familiar and its bust through
+  the summoned ramp; `wood` boxes send the hull inside them (the indigo and
+  its pale blue lights, hue 190 to 268 from saturation 0.2; grey steel
+  kept) through the wood ramp. The boxes hold the rows under the sails:
+  the Galleon from row 48 (its swirls end on row 46), the Gondola from row
+  53 and its bow post from row 48 (its striped sail ends on row 52), the
+  barge under its tarp and the stern left of the oar, the two ship busts
+  from row 30. The sails' swirls and stripes, the pennants and the barge's
+  tarp stay purple; the banners and lanterns turn the teal accent. The
+  Kraken is a creature and stays purple (its submerged look re-derived).
+- **Re-applied from the candidates.**
+  `scripts/art/cult-palette-mch960/apply.ts apply` re-derives every listed
+  master from its recorded candidate (the class derivation and the accent,
+  then the new remap; `rederivedBeforeRemap` of the pipeline) and records
+  the new preset; `apply.ts mask --out DIR` shows the classes (summon
+  blue, wood orange) before the remap. The campaign picture's entry names
+  the new preset and is re-baked; `sheets.ts --before DIR --out DIR`
+  writes the before and after sheets and the board mock.
+- **What changed:** the five robed cultists and their busts (trim and
+  flames), the three cities, Lumber Camp, Sawmill, Workshop, Port, Market,
+  the obelisk and six Monuments (lit windows, lamps, flames), the four
+  ships, the submerged Kraken and the three ship busts, the Familiar and
+  its bust, the campaign picture. The Forge, the Shipyard, the Muster
+  Monument, the Herald, the lodge icons and the effects have no accent and
+  are pixel for pixel as they were (their records name the new preset).
+- **Reviews.** `npm run art:chibi-cult-direction-review`: gates as before
+  (1, 2 and 4 pass; 3 and 5 fail as before); the summons lineup now calls
+  the Imp against the Familiar and the Initiate, and the Gibbering Mass
+  against the Familiar, "colour too close", the intended consistency,
+  told apart by shape on `summons-lineup-x3.png`.
+  `npm run art:chibi-naval-faction-review`: the Kraken is further from the
+  Gondola (palette distance 7.7, was 6.6) now the Gondola is wood.
 
 ## Decisions
 

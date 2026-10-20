@@ -19,7 +19,7 @@
       "ownerColour": false,
       "accent": "cult-robe-icon",
       "remap": {
-        "preset": "cult-royal-aqua",
+        "preset": "cult-royal-teal",
         "rules": {
           "kind": "robed",
           "protect": [
@@ -52,7 +52,7 @@
       "ownerColour": false,
       "accent": "cult-robe-icon",
       "remap": {
-        "preset": "cult-royal-aqua",
+        "preset": "cult-royal-teal",
         "rules": {
           "kind": "robed",
           "protect": [
@@ -91,10 +91,11 @@
       "ownerColour": false,
       "accent": "cult-lodge-icon",
       "remap": {
-        "preset": "cult-royal-aqua",
+        "preset": "cult-royal-teal",
         "rules": {
           "kind": "lodge",
-          "lodgeHue": [190, 268]
+          "lodgeHue": [190, 268],
+          "body": "summon"
         }
       }
     },
@@ -110,7 +111,7 @@
       "ownerColour": false,
       "accent": "cult-robe-icon",
       "remap": {
-        "preset": "cult-royal-aqua",
+        "preset": "cult-royal-teal",
         "rules": {
           "kind": "robed",
           "secondaryHue": [268, 335],
@@ -138,7 +139,7 @@
       "ownerColour": false,
       "accent": "cult-robe-icon",
       "remap": {
-        "preset": "cult-royal-aqua",
+        "preset": "cult-royal-teal",
         "rules": {
           "kind": "robed",
           "protect": [
@@ -177,7 +178,7 @@
       "ownerColour": false,
       "accent": "cult-robe-icon",
       "remap": {
-        "preset": "cult-royal-aqua",
+        "preset": "cult-royal-teal",
         "rules": {
           "kind": "robed",
           "props": [
@@ -228,7 +229,7 @@
       "ownerColour": false,
       "accent": "cult-lodge-icon",
       "remap": {
-        "preset": "cult-royal-aqua",
+        "preset": "cult-royal-teal",
         "rules": {
           "kind": "lodge",
           "noGlow": true
@@ -282,7 +283,7 @@
       },
       "accent": "cult-lodge-icon",
       "remap": {
-        "preset": "cult-royal-aqua",
+        "preset": "cult-royal-teal",
         "rules": {
           "kind": "lodge",
           "noGlow": true
@@ -300,7 +301,7 @@
       },
       "accent": "cult-lodge-icon",
       "remap": {
-        "preset": "cult-royal-aqua",
+        "preset": "cult-royal-teal",
         "rules": {
           "kind": "lodge",
           "noGlow": true
@@ -318,7 +319,7 @@
       },
       "accent": "cult-lodge-icon",
       "remap": {
-        "preset": "cult-royal-aqua",
+        "preset": "cult-royal-teal",
         "rules": {
           "kind": "lodge",
           "noGlow": true
@@ -369,7 +370,7 @@
       },
       "accent": "cult-lodge-icon",
       "remap": {
-        "preset": "cult-royal-aqua",
+        "preset": "cult-royal-teal",
         "rules": {
           "kind": "lodge",
           "noGlow": true
@@ -409,7 +410,7 @@
       },
       "accent": "cult-lodge-icon",
       "remap": {
-        "preset": "cult-royal-aqua",
+        "preset": "cult-royal-teal",
         "rules": {
           "kind": "lodge",
           "noGlow": true
@@ -471,7 +472,7 @@
       },
       "accent": "cult-lodge-icon",
       "remap": {
-        "preset": "cult-royal-aqua",
+        "preset": "cult-royal-teal",
         "rules": {
           "kind": "lodge",
           "noGlow": true
@@ -489,7 +490,7 @@
       },
       "accent": "cult-lodge-icon",
       "remap": {
-        "preset": "cult-royal-aqua",
+        "preset": "cult-royal-teal",
         "rules": {
           "kind": "lodge",
           "noGlow": true
@@ -540,7 +541,7 @@
       },
       "accent": "cult-lodge-icon",
       "remap": {
-        "preset": "cult-royal-aqua",
+        "preset": "cult-royal-teal",
         "rules": {
           "kind": "lodge",
           "noGlow": true
@@ -580,7 +581,7 @@
       },
       "accent": "cult-lodge-icon",
       "remap": {
-        "preset": "cult-royal-aqua",
+        "preset": "cult-royal-teal",
         "rules": {
           "kind": "lodge",
           "noGlow": true
@@ -620,7 +621,7 @@
       },
       "accent": "cult-lodge-icon",
       "remap": {
-        "preset": "cult-royal-aqua",
+        "preset": "cult-royal-teal",
         "rules": {
           "kind": "lodge",
           "noGlow": true
@@ -638,7 +639,7 @@
       },
       "accent": "cult-lodge-icon",
       "remap": {
-        "preset": "cult-royal-aqua",
+        "preset": "cult-royal-teal",
         "rules": {
           "kind": "lodge",
           "noGlow": true

@@ -406,7 +406,7 @@ export interface AssetRecord {
       readonly preset: string;
       readonly palette: RemapPalette;
       readonly rules: RemapRules;
-      readonly pixels: Readonly<Record<RemapKind, number>>;
+      readonly pixels: Readonly<Partial<Record<RemapKind, number>>>;
     };
     readonly ground?: {
       readonly asset: string;
@@ -2299,6 +2299,49 @@ async function rederivedMasterProblems(
   records: BatchRecords,
   record: AssetRecord,
 ): Promise<string[]> {
+  const derived = await rederivedMaster(root, manifest, records, record, true);
+  if (derived === undefined) return [];
+  if (Array.isArray(derived)) return derived;
+  const { kind, accent, remap } = record.derivation;
+  return pixelSha256(derived) ===
+    pixelSha256(await readRaster(path.join(root, record.master.path)))
+    ? []
+    : [
+        `batch ${manifest.batch} asset ${record.id}: the ${kind}${accent === undefined ? "" : " + accent"}${remap === undefined ? "" : " + remap"} derivation does not reproduce the master`,
+      ];
+}
+
+/**
+ * The master as the class derivation and the accent step make it of the
+ * recorded candidate today, before the palette remap: what a changed remap
+ * is applied to (bead pulp_wars-mch9.60 re-applies the Cult's tweaked
+ * palette from it). Throws when the master cannot be re-derived.
+ */
+export async function rederivedBeforeRemap(
+  root: string,
+  manifest: ChibiBatchManifest,
+  records: BatchRecords,
+  record: AssetRecord,
+): Promise<RgbaRaster> {
+  const derived = await rederivedMaster(root, manifest, records, record, false);
+  if (derived === undefined)
+    throw new Error(`${record.id}: no raw sheet or master to re-derive from`);
+  if (Array.isArray(derived)) throw new Error(derived.join("; "));
+  return derived;
+}
+
+/**
+ * The recorded candidate through the class derivation, the accent and (when
+ * `withRemap`) the remap; the problems when that fails, or undefined when
+ * the asset has nothing to re-derive or its raw sheet is not on disk.
+ */
+async function rederivedMaster(
+  root: string,
+  manifest: ChibiBatchManifest,
+  records: BatchRecords,
+  record: AssetRecord,
+  withRemap: boolean,
+): Promise<string[] | RgbaRaster | undefined> {
   const kind = record.derivation.kind;
   const accent = record.derivation.accent;
   const remap = record.derivation.remap;
@@ -2312,7 +2355,7 @@ async function rederivedMasterProblems(
       remap === undefined &&
       swapFrom === undefined)
   )
-    return [];
+    return undefined;
   const label = `batch ${manifest.batch} asset ${record.id}`;
   const asset = manifest.assets.find((entry) => entry.id === record.id);
   const recipe = records.recipes[record.recipe];
@@ -2322,7 +2365,8 @@ async function rederivedMasterProblems(
     return [`${label}: the recipe record has no candidate size`];
   const sheetFile = path.join(root, recipe.rawSheet);
   const masterFile = path.join(root, record.master.path);
-  if (!(await exists(sheetFile)) || !(await exists(masterFile))) return [];
+  if (!(await exists(sheetFile)) || !(await exists(masterFile)))
+    return undefined;
   const candidate = cropRaster(await readRaster(sheetFile), {
     ...candidateCell(
       record.candidate,
@@ -2402,7 +2446,7 @@ async function rederivedMasterProblems(
         return [`${label}: the recorded accent is not the manifest's preset`];
       derived = accentRaster(derived, accent.spec).raster;
     }
-    if (remap !== undefined) {
+    if (remap !== undefined && withRemap) {
       if (
         JSON.stringify(asset.remap) !==
           JSON.stringify({ preset: remap.preset, rules: remap.rules }) ||
@@ -2417,11 +2461,7 @@ async function rederivedMasterProblems(
       `${label}: ${error instanceof Error ? error.message : String(error)}`,
     ];
   }
-  return pixelSha256(derived) === pixelSha256(await readRaster(masterFile))
-    ? []
-    : [
-        `${label}: the ${kind}${accent === undefined ? "" : " + accent"}${remap === undefined ? "" : " + remap"} derivation does not reproduce the master`,
-      ];
+  return derived;
 }
 
 function missingCropRows(): never {

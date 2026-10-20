@@ -459,7 +459,7 @@ and city `ownerColour: false`). It added two pipeline pieces:
 - **`remap`** (bead `pulp_wars-mch9.59`): an `as-is` or `seated`
   fixed-colour asset may name a palette remap of
   [`remap.ts`](../../scripts/art/chibi/remap.ts), applied after the accent:
-  `"remap": { "preset": "cult-royal-aqua", "rules": { "kind": "lodge" } }`
+  `"remap": { "preset": "cult-royal-teal", "rules": { "kind": "lodge" } }`
   (or `"robed"`, with optional boxes). The rules classify each pixel by colour (robe crimson,
   a second cloth, gold embroidery, lodge indigo, green lights) inside or
   outside the asset's `protect`, `props` and `extend` boxes, and each class
@@ -470,7 +470,14 @@ and city `ownerColour: false`). It added two pipeline pieces:
   (`derivation.remap`); `art:validate` re-derives the master through the
   class derivation, the accent and the remap, and fails if the manifest and
   the record disagree. It is how the Cult's palette 1 went into production
-  without a new generation (CULT.md, "Palette 1 in production").
+  without a new generation (CULT.md, "Palette 1 in production"). Since
+  bead `pulp_wars-mch9.60` (preset `cult-royal-teal`) a `lodge` rule may
+  also name `body: "summon"` (the indigo goes through the preset's
+  `summon` ramp) and `wood` boxes (the hull inside them, indigo and its
+  pale blue lights, goes through the `wood` ramp), and a preset's
+  `glowMinValue` takes the dark rim of a green light with it; a changed
+  remap is re-applied from the recorded candidate
+  (`rederivedBeforeRemap`, `scripts/art/cult-palette-mch960/apply.ts`).
 
 Its cities use the `calm-settlement` class with the subject keys
 `CITY:UNDEAD:<level>/CALM`; its units and portraits are `edit-image-pixen`

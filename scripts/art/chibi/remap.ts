@@ -22,6 +22,16 @@
  *   bodies go through `main`, the eldritch green windows and lanterns
  *   through `glow` (unless the asset says `noGlow`).
  *
+ * Palette 1's tweak (bead pulp_wars-mch9.60, preset `cult-royal-teal`) adds
+ * two classes the lodge rules can ask for:
+ *
+ * - **summon** (`body: "summon"`): the indigo goes through the summoned
+ *   teal instead of the purple (the Familiar, which the user wanted the
+ *   colour of the other summons);
+ * - **wood** (`wood` boxes): inside the boxes the indigo goes through a
+ *   warm wood ramp (the hulls of the Galleon, the Gondola and the barge,
+ *   whose sails, banners and sigils stay purple).
+ *
  * The preset is named in the batch manifest (`remap.preset`, with the
  * asset's `remap.rules`), stored whole in the asset record, and
  * `art:validate` re-derives the master from the recorded candidate through
@@ -49,6 +59,16 @@ export interface RemapPalette {
   readonly trim: readonly RemapStop[];
   /** The eldritch green lights. */
   readonly glow: readonly RemapStop[];
+  /** The summoned teal, for a lodge body that is a summon (`body`). */
+  readonly summon?: readonly RemapStop[];
+  /** Hull wood, for the indigo inside a lodge asset's `wood` boxes. */
+  readonly wood?: readonly RemapStop[];
+  /**
+   * The value from which a strongly saturated green (0.6 and more) is a
+   * light too: the dark green rim of a flame or a lamp, which the default
+   * 0.45 leaves green beside the remapped light.
+   */
+  readonly glowMinValue?: number;
   /**
    * Colours no remapped pixel may come near (RGB distance under
    * `avoidDistance`): the four player colours of owner recolouring
@@ -92,6 +112,10 @@ export interface RemapRules {
   readonly noGlow?: boolean;
   /** The lodge hue window when not 222 to 268 (the Familiar's pale blue). */
   readonly lodgeHue?: readonly [number, number];
+  /** The lodge indigo is a summon's body: the `summon` ramp (lodge only). */
+  readonly body?: "summon";
+  /** Boxes where the lodge indigo is a hull: the `wood` ramp (lodge only). */
+  readonly wood?: readonly RemapBox[];
 }
 
 /** The manifest's `remap` field. */
@@ -146,6 +170,86 @@ export const REMAP_PRESETS = {
     avoid: ["#f06762", "#28b7a4", "#e2b63f", "#a277d2"],
     avoidDistance: 14,
   },
+  /**
+   * Palette 1 as the user tweaked it (bead pulp_wars-mch9.60, 2026-10-20:
+   * "make the familiar match the color of the other summons and have the
+   * accents on the robes match that hue as well ... the purple body of the
+   * cultist galleon and gondola is slightly nonsensical. make it wood
+   * colored"). The purple and the near-black are `cult-royal-aqua`'s. The
+   * accent is the summons' teal instead of the light mint: the trim and
+   * the lights keep the mint's lightness (so a lit line still reads on the
+   * purple) but take the summoned bodies' CIE hue (h 185 to 208, darker
+   * stops bluer as the summons' shading is) and their chroma (about 30,
+   * not the mint's 40 to 46). `summon` is the summons' own ramp, measured
+   * on the Imp, the Horror, the Gibbering Mass, the Tentacle and the
+   * Thing (the Imp's body #2f9194 at L* 55, its shade #245e66 at L* 37);
+   * `wood` a warm brown (CIE hue 45 to 68) a step darker than the ships'
+   * gold rails. The dark green rim of a flame or a lamp (saturation 0.6,
+   * value 0.15 and more) is a light too (`glowMinValue`), so no green
+   * outline is left round a teal flame.
+   */
+  "cult-royal-teal": {
+    main: "#6a2f93",
+    accent: "#46ada9",
+    ramp: [
+      [0, "#0c0612"],
+      [10, "#1f0e2e"],
+      [18, "#33184b"],
+      [26, "#4a2269"],
+      [34, "#62308a"],
+      [44, "#7f43ab"],
+      [56, "#a266cc"],
+      [70, "#c79be3"],
+    ],
+    dark: [
+      [0, "#060508"],
+      [10, "#121016"],
+      [20, "#1e1b24"],
+      [30, "#2e2a36"],
+      [45, "#48424f"],
+    ],
+    trim: [
+      [15, "#1b464a"],
+      [30, "#287b7c"],
+      [45, "#46ada9"],
+      [60, "#6cd1c9"],
+      [75, "#a6ede3"],
+      [90, "#dbfaf5"],
+    ],
+    glow: [
+      [12, "#073639"],
+      [30, "#176163"],
+      [50, "#369f9c"],
+      [65, "#5acdc4"],
+      [80, "#92ede2"],
+      [92, "#d4fcf5"],
+    ],
+    summon: [
+      [0, "#061619"],
+      [10, "#0c252b"],
+      [22, "#19484e"],
+      [30, "#255f65"],
+      [37, "#2d7d7d"],
+      [44, "#2f9496"],
+      [52, "#43aaa7"],
+      [62, "#59c7bd"],
+      [72, "#83dfd4"],
+      [84, "#afefe5"],
+    ],
+    wood: [
+      [0, "#150c08"],
+      [10, "#2a170f"],
+      [18, "#412215"],
+      [26, "#562f1b"],
+      [34, "#6b3e23"],
+      [44, "#845231"],
+      [56, "#a36d44"],
+      [70, "#c49160"],
+    ],
+    glowMinValue: 0.15,
+    avoid: ["#f06762", "#28b7a4", "#e2b63f", "#a277d2"],
+    avoidDistance: 14,
+  },
 } as const satisfies Readonly<Record<string, RemapPalette>>;
 
 export type RemapPresetName = keyof typeof REMAP_PRESETS;
@@ -156,7 +260,7 @@ export function remapPreset(name: string): RemapPalette | undefined {
     : undefined;
 }
 
-export type RemapKind = "main" | "dark" | "trim" | "glow";
+export type RemapKind = "main" | "dark" | "trim" | "glow" | "summon" | "wood";
 
 const hexOf = (rgb: Rgb): string =>
   `#${rgb.map((value) => Math.round(value).toString(16).padStart(2, "0")).join("")}`;
@@ -233,9 +337,21 @@ const inBox = (box: RemapBox, x: number, y: number): boolean =>
   x >= box.x0 && x <= box.x1 && y >= box.y0 && y <= box.y1;
 
 /** The eldritch green of flames, windows, lamps and lanterns. */
-export function isRemapGlow(rgb: Rgb): boolean {
+export function isRemapGlow(rgb: Rgb, minValue = 0.45): boolean {
   const { hue, saturation, value } = rgbToHsv(rgb[0], rgb[1], rgb[2]);
-  return hue >= 100 && hue <= 160 && saturation >= 0.4 && value >= 0.45;
+  if (hue < 100 || hue > 160) return false;
+  if (saturation >= 0.4 && value >= 0.45) return true;
+  return saturation >= 0.6 && value >= minValue;
+}
+
+/**
+ * A hull pixel inside a `wood` box: the indigo and its pale blue lights
+ * (hue 190 to 268, saturation from 0.2), so no blue glint is left on the
+ * planks; grey steel (cannons, fittings) is under 0.2 and kept.
+ */
+export function isRemapHull(rgb: Rgb): boolean {
+  const { hue, saturation, value } = rgbToHsv(rgb[0], rgb[1], rgb[2]);
+  return hue >= 190 && hue <= 268 && saturation >= 0.2 && value >= 0.1;
 }
 
 /** The lodge's indigo: shingles, hulls, sail stripes, tarps, bodies. */
@@ -272,12 +388,17 @@ export function remapClassify(
   rgb: Rgb,
   x: number,
   y: number,
+  palette?: Pick<RemapPalette, "glowMinValue">,
 ): RemapKind | undefined {
   if (rules.keep?.includes(hexOf(rgb)) === true) return undefined;
   if ((rules.protect ?? []).some((box) => inBox(box, x, y))) return undefined;
+  const glowFrom = palette?.glowMinValue;
   if (rules.kind === "lodge") {
-    if (isRemapIndigo(rgb, rules.lodgeHue)) return "main";
-    if (rules.noGlow !== true && isRemapGlow(rgb)) return "glow";
+    if ((rules.wood ?? []).some((box) => inBox(box, x, y)) && isRemapHull(rgb))
+      return "wood";
+    if (isRemapIndigo(rgb, rules.lodgeHue))
+      return rules.body === "summon" ? "summon" : "main";
+    if (rules.noGlow !== true && isRemapGlow(rgb, glowFrom)) return "glow";
     return undefined;
   }
   const { hue, saturation, value } = rgbToHsv(rgb[0], rgb[1], rgb[2]);
@@ -301,7 +422,7 @@ export function remapClassify(
       value <= rule.maxValue,
   );
   if (extended) return "main";
-  if (rules.noGlow !== true && isRemapGlow(rgb)) return "glow";
+  if (rules.noGlow !== true && isRemapGlow(rgb, glowFrom)) return "glow";
   if (isRemapGold(rgb) && !(rules.props ?? []).some((box) => inBox(box, x, y)))
     return "trim";
   return undefined;
@@ -309,8 +430,12 @@ export function remapClassify(
 
 export interface RemapResult {
   readonly raster: RgbaRaster;
-  /** Remapped pixels of each class. */
-  readonly pixels: Readonly<Record<RemapKind, number>>;
+  /**
+   * Remapped pixels of each class: main, dark, trim and glow always, summon
+   * and wood when the asset's rules use them (so palette 1's records stay
+   * as they were).
+   */
+  readonly pixels: Readonly<Partial<Record<RemapKind, number>>>;
 }
 
 const RAMP_OF: Record<RemapKind, keyof RemapPalette> = {
@@ -318,6 +443,8 @@ const RAMP_OF: Record<RemapKind, keyof RemapPalette> = {
   dark: "dark",
   trim: "trim",
   glow: "glow",
+  summon: "summon",
+  wood: "wood",
 };
 
 /** The ramp's colour for `sourceL`, taken darker until no avoided colour is near. */
@@ -347,7 +474,7 @@ export function remapRaster(
   rules: RemapRules,
 ): RemapResult {
   const data = new Uint8Array(base.data);
-  const pixels: Record<RemapKind, number> = {
+  const pixels: Partial<Record<RemapKind, number>> = {
     main: 0,
     dark: 0,
     trim: 0,
@@ -363,13 +490,15 @@ export function remapRaster(
         base.data[p * 4 + 1] ?? 0,
         base.data[p * 4 + 2] ?? 0,
       ];
-      const kind = remapClassify(rules, rgb, x, y);
+      const kind = remapClassify(rules, rgb, x, y, palette);
       if (kind === undefined) continue;
-      pixels[kind] += 1;
+      pixels[kind] = (pixels[kind] ?? 0) + 1;
       const key = `${kind}${hexOf(rgb)}`;
       let out = cache.get(key);
       if (out === undefined) {
-        const ramp = palette[RAMP_OF[kind]] as readonly RemapStop[];
+        const ramp = palette[RAMP_OF[kind]] as readonly RemapStop[] | undefined;
+        if (ramp === undefined)
+          throw new Error(`the palette has no ${RAMP_OF[kind]} ramp`);
         out = clearOf(palette, ramp, labOf(rgb)[0]);
         cache.set(key, out);
       }

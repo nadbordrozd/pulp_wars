@@ -15,10 +15,18 @@
  * Favour chip are. The summoned (Horror, Imp, Gibbering Mass, Tentacle,
  * Thing, the frog and their icons and portraits) keep their teal and are
  * not listed.
+ *
+ * Bead pulp_wars-mch9.60 tweaked the palette (preset `cult-royal-teal`,
+ * re-applied from the candidates by scripts/art/cult-palette-mch960/
+ * apply.ts): the accent is the summons' teal, the Familiar's body takes
+ * the summoned teal (`body: "summon"`) and the hulls of the Galleon, the
+ * Gondola and the barge are wood (`wood` boxes: everything under the
+ * sails, the barge's tarp kept purple), their sails, banners, sigils and
+ * lanterns purple and teal. The Kraken stays purple.
  */
 import type { RemapRules } from "../chibi/remap";
 
-export const CULT_REMAP_PRESET = "cult-royal-aqua";
+export const CULT_REMAP_PRESET = "cult-royal-teal";
 
 export interface CultRemapAsset {
   readonly id: string;
@@ -156,25 +164,61 @@ export const PLACE_ASSETS: readonly CultRemapAsset[] = [
   ].map((id) => `chibi-cult-${id}`),
 ].map((id) => ({ id, rules: lodge }));
 
-/** The four ships and the three ship portraits. */
+/**
+ * The four ships and the three ship portraits. The `wood` boxes (bead
+ * pulp_wars-mch9.60) hold the hulls: the rows under the sails' lowest
+ * purple (the Galleon's swirls end on row 46, its hull starts on row 49;
+ * the Gondola's striped sail ends on row 52, the bow post under the
+ * lantern from row 48), and on the barge everything under the tarp and the
+ * stern left of the oar. The Kraken is a creature and stays purple.
+ */
 export const SHIP_ASSETS: readonly CultRemapAsset[] = [
-  ...["patrol-boat", "battleship", "submarine", "transport"].map(
-    (id) => `chibi-naval-cult-${id}`,
-  ),
-  ...["patrol-boat", "battleship", "submarine"].map(
-    (id) => `chibi-naval-cult-portrait-${id}`,
-  ),
-].map((id) => ({ id, rules: lodge }));
+  {
+    id: "chibi-naval-cult-patrol-boat",
+    rules: {
+      kind: "lodge",
+      wood: [
+        { x0: 0, y0: 53, x1: 71, y1: 87 },
+        { x0: 0, y0: 48, x1: 16, y1: 52 },
+      ],
+    },
+  },
+  {
+    id: "chibi-naval-cult-battleship",
+    rules: { kind: "lodge", wood: [{ x0: 0, y0: 48, x1: 87, y1: 95 }] },
+  },
+  { id: "chibi-naval-cult-submarine", rules: lodge },
+  {
+    id: "chibi-naval-cult-transport",
+    rules: {
+      kind: "lodge",
+      wood: [
+        { x0: 0, y0: 46, x1: 71, y1: 71 },
+        { x0: 0, y0: 36, x1: 23, y1: 71 },
+      ],
+    },
+  },
+  {
+    id: "chibi-naval-cult-portrait-patrol-boat",
+    rules: { kind: "lodge", wood: [{ x0: 0, y0: 30, x1: 47, y1: 47 }] },
+  },
+  {
+    id: "chibi-naval-cult-portrait-battleship",
+    rules: { kind: "lodge", wood: [{ x0: 0, y0: 30, x1: 47, y1: 47 }] },
+  },
+  { id: "chibi-naval-cult-portrait-submarine", rules: lodge },
+];
 
 /** The lodge's two creatures, the Herald's Unbound look and their busts. */
 export const CREATURE_ASSETS: readonly CultRemapAsset[] = [
+  // The Familiar's body is the summoned teal (bead pulp_wars-mch9.60).
   {
     id: "chibi-direction-cult-familiar",
-    rules: { kind: "lodge", lodgeHue: [190, 268] },
+    rules: { kind: "lodge", lodgeHue: [190, 268], body: "summon" },
   },
   {
     id: "chibi-direction-portrait-cult-familiar",
-    rules: { kind: "lodge", lodgeHue: [190, 268] },
+    rules: { kind: "lodge", lodgeHue: [190, 268], body: "summon" },
   },
   { id: "chibi-direction-cult-herald", rules: { kind: "lodge", noGlow: true } },
   {

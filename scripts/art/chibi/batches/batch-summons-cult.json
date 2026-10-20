@@ -124,7 +124,7 @@
       },
       "accent": "cult-lodge-icon",
       "remap": {
-        "preset": "cult-royal-aqua",
+        "preset": "cult-royal-teal",
         "rules": {
           "kind": "lodge",
           "noGlow": true
@@ -153,7 +153,7 @@
       },
       "accent": "cult-lodge-icon",
       "remap": {
-        "preset": "cult-royal-aqua",
+        "preset": "cult-royal-teal",
         "rules": {
           "kind": "lodge",
           "noGlow": true
@@ -171,7 +171,7 @@
       },
       "accent": "cult-lodge-icon",
       "remap": {
-        "preset": "cult-royal-aqua",
+        "preset": "cult-royal-teal",
         "rules": {
           "kind": "lodge",
           "noGlow": true

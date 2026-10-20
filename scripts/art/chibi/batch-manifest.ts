@@ -1620,6 +1620,21 @@ export function batchManifestProblems(
         asset.remap.rules.kind !== "lodge"
       )
         problems.push(`${label}: a remap's rules are robed or lodge`);
+      const palette = remapPreset(asset.remap.preset);
+      const { body, wood } = asset.remap.rules;
+      if (
+        (body !== undefined || wood !== undefined) &&
+        asset.remap.rules.kind !== "lodge"
+      )
+        problems.push(`${label}: a remap's body and wood are lodge rules`);
+      if (body === "summon" && palette?.summon === undefined)
+        problems.push(
+          `${label}: remap preset ${asset.remap.preset} has no summon ramp`,
+        );
+      if (wood !== undefined && palette?.wood === undefined)
+        problems.push(
+          `${label}: remap preset ${asset.remap.preset} has no wood ramp`,
+        );
       if (
         classRecipe.derivation !== "as-is" &&
         classRecipe.derivation !== "seated"

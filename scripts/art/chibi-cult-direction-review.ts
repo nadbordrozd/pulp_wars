@@ -291,9 +291,12 @@ const isMagenta: Test = (_, h, s, v) =>
 /** Palette 1's royal purple (bead pulp_wars-mch9.59): hue 271 to 277. */
 const isRoyalPurple: Test = (_, h, s, v) =>
   h >= 262 && h <= 290 && s >= 0.3 && v >= 0.1;
-/** Palette 1's aquamarine trim and lights: hue 160 to 175. */
-const isAquamarine: Test = (_, h, s, v) =>
-  h >= 155 && h <= 178 && s >= 0.3 && v >= 0.3;
+/**
+ * Palette 1's accent, its trim and lights: the summons' teal since bead
+ * pulp_wars-mch9.60, hue 172 to 186 (the aquamarine, 160 to 175, before).
+ */
+const isAccent: Test = (_, h, s, v) =>
+  h >= 166 && h <= 192 && s >= 0.3 && v >= 0.3;
 
 function share(raster: RgbaRaster, test: Test): number {
   const measured = pixelsWhere([raster], test);
@@ -750,7 +753,7 @@ async function gates(
           redPixels: pixelsWhere([sprites[key]], isRed).count,
           magentaPixels: pixelsWhere([sprites[key]], isMagenta).count,
           royalPurplePixels: pixelsWhere([sprites[key]], isRoyalPurple).count,
-          aquamarineShare: percent(share(sprites[key], isAquamarine)),
+          accentShare: percent(share(sprites[key], isAccent)),
         },
       ];
     }),
@@ -760,7 +763,7 @@ async function gates(
       g.share <= 8 &&
       (g.hueMin === null || (g.hueMin >= 144 && (g.hueMax ?? 0) <= 152)) &&
       // The Horror's own teal body shares the window: it is not an accent.
-      (title === "Horror" || g.aquamarineShare <= 8) &&
+      (title === "Horror" || g.accentShare <= 8) &&
       // Round 2's Initiate wears blood on its blade (pulp_wars-mch9.54);
       // since palette 1 (pulp_wars-mch9.59) the Initiate and the Herald's
       // robe are royal purple, and the summoned Horror wears no purple.
@@ -782,7 +785,7 @@ async function gates(
   return [
     {
       gate: 1,
-      asks: "Round 2 (pulp_wars-mch9.54) under palette 1 (pulp_wars-mch9.59): the Initiate is an ordinary man in an evil robe: a human face shows, the robe is the lodge's royal purple with aquamarine trim and the blood on the blade red, no lodge indigo is left; its face, dagger and candle read at zoom 0.75. (Round 1 asked for an indigo robe with a lit side; round 2 for a blood-red one.)",
+      asks: "Round 2 (pulp_wars-mch9.54) under palette 1 (pulp_wars-mch9.59): the Initiate is an ordinary man in an evil robe: a human face shows, the robe is the lodge's royal purple with a teal trim (the summons' hue since pulp_wars-mch9.60) and the blood on the blade red, no lodge indigo is left; its face, dagger and candle read at zoom 0.75. (Round 1 asked for an indigo robe with a lit side; round 2 for a blood-red one.)",
       measured: {
         skinPixels: skin.count,
         redPixels: red.count,
@@ -841,10 +844,10 @@ async function gates(
     },
     {
       gate: 4,
-      asks: "The accent is small on all three: green on hue 148 after the accent step where it is left (the Horror's specks, the Herald's crown tips), aquamarine where palette 1 (pulp_wars-mch9.59) moved it (the Initiate's flame and trim); no pixel of the Horror or the Herald is red or magenta, and the Horror wears no purple (the Herald's robe is the lodge's royal purple; since round 2, pulp_wars-mch9.54, the Initiate's blood is its own).",
+      asks: "The accent is small on all three: green on hue 148 after the accent step where it is left (the Horror's specks, the Herald's crown tips), the teal accent where palette 1 (pulp_wars-mch9.59, the summons' hue since pulp_wars-mch9.60) moved it (the Initiate's flame and trim); no pixel of the Horror or the Herald is red or magenta, and the Horror wears no purple (the Herald's robe is the lodge's royal purple; since round 2, pulp_wars-mch9.54, the Initiate's blood is its own).",
       measured: {
         ...greens,
-        rule: "green (the accent band: hue 80 to 152, saturation 0.5 and more) at most 8% of each sprite and every green tone at hue 144 to 152; aquamarine (hue 155 to 178) at most 8% on the Initiate and the Herald (the Horror's teal body shares the window); no red (hue 345 to 12) and no magenta (hue 290 to 345) pixel on the Horror and the Herald, and no royal purple (hue 262 to 290) on the Horror",
+        rule: "green (the accent band: hue 80 to 152, saturation 0.5 and more) at most 8% of each sprite and every green tone at hue 144 to 152; the teal accent (hue 166 to 192) at most 8% on the Initiate and the Herald (the Horror's teal body shares the window); no red (hue 345 to 12) and no magenta (hue 290 to 345) pixel on the Horror and the Herald, and no royal purple (hue 262 to 290) on the Horror",
       },
       byEye: BY_EYE[4].note,
       verdict: gate4Pass && BY_EYE[4].pass ? "PASS" : "FAIL",
@@ -884,7 +887,7 @@ const BY_EYE: Readonly<
 > = {
   1: {
     pass: true,
-    note: "Palette 1 (pulp_wars-mch9.59): on sample-zoom-0.75.png the Initiate is a bearded man's pale face in a royal purple hood with a mint trim line, with the bloody blade (its gold hilt kept) on the left and the aquamarine candle flame on the right; the robe is dark (63% dark pixels), which the bog's mid value carries, and it is the colour of the lodge's purple roofs, as the user asked (one holistic palette).",
+    note: "Palette 1 (pulp_wars-mch9.59): on sample-zoom-0.75.png the Initiate is a bearded man's pale face in a royal purple hood with a teal trim line (the summons' hue since pulp_wars-mch9.60), with the bloody blade (its gold hilt kept) on the left and the teal candle flame on the right; the robe is dark (63% dark pixels), which the bog's mid value carries, and it is the colour of the lodge's purple roofs, as the user asked (one holistic palette).",
   },
   2: {
     pass: true,
@@ -896,7 +899,7 @@ const BY_EYE: Readonly<
   },
   4: {
     pass: true,
-    note: "Palette 1 (pulp_wars-mch9.59): the Initiate's candle flame, amulet and trim line are aquamarine, small. The Horror keeps a few green specks on its head, and the lit tips of the Herald's tentacle crown fall in the accent band and stay green (4% of the sprite; the Herald's remap keeps its green): they read as part of the teal crown above the royal purple robe.",
+    note: "Palette 1 (pulp_wars-mch9.59): the Initiate's candle flame, amulet and trim line are the teal accent (the summons' hue since pulp_wars-mch9.60), small. The Horror keeps a few green specks on its head, and the lit tips of the Herald's tentacle crown fall in the accent band and stay green (4% of the sprite; the Herald's remap keeps its green): they read as part of the teal crown above the royal purple robe.",
   },
   5: {
     pass: true,
@@ -1445,7 +1448,12 @@ async function summonsEvidence(): Promise<void> {
       const bounds = opaqueBounds(of(title));
       return { title, asset, size: `${bounds.width} x ${bounds.height}` };
     }),
-    lineup: { thresholds, pairs },
+    lineup: {
+      thresholds,
+      pairs,
+      byEye:
+        "Palette 1's tweak (bead pulp_wars-mch9.60): the user asked for the Familiar in the summons' teal and the robes' accent in the same hue, so the measure now calls the Imp colour-too-close to the Familiar and to the Initiate, and the Gibbering Mass to the Familiar; that closeness is intended. On summons-lineup-x3.png and at half size they are told by shape: the Imp is a one-eyed horned imp with a small belly patch; the Familiar a round frog-cat with a big cream face and belly, bat wings and a gold collar and bell; the Gibbering Mass a heap of eyes; the Initiate a hooded bearded man in a purple robe with a dagger and a candle (silhouette distance 0.55 to 0.67).",
+    },
     ...interfaceMeasures,
   });
 }

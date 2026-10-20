@@ -97,15 +97,10 @@
           "protanopia": 13.2,
           "greyPalette": 3.3,
           "lightness": 5.1,
-          "meanLightness": [
-            40.2,
-            40
-          ],
+          "meanLightness": [40.2, 40],
           "silhouette": 0.44,
           "distinct": false,
-          "reasons": [
-            "colour too close"
-          ]
+          "reasons": ["colour too close"]
         }
       },
       {
@@ -117,51 +112,40 @@
           "protanopia": 8.6,
           "greyPalette": 2.1,
           "lightness": 4,
-          "meanLightness": [
-            40.2,
-            44.5
-          ],
+          "meanLightness": [40.2, 44.5],
           "silhouette": 0.46,
           "distinct": false,
-          "reasons": [
-            "colour too close"
-          ]
+          "reasons": ["colour too close"]
         }
       },
       {
         "unit": "Imp",
         "rival": "Familiar",
         "measure": {
-          "palette": 45.2,
-          "deuteranopia": 22.4,
-          "protanopia": 28.4,
-          "greyPalette": 1.8,
-          "lightness": 6.2,
-          "meanLightness": [
-            40.2,
-            44
-          ],
+          "palette": 8.7,
+          "deuteranopia": 7,
+          "protanopia": 7.5,
+          "greyPalette": 4.1,
+          "lightness": 10,
+          "meanLightness": [40.2, 49.5],
           "silhouette": 0.55,
-          "distinct": true,
-          "reasons": []
+          "distinct": false,
+          "reasons": ["colour too close"]
         }
       },
       {
         "unit": "Imp",
         "rival": "Initiate",
         "measure": {
-          "palette": 26.5,
-          "deuteranopia": 13.6,
-          "protanopia": 15.9,
+          "palette": 22.8,
+          "deuteranopia": 11.7,
+          "protanopia": 14.1,
           "greyPalette": 5.4,
-          "lightness": 13.2,
-          "meanLightness": [
-            40.2,
-            26.8
-          ],
+          "lightness": 13.3,
+          "meanLightness": [40.2, 26.7],
           "silhouette": 0.67,
-          "distinct": true,
-          "reasons": []
+          "distinct": false,
+          "reasons": ["colour too close"]
         }
       },
       {
@@ -173,15 +157,10 @@
           "protanopia": 8.7,
           "greyPalette": 1.6,
           "lightness": 3.3,
-          "meanLightness": [
-            44.5,
-            44
-          ],
+          "meanLightness": [44.5, 44],
           "silhouette": 0.33,
           "distinct": false,
-          "reasons": [
-            "colour too close"
-          ]
+          "reasons": ["colour too close"]
         }
       },
       {
@@ -193,33 +172,25 @@
           "protanopia": 9.5,
           "greyPalette": 1.9,
           "lightness": 6.9,
-          "meanLightness": [
-            44.5,
-            40
-          ],
+          "meanLightness": [44.5, 40],
           "silhouette": 0.49,
           "distinct": false,
-          "reasons": [
-            "colour too close"
-          ]
+          "reasons": ["colour too close"]
         }
       },
       {
         "unit": "Gibbering Mass",
         "rival": "Familiar",
         "measure": {
-          "palette": 42.7,
-          "deuteranopia": 22.3,
-          "protanopia": 24.6,
-          "greyPalette": 2.9,
-          "lightness": 7.8,
-          "meanLightness": [
-            44.5,
-            44
-          ],
+          "palette": 11.3,
+          "deuteranopia": 9.7,
+          "protanopia": 9.4,
+          "greyPalette": 4,
+          "lightness": 8.2,
+          "meanLightness": [44.5, 49.5],
           "silhouette": 0.55,
-          "distinct": true,
-          "reasons": []
+          "distinct": false,
+          "reasons": ["colour too close"]
         }
       },
       {
@@ -231,16 +202,10 @@
           "protanopia": 2.5,
           "greyPalette": 0.8,
           "lightness": 1.7,
-          "meanLightness": [
-            38.7,
-            40.2
-          ],
+          "meanLightness": [38.7, 40.2],
           "silhouette": 1,
           "distinct": false,
-          "reasons": [
-            "colour too close",
-            "greyscale too close"
-          ]
+          "reasons": ["colour too close", "greyscale too close"]
         }
       },
       {
@@ -252,15 +217,10 @@
           "protanopia": 11.4,
           "greyPalette": 2.8,
           "lightness": 6.3,
-          "meanLightness": [
-            38.7,
-            40
-          ],
+          "meanLightness": [38.7, 40],
           "silhouette": 0.44,
           "distinct": false,
-          "reasons": [
-            "colour too close"
-          ]
+          "reasons": ["colour too close"]
         }
       },
       {
@@ -272,16 +232,10 @@
           "protanopia": 3.4,
           "greyPalette": 0.7,
           "lightness": 2.3,
-          "meanLightness": [
-            43.5,
-            44.5
-          ],
+          "meanLightness": [43.5, 44.5],
           "silhouette": 1,
           "distinct": false,
-          "reasons": [
-            "colour too close",
-            "greyscale too close"
-          ]
+          "reasons": ["colour too close", "greyscale too close"]
         }
       },
       {
@@ -293,18 +247,14 @@
           "protanopia": 10.2,
           "greyPalette": 2.1,
           "lightness": 3.9,
-          "meanLightness": [
-            43.5,
-            44
-          ],
+          "meanLightness": [43.5, 44],
           "silhouette": 0.33,
           "distinct": false,
-          "reasons": [
-            "colour too close"
-          ]
+          "reasons": ["colour too close"]
         }
       }
-    ]
+    ],
+    "byEye": "Palette 1's tweak (bead pulp_wars-mch9.60): the user asked for the Familiar in the summons' teal and the robes' accent in the same hue, so the measure now calls the Imp colour-too-close to the Familiar and to the Initiate, and the Gibbering Mass to the Familiar; that closeness is intended. On summons-lineup-x3.png and at half size they are told by shape: the Imp is a one-eyed horned imp with a small belly patch; the Familiar a round frog-cat with a big cream face and belly, bat wings and a gold collar and bell; the Gibbering Mass a heap of eyes; the Initiate a hooded bearded man in a purple robe with a dagger and a candle (silhouette distance 0.55 to 0.67)."
   },
   "calls": {
     "recipes": 43,

@@ -78,9 +78,12 @@ const isBlue = (p: { hue: number; saturation: number; value: number }) =>
 /** Palette 1's royal purple (pulp_wars-mch9.59): hue 271 to 277. */
 const isPurple = (p: { hue: number; saturation: number; value: number }) =>
   p.hue >= 262 && p.hue <= 290 && p.saturation >= 0.3 && p.value >= 0.1;
-/** Palette 1's aquamarine windows, lamps and flames: hue 160 to 175. */
-const isAqua = (p: { hue: number; saturation: number; value: number }) =>
-  p.hue >= 155 && p.hue <= 178 && p.saturation >= 0.45 && p.value >= 0.45;
+/**
+ * Palette 1's lit windows, lamps and flames: the summons' teal since bead
+ * pulp_wars-mch9.60 (hue 172 to 186; the aquamarine, 160 to 175, before).
+ */
+const isAccent = (p: { hue: number; saturation: number; value: number }) =>
+  p.hue >= 166 && p.hue <= 192 && p.saturation >= 0.45 && p.value >= 0.45;
 
 const cultBuildings = CHIBI_FACTION_BUILDING_ART_ASSETS_V7.filter((entry) =>
   entry.subject.startsWith("IMPROVEMENT:CULT:"),
@@ -237,7 +240,7 @@ describe("the Cult's colours on its places (pulp_wars-mch9.16)", () => {
     }
   });
 
-  it("wears palette 1's royal purple roofs and small aquamarine lights, and no indigo, green, red, magenta or key colour", async () => {
+  it("wears palette 1's royal purple roofs and small teal lights, and no indigo, green, red, magenta or key colour", async () => {
     const roofed = new Set([
       ...CHIBI_DIRECTION_CULT_CITY_ART_ASSETS_V7.map((entry) => entry.id),
       "chibi-cult-sawmill",
@@ -255,10 +258,10 @@ describe("the Cult's colours on its places (pulp_wars-mch9.16)", () => {
       const master = await masterOf(entry.url);
       const pixels = hsvPixels(master);
       // Palette 1 (pulp_wars-mch9.59): the green windows, lamps and flames
-      // are aquamarine; the accent is at most about 8% of a lodge sprite.
+      // are the teal accent; it is at most about 8% of a lodge sprite.
       expect(pixels.filter(isGreen).length, entry.id).toBe(0);
       expect(
-        pixels.filter(isAqua).length / pixels.length,
+        pixels.filter(isAccent).length / pixels.length,
         entry.id,
       ).toBeLessThanOrEqual(0.08);
       // Red means broken; magenta is another faction's accent.

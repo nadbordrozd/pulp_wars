@@ -1173,7 +1173,7 @@
         "label": "Cult",
         "opaquePixels": 2371,
         "outlineShare": 23.3,
-        "bodyMean": "#674379",
+        "bodyMean": "#68437a",
         "mainColours": [
           "#522775 36.7%",
           "#612f88 29.2%",
@@ -1186,15 +1186,15 @@
         "heightShareOfPatrolBoat": 75,
         "waterlineRow": 79,
         "patrolBoatWaterlineRow": 77,
-        "paletteDistanceToPatrolBoat": 6.6,
+        "paletteDistanceToPatrolBoat": 7.7,
         "water": {
           "shallow": {
-            "bodyMeanDeltaE": 66,
+            "bodyMeanDeltaE": 66.3,
             "bodyMeanContrast": 4.7,
             "bodyShareWithin12": 0
           },
           "deep": {
-            "bodyMeanDeltaE": 32.9,
+            "bodyMeanDeltaE": 33.2,
             "bodyMeanContrast": 1.7,
             "bodyShareWithin12": 2.9
           }

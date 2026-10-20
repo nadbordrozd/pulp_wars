@@ -868,8 +868,8 @@
       "candidateSha256": "af3cffb098e02a218c62978b47dde587ffb3396254fff506092a9a732134360e",
       "master": {
         "path": "public/assets/chibi/units/chibi-naval-cult-battleship.png",
-        "sha256": "a1929f2d28c067e65e8795cc329e9bd2fc1402da56bbf468be107340280cec3a",
-        "pixelSha256": "711c92e50c8173b5fb667593c8ca034c2149895be79184dfeea312e01ad13fc8",
+        "sha256": "1bff66aa5fab7e463c75ceba97082549f697bede8088a1b2e12679029edd39c1",
+        "pixelSha256": "d1b260252c0eeb9ce03e184eb6aa32b14f749a03d996fdd10fbc524f66d2405c",
         "width": 88,
         "height": 96
       },
@@ -912,10 +912,10 @@
           "trimPixels": 0
         },
         "remap": {
-          "preset": "cult-royal-aqua",
+          "preset": "cult-royal-teal",
           "palette": {
             "main": "#6a2f93",
-            "accent": "#4fe3c1",
+            "accent": "#46ada9",
             "ramp": [
               [0, "#0c0612"],
               [10, "#1f0e2e"],
@@ -934,31 +934,64 @@
               [45, "#48424f"]
             ],
             "trim": [
-              [15, "#124a42"],
-              [30, "#22836f"],
-              [45, "#3dbb9e"],
-              [60, "#66dec2"],
-              [75, "#9cf3dd"],
-              [90, "#d4fff4"]
+              [15, "#1b464a"],
+              [30, "#287b7c"],
+              [45, "#46ada9"],
+              [60, "#6cd1c9"],
+              [75, "#a6ede3"],
+              [90, "#dbfaf5"]
             ],
             "glow": [
-              [30, "#0f5f53"],
-              [50, "#22a58e"],
-              [65, "#3fd6b7"],
-              [80, "#7af2d6"],
-              [92, "#c8fff2"]
+              [12, "#073639"],
+              [30, "#176163"],
+              [50, "#369f9c"],
+              [65, "#5acdc4"],
+              [80, "#92ede2"],
+              [92, "#d4fcf5"]
             ],
+            "summon": [
+              [0, "#061619"],
+              [10, "#0c252b"],
+              [22, "#19484e"],
+              [30, "#255f65"],
+              [37, "#2d7d7d"],
+              [44, "#2f9496"],
+              [52, "#43aaa7"],
+              [62, "#59c7bd"],
+              [72, "#83dfd4"],
+              [84, "#afefe5"]
+            ],
+            "wood": [
+              [0, "#150c08"],
+              [10, "#2a170f"],
+              [18, "#412215"],
+              [26, "#562f1b"],
+              [34, "#6b3e23"],
+              [44, "#845231"],
+              [56, "#a36d44"],
+              [70, "#c49160"]
+            ],
+            "glowMinValue": 0.15,
             "avoid": ["#f06762", "#28b7a4", "#e2b63f", "#a277d2"],
             "avoidDistance": 14
           },
           "rules": {
-            "kind": "lodge"
+            "kind": "lodge",
+            "wood": [
+              {
+                "x0": 0,
+                "y0": 48,
+                "x1": 87,
+                "y1": 95
+              }
+            ]
           },
           "pixels": {
-            "main": 951,
+            "main": 118,
             "dark": 0,
             "trim": 0,
-            "glow": 109
+            "glow": 110,
+            "wood": 850
           }
         }
       },
@@ -1069,10 +1102,10 @@
           "trimPixels": 0
         },
         "remap": {
-          "preset": "cult-royal-aqua",
+          "preset": "cult-royal-teal",
           "palette": {
             "main": "#6a2f93",
-            "accent": "#4fe3c1",
+            "accent": "#46ada9",
             "ramp": [
               [0, "#0c0612"],
               [10, "#1f0e2e"],
@@ -1091,20 +1124,44 @@
               [45, "#48424f"]
             ],
             "trim": [
-              [15, "#124a42"],
-              [30, "#22836f"],
-              [45, "#3dbb9e"],
-              [60, "#66dec2"],
-              [75, "#9cf3dd"],
-              [90, "#d4fff4"]
+              [15, "#1b464a"],
+              [30, "#287b7c"],
+              [45, "#46ada9"],
+              [60, "#6cd1c9"],
+              [75, "#a6ede3"],
+              [90, "#dbfaf5"]
             ],
             "glow": [
-              [30, "#0f5f53"],
-              [50, "#22a58e"],
-              [65, "#3fd6b7"],
-              [80, "#7af2d6"],
-              [92, "#c8fff2"]
+              [12, "#073639"],
+              [30, "#176163"],
+              [50, "#369f9c"],
+              [65, "#5acdc4"],
+              [80, "#92ede2"],
+              [92, "#d4fcf5"]
             ],
+            "summon": [
+              [0, "#061619"],
+              [10, "#0c252b"],
+              [22, "#19484e"],
+              [30, "#255f65"],
+              [37, "#2d7d7d"],
+              [44, "#2f9496"],
+              [52, "#43aaa7"],
+              [62, "#59c7bd"],
+              [72, "#83dfd4"],
+              [84, "#afefe5"]
+            ],
+            "wood": [
+              [0, "#150c08"],
+              [10, "#2a170f"],
+              [18, "#412215"],
+              [26, "#562f1b"],
+              [34, "#6b3e23"],
+              [44, "#845231"],
+              [56, "#a36d44"],
+              [70, "#c49160"]
+            ],
+            "glowMinValue": 0.15,
             "avoid": ["#f06762", "#28b7a4", "#e2b63f", "#a277d2"],
             "avoidDistance": 14
           },
@@ -1156,8 +1213,8 @@
       "candidateSha256": "77c2216351631a585e4339b3f39f8242b131c9e3e774f39fce210b442ab6ae1d",
       "master": {
         "path": "public/assets/chibi/units/chibi-naval-cult-patrol-boat.png",
-        "sha256": "8c034f35f684450ab08821c1b731e8190fc192604109a624576cf275933e6472",
-        "pixelSha256": "298b087d39d8eec166ac8fc7b1da1f3e9e2dfd3814bd5c1afaf8575c97212b5a",
+        "sha256": "d5ce4e9866f374b4c795f22779489e40c808fb1f64e8f57e9031d79ba23d292a",
+        "pixelSha256": "f0941d709666d8c6e87b4fe6c8824f9ab321a3708a6768812ea577fced506226",
         "width": 72,
         "height": 88
       },
@@ -1200,10 +1257,10 @@
           "trimPixels": 0
         },
         "remap": {
-          "preset": "cult-royal-aqua",
+          "preset": "cult-royal-teal",
           "palette": {
             "main": "#6a2f93",
-            "accent": "#4fe3c1",
+            "accent": "#46ada9",
             "ramp": [
               [0, "#0c0612"],
               [10, "#1f0e2e"],
@@ -1222,31 +1279,70 @@
               [45, "#48424f"]
             ],
             "trim": [
-              [15, "#124a42"],
-              [30, "#22836f"],
-              [45, "#3dbb9e"],
-              [60, "#66dec2"],
-              [75, "#9cf3dd"],
-              [90, "#d4fff4"]
+              [15, "#1b464a"],
+              [30, "#287b7c"],
+              [45, "#46ada9"],
+              [60, "#6cd1c9"],
+              [75, "#a6ede3"],
+              [90, "#dbfaf5"]
             ],
             "glow": [
-              [30, "#0f5f53"],
-              [50, "#22a58e"],
-              [65, "#3fd6b7"],
-              [80, "#7af2d6"],
-              [92, "#c8fff2"]
+              [12, "#073639"],
+              [30, "#176163"],
+              [50, "#369f9c"],
+              [65, "#5acdc4"],
+              [80, "#92ede2"],
+              [92, "#d4fcf5"]
             ],
+            "summon": [
+              [0, "#061619"],
+              [10, "#0c252b"],
+              [22, "#19484e"],
+              [30, "#255f65"],
+              [37, "#2d7d7d"],
+              [44, "#2f9496"],
+              [52, "#43aaa7"],
+              [62, "#59c7bd"],
+              [72, "#83dfd4"],
+              [84, "#afefe5"]
+            ],
+            "wood": [
+              [0, "#150c08"],
+              [10, "#2a170f"],
+              [18, "#412215"],
+              [26, "#562f1b"],
+              [34, "#6b3e23"],
+              [44, "#845231"],
+              [56, "#a36d44"],
+              [70, "#c49160"]
+            ],
+            "glowMinValue": 0.15,
             "avoid": ["#f06762", "#28b7a4", "#e2b63f", "#a277d2"],
             "avoidDistance": 14
           },
           "rules": {
-            "kind": "lodge"
+            "kind": "lodge",
+            "wood": [
+              {
+                "x0": 0,
+                "y0": 53,
+                "x1": 71,
+                "y1": 87
+              },
+              {
+                "x0": 0,
+                "y0": 48,
+                "x1": 16,
+                "y1": 52
+              }
+            ]
           },
           "pixels": {
-            "main": 627,
+            "main": 324,
             "dark": 0,
             "trim": 0,
-            "glow": 32
+            "glow": 46,
+            "wood": 323
           }
         }
       },
@@ -1286,8 +1382,8 @@
       "candidateSha256": "037d51135c0b2cb428b334bfabebacf4cec48731e9c428c4b72f093566ea75bb",
       "master": {
         "path": "public/assets/chibi/portraits/chibi-naval-cult-portrait-battleship.png",
-        "sha256": "ecdd9aa09807a2f945c4aa24919ba788402cb28ccdc276d149605d02d13c68fe",
-        "pixelSha256": "df0a0682cbf40e28c883e42ef091d1a3a5fc5ed98bc46c377713332f53ace7a5",
+        "sha256": "0660e96e983a158e35797a3d6e79207d8941af5b2e44c6a584e80ef1966aa9d5",
+        "pixelSha256": "af659a2ad0387922b3836c6e756144294165664e351c604b2632baa4f4c76efa",
         "width": 48,
         "height": 48
       },
@@ -1357,10 +1453,10 @@
           "trimPixels": 0
         },
         "remap": {
-          "preset": "cult-royal-aqua",
+          "preset": "cult-royal-teal",
           "palette": {
             "main": "#6a2f93",
-            "accent": "#4fe3c1",
+            "accent": "#46ada9",
             "ramp": [
               [0, "#0c0612"],
               [10, "#1f0e2e"],
@@ -1379,31 +1475,64 @@
               [45, "#48424f"]
             ],
             "trim": [
-              [15, "#124a42"],
-              [30, "#22836f"],
-              [45, "#3dbb9e"],
-              [60, "#66dec2"],
-              [75, "#9cf3dd"],
-              [90, "#d4fff4"]
+              [15, "#1b464a"],
+              [30, "#287b7c"],
+              [45, "#46ada9"],
+              [60, "#6cd1c9"],
+              [75, "#a6ede3"],
+              [90, "#dbfaf5"]
             ],
             "glow": [
-              [30, "#0f5f53"],
-              [50, "#22a58e"],
-              [65, "#3fd6b7"],
-              [80, "#7af2d6"],
-              [92, "#c8fff2"]
+              [12, "#073639"],
+              [30, "#176163"],
+              [50, "#369f9c"],
+              [65, "#5acdc4"],
+              [80, "#92ede2"],
+              [92, "#d4fcf5"]
             ],
+            "summon": [
+              [0, "#061619"],
+              [10, "#0c252b"],
+              [22, "#19484e"],
+              [30, "#255f65"],
+              [37, "#2d7d7d"],
+              [44, "#2f9496"],
+              [52, "#43aaa7"],
+              [62, "#59c7bd"],
+              [72, "#83dfd4"],
+              [84, "#afefe5"]
+            ],
+            "wood": [
+              [0, "#150c08"],
+              [10, "#2a170f"],
+              [18, "#412215"],
+              [26, "#562f1b"],
+              [34, "#6b3e23"],
+              [44, "#845231"],
+              [56, "#a36d44"],
+              [70, "#c49160"]
+            ],
+            "glowMinValue": 0.15,
             "avoid": ["#f06762", "#28b7a4", "#e2b63f", "#a277d2"],
             "avoidDistance": 14
           },
           "rules": {
-            "kind": "lodge"
+            "kind": "lodge",
+            "wood": [
+              {
+                "x0": 0,
+                "y0": 30,
+                "x1": 47,
+                "y1": 47
+              }
+            ]
           },
           "pixels": {
-            "main": 188,
+            "main": 34,
             "dark": 0,
             "trim": 0,
-            "glow": 30
+            "glow": 30,
+            "wood": 154
           }
         }
       },
@@ -1443,8 +1572,8 @@
       "candidateSha256": "a6064f76bdadda7fa50b2ef5b974cc0698a672dbaf1adf1199fcbd747e31a494",
       "master": {
         "path": "public/assets/chibi/portraits/chibi-naval-cult-portrait-patrol-boat.png",
-        "sha256": "878a4a5765d6590a619cc0681875ccddae9bf998dc72ca6e411813b6f436fdfc",
-        "pixelSha256": "d043e989b9e6142490b2b6a49021eb72e16b4fb28785b6f366196ba7cb51fd51",
+        "sha256": "ce6bc0508195cca2e65bb2ae7aa85b84613781abada03db4b6397de6e32b6de1",
+        "pixelSha256": "1e5be32d4b9b85fe6255577d322e6efe3948061ebb2674cd35069099f76b014b",
         "width": 48,
         "height": 48
       },
@@ -1514,10 +1643,10 @@
           "trimPixels": 0
         },
         "remap": {
-          "preset": "cult-royal-aqua",
+          "preset": "cult-royal-teal",
           "palette": {
             "main": "#6a2f93",
-            "accent": "#4fe3c1",
+            "accent": "#46ada9",
             "ramp": [
               [0, "#0c0612"],
               [10, "#1f0e2e"],
@@ -1536,31 +1665,64 @@
               [45, "#48424f"]
             ],
             "trim": [
-              [15, "#124a42"],
-              [30, "#22836f"],
-              [45, "#3dbb9e"],
-              [60, "#66dec2"],
-              [75, "#9cf3dd"],
-              [90, "#d4fff4"]
+              [15, "#1b464a"],
+              [30, "#287b7c"],
+              [45, "#46ada9"],
+              [60, "#6cd1c9"],
+              [75, "#a6ede3"],
+              [90, "#dbfaf5"]
             ],
             "glow": [
-              [30, "#0f5f53"],
-              [50, "#22a58e"],
-              [65, "#3fd6b7"],
-              [80, "#7af2d6"],
-              [92, "#c8fff2"]
+              [12, "#073639"],
+              [30, "#176163"],
+              [50, "#369f9c"],
+              [65, "#5acdc4"],
+              [80, "#92ede2"],
+              [92, "#d4fcf5"]
             ],
+            "summon": [
+              [0, "#061619"],
+              [10, "#0c252b"],
+              [22, "#19484e"],
+              [30, "#255f65"],
+              [37, "#2d7d7d"],
+              [44, "#2f9496"],
+              [52, "#43aaa7"],
+              [62, "#59c7bd"],
+              [72, "#83dfd4"],
+              [84, "#afefe5"]
+            ],
+            "wood": [
+              [0, "#150c08"],
+              [10, "#2a170f"],
+              [18, "#412215"],
+              [26, "#562f1b"],
+              [34, "#6b3e23"],
+              [44, "#845231"],
+              [56, "#a36d44"],
+              [70, "#c49160"]
+            ],
+            "glowMinValue": 0.15,
             "avoid": ["#f06762", "#28b7a4", "#e2b63f", "#a277d2"],
             "avoidDistance": 14
           },
           "rules": {
-            "kind": "lodge"
+            "kind": "lodge",
+            "wood": [
+              {
+                "x0": 0,
+                "y0": 30,
+                "x1": 47,
+                "y1": 47
+              }
+            ]
           },
           "pixels": {
-            "main": 277,
+            "main": 139,
             "dark": 0,
             "trim": 0,
-            "glow": 20
+            "glow": 20,
+            "wood": 138
           }
         }
       },
@@ -1600,8 +1762,8 @@
       "candidateSha256": "2ec798d2a665fa164be3bd58bf3ecb98465f90d681823cdc2bb1a366b14e8118",
       "master": {
         "path": "public/assets/chibi/portraits/chibi-naval-cult-portrait-submarine.png",
-        "sha256": "1a5e6428b094a2f0ef28987c7813337b88b2d6de2d9f8f5c23983a1c0cfbf01f",
-        "pixelSha256": "af7aaafe4c5e18ce5a0dc813ec8a2db102bacb88d0dc9e043082bbe6f33b67db",
+        "sha256": "522f7dfc55e1bf2fe91322d8db5fca691b18e9f065c9250fd03b33812a1a9ef6",
+        "pixelSha256": "fc1eb6ceacf7006f8795e8f4968f21e6743bd97490a1b76412893b933c5b65de",
         "width": 48,
         "height": 48
       },
@@ -1671,10 +1833,10 @@
           "trimPixels": 0
         },
         "remap": {
-          "preset": "cult-royal-aqua",
+          "preset": "cult-royal-teal",
           "palette": {
             "main": "#6a2f93",
-            "accent": "#4fe3c1",
+            "accent": "#46ada9",
             "ramp": [
               [0, "#0c0612"],
               [10, "#1f0e2e"],
@@ -1693,20 +1855,44 @@
               [45, "#48424f"]
             ],
             "trim": [
-              [15, "#124a42"],
-              [30, "#22836f"],
-              [45, "#3dbb9e"],
-              [60, "#66dec2"],
-              [75, "#9cf3dd"],
-              [90, "#d4fff4"]
+              [15, "#1b464a"],
+              [30, "#287b7c"],
+              [45, "#46ada9"],
+              [60, "#6cd1c9"],
+              [75, "#a6ede3"],
+              [90, "#dbfaf5"]
             ],
             "glow": [
-              [30, "#0f5f53"],
-              [50, "#22a58e"],
-              [65, "#3fd6b7"],
-              [80, "#7af2d6"],
-              [92, "#c8fff2"]
+              [12, "#073639"],
+              [30, "#176163"],
+              [50, "#369f9c"],
+              [65, "#5acdc4"],
+              [80, "#92ede2"],
+              [92, "#d4fcf5"]
             ],
+            "summon": [
+              [0, "#061619"],
+              [10, "#0c252b"],
+              [22, "#19484e"],
+              [30, "#255f65"],
+              [37, "#2d7d7d"],
+              [44, "#2f9496"],
+              [52, "#43aaa7"],
+              [62, "#59c7bd"],
+              [72, "#83dfd4"],
+              [84, "#afefe5"]
+            ],
+            "wood": [
+              [0, "#150c08"],
+              [10, "#2a170f"],
+              [18, "#412215"],
+              [26, "#562f1b"],
+              [34, "#6b3e23"],
+              [44, "#845231"],
+              [56, "#a36d44"],
+              [70, "#c49160"]
+            ],
+            "glowMinValue": 0.15,
             "avoid": ["#f06762", "#28b7a4", "#e2b63f", "#a277d2"],
             "avoidDistance": 14
           },
@@ -1757,8 +1943,8 @@
       "candidateSha256": "02245c3f0f90726a8f5127846cb248d907e198139752ac11094ae6f5e151b9f5",
       "master": {
         "path": "public/assets/chibi/units/chibi-naval-cult-submarine.png",
-        "sha256": "c019a0108dc1ca009e77dd35ba8082311cf3c320d475218dc5413168f66e3c68",
-        "pixelSha256": "8a9170330c5cb47cf795ddfc8d3b12efe97fee87b170051d2f17b32ab88437e2",
+        "sha256": "e05b7351d4153ba4bac7b1b2608e12f920db32c5d241876db4c09eb2cddff467",
+        "pixelSha256": "64e4d32218c63338ea278b48c13b76259294cab761236d594f1c7fdfd87ede17",
         "width": 72,
         "height": 88
       },
@@ -1804,10 +1990,10 @@
           "trimPixels": 0
         },
         "remap": {
-          "preset": "cult-royal-aqua",
+          "preset": "cult-royal-teal",
           "palette": {
             "main": "#6a2f93",
-            "accent": "#4fe3c1",
+            "accent": "#46ada9",
             "ramp": [
               [0, "#0c0612"],
               [10, "#1f0e2e"],
@@ -1826,20 +2012,44 @@
               [45, "#48424f"]
             ],
             "trim": [
-              [15, "#124a42"],
-              [30, "#22836f"],
-              [45, "#3dbb9e"],
-              [60, "#66dec2"],
-              [75, "#9cf3dd"],
-              [90, "#d4fff4"]
+              [15, "#1b464a"],
+              [30, "#287b7c"],
+              [45, "#46ada9"],
+              [60, "#6cd1c9"],
+              [75, "#a6ede3"],
+              [90, "#dbfaf5"]
             ],
             "glow": [
-              [30, "#0f5f53"],
-              [50, "#22a58e"],
-              [65, "#3fd6b7"],
-              [80, "#7af2d6"],
-              [92, "#c8fff2"]
+              [12, "#073639"],
+              [30, "#176163"],
+              [50, "#369f9c"],
+              [65, "#5acdc4"],
+              [80, "#92ede2"],
+              [92, "#d4fcf5"]
             ],
+            "summon": [
+              [0, "#061619"],
+              [10, "#0c252b"],
+              [22, "#19484e"],
+              [30, "#255f65"],
+              [37, "#2d7d7d"],
+              [44, "#2f9496"],
+              [52, "#43aaa7"],
+              [62, "#59c7bd"],
+              [72, "#83dfd4"],
+              [84, "#afefe5"]
+            ],
+            "wood": [
+              [0, "#150c08"],
+              [10, "#2a170f"],
+              [18, "#412215"],
+              [26, "#562f1b"],
+              [34, "#6b3e23"],
+              [44, "#845231"],
+              [56, "#a36d44"],
+              [70, "#c49160"]
+            ],
+            "glowMinValue": 0.15,
             "avoid": ["#f06762", "#28b7a4", "#e2b63f", "#a277d2"],
             "avoidDistance": 14
           },
@@ -1850,7 +2060,7 @@
             "main": 1386,
             "dark": 0,
             "trim": 0,
-            "glow": 54
+            "glow": 56
           }
         }
       },
@@ -1884,8 +2094,8 @@
       "candidateSha256": "1784db0c8135931e398d048a3a552c1bab4aebf326e1563512b23580ec3d8fd6",
       "master": {
         "path": "public/assets/chibi/units/chibi-naval-cult-transport.png",
-        "sha256": "e6c61db344cb55fb5e50c5b285cc25cf84521fafdddf83b419a00d9e9d36e4da",
-        "pixelSha256": "430289f248b1dc528cccb1dd60b36dbb2e828dd9800d17f3c0fa0bdc68f6d62d",
+        "sha256": "686d7ebbaf22c17f4173512de84bad21a459d92923cfee04e8181165fc6dcada",
+        "pixelSha256": "0f447bec2ec66ad8277c7e6bae82624d1a996bb45d40fd68e6f779728e01945b",
         "width": 72,
         "height": 72
       },
@@ -1928,10 +2138,10 @@
           "trimPixels": 0
         },
         "remap": {
-          "preset": "cult-royal-aqua",
+          "preset": "cult-royal-teal",
           "palette": {
             "main": "#6a2f93",
-            "accent": "#4fe3c1",
+            "accent": "#46ada9",
             "ramp": [
               [0, "#0c0612"],
               [10, "#1f0e2e"],
@@ -1950,31 +2160,70 @@
               [45, "#48424f"]
             ],
             "trim": [
-              [15, "#124a42"],
-              [30, "#22836f"],
-              [45, "#3dbb9e"],
-              [60, "#66dec2"],
-              [75, "#9cf3dd"],
-              [90, "#d4fff4"]
+              [15, "#1b464a"],
+              [30, "#287b7c"],
+              [45, "#46ada9"],
+              [60, "#6cd1c9"],
+              [75, "#a6ede3"],
+              [90, "#dbfaf5"]
             ],
             "glow": [
-              [30, "#0f5f53"],
-              [50, "#22a58e"],
-              [65, "#3fd6b7"],
-              [80, "#7af2d6"],
-              [92, "#c8fff2"]
+              [12, "#073639"],
+              [30, "#176163"],
+              [50, "#369f9c"],
+              [65, "#5acdc4"],
+              [80, "#92ede2"],
+              [92, "#d4fcf5"]
             ],
+            "summon": [
+              [0, "#061619"],
+              [10, "#0c252b"],
+              [22, "#19484e"],
+              [30, "#255f65"],
+              [37, "#2d7d7d"],
+              [44, "#2f9496"],
+              [52, "#43aaa7"],
+              [62, "#59c7bd"],
+              [72, "#83dfd4"],
+              [84, "#afefe5"]
+            ],
+            "wood": [
+              [0, "#150c08"],
+              [10, "#2a170f"],
+              [18, "#412215"],
+              [26, "#562f1b"],
+              [34, "#6b3e23"],
+              [44, "#845231"],
+              [56, "#a36d44"],
+              [70, "#c49160"]
+            ],
+            "glowMinValue": 0.15,
             "avoid": ["#f06762", "#28b7a4", "#e2b63f", "#a277d2"],
             "avoidDistance": 14
           },
           "rules": {
-            "kind": "lodge"
+            "kind": "lodge",
+            "wood": [
+              {
+                "x0": 0,
+                "y0": 46,
+                "x1": 71,
+                "y1": 71
+              },
+              {
+                "x0": 0,
+                "y0": 36,
+                "x1": 23,
+                "y1": 71
+              }
+            ]
           },
           "pixels": {
-            "main": 512,
+            "main": 298,
             "dark": 0,
             "trim": 0,
-            "glow": 13
+            "glow": 13,
+            "wood": 214
           }
         }
       },

@@ -20,7 +20,7 @@
       "ownerColour": false,
       "accent": "cult-lodge",
       "remap": {
-        "preset": "cult-royal-aqua",
+        "preset": "cult-royal-teal",
         "rules": {
           "kind": "lodge"
         }
@@ -39,7 +39,7 @@
       "ownerColour": false,
       "accent": "cult-lodge",
       "remap": {
-        "preset": "cult-royal-aqua",
+        "preset": "cult-royal-teal",
         "rules": {
           "kind": "lodge"
         }
@@ -58,7 +58,7 @@
       "ownerColour": false,
       "accent": "cult-lodge",
       "remap": {
-        "preset": "cult-royal-aqua",
+        "preset": "cult-royal-teal",
         "rules": {
           "kind": "lodge"
         }

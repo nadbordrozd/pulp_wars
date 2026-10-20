@@ -54,9 +54,9 @@
       "sprite": "48 x 44",
       "greenPercent": 0,
       "indigoPercent": 0,
-      "tealPercent": 0,
+      "tealPercent": 46.9,
       "redPercent": 0,
-      "violetPercent": 47.8
+      "violetPercent": 0
     },
     {
       "asset": "chibi-direction-portrait-cult-hexer",
@@ -171,9 +171,9 @@
       "sprite": "43 x 38",
       "greenPercent": 0,
       "indigoPercent": 0,
-      "tealPercent": 2.1,
+      "tealPercent": 1.9,
       "redPercent": 0,
-      "violetPercent": 33
+      "violetPercent": 16.5
     },
     {
       "asset": "chibi-naval-cult-portrait-battleship",
@@ -184,9 +184,9 @@
       "sprite": "34 x 43",
       "greenPercent": 0,
       "indigoPercent": 0,
-      "tealPercent": 3,
+      "tealPercent": 2.2,
       "redPercent": 0,
-      "violetPercent": 18.9
+      "violetPercent": 3.4
     },
     {
       "asset": "chibi-naval-cult-portrait-submarine",

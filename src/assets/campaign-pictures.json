@@ -120,14 +120,14 @@
       "path": "public/assets/chibi/campaign/campaign-cult.png",
       "width": 128,
       "height": 96,
-      "pixelSha256": "6d1aec4e461e3f20c7d352389a55a62c4328fd59e18c19469a7825ba09d1bed6",
+      "pixelSha256": "2c96fb1e64342394ca132a0a2e677157a2c9e9c5f2492b3a93af49e039be580f",
       "source": {
         "recipe": "cult-b",
         "candidate": 2,
         "sha256": "093e7841a1a303706d4c87e916196da574f997f3a77285127e0e090d170e6fa5"
       },
       "remap": {
-        "preset": "cult-royal-aqua",
+        "preset": "cult-royal-teal",
         "rules": {
           "kind": "robed"
         }

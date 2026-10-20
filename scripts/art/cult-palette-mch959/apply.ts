@@ -82,6 +82,8 @@ const DEBUG: Record<RemapKind, readonly [number, number, number]> = {
   dark: [255, 230, 0],
   trim: [255, 0, 255],
   glow: [0, 255, 0],
+  summon: [40, 90, 255],
+  wood: [255, 140, 0],
 };
 
 async function mask(out: string): Promise<void> {

@@ -13,7 +13,7 @@
       "tealShare": 1.2,
       "redPixels": 0,
       "violetOrMagentaPixels": 816,
-      "fromGrass": 75.1
+      "fromGrass": 75.3
     },
     {
       "title": "City 2",
@@ -23,10 +23,10 @@
       "seat": 3,
       "greenShare": 0,
       "indigoShare": 0,
-      "tealShare": 0.6,
+      "tealShare": 0.3,
       "redPixels": 0,
       "violetOrMagentaPixels": 823,
-      "fromGrass": 66.7
+      "fromGrass": 66.8
     },
     {
       "title": "City 3",
@@ -36,10 +36,10 @@
       "seat": 3,
       "greenShare": 0,
       "indigoShare": 0,
-      "tealShare": 2.1,
+      "tealShare": 1.6,
       "redPixels": 0,
       "violetOrMagentaPixels": 771,
-      "fromGrass": 63.8
+      "fromGrass": 64.1
     }
   ],
   "buildings": [
@@ -51,7 +51,7 @@
       "seat": 3,
       "greenShare": 0,
       "indigoShare": 0,
-      "tealShare": 23.3,
+      "tealShare": 23.2,
       "redPixels": 0,
       "violetOrMagentaPixels": 236,
       "fromGrass": 65.7
@@ -64,10 +64,10 @@
       "seat": 3,
       "greenShare": 0,
       "indigoShare": 0,
-      "tealShare": 0.8,
+      "tealShare": 1.1,
       "redPixels": 0,
       "violetOrMagentaPixels": 1007,
-      "fromGrass": 77.6
+      "fromGrass": 77.8
     },
     {
       "title": "Forge",
@@ -93,7 +93,7 @@
       "tealShare": 0.5,
       "redPixels": 0,
       "violetOrMagentaPixels": 654,
-      "fromGrass": 66.5
+      "fromGrass": 66.6
     },
     {
       "title": "Port",
@@ -106,7 +106,7 @@
       "tealShare": 0.5,
       "redPixels": 0,
       "violetOrMagentaPixels": 344,
-      "fromGrass": 58.5
+      "fromGrass": 58.6
     },
     {
       "title": "Shipyard",
@@ -129,10 +129,10 @@
       "seat": 3,
       "greenShare": 0,
       "indigoShare": 0,
-      "tealShare": 4.7,
+      "tealShare": 1.6,
       "redPixels": 0,
       "violetOrMagentaPixels": 460,
-      "fromGrass": 61.2
+      "fromGrass": 61.6
     }
   ],
   "monuments": [
@@ -147,7 +147,7 @@
       "tealShare": 0.5,
       "redPixels": 0,
       "violetOrMagentaPixels": 0,
-      "fromGrass": 46.6
+      "fromGrass": 46.7
     },
     {
       "title": "Engineer",
@@ -160,7 +160,7 @@
       "tealShare": 0.7,
       "redPixels": 0,
       "violetOrMagentaPixels": 0,
-      "fromGrass": 43.6
+      "fromGrass": 43.7
     },
     {
       "title": "Muster",
@@ -183,10 +183,10 @@
       "seat": 3,
       "greenShare": 0,
       "indigoShare": 0,
-      "tealShare": 2.1,
+      "tealShare": 2.2,
       "redPixels": 0,
       "violetOrMagentaPixels": 0,
-      "fromGrass": 48.8
+      "fromGrass": 49.1
     },
     {
       "title": "Land Baron",
@@ -196,10 +196,10 @@
       "seat": 3,
       "greenShare": 0,
       "indigoShare": 0,
-      "tealShare": 0.7,
+      "tealShare": 1,
       "redPixels": 0,
       "violetOrMagentaPixels": 0,
-      "fromGrass": 48.8
+      "fromGrass": 48.9
     },
     {
       "title": "Sea Dog",
@@ -209,10 +209,10 @@
       "seat": 3,
       "greenShare": 0,
       "indigoShare": 0,
-      "tealShare": 1.9,
+      "tealShare": 2.4,
       "redPixels": 0,
       "violetOrMagentaPixels": 0,
-      "fromGrass": 45.4
+      "fromGrass": 45.9
     },
     {
       "title": "Slayer",
@@ -222,10 +222,10 @@
       "seat": 3,
       "greenShare": 0,
       "indigoShare": 0,
-      "tealShare": 1.4,
+      "tealShare": 0.7,
       "redPixels": 0,
       "violetOrMagentaPixels": 0,
-      "fromGrass": 46.3
+      "fromGrass": 46.4
     },
     {
       "title": "Obelisk",
@@ -238,7 +238,7 @@
       "tealShare": 2.8,
       "redPixels": 0,
       "violetOrMagentaPixels": 0,
-      "fromGrass": 45.7
+      "fromGrass": 46.1
     }
   ]
 }

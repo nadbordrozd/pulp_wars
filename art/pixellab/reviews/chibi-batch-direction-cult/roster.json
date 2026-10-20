@@ -11,7 +11,7 @@
       "foot": 76,
       "greenShare": 0,
       "indigoShare": 5.8,
-      "tealShare": 6.3,
+      "tealShare": 5.2,
       "redPixels": 124,
       "violetOrMagentaPixels": 383
     },
@@ -24,7 +24,7 @@
       "foot": 76,
       "greenShare": 0,
       "indigoShare": 0,
-      "tealShare": 4.8,
+      "tealShare": 4.1,
       "redPixels": 37,
       "violetOrMagentaPixels": 246
     },
@@ -37,9 +37,9 @@
       "foot": 81,
       "greenShare": 0,
       "indigoShare": 0,
-      "tealShare": 0.9,
+      "tealShare": 38.8,
       "redPixels": 0,
-      "violetOrMagentaPixels": 988
+      "violetOrMagentaPixels": 0
     },
     {
       "title": "Hexer",
@@ -50,7 +50,7 @@
       "foot": 76,
       "greenShare": 0,
       "indigoShare": 0,
-      "tealShare": 11.4,
+      "tealShare": 11.6,
       "redPixels": 7,
       "violetOrMagentaPixels": 240
     },
@@ -63,7 +63,7 @@
       "foot": 77,
       "greenShare": 0,
       "indigoShare": 0,
-      "tealShare": 6.5,
+      "tealShare": 5.7,
       "redPixels": 56,
       "violetOrMagentaPixels": 596
     },
@@ -76,7 +76,7 @@
       "foot": 81,
       "greenShare": 0,
       "indigoShare": 0,
-      "tealShare": 6.6,
+      "tealShare": 6.1,
       "redPixels": 87,
       "violetOrMagentaPixels": 235
     },
@@ -168,17 +168,14 @@
       "indigoShare": 0,
       "greenShare": 0,
       "redPixels": 0,
-      "violetOrMagentaPixels": 627,
+      "violetOrMagentaPixels": 324,
       "fromUndead": {
-        "palette": 31.5,
-        "deuteranopia": 24.6,
-        "protanopia": 25.3,
+        "palette": 25.3,
+        "deuteranopia": 20.8,
+        "protanopia": 20.9,
         "greyPalette": 1.7,
         "lightness": 12.2,
-        "meanLightness": [
-          34.1,
-          22
-        ],
+        "meanLightness": [34.3, 22],
         "silhouette": 0.63,
         "distinct": true,
         "reasons": []
@@ -192,17 +189,14 @@
       "indigoShare": 0,
       "greenShare": 0,
       "redPixels": 0,
-      "violetOrMagentaPixels": 951,
+      "violetOrMagentaPixels": 118,
       "fromUndead": {
-        "palette": 28.7,
-        "deuteranopia": 23.3,
-        "protanopia": 23.7,
-        "greyPalette": 3.2,
-        "lightness": 30.9,
-        "meanLightness": [
-          48,
-          16.7
-        ],
+        "palette": 27.8,
+        "deuteranopia": 23.4,
+        "protanopia": 21.7,
+        "greyPalette": 3,
+        "lightness": 31,
+        "meanLightness": [48, 16.7],
         "silhouette": 0.98,
         "distinct": true,
         "reasons": []
@@ -216,17 +210,14 @@
       "indigoShare": 0,
       "greenShare": 0,
       "redPixels": 0,
-      "violetOrMagentaPixels": 494,
+      "violetOrMagentaPixels": 283,
       "fromUndead": {
-        "palette": 30.2,
-        "deuteranopia": 22.7,
-        "protanopia": 24,
-        "greyPalette": 3.4,
+        "palette": 26.5,
+        "deuteranopia": 20.2,
+        "protanopia": 20.9,
+        "greyPalette": 3.1,
         "lightness": 14.5,
-        "meanLightness": [
-          38.8,
-          24.7
-        ],
+        "meanLightness": [38.9, 24.7],
         "silhouette": 0.97,
         "distinct": true,
         "reasons": []
@@ -247,15 +238,10 @@
         "protanopia": 14.6,
         "greyPalette": 4.1,
         "lightness": 12.3,
-        "meanLightness": [
-          27.2,
-          15.3
-        ],
+        "meanLightness": [27.2, 15.3],
         "silhouette": 0.63,
         "distinct": false,
-        "reasons": [
-          "colour too close"
-        ]
+        "reasons": ["colour too close"]
       }
     },
     "Submarine, submerged": {
@@ -268,20 +254,15 @@
       "redPixels": 0,
       "violetOrMagentaPixels": 1224,
       "fromUndead": {
-        "palette": 16,
-        "deuteranopia": 14.1,
+        "palette": 15.9,
+        "deuteranopia": 14.2,
         "protanopia": 13.7,
         "greyPalette": 4.3,
         "lightness": 11.6,
-        "meanLightness": [
-          30.2,
-          19.4
-        ],
+        "meanLightness": [30.2, 19.4],
         "silhouette": 0.63,
         "distinct": false,
-        "reasons": [
-          "colour too close"
-        ]
+        "reasons": ["colour too close"]
       }
     }
   },
