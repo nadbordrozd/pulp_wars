@@ -27,7 +27,14 @@ round-1 samples of bead `pulp_wars-mch9.29`): the Initiate, the Idol
 Bearer, the Hexer, the Summoner and the Stargazer and their five busts are
 ordinary people in evil robes with bloody daggers, replaced in place, under
 [The robed cultists](#the-robed-cultists-round-2). The summons are
-unchanged.
+unchanged. **The faction wears palette 1, royal purple and aquamarine**
+(bead `pulp_wars-mch9.59`; the user, 2026-10-20: "go with cultists color
+scheme 1."): a deterministic remap in place of the robed cultists, the
+lodge's places, ships and creatures, the lodge icons, the effects and the
+campaign picture, under [Palette 1 in production](#palette-1-in-production).
+Where an older section below names blood red robes, indigo roofs or green
+lights, that section is history; the palette is the one under
+[Palette](#palette).
 
 The art pipeline reads the two `text` blocks under **Prompt fragment** and
 **Negative fragment** below as layer 3 of every Cult prompt, so edit them
@@ -63,16 +70,22 @@ tentacle, a skull face or glowing eyes.
 
 The faction wears **fixed colours**; no sprite has an owner area or a mask.
 The player is read from the territory border, which is the Cult's eldritch
-green. Two families share the faction:
+green. Since palette 1 (bead `pulp_wars-mch9.59`) the robes, the places
+and the ships are one holistic palette, as the user asked for ("a
+holistic vision with the robes and the buildings and naval units. needs
+to be consistent", bead `pulp_wars-mch9.58`):
 
 - **The robed cultists** (the Initiate, the Idol Bearer, the Hexer, the
-  Summoner, the Stargazer, since round 2): blood red, black and deep purple
-  cloth with gold embroidery, skin, steel and blood, and the green flame as
-  the one accent, small.
-- **The lodge's places and things** (the Familiar, the cities, the
-  buildings, the ships): midnight indigo, pale cream wax and paper, warm
-  brass, and exactly one accent, the green flame. The cultists' red and
-  black stand apart from the indigo roofs on purpose.
+  Summoner, the Stargazer): royal purple and near-black cloth with
+  aquamarine embroidery, skin, steel, the gold of a hilt or a telescope,
+  and the blood on the blades, still red; the candle flames are
+  aquamarine. (Round 2 was blood red, black and deep purple with gold
+  embroidery and green flames.)
+- **The lodge's places and things** (the Familiar, the Herald's robe, the
+  cities, the buildings, the Monuments, the ships): royal purple roofs,
+  hulls, sails, drapes and bodies, pale cream wax and paper, warm brass,
+  and aquamarine windows, lamps and lanterns, small. (Round 1 was midnight
+  indigo with green lights, which the cultists' red stood apart from.)
 - **The summoned** (the Horror, the Herald's crown, the Tentacle, the Thing
   in the Cellar): rubbery deep-sea teal with pale cream bellies and suckers
   and big pale yellow eyes. Their colours are in their subject lines, not in
@@ -163,13 +176,13 @@ own rule (`factionColourShadesV7`) are glow `#80ffbc` and dark `#007336`.
 **What goes into the code, and where** (proposed here, implemented by the
 beads that own the files; nothing is changed by this bead):
 
-| Item                      | Proposal                                                                                                                             | Owner bead               |
-| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ | ------------------------ |
-| `FACTION_COLOURS_V7.CULT` | `"#00ff78"`. The record is typed by `FactionIdV7`, so the bead that adds the faction ID must add it                                  | E1                       |
-| Colour test and document  | the rows above into `faction-colours-render-v7.test.ts` (nine factions) and FACTION_COLOURS.md                                       | E1                       |
-| Engine seat colour        | none new: `PLAYER_COLORS_V7` already has nine entries (CORAL to AMBER) and the client never shows a seat                             | no change                |
-| Newsstand hue token       | `--pw-emerald: #0a6638` (ink) and `--pw-emerald-fill: #b9f7d0`, a ninth hue pair in `src/styles/v7.css`                              | U1 (the first Cult chip) |
-| Code palette              | `CULT_PALETTE_V7`: flame `#00ff78`, glow `#80ffbc`, dark `#007336`, indigo `#372f8f`, wax `#f3e7c4`, brass `#c9a24a`, teal `#1f8f95` | U1 to U3                 |
+| Item                      | Proposal                                                                                                                                                                          | Owner bead               |
+| ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------ |
+| `FACTION_COLOURS_V7.CULT` | `"#00ff78"`. The record is typed by `FactionIdV7`, so the bead that adds the faction ID must add it                                                                               | E1                       |
+| Colour test and document  | the rows above into `faction-colours-render-v7.test.ts` (nine factions) and FACTION_COLOURS.md                                                                                    | E1                       |
+| Engine seat colour        | none new: `PLAYER_COLORS_V7` already has nine entries (CORAL to AMBER) and the client never shows a seat                                                                          | no change                |
+| Newsstand hue token       | `--pw-emerald: #0a6638` (ink) and `--pw-emerald-fill: #b9f7d0`, a ninth hue pair in `src/styles/v7.css`                                                                           | U1 (the first Cult chip) |
+| Code palette              | `CULT_PALETTE_V7`: flame `#00ff78`, glow `#80ffbc`, dark `#007336`, purple `#4b226a` (indigo `#372f8f` until `pulp_wars-mch9.59`), wax `#f3e7c4`, brass `#c9a24a`, teal `#1f8f95` | U1 to U3                 |
 
 - **The hue token.** A faction colour is never text
   ([interface style](../../ui/STYLE.md#colour-of-a-faction)), so Favour, a
@@ -220,6 +233,39 @@ beads that own the files; nothing is changed by this bead):
 
 ## Palette
 
+**Palette 1, royal purple + aquamarine** (bead `pulp_wars-mch9.59`, the
+production pass of option 1 of bead `pulp_wars-mch9.58`). It is the
+`cult-royal-aqua` preset of the pipeline's `remap` step
+(`scripts/art/chibi/remap.ts`): each class of pixel goes through a ramp
+keyed by the source pixel's CIE L\*, so the drawn shading is kept.
+
+| Role                    | Ramp (source L\* : colour)                                                                                                      | Used for                                                                                                               |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| **Royal purple** (main) | swatch `#6a2f93`; 0 `#0c0612`, 10 `#1f0e2e`, 18 `#33184b`, 26 `#4a2269`, 34 `#62308a`, 44 `#7f43ab`, 56 `#a266cc`, 70 `#c79be3` | the robes' cloth (was blood red), the roofs, hulls, sails, tarps, drapes, the Familiar, the Herald's robe (was indigo) |
+| Near-black second cloth | 0 `#060508`, 10 `#121016`, 20 `#1e1b24`, 30 `#2e2a36`, 45 `#48424f`                                                             | the Hexer's cowl, the Stargazer's lining (was deep purple)                                                             |
+| **Aquamarine** (accent) | swatch `#4fe3c1`; trim 15 `#124a42` to 90 `#d4fff4`; lights 30 `#0f5f53` to 92 `#c8fff2`                                        | the robes' embroidery (was gold), candle flames, windows, lamps, lanterns, the campaign picture's Eye (was green)      |
+| Kept                    | exactly as drawn                                                                                                                | skin, blood, steel, wood, stone, cream wax and paper, brass, a gold hilt or telescope, the summoned teal               |
+
+- **Lifted above the summons' teal.** The aquamarine is a light mint
+  (hue 160 to 175, L\* 50 and more for the lights) and the summoned a mid
+  teal body (`#2c7e7d`, hue 180, L\* 47): the summons are never remapped.
+- **Clear of the player colours.** The ramps pass near two of the four
+  owner-recolouring colours (`RULESET7_PLAYER_COLORS` TEAL `#28b7a4` and
+  VIOLET `#a277d2`); a remapped pixel that would land within 14 (RGB) of
+  one is taken a little darker (`avoid` of the preset).
+- **The faction colour stays the eldritch green** `#00ff78`: the
+  territory border, the channel strands, the Favour chip (`--pw-emerald`)
+  and the green that the lodge icons and the effects keep. An aquamarine
+  border (`#46f0c8`) was measured 21 from the Dwarf jade and 5 from the
+  Candy pink simulated (bead `pulp_wars-mch9.58`), so it fails the
+  faction-colour test.
+- **The Undead violet is the nearest neighbour** (the main swatch is 28
+  from the Undead units' violet, 23 simulated): told apart by value and
+  material, a dull plum cloth against the Undead near-black cloth with a
+  bright magenta-violet glow.
+
+The round-1 table below is history: the targets ART2 generated from.
+
 Targets, to be replaced by the measured table (`palette.json` of the review)
 when ART2's sample is accepted. Distances are CIE76 from this bead's scratch
 measurement.
@@ -247,7 +293,11 @@ the Familiar and the summons, except where a rule names the cultists.
 
 Rules:
 
-- **Indigo, never black, never navy** (the places, the ships, the
+- **Retired by palette 1** (bead `pulp_wars-mch9.59`): the lodge is royal
+  purple, not indigo; the rule that stays is "never black": the purple's
+  lit side and its mid tones carry every roof and hull, and the remap keeps
+  the drawn shading. Round 1's rule, kept as history: **Indigo, never
+  black, never navy** (the places, the ships, the
   Familiar, the Herald). The robe is a violet-leaning blue at
   hue 240° to 250° with a clearly lit side. That keeps it 69 from the Undead
   near-black cloth (`#313135`), 46 from the Undead lit violet (hue 274°), 38
@@ -631,8 +681,10 @@ the shared hull's); fixed colours, no mask. Batch `naval-cult`, assets
 | Submarine, submerged | 72 x 88, derived      | derived by `scripts/art/naval-branch/submerged.ts` from the accepted Submarine: no PixelLab call                                                                       |
 | Portraits            | 48 x 48, `PORTRAIT`   | the Patrol Boat, the Battleship and the Submarine, whole                                                                                                               |
 
-**Tell beside the other fleets:** an indigo hull with cream-and-indigo
-stripes and a green light. The Undead fleet is the near neighbour (a
+**Tell beside the other fleets** (palette 1, bead `pulp_wars-mch9.59`): a
+royal purple hull with cream-and-purple stripes and an aquamarine light;
+the Kraken is a purple octopus with an aquamarine eye. (Round 1: an indigo
+hull with cream-and-indigo stripes and a green light.) The Undead fleet is the near neighbour (a
 near-black hull, a bone rail, a skull, violet lights): the Cult hull must be
 visibly blue, and nothing on it is bone-white or ragged.
 
@@ -1679,6 +1731,98 @@ Initiate's bust as the faction emblem, captured in muted headless Chrome).
   mid value carries it, and the face and the blade are the lightest shapes.
 - **The Familiar** keeps round 1's indigo look beside red-robed masters.
 
+## Palette 1 in production
+
+Bead `pulp_wars-mch9.59`. Bead `pulp_wars-mch9.58` sampled four holistic
+palettes as deterministic remaps of the production pixels
+(`scripts/art/cult-palette-mch958/`, sheets and colour distances under
+`art/explorations/cult-palette-mch958/`); the user chose option 1, royal
+purple + aquamarine (2026-10-20: "go with cultists color scheme 1."). No
+PixelLab call is made: every changed raster keeps its asset id, canvas,
+anchor and alpha, so the unit and settlement shadow tables are unchanged
+(`--check` of both measures passes).
+
+**How it is recorded.** The pipeline has a third derivation step,
+`remap` (`scripts/art/chibi/remap.ts`), after the class derivation and the
+accent: a batch manifest names `remap: { preset, rules }` on an asset, the
+record stores the preset's palette, the rules and the pixels moved, and
+`art:validate` re-derives the master from the recorded candidate through
+all three steps. `scripts/art/cult-palette-mch959/apply.ts apply` wrote
+the manifest entries and re-derived the masters (the asset list and each
+one's classifier rules are in `scripts/art/cult-palette-mch959/assets.ts`);
+`apply.ts effects` swaps the effects; `apply.ts mask --out DIR` shows what
+the classifier takes before a remap. The campaign picture's bake
+(`scripts/art/campaign-pictures.ts`) applies the same remap from the
+`remap` of its picture entry, and the submerged Kraken is re-derived from
+the remapped Submarine by `scripts/art/naval-branch/submerged.ts`.
+
+| Group                    | Assets                                                                                                                                                                                         | Rule                                               |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| Robed cultists and busts | the Initiate, Idol Bearer, Hexer, Summoner, Stargazer and their five busts                                                                                                                     | robed: purple, near-black, aquamarine              |
+| Places                   | City 1 to 3, Lumber Camp, Sawmill, Forge, Workshop, Port, Shipyard, Market, the obelisk and the seven Monuments                                                                                | lodge: purple, aquamarine lights                   |
+| Ships                    | the Black Gondola, the Galleon of the Eye, the Kraken, the barge, the three ship portraits; the submerged Kraken (derived)                                                                     | lodge                                              |
+| Creatures                | the Familiar and its bust; the Herald, the Unbound Herald and the Herald's bust                                                                                                                | lodge (the Herald keeps its green)                 |
+| Lodge icons              | Channel, Doorstep, Great Summoning, Join the Chant, Pamphlets, Proclaim, Sacrifice, the emblem icon, Hunger, Cowed, Unbound, Warded, Harvest Rites, The Stars Are Right, Offerings to the Deep | lodge, purple only: the green is kept              |
+| Effects                  | the fifteen effect sprites                                                                                                                                                                     | palette swap `cult-green.png` to `cult-purple.png` |
+| Campaign picture         | `campaign-cult.png`                                                                                                                                                                            | robed, over the whole scene                        |
+
+**What it changed beyond the samples.**
+
+- **The Summoner's facings** (the user's sample showed them as wide mint
+  panels): the rust facings of the robe are cloth, not embroidery. The
+  Summoner's `extend` rule now takes their unlit tones (hue 6 to 40, value
+  0.76 and less) to purple, so only the lit pattern lines turn mint, as on
+  the other four cultists.
+- **The Initiate's dagger hilt** is a prop: its gold and the hand round it
+  are protected, so the hilt stays gold and the hand gets no purple edge.
+- **The Idol Bearer's bust:** the hand boxes stop at row 18, so the gold
+  cuffs turn mint as on the map sprite.
+- **The seven Monuments and the obelisk:** their candle flames and lamps
+  are aquamarine and the Muster's kite shield purple.
+- **The lodge icons and the effects keep their green.** Their green is
+  the faction colour's, the colour of the channel strands, the Favour chip
+  and the territory border, which the code draws in `#00ff78`; only their
+  indigo (a hood, a roof, a ribbon, a disc, the emblem's ground, the deep
+  folds and outlines of the effects) turns purple. The effects use the
+  pipeline's palette swap (`scripts/art/cult-direction/green-palette.ts`
+  writes `cult-purple.png`: `#231d5e`, `#372f8f`, `#4a43b5` to `#2d1542`,
+  `#4b226a`, `#67338f`).
+- **The faction emblem** of the setup form is the Initiate's bust: it now
+  shows the purple hood with its mint trim (re-captured with
+  `scripts/art/cult-sprites-mch954/emblem-capture.ts`).
+- **Code colours:** `CULT_PALETTE_V7.indigo` (`#372f8f`) is
+  `CULT_PALETTE_V7.purple` (`#4b226a`, the remap of that tone): the Cowed
+  banner, the Proclaim rings and the eyes of the code-drawn warden idol. `--pw-emerald` and
+  `--pw-emerald-fill` are unchanged: they are the faction colour's ink and
+  fill (the Favour chip), and an aquamarine ink would fall on `--pw-teal`,
+  the gain and owned-technology ink.
+
+**Left as they are, on purpose.** The summons (the Imp, the Horror, the
+Gibbering Mass, the Tentacle, the Thing, the frog, their Unbound looks,
+busts and icons) keep their teal and the navy shading on it. The blood on
+the blades and the Summoner's bruised eye stay red (red means blood and
+broken). The lantern wood (the Cult forest pieces) and the heather ground
+are terrain, not the lodge: their few blue pixels are trunk and leaf
+shading. The Furious chip's dark body is a daemon's, not the lodge's. The
+territory border stays `#00ff78`.
+
+**Reviews.** `npm run art:chibi-cult-direction-review`: gates 1, 2 and 4
+pass (gate 1 and 4 now ask for palette 1); gate 3 (the Herald's 97 px,
+waived on 2026-10-10) and gate 5 fail as before, gate 5 now on the
+Initiate against the Ice Witch and the Grunt (dark robe, simulated) in
+place of the Human Fighter; the roster's own-faction pairs of a cultist and
+a summon or the Herald are more often "colour too close" under the
+colour-vision simulations (purple and aquamarine against teal), judged by
+outline on `roster-lineup-1x.png`. `npm run art:chibi-naval-faction-review`:
+the Cult hulls are further from Deep Water than the indigo was (body mean
+33 from Deep Water, was 21).
+
+**Weak spots.** The royal purple is the nearest any faction's cloth has
+come to the Undead violet (28, 23 simulated): the Undead keep near-black
+cloth with a bright violet glow, the Cult a dull plum cloth with mint
+trim, which holds on the board mock, but a lighter purple sprite would not.
+The Herald's tentacle crown keeps its teal with purple shadows.
+
 ## Decisions
 
 Made in this bead. The first four are the spec's; the rest are this
@@ -1687,6 +1831,9 @@ document's and differ from a look written in the spec or the proposal.
 1. **Faction colour** eldritch green `#00ff78`; re-measured against eight
    factions and it passes. Hue token `--pw-emerald`.
 2. **Fixed colours:** indigo robes, one green accent; the summoned in teal.
+   **Since palette 1** (bead `pulp_wars-mch9.59`): royal purple robes,
+   roofs and hulls with aquamarine accents; the border stays green and the
+   summoned teal.
 3. **Tone:** a silly lodge, never grim; no mythos names, no religion.
    **Overruled for the cultists by the user** (2026-10-17, bead
    `pulp_wars-mch9.54`): ordinary people, sinister, with evil robes and
@@ -1718,19 +1865,24 @@ document's and differ from a look written in the spec or the proposal.
     glowing green rim reads on land and on water, so one sprite still
     serves both.
 12. **The gondola is indigo, not black:** the black hull is the Undead's.
+    **Since palette 1** (bead `pulp_wars-mch9.59`) it is royal purple, still
+    not black.
 13. **The frog is teal**, in the summoned palette, on the Grave's canvas.
     (Since bead `pulp_wars-mch9.26` a second, unit-sized frog on the
     standard unit canvas is what a victim is drawn as.)
 14. **The Farm, the Windmill and the Mine stay shared**; seven buildings and
     the Monuments get a Cult look.
-15. **Walls are pale** (cream-grey weatherboard) under indigo roofs.
+15. **Walls are pale** (cream-grey weatherboard) under indigo roofs
+    (royal purple since bead `pulp_wars-mch9.59`).
 16. **The ground is a heather moor and the forest a lantern wood.**
 17. **Technology icons:** three (Warding Circles, The Stars Are Right,
     Harvest Rites); the unit technologies show portraits.
 
 ## Weak spots
 
-- **Indigo is a crowded corner.** The Dinosaur hide and navy, the Ice
+- **Purple sits near the Undead violet** (palette 1, bead
+  `pulp_wars-mch9.59`; see [Palette 1 in production](#palette-1-in-production)).
+- **Indigo is a crowded corner** (round 1). The Dinosaur hide and navy, the Ice
   Witch's robe and the Martian gunmetal are all dark blues. The Cult is the
   only one that is cloth with a pointed top and a cream-and-green light,
   but a navy sample must be rejected, not accepted and explained.

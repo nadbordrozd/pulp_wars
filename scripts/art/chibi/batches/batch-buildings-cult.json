@@ -16,7 +16,13 @@
         "height": 72
       },
       "ownerColour": false,
-      "accent": "cult-lodge"
+      "accent": "cult-lodge",
+      "remap": {
+        "preset": "cult-royal-aqua",
+        "rules": {
+          "kind": "lodge"
+        }
+      }
     },
     {
       "id": "chibi-cult-sawmill",
@@ -28,7 +34,13 @@
         "height": 72
       },
       "ownerColour": false,
-      "accent": "cult-lodge"
+      "accent": "cult-lodge",
+      "remap": {
+        "preset": "cult-royal-aqua",
+        "rules": {
+          "kind": "lodge"
+        }
+      }
     },
     {
       "id": "chibi-cult-forge",
@@ -40,7 +52,13 @@
         "height": 72
       },
       "ownerColour": false,
-      "accent": "cult-lodge"
+      "accent": "cult-lodge",
+      "remap": {
+        "preset": "cult-royal-aqua",
+        "rules": {
+          "kind": "lodge"
+        }
+      }
     },
     {
       "id": "chibi-cult-workshop",
@@ -52,7 +70,13 @@
         "height": 72
       },
       "ownerColour": false,
-      "accent": "cult-lodge"
+      "accent": "cult-lodge",
+      "remap": {
+        "preset": "cult-royal-aqua",
+        "rules": {
+          "kind": "lodge"
+        }
+      }
     },
     {
       "id": "chibi-cult-port",
@@ -64,7 +88,13 @@
         "height": 72
       },
       "ownerColour": false,
-      "accent": "cult-lodge"
+      "accent": "cult-lodge",
+      "remap": {
+        "preset": "cult-royal-aqua",
+        "rules": {
+          "kind": "lodge"
+        }
+      }
     },
     {
       "id": "chibi-cult-shipyard",
@@ -76,7 +106,13 @@
         "height": 72
       },
       "ownerColour": false,
-      "accent": "cult-lodge"
+      "accent": "cult-lodge",
+      "remap": {
+        "preset": "cult-royal-aqua",
+        "rules": {
+          "kind": "lodge"
+        }
+      }
     },
     {
       "id": "chibi-cult-market",
@@ -88,7 +124,13 @@
         "height": 72
       },
       "ownerColour": false,
-      "accent": "cult-lodge"
+      "accent": "cult-lodge",
+      "remap": {
+        "preset": "cult-royal-aqua",
+        "rules": {
+          "kind": "lodge"
+        }
+      }
     }
   ],
   "recipes": [

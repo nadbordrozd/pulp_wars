@@ -19,8 +19,12 @@ import { paletteColours } from "../../scripts/art/chibi/raster";
 import {
   CULT_GREEN_PALETTE,
   CULT_GREEN_PALETTE_PATH,
+  CULT_PURPLE_PALETTE,
+  CULT_PURPLE_PALETTE_PATH,
   cultGreenPalettePng,
+  cultPurplePalettePng,
 } from "../../scripts/art/cult-direction/green-palette";
+import { CULT_REMAP_ASSETS } from "../../scripts/art/cult-palette-mch959/assets";
 import {
   chibiFallbackSubjectV7,
   cultSummonedPortraitSubjectV7,
@@ -149,6 +153,18 @@ const isViolet = (p: Hsv): boolean =>
   p.hue >= 270 && p.hue < 345 && p.saturation >= 0.3 && p.value >= 0.25;
 const isGreen = (p: Hsv): boolean =>
   p.hue >= 80 && p.hue <= 152 && p.saturation >= 0.5 && p.value >= 0.45;
+/**
+ * Palette 1 (bead pulp_wars-mch9.59): the busts, the lodge's icons and
+ * creatures' busts and the ship portraits went through the
+ * `cult-royal-aqua` remap; its royal purple is hue 271 to 277.
+ */
+const PALETTE_ONE = new Set(CULT_REMAP_ASSETS.map((asset) => asset.id));
+const isPurple = (p: Hsv): boolean =>
+  p.hue >= 262 && p.hue <= 290 && p.saturation >= 0.3 && p.value >= 0.1;
+const isIndigo = (p: Hsv): boolean =>
+  p.hue >= 222 && p.hue <= 262 && p.saturation >= 0.45 && p.value >= 0.14;
+const isMagenta = (p: Hsv): boolean =>
+  p.hue > 290 && p.hue < 345 && p.saturation >= 0.3 && p.value >= 0.25;
 
 describe("the Cultists' interface art (pulp_wars-mch9.23)", () => {
   it("lists the unit portraits and the icons of the direction in batch interface-cult (Behold!, Pick Me!, Martyr, the Caller and the Chosen retired)", async () => {
@@ -231,7 +247,7 @@ describe("the Cultists' interface art (pulp_wars-mch9.23)", () => {
     }
   });
 
-  it("lists the fifteen effects in batch effects-cult, each mapped to cult-green.png", async () => {
+  it("lists the fifteen effects in batch effects-cult, each mapped to cult-green.png and swapped to cult-purple.png", async () => {
     const manifest = await loadBatchManifest(ROOT, EFFECTS);
     const fragments = await loadFragments(ROOT);
     expect(batchManifestProblems(manifest, fragments, EFFECTS)).toEqual([]);
@@ -243,9 +259,12 @@ describe("the Cultists' interface art (pulp_wars-mch9.23)", () => {
         asset.assetClass,
         asset.canvas.width,
         asset.canvas.height,
+        asset.paletteFrom?.path,
         asset.palette?.path,
       ]),
     ).toEqual(
+      // Palette 1 (pulp_wars-mch9.59): mapped to cult-green.png, then
+      // swapped position for position to cult-purple.png.
       EFFECT_ROWS.map(([name, id, side]) => [
         `chibi-direction-effect-cult-${name}`,
         `EFFECT:${id}`,
@@ -253,11 +272,12 @@ describe("the Cultists' interface art (pulp_wars-mch9.23)", () => {
         side,
         side,
         CULT_GREEN_PALETTE_PATH,
+        CULT_PURPLE_PALETTE_PATH,
       ]),
     );
     const records = await loadRecords(productionLayout(ROOT, EFFECTS), EFFECTS);
     const palette = paletteColours(
-      await readRaster(path.join(ROOT, CULT_GREEN_PALETTE_PATH)),
+      await readRaster(path.join(ROOT, CULT_PURPLE_PALETTE_PATH)),
     ).map(([r, g, b]) => (r << 16) | (g << 8) | b);
     for (const asset of manifest.assets) {
       const record = records.assets[asset.id];
@@ -315,6 +335,32 @@ describe("the Cultists' interface art (pulp_wars-mch9.23)", () => {
       );
       expect(isRed(hsv), to).toBe(false);
       expect(isViolet(hsv), to).toBe(false);
+    }
+  });
+
+  it("writes cult-purple.png: the green palette with its three indigo tones in palette 1's royal purple (pulp_wars-mch9.59)", async () => {
+    const png = await readFile(path.join(ROOT, CULT_PURPLE_PALETTE_PATH));
+    expect(png.equals(await cultPurplePalettePng())).toBe(true);
+    expect(CULT_PURPLE_PALETTE).toHaveLength(CULT_GREEN_PALETTE.length);
+    const changed = CULT_PURPLE_PALETTE.flatMap((entry, at) =>
+      entry.to === CULT_GREEN_PALETTE[at]?.to ? [] : [entry.to],
+    );
+    expect(changed).toEqual(["#2d1542", "#4b226a", "#67338f"]);
+    for (const to of changed) {
+      const hsv = rgbToHsv(
+        Number.parseInt(to.slice(1, 3), 16),
+        Number.parseInt(to.slice(3, 5), 16),
+        Number.parseInt(to.slice(5, 7), 16),
+      );
+      expect(isPurple(hsv), to).toBe(true);
+    }
+    for (const { to } of CULT_PURPLE_PALETTE) {
+      const hsv = rgbToHsv(
+        Number.parseInt(to.slice(1, 3), 16),
+        Number.parseInt(to.slice(3, 5), 16),
+        Number.parseInt(to.slice(5, 7), 16),
+      );
+      expect(isRed(hsv) || isMagenta(hsv) || isIndigo(hsv), to).toBe(false);
     }
   });
 
@@ -394,7 +440,7 @@ describe("the Cultists' interface art (pulp_wars-mch9.23)", () => {
       );
   });
 
-  it("keeps red for the Furious chip, violet off every piece and the green on the faction's hue", async () => {
+  it("keeps red for the Furious chip, palette 1's purple for the lodge, no stray violet or indigo, and the green on the faction's hue", async () => {
     const records = await loadRecords(
       productionLayout(ROOT, INTERFACE),
       INTERFACE,
@@ -408,8 +454,12 @@ describe("the Cultists' interface art (pulp_wars-mch9.23)", () => {
         expect(green.hue, record.id).toBeLessThanOrEqual(152);
       }
       if (ROBED_BUSTS.includes(record.id)) {
-        // Round 2: blood red is theirs, and no lodge indigo is left.
-        expect(pixels.filter(isRed).length, record.id).toBeGreaterThan(0);
+        // Round 2 under palette 1 (pulp_wars-mch9.59): royal purple cloth,
+        // the blood on a blade or an eye still red, no lodge indigo.
+        expect(record.derivation.remap?.preset, record.id).toBe(
+          "cult-royal-aqua",
+        );
+        expect(pixels.filter(isPurple).length, record.id).toBeGreaterThan(50);
         expect(
           pixels.filter(
             (p) =>
@@ -422,35 +472,36 @@ describe("the Cultists' interface art (pulp_wars-mch9.23)", () => {
         ).toBeLessThanOrEqual(0.02);
         continue;
       }
-      expect(pixels.filter(isViolet).length, record.id).toBe(0);
+      // The lodge's icons and creatures' busts wear palette 1's purple
+      // where they wore indigo; the summoned's wear no violet at all.
+      expect(
+        pixels.filter(PALETTE_ONE.has(record.id) ? isMagenta : isViolet).length,
+        record.id,
+      ).toBe(0);
+      if (PALETTE_ONE.has(record.id))
+        expect(pixels.filter(isIndigo).length, record.id).toBe(0);
       const red = pixels.filter(isRed).length;
       if (record.subject === "ICON:STATUS:FURIOUS")
         // Red eyes are the cue of an Unbound daemon (CULT.md, Palette).
         expect(red, record.id).toBeGreaterThanOrEqual(40);
       else expect(red, record.id).toBe(0);
     }
-    // The Herald's bust wears the lodge's indigo, never a navy or an azure
-    // (the robed cultists' busts are round 2's, checked above).
+    // The Herald's bust wears the lodge's royal purple since palette 1
+    // (pulp_wars-mch9.59; indigo before it), never a navy or an azure (the
+    // robed cultists' busts are round 2's, checked above).
     for (const [name, , recipeClass] of PORTRAITS) {
       if (recipeClass !== "portrait") continue;
       if (ROBED_BUSTS.includes(`chibi-direction-portrait-cult-${name}`))
         continue;
       const record = records.assets[`chibi-direction-portrait-cult-${name}`];
       if (record === undefined) throw new Error(name);
-      const cloth = hsvPixels(
+      const pixels = hsvPixels(
         await readRaster(path.join(ROOT, record.master.path)),
-      ).filter(
-        (p) =>
-          p.hue >= 212 &&
-          p.hue <= 266 &&
-          p.saturation >= 0.45 &&
-          p.value >= 0.14,
       );
-      expect(cloth.length, name).toBeGreaterThan(name === "herald" ? 40 : 150);
-      for (const p of cloth) {
-        expect(p.hue, name).toBeGreaterThanOrEqual(230);
-        expect(p.hue, name).toBeLessThanOrEqual(250);
-      }
+      expect(pixels.filter(isPurple).length, name).toBeGreaterThan(
+        name === "herald" ? 40 : 150,
+      );
+      expect(pixels.filter(isIndigo).length, name).toBe(0);
     }
   });
 
@@ -525,7 +576,10 @@ describe("the Cultists' interface art (pulp_wars-mch9.23)", () => {
         await readRaster(path.join(ROOT, record.master.path)),
       );
       expect(pixels.filter(isRed).length, id).toBe(0);
-      expect(pixels.filter(isViolet).length, id).toBe(0);
+      // Palette 1 (pulp_wars-mch9.59): the hull is royal purple.
+      expect(pixels.filter(isMagenta).length, id).toBe(0);
+      expect(pixels.filter(isIndigo).length, id).toBe(0);
+      expect(pixels.filter(isPurple).length, id).toBeGreaterThan(100);
       const entry = registered.find((candidate) => candidate.asset.id === id);
       expect(entry?.asset.subject, id).toBe(record.subject);
       expect(

@@ -372,7 +372,8 @@
       "campaign": "CULT",
       "recipe": "cult-b",
       "candidate": 2,
-      "subject": "the Lodge's meeting at the lip of the shaft, the Eye looking up"
+      "subject": "the Lodge's meeting at the lip of the shaft, the Eye looking up",
+      "remap": { "preset": "cult-royal-aqua", "rules": { "kind": "robed" } }
     },
     {
       "campaign": "CANDY",

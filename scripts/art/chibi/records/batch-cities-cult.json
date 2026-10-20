@@ -799,8 +799,8 @@
       "candidateSha256": "28db21dc0c651fe50cbb53377d8a5e54ad43799bc9a0bc5a677f545c0eef0124",
       "master": {
         "path": "public/assets/chibi/settlements/chibi-direction-cult-city-1.png",
-        "sha256": "9edba4c6ba93e244142e399e9350e129df9bc3010cab1d083513a74f6e976f49",
-        "pixelSha256": "ec546c255c704299df121325418177773f8464cba6a726c6e0df69434efd030f",
+        "sha256": "7198b3a868ea35f6cfee2642468f9dafceec2c66c75c0f3879d7d674c57baeb4",
+        "pixelSha256": "1d1a814b022d4d88e223098002279b8d3962bbaa26b8022845a9960ebce786ca",
         "width": 80,
         "height": 80
       },
@@ -844,6 +844,56 @@
           },
           "accentPixels": 31,
           "trimPixels": 0
+        },
+        "remap": {
+          "preset": "cult-royal-aqua",
+          "palette": {
+            "main": "#6a2f93",
+            "accent": "#4fe3c1",
+            "ramp": [
+              [0, "#0c0612"],
+              [10, "#1f0e2e"],
+              [18, "#33184b"],
+              [26, "#4a2269"],
+              [34, "#62308a"],
+              [44, "#7f43ab"],
+              [56, "#a266cc"],
+              [70, "#c79be3"]
+            ],
+            "dark": [
+              [0, "#060508"],
+              [10, "#121016"],
+              [20, "#1e1b24"],
+              [30, "#2e2a36"],
+              [45, "#48424f"]
+            ],
+            "trim": [
+              [15, "#124a42"],
+              [30, "#22836f"],
+              [45, "#3dbb9e"],
+              [60, "#66dec2"],
+              [75, "#9cf3dd"],
+              [90, "#d4fff4"]
+            ],
+            "glow": [
+              [30, "#0f5f53"],
+              [50, "#22a58e"],
+              [65, "#3fd6b7"],
+              [80, "#7af2d6"],
+              [92, "#c8fff2"]
+            ],
+            "avoid": ["#f06762", "#28b7a4", "#e2b63f", "#a277d2"],
+            "avoidDistance": 14
+          },
+          "rules": {
+            "kind": "lodge"
+          },
+          "pixels": {
+            "main": 816,
+            "dark": 0,
+            "trim": 0,
+            "glow": 31
+          }
         }
       },
       "anchor": {
@@ -876,8 +926,8 @@
       "candidateSha256": "b696e143e9e162a3e7d5ed47cdb54165c10e0a1fff60df0be8929d7ec24de657",
       "master": {
         "path": "public/assets/chibi/settlements/chibi-direction-cult-city-2.png",
-        "sha256": "f7fb2a782f1c75e85d62267f4affafd05d6abd3c58aab58f4d5953a3266f454a",
-        "pixelSha256": "ffcc9148d797e1cb4b3a16a8791e6797e431e6bf4279764c2db1da0d90cf4e9d",
+        "sha256": "9d73b583d1de0011d342d3effa6441906ff761fbdef667036dbd6909c85573f2",
+        "pixelSha256": "196191dc0f88e4de9383b12e4f0cb31703065fa097af14d2f0f81cf6b338f963",
         "width": 88,
         "height": 88
       },
@@ -921,6 +971,56 @@
           },
           "accentPixels": 22,
           "trimPixels": 0
+        },
+        "remap": {
+          "preset": "cult-royal-aqua",
+          "palette": {
+            "main": "#6a2f93",
+            "accent": "#4fe3c1",
+            "ramp": [
+              [0, "#0c0612"],
+              [10, "#1f0e2e"],
+              [18, "#33184b"],
+              [26, "#4a2269"],
+              [34, "#62308a"],
+              [44, "#7f43ab"],
+              [56, "#a266cc"],
+              [70, "#c79be3"]
+            ],
+            "dark": [
+              [0, "#060508"],
+              [10, "#121016"],
+              [20, "#1e1b24"],
+              [30, "#2e2a36"],
+              [45, "#48424f"]
+            ],
+            "trim": [
+              [15, "#124a42"],
+              [30, "#22836f"],
+              [45, "#3dbb9e"],
+              [60, "#66dec2"],
+              [75, "#9cf3dd"],
+              [90, "#d4fff4"]
+            ],
+            "glow": [
+              [30, "#0f5f53"],
+              [50, "#22a58e"],
+              [65, "#3fd6b7"],
+              [80, "#7af2d6"],
+              [92, "#c8fff2"]
+            ],
+            "avoid": ["#f06762", "#28b7a4", "#e2b63f", "#a277d2"],
+            "avoidDistance": 14
+          },
+          "rules": {
+            "kind": "lodge"
+          },
+          "pixels": {
+            "main": 828,
+            "dark": 0,
+            "trim": 0,
+            "glow": 22
+          }
         }
       },
       "anchor": {
@@ -953,8 +1053,8 @@
       "candidateSha256": "f501c342e2e1f7b4d4f84a8b80bc006af912f4a618ee9c3119ca8dc70dfb5d63",
       "master": {
         "path": "public/assets/chibi/settlements/chibi-direction-cult-city-3.png",
-        "sha256": "f80c69677fc2d7be35d48dbd00915210ec50f882ca0b5f85f02586b01ed4d50d",
-        "pixelSha256": "3ef33cd84681f21d3a743a7416ba47fc41f3080580f2e3e6e122620610a3bcc3",
+        "sha256": "231da834c7d9c6ed016aff07dd9386c9753b931bd385cf08f7a4653a012ccba9",
+        "pixelSha256": "e1fba739500aef889366f628f96831900579b819b40b12c71f8f7b00b57386a8",
         "width": 96,
         "height": 88
       },
@@ -998,6 +1098,56 @@
           },
           "accentPixels": 103,
           "trimPixels": 0
+        },
+        "remap": {
+          "preset": "cult-royal-aqua",
+          "palette": {
+            "main": "#6a2f93",
+            "accent": "#4fe3c1",
+            "ramp": [
+              [0, "#0c0612"],
+              [10, "#1f0e2e"],
+              [18, "#33184b"],
+              [26, "#4a2269"],
+              [34, "#62308a"],
+              [44, "#7f43ab"],
+              [56, "#a266cc"],
+              [70, "#c79be3"]
+            ],
+            "dark": [
+              [0, "#060508"],
+              [10, "#121016"],
+              [20, "#1e1b24"],
+              [30, "#2e2a36"],
+              [45, "#48424f"]
+            ],
+            "trim": [
+              [15, "#124a42"],
+              [30, "#22836f"],
+              [45, "#3dbb9e"],
+              [60, "#66dec2"],
+              [75, "#9cf3dd"],
+              [90, "#d4fff4"]
+            ],
+            "glow": [
+              [30, "#0f5f53"],
+              [50, "#22a58e"],
+              [65, "#3fd6b7"],
+              [80, "#7af2d6"],
+              [92, "#c8fff2"]
+            ],
+            "avoid": ["#f06762", "#28b7a4", "#e2b63f", "#a277d2"],
+            "avoidDistance": 14
+          },
+          "rules": {
+            "kind": "lodge"
+          },
+          "pixels": {
+            "main": 771,
+            "dark": 0,
+            "trim": 0,
+            "glow": 116
+          }
         }
       },
       "anchor": {

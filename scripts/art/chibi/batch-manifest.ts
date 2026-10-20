@@ -17,6 +17,7 @@ import {
   type ChibiPointV7,
 } from "../../../src/assets/chibi-art-v7";
 import { accentPreset } from "./accent";
+import { remapPreset, type RemapSpec } from "./remap";
 import { WAIVABLE_MASK_QA_CODES } from "./owner-mask";
 import type {
   CropRowsSpec,
@@ -868,6 +869,12 @@ export interface ChibiAssetSpec {
    * recoloured (bead pulp_wars-3tq.12, the Undead violet).
    */
   readonly accent?: string;
+  /**
+   * A named palette remap (scripts/art/chibi/remap.ts) applied after the
+   * accent, with the asset's own classifier rules (bead pulp_wars-mch9.59,
+   * the Cult's royal purple and aquamarine).
+   */
+  readonly remap?: RemapSpec;
 }
 
 export interface CropRegion {
@@ -1604,6 +1611,22 @@ export function batchManifestProblems(
         );
       if (owned)
         problems.push(`${label}: an accent is only for fixed-colour assets`);
+    }
+    if (asset.remap !== undefined) {
+      if (remapPreset(asset.remap.preset) === undefined)
+        problems.push(`${label}: unknown remap preset ${asset.remap.preset}`);
+      if (
+        asset.remap.rules.kind !== "robed" &&
+        asset.remap.rules.kind !== "lodge"
+      )
+        problems.push(`${label}: a remap's rules are robed or lodge`);
+      if (
+        classRecipe.derivation !== "as-is" &&
+        classRecipe.derivation !== "seated"
+      )
+        problems.push(`${label}: a remap is only for as-is and seated classes`);
+      if (owned)
+        problems.push(`${label}: a remap is only for fixed-colour assets`);
     }
     if (classRecipe.derivation === "ground-composite") {
       if (asset.groundAsset === undefined)

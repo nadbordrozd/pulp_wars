@@ -17,7 +17,13 @@
         "height": 88
       },
       "ownerColour": false,
-      "accent": "cult-lodge"
+      "accent": "cult-lodge",
+      "remap": {
+        "preset": "cult-royal-aqua",
+        "rules": {
+          "kind": "lodge"
+        }
+      }
     },
     {
       "id": "chibi-naval-cult-battleship",
@@ -29,7 +35,13 @@
         "height": 96
       },
       "ownerColour": false,
-      "accent": "cult-lodge"
+      "accent": "cult-lodge",
+      "remap": {
+        "preset": "cult-royal-aqua",
+        "rules": {
+          "kind": "lodge"
+        }
+      }
     },
     {
       "id": "chibi-naval-cult-transport",
@@ -41,7 +53,13 @@
         "height": 72
       },
       "ownerColour": false,
-      "accent": "cult-lodge"
+      "accent": "cult-lodge",
+      "remap": {
+        "preset": "cult-royal-aqua",
+        "rules": {
+          "kind": "lodge"
+        }
+      }
     },
     {
       "id": "chibi-naval-cult-submarine",
@@ -58,6 +76,12 @@
       },
       "ownerColour": false,
       "accent": "cult-lodge",
+      "remap": {
+        "preset": "cult-royal-aqua",
+        "rules": {
+          "kind": "lodge"
+        }
+      },
       "bottomMargin": 8,
       "subjectKey": "UNIT:CULT:SUBMARINE/KRAKEN"
     },
@@ -71,7 +95,13 @@
         "height": 48
       },
       "ownerColour": false,
-      "accent": "cult-lodge-icon"
+      "accent": "cult-lodge-icon",
+      "remap": {
+        "preset": "cult-royal-aqua",
+        "rules": {
+          "kind": "lodge"
+        }
+      }
     },
     {
       "id": "chibi-naval-cult-portrait-battleship",
@@ -83,7 +113,13 @@
         "height": 48
       },
       "ownerColour": false,
-      "accent": "cult-lodge-icon"
+      "accent": "cult-lodge-icon",
+      "remap": {
+        "preset": "cult-royal-aqua",
+        "rules": {
+          "kind": "lodge"
+        }
+      }
     },
     {
       "id": "chibi-naval-cult-portrait-submarine",
@@ -96,6 +132,12 @@
       },
       "ownerColour": false,
       "accent": "cult-lodge-icon",
+      "remap": {
+        "preset": "cult-royal-aqua",
+        "rules": {
+          "kind": "lodge"
+        }
+      },
       "subjectKey": "PORTRAIT:CULT:SUBMARINE/KRAKEN"
     },
     {
@@ -108,7 +150,14 @@
         "height": 48
       },
       "ownerColour": false,
-      "accent": "cult-lodge-icon"
+      "accent": "cult-lodge-icon",
+      "remap": {
+        "preset": "cult-royal-aqua",
+        "rules": {
+          "kind": "lodge",
+          "noGlow": true
+        }
+      }
     }
   ],
   "recipes": [

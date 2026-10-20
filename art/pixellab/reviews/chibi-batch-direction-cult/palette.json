@@ -9,17 +9,12 @@
         "herald"
       ],
       "target": "#4a43b5",
-      "mean": "#4c49a3",
-      "hue": 242,
-      "lightness": 35.8,
-      "fromTarget": 14.6,
-      "tones": [
-        "#5452ab",
-        "#443d98",
-        "#3f439f",
-        "#413b93"
-      ],
-      "share": 32.4
+      "mean": null,
+      "hue": null,
+      "lightness": null,
+      "fromTarget": null,
+      "tones": [],
+      "share": 0
     },
     {
       "role": "Indigo cloth, shade",
@@ -65,17 +60,17 @@
         "herald"
       ],
       "target": "#c9a24a",
-      "mean": "#b07523",
-      "hue": 35,
-      "lightness": 54.1,
-      "fromTarget": 18.7,
+      "mean": "#b07724",
+      "hue": 36,
+      "lightness": 54.8,
+      "fromTarget": 17.4,
       "tones": [
         "#caa472",
         "#b56e22",
         "#80460a",
         "#91520f"
       ],
-      "share": 7.9
+      "share": 6.7
     },
     {
       "role": "Eldritch green",
@@ -83,16 +78,12 @@
         "initiate"
       ],
       "target": "#00ff78",
-      "mean": "#47df8d",
-      "hue": 148,
-      "lightness": 79.5,
-      "fromTarget": 30.6,
-      "tones": [
-        "#4bec95",
-        "#44cf84",
-        "#2e8556"
-      ],
-      "share": 1.1
+      "mean": null,
+      "hue": null,
+      "lightness": null,
+      "fromTarget": null,
+      "tones": [],
+      "share": 0
     },
     {
       "role": "Deep-sea teal",

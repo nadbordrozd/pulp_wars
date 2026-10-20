@@ -29,6 +29,13 @@ import {
 } from "../pixellab-recovery";
 import { accentPreset, accentRaster, type AccentSpec } from "./accent";
 import {
+  remapPreset,
+  remapRaster,
+  type RemapKind,
+  type RemapPalette,
+  type RemapRules,
+} from "./remap";
+import {
   BATCH_ID_PATTERN,
   CHIBI_CLASS_RECIPES,
   assetOwned,
@@ -389,6 +396,17 @@ export interface AssetRecord {
       readonly spec: AccentSpec;
       readonly accentPixels: number;
       readonly trimPixels: number;
+    };
+    /**
+     * The palette remap applied after the accent (bead pulp_wars-mch9.59,
+     * scripts/art/chibi/remap.ts): the preset, its palette and the asset's
+     * rules as they were applied, and the pixels of each class it moved.
+     */
+    readonly remap?: {
+      readonly preset: string;
+      readonly palette: RemapPalette;
+      readonly rules: RemapRules;
+      readonly pixels: Readonly<Record<RemapKind, number>>;
     };
     readonly ground?: {
       readonly asset: string;
@@ -1586,12 +1604,15 @@ async function acceptedGroundStrip(
   };
 }
 
-type DerivedMaster = {
+export type DerivedMaster = {
   raster: RgbaRaster;
   derivation: AssetRecord["derivation"];
 };
 
-/** The class derivation, then the asset's accent step when it names one. */
+/**
+ * The class derivation, then the asset's accent step and its palette remap
+ * when it names them.
+ */
 async function deriveMaster(
   context: PipelineContext,
   records: BatchRecords,
@@ -1599,6 +1620,13 @@ async function deriveMaster(
   candidate: RgbaRaster,
 ): Promise<DerivedMaster> {
   const base = await deriveClassMaster(context, records, asset, candidate);
+  return remapMaster(asset, accentMaster(asset, base));
+}
+
+function accentMaster(
+  asset: ChibiAssetSpec,
+  base: DerivedMaster,
+): DerivedMaster {
   if (asset.accent === undefined) return base;
   const spec = accentPreset(asset.accent);
   if (spec === undefined)
@@ -1613,6 +1641,30 @@ async function deriveMaster(
         spec,
         accentPixels: result.accentPixels,
         trimPixels: result.trimPixels,
+      },
+    },
+  };
+}
+
+/** The palette remap of bead pulp_wars-mch9.59, after the accent. */
+export function remapMaster(
+  asset: ChibiAssetSpec,
+  base: DerivedMaster,
+): DerivedMaster {
+  if (asset.remap === undefined) return base;
+  const palette = remapPreset(asset.remap.preset);
+  if (palette === undefined)
+    throw new Error(`${asset.id}: unknown remap preset ${asset.remap.preset}`);
+  const result = remapRaster(base.raster, palette, asset.remap.rules);
+  return {
+    raster: result.raster,
+    derivation: {
+      ...base.derivation,
+      remap: {
+        preset: asset.remap.preset,
+        palette,
+        rules: asset.remap.rules,
+        pixels: result.pixels,
       },
     },
   };
@@ -2024,6 +2076,16 @@ export async function verifyAssetRecord(
     );
   if (asset.accent !== record.derivation.accent?.preset)
     problems.push(`${label}: the recorded accent is not the manifest's`);
+  const remap = record.derivation.remap;
+  if (
+    JSON.stringify(asset.remap) !==
+    JSON.stringify(
+      remap === undefined
+        ? undefined
+        : { preset: remap.preset, rules: remap.rules },
+    )
+  )
+    problems.push(`${label}: the recorded remap is not the manifest's`);
   if (assetOwned(asset)) {
     if (record.mask === undefined) return [...problems, `${label}: no mask`];
     const maskFile = path.join(root, record.mask.path);
@@ -2239,6 +2301,7 @@ async function rederivedMasterProblems(
 ): Promise<string[]> {
   const kind = record.derivation.kind;
   const accent = record.derivation.accent;
+  const remap = record.derivation.remap;
   const swapFrom = record.derivation.paletteFrom;
   if (
     record.status !== "ACCEPTED" ||
@@ -2246,6 +2309,7 @@ async function rederivedMasterProblems(
       kind !== "crop-rows" &&
       kind !== "rift-strip" &&
       accent === undefined &&
+      remap === undefined &&
       swapFrom === undefined)
   )
     return [];
@@ -2338,6 +2402,16 @@ async function rederivedMasterProblems(
         return [`${label}: the recorded accent is not the manifest's preset`];
       derived = accentRaster(derived, accent.spec).raster;
     }
+    if (remap !== undefined) {
+      if (
+        JSON.stringify(asset.remap) !==
+          JSON.stringify({ preset: remap.preset, rules: remap.rules }) ||
+        JSON.stringify(remapPreset(remap.preset)) !==
+          JSON.stringify(remap.palette)
+      )
+        return [`${label}: the recorded remap is not the manifest's preset`];
+      derived = remapRaster(derived, remap.palette, remap.rules).raster;
+    }
   } catch (error) {
     return [
       `${label}: ${error instanceof Error ? error.message : String(error)}`,
@@ -2346,7 +2420,7 @@ async function rederivedMasterProblems(
   return pixelSha256(derived) === pixelSha256(await readRaster(masterFile))
     ? []
     : [
-        `${label}: the ${kind}${accent === undefined ? "" : " + accent"} derivation does not reproduce the master`,
+        `${label}: the ${kind}${accent === undefined ? "" : " + accent"}${remap === undefined ? "" : " + remap"} derivation does not reproduce the master`,
       ];
 }
 

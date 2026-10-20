@@ -19,13 +19,13 @@
       "rival": "Necromancer",
       "gated": true,
       "measure": {
-        "palette": 28,
-        "deuteranopia": 16.8,
-        "protanopia": 15.7,
-        "greyPalette": 2.2,
-        "lightness": 7.1,
+        "palette": 19.4,
+        "deuteranopia": 13,
+        "protanopia": 13.3,
+        "greyPalette": 2.3,
+        "lightness": 6,
         "meanLightness": [
-          26.5,
+          26.8,
           28.2
         ],
         "silhouette": 0.66,
@@ -38,35 +38,16 @@
       "rival": "Ice Witch",
       "gated": true,
       "measure": {
-        "palette": 22.4,
-        "deuteranopia": 18.2,
-        "protanopia": 16.4,
-        "greyPalette": 2.4,
-        "lightness": 21.8,
+        "palette": 17.9,
+        "deuteranopia": 10.7,
+        "protanopia": 10.4,
+        "greyPalette": 2.6,
+        "lightness": 21.7,
         "meanLightness": [
-          26.5,
+          26.8,
           48.7
         ],
         "silhouette": 0.57,
-        "distinct": true,
-        "reasons": []
-      }
-    },
-    {
-      "unit": "Initiate",
-      "rival": "Human Fighter",
-      "gated": true,
-      "measure": {
-        "palette": 14.9,
-        "deuteranopia": 11.1,
-        "protanopia": 10.4,
-        "greyPalette": 2.8,
-        "lightness": 17.6,
-        "meanLightness": [
-          26.5,
-          45.2
-        ],
-        "silhouette": 0.62,
         "distinct": false,
         "reasons": [
           "colour too close"
@@ -75,21 +56,42 @@
     },
     {
       "unit": "Initiate",
+      "rival": "Human Fighter",
+      "gated": true,
+      "measure": {
+        "palette": 22.6,
+        "deuteranopia": 14.8,
+        "protanopia": 17.2,
+        "greyPalette": 3,
+        "lightness": 17.6,
+        "meanLightness": [
+          26.8,
+          45.2
+        ],
+        "silhouette": 0.62,
+        "distinct": true,
+        "reasons": []
+      }
+    },
+    {
+      "unit": "Initiate",
       "rival": "Grunt",
       "gated": true,
       "measure": {
-        "palette": 26.2,
-        "deuteranopia": 21.8,
-        "protanopia": 17.9,
-        "greyPalette": 1.5,
-        "lightness": 19.6,
+        "palette": 16.8,
+        "deuteranopia": 11.6,
+        "protanopia": 12.3,
+        "greyPalette": 1.8,
+        "lightness": 19.5,
         "meanLightness": [
-          26.5,
+          26.8,
           45.8
         ],
         "silhouette": 0.54,
-        "distinct": true,
-        "reasons": []
+        "distinct": false,
+        "reasons": [
+          "colour too close"
+        ]
       }
     },
     {
@@ -97,13 +99,13 @@
       "rival": "Lich",
       "gated": false,
       "measure": {
-        "palette": 22.3,
-        "deuteranopia": 11.3,
-        "protanopia": 12.4,
+        "palette": 21.9,
+        "deuteranopia": 12.3,
+        "protanopia": 13.3,
         "greyPalette": 1.8,
-        "lightness": 6.7,
+        "lightness": 5.9,
         "meanLightness": [
-          26.5,
+          26.8,
           29.3
         ],
         "silhouette": 0.54,
@@ -118,18 +120,20 @@
       "rival": "Banshee",
       "gated": false,
       "measure": {
-        "palette": 25.7,
-        "deuteranopia": 15.5,
-        "protanopia": 13.2,
-        "greyPalette": 2.9,
+        "palette": 21.8,
+        "deuteranopia": 13.9,
+        "protanopia": 12.3,
+        "greyPalette": 3.4,
         "lightness": 24.8,
         "meanLightness": [
-          26.5,
+          26.8,
           51.5
         ],
         "silhouette": 0.52,
-        "distinct": true,
-        "reasons": []
+        "distinct": false,
+        "reasons": [
+          "colour too close"
+        ]
       }
     },
     {
@@ -137,13 +141,13 @@
       "rival": "Shaman",
       "gated": false,
       "measure": {
-        "palette": 16.7,
-        "deuteranopia": 7.2,
-        "protanopia": 8.9,
-        "greyPalette": 1.8,
-        "lightness": 11.2,
+        "palette": 17.6,
+        "deuteranopia": 9.4,
+        "protanopia": 11.7,
+        "greyPalette": 1.9,
+        "lightness": 11.1,
         "meanLightness": [
-          26.5,
+          26.8,
           37.2
         ],
         "silhouette": 0.67,
@@ -196,13 +200,13 @@
       "rival": "Lich",
       "gated": true,
       "measure": {
-        "palette": 30.5,
-        "deuteranopia": 18.9,
-        "protanopia": 20.6,
-        "greyPalette": 2.6,
-        "lightness": 12.8,
+        "palette": 29.2,
+        "deuteranopia": 22.2,
+        "protanopia": 22.1,
+        "greyPalette": 2.3,
+        "lightness": 10.7,
         "meanLightness": [
-          35.8,
+          34.1,
           29.3
         ],
         "silhouette": 0.63,
@@ -215,13 +219,13 @@
       "rival": "Colossus",
       "gated": true,
       "measure": {
-        "palette": 27.6,
-        "deuteranopia": 20.6,
-        "protanopia": 20.3,
-        "greyPalette": 1.6,
-        "lightness": 13.9,
+        "palette": 28.4,
+        "deuteranopia": 17.4,
+        "protanopia": 19.7,
+        "greyPalette": 1.4,
+        "lightness": 13.2,
         "meanLightness": [
-          35.8,
+          34.1,
           43.7
         ],
         "silhouette": 0.54,
@@ -234,13 +238,13 @@
       "rival": "Frost Giant",
       "gated": true,
       "measure": {
-        "palette": 23.3,
-        "deuteranopia": 15.6,
-        "protanopia": 16.6,
-        "greyPalette": 2.7,
-        "lightness": 11.3,
+        "palette": 28.9,
+        "deuteranopia": 15.9,
+        "protanopia": 18.5,
+        "greyPalette": 2.1,
+        "lightness": 9.4,
         "meanLightness": [
-          35.8,
+          34.1,
           41.1
         ],
         "silhouette": 0.56,

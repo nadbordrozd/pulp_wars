@@ -5610,8 +5610,8 @@
       "candidateSha256": "66e525d231b3e7acc10d7e1088e05afbae312772b78b43d9d7d67e09d565f869",
       "master": {
         "path": "public/assets/chibi/units/chibi-direction-cult-familiar.png",
-        "sha256": "2626eedf5491fb33084ed9bb456331e6e702051c6b8103eae56ab7002d4e1cfe",
-        "pixelSha256": "88421083cc76819a0476bdb65d2468e26746c1e53a37517e6d81584ac3d3abae",
+        "sha256": "da1bce4951ac2e479fce91c1787c1ccb511b0983f68227498f080864a3393bca",
+        "pixelSha256": "0ec9c86e304989addbd06328a51678f53db20a14ff64c04a83cfb9eaf79dd7c0",
         "width": 72,
         "height": 88
       },
@@ -5655,6 +5655,57 @@
           },
           "accentPixels": 0,
           "trimPixels": 0
+        },
+        "remap": {
+          "preset": "cult-royal-aqua",
+          "palette": {
+            "main": "#6a2f93",
+            "accent": "#4fe3c1",
+            "ramp": [
+              [0, "#0c0612"],
+              [10, "#1f0e2e"],
+              [18, "#33184b"],
+              [26, "#4a2269"],
+              [34, "#62308a"],
+              [44, "#7f43ab"],
+              [56, "#a266cc"],
+              [70, "#c79be3"]
+            ],
+            "dark": [
+              [0, "#060508"],
+              [10, "#121016"],
+              [20, "#1e1b24"],
+              [30, "#2e2a36"],
+              [45, "#48424f"]
+            ],
+            "trim": [
+              [15, "#124a42"],
+              [30, "#22836f"],
+              [45, "#3dbb9e"],
+              [60, "#66dec2"],
+              [75, "#9cf3dd"],
+              [90, "#d4fff4"]
+            ],
+            "glow": [
+              [30, "#0f5f53"],
+              [50, "#22a58e"],
+              [65, "#3fd6b7"],
+              [80, "#7af2d6"],
+              [92, "#c8fff2"]
+            ],
+            "avoid": ["#f06762", "#28b7a4", "#e2b63f", "#a277d2"],
+            "avoidDistance": 14
+          },
+          "rules": {
+            "kind": "lodge",
+            "lodgeHue": [190, 268]
+          },
+          "pixels": {
+            "main": 997,
+            "dark": 0,
+            "trim": 0,
+            "glow": 0
+          }
         }
       },
       "anchor": {
@@ -5826,8 +5877,8 @@
       "candidateSha256": "380c1e70c49f2efee4ed95cd433e2252d1c3c484fcc0d739013e585d4512fedf",
       "master": {
         "path": "public/assets/chibi/units/chibi-direction-cult-herald.png",
-        "sha256": "80bd1238e1eb99c693a7bca1b271a622ac494d4f3b64189b144fb8c4d935fc53",
-        "pixelSha256": "8c41be6615085285b57869cac63336c79ed613ef13c1e848d706312a346e1582",
+        "sha256": "57c26a9078120eefdbc61e4eb683d0e39fe5d683370fa131da7cce8b2a9abd3f",
+        "pixelSha256": "542613fc425d8fa99600e46ee333fa24ef424bea1c04bed40d896d4abba43c92",
         "width": 88,
         "height": 104
       },
@@ -5868,6 +5919,57 @@
           },
           "accentPixels": 155,
           "trimPixels": 0
+        },
+        "remap": {
+          "preset": "cult-royal-aqua",
+          "palette": {
+            "main": "#6a2f93",
+            "accent": "#4fe3c1",
+            "ramp": [
+              [0, "#0c0612"],
+              [10, "#1f0e2e"],
+              [18, "#33184b"],
+              [26, "#4a2269"],
+              [34, "#62308a"],
+              [44, "#7f43ab"],
+              [56, "#a266cc"],
+              [70, "#c79be3"]
+            ],
+            "dark": [
+              [0, "#060508"],
+              [10, "#121016"],
+              [20, "#1e1b24"],
+              [30, "#2e2a36"],
+              [45, "#48424f"]
+            ],
+            "trim": [
+              [15, "#124a42"],
+              [30, "#22836f"],
+              [45, "#3dbb9e"],
+              [60, "#66dec2"],
+              [75, "#9cf3dd"],
+              [90, "#d4fff4"]
+            ],
+            "glow": [
+              [30, "#0f5f53"],
+              [50, "#22a58e"],
+              [65, "#3fd6b7"],
+              [80, "#7af2d6"],
+              [92, "#c8fff2"]
+            ],
+            "avoid": ["#f06762", "#28b7a4", "#e2b63f", "#a277d2"],
+            "avoidDistance": 14
+          },
+          "rules": {
+            "kind": "lodge",
+            "noGlow": true
+          },
+          "pixels": {
+            "main": 1877,
+            "dark": 0,
+            "trim": 0,
+            "glow": 0
+          }
         }
       },
       "anchor": {
@@ -5906,8 +6008,8 @@
       "candidateSha256": "f5d98a85d15415e92b980468408d1729b849fbb842b3db6a07a25e2c35d5a006",
       "master": {
         "path": "public/assets/chibi/units/chibi-direction-cult-herald-unbound.png",
-        "sha256": "0777db4976650163a2a4110ab62fb705483cca7c6cf3b26d326dd41b8c72cec8",
-        "pixelSha256": "57bb433be8169fec4ccf0d2b9dc05a8d3579376736d565591e03e948d95eb36e",
+        "sha256": "0a45b57ff90b3aedc04e526e15d7bd4925445ef4a2451467d9b1ad85d39af5f9",
+        "pixelSha256": "01a717d387a4256021f934d24880ee01b81d3d12f8b2b9adedcf838823012d82",
         "width": 88,
         "height": 104
       },
@@ -5948,6 +6050,57 @@
           },
           "accentPixels": 155,
           "trimPixels": 0
+        },
+        "remap": {
+          "preset": "cult-royal-aqua",
+          "palette": {
+            "main": "#6a2f93",
+            "accent": "#4fe3c1",
+            "ramp": [
+              [0, "#0c0612"],
+              [10, "#1f0e2e"],
+              [18, "#33184b"],
+              [26, "#4a2269"],
+              [34, "#62308a"],
+              [44, "#7f43ab"],
+              [56, "#a266cc"],
+              [70, "#c79be3"]
+            ],
+            "dark": [
+              [0, "#060508"],
+              [10, "#121016"],
+              [20, "#1e1b24"],
+              [30, "#2e2a36"],
+              [45, "#48424f"]
+            ],
+            "trim": [
+              [15, "#124a42"],
+              [30, "#22836f"],
+              [45, "#3dbb9e"],
+              [60, "#66dec2"],
+              [75, "#9cf3dd"],
+              [90, "#d4fff4"]
+            ],
+            "glow": [
+              [30, "#0f5f53"],
+              [50, "#22a58e"],
+              [65, "#3fd6b7"],
+              [80, "#7af2d6"],
+              [92, "#c8fff2"]
+            ],
+            "avoid": ["#f06762", "#28b7a4", "#e2b63f", "#a277d2"],
+            "avoidDistance": 14
+          },
+          "rules": {
+            "kind": "lodge",
+            "noGlow": true
+          },
+          "pixels": {
+            "main": 1865,
+            "dark": 0,
+            "trim": 0,
+            "glow": 0
+          }
         }
       },
       "anchor": {
@@ -5986,8 +6139,8 @@
       "candidateSha256": "c729c88370ee75c140a28bbc612ad4dcc220156aceb4135d725ac8521bd6feee",
       "master": {
         "path": "public/assets/chibi/units/chibi-direction-cult-hexer.png",
-        "sha256": "e19ea08c2687053bd7a9d468f2557dcadc141906538dc422020d5fa47d5a1c5e",
-        "pixelSha256": "b3c409db2bc3686aa1c48d94601e9775f778a2259ae1c86aa07035e38394cdfa",
+        "sha256": "c8b27cb6aff50ceadd1e16fb4414ad23ce36d4d7f912681f5c99b3503ac0f2be",
+        "pixelSha256": "513f0005c5ccc40e6e3e7614c9e4f4bcf06ebdfbb52b855558c592c8114ef847",
         "width": 56,
         "height": 80
       },
@@ -6011,6 +6164,65 @@
           },
           "accentPixels": 16,
           "trimPixels": 0
+        },
+        "remap": {
+          "preset": "cult-royal-aqua",
+          "palette": {
+            "main": "#6a2f93",
+            "accent": "#4fe3c1",
+            "ramp": [
+              [0, "#0c0612"],
+              [10, "#1f0e2e"],
+              [18, "#33184b"],
+              [26, "#4a2269"],
+              [34, "#62308a"],
+              [44, "#7f43ab"],
+              [56, "#a266cc"],
+              [70, "#c79be3"]
+            ],
+            "dark": [
+              [0, "#060508"],
+              [10, "#121016"],
+              [20, "#1e1b24"],
+              [30, "#2e2a36"],
+              [45, "#48424f"]
+            ],
+            "trim": [
+              [15, "#124a42"],
+              [30, "#22836f"],
+              [45, "#3dbb9e"],
+              [60, "#66dec2"],
+              [75, "#9cf3dd"],
+              [90, "#d4fff4"]
+            ],
+            "glow": [
+              [30, "#0f5f53"],
+              [50, "#22a58e"],
+              [65, "#3fd6b7"],
+              [80, "#7af2d6"],
+              [92, "#c8fff2"]
+            ],
+            "avoid": ["#f06762", "#28b7a4", "#e2b63f", "#a277d2"],
+            "avoidDistance": 14
+          },
+          "rules": {
+            "kind": "robed",
+            "keep": ["#31171b"],
+            "protect": [
+              {
+                "x0": 27,
+                "y0": 35,
+                "x1": 37,
+                "y1": 40
+              }
+            ]
+          },
+          "pixels": {
+            "main": 235,
+            "dark": 258,
+            "trim": 188,
+            "glow": 20
+          }
         }
       },
       "anchor": {
@@ -6185,8 +6397,8 @@
       "candidateSha256": "e0f403a497ef25ee5626007759092c085a1c925a7f7ae3b0c246c94a10b95569",
       "master": {
         "path": "public/assets/chibi/units/chibi-direction-cult-idol-bearer.png",
-        "sha256": "9e03684e92e339fda4a2338504e8dcf1de729d07af41fed55bb348f2de33dc2d",
-        "pixelSha256": "e97baf498fda00070fc2c17b3b6924ee4bb74caab653f627938b0f577c1ca6dc",
+        "sha256": "c6482b5dcc1f36b51fb448b2d406fcd1a360f5035061b85293ba83df3820c9e7",
+        "pixelSha256": "14ed81aa94125348d2be5ba90745a353dac34ac9666284efff1dfccba32ad788",
         "width": 56,
         "height": 80
       },
@@ -6210,6 +6422,64 @@
           },
           "accentPixels": 0,
           "trimPixels": 0
+        },
+        "remap": {
+          "preset": "cult-royal-aqua",
+          "palette": {
+            "main": "#6a2f93",
+            "accent": "#4fe3c1",
+            "ramp": [
+              [0, "#0c0612"],
+              [10, "#1f0e2e"],
+              [18, "#33184b"],
+              [26, "#4a2269"],
+              [34, "#62308a"],
+              [44, "#7f43ab"],
+              [56, "#a266cc"],
+              [70, "#c79be3"]
+            ],
+            "dark": [
+              [0, "#060508"],
+              [10, "#121016"],
+              [20, "#1e1b24"],
+              [30, "#2e2a36"],
+              [45, "#48424f"]
+            ],
+            "trim": [
+              [15, "#124a42"],
+              [30, "#22836f"],
+              [45, "#3dbb9e"],
+              [60, "#66dec2"],
+              [75, "#9cf3dd"],
+              [90, "#d4fff4"]
+            ],
+            "glow": [
+              [30, "#0f5f53"],
+              [50, "#22a58e"],
+              [65, "#3fd6b7"],
+              [80, "#7af2d6"],
+              [92, "#c8fff2"]
+            ],
+            "avoid": ["#f06762", "#28b7a4", "#e2b63f", "#a277d2"],
+            "avoidDistance": 14
+          },
+          "rules": {
+            "kind": "robed",
+            "protect": [
+              {
+                "x0": 13,
+                "y0": 21,
+                "x1": 20,
+                "y1": 29
+              }
+            ]
+          },
+          "pixels": {
+            "main": 342,
+            "dark": 15,
+            "trim": 134,
+            "glow": 0
+          }
         }
       },
       "anchor": {
@@ -6242,8 +6512,8 @@
       "candidateSha256": "74079fb5b40c7f6c0d2413511a67e9176d4d97cff3878fa9476a6c1967d4c3b6",
       "master": {
         "path": "public/assets/chibi/units/chibi-direction-cult-initiate.png",
-        "sha256": "3e20b433459a357eaf8e7bd4ed4e35923a4bb6afd346554d4b01504798457832",
-        "pixelSha256": "c6576e456278e1c6b9e6f70c96692581b645a4947caaedc5f12fe1a4ae1cd01a",
+        "sha256": "7c1ffd22bfe34843f1a151139aeec33cc20650dbd0987e5ee2894d961fa7d294",
+        "pixelSha256": "2a9525c19f244e56d09da09719f620595a4a04383470e8f1ab0d298c3e64ff86",
         "width": 56,
         "height": 80
       },
@@ -6267,6 +6537,76 @@
           },
           "accentPixels": 22,
           "trimPixels": 0
+        },
+        "remap": {
+          "preset": "cult-royal-aqua",
+          "palette": {
+            "main": "#6a2f93",
+            "accent": "#4fe3c1",
+            "ramp": [
+              [0, "#0c0612"],
+              [10, "#1f0e2e"],
+              [18, "#33184b"],
+              [26, "#4a2269"],
+              [34, "#62308a"],
+              [44, "#7f43ab"],
+              [56, "#a266cc"],
+              [70, "#c79be3"]
+            ],
+            "dark": [
+              [0, "#060508"],
+              [10, "#121016"],
+              [20, "#1e1b24"],
+              [30, "#2e2a36"],
+              [45, "#48424f"]
+            ],
+            "trim": [
+              [15, "#124a42"],
+              [30, "#22836f"],
+              [45, "#3dbb9e"],
+              [60, "#66dec2"],
+              [75, "#9cf3dd"],
+              [90, "#d4fff4"]
+            ],
+            "glow": [
+              [30, "#0f5f53"],
+              [50, "#22a58e"],
+              [65, "#3fd6b7"],
+              [80, "#7af2d6"],
+              [92, "#c8fff2"]
+            ],
+            "avoid": ["#f06762", "#28b7a4", "#e2b63f", "#a277d2"],
+            "avoidDistance": 14
+          },
+          "rules": {
+            "kind": "robed",
+            "protect": [
+              {
+                "x0": 0,
+                "y0": 26,
+                "x1": 10,
+                "y1": 47
+              },
+              {
+                "x0": 25,
+                "y0": 29,
+                "x1": 38,
+                "y1": 44
+              },
+              {
+                "x0": 0,
+                "y0": 48,
+                "x1": 12,
+                "y1": 60
+              }
+            ]
+          },
+          "pixels": {
+            "main": 634,
+            "dark": 0,
+            "trim": 108,
+            "glow": 32
+          }
         }
       },
       "anchor": {
@@ -6299,8 +6639,8 @@
       "candidateSha256": "65d90c06ae17539bbe67b84a9fdd72b01f194f11d607c1a12184679ce67cc1a9",
       "master": {
         "path": "public/assets/chibi/units/chibi-direction-cult-stargazer.png",
-        "sha256": "a688f8f7b92a232fe41c04ec33faf434bb4b5da2bec3b1a1b071bb7ad8266ced",
-        "pixelSha256": "6b88ec14e02fecdded73c3f9a01b83121fb5f47c7407ea7456dbf63d884f7506",
+        "sha256": "82d562e8c56bafddc76f9aa846bb412ce713381f5dcf660f2fcc7ed9a6f0fd21",
+        "pixelSha256": "bebc308de9b7af68946f2673180719a2332a5d9aee846c43e3c1cd106ee5c77a",
         "width": 72,
         "height": 88
       },
@@ -6324,6 +6664,73 @@
           },
           "accentPixels": 1,
           "trimPixels": 0
+        },
+        "remap": {
+          "preset": "cult-royal-aqua",
+          "palette": {
+            "main": "#6a2f93",
+            "accent": "#4fe3c1",
+            "ramp": [
+              [0, "#0c0612"],
+              [10, "#1f0e2e"],
+              [18, "#33184b"],
+              [26, "#4a2269"],
+              [34, "#62308a"],
+              [44, "#7f43ab"],
+              [56, "#a266cc"],
+              [70, "#c79be3"]
+            ],
+            "dark": [
+              [0, "#060508"],
+              [10, "#121016"],
+              [20, "#1e1b24"],
+              [30, "#2e2a36"],
+              [45, "#48424f"]
+            ],
+            "trim": [
+              [15, "#124a42"],
+              [30, "#22836f"],
+              [45, "#3dbb9e"],
+              [60, "#66dec2"],
+              [75, "#9cf3dd"],
+              [90, "#d4fff4"]
+            ],
+            "glow": [
+              [30, "#0f5f53"],
+              [50, "#22a58e"],
+              [65, "#3fd6b7"],
+              [80, "#7af2d6"],
+              [92, "#c8fff2"]
+            ],
+            "avoid": ["#f06762", "#28b7a4", "#e2b63f", "#a277d2"],
+            "avoidDistance": 14
+          },
+          "rules": {
+            "kind": "robed",
+            "keep": ["#3e0d10"],
+            "protect": [
+              {
+                "x0": 24,
+                "y0": 35,
+                "x1": 27,
+                "y1": 39
+              }
+            ],
+            "props": [
+              {
+                "x0": 36,
+                "y0": 0,
+                "x1": 71,
+                "y1": 87
+              }
+            ]
+          },
+          "pixels": {
+            "main": 430,
+            "dark": 19,
+            "trim": 165,
+            "glow": 0
+          }
         }
       },
       "anchor": {
@@ -6356,8 +6763,8 @@
       "candidateSha256": "8532f62602d2e55cba51adf721ef848e1e6f76e9323e187f7db840f787f730f1",
       "master": {
         "path": "public/assets/chibi/units/chibi-direction-cult-summoner.png",
-        "sha256": "b2b172b676510670c40a8699572fb9434b356c514846c37ffcd98fc21d1a4884",
-        "pixelSha256": "aca8b257d937d2a6404f0553f5b61ddfbb23630fffd7d549bb8134b68d21114d",
+        "sha256": "41b6a06cad13d65a806599c40e0f7451214a0857dfe7fc6dcaa953863741b463",
+        "pixelSha256": "1b637a2d41602107bff642b0b62fbd2a23405e90abd6db294e821829983d635c",
         "width": 56,
         "height": 80
       },
@@ -6381,6 +6788,83 @@
           },
           "accentPixels": 0,
           "trimPixels": 0
+        },
+        "remap": {
+          "preset": "cult-royal-aqua",
+          "palette": {
+            "main": "#6a2f93",
+            "accent": "#4fe3c1",
+            "ramp": [
+              [0, "#0c0612"],
+              [10, "#1f0e2e"],
+              [18, "#33184b"],
+              [26, "#4a2269"],
+              [34, "#62308a"],
+              [44, "#7f43ab"],
+              [56, "#a266cc"],
+              [70, "#c79be3"]
+            ],
+            "dark": [
+              [0, "#060508"],
+              [10, "#121016"],
+              [20, "#1e1b24"],
+              [30, "#2e2a36"],
+              [45, "#48424f"]
+            ],
+            "trim": [
+              [15, "#124a42"],
+              [30, "#22836f"],
+              [45, "#3dbb9e"],
+              [60, "#66dec2"],
+              [75, "#9cf3dd"],
+              [90, "#d4fff4"]
+            ],
+            "glow": [
+              [30, "#0f5f53"],
+              [50, "#22a58e"],
+              [65, "#3fd6b7"],
+              [80, "#7af2d6"],
+              [92, "#c8fff2"]
+            ],
+            "avoid": ["#f06762", "#28b7a4", "#e2b63f", "#a277d2"],
+            "avoidDistance": 14
+          },
+          "rules": {
+            "kind": "robed",
+            "protect": [
+              {
+                "x0": 26,
+                "y0": 21,
+                "x1": 30,
+                "y1": 27
+              },
+              {
+                "x0": 34,
+                "y0": 24,
+                "x1": 47,
+                "y1": 47
+              }
+            ],
+            "extend": [
+              {
+                "box": {
+                  "x0": 0,
+                  "y0": 0,
+                  "x1": 55,
+                  "y1": 79
+                },
+                "hue": [6, 40],
+                "minSaturation": 0.6,
+                "maxValue": 0.76
+              }
+            ]
+          },
+          "pixels": {
+            "main": 563,
+            "dark": 0,
+            "trim": 159,
+            "glow": 0
+          }
         }
       },
       "anchor": {

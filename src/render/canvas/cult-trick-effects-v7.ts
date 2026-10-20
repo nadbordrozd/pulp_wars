@@ -457,7 +457,7 @@ export function drawCultTrickFeedbackV7(
           context,
           point,
           (26 + 70 * wave) * zoom,
-          CULT_PALETTE_V7.indigo,
+          CULT_PALETTE_V7.purple,
           4 * zoom,
           (1 - wave) * 0.9,
         );

@@ -1173,29 +1173,29 @@
         "label": "Cult",
         "opaquePixels": 2371,
         "outlineShare": 23.3,
-        "bodyMean": "#4f5189",
+        "bodyMean": "#674379",
         "mainColours": [
-          "#4144a2 31.7%",
-          "#3a388c 30.3%",
-          "#3f429d 7%",
-          "#3b3d95 7%",
-          "#fee494 3.1%"
+          "#522775 36.7%",
+          "#612f88 29.2%",
+          "#5e2e85 7.1%",
+          "#fee494 3.1%",
+          "#33649a 2.9%"
         ],
         "size": "66 x 51",
         "patrolBoatSize": "59 x 68",
         "heightShareOfPatrolBoat": 75,
         "waterlineRow": 79,
         "patrolBoatWaterlineRow": 77,
-        "paletteDistanceToPatrolBoat": 6.4,
+        "paletteDistanceToPatrolBoat": 6.6,
         "water": {
           "shallow": {
-            "bodyMeanDeltaE": 58.7,
-            "bodyMeanContrast": 4.3,
+            "bodyMeanDeltaE": 66,
+            "bodyMeanContrast": 4.7,
             "bodyShareWithin12": 0
           },
           "deep": {
-            "bodyMeanDeltaE": 21,
-            "bodyMeanContrast": 1.5,
+            "bodyMeanDeltaE": 32.9,
+            "bodyMeanContrast": 1.7,
             "bodyShareWithin12": 2.9
           }
         }
@@ -1228,8 +1228,8 @@
           "deuteranopia": 10.9
         },
         "Cult": {
-          "normal": 32.9,
-          "deuteranopia": 24.4
+          "normal": 31.4,
+          "deuteranopia": 19.7
         }
       },
       "Undead": {
@@ -1258,8 +1258,8 @@
           "deuteranopia": 23
         },
         "Cult": {
-          "normal": 21.6,
-          "deuteranopia": 13.9
+          "normal": 16.6,
+          "deuteranopia": 15
         }
       },
       "Goblin": {
@@ -1288,8 +1288,8 @@
           "deuteranopia": 15.3
         },
         "Cult": {
-          "normal": 33.7,
-          "deuteranopia": 27.7
+          "normal": 32.8,
+          "deuteranopia": 23.7
         }
       },
       "Dinosaur": {
@@ -1318,8 +1318,8 @@
           "deuteranopia": 26.5
         },
         "Cult": {
-          "normal": 27.7,
-          "deuteranopia": 23
+          "normal": 28.3,
+          "deuteranopia": 15
         }
       },
       "Martian": {
@@ -1348,8 +1348,8 @@
           "deuteranopia": 31.6
         },
         "Cult": {
-          "normal": 40,
-          "deuteranopia": 36.7
+          "normal": 40.4,
+          "deuteranopia": 30.6
         }
       },
       "Dwarf": {
@@ -1378,8 +1378,8 @@
           "deuteranopia": 14.4
         },
         "Cult": {
-          "normal": 40.9,
-          "deuteranopia": 35.2
+          "normal": 39.9,
+          "deuteranopia": 29.5
         }
       },
       "Candy": {
@@ -1408,38 +1408,38 @@
           "deuteranopia": 14.4
         },
         "Cult": {
-          "normal": 42.5,
-          "deuteranopia": 40.7
+          "normal": 39.1,
+          "deuteranopia": 34.7
         }
       },
       "Cult": {
         "Human": {
-          "normal": 32.9,
-          "deuteranopia": 24.4
+          "normal": 31.4,
+          "deuteranopia": 19.7
         },
         "Undead": {
-          "normal": 21.6,
-          "deuteranopia": 13.9
+          "normal": 16.6,
+          "deuteranopia": 15
         },
         "Goblin": {
-          "normal": 33.7,
-          "deuteranopia": 27.7
+          "normal": 32.8,
+          "deuteranopia": 23.7
         },
         "Dinosaur": {
-          "normal": 27.7,
-          "deuteranopia": 23
+          "normal": 28.3,
+          "deuteranopia": 15
         },
         "Martian": {
-          "normal": 40,
-          "deuteranopia": 36.7
+          "normal": 40.4,
+          "deuteranopia": 30.6
         },
         "Dwarf": {
-          "normal": 40.9,
-          "deuteranopia": 35.2
+          "normal": 39.9,
+          "deuteranopia": 29.5
         },
         "Candy": {
-          "normal": 42.5,
-          "deuteranopia": 40.7
+          "normal": 39.1,
+          "deuteranopia": 34.7
         }
       }
     },

@@ -37,6 +37,8 @@ import process from "node:process";
 import { fileURLToPath } from "node:url";
 import sharp, { type OverlayOptions } from "sharp";
 import { encodePng, pixelSha256, readRaster, sha256 } from "./chibi/pipeline";
+import type { RgbaRaster } from "./chibi/owner-mask";
+import { remapPreset, remapRaster, type RemapSpec } from "./chibi/remap";
 
 const DIR = "scripts/art/campaign-pictures";
 const RECIPES = `${DIR}/recipes.json`;
@@ -87,6 +89,11 @@ interface PictureSpec {
   readonly recipe: string;
   readonly candidate: number;
   readonly subject: string;
+  /**
+   * A palette remap of the baked picture (scripts/art/chibi/remap.ts): the
+   * Cult's scene follows the faction's palette 1 (bead pulp_wars-mch9.59).
+   */
+  readonly remap?: RemapSpec;
 }
 
 interface RecipeFile {
@@ -120,6 +127,8 @@ export interface CampaignPictureRecordV7 {
     readonly candidate: number;
     readonly sha256: string;
   };
+  /** The palette remap the candidate went through, when it has one. */
+  readonly remap?: RemapSpec;
 }
 
 async function readJson<T>(file: string, fallback: T): Promise<T> {
@@ -542,7 +551,16 @@ export async function deriveCampaignPictures(root: string): Promise<{
     const bytes = await readFile(path.join(root, candidate.file));
     if (sha256(bytes) !== candidate.sha256)
       throw new Error(`${candidate.file} changed since it was recorded`);
-    const raster = await readRaster(bytes);
+    const drawn = await readRaster(bytes);
+    let raster: RgbaRaster = drawn;
+    if (spec.remap !== undefined) {
+      const palette = remapPreset(spec.remap.preset);
+      if (palette === undefined)
+        throw new Error(
+          `picture ${spec.campaign}: unknown remap preset ${spec.remap.preset}`,
+        );
+      raster = remapRaster(drawn, palette, spec.remap.rules).raster;
+    }
     if (raster.width !== recipe.width || raster.height !== recipe.height)
       throw new Error(
         `${candidate.file} is ${raster.width}x${raster.height}, not ${recipe.width}x${recipe.height}`,
@@ -567,6 +585,7 @@ export async function deriveCampaignPictures(root: string): Promise<{
         candidate: spec.candidate,
         sha256: candidate.sha256,
       },
+      ...(spec.remap === undefined ? {} : { remap: spec.remap }),
     });
   }
   return { record: { bead: file.bead, pictures }, files };

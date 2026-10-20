@@ -370,7 +370,7 @@ export function drawCultOverMarkV7(
     const width = pad * 2.6 + shutters + context.measureText(text).width;
     const left = x - width / 2;
     const top = y + frame.banner.y * zoom - height / 2;
-    context.fillStyle = highContrast ? "#000000" : CULT_PALETTE_V7.indigo;
+    context.fillStyle = highContrast ? "#000000" : CULT_PALETTE_V7.purple;
     context.strokeStyle = palette.casing;
     context.lineWidth = Math.max(1.2, 2.2 * zoom);
     context.beginPath();

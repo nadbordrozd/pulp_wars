@@ -16,7 +16,13 @@
         "height": 72
       },
       "ownerColour": false,
-      "accent": "cult-lodge"
+      "accent": "cult-lodge",
+      "remap": {
+        "preset": "cult-royal-aqua",
+        "rules": {
+          "kind": "lodge"
+        }
+      }
     },
     {
       "id": "chibi-cult-monument-engineer",
@@ -28,7 +34,13 @@
         "height": 72
       },
       "ownerColour": false,
-      "accent": "cult-lodge"
+      "accent": "cult-lodge",
+      "remap": {
+        "preset": "cult-royal-aqua",
+        "rules": {
+          "kind": "lodge"
+        }
+      }
     },
     {
       "id": "chibi-cult-monument-muster",
@@ -40,7 +52,13 @@
         "height": 72
       },
       "ownerColour": false,
-      "accent": "cult-lodge"
+      "accent": "cult-lodge",
+      "remap": {
+        "preset": "cult-royal-aqua",
+        "rules": {
+          "kind": "lodge"
+        }
+      }
     },
     {
       "id": "chibi-cult-monument-conqueror",
@@ -52,7 +70,13 @@
         "height": 72
       },
       "ownerColour": false,
-      "accent": "cult-lodge"
+      "accent": "cult-lodge",
+      "remap": {
+        "preset": "cult-royal-aqua",
+        "rules": {
+          "kind": "lodge"
+        }
+      }
     },
     {
       "id": "chibi-cult-monument-land-baron",
@@ -64,7 +88,13 @@
         "height": 72
       },
       "ownerColour": false,
-      "accent": "cult-lodge"
+      "accent": "cult-lodge",
+      "remap": {
+        "preset": "cult-royal-aqua",
+        "rules": {
+          "kind": "lodge"
+        }
+      }
     },
     {
       "id": "chibi-cult-monument-sea-dog",
@@ -76,7 +106,13 @@
         "height": 72
       },
       "ownerColour": false,
-      "accent": "cult-lodge"
+      "accent": "cult-lodge",
+      "remap": {
+        "preset": "cult-royal-aqua",
+        "rules": {
+          "kind": "lodge"
+        }
+      }
     },
     {
       "id": "chibi-cult-monument-slayer",
@@ -88,7 +124,13 @@
         "height": 72
       },
       "ownerColour": false,
-      "accent": "cult-lodge"
+      "accent": "cult-lodge",
+      "remap": {
+        "preset": "cult-royal-aqua",
+        "rules": {
+          "kind": "lodge"
+        }
+      }
     },
     {
       "id": "chibi-cult-monument",
@@ -100,7 +142,13 @@
         "height": 72
       },
       "ownerColour": false,
-      "accent": "cult-lodge"
+      "accent": "cult-lodge",
+      "remap": {
+        "preset": "cult-royal-aqua",
+        "rules": {
+          "kind": "lodge"
+        }
+      }
     }
   ],
   "recipes": [

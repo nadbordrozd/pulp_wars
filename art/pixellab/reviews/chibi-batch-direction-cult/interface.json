@@ -26,11 +26,11 @@
       "recipe": "r2a-portrait-initiate-1",
       "canvas": "48 x 48",
       "sprite": "41 x 48",
-      "greenPercent": 0.7,
+      "greenPercent": 0,
       "indigoPercent": 0,
-      "tealPercent": 0.2,
-      "redPercent": 21,
-      "violetPercent": 20.9
+      "tealPercent": 6.4,
+      "redPercent": 11.3,
+      "violetPercent": 18.9
     },
     {
       "asset": "chibi-direction-portrait-cult-idol-bearer",
@@ -39,11 +39,11 @@
       "recipe": "r2a-portrait-idol-bearer-2-idol",
       "canvas": "48 x 48",
       "sprite": "44 x 43",
-      "greenPercent": 0.1,
+      "greenPercent": 0,
       "indigoPercent": 0,
-      "tealPercent": 0,
-      "redPercent": 9.8,
-      "violetPercent": 0
+      "tealPercent": 4.4,
+      "redPercent": 6.9,
+      "violetPercent": 5.5
     },
     {
       "asset": "chibi-direction-portrait-cult-familiar",
@@ -53,10 +53,10 @@
       "canvas": "48 x 48",
       "sprite": "48 x 44",
       "greenPercent": 0,
-      "indigoPercent": 46.1,
-      "tealPercent": 1.7,
+      "indigoPercent": 0,
+      "tealPercent": 0,
       "redPercent": 0,
-      "violetPercent": 0
+      "violetPercent": 47.8
     },
     {
       "asset": "chibi-direction-portrait-cult-hexer",
@@ -65,11 +65,11 @@
       "recipe": "r2a-portrait-hexer-1",
       "canvas": "48 x 48",
       "sprite": "40 x 42",
-      "greenPercent": 0.9,
+      "greenPercent": 0.3,
       "indigoPercent": 0,
-      "tealPercent": 0,
-      "redPercent": 6.2,
-      "violetPercent": 21.3
+      "tealPercent": 9.1,
+      "redPercent": 1.6,
+      "violetPercent": 9.8
     },
     {
       "asset": "chibi-direction-portrait-cult-summoner",
@@ -80,9 +80,9 @@
       "sprite": "44 x 42",
       "greenPercent": 0,
       "indigoPercent": 0,
-      "tealPercent": 0.7,
-      "redPercent": 28.9,
-      "violetPercent": 0.7
+      "tealPercent": 7.8,
+      "redPercent": 5.1,
+      "violetPercent": 24.6
     },
     {
       "asset": "chibi-direction-portrait-cult-stargazer",
@@ -93,9 +93,9 @@
       "sprite": "46 x 42",
       "greenPercent": 0,
       "indigoPercent": 0,
-      "tealPercent": 0.4,
-      "redPercent": 21.4,
-      "violetPercent": 9
+      "tealPercent": 3.5,
+      "redPercent": 4.3,
+      "violetPercent": 17.1
     },
     {
       "asset": "chibi-direction-portrait-cult-thing",
@@ -131,10 +131,10 @@
       "canvas": "48 x 48",
       "sprite": "37 x 48",
       "greenPercent": 0,
-      "indigoPercent": 24.5,
+      "indigoPercent": 0,
       "tealPercent": 7.5,
       "redPercent": 0,
-      "violetPercent": 0
+      "violetPercent": 24.5
     },
     {
       "asset": "chibi-direction-portrait-cult-tentacle",
@@ -169,11 +169,11 @@
       "recipe": "cult-portrait-patrol-boat-a",
       "canvas": "48 x 48",
       "sprite": "43 x 38",
-      "greenPercent": 2.4,
-      "indigoPercent": 33,
-      "tealPercent": 0,
+      "greenPercent": 0,
+      "indigoPercent": 0,
+      "tealPercent": 2.1,
       "redPercent": 0,
-      "violetPercent": 0
+      "violetPercent": 33
     },
     {
       "asset": "chibi-naval-cult-portrait-battleship",
@@ -182,11 +182,11 @@
       "recipe": "cult-portrait-battleship-a",
       "canvas": "48 x 48",
       "sprite": "34 x 43",
-      "greenPercent": 3,
-      "indigoPercent": 19,
-      "tealPercent": 0,
+      "greenPercent": 0,
+      "indigoPercent": 0,
+      "tealPercent": 3,
       "redPercent": 0,
-      "violetPercent": 0
+      "violetPercent": 18.9
     },
     {
       "asset": "chibi-naval-cult-portrait-submarine",
@@ -195,11 +195,11 @@
       "recipe": "portrait-kraken-a",
       "canvas": "48 x 48",
       "sprite": "40 x 35",
-      "greenPercent": 1.3,
-      "indigoPercent": 60.1,
-      "tealPercent": 0,
+      "greenPercent": 0,
+      "indigoPercent": 0,
+      "tealPercent": 1.3,
       "redPercent": 0,
-      "violetPercent": 0
+      "violetPercent": 60.1
     }
   ],
   "icons": [
@@ -224,10 +224,10 @@
       "canvas": "48 x 48",
       "sprite": "36 x 31",
       "greenPercent": 0,
-      "indigoPercent": 37,
+      "indigoPercent": 0,
       "tealPercent": 0,
       "redPercent": 0,
-      "violetPercent": 0
+      "violetPercent": 37
     },
     {
       "asset": "chibi-direction-icon-cult-tech-harvest-rites",
@@ -237,10 +237,10 @@
       "canvas": "48 x 48",
       "sprite": "39 x 41",
       "greenPercent": 3.5,
-      "indigoPercent": 26.6,
+      "indigoPercent": 0,
       "tealPercent": 0.9,
       "redPercent": 0,
-      "violetPercent": 0
+      "violetPercent": 8.2
     },
     {
       "asset": "chibi-direction-icon-cult-action-sacrifice",
@@ -250,10 +250,10 @@
       "canvas": "48 x 48",
       "sprite": "30 x 45",
       "greenPercent": 40.8,
-      "indigoPercent": 30,
+      "indigoPercent": 0,
       "tealPercent": 0,
       "redPercent": 0,
-      "violetPercent": 0
+      "violetPercent": 30
     },
     {
       "asset": "chibi-direction-icon-cult-action-seize",
@@ -302,10 +302,10 @@
       "canvas": "48 x 48",
       "sprite": "15 x 44",
       "greenPercent": 27.7,
-      "indigoPercent": 7.7,
+      "indigoPercent": 0,
       "tealPercent": 0,
       "redPercent": 0,
-      "violetPercent": 0
+      "violetPercent": 7.7
     },
     {
       "asset": "chibi-direction-icon-cult-action-anchor",
@@ -341,10 +341,10 @@
       "canvas": "48 x 48",
       "sprite": "44 x 44",
       "greenPercent": 0.8,
-      "indigoPercent": 13,
+      "indigoPercent": 0,
       "tealPercent": 0.1,
       "redPercent": 0,
-      "violetPercent": 0
+      "violetPercent": 13
     },
     {
       "asset": "chibi-direction-icon-cult-action-ribbit",
@@ -406,10 +406,10 @@
       "canvas": "48 x 48",
       "sprite": "30 x 31",
       "greenPercent": 5.9,
-      "indigoPercent": 31,
+      "indigoPercent": 0,
       "tealPercent": 0,
       "redPercent": 0,
-      "violetPercent": 0
+      "violetPercent": 31
     },
     {
       "asset": "chibi-direction-icon-cult-action-pamphlets",
@@ -419,10 +419,10 @@
       "canvas": "48 x 48",
       "sprite": "31 x 31",
       "greenPercent": 0,
-      "indigoPercent": 20.1,
+      "indigoPercent": 0,
       "tealPercent": 0,
       "redPercent": 0,
-      "violetPercent": 0
+      "violetPercent": 20.4
     },
     {
       "asset": "chibi-direction-icon-cult-action-grab",
@@ -471,10 +471,10 @@
       "canvas": "48 x 48",
       "sprite": "42 x 43",
       "greenPercent": 20.1,
-      "indigoPercent": 39.2,
+      "indigoPercent": 0,
       "tealPercent": 0,
       "redPercent": 0,
-      "violetPercent": 0
+      "violetPercent": 38.1
     },
     {
       "asset": "chibi-direction-icon-cult-status-candlelit",
@@ -510,10 +510,10 @@
       "canvas": "48 x 48",
       "sprite": "37 x 34",
       "greenPercent": 3.5,
-      "indigoPercent": 20.3,
+      "indigoPercent": 0,
       "tealPercent": 0,
       "redPercent": 0,
-      "violetPercent": 0
+      "violetPercent": 16.2
     },
     {
       "asset": "chibi-direction-icon-cult-status-furious",
@@ -549,10 +549,10 @@
       "canvas": "48 x 48",
       "sprite": "40 x 36",
       "greenPercent": 1.5,
-      "indigoPercent": 54,
+      "indigoPercent": 0,
       "tealPercent": 0,
       "redPercent": 0,
-      "violetPercent": 0
+      "violetPercent": 53.9
     },
     {
       "asset": "chibi-direction-icon-cult-status-warded",
@@ -562,10 +562,10 @@
       "canvas": "48 x 48",
       "sprite": "38 x 40",
       "greenPercent": 4.3,
-      "indigoPercent": 23.4,
+      "indigoPercent": 0,
       "tealPercent": 0,
       "redPercent": 0,
-      "violetPercent": 0
+      "violetPercent": 23.4
     }
   ],
   "effects": [
@@ -577,10 +577,10 @@
       "canvas": "48 x 48",
       "sprite": "38 x 36",
       "greenPercent": 65.3,
-      "indigoPercent": 12,
+      "indigoPercent": 0,
       "tealPercent": 0,
       "redPercent": 0,
-      "violetPercent": 0
+      "violetPercent": 12
     },
     {
       "asset": "chibi-direction-effect-cult-seize",
@@ -590,10 +590,10 @@
       "canvas": "48 x 48",
       "sprite": "19 x 32",
       "greenPercent": 0,
-      "indigoPercent": 2.1,
+      "indigoPercent": 0,
       "tealPercent": 27.8,
       "redPercent": 0,
-      "violetPercent": 0
+      "violetPercent": 2.1
     },
     {
       "asset": "chibi-direction-effect-cult-summon-pop",
@@ -668,10 +668,10 @@
       "canvas": "48 x 48",
       "sprite": "40 x 35",
       "greenPercent": 0,
-      "indigoPercent": 5.7,
+      "indigoPercent": 0,
       "tealPercent": 28.1,
       "redPercent": 0,
-      "violetPercent": 0
+      "violetPercent": 5.7
     },
     {
       "asset": "chibi-direction-effect-cult-ribbit",
@@ -694,10 +694,10 @@
       "canvas": "40 x 40",
       "sprite": "22 x 22",
       "greenPercent": 3.8,
-      "indigoPercent": 3.1,
+      "indigoPercent": 0,
       "tealPercent": 2.1,
       "redPercent": 0,
-      "violetPercent": 0
+      "violetPercent": 3.1
     },
     {
       "asset": "chibi-direction-effect-cult-tentacle-slap",
@@ -733,10 +733,10 @@
       "canvas": "40 x 40",
       "sprite": "35 x 39",
       "greenPercent": 0,
-      "indigoPercent": 3.3,
+      "indigoPercent": 0,
       "tealPercent": 0,
       "redPercent": 0,
-      "violetPercent": 0
+      "violetPercent": 3.3
     },
     {
       "asset": "chibi-direction-effect-cult-favour",
@@ -759,10 +759,10 @@
       "canvas": "48 x 48",
       "sprite": "26 x 24",
       "greenPercent": 0,
-      "indigoPercent": 8.5,
+      "indigoPercent": 0,
       "tealPercent": 0,
       "redPercent": 0,
-      "violetPercent": 0
+      "violetPercent": 8.5
     }
   ]
 }

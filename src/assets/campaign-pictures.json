@@ -120,11 +120,17 @@
       "path": "public/assets/chibi/campaign/campaign-cult.png",
       "width": 128,
       "height": 96,
-      "pixelSha256": "320bc7ac8482d5c07560779ed8803f409bc8f9db77db0406f32de186e09b691f",
+      "pixelSha256": "6d1aec4e461e3f20c7d352389a55a62c4328fd59e18c19469a7825ba09d1bed6",
       "source": {
         "recipe": "cult-b",
         "candidate": 2,
         "sha256": "093e7841a1a303706d4c87e916196da574f997f3a77285127e0e090d170e6fa5"
+      },
+      "remap": {
+        "preset": "cult-royal-aqua",
+        "rules": {
+          "kind": "robed"
+        }
       }
     },
     {

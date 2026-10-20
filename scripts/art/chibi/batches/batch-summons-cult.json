@@ -122,7 +122,14 @@
         "width": 48,
         "height": 48
       },
-      "accent": "cult-lodge-icon"
+      "accent": "cult-lodge-icon",
+      "remap": {
+        "preset": "cult-royal-aqua",
+        "rules": {
+          "kind": "lodge",
+          "noGlow": true
+        }
+      }
     },
     {
       "id": "chibi-direction-icon-cult-action-drag",
@@ -144,7 +151,14 @@
         "width": 48,
         "height": 48
       },
-      "accent": "cult-lodge-icon"
+      "accent": "cult-lodge-icon",
+      "remap": {
+        "preset": "cult-royal-aqua",
+        "rules": {
+          "kind": "lodge",
+          "noGlow": true
+        }
+      }
     },
     {
       "id": "chibi-direction-icon-cult-hunger",
@@ -155,7 +169,14 @@
         "width": 48,
         "height": 48
       },
-      "accent": "cult-lodge-icon"
+      "accent": "cult-lodge-icon",
+      "remap": {
+        "preset": "cult-royal-aqua",
+        "rules": {
+          "kind": "lodge",
+          "noGlow": true
+        }
+      }
     },
     {
       "id": "chibi-direction-cult-imp-unbound",

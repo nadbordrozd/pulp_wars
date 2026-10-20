@@ -9,11 +9,11 @@
       "canvas": "56 x 80",
       "size": "50 x 59",
       "foot": 76,
-      "greenShare": 1.1,
+      "greenShare": 0,
       "indigoShare": 5.8,
-      "tealShare": 0,
-      "redPixels": 454,
-      "violetOrMagentaPixels": 135
+      "tealShare": 6.3,
+      "redPixels": 124,
+      "violetOrMagentaPixels": 383
     },
     {
       "title": "Idol Bearer",
@@ -24,9 +24,9 @@
       "foot": 76,
       "greenShare": 0,
       "indigoShare": 0,
-      "tealShare": 0,
-      "redPixels": 41,
-      "violetOrMagentaPixels": 242
+      "tealShare": 4.8,
+      "redPixels": 37,
+      "violetOrMagentaPixels": 246
     },
     {
       "title": "Familiar",
@@ -36,10 +36,10 @@
       "size": "58 x 65",
       "foot": 81,
       "greenShare": 0,
-      "indigoShare": 29,
-      "tealShare": 6,
+      "indigoShare": 0,
+      "tealShare": 0.9,
       "redPixels": 0,
-      "violetOrMagentaPixels": 0
+      "violetOrMagentaPixels": 988
     },
     {
       "title": "Hexer",
@@ -48,11 +48,11 @@
       "canvas": "56 x 80",
       "size": "44 x 65",
       "foot": 76,
-      "greenShare": 1,
+      "greenShare": 0,
       "indigoShare": 0,
-      "tealShare": 0.6,
-      "redPixels": 222,
-      "violetOrMagentaPixels": 216
+      "tealShare": 11.4,
+      "redPixels": 7,
+      "violetOrMagentaPixels": 240
     },
     {
       "title": "Summoner",
@@ -63,9 +63,9 @@
       "foot": 77,
       "greenShare": 0,
       "indigoShare": 0,
-      "tealShare": 0,
-      "redPixels": 164,
-      "violetOrMagentaPixels": 70
+      "tealShare": 6.5,
+      "redPixels": 56,
+      "violetOrMagentaPixels": 596
     },
     {
       "title": "Stargazer",
@@ -76,8 +76,8 @@
       "foot": 81,
       "greenShare": 0,
       "indigoShare": 0,
-      "tealShare": 0.8,
-      "redPixels": 299,
+      "tealShare": 6.6,
+      "redPixels": 87,
       "violetOrMagentaPixels": 235
     },
     {
@@ -114,10 +114,10 @@
       "size": "53 x 97",
       "foot": 100,
       "greenShare": 4.1,
-      "indigoShare": 50,
+      "indigoShare": 0,
       "tealShare": 5.3,
       "redPixels": 0,
-      "violetOrMagentaPixels": 0
+      "violetOrMagentaPixels": 1875
     },
     {
       "title": "Tentacle",
@@ -153,10 +153,10 @@
       "size": "53 x 97",
       "foot": 100,
       "greenShare": 4.1,
-      "indigoShare": 49.7,
+      "indigoShare": 0,
       "tealShare": 5.3,
       "redPixels": 101,
-      "violetOrMagentaPixels": 0
+      "violetOrMagentaPixels": 1865
     }
   ],
   "ships": {
@@ -165,18 +165,18 @@
       "size": "59 x 68",
       "waterline": 77,
       "sharedWaterline": 79,
-      "indigoShare": 31,
-      "greenShare": 1.6,
+      "indigoShare": 0,
+      "greenShare": 0,
       "redPixels": 0,
-      "violetOrMagentaPixels": 0,
+      "violetOrMagentaPixels": 627,
       "fromUndead": {
-        "palette": 32,
-        "deuteranopia": 27.6,
-        "protanopia": 27,
-        "greyPalette": 1.5,
-        "lightness": 13,
+        "palette": 31.5,
+        "deuteranopia": 24.6,
+        "protanopia": 25.3,
+        "greyPalette": 1.7,
+        "lightness": 12.2,
         "meanLightness": [
-          35,
+          34.1,
           22
         ],
         "silhouette": 0.63,
@@ -189,18 +189,18 @@
       "size": "71 x 79",
       "waterline": 84,
       "sharedWaterline": 84,
-      "indigoShare": 26.5,
-      "greenShare": 3.1,
+      "indigoShare": 0,
+      "greenShare": 0,
       "redPixels": 0,
-      "violetOrMagentaPixels": 0,
+      "violetOrMagentaPixels": 951,
       "fromUndead": {
-        "palette": 29.1,
-        "deuteranopia": 25.1,
-        "protanopia": 24.7,
+        "palette": 28.7,
+        "deuteranopia": 23.3,
+        "protanopia": 23.7,
         "greyPalette": 3.2,
-        "lightness": 31.6,
+        "lightness": 30.9,
         "meanLightness": [
-          48.6,
+          48,
           16.7
         ],
         "silhouette": 0.98,
@@ -213,18 +213,18 @@
       "size": "60 x 49",
       "waterline": 58,
       "sharedWaterline": 58,
-      "indigoShare": 32.9,
-      "greenShare": 0.9,
+      "indigoShare": 0,
+      "greenShare": 0,
       "redPixels": 0,
-      "violetOrMagentaPixels": 0,
+      "violetOrMagentaPixels": 494,
       "fromUndead": {
-        "palette": 30.9,
-        "deuteranopia": 25.8,
-        "protanopia": 26.1,
-        "greyPalette": 4,
-        "lightness": 15,
+        "palette": 30.2,
+        "deuteranopia": 22.7,
+        "protanopia": 24,
+        "greyPalette": 3.4,
+        "lightness": 14.5,
         "meanLightness": [
-          39.9,
+          38.8,
           24.7
         ],
         "silhouette": 0.97,
@@ -237,23 +237,25 @@
       "size": "66 x 51",
       "waterline": 79,
       "sharedWaterline": 79,
-      "indigoShare": 58.5,
-      "greenShare": 2.3,
+      "indigoShare": 0,
+      "greenShare": 0,
       "redPixels": 0,
-      "violetOrMagentaPixels": 0,
+      "violetOrMagentaPixels": 1386,
       "fromUndead": {
-        "palette": 21.6,
-        "deuteranopia": 13.9,
-        "protanopia": 16.2,
-        "greyPalette": 6.5,
-        "lightness": 13.1,
+        "palette": 16.6,
+        "deuteranopia": 15,
+        "protanopia": 14.6,
+        "greyPalette": 4.1,
+        "lightness": 12.3,
         "meanLightness": [
-          29,
+          27.2,
           15.3
         ],
         "silhouette": 0.63,
-        "distinct": true,
-        "reasons": []
+        "distinct": false,
+        "reasons": [
+          "colour too close"
+        ]
       }
     },
     "Submarine, submerged": {
@@ -261,23 +263,25 @@
       "size": "66 x 45",
       "waterline": 80,
       "sharedWaterline": 79,
-      "indigoShare": 56.2,
-      "greenShare": 2.5,
+      "indigoShare": 0,
+      "greenShare": 0,
       "redPixels": 0,
-      "violetOrMagentaPixels": 0,
+      "violetOrMagentaPixels": 1224,
       "fromUndead": {
-        "palette": 20.6,
-        "deuteranopia": 12.8,
-        "protanopia": 15,
-        "greyPalette": 6.2,
-        "lightness": 12.2,
+        "palette": 16,
+        "deuteranopia": 14.1,
+        "protanopia": 13.7,
+        "greyPalette": 4.3,
+        "lightness": 11.6,
         "meanLightness": [
-          31.8,
+          30.2,
           19.4
         ],
         "silhouette": 0.63,
-        "distinct": true,
-        "reasons": []
+        "distinct": false,
+        "reasons": [
+          "colour too close"
+        ]
       }
     }
   },

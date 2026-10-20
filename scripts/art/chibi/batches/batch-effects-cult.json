@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "batch": "effects-cult",
-  "title": "Cultists of the Ancient Ones, the ability effect sprites, palette-mapped to cult-green.png",
+  "title": "Cultists of the Ancient Ones, the ability effect sprites, palette-mapped to cult-green.png and, since palette 1 (pulp_wars-mch9.59), swapped to cult-purple.png",
   "bead": "pulp_wars-mch9.23",
   "faction": "CULT",
   "dryRun": false,
@@ -17,6 +17,10 @@
         "height": 48
       },
       "palette": {
+        "path": "scripts/art/chibi/palettes/cult-purple.png",
+        "sha256": "d91e79f08aab1eaef681f1793621f9df72f10dba3222daeb101a7bd3cd0a2464"
+      },
+      "paletteFrom": {
         "path": "scripts/art/chibi/palettes/cult-green.png",
         "sha256": "4699465ad1a0c1ce795e2eb9f7dff57b4a4b848eca8a5075a65caf8256b5c252"
       }
@@ -31,6 +35,10 @@
         "height": 48
       },
       "palette": {
+        "path": "scripts/art/chibi/palettes/cult-purple.png",
+        "sha256": "d91e79f08aab1eaef681f1793621f9df72f10dba3222daeb101a7bd3cd0a2464"
+      },
+      "paletteFrom": {
         "path": "scripts/art/chibi/palettes/cult-green.png",
         "sha256": "4699465ad1a0c1ce795e2eb9f7dff57b4a4b848eca8a5075a65caf8256b5c252"
       }
@@ -45,6 +53,10 @@
         "height": 48
       },
       "palette": {
+        "path": "scripts/art/chibi/palettes/cult-purple.png",
+        "sha256": "d91e79f08aab1eaef681f1793621f9df72f10dba3222daeb101a7bd3cd0a2464"
+      },
+      "paletteFrom": {
         "path": "scripts/art/chibi/palettes/cult-green.png",
         "sha256": "4699465ad1a0c1ce795e2eb9f7dff57b4a4b848eca8a5075a65caf8256b5c252"
       }
@@ -59,6 +71,10 @@
         "height": 40
       },
       "palette": {
+        "path": "scripts/art/chibi/palettes/cult-purple.png",
+        "sha256": "d91e79f08aab1eaef681f1793621f9df72f10dba3222daeb101a7bd3cd0a2464"
+      },
+      "paletteFrom": {
         "path": "scripts/art/chibi/palettes/cult-green.png",
         "sha256": "4699465ad1a0c1ce795e2eb9f7dff57b4a4b848eca8a5075a65caf8256b5c252"
       }
@@ -73,6 +89,10 @@
         "height": 48
       },
       "palette": {
+        "path": "scripts/art/chibi/palettes/cult-purple.png",
+        "sha256": "d91e79f08aab1eaef681f1793621f9df72f10dba3222daeb101a7bd3cd0a2464"
+      },
+      "paletteFrom": {
         "path": "scripts/art/chibi/palettes/cult-green.png",
         "sha256": "4699465ad1a0c1ce795e2eb9f7dff57b4a4b848eca8a5075a65caf8256b5c252"
       }
@@ -87,6 +107,10 @@
         "height": 40
       },
       "palette": {
+        "path": "scripts/art/chibi/palettes/cult-purple.png",
+        "sha256": "d91e79f08aab1eaef681f1793621f9df72f10dba3222daeb101a7bd3cd0a2464"
+      },
+      "paletteFrom": {
         "path": "scripts/art/chibi/palettes/cult-green.png",
         "sha256": "4699465ad1a0c1ce795e2eb9f7dff57b4a4b848eca8a5075a65caf8256b5c252"
       }
@@ -101,6 +125,10 @@
         "height": 48
       },
       "palette": {
+        "path": "scripts/art/chibi/palettes/cult-purple.png",
+        "sha256": "d91e79f08aab1eaef681f1793621f9df72f10dba3222daeb101a7bd3cd0a2464"
+      },
+      "paletteFrom": {
         "path": "scripts/art/chibi/palettes/cult-green.png",
         "sha256": "4699465ad1a0c1ce795e2eb9f7dff57b4a4b848eca8a5075a65caf8256b5c252"
       }
@@ -115,6 +143,10 @@
         "height": 48
       },
       "palette": {
+        "path": "scripts/art/chibi/palettes/cult-purple.png",
+        "sha256": "d91e79f08aab1eaef681f1793621f9df72f10dba3222daeb101a7bd3cd0a2464"
+      },
+      "paletteFrom": {
         "path": "scripts/art/chibi/palettes/cult-green.png",
         "sha256": "4699465ad1a0c1ce795e2eb9f7dff57b4a4b848eca8a5075a65caf8256b5c252"
       }
@@ -129,6 +161,10 @@
         "height": 48
       },
       "palette": {
+        "path": "scripts/art/chibi/palettes/cult-purple.png",
+        "sha256": "d91e79f08aab1eaef681f1793621f9df72f10dba3222daeb101a7bd3cd0a2464"
+      },
+      "paletteFrom": {
         "path": "scripts/art/chibi/palettes/cult-green.png",
         "sha256": "4699465ad1a0c1ce795e2eb9f7dff57b4a4b848eca8a5075a65caf8256b5c252"
       }
@@ -143,6 +179,10 @@
         "height": 40
       },
       "palette": {
+        "path": "scripts/art/chibi/palettes/cult-purple.png",
+        "sha256": "d91e79f08aab1eaef681f1793621f9df72f10dba3222daeb101a7bd3cd0a2464"
+      },
+      "paletteFrom": {
         "path": "scripts/art/chibi/palettes/cult-green.png",
         "sha256": "4699465ad1a0c1ce795e2eb9f7dff57b4a4b848eca8a5075a65caf8256b5c252"
       }
@@ -157,6 +197,10 @@
         "height": 40
       },
       "palette": {
+        "path": "scripts/art/chibi/palettes/cult-purple.png",
+        "sha256": "d91e79f08aab1eaef681f1793621f9df72f10dba3222daeb101a7bd3cd0a2464"
+      },
+      "paletteFrom": {
         "path": "scripts/art/chibi/palettes/cult-green.png",
         "sha256": "4699465ad1a0c1ce795e2eb9f7dff57b4a4b848eca8a5075a65caf8256b5c252"
       }
@@ -171,6 +215,10 @@
         "height": 48
       },
       "palette": {
+        "path": "scripts/art/chibi/palettes/cult-purple.png",
+        "sha256": "d91e79f08aab1eaef681f1793621f9df72f10dba3222daeb101a7bd3cd0a2464"
+      },
+      "paletteFrom": {
         "path": "scripts/art/chibi/palettes/cult-green.png",
         "sha256": "4699465ad1a0c1ce795e2eb9f7dff57b4a4b848eca8a5075a65caf8256b5c252"
       }
@@ -185,6 +233,10 @@
         "height": 40
       },
       "palette": {
+        "path": "scripts/art/chibi/palettes/cult-purple.png",
+        "sha256": "d91e79f08aab1eaef681f1793621f9df72f10dba3222daeb101a7bd3cd0a2464"
+      },
+      "paletteFrom": {
         "path": "scripts/art/chibi/palettes/cult-green.png",
         "sha256": "4699465ad1a0c1ce795e2eb9f7dff57b4a4b848eca8a5075a65caf8256b5c252"
       }
@@ -199,6 +251,10 @@
         "height": 40
       },
       "palette": {
+        "path": "scripts/art/chibi/palettes/cult-purple.png",
+        "sha256": "d91e79f08aab1eaef681f1793621f9df72f10dba3222daeb101a7bd3cd0a2464"
+      },
+      "paletteFrom": {
         "path": "scripts/art/chibi/palettes/cult-green.png",
         "sha256": "4699465ad1a0c1ce795e2eb9f7dff57b4a4b848eca8a5075a65caf8256b5c252"
       }
@@ -213,6 +269,10 @@
         "height": 48
       },
       "palette": {
+        "path": "scripts/art/chibi/palettes/cult-purple.png",
+        "sha256": "d91e79f08aab1eaef681f1793621f9df72f10dba3222daeb101a7bd3cd0a2464"
+      },
+      "paletteFrom": {
         "path": "scripts/art/chibi/palettes/cult-green.png",
         "sha256": "4699465ad1a0c1ce795e2eb9f7dff57b4a4b848eca8a5075a65caf8256b5c252"
       }

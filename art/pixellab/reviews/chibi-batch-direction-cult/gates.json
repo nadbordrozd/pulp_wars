@@ -8,13 +8,14 @@
   "gates": [
     {
       "gate": 1,
-      "asks": "Round 2 (pulp_wars-mch9.54): the Initiate is an ordinary man in an evil robe: a human face shows, the robe is blood red and not the lodge's indigo (so it parts from the indigo-roofed buildings); its face, dagger and candle read at zoom 0.75. (Round 1 asked for an indigo robe with a lit side.)",
+      "asks": "Round 2 (pulp_wars-mch9.54) under palette 1 (pulp_wars-mch9.59): the Initiate is an ordinary man in an evil robe: a human face shows, the robe is the lodge's royal purple with aquamarine trim and the blood on the blade red, no lodge indigo is left; its face, dagger and candle read at zoom 0.75. (Round 1 asked for an indigo robe with a lit side; round 2 for a blood-red one.)",
       "measured": {
         "skinPixels": 170,
-        "redPixels": 454,
+        "redPixels": 124,
+        "royalPurplePixels": 634,
         "lodgeIndigoShare": 0,
-        "darkShare": 63.8,
-        "meanLightness": 34.3,
+        "darkShare": 63.1,
+        "meanLightness": 34.7,
         "ink": 22.8,
         "clothMean": "#1e1a26",
         "clothHue": 260,
@@ -24,12 +25,12 @@
         "litClothFromUndeadBlack": 20.6,
         "litClothFromIceWitchNavy": 50.6,
         "atZoom075": {
-          "skinPixels": 108,
-          "greenPixels": 17
+          "skinPixels": 104,
+          "greenPixels": 0
         },
-        "rule": "at least 30 skin pixels (a face) and 30 red pixels (the robe, the blood); lodge indigo (hue 228 to 266, saturation 0.45 and more, value 0.35 and more) at most 1% of the sprite"
+        "rule": "at least 30 skin pixels (a face), 10 red pixels (the blood) and 200 royal purple pixels (hue 262 to 290, the robe); lodge indigo (hue 228 to 266, saturation 0.45 and more, value 0.35 and more) at most 1% of the sprite"
       },
-      "byEye": "Round 2 (pulp_wars-mch9.54): on sample-zoom-0.75.png the Initiate is a bearded man's pale face in a blood-red hood, with the bloody blade on the left and the green candle flame on the right; the robe is darker than round 1's (64% dark pixels), which the bog's mid value carries, and it shares no colour with the indigo roofs.",
+      "byEye": "Palette 1 (pulp_wars-mch9.59): on sample-zoom-0.75.png the Initiate is a bearded man's pale face in a royal purple hood with a mint trim line, with the bloody blade (its gold hilt kept) on the left and the aquamarine candle flame on the right; the robe is dark (63% dark pixels), which the bog's mid value carries, and it is the colour of the lodge's purple roofs, as the user asked (one holistic palette).",
       "verdict": "PASS"
     },
     {
@@ -69,15 +70,17 @@
     },
     {
       "gate": 4,
-      "asks": "Green is small on all three and lands on hue 148 after the accent step; no pixel of the Horror or the Herald is red, violet or magenta (since round 2, pulp_wars-mch9.54, the Initiate's blood red and purple trim are its own).",
+      "asks": "The accent is small on all three: green on hue 148 after the accent step where it is left (the Horror's specks, the Herald's crown tips), aquamarine where palette 1 (pulp_wars-mch9.59) moved it (the Initiate's flame and trim); no pixel of the Horror or the Herald is red or magenta, and the Horror wears no purple (the Herald's robe is the lodge's royal purple; since round 2, pulp_wars-mch9.54, the Initiate's blood is its own).",
       "measured": {
         "Initiate": {
-          "share": 1.1,
-          "pixels": 22,
-          "hueMin": 148,
-          "hueMax": 148,
-          "redPixels": 454,
-          "violetOrMagentaPixels": 135
+          "share": 0,
+          "pixels": 0,
+          "hueMin": null,
+          "hueMax": null,
+          "redPixels": 124,
+          "magentaPixels": 7,
+          "royalPurplePixels": 634,
+          "aquamarineShare": 6.3
         },
         "Horror": {
           "share": 0.5,
@@ -85,7 +88,9 @@
           "hueMin": 147,
           "hueMax": 148,
           "redPixels": 0,
-          "violetOrMagentaPixels": 0
+          "magentaPixels": 0,
+          "royalPurplePixels": 0,
+          "aquamarineShare": 22
         },
         "Herald": {
           "share": 4.1,
@@ -93,11 +98,13 @@
           "hueMin": 150,
           "hueMax": 150,
           "redPixels": 0,
-          "violetOrMagentaPixels": 0
+          "magentaPixels": 0,
+          "royalPurplePixels": 1875,
+          "aquamarineShare": 0.8
         },
-        "rule": "green (the accent band: hue 80 to 152, saturation 0.5 and more) at most 8% of each sprite and every green tone at hue 144 to 152; no red (hue 345 to 12) and no violet or magenta (hue 270 to 345) pixel on the Horror and the Herald"
+        "rule": "green (the accent band: hue 80 to 152, saturation 0.5 and more) at most 8% of each sprite and every green tone at hue 144 to 152; aquamarine (hue 155 to 178) at most 8% on the Initiate and the Herald (the Horror's teal body shares the window); no red (hue 345 to 12) and no magenta (hue 290 to 345) pixel on the Horror and the Herald, and no royal purple (hue 262 to 290) on the Horror"
       },
-      "byEye": "The only green on the Initiate is the candle flame and a small amulet (1%). The Horror keeps a few green specks on its head, and the lit tips of the Herald's tentacle crown fall in the accent band and turn green (4% of the sprite): they read as part of the teal crown.",
+      "byEye": "Palette 1 (pulp_wars-mch9.59): the Initiate's candle flame, amulet and trim line are aquamarine, small. The Horror keeps a few green specks on its head, and the lit tips of the Herald's tentacle crown fall in the accent band and stay green (4% of the sprite; the Herald's remap keeps its green): they read as part of the teal crown above the royal purple robe.",
       "verdict": "PASS"
     },
     {
@@ -108,13 +115,13 @@
           {
             "unit": "Initiate",
             "rival": "Necromancer",
-            "palette": 28,
-            "deuteranopia": 16.8,
-            "protanopia": 15.7,
-            "greyPalette": 2.2,
-            "lightness": 7.1,
+            "palette": 19.4,
+            "deuteranopia": 13,
+            "protanopia": 13.3,
+            "greyPalette": 2.3,
+            "lightness": 6,
             "meanLightness": [
-              26.5,
+              26.8,
               28.2
             ],
             "silhouette": 0.66,
@@ -124,32 +131,16 @@
           {
             "unit": "Initiate",
             "rival": "Ice Witch",
-            "palette": 22.4,
-            "deuteranopia": 18.2,
-            "protanopia": 16.4,
-            "greyPalette": 2.4,
-            "lightness": 21.8,
+            "palette": 17.9,
+            "deuteranopia": 10.7,
+            "protanopia": 10.4,
+            "greyPalette": 2.6,
+            "lightness": 21.7,
             "meanLightness": [
-              26.5,
+              26.8,
               48.7
             ],
             "silhouette": 0.57,
-            "distinct": true,
-            "reasons": []
-          },
-          {
-            "unit": "Initiate",
-            "rival": "Human Fighter",
-            "palette": 14.9,
-            "deuteranopia": 11.1,
-            "protanopia": 10.4,
-            "greyPalette": 2.8,
-            "lightness": 17.6,
-            "meanLightness": [
-              26.5,
-              45.2
-            ],
-            "silhouette": 0.62,
             "distinct": false,
             "reasons": [
               "colour too close"
@@ -157,19 +148,37 @@
           },
           {
             "unit": "Initiate",
-            "rival": "Grunt",
-            "palette": 26.2,
-            "deuteranopia": 21.8,
-            "protanopia": 17.9,
-            "greyPalette": 1.5,
-            "lightness": 19.6,
+            "rival": "Human Fighter",
+            "palette": 22.6,
+            "deuteranopia": 14.8,
+            "protanopia": 17.2,
+            "greyPalette": 3,
+            "lightness": 17.6,
             "meanLightness": [
-              26.5,
+              26.8,
+              45.2
+            ],
+            "silhouette": 0.62,
+            "distinct": true,
+            "reasons": []
+          },
+          {
+            "unit": "Initiate",
+            "rival": "Grunt",
+            "palette": 16.8,
+            "deuteranopia": 11.6,
+            "protanopia": 12.3,
+            "greyPalette": 1.8,
+            "lightness": 19.5,
+            "meanLightness": [
+              26.8,
               45.8
             ],
             "silhouette": 0.54,
-            "distinct": true,
-            "reasons": []
+            "distinct": false,
+            "reasons": [
+              "colour too close"
+            ]
           },
           {
             "unit": "Horror",
@@ -206,13 +215,13 @@
           {
             "unit": "Herald",
             "rival": "Lich",
-            "palette": 30.5,
-            "deuteranopia": 18.9,
-            "protanopia": 20.6,
-            "greyPalette": 2.6,
-            "lightness": 12.8,
+            "palette": 29.2,
+            "deuteranopia": 22.2,
+            "protanopia": 22.1,
+            "greyPalette": 2.3,
+            "lightness": 10.7,
             "meanLightness": [
-              35.8,
+              34.1,
               29.3
             ],
             "silhouette": 0.63,
@@ -222,13 +231,13 @@
           {
             "unit": "Herald",
             "rival": "Colossus",
-            "palette": 27.6,
-            "deuteranopia": 20.6,
-            "protanopia": 20.3,
-            "greyPalette": 1.6,
-            "lightness": 13.9,
+            "palette": 28.4,
+            "deuteranopia": 17.4,
+            "protanopia": 19.7,
+            "greyPalette": 1.4,
+            "lightness": 13.2,
             "meanLightness": [
-              35.8,
+              34.1,
               43.7
             ],
             "silhouette": 0.54,
@@ -238,13 +247,13 @@
           {
             "unit": "Herald",
             "rival": "Frost Giant",
-            "palette": 23.3,
-            "deuteranopia": 15.6,
-            "protanopia": 16.6,
-            "greyPalette": 2.7,
-            "lightness": 11.3,
+            "palette": 28.9,
+            "deuteranopia": 15.9,
+            "protanopia": 18.5,
+            "greyPalette": 2.1,
+            "lightness": 9.4,
             "meanLightness": [
-              35.8,
+              34.1,
               41.1
             ],
             "silhouette": 0.56,
@@ -253,11 +262,12 @@
           }
         ],
         "failing": [
-          "Initiate / Human Fighter: colour too close"
+          "Initiate / Ice Witch: colour too close",
+          "Initiate / Grunt: colour too close"
         ],
         "rule": "every named pair distinct by the Dwarf lineup's calibrated thresholds (lineup.json)"
       },
-      "byEye": "On lineup-1x.png, at half size and in greyscale: the Initiate (round 2) is a hooded bearded face with a dagger and a candle and no staff (Necromancer: white beard and skull staff; Ice Witch: pale face and crown). Since round 2 the measure calls the Initiate and the Human Fighter colour-too-close (both red): by eye the Fighter is a steel helmet with a red plume, a cross tabard, a sword and a round shield, the Initiate a dark hood and robe; the measured FAIL stands and is reported. The Horror is a ball with a pale belly band (Spider: flat with eight legs; Bunny: ears); the Herald is a bell with one eye (Lich: raised arms and ribs).",
+      "byEye": "On lineup-1x.png, at half size and in greyscale: the Initiate (round 2) is a hooded bearded face with a dagger and a candle and no staff (Necromancer: white beard and skull staff; Ice Witch: pale face and crown). Since palette 1 (pulp_wars-mch9.59) the Initiate is no longer red, and the measure calls it colour-too-close to the Ice Witch (dark robe, under deuteranopia and protanopia) and the Grunt: by eye the Ice Witch is a pale crowned face over a navy and white robe with a staff, the Grunt a green-skinned goblin with a club, the Initiate a bearded face in a purple hood with a bloody dagger and a candle; the measured FAIL stands and is reported. The Horror is a ball with a pale belly band (Spider: flat with eight legs; Bunny: ears); the Herald is a bell with one eye (Lich: raised arms and ribs).",
       "verdict": "FAIL"
     }
   ]

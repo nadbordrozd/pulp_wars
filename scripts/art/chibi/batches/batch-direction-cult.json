@@ -18,6 +18,32 @@
       },
       "ownerColour": false,
       "accent": "cult-robe",
+      "remap": {
+        "preset": "cult-royal-aqua",
+        "rules": {
+          "kind": "robed",
+          "protect": [
+            {
+              "x0": 0,
+              "y0": 26,
+              "x1": 10,
+              "y1": 47
+            },
+            {
+              "x0": 25,
+              "y0": 29,
+              "x1": 38,
+              "y1": 44
+            },
+            {
+              "x0": 0,
+              "y0": 48,
+              "x1": 12,
+              "y1": 60
+            }
+          ]
+        }
+      },
       "subjectKey": "UNIT:CULT:FIGHTER/BLOOD",
       "bottomMargin": 3
     },
@@ -43,7 +69,14 @@
         "height": 104
       },
       "ownerColour": false,
-      "accent": "cult-lodge"
+      "accent": "cult-lodge",
+      "remap": {
+        "preset": "cult-royal-aqua",
+        "rules": {
+          "kind": "lodge",
+          "noGlow": true
+        }
+      }
     },
     {
       "id": "chibi-direction-cult-idol-bearer",
@@ -56,6 +89,20 @@
       },
       "ownerColour": false,
       "accent": "cult-robe",
+      "remap": {
+        "preset": "cult-royal-aqua",
+        "rules": {
+          "kind": "robed",
+          "protect": [
+            {
+              "x0": 13,
+              "y0": 21,
+              "x1": 20,
+              "y1": 29
+            }
+          ]
+        }
+      },
       "subjectKey": "UNIT:CULT:GUARD/BLOOD",
       "bottomMargin": 3
     },
@@ -70,6 +117,13 @@
       },
       "ownerColour": false,
       "accent": "cult-lodge",
+      "remap": {
+        "preset": "cult-royal-aqua",
+        "rules": {
+          "kind": "lodge",
+          "lodgeHue": [190, 268]
+        }
+      },
       "bottomMargin": 6
     },
     {
@@ -83,6 +137,21 @@
       },
       "ownerColour": false,
       "accent": "cult-robe",
+      "remap": {
+        "preset": "cult-royal-aqua",
+        "rules": {
+          "kind": "robed",
+          "keep": ["#31171b"],
+          "protect": [
+            {
+              "x0": 27,
+              "y0": 35,
+              "x1": 37,
+              "y1": 40
+            }
+          ]
+        }
+      },
       "subjectKey": "UNIT:CULT:MARKSMAN/BLOOD",
       "bottomMargin": 3
     },
@@ -97,6 +166,39 @@
       },
       "ownerColour": false,
       "accent": "cult-robe",
+      "remap": {
+        "preset": "cult-royal-aqua",
+        "rules": {
+          "kind": "robed",
+          "protect": [
+            {
+              "x0": 26,
+              "y0": 21,
+              "x1": 30,
+              "y1": 27
+            },
+            {
+              "x0": 34,
+              "y0": 24,
+              "x1": 47,
+              "y1": 47
+            }
+          ],
+          "extend": [
+            {
+              "box": {
+                "x0": 0,
+                "y0": 0,
+                "x1": 55,
+                "y1": 79
+              },
+              "hue": [6, 40],
+              "minSaturation": 0.6,
+              "maxValue": 0.76
+            }
+          ]
+        }
+      },
       "subjectKey": "UNIT:CULT:CAPTAIN/BLOOD",
       "bottomMargin": 3
     },
@@ -111,6 +213,29 @@
       },
       "ownerColour": false,
       "accent": "cult-robe",
+      "remap": {
+        "preset": "cult-royal-aqua",
+        "rules": {
+          "kind": "robed",
+          "keep": ["#3e0d10"],
+          "protect": [
+            {
+              "x0": 24,
+              "y0": 35,
+              "x1": 27,
+              "y1": 39
+            }
+          ],
+          "props": [
+            {
+              "x0": 36,
+              "y0": 0,
+              "x1": 71,
+              "y1": 87
+            }
+          ]
+        }
+      },
       "bottomMargin": 6,
       "subjectKey": "UNIT:CULT:CATAPULT/BLOOD"
     },
@@ -163,7 +288,14 @@
         "height": 104
       },
       "ownerColour": false,
-      "accent": "cult-lodge"
+      "accent": "cult-lodge",
+      "remap": {
+        "preset": "cult-royal-aqua",
+        "rules": {
+          "kind": "lodge",
+          "noGlow": true
+        }
+      }
     },
     {
       "id": "chibi-direction-cult-frog",

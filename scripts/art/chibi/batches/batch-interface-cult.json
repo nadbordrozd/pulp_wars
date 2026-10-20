@@ -18,6 +18,26 @@
       },
       "ownerColour": false,
       "accent": "cult-robe-icon",
+      "remap": {
+        "preset": "cult-royal-aqua",
+        "rules": {
+          "kind": "robed",
+          "protect": [
+            {
+              "x0": 3,
+              "y0": 16,
+              "x1": 11,
+              "y1": 42
+            },
+            {
+              "x0": 12,
+              "y0": 19,
+              "x1": 31,
+              "y1": 33
+            }
+          ]
+        }
+      },
       "subjectKey": "PORTRAIT:CULT:FIGHTER/BLOOD"
     },
     {
@@ -31,6 +51,32 @@
       },
       "ownerColour": false,
       "accent": "cult-robe-icon",
+      "remap": {
+        "preset": "cult-royal-aqua",
+        "rules": {
+          "kind": "robed",
+          "protect": [
+            {
+              "x0": 14,
+              "y0": 19,
+              "x1": 33,
+              "y1": 34
+            },
+            {
+              "x0": 9,
+              "y0": 12,
+              "x1": 17,
+              "y1": 18
+            },
+            {
+              "x0": 29,
+              "y0": 12,
+              "x1": 40,
+              "y1": 18
+            }
+          ]
+        }
+      },
       "subjectKey": "PORTRAIT:CULT:GUARD/BLOOD"
     },
     {
@@ -43,7 +89,14 @@
         "height": 48
       },
       "ownerColour": false,
-      "accent": "cult-lodge-icon"
+      "accent": "cult-lodge-icon",
+      "remap": {
+        "preset": "cult-royal-aqua",
+        "rules": {
+          "kind": "lodge",
+          "lodgeHue": [190, 268]
+        }
+      }
     },
     {
       "id": "chibi-direction-portrait-cult-hexer",
@@ -56,6 +109,21 @@
       },
       "ownerColour": false,
       "accent": "cult-robe-icon",
+      "remap": {
+        "preset": "cult-royal-aqua",
+        "rules": {
+          "kind": "robed",
+          "secondaryHue": [268, 335],
+          "protect": [
+            {
+              "x0": 21,
+              "y0": 17,
+              "x1": 34,
+              "y1": 31
+            }
+          ]
+        }
+      },
       "subjectKey": "PORTRAIT:CULT:MARKSMAN/BLOOD"
     },
     {
@@ -69,6 +137,32 @@
       },
       "ownerColour": false,
       "accent": "cult-robe-icon",
+      "remap": {
+        "preset": "cult-royal-aqua",
+        "rules": {
+          "kind": "robed",
+          "protect": [
+            {
+              "x0": 18,
+              "y0": 20,
+              "x1": 36,
+              "y1": 33
+            },
+            {
+              "x0": 36,
+              "y0": 22,
+              "x1": 47,
+              "y1": 44
+            },
+            {
+              "x0": 0,
+              "y0": 29,
+              "x1": 6,
+              "y1": 35
+            }
+          ]
+        }
+      },
       "subjectKey": "PORTRAIT:CULT:CAPTAIN/BLOOD"
     },
     {
@@ -82,6 +176,20 @@
       },
       "ownerColour": false,
       "accent": "cult-robe-icon",
+      "remap": {
+        "preset": "cult-royal-aqua",
+        "rules": {
+          "kind": "robed",
+          "props": [
+            {
+              "x0": 30,
+              "y0": 0,
+              "x1": 47,
+              "y1": 47
+            }
+          ]
+        }
+      },
       "subjectKey": "PORTRAIT:CULT:CATAPULT/BLOOD"
     },
     {
@@ -118,7 +226,14 @@
         "height": 48
       },
       "ownerColour": false,
-      "accent": "cult-lodge-icon"
+      "accent": "cult-lodge-icon",
+      "remap": {
+        "preset": "cult-royal-aqua",
+        "rules": {
+          "kind": "lodge",
+          "noGlow": true
+        }
+      }
     },
     {
       "id": "chibi-direction-portrait-cult-tentacle",
@@ -165,7 +280,14 @@
         "width": 48,
         "height": 48
       },
-      "accent": "cult-lodge-icon"
+      "accent": "cult-lodge-icon",
+      "remap": {
+        "preset": "cult-royal-aqua",
+        "rules": {
+          "kind": "lodge",
+          "noGlow": true
+        }
+      }
     },
     {
       "id": "chibi-direction-icon-cult-tech-harvest-rites",
@@ -176,7 +298,14 @@
         "width": 48,
         "height": 48
       },
-      "accent": "cult-lodge-icon"
+      "accent": "cult-lodge-icon",
+      "remap": {
+        "preset": "cult-royal-aqua",
+        "rules": {
+          "kind": "lodge",
+          "noGlow": true
+        }
+      }
     },
     {
       "id": "chibi-direction-icon-cult-action-sacrifice",
@@ -187,7 +316,14 @@
         "width": 48,
         "height": 48
       },
-      "accent": "cult-lodge-icon"
+      "accent": "cult-lodge-icon",
+      "remap": {
+        "preset": "cult-royal-aqua",
+        "rules": {
+          "kind": "lodge",
+          "noGlow": true
+        }
+      }
     },
     {
       "id": "chibi-direction-icon-cult-action-seize",
@@ -231,7 +367,14 @@
         "width": 48,
         "height": 48
       },
-      "accent": "cult-lodge-icon"
+      "accent": "cult-lodge-icon",
+      "remap": {
+        "preset": "cult-royal-aqua",
+        "rules": {
+          "kind": "lodge",
+          "noGlow": true
+        }
+      }
     },
     {
       "id": "chibi-direction-icon-cult-action-anchor",
@@ -264,7 +407,14 @@
         "width": 48,
         "height": 48
       },
-      "accent": "cult-lodge-icon"
+      "accent": "cult-lodge-icon",
+      "remap": {
+        "preset": "cult-royal-aqua",
+        "rules": {
+          "kind": "lodge",
+          "noGlow": true
+        }
+      }
     },
     {
       "id": "chibi-direction-icon-cult-action-ribbit",
@@ -319,7 +469,14 @@
         "width": 48,
         "height": 48
       },
-      "accent": "cult-lodge-icon"
+      "accent": "cult-lodge-icon",
+      "remap": {
+        "preset": "cult-royal-aqua",
+        "rules": {
+          "kind": "lodge",
+          "noGlow": true
+        }
+      }
     },
     {
       "id": "chibi-direction-icon-cult-action-pamphlets",
@@ -330,7 +487,14 @@
         "width": 48,
         "height": 48
       },
-      "accent": "cult-lodge-icon"
+      "accent": "cult-lodge-icon",
+      "remap": {
+        "preset": "cult-royal-aqua",
+        "rules": {
+          "kind": "lodge",
+          "noGlow": true
+        }
+      }
     },
     {
       "id": "chibi-direction-icon-cult-action-grab",
@@ -374,7 +538,14 @@
         "width": 48,
         "height": 48
       },
-      "accent": "cult-lodge-icon"
+      "accent": "cult-lodge-icon",
+      "remap": {
+        "preset": "cult-royal-aqua",
+        "rules": {
+          "kind": "lodge",
+          "noGlow": true
+        }
+      }
     },
     {
       "id": "chibi-direction-icon-cult-status-candlelit",
@@ -407,7 +578,14 @@
         "width": 48,
         "height": 48
       },
-      "accent": "cult-lodge-icon"
+      "accent": "cult-lodge-icon",
+      "remap": {
+        "preset": "cult-royal-aqua",
+        "rules": {
+          "kind": "lodge",
+          "noGlow": true
+        }
+      }
     },
     {
       "id": "chibi-direction-icon-cult-status-furious",
@@ -440,7 +618,14 @@
         "width": 48,
         "height": 48
       },
-      "accent": "cult-lodge-icon"
+      "accent": "cult-lodge-icon",
+      "remap": {
+        "preset": "cult-royal-aqua",
+        "rules": {
+          "kind": "lodge",
+          "noGlow": true
+        }
+      }
     },
     {
       "id": "chibi-direction-icon-cult-status-warded",
@@ -451,7 +636,14 @@
         "width": 48,
         "height": 48
       },
-      "accent": "cult-lodge-icon"
+      "accent": "cult-lodge-icon",
+      "remap": {
+        "preset": "cult-royal-aqua",
+        "rules": {
+          "kind": "lodge",
+          "noGlow": true
+        }
+      }
     }
   ],
   "recipes": [

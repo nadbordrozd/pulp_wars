@@ -868,8 +868,8 @@
       "candidateSha256": "af3cffb098e02a218c62978b47dde587ffb3396254fff506092a9a732134360e",
       "master": {
         "path": "public/assets/chibi/units/chibi-naval-cult-battleship.png",
-        "sha256": "2daf353fbeacbba96bee97783147c2862e6c930b9598a9e4e0397cc112a32a86",
-        "pixelSha256": "65d06bde5f93ac821b782dfd7dfc632a0a074bef194330485eb11f91acfc0828",
+        "sha256": "a1929f2d28c067e65e8795cc329e9bd2fc1402da56bbf468be107340280cec3a",
+        "pixelSha256": "711c92e50c8173b5fb667593c8ca034c2149895be79184dfeea312e01ad13fc8",
         "width": 88,
         "height": 96
       },
@@ -910,6 +910,56 @@
           },
           "accentPixels": 109,
           "trimPixels": 0
+        },
+        "remap": {
+          "preset": "cult-royal-aqua",
+          "palette": {
+            "main": "#6a2f93",
+            "accent": "#4fe3c1",
+            "ramp": [
+              [0, "#0c0612"],
+              [10, "#1f0e2e"],
+              [18, "#33184b"],
+              [26, "#4a2269"],
+              [34, "#62308a"],
+              [44, "#7f43ab"],
+              [56, "#a266cc"],
+              [70, "#c79be3"]
+            ],
+            "dark": [
+              [0, "#060508"],
+              [10, "#121016"],
+              [20, "#1e1b24"],
+              [30, "#2e2a36"],
+              [45, "#48424f"]
+            ],
+            "trim": [
+              [15, "#124a42"],
+              [30, "#22836f"],
+              [45, "#3dbb9e"],
+              [60, "#66dec2"],
+              [75, "#9cf3dd"],
+              [90, "#d4fff4"]
+            ],
+            "glow": [
+              [30, "#0f5f53"],
+              [50, "#22a58e"],
+              [65, "#3fd6b7"],
+              [80, "#7af2d6"],
+              [92, "#c8fff2"]
+            ],
+            "avoid": ["#f06762", "#28b7a4", "#e2b63f", "#a277d2"],
+            "avoidDistance": 14
+          },
+          "rules": {
+            "kind": "lodge"
+          },
+          "pixels": {
+            "main": 951,
+            "dark": 0,
+            "trim": 0,
+            "glow": 109
+          }
         }
       },
       "anchor": {
@@ -948,8 +998,8 @@
       "candidateSha256": "bef128ffa65815aac3f9ba40914156139c0218ef05b2a6873909593d732a63fd",
       "master": {
         "path": "public/assets/chibi/icons/chibi-naval-cult-icon-tech-seamanship.png",
-        "sha256": "d2cc1cdc412978bdc4059247f906eb9a55936d9438cee4280c61c3af2c4de157",
-        "pixelSha256": "6daad4899b03486d7d380bab0c7bc4bdeb5a5cb95ab4066d7076d9c6477bd299",
+        "sha256": "1839d4a1576741ea6207e6a3c6b174f7d46826147724754fa70b47462ae3f112",
+        "pixelSha256": "8b1b460438957ac6537d5f7200e90bec11a8ef9dd02afed8f8f5039696fb01e7",
         "width": 48,
         "height": 48
       },
@@ -1017,6 +1067,57 @@
           },
           "accentPixels": 33,
           "trimPixels": 0
+        },
+        "remap": {
+          "preset": "cult-royal-aqua",
+          "palette": {
+            "main": "#6a2f93",
+            "accent": "#4fe3c1",
+            "ramp": [
+              [0, "#0c0612"],
+              [10, "#1f0e2e"],
+              [18, "#33184b"],
+              [26, "#4a2269"],
+              [34, "#62308a"],
+              [44, "#7f43ab"],
+              [56, "#a266cc"],
+              [70, "#c79be3"]
+            ],
+            "dark": [
+              [0, "#060508"],
+              [10, "#121016"],
+              [20, "#1e1b24"],
+              [30, "#2e2a36"],
+              [45, "#48424f"]
+            ],
+            "trim": [
+              [15, "#124a42"],
+              [30, "#22836f"],
+              [45, "#3dbb9e"],
+              [60, "#66dec2"],
+              [75, "#9cf3dd"],
+              [90, "#d4fff4"]
+            ],
+            "glow": [
+              [30, "#0f5f53"],
+              [50, "#22a58e"],
+              [65, "#3fd6b7"],
+              [80, "#7af2d6"],
+              [92, "#c8fff2"]
+            ],
+            "avoid": ["#f06762", "#28b7a4", "#e2b63f", "#a277d2"],
+            "avoidDistance": 14
+          },
+          "rules": {
+            "kind": "lodge",
+            "noGlow": true
+          },
+          "pixels": {
+            "main": 223,
+            "dark": 0,
+            "trim": 0,
+            "glow": 0
+          }
         }
       },
       "anchor": {
@@ -1055,8 +1156,8 @@
       "candidateSha256": "77c2216351631a585e4339b3f39f8242b131c9e3e774f39fce210b442ab6ae1d",
       "master": {
         "path": "public/assets/chibi/units/chibi-naval-cult-patrol-boat.png",
-        "sha256": "32c2ec70ceaf9e7719ee673e08dee313ba44ff3beeaf7cbb7d91ec5bcd582c28",
-        "pixelSha256": "537f7da25aa05144a2604342b8356898f432f5a2547e36e4f17a942f1cfd8d9b",
+        "sha256": "8c034f35f684450ab08821c1b731e8190fc192604109a624576cf275933e6472",
+        "pixelSha256": "298b087d39d8eec166ac8fc7b1da1f3e9e2dfd3814bd5c1afaf8575c97212b5a",
         "width": 72,
         "height": 88
       },
@@ -1097,6 +1198,56 @@
           },
           "accentPixels": 32,
           "trimPixels": 0
+        },
+        "remap": {
+          "preset": "cult-royal-aqua",
+          "palette": {
+            "main": "#6a2f93",
+            "accent": "#4fe3c1",
+            "ramp": [
+              [0, "#0c0612"],
+              [10, "#1f0e2e"],
+              [18, "#33184b"],
+              [26, "#4a2269"],
+              [34, "#62308a"],
+              [44, "#7f43ab"],
+              [56, "#a266cc"],
+              [70, "#c79be3"]
+            ],
+            "dark": [
+              [0, "#060508"],
+              [10, "#121016"],
+              [20, "#1e1b24"],
+              [30, "#2e2a36"],
+              [45, "#48424f"]
+            ],
+            "trim": [
+              [15, "#124a42"],
+              [30, "#22836f"],
+              [45, "#3dbb9e"],
+              [60, "#66dec2"],
+              [75, "#9cf3dd"],
+              [90, "#d4fff4"]
+            ],
+            "glow": [
+              [30, "#0f5f53"],
+              [50, "#22a58e"],
+              [65, "#3fd6b7"],
+              [80, "#7af2d6"],
+              [92, "#c8fff2"]
+            ],
+            "avoid": ["#f06762", "#28b7a4", "#e2b63f", "#a277d2"],
+            "avoidDistance": 14
+          },
+          "rules": {
+            "kind": "lodge"
+          },
+          "pixels": {
+            "main": 627,
+            "dark": 0,
+            "trim": 0,
+            "glow": 32
+          }
         }
       },
       "anchor": {
@@ -1135,8 +1286,8 @@
       "candidateSha256": "037d51135c0b2cb428b334bfabebacf4cec48731e9c428c4b72f093566ea75bb",
       "master": {
         "path": "public/assets/chibi/portraits/chibi-naval-cult-portrait-battleship.png",
-        "sha256": "236ce426b53a9634f0f5e8819e1f838065293a34ba095ffe5c875c26f6f50515",
-        "pixelSha256": "aebfb1c22452979e46c763d6ec50f6aebc8bf375f1884701954c05f0a590fb4a",
+        "sha256": "ecdd9aa09807a2f945c4aa24919ba788402cb28ccdc276d149605d02d13c68fe",
+        "pixelSha256": "df0a0682cbf40e28c883e42ef091d1a3a5fc5ed98bc46c377713332f53ace7a5",
         "width": 48,
         "height": 48
       },
@@ -1204,6 +1355,56 @@
           },
           "accentPixels": 30,
           "trimPixels": 0
+        },
+        "remap": {
+          "preset": "cult-royal-aqua",
+          "palette": {
+            "main": "#6a2f93",
+            "accent": "#4fe3c1",
+            "ramp": [
+              [0, "#0c0612"],
+              [10, "#1f0e2e"],
+              [18, "#33184b"],
+              [26, "#4a2269"],
+              [34, "#62308a"],
+              [44, "#7f43ab"],
+              [56, "#a266cc"],
+              [70, "#c79be3"]
+            ],
+            "dark": [
+              [0, "#060508"],
+              [10, "#121016"],
+              [20, "#1e1b24"],
+              [30, "#2e2a36"],
+              [45, "#48424f"]
+            ],
+            "trim": [
+              [15, "#124a42"],
+              [30, "#22836f"],
+              [45, "#3dbb9e"],
+              [60, "#66dec2"],
+              [75, "#9cf3dd"],
+              [90, "#d4fff4"]
+            ],
+            "glow": [
+              [30, "#0f5f53"],
+              [50, "#22a58e"],
+              [65, "#3fd6b7"],
+              [80, "#7af2d6"],
+              [92, "#c8fff2"]
+            ],
+            "avoid": ["#f06762", "#28b7a4", "#e2b63f", "#a277d2"],
+            "avoidDistance": 14
+          },
+          "rules": {
+            "kind": "lodge"
+          },
+          "pixels": {
+            "main": 188,
+            "dark": 0,
+            "trim": 0,
+            "glow": 30
+          }
         }
       },
       "anchor": {
@@ -1242,8 +1443,8 @@
       "candidateSha256": "a6064f76bdadda7fa50b2ef5b974cc0698a672dbaf1adf1199fcbd747e31a494",
       "master": {
         "path": "public/assets/chibi/portraits/chibi-naval-cult-portrait-patrol-boat.png",
-        "sha256": "751c3fc9e477ff1f60d211f8a3e783f79f66f2779b8e907c256db1010e8ce56f",
-        "pixelSha256": "659c6f29f78109707f38569781f38ad68ee953318a4cd612ad9f55c546849bdd",
+        "sha256": "878a4a5765d6590a619cc0681875ccddae9bf998dc72ca6e411813b6f436fdfc",
+        "pixelSha256": "d043e989b9e6142490b2b6a49021eb72e16b4fb28785b6f366196ba7cb51fd51",
         "width": 48,
         "height": 48
       },
@@ -1311,6 +1512,56 @@
           },
           "accentPixels": 20,
           "trimPixels": 0
+        },
+        "remap": {
+          "preset": "cult-royal-aqua",
+          "palette": {
+            "main": "#6a2f93",
+            "accent": "#4fe3c1",
+            "ramp": [
+              [0, "#0c0612"],
+              [10, "#1f0e2e"],
+              [18, "#33184b"],
+              [26, "#4a2269"],
+              [34, "#62308a"],
+              [44, "#7f43ab"],
+              [56, "#a266cc"],
+              [70, "#c79be3"]
+            ],
+            "dark": [
+              [0, "#060508"],
+              [10, "#121016"],
+              [20, "#1e1b24"],
+              [30, "#2e2a36"],
+              [45, "#48424f"]
+            ],
+            "trim": [
+              [15, "#124a42"],
+              [30, "#22836f"],
+              [45, "#3dbb9e"],
+              [60, "#66dec2"],
+              [75, "#9cf3dd"],
+              [90, "#d4fff4"]
+            ],
+            "glow": [
+              [30, "#0f5f53"],
+              [50, "#22a58e"],
+              [65, "#3fd6b7"],
+              [80, "#7af2d6"],
+              [92, "#c8fff2"]
+            ],
+            "avoid": ["#f06762", "#28b7a4", "#e2b63f", "#a277d2"],
+            "avoidDistance": 14
+          },
+          "rules": {
+            "kind": "lodge"
+          },
+          "pixels": {
+            "main": 277,
+            "dark": 0,
+            "trim": 0,
+            "glow": 20
+          }
         }
       },
       "anchor": {
@@ -1349,8 +1600,8 @@
       "candidateSha256": "2ec798d2a665fa164be3bd58bf3ecb98465f90d681823cdc2bb1a366b14e8118",
       "master": {
         "path": "public/assets/chibi/portraits/chibi-naval-cult-portrait-submarine.png",
-        "sha256": "65b64048228655b244f5fc9bc1ce701c07b378b9bbdaaa53294c84a358144752",
-        "pixelSha256": "7da2190f250829739e4a3cbb513c54e7fbba6acf69e1de0235d9e68cb8a162dd",
+        "sha256": "1a5e6428b094a2f0ef28987c7813337b88b2d6de2d9f8f5c23983a1c0cfbf01f",
+        "pixelSha256": "af7aaafe4c5e18ce5a0dc813ec8a2db102bacb88d0dc9e043082bbe6f33b67db",
         "width": 48,
         "height": 48
       },
@@ -1418,6 +1669,56 @@
           },
           "accentPixels": 13,
           "trimPixels": 0
+        },
+        "remap": {
+          "preset": "cult-royal-aqua",
+          "palette": {
+            "main": "#6a2f93",
+            "accent": "#4fe3c1",
+            "ramp": [
+              [0, "#0c0612"],
+              [10, "#1f0e2e"],
+              [18, "#33184b"],
+              [26, "#4a2269"],
+              [34, "#62308a"],
+              [44, "#7f43ab"],
+              [56, "#a266cc"],
+              [70, "#c79be3"]
+            ],
+            "dark": [
+              [0, "#060508"],
+              [10, "#121016"],
+              [20, "#1e1b24"],
+              [30, "#2e2a36"],
+              [45, "#48424f"]
+            ],
+            "trim": [
+              [15, "#124a42"],
+              [30, "#22836f"],
+              [45, "#3dbb9e"],
+              [60, "#66dec2"],
+              [75, "#9cf3dd"],
+              [90, "#d4fff4"]
+            ],
+            "glow": [
+              [30, "#0f5f53"],
+              [50, "#22a58e"],
+              [65, "#3fd6b7"],
+              [80, "#7af2d6"],
+              [92, "#c8fff2"]
+            ],
+            "avoid": ["#f06762", "#28b7a4", "#e2b63f", "#a277d2"],
+            "avoidDistance": 14
+          },
+          "rules": {
+            "kind": "lodge"
+          },
+          "pixels": {
+            "main": 622,
+            "dark": 0,
+            "trim": 0,
+            "glow": 13
+          }
         }
       },
       "anchor": {
@@ -1456,8 +1757,8 @@
       "candidateSha256": "02245c3f0f90726a8f5127846cb248d907e198139752ac11094ae6f5e151b9f5",
       "master": {
         "path": "public/assets/chibi/units/chibi-naval-cult-submarine.png",
-        "sha256": "52b63a1000dab22929bf07a39043c2dc2467887f8c3b10180faeb4f7568a0b5d",
-        "pixelSha256": "f573d27f33d0e4dd98c64beb3f6addf87a40ca5ad658ac8c2083e949b2c6ea4a",
+        "sha256": "c019a0108dc1ca009e77dd35ba8082311cf3c320d475218dc5413168f66e3c68",
+        "pixelSha256": "8a9170330c5cb47cf795ddfc8d3b12efe97fee87b170051d2f17b32ab88437e2",
         "width": 72,
         "height": 88
       },
@@ -1501,6 +1802,56 @@
           },
           "accentPixels": 54,
           "trimPixels": 0
+        },
+        "remap": {
+          "preset": "cult-royal-aqua",
+          "palette": {
+            "main": "#6a2f93",
+            "accent": "#4fe3c1",
+            "ramp": [
+              [0, "#0c0612"],
+              [10, "#1f0e2e"],
+              [18, "#33184b"],
+              [26, "#4a2269"],
+              [34, "#62308a"],
+              [44, "#7f43ab"],
+              [56, "#a266cc"],
+              [70, "#c79be3"]
+            ],
+            "dark": [
+              [0, "#060508"],
+              [10, "#121016"],
+              [20, "#1e1b24"],
+              [30, "#2e2a36"],
+              [45, "#48424f"]
+            ],
+            "trim": [
+              [15, "#124a42"],
+              [30, "#22836f"],
+              [45, "#3dbb9e"],
+              [60, "#66dec2"],
+              [75, "#9cf3dd"],
+              [90, "#d4fff4"]
+            ],
+            "glow": [
+              [30, "#0f5f53"],
+              [50, "#22a58e"],
+              [65, "#3fd6b7"],
+              [80, "#7af2d6"],
+              [92, "#c8fff2"]
+            ],
+            "avoid": ["#f06762", "#28b7a4", "#e2b63f", "#a277d2"],
+            "avoidDistance": 14
+          },
+          "rules": {
+            "kind": "lodge"
+          },
+          "pixels": {
+            "main": 1386,
+            "dark": 0,
+            "trim": 0,
+            "glow": 54
+          }
         }
       },
       "anchor": {
@@ -1533,8 +1884,8 @@
       "candidateSha256": "1784db0c8135931e398d048a3a552c1bab4aebf326e1563512b23580ec3d8fd6",
       "master": {
         "path": "public/assets/chibi/units/chibi-naval-cult-transport.png",
-        "sha256": "9668439d72e5a2b32800fd835511b9dce31960c038cccff65f6c400bd621d92e",
-        "pixelSha256": "3df9366389b8161ca425de0d21931c0de2ed6d2d3077caa847f0d54051e71d5d",
+        "sha256": "e6c61db344cb55fb5e50c5b285cc25cf84521fafdddf83b419a00d9e9d36e4da",
+        "pixelSha256": "430289f248b1dc528cccb1dd60b36dbb2e828dd9800d17f3c0fa0bdc68f6d62d",
         "width": 72,
         "height": 72
       },
@@ -1575,6 +1926,56 @@
           },
           "accentPixels": 13,
           "trimPixels": 0
+        },
+        "remap": {
+          "preset": "cult-royal-aqua",
+          "palette": {
+            "main": "#6a2f93",
+            "accent": "#4fe3c1",
+            "ramp": [
+              [0, "#0c0612"],
+              [10, "#1f0e2e"],
+              [18, "#33184b"],
+              [26, "#4a2269"],
+              [34, "#62308a"],
+              [44, "#7f43ab"],
+              [56, "#a266cc"],
+              [70, "#c79be3"]
+            ],
+            "dark": [
+              [0, "#060508"],
+              [10, "#121016"],
+              [20, "#1e1b24"],
+              [30, "#2e2a36"],
+              [45, "#48424f"]
+            ],
+            "trim": [
+              [15, "#124a42"],
+              [30, "#22836f"],
+              [45, "#3dbb9e"],
+              [60, "#66dec2"],
+              [75, "#9cf3dd"],
+              [90, "#d4fff4"]
+            ],
+            "glow": [
+              [30, "#0f5f53"],
+              [50, "#22a58e"],
+              [65, "#3fd6b7"],
+              [80, "#7af2d6"],
+              [92, "#c8fff2"]
+            ],
+            "avoid": ["#f06762", "#28b7a4", "#e2b63f", "#a277d2"],
+            "avoidDistance": 14
+          },
+          "rules": {
+            "kind": "lodge"
+          },
+          "pixels": {
+            "main": 512,
+            "dark": 0,
+            "trim": 0,
+            "glow": 13
+          }
         }
       },
       "anchor": {

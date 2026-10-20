@@ -456,6 +456,21 @@ and city `ownerColour: false`). It added two pipeline pieces:
   reviewed ones and no PixelLab call is made. `art:validate` re-derives
   them too. `npx tsx scripts/art/undead-direction/violet-palette.ts` writes
   the violet palette from the list in that file; a test checks the bytes.
+- **`remap`** (bead `pulp_wars-mch9.59`): an `as-is` or `seated`
+  fixed-colour asset may name a palette remap of
+  [`remap.ts`](../../scripts/art/chibi/remap.ts), applied after the accent:
+  `"remap": { "preset": "cult-royal-aqua", "rules": { "kind": "lodge" } }`
+  (or `"robed"`, with optional boxes). The rules classify each pixel by colour (robe crimson,
+  a second cloth, gold embroidery, lodge indigo, green lights) inside or
+  outside the asset's `protect`, `props` and `extend` boxes, and each class
+  goes through a ramp of the preset keyed by the source pixel's CIE L\*, so
+  the drawn shading is kept; a ramp colour that would land near one of the
+  preset's `avoid` colours (the player colours) is taken a little darker.
+  The record stores the preset's palette, the rules and the pixels moved
+  (`derivation.remap`); `art:validate` re-derives the master through the
+  class derivation, the accent and the remap, and fails if the manifest and
+  the record disagree. It is how the Cult's palette 1 went into production
+  without a new generation (CULT.md, "Palette 1 in production").
 
 Its cities use the `calm-settlement` class with the subject keys
 `CITY:UNDEAD:<level>/CALM`; its units and portraits are `edit-image-pixen`

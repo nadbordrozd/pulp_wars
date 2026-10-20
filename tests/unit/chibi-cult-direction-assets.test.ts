@@ -21,6 +21,8 @@ import {
   verifyAssetRecord,
 } from "../../scripts/art/chibi/pipeline";
 import { candidateCell, cropRaster } from "../../scripts/art/chibi/raster";
+import { REMAP_PRESETS, remapRaster } from "../../scripts/art/chibi/remap";
+import { CULT_REMAP_ASSETS } from "../../scripts/art/cult-palette-mch959/assets";
 import {
   CHIBI_DIRECTION_CULT_ART_ASSETS_V7,
   CHIBI_DIRECTION_CULT_NAVAL_ART_ASSETS_V7,
@@ -92,6 +94,25 @@ function hsvPixels(
 
 const master = (id: string): Promise<RgbaRaster> =>
   readRaster(path.join(ROOT, "public/assets/chibi/units", `${id}.png`));
+
+type Hsv = { hue: number; saturation: number; value: number };
+/**
+ * Palette 1 (bead pulp_wars-mch9.59): the robed cultists, the lodge's
+ * places, ships and creatures went through the `cult-royal-aqua` remap.
+ */
+const PALETTE_ONE = new Set(CULT_REMAP_ASSETS.map((asset) => asset.id));
+/** Its royal purple: cloth, roofs, hulls (hue 271 to 277 by the ramp). */
+const isPurple = (p: Hsv): boolean =>
+  p.hue >= 262 && p.hue <= 290 && p.saturation >= 0.3 && p.value >= 0.1;
+/** Its aquamarine: trim, flames, windows, lanterns (hue 160 to 175). */
+const isAqua = (p: Hsv): boolean =>
+  p.hue >= 155 && p.hue <= 178 && p.saturation >= 0.3 && p.value >= 0.3;
+/** The lodge indigo the remap replaced. */
+const isIndigo = (p: Hsv): boolean =>
+  p.hue >= 222 && p.hue <= 262 && p.saturation >= 0.45 && p.value >= 0.14;
+/** Magenta and pink: the Martians' and the Candy's. */
+const isMagenta = (p: Hsv): boolean =>
+  p.hue > 290 && p.hue < 345 && p.saturation >= 0.3 && p.value >= 0.25;
 
 /**
  * The robed cultists of round 2 (bead pulp_wars-mch9.54): ordinary people in
@@ -194,7 +215,14 @@ describe("the Cultists' first art sample (pulp_wars-mch9.14)", () => {
           ...recipe.candidateSize,
         },
       );
-      const derived = accentRaster(candidate, ACCENT_PRESETS[preset]).raster;
+      let derived = accentRaster(candidate, ACCENT_PRESETS[preset]).raster;
+      // Palette 1 (pulp_wars-mch9.59): the lodge's remap after the accent.
+      const remap = record.derivation.remap;
+      expect(remap !== undefined, id).toBe(PALETTE_ONE.has(id));
+      if (remap !== undefined) {
+        expect(remap.palette).toEqual(REMAP_PRESETS["cult-royal-aqua"]);
+        derived = remapRaster(derived, remap.palette, remap.rules).raster;
+      }
       expect(
         Buffer.from(derived.data).equals(Buffer.from((await master(id)).data)),
         id,
@@ -207,7 +235,7 @@ describe("the Cultists' first art sample (pulp_wars-mch9.14)", () => {
       );
   });
 
-  it("wears one green at hue 148, indigo cloth that is not navy, and no red, violet or magenta", async () => {
+  it("wears one green at hue 148, royal purple cloth (palette 1) that is not navy, and no red or magenta", async () => {
     for (const [id] of SAMPLE) {
       const pixels = hsvPixels(await master(id));
       const greens = pixels.filter(
@@ -233,33 +261,27 @@ describe("the Cultists' first art sample (pulp_wars-mch9.14)", () => {
         ).length,
         id,
       ).toBe(0);
+      // Violet is the Undead's and magenta the Martians': the summoned
+      // wear none; the Herald's robe is the lodge's royal purple.
       expect(
-        pixels.filter(
-          (p) =>
-            p.hue >= 270 &&
-            p.hue < 345 &&
-            p.saturation >= 0.3 &&
-            p.value >= 0.25,
+        pixels.filter((p) =>
+          PALETTE_ONE.has(id) ? isMagenta(p) : isMagenta(p) || isPurple(p),
         ).length,
         id,
       ).toBe(0);
     }
     for (const id of ["chibi-direction-cult-herald"]) {
-      // The lodge's cloth: every saturated blue is a violet-leaning indigo
-      // (hue 236 to 250) no darker than value 0.49, never a navy.
-      const cloth = hsvPixels(await master(id)).filter(
-        (p) =>
-          p.hue >= 212 &&
-          p.hue <= 266 &&
-          p.saturation >= 0.45 &&
-          p.value >= 0.14,
-      );
+      // The lodge's cloth since palette 1 (pulp_wars-mch9.59): the indigo
+      // robe is royal purple, lit enough to be no navy or black; no lodge
+      // indigo is left.
+      const pixels = hsvPixels(await master(id));
+      const cloth = pixels.filter(isPurple);
       expect(cloth.length, id).toBeGreaterThan(400);
-      for (const p of cloth) {
-        expect(p.hue, id).toBeGreaterThanOrEqual(236);
-        expect(p.hue, id).toBeLessThanOrEqual(250);
-        expect(p.value, id).toBeGreaterThanOrEqual(0.48);
-      }
+      expect(
+        cloth.filter((p) => p.value >= 0.3).length / cloth.length,
+        id,
+      ).toBeGreaterThan(0.8);
+      expect(pixels.filter(isIndigo).length, id).toBe(0);
     }
   });
 });
@@ -314,13 +336,20 @@ describe("the robed cultists, round 2 (pulp_wars-mch9.54)", () => {
     }
   });
 
-  it("wears blood red, no lodge indigo and no teal, and keeps the green small and on the faction's hue", async () => {
+  it("wears palette 1's royal purple and aquamarine, blood red on the blades, no lodge indigo and no teal, and no green", async () => {
     for (const [id] of ROUND_2_RECIPES) {
       const pixels = hsvPixels(await master(id));
       const count = (test: (p: (typeof pixels)[number]) => boolean): number =>
         pixels.filter(test).length;
-      // Blood on a blade, a red robe, hood or stole.
-      expect(count(isRed), id).toBeGreaterThanOrEqual(30);
+      // Palette 1 (pulp_wars-mch9.59): the blood-red cloth is royal purple
+      // and the gold embroidery and the flames aquamarine; the blood on a
+      // blade (and the Summoner's bruised eye) stays red.
+      expect(count(isPurple) / pixels.length, id).toBeGreaterThan(0.08);
+      expect(count(isAqua), id).toBeGreaterThanOrEqual(40);
+      expect(count(isAqua) / pixels.length, id).toBeLessThanOrEqual(0.15);
+      expect(count(isRed), id).toBeGreaterThanOrEqual(
+        id === "chibi-direction-cult-idol-bearer" ? 0 : 5,
+      );
       // Told from the indigo-roofed Cult buildings: no lodge indigo cloth.
       expect(
         count(
@@ -332,11 +361,12 @@ describe("the robed cultists, round 2 (pulp_wars-mch9.54)", () => {
         ) / pixels.length,
         id,
       ).toBeLessThanOrEqual(0.01);
-      // Teal is the summons': at most a glint (a lens, an eye).
+      // Teal is the summons': at most a glint (a lens, an eye). The
+      // aquamarine of palette 1 is lighter and greener (hue 160 to 175).
       expect(
         count(
           (p) =>
-            p.hue > 152 &&
+            p.hue > 178 &&
             p.hue <= 205 &&
             p.saturation >= 0.35 &&
             p.value >= 0.14,
@@ -355,12 +385,8 @@ describe("the robed cultists, round 2 (pulp_wars-mch9.54)", () => {
         ),
         id,
       ).toBeGreaterThanOrEqual(30);
-      const greens = pixels.filter(isGreen);
-      expect(greens.length / pixels.length, id).toBeLessThanOrEqual(0.02);
-      for (const green of greens) {
-        expect(green.hue, id).toBeGreaterThanOrEqual(144);
-        expect(green.hue, id).toBeLessThanOrEqual(152);
-      }
+      // The flames went aquamarine with the palette; no green is left.
+      expect(count(isGreen), id).toBeLessThanOrEqual(2);
     }
     // The telescope has no green tufts and no green lens.
     expect(
@@ -774,9 +800,16 @@ describe("the Cultists' batches (pulp_wars-mch9.15)", () => {
         expect(green.hue, id).toBeGreaterThanOrEqual(144);
         expect(green.hue, id).toBeLessThanOrEqual(152);
       }
-      // Round 2's robed cultists wear blood red and deep purple.
+      // Round 2's robed cultists wear purple and blood (checked above).
       if (ROBED_ROUND_2.includes(id)) continue;
-      expect(pixels.filter(isViolet).length, id).toBe(0);
+      // The lodge creatures wear palette 1's royal purple (mch9.59); the
+      // summoned wear no violet at all.
+      expect(
+        pixels.filter(PALETTE_ONE.has(id) ? isMagenta : isViolet).length,
+        id,
+      ).toBe(0);
+      if (PALETTE_ONE.has(id))
+        expect(pixels.filter(isIndigo).length, id).toBe(0);
       const red = pixels.filter(isRed).length;
       if (name.endsWith("-unbound"))
         // The Unbound cue: the eyes are red (CULT.md, "Red means broken").
@@ -850,10 +883,13 @@ describe("the Cultists' batches (pulp_wars-mch9.15)", () => {
         await readRaster(path.join(ROOT, record.master.path)),
       );
       expect(pixels.filter(isRed).length, asset.id).toBe(0);
-      expect(pixels.filter(isViolet).length, asset.id).toBe(0);
+      expect(pixels.filter(isMagenta).length, asset.id).toBe(0);
+      expect(pixels.filter(isIndigo).length, asset.id).toBe(0);
+      expect(record.derivation.remap?.preset, asset.id).toBe("cult-royal-aqua");
     }
     // The Submarine is a sibling of the accepted gondola, seated and
-    // anchored like every other Submarine; the hulls are visibly blue.
+    // anchored like every other Submarine; the hulls are visibly royal
+    // purple since palette 1 (pulp_wars-mch9.59; indigo before it).
     const submarine = manifest.assets.find(
       (asset) => asset.id === "chibi-naval-cult-submarine",
     );
@@ -865,10 +901,10 @@ describe("the Cultists' batches (pulp_wars-mch9.15)", () => {
     ).toEqual({ recipe: "cult-patrol-boat-a", candidate: 0, sibling: true });
     for (const name of ["patrol-boat", "battleship", "transport"]) {
       const pixels = hsvPixels(await master(`chibi-naval-cult-${name}`));
-      const indigo = pixels.filter(
-        (p) => p.hue >= 236 && p.hue <= 250 && p.saturation >= 0.45,
-      );
-      expect(indigo.length / pixels.length, name).toBeGreaterThan(0.2);
+      expect(
+        pixels.filter(isPurple).length / pixels.length,
+        name,
+      ).toBeGreaterThan(0.2);
     }
     for (const recipe of manifest.recipes)
       expect(records.recipes[recipe.id]?.review?.verdict, recipe.id).toMatch(

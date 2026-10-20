@@ -10,7 +10,17 @@
  *
  *   npx tsx scripts/art/cult-direction/green-palette.ts
  *
- * The file is deterministic; a test checks its colours against this list.
+ * It also writes scripts/art/chibi/palettes/cult-purple.png (bead
+ * pulp_wars-mch9.59, the Cult's palette 1): the same list, position for
+ * position, with the three indigo tones replaced by the royal purple the
+ * `cult-royal-aqua` remap gives them (scripts/art/chibi/remap.ts, the
+ * source L* through its main ramp). The effects are `palette-map` swaps from
+ * cult-green.png to cult-purple.png, so their shapes are kept exactly and
+ * the indigo hood of the Sacrifice puff and the deep folds turn purple; the
+ * green stays, the faction colour of the channel strands and the Favour.
+ *
+ * The files are deterministic; a test checks their colours against these
+ * lists.
  */
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
@@ -44,14 +54,40 @@ export const CULT_GREEN_PALETTE = [
   { to: "#b9b8b0", role: "smoke and stone grey" },
 ] as const;
 
+export const CULT_PURPLE_PALETTE_PATH =
+  "scripts/art/chibi/palettes/cult-purple.png";
+
+/** The swap of palette 1: indigo to the remap's purple, the rest kept. */
+const PURPLE_OF: Readonly<Record<string, { to: string; role: string }>> = {
+  "#231d5e": { to: "#2d1542", role: "royal purple, deepest fold" },
+  "#372f8f": { to: "#4b226a", role: "royal purple cloth, shade" },
+  "#4a43b5": { to: "#67338f", role: "royal purple cloth, lit" },
+};
+
+export const CULT_PURPLE_PALETTE: readonly {
+  readonly to: string;
+  readonly role: string;
+}[] = CULT_GREEN_PALETTE.map((entry) => PURPLE_OF[entry.to] ?? entry);
+
 const SIZE = 80;
 
 /** Bands of equal height, one per colour, like the other effect palettes. */
 export async function cultGreenPalettePng(): Promise<Buffer> {
+  return palettePng(CULT_GREEN_PALETTE);
+}
+
+/** cult-purple.png, the swap target of the effects since palette 1. */
+export async function cultPurplePalettePng(): Promise<Buffer> {
+  return palettePng(CULT_PURPLE_PALETTE);
+}
+
+async function palettePng(
+  list: readonly { readonly to: string }[],
+): Promise<Buffer> {
   const data = Buffer.alloc(SIZE * SIZE * 4);
-  const band = SIZE / CULT_GREEN_PALETTE.length;
+  const band = SIZE / list.length;
   for (let y = 0; y < SIZE; y += 1) {
-    const colour = CULT_GREEN_PALETTE[Math.floor(y / band)];
+    const colour = list[Math.floor(y / band)];
     if (colour === undefined) throw new Error("palette band out of range");
     const rgb = [1, 3, 5].map((at) =>
       Number.parseInt(colour.to.slice(at, at + 2), 16),
@@ -74,6 +110,11 @@ async function main(): Promise<void> {
   await mkdir(path.dirname(file), { recursive: true });
   await writeFile(file, await cultGreenPalettePng());
   console.log(`wrote ${CULT_GREEN_PALETTE_PATH}`);
+  await writeFile(
+    path.join(process.cwd(), CULT_PURPLE_PALETTE_PATH),
+    await cultPurplePalettePng(),
+  );
+  console.log(`wrote ${CULT_PURPLE_PALETTE_PATH}`);
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url))

@@ -1924,14 +1924,18 @@
       "candidateSha256": "4d057d8872b2d303ab566f2d7626a6e3c509018fe71b7bd86facd44e9373307c",
       "master": {
         "path": "public/assets/chibi/effects/chibi-direction-effect-cult-boo.png",
-        "sha256": "73db8bb1d6425f609381348d30a85c6e5e8908c62d0285907738e1e1f1582e22",
-        "pixelSha256": "bd7db4e756f245c2453b7aaa3f80329d8d54c753f9beb6a331c5372239afa7dd",
+        "sha256": "84e3c584179370adc8dccfc08a82a85847f16a026f638f97e65c098b5e481dc4",
+        "pixelSha256": "f06406bdbcbd4663ef76e04dad989cf50c875c2991e9505e464d907dd60780f2",
         "width": 48,
         "height": 48
       },
       "derivation": {
         "kind": "palette-map",
         "palette": {
+          "path": "scripts/art/chibi/palettes/cult-purple.png",
+          "sha256": "d91e79f08aab1eaef681f1793621f9df72f10dba3222daeb101a7bd3cd0a2464"
+        },
+        "paletteFrom": {
           "path": "scripts/art/chibi/palettes/cult-green.png",
           "sha256": "4699465ad1a0c1ce795e2eb9f7dff57b4a4b848eca8a5075a65caf8256b5c252"
         }
@@ -1974,6 +1978,10 @@
       "derivation": {
         "kind": "palette-map",
         "palette": {
+          "path": "scripts/art/chibi/palettes/cult-purple.png",
+          "sha256": "d91e79f08aab1eaef681f1793621f9df72f10dba3222daeb101a7bd3cd0a2464"
+        },
+        "paletteFrom": {
           "path": "scripts/art/chibi/palettes/cult-green.png",
           "sha256": "4699465ad1a0c1ce795e2eb9f7dff57b4a4b848eca8a5075a65caf8256b5c252"
         }
@@ -2008,14 +2016,18 @@
       "candidateSha256": "2ffd45ddeba3fd5f9b1ef9f9779dea6e32e273c1d69fda282a0f7f330f03965e",
       "master": {
         "path": "public/assets/chibi/effects/chibi-direction-effect-cult-pamphlets.png",
-        "sha256": "67b89d8de7a17d38c0e189e7aafcb15d9559b5dcd880c540a73f089b2e45d964",
-        "pixelSha256": "31c9771b04284886d8b8cfd6c8fc66b389621389049be21b93526c57fbf63969",
+        "sha256": "623c4a6bc299f37da828cfce0db74e6b18b56290291b35f1f5a550b75b72224e",
+        "pixelSha256": "1c080c75b520b9f11eb146188dca05f9f6219cc3dd31163fbbcf0cbce9b57095",
         "width": 40,
         "height": 40
       },
       "derivation": {
         "kind": "palette-map",
         "palette": {
+          "path": "scripts/art/chibi/palettes/cult-purple.png",
+          "sha256": "d91e79f08aab1eaef681f1793621f9df72f10dba3222daeb101a7bd3cd0a2464"
+        },
+        "paletteFrom": {
           "path": "scripts/art/chibi/palettes/cult-green.png",
           "sha256": "4699465ad1a0c1ce795e2eb9f7dff57b4a4b848eca8a5075a65caf8256b5c252"
         }
@@ -2058,6 +2070,10 @@
       "derivation": {
         "kind": "palette-map",
         "palette": {
+          "path": "scripts/art/chibi/palettes/cult-purple.png",
+          "sha256": "d91e79f08aab1eaef681f1793621f9df72f10dba3222daeb101a7bd3cd0a2464"
+        },
+        "paletteFrom": {
           "path": "scripts/art/chibi/palettes/cult-green.png",
           "sha256": "4699465ad1a0c1ce795e2eb9f7dff57b4a4b848eca8a5075a65caf8256b5c252"
         }
@@ -2100,6 +2116,10 @@
       "derivation": {
         "kind": "palette-map",
         "palette": {
+          "path": "scripts/art/chibi/palettes/cult-purple.png",
+          "sha256": "d91e79f08aab1eaef681f1793621f9df72f10dba3222daeb101a7bd3cd0a2464"
+        },
+        "paletteFrom": {
           "path": "scripts/art/chibi/palettes/cult-green.png",
           "sha256": "4699465ad1a0c1ce795e2eb9f7dff57b4a4b848eca8a5075a65caf8256b5c252"
         }
@@ -2134,14 +2154,18 @@
       "candidateSha256": "0a68a65302a5c0caf048d83199a0bd4af36e023ce1cbfc66ab5aa00c37cc6dfa",
       "master": {
         "path": "public/assets/chibi/effects/chibi-direction-effect-cult-ritual-fizzle.png",
-        "sha256": "2bee371ae20a62efb2539462a75705413c1be2d8ad2344bfa1f93ce0eec75b6d",
-        "pixelSha256": "6eb9a70319961db2237dc5c227dc53d5d8c4cf25b8e3678f0a1959307ef037d0",
+        "sha256": "7dc987323988abf91a98e31df2213166133e3c9814c475cee159e6e9543cede3",
+        "pixelSha256": "ad2a565a0c8c35fb4c092430463b1cd8764cc68199dbf941a8ab01a2b271a131",
         "width": 48,
         "height": 48
       },
       "derivation": {
         "kind": "palette-map",
         "palette": {
+          "path": "scripts/art/chibi/palettes/cult-purple.png",
+          "sha256": "d91e79f08aab1eaef681f1793621f9df72f10dba3222daeb101a7bd3cd0a2464"
+        },
+        "paletteFrom": {
           "path": "scripts/art/chibi/palettes/cult-green.png",
           "sha256": "4699465ad1a0c1ce795e2eb9f7dff57b4a4b848eca8a5075a65caf8256b5c252"
         }
@@ -2176,14 +2200,18 @@
       "candidateSha256": "9cd6e83645fe7adff1108741f27d6aba2dcc6fed8b72459a99938ecade520692",
       "master": {
         "path": "public/assets/chibi/effects/chibi-direction-effect-cult-sacrifice-puff.png",
-        "sha256": "aa85afac7f79c85d1a847aa849bb73ba18e1980d47b8a67bfdc1263f110f29a8",
-        "pixelSha256": "4530e4197d319b1039a3724403a74777f812caecbe469ea968075d3362883091",
+        "sha256": "1120fe597829c19787d573a903e3eda4628acbb57a42a406726aa1c11cca053d",
+        "pixelSha256": "d48e21ad02bae604f245812878ca0373ca7ea5ea54947ed65b4fe28d2e7180ee",
         "width": 48,
         "height": 48
       },
       "derivation": {
         "kind": "palette-map",
         "palette": {
+          "path": "scripts/art/chibi/palettes/cult-purple.png",
+          "sha256": "d91e79f08aab1eaef681f1793621f9df72f10dba3222daeb101a7bd3cd0a2464"
+        },
+        "paletteFrom": {
           "path": "scripts/art/chibi/palettes/cult-green.png",
           "sha256": "4699465ad1a0c1ce795e2eb9f7dff57b4a4b848eca8a5075a65caf8256b5c252"
         }
@@ -2218,14 +2246,18 @@
       "candidateSha256": "a72cdba43dc56a02c2f24162a06c36fb6df741d3340c2089e9e8fe80eb24173b",
       "master": {
         "path": "public/assets/chibi/effects/chibi-direction-effect-cult-seize.png",
-        "sha256": "bc46efe231299149caa2e24d37764013a634a86a4c88c6a6421b204aaedc370d",
-        "pixelSha256": "00f6a20dfd3580bf01a53400d6094698b1438183e178e9dbf71911bef115336a",
+        "sha256": "c52920978a70ae01c7e4d29e699d4ff9a0925079f2b28d07435740605f6a5653",
+        "pixelSha256": "5fe734060c928212baf11dc91e1c6e652e35db0930dcef480f91e32621fda9bf",
         "width": 48,
         "height": 48
       },
       "derivation": {
         "kind": "palette-map",
         "palette": {
+          "path": "scripts/art/chibi/palettes/cult-purple.png",
+          "sha256": "d91e79f08aab1eaef681f1793621f9df72f10dba3222daeb101a7bd3cd0a2464"
+        },
+        "paletteFrom": {
           "path": "scripts/art/chibi/palettes/cult-green.png",
           "sha256": "4699465ad1a0c1ce795e2eb9f7dff57b4a4b848eca8a5075a65caf8256b5c252"
         }
@@ -2268,6 +2300,10 @@
       "derivation": {
         "kind": "palette-map",
         "palette": {
+          "path": "scripts/art/chibi/palettes/cult-purple.png",
+          "sha256": "d91e79f08aab1eaef681f1793621f9df72f10dba3222daeb101a7bd3cd0a2464"
+        },
+        "paletteFrom": {
           "path": "scripts/art/chibi/palettes/cult-green.png",
           "sha256": "4699465ad1a0c1ce795e2eb9f7dff57b4a4b848eca8a5075a65caf8256b5c252"
         }
@@ -2310,6 +2346,10 @@
       "derivation": {
         "kind": "palette-map",
         "palette": {
+          "path": "scripts/art/chibi/palettes/cult-purple.png",
+          "sha256": "d91e79f08aab1eaef681f1793621f9df72f10dba3222daeb101a7bd3cd0a2464"
+        },
+        "paletteFrom": {
           "path": "scripts/art/chibi/palettes/cult-green.png",
           "sha256": "4699465ad1a0c1ce795e2eb9f7dff57b4a4b848eca8a5075a65caf8256b5c252"
         }
@@ -2352,6 +2392,10 @@
       "derivation": {
         "kind": "palette-map",
         "palette": {
+          "path": "scripts/art/chibi/palettes/cult-purple.png",
+          "sha256": "d91e79f08aab1eaef681f1793621f9df72f10dba3222daeb101a7bd3cd0a2464"
+        },
+        "paletteFrom": {
           "path": "scripts/art/chibi/palettes/cult-green.png",
           "sha256": "4699465ad1a0c1ce795e2eb9f7dff57b4a4b848eca8a5075a65caf8256b5c252"
         }
@@ -2394,6 +2438,10 @@
       "derivation": {
         "kind": "palette-map",
         "palette": {
+          "path": "scripts/art/chibi/palettes/cult-purple.png",
+          "sha256": "d91e79f08aab1eaef681f1793621f9df72f10dba3222daeb101a7bd3cd0a2464"
+        },
+        "paletteFrom": {
           "path": "scripts/art/chibi/palettes/cult-green.png",
           "sha256": "4699465ad1a0c1ce795e2eb9f7dff57b4a4b848eca8a5075a65caf8256b5c252"
         }
@@ -2428,14 +2476,18 @@
       "candidateSha256": "9c7fe01c45daa90cafce32394e50c4add02b9b62e896a99224b3594632d766d8",
       "master": {
         "path": "public/assets/chibi/effects/chibi-direction-effect-cult-switcheroo.png",
-        "sha256": "afa93d312d96068ff79c45b3c13e851efc699934d462008655d0927f3f3da39f",
-        "pixelSha256": "14cab35decfd3c370512c7ac80eac6c8f0644ce48d6ab0c41a865c60f1c623a4",
+        "sha256": "98868756fc6c37a7fd16407ad0e1053097994db75f92dc5eaa56eccb6c5f9a0a",
+        "pixelSha256": "e0284402672ba644da72ecfdf5060e96dc9dfb1271d541c897dc4cba2612748c",
         "width": 40,
         "height": 40
       },
       "derivation": {
         "kind": "palette-map",
         "palette": {
+          "path": "scripts/art/chibi/palettes/cult-purple.png",
+          "sha256": "d91e79f08aab1eaef681f1793621f9df72f10dba3222daeb101a7bd3cd0a2464"
+        },
+        "paletteFrom": {
           "path": "scripts/art/chibi/palettes/cult-green.png",
           "sha256": "4699465ad1a0c1ce795e2eb9f7dff57b4a4b848eca8a5075a65caf8256b5c252"
         }
@@ -2478,6 +2530,10 @@
       "derivation": {
         "kind": "palette-map",
         "palette": {
+          "path": "scripts/art/chibi/palettes/cult-purple.png",
+          "sha256": "d91e79f08aab1eaef681f1793621f9df72f10dba3222daeb101a7bd3cd0a2464"
+        },
+        "paletteFrom": {
           "path": "scripts/art/chibi/palettes/cult-green.png",
           "sha256": "4699465ad1a0c1ce795e2eb9f7dff57b4a4b848eca8a5075a65caf8256b5c252"
         }
@@ -2520,6 +2576,10 @@
       "derivation": {
         "kind": "palette-map",
         "palette": {
+          "path": "scripts/art/chibi/palettes/cult-purple.png",
+          "sha256": "d91e79f08aab1eaef681f1793621f9df72f10dba3222daeb101a7bd3cd0a2464"
+        },
+        "paletteFrom": {
           "path": "scripts/art/chibi/palettes/cult-green.png",
           "sha256": "4699465ad1a0c1ce795e2eb9f7dff57b4a4b848eca8a5075a65caf8256b5c252"
         }

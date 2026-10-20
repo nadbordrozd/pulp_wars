@@ -18,7 +18,13 @@
         "height": 80
       },
       "ownerColour": false,
-      "accent": "cult-lodge"
+      "accent": "cult-lodge",
+      "remap": {
+        "preset": "cult-royal-aqua",
+        "rules": {
+          "kind": "lodge"
+        }
+      }
     },
     {
       "id": "chibi-direction-cult-city-2",
@@ -31,7 +37,13 @@
         "height": 88
       },
       "ownerColour": false,
-      "accent": "cult-lodge"
+      "accent": "cult-lodge",
+      "remap": {
+        "preset": "cult-royal-aqua",
+        "rules": {
+          "kind": "lodge"
+        }
+      }
     },
     {
       "id": "chibi-direction-cult-city-3",
@@ -44,7 +56,13 @@
         "height": 88
       },
       "ownerColour": false,
-      "accent": "cult-lodge"
+      "accent": "cult-lodge",
+      "remap": {
+        "preset": "cult-royal-aqua",
+        "rules": {
+          "kind": "lodge"
+        }
+      }
     }
   ],
   "recipes": [

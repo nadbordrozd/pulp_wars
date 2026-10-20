@@ -25,7 +25,11 @@ export const CULT_PALETTE_V7 = {
   flame: "#00ff78",
   glow: "#80ffbc",
   dark: "#007336",
-  indigo: "#372f8f",
+  /**
+   * The lodge's royal purple (palette 1, bead pulp_wars-mch9.59), the shade
+   * tone of the robes, roofs and hulls; the indigo #372f8f before it.
+   */
+  purple: "#4b226a",
   wax: "#f3e7c4",
   brass: "#c9a24a",
   teal: "#1f8f95",
@@ -572,7 +576,7 @@ function drawCodeIdol(
     half * 0.45,
   );
   context.fill();
-  context.fillStyle = highContrast ? "#000000" : CULT_PALETTE_V7.indigo;
+  context.fillStyle = highContrast ? "#000000" : CULT_PALETTE_V7.purple;
   const eye = Math.max(0.8, radius * 0.13);
   for (const side of [-1, 1]) {
     context.beginPath();

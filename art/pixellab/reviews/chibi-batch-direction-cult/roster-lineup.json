@@ -12,26 +12,45 @@
     "Initiate / Hexer: colour too close",
     "Initiate / Summoner: colour too close, greyscale too close",
     "Initiate / Stargazer: colour too close",
+    "Initiate / Thing in the Cellar: colour too close",
     "Initiate / Horror: colour too close",
+    "Initiate / Herald: colour too close",
+    "Initiate / Tentacle: colour too close",
     "Idol Bearer / Hexer: colour too close",
     "Idol Bearer / Summoner: colour too close",
     "Idol Bearer / Stargazer: colour too close",
     "Idol Bearer / Thing in the Cellar: colour too close",
     "Idol Bearer / Horror: colour too close",
+    "Idol Bearer / Herald: colour too close",
     "Idol Bearer / Tentacle: colour too close",
     "Familiar / Herald: colour too close",
     "Hexer / Summoner: colour too close",
     "Hexer / Stargazer: colour too close",
+    "Hexer / Thing in the Cellar: colour too close",
     "Hexer / Horror: colour too close",
+    "Hexer / Herald: colour too close",
+    "Hexer / Tentacle: colour too close",
     "Summoner / Stargazer: colour too close",
     "Summoner / Horror: colour too close",
+    "Summoner / Herald: colour too close",
+    "Summoner / Tentacle: colour too close",
+    "Stargazer / Thing in the Cellar: colour too close",
     "Stargazer / Horror: colour too close",
+    "Stargazer / Herald: colour too close",
+    "Stargazer / Tentacle: colour too close",
     "Thing in the Cellar / Horror: colour too close",
+    "Thing in the Cellar / Herald: colour too close",
     "Thing in the Cellar / Tentacle: colour too close",
     "Horror / Herald: colour too close",
     "Horror / Tentacle: colour too close",
+    "Herald / Tentacle: colour too close",
+    "Summoner / Necromancer: colour too close",
+    "Hexer / Ice Witch: colour too close",
+    "Initiate / Banshee: colour too close",
     "Initiate / Shaman: colour too close",
-    "Thing in the Cellar / Abomination: colour too close"
+    "Thing in the Cellar / Abomination: colour too close",
+    "Familiar / Sabretooth: colour too close",
+    "Familiar / Raptor: colour too close"
   ],
   "pairs": [
     {
@@ -39,14 +58,14 @@
       "rival": "Idol Bearer",
       "kind": "own faction",
       "measure": {
-        "palette": 10.1,
-        "deuteranopia": 6.4,
-        "protanopia": 6.6,
-        "greyPalette": 1.7,
-        "lightness": 4.5,
+        "palette": 7.8,
+        "deuteranopia": 5.6,
+        "protanopia": 5.4,
+        "greyPalette": 1.5,
+        "lightness": 4.7,
         "meanLightness": [
-          26.5,
-          29.7
+          26.8,
+          30.3
         ],
         "silhouette": 0.66,
         "distinct": false,
@@ -61,14 +80,14 @@
       "rival": "Familiar",
       "kind": "own faction",
       "measure": {
-        "palette": 39.8,
-        "deuteranopia": 34,
-        "protanopia": 34.7,
-        "greyPalette": 7.2,
-        "lightness": 18.1,
+        "palette": 22.8,
+        "deuteranopia": 16.6,
+        "protanopia": 17.7,
+        "greyPalette": 6.2,
+        "lightness": 17.8,
         "meanLightness": [
-          26.5,
-          45.3
+          26.8,
+          44
         ],
         "silhouette": 0.62,
         "distinct": true,
@@ -80,14 +99,14 @@
       "rival": "Hexer",
       "kind": "own faction",
       "measure": {
-        "palette": 13.1,
-        "deuteranopia": 7.7,
-        "protanopia": 7.7,
+        "palette": 7.9,
+        "deuteranopia": 6.2,
+        "protanopia": 5.9,
         "greyPalette": 1.5,
-        "lightness": 3.3,
+        "lightness": 3.6,
         "meanLightness": [
-          26.5,
-          22.7
+          26.8,
+          23.4
         ],
         "silhouette": 0.6,
         "distinct": false,
@@ -101,14 +120,14 @@
       "rival": "Summoner",
       "kind": "own faction",
       "measure": {
-        "palette": 9.6,
-        "deuteranopia": 6.5,
-        "protanopia": 6.1,
-        "greyPalette": 1.3,
-        "lightness": 5.6,
+        "palette": 8.5,
+        "deuteranopia": 6.1,
+        "protanopia": 5.2,
+        "greyPalette": 1.5,
+        "lightness": 4.6,
         "meanLightness": [
-          26.5,
-          20.7
+          26.8,
+          21.3
         ],
         "silhouette": 0.68,
         "distinct": false,
@@ -123,14 +142,14 @@
       "rival": "Stargazer",
       "kind": "own faction",
       "measure": {
-        "palette": 9.7,
-        "deuteranopia": 5.2,
+        "palette": 8.2,
+        "deuteranopia": 5.5,
         "protanopia": 5.6,
-        "greyPalette": 1.1,
-        "lightness": 2.2,
+        "greyPalette": 1,
+        "lightness": 2.4,
         "meanLightness": [
-          26.5,
-          27.9
+          26.8,
+          28.6
         ],
         "silhouette": 0.54,
         "distinct": false,
@@ -144,18 +163,20 @@
       "rival": "Thing in the Cellar",
       "kind": "own faction",
       "measure": {
-        "palette": 26.9,
-        "deuteranopia": 14.4,
-        "protanopia": 13.4,
-        "greyPalette": 5.8,
-        "lightness": 17.2,
+        "palette": 20.4,
+        "deuteranopia": 10.7,
+        "protanopia": 12.8,
+        "greyPalette": 6.3,
+        "lightness": 17.1,
         "meanLightness": [
-          26.5,
+          26.8,
           44
         ],
         "silhouette": 0.37,
-        "distinct": true,
-        "reasons": []
+        "distinct": false,
+        "reasons": [
+          "colour too close"
+        ]
       }
     },
     {
@@ -163,13 +184,13 @@
       "rival": "Horror",
       "kind": "own faction",
       "measure": {
-        "palette": 25.5,
-        "deuteranopia": 12.1,
-        "protanopia": 11.2,
+        "palette": 16.8,
+        "deuteranopia": 8.1,
+        "protanopia": 9.5,
         "greyPalette": 1.4,
         "lightness": 12.9,
         "meanLightness": [
-          26.5,
+          26.8,
           40
         ],
         "silhouette": 0.55,
@@ -184,18 +205,20 @@
       "rival": "Herald",
       "kind": "own faction",
       "measure": {
-        "palette": 36,
-        "deuteranopia": 27.5,
-        "protanopia": 27.1,
-        "greyPalette": 5.4,
-        "lightness": 9.4,
+        "palette": 16.1,
+        "deuteranopia": 12.3,
+        "protanopia": 13.1,
+        "greyPalette": 5.1,
+        "lightness": 8.3,
         "meanLightness": [
-          26.5,
-          35.8
+          26.8,
+          34.1
         ],
         "silhouette": 0.5,
-        "distinct": true,
-        "reasons": []
+        "distinct": false,
+        "reasons": [
+          "colour too close"
+        ]
       }
     },
     {
@@ -203,18 +226,20 @@
       "rival": "Tentacle",
       "kind": "own faction",
       "measure": {
-        "palette": 28.1,
-        "deuteranopia": 17.3,
-        "protanopia": 16.5,
-        "greyPalette": 2.1,
+        "palette": 17.9,
+        "deuteranopia": 8.9,
+        "protanopia": 10.4,
+        "greyPalette": 2.4,
         "lightness": 17,
         "meanLightness": [
-          26.5,
+          26.8,
           44.5
         ],
         "silhouette": 0.53,
-        "distinct": true,
-        "reasons": []
+        "distinct": false,
+        "reasons": [
+          "colour too close"
+        ]
       }
     },
     {
@@ -222,14 +247,14 @@
       "rival": "Familiar",
       "kind": "own faction",
       "measure": {
-        "palette": 35.3,
-        "deuteranopia": 31.6,
-        "protanopia": 31.2,
-        "greyPalette": 5.9,
-        "lightness": 15.2,
+        "palette": 24.8,
+        "deuteranopia": 18.4,
+        "protanopia": 19.4,
+        "greyPalette": 4.1,
+        "lightness": 14.1,
         "meanLightness": [
-          29.7,
-          45.3
+          30.3,
+          44
         ],
         "silhouette": 0.59,
         "distinct": true,
@@ -241,14 +266,14 @@
       "rival": "Hexer",
       "kind": "own faction",
       "measure": {
-        "palette": 14.2,
-        "deuteranopia": 9.1,
-        "protanopia": 9.5,
-        "greyPalette": 1.4,
-        "lightness": 6.3,
+        "palette": 8.6,
+        "deuteranopia": 5,
+        "protanopia": 5.4,
+        "greyPalette": 1.5,
+        "lightness": 7.5,
         "meanLightness": [
-          29.7,
-          22.7
+          30.3,
+          23.4
         ],
         "silhouette": 0.64,
         "distinct": false,
@@ -262,14 +287,14 @@
       "rival": "Summoner",
       "kind": "own faction",
       "measure": {
-        "palette": 12.7,
-        "deuteranopia": 8,
-        "protanopia": 7,
-        "greyPalette": 1.4,
-        "lightness": 8.5,
+        "palette": 9.8,
+        "deuteranopia": 6.9,
+        "protanopia": 6.3,
+        "greyPalette": 1.8,
+        "lightness": 8.3,
         "meanLightness": [
-          29.7,
-          20.7
+          30.3,
+          21.3
         ],
         "silhouette": 0.72,
         "distinct": false,
@@ -283,14 +308,14 @@
       "rival": "Stargazer",
       "kind": "own faction",
       "measure": {
-        "palette": 10.1,
-        "deuteranopia": 7.5,
-        "protanopia": 7.7,
-        "greyPalette": 1.1,
-        "lightness": 4,
+        "palette": 11.5,
+        "deuteranopia": 9.2,
+        "protanopia": 8.7,
+        "greyPalette": 1,
+        "lightness": 3.6,
         "meanLightness": [
-          29.7,
-          27.9
+          30.3,
+          28.6
         ],
         "silhouette": 0.55,
         "distinct": false,
@@ -304,13 +329,13 @@
       "rival": "Thing in the Cellar",
       "kind": "own faction",
       "measure": {
-        "palette": 24.1,
-        "deuteranopia": 11,
-        "protanopia": 10.8,
-        "greyPalette": 3.6,
-        "lightness": 14.3,
+        "palette": 18.4,
+        "deuteranopia": 8.5,
+        "protanopia": 10.1,
+        "greyPalette": 3.3,
+        "lightness": 14.5,
         "meanLightness": [
-          29.7,
+          30.3,
           44
         ],
         "silhouette": 0.4,
@@ -325,13 +350,13 @@
       "rival": "Horror",
       "kind": "own faction",
       "measure": {
-        "palette": 23,
-        "deuteranopia": 10,
-        "protanopia": 9.3,
-        "greyPalette": 1.3,
-        "lightness": 10,
+        "palette": 17.6,
+        "deuteranopia": 8.4,
+        "protanopia": 9.5,
+        "greyPalette": 1.1,
+        "lightness": 9.2,
         "meanLightness": [
-          29.7,
+          30.3,
           40
         ],
         "silhouette": 0.59,
@@ -346,18 +371,20 @@
       "rival": "Herald",
       "kind": "own faction",
       "measure": {
-        "palette": 30.9,
-        "deuteranopia": 23.7,
-        "protanopia": 23.3,
-        "greyPalette": 4.6,
-        "lightness": 11.8,
+        "palette": 15.7,
+        "deuteranopia": 12.2,
+        "protanopia": 12.9,
+        "greyPalette": 3.1,
+        "lightness": 10.5,
         "meanLightness": [
-          29.7,
-          35.8
+          30.3,
+          34.1
         ],
         "silhouette": 0.59,
-        "distinct": true,
-        "reasons": []
+        "distinct": false,
+        "reasons": [
+          "colour too close"
+        ]
       }
     },
     {
@@ -365,13 +392,13 @@
       "rival": "Tentacle",
       "kind": "own faction",
       "measure": {
-        "palette": 24.1,
-        "deuteranopia": 11.6,
-        "protanopia": 11.3,
-        "greyPalette": 1.7,
-        "lightness": 14.1,
+        "palette": 16.4,
+        "deuteranopia": 6.6,
+        "protanopia": 8.2,
+        "greyPalette": 1.6,
+        "lightness": 13.3,
         "meanLightness": [
-          29.7,
+          30.3,
           44.5
         ],
         "silhouette": 0.63,
@@ -386,14 +413,14 @@
       "rival": "Hexer",
       "kind": "own faction",
       "measure": {
-        "palette": 32,
-        "deuteranopia": 29.4,
-        "protanopia": 28.7,
-        "greyPalette": 6.2,
-        "lightness": 21.5,
+        "palette": 22.6,
+        "deuteranopia": 17,
+        "protanopia": 16.7,
+        "greyPalette": 4.4,
+        "lightness": 21.4,
         "meanLightness": [
-          45.3,
-          22.7
+          44,
+          23.4
         ],
         "silhouette": 0.51,
         "distinct": true,
@@ -405,14 +432,14 @@
       "rival": "Summoner",
       "kind": "own faction",
       "measure": {
-        "palette": 40.8,
-        "deuteranopia": 37.8,
-        "protanopia": 37.1,
-        "greyPalette": 5.4,
-        "lightness": 23.7,
+        "palette": 20.8,
+        "deuteranopia": 16.6,
+        "protanopia": 16.8,
+        "greyPalette": 5.3,
+        "lightness": 22.4,
         "meanLightness": [
-          45.3,
-          20.7
+          44,
+          21.3
         ],
         "silhouette": 0.57,
         "distinct": true,
@@ -424,14 +451,14 @@
       "rival": "Stargazer",
       "kind": "own faction",
       "measure": {
-        "palette": 34.1,
-        "deuteranopia": 32.9,
-        "protanopia": 32.1,
-        "greyPalette": 5.1,
-        "lightness": 16.4,
+        "palette": 22.9,
+        "deuteranopia": 19.2,
+        "protanopia": 19.7,
+        "greyPalette": 4.5,
+        "lightness": 15.5,
         "meanLightness": [
-          45.3,
-          27.9
+          44,
+          28.6
         ],
         "silhouette": 0.62,
         "distinct": true,
@@ -443,13 +470,13 @@
       "rival": "Thing in the Cellar",
       "kind": "own faction",
       "measure": {
-        "palette": 30.7,
-        "deuteranopia": 24.8,
-        "protanopia": 21.8,
-        "greyPalette": 1.3,
-        "lightness": 8.3,
+        "palette": 34,
+        "deuteranopia": 19.4,
+        "protanopia": 19.6,
+        "greyPalette": 1.7,
+        "lightness": 8.5,
         "meanLightness": [
-          45.3,
+          44,
           44
         ],
         "silhouette": 0.5,
@@ -462,13 +489,13 @@
       "rival": "Horror",
       "kind": "own faction",
       "measure": {
-        "palette": 29.9,
-        "deuteranopia": 23.8,
-        "protanopia": 21.7,
-        "greyPalette": 3.9,
-        "lightness": 6.7,
+        "palette": 32.1,
+        "deuteranopia": 17.3,
+        "protanopia": 17.2,
+        "greyPalette": 3.3,
+        "lightness": 6.9,
         "meanLightness": [
-          45.3,
+          44,
           40
         ],
         "silhouette": 0.7,
@@ -481,14 +508,14 @@
       "rival": "Herald",
       "kind": "own faction",
       "measure": {
-        "palette": 14.9,
-        "deuteranopia": 11.1,
-        "protanopia": 11,
-        "greyPalette": 1.4,
-        "lightness": 12.3,
+        "palette": 11.9,
+        "deuteranopia": 7.8,
+        "protanopia": 7.8,
+        "greyPalette": 1.5,
+        "lightness": 13.1,
         "meanLightness": [
-          45.3,
-          35.8
+          44,
+          34.1
         ],
         "silhouette": 0.5,
         "distinct": false,
@@ -502,13 +529,13 @@
       "rival": "Tentacle",
       "kind": "own faction",
       "measure": {
-        "palette": 31.1,
-        "deuteranopia": 22.5,
-        "protanopia": 21.4,
-        "greyPalette": 3.2,
-        "lightness": 8.3,
+        "palette": 36.8,
+        "deuteranopia": 15.9,
+        "protanopia": 18.5,
+        "greyPalette": 2.6,
+        "lightness": 8.5,
         "meanLightness": [
-          45.3,
+          44,
           44.5
         ],
         "silhouette": 0.49,
@@ -521,14 +548,14 @@
       "rival": "Summoner",
       "kind": "own faction",
       "measure": {
-        "palette": 13.7,
-        "deuteranopia": 7.6,
-        "protanopia": 6.8,
-        "greyPalette": 1.3,
-        "lightness": 2.4,
+        "palette": 7.5,
+        "deuteranopia": 4.3,
+        "protanopia": 4.2,
+        "greyPalette": 1.4,
+        "lightness": 2.8,
         "meanLightness": [
-          22.7,
-          20.7
+          23.4,
+          21.3
         ],
         "silhouette": 0.64,
         "distinct": false,
@@ -542,14 +569,14 @@
       "rival": "Stargazer",
       "kind": "own faction",
       "measure": {
-        "palette": 11.3,
-        "deuteranopia": 6.7,
-        "protanopia": 6.7,
+        "palette": 10.6,
+        "deuteranopia": 8.4,
+        "protanopia": 8.3,
         "greyPalette": 1,
-        "lightness": 5,
+        "lightness": 5.9,
         "meanLightness": [
-          22.7,
-          27.9
+          23.4,
+          28.6
         ],
         "silhouette": 0.5,
         "distinct": false,
@@ -563,18 +590,20 @@
       "rival": "Thing in the Cellar",
       "kind": "own faction",
       "measure": {
-        "palette": 27.8,
-        "deuteranopia": 14.8,
-        "protanopia": 15,
-        "greyPalette": 4.3,
-        "lightness": 20.5,
+        "palette": 17.1,
+        "deuteranopia": 11.4,
+        "protanopia": 12.3,
+        "greyPalette": 3.9,
+        "lightness": 20.7,
         "meanLightness": [
-          22.7,
+          23.4,
           44
         ],
         "silhouette": 0.31,
-        "distinct": true,
-        "reasons": []
+        "distinct": false,
+        "reasons": [
+          "colour too close"
+        ]
       }
     },
     {
@@ -582,13 +611,13 @@
       "rival": "Horror",
       "kind": "own faction",
       "measure": {
-        "palette": 22.2,
-        "deuteranopia": 10.2,
-        "protanopia": 8.3,
-        "greyPalette": 1.7,
-        "lightness": 16.3,
+        "palette": 16,
+        "deuteranopia": 8.6,
+        "protanopia": 10.2,
+        "greyPalette": 2,
+        "lightness": 16.5,
         "meanLightness": [
-          22.7,
+          23.4,
           40
         ],
         "silhouette": 0.47,
@@ -603,18 +632,20 @@
       "rival": "Herald",
       "kind": "own faction",
       "measure": {
-        "palette": 27.4,
-        "deuteranopia": 21.2,
-        "protanopia": 20.5,
-        "greyPalette": 4.7,
-        "lightness": 12.3,
+        "palette": 14.3,
+        "deuteranopia": 11.2,
+        "protanopia": 12.6,
+        "greyPalette": 3.5,
+        "lightness": 11.3,
         "meanLightness": [
-          22.7,
-          35.8
+          23.4,
+          34.1
         ],
         "silhouette": 0.42,
-        "distinct": true,
-        "reasons": []
+        "distinct": false,
+        "reasons": [
+          "colour too close"
+        ]
       }
     },
     {
@@ -622,18 +653,20 @@
       "rival": "Tentacle",
       "kind": "own faction",
       "measure": {
-        "palette": 30.1,
-        "deuteranopia": 15.6,
-        "protanopia": 15.4,
-        "greyPalette": 1.6,
-        "lightness": 20.3,
+        "palette": 16.8,
+        "deuteranopia": 10,
+        "protanopia": 11.7,
+        "greyPalette": 1.5,
+        "lightness": 20.5,
         "meanLightness": [
-          22.7,
+          23.4,
           44.5
         ],
         "silhouette": 0.52,
-        "distinct": true,
-        "reasons": []
+        "distinct": false,
+        "reasons": [
+          "colour too close"
+        ]
       }
     },
     {
@@ -641,14 +674,14 @@
       "rival": "Stargazer",
       "kind": "own faction",
       "measure": {
-        "palette": 9.6,
-        "deuteranopia": 5.6,
-        "protanopia": 5.2,
+        "palette": 11.2,
+        "deuteranopia": 7.2,
+        "protanopia": 6.8,
         "greyPalette": 1,
-        "lightness": 7.3,
+        "lightness": 6.9,
         "meanLightness": [
-          20.7,
-          27.9
+          21.3,
+          28.6
         ],
         "silhouette": 0.53,
         "distinct": false,
@@ -662,13 +695,13 @@
       "rival": "Thing in the Cellar",
       "kind": "own faction",
       "measure": {
-        "palette": 26.3,
-        "deuteranopia": 15,
-        "protanopia": 15.7,
-        "greyPalette": 3.8,
-        "lightness": 22.7,
+        "palette": 24.8,
+        "deuteranopia": 12.8,
+        "protanopia": 14.9,
+        "greyPalette": 4.5,
+        "lightness": 21.7,
         "meanLightness": [
-          20.7,
+          21.3,
           44
         ],
         "silhouette": 0.41,
@@ -681,13 +714,13 @@
       "rival": "Horror",
       "kind": "own faction",
       "measure": {
-        "palette": 24.9,
-        "deuteranopia": 10.4,
-        "protanopia": 9.9,
-        "greyPalette": 1.1,
-        "lightness": 18.5,
+        "palette": 21.5,
+        "deuteranopia": 8.7,
+        "protanopia": 10.4,
+        "greyPalette": 1.6,
+        "lightness": 17.5,
         "meanLightness": [
-          20.7,
+          21.3,
           40
         ],
         "silhouette": 0.58,
@@ -702,18 +735,20 @@
       "rival": "Herald",
       "kind": "own faction",
       "measure": {
-        "palette": 34.4,
-        "deuteranopia": 29.3,
-        "protanopia": 28.5,
-        "greyPalette": 4.1,
-        "lightness": 14.5,
+        "palette": 13.9,
+        "deuteranopia": 11.3,
+        "protanopia": 12.4,
+        "greyPalette": 3.8,
+        "lightness": 11.7,
         "meanLightness": [
-          20.7,
-          35.8
+          21.3,
+          34.1
         ],
         "silhouette": 0.55,
-        "distinct": true,
-        "reasons": []
+        "distinct": false,
+        "reasons": [
+          "colour too close"
+        ]
       }
     },
     {
@@ -721,18 +756,20 @@
       "rival": "Tentacle",
       "kind": "own faction",
       "measure": {
-        "palette": 30.4,
-        "deuteranopia": 19.8,
-        "protanopia": 17.5,
-        "greyPalette": 1.1,
-        "lightness": 22.6,
+        "palette": 23.7,
+        "deuteranopia": 10.4,
+        "protanopia": 11.8,
+        "greyPalette": 2,
+        "lightness": 21.6,
         "meanLightness": [
-          20.7,
+          21.3,
           44.5
         ],
         "silhouette": 0.6,
-        "distinct": true,
-        "reasons": []
+        "distinct": false,
+        "reasons": [
+          "colour too close"
+        ]
       }
     },
     {
@@ -740,18 +777,20 @@
       "rival": "Thing in the Cellar",
       "kind": "own faction",
       "measure": {
-        "palette": 22.7,
-        "deuteranopia": 12.5,
-        "protanopia": 12.9,
-        "greyPalette": 3.6,
-        "lightness": 15.5,
+        "palette": 16.6,
+        "deuteranopia": 10,
+        "protanopia": 11,
+        "greyPalette": 3.7,
+        "lightness": 14.8,
         "meanLightness": [
-          27.9,
+          28.6,
           44
         ],
         "silhouette": 0.51,
-        "distinct": true,
-        "reasons": []
+        "distinct": false,
+        "reasons": [
+          "colour too close"
+        ]
       }
     },
     {
@@ -759,13 +798,13 @@
       "rival": "Horror",
       "kind": "own faction",
       "measure": {
-        "palette": 20.8,
-        "deuteranopia": 9.9,
-        "protanopia": 10,
-        "greyPalette": 0.9,
-        "lightness": 11.2,
+        "palette": 13.7,
+        "deuteranopia": 7.8,
+        "protanopia": 8.1,
+        "greyPalette": 0.7,
+        "lightness": 10.6,
         "meanLightness": [
-          27.9,
+          28.6,
           40
         ],
         "silhouette": 0.63,
@@ -780,18 +819,20 @@
       "rival": "Herald",
       "kind": "own faction",
       "measure": {
-        "palette": 28.9,
-        "deuteranopia": 25.6,
-        "protanopia": 23.7,
-        "greyPalette": 3.9,
-        "lightness": 8.1,
+        "palette": 14.5,
+        "deuteranopia": 12,
+        "protanopia": 12.6,
+        "greyPalette": 3.2,
+        "lightness": 7.7,
         "meanLightness": [
-          27.9,
-          35.8
+          28.6,
+          34.1
         ],
         "silhouette": 0.49,
-        "distinct": true,
-        "reasons": []
+        "distinct": false,
+        "reasons": [
+          "colour too close"
+        ]
       }
     },
     {
@@ -799,18 +840,20 @@
       "rival": "Tentacle",
       "kind": "own faction",
       "measure": {
-        "palette": 27.1,
-        "deuteranopia": 16.6,
-        "protanopia": 14.8,
-        "greyPalette": 1.7,
-        "lightness": 15.3,
+        "palette": 18.7,
+        "deuteranopia": 11.9,
+        "protanopia": 12,
+        "greyPalette": 1.5,
+        "lightness": 14.6,
         "meanLightness": [
-          27.9,
+          28.6,
           44.5
         ],
         "silhouette": 0.48,
-        "distinct": true,
-        "reasons": []
+        "distinct": false,
+        "reasons": [
+          "colour too close"
+        ]
       }
     },
     {
@@ -839,18 +882,20 @@
       "rival": "Herald",
       "kind": "own faction",
       "measure": {
-        "palette": 20.5,
-        "deuteranopia": 14.2,
-        "protanopia": 15.1,
-        "greyPalette": 0.8,
-        "lightness": 9.1,
+        "palette": 22.8,
+        "deuteranopia": 10.9,
+        "protanopia": 14,
+        "greyPalette": 1.2,
+        "lightness": 10.8,
         "meanLightness": [
           44,
-          35.8
+          34.1
         ],
         "silhouette": 0.51,
-        "distinct": true,
-        "reasons": []
+        "distinct": false,
+        "reasons": [
+          "colour too close"
+        ]
       }
     },
     {
@@ -879,14 +924,14 @@
       "rival": "Herald",
       "kind": "own faction",
       "measure": {
-        "palette": 18.2,
-        "deuteranopia": 12.8,
-        "protanopia": 13.4,
-        "greyPalette": 3,
-        "lightness": 9.3,
+        "palette": 20.6,
+        "deuteranopia": 9.1,
+        "protanopia": 11.8,
+        "greyPalette": 2.5,
+        "lightness": 7.9,
         "meanLightness": [
           40,
-          35.8
+          34.1
         ],
         "silhouette": 0.57,
         "distinct": false,
@@ -921,18 +966,20 @@
       "rival": "Tentacle",
       "kind": "own faction",
       "measure": {
-        "palette": 24.2,
-        "deuteranopia": 13.1,
-        "protanopia": 14.3,
-        "greyPalette": 2.4,
-        "lightness": 10.3,
+        "palette": 25.8,
+        "deuteranopia": 10.4,
+        "protanopia": 13.5,
+        "greyPalette": 1.9,
+        "lightness": 10.5,
         "meanLightness": [
-          35.8,
+          34.1,
           44.5
         ],
         "silhouette": 0.54,
-        "distinct": true,
-        "reasons": []
+        "distinct": false,
+        "reasons": [
+          "colour too close"
+        ]
       }
     },
     {
@@ -940,18 +987,20 @@
       "rival": "Necromancer",
       "kind": "look-alike",
       "measure": {
-        "palette": 28.3,
-        "deuteranopia": 19.1,
-        "protanopia": 18.6,
-        "greyPalette": 2,
-        "lightness": 8.2,
+        "palette": 18.5,
+        "deuteranopia": 11.2,
+        "protanopia": 12.6,
+        "greyPalette": 1.8,
+        "lightness": 7.2,
         "meanLightness": [
-          20.7,
+          21.3,
           28.2
         ],
         "silhouette": 0.63,
-        "distinct": true,
-        "reasons": []
+        "distinct": false,
+        "reasons": [
+          "colour too close"
+        ]
       }
     },
     {
@@ -959,13 +1008,13 @@
       "rival": "Lich",
       "kind": "look-alike",
       "measure": {
-        "palette": 20.7,
-        "deuteranopia": 14.8,
-        "protanopia": 14.1,
-        "greyPalette": 1.3,
-        "lightness": 6.4,
+        "palette": 19.4,
+        "deuteranopia": 14.3,
+        "protanopia": 13.6,
+        "greyPalette": 1.5,
+        "lightness": 4.8,
         "meanLightness": [
-          27.9,
+          28.6,
           29.3
         ],
         "silhouette": 0.57,
@@ -978,18 +1027,20 @@
       "rival": "Ice Witch",
       "kind": "look-alike",
       "measure": {
-        "palette": 24.2,
-        "deuteranopia": 18,
-        "protanopia": 17.4,
-        "greyPalette": 2.3,
-        "lightness": 25.1,
+        "palette": 18.9,
+        "deuteranopia": 8.8,
+        "protanopia": 9.7,
+        "greyPalette": 1.6,
+        "lightness": 25.3,
         "meanLightness": [
-          22.7,
+          23.4,
           48.7
         ],
         "silhouette": 0.63,
-        "distinct": true,
-        "reasons": []
+        "distinct": false,
+        "reasons": [
+          "colour too close"
+        ]
       }
     },
     {
@@ -997,18 +1048,20 @@
       "rival": "Banshee",
       "kind": "look-alike",
       "measure": {
-        "palette": 25.7,
-        "deuteranopia": 15.5,
-        "protanopia": 13.2,
-        "greyPalette": 2.9,
+        "palette": 21.8,
+        "deuteranopia": 13.9,
+        "protanopia": 12.3,
+        "greyPalette": 3.4,
         "lightness": 24.8,
         "meanLightness": [
-          26.5,
+          26.8,
           51.5
         ],
         "silhouette": 0.52,
-        "distinct": true,
-        "reasons": []
+        "distinct": false,
+        "reasons": [
+          "colour too close"
+        ]
       }
     },
     {
@@ -1016,13 +1069,13 @@
       "rival": "Shaman",
       "kind": "look-alike",
       "measure": {
-        "palette": 16.7,
-        "deuteranopia": 7.2,
-        "protanopia": 8.9,
-        "greyPalette": 1.8,
-        "lightness": 11.2,
+        "palette": 17.6,
+        "deuteranopia": 9.4,
+        "protanopia": 11.7,
+        "greyPalette": 1.9,
+        "lightness": 11.1,
         "meanLightness": [
-          26.5,
+          26.8,
           37.2
         ],
         "silhouette": 0.67,
@@ -1037,13 +1090,13 @@
       "rival": "Colossus",
       "kind": "look-alike",
       "measure": {
-        "palette": 27.6,
-        "deuteranopia": 20.6,
-        "protanopia": 20.3,
-        "greyPalette": 1.6,
-        "lightness": 13.9,
+        "palette": 28.4,
+        "deuteranopia": 17.4,
+        "protanopia": 19.7,
+        "greyPalette": 1.4,
+        "lightness": 13.2,
         "meanLightness": [
-          35.8,
+          34.1,
           43.7
         ],
         "silhouette": 0.54,
@@ -1056,13 +1109,13 @@
       "rival": "Tripod",
       "kind": "look-alike",
       "measure": {
-        "palette": 27.6,
-        "deuteranopia": 20.8,
-        "protanopia": 17.3,
-        "greyPalette": 2.9,
-        "lightness": 10.9,
+        "palette": 27.9,
+        "deuteranopia": 17.4,
+        "protanopia": 17.6,
+        "greyPalette": 2.4,
+        "lightness": 8.8,
         "meanLightness": [
-          35.8,
+          34.1,
           36.9
         ],
         "silhouette": 0.46,
@@ -1113,13 +1166,13 @@
       "rival": "Giant Spider",
       "kind": "look-alike",
       "measure": {
-        "palette": 39.3,
-        "deuteranopia": 36,
-        "protanopia": 33.4,
-        "greyPalette": 1.7,
-        "lightness": 7.3,
+        "palette": 38.1,
+        "deuteranopia": 32.5,
+        "protanopia": 31.4,
+        "greyPalette": 1.6,
+        "lightness": 5.3,
         "meanLightness": [
-          33.8,
+          32.1,
           34.1
         ],
         "silhouette": 0.39,
@@ -1132,13 +1185,13 @@
       "rival": "Bigfoot",
       "kind": "look-alike",
       "measure": {
-        "palette": 40.2,
-        "deuteranopia": 36.3,
-        "protanopia": 34.4,
-        "greyPalette": 3.2,
-        "lightness": 6.3,
+        "palette": 39,
+        "deuteranopia": 33,
+        "protanopia": 32.7,
+        "greyPalette": 3.1,
+        "lightness": 4.4,
         "meanLightness": [
-          33.8,
+          32.1,
           31.6
         ],
         "silhouette": 0.62,
@@ -1229,18 +1282,20 @@
       "rival": "Sabretooth",
       "kind": "look-alike",
       "measure": {
-        "palette": 21.1,
-        "deuteranopia": 15.1,
-        "protanopia": 15.5,
-        "greyPalette": 2.9,
-        "lightness": 10.1,
+        "palette": 23.7,
+        "deuteranopia": 11.3,
+        "protanopia": 12.9,
+        "greyPalette": 2.8,
+        "lightness": 10.4,
         "meanLightness": [
-          45.3,
+          44,
           54.8
         ],
         "silhouette": 0.7,
-        "distinct": true,
-        "reasons": []
+        "distinct": false,
+        "reasons": [
+          "colour too close"
+        ]
       }
     },
     {
@@ -1248,18 +1303,20 @@
       "rival": "Raptor",
       "kind": "look-alike",
       "measure": {
-        "palette": 28.2,
-        "deuteranopia": 16.9,
-        "protanopia": 20.1,
-        "greyPalette": 4.3,
-        "lightness": 10.2,
+        "palette": 31.1,
+        "deuteranopia": 10.9,
+        "protanopia": 16.1,
+        "greyPalette": 4.1,
+        "lightness": 9.9,
         "meanLightness": [
-          45.3,
+          44,
           36
         ],
         "silhouette": 0.55,
-        "distinct": true,
-        "reasons": []
+        "distinct": false,
+        "reasons": [
+          "colour too close"
+        ]
       }
     }
   ]

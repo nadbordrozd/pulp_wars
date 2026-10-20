@@ -75,6 +75,12 @@ const isGreen = (p: { hue: number; saturation: number; value: number }) =>
 const isBlue = (p: { hue: number; saturation: number; value: number }) =>
   // The cloth band of the cult-lodge accent preset.
   p.hue >= 212 && p.hue <= 262 && p.saturation >= 0.45 && p.value >= 0.14;
+/** Palette 1's royal purple (pulp_wars-mch9.59): hue 271 to 277. */
+const isPurple = (p: { hue: number; saturation: number; value: number }) =>
+  p.hue >= 262 && p.hue <= 290 && p.saturation >= 0.3 && p.value >= 0.1;
+/** Palette 1's aquamarine windows, lamps and flames: hue 160 to 175. */
+const isAqua = (p: { hue: number; saturation: number; value: number }) =>
+  p.hue >= 155 && p.hue <= 178 && p.saturation >= 0.45 && p.value >= 0.45;
 
 const cultBuildings = CHIBI_FACTION_BUILDING_ART_ASSETS_V7.filter((entry) =>
   entry.subject.startsWith("IMPROVEMENT:CULT:"),
@@ -231,7 +237,7 @@ describe("the Cult's colours on its places (pulp_wars-mch9.16)", () => {
     }
   });
 
-  it("wears indigo roofs that are no navy, one small green at hue 148, and no red, violet or key colour", async () => {
+  it("wears palette 1's royal purple roofs and small aquamarine lights, and no indigo, green, red, magenta or key colour", async () => {
     const roofed = new Set([
       ...CHIBI_DIRECTION_CULT_CITY_ART_ASSETS_V7.map((entry) => entry.id),
       "chibi-cult-sawmill",
@@ -248,14 +254,14 @@ describe("the Cult's colours on its places (pulp_wars-mch9.16)", () => {
     ]) {
       const master = await masterOf(entry.url);
       const pixels = hsvPixels(master);
-      const greens = pixels.filter(isGreen);
-      for (const green of greens) {
-        expect(green.hue, entry.id).toBeGreaterThanOrEqual(144);
-        expect(green.hue, entry.id).toBeLessThanOrEqual(152);
-      }
-      // "Green is at most about 8% of a lodge sprite" (CULT.md, Palette).
-      expect(greens.length / pixels.length, entry.id).toBeLessThanOrEqual(0.08);
-      // Red means broken; violet and magenta are other factions' accents.
+      // Palette 1 (pulp_wars-mch9.59): the green windows, lamps and flames
+      // are aquamarine; the accent is at most about 8% of a lodge sprite.
+      expect(pixels.filter(isGreen).length, entry.id).toBe(0);
+      expect(
+        pixels.filter(isAqua).length / pixels.length,
+        entry.id,
+      ).toBeLessThanOrEqual(0.08);
+      // Red means broken; magenta is another faction's accent.
       expect(
         pixels.filter(
           (p) =>
@@ -268,30 +274,32 @@ describe("the Cult's colours on its places (pulp_wars-mch9.16)", () => {
       expect(
         pixels.filter(
           (p) =>
-            p.hue >= 270 &&
+            p.hue > 290 &&
             p.hue < 345 &&
             p.saturation >= 0.3 &&
             p.value >= 0.25,
         ).length,
-        `${entry.id}: violet`,
+        `${entry.id}: magenta`,
       ).toBe(0);
       expect(
         extractOwnerMask(master).mask.bits.reduce((sum, bit) => sum + bit, 0),
         `${entry.id}: key-colour pixels`,
       ).toBe(0);
-      const blues = pixels.filter(isBlue);
-      for (const blue of blues) {
-        // Every saturated blue is the lodge's indigo, lifted out of navy.
-        expect(blue.hue, entry.id).toBeGreaterThanOrEqual(236);
-        expect(blue.hue, entry.id).toBeLessThanOrEqual(250);
-        expect(blue.value, entry.id).toBeGreaterThanOrEqual(0.48);
-      }
-      // A roofed piece is a pale shape under a blue roof, not a dark blob:
-      // the roof is a clear share of it (City 1 and the Shipyard the most,
-      // 55% and 53%) and never all of it.
+      // No lodge indigo is left: every roof, drape and awning is royal
+      // purple, lit enough not to read as black.
+      expect(pixels.filter(isBlue).length, entry.id).toBe(0);
+      const roofs = pixels.filter(isPurple);
+      if (roofs.length > 0)
+        expect(
+          roofs.filter((p) => p.value >= 0.25).length / roofs.length,
+          entry.id,
+        ).toBeGreaterThan(0.5);
+      // A roofed piece is a pale shape under a purple roof, not a dark
+      // blob: the roof is a clear share of it (City 1 and the Shipyard the
+      // most) and never all of it.
       if (roofed.has(entry.id)) {
-        expect(blues.length / pixels.length, entry.id).toBeGreaterThan(0.08);
-        expect(blues.length / pixels.length, entry.id).toBeLessThan(0.6);
+        expect(roofs.length / pixels.length, entry.id).toBeGreaterThan(0.08);
+        expect(roofs.length / pixels.length, entry.id).toBeLessThan(0.6);
       }
       // The light measure is asked of the bare stone pieces only. A dark
       // roof over the left half of a pale house reads as "lit from the

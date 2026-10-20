@@ -8,12 +8,12 @@
       "canvas": "80 x 80",
       "size": "61 x 58",
       "seat": 3,
-      "greenShare": 1.4,
-      "indigoShare": 36.7,
-      "tealShare": 0,
+      "greenShare": 0,
+      "indigoShare": 0,
+      "tealShare": 1.2,
       "redPixels": 0,
-      "violetOrMagentaPixels": 0,
-      "fromGrass": 74.6
+      "violetOrMagentaPixels": 816,
+      "fromGrass": 75.1
     },
     {
       "title": "City 2",
@@ -21,12 +21,12 @@
       "canvas": "88 x 88",
       "size": "77 x 74",
       "seat": 3,
-      "greenShare": 0.6,
-      "indigoShare": 22.1,
-      "tealShare": 0,
+      "greenShare": 0,
+      "indigoShare": 0,
+      "tealShare": 0.6,
       "redPixels": 0,
-      "violetOrMagentaPixels": 0,
-      "fromGrass": 66.6
+      "violetOrMagentaPixels": 823,
+      "fromGrass": 66.7
     },
     {
       "title": "City 3",
@@ -34,12 +34,12 @@
       "canvas": "96 x 88",
       "size": "86 x 83",
       "seat": 3,
-      "greenShare": 2,
-      "indigoShare": 15.2,
-      "tealShare": 0,
+      "greenShare": 0,
+      "indigoShare": 0,
+      "tealShare": 2.1,
       "redPixels": 0,
-      "violetOrMagentaPixels": 0,
-      "fromGrass": 63
+      "violetOrMagentaPixels": 771,
+      "fromGrass": 63.8
     }
   ],
   "buildings": [
@@ -49,12 +49,12 @@
       "canvas": "72 x 72",
       "size": "60 x 61",
       "seat": 3,
-      "greenShare": 0.2,
-      "indigoShare": 11.3,
-      "tealShare": 23.1,
+      "greenShare": 0,
+      "indigoShare": 0,
+      "tealShare": 23.3,
       "redPixels": 0,
-      "violetOrMagentaPixels": 0,
-      "fromGrass": 66
+      "violetOrMagentaPixels": 236,
+      "fromGrass": 65.7
     },
     {
       "title": "Sawmill",
@@ -62,12 +62,12 @@
       "canvas": "72 x 72",
       "size": "61 x 61",
       "seat": 3,
-      "greenShare": 1.4,
-      "indigoShare": 43.9,
-      "tealShare": 0,
+      "greenShare": 0,
+      "indigoShare": 0,
+      "tealShare": 0.8,
       "redPixels": 0,
-      "violetOrMagentaPixels": 0,
-      "fromGrass": 77
+      "violetOrMagentaPixels": 1007,
+      "fromGrass": 77.6
     },
     {
       "title": "Forge",
@@ -76,11 +76,11 @@
       "size": "59 x 61",
       "seat": 3,
       "greenShare": 0,
-      "indigoShare": 24.3,
+      "indigoShare": 0,
       "tealShare": 0,
       "redPixels": 0,
-      "violetOrMagentaPixels": 0,
-      "fromGrass": 64.8
+      "violetOrMagentaPixels": 454,
+      "fromGrass": 65.2
     },
     {
       "title": "Workshop",
@@ -88,12 +88,12 @@
       "canvas": "72 x 72",
       "size": "62 x 61",
       "seat": 3,
-      "greenShare": 0.9,
-      "indigoShare": 28.1,
-      "tealShare": 0,
+      "greenShare": 0,
+      "indigoShare": 0,
+      "tealShare": 0.5,
       "redPixels": 0,
-      "violetOrMagentaPixels": 0,
-      "fromGrass": 66.1
+      "violetOrMagentaPixels": 654,
+      "fromGrass": 66.5
     },
     {
       "title": "Port",
@@ -101,12 +101,12 @@
       "canvas": "72 x 72",
       "size": "62 x 62",
       "seat": 3,
-      "greenShare": 0.7,
-      "indigoShare": 18.2,
-      "tealShare": 0,
+      "greenShare": 0,
+      "indigoShare": 0,
+      "tealShare": 0.5,
       "redPixels": 0,
-      "violetOrMagentaPixels": 0,
-      "fromGrass": 57.5
+      "violetOrMagentaPixels": 344,
+      "fromGrass": 58.5
     },
     {
       "title": "Shipyard",
@@ -115,11 +115,11 @@
       "size": "62 x 61",
       "seat": 3,
       "greenShare": 0,
-      "indigoShare": 53,
+      "indigoShare": 0,
       "tealShare": 0,
       "redPixels": 0,
-      "violetOrMagentaPixels": 0,
-      "fromGrass": 77.3
+      "violetOrMagentaPixels": 1025,
+      "fromGrass": 77.8
     },
     {
       "title": "Market",
@@ -127,12 +127,12 @@
       "canvas": "72 x 72",
       "size": "61 x 59",
       "seat": 3,
-      "greenShare": 3.1,
-      "indigoShare": 20.4,
-      "tealShare": 1.6,
+      "greenShare": 0,
+      "indigoShare": 0,
+      "tealShare": 4.7,
       "redPixels": 0,
-      "violetOrMagentaPixels": 0,
-      "fromGrass": 58.6
+      "violetOrMagentaPixels": 460,
+      "fromGrass": 61.2
     }
   ],
   "monuments": [
@@ -142,12 +142,12 @@
       "canvas": "48 x 72",
       "size": "42 x 62",
       "seat": 3,
-      "greenShare": 0.3,
+      "greenShare": 0,
       "indigoShare": 0,
-      "tealShare": 0.1,
+      "tealShare": 0.5,
       "redPixels": 0,
       "violetOrMagentaPixels": 0,
-      "fromGrass": 46.5
+      "fromGrass": 46.6
     },
     {
       "title": "Engineer",
@@ -155,12 +155,12 @@
       "canvas": "48 x 72",
       "size": "36 x 65",
       "seat": 3,
-      "greenShare": 1.3,
+      "greenShare": 0,
       "indigoShare": 0,
-      "tealShare": 0,
+      "tealShare": 0.7,
       "redPixels": 0,
       "violetOrMagentaPixels": 0,
-      "fromGrass": 43.2
+      "fromGrass": 43.6
     },
     {
       "title": "Muster",
@@ -169,11 +169,11 @@
       "size": "30 x 68",
       "seat": 3,
       "greenShare": 0,
-      "indigoShare": 5.1,
+      "indigoShare": 0,
       "tealShare": 0.7,
       "redPixels": 0,
-      "violetOrMagentaPixels": 0,
-      "fromGrass": 53.5
+      "violetOrMagentaPixels": 77,
+      "fromGrass": 53.7
     },
     {
       "title": "Conqueror",
@@ -181,12 +181,12 @@
       "canvas": "48 x 72",
       "size": "37 x 63",
       "seat": 3,
-      "greenShare": 2.1,
+      "greenShare": 0,
       "indigoShare": 0,
-      "tealShare": 0,
+      "tealShare": 2.1,
       "redPixels": 0,
       "violetOrMagentaPixels": 0,
-      "fromGrass": 48.1
+      "fromGrass": 48.8
     },
     {
       "title": "Land Baron",
@@ -194,12 +194,12 @@
       "canvas": "48 x 72",
       "size": "44 x 59",
       "seat": 3,
-      "greenShare": 0.7,
+      "greenShare": 0,
       "indigoShare": 0,
-      "tealShare": 0,
+      "tealShare": 0.7,
       "redPixels": 0,
       "violetOrMagentaPixels": 0,
-      "fromGrass": 48.7
+      "fromGrass": 48.8
     },
     {
       "title": "Sea Dog",
@@ -207,12 +207,12 @@
       "canvas": "48 x 72",
       "size": "39 x 67",
       "seat": 3,
-      "greenShare": 1.9,
+      "greenShare": 0,
       "indigoShare": 0,
-      "tealShare": 0,
+      "tealShare": 1.9,
       "redPixels": 0,
       "violetOrMagentaPixels": 0,
-      "fromGrass": 45.1
+      "fromGrass": 45.4
     },
     {
       "title": "Slayer",
@@ -220,12 +220,12 @@
       "canvas": "48 x 72",
       "size": "34 x 65",
       "seat": 3,
-      "greenShare": 1.4,
+      "greenShare": 0,
       "indigoShare": 0,
-      "tealShare": 0,
+      "tealShare": 1.4,
       "redPixels": 0,
       "violetOrMagentaPixels": 0,
-      "fromGrass": 45.9
+      "fromGrass": 46.3
     },
     {
       "title": "Obelisk",
@@ -233,12 +233,12 @@
       "canvas": "48 x 72",
       "size": "39 x 62",
       "seat": 3,
-      "greenShare": 3.2,
+      "greenShare": 0,
       "indigoShare": 0,
-      "tealShare": 0,
+      "tealShare": 2.8,
       "redPixels": 0,
       "violetOrMagentaPixels": 0,
-      "fromGrass": 44.3
+      "fromGrass": 45.7
     }
   ]
 }

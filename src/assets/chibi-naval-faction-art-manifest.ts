@@ -635,7 +635,8 @@ export const CHIBI_NAVAL_FACTION_TECH_ICON_ASSETS_V7: readonly ChibiArtAssetV7[]
       ),
     },
     // `pulp_wars-5ti.22`: the Cult Offerings to the Deep, a green-flamed
-    // candle on a curling indigo wave (batch `naval-cult`).
+    // candle on a curling wave, indigo until palette 1 made it purple
+    // (pulp_wars-mch9.59) (batch `naval-cult`).
     {
       id: "chibi-naval-cult-icon-tech-seamanship",
       subject: "ICON:TECH:CULT:SEAMANSHIP",

@@ -4,8 +4,9 @@ import { chibiArtUrl } from "./chibi-art-manifest";
 /**
  * Cult production art (beads pulp_wars-mch9.14 and pulp_wars-mch9.15,
  * batches `direction-cult` and `naval-cult`; see docs/art/factions/CULT.md):
- * a secret lodge in indigo cloth with cream wax and paper, warm brass and
- * one green flame, and what it summons, rubbery deep-sea teal with cream
+ * a secret lodge in royal purple cloth (palette 1, pulp_wars-mch9.59;
+ * indigo before it) with cream wax and paper, warm brass and
+ * aquamarine flames, and what it summons, rubbery deep-sea teal with cream
  * bellies and yellow eyes. No sprite has an owner area or a mask
  * (`fixedColours`): the faction look alone says "Cult".
  *
@@ -265,8 +266,9 @@ export const CHIBI_DIRECTION_CULT_NAVAL_ART_ASSETS_V7: readonly ChibiCultNavalAr
 // ===== Bead pulp_wars-mch9.16: the lodge town (batch `cities-cult`) =====
 /**
  * The Cult's City 1-3 (docs/art/factions/CULT.md, Cities): cream
- * weatherboard under indigo roofs that end in a curled hood tip, a brass
- * dome and telescope, round green windows. Fixed colours, no mask, on the
+ * weatherboard under royal purple roofs (indigo before pulp_wars-mch9.59)
+ * that end in a curled hood tip, a brass
+ * dome and telescope, round aquamarine windows. Fixed colours, no mask, on the
  * canvases of the other direction cities. The Cult's buildings and
  * Monuments are with the other factions' in
  * chibi-faction-buildings-art-manifest.ts and

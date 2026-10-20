@@ -285,6 +285,15 @@ const isRed: Test = (_, h, s, v) =>
   (h >= 345 || h <= 12) && s >= 0.5 && v >= 0.35;
 const isViolet: Test = (_, h, s, v) =>
   h >= 270 && h < 345 && s >= 0.3 && v >= 0.25;
+/** Magenta and pink (the Martians', the Candy's): violet's upper part. */
+const isMagenta: Test = (_, h, s, v) =>
+  h > 290 && h < 345 && s >= 0.3 && v >= 0.25;
+/** Palette 1's royal purple (bead pulp_wars-mch9.59): hue 271 to 277. */
+const isRoyalPurple: Test = (_, h, s, v) =>
+  h >= 262 && h <= 290 && s >= 0.3 && v >= 0.1;
+/** Palette 1's aquamarine trim and lights: hue 160 to 175. */
+const isAquamarine: Test = (_, h, s, v) =>
+  h >= 155 && h <= 178 && s >= 0.3 && v >= 0.3;
 
 function share(raster: RgbaRaster, test: Test): number {
   const measured = pixelsWhere([raster], test);
@@ -703,7 +712,14 @@ async function gates(
     (rgb, h, s, v) => isCloth(rgb, h, s, v) && s >= 0.45 && v >= 0.35,
   );
   const indigoShare = indigo.count / Math.max(1, indigo.opaque);
-  const gate1Pass = skin.count >= 30 && red.count >= 30 && indigoShare <= 0.01;
+  // Palette 1 (bead pulp_wars-mch9.59): the blood-red cloth is royal purple
+  // and the blood on the blade stays red.
+  const purple = pixelsWhere([initiate], isRoyalPurple);
+  const gate1Pass =
+    skin.count >= 30 &&
+    red.count >= 10 &&
+    purple.count >= 200 &&
+    indigoShare <= 0.01;
 
   // Gate 2.
   // No measure tells cloth from the navy shade of a teal body: by eye.
@@ -732,7 +748,9 @@ async function gates(
           hueMin: hues.length === 0 ? null : round1(Math.min(...hues)),
           hueMax: hues.length === 0 ? null : round1(Math.max(...hues)),
           redPixels: pixelsWhere([sprites[key]], isRed).count,
-          violetOrMagentaPixels: pixelsWhere([sprites[key]], isViolet).count,
+          magentaPixels: pixelsWhere([sprites[key]], isMagenta).count,
+          royalPurplePixels: pixelsWhere([sprites[key]], isRoyalPurple).count,
+          aquamarineShare: percent(share(sprites[key], isAquamarine)),
         },
       ];
     }),
@@ -741,9 +759,15 @@ async function gates(
     ([title, g]) =>
       g.share <= 8 &&
       (g.hueMin === null || (g.hueMin >= 144 && (g.hueMax ?? 0) <= 152)) &&
-      // Round 2's Initiate wears blood red and a purple trim (pulp_wars-mch9.54).
+      // The Horror's own teal body shares the window: it is not an accent.
+      (title === "Horror" || g.aquamarineShare <= 8) &&
+      // Round 2's Initiate wears blood on its blade (pulp_wars-mch9.54);
+      // since palette 1 (pulp_wars-mch9.59) the Initiate and the Herald's
+      // robe are royal purple, and the summoned Horror wears no purple.
       (title === "Initiate" ||
-        (g.redPixels === 0 && g.violetOrMagentaPixels === 0)),
+        (g.redPixels === 0 &&
+          g.magentaPixels === 0 &&
+          (title === "Herald" || g.royalPurplePixels === 0))),
   );
 
   // Gate 5.
@@ -758,10 +782,11 @@ async function gates(
   return [
     {
       gate: 1,
-      asks: "Round 2 (pulp_wars-mch9.54): the Initiate is an ordinary man in an evil robe: a human face shows, the robe is blood red and not the lodge's indigo (so it parts from the indigo-roofed buildings); its face, dagger and candle read at zoom 0.75. (Round 1 asked for an indigo robe with a lit side.)",
+      asks: "Round 2 (pulp_wars-mch9.54) under palette 1 (pulp_wars-mch9.59): the Initiate is an ordinary man in an evil robe: a human face shows, the robe is the lodge's royal purple with aquamarine trim and the blood on the blade red, no lodge indigo is left; its face, dagger and candle read at zoom 0.75. (Round 1 asked for an indigo robe with a lit side; round 2 for a blood-red one.)",
       measured: {
         skinPixels: skin.count,
         redPixels: red.count,
+        royalPurplePixels: purple.count,
         lodgeIndigoShare: percent(indigoShare),
         darkShare: percent(value.dark),
         meanLightness: value.meanLightness,
@@ -781,7 +806,7 @@ async function gates(
           skinPixels: pixelsWhere([small], isSkin).count,
           greenPixels: pixelsWhere([small], isGreen).count,
         },
-        rule: "at least 30 skin pixels (a face) and 30 red pixels (the robe, the blood); lodge indigo (hue 228 to 266, saturation 0.45 and more, value 0.35 and more) at most 1% of the sprite",
+        rule: "at least 30 skin pixels (a face), 10 red pixels (the blood) and 200 royal purple pixels (hue 262 to 290, the robe); lodge indigo (hue 228 to 266, saturation 0.45 and more, value 0.35 and more) at most 1% of the sprite",
       },
       byEye: BY_EYE[1].note,
       verdict: gate1Pass && BY_EYE[1].pass ? "PASS" : "FAIL",
@@ -816,10 +841,10 @@ async function gates(
     },
     {
       gate: 4,
-      asks: "Green is small on all three and lands on hue 148 after the accent step; no pixel of the Horror or the Herald is red, violet or magenta (since round 2, pulp_wars-mch9.54, the Initiate's blood red and purple trim are its own).",
+      asks: "The accent is small on all three: green on hue 148 after the accent step where it is left (the Horror's specks, the Herald's crown tips), aquamarine where palette 1 (pulp_wars-mch9.59) moved it (the Initiate's flame and trim); no pixel of the Horror or the Herald is red or magenta, and the Horror wears no purple (the Herald's robe is the lodge's royal purple; since round 2, pulp_wars-mch9.54, the Initiate's blood is its own).",
       measured: {
         ...greens,
-        rule: "green (the accent band: hue 80 to 152, saturation 0.5 and more) at most 8% of each sprite and every green tone at hue 144 to 152; no red (hue 345 to 12) and no violet or magenta (hue 270 to 345) pixel on the Horror and the Herald",
+        rule: "green (the accent band: hue 80 to 152, saturation 0.5 and more) at most 8% of each sprite and every green tone at hue 144 to 152; aquamarine (hue 155 to 178) at most 8% on the Initiate and the Herald (the Horror's teal body shares the window); no red (hue 345 to 12) and no magenta (hue 290 to 345) pixel on the Horror and the Herald, and no royal purple (hue 262 to 290) on the Horror",
       },
       byEye: BY_EYE[4].note,
       verdict: gate4Pass && BY_EYE[4].pass ? "PASS" : "FAIL",
@@ -859,7 +884,7 @@ const BY_EYE: Readonly<
 > = {
   1: {
     pass: true,
-    note: "Round 2 (pulp_wars-mch9.54): on sample-zoom-0.75.png the Initiate is a bearded man's pale face in a blood-red hood, with the bloody blade on the left and the green candle flame on the right; the robe is darker than round 1's (64% dark pixels), which the bog's mid value carries, and it shares no colour with the indigo roofs.",
+    note: "Palette 1 (pulp_wars-mch9.59): on sample-zoom-0.75.png the Initiate is a bearded man's pale face in a royal purple hood with a mint trim line, with the bloody blade (its gold hilt kept) on the left and the aquamarine candle flame on the right; the robe is dark (63% dark pixels), which the bog's mid value carries, and it is the colour of the lodge's purple roofs, as the user asked (one holistic palette).",
   },
   2: {
     pass: true,
@@ -871,11 +896,11 @@ const BY_EYE: Readonly<
   },
   4: {
     pass: true,
-    note: "The only green on the Initiate is the candle flame and a small amulet (1%). The Horror keeps a few green specks on its head, and the lit tips of the Herald's tentacle crown fall in the accent band and turn green (4% of the sprite): they read as part of the teal crown.",
+    note: "Palette 1 (pulp_wars-mch9.59): the Initiate's candle flame, amulet and trim line are aquamarine, small. The Horror keeps a few green specks on its head, and the lit tips of the Herald's tentacle crown fall in the accent band and stay green (4% of the sprite; the Herald's remap keeps its green): they read as part of the teal crown above the royal purple robe.",
   },
   5: {
     pass: true,
-    note: "On lineup-1x.png, at half size and in greyscale: the Initiate (round 2) is a hooded bearded face with a dagger and a candle and no staff (Necromancer: white beard and skull staff; Ice Witch: pale face and crown). Since round 2 the measure calls the Initiate and the Human Fighter colour-too-close (both red): by eye the Fighter is a steel helmet with a red plume, a cross tabard, a sword and a round shield, the Initiate a dark hood and robe; the measured FAIL stands and is reported. The Horror is a ball with a pale belly band (Spider: flat with eight legs; Bunny: ears); the Herald is a bell with one eye (Lich: raised arms and ribs).",
+    note: "On lineup-1x.png, at half size and in greyscale: the Initiate (round 2) is a hooded bearded face with a dagger and a candle and no staff (Necromancer: white beard and skull staff; Ice Witch: pale face and crown). Since palette 1 (pulp_wars-mch9.59) the Initiate is no longer red, and the measure calls it colour-too-close to the Ice Witch (dark robe, under deuteranopia and protanopia) and the Grunt: by eye the Ice Witch is a pale crowned face over a navy and white robe with a staff, the Grunt a green-skinned goblin with a club, the Initiate a bearded face in a purple hood with a bloody dagger and a candle; the measured FAIL stands and is reported. The Horror is a ball with a pale belly band (Spider: flat with eight legs; Bunny: ears); the Herald is a bell with one eye (Lich: raised arms and ribs).",
   },
 };
 

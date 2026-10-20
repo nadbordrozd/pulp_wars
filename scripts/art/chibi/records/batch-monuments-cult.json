@@ -1350,8 +1350,8 @@
       "candidateSha256": "ddfdd5e9c42cfce6e1b12ae001acd83ab941a9a4f7a42273517bc6a6c98bf5ef",
       "master": {
         "path": "public/assets/chibi/buildings/chibi-cult-monument.png",
-        "sha256": "69ab60b10ed3ae43da0e005e22edf50085bb26600f7df16f2ac330b90b74b589",
-        "pixelSha256": "240807fcf600ceb99fc251053a6a7be287cbef3e503dd768b2e5c6969d0f09b3",
+        "sha256": "1c93a789e0ad746a76ee86c4c0cd97e7b2d3ba4805c8f6ed67fea3cf4c7bce0f",
+        "pixelSha256": "31db441ad38df82ca4cbdf9455709ec93f0a502109e4a257c1a5fbfd53d9f3e5",
         "width": 48,
         "height": 72
       },
@@ -1395,6 +1395,56 @@
           },
           "accentPixels": 43,
           "trimPixels": 0
+        },
+        "remap": {
+          "preset": "cult-royal-aqua",
+          "palette": {
+            "main": "#6a2f93",
+            "accent": "#4fe3c1",
+            "ramp": [
+              [0, "#0c0612"],
+              [10, "#1f0e2e"],
+              [18, "#33184b"],
+              [26, "#4a2269"],
+              [34, "#62308a"],
+              [44, "#7f43ab"],
+              [56, "#a266cc"],
+              [70, "#c79be3"]
+            ],
+            "dark": [
+              [0, "#060508"],
+              [10, "#121016"],
+              [20, "#1e1b24"],
+              [30, "#2e2a36"],
+              [45, "#48424f"]
+            ],
+            "trim": [
+              [15, "#124a42"],
+              [30, "#22836f"],
+              [45, "#3dbb9e"],
+              [60, "#66dec2"],
+              [75, "#9cf3dd"],
+              [90, "#d4fff4"]
+            ],
+            "glow": [
+              [30, "#0f5f53"],
+              [50, "#22a58e"],
+              [65, "#3fd6b7"],
+              [80, "#7af2d6"],
+              [92, "#c8fff2"]
+            ],
+            "avoid": ["#f06762", "#28b7a4", "#e2b63f", "#a277d2"],
+            "avoidDistance": 14
+          },
+          "rules": {
+            "kind": "lodge"
+          },
+          "pixels": {
+            "main": 0,
+            "dark": 0,
+            "trim": 0,
+            "glow": 56
+          }
         }
       },
       "anchor": {
@@ -1427,8 +1477,8 @@
       "candidateSha256": "f90abcfacb70d3db01c069ac996040bd615ec237e0c1dfc346cdd6b0b82b239c",
       "master": {
         "path": "public/assets/chibi/buildings/chibi-cult-monument-conqueror.png",
-        "sha256": "9d557b33a907f86dcd817597972f85ee34304a8f44b2957b000466cecf5fef03",
-        "pixelSha256": "5457ee2d25be015d765a071364a3f69be0e7634fd29884b09ca278469720bc37",
+        "sha256": "1583a9b35846d39bd821369038895304e5a1680b06af674c8bac16708faf8d81",
+        "pixelSha256": "17806cec8cd373c1f15703d8407088f64680b3406f1b9d9a5582553ad20176f8",
         "width": 48,
         "height": 72
       },
@@ -1472,6 +1522,56 @@
           },
           "accentPixels": 33,
           "trimPixels": 0
+        },
+        "remap": {
+          "preset": "cult-royal-aqua",
+          "palette": {
+            "main": "#6a2f93",
+            "accent": "#4fe3c1",
+            "ramp": [
+              [0, "#0c0612"],
+              [10, "#1f0e2e"],
+              [18, "#33184b"],
+              [26, "#4a2269"],
+              [34, "#62308a"],
+              [44, "#7f43ab"],
+              [56, "#a266cc"],
+              [70, "#c79be3"]
+            ],
+            "dark": [
+              [0, "#060508"],
+              [10, "#121016"],
+              [20, "#1e1b24"],
+              [30, "#2e2a36"],
+              [45, "#48424f"]
+            ],
+            "trim": [
+              [15, "#124a42"],
+              [30, "#22836f"],
+              [45, "#3dbb9e"],
+              [60, "#66dec2"],
+              [75, "#9cf3dd"],
+              [90, "#d4fff4"]
+            ],
+            "glow": [
+              [30, "#0f5f53"],
+              [50, "#22a58e"],
+              [65, "#3fd6b7"],
+              [80, "#7af2d6"],
+              [92, "#c8fff2"]
+            ],
+            "avoid": ["#f06762", "#28b7a4", "#e2b63f", "#a277d2"],
+            "avoidDistance": 14
+          },
+          "rules": {
+            "kind": "lodge"
+          },
+          "pixels": {
+            "main": 0,
+            "dark": 0,
+            "trim": 0,
+            "glow": 39
+          }
         }
       },
       "anchor": {
@@ -1504,8 +1604,8 @@
       "candidateSha256": "5a5613ae0281737ed7f9d92c955d99bb8454be540f648ba2dc6e269f7bbf7746",
       "master": {
         "path": "public/assets/chibi/buildings/chibi-cult-monument-engineer.png",
-        "sha256": "057ca0f76d2ea5d07007ece234c773da00953357b8f0d0e01df4de80782f99c4",
-        "pixelSha256": "de8dc8f335423797cd3ae9a4449183edc5f31dcc63f1c6ae1be368c29da1a552",
+        "sha256": "6ea84b4621865a6a479d1c1d6d3b1a7a32addece21f6651024b1baee2531175b",
+        "pixelSha256": "689bdd413a31fbb0ecd812b9008866d3ecac5b1079628854ceadd73463e82124",
         "width": 48,
         "height": 72
       },
@@ -1549,6 +1649,56 @@
           },
           "accentPixels": 19,
           "trimPixels": 0
+        },
+        "remap": {
+          "preset": "cult-royal-aqua",
+          "palette": {
+            "main": "#6a2f93",
+            "accent": "#4fe3c1",
+            "ramp": [
+              [0, "#0c0612"],
+              [10, "#1f0e2e"],
+              [18, "#33184b"],
+              [26, "#4a2269"],
+              [34, "#62308a"],
+              [44, "#7f43ab"],
+              [56, "#a266cc"],
+              [70, "#c79be3"]
+            ],
+            "dark": [
+              [0, "#060508"],
+              [10, "#121016"],
+              [20, "#1e1b24"],
+              [30, "#2e2a36"],
+              [45, "#48424f"]
+            ],
+            "trim": [
+              [15, "#124a42"],
+              [30, "#22836f"],
+              [45, "#3dbb9e"],
+              [60, "#66dec2"],
+              [75, "#9cf3dd"],
+              [90, "#d4fff4"]
+            ],
+            "glow": [
+              [30, "#0f5f53"],
+              [50, "#22a58e"],
+              [65, "#3fd6b7"],
+              [80, "#7af2d6"],
+              [92, "#c8fff2"]
+            ],
+            "avoid": ["#f06762", "#28b7a4", "#e2b63f", "#a277d2"],
+            "avoidDistance": 14
+          },
+          "rules": {
+            "kind": "lodge"
+          },
+          "pixels": {
+            "main": 0,
+            "dark": 0,
+            "trim": 0,
+            "glow": 22
+          }
         }
       },
       "anchor": {
@@ -1581,8 +1731,8 @@
       "candidateSha256": "102a249e6c9362977757124734f7668367db7077d20af2ebc52fd6435ca1543d",
       "master": {
         "path": "public/assets/chibi/buildings/chibi-cult-monument-explorer.png",
-        "sha256": "9b4d717e5c1d4bc21e3c21a8403bf806db8caca9468151f8beb85aa29282fd21",
-        "pixelSha256": "bd6f2965c7b9d9feadb0994f6b15f742f8e97b46f67f477fd96056c267519bb5",
+        "sha256": "e85e3012406ec3355639568db14cbc0a338e0f79988a1c0304832e5e9238b2f7",
+        "pixelSha256": "4cd199389e222da91d66c4c267b716127574a788473fc73500986d5060b3bc12",
         "width": 48,
         "height": 72
       },
@@ -1626,6 +1776,56 @@
           },
           "accentPixels": 5,
           "trimPixels": 0
+        },
+        "remap": {
+          "preset": "cult-royal-aqua",
+          "palette": {
+            "main": "#6a2f93",
+            "accent": "#4fe3c1",
+            "ramp": [
+              [0, "#0c0612"],
+              [10, "#1f0e2e"],
+              [18, "#33184b"],
+              [26, "#4a2269"],
+              [34, "#62308a"],
+              [44, "#7f43ab"],
+              [56, "#a266cc"],
+              [70, "#c79be3"]
+            ],
+            "dark": [
+              [0, "#060508"],
+              [10, "#121016"],
+              [20, "#1e1b24"],
+              [30, "#2e2a36"],
+              [45, "#48424f"]
+            ],
+            "trim": [
+              [15, "#124a42"],
+              [30, "#22836f"],
+              [45, "#3dbb9e"],
+              [60, "#66dec2"],
+              [75, "#9cf3dd"],
+              [90, "#d4fff4"]
+            ],
+            "glow": [
+              [30, "#0f5f53"],
+              [50, "#22a58e"],
+              [65, "#3fd6b7"],
+              [80, "#7af2d6"],
+              [92, "#c8fff2"]
+            ],
+            "avoid": ["#f06762", "#28b7a4", "#e2b63f", "#a277d2"],
+            "avoidDistance": 14
+          },
+          "rules": {
+            "kind": "lodge"
+          },
+          "pixels": {
+            "main": 0,
+            "dark": 0,
+            "trim": 0,
+            "glow": 10
+          }
         }
       },
       "anchor": {
@@ -1658,8 +1858,8 @@
       "candidateSha256": "c7fb26060abe9d102153e0d0b0710316f480f187f350a24cd2df2cdb6c85a88e",
       "master": {
         "path": "public/assets/chibi/buildings/chibi-cult-monument-land-baron.png",
-        "sha256": "99a802f0374a3fade7a5be5eddd8c91b073c2c596dbd88753a12f071c776f285",
-        "pixelSha256": "addb7c579a3dfdc36a21d0b864afc2e6692e26a0b34c84320b7aa92c240a0610",
+        "sha256": "27fce0d1cebb2e6f882c71cfb95a5e78001b9a925f81dee5f6ad23b9e2994568",
+        "pixelSha256": "c9ea7a8af4d253e0a8b1d7f201e4585e5ced56f930ca86567da70aa74d817e4c",
         "width": 48,
         "height": 72
       },
@@ -1703,6 +1903,56 @@
           },
           "accentPixels": 12,
           "trimPixels": 0
+        },
+        "remap": {
+          "preset": "cult-royal-aqua",
+          "palette": {
+            "main": "#6a2f93",
+            "accent": "#4fe3c1",
+            "ramp": [
+              [0, "#0c0612"],
+              [10, "#1f0e2e"],
+              [18, "#33184b"],
+              [26, "#4a2269"],
+              [34, "#62308a"],
+              [44, "#7f43ab"],
+              [56, "#a266cc"],
+              [70, "#c79be3"]
+            ],
+            "dark": [
+              [0, "#060508"],
+              [10, "#121016"],
+              [20, "#1e1b24"],
+              [30, "#2e2a36"],
+              [45, "#48424f"]
+            ],
+            "trim": [
+              [15, "#124a42"],
+              [30, "#22836f"],
+              [45, "#3dbb9e"],
+              [60, "#66dec2"],
+              [75, "#9cf3dd"],
+              [90, "#d4fff4"]
+            ],
+            "glow": [
+              [30, "#0f5f53"],
+              [50, "#22a58e"],
+              [65, "#3fd6b7"],
+              [80, "#7af2d6"],
+              [92, "#c8fff2"]
+            ],
+            "avoid": ["#f06762", "#28b7a4", "#e2b63f", "#a277d2"],
+            "avoidDistance": 14
+          },
+          "rules": {
+            "kind": "lodge"
+          },
+          "pixels": {
+            "main": 0,
+            "dark": 0,
+            "trim": 0,
+            "glow": 12
+          }
         }
       },
       "anchor": {
@@ -1735,8 +1985,8 @@
       "candidateSha256": "253a2e244bd62622f9c572e7e372e6c555d0009e90cf34e6dba34b93b24e97d3",
       "master": {
         "path": "public/assets/chibi/buildings/chibi-cult-monument-muster.png",
-        "sha256": "1b81616e8f65e3e08472c819ee20571513c8e896e44c2684794849101c368627",
-        "pixelSha256": "82634c41354aa926f1a10113fc3c8bc9a9ddde21402154de7bbbd8fe7a15d79d",
+        "sha256": "26c88d85ddd228fa9a635b1d3cda3d5067ebc6ffb68b182f803012406a698e2d",
+        "pixelSha256": "a02f4276caec4ff7736eb1d11d6b476f2edeeb6adc8e0855a0b89b725749e2cc",
         "width": 48,
         "height": 72
       },
@@ -1780,6 +2030,56 @@
           },
           "accentPixels": 0,
           "trimPixels": 0
+        },
+        "remap": {
+          "preset": "cult-royal-aqua",
+          "palette": {
+            "main": "#6a2f93",
+            "accent": "#4fe3c1",
+            "ramp": [
+              [0, "#0c0612"],
+              [10, "#1f0e2e"],
+              [18, "#33184b"],
+              [26, "#4a2269"],
+              [34, "#62308a"],
+              [44, "#7f43ab"],
+              [56, "#a266cc"],
+              [70, "#c79be3"]
+            ],
+            "dark": [
+              [0, "#060508"],
+              [10, "#121016"],
+              [20, "#1e1b24"],
+              [30, "#2e2a36"],
+              [45, "#48424f"]
+            ],
+            "trim": [
+              [15, "#124a42"],
+              [30, "#22836f"],
+              [45, "#3dbb9e"],
+              [60, "#66dec2"],
+              [75, "#9cf3dd"],
+              [90, "#d4fff4"]
+            ],
+            "glow": [
+              [30, "#0f5f53"],
+              [50, "#22a58e"],
+              [65, "#3fd6b7"],
+              [80, "#7af2d6"],
+              [92, "#c8fff2"]
+            ],
+            "avoid": ["#f06762", "#28b7a4", "#e2b63f", "#a277d2"],
+            "avoidDistance": 14
+          },
+          "rules": {
+            "kind": "lodge"
+          },
+          "pixels": {
+            "main": 77,
+            "dark": 0,
+            "trim": 0,
+            "glow": 0
+          }
         }
       },
       "anchor": {
@@ -1812,8 +2112,8 @@
       "candidateSha256": "2d8393917f66dc2a019b704bb81059f4fbddfd8d9f4ba9992bd08ac4f30204bf",
       "master": {
         "path": "public/assets/chibi/buildings/chibi-cult-monument-sea-dog.png",
-        "sha256": "dada330d91ed8821646b1218209ebb7df4da58f0d5bf4fccae9a0936089c503c",
-        "pixelSha256": "d0592bdee0bd3e66c515f499d7caaaa6ede31ec8064e39f7173277e9c5094aaa",
+        "sha256": "a85e804e3b62228bc33aff8261f1d475af33b1e8f6ca91fe09628016b29ac1dd",
+        "pixelSha256": "905226e075a55f33580a1a062d9fc12b5287bbf618a57814d7d6f7a2e49bfb41",
         "width": 48,
         "height": 72
       },
@@ -1857,6 +2157,56 @@
           },
           "accentPixels": 26,
           "trimPixels": 0
+        },
+        "remap": {
+          "preset": "cult-royal-aqua",
+          "palette": {
+            "main": "#6a2f93",
+            "accent": "#4fe3c1",
+            "ramp": [
+              [0, "#0c0612"],
+              [10, "#1f0e2e"],
+              [18, "#33184b"],
+              [26, "#4a2269"],
+              [34, "#62308a"],
+              [44, "#7f43ab"],
+              [56, "#a266cc"],
+              [70, "#c79be3"]
+            ],
+            "dark": [
+              [0, "#060508"],
+              [10, "#121016"],
+              [20, "#1e1b24"],
+              [30, "#2e2a36"],
+              [45, "#48424f"]
+            ],
+            "trim": [
+              [15, "#124a42"],
+              [30, "#22836f"],
+              [45, "#3dbb9e"],
+              [60, "#66dec2"],
+              [75, "#9cf3dd"],
+              [90, "#d4fff4"]
+            ],
+            "glow": [
+              [30, "#0f5f53"],
+              [50, "#22a58e"],
+              [65, "#3fd6b7"],
+              [80, "#7af2d6"],
+              [92, "#c8fff2"]
+            ],
+            "avoid": ["#f06762", "#28b7a4", "#e2b63f", "#a277d2"],
+            "avoidDistance": 14
+          },
+          "rules": {
+            "kind": "lodge"
+          },
+          "pixels": {
+            "main": 0,
+            "dark": 0,
+            "trim": 0,
+            "glow": 26
+          }
         }
       },
       "anchor": {
@@ -1889,8 +2239,8 @@
       "candidateSha256": "3a45e0b148bd430554fab0bfb3ab02b44513d94d151a50e5aaa7df4795a4c896",
       "master": {
         "path": "public/assets/chibi/buildings/chibi-cult-monument-slayer.png",
-        "sha256": "f3996360bc6f3684115d0ae75dff970cdbbf3cd7e77932164280bd1f5df668e4",
-        "pixelSha256": "2adac9bc3acb04716a503c4eb77b3b05efcff3b140a9c8b189a3fb9222f7afcb",
+        "sha256": "411a3793243d50a222986d030326e2acfe5b9e25aeab69d539d807a272ab49db",
+        "pixelSha256": "597b3d860d7d1aaaba6fc11727d5ccb663a4b7cfb30154cc10ab720feee8a950",
         "width": 48,
         "height": 72
       },
@@ -1934,6 +2284,56 @@
           },
           "accentPixels": 17,
           "trimPixels": 0
+        },
+        "remap": {
+          "preset": "cult-royal-aqua",
+          "palette": {
+            "main": "#6a2f93",
+            "accent": "#4fe3c1",
+            "ramp": [
+              [0, "#0c0612"],
+              [10, "#1f0e2e"],
+              [18, "#33184b"],
+              [26, "#4a2269"],
+              [34, "#62308a"],
+              [44, "#7f43ab"],
+              [56, "#a266cc"],
+              [70, "#c79be3"]
+            ],
+            "dark": [
+              [0, "#060508"],
+              [10, "#121016"],
+              [20, "#1e1b24"],
+              [30, "#2e2a36"],
+              [45, "#48424f"]
+            ],
+            "trim": [
+              [15, "#124a42"],
+              [30, "#22836f"],
+              [45, "#3dbb9e"],
+              [60, "#66dec2"],
+              [75, "#9cf3dd"],
+              [90, "#d4fff4"]
+            ],
+            "glow": [
+              [30, "#0f5f53"],
+              [50, "#22a58e"],
+              [65, "#3fd6b7"],
+              [80, "#7af2d6"],
+              [92, "#c8fff2"]
+            ],
+            "avoid": ["#f06762", "#28b7a4", "#e2b63f", "#a277d2"],
+            "avoidDistance": 14
+          },
+          "rules": {
+            "kind": "lodge"
+          },
+          "pixels": {
+            "main": 0,
+            "dark": 0,
+            "trim": 0,
+            "glow": 19
+          }
         }
       },
       "anchor": {

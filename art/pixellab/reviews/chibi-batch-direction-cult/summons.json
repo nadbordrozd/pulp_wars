@@ -132,14 +132,14 @@
         "unit": "Imp",
         "rival": "Familiar",
         "measure": {
-          "palette": 36,
-          "deuteranopia": 29,
-          "protanopia": 29.7,
-          "greyPalette": 2.4,
-          "lightness": 6.1,
+          "palette": 45.2,
+          "deuteranopia": 22.4,
+          "protanopia": 28.4,
+          "greyPalette": 1.8,
+          "lightness": 6.2,
           "meanLightness": [
             40.2,
-            45.3
+            44
           ],
           "silhouette": 0.55,
           "distinct": true,
@@ -150,14 +150,14 @@
         "unit": "Imp",
         "rival": "Initiate",
         "measure": {
-          "palette": 34.1,
-          "deuteranopia": 16.5,
+          "palette": 26.5,
+          "deuteranopia": 13.6,
           "protanopia": 15.9,
-          "greyPalette": 4.9,
-          "lightness": 13.3,
+          "greyPalette": 5.4,
+          "lightness": 13.2,
           "meanLightness": [
             40.2,
-            26.5
+            26.8
           ],
           "silhouette": 0.67,
           "distinct": true,
@@ -208,14 +208,14 @@
         "unit": "Gibbering Mass",
         "rival": "Familiar",
         "measure": {
-          "palette": 35.4,
-          "deuteranopia": 29.2,
-          "protanopia": 27.4,
-          "greyPalette": 2.7,
-          "lightness": 7.7,
+          "palette": 42.7,
+          "deuteranopia": 22.3,
+          "protanopia": 24.6,
+          "greyPalette": 2.9,
+          "lightness": 7.8,
           "meanLightness": [
             44.5,
-            45.3
+            44
           ],
           "silhouette": 0.55,
           "distinct": true,
@@ -413,10 +413,10 @@
       "canvas": "48 x 48",
       "sprite": "36 x 41",
       "greenPercent": 2.7,
-      "indigoPercent": 43.9,
+      "indigoPercent": 0,
       "tealPercent": 0.1,
       "redPercent": 0,
-      "violetPercent": 0
+      "violetPercent": 39.6
     },
     {
       "asset": "chibi-direction-icon-cult-action-drag",
@@ -439,10 +439,10 @@
       "canvas": "48 x 48",
       "sprite": "33 x 39",
       "greenPercent": 17.2,
-      "indigoPercent": 3.2,
+      "indigoPercent": 0,
       "tealPercent": 0,
       "redPercent": 0,
-      "violetPercent": 0
+      "violetPercent": 0.3
     },
     {
       "asset": "chibi-direction-icon-cult-hunger",
@@ -452,10 +452,10 @@
       "canvas": "48 x 48",
       "sprite": "40 x 37",
       "greenPercent": 0,
-      "indigoPercent": 9.8,
+      "indigoPercent": 0,
       "tealPercent": 0,
       "redPercent": 0,
-      "violetPercent": 0
+      "violetPercent": 9.8
     }
   ]
 }

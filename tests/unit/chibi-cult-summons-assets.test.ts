@@ -12,6 +12,7 @@ import {
   verifyAssetRecord,
 } from "../../scripts/art/chibi/pipeline";
 import { opaqueBounds } from "../../scripts/art/chibi/raster";
+import { CULT_REMAP_ASSETS } from "../../scripts/art/cult-palette-mch959/assets";
 import type { ArtSubjectV7 } from "../../src/assets/chibi-art-v7";
 import { chibiDirectionArtRegistryV7 } from "../../src/assets/chibi-direction-art-manifest";
 import { CHIBI_DIRECTION_CULT_SUMMONS_ART_ASSETS_V7 } from "../../src/assets/chibi-direction-cult-summons-art-manifest";
@@ -207,6 +208,13 @@ const isRed = (p: Hsv): boolean =>
   (p.hue >= 345 || p.hue <= 12) && p.saturation >= 0.5 && p.value >= 0.35;
 const isViolet = (p: Hsv): boolean =>
   p.hue >= 270 && p.hue < 345 && p.saturation >= 0.3 && p.value >= 0.25;
+const isMagenta = (p: Hsv): boolean =>
+  p.hue > 290 && p.hue < 345 && p.saturation >= 0.3 && p.value >= 0.25;
+/**
+ * The lodge icons of this batch (the Doorstep cottage, the Hunger bowl, the
+ * join icon) wear palette 1's royal purple since bead pulp_wars-mch9.59.
+ */
+const PALETTE_ONE = new Set(CULT_REMAP_ASSETS.map((asset) => asset.id));
 const isGreen = (p: Hsv): boolean =>
   p.hue >= 80 && p.hue <= 152 && p.saturation >= 0.5 && p.value >= 0.45;
 const isTeal = (p: Hsv): boolean =>
@@ -318,7 +326,10 @@ describe("the Cult redesign's summons art (pulp_wars-mch9.45)", () => {
       const pixels = hsvPixels(
         await readRaster(path.join(ROOT, record.master.path)),
       );
-      expect(pixels.filter(isViolet).length, id).toBe(0);
+      expect(
+        pixels.filter(PALETTE_ONE.has(id) ? isMagenta : isViolet).length,
+        id,
+      ).toBe(0);
       for (const green of pixels.filter(isGreen)) {
         expect(green.hue, id).toBeGreaterThanOrEqual(144);
         expect(green.hue, id).toBeLessThanOrEqual(152);
