@@ -2,8 +2,9 @@
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { bootstrapRuleset7App } from "../../src/app/index";
+import { campaignPictureAssetV7 } from "../../src/assets/campaign-pictures-manifest";
 import type * as CampaignsModule from "../../src/campaign/campaigns";
-import type { CampaignIdV7 } from "../../src/campaign/campaigns";
+import { CAMPAIGNS_V7, type CampaignIdV7 } from "../../src/campaign/campaigns";
 import { CAMPAIGN_CHEAT_STORAGE_KEY_V7 } from "../../src/campaign/cheat-v7";
 import { CAMPAIGN_PROGRESS_STORAGE_KEY_V7 } from "../../src/persistence/index";
 import { fixtureLastMissionV7 } from "../fixtures/v7-campaign-graph";
@@ -284,6 +285,65 @@ describe("Ruleset 7 campaign map", () => {
     await settle();
     expect(document.activeElement?.getAttribute("data-action")).toBe(
       "campaign-open-humans",
+    );
+    app.destroy();
+  });
+
+  it("draws each campaign's picture on its plate and over its mission list, the portrait when one fails", async () => {
+    const app = bootstrapRuleset7App(document);
+    await openMap();
+    const scene = (id: string): HTMLElement | null =>
+      plate(id).querySelector<HTMLElement>(
+        ".v7-campaign-picture > .v7-campaign-scene",
+      );
+    for (const campaign of CAMPAIGNS_V7) {
+      const frame = required(scene(campaign.id));
+      const picture = required(campaignPictureAssetV7(campaign.picture));
+      expect(frame.dataset.picture).toBe(picture.id);
+      const image = required(
+        frame.querySelector<HTMLImageElement>("img.v7-campaign-scene-art"),
+      );
+      expect(image.getAttribute("src")).toBe(picture.url);
+      expect([image.width, image.height]).toEqual([128, 96]);
+      expect(image.alt).toBe("");
+    }
+    // Open, locked and coming-soon plates all show their picture; a closed
+    // one keeps its lock badge beside it (the stylesheet greys it).
+    expect(plate("HUMANS").dataset.status).toBe("open");
+    expect(plate("HUMANS").querySelector(".v7-campaign-lock")).toBeNull();
+    for (const id of ["DINOSAURS", "CANDY"]) {
+      expect(plate(id).getAttribute("aria-disabled")).toBe("true");
+      expect(
+        plate(id).querySelector(".v7-campaign-picture > .v7-campaign-lock"),
+      ).not.toBeNull();
+    }
+    // A picture that fails to load gives way to the faction's portrait,
+    // and stays given way on the next render.
+    const image = required(
+      scene("UNDEAD")?.querySelector<HTMLImageElement>("img") ?? null,
+    );
+    image.dispatchEvent(new Event("error"));
+    const frame = required(
+      plate("UNDEAD").querySelector<HTMLElement>(".v7-campaign-portrait"),
+    );
+    expect(frame.classList.contains("v7-campaign-scene")).toBe(false);
+    expect(frame.querySelector("img.v7-campaign-scene-art")).toBeNull();
+    expect(frame.childElementCount).toBe(1);
+    plate("DINOSAURS").click();
+    await settle();
+    expect(scene("UNDEAD")).toBeNull();
+    expect(scene("HUMANS")).not.toBeNull();
+    // The mission list's head shows the campaign's picture too.
+    plate("HUMANS").click();
+    await settle();
+    const head = required(
+      document.querySelector<HTMLElement>(
+        ".v7-campaign-head .v7-campaign-scene",
+      ),
+    );
+    expect(head.dataset.picture).toBe("campaign-humans");
+    expect(head.querySelector("img")?.getAttribute("src")).toBe(
+      campaignPictureAssetV7("campaign-humans")?.url,
     );
     app.destroy();
   });

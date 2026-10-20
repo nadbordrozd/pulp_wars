@@ -2248,6 +2248,69 @@
   }
 }
 
+/*
+ * A campaign's picture (pulp_wars-hmyk.13): a 128 x 96 scene, shown 1:1 on
+ * a plate and shrunk to fit a narrow one (three across a phone); twice its
+ * size at the head of the mission list on a wide screen. Locked and coming
+ * soon plates grey it like the portrait above.
+ */
+.v7-campaign-picture > .v7-campaign-scene,
+.v7-campaign-plate-wide .v7-campaign-picture > .v7-campaign-scene {
+  display: block;
+  width: 8rem;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  background: var(--pw-surface-2);
+  box-shadow: none;
+}
+
+/* A tier's plate: the picture takes the plate's width, at most 1:1. */
+.v7-campaign-plate:not(.v7-campaign-plate-wide) {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.v7-campaign-plate:not(.v7-campaign-plate-wide)
+  .v7-campaign-picture:has(> .v7-campaign-scene) {
+  width: 100%;
+  min-width: 0;
+  justify-items: center;
+}
+
+.v7-campaign-plate:not(.v7-campaign-plate-wide)
+  .v7-campaign-picture
+  > .v7-campaign-scene {
+  width: 100%;
+  max-width: 8rem;
+}
+
+.v7-campaign-scene > .v7-campaign-scene-art {
+  display: block;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  max-height: none;
+  image-rendering: pixelated;
+}
+
+.v7-campaign-head {
+  flex-wrap: wrap;
+}
+
+.v7-campaign-head .v7-campaign-picture {
+  flex: none;
+}
+
+.v7-campaign-head .v7-campaign-heading {
+  flex: 1 1 8rem;
+  min-width: 0;
+}
+
+@media (width >= 48rem) {
+  .v7-campaign-head .v7-campaign-picture > .v7-campaign-scene {
+    width: 16rem;
+  }
+}
+
 /* ---------- Campaign: formats, stars, objectives (pulp_wars-v642.1) ---------- */
 
 .v7-mission-card {

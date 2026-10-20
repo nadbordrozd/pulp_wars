@@ -44,6 +44,7 @@ import { factionGrassProblems } from "./faction-grass";
 import { forestPieceProblems } from "./chibi-forest-pieces";
 import { mountainRangeProblems } from "./chibi-mountain-ranges";
 import { submergedSubmarineProblems } from "./naval-branch/submerged";
+import { campaignPictureProblems } from "./campaign-pictures";
 
 type ArtClass = "units" | "terrain" | "buildings" | "ui";
 type Stage = "sample" | "batch";
@@ -716,6 +717,8 @@ async function main(): Promise<void> {
       // The submerged Submarines (pulp_wars-5ti.6): derived from the
       // accepted surfaced sprites.
       ...(await submergedSubmarineProblems(ROOT)),
+      // The campaign pictures (pulp_wars-hmyk.13): the reviewed candidates.
+      ...(await campaignPictureProblems(ROOT)),
     ];
     if (chibiProblems.length > 0)
       throw new Error(

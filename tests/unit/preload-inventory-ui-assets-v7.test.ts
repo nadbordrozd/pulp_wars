@@ -192,7 +192,15 @@ describe("Ruleset 7 asset inventory", () => {
     expect(
       duel.some((entry) => entry.url.includes("chibi-direction-undead")),
     ).toBe(true);
-    expect(duel.some((entry) => entry.url.includes("goblin"))).toBe(false);
+    // No Goblin art, but the campaign map's pictures, which every player
+    // sees before a match (pulp_wars-hmyk.13): "campaign-goblins.png".
+    expect(
+      duel.some(
+        (entry) =>
+          entry.url.includes("goblin") &&
+          !entry.url.includes("assets/chibi/campaign/"),
+      ),
+    ).toBe(false);
     // Every faction in play is the whole look.
     expect(assetInventoryForFactionsV7("LIVE", FACTION_IDS_V7)).toEqual(all);
     // The Cult is offered since pulp_wars-mch9.20: the offered factions are

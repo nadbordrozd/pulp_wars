@@ -59,6 +59,7 @@ import {
   type LeaderboardLoadV7,
   type LeaderboardModeV7,
 } from "../../app/leaderboard-v7";
+import { campaignPictureAssetV7 } from "../../assets/campaign-pictures-manifest";
 import { CAMPAIGN_FORMAT_LABELS_V7 } from "../../campaign/chapter-1";
 import type {
   CampaignDefinitionV7,
@@ -2157,6 +2158,8 @@ export class Ruleset7DomAppView {
   /** The tier of the plate the note is about: it stands under that row. */
   #campaignNoteTier = 0;
   #campaignCheat = false;
+  /** Campaign pictures that failed to load: their plates draw the portrait. */
+  readonly #failedCampaignPictures = new Set<string>();
   readonly #cheatGesture = new CampaignCheatGestureV7();
   #confirmCampaignReset = false;
   /** Front Settings: "Reset tribe stars" is waiting for confirmation. */
@@ -3469,8 +3472,9 @@ export class Ruleset7DomAppView {
    * The campaign map (pulp_wars-hmyk.3, CAMPAIGN.md section 14.3): the
    * prologue set apart, then the campaigns in three tiers joined by the
    * lines of what unlocks what: two openers, the middle four, the last
-   * three. A plate is the campaign's picture (its faction's portrait until
-   * the art is drawn), its title, and its progress; a closed plate is
+   * three. A plate is the campaign's picture (pulp_wars-hmyk.13; its
+   * faction's portrait should it fail to load), its title, and its
+   * progress; a closed plate is
    * greyed with a lock and says why.
    */
   #campaignMap(progress: Ruleset7CampaignProgressV7): HTMLElement {
@@ -3706,8 +3710,9 @@ export class Ruleset7DomAppView {
   }
 
   /**
-   * A campaign's picture: its art once drawn (pulp_wars-hmyk.13), until
-   * then its faction's portrait on a framed plate.
+   * A campaign's picture (pulp_wars-hmyk.13): its framed scene, or, for a
+   * campaign without one or whose picture fails to load, its faction's
+   * portrait on a framed plate.
    */
   #campaignPicture(campaign: CampaignDefinitionV7): HTMLElement {
     const frame = el(this.#document, "span", "v7-campaign-portrait");
@@ -3716,6 +3721,38 @@ export class Ruleset7DomAppView {
       "--v7-campaign-faction",
       factionColourV7(campaign.faction),
     );
+    const picture = campaignPictureAssetV7(campaign.picture);
+    if (picture === null || this.#failedCampaignPictures.has(picture.id)) {
+      frame.append(this.#campaignPlaceholder(campaign));
+      return frame;
+    }
+    frame.classList.add("v7-campaign-scene");
+    frame.dataset.picture = picture.id;
+    const image = this.#document.createElement("img");
+    image.className = "v7-campaign-scene-art";
+    image.src = picture.url;
+    image.width = picture.width;
+    image.height = picture.height;
+    image.alt = "";
+    image.draggable = false;
+    // A picture that fails to load gives way to the placeholder, here and
+    // on every later render.
+    image.addEventListener(
+      "error",
+      () => {
+        this.#failedCampaignPictures.add(picture.id);
+        frame.classList.remove("v7-campaign-scene");
+        delete frame.dataset.picture;
+        frame.replaceChildren(this.#campaignPlaceholder(campaign));
+      },
+      { once: true },
+    );
+    frame.append(image);
+    return frame;
+  }
+
+  /** The placeholder of a campaign's picture: its faction's portrait. */
+  #campaignPlaceholder(campaign: CampaignDefinitionV7): HTMLElement {
     const chibi =
       this.#chibiArt(
         portraitSubjectV7(campaign.placeholderRole, campaign.faction),
@@ -3727,15 +3764,14 @@ export class Ruleset7DomAppView {
         CHIBI_DOM_BOXES_V7.card,
         factionColourV7(campaign.faction),
       );
-    frame.append(
+    return (
       chibi?.element ??
-        factionBadgeArt(
-          this.#document,
-          art(this.#document, UNIT_ART_KEYS_V7.FIGHTER, ""),
-          factionBadgeV7(campaign.faction),
-        ),
+      factionBadgeArt(
+        this.#document,
+        art(this.#document, UNIT_ART_KEYS_V7.FIGHTER, ""),
+        factionBadgeV7(campaign.faction),
+      )
     );
-    return frame;
   }
 
   /** Unreadable progress: the save-recovery pattern with a Reset button. */

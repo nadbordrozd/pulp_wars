@@ -336,6 +336,32 @@ const SCENES: readonly Scene[] = [
     },
   },
   {
+    // The map with every campaign opened by the testing cheat: each plate's
+    // picture in colour (pulp_wars-hmyk.13).
+    name: "campaign-map-unlocked",
+    match: false,
+    full: true,
+    run: async (c) => {
+      await front(c);
+      await click(c, "campaign");
+      await evaluate(
+        c,
+        `[...'pulpwars'].forEach((key) => document.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true })))`,
+      );
+    },
+  },
+  {
+    // A faction campaign's mission list under its picture (pulp_wars-hmyk.13).
+    name: "campaign-humans",
+    match: false,
+    full: true,
+    run: async (c) => {
+      await front(c);
+      await click(c, "campaign");
+      await click(c, "campaign-open-humans");
+    },
+  },
+  {
     name: "campaign-briefing",
     match: false,
     full: true,

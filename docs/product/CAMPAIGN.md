@@ -3734,8 +3734,10 @@ sections 4, 5 and 10.6, it is current.
 `src/campaign/campaigns.ts` lists every campaign (`CAMPAIGNS_V7`) in map
 order. An entry has an ID, its faction, a short name for sentences
 ("Humans"), a title and a subtitle, a tier, its prerequisites, a picture
-(an asset ID, null until the art bead `pulp_wars-hmyk.13` draws it), the
-portrait shown while there is no picture, and its chapter (the missions,
+(an asset ID of `src/assets/campaign-pictures-manifest.ts`, drawn in bead
+`pulp_wars-hmyk.13`; see
+[the campaign pictures](../art/CAMPAIGN_PICTURES.md)), the portrait shown
+when there is no picture or it fails to load, and its chapter (the missions,
 story and unlocks of `src/campaign/chapter-1.ts`'s shape), null until the
 campaign is written. The titles and subtitles of the faction campaigns are
 placeholders ("The Human Campaign", "Six missions") until the saga bible
@@ -3786,9 +3788,10 @@ The main menu's **Campaign** opens the **campaign map** (the panel titled
   with "Open"; the lines are dashed and soft while closed, ink when open.
   The lines are drawn in a box stretched to the row, so they meet the
   plates' centres at any width without measuring the layout.
-- A **plate** is a button: the picture (the faction's portrait on a framed
-  plate with a stripe of the faction's colour, until the art is drawn), the
-  title, and the progress ("Open"; or a star with "4/18" and "2 of 6"; a
+- A **plate** is a button: the picture (a 128 x 96 scene of the campaign,
+  shown 1:1 and shrunk to fit a narrow plate; the faction's portrait on a
+  framed plate with a stripe of the faction's colour should it fail to
+  load), the title, and the progress ("Open"; or a star with "4/18" and "2 of 6"; a
   trophy badge once completed). Locked and Coming soon plates are greyed with
   a lock badge, `aria-disabled`, focusable; a tap writes why in a status
   line under the map ("The Dinosaur Campaign opens when you finish Humans
@@ -3799,7 +3802,8 @@ The main menu's **Campaign** opens the **campaign map** (the panel titled
 - On a phone (narrower than 30rem) the middle four are two rows of two, and
   the lines follow; the map scrolls with the page.
 - An open plate opens the campaign's **mission list**: a **Campaigns** back
-  button, the picture with the subtitle and title, the story, and the
+  button, the picture (twice its size on a screen 48rem or wider) with the
+  subtitle and title, the story, and the
   mission cards of section 10.6; the prologue keeps its Factions row. A card
   opens its briefing as before; Back returns to the list. Escape steps
   back: briefing, list, map, menu.

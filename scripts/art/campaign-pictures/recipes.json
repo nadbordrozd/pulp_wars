@@ -1,0 +1,384 @@
+{
+  "bead": "pulp_wars-hmyk.13",
+  "shared": {
+    "fragments": ["style", "light-south-west"],
+    "klass": "Picture: one campaign picture for the campaign map of a strategy game, in the spirit of the small painted scenes of the Heroes of Might and Magic III campaign screen, drawn as bold chibi pixel art with thick black outlines on figures and buildings. One small storybook scene with one clear focal subject in the middle foreground standing on its ground, and a simple background of landscape and sky behind it. The scene fills the whole rectangle edge to edge: no border, no frame, no rounded corners, no vignette. Big simple shapes and strong contrast between the subject and the background, so it reads at a glance as a small thumbnail.",
+    "negative": "text, letters, words, caption, title, signature, watermark, border, frame, picture frame, rounded corners, vignette, multiple panels, grid of images, collage, sprite sheet, photorealism"
+  },
+  "recipes": [
+    {
+      "id": "humans-a",
+      "campaign": "HUMANS",
+      "endpoint": "generate-image-v2",
+      "width": 128,
+      "height": 96,
+      "seed": 1301,
+      "fragments": "@fragments",
+      "klass": "@klass",
+      "negative": "@negative",
+      "subject": "Subject: Marshal Vera Steele, a chibi knight in light steel armour and a red-plumed helmet on a white horse with a red caparison, lance raised, rides in the foreground on a dirt road. Behind her on a hill stands Kessler Hall, a baron's tall grim grey stone manor with dark slate roofs, narrow windows and a black banner, under a cloudy afternoon sky, green fields around.",
+      "references": [
+        {
+          "file": "public/assets/chibi/units/chibi-direction-knight.png",
+          "usage": "The look of the mounted knight in the foreground: keep this armour, horse, colours and chibi proportions."
+        }
+      ],
+      "review": {
+        "0": "ACCEPTED: Steele on her white horse with red caparison faces up the road to a grim grey Kessler Hall; the knight reads at phone size.",
+        "1": "good, but the Hall is a dark low barn and the knight is smaller than in #0",
+        "2": "good; Hall half hidden at the right edge, weaker focal point than #0",
+        "3": "good grim castle, but the knight is pushed to the right edge and reads smaller"
+      }
+    },
+    {
+      "id": "undead-a",
+      "campaign": "UNDEAD",
+      "endpoint": "generate-image-v2",
+      "width": 128,
+      "height": 96,
+      "seed": 1302,
+      "fragments": "@fragments",
+      "klass": "@klass",
+      "negative": "@negative",
+      "subject": "Subject: the Ashen Marquis, a chibi pale vampire nobleman in a near-black high-collared cloak with violet trim, sits up in an open stone coffin in a candlelit crypt, holding up one sheet of music with glowing violet notes. Stone arches, a few skulls and bones on shelves, candles with warm flames, a dark violet gloom behind. Playful and spooky, never scary.",
+      "references": [
+        {
+          "file": "public/assets/chibi/units/chibi-direction-undead-vampire.png",
+          "usage": "The look of the vampire nobleman: keep this face, cloak and colours."
+        }
+      ],
+      "review": {
+        "0": "ACCEPTED: the Marquis sits up in his coffin with the violet Lullaby sheet, face clear, candles and a skull; reads at phone size.",
+        "1": "good, but the brick wall is busy and the face is smaller",
+        "2": "rejected: the Marquis is turned away, no face at plate size",
+        "3": "good runner-up: the carved coffin and candelabra are busier at phone size"
+      }
+    },
+    {
+      "id": "dinosaurs-a",
+      "campaign": "DINOSAURS",
+      "endpoint": "generate-image-v2",
+      "width": 128,
+      "height": 96,
+      "seed": 1303,
+      "fragments": "@fragments",
+      "klass": "@klass",
+      "negative": "@negative",
+      "subject": "Subject: the Old Queen, a huge chibi Tyrannosaurus with deep blue hide, a cream belly and a red-orange crest, stands proudly over her nest of big speckled cream eggs on a jungle island. Giant green ferns and palms around, a smoking volcano and a blue sea behind under a warm golden sky.",
+      "references": [
+        {
+          "file": "public/assets/chibi/units/chibi-direction-dinosaur-t-rex.png",
+          "usage": "The look of the Tyrannosaurus: keep this blue hide, cream belly, red-orange crest and chibi proportions."
+        }
+      ],
+      "review": {
+        "0": "ACCEPTED: the Old Queen (blue hide, cream belly, red-orange crest as the game's T-Rex) stands over her nest, volcano and sea behind.",
+        "1": "Queen half hidden in ferns at the left edge",
+        "2": "good; the nest is small at the right edge",
+        "3": "good runner-up: bigger Queen, but beside the nest rather than over it"
+      }
+    },
+    {
+      "id": "martians-a",
+      "campaign": "MARTIANS",
+      "endpoint": "generate-image-v2",
+      "width": 128,
+      "height": 96,
+      "seed": 1304,
+      "fragments": "@fragments",
+      "klass": "@klass",
+      "negative": "@negative",
+      "subject": "Subject: a retro 1950s chrome flying saucer with a clear glass dome and hot magenta pink lights hovers low over a red desert crater, beside a tall thin radio antenna dish that sends a pink signal beam up into the sky. A deep red sky with a few stars and two small moons, red rocks and dunes.",
+      "references": [
+        {
+          "file": "public/assets/chibi/units/chibi-direction-martian-saucer.png",
+          "usage": "The look of the flying saucer: keep this chrome hull, glass dome and pink lights."
+        }
+      ],
+      "review": {
+        "0": "rejected: the saucer is tiny in its crater, red on red, unreadable at phone size",
+        "1": "rejected: saucer cut by a cliff, low contrast",
+        "2": "readable but the saucer is small and the sky is the same red as the ground; replaced by martians-b",
+        "3": "rejected: the saucer is tiny in its crater"
+      }
+    },
+    {
+      "id": "goblins-a",
+      "campaign": "GOBLINS",
+      "endpoint": "generate-image-v2",
+      "width": 128,
+      "height": 96,
+      "seed": 1305,
+      "fragments": "@fragments",
+      "klass": "@klass",
+      "negative": "@negative",
+      "subject": "Subject: Grubnak the Loud, a big green chibi orc boss in tin scrap armour daubed with hazard yellow paint, and two small grinning green goblins push a wooden cart carrying a huge stolen iron vault box, gold coins spilling out, away from a grey stone fort at dusk. Hills, a purple dusk sky, a lantern glow. Rowdy and silly.",
+      "references": [
+        {
+          "file": "public/assets/chibi/units/chibi-direction-goblin-orc-warboss.png",
+          "usage": "The look of the big orc boss: keep this green skin, scrap armour and yellow paint."
+        }
+      ],
+      "review": {
+        "0": "good, but the vault cart is small",
+        "1": "good; the goblins are small at the right edge",
+        "2": "ACCEPTED: Grubnak in scrap armour and yellow paint with his horn, two grinning goblins and the gold-laden vault cart, the fort and a lantern behind.",
+        "3": "Grubnak is pushed to the right edge, the castle a dark silhouette"
+      }
+    },
+    {
+      "id": "dwarves-a",
+      "campaign": "DWARVES",
+      "endpoint": "generate-image-v2",
+      "width": 128,
+      "height": 96,
+      "seed": 1306,
+      "fragments": "@fragments",
+      "klass": "@klass",
+      "negative": "@negative",
+      "subject": "Subject: Thane Brunhild, a sturdy chibi dwarf with a long braided copper-red beard and a crowned iron helmet, soot-black riveted iron armour and copper pipes, holds up a lantern at the stone lip of a vast round bottomless shaft inside a mountain cavern. A riveted iron crane hangs a chain down into the black pit, small puffs of white steam, warm lamplight on the rock, a faint violet glow deep below.",
+      "references": [
+        {
+          "file": "public/assets/chibi/units/chibi-direction-dwarf-engineer.png",
+          "usage": "The look of the dwarf: keep this iron armour, copper and chibi proportions."
+        }
+      ],
+      "review": {
+        "0": "rejected: a blue-grey stalactite reads as blue hair over the Thane",
+        "1": "ACCEPTED: the crowned Thane with a lantern and copper pipes at the shaft's lip, the iron crane and chain over the dark violet pit.",
+        "2": "the shaft is good but the Thane is small",
+        "3": "the Thane is small at the edge; the crane fills the picture"
+      }
+    },
+    {
+      "id": "ice-folk-a",
+      "campaign": "ICE_FOLK",
+      "endpoint": "generate-image-v2",
+      "width": 128,
+      "height": 96,
+      "seed": 1307,
+      "fragments": "@fragments",
+      "klass": "@klass",
+      "negative": "@negative",
+      "subject": "Subject: Mother Rime, a chibi old ice witch in shaggy warm white fur robes with a bright ice blue crystal staff and a crown of icicles, stands on a frozen mountain summit in falling snow. Jagged white snowy peaks behind under a pale blue winter sky, glittering ice shards around her feet.",
+      "references": [
+        {
+          "file": "public/assets/chibi/units/chibi-direction-ice-folk-ice-witch.png",
+          "usage": "The look of the ice witch: keep this fur robe, ice blue staff and colours."
+        }
+      ],
+      "review": {
+        "0": "good, plainer ground",
+        "1": "ACCEPTED: Mother Rime with her icicle crown and ice blue staff among ice shards on the summit, white peaks behind.",
+        "2": "good; the ice shards crowd the bottom left",
+        "3": "good runner-up: on a cliff edge, a little less clear"
+      }
+    },
+    {
+      "id": "candy-a",
+      "campaign": "CANDY",
+      "endpoint": "generate-image-v2",
+      "width": 128,
+      "height": 96,
+      "seed": 1308,
+      "fragments": "@fragments",
+      "klass": "@klass",
+      "negative": "@negative",
+      "subject": "Subject: Queen Praline, a chibi gingerbread woman with white icing trim and a golden caramel crown, stands before the Dreaming Palace, a fairy-tale castle of dark chocolate walls, marshmallow white towers and caramel roofs with jewel-candy windows, under a dreamy violet night sky full of stars and a crescent moon, soft clouds.",
+      "references": [
+        {
+          "file": "public/assets/chibi/settlements/chibi-direction-candy-city-3.png",
+          "usage": "The look of the candy palace: keep these chocolate, cream and caramel materials."
+        }
+      ],
+      "review": {
+        "0": "ACCEPTED: Queen Praline the gingerbread woman with her crown before the chocolate-and-cream palace (the Candy city's cake tower) under the violet night sky and moon.",
+        "1": "good dreamy palace, but plain white walls, no chocolate",
+        "2": "the palace sits on a muddy chocolate slope; Praline small at the right edge",
+        "3": "good runner-up: Praline big, the palace small on a cliff"
+      }
+    },
+    {
+      "id": "cult-a",
+      "campaign": "CULT",
+      "endpoint": "generate-image-v2",
+      "width": 128,
+      "height": 96,
+      "seed": 1309,
+      "fragments": "@fragments",
+      "klass": "@klass",
+      "negative": "@negative",
+      "subject": "Subject: a secret society's midnight meeting: five small chibi cultists, ordinary men in deep blood-red and black hooded robes holding candles with green flames, stand in a ring around a dark round shaft in a stone cave. From deep inside the shaft one huge glowing green eye looks up. The cultists have plain human faces, no tentacles, no skulls. Sinister pulp mood.",
+      "references": [
+        {
+          "file": "public/assets/chibi/units/chibi-direction-cult-initiate.png",
+          "usage": "The look of the cultists: keep these red and black robes and plain human faces."
+        }
+      ],
+      "review": {
+        "0": "good: five robed men round the shaft, the eye in it; figures small",
+        "1": "runner-up: same, the leader raising his arms; figures small at phone size",
+        "2": "busy cave, figures small",
+        "3": "the eye is the clearest thing, the men small"
+      }
+    },
+    {
+      "id": "frontier-a",
+      "campaign": "FRONTIER",
+      "endpoint": "generate-image-v2",
+      "width": 128,
+      "height": 96,
+      "seed": 1310,
+      "fragments": "@fragments",
+      "klass": "@klass",
+      "negative": "@negative",
+      "subject": "Subject: the Frontier: a small frontier fort with a palisade of pale birch logs and a cream plaster watchtower flying a red pennant stands on a green hill above a winding road, a chibi guard in steel armour with a spear and a red shield with a gold cross keeping watch in front. Far behind, a tall grey mountain under a dusky orange sky, a faint green glow at its summit.",
+      "references": [
+        {
+          "file": "public/assets/chibi/units/chibi-direction-guard.png",
+          "usage": "The look of the guard: keep this armour, tabard and chibi proportions."
+        }
+      ],
+      "review": {
+        "0": "readable: fort, glowing mountain, a small guard; flatter and plainer than the set; replaced by frontier-b",
+        "1": "the guard is small at the gate",
+        "2": "good, the guard small",
+        "3": "the guard is tiny"
+      }
+    },
+    {
+      "id": "martians-b",
+      "campaign": "MARTIANS",
+      "endpoint": "generate-image-v2",
+      "width": 128,
+      "height": 96,
+      "seed": 1314,
+      "fragments": "@fragments",
+      "klass": "@klass",
+      "negative": "@negative",
+      "subject": "Subject: Captain Quaxx, a small pink brain alien under the clear glass dome of a retro 1950s chrome flying saucer with hot magenta pink lights, hovers big in the foreground, the saucer a third of the picture wide, over a red Martian desert. Behind it a tall radio antenna dish sends a pink signal beam up to the stars. A dusky deep purple night sky with stars and two small moons above the red dunes.",
+      "references": [
+        {
+          "file": "public/assets/chibi/units/chibi-direction-martian-saucer.png",
+          "usage": "The look of the flying saucer and its pink brain pilot: keep this chrome hull, glass dome and pink lights."
+        }
+      ],
+      "review": {
+        "0": "good, the saucer smaller than in #1",
+        "1": "ACCEPTED: Quaxx's chrome saucer with the pink brain pilot under its dome, big in front; the dish beams pink to the stars; two moons; the purple sky parts the red ground.",
+        "2": "good runner-up: saucer and dish further apart, the dish small",
+        "3": "the dish is cut off by the right edge"
+      }
+    },
+    {
+      "id": "cult-b",
+      "campaign": "CULT",
+      "endpoint": "generate-image-v2",
+      "width": 128,
+      "height": 96,
+      "seed": 1319,
+      "fragments": "@fragments",
+      "klass": "@klass",
+      "negative": "@negative",
+      "subject": "Subject: the Long Night: three chibi cultists, ordinary men in deep blood-red and black hooded robes, stand big in the foreground at the stone lip of a dark round shaft, the one in the middle raising his arms and a black book; the others hold candles with green flames. From deep inside the shaft one huge glowing green eye looks up and lights them green. A dark cave, near-black shadows. Plain human faces, no tentacles, no skulls.",
+      "references": [
+        {
+          "file": "public/assets/chibi/units/chibi-direction-cult-initiate.png",
+          "usage": "The look of the cultists: keep these red and black robes and plain human faces."
+        }
+      ],
+      "review": {
+        "0": "good, the green light weaker",
+        "1": "good runner-up: biggest eye; the light is flatter",
+        "2": "ACCEPTED: three ordinary bearded men in blood-red hooded robes, the middle one raising the black book, green candle flames and the green Eye glowing up from the shaft rim-lighting them; sinister and readable at phone size.",
+        "3": "good, the shaft rim is brown and calmer"
+      }
+    },
+    {
+      "id": "frontier-b",
+      "campaign": "FRONTIER",
+      "endpoint": "generate-image-v2",
+      "width": 128,
+      "height": 96,
+      "seed": 1320,
+      "fragments": "@fragments",
+      "klass": "@klass",
+      "negative": "@negative",
+      "subject": "Subject: the Hollow Frontier: a chibi guard in steel armour with a spear and a red shield with a gold cross stands big in the foreground on a road, keeping watch. Behind him a frontier fort with a palisade of pale birch logs and a cream plaster watchtower flying a red pennant on a green hill with pine trees, and far behind a tall grey mountain under a dusky orange evening sky, a faint green glow at its summit.",
+      "references": [
+        {
+          "file": "public/assets/chibi/units/chibi-direction-guard.png",
+          "usage": "The look of the guard: keep this armour, shield and chibi proportions."
+        }
+      ],
+      "review": {
+        "0": "good, the fort pushed to the edge",
+        "1": "good runner-up",
+        "2": "ACCEPTED: a Ranger guard with spear and red shield before the birch-log fort and its watchtower, pines, and the grey mountain with its faint green glow under an orange evening sky.",
+        "3": "darker sky, the fort crowded"
+      }
+    }
+  ],
+  "pictures": [
+    {
+      "campaign": "FRONTIER",
+      "recipe": "frontier-b",
+      "candidate": 2,
+      "subject": "a Ranger guard on watch before the birch-log fort, the mountain glowing green behind"
+    },
+    {
+      "campaign": "HUMANS",
+      "recipe": "humans-a",
+      "candidate": 0,
+      "subject": "Marshal Steele rides up the road to Kessler Hall"
+    },
+    {
+      "campaign": "UNDEAD",
+      "recipe": "undead-a",
+      "candidate": 0,
+      "subject": "the Ashen Marquis sits up in his coffin with the Lullaby"
+    },
+    {
+      "campaign": "DINOSAURS",
+      "recipe": "dinosaurs-a",
+      "candidate": 0,
+      "subject": "the Old Queen over her nest of eggs on the island"
+    },
+    {
+      "campaign": "MARTIANS",
+      "recipe": "martians-b",
+      "candidate": 1,
+      "subject": "Captain Quaxx's saucer over the red desert, the dish signalling home"
+    },
+    {
+      "campaign": "GOBLINS",
+      "recipe": "goblins-a",
+      "candidate": 2,
+      "subject": "Grubnak's crew wheel the stolen vault away from the fort"
+    },
+    {
+      "campaign": "DWARVES",
+      "recipe": "dwarves-a",
+      "candidate": 1,
+      "subject": "the Thane with a lantern at the lip of the Bottomless"
+    },
+    {
+      "campaign": "ICE_FOLK",
+      "recipe": "ice-folk-a",
+      "candidate": 1,
+      "subject": "Mother Rime on the frozen summit"
+    },
+    {
+      "campaign": "CULT",
+      "recipe": "cult-b",
+      "candidate": 2,
+      "subject": "the Lodge's meeting at the lip of the shaft, the Eye looking up"
+    },
+    {
+      "campaign": "CANDY",
+      "recipe": "candy-a",
+      "candidate": 0,
+      "subject": "Queen Praline before the Dreaming Palace under the night sky"
+    }
+  ]
+}

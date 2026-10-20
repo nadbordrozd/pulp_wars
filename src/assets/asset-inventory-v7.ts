@@ -6,6 +6,10 @@ import {
 import { soundCandidateUrlV1, soundCandidateV1 } from "../audio/sound-choices";
 import { CAMPAIGNS_V7 } from "../campaign/campaigns";
 import { FACTION_IDS_V7, type FactionIdV7 } from "../engine/index";
+import {
+  CAMPAIGN_PICTURE_ASSETS_V7,
+  campaignPictureAssetV7,
+} from "./campaign-pictures-manifest";
 import { CHIBI_ART_ASSETS_V7 } from "./chibi-art-manifest";
 import { navalArtRoleOfSubjectV7, type ChibiArtAssetV7 } from "./chibi-art-v7";
 import { chibiDirectionArtAssetsV7 } from "./chibi-direction-art-manifest";
@@ -61,9 +65,13 @@ export interface AssetInventoryEntryV7 {
  */
 const EMBLEM_SUBJECTS: ReadonlySet<string> = new Set([
   ...FACTION_IDS_V7.map((faction) => portraitSubjectV7("FIGHTER", faction)),
-  // The campaign map's plates (pulp_wars-hmyk.3): each campaign's
-  // placeholder portrait until its picture is drawn (`#campaignPicture`).
-  ...CAMPAIGNS_V7.map((campaign) =>
+  // The campaign map's plates (pulp_wars-hmyk.3): the placeholder portrait
+  // of a campaign with no picture (`#campaignPicture`). A campaign with a
+  // picture (pulp_wars-hmyk.13) draws its placeholder only should the
+  // picture fail to load, so that portrait loads with its faction.
+  ...CAMPAIGNS_V7.filter(
+    (campaign) => campaignPictureAssetV7(campaign.picture) === null,
+  ).map((campaign) =>
     portraitSubjectV7(campaign.placeholderRole, campaign.faction),
   ),
 ]);
@@ -217,6 +225,12 @@ function classicEntries(live = false): AssetInventoryEntryV7[] {
         front: true as const,
       })),
     ),
+    // The campaign pictures (pulp_wars-hmyk.13): the campaign map is a
+    // screen before a match, so they load with the shared art.
+    ...CAMPAIGN_PICTURE_ASSETS_V7.map(({ url }) => ({
+      url,
+      group: "SHARED" as const,
+    })),
     // The forest of each faction (pulp_wars-2yc.2), loaded with its faction.
     ...Object.entries(FACTION_FOREST_ART_SETS_V7).flatMap(([id, set]) =>
       [...set.pieces, ...set.clumps].map(({ url }) => ({

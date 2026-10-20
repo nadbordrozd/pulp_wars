@@ -1,0 +1,756 @@
+{
+  "humans-a": {
+    "id": "humans-a",
+    "jobId": "6c7de4f0-8435-4c75-8c82-52c9824e0cc8",
+    "at": "2026-10-20T02:41:11.991Z",
+    "request": {
+      "endpoint": "generate-image-v2",
+      "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Picture: one campaign picture for the campaign map of a strategy game, in the spirit of the small painted scenes of the Heroes of Might and Magic III campaign screen, drawn as bold chibi pixel art with thick black outlines on figures and buildings. One small storybook scene with one clear focal subject in the middle foreground standing on its ground, and a simple background of landscape and sky behind it. The scene fills the whole rectangle edge to edge: no border, no frame, no rounded corners, no vignette. Big simple shapes and strong contrast between the subject and the background, so it reads at a glance as a small thumbnail. Subject: Marshal Vera Steele, a chibi knight in light steel armour and a red-plumed helmet on a white horse with a red caparison, lance raised, rides in the foreground on a dirt road. Behind her on a hill stands Kessler Hall, a baron's tall grim grey stone manor with dark slate roofs, narrow windows and a black banner, under a cloudy afternoon sky, green fields around. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, words, caption, title, signature, watermark, border, picture frame, rounded corners, vignette, multiple panels, grid of images, collage, sprite sheet.",
+      "image_size": {
+        "width": 128,
+        "height": 96
+      },
+      "no_background": false,
+      "seed": 1301,
+      "layers": [
+        {
+          "source": "scripts/art/chibi/fragments/style.txt",
+          "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/light-south-west.txt",
+          "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+        },
+        {
+          "source": "recipes.json klass",
+          "text": "Picture: one campaign picture for the campaign map of a strategy game, in the spirit of the small painted scenes of the Heroes of Might and Magic III campaign screen, drawn as bold chibi pixel art with thick black outlines on figures and buildings. One small storybook scene with one clear focal subject in the middle foreground standing on its ground, and a simple background of landscape and sky behind it. The scene fills the whole rectangle edge to edge: no border, no frame, no rounded corners, no vignette. Big simple shapes and strong contrast between the subject and the background, so it reads at a glance as a small thumbnail."
+        },
+        {
+          "source": "recipes.json subject",
+          "text": "Subject: Marshal Vera Steele, a chibi knight in light steel armour and a red-plumed helmet on a white horse with a red caparison, lance raised, rides in the foreground on a dirt road. Behind her on a hill stands Kessler Hall, a baron's tall grim grey stone manor with dark slate roofs, narrow windows and a black banner, under a cloudy afternoon sky, green fields around."
+        }
+      ],
+      "reference_images": [
+        {
+          "image": "file public/assets/chibi/units/chibi-direction-knight.png sha256 7f0bd7b7cd1933208ca21820428887cc1720e411b701bd42d11fffa9b184d427",
+          "usage_description": "The look of the mounted knight in the foreground: keep this armour, horse, colours and chibi proportions."
+        }
+      ]
+    },
+    "usageUsd": 0.08,
+    "candidates": [
+      {
+        "file": "art/pixellab/chibi-raw/campaign-pictures/humans-a-0.png",
+        "sha256": "910062625ddd1c6842434eafddec59fba7ea2a97c0db38823551ef6945f59309"
+      },
+      {
+        "file": "art/pixellab/chibi-raw/campaign-pictures/humans-a-1.png",
+        "sha256": "e0854dbd22189e63726be4f554a4c9f00330a0b0edec392ba5bc468d1b82f4c8"
+      },
+      {
+        "file": "art/pixellab/chibi-raw/campaign-pictures/humans-a-2.png",
+        "sha256": "6905f7e52ab3057450eb473a1694d5f0a9530f40f3876d045f196392f0a38c38"
+      },
+      {
+        "file": "art/pixellab/chibi-raw/campaign-pictures/humans-a-3.png",
+        "sha256": "193e20ddd4a76c3b5cc3a3e81364c9de6c4a6f3cf1f25c02e93eba9c7f4fe4c1"
+      }
+    ]
+  },
+  "undead-a": {
+    "id": "undead-a",
+    "jobId": "efb87b81-eb27-47cd-8156-3dd7d21a81e7",
+    "at": "2026-10-20T02:43:58.753Z",
+    "request": {
+      "endpoint": "generate-image-v2",
+      "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Picture: one campaign picture for the campaign map of a strategy game, in the spirit of the small painted scenes of the Heroes of Might and Magic III campaign screen, drawn as bold chibi pixel art with thick black outlines on figures and buildings. One small storybook scene with one clear focal subject in the middle foreground standing on its ground, and a simple background of landscape and sky behind it. The scene fills the whole rectangle edge to edge: no border, no frame, no rounded corners, no vignette. Big simple shapes and strong contrast between the subject and the background, so it reads at a glance as a small thumbnail. Subject: the Ashen Marquis, a chibi pale vampire nobleman in a near-black high-collared cloak with violet trim, sits up in an open stone coffin in a candlelit crypt, holding up one sheet of music with glowing violet notes. Stone arches, a few skulls and bones on shelves, candles with warm flames, a dark violet gloom behind. Playful and spooky, never scary. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, words, caption, title, signature, watermark, border, picture frame, rounded corners, vignette, multiple panels, grid of images, collage, sprite sheet.",
+      "image_size": {
+        "width": 128,
+        "height": 96
+      },
+      "no_background": false,
+      "seed": 1302,
+      "layers": [
+        {
+          "source": "scripts/art/chibi/fragments/style.txt",
+          "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/light-south-west.txt",
+          "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+        },
+        {
+          "source": "recipes.json klass",
+          "text": "Picture: one campaign picture for the campaign map of a strategy game, in the spirit of the small painted scenes of the Heroes of Might and Magic III campaign screen, drawn as bold chibi pixel art with thick black outlines on figures and buildings. One small storybook scene with one clear focal subject in the middle foreground standing on its ground, and a simple background of landscape and sky behind it. The scene fills the whole rectangle edge to edge: no border, no frame, no rounded corners, no vignette. Big simple shapes and strong contrast between the subject and the background, so it reads at a glance as a small thumbnail."
+        },
+        {
+          "source": "recipes.json subject",
+          "text": "Subject: the Ashen Marquis, a chibi pale vampire nobleman in a near-black high-collared cloak with violet trim, sits up in an open stone coffin in a candlelit crypt, holding up one sheet of music with glowing violet notes. Stone arches, a few skulls and bones on shelves, candles with warm flames, a dark violet gloom behind. Playful and spooky, never scary."
+        }
+      ],
+      "reference_images": [
+        {
+          "image": "file public/assets/chibi/units/chibi-direction-undead-vampire.png sha256 6edd4d41c4fdc3e3330b49d6033507c775337c010726dcf2f1054e399599804a",
+          "usage_description": "The look of the vampire nobleman: keep this face, cloak and colours."
+        }
+      ]
+    },
+    "usageUsd": 0.08,
+    "candidates": [
+      {
+        "file": "art/pixellab/chibi-raw/campaign-pictures/undead-a-0.png",
+        "sha256": "43314feb316ba066a3dfb4e2792e9b5735c3dee50a6fc7f18d7484e468bb4a1f"
+      },
+      {
+        "file": "art/pixellab/chibi-raw/campaign-pictures/undead-a-1.png",
+        "sha256": "40cd8e6902be2492c2f8fee6dc19a5698eb8e5cbd2ea36e6cd6129ff2d4016ee"
+      },
+      {
+        "file": "art/pixellab/chibi-raw/campaign-pictures/undead-a-2.png",
+        "sha256": "0f4a1b841e27d01a2e4e84df27af1fdf113c2b8e84e94eda5864c08912314788"
+      },
+      {
+        "file": "art/pixellab/chibi-raw/campaign-pictures/undead-a-3.png",
+        "sha256": "8cca61623cb754faa391ee6adbde372055654a8dd90e5fe1ae8cafea1af49438"
+      }
+    ]
+  },
+  "dinosaurs-a": {
+    "id": "dinosaurs-a",
+    "jobId": "0b2e2801-d3da-4fe2-a86d-12fbef6d4dd7",
+    "at": "2026-10-20T02:46:11.548Z",
+    "request": {
+      "endpoint": "generate-image-v2",
+      "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Picture: one campaign picture for the campaign map of a strategy game, in the spirit of the small painted scenes of the Heroes of Might and Magic III campaign screen, drawn as bold chibi pixel art with thick black outlines on figures and buildings. One small storybook scene with one clear focal subject in the middle foreground standing on its ground, and a simple background of landscape and sky behind it. The scene fills the whole rectangle edge to edge: no border, no frame, no rounded corners, no vignette. Big simple shapes and strong contrast between the subject and the background, so it reads at a glance as a small thumbnail. Subject: the Old Queen, a huge chibi Tyrannosaurus with deep blue hide, a cream belly and a red-orange crest, stands proudly over her nest of big speckled cream eggs on a jungle island. Giant green ferns and palms around, a smoking volcano and a blue sea behind under a warm golden sky. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, words, caption, title, signature, watermark, border, picture frame, rounded corners, vignette, multiple panels, grid of images, collage, sprite sheet.",
+      "image_size": {
+        "width": 128,
+        "height": 96
+      },
+      "no_background": false,
+      "seed": 1303,
+      "layers": [
+        {
+          "source": "scripts/art/chibi/fragments/style.txt",
+          "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/light-south-west.txt",
+          "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+        },
+        {
+          "source": "recipes.json klass",
+          "text": "Picture: one campaign picture for the campaign map of a strategy game, in the spirit of the small painted scenes of the Heroes of Might and Magic III campaign screen, drawn as bold chibi pixel art with thick black outlines on figures and buildings. One small storybook scene with one clear focal subject in the middle foreground standing on its ground, and a simple background of landscape and sky behind it. The scene fills the whole rectangle edge to edge: no border, no frame, no rounded corners, no vignette. Big simple shapes and strong contrast between the subject and the background, so it reads at a glance as a small thumbnail."
+        },
+        {
+          "source": "recipes.json subject",
+          "text": "Subject: the Old Queen, a huge chibi Tyrannosaurus with deep blue hide, a cream belly and a red-orange crest, stands proudly over her nest of big speckled cream eggs on a jungle island. Giant green ferns and palms around, a smoking volcano and a blue sea behind under a warm golden sky."
+        }
+      ],
+      "reference_images": [
+        {
+          "image": "file public/assets/chibi/units/chibi-direction-dinosaur-t-rex.png sha256 dcc37823c0f4879493c10fd7a5c9cbad20744f40fda397a31bef791c39425b38",
+          "usage_description": "The look of the Tyrannosaurus: keep this blue hide, cream belly, red-orange crest and chibi proportions."
+        }
+      ]
+    },
+    "usageUsd": 0.08,
+    "candidates": [
+      {
+        "file": "art/pixellab/chibi-raw/campaign-pictures/dinosaurs-a-0.png",
+        "sha256": "ac274d6f1703a54d2cc5189c0d50588d31ddbda993b26e6b5821d61479b158a7"
+      },
+      {
+        "file": "art/pixellab/chibi-raw/campaign-pictures/dinosaurs-a-1.png",
+        "sha256": "5b768dfa1b629052a439d6b607699466890b8420805a5bd1a18c8b7314ff8be7"
+      },
+      {
+        "file": "art/pixellab/chibi-raw/campaign-pictures/dinosaurs-a-2.png",
+        "sha256": "652cabd32453258790da725c9bb7b4dac6f7249146c90b0844b29f3d84a47363"
+      },
+      {
+        "file": "art/pixellab/chibi-raw/campaign-pictures/dinosaurs-a-3.png",
+        "sha256": "4fdd07c3e06a43cd977558519fc504913c2c5839e919c8e09696284a52c005b7"
+      }
+    ]
+  },
+  "martians-a": {
+    "id": "martians-a",
+    "jobId": "645e2fc8-46bf-43af-b432-d569ce4b91f1",
+    "at": "2026-10-20T02:47:37.034Z",
+    "request": {
+      "endpoint": "generate-image-v2",
+      "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Picture: one campaign picture for the campaign map of a strategy game, in the spirit of the small painted scenes of the Heroes of Might and Magic III campaign screen, drawn as bold chibi pixel art with thick black outlines on figures and buildings. One small storybook scene with one clear focal subject in the middle foreground standing on its ground, and a simple background of landscape and sky behind it. The scene fills the whole rectangle edge to edge: no border, no frame, no rounded corners, no vignette. Big simple shapes and strong contrast between the subject and the background, so it reads at a glance as a small thumbnail. Subject: a retro 1950s chrome flying saucer with a clear glass dome and hot magenta pink lights hovers low over a red desert crater, beside a tall thin radio antenna dish that sends a pink signal beam up into the sky. A deep red sky with a few stars and two small moons, red rocks and dunes. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, words, caption, title, signature, watermark, border, picture frame, rounded corners, vignette, multiple panels, grid of images, collage, sprite sheet.",
+      "image_size": {
+        "width": 128,
+        "height": 96
+      },
+      "no_background": false,
+      "seed": 1304,
+      "layers": [
+        {
+          "source": "scripts/art/chibi/fragments/style.txt",
+          "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/light-south-west.txt",
+          "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+        },
+        {
+          "source": "recipes.json klass",
+          "text": "Picture: one campaign picture for the campaign map of a strategy game, in the spirit of the small painted scenes of the Heroes of Might and Magic III campaign screen, drawn as bold chibi pixel art with thick black outlines on figures and buildings. One small storybook scene with one clear focal subject in the middle foreground standing on its ground, and a simple background of landscape and sky behind it. The scene fills the whole rectangle edge to edge: no border, no frame, no rounded corners, no vignette. Big simple shapes and strong contrast between the subject and the background, so it reads at a glance as a small thumbnail."
+        },
+        {
+          "source": "recipes.json subject",
+          "text": "Subject: a retro 1950s chrome flying saucer with a clear glass dome and hot magenta pink lights hovers low over a red desert crater, beside a tall thin radio antenna dish that sends a pink signal beam up into the sky. A deep red sky with a few stars and two small moons, red rocks and dunes."
+        }
+      ],
+      "reference_images": [
+        {
+          "image": "file public/assets/chibi/units/chibi-direction-martian-saucer.png sha256 76ee02c7288edb92d19c5550370c828955a9d064019e06f717fb469a0ec3eb5f",
+          "usage_description": "The look of the flying saucer: keep this chrome hull, glass dome and pink lights."
+        }
+      ]
+    },
+    "usageUsd": 0.08,
+    "candidates": [
+      {
+        "file": "art/pixellab/chibi-raw/campaign-pictures/martians-a-0.png",
+        "sha256": "27d2fd2fdab4306454c46f258a022e81bdcf3d0e89b37cc140c61f6509a1624b"
+      },
+      {
+        "file": "art/pixellab/chibi-raw/campaign-pictures/martians-a-1.png",
+        "sha256": "ea689f5db0a869ccd39cc774620b593391b6b32eb0e28dfb7b2ba4ede56f831c"
+      },
+      {
+        "file": "art/pixellab/chibi-raw/campaign-pictures/martians-a-2.png",
+        "sha256": "e8de88eed64bc421bf0bba584c3fa44b583bb987f5d43b505443d2902e33363f"
+      },
+      {
+        "file": "art/pixellab/chibi-raw/campaign-pictures/martians-a-3.png",
+        "sha256": "0855b6b8dfbf8127a10e938cc2c3292a7519a6e37d366a82b91a0f9452bcf0d6"
+      }
+    ]
+  },
+  "goblins-a": {
+    "id": "goblins-a",
+    "jobId": "a2f5e2ed-39cb-46f6-8e8b-4a70cf7787f4",
+    "at": "2026-10-20T02:49:29.735Z",
+    "request": {
+      "endpoint": "generate-image-v2",
+      "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Picture: one campaign picture for the campaign map of a strategy game, in the spirit of the small painted scenes of the Heroes of Might and Magic III campaign screen, drawn as bold chibi pixel art with thick black outlines on figures and buildings. One small storybook scene with one clear focal subject in the middle foreground standing on its ground, and a simple background of landscape and sky behind it. The scene fills the whole rectangle edge to edge: no border, no frame, no rounded corners, no vignette. Big simple shapes and strong contrast between the subject and the background, so it reads at a glance as a small thumbnail. Subject: Grubnak the Loud, a big green chibi orc boss in tin scrap armour daubed with hazard yellow paint, and two small grinning green goblins push a wooden cart carrying a huge stolen iron vault box, gold coins spilling out, away from a grey stone fort at dusk. Hills, a purple dusk sky, a lantern glow. Rowdy and silly. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, words, caption, title, signature, watermark, border, picture frame, rounded corners, vignette, multiple panels, grid of images, collage, sprite sheet.",
+      "image_size": {
+        "width": 128,
+        "height": 96
+      },
+      "no_background": false,
+      "seed": 1305,
+      "layers": [
+        {
+          "source": "scripts/art/chibi/fragments/style.txt",
+          "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/light-south-west.txt",
+          "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+        },
+        {
+          "source": "recipes.json klass",
+          "text": "Picture: one campaign picture for the campaign map of a strategy game, in the spirit of the small painted scenes of the Heroes of Might and Magic III campaign screen, drawn as bold chibi pixel art with thick black outlines on figures and buildings. One small storybook scene with one clear focal subject in the middle foreground standing on its ground, and a simple background of landscape and sky behind it. The scene fills the whole rectangle edge to edge: no border, no frame, no rounded corners, no vignette. Big simple shapes and strong contrast between the subject and the background, so it reads at a glance as a small thumbnail."
+        },
+        {
+          "source": "recipes.json subject",
+          "text": "Subject: Grubnak the Loud, a big green chibi orc boss in tin scrap armour daubed with hazard yellow paint, and two small grinning green goblins push a wooden cart carrying a huge stolen iron vault box, gold coins spilling out, away from a grey stone fort at dusk. Hills, a purple dusk sky, a lantern glow. Rowdy and silly."
+        }
+      ],
+      "reference_images": [
+        {
+          "image": "file public/assets/chibi/units/chibi-direction-goblin-orc-warboss.png sha256 6e2c2611e9199f79bbd0d3e67a44910b34560c363ac02f90975a7f23267beefd",
+          "usage_description": "The look of the big orc boss: keep this green skin, scrap armour and yellow paint."
+        }
+      ]
+    },
+    "usageUsd": 0.08,
+    "candidates": [
+      {
+        "file": "art/pixellab/chibi-raw/campaign-pictures/goblins-a-0.png",
+        "sha256": "2f0ff5215f990cd17de09faed6f99979844e954cb6ed4d91033a7822c3c96d14"
+      },
+      {
+        "file": "art/pixellab/chibi-raw/campaign-pictures/goblins-a-1.png",
+        "sha256": "962b73abd938574f085ac29bdfccc4b1e2c84089aeed5d7902de1bf4ea2a1bd5"
+      },
+      {
+        "file": "art/pixellab/chibi-raw/campaign-pictures/goblins-a-2.png",
+        "sha256": "4d6e12994809896eaa5a91715f4eb039f4946410e1ac9ac43daf90721d81399f"
+      },
+      {
+        "file": "art/pixellab/chibi-raw/campaign-pictures/goblins-a-3.png",
+        "sha256": "407ce51ccc1892cc33a3695025ee76b30ddc184c807f5507ffa99de5b440781d"
+      }
+    ]
+  },
+  "dwarves-a": {
+    "id": "dwarves-a",
+    "jobId": "99337b19-a3a3-44f4-bf34-00de967d8eb6",
+    "at": "2026-10-20T02:50:56.390Z",
+    "request": {
+      "endpoint": "generate-image-v2",
+      "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Picture: one campaign picture for the campaign map of a strategy game, in the spirit of the small painted scenes of the Heroes of Might and Magic III campaign screen, drawn as bold chibi pixel art with thick black outlines on figures and buildings. One small storybook scene with one clear focal subject in the middle foreground standing on its ground, and a simple background of landscape and sky behind it. The scene fills the whole rectangle edge to edge: no border, no frame, no rounded corners, no vignette. Big simple shapes and strong contrast between the subject and the background, so it reads at a glance as a small thumbnail. Subject: Thane Brunhild, a sturdy chibi dwarf with a long braided copper-red beard and a crowned iron helmet, soot-black riveted iron armour and copper pipes, holds up a lantern at the stone lip of a vast round bottomless shaft inside a mountain cavern. A riveted iron crane hangs a chain down into the black pit, small puffs of white steam, warm lamplight on the rock, a faint violet glow deep below. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, words, caption, title, signature, watermark, border, picture frame, rounded corners, vignette, multiple panels, grid of images, collage, sprite sheet.",
+      "image_size": {
+        "width": 128,
+        "height": 96
+      },
+      "no_background": false,
+      "seed": 1306,
+      "layers": [
+        {
+          "source": "scripts/art/chibi/fragments/style.txt",
+          "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/light-south-west.txt",
+          "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+        },
+        {
+          "source": "recipes.json klass",
+          "text": "Picture: one campaign picture for the campaign map of a strategy game, in the spirit of the small painted scenes of the Heroes of Might and Magic III campaign screen, drawn as bold chibi pixel art with thick black outlines on figures and buildings. One small storybook scene with one clear focal subject in the middle foreground standing on its ground, and a simple background of landscape and sky behind it. The scene fills the whole rectangle edge to edge: no border, no frame, no rounded corners, no vignette. Big simple shapes and strong contrast between the subject and the background, so it reads at a glance as a small thumbnail."
+        },
+        {
+          "source": "recipes.json subject",
+          "text": "Subject: Thane Brunhild, a sturdy chibi dwarf with a long braided copper-red beard and a crowned iron helmet, soot-black riveted iron armour and copper pipes, holds up a lantern at the stone lip of a vast round bottomless shaft inside a mountain cavern. A riveted iron crane hangs a chain down into the black pit, small puffs of white steam, warm lamplight on the rock, a faint violet glow deep below."
+        }
+      ],
+      "reference_images": [
+        {
+          "image": "file public/assets/chibi/units/chibi-direction-dwarf-engineer.png sha256 67bb9260cd497d243e434463bebc6d528349083d32b3d5404f7da1a707954992",
+          "usage_description": "The look of the dwarf: keep this iron armour, copper and chibi proportions."
+        }
+      ]
+    },
+    "usageUsd": 0.08,
+    "candidates": [
+      {
+        "file": "art/pixellab/chibi-raw/campaign-pictures/dwarves-a-0.png",
+        "sha256": "e83b8fb16532bf698d934ed55daa83d80fb4ee1815434e638e80a17c7c00cb3d"
+      },
+      {
+        "file": "art/pixellab/chibi-raw/campaign-pictures/dwarves-a-1.png",
+        "sha256": "b0307724f046fd752f0ceecdd32b48c041c68765f5aa43738c78be2758c485db"
+      },
+      {
+        "file": "art/pixellab/chibi-raw/campaign-pictures/dwarves-a-2.png",
+        "sha256": "ee8c84f6f9b1de85b1bf832b875c2fbb84e6d61fa4790f03d14e65f149e285a3"
+      },
+      {
+        "file": "art/pixellab/chibi-raw/campaign-pictures/dwarves-a-3.png",
+        "sha256": "73fe1545a8b02ba265c84e927294f91fb803d29ee4ecf437ec8ea62cb1d1de48"
+      }
+    ]
+  },
+  "ice-folk-a": {
+    "id": "ice-folk-a",
+    "jobId": "e27a83a2-f48d-49ff-925f-f240c103a1c6",
+    "at": "2026-10-20T02:52:25.017Z",
+    "request": {
+      "endpoint": "generate-image-v2",
+      "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Picture: one campaign picture for the campaign map of a strategy game, in the spirit of the small painted scenes of the Heroes of Might and Magic III campaign screen, drawn as bold chibi pixel art with thick black outlines on figures and buildings. One small storybook scene with one clear focal subject in the middle foreground standing on its ground, and a simple background of landscape and sky behind it. The scene fills the whole rectangle edge to edge: no border, no frame, no rounded corners, no vignette. Big simple shapes and strong contrast between the subject and the background, so it reads at a glance as a small thumbnail. Subject: Mother Rime, a chibi old ice witch in shaggy warm white fur robes with a bright ice blue crystal staff and a crown of icicles, stands on a frozen mountain summit in falling snow. Jagged white snowy peaks behind under a pale blue winter sky, glittering ice shards around her feet. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, words, caption, title, signature, watermark, border, picture frame, rounded corners, vignette, multiple panels, grid of images, collage, sprite sheet.",
+      "image_size": {
+        "width": 128,
+        "height": 96
+      },
+      "no_background": false,
+      "seed": 1307,
+      "layers": [
+        {
+          "source": "scripts/art/chibi/fragments/style.txt",
+          "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/light-south-west.txt",
+          "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+        },
+        {
+          "source": "recipes.json klass",
+          "text": "Picture: one campaign picture for the campaign map of a strategy game, in the spirit of the small painted scenes of the Heroes of Might and Magic III campaign screen, drawn as bold chibi pixel art with thick black outlines on figures and buildings. One small storybook scene with one clear focal subject in the middle foreground standing on its ground, and a simple background of landscape and sky behind it. The scene fills the whole rectangle edge to edge: no border, no frame, no rounded corners, no vignette. Big simple shapes and strong contrast between the subject and the background, so it reads at a glance as a small thumbnail."
+        },
+        {
+          "source": "recipes.json subject",
+          "text": "Subject: Mother Rime, a chibi old ice witch in shaggy warm white fur robes with a bright ice blue crystal staff and a crown of icicles, stands on a frozen mountain summit in falling snow. Jagged white snowy peaks behind under a pale blue winter sky, glittering ice shards around her feet."
+        }
+      ],
+      "reference_images": [
+        {
+          "image": "file public/assets/chibi/units/chibi-direction-ice-folk-ice-witch.png sha256 cb1515379430eb9e3df02de87eb8ff94e297813752bd87496baef4f71e05aa11",
+          "usage_description": "The look of the ice witch: keep this fur robe, ice blue staff and colours."
+        }
+      ]
+    },
+    "usageUsd": 0.08,
+    "candidates": [
+      {
+        "file": "art/pixellab/chibi-raw/campaign-pictures/ice-folk-a-0.png",
+        "sha256": "191e72eba74c59ab787d1b67fbe97f5d38bfdd2e7ed2c897a20e3e76553255bc"
+      },
+      {
+        "file": "art/pixellab/chibi-raw/campaign-pictures/ice-folk-a-1.png",
+        "sha256": "5bf472ecf0c592bc209d162a774ac15f10e12f4a71dca6ac221e3f6da754e104"
+      },
+      {
+        "file": "art/pixellab/chibi-raw/campaign-pictures/ice-folk-a-2.png",
+        "sha256": "f9a466166547c6235135c2200be87bd2b135ba738c0d4c60a3e8fc2fffae5754"
+      },
+      {
+        "file": "art/pixellab/chibi-raw/campaign-pictures/ice-folk-a-3.png",
+        "sha256": "fb836bb9091929f620fd2a6546abde5639543a06bd5c4dd76f2f2d5fec6f1361"
+      }
+    ]
+  },
+  "candy-a": {
+    "id": "candy-a",
+    "jobId": "ce4c518b-4fe3-4d09-8e22-29a2c68586e0",
+    "at": "2026-10-20T02:53:57.669Z",
+    "request": {
+      "endpoint": "generate-image-v2",
+      "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Picture: one campaign picture for the campaign map of a strategy game, in the spirit of the small painted scenes of the Heroes of Might and Magic III campaign screen, drawn as bold chibi pixel art with thick black outlines on figures and buildings. One small storybook scene with one clear focal subject in the middle foreground standing on its ground, and a simple background of landscape and sky behind it. The scene fills the whole rectangle edge to edge: no border, no frame, no rounded corners, no vignette. Big simple shapes and strong contrast between the subject and the background, so it reads at a glance as a small thumbnail. Subject: Queen Praline, a chibi gingerbread woman with white icing trim and a golden caramel crown, stands before the Dreaming Palace, a fairy-tale castle of dark chocolate walls, marshmallow white towers and caramel roofs with jewel-candy windows, under a dreamy violet night sky full of stars and a crescent moon, soft clouds. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, words, caption, title, signature, watermark, border, picture frame, rounded corners, vignette, multiple panels, grid of images, collage, sprite sheet.",
+      "image_size": {
+        "width": 128,
+        "height": 96
+      },
+      "no_background": false,
+      "seed": 1308,
+      "layers": [
+        {
+          "source": "scripts/art/chibi/fragments/style.txt",
+          "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/light-south-west.txt",
+          "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+        },
+        {
+          "source": "recipes.json klass",
+          "text": "Picture: one campaign picture for the campaign map of a strategy game, in the spirit of the small painted scenes of the Heroes of Might and Magic III campaign screen, drawn as bold chibi pixel art with thick black outlines on figures and buildings. One small storybook scene with one clear focal subject in the middle foreground standing on its ground, and a simple background of landscape and sky behind it. The scene fills the whole rectangle edge to edge: no border, no frame, no rounded corners, no vignette. Big simple shapes and strong contrast between the subject and the background, so it reads at a glance as a small thumbnail."
+        },
+        {
+          "source": "recipes.json subject",
+          "text": "Subject: Queen Praline, a chibi gingerbread woman with white icing trim and a golden caramel crown, stands before the Dreaming Palace, a fairy-tale castle of dark chocolate walls, marshmallow white towers and caramel roofs with jewel-candy windows, under a dreamy violet night sky full of stars and a crescent moon, soft clouds."
+        }
+      ],
+      "reference_images": [
+        {
+          "image": "file public/assets/chibi/settlements/chibi-direction-candy-city-3.png sha256 47c1c8c93ae863ea755e196b804ec59f7baf669e357d33f4b236aa0d8562618a",
+          "usage_description": "The look of the candy palace: keep these chocolate, cream and caramel materials."
+        }
+      ]
+    },
+    "usageUsd": 0.08,
+    "candidates": [
+      {
+        "file": "art/pixellab/chibi-raw/campaign-pictures/candy-a-0.png",
+        "sha256": "652d26f3c92993ab48cb11a9eb1a5bf4e160850db381ba7a2b6dccc00aa46717"
+      },
+      {
+        "file": "art/pixellab/chibi-raw/campaign-pictures/candy-a-1.png",
+        "sha256": "30d47f935a539b7ff02ba331ae1a04c605ba625363aa502a3c07952fe817a534"
+      },
+      {
+        "file": "art/pixellab/chibi-raw/campaign-pictures/candy-a-2.png",
+        "sha256": "990e61743879f6937e63bcb6fa85214e994b920065bc38ed9a576336ab611c9e"
+      },
+      {
+        "file": "art/pixellab/chibi-raw/campaign-pictures/candy-a-3.png",
+        "sha256": "24ae50779252e54db06be0fc3f405815ad50c83a74d0de5abda7e378bb784a57"
+      }
+    ]
+  },
+  "cult-a": {
+    "id": "cult-a",
+    "jobId": "c3273575-54e9-4c86-85eb-e5ea59354d6e",
+    "at": "2026-10-20T02:55:40.625Z",
+    "request": {
+      "endpoint": "generate-image-v2",
+      "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Picture: one campaign picture for the campaign map of a strategy game, in the spirit of the small painted scenes of the Heroes of Might and Magic III campaign screen, drawn as bold chibi pixel art with thick black outlines on figures and buildings. One small storybook scene with one clear focal subject in the middle foreground standing on its ground, and a simple background of landscape and sky behind it. The scene fills the whole rectangle edge to edge: no border, no frame, no rounded corners, no vignette. Big simple shapes and strong contrast between the subject and the background, so it reads at a glance as a small thumbnail. Subject: a secret society's midnight meeting: five small chibi cultists, ordinary men in deep blood-red and black hooded robes holding candles with green flames, stand in a ring around a dark round shaft in a stone cave. From deep inside the shaft one huge glowing green eye looks up. The cultists have plain human faces, no tentacles, no skulls. Sinister pulp mood. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, words, caption, title, signature, watermark, border, picture frame, rounded corners, vignette, multiple panels, grid of images, collage, sprite sheet.",
+      "image_size": {
+        "width": 128,
+        "height": 96
+      },
+      "no_background": false,
+      "seed": 1309,
+      "layers": [
+        {
+          "source": "scripts/art/chibi/fragments/style.txt",
+          "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/light-south-west.txt",
+          "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+        },
+        {
+          "source": "recipes.json klass",
+          "text": "Picture: one campaign picture for the campaign map of a strategy game, in the spirit of the small painted scenes of the Heroes of Might and Magic III campaign screen, drawn as bold chibi pixel art with thick black outlines on figures and buildings. One small storybook scene with one clear focal subject in the middle foreground standing on its ground, and a simple background of landscape and sky behind it. The scene fills the whole rectangle edge to edge: no border, no frame, no rounded corners, no vignette. Big simple shapes and strong contrast between the subject and the background, so it reads at a glance as a small thumbnail."
+        },
+        {
+          "source": "recipes.json subject",
+          "text": "Subject: a secret society's midnight meeting: five small chibi cultists, ordinary men in deep blood-red and black hooded robes holding candles with green flames, stand in a ring around a dark round shaft in a stone cave. From deep inside the shaft one huge glowing green eye looks up. The cultists have plain human faces, no tentacles, no skulls. Sinister pulp mood."
+        }
+      ],
+      "reference_images": [
+        {
+          "image": "file public/assets/chibi/units/chibi-direction-cult-initiate.png sha256 3e20b433459a357eaf8e7bd4ed4e35923a4bb6afd346554d4b01504798457832",
+          "usage_description": "The look of the cultists: keep these red and black robes and plain human faces."
+        }
+      ]
+    },
+    "usageUsd": 0.08,
+    "candidates": [
+      {
+        "file": "art/pixellab/chibi-raw/campaign-pictures/cult-a-0.png",
+        "sha256": "39f08579b91175acc116167bb4eabcfd7a04d2b406c66f3f67d0c6835e7e0a0e"
+      },
+      {
+        "file": "art/pixellab/chibi-raw/campaign-pictures/cult-a-1.png",
+        "sha256": "b0fd8c4ca64fb44759d4ba9dc13251b8baaf62c6eb3429053a9f30b091a1b8d7"
+      },
+      {
+        "file": "art/pixellab/chibi-raw/campaign-pictures/cult-a-2.png",
+        "sha256": "b04db1126a580b045b2d70ee9383282303a24bbffc30299f8495dd2082d5b3af"
+      },
+      {
+        "file": "art/pixellab/chibi-raw/campaign-pictures/cult-a-3.png",
+        "sha256": "7a3911ffc81ae99321a042d7aee5f0842547079589d4d713a7724b0173229a9a"
+      }
+    ]
+  },
+  "frontier-a": {
+    "id": "frontier-a",
+    "jobId": "d3ce1c2a-1ee6-479a-ab30-4e8c5c39b83c",
+    "at": "2026-10-20T02:58:13.366Z",
+    "request": {
+      "endpoint": "generate-image-v2",
+      "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Picture: one campaign picture for the campaign map of a strategy game, in the spirit of the small painted scenes of the Heroes of Might and Magic III campaign screen, drawn as bold chibi pixel art with thick black outlines on figures and buildings. One small storybook scene with one clear focal subject in the middle foreground standing on its ground, and a simple background of landscape and sky behind it. The scene fills the whole rectangle edge to edge: no border, no frame, no rounded corners, no vignette. Big simple shapes and strong contrast between the subject and the background, so it reads at a glance as a small thumbnail. Subject: the Frontier: a small frontier fort with a palisade of pale birch logs and a cream plaster watchtower flying a red pennant stands on a green hill above a winding road, a chibi guard in steel armour with a spear and a red shield with a gold cross keeping watch in front. Far behind, a tall grey mountain under a dusky orange sky, a faint green glow at its summit. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, words, caption, title, signature, watermark, border, picture frame, rounded corners, vignette, multiple panels, grid of images, collage, sprite sheet.",
+      "image_size": {
+        "width": 128,
+        "height": 96
+      },
+      "no_background": false,
+      "seed": 1310,
+      "layers": [
+        {
+          "source": "scripts/art/chibi/fragments/style.txt",
+          "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/light-south-west.txt",
+          "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+        },
+        {
+          "source": "recipes.json klass",
+          "text": "Picture: one campaign picture for the campaign map of a strategy game, in the spirit of the small painted scenes of the Heroes of Might and Magic III campaign screen, drawn as bold chibi pixel art with thick black outlines on figures and buildings. One small storybook scene with one clear focal subject in the middle foreground standing on its ground, and a simple background of landscape and sky behind it. The scene fills the whole rectangle edge to edge: no border, no frame, no rounded corners, no vignette. Big simple shapes and strong contrast between the subject and the background, so it reads at a glance as a small thumbnail."
+        },
+        {
+          "source": "recipes.json subject",
+          "text": "Subject: the Frontier: a small frontier fort with a palisade of pale birch logs and a cream plaster watchtower flying a red pennant stands on a green hill above a winding road, a chibi guard in steel armour with a spear and a red shield with a gold cross keeping watch in front. Far behind, a tall grey mountain under a dusky orange sky, a faint green glow at its summit."
+        }
+      ],
+      "reference_images": [
+        {
+          "image": "file public/assets/chibi/units/chibi-direction-guard.png sha256 e1347554c0c2d3431ab6188d8ddfe5b1bb41f704782e23e99bbc94b8fb678d65",
+          "usage_description": "The look of the guard: keep this armour, tabard and chibi proportions."
+        }
+      ]
+    },
+    "usageUsd": 0.08,
+    "candidates": [
+      {
+        "file": "art/pixellab/chibi-raw/campaign-pictures/frontier-a-0.png",
+        "sha256": "0f2339684e5db3d0ae5bc24d55902333329863d54abc03ecd6a0017a73fe0da9"
+      },
+      {
+        "file": "art/pixellab/chibi-raw/campaign-pictures/frontier-a-1.png",
+        "sha256": "85ee5442ebcd35baa93e47194340aa455927563c3810cb8ddb10f414d4cf33bc"
+      },
+      {
+        "file": "art/pixellab/chibi-raw/campaign-pictures/frontier-a-2.png",
+        "sha256": "6dfa6e375e2f4f32ae6a01782dc22073f90d681a62718c97f857d0a390d4cd4e"
+      },
+      {
+        "file": "art/pixellab/chibi-raw/campaign-pictures/frontier-a-3.png",
+        "sha256": "37970e2910a346652b2298a9144b056768a5f2ea1fff172a2d980242c0f84da4"
+      }
+    ]
+  },
+  "martians-b": {
+    "id": "martians-b",
+    "jobId": "2cb4369b-af4b-436a-bff2-59d936a4db2f",
+    "at": "2026-10-20T02:59:58.395Z",
+    "request": {
+      "endpoint": "generate-image-v2",
+      "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Picture: one campaign picture for the campaign map of a strategy game, in the spirit of the small painted scenes of the Heroes of Might and Magic III campaign screen, drawn as bold chibi pixel art with thick black outlines on figures and buildings. One small storybook scene with one clear focal subject in the middle foreground standing on its ground, and a simple background of landscape and sky behind it. The scene fills the whole rectangle edge to edge: no border, no frame, no rounded corners, no vignette. Big simple shapes and strong contrast between the subject and the background, so it reads at a glance as a small thumbnail. Subject: Captain Quaxx, a small pink brain alien under the clear glass dome of a retro 1950s chrome flying saucer with hot magenta pink lights, hovers big in the foreground, the saucer a third of the picture wide, over a red Martian desert. Behind it a tall radio antenna dish sends a pink signal beam up to the stars. A dusky deep purple night sky with stars and two small moons above the red dunes. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, words, caption, title, signature, watermark, border, picture frame, rounded corners, vignette, multiple panels, grid of images, collage, sprite sheet.",
+      "image_size": {
+        "width": 128,
+        "height": 96
+      },
+      "no_background": false,
+      "seed": 1314,
+      "layers": [
+        {
+          "source": "scripts/art/chibi/fragments/style.txt",
+          "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/light-south-west.txt",
+          "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+        },
+        {
+          "source": "recipes.json klass",
+          "text": "Picture: one campaign picture for the campaign map of a strategy game, in the spirit of the small painted scenes of the Heroes of Might and Magic III campaign screen, drawn as bold chibi pixel art with thick black outlines on figures and buildings. One small storybook scene with one clear focal subject in the middle foreground standing on its ground, and a simple background of landscape and sky behind it. The scene fills the whole rectangle edge to edge: no border, no frame, no rounded corners, no vignette. Big simple shapes and strong contrast between the subject and the background, so it reads at a glance as a small thumbnail."
+        },
+        {
+          "source": "recipes.json subject",
+          "text": "Subject: Captain Quaxx, a small pink brain alien under the clear glass dome of a retro 1950s chrome flying saucer with hot magenta pink lights, hovers big in the foreground, the saucer a third of the picture wide, over a red Martian desert. Behind it a tall radio antenna dish sends a pink signal beam up to the stars. A dusky deep purple night sky with stars and two small moons above the red dunes."
+        }
+      ],
+      "reference_images": [
+        {
+          "image": "file public/assets/chibi/units/chibi-direction-martian-saucer.png sha256 76ee02c7288edb92d19c5550370c828955a9d064019e06f717fb469a0ec3eb5f",
+          "usage_description": "The look of the flying saucer and its pink brain pilot: keep this chrome hull, glass dome and pink lights."
+        }
+      ]
+    },
+    "usageUsd": 0.08,
+    "candidates": [
+      {
+        "file": "art/pixellab/chibi-raw/campaign-pictures/martians-b-0.png",
+        "sha256": "26dd3bfdee8638b8056f43b7a1e834c660b7934c6a512e66acfb3c2e43c40cf4"
+      },
+      {
+        "file": "art/pixellab/chibi-raw/campaign-pictures/martians-b-1.png",
+        "sha256": "392bb3a8b6de4f84950e657217c1fcc3fcb5b791d8df64029fc937d8b07894c2"
+      },
+      {
+        "file": "art/pixellab/chibi-raw/campaign-pictures/martians-b-2.png",
+        "sha256": "fdd996b45229295d8cc1f219f902f742664295a6e9905245a9af58f0931ae969"
+      },
+      {
+        "file": "art/pixellab/chibi-raw/campaign-pictures/martians-b-3.png",
+        "sha256": "26eced9b9470d2ab82365dd49fb8d09acb36ff25359218485a27197da65ae760"
+      }
+    ]
+  },
+  "cult-b": {
+    "id": "cult-b",
+    "jobId": "f7e79542-65c4-426f-b08d-3dfe14eb28ff",
+    "at": "2026-10-20T03:01:23.637Z",
+    "request": {
+      "endpoint": "generate-image-v2",
+      "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Picture: one campaign picture for the campaign map of a strategy game, in the spirit of the small painted scenes of the Heroes of Might and Magic III campaign screen, drawn as bold chibi pixel art with thick black outlines on figures and buildings. One small storybook scene with one clear focal subject in the middle foreground standing on its ground, and a simple background of landscape and sky behind it. The scene fills the whole rectangle edge to edge: no border, no frame, no rounded corners, no vignette. Big simple shapes and strong contrast between the subject and the background, so it reads at a glance as a small thumbnail. Subject: the Long Night: three chibi cultists, ordinary men in deep blood-red and black hooded robes, stand big in the foreground at the stone lip of a dark round shaft, the one in the middle raising his arms and a black book; the others hold candles with green flames. From deep inside the shaft one huge glowing green eye looks up and lights them green. A dark cave, near-black shadows. Plain human faces, no tentacles, no skulls. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, words, caption, title, signature, watermark, border, picture frame, rounded corners, vignette, multiple panels, grid of images, collage, sprite sheet.",
+      "image_size": {
+        "width": 128,
+        "height": 96
+      },
+      "no_background": false,
+      "seed": 1319,
+      "layers": [
+        {
+          "source": "scripts/art/chibi/fragments/style.txt",
+          "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/light-south-west.txt",
+          "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+        },
+        {
+          "source": "recipes.json klass",
+          "text": "Picture: one campaign picture for the campaign map of a strategy game, in the spirit of the small painted scenes of the Heroes of Might and Magic III campaign screen, drawn as bold chibi pixel art with thick black outlines on figures and buildings. One small storybook scene with one clear focal subject in the middle foreground standing on its ground, and a simple background of landscape and sky behind it. The scene fills the whole rectangle edge to edge: no border, no frame, no rounded corners, no vignette. Big simple shapes and strong contrast between the subject and the background, so it reads at a glance as a small thumbnail."
+        },
+        {
+          "source": "recipes.json subject",
+          "text": "Subject: the Long Night: three chibi cultists, ordinary men in deep blood-red and black hooded robes, stand big in the foreground at the stone lip of a dark round shaft, the one in the middle raising his arms and a black book; the others hold candles with green flames. From deep inside the shaft one huge glowing green eye looks up and lights them green. A dark cave, near-black shadows. Plain human faces, no tentacles, no skulls."
+        }
+      ],
+      "reference_images": [
+        {
+          "image": "file public/assets/chibi/units/chibi-direction-cult-initiate.png sha256 3e20b433459a357eaf8e7bd4ed4e35923a4bb6afd346554d4b01504798457832",
+          "usage_description": "The look of the cultists: keep these red and black robes and plain human faces."
+        }
+      ]
+    },
+    "usageUsd": 0.08,
+    "candidates": [
+      {
+        "file": "art/pixellab/chibi-raw/campaign-pictures/cult-b-0.png",
+        "sha256": "c117b9786d2dbe097417d3be6d303d769699765c0097451a074cf39578ddbd0d"
+      },
+      {
+        "file": "art/pixellab/chibi-raw/campaign-pictures/cult-b-1.png",
+        "sha256": "62a7feea780f477669095235a133ab8c3466c417b0a85ecbbf83dfef2a704523"
+      },
+      {
+        "file": "art/pixellab/chibi-raw/campaign-pictures/cult-b-2.png",
+        "sha256": "093e7841a1a303706d4c87e916196da574f997f3a77285127e0e090d170e6fa5"
+      },
+      {
+        "file": "art/pixellab/chibi-raw/campaign-pictures/cult-b-3.png",
+        "sha256": "6e0da0285681e1b0fd869bdb7468d7edaee6c5d517121488a119133d1d6bd499"
+      }
+    ]
+  },
+  "frontier-b": {
+    "id": "frontier-b",
+    "jobId": "bd9b53fe-c518-4944-8c0f-4b2ae257a253",
+    "at": "2026-10-20T03:04:28.838Z",
+    "request": {
+      "endpoint": "generate-image-v2",
+      "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Picture: one campaign picture for the campaign map of a strategy game, in the spirit of the small painted scenes of the Heroes of Might and Magic III campaign screen, drawn as bold chibi pixel art with thick black outlines on figures and buildings. One small storybook scene with one clear focal subject in the middle foreground standing on its ground, and a simple background of landscape and sky behind it. The scene fills the whole rectangle edge to edge: no border, no frame, no rounded corners, no vignette. Big simple shapes and strong contrast between the subject and the background, so it reads at a glance as a small thumbnail. Subject: the Hollow Frontier: a chibi guard in steel armour with a spear and a red shield with a gold cross stands big in the foreground on a road, keeping watch. Behind him a frontier fort with a palisade of pale birch logs and a cream plaster watchtower flying a red pennant on a green hill with pine trees, and far behind a tall grey mountain under a dusky orange evening sky, a faint green glow at its summit. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, words, caption, title, signature, watermark, border, picture frame, rounded corners, vignette, multiple panels, grid of images, collage, sprite sheet.",
+      "image_size": {
+        "width": 128,
+        "height": 96
+      },
+      "no_background": false,
+      "seed": 1320,
+      "layers": [
+        {
+          "source": "scripts/art/chibi/fragments/style.txt",
+          "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/light-south-west.txt",
+          "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+        },
+        {
+          "source": "recipes.json klass",
+          "text": "Picture: one campaign picture for the campaign map of a strategy game, in the spirit of the small painted scenes of the Heroes of Might and Magic III campaign screen, drawn as bold chibi pixel art with thick black outlines on figures and buildings. One small storybook scene with one clear focal subject in the middle foreground standing on its ground, and a simple background of landscape and sky behind it. The scene fills the whole rectangle edge to edge: no border, no frame, no rounded corners, no vignette. Big simple shapes and strong contrast between the subject and the background, so it reads at a glance as a small thumbnail."
+        },
+        {
+          "source": "recipes.json subject",
+          "text": "Subject: the Hollow Frontier: a chibi guard in steel armour with a spear and a red shield with a gold cross stands big in the foreground on a road, keeping watch. Behind him a frontier fort with a palisade of pale birch logs and a cream plaster watchtower flying a red pennant on a green hill with pine trees, and far behind a tall grey mountain under a dusky orange evening sky, a faint green glow at its summit."
+        }
+      ],
+      "reference_images": [
+        {
+          "image": "file public/assets/chibi/units/chibi-direction-guard.png sha256 e1347554c0c2d3431ab6188d8ddfe5b1bb41f704782e23e99bbc94b8fb678d65",
+          "usage_description": "The look of the guard: keep this armour, shield and chibi proportions."
+        }
+      ]
+    },
+    "usageUsd": 0.08,
+    "candidates": [
+      {
+        "file": "art/pixellab/chibi-raw/campaign-pictures/frontier-b-0.png",
+        "sha256": "5ba594d2a6e8cc4b097d42e25654c7f8c3b810c7c156b3c645218d250ab88a8c"
+      },
+      {
+        "file": "art/pixellab/chibi-raw/campaign-pictures/frontier-b-1.png",
+        "sha256": "1482acdfa5a2def0450ed7d16633dafc69f1ca0f5a8e6e7af55f95d7e442a02b"
+      },
+      {
+        "file": "art/pixellab/chibi-raw/campaign-pictures/frontier-b-2.png",
+        "sha256": "ff89013094da576f1f5034e21dee8c78d8a6c741b30631c09f3c2ec94ae0f31f"
+      },
+      {
+        "file": "art/pixellab/chibi-raw/campaign-pictures/frontier-b-3.png",
+        "sha256": "11c7c7f6ebc08834402b49f897022ed54cef6508d576d7a6ee82ed6a8f79c0bb"
+      }
+    ]
+  }
+}

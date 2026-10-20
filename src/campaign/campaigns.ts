@@ -31,7 +31,7 @@ import { CHAPTER_UNDEAD_V7 } from "./chapter-undead";
  * (`pulp_wars-hmyk.1`, docs/product/SAGA.md) names the campaigns; each
  * campaign bead (`pulp_wars-hmyk.4` to `.12`) fills in its entry here: the
  * title, the subtitle, and a chapter of six missions. The art bead
- * (`pulp_wars-hmyk.13`) sets `picture`.
+ * (`pulp_wars-hmyk.13`) set every `picture`.
  */
 export const CAMPAIGN_IDS_V7 = Object.freeze([
   "FRONTIER",
@@ -67,11 +67,15 @@ export interface CampaignDefinitionV7 {
   /** Campaigns that must all be completed before this one opens. */
   readonly prerequisites: readonly CampaignIdV7[];
   /**
-   * The asset ID of the campaign's picture, or null until the art bead
-   * draws it: the map then shows the faction's portrait on a framed plate.
+   * The asset ID of the campaign's picture (src/assets/
+   * campaign-pictures-manifest.ts, `pulp_wars-hmyk.13`), or null for none:
+   * the map then shows the faction's portrait on a framed plate.
    */
   readonly picture: string | null;
-  /** The portrait the plate shows while `picture` is null. */
+  /**
+   * The portrait the plate shows while `picture` is null, or when the
+   * picture fails to load.
+   */
   readonly placeholderRole: UnitRoleIdV7;
   /** The missions, story and unlocks; null until the campaign is written. */
   readonly chapter: CampaignChapterV7 | null;
@@ -116,13 +120,14 @@ export const CAMPAIGNS_V7: readonly CampaignDefinitionV7[] = Object.freeze([
     subtitle: "Prologue",
     tier: 0,
     prerequisites: Object.freeze([]),
-    picture: null,
+    picture: "campaign-frontier",
     placeholderRole: "GUARD",
     chapter: CHAPTER_ONE_V7,
   } satisfies CampaignDefinitionV7),
   // The Humans campaign (`pulp_wars-hmyk.4`, docs/product/SAGA.md 2.1).
   Object.freeze({
     ...factionCampaign("HUMANS", "ORIGINAL", "Humans", "Human", 1),
+    picture: "campaign-humans",
     title: "The Marshal's Law",
     subtitle: "Steele against the Baron",
     chapter: CHAPTER_HUMANS_V7,
@@ -130,6 +135,7 @@ export const CAMPAIGNS_V7: readonly CampaignDefinitionV7[] = Object.freeze([
   // The Undead campaign (`pulp_wars-hmyk.5`, docs/product/SAGA.md 2.2).
   Object.freeze({
     ...factionCampaign("UNDEAD", "UNDEAD", "Undead", "Undead", 1),
+    picture: "campaign-undead",
     title: "The Long Sleep",
     subtitle: "The Marquis would like to rest",
     chapter: CHAPTER_UNDEAD_V7,
@@ -137,6 +143,7 @@ export const CAMPAIGNS_V7: readonly CampaignDefinitionV7[] = Object.freeze([
   // The Dinosaur campaign (`pulp_wars-hmyk.6`, docs/product/SAGA.md 2.5).
   Object.freeze({
     ...factionCampaign("DINOSAURS", "DINOSAUR", "Dinosaurs", "Dinosaur", 2),
+    picture: "campaign-dinosaurs",
     title: "The Egg Thief",
     subtitle: "The Old Queen wants her eggs back",
     chapter: CHAPTER_DINOSAURS_V7,
@@ -144,6 +151,7 @@ export const CAMPAIGNS_V7: readonly CampaignDefinitionV7[] = Object.freeze([
   // The Martian campaign (`pulp_wars-hmyk.7`, docs/product/SAGA.md 2.6).
   Object.freeze({
     ...factionCampaign("MARTIANS", "MARTIAN", "Martians", "Martian", 2),
+    picture: "campaign-martians",
     title: "Signal from Home",
     subtitle: "Quaxx would like to call home",
     chapter: CHAPTER_MARTIANS_V7,
@@ -151,6 +159,7 @@ export const CAMPAIGNS_V7: readonly CampaignDefinitionV7[] = Object.freeze([
   // The Goblin campaign (`pulp_wars-hmyk.8`, docs/product/SAGA.md 2.3).
   Object.freeze({
     ...factionCampaign("GOBLINS", "GOBLIN", "Goblins", "Goblin", 2),
+    picture: "campaign-goblins",
     title: "The Big Score",
     subtitle: "Grubnak robs the Baron",
     chapter: CHAPTER_GOBLINS_V7,
@@ -158,6 +167,7 @@ export const CAMPAIGNS_V7: readonly CampaignDefinitionV7[] = Object.freeze([
   // The Dwarf campaign (`pulp_wars-hmyk.9`, docs/product/SAGA.md 2.4).
   Object.freeze({
     ...factionCampaign("DWARVES", "DWARF", "Dwarves", "Dwarf", 2),
+    picture: "campaign-dwarves",
     title: "The Bottomless",
     subtitle: "The Thane puts a lid on it",
     chapter: CHAPTER_DWARVES_V7,
@@ -165,6 +175,7 @@ export const CAMPAIGNS_V7: readonly CampaignDefinitionV7[] = Object.freeze([
   // The Ice Folk campaign (`pulp_wars-hmyk.10`, docs/product/SAGA.md 2.7).
   Object.freeze({
     ...factionCampaign("ICE_FOLK", "ICE_FOLK", "Ice Folk", "Ice Folk", 3),
+    picture: "campaign-ice-folk",
     title: "The Long Winter",
     subtitle: "Mother Rime brings the cold",
     chapter: CHAPTER_ICE_FOLK_V7,
@@ -173,6 +184,7 @@ export const CAMPAIGNS_V7: readonly CampaignDefinitionV7[] = Object.freeze([
   // (`pulp_wars-hmyk.12`, docs/product/SAGA.md 2.9).
   Object.freeze({
     ...factionCampaign("CULT", "CULT", "Cultists", "Cultist", 3),
+    picture: "campaign-cult",
     title: "The Long Night",
     subtitle: "The finale",
     chapter: CHAPTER_CULT_V7,
@@ -180,6 +192,7 @@ export const CAMPAIGNS_V7: readonly CampaignDefinitionV7[] = Object.freeze([
   // The Candy campaign (`pulp_wars-hmyk.11`, docs/product/SAGA.md 2.8).
   Object.freeze({
     ...factionCampaign("CANDY", "CANDY", "Candy", "Candy", 3),
+    picture: "campaign-candy",
     title: "Sweet Dreams",
     subtitle: "Praline goes into the dream",
     chapter: CHAPTER_CANDY_V7,

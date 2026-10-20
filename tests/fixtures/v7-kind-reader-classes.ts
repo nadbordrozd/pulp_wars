@@ -427,6 +427,10 @@ export const KIND_READER_CLASSES_V7: Readonly<
   // plate and placeholder portrait; no unit is involved.
   "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#campaignPlate": "SEAT",
   "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#campaignPicture": "SEAT",
+  // Its placeholder portrait when the picture is missing or fails to load
+  // (pulp_wars-hmyk.13).
+  "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#campaignPlaceholder":
+    "SEAT",
   // Asset tiers (`pulp_wars-2yc.42`): the factions seated in the match,
   // whose art a board waits for. A mind-controlled unit's kind is the
   // faction of another seat of the same match, so the seats cover it.
