@@ -154,7 +154,7 @@ describe("Ruleset 7 campaign map", () => {
       "The Egg Thief, Locked: finish Humans and Undead",
     );
     expect(plate("CULT").getAttribute("aria-label")).toBe(
-      "The Cultist Campaign, Locked: finish Dinosaurs, Martians, Goblins and Dwarves",
+      "The Long Night, Locked: finish Dinosaurs, Martians, Goblins and Dwarves",
     );
     expect(plate("CANDY").getAttribute("aria-label")).toBe(
       "Sweet Dreams, Coming soon",

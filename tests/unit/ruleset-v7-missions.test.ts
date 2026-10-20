@@ -249,6 +249,19 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
     "a04066ac2a5d7068ed1dc50c41540e0161d3162a1cb5c326d94f98929153f7d0",
   "ICE_FOLK_6@1:ICE_FOLK":
     "77447b956d8255c6d3ab5e3592250f924d1051487c8be06b963892aced3306c8",
+  // The Cult campaign, "The Long Night" (`pulp_wars-hmyk.12`).
+  "CULT_1@1:CULT":
+    "6c274d4a4f602b9fa6badbe836e3418af51e8328d71ed899281e5a5e396fb101",
+  "CULT_2@1:CULT":
+    "794685436ad0729c0c021ecb228a21ea675938f78b579069b07eeb4b139b4685",
+  "CULT_3@1:CULT":
+    "4671d865faf1a8921813ffc211de94b6b5c8fa7c2a3153521f94b8737cf970c3",
+  "CULT_4@1:CULT":
+    "4046ad1a553206444436fde34b70f2cf449abfc5091eaf9add762d225d3973de",
+  "CULT_5@1:CULT":
+    "e6cc96e17a4fe1221bda5ab29ef67d41d3f69dcd10bbf9d22d1c4e4f86bfd629",
+  "CULT_6@1:CULT":
+    "a42b8554404ab3df6bd14e6d44ff8e54cb161128a7a84bb1fe79e6cce1d178fc",
   // The siege fixture of the Normal AI (`pulp_wars-68k.6`).
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 2.
   "TEST_NECK@2:ORIGINAL":
@@ -650,6 +663,19 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
     "f8d5975e48cec6531f27aa558b55fc4a678529539e8d36a8857df32c218dca4b",
   "ICE_FOLK_6@1:ICE_FOLK":
     "080d14156726faf33ee3aa386d8289e156f71a1c1610dde427f6c46372b9eb18",
+  // The Cult campaign, "The Long Night" (`pulp_wars-hmyk.12`).
+  "CULT_1@1:CULT":
+    "80fa3418a696806cf5a2d65e05798da71ba93df35207673594c0a3878f4fa548",
+  "CULT_2@1:CULT":
+    "70422b0b6047c373905561795510f99e9cda04bc89f3b02ccfe01935dfd87031",
+  "CULT_3@1:CULT":
+    "b6df2bab49892fd4dd2d43df907b0fe46d7d2cfd4f2d7ec076ba71d2d035cf76",
+  "CULT_4@1:CULT":
+    "4a353f87ebadd854fdc1ebe18071803e55ec0c76122351b4f6c6269dbbfd4f74",
+  "CULT_5@1:CULT":
+    "b697ec0018547fed4fe5cdec80e39da91d9b4d7f9ec84f1a61d5ac306ee5c142",
+  "CULT_6@1:CULT":
+    "99b2ef34ad36010782776c017337f88b9af6bff8f20d00f201dac13a244d2028",
 
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 2.
   "TEST_NECK@2:ORIGINAL":

@@ -65,6 +65,12 @@ import { ICE_FOLK_3_V7 } from "./ice-folk-3";
 import { ICE_FOLK_4_V7 } from "./ice-folk-4";
 import { ICE_FOLK_5_V7 } from "./ice-folk-5";
 import { ICE_FOLK_6_V7 } from "./ice-folk-6";
+import { CULT_1_V7 } from "./cult-1";
+import { CULT_2_V7 } from "./cult-2";
+import { CULT_3_V7 } from "./cult-3";
+import { CULT_4_V7 } from "./cult-4";
+import { CULT_5_V7 } from "./cult-5";
+import { CULT_6_V7 } from "./cult-6";
 import {
   LAB_BREAKTHROUGH_GOBLIN_V7,
   LAB_BREAKTHROUGH_UNDEAD_V7,
@@ -198,6 +204,13 @@ export const MISSION_REGISTRY_V7: readonly MissionDefinitionV7[] = deepFreeze([
   ICE_FOLK_4_V7,
   ICE_FOLK_5_V7,
   ICE_FOLK_6_V7,
+  // The Cult campaign, "The Long Night" (`pulp_wars-hmyk.12`).
+  CULT_1_V7,
+  CULT_2_V7,
+  CULT_3_V7,
+  CULT_4_V7,
+  CULT_5_V7,
+  CULT_6_V7,
   // The Human tuning labs (`pulp_wars-w49.3`): hidden mirror fixtures of
   // the text harness (docs/validation/TEXT_PLAY.md).
   LAB_SIEGE_V7,

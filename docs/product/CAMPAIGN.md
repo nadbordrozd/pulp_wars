@@ -5096,6 +5096,180 @@ The danger moments, and what each mission's hand play changed:
   answer; a city at level 5 gives a Frost Giant that decides any fight it
   reaches, which is why I5's camp starts one level short.
 
+## 23. The Cult campaign, "The Long Night" (`pulp_wars-hmyk.12`)
+
+The last tier-3 faction campaign and the saga's finale: six missions,
+`CULT_1` to `CULT_6` (`src/engine/v7/missions/cult-*.ts`), in the chapter
+`src/campaign/chapter-cult.ts` (chapter 9), which the campaign map's Cult
+plate ("The Long Night", subtitle "The finale") opens once the four middle
+campaigns are done (or with the testing cheat, section 14.5). The
+briefings are the minutes of the Lodge's meetings and, with the closings,
+the saga bible's ([SAGA.md](SAGA.md) sections 2.9 and 3.9), trimmed to the
+card; the last closing is the saga's ending and the chapter's outro its
+epilogue. Each mission was hand played through `play-text` (the
+thoughtful run, using the hints) and run by the scripted autopilot of
+section 15; from mission 3 on the autopilot must lose, and missions 1 and
+2 were meant to fall to a first thoughtful attempt. Every mission seats
+you as the Cult with no choice, so the chapter's starting factions are
+empty. Mr. Pettigrew (`PETTIGREW`) is an Initiate taking the minutes in
+CU1 and a Summoner from CU2 on; the faction's signature, daemons that are
+only as strong as the robed men channelling them, carries the campaign:
+an Imp and a Familiar's swap (CU1), Horrors and a Hexer's frog against
+walls (CU2), the Kraken and Tentacles round an escorted Galleon (CU3),
+Gibbering Masses on the doorstep (CU4), a Stargazer's star (CU5), and the
+Great Summoning of the Herald (CU6).
+
+The prologue's outro (`src/campaign/chapter-1.ts`) no longer says "To be
+continued": it points at the saga's campaigns, the Humans and the Undead
+open, and the Long Night at the end.
+
+### 23.1 The missions
+
+| Mission                         | Board (generator, seats, seed)  | Match seed | Seats                                                | Format and clock                                 | Stars                         |
+| ------------------------------- | ------------------------------- | ---------- | ---------------------------------------------------- | ------------------------------------------------ | ----------------------------- |
+| CU1 Minutes of the Last Meeting | Dry Land 11, 2 seats, seed 3    | 20261901   | Cult; Humans                                         | Kill Sergeant Hobb by round 10                   | by round 8; Pettigrew lives   |
+| CU2 One Wrong Note              | Dry Land 14, 2 seats, seed 16   | 20261902   | Cult; Undead                                         | Capture Cinderfield by round 18                  | by round 15; no city lost     |
+| CU3 Old Blood                   | Archipelago 16, 3 seats, seed 2 | 20261903   | Cult; Dinosaurs and Martians (teamed)                | Escort the Galleon to Lamplight Cove by round 16 | by round 12; no city lost     |
+| CU4 The Inspector Calls         | Dry Land 16, 3 seats, seed 3    | 20261904   | Cult; Dwarves and Goblins (teamed)                   | Hold the Seal-works for 14 rounds                | no city lost; Pettigrew lives |
+| CU5 Thaw                        | Dry Land 16, 4 seats, seed 8    | 20261905   | Cult and Goblins (ally); Ice Folk and Candy (teamed) | Kill Mother Rime by round 20                     | by round 16; Vole lives       |
+| CU6 The Long Night              | Dry Land 20, 4 seats, seed 1    | 20261906   | Cult; Dwarves, Humans and Undead (teamed)            | Capture the Deep Gate by round 20                | by round 14; Pettigrew lives  |
+
+### 23.2 Hand play
+
+| Mission | Thoughtful run                                                          | Autopilot                          |
+| ------- | ----------------------------------------------------------------------- | ---------------------------------- |
+| CU1     | Win, round 2, 3 stars (first attempt on the final definition)           | Victory, round 7, 3 stars          |
+| CU2     | Win, round 13, 3 stars (first attempt)                                  | Defeat, round 7                    |
+| CU3     | Win, round 15, 2 stars (fourth attempt, first on the final definition)  | Defeat, round 4 (the Galleon sunk) |
+| CU4     | Win (held), 14 rounds, 2 stars (fourth attempt, first on the final one) | Defeat, round 7                    |
+| CU5     | Win, round 11, 3 stars (seventh attempt, first on the final definition) | Defeat, round 14                   |
+| CU6     | Win, round 8, 3 stars (fifth attempt, first on the final definition)    | Defeat, round 8                    |
+
+On the final definitions each winning run was replayed from its command
+log (your moves, the Normal AI replying) and ended exactly as above, and
+each autopilot result held. CU1's autopilot wins, which step 1 of 6
+allows: its Imp and Familiar find Hobb by themselves.
+
+The danger moments, and what each mission's hand play changed:
+
+- **CU1.** With 4 Favour a Horror summoned in round 1 one-shot Hobb in
+  round 3, too quick even for the first step; the Lodge now has 2 Favour
+  and Hobb rides further off. A Ranger that walked into Hobb's zone took
+  his place as its garrison of one and Hobb left the road; the extra
+  Ranger now stands outside the zone. The winning line: the Explorer
+  monument (Scouts: a second Familiar) and an Imp in round 1; in round 2
+  a Familiar swapped Hobb into the middle of the Lodge, and the Hexer, the
+  Familiar and the Imp killed him.
+- **CU2.** The first definition held. A fortified Zombie killed the first
+  Horror; Horrors and an Imp's Swarm took Barrow Camp in rounds 4 to 6; a
+  Horror whose channeller was out of range broke loose and killed an
+  Initiate; the Hexer's Ribbit frogged the walled Zombie on Cinderfield
+  (Defense 0.5, no walls) and two Horrors killed it; the Horror that
+  advanced onto the centre broke loose too (no channeller within 3), and
+  the next Horror stood on the empty centre: captured in round 13.
+- **CU3.** With a War Raft in the lane from round 1 its splash killed the
+  Gondola; with two Krakens their torpedoes cleared the sea by round 3;
+  with Seamanship a Dugout rammed the Galleon to a third of its hull and
+  boarded it, and a captured escort does not end the mission (a
+  follow-up). Now one Kraken, three Plesiosaurs, the War Raft as a wave in
+  round 4, and the tribes without Seamanship or Submersibles (no Board, no
+  ram, no new Plesiosaurs). The winning line: the Galleon sank a Dugout,
+  the Kraken a Plesiosaur; a Kraken torpedo and Pettigrew's Tentacle at
+  the Cove killed two more; the Kraken died to a Skimmer's ram (and a
+  Tentacle slapped the Kraken, the weakest unit beside it); the Galleon
+  shot a boat a turn, shot the War Raft first when it came into range,
+  and sailed the last rounds (it cannot move and shoot in one turn):
+  beside the Cove in round 15, one round past the star.
+- **CU4.** With Steam Moles the dwarves tunnelled under the channellers
+  and erupted every other round; with Clockwork Gunners on the shelf they
+  shot a channeller a turn; both times strands broke, Horrors went loose
+  and Pettigrew died in round 8. Now the dwarves know no Fortification or
+  Marksmanship and start broke, and the goblins' camp is level 1 with no
+  Coins. The winning line: Gibbering Masses on the doorstep (no strand),
+  Idol Bearers on the centre, Mines and Offerings for Favour, Horrors and
+  Masses killing Steam Tanks; Pettigrew died in round 8 to a Horror whose
+  channeller a Hammerer had hit (one round's channels were lost to a
+  scripting slip): held, 2 stars.
+- **CU5.** With the sweets' camp beside Hood Hollow a Donut Racer killed
+  Vole in round 1; with Favour 12, Engineering and no Sled the circle won
+  in round 6, too easy; with Rime's whole ring as her zone she stepped out
+  from under a marked star; Candy grew three towns from the road's
+  villages. Now Rime guards her own tile alone, the road's villages are
+  gone, the sweets' camp is level 1 with no Coins and storms Hood Hollow
+  from round 5, and the summit keeps its Sled. The winning line: Horrors
+  killed the Yeti, the Snow Hunter, the Sled and a Gunner on the slope;
+  Vole took a village to heal; a Star-fall from the slope with the Idol
+  Bearer and an Initiate chanting (12) left Rime on 10, and the next star
+  killed her in round 11.
+- **CU6.** With the Seal-works on the shelf and Gunners at the Gate,
+  Gunner shots and a Knight's Overrun broke the strands and the Herald
+  went loose in the Lodge's own ranks (round 8); with the Seal-works four
+  tiles from the Gate, six at the Gate and a Steam Tank on its centre, an
+  enemy stepped on the Great Summoning's mark (18 Favour lost), and on a
+  replay the Herald took the Gate in round 6, too easy for the finale.
+  With the Seal-works seven tiles away, the Brass Titan on the centre,
+  nine at the Gate, the Rangers rushing from round 3 and the dead from
+  round 4, a Knight's Overrun and two Vampires killed both Summoners, the
+  Stargazer and the anchored Idol Bearers twice, the dwarves grew a town
+  (and a second Titan) on the village between, and the attempt was lost.
+  Now that village is gone, the Lodge has 8 Favour, one of the dead's
+  Vampires is a Ghoul, the Rangers rush from round 4 and the dead storm
+  the Seal-works from round 6, and the clock is 20 (star 14). The winning
+  line: the Muster and Explorer monuments and two Offerings in round 1
+  (20 Favour), and Pettigrew led the Great Summoning with the mark under
+  the Familiar (consumed on arrival; no enemy can stand on an occupied
+  mark); Star-falls of 18, 15, 12 and 12 killed four Hammerers, two
+  Engineers and a Vampire and took the Titan from 36 to 9; the Herald
+  walked west with five to seven strands, a Thing in the Cellar's Anchor
+  on the safest channeller, while a Knight killed a Summoner and took the
+  Idol off Hood Hollow's centre (an Initiate took it back); the Herald
+  killed the Titan, advanced onto the Gate in round 7 and took it in
+  round 8.
+
+### 23.3 Deviations and follow-ups
+
+- **Hood Hollow** is the Lodge's camp in CU4 to CU6 (the bible's "hidden
+  camp"); CU4's starts level 1 in the corner behind the peaks.
+- **CU1's Pettigrew is an Initiate** (the bible's Initiate), the Lodge has
+  a Captain-Summoner, a Familiar, a Hexer and 2 Favour, and the patrol's
+  `GUARD` hands over to `others` `ASSAULT` from round 5.
+- **CU3's clock is 16 and its star 12** (the bible's 20 and 16), and the
+  Dinosaurs may not research Seamanship or Submersibles; the War Raft is a
+  wave in round 4. E7 (a navy that hunts a lane) is the
+  built `GUARD` with `ships: true`.
+- **CU4's dwarves** keep two at the Gate for three rounds and then storm
+  the Seal-works (`GUARD` with `others: ASSAULT`, the bible's `NORMAL`
+  then `ASSAULT`); the goblins rush from round 5 (the bible's 4); three
+  waves (goblins in rounds 6 and 10, dwarves in round 8).
+- **CU5's Rime** is a `GUARD` of her own tile with a garrison of one, the
+  E2 fallback the bible names; E2 (a unit that never moves) is not built.
+  The sweets play their own game until round 4 and then `ASSAULT` Hood
+  Hollow.
+- **CU6** has a clock of 20 and a star of 14 (the bible's 24 and 20), the
+  Deep Gate at level 3 (the bible's 4), the Rangers' `RUSH` from round 4
+  (the bible's 3) and the dead's `ASSAULT` on the Seal-works (the bible's
+  Hood Hollow) from round 6; eighteen village edits (the natural-maps test
+  names it). The dwarves know neither Marksmanship nor Fortification (no
+  Gunners, no Steam Moles). E3 (a star for summoning the Herald) and E4
+  (story lines on the waves) are not built; the stars are the clock and
+  Pettigrew.
+- **The Herald's AI (`pulp_wars-mch9.56`)** is not touched: no Cult
+  mission needs an enemy or allied Herald (the Cult is the player in all
+  six), so the bound-Herald idling under `GUARD` stays open.
+- **Follow-up: a captured escort.** An `ESCORT` unit taken by the enemy
+  (a Dinosaur Dugout's Board in CU3's third version) neither loses nor
+  ends the mission: the objective's unit check ignores who owns it. CU3
+  avoids it by forbidding the tribes Seamanship.
+- **Observations for balance work (not changed here).** Steam Mole
+  eruptions and Clockwork Gunner shots break a channel every turn, which
+  is why CU4 and CU6 forbid them; a Knight's Overrun chain or a Vampire's
+  feast through a line of 7-HP robed men is the Cult's worst enemy; a
+  Tentacle slaps the weakest unit beside it even when that is the Cult's
+  own; a city at level 5 gives the Cult a Thing in the Cellar whose Anchor
+  makes one strand count three; Star-falls with four chanters (18) clear
+  a garrison ring in a turn, and Plated Steam Tanks take at most 4 from
+  each, Herald hits included.
+
 ## Appendix A: critique of the first draft
 
 The first draft was reviewed as a skeptical designer and engineer. Each item

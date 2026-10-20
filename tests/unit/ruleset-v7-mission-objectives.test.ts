@@ -1036,6 +1036,13 @@ describe("natural maps", () => {
       "ICE_FOLK_4",
       "ICE_FOLK_5",
       "ICE_FOLK_6",
+      // The Cult campaign (`pulp_wars-hmyk.12`).
+      "CULT_1",
+      "CULT_2",
+      "CULT_3",
+      "CULT_4",
+      "CULT_5",
+      "CULT_6",
     ]);
     for (const mission of MISSION_REGISTRY_V7)
       expect(missionMapDriftV7(mission), mission.id).toEqual([]);
@@ -1071,6 +1078,10 @@ describe("natural maps", () => {
       // villages and eleven more round the slopes and the barrows are gone,
       // so neither the Lodge nor the dead grows a free town.
       ICE_FOLK_6: 16,
+      // The Long Night (`pulp_wars-hmyk.12`): the Lodge's, the Pact's and
+      // the dead's nine towns stand on villages, and nine more between them
+      // are gone, so the night is a battle and not a land rush.
+      CULT_6: 18,
     };
     const terrainEdits: Readonly<Record<string, number>> = {
       // Bone Neck.

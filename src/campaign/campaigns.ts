@@ -1,6 +1,7 @@
 import type { FactionIdV7, UnitRoleIdV7 } from "../engine/v7/types";
 import { CHAPTER_ONE_V7, type CampaignChapterV7 } from "./chapter-1";
 import { CHAPTER_CANDY_V7 } from "./chapter-candy";
+import { CHAPTER_CULT_V7 } from "./chapter-cult";
 import { CHAPTER_DINOSAURS_V7 } from "./chapter-dinosaurs";
 import { CHAPTER_DWARVES_V7 } from "./chapter-dwarves";
 import { CHAPTER_GOBLINS_V7 } from "./chapter-goblins";
@@ -168,8 +169,14 @@ export const CAMPAIGNS_V7: readonly CampaignDefinitionV7[] = Object.freeze([
     subtitle: "Mother Rime brings the cold",
     chapter: CHAPTER_ICE_FOLK_V7,
   } satisfies CampaignDefinitionV7),
-  // The saga culminates with the Cult: the middle of the last row.
-  factionCampaign("CULT", "CULT", "Cultists", "Cultist", 3),
+  // The saga culminates with the Cult, the middle of the last row
+  // (`pulp_wars-hmyk.12`, docs/product/SAGA.md 2.9).
+  Object.freeze({
+    ...factionCampaign("CULT", "CULT", "Cultists", "Cultist", 3),
+    title: "The Long Night",
+    subtitle: "The finale",
+    chapter: CHAPTER_CULT_V7,
+  } satisfies CampaignDefinitionV7),
   // The Candy campaign (`pulp_wars-hmyk.11`, docs/product/SAGA.md 2.8).
   Object.freeze({
     ...factionCampaign("CANDY", "CANDY", "Candy", "Candy", 3),

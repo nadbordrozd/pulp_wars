@@ -77,9 +77,9 @@ describe("Ruleset 7 campaign front screen", () => {
     // The campaign map (pulp_wars-hmyk.3): the prologue open, the Humans
     // campaign open (pulp_wars-hmyk.4), the Martians, the Goblins and the
     // Dwarves locked behind both first campaigns (pulp_wars-hmyk.7,
-    // pulp_wars-hmyk.8, pulp_wars-hmyk.9), the Ice Folk and Candy locked
-    // behind the middle four (pulp_wars-hmyk.10, pulp_wars-hmyk.11), the
-    // rest not written yet.
+    // pulp_wars-hmyk.8, pulp_wars-hmyk.9), the Ice Folk, the Cult and Candy
+    // locked behind the middle four (pulp_wars-hmyk.10, pulp_wars-hmyk.12,
+    // pulp_wars-hmyk.11).
     expect(
       [...document.querySelectorAll<HTMLElement>(".v7-campaign-plate")].map(
         (plate) => [plate.dataset.campaign, plate.dataset.status],
@@ -93,7 +93,7 @@ describe("Ruleset 7 campaign front screen", () => {
       ["GOBLINS", "locked"],
       ["DWARVES", "locked"],
       ["ICE_FOLK", "locked"],
-      ["CULT", "soon"],
+      ["CULT", "locked"],
       ["CANDY", "locked"],
     ]);
     expect(
@@ -132,6 +132,13 @@ describe("Ruleset 7 campaign front screen", () => {
         ?.getAttribute("aria-label"),
     ).toBe(
       "The Long Winter, Locked: finish Dinosaurs, Martians, Goblins and Dwarves",
+    );
+    expect(
+      document
+        .querySelector('[data-action="campaign-open-cult"]')
+        ?.getAttribute("aria-label"),
+    ).toBe(
+      "The Long Night, Locked: finish Dinosaurs, Martians, Goblins and Dwarves",
     );
     expect(
       document

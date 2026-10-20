@@ -291,5 +291,5 @@ export const CHAPTER_ONE_V7: CampaignChapterV7 = Object.freeze({
     }),
   ]),
   outro:
-    "End of Part One. To be continued in Part Two: The Thing in the Shaft.",
+    "End of Part One. Part Two, The Thing in the Shaft, goes on in the campaigns of the saga: the Humans and the Undead are open now, and the Long Night waits at the end.",
 });
