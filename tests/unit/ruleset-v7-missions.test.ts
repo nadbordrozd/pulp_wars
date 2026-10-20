@@ -236,6 +236,19 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
     "850817bce49333a8259db6c14a497c384633c97d25b2bb4df7feb53242dda886",
   "CANDY_6@1:CANDY":
     "5164de3b08e1bf09e94cb9e2848a75e80cc440ec45553c03f005189da2151142",
+  // The Ice Folk campaign, "The Long Winter" (`pulp_wars-hmyk.10`).
+  "ICE_FOLK_1@1:ICE_FOLK":
+    "346894d9967db6e36e37dae510b72de902c8f9619c7a8d5abccca6388b5650a0",
+  "ICE_FOLK_2@1:ICE_FOLK":
+    "1ac048fce485763846252de9172cb0140ca1e0c1ff67b99f1bb5d2d7b82b5651",
+  "ICE_FOLK_3@1:ICE_FOLK":
+    "ca6f861718a57d2dee346c761df07b625c850add4142200ef71db4452d481def",
+  "ICE_FOLK_4@1:ICE_FOLK":
+    "2756ab0d9446281b7a1f675da092f67d0dd3fac9a6898187cc12e8e5429e9bb9",
+  "ICE_FOLK_5@1:ICE_FOLK":
+    "a04066ac2a5d7068ed1dc50c41540e0161d3162a1cb5c326d94f98929153f7d0",
+  "ICE_FOLK_6@1:ICE_FOLK":
+    "77447b956d8255c6d3ab5e3592250f924d1051487c8be06b963892aced3306c8",
   // The siege fixture of the Normal AI (`pulp_wars-68k.6`).
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 2.
   "TEST_NECK@2:ORIGINAL":
@@ -624,6 +637,19 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
     "2c658acbb487615bddd86d5134dbe2b51086ba9b1cc8b7c951d47fadf36124d5",
   "CANDY_6@1:CANDY":
     "439a84bf3892273713b9f92f918408e7b7464a764badf40d3e909fff064916be",
+  // The Ice Folk campaign, "The Long Winter" (`pulp_wars-hmyk.10`).
+  "ICE_FOLK_1@1:ICE_FOLK":
+    "c5fe4a9e6fbaebb83bce4a2bb0d0e3bc1aca17fcf8d7140575c40d3b62ff89c1",
+  "ICE_FOLK_2@1:ICE_FOLK":
+    "5a0d5d89d9639ab9e7b3a9b0077dfcb5cfbc231054195d4e7d8a0de8879fdd0b",
+  "ICE_FOLK_3@1:ICE_FOLK":
+    "6ef5b24e334980d51ecfeb6c513e3b2391ea7b2b0efa3a8c984a42a03ad8241d",
+  "ICE_FOLK_4@1:ICE_FOLK":
+    "2269227843b53ae17c46732c14c7b74978f1d083e1ef0fcc68ffc75167193244",
+  "ICE_FOLK_5@1:ICE_FOLK":
+    "f8d5975e48cec6531f27aa558b55fc4a678529539e8d36a8857df32c218dca4b",
+  "ICE_FOLK_6@1:ICE_FOLK":
+    "080d14156726faf33ee3aa386d8289e156f71a1c1610dde427f6c46372b9eb18",
 
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 2.
   "TEST_NECK@2:ORIGINAL":

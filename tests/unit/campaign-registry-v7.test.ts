@@ -10,6 +10,7 @@ import { CHAPTER_DINOSAURS_V7 } from "../../src/campaign/chapter-dinosaurs";
 import { CHAPTER_DWARVES_V7 } from "../../src/campaign/chapter-dwarves";
 import { CHAPTER_GOBLINS_V7 } from "../../src/campaign/chapter-goblins";
 import { CHAPTER_HUMANS_V7 } from "../../src/campaign/chapter-humans";
+import { CHAPTER_ICE_FOLK_V7 } from "../../src/campaign/chapter-ice-folk";
 import { CHAPTER_MARTIANS_V7 } from "../../src/campaign/chapter-martians";
 import { CHAPTER_UNDEAD_V7 } from "../../src/campaign/chapter-undead";
 import {
@@ -67,6 +68,7 @@ describe("campaign registry", () => {
       CHAPTER_MARTIANS_V7,
       CHAPTER_GOBLINS_V7,
       CHAPTER_DWARVES_V7,
+      CHAPTER_ICE_FOLK_V7,
       CHAPTER_CANDY_V7,
     ]);
     expect(campaignMissionV7("FRONTIER_4")).toMatchObject({
@@ -122,6 +124,14 @@ describe("campaign registry", () => {
       chapter: CHAPTER_DWARVES_V7,
       entry: { number: 6 },
     });
+    const iceFolk = campaignByIdV7("ICE_FOLK");
+    expect(iceFolk?.chapter).toBe(CHAPTER_ICE_FOLK_V7);
+    expect(iceFolk?.title).toBe("The Long Winter");
+    expect(campaignMissionV7("ICE_FOLK_6")).toMatchObject({
+      campaign: { id: "ICE_FOLK" },
+      chapter: CHAPTER_ICE_FOLK_V7,
+      entry: { number: 6 },
+    });
     const candy = campaignByIdV7("CANDY");
     expect(candy?.chapter).toBe(CHAPTER_CANDY_V7);
     expect(candy?.title).toBe("Sweet Dreams");
@@ -133,7 +143,7 @@ describe("campaign registry", () => {
     expect(campaignByIdV7("NOWHERE")).toBeNull();
   });
 
-  it("shows the prologue and the openers open, the Dinosaurs, the Martians, the Goblins, the Dwarves and Candy locked until the cheat, and every unwritten campaign as coming soon", () => {
+  it("shows the prologue and the openers open, the Dinosaurs, the Martians, the Goblins, the Dwarves, the Ice Folk and Candy locked until the cheat, and every unwritten campaign as coming soon", () => {
     for (const cheat of [false, true]) {
       const plates = campaignPlatesV7({}, cheat);
       expect(plates.map((plate) => [plate.campaign.id, plate.status])).toEqual([
@@ -156,7 +166,10 @@ describe("campaign registry", () => {
         // The Dwarf campaign (`pulp_wars-hmyk.9`): tier 2, locked the
         // same way.
         ["DWARVES", cheat ? "OPEN" : "LOCKED"],
-        ...CAMPAIGN_IDS_V7.slice(7, 9).map((id) => [id, "SOON"]),
+        // The Ice Folk campaign (`pulp_wars-hmyk.10`): tier 3, locked
+        // until the four middle campaigns are finished; the cheat opens it.
+        ["ICE_FOLK", cheat ? "OPEN" : "LOCKED"],
+        ...CAMPAIGN_IDS_V7.slice(8, 9).map((id) => [id, "SOON"]),
         // The Candy campaign (`pulp_wars-hmyk.11`): tier 3, locked until
         // the four middle campaigns are finished; the cheat opens it.
         ["CANDY", cheat ? "OPEN" : "LOCKED"],

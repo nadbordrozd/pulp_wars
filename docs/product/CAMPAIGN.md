@@ -4944,6 +4944,158 @@ The danger moments, and what each mission's hand play changed:
   lake masses where it is and never comes round. Two Liches focus-fire a
   Giant from 40 to 10 in one turn.
 
+## 22. The Ice Folk campaign, "The Long Winter" (`pulp_wars-hmyk.10`)
+
+The second tier-3 faction campaign, after Candy (section 21): six
+missions, `ICE_FOLK_1` to `ICE_FOLK_6` (`src/engine/v7/missions/ice-folk-*.ts`),
+in the chapter `src/campaign/chapter-ice-folk.ts`, which the campaign
+map's Ice Folk plate opens once the four middle campaigns are done (or with
+the testing cheat, section 14.5). The briefings and closings are the saga
+bible's ([SAGA.md](SAGA.md) sections 2.7 and 3.7), trimmed to the card.
+Each mission was hand played through `play-text` (the thoughtful run,
+using the hints) and run by the scripted autopilot of section 15; from
+mission 3 on the autopilot must lose or miss the clock, and missions 1 and
+2 were meant to fall to a first thoughtful attempt. Every mission seats
+you as the Ice Folk with no choice, so the chapter's starting factions are
+empty. Mother Rime (`RIME`) is the Ice Witch in every mission, and the
+faction's signature, ice, carries the campaign: freezing first and
+striking second (I1), a Frost Giant's smash (I2, I5), a road frozen across
+a strait (I3), Musk Oxen whose Frostbite freezes their attackers (I4, I6).
+
+### 22.1 The missions
+
+| Mission                  | Board (generator, seats, seed)  | Match seed | Seats                                                 | Format and clock                            | Stars                     |
+| ------------------------ | ------------------------------- | ---------- | ----------------------------------------------------- | ------------------------------------------- | ------------------------- |
+| I1 The Warm Mountain     | Dry Land 11, 2 seats, seed 2    | 20261601   | Ice Folk; Goblins                                     | Conquest of the Stovepipe and Boiler Hole   | by round 12; Rime lives   |
+| I2 Waking the Giants     | Dry Land 14, 2 seats, seed 12   | 20261602   | Ice Folk; Undead                                      | Kill the Frozen Abbot by round 20           | by round 15; no city lost |
+| I3 The Frozen Strait     | Continents 16, 2 seats, seed 15 | 20261603   | Ice Folk; Dwarves                                     | Capture Anvil Bay by round 22               | by round 18; no city lost |
+| I4 A Year Without Summer | Lakes 16, 3 seats, seed 3       | 20261604   | Ice Folk; Humans and Candy (teamed)                   | Hold Whitewater and Frostford for 16 rounds | no city lost; Rime lives  |
+| I5 The Ember Lodge       | Dry Land 16, 3 seats, seed 5    | 20261605   | Ice Folk; Cult and Goblins (teamed)                   | Capture the Ember Lodge by round 22         | by round 18; no city lost |
+| I6 The Winter Crown      | Dry Land 20, 4 seats, seed 1    | 20261606   | Ice Folk and Dwarves (ally); Cult and Undead (teamed) | Escort Rime to the Summit by round 20       | by round 16; no city lost |
+
+### 22.2 Hand play
+
+| Mission | Thoughtful run                                                                                    | Autopilot                      |
+| ------- | ------------------------------------------------------------------------------------------------- | ------------------------------ |
+| I1      | Win, round 10, 3 stars (second attempt on the final definition; the first won in round 14 with 2) | Defeat, round 14               |
+| I2      | Win, round 12, 3 stars (first attempt)                                                            | Victory, round 14, 3 stars     |
+| I3      | Win, round 11, 3 stars (fourth attempt, first on the final definition)                            | Defeat, out of time (round 23) |
+| I4      | Win (held), 16 rounds, 1 star (third attempt, first on the final definition)                      | Defeat, round 6 (a town lost)  |
+| I5      | Win, round 11, 3 stars (fifth attempt, first on the final definition)                             | Defeat, out of time (round 23) |
+| I6      | Win, round 11, 3 stars (second attempt on the final definition)                                   | Defeat, out of time (round 21) |
+
+On the final definitions each winning run was replayed from its command
+log (your moves, the Normal AI replying) and ended exactly as above, and
+each autopilot result held. I2's autopilot wins, which step 2 of 6 allows:
+the Frost Giant arrives beside the tomb and walks to the Abbot by itself.
+
+The danger moments, and what each mission's hand play changed:
+
+- **I1.** With three villages in the valley and 3 Coins the gang settled
+  each and trained a Goblin a turn; a Wolf Rider (Gang Up) killed both
+  Sleds one hit each, and lone Yetis that advanced after a kill died to
+  two Goblins or a Kaboom (6 to everything round the Goblin); a frozen
+  Brute heals while idle. The villages are gone, the gang starts broke,
+  and Rime has Deep Winter and a Musk Ox. The winning line: the Explorer
+  monument (Scouts: a second Sled), Sled and Witch Frost Bolts froze
+  Boiler Hole's centre Goblin and its neighbour, the Ox shattered the
+  frozen one and stood on the centre (round 6); the Sleds froze the Wolf
+  Rider, the Ox and a Hunter killed it; the Stovepipe's centre was frozen
+  twice and killed (round 10).
+- **I2.** The first definition held: Sled Frost Bolts froze the Abbot from
+  two tiles; a bitten Sled died and rose as a Zombie, Cold Snap froze it
+  and two Yetis shattered it; the Giant came in round 10, its Cold Aura
+  froze the door Zombie and then the Abbot and two beside him, and it
+  killed the Abbot in round 12.
+- **I3.** With the Ironclad on the strait from round 1 it shot a Yeti a
+  turn off the shore; with it as a wave in round 6 and every unoccupied
+  tile cracked each turn the road became a tug of war and the shore
+  Gunner killed the Witch; with Naval Engineering Anvil Bay's Shipyard
+  launched its own Ironclad, which shot the road from its dock (a hostile
+  dock never freezes). Now Icebound is known, the dwarves build no
+  Ironclads or Diving Bells, keep one Gunner, and their Ironclad comes
+  home in round 12. The winning line: the Yetis froze the shallows and
+  icebound the Bell, the Witch walked onto the ice (her ring freezes every
+  tile round her), Glacier (thick ice) in round 5, Yetis held the road and
+  killed the embarked Hammerer and Engineer (embarked units don't strike
+  back); Brittle in round 7, the Sled froze the gate's Hammerer each turn
+  and a Yeti shattered it with Breach (round 10); captured in round 11.
+- **I4.** With Chivalry and the southern villages the Wardens trained a
+  Knight a turn; Oxen on Frostford's centre froze every Knight that struck
+  them, but a Knight's Overrun chain killed a Sled, the Witch and two
+  Hunters in the open. Without Chivalry and with a wall of Musk Oxen both
+  enemies stood off for six rounds. Now the southern villages stay gone,
+  Chivalry is back, the Wardens `ASSAULT` Whitewater round the west shore
+  and the sweets Frostford, and each sends two waves. The winning line:
+  the Explorer monument at Frostford, Land Grants and Musk Oxen on every
+  front; everything that struck an Ox was frozen, then Hunters (Cold
+  Blood) and Rockfall killed or Oxen shattered it; a Knight's Overrun
+  killed a Yeti and both Sleds in round 11; Icemoor (not protected) fell
+  in round 15, and Rime died to a last Overrun in the final enemy phase:
+  held, 1 star.
+- **I5.** With a level-4 Lodge and four Mines it reached level 5 in round 2
+  and raised two Things in the Cellar; capped at level 3 but with Crafting
+  and the game round it, it still grew a level a round; with 6 Favour the
+  two Summoners called a Horror nearly every round and the Giant could not
+  advance onto the Lodge's centre before the clock. Now the Lodge knows no
+  Crafting or Engineering, its game is removed, it has 2 Favour, and the
+  camp is level 4 with Boom so a Workshop and two harvests make it level 5
+  in round 1 (the Giant). The winning line: three villages by round 4; the
+  Giant stepped onto a peak beside three Imps (Cold Aura froze five) and
+  killed one while an Ox, a Yeti and a Hunter finished the rest; the Giant
+  killed a Summoner, smashed the door Bearer (shards froze three more);
+  the Lodge trained an Initiate on its centre each turn, the Giant's Aura
+  froze it and a Yeti shattered it and stood on the centre; Behold and a
+  Hexer's Ribbit blocked the capture once; captured in round 11.
+- **I6.** An Initiate beside the summit settled the village there as a
+  cult town in round 1; it now starts outside the summit's reach. With
+  Engineering and a village on the road Rime walked over the peaks and won
+  in round 9: too easy for a finale. Now Engineering is not known at the
+  start, the road's village is gone, the Lodge has 4 Favour and an ambush
+  (an Initiate and a Hexer) by the summit, the Unquiet climb out in rounds
+  4, 8 and 12, and the clock is 20 (star 16). Rime then died in round 6 to
+  an Imp that strode over the peak beside her road. The winning line: the
+  Sled threw its bolas at the Horror every round (frozen, it never acted);
+  an Ox set the charge that blasted the peak on the road flat (Blast
+  Mountain); Yetis on the peaks beside her blocked the Imps and killed
+  them; Engineering bought in round 6; a second Sled froze the second
+  Horror; Rime walked inside a box of Mammoth, Oxen and Yetis, a Yeti's
+  Rockfall from a peak killed the summit's Initiate, and she stepped onto
+  the summit in round 11. Two Yetis died.
+
+### 22.3 Deviations and follow-ups
+
+- **I1's gang starts broke** (0 Coins) with no valley villages; Rime has
+  Deep Winter and a Musk Ox from the start.
+- **I2's Abbot guards the tomb** (`GUARD`, garrison 4, the rest `RUSH`).
+  The Frost Giant is a player wave in round 10 (`JUGGERNAUT`); E4 (a story
+  line on the wave) is not built, and the first hint announces the giant.
+- **I3's board is turned**: the strait runs north and south, Coldharbour
+  on the western shore facing Anvil Bay. Icebound is known from the start
+  (the bible's Rime and Pack Ice); the dwarves may not research Naval
+  Engineering or Submersibles, keep one Steam Launch and one Diving Bell,
+  and their Ironclad is a wave in round 12.
+- **I4 has a third town**, Icemoor, which is not protected (losing it
+  costs the star); the Wardens `ASSAULT` Whitewater (the bible's `RUSH`)
+  and both enemies send waves (Candy in rounds 4 and 8, the Wardens in 5
+  and 10). Seven villages south of the line are gone.
+- **I5's Lodge is level 3** (the bible's 4) without a Gibbering Mass on the
+  doorstep (daemons cannot be starting units; its Summoners call Imps and
+  Horrors), knows no Crafting or Engineering, and its tile's game is
+  removed (two Resource edits). The camp is level 4 with Boom, so the
+  Frost Giant comes in round 1 to a player who builds a Workshop.
+- **I6** keeps Engineering out of the starting technologies (it can be
+  researched), has a clock of 20 and a star of 16 (the bible's 24 and
+  20), and Unquiet waves in rounds 4, 8 and 12 (the bible's 6, 10 and 14);
+  sixteen village edits (the natural-maps test names it).
+- **Extensions.** None was needed or built.
+- **Observations for balance work (not changed here).** A Sled's bolas
+  each turn takes a Horror (or any one unit) out of the fight indefinitely;
+  a wall of Musk Oxen makes the Normal AI stand off entirely (I4's second
+  attempt); a Yeti's Rockfall from a peak hits two tiles away with no
+  answer; a city at level 5 gives a Frost Giant that decides any fight it
+  reaches, which is why I5's camp starts one level short.
+
 ## Appendix A: critique of the first draft
 
 The first draft was reviewed as a skeptical designer and engineer. Each item

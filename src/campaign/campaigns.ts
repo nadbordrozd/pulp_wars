@@ -5,6 +5,7 @@ import { CHAPTER_DINOSAURS_V7 } from "./chapter-dinosaurs";
 import { CHAPTER_DWARVES_V7 } from "./chapter-dwarves";
 import { CHAPTER_GOBLINS_V7 } from "./chapter-goblins";
 import { CHAPTER_HUMANS_V7 } from "./chapter-humans";
+import { CHAPTER_ICE_FOLK_V7 } from "./chapter-ice-folk";
 import { CHAPTER_MARTIANS_V7 } from "./chapter-martians";
 import { CHAPTER_UNDEAD_V7 } from "./chapter-undead";
 
@@ -160,7 +161,13 @@ export const CAMPAIGNS_V7: readonly CampaignDefinitionV7[] = Object.freeze([
     subtitle: "The Thane puts a lid on it",
     chapter: CHAPTER_DWARVES_V7,
   } satisfies CampaignDefinitionV7),
-  factionCampaign("ICE_FOLK", "ICE_FOLK", "Ice Folk", "Ice Folk", 3),
+  // The Ice Folk campaign (`pulp_wars-hmyk.10`, docs/product/SAGA.md 2.7).
+  Object.freeze({
+    ...factionCampaign("ICE_FOLK", "ICE_FOLK", "Ice Folk", "Ice Folk", 3),
+    title: "The Long Winter",
+    subtitle: "Mother Rime brings the cold",
+    chapter: CHAPTER_ICE_FOLK_V7,
+  } satisfies CampaignDefinitionV7),
   // The saga culminates with the Cult: the middle of the last row.
   factionCampaign("CULT", "CULT", "Cultists", "Cultist", 3),
   // The Candy campaign (`pulp_wars-hmyk.11`, docs/product/SAGA.md 2.8).

@@ -59,6 +59,12 @@ import { CANDY_3_V7 } from "./candy-3";
 import { CANDY_4_V7 } from "./candy-4";
 import { CANDY_5_V7 } from "./candy-5";
 import { CANDY_6_V7 } from "./candy-6";
+import { ICE_FOLK_1_V7 } from "./ice-folk-1";
+import { ICE_FOLK_2_V7 } from "./ice-folk-2";
+import { ICE_FOLK_3_V7 } from "./ice-folk-3";
+import { ICE_FOLK_4_V7 } from "./ice-folk-4";
+import { ICE_FOLK_5_V7 } from "./ice-folk-5";
+import { ICE_FOLK_6_V7 } from "./ice-folk-6";
 import {
   LAB_BREAKTHROUGH_GOBLIN_V7,
   LAB_BREAKTHROUGH_UNDEAD_V7,
@@ -185,6 +191,13 @@ export const MISSION_REGISTRY_V7: readonly MissionDefinitionV7[] = deepFreeze([
   CANDY_4_V7,
   CANDY_5_V7,
   CANDY_6_V7,
+  // The Ice Folk campaign, "The Long Winter" (`pulp_wars-hmyk.10`).
+  ICE_FOLK_1_V7,
+  ICE_FOLK_2_V7,
+  ICE_FOLK_3_V7,
+  ICE_FOLK_4_V7,
+  ICE_FOLK_5_V7,
+  ICE_FOLK_6_V7,
   // The Human tuning labs (`pulp_wars-w49.3`): hidden mirror fixtures of
   // the text harness (docs/validation/TEXT_PLAY.md).
   LAB_SIEGE_V7,

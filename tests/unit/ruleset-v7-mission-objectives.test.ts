@@ -1029,6 +1029,13 @@ describe("natural maps", () => {
       "CANDY_4",
       "CANDY_5",
       "CANDY_6",
+      // The Ice Folk campaign (`pulp_wars-hmyk.10`).
+      "ICE_FOLK_1",
+      "ICE_FOLK_2",
+      "ICE_FOLK_3",
+      "ICE_FOLK_4",
+      "ICE_FOLK_5",
+      "ICE_FOLK_6",
     ]);
     for (const mission of MISSION_REGISTRY_V7)
       expect(missionMapDriftV7(mission), mission.id).toEqual([]);
@@ -1060,6 +1067,10 @@ describe("natural maps", () => {
       CANDY_2: 11,
       CANDY_3: 14,
       CANDY_6: 11,
+      // The Winter Crown (`pulp_wars-hmyk.10`): the four seats stand on five
+      // villages and eleven more round the slopes and the barrows are gone,
+      // so neither the Lodge nor the dead grows a free town.
+      ICE_FOLK_6: 16,
     };
     const terrainEdits: Readonly<Record<string, number>> = {
       // Bone Neck.
