@@ -3,7 +3,7 @@ import type { MissionDefinitionV7 } from "./types";
 /**
  * `UNDEAD_3` "The Ship of the Dead" (docs/product/SAGA.md section 3.2, U3;
  * the Undead campaign, `pulp_wars-hmyk.5`). You must take Chapel Rock, the
- * Martians' fort on an island in the mouth of Gravesend Bay, by round 22:
+ * Martians' fort on an island in the mouth of Gravesend Bay, by round 20:
  * the Marquis's flagship lies under it. Step 3 of 6: a naval capture.
  * Martian Shields soak damage and refill every turn, so spread fire is
  * wasted; focus one ship a turn. The Undead fleet grows from the enemy's:
@@ -17,7 +17,7 @@ import type { MissionDefinitionV7 } from "./types";
  * (`GUARD`); the rest of the dredgers play their ordinary game. Their
  * fleet starts at sea off the channel, north and south (hand play of the
  * Humans' naval mission: a fleet anchored by your port shells it flat in
- * round 1). More ships come back down the channel in rounds 5 and 9.
+ * round 1). More ships come back down the channel in rounds 5, 9 and 13.
  *
  * Hand play (CAMPAIGN.md section 16) set the numbers: the dredgers learn
  * no naval technology (they built a Port on every water tile round the
@@ -49,7 +49,9 @@ import type { MissionDefinitionV7 } from "./types";
 export const UNDEAD_3_V7: MissionDefinitionV7 = {
   id: "UNDEAD_3",
   // Revision 2 (`pulp_wars-hmyk.17`): each seat explores its units' sight.
-  revision: 2,
+  // Revision 3 (`pulp_wars-hmyk.20`, retune 2): a thin start and a third
+  // wave.
+  revision: 3,
   seed: 20261303,
   // <map>
   size: 16,
@@ -75,6 +77,8 @@ export const UNDEAD_3_V7: MissionDefinitionV7 = {
       // City Walls on the Rock and a Saucer from the Rig).
       { kind: "RESOURCE", at: { x: 9, y: 6 }, resource: "." },
       { kind: "RESOURCE", at: { x: 6, y: 7 }, resource: "." },
+      // Retune 2 (`pulp_wars-hmyk.20`): the chest above Gravesend.
+      { kind: "CHEST", at: { x: 3, y: 3 }, present: false },
     ],
   },
   terrain: [
@@ -136,10 +140,7 @@ export const UNDEAD_3_V7: MissionDefinitionV7 = {
     { x: 6, y: 2 },
     { x: 4, y: 14 },
   ],
-  treasureChests: [
-    { x: 3, y: 3 },
-    { x: 2, y: 13 },
-  ],
+  treasureChests: [{ x: 2, y: 13 }],
   // </map>
   improvements: [
     // Gravesend's Port.
@@ -153,16 +154,8 @@ export const UNDEAD_3_V7: MissionDefinitionV7 = {
   seats: [
     {
       faction: "UNDEAD",
-      coins: 8,
-      technologies: [
-        "GATHERING",
-        "ADMINISTRATION",
-        "PLANNING",
-        "DRILL",
-        "FORTIFICATION",
-        "SHORECRAFT",
-        "SEAMANSHIP",
-      ],
+      coins: 5,
+      technologies: ["GATHERING", "SHORECRAFT", "SEAMANSHIP"],
       cities: [
         {
           name: "Gravesend",
@@ -173,33 +166,28 @@ export const UNDEAD_3_V7: MissionDefinitionV7 = {
         { name: "Lychgate", at: { x: 2, y: 11 }, level: 1, rewards: [] },
       ],
       units: [
-        { role: "CAPTAIN", at: { x: 3, y: 8 } },
+        { role: "FIGHTER", at: { x: 3, y: 8 } },
         { role: "PATROL_BOAT", at: { x: 4, y: 7 } },
-        { role: "PATROL_BOAT", at: { x: 4, y: 9 } },
-        { role: "FIGHTER", at: { x: 2, y: 8 }, home: 1 },
-        { role: "GUARD", at: { x: 2, y: 11 }, home: 1 },
+        // The Last Rites' old tender, which never quite sank.
+        { role: "SUBMARINE", at: { x: 4, y: 9 } },
+        { role: "FIGHTER", at: { x: 2, y: 11 }, home: 1 },
       ],
-      // The bay, the Rock and the Rig across the channel.
-      reveal: { radius: 2, rects: [{ x0: 4, y0: 5, x1: 11, y1: 9 }] },
+      // Chapel Rock is in sight across the bay.
+      reveal: { radius: 1, rects: [{ x0: 6, y0: 6, x1: 7, y1: 7 }] },
     },
     {
       // The dredgers of Gravesend Bay, after star-iron.
       faction: "MARTIAN",
-      coins: 4,
+      coins: 6,
       technologies: ["HUNTING", "DRILL", "MARKSMANSHIP"],
       cities: [
         {
           name: "Dredgers' Rig",
           at: { x: 10, y: 7 },
-          level: 1,
-          rewards: [],
+          level: 2,
+          rewards: ["STOCKPILE"],
         },
-        {
-          name: "Chapel Rock",
-          at: { x: 7, y: 6 },
-          level: 1,
-          rewards: [],
-        },
+        { name: "Chapel Rock", at: { x: 7, y: 6 }, level: 1, rewards: [] },
       ],
       units: [
         { role: "FIGHTER", at: { x: 10, y: 7 } },
@@ -236,6 +224,7 @@ export const UNDEAD_3_V7: MissionDefinitionV7 = {
         "SEAMANSHIP",
         "SUBMERSIBLES",
       ],
+      // The Rock's garrison holds the Rock.
       directive: {
         kind: "GUARD",
         zone: [{ x0: 7, y0: 6, x1: 7, y1: 7 }],
@@ -244,11 +233,14 @@ export const UNDEAD_3_V7: MissionDefinitionV7 = {
     },
   ],
   // The dredgers' fleet comes back from the open sea: two Skimmers down the
-  // channel in round 5, a Hover Cruiser and a Skimmer in round 9.
+  // channel in round 5, a Hover Cruiser and a Skimmer in round 9, a Cruiser
+  // and two Skimmers in round 13.
   reinforcements: [
     {
       seat: 1,
       round: 5,
+      line: "Two more dredgers skim in from the open sea, humming.",
+      announce: true,
       units: [
         { role: "PATROL_BOAT", at: { x: 8, y: 7 } },
         { role: "PATROL_BOAT", at: { x: 9, y: 9 } },
@@ -257,20 +249,33 @@ export const UNDEAD_3_V7: MissionDefinitionV7 = {
     {
       seat: 1,
       round: 9,
+      line: "A Hover Cruiser comes down the channel. The Last Rites' captain whistles.",
+      announce: true,
       units: [
         { role: "BATTLESHIP", at: { x: 8, y: 8 } },
         { role: "PATROL_BOAT", at: { x: 9, y: 9 } },
       ],
     },
+    {
+      seat: 1,
+      round: 13,
+      line: "The whole dredging fleet returns. The Marquis asks for his good hat.",
+      announce: true,
+      units: [
+        { role: "BATTLESHIP", at: { x: 8, y: 9 } },
+        { role: "PATROL_BOAT", at: { x: 9, y: 2 } },
+        { role: "PATROL_BOAT", at: { x: 9, y: 10 } },
+      ],
+    },
   ],
   forbiddenTechnologies: [],
   landmarks: [{ tag: "CHAPEL_ROCK", at: { x: 7, y: 6 } }],
-  // Take the Rock by round 22. The stars: by round 18, and Gravesend never
+  // Take the Rock by round 20. The stars: by round 16, and Gravesend never
   // falls.
   objective: {
     kind: "CAPTURE",
     places: ["CHAPEL_ROCK"],
-    byRound: 22,
-    bonus: [{ kind: "WITHIN_ROUNDS", rounds: 18 }, { kind: "KEEP_CITIES" }],
+    byRound: 20,
+    bonus: [{ kind: "WITHIN_ROUNDS", rounds: 16 }, { kind: "KEEP_CITIES" }],
   },
 };

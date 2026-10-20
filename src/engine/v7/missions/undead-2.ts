@@ -3,7 +3,7 @@ import type { MissionDefinitionV7 } from "./types";
 /**
  * `UNDEAD_2` "The Drowned Library" (docs/product/SAGA.md section 3.2, U2;
  * the Undead campaign, `pulp_wars-hmyk.5`). You hold the drowned Abbey of
- * Saint Ashes, an island in a lake, for 12 rounds while Doctor Crane (a
+ * Saint Ashes, an island in a lake, for 14 rounds while Doctor Crane (a
  * tagged Necromancer) reads the Marquis's diary, against the Bonepicker
  * goblins. Step 2 of 6: a hold-out. Goblins come in mobs and blow up
  * beside you, and the dead heal only inside their own borders; a
@@ -16,15 +16,21 @@ import type { MissionDefinitionV7 } from "./types";
  * it on foot is the causeway in the south-east. Your landing is on the
  * western shore. The Bonepickers camp on the eastern and southern shores
  * and assault the abbey from the first round (`ASSAULT`, then `RUSH` from
- * round 9); more of them come up from the lakeshore in rounds 5 and 9, the
- * second band also against the landing. The Naval branch is forbidden, so
+ * round 9); more of them come up from the lakeshore every other round
+ * from round 3, the third band against the landing. The Naval branch is forbidden, so
  * nobody sails the lake; the goblins have Engineering and climb the peaks.
  *
  * Hand play (CAMPAIGN.md section 16) set the numbers: with only the
  * causeway the goblins sat at its foot and never attacked, so they climb;
  * their camps are level 1 with no ore and no growth technologies (Mines and
  * a Workshop took a camp to level 4 in four rounds, a reward unit a
- * level); the clock is 12 rounds, not the bible's 14.
+ * level).
+ *
+ * Retune 2 (`pulp_wars-hmyk.20`) restored the bible's 14 rounds with six
+ * waves, both towns at level 1, three coins and Crane, the Marquis, two
+ * Banshees, a Zombie and two Skeletons; the goblins have no coins and no
+ * Fortification (a camp trained a Brute a turn), so only the Brutes in the
+ * waves and the start are Brutes.
  *
  * ```text
  *      x 01234567890123
@@ -47,7 +53,9 @@ import type { MissionDefinitionV7 } from "./types";
 export const UNDEAD_2_V7: MissionDefinitionV7 = {
   id: "UNDEAD_2",
   // Revision 2 (`pulp_wars-hmyk.17`): each seat explores its units' sight.
-  revision: 2,
+  // Revision 3 (`pulp_wars-hmyk.20`, retune 2): fourteen days, waves
+  // every other round, a thin garrison, no Fortification for the goblins.
+  revision: 3,
   seed: 20261302,
   // <map>
   size: 14,
@@ -58,7 +66,7 @@ export const UNDEAD_2_V7: MissionDefinitionV7 = {
     seed: 22,
     // The two goblin camps stand on villages; the villages round the
     // causeway and the eastern shore would hand the Bonepickers more camps
-    // beside the island. Shroudby, the village by the landing, stays.
+    // beside the island.
     edits: [
       { kind: "VILLAGE", at: { x: 12, y: 6 }, present: false },
       { kind: "VILLAGE", at: { x: 9, y: 12 }, present: false },
@@ -72,6 +80,13 @@ export const UNDEAD_2_V7: MissionDefinitionV7 = {
       { kind: "RESOURCE", at: { x: 11, y: 6 }, resource: "." },
       { kind: "RESOURCE", at: { x: 11, y: 7 }, resource: "." },
       { kind: "RESOURCE", at: { x: 10, y: 12 }, resource: "." },
+      // Retune 2 (`pulp_wars-hmyk.20`): the north-shore villages would be
+      // a goblin camp behind the abbey, Shroudby a free town by the
+      // landing.
+      { kind: "VILLAGE", at: { x: 9, y: 1 }, present: false },
+      { kind: "VILLAGE", at: { x: 3, y: 8 }, present: false },
+      { kind: "VILLAGE", at: { x: 6, y: 1 }, present: false },
+      { kind: "CHEST", at: { x: 10, y: 1 }, present: false },
     ],
   },
   terrain: [
@@ -123,25 +138,15 @@ export const UNDEAD_2_V7: MissionDefinitionV7 = {
     "PPPPPPPHHHHHHH",
     "PPPPPPPHHHHHHH",
   ],
-  villages: [
-    { x: 6, y: 1 },
-    { x: 9, y: 1 },
-    { x: 1, y: 5 },
-    { x: 3, y: 8 },
-  ],
-  treasureChests: [
-    { x: 10, y: 1 },
-    { x: 5, y: 12 },
-  ],
+  villages: [{ x: 1, y: 5 }],
+  treasureChests: [{ x: 5, y: 12 }],
   // </map>
   aiMode: "RIVAL",
   seats: [
     {
       faction: "UNDEAD",
-      coins: 6,
+      coins: 3,
       technologies: [
-        "GATHERING",
-        "ADMINISTRATION",
         "HUNTING",
         "MARKSMANSHIP",
         "DRILL",
@@ -158,8 +163,8 @@ export const UNDEAD_2_V7: MissionDefinitionV7 = {
         {
           name: "Ashwater Landing",
           at: { x: 1, y: 8 },
-          level: 2,
-          rewards: ["STOCKPILE"],
+          level: 1,
+          rewards: [],
         },
       ],
       units: [
@@ -168,21 +173,12 @@ export const UNDEAD_2_V7: MissionDefinitionV7 = {
         // The Ashen Marquis.
         { role: "KNIGHT", at: { x: 9, y: 7 }, tag: "MARQUIS" },
         { role: "MARKSMAN", at: { x: 8, y: 6 } },
-        { role: "MARKSMAN", at: { x: 7, y: 6 } },
-        { role: "FIGHTER", at: { x: 9, y: 6 } },
-        { role: "GUARD", at: { x: 9, y: 5 } },
-        { role: "GUARD", at: { x: 1, y: 8 }, home: 1 },
-        { role: "MARKSMAN", at: { x: 2, y: 8 }, home: 1 },
-        { role: "FIGHTER", at: { x: 1, y: 9 }, home: 1 },
+        { role: "MARKSMAN", at: { x: 8, y: 7 } },
+        { role: "GUARD", at: { x: 9, y: 6 } },
+        { role: "FIGHTER", at: { x: 9, y: 5 } },
+        { role: "FIGHTER", at: { x: 1, y: 8 }, home: 1 },
       ],
-      // The causeway shore and both goblin camps.
-      reveal: {
-        radius: 2,
-        rects: [
-          { x0: 9, y0: 8, x1: 13, y1: 12 },
-          { x0: 11, y0: 5, x1: 13, y1: 7 },
-        ],
-      },
+      reveal: { radius: 1 },
     },
     {
       // The Bonepicker clan, who use the abbey's bell tower as a lair.
@@ -191,7 +187,7 @@ export const UNDEAD_2_V7: MissionDefinitionV7 = {
       // Engineering: the goblins climb the peaks round the abbey; and
       // Fortification for their Brutes, which they learned in round 4 of
       // every hand-played run anyway.
-      technologies: ["DRILL", "ENGINEERING", "FORTIFICATION"],
+      technologies: ["DRILL", "ENGINEERING"],
       cities: [
         {
           name: "Bonepicker Camp",
@@ -206,6 +202,7 @@ export const UNDEAD_2_V7: MissionDefinitionV7 = {
         { role: "FIGHTER", at: { x: 12, y: 7 } },
         { role: "FIGHTER", at: { x: 12, y: 8 } },
         { role: "FIGHTER", at: { x: 11, y: 8 } },
+        { role: "FIGHTER", at: { x: 13, y: 6 } },
         { role: "GUARD", at: { x: 13, y: 8 } },
         { role: "RAIDER", at: { x: 13, y: 7 } },
         { role: "FIGHTER", at: { x: 9, y: 12 }, home: 1 },
@@ -241,6 +238,7 @@ export const UNDEAD_2_V7: MissionDefinitionV7 = {
         "RAIDING",
         "CHIVALRY",
         "METALLURGY",
+        "FORTIFICATION",
         "EXPLOSIVES",
       ],
       directive: [
@@ -249,12 +247,26 @@ export const UNDEAD_2_V7: MissionDefinitionV7 = {
       ],
     },
   ],
-  // The mobs come up from the lakeshore: the eastern shore by the causeway
-  // in round 5, both shores in round 9.
+  // The mobs come up from the lakeshore all fortnight: the north shore in
+  // rounds 3 and 11, the causeway in rounds 5, 9 and 13, the landing in
+  // rounds 7 and 11.
   reinforcements: [
     {
       seat: 1,
+      round: 3,
+      line: "The Bonepickers come round the north shore, picking as they go.",
+      announce: true,
+      units: [
+        { role: "FIGHTER", at: { x: 11, y: 1 } },
+        { role: "FIGHTER", at: { x: 12, y: 1 } },
+        { role: "FIGHTER", at: { x: 12, y: 2 } },
+      ],
+    },
+    {
+      seat: 1,
       round: 5,
+      line: "More of them up the causeway, and one with a sack of bombs.",
+      announce: true,
       units: [
         { role: "FIGHTER", at: { x: 12, y: 9 } },
         { role: "FIGHTER", at: { x: 11, y: 10 } },
@@ -265,17 +277,53 @@ export const UNDEAD_2_V7: MissionDefinitionV7 = {
     },
     {
       seat: 1,
+      round: 7,
+      line: "A band wades ashore at the landing, where nobody thought to build a wall.",
+      announce: true,
+      units: [
+        { role: "FIGHTER", at: { x: 2, y: 11 } },
+        { role: "FIGHTER", at: { x: 3, y: 11 } },
+        { role: "FIGHTER", at: { x: 1, y: 11 } },
+        { role: "GUARD", at: { x: 4, y: 11 } },
+      ],
+    },
+    {
+      seat: 1,
       round: 9,
+      line: "The clan sends its Brutes up the causeway. The Marquis sighs.",
+      announce: true,
       units: [
         { role: "FIGHTER", at: { x: 11, y: 9 } },
         { role: "FIGHTER", at: { x: 12, y: 9 } },
         { role: "FIGHTER", at: { x: 10, y: 10 } },
         { role: "FIGHTER", at: { x: 12, y: 8 } },
+        { role: "GUARD", at: { x: 13, y: 9 } },
+      ],
+    },
+    {
+      seat: 1,
+      round: 11,
+      line: "Bonepickers on both shores at once. Crane reads faster.",
+      announce: true,
+      units: [
+        { role: "FIGHTER", at: { x: 11, y: 1 } },
+        { role: "FIGHTER", at: { x: 12, y: 1 } },
+        { role: "FIGHTER", at: { x: 12, y: 2 } },
         { role: "FIGHTER", at: { x: 2, y: 11 } },
         { role: "FIGHTER", at: { x: 3, y: 11 } },
-        { role: "FIGHTER", at: { x: 1, y: 11 } },
-        { role: "FIGHTER", at: { x: 4, y: 12 } },
-        { role: "GUARD", at: { x: 4, y: 11 } },
+        { role: "MARKSMAN", at: { x: 13, y: 8 } },
+      ],
+    },
+    {
+      seat: 1,
+      round: 13,
+      line: "One last mob at the causeway. Crane has two pages to go.",
+      announce: true,
+      units: [
+        { role: "FIGHTER", at: { x: 11, y: 9 } },
+        { role: "FIGHTER", at: { x: 12, y: 9 } },
+        { role: "FIGHTER", at: { x: 10, y: 10 } },
+        { role: "FIGHTER", at: { x: 12, y: 8 } },
       ],
     },
   ],
@@ -288,11 +336,11 @@ export const UNDEAD_2_V7: MissionDefinitionV7 = {
     "SUBMERSIBLES",
   ],
   landmarks: [{ tag: "SAINT_ASHES", at: { x: 8, y: 5 } }],
-  // Twelve rounds, and the abbey and Doctor Crane must not fall. The
+  // Fourteen rounds, and the abbey and Doctor Crane must not fall. The
   // stars: no city lost, and the Marquis lives.
   objective: {
     kind: "SURVIVE",
-    rounds: 12,
+    rounds: 14,
     protect: [{ place: "SAINT_ASHES" }, { unit: "CRANE" }],
     bonus: [{ kind: "KEEP_CITIES" }, { kind: "UNIT_ALIVE", unit: "MARQUIS" }],
   },

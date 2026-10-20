@@ -4214,12 +4214,15 @@ factions are empty: it unlocks nothing for the prologue's faction choices.
 
 | Mission                   | Board (generator, seed) | Match seed | Seats                                                | Format and clock                                    | Stars                           |
 | ------------------------- | ----------------------- | ---------- | ---------------------------------------------------- | --------------------------------------------------- | ------------------------------- |
-| U1 Resurrection Men       | Dry Land 11, seed 13    | 20261301   | Undead; Humans                                       | Conquest of the Company's two camps                 | by round 12; the Marquis lives  |
-| U2 The Drowned Library    | Lakes 14, seed 22       | 20261302   | Undead; Goblins                                      | Hold Saint Ashes and keep Crane alive for 12 rounds | no city lost; the Marquis lives |
-| U3 The Ship of the Dead   | Continents 16, seed 15  | 20261303   | Undead; Martians                                     | Capture Chapel Rock by round 22                     | by round 18; no city lost       |
+| U1 Resurrection Men       | Dry Land 11, seed 13    | 20261301   | Undead; Humans                                       | Conquest of the Company's two camps by round 20     | by round 15; the Marquis lives  |
+| U2 The Drowned Library    | Lakes 14, seed 22       | 20261302   | Undead; Goblins                                      | Hold Saint Ashes and keep Crane alive for 14 rounds | no city lost; the Marquis lives |
+| U3 The Ship of the Dead   | Continents 16, seed 15  | 20261303   | Undead; Martians                                     | Capture Chapel Rock by round 20                     | by round 16; no city lost       |
 | U4 The Hall of the Thanes | Dry Land 16, seed 3     | 20261304   | Undead; Dwarves                                      | Escort Crane to the Summit Stair by round 22        | by round 18; no city lost       |
 | U5 Bedtime Reading        | Lakes 16, seed 9        | 20261305   | Undead; Cult and Humans (teamed)                     | Kill Brother Mallory by round 20                    | by round 16; no city lost       |
 | U6 The Founder's Tomb     | Dry Land 16, seed 23    | 20261306   | Undead and Humans (ally); Cult and Ice Folk (teamed) | Hold the Rangers' Lodge for 16 rounds               | Crane lives; no city lost       |
+
+The clocks are retune 2's (section 16.4); U1 had none, U2 held 12
+rounds and U3 had 22 (18) before it.
 
 ### 16.2 Hand play
 
@@ -4319,8 +4322,9 @@ The danger moments, and what each mission's hand play changed:
 
 ### 16.3 Deviations and follow-ups
 
-- **U2 holds 12 rounds**, not the bible's 14, and its goblins climb the
-  peaks (Engineering) instead of keeping to the causeway.
+- **U2's goblins climb the peaks** (Engineering) instead of keeping to
+  the causeway. It held 12 rounds, not the bible's 14, until retune 2
+  (section 16.4).
 - **U4's summit stair is bare ground**, not a village, and Cairn Hall
   stands on the tunnel road; a patrol walks the peaks.
 - **U3's Martians** learn no naval technology and no Fortification (no
@@ -4334,6 +4338,113 @@ The danger moments, and what each mission's hand play changed:
   `pulp_wars-hmyk.14`) landed while this campaign was built; none of the
   six missions needs one, and they were tuned without. U3's bay could
   hold a Sea Serpent in a later revision.
+
+### 16.4 Retune 2 (`pulp_wars-hmyk.20`)
+
+The user found the campaigns too easy: too many starting cities,
+technologies and units, too many villages, a passive AI. Retune 2 made
+every mission revision 3 (re-pinned). The rules: a thoughtful first
+attempt must need at least about 60% of the clock (or, holding, run a real
+risk of loss); the autopilot must lose from mission 2; a few missions
+start like a skirmish; villages near the dead's towns go; the enemy
+attacks (`RUSH`, `ASSAULT`, a `GUARD` that sends the rest) in waves, and
+every wave has a story line and is announced. Each mission was played
+again through `play-text`; every attempt is listed, failed ones first.
+
+| Mission | Start                                                                                                              | Enemy and map                                                                                                                                          | Clock (star)               | First attempt on the final definition | Autopilot                                  |
+| ------- | ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------- | ------------------------------------- | ------------------------------------------ |
+| U1      | Skirmish: the Tower at level 1, no technology, 5 coins; a Skeleton, the Marquis, a Necromancer                     | Two level 2 camps with Hunting, five Fighters home until round 4, then all but two `RUSH`; six Graves; one village                                     | Conquest by 20 (15)        | Win, round 16 (80%), 2 stars          | Defeat, round 12 (eliminated)              |
+| U2      | Saint Ashes and the Landing at level 1, 3 coins; Crane, the Marquis, two Banshees, a Zombie, two Skeletons         | Goblins with no coins and no Fortification, `ASSAULT` then `RUSH`; six waves (rounds 3 to 13); one village and one chest                               | Hold 14 (the saga's)       | Win (held 14), 3 stars                | Defeat, round 4 (Crane)                    |
+| U3      | Thin: Gravesend level 2 and Lychgate level 1, 5 coins; two Skeletons, a Ghost Ship, the tender                     | The Rock's garrison a Guard and a Fighter (its Ray Gunner gone); waves in rounds 5, 9 and 13 (a Cruiser and two Skimmers); the chest by Gravesend gone | Capture by 20 (16), was 22 | Win, round 14 (70%), 3 stars          | Defeat, out of time (round 17: eliminated) |
+| U4      | Thin: Lantern Hill level 2, 5 coins, four technologies; Crane, a Vampire, a Skeleton, a Zombie, a Banshee          | Thirteen wardens, ten held home, the rest `RUSH`; waves in rounds 6 and 12; four villages near Lantern Hill gone                                       | Escort by 22 (18)          | Win, round 16 (73%), 3 stars          | Defeat, round 11 (Crane)                   |
+| U5      | Thin: Lantern Hill and Gallows Cross level 2, 5 coins; the Marquis, a Necromancer, a Banshee, a Zombie, a Skeleton | The Lodge with Favour 10 and a second Summoner; the toll-men hold three and `RUSH` with the rest; two villages gone                                    | Kill by 20 (16)            | Win, round 14 (70%), 3 stars          | Defeat, out of time (round 21)             |
+| U6      | Ashby level 3 and Cinderwick, 5 coins, six technologies (no Gathering, Administration, Banshees or Planning)       | One Summoner, Favour 6, a muster at Greyhood until round 4, then `ASSAULT`; five units in every wave; the Rangers get two Guards and 6 coins           | Hold 16                    | Win (held 16), 3 stars                | Defeat, round 14 (the Lodge fell)          |
+
+The baseline before the retune (revision 2, autopilot): U1 lost at round
+20, U2 at round 3, U3 out of time, U4 at round 10, **U5 won at round 18
+with 2 stars**, U6 lost at round 15.
+
+Attempts and danger moments:
+
+- **U1** (two attempts). A first skirmish start with Marksmen and
+  Marksmanship for the Company: the Marquis, scouting east, was shot dead
+  in round 2 by an unseen Marksman and a Fighter, and the Tower fell in
+  round 6. The Marksmen went; the Fighters muster until round 4. The win:
+  Gathering and a Militia in round 1, the village in round 2, Raise five
+  times, both towns at level 3 by round 9, Feast chains from round 5; Dig
+  fell in round 13, Grimsditch in round 16. The rush killed five
+  half-raised Skeletons on the fields and a Ghoul, and the Tower's three
+  unit slots were full until round 9.
+- **U2** (four attempts). With a third camp on the north shore, then
+  without it, then with Bonepicker at level 1, the Marquis died in rounds
+  1 to 7 every time (Kaboom 6 to every neighbour, Gang Up, a Chucker) and
+  the camps trained a Brute a turn; the goblins lose Fortification (only
+  the Brutes in the start and the waves remain). The win: Mines,
+  Militia, then Walls in round 5; the Vampire's hit-and-run every turn (19
+  kills), two Wails a turn, Zombies infecting, Crane raising Skeletons on
+  the causeway as a buffer for the Kabooms. A Kaboom killed a Banshee and
+  four Skeletons; the round-7 landing wave besieged Ashwater Landing from
+  round 9 (a goblin on its centre in the last round, killed by a Zombie);
+  the Marquis was at 6 to 8 HP twice.
+- **U3** (three attempts). A skirmish start (Gravesend level 1, a third
+  Martian town rushing it) lost a Ghost Ship and Gravesend's Skeletons to
+  range-2 Ray Gunners by round 6; without the third town the Rock's Ray
+  Gunner sank four ships and a round-9 Cruiser shelled the ports. The
+  final start is thin, not a skirmish. The win: fruit and ports took
+  Gravesend to level 4 in round 3; Galleys torpedoed five Skimmers, and
+  Drowned Crews raised four Ghost Ships that the Rock's Grunt or the Cruiser
+  shot; Galleons from round 8; Gravesend's Abomination landed in round 13
+  (the Cruiser hit it for 14) and captured in round 14. A Saucer beamed
+  four units onto the Rock's centre, each sunk by the Galleon's shot; the
+  tender died in round 11. The clock went from 22 to 20 after the win.
+- **U4** (eight attempts on seven definitions). Skirmish starts (Lantern
+  Hill level 1, no technology, a Vampire) lost: Crane shot dead from the
+  fog in round 5; Gyrocopters bombing the Vampire to death; the north
+  villages becoming dwarf towns training Steam Moles; an empty Lantern
+  Hill captured by a Gyrocopter (elimination, round 9). The final start is
+  thin, with the two north villages back for whoever gets there first. The
+  win: the Vampire killed a Gyrocopter in round 2 and a Gunner and a
+  Hammerer in round 4 and captured Smeltkar in round 5 (level 3 by round
+  8); Feast chains on the round-6 wave, a Mole and its rider, and the
+  stair's Hammerer. Two Steam Moles surfaced beside the path and killed
+  two Zombies; a Gyrocopter and a Mole killed the lead Zombie; Lantern Hill
+  kept a Skeleton home.
+- **U5** (three attempts). A skirmish start (Lantern Hill level 1, a
+  Skeleton and the Marquis) was stuck at three income with full slots; with
+  a Necromancer and Drill, the toll-men's Marksman shot the Marquis three
+  turns running before anything could answer. The final start is thin. The
+  win: the Vampire's hit-and-run on the toll-men, Lantern Hill to level 5
+  (an Abomination) by round 7, Kessler's Toll captured in round 9, Blast
+  Mountain on the causeway peak, a second Vampire trained at the Toll;
+  the Vampire killed two Bearers and, from the open tile beside the
+  chapel, Mallory in round 14. The Bearers heal 4 a turn (two needed three
+  strikes each); the Lodge summoned eight Imps.
+- **U6** (seven attempts on six definitions). With Favour 14, two
+  Summoners and a third pair of waves a Horror took the Lodge in round 16,
+  and the next attempt collapsed by round 4; with a muster and Favour 10 or 8, a Horror stood on
+  the Lodge's centre in round 6 (twice); with Favour 2 an Imp did in round
+  9; with two more Ranger Guards the army was too thin by round 9. One
+  Summoner with Favour 2 let the autopilot win (round 17); Favour 6 is the
+  final. The win: an unbound Horror killed the Cult's own Summoner and an
+  Initiate (rounds 7 and 8) and was bound again; it killed a Ranger Guard
+  on the Lodge in round 10 and fell to a Lich and the promoted Vampire in
+  round 11. Cinderwick reached level 5 in round 8 (a second Abomination);
+  Liches killed the round-9 Summoner and five Initiates; Greyhood fell in
+  round 15 and the Cult was out. The Whitefang froze the Ashby Abomination
+  and beat it to death over four rounds, and killed a Lich, two Zombies
+  and a Skeleton.
+
+Deviations from the retune brief:
+
+- **Only U1 is a full skirmish start.** Skirmish starts for U3, U4 and U5
+  lost every attempt (listed above) to enemies the player could not see or
+  answer; their final starts are thin (one or two towns, few units, little
+  technology) instead.
+- **U6 keeps two towns and six technologies.** With fewer, the Lodge fell
+  before the Undead could reach it.
+- **U2's goblins have no Fortification**, and U3's Rock garrison no Ray
+  Gunner: in every attempt with them the Marquis or the fleet died before
+  the waves came.
 
 ## 17. The Dinosaur campaign, "The Egg Thief" (`pulp_wars-hmyk.6`)
 

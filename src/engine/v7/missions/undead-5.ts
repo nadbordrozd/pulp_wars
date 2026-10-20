@@ -49,7 +49,9 @@ import type { MissionDefinitionV7 } from "./types";
 export const UNDEAD_5_V7: MissionDefinitionV7 = {
   id: "UNDEAD_5",
   // Revision 2 (`pulp_wars-hmyk.17`): each seat explores its units' sight.
-  revision: 2,
+  // Revision 3 (`pulp_wars-hmyk.20`, retune 2): fewer units and
+  // technologies, a second Summoner and more Favour.
+  revision: 3,
   seed: 20261305,
   // <map>
   size: 16,
@@ -70,6 +72,10 @@ export const UNDEAD_5_V7: MissionDefinitionV7 = {
       { kind: "VILLAGE", at: { x: 8, y: 13 }, present: false },
       { kind: "VILLAGE", at: { x: 11, y: 13 }, present: false },
       { kind: "VILLAGE", at: { x: 14, y: 13 }, present: false },
+      // Retune 2 (`pulp_wars-hmyk.20`): two of the four villages by the
+      // Marquis's towns.
+      { kind: "VILLAGE", at: { x: 2, y: 4 }, present: false },
+      { kind: "VILLAGE", at: { x: 2, y: 13 }, present: false },
     ],
   },
   terrain: [
@@ -129,9 +135,7 @@ export const UNDEAD_5_V7: MissionDefinitionV7 = {
   ],
   villages: [
     { x: 2, y: 1 },
-    { x: 2, y: 4 },
     { x: 2, y: 7 },
-    { x: 2, y: 13 },
   ],
   treasureChests: [
     { x: 10, y: 12 },
@@ -142,13 +146,11 @@ export const UNDEAD_5_V7: MissionDefinitionV7 = {
   seats: [
     {
       faction: "UNDEAD",
-      coins: 8,
+      coins: 5,
       technologies: [
         "GATHERING",
-        "ADMINISTRATION",
         "HUNTING",
         "MARKSMANSHIP",
-        "FORESTRY",
         "DRILL",
         "FORTIFICATION",
       ],
@@ -170,11 +172,9 @@ export const UNDEAD_5_V7: MissionDefinitionV7 = {
         // The Ashen Marquis.
         { role: "KNIGHT", at: { x: 3, y: 10 }, tag: "MARQUIS" },
         { role: "CAPTAIN", at: { x: 2, y: 10 } },
-        { role: "FIGHTER", at: { x: 1, y: 10 } },
         { role: "MARKSMAN", at: { x: 2, y: 9 } },
         { role: "GUARD", at: { x: 5, y: 13 }, home: 1 },
         { role: "FIGHTER", at: { x: 6, y: 12 }, home: 1 },
-        { role: "MARKSMAN", at: { x: 5, y: 12 }, home: 1 },
       ],
       // The causeway, the fort and the strip of reeds round Greyhood.
       reveal: {
@@ -189,7 +189,7 @@ export const UNDEAD_5_V7: MissionDefinitionV7 = {
       // The Grey Lodge at Greyhood, Brother Mallory presiding.
       faction: "CULT",
       coins: 2,
-      favour: 8,
+      favour: 10,
       technologies: [
         "GATHERING",
         "ADMINISTRATION",
@@ -217,6 +217,7 @@ export const UNDEAD_5_V7: MissionDefinitionV7 = {
         { role: "FIGHTER", at: { x: 9, y: 3 } },
         { role: "FIGHTER", at: { x: 8, y: 7 } },
         { role: "FIGHTER", at: { x: 9, y: 7 } },
+        { role: "CAPTAIN", at: { x: 9, y: 2 } },
       ],
       reveal: { radius: 2, rects: [{ x0: 1, y0: 9, x1: 6, y1: 14 }] },
       // Step 5: Initiates, Idol Bearers and a Summoner's Horrors; no

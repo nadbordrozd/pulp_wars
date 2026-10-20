@@ -14,10 +14,19 @@ import type { MissionDefinitionV7 } from "./types";
  * a walled plateau in the north, Greyhood in the eastern woods, the
  * Whitefang camp in the north-western highlands, and the Marquis's Ashby
  * Camp on the southern slope with Cinderwick, a hamlet of his, on the
- * eastern one. The Lodge (`ASSAULT`) and the Whitefang (`ASSAULT`) both
- * go for the Lodge, the Lodge's second and third bands in rounds 5 and 9,
- * the Whitefang's in rounds 6 and 10; the Rangers keep to their walls
- * (`HOLD`) and train a fresh Guard whenever the centre's falls.
+ * eastern one. The Grey Lodge musters at Greyhood (`GUARD`) for three
+ * rounds and then storms the summit (`ASSAULT`); the Whitefang
+ * (`ASSAULT`) go for it from the start. The Lodge's second and third
+ * bands come in rounds 5 and 9, the Whitefang's in rounds 6 and 10, five
+ * units each; the Rangers keep to their walls (`HOLD`) and train a fresh
+ * Guard whenever the centre's falls.
+ *
+ * Retune 2 (`pulp_wars-hmyk.20`) took the Marquis's Gathering,
+ * Administration, Marksmanship and Planning and three coins, sent one
+ * Summoner instead of two with Favour 6, and gave the Rangers two Guards
+ * and six coins so the walls can outlast a Horror. Hand play: a
+ * thoughtful defence survived the 16 rounds; the autopilot lost in round
+ * 14.
  *
  * Hand play (CAMPAIGN.md section 16) set the shape: Ashby Camp was over
  * its unit limit with no second town, so nothing could be trained; the
@@ -48,7 +57,10 @@ import type { MissionDefinitionV7 } from "./types";
 export const UNDEAD_6_V7: MissionDefinitionV7 = {
   id: "UNDEAD_6",
   // Revision 2 (`pulp_wars-hmyk.17`): each seat explores its units' sight.
-  revision: 2,
+  // Revision 3 (`pulp_wars-hmyk.20`, retune 2): fewer technologies and
+  // coins, one Summoner, a muster at Greyhood, two more Ranger Guards and
+  // a fifth unit in every wave.
+  revision: 3,
   seed: 20261306,
   // <map>
   size: 16,
@@ -145,18 +157,14 @@ export const UNDEAD_6_V7: MissionDefinitionV7 = {
   seats: [
     {
       faction: "UNDEAD",
-      coins: 8,
+      coins: 5,
       technologies: [
-        "GATHERING",
-        "ADMINISTRATION",
         "HUNTING",
-        "MARKSMANSHIP",
         "FORESTRY",
         "SAWMILLING",
         "DRILL",
         "FORTIFICATION",
         "ENGINEERING",
-        "PLANNING",
       ],
       cities: [
         {
@@ -183,7 +191,7 @@ export const UNDEAD_6_V7: MissionDefinitionV7 = {
       // The Grey Lodge, come for its old temple.
       faction: "CULT",
       coins: 3,
-      favour: 10,
+      favour: 6,
       technologies: [
         "GATHERING",
         "ADMINISTRATION",
@@ -201,7 +209,6 @@ export const UNDEAD_6_V7: MissionDefinitionV7 = {
       ],
       units: [
         { role: "CAPTAIN", at: { x: 14, y: 3 } },
-        { role: "CAPTAIN", at: { x: 13, y: 2 } },
         { role: "GUARD", at: { x: 12, y: 3 } },
         { role: "FIGHTER", at: { x: 12, y: 2 } },
         { role: "FIGHTER", at: { x: 12, y: 4 } },
@@ -224,7 +231,17 @@ export const UNDEAD_6_V7: MissionDefinitionV7 = {
         "METALLURGY",
         "EXPLOSIVES",
       ],
-      directive: { kind: "ASSAULT", target: { x: 9, y: 2 } },
+      // The Lodge musters at Greyhood for three rounds, then storms the
+      // summit.
+      directive: [
+        {
+          kind: "GUARD",
+          zone: [{ x0: 11, y0: 1, x1: 15, y1: 6 }],
+          garrison: 20,
+          untilRound: 4,
+        },
+        { kind: "ASSAULT", target: { x: 9, y: 2 } },
+      ],
     },
     {
       // The Whitefang clan, hired to help the Lodge up the slopes.
@@ -271,7 +288,7 @@ export const UNDEAD_6_V7: MissionDefinitionV7 = {
     {
       // Marshal Steele's Rangers, on watch at the Lodge since the autumn.
       faction: "ORIGINAL",
-      coins: 0,
+      coins: 6,
       technologies: ["HUNTING", "MARKSMANSHIP", "DRILL", "FORTIFICATION"],
       cities: [
         {
@@ -286,6 +303,9 @@ export const UNDEAD_6_V7: MissionDefinitionV7 = {
         { role: "MARKSMAN", at: { x: 8, y: 2 } },
         { role: "MARKSMAN", at: { x: 10, y: 3 } },
         { role: "FIGHTER", at: { x: 10, y: 1 } },
+        // The summit watch, back from its rounds.
+        { role: "GUARD", at: { x: 8, y: 3 } },
+        { role: "GUARD", at: { x: 10, y: 2 } },
       ],
       reveal: { radius: 2, rects: [] },
       forbiddenTechnologies: [
@@ -317,41 +337,53 @@ export const UNDEAD_6_V7: MissionDefinitionV7 = {
     {
       seat: 1,
       round: 5,
+      line: "The Grey Lodge's second band comes out of the marsh, chanting.",
+      announce: true,
       units: [
         { role: "CAPTAIN", at: { x: 15, y: 5 } },
         { role: "FIGHTER", at: { x: 13, y: 6 } },
         { role: "FIGHTER", at: { x: 12, y: 5 } },
         { role: "GUARD", at: { x: 14, y: 6 } },
+        { role: "FIGHTER", at: { x: 15, y: 6 } },
       ],
     },
     {
       seat: 2,
       round: 6,
+      line: "The Whitefang come down the snowline behind a Mammoth. Frost follows.",
+      announce: true,
       units: [
         { role: "FIGHTER", at: { x: 1, y: 3 } },
         { role: "FIGHTER", at: { x: 2, y: 4 } },
         { role: "RAIDER", at: { x: 3, y: 4 } },
         { role: "FIGHTER", at: { x: 4, y: 3 } },
+        { role: "SWORDSMAN", at: { x: 1, y: 4 } },
       ],
     },
     {
       seat: 1,
       round: 9,
+      line: "Another band from Greyhood. The Lodge wants its temple back.",
+      announce: true,
       units: [
         { role: "CAPTAIN", at: { x: 15, y: 5 } },
         { role: "FIGHTER", at: { x: 13, y: 6 } },
         { role: "FIGHTER", at: { x: 12, y: 5 } },
         { role: "FIGHTER", at: { x: 14, y: 6 } },
+        { role: "GUARD", at: { x: 15, y: 6 } },
       ],
     },
     {
       seat: 2,
       round: 10,
+      line: "The rest of the clan, Sleds first. The Marquis is still in his tomb.",
+      announce: true,
       units: [
         { role: "SWORDSMAN", at: { x: 1, y: 3 } },
         { role: "FIGHTER", at: { x: 2, y: 4 } },
         { role: "FIGHTER", at: { x: 3, y: 4 } },
         { role: "FIGHTER", at: { x: 4, y: 3 } },
+        { role: "RAIDER", at: { x: 1, y: 4 } },
       ],
     },
   ],

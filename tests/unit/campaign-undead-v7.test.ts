@@ -116,19 +116,19 @@ describe("The Long Sleep", () => {
     expect(summary).toEqual([
       {
         kind: "DOMINATION",
-        byRound: undefined,
+        byRound: 20,
         rounds: undefined,
         bonus: ["WITHIN_ROUNDS", "UNIT_ALIVE"],
       },
       {
         kind: "SURVIVE",
         byRound: undefined,
-        rounds: 12,
+        rounds: 14,
         bonus: ["KEEP_CITIES", "UNIT_ALIVE"],
       },
       {
         kind: "CAPTURE",
-        byRound: 22,
+        byRound: 20,
         rounds: undefined,
         bonus: ["WITHIN_ROUNDS", "KEEP_CITIES"],
       },
@@ -156,10 +156,15 @@ describe("The Long Sleep", () => {
   it("builds the missions as hand play left them", () => {
     const seat = (id: string, index: number) =>
       mission(id).seats[index] as MissionDefinitionV7["seats"][number];
-    // U1: the Resurrection Company learns nothing.
+    // U1: a skirmish start (retune 2, `pulp_wars-hmyk.20`): one level 1
+    // tower and no technology against two camps that know only Hunting.
+    const marquis = seat("UNDEAD_1", 0);
+    expect(marquis.technologies).toEqual([]);
+    expect(marquis.cities).toHaveLength(1);
+    expect(marquis.cities[0]?.level).toBe(1);
     const company = seat("UNDEAD_1", 1);
-    expect(company.technologies).toEqual([]);
-    for (const tech of ["GATHERING", "HUNTING", "DRILL", "SCOUTING"])
+    expect(company.technologies).toEqual(["HUNTING"]);
+    for (const tech of ["GATHERING", "MARKSMANSHIP", "DRILL", "SCOUTING"])
       expect(company.forbiddenTechnologies, tech).toContain(tech);
     // U3: the dredgers sail a fixed fleet and raise no Force Fields.
     const dredgers = seat("UNDEAD_3", 1);
@@ -180,17 +185,18 @@ describe("The Long Sleep", () => {
       tag: "MALLORY",
     });
     expect(lodge.units.filter((unit) => unit.role === "GUARD")).toHaveLength(4);
-    // U6: the Lodge and the Whitefang both go for the Rangers' Lodge; the
-    // Rangers keep to their walls.
+    // U6: the Lodge (after a muster at Greyhood) and the Whitefang both go
+    // for the Rangers' Lodge; the Rangers keep to their walls.
     const summit = mission("UNDEAD_6");
     expect(summit.landmarks).toEqual([
       { tag: "THE_LODGE", at: { x: 9, y: 2 } },
     ]);
-    for (const index of [1, 2])
-      expect(seat("UNDEAD_6", index).directive).toEqual({
-        kind: "ASSAULT",
-        target: { x: 9, y: 2 },
-      });
+    const assault = { kind: "ASSAULT", target: { x: 9, y: 2 } };
+    expect(seat("UNDEAD_6", 1).directive).toEqual([
+      expect.objectContaining({ kind: "GUARD", untilRound: 4 }),
+      assault,
+    ]);
+    expect(seat("UNDEAD_6", 2).directive).toEqual(assault);
     expect(seat("UNDEAD_6", 3).directive).toMatchObject({ kind: "HOLD" });
   });
 

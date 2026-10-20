@@ -18,6 +18,12 @@ import type { MissionDefinitionV7 } from "./types";
  * found the camps growing a Fighter a turn each with any technology, and
  * Marksmen shooting every half-raised Skeleton on the fields.
  *
+ * Retune 2 (`pulp_wars-hmyk.20`) made it a skirmish start: the Tower at
+ * level 1 with no technology, five coins, a Skeleton, the Marquis and a
+ * Necromancer, and one village; the camps are level 2 with Hunting, keep
+ * all five Fighters home until round 4 (`GUARD`) and then send all but
+ * two at the Tower (`RUSH`). The clock is 20 rounds, the star 15.
+ *
  * ```text
  *      x 0123456789A
  * y  0   ..f....ff^.
@@ -36,7 +42,8 @@ import type { MissionDefinitionV7 } from "./types";
 export const UNDEAD_1_V7: MissionDefinitionV7 = {
   id: "UNDEAD_1",
   // Revision 2 (`pulp_wars-hmyk.17`): each seat explores its units' sight.
-  revision: 2,
+  // Revision 3 (`pulp_wars-hmyk.20`, retune 2): a skirmish start.
+  revision: 3,
   seed: 20261301,
   // <map>
   size: 11,
@@ -55,6 +62,9 @@ export const UNDEAD_1_V7: MissionDefinitionV7 = {
       { kind: "VILLAGE", at: { x: 9, y: 8 }, present: false },
       // The chest beside Grimsditch Camp handed the robbers a Raider.
       { kind: "CHEST", at: { x: 8, y: 5 }, present: false },
+      // Retune 2 (`pulp_wars-hmyk.20`): the village above the Tower would
+      // be a free second town.
+      { kind: "VILLAGE", at: { x: 5, y: 1 }, present: false },
     ],
   },
   terrain: [
@@ -97,10 +107,7 @@ export const UNDEAD_1_V7: MissionDefinitionV7 = {
     "WWWWWWWWWWW",
     "WWWWWWWWWWW",
   ],
-  villages: [
-    { x: 5, y: 1 },
-    { x: 3, y: 5 },
-  ],
+  villages: [{ x: 3, y: 5 }],
   treasureChests: [{ x: 6, y: 6 }],
   // </map>
   // The old Graves of the barrow fields.
@@ -109,46 +116,33 @@ export const UNDEAD_1_V7: MissionDefinitionV7 = {
     { x: 5, y: 4 },
     { x: 6, y: 4 },
     { x: 8, y: 4 },
-    { x: 4, y: 5 },
     { x: 5, y: 5 },
     { x: 7, y: 6 },
   ],
+  // The Dig's lumber camp (it feeds the camp's second level).
+  improvements: [{ at: { x: 5, y: 8 }, improvement: "LUMBER_CAMP" }],
   aiMode: "RIVAL",
   seats: [
     {
       faction: "UNDEAD",
       coins: 5,
-      technologies: ["GATHERING", "ADMINISTRATION", "DRILL", "FORTIFICATION"],
+      technologies: [],
       cities: [
-        {
-          name: "The Ashen Tower",
-          at: { x: 2, y: 2 },
-          level: 2,
-          rewards: ["STOCKPILE"],
-        },
+        { name: "The Ashen Tower", at: { x: 2, y: 2 }, level: 1, rewards: [] },
       ],
       units: [
+        { role: "FIGHTER", at: { x: 2, y: 2 } },
         // The Ashen Marquis.
-        { role: "KNIGHT", at: { x: 2, y: 2 }, tag: "MARQUIS" },
-        { role: "CAPTAIN", at: { x: 3, y: 3 } },
-        { role: "FIGHTER", at: { x: 3, y: 2 } },
-        { role: "FIGHTER", at: { x: 2, y: 3 } },
-        { role: "GUARD", at: { x: 1, y: 2 } },
+        { role: "KNIGHT", at: { x: 3, y: 2 }, tag: "MARQUIS" },
+        { role: "CAPTAIN", at: { x: 2, y: 3 } },
       ],
-      // The barrow fields and both camps.
-      reveal: {
-        radius: 2,
-        rects: [
-          { x0: 3, y0: 3, x1: 9, y1: 5 },
-          { x0: 5, y0: 6, x1: 7, y1: 8 },
-        ],
-      },
+      reveal: { radius: 1 },
     },
     {
       // Kessler's Resurrection Company, foreman Grimsditch.
       faction: "ORIGINAL",
-      coins: 0,
-      technologies: [],
+      coins: 4,
+      technologies: ["HUNTING"],
       cities: [
         {
           name: "Grimsditch Camp",
@@ -156,26 +150,27 @@ export const UNDEAD_1_V7: MissionDefinitionV7 = {
           level: 2,
           rewards: ["STOCKPILE"],
         },
-        { name: "Sexton's Dig", at: { x: 6, y: 8 }, level: 1, rewards: [] },
+        {
+          name: "Sexton's Dig",
+          at: { x: 6, y: 8 },
+          level: 2,
+          rewards: ["STOCKPILE"],
+        },
       ],
       units: [
         { role: "FIGHTER", at: { x: 9, y: 5 } },
         { role: "FIGHTER", at: { x: 9, y: 6 } },
+        { role: "FIGHTER", at: { x: 8, y: 5 } },
         { role: "FIGHTER", at: { x: 6, y: 8 }, home: 1 },
         { role: "FIGHTER", at: { x: 5, y: 7 }, home: 1 },
       ],
-      reveal: { radius: 1 },
-      // Step 1 keeps to the lesson: the Company learns nothing (hand play:
-      // with Hunting and Gathering its camps grew, took a Raider as a
-      // reward and trained a Fighter a turn each, and with Marksmen it shot
-      // the half-raised Skeletons off the fields every turn).
+      reveal: { radius: 1, rects: [{ x0: 0, y0: 0, x1: 4, y1: 4 }] },
       forbiddenTechnologies: [
         "GATHERING",
         "FARMING",
         "MILLING",
         "ADMINISTRATION",
         "PLANNING",
-        "HUNTING",
         "FORESTRY",
         "SAWMILLING",
         "MARKSMANSHIP",
@@ -191,6 +186,28 @@ export const UNDEAD_1_V7: MissionDefinitionV7 = {
         "FORTIFICATION",
         "EXPLOSIVES",
       ],
+      // The robbers dig for three rounds; then each camp keeps a man on
+      // its centre and every other robber goes for the Tower.
+      directive: [
+        {
+          kind: "GUARD",
+          zone: [
+            { x0: 8, y0: 4, x1: 10, y1: 6 },
+            { x0: 5, y0: 7, x1: 7, y1: 9 },
+          ],
+          garrison: 10,
+          untilRound: 4,
+        },
+        {
+          kind: "GUARD",
+          zone: [
+            { x0: 9, y0: 5, x1: 9, y1: 5 },
+            { x0: 6, y0: 8, x1: 6, y1: 8 },
+          ],
+          garrison: 2,
+          others: { kind: "RUSH" },
+        },
+      ],
     },
   ],
   // A dry board.
@@ -201,12 +218,13 @@ export const UNDEAD_1_V7: MissionDefinitionV7 = {
     "SEAMANSHIP",
     "SUBMERSIBLES",
   ],
-  // Run the robbers off: every camp. The stars: by round 12, and the
-  // Marquis lives.
+  // Run the robbers off by round 20: every camp. The stars: by round 15,
+  // and the Marquis lives.
   objective: {
     kind: "DOMINATION",
+    byRound: 20,
     bonus: [
-      { kind: "WITHIN_ROUNDS", rounds: 12 },
+      { kind: "WITHIN_ROUNDS", rounds: 15 },
       { kind: "UNIT_ALIVE", unit: "MARQUIS" },
     ],
   },

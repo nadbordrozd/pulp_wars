@@ -1116,6 +1116,12 @@ describe("natural maps", () => {
       // The Founder's Tomb (`pulp_wars-hmyk.5`): eleven villages gone (two
       // under towns), a chest, and the Lodge's and Ashby Camp's fields.
       UNDEAD_6: 16,
+      // Undead retune 2 (`pulp_wars-hmyk.20`): the villages within reach
+      // of the dead's towns go, so the start does not snowball.
+      UNDEAD_2: 13,
+      UNDEAD_3: 11,
+      UNDEAD_4: 12,
+      UNDEAD_5: 11,
       // The Candy campaign (`pulp_wars-hmyk.11`): Riftwatch's crack and
       // eight villages (four under cities); the lake of the Commissioner
       // keeps one village (the island raised, thirteen gone, two under

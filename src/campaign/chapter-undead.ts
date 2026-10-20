@@ -30,7 +30,7 @@ export const CHAPTER_UNDEAD_V7: CampaignChapterV7 = Object.freeze({
       format: "CONQUEST",
       briefing:
         "The Ashen Marquis has decided to go back to sleep, and finds his bed has been robbed. Kessler's Resurrection Company is digging up the Barrowlands by lantern light and selling the bones by the barrel. Doctor Crane, his archivist, has the foreman's name: Grimsditch. Run them off the Marquis's land. Politely, if possible. It will not be possible.",
-      objective: "Take both of the Company's camps.",
+      objective: "Take both of the Company's camps by turn 20.",
       hints: Object.freeze([
         "A Necromancer raises a Skeleton from every free Grave.",
         "A Vampire's kill heals it and lets it strike again.",
@@ -47,8 +47,8 @@ export const CHAPTER_UNDEAD_V7: CampaignChapterV7 = Object.freeze({
       name: "The Drowned Library",
       format: "SURVIVE",
       briefing:
-        "Doctor Crane believes the bell's score has a counter-score, and that the Marquis wrote of it in a diary before he was ashen. It was shelved in the Abbey of Saint Ashes, under a lake since a dam broke, and the Bonepicker goblins use its bell tower as a lair. Hold the abbey isle for twelve days while Crane reads with a lantern and a pair of tongs.",
-      objective: "Keep Saint Ashes and Crane for 12 turns.",
+        "Doctor Crane believes the bell's score has a counter-score, and that the Marquis wrote of it in a diary before he was ashen. It was shelved in the Abbey of Saint Ashes, under a lake since a dam broke, and the Bonepicker goblins use its bell tower as a lair. Hold the abbey isle for fourteen days while Crane reads with a lantern and a pair of tongs.",
+      objective: "Keep Saint Ashes and Crane for 14 turns.",
       hints: Object.freeze([
         "After a Wail, the Goblins cannot hit back.",
         "What a Zombie kills rises as one of yours.",
@@ -70,7 +70,7 @@ export const CHAPTER_UNDEAD_V7: CampaignChapterV7 = Object.freeze({
       format: "CAPTURE",
       briefing:
         "Half the Lullaby went to sea in the Marquis's flagship, the Last Rites, and down with her in Gravesend Bay. The Martians are dredging the bay for star-iron with machines that hover, and have built a fort on Chapel Rock, right over the wreck. Take the Rock and raise the Last Rites. Every Martian ship you sink comes back up with a crew of yours.",
-      objective: "Take Chapel Rock by turn 22.",
+      objective: "Take Chapel Rock by turn 20.",
       hints: Object.freeze([
         "Shields refill each turn: sink one ship at a time.",
         "Sunken Galleys strike from below, unanswered.",
@@ -92,7 +92,7 @@ export const CHAPTER_UNDEAD_V7: CampaignChapterV7 = Object.freeze({
       hints: Object.freeze([
         "Dwarves dig in by their cities: go around them.",
         "Engineering lets the dead climb the peaks.",
-        "Kill the Gyrocopters before they find Crane.",
+        "Gyrocopters bomb from afar and take empty towns.",
       ]),
       closing:
         "Crane reaches the stair with his hat still on. Behind him the Thane writes to Marshal Steele about the dead, in capitals.",

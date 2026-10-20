@@ -48,7 +48,9 @@ import type { MissionDefinitionV7 } from "./types";
 export const UNDEAD_4_V7: MissionDefinitionV7 = {
   id: "UNDEAD_4",
   // Revision 2 (`pulp_wars-hmyk.17`): each seat explores its units' sight.
-  revision: 2,
+  // Revision 3 (`pulp_wars-hmyk.20`, retune 2): a thin start against a
+  // clan that hunts.
+  revision: 3,
   seed: 20261304,
   // <map>
   size: 16,
@@ -70,6 +72,13 @@ export const UNDEAD_4_V7: MissionDefinitionV7 = {
       // The summit stair is a stair, not a village (hand play: the wardens
       // walked up and took it as a fourth hall).
       { kind: "VILLAGE", at: { x: 13, y: 1 }, present: false },
+      // Retune 2 (`pulp_wars-hmyk.20`): Lantern Hill keeps one village in
+      // reach, not five; the two on the goat path stay, for whoever gets
+      // there first.
+      { kind: "VILLAGE", at: { x: 1, y: 8 }, present: false },
+      { kind: "VILLAGE", at: { x: 7, y: 11 }, present: false },
+      { kind: "VILLAGE", at: { x: 1, y: 14 }, present: false },
+      { kind: "VILLAGE", at: { x: 5, y: 14 }, present: false },
     ],
   },
   terrain: [
@@ -130,11 +139,7 @@ export const UNDEAD_4_V7: MissionDefinitionV7 = {
   villages: [
     { x: 6, y: 1 },
     { x: 1, y: 2 },
-    { x: 1, y: 8 },
     { x: 1, y: 11 },
-    { x: 7, y: 11 },
-    { x: 1, y: 14 },
-    { x: 5, y: 14 },
   ],
   treasureChests: [
     { x: 7, y: 4 },
@@ -145,15 +150,8 @@ export const UNDEAD_4_V7: MissionDefinitionV7 = {
   seats: [
     {
       faction: "UNDEAD",
-      coins: 6,
-      technologies: [
-        "GATHERING",
-        "ADMINISTRATION",
-        "HUNTING",
-        "MARKSMANSHIP",
-        "DRILL",
-        "FORTIFICATION",
-      ],
+      coins: 5,
+      technologies: ["HUNTING", "MARKSMANSHIP", "DRILL", "FORTIFICATION"],
       cities: [
         {
           name: "Lantern Hill",
@@ -163,18 +161,20 @@ export const UNDEAD_4_V7: MissionDefinitionV7 = {
         },
       ],
       units: [
+        { role: "FIGHTER", at: { x: 4, y: 11 } },
         // Doctor Crane, with his hat.
         { role: "CAPTAIN", at: { x: 4, y: 10 }, tag: "CRANE" },
+        // A Vampire of the Marquis's court, lent for the walk.
         { role: "KNIGHT", at: { x: 5, y: 10 } },
-        { role: "FIGHTER", at: { x: 3, y: 10 } },
-        { role: "GUARD", at: { x: 4, y: 11 } },
+        { role: "GUARD", at: { x: 3, y: 10 } },
         { role: "MARKSMAN", at: { x: 5, y: 11 } },
       ],
-      // The road, both halls, the watch-post and the stair.
+      // Crane's map: the mountain, the road, both halls, the watch-post
+      // and the stair.
       reveal: {
-        radius: 2,
+        radius: 1,
         rects: [
-          { x0: 5, y0: 1, x1: 14, y1: 6 },
+          { x0: 0, y0: 0, x1: 15, y1: 6 },
           { x0: 5, y0: 6, x1: 12, y1: 9 },
         ],
       },
@@ -202,7 +202,7 @@ export const UNDEAD_4_V7: MissionDefinitionV7 = {
         // The Gyrocopters on patrol.
         { role: "RAIDER", at: { x: 12, y: 5 }, home: 2 },
         { role: "RAIDER", at: { x: 8, y: 2 } },
-        // The patrol on the peaks: they walk down to Lantern Hill.
+        // The patrol on the peaks.
         { role: "FIGHTER", at: { x: 10, y: 1 }, home: 2 },
         { role: "MARKSMAN", at: { x: 9, y: 1 }, home: 2 },
       ],
@@ -233,8 +233,8 @@ export const UNDEAD_4_V7: MissionDefinitionV7 = {
         "METALLURGY",
       ],
       // The wardens hold the halls on the road and the watch-post; the
-      // rest of the clan, the northern Gyrocopter and the patrol on the
-      // peaks, goes for Lantern Hill.
+      // rest of the clan, the Gyrocopters and both patrols, goes for
+      // Lantern Hill.
       directive: {
         kind: "GUARD",
         zone: [
@@ -244,6 +244,33 @@ export const UNDEAD_4_V7: MissionDefinitionV7 = {
         garrison: 10,
         others: { kind: "RUSH" },
       },
+    },
+  ],
+  // The clan calls up more hammers as the dead climb: a Gyrocopter, a
+  // Hammerer and a Gunner come over the northern peaks in round 6, and the
+  // stair's own guard turns out in round 12.
+  reinforcements: [
+    {
+      seat: 1,
+      round: 6,
+      line: "More of the clan over the northern peaks. They do not care to see the dead walk.",
+      announce: true,
+      units: [
+        { role: "RAIDER", at: { x: 11, y: 0 } },
+        { role: "FIGHTER", at: { x: 12, y: 2 } },
+        { role: "MARKSMAN", at: { x: 10, y: 0 } },
+      ],
+    },
+    {
+      seat: 1,
+      round: 12,
+      line: "The stair's own guard turns out. The Thane has sent word to stop the hat.",
+      announce: true,
+      units: [
+        { role: "FIGHTER", at: { x: 15, y: 2 } },
+        { role: "FIGHTER", at: { x: 12, y: 1 } },
+        { role: "GUARD", at: { x: 14, y: 0 } },
+      ],
     },
   ],
   // A dry board.
