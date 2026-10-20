@@ -28,8 +28,10 @@ import {
   queryTechnologyTreeV7,
   randomState,
   runReplayV7,
+  unitSightRadiusAtV7,
   validateMatchSetupV7,
   validateMissionDefinitionV7,
+  type CoordV7,
   type FactionIdV7,
   type GameStateV7,
   type MatchSetupV7,
@@ -58,6 +60,11 @@ import { NAVAL, testGrounds, groundsSetup } from "./ruleset-v7-missions.shared";
  * (old saves of the mission are then refused as stale); a rule or builder
  * change that alters a mission's state re-pins it (its identity bump
  * already invalidates saves).
+ *
+ * Exploration after placement (`pulp_wars-hmyk.17`) changed the builder
+ * without an identity bump, so every mission whose seats gained explored
+ * tiles took a revision (the old saves are refused as stale, not as a
+ * failed replay) and was re-pinned in both tables.
  */
 const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
   // Re-pinned by map curiosities (`pulp_wars-737.2`): the setup's
@@ -67,23 +74,23 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
   "TEST_GROUNDS@1:GOBLIN":
     "ed51a42b3e6e2a758ff872658f2184685002d92cbe761958ee4a1914dd91c9bc",
   // The AI-directive fixtures (`pulp_wars-68k.3`).
-  "TEST_RUSH@1:ORIGINAL":
-    "e441193ea8d2ba39b48b7e6bfe826898d8f9cf51722b2a9b890a3f17e271396c",
-  "TEST_HOLD@1:ORIGINAL":
-    "63f8feb4d5d7e1cb313b1c2bf4a09bee259ef73727773fdce351671ac4ed5925",
+  "TEST_RUSH@2:ORIGINAL":
+    "57c12283a924c25dcbdc9f00e256303b47a1712e31601df8a11787c644f0f2be",
+  "TEST_HOLD@2:ORIGINAL":
+    "5d4dfd698a664b552fa693d233df7011d403d6c76f44761a49dcef8167c03fa0",
   "TEST_GUARD@1:ORIGINAL":
     "75569e71228d50c8bdf4977e655316676c8f0b626a657b8c6c00bf5cefc31a50",
   // The ASSAULT fixture (`pulp_wars-v642.5`).
-  "TEST_ASSAULT@1:ORIGINAL":
-    "b3ee5f70ccfbf71026f2b3be6ffd8949dc31326671618f3fa7f44ecafc7ad433",
+  "TEST_ASSAULT@2:ORIGINAL":
+    "9f6ff69100ec1b2bdddfce1bca09378cef8b6e4ef776c0f01138e57868574449",
   // A GUARD whose others assault (`pulp_wars-v642.10`).
   "TEST_GUARD_RAID@1:ORIGINAL":
     "e76f3f18fa2fc91c1af603b1effe78f374d1240cc3bca9ba1dd16c8d59f9b65e",
   // Chapter One (`pulp_wars-68k.4`).
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 2.
   // Natural maps and objectives (`pulp_wars-v642.1`): revision 3.
-  "FRONTIER_1@3:ORIGINAL":
-    "e31edbe9e71807d9d2af6b97eca0b8f8f34c5432fa71022ea9cfb0e886e29ce2",
+  "FRONTIER_1@4:ORIGINAL":
+    "395f2a0474bbdc2085ab047d359da76ccfd25f2e90df86de4def525c2443a1d6",
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 2.
   // Natural maps and objectives (`pulp_wars-v642.1`): revision 3.
   // The campaign difficulty pass (`pulp_wars-v642.7`): revision 4.
@@ -93,123 +100,123 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
   // Natural maps and objectives (`pulp_wars-v642.1`): revision 3.
   // The campaign difficulty pass (`pulp_wars-v642.7`): revision 4.
   // The danger pass (`pulp_wars-v642.10`): revision 5.
-  "FRONTIER_3@5:GOBLIN":
-    "beeba28f5f8bd29b4df6bd5197f6ce78b681f8c6efeb086244fc612a4be76e0e",
+  "FRONTIER_3@6:GOBLIN":
+    "f54d2739467d7766cd53c4110bfbcfa9685faff46986a61307f00ac00b9cf3f2",
   // Revision 2 (`pulp_wars-68k.6`): Sawmilling forbidden, two starting siege
   // units for you, a Skeleton in the Lich's place.
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 3.
   // Natural maps and objectives (`pulp_wars-v642.1`): revision 4.
   // The campaign difficulty pass (`pulp_wars-v642.7`): revision 5.
   // The danger pass (`pulp_wars-v642.10`): revision 6.
-  "FRONTIER_4@6:ORIGINAL":
-    "1a42d9e03cfd98b6742269c1d7be08e6730fba81b38a18fde2d1adca63537f76",
+  "FRONTIER_4@7:ORIGINAL":
+    "6d7001fedc26b73409b913b1c0259bc426d3b1a060cc1bc24ea08263711bf42a",
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 3.
   // Natural maps and objectives (`pulp_wars-v642.1`): revision 4.
   // The campaign difficulty pass (`pulp_wars-v642.7`): revision 5.
   // The danger pass (`pulp_wars-v642.10`): revision 6.
-  "FRONTIER_4@6:GOBLIN":
-    "80a724cbb22a73a8168f630c7246fcb307cbb8efe29df6ae6166c00899829ae6",
+  "FRONTIER_4@7:GOBLIN":
+    "467f923ffd7507c76e1c95158deb6102cb3aed6f552f80cd16c72622d268a9eb",
   // Missions 5 and 6 (`pulp_wars-v642.2`).
   // Campaign difficulty pass B (`pulp_wars-v642.8`): revision 2.
   // The danger pass (`pulp_wars-v642.10`): revision 3.
-  "FRONTIER_5@3:UNDEAD":
-    "a67ceb2e9aad3a3cf0c797e86674b17eb6c5b95b7302dc4e65b4a83ee56b11f5",
+  "FRONTIER_5@4:UNDEAD":
+    "2c49e2e236c0b5d84aab66f4533d6d7549ef59d05fec58dd8f874dba835acec4",
   // Campaign difficulty pass B (`pulp_wars-v642.8`): revision 2.
-  "FRONTIER_6@2:DWARF":
-    "068ff4950c6d5135c522b9702a9bd7a38205b8d0bc7519cdcbd7b1389d6975e2",
+  "FRONTIER_6@3:DWARF":
+    "457b0fafa951d2708d6af23c83242ebc1411d8f7cbed9929229d7b5675e88e54",
   // Missions 7 and 8 (`pulp_wars-v642.3`).
   // Campaign difficulty pass B (`pulp_wars-v642.8`): revision 2.
   // Campaign danger pass B (`pulp_wars-v642.10`): revision 3.
-  "FRONTIER_7@3:ICE_FOLK":
-    "75201de1799d7aa763e360f8020a13dcf682e660cbe7d885b178aba20bbf2a29",
+  "FRONTIER_7@4:ICE_FOLK":
+    "68e53d55925f7dd58c6265267989bcd1f73e7864a2521e1e9d93a0c87e0863ff",
   // Mission 8 as a build-up (`pulp_wars-v642.9`): revision 2.
   // Campaign danger pass B (`pulp_wars-v642.10`): revision 3.
-  "FRONTIER_8@3:DINOSAUR":
-    "a5f58a38b09118b18f395e377b5f542d0d7ad44b3a8037565b6458cc77e0e121",
+  "FRONTIER_8@4:DINOSAUR":
+    "374bfe151fe61dcad29176ac7327d4c0031d00f042e0e4ab753d0615f5a367a7",
   // Missions 9 and 10 (`pulp_wars-v642.4`); mission 9 with less
   // pre-research (`pulp_wars-v642.9`): revision 2.
   // Campaign danger pass B (`pulp_wars-v642.10`): revision 3.
-  "FRONTIER_9@3:MARTIAN":
-    "1a31f9ca8bb14117a1bbbab42863f7dd4e004b7c8bb37d687748de5e7dcc3159",
+  "FRONTIER_9@4:MARTIAN":
+    "b7d794a0ba11c0b46bc6da0c16f560fa84d2188a18edf0157fe1e88a5076e6aa",
   // Mission 10 replayed on the corrected Cult AI (`pulp_wars-v642.6`): revision 2.
   // The Cult redesign's roster (`pulp_wars-mch9.31`): revision 3 (the Chosen
   // and the Caller of the ring are an Idol Bearer, an Initiate, and a Hexer).
   // Its retune (`pulp_wars-mch9.46`): revision 4 (the lodge owns
   // Engineering and Gibbering Masses and starts with 8 Favour).
   // Campaign danger pass B (`pulp_wars-v642.10`): revision 5.
-  "FRONTIER_10@5:ORIGINAL":
-    "f24c78997288b4f81b604f45d50f3a5dfd919c01bf01d6bc2bc0c39b3536f9c4",
+  "FRONTIER_10@6:ORIGINAL":
+    "2f3915324a118a83c806e256e8ceb3d2b1a41d5b80b043e7b492c4374c5494c5",
   // The Humans campaign, "The Marshal's Law" (`pulp_wars-hmyk.4`).
   "HUMAN_1@1:ORIGINAL":
     "ba75ade202d005fe8a6cd1db656371bf6404054dd8698435cc76acf92498a8a4",
-  "HUMAN_2@1:ORIGINAL":
-    "871e3f7498024c189f529ddb82925834f8fef4cd49150c5b1e79f73f0443e22a",
-  "HUMAN_3@1:ORIGINAL":
-    "66bdfcf29e63994de029611e0e7f351714a85ed3500a29fa5c15de48e4838eab",
-  "HUMAN_4@1:ORIGINAL":
-    "1271ca63142a0272dd7a402f47460d89028dd0f1b0ded04c8f49ed964af6f984",
+  "HUMAN_2@2:ORIGINAL":
+    "d0d5bbea630a8d8ff65de26217b9f0ae25ebd4464ba135ab0e6fb2746a0ae02c",
+  "HUMAN_3@2:ORIGINAL":
+    "650cca831bc048d76fac8faae3e037175c2c34ee8a5ee86d5d26817b93e57ce0",
+  "HUMAN_4@2:ORIGINAL":
+    "6bc84c212f80cb900ef34554476c5ad09ab0f4e29633789e06d405502c469c4b",
   // Mission curiosities (`pulp_wars-hmyk.14`): revision 2 of each, the Sea
   // Serpent in H5 and the Tesla Tower in H6, and the hidden fixture.
   "TEST_CURIOSITIES@1:ORIGINAL":
     "9b6a41cf850a6551d45396582fe72045f56ce02f4c4b970b247e9afb71dac4d4",
   "TEST_CURIOSITIES@1:GOBLIN":
     "ed95462583b0f54b4a3ffd614617928995af2452bb4dc78049fc6bacf57d3a04",
-  "HUMAN_5@2:ORIGINAL":
-    "6278f634c5bf0b19aa3f9efeaa17db38051fdb372e5045841d4ec712485eb5d1",
-  "HUMAN_6@2:ORIGINAL":
-    "e4bf04b3bb6d110fde3d56746ccfacd5e0ffda9264a684bf60d223edcbad5de1",
+  "HUMAN_5@3:ORIGINAL":
+    "e9e32eb797822002ece1bf424d2513e613513b6c4339ea982e80941ab11fcfa8",
+  "HUMAN_6@3:ORIGINAL":
+    "63fd349ac8c5d2729927a65c57c148e5387643472471d8a11384d6101b1bc643",
   // The Undead campaign, "The Long Sleep" (`pulp_wars-hmyk.5`).
-  "UNDEAD_1@1:UNDEAD":
-    "ce571acb28e5b3c1bb4f0e4558600cc36f84e96f228462e8fa8ac5de36eae6e3",
-  "UNDEAD_2@1:UNDEAD":
-    "a91553831cc2562cf5e8d0a992541fce60fa15f33c88f664fad5151d0e2fba0c",
-  "UNDEAD_3@1:UNDEAD":
-    "56fbd754294b168f46dee6058362e29b0361e8638b47a7e0ca85db272a1fb080",
-  "UNDEAD_4@1:UNDEAD":
-    "1a6aa87a5ad364d20eed80105f855aad065230a54f608f2e1d0e22ac26b6ea2b",
-  "UNDEAD_5@1:UNDEAD":
-    "71462e1d05c7632b5b316ea653ecac47b1e16b6caddf95e37645695edd6d25f3",
-  "UNDEAD_6@1:UNDEAD":
-    "15b2622590f1bca7e807580a56ad4da9922813272e6623569e79183cf6a121f2",
+  "UNDEAD_1@2:UNDEAD":
+    "858de9b7deb0a732afbb6a6f565f4bed14f1a3fa8e791d6f456238910a95e222",
+  "UNDEAD_2@2:UNDEAD":
+    "0caba72cac57af0467aad77b9dd22a76c2c665e25dcbab04e0fe4e77aefd5607",
+  "UNDEAD_3@2:UNDEAD":
+    "15c7509f41763e600e1a43a996d7aa10cb8b147a1167d3ab2134236652969474",
+  "UNDEAD_4@2:UNDEAD":
+    "dc9ce03f2de0cca1c6bf6a94e00741db378cea8e928a7cca05919789927159b0",
+  "UNDEAD_5@2:UNDEAD":
+    "277130e958be67ca9aba9d2915e0785b96c506ec250d3b71d520641d61d6d964",
+  "UNDEAD_6@2:UNDEAD":
+    "06718020cfbc796ccb740d0d12816a286326f3b47f69a70dca5d1c5a6d09fc19",
   // The Dinosaur campaign, "The Egg Thief" (`pulp_wars-hmyk.6`).
-  "DINOSAUR_1@1:DINOSAUR":
-    "0a7f9e870ebfbbaf8fe35864564811889142c42ffa85b858b99ddc8de02cf56f",
-  "DINOSAUR_2@1:DINOSAUR":
-    "6b424c29ef3cae703ae565e9c49fb9d3bd8f87041683054b9ede27b904870707",
-  "DINOSAUR_3@1:DINOSAUR":
-    "3ac154cc3a9602ac982c0a0c07a122e248c5d997f27d96bbb49654c55647f4a9",
-  "DINOSAUR_4@1:DINOSAUR":
-    "7a748c1c31972b3141e6197b013deca4d5003a3481f500fbf66392170e3388d7",
-  "DINOSAUR_5@1:DINOSAUR":
-    "4ee8d9e4fd568ebb2f21b7adb189d0fbe1b94a6fc14fe2222ad91e8f1f14a328",
-  "DINOSAUR_6@1:DINOSAUR":
-    "675bbd846d017ff0e1e00604c8f49be1eabf0333621b2c8ef06bd993ae1ea850",
+  "DINOSAUR_1@2:DINOSAUR":
+    "eaac803a529d31c447286c9780976852950fd1600daa46361f65d6eaf66569b1",
+  "DINOSAUR_2@2:DINOSAUR":
+    "1b6ae2458493449ca0a74d7a95368647fec7e93842765f8d6ab565d9c94b89d5",
+  "DINOSAUR_3@2:DINOSAUR":
+    "94c3791d5caad014ac15fe78c7d30beec283d67d9a0d36f3534360b6b091631c",
+  "DINOSAUR_4@2:DINOSAUR":
+    "89640d21e532a48fb2e2b81020a74215cbf9755ab451bb21cd43a328e45d0046",
+  "DINOSAUR_5@2:DINOSAUR":
+    "b8c8f545e2c50e926f1436de758085dbaa7eebdeb00b89075b21c3b19818e95e",
+  "DINOSAUR_6@2:DINOSAUR":
+    "5f6eefd3f97886e8234a6260fd34dc091872a80125fe59e44c4bb067a48fb559",
   // The Martian campaign, "Signal from Home" (`pulp_wars-hmyk.7`).
-  "MARTIAN_1@1:MARTIAN":
-    "2ea1bb3f1cb5f07e8217af2f9ab6fec80b1efdad1b9b2873b31b910405c47784",
+  "MARTIAN_1@2:MARTIAN":
+    "e7be3d20e3c97d2d730c2805a757b5c1dfb8b141702ae99cf41176925a0644c1",
   "MARTIAN_2@1:MARTIAN":
     "b321fc9d9e1d4e49e908188dc09103210107d1ed0e6b386677ac430d099cd079",
-  "MARTIAN_3@1:MARTIAN":
-    "a77b10a172dacd2ebcc10c2a6799b89e8ad8228729bcce7d2e1801874fdf8c35",
+  "MARTIAN_3@2:MARTIAN":
+    "5c3e0a62082c99e12ea20eac5e56e77af269503a82d3ef2742533cfbae997ad5",
   "MARTIAN_4@1:MARTIAN":
     "5717d65020471f2dce8b42127f989fc6285eec9b00fc7ed475f7d17c56cbe1e0",
-  "MARTIAN_5@1:MARTIAN":
-    "b536a412d010aa5f7623a0d9c09dc9d293321785ebc9d299f33c83eadfe349da",
+  "MARTIAN_5@2:MARTIAN":
+    "c45f83a773ba9df915830c4a96c7ac583cc013c360060c3e15af1bc985ad43dd",
   "MARTIAN_6@1:MARTIAN":
     "e0f6a063d1ac167990766b10e41fae7f229a9767ba50e5b0fcce91c23f6f80b9",
   // The Goblin campaign, "The Big Score" (`pulp_wars-hmyk.8`).
-  "GOBLIN_1@1:GOBLIN":
-    "adbd943983769a053f5f50ef6e85b44cf4fc483ea7db4bbf9a1adfd4001ff3e8",
-  "GOBLIN_2@1:GOBLIN":
-    "f854ac34f6fbb30fd7798a21b1854055d6638cfd6cf6a364965b121246b23d32",
-  "GOBLIN_3@1:GOBLIN":
-    "a9d191e3974dd964e22c9a13fe2ad7b21b858adc630f54a6eb184b93c4008038",
-  "GOBLIN_4@1:GOBLIN":
-    "a79f412c09dfa11a52432cbe6dd124701be3207c967e45add3817cccb93db82e",
-  "GOBLIN_5@1:GOBLIN":
-    "60f70023f2e507c80819feb1c14cee55e5e1689d33a77339ff0c32ad6de1e19b",
-  "GOBLIN_6@1:GOBLIN":
-    "c58d1b0a9c2535d7af4a13b4b6bae69fc4978eb9ff413e35a1099371bf7bdd9d",
+  "GOBLIN_1@2:GOBLIN":
+    "eef71c4226dfc8806e0b5e98806fda8183b8a2ef94e383a39b25853e1b166d7c",
+  "GOBLIN_2@2:GOBLIN":
+    "b3d1f1059a22d4c2258a0833f42ea1fd8d75b3e961043e2c566b9173d81a1f67",
+  "GOBLIN_3@2:GOBLIN":
+    "c3a222aee7ec2514a26259872e3ceb0e87346b64143ae20b9bf9dd15d76a3529",
+  "GOBLIN_4@2:GOBLIN":
+    "03382b5f3f3e8adf0fb830517f57be103d76f1840d0c3554be2b5aafcb797032",
+  "GOBLIN_5@2:GOBLIN":
+    "00d6bcad4bf3fa8aefa1772a02bc879191d338e2ccd579b48dc06211587bc679",
+  "GOBLIN_6@2:GOBLIN":
+    "5f9eeea3b521327921cf68ba5511fd04569a1fc867997bff37b219acdd136aa5",
   // The Dwarf campaign, "The Bottomless" (`pulp_wars-hmyk.9`).
   "DWARF_1@1:DWARF":
     "a0bb401b2f20df29125b8a8d3c45d4a02ee6d418a03cf45ce258a19ea0417ebc",
@@ -217,49 +224,49 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
     "6280a5c8886887d513551d77652aa64121cf3bc09e9715d11d6adb1ee79f7dc9",
   "DWARF_3@1:DWARF":
     "f5fa4aa8411ff22ca2537e1314387011ec585beaa3d5f058b5bf33487fe524dc",
-  "DWARF_4@1:DWARF":
-    "1e2dcc20bd29b117e3c2f5b4bfc46433f8ac584906ee3d2b8e88a896f7d17b73",
-  "DWARF_5@1:DWARF":
-    "d2c993f3dfda0c3fd26d2b4d5257ea21b71d6cbb69d45d7e65c0e1e451bbdeb3",
-  "DWARF_6@1:DWARF":
-    "bf8032333567a3843bb24f8f1e55a0af551ed7c61c6e2ad88f9bd1eec2e2c83b",
+  "DWARF_4@2:DWARF":
+    "7959bb1565764432a0a8f332351719a1702019c90f988ae19d3bcdfbdd3b807e",
+  "DWARF_5@2:DWARF":
+    "8f8702bb2efd464d9dd84349f0e30db2034478ff861c095e3bbd359e49bbe2ea",
+  "DWARF_6@2:DWARF":
+    "9c02798c4c5e2dd635288253a67ed2545dfb15e63e640e942a3cd1a98436b4a1",
   // The Candy campaign, "Sweet Dreams" (`pulp_wars-hmyk.11`).
   "CANDY_1@1:CANDY":
     "a3ddb2e1bf2df1846e01de9906d794916de02cff821233681ac5300203bc4901",
-  "CANDY_2@1:CANDY":
-    "ff0f6c2bf6e6a9303297faf786102559eaaf1fa6417c1f0014cec1c43aa39e6d",
-  "CANDY_3@1:CANDY":
-    "0737a71b66e8394dc68cab578c749be1567dabdf417224318cb8fb1de463ba3c",
+  "CANDY_2@2:CANDY":
+    "ba21a3716e91a6a01e6b72a733e215083dc8dcdd70ad5ba587d8ba022b5af0ee",
+  "CANDY_3@2:CANDY":
+    "6f6eab2d2a4b63ad6ee7c894f9a8696b88230d3b589c34d3aa984e27d81712e5",
   "CANDY_4@1:CANDY":
     "2566eebbe46c96f1a086cd9de27b80cc50503663fa7b1da893e4c68706c6d25d",
   "CANDY_5@1:CANDY":
     "850817bce49333a8259db6c14a497c384633c97d25b2bb4df7feb53242dda886",
-  "CANDY_6@1:CANDY":
-    "5164de3b08e1bf09e94cb9e2848a75e80cc440ec45553c03f005189da2151142",
+  "CANDY_6@2:CANDY":
+    "b55c2dc0c1ef55767a50e8a05c6d2f3b43fef36a19666f37475b8d32d9dae296",
   // The Ice Folk campaign, "The Long Winter" (`pulp_wars-hmyk.10`).
-  "ICE_FOLK_1@1:ICE_FOLK":
-    "346894d9967db6e36e37dae510b72de902c8f9619c7a8d5abccca6388b5650a0",
-  "ICE_FOLK_2@1:ICE_FOLK":
-    "1ac048fce485763846252de9172cb0140ca1e0c1ff67b99f1bb5d2d7b82b5651",
-  "ICE_FOLK_3@1:ICE_FOLK":
-    "ca6f861718a57d2dee346c761df07b625c850add4142200ef71db4452d481def",
-  "ICE_FOLK_4@1:ICE_FOLK":
-    "2756ab0d9446281b7a1f675da092f67d0dd3fac9a6898187cc12e8e5429e9bb9",
-  "ICE_FOLK_5@1:ICE_FOLK":
-    "a04066ac2a5d7068ed1dc50c41540e0161d3162a1cb5c326d94f98929153f7d0",
-  "ICE_FOLK_6@1:ICE_FOLK":
-    "77447b956d8255c6d3ab5e3592250f924d1051487c8be06b963892aced3306c8",
+  "ICE_FOLK_1@2:ICE_FOLK":
+    "d30877452340ef8c8b13a34713891cb71e0205c5d6081c5c600a88b18e6f4cd1",
+  "ICE_FOLK_2@2:ICE_FOLK":
+    "9db4556e89bc8bcd40c7fc30add154119158e50fd47d7b27164895c0b71693cf",
+  "ICE_FOLK_3@2:ICE_FOLK":
+    "7023c460b99bf731b03ba13bdfff6487078632524ece71f2aa245962c1acee42",
+  "ICE_FOLK_4@2:ICE_FOLK":
+    "e669306acbd2c9eb3f8f6a26d1e23e38bebbd31cb3ff03478eb0bc2b1f5612f0",
+  "ICE_FOLK_5@2:ICE_FOLK":
+    "46dc8cde7a1028c8c1c69c55a74f9ab74182fd25485de08bc659fa62b22402c6",
+  "ICE_FOLK_6@2:ICE_FOLK":
+    "9aff66c0bab40ac35c5ddc5a97f2a6411b17cdd211aad640b0374af4f681e86a",
   // The Cult campaign, "The Long Night" (`pulp_wars-hmyk.12`).
-  "CULT_1@1:CULT":
-    "6c274d4a4f602b9fa6badbe836e3418af51e8328d71ed899281e5a5e396fb101",
+  "CULT_1@2:CULT":
+    "74735d2378dbb12abafc1d2d316fe636165432690d362ddfaf844514bc9bd5a6",
   "CULT_2@1:CULT":
     "794685436ad0729c0c021ecb228a21ea675938f78b579069b07eeb4b139b4685",
-  "CULT_3@1:CULT":
-    "4671d865faf1a8921813ffc211de94b6b5c8fa7c2a3153521f94b8737cf970c3",
+  "CULT_3@2:CULT":
+    "24e88decbe9ea1dcabae4e0c221816a9d9605e09e7887f170e1f50b7543fc421",
   "CULT_4@1:CULT":
     "4046ad1a553206444436fde34b70f2cf449abfc5091eaf9add762d225d3973de",
-  "CULT_5@1:CULT":
-    "e6cc96e17a4fe1221bda5ab29ef67d41d3f69dcd10bbf9d22d1c4e4f86bfd629",
+  "CULT_5@2:CULT":
+    "4bbd95458e096153e33ed211a30e17c2d1b1f15d173ef64b2d2b6abf3fe019ac",
   "CULT_6@1:CULT":
     "a42b8554404ab3df6bd14e6d44ff8e54cb161128a7a84bb1fe79e6cce1d178fc",
   // The siege fixture of the Normal AI (`pulp_wars-68k.6`).
@@ -267,13 +274,13 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
   "TEST_NECK@2:ORIGINAL":
     "df0cdf7c6c70ded79dc9b66eb620466e8be7a26d43450971d0a409e3432de2a9",
   // The Human tuning labs (`pulp_wars-w49.3`, tuning 4).
-  "LAB_SIEGE@1:ORIGINAL":
-    "4dfd821eba726c3103d795c00fb6b02b8048e7904e1d216f4d26d9917a122466",
+  "LAB_SIEGE@2:ORIGINAL":
+    "f87fce47729afdb041d516f90c70dc3d36a20ca4ae34d0a808fb49e2f11e666f",
   // Tuning 5 (`pulp_wars-w49.4`): revision 2 of both, with Swordsmen.
   // The ninth unit (`pulp_wars-w49.17`, 7r55): revision 3.
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 4.
-  "LAB_BACKLINE@4:ORIGINAL":
-    "3105aba428609ef16311fb83781ecc91de68710d3868f7239dae81bc65b6702e",
+  "LAB_BACKLINE@5:ORIGINAL":
+    "de892b957336eea02d8f70d1371204736f405caa9dbbce4e053a626c1234804e",
   // The ninth unit (`pulp_wars-w49.17`, 7r55): revision 3.
   "LAB_LATE@3:ORIGINAL":
     "4958183f0bda43d018200e40a4a83d21f1e1dfbc8d958f4c672e29a5d10f5d3f",
@@ -337,8 +344,8 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
   "LAB_CULT_MID@2:CULT":
     "5314ea5794f60ad88ed98e7fbd59abc8cc9f173fcc902de0a4ecb6b53ff7f7a8",
   // The tutorial board (`pulp_wars-0yxy`): Humans against one Goblin seat.
-  "TUTORIAL_1@1:ORIGINAL":
-    "f8d36a0cd1ab6b2e351b45b3f2721d0b1cfab3b58728cbd5b7cd9b471bc3ecb1",
+  "TUTORIAL_1@2:ORIGINAL":
+    "e7f762c65bfdac5321858dc9393a427690029ef587dc2fbb74e603edaf531686",
   // The objective fixtures (`pulp_wars-v642.1`): escort, survive, capture
   // with a deadline and an ally, and kill.
   "TEST_ESCORT@1:ORIGINAL":
@@ -347,8 +354,8 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
     "a182fcdd2eeea0afa0bfc11a87aaf944b85159a255aa94cec7607d33c0b108e6",
   "TEST_CAPTURE@1:ORIGINAL":
     "c1a9c6e665e9e14c05ac8a5491ccf63ed521856a59244947320947660caa2553",
-  "TEST_KILL@1:ORIGINAL":
-    "a84ae828b0d7ad1d45cdf73e0e130f7704e8bdcc78673dcadc59f8aca317a197",
+  "TEST_KILL@2:ORIGINAL":
+    "0a7408f6725aae0e87010f16faa64a9b084b9c0a860b9e337d9f5e365925619c",
 };
 
 /**
@@ -498,15 +505,15 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
   "TEST_GROUNDS@1:GOBLIN":
     "b82a6886fe8e938b35f21807277443e5a296d8bdf69284f59f65a5637917577b",
   // The AI-directive fixtures (`pulp_wars-68k.3`), pinned at 7r34.
-  "TEST_RUSH@1:ORIGINAL":
-    "243228c450a3067a06a06078af18ad3254c40fa43a723577d13b010903dc7f87",
-  "TEST_HOLD@1:ORIGINAL":
-    "ab9625959c3cea281c1a8628bea232302513cc0a5d928e416fad71419e6a4670",
+  "TEST_RUSH@2:ORIGINAL":
+    "1e2b4e42b2101ade127c70356819ccbc045219ade3a1a093e5e12b8242a92336",
+  "TEST_HOLD@2:ORIGINAL":
+    "7d4bee2bfb5645288a7b9c8b755c5a7462d2537dc626dcba78dcd64f5d5fe739",
   "TEST_GUARD@1:ORIGINAL":
     "493749a981bcc06da8f1346adedfef54c1dd0d6a491e7167376f4a8cceb5432a",
   // The ASSAULT fixture (`pulp_wars-v642.5`), added after the curiosities.
-  "TEST_ASSAULT@1:ORIGINAL":
-    "31126e9c3cc9d0bd3c2ac28e8f92eda52c55b987f669895002f15886385ab13f",
+  "TEST_ASSAULT@2:ORIGINAL":
+    "4bb5cffec15344cfd0105fac241ea4bbb1c56212b93917050f49f8e7a92121a0",
   // A GUARD whose others assault (`pulp_wars-v642.10`).
   "TEST_GUARD_RAID@1:ORIGINAL":
     "d0c785306b57828a5f7fdcc436464f47c02a80852d93adbd784277166d1be1cb",
@@ -514,8 +521,8 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
   // states with the two curiosities keys left out.
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 2.
   // Natural maps and objectives (`pulp_wars-v642.1`): revision 3.
-  "FRONTIER_1@3:ORIGINAL":
-    "52314a7830374a1409de1b86efafd4d896888b7be29e28adb510629cccdb8206",
+  "FRONTIER_1@4:ORIGINAL":
+    "c79d8a77cc67e46047f9a9a9256626094f757b69678030fca780bb948c427ce9",
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 2.
   // Natural maps and objectives (`pulp_wars-v642.1`): revision 3.
   // The campaign difficulty pass (`pulp_wars-v642.7`): revision 4.
@@ -525,107 +532,107 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
   // Natural maps and objectives (`pulp_wars-v642.1`): revision 3.
   // The campaign difficulty pass (`pulp_wars-v642.7`): revision 4.
   // The danger pass (`pulp_wars-v642.10`): revision 5.
-  "FRONTIER_3@5:GOBLIN":
-    "80e41e3d7cca45c4caa13be99dcd36b0f8ed34c02797825fb1552cbc537cf964",
+  "FRONTIER_3@6:GOBLIN":
+    "ceb52da2bef332aad435598d33e3dab33f1f358eee44ad7f45345e33b959ecb2",
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 3.
   // Natural maps and objectives (`pulp_wars-v642.1`): revision 4.
   // The campaign difficulty pass (`pulp_wars-v642.7`): revision 5.
   // The danger pass (`pulp_wars-v642.10`): revision 6.
-  "FRONTIER_4@6:ORIGINAL":
-    "db97b5816f7593333ce25d892a40df3671e2bd0aa29af7538f64557d2d8b4a91",
+  "FRONTIER_4@7:ORIGINAL":
+    "eeb9e6e4a7df9624ae7c03df489e956d49edcd806e29ff5d67b5ed286a42b60d",
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 3.
   // Natural maps and objectives (`pulp_wars-v642.1`): revision 4.
   // The campaign difficulty pass (`pulp_wars-v642.7`): revision 5.
   // The danger pass (`pulp_wars-v642.10`): revision 6.
-  "FRONTIER_4@6:GOBLIN":
-    "1f1401dd4f6062b1ba7064f3deaef7d11ae1384f9920f0f93fdb20e476f63323",
+  "FRONTIER_4@7:GOBLIN":
+    "d123c5635c3bdaf56c8d1fad63820e601a4abdca7ecac6f8b76eec1cd6cfc331",
   // Missions 5 and 6 (`pulp_wars-v642.2`).
   // Campaign difficulty pass B (`pulp_wars-v642.8`): revision 2.
   // The danger pass (`pulp_wars-v642.10`): revision 3.
-  "FRONTIER_5@3:UNDEAD":
-    "4e3f6b86291fab66d1df46d3cc4fbba5c4f8b7166178c66fcf6b14d555201ac9",
+  "FRONTIER_5@4:UNDEAD":
+    "ccc728674c064a0ec4631416349034bac368ad3e496293acd3ce9b1d24c80a4b",
   // Campaign difficulty pass B (`pulp_wars-v642.8`): revision 2.
-  "FRONTIER_6@2:DWARF":
-    "d7ec6a39b5209bfcb5e2c6afa1ad440af61a939f8dfe1f8b049f3d7643ed02b4",
+  "FRONTIER_6@3:DWARF":
+    "a2f525871e83e6fd258c8a8f69604f185db85d1e7d8143416b9627b89d0c06cb",
   // Missions 7 and 8 (`pulp_wars-v642.3`).
   // Campaign difficulty pass B (`pulp_wars-v642.8`): revision 2.
   // Campaign danger pass B (`pulp_wars-v642.10`): revision 3.
-  "FRONTIER_7@3:ICE_FOLK":
-    "a73a79dcea4f0704cc57831f4911cffe7702f81b7d1136fe5d69769d44bc082a",
+  "FRONTIER_7@4:ICE_FOLK":
+    "d5a0cd22745b554b2bc9cc2fca91adfbd66703bc70cf75fc00eee537f1cc9363",
   // Mission 8 as a build-up (`pulp_wars-v642.9`): revision 2.
   // Campaign danger pass B (`pulp_wars-v642.10`): revision 3.
-  "FRONTIER_8@3:DINOSAUR":
-    "05d0bf468f3143c7bee6f2dc17b77987daecab0777dc7ff87c43d5c9297d1cda",
+  "FRONTIER_8@4:DINOSAUR":
+    "face1b77ad92923813440f78a0beb9c3fae87bc9e4859fe40cc3d6d28afbf692",
   // Missions 9 and 10 (`pulp_wars-v642.4`); mission 9 with less
   // pre-research (`pulp_wars-v642.9`): revision 2.
   // Campaign danger pass B (`pulp_wars-v642.10`): revision 3.
-  "FRONTIER_9@3:MARTIAN":
-    "a9309053ee3b9608d6fc6626be686e6ee54db50d5f5aed266d3ddb3e30b8dddd",
+  "FRONTIER_9@4:MARTIAN":
+    "ae8dfd75312d2f76317b5661c525c71c065e20c8ed3fbcf539d6cef9fcdd150e",
   // Mission 10 replayed on the corrected Cult AI (`pulp_wars-v642.6`): revision 2.
   // The Cult redesign's roster (`pulp_wars-mch9.31`): revision 3.
   // Its retune (`pulp_wars-mch9.46`): revision 4.
   // Campaign danger pass B (`pulp_wars-v642.10`): revision 5.
-  "FRONTIER_10@5:ORIGINAL":
-    "3261b98b1428331de3091102077772814e219b150055d67d2e0625d45e3274fd",
+  "FRONTIER_10@6:ORIGINAL":
+    "843fe7ac1602a90022a9c9cfa02a6cc3052e2e92134af0445026a8c125aa1e4a",
   // The Humans campaign, "The Marshal's Law" (`pulp_wars-hmyk.4`).
   "HUMAN_1@1:ORIGINAL":
     "3ee8bb1f6f874afa324696dbb3060091f24308cc62b748ef5ce2bfc8ac4e7e3f",
-  "HUMAN_2@1:ORIGINAL":
-    "0e8d2e5846f0f5367cba7b470d1a510b16533810e3224ed483811d5d4fce054a",
-  "HUMAN_3@1:ORIGINAL":
-    "dc6f40e41a918df3198bc9d2bcff5c7bc8bafe34e71d7a4afee4d028bc0febcb",
-  "HUMAN_4@1:ORIGINAL":
-    "a91220876d04c2802bbe523e120a8beeed87099677255527ccdc186880112803",
+  "HUMAN_2@2:ORIGINAL":
+    "9da81f28d3124c62af1b1178c9dba4d5fd82c51a9f3706cc512601ee022d7426",
+  "HUMAN_3@2:ORIGINAL":
+    "f0ff6af1a24c1f5fcc51a6e57df3b0f348f52173d031e61e5a1b8f088861e586",
+  "HUMAN_4@2:ORIGINAL":
+    "8be19bfb3048920372f27f4edd804bbb16b6e56f372ecf201f3e169111e41597",
   // The Undead campaign, "The Long Sleep" (`pulp_wars-hmyk.5`).
-  "UNDEAD_1@1:UNDEAD":
-    "91212cd0f2e147f1eb345bda1f080004823a8dfd1cb88165c2af554349f7a016",
-  "UNDEAD_2@1:UNDEAD":
-    "8570030b6495fc68e045926a031f164c3d65bcdd3b5a6f6837fb054e358c5605",
-  "UNDEAD_3@1:UNDEAD":
-    "cdd41e238efd30432d610bcd80151b21e5c51062b890fecd7b4b7dfcff6b81b2",
-  "UNDEAD_4@1:UNDEAD":
-    "ef9b0b8b606f4278384846aafc4969e54f517557503630655a3f9202255cd14f",
-  "UNDEAD_5@1:UNDEAD":
-    "bdfa9ae6651c9a2dbc9335a9839267fc20bd83c6b75bf75be9e83948c1c207b3",
-  "UNDEAD_6@1:UNDEAD":
-    "169c3a83b647ca7274d2a578f7272269d9e4e682c035f61ba7eb75436c898b94",
+  "UNDEAD_1@2:UNDEAD":
+    "d9d4aaef60c1c1fb5c5f633bc08dbca3f88b60630edac7eab8a19e956ef24f90",
+  "UNDEAD_2@2:UNDEAD":
+    "9e6b5a57db321ac3b275923abfec3e711c2352e2a6fb7abba979d8848a89de31",
+  "UNDEAD_3@2:UNDEAD":
+    "671605d0cd54ceb193caa267aef680e8ccd3816844ff031a1e962eeca38ba835",
+  "UNDEAD_4@2:UNDEAD":
+    "950e3d25346ec8a5c1a03b69aff64e04a23220468def6b6b8d0647784aa57c3c",
+  "UNDEAD_5@2:UNDEAD":
+    "b56ae4ac9e42b7eb3d9f2a547b09f99d93c68713978a215e5e23d510a728ea13",
+  "UNDEAD_6@2:UNDEAD":
+    "9e15745684fed4c4c3ef57934d8c6de2d4d413ba603ecb0f6ed744b5eef53cd5",
   // The Dinosaur campaign, "The Egg Thief" (`pulp_wars-hmyk.6`); the Sea
   // Road (`DINOSAUR_3`) places the Sea Serpent and has no pin here.
-  "DINOSAUR_1@1:DINOSAUR":
-    "7e23043cb8c6e4d11385cc48466da0e044be30c106b81cc0545b6a52b16aeffb",
-  "DINOSAUR_2@1:DINOSAUR":
-    "357d433f7cbbbd2b574c8d14d4e8a909aef68ed7f5df3d25acbcbb294180d682",
-  "DINOSAUR_4@1:DINOSAUR":
-    "e73e3994d80a9e3a951e2dd082e2ca32c9d611261848655c8513755edcff8411",
-  "DINOSAUR_5@1:DINOSAUR":
-    "e9aeb59d229ff10252b86b2d1863f694e2aaf257e132c2e9e5f0c629c02cca8a",
-  "DINOSAUR_6@1:DINOSAUR":
-    "44972bbd18d4d58cfa06bf465779fe736b3c4b3d9f0ffaba0b4451863ea84900",
+  "DINOSAUR_1@2:DINOSAUR":
+    "e34ec8cef10d768cd5cc9e1760e93e412d4c99064098151d86644a9570bfce5b",
+  "DINOSAUR_2@2:DINOSAUR":
+    "2b9d2d55ffe8824e86cdcf0c13d16e2a069257eb62c24d6e1f824ad10c41799e",
+  "DINOSAUR_4@2:DINOSAUR":
+    "b42ef48303653026a2f022a6517fd98262a2524aef837f81590b0cfa33169733",
+  "DINOSAUR_5@2:DINOSAUR":
+    "fdf0b7b4874cb853d02608fe8bec0eed347f21398a8248d47e148f11f4034ffb",
+  "DINOSAUR_6@2:DINOSAUR":
+    "9cb11e53354bbe4d325224ee4b117dd87c35702dc5f7f4ee8953fc399282f9b7",
   // The Martian campaign, "Signal from Home" (`pulp_wars-hmyk.7`).
-  "MARTIAN_1@1:MARTIAN":
-    "e3c9bec3e10b47cdffbfbdf8e2063c7955c9409e8f6f8254feb93c6538edbbdd",
+  "MARTIAN_1@2:MARTIAN":
+    "b0e34a02178d1e7f337814ccb3797849ea2d3fb535b59abf6eef46d1f237c253",
   "MARTIAN_2@1:MARTIAN":
     "00bdac1aea7f297c485297a57a4a0a11dd8066b377d5f1c55cbc9b5f94bc6fdb",
-  "MARTIAN_3@1:MARTIAN":
-    "ca57c2de0c9515c07f84488a5d5618a755da46df054359f8faf3dbbff546eaee",
+  "MARTIAN_3@2:MARTIAN":
+    "4733ea4461513ac885ece22d3fafee7a779c0b5e9524e88dc56b1a8b730d1472",
   "MARTIAN_4@1:MARTIAN":
     "e5a7d24e34e012ff120791f0d93a2d298f7a35661b8df6e8381a7bfbc248d71f",
-  "MARTIAN_5@1:MARTIAN":
-    "6abd8486abcd0bce5d7a90c0c2d773700153fd5731239bcda1bdc7ecac083205",
+  "MARTIAN_5@2:MARTIAN":
+    "8d46d2af9a739785d604c965d899ed12c4a2505e05cfe6d4ee51bc29f62721c2",
   "MARTIAN_6@1:MARTIAN":
     "5d21a6ed7335a806f76708054f00aa56ebbd8a153aed9c0369005472714ce701",
   // The Goblin campaign, "The Big Score" (`pulp_wars-hmyk.8`).
   // GOBLIN_4 places the Moon Gun, so it has no pre-curiosity pin.
-  "GOBLIN_1@1:GOBLIN":
-    "80f075e3b0ac47532799ee1af67dbeced03f85aff32d8d613819a2114f67e711",
-  "GOBLIN_2@1:GOBLIN":
-    "056a10afef40450c9a3908f43aeefed958bbcdf76c6daeb7fc3fcf2884b4e9da",
-  "GOBLIN_3@1:GOBLIN":
-    "8543173b80512f9040d582a44a9252cab79c6b62812aa56d54e806fe69c8e105",
-  "GOBLIN_5@1:GOBLIN":
-    "539e56d85ed631199c600bf6089282a6ac7c4a2a943fc9c1ce7fb3a326c51111",
-  "GOBLIN_6@1:GOBLIN":
-    "4c6fb734162d49bb4ef77fb8642e18b254ccf9304dd7322815572808f1315e17",
+  "GOBLIN_1@2:GOBLIN":
+    "c6cffa347a2755ad9487dde836450693c64a145750f92a7f3b2886390e883773",
+  "GOBLIN_2@2:GOBLIN":
+    "1604ef3a161519fe71b0c967985990e4fdeb8df9826ba7dca6e40f63f6b7d5bd",
+  "GOBLIN_3@2:GOBLIN":
+    "731eb366346ec099453714b7884d7c9adc8f8f3bc18a0d9a3d89d5e3539e5b12",
+  "GOBLIN_5@2:GOBLIN":
+    "c5b548dea9e8a33fda0ac9cafb978eebc2cecdefcfe2c95a6c0cee765ecb1279",
+  "GOBLIN_6@2:GOBLIN":
+    "2121a834eec91c83be910a0f344a7c65a080e995597952201875fb290498118a",
   // The Dwarf campaign, "The Bottomless" (`pulp_wars-hmyk.9`).
   "DWARF_1@1:DWARF":
     "fde7575e484f73ade3c7891f091121f4322002e4c1b047259cf9bb29afc36976",
@@ -633,47 +640,47 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
     "27323833aaa3e9eff1e9bc64fec3d044bbf35bfd32b549c360c3e8b6c3497e14",
   "DWARF_3@1:DWARF":
     "0d4b6cb44239b45a9ac6cf94c8fc06782d9fd5888d102d97b55ecb207d422469",
-  "DWARF_4@1:DWARF":
-    "5ce147e0765c4a240b325e610da6f7b9ee7196017fefb005d3d4e7331568730e",
-  "DWARF_5@1:DWARF":
-    "f29ab8e611c536bd6065c376380aa8e971d3156db72c4719108bd74f6b7c35db",
-  "DWARF_6@1:DWARF":
-    "62ed9a9959332e399e204208997a7056f335f11c52f5337f18a09b45da6bc86e",
+  "DWARF_4@2:DWARF":
+    "3419affb64c4434538c95daad79e79f41c35435cd99b1181b9fdd69069eaa0f4",
+  "DWARF_5@2:DWARF":
+    "a70ffb26d70c1212cf58029c8260ac518282b7b5524df92b45b7cb52b23a5b30",
+  "DWARF_6@2:DWARF":
+    "df6fc764953dc47e6830e634807c0497840e9ba4e0a297cf599ab2443d8a7b55",
   // The Candy campaign, "Sweet Dreams" (`pulp_wars-hmyk.11`).
   "CANDY_1@1:CANDY":
     "e64cd935aeee550160d803d8fae5db8b7125a913dbe210aeb460086c625b695f",
-  "CANDY_2@1:CANDY":
-    "98bc65015f9987a2656bf0b402e80bade7afaf0fe896454885e742d21e31e205",
-  "CANDY_3@1:CANDY":
-    "dfb983deb5da15062043d8e3a071c058e3c6e6992b1428e824d941815d481c50",
+  "CANDY_2@2:CANDY":
+    "06c78051a18c0e3502f438ed71c06e587e699650a617dd0852981dcad80f9ea7",
+  "CANDY_3@2:CANDY":
+    "fc8d85aa3f9cce6978b7d38b8673b2ff17a09dc3110e2b7b74fc5149c11f1e00",
   "CANDY_4@1:CANDY":
     "2c658acbb487615bddd86d5134dbe2b51086ba9b1cc8b7c951d47fadf36124d5",
-  "CANDY_6@1:CANDY":
-    "439a84bf3892273713b9f92f918408e7b7464a764badf40d3e909fff064916be",
+  "CANDY_6@2:CANDY":
+    "8ab80f2a1eed5df3049c27cd57a63eaa7a29755dc2a984de2a37e5237630df82",
   // The Ice Folk campaign, "The Long Winter" (`pulp_wars-hmyk.10`).
-  "ICE_FOLK_1@1:ICE_FOLK":
-    "c5fe4a9e6fbaebb83bce4a2bb0d0e3bc1aca17fcf8d7140575c40d3b62ff89c1",
-  "ICE_FOLK_2@1:ICE_FOLK":
-    "5a0d5d89d9639ab9e7b3a9b0077dfcb5cfbc231054195d4e7d8a0de8879fdd0b",
-  "ICE_FOLK_3@1:ICE_FOLK":
-    "6ef5b24e334980d51ecfeb6c513e3b2391ea7b2b0efa3a8c984a42a03ad8241d",
-  "ICE_FOLK_4@1:ICE_FOLK":
-    "2269227843b53ae17c46732c14c7b74978f1d083e1ef0fcc68ffc75167193244",
-  "ICE_FOLK_5@1:ICE_FOLK":
-    "f8d5975e48cec6531f27aa558b55fc4a678529539e8d36a8857df32c218dca4b",
-  "ICE_FOLK_6@1:ICE_FOLK":
-    "080d14156726faf33ee3aa386d8289e156f71a1c1610dde427f6c46372b9eb18",
+  "ICE_FOLK_1@2:ICE_FOLK":
+    "e6469d86e93440ba7ca992fc7ab8b763eb016032fbaba0e1244b2e98fe3bb9c5",
+  "ICE_FOLK_2@2:ICE_FOLK":
+    "6ee59e19cdb191fbf5441c415c390b0fab5ea36dc3a0da9be0814e0fdac71dae",
+  "ICE_FOLK_3@2:ICE_FOLK":
+    "5371c208ef8838ddaccf3820c823be8cae4c7542e17425f1239d3a30792c5db0",
+  "ICE_FOLK_4@2:ICE_FOLK":
+    "16886208e26b8a5ddbac470cba34be01725f49e24512bac4b0e357461af94941",
+  "ICE_FOLK_5@2:ICE_FOLK":
+    "442dffd858012c0d69f465c7ef710a8c436c993d8377674bea89f106bd0ef25f",
+  "ICE_FOLK_6@2:ICE_FOLK":
+    "e0cb357e1392c64879562b9541fa7e054d3e8d6de20b7676c67b6344e74db7ee",
   // The Cult campaign, "The Long Night" (`pulp_wars-hmyk.12`).
-  "CULT_1@1:CULT":
-    "80fa3418a696806cf5a2d65e05798da71ba93df35207673594c0a3878f4fa548",
+  "CULT_1@2:CULT":
+    "002fd1fe0b4fb4df60df06b6443a5cb1c657c804053c6b4a278e564a805f7b4a",
   "CULT_2@1:CULT":
     "70422b0b6047c373905561795510f99e9cda04bc89f3b02ccfe01935dfd87031",
-  "CULT_3@1:CULT":
-    "b6df2bab49892fd4dd2d43df907b0fe46d7d2cfd4f2d7ec076ba71d2d035cf76",
+  "CULT_3@2:CULT":
+    "456fd1f4cd11e22ee16fd095403eff5bd4ebf34760b23f61b1eb47330c720e03",
   "CULT_4@1:CULT":
     "4a353f87ebadd854fdc1ebe18071803e55ec0c76122351b4f6c6269dbbfd4f74",
-  "CULT_5@1:CULT":
-    "b697ec0018547fed4fe5cdec80e39da91d9b4d7f9ec84f1a61d5ac306ee5c142",
+  "CULT_5@2:CULT":
+    "3b5b6b4df0f604d88eeee4227acc7209b688a06bb4f6eb81b2cd53a9639c8bc0",
   "CULT_6@1:CULT":
     "99b2ef34ad36010782776c017337f88b9af6bff8f20d00f201dac13a244d2028",
 
@@ -682,12 +689,12 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
     "32595babd0a4d5371b260320b8d360786ba69b01808d2716eaadec332213500e",
   // The Human tuning labs (tuning 4) were never built before map
   // curiosities; their digests here are the same reduction of the state.
-  "LAB_SIEGE@1:ORIGINAL":
-    "08e89649ece323a8d5284cc1895331f236d702a507a8c68df6ff443175b539ed",
+  "LAB_SIEGE@2:ORIGINAL":
+    "abc6246d3b844e17ca1da5d6249837f33010b13f56e5ea8cec29d16504ebd1b6",
   // The ninth unit (`pulp_wars-w49.17`, 7r55): revision 3.
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 4.
-  "LAB_BACKLINE@4:ORIGINAL":
-    "5fbf6cb90165c921ad415893f5312335ba6f188958444930be6523823aeb3d7a",
+  "LAB_BACKLINE@5:ORIGINAL":
+    "55e68385ba32631b2ed00ffeac93bbd350780b871e284dee2252cb0793b69b33",
   // The ninth unit (`pulp_wars-w49.17`, 7r55): revision 3.
   "LAB_LATE@3:ORIGINAL":
     "1077f06138cc445c505ced579e7a197082076fbacf1ebdc4429a01cf799bfa1e",
@@ -734,8 +741,8 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
   "LAB_CULT_MID@2:CULT":
     "dd0f9d881c53029f996b230d8be84a6c06098c5c28eeaf376518e0e60baded16",
   // The tutorial board (`pulp_wars-0yxy`).
-  "TUTORIAL_1@1:ORIGINAL":
-    "7740c5e7f57484e405c12cb665cfd33322eadbaf3c4907bc9b2483c5c05b0463",
+  "TUTORIAL_1@2:ORIGINAL":
+    "e4f0764eaca0130db62162c634fe3fe4a48c03ceb631b6437238fb83b3aafcc7",
   // The objective fixtures (`pulp_wars-v642.1`): escort, survive, capture
   // with a deadline and an ally, and kill.
   "TEST_ESCORT@1:ORIGINAL":
@@ -744,8 +751,8 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
     "16ca39ad86c7548c276066af2086cd722b551e852067c0da2b6baf3bc37c3a4c",
   "TEST_CAPTURE@1:ORIGINAL":
     "932a21d3cb32380ba5492e2a1164fc9a2c1d40d76b2f9eaab343d5fbe9545662",
-  "TEST_KILL@1:ORIGINAL":
-    "962127daaa5f691cb2954eecf46fc8ef06aefbc69821de6f3e32636c8182a7c9",
+  "TEST_KILL@2:ORIGINAL":
+    "bc3da2c593cd0fe485dc3fae46adaa1bb14af40f07016b6bb6bfb66b63ed608d",
 };
 
 function preCuriosityMissionStateHash(state: GameStateV7): string {
@@ -841,6 +848,23 @@ function tile(state: GameStateV7, x: number, y: number) {
   return found;
 }
 
+function coordKey(at: CoordV7): string {
+  return `${String(at.x)},${String(at.y)}`;
+}
+
+/** The cells of the square of `radius` around `center`, clipped to the board. */
+function squareOnBoard(
+  size: number,
+  center: CoordV7,
+  radius: number,
+): CoordV7[] {
+  const cells: CoordV7[] = [];
+  for (let y = center.y - radius; y <= center.y + radius; y += 1)
+    for (let x = center.x - radius; x <= center.x + radius; x += 1)
+      if (x >= 0 && y >= 0 && x < size && y < size) cells.push({ x, y });
+  return cells;
+}
+
 /** A definition edited for a build-time validation case. */
 function edited(
   change: (mission: MissionDefinitionV7) => Partial<MissionDefinitionV7>,
@@ -881,6 +905,47 @@ describe("the mission registry", () => {
         expect(created.ok).toBe(true);
       }
     }
+  });
+
+  // `pulp_wars-hmyk.17`: no seat starts with a unit or a city on ground it
+  // has not explored; it sees what its units see and its cities' land.
+  it("starts every seat with its units' sight and its cities' territory explored", () => {
+    const missing: string[] = [];
+    for (const mission of MISSION_REGISTRY_V7)
+      for (const faction of missionSeatFactionsV7(
+        mission.seats[0] as MissionDefinitionV7["seats"][number],
+      )) {
+        const setup = missionMatchSetupV7(mission, faction);
+        if (setup === null) throw new Error(`${mission.id} ${faction}`);
+        const raw = createInitialMapStateV7(setup);
+        if (!raw.ok) throw new Error(raw.error.code);
+        const state = raw.state;
+        for (const player of state.players) {
+          const explored = new Set(player.explored.map(coordKey));
+          const need = (at: CoordV7, what: string): void => {
+            if (!explored.has(coordKey(at)))
+              missing.push(
+                `${mission.id}:${faction} seat ${String(player.seat)} ${what} ${coordKey(at)}`,
+              );
+          };
+          const own = state.cities.filter((city) => city.ownerId === player.id);
+          for (const city of own) need(city.at, "city");
+          for (const tile of state.board.tiles)
+            if (own.some((city) => city.id === tile.territoryCityId))
+              need(tile.at, "territory");
+          for (const unit of state.units)
+            if (unit.ownerId === player.id) {
+              need(unit.at, `${unit.role} on`);
+              for (const at of squareOnBoard(
+                state.board.width,
+                unit.at,
+                unitSightRadiusAtV7(state, unit),
+              ))
+                need(at, `${unit.role} at ${coordKey(unit.at)} sees`);
+            }
+        }
+      }
+    expect(missing).toEqual([]);
   });
 
   it("pins the initial state of every registered mission revision and faction choice", () => {
@@ -1167,6 +1232,58 @@ describe("the mission builder (TEST_GROUNDS)", () => {
     expect(state.turnOrder).toEqual([1, 2]);
     expect(state.random).toEqual(randomState(testGrounds().seed));
     expect(state.round).toBe(1);
+  });
+
+  // `pulp_wars-hmyk.17`: exploration is completed after placement.
+  it("explores each seat's cities' territory and its units' sight beyond the reveal", () => {
+    const mission = edited((base) => {
+      const human = base.seats[0] as MissionDefinitionV7["seats"][number];
+      return {
+        seats: [
+          {
+            ...human,
+            // No reveal at all, and a Land Grant at the capital.
+            reveal: { radius: 0 },
+            cities: [
+              {
+                ...(human.cities[0] as (typeof human.cities)[number]),
+                landGrant: true,
+              },
+              human.cities[1] as (typeof human.cities)[number],
+            ],
+            // A Fighter in the field, far from both cities.
+            units: [...human.units, { role: "FIGHTER", at: { x: 5, y: 4 } }],
+          },
+          base.seats[1] as MissionDefinitionV7["seats"][number],
+        ],
+      };
+    });
+    const state = buildMissionStateV7(mission, groundsSetup());
+    const human = state.players[0];
+    if (human === undefined) throw new Error("no human seat");
+    const expected = new Set<string>();
+    // The granted capital's 5 x 5 and the other city's 3 x 3 territory.
+    for (const at of squareOnBoard(11, { x: 2, y: 8 }, 2))
+      expected.add(coordKey(at));
+    for (const at of squareOnBoard(11, { x: 2, y: 3 }, 1))
+      expected.add(coordKey(at));
+    for (const unit of state.units)
+      if (unit.ownerId === human.id)
+        for (const at of squareOnBoard(
+          11,
+          unit.at,
+          unitSightRadiusAtV7(state, unit),
+        ))
+          expected.add(coordKey(at));
+    expect(new Set(human.explored.map(coordKey))).toEqual(expected);
+    // The field Fighter sees its 3 x 3, outside every city's land.
+    expect(human.explored).toContainEqual({ x: 6, y: 5 });
+    expect(human.explored).not.toContainEqual({ x: 7, y: 5 });
+    // Sorted by (y, x), each cell once.
+    expect(human.explored).toEqual(
+      [...human.explored].sort((a, b) => a.y - b.y || a.x - b.x),
+    );
+    expect(human.explored).toHaveLength(expected.size);
   });
 
   it("resolves the starting units through the chosen faction at full HP", () => {

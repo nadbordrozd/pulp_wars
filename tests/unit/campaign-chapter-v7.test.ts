@@ -213,7 +213,7 @@ describe("Chapter One data", () => {
     // Revision 3 (`pulp_wars-v642.10`, the danger pass): what the fort
     // trains beyond its seven rushes your towns, and the raiders storm
     // Gallows Cross from round 3.
-    expect(road.revision).toBe(3);
+    expect(road.revision).toBe(4);
     expect(seat(road, 1).directive).toEqual({
       kind: "GUARD",
       zone: [{ x0: 9, y0: 7, x1: 11, y1: 9 }],
@@ -353,7 +353,7 @@ describe("Chapter One data", () => {
     expect(seat(gate, 0).technologies).toContain("ENGINEERING");
     // Revision 2 (`pulp_wars-v642.8`): no Hunting and no Clockwork to
     // start; Blasting Charges are researched, never given.
-    expect(gate.revision).toBe(2);
+    expect(gate.revision).toBe(3);
     expect([...seat(gate, 0).technologies].sort()).toEqual(
       [
         "ADMINISTRATION",
@@ -607,7 +607,7 @@ describe("Chapter One data", () => {
     // three native cities and the Baron's port, on a bigger board with a
     // longer clock.
     const island = mission("FRONTIER_7");
-    expect(island.revision).toBe(3);
+    expect(island.revision).toBe(4);
     expect(island.size).toBe(20);
     expect(island.source?.mapType).toBe("ARCHIPELAGO");
     expect(island.source?.seed).toBe(2);
@@ -763,7 +763,7 @@ describe("Chapter One data", () => {
     // Revision 3 (`pulp_wars-v642.10`, the danger pass): the thralls keep
     // their camps only until round 3, then assault the nest; three waves of
     // three follow them, from round 6.
-    expect(hunt.revision).toBe(3);
+    expect(hunt.revision).toBe(4);
     expect(seat(hunt, 2).directive).toEqual([
       {
         kind: "HOLD",
@@ -835,7 +835,7 @@ describe("Chapter One data", () => {
       { kind: "ASSAULT", target: { x: 7, y: 8 } },
     ]);
     // Revision 3: no Confectioner in the kingdom.
-    expect(rescue.revision).toBe(3);
+    expect(rescue.revision).toBe(4);
     expect(seat(rescue, 1).units.map((unit) => unit.role)).not.toContain(
       "CAPTAIN",
     );
@@ -902,7 +902,7 @@ describe("Chapter One data", () => {
     });
     // Revision 5 (`pulp_wars-v642.10`, the danger pass): the thralls storm
     // Northwatch from the first round.
-    expect(finale.revision).toBe(5);
+    expect(finale.revision).toBe(6);
     expect(seat(finale, 3).directive).toEqual({
       kind: "ASSAULT",
       target: { x: 4, y: 8 },

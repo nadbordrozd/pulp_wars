@@ -154,7 +154,11 @@ export interface MissionSeatV7 {
   readonly cities: readonly MissionCityV7[];
   /** At least one; the first gets the seat's first unit ID (`2s + 2`). */
   readonly units: readonly MissionUnitV7[];
-  /** Explored at start: radius around each own city, plus rectangles. */
+  /**
+   * Explored at start: radius around each own city, plus rectangles; the
+   * builder adds the cities' territory and the starting units' sight
+   * (`pulp_wars-hmyk.17`).
+   */
   readonly reveal: {
     readonly radius: number;
     readonly rects?: readonly RectV7[];

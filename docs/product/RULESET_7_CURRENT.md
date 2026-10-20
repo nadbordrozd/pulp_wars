@@ -3373,7 +3373,10 @@ before its first Start Turn (the first seat's first Start Turn pays income
 as in every match), the mission's technologies (a seat that starts with one
 does not get the free opening technology,
 [section 6.1](#61-research-cost)), every cell within its reveal radius of an
-own city plus its reveal rectangles explored, and seven locked achievement
+own city plus its reveal rectangles explored, and on top of them every tile
+of its cities' territory and every tile its starting units see with their
+ordinary Sight (`pulp_wars-hmyk.17`: no starting unit or city stands on
+ground its seat has not explored), and seven locked achievement
 entitlements.
 
 **Units.** Each unit is written by mechanical role and resolves through its

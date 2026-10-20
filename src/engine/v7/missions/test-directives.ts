@@ -39,7 +39,8 @@ const DRY_NAVAL_V7 = [
  */
 export const TEST_RUSH_V7: MissionDefinitionV7 = {
   id: "TEST_RUSH",
-  revision: 1,
+  // Revision 2 (`pulp_wars-hmyk.17`): each seat explores its units' sight.
+  revision: 2,
   hidden: true,
   size: 11,
   seed: 20261004,
@@ -128,7 +129,8 @@ export const TEST_RUSH_V7: MissionDefinitionV7 = {
  */
 export const TEST_HOLD_V7: MissionDefinitionV7 = {
   id: "TEST_HOLD",
-  revision: 1,
+  // Revision 2 (`pulp_wars-hmyk.17`): each seat explores its units' sight.
+  revision: 2,
   hidden: true,
   size: 11,
   seed: 20261005,
@@ -317,7 +319,8 @@ export const TEST_GUARD_V7: MissionDefinitionV7 = {
  */
 export const TEST_ASSAULT_V7: MissionDefinitionV7 = {
   id: "TEST_ASSAULT",
-  revision: 1,
+  // Revision 2 (`pulp_wars-hmyk.17`): each seat explores its units' sight.
+  revision: 2,
   hidden: true,
   size: 11,
   seed: 20261014,

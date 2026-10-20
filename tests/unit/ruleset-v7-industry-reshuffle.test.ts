@@ -481,16 +481,19 @@ describe("the Industry reshuffle: the missions", () => {
       ].map((id) => [id, revision(id)]),
     ).toEqual([
       // Natural maps and objectives (`pulp_wars-v642.1`): one revision on.
-      ["FRONTIER_1", 3],
+      // Exploration after placement (`pulp_wars-hmyk.17`): one more.
+      ["FRONTIER_1", 4],
       // The campaign difficulty pass (`pulp_wars-v642.7`): one more.
       ["FRONTIER_2", 4],
-      // The danger pass (`pulp_wars-v642.10`): one more.
-      ["FRONTIER_3", 5],
-      ["FRONTIER_4", 6],
+      // The danger pass (`pulp_wars-v642.10`): one more; and
+      // `pulp_wars-hmyk.17`.
+      ["FRONTIER_3", 6],
+      ["FRONTIER_4", 7],
       ["TEST_NECK", 2],
-      // Unchanged: both seats owned Fortification already.
-      ["LAB_SIEGE", 1],
-      ["LAB_BACKLINE", 4],
+      // Unchanged here (both seats owned Fortification already); one on
+      // for exploration after placement (`pulp_wars-hmyk.17`).
+      ["LAB_SIEGE", 2],
+      ["LAB_BACKLINE", 5],
       ["LAB_LATE", 3],
       ["LAB_BREAKTHROUGH", 4],
       ["LAB_BREAKTHROUGH_GOBLIN", 4],

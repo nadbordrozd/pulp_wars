@@ -22,6 +22,7 @@ import {
   missionStatusV7,
   missionTaggedUnitsV7,
   parseGameStateV7,
+  unitSightRadiusAtV7,
   validateMissionDefinitionV7,
   viewForV7,
   type CoordV7,
@@ -448,6 +449,54 @@ describe("reinforcements", () => {
     const again = applyCommandV7(placed, human, { kind: "END_TURN" });
     if (!again.accepted) throw new Error(again.error.code);
     expect(canonicalHash(again.state)).toBe(canonicalHash(mine.state));
+  });
+
+  // `pulp_wars-hmyk.17`: like a starting unit, an arriving one never stands
+  // on ground its seat has not explored.
+  it("reveal their sight for their own seat as they arrive", () => {
+    const two = endTurns(start("TEST_SURVIVE"), 1).state;
+    const goblin = seatId(two, 1);
+    // The Goblins have forgotten the middle of the board.
+    const middle = (at: CoordV7): boolean =>
+      at.x >= 2 && at.x <= 8 && at.y >= 2 && at.y <= 8;
+    const blind: GameStateV7 = {
+      ...two,
+      players: two.players.map((player) =>
+        player.id === goblin
+          ? {
+              ...player,
+              explored: player.explored.filter((at) => !middle(at)),
+            }
+          : player,
+      ),
+    };
+    const before = new Set(blind.units.map((unit) => unit.id));
+    const mine = applyCommandV7(blind, blind.humanPlayerId, {
+      kind: "END_TURN",
+    });
+    if (!mine.accepted) throw new Error(mine.error.code);
+    const fresh = mine.state.units.filter((unit) => !before.has(unit.id));
+    expect(fresh).toHaveLength(2);
+    const explored = new Set(
+      mine.state.players
+        .find((player) => player.id === goblin)
+        ?.explored.map((at) => `${String(at.x)},${String(at.y)}`),
+    );
+    const revealed = mine.events.flatMap((event) =>
+      event.kind === "TILES_REVEALED" && event.playerId === goblin
+        ? event.tiles
+        : [],
+    );
+    for (const unit of fresh) {
+      const radius = unitSightRadiusAtV7(mine.state, unit);
+      expect(radius).toBeGreaterThan(0);
+      for (let dy = -radius; dy <= radius; dy += 1)
+        for (let dx = -radius; dx <= radius; dx += 1) {
+          const at = { x: unit.at.x + dx, y: unit.at.y + dy };
+          expect(explored.has(`${String(at.x)},${String(at.y)}`)).toBe(true);
+          if (middle(at)) expect(revealed).toContainEqual(at);
+        }
+    }
   });
 });
 

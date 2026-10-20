@@ -202,7 +202,7 @@ export function navalArenaV7(options: NavalArenaOptionsV7): GameStateV7 {
     forbiddenTechnologies: [],
     objective: { kind: "DOMINATION" },
   };
-  const built = buildMissionStateV7(
+  const sighted = buildMissionStateV7(
     mission,
     navalArenaSetupV7(
       options.third === undefined
@@ -211,6 +211,30 @@ export function navalArenaV7(options: NavalArenaOptionsV7): GameStateV7 {
       aiMode,
     ),
   );
+  // A fogged seat knows only the 3 x 3 around its capital: the builder also
+  // explores its units' sight (`pulp_wars-hmyk.17`), which the fog cases
+  // (a boat the mover has not seen) take back by hand.
+  const fogged = [
+    !explored[0],
+    !explored[1],
+    options.third !== undefined && options.third.explored !== true,
+  ];
+  const built: GameStateV7 = {
+    ...sighted,
+    players: sighted.players.map((player, index) => {
+      const capital = mission.seats[index]?.cities[0]?.at;
+      return fogged[index] === true && capital !== undefined
+        ? {
+            ...player,
+            explored: player.explored.filter(
+              (at) =>
+                Math.abs(at.x - capital.x) <= 1 &&
+                Math.abs(at.y - capital.y) <= 1,
+            ),
+          }
+        : player;
+    }),
+  };
   // The first Start Turn, as for every match (city actions, income).
   const started = createPlayableGameFromMapStateV7({
     ok: true,

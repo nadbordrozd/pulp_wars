@@ -40,7 +40,8 @@ import type { MissionDefinitionV7 } from "./types";
  */
 export const HUMAN_3_V7: MissionDefinitionV7 = {
   id: "HUMAN_3",
-  revision: 1,
+  // Revision 2 (`pulp_wars-hmyk.17`): each seat explores its units' sight.
+  revision: 2,
   seed: 20261203,
   // <map>
   size: 16,

@@ -53,7 +53,8 @@ import type { MissionDefinitionV7 } from "./types";
  */
 export const FRONTIER_3_V7: MissionDefinitionV7 = {
   id: "FRONTIER_3",
-  revision: 5,
+  // Revision 6 (`pulp_wars-hmyk.17`): each seat explores its units' sight.
+  revision: 6,
   seed: 20261103,
   // <map>
   size: 16,

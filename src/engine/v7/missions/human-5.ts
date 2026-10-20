@@ -53,7 +53,8 @@ import type { MissionDefinitionV7 } from "./types";
 export const HUMAN_5_V7: MissionDefinitionV7 = {
   id: "HUMAN_5",
   // Revision 2 (`pulp_wars-hmyk.14`): the old Sea Serpent in the deep water.
-  revision: 2,
+  // Revision 3 (`pulp_wars-hmyk.17`): each seat explores its units' sight.
+  revision: 3,
   seed: 20261205,
   // <map>
   size: 16,

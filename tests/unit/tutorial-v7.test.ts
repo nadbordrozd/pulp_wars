@@ -146,7 +146,7 @@ function playScript(opponent: (state: GameStateV7) => GameStateV7): {
 describe("the tutorial board", () => {
   it("is the registered TUTORIAL_1 mission: Humans against Goblins, in no chapter", () => {
     const mission = missionByIdV7(TUTORIAL_MISSION_ID_V7);
-    expect(mission).toMatchObject({ revision: 1, hidden: true, size: 11 });
+    expect(mission).toMatchObject({ revision: 2, hidden: true, size: 11 });
     expect(mission?.seats.map((seat) => seat.faction)).toEqual([
       "ORIGINAL",
       "GOBLIN",

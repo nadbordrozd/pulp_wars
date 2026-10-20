@@ -41,7 +41,8 @@ import type { MissionDefinitionV7 } from "./types";
  */
 export const GOBLIN_2_V7: MissionDefinitionV7 = {
   id: "GOBLIN_2",
-  revision: 1,
+  // Revision 2 (`pulp_wars-hmyk.17`): each seat explores its units' sight.
+  revision: 2,
   seed: 20261502,
   // <map>
   size: 14,

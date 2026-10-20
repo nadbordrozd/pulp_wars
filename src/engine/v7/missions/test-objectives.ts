@@ -219,6 +219,8 @@ export const TEST_CAPTURE_V7: MissionDefinitionV7 = {
 export const TEST_KILL_V7: MissionDefinitionV7 = {
   ...BOARD_V7,
   id: "TEST_KILL",
+  // Revision 2 (`pulp_wars-hmyk.17`): each seat explores its units' sight.
+  revision: 2,
   seed: 20261204,
   villages: [
     { x: 2, y: 2 },

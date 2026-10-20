@@ -128,7 +128,8 @@ export interface MissionSeatV7 {
   /** The first city is the seat's capital (its original capital). */
   readonly cities: readonly MissionCityV7[];
   readonly units: readonly MissionUnitV7[];
-  /** Explored at start: radius around each own city, plus rectangles. */
+  /** Explored at start: radius around each own city, plus rectangles;
+   * the builder adds territory and the units' sight (section 2.2). */
   readonly reveal: {
     readonly radius: number;
     readonly rects?: readonly RectV7[];
@@ -215,7 +216,13 @@ match. The builder is pure and draws nothing from the PRNG.
 - **Players.** Faction and tree from the setup (seat 0's choice included);
   `coins` from the definition (the first seat's first Start Turn then pays
   income as in every match); `researchedTechs` from the definition;
-  `explored` from `reveal`; ordinary locked achievement entitlements. A seat
+  `explored` from `reveal`, then (once every unit is placed) every tile of
+  the seat's cities' territory and everything its starting units see under
+  the ordinary sight rule (the role's Sight with the Fieldcraft and
+  high-ground bonuses; an Egg sees its own tile only), so no starting unit
+  or city stands on ground its seat has not explored (`pulp_wars-hmyk.17`;
+  a wave already reveals its units' sight as it arrives, section 10.3);
+  ordinary locked achievement entitlements. A seat
   that starts with a technology does not get the free opening research (the
   ordinary rule: the opener applies only while zero technologies are known).
 - **Units** at full HP, zero kills, fresh activation, homed as written. As in
@@ -290,7 +297,11 @@ export function forbiddenTechnologiesV7(
   initial state (per allowed faction choice) to its revision; editing a
   layout, unit, city, or technology without bumping the revision fails that
   test. Directives and story text sit outside the hash: changing them never
-  invalidates a save.
+  invalidates a save. A builder change that alters registered missions'
+  initial states without a ruleset identity bump bumps each altered
+  mission's revision too, so its old saves are refused as stale rather than
+  failing their replay check (exploration after placement,
+  `pulp_wars-hmyk.17`, bumped 57 missions).
 - **Ruleset identity.** `68k.2` changes the identity once (new map type, new
   setup key, new refusal code), with the ordinary consequences: the autosave
   key becomes `pulpWars.save.v7rNN.current`, the previous key joins

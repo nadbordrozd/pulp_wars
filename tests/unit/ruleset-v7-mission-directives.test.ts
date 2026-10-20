@@ -87,8 +87,8 @@ function asSkirmish(view: PlayerViewV7): PlayerViewV7 {
 
 describe("directive resolution", () => {
   it("registers the three hidden fixtures with valid directives", () => {
-    expect(mission("TEST_RUSH")).toMatchObject({ hidden: true, revision: 1 });
-    expect(mission("TEST_HOLD")).toMatchObject({ hidden: true, revision: 1 });
+    expect(mission("TEST_RUSH")).toMatchObject({ hidden: true, revision: 2 });
+    expect(mission("TEST_HOLD")).toMatchObject({ hidden: true, revision: 2 });
     expect(mission("TEST_GUARD")).toMatchObject({ hidden: true, revision: 1 });
     for (const item of MISSION_REGISTRY_V7)
       expect(() => validateMissionDirectivesV7(item)).not.toThrow();

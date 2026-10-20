@@ -75,7 +75,8 @@ const NO_RESOURCES_14_V7 = Array.from({ length: 14 }, () => "..............");
  */
 export const LAB_SIEGE_V7: MissionDefinitionV7 = {
   id: "LAB_SIEGE",
-  revision: 1,
+  // Revision 2 (`pulp_wars-hmyk.17`): each seat explores its units' sight.
+  revision: 2,
   hidden: true,
   mirror: true,
   size: 11,
@@ -199,7 +200,8 @@ export const LAB_SIEGE_V7: MissionDefinitionV7 = {
  */
 export const LAB_BACKLINE_V7: MissionDefinitionV7 = {
   id: "LAB_BACKLINE",
-  revision: 4,
+  // Revision 5 (`pulp_wars-hmyk.17`): each seat explores its units' sight.
+  revision: 5,
   hidden: true,
   mirror: true,
   size: 14,

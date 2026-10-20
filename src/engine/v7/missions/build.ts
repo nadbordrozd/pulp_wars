@@ -49,6 +49,7 @@ import {
   roadPopulationForCityV7,
 } from "../economy";
 import { withFullShieldsV7 } from "../martian";
+import { unitSightRadiusAtV7 } from "../movement";
 import { spatialContributionAtV7 } from "../spatial-economy";
 import { initialScoreLedgerV7 } from "../score";
 import { parseGameStateV7 } from "../state-schema";
@@ -312,7 +313,8 @@ export function buildMissionStateV7(
       fail(`the improvement at ${coordText(item.at)} lies outside territory`);
 
   // Exploration: every cell within `reveal.radius` of an own city, plus the
-  // rectangles, clipped to the board.
+  // rectangles, clipped to the board (and, once every unit is placed, the
+  // cities' territory and the units' sight, below).
   const players = basePlayers.map((player, seatIndex) => {
     const seat = mission.seats[seatIndex] as MissionSeatV7;
     const cells: CoordV7[] = [];
@@ -714,12 +716,45 @@ export function buildMissionStateV7(
     pendingChoices: [],
     outcome: null,
   };
+  // Exploration after placement (`pulp_wars-hmyk.17`): on top of its reveal,
+  // every seat has explored its cities' territory and what each of its
+  // starting units sees under the ordinary sight rule (the unit's Sight,
+  // its Fieldcraft and high-ground bonuses; an Egg sees only its own tile),
+  // as a unit that arrives or moves there would reveal it. Before, a unit
+  // placed outside its seat's reveal stood on unexplored ground.
+  const placedState: GameStateV7 = {
+    ...draft,
+    scoreLedger: initialScoreLedgerV7(draft),
+  };
+  const sighted: Omit<GameStateV7, "scoreLedger"> = {
+    ...draft,
+    players: players.map((player) => {
+      const cells: CoordV7[] = [...player.explored];
+      const own = new Set(
+        cities
+          .filter((city) => city.ownerId === player.id)
+          .map((city) => city.id),
+      );
+      for (const tile of board.tiles)
+        if (tile.territoryCityId !== null && own.has(tile.territoryCityId))
+          cells.push(tile.at);
+      for (const unit of units)
+        if (unit.ownerId === player.id)
+          cells.push(
+            ...cellsInRect(
+              size,
+              aroundRect(unit.at, unitSightRadiusAtV7(placedState, unit)),
+            ),
+          );
+      return { ...player, explored: sortedCoords(cells) };
+    }),
+  };
   // Score and modes (docs/product/RULESET_7_SCORE_AND_STARS.md section
   // 3.3): a mission's starting technologies count, but missions record no
   // stars.
   const state = deepFreeze<GameStateV7>({
-    ...draft,
-    scoreLedger: initialScoreLedgerV7(draft),
+    ...sighted,
+    scoreLedger: initialScoreLedgerV7(sighted),
   });
   if (parseGameStateV7(state) === null)
     fail("the built state does not pass the state schema");
