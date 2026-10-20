@@ -516,6 +516,15 @@ const NOTES: Readonly<Partial<Record<SoundIdV1, SoundNoteV7>>> = {
   },
   "match.victory": { when: "Match won", picture: icon("trophy") },
   "match.defeat": { when: "Match lost", picture: icon("skull") },
+  // A mission's reinforcement wave (`pulp_wars-hmyk.18`).
+  "match.wave.enemy": {
+    when: "Enemy reinforcements arrive",
+    picture: unit("FIGHTER", "GOBLIN"),
+  },
+  "match.wave.ally": {
+    when: "Friendly reinforcements arrive",
+    picture: unit("FIGHTER", "ORIGINAL"),
+  },
   "ui.select": { when: "Something selected", picture: icon("range") },
   "ui.click": { when: "Button pressed", picture: icon("menu") },
   "ui.toggle": { when: "Sound switched", picture: icon("sound") },

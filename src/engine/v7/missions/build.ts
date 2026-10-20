@@ -1237,7 +1237,43 @@ function validateMissionGoalsV7(
       if (!onBoard(size, unit.at))
         fail(`a reinforcement at ${coordText(unit.at)} is off the board`);
     }
+    // E4 (`pulp_wars-hmyk.18`): a wave's story line and its heads-up.
+    if (wave.line !== undefined) {
+      const problem = missionWaveTextProblemV7(wave.line);
+      if (problem !== null) fail(`a reinforcement line ${problem}`);
+    }
+    if (wave.announce !== undefined && wave.announce !== true) {
+      const problem =
+        typeof wave.announce === "string"
+          ? missionWaveTextProblemV7(wave.announce)
+          : "is neither true nor a sentence";
+      if (problem !== null) fail(`a reinforcement heads-up ${problem}`);
+    }
   }
+}
+
+/**
+ * The longest story line or heads-up of a reinforcement wave
+ * (`pulp_wars-hmyk.18`, docs/product/SAGA.md section 4, E4): one line of
+ * the banner on a phone, twice a hint's length.
+ */
+export const MISSION_WAVE_TEXT_MAX_V7 = 90;
+
+/**
+ * Why a wave's story line or heads-up cannot be shown, or null when it
+ * can: it is a single line of words, trimmed, at most
+ * `MISSION_WAVE_TEXT_MAX_V7` characters, and names no tile (the
+ * interface never shows coordinates).
+ */
+export function missionWaveTextProblemV7(text: unknown): string | null {
+  if (typeof text !== "string") return "is not text";
+  if (text.trim() === "") return "is empty";
+  if (text.trim() !== text) return "has spaces at its ends";
+  if (text.length > MISSION_WAVE_TEXT_MAX_V7)
+    return `is longer than ${String(MISSION_WAVE_TEXT_MAX_V7)} characters`;
+  if (/[\r\n\t]/.test(text)) return "is more than one line";
+  if (/\b\d{1,2}\s*,\s*\d{1,2}\b/.test(text)) return "names a tile";
+  return null;
 }
 
 /**

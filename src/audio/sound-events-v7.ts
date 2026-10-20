@@ -665,6 +665,16 @@ export function soundCuesForStepV7(
     case "TACTICAL_STATUS":
     case "DISBAND":
       return [];
+    // `pulp_wars-hmyk.18`: a mission's reinforcement wave arrives with a
+    // stinger, ominous for an enemy's, heroic for the viewer's own and an
+    // ally's (docs/ui/SOUND.md "Reinforcement waves").
+    case "REINFORCEMENT":
+      return [
+        {
+          id: step.side === "ENEMY" ? "match.wave.enemy" : "match.wave.ally",
+          delayMs: 0,
+        },
+      ];
   }
 }
 

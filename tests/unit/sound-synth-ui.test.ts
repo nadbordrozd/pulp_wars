@@ -34,6 +34,9 @@ const JINGLES: ReadonlySet<SoundIdV1> = new Set([
   "achievement.monument",
   "match.victory",
   "match.defeat",
+  // Bead pulp_wars-hmyk.18: the reinforcement stingers.
+  "match.wave.enemy",
+  "match.wave.ally",
 ]);
 
 describe("sound manifest", () => {

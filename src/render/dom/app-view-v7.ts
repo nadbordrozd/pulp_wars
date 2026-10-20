@@ -1018,6 +1018,12 @@ import {
 } from "../city-names-presentation-v7";
 import { GalleryViewV7 } from "./gallery-v7";
 import {
+  boundaryBeginsViewerTurnV7,
+  waveArrivalBannerV7,
+  waveHeadsUpBannersV7,
+  type WaveBannerV7,
+} from "../reinforcement-presentation-v7";
+import {
   createBrowserGameAudioV1,
   themeForSceneV1,
   type MusicSceneV1,
@@ -1677,6 +1683,13 @@ interface BoardArtWaitV7 {
 }
 /** First steps: how long the "out of moves" line stays up by itself. */
 const FIRST_STEP_OUT_OF_MOVES_MS_V7 = 6_000;
+/**
+ * `pulp_wars-hmyk.18`: how long a reinforcement banner stays up by itself
+ * (a tap takes it down sooner).
+ */
+export const WAVE_BANNER_MS_V7 = 4_500;
+/** `pulp_wars-hmyk.18`: the widths at which the banner sits at the bottom. */
+const WAVE_BANNER_NARROW_V7 = "(max-width: 599px)";
 /** The longest a level-up's reward dialog waits for its animation. */
 const REWARD_HOLD_LIMIT_MS_V7 = 2_500;
 
@@ -2053,6 +2066,17 @@ export class Ruleset7DomAppView {
    */
   #failureNotice: HTMLElement | null = null;
   #failureNoticeShown = false;
+  /**
+   * `pulp_wars-hmyk.18`: the reinforcement banner shown now (one element,
+   * kept across renders, for the match it was shown in) and the banners
+   * waiting for it to go.
+   */
+  #waveBanner: {
+    readonly element: HTMLElement;
+    readonly matchInstance: number;
+    timer: number | null;
+  } | null = null;
+  #waveBannerQueue: WaveBannerV7[] = [];
   #unsubscribeFailures: (() => void) | null = null;
   #matchInstance = 0;
   #presentationActive = false;
@@ -2261,10 +2285,24 @@ export class Ruleset7DomAppView {
     this.#audio =
       options.audio ??
       createBrowserGameAudioV1(documentRoot, this.#settingsStorage);
-    // Sound is timed by the board's own presentation steps.
-    this.#boardHost.setPresentationStepListener?.((cue) =>
-      this.#audio.playCues(soundCuesForStepV7(cue), cue.durationScale),
-    );
+    // Sound is timed by the board's own presentation steps; so is the
+    // reinforcement banner (`pulp_wars-hmyk.18`), which shows as the camera
+    // reaches the wave.
+    this.#boardHost.setPresentationStepListener?.((cue) => {
+      this.#audio.playCues(soundCuesForStepV7(cue), cue.durationScale);
+      if (cue.step.kind === "REINFORCEMENT") {
+        const playerId = cue.step.playerId;
+        const banner = waveArrivalBannerV7(
+          cue.after,
+          cue.envelope.events.filter(
+            (event) =>
+              event.kind !== "REINFORCEMENT_ARRIVED" ||
+              event.playerId === playerId,
+          ),
+        );
+        if (banner !== null) this.#showWaveBanner(banner);
+      }
+    });
     this.#coinFlight = new CoinFlightLayerV7(documentRoot, {
       coinUrl: () => this.#economyIcons("coin")?.url ?? null,
       counterIcon: () => this.#root.querySelector(".v7-coins .v7-economy-icon"),
@@ -2443,6 +2481,7 @@ export class Ruleset7DomAppView {
     this.#unsubscribeFailures?.();
     this.#unsubscribeFailures = null;
     this.#failureNotice = null;
+    this.#clearWaveBanners();
     this.#controller.setAiPacingGate?.(null);
     this.#document.removeEventListener(
       "visibilitychange",
@@ -2996,6 +3035,7 @@ export class Ruleset7DomAppView {
         this.#boardHost.destroy(),
       );
     this.#releaseMatchGestureGuard();
+    this.#clearWaveBanners();
     this.#matchShell = null;
     this.#matchRoot = null;
     this.#boardContainer = null;
@@ -6231,6 +6271,11 @@ export class Ruleset7DomAppView {
       nextChildren.push(toast);
     }
     if (this.#failureNotice !== null) nextChildren.push(this.#failureNotice);
+    if (this.#waveBanner !== null) {
+      if (this.#waveBanner.matchInstance === this.#matchInstance)
+        nextChildren.push(this.#waveBanner.element);
+      else this.#clearWaveBanners();
+    }
     // Every render rebuilds the dock. On narrow screens it can exceed its
     // height cap and scroll vertically, so remember where the outgoing dock
     // was scrolled and put the new one back there while the same selection
@@ -6413,6 +6458,7 @@ export class Ruleset7DomAppView {
     if (popup !== undefined) nextChildren.push(this.#scrim(popup));
     reconcileMatchChildren(main, board, nextChildren);
     if (this.#failureNotice !== null) this.#placeFailureNotice(main);
+    if (this.#waveBanner !== null) this.#placeWaveBanner(main);
     if (this.#compactMenuOpen) this.#fitCompactMenu(main);
     if (statusPopover !== null && dock !== null)
       this.#placeStatusPopover(main, dock, statusPopover);
@@ -13408,6 +13454,14 @@ export class Ruleset7DomAppView {
       this.#releaseAiPacing();
       this.#finishFeedback();
       this.#audio.playCues(sounds.essential);
+      // `pulp_wars-hmyk.18`: Fast Forward plays no step, so a wave's banner
+      // shows at once (without its stinger), and so does a heads-up.
+      const wave = waveArrivalBannerV7(
+        boundary.afterView,
+        boundary.playerEvents.events,
+      );
+      if (wave !== null) this.#showWaveBanner(wave);
+      this.#showWaveHeadsUps(boundary);
       return;
     }
     this.#audio.playCues(sounds.start);
@@ -13477,7 +13531,7 @@ export class Ruleset7DomAppView {
                   next.matchInstance,
             },
           );
-          if (!this.#destroyed && next.matchInstance === this.#matchInstance)
+          if (!this.#destroyed && next.matchInstance === this.#matchInstance) {
             // The boundary has played: its coins and population leave
             // their tiles, and the coin and level-up sounds wait for them
             // to land.
@@ -13487,6 +13541,9 @@ export class Ruleset7DomAppView {
                 this.#launchFeedback(next.feedback),
               ),
             );
+            // `pulp_wars-hmyk.18`: the scouts' heads-up of the turn it began.
+            this.#showWaveHeadsUps(next.boundary);
+          }
           // Its achievement notices may open now (bead pulp_wars-2yc.84).
           if (
             this.#releaseAchievementNotices(next.boundary) &&
@@ -14356,6 +14413,151 @@ export class Ruleset7DomAppView {
     } catch {
       // The stylesheet's place stands.
     }
+  }
+
+  /**
+   * `pulp_wars-hmyk.18`: shows a reinforcement banner, or queues it behind
+   * the one showing (at most three wait; a fourth is dropped). It is added
+   * to the match in place, without a render (a playback is running), and
+   * goes by itself after `WAVE_BANNER_MS_V7` or at a tap. It never takes
+   * the focus and never covers End Turn. Never throws.
+   */
+  #showWaveBanner(banner: WaveBannerV7): void {
+    if (this.#destroyed) return;
+    if (this.#waveBanner !== null) {
+      if (this.#waveBannerQueue.length < 3) this.#waveBannerQueue.push(banner);
+      return;
+    }
+    try {
+      const element = this.#buildWaveBanner(banner);
+      const current: {
+        readonly element: HTMLElement;
+        readonly matchInstance: number;
+        timer: number | null;
+      } = { element, matchInstance: this.#matchInstance, timer: null };
+      this.#waveBanner = current;
+      current.timer =
+        this.#document.defaultView?.setTimeout(
+          () => this.#dismissWaveBanner(element),
+          WAVE_BANNER_MS_V7,
+        ) ?? null;
+      const main = this.#matchRoot;
+      if (main !== null && main.isConnected && !main.contains(element)) {
+        main.append(element);
+        this.#placeWaveBanner(main);
+      }
+    } catch {
+      // The banner is a courtesy; play goes on without it.
+      this.#waveBanner = null;
+    }
+  }
+
+  /** The heads-up banners of the viewer's turn a boundary began. */
+  #showWaveHeadsUps(boundary: Ruleset7AcceptedBoundary): void {
+    if (!boundaryBeginsViewerTurnV7(boundary.beforeView, boundary.afterView))
+      return;
+    for (const banner of waveHeadsUpBannersV7(boundary.afterView))
+      this.#showWaveBanner(banner);
+  }
+
+  /** Takes the banner down (when it is still `element`), then the next. */
+  #dismissWaveBanner(element: HTMLElement): void {
+    const current = this.#waveBanner;
+    if (current === null || current.element !== element) return;
+    if (current.timer !== null)
+      this.#document.defaultView?.clearTimeout(current.timer);
+    this.#waveBanner = null;
+    element.remove();
+    const next = this.#waveBannerQueue.shift();
+    if (next !== undefined && !this.#destroyed) this.#showWaveBanner(next);
+  }
+
+  /** No banner and none waiting (a match left or the view destroyed). */
+  #clearWaveBanners(): void {
+    this.#waveBannerQueue = [];
+    const current = this.#waveBanner;
+    if (current === null) return;
+    if (current.timer !== null)
+      this.#document.defaultView?.clearTimeout(current.timer);
+    this.#waveBanner = null;
+    current.element.remove();
+  }
+
+  /**
+   * Where the banner hangs. On a wide screen under the HUD, centred; the
+   * HUD's height depends on the width and on the coach's line (as for the
+   * failure notice). On a phone (`WAVE_BANNER_NARROW_V7`) at the bottom,
+   * above the dock when one is open: the HUD takes the top of a phone in
+   * several rows, and the camera frames a wave just under it, where a
+   * banner there would cover the wave it names. Never throws.
+   */
+  #placeWaveBanner(main: HTMLElement): void {
+    try {
+      const banner = this.#waveBanner?.element;
+      if (banner === undefined) return;
+      const narrow =
+        this.#document.defaultView?.matchMedia?.(WAVE_BANNER_NARROW_V7)
+          .matches === true;
+      if (narrow) {
+        const dock = main.querySelector<HTMLElement>(
+          ':scope > [data-v7-region="dock"]',
+        );
+        const above =
+          dock === null
+            ? null
+            : main.getBoundingClientRect().bottom -
+              dock.getBoundingClientRect().top;
+        banner.style.top = "";
+        banner.style.bottom =
+          above !== null && Number.isFinite(above) && above > 0
+            ? `${Math.round(above + 8)}px`
+            : "";
+        return;
+      }
+      banner.style.bottom = "";
+      const hud = main.querySelector<HTMLElement>(
+        ':scope > [data-v7-region="hud"]',
+      );
+      if (hud === null) return;
+      let lowest = hud.getBoundingClientRect().bottom;
+      for (const row of hud.children)
+        lowest = Math.max(lowest, row.getBoundingClientRect().bottom);
+      const bottom = lowest - main.getBoundingClientRect().top;
+      if (Number.isFinite(bottom) && bottom > 0)
+        banner.style.top = `${Math.round(bottom + 8)}px`;
+    } catch {
+      // The stylesheet's place stands.
+    }
+  }
+
+  /**
+   * A reinforcement banner (`pulp_wars-hmyk.18`): the faction's emblem, a
+   * kicker with the side ("Enemy reinforcements!", "Enemies approaching!"), who
+   * arrived and roughly where, and the wave's story line. A tap anywhere on
+   * it takes it down.
+   */
+  #buildWaveBanner(banner: WaveBannerV7): HTMLElement {
+    const element = el(this.#document, "aside", "v7-wave-banner");
+    element.dataset.v7Region = "wave-banner";
+    element.dataset.side = banner.side.toLowerCase();
+    element.dataset.kind = banner.kind === "ARRIVAL" ? "arrival" : "heads-up";
+    element.dataset.faction = banner.faction;
+    element.setAttribute("role", "status");
+    element.setAttribute("aria-live", "polite");
+    element.title = "Tap to dismiss";
+    element.style.setProperty("--player", factionColourV7(banner.faction));
+    const body = el(this.#document, "div", "v7-wave-banner-body");
+    body.append(
+      text(this.#document, "p", banner.title, "v7-wave-banner-title"),
+      text(this.#document, "p", banner.text, "v7-wave-banner-text"),
+    );
+    if (banner.line !== null)
+      body.append(
+        text(this.#document, "p", `“${banner.line}”`, "v7-wave-banner-line"),
+      );
+    element.append(this.#factionEmblem(banner.faction, "small"), body);
+    element.addEventListener("click", () => this.#dismissWaveBanner(element));
+    return element;
   }
 
   #buildFailureNotice(): HTMLElement {

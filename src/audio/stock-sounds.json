@@ -2112,6 +2112,16 @@
       "wanted": "A sea serpent's bite: a sharp reptile hiss, a splash and a snap of jaws, 0.25 to 0.8 s."
     },
     {
+      "id": "match.wave.enemy",
+      "why": "Added by bead pulp_wars-hmyk.18 with ElevenLabs takes; the bundle was not searched for it.",
+      "wanted": "An ominous stinger for enemy reinforcements: low brass and a timpani roll, two dark minor notes, 0.8 to 2.2 s."
+    },
+    {
+      "id": "match.wave.ally",
+      "why": "Added by bead pulp_wars-hmyk.18 with ElevenLabs takes; the bundle was not searched for it.",
+      "wanted": "A heroic stinger for friendly reinforcements: a short bugle call over a snare drum, 0.8 to 2.2 s."
+    },
+    {
       "id": "special.ice-crack",
       "why": "Added by bead pulp_wars-5ti.27 with ElevenLabs takes; the bundle was not searched for it.",
       "wanted": "A sharp crack of thick lake ice, a short splintering and a small splash, 0.2 to 0.8 s."

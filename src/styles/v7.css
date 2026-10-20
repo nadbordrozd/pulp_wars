@@ -3104,6 +3104,144 @@ html:has(.v7-match-shell) body {
   justify-content: space-between;
 }
 
+/*
+ * `pulp_wars-hmyk.18`: the reinforcement banner. A cream plate under the
+ * HUD, centred (the view sets its top to the HUD's bottom; on a phone it
+ * sits at the bottom instead, below), with the
+ * arriving faction's stripe on its left edge and its emblem; the kicker
+ * says the side in that side's ink. It takes no focus, a tap takes it
+ * down, and it never reaches End Turn or the dock.
+ */
+.v7-wave-banner {
+  position: absolute;
+  z-index: 24;
+  top: calc(max(0.6rem, env(safe-area-inset-top)) + 3.6rem);
+  left: 50%;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: max-content;
+  max-width: min(30rem, calc(100% - 2rem));
+  padding: 0.45rem 0.9rem 0.5rem 0.5rem;
+  border: var(--pw-line-w) solid var(--pw-line);
+  border-left: 0.5rem solid var(--player, var(--pw-line));
+  border-radius: var(--pw-radius-sm);
+  background: var(--pw-surface);
+  box-shadow: var(--pw-shadow);
+  color: var(--pw-text);
+  cursor: pointer;
+  transform: translateX(-50%);
+  animation: v7-wave-banner-in 260ms ease-out;
+}
+
+.v7-wave-banner .v7-faction-emblem {
+  width: 2.6rem;
+  height: 2.6rem;
+}
+
+.v7-wave-banner-body {
+  display: grid;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.v7-wave-banner-body > p {
+  margin: 0;
+}
+
+.v7-wave-banner-title {
+  font-family: var(--pw-display);
+  font-size: var(--pw-fs-xl);
+  line-height: 1.1;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.v7-wave-banner[data-side="enemy"] .v7-wave-banner-title {
+  color: var(--pw-loss);
+}
+
+.v7-wave-banner[data-side="ally"] .v7-wave-banner-title,
+.v7-wave-banner[data-side="own"] .v7-wave-banner-title {
+  color: var(--pw-green);
+}
+
+.v7-wave-banner[data-kind="heads-up"] .v7-wave-banner-title {
+  color: var(--pw-text);
+}
+
+.v7-wave-banner-text {
+  font-size: var(--pw-fs-md);
+  font-weight: var(--pw-fw-bold);
+  line-height: 1.25;
+}
+
+.v7-wave-banner-line {
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-sm);
+  font-style: italic;
+  line-height: 1.25;
+}
+
+@keyframes v7-wave-banner-in {
+  from {
+    opacity: 0;
+    translate: 0 -0.6rem;
+  }
+}
+
+@keyframes v7-wave-banner-up {
+  from {
+    opacity: 0;
+    translate: 0 0.6rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .v7-wave-banner {
+    animation: none;
+  }
+}
+
+.v7-app-shell[data-motion="reduced"] .v7-wave-banner {
+  animation: none;
+}
+
+/*
+ * A phone: at the bottom (above the dock when one is open; the view sets
+ * its bottom), the whole width between the gutters, the emblem smaller.
+ */
+@media (max-width: 599px) {
+  .v7-wave-banner {
+    top: auto;
+    bottom: calc(max(0.75rem, env(safe-area-inset-bottom)) + 0.25rem);
+    gap: 0.45rem;
+    width: calc(100% - 2rem);
+    padding: 0.35rem 0.6rem 0.4rem 0.4rem;
+    animation-name: v7-wave-banner-up;
+  }
+
+  .v7-wave-banner .v7-faction-emblem {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .v7-wave-banner-title {
+    font-family: var(--pw-ui);
+    font-size: var(--pw-fs-sm);
+    font-weight: var(--pw-fw-heavy);
+    letter-spacing: 0.06em;
+  }
+
+  .v7-wave-banner-text {
+    font-size: var(--pw-fs-sm);
+  }
+
+  .v7-wave-banner-line {
+    font-size: var(--pw-fs-xs);
+  }
+}
+
 .v7-failure-notice-report {
   width: 100%;
   min-height: 6rem;

@@ -115,9 +115,11 @@ const MAX_CLIP_BYTES = 60_000;
  * picked. Bead pulp_wars-2yc.52 raised it to 4.6 MB: twelve new hurt
  * sounds (one per faction and three creatures, 26 clips of about 13 kB,
  * 0.33 MB), Village captured's new takes and the generic death's take.
+ * Bead pulp_wars-hmyk.18 raised it to 4.8 MB: the two reinforcement
+ * stingers' five takes of up to 2.2 s (0.14 MB).
  * Raise it again only with more takes, and not past about 6 MB.
  */
-const MAX_TOTAL_BYTES = 4_600_000;
+const MAX_TOTAL_BYTES = 4_800_000;
 /** The longest clip the game needs (a fanfare). */
 const MAX_CLIP_SECONDS = 3.2;
 /** A sound keeps at most this many recordings to choose from. */

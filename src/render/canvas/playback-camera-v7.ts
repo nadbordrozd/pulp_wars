@@ -444,6 +444,9 @@ export function playbackStepCellsV7(
     case "WINDMILL_HEALING":
     case "VISIBILITY_CROSSFADE":
       return [];
+    // `pulp_wars-hmyk.18`: a reinforcement wave, on the tiles it arrived on.
+    case "REINFORCEMENT":
+      return step.cells;
   }
 }
 

@@ -259,3 +259,76 @@ export const TEST_KILL_V7: MissionDefinitionV7 = {
     bonus: [{ kind: "UNIT_ALIVE", unit: "HERO" }],
   },
 };
+
+/**
+ * `TEST_WAVES` (`pulp_wars-hmyk.18`, docs/product/SAGA.md section 4, E4):
+ * the reinforcement banner's fixture. Three seats, the Undead your ally
+ * and the Goblins against you both; the whole board is in sight. In round
+ * 2 the Undead's wave of two comes with its own story line, and then the
+ * Goblins' wave of three in the north, with the default line and a
+ * heads-up at the start of your round 2 turn; in round 3 a Guard of yours
+ * comes to the keep. Hold the keep for four turns.
+ */
+export const TEST_WAVES_V7: MissionDefinitionV7 = {
+  ...BOARD_V7,
+  id: "TEST_WAVES",
+  seed: 20261205,
+  villages: [{ x: 2, y: 2 }],
+  landmarks: [{ tag: "KEEP", at: { x: 2, y: 8 } }],
+  teams: [0, 0, 1],
+  seats: [
+    {
+      faction: "ORIGINAL",
+      coins: 5,
+      technologies: ["DRILL"],
+      cities: [{ at: { x: 2, y: 8 }, level: 1, rewards: [] }],
+      units: [{ role: "FIGHTER", at: { x: 2, y: 8 } }],
+      reveal: { radius: 2, rects: WHOLE_BOARD_V7 },
+    },
+    {
+      faction: "UNDEAD",
+      coins: 0,
+      technologies: [],
+      cities: [{ at: { x: 8, y: 8 }, level: 1, rewards: [] }],
+      units: [{ role: "FIGHTER", at: { x: 8, y: 8 } }],
+      reveal: { radius: 2 },
+      directive: { kind: "HOLD", zone: [{ x0: 6, y0: 6, x1: 10, y1: 10 }] },
+    },
+    {
+      faction: "GOBLIN",
+      coins: 0,
+      technologies: [],
+      cities: [{ at: { x: 8, y: 2 }, level: 1, rewards: [] }],
+      units: [{ role: "FIGHTER", at: { x: 8, y: 2 } }],
+      reveal: { radius: 2 },
+      directive: { kind: "HOLD", zone: [{ x0: 6, y0: 0, x1: 10, y1: 4 }] },
+    },
+  ],
+  reinforcements: [
+    {
+      seat: 1,
+      round: 2,
+      units: [
+        { role: "FIGHTER", at: { x: 6, y: 7 } },
+        { role: "FIGHTER", at: { x: 7, y: 6 } },
+      ],
+      line: "The dead are here. They apologise for the delay.",
+    },
+    {
+      seat: 2,
+      round: 2,
+      units: [
+        { role: "FIGHTER", at: { x: 4, y: 1 } },
+        { role: "FIGHTER", at: { x: 5, y: 1 } },
+        { role: "FIGHTER", at: { x: 6, y: 1 } },
+      ],
+      announce: true,
+    },
+    { seat: 0, round: 3, units: [{ role: "GUARD", at: { x: 2, y: 7 } }] },
+  ],
+  objective: {
+    kind: "SURVIVE",
+    rounds: 4,
+    protect: [{ place: "KEEP" }],
+  },
+};

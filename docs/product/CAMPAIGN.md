@@ -2040,6 +2040,64 @@ squad in mission 9's fourth configuration). Standing on a wave's tiles
 does not cancel it: it comes in further out. A wave is announced by the hints or musters out of sight, and the turn it
 arrives is the player's to answer it.
 
+**A wave is announced** (`pulp_wars-hmyk.18`). The user, 2026-10-20: "The
+regularly appearing AI reinforcements are a nice balancer but you should do
+more to announce them. there should be a musical cue and / or a popup."
+Every wave the viewer sees arrive (an arrival in the fog is not projected,
+so it is neither shown nor heard) plays as one step of the playback
+(`REINFORCEMENT` in `src/render/canvas/presentation-plan-v7.ts`): the
+camera goes to its tiles by the playback camera's rules (it never moves
+once the player took the camera during that seat's playback, and reduced
+motion cuts instead of gliding), its units fade in and stand a beat, and
+as the step starts a stinger plays and a banner shows
+(`src/render/reinforcement-presentation-v7.ts`):
+
+- **The stinger** says the side: ominous for a seat against the viewer
+  (`match.wave.enemy`), heroic for the viewer's own wave and a team
+  mate's (`match.wave.ally`); [SOUND.md](../ui/SOUND.md#reinforcement-waves).
+  Fast Forward plays no stinger.
+- **The banner** is a cream plate under the HUD with the faction's stripe
+  and emblem: a kicker with the side ("Enemy reinforcements!", "Allied
+  reinforcements!", "Your reinforcements!"), one sentence of who and
+  roughly where, and the wave's story line in quotes. The sentence is a
+  count and the faction's soldiers ("Three Goblin raiders", "An Ice Folk
+  warrior"), a verb ("arrive"; "land on the coast" when every tile it came
+  on is land beside water; "sail up" for ships) and a place: "near" the
+  nearest city the viewer sees within three steps of the wave's middle,
+  else the part of the map in nine ("in the north-east", "in the middle
+  of the map"). It never names a tile. It counts the units the viewer saw
+  arrive. It goes after 4.5 seconds or at a tap, takes no focus, never
+  covers End Turn or the dock, and on a phone spans the width between the
+  gutters in smaller type. A second banner waits for the first (at most
+  three wait). Fast Forward shows it at once.
+- **The story line** (E4 of [SAGA.md section 4](SAGA.md#4-mission-system-extensions)):
+  a wave may carry `line`, at most 90 characters on one line with no
+  coordinates (`missionWaveTextProblemV7`, checked by the builder). A wave
+  without one shows its faction's generic line for its side
+  (`DEFAULT_WAVE_LINES_V7`: an enemy line and a friendly line for each of
+  the nine factions), so every wave of every mission has one.
+- **The heads-up** (decided by `pulp_wars-hmyk.18`; default off). A wave
+  may carry `announce`: `true` writes "Scouts report Goblins approaching
+  from the north." ("allied Undead", "your reinforcements"; the part of
+  the map from the middle of its written tiles, none for the middle), a
+  string is the sentence itself under the rules of `line`. It shows as a
+  banner ("Enemies approaching!", "Allies approaching!", "Help is on the
+  way!"), without a stinger, when the playback of the
+  boundary that begins the player's last turn before the wave arrives has
+  ended: the wave's round when the player plays before its seat in the
+  round, otherwise the round before (so a wave of the player's own seat
+  is announced the turn before). A heads-up that would fall on round 1 is
+  not shown (the briefing and the hints speak then), nor one of a seat
+  that is out. No built mission sets it yet; a mission that wants the
+  player warned without a hint sets it on that wave.
+
+Both fields are presentation only: they are not in the state, so they are
+outside the pinned initial-state hash and need no revision bump. The
+hidden fixture `TEST_WAVES` (`src/engine/v7/missions/test-objectives.ts`)
+has an allied wave with its own line, an enemy wave with the default line
+and a heads-up, and a wave of the player's own; the banner's tests and its
+screenshots use it.
+
 ### 10.4 Directive schedules
 
 A seat's `directive` may be a list; each entry may carry `fromRound` and

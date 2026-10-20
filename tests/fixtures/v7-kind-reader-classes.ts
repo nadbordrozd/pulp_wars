@@ -721,6 +721,11 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/render/city-names-presentation-v7.ts::cityNameSitesV7": "SEAT",
   "src/render/city-names-presentation-v7.ts::cityNameEntryV7": "SEAT",
   "src/render/city-names-presentation-v7.ts::cityGazetteerV7": "SEAT",
+  // The reinforcement banner (`pulp_wars-hmyk.18`): a wave is the seat's
+  // fresh units, so it is named and pictured by the seat's own faction.
+  "src/render/reinforcement-presentation-v7.ts::waveArrivalBannerV7": "SEAT",
+  "src/render/reinforcement-presentation-v7.ts::waveHeadsUpBannersV7": "SEAT",
+  "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#buildWaveBanner": "SEAT",
   // The ninth unit (`pulp_wars-w49.17`, 7r55). The state check: a risen
   // Wight and a Whirligig with attacks made are units of that kind
   // (`kindOf`); a marked Grave belongs to a seat whose registration has

@@ -426,6 +426,11 @@ const PLAN_CACHE_SIZE_V7 = 4;
 
 /** How many queued boundaries the camera looks ahead when it frames. */
 const PLAYBACK_LOOKAHEAD_V7 = 8;
+/**
+ * `pulp_wars-hmyk.18`: how long a reinforcement wave takes to fade in; the
+ * rest of its step (`durationMs`) it stands in view.
+ */
+const REINFORCEMENT_FADE_MS_V7 = 260;
 
 export interface BoardHostCallbacksV7 {
   readonly onSelection: (selection: BoardSelectionV7 | null) => void;
@@ -2202,6 +2207,26 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         if (token !== this.#presentationToken) return;
         this.#crossfade = null;
         this.#presentedView = after;
+      } else if (step.kind === "REINFORCEMENT") {
+        // `pulp_wars-hmyk.18`: the wave fades in where the camera came to,
+        // then holds a beat so it is seen before the turn goes on.
+        this.#crossfade = { before, after, progress: 0 };
+        await this.#animate(
+          REINFORCEMENT_FADE_MS_V7 * durationScale,
+          (progress) => {
+            this.#crossfade = { before, after, progress };
+            this.#draw();
+          },
+        );
+        if (token !== this.#presentationToken) return;
+        this.#crossfade = null;
+        this.#presentedView = after;
+        this.#draw();
+        await this.#animate(
+          (step.durationMs - REINFORCEMENT_FADE_MS_V7) * durationScale,
+          () => undefined,
+        );
+        if (token !== this.#presentationToken) return;
       } else if (step.kind === "TACTICAL_STATUS") {
         this.#presentedView = after;
         await this.#animate(step.durationMs * durationScale, (progress) => {

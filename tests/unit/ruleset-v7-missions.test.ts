@@ -356,6 +356,9 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
     "c1a9c6e665e9e14c05ac8a5491ccf63ed521856a59244947320947660caa2553",
   "TEST_KILL@2:ORIGINAL":
     "0a7408f6725aae0e87010f16faa64a9b084b9c0a860b9e337d9f5e365925619c",
+  // The reinforcement banner's fixture (`pulp_wars-hmyk.18`, E4).
+  "TEST_WAVES@1:ORIGINAL":
+    "57e5351a171907d3e5a52ded24a53961d6f3cc7b1d3cb936f60e0567be37dcab",
 };
 
 /**
@@ -753,6 +756,8 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
     "932a21d3cb32380ba5492e2a1164fc9a2c1d40d76b2f9eaab343d5fbe9545662",
   "TEST_KILL@2:ORIGINAL":
     "bc3da2c593cd0fe485dc3fae46adaa1bb14af40f07016b6bb6bfb66b63ed608d",
+  "TEST_WAVES@1:ORIGINAL":
+    "626e7927186909c5582b9c7b137b7ed67fff57fe837897935850aadc7c7b25a4",
 };
 
 function preCuriosityMissionStateHash(state: GameStateV7): string {

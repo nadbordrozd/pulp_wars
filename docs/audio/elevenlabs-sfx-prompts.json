@@ -1361,6 +1361,45 @@
       "promptInfluence": 0.5
     },
     {
+      "id": "match.wave.enemy",
+      "kind": "stinger",
+      "suffix": "stinger",
+      "prompt": "Enemy reinforcements arrive: an ominous short motif of low brass and a timpani roll, two dark minor notes, menacing like a villain entering in an old adventure serial, about one and a half seconds.",
+      "durationSeconds": 1.8,
+      "minSeconds": 0.8,
+      "maxSeconds": 2.2,
+      "promptInfluence": 0.5,
+      "loudness": {
+        "like": "match.defeat",
+        "offsetDb": -3,
+        "reason": "Bead pulp_wars-hmyk.18: a mission's reinforcement wave plays its stinger a few times a match, over the music, so it sits a little under the end-of-match jingles."
+      }
+    },
+    {
+      "id": "match.wave.ally",
+      "kind": "stinger",
+      "suffix": "stinger",
+      "prompt": "Allied reinforcements arrive: a short heroic bugle call over a snare drum, bright and rousing, the cavalry comes to the rescue in an old adventure serial, about one and a half seconds.",
+      "durationSeconds": 1.8,
+      "minSeconds": 0.8,
+      "maxSeconds": 2.2,
+      "promptInfluence": 0.5,
+      "loudness": {
+        "like": "match.victory",
+        "offsetDb": -3,
+        "reason": "Bead pulp_wars-hmyk.18: a mission's reinforcement wave plays its stinger a few times a match, over the music, so it sits a little under the end-of-match jingles."
+      },
+      "revisions": [
+        {
+          "round": 2,
+          "takes": 3,
+          "prompt": "Allied reinforcements arrive: one short heroic bugle call of four notes with a light snare drum, starting at once on the first note, bright and rousing, the cavalry to the rescue, ending cleanly on the last note after about one and a half seconds, gentle level with headroom.",
+          "durationSeconds": 1.6,
+          "reason": "Round 1: all three takes clipped and two rang on past 2.2 s; one started 0.6 s late."
+        }
+      ]
+    },
+    {
       "id": "ui.select",
       "kind": "ui",
       "suffix": "style",

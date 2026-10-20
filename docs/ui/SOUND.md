@@ -6,7 +6,8 @@ of the Cultists' own (bead `pulp_wars-mch9.24`,
 [The Cultists' own sounds](#the-cultists-own-sounds)), since
 2026-10-14 the Rocket Cart's `impact.rocket`, and a hurt sound for each
 kind of unit (bead `pulp_wars-2yc.52`, [Hurt sounds](#hurt-sounds)): 78
-sounds. Fifty-eight of them play the take generated with ElevenLabs that
+sounds; since 2026-10-20 also two stingers for a mission's reinforcement
+waves (bead `pulp_wars-hmyk.18`, [Reinforcement waves](#reinforcement-waves)). Fifty-eight of them play the take generated with ElevenLabs that
 measured best (bead `pulp_wars-2yc.51`,
 [ElevenLabs sound effects](#elevenlabs-sound-effects)), and the Goblin and
 Dinosaur hurt sounds the user's own ElevenLabs generations; seventeen play
@@ -184,84 +185,85 @@ economy is silent.
 
 ### Presentation steps
 
-| Step                                                            | Sounds                                                                     |
-| --------------------------------------------------------------- | -------------------------------------------------------------------------- |
-| Melee attack                                                    | `attack.melee`, then `impact.hit`                                          |
-| Ranged attack                                                   | `attack.ranged`, then `impact.hit`                                         |
-| Siege attack (Catapult class)                                   | `attack.siege`, then `impact.heavy`                                        |
-| Lich bolt                                                       | `attack.magic`, then `impact.hit`                                          |
-| Rocket Cart firework                                            | `attack.rocket`, then `impact.rocket` (see below)                          |
-| Clockwork Gunner burst                                          | `attack.gatling`, then `impact.hit`                                        |
-| Steam Cannon                                                    | `attack.cannon`, then `impact.heavy`                                       |
-| Ice boulder and Rockfall                                        | `attack.siege`, then `impact.ice`                                          |
-| Harpoon                                                         | `attack.ranged`, then `impact.hit`                                         |
-| Pie Launcher                                                    | `attack.siege`, then `impact.splat`                                        |
-| Gumball Gunner                                                  | `attack.pop`, then `impact.hit`                                            |
-| Plesiosaur torpedo (`pulp_wars-5ti.18`)                         | `attack.plesiosaur` (a bite with a wet roar), then `impact.hit`            |
-| Kraken torpedo (`pulp_wars-5ti.22`)                             | `attack.kraken` (a deep wet lash of a tentacle), then `impact.hit`         |
-| Sea Serpent bite (`pulp_wars-737.21`)                           | `attack.serpent` (a hiss and a splash), then `impact.hit`                  |
-| Martian heat ray and ray pistol                                 | `attack.ray`, then `impact.hit`                                            |
-| Any attack that kills either side                               | `unit.death` just after the hit                                            |
-| An attack whose target lives (melee, ranged, siege, ray)        | the target's hurt sound, 40 ms after the hit ([Hurt sounds](#hurt-sounds)) |
-| Splash, Wail, Plague, crush and eruption damage                 | the damaged unit's hurt sound, and `unit.death` when lethal                |
-| Explosion wave, Mole eruption, Gyrocopter bomb                  | `impact.explosion`                                                         |
-| Bomb Chucker bomb, Spitter acid                                 | `attack.siege`; the burst or `impact.splat` follows from its own step      |
-| Shield flare                                                    | `impact.shield`                                                            |
-| Beam Down, Tractor Beam                                         | `special.beam`                                                             |
-| Mind Control                                                    | `special.mind`                                                             |
-| Control released, ice crush                                     | `impact.ice`                                                               |
-| Shatter                                                         | `special.freeze`, then `impact.ice`                                        |
-| Cold Snap, Cold Aura, Freeze                                    | `special.freeze`                                                           |
-| Bolas                                                           | `attack.ranged`, then `special.freeze`                                     |
-| Frost Bolt                                                      | `attack.ranged`, then `special.freeze`                                     |
-| Black Ice and Frostbite freezes                                 | `special.freeze`                                                           |
-| Stampede                                                        | `impact.heavy`, then `impact.hit` as it reaches each unit in its way       |
-| Sweep                                                           | `attack.melee`                                                             |
-| Ice melting                                                     | `impact.splash`                                                            |
-| Crack Ice, a crack or a break (`pulp_wars-5ti.27`)              | `special.ice-crack`                                                        |
-| Tesla Tower zap (`pulp_wars-737.20`)                            | `special.zap`, then the target's hurt sound or `unit.death`                |
-| Moon Gun shot and landing (`pulp_wars-737.20`)                  | `attack.cannon`, then `impact.heavy` as the unit lands                     |
-| Lost Expedition found (`pulp_wars-737.20`)                      | `economy.treasure` as the notes rise                                       |
-| Lich splash                                                     | `impact.splash`                                                            |
-| Prize flag, Rally, Hatch call                                   | `support.rally`                                                            |
-| Tend, Cure, Regenerate, Recover, Fountain, Windmill, Sugar Toss | `support.heal`                                                             |
-| Raise, Devour, Wail, Infect, Grave, Plague, Bitten              | `support.dark`                                                             |
-| Lifesteal                                                       | `support.drain`                                                            |
-| Feast                                                           | `support.drain`                                                            |
-| Bat Escape swirl                                                | `special.puff`, then `special.puff` again as the bats fly off              |
-| Terror                                                          | `support.dark`                                                             |
-| Shrine blessing, Sugar Rush, Re-bake                            | `special.sparkle`                                                          |
-| Salvage, Spider bounty                                          | `economy.coin`                                                             |
-| Tunnel                                                          | `special.burrow`                                                           |
-| Assemble, Repair                                                | `economy.build`                                                            |
-| Knockback                                                       | `special.puff`                                                             |
-| Crash                                                           | `special.dizzy`                                                            |
-| Crash ending, Egg laid                                          | `special.pop`                                                              |
-| Peppermint Surprise                                             | `special.pop`, then the hurt sound of the unit on the tile                 |
-| Splat, acid landing                                             | `impact.splat`                                                             |
-| Bounce                                                          | `special.boing`                                                            |
-| Crumbs eaten                                                    | `economy.harvest`                                                          |
-| Charge! hit, Bow Ram                                            | `impact.heavy`                                                             |
-| Hatch, Egg destroyed                                            | `special.hatch`                                                            |
-| Grow                                                            | `unit.levelup`                                                             |
-| A daemon summoned: an Imp, a Horror or a Gibbering Mass         | `cult.summon`                                                              |
-| Strand broken                                                   | `cult.snap`                                                                |
-| Daemon Unbound                                                  | `cult.unbound`                                                             |
-| Star-fall                                                       | `cult.starfall`, then `impact.explosion` as the star lands                 |
-| The Herald arrives                                              | `cult.herald`                                                              |
-| Proclaim (a city Cowed)                                         | `cult.proclaim`                                                            |
-| Ribbit                                                          | `cult.ribbit` as the frog jumps out                                        |
-| Tentacle rises or sinks                                         | `cult.tentacle`                                                            |
-| Pamphlets take a village                                        | `cult.pamphlets`                                                           |
-| Join the chant, a strand formed                                 | none                                                                       |
-| Boo!, Grab                                                      | `special.boing`                                                            |
-| A rite begun                                                    | `support.dark`                                                             |
-| A rite fizzled, a unit consumed by the Herald                   | `special.puff`                                                             |
-| Switcheroo                                                      | `special.sparkle`                                                          |
-| A unit moving on land, the viewer's own or another player's     | `unit.step` ([Moves](#the-move-sounds)); another player's quieter          |
-| A ship or an embarked unit moving                               | `unit.step.naval`; another player's quieter                                |
-| A flyer moving, a push, a visibility crossfade                  | none                                                                       |
-| Another player's building in sight                              | `economy.build`, quieter                                                   |
+| Step                                                            | Sounds                                                                                                                    |
+| --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| Melee attack                                                    | `attack.melee`, then `impact.hit`                                                                                         |
+| Ranged attack                                                   | `attack.ranged`, then `impact.hit`                                                                                        |
+| Siege attack (Catapult class)                                   | `attack.siege`, then `impact.heavy`                                                                                       |
+| Lich bolt                                                       | `attack.magic`, then `impact.hit`                                                                                         |
+| Rocket Cart firework                                            | `attack.rocket`, then `impact.rocket` (see below)                                                                         |
+| Clockwork Gunner burst                                          | `attack.gatling`, then `impact.hit`                                                                                       |
+| Steam Cannon                                                    | `attack.cannon`, then `impact.heavy`                                                                                      |
+| Ice boulder and Rockfall                                        | `attack.siege`, then `impact.ice`                                                                                         |
+| Harpoon                                                         | `attack.ranged`, then `impact.hit`                                                                                        |
+| Pie Launcher                                                    | `attack.siege`, then `impact.splat`                                                                                       |
+| Gumball Gunner                                                  | `attack.pop`, then `impact.hit`                                                                                           |
+| Plesiosaur torpedo (`pulp_wars-5ti.18`)                         | `attack.plesiosaur` (a bite with a wet roar), then `impact.hit`                                                           |
+| Kraken torpedo (`pulp_wars-5ti.22`)                             | `attack.kraken` (a deep wet lash of a tentacle), then `impact.hit`                                                        |
+| Sea Serpent bite (`pulp_wars-737.21`)                           | `attack.serpent` (a hiss and a splash), then `impact.hit`                                                                 |
+| Martian heat ray and ray pistol                                 | `attack.ray`, then `impact.hit`                                                                                           |
+| Any attack that kills either side                               | `unit.death` just after the hit                                                                                           |
+| An attack whose target lives (melee, ranged, siege, ray)        | the target's hurt sound, 40 ms after the hit ([Hurt sounds](#hurt-sounds))                                                |
+| Splash, Wail, Plague, crush and eruption damage                 | the damaged unit's hurt sound, and `unit.death` when lethal                                                               |
+| Explosion wave, Mole eruption, Gyrocopter bomb                  | `impact.explosion`                                                                                                        |
+| Bomb Chucker bomb, Spitter acid                                 | `attack.siege`; the burst or `impact.splat` follows from its own step                                                     |
+| Shield flare                                                    | `impact.shield`                                                                                                           |
+| Beam Down, Tractor Beam                                         | `special.beam`                                                                                                            |
+| Mind Control                                                    | `special.mind`                                                                                                            |
+| Control released, ice crush                                     | `impact.ice`                                                                                                              |
+| Shatter                                                         | `special.freeze`, then `impact.ice`                                                                                       |
+| Cold Snap, Cold Aura, Freeze                                    | `special.freeze`                                                                                                          |
+| Bolas                                                           | `attack.ranged`, then `special.freeze`                                                                                    |
+| Frost Bolt                                                      | `attack.ranged`, then `special.freeze`                                                                                    |
+| Black Ice and Frostbite freezes                                 | `special.freeze`                                                                                                          |
+| Stampede                                                        | `impact.heavy`, then `impact.hit` as it reaches each unit in its way                                                      |
+| Sweep                                                           | `attack.melee`                                                                                                            |
+| Ice melting                                                     | `impact.splash`                                                                                                           |
+| Crack Ice, a crack or a break (`pulp_wars-5ti.27`)              | `special.ice-crack`                                                                                                       |
+| Tesla Tower zap (`pulp_wars-737.20`)                            | `special.zap`, then the target's hurt sound or `unit.death`                                                               |
+| Moon Gun shot and landing (`pulp_wars-737.20`)                  | `attack.cannon`, then `impact.heavy` as the unit lands                                                                    |
+| Lost Expedition found (`pulp_wars-737.20`)                      | `economy.treasure` as the notes rise                                                                                      |
+| Lich splash                                                     | `impact.splash`                                                                                                           |
+| Prize flag, Rally, Hatch call                                   | `support.rally`                                                                                                           |
+| Tend, Cure, Regenerate, Recover, Fountain, Windmill, Sugar Toss | `support.heal`                                                                                                            |
+| Raise, Devour, Wail, Infect, Grave, Plague, Bitten              | `support.dark`                                                                                                            |
+| Lifesteal                                                       | `support.drain`                                                                                                           |
+| Feast                                                           | `support.drain`                                                                                                           |
+| Bat Escape swirl                                                | `special.puff`, then `special.puff` again as the bats fly off                                                             |
+| Terror                                                          | `support.dark`                                                                                                            |
+| Shrine blessing, Sugar Rush, Re-bake                            | `special.sparkle`                                                                                                         |
+| Salvage, Spider bounty                                          | `economy.coin`                                                                                                            |
+| Tunnel                                                          | `special.burrow`                                                                                                          |
+| Assemble, Repair                                                | `economy.build`                                                                                                           |
+| Knockback                                                       | `special.puff`                                                                                                            |
+| Crash                                                           | `special.dizzy`                                                                                                           |
+| Crash ending, Egg laid                                          | `special.pop`                                                                                                             |
+| Peppermint Surprise                                             | `special.pop`, then the hurt sound of the unit on the tile                                                                |
+| Splat, acid landing                                             | `impact.splat`                                                                                                            |
+| Bounce                                                          | `special.boing`                                                                                                           |
+| Crumbs eaten                                                    | `economy.harvest`                                                                                                         |
+| Charge! hit, Bow Ram                                            | `impact.heavy`                                                                                                            |
+| Hatch, Egg destroyed                                            | `special.hatch`                                                                                                           |
+| Grow                                                            | `unit.levelup`                                                                                                            |
+| A daemon summoned: an Imp, a Horror or a Gibbering Mass         | `cult.summon`                                                                                                             |
+| Strand broken                                                   | `cult.snap`                                                                                                               |
+| Daemon Unbound                                                  | `cult.unbound`                                                                                                            |
+| Star-fall                                                       | `cult.starfall`, then `impact.explosion` as the star lands                                                                |
+| The Herald arrives                                              | `cult.herald`                                                                                                             |
+| Proclaim (a city Cowed)                                         | `cult.proclaim`                                                                                                           |
+| Ribbit                                                          | `cult.ribbit` as the frog jumps out                                                                                       |
+| Tentacle rises or sinks                                         | `cult.tentacle`                                                                                                           |
+| Pamphlets take a village                                        | `cult.pamphlets`                                                                                                          |
+| Join the chant, a strand formed                                 | none                                                                                                                      |
+| Boo!, Grab                                                      | `special.boing`                                                                                                           |
+| A rite begun                                                    | `support.dark`                                                                                                            |
+| A rite fizzled, a unit consumed by the Herald                   | `special.puff`                                                                                                            |
+| Switcheroo                                                      | `special.sparkle`                                                                                                         |
+| A unit moving on land, the viewer's own or another player's     | `unit.step` ([Moves](#the-move-sounds)); another player's quieter                                                         |
+| A ship or an embarked unit moving                               | `unit.step.naval`; another player's quieter                                                                               |
+| A flyer moving, a push, a visibility crossfade                  | none                                                                                                                      |
+| Another player's building in sight                              | `economy.build`, quieter                                                                                                  |
+| A mission's reinforcement wave arrives (`pulp_wars-hmyk.18`)    | `match.wave.enemy` for an enemy's, `match.wave.ally` for yours or an ally's ([Reinforcement waves](#reinforcement-waves)) |
 
 **The Rocket Cart's firework** (the user's pick, 2026-10-14) plays one
 recording, a Sonniss RPG fired through a car roof, cut in two: its firing
@@ -273,6 +275,43 @@ the impact still lands on the hit, which one clip of both could not do.
 `impact.rocket` belongs to this attack only; the Battleship's broadside and
 every bomb keep `impact.explosion`. The cuts, the levels and the reasons are
 in [STOCK_SOUND_CHOICES.md](../audio/STOCK_SOUND_CHOICES.md).
+
+### Reinforcement waves
+
+Bead `pulp_wars-hmyk.18`. The user, 2026-10-20: "The regularly appearing AI
+reinforcements are a nice balancer but you should do more to announce
+them. there should be a musical cue and / or a popup." A mission's wave
+([CAMPAIGN.md section 10.3](../product/CAMPAIGN.md#103-reinforcements))
+now arrives as a step of its own: the camera goes to it, its banner shows
+and its stinger plays.
+
+- **Two stingers.** `match.wave.enemy`, ominous (low brass and a timpani
+  roll, two dark minor notes), for a wave of a seat against the viewer;
+  `match.wave.ally`, heroic (a bugle call over a snare), for the viewer's
+  own wave and an ally's. The side is the step's (`waveSideV7`: the
+  viewer's own seat, a team mate under the mission's `teams`, or an
+  enemy). There is no neutral wave: a wave is always a seat's.
+- **Made with ElevenLabs** through the checked-in script
+  (`npm run audio:elevenlabs-sfx -- generate --only <id>`, then `measure`
+  and `encode` with `--only`), the raw takes outside the repository. The
+  enemy's three takes of round 1 all passed (#102 is the default, #101 and
+  #103 are choices); the ally's round 1 takes all clipped or rang on, and
+  round 2 asked for a shorter call that ends cleanly at a gentler level: #105
+  (0.9 s) is the default and #104 a choice. Each has a synthesised fallback
+  (two low saw notes a semitone apart over three soft drums; a square-wave
+  bugle arpeggio over two). Both are in the Gallery's Sounds tab under Turn
+  and match, with their takes and their synth, to hear and pick. Their
+  level is 3 dB under the end-of-match jingles (`loudness` in their
+  prompts), since a match may hear several.
+- **Levels and mute.** They are sound effects, in the interface's
+  category, under the **Sound** level and its toggle like Victory and
+  Defeat; with Sound off or at 0 they are silent. The music is not ducked.
+- **Fast Forward** plays no step, so it plays no stinger; the banner still
+  shows. **Reduced motion** keeps the stinger, which plays with the still
+  frame.
+- **Not heard**: by nobody on the development side, like every take
+  ([What has not been checked](#what-has-not-been-checked)). The ally's
+  default is short (0.9 s); its other take runs to 2.2 s.
 
 ### Hurt sounds
 
@@ -716,92 +755,94 @@ Pitch is the range of the tonal layers in Hz. Length is in ms and includes a
 12 ms tail. Peak is the level the rendered sound is scaled to (1 would be
 full scale). A unit test compares this table with the manifest.
 
-| Id                     | Label            | Category | Waveforms                        | Pitch (Hz) | Length (ms) | Peak |
-| ---------------------- | ---------------- | -------- | -------------------------------- | ---------- | ----------- | ---- |
-| `attack.melee`         | Melee swing      | combat   | noise + triangle                 | 140–220    | 122         | 0.3  |
-| `attack.ranged`        | Arrow shot       | combat   | triangle + noise                 | 300–520    | 102         | 0.28 |
-| `attack.siege`         | Siege thump      | combat   | noise + sine                     | 55–130     | 252         | 0.4  |
-| `attack.ray`           | Energy ray       | combat   | saw + sine                       | 210–1400   | 232         | 0.28 |
-| `attack.magic`         | Dark bolt        | combat   | sine + triangle                  | 440–1320   | 272         | 0.28 |
-| `attack.rocket`        | Rocket launch    | combat   | noise + saw                      | 300–900    | 312         | 0.26 |
-| `attack.gatling`       | Gun burst        | combat   | noise + square                   | 110–190    | 149         | 0.32 |
-| `attack.cannon`        | Cannon           | combat   | sine + noise                     | 42–110     | 272         | 0.45 |
-| `attack.pop`           | Gumball pop      | combat   | sine + triangle                  | 420–1500   | 82          | 0.26 |
-| `attack.plesiosaur`    | Plesiosaur bite  | combat   | noise + saw                      | 70–110     | 292         | 0.3  |
-| `attack.kraken`        | Kraken lash      | combat   | noise + sine                     | 55–90      | 292         | 0.3  |
-| `attack.serpent`       | Serpent bite     | combat   | noise + sine                     | 70–140     | 302         | 0.3  |
-| `impact.hit`           | Hit              | combat   | sine + noise                     | 70–190     | 122         | 0.4  |
-| `impact.heavy`         | Heavy hit        | combat   | sine + noise + square            | 45–120     | 232         | 0.46 |
-| `impact.explosion`     | Explosion        | combat   | noise + sine                     | 36–90      | 432         | 0.5  |
-| `impact.rocket`        | Rocket hit       | combat   | noise + sine                     | 36–90      | 432         | 0.5  |
-| `impact.ice`           | Ice crack        | combat   | noise + sine                     | 1250       | 182         | 0.26 |
-| `impact.splat`         | Splat            | combat   | sine + noise                     | 90–600     | 162         | 0.34 |
-| `impact.shield`        | Shield           | combat   | sine + triangle                  | 620–1240   | 252         | 0.26 |
-| `impact.splash`        | Splash           | combat   | noise + sine                     | 250–500    | 172         | 0.24 |
-| `unit.hurt`            | Damage           | combat   | square + noise                   | 165–330    | 132         | 0.3  |
-| `unit.hurt.human`      | Human hurt       | combat   | square + noise                   | 165–330    | 132         | 0.3  |
-| `unit.hurt.undead`     | Undead hurt      | combat   | square + noise                   | 165–330    | 132         | 0.3  |
-| `unit.hurt.goblin`     | Goblin hurt      | combat   | square + noise                   | 165–330    | 132         | 0.3  |
-| `unit.hurt.dinosaur`   | Dinosaur hurt    | combat   | square + noise                   | 165–330    | 132         | 0.3  |
-| `unit.hurt.martian`    | Martian hurt     | combat   | square + noise                   | 165–330    | 132         | 0.3  |
-| `unit.hurt.icefolk`    | Ice Folk hurt    | combat   | square + noise                   | 165–330    | 132         | 0.3  |
-| `unit.hurt.dwarf`      | Dwarf hurt       | combat   | square + noise                   | 165–330    | 132         | 0.3  |
-| `unit.hurt.candy`      | Candy hurt       | combat   | square + noise                   | 165–330    | 132         | 0.3  |
-| `unit.hurt.cultist`    | Cultist hurt     | combat   | square + noise                   | 165–330    | 132         | 0.3  |
-| `unit.hurt.daemon`     | Daemon hurt      | combat   | square + noise                   | 165–330    | 132         | 0.3  |
-| `unit.hurt.giant`      | Giant hurt       | combat   | square + noise                   | 165–330    | 132         | 0.3  |
-| `unit.hurt.monster`    | Monster hurt     | combat   | square + noise                   | 165–330    | 132         | 0.3  |
-| `unit.death`           | Death            | combat   | triangle + square + noise        | 82–392     | 372         | 0.34 |
-| `unit.step`            | Footsteps        | combat   | noise + sine                     | 110–150    | 42          | 0.1  |
-| `unit.step.naval`      | Ship moves       | combat   | noise + sine                     | 170–240    | 252         | 0.1  |
-| `unit.train`           | Unit trained     | economy  | square + sine + noise            | 70–784     | 332         | 0.26 |
-| `unit.levelup`         | Unit level up    | economy  | square + triangle                | 440–1109   | 352         | 0.24 |
-| `support.heal`         | Heal             | combat   | triangle + sine                  | 523–1568   | 412         | 0.26 |
-| `support.rally`        | Rally            | combat   | square + sine + noise            | 70–659     | 352         | 0.26 |
-| `support.dark`         | Dark magic       | combat   | saw + sine + triangle            | 73–233     | 372         | 0.3  |
-| `support.drain`        | Life drain       | combat   | sine + triangle                  | 300–1240   | 292         | 0.22 |
-| `special.beam`         | Beam             | combat   | sine + triangle                  | 380–1800   | 392         | 0.22 |
-| `special.mind`         | Mind control     | combat   | sine                             | 520–780    | 472         | 0.22 |
-| `special.freeze`       | Freeze           | combat   | triangle + noise                 | 1047–1568  | 392         | 0.2  |
-| `special.ice-crack`    | Crack Ice        | combat   | noise                            | noise only | 262         | 0.26 |
-| `special.zap`          | Zap              | combat   | noise + saw                      | 90–120     | 232         | 0.22 |
-| `special.burrow`       | Burrow           | combat   | noise + sine                     | 50–70      | 352         | 0.34 |
-| `special.hatch`        | Egg crack        | combat   | noise + sine                     | 500–900    | 212         | 0.26 |
-| `special.pop`          | Pop              | combat   | sine + noise                     | 300–900    | 67          | 0.24 |
-| `special.puff`         | Steam puff       | combat   | noise                            | noise only | 192         | 0.2  |
-| `special.sparkle`      | Sparkle          | combat   | triangle                         | 659–1319   | 337         | 0.2  |
-| `special.dizzy`        | Dizzy            | combat   | sine + triangle                  | 130–700    | 392         | 0.22 |
-| `special.boing`        | Bounce           | combat   | triangle                         | 160–420    | 232         | 0.26 |
-| `cult.ribbit`          | Frog croak       | combat   | square                           | 96–132     | 262         | 0.28 |
-| `cult.pamphlets`       | Paper rustle     | combat   | noise                            | noise only | 272         | 0.2  |
-| `cult.proclaim`        | Proclaim         | combat   | saw + square                     | 66–147     | 412         | 0.3  |
-| `cult.summon`          | Summoning        | combat   | sine + triangle + noise          | 160–1280   | 362         | 0.24 |
-| `cult.herald`          | Herald arrives   | combat   | sine + noise + saw               | 45–90      | 452         | 0.38 |
-| `cult.starfall`        | Falling star     | combat   | sine + triangle + noise          | 300–2000   | 292         | 0.24 |
-| `cult.snap`            | Strand snaps     | combat   | noise + triangle                 | 220–880    | 82          | 0.26 |
-| `cult.unbound`         | Daemon unbound   | combat   | sine + triangle                  | 110–220    | 472         | 0.34 |
-| `cult.tentacle`        | Tentacle         | combat   | sine + noise                     | 120–380    | 332         | 0.28 |
-| `cult.sacrifice`       | Sacrifice        | combat   | noise + sine + saw               | 55–130     | 452         | 0.32 |
-| `city.capture`         | City captured    | economy  | square + sine + noise + triangle | 70–1047    | 662         | 0.32 |
-| `village.capture`      | Village captured | economy  | square + sine + noise + triangle | 70–659     | 472         | 0.28 |
-| `city.lost`            | City lost        | economy  | square + triangle                | 110–330    | 692         | 0.3  |
-| `city.levelup`         | City level up    | economy  | triangle + square                | 262–1047   | 482         | 0.28 |
-| `reward.chosen`        | Reward chosen    | economy  | triangle + sine                  | 784–1175   | 362         | 0.24 |
-| `research.complete`    | Research done    | economy  | sine                             | 587–880    | 572         | 0.26 |
-| `economy.build`        | Build            | economy  | sine + noise                     | 149–280    | 197         | 0.3  |
-| `economy.harvest`      | Harvest          | economy  | triangle + noise                 | 370–587    | 202         | 0.22 |
-| `economy.coin`         | Coins            | economy  | square + sine                    | 988–1319   | 342         | 0.2  |
-| `economy.treasure`     | Treasure         | economy  | square + triangle                | 330–1661   | 492         | 0.22 |
-| `turn.start`           | Your turn        | ui       | triangle + sine                  | 440–880    | 442         | 0.24 |
-| `turn.end`             | End turn         | ui       | triangle                         | 330–440    | 372         | 0.18 |
-| `achievement.unlocked` | Achievement      | ui       | square + triangle + sine + noise | 70–1047    | 1162        | 0.32 |
-| `achievement.monument` | Monument         | ui       | triangle + square + sine + noise | 70–1047    | 1612        | 0.32 |
-| `match.victory`        | Victory          | ui       | triangle + square + sine + noise | 70–1319    | 1812        | 0.36 |
-| `match.defeat`         | Defeat           | ui       | triangle + saw                   | 82–440     | 1712        | 0.32 |
-| `ui.select`            | Select           | ui       | triangle                         | 660–700    | 62          | 0.12 |
-| `ui.click`             | Click            | ui       | sine + noise                     | 300–420    | 47          | 0.12 |
-| `ui.toggle`            | Toggle           | ui       | triangle                         | 523–784    | 152         | 0.14 |
-| `ui.error`             | Not allowed      | ui       | square                           | 156–196    | 272         | 0.2  |
+| Id                     | Label                 | Category | Waveforms                        | Pitch (Hz) | Length (ms) | Peak |
+| ---------------------- | --------------------- | -------- | -------------------------------- | ---------- | ----------- | ---- |
+| `attack.melee`         | Melee swing           | combat   | noise + triangle                 | 140–220    | 122         | 0.3  |
+| `attack.ranged`        | Arrow shot            | combat   | triangle + noise                 | 300–520    | 102         | 0.28 |
+| `attack.siege`         | Siege thump           | combat   | noise + sine                     | 55–130     | 252         | 0.4  |
+| `attack.ray`           | Energy ray            | combat   | saw + sine                       | 210–1400   | 232         | 0.28 |
+| `attack.magic`         | Dark bolt             | combat   | sine + triangle                  | 440–1320   | 272         | 0.28 |
+| `attack.rocket`        | Rocket launch         | combat   | noise + saw                      | 300–900    | 312         | 0.26 |
+| `attack.gatling`       | Gun burst             | combat   | noise + square                   | 110–190    | 149         | 0.32 |
+| `attack.cannon`        | Cannon                | combat   | sine + noise                     | 42–110     | 272         | 0.45 |
+| `attack.pop`           | Gumball pop           | combat   | sine + triangle                  | 420–1500   | 82          | 0.26 |
+| `attack.plesiosaur`    | Plesiosaur bite       | combat   | noise + saw                      | 70–110     | 292         | 0.3  |
+| `attack.kraken`        | Kraken lash           | combat   | noise + sine                     | 55–90      | 292         | 0.3  |
+| `attack.serpent`       | Serpent bite          | combat   | noise + sine                     | 70–140     | 302         | 0.3  |
+| `impact.hit`           | Hit                   | combat   | sine + noise                     | 70–190     | 122         | 0.4  |
+| `impact.heavy`         | Heavy hit             | combat   | sine + noise + square            | 45–120     | 232         | 0.46 |
+| `impact.explosion`     | Explosion             | combat   | noise + sine                     | 36–90      | 432         | 0.5  |
+| `impact.rocket`        | Rocket hit            | combat   | noise + sine                     | 36–90      | 432         | 0.5  |
+| `impact.ice`           | Ice crack             | combat   | noise + sine                     | 1250       | 182         | 0.26 |
+| `impact.splat`         | Splat                 | combat   | sine + noise                     | 90–600     | 162         | 0.34 |
+| `impact.shield`        | Shield                | combat   | sine + triangle                  | 620–1240   | 252         | 0.26 |
+| `impact.splash`        | Splash                | combat   | noise + sine                     | 250–500    | 172         | 0.24 |
+| `unit.hurt`            | Damage                | combat   | square + noise                   | 165–330    | 132         | 0.3  |
+| `unit.hurt.human`      | Human hurt            | combat   | square + noise                   | 165–330    | 132         | 0.3  |
+| `unit.hurt.undead`     | Undead hurt           | combat   | square + noise                   | 165–330    | 132         | 0.3  |
+| `unit.hurt.goblin`     | Goblin hurt           | combat   | square + noise                   | 165–330    | 132         | 0.3  |
+| `unit.hurt.dinosaur`   | Dinosaur hurt         | combat   | square + noise                   | 165–330    | 132         | 0.3  |
+| `unit.hurt.martian`    | Martian hurt          | combat   | square + noise                   | 165–330    | 132         | 0.3  |
+| `unit.hurt.icefolk`    | Ice Folk hurt         | combat   | square + noise                   | 165–330    | 132         | 0.3  |
+| `unit.hurt.dwarf`      | Dwarf hurt            | combat   | square + noise                   | 165–330    | 132         | 0.3  |
+| `unit.hurt.candy`      | Candy hurt            | combat   | square + noise                   | 165–330    | 132         | 0.3  |
+| `unit.hurt.cultist`    | Cultist hurt          | combat   | square + noise                   | 165–330    | 132         | 0.3  |
+| `unit.hurt.daemon`     | Daemon hurt           | combat   | square + noise                   | 165–330    | 132         | 0.3  |
+| `unit.hurt.giant`      | Giant hurt            | combat   | square + noise                   | 165–330    | 132         | 0.3  |
+| `unit.hurt.monster`    | Monster hurt          | combat   | square + noise                   | 165–330    | 132         | 0.3  |
+| `unit.death`           | Death                 | combat   | triangle + square + noise        | 82–392     | 372         | 0.34 |
+| `unit.step`            | Footsteps             | combat   | noise + sine                     | 110–150    | 42          | 0.1  |
+| `unit.step.naval`      | Ship moves            | combat   | noise + sine                     | 170–240    | 252         | 0.1  |
+| `unit.train`           | Unit trained          | economy  | square + sine + noise            | 70–784     | 332         | 0.26 |
+| `unit.levelup`         | Unit level up         | economy  | square + triangle                | 440–1109   | 352         | 0.24 |
+| `support.heal`         | Heal                  | combat   | triangle + sine                  | 523–1568   | 412         | 0.26 |
+| `support.rally`        | Rally                 | combat   | square + sine + noise            | 70–659     | 352         | 0.26 |
+| `support.dark`         | Dark magic            | combat   | saw + sine + triangle            | 73–233     | 372         | 0.3  |
+| `support.drain`        | Life drain            | combat   | sine + triangle                  | 300–1240   | 292         | 0.22 |
+| `special.beam`         | Beam                  | combat   | sine + triangle                  | 380–1800   | 392         | 0.22 |
+| `special.mind`         | Mind control          | combat   | sine                             | 520–780    | 472         | 0.22 |
+| `special.freeze`       | Freeze                | combat   | triangle + noise                 | 1047–1568  | 392         | 0.2  |
+| `special.ice-crack`    | Crack Ice             | combat   | noise                            | noise only | 262         | 0.26 |
+| `special.zap`          | Zap                   | combat   | noise + saw                      | 90–120     | 232         | 0.22 |
+| `special.burrow`       | Burrow                | combat   | noise + sine                     | 50–70      | 352         | 0.34 |
+| `special.hatch`        | Egg crack             | combat   | noise + sine                     | 500–900    | 212         | 0.26 |
+| `special.pop`          | Pop                   | combat   | sine + noise                     | 300–900    | 67          | 0.24 |
+| `special.puff`         | Steam puff            | combat   | noise                            | noise only | 192         | 0.2  |
+| `special.sparkle`      | Sparkle               | combat   | triangle                         | 659–1319   | 337         | 0.2  |
+| `special.dizzy`        | Dizzy                 | combat   | sine + triangle                  | 130–700    | 392         | 0.22 |
+| `special.boing`        | Bounce                | combat   | triangle                         | 160–420    | 232         | 0.26 |
+| `cult.ribbit`          | Frog croak            | combat   | square                           | 96–132     | 262         | 0.28 |
+| `cult.pamphlets`       | Paper rustle          | combat   | noise                            | noise only | 272         | 0.2  |
+| `cult.proclaim`        | Proclaim              | combat   | saw + square                     | 66–147     | 412         | 0.3  |
+| `cult.summon`          | Summoning             | combat   | sine + triangle + noise          | 160–1280   | 362         | 0.24 |
+| `cult.herald`          | Herald arrives        | combat   | sine + noise + saw               | 45–90      | 452         | 0.38 |
+| `cult.starfall`        | Falling star          | combat   | sine + triangle + noise          | 300–2000   | 292         | 0.24 |
+| `cult.snap`            | Strand snaps          | combat   | noise + triangle                 | 220–880    | 82          | 0.26 |
+| `cult.unbound`         | Daemon unbound        | combat   | sine + triangle                  | 110–220    | 472         | 0.34 |
+| `cult.tentacle`        | Tentacle              | combat   | sine + noise                     | 120–380    | 332         | 0.28 |
+| `cult.sacrifice`       | Sacrifice             | combat   | noise + sine + saw               | 55–130     | 452         | 0.32 |
+| `city.capture`         | City captured         | economy  | square + sine + noise + triangle | 70–1047    | 662         | 0.32 |
+| `village.capture`      | Village captured      | economy  | square + sine + noise + triangle | 70–659     | 472         | 0.28 |
+| `city.lost`            | City lost             | economy  | square + triangle                | 110–330    | 692         | 0.3  |
+| `city.levelup`         | City level up         | economy  | triangle + square                | 262–1047   | 482         | 0.28 |
+| `reward.chosen`        | Reward chosen         | economy  | triangle + sine                  | 784–1175   | 362         | 0.24 |
+| `research.complete`    | Research done         | economy  | sine                             | 587–880    | 572         | 0.26 |
+| `economy.build`        | Build                 | economy  | sine + noise                     | 149–280    | 197         | 0.3  |
+| `economy.harvest`      | Harvest               | economy  | triangle + noise                 | 370–587    | 202         | 0.22 |
+| `economy.coin`         | Coins                 | economy  | square + sine                    | 988–1319   | 342         | 0.2  |
+| `economy.treasure`     | Treasure              | economy  | square + triangle                | 330–1661   | 492         | 0.22 |
+| `turn.start`           | Your turn             | ui       | triangle + sine                  | 440–880    | 442         | 0.24 |
+| `turn.end`             | End turn              | ui       | triangle                         | 330–440    | 372         | 0.18 |
+| `achievement.unlocked` | Achievement           | ui       | square + triangle + sine + noise | 70–1047    | 1162        | 0.32 |
+| `achievement.monument` | Monument              | ui       | triangle + square + sine + noise | 70–1047    | 1612        | 0.32 |
+| `match.victory`        | Victory               | ui       | triangle + square + sine + noise | 70–1319    | 1812        | 0.36 |
+| `match.defeat`         | Defeat                | ui       | triangle + saw                   | 82–440     | 1712        | 0.32 |
+| `match.wave.enemy`     | Enemy reinforcements  | ui       | noise + sine + saw + triangle    | 69–150     | 1332        | 0.3  |
+| `match.wave.ally`      | Allied reinforcements | ui       | square + triangle + sine + noise | 70–784     | 1222        | 0.32 |
+| `ui.select`            | Select                | ui       | triangle                         | 660–700    | 62          | 0.12 |
+| `ui.click`             | Click                 | ui       | sine + noise                     | 300–420    | 47          | 0.12 |
+| `ui.toggle`            | Toggle                | ui       | triangle                         | 523–784    | 152         | 0.14 |
+| `ui.error`             | Not allowed           | ui       | square                           | 156–196    | 272         | 0.2  |
 
 ### Bounds the test enforces
 

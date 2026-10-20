@@ -2674,6 +2674,159 @@
       }
     },
     {
+      "id": "match.wave.ally",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "Allied reinforcements arrive: a short heroic bugle call over a snare drum, bright and rousing, the cavalry comes to the rescue in an old adventure serial, about one and a half seconds. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 1.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "match-wave-ally-101.wav",
+      "date": "2026-10-20",
+      "bytes": 310464,
+      "cost": {
+        "character-cost": "20"
+      }
+    },
+    {
+      "id": "match.wave.ally",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "Allied reinforcements arrive: a short heroic bugle call over a snare drum, bright and rousing, the cavalry comes to the rescue in an old adventure serial, about one and a half seconds. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 1.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "match-wave-ally-102.wav",
+      "date": "2026-10-20",
+      "bytes": 310464,
+      "cost": {
+        "character-cost": "20"
+      }
+    },
+    {
+      "id": "match.wave.ally",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "Allied reinforcements arrive: a short heroic bugle call over a snare drum, bright and rousing, the cavalry comes to the rescue in an old adventure serial, about one and a half seconds. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 1.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "match-wave-ally-103.wav",
+      "date": "2026-10-20",
+      "bytes": 310464,
+      "cost": {
+        "character-cost": "20"
+      }
+    },
+    {
+      "id": "match.wave.ally",
+      "n": 104,
+      "round": 2,
+      "take": 1,
+      "prompt": "Allied reinforcements arrive: one short heroic bugle call of four notes with a light snare drum, starting at once on the first note, bright and rousing, the cavalry to the rescue, ending cleanly on the last note after about one and a half seconds, gentle level with headroom. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 1.6,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "match-wave-ally-104.wav",
+      "date": "2026-10-20",
+      "bytes": 282240,
+      "cost": {
+        "character-cost": "18"
+      }
+    },
+    {
+      "id": "match.wave.ally",
+      "n": 105,
+      "round": 2,
+      "take": 2,
+      "prompt": "Allied reinforcements arrive: one short heroic bugle call of four notes with a light snare drum, starting at once on the first note, bright and rousing, the cavalry to the rescue, ending cleanly on the last note after about one and a half seconds, gentle level with headroom. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 1.6,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "match-wave-ally-105.wav",
+      "date": "2026-10-20",
+      "bytes": 282240,
+      "cost": {
+        "character-cost": "18"
+      }
+    },
+    {
+      "id": "match.wave.ally",
+      "n": 106,
+      "round": 2,
+      "take": 3,
+      "prompt": "Allied reinforcements arrive: one short heroic bugle call of four notes with a light snare drum, starting at once on the first note, bright and rousing, the cavalry to the rescue, ending cleanly on the last note after about one and a half seconds, gentle level with headroom. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 1.6,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "match-wave-ally-106.wav",
+      "date": "2026-10-20",
+      "bytes": 282240,
+      "cost": {
+        "character-cost": "18"
+      }
+    },
+    {
+      "id": "match.wave.enemy",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "Enemy reinforcements arrive: an ominous short motif of low brass and a timpani roll, two dark minor notes, menacing like a villain entering in an old adventure serial, about one and a half seconds. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 1.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "match-wave-enemy-101.wav",
+      "date": "2026-10-20",
+      "bytes": 310464,
+      "cost": {
+        "character-cost": "20"
+      }
+    },
+    {
+      "id": "match.wave.enemy",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "Enemy reinforcements arrive: an ominous short motif of low brass and a timpani roll, two dark minor notes, menacing like a villain entering in an old adventure serial, about one and a half seconds. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 1.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "match-wave-enemy-102.wav",
+      "date": "2026-10-20",
+      "bytes": 310464,
+      "cost": {
+        "character-cost": "20"
+      }
+    },
+    {
+      "id": "match.wave.enemy",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "Enemy reinforcements arrive: an ominous short motif of low brass and a timpani roll, two dark minor notes, menacing like a villain entering in an old adventure serial, about one and a half seconds. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 1.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "match-wave-enemy-103.wav",
+      "date": "2026-10-20",
+      "bytes": 310464,
+      "cost": {
+        "character-cost": "20"
+      }
+    },
+    {
       "id": "research.complete",
       "n": 101,
       "round": 1,

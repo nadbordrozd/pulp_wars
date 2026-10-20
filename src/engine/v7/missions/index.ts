@@ -99,6 +99,7 @@ import {
   TEST_ESCORT_V7,
   TEST_KILL_V7,
   TEST_SURVIVE_V7,
+  TEST_WAVES_V7,
 } from "./test-objectives";
 import { TUTORIAL_1_V7 } from "./tutorial";
 import type {
@@ -132,6 +133,8 @@ export const MISSION_REGISTRY_V7: readonly MissionDefinitionV7[] = deepFreeze([
   TEST_SURVIVE_V7,
   TEST_CAPTURE_V7,
   TEST_KILL_V7,
+  // The reinforcement banner's fixture (`pulp_wars-hmyk.18`, SAGA.md E4).
+  TEST_WAVES_V7,
   // The mission-curiosities fixture (`pulp_wars-hmyk.14`, SAGA.md E1).
   TEST_CURIOSITIES_V7,
   // Chapter One, "The Hollow Frontier" (`pulp_wars-68k.4`, section 6).

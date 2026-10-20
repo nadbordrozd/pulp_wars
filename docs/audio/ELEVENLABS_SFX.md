@@ -33,15 +33,15 @@ a listener can say whether it is the right sound.
 
 ## The count
 
-- 83 sound effects, every one of the game's (84) but `impact.rocket`, added later with the user's own recording.
-- 352 takes generated in 8 rounds: 243 in round 1, 78 in round 2, 15 in round 3, 4 in round 4, 4 in round 5, 2 in round 6, 3 in round 7, 3 in round 8.
+- 85 sound effects, every one of the game's (86) but `impact.rocket`, added later with the user's own recording.
+- 361 takes generated in 8 rounds: 249 in round 1, 81 in round 2, 15 in round 3, 4 in round 4, 4 in round 5, 2 in round 6, 3 in round 7, 3 in round 8.
 - 2 takes the user made with ElevenLabs and handed over, brought in by `import` (round 0) and played by default whatever they measure: `unit.hurt.dinosaur` #101 (`dinosaur_taking_dama_#1-1791924507764.wav`, 2026-10-13), `unit.hurt.goblin` #101 (`goblin_taking_damage_#2-1791924587712.wav`, 2026-10-13).
-- 82 of round 1, 33 of round 2, 8 of round 3, 3 of round 4, 3 of round 5, 1 of round 6, 2 of round 7, 2 of round 8 failed their rules. 46 prompts were revised and their failed takes generated again (round 2), and the 6 sounds still short of takes once more (round 3). Bead `pulp_wars-2yc.52` added rounds 4 to 6, new prompts for the sounds whose takes the user heard and did not want (`unit.death`, `village.capture`; their old takes are retired, kept to choose but never the default), and the first two rounds of its new sounds. Bead `pulp_wars-2yc.57` added rounds 7 and 8 for the move sounds: a shuffle of footsteps for `unit.step` (its single thumps retired) and the first two rounds of `unit.step.naval`, both 10 dB under the hit.
-- 210 takes kept: 82 sounds play a new take by default, 78 of them with at least one other to choose.
+- 85 of round 1, 34 of round 2, 8 of round 3, 3 of round 4, 3 of round 5, 1 of round 6, 2 of round 7, 2 of round 8 failed their rules. 47 prompts were revised and their failed takes generated again (round 2), and the 6 sounds still short of takes once more (round 3). Bead `pulp_wars-2yc.52` added rounds 4 to 6, new prompts for the sounds whose takes the user heard and did not want (`unit.death`, `village.capture`; their old takes are retired, kept to choose but never the default), and the first two rounds of its new sounds. Bead `pulp_wars-2yc.57` added rounds 7 and 8 for the move sounds: a shuffle of footsteps for `unit.step` (its single thumps retired) and the first two rounds of `unit.step.naval`, both 10 dB under the hit.
+- 215 takes kept: 84 sounds play a new take by default, 80 of them with at least one other to choose.
 - 1 sound with no passing take, which keeps its old default: `unit.train` (the best 2 failed takes offered to listen to).
 - 16 sounds play the version the user chose by ear ahead of their measured default, which stays a choice ([The user's picks](#the-users-picks)).
-- 220 clips, 3.20 MB together: AAC at 96 kbit/s like the stock clips.
-- The service reported a cost of 3095 credits in all (its `character-cost` header, summed over every take).
+- 225 clips, 3.34 MB together: AAC at 96 kbit/s like the stock clips.
+- The service reported a cost of 3269 credits in all (its `character-cost` header, summed over every take).
 
 ## The user's picks
 
@@ -77,38 +77,40 @@ The least certain defaults: a sound with fewer than two passing takes
 (nothing to compare by measurement), and the voices and jingles, whose
 character a measurement cannot judge.
 
-| Sound                  | Name             | Default | Why first                              |
-| ---------------------- | ---------------- | ------- | -------------------------------------- |
-| `attack.plesiosaur`    | Plesiosaur bite  | #104    | A voice: measured for shape only.      |
-| `attack.kraken`        | Kraken lash      | #105    | A voice: measured for shape only.      |
-| `attack.serpent`       | Serpent bite     | #103    | A voice: measured for shape only.      |
-| `unit.hurt`            | Damage           | #102    | A voice: measured for shape only.      |
-| `unit.hurt.human`      | Human hurt       | #101    | A voice: measured for shape only.      |
-| `unit.hurt.undead`     | Undead hurt      | #102    | A voice: measured for shape only.      |
-| `unit.hurt.martian`    | Martian hurt     | #101    | A voice: measured for shape only.      |
-| `unit.hurt.icefolk`    | Ice Folk hurt    | #101    | A voice: measured for shape only.      |
-| `unit.hurt.dwarf`      | Dwarf hurt       | #104    | A voice: measured for shape only.      |
-| `unit.hurt.candy`      | Candy hurt       | #102    | A voice: measured for shape only.      |
-| `unit.hurt.cultist`    | Cultist hurt     | #101    | A voice: measured for shape only.      |
-| `unit.hurt.daemon`     | Daemon hurt      | #101    | A voice: measured for shape only.      |
-| `unit.hurt.giant`      | Giant hurt       | #104    | A voice: measured for shape only.      |
-| `unit.hurt.monster`    | Monster hurt     | #102    | A voice: measured for shape only.      |
-| `unit.death`           | Death            | #105    | Only one take passed.                  |
-| `unit.train`           | Unit trained     | old     | No take passed: the old default plays. |
-| `support.rally`        | Rally            | #101    | Only one take passed.                  |
-| `cult.ribbit`          | Frog croak       | #103    | A voice: measured for shape only.      |
-| `cult.proclaim`        | Proclaim         | #108    | A voice: measured for shape only.      |
-| `city.capture`         | City captured    | #103    | A jingle: measured for shape only.     |
-| `village.capture`      | Village captured | #110    | A jingle: measured for shape only.     |
-| `city.lost`            | City lost        | #106    | A jingle: measured for shape only.     |
-| `city.levelup`         | City level up    | #104    | A jingle: measured for shape only.     |
-| `research.complete`    | Research done    | #104    | A jingle: measured for shape only.     |
-| `economy.treasure`     | Treasure         | #103    | A jingle: measured for shape only.     |
-| `turn.end`             | End turn         | #102    | A jingle: measured for shape only.     |
-| `achievement.unlocked` | Achievement      | #104    | A jingle: measured for shape only.     |
-| `achievement.monument` | Monument         | #104    | A jingle: measured for shape only.     |
-| `match.victory`        | Victory          | #102    | A jingle: measured for shape only.     |
-| `match.defeat`         | Defeat           | #102    | A jingle: measured for shape only.     |
+| Sound                  | Name                  | Default | Why first                              |
+| ---------------------- | --------------------- | ------- | -------------------------------------- |
+| `attack.plesiosaur`    | Plesiosaur bite       | #104    | A voice: measured for shape only.      |
+| `attack.kraken`        | Kraken lash           | #105    | A voice: measured for shape only.      |
+| `attack.serpent`       | Serpent bite          | #103    | A voice: measured for shape only.      |
+| `unit.hurt`            | Damage                | #102    | A voice: measured for shape only.      |
+| `unit.hurt.human`      | Human hurt            | #101    | A voice: measured for shape only.      |
+| `unit.hurt.undead`     | Undead hurt           | #102    | A voice: measured for shape only.      |
+| `unit.hurt.martian`    | Martian hurt          | #101    | A voice: measured for shape only.      |
+| `unit.hurt.icefolk`    | Ice Folk hurt         | #101    | A voice: measured for shape only.      |
+| `unit.hurt.dwarf`      | Dwarf hurt            | #104    | A voice: measured for shape only.      |
+| `unit.hurt.candy`      | Candy hurt            | #102    | A voice: measured for shape only.      |
+| `unit.hurt.cultist`    | Cultist hurt          | #101    | A voice: measured for shape only.      |
+| `unit.hurt.daemon`     | Daemon hurt           | #101    | A voice: measured for shape only.      |
+| `unit.hurt.giant`      | Giant hurt            | #104    | A voice: measured for shape only.      |
+| `unit.hurt.monster`    | Monster hurt          | #102    | A voice: measured for shape only.      |
+| `unit.death`           | Death                 | #105    | Only one take passed.                  |
+| `unit.train`           | Unit trained          | old     | No take passed: the old default plays. |
+| `support.rally`        | Rally                 | #101    | Only one take passed.                  |
+| `cult.ribbit`          | Frog croak            | #103    | A voice: measured for shape only.      |
+| `cult.proclaim`        | Proclaim              | #108    | A voice: measured for shape only.      |
+| `city.capture`         | City captured         | #103    | A jingle: measured for shape only.     |
+| `village.capture`      | Village captured      | #110    | A jingle: measured for shape only.     |
+| `city.lost`            | City lost             | #106    | A jingle: measured for shape only.     |
+| `city.levelup`         | City level up         | #104    | A jingle: measured for shape only.     |
+| `research.complete`    | Research done         | #104    | A jingle: measured for shape only.     |
+| `economy.treasure`     | Treasure              | #103    | A jingle: measured for shape only.     |
+| `turn.end`             | End turn              | #102    | A jingle: measured for shape only.     |
+| `achievement.unlocked` | Achievement           | #104    | A jingle: measured for shape only.     |
+| `achievement.monument` | Monument              | #104    | A jingle: measured for shape only.     |
+| `match.victory`        | Victory               | #102    | A jingle: measured for shape only.     |
+| `match.defeat`         | Defeat                | #102    | A jingle: measured for shape only.     |
+| `match.wave.enemy`     | Enemy reinforcements  | #102    | A jingle: measured for shape only.     |
+| `match.wave.ally`      | Allied reinforcements | #105    | A jingle: measured for shape only.     |
 
 ## The prompts
 
@@ -217,6 +219,8 @@ same way. A take quieter than that even at full level plays at 1.
 `unit.death` is matched instead to `unit.hurt`'s reference, -6 dB: Bead pulp_wars-2yc.52: units die often, so a death plays 6 dB under the level every hurt sound is matched to (the synthesised hurt sound's), and under the groan it replaces.
 `unit.step` is matched instead to `impact.hit`'s reference, -10 dB: Bead pulp_wars-2yc.57: units move more than anything else happens, every unit of an enemy turn, so a move plays 10 dB under the level the hit sound is matched to.
 `unit.step.naval` is matched instead to `impact.hit`'s reference, -10 dB: Bead pulp_wars-2yc.57: a ship's move, like a land unit's, plays 10 dB under the level the hit sound is matched to.
+`match.wave.enemy` is matched instead to `match.defeat`'s reference, -3 dB: Bead pulp_wars-hmyk.18: a mission's reinforcement wave plays its stinger a few times a match, over the music, so it sits a little under the end-of-match jingles.
+`match.wave.ally` is matched instead to `match.victory`'s reference, -3 dB: Bead pulp_wars-hmyk.18: a mission's reinforcement wave plays its stinger a few times a match, over the music, so it sits a little under the end-of-match jingles.
 
 The game reads `src/audio/elevenlabs-sounds.json` (each take's file,
 level, length, prompt and a line on its character, and the default);
@@ -311,6 +315,8 @@ are in seconds, onset and tail in ms, loudness in LUFS as stored.
 | `achievement.monument` | stinger  | 0.8–2.2    | 4     | 3    | #104    | 2.2    | 0     | 30   | 393      | 98%         | -10.1    | 0.23  | the synthesised sound                                                                           | medium     |
 | `match.victory`        | stinger  | 1–2.8      | 4     | 3    | #102    | 2.33   | 0     | 667  | 870      | 79%         | -12.4    | 0.35  | the synthesised sound                                                                           | medium     |
 | `match.defeat`         | stinger  | 0.9–2.6    | 3     | 3    | #102    | 2.6    | 0     | 236  | 284      | 100%        | -10.8    | 0.34  | the synthesised sound                                                                           | medium     |
+| `match.wave.enemy`     | stinger  | 0.8–2.2    | 3     | 3    | #102    | 2.2    | 0     | 371  | 108      | 100%        | -12.5    | 0.29  | -3 dB against `match.defeat`'s reference, the synthesised sound                                 | medium     |
+| `match.wave.ally`      | stinger  | 0.8–2.2    | 6     | 2    | #105    | 0.902  | 0     | 381  | 697      | 85%         | -15.8    | 0.37  | -3 dB against `match.victory`'s reference, the synthesised sound                                | medium     |
 | `ui.select`            | ui       | 0.015–0.15 | 5     | 2    | #105    | 0.15   | 0     | 25   | 1287     | 10%         | -16.6    | 0.28  | stock recording #1 (ui-select-1.m4a) at level 0.45                                              | high       |
 | `ui.click`             | ui       | 0.01–0.12  | 5     | 2    | #104    | 0.12   | 0     | 30   | 1603     | 64%         | -20.1    | 0.32  | stock recording #1 (ui-click-1.m4a) at level 0.3                                                | high       |
 | `ui.toggle`            | ui       | 0.02–0.2   | 6     | 2    | #105    | 0.138  | 10    | 90   | 2101     | 45%         | -18.2    | 0.32  | stock recording #1 (ui-toggle-1.m4a) at level 0.35                                              | high       |
@@ -397,6 +403,8 @@ are in seconds, onset and tail in ms, loudness in LUFS as stored.
 - `achievement.monument`: #104 scored best (0.617) of 3 kept: 2.2 s for a range of 0.8–2.2 s, onset 0 ms, tail 30 ms, centred near 393 Hz; the next, #101, scored 0.624.
 - `match.victory`: #102 scored best (0.382) of 3 kept: 2.33 s for a range of 1–2.8 s, onset 0 ms, tail 667 ms, centred near 870 Hz; the next, #104, scored 0.486.
 - `match.defeat`: #102 scored best (0.548) of 3 kept: 2.6 s for a range of 0.9–2.6 s, onset 0 ms, tail 236 ms, centred near 284 Hz; the next, #103, scored 0.595.
+- `match.wave.enemy`: #102 scored best (0.586) of 3 kept: 2.2 s for a range of 0.8–2.2 s, onset 0 ms, tail 371 ms, centred near 108 Hz; the next, #101, scored 0.623.
+- `match.wave.ally`: #105 scored best (0.638) of 2 kept: 0.902 s for a range of 0.8–2.2 s, onset 0 ms, tail 381 ms, centred near 697 Hz; the next, #104, scored 0.686.
 - `ui.select`: #105 scored best (1.113) of 2 kept: 0.15 s for a range of 0.015–0.15 s, onset 0 ms, tail 25 ms, centred near 1287 Hz; the next, #103, scored 1.258.
 - `ui.click`: #104 scored best (1.127) of 2 kept: 0.12 s for a range of 0.01–0.12 s, onset 0 ms, tail 30 ms, centred near 1603 Hz; the next, #102, scored 1.58.
 - `ui.toggle`: #105 scored best (1.257) of 2 kept: 0.138 s for a range of 0.02–0.2 s, onset 10 ms, tail 90 ms, centred near 2101 Hz; the next, #104, scored 1.412.
@@ -743,6 +751,15 @@ samples in flat runs at full scale.
 | `match.defeat`         | #101 | 1     | kept     | 0.6   | 2.6    | 0     | 35   | 290      | 100%        | 12.3  | 0.00%   |                                                                                                                                                                            |
 | `match.defeat`         | #102 | 1     | default  | 0.548 | 2.6    | 0     | 236  | 284      | 100%        | 10.6  | 0.00%   |                                                                                                                                                                            |
 | `match.defeat`         | #103 | 1     | kept     | 0.595 | 2.6    | 0     | 491  | 266      | 100%        | 10.7  | 0.00%   |                                                                                                                                                                            |
+| `match.wave.enemy`     | #101 | 1     | kept     | 0.623 | 2.115  | 0     | 777  | 132      | 100%        | 15    | 0.00%   |                                                                                                                                                                            |
+| `match.wave.enemy`     | #102 | 1     | default  | 0.586 | 2.2    | 0     | 371  | 108      | 100%        | 12.1  | 0.00%   |                                                                                                                                                                            |
+| `match.wave.enemy`     | #103 | 1     | kept     | 0.783 | 2.2    | 15    | 737  | 133      | 100%        | 17    | 0.00%   |                                                                                                                                                                            |
+| `match.wave.ally`      | #101 | 1     | rejected | 5.869 | 2.2    | 631   | 35   | 308      | 95%         | 11.9  | 0.15%   | clipped (0.15% of samples flat at full scale); too long (16% of its energy after 2.2 s); slow onset (631 ms, at most 80)                                                   |
+| `match.wave.ally`      | #102 | 1     | rejected | 1.024 | 2.2    | 65    | 40   | 328      | 94%         | 10.5  | 0.59%   | clipped (0.59% of samples flat at full scale)                                                                                                                              |
+| `match.wave.ally`      | #103 | 1     | rejected | 1.828 | 2.2    | 20    | 65   | 395      | 93%         | 11.7  | 0.13%   | clipped (0.13% of samples flat at full scale); too long (29% of its energy after 2.2 s)                                                                                    |
+| `match.wave.ally`      | #104 | 2     | kept     | 0.686 | 2.2    | 0     | 817  | 637      | 87%         | 12.9  | 0.00%   |                                                                                                                                                                            |
+| `match.wave.ally`      | #105 | 2     | default  | 0.638 | 0.902  | 0     | 381  | 697      | 85%         | 15.7  | 0.00%   |                                                                                                                                                                            |
+| `match.wave.ally`      | #106 | 2     | rejected | 0.916 | 2.2    | 0     | 1829 | 957      | 75%         | 25.9  | 0.00%   | long tail (1829 ms of 2200)                                                                                                                                                |
 | `ui.select`            | #101 | 1     | rejected | 1.629 | 0.15   | 0     | 10   | 367      | 99%         | 11.3  | 0.00%   | too long (15% of its energy after 0.15 s); too dull (centroid 367 Hz, at least 1000)                                                                                       |
 | `ui.select`            | #102 | 1     | rejected | 1.728 | 0.15   | 10    | 10   | 268      | 100%        | 7.3   | 0.31%   | clipped (0.31% of samples flat at full scale); too dull (centroid 268 Hz, at least 1000); squashed (crest 7.3 dB, at least 8)                                              |
 | `ui.select`            | #103 | 1     | kept     | 1.258 | 0.15   | 0     | 15   | 4285     | 49%         | 17.2  | 0.00%   |                                                                                                                                                                            |

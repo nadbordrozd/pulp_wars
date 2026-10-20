@@ -122,6 +122,10 @@ export const SOUND_IDS_V1 = [
   "achievement.monument",
   "match.victory",
   "match.defeat",
+  // A mission's reinforcement wave (`pulp_wars-hmyk.18`): an ominous
+  // stinger for an enemy's, a heroic one for your own and an ally's.
+  "match.wave.enemy",
+  "match.wave.ally",
   "ui.select",
   "ui.click",
   "ui.toggle",
@@ -1436,6 +1440,64 @@ const SYNTH_SOUNDS: Readonly<Record<SoundIdV1, SoundEntryV1>> = {
         [40, 900, 800],
       ],
       { lowpassHz: 600, gain: 0.5, attackMs: 20, decay: 1.3 },
+    ),
+  ]),
+  // Bead pulp_wars-hmyk.18: the fallbacks of the reinforcement stingers.
+  // The enemy's: two dark low notes a semitone apart over a timpani roll.
+  "match.wave.enemy": synth("Enemy reinforcements", "ui", 3, 0, 0.3, [
+    ...drum(0, 0.6),
+    ...drum(140, 0.45),
+    ...drum(280, 0.6),
+    ...tune(
+      "saw",
+      [
+        [50, 0, 420],
+        [49, 420, 900],
+      ],
+      { lowpassHz: 700, gain: 0.7, attackMs: 20, decay: 1.4 },
+    ),
+    ...tune(
+      "triangle",
+      [
+        [38, 0, 420],
+        [37, 420, 900],
+      ],
+      { gain: 0.6, attackMs: 15, decay: 1.3 },
+    ),
+    {
+      wave: "noise",
+      at: 420,
+      ms: 700,
+      lowpassHz: 320,
+      gain: 0.35,
+      attackMs: 60,
+      decay: 1.6,
+    },
+  ]),
+  // The ally's: a bugle call up a major arpeggio over a snare.
+  "match.wave.ally": synth("Allied reinforcements", "ui", 3, 0, 0.32, [
+    ...drum(0),
+    ...drum(300),
+    ...tune(
+      "square",
+      [
+        [67, 0, 110],
+        [72, 110, 110],
+        [76, 220, 110],
+        [79, 330, 200],
+        [76, 540, 110],
+        [79, 650, 560],
+      ],
+      LEAD,
+    ),
+    ...tune(
+      "triangle",
+      [
+        [48, 0, 300],
+        [55, 330, 300],
+        [60, 650, 560],
+      ],
+      { gain: 0.5 },
     ),
   ]),
   "ui.select": synth("Select", "ui", 1, 20, 0.12, [

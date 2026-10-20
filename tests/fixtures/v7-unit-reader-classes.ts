@@ -1251,6 +1251,10 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/render/mission-presentation-v7.ts::missionTrackerV7": "BOARD",
     "src/render/mission-presentation-v7.ts::missionMarkersV7": "BOARD",
     "src/render/mission-presentation-v7.ts::missionOutcomeLineV7": "BOARD",
+    // The reinforcement heads-up (`pulp_wars-hmyk.18`): the written tiles
+    // of a mission's wave, which has not arrived; no unit of the board.
+    "src/render/reinforcement-presentation-v7.ts::waveHeadsUpBannersV7":
+      "BOARD",
   };
 
 /**

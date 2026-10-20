@@ -255,6 +255,24 @@ export interface MissionReinforcementV7 {
     readonly role: UnitRoleIdV7;
     readonly at: CoordV7;
   }[];
+  /**
+   * A story line for the wave (`pulp_wars-hmyk.18`, docs/product/SAGA.md
+   * section 4, E4; CAMPAIGN.md section 10.3): the reinforcement banner
+   * shows it under its sentence when the wave arrives ("The dead are here.
+   * They apologise for the delay."). Absent: a generic line of the seat's
+   * faction and side. At most `MISSION_WAVE_TEXT_MAX_V7` characters, one
+   * line, no coordinates. Presentation only: not in the state, so it is
+   * outside the pinned initial-state hash and needs no revision bump.
+   */
+  readonly line?: string;
+  /**
+   * A heads-up for the wave (`pulp_wars-hmyk.18`): at the start of the
+   * player's last turn before it arrives, a banner says it is coming.
+   * `true` writes the sentence ("Scouts report Goblins approaching from
+   * the north."); a string is the sentence itself, under the same rules
+   * as `line`. Absent (the default): no heads-up. Presentation only.
+   */
+  readonly announce?: true | string;
 }
 
 /** The generated map types a mission board may come from. */

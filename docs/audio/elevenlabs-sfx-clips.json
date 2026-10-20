@@ -1,6 +1,6 @@
 {
   "provider": "ElevenLabs sound effects",
-  "provenance": "ElevenLabs sound effects, generated 2026-10-13, 2026-10-14, 2026-10-16, 2026-10-17, 2026-10-19",
+  "provenance": "ElevenLabs sound effects, generated 2026-10-13, 2026-10-14, 2026-10-16, 2026-10-17, 2026-10-19, 2026-10-20",
   "bead": "pulp_wars-2yc.51",
   "output": {
     "folder": "public/assets/audio",
@@ -4559,6 +4559,115 @@
           "gain": 0.44,
           "lufs": -13.1,
           "note": "2.6 s, hard attack, centred near 290 Hz, 100% of its energy under 1 kHz, crest 12.3 dB.",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "match.wave.enemy",
+      "default": 102,
+      "confidence": "medium",
+      "why": "#102 scored best (0.586) of 3 kept: 2.2 s for a range of 0.8–2.2 s, onset 0 ms, tail 371 ms, centred near 108 Hz; the next, #101, scored 0.623.",
+      "reference": {
+        "source": "-3 dB against `match.defeat`'s reference, the synthesised sound",
+        "lufs": -23.2
+      },
+      "takes": [
+        {
+          "n": 102,
+          "file": "match-wave-enemy-102.m4a",
+          "generated": "2026-10-20",
+          "round": 1,
+          "take": 2,
+          "model": "eleven_text_to_sound_v2",
+          "prompt": "Enemy reinforcements arrive: an ominous short motif of low brass and a timpani roll, two dark minor notes, menacing like a villain entering in an old adventure serial, about one and a half seconds. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+          "durationSeconds": 1.8,
+          "promptInfluence": 0.5,
+          "startSeconds": 0,
+          "endSeconds": 2.2,
+          "gain": 0.29,
+          "lufs": -12.5,
+          "note": "2.2 s, hard attack, centred near 108 Hz, 100% of its energy under 1 kHz, crest 12.1 dB.",
+          "passed": true
+        },
+        {
+          "n": 101,
+          "file": "match-wave-enemy-101.m4a",
+          "generated": "2026-10-20",
+          "round": 1,
+          "take": 1,
+          "model": "eleven_text_to_sound_v2",
+          "prompt": "Enemy reinforcements arrive: an ominous short motif of low brass and a timpani roll, two dark minor notes, menacing like a villain entering in an old adventure serial, about one and a half seconds. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+          "durationSeconds": 1.8,
+          "promptInfluence": 0.5,
+          "startSeconds": 0,
+          "endSeconds": 2.115,
+          "gain": 0.31,
+          "lufs": -12.9,
+          "note": "2.115 s, hard attack, centred near 132 Hz, 100% of its energy under 1 kHz, crest 15 dB.",
+          "passed": true
+        },
+        {
+          "n": 103,
+          "file": "match-wave-enemy-103.m4a",
+          "generated": "2026-10-20",
+          "round": 1,
+          "take": 3,
+          "model": "eleven_text_to_sound_v2",
+          "prompt": "Enemy reinforcements arrive: an ominous short motif of low brass and a timpani roll, two dark minor notes, menacing like a villain entering in an old adventure serial, about one and a half seconds. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+          "durationSeconds": 1.8,
+          "promptInfluence": 0.5,
+          "startSeconds": 0,
+          "endSeconds": 2.2,
+          "gain": 0.36,
+          "lufs": -14.3,
+          "note": "2.2 s, quick attack, centred near 133 Hz, 100% of its energy under 1 kHz, crest 17 dB.",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "match.wave.ally",
+      "default": 105,
+      "confidence": "medium",
+      "why": "#105 scored best (0.638) of 2 kept: 0.902 s for a range of 0.8–2.2 s, onset 0 ms, tail 381 ms, centred near 697 Hz; the next, #104, scored 0.686.",
+      "reference": {
+        "source": "-3 dB against `match.victory`'s reference, the synthesised sound",
+        "lufs": -24.5
+      },
+      "takes": [
+        {
+          "n": 105,
+          "file": "match-wave-ally-105.m4a",
+          "generated": "2026-10-20",
+          "round": 2,
+          "take": 2,
+          "model": "eleven_text_to_sound_v2",
+          "prompt": "Allied reinforcements arrive: one short heroic bugle call of four notes with a light snare drum, starting at once on the first note, bright and rousing, the cavalry to the rescue, ending cleanly on the last note after about one and a half seconds, gentle level with headroom. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+          "durationSeconds": 1.6,
+          "promptInfluence": 0.5,
+          "startSeconds": 0,
+          "endSeconds": 0.902,
+          "gain": 0.37,
+          "lufs": -15.8,
+          "note": "0.902 s, hard attack, centred near 697 Hz, 85% of its energy under 1 kHz, crest 15.7 dB.",
+          "passed": true
+        },
+        {
+          "n": 104,
+          "file": "match-wave-ally-104.m4a",
+          "generated": "2026-10-20",
+          "round": 2,
+          "take": 1,
+          "model": "eleven_text_to_sound_v2",
+          "prompt": "Allied reinforcements arrive: one short heroic bugle call of four notes with a light snare drum, starting at once on the first note, bright and rousing, the cavalry to the rescue, ending cleanly on the last note after about one and a half seconds, gentle level with headroom. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+          "durationSeconds": 1.6,
+          "promptInfluence": 0.5,
+          "startSeconds": 0,
+          "endSeconds": 2.2,
+          "gain": 0.26,
+          "lufs": -12.7,
+          "note": "2.2 s, hard attack, centred near 637 Hz, 87% of its energy under 1 kHz, crest 12.9 dB.",
           "passed": true
         }
       ]

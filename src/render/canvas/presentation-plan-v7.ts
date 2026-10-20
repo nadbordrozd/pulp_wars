@@ -8,6 +8,7 @@ import {
 } from "../../engine/index";
 import type { Ruleset7TacticalUiSymbolId } from "../../assets/ruleset7-tactical-ui-symbols";
 import { presentedUnitFactionV7 } from "../neutral-presentation-v7";
+import { waveSideV7, type WaveSideV7 } from "../reinforcement-presentation-v7";
 import type { ExplosionBlastV7 } from "./goblin-explosion-v7";
 import type { DinosaurEffectV7 } from "./dinosaur-effects-v7";
 import type { MartianFeedbackEffectV7 } from "./martian-effects-v7";
@@ -299,6 +300,23 @@ export type CorePresentationStepV7 =
       readonly damage: number;
       readonly lethal: boolean;
       readonly durationMs: 100;
+    }
+  | {
+      /**
+       * A mission's reinforcement wave arrived (`pulp_wars-hmyk.18`,
+       * docs/product/CAMPAIGN.md section 10.3): the camera frames its tiles
+       * (the playback camera's rules: never once the player took the
+       * camera, a cut with reduced motion), its units fade in, and the
+       * banner and the stinger of its side start with it. One step for
+       * every unit of one seat's wave the viewer sees arrive.
+       */
+      readonly kind: "REINFORCEMENT";
+      readonly playerId: number;
+      readonly side: WaveSideV7;
+      readonly unitIds: readonly number[];
+      readonly cells: readonly CoordV7[];
+      readonly durationMs: 520;
+      readonly followCamera: true;
     }
   | {
       /**
@@ -2437,6 +2455,26 @@ export function corePresentationPlanV7(
           actor: { unitId: event.unitId, at: event.at },
           recipients: [],
           durationMs: 320,
+        });
+    } else if (event.kind === "REINFORCEMENT_ARRIVED") {
+      // `pulp_wars-hmyk.18`: one step for the wave of one seat. Its
+      // arrival was projected, so the viewer sees its tile.
+      const last = steps.at(-1);
+      if (last?.kind === "REINFORCEMENT" && last.playerId === event.playerId)
+        steps[steps.length - 1] = {
+          ...last,
+          unitIds: [...last.unitIds, event.unitId],
+          cells: [...last.cells, event.at],
+        };
+      else
+        steps.push({
+          kind: "REINFORCEMENT",
+          playerId: event.playerId,
+          side: waveSideV7(after, event.playerId),
+          unitIds: [event.unitId],
+          cells: [event.at],
+          durationMs: 520,
+          followCamera: true,
         });
     } else if (event.kind === "WIGHT_RISEN") {
       // The ninth unit (`pulp_wars-w49.17`, 7r55): Rise Again, the bone
