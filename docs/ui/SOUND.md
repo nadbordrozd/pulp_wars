@@ -185,85 +185,85 @@ economy is silent.
 
 ### Presentation steps
 
-| Step                                                            | Sounds                                                                                                                    |
-| --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| Melee attack                                                    | `attack.melee`, then `impact.hit`                                                                                         |
-| Ranged attack                                                   | `attack.ranged`, then `impact.hit`                                                                                        |
-| Siege attack (Catapult class)                                   | `attack.siege`, then `impact.heavy`                                                                                       |
-| Lich bolt                                                       | `attack.magic`, then `impact.hit`                                                                                         |
-| Rocket Cart firework                                            | `attack.rocket`, then `impact.rocket` (see below)                                                                         |
-| Clockwork Gunner burst                                          | `attack.gatling`, then `impact.hit`                                                                                       |
-| Steam Cannon                                                    | `attack.cannon`, then `impact.heavy`                                                                                      |
-| Ice boulder and Rockfall                                        | `attack.siege`, then `impact.ice`                                                                                         |
-| Harpoon                                                         | `attack.ranged`, then `impact.hit`                                                                                        |
-| Pie Launcher                                                    | `attack.siege`, then `impact.splat`                                                                                       |
-| Gumball Gunner                                                  | `attack.pop`, then `impact.hit`                                                                                           |
-| Plesiosaur torpedo (`pulp_wars-5ti.18`)                         | `attack.plesiosaur` (a bite with a wet roar), then `impact.hit`                                                           |
-| Kraken torpedo (`pulp_wars-5ti.22`)                             | `attack.kraken` (a deep wet lash of a tentacle), then `impact.hit`                                                        |
-| Sea Serpent bite (`pulp_wars-737.21`)                           | `attack.serpent` (a hiss and a splash), then `impact.hit`                                                                 |
-| Martian heat ray and ray pistol                                 | `attack.ray`, then `impact.hit`                                                                                           |
-| Any attack that kills either side                               | `unit.death` just after the hit                                                                                           |
-| An attack whose target lives (melee, ranged, siege, ray)        | the target's hurt sound, 40 ms after the hit ([Hurt sounds](#hurt-sounds))                                                |
-| Splash, Wail, Plague, crush and eruption damage                 | the damaged unit's hurt sound, and `unit.death` when lethal                                                               |
-| Explosion wave, Mole eruption, Gyrocopter bomb                  | `impact.explosion`                                                                                                        |
-| Bomb Chucker bomb, Spitter acid                                 | `attack.siege`; the burst or `impact.splat` follows from its own step                                                     |
-| Shield flare                                                    | `impact.shield`                                                                                                           |
-| Beam Down, Tractor Beam                                         | `special.beam`                                                                                                            |
-| Mind Control                                                    | `special.mind`                                                                                                            |
-| Control released, ice crush                                     | `impact.ice`                                                                                                              |
-| Shatter                                                         | `special.freeze`, then `impact.ice`                                                                                       |
-| Cold Snap, Cold Aura, Freeze                                    | `special.freeze`                                                                                                          |
-| Bolas                                                           | `attack.ranged`, then `special.freeze`                                                                                    |
-| Frost Bolt                                                      | `attack.ranged`, then `special.freeze`                                                                                    |
-| Black Ice and Frostbite freezes                                 | `special.freeze`                                                                                                          |
-| Stampede                                                        | `impact.heavy`, then `impact.hit` as it reaches each unit in its way                                                      |
-| Sweep                                                           | `attack.melee`                                                                                                            |
-| Ice melting                                                     | `impact.splash`                                                                                                           |
-| Crack Ice, a crack or a break (`pulp_wars-5ti.27`)              | `special.ice-crack`                                                                                                       |
-| Tesla Tower zap (`pulp_wars-737.20`)                            | `special.zap`, then the target's hurt sound or `unit.death`                                                               |
-| Moon Gun shot and landing (`pulp_wars-737.20`)                  | `attack.cannon`, then `impact.heavy` as the unit lands                                                                    |
-| Lost Expedition found (`pulp_wars-737.20`)                      | `economy.treasure` as the notes rise                                                                                      |
-| Lich splash                                                     | `impact.splash`                                                                                                           |
-| Prize flag, Rally, Hatch call                                   | `support.rally`                                                                                                           |
-| Tend, Cure, Regenerate, Recover, Fountain, Windmill, Sugar Toss | `support.heal`                                                                                                            |
-| Raise, Devour, Wail, Infect, Grave, Plague, Bitten              | `support.dark`                                                                                                            |
-| Lifesteal                                                       | `support.drain`                                                                                                           |
-| Feast                                                           | `support.drain`                                                                                                           |
-| Bat Escape swirl                                                | `special.puff`, then `special.puff` again as the bats fly off                                                             |
-| Terror                                                          | `support.dark`                                                                                                            |
-| Shrine blessing, Sugar Rush, Re-bake                            | `special.sparkle`                                                                                                         |
-| Salvage, Spider bounty                                          | `economy.coin`                                                                                                            |
-| Tunnel                                                          | `special.burrow`                                                                                                          |
-| Assemble, Repair                                                | `economy.build`                                                                                                           |
-| Knockback                                                       | `special.puff`                                                                                                            |
-| Crash                                                           | `special.dizzy`                                                                                                           |
-| Crash ending, Egg laid                                          | `special.pop`                                                                                                             |
-| Peppermint Surprise                                             | `special.pop`, then the hurt sound of the unit on the tile                                                                |
-| Splat, acid landing                                             | `impact.splat`                                                                                                            |
-| Bounce                                                          | `special.boing`                                                                                                           |
-| Crumbs eaten                                                    | `economy.harvest`                                                                                                         |
-| Charge! hit, Bow Ram                                            | `impact.heavy`                                                                                                            |
-| Hatch, Egg destroyed                                            | `special.hatch`                                                                                                           |
-| Grow                                                            | `unit.levelup`                                                                                                            |
-| A daemon summoned: an Imp, a Horror or a Gibbering Mass         | `cult.summon`                                                                                                             |
-| Strand broken                                                   | `cult.snap`                                                                                                               |
-| Daemon Unbound                                                  | `cult.unbound`                                                                                                            |
-| Star-fall                                                       | `cult.starfall`, then `impact.explosion` as the star lands                                                                |
-| The Herald arrives                                              | `cult.herald`                                                                                                             |
-| Proclaim (a city Cowed)                                         | `cult.proclaim`                                                                                                           |
-| Ribbit                                                          | `cult.ribbit` as the frog jumps out                                                                                       |
-| Tentacle rises or sinks                                         | `cult.tentacle`                                                                                                           |
-| Pamphlets take a village                                        | `cult.pamphlets`                                                                                                          |
-| Join the chant, a strand formed                                 | none                                                                                                                      |
-| Boo!, Grab                                                      | `special.boing`                                                                                                           |
-| A rite begun                                                    | `support.dark`                                                                                                            |
-| A rite fizzled, a unit consumed by the Herald                   | `special.puff`                                                                                                            |
-| Switcheroo                                                      | `special.sparkle`                                                                                                         |
-| A unit moving on land, the viewer's own or another player's     | `unit.step` ([Moves](#the-move-sounds)); another player's quieter                                                         |
-| A ship or an embarked unit moving                               | `unit.step.naval`; another player's quieter                                                                               |
-| A flyer moving, a push, a visibility crossfade                  | none                                                                                                                      |
-| Another player's building in sight                              | `economy.build`, quieter                                                                                                  |
-| A mission's reinforcement wave arrives (`pulp_wars-hmyk.18`)    | `match.wave.enemy` for an enemy's, `match.wave.ally` for yours or an ally's ([Reinforcement waves](#reinforcement-waves)) |
+| Step                                                            | Sounds                                                                                                                                            |
+| --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Melee attack                                                    | `attack.melee`, then `impact.hit`                                                                                                                 |
+| Ranged attack                                                   | `attack.ranged`, then `impact.hit`                                                                                                                |
+| Siege attack (Catapult class)                                   | `attack.siege`, then `impact.heavy`                                                                                                               |
+| Lich bolt                                                       | `attack.magic`, then `impact.hit`                                                                                                                 |
+| Rocket Cart firework                                            | `attack.rocket`, then `impact.rocket` (see below)                                                                                                 |
+| Clockwork Gunner burst                                          | `attack.gatling`, then `impact.hit`                                                                                                               |
+| Steam Cannon                                                    | `attack.cannon`, then `impact.heavy`                                                                                                              |
+| Ice boulder and Rockfall                                        | `attack.siege`, then `impact.ice`                                                                                                                 |
+| Harpoon                                                         | `attack.ranged`, then `impact.hit`                                                                                                                |
+| Pie Launcher                                                    | `attack.siege`, then `impact.splat`                                                                                                               |
+| Gumball Gunner                                                  | `attack.pop`, then `impact.hit`                                                                                                                   |
+| Plesiosaur torpedo (`pulp_wars-5ti.18`)                         | `attack.plesiosaur` (a bite with a wet roar), then `impact.hit`                                                                                   |
+| Kraken torpedo (`pulp_wars-5ti.22`)                             | `attack.kraken` (a deep wet lash of a tentacle), then `impact.hit`                                                                                |
+| Sea Serpent bite (`pulp_wars-737.21`)                           | `attack.serpent` (a hiss and a splash), then `impact.hit`                                                                                         |
+| Martian heat ray and ray pistol                                 | `attack.ray`, then `impact.hit`                                                                                                                   |
+| Any attack that kills either side                               | `unit.death` just after the hit                                                                                                                   |
+| An attack whose target lives (melee, ranged, siege, ray)        | the target's hurt sound, 40 ms after the hit ([Hurt sounds](#hurt-sounds))                                                                        |
+| Splash, Wail, Plague, crush and eruption damage                 | the damaged unit's hurt sound, and `unit.death` when lethal                                                                                       |
+| Explosion wave, Mole eruption, Gyrocopter bomb                  | `impact.explosion`                                                                                                                                |
+| Bomb Chucker bomb, Spitter acid                                 | `attack.siege`; the burst or `impact.splat` follows from its own step                                                                             |
+| Shield flare                                                    | `impact.shield`                                                                                                                                   |
+| Beam Down, Tractor Beam                                         | `special.beam`                                                                                                                                    |
+| Mind Control                                                    | `special.mind`                                                                                                                                    |
+| Control released, ice crush                                     | `impact.ice`                                                                                                                                      |
+| Shatter                                                         | `special.freeze`, then `impact.ice`                                                                                                               |
+| Cold Snap, Cold Aura, Freeze                                    | `special.freeze`                                                                                                                                  |
+| Bolas                                                           | `attack.ranged`, then `special.freeze`                                                                                                            |
+| Frost Bolt                                                      | `attack.ranged`, then `special.freeze`                                                                                                            |
+| Black Ice and Frostbite freezes                                 | `special.freeze`                                                                                                                                  |
+| Stampede                                                        | `impact.heavy`, then `impact.hit` as it reaches each unit in its way                                                                              |
+| Sweep                                                           | `attack.melee`                                                                                                                                    |
+| Ice melting                                                     | `impact.splash`                                                                                                                                   |
+| Crack Ice, a crack or a break (`pulp_wars-5ti.27`)              | `special.ice-crack`                                                                                                                               |
+| Tesla Tower zap (`pulp_wars-737.20`)                            | `special.zap`, then the target's hurt sound or `unit.death`; each jump of the chain lightning (`pulp_wars-737.22`, cue `ZAP_JUMP`) the same again |
+| Moon Gun shot and landing (`pulp_wars-737.20`)                  | `attack.cannon`, then `impact.heavy` as the unit lands                                                                                            |
+| Lost Expedition found (`pulp_wars-737.20`)                      | `economy.treasure` as the notes rise                                                                                                              |
+| Lich splash                                                     | `impact.splash`                                                                                                                                   |
+| Prize flag, Rally, Hatch call                                   | `support.rally`                                                                                                                                   |
+| Tend, Cure, Regenerate, Recover, Fountain, Windmill, Sugar Toss | `support.heal`                                                                                                                                    |
+| Raise, Devour, Wail, Infect, Grave, Plague, Bitten              | `support.dark`                                                                                                                                    |
+| Lifesteal                                                       | `support.drain`                                                                                                                                   |
+| Feast                                                           | `support.drain`                                                                                                                                   |
+| Bat Escape swirl                                                | `special.puff`, then `special.puff` again as the bats fly off                                                                                     |
+| Terror                                                          | `support.dark`                                                                                                                                    |
+| Shrine blessing, Sugar Rush, Re-bake                            | `special.sparkle`                                                                                                                                 |
+| Salvage, Spider bounty                                          | `economy.coin`                                                                                                                                    |
+| Tunnel                                                          | `special.burrow`                                                                                                                                  |
+| Assemble, Repair                                                | `economy.build`                                                                                                                                   |
+| Knockback                                                       | `special.puff`                                                                                                                                    |
+| Crash                                                           | `special.dizzy`                                                                                                                                   |
+| Crash ending, Egg laid                                          | `special.pop`                                                                                                                                     |
+| Peppermint Surprise                                             | `special.pop`, then the hurt sound of the unit on the tile                                                                                        |
+| Splat, acid landing                                             | `impact.splat`                                                                                                                                    |
+| Bounce                                                          | `special.boing`                                                                                                                                   |
+| Crumbs eaten                                                    | `economy.harvest`                                                                                                                                 |
+| Charge! hit, Bow Ram                                            | `impact.heavy`                                                                                                                                    |
+| Hatch, Egg destroyed                                            | `special.hatch`                                                                                                                                   |
+| Grow                                                            | `unit.levelup`                                                                                                                                    |
+| A daemon summoned: an Imp, a Horror or a Gibbering Mass         | `cult.summon`                                                                                                                                     |
+| Strand broken                                                   | `cult.snap`                                                                                                                                       |
+| Daemon Unbound                                                  | `cult.unbound`                                                                                                                                    |
+| Star-fall                                                       | `cult.starfall`, then `impact.explosion` as the star lands                                                                                        |
+| The Herald arrives                                              | `cult.herald`                                                                                                                                     |
+| Proclaim (a city Cowed)                                         | `cult.proclaim`                                                                                                                                   |
+| Ribbit                                                          | `cult.ribbit` as the frog jumps out                                                                                                               |
+| Tentacle rises or sinks                                         | `cult.tentacle`                                                                                                                                   |
+| Pamphlets take a village                                        | `cult.pamphlets`                                                                                                                                  |
+| Join the chant, a strand formed                                 | none                                                                                                                                              |
+| Boo!, Grab                                                      | `special.boing`                                                                                                                                   |
+| A rite begun                                                    | `support.dark`                                                                                                                                    |
+| A rite fizzled, a unit consumed by the Herald                   | `special.puff`                                                                                                                                    |
+| Switcheroo                                                      | `special.sparkle`                                                                                                                                 |
+| A unit moving on land, the viewer's own or another player's     | `unit.step` ([Moves](#the-move-sounds)); another player's quieter                                                                                 |
+| A ship or an embarked unit moving                               | `unit.step.naval`; another player's quieter                                                                                                       |
+| A flyer moving, a push, a visibility crossfade                  | none                                                                                                                                              |
+| Another player's building in sight                              | `economy.build`, quieter                                                                                                                          |
+| A mission's reinforcement wave arrives (`pulp_wars-hmyk.18`)    | `match.wave.enemy` for an enemy's, `match.wave.ally` for yours or an ally's ([Reinforcement waves](#reinforcement-waves))                         |
 
 **The Rocket Cart's firework** (the user's pick, 2026-10-14) plays one
 recording, a Sonniss RPG fired through a car roof, cut in two: its firing

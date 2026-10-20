@@ -104,6 +104,11 @@ export type AbilityPreviewStyleV7 =
    * neutral bone white of the curiosities.
    */
   | "CURIOSITY_RANGE"
+  /**
+   * The chain lightning (bead pulp_wars-737.22): a unit a Zap's first jump
+   * may hit, shaded lightly in the arc's white.
+   */
+  | "ZAP_CHAIN"
   | "GATE_EXIT"
   | "GATE_SHOVE"
   | "GATE_BLOCKED"
@@ -657,6 +662,8 @@ const STYLE_COLORS: Readonly<
   CAMP_PERIMETER: { fill: "rgba(224, 150, 80, 0.1)", stroke: "#ffae42" },
   // Round 3: a Tower's zap range or a Gun's landing range, bone white.
   CURIOSITY_RANGE: { fill: "rgba(239, 230, 208, 0.08)", stroke: "#efe6d0" },
+  // The chain lightning: the arcs' white, a light wash.
+  ZAP_CHAIN: { fill: "rgba(255, 255, 255, 0.16)", stroke: "#ffffff" },
   GATE_EXIT: { fill: "rgba(236, 232, 255, 0.24)", stroke: "#ece8ff" },
   GATE_SHOVE: { fill: "rgba(236, 232, 255, 0.12)", stroke: "#c9c0f2" },
   GATE_BLOCKED: { fill: "rgba(170, 179, 192, 0.24)", stroke: "#aab3c0" },

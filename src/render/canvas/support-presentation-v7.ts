@@ -215,6 +215,7 @@ export function drawSupportFeedbackV7(
   // Moon Gun's blast and the Expedition's notes.
   if (
     feedback.effect === "ZAP" ||
+    feedback.effect === "ZAP_JUMP" ||
     feedback.effect === "MOON_GUN" ||
     feedback.effect === "MOON_GUN_LANDING" ||
     feedback.effect === "EXPEDITION"
@@ -480,6 +481,7 @@ const UNDEAD_PULSE_COLORS: Readonly<
       | "GATE"
       | "WELL"
       | "ZAP"
+      | "ZAP_JUMP"
       | "MOON_GUN"
       | "MOON_GUN_LANDING"
       | "EXPEDITION"
@@ -879,7 +881,9 @@ function drawRound2CuriosityCue(
 /**
  * Map curiosities round 3 (bead pulp_wars-737.20). ZAP: a white zig-zag
  * arc from the Tower to each target, with the arc sprite flaring on the
- * target. MOON_GUN: the smoke-and-flash ring of the Gun's blast (or the
+ * target; ZAP_JUMP (the chain lightning, bead pulp_wars-737.22) the same
+ * arc, body to body, from the last unit hit to the next. MOON_GUN: the
+ * smoke-and-flash ring of the Gun's blast (or the
  * landing puff) over the cell. EXPEDITION: the journal rising over the
  * finder, and a gold "+N" when it paid Coins. Without the sprites (LEGACY,
  * the classic look, still loading) the code-drawn arc and rings are the
@@ -890,7 +894,7 @@ function drawRound3CuriosityCue(
   center: { readonly x: number; readonly y: number },
   targets: readonly { readonly x: number; readonly y: number }[],
   zoom: number,
-  effect: "ZAP" | "MOON_GUN" | "EXPEDITION",
+  effect: "ZAP" | "ZAP_JUMP" | "MOON_GUN" | "EXPEDITION",
   rawProgress: number,
   fade: number,
   amount: number | undefined,
@@ -898,38 +902,71 @@ function drawRound3CuriosityCue(
 ): void {
   const unit = sprites?.step ?? zoom * 1.6;
   const progress = Math.max(0, Math.min(1, rawProgress));
-  if (effect === "ZAP") {
-    const from = { x: center.x, y: center.y - 44 * zoom };
-    for (const target of targets) {
-      // A jagged white arc from the Tower's ball to the target.
+  if (effect === "ZAP" || effect === "ZAP_JUMP") {
+    // The chain lightning (bead pulp_wars-737.22): a jump leaves from the
+    // body of the unit it last hit, a zap from the Tower's ball. The arc
+    // strikes out over the first three tenths of the cue, holds at full
+    // strength, and fades over the last three tenths (a short jump's arc
+    // must stay readable); reduced motion (progress held at 0.5) shows it
+    // whole and still.
+    const jump = effect === "ZAP_JUMP";
+    // A jump runs body to body, a tile or so: it zig-zags wider and lifts
+    // its end to the unit's body too, so the short arc reads.
+    const lift = (jump ? 14 : 0) * zoom;
+    const from = {
+      x: center.x,
+      y: center.y - (jump ? 14 : 44) * zoom,
+    };
+    const swing = (jump ? 12 : 9) * zoom;
+    const reach = Math.min(1, progress / 0.3);
+    const strength = Math.max(0, Math.min(1, (1 - progress) / 0.3));
+    for (const cell of targets) {
+      const target = { x: cell.x, y: cell.y - lift };
+      const dx = target.x - from.x;
+      const dy = target.y - from.y;
+      const length = Math.max(1, Math.hypot(dx, dy));
+      const steps = jump ? 5 : 6;
+      const points = [from];
+      for (let step = 1; step < steps; step += 1) {
+        const t = step / steps;
+        const side = step % 2 === 0 ? 1 : -1;
+        points.push({
+          x: from.x + dx * t + (-dy / length) * side * swing,
+          y: from.y + dy * t + (dx / length) * side * swing,
+        });
+      }
+      points.push(target);
+      // The points the arc has reached, and its tip between two of them.
+      const span = reach * (points.length - 1);
+      const whole = Math.floor(span);
+      const drawn = points.slice(0, whole + 1);
+      const last = points[whole];
+      const next = points[whole + 1];
+      if (last !== undefined && next !== undefined && span > whole)
+        drawn.push({
+          x: last.x + (next.x - last.x) * (span - whole),
+          y: last.y + (next.y - last.y) * (span - whole),
+        });
       context.save();
-      context.globalAlpha = fade;
+      context.globalAlpha = strength;
       context.lineJoin = "round";
       context.lineCap = "round";
       const zigzag = (width: number, colour: string): void => {
         context.strokeStyle = colour;
         context.lineWidth = Math.max(1, width * zoom);
         context.beginPath();
-        context.moveTo(from.x, from.y);
-        const steps = 6;
-        for (let step = 1; step < steps; step += 1) {
-          const t = step / steps;
-          const side = step % 2 === 0 ? 1 : -1;
-          const dx = target.x - from.x;
-          const dy = target.y - from.y;
-          const length = Math.max(1, Math.hypot(dx, dy));
-          context.lineTo(
-            from.x + dx * t + (-dy / length) * side * 9 * zoom,
-            from.y + dy * t + (dx / length) * side * 9 * zoom,
-          );
-        }
-        context.lineTo(target.x, target.y);
+        drawn.forEach((point, index) => {
+          if (index === 0) context.moveTo(point.x, point.y);
+          else context.lineTo(point.x, point.y);
+        });
         context.stroke();
       };
+      // A faint white glow, the dark casing, and the white core.
+      zigzag(14, "rgba(255, 255, 255, 0.28)");
       zigzag(7, "rgba(27, 27, 31, 0.8)");
       zigzag(3.5, "#ffffff");
       context.restore();
-      sprites?.draw("EFFECT:TESLA_ARC", target, 1, fade);
+      if (reach >= 1) sprites?.draw("EFFECT:TESLA_ARC", target, 1, strength);
     }
     return;
   }

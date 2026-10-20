@@ -7207,8 +7207,26 @@ threatens the seat, 1180 for another kill, 1240 for a hit on a threat,
 900 otherwise; immediate value 20 per kill plus 10 per damage plus the
 bounty; strategic value the target's value (with 4 times the bounty) on a
 kill, else its share by damage. A neutral unit is zapped only for the
-kill (a hit provokes it). `TESLA_ZAP_DAMAGE_FOR_POLICY_V7` (4) is pinned to
-the engine.
+kill (a hit provokes it). `TESLA_ZAP_DAMAGE_FOR_POLICY_V7` (16 since
+`7r105`, 4 before) is pinned to the engine.
+
+**The chain lightning** (`pulp_wars-737.22`, `7r105`). The jumps (8, 4,
+2, 1 to random neighbours, any owner's units, the zapper included) are
+valued by their expectation: `previewZapChainOddsV7` gives, for each
+visible unit the jumps may reach, the exact chance of each jump hitting it
+(every neighbour of a jump equally likely, over every path through the
+visible units) and that jump's hit, and `zapChainValueV7` sums chance
+times worth, scored like the first hit (10 per point of damage, Shield
+included, and 20 plus the unit's strategic value for a kill): positive on
+a hostile seat's unit, a neutral unit only for its kill and bounty, and
+**negative, weighted by `ZAP_CHAIN_OWN_WEIGHT_V7` (1.5)**, on a unit of
+the seat or an ally (the zapper included). The rounded sum is added to
+the zap's immediate value; a zap whose first hit plus chain is not
+positive is not a candidate. Units hidden from the seat are not counted.
+Proved on small hand-built states in
+`tests/unit/ruleset-v7-tesla-chain.test.ts` ("values a chain by its
+expected hits", "prefers the zap whose chain runs through enemies",
+"refuses a zap whose chain is expected to cost more than its first hit").
 
 **Moon Gun: a shortcut, like the gates.** A unit with a campaign goal
 (not `EXPLORE`, its tile explored) takes the Gun when walking to the Gun,

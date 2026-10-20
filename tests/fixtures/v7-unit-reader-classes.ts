@@ -684,6 +684,9 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/engine/v7/reducer.ts::applyFireMoonGun": "BOARD",
     "src/engine/v7/query.ts::publicZapTargetsV7": "BOARD",
     "src/engine/v7/query.ts::previewZapV7": "BOARD",
+    // The chain lightning (`pulp_wars-737.22`): the jumps reach units on
+    // the board only (a burrowed unit is off it and never hit).
+    "src/engine/v7/query.ts::previewZapChainOddsV7": "BOARD",
     "src/engine/v7/query.ts::previewMoonGunV7": "BOARD",
     "src/engine/v7/query.ts::queryMoonGunLandingsV7": "BOARD",
     "src/engine/v7/query.ts::queryCuriosityMoveEffectV7": "BOARD",

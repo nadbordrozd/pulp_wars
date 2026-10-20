@@ -322,7 +322,9 @@ describe("curiosities round three: the dock's words", () => {
     const base = round3UiFixtureV7();
     const line = (state: GameStateV7, at: CoordV7) =>
       curiosityStatusLineV7(viewForV7(state, state.humanPlayerId), at);
-    expect(line(base, AT.tower)).toMatch(/zap an enemy within 2 for 4/);
+    expect(line(base, AT.tower)).toMatch(
+      /zap an enemy within 2 for 16, then the lightning jumps on: 8 · 4 · 2 · 1/,
+    );
     expect(line(base, AT.gun)).toMatch(/^Loaded · /);
     expect(
       line(

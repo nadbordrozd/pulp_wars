@@ -118,6 +118,8 @@ const SUPPORT_SOUNDS: Readonly<Record<SupportEffectV7, SoundIdV1>> = {
   // the Moon Gun's blast and the unit's landing, and the Expedition's
   // find (the treasure; its sparkle follows the boundary).
   ZAP: "special.zap",
+  // The chain lightning (`pulp_wars-737.22`): each jump crackles again.
+  ZAP_JUMP: "special.zap",
   MOON_GUN: "attack.cannon",
   MOON_GUN_LANDING: "impact.heavy",
   EXPEDITION: "economy.treasure",

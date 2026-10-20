@@ -231,8 +231,30 @@ export const WELL_VISION_RADIUS_V7 = 5;
  * to 7): the Tesla Tower, the Moon Gun, the Gold Claim, and the Lost
  * Expedition.
  */
-/** Section 4.2: the fixed damage of a zap. */
-export const TESLA_ZAP_DAMAGE_V7 = 4;
+/**
+ * Section 4.2: the fixed damage of a zap's first hit. The chain lightning
+ * (`pulp_wars-737.22`, 7r105): 16 to the target (was 4).
+ */
+export const TESLA_ZAP_DAMAGE_V7 = 16;
+/**
+ * Section 4.2 (`pulp_wars-737.22`, 7r105): the chain lightning. After the
+ * first hit the bolt jumps from the last unit hit to a unit on one of the
+ * eight tiles around it that this zap has not hit yet, of any owner (the
+ * zapper included), for each of these in turn; it stops early when there is
+ * none.
+ */
+export const TESLA_CHAIN_DAMAGES_V7: readonly number[] = Object.freeze([
+  8, 4, 2, 1,
+]);
+/**
+ * The raw damage of hit `hop` of a zap: 0 is the first hit (16), 1 to 4 the
+ * chain's jumps (8, 4, 2, 1); 0 past the end.
+ */
+export function teslaHopDamageV7(hop: number): number {
+  return hop === 0
+    ? TESLA_ZAP_DAMAGE_V7
+    : (TESLA_CHAIN_DAMAGES_V7[hop - 1] ?? 0);
+}
 /** Section 4.1 row 4: a zap reaches every tile within this of the Tower. */
 export const TESLA_ZAP_RANGE_V7 = 2;
 /** Section 3.4: the Tower keeps the Spider's lair distances. */
@@ -2347,12 +2369,14 @@ export function zapReachesV7(
 }
 
 /**
- * Section 4.2: the zap on `target` from the Tower on `tower`: the fixed
- * {@link TESLA_ZAP_DAMAGE_V7}, halved (rounded up) for a land-form Ice Folk
- * unit in its own Blizzard when the Tower is 2 or more away, then Armoured
- * (1 off) and Plated (the cap), then taken from the Shield first; the HP
- * part is capped at the unit's HP. Every fact it reads is public, so a
- * view computes the same hit.
+ * Section 4.2: the zap on `target` from `tower` (the Tower, or for a jump
+ * of the chain the tile of the unit the bolt jumped from): `damage` (the
+ * fixed {@link TESLA_ZAP_DAMAGE_V7} of the first hit, or the jump's),
+ * halved (rounded up) for a land-form Ice Folk unit in its own Blizzard
+ * when the bolt comes from 2 or more away (only the first hit can), then
+ * Armoured (1 off) and Plated (the cap), then taken from the Shield first;
+ * the HP part is capped at the unit's HP. Every fact it reads is public, so
+ * a view computes the same hit.
  */
 export function zapHitV7(
   lookup: FactionRosterV7,
@@ -2360,6 +2384,7 @@ export function zapHitV7(
   tower: CoordV7,
   target: Pick<UnitStateV7, "id" | "ownerId" | "role" | "form" | "at" | "hp">,
   shield: number,
+  damage: number = TESLA_ZAP_DAMAGE_V7,
 ): {
   readonly damage: number;
   readonly shieldDamage: number;
@@ -2369,9 +2394,7 @@ export function zapHitV7(
   const halved =
     chebyshevV7(tower, target.at) >= 2 &&
     blizzardProtectsV7(lookup, witches, target);
-  const raw = halved
-    ? blizzardHalvedDamageV7(TESLA_ZAP_DAMAGE_V7)
-    : TESLA_ZAP_DAMAGE_V7;
+  const raw = halved ? blizzardHalvedDamageV7(damage) : damage;
   const hit = absorbHitV7(
     shield,
     target.hp,
@@ -2383,6 +2406,111 @@ export function zapHitV7(
     hpAfter: target.hp - hit.hpDamage,
     dies: hit.hpDamage >= target.hp,
   };
+}
+
+/** A unit a zap's chain may jump to: on the board, with HP left. */
+export type ZapChainUnitV7 = Pick<UnitStateV7, "id" | "at">;
+
+/** One hit of a zap: the unit, and the tile the bolt reached it from. */
+export interface ZapHopV7 {
+  readonly unitId: UnitStateV7["id"];
+  readonly from: CoordV7;
+}
+
+/**
+ * Section 4.2 (`pulp_wars-737.22`): the units a zap's bolt may jump to from
+ * the tile `last` of the last unit hit: every unit of `units` on one of the
+ * eight tiles around it that is not in `hit`, of any owner, in unit-ID
+ * order. `units` are the units on the board with HP left (the reducer's; a
+ * view's visible ones for a preview).
+ */
+export function zapChainNeighboursV7<Unit extends ZapChainUnitV7>(
+  units: readonly Unit[],
+  last: CoordV7,
+  hit: ReadonlySet<UnitStateV7["id"]>,
+): Unit[] {
+  return units
+    .filter((unit) => !hit.has(unit.id) && chebyshevV7(unit.at, last) === 1)
+    .sort((left, right) => left.id - right.id);
+}
+
+/**
+ * Section 4.2 (`pulp_wars-737.22`): the hits of a zap from the Tower on
+ * `tower` on `target`: the target first, then up to
+ * `TESLA_CHAIN_DAMAGES_V7.length` jumps, each from the last unit hit to one
+ * of its unhit neighbours (`zapChainNeighboursV7`), every one equally
+ * likely, drawn by one `nextBounded` on the match PRNG (a single neighbour
+ * is taken without a draw); the chain stops when there is none. Units are
+ * where they stood before the zap: a kill does not stop the chain, which
+ * jumps on from the dead unit's tile. Returns the hits and the PRNG after
+ * the draws.
+ */
+export function zapChainV7(
+  units: readonly ZapChainUnitV7[],
+  tower: CoordV7,
+  target: ZapChainUnitV7,
+  random: RandomState,
+): { readonly hops: readonly ZapHopV7[]; readonly random: RandomState } {
+  const hops: ZapHopV7[] = [{ unitId: target.id, from: tower }];
+  const hit = new Set<UnitStateV7["id"]>([target.id]);
+  let last = target.at;
+  let cursor = random;
+  for (let jump = 0; jump < TESLA_CHAIN_DAMAGES_V7.length; jump += 1) {
+    const next = zapChainNeighboursV7(units, last, hit);
+    let chosen = next[0];
+    if (chosen === undefined) break;
+    if (next.length > 1) {
+      const draw = nextBounded(cursor, next.length);
+      cursor = draw.random;
+      chosen = next[draw.value] ?? chosen;
+    }
+    hops.push({ unitId: chosen.id, from: last });
+    hit.add(chosen.id);
+    last = chosen.at;
+  }
+  return { hops, random: cursor };
+}
+
+/**
+ * Section 4.2 (`pulp_wars-737.22`): the odds of a zap's chain from `target`:
+ * for each unit of `units` the bolt may reach, the probability that jump 1,
+ * 2, 3, or 4 (index 0 to 3) hits it, every neighbour of a jump equally
+ * likely (the reducer's draw). `units` are the units the caller knows (a
+ * view's visible units); the target is never in the result. Exact over
+ * every path (at most 8 x 7 x 7 x 7 of them).
+ */
+export function zapChainChancesV7(
+  units: readonly ZapChainUnitV7[],
+  target: ZapChainUnitV7,
+): ReadonlyMap<UnitStateV7["id"], readonly number[]> {
+  const chances = new Map<UnitStateV7["id"], number[]>();
+  // Four jumps never leave the square of radius 4 round the target.
+  const near = units.filter(
+    (unit) => chebyshevV7(unit.at, target.at) <= TESLA_CHAIN_DAMAGES_V7.length,
+  );
+  const walk = (
+    last: CoordV7,
+    hit: Set<UnitStateV7["id"]>,
+    jump: number,
+    chance: number,
+  ): void => {
+    if (jump >= TESLA_CHAIN_DAMAGES_V7.length) return;
+    const next = zapChainNeighboursV7(near, last, hit);
+    for (const unit of next) {
+      const share = chance / next.length;
+      let entry = chances.get(unit.id);
+      if (entry === undefined) {
+        entry = TESLA_CHAIN_DAMAGES_V7.map(() => 0);
+        chances.set(unit.id, entry);
+      }
+      entry[jump] = (entry[jump] ?? 0) + share;
+      hit.add(unit.id);
+      walk(unit.at, hit, jump + 1, share);
+      hit.delete(unit.id);
+    }
+  };
+  walk(target.at, new Set([target.id]), 0, 1);
+  return chances;
 }
 
 /**

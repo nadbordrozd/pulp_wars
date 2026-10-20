@@ -173,30 +173,40 @@ describe("the Tesla Tower (section 4)", () => {
     expect(TESLA_ZAP_RANGE_V7).toBe(2);
   });
 
-  it("deals a fixed 4, never answered, and spends the primary action", () => {
+  it("deals a fixed 16, never answered, and spends the primary action", () => {
+    // A Troll (40) 2 away, nothing next to it: the chain stops at once.
     const state = tower({
       pieces: [
         { seat: 0, role: "FIGHTER", at: TOWER_V7, hp: 3 },
-        { seat: 1, role: "FIGHTER", at: at(9, 10) },
+        { seat: 1, role: "JUGGERNAUT", at: at(9, 11) },
       ],
     });
     const gunner = round3UnitAtV7(state, TOWER_V7);
-    const target = round3UnitAtV7(state, at(9, 10));
-    const result = applyAcceptedV7(state, P1, zap(state, TOWER_V7, at(9, 10)));
-    expect(result.events[0]).toEqual({
-      kind: "TESLA_ZAPPED",
-      playerId: P1,
-      unitId: gunner.id,
-      at: TOWER_V7,
-      targetUnitId: target.id,
-      targetAt: at(9, 10),
-      damage: TESLA_ZAP_DAMAGE_V7,
-      shieldDamage: 0,
-      hpAfter: target.hp - TESLA_ZAP_DAMAGE_V7,
-    });
+    const target = round3UnitAtV7(state, at(9, 11));
+    const result = applyAcceptedV7(state, P1, zap(state, TOWER_V7, at(9, 11)));
+    expect(
+      result.events.filter((event) => event.kind === "TESLA_ZAPPED"),
+    ).toEqual([
+      {
+        kind: "TESLA_ZAPPED",
+        playerId: P1,
+        unitId: gunner.id,
+        at: TOWER_V7,
+        hop: 0,
+        fromAt: TOWER_V7,
+        targetUnitId: target.id,
+        targetAt: at(9, 11),
+        damage: TESLA_ZAP_DAMAGE_V7,
+        shieldDamage: 0,
+        hpAfter: target.hp - TESLA_ZAP_DAMAGE_V7,
+      },
+    ]);
+    expect(TESLA_ZAP_DAMAGE_V7).toBe(16);
+    // No neighbour, no draw: the match PRNG is untouched.
+    expect(result.state.random).toEqual(state.random);
     expect(eventKindsV7(result.events)).not.toContain("COMBAT_RESOLVED");
     expect(unitById(result.state, gunner.id)?.hp).toBe(3);
-    expect(unitById(result.state, target.id)?.hp).toBe(target.hp - 4);
+    expect(unitById(result.state, target.id)?.hp).toBe(target.hp - 16);
     expect(unitById(result.state, gunner.id)?.activation.specialActed).toBe(
       true,
     );
@@ -244,7 +254,7 @@ describe("the Tesla Tower (section 4)", () => {
         (candidate) => candidate.targetUnitId === event.targetUnitId,
       );
       expect(preview?.exact).toBe(true);
-      expect(entry).toEqual({
+      expect(entry).toMatchObject({
         targetUnitId: event.targetUnitId,
         damage: event.damage,
         shieldDamage: event.shieldDamage,
@@ -253,32 +263,33 @@ describe("the Tesla Tower (section 4)", () => {
       });
       return { damage: event.damage, shield: event.shieldDamage };
     };
-    // A Martian Grunt (8, Shield 2) loses its Shield and 2 HP.
+    // The chain lightning (`pulp_wars-737.22`): the first hit is 16.
+    // A Martian Grunt (8, Shield 2) loses its Shield and all 8 HP.
     expect(hitOf(["ORIGINAL", "MARTIAN"], "FIGHTER", at(9, 10), {}, 2)).toEqual(
-      { damage: 2, shield: 2 },
+      { damage: 8, shield: 2 },
     );
-    // Armoured (the Ankylosaurus) takes 3.
+    // Armoured (the Ankylosaurus, 20) takes 15.
     expect(hitOf(["ORIGINAL", "DINOSAUR"], "GUARD", at(9, 10))).toEqual({
-      damage: 3,
+      damage: 15,
       shield: 0,
     });
-    // Plated caps at 4: the Steam Tank takes the whole 4.
+    // Plated caps at 4: the Steam Tank (16) takes only 4.
     expect(hitOf(["ORIGINAL", "DWARF"], "SWORDSMAN", at(9, 10))).toEqual({
       damage: 4,
       shield: 0,
     });
-    // An Ice Folk unit in its own Witch's Blizzard halves a zap from 2.
+    // An Ice Folk unit (9) in its own Witch's Blizzard halves a zap from 2.
     expect(
       hitOf(["ORIGINAL", "ICE_FOLK"], "FIGHTER", at(9, 11), {
         pieces: [{ seat: 1, role: "CAPTAIN", at: at(9, 12) }],
       }),
-    ).toEqual({ damage: 2, shield: 0 });
-    // From next to the Tower it does not.
+    ).toEqual({ damage: 8, shield: 0 });
+    // From next to the Tower it does not (16, all its 9 HP).
     expect(
       hitOf(["ORIGINAL", "ICE_FOLK"], "FIGHTER", at(9, 10), {
         pieces: [{ seat: 1, role: "CAPTAIN", at: at(9, 11) }],
       }),
-    ).toEqual({ damage: 4, shield: 0 });
+    ).toEqual({ damage: 9, shield: 0 });
   });
 
   it("credits the kill to the zapper: Promotion, Plunder, and growth", () => {
@@ -361,9 +372,12 @@ describe("the Tesla Tower (section 4)", () => {
         command.kind === "ZAP" ? command.targetUnitId : null,
       ),
     ).toEqual([near.id]);
-    // A ship takes the zap like any unit (a Goblin Diving Barrel: all 4).
+    // A ship takes the zap like any unit (all 16, up to its HP).
     const hit = applyAcceptedV7(state, P1, zap(state, TOWER_V7, at(10, 8)));
-    expect(hit.events[0]).toMatchObject({ kind: "TESLA_ZAPPED", damage: 4 });
+    expect(hit.events[0]).toMatchObject({
+      kind: "TESLA_ZAPPED",
+      damage: Math.min(TESLA_ZAP_DAMAGE_V7, near.hp),
+    });
   });
 
   it("hurts a neutral unit: it provokes it, and a kill pays the bounty", () => {

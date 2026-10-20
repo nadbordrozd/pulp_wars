@@ -17,7 +17,9 @@ import {
   CURIOSITY_LABELS_V7,
   FIRE_MOON_GUN_LABEL_V7,
   FIRE_MOON_GUN_PICK_V7,
+  ZAP_CHAIN_NOTE_V7,
   ZAP_LABEL_V7,
+  ZAP_OWN_RISK_WARNING_V7,
   ZAP_PICK_V7,
   monsterPreviewsV7,
   hostileBreedV7,
@@ -96,12 +98,28 @@ export function curiosityPickTargetsV7(
         (unit) => unit.id === command.targetUnitId,
       );
       if (hit === undefined || target === undefined) return [];
+      // The chain lightning (`pulp_wars-737.22`): the jumps are random, so
+      // the target carries their damage as a note, the units the first jump
+      // may hit are shaded lightly, and a warning says when a jump can
+      // reach the viewer's side.
+      const next = hit.chain.next.flatMap((unitId) => {
+        const unit = view.units.find((candidate) => candidate.id === unitId);
+        return unit === undefined
+          ? []
+          : [{ at: unit.at, own: !hostile(view, unit.ownerId) }];
+      });
       return [
         {
           at: target.at,
           command,
           family: "ZAP",
           previewLabel: zapTargetLabelV7(hit),
+          ...(next.length === 0
+            ? {}
+            : { previewFocusNote: ZAP_CHAIN_NOTE_V7, zapChain: next }),
+          ...(hit.chain.mayHitOwn
+            ? { previewWarnings: [ZAP_OWN_RISK_WARNING_V7] }
+            : {}),
           previewSkullBefore: hit.kills ? ["KO"] : [],
           hpLoss: [
             {
@@ -114,7 +132,7 @@ export function curiosityPickTargetsV7(
               maxHp: target.maxHp,
             },
           ],
-          semanticLabel: `${ZAP_LABEL_V7}: ${targetName(view, target)} takes ${hit.damage} damage${hit.shieldDamage > 0 ? ` and its Shield ${hit.shieldDamage}` : ""}${hit.kills ? " and is knocked out" : ""}. It cannot strike back. ${ZAP_PICK_V7}.`,
+          semanticLabel: `${ZAP_LABEL_V7}: ${targetName(view, target)} takes ${hit.damage} damage${hit.shieldDamage > 0 ? ` and its Shield ${hit.shieldDamage}` : ""}${hit.kills ? " and is knocked out" : ""}. It cannot strike back.${next.length === 0 ? " Nothing stands next to it, so the lightning stops there." : ` The lightning then jumps to a random neighbour (${next.length} next to it) for ${hit.chain.damages.join(", then ")}.`}${hit.chain.mayHitOwn ? ` ${ZAP_OWN_RISK_WARNING_V7}.` : ""} ${ZAP_PICK_V7}.`,
         },
       ];
     });

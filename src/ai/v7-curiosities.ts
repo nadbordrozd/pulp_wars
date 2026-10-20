@@ -1,5 +1,6 @@
-import type { UnitId } from "../engine/model/ids";
+import type { PlayerId, UnitId } from "../engine/model/ids";
 import {
+  isNeutralOwnerV7,
   isWildBreedV7,
   type CoordV7,
   type NeutralBreedV7,
@@ -181,9 +182,65 @@ export const TESLA_ERRAND_STEPS_V7 = 4;
 export const TESLA_WATCH_RADIUS_V7 = 4;
 /**
  * Round 3 (section 4.2): the zap's fixed damage, the policy's copy, pinned
- * to the engine's `TESLA_ZAP_DAMAGE_V7` by the round-3 AI test.
+ * to the engine's `TESLA_ZAP_DAMAGE_V7` by the round-3 AI test (16 since
+ * the chain lightning, `pulp_wars-737.22`).
  */
-export const TESLA_ZAP_DAMAGE_FOR_POLICY_V7 = 4;
+export const TESLA_ZAP_DAMAGE_FOR_POLICY_V7 = 16;
+/**
+ * The chain lightning (`pulp_wars-737.22`): a hit on the zapper's own side
+ * (its own or an ally's unit, the zapper included) weighs this much more
+ * than the same hit on an enemy, so an even gamble is refused.
+ */
+export const ZAP_CHAIN_OWN_WEIGHT_V7 = 1.5;
+
+/**
+ * The chain lightning (`pulp_wars-737.22`): the expected value of a zap's
+ * jumps from `odds` (`previewZapChainOddsV7`): for each unit and jump, the
+ * chance of the hit times its worth, scored like the first hit (10 per
+ * point of damage, Shield included, and 20 plus the unit's strategic
+ * `worth` for a kill); positive on a hostile seat's unit, negative and
+ * weighted by `ZAP_CHAIN_OWN_WEIGHT_V7` on the viewer's side; a neutral
+ * unit counts only its kill and bounty (a hit that does not kill provokes
+ * it). Rounded to a whole number so the decision tuples stay integers.
+ */
+export function zapChainValueV7(
+  view: PlayerViewV7,
+  odds: readonly {
+    readonly unitId: UnitId;
+    readonly ownerId: PlayerId;
+    readonly jumps: readonly {
+      readonly chance: number;
+      readonly damage: number;
+      readonly shieldDamage: number;
+      readonly kills: boolean;
+    }[];
+  }[],
+  worth: (unitId: UnitId) => number,
+  monsterById: ReadonlyMap<UnitId, { readonly bounty: number }>,
+): number {
+  let total = 0;
+  for (const entry of odds) {
+    const own =
+      entry.ownerId === view.viewer.id ||
+      queryAlliedV7(view, entry.ownerId, view.viewer.id);
+    const neutral =
+      monsterById.has(entry.unitId) || isNeutralOwnerV7(entry.ownerId);
+    const bounty = monsterById.get(entry.unitId)?.bounty ?? 0;
+    for (const jump of entry.jumps) {
+      if (jump.chance <= 0) continue;
+      const killValue = jump.kills ? 20 + worth(entry.unitId) : 0;
+      const value = neutral
+        ? jump.kills
+          ? killValue + bounty
+          : 0
+        : 10 * (jump.damage + jump.shieldDamage) + killValue;
+      total += own
+        ? -ZAP_CHAIN_OWN_WEIGHT_V7 * jump.chance * value
+        : jump.chance * value;
+    }
+  }
+  return Math.round(total);
+}
 /**
  * Round 3, the Moon Gun (section 11): the gate traversal's tier. The Move
  * onto the Gun of a unit whose Gun route saves `MOON_GUN_TURNS_SAVED_V7`

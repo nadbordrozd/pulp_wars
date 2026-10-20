@@ -32,9 +32,11 @@ import {
   expeditionNotesOfV7,
   resolveCuriosityClaimV7,
   seaSerpentBiteChoiceV7,
+  teslaHopDamageV7,
   teslaTowerAtV7,
   wellOutcomeV7,
   withMonsterProvocationsV7,
+  zapChainV7,
   zapHitV7,
   zapReachesV7,
   type NeutralBoardFactsV7,
@@ -1256,9 +1258,13 @@ function applyTossCoin(
  * may act after its Move); the target a visible unit hostile to the actor
  * on an explored tile within 2 of the Tower, a submerged Submarine only
  * next to it (`OUT_OF_RANGE`). The target takes the fixed zap (never
- * answered); the kill is credited to the zapper (Promotion, growth, Slayer,
- * Plunder, a neutral unit's bounty), deaths are ordinary, and the unit's
- * primary action is spent.
+ * answered), then the chain lightning (`pulp_wars-737.22`) jumps on to up
+ * to four more units, one at a time, each next to the last unit hit and
+ * not hit before, of any owner (the zapper too), drawn on the match PRNG
+ * (`zapChainV7`): 8, 4, 2, 1. The kills are credited to the zapper
+ * (Promotion, growth, Slayer, Plunder, a neutral unit's bounty; its own
+ * side's dead are not kills), deaths are ordinary, and the unit's primary
+ * action is spent.
  */
 function applyZap(
   original: GameStateV7,
@@ -1298,28 +1304,49 @@ function applyZap(
   )
     return rejected(original, "ZAP_NOT_LEGAL", { reason: "OUT_OF_RANGE" });
   try {
-    const hit = zapHitV7(
-      state,
-      winterV7(state).witches,
-      unit.at,
-      target,
-      shieldOfV7(state.shields, target.id),
-    );
-    const events: DomainEventV7[] = [
-      {
+    // The chain lightning (`pulp_wars-737.22`): the hits are drawn on the
+    // board before the zap, every hit computed on the unit as it stood;
+    // the deaths follow together.
+    const onBoard = state.units.filter((candidate) => candidate.hp > 0);
+    const chain = zapChainV7(onBoard, unit.at, target, state.random);
+    const witches = winterV7(state).witches;
+    const events: DomainEventV7[] = [];
+    const results: CombatSplashEntryV7[] = [];
+    chain.hops.forEach((hop, index) => {
+      const victim = onBoard.find((candidate) => candidate.id === hop.unitId);
+      if (victim === undefined) throw new RangeError("INVALID_STATE");
+      const hit = zapHitV7(
+        state,
+        witches,
+        hop.from,
+        victim,
+        shieldOfV7(state.shields, victim.id),
+        teslaHopDamageV7(index),
+      );
+      events.push({
         kind: "TESLA_ZAPPED",
         playerId: actor,
         unitId: unit.id,
         at: { x: unit.at.x, y: unit.at.y },
-        targetUnitId: target.id,
-        targetAt: { x: target.at.x, y: target.at.y },
+        hop: index,
+        fromAt: { x: hop.from.x, y: hop.from.y },
+        targetUnitId: victim.id,
+        targetAt: { x: victim.at.x, y: victim.at.y },
         damage: hit.damage,
         shieldDamage: hit.shieldDamage,
         hpAfter: hit.hpAfter,
-      },
-    ];
+      });
+      results.push({
+        unitId: victim.id,
+        at: { x: victim.at.x, y: victim.at.y },
+        damage: hit.damage,
+        dies: hit.dies,
+        shieldDamage: hit.shieldDamage,
+      });
+    });
     const spent: GameStateV7 = {
       ...state,
+      random: chain.random,
       commandIndex: nextSafe(state.commandIndex),
       units: state.units.map((candidate) =>
         candidate.id === unit.id
@@ -1338,15 +1365,7 @@ function applyZap(
       DWARF_KIT_V7,
       spent,
       unit.id,
-      [
-        {
-          unitId: target.id,
-          at: { x: target.at.x, y: target.at.y },
-          damage: hit.damage,
-          dies: hit.dies,
-          shieldDamage: hit.shieldDamage,
-        },
-      ],
+      results,
       "ATTACK",
       events,
     );

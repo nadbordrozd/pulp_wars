@@ -4,7 +4,10 @@
 2026-10-19 over the rules as built at `pulp-wars-poc-7r101`, with the Dwarf
 Gyrocopter change of `pulp-wars-poc-7r102` landing in parallel. Bead A
 is built (`pulp-wars-poc-7r103`, notes in section 17), and so is bead B,
-the Sea Serpent (`pulp-wars-poc-7r104`, notes in section 18). Two implementation beads build it (section 15): bead A
+the Sea Serpent (`pulp-wars-poc-7r104`, notes in section 18). The Tesla
+Tower was made stronger afterwards (`pulp_wars-737.22`,
+`pulp-wars-poc-7r105`: a zap of 16 and the chain lightning, section 19).
+Two implementation beads build it (section 15): bead A
 (the four land curiosities, `pulp-wars-poc-7r103`) and bead B (the naval
 one, `pulp-wars-poc-7r104`). No game was played or simulated to write it
 (the user's standing rule); every number is a first guess for hand-play
@@ -165,7 +168,9 @@ placed curiosity accepted by the independent checker.
 ## 4. The Tesla Tower
 
 **One sentence:** a unit standing on the Tesla Tower may zap an enemy
-within 2 of it for 4 damage instead of attacking.
+within 2 of it for 4 damage instead of attacking. **As built since
+`7r105`** (`pulp_wars-737.22`, section 19): 16 damage, then the lightning
+jumps from unit to neighbouring unit for 8, 4, 2, and 1.
 
 **Look:** a rusty iron lattice tower on a stone footing, a copper ball on
 top crackling with white arcs; neutral rust, charcoal, and copper-brown,
@@ -189,6 +194,9 @@ controller), a bound daemon. An Egg never acts; a neutral unit never
 commands. A burrowed unit is off the board and is never a target.
 
 ### 4.2 The effect
+
+The numbers below are bead A's (`7r103`); the zap is 16 and chains since
+`7r105` (section 19).
 
 - The target takes `TESLA_ZAP_DAMAGE_V7` = **4** damage: fixed, not an
   `ATTACK` (no Gang Up, Inspired, Charge, cover, or fortification), and
@@ -1167,6 +1175,88 @@ board, canvas, Gallery, sound), and the Serpent block of
 `tests/unit/chibi-curiosities-assets.test.ts`; the hand-built boards are
 `tests/fixtures/v7-serpent-arena.ts` and
 `tests/fixtures/v7-curiosities-serpent-ui.ts`.
+
+## 19. The chain lightning (`pulp_wars-737.22`)
+
+Built at `pulp-wars-poc-7r105`. The user, 2026-10-20: "make the tesla
+tower stronger. it should zap 1 unit for 16 points and then the lightning
+jumps to a random adjacent neighbour and zaps them for 8 and then it jumps
+to a neighbour and zaps for 4, then another for 2 and final one for 1. It
+doesnt zap the same unit twice. it can potentially zap the one using it."
+The rules are in
+[current rules section 2.7, round 3](RULESET_7_CURRENT.md#round-3-the-tesla-tower-the-moon-gun-the-gold-claim-and-the-lost-expedition).
+No game was played or simulated.
+
+**The rule as built.** The zapper picks its target as before (a hostile
+unit within 2 of the Tower; once per turn, the holder rules unchanged). The
+target takes `TESLA_ZAP_DAMAGE_V7` = **16**. The bolt then jumps from the
+last unit hit to a unit on one of the eight tiles around it that this zap
+has not hit, **of any owner** (enemy, neutral, allied, own, and the zapper
+on the Tower), for `TESLA_CHAIN_DAMAGES_V7` = 8, then 4, 2, and 1; it
+stops early when no unhit unit is next to the last one. Every hit is fixed
+and unanswered and goes through the zap's modifiers (`zapHitV7`: Shield
+first, Armoured 1 off, Plated's cap of 4; the Blizzard halves only the
+first hit from 2, a jump always comes from next to its unit).
+
+**Choices the user's words left open.**
+
+- **The PRNG.** Each jump takes its candidates in unit-ID order and draws
+  one by `nextBounded(count)` on the match PRNG (`state.random`), the
+  stream the treasure chests use, so a replay or a save replays the same
+  chain and a player cannot see the outcome in advance; a single candidate
+  is taken without a draw (a zap with no choice leaves the PRNG
+  untouched). `zapChainV7` is the one function the reducer calls; the
+  tests check the reducer's chain equals it.
+- **Drawn before the damage.** The chain is drawn on the board as it
+  stood before the zap and every hit is computed on its unit as it stood
+  (each unit is hit at most once, so that is exact); all hits then land
+  together through the giants' `resolveFixedHitsV7` (cause `ATTACK`), and
+  the deaths follow in hit order. A kill does not stop the chain, which
+  jumps on from the dead unit's tile; a unit that rises or a blast set off
+  by a death (a Goblin's) is not part of the chain.
+- **Credit.** Every hostile kill on the chain counts for the zapper
+  (Promotion, growth, Slayer, Plunder, the bounty); its own side's dead are
+  not kills; a zapper killed by its own chain earns nothing.
+- **Event.** `TESLA_ZAPPED` is emitted once per hit, in order, and gains
+  `hop` (0 the first hit, 1 to 4 the jumps) and `fromAt` (the Tower, then
+  the last unit hit); a jump may name the zapper as its target. Each event
+  is projected by the old rule (the actor, and every viewer that sees the
+  zapper or that hit's target). No new command or event kind, so no
+  ordinal moved.
+- **Preview.** The first hit stays exact ("Zap −16", "· KO"). The chain is
+  not faked as numbers: `previewZapV7` adds `chain` (the jumps' damage,
+  the visible units the first jump may hit, and whether a jump may reach
+  the viewer's side through the visible units), and the board shows "then
+  jumps: 8 · 4 · 2 · 1" on the focused target, shades the units next to
+  it, and warns "May hit your own".
+- **AI.** `previewZapChainOddsV7` gives the exact chance of each jump
+  hitting each visible unit (every path enumerated, at most 8 x 7 x 7 x 7),
+  and the policy adds the expected value of the jumps, own units weighted
+  1.5 against (Normal AI, round 3). A zap whose first hit plus chain is
+  not positive is not taken.
+- **Effect.** Each jump is a `ZAP_JUMP` support cue, a white arc (a faint
+  glow, a dark casing, a white core, as the Tower's) from the body of the
+  last unit hit to the next, then its damage number; the arc strikes out
+  over the first three tenths of the cue, holds, and fades over the last
+  three tenths; reduced motion shows it whole and still.
+
+**Campaign.** HUMAN_6 (Kessler Hall) hand-places a Tesla Tower; its
+initial-state pin does not move (the ruleset ID is left out of the
+mission pins, and no initial state changed). Its hand-play balance may
+change with the stronger zap (the Human campaign is being retuned
+separately).
+
+**Pins.** The identity tests moved to `7r105`; the round-3 tests that
+pinned the 4 (`tests/unit/ruleset-v7-curiosities-round3.test.ts`, the AI
+and render tests, and the round-3 DOM test, whose zap on the wounded
+Fighter now jumps to the gunner for 8) were updated. The simulation tier
+was not run (the user's rule). Expected to move there: every simulation
+in which a unit zaps (the curiosity simulations with the option on:
+`ruleset-v7-curiosities.sim`, `ruleset-v7-curiosities-ai.sim`,
+`ruleset7-curiosities-dom.sim`, `ruleset-v7-monster.sim`,
+`ruleset-v7-monster-headless.sim`, and the tuning simulations with
+curiosities on), since a zap now draws on the match PRNG and kills more.
+Tests: `tests/unit/ruleset-v7-tesla-chain.test.ts`.
 
 ## Appendix A. Ideas weighed and rejected
 

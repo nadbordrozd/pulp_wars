@@ -67,6 +67,7 @@ import {
   NEUTRAL_LABEL_V7,
   SPIDER_BOUNTY_RULE_V7,
   SPIDER_LABEL_V7,
+  ZAP_CHAIN_SENTENCE_V7,
   type CuriosityTileIdV7,
 } from "./curiosity-presentation-v7";
 import {
@@ -216,6 +217,8 @@ const CURIOSITY_GALLERY_NOTES_V7: Partial<
   // Round 3 (bead pulp_wars-737.20).
   TESLA_TOWER: [
     "The zap is never answered and counts as a kill for the unit that zaps.",
+    // The chain lightning (`pulp_wars-737.22`).
+    ZAP_CHAIN_SENTENCE_V7,
   ],
   MOON_GUN: [
     "The unit lands spent: no attack or capture until its owner's next turn. A unit on the Gun keeps everyone else from firing it.",

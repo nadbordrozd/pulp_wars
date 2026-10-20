@@ -423,6 +423,11 @@ export type SupportEffectV7 =
    * unit that found them.
    */
   | "ZAP"
+  /**
+   * The chain lightning (bead pulp_wars-737.22): one jump of a zap, a
+   * shorter arc from the last unit hit (the actor's tile) to the next.
+   */
+  | "ZAP_JUMP"
   | "MOON_GUN"
   | "MOON_GUN_LANDING"
   | "EXPEDITION"
@@ -801,12 +806,20 @@ export function corePresentationPlanV7(
       origins.set(event.unitId, event.to);
     } else if (event.kind === "TESLA_ZAPPED") {
       // Round 3: a white arc from the Tower to its target, which shows its
-      // damage; nothing strikes back.
-      if (isExplored(event.at) || isExplored(event.targetAt)) {
+      // damage; nothing strikes back. The chain lightning
+      // (`pulp_wars-737.22`): each jump is a shorter arc from the last unit
+      // hit to the next, with its own damage number, in order.
+      const jump = event.hop > 0;
+      if (
+        isExplored(event.targetAt) ||
+        isExplored(jump ? event.fromAt : event.at)
+      ) {
         steps.push({
           kind: "SUPPORT",
-          effect: "ZAP",
-          actor: { unitId: event.unitId, at: event.at },
+          effect: jump ? "ZAP_JUMP" : "ZAP",
+          actor: jump
+            ? { unitId: null, at: event.fromAt }
+            : { unitId: event.unitId, at: event.at },
           recipients: [{ unitId: event.targetUnitId, at: event.targetAt }],
           durationMs: 480,
         });

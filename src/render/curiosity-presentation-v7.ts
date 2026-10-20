@@ -13,6 +13,7 @@ import {
   NEUTRAL_BOUNTIES_V7,
   NEUTRAL_MONSTER_ROLE_RULE_V7,
   NEUTRAL_ROLE_RULES_V7,
+  TESLA_CHAIN_DAMAGES_V7,
   TESLA_ZAP_DAMAGE_V7,
   TESLA_ZAP_RANGE_V7,
   WELL_COINS_V7,
@@ -145,7 +146,8 @@ export const CURIOSITY_RULES_V7: Readonly<Record<CuriosityTileIdV7, string>> = {
   WISHING_WELL:
     "Once per match, each player may have a unit standing on the Well toss a Coin into it for a small surprise.",
   // Round 3 (RULESET_7_CURIOSITIES_ROUND_3.md section 1).
-  TESLA_TOWER: `A unit standing on the Tesla Tower may zap an enemy within ${TESLA_ZAP_RANGE_V7} of it for ${TESLA_ZAP_DAMAGE_V7} damage instead of attacking.`,
+  // The chain lightning (`pulp_wars-737.22`).
+  TESLA_TOWER: `A unit standing on the Tesla Tower may zap an enemy within ${TESLA_ZAP_RANGE_V7} of it for ${TESLA_ZAP_DAMAGE_V7} damage instead of attacking; the lightning then jumps from unit to neighbouring unit for ${TESLA_CHAIN_DAMAGES_V7.join(" · ")}.`,
   MOON_GUN: `A unit standing on the Moon Gun may be fired to any empty land tile within ${MOON_GUN_RANGE_V7} of it; the Gun fires once a turn.`,
   GOLD_CLAIM: `A unit that ends a Move on the Gold Claim stakes it for its owner; the Claim pays its owner ${GOLD_CLAIM_COINS_V7} Coins each turn until its ${GOLD_CLAIM_TOTAL_V7} Coins run out.`,
   LOST_EXPEDITION:
@@ -907,8 +909,19 @@ export function wellOutcomeTextV7(
 
 /** Round 3 (section 12.1): the Tesla Tower's command, its tooltip and pick. */
 export const ZAP_LABEL_V7 = "Zap";
-export const ZAP_TOOLTIP_V7 = `Zap an enemy within ${TESLA_ZAP_RANGE_V7} of the ${CURIOSITY_LABELS_V7.TESLA_TOWER} for ${TESLA_ZAP_DAMAGE_V7} damage instead of attacking. It is never answered`;
+export const ZAP_TOOLTIP_V7 = `Zap an enemy within ${TESLA_ZAP_RANGE_V7} of the ${CURIOSITY_LABELS_V7.TESLA_TOWER} for ${TESLA_ZAP_DAMAGE_V7} damage instead of attacking. It is never answered. The lightning then jumps to a random unit next to the last one hit, never the same one twice, for ${TESLA_CHAIN_DAMAGES_V7.join(" · ")}: it can hit your own units, the zapper too`;
 export const ZAP_PICK_V7 = "Pick an enemy to zap";
+/**
+ * The chain lightning (`pulp_wars-737.22`): the note a focused Zap target
+ * carries ("then jumps: 8 · 4 · 2 · 1"; the jumps are random, so no exact
+ * numbers), and the warning when a jump can reach the viewer's side. The
+ * dots are held by narrow no-break spaces, so the board's label wrap (which
+ * splits at " · ") never breaks the sequence.
+ */
+export const ZAP_CHAIN_NOTE_V7 = `then jumps: ${TESLA_CHAIN_DAMAGES_V7.join(" · ")}`;
+export const ZAP_OWN_RISK_WARNING_V7 = "May hit your own";
+/** The rule's short form, for the dock and the Gallery. */
+export const ZAP_CHAIN_SENTENCE_V7 = `Then the lightning jumps to a random unit next to the last one hit, never the same one twice, for ${TESLA_CHAIN_DAMAGES_V7.join(" · ")}. Any unit can be hit, the zapper too.`;
 /** Round 3 (section 12.1): the Moon Gun's command, its tooltip and pick. */
 export const FIRE_MOON_GUN_LABEL_V7 = "Fire";
 export const FIRE_MOON_GUN_TOOLTIP_V7 = `Fire this unit from the ${CURIOSITY_LABELS_V7.MOON_GUN} to an empty land tile within ${MOON_GUN_RANGE_V7}. It lands spent: no attack or capture until your next turn`;
@@ -918,7 +931,7 @@ export const STAKE_LABEL_V7 = "Stake";
 export const FIND_LABEL_V7 = "Find";
 export const STAKE_SENTENCE_V7 = `Ends on the ${CURIOSITY_LABELS_V7.GOLD_CLAIM}: it is staked for you and pays you ${GOLD_CLAIM_COINS_V7} Coins each turn.`;
 export const FIND_SENTENCE_V7 = `Ends on the ${CURIOSITY_LABELS_V7.LOST_EXPEDITION}: you find its notes and your next technology costs nothing.`;
-/** The label a Zap target wears: "Zap −4", "Zap −4 · KO". */
+/** The label a Zap target wears: "Zap −16", "Zap −16 · KO". */
 export function zapTargetLabelV7(hit: {
   readonly damage: number;
   readonly shieldDamage: number;
@@ -941,7 +954,7 @@ export function curiosityStatusLineV7(
   if (curiosity === undefined) return null;
   switch (curiosity.kind) {
     case "TESLA_TOWER":
-      return `Stand a unit on it to zap an enemy within ${TESLA_ZAP_RANGE_V7} for ${TESLA_ZAP_DAMAGE_V7}.`;
+      return `Stand a unit on it to zap an enemy within ${TESLA_ZAP_RANGE_V7} for ${TESLA_ZAP_DAMAGE_V7}, then the lightning jumps on: ${TESLA_CHAIN_DAMAGES_V7.join(" · ")}.`;
     case "MOON_GUN":
       return `${moonGunLoadedV7(curiosity, view.round, view.viewer.id) ? "Loaded" : "Reloading"} · Stand a unit on it to fire it up to ${MOON_GUN_RANGE_V7} tiles.`;
     case "GOLD_CLAIM":
@@ -1119,10 +1132,25 @@ export function curiosityBoundaryNoticeV7(
     } else if (event.kind === "TESLA_ZAPPED") {
       const unit = unitById(event.unitId);
       const target = unitById(event.targetUnitId);
-      if (target?.ownerId === viewerId || event.playerId === viewerId)
-        toast = target?.ownerId === viewerId;
+      // A toast when another player's zap hits the viewer's unit; the
+      // viewer's own chain hitting its own units is in the log only (a
+      // toast would cover the chain's arcs as they play).
+      if (target?.ownerId === viewerId && event.playerId !== viewerId)
+        toast = true;
+      const victim =
+        target === undefined
+          ? "a unit"
+          : event.hop > 0 && target.id === event.unitId
+            ? "the zapper itself"
+            : isNeutralOwnerV7(target.ownerId)
+              ? `the ${neutralName(target.id)}`
+              : ownedUnitName(after, target);
+      const outcome = `(−${event.damage + event.shieldDamage})${event.hpAfter === 0 ? ", killing it" : ""}`;
+      // The chain lightning (`pulp_wars-737.22`): each jump is its own part.
       parts.push(
-        `${unit === undefined ? "A unit" : capitalized(ownedUnitName(after, unit))} zapped ${target === undefined ? "a unit" : isNeutralOwnerV7(target.ownerId) ? `the ${neutralName(target.id)}` : ownedUnitName(after, target)} (−${event.damage + event.shieldDamage})${event.hpAfter === 0 ? ", killing it" : ""}`,
+        event.hop === 0
+          ? `${unit === undefined ? "A unit" : capitalized(ownedUnitName(after, unit))} zapped ${victim} ${outcome}`
+          : `The lightning jumped to ${victim} ${outcome}`,
       );
     } else if (event.kind === "MOON_GUN_FIRED") {
       const unit = unitById(event.unitId);

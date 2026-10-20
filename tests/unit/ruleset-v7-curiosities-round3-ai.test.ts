@@ -171,9 +171,10 @@ describe("the Tesla Tower (section 11)", () => {
   });
 
   it("holds the Tower (no routine Move) and zaps an enemy in range", () => {
+    // A Troll (40) survives the 16 (`pulp_wars-737.22`): no kill.
     const state = arena({
       kinds: ["TESLA_TOWER"],
-      pieces: [own("FIGHTER", 9, 9), foe("GUARD", 9, 11)],
+      pieces: [own("FIGHTER", 9, 9), foe("JUGGERNAUT", 9, 11)],
     });
     const candidates = unitCandidates(state, TOWER_V7);
     const zap = candidates.find(

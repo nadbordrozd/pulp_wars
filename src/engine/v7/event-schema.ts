@@ -97,7 +97,8 @@ import {
   GOLD_CLAIM_TOTAL_V7,
   MONSTER_REGENERATION_V7,
   NEUTRAL_BOUNTIES_V7,
-  TESLA_ZAP_DAMAGE_V7,
+  TESLA_CHAIN_DAMAGES_V7,
+  teslaHopDamageV7,
   WELL_COINS_V7,
   WELL_OUTCOMES_V7,
   WRECK_COINS_V7,
@@ -453,6 +454,8 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
     "playerId",
     "unitId",
     "at",
+    "hop",
+    "fromAt",
     "targetUnitId",
     "targetAt",
     "damage",
@@ -1797,20 +1800,26 @@ function validPayload(
       return id(e.playerId) && sortedCoords(e.tiles);
     case "COMBAT_RESOLVED":
       return combat(e.preview);
-    // Map curiosities round 3 (section 4.2): a fixed 4, split between HP and
-    // a Shield (Armoured takes 1 off, the Blizzard halves it).
+    // Map curiosities round 3 (section 4.2): a fixed hit, split between HP
+    // and a Shield (Armoured takes 1 off, the Blizzard halves it). The chain
+    // lightning (`pulp_wars-737.22`): hop 0 is the first hit (16, never the
+    // zapper), hops 1 to 4 the jumps (8, 4, 2, 1, the zapper may be hit).
     case "TESLA_ZAPPED":
       return (
         id(e.playerId) &&
         id(e.unitId) &&
         id(e.targetUnitId) &&
-        e.unitId !== e.targetUnitId &&
+        nn(e.hop) &&
+        Number(e.hop) <= TESLA_CHAIN_DAMAGES_V7.length &&
+        (Number(e.hop) > 0 || e.unitId !== e.targetUnitId) &&
         parseCoordV7(e.at) !== null &&
+        parseCoordV7(e.fromAt) !== null &&
         parseCoordV7(e.targetAt) !== null &&
         nn(e.damage) &&
         nn(e.shieldDamage) &&
         Number(e.shieldDamage) <= SHIELD_CAP_V7 &&
-        Number(e.damage) + Number(e.shieldDamage) <= TESLA_ZAP_DAMAGE_V7 &&
+        Number(e.damage) + Number(e.shieldDamage) <=
+          teslaHopDamageV7(Number(e.hop)) &&
         nn(e.hpAfter)
       );
     case "UNIT_BOMBED":

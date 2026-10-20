@@ -465,7 +465,10 @@ import {
   moonGunLoadedV7,
   moonGunTargetsV7,
   researchPriceWithNotesV7,
+  TESLA_CHAIN_DAMAGES_V7,
   teslaTowerAtV7,
+  zapChainChancesV7,
+  zapChainNeighboursV7,
   zapHitV7,
   zapReachesV7,
 } from "./curiosities";
@@ -2808,11 +2811,24 @@ function publicKnownTileV7(
 /** Map curiosities round 3 (section 10.4): one target of a zap. */
 export interface ZapTargetPreviewV7 {
   readonly targetUnitId: UnitId;
-  /** HP damage; `shieldDamage` is what its Shield absorbs. */
+  /** HP damage of the first hit; `shieldDamage` is what its Shield absorbs. */
   readonly damage: number;
   readonly shieldDamage: number;
   readonly hpAfter: number;
   readonly kills: boolean;
+  /**
+   * The chain lightning (`pulp_wars-737.22`): the raw damage of the jumps
+   * (8, 4, 2, 1; each jump is a random draw, so no exact numbers), the
+   * visible units the first jump may hit (every unit next to the target, of
+   * any owner, the zapper included; unit-ID order), and whether a jump may
+   * reach a unit of the viewer's side (its own or an ally's, the zapper
+   * included) through the visible units.
+   */
+  readonly chain: {
+    readonly damages: readonly number[];
+    readonly next: readonly UnitId[];
+    readonly mayHitOwn: boolean;
+  };
 }
 
 /** Map curiosities round 3 (section 10.4): every legal zap of a unit. */
@@ -2822,14 +2838,19 @@ export interface ZapPreviewV7 {
   readonly tower: CoordV7;
   /** In target-ID order. */
   readonly targets: readonly ZapTargetPreviewV7[];
-  /** Always true: every modifier a zap reads is public. */
+  /**
+   * Always true: every modifier the first hit reads is public. The chain's
+   * jumps are random and are not previewed as numbers.
+   */
   readonly exact: true;
 }
 
 /**
  * Map curiosities round 3 (section 10.4): for a unit that may zap now,
- * every legal target with its damage, Shield damage, HP after, and whether
- * it dies; null when the unit may not zap. Exact.
+ * every legal target with its first hit's damage, Shield damage, HP after,
+ * and whether it dies (exact), and its chain lightning: the jumps' damage,
+ * the units the first jump may hit, and whether the viewer's side may be
+ * hit (`pulp_wars-737.22`); null when the unit may not zap.
  */
 export function previewZapV7(
   view: PlayerViewV7,
@@ -2837,6 +2858,9 @@ export function previewZapV7(
 ): ZapPreviewV7 | null {
   const unit = view.units.find((candidate) => candidate.id === unitId);
   if (unit === undefined) return null;
+  const visible = view.units.filter((candidate) => candidate.hp > 0);
+  const ownSide = (ownerId: PlayerId): boolean =>
+    ownerId === view.viewer.id || publicAllied(view, ownerId, view.viewer.id);
   const targets = queryPlayerCommandsV7(view).flatMap((command) => {
     if (command.kind !== "ZAP" || command.unitId !== unitId) return [];
     const target = view.units.find(
@@ -2850,6 +2874,7 @@ export function previewZapV7(
       target,
       shieldOfV7(view.shields, target.id),
     );
+    const reach = zapChainChancesV7(visible, target);
     return [
       {
         targetUnitId: target.id,
@@ -2857,11 +2882,91 @@ export function previewZapV7(
         shieldDamage: hit.shieldDamage,
         hpAfter: hit.hpAfter,
         kills: hit.dies,
+        chain: {
+          damages: TESLA_CHAIN_DAMAGES_V7,
+          next: zapChainNeighboursV7(
+            visible,
+            target.at,
+            new Set([target.id]),
+          ).map((candidate) => candidate.id),
+          mayHitOwn: visible.some(
+            (candidate) =>
+              reach.has(candidate.id) && ownSide(candidate.ownerId),
+          ),
+        },
       },
     ];
   });
   if (targets.length === 0) return null;
   return { unitId, tower: unit.at, targets, exact: true };
+}
+
+/**
+ * The chain lightning (`pulp_wars-737.22`): one unit a zap's jumps may hit,
+ * with each jump's chance of hitting it and the hit it would take then.
+ */
+export interface ZapChainOddsV7 {
+  readonly unitId: UnitId;
+  readonly ownerId: PlayerId;
+  /** Jumps 1 to 4 (index 0 to 3); `chance` 0 when that jump cannot hit it. */
+  readonly jumps: readonly {
+    readonly chance: number;
+    readonly damage: number;
+    readonly shieldDamage: number;
+    readonly kills: boolean;
+  }[];
+}
+
+/**
+ * The chain lightning (`pulp_wars-737.22`): for the zap of `unitId` on
+ * `targetUnitId` (a target `previewZapV7` offers), every visible unit its
+ * jumps may hit, with the chance of each jump hitting it (every neighbour
+ * of a jump equally likely, exact over every path through the visible
+ * units) and that jump's hit on it; in unit-ID order. Empty when the zap is
+ * not offered. Units hidden from the viewer are not counted, so these are
+ * the viewer's odds, not the match's.
+ */
+export function previewZapChainOddsV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+  targetUnitId: UnitId,
+): readonly ZapChainOddsV7[] {
+  const offered = queryPlayerCommandsV7(view).some(
+    (command) =>
+      command.kind === "ZAP" &&
+      command.unitId === unitId &&
+      command.targetUnitId === targetUnitId,
+  );
+  const target = view.units.find((candidate) => candidate.id === targetUnitId);
+  if (!offered || target === undefined) return [];
+  const visible = view.units.filter((candidate) => candidate.hp > 0);
+  const witches = publicWitchesV7(view);
+  const chances = zapChainChancesV7(visible, target);
+  return visible
+    .filter((candidate) => chances.has(candidate.id))
+    .sort((left, right) => left.id - right.id)
+    .map((candidate) => ({
+      unitId: candidate.id,
+      ownerId: candidate.ownerId,
+      jumps: TESLA_CHAIN_DAMAGES_V7.map((damage, index) => {
+        // A jump comes from next to the unit, so the Blizzard never halves
+        // it; the tile it came from only matters for that.
+        const hit = zapHitV7(
+          view,
+          witches,
+          candidate.at,
+          candidate,
+          shieldOfV7(view.shields, candidate.id),
+          damage,
+        );
+        return {
+          chance: chances.get(candidate.id)?.[index] ?? 0,
+          damage: hit.damage,
+          shieldDamage: hit.shieldDamage,
+          kills: hit.dies,
+        };
+      }),
+    }));
 }
 
 /** Map curiosities round 3 (section 10.4): the Moon Gun under a unit. */

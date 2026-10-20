@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r104`, for all nine offered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r105`, for all nine offered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), Candy (`CANDY`), and
 the Cultists (`CULT`). The ninth faction, the Cultists of the Ancient Ones,
@@ -445,6 +445,16 @@ links to another, by Road or by Port. A sea link needs only **Shorecraft**
 the Roads technology, and unexplored water no longer breaks a link. A save,
 replay, or setup of `7r75` is rejected, and the browser autosave has a new
 key.
+`pulp-wars-poc-7r105` (`pulp_wars-737.22`; the user, 2026-10-20: "make
+the tesla tower stronger") makes the **Tesla Tower**'s zap **16** (was 4)
+and adds the **chain lightning**
+([section 2.7, round 3](#round-3-the-tesla-tower-the-moon-gun-the-gold-claim-and-the-lost-expedition)):
+the bolt then jumps from the last unit hit to a random unit next to it
+that it has not hit, of any owner (the zapper included), for 8, then 4, 2,
+and 1, stopping early when no such unit is next to the last one; the
+draws are on the match PRNG. `TESLA_ZAPPED` is emitted once per hit and
+gains `hop` and `fromAt`. A save, replay, or setup of `7r104` is rejected,
+and the browser autosave has a new key. Boards are unchanged.
 `pulp-wars-poc-7r104` (`pulp_wars-737.21`, map curiosities round 3, bead
 B, the naval one of the user's five) adds the **Sea Serpent**
 ([section 2.7, round 3 B](#round-3-b-the-sea-serpent)): a neutral sea
@@ -1578,10 +1588,10 @@ sections here cite.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r104`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Ruleset                                    | `pulp-wars-poc-7r105`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r104.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Browser autosave                           | `pulpWars.save.v7r105.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, `CULT`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`, `CULT_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -3918,12 +3928,12 @@ entity. The Normal AI knows them
 and the browser draws and explains them (below). The Sea Serpent is bead B
 (`pulp-wars-poc-7r104`, [below](#round-3-b-the-sea-serpent)).
 
-| Curiosity           | Where                             | Rule                                                                                                                                      |
-| ------------------- | --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| **Tesla Tower**     | Grass or Forest, boards 16 and up | A unit standing on the Tesla Tower may zap an enemy within 2 of it for 4 damage instead of attacking.                                     |
-| **Moon Gun**        | Grass, boards 16 and up           | A unit standing on the Moon Gun may be fired to any empty land tile within 5 of it; the Gun fires once a turn.                            |
-| **Gold Claim**      | Grass or Forest, boards 14 and up | A unit that ends a Move on the Gold Claim stakes it for its owner; the Claim pays its owner 2 Coins each turn until its 30 Coins run out. |
-| **Lost Expedition** | Grass or Forest, any board        | The first unit that ends a Move on the Lost Expedition finds its notes: its owner's next technology costs nothing.                        |
+| Curiosity           | Where                             | Rule                                                                                                                                                       |
+| ------------------- | --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Tesla Tower**     | Grass or Forest, boards 16 and up | A unit standing on the Tesla Tower may zap an enemy within 2 of it for 16 damage instead of attacking; the lightning then jumps on for 8, 4, 2, 1 (7r105). |
+| **Moon Gun**        | Grass, boards 16 and up           | A unit standing on the Moon Gun may be fired to any empty land tile within 5 of it; the Gun fires once a turn.                                             |
+| **Gold Claim**      | Grass or Forest, boards 14 and up | A unit that ends a Move on the Gold Claim stakes it for its owner; the Claim pays its owner 2 Coins each turn until its 30 Coins run out.                  |
+| **Lost Expedition** | Grass or Forest, any board        | The first unit that ends a Move on the Lost Expedition finds its notes: its owner's next technology costs nothing.                                         |
 
 **Generation.** The four kinds are appended to the frozen draw order with
 weight 2 each (Tesla Tower, Moon Gun, Gold Claim, Lost Expedition); the
@@ -3949,15 +3959,35 @@ the actor's own unit in land form on the Tower (else
 rules; the target is a hostile unit (a neutral one included) on an
 explored tile within Chebyshev 2 of the Tower (`TESLA_ZAP_RANGE_V7`), a
 submerged Submarine only next to it (else `OUT_OF_RANGE`). The target takes
-`TESLA_ZAP_DAMAGE_V7` = **4**: fixed damage, not an attack (no Gang Up,
-Charge, cover, or fortification), never answered; a Shield absorbs first,
-Armoured takes 3, Plated caps at 4, and an Ice Folk unit in its own
-Witch's Blizzard halves a hit from distance 2. The zapper gets the kill
-credit (Promotion, growth, Slayer, Plunder, a neutral unit's bounty), a
-neutral unit it hurts is provoked, and deaths are ordinary. Event
-`TESLA_ZAPPED { playerId, unitId, at, targetUnitId, targetAt, damage,
-shieldDamage, hpAfter }`, projected to the actor and to every viewer that
-sees the zapper or the target.
+`TESLA_ZAP_DAMAGE_V7` = **16** (4 before `7r105`): fixed damage, not an
+attack (no Gang Up, Charge, cover, or fortification), never answered; a
+Shield absorbs first, Armoured takes 1 off, Plated caps at 4, and an Ice
+Folk unit in its own Witch's Blizzard halves a hit from distance 2.
+
+**The chain lightning** (`pulp_wars-737.22`, `7r105`). The bolt then
+jumps from the last unit hit to a unit on one of the eight tiles around
+it that this zap has not hit, of **any owner** (an enemy, a neutral unit,
+an ally, the actor's own, the zapper on the Tower included; a submerged
+Submarine too; never a burrowed unit), for `TESLA_CHAIN_DAMAGES_V7` =
+**8**, then **4**, **2**, and **1** (at most five hits). Each jump takes
+its candidates in unit-ID order and, when there are two or more, draws one
+by `nextBounded(count)` on the **match PRNG** (`state.random`); a single
+candidate is taken without a draw, and the chain stops when there is none.
+The chain is drawn on the board as it stood before the zap: a kill does
+not stop it (it jumps on from the dead unit's tile), and every hit is
+computed on its unit as it stood (each unit is hit at most once). A jump
+comes from next to its unit, so the Blizzard never halves it; Shields,
+Armoured, and Plated apply as to the first hit. All the hits land
+together, then the deaths in hit order: the zapper gets the kill credit
+for every hostile unit killed on the chain (Promotion, growth, Slayer,
+Plunder, a neutral unit's bounty; its own side's dead are not kills, and
+a zapper killed by its own chain earns nothing), every neutral unit hurt
+is provoked, and deaths are ordinary (Graves, risings, death blasts). Event
+`TESLA_ZAPPED { playerId, unitId, at, hop, fromAt, targetUnitId, targetAt,
+damage, shieldDamage, hpAfter }`, one per hit in order (`hop` 0 is the
+first hit from the Tower, `fromAt` the Tower or the last unit hit), each
+projected to the actor and to every viewer that sees the zapper or that
+hit's target.
 
 **Moon Gun.** `FIRE_MOON_GUN { unitId, at }` is a primary action of the
 actor's own unit in land form on the Gun (else
@@ -4012,9 +4042,14 @@ the new events follow `INCOME_AWARDED` (`GOLD_CLAIM_PAID`),
 `SHRINE_CLAIMED` (`GOLD_CLAIM_STAKED`, `EXPEDITION_FOUND`) in
 `DOMAIN_EVENT_KIND_ORDER_V7`. The public queries offer every legal `ZAP`
 and `FIRE_MOON_GUN` (offered equals accepted), price the technology tree
-with the notes, and add `previewZapV7` (each target's damage, Shield
-damage, HP after, and kill; exact, equal to the result),
-`previewMoonGunV7` (the Gun, whether it is loaded, and the landings),
+with the notes, and add `previewZapV7` (each target's first-hit damage,
+Shield damage, HP after, and kill, exact and equal to the result; since
+`7r105` also its `chain`: the jumps' damage 8, 4, 2, 1, the visible units
+the first jump may hit, and whether a jump may reach the viewer's side
+through the visible units), `previewZapChainOddsV7` (`7r105`: for one zap,
+each visible unit its jumps may reach, with each jump's exact chance over
+every path through the visible units and that jump's hit; the Normal AI's
+input), `previewMoonGunV7` (the Gun, whether it is loaded, and the landings),
 `queryMoonGunLandingsV7`, and `queryCuriosityMoveEffectV7` (whether a Move
 stakes or finds). The headless metrics gain the `tesla` (zaps, kills),
 `moonGun` (shots), `goldClaim` (stakes, Coins paid), and `expedition`
@@ -4027,13 +4062,22 @@ tile's dock names it with one state line ("Loaded" or "Reloading"; "Yours ·
 18 Coins left", "Unclaimed", "Played out"; who took the notes). A unit on
 the Tower has one **Zap** button and a unit on the loaded Gun one **Fire**
 button; each arms its aiming and the target or landing is picked on the
-board (a Zap target labelled "Zap −4", "· KO" when it dies; each landing a
-Move mark, a landing in a visible enemy's reach or a monster's provoke
-tiles with the threat marker;
+board (a Zap target labelled "Zap −16", "· KO" when it dies; since
+`7r105` the focused target also notes "then jumps: 8 · 4 · 2 · 1", shades
+the units next to it the first jump may hit (the viewer's own in the
+friendly-fire yellow with the hazard band), and warns "May hit your own"
+when a jump can reach the viewer's side; each landing a Move mark, a
+landing in a visible enemy's reach or a monster's provoke tiles with the
+threat marker;
 [board targeting section 3.10](../ui/BOARD_TARGETING.md#310-map-curiosities-round-3-bead-pulp_wars-73720)).
 A Move onto the Claim is labelled **Stake** and onto the Expedition
-**Find**. The zap plays an arc and `special.zap`, the shot a muzzle blast,
-a flight, and a landing puff, and the find the notes effect.
+**Find**. The zap plays an arc and `special.zap` (each jump of the chain an
+arc from the body of the last unit hit to the next, its `special.zap` again,
+and its damage number, in order; the arc strikes out, holds, and fades;
+reduced motion shows each arc whole and still), the shot a muzzle blast, a flight, and a
+landing puff, and the find the notes effect. The log reads "Your Fighter
+zapped the Goblins' Troll (−16) · The lightning jumped to the Goblins'
+Goblin (−8), killing it".
 
 #### Round 3 B: the Sea Serpent
 

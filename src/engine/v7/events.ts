@@ -1409,12 +1409,18 @@ export type DomainEventV7 =
        * `playerId` on the Tesla Tower at `at` zapped `targetUnitId` on
        * `targetAt` (`damage` is HP damage, `shieldDamage` what its Shield
        * absorbed, `hpAfter` its HP afterwards; 0 when it died). Never
-       * answered; the deaths follow as `UNIT_DIED` cause `ATTACK`.
+       * answered; the deaths follow as `UNIT_DIED` cause `ATTACK`. The chain
+       * lightning (`pulp_wars-737.22`): one event per hit in order, `hop` 0
+       * the first hit (from the Tower) and 1 to 4 the jumps; `fromAt` is
+       * the tile the bolt came from (the Tower, then the last unit hit). A
+       * jump may hit the zapper itself.
        */
       readonly kind: "TESLA_ZAPPED";
       readonly playerId: PlayerId;
       readonly unitId: UnitId;
       readonly at: CoordV7;
+      readonly hop: number;
+      readonly fromAt: CoordV7;
       readonly targetUnitId: UnitId;
       readonly targetAt: CoordV7;
       readonly damage: number;

@@ -135,7 +135,7 @@ export interface AiCommandRecordV7 {
 }
 
 export interface HeadlessMetricsV7 {
-  readonly rulesetId: "pulp-wars-poc-7r104";
+  readonly rulesetId: "pulp-wars-poc-7r105";
   readonly setupHash: string;
   readonly mapHash: string;
   readonly postGenerationPrngHash: string;
@@ -1111,7 +1111,7 @@ export async function runAiBatchV7(
           const factions = options.factions ?? distinctFactionsV7(aiCount + 1);
           const result = runAiMatchInternalV7(
             {
-              rulesetId: "pulp-wars-poc-7r104",
+              rulesetId: "pulp-wars-poc-7r105",
               mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
               seed,
               width: size,
@@ -1232,7 +1232,7 @@ function createMetricsV7(state: GameStateV7): HeadlessMetricsV7 {
   for (const tile of state.board.tiles)
     if (tile.resource !== null) generated[tile.resource] += 1;
   return {
-    rulesetId: "pulp-wars-poc-7r104",
+    rulesetId: "pulp-wars-poc-7r105",
     setupHash: canonicalHash(state.setup),
     mapHash: canonicalHash({
       board: state.board,
@@ -1718,7 +1718,9 @@ function recordEventsV7(
     if (event.kind === "COIN_TOSSED") metrics.well.tosses[event.outcome] += 1;
     // Round 3 (section 10.4).
     if (event.kind === "TESLA_ZAPPED") {
-      metrics.tesla.zaps += 1;
+      // The chain lightning (`pulp_wars-737.22`): one zap per command (hop
+      // 0); a kill anywhere on the chain counts.
+      if (event.hop === 0) metrics.tesla.zaps += 1;
       if (event.hpAfter === 0) metrics.tesla.kills += 1;
     }
     if (event.kind === "MOON_GUN_FIRED") metrics.moonGun.shots += 1;

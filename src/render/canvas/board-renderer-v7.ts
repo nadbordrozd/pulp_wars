@@ -957,6 +957,16 @@ export interface MapCommandTargetV7 {
    */
   readonly coldAura?: readonly CoordV7[];
   /**
+   * The chain lightning (`pulp_wars-737.22`): the visible units a Zap's
+   * first jump may hit (every unit next to the target), shaded lightly
+   * while the target is focused; `own` marks the viewer's side (the zapper
+   * included) with the friendly-fire stripes.
+   */
+  readonly zapChain?: readonly {
+    readonly at: CoordV7;
+    readonly own: boolean;
+  }[];
+  /**
    * Ice Folk Freeze: an Ice Folk unit's Move that only Glacier's +1 Move
    * across ice reaches. Outlined in the pale ice with a dotted edge, named
    * by the dock's legend.
@@ -5775,6 +5785,12 @@ export function drawBoardV7(input: {
       defer,
       input.highContrast ?? false,
     );
+    drawZapChainFocusPreviewV7(
+      context,
+      camera,
+      input.plan,
+      input.previewFocus ?? null,
+    );
     drawGiantFocusPreviewV7(
       context,
       camera,
@@ -6739,6 +6755,48 @@ function drawGiantFocusPreviewV7(
       placer,
       defer,
     );
+}
+
+/**
+ * The chain lightning (`pulp_wars-737.22`): the focused (or only) Zap
+ * target's possible first jumps, each unit next to it shaded lightly and
+ * outlined dashed in the arc's white; one of the viewer's side (the zapper
+ * included) in the friendly-fire yellow with the hazard band.
+ */
+function drawZapChainFocusPreviewV7(
+  context: CanvasRenderingContext2D,
+  camera: CameraState,
+  plan: BoardRenderPlanV7,
+  focus: CoordV7 | null,
+): void {
+  const zaps = plan.targets.filter(
+    (target) => target.family === "ZAP" && target.zapChain !== undefined,
+  );
+  const target =
+    (focus === null
+      ? undefined
+      : zaps.find((candidate) => same(candidate.at, focus))) ??
+    (zaps.length === 1 ? zaps[0] : undefined);
+  for (const next of target?.zapChain ?? []) {
+    const cx = camera.offsetX + next.at.x * TILE_WIDTH * camera.zoom;
+    const cy = camera.offsetY + next.at.y * TILE_HEIGHT * camera.zoom;
+    const style = next.own ? "BLAST_FRIENDLY" : "ZAP_CHAIN";
+    drawAbilityAreaCellV7(context, cx, cy, camera.zoom, style);
+    context.save();
+    context.strokeStyle = abilityAreaStrokeV7(style);
+    context.lineWidth = 2 * camera.zoom;
+    context.setLineDash([3 * camera.zoom, 4 * camera.zoom]);
+    for (const edge of TILE_EDGES)
+      strokeTileEdge(context, camera, next.at, edge);
+    if (next.own) {
+      // The friendly-fire hazard band, as a blast's on an own unit.
+      context.strokeStyle = "#1b1b1f";
+      context.lineDashOffset = 3.5 * camera.zoom;
+      for (const edge of TILE_EDGES)
+        strokeTileEdge(context, camera, next.at, edge);
+    }
+    context.restore();
+  }
 }
 
 /**

@@ -271,17 +271,28 @@ describe("Ruleset 7 curiosities round three: the Tesla Tower's Zap", () => {
       expect(
         zaps.find((target) => same(target.at, AT.wounded))?.previewLabel,
       ).toBe("Zap −3 · KO");
-      expect(
-        zaps.find((target) => same(target.at, AT.guard))?.previewLabel,
-      ).toMatch(/^Zap −\d+$/);
-      // Zapping the wounded Fighter kills it, unanswered.
+      // The chain lightning (`pulp_wars-737.22`): the Guard (15) falls to
+      // the 16; nothing stands next to it, so no jump is shown.
+      const guard = zaps.find((target) => same(target.at, AT.guard));
+      expect(guard?.previewLabel).toBe("Zap −15 · KO");
+      expect(guard?.zapChain).toBeUndefined();
+      expect(guard?.previewWarnings).toBeUndefined();
+      // The wounded Fighter stands next to the gunner: the jump may hit it.
+      const wounded = zaps.find((target) => same(target.at, AT.wounded));
+      expect(wounded?.previewFocusNote).toBe(
+        "then jumps: 8\u202f·\u202f4\u202f·\u202f2\u202f·\u202f1",
+      );
+      expect(wounded?.zapChain).toEqual([{ at: AT.gunner, own: true }]);
+      expect(wounded?.previewWarnings).toEqual(["May hit your own"]);
+      // Zapping the wounded Fighter kills it, unanswered; the lightning
+      // jumps on to the only unit next to it, the gunner, for 8.
       const before = unitAt(app.state(), AT.gunner).hp;
       pickOn(app, AT.wounded);
       await settle();
       expect(app.state().units.some((unit) => same(unit.at, AT.wounded))).toBe(
         false,
       );
-      expect(unitAt(app.state(), AT.gunner).hp).toBe(before);
+      expect(unitAt(app.state(), AT.gunner).hp).toBe(before - 8);
       const text = document.body.textContent ?? "";
       expect(text).toContain("zapped");
       expect(COORDINATE.test(text)).toBe(false);

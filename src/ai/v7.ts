@@ -94,6 +94,7 @@ import {
   previewAssembleV7,
   previewBombRunV7,
   previewZapV7,
+  previewZapChainOddsV7,
   previewEconomicV7,
   previewGateV7,
   previewWhirlV7,
@@ -773,6 +774,7 @@ import {
   monstersThreateningV7,
   planCuriosityErrandsV7,
   soleCityDefenderV7,
+  zapChainValueV7,
   type CuriosityErrandV7,
   type CuriosityFactsV7,
   type MonsterFactsV7,
@@ -15720,10 +15722,26 @@ function scoreCommandWithContext(
       (entry) => entry.targetUnitId === command.targetUnitId,
     );
     const target = context.lookup.unitsById.get(command.targetUnitId);
+    // The chain lightning (`pulp_wars-737.22`): the expected value of the
+    // jumps (8, 4, 2, 1 to random neighbours, own units included); a zap
+    // whose chain is expected to cost more than the first hit is worth is
+    // not taken.
+    const chain =
+      hit === undefined
+        ? 0
+        : zapChainValueV7(
+            view,
+            previewZapChainOddsV7(view, actor.id, command.targetUnitId),
+            (unitId) => targetStrategicValue(view, unitId, context.lookup),
+            context.curiosities.monsterById,
+          );
+    const first =
+      hit === undefined ? 0 : 20 * Number(hit.kills) + 10 * hit.damage;
     if (
       hit !== undefined &&
       target !== undefined &&
-      (hit.kills || !isNeutralOwnerV7(target.ownerId))
+      (hit.kills || !isNeutralOwnerV7(target.ownerId)) &&
+      first + chain > 0
     ) {
       const threatening = context.threats.some(
         (item) => item.unitId === command.targetUnitId,
@@ -15737,7 +15755,7 @@ function scoreCommandWithContext(
           : 900;
       const bounty =
         context.curiosities.monsterById.get(command.targetUnitId)?.bounty ?? 0;
-      immediateValue = 20 * Number(hit.kills) + 10 * hit.damage + bounty;
+      immediateValue = first + chain + bounty;
       const value = targetStrategicValue(view, target.id, context.lookup);
       strategicValue += hit.kills
         ? value + 4 * bounty
