@@ -12,8 +12,10 @@ import type {
  * (`pulp_wars-hmyk.3`): the real registry builds only the Humans so far
  * (`pulp_wars-hmyk.4`), so the tests of the campaign graph give each a
  * chapter of the hidden fixture missions (`TEST_*`, registered and in no
- * campaign), the Humans' included. Candy stays unbuilt
- * ("Coming soon"). Use it through `vi.mock` of `src/campaign/campaigns`.
+ * campaign), the Humans' included. Candy is kept unbuilt ("Coming
+ * soon", its real chapter taken away since `pulp_wars-hmyk.11` built it), so
+ * the graph tests keep a campaign that is not written. Use it through
+ * `vi.mock` of `src/campaign/campaigns`.
  */
 export const FIXTURE_CAMPAIGN_MISSIONS_V7: Readonly<
   Partial<Record<CampaignIdV7, readonly string[]>>
@@ -46,6 +48,7 @@ export function fixtureCampaignsV7(
   campaigns: readonly CampaignDefinitionV7[],
 ): readonly CampaignDefinitionV7[] {
   return campaigns.map((campaign) => {
+    if (campaign.id === "CANDY") return { ...campaign, chapter: null };
     const missions = FIXTURE_CAMPAIGN_MISSIONS_V7[campaign.id];
     if (missions === undefined) return campaign;
     const chapter: CampaignChapterV7 = {

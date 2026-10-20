@@ -223,6 +223,19 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
     "d2c993f3dfda0c3fd26d2b4d5257ea21b71d6cbb69d45d7e65c0e1e451bbdeb3",
   "DWARF_6@1:DWARF":
     "bf8032333567a3843bb24f8f1e55a0af551ed7c61c6e2ad88f9bd1eec2e2c83b",
+  // The Candy campaign, "Sweet Dreams" (`pulp_wars-hmyk.11`).
+  "CANDY_1@1:CANDY":
+    "a3ddb2e1bf2df1846e01de9906d794916de02cff821233681ac5300203bc4901",
+  "CANDY_2@1:CANDY":
+    "ff0f6c2bf6e6a9303297faf786102559eaaf1fa6417c1f0014cec1c43aa39e6d",
+  "CANDY_3@1:CANDY":
+    "0737a71b66e8394dc68cab578c749be1567dabdf417224318cb8fb1de463ba3c",
+  "CANDY_4@1:CANDY":
+    "2566eebbe46c96f1a086cd9de27b80cc50503663fa7b1da893e4c68706c6d25d",
+  "CANDY_5@1:CANDY":
+    "850817bce49333a8259db6c14a497c384633c97d25b2bb4df7feb53242dda886",
+  "CANDY_6@1:CANDY":
+    "5164de3b08e1bf09e94cb9e2848a75e80cc440ec45553c03f005189da2151142",
   // The siege fixture of the Normal AI (`pulp_wars-68k.6`).
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 2.
   "TEST_NECK@2:ORIGINAL":
@@ -600,6 +613,17 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
     "f29ab8e611c536bd6065c376380aa8e971d3156db72c4719108bd74f6b7c35db",
   "DWARF_6@1:DWARF":
     "62ed9a9959332e399e204208997a7056f335f11c52f5337f18a09b45da6bc86e",
+  // The Candy campaign, "Sweet Dreams" (`pulp_wars-hmyk.11`).
+  "CANDY_1@1:CANDY":
+    "e64cd935aeee550160d803d8fae5db8b7125a913dbe210aeb460086c625b695f",
+  "CANDY_2@1:CANDY":
+    "98bc65015f9987a2656bf0b402e80bade7afaf0fe896454885e742d21e31e205",
+  "CANDY_3@1:CANDY":
+    "dfb983deb5da15062043d8e3a071c058e3c6e6992b1428e824d941815d481c50",
+  "CANDY_4@1:CANDY":
+    "2c658acbb487615bddd86d5134dbe2b51086ba9b1cc8b7c951d47fadf36124d5",
+  "CANDY_6@1:CANDY":
+    "439a84bf3892273713b9f92f918408e7b7464a764badf40d3e909fff064916be",
 
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 2.
   "TEST_NECK@2:ORIGINAL":

@@ -157,7 +157,7 @@ describe("Ruleset 7 campaign map", () => {
       "The Cultist Campaign, Locked: finish Dinosaurs, Martians, Goblins and Dwarves",
     );
     expect(plate("CANDY").getAttribute("aria-label")).toBe(
-      "The Candy Campaign, Coming soon",
+      "Sweet Dreams, Coming soon",
     );
     expect(plate("DINOSAURS").textContent).toContain("Locked");
     expect(plate("CANDY").textContent).toContain("Coming soon");
@@ -191,7 +191,7 @@ describe("Ruleset 7 campaign map", () => {
     await settle();
     expect(
       document.querySelector("[data-v7-region='campaign-note']")?.textContent,
-    ).toBe("The Candy Campaign: coming soon.");
+    ).toBe("Sweet Dreams: coming soon.");
     app.destroy();
   });
 

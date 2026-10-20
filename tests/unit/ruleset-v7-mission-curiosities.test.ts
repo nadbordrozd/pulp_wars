@@ -117,6 +117,8 @@ describe("mission curiosities", () => {
         "HUMAN_6",
         "DINOSAUR_3",
         "GOBLIN_4",
+        // The Dream Door's pair of Dimensional Gates (`pulp_wars-hmyk.11`).
+        "CANDY_5",
         "TEST_CURIOSITIES",
       ].includes(mission.id);
       expect(missionHasCuriositiesV7(mission), mission.id).toBe(placed);

@@ -77,7 +77,8 @@ describe("Ruleset 7 campaign front screen", () => {
     // The campaign map (pulp_wars-hmyk.3): the prologue open, the Humans
     // campaign open (pulp_wars-hmyk.4), the Martians, the Goblins and the
     // Dwarves locked behind both first campaigns (pulp_wars-hmyk.7,
-    // pulp_wars-hmyk.8, pulp_wars-hmyk.9), the rest not written yet.
+    // pulp_wars-hmyk.8, pulp_wars-hmyk.9), Candy locked behind the middle
+    // four (pulp_wars-hmyk.11), the rest not written yet.
     expect(
       [...document.querySelectorAll<HTMLElement>(".v7-campaign-plate")].map(
         (plate) => [plate.dataset.campaign, plate.dataset.status],
@@ -92,7 +93,7 @@ describe("Ruleset 7 campaign front screen", () => {
       ["DWARVES", "locked"],
       ["ICE_FOLK", "soon"],
       ["CULT", "soon"],
-      ["CANDY", "soon"],
+      ["CANDY", "locked"],
     ]);
     expect(
       document
@@ -124,6 +125,13 @@ describe("Ruleset 7 campaign front screen", () => {
         .querySelector('[data-action="campaign-open-dwarves"]')
         ?.getAttribute("aria-label"),
     ).toBe("The Bottomless, Locked: finish Humans and Undead");
+    expect(
+      document
+        .querySelector('[data-action="campaign-open-candy"]')
+        ?.getAttribute("aria-label"),
+    ).toBe(
+      "Sweet Dreams, Locked: finish Dinosaurs, Martians, Goblins and Dwarves",
+    );
     requiredButton('[data-action="campaign-open-frontier"]').click();
     await settle();
     expect(document.activeElement?.getAttribute("data-action")).toBe(

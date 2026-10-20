@@ -65,7 +65,8 @@ export interface DirectivePlanV7 {
   readonly campaign: CampaignDirectiveV7;
   /**
    * The units the leash confines to the zone: every own land unit for
-   * `HOLD`, the garrison for `GUARD`, none for `RUSH` and `ASSAULT`.
+   * `HOLD`, the garrison for `GUARD`, none for `RUSH` and `ASSAULT`; with
+   * `ships` (E7, `pulp_wars-hmyk.11`) every own ship as well.
    */
   readonly leashed: ReadonlySet<UnitId>;
   /** `GUARD`: the garrison in choice order; empty otherwise. */
@@ -341,6 +342,17 @@ export function directivePlanForViewV7(
           .filter((unit) => unit.ownerId === view.viewer.id && landUnitV7(unit))
           .map((unit) => unit.id),
   );
+  // E7 (`pulp_wars-hmyk.11`): with `ships` every own ship is leashed too,
+  // so its Moves end in the zone (or bring it closer to it); its attacks
+  // from where it stands are never filtered.
+  if (directive.ships === true)
+    for (const unit of view.units)
+      if (
+        unit.ownerId === view.viewer.id &&
+        unit.hp > 0 &&
+        unit.form === "NAVAL"
+      )
+        leashed.add(unit.id);
   return {
     directive,
     campaign: {

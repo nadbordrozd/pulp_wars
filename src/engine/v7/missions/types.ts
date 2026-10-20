@@ -382,11 +382,24 @@ export type MissionDirectiveV7 = MissionDirectiveWindowV7 &
   (
     | { readonly kind: "NORMAL" }
     | { readonly kind: "RUSH" }
-    | { readonly kind: "HOLD"; readonly zone: readonly RectV7[] }
+    | {
+        readonly kind: "HOLD";
+        readonly zone: readonly RectV7[];
+        readonly ships?: true;
+      }
     | {
         readonly kind: "GUARD";
         readonly zone: readonly RectV7[];
         readonly garrison: number;
+        /**
+         * Directives for ships (`pulp_wars-hmyk.11`, docs/product/SAGA.md
+         * section 4, E7): `true` leashes every ship of the seat to the zone
+         * as well (for `GUARD` besides the garrison, for `HOLD` besides the
+         * land units), so a flagship keeps to its anchorage and a squadron
+         * to its station; a zone that should hold ships is drawn on water.
+         * Absent: the directive leads land and embarked units only.
+         */
+        readonly ships?: true;
         /**
          * `pulp_wars-v642.10`: what every unit outside the garrison plays.
          * Absent: `NORMAL`. `RUSH` or `ASSAULT` (with its target): the

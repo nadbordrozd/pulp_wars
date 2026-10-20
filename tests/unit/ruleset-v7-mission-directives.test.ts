@@ -193,6 +193,21 @@ describe("directive resolution", () => {
         loose({ ...guard, garrison: 2, others: { kind: "RUSH" } }),
       ),
     ).not.toThrow();
+    // E7 (`pulp_wars-hmyk.11`): the ships leash of a HOLD or a GUARD is
+    // `true` or absent; any other value is refused, and no other kind
+    // takes it.
+    for (const ships of [false, "yes", 1])
+      expect(() =>
+        validateMissionDirectivesV7(loose({ ...guard, garrison: 2, ships })),
+      ).toThrow(/GUARD ships must be true or absent/);
+    expect(() =>
+      validateMissionDirectivesV7(loose({ kind: "RUSH", ships: true })),
+    ).toThrow(/RUSH directive takes no key "ships"/);
+    for (const directive of [
+      { ...guard, garrison: 2, ships: true },
+      { kind: "HOLD", zone: guard.zone, ships: true },
+    ])
+      expect(() => validateMissionDefinitionV7(loose(directive))).not.toThrow();
   });
 
   it("is NORMAL outside missions, for seat 0, and without a directive", () => {
@@ -648,6 +663,61 @@ describe("the leash", () => {
     for (const item of ready)
       if (commandRelocationsV7(item.command).length === 0)
         expect(boxed).toContain(item);
+  });
+});
+
+describe("the ships leash (E7)", () => {
+  // `pulp_wars-hmyk.11` (docs/product/SAGA.md section 4, E7): a HOLD or
+  // GUARD with `ships: true` leashes every ship of the seat to its zone.
+  // CANDY_3's Crown squadron holds the water round the Outflow fort.
+  it("leashes every ship of the seat, and its Moves end in the zone or come closer", () => {
+    const zone = zoneOf("CANDY_3");
+    const { view } = aiTurn("CANDY_3");
+    const plan = directivePlanForViewV7(view);
+    if (plan === null) throw new Error("no HOLD plan");
+    const ships = view.units.filter(
+      (unit) => unit.ownerId === view.viewer.id && unit.form === "NAVAL",
+    );
+    expect(ships.length).toBeGreaterThan(0);
+    for (const ship of ships) expect(plan.leashed.has(ship.id)).toBe(true);
+    const ready = queryAiReadyCommandsV7(view);
+    const kept = leashReadyCommandsV7(view, plan, ready);
+    const shipIds = new Set(ships.map((ship) => ship.id));
+    const shipMoves = (items: typeof ready) =>
+      items.filter(
+        (item) =>
+          item.command.kind === "MOVE" && shipIds.has(item.command.unitId),
+      );
+    // The squadron could sail anywhere on the lake; the leash keeps it at
+    // its anchorage.
+    expect(
+      shipMoves(ready).some(
+        (item) =>
+          item.command.kind === "MOVE" &&
+          !zoneContainsV7(zone, item.command.path.at(-1) as CoordV7),
+      ),
+    ).toBe(true);
+    const unitsById = new Map(view.units.map((unit) => [unit.id, unit]));
+    for (const item of shipMoves(kept)) {
+      if (item.command.kind !== "MOVE") continue;
+      const ship = unitsById.get(item.command.unitId);
+      if (ship !== undefined && zoneContainsV7(zone, ship.at))
+        expect(zoneContainsV7(zone, item.command.path.at(-1) as CoordV7)).toBe(
+          true,
+        );
+    }
+    // Attacks from where a ship stands are never filtered.
+    for (const item of ready)
+      if (item.command.kind === "ATTACK") expect(kept).toContain(item);
+  });
+
+  it("leashes no ship without the key", () => {
+    // TEST_HOLD's seat has no `ships`: its leash is the land units alone.
+    const { view } = aiTurn("TEST_HOLD", exploredAll);
+    const plan = directivePlanForViewV7(view);
+    if (plan === null) throw new Error("no HOLD plan");
+    for (const unit of view.units)
+      if (plan.leashed.has(unit.id)) expect(unit.form).not.toBe("NAVAL");
   });
 });
 

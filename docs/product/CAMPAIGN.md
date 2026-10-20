@@ -407,6 +407,19 @@ plays `NORMAL`. Nothing reads hidden state, the clock, or the PRNG.
   to go because the mission's `reveal` rectangles include the human's
   capital, exactly as if its scouts had been there; the AI still reads only
   its public view.
+- **Ships on the leash** (`pulp_wars-hmyk.11`, the saga's extension E7).
+  The directives lead land and embarked units: a ship was never leashed,
+  so a flagship left its post at once (`CANDY_3`'s Sovereign sailed out in
+  round 1 and shelled every boat the kingdom launched). A `HOLD` or
+  `GUARD` may carry `ships: true`: every ship of the seat (form `NAVAL`)
+  joins the leashed units, besides the land units of a `HOLD` and the
+  garrison of a `GUARD`, so its Moves end in the zone (or, from outside,
+  come closer) and its attacks from where it stands are never filtered;
+  the zone is drawn on water. It is the same filter on the ready commands
+  as every other leash, so the naval plan sees only the leashed Moves; it
+  is AI only (directives sit outside the state hash) and absent it changes
+  nothing. The shape check refuses any value but `true`
+  (`missionDirectiveProblemV7`).
 
 ### 2.6 Shared vs campaign-only
 
@@ -2234,7 +2247,8 @@ curiosities is a new `(id, revision)`, which an older build refuses as
 with nine kinds on an 11 x 11 board, next to the settlements) and
 `tests/unit/ruleset-v7-mission-curiosities.test.ts` cover it. Used by
 `HUMAN_5` (the Sea Serpent) and `HUMAN_6` (the Tesla Tower), section 15,
-and by `DINOSAUR_3` (the Sea Serpent), section 17.
+by `DINOSAUR_3` (the Sea Serpent), section 17, and by `CANDY_5` (a pair
+of Dimensional Gates, the only way across its strait), section 21.
 
 ## 11. Hand-play record: missions 1 to 4
 
@@ -4761,6 +4775,174 @@ The danger moments, and what each mission's hand play changed:
   never leaves its zone, so it can be worn down from outside its reach;
   Martian Grunts cannot climb, so a Martian assault on a mountain hold
   stalls at the foot.
+
+## 21. The Candy campaign, "Sweet Dreams" (`pulp_wars-hmyk.11`)
+
+The first tier-3 faction campaign: six missions, `CANDY_1` to `CANDY_6`
+(`src/engine/v7/missions/candy-*.ts`), in the chapter
+`src/campaign/chapter-candy.ts`, which the campaign map's Candy plate
+opens once the four middle campaigns are done (or with the testing cheat,
+section 14.5). The briefings and closings are the saga bible's
+([SAGA.md](SAGA.md) sections 2.8 and 3.8), trimmed to the card. Each
+mission was hand played through `play-text` (the thoughtful run, using the
+hints) and run by the scripted autopilot of section 15; from mission 3 on
+the autopilot must lose or miss the clock, and missions 1 and 2 were meant
+to fall to a first thoughtful attempt. Every mission seats you as the
+Candy with no choice, so the chapter's starting factions are empty.
+
+### 21.1 The missions
+
+| Mission                  | Board (generator, seats, seed) | Match seed | Seats                                                  | Format and clock                                  | Stars                            |
+| ------------------------ | ------------------------------ | ---------- | ------------------------------------------------------ | ------------------------------------------------- | -------------------------------- |
+| C1 Sweet Tooth           | Lakes 11, 2 seats, seed 1      | 20261801   | Candy; Goblins                                         | Conquest of Muncher's Camp and Spoon Hill         | by round 12; Praline lives       |
+| C2 The Royal Recipe Book | Lakes 14, 2 seats, seed 1      | 20261802   | Candy; Dinosaurs                                       | Capture Riftwatch by round 20                     | by round 16; Madame Nougat lives |
+| C3 The Commissioner      | Lakes 16, 2 seats, seed 8      | 20261803   | Candy; Humans                                          | Sink the Sovereign by round 18                    | by round 12; no city lost        |
+| C4 Sour Notes            | Dry Land 14, 2 seats, seed 6   | 20261804   | Candy; Cult                                            | Capture the Wick Chapel by round 16               | by round 12; Praline lives       |
+| C5 The Dream Door        | Continents 16, 2 seats, seed 4 | 20261805   | Candy; Undead                                          | Escort Praline to the Dreaming Palace by round 20 | by round 16; Madame Nougat lives |
+| C6 Sweet Dreams          | Lakes 16, 4 seats, seed 13     | 20261806   | Candy and Martians (ally); Undead and Goblins (teamed) | Hold Sugarcrest for 18 rounds                     | Praline lives; no city lost      |
+
+### 21.2 Hand play
+
+| Mission | Thoughtful run                                                         | Autopilot                          |
+| ------- | ---------------------------------------------------------------------- | ---------------------------------- |
+| C1      | Win, round 14, 2 stars (first attempt on the final definition)         | Victory, round 23, 1 star          |
+| C2      | Win, round 19, 2 stars (first attempt on the final definition)         | Defeat, round 16                   |
+| C3      | Win, round 8, 3 stars (first attempt on the final definition)          | Defeat, out of time (round 23)     |
+| C4      | Win, round 10, 3 stars (first attempt)                                 | Defeat, out of time (round 21)     |
+| C5      | Win, round 14, 2 stars (second attempt on the final definition)        | Defeat, out of time (round 25)     |
+| C6      | Win (held), 18 rounds, 2 stars (first attempt on the final definition) | Defeat, round 18 (Sugarcrest fell) |
+
+On the final definitions each winning run was replayed from its command
+log (your moves, the Normal AI replying) and ended exactly as above, and
+each autopilot result held. The clocks of C3, C4 and C5 were then cut (the
+saga's 22, 20 and 24 rounds); each replay still wins inside the new clock.
+
+The danger moments, and what each mission's hand play changed:
+
+- **C1.** With the raiders' camp across the lake in the north-east hills
+  and three free villages, the march through the forests took until round
+  13, the gang took the north-shore village and the hunt ran past round
+  14; the gang under `RUSH` stood off the walls. With the second camp on
+  the open north-west plain the kingdom fought two fronts and lone
+  Troopers died to Gang Up (two goblins deal 9 each to a Marshmallow).
+  Now the gang's two camps stand one above the other east of Gumdrop, the
+  villages are gone, the gang storms Gumdrop (`ASSAULT`), a Marshmallow
+  holds Gumdrop and Land Grants give each city a slot. The winning line: a
+  Rushed Giant killed a goblin on round 3 (+1 Attack), a Gunner's
+  Ricochet killed the Brute and wore the next, the Confectioner re-baked a
+  Donut Racer and a Trooper from Crumbs (twice from under a goblin); the
+  Giant took Muncher's Camp in round 7 and Spoon Hill in round 14, down to
+  15 of 40 after one gang-up. Step 1 may fall to plain play; the
+  autopilot won in round 23 with one star.
+- **C2.** With the library at the far end of a one-tile pass behind the
+  Rift, the column reached it in round 17, single file behind an
+  Ankylosaurus. Riftwatch now stands at the pass's mouth under the crack.
+  The winning line: round 2 a Rushed Trooper killed the wounded Raptor
+  that had bounced off the Marshmallow, round 4 another killed the T-Rex
+  Egg the turn before it hatched; the Nest fell in round 9 (Pie Splat, then
+  a Racer and a Trooper with no strike-back); a Raptor fed the Marshmallow
+  and a Racer grew to 16 HP; at Riftwatch the cavemen trained on the
+  centre every turn and the Pies Splatted each; in round 19 the Rushed
+  Confectioner Topped Up the Crashed Trooper on the centre so that it
+  could capture. Two Marshmallows were re-baked.
+- **C3.** Eight layouts. With three Tugs and Sugar Sails the Sovereign was
+  rammed to 3 HP in round 2 and sunk; with one Tug and no Sugar Sails
+  every boat the kingdom launched was shot on the AI's turn and a Patrol
+  Boat Boarded the last; with a Pie Galleon to start it Splatted the
+  Sovereign (15) and a Tug finished it in round 2; with Sugarcrest three
+  tiles from the anchorage nothing could leave port alive. The Normal AI
+  sails its flagship out at once, so the squadron is now leashed to the
+  water off the fort (E7, section 2.5); with three Patrol Boats and two
+  Submarines and a Port at the fort the Sovereign was promoted and healed
+  whole on its third kill and the fort launched a Submarine every few
+  rounds. Now the Crown has the Sovereign, one Patrol Boat and one
+  Submarine, no Coins and no Port; Sugarcrest is on the northern shore,
+  out of reach, Gumdrop under the guns. The winning line: Choco Subs and a
+  Tug built at Sugarcrest, staged four tiles from the anchorage; when the
+  Sovereign swung to the west end of it in round 8, two Rushed rams (10
+  and 12), a torpedo through the screening Patrol Boat (10) and a third
+  Rushed ram through the gap (3). A Trooper on Gumdrop's walls and a Tug
+  launched at Gumdrop's port were shelled in earlier rounds.
+- **C4.** First attempt. The Lodge summoned a Horror in round 1 (4 Favour)
+  and a second in round 4, Imps every round or two; a Hexer frogged a
+  Trooper. The winning line: the Rushed Giant (16) and a Gunner killed the
+  first Horror in round 5; a Pie's Splat (8), a Gunner (6, Ricochet) and a
+  Trooper (4, no strike-back) the second in round 6; the Marshmallow was
+  Sacrificed beside the chapel; in round 8 the Rushed Giant killed the
+  Idol Bearer on the chapel's centre (11) and stood there Crashed, and
+  captured in round 10. No Boo! landed in the run; the hint stays for the
+  player who stands in line. The clock was then cut from 20 (star 16) to
+  16 (star 12).
+- **C5.** With the far gate in the woods beside the Palace the Queen
+  crossed in round 3 and stood two tiles from it in round 4. The far gate
+  is now at the dream's northern end, six rows from the Palace, which the
+  dead hold with a Zombie, a Lich, a Necromancer among old graves and a
+  Skeleton (`GUARD`); a second Lich roams, and three waves rise round the
+  dream. The first attempt on it was lost: the Queen crossed in round 3
+  and walked south alone; Madame Nougat crossed to cure her bite and was
+  killed in round 6; two Liches (9 each) and an inspired Zombie took the
+  Queen from 40 to 10 in one enemy phase (round 7). The winning line: the
+  Marshmallow, then the Rushed Giant through the gate in round 2 (the
+  Giant killed the gate's watch and held the north); a Pie Launcher at
+  Riftwatch shot across the strait and killed the roaming Lich (round 4);
+  Nougat crossed in round 4 and Topped Up the Queen's bite (and was killed
+  in round 7); the Giant took Grey Gumdrop in round 6, a place to train on
+  the far side; Troopers and the Giant killed the dead that came north (a
+  kill draws no bite); in rounds 12 to 14 two Pies came through, Splatted
+  the Palace's Zombie (6) and the Rushed Giant killed it (12) and
+  advanced beside the Palace. The clock was then cut from 24 (star 20) to
+  20 (star 16).
+- **C6.** With the waves at the Rift north of the lake the dead took Red
+  Dust (the Martians fell in round 6) and Riftwatch and never came round
+  the lake: a passive player and the autopilot held. The seam now splits
+  along the western shore (waves beside Sugarcrest in rounds 5, 9, 13, 16
+  and 17) and the horde brings goblins down the eastern road (rounds 7, 11
+  and 15) and turns from Gumdrop on Sugarcrest itself in round 10; the
+  autopilot still held until the kingdom started with no Coins (it trains
+  a unit on the centre every turn). The winning line: the Explorer
+  monument made Gumdrop level 3 (Walls) in round 1; a Workshop, a Mine, a
+  Boom and two hunts made Sugarcrest level 5 by round 9 (a second
+  Gingerbread Giant); Pie Launchers on both walls Splatted and killed
+  whatever came within 3; Jawbreakers held the west flank (Toothache on
+  every Skeleton that hit them) and were re-baked; in rounds 14 and 17 a
+  Wolf Rider and an Orc Brute stood on Gumdrop's centre and were shot off
+  it. Riftwatch fell in round 5, and the second Giant, the Jawbreakers, the
+  Confectioner, both Pies, the Marshmallow and the Gunners died; Praline
+  ended on 18 of 40.
+
+### 21.3 Deviations and follow-ups
+
+- **E7, directives for ships, is built** (section 2.5): `ships: true` on a
+  `HOLD` or `GUARD`, AI only, used by C3. The other naval missions (H5,
+  G3, D5) stationed their fleets instead and are unchanged.
+- **Boards.** C3's island fort is one Terrain edit; C2's crack is three
+  Rift tiles beside Riftwatch. C5 is a Continents board (the saga's Lakes
+  20): two continents and a strait, the naval branch forbidden, so the
+  Dimensional Gates (E1, section 10.9) are the only way across. C3 and C6
+  remove more villages than ten (the natural-maps test now names them).
+- **C1's gang storms Gumdrop** (the bible's `RUSH` stood off) from two
+  camps east of it; the raiders' camp is Spoon Hill.
+- **C3's kingdom** has Sugarcrest on the northern shore and Gumdrop under
+  the guns (the bible puts both on the shore); its clock is 18 and its
+  star 12 (the bible's 22 and 18).
+- **C4's chapel** has no Walls (a level-2 town in the woods); the clock is
+  16 and the star 12.
+- **C5's dream** has Liches, graves and a `GUARD` on the Palace (the
+  bible's `NORMAL`), and its clock is 20 and its star 16.
+- **C6** adds goblin waves and a late turn of the horde on Sugarcrest, and
+  moves the nightmares' waves from the Rift to the western shore beside
+  Sugarcrest; the Martians' Red Dust falls early in every run (an ally
+  that holds only its own land against the whole of the dead).
+- **The campaign graph test** keeps Candy unbuilt in its fixture
+  (`tests/fixtures/v7-campaign-graph.ts`), so it still tests a campaign
+  that is "Coming soon".
+- **Observations for balance work (not changed here).** Candy capacity
+  is tight (a level-3 city holds four, a Giant two): Land Grants or a
+  monument decide what can be trained. The Normal AI sails its flagship
+  straight at the enemy's ports; a Battleship that kills three times is
+  promoted and healed whole. An `ASSAULT` seat whose army starts behind a
+  lake masses where it is and never comes round. Two Liches focus-fire a
+  Giant from 40 to 10 in one turn.
 
 ## Appendix A: critique of the first draft
 

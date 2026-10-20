@@ -53,6 +53,12 @@ import { DWARF_3_V7 } from "./dwarf-3";
 import { DWARF_4_V7 } from "./dwarf-4";
 import { DWARF_5_V7 } from "./dwarf-5";
 import { DWARF_6_V7 } from "./dwarf-6";
+import { CANDY_1_V7 } from "./candy-1";
+import { CANDY_2_V7 } from "./candy-2";
+import { CANDY_3_V7 } from "./candy-3";
+import { CANDY_4_V7 } from "./candy-4";
+import { CANDY_5_V7 } from "./candy-5";
+import { CANDY_6_V7 } from "./candy-6";
 import {
   LAB_BREAKTHROUGH_GOBLIN_V7,
   LAB_BREAKTHROUGH_UNDEAD_V7,
@@ -172,6 +178,13 @@ export const MISSION_REGISTRY_V7: readonly MissionDefinitionV7[] = deepFreeze([
   DWARF_4_V7,
   DWARF_5_V7,
   DWARF_6_V7,
+  // The Candy campaign, "Sweet Dreams" (`pulp_wars-hmyk.11`).
+  CANDY_1_V7,
+  CANDY_2_V7,
+  CANDY_3_V7,
+  CANDY_4_V7,
+  CANDY_5_V7,
+  CANDY_6_V7,
   // The Human tuning labs (`pulp_wars-w49.3`): hidden mirror fixtures of
   // the text harness (docs/validation/TEXT_PLAY.md).
   LAB_SIEGE_V7,

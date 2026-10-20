@@ -1022,6 +1022,13 @@ describe("natural maps", () => {
       "DWARF_4",
       "DWARF_5",
       "DWARF_6",
+      // The Candy campaign (`pulp_wars-hmyk.11`).
+      "CANDY_1",
+      "CANDY_2",
+      "CANDY_3",
+      "CANDY_4",
+      "CANDY_5",
+      "CANDY_6",
     ]);
     for (const mission of MISSION_REGISTRY_V7)
       expect(missionMapDriftV7(mission), mission.id).toEqual([]);
@@ -1045,6 +1052,14 @@ describe("natural maps", () => {
       // The Founder's Tomb (`pulp_wars-hmyk.5`): eleven villages gone (two
       // under towns), a chest, and the Lodge's and Ashby Camp's fields.
       UNDEAD_6: 16,
+      // The Candy campaign (`pulp_wars-hmyk.11`): Riftwatch's crack and
+      // eight villages (four under cities); the lake of the Commissioner
+      // keeps one village (the island raised, thirteen gone, two under
+      // cities: nobody grows while the ships fight); the long night's four
+      // seats stand on seven villages and four more are gone.
+      CANDY_2: 11,
+      CANDY_3: 14,
+      CANDY_6: 11,
     };
     const terrainEdits: Readonly<Record<string, number>> = {
       // Bone Neck.
@@ -1059,6 +1074,10 @@ describe("natural maps", () => {
       MARTIAN_1: 3,
       // The diggers' cave cleared in the shaft wall (`pulp_wars-hmyk.9`).
       DWARF_3: 1,
+      // The crack beside the library at Riftwatch, and the Crown's island
+      // fort raised out of the lake (`pulp_wars-hmyk.11`).
+      CANDY_2: 3,
+      CANDY_3: 1,
     };
     for (const mission of natural) {
       const source = mission.source as NonNullable<

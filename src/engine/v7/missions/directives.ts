@@ -16,6 +16,7 @@ import type { MissionDefinitionV7 } from "./types";
  * of at least 2, `fromRound` below `untilRound`; a zone is a non-empty list
  * of rectangles on the board; a `GUARD` garrison is a positive integer and
  * its `others` is absent, `{ kind: "RUSH" }` or `{ kind: "ASSAULT", target }`;
+ * a `HOLD` or `GUARD` `ships` is absent or `true` (E7, `pulp_wars-hmyk.11`);
  * a target is a tile on the board.
  */
 export function missionDirectiveProblemV7(
@@ -40,8 +41,8 @@ export function missionDirectiveProblemV7(
 const KEYS_BY_KIND: Readonly<Record<string, readonly string[]>> = {
   NORMAL: [],
   RUSH: [],
-  HOLD: ["zone"],
-  GUARD: ["zone", "garrison", "others"],
+  HOLD: ["zone", "ships"],
+  GUARD: ["zone", "garrison", "others", "ships"],
   ASSAULT: ["target"],
 };
 const WINDOW_KEYS = ["kind", "fromRound", "untilRound"];
@@ -72,6 +73,9 @@ function directiveProblem(size: number, entry: unknown): string | null {
       ? null
       : `the assault target ${show(entry.target)} is off the board`;
   if (kind !== "HOLD" && kind !== "GUARD") return null;
+  // E7 (`pulp_wars-hmyk.11`): the ships leash is `true` or absent.
+  if (entry.ships !== undefined && entry.ships !== true)
+    return `${kind} ships must be true or absent, not ${show(entry.ships)}`;
   if (kind === "GUARD") {
     const others = entry.others;
     if (others !== undefined) {
