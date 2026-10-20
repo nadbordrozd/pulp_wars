@@ -16,6 +16,14 @@ import type { MissionDefinitionV7 } from "./types";
  * mine mouths in the north cliffs, the south-western woods and the southern
  * grass.
  *
+ * The third retune (`pulp_wars-hmyk.21`, CAMPAIGN.md section 20.4, NOT play
+ * tested): Copperstep stands alone (Slagheap and the village by the Old
+ * Drift are gone) with Tobbin, a Fighter and a Gunner, three technologies
+ * and 3 Coins, and nothing but the town's own sight is explored. The Grey
+ * Shift has twelve dead, 8 Coins and four announced waves (rounds 3, 5, 8
+ * and 10) from all four cracks; it still storms Copperstep from round 1.
+ * The twelve rounds stay: a shorter hold would be an easier one.
+ *
  * ```text
  *      x 0123456789A
  * y  0   ^.f^..^^^ff
@@ -33,7 +41,9 @@ import type { MissionDefinitionV7 } from "./types";
  */
 export const DWARF_1_V7: MissionDefinitionV7 = {
   id: "DWARF_1",
-  revision: 1,
+  // Revision 2 (`pulp_wars-hmyk.21`, the third retune): a lean Copperstep
+  // against twelve dead and four announced waves.
+  revision: 2,
   seed: 20261501,
   // <map>
   size: 11,
@@ -50,6 +60,8 @@ export const DWARF_1_V7: MissionDefinitionV7 = {
       { kind: "VILLAGE", at: { x: 2, y: 9 }, present: false },
       // The Grey Stope's mouth: the fruit there is long gone.
       { kind: "RESOURCE", at: { x: 8, y: 9 }, resource: "." },
+      // Retune 3: the village below Copperstep is gone.
+      { kind: "VILLAGE", at: { x: 5, y: 9 }, present: false },
     ],
   },
   terrain: [
@@ -92,10 +104,7 @@ export const DWARF_1_V7: MissionDefinitionV7 = {
     "WWWWWWWPPPP",
     "WWWWWWWWPPP",
   ],
-  villages: [
-    { x: 2, y: 1 },
-    { x: 5, y: 9 },
-  ],
+  villages: [{ x: 2, y: 1 }],
   treasureChests: [
     { x: 4, y: 0 },
     { x: 5, y: 10 },
@@ -111,17 +120,10 @@ export const DWARF_1_V7: MissionDefinitionV7 = {
   seats: [
     {
       faction: "DWARF",
-      coins: 6,
-      // Clockwork (Gunners; Engineers Assemble), Leadership (the
-      // Engineer), Dig In (Steam Moles; Hammerers dig in by a city).
-      technologies: [
-        "GATHERING",
-        "ADMINISTRATION",
-        "HUNTING",
-        "MARKSMANSHIP",
-        "DRILL",
-        "FORTIFICATION",
-      ],
+      // Retune 3: Copperstep alone, three units, three technologies (the
+      // Gunner and a way to dig in), 3 Coins.
+      coins: 3,
+      technologies: ["HUNTING", "MARKSMANSHIP", "DRILL"],
       cities: [
         {
           name: "Copperstep",
@@ -129,30 +131,22 @@ export const DWARF_1_V7: MissionDefinitionV7 = {
           level: 3,
           rewards: ["STOCKPILE", "WALLS"],
         },
-        { name: "Slagheap", at: { x: 9, y: 5 }, level: 1, rewards: [] },
       ],
       units: [
         // Master Engineer Tobbin Copperstep, who does the sums.
         { role: "CAPTAIN", at: { x: 6, y: 5 }, tag: "TOBBIN" },
         { role: "FIGHTER", at: { x: 5, y: 4 } },
-        { role: "FIGHTER", at: { x: 5, y: 6 } },
         { role: "MARKSMAN", at: { x: 7, y: 6 } },
-        { role: "GUARD", at: { x: 9, y: 5 }, home: 1 },
       ],
-      // The three mine mouths, seen from the walls.
-      reveal: {
-        radius: 2,
-        rects: [
-          { x0: 3, y0: 0, x1: 7, y1: 3 },
-          { x0: 1, y0: 7, x1: 9, y1: 10 },
-        ],
-      },
+      // Only what the walls see.
+      reveal: { radius: 2 },
     },
     {
       // The Grey Shift: miners lost in a cave-in three hundred years ago,
       // the Unquiet, not the Marquis's.
       faction: "UNDEAD",
-      coins: 2,
+      // Retune 3: twelve dead and 8 Coins.
+      coins: 8,
       // No Field Defense: dead that dig in on their mine mouths never come
       // (hand play).
       technologies: [],
@@ -165,11 +159,15 @@ export const DWARF_1_V7: MissionDefinitionV7 = {
         { role: "GUARD", at: { x: 5, y: 1 } },
         { role: "GUARD", at: { x: 4, y: 1 } },
         { role: "FIGHTER", at: { x: 5, y: 0 } },
+        { role: "GUARD", at: { x: 3, y: 1 } },
+        { role: "FIGHTER", at: { x: 2, y: 0 } },
         { role: "GUARD", at: { x: 2, y: 9 }, home: 1 },
         { role: "GUARD", at: { x: 3, y: 9 }, home: 1 },
+        { role: "FIGHTER", at: { x: 3, y: 10 }, home: 1 },
         { role: "GUARD", at: { x: 8, y: 9 }, home: 2 },
         { role: "GUARD", at: { x: 7, y: 9 }, home: 2 },
         { role: "FIGHTER", at: { x: 9, y: 9 }, home: 2 },
+        { role: "FIGHTER", at: { x: 9, y: 10 }, home: 2 },
       ],
       reveal: { radius: 2, rects: [{ x0: 4, y0: 3, x1: 10, y1: 7 }] },
       // Step 1 keeps to the lesson: the dead learn nothing more.
@@ -201,18 +199,33 @@ export const DWARF_1_V7: MissionDefinitionV7 = {
     },
   ],
   // The tremors open new cracks: the dead come up by the north and south
-  // mouths in round 4, and in round 8 with a Necromancer from the old
-  // workings in the west and the east.
+  // mouths in rounds 3 and 10, by the west and the east in round 5, and in
+  // round 8 with a Necromancer from the old workings in the west and the
+  // east.
   reinforcements: [
     {
       seat: 1,
-      round: 4,
+      round: 3,
       units: [
         { role: "GUARD", at: { x: 3, y: 4 } },
         { role: "FIGHTER", at: { x: 3, y: 3 } },
         { role: "GUARD", at: { x: 8, y: 8 } },
         { role: "FIGHTER", at: { x: 9, y: 8 } },
       ],
+      line: "The tremors open two more cracks. Out come the miners.",
+      announce: true,
+    },
+    {
+      seat: 1,
+      round: 5,
+      units: [
+        { role: "GUARD", at: { x: 2, y: 7 } },
+        { role: "FIGHTER", at: { x: 3, y: 6 } },
+        { role: "FIGHTER", at: { x: 9, y: 3 } },
+        { role: "GUARD", at: { x: 10, y: 3 } },
+      ],
+      line: "The second crew clocks on, picks first.",
+      announce: true,
     },
     {
       seat: 1,
@@ -223,7 +236,24 @@ export const DWARF_1_V7: MissionDefinitionV7 = {
         { role: "GUARD", at: { x: 2, y: 6 } },
         { role: "FIGHTER", at: { x: 9, y: 3 } },
         { role: "GUARD", at: { x: 10, y: 3 } },
+        { role: "FIGHTER", at: { x: 8, y: 8 } },
       ],
+      line: "The old foreman climbs out, calling the roll of the dead.",
+      announce: true,
+    },
+    {
+      seat: 1,
+      round: 10,
+      units: [
+        { role: "GUARD", at: { x: 3, y: 4 } },
+        { role: "GUARD", at: { x: 3, y: 3 } },
+        { role: "FIGHTER", at: { x: 8, y: 8 } },
+        { role: "FIGHTER", at: { x: 9, y: 8 } },
+        { role: "GUARD", at: { x: 9, y: 3 } },
+        { role: "FIGHTER", at: { x: 10, y: 3 } },
+      ],
+      line: "Every miner who ever died in these workings is here.",
+      announce: true,
     },
   ],
   landmarks: [{ tag: "COPPERSTEP", at: { x: 6, y: 5 } }],

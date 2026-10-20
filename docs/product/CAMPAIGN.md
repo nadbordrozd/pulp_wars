@@ -4982,6 +4982,67 @@ The danger moments, and what each mission's hand play changed:
 - **Extensions.** E1 (the Moon Gun) was already built; E7 was not needed
   (G3's full reveal stands in for it).
 
+### 19.4 Retune 3 (untested) (`pulp_wars-hmyk.21`)
+
+The user, 2026-10-20, after retune 2: "we made a step in the right
+direction. but not quite big enough. It's still easy. the crux of the
+problem is that the AI is not smart enough ... make the other ones 75%
+harder and reduce starting resources etc. Don't worry that you might
+overshoot ... Try to over shoot. Not enough tokens to test this fully this
+week so just YOLO it." So this pass is **data only and was NOT play tested**:
+no `play-text`, no autopilot, no simulation, no thoughtful attempt. Nothing
+below says what a first attempt achieves; the build, the pins and the unit
+tests are the only checks. Every mission is one revision higher (G1 to G6: 3) and re-pinned; the tables above are the earlier passes'.
+
+The rules applied (the same lessons as sections 15.5 and 16.4, pushed
+further): the crew starts with one town and a handful of units (G1 to G3 as
+a skirmish: one level 1 or 2 town, two or three units, at most three
+technologies, 2 to 3 Coins, the map unexplored apart from what an objective
+needs known); the villages within reach of the start are gone; every enemy
+has half as many men again, more Coins and an aggressive directive from
+round 3 at the latest; every mission has at least two announced waves with a
+story line; the clocks are cut by about a fifth.
+
+| Mission | Start before                                                                                                                     | Start now                                                                                                                                                        | Enemy before                                                                         | Enemy now                                                                                                                                                                        | Waves now                                                                    | Clock (star)                                    |
+| ------- | -------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ----------------------------------------------- |
+| G1      | Camp level 2, Grubnak, Snikkit, an Ogre and two Fighters; Gathering, Leadership, Land Grants; 6 Coins; fort seen                 | Camp level 1, Grubnak, Snikkit, the Ogre; no technology; 2 Coins; only the fort's gate seen                                                                      | Fort level 3 and a level 1 toll, five men, 4 Coins, a garrison of two, the rest idle | Eight men, toll level 2, 10 Coins, Gathering and Farming; three hold, the other five `RUSH` from round 3                                                                         | The Baron's relief column, round 6                                           | Conquest by 14 (none before) (10, was 12)       |
+| G2      | Camp level 2, Mogga, two Fighters and a Chucker; Hunting, Marksmanship, Drill; 8 Coins; the downs seen                           | Camp level 1, Mogga and a Fighter; no technology (no Chucker yet); 2 Coins; only the cove seen                                                                   | Cove level 2, five dead, 3 Coins, three held home, two `RUSH` from round 1           | Eight dead, 8 Coins, Gathering, Farming, Hunting, Drill; four hold, four `RUSH` from round 3                                                                                     | Rounds 5 and 9 up the beach (the second with a Necromancer)                  | Capture by 14 (12) (was 18 and 15)              |
+| G3      | Saltreef Camp and Tarry Wharf (level 3, walled), three Fighters, two rafts, a Barrel; four technologies; 8 Coins; whole sea seen | Tarry Wharf alone (level 2), a Fighter, a raft and the Barrel (no Submersibles yet); 3 Coins; the southern waters seen                                           | Two towns, four ships (3 with Snapjaw) and two Fighters, 4 Coins, passive            | Three Dugouts, three Plesiosaurs (Snapjaw and two), 10 Coins, Hunting; `RUSH` on the wharf from round 2                                                                          | Rounds 4 (two war-canoes) and 7 (a Plesiosaur and a canoe)                   | Kill Snapjaw by 13 (10) (was 16 and 12)         |
+| G4      | Egg Rock, six units, seven technologies, 8 Coins, the island seen                                                                | Egg Rock, Snikkit, the Ogre and a Chucker; four technologies; 3 Coins; the village by the beach gone; the port's tiles seen                                      | Port Kessler garrison six, 4 Coins; the tribes five men, passive                     | Ten men (seven on the headland, three outside the neck `RUSH` from round 3), 12 Coins, Gathering and Scouting; the tribes eight men, 8 Coins, `ASSAULT` on Egg Rock from round 3 | The tribes in rounds 4 and 8, the Baron's harbour guard in rounds 6 and 11   | Capture by 16 (13) (was 20 and 16)              |
+| G5      | The Rock (level 3, walled), five units, five technologies, 6 Coins, the island seen                                              | The Rock (level 3, walled), Mogga, a Guard and a Fighter; three technologies; 2 Coins; the village gone                                                          | Loyalists with two men and 4 Coins, Martians with three men and 4 Coins              | Loyalists four men, 10 Coins, Gathering and Scouting; Martians five men, 10 Coins, Hunting and Drill                                                                             | Loyalists in rounds 3, 6, 9, 12; Martians in 4, 8, 12; the crews in round 13 | Hold 16 (kept: a shorter hold is an easier one) |
+| G6      | The Hall (level 3, walled) and the Quay, seven units, ten technologies, 10 Coins, the road seen                                  | The Hall (level 2), the Getaway, the Warboss, an Ogre and a Fighter; six technologies; 3 Coins; three more villages gone; only the Hall's side and the Gate seen | The Lodge nine men, 4 Coins; the dead four men, 3 Coins; both marching from round 1  | The Lodge thirteen men, 10 Coins (Favour 6); the dead eight men, 8 Coins, Hunting and Drill; both still march from round 1                                                       | The dead in rounds 3 and 8, the Lodge in rounds 5 and 11                     | Escort by 16 (13) (was 20 and 16)               |
+
+Notes on the choices:
+
+- **G1** gets its first clock (the saga's Conquest has stars only) and its
+  first wave. The fort is still level 3 and walled: a level 4 fort cannot be
+  built on this board (the builder wants four bare Grass tiles in the
+  territory and the fort has three).
+- **G2** has no Bomb Chuckers until Hunting and Marksmanship are learned; the
+  cove stays level 2 (level 3 wants three harvested Grass tiles, it has one)
+  and the cove's tiles are explored so that the objective's place is known.
+- **G3** drops the camp on the island and its slipway and every village of
+  the crew's shore. The tribes' towns keep their levels (level 3 does not
+  fit Shellmound). Submerged Snapjaw is only seen on explored water, so the
+  southern waters round the wharf are revealed and the tribes hunt the wharf:
+  Snapjaw comes to the crew.
+- **G4**: Port Kessler stays level 3 (level 4 needs one Grass tile more than
+  the headland has); the headland holds seven men at most, so three stand
+  outside the neck and march on the beachhead.
+- **G5** keeps its sixteen rounds: cutting a hold-out's clock makes it easier.
+  The waves are what grew, from five to seven, and all of them are announced.
+- **G6**: the Hall drops to level 2 and the Quay is gone with its village;
+  the Getaway is homed to the Hall. The Lodge's camps and the dead's mound
+  keep their levels (a level 3 town there wants more bare Grass than any has).
+  The Gate's tiles are explored so that the escort's place is known.
+
+**Follow-ups.** Everything above is a guess. The first real run of each
+mission should say whether a thoughtful first attempt takes about 60 to 100%
+of the clock; G3 (Snapjaw coming to the wharf from round 2 with three
+Plesiosaurs), G5 (seven waves on a level 3 Rock with three units) and the
+Dwarf campaign's D1 (see section 20.4) are the likeliest to be unwinnable
+and are the first to ease.
+
 ## 20. The Dwarf campaign, "The Bottomless" (`pulp_wars-hmyk.9`)
 
 The fourth tier-2 faction campaign, after the Goblins (section 19): six
@@ -5147,6 +5208,54 @@ The danger moments, and what each mission's hand play changed:
   never leaves its zone, so it can be worn down from outside its reach;
   Martian Grunts cannot climb, so a Martian assault on a mountain hold
   stalls at the foot.
+
+### 20.4 Retune 3 (untested) (`pulp_wars-hmyk.21`)
+
+The same pass as section 19.4, from the same words of the user, and with
+the same warning: **data only, NOT play tested** (no `play-text`, no
+autopilot, no simulation). Every mission is one revision higher (D1 2, D2 2,
+D3 2, D4 3, D5 3, D6 3) and re-pinned. The tables above are the earlier
+passes'.
+
+| Mission | Start before                                                                                                                 | Start now                                                                                                                                                                    | Enemy before                                                                                  | Enemy now                                                                                              | Waves now                                                                         | Clock (star)                             |
+| ------- | ---------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------- | ---------------------------------------- |
+| D1      | Copperstep (level 3, walled) and Slagheap, five units, six technologies, 6 Coins, three mouths seen                          | Copperstep alone (level 3, walled), Tobbin, a Fighter and a Gunner; three technologies; 3 Coins; the village below it gone; only the walls' sight                            | Eight dead at three mouths, 2 Coins, `ASSAULT` from round 1                                   | Twelve dead, 8 Coins, `ASSAULT` from round 1                                                           | Rounds 3, 5, 8 and 10 (was 4 and 8)                                               | Hold 12 (kept: a shorter hold is easier) |
+| D2      | Copperstep (level 3, walled), six units, six technologies, 8 Coins, the Peak seen                                            | Copperstep (level 2), the Engineer, a Gunner and a Fighter; Drill alone; 3 Coins; the village and chest beside it gone; only the three camps' tiles seen                     | Ten men, no technology, 2 Coins, six held the camps, the rest roamed                          | Sixteen men, Gathering and Hunting, 8 Coins; nine hold the camps, seven `RUSH` Copperstep from round 3 | Rounds 4, 7 and 10 (none before)                                                  | Capture by 16 (13) (was 20 and 16)       |
+| D3      | The Deep Gate (level 4) and Lanternhall, seven units, six technologies, 8 Coins, the shaft seen                              | The Deep Gate (level 3) alone, the Thane, Tobbin, a Fighter and a Gunner; three technologies; 3 Coins; two villages gone; the gallery's top and the Bell's Rest seen         | Seven dead, six held the gallery; the diggers two units, out on round 8, 2 Favour             | Eleven dead, ten hold the gallery, 6 Coins; the diggers 6 Coins, 3 Favour, out on round 4              | The dead in rounds 4 and 9, the diggers in rounds 5 and 12 (none before)          | Escort by 16 (13) (was 20 and 16)        |
+| D4      | The Hold (level 4) and Copperstep (level 3), seven units, eight technologies, 10 Coins, the meadow seen                      | The Hold alone (level 3), a Fighter, the Engineer, a Gunner and a Gyrocopter; five technologies; 3 Coins; two villages gone; only the landing field seen                     | Six Martians (four held the field, two went for the Hold), 3 Coins                            | Eleven Martians (four hold the field, seven go for the Hold), 10 Coins                                 | Rounds 3, 5, 8 and 11 (was 5 and 9)                                               | Kill by 14 (11) (was 18 and 14)          |
+| D5      | Anvil Bay (level 3) and the River Landing (level 2), five ships and a Fighter, nine technologies, 12 Coins, the estuary seen | Anvil Bay (level 2) alone, four ships; four technologies (no Submersibles); 4 Coins; two villages and a chest gone; only the Landing seen                                    | The Lodge four ships and a Captain, 0 Coins; the Redcaps four units, 3 Coins, passive         | The Lodge 6 Coins; the Redcaps seven units, 8 Coins, `RUSH` from round 3                               | The Redcaps in rounds 3 and 8, the Lodge in rounds 5 and 10 (none before)         | Escort by 18 (15) (was 22 and 18)        |
+| D6      | The Hold and Copperstep (both level 3, walled), eight units, ten technologies, 3 Coins                                       | The Hold (level 2) and Copperstep (level 3, walled), the Thane, a Fighter, a Hammerer and a Gunner; six technologies; 2 Coins; two villages gone; only the Gate's tiles seen | Twelve dead, 2 Coins; the Lodge four men, 4 Favour, 0 Coins; the Rangers marched from round 6 | Sixteen dead, 8 Coins; the Lodge five men, 6 Coins, 5 Favour; the Rangers march from round 8           | The dead in rounds 3, 6, 9 and 12 (was 4, 7, 10, 13), the Lodge in rounds 5 and 9 | Capture by 16 (13) (was 20 and 16)       |
+
+Notes on the choices:
+
+- **D1** keeps its Copperstep at level 3 and its walls (a hold-out needs a
+  wall to dig in against) and loses Slagheap, its Guard, a Fighter and the
+  sight of the mouths. The twelve rounds stay because a shorter hold is
+  easier.
+- **D2**: the clan may learn Gathering and Hunting (Snow Hunters). Nine of
+  its sixteen hold the camps; the other seven are the ones that march.
+- **D3**: Lanternhall is gone, so the Thane's party homes to one Gate. The
+  gallery now holds eleven dead; the diggers' cave leaves room for nobody
+  else (the Lodge cannot climb), so the diggers grow by waves.
+- **D4**: Copperstep's three Mines went with it (they are outside the Hold's
+  territory). Units on peaks need Mining, so the Hold's party stands on its
+  tiles, not on the ore peaks. The Martians cannot learn more than Scouting
+  (their other technologies stay forbidden, as hand play set), so the extra
+  strength is men and Coins.
+- **D5**: the River Landing is only a landing now (a tile the Anvil must
+  reach); the Lodge's ships ignore directives (E7 is not built), so the
+  Lodge has no new directive and the Redcaps are the ones that hunt.
+- **D6**: the Rangers wait two rounds longer. The Lodge's Favour is 5 (hand
+  play: 8 made an Imp a turn, 4 a Horror on round 1).
+
+**Follow-ups.** As for the Goblins: D1 (twelve dead and four waves on a
+three-unit Copperstep), D3 (eleven dead in a one-tile gallery with the Thane
+at three technologies) and D6 (a finale of four units against sixteen) are
+the likeliest to need easing once somebody plays them. The builder's rules
+found while retuning (a city's level needs that many bare or fruit Grass
+tiles in its territory; a capture or escort place must be on ground the
+player has explored; a unit on a chest tile or a peak without Mining is
+refused) are in `src/engine/v7/missions/build.ts`.
 
 ## 21. The Candy campaign, "Sweet Dreams" (`pulp_wars-hmyk.11`)
 

@@ -24,6 +24,16 @@ import type { MissionDefinitionV7 } from "./types";
  * Lodge's camp on the slope east of the Gate, the Rangers' camp on the
  * southern road.
  *
+ * The third retune (`pulp_wars-hmyk.21`, CAMPAIGN.md section 20.4, NOT play
+ * tested): the finale starts lean. Copperstep (level 3) and the Hold (level
+ * 2), the Thane, a Fighter, a Hammerer and a Gunner, six technologies and
+ * 2 Coins; the two villages by the cities are gone and only the Deep Gate's
+ * own tiles are explored. The Unquiet hold the Gate with sixteen men and 8
+ * Coins and march from round 1, the Lodge has five men, 6 Coins and 5
+ * Favour, and six announced waves: the dead (rounds 3, 6, 9 and 12)
+ * and two of the Lodge (rounds 5 and 9) arrive. The Rangers wait until round
+ * 8 to march. The clock is 16 rounds.
+ *
  * ```text
  *      x 0123456789ABCDEF
  * y  5   ......v......f^^
@@ -42,7 +52,9 @@ import type { MissionDefinitionV7 } from "./types";
 export const DWARF_6_V7: MissionDefinitionV7 = {
   id: "DWARF_6",
   // Revision 2 (`pulp_wars-hmyk.17`): each seat explores its units' sight.
-  revision: 2,
+  // Revision 3 (`pulp_wars-hmyk.21`, the third retune): a lean finale
+  // against a Gate of sixteen and six announced waves.
+  revision: 3,
   seed: 20261506,
   // <map>
   size: 16,
@@ -61,6 +73,9 @@ export const DWARF_6_V7: MissionDefinitionV7 = {
       { kind: "VILLAGE", at: { x: 14, y: 10 }, present: false },
       { kind: "VILLAGE", at: { x: 5, y: 13 }, present: false },
       { kind: "VILLAGE", at: { x: 14, y: 7 }, present: false },
+      // Retune 3: no free village by the Hold or Copperstep.
+      { kind: "VILLAGE", at: { x: 6, y: 5 }, present: false },
+      { kind: "VILLAGE", at: { x: 2, y: 10 }, present: false },
     ],
   },
   terrain: [
@@ -123,8 +138,6 @@ export const DWARF_6_V7: MissionDefinitionV7 = {
     { x: 5, y: 1 },
     { x: 11, y: 1 },
     { x: 14, y: 1 },
-    { x: 6, y: 5 },
-    { x: 2, y: 10 },
     { x: 11, y: 7 },
     { x: 8, y: 13 },
   ],
@@ -159,25 +172,22 @@ export const DWARF_6_V7: MissionDefinitionV7 = {
       // and the Explorer monument (one Gyrocopter flight away) made
       // Copperstep level 5 and a Brass Titan at once; with less in hand and
       // less of the board known the giant comes a round later.
-      coins: 3,
+      // Retune 3: 2 Coins, six technologies, four units.
+      coins: 2,
       technologies: [
         "GATHERING",
-        "ADMINISTRATION",
         "HUNTING",
         "MARKSMANSHIP",
-        "SCOUTING",
-        "RAIDING",
         "DRILL",
         "FORTIFICATION",
         "ENGINEERING",
-        "METALLURGY",
       ],
       cities: [
         {
           name: "Ironbraid Hold",
           at: { x: 2, y: 7 },
-          level: 3,
-          rewards: ["STOCKPILE", "WALLS"],
+          level: 2,
+          rewards: ["STOCKPILE"],
         },
         {
           name: "Copperstep",
@@ -190,22 +200,21 @@ export const DWARF_6_V7: MissionDefinitionV7 = {
         // Thane Brunhild Ironbraid, come to see the lid go down.
         { role: "CAPTAIN", at: { x: 2, y: 7 }, tag: "THANE" },
         { role: "FIGHTER", at: { x: 3, y: 7 } },
-        { role: "MARKSMAN", at: { x: 2, y: 6 } },
-        { role: "RAIDER", at: { x: 1, y: 7 } },
         { role: "SWORDSMAN", at: { x: 6, y: 8 }, home: 1 },
-        { role: "SWORDSMAN", at: { x: 7, y: 7 }, home: 1 },
-        { role: "FIGHTER", at: { x: 6, y: 7 }, home: 1 },
         { role: "MARKSMAN", at: { x: 6, y: 9 }, home: 1 },
       ],
+      // The Deep Gate's own tiles (the objective's place must be known);
+      // the bowl round it is unexplored.
       reveal: {
         radius: 2,
-        rects: [{ x0: 8, y0: 8, x1: 15, y1: 13 }],
+        rects: [{ x0: 10, y0: 9, x1: 12, y1: 11 }],
       },
     },
     {
       // The Unquiet from the shaft, holding the Deep Gate.
       faction: "UNDEAD",
-      coins: 2,
+      // Retune 3: sixteen men and 8 Coins.
+      coins: 8,
       technologies: [],
       cities: [
         {
@@ -231,6 +240,10 @@ export const DWARF_6_V7: MissionDefinitionV7 = {
         { role: "FIGHTER", at: { x: 9, y: 13 } },
         { role: "GUARD", at: { x: 14, y: 13 } },
         { role: "CATAPULT", at: { x: 14, y: 12 } },
+        { role: "FIGHTER", at: { x: 11, y: 13 } },
+        { role: "GUARD", at: { x: 11, y: 14 } },
+        { role: "FIGHTER", at: { x: 10, y: 14 } },
+        { role: "SWORDSMAN", at: { x: 10, y: 15 } },
       ],
       // Copperstep and the road to it (hand play: with half the board
       // revealed the Unquiet earned the Explorer monument and the Gate grew
@@ -274,8 +287,9 @@ export const DWARF_6_V7: MissionDefinitionV7 = {
       // Enough Favour for a Horror on round 1 (hand play on an earlier
       // board: with 8 the Lodge summoned an Imp a turn from round 3 and a
       // Horror by round 9).
-      coins: 0,
-      favour: 4,
+      // Retune 3: 6 Coins, 5 Favour (hand play: 8 made an Imp a turn).
+      coins: 6,
+      favour: 5,
       technologies: [
         "GATHERING",
         "ADMINISTRATION",
@@ -296,6 +310,7 @@ export const DWARF_6_V7: MissionDefinitionV7 = {
         { role: "GUARD", at: { x: 13, y: 10 } },
         { role: "FIGHTER", at: { x: 15, y: 9 } },
         { role: "FIGHTER", at: { x: 14, y: 11 } },
+        { role: "GUARD", at: { x: 15, y: 10 } },
       ],
       reveal: { radius: 2, rects: [{ x0: 5, y0: 6, x1: 10, y1: 10 }] },
       forbiddenTechnologies: [
@@ -356,47 +371,83 @@ export const DWARF_6_V7: MissionDefinitionV7 = {
         "METALLURGY",
         "EXPLOSIVES",
       ],
-      // The Rangers find their feet, then march on the dead.
-      directive: [{ kind: "NORMAL", untilRound: 6 }, { kind: "RUSH" }],
+      // The Rangers find their feet, then march on the dead (from round 8;
+      // it was 6).
+      directive: [{ kind: "NORMAL", untilRound: 8 }, { kind: "RUSH" }],
     },
   ],
-  // More dead climb out of the shaft by the Gate every third round.
+  // More dead climb out of the shaft by the Gate every third round, and
+  // the Lodge sends more up the eastern slope.
   reinforcements: [
     {
       seat: 1,
-      round: 4,
+      round: 3,
       units: [
         { role: "GUARD", at: { x: 12, y: 14 } },
         { role: "FIGHTER", at: { x: 11, y: 13 } },
         { role: "FIGHTER", at: { x: 10, y: 12 } },
+        { role: "GUARD", at: { x: 12, y: 15 } },
       ],
+      line: "The Bottomless coughs up the first of the night's dead.",
+      announce: true,
+    },
+    {
+      seat: 2,
+      round: 5,
+      units: [
+        { role: "FIGHTER", at: { x: 14, y: 11 } },
+        { role: "FIGHTER", at: { x: 15, y: 10 } },
+        { role: "GUARD", at: { x: 15, y: 9 } },
+      ],
+      line: "Grey hoods file up the eastern slope with a lantern each.",
+      announce: true,
     },
     {
       seat: 1,
-      round: 7,
+      round: 6,
       units: [
         { role: "SWORDSMAN", at: { x: 12, y: 14 } },
         { role: "GUARD", at: { x: 11, y: 13 } },
         { role: "FIGHTER", at: { x: 10, y: 12 } },
+        { role: "FIGHTER", at: { x: 12, y: 15 } },
       ],
+      line: "More dead climb out of the shaft. They apologise for the noise.",
+      announce: true,
     },
     {
       seat: 1,
-      round: 10,
+      round: 9,
       units: [
         { role: "GUARD", at: { x: 12, y: 14 } },
         { role: "SWORDSMAN", at: { x: 11, y: 13 } },
         { role: "CAPTAIN", at: { x: 10, y: 12 } },
+        { role: "FIGHTER", at: { x: 12, y: 15 } },
       ],
+      line: "A Necromancer in a good coat comes up the shaft, and he is cross.",
+      announce: true,
+    },
+    {
+      seat: 2,
+      round: 9,
+      units: [
+        { role: "CAPTAIN", at: { x: 14, y: 11 } },
+        { role: "FIGHTER", at: { x: 15, y: 10 } },
+        { role: "GUARD", at: { x: 15, y: 9 } },
+      ],
+      line: "The Lodge's choirmaster arrives to conduct the end of the world.",
+      announce: true,
     },
     {
       seat: 1,
-      round: 13,
+      round: 12,
       units: [
         { role: "SWORDSMAN", at: { x: 12, y: 14 } },
         { role: "GUARD", at: { x: 11, y: 13 } },
         { role: "FIGHTER", at: { x: 10, y: 12 } },
+        { role: "SWORDSMAN", at: { x: 12, y: 15 } },
       ],
+      line: "The last of the deep dead come up in step, and they are many.",
+      announce: true,
     },
   ],
   landmarks: [{ tag: "DEEP_GATE", at: { x: 11, y: 10 } }],
@@ -408,14 +459,14 @@ export const DWARF_6_V7: MissionDefinitionV7 = {
     "SEAMANSHIP",
     "SUBMERSIBLES",
   ],
-  // The Deep Gate by round 20. The stars: by round 16, and the Thane
-  // lives.
+  // The Deep Gate by round 16 (it was 20). The stars: by round 13, and the
+  // Thane lives.
   objective: {
     kind: "CAPTURE",
     places: ["DEEP_GATE"],
-    byRound: 20,
+    byRound: 16,
     bonus: [
-      { kind: "WITHIN_ROUNDS", rounds: 16 },
+      { kind: "WITHIN_ROUNDS", rounds: 13 },
       { kind: "UNIT_ALIVE", unit: "THANE" },
     ],
   },

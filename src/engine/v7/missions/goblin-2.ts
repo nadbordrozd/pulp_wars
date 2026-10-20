@@ -21,6 +21,14 @@ import type { MissionDefinitionV7 } from "./types";
  * fresh Skeleton on their centres every turn and the crew never reached
  * the cove's centre in time.
  *
+ * The third retune (`pulp_wars-hmyk.21`, CAMPAIGN.md section 19.4, NOT play
+ * tested): a skirmish start. The camp is level 1 with Mogga and a Fighter,
+ * no technology (no Bomb Chuckers until Hunting and Marksmanship are
+ * learned) and 2 Coins; the two villages and the chest near the camp are
+ * gone, and the map is unexplored. The cove has eight dead,
+ * four of whom march on the camp from round 3, and two announced waves
+ * (rounds 5 and 9) come up the beach. The clock is 14 rounds.
+ *
  * ```text
  *      x 01234567890123
  * y  0   ~~~~~~~~~~~~~~
@@ -42,7 +50,9 @@ import type { MissionDefinitionV7 } from "./types";
 export const GOBLIN_2_V7: MissionDefinitionV7 = {
   id: "GOBLIN_2",
   // Revision 2 (`pulp_wars-hmyk.17`): each seat explores its units' sight.
-  revision: 2,
+  // Revision 3 (`pulp_wars-hmyk.21`, the third retune): a skirmish start
+  // against a cove of eight that marches from round 3.
+  revision: 3,
   seed: 20261502,
   // <map>
   size: 14,
@@ -59,6 +69,10 @@ export const GOBLIN_2_V7: MissionDefinitionV7 = {
       { kind: "VILLAGE", at: { x: 3, y: 9 }, present: false },
       { kind: "VILLAGE", at: { x: 9, y: 12 }, present: false },
       { kind: "VILLAGE", at: { x: 12, y: 9 }, present: false },
+      // Retune 3: nothing free within reach of the camp.
+      { kind: "VILLAGE", at: { x: 6, y: 6 }, present: false },
+      { kind: "VILLAGE", at: { x: 6, y: 3 }, present: false },
+      { kind: "CHEST", at: { x: 3, y: 4 }, present: false },
     ],
   },
   terrain: [
@@ -111,15 +125,10 @@ export const GOBLIN_2_V7: MissionDefinitionV7 = {
     "PPPPPPPPPPPPPP",
   ],
   villages: [
-    { x: 6, y: 3 },
-    { x: 6, y: 6 },
     { x: 9, y: 6 },
     { x: 12, y: 6 },
   ],
-  treasureChests: [
-    { x: 5, y: 2 },
-    { x: 3, y: 4 },
-  ],
+  treasureChests: [{ x: 5, y: 2 }],
   // </map>
   // The cove's farm, on the fertile ground above the slipways.
   improvements: [{ at: { x: 3, y: 11 }, improvement: "FARM" }],
@@ -132,33 +141,29 @@ export const GOBLIN_2_V7: MissionDefinitionV7 = {
   seats: [
     {
       faction: "GOBLIN",
-      coins: 8,
-      // Bomb Chuckers, and the Workshop root.
-      technologies: ["HUNTING", "MARKSMANSHIP", "DRILL"],
+      // Retune 3: a skirmish start. Mogga and a Fighter, no technology
+      // (Bomb Chuckers come with Hunting and Marksmanship), 2 Coins.
+      coins: 2,
+      technologies: [],
       cities: [
-        {
-          name: "Gullcliff Camp",
-          at: { x: 3, y: 6 },
-          level: 2,
-          rewards: ["STOCKPILE"],
-        },
+        { name: "Gullcliff Camp", at: { x: 3, y: 6 }, level: 1, rewards: [] },
       ],
       units: [
         // Mogga the Ogre, who carries the powder.
         { role: "SWORDSMAN", at: { x: 3, y: 7 }, tag: "MOGGA" },
         { role: "FIGHTER", at: { x: 3, y: 6 } },
-        { role: "FIGHTER", at: { x: 4, y: 7 } },
-        { role: "MARKSMAN", at: { x: 2, y: 6 } },
       ],
-      // The downs down to the cove.
-      reveal: { radius: 2, rects: [{ x0: 1, y0: 2, x1: 8, y1: 12 }] },
+      // The camp and the cove (the objective's place must be known); the
+      // downs between are unexplored.
+      reveal: { radius: 1, rects: [{ x0: 2, y0: 11, x1: 4, y1: 12 }] },
     },
     {
       // The Unquiet: drowned sailors, a Necromancer who reads the tide
       // tables, and the Zombies on the slipways.
       faction: "UNDEAD",
-      coins: 3,
-      technologies: ["GATHERING"],
+      // Retune 3: eight dead, 8 Coins and four techs.
+      coins: 8,
+      technologies: ["GATHERING", "FARMING", "HUNTING", "DRILL"],
       cities: [
         {
           name: "Wreckers' Cove",
@@ -167,14 +172,17 @@ export const GOBLIN_2_V7: MissionDefinitionV7 = {
           rewards: ["STOCKPILE"],
         },
       ],
-      // The cove's three first: the garrison is chosen by unit ID among
+      // The cove's four first: the garrison is chosen by unit ID among
       // the units inside the zone.
       units: [
         { role: "GUARD", at: { x: 3, y: 12 } },
         { role: "CAPTAIN", at: { x: 4, y: 11 } },
         { role: "FIGHTER", at: { x: 3, y: 11 } },
+        { role: "GUARD", at: { x: 2, y: 11 } },
         { role: "FIGHTER", at: { x: 6, y: 11 } },
         { role: "FIGHTER", at: { x: 6, y: 10 } },
+        { role: "FIGHTER", at: { x: 5, y: 11 } },
+        { role: "FIGHTER", at: { x: 5, y: 10 } },
       ],
       reveal: { radius: 2 },
       // Step 2 keeps to the lesson: one Necromancer, no Banshees, Liches,
@@ -195,13 +203,47 @@ export const GOBLIN_2_V7: MissionDefinitionV7 = {
         "FORTIFICATION",
         "EXPLOSIVES",
       ],
-      // Three hold the cove; the rest raid up the coast.
-      directive: {
-        kind: "GUARD",
-        zone: [{ x0: 2, y0: 10, x1: 4, y1: 12 }],
-        garrison: 3,
-        others: { kind: "RUSH" },
-      },
+      // Four hold the cove; the rest raid up the coast from round 3.
+      directive: [
+        {
+          kind: "GUARD",
+          zone: [{ x0: 2, y0: 10, x1: 4, y1: 12 }],
+          garrison: 4,
+          untilRound: 3,
+        },
+        {
+          kind: "GUARD",
+          zone: [{ x0: 2, y0: 10, x1: 4, y1: 12 }],
+          garrison: 4,
+          others: { kind: "RUSH" },
+        },
+      ],
+    },
+  ],
+  // Two shifts more come up the beach.
+  reinforcements: [
+    {
+      seat: 1,
+      round: 5,
+      units: [
+        { role: "FIGHTER", at: { x: 4, y: 9 } },
+        { role: "FIGHTER", at: { x: 5, y: 9 } },
+        { role: "GUARD", at: { x: 6, y: 9 } },
+      ],
+      line: "Another tide of drowned men walks up the beach, dripping.",
+      announce: true,
+    },
+    {
+      seat: 1,
+      round: 9,
+      units: [
+        { role: "CAPTAIN", at: { x: 5, y: 8 } },
+        { role: "FIGHTER", at: { x: 6, y: 8 } },
+        { role: "FIGHTER", at: { x: 7, y: 8 } },
+        { role: "GUARD", at: { x: 4, y: 9 } },
+      ],
+      line: "The second shift clocks on, with a Necromancer who is late.",
+      announce: true,
     },
   ],
   // The Lost Sea is for the next mission.
@@ -213,11 +255,12 @@ export const GOBLIN_2_V7: MissionDefinitionV7 = {
     "SUBMERSIBLES",
   ],
   landmarks: [{ tag: "WRECKERS_COVE", at: { x: 3, y: 12 } }],
-  // Take the cove by round 18. The stars: by round 15, and no city lost.
+  // Take the cove by round 14 (it was 18). The stars: by round 12, and no
+  // city lost.
   objective: {
     kind: "CAPTURE",
     places: ["WRECKERS_COVE"],
-    byRound: 18,
-    bonus: [{ kind: "WITHIN_ROUNDS", rounds: 15 }, { kind: "KEEP_CITIES" }],
+    byRound: 14,
+    bonus: [{ kind: "WITHIN_ROUNDS", rounds: 12 }, { kind: "KEEP_CITIES" }],
   },
 };

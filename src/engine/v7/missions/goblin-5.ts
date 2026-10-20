@@ -18,6 +18,13 @@ import type { MissionDefinitionV7 } from "./types";
  * Brutes, and kill every Brain before it reaches the line. The getaway
  * rafts' crew comes early, in round 12, to help dig in.
  *
+ * The third retune (`pulp_wars-hmyk.21`, CAMPAIGN.md section 19.4, NOT play
+ * tested): the Rock starts lean (Mogga, a Guard and a Fighter, three
+ * technologies, 2 Coins; the eastern village is gone) and the sixteen
+ * rounds stay. The loyalists have a level 3 camp, four men, 10 Coins and
+ * land in four announced waves (rounds 3, 6, 9 and 12); the Martians have a
+ * hollow of five men, 10 Coins and drop in three (rounds 4, 8 and 12). The raft crews arrive in round 13, one round later.
+ *
  * ```text
  *      x 0123456789012345
  * y  0   ...^.~~~~~..^^..
@@ -41,7 +48,9 @@ import type { MissionDefinitionV7 } from "./types";
 export const GOBLIN_5_V7: MissionDefinitionV7 = {
   id: "GOBLIN_5",
   // Revision 2 (`pulp_wars-hmyk.17`): each seat explores its units' sight.
-  revision: 2,
+  // Revision 3 (`pulp_wars-hmyk.21`, the third retune): a lean Rock against
+  // seven announced waves.
+  revision: 3,
   seed: 20261505,
   // <map>
   size: 16,
@@ -59,6 +68,8 @@ export const GOBLIN_5_V7: MissionDefinitionV7 = {
       { kind: "VILLAGE", at: { x: 1, y: 5 }, present: false },
       { kind: "VILLAGE", at: { x: 4, y: 5 }, present: false },
       { kind: "VILLAGE", at: { x: 5, y: 11 }, present: false },
+      // Retune 3: the one village left on the Rock's island is gone.
+      { kind: "VILLAGE", at: { x: 11, y: 12 }, present: false },
     ],
   },
   terrain: [
@@ -116,7 +127,7 @@ export const GOBLIN_5_V7: MissionDefinitionV7 = {
     "PPPPPPPPPPPPPPPP",
     "PPPPPPPPPPPPPPPP",
   ],
-  villages: [{ x: 11, y: 12 }],
+  villages: [],
   treasureChests: [
     { x: 13, y: 2 },
     { x: 15, y: 4 },
@@ -128,14 +139,9 @@ export const GOBLIN_5_V7: MissionDefinitionV7 = {
   seats: [
     {
       faction: "GOBLIN",
-      coins: 6,
-      technologies: [
-        "GATHERING",
-        "HUNTING",
-        "MARKSMANSHIP",
-        "DRILL",
-        "FORTIFICATION",
-      ],
+      // Retune 3: three units, three technologies, 2 Coins.
+      coins: 2,
+      technologies: ["HUNTING", "DRILL", "FORTIFICATION"],
       cities: [
         {
           name: "Smuggler's Rock",
@@ -149,29 +155,38 @@ export const GOBLIN_5_V7: MissionDefinitionV7 = {
         { role: "SWORDSMAN", at: { x: 8, y: 12 }, tag: "MOGGA" },
         { role: "GUARD", at: { x: 8, y: 13 } },
         { role: "FIGHTER", at: { x: 7, y: 13 } },
-        { role: "FIGHTER", at: { x: 9, y: 13 } },
-        { role: "MARKSMAN", at: { x: 9, y: 14 } },
       ],
-      // The southern island and the water round it.
-      reveal: { radius: 3, rects: [{ x0: 2, y0: 9, x1: 13, y1: 15 }] },
+      // The Rock and the water round it.
+      reveal: { radius: 3, rects: [{ x0: 4, y0: 10, x1: 12, y1: 15 }] },
     },
     {
       // Kessler's last loyal men: a jungle camp on the north-western island,
       // who come ashore in landing parties.
       faction: "ORIGINAL",
-      coins: 4,
-      technologies: ["HUNTING", "MARKSMANSHIP", "DRILL", "FORTIFICATION"],
+      // Retune 3: a level 3 camp, four men, 10 Coins, Gathering and
+      // Scouting.
+      coins: 10,
+      technologies: [
+        "GATHERING",
+        "SCOUTING",
+        "HUNTING",
+        "MARKSMANSHIP",
+        "DRILL",
+        "FORTIFICATION",
+      ],
       cities: [
         {
           name: "Kessler's Camp",
           at: { x: 2, y: 2 },
-          level: 2,
-          rewards: ["STOCKPILE"],
+          level: 3,
+          rewards: ["STOCKPILE", "MILITIA"],
         },
       ],
       units: [
         { role: "GUARD", at: { x: 2, y: 2 } },
         { role: "FIGHTER", at: { x: 3, y: 2 } },
+        { role: "MARKSMAN", at: { x: 2, y: 3 } },
+        { role: "FIGHTER", at: { x: 1, y: 2 } },
       ],
       reveal: { radius: 2 },
       forbiddenTechnologies: [
@@ -190,8 +205,15 @@ export const GOBLIN_5_V7: MissionDefinitionV7 = {
     {
       // The Martians of Ray Hollow: saucers over the water, and Brains.
       faction: "MARTIAN",
-      coins: 4,
-      technologies: ["SCOUTING", "GATHERING", "ADMINISTRATION"],
+      // Retune 3: five men, 10 Coins, two more techs.
+      coins: 10,
+      technologies: [
+        "SCOUTING",
+        "GATHERING",
+        "ADMINISTRATION",
+        "HUNTING",
+        "DRILL",
+      ],
       cities: [
         {
           name: "Ray Hollow",
@@ -204,6 +226,8 @@ export const GOBLIN_5_V7: MissionDefinitionV7 = {
         { role: "RAIDER", at: { x: 13, y: 4 } },
         { role: "RAIDER", at: { x: 11, y: 5 } },
         { role: "CAPTAIN", at: { x: 13, y: 3 } },
+        { role: "RAIDER", at: { x: 12, y: 4 } },
+        { role: "RAIDER", at: { x: 14, y: 4 } },
       ],
       reveal: { radius: 2, rects: [{ x0: 6, y0: 10, x1: 11, y1: 15 }] },
       forbiddenTechnologies: [
@@ -232,58 +256,101 @@ export const GOBLIN_5_V7: MissionDefinitionV7 = {
         { role: "FIGHTER", at: { x: 4, y: 12 } },
         { role: "FIGHTER", at: { x: 3, y: 11 } },
         { role: "MARKSMAN", at: { x: 4, y: 11 } },
+        { role: "GUARD", at: { x: 5, y: 11 } },
       ],
+      line: "The Baron's last loyalists row ashore, shouting about contracts.",
+      announce: true,
     },
     {
       seat: 1,
-      round: 7,
+      round: 6,
       units: [
         { role: "GUARD", at: { x: 4, y: 12 } },
         { role: "FIGHTER", at: { x: 3, y: 11 } },
         { role: "MARKSMAN", at: { x: 4, y: 11 } },
         { role: "FIGHTER", at: { x: 5, y: 11 } },
+        { role: "MARKSMAN", at: { x: 6, y: 11 } },
       ],
+      line: "More loyalists wade in with a lawyer, a flag and a grudge.",
+      announce: true,
     },
     {
       seat: 1,
-      round: 11,
+      round: 9,
       units: [
         { role: "FIGHTER", at: { x: 4, y: 12 } },
         { role: "MARKSMAN", at: { x: 3, y: 11 } },
         { role: "MARKSMAN", at: { x: 4, y: 11 } },
         { role: "GUARD", at: { x: 5, y: 11 } },
+        { role: "FIGHTER", at: { x: 6, y: 11 } },
       ],
+      line: "The pay-clerk lands his escort. The Baron wants the crate by supper.",
+      announce: true,
+    },
+    {
+      seat: 1,
+      round: 12,
+      units: [
+        { role: "GUARD", at: { x: 4, y: 12 } },
+        { role: "GUARD", at: { x: 3, y: 11 } },
+        { role: "MARKSMAN", at: { x: 4, y: 11 } },
+        { role: "MARKSMAN", at: { x: 5, y: 11 } },
+        { role: "FIGHTER", at: { x: 6, y: 11 } },
+        { role: "FIGHTER", at: { x: 6, y: 10 } },
+      ],
+      line: "Every loyalist the Baron can still pay hits the beach at once.",
+      announce: true,
     },
     // Martians beamed down on the island's eastern end.
     {
       seat: 2,
-      round: 5,
+      round: 4,
       units: [
         { role: "CAPTAIN", at: { x: 11, y: 11 } },
         { role: "FIGHTER", at: { x: 11, y: 13 } },
         { role: "FIGHTER", at: { x: 10, y: 15 } },
+        { role: "RAIDER", at: { x: 11, y: 14 } },
       ],
+      line: "A saucer sets down a Brain and a few very polite Grunts.",
+      announce: true,
     },
     {
       seat: 2,
-      round: 9,
+      round: 8,
       units: [
         { role: "CAPTAIN", at: { x: 11, y: 11 } },
         { role: "MARKSMAN", at: { x: 11, y: 13 } },
         { role: "RAIDER", at: { x: 10, y: 15 } },
         { role: "FIGHTER", at: { x: 11, y: 14 } },
+        { role: "FIGHTER", at: { x: 10, y: 14 } },
       ],
+      line: "Another Brain beams down. It would like a word about the crate.",
+      announce: true,
     },
-    // The getaway rafts' crew, early, to help dig in.
+    {
+      seat: 2,
+      round: 12,
+      units: [
+        { role: "CAPTAIN", at: { x: 11, y: 11 } },
+        { role: "CAPTAIN", at: { x: 10, y: 15 } },
+        { role: "MARKSMAN", at: { x: 11, y: 13 } },
+        { role: "RAIDER", at: { x: 11, y: 14 } },
+      ],
+      line: "The last saucer comes down with two Brains and no manners.",
+      announce: true,
+    },
+    // The getaway rafts' crew, a round later than the first plan.
     {
       seat: 0,
-      round: 12,
+      round: 13,
       units: [
         { role: "FIGHTER", at: { x: 8, y: 15 } },
         { role: "FIGHTER", at: { x: 7, y: 15 } },
         { role: "GUARD", at: { x: 9, y: 15 } },
         { role: "MARKSMAN", at: { x: 7, y: 14 } },
       ],
+      line: "The getaway rafts' crew rows in, late, to help dig the Rock in.",
+      announce: true,
     },
   ],
   // Hold the Rock for 16 rounds. The stars: no city lost, and Mogga lives.

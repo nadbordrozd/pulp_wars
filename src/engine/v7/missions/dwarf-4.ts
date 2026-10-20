@@ -17,6 +17,14 @@ import type { MissionDefinitionV7 } from "./types";
  * their Mines, behind a wall of peaks and the Rift that no Martian on foot
  * can cross; the Martians have landed on the high meadow to the north.
  *
+ * The third retune (`pulp_wars-hmyk.21`, CAMPAIGN.md section 20.4, NOT play
+ * tested): the Hold stands alone (level 3; Copperstep is gone) with a
+ * Fighter, the Engineer, a Gunner and a Gyrocopter, five technologies and
+ * 3 Coins, and only the landing field is explored. The Martians have
+ * eleven men (the Mothership, its Projector and two Grunts hold the field,
+ * the other seven go for the Hold), 10 Coins and four announced waves
+ * (rounds 3, 5, 8 and 11). The clock is 14 rounds.
+ *
  * ```text
  *      x 0123456789ABCDEF
  * y  0   f.f.^.........^.
@@ -40,7 +48,9 @@ import type { MissionDefinitionV7 } from "./types";
 export const DWARF_4_V7: MissionDefinitionV7 = {
   id: "DWARF_4",
   // Revision 2 (`pulp_wars-hmyk.17`): each seat explores its units' sight.
-  revision: 2,
+  // Revision 3 (`pulp_wars-hmyk.21`, the third retune): a lean Hold against
+  // eleven Martians and four announced waves.
+  revision: 3,
   seed: 20261504,
   // <map>
   size: 16,
@@ -64,6 +74,9 @@ export const DWARF_4_V7: MissionDefinitionV7 = {
       { kind: "VILLAGE", at: { x: 2, y: 4 }, present: false },
       { kind: "VILLAGE", at: { x: 2, y: 1 }, present: false },
       { kind: "VILLAGE", at: { x: 5, y: 1 }, present: false },
+      // Retune 3: two of the southern villages are gone.
+      { kind: "VILLAGE", at: { x: 8, y: 10 }, present: false },
+      { kind: "VILLAGE", at: { x: 11, y: 7 }, present: false },
     ],
   },
   terrain: [
@@ -126,9 +139,7 @@ export const DWARF_4_V7: MissionDefinitionV7 = {
     { x: 14, y: 1 },
     { x: 11, y: 4 },
     { x: 14, y: 4 },
-    { x: 11, y: 7 },
     { x: 14, y: 7 },
-    { x: 8, y: 10 },
     { x: 11, y: 10 },
     { x: 14, y: 10 },
     { x: 14, y: 13 },
@@ -138,64 +149,52 @@ export const DWARF_4_V7: MissionDefinitionV7 = {
     { x: 9, y: 9 },
   ],
   // </map>
-  // The Hold's and Copperstep's Mines.
+  // The Hold's Mines (retune 3: Copperstep's three are gone with it).
   improvements: [
     { at: { x: 1, y: 12 }, improvement: "MINE" },
     { at: { x: 2, y: 12 }, improvement: "MINE" },
     { at: { x: 3, y: 12 }, improvement: "MINE" },
-    { at: { x: 4, y: 11 }, improvement: "MINE" },
-    { at: { x: 5, y: 11 }, improvement: "MINE" },
-    { at: { x: 6, y: 11 }, improvement: "MINE" },
   ],
   aiMode: "RIVAL",
   seats: [
     {
       faction: "DWARF",
-      coins: 10,
-      // Gyrocopters, Clockwork, Dig In and Mining.
+      // Retune 3: the Hold alone (level 3), four units, five technologies
+      // (a Gyrocopter, a Gunner, the way to Mining), 3 Coins.
+      coins: 3,
       technologies: [
         "GATHERING",
-        "ADMINISTRATION",
         "HUNTING",
         "MARKSMANSHIP",
         "SCOUTING",
         "DRILL",
-        "FORTIFICATION",
-        "ENGINEERING",
       ],
       cities: [
         {
           name: "Ironbraid Hold",
           at: { x: 2, y: 13 },
-          level: 4,
-          rewards: ["STOCKPILE", "WALLS", "BOOM"],
-        },
-        {
-          name: "Copperstep",
-          at: { x: 5, y: 12 },
           level: 3,
           rewards: ["STOCKPILE", "WALLS"],
         },
       ],
       units: [
         { role: "FIGHTER", at: { x: 2, y: 13 } },
-        { role: "CAPTAIN", at: { x: 1, y: 13 } },
-        { role: "MARKSMAN", at: { x: 2, y: 12 } },
+        { role: "CAPTAIN", at: { x: 2, y: 14 } },
+        { role: "MARKSMAN", at: { x: 3, y: 14 } },
         { role: "RAIDER", at: { x: 3, y: 13 } },
-        { role: "FIGHTER", at: { x: 5, y: 12 }, home: 1 },
-        { role: "MARKSMAN", at: { x: 6, y: 12 }, home: 1 },
-        { role: "RAIDER", at: { x: 6, y: 13 }, home: 1 },
       ],
-      // The high meadow, seen from the peaks.
+      // The high meadow round the landing field, seen from the peaks; the
+      // rest is unexplored.
       reveal: {
         radius: 2,
-        rects: [{ x0: 0, y0: 2, x1: 14, y1: 11 }],
+        rects: [{ x0: 1, y0: 2, x1: 8, y1: 7 }],
       },
     },
     {
       // A raiding mothership and its saucers, very polite.
       faction: "MARTIAN",
-      coins: 3,
+      // Retune 3: eleven men and 10 Coins.
+      coins: 10,
       technologies: ["SCOUTING"],
       cities: [
         { name: "Landing Field", at: { x: 4, y: 5 }, level: 1, rewards: [] },
@@ -211,6 +210,11 @@ export const DWARF_4_V7: MissionDefinitionV7 = {
         { role: "FIGHTER", at: { x: 5, y: 4 } },
         { role: "RAIDER", at: { x: 2, y: 5 } },
         { role: "RAIDER", at: { x: 6, y: 5 } },
+        { role: "FIGHTER", at: { x: 3, y: 5 } },
+        { role: "FIGHTER", at: { x: 5, y: 5 } },
+        { role: "FIGHTER", at: { x: 5, y: 6 } },
+        { role: "RAIDER", at: { x: 3, y: 3 } },
+        { role: "RAIDER", at: { x: 5, y: 3 } },
       ],
       reveal: { radius: 2, rects: [{ x0: 0, y0: 10, x1: 7, y1: 15 }] },
       // Grunts and Saucers. Hand play: with Ray Gunners and Force Fields
@@ -250,9 +254,20 @@ export const DWARF_4_V7: MissionDefinitionV7 = {
       },
     },
   ],
-  // Fresh troops beamed down from the sky: by Copperstep in round 5 and by
-  // the Hold in round 9.
+  // Fresh troops beamed down from the sky: by the Hold in rounds 3 and 8,
+  // by the Mines in rounds 5 and 11.
   reinforcements: [
+    {
+      seat: 1,
+      round: 3,
+      units: [
+        { role: "FIGHTER", at: { x: 0, y: 7 } },
+        { role: "FIGHTER", at: { x: 2, y: 7 } },
+        { role: "RAIDER", at: { x: 1, y: 6 } },
+      ],
+      line: "A saucer drops three Grunts on the forge roofs, apologising.",
+      announce: true,
+    },
     {
       seat: 1,
       round: 5,
@@ -260,16 +275,35 @@ export const DWARF_4_V7: MissionDefinitionV7 = {
         { role: "FIGHTER", at: { x: 4, y: 9 } },
         { role: "FIGHTER", at: { x: 5, y: 9 } },
         { role: "FIGHTER", at: { x: 6, y: 8 } },
+        { role: "RAIDER", at: { x: 5, y: 8 } },
       ],
+      line: "More Grunts beam down by the Mines, very politely.",
+      announce: true,
     },
     {
       seat: 1,
-      round: 9,
+      round: 8,
       units: [
-        { role: "FIGHTER", at: { x: 0, y: 7 } },
-        { role: "FIGHTER", at: { x: 2, y: 7 } },
+        { role: "RAIDER", at: { x: 0, y: 7 } },
         { role: "RAIDER", at: { x: 1, y: 6 } },
+        { role: "RAIDER", at: { x: 2, y: 7 } },
+        { role: "FIGHTER", at: { x: 1, y: 8 } },
       ],
+      line: "A squadron of saucers swoops in, and every pilot waves.",
+      announce: true,
+    },
+    {
+      seat: 1,
+      round: 11,
+      units: [
+        { role: "FIGHTER", at: { x: 4, y: 9 } },
+        { role: "FIGHTER", at: { x: 5, y: 9 } },
+        { role: "FIGHTER", at: { x: 6, y: 8 } },
+        { role: "RAIDER", at: { x: 5, y: 8 } },
+        { role: "RAIDER", at: { x: 0, y: 7 } },
+      ],
+      line: "The mothership calls in the whole fleet. It does not say please.",
+      announce: true,
     },
   ],
   // A dry board.
@@ -280,12 +314,12 @@ export const DWARF_4_V7: MissionDefinitionV7 = {
     "SEAMANSHIP",
     "SUBMERSIBLES",
   ],
-  // The Mothership down by round 18 (the saga's 20; hand play won in round
-  // 10). The stars: by round 14, and no city lost.
+  // The Mothership down by round 14 (the saga's 20; it was 18). The stars:
+  // by round 11, and no city lost.
   objective: {
     kind: "KILL",
     units: ["MOTHERSHIP"],
-    byRound: 18,
-    bonus: [{ kind: "WITHIN_ROUNDS", rounds: 14 }, { kind: "KEEP_CITIES" }],
+    byRound: 14,
+    bonus: [{ kind: "WITHIN_ROUNDS", rounds: 11 }, { kind: "KEEP_CITIES" }],
   },
 };

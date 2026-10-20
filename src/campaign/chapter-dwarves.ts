@@ -32,7 +32,7 @@ export const CHAPTER_DWARVES_V7: CampaignChapterV7 = Object.freeze({
       objective: "Hold Copperstep for 12 turns.",
       hints: Object.freeze([
         "A Clockwork Gunner that doesn't move shoots twice.",
-        "An Engineer repairs machines and cures a bite.",
+        "The dead come up in four waves, from turn 3.",
         "Dwarves who stand still by their own city dig in.",
       ]),
       closing:
@@ -50,10 +50,10 @@ export const CHAPTER_DWARVES_V7: CampaignChapterV7 = Object.freeze({
       format: "CAPTURE",
       briefing:
         "The Thane means to put a lid on the Bottomless: a seal of iron a hundred feet across. The best iron in the north is in the Iron Peak, and the Iron Peak belongs to the Whitefang clan, who have been in a temper since Marshal Steele beat them at Fort Hollow. Take the Peak's three mine-camps. Their Yetis walk over mountains; your Steam Moles go under them.",
-      objective: "Take the clan's three camps by turn 20.",
+      objective: "Take the clan's three camps by turn 16.",
       hints: Object.freeze([
         "A Steam Mole digs up to 3 tiles under anything.",
-        "A Hammerer rides the Mole down and comes up with it.",
+        "The clan marches on Copperstep from turn 3.",
         "Hit a Musk Ox up close and you freeze: shoot it.",
       ]),
       closing:
@@ -72,11 +72,11 @@ export const CHAPTER_DWARVES_V7: CampaignChapterV7 = Object.freeze({
       format: "ESCORT",
       briefing:
         "Nobody has been to the bottom of the Bottomless. The Thane is going anyway, down the old galleries with lanterns, a chain, and her best engineers. Somewhere below is the Deep Bell, and somewhere below that is whatever it woke. The galleries are full of the dead, and someone has been down here lately: there are candle stubs, and hooded footprints, all going down. Get the Thane to the bell.",
-      objective: "Get the Thane to the Bell's Rest by turn 20.",
+      objective: "Get the Thane to the Bell's Rest by turn 16.",
       hints: Object.freeze([
         "A Steam Mole tunnels a Hammerer past a blocked gallery.",
         "Nobody climbs the peaks here: the gallery is the way.",
-        "An Engineer cures a bite before it turns.",
+        "The Lodge's diggers come up the gallery from turn 4.",
       ]),
       closing:
         "The bell lies on its side at the bottom of the world, without its tongue, resting on something smooth and grey and very large. As the lanterns come close, the something moves. It is an eyelid. The Thane climbs back up in silence and orders the lid made twice as thick.",
@@ -94,11 +94,11 @@ export const CHAPTER_DWARVES_V7: CampaignChapterV7 = Object.freeze({
       format: "KILL",
       briefing:
         "Martians have found the Deep Gate. A mothership hangs over Ironbraid Hold, beaming soldiers down onto the forge roofs and asking, very politely, for the bell. They want to ring it, they say, to call home. The Thane has explained that the bell is at the bottom of a hole, on a monster's face, and that they may not. They did not listen. Bring the mothership down.",
-      objective: "Bring down the Mothership by turn 18.",
+      objective: "Bring down the Mothership by turn 14.",
       hints: Object.freeze([
         "A Gyrocopter bombs over walls, and nothing hits back.",
         "Bomb first to break the Shield, then strike.",
-        "A city of level 5 gives a Brass Titan.",
+        "Grunts beam down by the Hold on turns 3 and 8.",
       ]),
       closing:
         "The mothership comes down in the forge yard with a polite apology. The Thane sends the Martians home, by which she means to their colony at Red Dust, on foot. The forges go back to work on the Seal.",
@@ -114,10 +114,10 @@ export const CHAPTER_DWARVES_V7: CampaignChapterV7 = Object.freeze({
       format: "ESCORT",
       briefing:
         "The last of the Seal's iron, the great bolts, is cast at Anvil Bay on the coast and must come up the river by ironclad. The river runs past Greyhood, and the Grey Lodge has boats: black gondolas, a galleon with an eye painted on the sail, and something in the water with too many arms. The Redcaps, out of work since the Baron's war, have hired on as wreckers. Bring the bolt-ship to the landing.",
-      objective: "Bring the Anvil to the Landing by turn 22.",
+      objective: "Bring the Anvil to the Landing by turn 18.",
       hints: Object.freeze([
         "Dwarf hulls take 1 less a hit: screen the Anvil.",
-        "A Diving Bell's torpedo goes unanswered.",
+        "The Redcaps hunt from turn 3; the Lodge sails in waves.",
         "Fill the water round the Anvil and nothing can ram it.",
       ]),
       closing:
@@ -135,11 +135,11 @@ export const CHAPTER_DWARVES_V7: CampaignChapterV7 = Object.freeze({
       format: "CAPTURE",
       briefing:
         "The Seal is ready, and the Bottomless knows it. On the night the dwarves begin to lower the lid, the dead pour up out of the shaft, the Grey Lodge comes up the mountain behind them, and by morning they hold the Deep Gate itself. Take it back so the lid can go down. Marshal Steele has kept the Pact's first promise: her Rangers are on the road.",
-      objective: "Take the Deep Gate by turn 20.",
+      objective: "Take the Deep Gate by turn 16.",
       hints: Object.freeze([
         "Steam Tanks shrug off hits: send them in first.",
         "Blasting Charges bring a mountain down on its neighbours.",
-        "Kill the Liches before the Titans close in.",
+        "The dead climb out every third turn from turn 3.",
       ]),
       closing:
         "The Seal comes down over the Bottomless with a boom that rattles teeth in Kingsport. 'It will hold,' says the Thane, 'until the stars pull on it.' Under the iron the bell lies silent, and beside the chain waits its tongue, bought from a goblin at a scandalous price.",

@@ -17,6 +17,14 @@ import type { MissionDefinitionV7 } from "./types";
  * shoulder, Gnash's Camp in a pocket in the middle of it, and the Iron Den
  * in a pocket on its eastern side, which no road reaches from the south.
  *
+ * The third retune (`pulp_wars-hmyk.21`, CAMPAIGN.md section 20.4, NOT play
+ * tested): a skirmish start. Copperstep is level 2 with the Engineer, a
+ * Gunner and a Fighter, Drill alone and 3 Coins; the village and the chest
+ * beside it are gone and only the three camps' own tiles are explored. The
+ * clan has sixteen men (nine hold the camps, the rest march on Copperstep
+ * from round 3), Gathering and Hunting, 8 Coins and three announced waves
+ * (rounds 4, 7 and 10). The clock is 16 rounds.
+ *
  * ```text
  *      x 0123456789ABCD
  * y  0   .f...^..^^fff.
@@ -37,7 +45,9 @@ import type { MissionDefinitionV7 } from "./types";
  */
 export const DWARF_2_V7: MissionDefinitionV7 = {
   id: "DWARF_2",
-  revision: 1,
+  // Revision 2 (`pulp_wars-hmyk.21`, the third retune): a skirmish start
+  // against a clan that marches from round 3.
+  revision: 2,
   seed: 20261502,
   // <map>
   size: 14,
@@ -55,6 +65,9 @@ export const DWARF_2_V7: MissionDefinitionV7 = {
       { kind: "VILLAGE", at: { x: 12, y: 9 }, present: false },
       { kind: "VILLAGE", at: { x: 12, y: 3 }, present: false },
       { kind: "VILLAGE", at: { x: 12, y: 6 }, present: false },
+      // Retune 3: nothing free beside Copperstep.
+      { kind: "VILLAGE", at: { x: 3, y: 9 }, present: false },
+      { kind: "CHEST", at: { x: 2, y: 11 }, present: false },
     ],
   },
   terrain: [
@@ -110,58 +123,51 @@ export const DWARF_2_V7: MissionDefinitionV7 = {
     { x: 1, y: 1 },
     { x: 4, y: 1 },
     { x: 1, y: 4 },
-    { x: 3, y: 9 },
     { x: 12, y: 12 },
   ],
-  treasureChests: [
-    { x: 4, y: 0 },
-    { x: 2, y: 11 },
-  ],
+  treasureChests: [{ x: 4, y: 0 }],
   // </map>
   aiMode: "RIVAL",
   seats: [
     {
       faction: "DWARF",
-      coins: 8,
-      // Dig In (the Steam Mole), Clockwork and Leadership.
-      technologies: [
-        "GATHERING",
-        "ADMINISTRATION",
-        "HUNTING",
-        "MARKSMANSHIP",
-        "DRILL",
-        "FORTIFICATION",
-      ],
+      // Retune 3: a skirmish start. Three units, Drill alone, 3 Coins.
+      coins: 3,
+      technologies: ["DRILL"],
       cities: [
         {
           name: "Copperstep",
           at: { x: 3, y: 12 },
-          level: 3,
-          rewards: ["STOCKPILE", "WALLS"],
+          level: 2,
+          rewards: ["STOCKPILE"],
         },
       ],
       units: [
-        { role: "GUARD", at: { x: 4, y: 11 } },
+        { role: "MARKSMAN", at: { x: 4, y: 11 } },
         { role: "FIGHTER", at: { x: 3, y: 11 } },
-        { role: "GUARD", at: { x: 4, y: 12 } },
-        { role: "FIGHTER", at: { x: 4, y: 13 } },
-        { role: "MARKSMAN", at: { x: 2, y: 12 } },
         { role: "CAPTAIN", at: { x: 3, y: 12 } },
       ],
-      // The Iron Peak, as the Thane's surveyors drew it.
+      // The three camps' own tiles (the objective's places must be known);
+      // the Iron Peak between is unexplored.
       reveal: {
-        radius: 2,
-        rects: [{ x0: 3, y0: 4, x1: 13, y1: 13 }],
+        radius: 1,
+        rects: [
+          { x0: 5, y0: 6, x1: 7, y1: 8 },
+          { x0: 8, y0: 5, x1: 10, y1: 7 },
+          { x0: 11, y0: 8, x1: 13, y1: 10 },
+        ],
       },
     },
     {
       // The Whitefang clan under Chief Gnash, disowned by Mother Rime.
       faction: "ICE_FOLK",
-      coins: 2,
+      // Retune 3: sixteen men, 8 Coins, Gathering and Hunting.
+      coins: 8,
       // Hand play: with Crafting and Mining the camps grew to level 3 and
-      // walled themselves in by round 3. The clan learns nothing; its Yetis
-      // throw rocks from the peaks anyway (they are Mountain-born).
-      technologies: [],
+      // walled themselves in by round 3. The clan learns little: Gathering
+      // and Hunting only (retune 3); its Yetis throw rocks from the peaks
+      // anyway (they are Mountain-born).
+      technologies: ["GATHERING", "HUNTING"],
       cities: [
         { name: "Gnash's Camp", at: { x: 9, y: 6 }, level: 1, rewards: [] },
         { name: "Tusk Camp", at: { x: 6, y: 7 }, level: 1, rewards: [] },
@@ -179,17 +185,21 @@ export const DWARF_2_V7: MissionDefinitionV7 = {
         { role: "GUARD", at: { x: 12, y: 9 }, home: 2 },
         { role: "FIGHTER", at: { x: 11, y: 9 }, home: 2 },
         { role: "MARKSMAN", at: { x: 12, y: 10 }, home: 2 },
+        { role: "FIGHTER", at: { x: 9, y: 5 } },
+        { role: "FIGHTER", at: { x: 10, y: 6 } },
+        { role: "FIGHTER", at: { x: 5, y: 7 }, home: 1 },
+        { role: "FIGHTER", at: { x: 7, y: 7 }, home: 1 },
+        { role: "FIGHTER", at: { x: 11, y: 10 }, home: 2 },
+        { role: "MARKSMAN", at: { x: 12, y: 8 }, home: 2 },
       ],
       reveal: { radius: 2, rects: [{ x0: 1, y0: 10, x1: 5, y1: 13 }] },
       // Yetis and Musk Oxen only: no Snow Hunters beyond the three on the
       // peaks, no Sleds, Witches, Sabretooths or giants' kin.
       forbiddenTechnologies: [
-        "GATHERING",
         "FARMING",
         "MILLING",
         "ADMINISTRATION",
         "PLANNING",
-        "HUNTING",
         "FORESTRY",
         "SAWMILLING",
         "MARKSMANSHIP",
@@ -205,17 +215,69 @@ export const DWARF_2_V7: MissionDefinitionV7 = {
         "FORTIFICATION",
         "EXPLOSIVES",
       ],
-      // Each camp keeps its Musk Ox and a Yeti on the peak beside it; the
-      // rest of the clan roams.
-      directive: {
-        kind: "GUARD",
-        zone: [
-          { x0: 8, y0: 5, x1: 10, y1: 7 },
-          { x0: 5, y0: 6, x1: 7, y1: 8 },
-          { x0: 11, y0: 8, x1: 13, y1: 10 },
-        ],
-        garrison: 6,
-      },
+      // Each camp keeps three on the peak beside it; from round 3 the
+      // rest of the clan marches on Copperstep.
+      directive: [
+        {
+          kind: "GUARD",
+          zone: [
+            { x0: 8, y0: 5, x1: 10, y1: 7 },
+            { x0: 5, y0: 6, x1: 7, y1: 8 },
+            { x0: 11, y0: 8, x1: 13, y1: 10 },
+          ],
+          garrison: 9,
+          untilRound: 3,
+        },
+        {
+          kind: "GUARD",
+          zone: [
+            { x0: 8, y0: 5, x1: 10, y1: 7 },
+            { x0: 5, y0: 6, x1: 7, y1: 8 },
+            { x0: 11, y0: 8, x1: 13, y1: 10 },
+          ],
+          garrison: 9,
+          others: { kind: "RUSH" },
+        },
+      ],
+    },
+  ],
+  // The clan's warbands come down off the ridge.
+  reinforcements: [
+    {
+      seat: 1,
+      round: 4,
+      units: [
+        { role: "FIGHTER", at: { x: 11, y: 5 } },
+        { role: "MARKSMAN", at: { x: 12, y: 5 } },
+        { role: "GUARD", at: { x: 13, y: 5 } },
+      ],
+      line: "Yetis come down off the ridge, howling the clan's name.",
+      announce: true,
+    },
+    {
+      seat: 1,
+      round: 7,
+      units: [
+        { role: "SWORDSMAN", at: { x: 7, y: 4 } },
+        { role: "FIGHTER", at: { x: 8, y: 4 } },
+        { role: "FIGHTER", at: { x: 8, y: 3 } },
+        { role: "MARKSMAN", at: { x: 6, y: 4 } },
+      ],
+      line: "Gnash's own warband follows its Mammoth over the peaks.",
+      announce: true,
+    },
+    {
+      seat: 1,
+      round: 10,
+      units: [
+        { role: "GUARD", at: { x: 11, y: 5 } },
+        { role: "FIGHTER", at: { x: 12, y: 5 } },
+        { role: "MARKSMAN", at: { x: 13, y: 5 } },
+        { role: "FIGHTER", at: { x: 7, y: 4 } },
+        { role: "MARKSMAN", at: { x: 8, y: 4 } },
+      ],
+      line: "The Whitefang send the grandmothers. This is not a good sign.",
+      announce: true,
     },
   ],
   landmarks: [
@@ -231,11 +293,12 @@ export const DWARF_2_V7: MissionDefinitionV7 = {
     "SEAMANSHIP",
     "SUBMERSIBLES",
   ],
-  // The three camps by round 20. The stars: by round 16, and no city lost.
+  // The three camps by round 16 (it was 20). The stars: by round 13, and
+  // no city lost.
   objective: {
     kind: "CAPTURE",
     places: ["TUSK_CAMP", "GNASHS_CAMP", "IRON_DEN"],
-    byRound: 20,
-    bonus: [{ kind: "WITHIN_ROUNDS", rounds: 16 }, { kind: "KEEP_CITIES" }],
+    byRound: 16,
+    bonus: [{ kind: "WITHIN_ROUNDS", rounds: 13 }, { kind: "KEEP_CITIES" }],
   },
 };

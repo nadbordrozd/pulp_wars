@@ -10,6 +10,14 @@ import type { MissionDefinitionV7 } from "./types";
  * everything around it for 6); the Warboss's Berserk sends the goblins
  * near him an extra tile through the enemy's lines.
  *
+ * The third retune (`pulp_wars-hmyk.21`, CAMPAIGN.md section 19.4, NOT play
+ * tested): a skirmish start. The camp is level 1 with Grubnak, Snikkit and
+ * the Ogre (nobody can train another yet), no technology and 2 Coins; the
+ * three villages near the camp are gone. Fort Bullion has a garrison of
+ * eight, Gathering and Farming, and 10 Coins; three hold the fort and its
+ * toll and the rest march on the camp from round 3. The Baron's relief
+ * column lands in round 6. The clock is 14 rounds.
+ *
  * The board is the map generator's (Dry Land 11, seed 1): wooded hills in
  * the east, where the goblins camp, and plains in the west, where Fort
  * Bullion stands walled with its toll village to the south-east.
@@ -32,7 +40,9 @@ import type { MissionDefinitionV7 } from "./types";
 export const GOBLIN_1_V7: MissionDefinitionV7 = {
   id: "GOBLIN_1",
   // Revision 2 (`pulp_wars-hmyk.17`): each seat explores its units' sight.
-  revision: 2,
+  // Revision 3 (`pulp_wars-hmyk.21`, the third retune): a skirmish start
+  // against a fort of eight that marches from round 3.
+  revision: 3,
   seed: 20261501,
   // <map>
   size: 11,
@@ -46,6 +56,10 @@ export const GOBLIN_1_V7: MissionDefinitionV7 = {
     edits: [
       { kind: "VILLAGE", at: { x: 5, y: 7 }, present: false },
       { kind: "VILLAGE", at: { x: 5, y: 1 }, present: false },
+      // Retune 3: no free village within reach of the camp.
+      { kind: "VILLAGE", at: { x: 8, y: 1 }, present: false },
+      { kind: "VILLAGE", at: { x: 5, y: 4 }, present: false },
+      { kind: "VILLAGE", at: { x: 8, y: 7 }, present: false },
     ],
   },
   terrain: [
@@ -88,12 +102,7 @@ export const GOBLIN_1_V7: MissionDefinitionV7 = {
     "PPPPPPPWWWW",
     "PPPPPPPWWWW",
   ],
-  villages: [
-    { x: 2, y: 1 },
-    { x: 8, y: 1 },
-    { x: 5, y: 4 },
-    { x: 8, y: 7 },
-  ],
+  villages: [{ x: 2, y: 1 }],
   treasureChests: [
     { x: 5, y: 2 },
     { x: 9, y: 5 },
@@ -105,35 +114,36 @@ export const GOBLIN_1_V7: MissionDefinitionV7 = {
   seats: [
     {
       faction: "GOBLIN",
-      coins: 6,
-      // Leadership gives the Warboss his Berserk; Land Grants a free slot
-      // for the first new goblin.
-      technologies: ["GATHERING", "ADMINISTRATION", "PLANNING"],
+      // Retune 3: a skirmish start. One level 1 camp, the Warboss, Snikkit
+      // and an Ogre nobody can train yet, no technology, 2 Coins.
+      coins: 2,
+      technologies: [],
       cities: [
-        {
-          name: "Rustgut Camp",
-          at: { x: 8, y: 4 },
-          level: 2,
-          rewards: ["STOCKPILE"],
-        },
+        { name: "Rustgut Camp", at: { x: 8, y: 4 }, level: 1, rewards: [] },
       ],
       units: [
         // Grubnak the Loud, an Orc Warboss, and Snikkit, who can read.
         { role: "CAPTAIN", at: { x: 8, y: 4 }, tag: "GRUBNAK" },
         { role: "FIGHTER", at: { x: 9, y: 3 }, tag: "SNIKKIT" },
         { role: "SWORDSMAN", at: { x: 8, y: 5 } },
-        { role: "FIGHTER", at: { x: 9, y: 4 } },
-        { role: "FIGHTER", at: { x: 7, y: 3 } },
       ],
-      // The fort and its toll, seen from the hills.
-      reveal: { radius: 2, rects: [{ x0: 1, y0: 5, x1: 6, y1: 8 }] },
+      // The fort's gate, seen from the hills, and nothing else.
+      reveal: { radius: 2, rects: [{ x0: 1, y0: 5, x1: 3, y1: 7 }] },
     },
     {
-      // Fort Bullion's garrison: a Guard on the walls, a rifle and two
-      // Fighters; one Fighter at the toll.
+      // Fort Bullion's garrison. Retune 3: eight men (the fort's Guard, the
+      // toll's Fighter and a rifle hold; the rest march), a level 2 toll,
+      // 10 Coins, Gathering and Farming.
       faction: "ORIGINAL",
-      coins: 4,
-      technologies: ["HUNTING", "MARKSMANSHIP", "DRILL", "FORTIFICATION"],
+      coins: 10,
+      technologies: [
+        "GATHERING",
+        "FARMING",
+        "HUNTING",
+        "MARKSMANSHIP",
+        "DRILL",
+        "FORTIFICATION",
+      ],
       cities: [
         {
           name: "Fort Bullion",
@@ -141,20 +151,28 @@ export const GOBLIN_1_V7: MissionDefinitionV7 = {
           level: 3,
           rewards: ["STOCKPILE", "WALLS"],
         },
-        { name: "Bullion Toll", at: { x: 5, y: 7 }, level: 1, rewards: [] },
+        {
+          name: "Bullion Toll",
+          at: { x: 5, y: 7 },
+          level: 2,
+          rewards: ["STOCKPILE"],
+        },
       ],
+      // The three holders first: a garrison is chosen by unit ID among the
+      // units inside the zones.
       units: [
         { role: "GUARD", at: { x: 2, y: 6 } },
         { role: "FIGHTER", at: { x: 5, y: 7 }, home: 1 },
         { role: "MARKSMAN", at: { x: 1, y: 6 } },
         { role: "FIGHTER", at: { x: 3, y: 5 } },
         { role: "FIGHTER", at: { x: 3, y: 7 } },
+        { role: "FIGHTER", at: { x: 4, y: 6 } },
+        { role: "MARKSMAN", at: { x: 4, y: 5 } },
+        { role: "GUARD", at: { x: 4, y: 7 } },
       ],
       reveal: { radius: 1 },
       // Step 1 keeps to the lesson: the garrison learns nothing more.
       forbiddenTechnologies: [
-        "GATHERING",
-        "FARMING",
         "MILLING",
         "ADMINISTRATION",
         "PLANNING",
@@ -170,15 +188,42 @@ export const GOBLIN_1_V7: MissionDefinitionV7 = {
         "METALLURGY",
         "EXPLOSIVES",
       ],
-      // The fort and the toll keep their own; the rest play their game.
-      directive: {
-        kind: "GUARD",
-        zone: [
-          { x0: 1, y0: 5, x1: 3, y1: 7 },
-          { x0: 5, y0: 7, x1: 5, y1: 7 },
-        ],
-        garrison: 2,
-      },
+      // The fort and the toll keep three; for two rounds the rest play
+      // their game, then they march on the camp.
+      directive: [
+        {
+          kind: "GUARD",
+          zone: [
+            { x0: 1, y0: 5, x1: 3, y1: 7 },
+            { x0: 5, y0: 7, x1: 5, y1: 7 },
+          ],
+          garrison: 3,
+          untilRound: 3,
+        },
+        {
+          kind: "GUARD",
+          zone: [
+            { x0: 1, y0: 5, x1: 3, y1: 7 },
+            { x0: 5, y0: 7, x1: 5, y1: 7 },
+          ],
+          garrison: 3,
+          others: { kind: "RUSH" },
+        },
+      ],
+    },
+  ],
+  // The Baron's relief column, up the road from the toll.
+  reinforcements: [
+    {
+      seat: 1,
+      round: 6,
+      units: [
+        { role: "GUARD", at: { x: 5, y: 8 } },
+        { role: "FIGHTER", at: { x: 4, y: 8 } },
+        { role: "MARKSMAN", at: { x: 6, y: 8 } },
+      ],
+      line: "The Baron's relief column marches up the road, in step.",
+      announce: true,
     },
   ],
   // A dry board.
@@ -189,11 +234,13 @@ export const GOBLIN_1_V7: MissionDefinitionV7 = {
     "SEAMANSHIP",
     "SUBMERSIBLES",
   ],
-  // Take the fort and the toll. The stars: by round 12, and Snikkit lives.
+  // Take the fort and the toll by round 14 (retune 3; it had no clock).
+  // The stars: by round 10, and Snikkit lives.
   objective: {
     kind: "DOMINATION",
+    byRound: 14,
     bonus: [
-      { kind: "WITHIN_ROUNDS", rounds: 12 },
+      { kind: "WITHIN_ROUNDS", rounds: 10 },
       { kind: "UNIT_ALIVE", unit: "SNIKKIT" },
     ],
   },
