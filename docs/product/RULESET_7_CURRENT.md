@@ -5822,13 +5822,21 @@ Roads technology, and sea trade was a separate income.)
 - **Shown** (`src/render/technology-unlock-text-v7.ts`): the Commerce card
   reads "Each city linked by Road or Port to another of your cities: +1
   Coin each turn"; the Sailing (Shorecraft) card reads "Ports link cities
-  like Roads" and the Navigation card "Port links can cross deep water";
-  with Commerce the city panel of an own city that earns it has the
-  Trade +1 stat, and one that does not says "No trade: no Road or Port
-  link to another of your cities". The tile dock of an own active Port or
-  Shipyard that nothing joins to its city's center says "No link: needs a
-  Road to its city". The text harness prints the trade line under each
-  city.
+  like Roads: +1 population for each city joined to your capital, and +1
+  to the capital for each" and the Navigation card "Port links can cross
+  deep water"; the Roads card does not claim the link population (it is no
+  Roads unlock) and reads "Built Roads join cities into your network, as
+  Ports do" (`pulp_wars-5ti.29`; the user, 2026-10-20, had researched Roads
+  expecting the bonus for Port-linked cities). The city panel of an own
+  city with link population has the Link stat (+1, or +1 per joined city
+  on the capital: "Joined to your capital by Road or Port"). With Commerce
+  the city panel of an own city that earns it has the Trade +1 stat, and
+  one that does not says "No trade: no Road or Port link to another of
+  your cities". The tile dock of an own active Port or Shipyard that
+  nothing joins to its city's center says "Not joined: needs a Road to the
+  city, or a Port beside the city", or "Not joined: build a Port beside the
+  city" when it is two tiles from the center and every tile beside both is
+  water. The text harness prints the trade line under each city.
 - The board draws a Road onto every city center from each Road tile
   beside it. A Port or Shipyard is joined to each Road tile or center
   beside it by a dock link (`pulp_wars-2yc.47`): the dirt track stays on
@@ -5909,11 +5917,13 @@ benefit of a Port connection.)
   the route does not (a route may run under the ice), and neither does
   unexplored water: the link gives stored population, which must not change
   when a tile is explored (before `7r76` sea trade needed explored water).
-- The view publishes the links that count as `naval.seaRoutes`, one for
-  each pair of cities (a link whose two docks are joined to their centers
-  first, then the shortest), and the board draws each as a dashed line; a
-  crossing through water the viewer has not explored is published as its
-  two docks only. The public economic preview of a command is withheld
+- The view publishes the links that carry a connection as
+  `naval.seaRoutes`: only a link whose two docks are both joined to their
+  own city centers, one for each pair of cities (the shortest), and the
+  board draws each as a dashed line (`pulp_wars-5ti.29`; before, a link
+  from a dock that nothing joined to its city was drawn too and looked
+  like a connection); a crossing through water the viewer has not
+  explored is published as its two docks only. The public economic preview of a command is withheld
   while two own docks might be linked through unexplored tiles.
 - Allies never share a link. The Ice Folk have no ships, and their docks
   link the same way.

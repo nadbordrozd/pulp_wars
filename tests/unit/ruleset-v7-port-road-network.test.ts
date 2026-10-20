@@ -10,6 +10,7 @@ import {
   combinedNetworkCityIdsV7,
   landTradeCityIdsV7,
   previewEconomicV7,
+  publicLinkPopulationForCityV7,
   roadPopulationForCityV7,
   seaLinksV7,
   seaTradeCityIdsV7,
@@ -21,6 +22,10 @@ import {
 } from "../../src/engine/index";
 import { buildBoardRenderPlanV7 } from "../../src/render/canvas/board-renderer-v7";
 import { roadLinkChangesV7 } from "../../src/render/feedback-plan-v7";
+import {
+  PORT_NOT_JOINED_TEXT_V7,
+  portNotJoinedTextV7,
+} from "../../src/render/technology-unlock-text-v7";
 import { checkedV7 } from "../fixtures/v7-builders";
 import { coastalV7 } from "../fixtures/v7-naval-builders";
 import {
@@ -352,14 +357,80 @@ describe("Ports join the Road network (pulp_wars-5ti.12, 7r76)", () => {
       false,
       true,
     ]);
-    // The sea link itself exists and is drawn; it carries nothing yet.
-    expect(view.naval.seaRoutes).toHaveLength(1);
+    // The sea link itself exists but carries nothing yet, so no line is
+    // drawn (bead pulp_wars-5ti.29: a line suggested a connection), and
+    // the dock's warning names a Road, since land lies beside both.
+    expect(
+      seaLinksV7(unjoined.state, unjoined.state.humanPlayerId),
+    ).toHaveLength(1);
+    expect(view.naval.seaRoutes).toEqual([]);
+    const dock = view.naval.ownedPorts[0];
+    if (dock === undefined) throw new Error("dock missing");
+    expect(portNotJoinedTextV7(view, dock)).toBe(PORT_NOT_JOINED_TEXT_V7);
     const joined = world({
       techs: [...ROADS, "SHORECRAFT"],
       ...apart,
       roads: [[2, 1]],
     });
     expect(linkFacts(joined)).toEqual({ network: [0, 1], population: [1, 1] });
+    expect(
+      viewForV7(joined.state, joined.state.humanPlayerId).naval.seaRoutes,
+    ).toHaveLength(1);
+  });
+
+  it("the public preview counts the link population the engine counts (pulp_wars-5ti.29)", () => {
+    const apart = {
+      cities: TWO_PORTS.cities,
+      shallow: row(4, 6, 2),
+      ports: [
+        [3, 2, 0],
+        [7, 2, 1],
+      ],
+    } satisfies Omit<WorldSpec, "techs">;
+    const boards: readonly WorldSpec[] = [
+      {
+        techs: ROADS,
+        cities: [
+          [1, 1],
+          [4, 1],
+        ],
+        roads: row(2, 3, 1),
+      },
+      { techs: SAILING, ...TWO_PORTS },
+      { techs: [], ...TWO_PORTS },
+      { techs: [...ROADS, "SHORECRAFT"], ...apart },
+      { techs: [...ROADS, "SHORECRAFT"], ...apart, roads: [[2, 1]] },
+      // Road tiles without the Roads technology carry nothing.
+      { techs: ["SHORECRAFT"], ...apart, roads: [[2, 1]] },
+      { techs: SAILING, ...TWO_PORTS, hostileShips: [[7, 2]] },
+      // The mixed chain: Road, dock, sea, dock, Road, city, Road, city.
+      {
+        techs: [...ROADS, "SHORECRAFT"],
+        cities: [
+          [1, 1],
+          [8, 1],
+          [10, 1],
+        ],
+        roads: [
+          [2, 1],
+          [7, 1],
+          [9, 1],
+        ],
+        shallow: row(4, 5, 2),
+        ports: [
+          [3, 2, 0],
+          [6, 2, 1],
+        ],
+      },
+    ];
+    for (const spec of boards) {
+      const built = world(spec);
+      const human = built.state.humanPlayerId;
+      const view = viewForV7(built.state, human);
+      expect(
+        built.cityIds.map((id) => publicLinkPopulationForCityV7(view, id)),
+      ).toEqual(linkFacts(built).population);
+    }
   });
 
   it("a blockade, a long crossing and Deep Water break the sea link; a ship in the lane and fog do not", () => {

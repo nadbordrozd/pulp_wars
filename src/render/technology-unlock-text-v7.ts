@@ -8,6 +8,7 @@ import {
   technologyCapabilitiesV7,
   type CityId,
   type CombatPreviewV7,
+  type CoordV7,
   type PlayerViewV7,
 } from "../engine/index";
 
@@ -207,12 +208,92 @@ export type LandTradeStatusV7 =
 /**
  * Bead pulp_wars-5ti.12: Sailing's line. Active Ports of two cities join
  * the same network as Roads (population link, and trade with Commerce).
+ * Bead pulp_wars-5ti.29: the link population is said here, where it comes
+ * from without Roads, and no longer on the Roads card.
  */
-export const SEA_LINK_UNLOCK_TEXT_V7 = "Ports link cities like Roads";
+export const SEA_LINK_UNLOCK_TEXT_V7 =
+  "Ports link cities like Roads: +1 population for each city joined to your capital, and +1 to the capital for each";
 /** Navigation: a sea link may cross Deep Water. */
 export const SEA_LINK_DEEP_WATER_NOTE_V7 = "Port links can cross deep water";
-/** An own active dock that no Road joins to its city's center. */
-export const PORT_NOT_JOINED_TEXT_V7 = "No link: needs a Road to its city";
+/**
+ * Bead pulp_wars-5ti.29: the Roads card's line for the network effect
+ * (`LAND_ROAD_POPULATION`). Roads do not grant the link population; Road
+ * tiles are one way to join cities into the network, as Ports are.
+ */
+export const ROAD_LINK_UNLOCK_TEXT_V7 =
+  "Built Roads join cities into your network, as Ports do";
+/**
+ * An own active dock that nothing joins to its city's center (bead
+ * pulp_wars-5ti.29: the warning names both fixes).
+ */
+export const PORT_NOT_JOINED_TEXT_V7 =
+  "Not joined: needs a Road to the city, or a Port beside the city";
+/** The same, when only water lies between the dock and its city. */
+export const PORT_NOT_JOINED_WATER_TEXT_V7 =
+  "Not joined: build a Port beside the city";
+
+/**
+ * Bead pulp_wars-5ti.29: the warning of an own active dock that nothing
+ * joins to its city's center. Only water lies between them when the dock is
+ * two tiles from the center and every tile beside both is water: no single
+ * Road tile can join them, and a Port beside the city is the fix.
+ */
+export function portNotJoinedTextV7(
+  view: PlayerViewV7,
+  port: { readonly at: CoordV7; readonly cityId: CityId },
+): string {
+  const center = view.cities.find((city) => city.id === port.cityId)?.at;
+  if (center === undefined) return PORT_NOT_JOINED_TEXT_V7;
+  const distance = (left: CoordV7, right: CoordV7): number =>
+    Math.max(Math.abs(left.x - right.x), Math.abs(left.y - right.y));
+  if (distance(port.at, center) !== 2) return PORT_NOT_JOINED_TEXT_V7;
+  const between = view.board.tiles.filter(
+    (tile) =>
+      distance(tile.at, port.at) === 1 && distance(tile.at, center) === 1,
+  );
+  return between.length > 0 &&
+    between.every(
+      (tile) =>
+        tile.explored &&
+        (tile.terrain === "SHALLOW_WATER" || tile.terrain === "DEEP_WATER"),
+    )
+    ? PORT_NOT_JOINED_WATER_TEXT_V7
+    : PORT_NOT_JOINED_TEXT_V7;
+}
+
+/**
+ * Bead pulp_wars-5ti.29: the link population (section 9.3) of one of the
+ * viewer's cities, read from the view's capital-rooted network
+ * (`naval.networkCityIds`): +1 for a city joined to the original capital,
+ * and +1 to the capital for each; 0 while the capital is lost.
+ */
+export function cityLinkPopulationV7(
+  view: PlayerViewV7,
+  cityId: CityId,
+): number {
+  const capitalId =
+    view.players.find((player) => player.id === view.viewer.id)
+      ?.originalCapitalCityId ?? null;
+  const network = view.naval.networkCityIds;
+  if (capitalId === null || !network.includes(capitalId)) return 0;
+  if (cityId === capitalId) return network.length - 1;
+  return network.includes(cityId) ? 1 : 0;
+}
+
+/** The city panel's title for its link line. */
+export function cityLinkTitleV7(
+  view: PlayerViewV7,
+  cityId: CityId,
+): string | null {
+  const amount = cityLinkPopulationV7(view, cityId);
+  if (amount === 0) return null;
+  const capitalId = view.players.find(
+    (player) => player.id === view.viewer.id,
+  )?.originalCapitalCityId;
+  return cityId === capitalId
+    ? `${amount} ${amount === 1 ? "city" : "cities"} joined to your capital by Road or Port: +${amount} population`
+    : "Joined to your capital by Road or Port: +1 population";
+}
 
 export function landTradeStatusV7(
   view: PlayerViewV7,

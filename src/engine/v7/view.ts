@@ -1538,10 +1538,12 @@ function publicSeaRoutes(
       )
       .map((tile) => key(tile.at)),
   );
-  // `pulp-wars-poc-7r76` (`pulp_wars-5ti.12`): exactly the sea links of the
+  // `pulp-wars-poc-7r76` (`pulp_wars-5ti.12`): the sea links of the
   // viewer's connection network (`seaLinksV7`), one line for each pair of
-  // cities: a link whose two docks are joined to their own city centers
-  // first (the one that carries the connection), then the shortest.
+  // cities, the shortest. Bead pulp_wars-5ti.29: only a link whose two docks
+  // are joined to their own city centers carries a connection, so only such
+  // a link is published; a dock that nothing joins to its city draws no
+  // line (its tile says what joins it, `joinsCity`).
   const components = networkNodeComponentsV7(state, viewer.id);
   const cityAt = new Map(state.cities.map((city) => [city.id, city.at]));
   const carries = (at: CoordV7, cityId: CityId): boolean => {
@@ -1553,13 +1555,7 @@ function publicSeaRoutes(
       component === components.get(key(center))
     );
   };
-  const best = new Map<
-    string,
-    {
-      readonly route: PublicNavalFactsV7["seaRoutes"][number];
-      readonly carries: boolean;
-    }
-  >();
+  const best = new Map<string, PublicNavalFactsV7["seaRoutes"][number]>();
   const parentsByPort = new Map<string, ReadonlyMap<string, CoordV7 | null>>();
   for (const link of seaLinksV7(state, viewer.id)) {
     const [from, to] =
@@ -1572,6 +1568,7 @@ function publicSeaRoutes(
             { at: link.to, cityId: link.toCityId },
             { at: link.from, cityId: link.fromCityId },
           ] as const);
+    if (!carries(from.at, from.cityId) || !carries(to.at, to.cityId)) continue;
     let parents = parentsByPort.get(key(from.at));
     if (parents === undefined) {
       parents = waterParents(
@@ -1586,28 +1583,21 @@ function publicSeaRoutes(
     // A link counts whether or not its water is explored; a crossing the
     // viewer has not explored is published as its two docks only.
     const path = reconstructWaterPath(parents, to.at) ?? [from.at, to.at];
-    const candidate = {
-      route: { fromCityId: from.cityId, toCityId: to.cityId, path },
-      carries: carries(from.at, from.cityId) && carries(to.at, to.cityId),
-    };
+    const candidate = { fromCityId: from.cityId, toCityId: to.cityId, path };
     const routeKey = `${from.cityId}:${to.cityId}`;
     const existing = best.get(routeKey);
     if (
       existing === undefined ||
-      (candidate.carries && !existing.carries) ||
-      (candidate.carries === existing.carries &&
-        (candidate.route.path.length < existing.route.path.length ||
-          (candidate.route.path.length === existing.route.path.length &&
-            comparePath(candidate.route.path, existing.route.path) < 0)))
+      candidate.path.length < existing.path.length ||
+      (candidate.path.length === existing.path.length &&
+        comparePath(candidate.path, existing.path) < 0)
     )
       best.set(routeKey, candidate);
   }
-  return [...best.values()]
-    .map((entry) => entry.route)
-    .sort(
-      (left, right) =>
-        left.fromCityId - right.fromCityId || left.toCityId - right.toCityId,
-    );
+  return [...best.values()].sort(
+    (left, right) =>
+      left.fromCityId - right.fromCityId || left.toCityId - right.toCityId,
+  );
 }
 
 function comparePath(

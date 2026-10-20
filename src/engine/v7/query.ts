@@ -8996,17 +8996,51 @@ function liveTotalForCityV7(
         throw new RangeError("INTEGER_OVERFLOW");
       return value;
     }, 0);
+  const total = improvementPopulation + linkPopulationForCityV7(graph, cityId);
+  if (!Number.isSafeInteger(total)) throw new RangeError("INTEGER_OVERFLOW");
+  return total;
+}
+
+/**
+ * Section 9.3 on the public graph: +1 for a city of the capital's network,
+ * and +1 to the original capital for each such city (the engine's
+ * `roadPopulationReaderV7`).
+ */
+function linkPopulationForCityV7(
+  graph: PublicEconomyGraphV7,
+  cityId: CityId,
+): number {
   const connectivity = publicGraphNavalConnectivityV7(graph);
   const connectedOtherCities = [...connectivity.network].filter(
     (candidate) => candidate !== graph.originalCapitalCityId,
   );
-  const roadPopulation =
-    cityId === graph.originalCapitalCityId
-      ? connectedOtherCities.length
-      : Number(connectedOtherCities.includes(cityId));
-  const total = improvementPopulation + roadPopulation;
-  if (!Number.isSafeInteger(total)) throw new RangeError("INTEGER_OVERFLOW");
-  return total;
+  return cityId === graph.originalCapitalCityId
+    ? connectedOtherCities.length
+    : Number(connectedOtherCities.includes(cityId));
+}
+
+/**
+ * Bead pulp_wars-5ti.29: the viewer's live population of one own city as
+ * the public economic preview counts it (docks, live improvements, and the
+ * link population), so a test can hold it to the engine's stored
+ * `economicPopulation`.
+ */
+export function publicLiveTotalForCityV7(
+  view: PlayerViewV7,
+  cityId: CityId,
+): number {
+  return liveTotalForCityV7(publicEconomyGraph(view), cityId);
+}
+
+/**
+ * Bead pulp_wars-5ti.29: the link population (section 9.3) of one of the
+ * viewer's cities as the public economic preview counts it.
+ */
+export function publicLinkPopulationForCityV7(
+  view: PlayerViewV7,
+  cityId: CityId,
+): number {
+  return linkPopulationForCityV7(publicEconomyGraph(view), cityId);
 }
 
 function marketForCityV7(graph: PublicEconomyGraphV7, cityId: CityId): number {

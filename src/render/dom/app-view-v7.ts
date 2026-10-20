@@ -4,11 +4,14 @@ import {
   BREACH_UNLOCK_TEXT_V7,
   FIELD_DEFENSE_UNLOCK_TEXT_V7,
   TRAINING_BLOCKED_CENTER_V7,
-  PORT_NOT_JOINED_TEXT_V7,
+  ROAD_LINK_UNLOCK_TEXT_V7,
   SEA_LINK_DEEP_WATER_NOTE_V7,
   SEA_LINK_UNLOCK_TEXT_V7,
+  cityLinkPopulationV7,
+  cityLinkTitleV7,
   landTradeStatusTextV7,
   landTradeStatusV7,
+  portNotJoinedTextV7,
   landTradeUnlockTextV7,
   FOREST_COVER_UNLOCK_TEXT_V7,
   hireUnlockTextV7,
@@ -8424,6 +8427,21 @@ export class Ruleset7DomAppView {
             trade.append(text(this.#document, "dt", "Trade"), value);
             details.append(trade);
           }
+        // Bead pulp_wars-5ti.29: the link population the city gets from
+        // being joined to the original capital by Road or Port.
+        const linkTitle = cityLinkTitleV7(view, city.id);
+        if (linkTitle !== null) {
+          const link = el(this.#document, "div", "v7-city-stat");
+          link.dataset.stat = "capital-link";
+          link.title = linkTitle;
+          const value = el(this.#document, "dd", "v7-city-income");
+          value.append(
+            economyIcon(this.#document, "population"),
+            `+${cityLinkPopulationV7(view, city.id)}`,
+          );
+          link.append(text(this.#document, "dt", "Link"), value);
+          details.append(link);
+        }
         // Tunings 2 and 3: with Commerce, a city that earns no land trade
         // says why (no Road link to another of the player's cities).
         const landTrade = landTradeStatusV7(view, city.id);
@@ -9108,7 +9126,7 @@ export class Ruleset7DomAppView {
               const unjoined = text(
                 this.#document,
                 "p",
-                PORT_NOT_JOINED_TEXT_V7,
+                portNotJoinedTextV7(view, port),
                 "v7-chip is-warning",
               );
               unjoined.dataset.portLink = "none";
@@ -19332,7 +19350,9 @@ function effectDescription(
     case "LAND_TRADE_INCOME":
       return landTradeUnlockTextV7(effect.coins);
     case "LAND_ROAD_POPULATION":
-      return `Cities linked to your capital: +${effect.amount} population each, and the capital +${effect.amount} for each`;
+      // Bead pulp_wars-5ti.29: Roads do not grant the link population
+      // (Ports link cities without Roads); the card says what Roads add.
+      return ROAD_LINK_UNLOCK_TEXT_V7;
     case "MARKET_INCOME_MULTIPLIER":
       return `Markets earn ${effect.multiplier}× income`;
     case "SEA_LINK":
