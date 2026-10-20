@@ -109,12 +109,12 @@ const MISSION: MatchSetupV7 = {
   ...SKIRMISH,
   aiDifficulty: "NORMAL",
   aiCount: 1,
-  factions: ["ORIGINAL", "GOBLIN"],
+  factions: ["ORIGINAL", "UNDEAD"],
   mapType: "MISSION",
   gameMode: undefined,
   curiosities: false,
   gameKind: undefined,
-  mission: { id: "FRONTIER_1" },
+  mission: { id: "HUMAN_1" },
 } as unknown as MatchSetupV7;
 
 const TUTORIAL: MatchSetupV7 = {
@@ -369,8 +369,8 @@ describe("events", () => {
       {
         name: "mission_start",
         params: {
-          mission_id: "frontier_1",
-          campaign_id: "frontier",
+          mission_id: "human_1",
+          campaign_id: "humans",
           faction: "human",
         },
       },
@@ -417,8 +417,8 @@ describe("events", () => {
       {
         name: "mission_end",
         params: {
-          mission_id: "frontier_1",
-          campaign_id: "frontier",
+          mission_id: "human_1",
+          campaign_id: "humans",
           result: "win",
           stars: 3,
         },
@@ -427,8 +427,8 @@ describe("events", () => {
     expect(
       matchEndEventsV7(view(MISSION, { outcome: LOSS }))[1]?.params,
     ).toEqual({
-      mission_id: "frontier_1",
-      campaign_id: "frontier",
+      mission_id: "human_1",
+      campaign_id: "humans",
       result: "loss",
       stars: 0,
     });
@@ -511,8 +511,8 @@ describe("events", () => {
       [
         "mission_end",
         {
-          mission_id: "frontier_1",
-          campaign_id: "frontier",
+          mission_id: "human_1",
+          campaign_id: "humans",
           result: "win",
           stars: 2,
         },

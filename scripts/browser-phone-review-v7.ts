@@ -325,17 +325,6 @@ const SCENES: readonly Scene[] = [
     },
   },
   {
-    // The prologue's mission list, opened from its plate on the map.
-    name: "campaign-frontier",
-    match: false,
-    full: true,
-    run: async (c) => {
-      await front(c);
-      await click(c, "campaign");
-      await click(c, "campaign-open-frontier");
-    },
-  },
-  {
     // The map with every campaign opened by the testing cheat: each plate's
     // picture in colour (pulp_wars-hmyk.13).
     name: "campaign-map-unlocked",
@@ -362,20 +351,21 @@ const SCENES: readonly Scene[] = [
     },
   },
   {
+    // A locked card opens nothing; the first mission's briefing opens.
     name: "campaign-briefing",
     match: false,
     full: true,
     run: async (c) => {
       await front(c);
       await click(c, "campaign");
-      await click(c, "campaign-open-frontier");
-      await click(c, "mission-frontier_4");
-      await click(c, "mission-frontier_1");
+      await click(c, "campaign-open-humans");
+      await click(c, "mission-human_4");
+      await click(c, "mission-human_1");
     },
   },
   {
-    // The roster with progress (`pulp_wars-v642.1`): three missions won
-    // with one, two and three stars, the fourth open, the rest to come.
+    // The list with progress (`pulp_wars-v642.1`): three missions won
+    // with three, two and one star, the fourth open, the rest locked.
     name: "campaign-progress",
     match: false,
     full: true,
@@ -383,29 +373,29 @@ const SCENES: readonly Scene[] = [
       await front(c);
       await evaluate(c, CAMPAIGN_PROGRESS);
       await click(c, "campaign");
-      await click(c, "campaign-open-frontier");
+      await click(c, "campaign-open-humans");
     },
   },
   {
-    // A briefing with a faction choice, star goals and an unlock.
-    name: "campaign-briefing-choice",
+    // A briefing with an ally beside you, two opponents and star goals.
+    name: "campaign-briefing-allied",
     match: false,
     full: true,
     run: async (c) => {
       await front(c);
       await evaluate(c, CAMPAIGN_PROGRESS);
       await click(c, "campaign");
-      await click(c, "campaign-open-frontier");
-      await click(c, "mission-frontier_4");
+      await click(c, "campaign-open-humans");
+      await click(c, "mission-human_4");
     },
   },
-  // Missions 7 and 8 (`pulp_wars-v642.3`): the briefing of each (opened
-  // from the roster with the missions before it won), its first turn with
-  // the tracker and the marks, and its Victory dialog.
+  // The Humans' missions 5 and 6: the briefing of each (opened from the
+  // list with the missions before it won), its first turn with the
+  // tracker and the marks, and its Victory dialog.
   ...(
     [
-      ["mission-7-briefing", "frontier_7", 6],
-      ["mission-8-briefing", "frontier_8", 7],
+      ["mission-5-briefing", "human_5", 4],
+      ["mission-6-briefing", "human_6", 5],
     ] as const
   ).map(([name, card, won]): Scene => ({
     name,
@@ -415,82 +405,40 @@ const SCENES: readonly Scene[] = [
       await front(c);
       await evaluate(c, campaignProgressThrough(won));
       await click(c, "campaign");
-      await click(c, "campaign-open-frontier");
+      await click(c, "campaign-open-humans");
       await click(c, `mission-${card}`);
-    },
-  })),
-  ...(
-    [
-      ["mission-7-hud", "FRONTIER_7", "null"],
-      [
-        "mission-7-victory",
-        "FRONTIER_7",
-        "{ kind: 'VICTORY', winnerId: live.humanPlayerId, cause: 'PLACES_CAPTURED' }",
-      ],
-      ["mission-8-hud", "FRONTIER_8", "null"],
-      [
-        "mission-8-victory",
-        "FRONTIER_8",
-        "{ kind: 'VICTORY', winnerId: live.humanPlayerId, cause: 'TARGETS_KILLED' }",
-      ],
-    ] as const
-  ).map(([name, mission, outcome]): Scene => ({
-    name,
-    match: true,
-    run: async (c) => {
-      await mount(
-        c,
-        "/tests/fixtures/v7-score-ui.ts",
-        "null",
-        missionState(mission, outcome),
-      );
-    },
-  })),
-  // Missions 9 and 10 (`pulp_wars-v642.4`): the briefing of a mission
-  // with an ally and two opponents.
-  ...(["frontier_9", "frontier_10"] as const).map((mission): Scene => ({
-    name: `campaign-briefing-${mission.replace("frontier_", "m")}`,
-    match: false,
-    full: true,
-    run: async (c) => {
-      await front(c);
-      await evaluate(c, CAMPAIGN_PROGRESS_NINE);
-      await click(c, "campaign");
-      await click(c, "campaign-open-frontier");
-      await click(c, `mission-${mission}`);
     },
   })),
   // A mission in play: the objective tracker and the board's marks; and
   // the mission's Victory and Defeat dialogs.
   ...(
     [
-      // Missions 9 and 10 (`pulp_wars-v642.4`): four seats, an ally, a
-      // place to hold or to take, and the win dialog of each.
-      ["mission-hud-m9", "FRONTIER_9", "null"],
-      ["mission-hud-m10", "FRONTIER_10", "null"],
+      ["mission-5-hud", "HUMAN_5", "null"],
       [
-        "mission-victory-m9",
-        "FRONTIER_9",
-        "{ kind: 'VICTORY', winnerId: live.humanPlayerId, cause: 'SURVIVED' }",
+        "mission-5-victory",
+        "HUMAN_5",
+        "{ kind: 'VICTORY', winnerId: live.humanPlayerId, cause: 'TARGETS_KILLED' }",
       ],
+      // Four seats, a place to take, and the campaign's last win.
+      ["mission-6-hud", "HUMAN_6", "null"],
       [
-        "mission-victory-m10",
-        "FRONTIER_10",
+        "mission-6-victory",
+        "HUMAN_6",
         "{ kind: 'VICTORY', winnerId: live.humanPlayerId, cause: 'PLACES_CAPTURED' }",
       ],
-      ["mission-hud-capture", "FRONTIER_2", "null"],
+      ["mission-hud-capture", "HUMAN_2", "null"],
       ["mission-hud-escort", "TEST_ESCORT", "null"],
       ["mission-hud-deadline", "TEST_CAPTURE", "null"],
       ["mission-hud-survive", "TEST_SURVIVE", "null"],
       ["mission-hud-kill", "TEST_KILL", "null"],
       [
         "mission-victory",
-        "FRONTIER_2",
+        "HUMAN_2",
         "{ kind: 'VICTORY', winnerId: live.humanPlayerId, cause: 'PLACES_CAPTURED' }",
       ],
       [
         "mission-defeat",
-        "FRONTIER_4",
+        "HUMAN_1",
         "{ kind: 'DEFEAT', humanId: live.humanPlayerId, defeatedByPlayerId: live.players[1].id }",
       ],
     ] as const
@@ -506,12 +454,13 @@ const SCENES: readonly Scene[] = [
       );
     },
   })),
-  // Missions 5 and 6 (`pulp_wars-v642.2`): each one's briefing, its first
-  // turn with the tracker and the marks, and both of its end dialogs.
+  // The Humans' missions 3 and 4: an escort and a hold-out with an ally,
+  // each one's briefing, its first turn with the tracker and the marks,
+  // and both of its end dialogs.
   ...(
     [
-      ["frontier-5", "FRONTIER_5", 4, "ESCORT_ARRIVED", "ESCORT_LOST"],
-      ["frontier-6", "FRONTIER_6", 5, "SURVIVED", "PLACE_LOST"],
+      ["human-3", "HUMAN_3", 2, "ESCORT_ARRIVED", "ESCORT_LOST"],
+      ["human-4", "HUMAN_4", 3, "SURVIVED", "PLACE_LOST"],
     ] as const
   ).flatMap(([slug, mission, wonBefore, won, lost]): Scene[] => [
     {
@@ -522,7 +471,7 @@ const SCENES: readonly Scene[] = [
         await front(c);
         await evaluate(c, campaignProgressThrough(wonBefore));
         await click(c, "campaign");
-        await click(c, "campaign-open-frontier");
+        await click(c, "campaign-open-humans");
         await click(c, `mission-${mission.toLowerCase()}`);
       },
     },
@@ -1716,30 +1665,27 @@ function nineSeatFaction(faction: string): string {
  * played).
  */
 /**
- * Campaign progress for the roster scenes (`pulp_wars-v642.1`): missions 1
- * to 3 won with three, two and one star (the third in the format written
- * before stars existed).
+ * Campaign progress for the list scenes (`pulp_wars-v642.1`): the Humans'
+ * missions 1 to 3 won with three, two and one star (the third in the
+ * format written before stars existed).
  */
-const CAMPAIGN_PROGRESS = `localStorage.setItem('pulpWars.campaign.v1', JSON.stringify({ format: 'pulp-wars-campaign-progress', version: 1, completed: {
-  FRONTIER_1: { firstWonAt: '2026-10-14T10:00:00.000Z', bestRounds: 11, stars: 3 },
-  FRONTIER_2: { firstWonAt: '2026-10-14T11:00:00.000Z', bestRounds: 19, stars: 2 },
-  FRONTIER_3: { firstWonAt: '2026-10-14T12:00:00.000Z', bestRounds: 17 } } }))`;
+const CAMPAIGN_PROGRESS = `localStorage.setItem('pulpWars.campaign.v2', JSON.stringify({ format: 'pulp-wars-campaign-progress', version: 2, campaigns: { HUMANS: { completed: {
+  HUMAN_1: { firstWonAt: '2026-10-14T10:00:00.000Z', bestRounds: 11, stars: 3 },
+  HUMAN_2: { firstWonAt: '2026-10-14T11:00:00.000Z', bestRounds: 19, stars: 2 },
+  HUMAN_3: { firstWonAt: '2026-10-14T12:00:00.000Z', bestRounds: 17 } } } } }))`;
 
-/** Campaign progress with the first `count` missions won, three stars each. */
+/**
+ * Campaign progress with the Humans' first `count` missions won, three
+ * stars each.
+ */
 function campaignProgressThrough(count: number): string {
   const completed = Array.from(
     { length: count },
     (_, index) =>
-      `FRONTIER_${String(index + 1)}: { firstWonAt: '2026-10-14T10:00:00.000Z', bestRounds: 12, stars: 3 }`,
+      `HUMAN_${String(index + 1)}: { firstWonAt: '2026-10-14T10:00:00.000Z', bestRounds: 12, stars: 3 }`,
   ).join(", ");
-  return `localStorage.setItem('pulpWars.campaign.v1', JSON.stringify({ format: 'pulp-wars-campaign-progress', version: 1, completed: { ${completed} } }))`;
+  return `localStorage.setItem('pulpWars.campaign.v2', JSON.stringify({ format: 'pulp-wars-campaign-progress', version: 2, campaigns: { HUMANS: { completed: { ${completed} } } } }))`;
 }
-
-/**
- * Campaign progress with missions 1 to 9 won (`pulp_wars-v642.4`), so that
- * the briefings of missions 9 and 10 open.
- */
-const CAMPAIGN_PROGRESS_NINE = `localStorage.setItem('pulpWars.campaign.v1', JSON.stringify({ format: 'pulp-wars-campaign-progress', version: 1, completed: Object.fromEntries([1, 2, 3, 4, 5, 6, 7, 8, 9].map((number) => ['FRONTIER_' + String(number), { firstWonAt: '2026-10-14T10:00:00.000Z', bestRounds: 16, stars: 3 }])) }))`;
 
 /**
  * A mission's initial state, built by the mission builder (no command is

@@ -6,6 +6,7 @@ import {
   canonicalJson,
   hasExactKeysV7,
   isDenseArrayV7,
+  missionByIdV7,
   parseCommandV7,
   parseGameStateV7,
   parseMatchSetupV7,
@@ -28,6 +29,12 @@ export const MAX_SAVE_BYTES_V7 = 1_572_864;
  */
 export const STALE_MISSION_DIAGNOSTIC_V7 =
   "This mission was updated since the game was saved. Start it again from the campaign.";
+/**
+ * The diagnostic of a mission save whose mission is no longer in the game
+ * at any revision (the retired prologue's `FRONTIER_*`, `pulp_wars-hmyk.22`).
+ */
+export const REMOVED_MISSION_DIAGNOSTIC_V7 =
+  "This mission is no longer in the game. Delete the save and pick a campaign.";
 
 export interface SaveEnvelopeV7 {
   readonly format: "pulp-wars-save";
@@ -161,7 +168,13 @@ export function parseSaveV7(
   // revised (or removed) since it was saved is incompatible, not corrupt.
   const setupCheck = validateMatchSetupV7(input.setup);
   if (!setupCheck.ok && setupCheck.error.code === "UNKNOWN_MISSION")
-    return { kind: "INCOMPATIBLE", diagnostic: STALE_MISSION_DIAGNOSTIC_V7 };
+    return {
+      kind: "INCOMPATIBLE",
+      diagnostic:
+        missionByIdV7(setupCheck.error.params.id) === null
+          ? REMOVED_MISSION_DIAGNOSTIC_V7
+          : STALE_MISSION_DIAGNOSTIC_V7,
+    };
   const setup = parseMatchSetupV7(input.setup);
   const state = parseGameStateV7(input.state);
   const commands = parseCommands(input.acceptedCommands);

@@ -1,11 +1,11 @@
-import type { CampaignChapterV7 } from "./chapter-1";
+import type { CampaignChapterV7 } from "./chapter";
 
 /**
  * The Martian campaign, "Signal from Home" (`pulp_wars-hmyk.7`,
  * docs/product/SAGA.md sections 2.6 and 3.6): six missions of Captain
  * Quaxx's stranded Martians, who want to call home and learn what called
- * them here. Data only, in the shape of the prologue's chapter
- * (`./chapter-1.ts`); each mission's board, seats, objective and
+ * them here. Data only, in the shape of a chapter
+ * (`./chapter.ts`); each mission's board, seats, objective and
  * directives live in its engine definition
  * (`src/engine/v7/missions/martian-*.ts`).
  *
@@ -19,9 +19,7 @@ export const CHAPTER_MARTIANS_V7: CampaignChapterV7 = Object.freeze({
   title: "Signal from Home",
   intro:
     "The Overmind is dead and the Glass Ship is broken. Captain Quaxx and three hundred Martians are stranded on a wet, green, noisy planet. They answered a call to come here. Now they would like to make one to go home.",
-  // Every mission seats you as the Martians (a fixed faction, no choice),
-  // so the chapter unlocks nothing for the prologue's faction choices.
-  startingFactions: Object.freeze([]),
+  // Every mission seats you as the Martians (a fixed faction, no choice).
   missions: Object.freeze([
     Object.freeze({
       missionId: "MARTIAN_1",
@@ -38,7 +36,6 @@ export const CHAPTER_MARTIANS_V7: CampaignChapterV7 = Object.freeze({
       ]),
       closing:
         "The goblins are gone, and so are two saucers, but we have their hats. Our scientists report that to decode the call that brought us here, they need a native who understands the stars.",
-      unlocks: Object.freeze([]),
       names: Object.freeze({ QUAXX: "Captain Quaxx" }),
     }),
     Object.freeze({
@@ -56,7 +53,6 @@ export const CHAPTER_MARTIANS_V7: CampaignChapterV7 = Object.freeze({
       ]),
       closing:
         "Professor Haddock steps aboard in his slippers and asks to see the engine. Millford is handed back with an apology. The Professor has a theory about the bell under the mountain, and to test it he needs the Glass Ship's star-drive core.",
-      unlocks: Object.freeze([]),
       names: Object.freeze({ QUAXX: "Captain Quaxx", MILLFORD: "Millford" }),
     }),
     Object.freeze({
@@ -74,7 +70,6 @@ export const CHAPTER_MARTIANS_V7: CampaignChapterV7 = Object.freeze({
       ]),
       closing:
         "The core is home. Haddock wires it to the big dish at Red Dust and points the dish at the mountain. 'Listen,' he says. 'It is still calling.'",
-      unlocks: Object.freeze([]),
       names: Object.freeze({
         CORE_WALKER: "the Core-Walker",
         RAY_HOLLOW: "Ray Hollow",
@@ -95,7 +90,6 @@ export const CHAPTER_MARTIANS_V7: CampaignChapterV7 = Object.freeze({
       ]),
       closing:
         "Haddock has half of it: the call came from the bell under the mountain, in a language older than this planet. Quaxx sends a mothership to borrow the bell and saucers after a stolen crate. The rest is in the Lodge's orrery at Candlewick.",
-      unlocks: Object.freeze([]),
       names: Object.freeze({
         RED_DUST: "Red Dust",
         SUGARCREST: "Sugarcrest",
@@ -116,7 +110,6 @@ export const CHAPTER_MARTIANS_V7: CampaignChapterV7 = Object.freeze({
       ]),
       closing:
         "Haddock sets the orrery running. The stars are right until midwinter, the Long Night, and then not again for three hundred years. When he plays the call through its brass, every Martian in the room knows the voice. It is the voice of Mars.",
-      unlocks: Object.freeze([]),
       names: Object.freeze({ CANDLEWICK: "Candlewick" }),
     }),
     Object.freeze({
@@ -134,7 +127,6 @@ export const CHAPTER_MARTIANS_V7: CampaignChapterV7 = Object.freeze({
       ]),
       closing:
         "The last star falls short. Quaxx asks her crew who wants to go home. Nobody raises a hand. 'Then we stay,' she says. The date of the Long Night and the star-chart go to the Pact by the Crown's courier, a helpful clerk named Pettigrew.",
-      unlocks: Object.freeze([]),
       names: Object.freeze({
         QUAXX: "Captain Quaxx",
         STARGAZER_1: "the Stargazer of Hob's Knoll",

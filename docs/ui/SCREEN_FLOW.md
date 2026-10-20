@@ -3162,6 +3162,28 @@ lists above differ, this is current:
   Dwarves" (a flag notice) for the win that opened them. Campaign and Next
   mission return to the finished mission's own campaign.
 
+**The prologue retired (`pulp_wars-hmyk.22`).** "The Hollow Frontier" is no
+longer playable ([Campaign mode](../product/CAMPAIGN.md) section 24). Where
+the lists above differ, this is current:
+
+- **Campaign map.** No prologue plate and no dashed rule: the map is the
+  three rows of the nine faction campaigns, Humans and Undead open from the
+  start.
+- **No faction unlocks.** Every faction is open from the start, in skirmish
+  and in the campaigns. Gone with the prologue: the mission list's
+  **Factions** row, a card's **Unlocks** chip, the briefing's "Win to
+  unlock", and the Victory dialog's "New faction" notice. A mission whose
+  seat offers a choice lists every faction of the choice (none of the nine
+  campaigns' missions does today).
+- **A saved prologue mission** loads as the save-recovery screen: "This
+  mission is no longer in the game. Delete the save and pick a campaign.",
+  with the usual **Delete** action. Stored prologue wins are kept and change
+  nothing on the map.
+- The examples above that name prologue missions ("Goblins at the Gate",
+  "The Warrens", "Doctor Crane") are history; the faction campaigns' own
+  names stand in their place (for example "Mission 1 · Thaw at Northwatch ·
+  Turn 7" on the main menu's Continue).
+
 ## 0. Ruleset-6 replacement contract
 
 > **Historical (`pulp_wars-lky5`).** Ruleset 6 and ruleset 5 are retired.

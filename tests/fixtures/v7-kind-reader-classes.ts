@@ -420,8 +420,8 @@ export const KIND_READER_CLASSES_V7: Readonly<
   // faction theme; no unit is involved.
   "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#syncMusic": "SEAT",
   // The campaign screens (pulp_wars-68k.5) read the factions of a mission's
-  // seats and of the unlock table; no unit is involved.
-  "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#campaignList": "SEAT",
+  // seats; no unit is involved. (The list's faction roster and the Victory
+  // dialog's unlock notice went with the prologue, pulp_wars-hmyk.22.)
   "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#factionEmblem": "SEAT",
   // The campaign map (pulp_wars-hmyk.3): a campaign's faction, for its
   // plate and placeholder portrait; no unit is involved.
@@ -435,7 +435,6 @@ export const KIND_READER_CLASSES_V7: Readonly<
   // whose art a board waits for. A mind-controlled unit's kind is the
   // faction of another seat of the same match, so the seats cover it.
   "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#render": "SEAT",
-  "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#missionResults": "SEAT",
   // Many players (pulp_wars-ykw.5): seats and their factions in the setup
   // grid, the turn-order strip and the end-of-game list.
   "src/render/dom/app-view-v7.ts::syncFactionFieldsV7": "SEAT",

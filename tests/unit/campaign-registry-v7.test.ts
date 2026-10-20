@@ -4,7 +4,6 @@ import {
   CAMPAIGN_IDS_V7,
   type CampaignIdV7,
 } from "../../src/campaign/campaigns";
-import { CHAPTER_ONE_V7 } from "../../src/campaign/chapter-1";
 import { CHAPTER_CANDY_V7 } from "../../src/campaign/chapter-candy";
 import { CHAPTER_CULT_V7 } from "../../src/campaign/chapter-cult";
 import { CHAPTER_DINOSAURS_V7 } from "../../src/campaign/chapter-dinosaurs";
@@ -27,6 +26,7 @@ import {
   campaignMissionV7,
   campaignPlatesV7,
 } from "../../src/campaign/progress-v7";
+import { missionByIdV7 } from "../../src/engine/index";
 import type { StorageAdapter } from "../../src/persistence/index";
 
 /**
@@ -35,7 +35,7 @@ import type { StorageAdapter } from "../../src/persistence/index";
  * in campaign-graph-v7.test.ts.
  */
 describe("campaign registry", () => {
-  it("lists the prologue and nine faction campaigns in three tiers", () => {
+  it("lists the nine faction campaigns in three tiers", () => {
     expect(CAMPAIGNS_V7.map((campaign) => campaign.id)).toEqual([
       ...CAMPAIGN_IDS_V7,
     ]);
@@ -43,13 +43,12 @@ describe("campaign registry", () => {
       CAMPAIGNS_V7.filter((campaign) => campaign.tier === n).map(
         (campaign) => campaign.id,
       );
-    expect(tier(0)).toEqual(["FRONTIER"]);
     expect(tier(1)).toEqual(["HUMANS", "UNDEAD"]);
     expect(tier(2)).toEqual(["DINOSAURS", "MARTIANS", "GOBLINS", "DWARVES"]);
     expect(tier(3)).toEqual(["ICE_FOLK", "CULT", "CANDY"]);
     for (const campaign of CAMPAIGNS_V7)
       expect([...campaign.prerequisites], campaign.id).toEqual(
-        campaign.tier < 2 ? [] : campaign.tier === 2 ? tier(1) : tier(2),
+        campaign.tier === 1 ? [] : campaign.tier === 2 ? tier(1) : tier(2),
       );
     expect(new Set(CAMPAIGNS_V7.map((campaign) => campaign.faction)).size).toBe(
       9,
@@ -57,12 +56,25 @@ describe("campaign registry", () => {
     expect(Object.isFrozen(CAMPAIGNS_V7)).toBe(true);
   });
 
-  it("keeps the ten-mission chapter as the prologue, with its missions, and the Humans campaign after it", () => {
-    const frontier = campaignByIdV7("FRONTIER");
-    expect(frontier?.chapter).toBe(CHAPTER_ONE_V7);
-    expect(frontier?.title).toBe("The Hollow Frontier");
+  it("retires the prologue: no Frontier campaign, chapter, mission or picture", () => {
+    // pulp_wars-hmyk.22: "drop the original campaign we designed".
+    expect(CAMPAIGNS_V7).toHaveLength(9);
+    expect(CAMPAIGN_IDS_V7).not.toContain("FRONTIER");
+    expect(campaignByIdV7("FRONTIER")).toBeNull();
+    for (let number = 1; number <= 10; number += 1) {
+      const id = `FRONTIER_${String(number)}`;
+      expect(campaignMissionV7(id), id).toBeNull();
+      expect(missionByIdV7(id), id).toBeNull();
+    }
+    expect(
+      CAMPAIGNS_V7.map((campaign) => campaign.picture).filter(
+        (picture) => picture === "campaign-frontier",
+      ),
+    ).toEqual([]);
+  });
+
+  it("gives every campaign its six-mission chapter, the Humans first", () => {
     expect(CAMPAIGN_CHAPTERS_V7).toEqual([
-      CHAPTER_ONE_V7,
       CHAPTER_HUMANS_V7,
       CHAPTER_UNDEAD_V7,
       CHAPTER_DINOSAURS_V7,
@@ -73,11 +85,6 @@ describe("campaign registry", () => {
       CHAPTER_CULT_V7,
       CHAPTER_CANDY_V7,
     ]);
-    expect(campaignMissionV7("FRONTIER_4")).toMatchObject({
-      campaign: { id: "FRONTIER" },
-      chapter: CHAPTER_ONE_V7,
-      entry: { number: 4 },
-    });
     const humans = campaignByIdV7("HUMANS");
     expect(humans?.chapter).toBe(CHAPTER_HUMANS_V7);
     expect(humans?.title).toBe("The Marshal's Law");
@@ -154,11 +161,10 @@ describe("campaign registry", () => {
     expect(campaignByIdV7("NOWHERE")).toBeNull();
   });
 
-  it("shows the prologue and the openers open, and every other campaign locked until the cheat", () => {
+  it("shows the openers open, and every other campaign locked until the cheat", () => {
     for (const cheat of [false, true]) {
       const plates = campaignPlatesV7({}, cheat);
       expect(plates.map((plate) => [plate.campaign.id, plate.status])).toEqual([
-        ["FRONTIER", "OPEN"],
         // The Humans campaign (`pulp_wars-hmyk.4`): tier 1, open from the
         // start.
         ["HUMANS", "OPEN"],
@@ -187,38 +193,25 @@ describe("campaign registry", () => {
         // the four middle campaigns are finished; the cheat opens it.
         ["CANDY", cheat ? "OPEN" : "LOCKED"],
       ]);
-      expect(plates[1]).toMatchObject({
-        missionsWon: 0,
-        missionCount: 6,
-        stars: 0,
-      });
-      expect(plates[2]).toMatchObject({
-        missionsWon: 0,
-        missionCount: 6,
-        stars: 0,
-      });
-      expect(plates[3]).toMatchObject({
-        missionsWon: 0,
-        missionCount: 6,
-        stars: 0,
-      });
-      expect(plates[0]).toMatchObject({
-        missionsWon: 0,
-        missionCount: 10,
-        stars: 0,
-      });
+      for (const plate of plates)
+        expect(plate, plate.campaign.id).toMatchObject({
+          missionsWon: 0,
+          missionCount: 6,
+          stars: 0,
+        });
     }
-    // The prologue's last mission won: the prologue is done.
+    // The Humans' last mission won: the Humans campaign is done.
     const done = Object.fromEntries(
-      CHAPTER_ONE_V7.missions.map((entry) => [
+      CHAPTER_HUMANS_V7.missions.map((entry) => [
         entry.missionId,
-        { firstWonAt: "2026-10-03T12:00:00.000Z", bestRounds: 12, stars: 2 },
+        { firstWonAt: "2026-10-03T12:00:00.000Z", bestRounds: 12, stars: 1 },
       ]),
     );
     expect(campaignPlatesV7(done)[0]).toMatchObject({
+      campaign: { id: "HUMANS" },
       status: "DONE",
-      missionsWon: 10,
-      stars: 20,
+      missionsWon: 6,
+      stars: 6,
     });
   });
 });

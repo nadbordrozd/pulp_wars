@@ -2,20 +2,6 @@
   "bead": "pulp_wars-hmyk.13",
   "pictures": [
     {
-      "id": "campaign-frontier",
-      "campaign": "FRONTIER",
-      "subject": "a Ranger guard on watch before the birch-log fort, the mountain glowing green behind",
-      "path": "public/assets/chibi/campaign/campaign-frontier.png",
-      "width": 128,
-      "height": 96,
-      "pixelSha256": "f12183207b20dff904152a7a5c8a23150120d7e95f666f7af06ec3b7a92178ab",
-      "source": {
-        "recipe": "frontier-b",
-        "candidate": 2,
-        "sha256": "ff89013094da576f1f5034e21dee8c78d8a6c741b30631c09f3c2ec94ae0f31f"
-      }
-    },
-    {
       "id": "campaign-humans",
       "campaign": "HUMANS",
       "subject": "Marshal Steele rides up the road to Kessler Hall",

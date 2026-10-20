@@ -177,13 +177,10 @@ const INIT_SCRIPT = `(() => {
         highContrast: false,
       },
     }));
-    // Every campaign mission open (bead 2yc.98): the hunt plays any of them.
-    if (settings.get('hunt-campaign') === '1') {
-      const completed = {};
-      for (let mission = 1; mission <= 10; mission += 1)
-        completed['FRONTIER_' + mission] = { firstWonAt: '2026-10-01T00:00:00.000Z', bestRounds: 12, stars: 1 };
-      localStorage.setItem('pulpWars.campaign.v2', JSON.stringify({ format: 'pulp-wars-campaign-progress', version: 1, completed }));
-    }
+    // Every campaign mission open (bead 2yc.98): the hunt plays any of
+    // them. The testing cheat opens them all (pulp_wars-hmyk.22).
+    if (settings.get('hunt-campaign') === '1')
+      localStorage.setItem('pulpWars.campaignCheat', '1');
   } catch {}
   const errors = [];
   globalThis.__HUNT_ERRORS__ = errors;
@@ -607,7 +604,7 @@ try {
     const mission =
       options.campaignEvery > 0 &&
       index % options.campaignEvery === options.campaignEvery - 1
-        ? `FRONTIER_${(Math.floor(index / options.campaignEvery) % 10) + 1}`
+        ? `HUMAN_${(Math.floor(index / options.campaignEvery) % 6) + 1}`
         : null;
     await applyViewport(connection);
     const report: MatchReport = {
@@ -1269,11 +1266,11 @@ async function launchMission(
   connection: Connection,
   report: MatchReport,
 ): Promise<void> {
-  const mission = (report.mission ?? "FRONTIER_1").toLowerCase();
+  const mission = (report.mission ?? "HUMAN_1").toLowerCase();
   await tapButton(connection, '[data-action="campaign"]', 10_000);
   // The campaign map (pulp_wars-hmyk.3): the hunt's missions are the
-  // prologue's.
-  await tapButton(connection, '[data-action="campaign-open-frontier"]', 10_000);
+  // Humans' (the Hollow Frontier was retired by pulp_wars-hmyk.22).
+  await tapButton(connection, '[data-action="campaign-open-humans"]', 10_000);
   await tapButton(connection, `[data-action="mission-${mission}"]`, 10_000);
   // A choice of faction: the hunt's own when the mission offers it.
   await evaluate(

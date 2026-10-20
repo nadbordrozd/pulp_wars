@@ -1,11 +1,11 @@
-import type { CampaignChapterV7 } from "./chapter-1";
+import type { CampaignChapterV7 } from "./chapter";
 
 /**
  * The Undead campaign, "The Long Sleep" (`pulp_wars-hmyk.5`,
  * docs/product/SAGA.md sections 2.2 and 3.2): six missions of the Ashen
  * Marquis's search for the Lullaby, from the robbed barrows to his own
- * tomb under the summit. Data only, in the shape of the prologue's chapter
- * (`./chapter-1.ts`); each mission's board, seats, objective and
+ * tomb under the summit. Data only, in the shape of a chapter
+ * (`./chapter.ts`); each mission's board, seats, objective and
  * directives live in its engine definition
  * (`src/engine/v7/missions/undead-*.ts`).
  *
@@ -18,10 +18,7 @@ export const CHAPTER_UNDEAD_V7: CampaignChapterV7 = Object.freeze({
   title: "The Long Sleep",
   intro:
     "The Ashen Marquis kept his word: his dead marched for the living until the bell fell silent. Now he would like to lie down. But the dead of the whole north are walking again, his and not his, and something under the mountain will not let them rest.",
-  // Every mission seats you as the Undead (a fixed faction, no choice), so
-  // the chapter unlocks nothing for the prologue's faction choices: the
-  // Undead are still won there, in its fourth mission.
-  startingFactions: Object.freeze([]),
+  // Every mission seats you as the Undead (a fixed faction, no choice).
   missions: Object.freeze([
     Object.freeze({
       missionId: "UNDEAD_1",
@@ -38,7 +35,6 @@ export const CHAPTER_UNDEAD_V7: CampaignChapterV7 = Object.freeze({
       ]),
       closing:
         "In Grimsditch's cart is an order for the Marquis's own bones, to be delivered to a buyer in a grey hood. The Marquis is flattered. Doctor Crane is not.",
-      unlocks: Object.freeze([]),
       names: Object.freeze({ MARQUIS: "the Ashen Marquis" }),
     }),
     Object.freeze({
@@ -56,7 +52,6 @@ export const CHAPTER_UNDEAD_V7: CampaignChapterV7 = Object.freeze({
       ]),
       closing:
         "Crane finds the diary, water-stained, in the Marquis's own hand. It describes a bell, a summit, a thing that hums in the rock, and a song he wrote to make it sleep: the Lullaby. He does not remember writing any of it.",
-      unlocks: Object.freeze([]),
       names: Object.freeze({
         SAINT_ASHES: "Saint Ashes",
         CRANE: "Doctor Crane",
@@ -78,7 +73,6 @@ export const CHAPTER_UNDEAD_V7: CampaignChapterV7 = Object.freeze({
       ]),
       closing:
         "The Last Rites comes up with her captain at the wheel and half a score in a lead box. The other half, says the captain, the Marquis took to his grave. The Marquis has never seen his grave. He was told it was under the summit.",
-      unlocks: Object.freeze([]),
       names: Object.freeze({ CHAPEL_ROCK: "Chapel Rock" }),
     }),
     Object.freeze({
@@ -96,7 +90,6 @@ export const CHAPTER_UNDEAD_V7: CampaignChapterV7 = Object.freeze({
       ]),
       closing:
         "Crane reaches the stair with his hat still on. Behind him the Thane writes to Marshal Steele about the dead, in capitals.",
-      unlocks: Object.freeze([]),
       names: Object.freeze({
         CRANE: "Doctor Crane",
         SUMMIT_STAIR: "the Summit Stair",
@@ -117,7 +110,6 @@ export const CHAPTER_UNDEAD_V7: CampaignChapterV7 = Object.freeze({
       ]),
       closing:
         "Mallory falls mid-sentence and the diary comes home. In the Lodge's account books every entry, for years back, is in one small, tidy hand.",
-      unlocks: Object.freeze([]),
       names: Object.freeze({
         MALLORY: "Brother Mallory",
         MARQUIS: "the Ashen Marquis",
@@ -138,7 +130,6 @@ export const CHAPTER_UNDEAD_V7: CampaignChapterV7 = Object.freeze({
       ]),
       closing:
         "In the tomb lie the rest of the Lullaby and a page from the Grey Book in the Marquis's hand: 'It eats the door first.' He remembers now. He founded the Lodge and rang the bell. He gives Crane the page and goes to tell Steele what he is.",
-      unlocks: Object.freeze([]),
       names: Object.freeze({
         THE_LODGE: "the Rangers' Lodge",
         MARQUIS: "the Ashen Marquis",

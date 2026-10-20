@@ -608,32 +608,32 @@ describe("CAPTURE, a deadline, and an ally", () => {
     expect(
       missionStatusV7(won(cityTaken(state, at(8, 8), seatId(state, 2))))?.stars,
     ).toBe(1);
-    // FRONTIER_2: by round 18 and with every own city.
-    const frontier = start("FRONTIER_2");
-    const frontierWon = (after: GameStateV7): GameStateV7 => ({
+    // UNDEAD_3: by round 16 and with both own towns.
+    const chapter = start("UNDEAD_3");
+    const chapterWon = (after: GameStateV7): GameStateV7 => ({
       ...after,
       outcome: { kind: "VICTORY", winnerId: after.humanPlayerId },
     });
-    expect(missionStatusV7(frontierWon(frontier))?.stars).toBe(3);
-    expect(
-      missionStatusV7(frontierWon({ ...frontier, round: 19 }))?.stars,
-    ).toBe(2);
-    const town = definition("FRONTIER_2").seats[0]?.cities[1]?.at as CoordV7;
+    expect(missionStatusV7(chapterWon(chapter))?.stars).toBe(3);
+    expect(missionStatusV7(chapterWon({ ...chapter, round: 17 }))?.stars).toBe(
+      2,
+    );
+    const town = definition("UNDEAD_3").seats[0]?.cities[1]?.at as CoordV7;
     expect(
       missionStatusV7(
-        frontierWon(
-          cityTaken({ ...frontier, round: 19 }, town, seatId(frontier, 1)),
+        chapterWon(
+          cityTaken({ ...chapter, round: 17 }, town, seatId(chapter, 1)),
         ),
       )?.stars,
     ).toBe(1);
     // A defeat has no stars.
     expect(
       missionStatusV7({
-        ...frontier,
+        ...chapter,
         outcome: {
           kind: "DEFEAT",
-          humanId: frontier.humanPlayerId,
-          defeatedByPlayerId: seatId(frontier, 1),
+          humanId: chapter.humanPlayerId,
+          defeatedByPlayerId: seatId(chapter, 1),
         },
       })?.stars,
     ).toBeNull();
@@ -700,7 +700,7 @@ describe("a mission without goals", () => {
   it("keeps the ordinary elimination rule and still has a public status", () => {
     const grounds = definition("TEST_GROUNDS");
     expect(missionHasGoalsV7(grounds)).toBe(false);
-    expect(missionHasGoalsV7(definition("FRONTIER_1"))).toBe(true);
+    expect(missionHasGoalsV7(definition("HUMAN_1"))).toBe(true);
     const state = start("TEST_GROUNDS");
     const cleared = {
       ...state,
@@ -784,7 +784,8 @@ describe("the public status and the saved outcome", () => {
 
 describe("a seat's own forbidden technologies and its directive schedule", () => {
   it("forbids the AI seat's list to that seat alone", () => {
-    const state = start("FRONTIER_1");
+    // The Kessler Hall finale: the Goblin seat's own long list.
+    const state = start("HUMAN_6");
     const everyone = forbiddenTechnologiesV7(state.setup);
     const human = forbiddenTechnologiesV7(state.setup, 0);
     const goblins = forbiddenTechnologiesV7(state.setup, 1);
@@ -1018,17 +1019,9 @@ describe("natural maps", () => {
     const natural = MISSION_REGISTRY_V7.filter(
       (mission) => mission.source !== undefined,
     );
+    // The prologue's ten were the first (`pulp_wars-v642.1`); they were
+    // retired with it (`pulp_wars-hmyk.22`).
     expect(natural.map((mission) => mission.id)).toEqual([
-      "FRONTIER_1",
-      "FRONTIER_2",
-      "FRONTIER_3",
-      "FRONTIER_4",
-      "FRONTIER_5",
-      "FRONTIER_6",
-      "FRONTIER_7",
-      "FRONTIER_8",
-      "FRONTIER_9",
-      "FRONTIER_10",
       // The Humans campaign (`pulp_wars-hmyk.4`).
       "HUMAN_1",
       "HUMAN_2",
@@ -1095,19 +1088,10 @@ describe("natural maps", () => {
     ]);
     for (const mission of MISSION_REGISTRY_V7)
       expect(missionMapDriftV7(mission), mission.id).toEqual([]);
-    // The edit lists are small: the board is the generator's. (Ten at most
-    // since missions 5 and 6, `pulp_wars-v642.2`: a three-seat board has
-    // more villages to take away from the AI seats; it was eight.) The
-    // four-seat boards (`pulp_wars-v642.4`) remove a village under each of
-    // their six or seven cities, and mission 9 has its band of Rift. The
-    // danger pass (`pulp_wars-v642.10`) takes from mission 10 the four
-    // villages within an easy walk of your towns.
+    // The edit lists are small: the board is the generator's (ten edits
+    // at most, `pulp_wars-v642.2`: a three-seat board has more villages to
+    // take away from the AI seats). The missions below take more.
     const mostEdits: Readonly<Record<string, number>> = {
-      // The danger pass (`pulp_wars-v642.10`): five more villages gone, so
-      // the Goblins walk for their slots and the dead do not snowball.
-      FRONTIER_3: 11,
-      FRONTIER_9: 17,
-      FRONTIER_10: 17,
       // Kessler Hall (`pulp_wars-hmyk.4`): the Baron's plain keeps no
       // villages (thirteen gone, six of them under cities) and the Hall's
       // tile loses its Game; the second retune (`pulp_wars-hmyk.19`) takes
@@ -1148,12 +1132,6 @@ describe("natural maps", () => {
       CULT_6: 18,
     };
     const terrainEdits: Readonly<Record<string, number>> = {
-      // Bone Neck.
-      FRONTIER_4: 2,
-      // The Rift band: seven tiles in one column.
-      FRONTIER_9: 7,
-      // The clearing on the Lodge's summit.
-      FRONTIER_10: 2,
       // The Rangers' fields on the summit and Ashby Camp's cleared wood.
       UNDEAD_6: 3,
       // The Rift between Saucer Field and the scrap camps (`pulp_wars-hmyk.7`).
@@ -1196,9 +1174,12 @@ describe("natural maps", () => {
   });
 
   it("reports a board that no longer matches its source", () => {
-    const mission = definition("FRONTIER_4");
+    // Signal from Home: a Rift of three tiles cut into the generator's
+    // board (`pulp_wars-hmyk.7`).
+    const mission = definition("MARTIAN_1");
     const terrain = [...mission.terrain];
-    terrain[6] = (terrain[6] as string).replace("........", "...~....");
+    const first = terrain[0] as string;
+    terrain[0] = `${first.startsWith("~") ? "." : "~"}${first.slice(1)}`;
     expect(missionMapDriftV7({ ...mission, terrain })).not.toEqual([]);
     const source = mission.source as NonNullable<MissionDefinitionV7["source"]>;
     expect(
@@ -1211,10 +1192,10 @@ describe("natural maps", () => {
         source: { ...source, frozen: true },
       }),
     ).toEqual([]);
-    // The generator alone, without the edits, has water where the neck is.
+    // The generator alone, without the edits, has no Rift there.
     const raw = generatedMissionLayersV7(source);
-    expect(raw.terrain[6]?.slice(7, 9)).toBe("~~");
-    expect(missionMapLayersV7(source).terrain[6]?.slice(7, 9)).toBe("..");
+    expect(raw.terrain[4]?.slice(5, 8)).not.toBe("xxx");
+    expect(missionMapLayersV7(source).terrain[4]?.slice(5, 8)).toBe("xxx");
   });
 });
 
@@ -1244,10 +1225,13 @@ describe("how the objective is shown", () => {
       description: "Objective: Bring envoy to gate. 4 steps to go.",
     });
     // A chapter mission uses the campaign's own line.
-    const frontier = start("FRONTIER_2");
+    const chapter = start("HUMAN_2");
     expect(
-      missionTrackerV7(viewForV7(frontier, frontier.humanPlayerId)),
-    ).toMatchObject({ line: "Capture the Warrens.", counter: null });
+      missionTrackerV7(viewForV7(chapter, chapter.humanPlayerId)),
+    ).toMatchObject({
+      line: "Take the three toll forts by turn 18.",
+      counter: "18 turns",
+    });
     // A mission without goals still has its line; no mission, no tracker.
     const plain = start("TEST_GROUNDS");
     expect(
@@ -1331,8 +1315,8 @@ describe("how the objective is shown", () => {
       { text: "Keep hero alive", met: false },
     ]);
     expect(
-      missionStarGoalsV7("FRONTIER_4", null).map((goal) => goal.text),
-    ).toEqual(["Win the mission", "Win by turn 9", "Lose no city"]);
+      missionStarGoalsV7("HUMAN_2", null).map((goal) => goal.text),
+    ).toEqual(["Win the mission", "Win by turn 14", "Lose no city"]);
     expect(missionStarGoalsV7("NO_SUCH_MISSION", null)).toEqual([]);
   });
 });

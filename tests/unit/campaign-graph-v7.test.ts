@@ -10,6 +10,7 @@ import {
   campaignNewlyOpenedV7,
   campaignPlatesV7,
   type CampaignCompletedV7,
+  type CampaignPlateV7,
 } from "../../src/campaign/progress-v7";
 import { fixtureLastMissionV7 } from "../fixtures/v7-campaign-graph";
 
@@ -53,10 +54,16 @@ function statuses(
 
 const MIDDLE: CampaignIdV7[] = ["DINOSAURS", "MARTIANS", "GOBLINS", "DWARVES"];
 
+function plateOf(
+  completed: CampaignCompletedV7,
+  id: CampaignIdV7,
+): CampaignPlateV7 | undefined {
+  return campaignPlatesV7(completed).find((plate) => plate.campaign.id === id);
+}
+
 describe("campaign graph", () => {
   it("opens the two openers first and locks the rest behind them", () => {
     expect(statuses({})).toEqual({
-      FRONTIER: "OPEN",
       HUMANS: "OPEN",
       UNDEAD: "OPEN",
       DINOSAURS: "LOCKED",
@@ -67,7 +74,7 @@ describe("campaign graph", () => {
       CULT: "LOCKED",
       CANDY: "SOON",
     });
-    const dinosaurs = campaignPlatesV7({})[3];
+    const dinosaurs = plateOf({}, "DINOSAURS");
     expect(dinosaurs?.waitingFor.map((campaign) => campaign.id)).toEqual([
       "HUMANS",
       "UNDEAD",
@@ -96,7 +103,7 @@ describe("campaign graph", () => {
       "LOCKED",
     ]);
     expect(
-      campaignPlatesV7(finished("HUMANS"))[3]?.waitingFor.map(
+      plateOf(finished("HUMANS"), "DINOSAURS")?.waitingFor.map(
         (campaign) => campaign.id,
       ),
     ).toEqual(["UNDEAD"]);
@@ -136,7 +143,6 @@ describe("campaign graph", () => {
 
   it("with the cheat, opens every built campaign and every mission; Coming soon stays", () => {
     expect(statuses({}, true)).toEqual({
-      FRONTIER: "OPEN",
       HUMANS: "OPEN",
       UNDEAD: "OPEN",
       DINOSAURS: "OPEN",
@@ -167,9 +173,10 @@ describe("campaign graph", () => {
   });
 
   it("counts a campaign's missions and stars on its plate", () => {
-    const humans = campaignPlatesV7({
-      TEST_GROUNDS: { firstWonAt: AT, bestRounds: 9, stars: 1 },
-    })[1];
+    const humans = plateOf(
+      { TEST_GROUNDS: { firstWonAt: AT, bestRounds: 9, stars: 1 } },
+      "HUMANS",
+    );
     expect(humans).toMatchObject({
       status: "OPEN",
       missionsWon: 1,
@@ -178,12 +185,31 @@ describe("campaign graph", () => {
     });
   });
 
-  it("offers a mission's whole faction choice with the cheat", () => {
-    // FRONTIER_4 offers Human or Goblin; Goblin is unlocked by mission 2.
-    expect(campaignFactionChoicesV7("FRONTIER_4", {})).toEqual(["ORIGINAL"]);
-    expect(campaignFactionChoicesV7("FRONTIER_4", {}, true)).toEqual([
+  it("offers a mission's whole faction choice: no faction is locked", () => {
+    // TEST_GROUNDS offers Human or Goblin to seat 0; a fixed seat offers
+    // its one faction; an unknown mission offers none (pulp_wars-hmyk.22).
+    expect(campaignFactionChoicesV7("TEST_GROUNDS")).toEqual([
       "ORIGINAL",
       "GOBLIN",
     ]);
+    expect(campaignFactionChoicesV7("TEST_RUSH")).toHaveLength(1);
+    expect(campaignFactionChoicesV7("FRONTIER_4")).toEqual([]);
+  });
+
+  it("ignores the retired prologue's stored wins", () => {
+    // pulp_wars-hmyk.22: Frontier progress is kept in storage and changes
+    // nothing on the map, whatever was won there.
+    const frontier: CampaignCompletedV7 = Object.fromEntries(
+      Array.from({ length: 10 }, (_, index) => [
+        `FRONTIER_${String(index + 1)}`,
+        { firstWonAt: AT, bestRounds: 12, stars: 3 },
+      ]),
+    );
+    expect(statuses(frontier)).toEqual(statuses({}));
+    expect(
+      campaignPlatesV7(frontier).map((plate) => plate.campaign.id),
+    ).toEqual(campaignPlatesV7({}).map((plate) => plate.campaign.id));
+    expect(campaignMissionV7("FRONTIER_1")).toBeNull();
+    expect(campaignByIdV7("FRONTIER")).toBeNull();
   });
 });

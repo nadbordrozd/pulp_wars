@@ -29,7 +29,7 @@ import type {
  *     resources, biomes, villages, chests, the generator's capitals) and,
  *     with `--out`, writes the board's picture.
  *
- *   tsx scripts/mission-map-v7.ts show --mission FRONTIER_1 --out <dir>
+ *   tsx scripts/mission-map-v7.ts show --mission HUMAN_1 --out <dir>
  *     The picture of a registered mission's board with its cities, units,
  *     and landmarks.
  *

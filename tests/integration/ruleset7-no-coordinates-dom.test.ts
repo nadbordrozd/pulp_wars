@@ -10,7 +10,6 @@ import {
   queryPlayerCommandsV7,
   viewForV7,
   type CommandV7,
-  type FactionIdV7,
   type GameStateV7,
   type PlayerViewV7,
 } from "../../src/engine/index";
@@ -21,7 +20,7 @@ import {
   type Ruleset7CampaignProgressV7,
   type Ruleset7DispatchResult,
 } from "../../src/app/index";
-import { CHAPTER_ONE_V7 } from "../../src/campaign/chapter-1";
+import { CHAPTER_HUMANS_V7 } from "../../src/campaign/chapter-humans";
 import { CAMPAIGN_PROGRESS_STORAGE_KEY_V7 } from "../../src/persistence/index";
 import type {
   BoardHostCallbacksV7,
@@ -498,7 +497,7 @@ describe("Ruleset 7 player-facing text names no tile coordinates", () => {
 
   // The campaign screens (pulp_wars-68k.5): the list in every progress
   // state, every briefing, Settings and the resume label of a mission, and
-  // the mission Victory (with every unlock) and Defeat dialogs.
+  // the mission Victory (with the campaigns it opened) and Defeat dialogs.
   it("Campaign: list, briefings, mission Settings, resume label and dialogs", async () => {
     const offences = new Set<string>();
     const check = (step: string): void => {
@@ -508,10 +507,10 @@ describe("Ruleset 7 player-facing text names no tile coordinates", () => {
     const progressStates: Record<string, unknown>[] = [
       {},
       {
-        FRONTIER_1: { firstWonAt: "2026-10-03T12:00:00.000Z", bestRounds: 12 },
+        HUMAN_1: { firstWonAt: "2026-10-03T12:00:00.000Z", bestRounds: 12 },
       },
       Object.fromEntries(
-        CHAPTER_ONE_V7.missions.map((entry) => [
+        CHAPTER_HUMANS_V7.missions.map((entry) => [
           entry.missionId,
           { firstWonAt: "2026-10-03T12:00:00.000Z", bestRounds: 21 },
         ]),
@@ -525,8 +524,8 @@ describe("Ruleset 7 player-facing text names no tile coordinates", () => {
         CAMPAIGN_PROGRESS_STORAGE_KEY_V7,
         JSON.stringify({
           format: "pulp-wars-campaign-progress",
-          version: 1,
-          completed,
+          version: 2,
+          campaigns: { HUMANS: { completed } },
         }),
       );
       const app = bootstrapRuleset7App(document);
@@ -540,15 +539,15 @@ describe("Ruleset 7 player-facing text names no tile coordinates", () => {
         ?.click();
       await settle();
       check("campaign reset");
-      // The prologue's list, from its plate on the map (pulp_wars-hmyk.3).
+      // The Humans' list, from its plate on the map (pulp_wars-hmyk.3).
       document
         .querySelector<HTMLButtonElement>(
-          '[data-action="campaign-open-frontier"]',
+          '[data-action="campaign-open-humans"]',
         )
         ?.click();
       await settle();
       check("campaign list");
-      for (const entry of CHAPTER_ONE_V7.missions) {
+      for (const entry of CHAPTER_HUMANS_V7.missions) {
         const card = document.querySelector<HTMLButtonElement>(
           `[data-action="mission-${entry.missionId.toLowerCase()}"]`,
         );
@@ -573,8 +572,9 @@ describe("Ruleset 7 player-facing text names no tile coordinates", () => {
     expect(steps).toBe(
       1 +
         2 +
-        CHAPTER_ONE_V7.missions.filter((entry) => entry.planned === undefined)
-          .length,
+        CHAPTER_HUMANS_V7.missions.filter(
+          (entry) => entry.planned === undefined,
+        ).length,
     );
     // A mission in play: Settings, then the resume screen.
     document.body.innerHTML = '<div id="app"></div>';
@@ -585,13 +585,11 @@ describe("Ruleset 7 player-facing text names no tile coordinates", () => {
       ?.click();
     await settle();
     document
-      .querySelector<HTMLButtonElement>(
-        '[data-action="campaign-open-frontier"]',
-      )
+      .querySelector<HTMLButtonElement>('[data-action="campaign-open-humans"]')
       ?.click();
     await settle();
     document
-      .querySelector<HTMLButtonElement>('[data-action="mission-frontier_1"]')
+      .querySelector<HTMLButtonElement>('[data-action="mission-human_1"]')
       ?.click();
     await settle();
     document
@@ -630,7 +628,7 @@ describe("Ruleset 7 player-facing text names no tile coordinates", () => {
     // A mission's objective in the top bar (`pulp_wars-v642.1`): every
     // objective kind, with its counter.
     for (const missionId of [
-      "FRONTIER_2",
+      "HUMAN_2",
       "TEST_ESCORT",
       "TEST_SURVIVE",
       "TEST_CAPTURE",
@@ -647,9 +645,9 @@ describe("Ruleset 7 player-facing text names no tile coordinates", () => {
       check(`${missionId} tracker`);
       mounted.destroy();
     }
-    // The mission dialogs, each with its unlocks announced. The missions
-    // that are designed but not built have no match to end.
-    for (const entry of CHAPTER_ONE_V7.missions.filter(
+    // The mission dialogs, each win with the campaigns it opened. The
+    // missions that are designed but not built have no match to end.
+    for (const entry of CHAPTER_HUMANS_V7.missions.filter(
       (candidate) => candidate.planned === undefined,
     ))
       for (const victory of [true, false]) {
@@ -666,9 +664,7 @@ describe("Ruleset 7 player-facing text names no tile coordinates", () => {
               ),
             };
         const controller = new FixtureController(state);
-        controller.complete({ ...view, outcome: ended }, entry.missionId, [
-          ...entry.unlocks,
-        ]);
+        controller.complete({ ...view, outcome: ended }, entry.missionId);
         const host = new RecordingBoardHost();
         const mounted = mount(controller, host);
         expect(
@@ -1069,19 +1065,19 @@ class FixtureController implements Ruleset7ControllerPortV7 {
     this.#state = state;
     this.#snapshot = activeSnapshot(state);
   }
-  /** Shows a finished mission and the unlocks its win announced. */
-  complete(
-    view: PlayerViewV7,
-    missionId: string,
-    unlocked: readonly FactionIdV7[],
-  ): void {
+  /** Shows a finished mission and the campaigns its win opened. */
+  complete(view: PlayerViewV7, missionId: string): void {
     this.#snapshot = {
       ...activeSnapshot(this.#state),
       phase: "COMPLETE",
       view,
       offeredCommands: [],
     };
-    this.#lastWin = { missionId, firstWin: true, unlocked };
+    this.#lastWin = {
+      missionId,
+      firstWin: true,
+      opened: ["DINOSAURS", "MARTIANS", "GOBLINS", "DWARVES"],
+    };
   }
   campaignProgress(): Ruleset7CampaignProgressV7 {
     return {

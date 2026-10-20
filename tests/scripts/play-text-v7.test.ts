@@ -2236,7 +2236,9 @@ describe("text play: missions and their objectives (pulp_wars-v642.1)", () => {
   it("lists the missions, starts one, and prints its objective, clock, and stars", () => {
     const session = path.join(root, "mission.json");
     const list = ok("mission", "--session", session);
-    expect(list).toContain('FRONTIER_2  mission 2, "The Warrens"');
+    expect(list).toContain('HUMAN_2  mission 2, "The Lord Protector\'s Writ"');
+    // The retired prologue's missions are gone (pulp_wars-hmyk.22).
+    expect(list).not.toContain("FRONTIER_");
     expect(list).toContain("TEST_ESCORT  (fixture)");
     const started = ok("mission", "--session", session, "TEST_CAPTURE");
     expect(started).toContain("MISSION TEST_CAPTURE");
@@ -2260,26 +2262,36 @@ describe("text play: missions and their objectives (pulp_wars-v642.1)", () => {
     ).toBe(1);
   });
 
-  it("starts a chapter mission with its briefing, as the chosen faction, and names the cause of the end", () => {
+  it("starts a chapter mission with its briefing, a mission as the chosen faction, and names the cause of the end", () => {
     const session = path.join(root, "mission-chapter.json");
-    const started = ok(
+    const started = ok("mission", "--session", session, "HUMAN_2");
+    expect(started).toContain(
+      'MISSION HUMAN_2 | mission 2, "The Lord Protector\'s Writ"',
+    );
+    expect(started).toContain("BRIEFING: Baron Kessler is back from Kingsport");
+    expect(started).toContain(
+      "OBJECTIVE (as the game words it): Take the three toll forts by turn 18.",
+    );
+    expect(started).toContain(
+      "STARS: 1 for the win, +1 win by round 14 (so far yes), +1 own every city you started with (so far yes)",
+    );
+    expect(sessionState(session).setup.factions).toEqual([
+      "ORIGINAL",
+      "GOBLIN",
+    ]);
+    // A seat with a choice: TEST_GROUNDS offers Human or Goblin.
+    const chosen = ok(
       "mission",
       "--session",
-      session,
-      "FRONTIER_4",
+      path.join(root, "mission-choice.json"),
+      "TEST_GROUNDS",
       "--faction",
       "goblin",
     );
-    expect(started).toContain('MISSION FRONTIER_4 | mission 4, "Bone Neck"');
-    expect(started).toContain("BRIEFING: The Ashen Marquis waits");
-    expect(started).toContain(
-      "OBJECTIVE (as the game words it): Capture the Bone Gate by turn 14.",
-    );
-    expect(started).toContain("you are S0 Goblin");
-    expect(started).toContain(
-      "STARS: 1 for the win, +1 win by round 9 (so far yes), +1 own every city you started with (so far yes)",
-    );
-    expect(sessionState(session).setup.factions).toEqual(["GOBLIN", "UNDEAD"]);
+    expect(chosen).toContain("you are S0 Goblin");
+    expect(
+      sessionState(path.join(root, "mission-choice.json")).setup.factions[0],
+    ).toBe("GOBLIN");
     patchState(session, (state) => ({
       ...state,
       outcome: {
@@ -2297,7 +2309,7 @@ describe("text play: missions and their objectives (pulp_wars-v642.1)", () => {
         "mission",
         "--session",
         path.join(root, "mission-undead.json"),
-        "FRONTIER_4",
+        "TEST_GROUNDS",
         "--faction",
         "undead",
       ).exitCode,

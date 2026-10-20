@@ -278,37 +278,6 @@ describe("ruleset-7 Normal AI siege of a single-file front (pulp_wars-68k.6)", (
       ).toBeNull();
     });
 
-    it("finds the isthmus of Bone Neck", () => {
-      const mission = required(missionByIdV7("FRONTIER_4"));
-      const created = createPlayableGameV7(
-        required(missionMatchSetupV7(mission, "ORIGINAL")),
-      );
-      if (!created.ok) throw new Error(created.error.code);
-      const every: CoordV7[] = [];
-      for (let y = 0; y < created.state.board.height; y += 1)
-        for (let x = 0; x < created.state.board.width; x += 1)
-          every.push({ x, y });
-      const explored = checkedV7({
-        ...created.state,
-        players: created.state.players.map((player) => ({
-          ...player,
-          explored: every,
-        })),
-      });
-      const human = required(planFor(viewFor(explored)));
-      // Revision 4 (`pulp_wars-v642.1`): the generator's two lands, joined
-      // by the two tiles of Bone Neck.
-      expect(human.corridor).toEqual([
-        { x: 7, y: 6 },
-        { x: 8, y: 6 },
-      ]);
-      expect(human.target.at).toEqual({ x: 10, y: 6 });
-      expect(human.holders.map((unit) => unit.at)).toEqual([
-        { x: 9, y: 6 },
-        { x: 9, y: 7 },
-      ]);
-    });
-
     it("has no front on an open board, with the switch off, or for a switched-off seat", () => {
       const created = createPlayableGameV7(browserSetupV7(71));
       if (!created.ok) throw new Error(created.error.code);

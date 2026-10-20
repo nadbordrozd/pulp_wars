@@ -77,9 +77,7 @@ describe("The Big Score", () => {
     for (const entry of CHAPTER_GOBLINS_V7.missions) {
       expect(entry.planned, entry.missionId).toBeUndefined();
       expect(mission(entry.missionId).hidden, entry.missionId).toBeUndefined();
-      expect([...entry.unlocks]).toEqual([]);
     }
-    expect(CHAPTER_GOBLINS_V7.startingFactions).toEqual([]);
     expect(CHAPTER_GOBLINS_V7.missions.map((entry) => entry.format)).toEqual([
       "CONQUEST",
       "CAPTURE",

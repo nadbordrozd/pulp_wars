@@ -132,7 +132,7 @@ import {
 } from "../src/persistence/index";
 import {
   campaignMissionV7,
-  campaignNewlyUnlockedV7,
+  campaignNewlyOpenedV7,
 } from "../src/campaign/progress-v7";
 
 // The presentation modules read `import.meta.env` (Vite); outside Vite it
@@ -567,7 +567,9 @@ const RANDOM2_BATCH_V7: readonly MatchSpecV7[] = (
 );
 
 /**
- * Round two: the ten campaign missions, the tutorial and nine labs, seat 0
+ * Round two: ten faction-campaign missions (the first of each campaign and
+ * the Humans' finale; the Hollow Frontier was retired by
+ * `pulp_wars-hmyk.22`), the tutorial and nine labs, seat 0
  * (the human's) played by the Normal AI with a share of random commands.
  */
 function missionSpec(
@@ -596,16 +598,16 @@ function missionSpec(
 }
 
 const MISSIONS2_BATCH_V7: readonly MatchSpecV7[] = [
-  missionSpec("c01", 601, "FRONTIER_1", 0.25),
-  missionSpec("c02", 602, "FRONTIER_2", 0.25),
-  missionSpec("c03", 603, "FRONTIER_3", 0.25),
-  missionSpec("c04", 604, "FRONTIER_4", 0.25, "GOBLIN"),
-  missionSpec("c05", 605, "FRONTIER_5", 0.25),
-  missionSpec("c06", 606, "FRONTIER_6", 0.25),
-  missionSpec("c07", 607, "FRONTIER_7", 0.25),
-  missionSpec("c08", 608, "FRONTIER_8", 0.25),
-  missionSpec("c09", 609, "FRONTIER_9", 0.25),
-  missionSpec("c10", 610, "FRONTIER_10", 0.25),
+  missionSpec("c01", 601, "HUMAN_1", 0.25),
+  missionSpec("c02", 602, "UNDEAD_1", 0.25),
+  missionSpec("c03", 603, "DINOSAUR_1", 0.25),
+  missionSpec("c04", 604, "MARTIAN_1", 0.25),
+  missionSpec("c05", 605, "GOBLIN_1", 0.25),
+  missionSpec("c06", 606, "DWARF_1", 0.25),
+  missionSpec("c07", 607, "ICE_FOLK_1", 0.25),
+  missionSpec("c08", 608, "CANDY_1", 0.25),
+  missionSpec("c09", 609, "CULT_1", 0.25),
+  missionSpec("c10", 610, "HUMAN_6", 0.25),
   missionSpec("c11", 611, "TUTORIAL_1", 0.5),
   missionSpec("c12", 612, "LAB_SIEGE", 0.4),
   missionSpec("c13", 613, "LAB_BACKLINE", 0.4),
@@ -1400,7 +1402,7 @@ function runChild(id: string, out: string): void {
           else
             campaign = {
               firstWin: recorded.firstWin,
-              unlocked: campaignNewlyUnlockedV7(
+              opened: campaignNewlyOpenedV7(
                 campaignCompletionsV7(recorded.before),
                 campaignCompletionsV7(recorded.progress),
               ),

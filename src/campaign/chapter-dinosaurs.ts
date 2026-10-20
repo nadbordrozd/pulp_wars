@@ -1,11 +1,11 @@
-import type { CampaignChapterV7 } from "./chapter-1";
+import type { CampaignChapterV7 } from "./chapter";
 
 /**
  * The Dinosaur campaign, "The Egg Thief" (`pulp_wars-hmyk.6`,
  * docs/product/SAGA.md sections 2.5 and 3.5): six missions of the Old
  * Queen's hunt for her stolen clutch, from the poachers' camps on the
  * island to the Grey Lodge's town in the marsh. Data only, in the shape of
- * the prologue's chapter (`./chapter-1.ts`); each mission's board, seats,
+ * a chapter (`./chapter.ts`); each mission's board, seats,
  * objective and directives live in its engine definition
  * (`src/engine/v7/missions/dinosaur-*.ts`).
  *
@@ -18,10 +18,7 @@ export const CHAPTER_DINOSAURS_V7: CampaignChapterV7 = Object.freeze({
   title: "The Egg Thief",
   intro:
     "On the Island That Time Forgot the Old Queen has outlived the Overmind and the Baron's ships. This summer she laid her first clutch. Then the Baron, ruined by goblins and owing money to men in hoods, came back for it.",
-  // Every mission seats you as the Dinosaurs (a fixed faction, no
-  // choice), so the chapter unlocks nothing for the prologue's faction
-  // choices.
-  startingFactions: Object.freeze([]),
+  // Every mission seats you as the Dinosaurs (a fixed faction, no choice).
   missions: Object.freeze([
     Object.freeze({
       missionId: "DINOSAUR_1",
@@ -38,7 +35,6 @@ export const CHAPTER_DINOSAURS_V7: CampaignChapterV7 = Object.freeze({
       ]),
       closing:
         "The camps are empty of eggs. One poacher, before he runs, says the eggs went with the Major. The Major always gets his trophies home.",
-      unlocks: Object.freeze([]),
       names: Object.freeze({
         OLD_QUEEN: "the Old Queen",
         OONA: "Shaman Oona",
@@ -59,7 +55,6 @@ export const CHAPTER_DINOSAURS_V7: CampaignChapterV7 = Object.freeze({
       ]),
       closing:
         "Thornbury is stuffed, by the Queen, personally. His crate is empty. His diary says the eggs went on the Baron's last ship to the mainland, to the Baron's circus, where the buyers come.",
-      unlocks: Object.freeze([]),
       names: Object.freeze({
         OLD_QUEEN: "the Old Queen",
         THORNBURY: "Major Thornbury",
@@ -80,7 +75,6 @@ export const CHAPTER_DINOSAURS_V7: CampaignChapterV7 = Object.freeze({
       ]),
       closing:
         "The Old Queen steps ashore on the mainland, the first queen of her kind to do it. Behind the dunes a brass band is playing. The Baron's Travelling Wonder Circus is in town.",
-      unlocks: Object.freeze([]),
       names: Object.freeze({
         OLD_QUEEN: "the Old Queen",
         BIG_TOP_BAY: "Big Top Bay",
@@ -101,7 +95,6 @@ export const CHAPTER_DINOSAURS_V7: CampaignChapterV7 = Object.freeze({
       ]),
       closing:
         "The Queen has her word with the ringmaster. All that is found of Baron Otto Kessler is his hat. In its lining is his pocket-book: 'Eggs, eight, sold to the Grey Lodge, Greyhood, for the Long Night. Paid in full.'",
-      unlocks: Object.freeze([]),
       names: Object.freeze({
         OLD_QUEEN: "the Old Queen",
         KESSLER: "Baron Kessler",
@@ -122,7 +115,6 @@ export const CHAPTER_DINOSAURS_V7: CampaignChapterV7 = Object.freeze({
       ]),
       closing:
         "At the marsh's edge the Queen stops and lifts her head. Out in the reeds the Grey Lodge is singing, and somewhere in the singing are eight small heartbeats.",
-      unlocks: Object.freeze([]),
       names: Object.freeze({
         OLD_QUEEN: "the Old Queen",
         MIRES_EDGE: "Mire's Edge",
@@ -143,7 +135,6 @@ export const CHAPTER_DINOSAURS_V7: CampaignChapterV7 = Object.freeze({
       ]),
       closing:
         "Seven eggs come home through the reeds; the eighth slipped out of the marsh at dawn on a black-sailed galleon. The Queen's blood remembers the star that fell, the fire, and the long cold after it. 'Cold,' says Oona. 'It sleeps in cold.'",
-      unlocks: Object.freeze([]),
       names: Object.freeze({
         GREYHOOD: "Greyhood",
         OLD_QUEEN: "the Old Queen",

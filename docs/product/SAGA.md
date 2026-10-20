@@ -28,23 +28,35 @@ stories are set in the same world and interlock - again like in HoMM or
 warcraft campaigns. But this isn't supposed to be the same story seen from
 different pov. These are supposed to be complementing each other."
 
-**Root decisions this document follows.** The existing ten-mission chapter,
-"The Hollow Frontier" (`src/campaign/chapter-1.ts`,
-[CAMPAIGN.md section 9](CAMPAIGN.md#9-part-one-the-hollow-frontier-ten-missions)),
-stays on the campaign screen as the **prologue**. The saga follows on from
-it: its outro already promises "Part Two: The Thing in the Shaft", and that
-is this saga's title. Nothing here contradicts the prologue's briefings or
-closing lines; [section 5](#5-consistency-review) records the author's
-checks and [section 6](#6-editors-review) the independent editor's.
+**Root decisions this document follows.** The ten-mission chapter "The
+Hollow Frontier"
+([CAMPAIGN.md section 9](CAMPAIGN.md#9-part-one-the-hollow-frontier-ten-missions))
+is the saga's **prologue**: its events (Year 0, autumn) are the backstory
+every campaign builds on. The saga follows on from it: its outro promised
+"Part Two: The Thing in the Shaft", and that is this saga's title. Nothing
+here contradicts the prologue's briefings or closing lines;
+[section 5](#5-consistency-review) records the author's checks and
+[section 6](#6-editors-review) the independent editor's.
+
+**The prologue is no longer playable** (user, 2026-10-21, `pulp_wars-hmyk.22`:
+"drop the original campaign we designed. leave just the 9 one per
+faction."). Its chapter and its ten missions (`FRONTIER_1` to
+`FRONTIER_10`) were removed from the game, and the campaign screen shows the
+nine faction campaigns only
+([CAMPAIGN.md section 24](CAMPAIGN.md#24-the-prologue-retired-pulp_wars-hmyk22)).
+What happened in it stays true: the campaigns' intros and briefings recall it
+as history, and this document still cites its missions (F1 to F10) as the
+places where a thread began.
 
 ## 0. Conventions
 
-- **Mission names.** F1 to F10 are the prologue's missions (`FRONTIER_1` to
-  `FRONTIER_10`); H, U, G, D, DN, M, I, C and CU number the missions of the
+- **Mission names.** F1 to F10 are the retired prologue's missions
+  (`FRONTIER_1` to `FRONTIER_10`, backstory only); H, U, G, D, DN, M, I, C
+  and CU number the missions of the
   Humans, Undead, Goblin, Dwarf, Dinosaur, Martian, Ice Folk, Candy and Cult
   campaigns, 1 to 6.
-- **Player-facing text** follows the rules of the prologue
-  (`src/campaign/chapter-1.ts`): the pulp is in the story, the rules are
+- **Player-facing text** follows the rules of the chapters
+  (`src/campaign/chapter.ts`): the pulp is in the story, the rules are
   plain, and no text names a tile coordinate. The blurbs below are the
   briefing story (three to six sentences); the building bead may trim one to
   the card. A hint is at most 60 characters. "Turn" in player text means a
@@ -310,7 +322,7 @@ player who has met the other side reads a second meaning.
 
 ```text
                     Prologue: The Hollow Frontier
-                     (optional, always available)
+               (backstory only: retired, pulp_wars-hmyk.22)
 
           HUMANS: The Marshal's Law     UNDEAD: The Long Sleep
                         \                     /
@@ -344,7 +356,8 @@ Folk campaigns then give back as dramatic irony.
 
 **On the campaign screen**, as built by `pulp_wars-hmyk.3`
 ([CAMPAIGN.md section 14](CAMPAIGN.md#14-the-campaign-map-and-the-faction-campaigns-pulp_wars-hmyk3)):
-the prologue's wide plate on top, then three rows joined by lock knots:
+three rows joined by lock knots (the prologue's wide plate on top was
+removed with it by `pulp_wars-hmyk.22`):
 the two openers, the four of tier 2 (Dinosaurs, Martians, Goblins,
 Dwarves) and the three of tier 3 (Ice Folk, Cultists, Candy), with the
 Cult in the middle of the last row, where the saga culminates. Each

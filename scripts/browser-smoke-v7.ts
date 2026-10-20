@@ -102,13 +102,17 @@ const FACTION_OPTIONS_V7 = [
  */
 /** The setup form is open (the main menu's New game, pulp_wars-2yc.18). */
 const SETUP_OPEN_V7 = `document.querySelector('[data-v7-front="setup"] .v7-front-panel .v7-setup-form') !== null && document.querySelector('.v7-main-menu') === null && document.querySelector('.v7-setup-form').closest('[hidden]') === null`;
-// Version 2 (pulp_wars-hmyk.3); version 1 written under it still reads.
+// Version 2 (pulp_wars-hmyk.3), grouped by campaign.
 const CAMPAIGN_KEY_V7 = "pulpWars.campaign.v2";
 const SEEDED_CAMPAIGN_PROGRESS_V7 = JSON.stringify({
   format: "pulp-wars-campaign-progress",
-  version: 1,
-  completed: {
-    FRONTIER_1: { firstWonAt: "2026-10-03T12:00:00.000Z", bestRounds: 12 },
+  version: 2,
+  campaigns: {
+    HUMANS: {
+      completed: {
+        HUMAN_1: { firstWonAt: "2026-10-03T12:00:00.000Z", bestRounds: 12 },
+      },
+    },
   },
 });
 const timingMode = browserTimingModeV7(process.argv);
@@ -2885,9 +2889,9 @@ async function probeCampaign(connection: Connection): Promise<string> {
       connection,
       `document.querySelector('[data-v7-campaign] .v7-front-panel') !== null && document.querySelector('.v7-main-menu') === null && document.activeElement?.dataset?.action === 'front-back'`,
     );
-    // The campaign map (pulp_wars-hmyk.3): the prologue's plate opens its
-    // mission list.
-    await pointerClick(connection, '[data-action="campaign-open-frontier"]');
+    // The campaign map (pulp_wars-hmyk.3): the Humans' plate opens its
+    // mission list (the prologue was retired by pulp_wars-hmyk.22).
+    await pointerClick(connection, '[data-action="campaign-open-humans"]');
     await waitForExpression(
       connection,
       `document.querySelector('.v7-mission-card') !== null && document.activeElement?.dataset?.action === 'campaign-map'`,
@@ -2906,29 +2910,31 @@ async function probeCampaign(connection: Connection): Promise<string> {
   if (
     JSON.stringify(list) !==
     JSON.stringify([
-      "Mission 1, Goblins at the Gate, open",
-      "Mission 2, The Warrens, locked",
-      "Mission 3, Green Tide, locked",
-      "Mission 4, Bone Neck, locked",
+      "Mission 1, Thaw at Northwatch, Conquest, open",
+      "Mission 2, The Lord Protector's Writ, Capture, locked",
+      "Mission 3, Outlaws of the Greenwood, Escort, locked",
+      "Mission 4, The Siege of Fort Hollow, Hold out, locked",
+      "Mission 5, Broadsides at Saltmarsh, Hunt, locked",
+      "Mission 6, Kessler Hall, Capture, locked",
     ])
   )
     throw new Error(`Campaign list failed: ${JSON.stringify(list)}`);
   await capture(connection, "campaign-list-desktop.png");
-  await pointerClick(connection, '[data-action="mission-frontier_1"]');
+  await pointerClick(connection, '[data-action="mission-human_1"]');
   await waitForExpression(
     connection,
-    `(() => { const briefing = document.querySelector('[data-v7-region="briefing"]'); return briefing?.dataset.missionId === 'FRONTIER_1' && document.activeElement?.id === 'v7-briefing-title' && briefing.querySelector('h2')?.textContent === 'Goblins at the Gate' && briefing.querySelector('.v7-briefing-objective')?.textContent === 'ObjectiveCapture every enemy city.' && briefing.querySelectorAll('.v7-briefing-hints li').length === 3; })()`,
+    `(() => { const briefing = document.querySelector('[data-v7-region="briefing"]'); return briefing?.dataset.missionId === 'HUMAN_1' && document.activeElement?.id === 'v7-briefing-title' && briefing.querySelector('h2')?.textContent === 'Thaw at Northwatch' && briefing.querySelector('.v7-briefing-objective')?.textContent === 'ObjectiveTake the barrow and its camp by turn 15.' && briefing.querySelectorAll('.v7-briefing-hints li').length === 3; })()`,
   );
   await pointerClick(connection, '[data-action="campaign-start"]');
   await waitForExpression(
     connection,
-    `${humanTurn} && (() => { const setup = globalThis.__PULP_WARS_APP__.controller.snapshot().view.setup; return setup.mapType === 'MISSION' && setup.mission?.id === 'FRONTIER_1' && document.querySelector('canvas.board-canvas-v7') !== null; })()`,
+    `${humanTurn} && (() => { const setup = globalThis.__PULP_WARS_APP__.controller.snapshot().view.setup; return setup.mapType === 'MISSION' && setup.mission?.id === 'HUMAN_1' && document.querySelector('canvas.board-canvas-v7') !== null; })()`,
     900,
   );
   await openCompactSettings(connection);
   await waitForExpression(
     connection,
-    `document.querySelector('.v7-mission-label')?.textContent === 'Mission: Goblins at the Gate' && document.querySelector('.v7-mission-objective')?.textContent === 'Objective: Capture every enemy city.' && document.querySelector('.v7-map-seed') === null`,
+    `document.querySelector('.v7-mission-label')?.textContent === 'Mission: Thaw at Northwatch' && document.querySelector('.v7-mission-objective')?.textContent === 'Objective: Take the barrow and its camp by turn 15.' && document.querySelector('.v7-map-seed') === null`,
   );
   await pressKey(connection, "Escape", "Escape");
   await waitForExpression(
@@ -2948,11 +2954,11 @@ async function probeCampaign(connection: Connection): Promise<string> {
   await openCompactMenuItem(connection, "main-menu");
   await waitForExpression(
     connection,
-    `globalThis.__PULP_WARS_APP__?.controller.snapshot().phase === 'RESUMABLE' && /^Mission 1 · Goblins at the Gate · Turn \\d+$/.test(document.querySelector('.v7-resume-summary')?.textContent ?? '')`,
+    `globalThis.__PULP_WARS_APP__?.controller.snapshot().phase === 'RESUMABLE' && /^Mission 1 · Thaw at Northwatch · Turn \\d+$/.test(document.querySelector('.v7-resume-summary')?.textContent ?? '')`,
   );
   let won = "win skipped on the deployed bundle";
   if (!deployed) {
-    // A real, replay-valid FRONTIER_1 save one human command from victory.
+    // A real, replay-valid HUMAN_1 save one human command from victory.
     await evaluate(
       connection,
       `(async () => {
@@ -2963,7 +2969,7 @@ async function probeCampaign(connection: Connection): Promise<string> {
       true,
     );
     await navigateFresh(
-      `globalThis.__PULP_WARS_APP__?.controller.snapshot().phase === 'RESUMABLE' && (document.querySelector('.v7-resume-summary')?.textContent ?? '').startsWith('Mission 1 · Goblins at the Gate')`,
+      `globalThis.__PULP_WARS_APP__?.controller.snapshot().phase === 'RESUMABLE' && (document.querySelector('.v7-resume-summary')?.textContent ?? '').startsWith('Mission 1 · Thaw at Northwatch')`,
     );
     await touchClick(connection, '[data-action="resume"]');
     await waitForExpression(connection, humanTurn, 900);
@@ -2972,7 +2978,7 @@ async function probeCampaign(connection: Connection): Promise<string> {
       connection,
       `(async () => {
         const fixtures = await import('/tests/fixtures/v7-campaign-ui.ts');
-        const command = fixtures.missionWinFixtureV7('FRONTIER_1').winningCommand;
+        const command = fixtures.missionWinFixtureV7('HUMAN_1').winningCommand;
         const result = await globalThis.__PULP_WARS_APP__.controller.dispatch(command);
         return result.accepted;
       })()`,
@@ -2995,50 +3001,54 @@ async function probeCampaign(connection: Connection): Promise<string> {
     }
     await waitForExpression(
       connection,
-      `(() => { const dialog = document.querySelector('[data-v7-region="results"]'); return dialog?.dataset.outcome === 'victory' && dialog.dataset.missionId === 'FRONTIER_1' && dialog.querySelector('h2')?.textContent === 'Mission complete' && dialog.querySelector('[data-action="campaign-next"]') !== null; })()`,
+      `(() => { const dialog = document.querySelector('[data-v7-region="results"]'); return dialog?.dataset.outcome === 'victory' && dialog.dataset.missionId === 'HUMAN_1' && dialog.querySelector('h2')?.textContent === 'Mission complete' && dialog.querySelector('[data-action="campaign-next"]') !== null; })()`,
     );
     const recorded = await evaluate<number | null>(
       connection,
-      `JSON.parse(localStorage.getItem(${JSON.stringify(CAMPAIGN_KEY_V7)}) ?? 'null')?.campaigns?.FRONTIER?.completed?.FRONTIER_1?.bestRounds ?? null`,
+      `JSON.parse(localStorage.getItem(${JSON.stringify(CAMPAIGN_KEY_V7)}) ?? 'null')?.campaigns?.HUMANS?.completed?.HUMAN_1?.bestRounds ?? null`,
     );
     if (recorded === null) throw new Error("Campaign win was not recorded");
     await capture(connection, "campaign-victory-desktop.png");
     await pointerClick(connection, '[data-action="campaign-next"]');
     await waitForExpression(
       connection,
-      `globalThis.__PULP_WARS_APP__?.controller.snapshot().phase === 'EMPTY' && localStorage.getItem(${JSON.stringify(saveKey)}) === null && document.querySelector('[data-v7-region="briefing"]')?.dataset.missionId === 'FRONTIER_2'`,
+      `globalThis.__PULP_WARS_APP__?.controller.snapshot().phase === 'EMPTY' && localStorage.getItem(${JSON.stringify(saveKey)}) === null && document.querySelector('[data-v7-region="briefing"]')?.dataset.missionId === 'HUMAN_2'`,
     );
     won = `mission 1 won in ${recorded} turns, Next mission to the mission 2 briefing`;
   }
-  // Seeded progress: mission 4 offers exactly the unlocked factions.
+  // Seeded progress: the first three missions won, the fourth open.
   await evaluate(
     connection,
     `localStorage.setItem(${JSON.stringify(CAMPAIGN_KEY_V7)}, ${JSON.stringify(
       JSON.stringify({
         format: "pulp-wars-campaign-progress",
-        version: 1,
-        completed: Object.fromEntries(
-          ["FRONTIER_1", "FRONTIER_2", "FRONTIER_3"].map((id) => [
-            id,
-            { firstWonAt: "2026-10-03T12:00:00.000Z", bestRounds: 20 },
-          ]),
-        ),
+        version: 2,
+        campaigns: {
+          HUMANS: {
+            completed: Object.fromEntries(
+              ["HUMAN_1", "HUMAN_2", "HUMAN_3"].map((id) => [
+                id,
+                { firstWonAt: "2026-10-03T12:00:00.000Z", bestRounds: 20 },
+              ]),
+            ),
+          },
+        },
       }),
     )})`,
   );
   await navigateFresh(freshSetup);
   await openCampaign();
-  await pointerClick(connection, '[data-action="mission-frontier_4"]');
+  await pointerClick(connection, '[data-action="mission-human_4"]');
   await waitForExpression(
     connection,
-    `JSON.stringify(Array.from(document.querySelectorAll('#v7-campaign-faction option')).map((option) => option.value)) === '["ORIGINAL","GOBLIN"]'`,
+    `document.querySelector('[data-v7-region="briefing"]')?.dataset.missionId === 'HUMAN_4'`,
   );
   await evaluate(
     connection,
     `(() => { localStorage.removeItem(${JSON.stringify(saveKey)}); localStorage.removeItem(${JSON.stringify(CAMPAIGN_KEY_V7)}); })()`,
   );
   await navigateFresh(freshSetup);
-  return `list, briefing, mission 1 start with mission Settings, unavailable Naval tree and resume label; ${won}; mission 4 offers Human and Goblin`;
+  return `list, briefing, mission 1 start with mission Settings, unavailable Naval tree and resume label; ${won}; mission 4 opens after three wins`;
 }
 
 async function fileSha256(filename: string): Promise<string> {

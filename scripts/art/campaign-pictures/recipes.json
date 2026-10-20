@@ -321,12 +321,6 @@
   ],
   "pictures": [
     {
-      "campaign": "FRONTIER",
-      "recipe": "frontier-b",
-      "candidate": 2,
-      "subject": "a Ranger guard on watch before the birch-log fort, the mountain glowing green behind"
-    },
-    {
       "campaign": "HUMANS",
       "recipe": "humans-a",
       "candidate": 0,

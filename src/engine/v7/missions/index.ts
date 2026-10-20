@@ -7,16 +7,6 @@ import {
   type MissionRefV7,
   type PlayerColorV7,
 } from "../types";
-import { FRONTIER_1_V7 } from "./frontier-1";
-import { FRONTIER_2_V7 } from "./frontier-2";
-import { FRONTIER_3_V7 } from "./frontier-3";
-import { FRONTIER_10_V7 } from "./frontier-10";
-import { FRONTIER_4_V7 } from "./frontier-4";
-import { FRONTIER_5_V7 } from "./frontier-5";
-import { FRONTIER_6_V7 } from "./frontier-6";
-import { FRONTIER_7_V7 } from "./frontier-7";
-import { FRONTIER_8_V7 } from "./frontier-8";
-import { FRONTIER_9_V7 } from "./frontier-9";
 import { HUMAN_1_V7 } from "./human-1";
 import { HUMAN_2_V7 } from "./human-2";
 import { HUMAN_3_V7 } from "./human-3";
@@ -137,20 +127,9 @@ export const MISSION_REGISTRY_V7: readonly MissionDefinitionV7[] = deepFreeze([
   TEST_WAVES_V7,
   // The mission-curiosities fixture (`pulp_wars-hmyk.14`, SAGA.md E1).
   TEST_CURIOSITIES_V7,
-  // Chapter One, "The Hollow Frontier" (`pulp_wars-68k.4`, section 6).
-  FRONTIER_1_V7,
-  FRONTIER_2_V7,
-  FRONTIER_3_V7,
-  FRONTIER_4_V7,
-  // Missions 5 and 6 (`pulp_wars-v642.2`).
-  FRONTIER_5_V7,
-  FRONTIER_6_V7,
-  // Missions 7 and 8 (`pulp_wars-v642.3`, section 9.3).
-  FRONTIER_7_V7,
-  FRONTIER_8_V7,
-  // Missions 9 and 10 (`pulp_wars-v642.4`).
-  FRONTIER_9_V7,
-  FRONTIER_10_V7,
+  // The prologue's ten missions, `FRONTIER_1` to `FRONTIER_10`, were
+  // retired with it (`pulp_wars-hmyk.22`, section 24); their IDs are never
+  // reused, and a save of one loads as a removed mission.
   // The Humans campaign, "The Marshal's Law" (`pulp_wars-hmyk.4`).
   HUMAN_1_V7,
   HUMAN_2_V7,

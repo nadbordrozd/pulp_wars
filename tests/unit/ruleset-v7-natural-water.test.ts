@@ -15,6 +15,7 @@ import {
   maxSeatsV7,
   missionByIdV7,
   missionMapDriftV7,
+  missionMapLayersV7,
   naturalLakeCountRangeV7,
   nineSeatContinentGroupsV7,
   villageCountForRulesV7,
@@ -466,13 +467,28 @@ describe("natural water: what does not move", () => {
     expect(most("LAKES")).toEqual([2, 9, 9, 9, 9]);
   });
 
-  it("keeps the campaign boards: missions 4 and 9 regenerate under the rules they were baked with", () => {
-    for (const id of ["FRONTIER_4", "FRONTIER_9"]) {
-      const mission = missionByIdV7(id) as MissionDefinitionV7;
-      const source = mission.source as NonNullable<
-        MissionDefinitionV7["source"]
-      >;
-      expect(source.rules).toBe("SPREAD_VILLAGES_CURIOSITIES");
+  it("keeps a board baked under older rules: it regenerates under the rules it records", () => {
+    // The prologue's missions 4 and 9 were the registered boards baked
+    // before 7r87; they were retired (pulp_wars-hmyk.22), so a mission is
+    // baked here by hand from a campaign mission's source under those
+    // rules: a Continents board and a Lakes board, the two kinds natural
+    // water redrew.
+    for (const id of ["HUMAN_5", "MARTIAN_1"]) {
+      const current = missionByIdV7(id) as MissionDefinitionV7;
+      const source = {
+        ...(current.source as NonNullable<MissionDefinitionV7["source"]>),
+        rules: "SPREAD_VILLAGES_CURIOSITIES" as const,
+      };
+      const layers = missionMapLayersV7(source);
+      const mission: MissionDefinitionV7 = {
+        ...current,
+        source,
+        terrain: layers.terrain,
+        resources: layers.resources,
+        biomes: layers.biomes,
+        villages: layers.villages,
+        treasureChests: layers.treasureChests,
+      };
       expect(missionMapDriftV7(mission)).toEqual([]);
       // The current generator draws another board for the same source.
       expect(

@@ -945,17 +945,19 @@ describe("Ruleset 7 browser smoke script", () => {
     expect(probe).toContain(
       `await pointerClick(connection, '[data-action="campaign"]')`,
     );
-    expect(probe).toContain('"Mission 1, Goblins at the Gate, open"');
-    expect(probe).toContain('"Mission 2, The Warrens, locked"');
+    expect(probe).toContain('"Mission 1, Thaw at Northwatch, Conquest, open"');
+    expect(probe).toContain(
+      '"Mission 2, The Lord Protector\'s Writ, Capture, locked"',
+    );
     expect(probe).toContain(
       "document.activeElement?.id === 'v7-briefing-title'",
     );
     expect(probe).toContain(
       `await pointerClick(connection, '[data-action="campaign-start"]')`,
     );
-    expect(probe).toContain("'Mission: Goblins at the Gate'");
+    expect(probe).toContain("'Mission: Thaw at Northwatch'");
     expect(probe).toContain("'Sailing, unavailable in this mission'");
-    expect(probe).toContain("^Mission 1 · Goblins at the Gate · Turn");
+    expect(probe).toContain("^Mission 1 · Thaw at Northwatch · Turn");
     // The win uses the fixture only on the development server.
     const fixture = probe.indexOf("/tests/fixtures/v7-campaign-ui.ts");
     expect(fixture).toBeGreaterThan(probe.indexOf("if (!deployed)"));
@@ -965,8 +967,8 @@ describe("Ruleset 7 browser smoke script", () => {
     expect(probe).toContain(
       `await pointerClick(connection, '[data-action="campaign-next"]')`,
     );
-    expect(probe).toContain("dataset.missionId === 'FRONTIER_2'");
-    expect(probe).toContain(`'["ORIGINAL","GOBLIN"]'`);
+    expect(probe).toContain("dataset.missionId === 'HUMAN_2'");
+    expect(probe).toContain("dataset.missionId === 'HUMAN_4'");
   });
   it("probes the map curiosities on their fixture: a Shrine claim, a neutral turn and a Fountain heal", () => {
     const source = readFileSync("scripts/browser-smoke-v7.ts", "utf8");

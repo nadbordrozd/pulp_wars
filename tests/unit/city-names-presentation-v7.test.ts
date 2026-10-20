@@ -513,10 +513,17 @@ describe("the city name plate", () => {
 // Story names (`pulp_wars-v642.5`, docs/product/CAMPAIGN.md section 10.5):
 // a campaign mission names its places, and its board shows those names.
 describe("story names on a mission board", () => {
-  const definition = missionByIdV7("FRONTIER_9");
-  if (definition === null) throw new Error("FRONTIER_9 is not registered");
+  // The Humans' third mission: five named cities and a named village,
+  // Kingsbridge, the escort's goal.
+  const definition = missionByIdV7("HUMAN_3");
+  if (definition === null) throw new Error("HUMAN_3 is not registered");
   const missionSetup = missionMatchSetupV7(definition);
-  if (missionSetup === null) throw new Error("FRONTIER_9 has no setup");
+  if (missionSetup === null) throw new Error("HUMAN_3 has no setup");
+  const unnamedVillage = definition.villages.find(
+    (at) => !(at.x === 13 && at.y === 2),
+  );
+  if (unnamedVillage === undefined) throw new Error("no unnamed village");
+  const unnamedKey = `site:${String(unnamedVillage.x)},${String(unnamedVillage.y)}`;
   const created = match(missionSetup);
   // The whole board in sight, so that every village is on the plan.
   const state: GameStateV7 = {
@@ -538,26 +545,26 @@ describe("story names on a mission board", () => {
       expect(cityNameV7(view, city)).toBe(
         byTile.get(`${city.at.x},${city.at.y}`),
       );
-    const sugarcrest = state.cities.find(
-      (city) => city.at.x === 7 && city.at.y === 8,
+    const camp = state.cities.find(
+      (city) => city.at.x === 4 && city.at.y === 11,
     );
-    if (sugarcrest === undefined) throw new Error("no Sugarcrest");
-    expect(cityNameV7(view, sugarcrest)).toBe("Sugarcrest");
-    expect(cityAccessibleNameV7(view, sugarcrest)).toBe("Capital Sugarcrest");
+    if (camp === undefined) throw new Error("no Outlaw Camp");
+    expect(cityNameV7(view, camp)).toBe("Outlaw Camp");
+    expect(cityAccessibleNameV7(view, camp)).toBe("Capital Outlaw Camp");
   });
 
   it("labels a named village on the board before anyone takes it", () => {
-    expect(villageStoryNameV7(view, { x: 5, y: 14 })).toBe("Riftwatch");
-    expect(villageStoryNameV7(view, { x: 2, y: 5 })).toBeNull();
+    expect(villageStoryNameV7(view, { x: 13, y: 2 })).toBe("Kingsbridge");
+    expect(villageStoryNameV7(view, unnamedVillage)).toBeNull();
     const plan = buildBoardRenderPlanV7(view, [], {
       selection: null,
       selectedUnitId: null,
       selectedAchievement: null,
     });
-    const riftwatch = plan.entries.find((entry) => entry.key === "site:5,14");
-    expect(riftwatch?.cityName).toBe("Riftwatch");
-    expect(riftwatch?.label).toBe("Village Riftwatch");
-    const unnamed = plan.entries.find((entry) => entry.key === "site:2,5");
+    const kingsbridge = plan.entries.find((entry) => entry.key === "site:13,2");
+    expect(kingsbridge?.cityName).toBe("Kingsbridge");
+    expect(kingsbridge?.label).toBe("Village Kingsbridge");
+    const unnamed = plan.entries.find((entry) => entry.key === unnamedKey);
     expect(unnamed?.label).toBe("Village");
     expect(unnamed?.cityName).toBeUndefined();
   });
@@ -569,6 +576,6 @@ describe("story names on a mission board", () => {
       mission: { id: definition.id, revision: definition.revision + 1 },
     };
     expect(missionStoryNamesV7(stale).size).toBe(0);
-    expect(missionStoryNamesV7(missionSetup).size).toBe(9);
+    expect(missionStoryNamesV7(missionSetup).size).toBe(6);
   });
 });

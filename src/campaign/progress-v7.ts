@@ -9,15 +9,17 @@ import {
   type CampaignDefinitionV7,
   type CampaignIdV7,
 } from "./campaigns";
-import type { CampaignChapterV7, CampaignMissionEntryV7 } from "./chapter-1";
+import type { CampaignChapterV7, CampaignMissionEntryV7 } from "./chapter";
 
 /**
  * Derived campaign state (`pulp_wars-68k.5`, docs/product/CAMPAIGN.md
- * sections 4.2 and 4.3; the campaign graph of `pulp_wars-hmyk.3`, section
- * 14). Progress stores only completed missions; which missions and
- * campaigns are open and which factions are unlocked are computed here from
- * the completions and the campaign registry on every read, so they can
- * never disagree with what was won.
+ * section 4.2; the campaign graph of `pulp_wars-hmyk.3`, section 14).
+ * Progress stores only completed missions; which missions and campaigns are
+ * open is computed here from the completions and the campaign registry on
+ * every read, so it can never disagree with what was won. Every faction is
+ * open from the start, in skirmish and in the campaigns: the faction
+ * unlocks were the retired prologue's reward (`pulp_wars-hmyk.22`, section
+ * 24).
  */
 export const CAMPAIGN_CHAPTERS_V7: readonly CampaignChapterV7[] = Object.freeze(
   CAMPAIGNS_V7.flatMap((campaign) =>
@@ -245,41 +247,14 @@ export function campaignMissionCardsV7(
 }
 
 /**
- * The factions unlocked for campaign choices: the chapters' starting
- * factions plus the unlocks of every completed mission, in chapter order.
- * Skirmish is never gated (section 4.3).
- */
-export function campaignUnlockedFactionsV7(
-  completed: CampaignCompletedV7,
-): readonly FactionIdV7[] {
-  const unlocked: FactionIdV7[] = [];
-  const add = (faction: FactionIdV7): void => {
-    if (!unlocked.includes(faction)) unlocked.push(faction);
-  };
-  for (const chapter of CAMPAIGN_CHAPTERS_V7) {
-    chapter.startingFactions.forEach(add);
-    for (const entry of chapter.missions)
-      if (Object.hasOwn(completed, entry.missionId)) entry.unlocks.forEach(add);
-  }
-  return unlocked;
-}
-
-/**
  * The factions seat 0 may lead in a mission: its fixed faction, or its
- * choice list filtered to the unlocked factions (section 4.3); with
- * `allUnlocked` (the testing cheat) the whole choice list.
+ * whole choice list. No faction is locked (`pulp_wars-hmyk.22`).
  */
 export function campaignFactionChoicesV7(
   missionId: string,
-  completed: CampaignCompletedV7,
-  allUnlocked = false,
 ): readonly FactionIdV7[] {
   const human = missionByIdV7(missionId)?.seats[0];
-  if (human === undefined) return [];
-  if (typeof human.faction === "string") return [human.faction];
-  if (allUnlocked) return human.faction.choice;
-  const unlocked = campaignUnlockedFactionsV7(completed);
-  return human.faction.choice.filter((faction) => unlocked.includes(faction));
+  return human === undefined ? [] : missionSeatFactionsV7(human);
 }
 
 /**
@@ -301,16 +276,5 @@ export function campaignTagNameV7(missionId: string, tag: string): string {
   return (
     campaignMissionV7(missionId)?.entry.names?.[tag] ??
     tag.toLowerCase().replaceAll("_", " ")
-  );
-}
-
-/** Factions in `after` that `before` did not have (an unlock notice). */
-export function campaignNewlyUnlockedV7(
-  before: CampaignCompletedV7,
-  after: CampaignCompletedV7,
-): readonly FactionIdV7[] {
-  const prior = campaignUnlockedFactionsV7(before);
-  return campaignUnlockedFactionsV7(after).filter(
-    (faction) => !prior.includes(faction),
   );
 }

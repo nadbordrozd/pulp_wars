@@ -1,12 +1,12 @@
-import type { CampaignChapterV7 } from "./chapter-1";
+import type { CampaignChapterV7 } from "./chapter";
 
 /**
  * The Ice Folk campaign, "The Long Winter" (`pulp_wars-hmyk.10`,
  * docs/product/SAGA.md sections 2.7 and 3.7): six missions of Mother Rime
  * bringing the cold to the Hollow Mountain, from the goblins' stove under
  * Rime Camp's glacier to the night she carries the Heart of Winter onto
- * the summit. Data only, in the shape of the prologue's chapter
- * (`./chapter-1.ts`); each mission's board, seats, objective and directives
+ * the summit. Data only, in the shape of a chapter
+ * (`./chapter.ts`); each mission's board, seats, objective and directives
  * live in its engine definition (`src/engine/v7/missions/ice-folk-*.ts`).
  *
  * The briefings are the saga bible's, trimmed to the card; the hints state
@@ -18,9 +18,7 @@ export const CHAPTER_ICE_FOLK_V7: CampaignChapterV7 = Object.freeze({
   title: "The Long Winter",
   intro:
     "Mother Rime brought her people down from the peaks once already, called by a bell. This autumn the glaciers are weeping into the valleys and the mountain where the bell fell is warm to the touch. The Pact has learned that the thing below sleeps in the cold. So Rime will bring the cold.",
-  // Every mission seats you as the Ice Folk (a fixed faction, no choice),
-  // so the chapter unlocks nothing for the prologue's faction choices.
-  startingFactions: Object.freeze([]),
+  // Every mission seats you as the Ice Folk (a fixed faction, no choice).
   missions: Object.freeze([
     Object.freeze({
       missionId: "ICE_FOLK_1",
@@ -37,7 +35,6 @@ export const CHAPTER_ICE_FOLK_V7: CampaignChapterV7 = Object.freeze({
       ]),
       closing:
         "The stove is out. Chief Gnash comes down from the ridge, bows to Mother Rime, and asks to come home. The Whitefang are Ice Folk again.",
-      unlocks: Object.freeze([]),
       names: Object.freeze({
         RIME: "Mother Rime",
         STOVEPIPE: "the Stovepipe",
@@ -58,7 +55,6 @@ export const CHAPTER_ICE_FOLK_V7: CampaignChapterV7 = Object.freeze({
       ]),
       closing:
         "The Abbot shatters, and the giant walks out of the glacier yawning. He remembers the hungry star. It sleeps, he says, under the Hollow Mountain, and it is warm.",
-      unlocks: Object.freeze([]),
       names: Object.freeze({
         RIME: "Mother Rime",
         ABBOT: "the Frozen Abbot",
@@ -80,7 +76,6 @@ export const CHAPTER_ICE_FOLK_V7: CampaignChapterV7 = Object.freeze({
       ]),
       closing:
         "Anvil Bay surrenders with a dwarvish oath and a pot of tea. Thane Ironbraid sends word: the Ice Folk may pass, and may she please have her harbour back after the Long Night.",
-      unlocks: Object.freeze([]),
       names: Object.freeze({
         RIME: "Mother Rime",
         ANVIL_BAY: "Anvil Bay",
@@ -101,7 +96,6 @@ export const CHAPTER_ICE_FOLK_V7: CampaignChapterV7 = Object.freeze({
       ]),
       closing:
         "The snow settles. Under a white flag Queen Praline and Mother Rime meet on the frozen river and sign the Frost Treaty: no frost on Sugarcrest, and Sugarcrest's soldiers beside the Ice Folk until the Long Night is over.",
-      unlocks: Object.freeze([]),
       names: Object.freeze({
         RIME: "Mother Rime",
         WHITEWATER: "Whitewater",
@@ -123,7 +117,6 @@ export const CHAPTER_ICE_FOLK_V7: CampaignChapterV7 = Object.freeze({
       ]),
       closing:
         "The fire goes out with a hiss they hear in Kingsport. The mountain cools. Now the winter needs a heart, set on the summit, and Rime must carry it there herself.",
-      unlocks: Object.freeze([]),
       names: Object.freeze({
         RIME: "Mother Rime",
         EMBER_LODGE: "the Ember Lodge",
@@ -144,7 +137,6 @@ export const CHAPTER_ICE_FOLK_V7: CampaignChapterV7 = Object.freeze({
       ]),
       closing:
         "On the summit Rime sets the Heart of Winter in the snow and lays her hands on it, and does not take them away. By morning she is ice to the elbows, by evening to the crown. 'Someone has to stay with it,' she said, before she couldn't.",
-      unlocks: Object.freeze([]),
       names: Object.freeze({
         RIME: "Mother Rime",
         SUMMIT: "the Summit",

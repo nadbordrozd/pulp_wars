@@ -214,9 +214,9 @@ first, and every other seat is the Normal AI under the mission's directives.
 ```bash
 # The list: every registered mission with its size, seats, and objective.
 npm run --silent play:text -- mission --session S.json
-# Start one. --faction picks among seat 0's choices (mission 4: original or goblin).
-npm run --silent play:text -- mission --session m2.json FRONTIER_2
-npm run --silent play:text -- mission --session m4.json FRONTIER_4 --faction goblin
+# Start one. --faction picks among seat 0's choices (TEST_GROUNDS: original or goblin).
+npm run --silent play:text -- mission --session m2.json HUMAN_2
+npm run --silent play:text -- mission --session g.json TEST_GROUNDS --faction goblin
 ```
 
 A campaign mission prints its briefing, the Objective line as the game

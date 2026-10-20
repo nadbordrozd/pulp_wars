@@ -463,10 +463,6 @@ describe("the Industry reshuffle: the missions", () => {
       MISSION_REGISTRY_V7.find((mission) => mission.id === id)?.revision;
     expect(
       [
-        "FRONTIER_1",
-        "FRONTIER_2",
-        "FRONTIER_3",
-        "FRONTIER_4",
         "TEST_NECK",
         "LAB_SIEGE",
         "LAB_BACKLINE",
@@ -480,15 +476,7 @@ describe("the Industry reshuffle: the missions", () => {
         "LAB_DINOSAUR_MID",
       ].map((id) => [id, revision(id)]),
     ).toEqual([
-      // Natural maps and objectives (`pulp_wars-v642.1`): one revision on.
-      // Exploration after placement (`pulp_wars-hmyk.17`): one more.
-      ["FRONTIER_1", 4],
-      // The campaign difficulty pass (`pulp_wars-v642.7`): one more.
-      ["FRONTIER_2", 4],
-      // The danger pass (`pulp_wars-v642.10`): one more; and
-      // `pulp_wars-hmyk.17`.
-      ["FRONTIER_3", 6],
-      ["FRONTIER_4", 7],
+      // The prologue's missions 1 to 4 were retired (`pulp_wars-hmyk.22`).
       ["TEST_NECK", 2],
       // Unchanged here (both seats owned Fortification already); one on
       // for exploration after placement (`pulp_wars-hmyk.17`).

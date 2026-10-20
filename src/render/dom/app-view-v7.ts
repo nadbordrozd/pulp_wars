@@ -63,7 +63,7 @@ import {
   type LeaderboardModeV7,
 } from "../../app/leaderboard-v7";
 import { campaignPictureAssetV7 } from "../../assets/campaign-pictures-manifest";
-import { CAMPAIGN_FORMAT_LABELS_V7 } from "../../campaign/chapter-1";
+import { CAMPAIGN_FORMAT_LABELS_V7 } from "../../campaign/chapter";
 import type {
   CampaignDefinitionV7,
   CampaignIdV7,
@@ -89,7 +89,6 @@ import {
   campaignMissionV7,
   campaignNextMissionV7,
   campaignPlatesV7,
-  campaignUnlockedFactionsV7,
   type CampaignMissionCardV7,
   type CampaignPlateV7,
 } from "../../campaign/progress-v7";
@@ -3513,9 +3512,8 @@ export class Ruleset7DomAppView {
 
   /**
    * The campaign map (pulp_wars-hmyk.3, CAMPAIGN.md section 14.3): the
-   * prologue set apart, then the campaigns in three tiers joined by the
-   * lines of what unlocks what: two openers, the middle four, the last
-   * three. A plate is the campaign's picture (pulp_wars-hmyk.13; its
+   * campaigns in three tiers joined by the lines of what unlocks what: two
+   * openers, the middle four, the last three. A plate is the campaign's picture (pulp_wars-hmyk.13; its
    * faction's portrait should it fail to load), its title, and its
    * progress; a closed plate is
    * greyed with a lock and says why.
@@ -3532,17 +3530,6 @@ export class Ruleset7DomAppView {
     note.setAttribute("role", "status");
     note.textContent = this.#campaignNote;
     note.hidden = this.#campaignNote === "";
-    const prologue = plates.filter((plate) => plate.campaign.tier === 0);
-    if (prologue.length > 0) {
-      const row = el(this.#document, "ul", "v7-campaign-prologue");
-      row.setAttribute("aria-label", "Prologue");
-      for (const plate of prologue) {
-        const item = el(this.#document, "li", "v7-campaign-plate-item");
-        item.append(this.#campaignPlate(plate, true));
-        row.append(item);
-      }
-      section.append(row);
-    }
     const graph = el(this.#document, "div", "v7-campaign-graph");
     const tiers = ([1, 2, 3] as const).map((tier) =>
       plates.filter((plate) => plate.campaign.tier === tier),
@@ -3559,7 +3546,7 @@ export class Ruleset7DomAppView {
       list.setAttribute("aria-label", tierNames[index] ?? "Campaigns");
       for (const plate of row) {
         const item = el(this.#document, "li", "v7-campaign-plate-item");
-        item.append(this.#campaignPlate(plate, false));
+        item.append(this.#campaignPlate(plate));
         list.append(item);
       }
       graph.append(list);
@@ -3651,13 +3638,11 @@ export class Ruleset7DomAppView {
    * Locked and coming-soon plates are greyed with a lock, focusable, and
    * say why on a tap instead of opening.
    */
-  #campaignPlate(plate: CampaignPlateV7, wide: boolean): HTMLButtonElement {
+  #campaignPlate(plate: CampaignPlateV7): HTMLButtonElement {
     const { campaign, status } = plate;
     const node = this.#document.createElement("button");
     node.type = "button";
-    node.className = wide
-      ? "v7-campaign-plate v7-campaign-plate-wide"
-      : "v7-campaign-plate";
+    node.className = "v7-campaign-plate";
     node.dataset.action = `campaign-open-${campaign.id.toLowerCase()}`;
     node.dataset.campaign = campaign.id;
     node.dataset.status = status.toLowerCase();
@@ -3683,17 +3668,7 @@ export class Ruleset7DomAppView {
       );
     const body = el(this.#document, "span", "v7-campaign-plate-body");
     body.setAttribute("aria-hidden", "true");
-    // The subtitle on the prologue's wide plate; a tier's plate is
-    // picture, title and progress only.
-    if (wide)
-      body.append(
-        text(
-          this.#document,
-          "span",
-          campaign.subtitle,
-          "v7-campaign-plate-kicker",
-        ),
-      );
+    // A plate is picture, title and progress only.
     body.append(
       text(this.#document, "span", campaign.title, "v7-campaign-plate-title"),
     );
@@ -3907,29 +3882,6 @@ export class Ruleset7DomAppView {
       list.append(item);
     }
     section.append(list);
-    // The factions the campaign's wins unlock, dimmed until unlocked: the
-    // prologue's reward.
-    if (chapter.missions.every((entry) => entry.unlocks.length === 0))
-      return section;
-    const unlocked = campaignUnlockedFactionsV7(progress.completed);
-    const roster = el(this.#document, "div", "v7-campaign-roster");
-    const rosterTitle = text(this.#document, "h3", "Factions");
-    rosterTitle.id = "v7-campaign-roster-title";
-    const factions = el(this.#document, "ul", "v7-campaign-factions");
-    factions.setAttribute("aria-labelledby", rosterTitle.id);
-    for (const faction of FACTIONS) {
-      const open = unlocked.includes(faction);
-      const label = FACTION_LABELS[faction] ?? title(faction);
-      const entry = el(this.#document, "li", "v7-campaign-faction");
-      entry.dataset.faction = faction;
-      entry.dataset.unlocked = String(open);
-      entry.setAttribute("aria-label", open ? label : `${label}, locked`);
-      entry.title = open ? label : `${label} (locked)`;
-      entry.append(this.#factionEmblem(faction));
-      factions.append(entry);
-    }
-    roster.append(rosterTitle, factions);
-    section.append(roster);
     return section;
   }
 
@@ -3954,8 +3906,8 @@ export class Ruleset7DomAppView {
   }
 
   /**
-   * One mission card: number, name, format, who fights whom, what it
-   * unlocks, and its state (locked, open, its stars, or still to come).
+   * One mission card: number, name, format, who fights whom, and its state
+   * (locked, open, its stars, or still to come).
    */
   #missionCard(card: CampaignMissionCardV7): HTMLButtonElement {
     const { entry } = card;
@@ -3982,10 +3934,6 @@ export class Ruleset7DomAppView {
           : status === "OPEN"
             ? "Open"
             : (best ?? "Done");
-    const unlockText =
-      entry.unlocks.length === 0
-        ? ""
-        : `, unlocks ${entry.unlocks.map((faction) => FACTION_LABELS[faction] ?? title(faction)).join(" and ")}`;
     node.setAttribute(
       "aria-label",
       `Mission ${entry.number}, ${entry.name}, ${format}, ${
@@ -3998,7 +3946,7 @@ export class Ruleset7DomAppView {
               : `done, ${String(card.stars)} of ${String(card.maxStars)} stars${
                   best === null ? "" : `, best ${String(card.bestRounds)} turns`
                 }`
-      }${unlockText}`,
+      }`,
     );
     if (closed) node.setAttribute("aria-disabled", "true");
     const sides = el(this.#document, "span", "v7-mission-sides");
@@ -4022,15 +3970,6 @@ export class Ruleset7DomAppView {
       sides,
       state,
     );
-    if (entry.unlocks.length > 0) {
-      const unlock = el(this.#document, "span", "v7-mission-unlock");
-      unlock.setAttribute("aria-hidden", "true");
-      unlock.dataset.unlocked = String(status === "DONE");
-      unlock.append(text(this.#document, "span", "Unlocks"));
-      for (const faction of entry.unlocks)
-        unlock.append(this.#factionEmblem(faction, "tiny"));
-      node.append(unlock);
-    }
     node.onclick = () => {
       if (closed) return;
       this.#openBriefing(entry.missionId);
@@ -4113,8 +4052,7 @@ export class Ruleset7DomAppView {
   /**
    * The briefing (CAMPAIGN.md section 5, item 3): the story, the
    * Objective line, up to three hints, the map size and opponent, and the
-   * faction you lead, a choice filtered to unlocked factions where the
-   * mission offers one.
+   * faction you lead, a choice where the mission offers one.
    */
   #briefing(
     missionId: string,
@@ -4198,26 +4136,7 @@ export class Ruleset7DomAppView {
       facts.append(friends);
     }
     section.append(facts);
-    if (entry.unlocks.length > 0) {
-      const reward = el(this.#document, "p", "v7-briefing-unlock");
-      reward.dataset.v7Region = "briefing-unlock";
-      reward.append(text(this.#document, "span", "Win to unlock"));
-      for (const faction of entry.unlocks)
-        reward.append(
-          this.#factionEmblem(faction, "small"),
-          text(
-            this.#document,
-            "strong",
-            FACTION_LABELS[faction] ?? title(faction),
-          ),
-        );
-      section.append(reward);
-    }
-    const choices = campaignFactionChoicesV7(
-      missionId,
-      progress.completed,
-      this.#campaignCheat,
-    );
+    const choices = campaignFactionChoicesV7(missionId);
     const chosen =
       this.#briefingFaction !== null && choices.includes(this.#briefingFaction)
         ? this.#briefingFaction
@@ -12417,22 +12336,6 @@ export class Ruleset7DomAppView {
         text(this.#document, "p", entry.closing, "v7-campaign-story"),
       );
       const lastWin = this.#campaignProgress().lastWin;
-      if (lastWin?.missionId === entry.missionId)
-        for (const faction of lastWin.unlocked) {
-          const notice = el(this.#document, "div", "v7-unlock-notice");
-          notice.dataset.v7Region = "unlock-notice";
-          notice.dataset.faction = faction;
-          notice.setAttribute("role", "status");
-          notice.append(
-            this.#factionEmblem(faction),
-            text(
-              this.#document,
-              "p",
-              `New faction: ${FACTION_LABELS[faction] ?? title(faction)}`,
-            ),
-          );
-          result.append(notice);
-        }
       // The campaigns this win opened on the map (pulp_wars-hmyk.3).
       const opened = (
         lastWin?.missionId === entry.missionId ? (lastWin.opened ?? []) : []

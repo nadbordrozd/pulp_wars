@@ -18,7 +18,6 @@ import {
   queryPlayerCommandsV7,
   viewForV7,
   type CommandV7,
-  type FactionIdV7,
   type GameStateV7,
   type MatchSetupV7,
   type PlayerId,
@@ -30,7 +29,6 @@ import {
 import {
   campaignMissionV7,
   campaignNewlyOpenedV7,
-  campaignNewlyUnlockedV7,
   type CampaignCompletedV7,
 } from "../campaign/progress-v7";
 import {
@@ -97,16 +95,15 @@ export interface Ruleset7BrowserSnapshot {
 /**
  * Campaign progress as the campaign screens read it (`pulp_wars-68k.5`,
  * docs/product/CAMPAIGN.md section 4). `completed` is the stored
- * completions; open missions and unlocked factions are derived from it.
+ * completions; open missions and campaigns are derived from it.
  */
 export interface Ruleset7CampaignProgressV7 {
   readonly status: "OK" | "UNREADABLE";
   readonly completed: CampaignCompletedV7;
-  /** The last mission win this controller recorded, with its unlocks. */
+  /** The last mission win this controller recorded. */
   readonly lastWin: {
     readonly missionId: string;
     readonly firstWin: boolean;
-    readonly unlocked: readonly FactionIdV7[];
     /** Campaigns the win opened on the campaign map (`pulp_wars-hmyk.3`). */
     readonly opened?: readonly string[];
   } | null;
@@ -1250,7 +1247,6 @@ export class Ruleset7BrowserController {
     this.#campaignLastWin = {
       missionId,
       firstWin: recorded.firstWin,
-      unlocked: campaignNewlyUnlockedV7(before, after),
       opened: campaignNewlyOpenedV7(before, after),
     };
   }

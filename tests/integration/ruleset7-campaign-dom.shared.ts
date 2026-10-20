@@ -2,24 +2,41 @@
 // whole-game simulations in ruleset7-campaign-dom.sim.test.ts
 // (`pulp_wars-bwry`).
 
-import { LEGACY_CAMPAIGN_PROGRESS_STORAGE_KEY_V7 } from "../../src/persistence/index";
+import {
+  CAMPAIGN_PROGRESS_STORAGE_KEY_V7,
+  LEGACY_CAMPAIGN_PROGRESS_STORAGE_KEY_V7,
+} from "../../src/persistence/index";
 
 /**
  * The campaign screens (`pulp_wars-68k.5`, docs/product/CAMPAIGN.md
- * sections 4 and 5): the Skirmish / Campaign switch, the mission list, the
- * briefing with its filtered faction choice, the mission label in Settings
- * and on the resume screen, the mission Victory and Defeat dialogs, the
- * unlock notice, and Reset progress.
+ * sections 4, 5 and 14): the campaign map, the mission list, the briefing,
+ * the mission label in Settings and on the resume screen, the mission
+ * Victory and Defeat dialogs, and Reset progress.
  */
 export const AT = "2026-10-03T12:00:00.000Z";
 
 export const won = (bestRounds = 12) => ({ firstWonAt: AT, bestRounds });
 
+/** Progress of one campaign (version 2), the Humans by default. */
+export function seedProgress(
+  completed: Record<string, unknown>,
+  campaign = "HUMANS",
+): void {
+  window.localStorage.setItem(
+    CAMPAIGN_PROGRESS_STORAGE_KEY_V7,
+    JSON.stringify({
+      format: "pulp-wars-campaign-progress",
+      version: 2,
+      campaigns: { [campaign]: { completed } },
+    }),
+  );
+}
+
 /**
  * Progress as builds before `pulp_wars-hmyk.3` wrote it (version 1 under
- * the old key): every test that seeds it also exercises the migration.
+ * the old key): the retired prologue's missions only.
  */
-export function seedProgress(completed: Record<string, unknown>): void {
+export function seedLegacyProgress(completed: Record<string, unknown>): void {
   window.localStorage.setItem(
     LEGACY_CAMPAIGN_PROGRESS_STORAGE_KEY_V7,
     JSON.stringify({

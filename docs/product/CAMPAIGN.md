@@ -1,5 +1,15 @@
 # Campaign mode: design and teaser
 
+> **Current shape (`pulp_wars-hmyk.22`, user 2026-10-21: "drop the original
+> campaign we designed. leave just the 9 one per faction.").** The game has
+> the nine faction campaigns of [section 14](#14-the-campaign-map-and-the-faction-campaigns-pulp_wars-hmyk3)
+> to [section 23](#23-the-cult-campaign-the-long-night-pulp_wars-hmyk12)
+> and nothing else on its campaign screen. The teaser and part one, "The
+> Hollow Frontier" (sections 6, 8.3, 9, 11 and the Frontier parts of 4.3),
+> were retired with their faction unlocks; they are kept below as history.
+> Every faction is open from the start. See
+> [section 24](#24-the-prologue-retired-pulp_wars-hmyk22).
+
 **Status:** design (`pulp_wars-68k.1`, epic `pulp_wars-68k`). The engine
 bead `68k.2` is implemented at `pulp-wars-poc-7r34`
 ([current rules section 2.6](RULESET_7_CURRENT.md#26-mission-setup); its
@@ -538,6 +548,12 @@ version 1 below is migrated; see [section 14.4](#144-progress-version-2).)
 
 ### 4.3 What unlocks gate
 
+> **Superseded (`pulp_wars-hmyk.22`).** The faction unlocks were the
+> prologue's reward and were retired with it: every faction is open from
+> the start, in skirmish and in the campaigns, and a mission that offers a
+> choice lists its whole choice. See
+> [section 24](#24-the-prologue-retired-pulp_wars-hmyk22).
+
 **Recommendation: skirmish keeps every faction unlocked.** The unlocks gate
 the faction you may **lead in a campaign mission that offers a choice**, and
 the campaign screen shows the unlocked roster as the reward.
@@ -609,6 +625,12 @@ A painted campaign map in the HoMM manner is out of scope: it is new
 production art and needs an approved art direction first.
 
 ## 6. The teaser: Chapter One, "The Hollow Frontier"
+
+> **Retired (`pulp_wars-hmyk.22`).** The Hollow Frontier is no longer in
+> the game: its chapter (`src/campaign/chapter-1.ts`), its ten missions
+> (`src/engine/v7/missions/frontier-*.ts`) and its faction unlocks were
+> removed. This section is kept as history; see
+> [section 24](#24-the-prologue-retired-pulp_wars-hmyk22).
 
 This section describes the four missions as the teaser shipped them, on
 hand-authored boards with conquest objectives. They were rebuilt by
@@ -837,6 +859,11 @@ sketches above, are in the
 ## 7. Testing
 
 ### 7.1 Headless playability (`npm run playtest:campaign`)
+
+> **Removed (`pulp_wars-hmyk.22`).** The playtest script and its npm
+> script measured the prologue's missions against their bands; they were
+> removed with the prologue. The evidence files in `docs/validation/`
+> stay as history.
 
 The board, the starting position, and combat are deterministic, and the only
 PRNG draws are treasure chests. **A mission played Normal AI against Normal
@@ -1283,6 +1310,12 @@ of the table above: in band, which is revision 2.
   with a Lich behind a single-file gate stays beyond the proxy.
 
 ## 9. Part one, "The Hollow Frontier": ten missions
+
+> **Retired (`pulp_wars-hmyk.22`).** The Hollow Frontier is no longer in
+> the game: its chapter (`src/campaign/chapter-1.ts`), its ten missions
+> (`src/engine/v7/missions/frontier-*.ts`) and its faction unlocks were
+> removed. This section is kept as history; see
+> [section 24](#24-the-prologue-retired-pulp_wars-hmyk22).
 
 `pulp_wars-v642.1` (epic `pulp_wars-v642`; the user, 2026-10-14: "I want
 more. Make 10 total for now", maps "as natural looking as the generated
@@ -3817,16 +3850,17 @@ placeholders ("The Human Campaign", "Six missions") until the saga bible
 (`pulp_wars-hmyk.1`) names them; each campaign bead (`pulp_wars-hmyk.4` to
 `.12`) fills in its entry there.
 
-The ten-mission chapter of part one is the **prologue**, "The Hollow
-Frontier" (`FRONTIER`): always open, no one's prerequisite, its missions
-and progress unchanged. A mission belongs to exactly one campaign; its ID is
-unique across them.
+The ten-mission chapter of part one was the **prologue**, "The Hollow
+Frontier" (`FRONTIER`): always open, no one's prerequisite. It was retired
+by `pulp_wars-hmyk.22` ([section 24](#24-the-prologue-retired-pulp_wars-hmyk22)):
+the registry lists the nine faction campaigns only. A mission belongs to
+exactly one campaign; its ID is unique across them, and a retired ID is
+never reused.
 
 ### 14.2 The unlock graph
 
 | Tier | Campaigns                             | Open when                       |
 | ---- | ------------------------------------- | ------------------------------- |
-| 0    | The Hollow Frontier (prologue)        | always                          |
 | 1    | Humans, Undead                        | always                          |
 | 2    | Dinosaurs, Martians, Goblins, Dwarves | Humans **and** Undead completed |
 | 3    | Ice Folk, Cultists, Candy             | all four of tier 2 completed    |
@@ -3839,7 +3873,9 @@ unique across them.
 - Inside a campaign the missions open in order, as before (section 4.2).
 - The Cult is the middle of the last row: the saga culminates there.
 - Skirmish stays ungated (section 4.3). The faction unlocks of the
-  prologue are unchanged.
+  prologue were retired with it (`pulp_wars-hmyk.22`): no faction is
+  locked anywhere.
+- (Tier 0, the prologue, was retired by `pulp_wars-hmyk.22`.)
 
 The derived state is in `src/campaign/progress-v7.ts`: `campaignPlatesV7`
 (each campaign's status, the prerequisites it still waits for, missions won
@@ -3852,8 +3888,9 @@ dialog's "New campaigns: …" notice).
 The main menu's **Campaign** opens the **campaign map** (the panel titled
 "Campaign"):
 
-- The prologue's wide plate on top, set apart by a dashed rule.
-- Below, three rows: the two openers, the middle four, the last three.
+- Three rows: the two openers, the middle four, the last three. (The
+  prologue's wide plate on top, set apart by a dashed rule, was removed by
+  `pulp_wars-hmyk.22`.)
   Between two rows, the lines of what unlocks what: every plate above joins
   one knot that fans out to every plate below (every campaign above opens
   every one below). The knot is a lock with "Finish both" / "Finish all 4"
@@ -3877,7 +3914,8 @@ The main menu's **Campaign** opens the **campaign map** (the panel titled
 - An open plate opens the campaign's **mission list**: a **Campaigns** back
   button, the picture (twice its size on a screen 48rem or wider) with the
   subtitle and title, the story, and the
-  mission cards of section 10.6; the prologue keeps its Factions row. A card
+  mission cards of section 10.6 (the prologue's Factions row went with
+  it, `pulp_wars-hmyk.22`). A card
   opens its briefing as before; Back returns to the list. Escape steps
   back: briefing, list, map, menu.
 - Leaving a finished mission (Next mission, Campaign) returns to that
@@ -3907,7 +3945,8 @@ Progress is grouped by campaign under a new key, `pulpWars.campaign.v2`:
 
 - **Migration.** While there is no version 2, the store reads version 1
   (`pulpWars.campaign.v1`) and files its missions under `FRONTIER`; no win
-  is lost. Nothing is written on load; the first win recorded writes
+  is lost. (`FRONTIER` is retired, `pulp_wars-hmyk.22`: its wins are kept
+  and ignored.) Nothing is written on load; the first win recorded writes
   version 2 under the new key. The old key is left alone, so an older
   build (a cached tab) still reads its progress, until **Reset** erases
   both keys.
@@ -3918,7 +3957,7 @@ Progress is grouped by campaign under a new key, `pulpWars.campaign.v2`:
   (mission IDs are unique), so the derived state reads as before.
 
 Analytics: `mission_start` and `mission_end` carry `campaign_id`
-(`frontier`, `humans`, …; [ANALYTICS.md](../ANALYTICS.md)).
+(`humans`, `undead`, …; [ANALYTICS.md](../ANALYTICS.md)).
 
 ### 14.5 Testing: pick any mission
 
@@ -5989,3 +6028,68 @@ likeliest mistakes are the other way round from the earlier passes: CU6
 and CU4 may now be unwinnable by a first-time player, and CU1 may have no
 room to build a single Imp before the patrol arrives. Correct by playing,
 not by guessing.
+
+## 24. The prologue retired (`pulp_wars-hmyk.22`)
+
+**Request (user, 2026-10-21):** "drop the original campaign we designed.
+leave just the 9 one per faction."
+
+**What was removed.**
+
+- The prologue "The Hollow Frontier": its registry entry (`FRONTIER`, tier
+  0), its chapter (`src/campaign/chapter-1.ts`, `CHAPTER_ONE_V7`), its ten
+  missions (`FRONTIER_1` to `FRONTIER_10`, `src/engine/v7/missions/frontier-*.ts`)
+  and their registry entries and pins, and its picture
+  (`public/assets/chibi/campaign/campaign-frontier.png` and its manifest
+  entry; the recipes and records stay as generation history).
+- The campaign map's prologue row (the wide plate and its dashed rule).
+- The faction unlocks, which only the prologue granted: a chapter's
+  `startingFactions` and a mission's `unlocks`, the mission list's
+  Factions row, a card's Unlocks chip, the briefing's "Win to unlock", the
+  Victory dialog's "New faction" notice, and `campaignUnlockedFactionsV7`
+  and `campaignNewlyUnlockedV7`. The chapter shape now lives in
+  `src/campaign/chapter.ts`.
+- `scripts/campaign-playtest-v7.ts` and `npm run playtest:campaign` (the
+  prologue's AI-proxy playtest).
+
+**What stays.** The nine faction campaigns and their unlock graph
+(section 14.2), the tutorial, the hidden `TEST_*` fixtures and the `LAB_*`
+missions. The prologue's events stay the saga's backstory
+([SAGA.md](SAGA.md)); the campaigns' text still recalls them.
+
+**The unlock rule.** Every faction is available from the start, in
+skirmish (as before, section 4.3) and in the campaigns: a mission seat
+that offers a choice lists its whole choice (`campaignFactionChoicesV7`);
+none of the nine campaigns' missions has one today. The campaigns open as
+the graph says: Humans and Undead from the start, the middle four when both
+are completed, the last three when all four are. Nothing depended on the
+prologue's progress, so no player is locked out.
+
+**Stored progress.** Progress of either version that holds prologue wins
+(version 1, migrated under `FRONTIER`, or version 2's `FRONTIER` record)
+still loads, is kept on every later write, and is ignored: no registered
+campaign or mission has its IDs, so it opens and locks nothing. Reset
+erases it with the rest.
+
+**A saved prologue mission.** The autosave of a prologue mission in
+progress fails setup validation with `UNKNOWN_MISSION` and loads as
+`INCOMPATIBLE` on the save-recovery screen with "This mission is no longer
+in the game. Delete the save and pick a campaign." (a mission ID registered
+at another revision keeps "This mission was updated since the game was
+saved. Start it again from the campaign."). A replay of one is
+`INCOMPATIBLE_REPLAY`, as for any unregistered mission.
+
+**Tests.** The prologue's own content tests went with it
+(`campaign-chapter-v7.test.ts`, `campaign-missions-9-10-v7.test.ts`, the
+Bone Neck isthmus test, the teaser's Candy-free check). The mechanisms they
+also exercised are covered on the faction campaigns and the fixtures:
+objectives, stars, the tracker and the marks on `HUMAN_1` to `HUMAN_6`,
+`UNDEAD_3` and the `TEST_*` objective fixtures; a seat's own forbidden
+technologies on `HUMAN_6`; map edits and drift on `MARTIAN_1`; a board
+baked under older generator rules on hand-built copies of `HUMAN_5` and
+`MARTIAN_1`; story names on `HUMAN_3`; the faction choice of a briefing on
+`TEST_GROUNDS` in the fixture campaigns of the map test; the siege of a
+single-file front on `TEST_NECK`. New tests pin the retirement: the
+registry has nine campaigns and no `FRONTIER` ID, prologue progress
+changes nothing on the map (unit and DOM), and a saved prologue mission
+loads with the removed-mission message.

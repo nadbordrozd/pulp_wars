@@ -6,7 +6,7 @@ import {
   type Ruleset7BrowserSnapshot,
   type Ruleset7CampaignProgressV7,
 } from "../../src/app/index";
-import { CHAPTER_ONE_V7 } from "../../src/campaign/chapter-1";
+import { CHAPTER_HUMANS_V7 } from "../../src/campaign/chapter-humans";
 import {
   createPlayableGameV7,
   missionByIdV7,
@@ -31,6 +31,7 @@ import {
 } from "../../src/render/dom/app-view-v7";
 import {
   won,
+  seedLegacyProgress,
   seedProgress,
   settle,
   waitUntil,
@@ -48,10 +49,10 @@ async function openCampaign(): Promise<void> {
   await settle();
 }
 
-/** The campaign map, then the prologue's mission list (pulp_wars-hmyk.3). */
-async function openFrontier(): Promise<void> {
+/** The campaign map, then the Humans' mission list (pulp_wars-hmyk.3). */
+async function openHumans(): Promise<void> {
   await openCampaign();
-  requiredButton('[data-action="campaign-open-frontier"]').click();
+  requiredButton('[data-action="campaign-open-humans"]').click();
   await settle();
 }
 
@@ -74,8 +75,9 @@ describe("Ruleset 7 campaign front screen", () => {
     expect(document.querySelector("#v7-front-title")?.textContent).toBe(
       "Campaign",
     );
-    // The campaign map (pulp_wars-hmyk.3): the prologue open, the Humans
-    // campaign open (pulp_wars-hmyk.4), the Martians, the Goblins and the
+    // The campaign map (pulp_wars-hmyk.3): no prologue (retired by
+    // pulp_wars-hmyk.22), the Humans and the Undead campaigns open
+    // (pulp_wars-hmyk.4, .5), the Martians, the Goblins and the
     // Dwarves locked behind both first campaigns (pulp_wars-hmyk.7,
     // pulp_wars-hmyk.8, pulp_wars-hmyk.9), the Ice Folk, the Cult and Candy
     // locked behind the middle four (pulp_wars-hmyk.10, pulp_wars-hmyk.12,
@@ -85,7 +87,6 @@ describe("Ruleset 7 campaign front screen", () => {
         (plate) => [plate.dataset.campaign, plate.dataset.status],
       ),
     ).toEqual([
-      ["FRONTIER", "open"],
       ["HUMANS", "open"],
       ["UNDEAD", "open"],
       ["DINOSAURS", "locked"],
@@ -96,11 +97,10 @@ describe("Ruleset 7 campaign front screen", () => {
       ["CULT", "locked"],
       ["CANDY", "locked"],
     ]);
+    expect(document.querySelector(".v7-campaign-prologue")).toBeNull();
     expect(
-      document
-        .querySelector('[data-action="campaign-open-frontier"]')
-        ?.getAttribute("aria-label"),
-    ).toBe("The Hollow Frontier, open, 0 of 10 missions won");
+      document.querySelector('[data-action="campaign-open-frontier"]'),
+    ).toBeNull();
     expect(
       document
         .querySelector('[data-action="campaign-open-humans"]')
@@ -147,31 +147,28 @@ describe("Ruleset 7 campaign front screen", () => {
     ).toBe(
       "Sweet Dreams, Locked: finish Dinosaurs, Martians, Goblins and Dwarves",
     );
-    requiredButton('[data-action="campaign-open-frontier"]').click();
+    requiredButton('[data-action="campaign-open-humans"]').click();
     await settle();
     expect(document.activeElement?.getAttribute("data-action")).toBe(
       "campaign-map",
     );
     expect(document.querySelector(".v7-campaign-title")?.textContent).toBe(
-      "The Hollow Frontier",
+      "The Marshal's Law",
     );
     expect(document.querySelector(".v7-campaign-kicker")?.textContent).toBe(
-      "Prologue",
+      "Steele against the Baron",
     );
-    // Ten missions (`pulp_wars-v642.1`); the ones not built yet say so.
-    expect(document.querySelectorAll(".v7-mission-card")).toHaveLength(10);
+    // Six missions, every one built: none says "Coming soon".
+    expect(document.querySelectorAll(".v7-mission-card")).toHaveLength(6);
     expect(
       document.querySelectorAll('.v7-mission-card[data-status="soon"]'),
-    ).toHaveLength(
-      CHAPTER_ONE_V7.missions.filter((entry) => entry.planned !== undefined)
-        .length,
-    );
-    // Campaigns returns to the map, on the prologue's plate.
+    ).toHaveLength(0);
+    // Campaigns returns to the map, on the campaign's plate.
     requiredButton('[data-action="campaign-map"]').click();
     await settle();
     expect(document.querySelector(".v7-mission-card")).toBeNull();
     expect(document.activeElement?.getAttribute("data-action")).toBe(
-      "campaign-open-frontier",
+      "campaign-open-humans",
     );
     requiredButton('[data-action="front-back"]').click();
     await settle();
@@ -184,9 +181,9 @@ describe("Ruleset 7 campaign front screen", () => {
   });
 
   it("shows each mission's state, emblems and accessible name from stored progress", async () => {
-    seedProgress({ FRONTIER_1: { ...won(14), stars: 2 } });
+    seedProgress({ HUMAN_1: { ...won(14), stars: 2 } });
     const app = bootstrapRuleset7App(document);
-    await openFrontier();
+    await openHumans();
     const cards = [
       ...document.querySelectorAll<HTMLButtonElement>(".v7-mission-card"),
     ];
@@ -195,32 +192,21 @@ describe("Ruleset 7 campaign front screen", () => {
       "open",
       "locked",
       "locked",
-      // Missions 5 to 10 are built (`pulp_wars-v642.2` to `.4`).
-      "locked",
-      "locked",
-      "locked",
-      "locked",
       "locked",
       "locked",
     ]);
     expect(cards.map((card) => card.getAttribute("aria-label"))).toEqual([
-      "Mission 1, Goblins at the Gate, Conquest, done, 2 of 3 stars, best 14 turns",
-      "Mission 2, The Warrens, Capture, open, unlocks Goblin",
-      "Mission 3, Green Tide, Capture, locked",
-      "Mission 4, Bone Neck, Capture, locked, unlocks Undead",
-      "Mission 5, Dead Men's Road, Escort, locked, unlocks Dwarf",
-      "Mission 6, The Deep Gate, Hold out, locked, unlocks Ice Folk",
-      "Mission 7, The Island That Time Forgot, Capture, locked, unlocks Dinosaur",
-      "Mission 8, Brain Wave, Hunt, locked, unlocks Martian",
-      "Mission 9, Sugar and Spite, Rescue, locked, unlocks Candy",
-      "Mission 10, The Stars Are Right, Capture, locked, unlocks Cultists",
+      "Mission 1, Thaw at Northwatch, Conquest, done, 2 of 3 stars, best 14 turns",
+      "Mission 2, The Lord Protector's Writ, Capture, open",
+      "Mission 3, Outlaws of the Greenwood, Escort, locked",
+      "Mission 4, The Siege of Fort Hollow, Hold out, locked",
+      "Mission 5, Broadsides at Saltmarsh, Hunt, locked",
+      "Mission 6, Kessler Hall, Capture, locked",
     ]);
     expect(cards[0]?.textContent).toContain("Best: 14 turns");
     expect(cards[1]?.textContent).toContain("Open");
     expect(cards[2]?.textContent).toContain("Win the previous mission");
-    expect(cards[4]?.textContent).toContain("Win the previous mission");
-    // Every mission is built (`pulp_wars-v642.4`): none says "Coming soon".
-    expect(cards[8]?.textContent).toContain("Win the previous mission");
+    expect(cards[5]?.textContent).toContain("Win the previous mission");
     expect(cards.some((card) => card.textContent.includes("Coming soon"))).toBe(
       false,
     );
@@ -239,34 +225,16 @@ describe("Ruleset 7 campaign front screen", () => {
       }),
     ).toEqual([
       ["2", "2 of 3 stars", 2, 1],
-      ...Array.from({ length: 9 }, () => null),
+      ...Array.from({ length: 5 }, () => null),
     ]);
-    // What a mission unlocks, on its card.
-    expect(
-      cards.map(
-        (card) =>
-          card.querySelector<HTMLElement>(
-            ".v7-mission-unlock .v7-faction-emblem",
-          )?.dataset.faction ?? null,
-      ),
-    ).toEqual([
-      null,
-      "GOBLIN",
-      null,
-      "UNDEAD",
-      "DWARF",
-      "ICE_FOLK",
-      "DINOSAUR",
-      "MARTIAN",
-      "CANDY",
-      "CULT",
-    ]);
+    // No mission unlocks a faction any more (pulp_wars-hmyk.22).
+    expect(document.querySelector(".v7-mission-unlock")).toBeNull();
     // A mission still to come opens nothing.
     expect(cards[4]?.getAttribute("aria-disabled")).toBe("true");
     cards[4]?.click();
     await settle();
     expect(document.querySelector("[data-v7-region='briefing']")).toBeNull();
-    // Emblems: you lead, then the opponent (mission 4 offers two leaders).
+    // Emblems: you lead, your ally, "vs", then the opponents.
     expect(
       cards.map((card) =>
         [
@@ -276,17 +244,13 @@ describe("Ruleset 7 campaign front screen", () => {
         ].map((emblem) => emblem.dataset.faction),
       ),
     ).toEqual([
+      ["ORIGINAL", "UNDEAD"],
       ["ORIGINAL", "GOBLIN"],
-      ["ORIGINAL", "GOBLIN"],
-      ["GOBLIN", "UNDEAD"],
-      ["ORIGINAL", "GOBLIN", "UNDEAD"],
-      ["UNDEAD", "ORIGINAL", "ICE_FOLK"],
-      ["DWARF", "ICE_FOLK", "ORIGINAL"],
-      ["ICE_FOLK", "DINOSAUR", "ORIGINAL"],
-      ["DINOSAUR", "MARTIAN", "ORIGINAL"],
+      ["ORIGINAL", "GOBLIN", "DINOSAUR"],
       // An ally stands on your side of "vs".
-      ["MARTIAN", "CANDY", "UNDEAD", "GOBLIN"],
-      ["ORIGINAL", "GOBLIN", "CULT", "UNDEAD"],
+      ["ORIGINAL", "UNDEAD", "CULT", "ICE_FOLK"],
+      ["ORIGINAL", "GOBLIN"],
+      ["ORIGINAL", "GOBLIN", "DINOSAUR", "CULT"],
     ]);
     // A locked card stays focusable but opens nothing.
     expect(cards[2]?.disabled).toBe(false);
@@ -294,31 +258,15 @@ describe("Ruleset 7 campaign front screen", () => {
     cards[2]?.click();
     await settle();
     expect(document.querySelector("[data-v7-region='briefing']")).toBeNull();
-    // Every faction, dimmed until unlocked.
-    const roster = [
-      ...document.querySelectorAll<HTMLElement>(".v7-campaign-faction"),
-    ];
-    // Nine since the Cultists were offered (pulp_wars-mch9.20); mission 10
-    // unlocks them, last of all (`pulp_wars-v642.1`).
-    expect(roster).toHaveLength(9);
-    expect(roster.at(-1)?.dataset.faction).toBe("CULT");
-    expect(roster.at(-1)?.getAttribute("aria-label")).toBe("Cultists, locked");
-    expect(
-      roster
-        .filter((entry) => entry.dataset.unlocked === "true")
-        .map((entry) => entry.dataset.faction),
-    ).toEqual(["ORIGINAL"]);
-    expect(
-      roster
-        .find((entry) => entry.dataset.faction === "GOBLIN")
-        ?.getAttribute("aria-label"),
-    ).toBe("Goblin, locked");
+    // No faction roster: every faction is open from the start.
+    expect(document.querySelector(".v7-campaign-roster")).toBeNull();
+    expect(document.querySelector(".v7-campaign-faction")).toBeNull();
     app.destroy();
   });
 
   it("keeps the way back, the cards and the briefing in keyboard reading order", async () => {
     const app = bootstrapRuleset7App(document);
-    await openFrontier();
+    await openHumans();
     const order = focusables().map(
       (node) => node.getAttribute("data-action") ?? node.tagName.toLowerCase(),
     );
@@ -326,32 +274,28 @@ describe("Ruleset 7 campaign front screen", () => {
     expect(order).toEqual([
       "front-back",
       "campaign-map",
-      "mission-frontier_1",
-      "mission-frontier_2",
-      "mission-frontier_3",
-      "mission-frontier_4",
-      "mission-frontier_5",
-      "mission-frontier_6",
-      "mission-frontier_7",
-      "mission-frontier_8",
-      "mission-frontier_9",
-      "mission-frontier_10",
+      "mission-human_1",
+      "mission-human_2",
+      "mission-human_3",
+      "mission-human_4",
+      "mission-human_5",
+      "mission-human_6",
     ]);
     app.destroy();
   });
 
   it("opens the briefing with focus on its heading, and Back returns focus to the card", async () => {
     const app = bootstrapRuleset7App(document);
-    await openFrontier();
-    requiredButton('[data-action="mission-frontier_1"]').click();
+    await openHumans();
+    requiredButton('[data-action="mission-human_1"]').click();
     await settle();
     const briefing = required(
       document.querySelector<HTMLElement>("[data-v7-region='briefing']"),
     );
-    const entry = required(CHAPTER_ONE_V7.missions[0]);
+    const entry = required(CHAPTER_HUMANS_V7.missions[0]);
     expect(document.activeElement?.id).toBe("v7-briefing-title");
     expect(briefing.querySelector("h2")?.textContent).toBe(
-      "Goblins at the Gate",
+      "Thaw at Northwatch",
     );
     expect(briefing.querySelector(".v7-campaign-story")?.textContent).toBe(
       entry.briefing,
@@ -362,7 +306,9 @@ describe("Ruleset 7 campaign front screen", () => {
     const objective = required(
       briefing.querySelector<HTMLElement>(".v7-briefing-objective"),
     );
-    expect(objective.textContent).toBe("ObjectiveCapture Drum Camp.");
+    expect(objective.textContent).toBe(
+      "ObjectiveTake the barrow and its camp by turn 15.",
+    );
     expect(objective.dataset.objective).toBe("domination");
     expect(objective.querySelector("svg")?.dataset.icon).toBe("attack");
     // What the three stars are for.
@@ -371,7 +317,7 @@ describe("Ruleset 7 campaign front screen", () => {
         (goal) => goal.textContent,
       ),
     ).toEqual(["Win the mission", "Win by turn 12", "Lose no city"]);
-    // Mission 1 unlocks nothing.
+    // No mission unlocks a faction (pulp_wars-hmyk.22).
     expect(
       briefing.querySelector("[data-v7-region='briefing-unlock']"),
     ).toBeNull();
@@ -384,7 +330,7 @@ describe("Ruleset 7 campaign front screen", () => {
       "11 × 11",
     );
     expect(briefing.querySelector(".v7-briefing-opponent")?.textContent).toBe(
-      "vsGoblin",
+      "vsUndead",
     );
     expect(briefing.querySelector("#v7-campaign-faction")).toBeNull();
     expect(briefing.querySelector(".v7-briefing-lead-text")?.textContent).toBe(
@@ -400,15 +346,15 @@ describe("Ruleset 7 campaign front screen", () => {
     await settle();
     expect(document.querySelector("[data-v7-region='briefing']")).toBeNull();
     expect(document.activeElement?.getAttribute("data-action")).toBe(
-      "mission-frontier_1",
+      "mission-human_1",
     );
-    requiredButton('[data-action="mission-frontier_1"]').click();
+    requiredButton('[data-action="mission-human_1"]').click();
     await settle();
     requiredButton('[data-action="campaign-back"]').click();
     await settle();
     expect(document.querySelector("[data-v7-region='briefing']")).toBeNull();
     expect(document.activeElement?.getAttribute("data-action")).toBe(
-      "mission-frontier_1",
+      "mission-human_1",
     );
     // Escape from the list goes to the campaign map, then to the menu.
     document.activeElement?.dispatchEvent(
@@ -419,7 +365,7 @@ describe("Ruleset 7 campaign front screen", () => {
       document.querySelector("[data-v7-region='campaign-map']"),
     ).not.toBeNull();
     expect(document.activeElement?.getAttribute("data-action")).toBe(
-      "campaign-open-frontier",
+      "campaign-open-humans",
     );
     document.activeElement?.dispatchEvent(
       new KeyboardEvent("keydown", { key: "Escape", bubbles: true }),
@@ -429,64 +375,47 @@ describe("Ruleset 7 campaign front screen", () => {
     app.destroy();
   });
 
-  it("offers mission 4's choice filtered to unlocked factions and launches the chosen one", async () => {
-    seedProgress({ FRONTIER_1: won(), FRONTIER_3: won() });
-    const first = bootstrapRuleset7App(document);
-    await openFrontier();
-    requiredButton('[data-action="mission-frontier_4"]').click();
-    await settle();
-    // Goblin is not unlocked yet (mission 2 was never won): Human only.
-    expect(document.querySelector("#v7-campaign-faction")).toBeNull();
-    expect(document.querySelector(".v7-briefing-lead-text")?.textContent).toBe(
-      "You leadHuman",
+  it("keeps the retired prologue's stored wins out of sight: the map is as fresh", async () => {
+    // pulp_wars-hmyk.22: a profile that played the Hollow Frontier (version
+    // 1 progress, all ten won) sees the nine campaigns as a new one does.
+    seedLegacyProgress(
+      Object.fromEntries(
+        Array.from({ length: 10 }, (_, index) => [
+          `FRONTIER_${String(index + 1)}`,
+          { ...won(12), stars: 3 },
+        ]),
+      ),
     );
-    first.destroy();
-
-    document.body.innerHTML = '<div id="app"></div>';
-    seedProgress({ FRONTIER_1: won(), FRONTIER_2: won(), FRONTIER_3: won() });
     const app = bootstrapRuleset7App(document);
-    await openFrontier();
-    requiredButton('[data-action="mission-frontier_4"]').click();
-    await settle();
+    await openCampaign();
+    expect(document.querySelector(".v7-campaign-recovery")).toBeNull();
     expect(
-      document.querySelector("[data-v7-region='briefing-unlock']")?.textContent,
-    ).toBe("Win to unlockUndead");
-    expect(
-      document.querySelector<HTMLElement>(".v7-briefing-objective svg")?.dataset
-        .icon,
-    ).toBe("flag");
-    const choice = requiredSelect("v7-campaign-faction");
-    expect([...choice.options].map((option) => option.value)).toEqual([
-      "ORIGINAL",
-      "GOBLIN",
+      [...document.querySelectorAll<HTMLElement>(".v7-campaign-plate")].map(
+        (plate) => [plate.dataset.campaign, plate.dataset.status],
+      ),
+    ).toEqual([
+      ["HUMANS", "open"],
+      ["UNDEAD", "open"],
+      ["DINOSAURS", "locked"],
+      ["MARTIANS", "locked"],
+      ["GOBLINS", "locked"],
+      ["DWARVES", "locked"],
+      ["ICE_FOLK", "locked"],
+      ["CULT", "locked"],
+      ["CANDY", "locked"],
     ]);
-    expect([...choice.options].map((option) => option.textContent)).toEqual([
-      "Human",
-      "Goblin",
-    ]);
-    expect(choice.closest("label")?.textContent).toContain("You lead");
-    choice.value = "GOBLIN";
-    choice.dispatchEvent(new Event("change", { bubbles: true }));
     expect(
-      document.querySelector<HTMLElement>(
-        ".v7-briefing-lead-emblem .v7-faction-emblem",
-      )?.dataset.faction,
-    ).toBe("GOBLIN");
-    requiredButton('[data-action="campaign-start"]').click();
-    await waitUntil(() => app.controller.snapshot().phase === "ACTIVE");
-    expect(app.controller.snapshot().view?.setup).toMatchObject({
-      mapType: "MISSION",
-      mission: { id: "FRONTIER_4" },
-      factions: ["GOBLIN", "UNDEAD"],
-      width: 16,
-    });
+      document
+        .querySelector('[data-action="campaign-open-humans"]')
+        ?.getAttribute("aria-label"),
+    ).toBe("The Marshal's Law, open, 0 of 6 missions won");
     app.destroy();
   });
 
   it("starts a mission; Settings and the resume screen name the mission, not the seed", async () => {
     const app = bootstrapRuleset7App(document);
-    await openFrontier();
-    requiredButton('[data-action="mission-frontier_1"]').click();
+    await openHumans();
+    requiredButton('[data-action="mission-human_1"]').click();
     await settle();
     requiredButton('[data-action="campaign-start"]').click();
     await waitUntil(
@@ -497,8 +426,8 @@ describe("Ruleset 7 campaign front screen", () => {
     const view = required(app.controller.snapshot().view);
     expect(view.setup).toMatchObject({
       mapType: "MISSION",
-      mission: { id: "FRONTIER_1" },
-      factions: ["ORIGINAL", "GOBLIN"],
+      mission: { id: "HUMAN_1" },
+      factions: ["ORIGINAL", "UNDEAD"],
     });
     expect(view.turnOrder[view.activeSeatIndex]).toBe(view.humanPlayerId);
     // The objective tracker of the top bar.
@@ -507,18 +436,20 @@ describe("Ruleset 7 campaign front screen", () => {
         "[data-v7-region='hud'] [data-v7-region='mission-tracker']",
       ),
     );
-    expect(tracker.dataset.missionId).toBe("FRONTIER_1");
-    expect(tracker.textContent).toBe("Capture Drum Camp.");
+    expect(tracker.dataset.missionId).toBe("HUMAN_1");
+    expect(tracker.textContent).toBe(
+      "Take the barrow and its camp by turn 15.15 turns",
+    );
     expect(tracker.getAttribute("aria-label")).toBe(
-      "Objective: Capture Drum Camp.",
+      "Objective: Take the barrow and its camp by turn 15. 15 turns left.",
     );
     requiredButton('[data-action="compact-menu"]').click();
     requiredButton('[data-action="settings"]').click();
     expect(document.querySelector(".v7-mission-label")?.textContent).toBe(
-      "Mission: Goblins at the Gate",
+      "Mission: Thaw at Northwatch",
     );
     expect(document.querySelector(".v7-mission-objective")?.textContent).toBe(
-      "Objective: Capture Drum Camp.",
+      "Objective: Take the barrow and its camp by turn 15.",
     );
     expect(document.querySelector(".v7-map-seed")).toBeNull();
     requiredButton('[data-action="close-overlay"]').click();
@@ -526,15 +457,15 @@ describe("Ruleset 7 campaign front screen", () => {
     requiredButton('[data-action="main-menu"]').click();
     await waitUntil(() => app.controller.snapshot().phase === "RESUMABLE");
     expect(document.querySelector(".v7-resume-summary")?.textContent).toBe(
-      "Mission 1 · Goblins at the Gate · Turn 1",
+      "Mission 1 · Thaw at Northwatch · Turn 1",
     );
     // A mission started from the menu's Campaign replaces the saved one.
     requiredButton('[data-action="campaign"]').click();
     await settle();
     expect(document.querySelector("[data-v7-campaign]")).not.toBeNull();
-    requiredButton('[data-action="campaign-open-frontier"]').click();
+    requiredButton('[data-action="campaign-open-humans"]').click();
     await settle();
-    requiredButton('[data-action="mission-frontier_1"]').click();
+    requiredButton('[data-action="mission-human_1"]').click();
     await settle();
     requiredButton('[data-action="campaign-start"]').click();
     await waitUntil(
@@ -550,7 +481,7 @@ describe("Ruleset 7 campaign front screen", () => {
 describe("Ruleset 7 mission dialogs", () => {
   it("Defeat: Mission failed, Retry restarts the same setup, Campaign returns to the list", async () => {
     const fake = new FakeController(
-      completeView("FRONTIER_1", "ORIGINAL", (view) => ({
+      completeView("HUMAN_1", "ORIGINAL", (view) => ({
         kind: "DEFEAT",
         humanId: view.humanPlayerId,
         defeatedByPlayerId: required(
@@ -587,7 +518,7 @@ describe("Ruleset 7 mission dialogs", () => {
   it("Main menu on a mission's end dialog leaves for the title screen", async () => {
     for (const outcome of ["VICTORY", "DEFEAT"] as const) {
       const fake = new FakeController(
-        completeView("FRONTIER_1", "ORIGINAL", (view) =>
+        completeView("HUMAN_1", "ORIGINAL", (view) =>
           outcome === "VICTORY"
             ? { kind: "VICTORY", winnerId: view.humanPlayerId }
             : {
@@ -623,7 +554,7 @@ describe("Ruleset 7 mission dialogs", () => {
 
   it("Victory: why, the stars with what each was for, the debrief, Next mission and Retry", async () => {
     const fake = new FakeController(
-      completeView("FRONTIER_2", "ORIGINAL", (view) => ({
+      completeView("HUMAN_2", "ORIGINAL", (view) => ({
         kind: "VICTORY",
         winnerId: view.humanPlayerId,
         cause: "PLACES_CAPTURED",
@@ -638,7 +569,7 @@ describe("Ruleset 7 mission dialogs", () => {
     expect(dialog.querySelector("h2")?.textContent).toBe("Mission complete");
     expect(
       dialog.querySelector("[data-v7-region='mission-cause']")?.textContent,
-    ).toBe("The Warrens is yours.");
+    ).toBe("Mudford Toll and Halfway Toll and Kingsgate are yours.");
     // Round 1 with every own city: all three stars.
     const stars = required(
       dialog.querySelector<HTMLElement>(".v7-mission-stars"),
@@ -651,11 +582,11 @@ describe("Ruleset 7 mission dialogs", () => {
       ),
     ).toEqual([
       ["Win the mission", "true"],
-      ["Win by turn 18", "true"],
+      ["Win by turn 14", "true"],
       ["Lose no city", "true"],
     ]);
     expect(dialog.querySelector(".v7-campaign-story")?.textContent).toBe(
-      required(CHAPTER_ONE_V7.missions[1]).closing,
+      required(CHAPTER_HUMANS_V7.missions[1]).closing,
     );
     expect(
       [...dialog.querySelectorAll("button")].map((node) => node.textContent),
@@ -668,18 +599,17 @@ describe("Ruleset 7 mission dialogs", () => {
 
   it("Victory names the campaigns the win opened; Campaign returns to the mission's own list", async () => {
     const fake = new FakeController(
-      completeView("FRONTIER_2", "ORIGINAL", (view) => ({
+      completeView("HUMAN_2", "ORIGINAL", (view) => ({
         kind: "VICTORY",
         winnerId: view.humanPlayerId,
         cause: "PLACES_CAPTURED",
       })),
       {
         status: "OK",
-        completed: { FRONTIER_1: won(), FRONTIER_2: won() },
+        completed: { HUMAN_1: won(), HUMAN_2: won() },
         lastWin: {
-          missionId: "FRONTIER_2",
+          missionId: "HUMAN_2",
           firstWin: true,
-          unlocked: ["GOBLIN"],
           opened: ["DINOSAURS", "MARTIANS", "GOBLINS", "DWARVES"],
         },
         diagnostic: null,
@@ -698,24 +628,24 @@ describe("Ruleset 7 mission dialogs", () => {
     expect(
       document.querySelector<HTMLElement>(".v7-campaign-chapter")?.dataset
         .v7Campaign,
-    ).toBe("FRONTIER");
-    expect(document.querySelectorAll(".v7-mission-card")).toHaveLength(10);
+    ).toBe("HUMANS");
+    expect(document.querySelectorAll(".v7-mission-card")).toHaveLength(6);
     view.destroy();
   });
 
   it("Victory after the deadline for a star: the star is shown as missed", () => {
     const setup = required(
-      missionMatchSetupV7(required(missionByIdV7("FRONTIER_2")), "ORIGINAL"),
+      missionMatchSetupV7(required(missionByIdV7("HUMAN_2")), "ORIGINAL"),
     );
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
     const state = created.state;
-    // Won in round 19 (the star was for round 18), every own city kept.
+    // Won in round 15 (the star was for round 14), every own city kept.
     const fake = new FakeController(
       viewForV7(
         {
           ...state,
-          round: 19,
+          round: 15,
           outcome: {
             kind: "VICTORY",
             winnerId: state.humanPlayerId,
@@ -742,7 +672,7 @@ describe("Ruleset 7 mission dialogs", () => {
       ),
     ).toEqual([
       ["true", "Win the mission: earned"],
-      ["false", "Win by turn 18: missed"],
+      ["false", "Win by turn 14: missed"],
       ["true", "Lose no city: earned"],
     ]);
     view.destroy();
@@ -766,31 +696,18 @@ describe("Ruleset 7 mission dialogs", () => {
     }
   });
 
-  it("after the last built mission: the unlock, the outro, Retry, Campaign and Main menu", () => {
+  it("after a campaign's last mission: the outro, Retry, Campaign and Main menu", () => {
     const fake = new FakeController(
-      completeView("FRONTIER_10", "ORIGINAL", (view) => ({
+      completeView("HUMAN_6", "ORIGINAL", (view) => ({
         kind: "VICTORY",
         winnerId: view.humanPlayerId,
       })),
       {
         status: "OK",
-        completed: {
-          FRONTIER_1: won(),
-          FRONTIER_2: won(),
-          FRONTIER_3: won(),
-          FRONTIER_4: won(),
-          FRONTIER_5: won(),
-          FRONTIER_6: won(),
-          FRONTIER_7: won(),
-          FRONTIER_8: won(),
-          FRONTIER_9: won(),
-          FRONTIER_10: won(),
-        },
-        lastWin: {
-          missionId: "FRONTIER_10",
-          firstWin: true,
-          unlocked: ["CULT"],
-        },
+        completed: Object.fromEntries(
+          CHAPTER_HUMANS_V7.missions.map((entry) => [entry.missionId, won()]),
+        ),
+        lastWin: { missionId: "HUMAN_6", firstWin: true },
         diagnostic: null,
       },
     );
@@ -799,14 +716,12 @@ describe("Ruleset 7 mission dialogs", () => {
       document.querySelector<HTMLElement>("[data-v7-region='results']"),
     );
     expect(dialog.querySelector("h2")?.textContent).toBe("Mission complete");
-    expect(
-      dialog.querySelector("[data-v7-region='unlock-notice']")?.textContent,
-    ).toBe("New faction: Cultists");
+    // No faction notice: nothing is unlocked (pulp_wars-hmyk.22).
+    expect(dialog.querySelector("[data-v7-region='unlock-notice']")).toBeNull();
     expect(dialog.querySelector(".v7-campaign-outro")?.textContent).toBe(
-      CHAPTER_ONE_V7.outro,
+      CHAPTER_HUMANS_V7.outro,
     );
-    // Mission 10 is the last of part one (`pulp_wars-v642.4`): there is no
-    // Next mission to offer.
+    // Mission 6 is the campaign's last: there is no Next mission to offer.
     expect(
       [...dialog.querySelectorAll("button")].map((node) => node.textContent),
     ).toEqual(["Retry", "Campaign", "Main menu"]);
@@ -977,7 +892,11 @@ describe("Ruleset 7 mission objective in a match", () => {
       "TARGET:UNIT:boss",
       "ESCORT:UNIT:hero",
     ]);
-    expect(marks("FRONTIER_2")).toEqual(["GOAL:TILE:the Warrens"]);
+    expect(marks("HUMAN_2")).toEqual([
+      "GOAL:TILE:Mudford Toll",
+      "GOAL:TILE:Halfway Toll",
+      "GOAL:TILE:Kingsgate",
+    ]);
     // A skirmish has none, and no tracker.
     expect(marks("TEST_GROUNDS")).toEqual([]);
     expect(
@@ -985,8 +904,9 @@ describe("Ruleset 7 mission objective in a match", () => {
     ).toBeNull();
   });
 
-  it("missions 5 and 6: the tracker, the marks, the stars, and why each ends", () => {
-    // `pulp_wars-v642.2`: an escort against a clock, and a hold-out.
+  it("an escort and a hold-out: the tracker, the marks, the stars, and why each ends", () => {
+    // The Humans' missions 3 and 4: an escort against a clock, and a
+    // hold-out with an ally.
     const start = (missionId: string) => {
       const setup = required(
         missionMatchSetupV7(required(missionByIdV7(missionId))),
@@ -1044,67 +964,67 @@ describe("Ruleset 7 mission objective in a match", () => {
       });
     };
 
-    // Mission 5: the clock is the counter, the steps are in the sentence.
-    const road = start("FRONTIER_5");
+    // Mission 3: the clock is the counter, the steps are in the sentence.
+    const road = start("HUMAN_3");
     const roadView = viewForV7(road, road.humanPlayerId);
     const roadShown = shown(roadView);
     expect([roadShown.icon, roadShown.line, roadShown.counter]).toEqual([
       "move",
-      "Get Doctor Crane to the gate by turn 24.",
-      "24 turns",
+      "Get Mr. Pettigrew to Kingsbridge by turn 16.",
+      "16 turns",
     ]);
-    expect(roadShown.said).toContain("24 turns left.");
+    expect(roadShown.said).toContain("16 turns left.");
     expect(roadShown.said).toContain("8 steps to go.");
     expect(roadShown.said).not.toMatch(/\d\s*,\s*\d/);
-    // A flag on the gate, a star on the Doctor.
+    // A flag on Kingsbridge, a star on the clerk.
     expect(roadShown.marks).toEqual([
-      "GOAL:TILE:the Ironbraid Gate@14,2",
-      "ESCORT:UNIT:Doctor Crane@5,11",
+      "GOAL:TILE:Kingsbridge@13,2",
+      "ESCORT:UNIT:Mr. Pettigrew@4,11",
     ]);
     expect(
-      missionStarGoalsV7("FRONTIER_5", null).map((goal) => goal.text),
-    ).toEqual(["Win the mission", "Win by turn 20", "Lose no city"]);
+      missionStarGoalsV7("HUMAN_3", null).map((goal) => goal.text),
+    ).toEqual(["Win the mission", "Win by turn 13", "Lose no city"]);
     expect(ended(roadView, "VICTORY", "ESCORT_ARRIVED")).toBe(
-      "Doctor Crane made it.",
+      "Mr. Pettigrew made it.",
     );
     expect(ended(roadView, "DEFEAT", "ESCORT_LOST")).toBe(
-      "Doctor Crane was killed.",
+      "Mr. Pettigrew was killed.",
     );
     expect(ended(roadView, "DEFEAT", "OUT_OF_TIME")).toBe("Out of time.");
 
-    // Mission 6: fourteen turns, a shield on the gate, a star on the Thane.
-    const gate = start("FRONTIER_6");
-    const gateView = viewForV7(gate, gate.humanPlayerId);
-    const gateShown = shown(gateView);
-    expect([gateShown.icon, gateShown.line, gateShown.counter]).toEqual([
+    // Mission 4: twelve turns, a shield on the fort, a star on the clerk.
+    const fort = start("HUMAN_4");
+    const fortView = viewForV7(fort, fort.humanPlayerId);
+    const fortShown = shown(fortView);
+    expect([fortShown.icon, fortShown.line, fortShown.counter]).toEqual([
       "defense",
-      "Hold the Deep Gate for 14 turns.",
-      "14 turns",
+      "Hold Fort Hollow for 12 turns.",
+      "12 turns",
     ]);
-    expect(gateShown.marks).toEqual([
-      "DEFEND:TILE:the Deep Gate@5,6",
-      "ESCORT:UNIT:the Thane@5,6",
+    expect(fortShown.marks).toEqual([
+      "DEFEND:TILE:Fort Hollow@10,9",
+      "ESCORT:UNIT:Mr. Pettigrew@10,9",
     ]);
     expect(
-      missionStarGoalsV7("FRONTIER_6", null).map((goal) => goal.text),
-    ).toEqual(["Win the mission", "Lose no city", "Keep the Thane alive"]);
-    expect(ended(gateView, "VICTORY", "SURVIVED")).toBe("You held out.");
-    // The Deep Gate in an enemy's hands.
+      missionStarGoalsV7("HUMAN_4", null).map((goal) => goal.text),
+    ).toEqual(["Win the mission", "Lose no city", "Keep Mr. Pettigrew alive"]);
+    expect(ended(fortView, "VICTORY", "SURVIVED")).toBe("You held out.");
+    // Fort Hollow in an enemy's hands.
     const taker = required(
-      gate.turnOrder.find((id) => id !== gate.humanPlayerId),
+      fort.turnOrder.find((id) => id !== fort.humanPlayerId),
     );
     const fallen = viewForV7(
       {
-        ...gate,
-        cities: gate.cities.map((city) =>
-          city.at.x === 5 && city.at.y === 6
+        ...fort,
+        cities: fort.cities.map((city) =>
+          city.at.x === 10 && city.at.y === 9
             ? { ...city, ownerId: taker }
             : city,
         ),
       },
-      gate.humanPlayerId,
+      fort.humanPlayerId,
     );
-    expect(ended(fallen, "DEFEAT", "PLACE_LOST")).toBe("The Deep Gate fell.");
+    expect(ended(fallen, "DEFEAT", "PLACE_LOST")).toBe("Fort Hollow fell.");
   });
 });
 
@@ -1122,16 +1042,17 @@ describe("Ruleset 7 campaign progress recovery and reset", () => {
     expect(
       window.localStorage.getItem(CAMPAIGN_PROGRESS_STORAGE_KEY_V7),
     ).toBeNull();
-    // The campaign map again, and the prologue from its start.
-    expect(document.querySelectorAll(".v7-campaign-plate")).toHaveLength(10);
-    requiredButton('[data-action="campaign-open-frontier"]').click();
+    // The campaign map again, and the Humans from their start.
+    expect(document.querySelectorAll(".v7-campaign-plate")).toHaveLength(9);
+    requiredButton('[data-action="campaign-open-humans"]').click();
     await settle();
-    expect(document.querySelectorAll(".v7-mission-card")).toHaveLength(10);
+    expect(document.querySelectorAll(".v7-mission-card")).toHaveLength(6);
     app.destroy();
   });
 
   it("resets progress only after confirmation", async () => {
-    seedProgress({ FRONTIER_1: won(), FRONTIER_2: won() });
+    seedProgress({ HUMAN_1: won(), HUMAN_2: won() });
+    seedLegacyProgress({ FRONTIER_1: won() });
     const app = bootstrapRuleset7App(document);
     await openCampaign();
     requiredButton('[data-action="campaign-reset"]').click();
@@ -1145,7 +1066,7 @@ describe("Ruleset 7 campaign progress recovery and reset", () => {
     requiredButton('[data-action="campaign-reset-cancel"]').click();
     await settle();
     expect(
-      window.localStorage.getItem(LEGACY_CAMPAIGN_PROGRESS_STORAGE_KEY_V7),
+      window.localStorage.getItem(CAMPAIGN_PROGRESS_STORAGE_KEY_V7),
     ).not.toBeNull();
     requiredButton('[data-action="campaign-reset"]').click();
     await settle();
@@ -1157,21 +1078,13 @@ describe("Ruleset 7 campaign progress recovery and reset", () => {
     expect(
       window.localStorage.getItem(LEGACY_CAMPAIGN_PROGRESS_STORAGE_KEY_V7),
     ).toBeNull();
-    requiredButton('[data-action="campaign-open-frontier"]').click();
+    requiredButton('[data-action="campaign-open-humans"]').click();
     await settle();
     expect(
       [...document.querySelectorAll<HTMLElement>(".v7-mission-card")].map(
         (card) => card.dataset.status,
       ),
-    ).toEqual([
-      "open",
-      "locked",
-      "locked",
-      "locked",
-      ...CHAPTER_ONE_V7.missions
-        .slice(4)
-        .map((entry) => (entry.planned === undefined ? "locked" : "soon")),
-    ]);
+    ).toEqual(["open", "locked", "locked", "locked", "locked", "locked"]);
     app.destroy();
   });
 });
@@ -1338,10 +1251,4 @@ function focusables(): HTMLElement[] {
         (node.tagName === "SUMMARY" && node.parentElement === closed))
     );
   });
-}
-
-function requiredSelect(id: string): HTMLSelectElement {
-  const node = document.querySelector<HTMLSelectElement>(`#${id}`);
-  if (node === null) throw new Error(`Missing #${id}`);
-  return node;
 }

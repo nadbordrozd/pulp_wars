@@ -1,12 +1,12 @@
-import type { CampaignChapterV7 } from "./chapter-1";
+import type { CampaignChapterV7 } from "./chapter";
 
 /**
  * The Dwarf campaign, "The Bottomless" (`pulp_wars-hmyk.9`,
  * docs/product/SAGA.md sections 2.4 and 3.4): six missions of Thane
  * Brunhild Ironbraid's work to put a lid on the Bottomless, from the dead
  * miners of Copperstep to the night the Great Seal goes down over the Deep
- * Gate. Data only, in the shape of the prologue's chapter
- * (`./chapter-1.ts`); each mission's board, seats, objective and directives
+ * Gate. Data only, in the shape of a chapter
+ * (`./chapter.ts`); each mission's board, seats, objective and directives
  * live in its engine definition (`src/engine/v7/missions/dwarf-*.ts`).
  *
  * The briefings are the saga bible's, trimmed to the card; the hints state
@@ -18,9 +18,7 @@ export const CHAPTER_DWARVES_V7: CampaignChapterV7 = Object.freeze({
   title: "The Bottomless",
   intro:
     "Thane Brunhild Ironbraid cut the Deep Bell loose last autumn, and it fell down the Bottomless with a sound like a door slamming. Since then the mountain shakes every night, the dead climb out of the old workings, and every dwarf in the Hold can hear something breathing below.",
-  // Every mission seats you as the Dwarves (a fixed faction, no choice),
-  // so the chapter unlocks nothing for the prologue's faction choices.
-  startingFactions: Object.freeze([]),
+  // Every mission seats you as the Dwarves (a fixed faction, no choice).
   missions: Object.freeze([
     Object.freeze({
       missionId: "DWARF_1",
@@ -37,7 +35,6 @@ export const CHAPTER_DWARVES_V7: CampaignChapterV7 = Object.freeze({
       ]),
       closing:
         "The props hold. The dead lie down again, and the oldest of them, before he does, says one word: 'Deeper.'",
-      unlocks: Object.freeze([]),
       names: Object.freeze({
         COPPERSTEP: "Copperstep",
         TOBBIN: "Tobbin",
@@ -58,7 +55,6 @@ export const CHAPTER_DWARVES_V7: CampaignChapterV7 = Object.freeze({
       ]),
       closing:
         "The Peak is yours and the forges are lit. Chief Gnash of Whitefang, beaten this year by the living, the dead and now the dwarves, goes off to sulk at Mother Rime's door. Now the Thane must find out how big the lid has to be.",
-      unlocks: Object.freeze([]),
       names: Object.freeze({
         TUSK_CAMP: "Tusk Camp",
         GNASHS_CAMP: "Gnash's Camp",
@@ -80,7 +76,6 @@ export const CHAPTER_DWARVES_V7: CampaignChapterV7 = Object.freeze({
       ]),
       closing:
         "The bell lies on its side at the bottom of the world, without its tongue, resting on something smooth and grey and very large. As the lanterns come close, the something moves. It is an eyelid. The Thane climbs back up in silence and orders the lid made twice as thick.",
-      unlocks: Object.freeze([]),
       names: Object.freeze({
         THANE: "the Thane",
         TOBBIN: "Tobbin",
@@ -102,7 +97,6 @@ export const CHAPTER_DWARVES_V7: CampaignChapterV7 = Object.freeze({
       ]),
       closing:
         "The mothership comes down in the forge yard with a polite apology. The Thane sends the Martians home, by which she means to their colony at Red Dust, on foot. The forges go back to work on the Seal.",
-      unlocks: Object.freeze([]),
       names: Object.freeze({
         MOTHERSHIP: "the Mothership",
       }),
@@ -122,7 +116,6 @@ export const CHAPTER_DWARVES_V7: CampaignChapterV7 = Object.freeze({
       ]),
       closing:
         "The bolts come ashore. In the reeds a hooded man writes the ship's name in a small notebook.",
-      unlocks: Object.freeze([]),
       names: Object.freeze({
         ANVIL: "the Anvil",
         RIVER_LANDING: "the River Landing",
@@ -143,7 +136,6 @@ export const CHAPTER_DWARVES_V7: CampaignChapterV7 = Object.freeze({
       ]),
       closing:
         "The Seal comes down over the Bottomless with a boom that rattles teeth in Kingsport. 'It will hold,' says the Thane, 'until the stars pull on it.' Under the iron the bell lies silent, and beside the chain waits its tongue, bought from a goblin at a scandalous price.",
-      unlocks: Object.freeze([]),
       names: Object.freeze({
         THANE: "the Thane",
         DEEP_GATE: "the Deep Gate",

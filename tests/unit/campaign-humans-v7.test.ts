@@ -69,9 +69,7 @@ describe("The Marshal's Law", () => {
     for (const entry of CHAPTER_HUMANS_V7.missions) {
       expect(entry.planned, entry.missionId).toBeUndefined();
       expect(mission(entry.missionId).hidden, entry.missionId).toBeUndefined();
-      expect([...entry.unlocks]).toEqual([]);
     }
-    expect(CHAPTER_HUMANS_V7.startingFactions).toEqual(["ORIGINAL"]);
     expect(CHAPTER_HUMANS_V7.missions.map((entry) => entry.format)).toEqual([
       "CONQUEST",
       "CAPTURE",

@@ -1,5 +1,5 @@
 import type { FactionIdV7, UnitRoleIdV7 } from "../engine/v7/types";
-import { CHAPTER_ONE_V7, type CampaignChapterV7 } from "./chapter-1";
+import type { CampaignChapterV7 } from "./chapter";
 import { CHAPTER_CANDY_V7 } from "./chapter-candy";
 import { CHAPTER_CULT_V7 } from "./chapter-cult";
 import { CHAPTER_DINOSAURS_V7 } from "./chapter-dinosaurs";
@@ -12,11 +12,9 @@ import { CHAPTER_UNDEAD_V7 } from "./chapter-undead";
 
 /**
  * The campaign registry (`pulp_wars-hmyk.3`, docs/product/CAMPAIGN.md
- * section 14): the prologue, "The Hollow Frontier" (the ten-mission chapter
- * of part one), and the nine faction campaigns of the saga, which unlock
- * one another as a graph:
+ * section 14): the nine faction campaigns of the saga, which unlock one
+ * another as a graph:
  *
- * - the prologue is always open and is no one's prerequisite;
  * - tier 1, the Humans and the Undead, are open from the start;
  * - tier 2, the Dinosaurs, Martians, Goblins and Dwarves, open once both
  *   campaigns of tier 1 are completed;
@@ -32,9 +30,12 @@ import { CHAPTER_UNDEAD_V7 } from "./chapter-undead";
  * campaign bead (`pulp_wars-hmyk.4` to `.12`) fills in its entry here: the
  * title, the subtitle, and a chapter of six missions. The art bead
  * (`pulp_wars-hmyk.13`) set every `picture`.
+ *
+ * The prologue, "The Hollow Frontier" (`FRONTIER`, ten missions), was
+ * retired by `pulp_wars-hmyk.22` (CAMPAIGN.md section 24): its stored
+ * progress is kept and ignored, and its ID is never reused.
  */
 export const CAMPAIGN_IDS_V7 = Object.freeze([
-  "FRONTIER",
   "HUMANS",
   "UNDEAD",
   "DINOSAURS",
@@ -49,10 +50,10 @@ export const CAMPAIGN_IDS_V7 = Object.freeze([
 export type CampaignIdV7 = (typeof CAMPAIGN_IDS_V7)[number];
 
 /**
- * Where a campaign stands on the map: 0 the prologue, set apart; 1 the two
- * openers; 2 the middle four; 3 the last three.
+ * Where a campaign stands on the map: 1 the two openers; 2 the middle four;
+ * 3 the last three.
  */
-export type CampaignTierV7 = 0 | 1 | 2 | 3;
+export type CampaignTierV7 = 1 | 2 | 3;
 
 export interface CampaignDefinitionV7 {
   readonly id: CampaignIdV7;
@@ -110,20 +111,8 @@ function factionCampaign(
   });
 }
 
-/** Every campaign, in map order: the prologue, then tier by tier. */
+/** Every campaign, in map order, tier by tier. */
 export const CAMPAIGNS_V7: readonly CampaignDefinitionV7[] = Object.freeze([
-  Object.freeze({
-    id: "FRONTIER",
-    faction: "ORIGINAL",
-    name: "the Frontier",
-    title: "The Hollow Frontier",
-    subtitle: "Prologue",
-    tier: 0,
-    prerequisites: Object.freeze([]),
-    picture: "campaign-frontier",
-    placeholderRole: "GUARD",
-    chapter: CHAPTER_ONE_V7,
-  } satisfies CampaignDefinitionV7),
   // The Humans campaign (`pulp_wars-hmyk.4`, docs/product/SAGA.md 2.1).
   Object.freeze({
     ...factionCampaign("HUMANS", "ORIGINAL", "Humans", "Human", 1),

@@ -50,7 +50,7 @@ const cache = new Map<string, MissionEndFixtureV7>();
 
 /** The human's Normal AI wins against an AI seat that only ends turns. */
 export function missionWinFixtureV7(
-  missionId = "FRONTIER_1",
+  missionId = "HUMAN_1",
   faction?: FactionIdV7,
 ): MissionEndFixtureV7 & { readonly winningCommand: CommandV7 } {
   const fixture = playMissionV7(missionId, faction, "HUMAN");
@@ -59,7 +59,7 @@ export function missionWinFixtureV7(
 
 /** The Normal AI seat beats a human who only ends turns. */
 export function missionLossFixtureV7(
-  missionId = "FRONTIER_1",
+  missionId = "HUMAN_1",
 ): MissionEndFixtureV7 {
   return playMissionV7(missionId, undefined, "AI");
 }
@@ -135,7 +135,7 @@ function playMissionV7(
 /** The autosave source of the state just before the winning command. */
 export function missionNearWinSaveV7(
   savedAt: string,
-  missionId = "FRONTIER_1",
+  missionId = "HUMAN_1",
 ): { readonly source: string; readonly winningCommand: CommandV7 } {
   const fixture = missionWinFixtureV7(missionId);
   return {
@@ -147,7 +147,7 @@ export function missionNearWinSaveV7(
 /** The autosave source of the finished, won match (outcome `VICTORY`). */
 export function missionWonSaveV7(
   savedAt: string,
-  missionId = "FRONTIER_1",
+  missionId = "HUMAN_1",
 ): string {
   return JSON.stringify(
     createSaveEnvelopeV7(missionWinFixtureV7(missionId).after, savedAt),
@@ -157,7 +157,7 @@ export function missionWonSaveV7(
 /** The autosave source of the finished, lost match (outcome `DEFEAT`). */
 export function missionLostSaveV7(
   savedAt: string,
-  missionId = "FRONTIER_1",
+  missionId = "HUMAN_1",
 ): string {
   return JSON.stringify(
     createSaveEnvelopeV7(missionLossFixtureV7(missionId).after, savedAt),

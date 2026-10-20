@@ -1,11 +1,11 @@
-import type { CampaignChapterV7 } from "./chapter-1";
+import type { CampaignChapterV7 } from "./chapter";
 
 /**
  * The Goblin campaign, "The Big Score" (`pulp_wars-hmyk.8`,
  * docs/product/SAGA.md sections 2.3 and 3.3): six missions of Grubnak the
  * Loud's heist, from the Baron's last fort on the mainland to the getaway
  * through the Hollow Hills to the Ironbraid Gate. Data only, in the shape of
- * the prologue's chapter (`./chapter-1.ts`); each mission's board, seats,
+ * a chapter (`./chapter.ts`); each mission's board, seats,
  * objective and directives live in its engine definition
  * (`src/engine/v7/missions/goblin-*.ts`).
  *
@@ -18,9 +18,7 @@ export const CHAPTER_GOBLINS_V7: CampaignChapterV7 = Object.freeze({
   title: "The Big Score",
   intro:
     "Peace has been very bad for Grubnak the Loud. The Warrens are tidy, the wolves are fat, and Marshal Steele keeps sending him thank-you letters. Then a rumour comes up the river: Baron Kessler has run to his island with a vault full of everybody's money.",
-  // Every mission seats you as the Goblins (a fixed faction, no choice),
-  // so the chapter unlocks nothing for the prologue's faction choices.
-  startingFactions: Object.freeze([]),
+  // Every mission seats you as the Goblins (a fixed faction, no choice).
   missions: Object.freeze([
     Object.freeze({
       missionId: "GOBLIN_1",
@@ -37,7 +35,6 @@ export const CHAPTER_GOBLINS_V7: CampaignChapterV7 = Object.freeze({
       ]),
       closing:
         "Snikkit reads the map aloud: Port Kessler, the vault under the harbour, and a list. Gold, silver, the good cutlery, and 'one bell-tongue, dwarf-made'. Nobody knows what a bell-tongue is. Grubnak wants it anyway.",
-      unlocks: Object.freeze([]),
       names: Object.freeze({
         GRUBNAK: "Grubnak the Loud",
         SNIKKIT: "Snikkit",
@@ -58,7 +55,6 @@ export const CHAPTER_GOBLINS_V7: CampaignChapterV7 = Object.freeze({
       ]),
       closing:
         "The boats leak, the powder is damp, and the crew is singing. Snikkit has drawn the course across the Lost Sea in crayon.",
-      unlocks: Object.freeze([]),
       names: Object.freeze({
         MOGGA: "Mogga the Ogre",
         WRECKERS_COVE: "Wreckers' Cove",
@@ -79,7 +75,6 @@ export const CHAPTER_GOBLINS_V7: CampaignChapterV7 = Object.freeze({
       ]),
       closing:
         "Snapjaw sinks with a burp. On Egg Rock, Snikkit stands on a barrel and looks across the bay at Port Kessler: walls, guns, and on the hill above the town a cannon pointed at the moon.",
-      unlocks: Object.freeze([]),
       names: Object.freeze({
         SNAPJAW: "Snapjaw",
       }),
@@ -99,7 +94,6 @@ export const CHAPTER_GOBLINS_V7: CampaignChapterV7 = Object.freeze({
       ]),
       closing:
         "The vault is full: gold, silver, the good cutlery, and a long iron crate marked 'bell-tongue'. The Baron escapes into the jungle with his hat and his debts and nothing else. The crate hums.",
-      unlocks: Object.freeze([]),
       names: Object.freeze({
         PORT_KESSLER: "Port Kessler",
         SNIKKIT: "Snikkit",
@@ -120,7 +114,6 @@ export const CHAPTER_GOBLINS_V7: CampaignChapterV7 = Object.freeze({
       ]),
       closing:
         "On the sixteenth night the rafts are ready, and the crew sails home with the gold, the crate, and three saucer pilots who surrendered to Mogga. On the quay at home a polite man in a grey coat is waiting.",
-      unlocks: Object.freeze([]),
       names: Object.freeze({
         MOGGA: "Mogga the Ogre",
         SMUGGLERS_ROCK: "Smuggler's Rock",
@@ -141,7 +134,6 @@ export const CHAPTER_GOBLINS_V7: CampaignChapterV7 = Object.freeze({
       ]),
       closing:
         "Thane Ironbraid pays in gold, in beer, and in a title: Grubnak the Loud, Honorary Dwarf. She takes the clapper down into the Deep Gate. Snikkit, for no reason he can name, starts a notebook about the polite man in grey.",
-      unlocks: Object.freeze([]),
       names: Object.freeze({
         GETAWAY: "the getaway cart",
         IRONBRAID_GATE: "the Ironbraid Gate",

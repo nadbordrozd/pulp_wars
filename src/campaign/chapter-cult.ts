@@ -1,4 +1,4 @@
-import type { CampaignChapterV7 } from "./chapter-1";
+import type { CampaignChapterV7 } from "./chapter";
 
 /**
  * The Cult campaign, "The Long Night" (`pulp_wars-hmyk.12`,
@@ -6,7 +6,7 @@ import type { CampaignChapterV7 } from "./chapter-1";
  * missions of Mr. Silas Pettigrew rising from the Grey Lodge's minute-taker
  * to the Hierophant who holds the Herald's strand on the Long Night, from
  * the Ranger in the hedge at Greyhood to the capture of the Deep Gate. Data
- * only, in the shape of the prologue's chapter (`./chapter-1.ts`); each
+ * only, in the shape of a chapter (`./chapter.ts`); each
  * mission's board, seats, objective and directives live in its engine
  * definition (`src/engine/v7/missions/cult-*.ts`).
  *
@@ -21,9 +21,7 @@ export const CHAPTER_CULT_V7: CampaignChapterV7 = Object.freeze({
   title: "The Long Night",
   intro:
     "Silas Pettigrew was a junior clerk in the Lodge of the Unblinking Eye for nineteen years, and a junior clerk to Marshal Steele for six months. He knelt when everybody knelt and kept the minutes. On the Long Night the stars will be right for the last time in three hundred years, and Mr. Pettigrew has decided it is time somebody was promoted.",
-  // Every mission seats you as the Cult (a fixed faction, no choice), so
-  // the chapter unlocks nothing for the prologue's faction choices.
-  startingFactions: Object.freeze([]),
+  // Every mission seats you as the Cult (a fixed faction, no choice).
   missions: Object.freeze([
     Object.freeze({
       missionId: "CULT_1",
@@ -39,7 +37,6 @@ export const CHAPTER_CULT_V7: CampaignChapterV7 = Object.freeze({
       ]),
       closing:
         "Sergeant Hobb was lost in the marsh. Marshal Steele signs the letter to his mother that Mr. Pettigrew drafted for her. It is a very kind letter.",
-      unlocks: Object.freeze([]),
       names: Object.freeze({
         PETTIGREW: "Mr. Pettigrew",
         HOBB: "Sergeant Hobb",
@@ -62,7 +59,6 @@ export const CHAPTER_CULT_V7: CampaignChapterV7 = Object.freeze({
       ]),
       closing:
         "One note in the Lullaby is changed, in a hand so like the Marquis's that he will never know. In the same drawer Mr. Pettigrew finds a torn page in the Founder's own hand. He files it in his pocket, unread, for later. Mr. Pettigrew always files things for later.",
-      unlocks: Object.freeze([]),
       names: Object.freeze({
         PETTIGREW: "Mr. Pettigrew",
         GREYHOOD: "Greyhood",
@@ -84,7 +80,6 @@ export const CHAPTER_CULT_V7: CampaignChapterV7 = Object.freeze({
       ]),
       closing:
         "The egg comes ashore at Lamplight Cove, warm and humming. Mr. Pettigrew has it put in a basket by the fire, and knits it a small cosy.",
-      unlocks: Object.freeze([]),
       names: Object.freeze({
         GALLEON: "the Galleon of the Eye",
         LAMPLIGHT_COVE: "Lamplight Cove",
@@ -106,7 +101,6 @@ export const CHAPTER_CULT_V7: CampaignChapterV7 = Object.freeze({
       ]),
       closing:
         "The last bolt is wax by the twelfth day, and the brethren slip away in the snow. The dwarves count every bolt twice and find them all present. Grubnak, scratching his head, swears that one of them smelled of candles.",
-      unlocks: Object.freeze([]),
       names: Object.freeze({
         PETTIGREW: "Mr. Pettigrew",
         SEAL_WORKS: "the Seal-works",
@@ -128,7 +122,6 @@ export const CHAPTER_CULT_V7: CampaignChapterV7 = Object.freeze({
       ]),
       closing:
         "The star falls on the summit at midnight, and the Winter Crown breaks into a thousand pieces of hail. By morning the snow on the Hollow Mountain is melting. The Ice Folk carry the pieces down, and say, as Ice Folk do, that Mother Rime will be back with the first snow.",
-      unlocks: Object.freeze([]),
       names: Object.freeze({
         PETTIGREW: "Mr. Pettigrew",
         VOLE: "Sister Agatha Vole",
@@ -152,7 +145,6 @@ export const CHAPTER_CULT_V7: CampaignChapterV7 = Object.freeze({
       ]),
       closing:
         "On the wrong note the Hollow Mountain opens its eye, and up the shaft comes the Herald. Holding its strand, Mr. Pettigrew reads the page in his pocket: 'It eats the door first.' He tells it to sit. It sits on the shaft, and at dawn the window shuts for three hundred years.",
-      unlocks: Object.freeze([]),
       names: Object.freeze({
         PETTIGREW: "Mr. Pettigrew",
         DEEP_GATE: "the Deep Gate",

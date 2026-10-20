@@ -1,10 +1,10 @@
-import type { CampaignChapterV7 } from "./chapter-1";
+import type { CampaignChapterV7 } from "./chapter";
 
 /**
  * The Humans campaign, "The Marshal's Law" (`pulp_wars-hmyk.4`,
  * docs/product/SAGA.md sections 2.1 and 3.1): six missions of Marshal
  * Steele's war on Baron Kessler in the year after the Lodge fell. Data
- * only, in the shape of the prologue's chapter (`./chapter-1.ts`); each
+ * only, in the shape of a chapter (`./chapter.ts`); each
  * mission's board, seats, objective and directives live in its engine
  * definition (`src/engine/v7/missions/human-*.ts`).
  *
@@ -17,7 +17,6 @@ export const CHAPTER_HUMANS_V7: CampaignChapterV7 = Object.freeze({
   title: "The Marshal's Law",
   intro:
     "The Lodge has fallen and the Crown has made Vera Steele Marshal of the Frontier. Her first winter of peace is ending badly: the ground shakes, the dead won't stay down, and Baron Kessler has bought himself a royal writ.",
-  startingFactions: Object.freeze(["ORIGINAL"] as const),
   missions: Object.freeze([
     Object.freeze({
       missionId: "HUMAN_1",
@@ -34,7 +33,6 @@ export const CHAPTER_HUMANS_V7: CampaignChapterV7 = Object.freeze({
       ]),
       closing:
         "The barrow is quiet. In the mud a Ranger finds a grey hood, neatly folded. Mr. Pettigrew files it under Lost Property.",
-      unlocks: Object.freeze([]),
     }),
     Object.freeze({
       missionId: "HUMAN_2",
@@ -51,7 +49,6 @@ export const CHAPTER_HUMANS_V7: CampaignChapterV7 = Object.freeze({
       ]),
       closing:
         "The forts are yours, and the Crown has declared you an outlaw. Mr. Pettigrew has kept copies of everything. 'The Baron's accounts, Marshal. They do not add up.'",
-      unlocks: Object.freeze([]),
       names: Object.freeze({
         MUDFORD: "Mudford Toll",
         HALFWAY: "Halfway Toll",
@@ -73,7 +70,6 @@ export const CHAPTER_HUMANS_V7: CampaignChapterV7 = Object.freeze({
       ]),
       closing:
         "The judge reads the ledgers and signs a warrant for the Baron. Kessler answers it as he answers everything: he hires more men, and a grey-hooded lodge, it seems, is for hire.",
-      unlocks: Object.freeze([]),
       names: Object.freeze({
         PETTIGREW: "Mr. Pettigrew",
         KINGSBRIDGE: "Kingsbridge",
@@ -94,7 +90,6 @@ export const CHAPTER_HUMANS_V7: CampaignChapterV7 = Object.freeze({
       ]),
       closing:
         "The dead arrive on the seventh day, bowing. The Grey Lodge scatters and the Whitefang go home to sulk. But the Baron has closed the river mouth with his fleet, and not a sack of grain will reach the Frontier this spring.",
-      unlocks: Object.freeze([]),
       names: Object.freeze({
         FORT_HOLLOW: "Fort Hollow",
         PETTIGREW: "Mr. Pettigrew",
@@ -115,7 +110,6 @@ export const CHAPTER_HUMANS_V7: CampaignChapterV7 = Object.freeze({
       ]),
       closing:
         "The Golden Goose goes down with a sound like a dropped till. Unpaid, the Redcap fleet scatters, and every hired sword on the Frontier falls back on the one place still paying: Kessler Hall.",
-      unlocks: Object.freeze([]),
       names: Object.freeze({ GOLDEN_GOOSE: "the Golden Goose" }),
     }),
     Object.freeze({
@@ -133,7 +127,6 @@ export const CHAPTER_HUMANS_V7: CampaignChapterV7 = Object.freeze({
       ]),
       closing:
         "The Hall falls, but the Baron has slipped down the river to his island. In his strongroom lie two ledgers, his payments to the Grey Lodge and theirs to him, in one small, tidy hand. Mr. Pettigrew offers to file them.",
-      unlocks: Object.freeze([]),
       names: Object.freeze({ KESSLER_HALL: "Kessler Hall" }),
     }),
   ]),

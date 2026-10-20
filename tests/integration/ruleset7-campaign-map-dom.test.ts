@@ -96,19 +96,15 @@ function tapTitle(times: number): void {
 }
 
 describe("Ruleset 7 campaign map", () => {
-  it("shows the prologue apart and three tiers joined by lines; the openers open, the rest locked", async () => {
+  it("shows three tiers joined by lines, and no prologue; the openers open, the rest locked", async () => {
     const app = bootstrapRuleset7App(document);
     await openMap();
     const map = required(
       document.querySelector<HTMLElement>("[data-v7-region='campaign-map']"),
     );
-    expect(
-      [
-        ...map.querySelectorAll<HTMLElement>(
-          ".v7-campaign-prologue .v7-campaign-plate",
-        ),
-      ].map((node) => node.dataset.campaign),
-    ).toEqual(["FRONTIER"]);
+    // The Hollow Frontier was retired (pulp_wars-hmyk.22): nine plates.
+    expect(map.querySelector(".v7-campaign-prologue")).toBeNull();
+    expect(map.querySelectorAll(".v7-campaign-plate")).toHaveLength(9);
     expect(
       [...map.querySelectorAll<HTMLElement>(".v7-campaign-tier")].map(
         (tier) => [
@@ -124,7 +120,6 @@ describe("Ruleset 7 campaign map", () => {
       ["Last campaigns", ["ICE_FOLK", "CULT", "CANDY"]],
     ]);
     expect(plates()).toEqual({
-      FRONTIER: "open",
       HUMANS: "open",
       UNDEAD: "open",
       DINOSAURS: "locked",
@@ -217,7 +212,6 @@ describe("Ruleset 7 campaign map", () => {
     const two = bootstrapRuleset7App(document);
     await openMap();
     expect(plates()).toEqual({
-      FRONTIER: "open",
       HUMANS: "done",
       UNDEAD: "done",
       DINOSAURS: "open",
@@ -270,7 +264,7 @@ describe("Ruleset 7 campaign map", () => {
       ["TEST_GROUNDS", "open"],
       ["TEST_RUSH", "locked"],
     ]);
-    // No faction roster: this campaign unlocks no faction.
+    // No faction roster: no campaign unlocks a faction.
     expect(document.querySelector(".v7-campaign-roster")).toBeNull();
     requiredButton('[data-action="mission-test_grounds"]').click();
     await settle();
@@ -278,6 +272,9 @@ describe("Ruleset 7 campaign map", () => {
       document.querySelector<HTMLElement>("[data-v7-region='briefing']")
         ?.dataset.missionId,
     ).toBe("TEST_GROUNDS");
+    expect(
+      document.querySelector("[data-v7-region='briefing-unlock']"),
+    ).toBeNull();
     requiredButton('[data-action="campaign-back"]').click();
     await settle();
     expect(document.querySelectorAll(".v7-mission-card")).toHaveLength(2);
@@ -286,6 +283,45 @@ describe("Ruleset 7 campaign map", () => {
     expect(document.activeElement?.getAttribute("data-action")).toBe(
       "campaign-open-humans",
     );
+    app.destroy();
+  });
+
+  it("offers a choice mission's whole faction list with no progress, and launches the chosen one", async () => {
+    // TEST_GROUNDS (the fixture Humans' first mission) offers Human or
+    // Goblin to seat 0. No faction is locked (pulp_wars-hmyk.22): both are
+    // offered on a fresh profile, without the cheat.
+    const app = bootstrapRuleset7App(document);
+    await openMap();
+    plate("HUMANS").click();
+    await settle();
+    requiredButton('[data-action="mission-test_grounds"]').click();
+    await settle();
+    const choice = required(
+      document.querySelector<HTMLSelectElement>("#v7-campaign-faction"),
+    );
+    expect([...choice.options].map((option) => option.value)).toEqual([
+      "ORIGINAL",
+      "GOBLIN",
+    ]);
+    expect([...choice.options].map((option) => option.textContent)).toEqual([
+      "Human",
+      "Goblin",
+    ]);
+    expect(choice.closest("label")?.textContent).toContain("You lead");
+    choice.value = "GOBLIN";
+    choice.dispatchEvent(new Event("change", { bubbles: true }));
+    expect(
+      document.querySelector<HTMLElement>(
+        ".v7-briefing-lead-emblem .v7-faction-emblem",
+      )?.dataset.faction,
+    ).toBe("GOBLIN");
+    requiredButton('[data-action="campaign-start"]').click();
+    await waitUntil(() => app.controller.snapshot().phase === "ACTIVE");
+    expect(app.controller.snapshot().view?.setup).toMatchObject({
+      mapType: "MISSION",
+      mission: { id: "TEST_GROUNDS" },
+    });
+    expect(app.controller.snapshot().view?.setup.factions[0]).toBe("GOBLIN");
     app.destroy();
   });
 
@@ -364,7 +400,6 @@ describe("Ruleset 7 campaign map", () => {
       "1",
     );
     expect(plates()).toEqual({
-      FRONTIER: "open",
       HUMANS: "open",
       UNDEAD: "open",
       DINOSAURS: "open",

@@ -7,15 +7,18 @@ PixelLab.
 
 ## What they are
 
-One small opaque scene per campaign, ten in all: the prologue and the nine
-faction campaigns of the [saga](../product/SAGA.md). Each shows the
+One small opaque scene per campaign, nine in all: the nine faction
+campaigns of the [saga](../product/SAGA.md). (The prologue's, "The Hollow
+Frontier", was a tenth; it left the game with the prologue,
+`pulp_wars-hmyk.22`: its baked master and manifest entry are gone, and its
+recipes and records in `scripts/art/campaign-pictures/` stay as the
+generation history.) Each shows the
 campaign's protagonist or emblematic place, in the house
 [bold chibi](ART_DIRECTION.md) pixel style, in the spirit of the small
 painted scenes of the Heroes of Might and Magic III campaign screen.
 
 | Campaign                   | Picture                                                              |
 | -------------------------- | -------------------------------------------------------------------- |
-| The Hollow Frontier        | a Ranger guard before the birch-log fort, the mountain glowing green |
 | Humans, The Marshal's Law  | Marshal Steele rides up the road to Kessler Hall                     |
 | Undead, The Long Sleep     | the Ashen Marquis sits up in his coffin with the Lullaby             |
 | Dinosaurs, The Egg Thief   | the Old Queen over her nest of eggs on the island                    |
@@ -34,8 +37,7 @@ shaft is the otherworldly part.
 - **Canvas:** 128 x 96 (4:3), opaque, generated at that size. Masters in
   `public/assets/chibi/campaign/campaign-<id>.png`.
 - **A tier's plate** shows it 1:1 (8rem) and shrinks it to the plate's
-  width when narrower (three across a phone, about 0.65x). The prologue's
-  wide plate shows it 1:1 beside its title.
+  width when narrower (three across a phone, about 0.65x).
 - **A mission list's head** shows it 1:1, and 2x (16rem) on a screen 48rem
   or wider.
 - `image-rendering: pixelated`, in the portrait's ink frame.

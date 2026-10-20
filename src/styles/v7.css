@@ -1632,7 +1632,6 @@
 }
 
 .v7-mission-list,
-.v7-campaign-factions,
 .v7-briefing-hints {
   margin: 0;
   padding: 0;
@@ -1747,29 +1746,6 @@
 .v7-faction-emblem > .v7-undead-art {
   width: 100%;
   height: 100%;
-}
-
-.v7-campaign-roster {
-  display: grid;
-  gap: 0.5rem;
-}
-
-.v7-campaign-roster h3 {
-  color: var(--pw-text-2);
-  font-size: var(--pw-fs-sm);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.v7-campaign-factions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-}
-
-.v7-campaign-faction[data-unlocked="false"] {
-  filter: grayscale(1);
-  opacity: 0.45;
 }
 
 .v7-campaign-settings summary {
@@ -1915,8 +1891,7 @@
 /* ---------- Campaign map (pulp_wars-hmyk.3) ---------- */
 
 /*
- * The prologue set apart, then three tiers of plates joined by the lines
- * of what unlocks what. A plate is a Control: the campaign's picture on a
+ * Three tiers of plates joined by the lines of what unlocks what. A plate is a Control: the campaign's picture on a
  * framed plate, its title and its progress. A closed plate is greyed with
  * a lock (Unavailable but explained).
  */
@@ -1925,18 +1900,12 @@
   gap: 0.9rem;
 }
 
-.v7-campaign-prologue,
 .v7-campaign-tier {
   display: grid;
   gap: 0.6rem;
   margin: 0;
   padding: 0;
   list-style: none;
-}
-
-.v7-campaign-prologue {
-  padding-bottom: 0.9rem;
-  border-bottom: var(--pw-line-w-sm) dashed var(--pw-line-soft);
 }
 
 .v7-campaign-tier {
@@ -1992,16 +1961,6 @@
 
 .v7-campaign-plate[data-status="soon"] {
   border-style: dashed;
-}
-
-.v7-campaign-plate-wide {
-  grid-template-columns: auto minmax(0, 1fr);
-  grid-template-rows: auto;
-  gap: 0.8rem;
-  align-items: center;
-  justify-items: start;
-  padding: 0.55rem 0.8rem 0.55rem 0.55rem;
-  text-align: left;
 }
 
 /* The picture: a framed plate in the faction's colour (a stripe of it). */
@@ -2062,14 +2021,6 @@
   min-width: 0;
 }
 
-.v7-campaign-plate-kicker {
-  color: var(--pw-text-2);
-  font-size: var(--pw-fs-xs);
-  font-weight: var(--pw-fw-bold);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
 .v7-campaign-plate-title {
   font-size: var(--pw-fs-sm);
   font-weight: var(--pw-fw-heavy);
@@ -2081,10 +2032,6 @@
   margin-top: 0.6rem;
 }
 
-.v7-campaign-plate-wide .v7-campaign-plate-title {
-  font-size: var(--pw-fs-lg);
-}
-
 .v7-campaign-plate-state {
   display: flex;
   flex-wrap: wrap;
@@ -2093,10 +2040,6 @@
   justify-content: center;
   color: var(--pw-text-2);
   font-size: var(--pw-fs-xs);
-}
-
-.v7-campaign-plate-wide .v7-campaign-plate-state {
-  justify-content: start;
 }
 
 .v7-campaign-plate[data-status="done"] .v7-campaign-plate-state {
@@ -2233,11 +2176,6 @@
     height: 3.5rem;
   }
 
-  .v7-campaign-plate-wide .v7-campaign-portrait {
-    width: 4rem;
-    height: 4rem;
-  }
-
   .v7-campaign-plate {
     padding-inline: 0.3rem;
   }
@@ -2254,8 +2192,7 @@
  * size at the head of the mission list on a wide screen. Locked and coming
  * soon plates grey it like the portrait above.
  */
-.v7-campaign-picture > .v7-campaign-scene,
-.v7-campaign-plate-wide .v7-campaign-picture > .v7-campaign-scene {
+.v7-campaign-picture > .v7-campaign-scene {
   display: block;
   width: 8rem;
   height: auto;
@@ -2265,20 +2202,17 @@
 }
 
 /* A tier's plate: the picture takes the plate's width, at most 1:1. */
-.v7-campaign-plate:not(.v7-campaign-plate-wide) {
+.v7-campaign-plate {
   grid-template-columns: minmax(0, 1fr);
 }
 
-.v7-campaign-plate:not(.v7-campaign-plate-wide)
-  .v7-campaign-picture:has(> .v7-campaign-scene) {
+.v7-campaign-plate .v7-campaign-picture:has(> .v7-campaign-scene) {
   width: 100%;
   min-width: 0;
   justify-items: center;
 }
 
-.v7-campaign-plate:not(.v7-campaign-plate-wide)
-  .v7-campaign-picture
-  > .v7-campaign-scene {
+.v7-campaign-plate .v7-campaign-picture > .v7-campaign-scene {
   width: 100%;
   max-width: 8rem;
 }
@@ -2316,7 +2250,7 @@
 .v7-mission-card {
   grid-template-areas:
     "number name sides"
-    "number state unlock";
+    "number state .";
 }
 
 /* A mission that is designed but not built: listed, never opened. */
@@ -2380,21 +2314,6 @@
   height: 2.4rem;
 }
 
-.v7-mission-unlock {
-  display: flex;
-  grid-area: unlock;
-  gap: 0.3rem;
-  align-items: center;
-  justify-content: flex-end;
-  color: var(--pw-text-2);
-  font-size: var(--pw-fs-sm);
-  font-weight: var(--pw-fw-bold);
-}
-
-.v7-mission-unlock[data-unlocked="true"] {
-  color: var(--pw-teal);
-}
-
 .v7-briefing-objective .v7-ui-icon {
   align-self: center;
   width: 1.3rem;
@@ -2434,20 +2353,6 @@
 
 .v7-briefing-opponent span:not(.v7-mission-versus, .v7-faction-emblem) {
   font-weight: var(--pw-fw-bold);
-}
-
-.v7-briefing-unlock {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-  align-items: center;
-  color: var(--pw-text-2);
-  font-size: var(--pw-fs-sm);
-}
-
-.v7-briefing-unlock strong {
-  color: var(--pw-text);
-  font-size: var(--pw-fs-md);
 }
 
 .v7-mission-cause {
@@ -2511,13 +2416,8 @@
     grid-template-areas:
       "number name"
       "number state"
-      "number sides"
-      "number unlock";
+      "number sides";
     grid-template-columns: 2.2rem minmax(0, 1fr);
-  }
-
-  .v7-mission-unlock {
-    justify-content: flex-start;
   }
 }
 

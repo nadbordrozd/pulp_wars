@@ -38,6 +38,7 @@ import {
   type MissionDefinitionV7,
 } from "../../src/engine/index";
 import {
+  REMOVED_MISSION_DIAGNOSTIC_V7,
   STALE_MISSION_DIAGNOSTIC_V7,
   createSaveEnvelopeV7,
   parseSaveV7,
@@ -86,66 +87,6 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
   // A GUARD whose others assault (`pulp_wars-v642.10`).
   "TEST_GUARD_RAID@1:ORIGINAL":
     "e76f3f18fa2fc91c1af603b1effe78f374d1240cc3bca9ba1dd16c8d59f9b65e",
-  // Chapter One (`pulp_wars-68k.4`).
-  // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 2.
-  // Natural maps and objectives (`pulp_wars-v642.1`): revision 3.
-  "FRONTIER_1@4:ORIGINAL":
-    "395f2a0474bbdc2085ab047d359da76ccfd25f2e90df86de4def525c2443a1d6",
-  // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 2.
-  // Natural maps and objectives (`pulp_wars-v642.1`): revision 3.
-  // The campaign difficulty pass (`pulp_wars-v642.7`): revision 4.
-  "FRONTIER_2@4:ORIGINAL":
-    "ae50b8841ba0ad5b9e9cc54df3df67b50fc005ae5681594d29893fa9e9720cb7",
-  // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 2.
-  // Natural maps and objectives (`pulp_wars-v642.1`): revision 3.
-  // The campaign difficulty pass (`pulp_wars-v642.7`): revision 4.
-  // The danger pass (`pulp_wars-v642.10`): revision 5.
-  "FRONTIER_3@6:GOBLIN":
-    "f54d2739467d7766cd53c4110bfbcfa9685faff46986a61307f00ac00b9cf3f2",
-  // Revision 2 (`pulp_wars-68k.6`): Sawmilling forbidden, two starting siege
-  // units for you, a Skeleton in the Lich's place.
-  // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 3.
-  // Natural maps and objectives (`pulp_wars-v642.1`): revision 4.
-  // The campaign difficulty pass (`pulp_wars-v642.7`): revision 5.
-  // The danger pass (`pulp_wars-v642.10`): revision 6.
-  "FRONTIER_4@7:ORIGINAL":
-    "6d7001fedc26b73409b913b1c0259bc426d3b1a060cc1bc24ea08263711bf42a",
-  // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 3.
-  // Natural maps and objectives (`pulp_wars-v642.1`): revision 4.
-  // The campaign difficulty pass (`pulp_wars-v642.7`): revision 5.
-  // The danger pass (`pulp_wars-v642.10`): revision 6.
-  "FRONTIER_4@7:GOBLIN":
-    "467f923ffd7507c76e1c95158deb6102cb3aed6f552f80cd16c72622d268a9eb",
-  // Missions 5 and 6 (`pulp_wars-v642.2`).
-  // Campaign difficulty pass B (`pulp_wars-v642.8`): revision 2.
-  // The danger pass (`pulp_wars-v642.10`): revision 3.
-  "FRONTIER_5@4:UNDEAD":
-    "2c49e2e236c0b5d84aab66f4533d6d7549ef59d05fec58dd8f874dba835acec4",
-  // Campaign difficulty pass B (`pulp_wars-v642.8`): revision 2.
-  "FRONTIER_6@3:DWARF":
-    "457b0fafa951d2708d6af23c83242ebc1411d8f7cbed9929229d7b5675e88e54",
-  // Missions 7 and 8 (`pulp_wars-v642.3`).
-  // Campaign difficulty pass B (`pulp_wars-v642.8`): revision 2.
-  // Campaign danger pass B (`pulp_wars-v642.10`): revision 3.
-  "FRONTIER_7@4:ICE_FOLK":
-    "68e53d55925f7dd58c6265267989bcd1f73e7864a2521e1e9d93a0c87e0863ff",
-  // Mission 8 as a build-up (`pulp_wars-v642.9`): revision 2.
-  // Campaign danger pass B (`pulp_wars-v642.10`): revision 3.
-  "FRONTIER_8@4:DINOSAUR":
-    "374bfe151fe61dcad29176ac7327d4c0031d00f042e0e4ab753d0615f5a367a7",
-  // Missions 9 and 10 (`pulp_wars-v642.4`); mission 9 with less
-  // pre-research (`pulp_wars-v642.9`): revision 2.
-  // Campaign danger pass B (`pulp_wars-v642.10`): revision 3.
-  "FRONTIER_9@4:MARTIAN":
-    "b7d794a0ba11c0b46bc6da0c16f560fa84d2188a18edf0157fe1e88a5076e6aa",
-  // Mission 10 replayed on the corrected Cult AI (`pulp_wars-v642.6`): revision 2.
-  // The Cult redesign's roster (`pulp_wars-mch9.31`): revision 3 (the Chosen
-  // and the Caller of the ring are an Idol Bearer, an Initiate, and a Hexer).
-  // Its retune (`pulp_wars-mch9.46`): revision 4 (the lodge owns
-  // Engineering and Gibbering Masses and starts with 8 Favour).
-  // Campaign danger pass B (`pulp_wars-v642.10`): revision 5.
-  "FRONTIER_10@6:ORIGINAL":
-    "2f3915324a118a83c806e256e8ceb3d2b1a41d5b80b043e7b492c4374c5494c5",
   // The Humans campaign, "The Marshal's Law" (`pulp_wars-hmyk.4`).
   "HUMAN_1@2:ORIGINAL":
     "1c6a08e73893246b76e06aa3d98ee59b05ec5c9a31eeabef3f97cbd9c04219b1",
@@ -520,63 +461,6 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
   // A GUARD whose others assault (`pulp_wars-v642.10`).
   "TEST_GUARD_RAID@1:ORIGINAL":
     "d0c785306b57828a5f7fdcc436464f47c02a80852d93adbd784277166d1be1cb",
-  // Chapter One (`pulp_wars-68k.4`), added after the curiosities: the same
-  // states with the two curiosities keys left out.
-  // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 2.
-  // Natural maps and objectives (`pulp_wars-v642.1`): revision 3.
-  "FRONTIER_1@4:ORIGINAL":
-    "c79d8a77cc67e46047f9a9a9256626094f757b69678030fca780bb948c427ce9",
-  // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 2.
-  // Natural maps and objectives (`pulp_wars-v642.1`): revision 3.
-  // The campaign difficulty pass (`pulp_wars-v642.7`): revision 4.
-  "FRONTIER_2@4:ORIGINAL":
-    "bea27783827641a38a785a1383fcff8ab3d1a406684c9908859ea626d8b70136",
-  // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 2.
-  // Natural maps and objectives (`pulp_wars-v642.1`): revision 3.
-  // The campaign difficulty pass (`pulp_wars-v642.7`): revision 4.
-  // The danger pass (`pulp_wars-v642.10`): revision 5.
-  "FRONTIER_3@6:GOBLIN":
-    "ceb52da2bef332aad435598d33e3dab33f1f358eee44ad7f45345e33b959ecb2",
-  // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 3.
-  // Natural maps and objectives (`pulp_wars-v642.1`): revision 4.
-  // The campaign difficulty pass (`pulp_wars-v642.7`): revision 5.
-  // The danger pass (`pulp_wars-v642.10`): revision 6.
-  "FRONTIER_4@7:ORIGINAL":
-    "eeb9e6e4a7df9624ae7c03df489e956d49edcd806e29ff5d67b5ed286a42b60d",
-  // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 3.
-  // Natural maps and objectives (`pulp_wars-v642.1`): revision 4.
-  // The campaign difficulty pass (`pulp_wars-v642.7`): revision 5.
-  // The danger pass (`pulp_wars-v642.10`): revision 6.
-  "FRONTIER_4@7:GOBLIN":
-    "d123c5635c3bdaf56c8d1fad63820e601a4abdca7ecac6f8b76eec1cd6cfc331",
-  // Missions 5 and 6 (`pulp_wars-v642.2`).
-  // Campaign difficulty pass B (`pulp_wars-v642.8`): revision 2.
-  // The danger pass (`pulp_wars-v642.10`): revision 3.
-  "FRONTIER_5@4:UNDEAD":
-    "ccc728674c064a0ec4631416349034bac368ad3e496293acd3ce9b1d24c80a4b",
-  // Campaign difficulty pass B (`pulp_wars-v642.8`): revision 2.
-  "FRONTIER_6@3:DWARF":
-    "a2f525871e83e6fd258c8a8f69604f185db85d1e7d8143416b9627b89d0c06cb",
-  // Missions 7 and 8 (`pulp_wars-v642.3`).
-  // Campaign difficulty pass B (`pulp_wars-v642.8`): revision 2.
-  // Campaign danger pass B (`pulp_wars-v642.10`): revision 3.
-  "FRONTIER_7@4:ICE_FOLK":
-    "d5a0cd22745b554b2bc9cc2fca91adfbd66703bc70cf75fc00eee537f1cc9363",
-  // Mission 8 as a build-up (`pulp_wars-v642.9`): revision 2.
-  // Campaign danger pass B (`pulp_wars-v642.10`): revision 3.
-  "FRONTIER_8@4:DINOSAUR":
-    "face1b77ad92923813440f78a0beb9c3fae87bc9e4859fe40cc3d6d28afbf692",
-  // Missions 9 and 10 (`pulp_wars-v642.4`); mission 9 with less
-  // pre-research (`pulp_wars-v642.9`): revision 2.
-  // Campaign danger pass B (`pulp_wars-v642.10`): revision 3.
-  "FRONTIER_9@4:MARTIAN":
-    "ae8dfd75312d2f76317b5661c525c71c065e20c8ed3fbcf539d6cef9fcdd150e",
-  // Mission 10 replayed on the corrected Cult AI (`pulp_wars-v642.6`): revision 2.
-  // The Cult redesign's roster (`pulp_wars-mch9.31`): revision 3.
-  // Its retune (`pulp_wars-mch9.46`): revision 4.
-  // Campaign danger pass B (`pulp_wars-v642.10`): revision 5.
-  "FRONTIER_10@6:ORIGINAL":
-    "843fe7ac1602a90022a9c9cfa02a6cc3052e2e92134af0445026a8c125aa1e4a",
   // The Humans campaign, "The Marshal's Law" (`pulp_wars-hmyk.4`).
   "HUMAN_1@2:ORIGINAL":
     "1cb8533b4c23820e7f425ce0b1fbc6ab39955839b36eec20f00c4dc7577daea2",
@@ -1646,10 +1530,14 @@ describe("mission saves and replays", () => {
       { state, replay },
       "2026-10-03T12:00:00.000Z",
     );
-    for (const mission of [
-      { id: "TEST_GROUNDS", revision: 2 },
-      { id: "REMOVED_MISSION", revision: 1 },
-    ]) {
+    // A revised mission is stale; one no longer in the game at all (the
+    // retired prologue's, pulp_wars-hmyk.22) says so.
+    for (const [mission, diagnostic] of [
+      [{ id: "TEST_GROUNDS", revision: 2 }, STALE_MISSION_DIAGNOSTIC_V7],
+      [{ id: "REMOVED_MISSION", revision: 1 }, REMOVED_MISSION_DIAGNOSTIC_V7],
+      [{ id: "FRONTIER_1", revision: 4 }, REMOVED_MISSION_DIAGNOSTIC_V7],
+      [{ id: "FRONTIER_10", revision: 6 }, REMOVED_MISSION_DIAGNOSTIC_V7],
+    ] as const) {
       const setup = { ...save.setup, mission };
       const stale = {
         ...save,
@@ -1658,7 +1546,7 @@ describe("mission saves and replays", () => {
       };
       expect(parseSaveV7(JSON.stringify(stale))).toEqual({
         kind: "INCOMPATIBLE",
-        diagnostic: STALE_MISSION_DIAGNOSTIC_V7,
+        diagnostic,
       });
       const staleReplay = JSON.parse(
         JSON.stringify({ ...replay, setup }),
@@ -1672,6 +1560,9 @@ describe("mission saves and replays", () => {
     }
     expect(STALE_MISSION_DIAGNOSTIC_V7).toBe(
       "This mission was updated since the game was saved. Start it again from the campaign.",
+    );
+    expect(REMOVED_MISSION_DIAGNOSTIC_V7).toBe(
+      "This mission is no longer in the game. Delete the save and pick a campaign.",
     );
   });
 });

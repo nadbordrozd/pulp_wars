@@ -25,8 +25,8 @@ import {
 describe("Ruleset 7 browser controller campaign progress", () => {
   const savedAt = "2026-10-03T12:00:00.000Z";
 
-  it("records a mission win before the Victory snapshot, with its unlocks", async () => {
-    const fixture = missionWinFixtureV7("FRONTIER_1");
+  it("records a mission win before the Victory snapshot", async () => {
+    const fixture = missionWinFixtureV7("HUMAN_1");
     const storage = new MemoryStorage();
     storage.setItem(
       SAVE_STORAGE_KEY_V7,
@@ -61,9 +61,9 @@ describe("Ruleset 7 browser controller campaign progress", () => {
       format: "pulp-wars-campaign-progress",
       version: 2,
       campaigns: {
-        FRONTIER: {
+        HUMANS: {
           completed: {
-            FRONTIER_1: expect.objectContaining({
+            HUMAN_1: expect.objectContaining({
               firstWonAt: savedAt,
               bestRounds: rounds,
             }),
@@ -71,17 +71,17 @@ describe("Ruleset 7 browser controller campaign progress", () => {
         },
       },
     });
-    // Mission 1 unlocks nothing; the win is reported for the dialog.
+    // The win is reported for the dialog.
     expect(controller.campaignProgress()).toMatchObject({
       status: "OK",
-      completed: { FRONTIER_1: { bestRounds: rounds } },
-      lastWin: { missionId: "FRONTIER_1", firstWin: true, unlocked: [] },
+      completed: { HUMAN_1: { bestRounds: rounds } },
+      lastWin: { missionId: "HUMAN_1", firstWin: true },
     });
     controller.destroy();
   }, 60_000);
 
   it("records again when a completed mission save is resumed, keeping the first win and the best rounds", () => {
-    const fixture = missionWinFixtureV7("FRONTIER_1");
+    const fixture = missionWinFixtureV7("HUMAN_1");
     const rounds = fixture.after.state.round;
     const storage = new MemoryStorage();
     storage.setItem(
@@ -95,12 +95,12 @@ describe("Ruleset 7 browser controller campaign progress", () => {
     expect(first.snapshot().phase).toBe("COMPLETE");
     expect(first.campaignProgress()).toMatchObject({
       completed: {
-        FRONTIER_1: {
+        HUMAN_1: {
           firstWonAt: "2026-10-04T08:00:00.000Z",
           bestRounds: rounds,
         },
       },
-      lastWin: { missionId: "FRONTIER_1", firstWin: true },
+      lastWin: { missionId: "HUMAN_1", firstWin: true },
     });
     first.destroy();
     // A better earlier record is kept; reloading the dialog is idempotent.
@@ -108,26 +108,30 @@ describe("Ruleset 7 browser controller campaign progress", () => {
       CAMPAIGN_PROGRESS_STORAGE_KEY_V7,
       JSON.stringify({
         format: "pulp-wars-campaign-progress",
-        version: 1,
-        completed: {
-          FRONTIER_1: { firstWonAt: savedAt, bestRounds: rounds - 3 },
-          REMOVED_MISSION: { firstWonAt: savedAt, bestRounds: 9 },
+        version: 2,
+        campaigns: {
+          HUMANS: {
+            completed: {
+              HUMAN_1: { firstWonAt: savedAt, bestRounds: rounds - 3 },
+              REMOVED_MISSION: { firstWonAt: savedAt, bestRounds: 9 },
+            },
+          },
         },
       }),
     );
     const second = new Ruleset7BrowserController({ storage });
     expect(second.campaignProgress()).toMatchObject({
       completed: {
-        FRONTIER_1: { firstWonAt: savedAt, bestRounds: rounds - 3 },
+        HUMAN_1: { firstWonAt: savedAt, bestRounds: rounds - 3 },
         REMOVED_MISSION: { bestRounds: 9 },
       },
-      lastWin: { missionId: "FRONTIER_1", firstWin: false, unlocked: [] },
+      lastWin: { missionId: "HUMAN_1", firstWin: false },
     });
     second.destroy();
   }, 60_000);
 
   it("records nothing while progress is unreadable, and reset clears it", () => {
-    const fixture = missionWinFixtureV7("FRONTIER_1");
+    const fixture = missionWinFixtureV7("HUMAN_1");
     const storage = new MemoryStorage();
     storage.setItem(CAMPAIGN_PROGRESS_STORAGE_KEY_V7, "{ not json");
     storage.setItem(
@@ -154,7 +158,7 @@ describe("Ruleset 7 browser controller campaign progress", () => {
   }, 60_000);
 
   it("survives restricted storage: progress reads fail without breaking the match", () => {
-    const fixture = missionWinFixtureV7("FRONTIER_1");
+    const fixture = missionWinFixtureV7("HUMAN_1");
     const save = JSON.stringify(createSaveEnvelopeV7(fixture.after, savedAt));
     const storage: StorageAdapter = {
       getItem: (key) => {

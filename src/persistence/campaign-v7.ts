@@ -15,12 +15,17 @@ import type { StorageAdapter } from "./index";
  * is no version 2 and migrated into the campaign `FRONTIER`; the first win
  * recorded afterwards writes version 2 under the new key. The old key is
  * left alone (an older build still reads it) until Reset erases both.
+ *
+ * `FRONTIER`, the prologue, was retired by `pulp_wars-hmyk.22`: its
+ * progress (of either version) still loads, is kept on every write, and is
+ * ignored by the campaign map, since no registered campaign or mission has
+ * its IDs.
  */
 export const CAMPAIGN_PROGRESS_STORAGE_KEY_V7 = "pulpWars.campaign.v2";
 /** Where version 1 lived (`pulp_wars-68k.5` until `pulp_wars-hmyk.3`). */
 export const LEGACY_CAMPAIGN_PROGRESS_STORAGE_KEY_V7 = "pulpWars.campaign.v1";
 export const CAMPAIGN_PROGRESS_FORMAT_V7 = "pulp-wars-campaign-progress";
-/** The campaign version 1's missions belong to: the prologue. */
+/** The campaign version 1's missions belong to: the retired prologue. */
 export const LEGACY_CAMPAIGN_ID_V7 = "FRONTIER";
 /** Progress is a handful of missions; anything larger is not ours. */
 export const MAX_CAMPAIGN_PROGRESS_BYTES_V7 = 64 * 1024;

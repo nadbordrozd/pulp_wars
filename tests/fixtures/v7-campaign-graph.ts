@@ -5,7 +5,7 @@ import type {
 import type {
   CampaignChapterV7,
   CampaignMissionEntryV7,
-} from "../../src/campaign/chapter-1";
+} from "../../src/campaign/chapter";
 
 /**
  * A campaign registry with the faction campaigns built
@@ -40,7 +40,6 @@ function entry(missionId: string, number: number): CampaignMissionEntryV7 {
     objective: "Win the fixture.",
     hints: [],
     closing: "The fixture is won.",
-    unlocks: [],
   };
 }
 
@@ -56,7 +55,6 @@ export function fixtureCampaignsV7(
       number: 1,
       title: campaign.title,
       intro: `The ${campaign.name} fixture.`,
-      startingFactions: [],
       missions: missions.map((id, index) => entry(id, index + 1)),
       outro: "The end of the fixture.",
     };

@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { validateMissionDirectivesV7 } from "../../src/ai/v7-directives";
 import { CAMPAIGNS_V7 } from "../../src/campaign/campaigns";
-import { CHAPTER_ONE_V7 } from "../../src/campaign/chapter-1";
 import { CHAPTER_CULT_V7 } from "../../src/campaign/chapter-cult";
 import {
   missionByIdV7,
@@ -80,9 +79,7 @@ describe("The Long Night", () => {
     for (const entry of CHAPTER_CULT_V7.missions) {
       expect(entry.planned, entry.missionId).toBeUndefined();
       expect(mission(entry.missionId).hidden, entry.missionId).toBeUndefined();
-      expect([...entry.unlocks]).toEqual([]);
     }
-    expect(CHAPTER_CULT_V7.startingFactions).toEqual([]);
     expect(CHAPTER_CULT_V7.missions.map((entry) => entry.format)).toEqual([
       "KILL",
       "CAPTURE",
@@ -103,9 +100,6 @@ describe("The Long Night", () => {
       tier: 3,
       chapter: CHAPTER_CULT_V7,
     });
-    // The prologue no longer promises a part that is not there.
-    expect(CHAPTER_ONE_V7.outro).not.toMatch(/to be continued/i);
-    expect(CHAPTER_ONE_V7.outro).toMatch(/The Thing in the Shaft/);
     // The last closing is the saga's ending, the outro its epilogue.
     const last = CHAPTER_CULT_V7.missions.at(-1);
     expect(last?.closing).toMatch(/It eats the door first/);

@@ -1,11 +1,11 @@
-import type { CampaignChapterV7 } from "./chapter-1";
+import type { CampaignChapterV7 } from "./chapter";
 
 /**
  * The Candy campaign, "Sweet Dreams" (`pulp_wars-hmyk.11`,
  * docs/product/SAGA.md sections 2.8 and 3.8): six missions of Queen
  * Praline's search for the reason Sugarcrest is going stale, from the
  * goblins eating Gumdrop to the night the Ashen Marquis brings the Lullaby.
- * Data only, in the shape of the prologue's chapter (`./chapter-1.ts`);
+ * Data only, in the shape of a chapter (`./chapter.ts`);
  * each mission's board, seats, objective and directives live in its engine
  * definition (`src/engine/v7/missions/candy-*.ts`).
  *
@@ -18,9 +18,7 @@ export const CHAPTER_CANDY_V7: CampaignChapterV7 = Object.freeze({
   title: "Sweet Dreams",
   intro:
     "Sugarcrest fell out of a hole in the world last autumn and has been making the best of it. This autumn the best is going stale: the gumdrops are hard, the walls are crumbling, and something sour is seeping through the sealed Rift at night.",
-  // Every mission seats you as the Candy (a fixed faction, no choice), so
-  // the chapter unlocks nothing for the prologue's faction choices.
-  startingFactions: Object.freeze([]),
+  // Every mission seats you as the Candy (a fixed faction, no choice).
   missions: Object.freeze([
     Object.freeze({
       missionId: "CANDY_1",
@@ -37,7 +35,6 @@ export const CHAPTER_CANDY_V7: CampaignChapterV7 = Object.freeze({
       ]),
       closing:
         "The goblins flee with their spoons. In the ruins of the pantry Madame Nougat finds something worse than goblins: the nougat is stale. All of it. All over the kingdom.",
-      unlocks: Object.freeze([]),
       names: Object.freeze({
         PRALINE: "Queen Praline",
       }),
@@ -57,7 +54,6 @@ export const CHAPTER_CANDY_V7: CampaignChapterV7 = Object.freeze({
       ]),
       closing:
         "The recipe is not a recipe. It is a description, in very old icing, of a great sleeper, and a dream it once had of a kingdom made of sugar. Madame Nougat sits down very suddenly.",
-      unlocks: Object.freeze([]),
       names: Object.freeze({
         NOUGAT: "Madame Nougat",
         RIFTWATCH: "Riftwatch",
@@ -78,7 +74,6 @@ export const CHAPTER_CANDY_V7: CampaignChapterV7 = Object.freeze({
       ]),
       closing:
         "The Sovereign goes down. The Commissioner rows ashore, bows, and says it is no matter: the choir will sing on the date regardless. He seems very sure. Praline sets her Confectioners to finding out what the date is.",
-      unlocks: Object.freeze([]),
       names: Object.freeze({
         SOVEREIGN: "the Sovereign",
       }),
@@ -98,7 +93,6 @@ export const CHAPTER_CANDY_V7: CampaignChapterV7 = Object.freeze({
       ]),
       closing:
         "The choir comes home singing. The hoods, it turns out, could not agree whether to silence it or to teach it a new hymn, and a letter on the chapel desk tells them, in a small, tidy hand, that they should have done neither.",
-      unlocks: Object.freeze([]),
       names: Object.freeze({
         PRALINE: "Queen Praline",
         WICK_CHAPEL: "the Wick Chapel",
@@ -119,7 +113,6 @@ export const CHAPTER_CANDY_V7: CampaignChapterV7 = Object.freeze({
       ]),
       closing:
         "In the Dreaming Palace Praline finds the sleeper's dream of her own throne room, grey and crumbling, and outside its window, the eye. It is closed again, almost. 'It needs a lullaby,' she says, 'and a sweeter voice than the dead have got.'",
-      unlocks: Object.freeze([]),
       names: Object.freeze({
         PRALINE: "Queen Praline",
         NOUGAT: "Madame Nougat",
@@ -141,7 +134,6 @@ export const CHAPTER_CANDY_V7: CampaignChapterV7 = Object.freeze({
       ]),
       closing:
         "On the fifteenth night the Marquis arrives and unrolls the Lullaby on the Queen's piano. The choir sings it once, and every nightmare for a mile sleeps. Only Praline frowns, at one note near the end. 'It tastes sour,' she says. The Marquis assures her it is in his own hand.",
-      unlocks: Object.freeze([]),
       names: Object.freeze({
         PRALINE: "Queen Praline",
         SUGARCREST: "Sugarcrest",

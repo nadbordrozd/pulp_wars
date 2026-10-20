@@ -1,13 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { CHAPTER_ONE_V7 } from "../../src/campaign/chapter-1";
+import type { CampaignChapterV7 } from "../../src/campaign/chapter";
+import { CHAPTER_HUMANS_V7 } from "../../src/campaign/chapter-humans";
 import {
   campaignFactionChoicesV7,
   campaignMissionCardsV7,
   campaignMissionV7,
-  campaignNewlyUnlockedV7,
   campaignNextMissionV7,
+  campaignPlatesV7,
   campaignTagNameV7,
-  campaignUnlockedFactionsV7,
   type CampaignCompletedV7,
 } from "../../src/campaign/progress-v7";
 import {
@@ -55,7 +55,7 @@ function storedV2(
 /** The completions of one campaign as last written. */
 function written(
   storage: StorageAdapter,
-  campaign = "FRONTIER",
+  campaign = "HUMANS",
 ): Record<string, unknown> {
   return JSON.parse(storage.getItem(CAMPAIGN_PROGRESS_STORAGE_KEY_V7) ?? "")
     .campaigns[campaign].completed;
@@ -89,21 +89,19 @@ describe("campaign progress store", () => {
         campaigns: {},
       },
     });
-    const recorded = store.recordWin("FRONTIER", "FRONTIER_1", 14);
+    const recorded = store.recordWin("HUMANS", "HUMAN_1", 14);
     expect(recorded).toMatchObject({ ok: true, firstWin: true });
-    store.recordWin("HUMANS", "HUMANS_1", 9, 2);
+    store.recordWin("UNDEAD", "UNDEAD_1", 9, 2);
     const source = storage.getItem(CAMPAIGN_PROGRESS_STORAGE_KEY_V7);
     expect(JSON.parse(source ?? "")).toEqual({
       format: "pulp-wars-campaign-progress",
       version: 2,
       campaigns: {
-        FRONTIER: {
-          completed: {
-            FRONTIER_1: { firstWonAt: AT, bestRounds: 14, stars: 1 },
-          },
-        },
         HUMANS: {
-          completed: { HUMANS_1: { firstWonAt: AT, bestRounds: 9, stars: 2 } },
+          completed: { HUMAN_1: { firstWonAt: AT, bestRounds: 14, stars: 1 } },
+        },
+        UNDEAD: {
+          completed: { UNDEAD_1: { firstWonAt: AT, bestRounds: 9, stars: 2 } },
         },
       },
     });
@@ -112,13 +110,13 @@ describe("campaign progress store", () => {
     if (loaded.kind !== "VALID") throw new Error(loaded.kind);
     // Every campaign's completions in one record, for the derived state.
     expect(campaignCompletionsV7(loaded.progress)).toEqual({
-      FRONTIER_1: { firstWonAt: AT, bestRounds: 14, stars: 1 },
-      HUMANS_1: { firstWonAt: AT, bestRounds: 9, stars: 2 },
+      HUMAN_1: { firstWonAt: AT, bestRounds: 14, stars: 1 },
+      UNDEAD_1: { firstWonAt: AT, bestRounds: 9, stars: 2 },
     });
     expect(storage.getItem(LEGACY_CAMPAIGN_PROGRESS_STORAGE_KEY_V7)).toBeNull();
   });
 
-  it("migrates version 1 into the prologue without losing a win, and leaves the old key alone", () => {
+  it("migrates version 1 into the retired prologue without losing a win, and leaves the old key alone", () => {
     const storage = new MemoryStorage();
     const legacy = storedV1({
       FRONTIER_1: { ...won(14), stars: 3 },
@@ -146,12 +144,22 @@ describe("campaign progress store", () => {
       },
     });
     expect(storage.writes).toBe(0);
-    // The next win writes version 2, with every earlier win in it.
-    store.recordWin("FRONTIER", "FRONTIER_3", 17, 2);
-    expect(written(storage)).toEqual({
+    // The prologue is retired (pulp_wars-hmyk.22): its wins open nothing
+    // and lock nothing on the map.
+    const migrated = store.load();
+    if (migrated.kind !== "VALID") throw new Error(migrated.kind);
+    expect(campaignPlatesV7(campaignCompletionsV7(migrated.progress))).toEqual(
+      campaignPlatesV7({}),
+    );
+    // The next win, in a faction campaign, writes version 2 with every
+    // earlier win in it: the Frontier's are kept beside it.
+    store.recordWin("HUMANS", "HUMAN_1", 17, 2);
+    expect(written(storage, "FRONTIER")).toEqual({
       FRONTIER_1: { firstWonAt: AT, bestRounds: 14, stars: 3 },
       FRONTIER_2: { firstWonAt: AT, bestRounds: 20 },
-      FRONTIER_3: {
+    });
+    expect(written(storage)).toEqual({
+      HUMAN_1: {
         firstWonAt: "2026-10-19T08:00:00.000Z",
         bestRounds: 17,
         stars: 2,
@@ -171,7 +179,7 @@ describe("campaign progress store", () => {
     expect(Object.keys(campaignCompletionsV7(loaded.progress))).toEqual([
       "FRONTIER_1",
       "FRONTIER_2",
-      "FRONTIER_3",
+      "HUMAN_1",
     ]);
     // Empty version 1 progress migrates to no campaigns at all.
     expect(parseCampaignProgressV7(storedV1({}))).toEqual({
@@ -188,45 +196,43 @@ describe("campaign progress store", () => {
     const storage = new MemoryStorage();
     // What a build before stars wrote: still valid, never rewritten on load.
     storage.setItem(
-      LEGACY_CAMPAIGN_PROGRESS_STORAGE_KEY_V7,
-      storedV1({ FRONTIER_1: won(14) }),
+      CAMPAIGN_PROGRESS_STORAGE_KEY_V7,
+      storedV2({ HUMANS: { HUMAN_1: won(14) } }),
     );
     const store = new CampaignProgressStoreV7(storage, { now: () => AT });
     expect(store.load()).toMatchObject({
       kind: "VALID",
       progress: {
         campaigns: {
-          FRONTIER: { completed: { FRONTIER_1: { bestRounds: 14 } } },
+          HUMANS: { completed: { HUMAN_1: { bestRounds: 14 } } },
         },
       },
     });
-    const best = (): unknown => written(storage).FRONTIER_1;
+    const best = (): unknown => written(storage).HUMAN_1;
     expect(
-      campaignMissionCardsV7(CHAPTER_ONE_V7, { FRONTIER_1: won(14) })[0],
+      campaignMissionCardsV7(CHAPTER_HUMANS_V7, { HUMAN_1: won(14) })[0],
     ).toMatchObject({ stars: 1, maxStars: 3 });
     // A slower win with more stars raises the stars and keeps the rounds.
-    store.recordWin("FRONTIER", "FRONTIER_1", 20, 3);
+    store.recordWin("HUMANS", "HUMAN_1", 20, 3);
     expect(best()).toEqual({ firstWonAt: AT, bestRounds: 14, stars: 3 });
     // A faster win with fewer stars lowers the rounds and keeps the stars.
-    store.recordWin("FRONTIER", "FRONTIER_1", 9, 2);
+    store.recordWin("HUMANS", "HUMAN_1", 9, 2);
     expect(best()).toEqual({ firstWonAt: AT, bestRounds: 9, stars: 3 });
     storage.writes = 0;
-    store.recordWin("FRONTIER", "FRONTIER_1", 12, 1);
+    store.recordWin("HUMANS", "HUMAN_1", 12, 1);
     expect(storage.writes).toBe(0);
-    expect(() => store.recordWin("FRONTIER", "FRONTIER_1", 12, 4)).toThrow(
+    expect(() => store.recordWin("HUMANS", "HUMAN_1", 12, 4)).toThrow(
       RangeError,
     );
-    expect(() => store.recordWin("FRONTIER", "FRONTIER_1", 12, 0)).toThrow(
+    expect(() => store.recordWin("HUMANS", "HUMAN_1", 12, 0)).toThrow(
       RangeError,
     );
-    expect(() => store.recordWin("frontier", "FRONTIER_1", 12)).toThrow(
-      RangeError,
-    );
+    expect(() => store.recordWin("humans", "HUMAN_1", 12)).toThrow(RangeError);
     const loaded = store.load();
     if (loaded.kind !== "VALID") throw new Error(loaded.kind);
     expect(
       campaignMissionCardsV7(
-        CHAPTER_ONE_V7,
+        CHAPTER_HUMANS_V7,
         campaignCompletionsV7(loaded.progress),
       )[0],
     ).toMatchObject({ status: "DONE", stars: 3, maxStars: 3, bestRounds: 9 });
@@ -236,31 +242,31 @@ describe("campaign progress store", () => {
     const storage = new MemoryStorage();
     let now = AT;
     const store = new CampaignProgressStoreV7(storage, { now: () => now });
-    store.recordWin("FRONTIER", "FRONTIER_1", 14);
+    store.recordWin("HUMANS", "HUMAN_1", 14);
     now = "2026-10-05T09:30:00.000Z";
-    const slower = store.recordWin("FRONTIER", "FRONTIER_1", 20);
+    const slower = store.recordWin("HUMANS", "HUMAN_1", 20);
     expect(slower).toMatchObject({ ok: true, firstWin: false });
-    expect(written(storage).FRONTIER_1).toEqual({
+    expect(written(storage).HUMAN_1).toEqual({
       firstWonAt: AT,
       bestRounds: 14,
       stars: 1,
     });
     // Recording the same win again writes nothing new.
     storage.writes = 0;
-    store.recordWin("FRONTIER", "FRONTIER_1", 14);
+    store.recordWin("HUMANS", "HUMAN_1", 14);
     expect(storage.writes).toBe(0);
-    store.recordWin("FRONTIER", "FRONTIER_1", 9);
-    expect(written(storage).FRONTIER_1).toEqual({
+    store.recordWin("HUMANS", "HUMAN_1", 9);
+    expect(written(storage).HUMAN_1).toEqual({
       firstWonAt: AT,
       bestRounds: 9,
       stars: 1,
     });
     // A mission's wins stay with the campaign that first filed it.
-    store.recordWin("HUMANS", "FRONTIER_1", 8);
-    expect(written(storage).FRONTIER_1).toMatchObject({ bestRounds: 8 });
+    store.recordWin("UNDEAD", "HUMAN_1", 8);
+    expect(written(storage).HUMAN_1).toMatchObject({ bestRounds: 8 });
     expect(
       JSON.parse(storage.getItem(CAMPAIGN_PROGRESS_STORAGE_KEY_V7) ?? "")
-        .campaigns.HUMANS,
+        .campaigns.UNDEAD,
     ).toBeUndefined();
   });
 
@@ -269,22 +275,30 @@ describe("campaign progress store", () => {
     storage.setItem(
       CAMPAIGN_PROGRESS_STORAGE_KEY_V7,
       storedV2({
-        FRONTIER: { GONE_MISSION: won(7) },
+        HUMANS: { GONE_MISSION: won(7) },
         GONE_CAMPAIGN: { GONE_TOO: won(5) },
+        // The retired prologue (pulp_wars-hmyk.22), all ten won.
+        FRONTIER: Object.fromEntries(
+          Array.from({ length: 10 }, (_, index) => [
+            `FRONTIER_${String(index + 1)}`,
+            { ...won(12), stars: 3 },
+          ]),
+        ),
       }),
     );
     const store = new CampaignProgressStoreV7(storage, { now: () => AT });
-    store.recordWin("FRONTIER", "FRONTIER_1", 11);
-    expect(Object.keys(written(storage))).toEqual([
-      "FRONTIER_1",
-      "GONE_MISSION",
-    ]);
+    store.recordWin("HUMANS", "HUMAN_1", 11);
+    expect(Object.keys(written(storage))).toEqual(["GONE_MISSION", "HUMAN_1"]);
     expect(Object.keys(written(storage, "GONE_CAMPAIGN"))).toEqual([
       "GONE_TOO",
     ]);
-    expect(campaignUnlockedFactionsV7({ GONE_MISSION: won() })).toEqual([
-      "ORIGINAL",
-    ]);
+    expect(Object.keys(written(storage, "FRONTIER"))).toHaveLength(10);
+    // Nothing derived reads them: the map is as if only HUMAN_1 was won.
+    const loaded = store.load();
+    if (loaded.kind !== "VALID") throw new Error(loaded.kind);
+    expect(campaignPlatesV7(campaignCompletionsV7(loaded.progress))).toEqual(
+      campaignPlatesV7({ HUMAN_1: { ...won(11), stars: 1 } }),
+    );
   });
 
   it("reports corrupt progress as unreadable and records nothing until reset", () => {
@@ -416,225 +430,183 @@ describe("campaign progress store", () => {
 
 describe("derived campaign state", () => {
   const statuses = (completed: CampaignCompletedV7) =>
-    campaignMissionCardsV7(CHAPTER_ONE_V7, completed).map(
+    campaignMissionCardsV7(CHAPTER_HUMANS_V7, completed).map(
       (card) => card.status,
     );
 
   it("opens missions in order and keeps completed ones playable", () => {
-    const rest = ["LOCKED", "LOCKED", "LOCKED", "LOCKED", "LOCKED", "LOCKED"];
     expect(statuses({})).toEqual([
       "OPEN",
       "LOCKED",
       "LOCKED",
       "LOCKED",
-      ...rest,
+      "LOCKED",
+      "LOCKED",
     ]);
-    expect(statuses({ FRONTIER_1: won() })).toEqual([
+    expect(statuses({ HUMAN_1: won() })).toEqual([
       "DONE",
       "OPEN",
       "LOCKED",
       "LOCKED",
-      ...rest,
+      "LOCKED",
+      "LOCKED",
     ]);
     expect(
       statuses({
-        FRONTIER_1: won(),
-        FRONTIER_2: won(),
-        FRONTIER_3: won(),
-        FRONTIER_4: won(),
+        HUMAN_1: won(),
+        HUMAN_2: won(),
+        HUMAN_3: won(),
+        HUMAN_4: won(),
       }),
-    ).toEqual(["DONE", "DONE", "DONE", "DONE", "OPEN", ...rest.slice(1)]);
-    // Every mission of part one is built (missions 5 and 6 by
-    // `pulp_wars-v642.2`, 7 and 8 by `.3`, 9 and 10 by `.4`).
+    ).toEqual(["DONE", "DONE", "DONE", "DONE", "OPEN", "LOCKED"]);
     expect(
-      campaignMissionCardsV7(CHAPTER_ONE_V7, {}).map((card) => card.built),
-    ).toEqual([true, true, true, true, true, true, true, true, true, true]);
+      campaignMissionCardsV7(CHAPTER_HUMANS_V7, {}).map((card) => card.built),
+    ).toEqual([true, true, true, true, true, true]);
   });
 
   it("describes each card from the mission definitions", () => {
-    const cards = campaignMissionCardsV7(CHAPTER_ONE_V7, {
-      FRONTIER_1: won(17),
+    const cards = campaignMissionCardsV7(CHAPTER_HUMANS_V7, {
+      HUMAN_1: won(17),
     });
     expect(
-      cards.slice(0, 4).map((card) => ({
-        id: card.entry.missionId,
-        leads: card.leads,
-        opponents: card.opponents,
-        size: card.size,
-        best: card.bestRounds,
-      })),
-    ).toEqual([
-      {
-        id: "FRONTIER_1",
-        leads: ["ORIGINAL"],
-        opponents: ["GOBLIN"],
-        size: 11,
-        best: 17,
-      },
-      {
-        id: "FRONTIER_2",
-        leads: ["ORIGINAL"],
-        opponents: ["GOBLIN"],
-        size: 14,
-        best: null,
-      },
-      {
-        id: "FRONTIER_3",
-        leads: ["GOBLIN"],
-        opponents: ["UNDEAD"],
-        size: 16,
-        best: null,
-      },
-      {
-        id: "FRONTIER_4",
-        leads: ["ORIGINAL", "GOBLIN"],
-        opponents: ["UNDEAD"],
-        size: 16,
-        best: null,
-      },
-    ]);
-    expect(
-      cards.slice(0, 4).map((card) => [card.stars, card.maxStars]),
-    ).toEqual([
-      [1, 3],
-      [0, 3],
-      [0, 3],
-      [0, 3],
-    ]);
-    expect(cards.slice(0, 4).every((card) => card.allies.length === 0)).toBe(
-      true,
-    );
-    // A designed mission's card comes from its plan; missions 9 and 10
-    // are built, and their cards read the same from their definitions.
-    expect(
-      cards.slice(4).map((card) => ({
+      cards.map((card) => ({
         id: card.entry.missionId,
         leads: card.leads,
         opponents: card.opponents,
         allies: card.allies,
         size: card.size,
+        best: card.bestRounds,
       })),
     ).toEqual([
       {
-        id: "FRONTIER_5",
-        leads: ["UNDEAD"],
-        opponents: ["ORIGINAL", "ICE_FOLK"],
+        id: "HUMAN_1",
+        leads: ["ORIGINAL"],
+        opponents: ["UNDEAD"],
         allies: [],
-        size: 16,
+        size: 11,
+        best: 17,
       },
       {
-        id: "FRONTIER_6",
-        leads: ["DWARF"],
-        opponents: ["ICE_FOLK", "ORIGINAL"],
+        id: "HUMAN_2",
+        leads: ["ORIGINAL"],
+        opponents: ["GOBLIN"],
         allies: [],
         size: 14,
+        best: null,
       },
       {
-        id: "FRONTIER_7",
-        leads: ["ICE_FOLK"],
-        opponents: ["DINOSAUR", "ORIGINAL"],
-        allies: [],
-        size: 20,
-      },
-      {
-        id: "FRONTIER_8",
-        leads: ["DINOSAUR"],
-        opponents: ["MARTIAN", "ORIGINAL"],
-        allies: [],
-        size: 16,
-      },
-      {
-        id: "FRONTIER_9",
-        leads: ["MARTIAN"],
-        opponents: ["UNDEAD", "GOBLIN"],
-        allies: ["CANDY"],
-        size: 16,
-      },
-      {
-        id: "FRONTIER_10",
+        id: "HUMAN_3",
         leads: ["ORIGINAL"],
-        opponents: ["CULT", "UNDEAD"],
-        allies: ["GOBLIN"],
-        size: 20,
+        opponents: ["GOBLIN", "DINOSAUR"],
+        allies: [],
+        size: 16,
+        best: null,
       },
+      {
+        id: "HUMAN_4",
+        leads: ["ORIGINAL"],
+        opponents: ["CULT", "ICE_FOLK"],
+        allies: ["UNDEAD"],
+        size: 16,
+        best: null,
+      },
+      {
+        id: "HUMAN_5",
+        leads: ["ORIGINAL"],
+        opponents: ["GOBLIN"],
+        allies: [],
+        size: 16,
+        best: null,
+      },
+      {
+        id: "HUMAN_6",
+        leads: ["ORIGINAL"],
+        opponents: ["GOBLIN", "DINOSAUR", "CULT"],
+        allies: [],
+        size: 20,
+        best: null,
+      },
+    ]);
+    expect(cards.map((card) => [card.stars, card.maxStars])).toEqual([
+      [1, 3],
+      [0, 3],
+      [0, 3],
+      [0, 3],
+      [0, 3],
+      [0, 3],
     ]);
   });
 
   it("puts an allied AI seat of a mission with teams among the allies", () => {
     // The capture fixture: seat 1 is on your team, seat 2 is the enemy.
     const fixture = {
-      ...CHAPTER_ONE_V7,
-      missions: [{ ...CHAPTER_ONE_V7.missions[0], missionId: "TEST_CAPTURE" }],
-    } as typeof CHAPTER_ONE_V7;
+      ...CHAPTER_HUMANS_V7,
+      missions: [
+        { ...CHAPTER_HUMANS_V7.missions[0], missionId: "TEST_CAPTURE" },
+      ],
+    } as typeof CHAPTER_HUMANS_V7;
     const [card] = campaignMissionCardsV7(fixture, {});
     expect(card?.allies).toHaveLength(1);
     expect(card?.opponents).toHaveLength(1);
     expect(card?.maxStars).toBe(2);
   });
 
-  it("derives unlocks from completions: Human always, Goblin after 2, Undead after 4", () => {
-    expect(campaignUnlockedFactionsV7({})).toEqual(["ORIGINAL"]);
-    expect(campaignUnlockedFactionsV7({ FRONTIER_1: won() })).toEqual([
-      "ORIGINAL",
-    ]);
-    expect(
-      campaignUnlockedFactionsV7({ FRONTIER_1: won(), FRONTIER_2: won() }),
-    ).toEqual(["ORIGINAL", "GOBLIN"]);
-    expect(
-      campaignUnlockedFactionsV7({
-        FRONTIER_1: won(),
-        FRONTIER_2: won(),
-        FRONTIER_3: won(),
-        FRONTIER_4: won(),
-      }),
-    ).toEqual(["ORIGINAL", "GOBLIN", "UNDEAD"]);
-    expect(
-      campaignNewlyUnlockedV7(
-        { FRONTIER_1: won() },
-        { FRONTIER_1: won(), FRONTIER_2: won() },
-      ),
-    ).toEqual(["GOBLIN"]);
-    expect(
-      campaignNewlyUnlockedV7(
-        { FRONTIER_1: won(), FRONTIER_2: won() },
-        { FRONTIER_1: won(), FRONTIER_2: won(9) },
-      ),
-    ).toEqual([]);
+  it("shows a designed mission that is not built as coming soon, and refuses an unplanned one", () => {
+    const first = CHAPTER_HUMANS_V7.missions[0];
+    if (first === undefined) throw new Error("no first mission");
+    const planned: CampaignChapterV7 = {
+      ...CHAPTER_HUMANS_V7,
+      missions: [
+        {
+          ...first,
+          missionId: "NOT_BUILT_YET",
+          planned: { leads: ["GOBLIN"], opponents: ["DWARF"], size: 14 },
+        },
+      ],
+    };
+    expect(campaignMissionCardsV7(planned, {})[0]).toMatchObject({
+      built: false,
+      leads: ["GOBLIN"],
+      opponents: ["DWARF"],
+      allies: [],
+      size: 14,
+      stars: 0,
+      maxStars: 3,
+    });
+    const unplanned: CampaignChapterV7 = {
+      ...CHAPTER_HUMANS_V7,
+      missions: [{ ...first, missionId: "NOT_BUILT_YET" }],
+    };
+    expect(() => campaignMissionCardsV7(unplanned, {})).toThrow(
+      /not registered/,
+    );
   });
 
-  it("filters a choice mission to unlocked factions; fixed seats need no unlock", () => {
-    expect(
-      campaignFactionChoicesV7("FRONTIER_4", {
-        FRONTIER_1: won(),
-        FRONTIER_2: won(),
-        FRONTIER_3: won(),
-      }),
-    ).toEqual(["ORIGINAL", "GOBLIN"]);
-    // Goblin not unlocked (mission 2 not won): only Human is offered.
-    expect(
-      campaignFactionChoicesV7("FRONTIER_4", {
-        FRONTIER_1: won(),
-        FRONTIER_3: won(),
-      }),
-    ).toEqual(["ORIGINAL"]);
-    // Mission 3 is played as the Goblins whatever is unlocked.
-    expect(campaignFactionChoicesV7("FRONTIER_3", {})).toEqual(["GOBLIN"]);
-    expect(campaignFactionChoicesV7("NOT_A_MISSION", {})).toEqual([]);
+  it("offers a choice mission's whole list and a fixed seat's one faction: nothing is locked", () => {
+    // pulp_wars-hmyk.22: the faction unlocks were the retired prologue's;
+    // whatever was won, every faction of a seat's choice is offered.
+    expect(campaignFactionChoicesV7("TEST_GROUNDS")).toEqual([
+      "ORIGINAL",
+      "GOBLIN",
+    ]);
+    expect(campaignFactionChoicesV7("HUMAN_1")).toEqual(["ORIGINAL"]);
+    expect(campaignFactionChoicesV7("UNDEAD_1")).toEqual(["UNDEAD"]);
+    expect(campaignFactionChoicesV7("NOT_A_MISSION")).toEqual([]);
+    expect(campaignFactionChoicesV7("FRONTIER_4")).toEqual([]);
   });
 
   it("finds chapter missions and the next one; hidden fixtures belong to none", () => {
-    expect(campaignMissionV7("FRONTIER_2")?.entry.number).toBe(2);
+    expect(campaignMissionV7("HUMAN_2")?.entry.number).toBe(2);
     expect(campaignMissionV7("TEST_GROUNDS")).toBeNull();
-    expect(campaignNextMissionV7("FRONTIER_1")?.missionId).toBe("FRONTIER_2");
-    expect(campaignNextMissionV7("FRONTIER_4")?.missionId).toBe("FRONTIER_5");
-    expect(campaignNextMissionV7("FRONTIER_5")?.missionId).toBe("FRONTIER_6");
-    expect(campaignNextMissionV7("FRONTIER_6")?.missionId).toBe("FRONTIER_7");
-    // Missions 9 and 10 are built (`pulp_wars-v642.4`); after the last
-    // there is nothing to go on to.
-    expect(campaignNextMissionV7("FRONTIER_8")?.missionId).toBe("FRONTIER_9");
-    expect(campaignNextMissionV7("FRONTIER_9")?.missionId).toBe("FRONTIER_10");
-    expect(campaignNextMissionV7("FRONTIER_10")).toBeNull();
-    expect(campaignTagNameV7("FRONTIER_2", "WARRENS")).toBe("the Warrens");
+    expect(campaignMissionV7("FRONTIER_2")).toBeNull();
+    expect(campaignNextMissionV7("HUMAN_1")?.missionId).toBe("HUMAN_2");
+    expect(campaignNextMissionV7("HUMAN_5")?.missionId).toBe("HUMAN_6");
+    // After a campaign's last mission there is nothing to go on to.
+    expect(campaignNextMissionV7("HUMAN_6")).toBeNull();
+    expect(campaignNextMissionV7("FRONTIER_1")).toBeNull();
+    expect(campaignTagNameV7("HUMAN_5", "GOLDEN_GOOSE")).toBe(
+      "the Golden Goose",
+    );
     expect(campaignTagNameV7("TEST_ESCORT", "SOME_PLACE")).toBe("some place");
     expect(campaignNextMissionV7("TEST_GROUNDS")).toBeNull();
   });

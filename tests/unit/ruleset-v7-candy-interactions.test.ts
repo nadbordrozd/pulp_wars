@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
   createPlayableGameV7,
-  missionByIdV7,
   parseGameStateV7,
   queryPlayerCommandsV7,
   viewForV7,
@@ -448,10 +447,5 @@ describe("setups (sections 2.4, 12.10, and 12.17)", () => {
           JSON.stringify(command),
         ).toBe(state.rulesetId);
     }
-  });
-
-  it("keeps the teaser missions free of the Candy", () => {
-    for (const id of ["FRONTIER_1", "FRONTIER_2", "FRONTIER_3", "FRONTIER_4"])
-      expect(JSON.stringify(missionByIdV7(id))).not.toContain("CANDY");
   });
 });
