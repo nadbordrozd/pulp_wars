@@ -1228,6 +1228,79 @@ forecast (only its first target is the eye mark); a status other than a
 Bolas or a Ribbit (a frog, Plague, a bite) put on a bearer by an attack is
 valued only as the attack. No number was tuned (no simulation).
 
+### 12.9 As built: keeping the summons bound (`pulp_wars-mch9.57`, `pulp_wars-mch9.56`)
+
+The user (2026-10-20): the Cult AI "should make more of an effort to avoid
+having their summons unbound. units on the front line should be
+channelling". Built on hand-built states only
+(`tests/unit/ruleset-v7-cult-bound-ai.test.ts`: each state ended a Cult
+turn, before this bead, with a summon that broke loose at its next check,
+or that the visible enemy could break with one hit on each channeller it
+reaches; one more state, a Mass on its Doorstep, guards the change). No
+rule changed and the ruleset identity did not move. No match was played.
+The code is `cultPlanV7` in `src/ai/v7-cult-channel.ts`, the Herald's
+scoring in `src/ai/v7-cult-rituals.ts`, and the `GUARD` garrison in
+`src/ai/v7-directives.ts`. The failures found, and what now happens:
+
+1. **A Horror summoned at the front.** The Summoner and its helper hold
+   it from where they stand, both in the reach of two Archers: one hit on
+   each breaks it. The Initiates behind took a village and wandered.
+   **The strands the enemy cannot break** (pass 4): the visible enemies
+   are matched to the channellers they can attack (each breaks one strand,
+   three for a gripped channeller), and a held daemon whose strands that
+   best matching leaves short of its Control and spare (pass 2's budget)
+   gets more channellers, the dearest daemon first, each the free cultist
+   that leaves it the most strands after the matching, while one more
+   raises them. Never an Idol Bearer, a busy Summoner, or a cultist with a
+   village or a Seizure to hold. So the front-line cultists by a summon
+   channel it instead of wandering or brawling.
+2. **An Imp of a Brood killed and advanced away from its lead** (A-R3 let
+   any Imp of a Brood make that advance) and broke loose. Now an advance
+   after a kill, for every daemon, ends beyond its holders (its Brood, its
+   channellers) only for a victim worth `CULT_LOOSE_KILL_RATIO_V7` (2)
+   times the daemon's price, its Coins against the daemon's Favour
+   (`cultDaemonWorthV7`: Imp 2, Horror 4, Mass 5, Herald 18; a lead Imp
+   with the Imps its Brood holds): a Knight for an Imp, a Catapult for a
+   Horror.
+3. **One cultist for two daemons.** Pass 1 served the Herald, then the
+   others by unit ID: an Imp kept the strand and a Horror broke loose. Now
+   the dearest is served first, so the cheapest is the one let go; and
+   once the plan knows which daemons it lets go, the other daemons'
+   channellers take tiles out of their rampage (a robed cultist within 2,
+   or the nearest unit in its reach), which comes at the check, before the
+   daemons of higher unit IDs are checked.
+4. **A channeller beside an Idol Bearer in two Archers' reach.** The tile
+   beside a bearer came before a tile out of reach, but the shield wall's
+   halved shot still breaks a strand. Now a tile nothing can hit comes
+   first, then the bearer, then the fewest enemies that reach it; among
+   the candidates of one rank, one with such a tile is asked first.
+5. **A Horror struck across a lake.** A daemon could end a Move "within 4
+   tiles" (`CULT_DAEMON_LEASH_V7`) of the cultists it still wanted, which
+   counted cultists a lake, a unit in the way, or a mission's leash keeps
+   back. Now a cultist counts when it stands within 3 of the tile or (one
+   that has not moved and is no center's garrison) a Move the engine
+   offers it ends within 3; the RETURN step reads the same.
+6. **The Herald's pair of cheap kills.** Two kills let it advance off its
+   leash, so two Warriors bought the bind of an 18-Favour Herald. Now the
+   pair's victims must be worth its price together
+   (`CULT_HERALD_LOOSE_KILLS_V7`, 18 Coins: "kills a lot"). A kill never
+   wins the game (only a capture eliminates a player), so no win is read.
+7. **`pulp_wars-mch9.56`, a bound Herald under a `GUARD` directive.** In
+   `DINOSAUR_6` the Herald stood still until it broke loose. The cause was
+   the directive, not the channel plan: with eight or fewer of the Lodge's
+   units inside the zone, the Herald (called inside it) took a garrison
+   place and was leashed to stay. A summon (a daemon or a Tentacle) is now
+   never the garrison (`guardGarrisonV7`); it plays the others' directive,
+   `ASSAULT` there, and its leash (rule 5) keeps it within the reach of the
+   garrison cultists that channel it from inside the zone.
+
+A seat without summons decides as before (the plan's new parts read only
+the daemons; two recorded turns are pinned). Left for later: the Summon's
+tile still prefers the one nearest the enemy (rule 1 now covers it with
+more strands rather than a safer tile), and the matching takes one strand
+per enemy unit (a splash, a Herald's two attacks, or a Catapult's shot on
+two channellers side by side are not counted).
+
 ## 13. Interface
 
 All targeting stays on the board ([board targeting](../ui/BOARD_TARGETING.md));
@@ -1717,3 +1790,12 @@ Bearer before the check. The search found two real gaps in "where a
 channeller can follow it" (section 12.7, rule 4): a cultist kept for the
 Herald's Hunger, and a garrison beyond its Channel reach of its center,
 were counted as followers; neither is now.
+
+**Keeping the summons bound** (`pulp_wars-mch9.57`, with
+`pulp_wars-mch9.56`; no rule changed): at the user's request the Normal AI
+works harder to keep its summons bound: channellers out of reach first,
+more strands where the visible enemy can break them, the dearest daemon
+held first, no advance off its leash but for a kill worth twice the
+daemon (the Herald's pair worth its price), a cultist counted as a
+follower only when an offered Move takes it within reach, and no summon in
+a `GUARD` garrison. See [section 12.9](#129-as-built-keeping-the-summons-bound-pulp_wars-mch957-pulp_wars-mch956).

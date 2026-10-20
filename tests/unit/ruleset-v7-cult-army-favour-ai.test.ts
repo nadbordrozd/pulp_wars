@@ -375,19 +375,21 @@ describe("the Cult seat (A-R1): cultists do not brawl", () => {
     expect(reached(bearer, at(3, 4))).toBe(true);
     expect(ends(bearer, at(2, 5))).toContainEqual(at(3, 4));
     // A Horror on (2, 3), held by two cultists that have channelled
-    // (Control and one to spare): the mover is no channeller of it.
+    // (Control and one to spare) out of every reach: the mover is no
+    // channeller of it. (`pulp_wars-mch9.57`: with its second holder in
+    // the garrison's reach, on (4, 6), the mover would channel it too.)
     const horror = withStrandsV7(
       withHorrorV7(
         approach("FIGHTER", [
           own("FIGHTER", 4, 5, { activation: CHANNELLED }),
-          own("FIGHTER", 4, 6, { activation: CHANNELLED }),
+          own("FIGHTER", 5, 6, { activation: CHANNELLED }),
         ]),
         0,
         at(2, 3),
         { activation: SPENT },
       ),
       at(2, 3),
-      [at(4, 5), at(4, 6)],
+      [at(4, 5), at(5, 6)],
     );
     expect(strandsOn(horror, at(2, 3))).toBe(2);
     expect(ends(horror, at(2, 5))).toContainEqual(at(2, 4));

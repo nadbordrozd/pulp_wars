@@ -62,7 +62,13 @@ import {
  * Brood), Doorstep (no channeller for a Mass at home; an Idol Bearer that
  * holds one stays by it, or steps beside one), Swarm, and the Summoner a
  * Seizure may need kept from the trickle and the spare strands
- * (`tests/unit/ruleset-v7-cult-summons-ai.test.ts`).
+ * (`tests/unit/ruleset-v7-cult-summons-ai.test.ts`). Revised by
+ * `pulp_wars-mch9.57` (keep the summons bound, section 12.9): the dearest
+ * daemon is held first, channellers take tiles nothing can hit first,
+ * a daemon gets more strands where the visible enemy can break those it
+ * has (pass 4), a cultist follows a daemon only where an offered Move takes
+ * it, and an advance after a kill ends off the leash only for a victim
+ * worth twice the daemon (`tests/unit/ruleset-v7-cult-bound-ai.test.ts`).
  *
  * The Normal AI chooses one command at a time and remembers nothing, so the
  * plan is a function of the public view and the commands the engine offers:
@@ -120,6 +126,9 @@ export const CULT_CHANNEL_RANGE_V7 = 3;
 /**
  * A daemon ends its Move within this many tiles of its wanted channellers
  * (section 15.2 step 2): one more than the range, the step of a cultist.
+ * (`pulp_wars-mch9.57`: the plan now asks whether a cultist can follow, a
+ * Move the engine offers it ending within the Channel's reach; this is the
+ * farthest such a cultist of Move 1 stands.)
  */
 export const CULT_DAEMON_LEASH_V7 = 4;
 /** A Horror is summoned with an enemy unit or center this near. */
@@ -153,6 +162,31 @@ export const CULT_HOME_GUARD_V7 = 3;
 export const CULT_SPARE_BODIES_V7 = 2;
 /** The own units this near a daemon that cannot be held step away. */
 export const CULT_FLEE_RANGE_V7 = 4;
+/**
+ * `pulp_wars-mch9.57`: a daemon's advance after a kill may take it beyond
+ * its channellers only for a victim worth this many times the daemon (its
+ * price in Coins against the daemon's in Favour).
+ */
+export const CULT_LOOSE_KILL_RATIO_V7 = 2;
+
+/**
+ * `pulp_wars-mch9.57`: what a daemon is worth to its seat, in Favour: its
+ * price (the Herald the Great Summoning's), and nothing for a Tentacle.
+ */
+export function cultDaemonWorthV7(role: string | undefined): number {
+  switch (role) {
+    case "IMP":
+      return CULT_IMP_FAVOUR_V7;
+    case "HORROR":
+      return CULT_HORROR_FAVOUR_V7;
+    case "MASS":
+      return CULT_MASS_FAVOUR_V7;
+    case "HERALD":
+      return CULT_SUMMONING_FAVOUR_V7;
+    default:
+      return 0;
+  }
+}
 
 export const CULT_SEIZE_PRIORITY_V7 = 4000;
 export const CULT_RELEASE_PRIORITY_V7 = 3990;
@@ -401,6 +435,8 @@ interface AssignmentV7 {
   readonly daemon: PublicUnitV7;
   readonly option: OptionV7;
   readonly bind: boolean;
+  /** `pulp_wars-mch9.57`: it takes its tile beside a Thing for its grip. */
+  readonly grip: boolean;
 }
 
 /**
@@ -933,6 +969,28 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
     return options;
   };
 
+  /**
+   * `pulp_wars-mch9.57`: the free cultist can channel a daemon on `at` this
+   * turn: it stands within the Channel's reach of it, or (it has not moved
+   * and is no center's garrison) a Move the engine offers it ends within
+   * that reach. (It was "within 4 tiles", which counted a cultist the
+   * terrain, a unit in the way, or a mission's leash keeps back: a daemon
+   * stepped where it could not be held.)
+   */
+  const followsTo = (unit: PublicUnitV7, at: CoordV7): boolean =>
+    gap(unit.at, at) <= CULT_CHANNEL_RANGE_V7 ||
+    (!unit.activation.moved &&
+      !onOwnCenter(unit) &&
+      (movesByUnit.get(unit.id) ?? []).some((move) => {
+        const end = move.path.at(-1);
+        return (
+          end !== undefined &&
+          !sameTile(end, at) &&
+          gap(end, at) <= CULT_CHANNEL_RANGE_V7 &&
+          landTile(end)
+        );
+      }));
+
   const assigned = new Map<UnitId, AssignmentV7>();
   const order: AssignmentV7[] = [];
   /** The tiles of the channellers: the strand holders and the assigned. */
@@ -941,8 +999,67 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
     .map((unit) => unit.at);
 
   /**
-   * The tile an assigned channeller takes (section 15.2 step 3): next to an
-   * own Idol Bearer, then outside every visible enemy's threatened tiles,
+   * `pulp_wars-mch9.57`: the own daemons the plan lets go (set once the
+   * passes know them). Each rampages at the check, before the daemons of
+   * higher unit IDs are checked, on the nearest robed cultist within 2, or
+   * else on the nearest unit in its reach that is no summon (section 9.2): a
+   * channeller of another daemon it hits breaks that strand too.
+   */
+  let looseDaemons: readonly PublicUnitV7[] = [];
+  /** The own daemons let go whose rampage would hit a cultist on `at`. */
+  const looseOn = (at: CoordV7): readonly number[] =>
+    looseDaemons.flatMap((loose, index) => {
+      const span = gap(loose.at, at);
+      const reach = unitRoleRuleV7(view, loose).move + 1;
+      const first =
+        span <= 2 ||
+        (span <= reach &&
+          !view.units.some(
+            (unit) =>
+              unit.hp > 0 &&
+              unit.form === "LAND" &&
+              unit.summoned === undefined &&
+              !isNeutralOwnerV7(unit.ownerId) &&
+              !sameTile(unit.at, at) &&
+              gap(unit.at, loose.at) < span,
+          ));
+      return first ? [enemies.length + index] : [];
+    });
+  /**
+   * `pulp_wars-mch9.57`: what can hit a cultist on `at` before the next
+   * check: the visible enemies that can attack it (by index) and the own
+   * daemons let go that would rampage on it (after them).
+   */
+  const attackersAt = new Map<string, readonly number[]>();
+  const attackersOf = (at: CoordV7): readonly number[] => {
+    const key = cultTileKeyV7(at);
+    let list = attackersAt.get(key);
+    if (list === undefined) {
+      const visible = tools.threatened(at)
+        ? enemies.flatMap((enemy, index) =>
+            tools.reach(enemy.id, at) ? [index] : [],
+          )
+        : [];
+      list = [
+        ...visible,
+        // (A threat of no player's unit, a monster: one of its own.)
+        ...(tools.threatened(at) && visible.length === 0
+          ? [-1 - (at.y * view.board.width + at.x)]
+          : []),
+        ...looseOn(at),
+      ];
+      attackersAt.set(key, list);
+    }
+    return list;
+  };
+  /** Nothing can hit a channeller on `at` before the next check. */
+  const sheltered = (at: CoordV7): boolean => attackersOf(at).length === 0;
+  /**
+   * The tile an assigned channeller takes (section 15.2 step 3): outside
+   * every visible enemy's threatened tiles (`pulp_wars-mch9.57`: first, as
+   * any hit breaks a strand, the shield wall's halved one too; and out of
+   * the rampage of an own daemon the plan lets go), then next to an own
+   * Idol Bearer, then in the reach of the fewest of them (`attackersOf`),
    * then not next to another channeller, then the farthest from the enemy;
    * then next to a Thing that grips nobody, then where it stands, then the
    * first in `(y, x)` order. With `grip` (too few cultists for the Control
@@ -960,13 +1077,14 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
         Number(
           grip && freeThings.some((thing) => gap(thing.at, option.at) === 1),
         ),
+        Number(sheltered(option.at)),
         Number(
           bearers.some(
             (bearer) =>
               bearer.id !== unit.id && gap(bearer.at, option.at) === 1,
           ),
         ),
-        Number(!tools.threatened(option.at)),
+        -attackersOf(option.at).length,
         Number(!channellerTiles.some((tile) => gap(tile, option.at) === 1)),
         enemyGap(option.at),
         Number(freeThings.some((thing) => gap(thing.at, option.at) === 1)),
@@ -987,8 +1105,9 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
    * nearest first; one that has moved already (it came for this) before the
    * others, then in the order of `channelRank` (the Summoner with nothing
    * better to do before a cultist with a village or a Seizure to hold, the
-   * Idol Bearer and the busy Summoner last). Never a unit kept for the
-   * Herald's Hunger.
+   * Idol Bearer and the busy Summoner last; `pulp_wars-mch9.57`: within a
+   * rank, one that can channel from a tile no visible enemy can attack
+   * first). Never a unit kept for the Herald's Hunger.
    */
   const candidatesFor = (
     daemon: PublicUnitV7,
@@ -998,13 +1117,21 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
   }[] =>
     free
       .filter((unit) => !assigned.has(unit.id) && !keep.has(unit.id))
-      .map((unit) => ({ unit, options: optionsFor(unit, daemon) }))
+      .map((unit) => {
+        const options = optionsFor(unit, daemon);
+        return {
+          unit,
+          options,
+          safe: options.some((option) => sheltered(option.at)),
+        };
+      })
       .filter((item) => item.options.length > 0)
       .sort(
         (left, right) =>
           Number(right.unit.activation.moved) -
             Number(left.unit.activation.moved) ||
           channelRank(left.unit) - channelRank(right.unit) ||
+          Number(right.safe) - Number(left.safe) ||
           gap(left.unit.at, daemon.at) - gap(right.unit.at, daemon.at) ||
           left.unit.id - right.unit.id,
       );
@@ -1029,7 +1156,13 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
       grip,
     );
     if (option === undefined) return;
-    const assignment = { unit: item.unit, daemon, option, bind };
+    const assignment = {
+      unit: item.unit,
+      daemon,
+      option,
+      bind,
+      grip: grip && gripOptions.length > 0,
+    };
     assigned.set(item.unit.id, assignment);
     order.push(assignment);
     channellerTiles.push(option.at);
@@ -1053,6 +1186,11 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
     lead: UnitId | null;
     /** A-R3: a Gibbering Mass its Doorstep holds (or an Idol Bearer's step). */
     doorstep: boolean;
+    /**
+     * `pulp_wars-mch9.57`: what the seat loses when it breaks loose, in
+     * Favour (`cultDaemonWorthV7`; a lead Imp with the Imps its Brood holds).
+     */
+    readonly worth: number;
   }
   const work: DaemonWorkV7[] = daemonEntries.map((item) => ({
     unit: item.unit,
@@ -1066,7 +1204,24 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
     spare: spareOf(item),
     lead: followerOf(item.unit.id) ? (leadOf.get(item.unit.id) ?? null) : null,
     doorstep: onDoorstep(item.entry),
+    worth:
+      cultDaemonWorthV7(item.entry.role) *
+      (item.entry.role === "IMP" && !followerOf(item.unit.id)
+        ? 1 + (followersOf.get(item.unit.id)?.length ?? 0)
+        : 1),
   }));
+  /**
+   * `pulp_wars-mch9.57`: the daemons the channel plan serves first: the
+   * Herald, then the dearest (the cheapest is the one let go when the
+   * cultists are too few for all), then by unit ID.
+   */
+  const byWorth = [...work].sort(
+    (left, right) =>
+      Number(right.unit.summoned === "HERALD") -
+        Number(left.unit.summoned === "HERALD") ||
+      right.worth - left.worth ||
+      left.unit.id - right.unit.id,
+  );
 
   // ---------------------------------------------------- the Offering
   // Section 15.4 and 15.10 rule 3 (paced): a city at its unit limit or with
@@ -1306,10 +1461,10 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
   };
 
   // Pass 1 (section 15.2 step 1): each daemon its Control, the Herald
-  // first, then the others by unit ID. A-R3: an Imp a lead's Brood holds
-  // and a Mass on its Doorstep are given none; an Imp whose lead cannot be
-  // held then asks for a strand of its own.
-  for (const daemon of work) {
+  // first, then (`pulp_wars-mch9.57`) the dearest, then by unit ID. A-R3:
+  // an Imp a lead's Brood holds and a Mass on its Doorstep are given none;
+  // an Imp whose lead cannot be held then asks for a strand of its own.
+  for (const daemon of byWorth) {
     // (A-R1: a starving Herald is let go: no strand for it.)
     if (daemon.starving || daemon.lead !== null || daemon.doorstep) continue;
     if (!holdOne(daemon)) daemon.holdable = false;
@@ -1325,8 +1480,9 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
 
   // Pass 2: the strands to spare for each daemon that is held (one; A-R3:
   // one for a Brood of three, none for a smaller Brood), from the cultists
-  // that are left ("with too few robed cultists it wants Control").
-  for (const daemon of work) {
+  // that are left ("with too few robed cultists it wants Control"; the
+  // dearest first, `pulp_wars-mch9.57`).
+  for (const daemon of byWorth) {
     if (!daemon.holdable || daemon.lead !== null || daemon.doorstep) continue;
     const holders = holdersOf(daemon.unit.id);
     const total =
@@ -1396,6 +1552,148 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
         break;
       }
     }
+
+  // `pulp_wars-mch9.57`: the daemons the plan lets go are known now; the
+  // channellers of the others take their tiles out of those daemons'
+  // rampage (it comes at the check, and a hit breaks a strand).
+  looseDaemons = work
+    .filter((daemon) => !daemon.holdable)
+    .map((daemon) => daemon.unit);
+  if (looseDaemons.length > 0) {
+    attackersAt.clear();
+    channellerTiles.length = own.filter((unit) => strandOf.has(unit.id)).length;
+    order.forEach((assignment, index) => {
+      const options = optionsFor(assignment.unit, assignment.daemon);
+      const gripOptions = assignment.grip
+        ? options.filter((option) =>
+            freeThings.some((thing) => gap(thing.at, option.at) === 1),
+          )
+        : [];
+      const option =
+        bestOption(
+          assignment.unit,
+          gripOptions.length > 0 ? gripOptions : options,
+          assignment.grip,
+        ) ?? assignment.option;
+      const next = { ...assignment, option };
+      order[index] = next;
+      assigned.set(assignment.unit.id, next);
+      channellerTiles.push(option.at);
+    });
+  }
+
+  // Pass 4 (`pulp_wars-mch9.57`, keep the summons bound): every hit breaks
+  // a strand, so a daemon is held at the next check only if the strands the
+  // visible enemy cannot break reach its Control. The visible enemies are
+  // matched to the channellers they can attack (each enemy breaks one
+  // strand: three for a gripped channeller; an own daemon let go, the
+  // channeller its rampage falls on), and a held daemon whose strands the
+  // best such matching leaves short of the strands it wants (its Control
+  // and its spare, pass 2) gets more channellers, the dearest daemon
+  // first, each the free cultist that
+  // leaves it most strands after the matching (one on a tile out of reach
+  // first), and only while one more raises that. Never a busy Summoner, an
+  // Idol Bearer (the warden), or a cultist with a village or a Seizure to
+  // hold: the front-line cultists by a summon channel it instead of
+  // wandering or brawling.
+  /**
+   * The strands among `holders` (tiles and weights) the visible enemies can
+   * break, each one strand-holder at most: the greatest weight of a
+   * matching (greedy by weight with augmenting paths, which is exact for a
+   * matching's one side).
+   */
+  const breakable = (
+    holders: readonly { readonly at: CoordV7; readonly weight: number }[],
+  ): number => {
+    const reachers = holders.map((holder) => attackersOf(holder.at));
+    const matched = new Map<number, number>();
+    const augment = (index: number, seen: Set<number>): boolean => {
+      for (const enemy of reachers[index] ?? []) {
+        if (seen.has(enemy)) continue;
+        seen.add(enemy);
+        const other = matched.get(enemy);
+        if (other === undefined || augment(other, seen)) {
+          matched.set(enemy, index);
+          return true;
+        }
+      }
+      return false;
+    };
+    let broken = 0;
+    for (const index of holders
+      .map((_, at) => at)
+      .sort(
+        (left, right) =>
+          (holders[right]?.weight ?? 0) - (holders[left]?.weight ?? 0),
+      ))
+      if (augment(index, new Set())) broken += holders[index]?.weight ?? 0;
+    return broken;
+  };
+  /** The channellers of a daemon at the next check: tiles and weights. */
+  const holdingTiles = (
+    daemon: DaemonWorkV7,
+  ): { readonly at: CoordV7; readonly weight: number }[] => [
+    ...holdersOf(daemon.unit.id)
+      .filter((unit) => gap(unit.at, daemon.unit.at) <= CULT_CHANNEL_RANGE_V7)
+      .map((unit) => ({
+        at: unit.at,
+        weight:
+          grippedCultists.has(unit.id) ||
+          (daemon.grip &&
+            anchors.some((command) => command.cultistUnitId === unit.id))
+            ? 3
+            : 1,
+      })),
+    ...order
+      .filter((assignment) => assignment.daemon.id === daemon.unit.id)
+      .map((assignment) => ({
+        at: assignment.option.at,
+        weight: assignment.grip ? 3 : 1,
+      })),
+  ];
+  /** The strands the daemon keeps after the visible enemy's best hits. */
+  const keptStrands = (
+    holders: readonly { readonly at: CoordV7; readonly weight: number }[],
+  ): number =>
+    holders.reduce((sum, holder) => sum + holder.weight, 0) -
+    breakable(holders);
+  for (const daemon of byWorth) {
+    if (
+      !daemon.holdable ||
+      daemon.starving ||
+      daemon.lead !== null ||
+      daemon.doorstep
+    )
+      continue;
+    const target = daemon.control + daemon.spare;
+    for (;;) {
+      const holders = holdingTiles(daemon);
+      const kept = keptStrands(holders);
+      if (kept >= target) break;
+      let best:
+        | {
+            readonly item: ReturnType<typeof candidatesFor>[number];
+            readonly kept: number;
+          }
+        | undefined;
+      for (const item of candidatesFor(daemon.unit)) {
+        if (
+          bearers.some((bearer) => bearer.id === item.unit.id) ||
+          (isSummoner(item.unit) && busySummoner(item.unit)) ||
+          occupied(item.unit)
+        )
+          continue;
+        const option = bestOption(item.unit, item.options, false);
+        if (option === undefined) continue;
+        const after = keptStrands([...holders, { at: option.at, weight: 1 }]);
+        if (after > kept && (best === undefined || after > best.kept))
+          best = { item, kept: after };
+      }
+      if (best === undefined) break;
+      assign(daemon.unit, best.item, false, false);
+      daemon.channellers.push(best.item.unit.id);
+    }
+  }
 
   // Anchor (section 15.4): a Thing always grips a channeller beside it.
   {
@@ -1478,13 +1776,8 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
       (holders.every((unit) => gap(unit.at, tile) <= CULT_CHANNEL_RANGE_V7)
         ? daemon.strands
         : 0) +
-      pool.filter(
-        (unit) =>
-          gap(unit.at, tile) <=
-          (unit.activation.moved
-            ? CULT_CHANNEL_RANGE_V7
-            : CULT_DAEMON_LEASH_V7),
-      ).length;
+      // (`pulp_wars-mch9.57`: a cultist that can follow it there.)
+      pool.filter((unit) => !keep.has(unit.id) && followsTo(unit, tile)).length;
     const ownGap = (tile: CoordV7): number =>
       own.reduce(
         (best, unit) =>
@@ -1779,10 +2072,7 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
         !keep.has(unit.id) &&
         (assigned.get(unit.id)?.daemon.id ?? daemon.unit.id) ===
           daemon.unit.id &&
-        gap(unit.at, at) <=
-          (unit.activation.moved || onOwnCenter(unit)
-            ? CULT_CHANNEL_RANGE_V7
-            : CULT_DAEMON_LEASH_V7),
+        followsTo(unit, at),
     ).length;
     return daemon.strands + near >= need;
   };
@@ -1795,6 +2085,20 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
    * follow it; a lead Imp keeps the Imps of its Brood that have moved beside
    * it; a kill may break a Brood.
    */
+  /**
+   * `pulp_wars-mch9.57`: the kill whose advance ends on `at` (its victim's
+   * tile) is worth the daemon's bind: a victim worth
+   * `CULT_LOOSE_KILL_RATIO_V7` times the daemon or more (its price in
+   * Coins, `CULT_SWARM_PRICELESS_V7` for a unit with none).
+   */
+  const looseKill = (daemon: DaemonWorkV7, at: CoordV7): boolean => {
+    const victim = enemies.find((unit) => sameTile(unit.at, at));
+    return (
+      victim !== undefined &&
+      (unitRoleRuleV7(view, victim).cost ?? CULT_SWARM_PRICELESS_V7) >=
+        CULT_LOOSE_KILL_RATIO_V7 * daemon.worth
+    );
+  };
   const daemonMayEndAs = (
     daemonUnitId: UnitId,
     at: CoordV7,
@@ -1818,12 +2122,14 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
         channelHolds(daemon, at, Math.max(daemon.wanted, daemon.control))
       );
     }
+    // `pulp_wars-mch9.57`: an advance after a kill (A-R3 let any Imp of a
+    // Brood make it) ends beyond its holders only for a kill of
+    // `CULT_LOOSE_KILL_RATIO_V7` times its worth.
+    if (advance && looseKill(daemon, at)) return true;
     if (daemon.unit.summoned === "IMP") {
       if (daemon.lead !== null)
         return (
-          advance ||
-          broodAt(daemonUnitId, at) ||
-          channelHolds(daemon, at, daemon.control)
+          broodAt(daemonUnitId, at) || channelHolds(daemon, at, daemon.control)
         );
       const followers = work.filter(
         (follower) => follower.lead === daemonUnitId,

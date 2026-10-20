@@ -273,8 +273,8 @@ function zoneFieldsV7(
 }
 
 /**
- * The `GUARD` garrison (section 2.5): own land units already inside the
- * zone first, then by land-route steps to the zone (units with no route
+ * The `GUARD` garrison (section 2.5): own land units (never a summon,
+ * `pulp_wars-mch9.56`) already inside the zone first, then by land-route steps to the zone (units with no route
  * last), then by unit ID; at most `garrison`, fewer when the seat has fewer
  * land units. Recomputed at every decision; deterministic.
  */
@@ -287,7 +287,14 @@ export function guardGarrisonV7(
   const candidates = view.units
     .filter(
       (unit) =>
-        unit.ownerId === view.viewer.id && unit.hp > 0 && unit.form === "LAND",
+        unit.ownerId === view.viewer.id &&
+        unit.hp > 0 &&
+        unit.form === "LAND" &&
+        // `pulp_wars-mch9.56`: a summon (a Cult daemon or a Tentacle) is
+        // never the garrison; it plays the others' directive. A Herald
+        // called inside a GUARD zone (DINOSAUR_6) took a garrison place and
+        // stood still until it broke loose.
+        unit.summoned === undefined,
     )
     .map((unit) => ({
       unit,

@@ -985,7 +985,11 @@ Where section 2.5 left a detail open, the AI decided:
   the human capital is enough on its open board).
 - **`RETURN`** goes to the zone tile nearest by distance, then by the
   straighter line; the route field covers the whole zone. A `GUARD`
-  garrison unit inside the zone takes `RETURN` to its own tile (it stays). A
+  garrison unit inside the zone takes `RETURN` to its own tile (it stays).
+  A summon (a Cult daemon or a Tentacle) is never the garrison
+  (`pulp_wars-mch9.56`: a Herald called inside `DINOSAUR_6`'s zone took a
+  garrison place and stood still until it broke loose); it plays the
+  others' directive. A
   unit on an own city center with a hostile unit near, or a defender bound
   for a threatened city, keeps that objective, as in every match.
 - **Priority band** of the proxy variation is the best candidate's exact

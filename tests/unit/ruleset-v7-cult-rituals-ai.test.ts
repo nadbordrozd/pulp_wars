@@ -1217,7 +1217,7 @@ describe("the Cult seat (A-R2): the Herald's advance", () => {
     ofKind(turn.commands, "ATTACK").filter((command) => command.unitId === id)
       .length;
 
-  it("makes no lone kill whose advance leaves it beyond its channellers' reach, but two kills that do", () => {
+  it("makes no lone kill whose advance leaves it beyond its channellers' reach, but two kills worth its price that do", () => {
     // From (5, 2) a kill on (5, 1) advances it five tiles from the
     // Initiates: it would break loose at the next check.
     const lone = herald([foe("FIGHTER", 5, 1)], at(5, 4));
@@ -1226,12 +1226,21 @@ describe("the Cult seat (A-R2): the Herald's advance", () => {
     expect(attacksOf(turn, id)).toBe(0);
     expect(alive(turn.state, idAt(lone, at(5, 1)))).toBe(true);
     // A second Fighter beside the first: from the first one's tile the
-    // second attack kills too, and both are worth the bind.
+    // second attack kills too. `pulp_wars-mch9.57` (keep the summons
+    // bound): two Fighters (4 Coins) are not worth the bind of an
+    // 18-Favour Herald any more...
     const pair = herald([foe("FIGHTER", 5, 1), foe("FIGHTER", 5, 0)], at(5, 4));
-    const both = policyTurn(pair);
-    expect(attacksOf(both, idAt(pair, at(5, 4)))).toBe(2);
-    expect(alive(both.state, idAt(pair, at(5, 1)))).toBe(false);
-    expect(alive(both.state, idAt(pair, at(5, 0)))).toBe(false);
+    const cheap = policyTurn(pair);
+    expect(alive(cheap.state, idAt(pair, at(5, 1)))).toBe(true);
+    // ...two wounded Knights (18 Coins, `CULT_HERALD_LOOSE_KILLS_V7`) are.
+    const knights = herald(
+      [foe("KNIGHT", 5, 1, { hp: 3 }), foe("KNIGHT", 5, 0, { hp: 3 })],
+      at(5, 4),
+    );
+    const both = policyTurn(knights);
+    expect(attacksOf(both, idAt(knights, at(5, 4)))).toBe(2);
+    expect(alive(both.state, idAt(knights, at(5, 1)))).toBe(false);
+    expect(alive(both.state, idAt(knights, at(5, 0)))).toBe(false);
     // Sanity (the mutation): a Fighter within the leash is killed.
     const near = herald([foe("FIGHTER", 5, 2)], at(5, 4));
     expect(alive(policyTurn(near).state, idAt(near, at(5, 2)))).toBe(false);

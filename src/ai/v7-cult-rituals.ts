@@ -90,6 +90,12 @@ export const CULT_HERALD_ATTACKS_V7 = 2;
 export const CULT_PROCLAIM_RANGE_V7 = 3;
 /** The value of a unit that has no cost (a giant, a daemon, an Egg). */
 export const CULT_PRICELESS_VALUE_V7 = 12;
+/**
+ * `pulp_wars-mch9.57` (keep the summons bound): the Herald's kills take it
+ * beyond its channellers only when its victims are worth this much
+ * together (their prices in Coins): the Herald's own price, 18.
+ */
+export const CULT_HERALD_LOOSE_KILLS_V7: number = CULT_SUMMONING_FAVOUR_V7;
 
 /** The Herald's planned Move, its Proclaim, and a Horror's Boo!. */
 export const CULT_HERALD_PRIORITY_V7 = 3970;
@@ -676,15 +682,19 @@ export function cultRitualPlanV7(facts: CultRitualFactsV7): CultRitualPlanV7 {
       let from = at;
       let hp = herald.hp;
       const gone: UnitId[] = [];
-      pair.forEach((hit, index) => {
+      // `pulp_wars-mch9.57` (keep the summons bound): two kills were enough
+      // to break its leash; now only kills worth
+      // `CULT_HERALD_LOOSE_KILLS_V7` together are ("kills a lot": a kill
+      // never wins the game, as only a capture eliminates a player).
+      const killed = pair.reduce((sum, hit) => sum + hit.kills * hit.value, 0);
+      pair.forEach((hit) => {
         hp -= hit.taken;
         if (hit.advance === null) return;
         gone.push(hit.target.id);
-        const next = pair[index + 1];
         if (
           leashed(from) &&
           !leashed(hit.advance) &&
-          !(next !== undefined && next.kills > 0)
+          killed < CULT_HERALD_LOOSE_KILLS_V7
         )
           leash = false;
         from = hit.advance;

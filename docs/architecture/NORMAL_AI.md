@@ -323,7 +323,7 @@ design and the record of what each bead built and decided are in
 [the Cultists spec, section 15](../product/RULESET_7_CULTISTS.md#15-normal-ai)
 (15.1 to 15.5 the design, 15.6 to 15.10 as built) and, for the redesign,
 in [the Cult redesign, section 12](../product/RULESET_7_CULT_REDESIGN.md#12-normal-ai)
-(12.1 to 12.4 the design, 12.5 to 12.8 as built); where they differ, what
+(12.1 to 12.4 the design, 12.5 to 12.9 as built); where they differ, what
 is written here is what the code does.
 
 Tests: `tests/unit/ruleset-v7-cult-ai.test.ts`,
@@ -332,7 +332,9 @@ Tests: `tests/unit/ruleset-v7-cult-ai.test.ts`,
 `tests/unit/ruleset-v7-cult-against-ai.test.ts`,
 `tests/unit/ruleset-v7-cult-corrections-ai.test.ts`,
 `tests/unit/ruleset-v7-cult-army-favour-ai.test.ts`,
-`tests/unit/ruleset-v7-cult-summons-ai.test.ts`.
+`tests/unit/ruleset-v7-cult-summons-ai.test.ts`,
+`tests/unit/ruleset-v7-cult-bound-ai.test.ts` (keeping the summons bound,
+`pulp_wars-mch9.57`).
 
 ### The Cult seat on the army rules (`src/ai/v7-cult.ts`)
 
@@ -477,9 +479,22 @@ the army policy say.
 land form that has not used its action and holds no strand; it can channel
 a daemon when the engine offers it the Channel, or a Move that ends on land
 within 3 tiles of the daemon. Pass 1 gives each bound daemon that needs
-strands its Control (the Herald first, then the others by unit ID); pass 2
-gives each **one strand to spare** from the cultists that are left, so that
-one hit never unbinds it. **Brood** (`cultBroodLeadsV7`, checked against
+strands its Control (the Herald first, then the dearest by its price,
+`cultDaemonWorthV7`, a lead Imp counting the Imps its Brood holds, then by
+unit ID, so with too few cultists the cheapest summon is the one let go;
+`pulp_wars-mch9.57`); pass 2 gives each **one strand to spare** from the
+cultists that are left, so that one hit never unbinds it. **Pass 4, the
+strands the enemy cannot break** (`pulp_wars-mch9.57`): any hit breaks a
+strand, so the visible enemies are matched to the channellers they can
+attack (each breaks one strand, three for a gripped channeller; an own
+daemon the plan lets go breaks the strand of the cultist its rampage
+would fall on, one within 2 or the nearest in its reach); a held daemon
+whose strands that best matching leaves short of its Control and spare
+gets more channellers, the dearest daemon first, each the free cultist
+that leaves it the most strands after the matching, while one more
+raises them (never an Idol Bearer, a busy Summoner, or a cultist with a
+village or a Seizure to hold): the front-line cultists by a summon channel
+it. **Brood** (`cultBroodLeadsV7`, checked against
 the engine's `impBroodV7`): each decision the own Imps are grouped as the
 check would hold them and the fewest are channelled (an Imp with a strand
 of its own leads; then the Imp that covers the most, nearest the
@@ -493,26 +508,36 @@ make; a Summoner a Seizure may need this turn gives no strand. A Summoner
 with nothing better to do also channels for the **trickle** (its strand
 that holds pays 1 Favour), never at the cap of 30, and channels a held
 daemon beyond its Control + 1 from a tile no visible enemy can attack. The
-unit on an own center channels from its center or not at all. An assigned
-channeller prefers a tile next to an own Idol Bearer, then one outside
-every visible enemy's threatened tiles, then one not next to another
-channeller, then the farthest from the enemy, then one next to a Thing that
-grips nobody. It is held: it moves, channels, and does nothing else.
+unit on an own center channels from its center or not at all. Among
+cultists of one rank, one that can channel from a tile nothing can hit
+comes first. An assigned channeller prefers a tile outside every visible
+enemy's threatened tiles and the rampage of an own daemon let go (before
+`pulp_wars-mch9.57` a tile next to an own Idol Bearer came first, but the
+shield wall's halved shot still breaks a strand), then one next to an own
+Idol Bearer, then one in the reach of the fewest, then one not next to
+another channeller, then the farthest from the enemy, then one next to a
+Thing that grips nobody. It is held: it moves, channels, and does nothing
+else.
 
 **2. The daemon's move.** A bound daemon's Move and attack are chosen by
 the ordinary scoring and made first. A Move, and an attack whose kill would
 advance it, is refused unless the tile is within 3 tiles of every cultist
-that channels it already and within 4 (`CULT_DAEMON_LEASH_V7`) of as many
-free cultists as it still wants (within 3 for one that has moved). An Imp a
-Brood holds ends a Move beside a held lead with room, or where a free
-cultist can follow it; a lead ends no Move away from an Imp of its Brood
-that has moved already (an Imp's advance after a kill may still break its
-Brood). A Gibbering Mass ends a Move only on its Doorstep or where a
-channeller can follow it.
+that channels it already and as many free cultists as it still wants can
+follow it there: one within 3 of the tile, or (one that has not moved, not
+a center's garrison) with an offered Move ending within 3 of it
+(`pulp_wars-mch9.57`; it was "within 4", `CULT_DAEMON_LEASH_V7`, which
+counted cultists a lake, a unit in the way, or a mission's leash keeps
+back). An advance after a kill may end beyond them only for a victim worth
+`CULT_LOOSE_KILL_RATIO_V7` (2) times the daemon's price (its Coins against
+the daemon's Favour; a Knight for an Imp, a Catapult for a Horror). An Imp
+a Brood holds ends a Move, and (`pulp_wars-mch9.57`) an advance, beside a
+held lead with room, or where a free cultist can follow it; a lead ends no
+Move away from an Imp of its Brood that has moved already. A Gibbering Mass
+ends a Move only on its Doorstep or where a channeller can follow it.
 
 **3. A daemon that cannot be held** (fewer strands than its Control can
-reach it where it stands) **goes back** when a Move brings it within 4
-tiles of enough free cultists; an Imp goes back beside a held lead whose
+reach it where it stands) **goes back** when a Move brings it where enough
+free cultists can follow it; an Imp goes back beside a held lead whose
 Brood can take it, and a Mass that needs a strand back onto its Doorstep.
 Otherwise it is **released toward the enemy**: it takes the offered tile
 with the greatest lead of the nearest visible enemy over the nearest own
@@ -698,8 +723,10 @@ that is left over), then the damage, then a tile where a visible enemy is
 nearer to it than any own unit. A first hit that kills nothing is paired
 with a second hit on the same unit when the second kills it. A kill whose
 advance takes it from a tile its channellers can hold it on to one they
-cannot is made only when the second attack from there kills too (**a lone
-kill off its leash is never made**), and a pair whose Move and advances
+cannot is made only when the kills of the pair are worth the Herald's
+price together, 18 Coins (`CULT_HERALD_LOOSE_KILLS_V7`, `pulp_wars-mch9.57`;
+it was any second kill, so two Warriors bought an 18-Favour bind; a kill
+never wins the game, only a capture eliminates), and a pair whose Move and advances
 leave it where the visible enemy, less its victims, kills it next turn is
 not made either (unless it stands in lethal reach already, or stays where
 it stands). Every other attack of the Herald, and every kill the plan does
