@@ -18,12 +18,19 @@ import type { MissionDefinitionV7 } from "./types";
  * (Pack Hunt).
  *
  * The board is the map generator's (Pangea 14, seed 4): open plains in the
- * north with Thunder Nest and Fernmaw; a massif of peaks in the middle and
+ * north with Thunder Nest (retune 3: Fernmaw is gone); a massif of peaks in the middle and
  * the south-west, with Tarpit Lodge in the pocket behind its southern
  * ridge; wooded hills in the east. The Redcaps camp in the two valleys:
  * the strip of the western shore and the gap between the massif and the
  * woods. Four villages are gone (the two camps and the two of the south
  * that would feed the Redcaps), and the two chests by the eastern camp.
+ *
+ * Retune 3 (`pulp_wars-hmyk.21`, untested): you start like a skirmish
+ * (a level 1 nest, the Old Queen and one Spitter, no technology, no
+ * Coins), the four villages near the nest are gone, the lodge is level 2
+ * with eleven men, of whom the Major and three guns hold the ridge and
+ * the rest rush the nest, and eleven Redcaps rush with four announced
+ * packs (rounds 3, 6, 9, 12) on a 16-round clock.
  *
  * Hand play (the Dinosaur campaign's record in CAMPAIGN.md) set the
  * layout: with Thornbury on the ridge over the lodge and Engineering
@@ -34,7 +41,7 @@ import type { MissionDefinitionV7 } from "./types";
  * y  0   ~~~~~~~~~~~~~~
  *    1   ~~~........~~~
  *    2   ~~......v..f~~      v: villages
- *    3   ~~ffT....f.F^~      T: Thunder Nest; F: Fernmaw
+ *    3   ~~ffT....f..^~      T: Thunder Nest
  *    4   ~^f^f.f.....f~
  *    5   ~v^^^.f.vfff.~
  *    6   ~^^fv^f.ff^ff~
@@ -50,7 +57,9 @@ import type { MissionDefinitionV7 } from "./types";
 export const DINOSAUR_2_V7: MissionDefinitionV7 = {
   id: "DINOSAUR_2",
   // Revision 2 (`pulp_wars-hmyk.17`): each seat explores its units' sight.
-  revision: 2,
+  // Revision 3 (`pulp_wars-hmyk.21`, retune 3): a skirmish start, the
+  // villages near the nest gone, a bigger lodge and four Redcap waves.
+  revision: 3,
   seed: 20261402,
   // <map>
   size: 14,
@@ -68,6 +77,11 @@ export const DINOSAUR_2_V7: MissionDefinitionV7 = {
       { kind: "VILLAGE", at: { x: 11, y: 11 }, present: false },
       { kind: "CHEST", at: { x: 7, y: 9 }, present: false },
       { kind: "CHEST", at: { x: 8, y: 9 }, present: false },
+      // Retune 3: the four villages of the north are gone.
+      { kind: "VILLAGE", at: { x: 8, y: 2 }, present: false },
+      { kind: "VILLAGE", at: { x: 1, y: 5 }, present: false },
+      { kind: "VILLAGE", at: { x: 8, y: 5 }, present: false },
+      { kind: "VILLAGE", at: { x: 4, y: 6 }, present: false },
     ],
   },
   terrain: [
@@ -119,12 +133,7 @@ export const DINOSAUR_2_V7: MissionDefinitionV7 = {
     "PPPPHHHHHWWPPP",
     "PPPPPPPPPPPPPP",
   ],
-  villages: [
-    { x: 8, y: 2 },
-    { x: 1, y: 5 },
-    { x: 8, y: 5 },
-    { x: 4, y: 6 },
-  ],
+  villages: [],
   treasureChests: [],
   // </map>
   aiMode: "RIVAL",
@@ -133,59 +142,41 @@ export const DINOSAUR_2_V7: MissionDefinitionV7 = {
   seats: [
     {
       faction: "DINOSAUR",
-      coins: 8,
-      // Spitters (Acid), Raptors, the Shaman, and Nesting's slots.
-      technologies: [
-        "GATHERING",
-        "ADMINISTRATION",
-        "HUNTING",
-        "MARKSMANSHIP",
-        "SCOUTING",
-        "DRILL",
-        "FORTIFICATION",
-      ],
+      // Retune 3: a skirmish start. One nest at level 1, no technology and
+      // no Coins; the Old Queen and one Spitter (Marksmanship and Hunting
+      // are yours to research before you can raise another), the tar
+      // country unseen.
+      coins: 0,
+      technologies: [],
       cities: [
         {
           name: "Thunder Nest",
           at: { x: 4, y: 3 },
-          level: 2,
-          rewards: ["STOCKPILE"],
-        },
-        {
-          name: "Fernmaw",
-          at: { x: 11, y: 3 },
-          level: 2,
-          rewards: ["STOCKPILE"],
+          level: 1,
+          rewards: [],
         },
       ],
       units: [
         // The Old Queen, a T-Rex.
         { role: "KNIGHT", at: { x: 4, y: 4 }, tag: "OLD_QUEEN" },
-        { role: "FIGHTER", at: { x: 4, y: 3 } },
-        { role: "RAIDER", at: { x: 10, y: 4 }, home: 1 },
-        { role: "MARKSMAN", at: { x: 11, y: 4 }, home: 1 },
-        { role: "CAPTAIN", at: { x: 11, y: 3 }, home: 1 },
+        { role: "MARKSMAN", at: { x: 5, y: 3 } },
       ],
       // The tar peaks are too steep for a dinosaur: no Engineering, and
       // no Wallbreaker to blast them (the lesson is the Spitter's Acid).
       forbiddenTechnologies: ["ENGINEERING", "METALLURGY", "EXPLOSIVES"],
-      // The tar country: the ridge over the lodge and both valleys.
-      reveal: {
-        radius: 2,
-        rects: [
-          { x0: 1, y0: 7, x1: 6, y1: 11 },
-          { x0: 7, y0: 7, x1: 9, y1: 9 },
-        ],
-      },
+      reveal: { radius: 1 },
     },
     {
       // Major Thornbury's shooting lodge at Tarpit: the Major and his
       // gun-bearers on the peaks of the ridge.
       faction: "ORIGINAL",
-      coins: 3,
+      // Retune 3: a level 2 lodge with Gathering and Scouting, 8 Coins.
+      coins: 8,
       technologies: [
+        "GATHERING",
         "HUNTING",
         "MARKSMANSHIP",
+        "SCOUTING",
         "DRILL",
         "ENGINEERING",
         "FORTIFICATION",
@@ -194,8 +185,8 @@ export const DINOSAUR_2_V7: MissionDefinitionV7 = {
         {
           name: "Tarpit Lodge",
           at: { x: 4, y: 10 },
-          level: 1,
-          rewards: [],
+          level: 2,
+          rewards: ["STOCKPILE"],
         },
       ],
       units: [
@@ -210,10 +201,14 @@ export const DINOSAUR_2_V7: MissionDefinitionV7 = {
         { role: "GUARD", at: { x: 4, y: 10 } },
         { role: "FIGHTER", at: { x: 3, y: 10 } },
         { role: "FIGHTER", at: { x: 5, y: 10 } },
+        { role: "FIGHTER", at: { x: 4, y: 11 } },
+        { role: "FIGHTER", at: { x: 2, y: 11 } },
+        { role: "MARKSMAN", at: { x: 3, y: 11 } },
+        { role: "GUARD", at: { x: 5, y: 11 } },
       ],
-      reveal: { radius: 2 },
+      // Thunder Nest, from the Redcaps' spoor.
+      reveal: { radius: 2, rects: [{ x0: 3, y0: 2, x1: 5, y1: 4 }] },
       forbiddenTechnologies: [
-        "GATHERING",
         "FARMING",
         "MILLING",
         "ADMINISTRATION",
@@ -221,7 +216,6 @@ export const DINOSAUR_2_V7: MissionDefinitionV7 = {
         "FORESTRY",
         "SAWMILLING",
         "FIELDCRAFT",
-        "SCOUTING",
         "ROADS",
         "COMMERCE",
         "RAIDING",
@@ -229,19 +223,23 @@ export const DINOSAUR_2_V7: MissionDefinitionV7 = {
         "METALLURGY",
         "EXPLOSIVES",
       ],
-      // The Major never leaves his peak; his gun-bearers play their
-      // ordinary game round the lodge.
+      // The Major and his three nearest guns hold the ridge; every other
+      // man of the lodge goes for the nest (retune 3: they used to play
+      // their ordinary game round the lodge).
       directive: {
         kind: "GUARD",
-        zone: [{ x0: 4, y0: 8, x1: 4, y1: 8 }],
-        garrison: 1,
+        zone: [{ x0: 3, y0: 7, x1: 5, y1: 8 }],
+        garrison: 4,
+        others: { kind: "RUSH" },
       },
     },
     {
       // The Redcap trackers, very good at finding dinosaurs.
       faction: "GOBLIN",
-      coins: 2,
-      technologies: ["SCOUTING"],
+      // Retune 3: eleven trackers, a level 2 Gutter Gulch, Drill and Walls,
+      // Raiding.
+      coins: 6,
+      technologies: ["SCOUTING", "RAIDING", "DRILL", "FORTIFICATION"],
       cities: [
         {
           name: "Redcap Hollow",
@@ -252,17 +250,22 @@ export const DINOSAUR_2_V7: MissionDefinitionV7 = {
         {
           name: "Gutter Gulch",
           at: { x: 7, y: 8 },
-          level: 1,
-          rewards: [],
+          level: 2,
+          rewards: ["STOCKPILE"],
         },
       ],
       units: [
-        { role: "FIGHTER", at: { x: 1, y: 9 } },
+        { role: "GUARD", at: { x: 1, y: 9 } },
         { role: "FIGHTER", at: { x: 1, y: 8 } },
         { role: "RAIDER", at: { x: 1, y: 7 } },
-        { role: "FIGHTER", at: { x: 7, y: 8 }, home: 1 },
+        { role: "FIGHTER", at: { x: 2, y: 7 } },
+        { role: "RAIDER", at: { x: 2, y: 10 } },
+        { role: "GUARD", at: { x: 7, y: 8 }, home: 1 },
         { role: "FIGHTER", at: { x: 8, y: 8 }, home: 1 },
+        { role: "FIGHTER", at: { x: 8, y: 9 }, home: 1 },
+        { role: "FIGHTER", at: { x: 9, y: 8 }, home: 1 },
         { role: "RAIDER", at: { x: 8, y: 7 }, home: 1 },
+        { role: "RAIDER", at: { x: 7, y: 9 }, home: 1 },
       ],
       // Your nests, from the trackers' spoor.
       reveal: { radius: 2, rects: [{ x0: 3, y0: 2, x1: 12, y1: 4 }] },
@@ -279,28 +282,32 @@ export const DINOSAUR_2_V7: MissionDefinitionV7 = {
         "FIELDCRAFT",
         "ROADS",
         "COMMERCE",
-        "RAIDING",
         "CHIVALRY",
-        "DRILL",
         "ENGINEERING",
         "METALLURGY",
-        "FORTIFICATION",
         "EXPLOSIVES",
       ],
       directive: { kind: "RUSH" },
     },
   ],
   // More Redcaps answer the Major's bounty: a pack at each camp in rounds
-  // 5 and 9.
-  reinforcements: [5, 9].map((round) => ({
+  // 3, 6, 9 and 12, each announced (retune 3: two waves, rounds 5 and 9).
+  reinforcements: [
+    [3, "Redcap trackers pick up the spoor of your nest."],
+    [6, "The Major's bounty has brought more trackers."],
+    [9, "Every Redcap in the tar country is on his way."],
+    [12, "The last trackers, still hopeful about the bounty."],
+  ].map(([round, line]) => ({
     seat: 2,
-    round,
+    round: round as number,
     units: [
       { role: "FIGHTER" as const, at: { x: 1, y: 8 } },
       { role: "RAIDER" as const, at: { x: 1, y: 7 } },
       { role: "FIGHTER" as const, at: { x: 8, y: 8 } },
       { role: "RAIDER" as const, at: { x: 8, y: 7 } },
     ],
+    line: line as string,
+    announce: true as const,
   })),
   // Nobody sails the tar country.
   forbiddenTechnologies: [
@@ -310,14 +317,14 @@ export const DINOSAUR_2_V7: MissionDefinitionV7 = {
     "SEAMANSHIP",
     "SUBMERSIBLES",
   ],
-  // Hunt the hunter by round 20. The stars: by round 16, and the Old Queen
-  // lives.
+  // Hunt the hunter by round 16 (was 20). The stars: by round 12, and the
+  // Old Queen lives.
   objective: {
     kind: "KILL",
     units: ["THORNBURY"],
-    byRound: 20,
+    byRound: 16,
     bonus: [
-      { kind: "WITHIN_ROUNDS", rounds: 16 },
+      { kind: "WITHIN_ROUNDS", rounds: 12 },
       { kind: "UNIT_ALIVE", unit: "OLD_QUEEN" },
     ],
   },

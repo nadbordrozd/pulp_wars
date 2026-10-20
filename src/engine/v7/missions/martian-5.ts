@@ -16,6 +16,13 @@ import type { MissionDefinitionV7 } from "./types";
  * Redcaps' two camps lie on the lower slope across the road south; Red
  * Dust is far off in the south-east.
  *
+ * Retune 3 (`pulp_wars-hmyk.21`, untested): you start like a skirmish (Red
+ * Dust at level 1, a Cavalier and a Grunt, no technology, no Coins, only
+ * Candlewick's slope marked), the three villages near Red Dust are gone, the
+ * Lodge holds the hall with twelve and 8 Favour, fifteen Redcaps with Drill
+ * and Walls rush Red Dust, six announced waves come (four Redcap columns,
+ * two files of the Lodge's faithful), and the clock is 15.
+ *
  * ```text
  *      x 0123456789ABCDEF
  * y  1   ~~~~f.vf^v.^.~~~      v: villages
@@ -37,7 +44,10 @@ import type { MissionDefinitionV7 } from "./types";
 export const MARTIAN_5_V7: MissionDefinitionV7 = {
   id: "MARTIAN_5",
   // Revision 2 (`pulp_wars-hmyk.17`): each seat explores its units' sight.
-  revision: 2,
+  // Revision 3 (`pulp_wars-hmyk.21`, retune 3): a skirmish start (Red Dust at
+  // level 1, a Cavalier and a Grunt, no technology), no village near it, a
+  // fuller Lodge and Redcap host, six announced waves and a 15-round clock.
+  revision: 3,
   seed: 20261605,
   // <map>
   size: 16,
@@ -53,6 +63,10 @@ export const MARTIAN_5_V7: MissionDefinitionV7 = {
       { kind: "VILLAGE", at: { x: 7, y: 8 }, present: false },
       { kind: "VILLAGE", at: { x: 10, y: 8 }, present: false },
       { kind: "CHEST", at: { x: 9, y: 6 }, present: false },
+      // Retune 3: the three villages within reach of Red Dust.
+      { kind: "VILLAGE", at: { x: 13, y: 8 }, present: false },
+      { kind: "VILLAGE", at: { x: 10, y: 11 }, present: false },
+      { kind: "VILLAGE", at: { x: 10, y: 14 }, present: false },
     ],
   },
   terrain: [
@@ -117,63 +131,45 @@ export const MARTIAN_5_V7: MissionDefinitionV7 = {
     { x: 4, y: 5 },
     { x: 1, y: 8 },
     { x: 4, y: 8 },
-    { x: 13, y: 8 },
-    { x: 10, y: 11 },
-    { x: 10, y: 14 },
   ],
   treasureChests: [{ x: 5, y: 7 }],
   // </map>
-  // Red Dust's hydroponic farm.
-  improvements: [{ at: { x: 13, y: 11 }, improvement: "FARM" }],
+  // (Retune 3: Red Dust's hydroponic farm is gone: a level 1 town.)
   aiMode: "RIVAL",
   teams: [0, 1, 1],
   seats: [
     {
       faction: "MARTIAN",
-      coins: 8,
-      technologies: [
-        "GATHERING",
-        "ADMINISTRATION",
-        "HUNTING",
-        "FORESTRY",
-        "SAWMILLING",
-        "MARKSMANSHIP",
-        "SCOUTING",
-        "RAIDING",
-        "CHIVALRY",
-        "DRILL",
-        "FORTIFICATION",
-      ],
+      // Retune 3: a skirmish start. Red Dust at level 1, no technology, no
+      // Coins, a Cavalier you cannot raise another of (no Chivalry) and a
+      // Grunt; only Candlewick's slope is marked.
+      coins: 0,
+      technologies: [],
       cities: [
         {
           name: "Red Dust",
           at: { x: 13, y: 12 },
-          level: 3,
-          rewards: ["STOCKPILE", "WALLS"],
+          level: 1,
+          rewards: [],
         },
       ],
       units: [
-        { role: "GUARD", at: { x: 13, y: 12 } },
         // The mothership's crew, home on foot from the Hold.
         { role: "KNIGHT", at: { x: 12, y: 11 } },
-        { role: "FIGHTER", at: { x: 12, y: 12 } },
-        { role: "FIGHTER", at: { x: 13, y: 11 } },
-        { role: "MARKSMAN", at: { x: 12, y: 13 } },
-        { role: "MARKSMAN", at: { x: 11, y: 12 } },
-        { role: "CATAPULT", at: { x: 11, y: 13 } },
-        { role: "RAIDER", at: { x: 12, y: 10 } },
+        { role: "FIGHTER", at: { x: 13, y: 12 } },
       ],
-      // The road north to Candlewick.
+      // Candlewick, far up the road.
       reveal: {
-        radius: 2,
-        rects: [{ x0: 6, y0: 2, x1: 14, y1: 12 }],
+        radius: 1,
+        rects: [{ x0: 8, y0: 3, x1: 10, y1: 5 }],
       },
     },
     {
       // The Grey Lodge in Candlewick, with the orrery.
       faction: "CULT",
-      coins: 2,
-      favour: 6,
+      // Retune 3: 8 Coins, 8 Favour, thirteen men instead of eight.
+      coins: 8,
+      favour: 8,
       technologies: [
         "HUNTING",
         "FORESTRY",
@@ -206,13 +202,18 @@ export const MARTIAN_5_V7: MissionDefinitionV7 = {
         // and 10 Favour the Lodge called three Horrors and an Imp by round
         // 5 and they ate the strike force).
         { role: "CATAPULT", at: { x: 11, y: 2 } },
+        { role: "FIGHTER", at: { x: 11, y: 4 } },
+        { role: "FIGHTER", at: { x: 11, y: 3 } },
+        { role: "GUARD", at: { x: 10, y: 2 } },
+        { role: "MARKSMAN", at: { x: 9, y: 2 } },
+        { role: "FIGHTER", at: { x: 11, y: 5 } },
       ],
       reveal: { radius: 2, rects: [{ x0: 6, y0: 2, x1: 14, y1: 13 }] },
       // The Lodge holds the town and its slope.
       directive: {
         kind: "GUARD",
-        zone: [{ x0: 7, y0: 2, x1: 11, y1: 6 }],
-        garrison: 8,
+        zone: [{ x0: 7, y0: 2, x1: 12, y1: 6 }],
+        garrison: 12,
       },
       forbiddenTechnologies: [
         "GATHERING",
@@ -234,8 +235,17 @@ export const MARTIAN_5_V7: MissionDefinitionV7 = {
     {
       // The Redcaps, hired to keep the road.
       faction: "GOBLIN",
-      coins: 0,
-      technologies: ["HUNTING", "MARKSMANSHIP"],
+      // Retune 3: 6 Coins, Scouting, Raiding, Drill and Walls, fifteen
+      // Redcaps instead of eight.
+      coins: 6,
+      technologies: [
+        "HUNTING",
+        "MARKSMANSHIP",
+        "SCOUTING",
+        "RAIDING",
+        "DRILL",
+        "FORTIFICATION",
+      ],
       cities: [
         {
           name: "Snuffer's Camp",
@@ -254,6 +264,13 @@ export const MARTIAN_5_V7: MissionDefinitionV7 = {
         { role: "FIGHTER", at: { x: 11, y: 8 }, home: 1 },
         { role: "FIGHTER", at: { x: 10, y: 9 }, home: 1 },
         { role: "MARKSMAN", at: { x: 9, y: 8 }, home: 1 },
+        { role: "FIGHTER", at: { x: 8, y: 8 } },
+        { role: "FIGHTER", at: { x: 6, y: 9 } },
+        { role: "RAIDER", at: { x: 6, y: 7 } },
+        { role: "FIGHTER", at: { x: 11, y: 9 }, home: 1 },
+        { role: "FIGHTER", at: { x: 9, y: 9 }, home: 1 },
+        { role: "RAIDER", at: { x: 12, y: 8 }, home: 1 },
+        { role: "MARKSMAN", at: { x: 11, y: 7 }, home: 1 },
       ],
       reveal: { radius: 2, rects: [{ x0: 6, y0: 6, x1: 14, y1: 13 }] },
       // The Redcaps go for Red Dust at once.
@@ -267,15 +284,11 @@ export const MARTIAN_5_V7: MissionDefinitionV7 = {
         "FORESTRY",
         "SAWMILLING",
         "FIELDCRAFT",
-        "SCOUTING",
         "ROADS",
         "COMMERCE",
-        "RAIDING",
         "CHIVALRY",
-        "DRILL",
         "ENGINEERING",
         "METALLURGY",
-        "FORTIFICATION",
         "EXPLOSIVES",
       ],
     },
@@ -288,12 +301,87 @@ export const MARTIAN_5_V7: MissionDefinitionV7 = {
     "SUBMERSIBLES",
   ],
   landmarks: [{ tag: "CANDLEWICK", at: { x: 9, y: 4 } }],
-  // Take Candlewick by round 18 (the saga's 22: the first hand-played
-  // run took it in 8). The stars: by round 14, and no city lost.
+  // Retune 3: the Redcaps' hired men come up the road in rounds 3, 6, 9 and
+  // 12 and the Lodge's faithful file into the hall in rounds 5 and 9, every
+  // wave announced.
+  reinforcements: [
+    {
+      seat: 2,
+      round: 3,
+      units: [
+        { role: "FIGHTER", at: { x: 6, y: 8 } },
+        { role: "FIGHTER", at: { x: 8, y: 9 } },
+        { role: "MARKSMAN", at: { x: 7, y: 9 } },
+      ],
+      line: "Hired Redcaps tramp out of the hills, rifles first.",
+      announce: true,
+    },
+    {
+      seat: 1,
+      round: 5,
+      units: [
+        { role: "FIGHTER", at: { x: 12, y: 3 } },
+        { role: "FIGHTER", at: { x: 12, y: 4 } },
+        { role: "MARKSMAN", at: { x: 11, y: 6 } },
+      ],
+      line: "Candle-makers in grey file into the hall.",
+      announce: true,
+    },
+    {
+      seat: 2,
+      round: 6,
+      units: [
+        { role: "FIGHTER", at: { x: 10, y: 9 } },
+        { role: "FIGHTER", at: { x: 11, y: 9 } },
+        { role: "RAIDER", at: { x: 9, y: 8 } },
+        { role: "RAIDER", at: { x: 12, y: 8 } },
+      ],
+      line: "The Lodge's coin buys another Redcap column.",
+      announce: true,
+    },
+    {
+      seat: 1,
+      round: 9,
+      units: [
+        { role: "GUARD", at: { x: 12, y: 4 } },
+        { role: "FIGHTER", at: { x: 12, y: 3 } },
+        { role: "FIGHTER", at: { x: 11, y: 6 } },
+        { role: "MARKSMAN", at: { x: 10, y: 6 } },
+      ],
+      line: "The last of Candlewick's faithful take up the candles.",
+      announce: true,
+    },
+    {
+      seat: 2,
+      round: 9,
+      units: [
+        { role: "FIGHTER", at: { x: 6, y: 8 } },
+        { role: "FIGHTER", at: { x: 7, y: 9 } },
+        { role: "MARKSMAN", at: { x: 8, y: 9 } },
+        { role: "RAIDER", at: { x: 6, y: 7 } },
+      ],
+      line: "Redcaps, unpaid, come anyway for the melting-down.",
+      announce: true,
+    },
+    {
+      seat: 2,
+      round: 12,
+      units: [
+        { role: "FIGHTER", at: { x: 10, y: 9 } },
+        { role: "FIGHTER", at: { x: 11, y: 9 } },
+        { role: "MARKSMAN", at: { x: 9, y: 9 } },
+        { role: "RAIDER", at: { x: 12, y: 8 } },
+      ],
+      line: "Every Redcap left on the mountain, with a grudge.",
+      announce: true,
+    },
+  ],
+  // Take Candlewick by round 15 (the saga's 22; was 18). The stars: by
+  // round 11, and no city lost.
   objective: {
     kind: "CAPTURE",
     places: ["CANDLEWICK"],
-    byRound: 18,
-    bonus: [{ kind: "WITHIN_ROUNDS", rounds: 14 }, { kind: "KEEP_CITIES" }],
+    byRound: 15,
+    bonus: [{ kind: "WITHIN_ROUNDS", rounds: 11 }, { kind: "KEEP_CITIES" }],
   },
 };

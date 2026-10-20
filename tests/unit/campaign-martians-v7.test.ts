@@ -115,21 +115,22 @@ describe("Signal from Home", () => {
       };
     });
     expect(summary).toEqual([
+      // Retune 3 (`pulp_wars-hmyk.21`): every clock shortened (M1 has one now).
       {
         kind: "DOMINATION",
-        byRound: undefined,
+        byRound: 15,
         rounds: undefined,
         bonus: ["WITHIN_ROUNDS", "UNIT_ALIVE"],
       },
       {
         kind: "CAPTURE",
-        byRound: 18,
+        byRound: 14,
         rounds: undefined,
         bonus: ["WITHIN_ROUNDS", "KEEP_CITIES"],
       },
       {
         kind: "ESCORT",
-        byRound: 16,
+        byRound: 13,
         rounds: undefined,
         bonus: ["WITHIN_ROUNDS", "KEEP_CITIES"],
       },
@@ -141,13 +142,13 @@ describe("Signal from Home", () => {
       },
       {
         kind: "CAPTURE",
-        byRound: 18,
+        byRound: 15,
         rounds: undefined,
         bonus: ["WITHIN_ROUNDS", "KEEP_CITIES"],
       },
       {
         kind: "KILL",
-        byRound: 16,
+        byRound: 14,
         rounds: undefined,
         bonus: ["WITHIN_ROUNDS", "KEEP_CITIES"],
       },
@@ -157,12 +158,21 @@ describe("Signal from Home", () => {
   it("builds the missions as hand play left them", () => {
     const seat = (id: string, index: number) =>
       mission(id).seats[index] as MissionDefinitionV7["seats"][number];
-    // M1: the scrap camps learn nothing.
-    expect(seat("MARTIAN_1", 1).technologies).toEqual([]);
-    // M2: Millford's militia has no economy, Drill or walls of its own.
+    // M1 (retune 3): the scrap camps learn little: no rifles, Raiding or
+    // Chivalry, and no farms.
+    const raiders = seat("MARTIAN_1", 1);
+    for (const tech of ["MARKSMANSHIP", "RAIDING", "CHIVALRY", "FARMING"])
+      expect(raiders.forbiddenTechnologies, tech).toContain(tech);
+    // M2 (retune 3): Millford's militia has Drill, Walls and rifles, but
+    // still no economy of its own.
     const militia = seat("MARTIAN_2", 1);
-    expect(militia.technologies).toEqual([]);
-    for (const tech of ["GATHERING", "DRILL", "FORTIFICATION", "HUNTING"])
+    expect(militia.technologies).toEqual([
+      "HUNTING",
+      "MARKSMANSHIP",
+      "DRILL",
+      "FORTIFICATION",
+    ]);
+    for (const tech of ["GATHERING", "ADMINISTRATION", "FARMING"])
       expect(militia.forbiddenTechnologies, tech).toContain(tech);
     // M3: the Crater is a camp of units, not a town (a Saucer would beam
     // the core across from beside it); Ray Hollow is the only Martian town.
@@ -191,6 +201,71 @@ describe("Signal from Home", () => {
     const centres = circle.cities.map((city) => city.at);
     for (const gazer of gazers) expect(centres).not.toContainEqual(gazer.at);
     expect(seat("MARTIAN_6", 0).forbiddenTechnologies).toContain("RAIDING");
+  });
+
+  it("is much harder after retune 3 (pulp_wars-hmyk.21)", () => {
+    const seat = (id: string, index: number) =>
+      mission(id).seats[index] as MissionDefinitionV7["seats"][number];
+    // Three missions start like a skirmish: one level 1 town and at most
+    // three units, almost no technology, almost no Coins.
+    for (const id of ["MARTIAN_1", "MARTIAN_2", "MARTIAN_5"]) {
+      const start = seat(id, 0);
+      expect(start.cities, id).toHaveLength(1);
+      expect(start.cities[0]?.level, id).toBe(1);
+      expect(start.units.length, id).toBeLessThanOrEqual(3);
+      expect(start.technologies.length, id).toBeLessThanOrEqual(2);
+      expect(start.coins, id).toBeLessThanOrEqual(3);
+      expect(start.reveal.radius, id).toBe(1);
+    }
+    // The other three start thin: one town, at most five units and five
+    // technologies, at most 3 Coins.
+    for (const id of ["MARTIAN_3", "MARTIAN_4", "MARTIAN_6"]) {
+      const start = seat(id, 0);
+      expect(start.cities, id).toHaveLength(1);
+      expect(start.units.length, id).toBeLessThanOrEqual(5);
+      expect(start.technologies.length, id).toBeLessThanOrEqual(5);
+      expect(start.coins, id).toBeLessThanOrEqual(3);
+    }
+    // Every hostile seat that has a directive attacks (the Lodge of M5
+    // holds its hall, and the Rangers of M6 are on your side).
+    for (const id of ORDER)
+      for (const [index, item] of mission(id).seats.entries()) {
+        if (index === 0 || item.directive === undefined) continue;
+        if (mission(id).teams?.[index] === 0) continue;
+        if (id === "MARTIAN_5" && index === 1) continue;
+        if (id === "MARTIAN_6" && index === 1) continue;
+        const entries = Array.isArray(item.directive)
+          ? item.directive
+          : [item.directive];
+        const last = entries[entries.length - 1];
+        expect(
+          last?.kind === "RUSH" ||
+            last?.kind === "ASSAULT" ||
+            (last?.kind === "GUARD" && last.others !== undefined),
+          `${id} seat ${String(index)}`,
+        ).toBe(true);
+      }
+    // Every mission from the second on sends at least two announced enemy
+    // waves with a story line of their own.
+    for (const id of ORDER.slice(1)) {
+      const hostile = (mission(id).reinforcements ?? []).filter(
+        (wave) => wave.seat !== 0 && mission(id).teams?.[wave.seat] !== 0,
+      );
+      expect(hostile.length, id).toBeGreaterThanOrEqual(2);
+      for (const wave of hostile) {
+        expect(wave.announce, id).toBe(true);
+        expect(wave.line, id).toBeTypeOf("string");
+      }
+    }
+    for (const [id, revision] of [
+      ["MARTIAN_1", 3],
+      ["MARTIAN_2", 2],
+      ["MARTIAN_3", 3],
+      ["MARTIAN_4", 2],
+      ["MARTIAN_5", 3],
+      ["MARTIAN_6", 2],
+    ] as const)
+      expect(mission(id).revision, id).toBe(revision);
   });
 
   it("names every place and unit an objective talks about", () => {

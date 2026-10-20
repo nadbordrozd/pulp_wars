@@ -23,6 +23,12 @@ import type { MissionDefinitionV7 } from "./types";
  * they get comes with a wave or stands in Coffin Hill. A Saucer that
  * beams two Grunts beside a Lich kills it in one turn (hand play).
  *
+ * Retune 3 (`pulp_wars-hmyk.21`, untested): you start thin (Red Dust alone
+ * at level 3 with Walls, a Guard, a Grunt, a gun and a Catapult, four
+ * technologies, 2 Coins), the village north of Red Dust is gone, the dead
+ * begin as fourteen, Sugarcrest keeps three men, and six announced waves
+ * come (rounds 3, 5, 7, 9, 11 and 13) against the unchanged 16-night hold.
+ *
  * ```text
  *      x 0123456789ABCDEF
  * y  0   .f$^ff.^........      $: treasure chests   v: villages
@@ -45,7 +51,10 @@ import type { MissionDefinitionV7 } from "./types";
  */
 export const MARTIAN_4_V7: MissionDefinitionV7 = {
   id: "MARTIAN_4",
-  revision: 1,
+  // Revision 2 (`pulp_wars-hmyk.21`, retune 3): a thin start (Red Dust
+  // alone, four units, four technologies, 2 Coins), no village near it,
+  // fourteen dead to begin with and six announced waves.
+  revision: 2,
   seed: 20261604,
   // <map>
   size: 16,
@@ -65,6 +74,8 @@ export const MARTIAN_4_V7: MissionDefinitionV7 = {
       { kind: "VILLAGE", at: { x: 4, y: 1 }, present: false },
       { kind: "VILLAGE", at: { x: 1, y: 13 }, present: false },
       { kind: "VILLAGE", at: { x: 4, y: 13 }, present: false },
+      // Retune 3: the village north of Red Dust.
+      { kind: "VILLAGE", at: { x: 7, y: 1 }, present: false },
     ],
   },
   terrain: [
@@ -123,7 +134,6 @@ export const MARTIAN_4_V7: MissionDefinitionV7 = {
     "PPWWWWWWWWWWWWWW",
   ],
   villages: [
-    { x: 7, y: 1 },
     { x: 14, y: 1 },
     { x: 14, y: 4 },
     { x: 13, y: 7 },
@@ -150,17 +160,11 @@ export const MARTIAN_4_V7: MissionDefinitionV7 = {
   seats: [
     {
       faction: "MARTIAN",
-      coins: 8,
-      technologies: [
-        "GATHERING",
-        "HUNTING",
-        "FORESTRY",
-        "SAWMILLING",
-        "MARKSMANSHIP",
-        "SCOUTING",
-        "DRILL",
-        "FORTIFICATION",
-      ],
+      // Retune 3: thin. Red Dust alone (Saucer Field is gone), four
+      // technologies, 2 Coins, four units (the Catapult is one you cannot
+      // raise again: no Sawmilling), the barrow country half seen.
+      coins: 2,
+      technologies: ["HUNTING", "MARKSMANSHIP", "DRILL", "FORTIFICATION"],
       cities: [
         {
           name: "Red Dust",
@@ -168,33 +172,28 @@ export const MARTIAN_4_V7: MissionDefinitionV7 = {
           level: 3,
           rewards: ["STOCKPILE", "WALLS"],
         },
-        {
-          name: "Saucer Field",
-          at: { x: 8, y: 4 },
-          level: 2,
-          rewards: ["STOCKPILE"],
-        },
       ],
       units: [
         { role: "GUARD", at: { x: 4, y: 6 } },
         { role: "FIGHTER", at: { x: 4, y: 5 } },
-        { role: "FIGHTER", at: { x: 3, y: 6 } },
         { role: "MARKSMAN", at: { x: 5, y: 6 } },
-        { role: "MARKSMAN", at: { x: 5, y: 5 } },
         { role: "CATAPULT", at: { x: 5, y: 4 } },
-        { role: "RAIDER", at: { x: 8, y: 4 }, home: 1 },
-        { role: "RAIDER", at: { x: 9, y: 4 }, home: 1 },
       ],
-      // The dish sees the barrow country and the lake.
+      // The dish sees the barrow country west of it, and Sugarcrest's walls
+      // across the lake, but not the lake.
       reveal: {
         radius: 2,
-        rects: [{ x0: 0, y0: 0, x1: 12, y1: 15 }],
+        rects: [
+          { x0: 0, y0: 0, x1: 8, y1: 9 },
+          { x0: 6, y0: 12, x1: 8, y1: 14 },
+        ],
       },
     },
     {
       // The Unquiet: the Rift Lakes' dead, walking toward the dish.
       faction: "UNDEAD",
-      coins: 4,
+      // Retune 3: 10 Coins and fourteen of the dead instead of eight.
+      coins: 10,
       technologies: ["DRILL", "FORTIFICATION", "EXPLOSIVES"],
       cities: [
         {
@@ -214,6 +213,12 @@ export const MARTIAN_4_V7: MissionDefinitionV7 = {
         { role: "GUARD", at: { x: 1, y: 1 }, home: 1 },
         { role: "FIGHTER", at: { x: 0, y: 3 }, home: 1 },
         { role: "FIGHTER", at: { x: 2, y: 3 }, home: 1 },
+        { role: "FIGHTER", at: { x: 0, y: 9 } },
+        { role: "FIGHTER", at: { x: 2, y: 9 } },
+        { role: "GUARD", at: { x: 1, y: 11 } },
+        { role: "FIGHTER", at: { x: 1, y: 0 }, home: 1 },
+        { role: "FIGHTER", at: { x: 0, y: 0 }, home: 1 },
+        { role: "GUARD", at: { x: 0, y: 2 }, home: 1 },
       ],
       reveal: { radius: 2, rects: [{ x0: 0, y0: 0, x1: 9, y1: 15 }] },
       // Every dead thing walks toward the nearest living town (hand play:
@@ -267,7 +272,6 @@ export const MARTIAN_4_V7: MissionDefinitionV7 = {
       units: [
         { role: "GUARD", at: { x: 7, y: 13 } },
         { role: "FIGHTER", at: { x: 6, y: 13 } },
-        { role: "MARKSMAN", at: { x: 8, y: 13 } },
         { role: "GUARD", at: { x: 10, y: 13 }, home: 1 },
       ],
       reveal: { radius: 3, rects: [{ x0: 0, y0: 8, x1: 12, y1: 15 }] },
@@ -298,9 +302,22 @@ export const MARTIAN_4_V7: MissionDefinitionV7 = {
     { tag: "RED_DUST", at: { x: 4, y: 5 } },
     { tag: "SUGARCREST", at: { x: 7, y: 13 } },
   ],
-  // The nights the dead walk: the barrow country (rounds 5 and 13) and
-  // the road round the lake toward Sugarcrest (round 9).
+  // The nights the dead walk: the barrow country (rounds 3, 5, 9 and 13)
+  // and the road round the lake toward Sugarcrest (rounds 7 and 11), every
+  // wave announced (retune 3: three waves, rounds 5, 9 and 13).
   reinforcements: [
+    {
+      seat: 1,
+      round: 3,
+      units: [
+        { role: "FIGHTER", at: { x: 0, y: 5 } },
+        { role: "FIGHTER", at: { x: 0, y: 4 } },
+        { role: "GUARD", at: { x: 1, y: 6 } },
+        { role: "CAPTAIN", at: { x: 0, y: 3 } },
+      ],
+      line: "The barrow fields give up their first dead.",
+      announce: true,
+    },
     {
       seat: 1,
       round: 5,
@@ -309,16 +326,44 @@ export const MARTIAN_4_V7: MissionDefinitionV7 = {
         { role: "FIGHTER", at: { x: 0, y: 4 } },
         { role: "CATAPULT", at: { x: 0, y: 6 } },
       ],
+      line: "The dish hums and the dead climb out, Liches among them.",
+      announce: true,
     },
     {
       seat: 1,
-      round: 9,
+      round: 7,
       units: [
         { role: "GUARD", at: { x: 1, y: 13 } },
         { role: "FIGHTER", at: { x: 2, y: 13 } },
         { role: "CATAPULT", at: { x: 0, y: 13 } },
         { role: "CAPTAIN", at: { x: 1, y: 14 } },
       ],
+      line: "The dead take the long road toward Sugarcrest.",
+      announce: true,
+    },
+    {
+      seat: 1,
+      round: 9,
+      units: [
+        { role: "KNIGHT", at: { x: 0, y: 5 } },
+        { role: "CATAPULT", at: { x: 0, y: 6 } },
+        { role: "FIGHTER", at: { x: 0, y: 4 } },
+        { role: "FIGHTER", at: { x: 0, y: 2 } },
+      ],
+      line: "A Lich and a mounted corpse lead the night's dead.",
+      announce: true,
+    },
+    {
+      seat: 1,
+      round: 11,
+      units: [
+        { role: "GUARD", at: { x: 1, y: 13 } },
+        { role: "FIGHTER", at: { x: 2, y: 13 } },
+        { role: "CATAPULT", at: { x: 0, y: 13 } },
+        { role: "CAPTAIN", at: { x: 1, y: 14 } },
+      ],
+      line: "More of the dead come by the southern road.",
+      announce: true,
     },
     {
       seat: 1,
@@ -328,7 +373,10 @@ export const MARTIAN_4_V7: MissionDefinitionV7 = {
         { role: "FIGHTER", at: { x: 0, y: 4 } },
         { role: "CATAPULT", at: { x: 0, y: 6 } },
         { role: "FIGHTER", at: { x: 0, y: 2 } },
+        { role: "CATAPULT", at: { x: 0, y: 3 } },
       ],
+      line: "Every barrow of the Rift Lakes empties at once.",
+      announce: true,
     },
   ],
   // Hold Red Dust for 16 nights. The stars: no city lost, and Sugarcrest

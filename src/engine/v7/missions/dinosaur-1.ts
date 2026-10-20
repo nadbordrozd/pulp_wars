@@ -14,14 +14,20 @@ import type { MissionDefinitionV7 } from "./types";
  * The board is the map generator's (Pangea 11, seed 16). Thunder Nest
  * stands on the north-eastern edge of the jungle; the poachers have two
  * beach camps, one on the western shore and one on the south-eastern. The
- * village in the middle of the jungle is yours to take; the one walled in
- * by the south-western peaks is gone.
+ * villages are gone (retune 3: the jungle's too).
  *
  * Hand play (the Dinosaur campaign's record in CAMPAIGN.md) set the
  * numbers: against three Fighters and a rifle per camp the Queen alone
  * ate both camps by round 4; with two rifles each she was shot dead in
- * round 4. Each camp keeps a Guard and a rifle, and you start with a
- * Raptor and Land Grants (a free slot for an Egg).
+ * round 4.
+ *
+ * Retune 3 (`pulp_wars-hmyk.21`, untested): the user found the campaign
+ * still too easy, so you start like a skirmish (one level 1 nest, the Old
+ * Queen and Oona, no technology, no Coins, the jungle unseen), the jungle
+ * village and the chests are gone, and the poachers are richer (level 2
+ * camps, twelve men, Gathering and Scouting, 8 Coins): they dig in for
+ * two rounds, then all but three rush the nest, with crate-wagon waves in
+ * rounds 5 and 9 and a 16-round clock.
  *
  * ```text
  *      x 0123456789A
@@ -41,7 +47,9 @@ import type { MissionDefinitionV7 } from "./types";
 export const DINOSAUR_1_V7: MissionDefinitionV7 = {
   id: "DINOSAUR_1",
   // Revision 2 (`pulp_wars-hmyk.17`): each seat explores its units' sight.
-  revision: 2,
+  // Revision 3 (`pulp_wars-hmyk.21`, retune 3): a skirmish start, no
+  // village or chest in reach, a rushing, richer poacher and two waves.
+  revision: 3,
   seed: 20261401,
   // <map>
   size: 11,
@@ -56,6 +64,11 @@ export const DINOSAUR_1_V7: MissionDefinitionV7 = {
       { kind: "VILLAGE", at: { x: 2, y: 5 }, present: false },
       { kind: "VILLAGE", at: { x: 8, y: 8 }, present: false },
       { kind: "VILLAGE", at: { x: 2, y: 8 }, present: false },
+      // Retune 3: the jungle village and both chests would be free
+      // Raptors and a free town for whoever walks there first.
+      { kind: "VILLAGE", at: { x: 8, y: 5 }, present: false },
+      { kind: "CHEST", at: { x: 8, y: 6 }, present: false },
+      { kind: "CHEST", at: { x: 6, y: 8 }, present: false },
     ],
   },
   terrain: [
@@ -98,56 +111,48 @@ export const DINOSAUR_1_V7: MissionDefinitionV7 = {
     "PPPHPPPPPPP",
     "PPPPPPPPPPP",
   ],
-  villages: [{ x: 8, y: 5 }],
-  treasureChests: [
-    { x: 8, y: 6 },
-    { x: 6, y: 8 },
-  ],
+  villages: [],
+  treasureChests: [],
   // </map>
   aiMode: "RIVAL",
   seats: [
     {
       faction: "DINOSAUR",
-      coins: 6,
-      // Nesting and Land Grants (two slots more in every city), the Raptor
-      // Egg, and the Shaman's Hatch and War Drums.
-      technologies: [
-        "GATHERING",
-        "ADMINISTRATION",
-        "PLANNING",
-        "SCOUTING",
-        "DRILL",
-        "FORTIFICATION",
-      ],
+      // Retune 3: a skirmish start. One nest at level 1, no technology (no
+      // Land Grants, no Hatch: the Shaman only speaks), no Coins, the
+      // jungle unseen; the Old Queen and Oona are all you have.
+      coins: 0,
+      technologies: [],
       cities: [
         {
           name: "Thunder Nest",
           at: { x: 8, y: 2 },
-          level: 2,
-          rewards: ["STOCKPILE"],
+          level: 1,
+          rewards: [],
         },
       ],
       units: [
         // The Old Queen, a T-Rex, and Shaman Oona, who speaks for her.
         { role: "KNIGHT", at: { x: 8, y: 3 }, tag: "OLD_QUEEN" },
         { role: "CAPTAIN", at: { x: 8, y: 2 }, tag: "OONA" },
-        { role: "RAIDER", at: { x: 9, y: 2 } },
       ],
-      // Both camps, seen from the jungle.
-      reveal: {
-        radius: 2,
-        rects: [
-          { x0: 1, y0: 4, x1: 3, y1: 6 },
-          { x0: 5, y0: 5, x1: 9, y1: 9 },
-        ],
-      },
+      reveal: { radius: 1 },
     },
     {
       // Kessler's poachers, Thunder Nest's eggs in their crates: a Guard
       // on each camp, two rifles behind it, and men with clubs.
       faction: "ORIGINAL",
-      coins: 4,
-      technologies: ["HUNTING", "MARKSMANSHIP", "DRILL", "FORTIFICATION"],
+      // Retune 3: a richer poacher with Gathering and Scouting, and twelve
+      // men instead of seven.
+      coins: 8,
+      technologies: [
+        "GATHERING",
+        "HUNTING",
+        "MARKSMANSHIP",
+        "SCOUTING",
+        "DRILL",
+        "FORTIFICATION",
+      ],
       cities: [
         {
           name: "Gunwale Camp",
@@ -167,14 +172,18 @@ export const DINOSAUR_1_V7: MissionDefinitionV7 = {
         { role: "MARKSMAN", at: { x: 1, y: 4 } },
         { role: "FIGHTER", at: { x: 3, y: 4 } },
         { role: "FIGHTER", at: { x: 3, y: 5 } },
+        { role: "FIGHTER", at: { x: 2, y: 4 } },
+        { role: "FIGHTER", at: { x: 1, y: 5 } },
         { role: "GUARD", at: { x: 8, y: 8 }, home: 1 },
         { role: "MARKSMAN", at: { x: 7, y: 8 }, home: 1 },
+        { role: "MARKSMAN", at: { x: 6, y: 8 }, home: 1 },
         { role: "FIGHTER", at: { x: 7, y: 7 }, home: 1 },
+        { role: "FIGHTER", at: { x: 6, y: 7 }, home: 1 },
+        { role: "FIGHTER", at: { x: 7, y: 9 }, home: 1 },
       ],
-      reveal: { radius: 1 },
-      // Step 1 keeps to the lesson: the poachers learn nothing more.
+      // Thunder Nest, from the crates' trail.
+      reveal: { radius: 1, rects: [{ x0: 7, y0: 1, x1: 9, y1: 3 }] },
       forbiddenTechnologies: [
-        "GATHERING",
         "FARMING",
         "MILLING",
         "ADMINISTRATION",
@@ -182,7 +191,6 @@ export const DINOSAUR_1_V7: MissionDefinitionV7 = {
         "FORESTRY",
         "SAWMILLING",
         "FIELDCRAFT",
-        "SCOUTING",
         "ROADS",
         "COMMERCE",
         "RAIDING",
@@ -196,15 +204,63 @@ export const DINOSAUR_1_V7: MissionDefinitionV7 = {
         "SEAMANSHIP",
         "SUBMERSIBLES",
       ],
+      // The poachers dig in for two rounds, then each camp keeps two men
+      // on its centre and everyone else marches on the nest.
+      directive: [
+        {
+          kind: "GUARD",
+          zone: [
+            { x0: 1, y0: 4, x1: 3, y1: 6 },
+            { x0: 6, y0: 7, x1: 8, y1: 9 },
+          ],
+          garrison: 12,
+          untilRound: 3,
+        },
+        {
+          kind: "GUARD",
+          zone: [
+            { x0: 2, y0: 5, x1: 2, y1: 5 },
+            { x0: 8, y0: 8, x1: 8, y1: 8 },
+          ],
+          garrison: 3,
+          others: { kind: "RUSH" },
+        },
+      ],
+    },
+  ],
+  // Retune 3: more hired guns come off the crate wagons, in rounds 5 and 9.
+  reinforcements: [
+    {
+      seat: 1,
+      round: 5,
+      units: [
+        { role: "FIGHTER", at: { x: 5, y: 8 } },
+        { role: "FIGHTER", at: { x: 5, y: 7 } },
+        { role: "MARKSMAN", at: { x: 4, y: 8 } },
+      ],
+      line: "More hired guns off the crate wagons.",
+      announce: true,
+    },
+    {
+      seat: 1,
+      round: 9,
+      units: [
+        { role: "GUARD", at: { x: 4, y: 4 } },
+        { role: "FIGHTER", at: { x: 4, y: 5 } },
+        { role: "RAIDER", at: { x: 1, y: 3 } },
+      ],
+      line: "The Baron's last crates, and the men to carry them.",
+      announce: true,
     },
   ],
   forbiddenTechnologies: [],
-  // Follow the boots: take both camps. The stars: by round 12, and the Old
-  // Queen lives.
+  // Follow the boots: take both camps by round 16 (retune 3: there was no
+  // clock). The stars: by round 11, and the Old Queen lives.
   objective: {
     kind: "DOMINATION",
+    byRound: 16,
     bonus: [
-      { kind: "WITHIN_ROUNDS", rounds: 12 },
+      { kind: "WITHIN_ROUNDS", rounds: 11 },
       { kind: "UNIT_ALIVE", unit: "OLD_QUEEN" },
     ],
   },

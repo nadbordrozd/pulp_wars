@@ -49,8 +49,11 @@ import type { MissionDefinitionV7 } from "./types";
  */
 export const DINOSAUR_5_V7: MissionDefinitionV7 = {
   id: "DINOSAUR_5",
+  // Retune 3 (`pulp_wars-hmyk.21`): a thin start (one town, five
+  // technologies, three units, 3 Coins, no village in reach), the Unquiet
+  // and the Redcaps twice as many, seven announced waves, a 15-round clock.
   // Revision 2 (`pulp_wars-hmyk.17`): each seat explores its units' sight.
-  revision: 2,
+  revision: 3,
   seed: 20261405,
   // <map>
   size: 16,
@@ -70,6 +73,12 @@ export const DINOSAUR_5_V7: MissionDefinitionV7 = {
       { kind: "VILLAGE", at: { x: 9, y: 4 }, present: false },
       { kind: "VILLAGE", at: { x: 6, y: 7 }, present: false },
       { kind: "VILLAGE", at: { x: 3, y: 7 }, present: false },
+      // Retune 3: the four villages and the chest round the Circus Ground.
+      { kind: "VILLAGE", at: { x: 6, y: 13 }, present: false },
+      { kind: "VILLAGE", at: { x: 6, y: 10 }, present: false },
+      { kind: "VILLAGE", at: { x: 9, y: 10 }, present: false },
+      { kind: "VILLAGE", at: { x: 12, y: 10 }, present: false },
+      { kind: "CHEST", at: { x: 11, y: 10 }, present: false },
     ],
   },
   terrain: [
@@ -127,17 +136,8 @@ export const DINOSAUR_5_V7: MissionDefinitionV7 = {
     "PPPPPPPPHHHHHHHH",
     "PPPPPPPPPHHHHHHH",
   ],
-  villages: [
-    { x: 9, y: 1 },
-    { x: 6, y: 10 },
-    { x: 9, y: 10 },
-    { x: 12, y: 10 },
-    { x: 6, y: 13 },
-  ],
-  treasureChests: [
-    { x: 3, y: 6 },
-    { x: 11, y: 10 },
-  ],
+  villages: [{ x: 9, y: 1 }],
+  treasureChests: [{ x: 3, y: 6 }],
   // </map>
   // The old Graves of the barrow fields and along the road.
   graves: [
@@ -156,19 +156,16 @@ export const DINOSAUR_5_V7: MissionDefinitionV7 = {
   seats: [
     {
       faction: "DINOSAUR",
-      coins: 10,
+      // Retune 3: thin. The Circus Ground alone (Sawdust Camp is gone),
+      // five technologies, 3 Coins, the Queen, a Triceratops and a
+      // Spitter, and only the marsh's edge in sight.
+      coins: 3,
       technologies: [
-        "GATHERING",
-        "ADMINISTRATION",
-        "PLANNING",
         "HUNTING",
         "MARKSMANSHIP",
         "SCOUTING",
         "DRILL",
         "FORTIFICATION",
-        "ENGINEERING",
-        "METALLURGY",
-        "EXPLOSIVES",
       ],
       cities: [
         {
@@ -177,34 +174,24 @@ export const DINOSAUR_5_V7: MissionDefinitionV7 = {
           level: 2,
           rewards: ["STOCKPILE"],
         },
-        {
-          name: "Sawdust Camp",
-          at: { x: 12, y: 13 },
-          level: 1,
-          rewards: [],
-        },
       ],
       units: [
         // The Old Queen, an Alpha since the circus.
         { role: "KNIGHT", at: { x: 9, y: 12 }, tag: "OLD_QUEEN", kills: 3 },
         { role: "SWORDSMAN", at: { x: 8, y: 13 } },
-        { role: "CAPTAIN", at: { x: 9, y: 13 } },
-        { role: "RAIDER", at: { x: 11, y: 12 }, home: 1 },
-        { role: "MARKSMAN", at: { x: 12, y: 12 }, home: 1 },
+        { role: "MARKSMAN", at: { x: 10, y: 12 } },
       ],
-      // The road north: the ridge, the barrow fields and the marsh's edge.
+      // Mire's Edge, far in the north, and nothing between.
       reveal: {
         radius: 2,
-        rects: [
-          { x0: 5, y0: 0, x1: 13, y1: 10 },
-          { x0: 1, y0: 9, x1: 4, y1: 12 },
-        ],
+        rects: [{ x0: 8, y0: 0, x1: 10, y1: 2 }],
       },
     },
     {
       // The Unquiet: dead the eggs' smell has woken, not the Marquis's.
       faction: "UNDEAD",
-      coins: 2,
+      // Retune 3: level 2 barrows and 8 Coins.
+      coins: 8,
       // Zombies (the bite) and Necromancers (Raise); no Ghouls (hand
       // play: a Ghoul's Carrion, +1 Attack on a bitten unit, finished the
       // Queen twice).
@@ -213,14 +200,14 @@ export const DINOSAUR_5_V7: MissionDefinitionV7 = {
         {
           name: "Barrow Hill",
           at: { x: 6, y: 4 },
-          level: 1,
-          rewards: [],
+          level: 2,
+          rewards: ["STOCKPILE"],
         },
         {
           name: "Cold Barrow",
           at: { x: 12, y: 5 },
-          level: 1,
-          rewards: [],
+          level: 2,
+          rewards: ["STOCKPILE"],
         },
       ],
       units: [
@@ -235,6 +222,15 @@ export const DINOSAUR_5_V7: MissionDefinitionV7 = {
         { role: "GUARD", at: { x: 13, y: 7 }, home: 1 },
         { role: "FIGHTER", at: { x: 13, y: 6 }, home: 1 },
         { role: "FIGHTER", at: { x: 12, y: 7 }, home: 1 },
+        // Retune 3: eight more of the dead (eleven before).
+        { role: "FIGHTER", at: { x: 4, y: 4 } },
+        { role: "FIGHTER", at: { x: 7, y: 5 } },
+        { role: "GUARD", at: { x: 5, y: 5 } },
+        { role: "CAPTAIN", at: { x: 7, y: 3 } },
+        { role: "FIGHTER", at: { x: 13, y: 5 }, home: 1 },
+        { role: "FIGHTER", at: { x: 13, y: 4 }, home: 1 },
+        { role: "GUARD", at: { x: 14, y: 7 }, home: 1 },
+        { role: "CAPTAIN", at: { x: 13, y: 8 }, home: 1 },
       ],
       reveal: { radius: 2, rects: [{ x0: 7, y0: 11, x1: 13, y1: 14 }] },
       forbiddenTechnologies: [
@@ -260,8 +256,9 @@ export const DINOSAUR_5_V7: MissionDefinitionV7 = {
     {
       // The Redcaps, unpaid since the Baron's accident, the Lodge's now.
       faction: "GOBLIN",
-      coins: 2,
-      technologies: ["SCOUTING", "DRILL", "FORTIFICATION"],
+      // Retune 3: 6 Coins, Raiding, nine Redcaps.
+      coins: 6,
+      technologies: ["SCOUTING", "RAIDING", "DRILL", "FORTIFICATION"],
       cities: [
         {
           name: "Redcap Ford",
@@ -277,6 +274,9 @@ export const DINOSAUR_5_V7: MissionDefinitionV7 = {
         { role: "FIGHTER", at: { x: 9, y: 8 } },
         { role: "RAIDER", at: { x: 10, y: 8 } },
         { role: "RAIDER", at: { x: 8, y: 7 } },
+        { role: "FIGHTER", at: { x: 7, y: 8 } },
+        { role: "FIGHTER", at: { x: 11, y: 8 } },
+        { role: "GUARD", at: { x: 9, y: 9 } },
       ],
       reveal: { radius: 2, rects: [{ x0: 7, y0: 11, x1: 13, y1: 14 }] },
       forbiddenTechnologies: [
@@ -292,7 +292,6 @@ export const DINOSAUR_5_V7: MissionDefinitionV7 = {
         "FIELDCRAFT",
         "ROADS",
         "COMMERCE",
-        "RAIDING",
         "CHIVALRY",
         "ENGINEERING",
         "METALLURGY",
@@ -302,7 +301,7 @@ export const DINOSAUR_5_V7: MissionDefinitionV7 = {
       directive: {
         kind: "GUARD",
         zone: [{ x0: 8, y0: 8, x1: 11, y1: 9 }],
-        garrison: 2,
+        garrison: 3,
         others: { kind: "RUSH" },
       },
     },
@@ -310,7 +309,7 @@ export const DINOSAUR_5_V7: MissionDefinitionV7 = {
       // Captain Quaxx's saucers, who have not forgotten who ate the
       // Overmind.
       faction: "MARTIAN",
-      coins: 3,
+      coins: 0,
       technologies: ["SCOUTING"],
       cities: [
         {
@@ -320,10 +319,8 @@ export const DINOSAUR_5_V7: MissionDefinitionV7 = {
           rewards: [],
         },
       ],
-      units: [
-        { role: "RAIDER", at: { x: 4, y: 11 } },
-        { role: "FIGHTER", at: { x: 3, y: 11 } },
-      ],
+      // Retune 3: one Fighter (the Raider went; the camp is a small one).
+      units: [{ role: "FIGHTER", at: { x: 3, y: 11 } }],
       reveal: { radius: 2, rects: [{ x0: 5, y0: 0, x1: 13, y1: 10 }] },
       forbiddenTechnologies: [
         "GATHERING",
@@ -348,49 +345,100 @@ export const DINOSAUR_5_V7: MissionDefinitionV7 = {
       ],
     },
   ],
-  // The Unquiet rise all along the road: south of the ridge in round 4,
-  // round the ford in round 7, on the barrow fields in round 10, by the
-  // marsh in round 13.
+  // The Unquiet rise all along the road, six times, and the Redcaps'
+  // hired men come over the ridge once (retune 3: four waves in rounds 4,
+  // 7, 10 and 13): south of the ridge, round the ford, on the barrow
+  // fields, by the marsh, and every wave is announced with a line.
   reinforcements: [
     {
       seat: 1,
-      round: 4,
+      round: 3,
       units: [
         { role: "GUARD", at: { x: 5, y: 11 } },
         { role: "FIGHTER", at: { x: 4, y: 13 } },
         { role: "FIGHTER", at: { x: 6, y: 12 } },
         { role: "FIGHTER", at: { x: 5, y: 14 } },
+        { role: "CAPTAIN", at: { x: 4, y: 12 } },
       ],
+      line: "The barrows to the south stir: they smell the eggs on you.",
+      announce: true,
     },
     {
       seat: 1,
-      round: 7,
+      round: 5,
       units: [
         { role: "GUARD", at: { x: 7, y: 7 } },
         { role: "FIGHTER", at: { x: 6, y: 6 } },
         { role: "FIGHTER", at: { x: 11, y: 7 } },
         { role: "FIGHTER", at: { x: 12, y: 8 } },
+        { role: "CAPTAIN", at: { x: 6, y: 7 } },
       ],
+      line: "The ridge's old graves open, one after another.",
+      announce: true,
+    },
+    {
+      seat: 2,
+      round: 6,
+      units: [
+        { role: "FIGHTER", at: { x: 8, y: 9 } },
+        { role: "FIGHTER", at: { x: 11, y: 9 } },
+        { role: "RAIDER", at: { x: 9, y: 8 } },
+        { role: "RAIDER", at: { x: 10, y: 8 } },
+      ],
+      line: "The Redcaps take the hoods' coin and come over the ridge.",
+      announce: true,
     },
     {
       seat: 1,
-      round: 10,
+      round: 7,
       units: [
         { role: "GUARD", at: { x: 7, y: 5 } },
         { role: "GUARD", at: { x: 8, y: 4 } },
         { role: "FIGHTER", at: { x: 7, y: 3 } },
         { role: "FIGHTER", at: { x: 10, y: 4 } },
+        { role: "CAPTAIN", at: { x: 6, y: 5 } },
       ],
+      line: "Skeletons climb out of the barrow fields in rows.",
+      announce: true,
     },
     {
       seat: 1,
-      round: 13,
+      round: 9,
       units: [
         { role: "GUARD", at: { x: 8, y: 2 } },
         { role: "GUARD", at: { x: 10, y: 2 } },
         { role: "FIGHTER", at: { x: 9, y: 3 } },
         { role: "FIGHTER", at: { x: 11, y: 2 } },
+        { role: "CAPTAIN", at: { x: 9, y: 2 } },
       ],
+      line: "Something in the marsh sends its dead to meet the herd.",
+      announce: true,
+    },
+    {
+      seat: 1,
+      round: 11,
+      units: [
+        { role: "GUARD", at: { x: 5, y: 11 } },
+        { role: "FIGHTER", at: { x: 4, y: 13 } },
+        { role: "FIGHTER", at: { x: 6, y: 12 } },
+        { role: "FIGHTER", at: { x: 7, y: 7 } },
+        { role: "CAPTAIN", at: { x: 6, y: 6 } },
+      ],
+      line: "The dead circle back behind the herd.",
+      announce: true,
+    },
+    {
+      seat: 1,
+      round: 13,
+      units: [
+        { role: "GUARD", at: { x: 7, y: 5 } },
+        { role: "FIGHTER", at: { x: 7, y: 3 } },
+        { role: "FIGHTER", at: { x: 10, y: 4 } },
+        { role: "FIGHTER", at: { x: 9, y: 3 } },
+        { role: "CAPTAIN", at: { x: 8, y: 2 } },
+      ],
+      line: "The last barrow empties onto the road.",
+      announce: true,
     },
   ],
   landmarks: [{ tag: "MIRES_EDGE", at: { x: 9, y: 1 }, name: "Mire's Edge" }],
@@ -402,14 +450,14 @@ export const DINOSAUR_5_V7: MissionDefinitionV7 = {
     "SEAMANSHIP",
     "SUBMERSIBLES",
   ],
-  // The Queen to Mire's Edge by round 18 (the saga's 22; hand play won in
-  // round 7). The stars: by round 14, and no city lost.
+  // The Queen to Mire's Edge by round 15 (the saga's 22; was 18). The
+  // stars: by round 11, and no city lost.
   objective: {
     kind: "ESCORT",
     unit: "OLD_QUEEN",
     to: "MIRES_EDGE",
     within: 1,
-    byRound: 18,
-    bonus: [{ kind: "WITHIN_ROUNDS", rounds: 14 }, { kind: "KEEP_CITIES" }],
+    byRound: 15,
+    bonus: [{ kind: "WITHIN_ROUNDS", rounds: 11 }, { kind: "KEEP_CITIES" }],
   },
 };

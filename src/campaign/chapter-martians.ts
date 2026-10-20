@@ -29,8 +29,8 @@ export const CHAPTER_MARTIANS_V7: CampaignChapterV7 = Object.freeze({
       name: "Strangers in a Strange Land",
       format: "CONQUEST",
       briefing:
-        "Captain's log, Earth summer. Our colony at Saucer Field has neighbours: goblins, who have discovered that a crashed saucer is worth more in pieces. They have stripped two already and are wearing the parts as hats. Their camps lie across the water and the Rift. Recover the saucers, Captain. Teach the natives to respect the Shield.",
-      objective: "Take both of the scrap camps.",
+        "Captain's log, Earth summer. Our colony at Saucer Field has neighbours: goblins, who have discovered that a crashed saucer is worth more in pieces. They have stripped two already and are wearing the parts as hats. Their camps lie across the water and the Rift. Recover the saucers, Captain. Teach the natives to respect the Shield. They are coming for the colony first.",
+      objective: "Take both scrap camps by turn 15.",
       hints: Object.freeze([
         "A heat ray hits hardest from a gun that has not moved.",
         "Shields soak a hit and refill at the start of your turn.",
@@ -47,8 +47,8 @@ export const CHAPTER_MARTIANS_V7: CampaignChapterV7 = Object.freeze({
       name: "Abduction at Millford",
       format: "CAPTURE",
       briefing:
-        "Professor Ambrose Haddock of the Millford Observatory has published four papers on last autumn's falling stars and been laughed at for all of them. He is exactly the native we need. Collect him. Millford's militia will object, so bring a Brain: the natives are far more reasonable when they are fighting for us. Do not damage the telescope.",
-      objective: "Take Millford by turn 18.",
+        "Professor Ambrose Haddock of the Millford Observatory has published four papers on last autumn's falling stars and been laughed at for all of them. He is exactly the native we need. Collect him. Millford's militia will object, so bring a Brain: the natives are far more reasonable when they are fighting for us. Do not damage the telescope. The county is mustering.",
+      objective: "Take Millford by turn 14.",
       hints: Object.freeze([
         "A Brain takes up to three enemies beside it.",
         "An enemy taken on a town's centre can capture it.",
@@ -65,8 +65,8 @@ export const CHAPTER_MARTIANS_V7: CampaignChapterV7 = Object.freeze({
       name: "The Glass Ship",
       format: "ESCORT",
       briefing:
-        "The Glass Ship still lies in the Crater on the dinosaur island, and the beasts that guard it hate it more than ever. The star-drive core is too heavy to fly: a Tripod must carry it through the jungle and across the strait to Ray Hollow. The beasts will come for it. So will the sea. Bring the core home.",
-      objective: "Walk the core to Ray Hollow by turn 16.",
+        "The Glass Ship still lies in the Crater on the dinosaur island, and the beasts that guard it hate it more than ever. The star-drive core is too heavy to fly: a Tripod must carry it through the jungle and across the strait to Ray Hollow. The beasts will come for it. So will the sea. Bring the core home, and quickly: the whole island is hunting it.",
+      objective: "Walk the core to Ray Hollow by turn 13.",
       hints: Object.freeze([
         "With Hover Pods, foot units launch from any beach.",
         "One torpedo sinks a Tripod afloat: cross out of reach.",
@@ -107,8 +107,8 @@ export const CHAPTER_MARTIANS_V7: CampaignChapterV7 = Object.freeze({
       name: "The Orrery at Candlewick",
       format: "CAPTURE",
       briefing:
-        "Candlewick is a quiet town of candle-makers on the mountain's slope that has thrown out Steele's reeve and started lighting very large candles. In its meeting hall stands the Lodge's orrery, a brass machine that shows when the stars will be right. The Grey Lodge has hired Redcaps to guard it, with orders to melt it down if anyone comes. Take Candlewick first.",
-      objective: "Take Candlewick by turn 18.",
+        "Candlewick is a quiet town of candle-makers on the mountain's slope that has thrown out Steele's reeve and started lighting very large candles. In its meeting hall stands the Lodge's orrery, a brass machine that shows when the stars will be right. The Grey Lodge has hired Redcaps to guard it, with orders to melt it down if anyone comes. Take Candlewick first, before the Redcaps arrive in force.",
+      objective: "Take Candlewick by turn 15.",
       hints: Object.freeze([
         "A marked star falls next turn: get out from under it.",
         "Beside an idol you may hit only the Idol Bearer.",
@@ -126,7 +126,7 @@ export const CHAPTER_MARTIANS_V7: CampaignChapterV7 = Object.freeze({
       format: "KILL",
       briefing:
         "Captain's log: the truth. Mars was green once. Something like the thing under this mountain woke there, called with the voices of the living, and ate until our world was red and still. The call that brought us here was our grandmothers' voices in its mouth. Three of the Lodge's Stargazers are pulling stars down on Red Dust. Kill them. Then we will decide whether we are going home.",
-      objective: "Kill the three Stargazers by turn 16.",
+      objective: "Kill the three Stargazers by turn 14.",
       hints: Object.freeze([
         "Hurt or move a chanter and the star hits softer.",
         "Hurt a Stargazer and its marked star never falls.",

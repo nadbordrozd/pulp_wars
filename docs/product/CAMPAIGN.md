@@ -4615,6 +4615,57 @@ what each mission's hand play changed:
 - **The Old Queen** is an Alpha from DN5 on (the `kills` of a mission
   unit), as the story has grown her.
 
+### 17.4 Retune 3 (`pulp_wars-hmyk.21`): much harder, NOT play-tested
+
+The user, 2026-10-20, after the Human and Undead retune: "we made a step in
+the right direction. but not quite big enough. It's still easy. the crux of
+the problem is that the AI is not smart enough. I'm running out of tokens
+for this week so I don't want you to play the game yourself right now.
+Instead work on all the remaining campaigns and apply the same lessons. If
+anything, you can go a bit further. If you made the human and undead
+campaigns 50% harder, make the other ones 75% harder and reduce starting
+resources etc. Don't worry that you might overshoot ... Try to over shoot.
+Not enough tokens to test this fully this week so just YOLO it."
+
+So this pass is **data only and was not played**: no `play-text`, no
+autopilot, no simulation. Every mission was only built and pinned (the
+mission, pin, objective and chapter tests, section 16.4's rules). Expect it
+to overshoot; the numbers below are the first thing to move when it does.
+Every mission is revision 3 (re-pinned), every enemy seat has a directive
+that attacks (`RUSH`, or a `GUARD` that sends the rest of its army), and
+every wave carries a story line and a heads-up. Four missions start like a
+skirmish (one level 1 town, two units, no technology, no Coins, only the
+town in sight); DN3 and DN5 start thin.
+
+| Mission | Start before                                                                                                                           | Start now                                                                                                                                                    | Enemy before                                                                               | Enemy now                                                                                                                                                                                                  | Waves before to now                                                                                                 | Clock (star) before to now |
+| ------- | -------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- | -------------------------- |
+| DN1     | Thunder Nest level 2, the Queen, Oona and a Raptor, six technologies, 6 Coins, a village in the jungle and two chests, both camps seen | **Skirmish**: Thunder Nest level 1, the Queen and Oona, no technology, 0 Coins, the jungle village and both chests gone, only the nest seen                  | seven men, level 2 and 1 camps, no directive, 4 Coins, Hunting, Marksmanship, Drill, Walls | twelve men (Gunwale level 2, Tusker's Landing level 1), 8 Coins, plus Gathering and Scouting; dig in until round 3, then all but three `RUSH` the nest                                                     | none to rounds 5 and 9 (three men each), announced                                                                  | none (12) to 16 (11)       |
+| DN2     | Thunder Nest and Fernmaw level 2, five units, seven technologies, 8 Coins, four villages                                               | **Skirmish**: Thunder Nest level 1, the Queen and one Spitter, no technology, 0 Coins; Fernmaw and all four villages gone                                    | lodge level 1 with seven men, the Major `GUARD` alone; six Redcaps, 2 Coins                | lodge level 2 with eleven men, 8 Coins, Gathering and Scouting; the Major and three guns hold the ridge, the rest `RUSH`; eleven Redcaps (Gutter Gulch level 2), 6 Coins, Raiding, Drill and Walls, `RUSH` | two Redcap packs (rounds 5, 9) to four (rounds 3, 6, 9, 12), announced                                              | 20 (16) to 16 (12)         |
+| DN3     | Fernmaw and the Crater level 2, five units, eight technologies, 8 Coins, a village and a chest by Fernmaw                              | **Thin**: Fernmaw alone, the Queen, a Patrol Boat and a Fighter, four technologies, 3 Coins, only Big Top Bay seen; the village and the chest gone           | eight units (four ships, a Guard and three Fighters); 5 Coins, no technology               | thirteen units (seven ships with a second Submarine and two more Patrol Boats, six soldiers); 12 Coins, Hunting, Marksmanship, Drill and Walls; the fleet still keeps to the shallows                      | three landings (rounds 4, 8, 12) to four landings (3, 6, 9, 12) and a three-ship flotilla (7), announced            | 22 (18) to 18 (14)         |
+| DN4     | Big Top Bay level 2, three units, ten technologies, 8 Coins, three villages and a chest in reach; the freed beasts in rounds 6 and 10  | **Skirmish**: Big Top Bay level 1, the Queen and a Triceratops, no technology, 0 Coins, the villages and chest gone; one freed beast each in rounds 8 and 12 | the big top (eight Guards, two rifles), two Redcap camps of three at level 1               | six rifles (all `RUSH` your camp), 10 Coins, Scouting; both Redcap camps level 2 with six each, 8 Coins, Raiding                                                                                           | Redcap packs in rounds 4 and 8 (four men) to rounds 3, 6, 9, 12 (six men) and a firing line in round 5, announced   | 18 (14) to 15 (11)         |
+| DN5     | the Circus Ground level 2 and Sawdust Camp, five units, eleven technologies, 10 Coins, four villages and a chest in reach              | **Thin**: the Circus Ground alone, the Queen, a Triceratops and a Spitter, five technologies, 3 Coins, only Mire's Edge seen; the villages and chest gone    | eleven dead and six Redcaps, all level 1; Quaxx's camp two units                           | nineteen dead (both barrows level 2, 8 Coins), nine Redcaps (6 Coins, Raiding), Quaxx's camp one Fighter and no Coins                                                                                      | four waves of the dead (rounds 4, 7, 10, 13) to six (3, 5, 7, 9, 11, 13) of five and a Redcap column (6), announced | 18 (14) to 15 (11)         |
+| DN6     | Mire's Edge level 2 and Sallow Ford, five units, eleven technologies, 10 Coins, two villages in reach                                  | **Skirmish**: Mire's Edge level 1, the Old Queen and Oona, no technology, 0 Coins, only Greyhood's island seen; Sallow Ford and the two villages gone        | Greyhood level 3, twelve men, 16 Favour, 3 Coins; the barrow five men level 1              | Greyhood sixteen men, 20 Favour (the Herald can be called at once), 10 Coins; the barrow nine men, level 2, 8 Coins                                                                                        | four waves of the dead (rounds 5, 8, 11, 14) to six (3, 5, 7, 9, 11, 13) and two Lodge boatloads (4, 8), announced  | 18 (14) to 15 (11)         |
+
+Notes on what the data could not do:
+
+- **No level 3 or 4 for the enemy towns on these boards.** A city needs
+  enough bare Grass (or Fruit) round it for its level; the poachers' camps,
+  the Redcap camps, the big top and the Baron's towns hold none to spare,
+  so the extra strength is in men, Coins and technology, not levels or
+  Walls. Greyhood stays level 3.
+- **DN2 has no village left** on its board (the four of the north are
+  gone), and DN1 and DN4 have none either.
+- **A skirmish start must still see its objective's landmark** (the
+  builder's rule): DN6 shows Greyhood's island, DN3 and DN5 the one tile
+  they walk to.
+- **DN6's cult test** (`ruleset-v7-cult-bound-ai.test.ts`, a bound Herald
+  under the `GUARD` directive) still holds: the Lodge's old units kept
+  their places and the new ones stand beside them.
+
+**Test notes.** Not played; the first real attempt will show which
+mission overshoots. If a mission is unwinnable, take back in this order:
+the second wave, the Coins, the Favour, then the clock.
+
 ## 18. The Martian campaign, "Signal from Home" (`pulp_wars-hmyk.7`)
 
 The second tier-2 faction campaign, after the Dinosaurs (section 17): six missions, `MARTIAN_1` to
@@ -4754,6 +4805,35 @@ The danger moments, and what each mission's hand play changed:
   mission curiosities (E1); the escort tag was checked through embarking
   and Beam Down (E6: the escort is lost when sunk afloat and arrives after
   a Beam Down).
+
+### 18.4 Retune 3 (`pulp_wars-hmyk.21`): much harder, NOT play-tested
+
+Same brief as section 17.4 ("just YOLO it", about 75% harder than the
+first pass, no hand play, no simulation): data only, built and pinned but
+never played, so it may well overshoot. Revisions: M1 3, M2 2, M3 3, M4 2,
+M5 3, M6 2 (re-pinned). Three missions start like a skirmish (M1, M2, M5:
+one level 1 town, two or three units, little or no technology, 0 to 3
+Coins, only the town and the objective in sight); M3, M4 and M6 start thin
+(one town, four or five units, four or five technologies, at most 3
+Coins). Every hostile seat that is not holding a place goes for you.
+
+| Mission | Start before                                                                                          | Start now                                                                                                                                               | Enemy before                                                                                         | Enemy now                                                                                                                                               | Waves before to now                                                                    | Clock (star) before to now |
+| ------- | ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | -------------------------- |
+| M1      | Saucer Field level 2, five units, three technologies, 5 Coins, two villages and two chests in reach   | **Skirmish**: Saucer Field level 1, Quaxx, a Grunt and a gun, no technology, 0 Coins, two villages and both chests gone, only the town seen             | four Fighters, no technology, 0 Coins, no directive (the lake and the Rift keep them away)           | eleven raiders, 6 Coins, Gathering, Hunting, Scouting, Drill and Walls; dig in until round 3, then all but three go the long way round for Saucer Field | none to rafts on the south shore in rounds 6 and 10, announced                         | none to 15 (11)            |
+| M2      | Red Dust level 2, four units, six technologies, 6 Coins, five villages                                | **Skirmish-like**: Red Dust level 1 (its farm gone), Quaxx and a Grunt, Scouting and Hunting, 3 Coins, three villages gone, only Millford's ground seen | six militiamen, no technology, `GUARD` of four                                                       | thirteen men, 8 Coins, Hunting, Marksmanship, Drill and Walls; garrison six at Millford, the rest `RUSH` Red Dust from round 4                          | none to levies in rounds 4, 8, 12, announced                                           | 18 (15) to 14 (11)         |
+| M3      | Ray Hollow, seven units, nine technologies, 6 Coins, two villages in reach                            | **Thin**: Ray Hollow, the Core-Walker, a Grunt, a gun and a Grunt at the town, four technologies, 0 Coins, two villages gone, only the Crater seen      | Tarpit level 2, eight beasts, 0 Coins, four technologies, `RUSH`                                     | seventeen beasts with a second Plesiosaur, 8 Coins, Marksmanship and Raiding; `RUSH`                                                                    | four (rounds 3, 5, 7, 8) to five (2, 4, 6, 8, 10), announced                           | 16 (12) to 13 (10)         |
+| M4      | Red Dust level 3 and Saucer Field level 2, eight units, eight technologies, 8 Coins, six villages     | **Thin**: Red Dust (level 3, Walls) alone, a Guard, a Grunt, a gun and a Catapult, four technologies, 2 Coins, the north village gone                   | eight dead, 4 Coins; Sugarcrest four units                                                           | fourteen dead, 10 Coins; Sugarcrest three units; `RUSH`                                                                                                 | three (rounds 5, 9, 13) to six (3, 5, 7, 9, 11, 13), announced                         | hold 16 to hold 16         |
+| M5      | Red Dust level 3, eight units, eleven technologies, 8 Coins, three villages in reach                  | **Skirmish**: Red Dust level 1 (its farm gone), a Cavalier and a Grunt, no technology, 0 Coins, three villages gone, only Candlewick's slope seen       | Lodge eight men, 2 Coins, 6 Favour, garrison eight; Redcaps eight, 0 Coins, two technologies, `RUSH` | Lodge thirteen men, 8 Coins, 8 Favour, garrison twelve; Redcaps fifteen, 6 Coins, Scouting, Raiding, Drill and Walls, `RUSH`                            | none to six (Redcaps 3, 6, 9, 12; the Lodge 5, 9), announced                           | 18 (14) to 15 (11)         |
+| M6      | Red Dust level 3, Saucer Field and Candlewick, ten units, nine technologies, 10 Coins, three villages | **Thin**: Red Dust level 3 (Walls) alone, Quaxx, a Guard, two Grunts and a Catapult, five technologies, 3 Coins, only the three hills seen              | circles of six (18 units), 2 Coins, 6 Favour; the dead three; the Rangers five, marching in round 8  | circles of eight (24 units), 8 Coins, 10 Favour; the dead seven, 6 Coins; the Rangers three, marching in round 10                                       | three (rounds 4, 7, 10) to seven (the dead 3, 5, 7, 9, 11; the Lodge 6, 10), announced | 16 (12) to 14 (10)         |
+
+(M4's hold stays 16 rounds: a shorter hold would be easier.)
+
+M5's Lodge still has no Summoner and no Captain, and M6's three circles
+still stand in the full ring with the Stargazers off the camps' centres
+(the hand-play lessons of section 18.2). **Test notes.** Not played; the
+first real attempt will show which mission overshoots. If a mission is
+unwinnable, take back in this order: the second wave, the Coins, the
+extra men, then the clock.
 
 ## 19. The Goblin campaign, "The Big Score" (`pulp_wars-hmyk.8`)
 

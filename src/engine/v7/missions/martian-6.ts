@@ -18,6 +18,13 @@ import type { MissionDefinitionV7 } from "./types";
  * barrow country round the lake's western end; Millford is on the southern
  * shore.
  *
+ * Retune 3 (`pulp_wars-hmyk.21`, untested): you start thin (Red Dust alone
+ * at level 3 with Walls, Quaxx, a Guard, two Grunts and a Catapult, five
+ * technologies, 3 Coins, only the three hills marked), the three villages
+ * near Red Dust are gone, each hill camp has two more men and the Lodge
+ * 10 Favour, the dead start as seven, the Rangers are three and march in
+ * round 10, seven announced waves come, and the clock is 14.
+ *
  * ```text
  *      x 0123456789ABCDEF
  * y  0   .f.^ff.^.3......      1 2 3: the Stargazers
@@ -40,7 +47,12 @@ import type { MissionDefinitionV7 } from "./types";
  */
 export const MARTIAN_6_V7: MissionDefinitionV7 = {
   id: "MARTIAN_6",
-  revision: 1,
+  // Revision 2 (`pulp_wars-hmyk.21`, retune 3): a thin start (Red Dust
+  // alone, five units, five technologies, 3 Coins, only the three hills
+  // marked), no village near it, fuller hill camps and dead, a smaller
+  // Ranger column that marches later, seven announced waves and a 14-round
+  // clock.
+  revision: 2,
   seed: 20261606,
   // <map>
   size: 16,
@@ -60,6 +72,10 @@ export const MARTIAN_6_V7: MissionDefinitionV7 = {
       { kind: "VILLAGE", at: { x: 9, y: 13 }, present: false },
       // Hob's Knoll stands on Fertile Ground.
       { kind: "RESOURCE", at: { x: 1, y: 7 }, resource: "." },
+      // Retune 3: the three villages within reach of Red Dust.
+      { kind: "VILLAGE", at: { x: 6, y: 4 }, present: false },
+      { kind: "VILLAGE", at: { x: 9, y: 4 }, present: false },
+      { kind: "VILLAGE", at: { x: 3, y: 7 }, present: false },
     ],
   },
   terrain: [
@@ -118,9 +134,6 @@ export const MARTIAN_6_V7: MissionDefinitionV7 = {
     "PPWWWWWWWWWWWWWW",
   ],
   villages: [
-    { x: 6, y: 4 },
-    { x: 9, y: 4 },
-    { x: 3, y: 7 },
     { x: 3, y: 13 },
     { x: 6, y: 13 },
     { x: 12, y: 13 },
@@ -137,13 +150,12 @@ export const MARTIAN_6_V7: MissionDefinitionV7 = {
   seats: [
     {
       faction: "MARTIAN",
-      coins: 10,
+      // Retune 3: thin. Red Dust alone (Saucer Field and Candlewick are
+      // gone), five technologies, 3 Coins, five units, and only the three
+      // hill camps marked.
+      coins: 3,
       technologies: [
-        "GATHERING",
-        "ADMINISTRATION",
         "HUNTING",
-        "FORESTRY",
-        "SAWMILLING",
         "MARKSMANSHIP",
         "SCOUTING",
         "DRILL",
@@ -158,13 +170,6 @@ export const MARTIAN_6_V7: MissionDefinitionV7 = {
           level: 3,
           rewards: ["STOCKPILE", "WALLS"],
         },
-        {
-          name: "Saucer Field",
-          at: { x: 13, y: 6 },
-          level: 1,
-          rewards: [],
-        },
-        { name: "Candlewick", at: { x: 14, y: 9 }, level: 1, rewards: [] },
       ],
       units: [
         // Captain Quaxx.
@@ -174,24 +179,24 @@ export const MARTIAN_6_V7: MissionDefinitionV7 = {
         // tiles from its Stargazer).
         { role: "FIGHTER", at: { x: 7, y: 6 } },
         { role: "FIGHTER", at: { x: 6, y: 6 } },
-        { role: "MARKSMAN", at: { x: 14, y: 6 }, home: 1 },
-        { role: "MARKSMAN", at: { x: 12, y: 9 }, home: 2 },
         { role: "CATAPULT", at: { x: 8, y: 7 } },
-        { role: "KNIGHT", at: { x: 14, y: 5 }, home: 1 },
-        { role: "RAIDER", at: { x: 13, y: 7 }, home: 1 },
-        { role: "RAIDER", at: { x: 14, y: 8 }, home: 2 },
       ],
-      // The dish sees the hills, the barrows and the southern shore.
+      // The three hill camps, and nothing else beyond the dish's walls.
       reveal: {
         radius: 2,
-        rects: [{ x0: 0, y0: 0, x1: 15, y1: 14 }],
+        rects: [
+          { x0: 0, y0: 6, x1: 2, y1: 8 },
+          { x0: 3, y0: 0, x1: 5, y1: 2 },
+          { x0: 8, y0: 0, x1: 10, y1: 1 },
+        ],
       },
     },
     {
       // The Grey Lodge: three hill camps, each with a Stargazer.
       faction: "CULT",
-      coins: 2,
-      favour: 6,
+      // Retune 3: 8 Coins, 10 Favour, six more men (two on each hill).
+      coins: 8,
+      favour: 10,
       // The Lodge learns nothing (hand play: hunting grew Owl Hill and its
       // reward unit took the centre, pushing the Idol Bearer off the
       // Stargazer).
@@ -226,6 +231,12 @@ export const MARTIAN_6_V7: MissionDefinitionV7 = {
         { role: "FIGHTER", at: { x: 10, y: 1 }, home: 2 },
         { role: "FIGHTER", at: { x: 8, y: 0 }, home: 2 },
         { role: "FIGHTER", at: { x: 9, y: 1 }, home: 2 },
+        { role: "FIGHTER", at: { x: 2, y: 7 } },
+        { role: "MARKSMAN", at: { x: 2, y: 8 } },
+        { role: "FIGHTER", at: { x: 4, y: 3 }, home: 1 },
+        { role: "MARKSMAN", at: { x: 5, y: 3 }, home: 1 },
+        { role: "FIGHTER", at: { x: 11, y: 1 }, home: 2 },
+        { role: "MARKSMAN", at: { x: 11, y: 0 }, home: 2 },
       ],
       reveal: { radius: 2, rects: [{ x0: 0, y0: 0, x1: 15, y1: 10 }] },
       // Each Stargazer and its Idol Bearer hold their two tiles, off the
@@ -268,7 +279,8 @@ export const MARTIAN_6_V7: MissionDefinitionV7 = {
     {
       // The Unquiet, walking in from the barrows.
       faction: "UNDEAD",
-      coins: 0,
+      // Retune 3: 6 Coins and seven of the dead instead of three.
+      coins: 6,
       technologies: ["DRILL", "FORTIFICATION", "EXPLOSIVES"],
       cities: [
         { name: "Coffin Hill", at: { x: 2, y: 10 }, level: 1, rewards: [] },
@@ -277,6 +289,10 @@ export const MARTIAN_6_V7: MissionDefinitionV7 = {
         { role: "GUARD", at: { x: 2, y: 10 } },
         { role: "FIGHTER", at: { x: 1, y: 9 } },
         { role: "FIGHTER", at: { x: 2, y: 9 } },
+        { role: "FIGHTER", at: { x: 0, y: 9 } },
+        { role: "FIGHTER", at: { x: 3, y: 9 } },
+        { role: "GUARD", at: { x: 0, y: 10 } },
+        { role: "CAPTAIN", at: { x: 1, y: 10 } },
       ],
       reveal: { radius: 2, rects: [{ x0: 0, y0: 4, x1: 9, y1: 12 }] },
       directive: { kind: "RUSH" },
@@ -316,16 +332,15 @@ export const MARTIAN_6_V7: MissionDefinitionV7 = {
       ],
       units: [
         { role: "GUARD", at: { x: 9, y: 13 } },
-        { role: "KNIGHT", at: { x: 8, y: 13 } },
         { role: "FIGHTER", at: { x: 10, y: 13 } },
-        { role: "FIGHTER", at: { x: 9, y: 14 } },
         { role: "MARKSMAN", at: { x: 8, y: 14 } },
       ],
       reveal: { radius: 2, rects: [{ x0: 0, y0: 4, x1: 15, y1: 14 }] },
-      // The Rangers keep Millford until round 8, then march.
+      // The Rangers keep Millford until round 10, then march (retune 3: a
+      // column of three, and later: it was five and round 8).
       directive: [
-        { kind: "NORMAL", untilRound: 8 },
-        { kind: "RUSH", fromRound: 8 },
+        { kind: "NORMAL", untilRound: 10 },
+        { kind: "RUSH", fromRound: 10 },
       ],
       forbiddenTechnologies: [
         "FARMING",
@@ -345,46 +360,103 @@ export const MARTIAN_6_V7: MissionDefinitionV7 = {
     "SEAMANSHIP",
     "SUBMERSIBLES",
   ],
-  // The Unquiet rise three times from the barrows on the shore west of
-  // Red Dust (hand play: from the western edge they dug in round Coffin
-  // Hill and never came).
+  // The Unquiet rise five times from the barrows on the shore west of Red
+  // Dust (hand play: from the western edge they dug in round Coffin Hill
+  // and never came), and the Lodge sends more chanters up the hills in
+  // rounds 6 and 10; every wave is announced (retune 3: three waves,
+  // rounds 4, 7 and 10).
   reinforcements: [
     {
       seat: 2,
-      round: 4,
+      round: 3,
       units: [
         { role: "FIGHTER", at: { x: 3, y: 8 } },
         { role: "FIGHTER", at: { x: 4, y: 8 } },
         { role: "GUARD", at: { x: 2, y: 8 } },
+        { role: "CAPTAIN", at: { x: 2, y: 9 } },
       ],
+      line: "The barrows west of the dish open early.",
+      announce: true,
     },
     {
       seat: 2,
-      round: 7,
+      round: 5,
       units: [
         { role: "CATAPULT", at: { x: 2, y: 9 } },
         { role: "FIGHTER", at: { x: 3, y: 8 } },
         { role: "FIGHTER", at: { x: 4, y: 8 } },
         { role: "GUARD", at: { x: 2, y: 8 } },
       ],
+      line: "A Lich walks out of the barrows with its escort.",
+      announce: true,
+    },
+    {
+      seat: 1,
+      round: 6,
+      units: [
+        { role: "FIGHTER", at: { x: 4, y: 3 } },
+        { role: "FIGHTER", at: { x: 5, y: 3 } },
+        { role: "MARKSMAN", at: { x: 6, y: 2 } },
+      ],
+      line: "More of the Grey Lodge climb to the hill camps.",
+      announce: true,
     },
     {
       seat: 2,
-      round: 10,
+      round: 7,
       units: [
         { role: "KNIGHT", at: { x: 4, y: 8 } },
         { role: "CATAPULT", at: { x: 2, y: 9 } },
         { role: "FIGHTER", at: { x: 3, y: 8 } },
         { role: "FIGHTER", at: { x: 2, y: 8 } },
       ],
+      line: "The dead send a rider ahead of the next column.",
+      announce: true,
+    },
+    {
+      seat: 2,
+      round: 9,
+      units: [
+        { role: "FIGHTER", at: { x: 3, y: 8 } },
+        { role: "FIGHTER", at: { x: 4, y: 8 } },
+        { role: "GUARD", at: { x: 2, y: 8 } },
+        { role: "CATAPULT", at: { x: 2, y: 9 } },
+        { role: "CAPTAIN", at: { x: 3, y: 9 } },
+      ],
+      line: "Necromancers and Liches arrive together.",
+      announce: true,
+    },
+    {
+      seat: 1,
+      round: 10,
+      units: [
+        { role: "FIGHTER", at: { x: 11, y: 1 } },
+        { role: "FIGHTER", at: { x: 11, y: 0 } },
+        { role: "MARKSMAN", at: { x: 9, y: 2 } },
+      ],
+      line: "The Lodge's last chanters take their places on the hills.",
+      announce: true,
+    },
+    {
+      seat: 2,
+      round: 11,
+      units: [
+        { role: "KNIGHT", at: { x: 4, y: 8 } },
+        { role: "CATAPULT", at: { x: 2, y: 9 } },
+        { role: "FIGHTER", at: { x: 3, y: 8 } },
+        { role: "FIGHTER", at: { x: 2, y: 8 } },
+        { role: "CATAPULT", at: { x: 3, y: 9 } },
+      ],
+      line: "Every barrow west of the dish gives up its last.",
+      announce: true,
     },
   ],
-  // Kill the three Stargazers by round 16 (the saga's 22). The stars: by
-  // round 12, and no city lost.
+  // Kill the three Stargazers by round 14 (the saga's 22; was 16). The
+  // stars: by round 10, and no city lost.
   objective: {
     kind: "KILL",
     units: ["STARGAZER_1", "STARGAZER_2", "STARGAZER_3"],
-    byRound: 16,
-    bonus: [{ kind: "WITHIN_ROUNDS", rounds: 12 }, { kind: "KEEP_CITIES" }],
+    byRound: 14,
+    bonus: [{ kind: "WITHIN_ROUNDS", rounds: 10 }, { kind: "KEEP_CITIES" }],
   },
 };

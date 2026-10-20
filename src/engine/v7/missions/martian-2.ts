@@ -14,6 +14,13 @@ import type { MissionDefinitionV7 } from "./types";
  * the hills in the south-west, walled, with its two farm villages north and
  * east of it.
  *
+ * Retune 3 (`pulp_wars-hmyk.21`, untested): you start like a skirmish (Red
+ * Dust at level 1, Quaxx and one Grunt, Scouting and Hunting, 3 Coins), the
+ * three villages near Red Dust are gone, the militia has thirteen men with
+ * Drill and Walls, holds Millford with six and marches the rest on Red
+ * Dust from round 4, three announced levies come in rounds 4, 8 and 12, and
+ * the clock is 14.
+ *
  * ```text
  *      x 0123456789ABCD
  * y  0   ~~~~~~~~~~~~~~
@@ -34,7 +41,11 @@ import type { MissionDefinitionV7 } from "./types";
  */
 export const MARTIAN_2_V7: MissionDefinitionV7 = {
   id: "MARTIAN_2",
-  revision: 1,
+  // Revision 2 (`pulp_wars-hmyk.21`, retune 3): a skirmish-like start (Red
+  // Dust at level 1, Quaxx and a Grunt, two technologies, 3 Coins), the
+  // villages near Red Dust gone, a militia of thirteen with Drill and Walls
+  // that marches on Red Dust, three announced levies and a 14-round clock.
+  revision: 2,
   seed: 20261602,
   // <map>
   size: 14,
@@ -53,6 +64,10 @@ export const MARTIAN_2_V7: MissionDefinitionV7 = {
       { kind: "CHEST", at: { x: 6, y: 10 }, present: false },
       { kind: "VILLAGE", at: { x: 6, y: 8 }, present: false },
       { kind: "VILLAGE", at: { x: 9, y: 11 }, present: false },
+      // Retune 3: the three villages within reach of Red Dust.
+      { kind: "VILLAGE", at: { x: 12, y: 5 }, present: false },
+      { kind: "VILLAGE", at: { x: 9, y: 5 }, present: false },
+      { kind: "VILLAGE", at: { x: 6, y: 5 }, present: false },
     ],
   },
   terrain: [
@@ -107,15 +122,12 @@ export const MARTIAN_2_V7: MissionDefinitionV7 = {
   villages: [
     { x: 3, y: 2 },
     { x: 6, y: 2 },
-    { x: 6, y: 5 },
-    { x: 9, y: 5 },
-    { x: 12, y: 5 },
   ],
   treasureChests: [{ x: 9, y: 9 }],
   // </map>
-  // Red Dust's farm and Millford's mines on the hill.
+  // Millford's mines on the hill (retune 3: Red Dust's farm is gone, so the
+  // town starts at level 1).
   improvements: [
-    { at: { x: 11, y: 3 }, improvement: "FARM" },
     { at: { x: 3, y: 10 }, improvement: "MINE" },
     { at: { x: 2, y: 11 }, improvement: "MINE" },
   ],
@@ -123,41 +135,37 @@ export const MARTIAN_2_V7: MissionDefinitionV7 = {
   seats: [
     {
       faction: "MARTIAN",
-      coins: 6,
-      technologies: [
-        "GATHERING",
-        "ADMINISTRATION",
-        "SCOUTING",
-        "HUNTING",
-        "MARKSMANSHIP",
-        "DRILL",
-      ],
+      // Retune 3: a skirmish-like start. Red Dust at level 1, Scouting and
+      // Hunting, 3 Coins, Quaxx and one Grunt: Mind Control has to make the
+      // army. Only the old Millford road is marked.
+      coins: 3,
+      technologies: ["SCOUTING", "HUNTING"],
       cities: [
         {
           name: "Red Dust",
           at: { x: 11, y: 2 },
-          level: 2,
-          rewards: ["STOCKPILE"],
+          level: 1,
+          rewards: [],
         },
       ],
       units: [
         // Captain Quaxx, a Brain.
         { role: "CAPTAIN", at: { x: 11, y: 2 }, tag: "QUAXX" },
         { role: "FIGHTER", at: { x: 10, y: 3 } },
-        { role: "FIGHTER", at: { x: 10, y: 1 } },
-        { role: "MARKSMAN", at: { x: 10, y: 2 } },
       ],
-      // Down the farmland to Millford.
+      // Red Dust, and the ground round Millford.
       reveal: {
-        radius: 2,
-        rects: [{ x0: 1, y0: 2, x1: 9, y1: 12 }],
+        radius: 1,
+        rects: [{ x0: 2, y0: 10, x1: 4, y1: 12 }],
       },
     },
     {
       // Millford's militia.
       faction: "ORIGINAL",
-      coins: 0,
-      technologies: [],
+      // Retune 3: 8 Coins, Hunting, Marksmanship, Drill and Walls, and
+      // thirteen men instead of six.
+      coins: 8,
+      technologies: ["HUNTING", "MARKSMANSHIP", "DRILL", "FORTIFICATION"],
       cities: [
         {
           name: "Millford",
@@ -175,23 +183,37 @@ export const MARTIAN_2_V7: MissionDefinitionV7 = {
         { role: "FIGHTER", at: { x: 3, y: 8 }, home: 1 },
         { role: "FIGHTER", at: { x: 4, y: 8 }, home: 1 },
         { role: "GUARD", at: { x: 6, y: 11 }, home: 2 },
+        { role: "FIGHTER", at: { x: 2, y: 10 } },
+        { role: "MARKSMAN", at: { x: 3, y: 9 } },
+        { role: "GUARD", at: { x: 4, y: 9 } },
+        { role: "FIGHTER", at: { x: 2, y: 8 }, home: 1 },
+        { role: "MARKSMAN", at: { x: 3, y: 7 }, home: 1 },
+        { role: "FIGHTER", at: { x: 7, y: 11 }, home: 2 },
+        { role: "MARKSMAN", at: { x: 6, y: 10 }, home: 2 },
       ],
-      reveal: { radius: 2 },
-      // Millford keeps its militia home: a garrison round the walls, the
-      // rest playing their ordinary game.
-      directive: {
-        kind: "GUARD",
-        zone: [{ x0: 1, y0: 8, x1: 7, y1: 12 }],
-        garrison: 4,
-      },
-      // Step 2: the militia learns nothing (hand play: Workshops by its
+      // Red Dust, from the farmers' gossip.
+      reveal: { radius: 2, rects: [{ x0: 10, y0: 1, x1: 12, y1: 3 }] },
+      // Millford keeps its walls for three rounds, then a garrison of six
+      // stays and everyone else marches on Red Dust (retune 3: a garrison
+      // of four, the rest playing their ordinary game round the lodge).
+      directive: [
+        {
+          kind: "GUARD",
+          zone: [{ x0: 1, y0: 7, x1: 7, y1: 12 }],
+          garrison: 13,
+          untilRound: 4,
+        },
+        {
+          kind: "GUARD",
+          zone: [{ x0: 1, y0: 7, x1: 7, y1: 12 }],
+          garrison: 6,
+          others: { kind: "RUSH" },
+        },
+      ],
+      // Step 2: the militia learns little (hand play: Workshops by its
       // Mines grew Millford in round 1, and with Hunting and Marksmen its
       // five towns trained a unit each a turn).
       forbiddenTechnologies: [
-        "DRILL",
-        "FORTIFICATION",
-        "HUNTING",
-        "MARKSMANSHIP",
         "GATHERING",
         "FARMING",
         "MILLING",
@@ -220,12 +242,51 @@ export const MARTIAN_2_V7: MissionDefinitionV7 = {
     "SUBMERSIBLES",
   ],
   landmarks: [{ tag: "MILLFORD", at: { x: 3, y: 11 } }],
-  // Collect the Professor: take Millford by round 18. The stars: by round
-  // 15, and no city lost.
+  // Retune 3: the county's levies come to Millford in rounds 4, 8 and 12,
+  // each announced.
+  reinforcements: [
+    {
+      seat: 1,
+      round: 4,
+      units: [
+        { role: "FIGHTER", at: { x: 2, y: 8 } },
+        { role: "FIGHTER", at: { x: 4, y: 8 } },
+        { role: "MARKSMAN", at: { x: 3, y: 9 } },
+      ],
+      line: "Millford rings the bell: every farmhand takes a pitchfork.",
+      announce: true,
+    },
+    {
+      seat: 1,
+      round: 8,
+      units: [
+        { role: "GUARD", at: { x: 2, y: 9 } },
+        { role: "FIGHTER", at: { x: 4, y: 8 } },
+        { role: "FIGHTER", at: { x: 2, y: 8 } },
+        { role: "MARKSMAN", at: { x: 5, y: 9 } },
+      ],
+      line: "The county militia arrives by wagon, in its good boots.",
+      announce: true,
+    },
+    {
+      seat: 1,
+      round: 12,
+      units: [
+        { role: "GUARD", at: { x: 4, y: 9 } },
+        { role: "FIGHTER", at: { x: 2, y: 9 } },
+        { role: "FIGHTER", at: { x: 4, y: 8 } },
+        { role: "MARKSMAN", at: { x: 3, y: 9 } },
+      ],
+      line: "Regulars of the Pact march up the south road.",
+      announce: true,
+    },
+  ],
+  // Collect the Professor: take Millford by round 14 (was 18). The stars:
+  // by round 11, and no city lost.
   objective: {
     kind: "CAPTURE",
     places: ["MILLFORD"],
-    byRound: 18,
-    bonus: [{ kind: "WITHIN_ROUNDS", rounds: 15 }, { kind: "KEEP_CITIES" }],
+    byRound: 14,
+    bonus: [{ kind: "WITHIN_ROUNDS", rounds: 11 }, { kind: "KEEP_CITIES" }],
   },
 };
