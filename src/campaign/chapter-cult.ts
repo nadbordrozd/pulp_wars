@@ -31,10 +31,10 @@ export const CHAPTER_CULT_V7: CampaignChapterV7 = Object.freeze({
       name: "Minutes of the Last Meeting",
       format: "KILL",
       briefing:
-        "Minutes of the spring meeting of the Grey Lodge, Greyhood. Present: Brother Mallory (Hierophant), eleven brethren, Mr. Pettigrew (minutes, on his afternoon off from the Marshal's office). Item one: Sergeant Hobb of the Rangers observed the meeting from a hedge and is riding for Northwatch. Item two: Sergeant Hobb is not to reach Northwatch. Item three: refreshments.",
-      objective: "Stop Sergeant Hobb by turn 10.",
+        "Minutes of the spring meeting of the Grey Lodge, Greyhood. Present: Brother Mallory (Hierophant), one brother, Mr. Pettigrew (minutes, on his afternoon off from the Marshal's office). Item one: Sergeant Hobb of the Rangers observed the meeting from a hedge and is riding for Northwatch. Item two: Sergeant Hobb is not to reach Northwatch. Item three: refreshments.",
+      objective: "Stop Sergeant Hobb by turn 8.",
       hints: Object.freeze([
-        "A Familiar swaps places with a unit up to 4 tiles away.",
+        "Hobb rides the road: an Imp is fast enough to catch him.",
         "Keep a channeller within 3 of every daemon.",
       ]),
       closing:
@@ -54,7 +54,7 @@ export const CHAPTER_CULT_V7: CampaignChapterV7 = Object.freeze({
       format: "CAPTURE",
       briefing:
         "Item one: Brother Mallory is dead, and the Lodge has elected a new Hierophant, Mr. Pettigrew, by a show of hands (one hand). Item two: the Ashen Marquis has found a Lullaby that would put the Guest back to sleep. Item three: the Lodge will borrow it from his archive at Cinderfield, change one note, and put it back. Item four: the Marquis is to believe we came for the silver.",
-      objective: "Take Cinderfield by turn 18.",
+      objective: "Take Cinderfield by turn 15.",
       hints: Object.freeze([
         "Skeletons shrug off shots: send a Horror in.",
         "A frog loses its walls: Ribbit, then strike.",
@@ -76,7 +76,7 @@ export const CHAPTER_CULT_V7: CampaignChapterV7 = Object.freeze({
       format: "ESCORT",
       briefing:
         "Item one: the Grey Book says a Herald is paid for in old blood, and the oldest blood in the world is a dinosaur egg. Item two: the brethren at Greyhood were overrun by dinosaurs, and only one egg got away, aboard the Galleon of the Eye. Item three: the Galleon must sail the Lost Sea to Lamplight Cove, past the sea-beasts and the Martian skimmers. Item four: it is not to sink.",
-      objective: "Bring the egg to Lamplight Cove by turn 16.",
+      objective: "Bring the egg to Lamplight Cove by turn 13.",
       hints: Object.freeze([
         "Beside the Kraken, an enemy ship moves only one tile.",
         "The Galleon moves or shoots: never both in one turn.",
@@ -97,15 +97,15 @@ export const CHAPTER_CULT_V7: CampaignChapterV7 = Object.freeze({
       name: "The Inspector Calls",
       format: "SURVIVE",
       briefing:
-        "Item one: Mr. Pettigrew has been appointed the Crown's Inspector of Works, by himself, with a very good stamp. Item two: the Inspector and twelve brethren with toolbags will replace each bolt of the Great Seal with one of black wax. Item three: the dwarves will notice on the third day, and on the fourth the goblin who refused our gold, now an Honorary Dwarf. Item four: hold the Seal-works.",
-      objective: "Hold the Seal-works for 14 turns.",
+        "Item one: Mr. Pettigrew has been appointed the Crown's Inspector of Works, by himself, with a very good stamp. Item two: the Inspector and four brethren with toolbags will replace each bolt of the Great Seal with one of black wax. Item three: the dwarves will notice on the third day, and on the fourth the goblin who refused our gold, now an Honorary Dwarf. Item four: hold the Seal-works.",
+      objective: "Hold the Seal-works for 12 turns.",
       hints: Object.freeze([
-        "A Gibbering Mass needs no strand on your doorstep.",
+        "Research Metallurgy: a Gibbering Mass needs no strand.",
         "A hurt cultist drops its strand: keep them out of reach.",
         "Enemies beside an Idol Bearer can strike only the Bearer.",
       ]),
       closing:
-        "The last bolt is wax by the fourteenth day, and the brethren slip away in the snow. The dwarves count every bolt twice and find them all present. Grubnak, scratching his head, swears that one of them smelled of candles.",
+        "The last bolt is wax by the twelfth day, and the brethren slip away in the snow. The dwarves count every bolt twice and find them all present. Grubnak, scratching his head, swears that one of them smelled of candles.",
       unlocks: Object.freeze([]),
       names: Object.freeze({
         PETTIGREW: "Mr. Pettigrew",
@@ -120,7 +120,7 @@ export const CHAPTER_CULT_V7: CampaignChapterV7 = Object.freeze({
       format: "KILL",
       briefing:
         "Item one: Mother Rime has made herself into a crown of ice on the summit, and while she stands the mountain is cold and the Guest sleeps through any note. Item two: Sister Agatha Vole, formerly of the Millford Ladies' Academy, has offered to drop a star on her. Item three: the Redcaps have been hired at the usual rate. Item four: a star needs a Stargazer, chanters, and one clear night.",
-      objective: "Break the Winter Crown by turn 20.",
+      objective: "Break the Winter Crown by turn 16.",
       hints: Object.freeze([
         "Chanters beside a Stargazer make its star hit harder.",
         "Rime never leaves her Crown: bring the star to her.",
@@ -144,7 +144,7 @@ export const CHAPTER_CULT_V7: CampaignChapterV7 = Object.freeze({
       format: "CAPTURE",
       briefing:
         "Item one: tonight is the Long Night. Item two: the Pact is at the Deep Gate to ring the Lullaby, with Marshal Steele and every Ranger in the north. Item three: the Lullaby has a wrong note, the Seal has wax bolts, and the mountain is warm. Item four: whoever holds the Gate at dawn holds the leash of whatever comes up first. Item five: Mr. Pettigrew has not read the page in his pocket.",
-      objective: "Take the Deep Gate by turn 20.",
+      objective: "Take the Deep Gate by turn 16.",
       hints: Object.freeze([
         "Three chanters, 18 Favour, The Stars Are Right: Herald.",
         "Stand your own unit on the mark: no foe can block it.",

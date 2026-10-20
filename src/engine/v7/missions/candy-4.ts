@@ -33,10 +33,18 @@ import type { MissionDefinitionV7 } from "./types";
  *   12   .f^^^f........
  *   13   .^f^.f.......f
  * ```
+ *
+ * The third retune (`pulp_wars-hmyk.21`, CAMPAIGN.md section 21.4, not
+ * play-tested): a skirmish start. Sugarcrest alone at level 2 (Gumdrop is
+ * gone) with Queen Praline and a Fighter, no technology, 3 Coins, the
+ * chapel unseen. The brethren have twelve units, 4 Coins and Favour 8; five
+ * hold the chapel and the rest march on Sugarcrest from round 1, and three
+ * announced waves come in rounds 4, 7 and 10. The clock is 13 (was 16).
  */
 export const CANDY_4_V7: MissionDefinitionV7 = {
   id: "CANDY_4",
-  revision: 1,
+  // Revision 2 (`pulp_wars-hmyk.21`, the third retune): a skirmish start.
+  revision: 2,
   seed: 20261804,
   // <map>
   size: 14,
@@ -124,55 +132,30 @@ export const CANDY_4_V7: MissionDefinitionV7 = {
   seats: [
     {
       faction: "CANDY",
-      coins: 6,
-      technologies: [
-        "GATHERING",
-        "ADMINISTRATION",
-        "PLANNING",
-        "HUNTING",
-        "MARKSMANSHIP",
-        "FORESTRY",
-        "SAWMILLING",
-        "DRILL",
-        "FORTIFICATION",
-      ],
+      // Retune 3: a skirmish start. Sugarcrest alone, Queen Praline (who
+      // means to fetch her choir herself) and a Fighter, no technology.
+      coins: 3,
+      technologies: [],
       cities: [
         {
           name: "Sugarcrest",
           at: { x: 7, y: 10 },
-          level: 3,
-          rewards: ["STOCKPILE", "WALLS"],
-        },
-        {
-          name: "Gumdrop",
-          at: { x: 10, y: 7 },
           level: 2,
           rewards: ["STOCKPILE"],
         },
       ],
       units: [
-        // Queen Praline, who means to fetch her choir herself.
         { role: "JUGGERNAUT", at: { x: 7, y: 9 }, tag: "PRALINE" },
-        { role: "CAPTAIN", at: { x: 7, y: 10 } },
         { role: "FIGHTER", at: { x: 8, y: 9 } },
-        { role: "MARKSMAN", at: { x: 6, y: 9 } },
-        { role: "GUARD", at: { x: 10, y: 7 }, home: 1 },
-        { role: "FIGHTER", at: { x: 10, y: 6 }, home: 1 },
       ],
-      // The trail of sugar up to the chapel.
-      reveal: {
-        radius: 2,
-        rects: [
-          { x0: 8, y0: 0, x1: 12, y1: 6 },
-          { x0: 2, y0: 0, x1: 6, y1: 2 },
-        ],
-      },
+      // The chapel's door, and nothing else.
+      reveal: { radius: 2, rects: [{ x0: 10, y0: 1, x1: 10, y1: 1 }] },
     },
     {
       // The Candlewick brethren, who could not agree.
       faction: "CULT",
-      coins: 0,
-      favour: 4,
+      coins: 4,
+      favour: 8,
       technologies: [
         "GATHERING",
         "ADMINISTRATION",
@@ -198,6 +181,12 @@ export const CANDY_4_V7: MissionDefinitionV7 = {
         { role: "FIGHTER", at: { x: 4, y: 1 }, home: 1 },
         { role: "MARKSMAN", at: { x: 3, y: 1 }, home: 1 },
         { role: "CAPTAIN", at: { x: 5, y: 1 }, home: 1 },
+        // Retune 3: five more brethren.
+        { role: "FIGHTER", at: { x: 9, y: 2 } },
+        { role: "MARKSMAN", at: { x: 12, y: 2 } },
+        { role: "GUARD", at: { x: 11, y: 1 } },
+        { role: "FIGHTER", at: { x: 3, y: 2 }, home: 1 },
+        { role: "MARKSMAN", at: { x: 5, y: 2 }, home: 1 },
       ],
       reveal: { radius: 2, rects: [{ x0: 4, y0: 4, x1: 12, y1: 9 }] },
       forbiddenTechnologies: [
@@ -216,35 +205,54 @@ export const CANDY_4_V7: MissionDefinitionV7 = {
         "METALLURGY",
         "EXPLOSIVES",
       ],
-      // The chapel keeps its garrison; the rest of the brethren come down
-      // the hill for Gumdrop.
+      // The chapel keeps five; the rest of the brethren come down for
+      // Sugarcrest from round 1 (retune 3).
       directive: {
         kind: "GUARD",
         zone: [{ x0: 9, y0: 0, x1: 11, y1: 2 }],
-        garrison: 4,
-        others: { kind: "ASSAULT", target: { x: 10, y: 7 } },
+        garrison: 5,
+        others: { kind: "ASSAULT", target: { x: 7, y: 10 } },
       },
     },
   ],
-  // More brethren come up from Candlewick: by the hill camp in round 8 and
-  // to the chapel in round 12.
+  // More brethren come up from Candlewick (retune 3: three announced
+  // waves, by the hill camp in rounds 4 and 10 and to the chapel in round 7).
   reinforcements: [
     {
       seat: 1,
-      round: 8,
+      round: 4,
+      line: "Brethren from Candlewick, still arguing, come down the hill.",
+      announce: true,
       units: [
         { role: "FIGHTER", at: { x: 2, y: 0 } },
         { role: "FIGHTER", at: { x: 5, y: 0 } },
         { role: "MARKSMAN", at: { x: 1, y: 2 } },
+        { role: "GUARD", at: { x: 3, y: 0 } },
       ],
     },
     {
       seat: 1,
-      round: 12,
+      round: 7,
+      line: "A hooded procession reaches the chapel. Somebody has brought a bell.",
+      announce: true,
       units: [
         { role: "CAPTAIN", at: { x: 12, y: 0 } },
         { role: "FIGHTER", at: { x: 13, y: 1 } },
         { role: "FIGHTER", at: { x: 8, y: 0 } },
+        { role: "MARKSMAN", at: { x: 12, y: 1 } },
+      ],
+    },
+    {
+      seat: 1,
+      round: 10,
+      line: "The vote is in: attack. Every grey hood in the hills is on its way.",
+      announce: true,
+      units: [
+        { role: "CAPTAIN", at: { x: 2, y: 0 } },
+        { role: "FIGHTER", at: { x: 5, y: 0 } },
+        { role: "FIGHTER", at: { x: 1, y: 2 } },
+        { role: "MARKSMAN", at: { x: 3, y: 0 } },
+        { role: "GUARD", at: { x: 4, y: 0 } },
       ],
     },
   ],
@@ -257,14 +265,14 @@ export const CANDY_4_V7: MissionDefinitionV7 = {
     "SEAMANSHIP",
     "SUBMERSIBLES",
   ],
-  // The chapel by round 16 (the saga's 20: the thoughtful win came in
-  // round 10). The stars: by round 12, and Praline lives.
+  // The chapel by round 13 (the saga's 20: the thoughtful win came in
+  // round 10; retune 3). The stars: by round 10, and Praline lives.
   objective: {
     kind: "CAPTURE",
     places: ["WICK_CHAPEL"],
-    byRound: 16,
+    byRound: 13,
     bonus: [
-      { kind: "WITHIN_ROUNDS", rounds: 12 },
+      { kind: "WITHIN_ROUNDS", rounds: 10 },
       { kind: "UNIT_ALIVE", unit: "PRALINE" },
     ],
   },

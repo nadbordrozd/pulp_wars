@@ -1135,6 +1135,9 @@ describe("natural maps", () => {
       CANDY_2: 11,
       CANDY_3: 14,
       CANDY_6: 11,
+      // Retune 3 (`pulp_wars-hmyk.21`): the villages by the player's start go.
+      ICE_FOLK_4: 11,
+      ICE_FOLK_5: 15,
       // The Winter Crown (`pulp_wars-hmyk.10`): the four seats stand on five
       // villages and eleven more round the slopes and the barrows are gone,
       // so neither the Lodge nor the dead grows a free town.

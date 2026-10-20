@@ -5316,6 +5316,56 @@ The danger moments, and what each mission's hand play changed:
   lake masses where it is and never comes round. Two Liches focus-fire a
   Giant from 40 to 10 in one turn.
 
+### 21.4 Retune 3 (untested, `pulp_wars-hmyk.21`)
+
+The user, 2026-10-20, after the Human and Undead retunes: "as far as the
+campaign, we made a step in the right direction. but not quite big enough.
+It's still easy. the crux of the problem is that the AI is not smart
+enough. I'm running out of tokens for this week so I don't want you to play
+the game yourself right now. Instead work on all the remaining campaigns
+and apply the same lessons. If anything, you can go a bit further [...]
+make the other ones 75% harder and reduce starting resources etc. Don't
+worry that you might overshoot [...] Try to over shoot. Not enough tokens
+to test this fully this week so just YOLO it." So this retune is **data
+only and was NOT play-tested**: no `play-text`, no hand play, no
+simulation; it was checked by the builder (every board builds, every
+directive validates), the focused mission and campaign tests, and the unit
+tier. Treat every number below as a first guess that errs on the hard
+side, to be corrected by the first real attempt.
+
+The rules, from sections 15.5 and 16.4: at least three of the six missions start like
+a skirmish (one capital, a couple of units and the one strong unit nobody
+can train yet, no technology, 0 to 5 Coins, a small reveal) and the others
+are thin (about 40% fewer units, fewer towns, technologies and Coins);
+the villages near the player's start go (recorded map edits); every
+enemy has 50 to 100% more units, Coins and an aggressive directive from
+round 1 to 3 (a `GUARD` only with `others` set to `RUSH` or `ASSAULT`);
+from mission 2 on there are at least two announced waves with a story
+line; clocks are about a fifth shorter and the star thresholds tighter.
+Every mission is one revision higher and re-pinned. **Limits the builder
+set**: a city's level is capped by the bare Grass round it (so an enemy
+camp could not always go up a level, and some towns kept their level
+because their farm needs it), Walls come only at level 3, and a unit
+cannot start on a mountain without Engineering. Enemy technologies were
+not raised (the forbidden lists keep each lesson's unit set).
+
+| Mission | Start, was then now                                                                                                                                                                                                                             | Enemy, was then now                                                                                                                                                                                        | Waves                                                                                                | Clock (star)                      |
+| ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- | --------------------------------- |
+| C1      | Sugarcrest L3 and Gumdrop L1, five units, four technologies, 5 Coins, the shore seen, then **skirmish**: Sugarcrest L2 alone, Praline and a Fighter, no technology, 3 Coins, no reveal beyond the city                                          | seven goblins, 0 Coins, an `ASSAULT` on Gumdrop from round 1, then eleven, 4 Coins, all held for three rounds, then three stay and the rest `ASSAULT` Sugarcrest                                           | one in round 5, then two announced (rounds 4 and 7)                                                  | none (star 12), then 14 (star 10) |
+| C2      | Sugarcrest L3 and Gumdrop L2, six units, seven technologies, 6 Coins, then **skirmish**: Sugarcrest L2 alone, Nougat, a Fighter and the old Pie Launcher, no technology, 3 Coins, only the library seen                                         | six runaways, no directive, 0 Coins, then thirteen, 4 Coins, held for three rounds, then four stay and the rest `RUSH`                                                                                     | none, then three announced (rounds 5, 9, 13)                                                         | 20 (16), then 16 (12)             |
+| C3      | Sugarcrest L2 and Gumdrop L3, four units, six technologies, 10 Coins, then **thin**: the same towns (Gumdrop's farms need level 3), a Guard and a Tug, Shorecraft, Navigation and Sugar Sails, 4 Coins                                          | the squadron of four ships leashed to its anchorage, 0 Coins, then seven (two more boats and a Submarine), 4 Coins, leashed until round 8 and then an `ASSAULT` on Gumdrop                                 | none, then three announced (rounds 5, 9, 13) of ships                                                | 18 (12), then 14 (10)             |
+| C4      | Sugarcrest L3 and Gumdrop L2, six units, nine technologies, 6 Coins, then **skirmish**: Sugarcrest L2 alone, Praline and a Fighter, no technology, 3 Coins, only the chapel's door seen                                                         | seven brethren, Favour 4, 0 Coins, the chapel keeps four, the rest `ASSAULT` Gumdrop, then twelve, Favour 8, 4 Coins, the chapel keeps five, the rest `ASSAULT` Sugarcrest from round 1                    | two (rounds 8, 12), then three announced (rounds 4, 7, 10)                                           | 16 (12), then 13 (10)             |
+| C5      | Sugarcrest L3 and Riftwatch L2, seven units, nine technologies, 8 Coins, the far side seen, then **thin**: Sugarcrest L2 alone, Praline, Nougat, a Fighter and the Pie Launcher, four technologies, 3 Coins, only the gates and the Palace seen | eleven dead, 2 Coins, the Palace keeps four, then seventeen, 6 Coins, the Palace keeps six and the rest `RUSH`                                                                                             | three (rounds 6, 10, 14), then five announced (rounds 4, 7, 10, 13, 15)                              | 20 (16), then 16 (13)             |
+| C6      | Sugarcrest L3, Gumdrop L2 and Riftwatch L1, seven units, eleven technologies, 0 Coins, then **thin**: Sugarcrest L3 and Gumdrop L2, Praline, Nougat, a Swordsman and a Guard, six technologies, 2 Coins, only the two approaches seen           | the dead six, 2 Coins, then eleven, 6 Coins; the horde six, 2 Coins, then ten, 5 Coins, and its `ASSAULT` on Gumdrop from round 1 (was a calm start until round 4) and on Sugarcrest from round 8 (was 10) | eight, then nine announced: the dead in rounds 4, 7, 10, 13, 15 and the horde in rounds 5, 9, 12, 15 | 18 nights, then 15                |
+
+What the hand-play notes of sections 21.2 and 21.3 warned about and this
+pass walked past on purpose: C3's squadron now leaves its anchorage in round
+8 (the leash was the fix for a Sovereign that sailed out in round 1; with
+a Tug and 4 Coins the player has until then to kill it at the fort or to
+mass for the sortie); C5's `RUSH` may send the dead across the Gates to
+Sugarcrest; C6's Red Dust ally is unchanged and still falls early. **No
+mission of this campaign has been played since the retune.**
+
 ## 22. The Ice Folk campaign, "The Long Winter" (`pulp_wars-hmyk.10`)
 
 The second tier-3 faction campaign, after Candy (section 21): six
@@ -5467,6 +5517,53 @@ The danger moments, and what each mission's hand play changed:
   attempt); a Yeti's Rockfall from a peak hits two tiles away with no
   answer; a city at level 5 gives a Frost Giant that decides any fight it
   reaches, which is why I5's camp starts one level short.
+
+### 22.4 Retune 3 (untested, `pulp_wars-hmyk.21`)
+
+The user, 2026-10-20, after the Human and Undead retunes: "as far as the
+campaign, we made a step in the right direction. but not quite big enough.
+It's still easy. the crux of the problem is that the AI is not smart
+enough. I'm running out of tokens for this week so I don't want you to play
+the game yourself right now. Instead work on all the remaining campaigns
+and apply the same lessons. If anything, you can go a bit further [...]
+make the other ones 75% harder and reduce starting resources etc. Don't
+worry that you might overshoot [...] Try to over shoot. Not enough tokens
+to test this fully this week so just YOLO it." So this retune is **data
+only and was NOT play-tested**: no `play-text`, no hand play, no
+simulation; it was checked by the builder (every board builds, every
+directive validates), the focused mission and campaign tests, and the unit
+tier. Treat every number below as a first guess that errs on the hard
+side, to be corrected by the first real attempt.
+
+The rules, from sections 15.5 and 16.4: at least three of the six missions start like
+a skirmish (one capital, a couple of units and the one strong unit nobody
+can train yet, no technology, 0 to 5 Coins, a small reveal) and the others
+are thin (about 40% fewer units, fewer towns, technologies and Coins);
+the villages near the player's start go (recorded map edits); every
+enemy has 50 to 100% more units, Coins and an aggressive directive from
+round 1 to 3 (a `GUARD` only with `others` set to `RUSH` or `ASSAULT`);
+from mission 2 on there are at least two announced waves with a story
+line; clocks are about a fifth shorter and the star thresholds tighter.
+Every mission is one revision higher and re-pinned. **Limits the builder
+set**: a city's level is capped by the bare Grass round it (so an enemy
+camp could not always go up a level, and some towns kept their level
+because their farm needs it), Walls come only at level 3, and a unit
+cannot start on a mountain without Engineering. Enemy technologies were
+not raised (the forbidden lists keep each lesson's unit set).
+
+| Mission | Start, was then now                                                                                                                                                                                                                                                                 | Enemy, was then now                                                                                                                                                                                                                                                                          | Waves                                                                                                        | Clock (star)                      |
+| ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ | --------------------------------- |
+| I1      | Rime Camp L2, five units, five technologies, 5 Coins, the valley seen, then **skirmish**: Rime Camp L1, Rime, a Fighter and a Guard, no technology, 3 Coins, only the camp and the two goblin camps seen; both villages by the camp gone                                            | six goblins, 0 Coins, no directive, then ten (and a level 2 Boiler Hole), 4 Coins, held for three rounds, then three stay and the rest `RUSH` Rime Camp                                                                                                                                      | none, then one announced (round 7)                                                                           | none (star 12), then 15 (star 11) |
+| I2      | Rime Camp and Whitefang L2, seven units, five technologies, 5 Coins, then **skirmish**: Rime Camp L1 alone (Whitefang gone), Rime, Gnash and a Fighter, no technology, 3 Coins; three villages by the camp gone                                                                     | seven dead, 2 Coins, the Abbot and three stay, the rest `RUSH` from round 1, then twelve, 5 Coins, held for three rounds, then the Abbot and four stay and the rest `RUSH`                                                                                                                   | the Frost Giant in round 10, then also three announced waves of the dead (rounds 4, 8, 12)                   | 20 (15), then 16 (12)             |
+| I3      | Coldharbour L2 and Snowmere L1, seven units, ten technologies, 6 Coins, the strait seen, then **thin**: Coldharbour L2 alone, Rime, two Fighters and a Guard, Rime and Pack Ice only, 4 Coins, only Anvil Bay seen; Snowmere and two cliff villages gone                            | seven dwarves, 0 Coins, three hold the harbour, then twelve, 4 Coins, Anvil Bay L4, five hold the harbour and the rest cross the ice                                                                                                                                                         | the Ironclad in round 12, then the Ironclad in round 9 and two landing parties (rounds 5, 14), all announced | 22 (18), then 18 (14)             |
+| I4      | Whitewater L3, Frostford L2 and Icemoor L1, nine units, eight technologies, 6 Coins, then **thin**: Whitewater and Frostford L2, Rime, two Fighters, a Guard and a Marksman, four technologies, 3 Coins, the north banks seen; Icemoor and two villages gone                        | the Wardens five, 2 Coins, then nine, 6 Coins; the sweets five, 2 Coins, camp L1, then eight, 5 Coins, camp L2; both `ASSAULT` from round 1 as before                                                                                                                                        | four, then six announced (sweets in rounds 3, 6, 10, Wardens in rounds 4, 8, 12)                             | 16 nights, then 13                |
+| I5      | Hoarfrost Camp L4 with Walls and a Boom, seven units, eight technologies, 6 Coins, the slope seen, then **skirmish**: Hoarfrost Camp L2 alone, Rime, a Fighter and a Guard, no technology, 3 Coins, only the Lodge's door seen; five more villages gone                             | the Lodge seven keepers, Favour 2, 0 Coins, all held home, then ten, Favour 4, 4 Coins, Scouting (Familiars), eight held and two hunt; the Redcaps eight, 2 Coins, then twelve, 5 Coins, camp level 2 for the Pit, still `RUSH`                                                              | two (Redcaps), then four announced (Redcaps in rounds 3, 6, 9, the Lodge's new shift in round 8)             | 22 (18), then 18 (14)             |
+| I6      | Rime Camp L3, Whitefang L2 and the Ember Lodge L2, eleven units, eight technologies (Explosives in), 8 Coins, the climb seen, then **thin**: Rime Camp L2 and Whitefang L1, six units, five technologies (no Administration, Scouting or Explosives), 4 Coins, only the Summit seen | the Lodge eleven units, Favour 4, 2 Coins, a `HOLD` of the slopes, then sixteen, Favour 8, 6 Coins, its Eastwatch L2, a `HOLD` for three rounds and then ten hold and six `ASSAULT` Rime Camp; the dead three, 0 Coins, then six, 4 Coins; the dwarves are the player's allies and unchanged | three (the dead in rounds 4, 8, 12), then five announced (rounds 3, 6, 9, 12, 15), each larger               | 20 (16), then 16 (13)             |
+
+I1 and I2 keep the saga's closings (Gnash comes home to Whitefang, which
+I2 no longer shows on the map). I5's Frost Giant (a level 5 city) is now a
+long reach from a level 2 camp, which is the point of the lesson. **No
+mission of this campaign has been played since the retune.**
 
 ## 23. The Cult campaign, "The Long Night" (`pulp_wars-hmyk.12`)
 
@@ -5731,3 +5828,55 @@ names the draft's position, the objection, and what this redraft does.
    you want for the teaser?
 3. **Tone and names.** Captain Vera Steele, Grubnak the Loud, the Ashen
    Marquis, "The Hollow Frontier": keep, or do you have names in mind?
+
+### 23.4 Retune 3 (untested, `pulp_wars-hmyk.21`)
+
+The user, 2026-10-20, after the Human and Undead retunes: "as far as the
+campaign, we made a step in the right direction. but not quite big enough.
+It's still easy. the crux of the problem is that the AI is not smart
+enough. I'm running out of tokens for this week so I don't want you to play
+the game yourself right now. Instead work on all the remaining campaigns
+and apply the same lessons. If anything, you can go a bit further [...]
+make the other ones 75% harder and reduce starting resources etc. Don't
+worry that you might overshoot [...] Try to over shoot. Not enough tokens
+to test this fully this week so just YOLO it." So this retune is **data
+only and was NOT play-tested**: no `play-text`, no hand play, no
+simulation; it was checked by the builder (every board builds, every
+directive validates), the focused mission and campaign tests, and the unit
+tier. Treat every number below as a first guess that errs on the hard
+side, to be corrected by the first real attempt.
+
+The rules, from sections 15.5 and 16.4: at least three of the six missions start like
+a skirmish (one capital, a couple of units and the one strong unit nobody
+can train yet, no technology, 0 to 5 Coins, a small reveal) and the others
+are thin (about 40% fewer units, fewer towns, technologies and Coins);
+the villages near the player's start go (recorded map edits); every
+enemy has 50 to 100% more units, Coins and an aggressive directive from
+round 1 to 3 (a `GUARD` only with `others` set to `RUSH` or `ASSAULT`);
+from mission 2 on there are at least two announced waves with a story
+line; clocks are about a fifth shorter and the star thresholds tighter.
+Every mission is one revision higher and re-pinned. **Limits the builder
+set**: a city's level is capped by the bare Grass round it (so an enemy
+camp could not always go up a level, and some towns kept their level
+because their farm needs it), Walls come only at level 3, and a unit
+cannot start on a mountain without Engineering. Enemy technologies were
+not raised (the forbidden lists keep each lesson's unit set).
+
+The finale, CU6, is meant to be the hardest mission in the game: three
+armies of the Pact, nine announced waves, and a Cult that starts with ten
+units, seven technologies and 4 Coins.
+
+| Mission | Start, was then now                                                                                                                                                                                                                                                                         | Enemy, was then now                                                                                                                                                                                                                                                                                                                       | Waves                                                                                                                                                          | Clock (star)          |
+| ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------- |
+| CU1     | Greyhood L2, five units, five technologies, 5 Coins, Favour 2, the road south seen, then **skirmish**: Greyhood L2, Pettigrew, Mallory and a Fighter, Gathering and Leadership, 3 Coins, Favour 2, only the camp and Hobb's road seen; four villages gone                                   | five Rangers, 0 Coins, the patrol marches in round 4, then nine, 4 Coins, it marches in round 3                                                                                                                                                                                                                                           | none, then one announced (round 5)                                                                                                                             | 10 (8), then 8 (6)    |
+| CU2     | Greyhood L2 and Candle Copse L1, six units, seven technologies, 5 Coins, Favour 6, the Barrowlands seen, then **thin**: Greyhood L2 alone, four units, four technologies (no Masses), 3 Coins, Favour 4, only Cinderfield seen; two villages gone                                           | six dead, 0 Coins, four hold the archive and the rest roam, then twelve, 5 Coins, all held for three rounds and then six stay and the rest `RUSH`                                                                                                                                                                                         | none, then three announced (rounds 4, 8, 12)                                                                                                                   | 18 (15), then 15 (12) |
+| CU3     | Reedmouth and the Cove L2, six units, nine technologies, 8 Coins, the coast seen, then **thin**: the same towns, the Galleon, a Kraken and a Fighter in each town, six technologies (no Scouting, Raiding or Chivalry), 4 Coins, only the east of the lane seen                             | the tribes seven units, 3 Coins, their boats guard the lane; the Martians four units, 3 Coins, calm; then twelve and 6 Coins, `GUARD` until round 3 and then an `ASSAULT` on the Cove; seven and 5 Coins, a `RUSH` from round 3                                                                                                           | one (the War Raft, round 4), then three announced (rounds 3, 6, 9)                                                                                             | 16 (12), then 13 (10) |
+| CU4     | The Seal-works L2 and Hood Hollow L1, eight units, eight technologies, 6 Coins, Favour 9, the shelf and the road seen, then **thin**: the Seal-works alone, five units, six technologies (no Mountaineering or Masses), 3 Coins, Favour 6, only the Gate seen                               | nine dwarves, 0 Coins, they storm in round 3; seven goblins, 0 Coins, they rush in round 4, then fifteen and 5 Coins, they storm in round 2; eleven and 4 Coins, they rush in round 2                                                                                                                                                     | three (rounds 6, 8, 10), then five announced (rounds 4, 6, 8, 10, 12)                                                                                          | 14 nights, then 12    |
+| CU5     | Hood Hollow L2, eight units, ten technologies, 6 Coins, Favour 12, the slope seen, then **skirmish**: Hood Hollow L2, Pettigrew, Vole, a Fighter and a Guard, six technologies (the road to Stargazers and Hexers), 3 Coins, Favour 8, only the summit seen                                 | the Ice Folk seven, 0 Coins, Rime holds her tile and the rest play on; the sweets four, 0 Coins, they march in round 4; then thirteen and 5 Coins, the guard sallies on Hood Hollow from round 3; eight and 4 Coins, they storm from round 2                                                                                              | none, then five announced (the Crown's guard in rounds 5, 9, 13, the sweets in rounds 6, 11)                                                                   | 20 (16), then 16 (13) |
+| CU6     | Hood Hollow L3 and the Seal-works L2, seventeen units, thirteen technologies, 10 Coins, Favour 8, the north seen, then **thin**: Hood Hollow L3 and the Seal-works L1, ten units, seven technologies (Explosives, the Great Summoning, kept), 4 Coins, Favour 6, only the Gate's shelf seen | the dwarves twelve, 0 Coins, nine hold the Gate, then eighteen and 6 Coins, twelve hold and six `ASSAULT` the Seal-works from round 3; the Rangers eight and 2 Coins, a march in round 4, then fourteen and 6 Coins, a `RUSH` from round 2; the dead seven and 2 Coins, a storm in round 6, then twelve and 6 Coins, a storm from round 3 | two (Rangers), then nine announced (Rangers in rounds 4, 7, 10, 13, the dead in 5, 9, 12, the dwarves in 6 and 11, the second with a Brass Titan for the Gate) | 20 (14), then 16 (12) |
+
+**No mission of this campaign has been played since the retune.** The
+likeliest mistakes are the other way round from the earlier passes: CU6
+and CU4 may now be unwinnable by a first-time player, and CU1 may have no
+room to build a single Imp before the patrol arrives. Correct by playing,
+not by guessing.

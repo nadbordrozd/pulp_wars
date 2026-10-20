@@ -39,11 +39,20 @@ import type { MissionDefinitionV7 } from "./types";
  *   12   f....f......vf
  *   13   ff.$...^....ff      $: treasure chests
  * ```
+ *
+ * The third retune (`pulp_wars-hmyk.21`, CAMPAIGN.md section 21.4, not
+ * play-tested): a skirmish start. Sugarcrest alone at level 2 (Gumdrop is
+ * gone) with Madame Nougat, a Fighter and the old Pie Launcher nobody can
+ * build yet, no technology, 3 Coins, only the library seen. The runaways
+ * have seven more dinosaurs and 4 Coins, hold home for three rounds and
+ * then send all but four, and three announced waves come in rounds 5, 9
+ * and 13. The clock is 16 (was 20).
  */
 export const CANDY_2_V7: MissionDefinitionV7 = {
   id: "CANDY_2",
   // Revision 2 (`pulp_wars-hmyk.17`): each seat explores its units' sight.
-  revision: 2,
+  // Revision 3 (`pulp_wars-hmyk.21`, the third retune): a skirmish start.
+  revision: 3,
   seed: 20261802,
   // <map>
   size: 14,
@@ -139,28 +148,14 @@ export const CANDY_2_V7: MissionDefinitionV7 = {
   seats: [
     {
       faction: "CANDY",
-      coins: 6,
-      // Leadership (the Confectioner), Pie Launchers (Splat), Home Sweet
-      // Home (the Marshmallow), and what leads to them.
-      technologies: [
-        "GATHERING",
-        "ADMINISTRATION",
-        "HUNTING",
-        "FORESTRY",
-        "SAWMILLING",
-        "DRILL",
-        "FORTIFICATION",
-      ],
+      // Retune 3: a skirmish start. Sugarcrest alone, Madame Nougat, a
+      // Fighter and the old Pie Launcher (no Sawmilling), no technology.
+      coins: 3,
+      technologies: [],
       cities: [
         {
           name: "Sugarcrest",
           at: { x: 5, y: 11 },
-          level: 3,
-          rewards: ["STOCKPILE", "WALLS"],
-        },
-        {
-          name: "Gumdrop",
-          at: { x: 8, y: 11 },
           level: 2,
           rewards: ["STOCKPILE"],
         },
@@ -168,25 +163,16 @@ export const CANDY_2_V7: MissionDefinitionV7 = {
       units: [
         // Madame Nougat, the Royal Confectioner, in goggles.
         { role: "CAPTAIN", at: { x: 5, y: 12 }, tag: "NOUGAT" },
-        { role: "GUARD", at: { x: 4, y: 11 } },
         { role: "FIGHTER", at: { x: 5, y: 11 } },
         { role: "CATAPULT", at: { x: 6, y: 12 } },
-        { role: "GUARD", at: { x: 8, y: 11 }, home: 1 },
-        { role: "FIGHTER", at: { x: 7, y: 11 }, home: 1 },
       ],
-      // The library and the road to it, as the royal maps have them.
-      reveal: {
-        radius: 2,
-        rects: [
-          { x0: 0, y0: 6, x1: 3, y1: 10 },
-          { x0: 2, y0: 0, x1: 6, y1: 3 },
-        ],
-      },
+      // The library, and nothing else.
+      reveal: { radius: 2, rects: [{ x0: 2, y0: 2, x1: 2, y1: 2 }] },
     },
     {
       // Kessler's runaway menagerie, nesting in the stacks.
       faction: "DINOSAUR",
-      coins: 0,
+      coins: 4,
       technologies: [],
       cities: [
         {
@@ -210,7 +196,14 @@ export const CANDY_2_V7: MissionDefinitionV7 = {
         { role: "RAIDER", at: { x: 1, y: 9 }, home: 1 },
         // The clutch in the Nest: a T-Rex, four turns from hatching.
         { role: "KNIGHT", at: { x: 2, y: 7 }, home: 1, egg: 4 },
-        // The clutch in the Nest: a Raptor soon, a T-Rex later.
+        // Retune 3: seven more of the menagerie.
+        { role: "FIGHTER", at: { x: 5, y: 2 } },
+        { role: "GUARD", at: { x: 5, y: 1 } },
+        { role: "RAIDER", at: { x: 6, y: 2 }, kills: 1 },
+        { role: "FIGHTER", at: { x: 1, y: 8 }, home: 1 },
+        { role: "GUARD", at: { x: 2, y: 9 }, home: 1 },
+        { role: "RAIDER", at: { x: 0, y: 9 }, home: 1 },
+        { role: "FIGHTER", at: { x: 1, y: 6 }, home: 1 },
       ],
       reveal: { radius: 2, rects: [{ x0: 0, y0: 6, x1: 6, y1: 12 }] },
       // Runaways from a circus: they learn nothing.
@@ -236,6 +229,68 @@ export const CANDY_2_V7: MissionDefinitionV7 = {
         "FORTIFICATION",
         "EXPLOSIVES",
       ],
+      // Retune 3: all of them hold the stacks for three rounds; then four
+      // stay with the Nest's clutch and the rest rampage for Sugarcrest.
+      directive: [
+        {
+          kind: "GUARD",
+          zone: [
+            { x0: 1, y0: 1, x1: 6, y1: 3 },
+            { x0: 0, y0: 6, x1: 3, y1: 9 },
+          ],
+          garrison: 13,
+          untilRound: 3,
+        },
+        {
+          kind: "GUARD",
+          zone: [
+            { x0: 1, y0: 1, x1: 6, y1: 3 },
+            { x0: 0, y0: 6, x1: 3, y1: 9 },
+          ],
+          garrison: 4,
+          others: { kind: "RUSH" },
+          fromRound: 3,
+        },
+      ],
+    },
+  ],
+  // Retune 3: more of the circus's runaways turn up, three times.
+  reinforcements: [
+    {
+      seat: 1,
+      round: 5,
+      line: "A second family of runaways blunders out of the western reeds.",
+      announce: true,
+      units: [
+        { role: "GUARD", at: { x: 1, y: 6 } },
+        { role: "FIGHTER", at: { x: 2, y: 6 } },
+        { role: "RAIDER", at: { x: 1, y: 7 } },
+        { role: "FIGHTER", at: { x: 1, y: 9 } },
+      ],
+    },
+    {
+      seat: 1,
+      round: 9,
+      line: "Kessler's circus has been busy: three more beasts, none of them fed.",
+      announce: true,
+      units: [
+        { role: "RAIDER", at: { x: 5, y: 2 } },
+        { role: "FIGHTER", at: { x: 6, y: 1 } },
+        { role: "GUARD", at: { x: 6, y: 2 } },
+        { role: "FIGHTER", at: { x: 5, y: 1 } },
+      ],
+    },
+    {
+      seat: 1,
+      round: 13,
+      line: "The T-Rex's cousins roar in from the pass. Library hours are over.",
+      announce: true,
+      units: [
+        { role: "KNIGHT", at: { x: 4, y: 2 } },
+        { role: "RAIDER", at: { x: 5, y: 2 } },
+        { role: "FIGHTER", at: { x: 6, y: 2 } },
+        { role: "GUARD", at: { x: 3, y: 2 } },
+      ],
     },
   ],
   landmarks: [{ tag: "RIFTWATCH", at: { x: 2, y: 2 } }],
@@ -247,13 +302,13 @@ export const CANDY_2_V7: MissionDefinitionV7 = {
     "SEAMANSHIP",
     "SUBMERSIBLES",
   ],
-  // Riftwatch by round 20. The stars: by round 16, and Madame Nougat lives.
+  // Riftwatch by round 16. The stars: by round 12, and Madame Nougat lives.
   objective: {
     kind: "CAPTURE",
     places: ["RIFTWATCH"],
-    byRound: 20,
+    byRound: 16,
     bonus: [
-      { kind: "WITHIN_ROUNDS", rounds: 16 },
+      { kind: "WITHIN_ROUNDS", rounds: 12 },
       { kind: "UNIT_ALIVE", unit: "NOUGAT" },
     ],
   },

@@ -43,11 +43,22 @@ import type { MissionDefinitionV7 } from "./types";
  *   14   f...ffff.....v..
  *   15   f^.^$ff^^^f..f..
  * ```
+ *
+ * The third retune (`pulp_wars-hmyk.21`, CAMPAIGN.md section 23.4, not
+ * play-tested): a skirmish start. Hood Hollow alone with Mr. Pettigrew,
+ * Sister Vole (the Stargazer, who nobody can train yet) and two guards,
+ * six technologies (the road to Stargazers and Hexers), 3 Coins and Favour 8; the
+ * summit is the only thing seen. The Ice Folk have thirteen units and 5
+ * Coins, the sweets eight and 4 Coins; from round 3 the Ice Folk's guard
+ * sallies on Hood Hollow and from round 2 the sweets storm it, and five
+ * announced waves (the Crown's frozen guard in rounds 5, 9 and 13, the
+ * sweets in rounds 6 and 11) come. The clock is 16 (was 20).
  */
 export const CULT_5_V7: MissionDefinitionV7 = {
   id: "CULT_5",
   // Revision 2 (`pulp_wars-hmyk.17`): each seat explores its units' sight.
-  revision: 2,
+  // Revision 3 (`pulp_wars-hmyk.21`, the third retune): a skirmish start.
+  revision: 3,
   seed: 20261905,
   // <map>
   size: 16,
@@ -145,9 +156,10 @@ export const CULT_5_V7: MissionDefinitionV7 = {
   seats: [
     {
       faction: "CULT",
-      coins: 6,
-      // The Lodge's purse for the season: three daemons, or a Mass and two.
-      favour: 12,
+      coins: 3,
+      // The Lodge's purse for the season, much thinner (retune 3: 8, was
+      // 12).
+      favour: 8,
       // Leadership (the Summoner), Hexers, Stargazers (Star-fall) on the
       // way through Forestry, Warding Circles (the Idol Bearer), and
       // Mountaineering and Gibbering Masses (the climb, and a wall at home).
@@ -158,10 +170,6 @@ export const CULT_5_V7: MissionDefinitionV7 = {
         "MARKSMANSHIP",
         "FORESTRY",
         "SAWMILLING",
-        "DRILL",
-        "FORTIFICATION",
-        "ENGINEERING",
-        "METALLURGY",
       ],
       cities: [
         {
@@ -177,19 +185,15 @@ export const CULT_5_V7: MissionDefinitionV7 = {
         // Sister Agatha Vole, Stargazer.
         { role: "CATAPULT", at: { x: 5, y: 10 }, tag: "VOLE" },
         { role: "FIGHTER", at: { x: 4, y: 10 } },
-        { role: "FIGHTER", at: { x: 6, y: 10 } },
-        { role: "FIGHTER", at: { x: 4, y: 11 } },
         { role: "GUARD", at: { x: 6, y: 9 } },
-        { role: "MARKSMAN", at: { x: 6, y: 11 } },
-        { role: "FIGHTER", at: { x: 6, y: 12 } },
       ],
-      // The slope and the summit, from the Lodge's old maps.
-      reveal: { radius: 2, rects: [{ x0: 0, y0: 0, x1: 11, y1: 13 }] },
+      // The summit, and nothing else (retune 3).
+      reveal: { radius: 2, rects: [{ x0: 4, y0: 1, x1: 4, y1: 1 }] },
     },
     {
       // The Winter Crown's guard.
       faction: "ICE_FOLK",
-      coins: 0,
+      coins: 5,
       technologies: [
         "GATHERING",
         "HUNTING",
@@ -215,22 +219,40 @@ export const CULT_5_V7: MissionDefinitionV7 = {
         { role: "MARKSMAN", at: { x: 0, y: 3 } },
         { role: "FIGHTER", at: { x: 7, y: 1 }, home: 1 },
         { role: "RAIDER", at: { x: 8, y: 1 }, home: 1 },
+        // Retune 3: six more of the guard.
+        { role: "GUARD", at: { x: 3, y: 0 } },
+        { role: "FIGHTER", at: { x: 5, y: 4 } },
+        { role: "GUARD", at: { x: 4, y: 4 } },
+        { role: "FIGHTER", at: { x: 9, y: 2 }, home: 1 },
+        { role: "MARKSMAN", at: { x: 8, y: 0 }, home: 1 },
+        { role: "RAIDER", at: { x: 9, y: 1 }, home: 1 },
       ],
       reveal: { radius: 2, rects: [{ x0: 0, y0: 0, x1: 9, y1: 12 }] },
       // Rime is the Crown: a garrison of one on its tile, so she never
       // leaves it (the saga's E2 fallback; hand play: with the whole ring of
       // peaks as her zone she stepped out from under a marked star). The
-      // rest of the guard plays its own game on the snowfields.
-      directive: {
-        kind: "GUARD",
-        zone: [{ x0: 4, y0: 1, x1: 4, y1: 1 }],
-        garrison: 1,
-      },
+      // rest of the guard plays its own game on the snowfields for two
+      // rounds, then sallies on Hood Hollow (retune 3).
+      directive: [
+        {
+          kind: "GUARD",
+          zone: [{ x0: 4, y0: 1, x1: 4, y1: 1 }],
+          garrison: 1,
+          untilRound: 3,
+        },
+        {
+          kind: "GUARD",
+          zone: [{ x0: 4, y0: 1, x1: 4, y1: 1 }],
+          garrison: 1,
+          others: { kind: "ASSAULT", target: { x: 5, y: 11 } },
+          fromRound: 3,
+        },
+      ],
     },
     {
       // The Frost Treaty's soldiers from Sugarcrest.
       faction: "CANDY",
-      coins: 0,
+      coins: 4,
       technologies: ["GATHERING", "HUNTING", "MARKSMANSHIP", "SCOUTING"],
       cities: [
         {
@@ -245,11 +267,17 @@ export const CULT_5_V7: MissionDefinitionV7 = {
         { role: "FIGHTER", at: { x: 9, y: 7 } },
         { role: "MARKSMAN", at: { x: 10, y: 8 } },
         { role: "RAIDER", at: { x: 11, y: 6 } },
+        // Retune 3: four more sweets.
+        { role: "FIGHTER", at: { x: 9, y: 8 } },
+        { role: "GUARD", at: { x: 11, y: 7 } },
+        { role: "RAIDER", at: { x: 9, y: 6 } },
+        { role: "MARKSMAN", at: { x: 8, y: 7 } },
       ],
       reveal: { radius: 2, rects: [{ x0: 0, y0: 6, x1: 12, y1: 13 }] },
-      // The sweets march on the fourth day and storm Hood Hollow.
+      // The sweets march on the second day and storm Hood Hollow (retune 3:
+      // was the fourth).
       directive: [
-        { kind: "NORMAL", untilRound: 4 },
+        { kind: "NORMAL", untilRound: 2 },
         { kind: "ASSAULT", target: { x: 5, y: 11 } },
       ],
     },
@@ -277,6 +305,73 @@ export const CULT_5_V7: MissionDefinitionV7 = {
       directive: { kind: "RUSH" },
     },
   ],
+  // Retune 3: five announced waves, the Crown's frozen guard in rounds 5, 9
+  // and 13 and the sweets of the Frost Treaty in rounds 6 and 11.
+  reinforcements: [
+    {
+      seat: 1,
+      round: 5,
+      line: "The snowfield stirs: the Crown's frozen guard walks out of the drifts.",
+      announce: true,
+      units: [
+        { role: "GUARD", at: { x: 3, y: 4 } },
+        { role: "FIGHTER", at: { x: 3, y: 5 } },
+        { role: "GUARD", at: { x: 4, y: 5 } },
+        { role: "MARKSMAN", at: { x: 5, y: 5 } },
+      ],
+    },
+    {
+      seat: 2,
+      round: 6,
+      line: "Sugarcrest's treaty soldiers march out of Toffee Post, banners up.",
+      announce: true,
+      units: [
+        { role: "FIGHTER", at: { x: 11, y: 6 } },
+        { role: "FIGHTER", at: { x: 12, y: 7 } },
+        { role: "GUARD", at: { x: 11, y: 8 } },
+        { role: "RAIDER", at: { x: 12, y: 6 } },
+      ],
+    },
+    {
+      seat: 1,
+      round: 9,
+      line: "Mother Rime's snow-walkers come down the mountain, quite silent, quite cold.",
+      announce: true,
+      units: [
+        { role: "GUARD", at: { x: 3, y: 4 } },
+        { role: "GUARD", at: { x: 4, y: 5 } },
+        { role: "FIGHTER", at: { x: 3, y: 5 } },
+        { role: "RAIDER", at: { x: 5, y: 5 } },
+        { role: "MARKSMAN", at: { x: 9, y: 2 } },
+      ],
+    },
+    {
+      seat: 2,
+      round: 11,
+      line: "Another column of sweets. The Frost Treaty is very thorough about this.",
+      announce: true,
+      units: [
+        { role: "FIGHTER", at: { x: 11, y: 6 } },
+        { role: "GUARD", at: { x: 12, y: 7 } },
+        { role: "FIGHTER", at: { x: 11, y: 8 } },
+        { role: "RAIDER", at: { x: 12, y: 6 } },
+        { role: "MARKSMAN", at: { x: 10, y: 9 } },
+      ],
+    },
+    {
+      seat: 1,
+      round: 13,
+      line: "The Winter Crown's last guard rises from the ice, in a hurry.",
+      announce: true,
+      units: [
+        { role: "GUARD", at: { x: 3, y: 4 } },
+        { role: "GUARD", at: { x: 4, y: 5 } },
+        { role: "FIGHTER", at: { x: 3, y: 5 } },
+        { role: "FIGHTER", at: { x: 5, y: 5 } },
+        { role: "MARKSMAN", at: { x: 9, y: 2 } },
+      ],
+    },
+  ],
   landmarks: [
     { tag: "SUMMIT", at: { x: 4, y: 1 } },
     { tag: "HOOD_HOLLOW", at: { x: 5, y: 11 } },
@@ -289,13 +384,13 @@ export const CULT_5_V7: MissionDefinitionV7 = {
     "SEAMANSHIP",
     "SUBMERSIBLES",
   ],
-  // The Winter Crown by round 20. The stars: by round 16, and Vole lives.
+  // The Winter Crown by round 16. The stars: by round 13, and Vole lives.
   objective: {
     kind: "KILL",
     units: ["RIME"],
-    byRound: 20,
+    byRound: 16,
     bonus: [
-      { kind: "WITHIN_ROUNDS", rounds: 16 },
+      { kind: "WITHIN_ROUNDS", rounds: 13 },
       { kind: "UNIT_ALIVE", unit: "VOLE" },
     ],
   },

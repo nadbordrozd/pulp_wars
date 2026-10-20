@@ -170,27 +170,29 @@ describe("The Long Night", () => {
       };
     });
     expect(summary).toEqual([
-      { kind: "KILL", byRound: 10, bonus: ["WITHIN_ROUNDS 8", "UNIT_ALIVE"] },
+      // Retune 3 (`pulp_wars-hmyk.21`): the clocks are about a fifth
+      // shorter.
+      { kind: "KILL", byRound: 8, bonus: ["WITHIN_ROUNDS 6", "UNIT_ALIVE"] },
       {
         kind: "CAPTURE",
-        byRound: 18,
-        bonus: ["WITHIN_ROUNDS 15", "KEEP_CITIES"],
+        byRound: 15,
+        bonus: ["WITHIN_ROUNDS 12", "KEEP_CITIES"],
       },
       {
         kind: "ESCORT",
-        byRound: 16,
-        bonus: ["WITHIN_ROUNDS 12", "KEEP_CITIES"],
+        byRound: 13,
+        bonus: ["WITHIN_ROUNDS 10", "KEEP_CITIES"],
       },
       {
         kind: "SURVIVE",
         byRound: undefined,
         bonus: ["KEEP_CITIES", "UNIT_ALIVE"],
       },
-      { kind: "KILL", byRound: 20, bonus: ["WITHIN_ROUNDS 16", "UNIT_ALIVE"] },
+      { kind: "KILL", byRound: 16, bonus: ["WITHIN_ROUNDS 13", "UNIT_ALIVE"] },
       {
         kind: "CAPTURE",
-        byRound: 20,
-        bonus: ["WITHIN_ROUNDS 14", "UNIT_ALIVE"],
+        byRound: 16,
+        bonus: ["WITHIN_ROUNDS 12", "UNIT_ALIVE"],
       },
     ]);
     expect(mission("CULT_1").objective).toMatchObject({ units: ["HOBB"] });
@@ -204,7 +206,7 @@ describe("The Long Night", () => {
     });
     expect(mission("CULT_4").objective).toMatchObject({
       kind: "SURVIVE",
-      rounds: 14,
+      rounds: 12,
       protect: [{ place: "SEAL_WORKS" }],
     });
     expect(mission("CULT_5").objective).toMatchObject({ units: ["RIME"] });
@@ -218,39 +220,79 @@ describe("The Long Night", () => {
     expect(alive("CULT_5")).toEqual({ kind: "UNIT_ALIVE", unit: "VOLE" });
   });
 
-  it("builds the missions as hand play left them", () => {
-    // CU1: Hobb is the south road's garrison of one; from round 5 the rest
-    // of the patrol storms Greyhood.
+  it("builds the missions as the third retune left them", () => {
+    // `pulp_wars-hmyk.21` (CAMPAIGN.md section 23.4, not play-tested): thin
+    // or skirmish starts, bigger enemies that march early, announced waves.
+    // Every wave of every mission has a story line and is announced.
+    for (const id of ORDER)
+      for (const wave of mission(id).reinforcements ?? []) {
+        expect(wave.line, id).toBeTypeOf("string");
+        expect(wave.announce, id).toBe(true);
+      }
+    // CU1: a skirmish start (Greyhood, three units, Gathering and
+    // Leadership); Hobb is the south road's garrison of one; from round 3
+    // the rest of the patrol storms Greyhood; a second patrol in round 5.
+    expect(seat("CULT_1", 0).technologies).toEqual([
+      "GATHERING",
+      "ADMINISTRATION",
+    ]);
+    expect(seat("CULT_1", 0).units).toHaveLength(3);
     expect(seat("CULT_1", 1).directive).toEqual([
-      expect.objectContaining({ kind: "GUARD", garrison: 1, untilRound: 4 }),
+      expect.objectContaining({ kind: "GUARD", garrison: 1, untilRound: 3 }),
       expect.objectContaining({
         kind: "GUARD",
         garrison: 1,
         others: expect.objectContaining({ kind: "ASSAULT" }) as unknown,
       }),
     ]);
-    // CU2: the Marquis's archive guard keeps four at Cinderfield.
-    expect(seat("CULT_2", 1).directive).toMatchObject({
-      kind: "GUARD",
-      garrison: 4,
-    });
-    // CU3: the tribes hunt the Galleon's lane with their boats, without
-    // Boarding, rams or new Plesiosaurs (hand play: a boarded escort);
-    // the War Raft comes in round 4.
-    expect(seat("CULT_3", 1).directive).toMatchObject({
-      kind: "GUARD",
-      garrison: 1,
-      ships: true,
-    });
+    expect(waves("CULT_1")).toEqual([{ seat: 1, round: 5 }]);
+    // CU2: a thin start (one town, no Masses yet); the Marquis's archive
+    // guard keeps six at Cinderfield from round 3 and sends the rest; three
+    // waves.
+    expect(seat("CULT_2", 0).cities).toHaveLength(1);
+    expect(seat("CULT_2", 0).technologies).not.toContain("METALLURGY");
+    expect(seat("CULT_2", 1).directive).toEqual([
+      expect.objectContaining({ kind: "GUARD", garrison: 12, untilRound: 3 }),
+      expect.objectContaining({
+        kind: "GUARD",
+        garrison: 6,
+        others: { kind: "RUSH" },
+        fromRound: 3,
+      }),
+    ]);
+    expect(waves("CULT_2")).toEqual([
+      { seat: 1, round: 4 },
+      { seat: 1, round: 8 },
+      { seat: 1, round: 12 },
+    ]);
+    // CU3: the tribes hunt the Galleon's lane with their boats until round
+    // 3 and then sail on the Cove, without Boarding, rams or new
+    // Plesiosaurs (hand play: a boarded escort); the Skimmers rush; three
+    // waves of ships.
+    expect(seat("CULT_3", 1).directive).toMatchObject([
+      { kind: "GUARD", garrison: 1, ships: true, untilRound: 3 },
+      { kind: "ASSAULT", fromRound: 3 },
+    ]);
     for (const tech of ["SEAMANSHIP", "SUBMERSIBLES"])
       expect(seat("CULT_3", 1).forbiddenTechnologies, tech).toContain(tech);
-    expect(waves("CULT_3")).toEqual([{ seat: 1, round: 4 }]);
-    // CU4: no Steam Moles or Gunners under the circle (hand play); two
-    // keep the Gate and the rest storm the Seal-works; three waves.
+    expect(seat("CULT_3", 2).directive).toEqual([
+      { kind: "NORMAL", untilRound: 3 },
+      { kind: "RUSH" },
+    ]);
+    expect(waves("CULT_3")).toEqual([
+      { seat: 1, round: 3 },
+      { seat: 2, round: 6 },
+      { seat: 1, round: 9 },
+    ]);
+    // CU4: a thin start (the Seal-works alone, five units); no Steam Moles
+    // or Gunners under the circle (hand play); two keep the Gate and the
+    // rest storm the Seal-works from round 2; five waves.
+    expect(seat("CULT_4", 0).cities).toHaveLength(1);
+    expect(seat("CULT_4", 0).units).toHaveLength(5);
     for (const tech of ["MARKSMANSHIP", "FORTIFICATION"])
       expect(seat("CULT_4", 1).forbiddenTechnologies, tech).toContain(tech);
     expect(seat("CULT_4", 1).directive).toEqual([
-      expect.objectContaining({ kind: "GUARD", garrison: 2, untilRound: 3 }),
+      expect.objectContaining({ kind: "GUARD", garrison: 2, untilRound: 2 }),
       expect.objectContaining({
         kind: "GUARD",
         garrison: 2,
@@ -258,55 +300,90 @@ describe("The Long Night", () => {
       }),
     ]);
     expect(seat("CULT_4", 2).directive).toEqual([
-      { kind: "NORMAL", untilRound: 4 },
+      { kind: "NORMAL", untilRound: 2 },
       { kind: "RUSH" },
     ]);
     expect(waves("CULT_4")).toEqual([
-      { seat: 2, round: 6 },
-      { seat: 1, round: 8 },
-      { seat: 2, round: 10 },
+      { seat: 2, round: 4 },
+      { seat: 1, round: 6 },
+      { seat: 2, round: 8 },
+      { seat: 1, round: 10 },
+      { seat: 2, round: 12 },
     ]);
-    // CU5: Rime guards her own tile alone, so she never leaves the Crown
-    // (SAGA.md section 4, E2's fallback); the sweets storm Hood Hollow from
-    // round 5; the Redcaps rush.
+    // CU5: a skirmish start (the road to Stargazers and Hexers only); Rime guards her
+    // own tile alone, so she never leaves the Crown (SAGA.md section 4,
+    // E2's fallback), and from round 3 the rest of her guard sallies on
+    // Hood Hollow; the sweets storm it from round 2; the Redcaps rush; five
+    // waves.
+    expect(seat("CULT_5", 0).technologies).toEqual([
+      "GATHERING",
+      "ADMINISTRATION",
+      "HUNTING",
+      "MARKSMANSHIP",
+      "FORESTRY",
+      "SAWMILLING",
+    ]);
+    expect(seat("CULT_5", 0).units).toHaveLength(4);
     const rime = tagged("CULT_5", 1, "RIME");
-    expect(seat("CULT_5", 1).directive).toEqual({
-      kind: "GUARD",
-      zone: [
-        { x0: rime?.at.x, y0: rime?.at.y, x1: rime?.at.x, y1: rime?.at.y },
-      ],
-      garrison: 1,
-    });
+    const crown = [
+      { x0: rime?.at.x, y0: rime?.at.y, x1: rime?.at.x, y1: rime?.at.y },
+    ];
+    expect(seat("CULT_5", 1).directive).toEqual([
+      { kind: "GUARD", zone: crown, garrison: 1, untilRound: 3 },
+      {
+        kind: "GUARD",
+        zone: crown,
+        garrison: 1,
+        others: expect.objectContaining({ kind: "ASSAULT" }) as unknown,
+        fromRound: 3,
+      },
+    ]);
     expect(seat("CULT_5", 2).directive).toEqual([
-      { kind: "NORMAL", untilRound: 4 },
+      { kind: "NORMAL", untilRound: 2 },
       expect.objectContaining({ kind: "ASSAULT" }),
     ]);
     expect(seat("CULT_5", 3).directive).toEqual({ kind: "RUSH" });
-    expect(waves("CULT_5")).toEqual([]);
-    // CU6: The Stars Are Right (Explosives) and Favour short of a Great
-    // Summoning; nine keep the Gate, with no Gunners or Steam Moles; the
-    // Rangers rush from round 4 and the dead storm the Seal-works from
-    // round 6; two waves of Rangers.
+    expect(waves("CULT_5")).toEqual([
+      { seat: 1, round: 5 },
+      { seat: 2, round: 6 },
+      { seat: 1, round: 9 },
+      { seat: 2, round: 11 },
+      { seat: 1, round: 13 },
+    ]);
+    // CU6, the saga's hardest: The Stars Are Right (Explosives) and Favour
+    // short of a Great Summoning, on a thin start (ten units, seven
+    // technologies); twelve keep the Gate and six storm the Seal-works from
+    // round 3, with no Gunners or Steam Moles; the Rangers rush from round
+    // 2 and the dead storm the Seal-works from round 3; nine waves.
     expect(seat("CULT_6", 0).technologies).toContain("EXPLOSIVES");
-    expect(seat("CULT_6", 0).favour).toBe(8);
-    expect(seat("CULT_6", 1).directive).toMatchObject({
-      kind: "GUARD",
-      garrison: 9,
-    });
+    expect(seat("CULT_6", 0).technologies).toHaveLength(7);
+    expect(seat("CULT_6", 0).units).toHaveLength(10);
+    expect(seat("CULT_6", 0).favour).toBe(6);
+    expect(seat("CULT_6", 1).directive).toMatchObject([
+      { kind: "GUARD", garrison: 18, untilRound: 3 },
+      { kind: "GUARD", garrison: 12, others: { kind: "ASSAULT" } },
+    ]);
     for (const tech of ["MARKSMANSHIP", "FORTIFICATION"])
       expect(seat("CULT_6", 1).forbiddenTechnologies, tech).toContain(tech);
     expect(seat("CULT_6", 1).units[0]).toMatchObject({ role: "JUGGERNAUT" });
     expect(seat("CULT_6", 2).directive).toEqual([
-      { kind: "NORMAL", untilRound: 3 },
+      { kind: "NORMAL", untilRound: 2 },
       { kind: "RUSH" },
     ]);
     expect(seat("CULT_6", 3).directive).toEqual([
-      { kind: "NORMAL", untilRound: 5 },
+      { kind: "NORMAL", untilRound: 3 },
       expect.objectContaining({ kind: "ASSAULT" }),
     ]);
     expect(waves("CULT_6")).toEqual([
-      { seat: 2, round: 8 },
-      { seat: 2, round: 14 },
+      { seat: 2, round: 4 },
+      { seat: 3, round: 5 },
+      { seat: 1, round: 6 },
+      { seat: 2, round: 7 },
+      { seat: 3, round: 9 },
+      { seat: 2, round: 10 },
+      { seat: 1, round: 11 },
+      { seat: 3, round: 12 },
+      { seat: 2, round: 13 },
     ]);
   });
 

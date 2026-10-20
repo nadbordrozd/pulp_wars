@@ -51,10 +51,25 @@ import type { MissionDefinitionV7 } from "./types";
  *   18   f....v..R....f..ff^f      R: the Ranger Post
  *   19   $...f...f......ff.ff
  * ```
+ *
+ * The third retune (`pulp_wars-hmyk.21`, CAMPAIGN.md section 23.4, not
+ * play-tested): the saga's finale is the hardest mission of the game. A
+ * thin start: ten units (was seventeen), seven technologies (Explosives, the
+ * Great Summoning, is in; no Farming, Forestry, Sawmilling, Scouting,
+ * Engineering or Metallurgy), 4 Coins and Favour 6, Hood Hollow walled and
+ * the Seal-works at level 1, only the Gate's shelf seen. The Pact: the Deep
+ * Gate has eighteen dwarves (twelve hold the Gate, six storm the
+ * Seal-works from round 3) and 6 Coins; the Rangers fourteen and 6 Coins,
+ * marching from round 2; the dead twelve and 6 Coins, storming from round
+ * 3; nine announced waves come, four of Rangers (rounds 4, 7, 10 and 13),
+ * three of the dead (rounds 5, 9 and 12), two of dwarves (rounds 6 and 11,
+ * the second with a Brass Titan). The clock is 16 (was 20).
  */
 export const CULT_6_V7: MissionDefinitionV7 = {
   id: "CULT_6",
-  revision: 1,
+  // Revision 2 (`pulp_wars-hmyk.21`, the third retune): the hardest mission
+  // of the game.
+  revision: 2,
   seed: 20261906,
   // <map>
   size: 20,
@@ -181,28 +196,23 @@ export const CULT_6_V7: MissionDefinitionV7 = {
   seats: [
     {
       faction: "CULT",
-      coins: 10,
+      // Retune 3: 4 Coins (was 10).
+      coins: 4,
       // The egg's worth, less what the night's work has cost already: a
-      // Great Summoning wants 18.
-      favour: 8,
+      // Great Summoning wants 18 (retune 3: 6, was 8).
+      favour: 6,
       // The whole Lodge: Leadership, Harvest Rites (the Offering), Hexers,
       // Stargazers, Familiars, Warding Circles (the Idol Bearer),
       // Mountaineering, Gibbering Masses, and The Stars Are Right (the
       // Great Summoning).
       technologies: [
         "GATHERING",
-        "FARMING",
         "ADMINISTRATION",
         "HUNTING",
         "MARKSMANSHIP",
-        "FORESTRY",
-        "SAWMILLING",
-        "SCOUTING",
         "DRILL",
         "FORTIFICATION",
         "EXPLOSIVES",
-        "ENGINEERING",
-        "METALLURGY",
       ],
       cities: [
         {
@@ -211,12 +221,7 @@ export const CULT_6_V7: MissionDefinitionV7 = {
           level: 3,
           rewards: ["STOCKPILE", "WALLS"],
         },
-        {
-          name: "The Seal-works",
-          at: { x: 14, y: 6 },
-          level: 2,
-          rewards: ["STOCKPILE"],
-        },
+        { name: "The Seal-works", at: { x: 14, y: 6 }, level: 1, rewards: [] },
       ],
       units: [
         // Mr. Pettigrew, Hierophant of the Deep Gate (soon).
@@ -225,31 +230,22 @@ export const CULT_6_V7: MissionDefinitionV7 = {
         // Anchor makes the strand of the cultist it grips count three.
         { role: "JUGGERNAUT", at: { x: 14, y: 6 }, home: 1 },
         { role: "CAPTAIN", at: { x: 13, y: 7 }, home: 1 },
-        { role: "CAPTAIN", at: { x: 15, y: 7 }, home: 1 },
         { role: "CATAPULT", at: { x: 13, y: 4 }, home: 1 },
-        { role: "CATAPULT", at: { x: 15, y: 4 }, home: 1 },
         { role: "GUARD", at: { x: 13, y: 5 }, home: 1 },
-        { role: "GUARD", at: { x: 14, y: 4 }, home: 1 },
         { role: "GUARD", at: { x: 15, y: 6 }, home: 1 },
         { role: "FIGHTER", at: { x: 12, y: 4 }, home: 1 },
-        { role: "FIGHTER", at: { x: 12, y: 5 }, home: 1 },
-        { role: "FIGHTER", at: { x: 16, y: 5 } },
         { role: "FIGHTER", at: { x: 16, y: 7 } },
         { role: "MARKSMAN", at: { x: 13, y: 3 } },
-        { role: "RAIDER", at: { x: 16, y: 4 } },
         // The rearguard at Hood Hollow.
         { role: "GUARD", at: { x: 17, y: 6 } },
-        { role: "FIGHTER", at: { x: 16, y: 6 } },
-        { role: "MARKSMAN", at: { x: 17, y: 5 } },
       ],
-      // The mountain and its roads, from the Lodge's maps and the Martians'
-      // star-chart, kindly lent.
-      reveal: { radius: 2, rects: [{ x0: 0, y0: 0, x1: 19, y1: 10 }] },
+      // The Gate's shelf from the Lodge's maps, and nothing more (retune 3).
+      reveal: { radius: 2, rects: [{ x0: 5, y0: 1, x1: 9, y1: 5 }] },
     },
     {
       // The Deep Gate: the Thane's dwarves at the chain.
       faction: "DWARF",
-      coins: 0,
+      coins: 6,
       technologies: [
         "GATHERING",
         "ADMINISTRATION",
@@ -307,19 +303,37 @@ export const CULT_6_V7: MissionDefinitionV7 = {
         { role: "FIGHTER", at: { x: 2, y: 3 }, home: 1 },
         { role: "FIGHTER", at: { x: 8, y: 6 }, home: 2 },
         { role: "FIGHTER", at: { x: 9, y: 5 }, home: 2 },
+        // Retune 3: six more dwarves.
+        { role: "SWORDSMAN", at: { x: 9, y: 3 } },
+        { role: "FIGHTER", at: { x: 9, y: 2 } },
+        { role: "FIGHTER", at: { x: 5, y: 2 } },
+        { role: "FIGHTER", at: { x: 5, y: 4 } },
+        { role: "GUARD", at: { x: 7, y: 5 } },
+        { role: "FIGHTER", at: { x: 8, y: 5 }, home: 2 },
       ],
       reveal: { radius: 2, rects: [{ x0: 0, y0: 0, x1: 19, y1: 10 }] },
-      // Nine keep the Gate; the rest play their own game.
-      directive: {
-        kind: "GUARD",
-        zone: [{ x0: 6, y0: 2, x1: 8, y1: 4 }],
-        garrison: 9,
-      },
+      // Twelve keep the Gate (retune 3: was nine); the rest storm the
+      // Seal-works from round 3 (they played their own game).
+      directive: [
+        {
+          kind: "GUARD",
+          zone: [{ x0: 6, y0: 2, x1: 8, y1: 4 }],
+          garrison: 18,
+          untilRound: 3,
+        },
+        {
+          kind: "GUARD",
+          zone: [{ x0: 6, y0: 2, x1: 8, y1: 4 }],
+          garrison: 12,
+          others: { kind: "ASSAULT", target: { x: 14, y: 6 } },
+          fromRound: 3,
+        },
+      ],
     },
     {
       // Marshal Steele's Rangers, every one in the north.
       faction: "ORIGINAL",
-      coins: 2,
+      coins: 6,
       technologies: [
         "GATHERING",
         "HUNTING",
@@ -351,15 +365,22 @@ export const CULT_6_V7: MissionDefinitionV7 = {
         { role: "KNIGHT", at: { x: 8, y: 18 }, home: 1 },
         { role: "FIGHTER", at: { x: 7, y: 18 }, home: 1 },
         { role: "FIGHTER", at: { x: 9, y: 18 }, home: 1 },
+        // Retune 3: six more Rangers.
+        { role: "KNIGHT", at: { x: 15, y: 16 } },
+        { role: "KNIGHT", at: { x: 18, y: 16 } },
+        { role: "FIGHTER", at: { x: 16, y: 15 } },
+        { role: "FIGHTER", at: { x: 17, y: 15 } },
+        { role: "MARKSMAN", at: { x: 16, y: 18 } },
+        { role: "KNIGHT", at: { x: 7, y: 17 }, home: 1 },
       ],
       reveal: { radius: 2, rects: [{ x0: 10, y0: 0, x1: 19, y1: 19 }] },
-      // The Rangers march on the fourth night.
-      directive: [{ kind: "NORMAL", untilRound: 3 }, { kind: "RUSH" }],
+      // The Rangers march on the second night (retune 3: was the fourth).
+      directive: [{ kind: "NORMAL", untilRound: 2 }, { kind: "RUSH" }],
     },
     {
       // The Marquis's dead, over the western ridge.
       faction: "UNDEAD",
-      coins: 2,
+      coins: 6,
       technologies: [
         "GATHERING",
         "ADMINISTRATION",
@@ -387,21 +408,32 @@ export const CULT_6_V7: MissionDefinitionV7 = {
         { role: "FIGHTER", at: { x: 2, y: 9 }, home: 1 },
         { role: "FIGHTER", at: { x: 1, y: 9 }, home: 1 },
         { role: "RAIDER", at: { x: 0, y: 9 }, home: 1 },
+        // Retune 3: five more of the dead.
+        { role: "FIGHTER", at: { x: 3, y: 13 } },
+        { role: "FIGHTER", at: { x: 1, y: 15 } },
+        { role: "GUARD", at: { x: 3, y: 15 } },
+        { role: "FIGHTER", at: { x: 3, y: 9 }, home: 1 },
+        { role: "KNIGHT", at: { x: 4, y: 14 } },
       ],
       reveal: { radius: 2, rects: [{ x0: 0, y0: 0, x1: 19, y1: 10 }] },
       // The dead play their own game, then storm the Seal-works from the
-      // sixth night.
+      // third night (retune 3: was the sixth).
       directive: [
-        { kind: "NORMAL", untilRound: 5 },
+        { kind: "NORMAL", untilRound: 3 },
         { kind: "ASSAULT", target: { x: 14, y: 6 } },
       ],
     },
   ],
   // More Rangers up the southern road on the eighth and fourteenth nights.
+  // Retune 3: nine announced waves in all, four of Rangers (rounds 4, 7, 10
+  // and 13), three of the dead (rounds 5, 9 and 12) and two of dwarves
+  // (rounds 6 and 11, the second with a Brass Titan for the Gate).
   reinforcements: [
     {
       seat: 2,
-      round: 8,
+      round: 4,
+      line: "Steele's second column rides up the southern road. Knights in front, as ever.",
+      announce: true,
       units: [
         { role: "KNIGHT", at: { x: 13, y: 18 } },
         { role: "KNIGHT", at: { x: 12, y: 18 } },
@@ -410,13 +442,109 @@ export const CULT_6_V7: MissionDefinitionV7 = {
       ],
     },
     {
+      seat: 3,
+      round: 5,
+      line: "The Marquis's dead come over the western ridge, still taking notes.",
+      announce: true,
+      units: [
+        { role: "FIGHTER", at: { x: 3, y: 12 } },
+        { role: "FIGHTER", at: { x: 3, y: 10 } },
+        { role: "GUARD", at: { x: 4, y: 12 } },
+        { role: "KNIGHT", at: { x: 5, y: 12 } },
+        { role: "FIGHTER", at: { x: 4, y: 10 } },
+      ],
+    },
+    {
+      seat: 1,
+      round: 6,
+      line: "The Thane sends the second shift down from the Deep Gate. The bell is warm.",
+      announce: true,
+      units: [
+        { role: "SWORDSMAN", at: { x: 9, y: 4 } },
+        { role: "SWORDSMAN", at: { x: 9, y: 5 } },
+        { role: "FIGHTER", at: { x: 8, y: 5 } },
+        { role: "GUARD", at: { x: 9, y: 6 } },
+        { role: "FIGHTER", at: { x: 8, y: 6 } },
+      ],
+    },
+    {
       seat: 2,
-      round: 14,
+      round: 7,
+      line: "Marshal Steele's third column: every Ranger who could find a horse.",
+      announce: true,
+      units: [
+        { role: "KNIGHT", at: { x: 13, y: 18 } },
+        { role: "KNIGHT", at: { x: 12, y: 18 } },
+        { role: "KNIGHT", at: { x: 14, y: 18 } },
+        { role: "FIGHTER", at: { x: 13, y: 19 } },
+        { role: "MARKSMAN", at: { x: 12, y: 19 } },
+      ],
+    },
+    {
+      seat: 3,
+      round: 9,
+      line: "The Barrowlands empty. The Marquis has called in every favour owed to the dead.",
+      announce: true,
+      units: [
+        { role: "FIGHTER", at: { x: 3, y: 12 } },
+        { role: "FIGHTER", at: { x: 3, y: 10 } },
+        { role: "GUARD", at: { x: 4, y: 12 } },
+        { role: "KNIGHT", at: { x: 5, y: 12 } },
+        { role: "KNIGHT", at: { x: 4, y: 10 } },
+        { role: "FIGHTER", at: { x: 4, y: 13 } },
+      ],
+    },
+    {
+      seat: 2,
+      round: 10,
+      line: "Rangers on every road. Steele is quite sure this is the last night of the Lodge.",
+      announce: true,
       units: [
         { role: "KNIGHT", at: { x: 13, y: 18 } },
         { role: "KNIGHT", at: { x: 12, y: 18 } },
         { role: "CATAPULT", at: { x: 13, y: 19 } },
         { role: "FIGHTER", at: { x: 12, y: 19 } },
+        { role: "FIGHTER", at: { x: 14, y: 19 } },
+      ],
+    },
+    {
+      seat: 1,
+      round: 11,
+      line: "The Thane's Brass Titan lumbers out of the shaft and plants itself on the Gate.",
+      announce: true,
+      units: [
+        { role: "JUGGERNAUT", at: { x: 8, y: 5 } },
+        { role: "SWORDSMAN", at: { x: 9, y: 4 } },
+        { role: "SWORDSMAN", at: { x: 9, y: 5 } },
+        { role: "GUARD", at: { x: 8, y: 6 } },
+      ],
+    },
+    {
+      seat: 3,
+      round: 12,
+      line: "The Marquis's last parish rises, with the score for the Lullaby in its teeth.",
+      announce: true,
+      units: [
+        { role: "FIGHTER", at: { x: 3, y: 12 } },
+        { role: "FIGHTER", at: { x: 3, y: 10 } },
+        { role: "GUARD", at: { x: 4, y: 12 } },
+        { role: "KNIGHT", at: { x: 5, y: 12 } },
+        { role: "KNIGHT", at: { x: 4, y: 10 } },
+        { role: "GUARD", at: { x: 4, y: 13 } },
+      ],
+    },
+    {
+      seat: 2,
+      round: 13,
+      line: "Dawn is near and the Rangers are not early: they are on time, which is worse.",
+      announce: true,
+      units: [
+        { role: "KNIGHT", at: { x: 13, y: 18 } },
+        { role: "KNIGHT", at: { x: 12, y: 18 } },
+        { role: "KNIGHT", at: { x: 14, y: 18 } },
+        { role: "CATAPULT", at: { x: 13, y: 19 } },
+        { role: "FIGHTER", at: { x: 12, y: 19 } },
+        { role: "MARKSMAN", at: { x: 14, y: 19 } },
       ],
     },
   ],
@@ -432,14 +560,14 @@ export const CULT_6_V7: MissionDefinitionV7 = {
     "SEAMANSHIP",
     "SUBMERSIBLES",
   ],
-  // The Deep Gate by round 20 (dawn). The stars: by round 14, and Pettigrew
-  // lives.
+  // The Deep Gate by round 16 (dawn, retune 3: was round 20). The stars: by
+  // round 12, and Pettigrew lives.
   objective: {
     kind: "CAPTURE",
     places: ["DEEP_GATE"],
-    byRound: 20,
+    byRound: 16,
     bonus: [
-      { kind: "WITHIN_ROUNDS", rounds: 14 },
+      { kind: "WITHIN_ROUNDS", rounds: 12 },
       { kind: "UNIT_ALIVE", unit: "PETTIGREW" },
     ],
   },

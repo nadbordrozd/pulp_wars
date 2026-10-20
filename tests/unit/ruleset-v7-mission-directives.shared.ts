@@ -33,7 +33,12 @@ export function playable(id: string): GameStateV7 {
 }
 
 export function zoneOf(id: string): readonly RectV7[] {
-  const directive = mission(id).seats[1]?.directive;
+  const written = mission(id).seats[1]?.directive;
+  // A schedule (`pulp_wars-hmyk.21`, CANDY_3's squadron holds its anchorage
+  // until round 8): the first entry that has a zone.
+  const directive = Array.isArray(written)
+    ? written.find((entry) => "zone" in entry)
+    : written;
   if (directive === undefined || !("zone" in directive))
     throw new Error(`${id} has no zone`);
   return directive.zone;
