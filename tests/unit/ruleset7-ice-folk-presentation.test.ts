@@ -39,7 +39,6 @@ import {
   FROZEN_NO_STRIKE_BACK_V7,
   STAMPEDE_MOVED_V7,
   STAMPEDE_NO_LINE_V7,
-  STAYS_FROZEN_V7,
   HIDDEN_BLIZZARD_PREVIEW_V7,
   ICE_FOLK_HELP_RULES_V7,
   PLANTED_PREVIEW_V7,
@@ -49,6 +48,7 @@ import {
   WILL_BE_FROZEN_V7,
   bolasPreviewLinesV7,
   boulderThrowTextV7,
+  coldSnapChangedTargetsV7,
   coldSnapSummaryV7,
   frozenCannotActV7,
   frozenChipV7,
@@ -143,7 +143,7 @@ describe("Ice Folk texts (section 13.2)", () => {
     // Ice Folk Freeze (`pulp_wars-w49.37`): Cold Snap reaches the eight
     // tiles around the Witch.
     expect(COLD_SNAP_RANGE_V7).toBe(1);
-    expect(COLD_SNAP_NO_TARGET_V7).toBe("No enemy next to her");
+    expect(COLD_SNAP_NO_TARGET_V7).toBe("No unfrozen enemy next to her");
     const boulder = effectiveRoleRuleV7("CATAPULT", "ICE_FOLK").attack2;
     expect(boulderThrowTextV7(true)).toBe(
       `Planted: Attack ${half(boulder + PLANTED_BONUS2_V7)}`,
@@ -412,10 +412,24 @@ describe("Bolas and Cold Snap previews (sections 13.1 and 13.2)", () => {
   it("summarises a Cold Snap from its preview", () => {
     const snap = previewColdSnapV7(view, unitAt(view, AT.witch).id);
     if (snap === null) throw new Error("no Cold Snap preview");
-    // Ice Folk Freeze (`pulp_wars-w49.37`): every target is Frozen.
-    expect(coldSnapSummaryV7(snap)).toBe(
-      `Freezes ${snap.targets.length} unit${snap.targets.length === 1 ? "" : "s"}`,
+    // No pointless actions (`pulp_wars-zir6`): it counts the units it
+    // changes (not those Frozen already).
+    const changed = coldSnapChangedTargetsV7(snap);
+    expect(changed).toEqual(
+      snap.targets.filter((target) => !target.alreadyFrozen),
     );
+    expect(coldSnapSummaryV7(snap)).toBe(
+      `Freezes ${changed.length} unit${changed.length === 1 ? "" : "s"}`,
+    );
+    expect(
+      coldSnapSummaryV7({
+        ...snap,
+        targets: [
+          { unitId: 1 as never, alreadyFrozen: false },
+          { unitId: 2 as never, alreadyFrozen: true },
+        ],
+      }),
+    ).toBe("Freezes 1 unit");
   });
 
   it("names why a Witch or a Frozen unit has no ability", () => {
@@ -507,20 +521,19 @@ describe("Ice Folk Freeze previews (bead pulp_wars-w49.38)", () => {
   const witch = unitAt(view, FREEZE.witch);
   const mammoth = unitAt(view, FREEZE.mammoth);
 
-  it("hints Stays Frozen for a Frost Bolt on a unit that is Frozen already", () => {
+  it("hints Will be Frozen, and offers no Frost Bolt on a unit that is Frozen already", () => {
     const fresh = previewFrostBoltV7(
       view,
       witch.id,
       unitAt(view, FREEZE.boltTarget).id,
     );
-    const again = previewFrostBoltV7(
-      view,
-      witch.id,
-      unitAt(view, FREEZE.boltFrozen).id,
-    );
-    if (fresh === null || again === null) throw new Error("no Frost Bolt");
+    if (fresh === null) throw new Error("no Frost Bolt");
     expect(bolasPreviewLinesV7(view, fresh)[0]).toBe(WILL_BE_FROZEN_V7);
-    expect(bolasPreviewLinesV7(view, again)[0]).toBe(STAYS_FROZEN_V7);
+    // No pointless actions (`pulp_wars-zir6`): a freeze would change
+    // nothing on a unit Frozen already, so it is no target.
+    expect(
+      previewFrostBoltV7(view, witch.id, unitAt(view, FREEZE.boltFrozen).id),
+    ).toBeNull();
   });
 
   it("walks a Stampede: the hits, the shove, the kill and the end", () => {

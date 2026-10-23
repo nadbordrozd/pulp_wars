@@ -622,6 +622,7 @@ import {
   STAMPEDE_PICK_V7,
   STAMPEDE_TOOLTIP_V7,
   WITCH_SUPPORT_UNLOCK_TEXT_V7,
+  coldSnapChangedTargetsV7,
   coldSnapSummaryV7,
   frozenCannotActV7,
   frozenChipV7,
@@ -15868,10 +15869,12 @@ export class Ruleset7DomAppView {
         return null;
       }
       prompt = coldSnapSummaryV7(preview);
-      panel.dataset.boardTargets = String(preview.targets.length);
+      // No pointless actions (`pulp_wars-zir6`): the units it changes.
+      const changed = coldSnapChangedTargetsV7(preview);
+      panel.dataset.boardTargets = String(changed.length);
       // Each target is labelled on the board; the cast button names them
       // for assistive technology.
-      const targets = preview.targets
+      const targets = changed
         .map(
           (target) =>
             `${nameOf(target.unitId)}: ${target.alreadyFrozen ? "Stays Frozen" : "Will be Frozen"}`,
@@ -19190,7 +19193,7 @@ function setupFrom(draft: DraftV7, gameKind: GameKindV7): MatchSetupV7 | null {
   const aiHeadStartCoins =
     draft.mapType === "SHOWCASE" ? 0 : draft.aiHeadStartCoins;
   return {
-    rulesetId: "pulp-wars-poc-7r106",
+    rulesetId: "pulp-wars-poc-7r107",
     seed,
     width,
     height: width,

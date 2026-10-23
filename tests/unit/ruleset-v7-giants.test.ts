@@ -162,14 +162,14 @@ describe("the giants' signatures: the identity", () => {
   // Monument skin rule (`pulp_wars-eu3r.3`) 7r69, and the Vampire and
   // Banshee rework (`pulp_wars-ty6i`) 7r70.
   it("was 7r62 after 7r61, whose save keys are obsolete", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r106");
-    expect(PRIOR_RULESET_7_IDS.slice(-45, -43)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r107");
+    expect(PRIOR_RULESET_7_IDS.slice(-46, -44)).toEqual([
       "pulp-wars-poc-7r61",
       "pulp-wars-poc-7r62",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r106.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-45, -43)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r107.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-46, -44)).toEqual([
       "pulpWars.save.v7r61.current",
       "pulpWars.save.v7r62.current",
     ]);
@@ -1487,11 +1487,12 @@ describe("Thunder Stomp (section 6.4)", () => {
     // No retaliation; the Brontosaurus used its primary action.
     expect(unitAtV7(run.state, at(5, 3)).hp).toBe(unitAtV7(state, at(5, 3)).hp);
     expect(unitAtV7(run.state, at(5, 3)).activation.specialActed).toBe(true);
-    // A Stomp that hits nobody is legal.
+    // No pointless actions (`pulp_wars-zir6`, 7r107): a Stomp that would
+    // hit nobody and smash no Field Defense is refused and never offered.
     const alone = bronto([{ seat: 1, role: "FIGHTER", at: at(8, 3) }]);
-    expect(apply(alone, stomp(alone)).events[0]).toMatchObject({
-      kind: "THUNDER_STOMP",
-      results: [],
+    expect(reject(alone, stomp(alone))).toMatchObject({
+      code: "STOMP_NOT_LEGAL",
+      params: { reason: "NO_TARGET" },
     });
   });
 

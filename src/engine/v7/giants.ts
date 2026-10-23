@@ -673,7 +673,10 @@ export function tossCandidateTilesV7(
 
 export type StompRejectionV7 =
   | { readonly code: "UNIT_ROLE_INVALID" }
-  | { readonly code: "STOMP_NOT_LEGAL"; readonly reason: "EMBARKED" | "MOVED" }
+  | {
+      readonly code: "STOMP_NOT_LEGAL";
+      readonly reason: "EMBARKED" | "MOVED" | "NO_TARGET";
+    }
   | { readonly code: "UNIT_ALREADY_ACTED" };
 
 /** Section 6.4: the Stomp legality after the ordinary unit errors. */
@@ -696,6 +699,23 @@ export function stompRejectionV7(
   if (unit.activation.moved)
     return { code: "STOMP_NOT_LEGAL", reason: "MOVED" };
   return null;
+}
+
+/**
+ * No pointless actions (`pulp_wars-zir6`, 7r107): a Stomp that would hit
+ * nobody and smash no Field Defense changes nothing, so it is refused
+ * (`STOMP_NOT_LEGAL { reason: "NO_TARGET" }`) and never offered. Checked
+ * after {@link stompRejectionV7}, from the Stomp's results and the Field
+ * Defense tiles around the Brontosaurus (the reducer's and the viewer's: the
+ * tiles around an own unit are explored, so the two agree).
+ */
+export function stompEffectRejectionV7(
+  results: readonly unknown[],
+  fieldDefenses: readonly CoordV7[],
+): StompRejectionV7 | null {
+  return results.length === 0 && fieldDefenses.length === 0
+    ? { code: "STOMP_NOT_LEGAL", reason: "NO_TARGET" }
+    : null;
 }
 
 /**
@@ -1084,6 +1104,8 @@ export function applyStompV7(
       state.board.height,
       bronto.at,
     ).filter((at) => tileAtV7(state.board, at)?.fieldDefense === true);
+    const pointless = stompEffectRejectionV7(results, fieldDefenses);
+    if (pointless !== null) return rejectWith(kit, original, bronto, pointless);
     const events: DomainEventV7[] = [
       {
         kind: "THUNDER_STOMP",

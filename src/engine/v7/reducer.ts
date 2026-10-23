@@ -126,6 +126,7 @@ import {
   attackMaximumRangeV7,
   canBeFrozenV7,
   coldSnapTargetsV7,
+  freezeChangesUnitV7,
   frozenCountdownV7,
   isFrozenV7,
   isIceFolkLandUnitV7,
@@ -507,13 +508,14 @@ export type RuleErrorCodeV7 =
   | "MIND_CONTROL_NOT_LEGAL"
   | "TRACTOR_BEAM_NOT_LEGAL"
   // The Ice Folk revision: an illegal Bolas (`EMBARKED`, `TARGET_IMMUNE`,
-  // `OUT_OF_RANGE`) or Cold Snap (`EMBARKED`, `NO_TARGET`).
+  // `OUT_OF_RANGE`, and since `pulp_wars-zir6` `ALREADY_FROZEN`) or Cold
+  // Snap (`EMBARKED`, `NO_TARGET`, `ALREADY_FROZEN`).
   | "BOLAS_NOT_LEGAL"
   | "COLD_SNAP_NOT_LEGAL"
   // Ice Folk Freeze (`pulp_wars-w49.37`): a command naming a Frozen unit
   // (`UNIT_FROZEN { unitId }`), an illegal Frost Bolt (`EMBARKED`,
-  // `TARGET_IMMUNE`, `OUT_OF_RANGE`), or Stampede (`EMBARKED`, `MOVED`,
-  // `DIRECTION`, `BLOCKED`).
+  // `TARGET_IMMUNE`, `OUT_OF_RANGE`, `ALREADY_FROZEN`), or Stampede
+  // (`EMBARKED`, `MOVED`, `DIRECTION`, `BLOCKED`).
   | "UNIT_FROZEN"
   | "FROST_BOLT_NOT_LEGAL"
   | "STAMPEDE_NOT_LEGAL"
@@ -555,7 +557,8 @@ export type RuleErrorCodeV7 =
   // The giants' signatures (docs/product/RULESET_7_GIANTS.md sections 6.2,
   // 6.3, 6.4, and 6.8): an illegal Swallow (`EMBARKED`, `FULL`, `TARGET`,
   // `IMMUNE`, `TOO_BIG`), Goblin Toss (`EMBARKED`, `PASSENGER`,
-  // `DESTINATION`), Thunder Stomp (`EMBARKED`, `MOVED`), or Break Off
+  // `DESTINATION`), Thunder Stomp (`EMBARKED`, `MOVED`, and since
+  // `pulp_wars-zir6` `NO_TARGET`), or Break Off
   // (`EMBARKED`, `TOO_WEAK`, `NO_HOME`, `TILE`).
   | "SWALLOW_NOT_LEGAL"
   | "TOSS_NOT_LEGAL"
@@ -4853,6 +4856,10 @@ function applySingleFreeze(
     return rejected(original, rule.error, { reason: "TARGET_IMMUNE" });
   if (!rule.inRange(source.at, target.at))
     return rejected(original, rule.error, { reason: "OUT_OF_RANGE" });
+  // No pointless actions (`pulp_wars-zir6`, 7r107): a freeze that would not
+  // change the target's Frozen entry (it is Frozen for as long already).
+  if (!freezeChangesUnitV7(state, state.frozen, target))
+    return rejected(original, rule.error, { reason: "ALREADY_FROZEN" });
   try {
     const applied = withFrozenAppliedV7(state, state.frozen, [target.id]);
     return accepted(
@@ -4915,6 +4922,12 @@ function applyColdSnap(
   );
   if (targets.length === 0)
     return rejected(original, "COLD_SNAP_NOT_LEGAL", { reason: "NO_TARGET" });
+  // No pointless actions (`pulp_wars-zir6`, 7r107): an area cast needs at
+  // least one target it changes; already Frozen targets still count in it.
+  if (!targets.some((unit) => freezeChangesUnitV7(state, state.frozen, unit)))
+    return rejected(original, "COLD_SNAP_NOT_LEGAL", {
+      reason: "ALREADY_FROZEN",
+    });
   try {
     const applied = withFrozenAppliedV7(
       state,

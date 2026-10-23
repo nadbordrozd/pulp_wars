@@ -171,17 +171,21 @@ export const STAYS_FROZEN_V7 = "Stays Frozen";
 export function canThenShatterTextV7(units: readonly string[]): string {
   return `${joinAnd(units)} can then shatter it`;
 }
-export const BOLAS_NO_TARGET_V7 = `No enemy within ${BOLAS_RANGE_V7} tiles`;
+/**
+ * No pointless actions (`pulp_wars-zir6`): an enemy Frozen already is no
+ * target, so the reason names the unfrozen ones.
+ */
+export const BOLAS_NO_TARGET_V7 = `No unfrozen enemy within ${BOLAS_RANGE_V7} tiles`;
 export const COLD_SNAP_LABEL_V7 = "Cold Snap";
 export const COLD_SNAP_TOOLTIP_V7 =
   "Freeze every hostile unit next to her. No damage. Instead of a Frost Bolt.";
-export const COLD_SNAP_NO_TARGET_V7 = "No enemy next to her";
+export const COLD_SNAP_NO_TARGET_V7 = "No unfrozen enemy next to her";
 export const COLD_SNAP_CAST_V7 = "Cast Cold Snap";
 /** Ice Folk Freeze (`pulp_wars-w49.38`): the Witch's single-target freeze. */
 export const FROST_BOLT_LABEL_V7 = "Frost Bolt";
 export const FROST_BOLT_TOOLTIP_V7 = `Freeze one hostile unit within ${FROST_BOLT_RANGE_V7} tiles. No damage. Instead of a Cold Snap.`;
 export const FROST_BOLT_PICK_V7 = "Choose a unit to freeze";
-export const FROST_BOLT_NO_TARGET_V7 = `No enemy within ${FROST_BOLT_RANGE_V7} tiles`;
+export const FROST_BOLT_NO_TARGET_V7 = `No unfrozen enemy within ${FROST_BOLT_RANGE_V7} tiles`;
 /** The Witch used her Cold Snap or Frost Bolt (one of the two a turn). */
 export const WITCH_SPELL_USED_V7 = "She already cast this turn";
 /** Ice Folk Freeze: the Mammoth's charge. */
@@ -817,9 +821,21 @@ export function freezeTargetLabelV7(alreadyFrozen: boolean): string {
   return alreadyFrozen ? STAYS_FROZEN_V7 : "Freeze";
 }
 
-/** The Cold Snap summary: "Freezes 3 units" (every target is Frozen). */
+/**
+ * No pointless actions (`pulp_wars-zir6`): the Cold Snap targets it
+ * changes. A unit Frozen already is in the cast's results but the freeze
+ * leaves it as it is, so the board marks it as no target and the summary
+ * does not count it.
+ */
+export function coldSnapChangedTargetsV7(
+  preview: ColdSnapPreviewV7,
+): ColdSnapPreviewV7["targets"] {
+  return preview.targets.filter((target) => !target.alreadyFrozen);
+}
+
+/** The Cold Snap summary: "Freezes 3 units" (the units it changes). */
 export function coldSnapSummaryV7(preview: ColdSnapPreviewV7): string {
-  return `Freezes ${plural(preview.targets.length, "unit")}`;
+  return `Freezes ${plural(coldSnapChangedTargetsV7(preview).length, "unit")}`;
 }
 
 /** The Ice Folk ability commands with a button of their own. */

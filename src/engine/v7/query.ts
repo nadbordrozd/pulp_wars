@@ -220,6 +220,7 @@ import {
   blizzardProtectsV7,
   canBeFrozenV7,
   coldSnapTargetsV7,
+  freezeChangesUnitV7,
   frozenTurnsForV7,
   frozenUnitNamedV7,
   hiddenBlizzardPossibleV7,
@@ -308,6 +309,7 @@ import {
   breakOffTrooperHpV7,
   ringTilesV7,
   siegeHammerRazedCityV7,
+  stompEffectRejectionV7,
   stompRejectionV7,
   stompResultsV7,
   swallowRejectionV7,
@@ -1363,9 +1365,13 @@ function appendPublicUnitCommandsV7(
           unitId: unit.id,
           targetUnitId: target.id,
         });
+    // No pointless actions (`pulp_wars-zir6`): a Cold Snap needs a target
+    // it changes (one not Frozen already for as long).
     if (
       rule.abilities.includes("COLD_SNAP") &&
-      coldSnapTargetsV7(view, unit, view.units).length > 0
+      coldSnapTargetsV7(view, unit, view.units).some((target) =>
+        freezeChangesUnitV7(view, view.frozen, target),
+      )
     )
       candidates.push({ kind: "COLD_SNAP", unitId: unit.id });
     if (rule.abilities.includes("FROST_BOLT"))
@@ -2070,7 +2076,13 @@ function appendPublicGiantCommandsV7(
     return;
   }
   if (signature === "STOMP") {
-    if (stompRejectionV7(view, unit) === null)
+    if (
+      stompRejectionV7(view, unit) === null &&
+      stompEffectRejectionV7(
+        stompResultsV7(view, view.shields, view.units, unit),
+        publicStompFieldDefensesV7(view, unit),
+      ) === null
+    )
       candidates.push({ kind: "STOMP", unitId: unit.id });
     return;
   }
@@ -4548,7 +4560,8 @@ export function previewTendWoundedV7(
  * The Ice Folk revision section 21.9 (and Ice Folk Freeze, section 21.6):
  * the legal targets of an own Sled's Bolas or Ice Witch's Frost Bolt (land
  * form, primary action ready): every visible hostile unit that can be
- * Frozen within the reach (Chebyshev 1 to 2), in unit-ID order.
+ * Frozen within the reach (Chebyshev 1 to 2) and that the freeze would
+ * change (`pulp_wars-zir6`), in unit-ID order.
  */
 function publicSingleFreezeTargetsV7(
   view: PlayerViewV7,
@@ -4560,7 +4573,10 @@ function publicSingleFreezeTargetsV7(
       (target) =>
         target.id !== source.id &&
         canBeFrozenV7(view, source.ownerId, target) &&
-        inRange(source.at, target.at),
+        inRange(source.at, target.at) &&
+        // No pointless actions (`pulp_wars-zir6`): never a unit the freeze
+        // would not change (Frozen already for as long).
+        freezeChangesUnitV7(view, view.frozen, target),
     )
     .sort((left, right) => left.id - right.id);
 }
@@ -4572,7 +4588,11 @@ function publicSingleFreezeTargetsV7(
 export interface BolasPreviewV7 {
   readonly unitId: UnitId;
   readonly targetUnitId: UnitId;
-  /** The target is already Frozen (the freeze is renewed). */
+  /**
+   * The target is already Frozen (the freeze is renewed). Since no
+   * pointless actions (`pulp_wars-zir6`) only a freeze that lengthens the
+   * entry is offered, so this is true only for such a renewal.
+   */
   readonly alreadyFrozen: boolean;
   /** The target's `turnsLeft` after the freeze. */
   readonly turnsLeft: number;
@@ -6196,15 +6216,24 @@ export function previewStompV7(
   return {
     unitId,
     results: stompResultsV7(view, view.shields, view.units, unit),
-    fieldDefenses: ringTilesV7(
-      view.board.width,
-      view.board.height,
-      unit.at,
-    ).filter((at) => {
+    fieldDefenses: publicStompFieldDefensesV7(view, unit),
+  };
+}
+
+/**
+ * Section 6.4: the explored tiles around `unit` with Field Defense, in
+ * (y, x): what its Stomp would smash.
+ */
+export function publicStompFieldDefensesV7(
+  view: PlayerViewV7,
+  unit: PlayerViewV7["units"][number],
+): readonly CoordV7[] {
+  return ringTilesV7(view.board.width, view.board.height, unit.at).filter(
+    (at) => {
       const tile = tileAtView(view, at);
       return tile?.explored === true && tile.fieldDefense;
-    }),
-  };
+    },
+  );
 }
 
 /** Section 6.8: the preview of an offered Break Off. */

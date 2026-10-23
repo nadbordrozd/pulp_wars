@@ -497,9 +497,11 @@ describe("the Ice Witch: Cold Snap and Frost Bolt (section 21.6)", () => {
   it("Frost Bolt freezes one visible hostile unit within 2, in table order, and spends her action", () => {
     const state = witchField();
     const witch = unitAtV7(state, at(5, 3));
-    // Offered for every legal target within 2, in target-ID order.
+    // Offered for every legal target within 2, in target-ID order; never
+    // the Frozen one on (6, 2), which it would not change (no pointless
+    // actions, `pulp_wars-zir6`).
     expect(offeredV7(state, "FROST_BOLT")).toEqual(
-      [at(4, 3), at(6, 2), at(7, 1)]
+      [at(4, 3), at(7, 1)]
         .map((where) => unitAtV7(state, where).id)
         .sort((left, right) => left - right)
         .map((targetUnitId) => ({

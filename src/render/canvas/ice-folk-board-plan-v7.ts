@@ -27,6 +27,7 @@ import {
   bolasPreviewLinesV7,
   coldAuraMoveLabelV7,
   coldAuraMoveTargetsV7,
+  coldSnapChangedTargetsV7,
   freezeTargetLabelV7,
   frozenTurnsLeftV7,
   iceFolkCombatLinesV7,
@@ -249,20 +250,24 @@ export function iceFolkPickTargetsV7(
   if (command === undefined) return [];
   const preview = previewColdSnapV7(view, command.unitId);
   if (preview === null) return [];
-  return preview.targets.flatMap((entry): MapCommandTargetV7[] => {
-    const target = unitById(entry.unitId);
-    if (target === undefined) return [];
-    const name = unitRoleRuleV7(view, target).label;
-    return [
-      {
-        at: target.at,
-        command,
-        family: "COLD_SNAP",
-        previewLabel: freezeTargetLabelV7(entry.alreadyFrozen),
-        semanticLabel: `${COLD_SNAP_LABEL_V7}: freezes this ${name} with every other highlighted unit. ${entry.alreadyFrozen ? STAYS_FROZEN_V7 : WILL_BE_FROZEN_V7}. Choose any highlighted unit to cast.`,
-      },
-    ];
-  });
+  // No pointless actions (`pulp_wars-zir6`): a unit Frozen already is not
+  // marked; the cast leaves it as it is.
+  return coldSnapChangedTargetsV7(preview).flatMap(
+    (entry): MapCommandTargetV7[] => {
+      const target = unitById(entry.unitId);
+      if (target === undefined) return [];
+      const name = unitRoleRuleV7(view, target).label;
+      return [
+        {
+          at: target.at,
+          command,
+          family: "COLD_SNAP",
+          previewLabel: freezeTargetLabelV7(entry.alreadyFrozen),
+          semanticLabel: `${COLD_SNAP_LABEL_V7}: freezes this ${name} with every other highlighted unit. ${entry.alreadyFrozen ? STAYS_FROZEN_V7 : WILL_BE_FROZEN_V7}. Choose any highlighted unit to cast.`,
+        },
+      ];
+    },
+  );
 }
 
 /**

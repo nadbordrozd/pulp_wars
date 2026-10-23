@@ -60,6 +60,7 @@ import {
   FROZEN_NO_STRIKE_BACK_V7,
   SHATTERS_PREVIEW_V7,
   bolasPreviewLinesV7,
+  coldSnapChangedTargetsV7,
   iceFolkCombatLinesV7,
 } from "../../src/render/ice-folk-presentation-v7";
 import {
@@ -510,7 +511,11 @@ describe("Ice Folk targets and previews on the board (section 13.1)", () => {
       iceFolkPick: { kind: "COLD_SNAP", unitId: witch.id },
     });
     const preview = previewColdSnapV7(view, witch.id);
-    expect(plan.targets).toHaveLength(preview?.targets.length ?? -1);
+    if (preview === null) throw new Error("no Cold Snap preview");
+    // No pointless actions (`pulp_wars-zir6`): a unit Frozen already is in
+    // the cast but is not marked.
+    expect(plan.targets).toHaveLength(coldSnapChangedTargetsV7(preview).length);
+    expect(plan.targets.length).toBeGreaterThan(0);
     expect(
       plan.targets.every(
         (target) =>
@@ -740,8 +745,9 @@ describe("Ice Folk Freeze on the board (bead pulp_wars-w49.38)", () => {
     const plan = planFor(view, FREEZE.witch, {
       iceFolkPick: { kind: "FROST_BOLT", unitId: witch.id },
     });
+    // No pointless actions (`pulp_wars-zir6`): the unit Frozen already is
+    // no target.
     expect(plan.targets.map((target) => target.family)).toEqual([
-      "FROST_BOLT",
       "FROST_BOLT",
       "FROST_BOLT",
     ]);
@@ -749,7 +755,7 @@ describe("Ice Folk Freeze on the board (bead pulp_wars-w49.38)", () => {
       plan.targets.find((target) => at(target, where))?.previewLabel;
     expect(label(FREEZE.boltTarget)).toBe("Freeze");
     expect(label(FREEZE.snapTarget)).toBe("Freeze");
-    expect(label(FREEZE.boltFrozen)).toBe("Stays Frozen");
+    expect(label(FREEZE.boltFrozen)).toBeUndefined();
     // Its reach (the 5 x 5 tiles round her) is outlined.
     expect(
       plan.entries.filter(

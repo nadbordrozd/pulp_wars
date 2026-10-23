@@ -183,6 +183,30 @@ export function withFrozenAppliedV7(
 }
 
 /**
+ * No pointless actions (`pulp_wars-zir6`, 7r107): whether freezing `unit`
+ * now would change its Frozen entry ({@link withFrozenAppliedV7}): it has
+ * none, or its `turnsLeft` is below what a freeze gives now. A unit that is
+ * Frozen for at least that long already would keep its count unchanged, so
+ * a Frost Bolt (Bolas) at it is refused (`ALREADY_FROZEN`) and a Cold Snap
+ * needs at least one target it changes. `frozen` is the state's list or a
+ * view's (a view lists every visible unit's entry).
+ */
+export function freezeChangesUnitV7(
+  state: {
+    readonly turnOrder: readonly PlayerId[];
+    readonly activeSeatIndex: number;
+  },
+  frozen: readonly FrozenStatusV7[],
+  unit: Pick<UnitStateV7, "id" | "ownerId">,
+): boolean {
+  const prior = frozenEntryOfV7(frozen, unit.id);
+  return (
+    prior === undefined ||
+    prior.turnsLeft < frozenTurnsForV7(state, unit.ownerId)
+  );
+}
+
+/**
  * Section 21.2: the thaw at the end of `playerId`'s turn. Every entry of
  * that player's units loses 1 from `turnsLeft`, and an entry at 0 is
  * removed (the unit thaws). No event: the view list is the source.

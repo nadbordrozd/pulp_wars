@@ -6,7 +6,10 @@ import {
   breakOffActorRejectionV7,
   effectiveRoleRuleV7,
   roleMechanicsV7,
+  publicStompFieldDefensesV7,
+  stompEffectRejectionV7,
   stompRejectionV7,
+  stompResultsV7,
   swallowRejectionV7,
   tossActorRejectionV7,
   tossPassengerLegalV7,
@@ -222,6 +225,9 @@ export function giantCommandTooltipV7(
   }
 }
 
+/** No pointless actions (`pulp_wars-zir6`): why a ready Stomp is not offered. */
+export const STOMP_NO_TARGET_V7 = "No enemy or Field Defense next to it";
+
 /**
  * Why the selected giant's button is unavailable, or null when its command
  * is offered, or when there is nothing to say (the unit is done for the
@@ -266,10 +272,22 @@ export function giantCommandUnavailableTextV7(
     }
     case "STOMP": {
       const rejection = stompRejectionV7(view, unit);
-      if (rejection === null || rejection.code === "UNIT_ROLE_INVALID")
-        return null;
+      // No pointless actions (`pulp_wars-zir6`): a ready Brontosaurus with
+      // nobody to hit and no Field Defense to smash around it.
+      if (rejection === null)
+        return stompEffectRejectionV7(
+          stompResultsV7(view, view.shields, view.units, unit),
+          publicStompFieldDefensesV7(view, unit),
+        ) === null
+          ? null
+          : STOMP_NO_TARGET_V7;
+      if (rejection.code === "UNIT_ROLE_INVALID") return null;
       if (rejection.code === "UNIT_ALREADY_ACTED") return already;
-      return rejection.reason === "MOVED" ? "It moved this turn" : "Not at sea";
+      return rejection.reason === "MOVED"
+        ? "It moved this turn"
+        : rejection.reason === "NO_TARGET"
+          ? STOMP_NO_TARGET_V7
+          : "Not at sea";
     }
     case "BREAK_OFF": {
       const home = view.cities.find((city) => city.id === unit.homeCityId);

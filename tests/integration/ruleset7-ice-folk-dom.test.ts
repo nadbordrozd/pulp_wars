@@ -41,6 +41,7 @@ import {
   ICE_FOLK_HELP_RULES_V7,
   SHATTERS_PREVIEW_V7,
   bolasPreviewLinesV7,
+  coldSnapChangedTargetsV7,
   coldSnapSummaryV7,
   frozenChipV7,
   stampedePlanV7,
@@ -441,7 +442,7 @@ describe("Ice Folk abilities", () => {
       requiredButton("cold-snap-cast").getAttribute("aria-label"),
     ).toContain(coldSnapSummaryV7(preview));
     const targets = boardPlan(host).targets;
-    expect(targets).toHaveLength(preview.targets.length);
+    expect(targets).toHaveLength(coldSnapChangedTargetsV7(preview).length);
     // Choosing any highlighted unit casts it.
     host.callbacks?.onCommand(required(targets[0]));
     await waitUntil(() => controller.accepted.length === 1);
