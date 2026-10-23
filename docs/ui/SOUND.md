@@ -39,9 +39,14 @@ relative loudness still need a human ear
 
 ## Player-facing behaviour
 
-- **On by default.** Sound starts with the player's first click, tap or key
-  press. Browsers do not allow sound before a gesture, and the game creates
-  no audio device before one.
+- **On by default.** Sound starts as soon as the game has loaded where the
+  browser allows a page to play sound by itself (the player has already
+  used the page, or plays here often), else with the player's first click,
+  tap or key press. Since bead `pulp_wars-2yc.107` the game opens its audio
+  device when the loading screen goes; a browser that does not allow sound
+  yet keeps it suspended, silent, until that gesture. A browser that says
+  up front that it does not (`navigator.getAutoplayPolicy`) is not asked,
+  and with Sound and Music both off nothing is opened.
 - **Settings.** Two levels, **Music** (the themes) and **Sound** (the
   effects), one row each: an icon toggle (pressed is on), the name, and a
   volume slider, 0–100% in steps of 5, default 70%. They are independent:
@@ -60,8 +65,9 @@ relative loudness still need a human ear
   level it will have when turned back on (bead pulp_wars-2yc.67).
 - **Music.** The title theme plays on the menu and its screens, the
   viewer's faction theme during a match
-  ([Where the themes play](#where-the-themes-play)). It starts with the
-  first gesture, like the effects.
+  ([Where the themes play](#where-the-themes-play)). The title theme loads
+  with the art behind the loading screen and starts when the game is up,
+  or with the first gesture, like the effects.
 - **Gallery.** The Gallery has a **Sounds** tab: every sound as a card with a
   picture, grouped, and a row per faction for its theme. Each card says where
   its sound comes from: the prompt of an ElevenLabs take, the library file
@@ -679,8 +685,13 @@ when a faction the game offers has no theme.
 
 ### How a theme is played
 
-- **Loaded when it is first played.** No theme is fetched at the game's
-  start or when the audio device opens. A decoded theme is about 38 MB of
+- **Loaded when it is first played.** One theme is fetched at the game's
+  start: the title theme, with the art (bead `pulp_wars-2yc.107`; not
+  with Music off or at zero), because the title screen plays it first.
+  The music player takes those bytes from the sound file store
+  (`takeSoundFileBytesV1`) and keeps them no longer; a start's fetch that
+  failed is fetched again. No other theme is fetched at the start or when
+  the audio device opens. A decoded theme is about 38 MB of
   samples, and ten would be about 380 MB. A theme is fetched and decoded
   when it is first wanted; the theme before it plays on until the new one
   is ready; and the old one's samples are let go as soon as the crossfade
@@ -713,9 +724,15 @@ when a faction the game offers has no theme.
   times the Music slider squared. The music does not pass the effects'
   limiter. At the default 70% a theme plays near -28 LUFS, under the
   effects.
-- **Autoplay.** The music starts with the first gesture: on the title
-  screen, the first click or key press. With Music off or at zero nothing
-  is fetched, and the device is not opened for it.
+- **Autoplay.** The music starts when the game is up where the browser
+  allows sound without a gesture. Elsewhere the device is opened
+  suspended (`startWhenAllowed`, then `openWithoutGesture`): the title
+  theme is decoded and set on its clock with the music player paused, and
+  the first gesture (pointer down or up, mouse down, touch end, key down,
+  click) resumes the clock, so the theme is heard at once; a browser that
+  lets the device run by itself later (`statechange`) starts it then. A
+  tap on the loading screen counts: the browser remembers it. With Music
+  off or at zero no theme is fetched.
 - **Hidden tab.** The audio clock is suspended, so the theme pauses on the
   sample, and resumed when the tab is shown.
 
@@ -1143,17 +1160,23 @@ hears as louder. It is a starting point, not a mix.
 - **Start of the game.** The start asks for one clip a sound (since bead
   `pulp_wars-2yc.51` its ElevenLabs default)
   (`soundAssetUrlsV7` in `src/assets/asset-inventory-v7.ts`,
-  `src/app/v7-preload-boot.ts`): the sound's default recording, or the one
-  this browser picked. It asks when the title screen is up, not before
-  (`pulp_wars-2yc.42`): asked for beside the title's art, the clips made
-  the title 1.8 s later on a slow link. It does not wait for any of them:
-  no screen depends on sound, and a click in the two seconds the clips
-  need on such a link plays the synthesised sound. The factions' art
-  loads after the clips. No alternative is fetched at the start: 77 files
-  of the 305 (201 ElevenLabs takes and 104 stock clips).
-- **First gesture.** The audio device opens and decodes the clips that have
-  arrived (`web-audio-output.ts`). A browser cannot decode sound before the
-  gesture.
+  `startSoundUrlsV7` in `src/app/v7-preload-boot.ts`): the sound's default
+  recording, or the one this browser picked; none with Sound off. Since
+  bead `pulp_wars-2yc.107` the clips and the title theme load behind the
+  loading screen and are counted in its bar with the art. They are asked
+  for once the loading screen's scene is in, so the scene still shows as
+  early as before (asked for beside the scene's art, the clips made the
+  title 1.8 s later on a slow link, `pulp_wars-2yc.42`). When the art is
+  in, the screen waits for them 5 s at most (`SOUND_PRELOAD_HOLD_MS_V7`:
+  the theme's 1.4 MB and the clips' 0.3 MB are about four seconds of a
+  "Fast 3G" link); after that the game starts and they go on loading. A
+  file that fails counts as done: its synthesised sound plays. No
+  alternative is fetched at the start: 77 files of the 305 (201 ElevenLabs
+  takes and 104 stock clips).
+- **The device opens.** When the game is up (or with the first gesture)
+  the audio device opens and decodes the clips that have arrived
+  (`web-audio-output.ts`); it can decode while it waits, suspended, for
+  the gesture that lets it play.
 - **On demand.** Another candidate is fetched and decoded when the Gallery
   plays it or when it is picked, once.
 - **Fallback.** Until a clip is decoded, and whenever it cannot be fetched
@@ -1422,7 +1445,7 @@ context is suspended.
 
 `GameAudioV1.music` is the music: `scene` (the theme of the screen),
 `audition` (a theme the Gallery plays over it), `wanted` (what the device
-was asked for; null with Music off or before a gesture), `requests` (the
+was asked for; null with Music off or before the device opened), `requests` (the
 theme files fetched so far) and `player` (what plays, what is loading, how
 many decoded themes are held and how many bytes, and the most ever held).
 

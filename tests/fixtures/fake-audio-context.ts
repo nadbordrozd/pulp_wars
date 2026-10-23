@@ -109,6 +109,11 @@ export interface FakeAudioDeviceV1 {
   advance(seconds: number): void;
   /** Files handed to `decodeAudioData` so far. */
   readonly decodes: () => number;
+  /**
+   * The browser lets every suspended context run by itself (it allows
+   * sound now): each one runs and tells its `statechange` listeners.
+   */
+  allow(): void;
 }
 
 export interface FakeAudioContextOptionsV1 {
@@ -118,6 +123,12 @@ export interface FakeAudioContextOptionsV1 {
    * Without it the device decodes nothing, like jsdom.
    */
   readonly decode?: (data: ArrayBuffer) => number;
+  /**
+   * A browser that does not allow sound before a gesture (bead
+   * pulp_wars-2yc.107): a new context starts suspended, and runs once it
+   * is resumed or the test lets it (`allow`).
+   */
+  readonly startSuspended?: boolean;
 }
 
 /** The sample rate the stand-in decodes at. */
@@ -132,10 +143,19 @@ export function installFakeAudioContext(
   let master: FakeAudioNodeV1 | null = null;
   let music: FakeAudioNodeV1 | null = null;
   const sources: FakeAudioSourceV1[] = [];
-  const live: { state: string; currentTime: number }[] = [];
+  const live: FakeAudioContext[] = [];
   class FakeAudioContext {
-    state = "running";
+    state = options.startSuspended === true ? "suspended" : "running";
     currentTime = 0;
+    readonly #listeners: (() => void)[] = [];
+    addEventListener(type: string, listener: () => void): void {
+      if (type === "statechange") this.#listeners.push(listener);
+    }
+    setState(next: string): void {
+      if (this.state === next) return;
+      this.state = next;
+      for (const listener of this.#listeners) listener();
+    }
     destination: FakeAudioNodeV1;
     constructor() {
       contexts += 1;
@@ -262,10 +282,10 @@ export function installFakeAudioContext(
       return source;
     }
     suspend = async (): Promise<void> => {
-      this.state = "suspended";
+      this.setState("suspended");
     };
     resume = async (): Promise<void> => {
-      this.state = "running";
+      this.setState("running");
     };
     close = async (): Promise<void> => undefined;
   }
@@ -286,6 +306,10 @@ export function installFakeAudioContext(
         if (context.state === "running") context.currentTime += seconds;
     },
     decodes: () => decodes,
+    allow(): void {
+      for (const context of live)
+        if (context.state === "suspended") context.setState("running");
+    },
   };
 }
 

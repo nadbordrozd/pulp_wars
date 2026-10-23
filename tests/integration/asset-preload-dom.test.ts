@@ -16,13 +16,20 @@ import {
   bootstrapPreloadedRuleset7App,
   startAssetTiersV7,
   startPreloadUrlsV7,
+  startSoundUrlsV7,
 } from "../../src/app/v7-preload-boot";
 import { FACTION_IDS_V7 } from "../../src/engine/index";
 import { factionAssetUrlsV7 } from "../../src/assets/asset-inventory-v7";
 import {
+  AUDIO_SETTINGS_STORAGE_KEY_V1,
+  DEFAULT_AUDIO_SETTINGS_V1,
+  GameAudioV1,
+  MUSIC_SETTINGS_STORAGE_KEY_V1,
   SOUND_ALL_CLIPS_V1,
   SOUND_DEFAULT_CLIPS_V1,
+  SOUND_TITLE_THEME_ID_V1,
   STOCK_SOUND_PICKS_STORAGE_KEY_V1,
+  playableSoundV1,
   soundCandidateUrlV1,
   soundCandidateV1,
   soundChoiceSetV1,
@@ -152,7 +159,8 @@ describe("Ruleset 7 start behind the asset preloader", () => {
     const { preloader, requests } = manualPreloader();
     const host = new Host();
     // The loading screen is silent: no AudioContext exists while the art
-    // loads, nor when the app mounts (sound waits for a user gesture).
+    // loads. Once the game is up one is opened without a gesture (bead
+    // pulp_wars-2yc.107); it plays only if the browser allows it.
     let audioContexts = 0;
     Reflect.set(window, "AudioContext", function AudioContext() {
       audioContexts += 1;
@@ -164,6 +172,8 @@ describe("Ruleset 7 start behind the asset preloader", () => {
       boardHost: host,
       randomSeed: () => 7,
       randomDraw: () => 0,
+      // The sound files arrive at once (the bar counts them too).
+      fetchSound: () => Promise.resolve(),
     });
     await flush();
     expect(audioContexts).toBe(0);
@@ -200,12 +210,18 @@ describe("Ruleset 7 start behind the asset preloader", () => {
     expect(appShown()).toBe(false);
     expect(host.model).toBeNull();
 
+    // The bar counts the start's sound files (the title theme and one clip
+    // a sound) beside the art; they are asked for once the scene is in.
+    const sounds = 1 + soundAssetUrlsV7().length;
+    const half = String(Math.floor((335 / (670 + sounds)) * 100));
     requests[0]?.onProgress?.({ settled: 335, total: 670 });
-    expect(bar?.getAttribute("aria-valuenow")).toBe("50");
-    expect(bar?.querySelector<HTMLElement>("span")?.style.width).toBe("50%");
+    expect(bar?.getAttribute("aria-valuenow")).toBe(half);
+    expect(bar?.querySelector<HTMLElement>("span")?.style.width).toBe(
+      `${half}%`,
+    );
     // The bar never runs backwards.
     requests[0]?.onProgress?.({ settled: 100, total: 670 });
-    expect(bar?.getAttribute("aria-valuenow")).toBe("50");
+    expect(bar?.getAttribute("aria-valuenow")).toBe(half);
     await flush();
     expect(appShown()).toBe(false);
 
@@ -219,7 +235,7 @@ describe("Ruleset 7 start behind the asset preloader", () => {
       loaded: 670,
     });
     expect(app.lazyAssetLoads()).toEqual(lazyRasterLoadsV7());
-    expect(audioContexts).toBe(0);
+    expect(audioContexts).toBe(1);
     Reflect.deleteProperty(window, "AudioContext");
 
     // With the title up, the factions' art loads in the background: every
@@ -849,98 +865,153 @@ describe("loading screen", () => {
 });
 
 /**
- * The recorded sound clips at the start (bead pulp_wars-2yc.20,
- * docs/ui/SOUND.md "Stock recordings"): asked for once the app is mounted
- * (bead pulp_wars-2yc.42: they no longer share the link with the title's
- * art), never waited for by a screen, and never in the way of the game
- * starting.
+ * The sound of the start (bead pulp_wars-2yc.107, docs/ui/SOUND.md "How a
+ * clip is played"): the title theme and one clip a sound load with the art
+ * behind the loading screen, once its scene is in, counted in its bar. The
+ * screen waits for them no longer than the hold; a sound file never keeps
+ * the game from starting. Before it (beads pulp_wars-2yc.20 and .42) the
+ * clips were asked for only once the app was mounted and the theme only
+ * when the first gesture wanted it, so the music started late.
  */
-describe("Ruleset 7 start and the sound clips", () => {
-  it("asks for every clip once the app is mounted and does not wait for any of them", async () => {
-    const { preloader, requests } = manualPreloader();
-    const asked: (readonly string[])[] = [];
-    const starting = bootstrapPreloadedRuleset7App(document, {
+describe("Ruleset 7 start and its sound", () => {
+  const titleTheme = (): string => {
+    const source = playableSoundV1(SOUND_TITLE_THEME_ID_V1)?.source;
+    if (source?.kind !== "FILE") throw new Error("no title theme file");
+    return source.url;
+  };
+
+  /** A preloader whose scene the test lets in by hand. */
+  function scenePreloader() {
+    const manual = manualPreloader();
+    const scene = new Set(titleSceneAssetUrlsV7());
+    let sceneIn = false;
+    const preloader: AssetPreloaderV7 = {
+      ...manual.preloader,
+      covers: (urls) =>
+        (sceneIn && urls.every((url) => scene.has(url))) ||
+        manual.preloader.covers(urls),
+    };
+    return {
       preloader,
-      loadingScreenDelayMs: 0,
-      storage: null,
-      boardHost: new Host(),
-      randomSeed: () => 7,
-      randomDraw: () => 0,
-      // Nothing ever answers: the clips are still loading.
-      prefetchSounds: (urls) => asked.push(urls),
+      requests: manual.requests,
+      letSceneIn: () => {
+        sceneIn = true;
+      },
+    };
+  }
+
+  /** Sound fetches the test settles by hand. */
+  function manualSound() {
+    const asked: string[] = [];
+    const settle = new Map<string, (ok: boolean) => void>();
+    return {
+      asked,
+      fetchSound: (url: string) =>
+        new Promise<void>((resolve, reject) => {
+          asked.push(url);
+          settle.set(url, (ok) =>
+            ok ? resolve() : reject(new Error("offline")),
+          );
+        }),
+      settle: (url: string, ok = true) => settle.get(url)?.(ok),
+      settleAll: () => {
+        for (const done of settle.values()) done(true);
+      },
+    };
+  }
+
+  const startOptions = {
+    loadingScreenDelayMs: 0,
+    storage: null,
+    get boardHost() {
+      return new Host();
+    },
+    randomSeed: () => 7,
+    randomDraw: () => 0,
+  };
+
+  it("loads the title theme and the clips once the scene is in, counts them in the bar, and starts the game when they are in", async () => {
+    const { preloader, requests, letSceneIn } = scenePreloader();
+    const sound = manualSound();
+    const start = vi.spyOn(GameAudioV1.prototype, "startWhenAllowed");
+    const starting = bootstrapPreloadedRuleset7App(document, {
+      ...startOptions,
+      preloader,
+      fetchSound: sound.fetchSound,
     });
     await flush();
-    // Not while the loading screen shows: the title's art has the link.
+    // The scene's art has the link first: no sound file is asked for yet.
+    expect(sound.asked).toEqual([]);
+    const clips = soundAssetUrlsV7();
+    const files = [titleTheme(), ...clips];
+    const bar = query('[role="progressbar"]');
+    requests[0]?.onProgress?.({ settled: 0, total: 100 });
+    expect(sound.asked).toEqual([]);
+    // The scene is in: the theme first, then one clip a sound, all at once.
+    letSceneIn();
+    requests[0]?.onProgress?.({ settled: 50, total: 100 });
+    expect(sound.asked).toEqual(files);
+    // One bar for the art and the sound.
+    const total = 100 + files.length;
+    expect(bar?.getAttribute("aria-valuenow")).toBe(
+      String(Math.floor((50 / total) * 100)),
+    );
+    sound.settle(titleTheme());
+    await flush();
+    expect(bar?.getAttribute("aria-valuenow")).toBe(
+      String(Math.floor((51 / total) * 100)),
+    );
+    // The art is in; the screen waits for the sound.
+    requests[0]?.resolve(result(100));
+    await flush();
+    // (The loading screen draws its scene by now, so its canvas is there.)
+    expect(query("[data-v7-setup]")).toBeNull();
     expect(query("[data-v7-loading]")).not.toBeNull();
-    expect(asked).toEqual([]);
-    // The art's own list has no sound file in it.
-    expect(
-      requests[0]?.urls.filter((url) => url.includes("assets/audio/")),
-    ).toEqual([]);
-    requests[0]?.resolve({
-      total: 1,
-      loaded: 1,
-      failed: [],
-      unfinished: 0,
-    });
+    // A file that fails counts as done: the synthesised sound plays.
+    sound.settle(clips[0] ?? "", false);
+    sound.settleAll();
     const app = await starting;
-    // The game is there, and with it the clips are asked for, all at once;
-    // none has arrived.
-    expect(query("[data-v7-loading]")).toBeNull();
     expect(appShown()).toBe(true);
-    expect(asked).toEqual([soundAssetUrlsV7()]);
-    expect(asked[0]?.length).toBeGreaterThan(0);
+    expect(query("[data-v7-loading]")).toBeNull();
+    // Each file was asked for once, and the music is started right away.
+    expect(sound.asked).toEqual(files);
+    expect(start).toHaveBeenCalledTimes(1);
+    start.mockRestore();
     app.destroy();
   });
 
-  it("gives the clips the link first: the factions' art starts when they are in, or after the hold", async () => {
-    const start = async (soundHoldMs: number) => {
-      const manual = manualPreloader();
-      let clipsIn: () => void = () => undefined;
-      const starting = bootstrapPreloadedRuleset7App(document, {
-        preloader: manual.preloader,
-        loadingScreenDelayMs: 0,
-        storage: null,
-        boardHost: new Host(),
-        randomSeed: () => 7,
-        randomDraw: () => 0,
-        soundHoldMs,
-        prefetchSounds: () =>
-          new Promise<void>((resolve) => {
-            clipsIn = resolve;
-          }),
-      });
-      await flush();
-      manual.requests[0]?.resolve(result(1));
-      const app = await starting;
-      return { app, requests: manual.requests, clipsIn: () => clipsIn() };
-    };
-    // The clips are on their way: no faction art is asked for yet.
-    const waiting = await start(60_000);
-    await flush();
-    expect(waiting.requests).toHaveLength(1);
-    waiting.clipsIn();
-    await waitUntil(() => waiting.requests.length === 2);
-    expect(waiting.requests[1]?.urls).toEqual(backgroundPreloadUrlsV7("LIVE"));
-    waiting.app.destroy();
-
-    // Slow clips hold the art back no longer than the hold. The hold is a
-    // timer: on the machine's clock a loaded run let it pass before the
-    // first look (pulp_wars-2yc.64), so this half keeps its own clock.
+  it("starts the game without the sound once the hold is over", async () => {
     vi.useFakeTimers();
     try {
-      document.body.innerHTML = '<div id="app"></div>';
-      const slow = await start(20);
+      const { preloader, requests } = scenePreloader();
+      const sound = manualSound();
+      const start = vi.spyOn(GameAudioV1.prototype, "startWhenAllowed");
+      let started = false;
+      const starting = bootstrapPreloadedRuleset7App(document, {
+        ...startOptions,
+        preloader,
+        soundHoldMs: 20,
+        fetchSound: sound.fetchSound,
+      }).then((app) => {
+        started = true;
+        return app;
+      });
       await flush();
-      expect(slow.requests).toHaveLength(1);
-      // Still held a moment before the hold is up; asked for once it is.
+      requests[0]?.resolve(result(1));
+      await flush();
+      // A scene that never reported in leaves the sound to the end of
+      // the art: it is asked for then, and nothing of it arrives.
+      expect(sound.asked[0]).toBe(titleTheme());
       await vi.advanceTimersByTimeAsync(19);
-      await flush();
-      expect(slow.requests).toHaveLength(1);
+      expect(started).toBe(false);
       await vi.advanceTimersByTimeAsync(1);
-      await waitUntil(() => slow.requests.length === 2);
-      expect(slow.requests[1]?.urls).toEqual(backgroundPreloadUrlsV7("LIVE"));
-      slow.app.destroy();
+      const app = await starting;
+      expect(appShown()).toBe(true);
+      // The music is asked to start all the same: it plays when its file
+      // is in.
+      expect(start).toHaveBeenCalledTimes(1);
+      start.mockRestore();
+      app.destroy();
     } finally {
       vi.useRealTimers();
     }
@@ -954,23 +1025,21 @@ describe("Ruleset 7 start and the sound clips", () => {
     };
     const start = async (): Promise<readonly string[]> => {
       const { preloader, requests } = manualPreloader();
-      const asked: (readonly string[])[] = [];
+      const asked: string[] = [];
       const starting = bootstrapPreloadedRuleset7App(document, {
+        ...startOptions,
         preloader,
-        loadingScreenDelayMs: 0,
-        storage: null,
-        boardHost: new Host(),
-        randomSeed: () => 7,
-        randomDraw: () => 0,
-        prefetchSounds: (urls) => asked.push(urls),
+        fetchSound: (url) => {
+          asked.push(url);
+          return Promise.resolve();
+        },
       });
       await flush();
-      expect(asked).toHaveLength(0);
       requests[0]?.resolve({ total: 0, loaded: 0, failed: [], unfinished: 0 });
       (await starting).destroy();
       document.body.innerHTML = '<div id="app"></div>';
-      expect(asked).toHaveLength(1);
-      return asked[0] ?? [];
+      expect(asked[0]).toBe(titleTheme());
+      return asked.slice(1);
     };
     // The default of a sound: an ElevenLabs take (bead pulp_wars-2yc.51).
     const byDefault = (id: string): string =>
@@ -1006,16 +1075,65 @@ describe("Ruleset 7 start and the sound clips", () => {
     expect(picked.length).toBe(defaults.length);
   });
 
-  it("starts the game when asking for the clips fails", async () => {
+  it("loads only the sound the stored preference plays", () => {
+    const on = DEFAULT_AUDIO_SETTINGS_V1;
+    const clips = soundAssetUrlsV7();
+    expect(startSoundUrlsV7(on)).toEqual({ music: [titleTheme()], clips });
+    // Music off, or at zero: no theme. Sound off: no clip.
+    expect(startSoundUrlsV7({ ...on, musicEnabled: false }).music).toEqual([]);
+    expect(startSoundUrlsV7({ ...on, musicVolume: 0 }).music).toEqual([]);
+    expect(startSoundUrlsV7({ ...on, enabled: false })).toEqual({
+      music: [titleTheme()],
+      clips: [],
+    });
+    // ?stock-sounds=0 keeps the theme and drops the clips with a stand-in.
+    expect(startSoundUrlsV7(on, false)).toEqual({
+      music: [titleTheme()],
+      clips: soundAssetUrlsV7(false),
+    });
+  });
+
+  it("asks for nothing, and opens no device, with Sound and Music both off", async () => {
+    window.localStorage.setItem(
+      AUDIO_SETTINGS_STORAGE_KEY_V1,
+      JSON.stringify({ enabled: false, volume: 70 }),
+    );
+    window.localStorage.setItem(
+      MUSIC_SETTINGS_STORAGE_KEY_V1,
+      JSON.stringify({ enabled: false, volume: 70 }),
+    );
+    let audioContexts = 0;
+    Reflect.set(window, "AudioContext", function AudioContext() {
+      audioContexts += 1;
+    });
+    try {
+      const { preloader, requests } = manualPreloader();
+      const asked: string[] = [];
+      const starting = bootstrapPreloadedRuleset7App(document, {
+        ...startOptions,
+        preloader,
+        fetchSound: (url) => {
+          asked.push(url);
+          return Promise.resolve();
+        },
+      });
+      await flush();
+      requests[0]?.resolve(result(1));
+      const app = await starting;
+      expect(asked).toEqual([]);
+      expect(audioContexts).toBe(0);
+      app.destroy();
+    } finally {
+      Reflect.deleteProperty(window, "AudioContext");
+    }
+  });
+
+  it("starts the game when asking for the sound fails", async () => {
     const { preloader, requests } = manualPreloader();
     const starting = bootstrapPreloadedRuleset7App(document, {
+      ...startOptions,
       preloader,
-      loadingScreenDelayMs: 0,
-      storage: null,
-      boardHost: new Host(),
-      randomSeed: () => 7,
-      randomDraw: () => 0,
-      prefetchSounds: () => {
+      fetchSound: () => {
         throw new Error("no network");
       },
     });
@@ -1026,24 +1144,23 @@ describe("Ruleset 7 start and the sound clips", () => {
     app.destroy();
   });
 
-  it("asks for no clip with ?stock-sounds=0", async () => {
+  it("asks for the theme and no clip with ?stock-sounds=0", async () => {
     window.history.replaceState(null, "", "?stock-sounds=0");
     try {
       const { preloader, requests } = manualPreloader();
-      const asked: (readonly string[])[] = [];
+      const asked: string[] = [];
       const starting = bootstrapPreloadedRuleset7App(document, {
+        ...startOptions,
         preloader,
-        loadingScreenDelayMs: 0,
-        storage: null,
-        boardHost: new Host(),
-        randomSeed: () => 7,
-        randomDraw: () => 0,
-        prefetchSounds: (urls) => asked.push(urls),
+        fetchSound: (url) => {
+          asked.push(url);
+          return Promise.resolve();
+        },
       });
       await flush();
       requests[0]?.resolve({ total: 0, loaded: 0, failed: [], unfinished: 0 });
       const app = await starting;
-      expect(asked).toEqual([[]]);
+      expect(asked).toEqual([titleTheme()]);
       expect(soundAssetUrlsV7(false)).toEqual([]);
       app.destroy();
     } finally {

@@ -232,7 +232,9 @@ import {
   createTerrainRippleV7,
   terrainRippleEnabledV7,
 } from "./terrain-ripple-v7";
+import { clearDirtRoadCacheV7 } from "./dirt-road-v7";
 import {
+  clearVictoryGlowSpritesV7,
   createVictoryWaveV7,
   drawVictoryFadeTintV7,
   victoryWaveEnabledV7,
@@ -276,7 +278,8 @@ import {
   type FogLiftSpritesV7,
   type FogLiftTimingV7,
 } from "./fog-lift-v7";
-import { starfieldEnabledV7 } from "./starfield-v7";
+import { clearStarfieldBackdropsV7, starfieldEnabledV7 } from "./starfield-v7";
+import { onCanvasContentLossV7, watchCanvasLossV7 } from "./canvas-loss-v7";
 import {
   CombatJuiceV7,
   DAMAGE_FLOAT_V7,
@@ -506,9 +509,17 @@ const ATMOSPHERE_STEP_MS = 50;
 
 export class CanvasBoardHostV7 implements BoardHostV7 {
   readonly #document: Document;
-  readonly #chibiArt: ChibiBoardArtV7;
+  // The art and its kept copies are built again when the browser clears
+  // the page's canvases (bug pulp_wars-urs0, `#rebuildArt`).
+  #chibiArt!: ChibiBoardArtV7;
   readonly #glowCache: BoardGlowCacheV7;
-  readonly #saturationCache: SpriteSaturationCacheV7;
+  readonly #artOptions: {
+    readonly composedForests?: boolean;
+    readonly composedMountains?: boolean;
+  };
+  /** Unsubscribes the mounted board from canvas losses. */
+  #stopLossWatch: (() => void) | null = null;
+  #saturationCache!: SpriteSaturationCacheV7;
   #direction: {
     readonly key: string;
     readonly registry: ChibiArtRegistryV7 | undefined;
@@ -622,23 +633,23 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
   /** Review tooling only (pinIceFolkFeedback): cues frozen mid-animation. */
   #pinnedIceFolkFeedback: readonly IceFolkFeedbackV7[] = [];
   /** The Ice Folk Snow tiles, snow caps, rime and casings, built once. */
-  readonly #iceFolkArt: IceFolkBoardArtV7;
-  readonly #forestArt: { resolve(): ChibiForestArtV7 | null };
+  #iceFolkArt!: IceFolkBoardArtV7;
+  #forestArt!: { resolve(): ChibiForestArtV7 | null };
   /** Faction forests (pulp_wars-2yc.2): undefined with the switch off. */
-  readonly #factionForestArt?: { resolve(): ChibiForestArtV7 | null };
-  readonly #mountainArt: { resolve(): ChibiMassifArtV7 | null };
+  #factionForestArt: { resolve(): ChibiForestArtV7 | null } | undefined;
+  #mountainArt!: { resolve(): ChibiMassifArtV7 | null };
   /** EXPERIMENT pulp_wars-2o7.4: undefined with the switch off. */
-  readonly #factionGrassArt?: { resolve(): FactionGrassArtV7 | null };
+  #factionGrassArt: { resolve(): FactionGrassArtV7 | null } | undefined;
   /** A TRY (pulp_wars-2yc.8): the settlement shadow switch, read once. */
   readonly #settlementShadow = settlementShadowEnabledV7();
   readonly #settlementShadowPlain = settlementShadowPlainV7();
   /** Bead pulp_wars-2yc.61: the faded tile buildings, read once. */
   readonly #buildingFade = buildingFadeFromSearchV7();
   /** The shoreline (pulp_wars-2yc.5): undefined with the switch off. */
-  readonly #coastArt?: CoastSandArtV7;
+  #coastArt: CoastSandArtV7 | undefined;
   /** The atmosphere (pulp_wars-2yc.17): each undefined with its switch off. */
-  readonly #waterBlendArt?: WaterBlendArtV7;
-  readonly #fogArt?: FogArtV7;
+  #waterBlendArt: WaterBlendArtV7 | undefined;
+  #fogArt: FogArtV7 | undefined;
   readonly #starfield = starfieldEnabledV7();
   /**
    * The fog's drift and the stars' twinkle clock. It advances only with
@@ -705,7 +716,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
   /** Review tooling only (pinCombatJuice): cues held at a moment. */
   #pinnedCombatJuice: readonly CombatJuiceEntryV7[] | null = null;
   /** The white silhouette of each unit raster, for the death flash. */
-  readonly #juiceSilhouettes = new WeakMap<object, CanvasImageSource | null>();
+  #juiceSilhouettes = new WeakMap<object, CanvasImageSource | null>();
   /**
    * The fog lift (bead pulp_wars-2yc.83, fog-lift-v7.ts): cells the viewer
    * has just explored keep their cloud on the effects overlay and lift it
@@ -764,13 +775,13 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
   /** Review tooling only (pinDwarfFeedback): cues frozen mid-animation. */
   #pinnedDwarfFeedback: readonly DwarfFeedbackV7[] = [];
   /** The Dig In earthwork rasters, built once per width. */
-  readonly #dwarfArt: DwarfBoardArtV7;
+  #dwarfArt!: DwarfBoardArtV7;
   /** The Candy cue playing on the effects overlay (bead pulp_wars-jdb.6). */
   #candyFeedback: CandyFeedbackV7 | null = null;
   /** Review tooling only (pinCandyFeedback): cues frozen mid-animation. */
   #pinnedCandyFeedback: readonly CandyFeedbackV7[] = [];
   /** The faded copies of Crashed units' sprites, built once per sprite. */
-  readonly #candyDroopCache: SpriteSaturationCacheV7;
+  #candyDroopCache!: SpriteSaturationCacheV7;
   /**
    * The giants' signature cue playing on the effects overlay (bead
    * `pulp_wars-w49.32`).
@@ -869,20 +880,34 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       canvasClientRect: () => this.#canvas?.getBoundingClientRect() ?? null,
     });
     this.#glowCache = new BoardGlowCacheV7(documentRoot);
+    this.#artOptions = options;
+    this.#buildArt();
+  }
+
+  /**
+   * The board's art resolvers, each with its kept copies: built with the
+   * host, and again when the page's canvases are cleared (`#rebuildArt`).
+   */
+  #buildArt(): void {
+    this.#factionForestArt = undefined;
+    this.#coastArt = undefined;
+    this.#waterBlendArt = undefined;
+    this.#fogArt = undefined;
+    this.#factionGrassArt = undefined;
     this.#saturationCache = createSpriteSaturationCacheV7(
-      browserChibiRasterEnvironmentV7(documentRoot),
+      browserChibiRasterEnvironmentV7(this.#document),
     );
     this.#iceFolkArt = createIceFolkBoardArtV7(
-      browserChibiRasterEnvironmentV7(documentRoot),
+      browserChibiRasterEnvironmentV7(this.#document),
     );
     this.#dwarfArt = createDwarfBoardArtV7(
-      browserChibiRasterEnvironmentV7(documentRoot),
+      browserChibiRasterEnvironmentV7(this.#document),
     );
     this.#candyDroopCache = createSpriteSaturationCacheV7(
-      browserChibiRasterEnvironmentV7(documentRoot),
+      browserChibiRasterEnvironmentV7(this.#document),
     );
     this.#chibiArt = createChibiArtResolverV7({
-      environment: browserChibiRasterEnvironmentV7(documentRoot),
+      environment: browserChibiRasterEnvironmentV7(this.#document),
       redraw: () => {
         this.#glowCache.clear();
         this.#draw();
@@ -891,16 +916,16 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     // Composed forests (pulp_wars-maw.3): the multi-tile Forest pieces of
     // the CHIBI art set.
     this.#forestArt =
-      options.composedForests === false
+      this.#artOptions.composedForests === false
         ? { resolve: () => null }
         : createChibiForestArtV7({
-            environment: browserChibiRasterEnvironmentV7(documentRoot),
+            environment: browserChibiRasterEnvironmentV7(this.#document),
             redraw: () => this.#draw(),
             set: CHIBI_FOREST_ART_SET_V7,
           });
     if (factionForestsEnabledV7())
       this.#factionForestArt = createFactionForestArtV7({
-        environment: browserChibiRasterEnvironmentV7(documentRoot),
+        environment: browserChibiRasterEnvironmentV7(this.#document),
         redraw: () => this.#draw(),
         base: this.#forestArt,
         sets: FACTION_FOREST_ART_SETS_V7,
@@ -908,35 +933,56 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     // Mountains as massifs (pulp_wars-e9f, pulp_wars-2o7.1): ridges and
     // single mountains that fill their cells, tall under other Mountains.
     this.#mountainArt =
-      options.composedMountains === false
+      this.#artOptions.composedMountains === false
         ? { resolve: () => null }
         : createChibiMassifArtV7({
-            environment: browserChibiRasterEnvironmentV7(documentRoot),
+            environment: browserChibiRasterEnvironmentV7(this.#document),
             redraw: () => this.#draw(),
             set: CHIBI_MOUNTAIN_ART_SET_V7,
           });
     if (coastSandEnabledV7())
       this.#coastArt = createCoastSandArtV7(
-        browserChibiRasterEnvironmentV7(documentRoot),
+        browserChibiRasterEnvironmentV7(this.#document),
       );
     const waterBlend = waterBlendStyleV7();
     if (waterBlend !== "OFF")
       this.#waterBlendArt = createWaterBlendArtV7(
         waterBlend,
-        browserChibiRasterEnvironmentV7(documentRoot),
+        browserChibiRasterEnvironmentV7(this.#document),
       );
     const fogStyle = fogStyleV7();
     if (fogStyle !== "OFF")
       this.#fogArt = createFogArtV7(
-        browserChibiRasterEnvironmentV7(documentRoot),
+        browserChibiRasterEnvironmentV7(this.#document),
         fogStyle,
       );
     if (factionGrassEnabledV7())
       this.#factionGrassArt = createFactionGrassArtV7({
-        environment: browserChibiRasterEnvironmentV7(documentRoot),
+        environment: browserChibiRasterEnvironmentV7(this.#document),
         redraw: () => this.#draw(),
         tiles: FACTION_GRASS_TILES_V7,
       });
+  }
+
+  /**
+   * Bug pulp_wars-urs0: the browser cleared the page's canvases (a lost GPU
+   * context), and with them every copy the board keeps: toned terrain,
+   * recoloured cities and buildings, the coast, the roads, the sky. The
+   * copies are thrown away and built again from the art, and the board is
+   * drawn again; without this the map stayed empty under its units until
+   * the page was reloaded.
+   */
+  #rebuildArt(): void {
+    this.#buildArt();
+    this.#direction = null;
+    this.#glowCache.clear();
+    this.#juiceSilhouettes = new WeakMap();
+    this.#fogLiftSprites = undefined;
+    this.#effectArtRequested = false;
+    clearDirtRoadCacheV7();
+    clearStarfieldBackdropsV7();
+    clearVictoryGlowSpritesV7();
+    this.#draw();
   }
 
   mount(container: HTMLElement, callbacks: BoardHostCallbacksV7): void {
@@ -967,6 +1013,11 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     canvas.addEventListener("pointerleave", this.#onPointerLeave);
     canvas.addEventListener("wheel", this.#onWheel, { passive: false });
     canvas.addEventListener("keydown", this.#onKeyDown);
+    // Bug pulp_wars-urs0: a lost GPU context clears the board's canvases
+    // and every copy it keeps; the copies are built again and redrawn.
+    watchCanvasLossV7(canvas);
+    watchCanvasLossV7(effectsCanvas);
+    this.#stopLossWatch = onCanvasContentLossV7(() => this.#rebuildArt());
     container.replaceChildren(canvas, description, effectsCanvas);
     this.#canvas = canvas;
     this.#effectsCanvas = effectsCanvas;
@@ -4110,6 +4161,8 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       mounted.removeEventListener("wheel", this.#onWheel);
       mounted.removeEventListener("keydown", this.#onKeyDown);
     }
+    this.#stopLossWatch?.();
+    this.#stopLossWatch = null;
     try {
       this.#detachEffects();
     } catch (error) {

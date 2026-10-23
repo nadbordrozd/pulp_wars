@@ -341,12 +341,14 @@ export function factionAssetUrlsV7(
 /**
  * The sound files of the client (bead pulp_wars-2yc.20, docs/ui/SOUND.md
  * "Stock recordings"): the file of every sound effect of the audio
- * manifest that names one. The game's start fetches them beside the art,
- * without waiting for them (src/app/v7-preload-boot.ts); a sound whose
+ * manifest that names one. The game's start fetches them with the art,
+ * behind the loading screen and no longer than its hold
+ * (src/app/v7-preload-boot.ts, bead pulp_wars-2yc.107); a sound whose
  * file has not arrived plays its synthesised fallback.
  *
  * No theme is listed (bead pulp_wars-2yc.27): a theme is megabytes, so its
- * file is fetched when it is first played, one theme at a time.
+ * file is fetched when it is first played, one theme at a time; the title
+ * theme alone is added by the start (`startSoundUrlsV7`).
  *
  * A sound with several recordings (bead pulp_wars-2yc.24) lists one file:
  * its default recording, or the one this browser picked (`picks`); none

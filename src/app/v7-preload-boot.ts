@@ -7,8 +7,17 @@ import {
   type AssetLookV7,
   type AssetTiersV7,
 } from "../assets/asset-inventory-v7";
+import {
+  loadAudioSettingsV1,
+  type AudioSettingsV1,
+} from "../audio/audio-settings";
+import { playableSoundV1 } from "../audio/playable-sound";
+import { SOUND_TITLE_THEME_ID_V1 } from "../audio/sound-manifest";
 import { soundFileBytesV1 } from "../audio/sound-file-store";
-import { loadStockSoundPicksV1 } from "../audio/stock-sound-picks";
+import {
+  loadStockSoundPicksV1,
+  type StockSoundPicksV1,
+} from "../audio/stock-sound-picks";
 import { stockSoundsEnabledV1 } from "../audio/stock-sounds";
 import { SETTINGS_STORAGE_KEY, parseSettings } from "../persistence/index";
 import { browserChibiRasterEnvironmentV7 } from "../render/canvas/chibi-art-resolver-v7";
@@ -43,8 +52,12 @@ import {
  * The look loads in tiers (bead pulp_wars-2yc.42, `assetTiersV7`). The
  * start blocks on the FRONT tier only: the loading screen's scene, the
  * shared art and the factions' emblems, which is everything the screens
- * before a match draw. Once the app is mounted the sound clips are asked
- * for, and after them each faction's own art, in the background. A board
+ * before a match draw, and the sound the start plays (bead
+ * pulp_wars-2yc.107): the title theme and the clips, asked for once the
+ * scene is in and counted in the same bar, waited for no longer than
+ * `soundHoldMs` after the art. Once the app is mounted the music starts
+ * where the browser allows it (else with the first gesture), and each
+ * faction's own art loads in the background. A board
  * is drawn only when the art of its factions is in: the app asks
  * `ensureFactionAssets` before it shows a match or the Gallery and waits
  * behind the loading plate for whatever is still on its way, which then
@@ -70,13 +83,16 @@ export interface PreloadedBootOptionsV7 extends BootstrapRuleset7Options {
   readonly loadingScreenDelayMs?: number;
   readonly now?: () => number;
   /**
-   * Starts fetching the sound files and returns at once; the browser's
-   * `fetch` into the sound file store by default (a test passes its own).
-   * Called once the app is mounted. A promise it returns is waited for,
-   * no longer than `soundHoldMs`, before the factions' art starts.
+   * Fetches one sound file of the start (`startSoundUrlsV7`: the title
+   * theme, then the clips) and settles when it has arrived or failed; the
+   * browser's `fetch` into the sound file store by default (a test passes
+   * its own). Asked for once the loading screen's scene is in.
    */
-  readonly prefetchSounds?: (urls: readonly string[]) => unknown;
-  /** The longest the factions' art waits for the sound clips. */
+  readonly fetchSound?: (url: string) => Promise<unknown>;
+  /**
+   * The longest the loading screen waits for the sound files once the art
+   * is in; the game then starts and they go on loading.
+   */
   readonly soundHoldMs?: number;
 }
 
@@ -101,11 +117,32 @@ export interface PreloadedRuleset7App extends BootstrappedRuleset7App {
 
 export const LOADING_SCREEN_DELAY_MS_V7 = 150;
 /**
- * The clips are 0.3 MB, two seconds of a "Fast 3G" link: the factions' art
- * leaves them the link that long, so the first click after the title has
- * its recording, and no longer when they are slow.
+ * The title theme is 1.4 MB and the clips 0.3 MB: on a "Fast 3G" link
+ * (180 kB/s) they need about four seconds more than the art. The loading
+ * screen waits for them that long at most; a slower link starts the game
+ * without them, and the music starts when its file is in.
  */
-export const SOUND_PREFETCH_HOLD_MS_V7 = 4_000;
+export const SOUND_PRELOAD_HOLD_MS_V7 = 5_000;
+
+/**
+ * The sound files the start loads with the art (bead pulp_wars-2yc.107),
+ * as the stored preference allows: the title theme when Music is on and
+ * above zero, and when Sound is on one clip a sound (its default
+ * recording, or the one this browser picked; none with `?stock-sounds=0`).
+ */
+export function startSoundUrlsV7(
+  settings: AudioSettingsV1,
+  stockSounds = true,
+  picks: StockSoundPicksV1 = {},
+): { readonly music: readonly string[]; readonly clips: readonly string[] } {
+  const title = playableSoundV1(SOUND_TITLE_THEME_ID_V1)?.source;
+  const music =
+    settings.musicEnabled && settings.musicVolume > 0 && title?.kind === "FILE"
+      ? [title.url]
+      : [];
+  const clips = settings.enabled ? soundAssetUrlsV7(stockSounds, picks) : [];
+  return { music, clips };
+}
 
 /**
  * The tiers the start loads a look in: the loading screen's scene heads
@@ -183,6 +220,62 @@ export async function bootstrapPreloadedRuleset7App(
   };
   const urls = tiersOf(look).front;
   const sceneUrls = titleSceneAssetUrlsV7();
+
+  // The sound the start plays (bead pulp_wars-2yc.107): the title theme
+  // and the clips, counted in the bar with the art. A sound file is never
+  // what keeps the game from starting.
+  let soundUrls: readonly string[] = [];
+  let fetchSound: ((url: string) => Promise<unknown>) | null = null;
+  try {
+    if (options.fetchSound !== undefined) fetchSound = options.fetchSound;
+    else if (browser !== null && typeof browser.fetch === "function")
+      fetchSound = (url) =>
+        soundFileBytesV1(url, (file) => browser.fetch(file));
+    if (fetchSound !== null) {
+      const { music, clips } = startSoundUrlsV7(
+        loadAudioSettingsV1(settingsStorage),
+        stockSoundsEnabledV1(browser?.location.search ?? ""),
+        // Of a sound with several recordings, the one this browser picked.
+        loadStockSoundPicksV1(settingsStorage),
+      );
+      soundUrls = [...new Set([...music, ...clips])];
+    }
+  } catch {
+    soundUrls = [];
+  }
+  let artProgress: AssetPreloadProgressV7 | null = null;
+  let soundSettled = 0;
+  let loadingEnded = false;
+  const report = (): void => {
+    if (loadingEnded) return;
+    progress = {
+      settled: (artProgress?.settled ?? 0) + soundSettled,
+      total: (artProgress?.total ?? 0) + soundUrls.length,
+    };
+    screen?.update(progress);
+  };
+  let soundDone: Promise<unknown> | null = null;
+  /** Asks for every sound file once; the scene's art has the link first. */
+  const startSound = (): Promise<unknown> => {
+    soundDone ??= Promise.all(
+      soundUrls.map((url) => {
+        let pending: Promise<unknown>;
+        try {
+          pending = Promise.resolve(fetchSound?.(url));
+        } catch {
+          pending = Promise.resolve();
+        }
+        return pending
+          .catch(() => undefined)
+          .then(() => {
+            soundSettled += 1;
+            report();
+          });
+      }),
+    );
+    return soundDone;
+  };
+
   const show = (): void => {
     screen = mountLoadingScreenV7(documentRoot, root, {
       motion: startMotionV7(documentRoot, settingsStorage),
@@ -198,11 +291,16 @@ export async function bootstrapPreloadedRuleset7App(
   if (timer === null) show();
   let result: AssetPreloadResultV7;
   try {
+    // A scene already in (a warm cache) leaves the link to the sound now.
+    if (preloader.covers(sceneUrls)) void startSound();
     result = await preloader.preload(
       urls,
       (update) => {
-        progress = update;
-        screen?.update(update);
+        artProgress = update;
+        // The scene is in: the sound shares the link with the rest.
+        if (soundDone === null && preloader.covers(sceneUrls))
+          void startSound();
+        report();
       },
       // The scene's files load alone first, so the loading screen shows
       // the scene as early as the link allows (pulp_wars-2yc.11).
@@ -212,8 +310,26 @@ export async function bootstrapPreloadedRuleset7App(
     // A broken preloader must not keep the game from starting: every
     // raster then loads on demand, as it did before preloading.
     result = { total: 0, loaded: 0, failed: [], unfinished: 0 };
+  }
+  try {
+    // The art is in: the sound has `soundHoldMs` more, then the game
+    // starts and the files go on loading.
+    let hold: ReturnType<typeof setTimeout> | undefined;
+    await Promise.race([
+      startSound(),
+      new Promise((resolve) => {
+        hold = globalThis.setTimeout(
+          resolve,
+          options.soundHoldMs ?? SOUND_PRELOAD_HOLD_MS_V7,
+        );
+      }),
+    ]);
+    globalThis.clearTimeout(hold);
+  } catch {
+    // Sound files are optional; the game starts without them.
   } finally {
     await fonts;
+    loadingEnded = true;
     if (timer !== null) globalThis.clearTimeout(timer);
     (screen as ReturnType<typeof mountLoadingScreenV7> | null)?.destroy();
     markRasterPreloadCompleteV7();
@@ -239,41 +355,19 @@ export async function bootstrapPreloadedRuleset7App(
       waitFor(factionAssetUrlsV7(tiersOf(next), factions), onProgress),
   });
 
-  // The app is on screen. Now the sound clips (never waited for by a
-  // screen: a sound whose clip has not arrived plays its synthesised
-  // fallback), which no longer share the link with the title's art, and
-  // after them each faction's art.
-  let sounds: unknown = undefined;
+  // The app is on screen with its theme set: the music starts now where
+  // the browser allows sound without a gesture, else with the first one
+  // (its theme then already decoded). A sound file still on its way (a
+  // slow link) is played when it arrives.
   try {
-    // Of a sound with several recordings, the one this browser picked.
-    const clips = soundAssetUrlsV7(
-      stockSoundsEnabledV1(browser?.location.search ?? ""),
-      loadStockSoundPicksV1(settingsStorage),
-    );
-    if (options.prefetchSounds !== undefined)
-      sounds = options.prefetchSounds(clips);
-    else if (browser !== null && typeof browser.fetch === "function")
-      sounds = Promise.allSettled(
-        clips.map((url) =>
-          soundFileBytesV1(url, (file) => browser.fetch(file)),
-        ),
-      );
+    app.view.audio.startWhenAllowed();
   } catch {
-    // Sound files are optional; the game starts without them.
+    // Sound is optional; the game goes on without it.
   }
+  // Then each faction's art, in the background.
   const rest = Object.values(tiersOf(look).factions).flat();
   const background = (async (): Promise<void> => {
     try {
-      if (sounds instanceof Promise)
-        await Promise.race([
-          sounds.catch(() => undefined),
-          new Promise((resolve) =>
-            globalThis.setTimeout(
-              resolve,
-              options.soundHoldMs ?? SOUND_PREFETCH_HOLD_MS_V7,
-            ),
-          ),
-        ]);
       if (!settled(rest)) await preloader.preload(rest);
     } catch {
       // A board then waits for its factions itself, or loads on demand.

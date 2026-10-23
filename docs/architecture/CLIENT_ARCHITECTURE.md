@@ -2117,11 +2117,17 @@ before a match draw, and a board waits for the art of its own factions.
   - A tier for each faction (85 files and 0.28 MB at most, about 560
     files and 1.6 MB together): what only a board with that faction on it
     shows.
-  - Once the app is mounted the start asks for the sound clips, then
-    loads every faction tier in the background (`background` and
-    `assetsSettled()` on the app). The faction art waits for the clips,
-    4 s at most (`SOUND_PREFETCH_HOLD_MS_V7`), so the first click has its
-    recording.
+  - The start's sound (bead `pulp_wars-2yc.107`, `startSoundUrlsV7`): the
+    title theme and one clip a sound, as the stored Sound and Music
+    preference allows, are fetched into the sound file store once the
+    scene is in and counted in the loading bar with the `FRONT` tier. The
+    screen waits for them at most 5 s after the art
+    (`SOUND_PRELOAD_HOLD_MS_V7`, `soundHoldMs`); a slow or failed file
+    never keeps the game from starting. Once the app is mounted the start
+    calls `GameAudioV1.startWhenAllowed()` (the music starts where the
+    browser allows it, else with the first gesture; docs/ui/SOUND.md
+    "Autoplay") and loads every faction tier in the background
+    (`background` and `assetsSettled()` on the app).
 - **A board waits for its factions.** The rule is unchanged: no art is
   loaded on demand after a match starts, so a board never draws a stand-in
   because its faction's art is still downloading. The view asks
@@ -2177,6 +2183,22 @@ before a match draw, and a board waits for the art of its own factions.
   as before, with its fallback; after the preload such a load is recorded
   (`lazyRasterLoadsV7`, exposed as `lazyAssetLoads()` on the app), and the
   browser smoke fails when a match or the Gallery recorded one.
+  A load on demand that fails is asked for once more a second later
+  (`CHIBI_RASTER_RETRY_MS_V7`) before its piece is drawn in code.
+- **Lost canvases** (bug `pulp_wars-urs0`). The live look draws every
+  terrain tile, city and building from a canvas copy it builds once and
+  keeps (tones, recolours, slices, faded buildings, grass spills, forest
+  and massif bakes, road sprites, the sky's backdrop); the units are image
+  elements. When the browser loses its GPU context every GPU-backed canvas
+  of the page is cleared, the kept copies too, and the board went on
+  drawing them: an empty map under the units until a reload. Chrome
+  reproduces it with the DevTools protocol's `Browser.crashGpuProcess`.
+  Each copy `browserChibiRasterEnvironmentV7().createSurface` makes, and
+  the board's own canvases, are watched (`src/render/canvas/canvas-loss-v7.ts`):
+  their `contextrestored` events, coalesced until none has come for
+  120 ms, make the board host build its art resolvers and every kept copy
+  again (`#rebuildArt`) and redraw. No copy is made from, or on, a context
+  that reports itself lost (`isContextLost()`).
 - **Loading screen** (bead `pulp_wars-502h`). `mountLoadingScreenV7`
   (`src/render/dom/loading-screen-v7.ts`): the title scene
   (`TitleSceneViewV7`) behind a plate with a crest, the visible label

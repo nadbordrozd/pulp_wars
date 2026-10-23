@@ -955,6 +955,14 @@ const GLOW_SPRITE_PX = 64;
 const glowSprites = new Map<string, CanvasImageSource | null>();
 
 /**
+ * Forgets the painted glows, so each is painted again: after the browser
+ * cleared the page's canvases (bug pulp_wars-urs0).
+ */
+export function clearVictoryGlowSpritesV7(): void {
+  glowSprites.clear();
+}
+
+/**
  * The glow of one colour drawn once on a small canvas of its own, so a
  * frame of the wave stamps it rather than building a gradient a cell.
  * Null where no canvas can be made (the caller draws the gradient).

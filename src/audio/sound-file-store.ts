@@ -47,6 +47,19 @@ export function soundFileBytesV1(
 }
 
 /**
+ * Hands over the fetch of a file the store holds and forgets it, or null
+ * when it holds none (bead pulp_wars-2yc.107). The theme the start fetched
+ * is taken by the music player, which decodes the bytes and keeps them no
+ * longer: a theme is megabytes.
+ */
+export function takeSoundFileBytesV1(url: string): Promise<ArrayBuffer> | null {
+  const known = files.get(url);
+  if (known === undefined) return null;
+  files.delete(url);
+  return known;
+}
+
+/**
  * Starts fetching sound files and returns at once. Nothing waits for them
  * and a failure is silent: the synthesised sound plays instead.
  */

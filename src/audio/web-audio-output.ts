@@ -14,7 +14,11 @@ import {
   playableSoundIdsV1,
   playableSoundV1,
 } from "./playable-sound";
-import { soundFileBytesV1, type SoundFileFetchV1 } from "./sound-file-store";
+import {
+  soundFileBytesV1,
+  takeSoundFileBytesV1,
+  type SoundFileFetchV1,
+} from "./sound-file-store";
 import { SOUND_THEMES_V1, type SoundKeyV1 } from "./sound-manifest";
 import {
   isStockSoundChoiceV1,
@@ -66,12 +70,29 @@ import {
  * (`music-player.ts`).
  */
 export interface WebAudioOutputV1 extends SoundOutputV1 {
-  /** True once a gesture has created the context. */
+  /**
+   * True once the context exists and may play: a gesture created or
+   * resumed it, or the browser let it start without one.
+   */
   readonly unlocked: boolean;
+  /**
+   * True once the context exists, also while it waits for a gesture to let
+   * it play (`openWithoutGesture`): music is loaded and decoded on it then,
+   * so the first gesture only has to start its clock.
+   */
+  readonly opened?: boolean;
   /** Whether recorded clips replace the sounds that have one. */
   readonly stockSounds: boolean;
   /** Creates the context if needed and resumes it. Call from a gesture. */
   unlock(): void;
+  /**
+   * Creates the context without a gesture (bead pulp_wars-2yc.107): the
+   * game has loaded. A browser that allows sound now plays at once; one
+   * that does not keeps the context suspended, the music player paused,
+   * until a gesture's `unlock`. Nothing where the browser says up front
+   * that sound needs a gesture (`navigator.getAutoplayPolicy`).
+   */
+  openWithoutGesture?(): void;
   /** The effects' master volume, 0 to 1. */
   setVolume(volume: number): void;
   /** The music's volume, 0 to 1. */
@@ -147,6 +168,8 @@ export function createWebAudioOutputV1(
   let volume = 1;
   let musicVolume = 1;
   let paused = false;
+  /** Opened before a gesture, and the browser has not let it play yet. */
+  let waitingForGesture = false;
   let closed = false;
   const musicRequests: string[] = [];
   /** Rendered synth recipes. */
@@ -276,13 +299,22 @@ export function createWebAudioOutputV1(
           const fetchFile = Reflect.get(browser, "fetch") as unknown;
           if (typeof fetchFile !== "function") throw new Error("No fetch");
           musicRequests.push(source.url);
-          const response = await (fetchFile as typeof fetch).call(
-            browser,
-            source.url,
-            abandoned === undefined ? undefined : { signal: abandoned },
-          );
-          if (!response.ok) throw new Error(`HTTP ${response.status}`);
-          const data = await response.arrayBuffer();
+          const fetched = async (): Promise<ArrayBuffer> => {
+            const response = await (fetchFile as typeof fetch).call(
+              browser,
+              source.url,
+              abandoned === undefined ? undefined : { signal: abandoned },
+            );
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            return response.arrayBuffer();
+          };
+          // The start fetched the title theme with the art (bead
+          // pulp_wars-2yc.107): its bytes are taken, not fetched again.
+          const preloaded = takeSoundFileBytesV1(source.url);
+          const data =
+            preloaded === null
+              ? await fetched()
+              : await preloaded.catch(fetched);
           // Another theme was asked for meanwhile: this one is not decoded.
           if (abandoned?.aborted === true) throw new Error("Abandoned");
           return await target.decodeAudioData(data);
@@ -305,61 +337,112 @@ export function createWebAudioOutputV1(
     }
   };
 
+  /** The music player follows the hidden tab and the gesture's gate. */
+  const syncPlayer = (): void => {
+    if (player === null) return;
+    if (paused || waitingForGesture) player.pause();
+    else player.resume();
+  };
+
+  /** The browser lets the context play: nothing waits for a gesture. */
+  const letPlay = (): void => {
+    if (!waitingForGesture || closed) return;
+    waitingForGesture = false;
+    syncPlayer();
+  };
+
+  /** The context, made on first use; null where it cannot be made. */
+  const open = (): AudioContext | null => {
+    if (closed) return null;
+    if (context !== null) return context;
+    try {
+      const created = new constructor();
+      const limiter = created.createDynamicsCompressor();
+      limiter.threshold.value = -12;
+      limiter.knee.value = 8;
+      limiter.ratio.value = 8;
+      limiter.attack.value = 0.003;
+      limiter.release.value = 0.15;
+      const gain = created.createGain();
+      gain.gain.value = volume;
+      gain.connect(limiter);
+      limiter.connect(created.destination);
+      // Music has its own level and does not pass the limiter.
+      const music = created.createGain();
+      music.gain.value = musicVolume;
+      music.connect(created.destination);
+      context = created;
+      master = gain;
+      musicMaster = music;
+      player = new MusicPlayerV1({
+        context: created,
+        destination: music,
+        track: (id) => musicTrack(created, id),
+        onEnded: (id, reason) => output.onMusicEnded?.(id, reason),
+      });
+      syncPlayer();
+      if (paused && typeof created.suspend === "function")
+        void created.suspend().catch(() => undefined);
+      // A context the browser starts by itself (it allows sound without a
+      // gesture) says so with a change of state.
+      if (typeof created.addEventListener === "function")
+        created.addEventListener("statechange", () => {
+          if (created.state === "running") letPlay();
+        });
+      try {
+        loadFiles(created);
+      } catch {
+        // Without its files the device still plays every synth sound.
+      }
+      return created;
+    } catch {
+      context = null;
+      master = null;
+      musicMaster = null;
+      player = null;
+      return null;
+    }
+  };
+
   const output: WebAudioOutputV1 = {
     get unlocked(): boolean {
+      return context !== null && !closed && !waitingForGesture;
+    },
+    get opened(): boolean {
       return context !== null && !closed;
     },
     stockSounds,
     onMusicEnded: null,
     unlock(): void {
       if (closed) return;
-      if (context === null) {
-        try {
-          const created = new constructor();
-          const limiter = created.createDynamicsCompressor();
-          limiter.threshold.value = -12;
-          limiter.knee.value = 8;
-          limiter.ratio.value = 8;
-          limiter.attack.value = 0.003;
-          limiter.release.value = 0.15;
-          const gain = created.createGain();
-          gain.gain.value = volume;
-          gain.connect(limiter);
-          limiter.connect(created.destination);
-          // Music has its own level and does not pass the limiter.
-          const music = created.createGain();
-          music.gain.value = musicVolume;
-          music.connect(created.destination);
-          context = created;
-          master = gain;
-          musicMaster = music;
-          player = new MusicPlayerV1({
-            context: created,
-            destination: music,
-            track: (id) => musicTrack(created, id),
-            onEnded: (id, reason) => output.onMusicEnded?.(id, reason),
-          });
-          if (paused) {
-            player.pause();
-            if (typeof created.suspend === "function")
-              void created.suspend().catch(() => undefined);
-          }
-          try {
-            loadFiles(created);
-          } catch {
-            // Without its files the device still plays every synth sound.
-          }
-        } catch {
-          context = null;
-          master = null;
-          musicMaster = null;
-          player = null;
-          return;
-        }
-      }
+      const target = open();
+      if (target === null) return;
+      // The gesture lets a context opened before it play.
+      letPlay();
       // A hidden tab keeps its clock stopped until it is shown again.
-      if (context.state === "suspended" && !paused)
-        void context.resume().catch(() => undefined);
+      if (target.state !== "running" && !paused)
+        void target.resume().catch(() => undefined);
+    },
+    openWithoutGesture(): void {
+      if (closed || context !== null) return;
+      // A browser that says up front that sound needs a gesture is not
+      // asked: no context (and no console warning) until the gesture.
+      try {
+        const policy = (
+          Reflect.get(browser, "navigator") as
+            { getAutoplayPolicy?: (kind: string) => string } | undefined
+        )?.getAutoplayPolicy?.("audiocontext");
+        if (policy === "disallowed") return;
+      } catch {
+        // No answer: the context is asked.
+      }
+      waitingForGesture = true;
+      const target = open();
+      if (target === null) {
+        waitingForGesture = false;
+        return;
+      }
+      if (target.state === "running") letPlay();
     },
     setVolume(next: number): void {
       volume = Math.min(1, Math.max(0, next));
@@ -384,14 +467,11 @@ export function createWebAudioOutputV1(
       if (closed || next === paused) return;
       paused = next;
       if (context === null) return;
+      syncPlayer();
       if (next) {
-        player?.pause();
         if (typeof context.suspend === "function")
           void context.suspend().catch(() => undefined);
-      } else {
-        player?.resume();
-        void context.resume().catch(() => undefined);
-      }
+      } else void context.resume().catch(() => undefined);
     },
     start(request: SoundStartV1): { readonly stop: SoundStopV1 } | null {
       if (context === null || master === null || closed) return null;

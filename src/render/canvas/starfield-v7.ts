@@ -249,10 +249,18 @@ function paintBackdrop(
 /** The backdrop is painted once at this share of the viewport's size. */
 const BACKDROP_SCALE = 1 / 8;
 
-const backdrops = new WeakMap<
+let backdrops = new WeakMap<
   object,
   { width: number; height: number; canvas: HTMLCanvasElement | null }
 >();
+
+/**
+ * Forgets the painted backdrops, so each is painted again: after the
+ * browser cleared the page's canvases (bug pulp_wars-urs0).
+ */
+export function clearStarfieldBackdropsV7(): void {
+  backdrops = new WeakMap();
+}
 
 /**
  * The sky and its nebula as one small opaque surface per canvas and

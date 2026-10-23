@@ -31,8 +31,10 @@ import {
 /**
  * The game's sound (bead pulp_wars-2yc.10, docs/ui/SOUND.md): the one
  * object the interface talks to. It holds the preference (Sound and Music,
- * each on or off with a volume), opens the audio device only after a user
- * gesture, stays silent while the tab is hidden, and keeps a short log of
+ * each on or off with a volume), opens the audio device with a user
+ * gesture or, once the game has loaded, where the browser allows sound
+ * without one (`startWhenAllowed`), stays silent while the tab is hidden,
+ * and keeps a short log of
  * what was asked for, so tests and the browser smoke can check the event
  * mapping without a loudspeaker.
  *
@@ -68,7 +70,7 @@ export interface GameMusicStateV1 {
   readonly audition: SoundKeyV1 | null;
   /**
    * What the device was asked to play: the audition, else the scene; null
-   * while Music is off or at zero, and before the first gesture.
+   * while Music is off or at zero, and before the device has opened.
    */
   readonly wanted: SoundKeyV1 | null;
   /** The device's side; null without a device or before the gesture. */
@@ -275,6 +277,21 @@ export class GameAudioV1 {
     this.#syncMusic();
   }
 
+  /**
+   * The game has loaded (bead pulp_wars-2yc.107): the device opens without
+   * waiting for a gesture, and the screen's theme is loaded and decoded on
+   * it. Where the browser allows sound now (the player has used the page
+   * already, or plays here often) the music starts at once; elsewhere the
+   * device waits, suspended, and the first gesture starts the theme that
+   * is already decoded. With Sound and Music both off nothing is opened.
+   */
+  startWhenAllowed(): void {
+    if (this.#destroyed) return;
+    if (!this.#settings.enabled && !this.#settings.musicEnabled) return;
+    this.#output?.openWithoutGesture?.();
+    this.#syncMusic();
+  }
+
   /** Sound effects on or off. Returns false when it was not stored. */
   setEnabled(enabled: boolean): boolean {
     if (enabled === this.#settings.enabled) return true;
@@ -330,8 +347,11 @@ export class GameAudioV1 {
     if (this.#destroyed || this.#output === null) return;
     const theme = this.#audition ?? this.#scene;
     if (theme !== this.#musicOver) this.#musicOver = null;
+    // A device opened before the gesture loads the theme already; it is
+    // heard once the browser lets the device play.
+    const opened = this.#output.opened ?? this.unlocked;
     const wanted =
-      this.#musicAudible() && this.unlocked && theme !== this.#musicOver
+      this.#musicAudible() && opened && theme !== this.#musicOver
         ? theme
         : null;
     if (wanted === this.#musicWanted && !force) return;
@@ -462,7 +482,14 @@ export class GameAudioV1 {
 }
 
 /** Gestures that satisfy the browsers' autoplay rules. */
-const GESTURES = ["pointerup", "mousedown", "touchend", "keydown", "click"];
+const GESTURES = [
+  "pointerdown",
+  "pointerup",
+  "mousedown",
+  "touchend",
+  "keydown",
+  "click",
+];
 
 /**
  * The browser's game audio: the WebAudio device (when the browser has one),

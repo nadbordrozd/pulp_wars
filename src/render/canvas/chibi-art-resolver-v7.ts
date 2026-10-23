@@ -16,6 +16,7 @@ import {
 } from "./chibi-terrain-fringe-v7";
 import type { Point } from "./geometry";
 import { parseHexColourV7, recolourOwnerPixelsV7 } from "./owner-recolour-v7";
+import { contextLostV7, watchCanvasLossV7 } from "./canvas-loss-v7";
 import { noteLazyRasterV7, preloadedRasterV7 } from "./preloaded-rasters-v7";
 import { riftCrackPixelsV7 } from "./rift-presentation-v7";
 
@@ -148,6 +149,9 @@ export interface ChibiRasterEnvironmentV7 {
   ): CanvasImageSource | null;
 }
 
+/** The wait before a raster that failed to load is asked for again. */
+export const CHIBI_RASTER_RETRY_MS_V7 = 1_000;
+
 export function browserChibiRasterEnvironmentV7(
   documentRoot: Document,
 ): ChibiRasterEnvironmentV7 {
@@ -162,8 +166,21 @@ export function browserChibiRasterEnvironmentV7(
       }
       noteLazyRasterV7(url);
       const image = documentRoot.createElement("img");
+      // A file that fails is asked for once more, a moment later, before
+      // its piece gives up and is drawn in code (bug pulp_wars-urs0): a
+      // reload's request can fail where the next one does not.
+      let retried = false;
       image.addEventListener("load", () => settle(true));
-      image.addEventListener("error", () => settle(false));
+      image.addEventListener("error", () => {
+        if (retried) {
+          settle(false);
+          return;
+        }
+        retried = true;
+        globalThis.setTimeout(() => {
+          image.src = url;
+        }, CHIBI_RASTER_RETRY_MS_V7);
+      });
       image.src = url;
       return image;
     },
@@ -173,7 +190,9 @@ export function browserChibiRasterEnvironmentV7(
         canvas.width = width;
         canvas.height = height;
         const context = canvas.getContext("2d", { willReadFrequently: true });
-        if (context === null) return null;
+        // A lost context reads back as transparent pixels: a copy made
+        // from them would be kept and drawn as nothing (pulp_wars-urs0).
+        if (context === null || contextLostV7(context)) return null;
         context.imageSmoothingEnabled = false;
         context.clearRect(0, 0, width, height);
         context.drawImage(image, 0, 0, width, height);
@@ -188,10 +207,13 @@ export function browserChibiRasterEnvironmentV7(
         canvas.width = width;
         canvas.height = height;
         const context = canvas.getContext("2d");
-        if (context === null) return null;
+        if (context === null || contextLostV7(context)) return null;
         const data = context.createImageData(width, height);
         data.data.set(pixels);
         context.putImageData(data, 0, 0);
+        // The copy is kept and drawn every frame: the page hears when the
+        // browser clears it (canvas-loss-v7.ts) and builds it again.
+        watchCanvasLossV7(canvas);
         return canvas;
       } catch {
         return null;
