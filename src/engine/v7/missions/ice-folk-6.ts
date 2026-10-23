@@ -42,13 +42,25 @@ import type { MissionDefinitionV7 } from "./types";
  * hold the slopes, six march on Rime Camp from round 4. The Unquiet have a
  * barrow, six dead and five announced waves (rounds 3, 6, 9, 12
  * and 15). The clock is 16 (was 20).
+ *
+ * The fourth retune (`pulp_wars-hmyk.31`, CAMPAIGN.md section 22.5,
+ * hand-played): Rime Camp level 3 behind walls, Whitefang level 1, the old
+ * Ember Lodge's village behind Rime Camp back; nine units (a second Ox, a
+ * second Snow Hunter, a Sled), seven technologies (Scouting and Explosives
+ * back), 6 Coins, the climb seen. The Grey Lodge has eleven units (three of
+ * retune 3's keepers and the ambush below the summit are gone) and Favour
+ * 3: eight hold the slopes and three march. The dead have ten on the board
+ * (the first wave among them) and one more wave in round 8. The clock is 18
+ * (star 14).
  */
 export const ICE_FOLK_6_V7: MissionDefinitionV7 = {
   id: "ICE_FOLK_6",
   // Revision 2 (`pulp_wars-hmyk.17`): each seat explores its units' sight.
   // Revision 3 (`pulp_wars-hmyk.21`, the third retune): a thin start, a
   // marching Lodge and five waves of the dead.
-  revision: 3,
+  // Revision 4 (`pulp_wars-hmyk.31`, the fourth retune): eased toward the
+  // middle; the first of the dead on the board, one later wave.
+  revision: 4,
   seed: 20261606,
   // <map>
   size: 20,
@@ -62,7 +74,6 @@ export const ICE_FOLK_6_V7: MissionDefinitionV7 = {
     // barrows are gone (each would be a free town for the Lodge or the
     // dead).
     edits: [
-      { kind: "VILLAGE", at: { x: 10, y: 1 }, present: false },
       { kind: "VILLAGE", at: { x: 2, y: 3 }, present: false },
       { kind: "VILLAGE", at: { x: 8, y: 6 }, present: false },
       { kind: "VILLAGE", at: { x: 14, y: 6 }, present: false },
@@ -150,6 +161,8 @@ export const ICE_FOLK_6_V7: MissionDefinitionV7 = {
     "PPPPPPPPPPPPPWWWWWWW",
   ],
   villages: [
+    // Retune 4: the old Ember Lodge's village is back, behind Rime Camp.
+    { x: 10, y: 1 },
     { x: 11, y: 9 },
     { x: 14, y: 15 },
     { x: 1, y: 18 },
@@ -178,20 +191,24 @@ export const ICE_FOLK_6_V7: MissionDefinitionV7 = {
       // (Blast Mountain is one research away), and no Engineering (hand
       // play: with it the Witch walked straight over the peaks to the
       // summit in nine rounds).
-      coins: 4,
+      // Retune 4: Scouting and Explosives (Brittle) back, 6 Coins, Rime
+      // Camp at level 3 behind walls (Engineering stays a research away).
+      coins: 6,
       technologies: [
         "GATHERING",
         "HUNTING",
         "MARKSMANSHIP",
+        "SCOUTING",
         "DRILL",
         "FORTIFICATION",
+        "EXPLOSIVES",
       ],
       cities: [
         {
           name: "Rime Camp",
           at: { x: 7, y: 3 },
-          level: 2,
-          rewards: ["STOCKPILE"],
+          level: 3,
+          rewards: ["STOCKPILE", "WALLS"],
         },
         { name: "Whitefang", at: { x: 2, y: 3 }, level: 1, rewards: [] },
       ],
@@ -203,16 +220,22 @@ export const ICE_FOLK_6_V7: MissionDefinitionV7 = {
         { role: "FIGHTER", at: { x: 6, y: 3 } },
         { role: "MARKSMAN", at: { x: 7, y: 2 } },
         { role: "FIGHTER", at: { x: 2, y: 3 }, home: 1 },
+        // Retune 4: a second Musk Ox, a second Snow Hunter and a Sled.
+        { role: "GUARD", at: { x: 8, y: 3 } },
+        { role: "MARKSMAN", at: { x: 6, y: 2 } },
+        { role: "RAIDER", at: { x: 8, y: 2 } },
       ],
-      // The camps and the summit, and nothing between.
-      reveal: { radius: 2, rects: [{ x0: 11, y0: 9, x1: 11, y1: 9 }] },
+      // The camps and the summit (retune 4: and the climb to it).
+      reveal: { radius: 2, rects: [{ x0: 8, y0: 4, x1: 12, y1: 9 }] },
     },
     {
       // The Grey Lodge on the eastern slopes.
       faction: "CULT",
       coins: 6,
-      // Enough Favour for two Horrors at once (retune 3: was 4).
-      favour: 8,
+      // Enough Favour for two Horrors at once (retune 3: was 4). Retune 4:
+      // 3 (hand play: a Horror kills Mother Rime in one blow, and with 6
+      // one stood in the fog on every other tile of the climb).
+      favour: 3,
       // Leadership (the Summoner), Hexers and Familiars.
       technologies: [
         "GATHERING",
@@ -245,15 +268,12 @@ export const ICE_FOLK_6_V7: MissionDefinitionV7 = {
         { role: "GUARD", at: { x: 14, y: 9 } },
         { role: "FIGHTER", at: { x: 17, y: 6 }, home: 1 },
         { role: "RAIDER", at: { x: 16, y: 7 }, home: 1 },
-        // The ambush below the summit, on the western path.
-        { role: "FIGHTER", at: { x: 9, y: 9 } },
-        { role: "MARKSMAN", at: { x: 10, y: 8 } },
-        // Retune 3: five more keepers of the slopes.
+        // Retune 4: the ambush below the summit is gone (hand play: its
+        // Fighter settled the Summit's village in round 4 and the last
+        // step of the climb became a siege nobody was left for).
+        // Retune 3: five more keepers of the slopes (retune 4: two).
         { role: "MARKSMAN", at: { x: 12, y: 5 } },
         { role: "GUARD", at: { x: 15, y: 7 } },
-        { role: "RAIDER", at: { x: 16, y: 5 }, home: 1 },
-        { role: "FIGHTER", at: { x: 16, y: 8 }, home: 1 },
-        { role: "FIGHTER", at: { x: 11, y: 6 } },
       ],
       reveal: { radius: 2, rects: [{ x0: 6, y0: 2, x1: 15, y1: 11 }] },
       forbiddenTechnologies: [
@@ -290,7 +310,7 @@ export const ICE_FOLK_6_V7: MissionDefinitionV7 = {
             { x0: 12, y0: 4, x1: 16, y1: 10 },
             { x0: 8, y0: 8, x1: 10, y1: 9 },
           ],
-          garrison: 10,
+          garrison: 8,
           others: { kind: "ASSAULT", target: { x: 7, y: 3 } },
           fromRound: 4,
         },
@@ -312,6 +332,11 @@ export const ICE_FOLK_6_V7: MissionDefinitionV7 = {
         { role: "FIGHTER", at: { x: 3, y: 8 } },
         { role: "FIGHTER", at: { x: 5, y: 9 } },
         { role: "GUARD", at: { x: 5, y: 8 } },
+        // Retune 4: the first wave (round 3) is on the board from the start.
+        { role: "FIGHTER", at: { x: 6, y: 9 } },
+        { role: "FIGHTER", at: { x: 6, y: 7 } },
+        { role: "GUARD", at: { x: 6, y: 8 } },
+        { role: "FIGHTER", at: { x: 5, y: 7 } },
       ],
       reveal: { radius: 2, rects: [{ x0: 2, y0: 2, x1: 12, y1: 11 }] },
       forbiddenTechnologies: [
@@ -384,23 +409,12 @@ export const ICE_FOLK_6_V7: MissionDefinitionV7 = {
   teams: [0, 1, 1, 0],
   // The Unquiet climb out of the barrows in rounds 4, 8 and 12 (hand play:
   // in rounds 6, 10 and 14 they came too late for the road). Retune 3: in
-  // rounds 3, 6, 9, 12 and 15, and bigger.
+  // rounds 3, 6, 9, 12 and 15, and bigger. Retune 4: the first wave is on
+  // the board from the start and one more comes in round 8.
   reinforcements: [
     {
       seat: 2,
-      round: 3,
-      line: "The first of the Unquiet climb out of the barrows, stiff and in no hurry.",
-      announce: true,
-      units: [
-        { role: "FIGHTER", at: { x: 6, y: 9 } },
-        { role: "FIGHTER", at: { x: 5, y: 8 } },
-        { role: "GUARD", at: { x: 6, y: 8 } },
-        { role: "FIGHTER", at: { x: 5, y: 7 } },
-      ],
-    },
-    {
-      seat: 2,
-      round: 6,
+      round: 8,
       line: "More of the dead, who have heard there is a witch on the road.",
       announce: true,
       units: [
@@ -409,46 +423,6 @@ export const ICE_FOLK_6_V7: MissionDefinitionV7 = {
         { role: "FIGHTER", at: { x: 6, y: 9 } },
         { role: "FIGHTER", at: { x: 5, y: 8 } },
         { role: "FIGHTER", at: { x: 6, y: 7 } },
-      ],
-    },
-    {
-      seat: 2,
-      round: 9,
-      line: "The barrows empty a little more. Somebody up there is very persuasive.",
-      announce: true,
-      units: [
-        { role: "SWORDSMAN", at: { x: 7, y: 8 } },
-        { role: "GUARD", at: { x: 6, y: 8 } },
-        { role: "FIGHTER", at: { x: 6, y: 9 } },
-        { role: "CAPTAIN", at: { x: 5, y: 9 } },
-        { role: "FIGHTER", at: { x: 8, y: 9 } },
-      ],
-    },
-    {
-      seat: 2,
-      round: 12,
-      line: "A Necromancer's worth of dead, arriving in good order and bad temper.",
-      announce: true,
-      units: [
-        { role: "SWORDSMAN", at: { x: 7, y: 8 } },
-        { role: "SWORDSMAN", at: { x: 8, y: 9 } },
-        { role: "GUARD", at: { x: 6, y: 8 } },
-        { role: "FIGHTER", at: { x: 6, y: 9 } },
-        { role: "FIGHTER", at: { x: 5, y: 8 } },
-        { role: "FIGHTER", at: { x: 6, y: 7 } },
-      ],
-    },
-    {
-      seat: 2,
-      round: 15,
-      line: "The last of the Unquiet. They will not be sorry to see it end either.",
-      announce: true,
-      units: [
-        { role: "SWORDSMAN", at: { x: 7, y: 8 } },
-        { role: "GUARD", at: { x: 6, y: 8 } },
-        { role: "GUARD", at: { x: 8, y: 9 } },
-        { role: "FIGHTER", at: { x: 6, y: 9 } },
-        { role: "FIGHTER", at: { x: 5, y: 8 } },
       ],
     },
   ],
@@ -461,14 +435,14 @@ export const ICE_FOLK_6_V7: MissionDefinitionV7 = {
     "SEAMANSHIP",
     "SUBMERSIBLES",
   ],
-  // Rime onto the summit by round 16. The stars: by round 13, and no city
+  // Rime onto the summit by round 18. The stars: by round 14, and no city
   // lost.
   objective: {
     kind: "ESCORT",
     unit: "RIME",
     to: "SUMMIT",
     within: 0,
-    byRound: 16,
-    bonus: [{ kind: "WITHIN_ROUNDS", rounds: 13 }, { kind: "KEEP_CITIES" }],
+    byRound: 18,
+    bonus: [{ kind: "WITHIN_ROUNDS", rounds: 14 }, { kind: "KEEP_CITIES" }],
   },
 };

@@ -1120,13 +1120,15 @@ describe("natural maps", () => {
       CANDY_2: 11,
       CANDY_3: 14,
       CANDY_6: 11,
-      // Retune 3 (`pulp_wars-hmyk.21`): the villages by the player's start go.
-      ICE_FOLK_4: 11,
-      ICE_FOLK_5: 15,
+      // Retune 3 (`pulp_wars-hmyk.21`): the villages by the player's start
+      // go; retune 4 (`pulp_wars-hmyk.31`) gives some back (I4 is within
+      // ten again, I5 has three of the snowfield's back).
+      ICE_FOLK_5: 12,
       // The Winter Crown (`pulp_wars-hmyk.10`): the four seats stand on five
-      // villages and eleven more round the slopes and the barrows are gone,
-      // so neither the Lodge nor the dead grows a free town.
-      ICE_FOLK_6: 16,
+      // villages and the ones round the slopes and the barrows are gone, so
+      // neither the Lodge nor the dead grows a free town (retune 4: the old
+      // Ember Lodge's village behind Rime Camp is back).
+      ICE_FOLK_6: 15,
       // The Long Night (`pulp_wars-hmyk.12`): the Lodge's, the Pact's and
       // the dead's nine towns stand on villages, and nine more between them
       // are gone, so the night is a battle and not a land rush.

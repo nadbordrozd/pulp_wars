@@ -38,13 +38,23 @@ import type { MissionDefinitionV7 } from "./types";
  * camps, ten Goblins, Coins to train more, hold
  * home for three rounds and then send all but three at the camp; a second
  * gang comes up the valley in round 7.
+ *
+ * The fourth retune (`pulp_wars-hmyk.31`, CAMPAIGN.md section 22.5,
+ * hand-played): eased toward the middle. Rime Camp is level 2 with
+ * Gathering, 5 Coins and a second Yeti, and both villages by the camp are
+ * back. The Frostbite Boys keep the Stovepipe at level 2 but Boiler Hole is
+ * level 1; eight Goblins and no Coins, home for four rounds and then all
+ * but three at the camp; the second gang is gone. The clock is 22 (star
+ * 15).
  */
 export const ICE_FOLK_1_V7: MissionDefinitionV7 = {
   id: "ICE_FOLK_1",
   // Revision 2 (`pulp_wars-hmyk.17`): each seat explores its units' sight.
   // Revision 3 (`pulp_wars-hmyk.21`, the third retune): a skirmish start
   // against a bigger, marching gang.
-  revision: 3,
+  // Revision 4 (`pulp_wars-hmyk.31`, the fourth retune): eased toward
+  // the middle.
+  revision: 4,
   seed: 20261601,
   // <map>
   size: 11,
@@ -61,9 +71,8 @@ export const ICE_FOLK_1_V7: MissionDefinitionV7 = {
       { kind: "VILLAGE", at: { x: 1, y: 5 }, present: false },
       { kind: "VILLAGE", at: { x: 4, y: 5 }, present: false },
       { kind: "VILLAGE", at: { x: 1, y: 8 }, present: false },
-      // Retune 3: nothing free by the camp.
-      { kind: "VILLAGE", at: { x: 1, y: 2 }, present: false },
-      { kind: "VILLAGE", at: { x: 7, y: 2 }, present: false },
+      // Retune 3: nothing free by the camp. Retune 4: both villages by
+      // the camp are back.
     ],
   },
   terrain: [
@@ -106,7 +115,10 @@ export const ICE_FOLK_1_V7: MissionDefinitionV7 = {
     "PPPPPPPPPPP",
     "PPPPPPPPPPP",
   ],
-  villages: [],
+  villages: [
+    { x: 1, y: 2 },
+    { x: 7, y: 2 },
+  ],
   treasureChests: [
     { x: 8, y: 4 },
     { x: 2, y: 8 },
@@ -118,15 +130,16 @@ export const ICE_FOLK_1_V7: MissionDefinitionV7 = {
       faction: "ICE_FOLK",
       // Retune 3 (`pulp_wars-hmyk.21`): a skirmish start. A level 1 camp,
       // Mother Rime, a Fighter and one Guard nobody can train yet (no
-      // Fortification), no technology.
-      coins: 3,
-      technologies: [],
+      // Fortification), no technology. Retune 4: level 2, Gathering, 5 Coins
+      // and a second Yeti.
+      coins: 5,
+      technologies: ["GATHERING"],
       cities: [
         {
           name: "Rime Camp",
           at: { x: 4, y: 2 },
-          level: 1,
-          rewards: [],
+          level: 2,
+          rewards: ["STOCKPILE"],
         },
       ],
       units: [
@@ -134,6 +147,7 @@ export const ICE_FOLK_1_V7: MissionDefinitionV7 = {
         { role: "CAPTAIN", at: { x: 4, y: 3 }, tag: "RIME" },
         { role: "FIGHTER", at: { x: 4, y: 2 } },
         { role: "GUARD", at: { x: 4, y: 4 } },
+        { role: "FIGHTER", at: { x: 3, y: 3 } },
       ],
       // The camp and the two camps below it, and nothing else.
       reveal: {
@@ -147,8 +161,7 @@ export const ICE_FOLK_1_V7: MissionDefinitionV7 = {
     {
       // The Frostbite Boys: a goblin gang with a stove.
       faction: "GOBLIN",
-      // Retune 3: Coins to keep training.
-      coins: 4,
+      coins: 0,
       technologies: [],
       cities: [
         {
@@ -157,12 +170,7 @@ export const ICE_FOLK_1_V7: MissionDefinitionV7 = {
           level: 2,
           rewards: ["STOCKPILE"],
         },
-        {
-          name: "Boiler Hole",
-          at: { x: 7, y: 5 },
-          level: 2,
-          rewards: ["STOCKPILE"],
-        },
+        { name: "Boiler Hole", at: { x: 7, y: 5 }, level: 1, rewards: [] },
       ],
       units: [
         { role: "FIGHTER", at: { x: 4, y: 8 } },
@@ -171,13 +179,12 @@ export const ICE_FOLK_1_V7: MissionDefinitionV7 = {
         { role: "RAIDER", at: { x: 4, y: 7 } },
         { role: "FIGHTER", at: { x: 7, y: 5 }, home: 1 },
         { role: "FIGHTER", at: { x: 8, y: 5 }, home: 1 },
-        // Retune 3: four more, and a second Raider.
+        // Retune 3: four more, and a second Raider (retune 4: a Fighter and
+        // the Raider are gone again).
         { role: "FIGHTER", at: { x: 3, y: 7 } },
-        { role: "FIGHTER", at: { x: 5, y: 7 } },
-        { role: "RAIDER", at: { x: 6, y: 7 }, home: 1 },
         { role: "GUARD", at: { x: 6, y: 5 }, home: 1 },
       ],
-      reveal: { radius: 2, rects: [{ x0: 2, y0: 2, x1: 7, y1: 5 }] },
+      reveal: { radius: 2, rects: [{ x0: 3, y0: 2, x1: 7, y1: 4 }] },
       // Step 1 keeps to the lesson: a gang of Goblins with a Brute and a
       // Wolf Rider, who learn nothing.
       forbiddenTechnologies: [
@@ -203,7 +210,8 @@ export const ICE_FOLK_1_V7: MissionDefinitionV7 = {
         "EXPLOSIVES",
       ],
       // Retune 3: they hold home for three rounds (Boiler Hole and the
-      // Stovepipe, all ten), then all but three march on Rime Camp.
+      // Stovepipe, all ten), then all but three march on Rime Camp. Retune
+      // 4: four rounds, all eight.
       directive: [
         {
           kind: "GUARD",
@@ -211,8 +219,8 @@ export const ICE_FOLK_1_V7: MissionDefinitionV7 = {
             { x0: 3, y0: 6, x1: 8, y1: 9 },
             { x0: 6, y0: 4, x1: 8, y1: 6 },
           ],
-          garrison: 10,
-          untilRound: 3,
+          garrison: 8,
+          untilRound: 4,
         },
         {
           kind: "GUARD",
@@ -222,23 +230,8 @@ export const ICE_FOLK_1_V7: MissionDefinitionV7 = {
           ],
           garrison: 3,
           others: { kind: "RUSH" },
-          fromRound: 3,
+          fromRound: 4,
         },
-      ],
-    },
-  ],
-  // Retune 3: a second gang, with another stove, up the valley.
-  reinforcements: [
-    {
-      seat: 1,
-      round: 7,
-      line: "A second gang comes up the valley with a second stove. Smaller, hotter.",
-      announce: true,
-      units: [
-        { role: "FIGHTER", at: { x: 9, y: 7 } },
-        { role: "FIGHTER", at: { x: 9, y: 8 } },
-        { role: "RAIDER", at: { x: 10, y: 7 } },
-        { role: "GUARD", at: { x: 8, y: 7 } },
       ],
     },
   ],
@@ -254,12 +247,12 @@ export const ICE_FOLK_1_V7: MissionDefinitionV7 = {
     "SEAMANSHIP",
     "SUBMERSIBLES",
   ],
-  // Both camps, by round 15. The stars: by round 11, and Rime lives.
+  // Both camps, by round 22. The stars: by round 15, and Rime lives.
   objective: {
     kind: "DOMINATION",
-    byRound: 15,
+    byRound: 22,
     bonus: [
-      { kind: "WITHIN_ROUNDS", rounds: 11 },
+      { kind: "WITHIN_ROUNDS", rounds: 15 },
       { kind: "UNIT_ALIVE", unit: "RIME" },
     ],
   },

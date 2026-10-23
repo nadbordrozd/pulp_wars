@@ -137,18 +137,19 @@ describe("The Long Winter", () => {
       };
     });
     expect(summary).toEqual([
-      // Retune 3 (`pulp_wars-hmyk.21`): the clocks are about a fifth
-      // shorter, and the first mission has one.
+      // Retune 4 (`pulp_wars-hmyk.31`, CAMPAIGN.md section 22.5): the
+      // conquests' clocks are about one and a half good wins, the escort's
+      // stays close and the hold keeps its length.
       {
         kind: "DOMINATION",
-        byRound: 15,
-        bonus: ["WITHIN_ROUNDS 11", "UNIT_ALIVE"],
+        byRound: 22,
+        bonus: ["WITHIN_ROUNDS 15", "UNIT_ALIVE"],
       },
-      { kind: "KILL", byRound: 16, bonus: ["WITHIN_ROUNDS 12", "KEEP_CITIES"] },
+      { kind: "KILL", byRound: 18, bonus: ["WITHIN_ROUNDS 14", "KEEP_CITIES"] },
       {
         kind: "CAPTURE",
-        byRound: 18,
-        bonus: ["WITHIN_ROUNDS 14", "KEEP_CITIES"],
+        byRound: 22,
+        bonus: ["WITHIN_ROUNDS 16", "KEEP_CITIES"],
       },
       {
         kind: "SURVIVE",
@@ -157,13 +158,13 @@ describe("The Long Winter", () => {
       },
       {
         kind: "CAPTURE",
-        byRound: 18,
-        bonus: ["WITHIN_ROUNDS 14", "KEEP_CITIES"],
+        byRound: 22,
+        bonus: ["WITHIN_ROUNDS 16", "KEEP_CITIES"],
       },
       {
         kind: "ESCORT",
-        byRound: 16,
-        bonus: ["WITHIN_ROUNDS 13", "KEEP_CITIES"],
+        byRound: 18,
+        bonus: ["WITHIN_ROUNDS 14", "KEEP_CITIES"],
       },
     ]);
     expect(mission("ICE_FOLK_2").objective).toMatchObject({
@@ -189,58 +190,104 @@ describe("The Long Winter", () => {
       mission(id).objective.bonus?.find((bonus) => bonus.kind === "UNIT_ALIVE");
     expect(alive("ICE_FOLK_1")).toEqual({ kind: "UNIT_ALIVE", unit: "RIME" });
     expect(alive("ICE_FOLK_4")).toEqual({ kind: "UNIT_ALIVE", unit: "RIME" });
+    // Every chapter objective names its mission's clock.
+    for (const entry of CHAPTER_ICE_FOLK_V7.missions) {
+      const { objective } = mission(entry.missionId);
+      const clock =
+        "byRound" in objective && objective.byRound !== undefined
+          ? objective.byRound
+          : "rounds" in objective
+            ? objective.rounds
+            : undefined;
+      expect(entry.objective, entry.missionId).toContain(String(clock));
+    }
   });
 
-  it("builds the missions as the third retune left them", () => {
-    // `pulp_wars-hmyk.21` (CAMPAIGN.md section 22.4, not play-tested): thin
-    // or skirmish starts, bigger enemies that march early, announced waves.
+  it("builds the missions as the fourth retune left them", () => {
+    // `pulp_wars-hmyk.31` (CAMPAIGN.md section 22.5, hand-played): eased
+    // from the third retune toward the middle. The enemies outnumber your
+    // side (yours and the dwarves' in I6) from the start and attack, so the
+    // difficulty comes from them rather than from waves or the clock.
+    for (const id of ORDER) {
+      const definition = mission(id);
+      const side = (index: number) => definition.teams?.[index] ?? index;
+      const count = (ours: boolean) =>
+        definition.seats
+          .filter((_, index) => (side(index) === side(0)) === ours)
+          .reduce((sum, item) => sum + item.units.length, 0);
+      expect(count(false), id).toBeGreaterThan(count(true));
+    }
+    // Every hostile seat attacks: RUSH, an ASSAULT, or a GUARD that sends
+    // the rest.
+    for (const id of ORDER) {
+      const definition = mission(id);
+      const side = (index: number) => definition.teams?.[index] ?? index;
+      for (const [index, item] of definition.seats.entries()) {
+        if (side(index) === side(0)) continue;
+        const entries = Array.isArray(item.directive)
+          ? item.directive
+          : [item.directive];
+        const last = entries[entries.length - 1];
+        expect(
+          last?.kind === "RUSH" ||
+            last?.kind === "ASSAULT" ||
+            (last?.kind === "GUARD" && last.others !== undefined),
+          `${id} seat ${String(index)}`,
+        ).toBe(true);
+      }
+    }
+    // Some economy is back: every start has technology, at least 5 Coins
+    // and a town of level 2 or more, and every mission has neutral
+    // villages to take.
+    for (const id of ORDER) {
+      const start = seat(id, 0);
+      expect(start.technologies.length, id).toBeGreaterThan(0);
+      expect(start.coins, id).toBeGreaterThanOrEqual(5);
+      expect(
+        Math.max(...start.cities.map((city) => city.level ?? 1)),
+        id,
+      ).toBeGreaterThanOrEqual(2);
+      expect(mission(id).villages.length, id).toBeGreaterThan(0);
+    }
+    // Waves only fine-tune: every enemy wave is announced with a story line
+    // (the player's own giant of I2 has the line only).
     const rounds = (id: string) =>
       (mission(id).reinforcements ?? []).map((wave) => [wave.seat, wave.round]);
-    // Every wave of every mission from the second on is announced and has
-    // a story line (the player's own giant of I2 has the line only).
-    for (const id of ORDER.slice(1))
+    for (const id of ORDER)
       for (const wave of mission(id).reinforcements ?? []) {
         expect(wave.line, id).toBeTypeOf("string");
         if (wave.seat !== 0) expect(wave.announce, id).toBe(true);
       }
-    // I1: a skirmish start (one camp, three units, no technology); the
-    // Frostbite Boys hold three rounds and then send all but three.
-    expect(seat("ICE_FOLK_1", 0).technologies).toEqual([]);
-    expect(seat("ICE_FOLK_1", 0).cities).toHaveLength(1);
-    expect(seat("ICE_FOLK_1", 0).units).toHaveLength(3);
-    expect(seat("ICE_FOLK_1", 1).coins).toBe(4);
+    // I1: one level 2 camp and four units against eight Goblins with no
+    // Coins, who hold four rounds and then send all but three; no waves.
+    expect(seat("ICE_FOLK_1", 0).units).toHaveLength(4);
+    expect(seat("ICE_FOLK_1", 1).units).toHaveLength(8);
+    expect(seat("ICE_FOLK_1", 1).coins).toBe(0);
     expect(seat("ICE_FOLK_1", 1).directive).toMatchObject([
-      { kind: "GUARD", untilRound: 3 },
-      { kind: "GUARD", garrison: 3, others: { kind: "RUSH" }, fromRound: 3 },
+      { kind: "GUARD", untilRound: 4 },
+      { kind: "GUARD", garrison: 3, others: { kind: "RUSH" }, fromRound: 4 },
     ]);
-    expect(rounds("ICE_FOLK_1")).toEqual([[1, 7]]);
-    // I2: a skirmish start; the tomb holds three rounds, then the Abbot and
-    // four stay and the rest march; three waves of the dead; the first
-    // Frost Giant joins you in round 10.
-    expect(seat("ICE_FOLK_2", 0).technologies).toEqual([]);
-    expect(seat("ICE_FOLK_2", 0).cities).toHaveLength(1);
+    expect(rounds("ICE_FOLK_1")).toEqual([]);
+    // I2: sixteen dead (retune 3's first wave on the board), the tomb holds
+    // three rounds, then the Abbot and four stay and the rest march; no
+    // waves of the dead; the first Frost Giant joins you in round 10.
+    expect(seat("ICE_FOLK_2", 1).units).toHaveLength(16);
     expect(seat("ICE_FOLK_2", 1).directive).toMatchObject([
       { kind: "GUARD", untilRound: 3 },
       { kind: "GUARD", garrison: 5, others: { kind: "RUSH" }, fromRound: 3 },
     ]);
-    expect(rounds("ICE_FOLK_2")).toEqual([
-      [1, 4],
-      [1, 8],
-      [0, 10],
-      [1, 12],
-    ]);
+    expect(rounds("ICE_FOLK_2")).toEqual([[0, 10]]);
     expect(
       (mission("ICE_FOLK_2").reinforcements ?? []).find(
         (wave) => wave.seat === 0,
       )?.units,
     ).toEqual([expect.objectContaining({ role: "JUGGERNAUT" })]);
-    // I3: Rime and Pack Ice known, Icebound a research away; Anvil Bay
-    // builds no Ironclads or Diving Bells, holds five and sends the rest;
-    // its Ironclad comes home in round 9.
-    expect(seat("ICE_FOLK_3", 0).technologies).toEqual([
-      "SHORECRAFT",
-      "NAVIGATION",
-    ]);
+    // I3: Rime, Pack Ice and Icebound known; Anvil Bay builds no Ironclads
+    // or Diving Bells, holds five and sends the rest; no landing parties,
+    // and its Ironclad comes home in round 11.
+    expect(seat("ICE_FOLK_3", 0).technologies).toEqual(
+      expect.arrayContaining(["SHORECRAFT", "NAVIGATION", "NAVAL_ENGINEERING"]),
+    );
     for (const tech of ["NAVAL_ENGINEERING", "SUBMERSIBLES"])
       expect(seat("ICE_FOLK_3", 1).forbiddenTechnologies, tech).toContain(tech);
     expect(seat("ICE_FOLK_3", 1).directive).toMatchObject({
@@ -248,20 +295,19 @@ describe("The Long Winter", () => {
       garrison: 5,
       others: { kind: "RUSH" },
     });
-    expect(rounds("ICE_FOLK_3")).toEqual([
-      [1, 5],
-      [1, 9],
-      [1, 14],
-    ]);
-    expect((mission("ICE_FOLK_3").reinforcements ?? [])[1]?.units).toEqual([
+    expect(rounds("ICE_FOLK_3")).toEqual([[1, 11]]);
+    expect((mission("ICE_FOLK_3").reinforcements ?? [])[0]?.units).toEqual([
       expect.objectContaining({ role: "BATTLESHIP" }),
     ]);
-    // I4: both Snow Line towns, five units; the Wardens ride with Chivalry
-    // and the sweets march; six waves, the sweets in rounds 3, 6 and 10 and
-    // the Wardens in rounds 4, 8 and 12.
+    // I4: both Snow Line towns, six units; the Wardens ride with Chivalry
+    // and rifles and the sweets march; two waves, the sweets in round 6 and
+    // the Wardens in round 8.
     expect(seat("ICE_FOLK_4", 0).cities).toHaveLength(2);
-    expect(seat("ICE_FOLK_4", 0).units).toHaveLength(5);
+    expect(seat("ICE_FOLK_4", 0).units).toHaveLength(6);
     expect(seat("ICE_FOLK_4", 1).technologies).toContain("CHIVALRY");
+    expect(
+      seat("ICE_FOLK_4", 1).units.filter((unit) => unit.role === "MARKSMAN"),
+    ).toHaveLength(3);
     expect(seat("ICE_FOLK_4", 1).directive).toMatchObject({
       kind: "ASSAULT",
     });
@@ -269,52 +315,42 @@ describe("The Long Winter", () => {
       kind: "ASSAULT",
     });
     expect(rounds("ICE_FOLK_4")).toEqual([
-      [2, 3],
-      [1, 4],
       [2, 6],
       [1, 8],
-      [2, 10],
-      [1, 12],
     ]);
-    // I5: a skirmish start (one level 2 camp, no technology); the Lodge has
-    // 4 Favour and sends two hunters from round 1; the Redcaps rush; four
-    // waves, the Lodge changing its shift in round 8.
-    expect(seat("ICE_FOLK_5", 0).technologies).toEqual([]);
-    expect(seat("ICE_FOLK_5", 0).cities[0]).toMatchObject({ level: 2 });
-    expect(seat("ICE_FOLK_5", 1).favour).toBe(4);
+    // I5: Hoarfrost Camp at level 3 behind walls (a Frost Giant a few
+    // rounds of growth away); the Lodge has ten keepers and Favour 1, holds
+    // eight and sends two from round 1; the Redcaps rush; no waves.
+    expect(seat("ICE_FOLK_5", 0).cities[0]).toMatchObject({
+      level: 3,
+      rewards: ["STOCKPILE", "WALLS"],
+    });
+    expect(seat("ICE_FOLK_5", 1).units).toHaveLength(10);
+    expect(seat("ICE_FOLK_5", 1).favour).toBe(1);
     expect(seat("ICE_FOLK_5", 1).directive).toMatchObject({
       kind: "GUARD",
       garrison: 8,
       others: { kind: "RUSH" },
     });
     expect(seat("ICE_FOLK_5", 2).directive).toMatchObject({ kind: "RUSH" });
-    expect(rounds("ICE_FOLK_5")).toEqual([
-      [2, 3],
-      [2, 6],
-      [1, 8],
-      [2, 9],
-    ]);
-    // I6: no Engineering at the start (the peaks are the road's walls) and
-    // no Explosives; the Lodge holds the slopes and then sends six at Rime
-    // Camp, the Unquiet climb out of the barrows in five waves, and the
-    // dwarves hold the Deep Gate.
+    expect(rounds("ICE_FOLK_5")).toEqual([]);
+    // I6: no Engineering at the start (the peaks are the road's walls);
+    // the climb is seen; the Lodge has eleven units and Favour 3, holds the
+    // slopes and then sends three at Rime Camp, with no ambush below the
+    // summit; the Unquiet have ten on the board and one wave in round 8;
+    // the dwarves hold the Deep Gate.
     expect(seat("ICE_FOLK_6", 0).technologies).not.toContain("ENGINEERING");
-    expect(seat("ICE_FOLK_6", 0).technologies).not.toContain("EXPLOSIVES");
-    expect(seat("ICE_FOLK_6", 0).units).toHaveLength(6);
-    expect(seat("ICE_FOLK_6", 1).favour).toBe(8);
+    expect(seat("ICE_FOLK_6", 0).units).toHaveLength(9);
+    expect(seat("ICE_FOLK_6", 1).units).toHaveLength(11);
+    expect(seat("ICE_FOLK_6", 1).favour).toBe(3);
     expect(seat("ICE_FOLK_6", 1).directive).toMatchObject([
       { kind: "HOLD", untilRound: 4 },
-      { kind: "GUARD", garrison: 10, others: { kind: "ASSAULT" } },
+      { kind: "GUARD", garrison: 8, others: { kind: "ASSAULT" } },
     ]);
+    expect(seat("ICE_FOLK_6", 2).units).toHaveLength(10);
     expect(seat("ICE_FOLK_6", 2).directive).toMatchObject({ kind: "RUSH" });
     expect(seat("ICE_FOLK_6", 3).directive).toMatchObject({ kind: "HOLD" });
-    expect(rounds("ICE_FOLK_6")).toEqual([
-      [2, 3],
-      [2, 6],
-      [2, 9],
-      [2, 12],
-      [2, 15],
-    ]);
+    expect(rounds("ICE_FOLK_6")).toEqual([[2, 8]]);
   });
 
   it("names every place and unit an objective talks about", () => {

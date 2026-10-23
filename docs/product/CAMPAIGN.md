@@ -6453,6 +6453,132 @@ I2 no longer shows on the map). I5's Frost Giant (a level 5 city) is now a
 long reach from a level 2 camp, which is the point of the lesson. **No
 mission of this campaign has been played since the retune.**
 
+### 22.5 Retune 4: toward the middle, strong enemy starts (`pulp_wars-hmyk.31`)
+
+The user, 2026-10-23, about the third retunes: "the enemies are too strong
+and the time limits are too harsh". So this pass eases section 22.4 toward
+the middle, and it must stay a real fight. It keeps the method of sections
+19.5 and 20.5: the difficulty comes from strong, aggressive enemy starts
+that outnumber the player, not from the clock. Conquest and capture clocks
+are lax (about one and a half times a good win), the escort keeps a
+meaningful clock, and the hold keeps its thirteen rounds. Waves only
+fine-tune: retune 3's waves are cut but for I3's Ironclad (the story), two
+in I4 and one in I6, and I2's first wave of the dead is on the board from
+the start. Some economy is back: every start has technology, at least 5
+Coins, a town of level 2 or more and neutral villages, each within reach.
+Mission 1 is slightly easier than the rest. From mission 2 on the
+autopilot (section 15) loses, and the first thoughtful attempt on each
+definition was lost or won narrowly; where it was won comfortably the
+enemy was strengthened, and after three losses the enemy start was eased,
+never the clock.
+
+The earlier campaigns' lessons held here too. Weak extra units only feed
+the Ice Folk's chains (freeze, then shatter): I2's two extra Zombies only
+fed the Giant's Cold Aura, and I4's extra Fighters only walked into a wall
+of Musk Oxen, so they became rifles, whose shots from two tiles draw no
+Frostbite. I2's first wave stands on the snowfields from the start.
+
+This section supersedes section 22.4's numbers. All six missions are now
+revision 4, re-pinned in both pin tables. Every mission's enemies
+outnumber your side, yours and the dwarves' in I6
+(`tests/unit/campaign-ice-folk-v7.test.ts`): I1 8 to 4, I2 16 to 5, I3 12
+to 5, I4 16 to 6, I5 18 to 6 and I6 21 to 13.
+
+| Mission | Your start now                                                                                                                                                                                                                                                                                                                 | Enemies now                                                                                                                                                                                                                                                                  | Clock and stars                                      | Waves                                                                                                               |
+| ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| I1      | Rime Camp level 2 (was 1), Gathering, 5 Coins (were 3), Rime, two Yetis (was one) and the Ox, both villages by the camp back                                                                                                                                                                                                   | the Frostbite Boys eight (were ten: a Fighter and the second Wolf Rider gone), no Coins (were 4), Boiler Hole level 1 (was 2), a smaller reveal of your camp; home for four rounds (was three), then all but three `RUSH`                                                    | conquest by 22 (was 15); by 15 (was 11), Rime lives  | none (round 7 cut)                                                                                                  |
+| I2      | Rime Camp level 2 (was 1), Gathering and Scouting, 5 Coins (were 3), Rime, Gnash, two Yetis (was one) and a Sled (new), two of the three villages by the camp back                                                                                                                                                             | the Abbot and fifteen dead (were eleven: retune 3's round-4 wave of three Skeletons and a Zombie on the snowfields from the start), 4 Coins (were 5); home for three rounds, then the Abbot and four stay and eleven `RUSH`                                                  | kill by 18 (was 16); by 14 (was 12), no city lost    | the Frost Giant in round 10 (yours); the dead's rounds 4, 8 and 12 cut                                              |
+| I3      | Coldharbour level 2, Gathering, Scouting, Rime, Pack Ice and Icebound (new), 6 Coins (were 4), Rime, two Yetis, the Ox and a Sled (new), the village on the cliffs back                                                                                                                                                        | Anvil Bay level 3 walled (was 4 with a Boom), twelve dwarves (two Steam Launches, the Bell, two Gunners), 3 Coins (were 4); five hold, the rest cross the ice                                                                                                                | capture by 22 (was 18); by 16 (was 14), no city lost | the Ironclad in round 11 (was 9); the landing parties of rounds 5 and 14 cut                                        |
+| I4      | Whitewater level 3 walled (was 2) and Frostford level 2, Hunting and Marksmanship back (six technologies), 5 Coins (were 3), Rime, two Yetis, two Snow Hunters (one back) and the Ox, the villages by Whitewater back                                                                                                          | the Wardens eight (were nine): four Knights, three Marksmen (were Fighters) and a Fighter, 4 Coins (were 6); the sweets eight with a Gumball Gunner (was a Fighter), 3 Coins (were 5); both `ASSAULT` from round 1                                                           | hold 13 (kept); no city lost, Rime lives             | the sweets in round 6 and the Wardens in round 8 (a Knight, two Marksmen and a Fighter); rounds 3, 4, 10 and 12 cut |
+| I5      | Hoarfrost Camp level 3 walled (was 2), Rime, two Yetis (was one), the Ox, a Sled and a Snow Hunter (new), six technologies (were none), 5 Coins (were 3), three of the snowfield's villages back                                                                                                                               | the Lodge ten (kept), Favour 1 (was 4), 3 Coins (were 4), eight stay and two hunt; the Redcaps eight (were twelve: two of retune 3's four extras and both Wolf Riders gone), 3 Coins (were 5), `RUSH`                                                                        | capture by 22 (was 18); by 16 (was 14), no city lost | none (the Redcaps' rounds 3, 6 and 9 and the Lodge's round-8 shift cut)                                             |
+| I6      | Rime Camp level 3 walled (was 2) and Whitefang level 1, nine units (were six: a second Ox, a second Snow Hunter and a Sled), seven technologies (Scouting and Explosives back; Engineering still a research away), 6 Coins (were 4), the climb seen (was only the Summit), the old Ember Lodge's village behind Rime Camp back | the Lodge eleven (were sixteen: three of retune 3's keepers and the ambush below the summit gone), Favour 3 (was 8), eight hold the slopes and three `ASSAULT` Rime Camp from round 4; the dead ten (were six: the round-3 wave on the board), `RUSH`; the dwarves unchanged | escort by 18 (was 16); by 14 (was 13), no city lost  | the dead in round 8 (the old round-6 wave); rounds 9, 12 and 15 cut                                                 |
+
+**Hand play** through `play-text`, authorised for this pass. The
+baseline, retune 3 under the autopilot: I1 lost in round 6, I2 in round
+10, I3 in round 5, I4 in round 5 (a town lost), I5 in round 10 and I6 in
+round 12 (the escort lost).
+
+| Mission | Autopilot (final)              | Thoughtful attempts on the final definition                                                                                                                     | Tried and dropped                                                                                                                                                                                                                                                                     |
+| ------- | ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| I1      | defeat, round 7                | win, round 17 of 22, 2 stars (the round-15 star missed), Rime lived (first attempt on this definition; played under the then clock of 20)                       | a gang of nine with 3 Coins and a second Wolf Rider (one village back): three losses (abandoned in rounds 3, 5 and 7): the Wolf Rider and Gang Up Goblins killed a Yeti a turn, and with Coins the gang retrained every loss (46 banked by round 7)                                   |
+| I2      | defeat, round 15               | win, round 12 of 18, 3 stars, Rime and a Yeti left (first attempt on this definition; played under the then clock of 20)                                        | without the snowfield wave: the autopilot won in round 12; two more Zombies beside the Abbot instead: abandoned in round 12 as a certain 3-star win (the Zombies only fed the Giant)                                                                                                  |
+| I3      | defeat, round 5                | win, round 17 of 22, 2 stars (the round-16 star missed), Rime, four Yetis and three Sleds lost (first attempt on this definition)                               | Icebound still to learn and the Ironclad in round 10: lost (abandoned in round 13, no foothold across the strait); Icebound known with one Steam Launch: two 3-star wins in round 13 (the Ironclad in round 14 and in round 11)                                                       |
+| I4      | defeat, round 5 (a town lost)  | win, held 13, 3 stars, four Oxen and a Hunter lost (first attempt on this definition)                                                                           | the enemies all Knights and Fighters: a loss (abandoned in round 10, a Knight on Whitewater's centre), then a 3-star win with no unit lost behind a wall of Oxen (the Wardens never attacked it)                                                                                      |
+| I5      | defeat, round 13               | win, round 15 of 22, 3 stars (the round-16 star with one round to spare), the Sled, an Ox, a Yeti and the Hunter lost, after four losses on earlier definitions | retune 3's Lodge and Redcaps eased step by step: four losses (abandoned in rounds 20, 12, 15 and 19: the Giant worn down by broods of Imps, or no unit to step onto the emptied centre); Hoarfrost at level 4 with a Boom (the Giant in round 1): two 3-star wins in rounds 13 and 12 |
+| I6      | defeat, round 19 (out of time) | win, round 12 of 18, 3 stars, the Sled, an Ox, the Mammoth and two Hunters lost, after three losses on earlier definitions                                      | Favour 6 and the Summit unseen: two losses (rounds 8 and 9: a Horror kills Rime in one blow, the second out of the fog); Favour 3 with the ambush below the summit: a loss (round 16: its Fighter held the Summit's village and Rime had no one left to clear it)                     |
+
+What decided them:
+
+- **I1.** Mission 1 is the gentlest. With Coins the gang retrained every
+  loss and its Wolf Rider and Gang Up Goblins killed a Yeti a turn; with
+  none, the camp's fruit and Crafting, both villages by round 4 (Yetis
+  over the peaks), Deep Winter and Rockfall from the peaks held the rush
+  (it still killed four Yetis and an Ox), then a Sled's bolas froze each
+  camp's centre for the Sled to take: Boiler Hole in round 13 and the
+  Stovepipe in round 17. The clock (then 20) was nearly binding, so it is 22.
+- **I2.** The Frost Giant decides it: from round 10 its Cold Aura freezes
+  the Abbot (10 HP, Defense 1) and the dead round him, and one blow kills
+  him. Before that the eleven marching dead must not take Rime Camp: Cold
+  Snap froze three a turn, Frost Bolts kept Skeletons standing on the
+  centres from capturing, a Mammoth shatter took Rime Camp's centre back,
+  and at round 12 only Rime and a Yeti were left.
+- **I3.** Icebound decides it. Frozen in beside the ice, a boat cannot
+  shoot or strike back and is crushed 3 a turn; but another boat cracks
+  it open, so the second Steam Launch keeps the strait dangerous. Rime
+  died on the port ice to a Launch and a Mole; the Ironclad was icebound
+  on the turn it arrived; a dug-in Steam Mole on Anvil Bay's centre healed
+  between attacks and fell to a bolas and two hits in round 16.
+- **I4.** The Knights' Overrun kills anyone soft left in the open (Rime
+  and both Hunters in one turn in the first loss). Musk Oxen on the snow
+  line freeze every Knight that strikes them, and the Snow Hunters' Cold
+  Blood (9 a shot on a frozen Knight) kill them; the rifles shoot from two
+  tiles and draw no Frostbite, so the line bleeds: four Oxen died, the
+  walled centres held.
+- **I5.** Growth to a level 5 city wakes the Frost Giant, and Hoarfrost
+  level 4 with a Boom gave it in round 1, which won comfortably twice; at
+  level 3 it comes in round 4. The Giant's Cold Aura freezes all round it
+  as it steps and Glacial Smash shatters a frozen Idol Bearer from full
+  health; killing a brood's holder sets its Imps loose on their own
+  keepers. The Lodge trains a keeper onto an emptied centre every turn,
+  so a capturer must stand beside the centre when the Giant empties it:
+  in the losses nobody did; in the win a hexed Yeti stepped on and died,
+  and the Giant itself stepped onto the empty centre a turn later.
+- **I6.** A Horror kills Mother Rime (10 HP) in one blow, and the Lodge
+  summons one nearly every round (Favour from its kills). Rime walks only
+  where no Horror can reach her that turn, and every turn something
+  freezes the nearest one (her Frost Bolt, a Sled's bolas, an Ox's
+  Frostbite) so the Hunters and Oxen can shatter it. With the ambush
+  below the summit, its Fighter settled the Summit's village in round 4
+  and the last step became a siege nobody was left for; without it the
+  Summit stayed neutral and Rime walked on in round 12.
+
+Deviations from the brief:
+
+- **I5 and I6 were won on definitions eased after four and three
+  losses**, so their first attempts on the final definitions were played
+  with the plan known; both were 3-star wins, I5's in round 15 of 22 with
+  one round to spare on the star. I1's and I2's final clocks were set
+  after their winning attempts (from 20 to 22 in I1, where the clock was
+  nearly binding, and from 20 to 18 in I2, where the Giant decides it by
+  round 12 or 13); the wins keep their stars under the final clocks but
+  for I1's, which missed the round-14 star then and the round-15 star
+  now.
+- **I5's fifth attempt was rewound once**: a tool misuse ended four of
+  my turns idle (rounds 12 to 15); the session was rebuilt from its
+  command log to the start of round 12 and played on. That definition
+  (Hoarfrost level 4) was dropped as too easy anyway.
+- **Waves kept**: I3's Ironclad is the story (the dwarves' ship comes
+  home), I4 keeps one wave from each side (the hold-out's pressure), and
+  I6 keeps one wave of the dead.
+
+**Follow-ups.** The Lodge summons Horrors at a steady pace from Favour
+earned by kills even at Favour 3 (I6), and a Horror kills an Ice Witch in
+one blow; whether the summoning pace is right is a rules question. Killing
+a brood's holding Imp unbinds the rest, which then attack the nearest
+cultist, often the Summoners (I5); that is a strong trick and may deserve
+a look. The AI retrains a unit onto an emptied capital centre every turn
+(I5), so a city falls only to a capturer already standing beside it.
+
 ## 23. The Cult campaign, "The Long Night" (`pulp_wars-hmyk.12`)
 
 The last tier-3 faction campaign and the saga's finale: six missions,

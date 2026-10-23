@@ -46,13 +46,24 @@ import type { MissionDefinitionV7 } from "./types";
  * eight, both march from round 1, and six announced waves (rounds 3, 4,
  * 6, 8, 10 and 12) come from the two sides in turn. The clock is 13 (was
  * 16).
+ *
+ * The fourth retune (`pulp_wars-hmyk.31`, CAMPAIGN.md section 22.5,
+ * hand-played): Whitewater is level 3 behind walls and Frostford level 2,
+ * the villages by Whitewater are back, six units (a second Snow Hunter),
+ * six technologies (Hunting and Marksmanship back), 5 Coins. The Wardens
+ * have eight riders and rifles (four Knights, three Marksmen, a Fighter)
+ * and 4 Coins, the sweets eight with a Gumball Gunner and 3 Coins; both
+ * still march from round 1, and two announced waves are left (the sweets
+ * in round 6, the Wardens in round 8). The hold stays 13 rounds.
  */
 export const ICE_FOLK_4_V7: MissionDefinitionV7 = {
   id: "ICE_FOLK_4",
   // Revision 2 (`pulp_wars-hmyk.17`): each seat explores its units' sight.
   // Revision 3 (`pulp_wars-hmyk.21`, the third retune): a thin start against
   // two marching armies and six waves.
-  revision: 3,
+  // Revision 4 (`pulp_wars-hmyk.31`, the fourth retune): eased toward
+  // the middle.
+  revision: 4,
   seed: 20261604,
   // <map>
   size: 16,
@@ -74,9 +85,6 @@ export const ICE_FOLK_4_V7: MissionDefinitionV7 = {
       { kind: "VILLAGE", at: { x: 6, y: 11 }, present: false },
       { kind: "VILLAGE", at: { x: 13, y: 13 }, present: false },
       { kind: "VILLAGE", at: { x: 6, y: 14 }, present: false },
-      // Retune 3: the two villages by Whitewater are gone too.
-      { kind: "VILLAGE", at: { x: 1, y: 1 }, present: false },
-      { kind: "VILLAGE", at: { x: 7, y: 1 }, present: false },
     ],
   },
   terrain: [
@@ -135,6 +143,8 @@ export const ICE_FOLK_4_V7: MissionDefinitionV7 = {
     "PPPPPPPPPPWWWWWW",
   ],
   villages: [
+    { x: 1, y: 1 },
+    { x: 7, y: 1 },
     { x: 10, y: 1 },
     { x: 13, y: 1 },
   ],
@@ -148,15 +158,23 @@ export const ICE_FOLK_4_V7: MissionDefinitionV7 = {
     {
       faction: "ICE_FOLK",
       // Retune 3: a thin start. Rime (freeze the lakes) known; Black Ice is
-      // one research away.
-      coins: 3,
-      technologies: ["GATHERING", "DRILL", "FORTIFICATION", "SHORECRAFT"],
+      // one research away. Retune 4: Hunting and Marksmanship back, 5
+      // Coins, Whitewater at level 3 behind walls.
+      coins: 5,
+      technologies: [
+        "GATHERING",
+        "HUNTING",
+        "MARKSMANSHIP",
+        "DRILL",
+        "FORTIFICATION",
+        "SHORECRAFT",
+      ],
       cities: [
         {
           name: "Whitewater",
           at: { x: 4, y: 2 },
-          level: 2,
-          rewards: ["STOCKPILE"],
+          level: 3,
+          rewards: ["STOCKPILE", "WALLS"],
         },
         {
           name: "Frostford",
@@ -169,9 +187,10 @@ export const ICE_FOLK_4_V7: MissionDefinitionV7 = {
         // Mother Rime, the Ice Witch.
         { role: "CAPTAIN", at: { x: 5, y: 3 }, tag: "RIME" },
         { role: "FIGHTER", at: { x: 4, y: 2 } },
+        // Retune 4: Whitewater's Snow Hunter is back.
+        { role: "MARKSMAN", at: { x: 5, y: 2 } },
         { role: "GUARD", at: { x: 7, y: 4 }, home: 1 },
         { role: "FIGHTER", at: { x: 7, y: 5 }, home: 1 },
-        // A Marksman nobody can train again (no Marksmanship).
         { role: "MARKSMAN", at: { x: 6, y: 4 }, home: 1 },
       ],
       // The Snow Line's north banks, and nothing beyond the lakes.
@@ -180,7 +199,7 @@ export const ICE_FOLK_4_V7: MissionDefinitionV7 = {
     {
       // The Crown's Harvest Wardens (not Steele's Rangers).
       faction: "ORIGINAL",
-      coins: 6,
+      coins: 4,
       technologies: ["SCOUTING", "RAIDING", "CHIVALRY", "HUNTING"],
       cities: [
         {
@@ -194,13 +213,15 @@ export const ICE_FOLK_4_V7: MissionDefinitionV7 = {
         { role: "KNIGHT", at: { x: 8, y: 12 } },
         { role: "KNIGHT", at: { x: 8, y: 11 } },
         { role: "FIGHTER", at: { x: 9, y: 12 } },
-        { role: "FIGHTER", at: { x: 7, y: 12 } },
+        // Retune 4: three rifles (hand play: a wall of Musk Oxen kept every
+        // Knight off; a shot from two tiles draws no Frostbite).
+        { role: "MARKSMAN", at: { x: 7, y: 12 } },
         { role: "MARKSMAN", at: { x: 8, y: 13 } },
-        // Retune 3: two more Knights, two more Fighters.
+        // Retune 3: two more Knights, two more Fighters (retune 4: one is a
+        // rifle, the other is gone).
         { role: "KNIGHT", at: { x: 7, y: 11 } },
         { role: "KNIGHT", at: { x: 6, y: 12 } },
-        { role: "FIGHTER", at: { x: 8, y: 14 } },
-        { role: "FIGHTER", at: { x: 10, y: 13 } },
+        { role: "MARKSMAN", at: { x: 8, y: 14 } },
       ],
       reveal: { radius: 2, rects: [{ x0: 0, y0: 2, x1: 10, y1: 12 }] },
       forbiddenTechnologies: [
@@ -233,7 +254,7 @@ export const ICE_FOLK_4_V7: MissionDefinitionV7 = {
     {
       // Sugarcrest's frost-march.
       faction: "CANDY",
-      coins: 5,
+      coins: 3,
       technologies: ["SCOUTING"],
       cities: [
         {
@@ -251,8 +272,9 @@ export const ICE_FOLK_4_V7: MissionDefinitionV7 = {
         { role: "GUARD", at: { x: 10, y: 4 } },
         // Retune 3: two more Fighters and a Raider.
         { role: "FIGHTER", at: { x: 10, y: 5 } },
-        { role: "FIGHTER", at: { x: 10, y: 3 } },
         { role: "RAIDER", at: { x: 9, y: 5 } },
+        // Retune 4: a rifle of sugar.
+        { role: "MARKSMAN", at: { x: 10, y: 3 } },
       ],
       reveal: { radius: 2, rects: [{ x0: 5, y0: 1, x1: 12, y1: 7 }] },
       forbiddenTechnologies: [
@@ -286,38 +308,14 @@ export const ICE_FOLK_4_V7: MissionDefinitionV7 = {
     },
   ],
   teams: [0, 1, 1],
-  // Retune 3: six announced waves. The sweets come over the eastern hills
-  // in rounds 3, 6 and 10, the Wardens up the west shore in rounds 4, 8 and
-  // 12.
+  // Retune 3: six announced waves, the sweets over the eastern hills in
+  // rounds 3, 6 and 10, the Wardens up the west shore in rounds 4, 8 and
+  // 12. Retune 4: two, the sweets in round 6 and the Wardens in round 8.
   reinforcements: [
     {
       seat: 2,
-      round: 3,
-      line: "Sugarcrest's first frost-march: sprinkles, banners and bad intentions.",
-      announce: true,
-      units: [
-        { role: "FIGHTER", at: { x: 12, y: 3 } },
-        { role: "FIGHTER", at: { x: 12, y: 5 } },
-        { role: "RAIDER", at: { x: 11, y: 4 } },
-        { role: "FIGHTER", at: { x: 10, y: 5 } },
-      ],
-    },
-    {
-      seat: 1,
-      round: 4,
-      line: "The Harvest Wardens ride up the west shore with torches and a grudge.",
-      announce: true,
-      units: [
-        { role: "KNIGHT", at: { x: 1, y: 10 } },
-        { role: "FIGHTER", at: { x: 2, y: 11 } },
-        { role: "FIGHTER", at: { x: 0, y: 11 } },
-        { role: "MARKSMAN", at: { x: 2, y: 10 } },
-      ],
-    },
-    {
-      seat: 2,
       round: 6,
-      line: "A second column of sweets crosses the eastern hills at a run.",
+      line: "A column of sweets crosses the eastern hills at a run.",
       announce: true,
       units: [
         { role: "FIGHTER", at: { x: 12, y: 3 } },
@@ -333,33 +331,8 @@ export const ICE_FOLK_4_V7: MissionDefinitionV7 = {
       announce: true,
       units: [
         { role: "KNIGHT", at: { x: 1, y: 10 } },
-        { role: "KNIGHT", at: { x: 2, y: 11 } },
+        { role: "MARKSMAN", at: { x: 2, y: 11 } },
         { role: "FIGHTER", at: { x: 0, y: 11 } },
-        { role: "FIGHTER", at: { x: 2, y: 10 } },
-      ],
-    },
-    {
-      seat: 2,
-      round: 10,
-      line: "Sugarcrest throws everything it has left at the Snow Line.",
-      announce: true,
-      units: [
-        { role: "FIGHTER", at: { x: 12, y: 3 } },
-        { role: "FIGHTER", at: { x: 12, y: 5 } },
-        { role: "GUARD", at: { x: 11, y: 4 } },
-        { role: "RAIDER", at: { x: 10, y: 5 } },
-        { role: "RAIDER", at: { x: 9, y: 5 } },
-      ],
-    },
-    {
-      seat: 1,
-      round: 12,
-      line: "The last of the Harvest Wardens, riding hard to be home by supper.",
-      announce: true,
-      units: [
-        { role: "KNIGHT", at: { x: 1, y: 10 } },
-        { role: "KNIGHT", at: { x: 2, y: 11 } },
-        { role: "KNIGHT", at: { x: 0, y: 11 } },
         { role: "MARKSMAN", at: { x: 2, y: 10 } },
       ],
     },

@@ -39,13 +39,22 @@ import type { MissionDefinitionV7 } from "./types";
  * the rest cross the ice from the first round; landing parties arrive in
  * rounds 5 and 14 and the Ironclad comes home in round 9 (was 12). The
  * clock is 18 (was 22).
+ *
+ * The fourth retune (`pulp_wars-hmyk.31`, CAMPAIGN.md section 22.5,
+ * hand-played): Coldharbour at level 2 with Gathering, Scouting, Rime, Pack
+ * Ice and Icebound, 6 Coins and a Sled; the village on the cliffs is back.
+ * Anvil Bay is level 3 behind walls with twelve dwarves (two Steam
+ * Launches, the Bell, two Gunners), 3 Coins; the landing parties are gone
+ * and the Ironclad comes home in round 11. The clock is 22 (star 16).
  */
 export const ICE_FOLK_3_V7: MissionDefinitionV7 = {
   id: "ICE_FOLK_3",
   // Revision 2 (`pulp_wars-hmyk.17`): each seat explores its units' sight.
   // Revision 3 (`pulp_wars-hmyk.21`, the third retune): a thin start against
   // a garrisoned harbour and three waves.
-  revision: 3,
+  // Revision 4 (`pulp_wars-hmyk.31`, the fourth retune): eased toward
+  // the middle.
+  revision: 4,
   seed: 20261603,
   // <map>
   size: 16,
@@ -59,7 +68,6 @@ export const ICE_FOLK_3_V7: MissionDefinitionV7 = {
     edits: [
       { kind: "VILLAGE", at: { x: 3, y: 8 }, present: false },
       { kind: "VILLAGE", at: { x: 11, y: 11 }, present: false },
-      { kind: "VILLAGE", at: { x: 2, y: 11 }, present: false },
       { kind: "VILLAGE", at: { x: 4, y: 14 }, present: false },
     ],
   },
@@ -119,6 +127,7 @@ export const ICE_FOLK_3_V7: MissionDefinitionV7 = {
     "PPPPPPPPPPPPPPPP",
   ],
   villages: [
+    { x: 2, y: 11 },
     { x: 6, y: 2 },
     { x: 10, y: 3 },
     { x: 13, y: 3 },
@@ -141,9 +150,16 @@ export const ICE_FOLK_3_V7: MissionDefinitionV7 = {
     {
       faction: "ICE_FOLK",
       // Retune 3: Rime (freeze the shallows) and Pack Ice (the deep water)
-      // are all the learning there is; Icebound is a research away.
-      coins: 4,
-      technologies: ["SHORECRAFT", "NAVIGATION"],
+      // are all the learning there is; Icebound is a research away. Retune
+      // 4: Gathering, Scouting and Icebound known, 6 Coins.
+      coins: 6,
+      technologies: [
+        "GATHERING",
+        "SCOUTING",
+        "SHORECRAFT",
+        "NAVIGATION",
+        "NAVAL_ENGINEERING",
+      ],
       cities: [
         {
           name: "Coldharbour",
@@ -159,6 +175,8 @@ export const ICE_FOLK_3_V7: MissionDefinitionV7 = {
         { role: "FIGHTER", at: { x: 4, y: 11 } },
         // The one Guard nobody can train yet (no Fortification).
         { role: "GUARD", at: { x: 5, y: 12 } },
+        // Retune 4: a Sled.
+        { role: "RAIDER", at: { x: 4, y: 12 } },
       ],
       // The cliffs round the camp, and Anvil Bay across the strait.
       reveal: { radius: 2, rects: [{ x0: 11, y0: 11, x1: 11, y1: 11 }] },
@@ -166,7 +184,7 @@ export const ICE_FOLK_3_V7: MissionDefinitionV7 = {
     {
       // The Anvil Bay iron fleet.
       faction: "DWARF",
-      coins: 4,
+      coins: 3,
       technologies: [
         "GATHERING",
         "FARMING",
@@ -182,8 +200,8 @@ export const ICE_FOLK_3_V7: MissionDefinitionV7 = {
         {
           name: "Anvil Bay",
           at: { x: 11, y: 11 },
-          level: 4,
-          rewards: ["STOCKPILE", "WALLS", "BOOM"],
+          level: 3,
+          rewards: ["STOCKPILE", "WALLS"],
         },
       ],
       units: [
@@ -241,49 +259,27 @@ export const ICE_FOLK_3_V7: MissionDefinitionV7 = {
       },
     },
   ],
-  // The Ironclad comes home from the south in round 9 (hand play: in
+  // The Ironclad comes home from the south in round 11 (hand play: in
   // round 6 it shot a unit a turn off the ice from three tiles out; retune
-  // 3: round 12 was too late), and landing parties come in rounds 5 and 14.
+  // 3 brought it to round 9 and added landing parties in rounds 5 and 14;
+  // retune 4: the landing parties are gone and the Ironclad comes in round
+  // 11).
   reinforcements: [
     {
       seat: 1,
-      round: 5,
-      line: "A landing party of dwarves tramps ashore at Anvil Bay, boots first.",
-      announce: true,
-      units: [
-        { role: "FIGHTER", at: { x: 13, y: 9 } },
-        { role: "FIGHTER", at: { x: 12, y: 9 } },
-        { role: "FIGHTER", at: { x: 13, y: 10 } },
-        { role: "MARKSMAN", at: { x: 14, y: 10 } },
-      ],
-    },
-    {
-      seat: 1,
-      round: 9,
+      round: 11,
       line: "The Ironclad comes home from the south. It has opinions about ice.",
       announce: true,
       units: [{ role: "BATTLESHIP", at: { x: 10, y: 14 } }],
     },
-    {
-      seat: 1,
-      round: 14,
-      line: "Anvil Bay sends its second shift: the thane has stopped being polite.",
-      announce: true,
-      units: [
-        { role: "FIGHTER", at: { x: 13, y: 12 } },
-        { role: "FIGHTER", at: { x: 14, y: 12 } },
-        { role: "FIGHTER", at: { x: 12, y: 13 } },
-        { role: "GUARD", at: { x: 13, y: 13 } },
-      ],
-    },
   ],
   landmarks: [{ tag: "ANVIL_BAY", at: { x: 11, y: 11 } }],
   forbiddenTechnologies: [],
-  // Anvil Bay by round 18. The stars: by round 14, and no city lost.
+  // Anvil Bay by round 22. The stars: by round 16, and no city lost.
   objective: {
     kind: "CAPTURE",
     places: ["ANVIL_BAY"],
-    byRound: 18,
-    bonus: [{ kind: "WITHIN_ROUNDS", rounds: 14 }, { kind: "KEEP_CITIES" }],
+    byRound: 22,
+    bonus: [{ kind: "WITHIN_ROUNDS", rounds: 16 }, { kind: "KEEP_CITIES" }],
   },
 };

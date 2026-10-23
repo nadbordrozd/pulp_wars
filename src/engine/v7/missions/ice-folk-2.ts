@@ -42,12 +42,22 @@ import type { MissionDefinitionV7 } from "./types";
  * gone. The tomb has eleven dead, which hold home for three
  * rounds and then send six at the camp, and three announced waves of the
  * Abbot's dead come in rounds 4, 8 and 12. The clock is 16 (was 20).
+ *
+ * The fourth retune (`pulp_wars-hmyk.31`, CAMPAIGN.md section 22.5,
+ * hand-played): Rime Camp at level 2, Gathering and Scouting, 5 Coins, a
+ * second Yeti and a Sled; two of the three villages near the camp are
+ * back. Retune 3's round-4 wave (three Skeletons and a Zombie) is on the
+ * snowfields from the start, so the tomb has sixteen dead (eleven march
+ * after three rounds) and 4 Coins; the other waves are gone, and the Giant
+ * still wakes in round 10. The clock is 18 (star 14).
  */
 export const ICE_FOLK_2_V7: MissionDefinitionV7 = {
   id: "ICE_FOLK_2",
   // Revision 2 (`pulp_wars-hmyk.17`): each seat explores its units' sight.
   // Revision 3 (`pulp_wars-hmyk.21`, the third retune): a skirmish start.
-  revision: 3,
+  // Revision 4 (`pulp_wars-hmyk.31`, the fourth retune): eased toward
+  // the middle.
+  revision: 4,
   seed: 20261602,
   // <map>
   size: 14,
@@ -64,10 +74,9 @@ export const ICE_FOLK_2_V7: MissionDefinitionV7 = {
       { kind: "VILLAGE", at: { x: 9, y: 1 }, present: false },
       { kind: "VILLAGE", at: { x: 3, y: 4 }, present: false },
       { kind: "VILLAGE", at: { x: 9, y: 4 }, present: false },
-      // Retune 3: the villages by the camp are gone too.
+      // Retune 3: the villages by the camp are gone too (retune 4: two of
+      // the three are back).
       { kind: "VILLAGE", at: { x: 6, y: 7 }, present: false },
-      { kind: "VILLAGE", at: { x: 9, y: 7 }, present: false },
-      { kind: "VILLAGE", at: { x: 12, y: 7 }, present: false },
     ],
   },
   terrain: [
@@ -123,6 +132,8 @@ export const ICE_FOLK_2_V7: MissionDefinitionV7 = {
     { x: 12, y: 1 },
     { x: 12, y: 4 },
     { x: 3, y: 7 },
+    { x: 9, y: 7 },
+    { x: 12, y: 7 },
   ],
   treasureChests: [
     { x: 13, y: 4 },
@@ -135,14 +146,15 @@ export const ICE_FOLK_2_V7: MissionDefinitionV7 = {
       faction: "ICE_FOLK",
       // Retune 3: a skirmish start. One camp at level 1, Mother Rime, Chief
       // Gnash (a Swordsman, Metallurgy away) and a Fighter, no technology.
-      coins: 3,
-      technologies: [],
+      // Retune 4: level 2, Gathering and Scouting, 5 Coins.
+      coins: 5,
+      technologies: ["GATHERING", "SCOUTING"],
       cities: [
         {
           name: "Rime Camp",
           at: { x: 8, y: 10 },
-          level: 1,
-          rewards: [],
+          level: 2,
+          rewards: ["STOCKPILE"],
         },
       ],
       units: [
@@ -151,6 +163,9 @@ export const ICE_FOLK_2_V7: MissionDefinitionV7 = {
         // Chief Gnash of Whitefang, home again, a Mammoth of a man.
         { role: "SWORDSMAN", at: { x: 9, y: 10 } },
         { role: "FIGHTER", at: { x: 7, y: 10 } },
+        // Retune 4: a second Yeti and a Sled.
+        { role: "FIGHTER", at: { x: 9, y: 9 } },
+        { role: "RAIDER", at: { x: 8, y: 11 } },
       ],
       // The camp and the tomb's door, and nothing else.
       reveal: { radius: 2, rects: [{ x0: 6, y0: 2, x1: 6, y1: 2 }] },
@@ -158,7 +173,7 @@ export const ICE_FOLK_2_V7: MissionDefinitionV7 = {
     {
       // The Frozen Abbot's ice-bound dead.
       faction: "UNDEAD",
-      coins: 5,
+      coins: 4,
       technologies: [],
       cities: [
         {
@@ -185,6 +200,12 @@ export const ICE_FOLK_2_V7: MissionDefinitionV7 = {
         { role: "FIGHTER", at: { x: 3, y: 6 } },
         { role: "GUARD", at: { x: 7, y: 3 } },
         { role: "GUARD", at: { x: 9, y: 4 } },
+        // Retune 4: retune 3's round-4 wave (three Skeletons and a Zombie)
+        // is on the snowfields from the start.
+        { role: "FIGHTER", at: { x: 10, y: 3 } },
+        { role: "FIGHTER", at: { x: 11, y: 4 } },
+        { role: "FIGHTER", at: { x: 9, y: 3 } },
+        { role: "GUARD", at: { x: 10, y: 5 } },
       ],
       reveal: { radius: 2, rects: [{ x0: 5, y0: 6, x1: 13, y1: 11 }] },
       // Skeletons and Zombies only: no Necromancers, Ghouls, Banshees,
@@ -213,12 +234,12 @@ export const ICE_FOLK_2_V7: MissionDefinitionV7 = {
       ],
       // Retune 3: all eleven hold the cirque for three rounds; then the
       // Abbot and four of his dead stay, and the other six march on Rime
-      // Camp.
+      // Camp (retune 4: sixteen hold, and eleven march).
       directive: [
         {
           kind: "GUARD",
           zone: [{ x0: 5, y0: 0, x1: 7, y1: 3 }],
-          garrison: 11,
+          garrison: 16,
           untilRound: 3,
         },
         {
@@ -232,52 +253,14 @@ export const ICE_FOLK_2_V7: MissionDefinitionV7 = {
     },
   ],
   // The first giant wakes on the tenth day, beside the tomb. Retune 3: and
-  // the Abbot sends three announced waves, in rounds 4, 8 and 12.
+  // the Abbot sent three announced waves, in rounds 4, 8 and 12 (retune 4:
+  // the first is on the board from the start, the other two are gone).
   reinforcements: [
-    {
-      seat: 1,
-      round: 4,
-      line: "The Abbot's dead come down off the snowfields. They have been waiting a while.",
-      announce: true,
-      units: [
-        { role: "FIGHTER", at: { x: 10, y: 4 } },
-        { role: "FIGHTER", at: { x: 11, y: 4 } },
-        { role: "FIGHTER", at: { x: 9, y: 4 } },
-        { role: "GUARD", at: { x: 10, y: 5 } },
-      ],
-    },
-    {
-      seat: 1,
-      round: 8,
-      line: "A second rank climbs out of the western woods, still in the Abbot's colours.",
-      announce: true,
-      units: [
-        { role: "FIGHTER", at: { x: 4, y: 8 } },
-        { role: "FIGHTER", at: { x: 4, y: 6 } },
-        { role: "FIGHTER", at: { x: 3, y: 8 } },
-        { role: "GUARD", at: { x: 4, y: 9 } },
-        { role: "GUARD", at: { x: 3, y: 9 } },
-      ],
-    },
     {
       seat: 0,
       round: 10,
       line: "A Frost Giant wakes beside the tomb, yawns, and picks a side.",
       units: [{ role: "JUGGERNAUT", at: { x: 8, y: 3 } }],
-    },
-    {
-      seat: 1,
-      round: 12,
-      line: "The Abbot's last reserve: everything the tomb had left, and it had a lot left.",
-      announce: true,
-      units: [
-        { role: "FIGHTER", at: { x: 13, y: 6 } },
-        { role: "FIGHTER", at: { x: 13, y: 7 } },
-        { role: "FIGHTER", at: { x: 12, y: 6 } },
-        { role: "GUARD", at: { x: 12, y: 8 } },
-        { role: "GUARD", at: { x: 13, y: 8 } },
-        { role: "FIGHTER", at: { x: 11, y: 7 } },
-      ],
     },
   ],
   landmarks: [{ tag: "GLACIER_TOMB", at: { x: 6, y: 2 } }],
@@ -289,11 +272,11 @@ export const ICE_FOLK_2_V7: MissionDefinitionV7 = {
     "SEAMANSHIP",
     "SUBMERSIBLES",
   ],
-  // The Abbot by round 16. The stars: by round 12, and no city lost.
+  // The Abbot by round 18. The stars: by round 14, and no city lost.
   objective: {
     kind: "KILL",
     units: ["ABBOT"],
-    byRound: 16,
-    bonus: [{ kind: "WITHIN_ROUNDS", rounds: 12 }, { kind: "KEEP_CITIES" }],
+    byRound: 18,
+    bonus: [{ kind: "WITHIN_ROUNDS", rounds: 14 }, { kind: "KEEP_CITIES" }],
   },
 };

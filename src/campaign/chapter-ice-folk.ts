@@ -26,8 +26,8 @@ export const CHAPTER_ICE_FOLK_V7: CampaignChapterV7 = Object.freeze({
       name: "The Warm Mountain",
       format: "CONQUEST",
       briefing:
-        "Rime Camp's glacier is melting from underneath, and in the warm caves below it a goblin gang calling itself the Frostbite Boys has moved in with a stove. The Ice Folk do not object to goblins. They object to stoves. They are ten; you have a Fighter and a Guard. Put the stove out, and the goblins with it. Chief Gnash of Whitefang, out of work, is watching from the ridge to see how it is done.",
-      objective: "Take both goblin camps by turn 15.",
+        "Rime Camp's glacier is melting from underneath, and in the warm caves below it a goblin gang calling itself the Frostbite Boys has moved in with a stove. The Ice Folk do not object to goblins. They object to stoves. They are eight; you have two Fighters and a Guard. Put the stove out, and the goblins with it. Chief Gnash of Whitefang, out of work, is watching from the ridge to see how it is done.",
+      objective: "Take both goblin camps by turn 22.",
       hints: Object.freeze([
         "Frozen enemies can't act: freeze first, then strike.",
         "A badly hurt Frozen enemy shatters when hit up close.",
@@ -47,11 +47,11 @@ export const CHAPTER_ICE_FOLK_V7: CampaignChapterV7 = Object.freeze({
       name: "Waking the Giants",
       format: "KILL",
       briefing:
-        "Long ago, say the Ice Folk, the giants of the frost walked out of the cold to put a hungry star to bed. They sleep now in the Glacier Tomb, and the Frozen Abbot, a monk who has prayed to the wrong thing for three hundred years, has raised his dead to keep them asleep. Destroy the Abbot, who has eleven dead and more coming. The first giant wakes on the tenth day whether he is gone or not.",
-      objective: "Destroy the Frozen Abbot by turn 16.",
+        "Long ago, say the Ice Folk, the giants of the frost walked out of the cold to put a hungry star to bed. They sleep now in the Glacier Tomb, and the Frozen Abbot, a monk who has prayed to the wrong thing for three hundred years, has raised his dead to keep them asleep. Destroy the Abbot, who has sixteen dead and is sending them down. The first giant wakes on the tenth day whether he is gone or not.",
+      objective: "Destroy the Frozen Abbot by turn 18.",
       hints: Object.freeze([
         "A Frost Giant joins you on turn 10: freeze, then smash.",
-        "The Abbot's dead come in waves: hold the camp first.",
+        "The Abbot's dead march at once: hold the camp first.",
       ]),
       closing:
         "The Abbot shatters, and the giant walks out of the glacier yawning. He remembers the hungry star. It sleeps, he says, under the Hollow Mountain, and it is warm.",
@@ -68,7 +68,7 @@ export const CHAPTER_ICE_FOLK_V7: CampaignChapterV7 = Object.freeze({
       format: "CAPTURE",
       briefing:
         "The shortest road from the peaks to the Hollow Mountain crosses the Grey Strait, and the dwarves of Anvil Bay patrol it with ironclads. They saw the first floes coming and decided it was an invasion. It is, a little. The harbour is walled and its soldiers are marching. Freeze a road across the strait and take Anvil Bay. The Ice Folk need no ships: they walk on the sea they freeze.",
-      objective: "Take Anvil Bay by turn 18.",
+      objective: "Take Anvil Bay by turn 22.",
       hints: Object.freeze([
         "Ice with a unit on it can't be broken: hold your road.",
         "Icebound locks a ship beside your ice in place.",
@@ -109,7 +109,7 @@ export const CHAPTER_ICE_FOLK_V7: CampaignChapterV7 = Object.freeze({
       format: "CAPTURE",
       briefing:
         "The Grey Lodge knows what cold does to the thing it worships, and it has found the answer every cult finds sooner or later: a bonfire. At the Ember Lodge on the mountain's shoulder burns a fire that has not gone out in three hundred years, and the Redcaps feed it with every tree for miles. While it burns, the mountain stays warm. Take the Lodge, where ten keepers wait, and put the fire out.",
-      objective: "Take the Ember Lodge by turn 18.",
+      objective: "Take the Ember Lodge by turn 22.",
       hints: Object.freeze([
         "A giant's blow shatters a badly hurt Frozen enemy.",
         "A city of level 5 wakes a Frost Giant.",
@@ -129,11 +129,11 @@ export const CHAPTER_ICE_FOLK_V7: CampaignChapterV7 = Object.freeze({
       format: "ESCORT",
       briefing:
         "The Heart of Winter is a stone of ice older than the mountain, and it must be set on the summit before the Long Night. Mother Rime will carry it. The Grey Lodge and the dead will try to stop her, because they understand exactly what it is for. Thane Ironbraid's dwarves hold the Deep Gate on the road and will fight beside you. Bring Rime to the summit.",
-      objective: "Bring Rime to the Summit by turn 16.",
+      objective: "Bring Rime to the Summit by turn 18.",
       hints: Object.freeze([
         "Musk Oxen freeze whoever strikes them up close.",
         "A Sled's bolas holds a daemon still for a turn.",
-        "Research Explosives to blast a peak flat.",
+        "Research Engineering to climb the peaks.",
       ]),
       closing:
         "On the summit Rime sets the Heart of Winter in the snow and lays her hands on it, and does not take them away. By morning she is ice to the elbows, by evening to the crown. 'Someone has to stay with it,' she said, before she couldn't.",
