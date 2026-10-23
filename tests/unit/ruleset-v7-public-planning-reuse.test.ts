@@ -44,7 +44,10 @@ describe("ruleset-7 exact public planning reuse", () => {
       // tier 2 costs 12 with the view's four cities, so its 12 Coins
       // buy one and six RESEARCH commands are offered again (was
       // 41c906…446d).
-      "a763fd68eb9222bfe9fde304cb97e91d6696d9b38af00fff43cd0496efdbf270",
+      // Building placement (`pulp_wars-h0xx`, 7r106): Fertile Ground, Fruit, and
+      // Game no longer block a building, a Forest needs Forestry and a Mountain
+      // takes only the Mine, so the building offers moved (was a763fd…f270).
+      "ec361d2e83f57f5da1e481a72a08e6077217484c332c735d48e34f26f4ff3db5",
     );
   });
 

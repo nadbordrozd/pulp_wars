@@ -49,7 +49,9 @@ describe("ruleset-7 late public query performance", () => {
     // Technology base cost 5 / 6 / 7 (`pulp_wars-w49.40`, 7r81): 69. A
     // tier 2 costs 12 with the view's four cities, so its 12 Coins buy
     // five more technologies (six RESEARCH commands instead of one).
-    expect(commands).toHaveLength(69);
+    // Building placement (`pulp_wars-h0xx`, 7r106): 79, with ten building
+    // offers more on Fertile Ground that no longer blocks them.
+    expect(commands).toHaveLength(79);
     expect(canonicalHash(commands)).toBe(
       // Tuning 6 (`pulp_wars-w49.6`): research costs 1 Coin for each
       // technology owned, so the retained view's 12 Coins buy a technology
@@ -62,7 +64,10 @@ describe("ruleset-7 late public query performance", () => {
       // tier 2 costs 12 with the view's four cities, so its 12 Coins
       // buy one and six RESEARCH commands are offered again (was
       // 4eb8ff…e1fc).
-      "5d18df44f6c0367b6ed3c153e14baaef93f2eb2fc9fb97298d5cc42a280d04ef",
+      // Building placement (`pulp_wars-h0xx`, 7r106): Fertile Ground, Fruit, and
+      // Game no longer block a building, a Forest needs Forestry and a Mountain
+      // takes only the Mine, so the building offers moved (was 5d18df…04ef).
+      "e2898b2c332da544a42fdd17159023dc9e7f4b09c2487fa5e4340fb1b72ef2dc",
     );
     expect(
       commands.flatMap((command) =>
@@ -107,7 +112,10 @@ describe("ruleset-7 late public query performance", () => {
       // tier 2 costs 12 with the view's four cities, so its 12 Coins
       // buy one and six RESEARCH commands are offered again (was
       // 4eb8ff…e1fc).
-      "5d18df44f6c0367b6ed3c153e14baaef93f2eb2fc9fb97298d5cc42a280d04ef",
+      // Building placement (`pulp_wars-h0xx`, 7r106): Fertile Ground, Fruit, and
+      // Game no longer block a building, a Forest needs Forestry and a Mountain
+      // takes only the Mine, so the building offers moved (was 5d18df…04ef).
+      "e2898b2c332da544a42fdd17159023dc9e7f4b09c2487fa5e4340fb1b72ef2dc",
     );
     const ready = queryAiReadyCommandsV7(view);
     // Revision 17 inserts KABOOM after WAIL, shifting the later command-kind
@@ -191,7 +199,9 @@ describe("ruleset-7 late public query performance", () => {
       // FIRE_MOON_GUN after JOIN_CHANT, moving the later command kinds
       // forward by two (was b59904…a328); the revision-12-ordinal value is
       // unchanged.
-      "fd52366948dd1195dee074fedaf3d3b5dbc86a44305334cf15425f58b1c3e3ec",
+      // Building placement (`pulp_wars-h0xx`, 7r106): the building offers moved
+      // (was fd5236…e3ec).
+      "68c51b2bfb835fd04c215a182a9240f6338d970999c2bc864f7a53b10e1953c7",
     );
     // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
     // (spec section 8); with revision-12 ordinals the value is unchanged.
@@ -206,7 +216,9 @@ describe("ruleset-7 late public query performance", () => {
       // tier 2 costs 12 with the view's four cities, so its 12 Coins
       // buy one and six RESEARCH commands are offered again (was
       // 724d39…5de0).
-      "414a641fdec511aa73fa84a717afa8aeb2e51438deb0dbc1403cbed5a3bf0796",
+      // Building placement (`pulp_wars-h0xx`, 7r106): the building offers moved
+      // (was 414a64…0796).
+      "4b48eabb31cf27abb21bd8936711abb2fc8076fbf7b56cfd183e90a97658bf2f",
     );
     expect(
       canonicalHash(
@@ -224,7 +236,9 @@ describe("ruleset-7 late public query performance", () => {
       // Free Pearls (`pulp_wars-5ti.14`, 7r86): every economic preview
       // carries `coinsReceived`, the Coins it pays at once (was
       // 9aa14d…a856).
-    ).toBe("8109fe6404f2feb3086b34b5c8226d388835d9219fe7e63f9e1ef3377981b852");
+      // Building placement (`pulp_wars-h0xx`, 7r106): the building offers moved
+      // (was 8109fe…b852).
+    ).toBe("73fd0a544695256622a6f312aa589cd6f806be09310c2ef4d148a4bf87597637");
     expect(
       canonicalHash(
         commands.filter(isRetainedLandCommand).map((command) => ({
@@ -241,7 +255,9 @@ describe("ruleset-7 late public query performance", () => {
       // Free Pearls (`pulp_wars-5ti.14`, 7r86): every economic preview
       // carries `coinsReceived`, the Coins it pays at once (was
       // 9aa14d…a856).
-    ).toBe("8109fe6404f2feb3086b34b5c8226d388835d9219fe7e63f9e1ef3377981b852");
+      // Building placement (`pulp_wars-h0xx`, 7r106): the building offers moved
+      // (was 8109fe…b852).
+    ).toBe("73fd0a544695256622a6f312aa589cd6f806be09310c2ef4d148a4bf87597637");
     expect(elapsed).toBeLessThan(250);
 
     const incrementalView = structuredClone(RETAINED_VIEW);
@@ -318,7 +334,11 @@ describe("ruleset-7 late public query performance", () => {
       expect(canonicalHash(leftResult)).toBe(canonicalHash(expected));
       expect(canonicalHash(rightResult)).toBe(canonicalHash(expected));
       expect(canonicalHash(leftResult.potentials)).toBe(
-        "6285861dd661a0602060b37c81953173582695945c57f668d5106e5fe2898cc5",
+        // Building placement (`pulp_wars-h0xx`, 7r106): Fertile Ground, Fruit,
+        // and Game no longer block a building, a Forest needs Forestry and a
+        // Mountain takes only the Mine, so the building offers moved (was
+        // 628586…8cc5).
+        "2c67ccd3fbd56ba7a83f29a18d9b492d79b08cea9444a9a39bceda84a4cd8b1d",
       );
       expect(
         leftResult.potentials.find(
@@ -336,7 +356,11 @@ describe("ruleset-7 late public query performance", () => {
           ),
         ),
       ).toBe(
-        "46e69d22f7561de4a04018da1efd36af083d79750c5846a3eb973d1b5c0ee6ee",
+        // Building placement (`pulp_wars-h0xx`, 7r106): Fertile Ground, Fruit,
+        // and Game no longer block a building, a Forest needs Forestry and a
+        // Mountain takes only the Mine, so the building offers moved (was
+        // 46e69d…e6ee).
+        "8820b309e3f9bde7c27e2375a30ee32fd0133ec03b53b5bf7a8e15cb48af55fc",
       );
       expect(canonicalHash(leftResult.scores)).toBe(
         // Tuning 6 (`pulp_wars-w49.6`): research costs 1 Coin for each
@@ -350,7 +374,11 @@ describe("ruleset-7 late public query performance", () => {
         // tier 2 costs 12 with the view's four cities, so its 12 Coins
         // buy one and six RESEARCH commands are offered again (was
         // 70afe9…2b43).
-        "b219a154ec0b5d104ff547ed04d678a337c481ec70fec9f6da918b2a81529cd9",
+        // Building placement (`pulp_wars-h0xx`, 7r106): Fertile Ground, Fruit,
+        // and Game no longer block a building, a Forest needs Forestry and a
+        // Mountain takes only the Mine, so the building offers moved (was
+        // b219a1…9cd9).
+        "df2a7f6648c556c4f4a81f4280daaf1448137bbd9d540e2961af40ac5f7922fa",
       );
       const revision8Scores = leftResult.scores.filter(({ command }) =>
         isRevision8MergedUnlockCommand(command),
@@ -376,7 +404,11 @@ describe("ruleset-7 late public query performance", () => {
         // tier 2 costs 12 with the view's four cities, so its 12 Coins
         // buy one and six RESEARCH commands are offered again (was
         // 70afe9…2b43).
-        "b219a154ec0b5d104ff547ed04d678a337c481ec70fec9f6da918b2a81529cd9",
+        // Building placement (`pulp_wars-h0xx`, 7r106): Fertile Ground, Fruit,
+        // and Game no longer block a building, a Forest needs Forestry and a
+        // Mountain takes only the Mine, so the building offers moved (was
+        // b219a1…9cd9).
+        "df2a7f6648c556c4f4a81f4280daaf1448137bbd9d540e2961af40ac5f7922fa",
       );
       expect(queryPublicEconomicPotentialsV7(leftView)).toBe(
         leftResult.potentials,
@@ -448,7 +480,10 @@ describe("ruleset-7 late public query performance", () => {
       // tier 2 costs 12 with the view's four cities, so its 12 Coins
       // buy one and six RESEARCH commands are offered again (was
       // 4eb8ff…e1fc).
-      "5d18df44f6c0367b6ed3c153e14baaef93f2eb2fc9fb97298d5cc42a280d04ef",
+      // Building placement (`pulp_wars-h0xx`, 7r106): Fertile Ground, Fruit, and
+      // Game no longer block a building, a Forest needs Forestry and a Mountain
+      // takes only the Mine, so the building offers moved (was 5d18df…04ef).
+      "e2898b2c332da544a42fdd17159023dc9e7f4b09c2487fa5e4340fb1b72ef2dc",
     );
     const firstMove = required(
       queryPlayerCommandsV7(original).find(
@@ -483,7 +518,10 @@ describe("ruleset-7 late public query performance", () => {
       // tier 2 costs 12 with the view's four cities, so its 12 Coins
       // buy one and six RESEARCH commands are offered again (was
       // 099b61…6db1).
-      "60641ede587dac5dbea11620f258375e2919ea3c3dc9cc94c35c05cf1de65ff7",
+      // Building placement (`pulp_wars-h0xx`, 7r106): Fertile Ground, Fruit, and
+      // Game no longer block a building, a Forest needs Forestry and a Mountain
+      // takes only the Mine, so the building offers moved (was 60641e…5ff7).
+      "5c3fa3ced1628fa0f0349228023149e993ab6fd7edf54094dad0d81d679615c1",
     );
     expect(canonicalHash(changedCommands.filter(isRetainedLandCommand))).toBe(
       // Tuning 6 (`pulp_wars-w49.6`): research costs 1 Coin for each
@@ -497,7 +535,10 @@ describe("ruleset-7 late public query performance", () => {
       // tier 2 costs 12 with the view's four cities, so its 12 Coins
       // buy one and six RESEARCH commands are offered again (was
       // 099b61…6db1).
-      "60641ede587dac5dbea11620f258375e2919ea3c3dc9cc94c35c05cf1de65ff7",
+      // Building placement (`pulp_wars-h0xx`, 7r106): Fertile Ground, Fruit, and
+      // Game no longer block a building, a Forest needs Forestry and a Mountain
+      // takes only the Mine, so the building offers moved (was 60641e…5ff7).
+      "5c3fa3ced1628fa0f0349228023149e993ab6fd7edf54094dad0d81d679615c1",
     );
   });
 

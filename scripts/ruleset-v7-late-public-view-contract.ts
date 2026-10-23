@@ -206,7 +206,9 @@ export const RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION = Object.freeze({
     // FIRE_MOON_GUN after JOIN_CHANT, moving the later command kinds
     // forward by two (was 60a2ff…8f89); the revision-12-ordinal value is
     // unchanged.
-    "526c6c8066e2fad8fad8f7e89750af47f539d7429625e28f267065b1a96a2b4a",
+    // Building placement (`pulp_wars-h0xx`, 7r106): the candidates of
+    // `candidateCount` below (was 526c6c…2b4a).
+    "67ba0a1c2ddce9fe572a87fab23cccae05a8fe7759daf686449a1324b7ea4b1e",
   command: Object.freeze({
     kind: "RESEARCH",
     tech: "MARKSMANSHIP",
@@ -226,7 +228,11 @@ export const RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION = Object.freeze({
   // Research Marksmanship again (12 Coins).
   // The garrison of a watched center (`pulp_wars-mch9.27`): 28, with unit
   // 32's step onto the empty center of city 9 beside it (736).
-  candidateCount: 28,
+  // Building placement (`pulp_wars-h0xx`, 7r106): 38. Fertile Ground no
+  // longer blocks a building, so nine Forges and three Workshops on the
+  // view's Fertile Ground are new, and the two Forges on Forest beside its
+  // Mines are gone (the seat has no Forestry); the command is unchanged.
+  candidateCount: 38,
 });
 
 /**
@@ -298,10 +304,10 @@ export function upgradeRetainedPublicViewV7(
   });
   return {
     ...retained,
-    rulesetId: "pulp-wars-poc-7r105",
+    rulesetId: "pulp-wars-poc-7r106",
     setup: {
       ...retained.setup,
-      rulesetId: "pulp-wars-poc-7r105",
+      rulesetId: "pulp-wars-poc-7r106",
       mapType: "DRY_LAND",
       mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
       curiosities: false,

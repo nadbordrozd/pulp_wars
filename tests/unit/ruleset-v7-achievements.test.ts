@@ -546,13 +546,20 @@ describe("ruleset-7 achievements and Monuments", () => {
         ),
       },
     });
-    expect(
-      applyCommandV7(nonempty, nonempty.humanPlayerId, {
-        kind: "BUILD_MONUMENT",
-        achievement: "ENGINEER",
-        at,
-      }),
-    ).toMatchObject({ accepted: false, error: { code: "INVALID_TILE" } });
+    // Building placement (`pulp_wars-h0xx`, 7r106): a resource no longer
+    // blocks a Monument (it was INVALID_TILE); the Monument uses it up.
+    const onResource = applyCommandV7(
+      nonempty,
+      nonempty.humanPlayerId,
+      command,
+    );
+    expect(onResource.accepted).toBe(true);
+    if (onResource.accepted)
+      expect(
+        onResource.state.board.tiles.find((candidate) =>
+          same(candidate.at, at),
+        ),
+      ).toMatchObject({ resource: null, improvement: "MONUMENT" });
     expect(
       queryPlayerCommandsV7(viewForV7(state, state.humanPlayerId)),
     ).toContainEqual(command);
@@ -571,10 +578,15 @@ describe("ruleset-7 achievements and Monuments", () => {
       },
     });
     const coins = required(state.players[0], "player missing").coins;
+    // Building placement (`pulp_wars-h0xx`, 7r106): a Monument on a Forest
+    // clears it and is paid Clear Forest's Coin; it costs nothing either way.
+    const forest =
+      state.board.tiles.find((candidate) => same(candidate.at, at))?.terrain ===
+      "FOREST";
     const built = applyCommandV7(state, state.humanPlayerId, command);
     if (!built.accepted) throw new Error(built.error.code);
     state = built.state;
-    expect(state.players[0]?.coins).toBe(coins);
+    expect(state.players[0]?.coins).toBe(coins + (forest ? 1 : 0));
     expect(state.players[0]?.achievementEntitlements[2]).toMatchObject({
       unlocked: true,
       spent: true,
@@ -587,11 +599,18 @@ describe("ruleset-7 achievements and Monuments", () => {
       amount: 3,
       source: { kind: "MONUMENT", achievement: "MUSTER", at },
     });
-    expect(built.events[0]).toMatchObject({
+    // A cleared Forest is reported first (7r106).
+    expect(built.events[forest ? 1 : 0]).toMatchObject({
       kind: "MONUMENT_BUILT",
       achievement: "MUSTER",
       populationAdded: 3,
     });
+    if (forest)
+      expect(built.events[0]).toMatchObject({
+        kind: "FOREST_CLEARED",
+        at,
+        coinDelta: 1,
+      });
 
     const sameCity = applyCommandV7(
       unlockEntitlement(state, "ENGINEER"),
@@ -760,7 +779,7 @@ describe("ruleset-7 achievements and Monuments", () => {
     ).toBe(true);
   });
 
-  it("keeps Monument sites on hidden Ore and empty Mountains equivalent until Engineering", () => {
+  it("keeps Monument sites on hidden Ore and empty Mountains equivalent, and offers none on a Mountain (7r106)", () => {
     const base = levelTwoWithoutPopulation(
       unlockEntitlement(exploredAllV7(initialV7(707)), "EXPLORER"),
     );
@@ -821,35 +840,38 @@ describe("ruleset-7 achievements and Monuments", () => {
         error: "NOT_OFFERED",
       });
       expect(scorePublicSpatialPlanV7(view, command)).toBe(0);
+      // Building placement (`pulp_wars-h0xx`, 7r106): a Monument is never
+      // built on a Mountain, so it is the tile that refuses it.
       expect(applyCommandV7(state, state.humanPlayerId, command)).toMatchObject(
         {
           accepted: false,
-          error: { code: "TECH_REQUIRED", params: { tech: "ENGINEERING" } },
+          error: { code: "INVALID_TILE", params: { action: "BUILD_MONUMENT" } },
         },
       );
     }
 
+    // With Engineering (and Drill's Ore) a Mountain, Ore or not, still
+    // takes no Monument (it did before 7r106 when it held no Ore).
     const revealedEmpty = mountain(null, true);
     const revealedEmptyView = viewForV7(
       revealedEmpty,
       revealedEmpty.humanPlayerId,
     );
-    expect(queryPlayerCommandsV7(revealedEmptyView)).toContainEqual(command);
-    expect(previewMonumentV7(revealedEmptyView, command)).toMatchObject({
-      ok: true,
-    });
-    expect(
-      applyCommandV7(revealedEmpty, revealedEmpty.humanPlayerId, command)
-        .accepted,
-    ).toBe(true);
-
     const revealedOre = mountain("ORE", true);
     const revealedOreView = viewForV7(revealedOre, revealedOre.humanPlayerId);
-    expect(queryPlayerCommandsV7(revealedOreView)).not.toContainEqual(command);
-    expect(previewMonumentV7(revealedOreView, command)).toEqual({
-      ok: false,
-      error: "NOT_OFFERED",
-    });
+    for (const [state, view] of [
+      [revealedEmpty, revealedEmptyView],
+      [revealedOre, revealedOreView],
+    ] as const) {
+      expect(queryPlayerCommandsV7(view)).not.toContainEqual(command);
+      expect(previewMonumentV7(view, command)).toEqual({
+        ok: false,
+        error: "NOT_OFFERED",
+      });
+      expect(applyCommandV7(state, state.humanPlayerId, command)).toMatchObject(
+        { accepted: false, error: { code: "INVALID_TILE" } },
+      );
+    }
     const potential = (view: typeof revealedEmptyView) =>
       required(
         queryPublicEconomicPotentialsV7(view).find(
@@ -858,11 +880,8 @@ describe("ruleset-7 achievements and Monuments", () => {
         "Monument potential missing",
       );
     expect(potential(revealedEmptyView).targets).toBe(
-      potential(revealedOreView).targets + 1,
+      potential(revealedOreView).targets,
     );
-    expect(
-      applyCommandV7(revealedOre, revealedOre.humanPlayerId, command),
-    ).toMatchObject({ accepted: false, error: { code: "INVALID_TILE" } });
   });
 
   it("does not offer or preview a Monument on a visible treasure chest", () => {

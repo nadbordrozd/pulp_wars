@@ -189,7 +189,11 @@ function assertFrozen(
       commandHash:
         "335e1d932643d374f14fd14ca833beff38963367a5f740a61f4713bd4db78a5e",
       potentialHash:
-        "6285861dd661a0602060b37c81953173582695945c57f668d5106e5fe2898cc5",
+        // Building placement (`pulp_wars-h0xx`, 7r106): Fertile Ground, Fruit,
+        // and Game no longer block a building, a Forest needs Forestry and a
+        // Mountain takes only the Mine, so the building offers moved (was
+        // 628586…8cc5).
+        "2c67ccd3fbd56ba7a83f29a18d9b492d79b08cea9444a9a39bceda84a4cd8b1d",
       scoreHash:
         "2b66f6213316ace82e1e1499ae87487735d4b40903d66f13a7d373dcf3b001ea",
       operations: 4_100,

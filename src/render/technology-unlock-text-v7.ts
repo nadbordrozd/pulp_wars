@@ -50,6 +50,14 @@ export const BLAST_MOUNTAIN_SETTER_NOTE_V7 = "sets the charge and is not hit";
 export const BLAST_ORE_WARNING_V7 =
   "Ore here: blasting it gives up a Mine (+2 population)";
 
+/**
+ * Forestry, after its Clear Forest line (building placement,
+ * `pulp_wars-h0xx`, 7r106): a building may stand on a Forest, which it
+ * clears first.
+ */
+export const FOREST_BUILDING_UNLOCK_TEXT_V7 =
+  "Build on Forest: a building clears it first (+1 Coin)";
+
 /** Forestry, `FOREST_COVER` (tuning 3). */
 export const FOREST_COVER_UNLOCK_TEXT_V7 =
   "Forest cover: your units in Forest defend at ×1.5";

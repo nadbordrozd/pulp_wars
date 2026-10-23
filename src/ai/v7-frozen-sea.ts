@@ -1193,7 +1193,10 @@ const ICE_CONTRIBUTORS_V7: ReadonlySet<string> = new Set([
  * already needs, and 3 Coins); every other building on ice (a mill, the
  * Workshop, the Market) needs at least that tile and a contributor beside
  * it, so `contributor` marks such a tile. Only an Ice Folk seat builds on
- * ice.
+ * ice. Since building placement (`pulp_wars-h0xx`, 7r106) Fish or Pearls
+ * no longer block a building on ice (it uses them up); the plan still
+ * leaves such a tile out, so it freezes for building only where nothing
+ * is given up.
  */
 export function iceBuildSiteV7(
   view: PlayerViewV7,

@@ -119,6 +119,10 @@ import {
   type PublicPlannedImprovementV7,
 } from "../engine/v7/query";
 import {
+  consumedResourcePopulationV7,
+  resourceConsumedByBuildingV7,
+} from "../engine/v7/building-placement";
+import {
   COMMAND_KIND_ORDER_V7,
   NAVAL_ROLE_IDS_V7,
   REWARD_IDS_V7,
@@ -14417,7 +14421,15 @@ function scoreCommandWithContext(
       5 * population +
       12 * recurring -
       economic.preview.cost +
-      (command.kind === "CLEAR_FOREST" ? 1 : 0);
+      // Building placement (`pulp_wars-h0xx`, 7r106): a build on a Forest
+      // clears it and is paid Clear Forest's Coin.
+      (command.kind === "CLEAR_FOREST" || economic.preview.clearsForest
+        ? 1
+        : 0) -
+      // ... and a build over a resource gives up what it would have given
+      // (a harvest's 1, a Farm's 2, Pearls' Coins as 2), so the seat builds
+      // on a bare tile when it has one.
+      5 * consumedResourcePopulationV7(economic.preview.resourceConsumed);
     if (economic.preview.levelsReached.length > 0) priority = 1210;
     else if (recurring > 0) priority = 1200;
     else if (
@@ -14527,7 +14539,19 @@ function scoreCommandWithContext(
     const preview = previewMonumentV7(view, command);
     if (preview.ok) {
       const imminent = preview.preview.levelsReached.length;
-      immediateValue = 15 + 20 * imminent;
+      // Building placement (`pulp_wars-h0xx`, 7r106): a Monument over a
+      // resource uses it up; on a Forest it clears it for a Coin.
+      const site = findPublicTileV7(view, command.at);
+      immediateValue =
+        15 +
+        20 * imminent -
+        (site?.explored === true
+          ? 5 *
+              consumedResourcePopulationV7(
+                resourceConsumedByBuildingV7("MONUMENT", site.resource),
+              ) -
+            (site.terrain === "FOREST" ? 1 : 0)
+          : 0);
       strategicValue =
         3 +
         preview.preview.rewardWork.reduce(

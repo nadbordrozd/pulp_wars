@@ -7,6 +7,7 @@ export * from "./v7/achievements";
 export * from "./v7/afflictions";
 export * from "./v7/artifacts";
 export * from "./v7/berserk";
+export * from "./v7/building-placement";
 export * from "./v7/candy";
 export * from "./v7/candy-abilities";
 export * from "./v7/combat";

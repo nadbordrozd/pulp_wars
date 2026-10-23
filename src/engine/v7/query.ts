@@ -284,6 +284,15 @@ import {
   unitWhirlsV7,
 } from "./dwarf-crowd-control";
 import { noRisingAtV7, riftAtV7 } from "./rift";
+import {
+  CLEAR_FOREST_COINS_V7,
+  consumedResourcePopulationV7,
+  generalBuildingFitsTerrainV7,
+  lumberCampResourceFitsV7,
+  resourceConsumedByBuildingV7,
+  resourceUnderImprovementV7,
+  type ConsumableResourceV7,
+} from "./building-placement";
 import { grownHpV7 } from "./growth";
 import {
   attackCrushDamageV7,
@@ -430,6 +439,7 @@ import {
   type ImprovementIdV7,
   type RitualKindV7,
   type TechnologyIdV7,
+  type TerrainIdV7,
   type SummonDaemonV7,
   type SummonedRoleIdV7,
   type RewardIdV7,
@@ -775,11 +785,11 @@ function appendPublicTileCommandsV7(
         iceAtV7(view, tile.at),
       )) &&
     tile.terrain !== "RIFT" &&
-    (tile.terrain !== "MOUNTAIN" ||
-      view.viewer.researchedTechs.includes("ENGINEERING")) &&
+    // Building placement (`pulp_wars-h0xx`, 7r106): the general building
+    // rule (no Mountain; a Forest with Forestry; no land resource blocks).
+    publicGeneralBuildingTileV7(view, tile) &&
     !view.treasureChests.some((chest) => same(chest, tile.at)) &&
     tile.site === null &&
-    tile.resource === null &&
     tile.improvement === null &&
     !cityHasImprovement(view, monumentCity.id, "MONUMENT")
   )
@@ -8183,9 +8193,21 @@ export interface EconomicPreviewV7 {
   readonly cost: number;
   /**
    * The Coins the action pays at once (`pulp_wars-5ti.14`): Gather Pearls
-   * `GATHER_PEARLS_V7.coinsReceived` (10), Clear Forest 1, otherwise 0.
+   * `GATHER_PEARLS_V7.coinsReceived` (10), Clear Forest 1, a building that
+   * clears a Forest 1 (`pulp_wars-h0xx`, 7r106), otherwise 0.
    */
   readonly coinsReceived: number;
+  /**
+   * Building placement (`pulp_wars-h0xx`, 7r106): true when the build stands
+   * on a Forest and clears it (as Clear Forest does) on its way.
+   */
+  readonly clearsForest: boolean;
+  /**
+   * The visible resource the build uses up (Fruit, Fertile Ground, or Game
+   * on land, Fish or Pearls on ice, under a building that does not keep it;
+   * 7r106), or null.
+   */
+  readonly resourceConsumed: ConsumableResourceV7 | null;
   readonly ownerCityId: CityId | null;
   readonly populationDeltaByCity: readonly CityValueDeltaV7[];
   readonly coinIncomeDeltaByCity: readonly CityValueDeltaV7[];
@@ -8423,9 +8445,16 @@ function calculatePublicEconomicPreviewV7(
         });
       levelsReached.push(...growth.reachedLevels);
     }
+    // Building placement (`pulp_wars-h0xx`, 7r106): a building on a Forest
+    // clears it on its way and is paid what Clear Forest pays.
+    const clearsForest =
+      improvement !== null &&
+      command.kind !== "CLEAR_FOREST" &&
+      tile.terrain === "FOREST" &&
+      improvement !== "LUMBER_CAMP";
     const immediateCoins =
-      command.kind === "CLEAR_FOREST"
-        ? 1
+      command.kind === "CLEAR_FOREST" || clearsForest
+        ? CLEAR_FOREST_COINS_V7
         : command.kind === "GATHER_PEARLS"
           ? GATHER_PEARLS_V7.coinsReceived
           : 0;
@@ -8439,6 +8468,11 @@ function calculatePublicEconomicPreviewV7(
         at: command.at,
         cost,
         coinsReceived: immediateCoins,
+        clearsForest,
+        resourceConsumed:
+          improvement === null
+            ? null
+            : resourceConsumedByBuildingV7(improvement, tile.resource),
         ownerCityId: foreignBlast ? null : tile.territoryCityId,
         populationDeltaByCity,
         coinIncomeDeltaByCity,
@@ -8864,6 +8898,23 @@ function replacePublicGraphTileV7(
   };
 }
 
+/**
+ * Building placement (`pulp_wars-h0xx`, 7r106): what a general building
+ * (spatial or Monument) changes on its public graph tile. A Forest it stands
+ * on is cleared to Grass, and a land resource under it is used up (on ice,
+ * where a building needs a tile without one, there is none).
+ */
+function publicBuiltTileV7(
+  tile: PublicEconomyGraphTileV7,
+  improvement: ImprovementIdV7,
+): Partial<PublicEconomyGraphTileV7> {
+  return {
+    improvement,
+    terrain: tile.terrain === "FOREST" ? "GRASS" : tile.terrain,
+    resource: resourceUnderImprovementV7(improvement, tile.resource),
+  };
+}
+
 function graphAfterTileCommandV7(
   view: PlayerViewV7,
   graph: PublicEconomyGraphV7,
@@ -8909,9 +8960,11 @@ function graphAfterTileCommandV7(
       improvement: "SHIPYARD",
     });
   if (spatial !== undefined)
-    return replacePublicGraphTileV7(graph, command.at, {
-      improvement: spatial.improvement,
-    });
+    return replacePublicGraphTileV7(
+      graph,
+      command.at,
+      publicBuiltTileV7(tile, spatial.improvement),
+    );
   if (command.kind === "CLEAR_FOREST")
     return replacePublicGraphTileV7(graph, command.at, {
       terrain: "GRASS",
@@ -10148,14 +10201,16 @@ function graphAfterPublicCandidateV7(
     );
     if (
       tile?.explored !== true ||
-      (tile.terrain === "MOUNTAIN" &&
-        !view.viewer.researchedTechs.includes("ENGINEERING"))
+      // Building placement (`pulp_wars-h0xx`, 7r106).
+      !publicGraphGeneralBuildingTileV7(view, tile)
     )
       return null;
     return {
-      ...replacePublicGraphTileV7(graph, candidate.at, {
-        improvement: "MONUMENT",
-      }),
+      ...replacePublicGraphTileV7(
+        graph,
+        candidate.at,
+        publicBuiltTileV7(tile, "MONUMENT"),
+      ),
       remainingMonumentEntitlements: Math.max(
         0,
         graph.remainingMonumentEntitlements - 1,
@@ -10241,6 +10296,24 @@ function publicPlacementImprovementV7(
     SPATIAL_ECONOMIC_ACTIONS_V7[placement.kind as SpatialEconomicCommandKindV7]
       ?.improvement ??
     null
+  );
+}
+
+/**
+ * Building placement (`pulp_wars-h0xx`, 7r106) on a public graph tile, as
+ * the planner reads it: on land the general building rule (Grass, or Forest
+ * with Forestry; never a Mountain; no resource blocks), on water (the
+ * viewer's own ice, the only water with buildings) any tile.
+ */
+function publicGraphGeneralBuildingTileV7(
+  view: PlayerViewV7,
+  tile: PublicEconomyGraphTileV7,
+): boolean {
+  if (tile.terrain === "SHALLOW_WATER" || tile.terrain === "DEEP_WATER")
+    return true;
+  return generalBuildingFitsTerrainV7(
+    tile.terrain,
+    view.viewer.researchedTechs,
   );
 }
 
@@ -10356,7 +10429,11 @@ function appendPublicPlacementsForTileV7(
           ? view.viewer.faction === "ICE_FOLK" &&
             (tile.terrain === "SHALLOW_WATER" || tile.terrain === "DEEP_WATER")
           : tile.terrain === rule.terrain) &&
-        tile.resource === rule.resource &&
+        // 7r106: Game does not block a Lumber Camp, nor Fish or Pearls a
+        // Fishing Hole; each uses its resource up.
+        (kind === "BUILD_LUMBER_CAMP"
+          ? lumberCampResourceFitsV7(tile.resource)
+          : kind === "BUILD_FISHING_HOLE" || tile.resource === rule.resource) &&
         tile.improvement === null &&
         !treasureKeys.has(coordKeyV7(tile.at))
       )
@@ -10367,10 +10444,9 @@ function appendPublicPlacementsForTileV7(
     ) as SpatialEconomicCommandKindV7[]) {
       const rule = SPATIAL_ECONOMIC_ACTIONS_V7[kind];
       if (
-        (tile.terrain === "MOUNTAIN" &&
-          !view.viewer.researchedTechs.includes("ENGINEERING")) ||
+        // Building placement (`pulp_wars-h0xx`, 7r106).
+        !publicGraphGeneralBuildingTileV7(view, tile) ||
         tile.site !== null ||
-        tile.resource !== null ||
         tile.improvement !== null ||
         treasureKeys.has(coordKeyV7(tile.at)) ||
         cityImprovementKeys.has(`${tile.territoryCityId}:${rule.improvement}`)
@@ -10388,10 +10464,8 @@ function appendPublicPlacementsForTileV7(
     }
     if (
       entitlementsAvailable &&
-      (tile.terrain !== "MOUNTAIN" ||
-        view.viewer.researchedTechs.includes("ENGINEERING")) &&
+      publicGraphGeneralBuildingTileV7(view, tile) &&
       tile.site === null &&
-      tile.resource === null &&
       tile.improvement === null &&
       !treasureKeys.has(coordKeyV7(tile.at)) &&
       !cityImprovementKeys.has(`${tile.territoryCityId}:MONUMENT`)
@@ -10853,9 +10927,11 @@ function scorePublicPlacementV7(
     SPATIAL_ECONOMIC_ACTIONS_V7[placement.kind as SpatialEconomicCommandKindV7];
   const after =
     placement.kind === "BUILD_MONUMENT"
-      ? replacePublicGraphTileV7(graph, placement.at, {
-          improvement: "MONUMENT",
-        })
+      ? replacePublicGraphTileV7(
+          graph,
+          placement.at,
+          publicBuiltTileV7(tile, "MONUMENT"),
+        )
       : graphAfterTileCommandV7(view, graph, {
           kind: placement.kind as Exclude<
             PublicEconomicPotentialKindV7,
@@ -10895,7 +10971,22 @@ function scorePublicPlacementV7(
         evaluation?.distinctFamilies.length ?? 0,
       ) +
     4 * (evaluation?.oppositePairAxes.length ?? 0) +
-    (placement.kind === "BUILD_ROAD" && recurringCoinDelta > 0 ? 4 : 0)
+    (placement.kind === "BUILD_ROAD" && recurringCoinDelta > 0 ? 4 : 0) -
+    // Building placement (`pulp_wars-h0xx`, 7r106): a building over a
+    // resource uses it up, giving up what it would have given
+    // (`consumedResourcePopulationV7`).
+    8 * placementConsumedPopulationV7(improvement, tile.resource)
+  );
+}
+
+/** The population a building gives up by using its tile's resource up (7r106). */
+function placementConsumedPopulationV7(
+  improvement: ImprovementIdV7 | null,
+  resource: PublicEconomyGraphTileV7["resource"],
+): number {
+  if (improvement === null) return 0;
+  return consumedResourcePopulationV7(
+    resourceConsumedByBuildingV7(improvement, resource),
   );
 }
 
@@ -11546,7 +11637,11 @@ function publicTileCommandLegal(
       tile.site === null &&
       // The Fishing Hole: any terrain of its own ice (checked above).
       (kind === "BUILD_FISHING_HOLE" || tile.terrain === basic.terrain) &&
-      tile.resource === basic.resource &&
+      // 7r106: Game does not block a Lumber Camp, nor Fish or Pearls a
+      // Fishing Hole; each uses its resource up.
+      (kind === "BUILD_LUMBER_CAMP"
+        ? lumberCampResourceFitsV7(tile.resource)
+        : kind === "BUILD_FISHING_HOLE" || tile.resource === basic.resource) &&
       (kind === "HARVEST_FISH"
         ? tile.improvement === null ||
           ((tile.improvement === "PORT" || tile.improvement === "SHIPYARD") &&
@@ -11605,9 +11700,8 @@ function publicTileCommandLegal(
       !publicCityDevelopmentFootprintKnown(view, city) ||
       view.treasureChests.some((chest) => same(chest, tile.at)) ||
       tile.site !== null ||
-      (tile.terrain === "MOUNTAIN" &&
-        !view.viewer.researchedTechs.includes("ENGINEERING")) ||
-      tile.resource !== null ||
+      // Building placement (`pulp_wars-h0xx`, 7r106).
+      !publicGeneralBuildingTileV7(view, tile) ||
       tile.improvement !== null ||
       cityHasImprovement(view, city.id, spatial.improvement)
     )
@@ -11692,6 +11786,29 @@ function publicTileCommandLegal(
     tile.improvement !== null &&
     ((tile.improvement !== "PORT" && tile.improvement !== "SHIPYARD") ||
       !view.units.some((unit) => same(unit.at, tile.at)))
+  );
+}
+
+/**
+ * Building placement (`pulp_wars-h0xx`, 7r106; RULESET_7_CURRENT.md section
+ * 8.1): the terrain and resource conditions of a general building (Windmill,
+ * Sawmill, Forge, Workshop, Market, Monument) on an explored tile. On land
+ * the shared rule: Grass, or Forest with Forestry (the build clears it),
+ * never a Mountain, and no resource blocks it (it is used up), on ice (the
+ * caller has checked it is the viewer's own) too.
+ */
+function publicGeneralBuildingTileV7(
+  view: PlayerViewV7,
+  tile: {
+    readonly biome: unknown;
+    readonly terrain: TerrainIdV7 | null;
+    readonly resource: unknown;
+  },
+): boolean {
+  if (tile.biome === null) return true;
+  return generalBuildingFitsTerrainV7(
+    tile.terrain,
+    view.viewer.researchedTechs,
   );
 }
 

@@ -42,15 +42,15 @@ import {
 
 describe("ruleset-7 revision-12 identity", () => {
   it("keeps rejecting r11 after the r54 identity and cleans every obsolete Ruleset-7 key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r105");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r105.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-51)).toBe(
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r106");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r106.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-52)).toBe(
       "pulpWars.save.v7r54.current",
     );
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
 
     const state = initialV7();
-    expect(state.rulesetId).toBe("pulp-wars-poc-7r105");
+    expect(state.rulesetId).toBe("pulp-wars-poc-7r106");
     expect(
       parseGameStateV7({ ...state, rulesetId: "pulp-wars-poc-7r11" }),
     ).toBeNull();
@@ -463,7 +463,10 @@ describe("ruleset-7 revision-12 resources kept under improvements", () => {
     expect(parsePlayerEventEnvelopeV7(projected)).toMatchObject({ ok: true });
   });
 
-  it("keeps masked Fertile Ground under a Monument and exposes it after removal with Gathering", () => {
+  // Building placement (`pulp_wars-h0xx`, 7r106): a Monument uses up the
+  // resource it stands on, a masked one too (before, it kept the Fertile
+  // Ground and its removal re-exposed it).
+  it("uses up masked Fertile Ground under a Monument, so its removal restores nothing", () => {
     const { state, fertile } = resourceFixture();
     const builder = checkedV7({
       ...withHumanTechs(state, ["SCOUTING", "DRILL", "ENGINEERING"]),
@@ -497,7 +500,7 @@ describe("ruleset-7 revision-12 resources kept under improvements", () => {
     });
     expect(tileAt(built.state, fertile)).toMatchObject({
       improvement: "MONUMENT",
-      resource: "FERTILE_GROUND",
+      resource: null,
     });
     const gathered = withHumanTechs(built.state, [
       "GATHERING",
@@ -512,41 +515,25 @@ describe("ruleset-7 revision-12 resources kept under improvements", () => {
       parseGameStateV7(JSON.parse(JSON.stringify(gathered)) as unknown),
     ).toEqual(gathered);
 
-    const removedMasked = apply(built.state, {
-      kind: "REDEVELOP",
-      at: fertile,
-    });
-    expect(tileAt(removedMasked.state, fertile)).toMatchObject({
-      improvement: null,
-      resource: "FERTILE_GROUND",
-    });
-    expect(
-      viewTile(viewForV7(removedMasked.state, state.humanPlayerId), fertile),
-    ).toMatchObject({ resource: null });
-    const maskedProjection = projectEventsV7(
-      built.state,
-      removedMasked.state,
-      state.humanPlayerId,
-      removedMasked.events,
-    );
-    expect(JSON.stringify(maskedProjection)).not.toContain("FERTILE_GROUND");
-    expect(parsePlayerEventEnvelopeV7(maskedProjection)).toMatchObject({
-      ok: true,
-    });
-
     const removed = apply(gathered, { kind: "REDEVELOP", at: fertile });
+    expect(tileAt(removed.state, fertile)).toMatchObject({
+      improvement: null,
+      resource: null,
+    });
     expect(
       removed.events.find(
         (event) => event.kind === "ECONOMIC_BUILDING_REMOVED",
       ),
-    ).toMatchObject({
-      improvement: "MONUMENT",
-      resourceRestored: "FERTILE_GROUND",
-    });
+    ).toMatchObject({ improvement: "MONUMENT", resourceRestored: null });
     expect(removed.events.every((event) => parseEventV7(event).ok)).toBe(true);
-    expect(
-      viewTile(viewForV7(removed.state, state.humanPlayerId), fertile),
-    ).toMatchObject({ improvement: null, resource: "FERTILE_GROUND" });
+    const projection = projectEventsV7(
+      gathered,
+      removed.state,
+      state.humanPlayerId,
+      removed.events,
+    );
+    expect(JSON.stringify(projection)).not.toContain("FERTILE_GROUND");
+    expect(parsePlayerEventEnvelopeV7(projection)).toMatchObject({ ok: true });
   });
 
   it("rejects resources an improvement can never hide", () => {

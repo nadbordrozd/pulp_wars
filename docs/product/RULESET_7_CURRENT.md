@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r105`, for all nine offered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r106`, for all nine offered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), Candy (`CANDY`), and
 the Cultists (`CULT`). The ninth faction, the Cultists of the Ancient Ones,
@@ -445,6 +445,21 @@ links to another, by Road or by Port. A sea link needs only **Shorecraft**
 the Roads technology, and unexplored water no longer breaks a link. A save,
 replay, or setup of `7r75` is rejected, and the browser autosave has a new
 key.
+`pulp-wars-poc-7r106` (`pulp_wars-h0xx`; the user, 2026-10-23: "overall
+mountains should be the toughest ... fertile ground or fruit should not be
+an obstacle to building at all") rationalises **building placement**
+([section 8.1](#81-common-placement-gates), with the audit of every
+building before and after): nothing but the **Mine** is built on a
+Mountain (a Windmill, Sawmill, Forge, Workshop, Market, or Monument was
+allowed there with Engineering); **no land resource blocks a building**,
+which uses it up (Fruit, Fertile Ground, or Game; the Farm keeps its
+Fertile Ground and the Mine its Ore); and a building on a **Forest** needs
+**Forestry**, the technology of Clear Forest, and clears it on its way
+(the tile becomes Grass and pays Clear Forest's Coin; before, a Forest took
+one with no technology and stayed a Forest). The Lumber Camp stays on its
+Forest and Game no longer blocks it. A save, replay, or setup of `7r105`
+is rejected, and the browser autosave has a new key. Boards are
+unchanged.
 `pulp-wars-poc-7r105` (`pulp_wars-737.22`; the user, 2026-10-20: "make
 the tesla tower stronger") makes the **Tesla Tower**'s zap **16** (was 4)
 and adds the **chain lightning**
@@ -1588,10 +1603,10 @@ sections here cite.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r105`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Ruleset                                    | `pulp-wars-poc-7r106`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r105.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Browser autosave                           | `pulpWars.save.v7r106.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, `CULT`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`, `CULT_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -4927,8 +4942,10 @@ added the last four, constants in `src/engine/v7/achievements.ts`):
   burrowed unit, which is off the board, not until it surfaces.
 - Each unlocked, unspent entitlement funds one `BUILD_MONUMENT`: 0 Coins, +3
   live population (`MONUMENT_POPULATION_V7`; 3 since the economy rejig,
-  `7r54`, 2 from tuning 1, `7r46`, to `7r53`, and 3 before), on an explored owned land tile with no site, resource,
-  improvement, or treasure (Mountain needs Engineering), at most one Monument
+  `7r54`, 2 from tuning 1, `7r46`, to `7r53`, and 3 before), on an explored owned Grass tile, or Forest with
+  Forestry (cleared), never a Mountain, with no site, improvement, or
+  treasure; a resource under it is used up (`7r106`,
+  [section 8.1](#81-common-placement-gates)), at most one Monument
   per city, no pending reward, and no hostile unit on the tile (a siege
   has not mattered since `7r80`). A player can therefore place at most
   seven Monuments in a match, never more than one per owned city.
@@ -5495,25 +5512,30 @@ raw read is Board's Deep Water gate, the boarder's owner's Navigation
 
 - A tile has at most one resource. Harvested Fruit, Game, Fish, and Pearls
   never regenerate.
-- **Resources stay under improvements.** Placing an improvement never
-  removes the resource beneath it: the resource stays on the tile, hidden in
-  every public view, preview, and Normal AI input while the improvement
-  stands, and it is visible and usable again once the improvement is removed
-  (Redevelop or Pillage). A Farm always stands on Fertile Ground and a Mine on
-  Ore. Ports and Shipyards are the exception: their Fish or Pearls stay visible
-  and harvestable. Harvests (Fruit, Game, Fish, Pearls) are not improvements
-  and consume their resource. An improved tile never offers a resource action
-  for the resource it hides.
+- **A building uses up the resource it is built over** (building
+  placement, `pulp_wars-h0xx`, `7r106`; [section 8.1](#81-common-placement-gates)),
+  unless it is the building that works it: a Farm always stands on Fertile
+  Ground and a Mine on Ore, and they keep it underneath, hidden in every
+  public view, preview, and Normal AI input while they stand and visible and
+  usable again once they are removed (Redevelop or Pillage). Ports and
+  Shipyards keep their Fish or Pearls visible and harvestable. Every other
+  building (a Lumber Camp over Game, a Windmill, Sawmill, Forge, Workshop,
+  Market, or Monument over Fruit, Fertile Ground, or Game) removes the
+  resource for good, a hidden one too, so its removal restores nothing.
+  Before `7r106` every improvement kept its resource, and a Fertile Ground
+  hidden under a mill came back when it was removed. Harvests (Fruit, Game,
+  Fish, Pearls) are not improvements and consume their resource. An improved
+  tile never offers a resource action for the resource it hides.
 - Without Drill, an explored Mountain shows no resource marker, so hidden Ore
   is indistinguishable from an empty Mountain. Likewise, without Gathering an
   explored Grass tile shows no Fertile Ground marker; the mask applies to the
   public view, previews, projected events (a cultivated tile reports no
   resource), and Normal AI input.
-- Placement gates for buildings, Monuments, and Replant Forest consider only
-  resources the actor can observe, so a player without Gathering may place a
-  Sawmill, Workshop, Forge, or Monument on Grass that hides Fertile Ground. The
-  Fertile Ground stays under it and is exposed (to viewers with Gathering)
-  when the improvement is removed; the removal event reports it as restored.
+- Placement gates consider only resources the actor can observe. Since
+  `7r106` no resource blocks a building, on land or on ice, so only Replant
+  Forest still reads them: a player without Gathering may replant Grass
+  that hides Fertile Ground. A Sawmill, Workshop, Forge, Market, or Monument placed on Grass
+  that hides Fertile Ground uses it up like a visible one.
 - **Terrain-transform exception:** terrain transforms are not improvements.
   Replant Forest on Grass that hides Fertile Ground turns the tile into Forest
   and removes the Fertile Ground, which cannot exist on Forest. Clear Forest,
@@ -5539,8 +5561,9 @@ A Shipyard was already refused on a blockaded Port (`INVALID_TILE`). The
 tile dock says "Enemy on this tile" on such a tile of the player's land.
 No unit is needed. Resource
 actions, buildings, and Monuments never target a site (city center or village)
-or a treasure tile. Mountain targets for buildings, Monuments, and Roads
-require Engineering. Roads always coexist. **No tile command targets a
+or a treasure tile. Mountain targets for Roads require Engineering; a
+Mountain takes no building but the Mine (Engineering, on Ore; building
+placement below). Roads always coexist. **No tile command targets a
 Rift**: buildings, Monuments, and Roads are rejected with `INVALID_TILE`
 (the Forest actions with `FOREST_ACTION_INVALID_TILE`), and the query
 offers none. A Rift may lie in territory (a Land Grant claims it) and adds
@@ -5556,8 +5579,10 @@ and no tile command changes a tile into water, a Rift, or a site.
 builds on ice (a seat rule read from the seat's faction, like Snow; a
 Martian controlling a Yeti does not), and only on **its own ice**
 (`iceBuildableV7`; another seat's ice is Frozen first). The tile is
-otherwise held to the gates above, plus: no visible resource (Fish or
-Pearls: harvest them first) and no improvement. The Ice Harbour (its Port,
+otherwise held to the gates above, plus: no improvement. Fish or Pearls
+on it no longer block a building (building placement, `7r106`): a
+general building or a Fishing Hole uses them up, the Ice Harbour keeps
+them (before, they had to be harvested first). The Ice Harbour (its Port,
 [section 14](#14-naval-rules)), the **Fishing Hole**
 ([section 8.2](#82-resource-and-basic-actions)), the Windmill, Sawmill,
 Forge, Workshop, Market, and Monument may stand on such ice; a Farm, a
@@ -5567,18 +5592,100 @@ Pillage removes the building and leaves the ice. Every other seat builds
 nothing on ice (`INVALID_TILE`, never offered), even on ice it owns (the
 ice of a city it captured, whose buildings keep working for it).
 
+**Building placement** (`pulp_wars-h0xx`, `pulp-wars-poc-7r106`; the
+user, 2026-10-23: "some buildings you can build on mountains but not on
+fruits or fertile ground. rationalise this. overall mountains should be the
+toughest - there should be fewest things you can build on mountains.
+fertile ground or fruit should not be an obstacle to building at all.
+building on a forest should be only available after you have the tech to
+clear a forest and then building on a forest implicitly clears the
+forest"). The shared rule is `src/engine/v7/building-placement.ts`; the
+reducer, the public command query, the economic preview, the planner, and
+the Normal AI all read it.
+
+- **Mountains are the toughest terrain.** Only the **Mine** is built on a
+  Mountain (with Engineering, on Ore, as before). A Windmill, Sawmill,
+  Forge, Workshop, Market, or Monument (the **general buildings**) is never
+  built there (`INVALID_TILE`, never offered), with or without Engineering.
+- **No land resource is an obstacle.** A general building on Grass is
+  built whatever its resource (Fruit, Fertile Ground, or none) and uses the
+  resource up; on a Forest with Game it uses up the Game. A Lumber Camp
+  stands on a Forest with or without Game and uses the Game up. The
+  harvest buildings work as before: the Farm needs Fertile Ground and keeps
+  it, the Mine needs Ore and keeps it, and the harvests take their
+  resource.
+- **A Forest needs Forestry and is cleared.** A general building on a
+  Forest needs **Forestry** (`FORESTRY`, the technology of Clear Forest in
+  every faction's tree; `TECH_REQUIRED { tech: "FORESTRY" }` and not
+  offered without it). The build clears the Forest first exactly as Clear
+  Forest does: the tile becomes Grass (Road, Field Defense, and territory
+  kept), the builder is paid Clear Forest's **1 Coin**
+  (`CLEAR_FOREST_COINS_V7`), and a `FOREST_CLEARED` event (`coinDelta` 1)
+  comes before the build's `ECONOMIC_BUILDING_BUILT` or `MONUMENT_BUILT`.
+  The price check is the building's full cost. A Lumber Camp, which works
+  the Forest, stays on it uncleared and needs only its own Forestry.
+- **Ice follows the same rule**: on an Ice Folk seat's own ice, Fish or
+  Pearls no longer block a general building or a Fishing Hole, which uses
+  them up (the Ice Harbour, a Port, keeps them as before). Before, they had
+  to be harvested first.
+- **What the player sees.** The economic preview of a build has
+  `clearsForest` and `resourceConsumed` (the visible Fruit, Fertile Ground,
+  Game, Fish, or Pearls it uses up), and its `coinsReceived` is 1 on a
+  Forest. The tile dock's build button shows the "+1" Coin chip and one
+  short chip each: "Clears the forest", "Uses up the Fruit" (a Monument's
+  button too). Forestry's technology card adds "Build on Forest: a building
+  clears it first (+1 Coin)" under Clear Forest.
+- **The Normal AI** is offered the same tiles (its candidates are the public
+  command query's) and weighs what a build gives up: 5 points of immediate
+  value for each population the used-up resource would have given (a
+  harvest's 1 for Fruit, Game, or Fish, a Farm's 2 for Fertile Ground, and
+  Pearls' 10 Coins as 2; `consumedResourcePopulationV7`), 8 a population
+  in the planner's placement
+  score, and +1 for the cleared Forest's Coin, so it builds on a bare tile
+  when one serves as well.
+- **Missions.** A mission's starting general building stands on bare Grass
+  (the builder's `improvementFits`; it accepted Fertile Ground under one
+  before). Every registered mission already did; none moved.
+- Field Defense, a Dwarf Barricade, and Roads are not buildings and are
+  unchanged.
+
+The audit (`7r105`, before, and `7r106`, after). The rule is the same for
+all nine factions, Human, Undead, Goblin, Dinosaur, Martian, Ice Folk,
+Dwarf, Candy, and Cult: they share the improvement IDs and the technology
+IDs (`FARMING`, `FORESTRY`, `ENGINEERING`, `MILLING`, `SAWMILLING`,
+`METALLURGY`, `DRILL`, `ADMINISTRATION`, `SHORECRAFT`, `NAVAL_ENGINEERING`),
+only the names differ (a Farm is the Undead Graveyard, the Martian
+Hydroponic Farm, the Ice Folk Frost Garden, the Dwarf Mushroom Farm; a
+Windmill the Bone Mill, Grinding Stone, Solar Array, or Steam Pump; the
+Dinosaur Sawmill the Chopping Block; the Dwarf Engineering is Mining).
+"Hidden" Fertile Ground is one a seat without Gathering cannot see; Ore is
+always visible to a seat with Engineering.
+
+| Building (tech)                                       | Grass                               | Grass + Fruit                   | Grass + Fertile Ground                      | Forest                                                                          | Forest + Game                                           | Mountain                            | Mountain + Ore     | Own ice (Ice Folk)                                      |
+| ----------------------------------------------------- | ----------------------------------- | ------------------------------- | ------------------------------------------- | ------------------------------------------------------------------------------- | ------------------------------------------------------- | ----------------------------------- | ------------------ | ------------------------------------------------------- |
+| Farm (Farming)                                        | no                                  | no                              | yes, keeps it                               | no                                                                              | no                                                      | no                                  | no                 | no                                                      |
+| Lumber Camp (Forestry)                                | no                                  | no                              | no                                          | yes                                                                             | before no; **now yes, Game used up**                    | no                                  | no                 | no                                                      |
+| Mine (Engineering)                                    | no                                  | no                              | no                                          | no                                                                              | no                                                      | no                                  | yes, keeps it      | no                                                      |
+| Windmill, Sawmill, Forge, Workshop, Market (own tech) | yes                                 | before no; **now yes, used up** | before only if hidden; **now yes, used up** | before yes with no tech, stays Forest; **now with Forestry, cleared (+1 Coin)** | before no; **now with Forestry, cleared, Game used up** | before with Engineering; **now no** | **no** (before no) | before no resource; **now yes, Fish or Pearls used up** |
+| Monument (an achievement)                             | yes                                 | before no; **now yes, used up** | before only if hidden; **now yes, used up** | before yes, stays Forest; **now with Forestry, cleared (+1 Coin)**              | before no; **now with Forestry, cleared, Game used up** | before with Engineering; **now no** | **no** (before no) | before no resource; **now yes, Fish or Pearls used up** |
+| Fishing Hole (Rime, Ice Folk)                         | no                                  | no                              | no                                          | no                                                                              | no                                                      | no                                  | no                 | before no resource; **now yes, Fish or Pearls used up** |
+| Port, Shipyard (Shorecraft, Naval Engineering)        | Shallow Water (Fish or Pearls kept) | —                               | —                                           | —                                                                               | —                                                       | —                                   | —                  | Ice Harbour                                             |
+
+The mill placement needs (a contributor next to it), the one per city, and
+every other gate of this section are unchanged.
+
 ### 8.2 Resource and basic actions
 
-| Action              | Tech                           | Target                                                                   | Cost | Result                                |
-| ------------------- | ------------------------------ | ------------------------------------------------------------------------ | ---: | ------------------------------------- |
-| Harvest Fruit       | Gathering                      | Grass + Fruit                                                            |    2 | remove Fruit; +1 permanent population |
-| Hunt Game           | Hunting                        | Forest + Game                                                            |    2 | remove Game; +1 permanent population  |
-| Harvest Fish        | Shorecraft                     | Shallow Water + Fish (Port tile if active)                               |    2 | remove Fish; +1 permanent population  |
-| Gather Pearls       | Navigation                     | any water + Pearls (Port tile if active)                                 |    0 | remove Pearls; receive 10 Coins¹      |
-| Build Farm          | Farming                        | Grass + Fertile Ground                                                   |    5 | Farm; +2 live population              |
-| Build Lumber Camp   | Forestry                       | Forest, no resource or improvement                                       |    3 | Lumber Camp; +1 live population       |
-| Build Mine          | Engineering                    | Mountain + Ore                                                           |    5 | Mine; +2 live population              |
-| Build Fishing Hole² | Rime (the Ice Folk Shorecraft) | the seat's own ice (Shallow or Deep), no visible resource or improvement |    3 | Fishing Hole; +1 live population      |
+| Action              | Tech                           | Target                                                                                 | Cost | Result                                |
+| ------------------- | ------------------------------ | -------------------------------------------------------------------------------------- | ---: | ------------------------------------- |
+| Harvest Fruit       | Gathering                      | Grass + Fruit                                                                          |    2 | remove Fruit; +1 permanent population |
+| Hunt Game           | Hunting                        | Forest + Game                                                                          |    2 | remove Game; +1 permanent population  |
+| Harvest Fish        | Shorecraft                     | Shallow Water + Fish (Port tile if active)                                             |    2 | remove Fish; +1 permanent population  |
+| Gather Pearls       | Navigation                     | any water + Pearls (Port tile if active)                                               |    0 | remove Pearls; receive 10 Coins¹      |
+| Build Farm          | Farming                        | Grass + Fertile Ground                                                                 |    5 | Farm; +2 live population              |
+| Build Lumber Camp   | Forestry                       | Forest, no improvement (Game is used up, `7r106`)                                      |    3 | Lumber Camp; +1 live population       |
+| Build Mine          | Engineering                    | Mountain + Ore                                                                         |    5 | Mine; +2 live population              |
+| Build Fishing Hole² | Rime (the Ice Folk Shorecraft) | the seat's own ice (Shallow or Deep), no improvement (Fish or Pearls used up, `7r106`) |    3 | Fishing Hole; +1 live population      |
 
 ² The frozen sea redesign (`pulp_wars-5ti.25`, `7r100`): the Ice Folk
 **Fishing Hole** (`BUILD_FISHING_HOLE`, improvement `FISHING_HOLE`,
@@ -5618,9 +5725,10 @@ reserve holds the gathering back.
 | Market   | Administration |    6 | one/city | at least one adjacent economic family                                     | Coins, not population ([section 9.4](#94-market))                                                          |
 | Monument | achievement    |    0 | one/city | an unspent achievement entitlement                                        | +3                                                                                                         |
 
-- Buildings target a land tile with no site, visible resource, improvement, or
-  treasure; an Ice Folk seat may also put them on its own ice in its
-  territory ([section 8.1](#81-common-placement-gates)), and their
+- Buildings target a Grass tile, or a Forest with Forestry (cleared), with
+  no site, improvement, or treasure, never a Mountain, whatever its resource
+  (used up; `7r106`, [section 8.1](#81-common-placement-gates)); an Ice Folk
+  seat may also put them on its own ice in its territory, and their
   neighbours are counted across land and ice alike (a Windmill on the ice
   next to a Frost Garden ashore counts it; a Windmill ashore counts a
   Fishing Hole on the ice).

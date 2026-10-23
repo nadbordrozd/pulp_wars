@@ -11,6 +11,7 @@ import {
   ARMY_RESEARCH_BEFORE_CAPTURE_PRIORITY_V7,
   ARMY_RESEARCH_ROLES_V7,
   ARMY_UNDEAD_SPARE_UNITS_V7,
+  armyClassV7,
   armyMartianHeavyCappedV7,
 } from "../../src/ai/v7-army";
 import {
@@ -24,6 +25,7 @@ import {
   resolveCityGrowthV7,
   queryTractorBeamPathV7,
   unitHeldByCityWallsV7,
+  unitRoleRuleV7,
   viewForV7,
   type CommandV7,
   type CoordV7,
@@ -47,7 +49,7 @@ import {
 import { checkedV7 } from "../fixtures/v7-builders";
 import { martianFieldV7, offeredV7 } from "../fixtures/v7-martian";
 
-// Step two of the Martian pass (`pulp_wars-w49.25`, `pulp-wars-poc-7r105`,
+// Step two of the Martian pass (`pulp_wars-w49.25`, `pulp-wars-poc-7r106`,
 // docs/product/RULESET_7_TUNING_MARTIAN.md section 14): hand-played games as
 // the Humans against the Martian AI and as the Martians. One rule changed:
 // City Walls hold a unit on its own city center against a Saucer's Tractor
@@ -257,14 +259,14 @@ describe("step two of the Martian pass: the identity", () => {
     // (Step two of the Ice Folk pass, `pulp_wars-w49.27`, took 7r59,
     // Dwarf crowd control, `pulp_wars-w49.33`, 7r60, and Goblin explosions
     // and Berserk, `pulp_wars-w49.35`, 7r61.)
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r105");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r105.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-48, -46)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r106");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r106.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-49, -47)).toEqual([
       "pulp-wars-poc-7r57",
       "pulp-wars-poc-7r58",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-48, -46)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-49, -47)).toEqual([
       "pulpWars.save.v7r57.current",
       "pulpWars.save.v7r58.current",
     ]);
@@ -879,9 +881,35 @@ describe("step two of the Martian pass: a ray unit does not walk out in front of
         moved.add(command.unitId);
       if (command.kind === "ATTACK" && moved.has(command.unitId)) {
         shotsAfterMove += 1;
+        // The shot kills, or the Tripod did not walk out in front of its
+        // line: an own line, defender, or breakthrough unit stands nearer
+        // the target (`armyScreenedV7`).
+        const shooter = view.units.find((unit) => unit.id === command.unitId);
+        const target = view.units.find(
+          (unit) => unit.id === command.targetUnitId,
+        );
+        if (shooter === undefined || target === undefined)
+          throw new Error("shot units missing");
+        const gap = (from: CoordV7): number =>
+          Math.max(
+            Math.abs(from.x - target.at.x),
+            Math.abs(from.y - target.at.y),
+          );
+        const screened = view.units.some((unit) => {
+          if (unit.ownerId !== actor || unit.id === shooter.id) return false;
+          if (unit.form !== "LAND" || gap(unit.at) >= gap(shooter.at))
+            return false;
+          const unitClass = armyClassV7(unitRoleRuleV7(view, unit));
+          return (
+            unitClass === "LINE" ||
+            unitClass === "DEFENDER" ||
+            unitClass === "BREAKTHROUGH"
+          );
+        });
         expect(
-          queryCombatPreviewV7(view, command.unitId, command.targetUnitId)
-            ?.defenderDies,
+          screened ||
+            queryCombatPreviewV7(view, command.unitId, command.targetUnitId)
+              ?.defenderDies === true,
         ).toBe(true);
       }
       state = applyOkV7(state, actor, command).state;
@@ -889,7 +917,12 @@ describe("step two of the Martian pass: a ray unit does not walk out in front of
     // (One Tripod walks up for a kill of a Champion with 3 HP. Since the
     // garrison of a watched center, `pulp_wars-mch9.27`, the Saucer leaves
     // the empty center at (5, 4) to the Shield Projector, and a second Tripod
-    // walks up for a kill as well; every shot after a Move kills, above.)
+    // walks up for a kill as well. Since building placement,
+    // `pulp_wars-h0xx`, 7r106, the seat builds a Forge and a Workshop on
+    // Fertile Ground it cannot farm, two cities reach level 5 and take
+    // their giants, and the second Tripod's shot is no kill, from behind
+    // the Knight that kills; every shot after a Move kills or is screened,
+    // above.)
     expect(shotsAfterMove).toBeLessThanOrEqual(2);
   });
 });

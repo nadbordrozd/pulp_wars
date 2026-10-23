@@ -276,10 +276,12 @@ describe("source audits", () => {
       "src/ai/v7.ts": 3,
       // BUILD_MINE's technology.
       "src/engine/rules/ruleset-v7.ts": 1,
-      // Monument, placement enumerations, and public tile-command legality.
-      "src/engine/v7/query.ts": 7,
-      // Spatial buildings, Monument, and infrastructure.
-      "src/engine/v7/reducer.ts": 5,
+      // Public tile-command legality of Roads (building placement,
+      // `pulp_wars-h0xx`, 7r106: a Mountain takes no building but the
+      // Mine, so the Monument and spatial Engineering tests are gone).
+      "src/engine/v7/query.ts": 2,
+      // Infrastructure (Roads).
+      "src/engine/v7/reducer.ts": 1,
       // Headless telemetry: Mountain-born Moves made without Engineering.
       "src/headless/ice-folk-telemetry-v7.ts": 1,
     });

@@ -77,7 +77,7 @@ const captured = JSON.parse(
 ) as CapturedFixture;
 
 describe("ruleset-7 bounded redevelopment possibility proof", () => {
-  it("proves all 33 captured basic rebuilds false within the exact ceiling", () => {
+  it("proves 32 of the 33 captured basic rebuilds false within the exact ceiling", () => {
     expect(captured.source).toEqual({
       aiMode: "COOPERATIVE",
       seed: 6173,
@@ -105,11 +105,28 @@ describe("ruleset-7 bounded redevelopment possibility proof", () => {
     expect(cold.operations).toBe(cold.ceiling);
     expect(cold.maxSliceOperations).toBe(1);
     expect(canonicalHash(cold.result)).toBe(
-      "fbd139344ac2e744f26a193e33ebe04da19dcdd5051cd997e21975bcb11870ae",
+      // Building placement (`pulp_wars-h0xx`, 7r106): Fertile Ground, Fruit, and
+      // Game no longer block a building, a Forest needs Forestry and a Mountain
+      // takes only the Mine, so the building offers moved (was fbd139…70ae).
+      "fde54b1c4baa2e6945b2cc70f89516913a8f4642c9ee63541d8074969d64d94f",
     );
+    // Building placement (`pulp_wars-h0xx`, 7r106): a Farm's Fertile Ground
+    // no longer blocks a mill or a Market, so one Farm's rebuild may now
+    // change the improvement (all 33 were proved false before).
     expect(
       cold.result.filter((value) => !value.mayChangeImprovement),
-    ).toHaveLength(33);
+    ).toHaveLength(32);
+    expect(
+      cold.result
+        .filter((value) => value.mayChangeImprovement)
+        .map((value) => {
+          const tile =
+            view.board.tiles[
+              value.candidate.at.y * view.board.width + value.candidate.at.x
+            ];
+          return tile?.explored ? tile.improvement : null;
+        }),
+    ).toEqual(["FARM"]);
     for (const value of cold.result)
       if (!value.mayChangeImprovement)
         expect(

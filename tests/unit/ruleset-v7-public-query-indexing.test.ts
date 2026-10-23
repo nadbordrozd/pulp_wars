@@ -72,7 +72,10 @@ describe("ruleset-7 exact public query indexing", () => {
       // Siege rules (`pulp_wars-0pgd`, 7r80): recomputed; the neutral
       // Roads under visible enemy units are no longer offered (was
       // 2aa894…9307).
-      "d2cb99d35b5c98f62b43646d67f03cf3cf2136b0439162a91672cbf18554564a",
+      // Building placement (`pulp_wars-h0xx`, 7r106): Fertile Ground, Fruit, and
+      // Game no longer block a building, a Forest needs Forestry and a Mountain
+      // takes only the Mine, so the building offers moved (was d2cb99…564a).
+      "1e5e41b13e8dcd58b3334476065291d3bc32ce7accc67350606b293971230fff",
     );
     const reads = measured.reads();
     expect(reads.tileReads).toBeLessThan(6_000);
@@ -106,7 +109,9 @@ describe("ruleset-7 exact public query indexing", () => {
       // The economy rejig (`pulp_wars-w49.16`): the research offers follow
       // the price per city (was 66 236). The Industry reshuffle
       // (`pulp_wars-w49.21`): three Guard offers fewer (was 66 238).
-      65_491 + publicPlanningFactScanOperations(measured.view),
+      // Building placement (`pulp_wars-h0xx`, 7r106): the building offers
+      // moved (was 65 491).
+      64_397 + publicPlanningFactScanOperations(measured.view),
     );
     expect(canonicalHash(planned.result)).toBe(
       // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
@@ -115,7 +120,9 @@ describe("ruleset-7 exact public query indexing", () => {
       // 2d5421…3b8e).
       // Siege rules (`pulp_wars-0pgd`, 7r80): recomputed, without the
       // neutral Roads under enemy units (was d5416e…9615).
-      "ec3cf94435ecf46fc9885ac25db421132a073d96dced1ed5d983ae69be53fb1e",
+      // Building placement (`pulp_wars-h0xx`, 7r106): the building offers moved
+      // (was ec3cf9…fb1e).
+      "e950d33ed2fd74d46e61d58a5dadd0474fb29c827c66bdac86f4a99b310fabd6",
     );
   });
 
@@ -141,7 +148,11 @@ describe("ruleset-7 exact public query indexing", () => {
         leftResult = progress.result;
       }
       if (rightResult === null) {
-        const progress = right.advance(37);
+        // 64 a slice since building placement (`pulp_wars-h0xx`, 7r106; 37
+        // before): the view's ten new building offers make the right-hand
+        // work long enough that 37 no longer finishes it within the
+        // left-hand fact scan.
+        const progress = right.advance(64);
         rightOperations += progress.operations;
         rightResult = progress.result;
       }
@@ -162,7 +173,9 @@ describe("ruleset-7 exact public query indexing", () => {
       // no longer offer the Guard).
       // 4 103 since the technology base cost 5 / 6 / 7 (`pulp_wars-w49.40`:
       // six RESEARCH commands are offered again).
-      4_103 + publicPlanningFactScanOperations(rightView),
+      // 7 117 since building placement (`pulp_wars-h0xx`, 7r106: ten
+      // building offers more).
+      7_117 + publicPlanningFactScanOperations(rightView),
     );
     expect(canonicalHash(leftResult)).toBe(
       // Tuning 6 (`pulp_wars-w49.6`): research costs 1 Coin for each
@@ -176,7 +189,10 @@ describe("ruleset-7 exact public query indexing", () => {
       // tier 2 costs 12 with the view's four cities, so its 12 Coins
       // buy one and six RESEARCH commands are offered again (was
       // 41c906…446d).
-      "a763fd68eb9222bfe9fde304cb97e91d6696d9b38af00fff43cd0496efdbf270",
+      // Building placement (`pulp_wars-h0xx`, 7r106): Fertile Ground, Fruit, and
+      // Game no longer block a building, a Forest needs Forestry and a Mountain
+      // takes only the Mine, so the building offers moved (was a763fd…f270).
+      "ec361d2e83f57f5da1e481a72a08e6077217484c332c735d48e34f26f4ff3db5",
     );
     expect(rightResult).toEqual(leftResult);
   });

@@ -74,7 +74,11 @@ describe("ruleset-7 exact public-planning performance", () => {
         // tier 2 costs 12 with the view's four cities, so its 12 Coins
         // buy one and six RESEARCH commands are offered again (was
         // 4eb8ff…e1fc).
-        "5d18df44f6c0367b6ed3c153e14baaef93f2eb2fc9fb97298d5cc42a280d04ef",
+        // Building placement (`pulp_wars-h0xx`, 7r106): Fertile Ground, Fruit,
+        // and Game no longer block a building, a Forest needs Forestry and a
+        // Mountain takes only the Mine, so the building offers moved (was
+        // 5d18df…04ef).
+        "e2898b2c332da544a42fdd17159023dc9e7f4b09c2487fa5e4340fb1b72ef2dc",
       resultHash:
         // Tuning 6 (`pulp_wars-w49.6`): research costs 1 Coin for each
         // technology owned, so the retained view's 12 Coins buy a technology
@@ -87,7 +91,11 @@ describe("ruleset-7 exact public-planning performance", () => {
         // tier 2 costs 12 with the view's four cities, so its 12 Coins
         // buy one and six RESEARCH commands are offered again (was
         // 41c906…446d).
-        "a763fd68eb9222bfe9fde304cb97e91d6696d9b38af00fff43cd0496efdbf270",
+        // Building placement (`pulp_wars-h0xx`, 7r106): Fertile Ground, Fruit,
+        // and Game no longer block a building, a Forest needs Forestry and a
+        // Mountain takes only the Mine, so the building offers moved (was
+        // a763fd…f270).
+        "ec361d2e83f57f5da1e481a72a08e6077217484c332c735d48e34f26f4ff3db5",
       // 4 097 since tuning 4 (one RESEARCH fewer in the retained view);
       // 4 099 since tuning 5 (`pulp_wars-w49.4`: two cities offer the
       // Swordsman); 4 105 since tuning 6 (six RESEARCH commands again);
@@ -100,7 +108,9 @@ describe("ruleset-7 exact public-planning performance", () => {
       // 4 103 since the technology base cost 5 / 6 / 7 (`pulp_wars-w49.40`,
       // 7r81: a tier 2 costs 12 with the view's four cities, so six
       // RESEARCH commands are offered again).
-      operations: 4_103,
+      // 7 117 since building placement (`pulp_wars-h0xx`, 7r106: ten
+      // building offers more, on Fertile Ground no longer blocked).
+      operations: 7_117,
     },
     {
       id: "captured-command-300",
@@ -111,7 +121,11 @@ describe("ruleset-7 exact public-planning performance", () => {
         // Siege rules (`pulp_wars-0pgd`, 7r80): recomputed; the neutral
         // Roads under visible enemy units are no longer offered (was
         // 2aa894…9307).
-        "d2cb99d35b5c98f62b43646d67f03cf3cf2136b0439162a91672cbf18554564a",
+        // Building placement (`pulp_wars-h0xx`, 7r106): Fertile Ground, Fruit,
+        // and Game no longer block a building, a Forest needs Forestry and a
+        // Mountain takes only the Mine, so the building offers moved (was
+        // d2cb99…564a).
+        "1e5e41b13e8dcd58b3334476065291d3bc32ce7accc67350606b293971230fff",
       // Tuning 1 (`pulp_wars-w49.3`, 7r46): one contributor counts for one
       // Windmill, Sawmill, Forge, and Market and a Monument gives 2, so the
       // planned values differ (was b32cb8…1f5b and 66 235 operations).
@@ -122,7 +136,9 @@ describe("ruleset-7 exact public-planning performance", () => {
         // 2d5421…3b8e).
         // Siege rules (`pulp_wars-0pgd`, 7r80): recomputed, without the
         // neutral Roads under enemy units (was d5416e…9615).
-        "ec3cf94435ecf46fc9885ac25db421132a073d96dced1ed5d983ae69be53fb1e",
+        // Building placement (`pulp_wars-h0xx`, 7r106): the building offers
+        // moved (was ec3cf9…fb1e).
+        "e950d33ed2fd74d46e61d58a5dadd0474fb29c827c66bdac86f4a99b310fabd6",
       // Tuning 5: the Swordsman offers (was 66 233). The economy rejig
       // (`pulp_wars-w49.16`): research offers by the price per city, and a
       // mill counts every contributor of its owner (was 66 236). The
@@ -130,7 +146,9 @@ describe("ruleset-7 exact public-planning performance", () => {
       // (was 66 238).
       // The siege rules (`pulp_wars-0pgd`, 7r80): two neutral Roads under
       // enemy units are no longer candidates (was 66 235).
-      operations: 65_491,
+      // Building placement (`pulp_wars-h0xx`, 7r106): the building offers
+      // moved (was 65 491).
+      operations: 64_397,
     },
     {
       id: "captured-command-425",
@@ -139,7 +157,11 @@ describe("ruleset-7 exact public-planning performance", () => {
         // Siege rules (`pulp_wars-0pgd`, 7r80): recomputed; the neutral
         // Roads under visible enemy units are no longer offered (was
         // d63241…7344).
-        "3ea5704c71cd4c5a5278d4fc2871c4f2753c118c9901807a50f3caf9dcd9f928",
+        // Building placement (`pulp_wars-h0xx`, 7r106): Fertile Ground, Fruit,
+        // and Game no longer block a building, a Forest needs Forestry and a
+        // Mountain takes only the Mine, so the building offers moved (was
+        // 3ea570…f928).
+        "21c2d6d74fbed596c045b3200fa4860fe0b4410544eeb8ffc946e3cca566ba75",
       // Revision 16 caps a Market at 3 Coins; with the cap at 4 the
       // revision-15 value 209b3326… returns.
       // Tuning 1 (7r46), as above (was c92698…dbc5 and 94 442 operations).
@@ -148,12 +170,16 @@ describe("ruleset-7 exact public-planning performance", () => {
         // 2e06bb…623a).
         // Siege rules (`pulp_wars-0pgd`, 7r80): recomputed, without the
         // neutral Roads under enemy units (was 3b0102…0a9c).
-        "2a6b148e6b3e57ff5622118452b2d2b65483d3b5e4e86ebe4aff6588c9ebc475",
+        // Building placement (`pulp_wars-h0xx`, 7r106): the building offers
+        // moved (was 2a6b14…c475).
+        "e1fe7960acbd5f253cf5ffe06b3f4cf3114657094a12df36a411f3856808b298",
       // Tuning 5: the Swordsman offer (was 94 438).
       // The economy rejig (`pulp_wars-w49.16`), as above (was 94 439).
       // The siege rules (`pulp_wars-0pgd`, 7r80): one neutral Road under an
       // enemy unit is no longer a candidate (was 94 445).
-      operations: 94_026,
+      // Building placement (`pulp_wars-h0xx`, 7r106): the building offers
+      // moved (was 94 026).
+      operations: 96_631,
     },
   ] as const;
 
@@ -214,12 +240,16 @@ describe("ruleset-7 exact public-planning performance", () => {
     );
     const result = drain(view, commands, 7);
     expect(result.operations).toBe(
-      28_474 + publicPlanningFactScanOperations(view),
+      // Building placement (`pulp_wars-h0xx`, 7r106): the building offers
+      // moved (was 28 474).
+      28_498 + publicPlanningFactScanOperations(view),
     );
     // Revision 14 (E2): Commerce no longer doubles the Market values in the
     // plan (with E2 reverted the revision-13 value 09abc6aa… returns).
     expect(canonicalHash(result.result)).toBe(
-      "9032dd0c4bedee8ff282496835db5a85946717d0344b81e894336793b444014a",
+      // Building placement (`pulp_wars-h0xx`, 7r106): the building offers moved
+      // (was 9032dd…014a).
+      "54e05d7ea4193dbd3c94ab227922e22e785294320a34dcabace2d5e0dcf62394",
     );
   });
 
@@ -249,10 +279,16 @@ describe("ruleset-7 exact public-planning performance", () => {
     if (buildPort?.kind !== "BUILD_PORT")
       throw new Error("Port command missing");
     expect(canonicalHash(beforeCommands)).toBe(
-      "6be10102571a924f4c879e23627695334f6aa275f42e471e30d5e19ca465635a",
+      // Building placement (`pulp_wars-h0xx`, 7r106): Fertile Ground, Fruit, and
+      // Game no longer block a building, a Forest needs Forestry and a Mountain
+      // takes only the Mine, so the building offers moved (was 6be101…635a).
+      "ddb73eba3c24936099ed10fdcee0beaae5dae6072dc5d9f2449b14eb791b6a56",
     );
     expect(canonicalHash(drain(beforeView, beforeCommands, 17).result)).toBe(
-      "44a039254f15c4c849ed4f682d8d9f7c6b7269ccba31b4868fbb97ad053939ca",
+      // Building placement (`pulp_wars-h0xx`, 7r106): Fertile Ground, Fruit, and
+      // Game no longer block a building, a Forest needs Forestry and a Mountain
+      // takes only the Mine, so the building offers moved (was 44a039…39ca).
+      "5409e6b652d0321861b427b0d2c7980bfc9c85fb4b7b445165f1250981887e19",
     );
 
     const built = applyCommandV7(state, actor, buildPort);
@@ -260,14 +296,21 @@ describe("ruleset-7 exact public-planning performance", () => {
     const afterView = viewForV7(built.state, actor);
     const afterCommands = queryPlayerCommandsV7(afterView);
     expect(canonicalHash(afterCommands)).toBe(
-      "1334069fd90c1c2a3d8fc86d7a943bff079c9fe46faf7b031090354ba11d10d0",
+      // Building placement (`pulp_wars-h0xx`, 7r106): Fertile Ground, Fruit, and
+      // Game no longer block a building, a Forest needs Forestry and a Mountain
+      // takes only the Mine, so the building offers moved (was 133406…10d0).
+      "148039a9a2c8283e46d0a136a3eed224335b4213ecea53299225768dbdc13847",
     );
     const after = drain(afterView, afterCommands, 1);
     expect(after.operations).toBe(
-      28_463 + publicPlanningFactScanOperations(afterView),
+      // Building placement (`pulp_wars-h0xx`, 7r106): the building offers
+      // moved (was 28 463).
+      28_839 + publicPlanningFactScanOperations(afterView),
     );
     expect(canonicalHash(after.result)).toBe(
-      "58cc250e5c97fd8506decc2f91427da30055c31b55d418049d3b30518fc33e9b",
+      // Building placement (`pulp_wars-h0xx`, 7r106): the building offers moved
+      // (was 58cc25…3e9b).
+      "23afe674dd0a6d8089070530126cfb38ef5aeb8b557fb333ec4886c753faedb7",
     );
   });
 });

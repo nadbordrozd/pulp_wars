@@ -565,9 +565,17 @@ describe("Ruleset 7 revision-21 achievements UI", () => {
       '[data-action="command-build_monument-land_baron"]',
     );
     expect(build.textContent).toContain("Monument");
+    // Building placement (`pulp_wars-h0xx`, 7r106): the tile east of the
+    // capital is a Forest with Game, which the Monument clears (+1 Coin)
+    // and uses up; the button says so.
     expect(build.getAttribute("aria-label")).toBe(
-      "Monument · free · population +3",
+      "Monument · free · +1 Coins · population +3 · Clears the forest · Uses up the Game",
     );
+    expect(
+      [...build.querySelectorAll("[data-build-site]")].map(
+        (chip) => chip.textContent,
+      ),
+    ).toEqual(["Clears the forest", "Uses up the Game"]);
     expect(
       build.querySelector('[data-chibi-subject*="MONUMENT"]'),
     ).not.toBeNull();

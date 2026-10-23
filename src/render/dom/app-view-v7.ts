@@ -13,6 +13,7 @@ import {
   landTradeStatusV7,
   portNotJoinedTextV7,
   landTradeUnlockTextV7,
+  FOREST_BUILDING_UNLOCK_TEXT_V7,
   FOREST_COVER_UNLOCK_TEXT_V7,
   hireUnlockTextV7,
   BLAST_MOUNTAIN_DAMAGE_NOTE_V7,
@@ -144,6 +145,7 @@ import {
   cityIsCowedV7,
   cityLevelIncomeV7,
   CITY_REWARD_COINS_V7,
+  CLEAR_FOREST_COINS_V7,
   LAND_GRANT_MINIMUM_COST_V7,
   LAND_TRADE_INCOME_COINS_V7,
   MONUMENT_POPULATION_V7,
@@ -408,9 +410,11 @@ import {
   territoryFactionV7,
 } from "../faction-buildings-v7";
 import {
+  BUILD_CLEARS_FOREST_NOTE_V7,
   buildCommandImprovementV7,
   buildingRuleCoversYieldV7,
   buildingRuleTextV7,
+  buildSiteNotesV7,
 } from "../building-rules-v7";
 import {
   CHIBI_DOM_BOXES_V7,
@@ -9499,13 +9503,25 @@ export class Ruleset7DomAppView {
           action.append(economyChips(this.#document, { cost }));
         }
       } else if (command.kind === "BUILD_MONUMENT") {
+        // Building placement (`pulp_wars-h0xx`, 7r106): a Monument on a
+        // Forest clears it and is paid Clear Forest's Coin.
+        const notes =
+          previewView === null ? [] : buildSiteNotesV7(previewView, command);
+        const coins = notes.includes(BUILD_CLEARS_FOREST_NOTE_V7)
+          ? CLEAR_FOREST_COINS_V7
+          : 0;
         action.setAttribute(
           "aria-label",
-          `${commandLabel(command, this.#viewerFaction())} · free · population +${MONUMENT_POPULATION_V7}`,
+          `${commandLabel(command, this.#viewerFaction())} · free${coins > 0 ? ` · +${coins} Coins` : ""} · population +${MONUMENT_POPULATION_V7}`,
         );
         action.append(
-          economyChips(this.#document, { population: MONUMENT_POPULATION_V7 }),
+          economyChips(this.#document, {
+            coins,
+            population: MONUMENT_POPULATION_V7,
+          }),
         );
+        if (previewView !== null)
+          appendBuildSiteNotesV7(this.#document, action, previewView, command);
       } else if (command.kind === "BUILD_FIELD_DEFENSE") {
         const view = this.#snapshot.view;
         const unit = view?.units.find((item) => item.id === command.unitId);
@@ -9668,6 +9684,10 @@ export class Ruleset7DomAppView {
               ),
             }),
           );
+          // Building placement (`pulp_wars-h0xx`, 7r106): a build on a
+          // Forest says it clears it, one over a resource that it uses it up.
+          if (view !== null)
+            appendBuildSiteNotesV7(this.#document, action, view, command);
           // Tuning 3 (`pulp_wars-w49.3`): a Blast Mountain is an explosion;
           // the button says what it would hit, like a Kaboom button.
           const blast =
@@ -19170,7 +19190,7 @@ function setupFrom(draft: DraftV7, gameKind: GameKindV7): MatchSetupV7 | null {
   const aiHeadStartCoins =
     draft.mapType === "SHOWCASE" ? 0 : draft.aiHeadStartCoins;
   return {
-    rulesetId: "pulp-wars-poc-7r105",
+    rulesetId: "pulp-wars-poc-7r106",
     seed,
     width,
     height: width,
@@ -19636,7 +19656,14 @@ export function technologyEffectGroupsV7(
               effectDescription(effect, faction),
               buildingRuleTextV7(improvement, faction),
             ]
-          : [effectDescription(effect, faction)];
+          : // Building placement (`pulp_wars-h0xx`, 7r106): the
+            // technology of Clear Forest lets a building clear one.
+            effect.kind === "COMMAND" && effect.command === "CLEAR_FOREST"
+            ? [
+                effectDescription(effect, faction),
+                FOREST_BUILDING_UNLOCK_TEXT_V7,
+              ]
+            : [effectDescription(effect, faction)];
     grouped.set(id, [...(grouped.get(id) ?? []), ...descriptions]);
   }
   return order.flatMap((id) => {
@@ -20369,6 +20396,36 @@ const STAT_ICONS: Readonly<Record<string, UiIconIdV7>> = {
   RANGE: "range",
   SIGHT: "sight",
 };
+
+/**
+ * Building placement (`pulp_wars-h0xx`, 7r106): a build button's short notes
+ * ("Clears the forest", "Uses up the Fruit"), one compact chip each, also
+ * read out in the accessible name.
+ */
+function appendBuildSiteNotesV7(
+  documentRoot: Document,
+  action: HTMLElement,
+  view: PlayerViewV7,
+  command: CommandV7,
+): void {
+  const notes = buildSiteNotesV7(view, command);
+  if (notes.length === 0) return;
+  for (const note of notes) {
+    const chip = text(
+      documentRoot,
+      "span",
+      note,
+      "v7-undead-preview-chip v7-build-site-chip",
+    );
+    chip.dataset.buildSite =
+      note === BUILD_CLEARS_FOREST_NOTE_V7 ? "clears-forest" : "uses-up";
+    action.append(chip);
+  }
+  action.setAttribute(
+    "aria-label",
+    `${action.getAttribute("aria-label") ?? ""} · ${notes.join(" · ")}`,
+  );
+}
 
 function economyChips(
   documentRoot: Document,

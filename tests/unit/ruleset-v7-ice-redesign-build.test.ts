@@ -301,7 +301,7 @@ describe("the Ice Harbour and the Great Harbour (section 2.6)", () => {
 });
 
 describe("the Fishing Hole and the buildings on ice (section 2.6)", () => {
-  it("a Fishing Hole: 3 Coins, +1 population, on own ice with no visible resource", () => {
+  it("a Fishing Hole: 3 Coins, +1 population, on own ice, using up its Fish (7r106)", () => {
     const resources = Array.from({ length: 11 }, (_, y) =>
       y === 3 ? "......s...." : "...........",
     );
@@ -335,16 +335,22 @@ describe("the Fishing Hole and the buildings on ice (section 2.6)", () => {
     expect(isOffered(result.state, at("BUILD_FISHING_HOLE", MIDDLE))).toBe(
       true,
     );
-    // Not on the Fish (harvest it first), nor on another seat's ice or open
-    // water.
-    for (const tile of [EAST, { x: 3, y: 3 }]) {
-      expect(isOffered(state, at("BUILD_FISHING_HOLE", tile))).toBe(false);
-      expect(rejectV7(state, 0, at("BUILD_FISHING_HOLE", tile)).code).toBe(
-        "INVALID_TILE",
-      );
-    }
-    const harvested = acceptV7(state, 0, at("HARVEST_FISH", EAST)).state;
-    expect(isOffered(harvested, at("BUILD_FISHING_HOLE", EAST))).toBe(true);
+    // Not on another seat's ice or open water.
+    const foreign = { x: 3, y: 3 };
+    expect(isOffered(state, at("BUILD_FISHING_HOLE", foreign))).toBe(false);
+    expect(rejectV7(state, 0, at("BUILD_FISHING_HOLE", foreign)).code).toBe(
+      "INVALID_TILE",
+    );
+    // Building placement (`pulp_wars-h0xx`, 7r106): the Fish no longer
+    // blocks it (before, it had to be harvested first); the Fishing Hole
+    // uses it up.
+    expect(tileOf(state, EAST)?.resource).toBe("FISH");
+    expect(isOffered(state, at("BUILD_FISHING_HOLE", EAST))).toBe(true);
+    const onFish = acceptV7(state, 0, at("BUILD_FISHING_HOLE", EAST)).state;
+    expect(tileOf(onFish, EAST)).toMatchObject({
+      improvement: "FISHING_HOLE",
+      resource: null,
+    });
     // Without Rime there is no Fishing Hole (and no ice to put it on).
     expect(
       rejectV7(scene([], [WEST], { ports: [false, true] }), 0, hole).code,

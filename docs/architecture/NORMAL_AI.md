@@ -6554,6 +6554,27 @@ on a Rift, and no hostile Kaboom is expected from a Rift tile. Flyers are
 not sent to Rifts on purpose; they end there only when an ordinary move
 choice does.
 
+## Building placement (`pulp_wars-h0xx`, `7r106`)
+
+The rules ([current rules section 8.1](../product/RULESET_7_CURRENT.md#81-common-placement-gates)):
+nothing but the Mine on a Mountain, no land resource blocks a building (it
+is used up), and a building on a Forest needs Forestry and clears it for
+Clear Forest's Coin. The policy's build candidates are the public command
+query's, and the planner (`enumeratePublicPlacementsIgnoringGatesV7`, the
+economic potentials, `scorePublicSpatialPlanV7`) reads the same shared
+rule (`src/engine/v7/building-placement.ts`), so no Mountain is planned
+for a mill or a Monument and a Forest is planned only with Forestry, as
+the Grass it becomes. What a build gives up is weighed: in
+`scoreCommandWithContext` the immediate value of a build (a Monument's
+too) loses 5 for each population its used-up resource would have given
+(Fruit, Game, or Fish 1, Fertile Ground a Farm's 2, Pearls' 10 Coins 2;
+`consumedResourcePopulationV7`, on land and on Ice Folk ice alike) and
+gains 1 for a cleared
+Forest's Coin; the planner's placement score loses 8 for each such
+population. So between two tiles that serve a mill alike the seat takes
+the bare one. Unit tests: `tests/unit/ruleset-v7-building-placement.test.ts`.
+No match was run (the user's standing rule).
+
 ## The Redevelop and rebuild cycle (`pulp_wars-9s0.9`)
 
 **Defect.** A seat could `REDEVELOP` a tile and then build the same

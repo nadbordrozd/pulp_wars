@@ -1387,7 +1387,13 @@ function resourceFitsTerrain(
           : terrain === "SHALLOW_WATER" || terrain === "DEEP_WATER";
 }
 
-/** Revision 12: an improvement never removes the resource beneath it. */
+/**
+ * A starting improvement stands where the rules could have built it. Since
+ * building placement (`pulp_wars-h0xx`, 7r106) a general building uses up
+ * the resource it is built over, so it starts on bare Grass (a Forest it
+ * stood on would have been cleared to Grass); the Farm keeps its Fertile
+ * Ground, the Mine its Ore, a dock its Fish or Pearls.
+ */
 function improvementFits(
   improvement: (typeof IMPROVEMENT_IDS_V7)[number],
   terrain: TerrainIdV7,
@@ -1407,10 +1413,7 @@ function improvementFits(
         (resource === null || resource === "FISH" || resource === "PEARLS")
       );
     default:
-      return (
-        terrain === "GRASS" &&
-        (resource === null || resource === "FERTILE_GROUND")
-      );
+      return terrain === "GRASS" && resource === null;
   }
 }
 

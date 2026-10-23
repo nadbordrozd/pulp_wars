@@ -98,6 +98,9 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       // helpers over the registry).
       "../engine/v7/giants",
       "../engine/v7/query",
+      // Building placement (`pulp_wars-h0xx`): the resource a build uses up
+      // (a pure rule helper over a public tile).
+      "../engine/v7/building-placement",
       "../engine/v7/types",
       "../engine/v7/spatial-economy",
       "../engine/v7/view",
@@ -439,7 +442,11 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       // FIRE_MOON_GUN after JOIN_CHANT, moving the later command kinds
       // forward by two (was 081027…f2cb); the revision-12-ordinal value is
       // unchanged.
-      "bb0395354ae75e9992d9d81b8df718b2f8e3bda41f6c39aba3d729b46a7ce575",
+      // Building placement (`pulp_wars-h0xx`, 7r106): the command is the
+      // same Move to (7, 9); Workshops, Markets, Sawmills, and Monuments on
+      // the Fruit at (7, 7) and (7, 8) and a Market, a Sawmill, and a Lumber
+      // Camp on the Game at (9, 8) are new candidates (was bb0395…e575).
+      "7a56d4fdc35c4f1484ebb6335f640210a886305f87d578ee3581a28373e4adbb",
     );
     // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
     // (spec section 8); this is the value with revision-12 ordinals
@@ -455,7 +462,11 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       // d8d542…10dc).
       // The reward ladder rework (`pulp_wars-zypi`): as above (was
       // c837b9…941f).
-      "9cc18b5fe6358a8a1ce116d235dfe360c7051f8870df0e79b8ea94c76067d451",
+      // Building placement (`pulp_wars-h0xx`, 7r106): the command is the
+      // same Move to (7, 9); Workshops, Markets, Sawmills, and Monuments on
+      // the Fruit at (7, 7) and (7, 8) and a Market, a Sawmill, and a Lumber
+      // Camp on the Game at (9, 8) are new candidates (was 9cc18b…d451).
+      "8fba91d9b5f55298c5d35757267ff13405ab6bd791943235736ab09bec1f2879",
     );
     const basicCommands = queryPlayerCommandsV7(basicView);
     const basicWork = new NormalPolicyWorkV7(structuredClone(basicView));
@@ -1185,7 +1196,10 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       // The garrison of a watched center (`pulp_wars-mch9.27`): the
       // command is unchanged; one Move more, unit 32's step onto the empty
       // center of city 9 (was bba722…4f4c).
-      "5645425e75a83f2f684c0279c4599c69d4861844afaead9ef08ebffc0cedd382",
+      // Building placement (`pulp_wars-h0xx`, 7r106): the command is
+      // unchanged; twelve Forges and Workshops on Fertile Ground are new and
+      // two Forges on Forest are gone (was 564542…d382).
+      "37c050e1b05c4dbc53aba186b076c34d33276f98ba3ca13eb60f33bb7b7cdc3e",
     );
     const revision4Commands = new Set([
       '{"kind":"ATTACK","unitId":19,"targetUnitId":34}',
@@ -1291,14 +1305,18 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       // FIRE_MOON_GUN after JOIN_CHANT, moving the later command kinds
       // forward by two (was 0c43d9…3462); the revision-12-ordinal value is
       // unchanged.
-      "f12214cc7788f5ed8cd11ee201077cadd07fc68a4d83b4a7a87e11f63b1b9c33",
+      // Building placement (`pulp_wars-h0xx`, 7r106): the building candidates
+      // follow the new placement rules (was f12214…9c33).
+      "442a4c90c8e6fde56287a62d23972f75cf808af80e351ed934c69bf2fea2253f",
     );
     expect(
       canonicalHash(withRevision12CandidateOrdinalsV7(revision4Candidates)),
     ).toBe(
       // The Martian pass's correction (`pulp_wars-w49.14`): the Human seat's
       // new rules score this subset (was afe478…07ac).
-      "b8ab4b5022177b7713636746f64e3a309f2451cb3d8dd0dfc582e96e29e215d7",
+      // Building placement (`pulp_wars-h0xx`, 7r106): the building candidates
+      // follow the new placement rules (was b8ab4b…15d7).
+      "e9e13ce2ac6cc113757122f201b3f18f58511042bf64d9d2a6cac0d5cfe18f43",
     );
     expect(canonicalHash(sync)).toBe(canonicalHash(sliced));
     expect(sync).toEqual(sliced);
@@ -1312,7 +1330,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     const source = upgradeRetainedPublicViewV7(retained);
 
     expect(canonicalJson(retained)).toBe(retainedBytes);
-    expect(source.rulesetId).toBe("pulp-wars-poc-7r105");
+    expect(source.rulesetId).toBe("pulp-wars-poc-7r106");
     expect(source.viewer.factionTreeId).toBe("ORIGINAL_BASELINE_V5");
     expect(
       source.players.every(

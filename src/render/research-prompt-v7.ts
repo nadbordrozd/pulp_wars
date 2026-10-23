@@ -2,6 +2,7 @@ import {
   BASIC_ECONOMIC_ACTIONS_V7,
   queryPlayerCommandsV7,
   queryTechnologyTreeV7,
+  resourceConsumedByBuildingV7,
   type CommandV7,
   type CoordV7,
   type PlayerViewV7,
@@ -108,12 +109,28 @@ export function tileResearchPromptsV7(
   if (!view.cities.some((city) => city.ownerId === view.viewer.id)) return [];
   const nodes = queryTechnologyTreeV7(view).nodes;
   const prompts: TileResearchPromptV7[] = [];
+  const tile = view.board.tiles.find(
+    (candidate) => candidate.at.x === at.x && candidate.at.y === at.y,
+  );
   for (const command of whatIfCommandsV7(view, nodes)) {
     if (
       !RESEARCH_PROMPT_COMMANDS_V7.has(command.kind) ||
       !("at" in command) ||
       command.at.x !== at.x ||
       command.at.y !== at.y
+    )
+      continue;
+    // Building placement (`pulp_wars-h0xx`, 7r106): a building that would
+    // use the tile's resource up (a Lumber Camp over Game) is not what the
+    // resource is for, so it asks for no research.
+    const improvement =
+      BASIC_ECONOMIC_ACTIONS_V7[
+        command.kind as keyof typeof BASIC_ECONOMIC_ACTIONS_V7
+      ]?.improvement ?? null;
+    if (
+      improvement !== null &&
+      tile?.explored === true &&
+      resourceConsumedByBuildingV7(improvement, tile.resource) !== null
     )
       continue;
     const node = nodes.find((candidate) =>

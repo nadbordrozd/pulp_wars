@@ -98,7 +98,8 @@ describe("building placement lines (pulp_wars-2yc.90)", () => {
       IMPROVEMENT_IDS_V7.map((id) => buildingRuleTextV7(id, null)),
     ).toEqual([
       "Farm: on Grass with Fertile Ground in your borders; +2 population",
-      "Lumber Camp: on Forest with no resource in your borders; +1 population",
+      // Building placement (`pulp_wars-h0xx`, 7r106): Game does not block it.
+      "Lumber Camp: on Forest in your borders, using up any Game; +1 population",
       "Mine: on Mountain with Ore in your borders; +2 population",
       "Windmill: one per city, next to your Farms; +1 population for each, max 8",
       "Sawmill: one per city, next to your Lumber Camps; +1 population for each, max 8",
@@ -179,9 +180,11 @@ describe("building placement lines (pulp_wars-2yc.90)", () => {
     ] as const) {
       const rule = BASIC_ECONOMIC_ACTIONS_V7[kind];
       const line = buildingRuleTextV7(improvement, null);
-      expect(line).toContain(`on ${words(rule.terrain)} with `);
+      // Building placement (7r106): a Lumber Camp uses up any Game.
       expect(line).toContain(
-        rule.resource === null ? "no resource" : words(rule.resource),
+        rule.resource === null
+          ? `on ${words(rule.terrain)} in your borders, using up any Game`
+          : `on ${words(rule.terrain)} with ${words(rule.resource)}`,
       );
       expect(line).toContain(`+${rule.population} population`);
       expect(line).toContain("in your borders");

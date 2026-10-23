@@ -185,14 +185,14 @@ describe("the Industry reshuffle: identity", () => {
   it("was 7r56 after 7r55, with both save keys obsolete now", () => {
     // (Step two of the Undead pass, `pulp_wars-w49.24`, took 7r57, and
     // step two of the Martian pass, `pulp_wars-w49.25`, 7r58.)
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r105");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r105.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-50, -48)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r106");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r106.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-51, -49)).toEqual([
       "pulp-wars-poc-7r55",
       "pulp-wars-poc-7r56",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-50, -48)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-51, -49)).toEqual([
       "pulpWars.save.v7r55.current",
       "pulpWars.save.v7r56.current",
     ]);
@@ -412,9 +412,12 @@ describe("the Industry reshuffle: the rules", () => {
     }
   });
 
-  it("still needs Engineering for a Mine, and for a Workshop on a Mountain", () => {
+  it("still needs Engineering for a Mine, and builds no Workshop on a Mountain", () => {
     const state = mountainV7(farmed("ORIGINAL", ["DRILL"]), at(9, 8));
     const actor = seatIdV7(state, 0);
+    // Building placement (`pulp_wars-h0xx`, 7r106): only the Mine stands on
+    // a Mountain, so the tile refuses a Workshop with or without
+    // Engineering (before, Engineering was what it needed).
     const onMountain = applyCommandV7(state, actor, {
       kind: "BUILD_WORKSHOP",
       at: at(9, 8),
@@ -422,8 +425,8 @@ describe("the Industry reshuffle: the rules", () => {
     expect(onMountain.accepted).toBe(false);
     if (!onMountain.accepted)
       expect([onMountain.error.code, onMountain.error.params]).toEqual([
-        "TECH_REQUIRED",
-        { tech: "ENGINEERING" },
+        "INVALID_TILE",
+        { action: "BUILD_WORKSHOP" },
       ]);
     const ore = patchTileV7(state, at(9, 8), { resource: "ORE" });
     const mine = applyCommandV7(ore, actor, {

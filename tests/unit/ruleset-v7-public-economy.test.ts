@@ -446,10 +446,12 @@ describe("ruleset-7 pure public economy", () => {
         ok: false,
         error: "NOT_OFFERED",
       });
+      // Building placement (`pulp_wars-h0xx`, 7r106): a Windmill is never
+      // built on a Mountain, so the tile refuses it at every stage.
       expect(applyCommandV7(state, state.humanPlayerId, command)).toMatchObject(
         {
           accepted: false,
-          error: { code: "TECH_REQUIRED", params: { tech: "ENGINEERING" } },
+          error: { code: "INVALID_TILE", params: { action: "BUILD_WINDMILL" } },
         },
       );
     }
@@ -466,24 +468,26 @@ describe("ruleset-7 pure public economy", () => {
       expect(
         queryPlayerCommandsV7(viewForV7(state, state.humanPlayerId)),
       ).not.toContainEqual(command);
+      // Building placement (`pulp_wars-h0xx`, 7r106): a Windmill is never
+      // built on a Mountain, so the tile refuses it at every stage.
       expect(applyCommandV7(state, state.humanPlayerId, command)).toMatchObject(
         {
           accepted: false,
-          error: { code: "TECH_REQUIRED", params: { tech: "ENGINEERING" } },
+          error: { code: "INVALID_TILE", params: { action: "BUILD_WINDMILL" } },
         },
       );
     }
 
+    // With Engineering too (before 7r106 an empty Mountain took it).
     const engineeringEmpty = mountain(null, "ENGINEERING");
     expect(
       queryPlayerCommandsV7(
         viewForV7(engineeringEmpty, engineeringEmpty.humanPlayerId),
       ),
-    ).toContainEqual(command);
+    ).not.toContainEqual(command);
     expect(
-      applyCommandV7(engineeringEmpty, engineeringEmpty.humanPlayerId, command)
-        .accepted,
-    ).toBe(true);
+      applyCommandV7(engineeringEmpty, engineeringEmpty.humanPlayerId, command),
+    ).toMatchObject({ accepted: false, error: { code: "INVALID_TILE" } });
     const engineeringOre = mountain("ORE", "ENGINEERING");
     expect(
       queryPlayerCommandsV7(
@@ -925,8 +929,14 @@ describe("ruleset-7 pure public economy", () => {
       at: monumentAt,
     } as const;
     // The economy rejig (7r54): a Monument gives 3 population again (-21
-    // at 2, from tuning 1 to 7r53).
-    expect(scorePublicSpatialPlanV7(twoCities, monumentPlan)).toBe(-29);
+    // at 2, from tuning 1 to 7r53). Building placement (`pulp_wars-h0xx`,
+    // 7r106): the view's land is all Mountain, where no Monument stands, so
+    // the Monument's tile is Grass (the only place one may be planned).
+    expect(scorePublicSpatialPlanV7(twoCities, monumentPlan)).toBe(0);
+    const grassMonument = patchViewTile(twoCities, monumentAt, {
+      terrain: "GRASS",
+    });
+    expect(scorePublicSpatialPlanV7(grassMonument, monumentPlan)).toBe(-29);
 
     const expandCity = required(
       base.cities.find((city) => city.id === staged.cityId),

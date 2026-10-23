@@ -268,6 +268,12 @@ import { isUnitVisibleToPlayerV7 } from "./observation";
 import { parseGameStateV7 } from "./state-schema";
 import { wailResultEntriesV7, wailTargetsV7 } from "./wail";
 import { isRiftTerrainV7, noRisingAtV7 } from "./rift";
+import {
+  CLEAR_FOREST_COINS_V7,
+  generalBuildingTerrainV7,
+  lumberCampResourceFitsV7,
+  resourceUnderImprovementV7,
+} from "./building-placement";
 import { allOwnedUnitsV7, barricadesOfV7, tileOccupiedV7 } from "./units";
 import {
   applyAssembleV7,
@@ -419,6 +425,7 @@ import {
   type CoordV7,
   type CuriosityV7,
   type GameStateV7,
+  type ImprovementIdV7,
   type MatchSetupV7,
   type PendingChoiceV7,
   type PlayerStateV7,
@@ -2425,12 +2432,15 @@ function applyBasic(
         ? // The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section
           // 2.6): the Fishing Hole stands on the Ice Folk seat's own ice
           // (Shallow or Deep), with no visible resource.
-          iceBuildableV7(
-            actorPlayer.faction,
-            actor,
-            iceAtV7(state, command.at),
-          ) && observedResourceV7(actorPlayer, tile) === null
-        : tile.terrain === rule.terrain && tile.resource === rule.resource) &&
+          // Building placement (`pulp_wars-h0xx`, 7r106): Fish or Pearls
+          // there no longer block it; the Fishing Hole uses them up.
+          iceBuildableV7(actorPlayer.faction, actor, iceAtV7(state, command.at))
+        : tile.terrain === rule.terrain &&
+          // Building placement (`pulp_wars-h0xx`, 7r106): Game no longer
+          // blocks a Lumber Camp, which uses it up.
+          (kind === "BUILD_LUMBER_CAMP"
+            ? lumberCampResourceFitsV7(tile.resource)
+            : tile.resource === rule.resource)) &&
       (kind === "HARVEST_FISH"
         ? tile.improvement === null ||
           tile.improvement === "PORT" ||
@@ -2468,10 +2478,14 @@ function applyBasic(
               at: command.at,
             },
     };
-    // Harvests consume their resource; Farm and Mine keep it underneath.
+    // Harvests consume their resource; Farm and Mine keep it underneath,
+    // and a Lumber Camp uses up the Game of its Forest (7r106).
     const board = replaceTile(state, command.at, {
       ...tile,
-      resource: rule.improvement === null ? null : tile.resource,
+      resource:
+        rule.improvement === null
+          ? null
+          : resourceUnderImprovementV7(rule.improvement, tile.resource),
       improvement: rule.improvement ?? tile.improvement,
     });
     const recalculation = recomputeLiveEconomyV7(
@@ -2551,15 +2565,13 @@ function applySpatial(
     return rejected(original, "INVALID_TILE", { action: command.kind });
   if (!player.researchedTechs.includes(rule.technology))
     return rejected(original, "TECH_REQUIRED", { tech: rule.technology });
+  const site = generalBuildingSiteV7(player, tile);
+  if (site === "NEEDS_FORESTRY")
+    return rejected(original, "TECH_REQUIRED", { tech: "FORESTRY" });
   if (
-    tile.terrain === "MOUNTAIN" &&
-    !player.researchedTechs.includes("ENGINEERING")
-  )
-    return rejected(original, "TECH_REQUIRED", { tech: "ENGINEERING" });
-  if (
+    site === "NEVER" ||
     state.treasureChests.some((chest) => same(chest, command.at)) ||
     tile.site !== null ||
-    observedResourceV7(player, tile) !== null ||
     tile.improvement !== null
   )
     return rejected(original, "INVALID_TILE", { action: kind });
@@ -2580,10 +2592,11 @@ function applySpatial(
     return rejected(original, "CITY_BUILDING_LIMIT", {
       improvement: rule.improvement,
     });
-  const board = replaceTile(state, command.at, {
-    ...tile,
-    improvement: rule.improvement,
-  });
+  const board = replaceTile(
+    state,
+    command.at,
+    builtTileV7(tile, rule.improvement, site),
+  );
   const evaluation = spatialContributionAtV7(
     { board, cities: state.cities },
     command.at,
@@ -2627,7 +2640,12 @@ function applySpatial(
       nextEntityId,
       commandIndex: nextSafe(state.commandIndex),
       board,
-      players: debit(state.players, actor, rule.cost),
+      // A build that clears a Forest is paid what Clear Forest pays.
+      players: debit(
+        state.players,
+        actor,
+        rule.cost - (site === "CLEARS_FOREST" ? CLEAR_FOREST_COINS_V7 : 0),
+      ),
       cities: recalculation.cities,
       populationContributions: recalculation.populationContributions,
     };
@@ -2639,6 +2657,7 @@ function applySpatial(
         ? marketCoinsV7(evaluation.marketIncome)
         : evaluation.marketIncome;
     return accepted(next, [
+      ...forestClearedByBuildV7(actor, city.id, command.at, site),
       {
         kind: "ECONOMIC_BUILDING_BUILT",
         playerId: actor,
@@ -2687,17 +2706,19 @@ function applyMonument(
       improvement: "MONUMENT",
     });
   if (
-    tile.terrain === "MOUNTAIN" &&
-    !player.researchedTechs.includes("ENGINEERING")
-  )
-    return rejected(original, "TECH_REQUIRED", { tech: "ENGINEERING" });
-  if (
     // The frozen sea redesign (section 2.6): or the Ice Folk seat's own ice.
     (tile.biome === null &&
       !iceBuildableV7(player.faction, actor, iceAtV7(state, command.at))) ||
-    isRiftTerrainV7(tile.terrain) ||
+    isRiftTerrainV7(tile.terrain)
+  )
+    return rejected(original, "INVALID_TILE", { action: "BUILD_MONUMENT" });
+  // Building placement (`pulp_wars-h0xx`, 7r106): the general building rule.
+  const site = generalBuildingSiteV7(player, tile);
+  if (site === "NEEDS_FORESTRY")
+    return rejected(original, "TECH_REQUIRED", { tech: "FORESTRY" });
+  if (
+    site === "NEVER" ||
     tile.site !== null ||
-    observedResourceV7(player, tile) !== null ||
     tile.improvement !== null ||
     state.treasureChests.some((chest) => same(chest, command.at))
   )
@@ -2714,10 +2735,11 @@ function applyMonument(
       achievement: command.achievement,
     });
   try {
-    const board = replaceTile(state, command.at, {
-      ...tile,
-      improvement: "MONUMENT",
-    });
+    const board = replaceTile(
+      state,
+      command.at,
+      builtTileV7(tile, "MONUMENT", site),
+    );
     const contribution: PopulationContributionV7 = {
       id: state.nextEntityId,
       cityId: city.id,
@@ -2745,6 +2767,11 @@ function applyMonument(
         candidate.id === actor
           ? {
               ...candidate,
+              // A Monument that clears a Forest is paid what Clear Forest
+              // pays (7r106).
+              coins:
+                candidate.coins +
+                (site === "CLEARS_FOREST" ? CLEAR_FOREST_COINS_V7 : 0),
               achievementEntitlements: candidate.achievementEntitlements.map(
                 (item) =>
                   item.achievement === command.achievement
@@ -2760,6 +2787,7 @@ function applyMonument(
     const settlement = settleCityRewardsV7(staged, actor);
     const achievements = evaluateAchievementsV7(settlement.state, actor);
     return accepted(checked(achievements.state), [
+      ...forestClearedByBuildV7(actor, city.id, command.at, site),
       {
         kind: "MONUMENT_BUILT",
         playerId: actor,
@@ -10588,9 +10616,10 @@ function populationContributionAt(
 /**
  * Revision 12 masks Fertile Ground until Gathering. Placement gates consider
  * only resources the actor can observe, so the public command query stays
- * exact without revealing a masked resource. An improvement placed over a
- * masked resource keeps it underneath; only the Replant Forest terrain
- * transform drops it.
+ * exact without revealing a masked resource. A Farm placed over Fertile
+ * Ground keeps it underneath; since building placement (`pulp_wars-h0xx`,
+ * 7r106) any other building uses a resource under it up, a masked one too,
+ * and the Replant Forest terrain transform drops it.
  */
 function observedResourceV7(
   player: PlayerStateV7,
@@ -10600,6 +10629,57 @@ function observedResourceV7(
     isResourceRevealedV7(tile.resource, player.researchedTechs)
     ? tile.resource
     : null;
+}
+/**
+ * Building placement (`pulp_wars-h0xx`, 7r106; RULESET_7_CURRENT.md section
+ * 8.1): where a general building (Windmill, Sawmill, Forge, Workshop,
+ * Market, Monument) may stand. On land the shared terrain rule
+ * (`generalBuildingTerrainV7`): Grass, or Forest with Forestry (the build
+ * clears it), never a Mountain or a Rift, whatever the resource. On an Ice
+ * Folk seat's own ice (the caller has checked it) any tile: Fish or Pearls
+ * no longer block it either (they are used up).
+ */
+function generalBuildingSiteV7(
+  player: PlayerStateV7,
+  tile: TileStateV7,
+): "OPEN" | "CLEARS_FOREST" | "NEEDS_FORESTRY" | "NEVER" {
+  if (tile.biome === null) return "OPEN";
+  return generalBuildingTerrainV7(tile.terrain, player.researchedTechs);
+}
+/**
+ * The tile once a general building stands on it: a cleared Forest becomes
+ * Grass, and a resource under it (on land or on ice) is used up.
+ */
+function builtTileV7(
+  tile: TileStateV7,
+  improvement: ImprovementIdV7,
+  site: "OPEN" | "CLEARS_FOREST",
+): TileStateV7 {
+  return {
+    ...tile,
+    terrain: site === "CLEARS_FOREST" ? "GRASS" : tile.terrain,
+    resource: resourceUnderImprovementV7(improvement, tile.resource),
+    improvement,
+  };
+}
+/** The Clear Forest a build makes on its way (7r106), reported as Clear Forest reports it. */
+function forestClearedByBuildV7(
+  actor: PlayerId,
+  cityId: CityStateV7["id"],
+  at: CoordV7,
+  site: "OPEN" | "CLEARS_FOREST",
+): DomainEventV7[] {
+  return site === "CLEARS_FOREST"
+    ? [
+        {
+          kind: "FOREST_CLEARED",
+          playerId: actor,
+          cityId,
+          at,
+          coinDelta: CLEAR_FOREST_COINS_V7,
+        },
+      ]
+    : [];
 }
 /**
  * The resource an improvement hid and its removal re-exposes. Port and

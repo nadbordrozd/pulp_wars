@@ -3,8 +3,12 @@ import {
   dockPopulationV7,
   MARKET_INCOME_CAP_V7,
   MONUMENT_POPULATION_V7,
+  resourceConsumedByBuildingV7,
+  type CommandV7,
+  type ConsumableResourceV7,
   type FactionIdV7,
   type ImprovementIdV7,
+  type PlayerViewV7,
 } from "../engine/index";
 import { factionBuildingV7 } from "./faction-buildings-v7";
 
@@ -21,9 +25,11 @@ import { factionBuildingV7 } from "./faction-buildings-v7";
  * technology card that unlocks a building shows the line under its "Build"
  * line, and the building's tile dock shows it behind its "?". A line stays
  * within the card's 92 characters; the finer gates every building shares
- * (no village, resource or treasure on the tile, a Mountain needs
- * Engineering) are left to the Help and the build buttons, which are only
- * offered where the engine allows them.
+ * (no village or treasure on the tile; nothing but the Mine on a Mountain;
+ * a Forest needs Forestry and is cleared; a resource under a building is
+ * used up: `pulp_wars-h0xx`, 7r106) are left to the Help and the build
+ * buttons, which are only offered where the engine allows them and say what
+ * a build clears or uses up (`buildSiteNotesV7`).
  */
 
 /** The longest technology card line (the naval card tests). */
@@ -118,6 +124,9 @@ export function buildingRuleTextV7(
               ? "BUILD_LUMBER_CAMP"
               : "BUILD_MINE"
         ];
+      // Building placement (7r106): Game does not block a Lumber Camp.
+      if (improvement === "LUMBER_CAMP")
+        return `${name}: on ${words(rule.terrain)} in your borders, using up any Game; ${population(rule.population)}`;
       return `${name}: on ${words(rule.terrain)} with ${rule.resource === null ? "no resource" : words(rule.resource)} in your borders; ${population(rule.population)}`;
     }
     case "WINDMILL":
@@ -188,4 +197,41 @@ export function buildingRuleCoversYieldV7(
   improvement: ImprovementIdV7,
 ): boolean {
   return improvement !== "WORKSHOP";
+}
+
+/**
+ * Building placement (`pulp_wars-h0xx`, 7r106): the short note on a build
+ * button whose building stands on a Forest. The build clears the Forest
+ * first, as Clear Forest does (and pays its Coin).
+ */
+export const BUILD_CLEARS_FOREST_NOTE_V7 = "Clears the forest";
+
+/** "Uses up the Fruit": a building over a resource it does not keep. */
+export function buildUsesUpNoteV7(resource: ConsumableResourceV7): string {
+  return `Uses up the ${words(resource)}`;
+}
+
+/**
+ * The notes a build button shows for its tile (7r106): that it clears the
+ * Forest, and the visible resource it uses up. Empty for a command that
+ * builds nothing, a Lumber Camp's Forest (it stays), and a plain tile.
+ */
+export function buildSiteNotesV7(
+  view: PlayerViewV7,
+  command: CommandV7,
+): readonly string[] {
+  if (!("at" in command)) return [];
+  const improvement = buildCommandImprovementV7(command.kind);
+  if (improvement === null) return [];
+  const at = command.at;
+  const tile = view.board.tiles.find(
+    (candidate) => candidate.at.x === at.x && candidate.at.y === at.y,
+  );
+  if (tile?.explored !== true) return [];
+  const notes: string[] = [];
+  if (tile.terrain === "FOREST" && improvement !== "LUMBER_CAMP")
+    notes.push(BUILD_CLEARS_FOREST_NOTE_V7);
+  const consumed = resourceConsumedByBuildingV7(improvement, tile.resource);
+  if (consumed !== null) notes.push(buildUsesUpNoteV7(consumed));
+  return notes;
 }

@@ -63,7 +63,13 @@ describe("Ruleset 7 blocked dock actions", () => {
     const poor = view(blockedActionsMatchV7({ coins: 1 }));
     const dear = unaffordableCommandsV7(poor);
     // (A Road, 2 Coins, is one of them on every tile here.)
-    expect(on(dear, AT.game)).toEqual(["HUNT_GAME", "BUILD_ROAD"]);
+    // Building placement (`pulp_wars-h0xx`, 7r106): Game no longer blocks a
+    // Lumber Camp (it uses the Game up).
+    expect(on(dear, AT.game)).toEqual([
+      "HUNT_GAME",
+      "BUILD_LUMBER_CAMP",
+      "BUILD_ROAD",
+    ]);
     expect(on(dear, AT.fertile)).toEqual(["BUILD_FARM", "BUILD_ROAD"]);
     expect(on(dear, AT.forest)).toEqual([
       "BUILD_LUMBER_CAMP",
