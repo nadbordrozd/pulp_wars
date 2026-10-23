@@ -3991,7 +3991,8 @@ the clock.
 
 ### 15.1 The missions
 
-The first pass; section 15.5 has the second retune's starts and clocks.
+The first pass; section 15.5 has the second retune's starts and clocks,
+section 15.6 the fourth's.
 
 | Mission                      | Board (generator, seed) | Match seed | Seats                                        | Format and clock                                | Stars                             |
 | ---------------------------- | ----------------------- | ---------- | -------------------------------------------- | ----------------------------------------------- | --------------------------------- |
@@ -4235,6 +4236,91 @@ falls back on Kessler Hall", now on the board). Wave lines and heads-ups
 it too tight, the star (round 14) is the first thing to move. H6's tower
 went unused by both sides; the Normal AI never stands on a tower it does
 not need.
+
+### 15.6 Retune 4: strong enemy starts, lax conquest clocks (`pulp_wars-hmyk.25`)
+
+The user, 2026-10-23: the first two campaigns are still too easy; the
+difficulty should come from strong, aggressive enemy starts ("the starting
+strength needs to usually be higher than the player's"), not from the
+clock; conquest clocks are lax (only to stop stalemates), escort clocks
+stay meaningful, hold-outs keep their length, waves are a fine-tune or a
+story beat, and the first mission is slightly easier than the rest. The
+calibration: for missions 2 to 6 the first thoughtful attempt is lost or
+won narrowly, and the autopilot (section 15) loses from mission 2 on.
+Five missions are one revision higher (H1 3, H2 4, H4 4, H5 5, H6 5) and
+re-pinned in both pin tables; H3 stays at revision 3. Every enemy now
+starts with more units than you (`tests/unit/campaign-humans-v7.test.ts`).
+
+| Mission | Start now                                                                                | Enemies now                                                                                                                                                                                                                                                                                                                           | Clock and stars                         | Waves                                                                         |
+| ------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------- | ----------------------------------------------------------------------------- |
+| H1      | as retune 2: Northwatch (level 2), the Knight and two Fighters, three technologies       | two towns, the Necromancer, a Zombie on each gate and five Skeletons (was a Zombie and three), 4 Coins (was 3); the march from round 3                                                                                                                                                                                                | conquest by 20 (was 15); by 14, no loss | none                                                                          |
+| H2      | Fort Steele walled (level 3, land grant), three Fighters and the Catapult, no technology | three forts, eight Goblins (two more, at Halfway and Kingsgate), 4 Coins (was 3); the march from round 4                                                                                                                                                                                                                              | by 30 (was 18); by 22, no loss          | none                                                                          |
+| H3      | unchanged (retune 2)                                                                     | unchanged (retune 2)                                                                                                                                                                                                                                                                                                                  | escort by 16; by 13, no loss            | none                                                                          |
+| H4      | Fort Hollow as retune 2; Hollow Mill level 2 (three slots, was level 1); 8 Coins (was 6) | the Lodge's column has two more Initiates and 3 Coins (Favour 3), the Whitefang a fifth Yeti beside the Mammoth and 2 Coins (were 0); the Lodge assaults from round 1, the Whitefang rush from round 2                                                                                                                                | hold 12; no loss, Pettigrew lives       | three (Lodge 6, the dead 7, Whitefang 8; Lodge 3 and 10, Whitefang 4 removed) |
+| H5      | as retune 2 (skirmish-like Saltmarsh)                                                    | the blockade with a third Fire Raft and a second Diving Barrel, 13 Coins (was 10)                                                                                                                                                                                                                                                     | hunt by 20; by 16, no loss (unchanged)  | none                                                                          |
+| H6      | as retune 2: Fort Steele, three Knights, the Catapult, two Fighters, a Marksman          | Trolls on the Hall's gate, beside it on the north lawn and on Weir Toll's gate (was a Brute; garrison 6), the round-5 band's men gone, the far marches' band on the ridge road from the start, 12 Coins (was 8); a second Triceratops; the Lodge a second choir (a Summoner, two Initiates), 4 Coins, Favour 6, hunting from round 10 | by 26 (was 22); by 20, no loss          | one (Gallows band, round 9; rounds 5 and 13 removed)                          |
+
+**Hand play** on the final definitions (all attempts listed; earlier
+definitions under "tried"):
+
+| Mission | Autopilot                   | Thoughtful attempts on the final definition                                                                              | Tried and dropped                                                                                                                                                                                                                                                                       |
+| ------- | --------------------------- | ------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| H1      | defeat, round 11            | loss (abandoned round 12); then win, round 10 of 20 (50%), 3 stars                                                       | a Ghoul, 5 Coins and a march from round 2: a Knight chain then death, the dead took every village by round 3 (5 towns, 13 units), losing by round 6; two more Skeletons, 5 Coins, march from round 2: the Knight died on the barrow in round 2                                          |
+| H2      | defeat, round 13            | win, round 26 of 30 (87%), 2 stars (the round-22 star missed; continued from a 26-round run that was heading for a loss) | ten attempts (a to j) on four field-army variants (three to five field Goblins, a Wolf Rider or a Warboss, 4 to 6 Coins, march from round 3 or 4) and the retune-2 fort: all lost or abandoned; the same definition without the two field Goblins: autopilot won in round 14 (too easy) |
+| H3      | defeat, round 3 (retune 2)  | unchanged: retune 2's first attempt was lost and its second won on the last round                                        | four thoughtful losses on three harder variants (a Warboss at the Rookery, an extra Goblin, 6 or 4 Coins): the escort died at the wood's edge or ran out of time                                                                                                                        |
+| H4      | defeat, round 9 (fort lost) | win (held), round 12, 3 stars, the Catapult, both Marksmen and a Guard lost, Pettigrew at 5 HP                           | a second Summoner and Idol Bearer, all seven Yetis, the Whitefang rushing from round 1: lost in round 4; the Lodge column with two more Initiates and the Mill at level 1: lost in round 9 (nowhere to train)                                                                           |
+| H5      | defeat, round 17            | win, round 20 of 20 (100%), 2 stars                                                                                      | none                                                                                                                                                                                                                                                                                    |
+| H6      | defeat, round 25            | loss (abandoned round 16, nine Knights dead); then win, round 18 of 26 (69%), 3 stars, five Knights lost                 | hired-sword bands on the map from the start: one Knight's Overrun chain ate them, won in round 11 (too easy); the Lodge guarding only: won in round 18 (69%) on the first try; the Lodge hunting from round 7: lost (abandoned round 16)                                                |
+
+What decided them:
+
+- **H1.** The lost attempt took four towns by round 5 (technology prices
+  doubled) and lost the Knight to Ghouls; the dead retook three towns and
+  raised two more Necromancers. The win kept the Knight's chains short:
+  five kills in round 2, then in round 5 a chain of seven (a Zombie on a
+  town, a Zombie, a Ghoul, a Skeleton, the Necromancer and two Skeletons)
+  onto the barrow; Raider charges killed two Ghouls; the camp fell in
+  round 9 and the last town in round 10.
+- **H2.** Weak Goblins only feed Knights and Catapults, so the Redcaps'
+  strength is numbers: eight Goblins Gang Up and Kaboom whatever steps up
+  to a fort. The win needed three Juggernauts (Fort Steele grew to level 7
+  by farming Mudford and blasting mountains), Roads in round 15 and Breach;
+  the second Juggernaut stood beside Halfway and took four Goblins' attacks
+  (34 to 10) in round 21; Halfway fell in round 23 and Kingsgate in round 26. With 26 rounds the same game was a loss, so the conquest clock is 30.
+- **H3.** Unchanged: every harder variant was lost (four tries), and
+  retune 2 already met this pass's calibration (a first-try loss, a
+  last-round win).
+- **H4.** The gate Guard on its Field Defense (Defense 7) held all game;
+  the Catapult killed two Initiates and broke the first Idol Bearer before
+  Imps killed it (round 4); the Marksmen killed the second Idol, two Imps,
+  the Familiar, Yetis and the first Mammoth; the level 2 Mill trained a
+  Guard and a Marksman. The Lodge massed six Horrors around its
+  channellers from round 7 but never sent them at the walls.
+- **H5.** Two ports by round 2, Cobbleton in round 5, a Fire Raft a turn
+  from the Anchorage's Shipyard from round 7 sunk by a Submarine a turn;
+  two new Submarines were sunk on their port (a raft, then an unseen
+  Diving Barrel). The Goose came round the north this time; torpedoes for
+  8, 12 and 5 sank her in the last round.
+- **H6.** The Weir Troll (40 HP, it heals) needed four lances over two
+  rounds (Weir in round 8). The lost attempt met the hunting Lodge near
+  Weir: a Horror or an Imp swarm (Favour 6) killed one or two Knights every
+  enemy phase, and Greyfriars grew to level 5 and fielded the Thing in the
+  Cellar. The win kept the Knights together, chained nine Goblins down to
+  Gallows (round 12), killed the Horror with two Marksmen and a lance
+  (round 14) and chained two Initiates, two Summoners and four Imps onto
+  Greyfriars (the Lodge out in round 15); three lances took the Hall's
+  Troll to 6 and both Trolls killed three Knights back (round 16); in round
+  17 a Knight finished the Troll, which had stepped out, Overran the Goblin
+  on the Hall's center and survived the lawn Troll's blow at 3 HP;
+  captured in round 18.
+
+**Follow-ups.** H3 is still retune 2's mission: if the user finds it too
+easy, the next lever is the beasts' leash or a second Redcap post rather
+than more Goblins (Knights and Marksmen thrive on weak units). H4's first
+win on its final definition took three stars: the Lodge never sent its
+massed Horrors at the walls (an AI limit worth a look). H2's win needed 26
+of 30 rounds; if players find it slow, the round-22 star is the first
+thing to move, not the clock.
 
 ## 16. The Undead campaign, "The Long Sleep" (`pulp_wars-hmyk.5`)
 

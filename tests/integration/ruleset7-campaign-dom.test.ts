@@ -315,7 +315,7 @@ describe("Ruleset 7 campaign front screen", () => {
       briefing.querySelector<HTMLElement>(".v7-briefing-objective"),
     );
     expect(objective.textContent).toBe(
-      "ObjectiveTake the barrow and its camp by turn 15.",
+      "ObjectiveTake the barrow and its camp by turn 20.",
     );
     expect(objective.dataset.objective).toBe("domination");
     expect(objective.querySelector("svg")?.dataset.icon).toBe("attack");
@@ -324,7 +324,7 @@ describe("Ruleset 7 campaign front screen", () => {
       [...briefing.querySelectorAll(".v7-mission-goal")].map(
         (goal) => goal.textContent,
       ),
-    ).toEqual(["Win the mission", "Win by turn 12", "Lose no city"]);
+    ).toEqual(["Win the mission", "Win by turn 14", "Lose no city"]);
     // No mission unlocks a faction (pulp_wars-hmyk.22).
     expect(
       briefing.querySelector("[data-v7-region='briefing-unlock']"),
@@ -446,10 +446,10 @@ describe("Ruleset 7 campaign front screen", () => {
     );
     expect(tracker.dataset.missionId).toBe("HUMAN_1");
     expect(tracker.textContent).toBe(
-      "Take the barrow and its camp by turn 15.15 turns",
+      "Take the barrow and its camp by turn 20.20 turns",
     );
     expect(tracker.getAttribute("aria-label")).toBe(
-      "Objective: Take the barrow and its camp by turn 15. 15 turns left.",
+      "Objective: Take the barrow and its camp by turn 20. 20 turns left.",
     );
     requiredButton('[data-action="compact-menu"]').click();
     requiredButton('[data-action="settings"]').click();
@@ -457,7 +457,7 @@ describe("Ruleset 7 campaign front screen", () => {
       "Mission: Thaw at Northwatch",
     );
     expect(document.querySelector(".v7-mission-objective")?.textContent).toBe(
-      "Objective: Take the barrow and its camp by turn 15.",
+      "Objective: Take the barrow and its camp by turn 20.",
     );
     expect(document.querySelector(".v7-map-seed")).toBeNull();
     requiredButton('[data-action="close-overlay"]').click();
@@ -596,7 +596,7 @@ describe("Ruleset 7 mission dialogs", () => {
       ),
     ).toEqual([
       ["Win the mission", "true"],
-      ["Win by turn 14", "true"],
+      ["Win by turn 22", "true"],
       ["Lose no city", "true"],
     ]);
     expect(dialog.querySelector(".v7-campaign-story")?.textContent).toBe(
@@ -666,12 +666,12 @@ describe("Ruleset 7 mission dialogs", () => {
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
     const state = created.state;
-    // Won in round 15 (the star was for round 14), every own city kept.
+    // Won in round 23 (the star was for round 22), every own city kept.
     const fake = new FakeController(
       viewForV7(
         {
           ...state,
-          round: 15,
+          round: 23,
           outcome: {
             kind: "VICTORY",
             winnerId: state.humanPlayerId,
@@ -698,7 +698,7 @@ describe("Ruleset 7 mission dialogs", () => {
       ),
     ).toEqual([
       ["true", "Win the mission: earned"],
-      ["false", "Win by turn 14: missed"],
+      ["false", "Win by turn 22: missed"],
       ["true", "Lose no city: earned"],
     ]);
     view.destroy();

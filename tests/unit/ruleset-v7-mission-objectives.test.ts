@@ -1229,8 +1229,8 @@ describe("how the objective is shown", () => {
     expect(
       missionTrackerV7(viewForV7(chapter, chapter.humanPlayerId)),
     ).toMatchObject({
-      line: "Take the three toll forts by turn 18.",
-      counter: "18 turns",
+      line: "Take the three toll forts by turn 30.",
+      counter: "30 turns",
     });
     // A mission without goals still has its line; no mission, no tracker.
     const plain = start("TEST_GROUNDS");
@@ -1316,7 +1316,7 @@ describe("how the objective is shown", () => {
     ]);
     expect(
       missionStarGoalsV7("HUMAN_2", null).map((goal) => goal.text),
-    ).toEqual(["Win the mission", "Win by turn 14", "Lose no city"]);
+    ).toEqual(["Win the mission", "Win by turn 22", "Lose no city"]);
     expect(missionStarGoalsV7("NO_SUCH_MISSION", null)).toEqual([]);
   });
 });

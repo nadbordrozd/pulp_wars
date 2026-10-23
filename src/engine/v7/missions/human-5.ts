@@ -37,6 +37,9 @@ import type { MissionDefinitionV7 } from "./types";
  * gathered in your own land, and Saltmarsh has none: the Submarines are
  * paid for by the town and the village up the coast. (A level 2 Saltmarsh
  * with a Fighter, a boat and Sailing alone could not pay for a fleet.)
+ * The fourth retune (`pulp_wars-hmyk.25`, section 15.6): a stronger
+ * blockade, three Fire Rafts and two Diving Barrels from the start and 13
+ * Coins; the chase clock stays 20 rounds (the thoughtful win took all 20).
  *
  * ```text
  *      x 0123456789012345
@@ -63,8 +66,10 @@ export const HUMAN_5_V7: MissionDefinitionV7 = {
   // Revision 2 (`pulp_wars-hmyk.14`): the old Sea Serpent in the deep water.
   // Revision 3 (`pulp_wars-hmyk.17`): each seat explores its units' sight.
   // Revision 4 (`pulp_wars-hmyk.19`, the second retune): a skirmish start,
-  // Ferry Rest gone, a richer blockade.
-  revision: 4,
+  // Ferry Rest gone, a richer blockade. Revision 5 (`pulp_wars-hmyk.25`,
+  // the fourth retune): a third Fire Raft, a second Diving Barrel and 13
+  // Coins for the blockade.
+  revision: 5,
   seed: 20261205,
   // <map>
   size: 16,
@@ -185,7 +190,7 @@ export const HUMAN_5_V7: MissionDefinitionV7 = {
     {
       // The Redcap navy, Baron Kessler's blockade.
       faction: "GOBLIN",
-      coins: 10,
+      coins: 13,
       technologies: [
         "HUNTING",
         "SHORECRAFT",
@@ -218,6 +223,9 @@ export const HUMAN_5_V7: MissionDefinitionV7 = {
         { role: "PATROL_BOAT", at: { x: 15, y: 7 } },
         { role: "PATROL_BOAT", at: { x: 15, y: 11 } },
         { role: "SUBMARINE", at: { x: 15, y: 4 } },
+        // Retune 4: a third Fire Raft and a second Diving Barrel.
+        { role: "PATROL_BOAT", at: { x: 15, y: 12 } },
+        { role: "SUBMARINE", at: { x: 15, y: 2 } },
         { role: "FIGHTER", at: { x: 10, y: 10 }, home: 1 },
       ],
       reveal: { radius: 2, rects: [{ x0: 3, y0: 6, x1: 9, y1: 13 }] },

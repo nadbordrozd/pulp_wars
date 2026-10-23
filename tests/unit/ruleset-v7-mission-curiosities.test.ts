@@ -135,7 +135,7 @@ describe("mission curiosities", () => {
     const broadsides = missionByIdV7("HUMAN_5");
     const hall = missionByIdV7("HUMAN_6");
     if (broadsides === null || hall === null) throw new Error("missing");
-    expect([broadsides.revision, hall.revision]).toEqual([4, 4]);
+    expect([broadsides.revision, hall.revision]).toEqual([5, 5]);
     const sea = createPlayableGameV7(
       missionMatchSetupV7(broadsides) ?? (null as never),
     );

@@ -14,13 +14,18 @@ import type { MissionDefinitionV7 } from "./types";
  * a ring of peaks, with the barrow camp beside it. Six old Graves lie on the
  * fields between. The dead mill about for two rounds and march on
  * Northwatch from round 3; the barrow is to be found, not seen, and the
- * clearing must be done by round 15.
+ * clearing must be done by round 20.
  *
  * The second retune (`pulp_wars-hmyk.19`, CAMPAIGN.md section 15.5): a
  * skirmish start (one young town, a Fighter and the Knight) was tried and
  * snowballed every time (the Necromancer's free Skeletons), so step 1 keeps
  * the first pass's start, loses the village at Northwatch's door, and gains
  * the clock.
+ *
+ * The fourth retune (`pulp_wars-hmyk.25`, CAMPAIGN.md section 15.6): the
+ * barrow starts stronger than Northwatch (two Zombies on the gates, five
+ * Skeletons and 4 Coins against the Knight and two Fighters), and the
+ * conquest clock is lax (20 rounds; the thoughtful win took 10).
  *
  * ```text
  *      x 0123456789A
@@ -39,10 +44,11 @@ import type { MissionDefinitionV7 } from "./types";
  */
 export const HUMAN_1_V7: MissionDefinitionV7 = {
   id: "HUMAN_1",
-  // Revision 2 (`pulp_wars-hmyk.19`, the second retune): a 15-round clock,
-  // no free village at Northwatch's door, the barrow unseen, and the dead
-  // march from round 3.
-  revision: 2,
+  // Revision 3 (`pulp_wars-hmyk.25`, the fourth retune): the barrow's
+  // Zombies on both gates, five Skeletons and 4 Coins; a lax 20-round
+  // clock. Revision 2 (`pulp_wars-hmyk.19`): no free village at
+  // Northwatch's door, the barrow unseen, and the dead march from round 3.
+  revision: 3,
   seed: 20261201,
   // <map>
   size: 11,
@@ -145,7 +151,7 @@ export const HUMAN_1_V7: MissionDefinitionV7 = {
     {
       // The Unquiet of Hollow Barrow.
       faction: "UNDEAD",
-      coins: 3,
+      coins: 4,
       technologies: ["GATHERING", "ADMINISTRATION"],
       cities: [
         {
@@ -156,12 +162,17 @@ export const HUMAN_1_V7: MissionDefinitionV7 = {
         },
         { name: "Barrow Camp", at: { x: 7, y: 2 }, level: 1, rewards: [] },
       ],
+      // Retune 4: a Zombie on each gate and five Skeletons, more than
+      // Northwatch fields.
       units: [
         { role: "CAPTAIN", at: { x: 4, y: 2 } },
-        { role: "FIGHTER", at: { x: 3, y: 3 } },
-        { role: "FIGHTER", at: { x: 4, y: 3 } },
-        { role: "FIGHTER", at: { x: 6, y: 3 }, home: 1 },
+        { role: "GUARD", at: { x: 4, y: 3 } },
         { role: "GUARD", at: { x: 7, y: 2 }, home: 1 },
+        { role: "FIGHTER", at: { x: 3, y: 3 } },
+        { role: "FIGHTER", at: { x: 5, y: 3 } },
+        { role: "FIGHTER", at: { x: 3, y: 4 } },
+        { role: "FIGHTER", at: { x: 6, y: 3 }, home: 1 },
+        { role: "FIGHTER", at: { x: 8, y: 3 }, home: 1 },
       ],
       reveal: { radius: 2, rects: [{ x0: 2, y0: 4, x1: 8, y1: 6 }] },
       // Step 1 keeps to the lesson: no Liches, Banshees, Vampires or
@@ -190,12 +201,12 @@ export const HUMAN_1_V7: MissionDefinitionV7 = {
     "SEAMANSHIP",
     "SUBMERSIBLES",
   ],
-  // Clear the barrow: every dead town, by round 15 (retune 2: a clock;
-  // the first pass's thoughtful win took 9 rounds). The stars: by round
-  // 12, and Northwatch never falls.
+  // Clear the barrow: every dead town, by round 20 (retune 4: lax for a
+  // conquest; the thoughtful win took 10 rounds). The stars: by round
+  // 14, and Northwatch never falls.
   objective: {
     kind: "DOMINATION",
-    byRound: 15,
-    bonus: [{ kind: "WITHIN_ROUNDS", rounds: 12 }, { kind: "KEEP_CITIES" }],
+    byRound: 20,
+    bonus: [{ kind: "WITHIN_ROUNDS", rounds: 14 }, { kind: "KEEP_CITIES" }],
   },
 };

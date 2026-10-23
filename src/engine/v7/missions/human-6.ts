@@ -3,7 +3,7 @@ import type { MissionDefinitionV7 } from "./types";
 /**
  * `HUMAN_6` "Kessler Hall" (docs/product/SAGA.md section 3.1, H6;
  * `pulp_wars-hmyk.4`). The Humans campaign's finale: take Kessler Hall by
- * round 22 against three teamed armies with three kinds of trouble, the
+ * round 26 against three teamed armies with three kinds of trouble, the
  * Redcaps' Gang Up in the toll forts, the circus beasts' Charge on the
  * lawns, and the Grey Lodge's daemons by the chapel. Step 6 of 6: a
  * multi-front siege; take the armies apart one at a time.
@@ -16,7 +16,8 @@ import type { MissionDefinitionV7 } from "./types";
  * the middle, the Lodge's chapel town west of it and the menagerie east of
  * it. The Redcaps hold their forts and the Hall and send the rest at you;
  * the beasts keep to the Hall's grounds; the Lodge keeps its chapel and
- * the Hall's west lawn. The saga's lightning tower, a Tesla Tower (mission
+ * the Hall's west lawn, and from round 10 sends the rest of its choir and
+ * its daemons hunting. The saga's lightning tower, a Tesla Tower (mission
  * curiosities, SAGA.md section 4, E1; `pulp_wars-hmyk.14`), stands on the
  * Hall's lawn two tiles before its gate, so whoever holds it zaps the
  * gate's Troll (hand play: one zap and three Knights took the Troll in
@@ -38,6 +39,15 @@ import type { MissionDefinitionV7 } from "./types";
  * menagerie has two more Raptors, and four of the six villages on the
  * Frontier's side are gone. With the Lodge hunting from round 6 and no
  * Chivalry the column died by round 7 in two tries.
+ *
+ * The fourth retune (`pulp_wars-hmyk.25`, CAMPAIGN.md section 15.6): the
+ * enemies start stronger instead of arriving in waves. Two Trolls hold the
+ * Hall and a third Weir Toll's gate (weak Goblins only fed the Knights'
+ * Overrun chains), the far marches' band is on the ridge road from the
+ * start and the round-5 and round-13 bands are gone, the Redcaps have 12
+ * Coins, the menagerie a second Triceratops, and the Lodge a second choir
+ * (a Summoner and two Initiates), 4 Coins and 6 Favour; the conquest clock
+ * is 26 rounds (the thoughtful win took 18).
  *
  * ```text
  *      x 01234567890123456789
@@ -69,8 +79,10 @@ export const HUMAN_6_V7: MissionDefinitionV7 = {
   // Revision 3 (`pulp_wars-hmyk.17`): each seat explores its units' sight.
   // Revision 4 (`pulp_wars-hmyk.19`, the second retune): one fort and a
   // veteran column against five walled tolls, rushing Redcaps, waves of
-  // hired swords and fewer free villages.
-  revision: 4,
+  // hired swords and fewer free villages. Revision 5 (`pulp_wars-hmyk.25`,
+  // the fourth retune): three Trolls, a second choir hunting from round
+  // 10, one wave instead of three, and a 26-round clock.
+  revision: 5,
   seed: 20261206,
   // <map>
   size: 20,
@@ -241,7 +253,7 @@ export const HUMAN_6_V7: MissionDefinitionV7 = {
     {
       // The Redcaps: the last of Kessler's goblins, in his forts and yard.
       faction: "GOBLIN",
-      coins: 8,
+      coins: 12,
       technologies: [],
       cities: [
         {
@@ -281,13 +293,17 @@ export const HUMAN_6_V7: MissionDefinitionV7 = {
           rewards: ["STOCKPILE"],
         },
       ],
-      // The four holders first (a garrison is chosen by unit ID among the
-      // units inside the zones), then the forts' Goblins and the field army.
+      // The six holders first (a garrison is chosen by unit ID among the
+      // units inside the zones: the Hall's two Trolls and the four tolls'
+      // holders), then the forts' Goblins and the field army.
       // The Hall's gate is held by a Troll (hand play: with an Orc Brute
       // there, two Knights' Overrun chains took the Hall in round 10).
       units: [
         { role: "JUGGERNAUT", at: { x: 10, y: 4 } },
-        { role: "GUARD", at: { x: 4, y: 11 }, home: 1 },
+        // Retune 4: the Hall's second Troll, on the north lawn.
+        { role: "JUGGERNAUT", at: { x: 10, y: 3 } },
+        // Retune 4: a Troll on Weir Toll's gate, the first fort in the way.
+        { role: "JUGGERNAUT", at: { x: 4, y: 11 }, home: 1 },
         { role: "GUARD", at: { x: 12, y: 11 }, home: 2 },
         { role: "GUARD", at: { x: 18, y: 11 }, home: 3 },
         { role: "GUARD", at: { x: 13, y: 14 }, home: 4 },
@@ -300,6 +316,10 @@ export const HUMAN_6_V7: MissionDefinitionV7 = {
         { role: "FIGHTER", at: { x: 14, y: 15 }, home: 4 },
         { role: "FIGHTER", at: { x: 12, y: 13 }, home: 4 },
         { role: "FIGHTER", at: { x: 4, y: 10 }, home: 1 },
+        // Retune 4: the far marches' band is already on the ridge road.
+        { role: "FIGHTER", at: { x: 17, y: 9 } },
+        { role: "FIGHTER", at: { x: 17, y: 8 } },
+        { role: "FIGHTER", at: { x: 16, y: 9 } },
       ],
       reveal: { radius: 2, rects: [{ x0: 2, y0: 12, x1: 18, y1: 18 }] },
       // Mercenaries field Goblins, which mob (H2's lesson: no farms, no
@@ -334,25 +354,25 @@ export const HUMAN_6_V7: MissionDefinitionV7 = {
         {
           kind: "GUARD",
           zone: [
-            { x0: 10, y0: 4, x1: 10, y1: 4 },
+            { x0: 10, y0: 3, x1: 10, y1: 4 },
             { x0: 4, y0: 11, x1: 4, y1: 11 },
             { x0: 12, y0: 11, x1: 12, y1: 11 },
             { x0: 18, y0: 11, x1: 18, y1: 11 },
             { x0: 13, y0: 14, x1: 13, y1: 14 },
           ],
-          garrison: 5,
+          garrison: 6,
           untilRound: 4,
         },
         {
           kind: "GUARD",
           zone: [
-            { x0: 10, y0: 4, x1: 10, y1: 4 },
+            { x0: 10, y0: 3, x1: 10, y1: 4 },
             { x0: 4, y0: 11, x1: 4, y1: 11 },
             { x0: 12, y0: 11, x1: 12, y1: 11 },
             { x0: 18, y0: 11, x1: 18, y1: 11 },
             { x0: 13, y0: 14, x1: 13, y1: 14 },
           ],
-          garrison: 5,
+          garrison: 6,
           others: { kind: "RUSH" },
         },
       ],
@@ -379,6 +399,8 @@ export const HUMAN_6_V7: MissionDefinitionV7 = {
         // Retune 2: two more of the Baron's raptors.
         { role: "RAIDER", at: { x: 12, y: 3 }, kills: 1 },
         { role: "RAIDER", at: { x: 15, y: 5 } },
+        // Retune 4: the circus's second Triceratops.
+        { role: "SWORDSMAN", at: { x: 13, y: 6 }, kills: 1 },
       ],
       reveal: { radius: 3 },
       forbiddenTechnologies: [
@@ -393,8 +415,8 @@ export const HUMAN_6_V7: MissionDefinitionV7 = {
     {
       // The Grey Lodge, chanting in the chapel beside the Hall.
       faction: "CULT",
-      coins: 2,
-      favour: 3,
+      coins: 4,
+      favour: 6,
       technologies: ["GATHERING", "ADMINISTRATION", "HUNTING", "DRILL"],
       cities: [
         {
@@ -410,6 +432,10 @@ export const HUMAN_6_V7: MissionDefinitionV7 = {
         { role: "FIGHTER", at: { x: 7, y: 4 } },
         { role: "FIGHTER", at: { x: 5, y: 6 } },
         { role: "FIGHTER", at: { x: 8, y: 5 } },
+        // Retune 4: the Lodge's second choir.
+        { role: "CAPTAIN", at: { x: 5, y: 4 } },
+        { role: "FIGHTER", at: { x: 4, y: 5 } },
+        { role: "FIGHTER", at: { x: 8, y: 6 } },
       ],
       reveal: { radius: 2 },
       // As in H4: Summoners, Initiates and Idol Bearers, a little Favour.
@@ -427,29 +453,30 @@ export const HUMAN_6_V7: MissionDefinitionV7 = {
         "EXPLOSIVES",
         "FORTIFICATION",
       ],
-      // The chapel and the Hall's west lawn.
-      directive: {
-        kind: "GUARD",
-        zone: [{ x0: 4, y0: 3, x1: 9, y1: 7 }],
-        garrison: 2,
-      },
+      // The chapel and the Hall's west lawn; from round 10 (retune 4) the
+      // rest of the choir and its daemons go hunting.
+      directive: [
+        {
+          kind: "GUARD",
+          zone: [{ x0: 4, y0: 3, x1: 9, y1: 7 }],
+          garrison: 2,
+          untilRound: 10,
+        },
+        {
+          kind: "GUARD",
+          zone: [{ x0: 4, y0: 3, x1: 9, y1: 7 }],
+          garrison: 2,
+          others: { kind: "RUSH" },
+        },
+      ],
     },
   ],
   teams: [0, 1, 1, 1],
   // Retune 2: every hired sword on the Frontier falls back on the one place
-  // still paying, in three bands behind the tolls.
+  // still paying, in three bands behind the tolls. Retune 4: one band is on
+  // the board from the start, one is gone, and the Baron's last payroll
+  // still comes in round 9.
   reinforcements: [
-    {
-      seat: 1,
-      round: 5,
-      line: "Hired swords off the river road fall in behind Weir Toll.",
-      announce: true,
-      units: [
-        { role: "FIGHTER", at: { x: 3, y: 9 } },
-        { role: "FIGHTER", at: { x: 4, y: 9 } },
-        { role: "FIGHTER", at: { x: 2, y: 10 } },
-      ],
-    },
     {
       seat: 1,
       round: 9,
@@ -463,18 +490,6 @@ export const HUMAN_6_V7: MissionDefinitionV7 = {
         { role: "FIGHTER", at: { x: 13, y: 8 } },
       ],
     },
-    {
-      seat: 1,
-      round: 13,
-      line: "Redcaps from the far marches come over the ridge road.",
-      announce: true,
-      units: [
-        { role: "FIGHTER", at: { x: 17, y: 9 } },
-        { role: "FIGHTER", at: { x: 18, y: 9 } },
-        { role: "FIGHTER", at: { x: 16, y: 9 } },
-        { role: "FIGHTER", at: { x: 17, y: 8 } },
-      ],
-    },
   ],
   forbiddenTechnologies: [
     "SHORECRAFT",
@@ -484,11 +499,12 @@ export const HUMAN_6_V7: MissionDefinitionV7 = {
     "SUBMERSIBLES",
   ],
   landmarks: [{ tag: "KESSLER_HALL", at: { x: 10, y: 4 } }],
-  // The Hall by round 22; the stars: by round 18, and no city lost.
+  // The Hall by round 26 (retune 4: lax for a conquest; the thoughtful win
+  // took 18); the stars: by round 20, and no city lost.
   objective: {
     kind: "CAPTURE",
     places: ["KESSLER_HALL"],
-    byRound: 22,
-    bonus: [{ kind: "WITHIN_ROUNDS", rounds: 18 }, { kind: "KEEP_CITIES" }],
+    byRound: 26,
+    bonus: [{ kind: "WITHIN_ROUNDS", rounds: 20 }, { kind: "KEEP_CITIES" }],
   },
 };

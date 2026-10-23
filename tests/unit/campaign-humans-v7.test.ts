@@ -114,13 +114,13 @@ describe("The Marshal's Law", () => {
     expect(summary).toEqual([
       {
         kind: "DOMINATION",
-        byRound: 15,
+        byRound: 20,
         rounds: undefined,
         bonus: ["WITHIN_ROUNDS", "KEEP_CITIES"],
       },
       {
         kind: "CAPTURE",
-        byRound: 18,
+        byRound: 30,
         rounds: undefined,
         bonus: ["WITHIN_ROUNDS", "KEEP_CITIES"],
       },
@@ -144,7 +144,7 @@ describe("The Marshal's Law", () => {
       },
       {
         kind: "CAPTURE",
-        byRound: 22,
+        byRound: 26,
         rounds: undefined,
         bonus: ["WITHIN_ROUNDS", "KEEP_CITIES"],
       },
@@ -180,12 +180,13 @@ describe("The Marshal's Law", () => {
   it("keeps the second retune's lean starts and established enemies", () => {
     // `pulp_wars-hmyk.19` (CAMPAIGN.md section 15.5): H2 and H5 start like
     // a skirmish (one town, a few units, two technologies at most), and no
-    // Human start holds more than one town but H4's fort and mill.
+    // Human start holds more than one town but H4's fort and mill. (The
+    // fourth retune, section 15.6, gave H2's fort a third Fighter.)
     const seat0 = (id: string) =>
       mission(id).seats[0] as MissionDefinitionV7["seats"][number];
     for (const id of ["HUMAN_2", "HUMAN_5"]) {
       expect(seat0(id).cities, id).toHaveLength(1);
-      expect(seat0(id).units.length, id).toBeLessThanOrEqual(3);
+      expect(seat0(id).units.length, id).toBeLessThanOrEqual(4);
       expect(seat0(id).technologies.length, id).toBeLessThanOrEqual(2);
       expect(seat0(id).reveal.radius, id).toBe(1);
     }
@@ -195,7 +196,7 @@ describe("The Marshal's Law", () => {
         id === "HUMAN_4" ? 2 : 1,
       );
     // Every enemy starts with more towns than you (H4's besiegers come in
-    // six waves instead).
+    // three waves instead).
     for (const id of ORDER.filter((item) => item !== "HUMAN_4")) {
       const definition = mission(id);
       const teams = definition.teams;
@@ -218,6 +219,41 @@ describe("The Marshal's Law", () => {
         expect(wave.line, `${id} round ${String(wave.round)}`).toBeTypeOf(
           "string",
         );
+  });
+
+  it("keeps the fourth retune's strong enemy starts", () => {
+    // `pulp_wars-hmyk.25` (CAMPAIGN.md section 15.6): the enemies outnumber
+    // you from the start, and the difficulty comes from them rather than
+    // from waves: H4 keeps three waves, H6 one.
+    for (const id of ORDER) {
+      const definition = mission(id);
+      const teams = definition.teams;
+      const ours = (definition.seats[0] as MissionDefinitionV7["seats"][number])
+        .units.length;
+      const theirs = definition.seats
+        .slice(1)
+        .filter((_, index) => teams === undefined || teams[index + 1] !== 0)
+        .reduce((sum, item) => sum + item.units.length, 0);
+      expect(theirs, id).toBeGreaterThan(ours);
+    }
+    expect(
+      mission("HUMAN_4").reinforcements?.map((wave) => wave.round),
+    ).toEqual([6, 7, 8]);
+    expect(
+      mission("HUMAN_6").reinforcements?.map((wave) => wave.round),
+    ).toEqual([9]);
+    // H6: two Trolls hold the Hall and a third Weir Toll's gate.
+    const goblins = mission("HUMAN_6")
+      .seats[1] as MissionDefinitionV7["seats"][number];
+    expect(
+      goblins.units
+        .filter((unit) => unit.role === "JUGGERNAUT")
+        .map((unit) => unit.at),
+    ).toEqual([
+      { x: 10, y: 4 },
+      { x: 10, y: 3 },
+      { x: 4, y: 11 },
+    ]);
   });
 
   it("names every place and unit an objective talks about", () => {

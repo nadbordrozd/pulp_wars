@@ -25,7 +25,7 @@ export const CHAPTER_HUMANS_V7: CampaignChapterV7 = Object.freeze({
       format: "CONQUEST",
       briefing:
         "Marshal Steele's first spring of peace begins with an earthquake and a knock on the barrow doors. The dead of Hollow Barrow are walking again, and this time nobody gave the order: the Ashen Marquis swears they are none of his. Mr. Pettigrew, your clerk, has already filed the incident report. Clear the barrow before the farmers start burying each other.",
-      objective: "Take the barrow and its camp by turn 15.",
+      objective: "Take the barrow and its camp by turn 20.",
       hints: Object.freeze([
         "Stand on Graves: the dead rise only from free ones.",
         "The Necromancer raises them. Ride him down first.",
@@ -41,7 +41,7 @@ export const CHAPTER_HUMANS_V7: CampaignChapterV7 = Object.freeze({
       format: "CAPTURE",
       briefing:
         "Baron Kessler is back from Kingsport with a royal writ, a new title and an army of goblin mercenaries in red caps. As Lord Protector he has disbanded the Rangers, doubled the tolls and seized the three toll forts on the King's Road. Steele has read the writ twice and decided it is a forgery. Take the forts back before his Redcaps dig in.",
-      objective: "Take the three toll forts by turn 18.",
+      objective: "Take the three toll forts by turn 30.",
       hints: Object.freeze([
         "Redcaps mob a lone unit: advance in a block.",
         "A Goblin's Kaboom hurts all around it: shoot first.",
@@ -119,10 +119,10 @@ export const CHAPTER_HUMANS_V7: CampaignChapterV7 = Object.freeze({
       format: "CAPTURE",
       briefing:
         "Kessler Hall stands on its hill above the Baron's lands, with a lightning tower on the lawn, the last of the Redcaps in the yard, his circus beasts in the cellars and the Grey Lodge chanting in the chapel. Every road to it is a toll road. Take the Hall before midsummer. Grubnak has offered help, the Marquis has offered help, and Steele has said no to both: this one belongs to the Frontier.",
-      objective: "Take Kessler Hall by turn 22.",
+      objective: "Take Kessler Hall by turn 26.",
       hints: Object.freeze([
         "Goblins Gang Up: never leave a Knight alone by a fort.",
-        "The tower's zap and three lances at once fell the Troll.",
+        "Trolls heal: bring four lances at once to fell one.",
         "Kill the Lodge's channellers and its daemon turns on it.",
       ]),
       closing:

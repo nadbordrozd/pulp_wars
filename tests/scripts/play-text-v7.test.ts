@@ -2270,10 +2270,10 @@ describe("text play: missions and their objectives (pulp_wars-v642.1)", () => {
     );
     expect(started).toContain("BRIEFING: Baron Kessler is back from Kingsport");
     expect(started).toContain(
-      "OBJECTIVE (as the game words it): Take the three toll forts by turn 18.",
+      "OBJECTIVE (as the game words it): Take the three toll forts by turn 30.",
     );
     expect(started).toContain(
-      "STARS: 1 for the win, +1 win by round 14 (so far yes), +1 own every city you started with (so far yes)",
+      "STARS: 1 for the win, +1 win by round 22 (so far yes), +1 own every city you started with (so far yes)",
     );
     expect(sessionState(session).setup.factions).toEqual([
       "ORIGINAL",
