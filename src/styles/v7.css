@@ -7064,6 +7064,12 @@ html:has(.v7-match-shell) body {
   font-weight: var(--pw-fw-bold);
 }
 
+/* Retry mission (bead pulp_wars-hmyk.24): the question's second line. */
+.v7-retry-confirm-detail {
+  margin: -0.4rem 0 0;
+  color: var(--pw-text-2);
+}
+
 .v7-end-turn-answers {
   display: grid;
   grid-template-columns: 1fr 1fr;

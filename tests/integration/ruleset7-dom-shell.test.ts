@@ -926,10 +926,20 @@ describe("Ruleset 7 DOM shell", () => {
     chooseSeed();
     requiredButton('[data-action="launch"]').click();
     await waitUntil(() => app.controller.snapshot().phase === "ACTIVE");
+    // A skirmish's match menu has no Retry mission (bead pulp_wars-hmyk.24).
+    requiredButton('[data-action="compact-menu"]').click();
+    expect(document.querySelector('[data-action="main-menu"]')).not.toBeNull();
+    expect(
+      document.querySelector('[data-action="menu-mission-retry"]'),
+    ).toBeNull();
     openMenuItem("settings");
     expect(requiredButton('[data-action="restart"]').textContent).toBe(
-      "Restart game",
+      "Restart match",
     );
+    // A skirmish has no Retry mission (bead pulp_wars-hmyk.24).
+    expect(
+      document.querySelector('[data-action="settings-mission-retry"]'),
+    ).toBeNull();
     expect(requiredButton('[data-action="delete-save"]').textContent).toBe(
       "Delete save",
     );

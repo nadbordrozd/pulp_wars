@@ -1076,6 +1076,12 @@ export { economicFormulaV7 } from "../economy-presentation-v7";
 
 const BOARD_SIZES = BOARD_SIZES_V7;
 /** The Rift (bead pulp_wars-9s0.5, RULESET_7_RIFT.md section 8). */
+/** Retry mission (bead pulp_wars-hmyk.24): the match menu, Settings, Defeat. */
+export const RETRY_MISSION_LABEL_V7 = "Retry mission";
+/** A won mission's second action, for the missing stars. */
+export const REPLAY_MISSION_LABEL_V7 = "Replay mission";
+export const RETRY_MISSION_QUESTION_V7 = "Restart this mission?";
+export const RETRY_MISSION_DETAIL_V7 = "Your progress in it will be lost.";
 export const RIFT_LABEL_V7 = "Only flyers";
 export const RIFT_TOOLTIP_V7 =
   "A Rift: only flying units can cross or stand on it, and nothing can be built on it.";
@@ -2043,6 +2049,11 @@ export class Ruleset7DomAppView {
    * for the player's one answer.
    */
   #endTurnConfirm = false;
+  /**
+   * Retry mission (bead pulp_wars-hmyk.24): the match menu's (or
+   * Settings') Retry mission waits for the player's answer.
+   */
+  #retryConfirm = false;
   #unitHelpModal: HTMLElement | null = null;
   #modalReturnAction: string | null = null;
   /**
@@ -2609,6 +2620,7 @@ export class Ruleset7DomAppView {
     else if (this.#selectedUnitHelpId !== null) this.#closeUnitHelp();
     else if (this.#dockDetailsKey !== null) this.#closeDockDetails();
     else if (this.#screen !== "MATCH") this.#closeOverlay();
+    else if (this.#retryConfirm) this.#closeRetryConfirm();
     else return false;
     return true;
   }
@@ -2651,6 +2663,10 @@ export class Ruleset7DomAppView {
         } else if (this.#screen !== "MATCH") {
           event.preventDefault();
           this.#closeOverlay();
+        } else if (this.#retryConfirm) {
+          // Retry mission: Escape answers with Cancel.
+          event.preventDefault();
+          this.#closeRetryConfirm();
         } else if (this.#endTurnConfirm) {
           // The Cultists: Escape answers the End Turn question with Back.
           event.preventDefault();
@@ -6078,6 +6094,19 @@ export class Ruleset7DomAppView {
         };
         menu.append(report);
       }
+      // Retry mission (bead pulp_wars-hmyk.24): a campaign mission starts
+      // over from here, after a question.
+      if (this.#snapshot.phase === "ACTIVE" && this.#inCampaignMission()) {
+        const retry = button(
+          this.#document,
+          RETRY_MISSION_LABEL_V7,
+          "menu-mission-retry",
+          "v7-menu-item",
+        );
+        retry.onclick = () => this.#openRetryConfirm();
+        retry.disabled = blocked;
+        menu.append(retry);
+      }
       if (this.#snapshot.phase === "ACTIVE") {
         const mainMenu = button(
           this.#document,
@@ -6346,6 +6375,16 @@ export class Ruleset7DomAppView {
         ? this.#endTurnUnboundDialog(view)
         : null;
     if (endTurnQuestion !== null) nextChildren.push(endTurnQuestion);
+    // Retry mission (bead pulp_wars-hmyk.24): the question.
+    if (
+      this.#retryConfirm &&
+      this.#snapshot.phase === "ACTIVE" &&
+      this.#screen === "MATCH" &&
+      view.pendingChoices.length === 0 &&
+      !showAchievementNotice &&
+      this.#inCampaignMission()
+    )
+      nextChildren.push(this.#retryConfirmDialog());
     // Bead pulp_wars-2yc.29: a level-up's dialog waits for its animation.
     if (view.pendingChoices[0] !== undefined && this.#rewardHeld) {
       // Nothing yet: the population is on its way to the city.
@@ -10648,7 +10687,8 @@ export class Ruleset7DomAppView {
       region.startsWith("overlay-") ||
       region === "unit-help" ||
       region === "dock-details" ||
-      region === "recruit-help"
+      region === "recruit-help" ||
+      region === "retry-confirm"
     );
   }
 
@@ -11649,8 +11689,18 @@ export class Ruleset7DomAppView {
       soundTestPanelV7(this.#document, this.#audio),
     );
     const game = el(this.#document, "div", "button-row");
-    const restart = button(this.#document, "Restart game", "restart");
-    restart.onclick = () => void this.#restart();
+    // A campaign mission is retried after a question (bead
+    // pulp_wars-hmyk.24); a skirmish restarts at once, as before.
+    const inMission = this.#inCampaignMission();
+    const restart = button(
+      this.#document,
+      inMission ? RETRY_MISSION_LABEL_V7 : "Restart match",
+      inMission ? "settings-mission-retry" : "restart",
+    );
+    restart.onclick = () => {
+      if (inMission) this.#openRetryConfirm();
+      else void this.#restart();
+    };
     const remove = button(
       this.#document,
       "Delete save",
@@ -12316,11 +12366,13 @@ export class Ruleset7DomAppView {
     }
     const goals = missionStarGoalsV7(entry.missionId, view);
     const actions = el(this.#document, "div", "button-row");
+    // Bead pulp_wars-hmyk.24: a defeat's first action is Retry mission; a
+    // win offers Replay mission after Next mission, for the missing stars.
     const retry = (primary: boolean): HTMLButtonElement => {
       const again = button(
         this.#document,
-        "Retry",
-        "mission-retry",
+        victory ? REPLAY_MISSION_LABEL_V7 : RETRY_MISSION_LABEL_V7,
+        victory ? "mission-replay" : "mission-retry",
         primary ? "primary-action" : "",
       );
       again.onclick = () => void this.#restart();
@@ -13159,6 +13211,8 @@ export class Ruleset7DomAppView {
     this.#render();
   }
   async #restart(): Promise<void> {
+    this.#retryConfirm = false;
+    this.#compactMenuOpen = false;
     this.#releaseVictoryHold(false);
     this.#cancelPresentations();
     this.#scoreBreakdownFor = null;
@@ -13191,7 +13245,12 @@ export class Ruleset7DomAppView {
       this.#matchInstance += 1;
       this.#selection = null;
       this.#screen = "MATCH";
-      this.#notice = "Game restarted.";
+      this.#notice =
+        setup !== undefined &&
+        !tutorialRestart &&
+        campaignMissionV7(setup.mission?.id ?? "") !== null
+          ? "Mission restarted."
+          : "Match restarted.";
     }
     this.#render();
     await this.#progressAi();
@@ -17241,6 +17300,78 @@ export class Ruleset7DomAppView {
     buttons.append(cancel);
     panel.append(buttons);
     return panel;
+  }
+
+  /** Whether the match is a mission of a campaign (not the tutorial). */
+  #inCampaignMission(): boolean {
+    const id = this.#snapshot.view?.setup.mission?.id;
+    return id !== undefined && campaignMissionV7(id) !== null;
+  }
+
+  /**
+   * Retry mission (bead pulp_wars-hmyk.24): asks before the mission starts
+   * over; from the match menu or from Settings.
+   */
+  #openRetryConfirm(): void {
+    this.#compactMenuOpen = false;
+    this.#modalReturnAction = null;
+    this.#screen = "MATCH";
+    this.#retryConfirm = true;
+    this.#pendingFocusAction = "retry-confirm-cancel";
+    this.#render();
+  }
+
+  /** Answers the Retry mission question with Cancel: the match goes on. */
+  #closeRetryConfirm(): void {
+    this.#retryConfirm = false;
+    this.#pendingFocusAction = "compact-menu";
+    this.#render();
+  }
+
+  /**
+   * The Retry mission question: one sentence, Cancel (safe, first and
+   * focused) and Retry (destructive). Campaign progress is not touched;
+   * the restart replaces the autosave of the abandoned attempt.
+   */
+  #retryConfirmDialog(): HTMLElement {
+    const modal = el(
+      this.#document,
+      "section",
+      "v7-end-turn-confirm v7-retry-confirm",
+    );
+    modal.dataset.v7Region = "retry-confirm";
+    modal.setAttribute("role", "alertdialog");
+    modal.setAttribute("aria-modal", "true");
+    const question = text(
+      this.#document,
+      "p",
+      RETRY_MISSION_QUESTION_V7,
+      "v7-end-turn-question",
+    );
+    question.id = "v7-retry-confirm-question";
+    const detail = text(
+      this.#document,
+      "p",
+      RETRY_MISSION_DETAIL_V7,
+      "v7-retry-confirm-detail",
+    );
+    detail.id = "v7-retry-confirm-detail";
+    modal.setAttribute("aria-labelledby", question.id);
+    modal.setAttribute("aria-describedby", detail.id);
+    const answers = el(this.#document, "div", "button-row v7-end-turn-answers");
+    const cancel = button(this.#document, "Cancel", "retry-confirm-cancel");
+    cancel.onclick = () => this.#closeRetryConfirm();
+    const retry = button(
+      this.#document,
+      "Retry",
+      "retry-confirm",
+      "destructive",
+    );
+    retry.setAttribute("aria-label", "Retry: restart this mission");
+    retry.onclick = () => void this.#restart();
+    answers.append(cancel, retry);
+    modal.append(question, detail, answers);
+    return modal;
   }
 
   /**

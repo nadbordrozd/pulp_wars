@@ -2555,7 +2555,8 @@ the screens it opens (new game, campaign, Settings, save recovery). Ruleset
 - **Leaving a match.** A match's menu ends with **Save & quit**, which
   saves and shows the main menu with Continue focused. Every end dialog has
   **Main menu** after its other actions (Victory and Defeat: Play again,
-  Main menu; a mission: Next mission or Retry, Campaign, Main menu). Main
+  Main menu; a mission: Next mission and Replay mission, or Retry mission,
+  then Campaign, Main menu). Main
   menu clears the finished match from the autosave slot (there is nothing
   in it to continue; a mission's win is already recorded) and shows the
   main menu without Continue, focus on New game.
@@ -3183,6 +3184,33 @@ the lists above differ, this is current:
   "The Warrens", "Doctor Crane") are history; the faction campaigns' own
   names stand in their place (for example "Mission 1 · Thaw at Northwatch ·
   Turn 7" on the main menu's Continue).
+
+**Retry mission (`pulp_wars-hmyk.24`).** A mission starts over from the
+game, without the main menu. Where the lists above differ, this is current:
+
+- **Match menu.** In a campaign mission (not the tutorial, not a hidden
+  fixture mission, not a skirmish) the match menu (☰) has **Retry mission**
+  just before Save & quit. It closes the menu and asks, over the board on
+  the scrim: "Restart this mission?" and, under it, "Your progress in it
+  will be lost." The answers are **Cancel** (first, focused) and **Retry**
+  (destructive). Cancel, Escape or a tap on the scrim keeps the match and
+  returns the focus to the menu toggle.
+- **Retry** starts the same mission again from its start: the same mission
+  id and revision, seed and faction choice (the setup it was started with).
+  Campaign progress is not touched (no win, no stars); the fresh start
+  replaces the abandoned attempt in the autosave slot. Analytics sends the
+  attempt's `match_end` as abandoned and a new `match_start` from the
+  campaign. The notice says "Mission restarted."
+- **Settings** in a mission reads **Retry mission** in place of Restart
+  and asks the same question. In a skirmish it reads **Restart match** and
+  restarts at once, as before ("Match restarted.").
+- **Defeat** (a campaign mission): **Retry mission** is the first, primary
+  button, then Campaign and Main menu.
+- **Victory** (a campaign mission): **Next mission** stays first and
+  primary; **Replay mission** (for the missing stars) is the secondary
+  button after it. After a campaign's last mission Replay mission is the
+  primary button.
+- A skirmish's Victory and Defeat keep **Play again**.
 
 ## 0. Ruleset-6 replacement contract
 

@@ -6,11 +6,16 @@ import {
   type Ruleset7BrowserSnapshot,
   type Ruleset7CampaignProgressV7,
 } from "../../src/app/index";
+import {
+  NO_ANALYTICS_V7,
+  type GameAnalyticsV7,
+} from "../../src/app/analytics-v7";
 import { CHAPTER_HUMANS_V7 } from "../../src/campaign/chapter-humans";
 import {
   createPlayableGameV7,
   missionByIdV7,
   missionMatchSetupV7,
+  SAVE_STORAGE_KEY_V7,
   viewForV7,
   type FactionIdV7,
   type MatchOutcomeV7,
@@ -26,9 +31,12 @@ import {
   missionStarGoalsV7,
 } from "../../src/render/mission-presentation-v7";
 import {
+  RETRY_MISSION_DETAIL_V7,
+  RETRY_MISSION_QUESTION_V7,
   Ruleset7DomAppView,
   type Ruleset7ControllerPortV7,
 } from "../../src/render/dom/app-view-v7";
+import { TUTORIAL_MISSION_ID_V7 } from "../../src/render/tutorial-v7";
 import {
   won,
   seedLegacyProgress,
@@ -479,7 +487,7 @@ describe("Ruleset 7 campaign front screen", () => {
 });
 
 describe("Ruleset 7 mission dialogs", () => {
-  it("Defeat: Mission failed, Retry restarts the same setup, Campaign returns to the list", async () => {
+  it("Defeat: Mission failed, Retry mission restarts the same setup, Campaign returns to the list", async () => {
     const fake = new FakeController(
       completeView("HUMAN_1", "ORIGINAL", (view) => ({
         kind: "DEFEAT",
@@ -503,7 +511,13 @@ describe("Ruleset 7 mission dialogs", () => {
     expect(dialog.querySelector(".v7-mission-goals")).toBeNull();
     expect(
       [...dialog.querySelectorAll("button")].map((node) => node.textContent),
-    ).toEqual(["Retry", "Campaign", "Main menu"]);
+    ).toEqual(["Retry mission", "Campaign", "Main menu"]);
+    // Bead pulp_wars-hmyk.24: Retry mission is the first, primary action.
+    expect(
+      requiredButton('[data-action="mission-retry"]').classList.contains(
+        "primary-action",
+      ),
+    ).toBe(true);
     requiredButton('[data-action="mission-retry"]').click();
     await settle();
     expect(fake.calls).toEqual(["restart"]);
@@ -552,7 +566,7 @@ describe("Ruleset 7 mission dialogs", () => {
     }
   });
 
-  it("Victory: why, the stars with what each was for, the debrief, Next mission and Retry", async () => {
+  it("Victory: why, the stars with what each was for, the debrief, Next mission and Replay mission", async () => {
     const fake = new FakeController(
       completeView("HUMAN_2", "ORIGINAL", (view) => ({
         kind: "VICTORY",
@@ -590,8 +604,20 @@ describe("Ruleset 7 mission dialogs", () => {
     );
     expect(
       [...dialog.querySelectorAll("button")].map((node) => node.textContent),
-    ).toEqual(["Next mission", "Retry", "Campaign", "Main menu"]);
-    requiredButton('[data-action="mission-retry"]').click();
+    ).toEqual(["Next mission", "Replay mission", "Campaign", "Main menu"]);
+    // Bead pulp_wars-hmyk.24: Next mission stays first; Replay is secondary.
+    expect(
+      requiredButton('[data-action="campaign-next"]').classList.contains(
+        "primary-action",
+      ),
+    ).toBe(true);
+    expect(
+      requiredButton('[data-action="mission-replay"]').classList.contains(
+        "primary-action",
+      ),
+    ).toBe(false);
+    expect(document.querySelector('[data-action="mission-retry"]')).toBeNull();
+    requiredButton('[data-action="mission-replay"]').click();
     await settle();
     expect(fake.calls).toEqual(["restart"]);
     view.destroy();
@@ -696,7 +722,7 @@ describe("Ruleset 7 mission dialogs", () => {
     }
   });
 
-  it("after a campaign's last mission: the outro, Retry, Campaign and Main menu", () => {
+  it("after a campaign's last mission: the outro, Replay mission, Campaign and Main menu", () => {
     const fake = new FakeController(
       completeView("HUMAN_6", "ORIGINAL", (view) => ({
         kind: "VICTORY",
@@ -724,7 +750,7 @@ describe("Ruleset 7 mission dialogs", () => {
     // Mission 6 is the campaign's last: there is no Next mission to offer.
     expect(
       [...dialog.querySelectorAll("button")].map((node) => node.textContent),
-    ).toEqual(["Retry", "Campaign", "Main menu"]);
+    ).toEqual(["Replay mission", "Campaign", "Main menu"]);
     view.destroy();
   });
 
@@ -813,6 +839,242 @@ describe("Ruleset 7 mission dialogs", () => {
       );
       view.destroy();
     }
+  });
+});
+
+describe("Ruleset 7 Retry mission (pulp_wars-hmyk.24)", () => {
+  const activeMission = (missionId: string): PlayerViewV7 => {
+    const mission = required(missionByIdV7(missionId));
+    const setup = required(
+      missionId === "HUMAN_1"
+        ? missionMatchSetupV7(mission, "ORIGINAL")
+        : missionMatchSetupV7(mission),
+    );
+    const created = createPlayableGameV7(setup);
+    if (!created.ok) throw new Error(created.error.code);
+    return viewForV7(created.state, created.state.humanPlayerId);
+  };
+  const menuActions = (): (string | undefined)[] =>
+    [
+      ...document.querySelectorAll<HTMLElement>("#v7-hud-menu .v7-menu-item"),
+    ].map((node) => node.dataset.action);
+  const confirm = (): HTMLElement | null =>
+    document.querySelector<HTMLElement>("[data-v7-region='retry-confirm']");
+  const escape = (): void => {
+    (document.activeElement ?? document.body).dispatchEvent(
+      new KeyboardEvent("keydown", { key: "Escape", bubbles: true }),
+    );
+  };
+
+  it("the match menu offers Retry mission only in a campaign mission, before Save & quit", () => {
+    let view = mount(
+      new FakeController(activeMission("HUMAN_1"), undefined, "ACTIVE"),
+    );
+    requiredButton('[data-action="compact-menu"]').click();
+    const actions = menuActions();
+    expect(actions).toContain("menu-mission-retry");
+    expect(actions.indexOf("menu-mission-retry")).toBe(
+      actions.indexOf("main-menu") - 1,
+    );
+    expect(
+      requiredButton('[data-action="menu-mission-retry"]').textContent,
+    ).toBe("Retry mission");
+    view.destroy();
+    // A hidden fixture mission (in no chapter) and the tutorial: none.
+    for (const missionId of ["TEST_GROUNDS", TUTORIAL_MISSION_ID_V7]) {
+      document.body.innerHTML = '<div id="app"></div>';
+      view = mount(
+        new FakeController(activeMission(missionId), undefined, "ACTIVE"),
+      );
+      requiredButton('[data-action="compact-menu"]').click();
+      expect(menuActions(), missionId).toContain("main-menu");
+      expect(menuActions(), missionId).not.toContain("menu-mission-retry");
+      view.destroy();
+    }
+  });
+
+  it("asks first: Cancel, Escape and the scrim keep the match; Retry restarts it", async () => {
+    const fake = new FakeController(
+      activeMission("HUMAN_1"),
+      undefined,
+      "ACTIVE",
+    );
+    const view = mount(fake);
+    const open = (): HTMLElement => {
+      requiredButton('[data-action="compact-menu"]').click();
+      requiredButton('[data-action="menu-mission-retry"]').click();
+      return required(confirm());
+    };
+    const dialog = open();
+    // The menu closes behind the question.
+    expect(document.querySelector("#v7-hud-menu")).toBeNull();
+    expect(dialog.getAttribute("role")).toBe("alertdialog");
+    expect(dialog.getAttribute("aria-modal")).toBe("true");
+    expect(RETRY_MISSION_QUESTION_V7).toBe("Restart this mission?");
+    expect(RETRY_MISSION_DETAIL_V7).toBe("Your progress in it will be lost.");
+    expect(
+      document.getElementById(required(dialog.getAttribute("aria-labelledby")))
+        ?.textContent,
+    ).toBe(RETRY_MISSION_QUESTION_V7);
+    expect(
+      document.getElementById(required(dialog.getAttribute("aria-describedby")))
+        ?.textContent,
+    ).toBe(RETRY_MISSION_DETAIL_V7);
+    // The safe answer comes first and takes the focus.
+    expect(
+      [...dialog.querySelectorAll("button")].map((node) => [
+        node.dataset.action,
+        node.textContent,
+      ]),
+    ).toEqual([
+      ["retry-confirm-cancel", "Cancel"],
+      ["retry-confirm", "Retry"],
+    ]);
+    await settle();
+    expect(document.activeElement?.getAttribute("data-action")).toBe(
+      "retry-confirm-cancel",
+    );
+    // A scrim takes the pointer from the board behind it.
+    expect(
+      document.querySelector<HTMLElement>("[data-v7-region='scrim']")?.dataset
+        .dismissable,
+    ).toBe("true");
+    requiredButton('[data-action="retry-confirm-cancel"]').click();
+    await settle();
+    expect(confirm()).toBeNull();
+    expect(document.activeElement?.getAttribute("data-action")).toBe(
+      "compact-menu",
+    );
+    open();
+    await settle();
+    escape();
+    await settle();
+    expect(confirm()).toBeNull();
+    open();
+    required(
+      document.querySelector<HTMLElement>("[data-v7-region='scrim']"),
+    ).click();
+    expect(confirm()).toBeNull();
+    expect(fake.calls).toEqual([]);
+    open();
+    requiredButton('[data-action="retry-confirm"]').click();
+    await settle();
+    expect(fake.calls).toEqual(["restart"]);
+    expect(confirm()).toBeNull();
+    view.destroy();
+  });
+
+  it("Settings in a mission reads Retry mission and asks the same question", async () => {
+    const fake = new FakeController(
+      activeMission("HUMAN_1"),
+      undefined,
+      "ACTIVE",
+    );
+    const view = mount(fake);
+    requiredButton('[data-action="compact-menu"]').click();
+    requiredButton('[data-action="settings"]').click();
+    expect(document.querySelector('[data-action="restart"]')).toBeNull();
+    const retry = requiredButton('[data-action="settings-mission-retry"]');
+    expect(retry.textContent).toBe("Retry mission");
+    retry.click();
+    await settle();
+    // Settings closes; the question is over the match.
+    expect(
+      document.querySelector("[data-v7-region='overlay-settings']"),
+    ).toBeNull();
+    expect(confirm()).not.toBeNull();
+    expect(fake.calls).toEqual([]);
+    requiredButton('[data-action="retry-confirm"]').click();
+    await settle();
+    expect(fake.calls).toEqual(["restart"]);
+    view.destroy();
+  });
+
+  it("restarts the same mission and choice from its start: progress untouched, the autosave replaced, the attempt abandoned", async () => {
+    seedProgress({ HUMAN_1: won() });
+    const started: {
+      readonly source: string;
+      readonly missionId: string | undefined;
+      readonly beforePhase: string | null;
+      readonly beforeOutcome: unknown;
+    }[] = [];
+    const analytics: GameAnalyticsV7 = {
+      ...NO_ANALYTICS_V7,
+      matchStarted: (setup, source, before) => {
+        started.push({
+          source,
+          missionId: setup.mission?.id,
+          beforePhase: before?.phase ?? null,
+          beforeOutcome: before?.view?.outcome ?? null,
+        });
+      },
+    };
+    const app = bootstrapRuleset7App(document, { analytics });
+    await openHumans();
+    requiredButton('[data-action="mission-human_2"]').click();
+    await settle();
+    requiredButton('[data-action="campaign-start"]').click();
+    await waitUntil(
+      () =>
+        app.controller.snapshot().phase === "ACTIVE" &&
+        !app.controller.snapshot().transitioning,
+    );
+    const fresh = required(app.controller.snapshot().view);
+    expect(fresh.setup.mission?.id).toBe("HUMAN_2");
+    const progress = window.localStorage.getItem(
+      CAMPAIGN_PROGRESS_STORAGE_KEY_V7,
+    );
+    expect(progress).not.toBeNull();
+    // One step into the attempt: a unit moves, and the autosave has it.
+    const move = required(
+      app.controller
+        .snapshot()
+        .offeredCommands.find((command) => command.kind === "MOVE"),
+    );
+    await app.controller.dispatch(move);
+    await waitUntil(
+      () =>
+        app.controller.snapshot().view?.commandIndex === 1 &&
+        !app.controller.snapshot().transitioning,
+    );
+    app.controller.flushPersistence();
+    expect(savedCommandCount()).toBe(1);
+    started.length = 0;
+    requiredButton('[data-action="compact-menu"]').click();
+    requiredButton('[data-action="menu-mission-retry"]').click();
+    requiredButton('[data-action="retry-confirm"]').click();
+    await waitUntil(
+      () =>
+        app.controller.snapshot().phase === "ACTIVE" &&
+        !app.controller.snapshot().transitioning &&
+        app.controller.snapshot().view?.commandIndex === 0,
+    );
+    const again = required(app.controller.snapshot().view);
+    // The same mission, revision, seed and faction, from its start.
+    expect(again.setup).toEqual(fresh.setup);
+    expect(again.round).toBe(fresh.round);
+    expect(again.units).toEqual(fresh.units);
+    expect(document.querySelector("#v7-live")?.textContent).toBe(
+      "Mission restarted.",
+    );
+    // Campaign progress is not touched: no win, no stars.
+    expect(window.localStorage.getItem(CAMPAIGN_PROGRESS_STORAGE_KEY_V7)).toBe(
+      progress,
+    );
+    // The abandoned attempt's autosave is replaced by the fresh start.
+    app.controller.flushPersistence();
+    expect(savedCommandCount()).toBe(0);
+    // Analytics: the unfinished attempt goes as abandoned (the snapshot
+    // before the launch), and the mission starts again as a campaign start.
+    expect(started).toEqual([
+      {
+        source: "campaign",
+        missionId: "HUMAN_2",
+        beforePhase: "ACTIVE",
+        beforeOutcome: null,
+      },
+    ]);
+    app.destroy();
   });
 });
 
@@ -1088,6 +1350,23 @@ describe("Ruleset 7 campaign progress recovery and reset", () => {
     app.destroy();
   });
 });
+
+/** The accepted commands of the autosave slot's match. */
+function savedCommandCount(): number {
+  const raw = window.localStorage.getItem(SAVE_STORAGE_KEY_V7);
+  if (raw === null) throw new Error("No autosave");
+  const find = (value: unknown): unknown[] | null => {
+    if (value === null || typeof value !== "object") return null;
+    const record = value as Record<string, unknown>;
+    if (Array.isArray(record.acceptedCommands)) return record.acceptedCommands;
+    for (const child of Object.values(record)) {
+      const found = find(child);
+      if (found !== null) return found;
+    }
+    return null;
+  };
+  return required(find(JSON.parse(raw))).length;
+}
 
 function completeView(
   missionId: string,
