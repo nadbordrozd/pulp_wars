@@ -24,6 +24,13 @@ import type { MissionDefinitionV7 } from "./types";
  * all five Fighters home until round 4 (`GUARD`) and then send all but
  * two at the Tower (`RUSH`). The clock is 20 rounds, the star 15.
  *
+ * Retune 4 (`pulp_wars-hmyk.26`) makes the Company stronger than the
+ * Ashen Tower from the start: Grimsditch is a Swordsman on his camp's
+ * centre, the Dig is held by a Guard, each camp has two more men than
+ * before and a Marksman (the Company knows Marksmanship from the start),
+ * and the robbers come for the Tower from round 2 with six coins behind
+ * them. The clock stays 20 rounds, the star 15.
+ *
  * ```text
  *      x 0123456789A
  * y  0   ..f....ff^.
@@ -43,7 +50,9 @@ export const UNDEAD_1_V7: MissionDefinitionV7 = {
   id: "UNDEAD_1",
   // Revision 2 (`pulp_wars-hmyk.17`): each seat explores its units' sight.
   // Revision 3 (`pulp_wars-hmyk.20`, retune 2): a skirmish start.
-  revision: 3,
+  // Revision 4 (`pulp_wars-hmyk.26`, retune 4): a stronger Company that
+  // rushes from round 2.
+  revision: 4,
   seed: 20261301,
   // <map>
   size: 11,
@@ -141,8 +150,8 @@ export const UNDEAD_1_V7: MissionDefinitionV7 = {
     {
       // Kessler's Resurrection Company, foreman Grimsditch.
       faction: "ORIGINAL",
-      coins: 4,
-      technologies: ["HUNTING"],
+      coins: 6,
+      technologies: ["HUNTING", "MARKSMANSHIP"],
       cities: [
         {
           name: "Grimsditch Camp",
@@ -158,11 +167,16 @@ export const UNDEAD_1_V7: MissionDefinitionV7 = {
         },
       ],
       units: [
-        { role: "FIGHTER", at: { x: 9, y: 5 } },
+        // Grimsditch, the foreman.
+        { role: "SWORDSMAN", at: { x: 9, y: 5 } },
+        { role: "FIGHTER", at: { x: 9, y: 4 } },
         { role: "FIGHTER", at: { x: 9, y: 6 } },
         { role: "FIGHTER", at: { x: 8, y: 5 } },
-        { role: "FIGHTER", at: { x: 6, y: 8 }, home: 1 },
+        { role: "MARKSMAN", at: { x: 10, y: 5 } },
+        { role: "GUARD", at: { x: 6, y: 8 }, home: 1 },
         { role: "FIGHTER", at: { x: 5, y: 7 }, home: 1 },
+        { role: "FIGHTER", at: { x: 7, y: 8 }, home: 1 },
+        { role: "MARKSMAN", at: { x: 6, y: 9 }, home: 1 },
       ],
       reveal: { radius: 1, rects: [{ x0: 0, y0: 0, x1: 4, y1: 4 }] },
       forbiddenTechnologies: [
@@ -173,7 +187,6 @@ export const UNDEAD_1_V7: MissionDefinitionV7 = {
         "PLANNING",
         "FORESTRY",
         "SAWMILLING",
-        "MARKSMANSHIP",
         "FIELDCRAFT",
         "SCOUTING",
         "ROADS",
@@ -186,8 +199,8 @@ export const UNDEAD_1_V7: MissionDefinitionV7 = {
         "FORTIFICATION",
         "EXPLOSIVES",
       ],
-      // The robbers dig for three rounds; then each camp keeps a man on
-      // its centre and every other robber goes for the Tower.
+      // The robbers dig for one round; then each camp keeps a man on its
+      // centre and every other robber goes for the Tower.
       directive: [
         {
           kind: "GUARD",
@@ -196,7 +209,7 @@ export const UNDEAD_1_V7: MissionDefinitionV7 = {
             { x0: 5, y0: 7, x1: 7, y1: 9 },
           ],
           garrison: 10,
-          untilRound: 4,
+          untilRound: 2,
         },
         {
           kind: "GUARD",

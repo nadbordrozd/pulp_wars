@@ -16,9 +16,9 @@ import type { MissionDefinitionV7 } from "./types";
  * it on foot is the causeway in the south-east. Your landing is on the
  * western shore. The Bonepickers camp on the eastern and southern shores
  * and assault the abbey from the first round (`ASSAULT`, then `RUSH` from
- * round 9); more of them come up from the lakeshore every other round
- * from round 3, the third band against the landing. The Naval branch is forbidden, so
- * nobody sails the lake; the goblins have Engineering and climb the peaks.
+ * round 9); more of them come up from the lakeshore in rounds 4, 7 and
+ * 10, the second band against the landing. The Naval branch is forbidden,
+ * so nobody sails the lake; the goblins have Engineering and climb the peaks.
  *
  * Hand play (CAMPAIGN.md section 16) set the numbers: with only the
  * causeway the goblins sat at its foot and never attacked, so they climb;
@@ -31,6 +31,11 @@ import type { MissionDefinitionV7 } from "./types";
  * Banshees, a Zombie and two Skeletons; the goblins have no coins and no
  * Fortification (a camp trained a Brute a turn), so only the Brutes in the
  * waves and the start are Brutes.
+ *
+ * Retune 4 (`pulp_wars-hmyk.26`) moves the strength into the start: the
+ * clan has four coins, two more Brutes and its Ogre, Old Gutbucket, beside
+ * the causeway, and only three bands come up the shore (rounds 4, 7 and
+ * 10). The hold stays 14 rounds.
  *
  * ```text
  *      x 01234567890123
@@ -55,7 +60,9 @@ export const UNDEAD_2_V7: MissionDefinitionV7 = {
   // Revision 2 (`pulp_wars-hmyk.17`): each seat explores its units' sight.
   // Revision 3 (`pulp_wars-hmyk.20`, retune 2): fourteen days, waves
   // every other round, a thin garrison, no Fortification for the goblins.
-  revision: 3,
+  // Revision 4 (`pulp_wars-hmyk.26`, retune 4): a strong clan at the
+  // causeway, three waves.
+  revision: 4,
   seed: 20261302,
   // <map>
   size: 14,
@@ -183,10 +190,9 @@ export const UNDEAD_2_V7: MissionDefinitionV7 = {
     {
       // The Bonepicker clan, who use the abbey's bell tower as a lair.
       faction: "GOBLIN",
-      coins: 0,
-      // Engineering: the goblins climb the peaks round the abbey; and
-      // Fortification for their Brutes, which they learned in round 4 of
-      // every hand-played run anyway.
+      coins: 4,
+      // Engineering: the goblins climb the peaks round the abbey. No
+      // Fortification (retune 2): a camp trained a Brute a turn.
       technologies: ["DRILL", "ENGINEERING"],
       cities: [
         {
@@ -204,10 +210,14 @@ export const UNDEAD_2_V7: MissionDefinitionV7 = {
         { role: "FIGHTER", at: { x: 11, y: 8 } },
         { role: "FIGHTER", at: { x: 13, y: 6 } },
         { role: "GUARD", at: { x: 13, y: 8 } },
+        { role: "GUARD", at: { x: 11, y: 6 } },
+        // The clan's Ogre, Old Gutbucket.
+        { role: "SWORDSMAN", at: { x: 11, y: 7 } },
         { role: "RAIDER", at: { x: 13, y: 7 } },
         { role: "FIGHTER", at: { x: 9, y: 12 }, home: 1 },
         { role: "FIGHTER", at: { x: 10, y: 11 }, home: 1 },
         { role: "FIGHTER", at: { x: 8, y: 11 }, home: 1 },
+        { role: "GUARD", at: { x: 9, y: 11 }, home: 1 },
       ],
       reveal: {
         radius: 1,
@@ -247,32 +257,19 @@ export const UNDEAD_2_V7: MissionDefinitionV7 = {
       ],
     },
   ],
-  // The mobs come up from the lakeshore all fortnight: the north shore in
-  // rounds 3 and 11, the causeway in rounds 5, 9 and 13, the landing in
-  // rounds 7 and 11.
+  // Retune 4 (`pulp_wars-hmyk.26`): the clan starts strong and three
+  // bands come up from the lakeshore: the north shore in round 4, the
+  // landing in round 7, the causeway in round 10.
   reinforcements: [
     {
       seat: 1,
-      round: 3,
+      round: 4,
       line: "The Bonepickers come round the north shore, picking as they go.",
       announce: true,
       units: [
         { role: "FIGHTER", at: { x: 11, y: 1 } },
         { role: "FIGHTER", at: { x: 12, y: 1 } },
-        { role: "FIGHTER", at: { x: 12, y: 2 } },
-      ],
-    },
-    {
-      seat: 1,
-      round: 5,
-      line: "More of them up the causeway, and one with a sack of bombs.",
-      announce: true,
-      units: [
-        { role: "FIGHTER", at: { x: 12, y: 9 } },
-        { role: "FIGHTER", at: { x: 11, y: 10 } },
-        { role: "FIGHTER", at: { x: 10, y: 10 } },
-        { role: "FIGHTER", at: { x: 12, y: 7 } },
-        { role: "MARKSMAN", at: { x: 13, y: 8 } },
+        { role: "RAIDER", at: { x: 12, y: 2 } },
       ],
     },
     {
@@ -289,41 +286,14 @@ export const UNDEAD_2_V7: MissionDefinitionV7 = {
     },
     {
       seat: 1,
-      round: 9,
+      round: 10,
       line: "The clan sends its Brutes up the causeway. The Marquis sighs.",
       announce: true,
       units: [
         { role: "FIGHTER", at: { x: 11, y: 9 } },
         { role: "FIGHTER", at: { x: 12, y: 9 } },
-        { role: "FIGHTER", at: { x: 10, y: 10 } },
-        { role: "FIGHTER", at: { x: 12, y: 8 } },
-        { role: "GUARD", at: { x: 13, y: 9 } },
-      ],
-    },
-    {
-      seat: 1,
-      round: 11,
-      line: "Bonepickers on both shores at once. Crane reads faster.",
-      announce: true,
-      units: [
-        { role: "FIGHTER", at: { x: 11, y: 1 } },
-        { role: "FIGHTER", at: { x: 12, y: 1 } },
-        { role: "FIGHTER", at: { x: 12, y: 2 } },
-        { role: "FIGHTER", at: { x: 2, y: 11 } },
-        { role: "FIGHTER", at: { x: 3, y: 11 } },
-        { role: "MARKSMAN", at: { x: 13, y: 8 } },
-      ],
-    },
-    {
-      seat: 1,
-      round: 13,
-      line: "One last mob at the causeway. Crane has two pages to go.",
-      announce: true,
-      units: [
-        { role: "FIGHTER", at: { x: 11, y: 9 } },
-        { role: "FIGHTER", at: { x: 12, y: 9 } },
-        { role: "FIGHTER", at: { x: 10, y: 10 } },
-        { role: "FIGHTER", at: { x: 12, y: 8 } },
+        { role: "GUARD", at: { x: 10, y: 10 } },
+        { role: "MARKSMAN", at: { x: 13, y: 9 } },
       ],
     },
   ],

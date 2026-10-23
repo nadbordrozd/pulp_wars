@@ -107,18 +107,18 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
   "HUMAN_6@5:ORIGINAL":
     "e86b7c56a70b01e61deb39f9d7b23bd8d54c1d2e093bff0d7b0d079dc81d1ef7",
   // The Undead campaign, "The Long Sleep" (`pulp_wars-hmyk.5`).
-  "UNDEAD_1@3:UNDEAD":
-    "3ae6a9a029fd869d12295e1273510c9cee4839a585e1008e2c44790801f7c96f",
-  "UNDEAD_2@3:UNDEAD":
-    "47e7384bac2d20277226444d8fe8fcdb6bfde173bcce943a2d3a6838c6369700",
-  "UNDEAD_3@3:UNDEAD":
-    "d0bc9a118d437b71754f70017ddee8e8cdcbe5b660dd305c7658e22c4737081e",
-  "UNDEAD_4@3:UNDEAD":
-    "21aef7ded19ba44f43b5d5ace7c7c610a2cb37cfd1fa66dee19994c345d4a8af",
-  "UNDEAD_5@3:UNDEAD":
-    "e698cf67c7732eca0bb87a18372bf3378e5dd5a9203516c6a36d4beb43403651",
-  "UNDEAD_6@3:UNDEAD":
-    "ed0ddf43982210061da9badf3c410dde9c3561677fe90479657d257db8c87174",
+  "UNDEAD_1@4:UNDEAD":
+    "8d4f1048014013c59a3e36d653e067a2082a48a59ddf1b27234b0bf4fb45fc8a",
+  "UNDEAD_2@4:UNDEAD":
+    "6120d1a1767b02bfb33a16a6e609426c4f2f348eed77d083fa4dbdc6cdb98e20",
+  "UNDEAD_3@4:UNDEAD":
+    "0f4d2cbbfbe5646900507ffc930a621c13774f4ae228eda8f8ff20fab3536c82",
+  "UNDEAD_4@4:UNDEAD":
+    "4f2b959f095df88765f9e07088046b82c5efb773aaf9d960c8094dc3a2e07fc8",
+  "UNDEAD_5@4:UNDEAD":
+    "647077de58471f0e087ae69bef071c363c34b3ff6580544215e01e637b38aff4",
+  "UNDEAD_6@4:UNDEAD":
+    "b47c5f077890f2ab271236d0ac87032cf65edbfdfba91423c3f8bb80f0db88ae",
   // The Dinosaur campaign, "The Egg Thief" (`pulp_wars-hmyk.6`).
   "DINOSAUR_1@3:DINOSAUR":
     "11832ac6b4da22f9cf9541320f7a79f188a3e020a98c6e23104e4d696d88598b",
@@ -471,18 +471,18 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
   "HUMAN_4@4:ORIGINAL":
     "087d20cf97d5e2276a85f15d15500f1cc6e013bb51e096ba120804c47c53e38c",
   // The Undead campaign, "The Long Sleep" (`pulp_wars-hmyk.5`).
-  "UNDEAD_1@3:UNDEAD":
-    "aa23d251b8783d0aea2355c5ed40078102b348e7372a837f8ad7f27e547bff8e",
-  "UNDEAD_2@3:UNDEAD":
-    "a5fafce543d450fb0a5219954daba7270921bc7d36033af2d2f7e0df5668cfd5",
-  "UNDEAD_3@3:UNDEAD":
-    "1cd31568d0be289ca78b15d5d58188494b2033996e9dccfac780934feca82b23",
-  "UNDEAD_4@3:UNDEAD":
-    "dd5cd90ef237ebba16d7fdccaf51c0af0e7e1adfd54dcfee3c65ba6722b42231",
-  "UNDEAD_5@3:UNDEAD":
-    "ee75fbc218c16ee6ec75348673b592917462ff3a3203d8e6d32c5932b5b4cf05",
-  "UNDEAD_6@3:UNDEAD":
-    "8f45b87f726ddf7d2c02b6b6a1d04a6b55f1926f2c60aaddaf3da9966c3b2a64",
+  "UNDEAD_1@4:UNDEAD":
+    "fab27ddee24d2e49e14c5fa5c3b1a4fc413e258cd09e2e999fdc47de5312cb26",
+  "UNDEAD_2@4:UNDEAD":
+    "54c565178f9267763905c9fd653aadb0d905800e4e1a9291d3c34addab8b95d6",
+  "UNDEAD_3@4:UNDEAD":
+    "09c549d9cc063c0df6e4d2b35473fbd8c0356fed697615b200b9e417540620c0",
+  "UNDEAD_4@4:UNDEAD":
+    "9345d60e05e47cff3684914ac4eb8876f09428c24af45d6a0a925f6e321c0a00",
+  "UNDEAD_5@4:UNDEAD":
+    "31b71946de12471600651b36736873231d6a294836a98107207d4525fd099def",
+  "UNDEAD_6@4:UNDEAD":
+    "a2afe3ddc9ffce740b4b816fb6ecf88dff67c5e8e4b4a8c320be1d4c4bddb841",
   // The Dinosaur campaign, "The Egg Thief" (`pulp_wars-hmyk.6`); the Sea
   // Road (`DINOSAUR_3`) places the Sea Serpent and has no pin here.
   "DINOSAUR_1@3:DINOSAUR":

@@ -3,7 +3,7 @@ import type { MissionDefinitionV7 } from "./types";
 /**
  * `UNDEAD_3` "The Ship of the Dead" (docs/product/SAGA.md section 3.2, U3;
  * the Undead campaign, `pulp_wars-hmyk.5`). You must take Chapel Rock, the
- * Martians' fort on an island in the mouth of Gravesend Bay, by round 20:
+ * Martians' fort on an island in the mouth of Gravesend Bay, by round 22:
  * the Marquis's flagship lies under it. Step 3 of 6: a naval capture.
  * Martian Shields soak damage and refill every turn, so spread fire is
  * wasted; focus one ship a turn. The Undead fleet grows from the enemy's:
@@ -17,7 +17,7 @@ import type { MissionDefinitionV7 } from "./types";
  * (`GUARD`); the rest of the dredgers play their ordinary game. Their
  * fleet starts at sea off the channel, north and south (hand play of the
  * Humans' naval mission: a fleet anchored by your port shells it flat in
- * round 1). More ships come back down the channel in rounds 5, 9 and 13.
+ * round 1). Two more ships come back down the channel in round 9.
  *
  * Hand play (CAMPAIGN.md section 16) set the numbers: the dredgers learn
  * no naval technology (they built a Port on every water tile round the
@@ -25,6 +25,11 @@ import type { MissionDefinitionV7 } from "./types";
  * Force Fields (a Hover Cruiser beside a Shield Projector out-shot every
  * Undead ship); Gravesend gets Planning and Lychgate a port, since one
  * town over its unit limit could train nothing.
+ *
+ * Retune 4 (`pulp_wars-hmyk.26`) puts the fleet at sea from the start:
+ * four Skimmers and a Hover Cruiser, a Champion at the Rig and eight
+ * coins; only a second Cruiser and a Skimmer come in round 9. The clock
+ * is lax, 22 rounds (a good win took 16); the star stays 16.
  *
  * ```text
  *      x 0123456789012345
@@ -51,7 +56,9 @@ export const UNDEAD_3_V7: MissionDefinitionV7 = {
   // Revision 2 (`pulp_wars-hmyk.17`): each seat explores its units' sight.
   // Revision 3 (`pulp_wars-hmyk.20`, retune 2): a thin start and a third
   // wave.
-  revision: 3,
+  // Revision 4 (`pulp_wars-hmyk.26`, retune 4): the fleet at sea from the
+  // start, one wave, 22 rounds.
+  revision: 4,
   seed: 20261303,
   // <map>
   size: 16,
@@ -178,7 +185,7 @@ export const UNDEAD_3_V7: MissionDefinitionV7 = {
     {
       // The dredgers of Gravesend Bay, after star-iron.
       faction: "MARTIAN",
-      coins: 6,
+      coins: 8,
       technologies: ["HUNTING", "DRILL", "MARKSMANSHIP"],
       cities: [
         {
@@ -193,13 +200,17 @@ export const UNDEAD_3_V7: MissionDefinitionV7 = {
         { role: "FIGHTER", at: { x: 10, y: 7 } },
         { role: "MARKSMAN", at: { x: 11, y: 7 } },
         { role: "FIGHTER", at: { x: 11, y: 8 } },
+        { role: "SWORDSMAN", at: { x: 11, y: 6 } },
         // The Rock's garrison.
         { role: "GUARD", at: { x: 7, y: 6 }, home: 1 },
         { role: "FIGHTER", at: { x: 7, y: 7 }, home: 1 },
         // The fleet, at sea off the channel.
         { role: "PATROL_BOAT", at: { x: 8, y: 8 } },
-        { role: "PATROL_BOAT", at: { x: 9, y: 2 } },
+        { role: "PATROL_BOAT", at: { x: 9, y: 3 } },
         { role: "PATROL_BOAT", at: { x: 11, y: 12 } },
+        { role: "PATROL_BOAT", at: { x: 10, y: 11 } },
+        // The dredging fleet's Hover Cruiser.
+        { role: "BATTLESHIP", at: { x: 9, y: 2 } },
       ],
       reveal: { radius: 2, rects: [{ x0: 2, y0: 6, x1: 5, y1: 10 }] },
       // Step 3: Grunts, Shield Projectors, Ray Gunners and the Hover Fleet's
@@ -232,50 +243,29 @@ export const UNDEAD_3_V7: MissionDefinitionV7 = {
       },
     },
   ],
-  // The dredgers' fleet comes back from the open sea: two Skimmers down the
-  // channel in round 5, a Hover Cruiser and a Skimmer in round 9, a Cruiser
-  // and two Skimmers in round 13.
+  // Retune 4 (`pulp_wars-hmyk.26`): the fleet starts at sea, and only a
+  // second Hover Cruiser and a Skimmer come back down the channel in
+  // round 9.
   reinforcements: [
     {
       seat: 1,
-      round: 5,
-      line: "Two more dredgers skim in from the open sea, humming.",
-      announce: true,
-      units: [
-        { role: "PATROL_BOAT", at: { x: 8, y: 7 } },
-        { role: "PATROL_BOAT", at: { x: 9, y: 9 } },
-      ],
-    },
-    {
-      seat: 1,
       round: 9,
-      line: "A Hover Cruiser comes down the channel. The Last Rites' captain whistles.",
+      line: "Another Hover Cruiser comes down the channel. The Last Rites' captain whistles.",
       announce: true,
       units: [
         { role: "BATTLESHIP", at: { x: 8, y: 8 } },
         { role: "PATROL_BOAT", at: { x: 9, y: 9 } },
       ],
     },
-    {
-      seat: 1,
-      round: 13,
-      line: "The whole dredging fleet returns. The Marquis asks for his good hat.",
-      announce: true,
-      units: [
-        { role: "BATTLESHIP", at: { x: 8, y: 9 } },
-        { role: "PATROL_BOAT", at: { x: 9, y: 2 } },
-        { role: "PATROL_BOAT", at: { x: 9, y: 10 } },
-      ],
-    },
   ],
   forbiddenTechnologies: [],
   landmarks: [{ tag: "CHAPEL_ROCK", at: { x: 7, y: 6 } }],
-  // Take the Rock by round 20. The stars: by round 16, and Gravesend never
+  // Take the Rock by round 22. The stars: by round 16, and Gravesend never
   // falls.
   objective: {
     kind: "CAPTURE",
     places: ["CHAPEL_ROCK"],
-    byRound: 20,
+    byRound: 22,
     bonus: [{ kind: "WITHIN_ROUNDS", rounds: 16 }, { kind: "KEEP_CITIES" }],
   },
 };

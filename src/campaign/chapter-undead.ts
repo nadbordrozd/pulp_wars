@@ -65,7 +65,7 @@ export const CHAPTER_UNDEAD_V7: CampaignChapterV7 = Object.freeze({
       format: "CAPTURE",
       briefing:
         "Half the Lullaby went to sea in the Marquis's flagship, the Last Rites, and down with her in Gravesend Bay. The Martians are dredging the bay for star-iron with machines that hover, and have built a fort on Chapel Rock, right over the wreck. Take the Rock and raise the Last Rites. Every Martian ship you sink comes back up with a crew of yours.",
-      objective: "Take Chapel Rock by turn 20.",
+      objective: "Take Chapel Rock by turn 22.",
       hints: Object.freeze([
         "Shields refill each turn: sink one ship at a time.",
         "Sunken Galleys strike from below, unanswered.",
@@ -102,7 +102,7 @@ export const CHAPTER_UNDEAD_V7: CampaignChapterV7 = Object.freeze({
       format: "KILL",
       briefing:
         "The Grey Lodge has worked out who the Marquis was before he was ashen. Brother Mallory, its Hierophant, a corn merchant in a very good robe, has stolen the Marquis's diary and reads it aloud to his Summoners to learn which pages to burn. Stop his reading for good, before he gets to the end. The Marquis would like his diary back.",
-      objective: "Kill Brother Mallory by turn 20.",
+      objective: "Kill Brother Mallory by turn 16.",
       hints: Object.freeze([
         "Beside a raised idol you may hit only the Bearer.",
         "A Wail hurts only the living: daemons shrug it off.",

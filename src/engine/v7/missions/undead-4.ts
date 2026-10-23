@@ -25,6 +25,11 @@ import type { MissionDefinitionV7 } from "./types";
  * path and its Gyrocopters bombed Crane, so it moved onto the road; with
  * nobody on the peaks the goat path was too easy, hence the patrol.
  *
+ * Retune 4 (`pulp_wars-hmyk.26`) drops the two waves and puts their units
+ * on the map from round 1: a second Gyrocopter and two Hammerers on the
+ * northern peaks and a Guard on the stair, all held round the stair, with
+ * six coins. The clock stays 22 rounds, the star 18.
+ *
  * ```text
  *      x 0123456789012345
  * y  0   fffff.ff.^.f^fff
@@ -50,7 +55,9 @@ export const UNDEAD_4_V7: MissionDefinitionV7 = {
   // Revision 2 (`pulp_wars-hmyk.17`): each seat explores its units' sight.
   // Revision 3 (`pulp_wars-hmyk.20`, retune 2): a thin start against a
   // clan that hunts.
-  revision: 3,
+  // Revision 4 (`pulp_wars-hmyk.26`, retune 4): the northern hammers and
+  // the stair's guard start on the map; no waves.
+  revision: 4,
   seed: 20261304,
   // <map>
   size: 16,
@@ -182,7 +189,7 @@ export const UNDEAD_4_V7: MissionDefinitionV7 = {
     {
       // The Ironbraid crypt-wardens.
       faction: "DWARF",
-      coins: 4,
+      coins: 6,
       technologies: ["DRILL", "FORTIFICATION"],
       cities: [
         { name: "Deepdelve", at: { x: 10, y: 5 }, level: 1, rewards: [] },
@@ -205,6 +212,12 @@ export const UNDEAD_4_V7: MissionDefinitionV7 = {
         // The patrol on the peaks.
         { role: "FIGHTER", at: { x: 10, y: 1 }, home: 2 },
         { role: "MARKSMAN", at: { x: 9, y: 1 }, home: 2 },
+        // Retune 4 (`pulp_wars-hmyk.26`): the northern hammers and the
+        // stair's own guard are out from the start.
+        { role: "RAIDER", at: { x: 11, y: 0 }, home: 2 },
+        { role: "FIGHTER", at: { x: 12, y: 2 }, home: 2 },
+        { role: "FIGHTER", at: { x: 12, y: 1 }, home: 2 },
+        { role: "GUARD", at: { x: 14, y: 0 }, home: 2 },
       ],
       reveal: { radius: 2, rects: [{ x0: 2, y0: 9, x1: 6, y1: 12 }] },
       // Step 4: Hammerers, Steam Moles dug in, Gyrocopters, Clockwork
@@ -240,37 +253,11 @@ export const UNDEAD_4_V7: MissionDefinitionV7 = {
         zone: [
           { x0: 9, y0: 4, x1: 11, y1: 9 },
           { x0: 12, y0: 3, x1: 14, y1: 5 },
+          { x0: 12, y0: 0, x1: 15, y1: 2 },
         ],
-        garrison: 10,
+        garrison: 13,
         others: { kind: "RUSH" },
       },
-    },
-  ],
-  // The clan calls up more hammers as the dead climb: a Gyrocopter, a
-  // Hammerer and a Gunner come over the northern peaks in round 6, and the
-  // stair's own guard turns out in round 12.
-  reinforcements: [
-    {
-      seat: 1,
-      round: 6,
-      line: "More of the clan over the northern peaks. They do not care to see the dead walk.",
-      announce: true,
-      units: [
-        { role: "RAIDER", at: { x: 11, y: 0 } },
-        { role: "FIGHTER", at: { x: 12, y: 2 } },
-        { role: "MARKSMAN", at: { x: 10, y: 0 } },
-      ],
-    },
-    {
-      seat: 1,
-      round: 12,
-      line: "The stair's own guard turns out. The Thane has sent word to stop the hat.",
-      announce: true,
-      units: [
-        { role: "FIGHTER", at: { x: 15, y: 2 } },
-        { role: "FIGHTER", at: { x: 12, y: 1 } },
-        { role: "GUARD", at: { x: 14, y: 0 } },
-      ],
     },
   ],
   // A dry board.

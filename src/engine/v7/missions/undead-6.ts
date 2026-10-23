@@ -16,9 +16,9 @@ import type { MissionDefinitionV7 } from "./types";
  * Camp on the southern slope with Cinderwick, a hamlet of his, on the
  * eastern one. The Grey Lodge musters at Greyhood (`GUARD`) for three
  * rounds and then storms the summit (`ASSAULT`); the Whitefang
- * (`ASSAULT`) go for it from the start. The Lodge's second and third
- * bands come in rounds 5 and 9, the Whitefang's in rounds 6 and 10, five
- * units each; the Rangers keep to their walls (`HOLD`) and train a fresh
+ * (`ASSAULT`) go for it from the start. One more band of each comes in
+ * rounds 9 (the Lodge) and 10 (the Whitefang), five units each; the
+ * Rangers keep to their walls (`HOLD`) and train a fresh
  * Guard whenever the centre's falls.
  *
  * Retune 2 (`pulp_wars-hmyk.20`) took the Marquis's Gathering,
@@ -33,6 +33,17 @@ import type { MissionDefinitionV7 } from "./types";
  * Whitefang camp beside Ashby, `RUSH`ing, went for the camp instead of
  * the Lodge and fell in round 4. Liches outrange both enemies, the
  * Vampire only finishes the wounded.
+ *
+ * Retune 4 (`pulp_wars-hmyk.26`) puts the Whitefang's round-6 band on the
+ * map from round 1 (a second Mammoth, a Sled and two Yetis), adds the
+ * clan's Frost Giant in its camp and two coins, and drops the Lodge's
+ * round-5 band. Hand play: a larger Lodge (a second band at Greyhood, or
+ * Favour 8) took the summit with Horrors in round 4 every time, so the
+ * Lodge keeps retune 2's muster; a third Mammoth only fed the Vampire, and
+ * the Giant at the Lodge's western edge from round 1 smashed a Guard a
+ * turn until the summit fell in round 8, so it starts in the camp. Its
+ * Cold Aura and Glacial Smash wear the Rangers down; the Liches must reach
+ * it. The hold stays 16 rounds.
  *
  * ```text
  *      x 0123456789012345
@@ -60,7 +71,9 @@ export const UNDEAD_6_V7: MissionDefinitionV7 = {
   // Revision 3 (`pulp_wars-hmyk.20`, retune 2): fewer technologies and
   // coins, one Summoner, a muster at Greyhood, two more Ranger Guards and
   // a fifth unit in every wave.
-  revision: 3,
+  // Revision 4 (`pulp_wars-hmyk.26`, retune 4): the Whitefang's second
+  // band and a Frost Giant start on the map; two waves, in rounds 9 and 10.
+  revision: 4,
   seed: 20261306,
   // <map>
   size: 16,
@@ -246,7 +259,7 @@ export const UNDEAD_6_V7: MissionDefinitionV7 = {
     {
       // The Whitefang clan, hired to help the Lodge up the slopes.
       faction: "ICE_FOLK",
-      coins: 3,
+      coins: 5,
       technologies: ["HUNTING", "DRILL", "ENGINEERING"],
       cities: [
         {
@@ -265,6 +278,14 @@ export const UNDEAD_6_V7: MissionDefinitionV7 = {
         { role: "FIGHTER", at: { x: 2, y: 3 } },
         { role: "FIGHTER", at: { x: 5, y: 1 } },
         { role: "RAIDER", at: { x: 4, y: 2 } },
+        // Retune 4 (`pulp_wars-hmyk.26`): the clan's second Mammoth, a
+        // Sled and two Yetis are already down the snowline, and its Frost
+        // Giant is in the camp.
+        { role: "SWORDSMAN", at: { x: 4, y: 3 } },
+        { role: "JUGGERNAUT", at: { x: 3, y: 1 } },
+        { role: "RAIDER", at: { x: 3, y: 4 } },
+        { role: "FIGHTER", at: { x: 6, y: 1 } },
+        { role: "FIGHTER", at: { x: 4, y: 4 } },
       ],
       reveal: { radius: 2, rects: [{ x0: 3, y0: 0, x1: 12, y1: 9 }] },
       forbiddenTechnologies: [
@@ -333,33 +354,10 @@ export const UNDEAD_6_V7: MissionDefinitionV7 = {
     { x: 5, y: 6 },
     { x: 8, y: 6 },
   ],
+  // Retune 4 (`pulp_wars-hmyk.26`): the Whitefang's round-6 band starts on
+  // the map and the Lodge's round-5 band is gone; one more of each side
+  // comes in rounds 9 and 10.
   reinforcements: [
-    {
-      seat: 1,
-      round: 5,
-      line: "The Grey Lodge's second band comes out of the marsh, chanting.",
-      announce: true,
-      units: [
-        { role: "CAPTAIN", at: { x: 15, y: 5 } },
-        { role: "FIGHTER", at: { x: 13, y: 6 } },
-        { role: "FIGHTER", at: { x: 12, y: 5 } },
-        { role: "GUARD", at: { x: 14, y: 6 } },
-        { role: "FIGHTER", at: { x: 15, y: 6 } },
-      ],
-    },
-    {
-      seat: 2,
-      round: 6,
-      line: "The Whitefang come down the snowline behind a Mammoth. Frost follows.",
-      announce: true,
-      units: [
-        { role: "FIGHTER", at: { x: 1, y: 3 } },
-        { role: "FIGHTER", at: { x: 2, y: 4 } },
-        { role: "RAIDER", at: { x: 3, y: 4 } },
-        { role: "FIGHTER", at: { x: 4, y: 3 } },
-        { role: "SWORDSMAN", at: { x: 1, y: 4 } },
-      ],
-    },
     {
       seat: 1,
       round: 9,

@@ -4,7 +4,7 @@ import type { MissionDefinitionV7 } from "./types";
  * `UNDEAD_5` "Bedtime Reading" (docs/product/SAGA.md section 3.2, U5; the
  * Undead campaign, `pulp_wars-hmyk.5`). Brother Mallory, Hierophant of the
  * Grey Lodge (a tagged Summoner), is reading the Marquis's diary aloud at
- * Greyhood; you must kill him by round 20. Step 5 of 6: a hunt for a target
+ * Greyhood; you must kill him by round 16. Step 5 of 6: a hunt for a target
  * behind a shield wall. A unit beside a raised idol may attack only an
  * Idol Bearer, and shots at cultists beside it do half; break the Bearers
  * first, then send the Vampire in: its kill heals it and lets it strike
@@ -25,6 +25,12 @@ import type { MissionDefinitionV7 } from "./types";
  * chapel, two Initiates and a smaller ring, the autopilot won by round 18,
  * so Greyhood is level 2, the ring holds ten and the Lodge has Favour for
  * Horrors. Killing a daemon's channellers turns it loose on the Lodge.
+ *
+ * Retune 4 (`pulp_wars-hmyk.26`) makes the start stronger than your
+ * column: the ring has six Idol Bearers (two more close the strip's
+ * southern end), the Lodge five coins and 14 Favour; the toll-men have six
+ * coins, two Champions, a second Marksman and a Knight. A hunt keeps a
+ * meaningful clock: 16 rounds (good wins took 13 and 14), the star 13.
  *
  * ```text
  *      x 0123456789012345
@@ -51,7 +57,9 @@ export const UNDEAD_5_V7: MissionDefinitionV7 = {
   // Revision 2 (`pulp_wars-hmyk.17`): each seat explores its units' sight.
   // Revision 3 (`pulp_wars-hmyk.20`, retune 2): fewer units and
   // technologies, a second Summoner and more Favour.
-  revision: 3,
+  // Revision 4 (`pulp_wars-hmyk.26`, retune 4): a stronger ring and toll,
+  // 16 rounds.
+  revision: 4,
   seed: 20261305,
   // <map>
   size: 16,
@@ -188,8 +196,8 @@ export const UNDEAD_5_V7: MissionDefinitionV7 = {
     {
       // The Grey Lodge at Greyhood, Brother Mallory presiding.
       faction: "CULT",
-      coins: 2,
-      favour: 10,
+      coins: 5,
+      favour: 14,
       technologies: [
         "GATHERING",
         "ADMINISTRATION",
@@ -215,8 +223,10 @@ export const UNDEAD_5_V7: MissionDefinitionV7 = {
         { role: "GUARD", at: { x: 9, y: 6 } },
         { role: "FIGHTER", at: { x: 8, y: 3 } },
         { role: "FIGHTER", at: { x: 9, y: 3 } },
-        { role: "FIGHTER", at: { x: 8, y: 7 } },
-        { role: "FIGHTER", at: { x: 9, y: 7 } },
+        // Retune 4 (`pulp_wars-hmyk.26`): two more Idol Bearers close the
+        // strip's southern end.
+        { role: "GUARD", at: { x: 8, y: 7 } },
+        { role: "GUARD", at: { x: 9, y: 7 } },
         { role: "CAPTAIN", at: { x: 9, y: 2 } },
       ],
       reveal: { radius: 2, rects: [{ x0: 1, y0: 9, x1: 6, y1: 14 }] },
@@ -246,7 +256,7 @@ export const UNDEAD_5_V7: MissionDefinitionV7 = {
     {
       // Kessler's toll-men, paid to hold the causeway.
       faction: "ORIGINAL",
-      coins: 3,
+      coins: 6,
       technologies: [
         "HUNTING",
         "MARKSMANSHIP",
@@ -264,10 +274,16 @@ export const UNDEAD_5_V7: MissionDefinitionV7 = {
       ],
       units: [
         { role: "GUARD", at: { x: 8, y: 9 } },
+        // Kessler's sergeants at the toll.
+        { role: "SWORDSMAN", at: { x: 8, y: 10 } },
+        { role: "SWORDSMAN", at: { x: 10, y: 11 } },
         { role: "MARKSMAN", at: { x: 9, y: 10 } },
+        { role: "MARKSMAN", at: { x: 13, y: 10 } },
         { role: "FIGHTER", at: { x: 7, y: 10 } },
         { role: "FIGHTER", at: { x: 10, y: 10 } },
         { role: "RAIDER", at: { x: 11, y: 11 } },
+        // Kessler's hired rider.
+        { role: "KNIGHT", at: { x: 12, y: 11 } },
         { role: "FIGHTER", at: { x: 12, y: 10 } },
         { role: "FIGHTER", at: { x: 11, y: 9 } },
       ],
@@ -303,12 +319,12 @@ export const UNDEAD_5_V7: MissionDefinitionV7 = {
     "SEAMANSHIP",
     "SUBMERSIBLES",
   ],
-  // Kill Brother Mallory by round 20. The stars: by round 16, and no city
+  // Kill Brother Mallory by round 16. The stars: by round 13, and no city
   // lost.
   objective: {
     kind: "KILL",
     units: ["MALLORY"],
-    byRound: 20,
-    bonus: [{ kind: "WITHIN_ROUNDS", rounds: 16 }, { kind: "KEEP_CITIES" }],
+    byRound: 16,
+    bonus: [{ kind: "WITHIN_ROUNDS", rounds: 13 }, { kind: "KEEP_CITIES" }],
   },
 };

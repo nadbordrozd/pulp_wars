@@ -126,7 +126,7 @@ describe("The Long Sleep", () => {
       },
       {
         kind: "CAPTURE",
-        byRound: 20,
+        byRound: 22,
         rounds: undefined,
         bonus: ["WITHIN_ROUNDS", "KEEP_CITIES"],
       },
@@ -138,7 +138,7 @@ describe("The Long Sleep", () => {
       },
       {
         kind: "KILL",
-        byRound: 20,
+        byRound: 16,
         rounds: undefined,
         bonus: ["WITHIN_ROUNDS", "KEEP_CITIES"],
       },
@@ -155,14 +155,15 @@ describe("The Long Sleep", () => {
     const seat = (id: string, index: number) =>
       mission(id).seats[index] as MissionDefinitionV7["seats"][number];
     // U1: a skirmish start (retune 2, `pulp_wars-hmyk.20`): one level 1
-    // tower and no technology against two camps that know only Hunting.
+    // tower and no technology against two camps that know Hunting and,
+    // since retune 4 (`pulp_wars-hmyk.26`), Marksmanship.
     const marquis = seat("UNDEAD_1", 0);
     expect(marquis.technologies).toEqual([]);
     expect(marquis.cities).toHaveLength(1);
     expect(marquis.cities[0]?.level).toBe(1);
     const company = seat("UNDEAD_1", 1);
-    expect(company.technologies).toEqual(["HUNTING"]);
-    for (const tech of ["GATHERING", "MARKSMANSHIP", "DRILL", "SCOUTING"])
+    expect(company.technologies).toEqual(["HUNTING", "MARKSMANSHIP"]);
+    for (const tech of ["GATHERING", "DRILL", "SCOUTING"])
       expect(company.forbiddenTechnologies, tech).toContain(tech);
     // U3: the dredgers sail a fixed fleet and raise no Force Fields.
     const dredgers = seat("UNDEAD_3", 1);
@@ -175,14 +176,14 @@ describe("The Long Sleep", () => {
     ]);
     expect(hall.villages).not.toContainEqual({ x: 13, y: 1 });
     // U5: Brother Mallory is a Summoner on Greyhood's centre, ringed by
-    // Idol Bearers.
+    // six Idol Bearers (retune 4).
     const lodge = seat("UNDEAD_5", 1);
     expect(lodge.units[0]).toMatchObject({
       role: "CAPTAIN",
       at: { x: 9, y: 5 },
       tag: "MALLORY",
     });
-    expect(lodge.units.filter((unit) => unit.role === "GUARD")).toHaveLength(4);
+    expect(lodge.units.filter((unit) => unit.role === "GUARD")).toHaveLength(6);
     // U6: the Lodge (after a muster at Greyhood) and the Whitefang both go
     // for the Rangers' Lodge; the Rangers keep to their walls.
     const summit = mission("UNDEAD_6");
@@ -196,6 +197,46 @@ describe("The Long Sleep", () => {
     ]);
     expect(seat("UNDEAD_6", 2).directive).toEqual(assault);
     expect(seat("UNDEAD_6", 3).directive).toMatchObject({ kind: "HOLD" });
+  });
+
+  it("keeps the fourth retune's strong enemy starts", () => {
+    // `pulp_wars-hmyk.26` (CAMPAIGN.md section 16.5): the enemies outnumber
+    // you from the start, and the difficulty comes from them rather than
+    // from waves: U2 keeps three, U3 one, U4 none, U6 two.
+    for (const id of ORDER) {
+      const definition = mission(id);
+      const teams = definition.teams;
+      const ours = (definition.seats[0] as MissionDefinitionV7["seats"][number])
+        .units.length;
+      const theirs = definition.seats
+        .slice(1)
+        .filter((_, index) => teams === undefined || teams[index + 1] !== 0)
+        .reduce((sum, item) => sum + item.units.length, 0);
+      expect(theirs, id).toBeGreaterThan(ours);
+    }
+    const waves = (id: string) =>
+      (mission(id).reinforcements ?? []).map((wave) => wave.round);
+    expect(waves("UNDEAD_1")).toEqual([]);
+    expect(waves("UNDEAD_2")).toEqual([4, 7, 10]);
+    expect(waves("UNDEAD_3")).toEqual([9]);
+    expect(waves("UNDEAD_4")).toEqual([]);
+    expect(waves("UNDEAD_5")).toEqual([]);
+    expect(waves("UNDEAD_6")).toEqual([9, 10]);
+    // U3: the dredgers' Hover Cruiser is at sea from the start.
+    const dredgers = mission("UNDEAD_3")
+      .seats[1] as MissionDefinitionV7["seats"][number];
+    expect(
+      dredgers.units.filter((unit) => unit.role === "BATTLESHIP"),
+    ).toHaveLength(1);
+    // U6: the Whitefang's Frost Giant starts in its camp, not at the
+    // Lodge's edge (there it took the summit in round 8).
+    const whitefang = mission("UNDEAD_6")
+      .seats[2] as MissionDefinitionV7["seats"][number];
+    expect(
+      whitefang.units
+        .filter((unit) => unit.role === "JUGGERNAUT")
+        .map((unit) => unit.at),
+    ).toEqual([{ x: 3, y: 1 }]);
   });
 
   it("names every place and unit an objective talks about", () => {

@@ -4341,13 +4341,14 @@ factions are empty: it unlocks nothing for the prologue's faction choices.
 | ------------------------- | ----------------------- | ---------- | ---------------------------------------------------- | --------------------------------------------------- | ------------------------------- |
 | U1 Resurrection Men       | Dry Land 11, seed 13    | 20261301   | Undead; Humans                                       | Conquest of the Company's two camps by round 20     | by round 15; the Marquis lives  |
 | U2 The Drowned Library    | Lakes 14, seed 22       | 20261302   | Undead; Goblins                                      | Hold Saint Ashes and keep Crane alive for 14 rounds | no city lost; the Marquis lives |
-| U3 The Ship of the Dead   | Continents 16, seed 15  | 20261303   | Undead; Martians                                     | Capture Chapel Rock by round 20                     | by round 16; no city lost       |
+| U3 The Ship of the Dead   | Continents 16, seed 15  | 20261303   | Undead; Martians                                     | Capture Chapel Rock by round 22                     | by round 16; no city lost       |
 | U4 The Hall of the Thanes | Dry Land 16, seed 3     | 20261304   | Undead; Dwarves                                      | Escort Crane to the Summit Stair by round 22        | by round 18; no city lost       |
-| U5 Bedtime Reading        | Lakes 16, seed 9        | 20261305   | Undead; Cult and Humans (teamed)                     | Kill Brother Mallory by round 20                    | by round 16; no city lost       |
+| U5 Bedtime Reading        | Lakes 16, seed 9        | 20261305   | Undead; Cult and Humans (teamed)                     | Kill Brother Mallory by round 16                    | by round 13; no city lost       |
 | U6 The Founder's Tomb     | Dry Land 16, seed 23    | 20261306   | Undead and Humans (ally); Cult and Ice Folk (teamed) | Hold the Rangers' Lodge for 16 rounds               | Crane lives; no city lost       |
 
-The clocks are retune 2's (section 16.4); U1 had none, U2 held 12
-rounds and U3 had 22 (18) before it.
+The clocks are retune 4's (section 16.5): U3 went from 20 to 22 and U5
+from 20 (16) to 16 (13); the rest are retune 2's (section 16.4). U1 had
+none, U2 held 12 rounds and U3 had 22 (18) before retune 2.
 
 ### 16.2 Hand play
 
@@ -4570,6 +4571,136 @@ Deviations from the retune brief:
 - **U2's goblins have no Fortification**, and U3's Rock garrison no Ray
   Gunner: in every attempt with them the Marquis or the fleet died before
   the waves came.
+
+### 16.5 Retune 4: strong enemy starts, lax conquest clocks (`pulp_wars-hmyk.26`)
+
+The user, 2026-10-23, as in section 15.6: the first two campaigns are
+still too easy; the difficulty comes from strong, aggressive enemy starts,
+usually stronger than the player's, not from the clock; conquest clocks
+are lax (about one and a half times a good win), escort and hunt clocks
+stay meaningful, hold-outs keep their length, waves only fine-tune, and
+the first mission is slightly easier than the rest. The calibration: for
+missions 2 to 6 the first thoughtful attempt is lost or won narrowly, and
+the autopilot (section 15) loses from mission 2 on. The Humans' lesson
+(section 15.6) held here too: weak extra units only feed the Vampire's
+Feast chains and the Zombies' Infect, so the added units are strong ones
+(Champions, Brutes, an Ogre, a Hover Cruiser, a Mammoth) or better
+positions, and most waves moved onto the map. All six missions are
+revision 4, re-pinned in both pin tables; no map edits changed. Every
+enemy now starts with more units than you
+(`tests/unit/campaign-undead-v7.test.ts`; U6 counts the Cult and the
+Whitefang, not the Rangers).
+
+| Mission | Your start (unchanged from retune 2)                        | Enemies now                                                                                                                                                                                                                                  | Clock and stars                                         | Waves                                                                                        |
+| ------- | ----------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| U1      | the Tower (level 1), 5 Coins, no technology; 3 units        | 9 units (were 5): Grimsditch a Champion on his camp, three Fighters and a Marksman there, a Guard, two Fighters and a Marksman at the Dig; Hunting and Marksmanship, 6 Coins (were 4); home only until round 2 (was 4), then `RUSH`          | conquest by 20, by 15 and the Marquis lives (unchanged) | none                                                                                         |
+| U2      | Saint Ashes and the Landing (level 1), 3 Coins; 7 units     | 13 units (were 10): two more Brutes and the Ogre, Old Gutbucket, by the causeway and a Brute at Gnawbone; 4 Coins (were 0)                                                                                                                   | hold 14 (unchanged)                                     | three (north shore 4, landing 7, causeway 10; were six, rounds 3 to 13)                      |
+| U3      | Gravesend (level 2) and Lychgate, 5 Coins; 4 units          | 11 units (were 8): four Skimmers and a Hover Cruiser at sea from round 1 (were three Skimmers), a Champion at the Rig; 8 Coins (were 6)                                                                                                      | capture by 22 (was 20); by 16, no loss                  | one (a second Cruiser and a Skimmer, round 9; rounds 5 and 13 removed)                       |
+| U4      | Lantern Hill (level 2), 5 Coins, four technologies; 5 units | 17 units (were 13): the round-6 and round-12 waves on the map from round 1, a second Gyrocopter and two Hammerers on the northern peaks and the stair's Guard, held round the stair (a third `GUARD` zone, garrison 13); 6 Coins (were 4)    | escort by 22, by 18, no loss (unchanged)                | none (rounds 6 and 12 removed)                                                               |
+| U5      | Lantern Hill and Gallows Cross (level 2), 5 Coins; 5 units  | the Lodge 10 units with six Idol Bearers (two Initiates became Bearers closing the strip's south end), 5 Coins (were 2), Favour 14 (was 10); the toll-men 11 units (were 7): two Champions, a second Marksman and a Knight, 6 Coins (were 3) | hunt by 16 (was 20); by 13 (was 16), no loss            | none                                                                                         |
+| U6      | Ashby (level 3) and Cinderwick, 5 Coins; 7 units            | the Lodge as retune 2 (5 units, Favour 6, the muster); the Whitefang 12 units (were 7): the round-6 band (a second Mammoth, a Sled, two Yetis) on the map from round 1 and the clan's Frost Giant in its camp; 5 Coins (were 3)              | hold 16 (unchanged)                                     | two (the Lodge 9, the Whitefang 10; the Lodge's round 5 and the Whitefang's round 6 removed) |
+
+U5's hunt keeps an escort-type clock: good wins took 13 and 14 rounds, so
+16 leaves two or three rounds of slack. U3's conquest clock went the other
+way: a good win took 16 rounds, so 22 (the star stays 16).
+
+**Hand play** through `play-text` (authorised for this pass). The
+baseline, retune 2 under the autopilot: U1 lost in round 12, U2 in round
+4, U3 in round 17, U4 in round 11, U5 out of time (round 21), U6 lost in
+round 14.
+
+| Mission | Autopilot (final)            | Thoughtful attempts on the final definition                                      | Tried and dropped                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| ------- | ---------------------------- | -------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| U1      | defeat, round 8              | loss (abandoned round 15, no camp seen); then win, round 13 of 20 (65%), 3 stars | without Marksmen or Marksmanship, a rush from round 3, 22 rounds: the autopilot lost in round 8, but a thoughtful game had the Company down to two units by round 12 (too easy); with a Knight and two Marksmen: the Knight Overran a Skeleton, the Necromancer and the Vampire in round 2 (lost)                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| U2      | defeat, round 4 (Crane)      | win (held 14), 2 stars (the Marquis lost)                                        | a Bomb Chucker in the camp from the start: it splashed Crane every turn and killed him in round 4 (lost)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| U3      | defeat, round 20             | two losses (abandoned rounds 20 and 12); then win, round 16 of 22 (73%), 3 stars | none                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| U4      | defeat, round 11 (Crane)     | win, round 17 of 22 (77%), 3 stars                                               | the waves on the map plus a third Gunner and a third Hammerer at the stair: the autopilot lost in round 11 and two thoughtful attempts were abandoned (rounds 10 and 8, Crane still at the foot of the mountain)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| U5      | defeat, round 6 (eliminated) | win, round 13 of 16 (81%), 3 stars                                               | a Champion and a second Marksman for the toll-men, the Lodge with Favour 14 and 5 Coins, 20 rounds: a first-try win in round 14 (70%), too comfortable; two more Bearers and a Knight on top: the autopilot lost in round 6, a win in round 14 of 20 (70%); then the second Champion and the 16-round clock                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| U6      | defeat, round 13             | win (held 16), 3 stars, the Lodge down to one Guard, the Vampire and a Lich lost | without the Frost Giant (the review's correction pass, below): the autopilot lost in round 16 and a first-try hold took 3 stars with Crane at 8 of 10 (too easy); a third Mammoth instead (by Ashby, then on the northern path with 8 Coins): abandoned in rounds 6 and 4, all three dead by round 4 both times (too easy); the Giant at the Lodge's western edge from round 1: lost in round 8 and abandoned in round 4 on the same course; both rounds' bands on the map (a second Summoner and two Initiates at Greyhood, Favour 8): the autopilot and a thoughtful game lost in round 4; Favour 6 and an Idol Bearer instead of the second Summoner: the autopilot lost in round 9, a thoughtful game in round 4 (a Horror on the Lodge's centre, out of reach, both times) |
+
+What decided them:
+
+- **U1.** The rush comes from round 2 behind a Champion, and two Marksmen
+  out of the Undead's sight (range 2, sight 1) shoot half-raised Skeletons
+  and Necromancers. The lost attempt lost the Necromancer to the Champion
+  in round 4 (Rally leaves the Necromancer unable to move) and two more to
+  the Marksmen, and the Vampire wore down to 2 HP. The win bought sight
+  first (Scouting in round 2, a Ghoul in round 3), killed the camp's
+  Marksman with Rally and the Vampire in round 4 and the Champion in round
+  5 (it still killed a Necromancer), raised five Graves in round 9 and took
+  both camps in round 13. The Knight was dropped: mission 1 must stay
+  winnable on a second try.
+- **U2.** A double Wail every turn and the Zombies' Infect turned Brutes
+  and Wolf Riders into Zombies; the Vampire killed a Brute and the Ogre in
+  round 2 and then died to a Wolf Rider's Gang Up. By round 11 there were
+  18 goblins on the board and the island front lost every raised unit each
+  enemy phase; the Marquis fell, Crane was never hit. The start Chucker
+  went: it killed Crane before the hold could start.
+- **U3.** The fleet at sea from round 1 decides it: the Rock's Grunt shoots
+  every Ghost Ship, Saucers beam a unit back onto the Rock every enemy
+  phase, and the Hover Cruisers (range 3, unseen) sank the Abomination at
+  sea in both lost attempts. The win was patient: the Abomination went back
+  ashore and waited; two Galleons (range 3, splash) cleared the Rock every
+  turn; the round-9 Cruiser was found in round 11 and torpedoed in round
+  13; then the Abomination sailed, landed in round 15 and captured in round 16. A Galleon trained at Lychgate cannot reach the bay (no channel).
+- **U4.** The added units hold the stair: the wardens cannot climb, so the
+  danger is on the northern peaks. A third Gunner (twin shots, range 2)
+  took the Vampire from 13 to 4 in two turns in both lost attempts and was
+  dropped with a third Hammerer. The win: both Gyrocopters killed in round
+  2, both Gunners in one Feast in round 5, Smeltkar captured in round 8
+  for a second training town, the stair's two Hammerers and the Steam Mole
+  killed in rounds 14 and 15, and Crane walked onto the stair, boxed in by
+  four units, in round 17.
+- **U5.** The Vampire and three Banshees a turn wore down the toll-men
+  (both Champions by round 6, infected); Breach killed the Toll's Guard
+  and the Toll fell in round 10; Blast Mountain on the causeway peak and
+  beside the strip and the Vampire broke the two southern Bearers; a Wail
+  took Mallory from 7 to 4 in round 13, the strand of a daemon whose
+  channellers were hurt broke, and the unbound daemon finished Mallory in
+  the Lodge's own turn (in every win). The attempt that set the clock was
+  played on 18 rounds and replayed command for command on the final 16:
+  the same win in round 13.
+- **U6.** More of the Lodge at the start is fatal: Horrors channelled every
+  turn (a daemon's kill pays Favour) stand on the Lodge's centre, where
+  nothing of yours can reach (the Rangers' land is closed to you), and take
+  it in round 4. The added strength is the Whitefang's. Their band on the
+  map alone left a 3-star first-try hold (Crane at 8 of 10), so the
+  review asked for one correction pass on the Whitefang side: a third
+  Mammoth only fed the Abomination, the Vampire's Feast and the Liches
+  (all three Mammoths dead by round 4, twice), so the clan got its Frost
+  Giant instead (36 HP, Cold Aura freezes, Glacial Smash, a promotion heals
+  it). Started at the Lodge's western edge it smashed a Rangers' Guard a
+  turn from round 1, outran the Liches and stood on the empty centre in
+  round 7 (a plagued Yeti there first, killed by the Plague) and took the
+  Lodge in round 8; from the camp it reaches the Lodge in round 6. The
+  win on that final definition: the Abomination in round 2, the Mammoths
+  and Sleds killed round Ashby by round 8, Blast Mountain on 7,2 and the
+  Vampire's Feast chain killed two Yetis (round 9; it died in round 13),
+  Liches on the Lodge's southern edge took the Giant from 41 to 16 with
+  Plague, and the Lodge ended the hold on its last Guard with the Giant
+  alive. Liches killing channellers let daemons loose on the Lodge's own
+  bands; the Plague spread from the Whitefang onto the Rangers' Guards.
+
+Deviations from the brief:
+
+- **Four first thoughtful attempts on the final definitions were wins**
+  (U2 with 2 stars; U4, U5 and U6 with 3). U4, U5 and U6 each had a
+  harder or longer definition lost or won too comfortably first (listed
+  above), and the autopilot loses every mission; U5's 81% of its clock and
+  U4's 77% are narrow, U2 cost the Marquis, and U6's hold ended on the
+  Rangers' last Guard.
+- **U6's Lodge is retune 2's.** Every larger Lodge took the summit in round
+  4; the added strength is the Whitefang's (the Frost Giant).
+
+**Follow-ups.** U5 always ends with an unbound daemon killing Mallory in
+the Lodge's own turn, which reads oddly as a finish (a rules look: should
+a daemon unbound by your damage count as your kill?). U6's Plague spreads
+onto the allied Rangers (by the rules, but a player may not expect it).
+U3's Lychgate cannot reach the bay by sea, so its port trains nothing
+useful for the capture. U4's Clockwork Gunner's twin shots dominate the
+plateau fights. U6's Frost Giant heals in full on each promotion, which
+makes it hard to finish; if U6 proves too hard, start it further back
+rather than removing it, and if too easy, two coins more for the clan.
 
 ## 17. The Dinosaur campaign, "The Egg Thief" (`pulp_wars-hmyk.6`)
 
