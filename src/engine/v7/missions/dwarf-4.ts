@@ -25,6 +25,12 @@ import type { MissionDefinitionV7 } from "./types";
  * the other seven go for the Hold), 10 Coins and four announced waves
  * (rounds 3, 5, 8 and 11). The clock is 14 rounds.
  *
+ * The fourth retune (`pulp_wars-hmyk.30`, CAMPAIGN.md section 20.5, hand
+ * played): Copperstep is back (level 2, no Mines) with a Gunner, Dig In is
+ * known, 6 Coins and the village in the gap east of Copperstep; the
+ * eleven Martians keep their posts with 6 Coins; the four waves are gone
+ * and the Mothership must fall by round 16.
+ *
  * ```text
  *      x 0123456789ABCDEF
  * y  0   f.f.^.........^.
@@ -50,7 +56,9 @@ export const DWARF_4_V7: MissionDefinitionV7 = {
   // Revision 2 (`pulp_wars-hmyk.17`): each seat explores its units' sight.
   // Revision 3 (`pulp_wars-hmyk.21`, the third retune): a lean Hold against
   // eleven Martians and four announced waves.
-  revision: 3,
+  // Revision 4 (`pulp_wars-hmyk.30`, the fourth retune): Copperstep back,
+  // no waves, 16 rounds.
+  revision: 4,
   seed: 20261504,
   // <map>
   size: 16,
@@ -74,8 +82,8 @@ export const DWARF_4_V7: MissionDefinitionV7 = {
       { kind: "VILLAGE", at: { x: 2, y: 4 }, present: false },
       { kind: "VILLAGE", at: { x: 2, y: 1 }, present: false },
       { kind: "VILLAGE", at: { x: 5, y: 1 }, present: false },
-      // Retune 3: two of the southern villages are gone.
-      { kind: "VILLAGE", at: { x: 8, y: 10 }, present: false },
+      // Retune 3: two of the southern villages are gone (retune 4 gives
+      // back the one in the gap east of Copperstep).
       { kind: "VILLAGE", at: { x: 11, y: 7 }, present: false },
     ],
   },
@@ -140,6 +148,7 @@ export const DWARF_4_V7: MissionDefinitionV7 = {
     { x: 11, y: 4 },
     { x: 14, y: 4 },
     { x: 14, y: 7 },
+    { x: 8, y: 10 },
     { x: 11, y: 10 },
     { x: 14, y: 10 },
     { x: 14, y: 13 },
@@ -159,15 +168,17 @@ export const DWARF_4_V7: MissionDefinitionV7 = {
   seats: [
     {
       faction: "DWARF",
-      // Retune 3: the Hold alone (level 3), four units, five technologies
-      // (a Gyrocopter, a Gunner, the way to Mining), 3 Coins.
-      coins: 3,
+      // Retune 4: the Hold (level 3) and Copperstep, five units, six
+      // technologies (a Gyrocopter, Gunners, Dig In, the way to Mining), 6
+      // Coins.
+      coins: 6,
       technologies: [
         "GATHERING",
         "HUNTING",
         "MARKSMANSHIP",
         "SCOUTING",
         "DRILL",
+        "FORTIFICATION",
       ],
       cities: [
         {
@@ -176,12 +187,20 @@ export const DWARF_4_V7: MissionDefinitionV7 = {
           level: 3,
           rewards: ["STOCKPILE", "WALLS"],
         },
+        // Retune 4: Copperstep is back, without its Mines.
+        {
+          name: "Copperstep",
+          at: { x: 5, y: 12 },
+          level: 2,
+          rewards: ["STOCKPILE"],
+        },
       ],
       units: [
         { role: "FIGHTER", at: { x: 2, y: 13 } },
         { role: "CAPTAIN", at: { x: 2, y: 14 } },
         { role: "MARKSMAN", at: { x: 3, y: 14 } },
         { role: "RAIDER", at: { x: 3, y: 13 } },
+        { role: "MARKSMAN", at: { x: 5, y: 12 }, home: 1 },
       ],
       // The high meadow round the landing field, seen from the peaks; the
       // rest is unexplored.
@@ -193,8 +212,8 @@ export const DWARF_4_V7: MissionDefinitionV7 = {
     {
       // A raiding mothership and its saucers, very polite.
       faction: "MARTIAN",
-      // Retune 3: eleven men and 10 Coins.
-      coins: 10,
+      // Retune 3: eleven men; retune 4: 6 Coins (were 10).
+      coins: 6,
       technologies: ["SCOUTING"],
       cities: [
         { name: "Landing Field", at: { x: 4, y: 5 }, level: 1, rewards: [] },
@@ -254,58 +273,6 @@ export const DWARF_4_V7: MissionDefinitionV7 = {
       },
     },
   ],
-  // Fresh troops beamed down from the sky: by the Hold in rounds 3 and 8,
-  // by the Mines in rounds 5 and 11.
-  reinforcements: [
-    {
-      seat: 1,
-      round: 3,
-      units: [
-        { role: "FIGHTER", at: { x: 0, y: 7 } },
-        { role: "FIGHTER", at: { x: 2, y: 7 } },
-        { role: "RAIDER", at: { x: 1, y: 6 } },
-      ],
-      line: "A saucer drops three Grunts on the forge roofs, apologising.",
-      announce: true,
-    },
-    {
-      seat: 1,
-      round: 5,
-      units: [
-        { role: "FIGHTER", at: { x: 4, y: 9 } },
-        { role: "FIGHTER", at: { x: 5, y: 9 } },
-        { role: "FIGHTER", at: { x: 6, y: 8 } },
-        { role: "RAIDER", at: { x: 5, y: 8 } },
-      ],
-      line: "More Grunts beam down by the Mines, very politely.",
-      announce: true,
-    },
-    {
-      seat: 1,
-      round: 8,
-      units: [
-        { role: "RAIDER", at: { x: 0, y: 7 } },
-        { role: "RAIDER", at: { x: 1, y: 6 } },
-        { role: "RAIDER", at: { x: 2, y: 7 } },
-        { role: "FIGHTER", at: { x: 1, y: 8 } },
-      ],
-      line: "A squadron of saucers swoops in, and every pilot waves.",
-      announce: true,
-    },
-    {
-      seat: 1,
-      round: 11,
-      units: [
-        { role: "FIGHTER", at: { x: 4, y: 9 } },
-        { role: "FIGHTER", at: { x: 5, y: 9 } },
-        { role: "FIGHTER", at: { x: 6, y: 8 } },
-        { role: "RAIDER", at: { x: 5, y: 8 } },
-        { role: "RAIDER", at: { x: 0, y: 7 } },
-      ],
-      line: "The mothership calls in the whole fleet. It does not say please.",
-      announce: true,
-    },
-  ],
   // A dry board.
   forbiddenTechnologies: [
     "SHORECRAFT",
@@ -314,12 +281,12 @@ export const DWARF_4_V7: MissionDefinitionV7 = {
     "SEAMANSHIP",
     "SUBMERSIBLES",
   ],
-  // The Mothership down by round 14 (the saga's 20; it was 18). The stars:
-  // by round 11, and no city lost.
+  // The Mothership down by round 16 (the saga's 20; 18, then 14 in retune
+  // 3). The stars: by round 12, and no city lost.
   objective: {
     kind: "KILL",
     units: ["MOTHERSHIP"],
-    byRound: 14,
-    bonus: [{ kind: "WITHIN_ROUNDS", rounds: 11 }, { kind: "KEEP_CITIES" }],
+    byRound: 16,
+    bonus: [{ kind: "WITHIN_ROUNDS", rounds: 12 }, { kind: "KEEP_CITIES" }],
   },
 };

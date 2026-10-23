@@ -140,28 +140,29 @@ describe("The Bottomless", () => {
         byRound: undefined,
         bonus: ["KEEP_CITIES", "UNIT_ALIVE"],
       },
-      // The third retune (`pulp_wars-hmyk.21`): clocks cut by about a fifth
-      // (D1's hold stays at twelve: a shorter hold would be easier).
+      // The fourth retune (`pulp_wars-hmyk.30`): the conquests' clocks lax
+      // again, the escorts and the hunt still pressing (D1's hold stays at
+      // twelve: a shorter hold would be easier).
       {
         kind: "CAPTURE",
-        byRound: 16,
-        bonus: ["WITHIN_ROUNDS 13", "KEEP_CITIES"],
+        byRound: 24,
+        bonus: ["WITHIN_ROUNDS 18", "KEEP_CITIES"],
       },
-      {
-        kind: "ESCORT",
-        byRound: 16,
-        bonus: ["WITHIN_ROUNDS 13", "UNIT_ALIVE"],
-      },
-      { kind: "KILL", byRound: 14, bonus: ["WITHIN_ROUNDS 11", "KEEP_CITIES"] },
       {
         kind: "ESCORT",
         byRound: 18,
-        bonus: ["WITHIN_ROUNDS 15", "KEEP_CITIES"],
+        bonus: ["WITHIN_ROUNDS 14", "UNIT_ALIVE"],
+      },
+      { kind: "KILL", byRound: 16, bonus: ["WITHIN_ROUNDS 12", "KEEP_CITIES"] },
+      {
+        kind: "ESCORT",
+        byRound: 20,
+        bonus: ["WITHIN_ROUNDS 16", "KEEP_CITIES"],
       },
       {
         kind: "CAPTURE",
-        byRound: 16,
-        bonus: ["WITHIN_ROUNDS 13", "UNIT_ALIVE"],
+        byRound: 20,
+        bonus: ["WITHIN_ROUNDS 15", "UNIT_ALIVE"],
       },
     ]);
     expect(mission("DWARF_1").objective).toMatchObject({
@@ -196,31 +197,39 @@ describe("The Bottomless", () => {
   });
 
   it("builds the missions as hand play left them", () => {
-    // D1: the Grey Shift knows nothing and storms Copperstep, with waves in
-    // rounds 3, 5, 8 and 10.
+    // D1: the Grey Shift knows nothing and storms Copperstep; the old
+    // foreman's wave comes in round 7.
     expect(seat("DWARF_1", 1).technologies).toEqual([]);
     expect(seat("DWARF_1", 1).directive).toMatchObject({ kind: "ASSAULT" });
     expect(
       (mission("DWARF_1").reinforcements ?? []).map((wave) => wave.round),
-    ).toEqual([3, 5, 8, 10]);
+    ).toEqual([7]);
     // D2: the clan learns Gathering and Hunting only; each camp keeps three
-    // and the rest march from round 3; the dwarves start with Drill alone.
+    // and the rest march from round 2; the dwarves start with a Steam Mole.
     expect(seat("DWARF_2", 1).technologies).toEqual(["GATHERING", "HUNTING"]);
     expect(seat("DWARF_2", 1).directive).toEqual([
-      expect.objectContaining({ kind: "GUARD", garrison: 9, untilRound: 3 }),
+      expect.objectContaining({ kind: "GUARD", garrison: 9, untilRound: 2 }),
       expect.objectContaining({
         kind: "GUARD",
         garrison: 9,
         others: { kind: "RUSH" },
       }),
     ]);
-    expect(seat("DWARF_2", 0).technologies).toEqual(["DRILL"]);
+    expect(seat("DWARF_2", 0).technologies).toEqual([
+      "HUNTING",
+      "MARKSMANSHIP",
+      "DRILL",
+      "FORTIFICATION",
+    ]);
+    expect(seat("DWARF_2", 0).units.some((unit) => unit.role === "GUARD")).toBe(
+      true,
+    );
     // D3: nobody climbs the peaks; the diggers hold their cave until
-    // round 4; ten dead hold the gallery.
+    // round 5; ten dead hold the gallery.
     for (const tech of ["ENGINEERING", "METALLURGY"])
       expect(mission("DWARF_3").forbiddenTechnologies, tech).toContain(tech);
     expect(seat("DWARF_3", 2).directive).toEqual([
-      expect.objectContaining({ kind: "HOLD", untilRound: 4 }),
+      expect.objectContaining({ kind: "HOLD", untilRound: 5 }),
       expect.objectContaining({ kind: "RUSH" }),
     ]);
     expect(seat("DWARF_3", 1).directive).toMatchObject({
@@ -228,18 +237,19 @@ describe("The Bottomless", () => {
       garrison: 10,
     });
     // D4: the Mothership keeps four at its field and sends the rest at the
-    // Hold; troops beam down in rounds 3, 5, 8 and 11.
+    // Hold.
     expect(seat("DWARF_4", 1).directive).toMatchObject({
       kind: "GUARD",
       garrison: 4,
       others: { kind: "ASSAULT" },
     });
-    expect(
-      (mission("DWARF_4").reinforcements ?? []).map((wave) => wave.round),
-    ).toEqual([3, 5, 8, 11]);
-    // D5: a lean Dwarf navy without Submersibles; the Lodge's four ships and
-    // no Shipyard builders; the Redcaps hunt from round 3.
+    // D5: a Dwarf navy without Submersibles, whose only Ironclad is the
+    // Anvil; the Lodge's four ships and no Shipyard builders; the Redcaps
+    // hunt from round 3.
     expect(seat("DWARF_5", 0).technologies).not.toContain("SUBMERSIBLES");
+    expect(seat("DWARF_5", 0).forbiddenTechnologies).toEqual([
+      "NAVAL_ENGINEERING",
+    ]);
     expect(seat("DWARF_5", 2).directive).toEqual([
       { kind: "NORMAL", untilRound: 3 },
       { kind: "RUSH" },
@@ -250,9 +260,8 @@ describe("The Bottomless", () => {
     expect(seat("DWARF_5", 1).forbiddenTechnologies).toContain(
       "NAVAL_ENGINEERING",
     );
-    // D6: two Liches in the bowl, seven on the Gate, the dead climbing out
-    // every third round (from round 3) and the Lodge's two waves; the
-    // Rangers attack from round 8.
+    // D6: two Liches in the bowl and seven on the Gate; no Gyrocopter at
+    // the start; the Rangers attack from round 6.
     expect(
       seat("DWARF_6", 1).units.filter((unit) => unit.role === "CATAPULT"),
     ).toHaveLength(2);
@@ -262,43 +271,56 @@ describe("The Bottomless", () => {
       others: { kind: "ASSAULT" },
     });
     expect(
-      (mission("DWARF_6").reinforcements ?? []).map((wave) => wave.round),
-    ).toEqual([3, 5, 6, 9, 9, 12]);
+      seat("DWARF_6", 0).units.some((unit) => unit.role === "RAIDER"),
+    ).toBe(false);
+    expect(seat("DWARF_6", 0).technologies).not.toContain("SCOUTING");
     expect(seat("DWARF_6", 3).directive).toEqual([
-      { kind: "NORMAL", untilRound: 8 },
+      { kind: "NORMAL", untilRound: 6 },
       { kind: "RUSH" },
     ]);
   });
 
-  it("keeps the third retune's lean starts, aggressive enemies and announced waves", () => {
-    // `pulp_wars-hmyk.21` (CAMPAIGN.md section 20.4): D1, D2 and D5 start
-    // like a skirmish or close to it (one town, a few units); no Dwarf start
-    // holds more than one town but D6's two; every enemy with an army
-    // marches, assaults or hunts; every wave of missions 1 to 6 is
-    // announced and carries its story line.
-    for (const id of ["DWARF_1", "DWARF_2", "DWARF_5"]) {
-      expect(seat(id, 0).cities, id).toHaveLength(1);
-      expect(seat(id, 0).units.length, id).toBeLessThanOrEqual(4);
-      expect(seat(id, 0).technologies.length, id).toBeLessThanOrEqual(4);
-    }
-    for (const id of ORDER)
-      expect(seat(id, 0).cities.length, id).toBeLessThanOrEqual(
-        id === "DWARF_6" ? 2 : 1,
-      );
-    for (const id of ["DWARF_1", "DWARF_2", "DWARF_3", "DWARF_4", "DWARF_6"]) {
-      const enemy = seat(id, 1);
-      expect(enemy.directive, id).toBeDefined();
-    }
+  it("keeps the fourth retune's strong enemy starts (pulp_wars-hmyk.30)", () => {
+    // CAMPAIGN.md section 20.5: every enemy side starts with more units than
+    // you (the Rangers in D6 are yours and do not count), and the difficulty
+    // comes from them rather than from waves.
     for (const id of ORDER) {
-      const waves = mission(id).reinforcements ?? [];
-      expect(waves.length, id).toBeGreaterThanOrEqual(2);
-      for (const wave of waves) {
-        expect(wave.line, `${id} round ${String(wave.round)}`).toBeTypeOf(
-          "string",
-        );
-        expect(wave.announce, `${id} round ${String(wave.round)}`).toBe(true);
-      }
+      const definition = mission(id);
+      const teams = definition.teams;
+      const ours = seat(id, 0).units.length;
+      const theirs = definition.seats
+        .slice(1)
+        .filter((_, index) => teams === undefined || teams[index + 1] !== 0)
+        .reduce((sum, item) => sum + item.units.length, 0);
+      expect(theirs, id).toBeGreaterThan(ours);
     }
+    // Every enemy with an army marches, assaults or holds its ground.
+    for (const id of ["DWARF_1", "DWARF_2", "DWARF_3", "DWARF_4", "DWARF_6"])
+      expect(seat(id, 1).directive, id).toBeDefined();
+    // One wave is left in the campaign, the old foreman's in D1, announced
+    // with its story line.
+    const waves = (id: string) =>
+      (mission(id).reinforcements ?? []).map((wave) => wave.round);
+    expect(ORDER.map(waves)).toEqual([[7], [], [], [], [], []]);
+    for (const id of ORDER)
+      for (const wave of mission(id).reinforcements ?? []) {
+        expect(wave.line, id).toBeTypeOf("string");
+        expect(wave.announce, id).toBe(true);
+      }
+    // Some economy back: D1, D3, D4 and D6 start with two towns; D2 and D5
+    // with one.
+    expect(ORDER.map((id) => seat(id, 0).cities.length)).toEqual([
+      2, 1, 2, 2, 1, 2,
+    ]);
+    for (const [id, revision] of [
+      ["DWARF_1", 3],
+      ["DWARF_2", 3],
+      ["DWARF_3", 3],
+      ["DWARF_4", 4],
+      ["DWARF_5", 4],
+      ["DWARF_6", 4],
+    ] as const)
+      expect(mission(id).revision, id).toBe(revision);
   });
 
   it("names every place and unit an objective talks about", () => {

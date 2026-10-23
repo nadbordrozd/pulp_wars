@@ -5912,6 +5912,130 @@ tiles in its territory; a capture or escort place must be on ground the
 player has explored; a unit on a chest tile or a peak without Mining is
 refused) are in `src/engine/v7/missions/build.ts`.
 
+### 20.5 Retune 4: toward the middle, strong enemy starts (`pulp_wars-hmyk.30`)
+
+The user, 2026-10-23, on retune 3: "the enemies are too strong and the time
+limits are too harsh"; in most missions the enemies overwhelmed you before
+the clock mattered. The brief is section 16.5's: ease retune 3 back toward
+the middle but keep a real fight; the difficulty comes from a strong,
+aggressive enemy start, not from the clock; conquest clocks are lax (about
+one and a half times a good win), the escorts and the hunt keep a pressing
+clock, the hold keeps its length; waves only fine-tune; some economy comes
+back (villages, Coins, a second town where it fits); mission 1 is slightly
+easier than the rest. The calibration: from mission 2 on the first
+thoughtful attempt is lost or won narrowly, three thoughtful losses ease
+the enemy's start (not the clock), and the autopilot (section 15) loses.
+Revisions: D1 3, D2 3, D3 3, D4 4, D5 4, D6 4, re-pinned in both pin
+tables. Every enemy side still starts with more units than you
+(`tests/unit/campaign-dwarves-v7.test.ts`; the Rangers in D6 are yours and
+do not count), and one wave is left in the campaign, D1's old foreman.
+
+| Mission | Your start now                                                                                                                                                                                                                                               | Enemies now                                                                                                                                                            | Units (you : them) | Clock (star)                     | Waves                                                                                 |
+| ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------ | -------------------------------- | ------------------------------------------------------------------------------------- |
+| D1      | Copperstep level 3 walled and Slagheap (back), Tobbin, two Hammerers and a Gunner, Gathering, Hunting, Clockwork and Crafting, 5 Coins, the village below Copperstep back, sight radius 2                                                                    | the twelve dead, 5 Coins (were 8), `ASSAULT` Copperstep from round 1                                                                                                   | 4 : 12             | hold 12 (unchanged)              | one: the old foreman (a Necromancer), a Zombie and two Skeletons, round 7 (were four) |
+| D2      | Copperstep level 2, the Engineer, a Gunner, a Hammerer and a Steam Mole (new), Hunting, Clockwork, Crafting and Dig In, 5 Coins, the village and chest beside Copperstep back, sight radius 2                                                                | seventeen men (retune 3's round-4 warband on the board), 8 Coins, Gathering and Hunting; nine hold the camps, the rest `RUSH` Copperstep from round 2 (was 3)          | 4 : 17             | capture by 24 (18) (was 16 (13)) | none (rounds 4, 7 and 10 removed)                                                     |
+| D3      | the Deep Gate level 3 walled and Lanternhall level 2 (back) with a Steam Mole, the Thane, Tobbin, a Hammerer and a Gunner, five technologies (Gathering, Dig In added), 5 Coins, the village north of the Gate back                                          | the eleven dead (ten hold the gallery), 4 Coins (were 6); the diggers 4 Coins (were 6), Favour 3, out on round 5 (was 4)                                               | 5 : 13             | escort by 18 (14) (was 16 (13))  | none (were four)                                                                      |
+| D4      | the Hold level 3 walled and Copperstep level 2 (back, without its Mines) with a Gunner, the Hold's Hammerer, Engineer, Gunner and Gyrocopter, six technologies (Dig In added), 6 Coins, the village east of Copperstep back                                  | eleven Martians (the Mothership, its Projector and two Grunts hold the field), 6 Coins (were 10)                                                                       | 5 : 11             | kill by 16 (12) (was 14 (11))    | none (were four)                                                                      |
+| D5      | Anvil Bay level 3 walled, the Anvil, two Launches, a Diving Bell and a Hammerer ashore, Gathering, Hunting, Shorecraft, Navigation and Sea Tunnels, 6 Coins, the village and chest up the coast back; Ironclads forbidden to you (the Anvil is the only one) | the Lodge's four ships, 4 Coins (were 6); the Redcaps seven, 5 Coins (were 8), two rafts on station in the strait below the Landing, `RUSH` from round 3               | 5 : 12             | escort by 20 (16) (was 18 (15))  | none (were four)                                                                      |
+| D6      | the Hold and Copperstep both level 3 walled, the Thane, two Hammerers, two Gunners and a Steam Tank, six technologies, 6 Coins, both villages back (no Gyrocopter)                                                                                           | fourteen dead (two Skeletons gone), 5 Coins (were 8), seven hold the Gate; the Lodge five, 4 Coins (were 6), Favour 4 (was 5); the Rangers march from round 6 (were 8) | 6 : 19             | capture by 20 (15) (was 16 (13)) | none (were six)                                                                       |
+
+D2's and D6's clocks are lax (good wins in rounds 20 and 11, D2's by a
+player who took the slow road round the clan's peaks); D3's and D5's
+escorts and D4's hunt keep a few rounds over a good win (rounds 18, 19 and
+14).
+
+**Hand play** through `play-text` (authorised for this pass). The
+baseline, retune 3 under the autopilot: D1 lost in round 5, D2 in round 16,
+D3 the Thane killed in round 2, D4 out of time (round 15), D5 the Anvil
+sunk in round 11, D6 out of time (round 17).
+
+| Mission | Autopilot (final)                 | Thoughtful attempts on the final definition                                                                                                             | Tried and dropped                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| ------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| D1      | defeat, round 6 (Copperstep fell) | win (held 12), 3 stars; a Gunner and a Hammerer lost                                                                                                    | none                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| D2      | out of time, round 25             | win, round 20 (of 22, then the clock), 2 stars (the star missed)                                                                                        | the clan with fourteen men and the march from round 3: abandoned in round 12 as too easy (two of its five marchers came at a time, blasts emptied the peaks)                                                                                                                                                                                                                                                                            |
+| D3      | the Thane killed, round 3         | loss (abandoned round 11, the Thane still at the top of the gallery); then win, round 18 of 18, 1 star (Tobbin killed), a replay of the loss to round 4 | none                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| D4      | out of time, round 17             | loss (abandoned round 11, a Titan dead and the Mothership untouched); then win, round 14 of 16, 2 stars, a replay of the loss to round 4                | none                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| D5      | the Anvil sunk, round 8           | win, round 19 of 20, 2 stars, the Anvil at 13 of 25                                                                                                     | Ironclads allowed and no rafts in the strait: a 3-star win in round 15, the Anvil untouched (three Ironclads sank both navies piecemeal)                                                                                                                                                                                                                                                                                                |
+| D6      | out of time, round 21             | loss (abandoned round 13, the Titan killed by two Horrors); then win, round 11 of 20, 3 stars, on the line found on an easier version                   | a Gyrocopter at the start: a 3-star win in round 9 (the Explorer monument gave a Titan in round 4); eighteen dead with garrison 9, then sixteen with garrison 8 and Favour 4: three losses (rounds 15, 12 and 13: each time the Titan that took the centre died in the night to the Lich, the ring's Zombies and the Lodge's Imps); the Lodge at 2 Coins and Favour 3: a 3-star win in round 11 (its line won on the final version too) |
+
+What decided them:
+
+- **D1.** Mission 1 is a lesson with a real fight: the first rush (rounds 2
+  to 6) killed a Gunner beside Copperstep and bit both Hammerers (Tobbin
+  cured them); Mining put the Gunners on the peaks; Slagheap's Scouts (a
+  Gyrocopter) earned the Explorer monument in round 6 and Copperstep
+  reached level 5 in round 7 (Boom), a Brass Titan whose Siege Hammer
+  killed a Zombie a blow; an inspired Zombie killed the second Hammerer
+  and raised it; the foreman died in round 11.
+- **D2.** Blasting Charges decide the Iron Peak: the clan stands on its
+  peaks, and every blast does 5 to all round it (the first strips nothing:
+  the Ice Folk have no Shield), so two blasts beside a camp empty it. The
+  clan took the village beside Copperstep in round 3 (a Yeti killed the
+  Hammerer on it) and the Mole and a Gunner took it back in round 5;
+  roaming Snow Hunters killed three Gunners and the Gyrocopter; a frozen
+  Hammerer was shattered; Gnash died to a Mole in round 12; the camps fell
+  in rounds 13, 18 and 20 (a Mole tunnelled a Hammerer beside the Iron
+  Den). Copperstep's three slots are full at the start (the Militia reward
+  gave the first extra unit).
+- **D3.** The gallery is one tile wide, so the Thane must walk every turn
+  from about round 9. The lost attempt let the Brass Titan (a blast on the
+  Gate's bare peak gave the level-5 population in round 4) run ahead: three
+  Imps swarmed it and two Zombies killed it in round 9. The win kept Tobbin
+  beside the Titan (+4 repair a turn), shot the Imps with twin Gunner
+  shots, killed the brood Imp and an Idol Bearer that awestruck the column,
+  took the diggers' cave (the Lodge eliminated) and cleared the bottom with
+  bombs and six blasts; the Thane, at 3 HP, stepped beside the Bell's Rest
+  on the last round.
+- **D4.** The Martians do not come over the peaks; their Grunts shoot from
+  2 tiles and the Saucers beam them back out of reach. Two blasts in one
+  turn kill a Grunt (the first takes its Shield 2, the second hits full),
+  so three Grunts died in round 7; Gyrocopters bomb at 2 tiles only, so the
+  hunt needs a Titan beside the Mothership: the first hit it 16 to 8 (the
+  Shield 4 first) and died to it, the Grunts and the Projector; a bomb (3
+  through the Shield) and the second Titan's Siege Hammer finished it in
+  round 14.
+- **D5.** With Ironclads forbidden the Anvil itself is the gun: the Galleon
+  cannot move and shoot in one turn, so the Anvil held still and shot first
+  (25 to 11), a Diving Bell's torpedo sank it, and only a Bell can target
+  the submerged Kraken (a Launch's ram and the Anvil's splash killed it).
+  The Lodge kept sending Gondolas and Familiars from Oddmantle, a village it
+  took in round 4, and two Fire Rafts blew up beside the Anvil (Kaboom,
+  21 to 13); the convoy moved every second turn and a Launch's ram pushed
+  the last Gondola aside.
+- **D6.** The Gate's centre is a death trap: whatever takes it is hit in
+  the night by the Lich (8), the ring's Zombies and Wight, and the Lodge's
+  Imps and Horrors (4 Attack, half again on a Titan), and the dead heal 4 a
+  turn round the Gate. The win struck in one turn, in round 10: the Titan,
+  never advancing off its line, stepped onto the mine beside the Gate and
+  killed the Wight there (walls torn down), and four blasts in the same
+  turn (12 Coins) killed the Lich and a Zombie and left the Imps at 1 HP
+  for a Tank and a Gunner; it held the centre at 24 of 36 and captured in
+  round 11.
+
+Deviations from the brief:
+
+- **D1's first attempt is a 3-star win**, as a mission-1 lesson may be; the
+  fight was real for six rounds, and the Titan of round 7 decided it.
+- **D5's and D2's first attempts on the final definitions were narrow
+  wins** on time (rounds 19 of 20 and 20 of 22); D2's clock then went to 24
+  (star 18) to be lax.
+- **D3's and D4's wins replay their losses** to round 4, as section 16.5's
+  U5 did.
+- **D6 eased in three steps after four losses** (b and c on eighteen dead,
+  d on sixteen, e on the final fourteen); its winning line was found on a
+  version with a weaker Lodge (2 Coins, Favour 3) and then won on the final
+  version unchanged (attempt g), so the final version's first thoughtful
+  attempt (e) is a loss and its win needed the line.
+
+**Follow-ups.** Blasting Charges decide D2, D4 and D6 (two blasts in one
+turn kill most units, and the Martian Shield only stops the first);
+whether Blast Mountain should cost more or hit less is a balance question
+for later. A Brass Titan that takes an enemy capital's centre is usually
+killed in the night; the Engineer's repair is the counter but walks at 1.
+The Explorer monument comes fast once a Gyrocopter flies (D1, D2, D4,
+D6), and every early Titan in this pass came from it or from a blast on a
+bare peak in a town's land (D3, D4).
+
 ## 21. The Candy campaign, "Sweet Dreams" (`pulp_wars-hmyk.11`)
 
 The first tier-3 faction campaign: six missions, `CANDY_1` to `CANDY_6`

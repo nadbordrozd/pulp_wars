@@ -26,6 +26,12 @@ import type { MissionDefinitionV7 } from "./types";
  * (the dead in rounds 4 and 9, the diggers in rounds 5 and 12); the diggers
  * come out on round 4, not 8. The clock is 16 rounds.
  *
+ * The fourth retune (`pulp_wars-hmyk.30`, CAMPAIGN.md section 20.5, hand
+ * played): Lanternhall is back with a Steam Mole, and the Thane's party
+ * has five technologies, 5 Coins and the village north of the Gate; the
+ * eleven dead keep the gallery with 4 Coins, the diggers come out on round
+ * 5 with 4 Coins, the four waves are gone, and the clock is 18 rounds.
+ *
  * ```text
  *      x 0123456789ABCDEF
  * y  3   fff..f..f...f^..
@@ -47,7 +53,9 @@ export const DWARF_3_V7: MissionDefinitionV7 = {
   id: "DWARF_3",
   // Revision 2 (`pulp_wars-hmyk.21`, the third retune): a lean Gate and a
   // gallery full of the dead.
-  revision: 2,
+  // Revision 3 (`pulp_wars-hmyk.30`, the fourth retune): Lanternhall back,
+  // no waves, 18 rounds.
+  revision: 3,
   seed: 20261503,
   // <map>
   size: 16,
@@ -62,8 +70,8 @@ export const DWARF_3_V7: MissionDefinitionV7 = {
       { kind: "VILLAGE", at: { x: 10, y: 4 }, present: false },
       { kind: "VILLAGE", at: { x: 10, y: 14 }, present: false },
       { kind: "TERRAIN", at: { x: 12, y: 9 }, terrain: "." },
-      // Retune 3: no free village near the Gate.
-      { kind: "VILLAGE", at: { x: 13, y: 1 }, present: false },
+      // Retune 3: no free village near the Gate (retune 4 gives back the
+      // one north of the Gate).
       { kind: "VILLAGE", at: { x: 10, y: 1 }, present: false },
     ],
   },
@@ -124,6 +132,7 @@ export const DWARF_3_V7: MissionDefinitionV7 = {
   ],
   villages: [
     { x: 7, y: 1 },
+    { x: 13, y: 1 },
     { x: 7, y: 4 },
     { x: 1, y: 7 },
     { x: 4, y: 7 },
@@ -155,15 +164,28 @@ export const DWARF_3_V7: MissionDefinitionV7 = {
   seats: [
     {
       faction: "DWARF",
-      // Retune 3: a lean descent. Four units, three technologies, 3 Coins.
-      coins: 3,
-      technologies: ["HUNTING", "MARKSMANSHIP", "DRILL"],
+      // Retune 4: the Gate and Lanternhall, five units, five technologies,
+      // 5 Coins.
+      coins: 5,
+      technologies: [
+        "GATHERING",
+        "HUNTING",
+        "MARKSMANSHIP",
+        "DRILL",
+        "FORTIFICATION",
+      ],
       cities: [
         {
           name: "The Deep Gate",
           at: { x: 13, y: 4 },
           level: 3,
           rewards: ["STOCKPILE", "WALLS"],
+        },
+        {
+          name: "Lanternhall",
+          at: { x: 10, y: 4 },
+          level: 2,
+          rewards: ["STOCKPILE"],
         },
       ],
       units: [
@@ -173,6 +195,8 @@ export const DWARF_3_V7: MissionDefinitionV7 = {
         { role: "CAPTAIN", at: { x: 14, y: 4 }, tag: "TOBBIN" },
         { role: "FIGHTER", at: { x: 13, y: 5 } },
         { role: "MARKSMAN", at: { x: 14, y: 3 } },
+        // Retune 4: Lanternhall's Steam Mole, the way past the dead.
+        { role: "GUARD", at: { x: 12, y: 6 }, home: 1 },
       ],
       // The top of the gallery and the Bell's Rest at its foot (the
       // objective's place must be known); the rest of the shaft is not.
@@ -188,8 +212,8 @@ export const DWARF_3_V7: MissionDefinitionV7 = {
       // The deep dead: miners, prospectors and worse, standing in the
       // gallery the way they fell.
       faction: "UNDEAD",
-      // Retune 3: eleven dead in the gallery and 6 Coins.
-      coins: 6,
+      // Retune 3: eleven dead in the gallery; retune 4: 4 Coins.
+      coins: 4,
       technologies: [],
       cities: [
         { name: "Old Sump", at: { x: 10, y: 14 }, level: 1, rewards: [] },
@@ -242,8 +266,9 @@ export const DWARF_3_V7: MissionDefinitionV7 = {
       faction: "CULT",
       // Hand play: with 4 Favour a Horror stood over the gallery from
       // round 1.
-      // Retune 3: 6 Coins and 3 Favour (a Horror needs more).
-      coins: 6,
+      // Retune 3: 3 Favour (a Horror needs more); retune 4: 4 Coins (were
+      // 6).
+      coins: 4,
       favour: 3,
       technologies: ["GATHERING", "ADMINISTRATION", "DRILL", "FORTIFICATION"],
       cities: [
@@ -276,59 +301,10 @@ export const DWARF_3_V7: MissionDefinitionV7 = {
         {
           kind: "HOLD",
           zone: [{ x0: 12, y0: 9, x1: 12, y1: 10 }],
-          untilRound: 4,
+          untilRound: 5,
         },
         { kind: "RUSH" },
       ],
-    },
-  ],
-  // The deep dead and the diggers keep coming.
-  reinforcements: [
-    {
-      seat: 1,
-      round: 4,
-      units: [
-        { role: "GUARD", at: { x: 13, y: 12 } },
-        { role: "FIGHTER", at: { x: 14, y: 12 } },
-        { role: "GUARD", at: { x: 14, y: 13 } },
-      ],
-      line: "The deep dead shuffle up from the sump, three abreast.",
-      announce: true,
-    },
-    {
-      seat: 2,
-      round: 5,
-      units: [
-        { role: "FIGHTER", at: { x: 12, y: 10 } },
-        { role: "FIGHTER", at: { x: 13, y: 9 } },
-        { role: "CAPTAIN", at: { x: 14, y: 10 } },
-      ],
-      line: "The diggers' second shift, hooded, humming, all going down.",
-      announce: true,
-    },
-    {
-      seat: 1,
-      round: 9,
-      units: [
-        { role: "CAPTAIN", at: { x: 13, y: 12 } },
-        { role: "GUARD", at: { x: 14, y: 12 } },
-        { role: "FIGHTER", at: { x: 14, y: 13 } },
-        { role: "FIGHTER", at: { x: 15, y: 14 } },
-      ],
-      line: "Something older climbs out of the sump, with a lantern.",
-      announce: true,
-    },
-    {
-      seat: 2,
-      round: 12,
-      units: [
-        { role: "FIGHTER", at: { x: 12, y: 10 } },
-        { role: "FIGHTER", at: { x: 13, y: 9 } },
-        { role: "GUARD", at: { x: 14, y: 10 } },
-        { role: "CAPTAIN", at: { x: 14, y: 11 } },
-      ],
-      line: "The Lodge sends the rest of the choir down the shaft.",
-      announce: true,
     },
   ],
   landmarks: [{ tag: "BELLS_REST", at: { x: 14, y: 14 }, name: "Bell's Rest" }],
@@ -342,16 +318,16 @@ export const DWARF_3_V7: MissionDefinitionV7 = {
     "SEAMANSHIP",
     "SUBMERSIBLES",
   ],
-  // The Thane to the Bell's Rest by round 16 (the saga's 24; it was 20).
-  // The stars: by round 13, and Tobbin lives.
+  // The Thane to the Bell's Rest by round 18 (the saga's 24; 20, then 16
+  // in retune 3). The stars: by round 14, and Tobbin lives.
   objective: {
     kind: "ESCORT",
     unit: "THANE",
     to: "BELLS_REST",
     within: 1,
-    byRound: 16,
+    byRound: 18,
     bonus: [
-      { kind: "WITHIN_ROUNDS", rounds: 13 },
+      { kind: "WITHIN_ROUNDS", rounds: 14 },
       { kind: "UNIT_ALIVE", unit: "TOBBIN" },
     ],
   },

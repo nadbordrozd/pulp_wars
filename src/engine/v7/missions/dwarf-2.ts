@@ -25,6 +25,13 @@ import type { MissionDefinitionV7 } from "./types";
  * from round 3), Gathering and Hunting, 8 Coins and three announced waves
  * (rounds 4, 7 and 10). The clock is 16 rounds.
  *
+ * The fourth retune (`pulp_wars-hmyk.30`, CAMPAIGN.md section 20.5, hand
+ * played): a Steam Mole joins the start, with Hunting, Clockwork and Dig
+ * In, 5 Coins, and the village and chest beside Copperstep back; the clan
+ * has seventeen men (retune 3's first warband on the board from the
+ * start), 8 Coins, and marches from round 2; the waves are gone and the
+ * clock is a lax 24 rounds.
+ *
  * ```text
  *      x 0123456789ABCD
  * y  0   .f...^..^^fff.
@@ -47,7 +54,9 @@ export const DWARF_2_V7: MissionDefinitionV7 = {
   id: "DWARF_2",
   // Revision 2 (`pulp_wars-hmyk.21`, the third retune): a skirmish start
   // against a clan that marches from round 3.
-  revision: 2,
+  // Revision 3 (`pulp_wars-hmyk.30`, the fourth retune): a Mole, the
+  // village back, no waves, 24 rounds.
+  revision: 3,
   seed: 20261502,
   // <map>
   size: 14,
@@ -65,9 +74,6 @@ export const DWARF_2_V7: MissionDefinitionV7 = {
       { kind: "VILLAGE", at: { x: 12, y: 9 }, present: false },
       { kind: "VILLAGE", at: { x: 12, y: 3 }, present: false },
       { kind: "VILLAGE", at: { x: 12, y: 6 }, present: false },
-      // Retune 3: nothing free beside Copperstep.
-      { kind: "VILLAGE", at: { x: 3, y: 9 }, present: false },
-      { kind: "CHEST", at: { x: 2, y: 11 }, present: false },
     ],
   },
   terrain: [
@@ -123,17 +129,22 @@ export const DWARF_2_V7: MissionDefinitionV7 = {
     { x: 1, y: 1 },
     { x: 4, y: 1 },
     { x: 1, y: 4 },
+    { x: 3, y: 9 },
     { x: 12, y: 12 },
   ],
-  treasureChests: [{ x: 4, y: 0 }],
+  treasureChests: [
+    { x: 4, y: 0 },
+    { x: 2, y: 11 },
+  ],
   // </map>
   aiMode: "RIVAL",
   seats: [
     {
       faction: "DWARF",
-      // Retune 3: a skirmish start. Three units, Drill alone, 3 Coins.
-      coins: 3,
-      technologies: ["DRILL"],
+      // Retune 4: four units (a Steam Mole added; Copperstep's three slots
+      // are full), four technologies, 5 Coins.
+      coins: 5,
+      technologies: ["HUNTING", "MARKSMANSHIP", "DRILL", "FORTIFICATION"],
       cities: [
         {
           name: "Copperstep",
@@ -145,12 +156,13 @@ export const DWARF_2_V7: MissionDefinitionV7 = {
       units: [
         { role: "MARKSMAN", at: { x: 4, y: 11 } },
         { role: "FIGHTER", at: { x: 3, y: 11 } },
+        { role: "GUARD", at: { x: 4, y: 12 } },
         { role: "CAPTAIN", at: { x: 3, y: 12 } },
       ],
       // The three camps' own tiles (the objective's places must be known);
       // the Iron Peak between is unexplored.
       reveal: {
-        radius: 1,
+        radius: 2,
         rects: [
           { x0: 5, y0: 6, x1: 7, y1: 8 },
           { x0: 8, y0: 5, x1: 10, y1: 7 },
@@ -161,7 +173,7 @@ export const DWARF_2_V7: MissionDefinitionV7 = {
     {
       // The Whitefang clan under Chief Gnash, disowned by Mother Rime.
       faction: "ICE_FOLK",
-      // Retune 3: sixteen men, 8 Coins, Gathering and Hunting.
+      // Retune 4: seventeen men, 8 Coins, Gathering and Hunting.
       coins: 8,
       // Hand play: with Crafting and Mining the camps grew to level 3 and
       // walled themselves in by round 3. The clan learns little: Gathering
@@ -185,12 +197,14 @@ export const DWARF_2_V7: MissionDefinitionV7 = {
         { role: "GUARD", at: { x: 12, y: 9 }, home: 2 },
         { role: "FIGHTER", at: { x: 11, y: 9 }, home: 2 },
         { role: "MARKSMAN", at: { x: 12, y: 10 }, home: 2 },
-        { role: "FIGHTER", at: { x: 9, y: 5 } },
         { role: "FIGHTER", at: { x: 10, y: 6 } },
         { role: "FIGHTER", at: { x: 5, y: 7 }, home: 1 },
         { role: "FIGHTER", at: { x: 7, y: 7 }, home: 1 },
-        { role: "FIGHTER", at: { x: 11, y: 10 }, home: 2 },
         { role: "MARKSMAN", at: { x: 12, y: 8 }, home: 2 },
+        // Retune 4: retune 3's first warband, down off the ridge already.
+        { role: "FIGHTER", at: { x: 11, y: 5 } },
+        { role: "MARKSMAN", at: { x: 12, y: 5 } },
+        { role: "GUARD", at: { x: 13, y: 5 } },
       ],
       reveal: { radius: 2, rects: [{ x0: 1, y0: 10, x1: 5, y1: 13 }] },
       // Yetis and Musk Oxen only: no Snow Hunters beyond the three on the
@@ -226,7 +240,7 @@ export const DWARF_2_V7: MissionDefinitionV7 = {
             { x0: 11, y0: 8, x1: 13, y1: 10 },
           ],
           garrison: 9,
-          untilRound: 3,
+          untilRound: 2,
         },
         {
           kind: "GUARD",
@@ -239,45 +253,6 @@ export const DWARF_2_V7: MissionDefinitionV7 = {
           others: { kind: "RUSH" },
         },
       ],
-    },
-  ],
-  // The clan's warbands come down off the ridge.
-  reinforcements: [
-    {
-      seat: 1,
-      round: 4,
-      units: [
-        { role: "FIGHTER", at: { x: 11, y: 5 } },
-        { role: "MARKSMAN", at: { x: 12, y: 5 } },
-        { role: "GUARD", at: { x: 13, y: 5 } },
-      ],
-      line: "Yetis come down off the ridge, howling the clan's name.",
-      announce: true,
-    },
-    {
-      seat: 1,
-      round: 7,
-      units: [
-        { role: "SWORDSMAN", at: { x: 7, y: 4 } },
-        { role: "FIGHTER", at: { x: 8, y: 4 } },
-        { role: "FIGHTER", at: { x: 8, y: 3 } },
-        { role: "MARKSMAN", at: { x: 6, y: 4 } },
-      ],
-      line: "Gnash's own warband follows its Mammoth over the peaks.",
-      announce: true,
-    },
-    {
-      seat: 1,
-      round: 10,
-      units: [
-        { role: "GUARD", at: { x: 11, y: 5 } },
-        { role: "FIGHTER", at: { x: 12, y: 5 } },
-        { role: "MARKSMAN", at: { x: 13, y: 5 } },
-        { role: "FIGHTER", at: { x: 7, y: 4 } },
-        { role: "MARKSMAN", at: { x: 8, y: 4 } },
-      ],
-      line: "The Whitefang send the grandmothers. This is not a good sign.",
-      announce: true,
     },
   ],
   landmarks: [
@@ -293,12 +268,12 @@ export const DWARF_2_V7: MissionDefinitionV7 = {
     "SEAMANSHIP",
     "SUBMERSIBLES",
   ],
-  // The three camps by round 16 (it was 20). The stars: by round 13, and
-  // no city lost.
+  // The three camps by round 24 (retune 4; it was 16, and 20 before). The
+  // stars: by round 18, and no city lost.
   objective: {
     kind: "CAPTURE",
     places: ["TUSK_CAMP", "GNASHS_CAMP", "IRON_DEN"],
-    byRound: 16,
-    bonus: [{ kind: "WITHIN_ROUNDS", rounds: 13 }, { kind: "KEEP_CITIES" }],
+    byRound: 24,
+    bonus: [{ kind: "WITHIN_ROUNDS", rounds: 18 }, { kind: "KEEP_CITIES" }],
   },
 };
