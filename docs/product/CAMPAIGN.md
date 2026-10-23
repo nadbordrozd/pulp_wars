@@ -5245,6 +5245,123 @@ first real attempt will show which mission overshoots. If a mission is
 unwinnable, take back in this order: the second wave, the Coins, the
 extra men, then the clock.
 
+### 18.5 Retune 4: strong enemy starts, lax conquest clocks (`pulp_wars-hmyk.28`)
+
+The user, 2026-10-23, on retune 3: "the enemies are too strong and the time
+limits are too harsh"; in most missions the enemies overwhelmed you before
+the clock mattered. The brief is section 16.5's: ease retune 3 back toward
+the middle but keep a real fight; the difficulty comes from a strong,
+aggressive enemy start, not from the clock; conquest clocks are lax (about
+one and a half times a good win), the escort and the hunt keep a pressing
+clock, the hold keeps its length; waves only fine-tune; some economy comes
+back (villages, Coins, a level 2 town where it fits); mission 1 is slightly
+easier than the rest. The calibration: from mission 2 on the first
+thoughtful attempt is lost or won narrowly, three thoughtful losses ease
+the enemy's start (not the clock), and the autopilot (section 15) loses.
+Revisions: M1 4, M2 3, M3 4, M4 3, M5 4, M6 3, re-pinned in both pin
+tables; the map edits only lost village removals (two or three villages
+are back in every mission). Every enemy still starts with more units than
+you (`tests/unit/campaign-martians-v7.test.ts`; Sugarcrest in M4 and the
+Rangers in M6 are your allies and do not count), and every mission starts
+with a Saucer.
+
+| Mission | Your start now                                                                                                                                                                | Enemies now                                                                                                                                                                                                          | Units (you : them) | Clock (star)                      | Waves                                                                                                   |
+| ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------ | --------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| M1      | Saucer Field level 2 (Stockpile), Quaxx, a Grunt, a gun and a Saucer, Scouting and Hunting, 5 Coins, two villages back (the chests stay gone), sight radius 2                 | nine raiders (two Fighters gone), 5 Coins (were 6), the same technologies; dig in until round 3, then all but three go the long way round                                                                            | 4 : 9              | conquest by 20 (14) (was 15 (11)) | none (the rafts of rounds 6 and 10 removed)                                                             |
+| M2      | Red Dust level 2 with its farm (Stockpile), Quaxx, a Grunt and a Saucer, Scouting and Hunting, 5 Coins, two of the three villages back, sight radius 2                        | eleven militiamen (two at Haybridge gone), 5 Coins (were 8), Hunting, Marksmanship, Drill and Walls; home until round 4, then six stay and the rest `RUSH` Red Dust                                                  | 3 : 11             | capture by 22 (16) (was 14 (11))  | none (rounds 4, 8 and 12 removed)                                                                       |
+| M3      | Ray Hollow, the Core-Walker with a Grunt, a gun and a Shield Projector, a Grunt and a Saucer at the town, six technologies (Drill and Walls added), 3 Coins, one village back | thirteen beasts, one Plesiosaur (the second gone), no Triceratops within a charge of the Crater in round 1, 5 Coins (were 8); `RUSH`                                                                                 | 6 : 13             | escort by 16 (12) (was 13 (10))   | one: a T-Rex and a Raptor on the beach, round 8 (were five)                                             |
+| M4      | Red Dust level 3 (Walls) and Saucer Field level 2 (Stockpile), a Guard, two Grunts, two guns, a Catapult and a Saucer, six technologies, 6 Coins, the north village back      | twelve dead (two Skeletons gone), 5 Coins (were 10); `RUSH`; Sugarcrest three units                                                                                                                                  | 7 : 12             | hold 16 (unchanged)               | two: a Lich and two in round 5, a Lich, a Vampire and two in round 10, both from the barrows (were six) |
+| M5      | Red Dust level 2 (Stockpile), a Mothership, two Grunts, the Brain, two guns, a Shield Projector, a Saucer and a Tripod, seven technologies, 6 Coins, two villages back        | the Lodge eight (the centre's Idol Bearer, a full ring of six, the Stargazer), 2 Coins, 6 Favour, garrison eight; the Redcaps eight (six Goblins, two Bomb Chuckers), 0 Coins, Hunting and Marksmanship only, `RUSH` | 9 : 16             | capture by 20 (14) (was 15 (11))  | none (were six)                                                                                         |
+| M6      | Red Dust level 3 (Walls) and Saucer Field level 1, Quaxx, a Shield Projector, two Grunts, a Tripod, two Saucers and two guns, seven technologies, 8 Coins, two villages back  | circles of seven (21: each the Stargazer, its Idol Bearer, a Hexer and four Initiates), 4 Coins, 8 Favour; the dead five, 4 Coins, `RUSH`; the Rangers three, marching from round 9                                  | 9 : 26             | hunt by 16 (12) (was 14 (10))     | two of the dead: rounds 5 and 9 (were seven)                                                            |
+
+M1's clock is a mission-1 conquest clock (a good win took 16 rounds); M2's
+and M5's are lax (good wins in rounds 15 and 8); M3's escort keeps six
+rounds over a good win's ten; M6's hunt keeps the retune-3 margin over a
+good win plus two rounds.
+
+**Hand play** through `play-text` (authorised for this pass). The
+baseline, retune 3 under the autopilot: M1 lost in round 14, M2 out of time
+(round 15), M3 the core lost in round 1, M4 lost in round 6, M5 in round 5,
+M6 in round 5.
+
+| Mission | Autopilot (final)                     | Thoughtful attempts on the final definition                                                                                           | Tried and dropped                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| ------- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| M1      | out of time, round 21 (no camp found) | win, round 16 of 20 (80%), 2 stars (the round-14 star missed)                                                                         | none                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| M2      | out of time, round 23                 | loss (abandoned round 18, Quaxx killed in round 16); then win, round 15 of 22 (68%), 3 stars                                          | none                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| M3      | the core lost, round 2                | loss (round 8, the torpedo); then win, round 10 of 16 (63%), 3 stars, the Core-Walker at 2 of 12 HP (a replay of the loss to round 7) | the Saucer and Projector back with a second Triceratops by the ford and the T-Rex wave in round 6: both Triceratops gored the Core-Walker in the beasts' first turn (lost in round 1); without Triceratops in charge range of the Crater: three losses (rounds 8, 8 and 9: the T-Rex through the jungle, a torpedo afloat, the ford blocked), so the second Plesiosaur went and the wave moved to round 8                                                                                                                                                                                                                                     |
+| M4      | defeat, round 10 (Red Dust lost)      | win (held 16), 3 stars, five units left                                                                                               | Saucer Field (level 1) and its Saucer back, five technologies, 5 Coins, fourteen dead with 6 Coins, waves in rounds 5 and 10 (the second on the southern road): two collapses (abandoned rounds 8 and 5); Gathering, 6 Coins, Saucer Field level 2, a second Grunt and gun, ten dead: a 3-star hold, quiet after round 7 (too easy); the round-10 wave out of the barrows at Red Dust: the same hold replayed from round 9, 3 stars                                                                                                                                                                                                           |
+| M5      | out of time, round 21                 | win, round 8 of 20 (40%), 3 stars, narrowly (the Tripod, the Mothership and both Saucers lost)                                        | seven versions lost eight attempts (rounds 4 to 13): a four-unit start against thirteen in the hall and eleven Redcaps with Orc Brutes and a wave (two collapses by round 4); Red Dust level 3, a Projector, Drill and Walls (lost round 7); a second Grunt and a gun instead of the Saucer, the Redcaps without Raiding (lost round 9: three Redcap towns trained a Brute a turn); the Redcaps at 0 Coins with Hunting and Marksmanship only (lost round 11); the Redcaps as the first pass, eight (out of time); the hall at ten (out of time); a Saucer and a Tripod more (out of time, one hole beside the centre and no beamer in reach) |
+| M6      | out of time, round 17                 | win, round 9 of 16, 3 stars (Quaxx killed, the Tripod at 1 HP, a gun lost, Owl Hill besieged once)                                    | circles of seven against six Coins and no extra guns: a loss (abandoned round 8: the first stars killed both Grunts and a Saucer); circles of six, the dead four, 8 Coins and two more guns: a first-try win in round 9 for a Grunt and two guns (too comfortable)                                                                                                                                                                                                                                                                                                                                                                            |
+
+What decided them:
+
+- **M1.** Mission 1 is a lesson with a real fight: only one Wolf Rider came
+  round the lake, two beamed shots killed Scrapheap's pair and a Saucer
+  took it in round 10; four Saucers died to the veteran Bomb Chucker
+  (minimum range 2) and Gang Up until a rallied, beamed Grunt killed it in
+  round 13; Quaxx, beamed beside the Orc Brute on Tinhat's Field Defense,
+  took it in round 15 and it captured in round 16. The Explorer monument
+  and fruit put Saucer Field at level 5 in round 7, but the Colossus had
+  no way east.
+- **M2.** Mind Control is once a turn, then the Brain cools: the lost
+  attempt beamed Quaxx into Ploughby's ring, took one Fighter and lost
+  Quaxx to Millford's Marksman a turn later. The win grew five towns
+  (villages and the Explorer monument to six Saucers by round 12), beamed
+  fresh Grunts to range-2 firing spots each turn (no retaliation) from
+  round 11, and a Saucer on the mountain beside Millford beamed a Shield
+  Projector beside its empty centre in round 13; it captured in round 15.
+  The militia held a line round Haybridge and never rushed in force.
+- **M3.** The ford decides it. A Saucer cannot beam a unit afloat or
+  tractor it onto land, the lone Plesiosaur's torpedo does 10 to a Tripod
+  afloat (the public estimate said 6), and the T-Rex comes through the
+  jungle unseen. The win waited a turn at the ford to heal to 12 of 12,
+  waded with a Projector beamed onto the bank beside it (Shield 4 and its
+  full-HP guard left it at 2 HP), landed in round 10 and was beamed beside
+  Ray Hollow by the Saucer waiting on the mountain.
+- **M4.** The Lich (range 3), the Plague of Pestilence and the
+  Necromancer's raised Skeletons collapsed the thin starts by round 5 to 8. The final start holds with Heat Sinks, two beamed Grunts and a gun per
+  Lich (each fortified Lich died in a turn) and the Projector on Red Dust's
+  centre (Defense 4.5); the round-10 wave from the barrows brings a Vampire
+  that killed two Grunts, both Saucers and two guns by round 16.
+- **M5.** The Redcap rush (Bomb Chuckers, Gang Up, Wolf Riders, Orc Brutes
+  trained every turn) beat every richer start before Candlewick was in
+  reach, so the Redcaps went back to the first pass's eight and the hall
+  kept a full ring: retune 3's outer cultists, kept as ten, killed every
+  staged beamer. The win: the Muster monument in round 1 (seven unit
+  kinds: six with Red Dust at level 3 lifted it to the Colossus in round
+  1), the Tripod, the Mothership and both Saucers staged east of the hall;
+  a Hexer that stepped out of the ring to frog the Tripod was killed and a
+  Saucer flew round to the hole, beamed the Brain beside the centre, and
+  the Brain took the centre's Idol Bearer, which captured in round 8.
+- **M6.** The Stargazers mark where you stand (two to four tiles away) and
+  the star falls at the Lodge's next turn start: never end a turn on a
+  marked square (twelve with two chanters, eighteen with four). The circles
+  fall to the hints: a Brain beamed beside an idol takes it, so its circle
+  can strike only it and its Stargazer loses the idol's halving; a Grunt
+  beamed in reach (7) kills the Stargazer. Cairn Top fell to two halved
+  beamed shots (4 and 3). Quaxx died the night after; a Brain trained at
+  Owl Hill took Hob's Knoll's idol in round 9 and a beamed Grunt killed the
+  last Stargazer.
+
+Deviations from the brief:
+
+- **Two first thoughtful attempts on the final definitions were wins**: M4
+  (3 stars, five units left) and M6 (round 9, Quaxx lost). Both followed a
+  harder or easier definition that lost or won too comfortably, and M6's
+  was played knowing the line of the comfortable win; a first-time player
+  will be slower. M5's win (40% of its clock) was narrow in units, not in
+  time.
+- **M3's win replays its loss** to round 7 (waiting a turn at the ford was
+  the difference), as section 16.5's U5 did.
+
+**Follow-ups.** The public threat estimate under-reads a Plesiosaur's
+torpedo on a Tripod afloat (6 shown, 10 dealt) and a T-Rex coming through
+the jungle (M3). The free Muster monument counts the starting units, so a
+mission that starts with six unit kinds hands out level-ups in round 1 (M5
+reached the Colossus); worth a rule look or a mission check. If M6 proves
+lax for first-time players, its hunt can go back to 14 (star 11) rather
+than adding men. M1's Colossus has no path off Saucer Field's shore.
+
 ## 19. The Goblin campaign, "The Big Score" (`pulp_wars-hmyk.8`)
 
 The third tier-2 faction campaign, after the Martians (section 18): six

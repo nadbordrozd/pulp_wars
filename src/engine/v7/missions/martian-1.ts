@@ -16,12 +16,13 @@ import type { MissionDefinitionV7 } from "./types";
  * and the Rift on the eastern strip, reachable on foot only the long way
  * round the southern lake.
  *
- * Retune 3 (`pulp_wars-hmyk.21`, untested): you start like a skirmish (one
- * level 1 town, Quaxx, a Grunt and a gun, no technology, no Coins), the
- * villages and chests within reach are gone, and the raiders are eleven with
- * Walls and Drill: they dig in for two rounds, then all but three march the
- * long way round, with rafts landing on the south shore in rounds 6 and 10;
- * the clock is 15.
+ * Retune 4 (`pulp_wars-hmyk.28`, hand-played; CAMPAIGN.md section 18.5):
+ * you start with Saucer Field at level 2, Quaxx, a Grunt, a gun and a
+ * Saucer, Scouting and Hunting and 5 Coins, the two villages within reach
+ * are back (the chests stay gone), and the raiders are nine with Walls and
+ * Drill: they dig in for two rounds, then all but three march the long way
+ * round; no rafts land, and the clock is 20 (retune 3: a skirmish start
+ * against eleven, two raft waves and a 15-round clock).
  *
  * ```text
  *      x 0123456789A
@@ -44,7 +45,10 @@ export const MARTIAN_1_V7: MissionDefinitionV7 = {
   // Revision 3 (`pulp_wars-hmyk.21`, retune 3): a skirmish start, no village
   // or chest in reach, a rushing, richer raider camp, two announced waves
   // and a 15-round clock.
-  revision: 3,
+  // Revision 4 (`pulp_wars-hmyk.28`, retune 4): Saucer Field at level 2 with
+  // a Saucer, the villages back, nine raiders, no waves and a 20-round
+  // clock.
+  revision: 4,
   seed: 20261601,
   // <map>
   size: 11,
@@ -62,10 +66,8 @@ export const MARTIAN_1_V7: MissionDefinitionV7 = {
       // handed the raiders a third camp out of sight.
       { kind: "VILLAGE", at: { x: 9, y: 7 }, present: false },
       { kind: "VILLAGE", at: { x: 6, y: 9 }, present: false },
-      // Retune 3: the two villages and both chests within reach of Saucer
-      // Field.
-      { kind: "VILLAGE", at: { x: 2, y: 5 }, present: false },
-      { kind: "VILLAGE", at: { x: 5, y: 5 }, present: false },
+      // Retune 3: both chests within reach of Saucer Field (retune 4 gives
+      // the two villages back).
       { kind: "CHEST", at: { x: 0, y: 0 }, present: false },
       { kind: "CHEST", at: { x: 6, y: 0 }, present: false },
     ],
@@ -110,24 +112,28 @@ export const MARTIAN_1_V7: MissionDefinitionV7 = {
     "PPPPWWWWWWW",
     "PPPPWWWWWWW",
   ],
-  villages: [{ x: 8, y: 1 }],
+  villages: [
+    { x: 8, y: 1 },
+    { x: 2, y: 5 },
+    { x: 5, y: 5 },
+  ],
   treasureChests: [],
   // </map>
   aiMode: "RIVAL",
   seats: [
     {
       faction: "MARTIAN",
-      // Retune 3: a skirmish start. One town at level 1, no technology, no
-      // Coins, Quaxx, one Grunt and the only gun you cannot raise another
-      // of yet; nothing seen beyond the town.
-      coins: 0,
-      technologies: [],
+      // Retune 4: Saucer Field at level 2, Scouting and Hunting, 5 Coins,
+      // Quaxx, a Grunt, a gun and a Saucer (retune 3: level 1, nothing
+      // researched, no Coins and no Saucer).
+      coins: 5,
+      technologies: ["SCOUTING", "HUNTING"],
       cities: [
         {
           name: "Saucer Field",
           at: { x: 3, y: 2 },
-          level: 1,
-          rewards: [],
+          level: 2,
+          rewards: ["STOCKPILE"],
         },
       ],
       units: [
@@ -135,15 +141,16 @@ export const MARTIAN_1_V7: MissionDefinitionV7 = {
         { role: "CAPTAIN", at: { x: 2, y: 2 }, tag: "QUAXX" },
         { role: "FIGHTER", at: { x: 3, y: 3 } },
         { role: "MARKSMAN", at: { x: 2, y: 1 } },
+        { role: "RAIDER", at: { x: 3, y: 1 } },
       ],
-      reveal: { radius: 1 },
+      reveal: { radius: 2 },
     },
     {
       // The scrap-raiders.
       faction: "GOBLIN",
-      // Retune 3: 6 Coins, Gathering, Hunting, Scouting, Drill and Walls,
-      // eleven raiders instead of four.
-      coins: 6,
+      // Retune 3: Gathering, Hunting, Scouting, Drill and Walls, eleven
+      // raiders instead of four (retune 4: nine, 5 Coins, were 6).
+      coins: 5,
       technologies: [
         "GATHERING",
         "HUNTING",
@@ -168,9 +175,7 @@ export const MARTIAN_1_V7: MissionDefinitionV7 = {
         { role: "FIGHTER", at: { x: 10, y: 4 } },
         { role: "FIGHTER", at: { x: 9, y: 5 } },
         { role: "MARKSMAN", at: { x: 10, y: 5 } },
-        { role: "FIGHTER", at: { x: 10, y: 7 }, home: 1 },
         { role: "MARKSMAN", at: { x: 10, y: 8 }, home: 1 },
-        { role: "FIGHTER", at: { x: 9, y: 6 }, home: 1 },
         { role: "RAIDER", at: { x: 8, y: 9 }, home: 1 },
       ],
       // Saucer Field, from the scrap trail.
@@ -202,7 +207,7 @@ export const MARTIAN_1_V7: MissionDefinitionV7 = {
             { x0: 7, y0: 3, x1: 10, y1: 6 },
             { x0: 8, y0: 6, x1: 10, y1: 9 },
           ],
-          garrison: 11,
+          garrison: 9,
           untilRound: 3,
         },
         {
@@ -217,33 +222,6 @@ export const MARTIAN_1_V7: MissionDefinitionV7 = {
       ],
     },
   ],
-  // Retune 3: rafts of scrap-raiders land on the southern shore in rounds
-  // 6 and 10.
-  reinforcements: [
-    {
-      seat: 1,
-      round: 6,
-      units: [
-        { role: "FIGHTER", at: { x: 2, y: 8 } },
-        { role: "FIGHTER", at: { x: 3, y: 8 } },
-        { role: "MARKSMAN", at: { x: 1, y: 9 } },
-      ],
-      line: "Goblins on rafts, wearing the last saucer's hat.",
-      announce: true,
-    },
-    {
-      seat: 1,
-      round: 10,
-      units: [
-        { role: "FIGHTER", at: { x: 3, y: 8 } },
-        { role: "FIGHTER", at: { x: 2, y: 8 } },
-        { role: "RAIDER", at: { x: 4, y: 9 } },
-        { role: "MARKSMAN", at: { x: 1, y: 8 } },
-      ],
-      line: "Every scrap-raider on the lake comes for your Shield.",
-      announce: true,
-    },
-  ],
   // Lakes, but no fleets in the first lesson.
   forbiddenTechnologies: [
     "SHORECRAFT",
@@ -252,13 +230,13 @@ export const MARTIAN_1_V7: MissionDefinitionV7 = {
     "SEAMANSHIP",
     "SUBMERSIBLES",
   ],
-  // Run the raiders off: both camps, by round 15 (retune 3: there was no
-  // clock). The stars: by round 11, and Quaxx lives.
+  // Run the raiders off: both camps, by round 20 (retune 3: 15; before it
+  // there was no clock). The stars: by round 14, and Quaxx lives.
   objective: {
     kind: "DOMINATION",
-    byRound: 15,
+    byRound: 20,
     bonus: [
-      { kind: "WITHIN_ROUNDS", rounds: 11 },
+      { kind: "WITHIN_ROUNDS", rounds: 14 },
       { kind: "UNIT_ALIVE", unit: "QUAXX" },
     ],
   },

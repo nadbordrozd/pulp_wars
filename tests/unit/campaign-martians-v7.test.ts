@@ -113,22 +113,23 @@ describe("Signal from Home", () => {
       };
     });
     expect(summary).toEqual([
-      // Retune 3 (`pulp_wars-hmyk.21`): every clock shortened (M1 has one now).
+      // Retune 4 (`pulp_wars-hmyk.28`): the conquests' clocks lax again,
+      // the escort and the hunt still pressing, the hold as long as ever.
       {
         kind: "DOMINATION",
-        byRound: 15,
+        byRound: 20,
         rounds: undefined,
         bonus: ["WITHIN_ROUNDS", "UNIT_ALIVE"],
       },
       {
         kind: "CAPTURE",
-        byRound: 14,
+        byRound: 22,
         rounds: undefined,
         bonus: ["WITHIN_ROUNDS", "KEEP_CITIES"],
       },
       {
         kind: "ESCORT",
-        byRound: 13,
+        byRound: 16,
         rounds: undefined,
         bonus: ["WITHIN_ROUNDS", "KEEP_CITIES"],
       },
@@ -140,13 +141,13 @@ describe("Signal from Home", () => {
       },
       {
         kind: "CAPTURE",
-        byRound: 15,
+        byRound: 20,
         rounds: undefined,
         bonus: ["WITHIN_ROUNDS", "KEEP_CITIES"],
       },
       {
         kind: "KILL",
-        byRound: 14,
+        byRound: 16,
         rounds: undefined,
         bonus: ["WITHIN_ROUNDS", "KEEP_CITIES"],
       },
@@ -201,31 +202,37 @@ describe("Signal from Home", () => {
     expect(seat("MARTIAN_6", 0).forbiddenTechnologies).toContain("RAIDING");
   });
 
-  it("is much harder after retune 3 (pulp_wars-hmyk.21)", () => {
+  it("keeps the fourth retune's strong enemy starts (pulp_wars-hmyk.28)", () => {
     const seat = (id: string, index: number) =>
       mission(id).seats[index] as MissionDefinitionV7["seats"][number];
-    // Three missions start like a skirmish: one level 1 town and at most
-    // three units, almost no technology, almost no Coins.
-    for (const id of ["MARTIAN_1", "MARTIAN_2", "MARTIAN_5"]) {
-      const start = seat(id, 0);
-      expect(start.cities, id).toHaveLength(1);
-      expect(start.cities[0]?.level, id).toBe(1);
-      expect(start.units.length, id).toBeLessThanOrEqual(3);
-      expect(start.technologies.length, id).toBeLessThanOrEqual(2);
-      expect(start.coins, id).toBeLessThanOrEqual(3);
-      expect(start.reveal.radius, id).toBe(1);
+    // CAMPAIGN.md section 18.5: the enemies outnumber you from the start
+    // (your allies, Sugarcrest and the Rangers, do not count), and the
+    // difficulty comes from them rather than from waves.
+    for (const id of ORDER) {
+      const definition = mission(id);
+      const teams = definition.teams;
+      const ours = seat(id, 0).units.length;
+      const theirs = definition.seats
+        .slice(1)
+        .filter((_, index) => teams === undefined || teams[index + 1] !== 0)
+        .reduce((sum, item) => sum + item.units.length, 0);
+      expect(theirs, id).toBeGreaterThan(ours);
     }
-    // The other three start thin: one town, at most five units and five
-    // technologies, at most 3 Coins.
-    for (const id of ["MARTIAN_3", "MARTIAN_4", "MARTIAN_6"]) {
-      const start = seat(id, 0);
-      expect(start.cities, id).toHaveLength(1);
-      expect(start.units.length, id).toBeLessThanOrEqual(5);
-      expect(start.technologies.length, id).toBeLessThanOrEqual(5);
-      expect(start.coins, id).toBeLessThanOrEqual(3);
-    }
-    // Every hostile seat that has a directive attacks (the Lodge of M5
-    // holds its hall, and the Rangers of M6 are on your side).
+    const waves = (id: string) =>
+      (mission(id).reinforcements ?? []).map((wave) => wave.round);
+    expect(waves("MARTIAN_1")).toEqual([]);
+    expect(waves("MARTIAN_2")).toEqual([]);
+    expect(waves("MARTIAN_3")).toEqual([8]);
+    expect(waves("MARTIAN_4")).toEqual([5, 10]);
+    expect(waves("MARTIAN_5")).toEqual([]);
+    expect(waves("MARTIAN_6")).toEqual([5, 9]);
+    for (const id of ORDER)
+      for (const wave of mission(id).reinforcements ?? []) {
+        expect(wave.announce, id).toBe(true);
+        expect(wave.line, id).toBeTypeOf("string");
+      }
+    // Every hostile seat that has a directive attacks (the Lodge holds its
+    // hall in M5 and its hills in M6).
     for (const id of ORDER)
       for (const [index, item] of mission(id).seats.entries()) {
         if (index === 0 || item.directive === undefined) continue;
@@ -243,25 +250,30 @@ describe("Signal from Home", () => {
           `${id} seat ${String(index)}`,
         ).toBe(true);
       }
-    // Every mission from the second on sends at least two announced enemy
-    // waves with a story line of their own.
-    for (const id of ORDER.slice(1)) {
-      const hostile = (mission(id).reinforcements ?? []).filter(
-        (wave) => wave.seat !== 0 && mission(id).teams?.[wave.seat] !== 0,
-      );
-      expect(hostile.length, id).toBeGreaterThanOrEqual(2);
-      for (const wave of hostile) {
-        expect(wave.announce, id).toBe(true);
-        expect(wave.line, id).toBeTypeOf("string");
-      }
+    // Some economy back: M1 and M2 start from one level 2 town, and every
+    // mission starts with a Saucer to beam with.
+    for (const id of ["MARTIAN_1", "MARTIAN_2"]) {
+      expect(seat(id, 0).cities, id).toHaveLength(1);
+      expect(seat(id, 0).cities[0]?.level, id).toBe(2);
     }
+    for (const id of ORDER)
+      expect(
+        seat(id, 0).units.some((unit) => unit.role === "RAIDER"),
+        id,
+      ).toBe(true);
+    // M5: eight Redcaps without Drill or Walls rush Red Dust (with them
+    // and two Orc Brutes no strike force got up the road).
+    const redcaps = seat("MARTIAN_5", 2);
+    expect(redcaps.units).toHaveLength(8);
+    for (const tech of ["DRILL", "FORTIFICATION"])
+      expect(redcaps.forbiddenTechnologies, tech).toContain(tech);
     for (const [id, revision] of [
-      ["MARTIAN_1", 3],
-      ["MARTIAN_2", 2],
-      ["MARTIAN_3", 3],
-      ["MARTIAN_4", 2],
-      ["MARTIAN_5", 3],
-      ["MARTIAN_6", 2],
+      ["MARTIAN_1", 4],
+      ["MARTIAN_2", 3],
+      ["MARTIAN_3", 4],
+      ["MARTIAN_4", 3],
+      ["MARTIAN_5", 4],
+      ["MARTIAN_6", 3],
     ] as const)
       expect(mission(id).revision, id).toBe(revision);
   });
