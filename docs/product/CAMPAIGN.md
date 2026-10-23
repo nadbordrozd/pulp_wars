@@ -5570,6 +5570,134 @@ Plesiosaurs), G5 (seven waves on a level 3 Rock with three units) and the
 Dwarf campaign's D1 (see section 20.4) are the likeliest to be unwinnable
 and are the first to ease.
 
+### 19.5 Retune 4: toward the middle, strong enemy starts (`pulp_wars-hmyk.29`)
+
+The user, 2026-10-23, about retune 3 (section 19.4): the campaign was
+mostly impossible, "the enemies are too strong and the time limits are too
+harsh. In most cases the time limit doesn't even come into play because
+the enemies overwhelm you anyway." So this pass eases it toward the
+middle, and it must stay a real fight. It keeps the method of sections
+15.6, 16.5 and 17.5. The difficulty comes from strong, aggressive enemy
+starts rather than the clock. Conquest and capture clocks are lax (about
+one and a half times a good win), the hunt and the escort keep a
+meaningful clock, and the hold-out keeps its sixteen rounds. Waves only
+fine-tune: every wave of retune 3 is cut except G5's landings, which are
+the story (the Rock is on its own island). Some economy comes back (Coins,
+a village per start, level 2 and walled towns where they fit). Mission 1
+is slightly easier than the rest. For missions 2 to 6 the first
+thoughtful attempt is lost or won narrowly, and the autopilot (section 15)
+loses from mission 2 on.
+
+The earlier campaigns' lessons held here too. Weak extra units only feed
+the crew's Gang Up and Scrap Buggy chains, so the enemy keeps strong units
+in good positions: a Wight holding Wreckers' Cove, seven men on Port
+Kessler's headland, the Lodge's second choir on the road. Waves that came
+in on the map's far side became units on the map at the start (G5's first
+landing party, G6's choir).
+
+This section supersedes section 19.4's numbers. All six missions are now
+revision 4, re-pinned in both pin tables. Every mission's enemies
+outnumber your side, yours and the Thane's escort together
+(`tests/unit/campaign-goblins-v7.test.ts`): G1 7 to 4, G2 7 to 4, G3 7 to
+4, G4 15 to 4, G5 10 to 4 and G6 21 to 10.
+
+| Mission | Your start now                                                                                                                                                                                                                      | Enemies now                                                                                                                                                                                                                                            | Clock and stars                                        | Waves                                                                                                                         |
+| ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
+| G1      | Rustgut Camp level 2 (was 1), Gathering, 5 Coins (were 2), Grubnak, Snikkit, a second Goblin (new) and the Ogre, the two hill villages back                                                                                         | Fort Bullion seven men (the 4,7 Guard gone), 4 Coins (were 10), Gathering and Farming forbidden again (with them the fort grew to level 4 in round 1); three hold, the rest march from round 4 (was 3)                                                 | conquest by 20 (was 14); by 14 (was 10), Snikkit lives | none (the round-6 relief column cut)                                                                                          |
+| G2      | Gullcliff Camp level 2, Hunting and Marksmanship (Bomb Chuckers), 5 Coins (were 2), Mogga, two Goblins and a Chucker (were Mogga and a Goblin), the village on the downs back                                                       | the dead seven (were eight): a Wight (Rise Again) holds the cove with two Zombies, a Skeleton and the Necromancer (garrison 5), two Skeletons march from round 4; 5 Coins (were 8), Gathering and Hunting                                              | capture by 20 (was 14); by 14 (was 12), no city lost   | none (rounds 5 and 9 cut)                                                                                                     |
+| G3      | Tarry Wharf level 2, two Fire Rafts (was one) and the Diving Barrel, 5 Coins (were 3), Submersibles still to learn, the village on the crew's shore back; the whole sea known again                                                 | Snapjaw, a young Plesiosaur (the third gone), three Dugouts, 6 Coins (were 10); the hunt from round 3 (was 2)                                                                                                                                          | hunt by 15 (was 13); by 11 (was 10), no city lost      | none (rounds 4 and 7 cut)                                                                                                     |
+| G4      | Egg Rock level 1 (a level 2 camp does not fit: no Grass), Snikkit, the Ogre, a Chucker and an Orc Brute (new), seven technologies (Gathering, Leadership and Land Grants back), 5 Coins (were 3), the village across the water back | the port nine (seven on the headland, two outside the neck march from round 4), 6 Coins (were 12), no Gathering or Scouting; the tribes six (were eight), 5 Coins (were 8), Egg Rock stormed from round 4                                              | capture by 20 (was 16); by 15 (was 13), Snikkit lives  | none (rounds 4, 6, 8 and 11 cut)                                                                                              |
+| G5      | the Rock level 3 walled, Mogga, a Brute, a Goblin and a Chucker (back), five technologies (were three), 5 Coins (were 2), the eastern village back                                                                                  | the loyalists' camp level 2 (was 3), 6 Coins (were 10), their first landing party (two Fighters, a rifle and a Guard) ashore at the start; the Martians a Brain and three saucers (were five), 6 Coins (were 10)                                       | hold 16 (kept); no city lost, Mogga lives              | loyalists rounds 7 and 11 (were 3, 6, 9 and 12), Martians rounds 5 and 9 (were 4, 8 and 12), the raft crews round 12 (was 13) |
+| G6      | Grubnak's Hall level 3 walled (was 2) and the River Quay back, the Getaway, Warboss, Ogre, Goblin, Brute (new) and Chucker (new), eight technologies (were six), 6 Coins (were 3), the village up the road back                     | the Lodge fifteen (were thirteen; two of retune 3's extras gone, its second choir of a Hexer's rifle, a Familiar, an Initiate and an Idol Bearer on the road from the start), 6 Coins (were 10), Favour 6; the dead six (were eight), 5 Coins (were 8) | escort by 14 (was 16); by 10 (was 13), no city lost    | none (rounds 3, 5, 8 and 11 cut)                                                                                              |
+
+**Hand play** through `play-text`, authorised for this pass. The
+baseline, retune 3 under the autopilot: G1 lost in round 4, G2 in round 4,
+G3 in round 12, G4 in round 3, G5 in round 11 and G6 in round 2 (the
+escort lost). The winning logs replay command for command on the final
+definitions.
+
+| Mission | Autopilot (final)                 | Thoughtful attempts on the final definition                                                                    | Tried and dropped                                                                                                                                                                                                        |
+| ------- | --------------------------------- | -------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| G1      | defeat, round 14                  | win, round 17 of 20, 2 stars (the round-14 star missed), Snikkit lived                                         | the fort with Gathering and Farming and 6 Coins: lost (abandoned in round 6): it grew to level 4 in round 1, took the middle village and had eleven men to six                                                           |
+| G2      | defeat, round 13                  | win, round 15 of 20, 2 stars (the round-14 star missed), after two losses on the definition before             | the Wight rushing with two Skeletons: two losses (abandoned in rounds 9 and 11): the inspired Wight killed or crippled Mogga, a Skeleton took the new village and trained a Skeleton a turn, five slots against ten dead |
+| G3      | defeat, round 11                  | win, round 10 of 15, 3 stars, after one loss on the definition before (four barrels and a raft lost)           | retune 3's southern-waters reveal: lost (abandoned in round 8, Snapjaw never seen); the third Plesiosaur back: lost (abandoned in round 6, Dugouts screened Snapjaw and rammed the barrels)                              |
+| G4      | defeat, round 6                   | win, round 17 of 20, 2 stars (the round-15 star missed), Snikkit lived at 1 HP for five rounds (first attempt) | none                                                                                                                                                                                                                     |
+| G5      | defeat, round 11                  | win, held 16, 2 stars (Mogga killed in round 4), one Brute left at the end (first attempt)                     | none                                                                                                                                                                                                                     |
+| G6      | defeat, round 9 (the escort lost) | loss (round 5, the Getaway ran ahead into the forest and died), then a win in round 8 of the then 18, 3 stars  | without the choir on the road: a first-try win in round 10, 3 stars, the Getaway at 3 HP (too easy for the finale); three Lodge holders on the pass instead: the autopilot won in round 9                                |
+
+What decided them:
+
+- **G1.** Mission 1 stays the gentlest. With Gathering and Farming the fort
+  boomed (Workshop, farm, Boom and a free Raider by round 3); without them
+  it fields Guards on Field Defenses. The crew's fruit, game and the
+  Explorer monument take the camp to level 3 (Scouts) and the hill village
+  to level 2; Gang Up kills the rush's Fighters and its rifle (a Goblin
+  with +2 kills a rifle, the Ogre with +2 a Fighter); then Bomb Chuckers
+  (4 a bomb on a fortified Guard, which heals 4) and Explosives: Brutes
+  with Breach and Gang Up break the Guards, and a Brute on each emptied
+  centre takes the toll and the fort.
+- **G2.** The cove's Wight decides it. Rushing, inspired by the
+  Necromancer, it hit Mogga for 10 to 11 and rose again when bombed down;
+  a Skeleton then took the new village, which trained a Skeleton a turn
+  for the dead. Holding the cove, the Wight leaves the crew room to grow:
+  Bomb Chuckers (no retaliation) killed the raised Skeletons, a Wolf Rider
+  and Mogga with Gang Up kept the village, and two bombs killed the
+  Necromancer at the cove's edge in round 7. The walled centre trains a
+  Skeleton each turn, so it falls only to a bomb and a melee kill with
+  Gang Up that advances onto it (Mogga, 9 damage with +2).
+- **G3.** Seeing the sea is the mission. A submerged Plesiosaur is shown
+  only on explored water, and Snapjaw does not come to the wharf on its
+  own, so with retune 3's reveal it was never found. Pearls, ports and the
+  free Explorer monument give the wharf a barrel a turn; Dugouts ram a
+  barrel for 10, so each barrel that torpedoes a Dugout is lost to the
+  next. Snapjaw ate a raft (Alpha, 20 HP, full heal) beside the wharf and
+  two barrels torpedoed it (12 and 8) in the same turn.
+- **G4.** The tribes and the port fight each other as much as the crew
+  (their rifle and the tribes killed each other's men in rounds 1 and 2).
+  The crew takes Tarpit with the Ogre and grows Brutes; the port's two
+  rifles (range 2) are what kill, and Bomb Chuckers die to them. The
+  headland falls to Breach Brutes with Gang Up from the neck, once a kill
+  or a Moon Gun drop empties the centre.
+- **G5.** Mogga died early (a rifle after the Ogre fought the landing
+  party's Guard). The Rock reached level 5 by round 5 (farms and a
+  Workshop) and its free Troll carried the defence to round 12, when it
+  died overextended. The waves that land beside the Rock (the round-11
+  loyalists, whose own tiles were taken) are the danger; the raft crews'
+  tiles were next to enemies, so they came in on the far islands. The
+  hold was won by moving the wounded Brute off the walled centre and
+  training a fresh one onto it each turn from round 14.
+- **G6.** The crew kills the choir's Hexer with a bomb and a Goblin in
+  round 2 and its Initiates with a Scrap Buggy chain and the Buggy's
+  Crash; the Lodge's Horror spends the game on the Thane's Steam Moles.
+  The way to the Gate runs through forest: the Getaway must stop in the
+  forest at 9,9 and then runs 8,8, 7,7 and 7,6 in one turn. Sent ahead
+  into that forest alone, it died to an Imp and an Initiate; kept inside
+  the mob, with the Ogre scouting a tile ahead, it arrived in round 8.
+
+Deviations from the brief:
+
+- **G2 and G3 were won on the second definition after losses on the
+  first** (two in G2, one in G3), so their first attempts on the final
+  definitions were played with the plan known; G3's was a 3-star win in
+  round 10 of 15 (four barrels lost). G6's first attempt on its final
+  definition was lost and the second was a comfortable 3-star win.
+- **G5 keeps waves** as its main pressure: the Rock is on its own island
+  and the loyalists cannot cross water except by landing. They are cut
+  from seven to four, and the first landing party is on the map from the
+  start.
+- **G4's returned village** stands across the water from Egg Rock, where
+  the crew cannot reach it (Shorecraft is forbidden); it is the tribes'.
+
+**Follow-ups.** A wave never lands next to a hostile unit, and its
+fallback search runs ring by ring to the edge of the board; in G5 the raft
+crews' wave came in on the far islands (13,6, 15,6, 5,5, 6,5), useless to
+the Rock and in among the enemies. A per-wave cap on how far a wave may be
+pushed, or a "skip if blocked" option, would make friendly waves reliable.
+In G4 a city reward unit (the tribes' Militia) displaced the crew's Ogre
+off Tarpit's centre, which it had taken by a kill; that looks wrong for a
+hostile unit and needs a look at the rules. G6 is sensitive to the
+Lodge's placement: three holders on the pass let the autopilot through.
+
 ## 20. The Dwarf campaign, "The Bottomless" (`pulp_wars-hmyk.9`)
 
 The fourth tier-2 faction campaign, after the Goblins (section 19): six

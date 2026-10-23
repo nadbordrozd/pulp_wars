@@ -26,11 +26,11 @@ export const CHAPTER_GOBLINS_V7: CampaignChapterV7 = Object.freeze({
       name: "Grubnak Gets Bored",
       format: "CONQUEST",
       briefing:
-        "The Baron's last soldiers on the mainland are sitting in Fort Bullion with nothing to guard but his paperwork, and they have counted you: a Warboss, a goblin and an Ogre. Grubnak has never read paperwork, but he can smell a map. Take the fort, find the papers, and give the one with a vault on it to Snikkit, who can read. Then, says Grubnak, we rob a baron.",
-      objective: "Take the fort and its toll by turn 14.",
+        "The Baron's last soldiers on the mainland are sitting in Fort Bullion with nothing to guard but his paperwork, and they have counted you: a Warboss, two goblins and an Ogre. Grubnak has never read paperwork, but he can smell a map. Take the fort, find the papers, and give the one with a vault on it to Snikkit, who can read. Then, says Grubnak, we rob a baron.",
+      objective: "Take the fort and its toll by turn 20.",
       hints: Object.freeze([
         "Each Goblin beside a target makes the next hit harder.",
-        "The fort's men march on your camp from turn 3.",
+        "The fort's men march on your camp from turn 4.",
         "Keep Snikkit out of the brawl: he does the reading.",
       ]),
       closing:
@@ -47,11 +47,11 @@ export const CHAPTER_GOBLINS_V7: CampaignChapterV7 = Object.freeze({
       format: "CAPTURE",
       briefing:
         "The island is across the Lost Sea, and goblins have never owned a boat they did not set on fire. The only shipyard on this coast is Wreckers' Cove, and the Unquiet have taken it: drowned sailors who walked ashore when the bell rang. Take the cove and the boats are yours, powder and all. Mogga the Ogre will carry the barrels. Nobody else is to touch the powder.",
-      objective: "Take Wreckers' Cove by turn 14.",
+      objective: "Take Wreckers' Cove by turn 20.",
       hints: Object.freeze([
         "Bombs hurt your own: chuck them ahead of the mob.",
         "Kill the Necromancer and the dead stop getting up.",
-        "The dead march from turn 3; more come on turns 5 and 9.",
+        "A Wight guards the cove: bomb it from two tiles away.",
       ]),
       closing:
         "The boats leak, the powder is damp, and the crew is singing. Snikkit has drawn the course across the Lost Sea in crayon.",
@@ -67,11 +67,11 @@ export const CHAPTER_GOBLINS_V7: CampaignChapterV7 = Object.freeze({
       format: "KILL",
       briefing:
         "Halfway across, the Lost Sea gets more lost. The island's sea-beasts do not like boats, and the biggest of them, a grey old plesiosaur the natives call Snapjaw, has already eaten three fire rafts and a rowing boat. Sink Snapjaw and the way to Egg Rock lies open. Fire rafts are very good at sinking things, including themselves.",
-      objective: "Sink Snapjaw by turn 13.",
+      objective: "Sink Snapjaw by turn 15.",
       hints: Object.freeze([
         "Don't feed Snapjaw: its next kill heals it whole.",
         "A Diving Barrel torpedoes from below, unanswered.",
-        "The tribes hunt your wharf from turn 2: guard it.",
+        "The tribes hunt your wharf from turn 3: guard it.",
       ]),
       closing:
         "Snapjaw sinks with a burp. On Egg Rock, Snikkit stands on a barrel and looks across the bay at Port Kessler: walls, guns, and on the hill above the town a cannon pointed at the moon.",
@@ -86,11 +86,11 @@ export const CHAPTER_GOBLINS_V7: CampaignChapterV7 = Object.freeze({
       format: "CAPTURE",
       briefing:
         "Port Kessler's vault sits under the harbour behind walls no goblin has ever climbed. But on the hill above the town stands the Baron's Moon Gun, a circus cannon built to fire a man at the moon, and Snikkit has done the sums. Take the Moon Gun, fire the crew over the walls, and have the vault before the garrison and the island's angry natives work out what is going on. Bring sacks.",
-      objective: "Take Port Kessler by turn 16.",
+      objective: "Take Port Kessler by turn 20.",
       hints: Object.freeze([
         "The Moon Gun fires a unit to any empty tile within 5.",
         "With Explosives an Orc Brute's hit ignores Walls.",
-        "The tribes storm Egg Rock from turn 3: hold the beach.",
+        "The tribes storm Egg Rock from turn 4: hold the beach.",
       ]),
       closing:
         "The vault is full: gold, silver, the good cutlery, and a long iron crate marked 'bell-tongue'. The Baron escapes into the jungle with his hat and his debts and nothing else. The crate hums.",
@@ -110,7 +110,7 @@ export const CHAPTER_GOBLINS_V7: CampaignChapterV7 = Object.freeze({
       hints: Object.freeze([
         "Never stand beside a Brain: it takes your Goblins.",
         "An Orc Brute on a Field Defense is a wall.",
-        "The raft crews land to help you on turn 13.",
+        "Keep the beach clear: the raft crews row in on turn 12.",
       ]),
       closing:
         "On the sixteenth night the rafts are ready, and the crew sails home with the gold, the crate, and three saucer pilots who surrendered to Mogga. On the quay at home a polite man in a grey coat is waiting.",
@@ -126,7 +126,7 @@ export const CHAPTER_GOBLINS_V7: CampaignChapterV7 = Object.freeze({
       format: "ESCORT",
       briefing:
         "The polite man in grey offers twice the crate's weight in gold. Snikkit has made inquiries: the crate holds the clapper of the dwarves' Deep Bell, and the polite man's friends wear hoods. Grubnak, for reasons he cannot explain, says no. Now the Grey Lodge and the Unquiet stand between you and Thane Ironbraid, waiting at her gate with beer. Get the loot-cart there in one piece.",
-      objective: "Get the cart to Ironbraid Gate by turn 16.",
+      objective: "Get the cart to Ironbraid Gate by turn 14.",
       hints: Object.freeze([
         "A Hexer turns your best unit into a frog: kill it first.",
         "A Scrap Buggy that kills may strike again: chain them.",

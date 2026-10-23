@@ -30,15 +30,14 @@ import type { MissionDefinitionV7 } from "./types";
  * starts on Egg Rock: beside the Bomb Chucker its death blast left him at
  * 1 HP in round 1.
  *
- * The third retune (`pulp_wars-hmyk.21`, CAMPAIGN.md section 19.4, NOT play
- * tested): the crew lands lean (Snikkit, the Ogre and a Chucker, four
- * technologies, 3 Coins; the village by the beachhead is gone). Port
- * Kessler has ten men (seven on the headland, three outside the neck who
- * march on the beachhead from round 3), 12 Coins and Gathering and
- * Scouting; the tribes have eight men, 8 Coins and a level 2 home, and
- * assault Egg Rock from round 3; four announced waves (the tribes in
- * rounds 4 and 8, the Baron's harbour guard in rounds 6 and 11) come up
- * the island. The clock is 16 rounds.
+ * The fourth retune (`pulp_wars-hmyk.29`, CAMPAIGN.md section 19.5, hand
+ * played) eases the third (a lean landing against a port of ten, assaulting
+ * tribes and four waves on a 16-round clock): the crew lands with Snikkit,
+ * the Ogre, a Chucker and an Orc Brute, seven technologies (Leadership and
+ * Land Grants back) and 5 Coins (Egg Rock stays level 1: it has no Grass to
+ * grow on); the port has nine (seven on the headland, two outside the neck
+ * who march from round 4) and 6 Coins; the tribes six and 5 Coins, storming
+ * Egg Rock from round 4. No waves; a lax 20-round clock.
  *
  * ```text
  *      x 0123456
@@ -56,7 +55,9 @@ export const GOBLIN_4_V7: MissionDefinitionV7 = {
   // Revision 2 (`pulp_wars-hmyk.17`): each seat explores its units' sight.
   // Revision 3 (`pulp_wars-hmyk.21`, the third retune): a lean landing
   // against a port of ten, assaulting tribes and four announced waves.
-  revision: 3,
+  // Revision 4 (`pulp_wars-hmyk.29`, the fourth retune): a Brute and three
+  // technologies more, a port of nine, no waves, a lax clock.
+  revision: 4,
   seed: 20261504,
   // <map>
   size: 16,
@@ -65,12 +66,11 @@ export const GOBLIN_4_V7: MissionDefinitionV7 = {
     size: 16,
     seats: 3,
     seed: 74,
-    // Tarpit and Egg Rock stand on villages.
+    // Tarpit and Egg Rock stand on villages (retune 4 gives back the one
+    // across the water from Egg Rock).
     edits: [
       { kind: "VILLAGE", at: { x: 3, y: 2 }, present: false },
       { kind: "VILLAGE", at: { x: 6, y: 2 }, present: false },
-      // Retune 3: no free village by the beachhead.
-      { kind: "VILLAGE", at: { x: 9, y: 2 }, present: false },
     ],
   },
   terrain: [
@@ -129,6 +129,7 @@ export const GOBLIN_4_V7: MissionDefinitionV7 = {
     "PPPPPPHHHHHHHPPP",
   ],
   villages: [
+    { x: 9, y: 2 },
     { x: 14, y: 5 },
     { x: 6, y: 11 },
     { x: 7, y: 14 },
@@ -149,17 +150,26 @@ export const GOBLIN_4_V7: MissionDefinitionV7 = {
   seats: [
     {
       faction: "GOBLIN",
-      // Retune 3: a lean landing. Snikkit, the Ogre and a Chucker, four
-      // technologies (Bomb Chuckers, Orc Brutes and the way to Explosives),
-      // 3 Coins.
-      coins: 3,
-      technologies: ["HUNTING", "MARKSMANSHIP", "DRILL", "FORTIFICATION"],
+      // Retune 4: Snikkit, the Ogre, a Chucker and an Orc Brute, seven
+      // technologies (Land Grants, Bomb Chuckers, Orc Brutes and the way to
+      // Explosives), 5 Coins.
+      coins: 5,
+      technologies: [
+        "GATHERING",
+        "ADMINISTRATION",
+        "PLANNING",
+        "HUNTING",
+        "MARKSMANSHIP",
+        "DRILL",
+        "FORTIFICATION",
+      ],
       cities: [{ name: "Egg Rock", at: { x: 6, y: 2 }, level: 1, rewards: [] }],
       units: [
         // Snikkit, who did the sums.
         { role: "FIGHTER", at: { x: 6, y: 2 }, tag: "SNIKKIT" },
         { role: "SWORDSMAN", at: { x: 5, y: 2 } },
         { role: "MARKSMAN", at: { x: 4, y: 1 } },
+        { role: "GUARD", at: { x: 5, y: 3 } },
       ],
       // The beachhead, the hills round the Gun and the port's own tiles
       // (the objective's place must be known).
@@ -175,16 +185,9 @@ export const GOBLIN_4_V7: MissionDefinitionV7 = {
       // Kessler's island garrison: Port Kessler, walled, with its guns on
       // the headland. The Baron himself stays in his counting-house.
       faction: "ORIGINAL",
-      // Retune 3: ten men, 12 Coins, Gathering and Scouting.
-      coins: 12,
-      technologies: [
-        "GATHERING",
-        "SCOUTING",
-        "HUNTING",
-        "MARKSMANSHIP",
-        "DRILL",
-        "FORTIFICATION",
-      ],
+      // Retune 4: nine men and 6 Coins.
+      coins: 6,
+      technologies: ["HUNTING", "MARKSMANSHIP", "DRILL", "FORTIFICATION"],
       cities: [
         {
           name: "Port Kessler",
@@ -193,7 +196,7 @@ export const GOBLIN_4_V7: MissionDefinitionV7 = {
           rewards: ["STOCKPILE", "WALLS"],
         },
       ],
-      // Seven on the headland, in the order of the garrison, then three
+      // Seven on the headland, in the order of the garrison, then two
       // outside the neck who march on the beachhead.
       units: [
         { role: "GUARD", at: { x: 4, y: 5 } },
@@ -203,7 +206,6 @@ export const GOBLIN_4_V7: MissionDefinitionV7 = {
         { role: "MARKSMAN", at: { x: 5, y: 6 } },
         { role: "FIGHTER", at: { x: 2, y: 5 } },
         { role: "GUARD", at: { x: 1, y: 6 } },
-        { role: "FIGHTER", at: { x: 3, y: 3 } },
         { role: "FIGHTER", at: { x: 4, y: 3 } },
         { role: "MARKSMAN", at: { x: 2, y: 3 } },
       ],
@@ -224,14 +226,14 @@ export const GOBLIN_4_V7: MissionDefinitionV7 = {
         "METALLURGY",
         "EXPLOSIVES",
       ],
-      // The garrison holds the headland and its neck; from round 3 the
-      // three outside the neck march on the beachhead.
+      // The garrison holds the headland and its neck; from round 4 the
+      // two outside the neck march on the beachhead.
       directive: [
         {
           kind: "GUARD",
           zone: [{ x0: 1, y0: 4, x1: 5, y1: 6 }],
           garrison: 7,
-          untilRound: 3,
+          untilRound: 4,
         },
         {
           kind: "GUARD",
@@ -244,12 +246,11 @@ export const GOBLIN_4_V7: MissionDefinitionV7 = {
     {
       // The island's tribes, who bite whoever lands.
       faction: "DINOSAUR",
-      // Retune 3: a level 2 home, eight men, 8 Coins.
-      coins: 8,
+      // Retune 4: a level 2 home, six men, 5 Coins.
+      coins: 5,
       technologies: ["GATHERING", "HUNTING", "SCOUTING"],
       // Fernhollow, their home, is on the north-eastern island; Tarpit is
-      // the hunting camp on the Baron's island, and the hunters keep coming
-      // out of the jungle (the waves below).
+      // the hunting camp on the Baron's island.
       cities: [
         {
           name: "Fernhollow",
@@ -265,15 +266,13 @@ export const GOBLIN_4_V7: MissionDefinitionV7 = {
         { role: "FIGHTER", at: { x: 2, y: 2 }, home: 1 },
         { role: "FIGHTER", at: { x: 3, y: 1 }, home: 1 },
         { role: "RAIDER", at: { x: 1, y: 1 }, home: 1 },
-        { role: "FIGHTER", at: { x: 4, y: 0 }, home: 1 },
-        { role: "RAIDER", at: { x: 4, y: 2 }, home: 1 },
         { role: "FIGHTER", at: { x: 12, y: 2 } },
       ],
       reveal: { radius: 2 },
       forbiddenTechnologies: ["METALLURGY", "CHIVALRY"],
-      // The tribes bite whoever lands: from round 3 they storm Egg Rock.
+      // The tribes bite whoever lands: from round 4 they storm Egg Rock.
       directive: [
-        { kind: "NORMAL", untilRound: 3 },
+        { kind: "NORMAL", untilRound: 4 },
         { kind: "ASSAULT", target: { x: 6, y: 2 } },
       ],
     },
@@ -287,64 +286,14 @@ export const GOBLIN_4_V7: MissionDefinitionV7 = {
     "SUBMERSIBLES",
   ],
   landmarks: [{ tag: "PORT_KESSLER", at: { x: 4, y: 5 } }],
-  // The island's hunters, out of the jungle on its western end, and the
-  // Baron's harbour guard, up the neck.
-  reinforcements: [
-    {
-      seat: 2,
-      round: 4,
-      units: [
-        { role: "RAIDER", at: { x: 0, y: 2 } },
-        { role: "FIGHTER", at: { x: 1, y: 1 } },
-        { role: "RAIDER", at: { x: 0, y: 0 } },
-      ],
-      line: "The hunters come out of the jungle, painted for the occasion.",
-      announce: true,
-    },
-    {
-      seat: 1,
-      round: 6,
-      units: [
-        { role: "GUARD", at: { x: 3, y: 3 } },
-        { role: "MARKSMAN", at: { x: 2, y: 3 } },
-        { role: "FIGHTER", at: { x: 4, y: 3 } },
-      ],
-      line: "The Baron's harbour guard doubles up the neck, grumbling.",
-      announce: true,
-    },
-    {
-      seat: 2,
-      round: 8,
-      units: [
-        { role: "SWORDSMAN", at: { x: 1, y: 1 } },
-        { role: "RAIDER", at: { x: 0, y: 2 } },
-        { role: "FIGHTER", at: { x: 0, y: 3 } },
-        { role: "RAIDER", at: { x: 0, y: 0 } },
-      ],
-      line: "The tribes' chief walks out of the trees, and he is not alone.",
-      announce: true,
-    },
-    {
-      seat: 1,
-      round: 11,
-      units: [
-        { role: "GUARD", at: { x: 3, y: 3 } },
-        { role: "GUARD", at: { x: 4, y: 3 } },
-        { role: "MARKSMAN", at: { x: 2, y: 3 } },
-        { role: "FIGHTER", at: { x: 5, y: 3 } },
-      ],
-      line: "The Baron's last pay-packet buys him four more guards.",
-      announce: true,
-    },
-  ],
-  // Capture Port Kessler by round 16 (it was 20). The stars: by round 13,
-  // and Snikkit lives.
+  // Capture Port Kessler by round 20 (retune 4: lax). The stars: by round
+  // 15, and Snikkit lives.
   objective: {
     kind: "CAPTURE",
     places: ["PORT_KESSLER"],
-    byRound: 16,
+    byRound: 20,
     bonus: [
-      { kind: "WITHIN_ROUNDS", rounds: 13 },
+      { kind: "WITHIN_ROUNDS", rounds: 15 },
       { kind: "UNIT_ALIVE", unit: "SNIKKIT" },
     ],
   },

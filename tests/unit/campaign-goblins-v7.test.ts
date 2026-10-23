@@ -130,23 +130,26 @@ describe("The Big Score", () => {
         ),
       };
     });
-    // The third retune (`pulp_wars-hmyk.21`): clocks cut by about a fifth.
+    // The fourth retune (`pulp_wars-hmyk.29`, CAMPAIGN.md section 19.5):
+    // the conquests and captures get a lax clock (about one and a half
+    // times a good win); the hunt and the escort keep a meaningful one; the
+    // hold-out keeps its length.
     expect(summary).toEqual([
       {
         kind: "DOMINATION",
-        byRound: 14,
-        bonus: ["WITHIN_ROUNDS 10", "UNIT_ALIVE"],
+        byRound: 20,
+        bonus: ["WITHIN_ROUNDS 14", "UNIT_ALIVE"],
       },
       {
         kind: "CAPTURE",
-        byRound: 14,
-        bonus: ["WITHIN_ROUNDS 12", "KEEP_CITIES"],
+        byRound: 20,
+        bonus: ["WITHIN_ROUNDS 14", "KEEP_CITIES"],
       },
-      { kind: "KILL", byRound: 13, bonus: ["WITHIN_ROUNDS 10", "KEEP_CITIES"] },
+      { kind: "KILL", byRound: 15, bonus: ["WITHIN_ROUNDS 11", "KEEP_CITIES"] },
       {
         kind: "CAPTURE",
-        byRound: 16,
-        bonus: ["WITHIN_ROUNDS 13", "UNIT_ALIVE"],
+        byRound: 20,
+        bonus: ["WITHIN_ROUNDS 15", "UNIT_ALIVE"],
       },
       {
         kind: "SURVIVE",
@@ -155,8 +158,8 @@ describe("The Big Score", () => {
       },
       {
         kind: "ESCORT",
-        byRound: 16,
-        bonus: ["WITHIN_ROUNDS 13", "KEEP_CITIES"],
+        byRound: 14,
+        bonus: ["WITHIN_ROUNDS 10", "KEEP_CITIES"],
       },
     ]);
     expect(mission("GOBLIN_5").objective).toMatchObject({
@@ -177,31 +180,39 @@ describe("The Big Score", () => {
   });
 
   it("builds the missions as hand play left them", () => {
-    // G1 (third retune): the fort and its toll keep three and the rest
-    // march from round 3.
+    // G1 (fourth retune): the fort and its toll keep three and the rest
+    // march from round 4; the fort may not learn Gathering or Farming
+    // (with them it grew to level 4 in round 1).
     expect(seat("GOBLIN_1", 1).directive).toEqual([
-      expect.objectContaining({ kind: "GUARD", garrison: 3, untilRound: 3 }),
+      expect.objectContaining({ kind: "GUARD", garrison: 3, untilRound: 4 }),
       expect.objectContaining({
         kind: "GUARD",
         garrison: 3,
         others: { kind: "RUSH" },
       }),
     ]);
-    // G2: the Unquiet keep four on the cove and send the rest from round 3;
-    // they have no Leadership and no Land Grants.
+    for (const tech of ["GATHERING", "FARMING"])
+      expect(seat("GOBLIN_1", 1).forbiddenTechnologies, tech).toContain(tech);
+    // G2: the Unquiet keep five on the cove, their Wight among them, and
+    // send the rest from round 4; they have no Leadership and no Land
+    // Grants.
     expect(seat("GOBLIN_2", 1).directive).toEqual([
-      expect.objectContaining({ kind: "GUARD", garrison: 4, untilRound: 3 }),
+      expect.objectContaining({ kind: "GUARD", garrison: 5, untilRound: 4 }),
       expect.objectContaining({
         kind: "GUARD",
-        garrison: 4,
+        garrison: 5,
         others: { kind: "RUSH" },
       }),
     ]);
+    expect(
+      seat("GOBLIN_2", 1).units.findIndex((unit) => unit.role === "SWORDSMAN"),
+    ).toBeLessThan(5);
     for (const tech of ["ADMINISTRATION", "PLANNING"])
       expect(seat("GOBLIN_2", 1).forbiddenTechnologies, tech).toContain(tech);
-    // G3: Snapjaw is a Plesiosaur one kill from Alpha; the crew knows no
-    // Submersibles (it starts with one Diving Barrel it cannot rebuild) and
-    // the tribes may not learn them; the tribes hunt the wharf from round 2.
+    // G3: Snapjaw is a Plesiosaur one kill from Alpha; the crew starts with
+    // a Diving Barrel and must learn Submersibles to build more, the tribes
+    // may not learn them; the tribes hunt the wharf from round 3; the whole
+    // sea is known (a submerged Plesiosaur is seen only on explored water).
     expect(seat("GOBLIN_3", 1).units).toContainEqual(
       expect.objectContaining({ tag: "SNAPJAW", role: "SUBMARINE", kills: 2 }),
     );
@@ -211,17 +222,23 @@ describe("The Big Score", () => {
     );
     expect(seat("GOBLIN_3", 1).forbiddenTechnologies).toContain("SUBMERSIBLES");
     expect(seat("GOBLIN_3", 1).directive).toEqual([
-      { kind: "NORMAL", untilRound: 2 },
+      { kind: "NORMAL", untilRound: 3 },
       { kind: "RUSH" },
     ]);
-    // G4: the Moon Gun on the hill above the neck; ten men at the port,
+    expect(seat("GOBLIN_3", 0).reveal?.rects).toContainEqual({
+      x0: 0,
+      y0: 0,
+      x1: 15,
+      y1: 15,
+    });
+    // G4: the Moon Gun on the hill above the neck; nine men at the port,
     // seven of them on the headland; no ships; the tribes storm Egg Rock;
-    // four announced waves.
+    // no waves.
     const g4 = mission("GOBLIN_4");
     expect(g4.curiosities).toEqual([{ kind: "MOON_GUN", at: { x: 2, y: 1 } }]);
-    expect(seat("GOBLIN_4", 1).units).toHaveLength(10);
+    expect(seat("GOBLIN_4", 1).units).toHaveLength(9);
     expect(seat("GOBLIN_4", 1).directive).toEqual([
-      expect.objectContaining({ kind: "GUARD", garrison: 7, untilRound: 3 }),
+      expect.objectContaining({ kind: "GUARD", garrison: 7, untilRound: 4 }),
       expect.objectContaining({
         kind: "GUARD",
         garrison: 7,
@@ -229,15 +246,14 @@ describe("The Big Score", () => {
       }),
     ]);
     expect(seat("GOBLIN_4", 2).directive).toEqual([
-      { kind: "NORMAL", untilRound: 3 },
+      { kind: "NORMAL", untilRound: 4 },
       { kind: "ASSAULT", target: { x: 6, y: 2 } },
     ]);
     expect(g4.forbiddenTechnologies).toContain("SHORECRAFT");
-    expect((g4.reinforcements ?? []).map((wave) => wave.round)).toEqual([
-      4, 6, 8, 11,
-    ]);
-    // G5: the loyalists rush, the saucers go for the Rock, seven enemy
-    // waves, and the raft crews land in round 13.
+    expect(g4.reinforcements ?? []).toEqual([]);
+    // G5: the loyalists rush (their first landing party ashore at the
+    // start), the saucers go for the Rock, four enemy waves, and the raft
+    // crews row in in round 12.
     expect(seat("GOBLIN_5", 1).directive).toEqual({ kind: "RUSH" });
     expect(seat("GOBLIN_5", 2).directive).toMatchObject({ kind: "ASSAULT" });
     expect(
@@ -245,14 +261,15 @@ describe("The Big Score", () => {
         .filter((wave) => wave.seat !== 0)
         .map((wave) => wave.round)
         .sort((left, right) => left - right),
-    ).toEqual([3, 4, 6, 8, 9, 12, 12]);
+    ).toEqual([5, 7, 9, 11]);
     expect(
       (mission("GOBLIN_5").reinforcements ?? [])
         .filter((wave) => wave.seat === 0)
         .map((wave) => wave.round),
-    ).toEqual([13]);
-    // G6: the Lodge keeps four at its camps and sends the rest at the Hall;
-    // the Thane's escort holds the Gate.
+    ).toEqual([12]);
+    // G6: the Lodge keeps four at its camps and sends the rest at the Hall
+    // (its second choir starts on the road); the Thane's escort holds the
+    // Gate.
     expect(seat("GOBLIN_6", 1).directive).toMatchObject({
       kind: "GUARD",
       garrison: 4,
@@ -264,28 +281,57 @@ describe("The Big Score", () => {
     });
   });
 
-  it("keeps the third retune's lean starts, aggressive enemies and announced waves", () => {
-    // `pulp_wars-hmyk.21` (CAMPAIGN.md section 19.4): G1 to G3 start like a
-    // skirmish (one town, a few units, at most three technologies); no
-    // other start holds more than one town; every enemy marches or hunts
-    // from round 3 at the latest; every wave of missions 2 to 6 is
-    // announced and carries its story line.
-    for (const id of ["GOBLIN_1", "GOBLIN_2", "GOBLIN_3"]) {
-      expect(seat(id, 0).cities, id).toHaveLength(1);
-      expect(seat(id, 0).units.length, id).toBeLessThanOrEqual(3);
-      expect(seat(id, 0).technologies.length, id).toBeLessThanOrEqual(3);
-    }
-    expect(seat("GOBLIN_1", 0).technologies).toEqual([]);
-    expect(seat("GOBLIN_2", 0).technologies).toEqual([]);
+  it("starts the enemies stronger than you and keeps waves for fine-tuning", () => {
+    // `pulp_wars-hmyk.29` (CAMPAIGN.md section 19.5): the enemies outnumber
+    // your side (yours and the Thane's escort in G6) from the start, so the
+    // difficulty comes from them rather than from waves or the clock.
     for (const id of ORDER) {
-      expect(seat(id, 0).cities.length, id).toBe(1);
-      for (const enemy of mission(id).seats.slice(1)) {
-        expect(enemy.directive, `${id} ${String(enemy.faction)}`).toBeDefined();
+      const definition = mission(id);
+      const teams = definition.teams;
+      const side = (index: number) => teams?.[index] ?? index;
+      const count = (ours: boolean) =>
+        definition.seats
+          .filter((_, index) => (side(index) === side(0)) === ours)
+          .reduce((sum, item) => sum + item.units.length, 0);
+      expect(count(false), id).toBeGreaterThan(count(true));
+    }
+    // Some economy is back: every start has technology and at least 5
+    // Coins, and every start but G3's and G4's lean landings has a town of
+    // level 2 or more.
+    for (const id of ORDER) {
+      const start = seat(id, 0);
+      expect(start.technologies.length, id).toBeGreaterThan(0);
+      expect(start.coins, id).toBeGreaterThanOrEqual(5);
+    }
+    for (const id of ["GOBLIN_1", "GOBLIN_2", "GOBLIN_5", "GOBLIN_6"])
+      expect(
+        Math.max(...seat(id, 0).cities.map((city) => city.level ?? 1)),
+        id,
+      ).toBeGreaterThanOrEqual(2);
+    // Every hostile seat attacks: RUSH, an ASSAULT, or a GUARD that sends
+    // the rest.
+    for (const id of ORDER) {
+      const definition = mission(id);
+      const side = (index: number) => definition.teams?.[index] ?? index;
+      for (const [index, item] of definition.seats.entries()) {
+        if (side(index) === side(0)) continue;
+        const entries = Array.isArray(item.directive)
+          ? item.directive
+          : [item.directive];
+        const last = entries[entries.length - 1];
+        expect(
+          last?.kind === "RUSH" ||
+            last?.kind === "ASSAULT" ||
+            (last?.kind === "GUARD" && last.others !== undefined),
+          `${id} seat ${String(index)}`,
+        ).toBe(true);
       }
     }
-    for (const id of ORDER.slice(1)) {
+    // Waves only fine-tune: none but G5's landings (the story's), each
+    // announced with a story line of its own.
+    for (const id of ORDER) {
       const waves = mission(id).reinforcements ?? [];
-      expect(waves.length, id).toBeGreaterThanOrEqual(2);
+      if (id !== "GOBLIN_5") expect(waves, id).toEqual([]);
       for (const wave of waves) {
         expect(wave.line, `${id} round ${String(wave.round)}`).toBeTypeOf(
           "string",
