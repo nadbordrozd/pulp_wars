@@ -122,27 +122,29 @@ describe("The Egg Thief", () => {
       };
     });
     expect(summary).toEqual([
-      // Retune 3 (`pulp_wars-hmyk.21`): every clock shortened, DN1 has one.
+      // Retune 4 (`pulp_wars-hmyk.27`): the conquests lax (about 1.5 times
+      // a good hand-played win), the hunts tight; DN5's escort lax enough
+      // for a game that expands first (the correction pass).
       {
         kind: "DOMINATION",
-        byRound: 16,
-        bonus: ["WITHIN_ROUNDS 11", "UNIT_ALIVE"],
+        byRound: 20,
+        bonus: ["WITHIN_ROUNDS 13", "UNIT_ALIVE"],
       },
       { kind: "KILL", byRound: 16, bonus: ["WITHIN_ROUNDS 12", "UNIT_ALIVE"] },
       {
         kind: "ESCORT",
-        byRound: 18,
-        bonus: ["WITHIN_ROUNDS 14", "KEEP_CITIES"],
+        byRound: 20,
+        bonus: ["WITHIN_ROUNDS 16", "KEEP_CITIES"],
       },
-      { kind: "KILL", byRound: 15, bonus: ["WITHIN_ROUNDS 11", "UNIT_ALIVE"] },
+      { kind: "KILL", byRound: 16, bonus: ["WITHIN_ROUNDS 12", "UNIT_ALIVE"] },
       {
         kind: "ESCORT",
-        byRound: 15,
-        bonus: ["WITHIN_ROUNDS 11", "KEEP_CITIES"],
+        byRound: 22,
+        bonus: ["WITHIN_ROUNDS 16", "KEEP_CITIES"],
       },
       {
         kind: "CAPTURE",
-        byRound: 15,
+        byRound: 16,
         bonus: ["WITHIN_ROUNDS 11", "UNIT_ALIVE"],
       },
     ]);
@@ -156,12 +158,16 @@ describe("The Egg Thief", () => {
   });
 
   it("builds the missions as hand play left them", () => {
-    // DN1 (retune 3): a Guard and rifles on each poacher camp; you start
-    // like a skirmish, with no technology.
+    // DN1 (retune 4): a Guard and two rifles on each poacher camp, and a
+    // Champion at Tusker's Landing; you start with Drill and Nesting.
     const poachers = seat("DINOSAUR_1", 1).units.map((unit) => unit.role);
     expect(poachers.filter((role) => role === "GUARD")).toHaveLength(2);
-    expect(poachers.filter((role) => role === "MARKSMAN")).toHaveLength(3);
-    expect(seat("DINOSAUR_1", 0).technologies).toEqual([]);
+    expect(poachers.filter((role) => role === "MARKSMAN")).toHaveLength(4);
+    expect(poachers.filter((role) => role === "SWORDSMAN")).toHaveLength(1);
+    expect(seat("DINOSAUR_1", 0).technologies).toEqual([
+      "DRILL",
+      "FORTIFICATION",
+    ]);
     // DN2: Thornbury on a peak walled in by peaks, leashed to it; the peaks
     // are closed to you.
     const thornbury = seat("DINOSAUR_2", 1).units[0];
@@ -171,12 +177,14 @@ describe("The Egg Thief", () => {
     for (let dy = -1; dy <= 1; dy += 1)
       for (let dx = -1; dx <= 1; dx += 1)
         expect(dn2.terrain[at.y + dy]?.[at.x + dx], `${dx} ${dy}`).toBe("^");
-    // Retune 3: the Major and three guns hold the ridge round his peak, and
-    // every other man of the lodge rushes the nest.
+    // Retune 4: the Major, four rifles and a Guard fill the six peaks of
+    // the ridge (a full zone, so none of them steps off; retune 3's Major
+    // walked out of a half-empty one), and every other man of the lodge
+    // rushes the nest.
     const ridge = seat("DINOSAUR_2", 1).directive;
     expect(ridge).toMatchObject({
       kind: "GUARD",
-      garrison: 4,
+      garrison: 6,
       others: { kind: "RUSH" },
     });
     const zone = (
@@ -193,6 +201,20 @@ describe("The Egg Thief", () => {
           at.y <= rect.y1,
       ),
     ).toBe(true);
+    const tiles = zone.reduce(
+      (sum, rect) => sum + (rect.x1 - rect.x0 + 1) * (rect.y1 - rect.y0 + 1),
+      0,
+    );
+    const onRidge = seat("DINOSAUR_2", 1).units.filter((unit) =>
+      zone.some(
+        (rect) =>
+          rect.x0 <= unit.at.x &&
+          unit.at.x <= rect.x1 &&
+          rect.y0 <= unit.at.y &&
+          unit.at.y <= rect.y1,
+      ),
+    );
+    expect(onRidge).toHaveLength(tiles);
     for (const tech of ["ENGINEERING", "METALLURGY", "EXPLOSIVES"])
       expect(seat("DINOSAUR_2", 0).forbiddenTechnologies, tech).toContain(tech);
     // DN3: the Baron has no naval technology (his fleet keeps to the
@@ -208,29 +230,35 @@ describe("The Egg Thief", () => {
     expect(dn3.landmarks).toEqual([
       { tag: "BIG_TOP_BAY", at: { x: 13, y: 3 }, name: "Big Top Bay" },
     ]);
-    // DN4: eight Guards in a full ring round the ringmaster, leashed to
-    // the ring; the freed beasts arrive in rounds 6 and 10.
+    // DN4: eight Guards in a full ring round the ringmaster (a Champion
+    // since retune 4), leashed to the ring, and six rifles each held to
+    // its own post; the freed beasts arrive in rounds 6 and 10.
     const circus = seat("DINOSAUR_4", 1);
-    expect(circus.units[0]).toMatchObject({ role: "CAPTAIN", tag: "KESSLER" });
+    expect(circus.units[0]).toMatchObject({
+      role: "SWORDSMAN",
+      tag: "KESSLER",
+    });
     expect(circus.units.filter((unit) => unit.role === "GUARD")).toHaveLength(
       8,
     );
-    expect(circus.directive).toMatchObject({ kind: "GUARD", garrison: 9 });
+    expect(circus.directive).toMatchObject({ kind: "GUARD", garrison: 15 });
+    expect(circus.units).toHaveLength(15);
     expect(
       (mission("DINOSAUR_4").reinforcements ?? [])
         .filter((wave) => wave.seat === 0)
         .map((wave) => wave.round),
-    ).toEqual([8, 12]);
+    ).toEqual([6, 10]);
     // DN5: no Ghouls for the Unquiet; the Redcaps hold the gaps.
     expect(seat("DINOSAUR_5", 1).forbiddenTechnologies).toContain("SCOUTING");
     expect(seat("DINOSAUR_5", 2).directive).toMatchObject({
       kind: "GUARD",
       others: { kind: "RUSH" },
     });
-    // DN6: the Lodge can call the Herald from the start and sends all but
-    // its garrison at Mire's Edge.
+    // DN6: the Lodge starts 12 Favour short of the Herald (retune 4; with
+    // 16 it came in round 2, with 12 in round 6) and sends all but its
+    // garrison at Mire's Edge.
     const lodge = seat("DINOSAUR_6", 1);
-    expect(lodge.favour).toBe(20);
+    expect(lodge.favour).toBe(8);
     expect(lodge.technologies).toContain("EXPLOSIVES");
     expect(lodge.directive).toMatchObject({
       kind: "GUARD",
@@ -239,25 +267,27 @@ describe("The Egg Thief", () => {
     });
   });
 
-  it("is much harder after retune 3 (pulp_wars-hmyk.21)", () => {
-    // Four missions start like a skirmish: one level 1 town, at most two
-    // units of no great number, no technology, no Coins.
-    for (const id of ["DINOSAUR_1", "DINOSAUR_2", "DINOSAUR_4", "DINOSAUR_6"]) {
-      const start = seat(id, 0);
-      expect(start.technologies, id).toEqual([]);
-      expect(start.coins, id).toBe(0);
-      expect(start.cities, id).toHaveLength(1);
-      expect(start.cities[0]?.level, id).toBe(1);
-      expect(start.units.length, id).toBeLessThanOrEqual(2);
-      expect(start.reveal.radius, id).toBe(1);
+  it("keeps the fourth retune's strong enemy starts (pulp_wars-hmyk.27)", () => {
+    // CAMPAIGN.md section 17.5: the enemies outnumber your side (yours and
+    // Quaxx's saucers) from the start, so the difficulty comes from them
+    // rather than from waves.
+    for (const id of ORDER) {
+      const definition = mission(id);
+      const teams = definition.teams;
+      const side = (index: number) => teams?.[index] ?? index;
+      const count = (ours: boolean) =>
+        definition.seats
+          .filter((_, index) => (side(index) === side(0)) === ours)
+          .reduce((sum, item) => sum + item.units.length, 0);
+      expect(count(false), id).toBeGreaterThan(count(true));
     }
-    // The other two start thin: one town and three units.
-    for (const id of ["DINOSAUR_3", "DINOSAUR_5"]) {
+    // The player's economy is back: every start has a level 2 town, some
+    // technology and Coins.
+    for (const id of ORDER) {
       const start = seat(id, 0);
-      expect(start.cities, id).toHaveLength(1);
-      expect(start.units, id).toHaveLength(3);
-      expect(start.technologies.length, id).toBeLessThanOrEqual(5);
-      expect(start.coins, id).toBeLessThanOrEqual(3);
+      expect(start.cities[0]?.level, id).toBe(2);
+      expect(start.technologies.length, id).toBeGreaterThan(0);
+      expect(start.coins, id).toBeGreaterThanOrEqual(4);
     }
     // Every hostile seat that has a directive attacks: RUSH, an ASSAULT,
     // or a GUARD that sends the rest (DN3's Baron keeps his fleet).
@@ -275,22 +305,29 @@ describe("The Egg Thief", () => {
           `${id} seat ${String(index)}`,
         ).toBe(true);
       }
-    // Every mission from the second on sends announced enemy waves with a
-    // story line of their own.
-    for (const id of ORDER.slice(1)) {
-      const hostile = (mission(id).reinforcements ?? []).filter(
+    // Waves are for fine-tuning: at most two hostile ones a mission, none
+    // in DN1 and DN2, each announced with a story line of its own.
+    const hostile = (id: string) =>
+      (mission(id).reinforcements ?? []).filter(
         (wave) => wave.seat !== 0 && mission(id).teams?.[wave.seat] !== 0,
       );
-      expect(hostile.length, id).toBeGreaterThanOrEqual(2);
-      for (const wave of hostile) {
+    expect(ORDER.map((id) => hostile(id).map((wave) => wave.round))).toEqual([
+      [],
+      [],
+      [4, 9],
+      [6],
+      [8, 10],
+      [9],
+    ]);
+    for (const id of ORDER)
+      for (const wave of hostile(id)) {
         expect(wave.announce, id).toBe(true);
         expect(wave.line, id).toBeTypeOf("string");
       }
-    }
-    // The poachers of DN1 have twelve men; the Lodge of DN6 holds 20 Favour.
-    expect(seat("DINOSAUR_1", 1).units).toHaveLength(12);
-    // Retune 3 revisions.
-    for (const id of ORDER) expect(mission(id).revision, id).toBe(3);
+    // DN1's poachers have eleven men (retune 3: twelve and two waves).
+    expect(seat("DINOSAUR_1", 1).units).toHaveLength(11);
+    // Retune 4 revisions.
+    for (const id of ORDER) expect(mission(id).revision, id).toBe(4);
   });
 
   it("names every place and unit an objective talks about", () => {

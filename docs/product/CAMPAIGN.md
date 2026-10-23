@@ -4873,6 +4873,8 @@ what each mission's hand play changed:
 
 ### 17.4 Retune 3 (`pulp_wars-hmyk.21`): much harder, NOT play-tested
 
+Superseded by retune 4 (section 17.5); the numbers below are retune 3's.
+
 The user, 2026-10-20, after the Human and Undead retune: "we made a step in
 the right direction. but not quite big enough. It's still easy. the crux of
 the problem is that the AI is not smart enough. I'm running out of tokens
@@ -4921,6 +4923,158 @@ Notes on what the data could not do:
 **Test notes.** Not played; the first real attempt will show which
 mission overshoots. If a mission is unwinnable, take back in this order:
 the second wave, the Coins, the Favour, then the clock.
+
+### 17.5 Retune 4: toward the middle, strong enemy starts (`pulp_wars-hmyk.27`)
+
+The user, 2026-10-23, about retune 3 (section 17.4): the campaign was
+mostly impossible, "the enemies are too strong and the time limits are too
+harsh. In most cases the time limit doesn't even come into play because
+the enemies overwhelm you anyway." So this pass eases it toward the
+middle, and it must stay a real fight. It keeps the method of sections
+15.6 and 16.5. The difficulty comes from strong, aggressive enemy starts
+rather than the clock. Conquest clocks are lax (about one and a half times
+a good win), while escort and hunt clocks stay meaningful. Waves only
+fine-tune, most of retune 3's are cut, and some player economy (Coins,
+villages) comes back. Mission 1 is slightly easier than the rest. For
+missions 2 to 6 the first thoughtful attempt is lost or won narrowly, and
+the autopilot (section 15) loses from mission 2 on.
+
+The Human and Undead lesson held here too. Weak extra units only feed the
+Old Queen's Overrun chains, where each kill is a growth step and a full
+heal until she is an Alpha. So the enemy keeps or gains strong units
+(Champions, Brutes, Wights) and better positions: full `GUARD` zones that
+keep a target in place, and rifles posted apart so that she cannot eat
+her way along them. Everything retune 3 added in numbers was cut.
+
+This section supersedes section 17.4's numbers. All six missions are now
+revision 4, re-pinned in both pin tables. Every mission's enemies
+outnumber your side, yours and Quaxx's saucers together
+(`tests/unit/campaign-dinosaurs-v7.test.ts`): DN1 11 to 2, DN2 17 to 2,
+DN3 12 to 3, DN4 23 to 2, DN5 20 to 6 and DN6 17 to 4. Each start now has
+a level 2 town (Stockpile), some technology and 4 to 8 Coins. Retune 3's
+skirmish starts had a level 1 town (two slots), which the Queen and the
+Shaman filled, so not one Egg could be laid.
+
+| Mission | Your start now                                                                                                                                                                           | Enemies now                                                                                                                                                                                                                                                                                                                                                                                            | Clock and stars                                      | Waves                                                                                                    |
+| ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| DN1     | Thunder Nest level 2, Drill and Nesting, 4 Coins (were 0), the jungle village back; the Queen and Oona                                                                                   | 11 men (were 12): a Guard, two rifles and three Fighters at Gunwale Camp; a Guard, two rifles, a Fighter and a Champion at Tusker's Landing. They have 6 Coins (were 8) and gain Engineering and Metallurgy. They dig in until round 3 and then rush (unchanged).                                                                                                                                      | conquest by 20 (was 16); by 13 (was 11), Queen lives | none (rounds 5 and 9 removed)                                                                            |
+| DN2     | Thunder Nest level 2, Hunting, Spitters, Drill and Nesting, 4 Coins (were 0), the two villages east of the nest back; the Queen and a Spitter                                            | the lodge 11 (level 2, 8 Coins): the Major, four rifles and a Guard fill the ridge's six peaks (`GUARD` garrison 6; retune 3's garrison of 4 let the Major step off, and the autopilot's Queen ate him in round 4); the other five rush. The Redcaps 6 (were 11), both camps level 1 (Gutter Gulch was 2), 2 Coins (were 6), `RUSH`.                                                                   | hunt by 16; by 12, Queen lives (unchanged)           | none (rounds 3, 6, 9 and 12 removed)                                                                     |
+| DN3     | Fernmaw level 2 and the Crater level 1 (back) with a Caveman, Hunting, Scouting and three sea technologies, 5 Coins (were 3), the village by Fernmaw back                                | 12 units (were 13, one Patrol Boat fewer), 8 Coins (were 12); the fleet still keeps to the shallows                                                                                                                                                                                                                                                                                                    | escort by 20 (was 18); by 16 (was 14), no loss       | two landings, round 4 (three men) and round 9 (four); were 3, 6, 9 and 12 and a flotilla in round 7      |
+| DN4     | Big Top Bay level 2, Hunting, Spitters, Drill and Nesting, 5 Coins (were 0), two of the three villages back; the Queen and a Triceratops                                                 | the circus 15: Kessler is a Champion (was a 10-HP Captain), with the eight ring Guards and six rifles, each held to its own post round the ring (one-tile `GUARD` zones, garrison 15; retune 3's rifles rushed). It has 6 Coins (were 10) and gains Metallurgy. The Redcaps 8 (were 12), camps level 1 (were 2), 4 Coins (were 8), `RUSH`.                                                             | hunt by 16 (was 15); by 12 (was 11), Queen lives     | one Redcap pack (round 6; were four and a firing line); the freed beasts in rounds 6 and 10 (were 8, 12) |
+| DN5     | the Circus Ground level 2, Hunting, Spitters, Scouting, Drill and Nesting, 8 Coins (were 3), two of the four villages back; the Alpha Queen, a Triceratops, a Spitter and a Shaman (new) | the Unquiet 15 (were 19, 4 Coins, were 8): a Necromancer, Zombies and a new Wight (Rise Again) at each barrow, plus Skeletons. They gain Engineering and Metallurgy and hold the barrow road (`GUARD` zone, garrison 9) while the rest rush. The Redcaps 5 (were 9, 2 Coins): three Brutes hold Field Defense trenches on the ford and the gap and two Goblins rush. Quaxx has a Fighter and a Raider. | escort by 22 (was 15); by 16 (was 11), no loss       | two risings, round 8 (three by the ridge) and round 10 (five by the marsh); were six and a Redcap column |
+| DN6     | Mire's Edge level 2, Hunting, Spitters, Scouting, Drill, Nesting and Wallbreaker, 5 Coins (were 0), two villages back; the Alpha Queen, Oona, a Spitter and a Triceratops                | the Lodge 12 (were 16, retune 2's twelve), Favour 8 (was 20; the Herald costs 20), 6 Coins (were 10), the same directive; the Unquiet 5 (were 9), 4 Coins (were 8), `RUSH`                                                                                                                                                                                                                             | capture by 16 (was 15); by 11 (was 11), Queen lives  | one Lodge boatload in round 9 (were six risings and two boats)                                           |
+
+DN1's conquest got the lax clock, about 1.5 times the 3-star win of round
+11 that the first, too-easy definition gave. DN3's escort is long because
+the crossing is slow: the one win arrived in round 18. The DN2 and DN4
+hunts keep 16 rounds. DN5's escort and DN6's capture got their clocks in
+a correction pass (below), sized for a game that expands for a few rounds
+before it strikes: DN6's 16 is about 1.5 times that game's win in round
+11, and DN5's 22 leaves such a game room to grind through the barrow
+road.
+
+**Hand play** through `play-text`, authorised for this pass. The
+baseline, retune 3 under the autopilot: DN1 lost in round 11, DN2 **won in
+round 4 with 3 stars** (the Major stepped off his peak), DN3 lost in round
+8, DN4 in round 7, DN5 in round 7 and DN6 in round 5. The autopilot
+results below were re-run after main's building-placement rules (7r106)
+and the no-pointless-actions rule (7r107) were merged in. So were the
+winning logs: they replay command for command on the final definitions.
+In DN3 and DN5 a monument and a Workshop that 7r106 no longer allows
+(peak or forest) move to another tile of the same city, and in DN5 one
+Market is skipped. The outcomes are unchanged.
+
+| Mission | Autopilot (final)             | Thoughtful attempts on the final definition                                                                                          | Tried and dropped                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| ------- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| DN1     | defeat, round 7               | win, round 17 of the then 18 (2 stars, Oona lost); the clock then went to 20                                                         | ten poachers (three rifles, five clubs) on 18 rounds: a first-try 3-star win in round 11, the rush walking single file into the Queen (too easy); twelve with four rifles: the same chain by round 5 (abandoned, too easy); a Champion at each camp: the Queen shot dead in round 3 (lost), then a 1-star win in round 16 of 18 (the Queen shot down alone at Tusker's Landing)                                                                                                                                                                                                                                     |
+| DN2     | defeat, round 8               | win, round 10 of 16 (63%), 3 stars, the Queen held back at 15 HP                                                                     | the Major and three guns on four peaks, nine Redcaps and a wave: the Queen fed on the rush (abandoned with the ridge untested); six on the ridge with Brutes among the Redcaps and Gutter Gulch at level 2: three losses (the Queen killed by Gang Up twice, six Spitters lost to Wolf Rider charges, the Major never seen); four on the ridge and no wave: lost; six Redcaps with four on the ridge: a 3-star win in round 9 (too easy)                                                                                                                                                                            |
+| DN3     | defeat, round 7 (escort lost) | win, round 18 of 20 (90%), 2 stars (the round-16 star missed)                                                                        | none                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| DN4     | defeat, round 9               | win, round 9 of 16, 3 stars, **the Queen at 1 HP** (it replayed an earlier attempt's opening to round 7)                             | six rushing rifles: a 3-star win in round 9 (they came one by one into the Queen); the rifles at posts: a 3-star win in round 11; two Brutes for Goblins and no Spitters or Scouting: two losses (both Triceratops killed, the ring never seen); Spitters and Scouting back: a 3-star win in round 8 (the 10-HP Captain died to a Triceratops); no Scouting: the same (the Triceratops's charge itself reveals the ring)                                                                                                                                                                                            |
+| DN5     | defeat, round 4 (escort lost) | expand-first: loss (abandoned in round 16 of 22, the Queen at 3 HP after a Gang Up at the ford in round 14; three towns, nine units) | Wallbreaker at the start and all the dead rushing: **the autopilot won in round 4**; no Wallbreaker, two Wights and the trenches: the Queen chained the ford's Brutes in round 2 (too easy); Ogres in the trenches and the dead holding the road: two losses; three Ogres and two Goblins, your 8 Coins: lost; three more Zombies at the marsh's edge and the marsh rising in round 5: two losses; two of them and the rising in round 6: two losses. Final before the correction pass: the definition before those Zombies, on which the round-2 rush won in round 6 of 14 with 3 stars (the Queen at about 10 HP) |
+| DN6     | out of time, round 17         | expand-first: win, round 11 of 16 (69%), 3 stars on the star round, the Queen at 10 of 36; the Herald never came                     | a Lodge of 14, Favour 16, a rising of the dead in round 5 and 16 rounds: two losses (the Herald came in round 2 and, still bound, struck the Queen on Greyhood's centre; unbound, it ate its own cultists and then hunted her); Favour 12: lost (the Herald in round 6, the Spitters and Mire's Edge lost); Favour 12, the boat in round 6 and 12 rounds: the round-6 rush won in round 6, 3 stars, the Queen at 9 of 36 (the only plan that won, so the correction pass eased it)                                                                                                                                  |
+
+What decided them:
+
+- **DN1.** Mission 1 stays the gentlest. Without waves, the poachers' rush
+  feeds a Queen kept in the jungle by the nest: in round 5 she kills a
+  Fighter on the village (Big, full heal), then chains two rifles and the
+  Champion (Alpha). Tusker's Champion and the four rifles make her hunt
+  carefully: alone at a camp, she was shot down from two tiles, because a
+  wounded T-Rex hits for less. The Gunwale column killed Oona, a Spitter
+  and a Raptor. Spitters (no retaliation at range 2, and Guards are open
+  to ranged) took the camp Guards, and a Raptor stepped in.
+- **DN2.** Two things decide it. First, the full ridge: six units on six
+  tiles never step off, so the Major can only be shot from below. Second,
+  sight: Spitters see one tile, so a Raptor must spot him first, after
+  which the explored tile keeps him shown. In the win a Spitter killed the
+  rifle in front, the Major stepped down onto its peak, and two Spitters
+  shot him (6 and 5). The Redcaps had to come down to six: with eleven,
+  or with Brutes, their Wolf Rider charges and Gang Up killed every
+  Spitter.
+- **DN3.** The Queen bit the Submarine and two Patrol Boats off the shore
+  and became an Alpha in round 5. Plesiosaurs sank the Battleship (it hit
+  the Queen for 14 and 9 at Gullrock), Gullrock fell in round 10, and the
+  round-9 landing took Fernmaw's centre, which was retaken in round 13.
+  The Queen then sailed four turns and landed in round 18 of 20.
+- **DN4.** Retune 3's rushing rifles came to the Queen one by one. Held at
+  posts, apart (two on the peaks), they shoot her down instead. The ring
+  is broken by Spitters (6 a shot on a Guard) and a Triceratops's Gore or
+  Charge, which advances it beside the Baron. As a 10-HP Captain the
+  Baron died to that first bite in every win. As a Champion (15 HP) he
+  killed the Triceratops, and the Queen had to Overrun onto the broken
+  ring herself: she hit him 15 to 3, and he died to her retaliation with
+  her at 1 HP.
+- **DN5.** Before the correction pass the Alpha Queen at full HP was the
+  whole plan: a round-2 chain through the ford onto the Redcaps' only
+  town, then Barrow Hill in round 5 and the marsh in round 6, before the
+  risings closed the road. Anything that wounded her early lost, because
+  an Alpha no longer heals by growing. With the risings in rounds 8 and 10
+  and 22 rounds, an expand-first game took both villages (three towns by
+  round 3), grew them with fruit, game, a farm and mines, and was never
+  overwhelmed: the dead mostly hold their road. Five Spitters ground down
+  the ford, and the Queen broke the ford's Brutes in round 14. There a
+  Wolf Rider's and a Goblin's Gang Up took her from 28 to 3, and the push
+  stalled. The barrow road and Mire's Edge, which a Ghoul took for the
+  dead in round 4, are the wall.
+- **DN6.** Before the correction pass the win had to land before the
+  Herald did: with 16 Favour he came in round 2 and with 12 in round 6, and
+  only a round-6 rush by the west shore won. With 8 Favour and the boat in
+  round 9, an expand-first game took both villages (rounds 2 and 3) and the
+  Lodge's new town by the west shore (round 7). It grew its towns, then
+  went in by the west shore from round 7: Imps, Hexers and Initiates fell
+  to Spitters and the Triceratops, and the Queen broke two Idol Bearers,
+  killed the centre's Summoner in round 10 and captured Greyhood in round
+  11 at 10 of 36. The Herald was never called.
+
+Deviations from the brief:
+
+- **DN2's and DN4's first attempts on the final definitions were 3-star
+  wins.** The brief asks for a loss or a narrow win, and these were narrow
+  on health rather than on the clock: the Queen ended at 1 HP in DN4. Each
+  came after thoughtful losses on harder definitions, which the rule of
+  three losses eased (DN2 four, DN4 two). They were also played with the
+  plan known from those games, and DN4's replayed an earlier winning
+  opening. A fresh player should lose the first try.
+- **DN5 and DN6 had one correction pass** (the review: seven DN5 losses and
+  a single winning plan, a round-6 rush, on both were the "enemies
+  overwhelm you" problem, and the user enjoys expanding before striking).
+  DN5's risings moved from rounds 5 and 6 to 8 and 10, the first cut from
+  five to three, and its clock went from 14 to 22. DN6's Favour went from
+  12 to 8, the boat from round 6 to 9, and the clock from 12 to 16. Each
+  had one thoughtful expand-first attempt: DN6 a narrow win (round 11 of
+  16, the Queen at 10 of 36), DN5 a loss. The old rushes still work, and
+  sooner, but a player who expands first now has a game.
+- **DN3 has a single attempt** (a 2-star win in round 18 of 20).
+
+**Follow-ups.** The bound Herald still strikes units beside it: in DN6 it
+struck the Queen on Greyhood's centre for 15 with all three strands held.
+Section 17.3 says the bound Herald idled until it went Unbound, so this
+needs a look at the rules or at the Normal AI. DN5's
+expand-first attempt lost: if it still proves too hard, the next lever is
+the round-10 marsh rising (or keeping the dead out of Mire's Edge), not
+the clock. DN4 turns on the trick of a Triceratops charge
+into the ring, and once it is known the mission is quick. DN2 needs a
+Raptor to spot for the Spitters (the new third hint says so).
 
 ## 18. The Martian campaign, "Signal from Home" (`pulp_wars-hmyk.7`)
 

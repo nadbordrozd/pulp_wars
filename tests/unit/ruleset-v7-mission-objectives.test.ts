@@ -1108,9 +1108,10 @@ describe("natural maps", () => {
       UNDEAD_5: 11,
       // Dinosaur retune 3 (`pulp_wars-hmyk.21`): the villages and chests
       // within reach of your town are gone, so the big top's roustabouts
-      // and the Barrowlands' dead do not meet an easy start.
-      DINOSAUR_4: 14,
-      DINOSAUR_5: 13,
+      // and the Barrowlands' dead do not meet an easy start; retune 4
+      // (`pulp_wars-hmyk.27`) gives two villages back to each.
+      DINOSAUR_4: 12,
+      DINOSAUR_5: 11,
       // The Candy campaign (`pulp_wars-hmyk.11`): Riftwatch's crack and
       // eight villages (four under cities); the lake of the Commissioner
       // keeps one village (the island raised, thirteen gone, two under

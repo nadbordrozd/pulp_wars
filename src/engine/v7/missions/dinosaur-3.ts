@@ -5,7 +5,7 @@ import type { MissionDefinitionV7 } from "./types";
  * Dinosaur campaign, `pulp_wars-hmyk.6`). You lead the Old Queen's
  * dinosaurs, who have never needed to sail, across the Lost Sea after the
  * eggs: she must come within a tile of Big Top Bay on the mainland's
- * north-eastern shore by round 22, crossing embarked. Step 3 of 6: a
+ * north-eastern shore by round 20, crossing embarked. Step 3 of 6: a
  * transport carrying your best unit is the weakest thing on the sea, so
  * the lane is cleared first. A Dugout rams harder after a run of two tiles
  * (Horned Prows), a Plesiosaur torpedoes unanswered and grows; War Rafts
@@ -22,15 +22,16 @@ import type { MissionDefinitionV7 } from "./types";
  * Battleship, Submarine and two Patrol Boats keep to the shallows (no
  * Navigation), the Battleship's guns covering the whole
  * northern lane. His landing parties come ashore on the island's western
- * beaches in rounds 4, 8 and 12. Gullrock's garrison holds the islet
+ * beaches in rounds 4 and 9. Gullrock's garrison holds the islet
  * (`GUARD`) and the rest of his men hunt you (`others: RUSH`).
  *
- * Retune 3 (`pulp_wars-hmyk.21`, untested): you start thin (Fernmaw
- * alone, four technologies, 3 Coins, the Queen, a boat and a Fighter, only
- * the far shore seen), the village and chest by Fernmaw are gone, the
- * Baron is richer (12 Coins, Drill and Walls, two more
- * Patrol Boats and a second Submarine) and five announced waves land (four
- * landings and a gunboat flotilla) on an 18-round clock.
+ * Retune 3 (`pulp_wars-hmyk.21`) started you thin (Fernmaw alone, 3
+ * Coins) against a richer Baron (12 Coins, Drill and Walls, more boats)
+ * with five announced waves on an 18-round clock; the user found the
+ * campaign mostly impossible. Retune 4 (`pulp_wars-hmyk.27`, hand-played,
+ * CAMPAIGN.md section 17.5): the Crater back with a Fighter, Scouting,
+ * 5 Coins and the village by Fernmaw; the Baron has 8 Coins, one Patrol
+ * Boat fewer and two landings (rounds 4 and 9) on a 20-round clock.
  *
  * Hand play (the Dinosaur campaign's record in CAMPAIGN.md) set the
  * numbers: with Hunting, Drill and the naval tree Gullrock and the Wharf
@@ -64,7 +65,9 @@ export const DINOSAUR_3_V7: MissionDefinitionV7 = {
   // Revision 3 (`pulp_wars-hmyk.21`, retune 3): a thin start (Fernmaw
   // alone, four technologies, three units, 3 Coins), a blind crossing, a
   // richer Baron and five announced waves.
-  revision: 3,
+  // Revision 4 (`pulp_wars-hmyk.27`, retune 4): the Crater and a village
+  // back, 5 Coins, a poorer Baron, two landings, a 20-round clock.
+  revision: 4,
   seed: 20261403,
   // <map>
   size: 16,
@@ -82,8 +85,8 @@ export const DINOSAUR_3_V7: MissionDefinitionV7 = {
       { kind: "RESOURCE", at: { x: 5, y: 2 }, resource: "." },
       { kind: "RESOURCE", at: { x: 5, y: 4 }, resource: "." },
       { kind: "RESOURCE", at: { x: 6, y: 4 }, resource: "." },
-      // Retune 3: the village and the chest beside Fernmaw are gone.
-      { kind: "VILLAGE", at: { x: 2, y: 3 }, present: false },
+      // Retune 3: the chest beside Fernmaw is gone (retune 4 gives the
+      // village back).
       { kind: "CHEST", at: { x: 1, y: 8 }, present: false },
     ],
   },
@@ -144,6 +147,7 @@ export const DINOSAUR_3_V7: MissionDefinitionV7 = {
   ],
   villages: [
     { x: 13, y: 3 },
+    { x: 2, y: 3 },
     { x: 2, y: 11 },
     { x: 5, y: 11 },
   ],
@@ -160,11 +164,18 @@ export const DINOSAUR_3_V7: MissionDefinitionV7 = {
   seats: [
     {
       faction: "DINOSAUR",
-      // Retune 3: thin. Fernmaw alone (the Crater is gone), Hunting and
-      // the sea technologies only, 3 Coins, three units, and the lane
-      // unseen but for the far shore.
-      coins: 3,
-      technologies: ["HUNTING", "SHORECRAFT", "NAVIGATION", "SEAMANSHIP"],
+      // Retune 3: thin. Fernmaw alone (the Crater was gone), Hunting and
+      // the sea technologies only, 3 Coins. Retune 4: the Crater and a
+      // Fighter back, Scouting, 5 Coins. The lane is unseen but for the
+      // far shore.
+      coins: 5,
+      technologies: [
+        "HUNTING",
+        "SCOUTING",
+        "SHORECRAFT",
+        "NAVIGATION",
+        "SEAMANSHIP",
+      ],
       cities: [
         {
           name: "Fernmaw",
@@ -172,12 +183,18 @@ export const DINOSAUR_3_V7: MissionDefinitionV7 = {
           level: 2,
           rewards: ["STOCKPILE"],
         },
+        {
+          name: "The Crater",
+          at: { x: 2, y: 9 },
+          level: 1,
+          rewards: [],
+        },
       ],
       units: [
         // The Old Queen, a T-Rex, who must cross the sea.
         { role: "KNIGHT", at: { x: 3, y: 4 }, tag: "OLD_QUEEN" },
         { role: "PATROL_BOAT", at: { x: 4, y: 3 } },
-        { role: "FIGHTER", at: { x: 3, y: 5 } },
+        { role: "FIGHTER", at: { x: 2, y: 9 }, home: 1 },
       ],
       // Big Top Bay, and the water round Fernmaw.
       reveal: {
@@ -189,8 +206,8 @@ export const DINOSAUR_3_V7: MissionDefinitionV7 = {
       // The Baron's last warships, Gullrock fort and Kessler's Wharf.
       faction: "ORIGINAL",
       // Retune 3: 12 Coins and Hunting, Marksmanship, Drill and Walls (his
-      // ships still keep to the shallows: no Navigation).
-      coins: 12,
+      // ships still keep to the shallows: no Navigation); retune 4: 8.
+      coins: 8,
       technologies: ["HUNTING", "MARKSMANSHIP", "DRILL", "FORTIFICATION"],
       cities: [
         {
@@ -220,10 +237,9 @@ export const DINOSAUR_3_V7: MissionDefinitionV7 = {
         { role: "FIGHTER", at: { x: 12, y: 7 }, home: 1 },
         { role: "FIGHTER", at: { x: 12, y: 8 }, home: 1 },
         // Retune 3: a second Submarine, two more Patrol Boats and men for
-        // the landings.
+        // the landings (retune 4: one of those Patrol Boats).
         { role: "SUBMARINE", at: { x: 5, y: 3 } },
         { role: "PATROL_BOAT", at: { x: 10, y: 5 }, home: 1 },
-        { role: "PATROL_BOAT", at: { x: 6, y: 2 } },
         { role: "MARKSMAN", at: { x: 12, y: 9 }, home: 1 },
         { role: "FIGHTER", at: { x: 10, y: 7 }, home: 1 },
       ],
@@ -261,13 +277,12 @@ export const DINOSAUR_3_V7: MissionDefinitionV7 = {
     },
   ],
   // The Baron's landing parties on the island's western shore, in rounds
-  // 3, 6, 9 and 12, for Fernmaw, and a pair of Patrol Boats and a
-  // Submarine for the lane in round 7; every wave announced (retune 3:
-  // three landings, rounds 4, 8 and 12, and no ships).
+  // 4 and 9, for Fernmaw and the Crater, each announced (retune 3: four
+  // landings and a gunboat flotilla).
   reinforcements: [
     {
       seat: 1,
-      round: 3,
+      round: 4,
       units: [
         { role: "FIGHTER", at: { x: 1, y: 6 } },
         { role: "FIGHTER", at: { x: 1, y: 7 } },
@@ -278,64 +293,27 @@ export const DINOSAUR_3_V7: MissionDefinitionV7 = {
     },
     {
       seat: 1,
-      round: 6,
+      round: 9,
       units: [
         { role: "GUARD", at: { x: 1, y: 8 } },
-        { role: "FIGHTER", at: { x: 0, y: 8 } },
-        { role: "FIGHTER", at: { x: 1, y: 10 } },
+        { role: "FIGHTER", at: { x: 1, y: 6 } },
+        { role: "FIGHTER", at: { x: 1, y: 7 } },
         { role: "MARKSMAN", at: { x: 0, y: 7 } },
       ],
       line: "The Baron sends the second boat, and the heavier men.",
       announce: true,
     },
-    {
-      seat: 1,
-      round: 7,
-      units: [
-        { role: "PATROL_BOAT", at: { x: 10, y: 5 } },
-        { role: "PATROL_BOAT", at: { x: 10, y: 5 } },
-        { role: "SUBMARINE", at: { x: 10, y: 5 } },
-      ],
-      line: "Gunboats close the sea road behind you.",
-      announce: true,
-    },
-    {
-      seat: 1,
-      round: 9,
-      units: [
-        { role: "FIGHTER", at: { x: 1, y: 6 } },
-        { role: "FIGHTER", at: { x: 1, y: 7 } },
-        { role: "FIGHTER", at: { x: 0, y: 8 } },
-        { role: "MARKSMAN", at: { x: 0, y: 6 } },
-        { role: "MARKSMAN", at: { x: 0, y: 7 } },
-      ],
-      line: "Every Redcoat the Baron could spare, and every rifle.",
-      announce: true,
-    },
-    {
-      seat: 1,
-      round: 12,
-      units: [
-        { role: "GUARD", at: { x: 1, y: 8 } },
-        { role: "FIGHTER", at: { x: 1, y: 6 } },
-        { role: "FIGHTER", at: { x: 1, y: 7 } },
-        { role: "MARKSMAN", at: { x: 0, y: 6 } },
-        { role: "MARKSMAN", at: { x: 1, y: 10 } },
-      ],
-      line: "The last boat in the Baron's pocket-book.",
-      announce: true,
-    },
   ],
   landmarks: [{ tag: "BIG_TOP_BAY", at: { x: 13, y: 3 }, name: "Big Top Bay" }],
   forbiddenTechnologies: [],
-  // The Queen to Big Top Bay by round 18 (was 22). The stars: by round 14,
-  // and no city lost.
+  // The Queen to Big Top Bay by round 20 (retune 3: 18). The stars: by
+  // round 16, and no city lost.
   objective: {
     kind: "ESCORT",
     unit: "OLD_QUEEN",
     to: "BIG_TOP_BAY",
     within: 1,
-    byRound: 18,
-    bonus: [{ kind: "WITHIN_ROUNDS", rounds: 14 }, { kind: "KEEP_CITIES" }],
+    byRound: 20,
+    bonus: [{ kind: "WITHIN_ROUNDS", rounds: 16 }, { kind: "KEEP_CITIES" }],
   },
 };

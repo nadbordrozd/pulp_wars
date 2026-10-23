@@ -5,12 +5,12 @@ import type { MissionDefinitionV7 } from "./types";
  * 3.5, DN4; the Dinosaur campaign, `pulp_wars-hmyk.6`). You lead the Old
  * Queen's dinosaurs, landed at Big Top Bay, against Baron Kessler's
  * Travelling Wonder Circus, and must kill the Baron himself (a tagged
- * Captain, the ringmaster) by round 18. Step 4 of 6: a walled ring and a
+ * Champion, the ringmaster) by round 16. Step 4 of 6: a walled ring and a
  * ringmaster hiding in it. The big top is a walled town under the peaks,
  * its ring eight Guards dug in on Field Defenses (`GUARD` on the ring
  * alone: it is full, so nothing in it moves); the Redcap roustabouts, Orc
  * Brutes among them, march on your camp from their two camps (`RUSH`, and
- * more of them in rounds 4 and 8). A Triceratops's Charge! ignores Walls
+ * more of them in round 6). A Triceratops's Charge! ignores Walls
  * and Field Defense and shoves its target back, and Wallbreaker's Breach
  * lets every dinosaur bite through the trenches; kill one Guard of the
  * ring and the Queen's Rampage carries her in. The beasts freed from the
@@ -25,16 +25,19 @@ import type { MissionDefinitionV7 } from "./types";
  * and those that would feed the circus and the Redcaps), and the chest by
  * the big top.
  *
- * Retune 3 (`pulp_wars-hmyk.21`, untested): you start like a skirmish (a
- * level 1 Big Top Bay, the Queen and a Triceratops, no technology, no
- * Coins; the three villages and the chest by the bay are gone); the big
- * top has six rifles, of which four march on your
- * camp; the Redcap camps are level 2 with twelve men and four announced
- * packs (rounds 3, 6, 9, 12), a firing line comes in round 5, the freed
- * beasts shrink to one each in rounds 8 and 12, and the clock is 15.
+ * Retune 3 (`pulp_wars-hmyk.21`) started you like a skirmish against six
+ * rushing rifles, level 2 Redcap camps of twelve, four packs and a firing
+ * line on a 15-round clock; the user found the campaign mostly
+ * impossible. Retune 4 (`pulp_wars-hmyk.27`, hand-played, CAMPAIGN.md
+ * section 17.5): a level 2 Big Top Bay with Hunting, Spitters, Drill,
+ * Nesting and 5 Coins, two villages back; the Baron is a Champion (a
+ * 10-HP Captain fell to the first bite), his six rifles hold posts round
+ * the ring, apart and two of them on the peaks, the Redcap camps are
+ * level 1 with eight, one pack comes in round 6, the freed beasts in
+ * rounds 6 and 10, and the clock is 16.
  *
- * Hand play (the Dinosaur campaign's record in CAMPAIGN.md) set the layout: with the big top in
- * the middle of the dunes and Fighters in its ring, a T-Rex's Rampage ran
+ * Hand play (the Dinosaur campaign's record in CAMPAIGN.md) set the
+ * layout: with the big top in the middle of the dunes and Fighters in its ring, a T-Rex's Rampage ran
  * through the ring into the 10-HP Baron in round 3, and a ring leashed to a
  * wider zone walked round to the side facing you.
  *
@@ -64,7 +67,10 @@ export const DINOSAUR_4_V7: MissionDefinitionV7 = {
   // Revision 3 (`pulp_wars-hmyk.21`, retune 3): a skirmish start (the
   // Queen and a Triceratops, no technology), no village in reach, a richer
   // circus with rifles that rush, bigger Redcap packs and a 15-round clock.
-  revision: 3,
+  // Revision 4 (`pulp_wars-hmyk.27`, retune 4): a level 2 bay, two
+  // villages back, a Champion Baron, rifles at posts, one Redcap pack and
+  // a 16-round clock.
+  revision: 4,
   seed: 20261404,
   // <map>
   size: 16,
@@ -87,10 +93,9 @@ export const DINOSAUR_4_V7: MissionDefinitionV7 = {
       { kind: "VILLAGE", at: { x: 1, y: 4 }, present: false },
       { kind: "VILLAGE", at: { x: 8, y: 2 }, present: false },
       { kind: "CHEST", at: { x: 7, y: 6 }, present: false },
-      // Retune 3: the three villages round Big Top Bay and its chest.
-      { kind: "VILLAGE", at: { x: 8, y: 11 }, present: false },
+      // Retune 3: the villages round Big Top Bay and its chest (retune 4
+      // gives back two of the three villages).
       { kind: "VILLAGE", at: { x: 5, y: 14 }, present: false },
-      { kind: "VILLAGE", at: { x: 11, y: 14 }, present: false },
       { kind: "CHEST", at: { x: 9, y: 13 }, present: false },
     ],
   },
@@ -149,7 +154,10 @@ export const DINOSAUR_4_V7: MissionDefinitionV7 = {
     "PPPPPPPPPPPPPPPP",
     "PPPPPPPPPPPPPPPP",
   ],
-  villages: [],
+  villages: [
+    { x: 8, y: 11 },
+    { x: 11, y: 14 },
+  ],
   treasureChests: [],
   // </map>
   // The ring round the big top: the roustabouts' trenches, on the dunes
@@ -170,17 +178,18 @@ export const DINOSAUR_4_V7: MissionDefinitionV7 = {
   seats: [
     {
       faction: "DINOSAUR",
-      // Retune 3: a skirmish start. Big Top Bay at level 1, no technology,
-      // no Coins, the Old Queen and a Triceratops you cannot raise another
-      // of yet, and nothing seen beyond the shore.
-      coins: 0,
-      technologies: [],
+      // Retune 3 started you like a skirmish (a level 1 bay, nothing
+      // else); retune 4: level 2, Hunting, Spitters, Drill, Nesting and
+      // 5 Coins. The Old Queen and a Triceratops, nothing seen beyond the
+      // shore.
+      coins: 5,
+      technologies: ["HUNTING", "MARKSMANSHIP", "DRILL", "FORTIFICATION"],
       cities: [
         {
           name: "Big Top Bay",
           at: { x: 8, y: 14 },
-          level: 1,
-          rewards: [],
+          level: 2,
+          rewards: ["STOCKPILE"],
         },
       ],
       units: [
@@ -193,15 +202,16 @@ export const DINOSAUR_4_V7: MissionDefinitionV7 = {
     {
       // Baron Kessler's Travelling Wonder Circus.
       faction: "ORIGINAL",
-      // Retune 3: 10 Coins, Scouting, and
-      // six rifles instead of two.
-      coins: 10,
+      // Retune 3: 10 Coins, Scouting, and six rifles instead of two.
+      // Retune 4: 6 Coins and Metallurgy.
+      coins: 6,
       technologies: [
         "HUNTING",
         "MARKSMANSHIP",
         "SCOUTING",
         "DRILL",
         "ENGINEERING",
+        "METALLURGY",
         "FORTIFICATION",
       ],
       cities: [
@@ -213,8 +223,10 @@ export const DINOSAUR_4_V7: MissionDefinitionV7 = {
         },
       ],
       units: [
-        // Baron Otto Kessler, in a ringmaster's coat.
-        { role: "CAPTAIN", at: { x: 8, y: 5 }, tag: "KESSLER" },
+        // Baron Otto Kessler, in a ringmaster's coat: a Champion (retune
+        // 4; as a 10-HP Captain he died to the first bite through the
+        // ring).
+        { role: "SWORDSMAN", at: { x: 8, y: 5 }, tag: "KESSLER" },
         // The ring: eight Guards dug in round the ringmaster (hand play:
         // with Fighters in it, a T-Rex's Overrun ran through a Fighter
         // into the Baron in round 3), and two rifles before it.
@@ -226,12 +238,15 @@ export const DINOSAUR_4_V7: MissionDefinitionV7 = {
         { role: "GUARD", at: { x: 7, y: 6 } },
         { role: "GUARD", at: { x: 8, y: 6 } },
         { role: "GUARD", at: { x: 9, y: 6 } },
-        { role: "MARKSMAN", at: { x: 6, y: 6 } },
-        { role: "MARKSMAN", at: { x: 8, y: 7 } },
+        // Retune 4: six rifles posted apart round the ring (none beside
+        // another, so a T-Rex cannot eat her way along them), two of them
+        // up on the peaks, each holding its post.
+        { role: "MARKSMAN", at: { x: 5, y: 6 } },
         { role: "MARKSMAN", at: { x: 6, y: 4 } },
-        { role: "MARKSMAN", at: { x: 10, y: 6 } },
-        { role: "MARKSMAN", at: { x: 7, y: 7 } },
-        { role: "MARKSMAN", at: { x: 9, y: 7 } },
+        { role: "MARKSMAN", at: { x: 10, y: 5 } },
+        { role: "MARKSMAN", at: { x: 10, y: 7 } },
+        { role: "MARKSMAN", at: { x: 6, y: 8 } },
+        { role: "MARKSMAN", at: { x: 8, y: 9 } },
       ],
       reveal: { radius: 2, rects: [{ x0: 6, y0: 12, x1: 10, y1: 14 }] },
       forbiddenTechnologies: [
@@ -247,15 +262,23 @@ export const DINOSAUR_4_V7: MissionDefinitionV7 = {
         "COMMERCE",
         "RAIDING",
         "CHIVALRY",
-        "METALLURGY",
         "EXPLOSIVES",
       ],
-      // The ring holds the big top; the rifles outside it march on your
-      // camp (retune 3: they used to play their ordinary game).
+      // The ring holds the big top and each rifle holds its post (an exact
+      // one-tile zone; retune 3's rifles marched on your camp and fed the
+      // Queen).
       directive: {
         kind: "GUARD",
-        zone: [{ x0: 7, y0: 4, x1: 9, y1: 6 }],
-        garrison: 9,
+        zone: [
+          { x0: 7, y0: 4, x1: 9, y1: 6 },
+          { x0: 5, y0: 6, x1: 5, y1: 6 },
+          { x0: 6, y0: 4, x1: 6, y1: 4 },
+          { x0: 10, y0: 5, x1: 10, y1: 5 },
+          { x0: 10, y0: 7, x1: 10, y1: 7 },
+          { x0: 6, y0: 8, x1: 6, y1: 8 },
+          { x0: 8, y0: 9, x1: 8, y1: 9 },
+        ],
+        garrison: 15,
         others: { kind: "RUSH" },
       },
     },
@@ -263,36 +286,33 @@ export const DINOSAUR_4_V7: MissionDefinitionV7 = {
       // The Redcap roustabouts, with cattle-prods.
       faction: "GOBLIN",
       // Retune 3: level 2 camps, 8 Coins, Raiding, twelve roustabouts.
-      coins: 8,
+      // Retune 4: level 1 camps, 4 Coins, eight.
+      coins: 4,
       // Orc Brutes with cattle-prods, Goblins and Wolf Riders.
       technologies: ["SCOUTING", "RAIDING", "DRILL", "FORTIFICATION"],
       cities: [
         {
           name: "Rope Yard",
           at: { x: 2, y: 8 },
-          level: 2,
-          rewards: ["STOCKPILE"],
+          level: 1,
+          rewards: [],
         },
         {
           name: "Sawdust Camp",
           at: { x: 12, y: 7 },
-          level: 2,
-          rewards: ["STOCKPILE"],
+          level: 1,
+          rewards: [],
         },
       ],
       units: [
         { role: "GUARD", at: { x: 2, y: 8 } },
         { role: "FIGHTER", at: { x: 3, y: 8 } },
         { role: "RAIDER", at: { x: 3, y: 9 } },
-        { role: "FIGHTER", at: { x: 1, y: 8 } },
-        { role: "RAIDER", at: { x: 2, y: 7 } },
-        { role: "FIGHTER", at: { x: 2, y: 9 } },
+        { role: "GUARD", at: { x: 1, y: 8 } },
         { role: "GUARD", at: { x: 12, y: 7 }, home: 1 },
         { role: "FIGHTER", at: { x: 12, y: 8 }, home: 1 },
         { role: "RAIDER", at: { x: 11, y: 8 }, home: 1 },
-        { role: "FIGHTER", at: { x: 13, y: 7 }, home: 1 },
-        { role: "RAIDER", at: { x: 11, y: 7 }, home: 1 },
-        { role: "FIGHTER", at: { x: 13, y: 8 }, home: 1 },
+        { role: "GUARD", at: { x: 13, y: 7 }, home: 1 },
       ],
       reveal: { radius: 2, rects: [{ x0: 6, y0: 12, x1: 10, y1: 14 }] },
       forbiddenTechnologies: [
@@ -317,52 +337,32 @@ export const DINOSAUR_4_V7: MissionDefinitionV7 = {
     },
   ],
   // The beasts freed from the cage wagons come to the Queen's side in
-  // rounds 8 and 12, one at a time (retune 3: two each in rounds 6 and 10).
-  // More roustabouts at both camps in rounds 3, 6, 9 and 12, and a firing
-  // line from the big top in round 5, all announced.
+  // rounds 6 and 10, one at a time (retune 3: rounds 8 and 12), and more
+  // roustabouts come at both camps in round 6 (retune 3: four packs and a
+  // firing line), all announced.
   reinforcements: [
-    ...(
-      [
-        [3, "The roustabouts hear a Queen is loose and reach for the prods."],
-        [6, "More roustabouts, and the Baron's whip-hand with them."],
-        [9, "The whole circus crew is coming, cattle-prods up."],
-        [12, "Every last roustabout in the Baron's pay."],
-      ] as const
-    ).map(([round, line]) => ({
-      seat: 2,
-      round,
-      units: [
-        { role: "GUARD" as const, at: { x: 2, y: 9 } },
-        { role: "FIGHTER" as const, at: { x: 1, y: 9 } },
-        { role: "FIGHTER" as const, at: { x: 1, y: 8 } },
-        { role: "FIGHTER" as const, at: { x: 13, y: 8 } },
-        { role: "RAIDER" as const, at: { x: 12, y: 9 } },
-        { role: "FIGHTER" as const, at: { x: 13, y: 9 } },
-      ],
-      line,
-      announce: true as const,
-    })),
     {
-      seat: 1,
-      round: 5,
+      seat: 2,
+      round: 6,
       units: [
-        { role: "MARKSMAN", at: { x: 6, y: 8 } },
-        { role: "MARKSMAN", at: { x: 10, y: 8 } },
-        { role: "GUARD", at: { x: 8, y: 8 } },
+        { role: "GUARD", at: { x: 2, y: 9 } },
+        { role: "FIGHTER", at: { x: 1, y: 9 } },
+        { role: "FIGHTER", at: { x: 13, y: 8 } },
+        { role: "RAIDER", at: { x: 12, y: 9 } },
       ],
-      line: "The Baron's marksmen form a firing line across the dunes.",
+      line: "More roustabouts, and the Baron's whip-hand with them.",
       announce: true,
     },
     {
       seat: 0,
-      round: 8,
+      round: 6,
       units: [{ role: "SWORDSMAN", at: { x: 4, y: 10 } }],
       line: "A cage door bursts: a Triceratops runs to the Queen.",
       announce: true,
     },
     {
       seat: 0,
-      round: 12,
+      round: 10,
       units: [{ role: "MARKSMAN", at: { x: 12, y: 11 } }],
       line: "A Spitter slips its chain and follows her scent.",
       announce: true,
@@ -376,14 +376,15 @@ export const DINOSAUR_4_V7: MissionDefinitionV7 = {
     "SEAMANSHIP",
     "SUBMERSIBLES",
   ],
-  // The Queen would like a word with the ringmaster, by round 15 (the
-  // saga's 20; was 18). The stars: by round 11, and the Old Queen lives.
+  // The Queen would like a word with the ringmaster, by round 16 (the
+  // saga's 20; retune 3: 15). The stars: by round 12, and the Old Queen
+  // lives.
   objective: {
     kind: "KILL",
     units: ["KESSLER"],
-    byRound: 15,
+    byRound: 16,
     bonus: [
-      { kind: "WITHIN_ROUNDS", rounds: 11 },
+      { kind: "WITHIN_ROUNDS", rounds: 12 },
       { kind: "UNIT_ALIVE", unit: "OLD_QUEEN" },
     ],
   },

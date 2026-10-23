@@ -27,7 +27,7 @@ export const CHAPTER_DINOSAURS_V7: CampaignChapterV7 = Object.freeze({
       format: "CONQUEST",
       briefing:
         "The Old Queen woke to an empty nest and a trail of boot prints. Shaman Oona read them: big boots, many men, the Baron's. They carried the eggs to the poachers' camps on the coast. The Queen is very angry. The poachers have heard, and they are loading rifles. Oona says: follow the boots. Eat the boots.",
-      objective: "Take both poacher camps by turn 16.",
+      objective: "Take both poacher camps by turn 20.",
       hints: Object.freeze([
         "Dinosaurs grow when they kill: feed the young ones.",
         "A city lays an Egg beside it; a Raptor hatches next turn.",
@@ -51,7 +51,7 @@ export const CHAPTER_DINOSAURS_V7: CampaignChapterV7 = Object.freeze({
       hints: Object.freeze([
         "Spitter acid ignores cover, Walls and Field Defense.",
         "Dinosaurs cannot climb the tar peaks: shoot from below.",
-        "A Caveman hits harder beside one of your dinosaurs.",
+        "Spitters see one tile: a Raptor's eyes find the Major.",
       ]),
       closing:
         "Thornbury is stuffed, by the Queen, personally. His crate is empty. His diary says the eggs went on the Baron's last ship to the mainland, to the Baron's circus, where the buyers come.",
@@ -67,7 +67,7 @@ export const CHAPTER_DINOSAURS_V7: CampaignChapterV7 = Object.freeze({
       format: "ESCORT",
       briefing:
         "Dinosaurs do not sail. Dinosaurs have never needed to. But the eggs are across the sea, so the cavemen have hollowed out the biggest logs on the island and the sea-reptiles have come up from the deep. The Baron's last warships stand between the island and the mainland. Get the Queen across. Mind the old serpent in the deep water: it is nobody's friend. His men are already wading ashore behind you.",
-      objective: "Bring the Queen to Big Top Bay by turn 18.",
+      objective: "Bring the Queen to Big Top Bay by turn 20.",
       hints: Object.freeze([
         "A Dugout rams harder after a run of two tiles.",
         "A Plesiosaur torpedoes from below, unanswered.",
@@ -87,11 +87,11 @@ export const CHAPTER_DINOSAURS_V7: CampaignChapterV7 = Object.freeze({
       format: "KILL",
       briefing:
         "Kessler's Travelling Wonder Circus has pitched its big top under the hills: cages of stolen beasts, Redcap roustabouts with cattle-prods, and the Baron himself in a ringmaster's coat, selling tickets. The eggs are not here. He sold them last week to men in hoods. But the Baron is here. Break open the cages, and the Queen would like a word with the ringmaster. The roustabouts have seen her coming.",
-      objective: "Kill Baron Kessler by turn 15.",
+      objective: "Kill Baron Kessler by turn 16.",
       hints: Object.freeze([
         "Charge! ignores Walls and shoves the target back.",
         "Kill one Guard of the ring and the Queen goes on in.",
-        "The freed beasts join you on turns 8 and 12.",
+        "The freed beasts join you on turns 6 and 10.",
       ]),
       closing:
         "The Queen has her word with the ringmaster. All that is found of Baron Otto Kessler is his hat. In its lining is his pocket-book: 'Eggs, eight, sold to the Grey Lodge, Greyhood, for the Long Night. Paid in full.'",
@@ -107,7 +107,7 @@ export const CHAPTER_DINOSAURS_V7: CampaignChapterV7 = Object.freeze({
       format: "ESCORT",
       briefing:
         "Greyhood lies across the Barrowlands, and the eggs are giving off a smell of old blood that wakes every corpse for miles. The Unquiet are rising all along the road, and the Redcaps, unpaid since the Baron's unfortunate accident, have taken service with the hoods. The Martians, who have not forgotten who ate the Overmind, have offered saucers. Get the Queen to the edge of the marsh, and fast.",
-      objective: "Bring the Queen to Mire's Edge by turn 15.",
+      objective: "Bring the Queen to Mire's Edge by turn 22.",
       hints: Object.freeze([
         "Bitten units rise as Zombies: keep the wounded back.",
         "Never let the Queen walk alone into the barrows.",
@@ -127,7 +127,7 @@ export const CHAPTER_DINOSAURS_V7: CampaignChapterV7 = Object.freeze({
       format: "CAPTURE",
       briefing:
         "The Grey Lodge means to offer the Queen's eggs to the thing under the mountain: the oldest blood in the world, they say, for the oldest hunger. Every egg they offer brings them closer to calling up something worse than a dinosaur. Take Greyhood before the last egg is offered. Oona says the Queen's blood remembers that hunger. The Lodge knows she is coming.",
-      objective: "Take Greyhood by turn 15.",
+      objective: "Take Greyhood by turn 16.",
       hints: Object.freeze([
         "Hit the cultists holding a daemon, and it turns on them.",
         "A daemon set loose bites whoever stands nearest.",
