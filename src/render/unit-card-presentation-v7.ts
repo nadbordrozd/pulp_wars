@@ -1,9 +1,14 @@
-import type {
-  PublicUnitStatBreakdownV7,
-  PublicUnitStatTermV7,
-  PublicUnitStatsV7,
-  PublicUnitStatValueV7,
+import {
+  PROMOTION_HP_V7,
+  PROMOTION_KILLS_V7,
+  type PlayerViewV7,
+  type PublicUnitStatBreakdownV7,
+  type PublicUnitStatTermV7,
+  type PublicUnitStatsV7,
+  type PublicUnitStatValueV7,
+  type PublicUnitV7,
 } from "../engine/index";
+import { promotionCandidateV7 } from "./feedback-plan-v7";
 import {
   GROUND_MODIFIER_SOURCES_V7,
   presentedModifierV7,
@@ -196,5 +201,48 @@ export function statusPopoverV7(
     title,
     effects: statusEffectsV7(stats, status),
     text: text === null || text.trim() === "" ? null : text,
+  };
+}
+
+/**
+ * A unit's way to its Promotion (bead `pulp_wars-2yc.106`): the dock shows
+ * it as a row of pips beside the unit's name, one per kill needed, lit for
+ * each kill it has. `label` names the count ("Promotion: 2 of 3 kills") and
+ * `text` says what the Promotion gives.
+ */
+export interface PromotionProgressV7 {
+  /** The kills that count, at most `needed`. */
+  readonly kills: number;
+  readonly needed: number;
+  readonly ready: boolean;
+  readonly label: string;
+  readonly text: string;
+}
+
+/**
+ * The Promotion progress of a visible unit, or null for a unit that is
+ * never Promoted (a veteran, a dinosaur that grows instead, an Egg, a
+ * summoned unit, the neutral Monster). Kills are public on every visible
+ * unit, so a rival's progress shows too.
+ */
+export function promotionProgressV7(
+  view: PlayerViewV7,
+  unit: PublicUnitV7,
+): PromotionProgressV7 | null {
+  if (!promotionCandidateV7(view, unit)) return null;
+  const needed = PROMOTION_KILLS_V7;
+  const kills = Math.min(Math.max(0, unit.kills), needed);
+  const ready = kills >= needed;
+  const gain = `+${PROMOTION_HP_V7} maximum HP and a full heal`;
+  return {
+    kills,
+    needed,
+    ready,
+    label: `Promotion: ${kills} of ${needed} kills`,
+    text: !ready
+      ? `At ${needed} kills it can be promoted once: ${gain}.`
+      : unit.form === "EMBARKED"
+        ? `It can be promoted once it is back on land: ${gain}.`
+        : `It can be promoted now: ${gain}.`,
   };
 }

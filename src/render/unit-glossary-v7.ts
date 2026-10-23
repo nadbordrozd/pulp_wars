@@ -1286,6 +1286,9 @@ const STATUS_IDS: Readonly<Record<string, GlossaryIdV7>> = {
   // The compact unit card (bead `pulp_wars-2yc.86`): the chips it adds for
   // a stat term no other chip shows (`modifierChipsV7`).
   veteran: "TERM_VETERAN",
+  // The kills toward a Promotion, as pips beside the name (bead
+  // `pulp_wars-2yc.106`).
+  promotion: "TERM_VETERAN",
   charge: "CHARGE",
   alpha: "GROW",
   "half-power": "STATUS_RAY_POWER",

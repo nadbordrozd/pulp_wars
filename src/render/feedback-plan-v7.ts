@@ -326,24 +326,42 @@ const same = (left: CoordV7, right: CoordV7): boolean =>
   left.x === right.x && left.y === right.y;
 
 /**
- * Whether a visible unit waits for its Promotion: the legality of `PROMOTE`
- * (`queryPlayerCommandsV7`) read from the public unit: not embarked, not an
- * Egg, not a veteran, the kills, and not a unit that grows instead. Kills and the
- * veteran flag are public on every visible unit, so this is no secret of
- * its owner. The neutral Monster is never promoted.
+ * Whether a visible unit can ever be Promoted (bead `pulp_wars-2yc.106`):
+ * the legality of `PROMOTE` (`queryPlayerCommandsV7`) without its kills and
+ * its form: not the neutral Monster, not an Egg, not a veteran, not a unit
+ * that grows instead (a dinosaur), and not a summoned unit. An embarked
+ * passenger counts its kills afloat and is Promoted once it lands. Kills
+ * and the veteran flag are public on every visible unit.
  */
-export function promotionReadyV7(
+export function promotionCandidateV7(
   view: PlayerViewV7,
   unit: PublicUnitV7,
 ): boolean {
   return (
     unit.ownerId !== NEUTRAL_OWNER_ID_V7 &&
     unit.hp > 0 &&
-    unit.form !== "EMBARKED" &&
     unit.form !== "EGG" &&
     !unit.veteran &&
-    unit.kills >= PROMOTION_KILLS_V7 &&
+    unit.summoned === undefined &&
     !unitGrowsV7(view, unit)
+  );
+}
+
+/**
+ * Whether a visible unit waits for its Promotion: the legality of `PROMOTE`
+ * (`queryPlayerCommandsV7`) read from the public unit: a Promotion
+ * candidate (`promotionCandidateV7`), not embarked, with the kills. Kills
+ * and the veteran flag are public on every visible unit, so this is no
+ * secret of its owner. The neutral Monster is never promoted.
+ */
+export function promotionReadyV7(
+  view: PlayerViewV7,
+  unit: PublicUnitV7,
+): boolean {
+  return (
+    unit.form !== "EMBARKED" &&
+    unit.kills >= PROMOTION_KILLS_V7 &&
+    promotionCandidateV7(view, unit)
   );
 }
 

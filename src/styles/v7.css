@@ -3556,6 +3556,63 @@ html:has(.v7-match-shell) body {
   background: var(--pw-loss);
 }
 
+/*
+ * Bead pulp_wars-2yc.106: the kills toward a Promotion, a row of small
+ * diamonds (the board's Veteran mark) beside the name, lit `--pw-yellow`
+ * per kill. It takes the name's row, so the card is no taller; its tap
+ * area reaches past it without moving anything.
+ */
+.v7-identity-head[data-promotion="true"] {
+  grid-template-columns: auto auto auto;
+  grid-template-areas:
+    "name pips help"
+    "line line line";
+}
+
+.v7-promotion-pips {
+  position: relative;
+  grid-area: pips;
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  border-radius: var(--pw-radius-xs);
+  cursor: pointer;
+}
+
+/* The tap area: past the pips on every side, taking no room. */
+.v7-promotion-pips::before {
+  position: absolute;
+  inset: -0.35rem -0.15rem;
+  border-radius: var(--pw-radius-xs);
+  content: "";
+}
+
+.v7-promotion-pip {
+  width: 7px;
+  height: 7px;
+  border: var(--pw-line-w-sm) solid var(--pw-line);
+  background: var(--pw-surface-raised);
+  transform: rotate(45deg);
+}
+
+.v7-promotion-pip[data-lit="true"] {
+  background: var(--pw-amber);
+}
+
+.v7-promotion-pips:hover::before,
+.v7-promotion-pips[aria-expanded="true"]::before {
+  box-shadow: inset 0 0 0 var(--pw-line-w-sm) var(--pw-line);
+}
+
+.v7-promotion-pips:focus-visible {
+  outline: none;
+}
+
+.v7-promotion-pips:focus-visible::before {
+  outline: 2px solid var(--pw-focus);
+  outline-offset: 1px;
+}
+
 /* A status chip is a button: a tap opens what it does. */
 .v7-unit-status-cues [role="button"] {
   min-height: 1.5rem;
@@ -5676,6 +5733,16 @@ html:has(.v7-match-shell) body {
       "name name"
       "line help";
     column-gap: 0.2rem;
+  }
+
+  /* The Promotion pips sit over the "?", in the name's row. */
+  .v7-selection-dock[data-card="compact"][data-selection-kind="unit"]
+    > .v7-identity
+    > .v7-identity-head[data-promotion="true"] {
+    grid-template-columns: auto auto;
+    grid-template-areas:
+      "name pips"
+      "line help";
   }
 
   .v7-selection-dock[data-card="compact"][data-selection-kind="unit"]

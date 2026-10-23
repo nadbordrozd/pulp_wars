@@ -968,6 +968,7 @@ import {
 import {
   cardModifiersV7,
   modifierChipsV7,
+  promotionProgressV7,
   statusPopoverV7,
 } from "../unit-card-presentation-v7";
 import {
@@ -13990,7 +13991,7 @@ export class Ruleset7DomAppView {
     )) {
       const status = chip.dataset.unitStatus ?? "";
       const entry = statusGlossaryV7(status);
-      const label = (chip.textContent ?? "").trim();
+      const label = chip.dataset.statusLabel ?? (chip.textContent ?? "").trim();
       const id = entry?.id ?? status;
       // A two-slot body is already explained by its Big body line.
       const coveredBy = STATUS_COVERED_BY_ABILITY_V7[status];
@@ -14077,12 +14078,37 @@ export class Ruleset7DomAppView {
       ),
       hp,
     );
+    // Bead pulp_wars-2yc.106: the kills toward a Promotion, as pips beside
+    // the name (one per kill needed, lit per kill), in the room the name's
+    // row already has; a tap explains them like a chip.
+    const promotion = promotionProgressV7(view, unit);
+    const explainers: HTMLElement[] = [];
+    if (promotion !== null) {
+      const pips = el(documentRoot, "span", "v7-promotion-pips");
+      pips.dataset.unitStatus = "promotion";
+      pips.dataset.statusLabel = promotion.label;
+      pips.dataset.kills = String(promotion.kills);
+      if (promotion.ready) pips.dataset.ready = "true";
+      pips.title = promotion.text;
+      pips.setAttribute("aria-label", `${promotion.label}. ${promotion.text}`);
+      for (let index = 0; index < promotion.needed; index += 1) {
+        const pip = el(documentRoot, "span", "v7-promotion-pip");
+        pip.setAttribute("aria-hidden", "true");
+        pip.dataset.lit = String(index < promotion.kills);
+        pips.append(pip);
+      }
+      head.dataset.promotion = "true";
+      head.append(pips);
+      explainers.push(pips);
+    }
     // Every chip of the card, in its order, in one row under the HP; a
     // stat term no chip stands for (Veteran, Charge) gets its own chip.
     const chips = [
       ...identity.querySelectorAll<HTMLElement>("[data-unit-status]"),
     ].filter(
-      (chip) => chip.parentElement?.closest("[data-unit-status]") === null,
+      (chip) =>
+        chip.parentElement?.closest("[data-unit-status]") === null &&
+        !explainers.includes(chip),
     );
     for (const extra of modifierChipsV7(
       stats,
@@ -14100,7 +14126,7 @@ export class Ruleset7DomAppView {
       chips.push(chip);
     }
     identity.querySelector(":scope > .v7-unit-status-cues")?.remove();
-    if (chips.length === 0) {
+    if (chips.length === 0 && explainers.length === 0) {
       this.#statusPopover = null;
       return details;
     }
@@ -14110,7 +14136,7 @@ export class Ruleset7DomAppView {
         ? this.#statusPopover.status
         : null;
     let openChip: HTMLElement | null = null;
-    for (const chip of chips) {
+    for (const chip of [...explainers, ...chips]) {
       const status = chip.dataset.unitStatus ?? "";
       const open = status === popoverStatus && openChip === null;
       if (open) openChip = chip;
@@ -14130,9 +14156,9 @@ export class Ruleset7DomAppView {
         event.preventDefault();
         toggle();
       };
-      row.append(chip);
+      if (!explainers.includes(chip)) row.append(chip);
     }
-    head.after(row);
+    if (chips.length > 0) head.after(row);
     if (openChip === null) {
       if (popoverStatus !== null) this.#statusPopover = null;
     } else dock.append(this.#statusPopoverPanel(view, unit, stats, openChip));
@@ -14152,7 +14178,7 @@ export class Ruleset7DomAppView {
     chip: HTMLElement,
   ): HTMLElement {
     const status = chip.dataset.unitStatus ?? "";
-    const label = (chip.textContent ?? "").trim();
+    const label = chip.dataset.statusLabel ?? (chip.textContent ?? "").trim();
     const glossary = statusGlossaryV7(status);
     const popover = statusPopoverV7(
       stats,
@@ -14204,7 +14230,7 @@ export class Ruleset7DomAppView {
     panel: HTMLElement,
   ): void {
     const chip = dock.querySelector<HTMLElement>(
-      '.v7-unit-status-cues [aria-expanded="true"]',
+      '.v7-unit-status-cues [aria-expanded="true"], .v7-promotion-pips[aria-expanded="true"]',
     );
     const area = main.getBoundingClientRect();
     const dockBox = dock.getBoundingClientRect();
@@ -14253,14 +14279,14 @@ export class Ruleset7DomAppView {
     if (
       target instanceof Element &&
       target.closest(
-        ".v7-status-popover, .v7-unit-status-cues [role='button']",
+        ".v7-status-popover, .v7-unit-status-cues [role='button'], .v7-promotion-pips",
       ) !== null
     )
       return;
     this.#statusPopover = null;
     this.#root.querySelector(".v7-status-popover")?.remove();
     for (const chip of this.#root.querySelectorAll<HTMLElement>(
-      '.v7-unit-status-cues [aria-expanded="true"]',
+      '.v7-unit-status-cues [aria-expanded="true"], .v7-promotion-pips[aria-expanded="true"]',
     ))
       chip.setAttribute("aria-expanded", "false");
   }

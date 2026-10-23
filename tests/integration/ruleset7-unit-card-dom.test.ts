@@ -90,13 +90,14 @@ describe("Compact unit card", () => {
   it("keeps a phone's unit card one slim row whose actions scroll sideways", () => {
     const scene = rig(unitCardFixtureV7());
     select(scene, AT.plain);
-    // The name, its "?" and the HP form the head beside the portrait.
+    // The name, its "?", the HP and the Promotion pips (bead
+    // pulp_wars-2yc.106) form the head beside the portrait.
     const head = requiredElement<HTMLElement>(
       ".v7-selection-dock > .v7-identity > .v7-identity-head",
     );
     expect(
       [...head.children].map((child) => child.className.split(" ")[0]),
-    ).toEqual(["", "v7-unit-help", "v7-unit-hp"]);
+    ).toEqual(["", "v7-unit-help", "v7-unit-hp", "v7-promotion-pips"]);
     expect(head.querySelector("h2")?.textContent).toBe("Fighter");
     scene.app.destroy();
     // The narrow-screen rules: the identity's parts join the dock's grid,

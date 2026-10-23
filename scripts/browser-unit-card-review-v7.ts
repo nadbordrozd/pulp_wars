@@ -11,8 +11,10 @@ import { ruleset7FixtureMountExpressionV7 } from "./browser-undead-fixture-v7";
  * "Compact unit card"). On the unit card fixture it captures, at desktop
  * 1440x900, phone 390x844 and phone 320x640: a plain own unit, a unit
  * with statuses with its Inspired chip's popover open, the details view,
- * an enemy unit and a city. It records each dock's height and fails when a
- * dock or the page overflows its width. No match is played. It needs the
+ * an enemy unit, a city, and the Promotion pips (bead pulp_wars-2yc.106:
+ * two of three kills, their popover, a rival with three). It records each
+ * dock's height and fails when a dock or the page overflows its width. No
+ * match is played. It needs the
  * Vite dev server, because the fixture is imported from `tests/fixtures`;
  * Chrome runs headless with `--mute-audio`.
  *
@@ -50,6 +52,8 @@ interface Scene {
   readonly then?: string;
   /** What to wait for after `then`. */
   readonly waitFor?: string;
+  /** The fixture function (default `unitCardFixtureV7`). */
+  readonly fixture?: string;
 }
 
 const SIZES: readonly ScreenSize[] = [
@@ -73,6 +77,25 @@ const SCENES: readonly Scene[] = [
   },
   { name: "enemy-unit", place: "enemy" },
   { name: "city", place: "capital" },
+  // Bead pulp_wars-2yc.106: the Promotion pips, two of three kills, their
+  // popover, and a rival waiting for its Promotion.
+  {
+    name: "promotion-pips",
+    place: "plain",
+    fixture: "unitCardPromotionFixtureV7",
+  },
+  {
+    name: "promotion-popover",
+    place: "plain",
+    fixture: "unitCardPromotionFixtureV7",
+    then: `document.querySelector('.v7-selection-dock [data-unit-status="promotion"]')?.click()`,
+    waitFor: `document.querySelector('.v7-status-popover') !== null || globalThis.__UNIT_CARD_BEFORE__ === true`,
+  },
+  {
+    name: "promotion-enemy",
+    place: "enemy",
+    fixture: "unitCardPromotionFixtureV7",
+  },
 ];
 
 const baseUrl = new URL(
@@ -124,7 +147,7 @@ try {
   for (const size of SIZES)
     for (const scene of SCENES) {
       await viewport(connection, size);
-      await mount(connection);
+      await mount(connection, scene.fixture ?? "unitCardFixtureV7");
       await evaluate(
         connection,
         `(() => { globalThis.__UNIT_CARD_BEFORE__ = ${String(before)}; const host = ${REVIEW}.boardHost; host.resetInspectionCycle(); host.activate(${REVIEW}.at[${JSON.stringify(scene.place)}]); })()`,
@@ -159,6 +182,11 @@ try {
               const row = dock.querySelector(':scope > .v7-context-actions');
               return row === null ? null : { width: Math.round(row.clientWidth), scrolls: row.scrollWidth > row.clientWidth + 1 };
             })(),
+            parts: Object.fromEntries(['.v7-identity-art', '.v7-identity-head', '.v7-promotion-pips', ':scope > .v7-context-actions'].map((selector) => {
+              const part = dock.querySelector(selector);
+              const rect = part?.getBoundingClientRect();
+              return [selector, rect === undefined ? null : [Math.round(rect.width), Math.round(rect.height)]];
+            })),
             pageOverflow: document.documentElement.scrollWidth - window.innerWidth,
             dockOverflow: dock.scrollWidth - dock.clientWidth,
           };
@@ -186,7 +214,7 @@ try {
   await rm(userData, { recursive: true, force: true, maxRetries: 5 });
 }
 
-async function mount(connection: Connection): Promise<void> {
+async function mount(connection: Connection, fixture: string): Promise<void> {
   const next = new URL(baseUrl.href);
   next.search = "";
   next.searchParams.set("art", "chibi");
@@ -204,7 +232,7 @@ async function mount(connection: Connection): Promise<void> {
     connection,
     ruleset7FixtureMountExpressionV7({
       module: "/tests/fixtures/v7-unit-card.ts",
-      fixture: "unitCardFixtureV7",
+      fixture,
       global: "__UNIT_CARD_REVIEW__",
       extras: "at: fixtures.UNIT_CARD_UI_V7",
     }),

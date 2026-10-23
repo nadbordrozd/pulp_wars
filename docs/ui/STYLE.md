@@ -93,6 +93,9 @@ plate.
   status of a faction or an effect uses that hue's ink on its fill.
   A unit's status chip is a button (bead `pulp_wars-2yc.86`): an ink
   rule on hover, `--pw-yellow` with ink text while its popover is open.
+  The Promotion pips beside a unit's name (bead `pulp_wars-2yc.106`) are
+  7 px diamonds with an ink rule, `--pw-surface-raised` and `--pw-amber`
+  when lit; hovered or open, an ink rule frames them.
   The popover is a Control-like plate (`--pw-surface-raised`, a
   `--pw-line-w-sm` ink border, `--pw-radius-sm`, `--pw-shadow-sm`): the
   name heavy, the change in `--pw-gain` (`--pw-loss` when it takes

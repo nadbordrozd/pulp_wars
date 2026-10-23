@@ -485,6 +485,21 @@ its name and health, and a row of action buttons.
   selection closes it; Escape returns the focus to the chip.
   `src/render/unit-card-presentation-v7.ts` holds the chip-to-term table
   and the sums.
+- **Promotion pips** (bead `pulp_wars-2yc.106`, the user, 2026-10-23:
+  nothing showed how many kills a Promotion needs). A unit that can be
+  Promoted shows three small diamonds (the board's Veteran mark) beside
+  its name, one per kill needed, lit `--pw-amber` for each kill it has
+  (at most three). They take the name's row (on a phone they sit over the
+  `?`), so the dock is no taller: the review heights below are unchanged.
+  They are a button like a chip: a tap opens the popover "Promotion: 2 of
+  3 kills" with "At 3 kills it can be promoted once: +5 maximum HP and a
+  full heal." ("It can be promoted now: ..." at three, "... once it is
+  back on land: ..." for a passenger), and the details dialog lists the
+  count. A rival's visible unit shows its pips too (kills are public). A
+  unit that is never Promoted shows none: a veteran (its Veteran chip
+  stays), a dinosaur that grows instead (its growth chip is its count),
+  an Egg, a summoned unit and the neutral Monster
+  (`promotionCandidateV7`, `promotionProgressV7`).
 - **Details.** The `?` opens the unit dialog as before, which now holds
   everything the main view leaves out: the owner, faction and role, the
   six stats with their terms (read-only text; the chips explain them),
@@ -530,7 +545,11 @@ its name and health, and a row of action buttons.
   207 to 98, 207 to 101 and 228 to 101; the capital 140 to 132, 380 to
   355 and 346 to 346 (its eight train cards are its production and
   stay). At 390 px about two and a half action tiles show beside the
-  head, at 320 px about one and a half; the rest scroll.
+  head, at 320 px about one and a half; the rest scroll. With the
+  Promotion pips (bead `pulp_wars-2yc.106`) every one of these heights is
+  the same, and the review adds a Fighter with two of three kills (129, 101
+  and 101), its popover, and a rival waiting for its Promotion (98, 101
+  and 101).
 
 #### Tutorial
 

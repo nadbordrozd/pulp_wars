@@ -58,3 +58,24 @@ export function unitCardFixtureV7(): GameStateV7 {
   });
   return replaceTileV7(state, at.fruit, { resource: "FRUIT" });
 }
+
+/**
+ * The Promotion pips (bead `pulp_wars-2yc.106`): the unit card fixture with
+ * two kills on the `plain` Fighter (two of its three pips lit) and three on
+ * the `enemy` Martian Fighter (all lit: it waits for its Promotion). The
+ * `inspired` Knight is a veteran and shows none.
+ */
+export function unitCardPromotionFixtureV7(): GameStateV7 {
+  const at = UNIT_CARD_UI_V7;
+  const state = unitCardFixtureV7();
+  return checkedV7({
+    ...state,
+    units: state.units.map((unit) =>
+      sameV7(unit.at, at.plain)
+        ? { ...unit, kills: 2 }
+        : sameV7(unit.at, at.enemy)
+          ? { ...unit, kills: 3 }
+          : unit,
+    ),
+  });
+}
