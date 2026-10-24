@@ -141,8 +141,8 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
     "f4e2e7815e1c6a9eb17f3f4d8cee91ee5aae5f16a50b6a057d48a07540b45c3a",
   "MARTIAN_4@3:MARTIAN":
     "c9c079ab825d9d43982c0e0c08eb41fe48de994ce3dff22fcef808591f2d4720",
-  "MARTIAN_5@5:MARTIAN":
-    "8efabd5d38f5724461d6171208408de3b400be02d95fe812811aa683d4092541",
+  "MARTIAN_5@6:MARTIAN":
+    "0e8c94226abd21399d37ca87f6fed2297db4162148e3a65d894557fcac4fcfe7",
   "MARTIAN_6@3:MARTIAN":
     "9ea4696ee3dd4d24a128813c7f8c8ab0410ccdc0e6970718d15c7a9fc4c68d06",
   // The Goblin campaign, "The Big Score" (`pulp_wars-hmyk.8`).
@@ -504,8 +504,8 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
     "52ffbd8e467e8d8cc571a2e6b573c52f0b1757b568adf96d05727363e3218bf2",
   "MARTIAN_4@3:MARTIAN":
     "1edcbec02c1cd0dec3c740a54409c8f8e7522d7067ed49770c00fe9ba00bc8b6",
-  "MARTIAN_5@5:MARTIAN":
-    "4cf9ff01039b4a66b6e93fdb5c213e4c8d45ccbbac4e2d715d57f7b1f539b638",
+  "MARTIAN_5@6:MARTIAN":
+    "5042b75390922627c8ec06b9c1f69ed93ef5c39454199594f68d72475e731bef",
   "MARTIAN_6@3:MARTIAN":
     "8a73683d76526f00c4b9cbe5c867615b90e4ad9bfbfda6808081558124808126",
   // The Goblin campaign, "The Big Score" (`pulp_wars-hmyk.8`).

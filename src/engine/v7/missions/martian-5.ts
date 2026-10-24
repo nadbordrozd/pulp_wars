@@ -34,6 +34,15 @@ import type { MissionDefinitionV7 } from "./types";
  * 5 Coins, no Fortification (no Brute training), and they rush Red Dust
  * from round 1; you cannot research Climbing; the clock is 18.
  *
+ * Revision 6 (`pulp_wars-hmyk.37`, hand-played; CAMPAIGN.md section 18.6)
+ * on the redesigned Mothership (`pulp_wars-ewpj`, `7r108`): Mass Beam Down
+ * set a Brain beside the hall's centre in round 5, and the Idol Bearer it
+ * took there shielded it and captured (a win in round 6). The Lodge now
+ * has no Idol Bearer: an Initiate holds the centre, four Initiates and
+ * four Hexers the ring, so a taken centre unit can be frogged or killed;
+ * the Redcaps have Fortification again (Orc Brutes trained and fortified
+ * on the road) and 6 Coins.
+ *
  * ```text
  *      x 0123456789ABCDEF
  * y  1   ~~~~f.vf^v.^.~~~      v: villages
@@ -65,7 +74,10 @@ export const MARTIAN_5_V7: MissionDefinitionV7 = {
   // Revision 5 (`pulp_wars-hmyk.36`): four Redcap towns with Brutes, Ogres
   // and a Warboss rushing from round 1, no Climbing for you, and an
   // 18-round clock.
-  revision: 5,
+  // Revision 6 (`pulp_wars-hmyk.37`): no Idol Bearer in the hall (an
+  // Initiate on the centre, a ring of Initiates and Hexers) and Brute
+  // training for the Redcaps.
+  revision: 6,
   seed: 20261605,
   // <map>
   size: 16,
@@ -233,16 +245,24 @@ export const MARTIAN_5_V7: MissionDefinitionV7 = {
         },
       ],
       units: [
-        { role: "GUARD", at: { x: 9, y: 4 } },
+        // Revision 6 (`pulp_wars-hmyk.37`): an Initiate on the centre, not
+        // an Idol Bearer (hand play on the new Mothership: a Brain beamed
+        // beside the centre took the Idol Bearer, whose idol then kept the
+        // Lodge beside it from hitting anything else, and it captured the
+        // next turn, round 6; with an Initiate there the Lodge frogged or
+        // killed the taken unit). No Idol Bearer anywhere in the hall: the
+        // AI walks one onto the centre.
+        { role: "FIGHTER", at: { x: 9, y: 4 } },
         // The hall's ring: every tile a walker can reach beside the
         // centre is held (hand play: with one free, a Brain beamed in took
-        // the centre's Idol Bearer in round 7).
+        // the centre's Idol Bearer in round 7), and a fourth Hexer.
         { role: "FIGHTER", at: { x: 8, y: 3 } },
         { role: "FIGHTER", at: { x: 8, y: 4 } },
         { role: "MARKSMAN", at: { x: 10, y: 4 } },
         { role: "MARKSMAN", at: { x: 9, y: 5 } },
         { role: "FIGHTER", at: { x: 10, y: 5 } },
-        { role: "GUARD", at: { x: 10, y: 3 } },
+        { role: "MARKSMAN", at: { x: 10, y: 3 } },
+        { role: "MARKSMAN", at: { x: 11, y: 4 } },
         // The Stargazer on the hall's roof (no Summoner: hand play, with one
         // and 10 Favour the Lodge called three Horrors and an Imp by round
         // 5 and they ate the strike force).
@@ -253,7 +273,7 @@ export const MARTIAN_5_V7: MissionDefinitionV7 = {
       directive: {
         kind: "GUARD",
         zone: [{ x0: 7, y0: 2, x1: 12, y1: 6 }],
-        garrison: 8,
+        garrison: 9,
       },
       forbiddenTechnologies: [
         "GATHERING",
@@ -281,9 +301,13 @@ export const MARTIAN_5_V7: MissionDefinitionV7 = {
       // martians. they get one shotted from distance"): four towns, Orc
       // Brutes on every centre, Ogres and a Warboss, and Coins to train Bomb
       // Chuckers (hand play: with Fortification and 6 Coins they trained
-      // two Brutes a turn and walled the road in every attempt).
-      coins: 5,
-      technologies: ["HUNTING", "MARKSMANSHIP", "DRILL"],
+      // two Brutes a turn and walled the road in every attempt). Revision 6
+      // (`pulp_wars-hmyk.37`): Fortification and 6 Coins again, now that
+      // Mass Beam Down lifts a strike force over the wall (hand play: they
+      // fortified Brutes round the Hollow, took Quasik and brought the
+      // Mothership down to 2 HP; without Brutes they were gone by round 4).
+      coins: 6,
+      technologies: ["HUNTING", "MARKSMANSHIP", "DRILL", "FORTIFICATION"],
       cities: [
         {
           name: "Snuffer's Camp",
@@ -343,7 +367,6 @@ export const MARTIAN_5_V7: MissionDefinitionV7 = {
         "CHIVALRY",
         "ENGINEERING",
         "METALLURGY",
-        "FORTIFICATION",
         "EXPLOSIVES",
       ],
     },
@@ -357,8 +380,8 @@ export const MARTIAN_5_V7: MissionDefinitionV7 = {
   ],
   landmarks: [{ tag: "CANDLEWICK", at: { x: 9, y: 4 } }],
   // Take Candlewick by round 18 (the saga's 22; retune 3: 15; retune 4: 20;
-  // revision 5's hand-played wins came in rounds 11 and 12). The stars: by
-  // round 13, and no city lost.
+  // revision 5's hand-played wins came in rounds 11 and 12, revision 6's in
+  // rounds 12 and 9). The stars: by round 13, and no city lost.
   objective: {
     kind: "CAPTURE",
     places: ["CANDLEWICK"],

@@ -5411,9 +5411,42 @@ hence the fourth Ogre after v4's narrow win. The v4 and final wins took 60
 and 55 per cent of the old clock; the clock is 18 rather than 1.5 times a
 faster human win, to stay lax.
 
-**Follow-ups.** Replay M5 once `pulp_wars-ewpj` lands (a Mass Beam Down
-that drops three units beside the hall may need a fuller ring or a
-stronger Redcap start). Choosing the free Saucer (Scouts) at a level-up
+**Revision 6: on the new Mothership (`pulp_wars-hmyk.37`).** Replayed on
+ruleset 7r108 (`pulp_wars-ewpj`: the Mothership has 20 HP, Defence 3,
+Attack 3, the Shield Canopy and Mass Beam Down), revision 5 was a win in
+round 6 with no peril, so `MARTIAN_5` changed again (revision 6, re-pinned
+in both pin tables); your start, the Redcaps' towns and units and the clock
+are revision 5's.
+
+| What           | Revision 5                                                 | Now (revision 6)                                                                                                                 |
+| -------------- | ---------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| The hall       | an Idol Bearer on the centre, a ring of six, the Stargazer | no Idol Bearer: an Initiate on the centre, four Initiates and four Hexers on and around the ring, the Stargazer (nine, guarding) |
+| Redcap economy | 5 Coins, Fortification forbidden (no Brute training)       | 6 Coins and Fortification: Orc Brutes trained and fortified on the road                                                          |
+
+**Hand play** (`play-text`, Mass Beam Down used every time; the autopilot
+of section 15 on the final definition: defeat, eliminated in round 8).
+
+| Version                                                        | Attempts                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| -------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| revision 5 on 7r108                                            | win, round 6 of 18, 3 stars, a Saucer, a Grunt and the borrowed Brute lost: in round 1 the Mothership beamed a Grunt, the Brain and a Grunt round Grubber's Den, the Brain took its centre Brute (it captured in round 2) and the guns killed the Wolf Rider, two Ogres and the Warboss by round 2; in round 5 the Mothership walked to 11,6 and beamed two Brains and a Grunt into three gaps the ring had left; a Brain took the centre's Idol Bearer, whose idol then kept the Lodge beside it from striking anything but an Idol Bearer, and it captured in round 6                                                                                                                                                                                                                                                                       |
+| a: an Initiate on the centre, the two Idol Bearers on the ring | dropped: the AI walked an Idol Bearer onto the centre in round 1                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| b: no Idol Bearer                                              | win, round 10, 3 stars, a Brain, a Saucer and the borrowed Brute lost: the Hexers frogged the Brain and the taken centre Initiate and an Initiate killed it and stepped in; the hall fell only after a beamed strike force and the Tripod had killed the Lodge down to three. The Redcaps were gone by round 4: strengthen them                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| c FINAL: b with Fortification and 6 Coins for the Redcaps      | first attempt: win, round 12 of 18, 3 stars, four units lost (a Brain, three Ray Gunners, one of them to the star-fall) and the borrowed Brute: the Redcaps trained a Brute a turn at the Hollow and fortified them round it, and two Brutes and a Bomb Chucker took the Mothership from 17 to 2 HP in round 5, which cost three turns of recovering; the hall fell when a Brain beamed beside the centre took its Initiate while the Hexers' frogs were spent, and it survived on 3 HP. Second attempt, knowing the line: win, round 9, 3 stars, six units lost (three Brains, two Ray Gunners, a Saucer) and Quasik taken back; the star-fall killed a Brain and the taken centre unit, and the hall fell to a Brain that killed the centre's Initiate and stepped onto the centre after a beamed strike force had killed four of the Lodge |
+| d: c with a second Stargazer                                   | abandoned in round 11 of 18, losing: both stars on one tile and two Brutes brought the Mothership to 4 HP in round 6, two Ray Gunners, a Saucer and Quasik lost, the Hollow taken and lost again, Brutes walking on Red Dust, the hall untouched. Too far on top of c for a mission that must stay winnable; reverted                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+
+What decides it now: the Redcaps' fortified Brutes (Defense 4.5) do not
+die to one ray, gang up on whatever stands beside two of them (the
+Mothership too), and replace themselves every turn; Disintegrator
+(Explosives) and Breach are worth their Coins. In the hall a taken centre
+unit no longer shields itself: four Hexers frog it (a frog cannot
+capture) and the ring kills it, so a Brain must arrive when the frogs are
+spent or after a strike force has thinned the Lodge, and the Stargazer's
+mark punishes anything that stays. Deviations: the first attempt on the
+final definition was a win with real losses rather than a loss; the user
+is the stronger player, but the one harder step tried (a second
+Stargazer) looked unwinnable for me, so the final is c.
+
+**Follow-ups.** Choosing the free Saucer (Scouts) at a level-up
 displaces and kills the unit standing on the city's centre (M5 starts with
 a Grunt on Red Dust's centre and the free Muster monument offers Scouts in
 round 1); worth a rule look or a warning in the reward choice.

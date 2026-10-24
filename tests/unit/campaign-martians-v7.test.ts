@@ -268,7 +268,7 @@ describe("Signal from Home", () => {
       ["MARTIAN_2", 3],
       ["MARTIAN_3", 4],
       ["MARTIAN_4", 3],
-      ["MARTIAN_5", 5],
+      ["MARTIAN_5", 6],
       ["MARTIAN_6", 3],
     ] as const)
       expect(mission(id).revision, id).toBe(revision);
@@ -298,11 +298,12 @@ describe("Signal from Home", () => {
     expect(count("SWORDSMAN")).toBeGreaterThanOrEqual(3);
     expect(count("CAPTAIN")).toBe(1);
     expect(count("FIGHTER")).toBeLessThanOrEqual(1);
-    // Coins to keep training, but no Brute factory (with Fortification
-    // they walled the road with two new Brutes a turn).
+    // Coins to keep training, and Brute training again since revision 6
+    // (`pulp_wars-hmyk.37`): Mass Beam Down lifts a strike force over the
+    // wall of Brutes that revision 5 had to forbid.
     expect(redcaps.coins).toBeGreaterThan(0);
-    expect(redcaps.technologies).not.toContain("FORTIFICATION");
-    expect(redcaps.forbiddenTechnologies).toContain("FORTIFICATION");
+    expect(redcaps.technologies).toContain("FORTIFICATION");
+    expect(redcaps.forbiddenTechnologies).not.toContain("FORTIFICATION");
     // No Climbing: a Brain on the bare mountain beside the hall's centre
     // took it past the whole ring.
     for (const tech of ["ENGINEERING", "METALLURGY"])
@@ -311,6 +312,25 @@ describe("Signal from Home", () => {
       kind: "CAPTURE",
       byRound: 18,
     });
+  });
+
+  it("keeps an Idol Bearer off M5's hall for the Mothership (pulp_wars-hmyk.37)", () => {
+    // CAMPAIGN.md section 18.6: a Brain beamed beside the centre by Mass
+    // Beam Down took the centre's Idol Bearer, whose idol barred the Lodge
+    // beside it from striking anything else, and it captured the next turn.
+    const lodge = mission("MARTIAN_5")
+      .seats[1] as MissionDefinitionV7["seats"][number];
+    const hall = lodge.cities[0]?.at;
+    expect(
+      lodge.units.find((unit) => unit.at.x === hall?.x && unit.at.y === hall.y)
+        ?.role,
+    ).toBe("FIGHTER");
+    // No Idol Bearer at all (the AI walks one onto the centre), and the
+    // ring's Hexers can frog a taken centre unit.
+    expect(lodge.units.some((unit) => unit.role === "GUARD")).toBe(false);
+    expect(
+      lodge.units.filter((unit) => unit.role === "MARKSMAN").length,
+    ).toBeGreaterThanOrEqual(4);
   });
 
   it("names every place and unit an objective talks about", () => {
