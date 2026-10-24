@@ -156,14 +156,19 @@ describe("Candy unit dock", () => {
     app.destroy();
   });
 
-  it("explains the missing Field Defense", () => {
+  // Bead pulp_wars-2yc.108: Candy never builds Field Defense, so the dock
+  // shows no greyed Fortify for it.
+  it("shows no Fortify for the Field Defense Candy never builds", () => {
     const controller = new FixtureController(
       candyUiFieldV7([{ seat: 0, role: "FIGHTER", at: { x: 7, y: 8 } }]),
     );
     const host = new RecordingBoardHost();
     const app = mount(controller, host);
     selectUnitAt(controller, host, { x: 7, y: 8 });
-    expect(requiredButton("candy-field-defense").title).toBe(
+    expect(document.querySelector('[data-action="candy-field-defense"]')).toBe(
+      null,
+    );
+    expect(document.body.textContent).not.toContain(
       CANDY_FIELD_DEFENSE_EXPLANATION_V7,
     );
     app.destroy();

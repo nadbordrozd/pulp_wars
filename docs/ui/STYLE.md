@@ -107,7 +107,13 @@ plate.
   opacity that takes text under 4.5:1. A dock action the player cannot
   pay for (`.is-blocked`, bead `pulp_wars-2yc.36`) is `--pw-surface-2` with
   a soft rule and no shadow, its art greyed, its name `--pw-text-2` and its
-  price `--pw-loss` on `--pw-red-fill`.
+  price `--pw-loss` on `--pw-red-fill`. A disabled action is shown only
+  for a reason that can change (no target in range, not enough Coins,
+  already acted, Frozen, a technology the player can research); an action
+  the faction or the unit's kind can never take ("Martians cannot build
+  Field Defense", "Clockwork never recovers by itself") is not shown at
+  all, and the unit's `?` details say what its kind cannot do (bead
+  `pulp_wars-2yc.108`; `src/render/disabled-reasons-v7.ts`).
 - **Technology** (the radial tree, bead `pulp_wars-2yc.58`): round badges
   on a night ground (`--pw-tree-ground` with `--pw-tree-glow` at the hub).
   Available is a `--pw-yellow` badge with the art straight on the yellow and

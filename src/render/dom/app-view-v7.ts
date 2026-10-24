@@ -381,6 +381,7 @@ import {
 import { TechnologyTreeViewportV7 } from "./technology-tree-viewport-v7";
 import { installMatchGestureGuardV7 } from "./match-gesture-guard-v7";
 import { createTacticalSymbolV7 } from "./tactical-symbol-v7";
+import { hidePermanentlyDisabledActionsV7 } from "../disabled-reasons-v7";
 import type { TacticalSymbolTheme } from "../../assets/ruleset7-tactical-ui-symbols";
 import {
   FAVOUR_CANDLE_SPRITE_URL_V7,
@@ -494,12 +495,10 @@ import {
 import {
   BERSERK_DESCRIPTION_V7,
   BERSERK_LABEL_V7,
-  GOBLIN_FIELD_DEFENSE_EXPLANATION_V7,
   berserkPreviewTextV7,
   deathBlastNoteV7,
   goblinBoundaryNoticeV7,
   goblinCommandLabelV7,
-  goblinFieldDefenseBlockedV7,
   kaboomPreviewTextV7,
   kaboomTooltipV7,
   fireRaftKaboomTooltipV7,
@@ -517,7 +516,6 @@ import {
 import {
   ABANDON_EGG_LABEL_V7,
   CHARGE_LABEL_V7,
-  DINOSAUR_FIELD_DEFENSE_EXPLANATION_V7,
   DINOSAUR_HIRE_NOTE_V7,
   HATCH_LABEL_V7,
   HATCH_NEW_EGG_V7,
@@ -532,7 +530,6 @@ import {
   cityCapacityTextV7,
   dinosaurBoundaryNoticeV7,
   dinosaurCommandLabelV7,
-  dinosaurFieldDefenseBlockedV7,
   dinosaurRewardLabelV7,
   eggCountdownTextV7,
   eggInfoTextV7,
@@ -568,7 +565,6 @@ import {
   DISINTEGRATOR_UNLOCK_TEXT_V7,
   FORCE_FIELDS_UNLOCK_TEXT_V7,
   HEAT_SINKS_UNLOCK_TEXT_V7,
-  MARTIAN_FIELD_DEFENSE_EXPLANATION_V7,
   MARTIAN_FROZEN_MOVED_V7,
   MIND_CONTROL_LABEL_V7,
   MIND_CONTROL_PICK_V7,
@@ -585,7 +581,6 @@ import {
   brainControlTextV7,
   martianBoundaryNoticeV7,
   martianCommandLabelV7,
-  martianFieldDefenseBlockedV7,
   martianRewardLabelV7,
   martianRoleUnlockTextV7,
   martianSlotCapacityTooltipV7,
@@ -620,7 +615,6 @@ import {
   FROST_BOLT_PICK_V7,
   FROST_BOLT_TOOLTIP_V7,
   GLIDE_MOVE_LABEL_V7,
-  ICE_FOLK_FIELD_DEFENSE_EXPLANATION_V7,
   SNOW_LABEL_V7,
   STAMPEDE_CHARGE_V7,
   STAMPEDE_CONFIRM_HINT_V7,
@@ -635,7 +629,6 @@ import {
   iceFolkAbilityUnavailableTextV7,
   iceFolkBoundaryNoticeV7,
   iceFolkCommandLabelV7,
-  iceFolkFieldDefenseBlockedV7,
   iceFolkRewardLabelV7,
   iceFolkRoleUnlockTextV7,
   boulderThrowTextV7,
@@ -748,10 +741,8 @@ import {
   BOMB_RUN_PICK_TARGET_V7,
   CLOCKWORK_INFO_V7,
   CLOCKWORK_LABEL_V7,
-  CLOCKWORK_RECOVER_V7,
   DIG_IN_UNLOCK_TEXT_V7,
   DIVE_UNLOCK_TEXT_V7,
-  DWARF_FIELD_DEFENSE_EXPLANATION_V7,
   DWARF_SLOT_TOOLTIP_V7,
   ENGINEER_SUPPORT_UNLOCK_TEXT_V7,
   REPAIR_CHIP_V7,
@@ -774,13 +765,11 @@ import {
   bombRunTooltipV7,
   landingHintV7,
   landingLabelV7,
-  clockworkRecoverBlockedV7,
   digInChipV7,
   dwarfAbilityUnavailableTextV7,
   dwarfBoundaryNoticeV7,
   dwarfCityNameV7,
   dwarfCommandLabelV7,
-  dwarfFieldDefenseBlockedV7,
   dwarfLabelV7,
   dwarfRewardLabelV7,
   dwarfRoleUnlockTextV7,
@@ -897,7 +886,6 @@ import {
   type CultPickV7,
 } from "../canvas/cult-board-plan-v7";
 import {
-  CANDY_FIELD_DEFENSE_EXPLANATION_V7,
   CONFECTIONER_SUPPORT_UNLOCK_TEXT_V7,
   TOP_UP_LABEL_V7,
   TOP_UP_TOOLTIP_V7,
@@ -912,7 +900,6 @@ import {
   candyBoundaryNoticeV7,
   candyChipsV7,
   candyCommandNameV7,
-  candyFieldDefenseBlockedV7,
   candyRoleUnlockTextV7,
   crumbsTileLinesV7,
   glazeTileLinesV7,
@@ -7818,103 +7805,35 @@ export class Ruleset7DomAppView {
       // Bead pulp_wars-9im: one Hatch button, whatever the number of Eggs.
       const hatch = this.#hatchButton(unit.id);
       if (hatch !== null) actions.prepend(hatch);
-      // Revision 19: why an adjacent Egg cannot be hatched yet, and the
-      // Field Defense restriction. aria-disabled keeps each explanation
-      // reachable by keyboard.
-      const dinosaurBlocked: {
-        readonly action: string;
-        readonly label: string;
-        readonly reason: string;
-        readonly explanation: string;
-        readonly icon: "hatch" | null;
-      }[] = [];
-      if (hatchBlockedEggsV7(view, unit.id).length > 0)
-        dinosaurBlocked.push({
-          action: "hatch-unavailable",
-          label: HATCH_LABEL_V7,
-          reason: "hatch-new-egg",
-          explanation: HATCH_NEW_EGG_V7,
-          icon: "hatch",
-        });
-      if (dinosaurFieldDefenseBlockedV7(view, unit.id))
-        dinosaurBlocked.push({
-          action: "dinosaur-field-defense",
-          label: "Fortify",
-          reason: "dinosaur-field-defense",
-          explanation: DINOSAUR_FIELD_DEFENSE_EXPLANATION_V7,
-          icon: null,
-        });
-      // The Martian revision (section 13.2): the Field Defense restriction.
-      if (martianFieldDefenseBlockedV7(view, unit.id))
-        dinosaurBlocked.push({
-          action: "martian-field-defense",
-          label: "Fortify",
-          reason: "martian-field-defense",
-          explanation: MARTIAN_FIELD_DEFENSE_EXPLANATION_V7,
-          icon: null,
-        });
-      // The Ice Folk revision (section 13.2): the Field Defense restriction.
-      if (iceFolkFieldDefenseBlockedV7(view, unit.id))
-        dinosaurBlocked.push({
-          action: "ice-folk-field-defense",
-          label: "Fortify",
-          reason: "ice-folk-field-defense",
-          explanation: ICE_FOLK_FIELD_DEFENSE_EXPLANATION_V7,
-          icon: null,
-        });
-      // The Dwarf revision (section 16.2): Dwarves dig in instead.
-      if (dwarfFieldDefenseBlockedV7(view, unit.id))
-        dinosaurBlocked.push({
-          action: "dwarf-field-defense",
-          label: "Fortify",
-          reason: "dwarf-field-defense",
-          explanation: DWARF_FIELD_DEFENSE_EXPLANATION_V7,
-          icon: null,
-        });
-      // The Candy revision (section 15.2): Candy has Home Sweet Home.
-      if (candyFieldDefenseBlockedV7(view, unit.id))
-        dinosaurBlocked.push({
-          action: "candy-field-defense",
-          label: "Fortify",
-          reason: "candy-field-defense",
-          explanation: CANDY_FIELD_DEFENSE_EXPLANATION_V7,
-          icon: null,
-        });
-      for (const entry of dinosaurBlocked) {
+      // Revision 19: why an adjacent Egg cannot be hatched yet.
+      // aria-disabled keeps the explanation reachable by keyboard. Bead
+      // pulp_wars-2yc.108: the Fortify that a faction without Field Defense
+      // can never use is not shown (src/render/disabled-reasons-v7.ts).
+      if (hatchBlockedEggsV7(view, unit.id).length > 0) {
         const blocked = button(
           this.#document,
           "",
-          entry.action,
+          "hatch-unavailable",
           "v7-context-action",
         );
         blocked.append(
-          entry.icon === null
-            ? createTacticalSymbolV7(
-                this.#document,
-                "ui-action-field-defense",
-                this.#tacticalTheme(),
-              )
-            : (this.#chibiArt("ICON:ACTION:HATCH", CHIBI_DOM_BOXES_V7.action)
-                ?.element ??
-                uiIconV7(
-                  this.#document,
-                  entry.icon,
-                  "v7-ui-icon v7-command-icon",
-                )),
-          text(this.#document, "span", entry.label, "v7-action-label"),
+          this.#chibiArt("ICON:ACTION:HATCH", CHIBI_DOM_BOXES_V7.action)
+            ?.element ??
+            uiIconV7(this.#document, "hatch", "v7-ui-icon v7-command-icon"),
+          text(this.#document, "span", HATCH_LABEL_V7, "v7-action-label"),
         );
         blocked.setAttribute("aria-disabled", "true");
-        blocked.dataset.disabledReason = entry.reason;
-        blocked.title = entry.explanation;
+        blocked.dataset.disabledReason = "hatch-new-egg";
+        blocked.title = HATCH_NEW_EGG_V7;
         blocked.setAttribute(
           "aria-label",
-          `${entry.label} unavailable. ${entry.explanation}`,
+          `${HATCH_LABEL_V7} unavailable. ${HATCH_NEW_EGG_V7}`,
         );
         // A tap (no hover on touch) shows the reason as a toast.
         blocked.onclick = () => {
-          this.#notice = `${entry.explanation}.`;
-          this.#showToast(`${entry.explanation}.`);
-          this.#pendingFocusAction = entry.action;
+          this.#notice = `${HATCH_NEW_EGG_V7}.`;
+          this.#showToast(`${HATCH_NEW_EGG_V7}.`);
+          this.#pendingFocusAction = "hatch-unavailable";
           this.#render();
         };
         actions.append(blocked);
@@ -7952,61 +7871,6 @@ export class Ruleset7DomAppView {
         ...this.#cultTrickActionButtons(view, unit.id),
       ].reverse())
         actions.prepend(button);
-      if (goblinFieldDefenseBlockedV7(view, unit.id)) {
-        // Revision 17 (section 5.3): the Goblin never builds Field Defense;
-        // aria-disabled keeps the explanation reachable by keyboard.
-        const fortify = button(
-          this.#document,
-          "",
-          "goblin-field-defense",
-          "v7-context-action",
-        );
-        fortify.append(
-          createTacticalSymbolV7(
-            this.#document,
-            "ui-action-field-defense",
-            this.#tacticalTheme(),
-          ),
-          text(this.#document, "span", "Fortify", "v7-action-label"),
-        );
-        fortify.setAttribute("aria-disabled", "true");
-        fortify.dataset.disabledReason = "goblin-field-defense";
-        fortify.title = GOBLIN_FIELD_DEFENSE_EXPLANATION_V7;
-        fortify.setAttribute(
-          "aria-label",
-          `Fortify unavailable. ${GOBLIN_FIELD_DEFENSE_EXPLANATION_V7}`,
-        );
-        actions.append(fortify);
-      }
-      // The Dwarf revision (section 16.1): clockwork never recovers.
-      if (clockworkRecoverBlockedV7(view, unit)) {
-        const recover = button(
-          this.#document,
-          "",
-          "clockwork-recover",
-          "v7-context-action",
-        );
-        recover.append(
-          this.#chibiArt("ICON:ACTION:RECOVER", CHIBI_DOM_BOXES_V7.action)
-            ?.element ?? art(this.#document, "ui-action-recover", ""),
-          text(this.#document, "span", "Recover", "v7-action-label"),
-        );
-        // aria-disabled keeps the explanation reachable by keyboard.
-        recover.setAttribute("aria-disabled", "true");
-        recover.dataset.disabledReason = "clockwork";
-        recover.title = CLOCKWORK_RECOVER_V7;
-        recover.setAttribute(
-          "aria-label",
-          `Recover unavailable. ${CLOCKWORK_RECOVER_V7}`,
-        );
-        recover.onclick = () => {
-          this.#notice = `${CLOCKWORK_RECOVER_V7}.`;
-          this.#showToast(`${CLOCKWORK_RECOVER_V7}.`);
-          this.#pendingFocusAction = "clockwork-recover";
-          this.#render();
-        };
-        actions.append(recover);
-      }
       if (restlessRecoverBlockedV7(view, unit)) {
         const recover = button(
           this.#document,
@@ -8053,6 +7917,10 @@ export class Ruleset7DomAppView {
         );
         actions.append(disband);
       }
+      // Bead pulp_wars-2yc.108: a disabled action is shown only for a
+      // reason that can change; one the faction or the unit's kind can
+      // never take is dropped.
+      hidePermanentlyDisabledActionsV7(actions);
       // The Martian revision: while an ability is aimed, the dock shows its
       // compact prompt instead of the actions, so the board stays in view.
       const martianPanel =

@@ -618,7 +618,7 @@ describe("Ice Folk technology cards, Help, achievements and Gallery", () => {
     ]);
     const glacier = lines("submersibles");
     expect(glacier).toContain(
-      "Glacier: your ice is thick (two Cracks break it), covers your units, and gives +1 Move across it",
+      "Glacier: your ice is thick: other players must Crack Ice twice to break it, and your Freeze mends a crack; your units on it have cover and +1 Move across it",
     );
     expect(glacier.join(" ")).not.toContain("Submarine");
     expect(

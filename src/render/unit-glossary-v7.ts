@@ -807,7 +807,7 @@ const ENTRIES = {
   ],
   STATUS_ICE_CRUSH: [
     "Ice crush",
-    "The ice hurts it at the start of the Ice Folk turn.",
+    "The ice hurts it at the start of the turn of the player whose ice it is.",
   ],
   // Ice Folk Freeze (`pulp_wars-w49.38`): Frozen is the one Ice Folk
   // status of a unit.

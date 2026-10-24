@@ -192,25 +192,29 @@ folded by `pulp_wars-5ti.9`; the design is the
 [naval branch overlay](../product/RULESET_7_NAVAL_BRANCH.md#8-ice-folk-the-frozen-sea)).
 The targeting rules are in
 [BOARD_TARGETING.md section 3.5](BOARD_TARGETING.md#35-the-frozen-sea-freeze-the-slide-icebound-bead-pulp_wars-5ti7).
+The frozen sea redesign (bead `pulp_wars-5ti.27`) made the ice permanent:
+no countdown and no melting stages are shown, and every other faction's
+units and ships have Crack Ice; the lines below say it as it is now (bead
+`pulp_wars-5ti.30`).
 
 - **Freeze.** Every Ice Folk land unit next to water has one Freeze
   button (a snowflake). A line role's arms it: the tiles it may freeze
-  toward are Place targets labelled "Ice 2 · 3 turns" (or "· stays" in its
-  own territory), the far tile of each line is tinted, and a click, a tap
-  or Enter freezes. The Ice Witch's button casts her ring at once; the
-  ring is marked while she is selected and lifted, with its label, while
-  the button is hovered or focused. A disabled button names the reason
+  toward are Place targets labelled "Ice 2", "Ice 2 · takes 1", "Ice 2 ·
+  mends 1" or "Ice 1 · Icebound", the far tile of each line is tinted, and
+  a click, a tap or Enter freezes. The Ice Witch's button casts her ring
+  at once; the ring is marked while she is selected and lifted, with its
+  label, while the button is hovered or focused. A disabled button names
+  the reason
   ("Needs Rime", "Deep Water needs Pack Ice", "Already acted this turn").
 - **Ice on the board.** An ice tile is drawn as a sheet over its water,
   paler over Shallow Water and bluer over Deep Water, with a ragged edge
-  where it meets open water. Ice in its owner's territory, which never
-  melts, is dusted with snow; other ice shows cracks that grow as it
-  nears melting (a hairline at 3 turns or more, two cracks at 2, three
-  wide ones at 1 or 0). LEGACY draws a plain floe in the same colours.
-- **The ice chip.** A selected ice tile shows "Ice · 3" (a snowflake and
-  the owner's turns left) or "Ice · stays"; its tooltip says what ice is,
-  when it melts, and, on the viewer's own ice with Black Ice, that enemies
-  standing there are Frozen at the start of the viewer's turn.
+  where it meets open water. Ice never melts: Glacier's thick ice is
+  dusted with snow, and thick ice that has taken one Crack Ice adds dark
+  crack lines. LEGACY draws a plain floe in the same colours.
+- **The ice chip.** A selected ice tile shows "Ice", "Ice · thick" or
+  "Ice · cracked"; its tooltip says what ice is, "Thick: two Cracks break
+  it." or "Cracked: one more Crack breaks it.", and, on the viewer's own
+  ice with Black Ice, that an enemy that steps onto it is Frozen.
 - **Moving on ice.** A sliding unit's destinations are the tiles it really
   stops on; each slide draws an arrow from the tile it steps from to the
   tile it stops on, and the dock's legend reads "Slide: it stops where the
@@ -224,7 +228,8 @@ The targeting rules are in
   the start of whose turn; its owner sees one disabled "Sail" button with
   "Icebound: it cannot sail, shoot or board". An attack on it reads
   "Icebound: no strike-back".
-- **Cues.** A Freeze spreads frost over its tiles, melting ice breaks into
+- **Cues.** A Freeze spreads frost over its tiles, broken ice (a Crack Ice,
+  or the ice under a ship whose freezer was eliminated) drifts apart into
   floes, the crush closes on a frozen ship before its hit number, and a
   boarded ship's flag changes from its former owner's colour to its
   captor's. Reduced motion holds one frame of each. Notices: "You froze 2
@@ -235,10 +240,11 @@ The targeting rules are in
   (Rime adds "The Ice Folk build no ships"); the cards show ice (a
   snowflake, floes, the pack ice, a frost ring and an ice block) until
   the faction has icons of its own for them.
-- **Help.** The Ice Folk list is "On the ice" (Freeze, Slide, Thaw, No
-  ships, Black Ice, Icebound, Glacier). Every other faction keeps "At
-  sea" and, in a match with an Ice Folk seat, gains one line on ice. The
-  Ice Folk Sea Dog goal reads "Hold the ice with 3 units at once."
+- **Help.** Help is the same short text for every faction (bead
+  `pulp_wars-2yc.39`): there is no "On the ice" or "At sea" list; Freeze,
+  the slide, Runners and Crack Ice are explained on the unit's `?` (the
+  unit glossary). The Ice Folk Sea Dog goal reads "Hold the ice with 3
+  units at once."
 - **Gallery.** The Ice Folk cells of the Patrol Boat, Battleship,
   Submarine and Transport rows show a snowflake and "Ice" ("No ships: the
   Ice Folk freeze the sea and slide across it") instead of a dash.
@@ -1309,10 +1315,9 @@ looks as in revision 16 apart from the extra faction option.
   Goblin seat the leaderboard and turn status name each player's faction.
 - **Unit information.** The `?` details list "Kaboom N", "Explodes on death
   (N)", "Bombs", "Regenerates 4 HP each turn", "Gang Up: +1 Attack per ally
-  next to the target (max +2)" and, for the Goblin, "No Field Defense". Where
-  a Human Fighter would be offered Field Defense, a Goblin shows an
-  `aria-disabled` Fortify action explaining "Goblins cannot build Field
-  Defense; use an Orc Brute". The city dock's unit capacity adds a "+1
+  next to the target (max +2)" and, for the Goblin, "No Field Defense". The
+  Goblin never builds Field Defense, so its dock shows no Fortify (bead
+  `pulp_wars-2yc.108`). The city dock's unit capacity adds a "+1
   Warrens" chip.
 - **Kaboom!** Goblin-crewed land units get a Kaboom! button whose icon is a
   bomb: in CHIBI the PixelLab `ICON:ACTION:KABOOM` raster (a round black
@@ -1526,9 +1531,9 @@ seat looks as in revision 18 apart from the extra faction option.
   Ankylosaurus ("Your armour −1" when the viewer's Ankylosaurus takes the
   retaliation). The `?` details name Acid, Armoured, Charge!, Hatch, Grows,
   Rampage, Pounce and War Drums, "Big body" for two slots, and "Wild" for the
-  Caveman and Ankylosaurus. Where a Human Fighter or Guard would be offered
-  Field Defense, they show an `aria-disabled` Fortify explaining "Dinosaurs
-  cannot build Field Defense".
+  Caveman and Ankylosaurus. Dinosaurs never build Field Defense, so the dock
+  shows no Fortify for it (bead `pulp_wars-2yc.108`: no greyed action for
+  what a faction can never do).
 - **Feedback.** Cues are code-native and unowned (white, cream, light grey,
   basalt grey, charcoal). A Charge with a run-up lunges like any melee attack and
   flashes a spiky star with two puffs on the target (`CHARGE_HIT`); a
@@ -1651,8 +1656,8 @@ without a Martian seat looks as before apart from the extra faction option.
   "Controlled" line with the same sentences and "It cannot be disbanded or
   create units". A machine afloat is
   "{Unit} (afloat)" and says it cannot attack or use abilities until it
-  lands. A Grunt or Shield Projector where a Fighter or Guard would fortify
-  shows a disabled Fortify: "Martians cannot build Field Defense".
+  lands. Martians never build Field Defense, so a Grunt or Shield Projector
+  shows no Fortify (bead `pulp_wars-2yc.108`).
 - **Abilities.** Beam Down, Mind Control and Tractor Beam are one button
   each (the offered commands, one per passenger and tile or per target, are
   never buttons). A button without a legal choice is `aria-disabled` and
@@ -1850,9 +1855,9 @@ from the extra faction option.
   info adds "Shatters at 4 HP or less" for an Ice Folk unit, its Snow or
   Blizzard, Rockfall and the throw. Ability lines name Mountain-born,
   Rockfall, Bolas, Cold Blood, Sweep, Trample, Stampede, Blizzard, Cold
-  Snap, Frost Bolt, Boulders, Prowl, Cold Aura and Frostbite. A Yeti or
-  Mammoth where a Fighter or Guard would fortify shows a disabled Fortify:
-  "Ice Folk cannot build Field Defense". The balance round
+  Snap, Frost Bolt, Boulders, Prowl, Cold Aura and Frostbite. The Ice Folk
+  never build Field Defense, so a Yeti or Mammoth shows no Fortify (bead
+  `pulp_wars-2yc.108`). The balance round
   (`pulp_wars-1wy.5`, `7r37`): **Snow cover** multiplies Defense (× 1.25),
   so its term in the Defense row reads **"+25%"** (a Yeti's "1.5 +25%"),
   never the product's fraction ("+0.375", 1.875); its accessible name is
@@ -2049,8 +2054,8 @@ apart from the extra faction option.
 - **Clockwork** (spec 7): a construct's dock chip "Clockwork" (the cog
   glyph) says "Clockwork: full strength when attacking; only an Engineer can
   repair it"; on the board a copper cog sits at the HP bar's end whenever
-  the bar shows. A wounded own construct that could Recover shows a disabled
-  Recover: "Clockwork never recovers by itself". The Gunner's chip says "2
+  the bar shows. A construct never Recovers, so its dock shows no Recover
+  (bead `pulp_wars-2yc.108`); the Clockwork chip says why. The Gunner's chip says "2
   shots if it stands still", then "1 shot left", then "Fired: cannot move".
   Plated units show "Plated 4"; a bombed unit "Bombed this turn"; a rider on
   its surfacing turn "Just surfaced" ("Just surfaced: cannot enter a city or
@@ -2136,8 +2141,8 @@ apart from the extra faction option.
     the chip "+4 machines, +2 others" and the tooltip "Heal adjacent units:
     +4 machines, +2 others. Cures Plague, bites, and frost"; a selected
     Engineer marks its targets "+4 HP" or "+2 HP" from the exact preview.
-  - A Hammerer or Mole where a Fighter or Guard would fortify shows a
-    disabled Fortify: "Dwarves dig in instead of building Field Defense".
+  - Dwarves dig in instead of building Field Defense, so a Hammerer or Mole
+    shows no Fortify (bead `pulp_wars-2yc.108`).
 - **Attack preview** (own and enemy attacks; the cursor description carries
   every line): notes "Dug in", "Plated: at most 4", "Ignores fortification"
   (a Blasting Steam Cannon), and "Knocks back" or "Knockback blocked" (no
@@ -2240,8 +2245,8 @@ faction option.
   "Already acted", or "Already rushed"; a disabled Re-bake "Crashed", "No
   home city", "No Crumbs next to it", "The Crumbs are covered", that its
   city is full, or "Not enough Coins"; a disabled Sugar Toss "Crashed" or
-  "No wounded unit within 2 tiles". A Toffee Trooper or a Marshmallow that could
-  otherwise build Field Defense says "Candy can't build Field Defense".
+  "No wounded unit within 2 tiles". Candy never builds Field Defense, so a
+  Toffee Trooper or a Marshmallow shows no Fortify (bead `pulp_wars-2yc.108`).
 - **Log, technology tree, and Help.** The log has a line for a Rush, a
   Crash (a count), a Re-bake, eaten Crumbs (with the Peppermint damage),
   stale Crumbs, a Sugar Toss, a Splat, and a Bounce. A Candy viewer's tree

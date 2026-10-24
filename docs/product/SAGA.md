@@ -1945,10 +1945,10 @@ extension the framework lacks is flagged **(E*n*)** and listed in
 - **Format:** Capture, ice (`CAPTURE` `ANVIL_BAY`, `byRound` 22). **Stars:**
   by turn 18; lose no city.
 - **Difficulty:** 3 of 6.
-- **Tactical problem:** build a road and hold it. Any ship that is not Ice
-  Folk can break the ice beside it back into water, unless a unit stands on
-  it; so the road advances under guard, and Black Ice and Icebound deal with
-  the ships that come to break it.
+- **Tactical problem:** build a road and hold it. Any unit or ship of
+  another faction can break the ice beside it back into water, unless a unit
+  stands on it; so the road advances under guard, and Black Ice and
+  Icebound deal with the ships that come to break it.
 - **Hint:** "Ice with a unit on it can't be broken: hold your road."
 - **Map:** Continents 16. The northern shore with Coldharbour; the Grey
   Strait, shallow at the edges and deep in the middle; the southern shore

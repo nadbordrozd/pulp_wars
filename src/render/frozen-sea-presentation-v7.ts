@@ -56,7 +56,7 @@ export const NO_SHIPS_RULE_V7 =
   "Ships cannot enter ice; the Ice Folk have no ships at all.";
 export const BLACK_ICE_RULE_V7 = "An enemy that steps onto your ice is Frozen.";
 export const ICEBOUND_RULE_V7 = `Freeze a ship in place: it cannot sail, shoot or strike back, and the ice crushes it for ${ICE_CRUSH_DAMAGE_V7} each turn.`;
-export const GLACIER_RULE_V7 = `Your ice is thick (two Cracks break it), your units on it have cover, and a Move of yours across ice gets +${GLACIER_ICE_MOVE_BONUS_V7} Move.`;
+export const GLACIER_RULE_V7 = `Your ice is thick: other players must Crack Ice twice to break it, and your Freeze mends a crack. Your units on it have cover, and a Move of yours across ice gets +${GLACIER_ICE_MOVE_BONUS_V7} Move.`;
 export const CRACK_ICE_LABEL_V7 = "Crack Ice";
 export const CRACK_ICE_RULE_V7 =
   "Any other unit or ship next to ice may break one tile of it back into water, unless a unit stands on it or it is built on.";
@@ -89,10 +89,12 @@ export const ICEBOUND_UNLOCK_V7 = `${ICEBOUND_LABEL_V7}: Freeze locks an enemy s
 export const BLACK_ICE_UNLOCK_V7 = `${BLACK_ICE_LABEL_V7}: an enemy that steps onto your ice is Frozen`;
 /**
  * The frozen sea redesign (RULESET_7_ICE_REDESIGN.md section 2.5): Glacier
- * makes the ice thick instead of lasting longer.
+ * makes the ice thick instead of lasting longer. Bead pulp_wars-5ti.30: the
+ * line names the other players' Crack Ice, so "thick" is not read as the
+ * old melting ice.
  */
 export function glacierUnlockTextV7(): string {
-  return `${GLACIER_LABEL_V7}: your ice is thick (two Cracks break it), covers your units, and gives +${GLACIER_ICE_MOVE_BONUS_V7} Move across it`;
+  return `${GLACIER_LABEL_V7}: your ice is thick: other players must Crack Ice twice to break it, and your Freeze mends a crack; your units on it have cover and +${GLACIER_ICE_MOVE_BONUS_V7} Move across it`;
 }
 export const ICE_NO_SHIPS_NOTE_V7 = "The Ice Folk build no ships";
 

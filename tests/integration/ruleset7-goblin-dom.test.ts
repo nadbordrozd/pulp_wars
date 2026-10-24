@@ -298,12 +298,11 @@ describe("Revision 17 Goblin DOM", () => {
     const fortifyHost = new RecordingBoardHost();
     const fortifyApp = mount(fortify, fortifyHost);
     selectUnitAt(fortify, fortifyHost, { x: 8, y: 9 });
-    const blocked = requiredButton("goblin-field-defense");
-    expect(blocked.getAttribute("aria-disabled")).toBe("true");
-    expect(blocked.getAttribute("aria-label")).toBe(
-      "Fortify unavailable. Goblins cannot build Field Defense; use an Orc Brute",
+    // Bead pulp_wars-2yc.108: the Goblin never builds Field Defense, so no
+    // greyed Fortify is shown for it.
+    expect(document.querySelector('[data-action="goblin-field-defense"]')).toBe(
+      null,
     );
-    blocked.click();
     expect(fortify.accepted).toEqual([]);
     selectUnitAt(fortify, fortifyHost, { x: 4, y: 3 });
     // Bead pulp_wars-2yc.63: the engine's "Ram: attack again" is the

@@ -36,10 +36,8 @@ import {
 import {
   BLASTING_CHARGES_UNLOCK_TEXT_V7,
   CLOCKWORK_INFO_V7,
-  CLOCKWORK_RECOVER_V7,
   DIG_IN_UNLOCK_TEXT_V7,
   DUG_IN_INFO_V7,
-  DWARF_FIELD_DEFENSE_EXPLANATION_V7,
   DWARF_HELP_RULES_V7,
   NOT_DUG_IN_MOVED_V7,
   REPAIR_CHIP_V7,
@@ -140,19 +138,24 @@ describe("Dwarf unit dock", () => {
     selectUnitAt(controller, host, AT.dugInHammerer);
     expect(chipText("dug-in")).toBe("Dug in");
     expect(chipTitle("dug-in")).toBe(DUG_IN_INFO_V7);
-    // Fortify is explained: Dwarves dig in instead.
-    const fortify = requiredButton("dwarf-field-defense");
-    expect(fortify.getAttribute("aria-disabled")).toBe("true");
-    expect(fortify.title).toBe(DWARF_FIELD_DEFENSE_EXPLANATION_V7);
+    // Bead pulp_wars-2yc.108: Dwarves never build Field Defense (they dig
+    // in), so no greyed Fortify is shown for it.
+    expect(document.querySelector('[data-action="dwarf-field-defense"]')).toBe(
+      null,
+    );
     selectUnitAt(controller, host, AT.movedHammerer);
     expect(chipTitle("not-dug-in")).toBe(NOT_DUG_IN_MOVED_V7);
     selectUnitAt(controller, host, AT.gunner);
     expect(chipTitle("clockwork")).toBe(CLOCKWORK_INFO_V7);
     expect(chipText("shots")).toBe("2 shots if it stands still");
-    // The wounded Gunner's Recover is absent, with the reason.
-    const recover = requiredButton("clockwork-recover");
-    expect(recover.getAttribute("aria-disabled")).toBe("true");
-    expect(recover.title).toBe(CLOCKWORK_RECOVER_V7);
+    // The wounded Gunner never Recovers: its Clockwork chip says so, and no
+    // greyed Recover is shown.
+    expect(document.querySelector('[data-action="clockwork-recover"]')).toBe(
+      null,
+    );
+    expect(document.querySelector('[data-action="command-recover"]')).toBe(
+      null,
+    );
     selectUnitAt(controller, host, AT.woundedTank);
     expect(chipText("plated")).toMatch(/^Plated \d+$/);
     app.destroy();

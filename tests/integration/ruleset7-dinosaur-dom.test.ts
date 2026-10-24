@@ -1076,11 +1076,11 @@ describe("Revision 19 growth, abilities and labels", () => {
     expect(requiredElement(".v7-selection-dock h2").textContent).toBe(
       "Caveman",
     );
-    const fortify = requiredButton("dinosaur-field-defense");
-    expect(fortify.getAttribute("aria-disabled")).toBe("true");
-    expect(fortify.getAttribute("aria-label")).toBe(
-      "Fortify unavailable. Dinosaurs cannot build Field Defense",
-    );
+    // Bead pulp_wars-2yc.108: Dinosaurs never build Field Defense, so no
+    // greyed Fortify is shown for it.
+    expect(
+      document.querySelector('[data-action="dinosaur-field-defense"]'),
+    ).toBe(null);
     selectUnitAt(controller, host, { x: 7, y: 9 });
     expect(
       document.querySelector('[data-action="dinosaur-field-defense"]'),

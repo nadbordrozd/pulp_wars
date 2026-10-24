@@ -13343,7 +13343,7 @@ nothing here happens: the `ice` list is always empty.
 | No ships  | Ships cannot enter ice; the Ice Folk have no ships at all.                                                                        |
 | Black Ice | An enemy that steps onto your ice is Frozen.                                                                                      |
 | Icebound  | Freeze a ship in place: it cannot sail, shoot, or strike back, and the ice crushes it for 3 each turn until it sinks or is freed. |
-| Glacier   | Your ice is thick (two Cracks to break), your units on it have Snow cover, and a Move across ice gets +1 Move.                    |
+| Glacier   | Your ice is thick: others must Crack Ice twice to break it, and your Freeze mends a crack; Snow cover and +1 Move across it.      |
 
 **Ice tiles.**
 
