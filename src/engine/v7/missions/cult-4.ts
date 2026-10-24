@@ -49,12 +49,23 @@ import type { MissionDefinitionV7 } from "./types";
  * storms from round 2; Honour Camp has eleven goblins and 4 Coins and rushes
  * from round 2; five announced waves come in rounds 4, 6, 8, 10 and 12.
  * The clock is 12 rounds (was 14).
+ *
+ * The fourth retune (`pulp_wars-hmyk.33`, CAMPAIGN.md section 23.5,
+ * hand-played): eased toward the middle. The Seal-works and Hood Hollow
+ * (level 1) with seven units, seven technologies (Mountaineering back;
+ * Masses a research away), 6 Coins and Favour 8. The Deep Gate has twelve
+ * dwarves and 4 Coins (two keep the Gate, the rest storm from round 4);
+ * Honour Camp eleven goblins (two of them Chuckers) and 2 Coins, storming
+ * the Seal-works from round 4; one wave, the story's Steam Tank in round
+ * 8. The hold stays 12 rounds.
  */
 export const CULT_4_V7: MissionDefinitionV7 = {
   id: "CULT_4",
   // Revision 2 (`pulp_wars-hmyk.21`, the third retune): a thin start under
   // two storming armies and five waves.
-  revision: 2,
+  // Revision 3 (`pulp_wars-hmyk.33`, the fourth retune): eased toward the
+  // middle.
+  revision: 3,
   seed: 20261904,
   // <map>
   size: 16,
@@ -148,9 +159,9 @@ export const CULT_4_V7: MissionDefinitionV7 = {
   seats: [
     {
       faction: "CULT",
-      coins: 3,
-      // Favour enough for a daemon or two (retune 3: 6, was 9).
-      favour: 6,
+      coins: 6,
+      // Favour enough for a daemon or two (retune 4: 8; retune 3 6, was 9).
+      favour: 8,
       // Leadership (the Summoner), Hexers, Warding Circles (the Idol
       // Bearer), and Crafting and Mountaineering on the way to Gibbering
       // Masses.
@@ -161,6 +172,7 @@ export const CULT_4_V7: MissionDefinitionV7 = {
         "MARKSMANSHIP",
         "DRILL",
         "FORTIFICATION",
+        "ENGINEERING",
       ],
       cities: [
         {
@@ -169,6 +181,8 @@ export const CULT_4_V7: MissionDefinitionV7 = {
           level: 2,
           rewards: ["STOCKPILE"],
         },
+        // Retune 4: the Lodge's hidden camp is back.
+        { name: "Hood Hollow", at: { x: 13, y: 1 }, level: 1, rewards: [] },
       ],
       units: [
         // Mr. Pettigrew, the Crown's Inspector of Works.
@@ -177,6 +191,9 @@ export const CULT_4_V7: MissionDefinitionV7 = {
         { role: "GUARD", at: { x: 12, y: 4 } },
         { role: "FIGHTER", at: { x: 13, y: 3 } },
         { role: "MARKSMAN", at: { x: 14, y: 5 } },
+        // Retune 4: a second Idol Bearer and the camp's Initiate are back.
+        { role: "GUARD", at: { x: 13, y: 5 } },
+        { role: "FIGHTER", at: { x: 13, y: 1 }, home: 1 },
       ],
       // The Deep Gate and the shelf (retune 3: not the road below).
       reveal: { radius: 2, rects: [{ x0: 9, y0: 0, x1: 11, y1: 2 }] },
@@ -184,7 +201,7 @@ export const CULT_4_V7: MissionDefinitionV7 = {
     {
       // The Seal's wardens: the Deep Gate and Copperstep.
       faction: "DWARF",
-      coins: 5,
+      coins: 4,
       technologies: [
         "GATHERING",
         "ADMINISTRATION",
@@ -229,23 +246,20 @@ export const CULT_4_V7: MissionDefinitionV7 = {
         { role: "FIGHTER", at: { x: 11, y: 8 }, home: 1 },
         { role: "FIGHTER", at: { x: 10, y: 7 }, home: 1 },
         { role: "FIGHTER", at: { x: 11, y: 7 }, home: 1 },
-        // Retune 3: six more dwarves.
+        // Three of retune 3's six extra dwarves.
         { role: "FIGHTER", at: { x: 11, y: 0 } },
         { role: "FIGHTER", at: { x: 8, y: 1 } },
-        { role: "FIGHTER", at: { x: 8, y: 2 } },
         { role: "SWORDSMAN", at: { x: 10, y: 3 } },
-        { role: "FIGHTER", at: { x: 8, y: 0 } },
-        { role: "FIGHTER", at: { x: 10, y: 9 }, home: 1 },
       ],
       reveal: { radius: 2, rects: [{ x0: 8, y0: 0, x1: 15, y1: 13 }] },
-      // Two keep the Gate; from round 2 the rest storm the Seal-works
-      // (retune 3: was round 3).
+      // Two keep the Gate; from round 4 the rest storm the Seal-works
+      // (retune 4; retune 3 from round 3).
       directive: [
         {
           kind: "GUARD",
           zone: [{ x0: 9, y0: 0, x1: 11, y1: 2 }],
           garrison: 2,
-          untilRound: 2,
+          untilRound: 3,
         },
         {
           kind: "GUARD",
@@ -258,7 +272,7 @@ export const CULT_4_V7: MissionDefinitionV7 = {
     {
       // Grubnak's horde, Honorary Dwarves.
       faction: "GOBLIN",
-      coins: 4,
+      coins: 2,
       technologies: [
         "GATHERING",
         "HUNTING",
@@ -283,81 +297,29 @@ export const CULT_4_V7: MissionDefinitionV7 = {
         { role: "GUARD", at: { x: 15, y: 12 } },
         { role: "RAIDER", at: { x: 12, y: 11 } },
         { role: "MARKSMAN", at: { x: 13, y: 13 } },
-        // Retune 3: four more goblins.
+        // Retune 3's four extra goblins, two of them Chuckers now.
         { role: "FIGHTER", at: { x: 12, y: 14 } },
-        { role: "FIGHTER", at: { x: 11, y: 12 } },
         { role: "RAIDER", at: { x: 14, y: 13 } },
-        { role: "FIGHTER", at: { x: 12, y: 13 } },
+        { role: "MARKSMAN", at: { x: 11, y: 12 } },
+        { role: "MARKSMAN", at: { x: 12, y: 13 } },
       ],
       reveal: { radius: 2, rects: [{ x0: 8, y0: 0, x1: 15, y1: 13 }] },
-      // The horde shows up on the second day (retune 3: was the fourth).
-      directive: [{ kind: "NORMAL", untilRound: 2 }, { kind: "RUSH" }],
+      // The horde storms the Seal-works from the fourth day (retune 4;
+      // retune 3 rushed from the third, was the fourth).
+      directive: [
+        { kind: "NORMAL", untilRound: 3 },
+        { kind: "ASSAULT", target: { x: 13, y: 4 } },
+      ],
     },
   ],
-  // More of the horde up the road, and the dwarves' Steam Tanks (retune 3:
-  // five announced waves).
+  // Retune 4: one wave, the story's Steam Tank out of the Gate.
   reinforcements: [
     {
-      seat: 2,
-      round: 4,
-      line: "Grubnak's first mob comes up the road, bombs first, questions never.",
-      announce: true,
-      units: [
-        { role: "FIGHTER", at: { x: 14, y: 9 } },
-        { role: "FIGHTER", at: { x: 15, y: 9 } },
-        { role: "GUARD", at: { x: 15, y: 10 } },
-        { role: "RAIDER", at: { x: 14, y: 10 } },
-      ],
-    },
-    {
       seat: 1,
-      round: 6,
-      line: "Dwarves in Seal-works livery march down off the shelf. They have a clipboard.",
-      announce: true,
-      units: [
-        { role: "SWORDSMAN", at: { x: 9, y: 5 } },
-        { role: "FIGHTER", at: { x: 8, y: 5 } },
-        { role: "FIGHTER", at: { x: 9, y: 6 } },
-        { role: "GUARD", at: { x: 8, y: 6 } },
-      ],
-    },
-    {
-      seat: 2,
       round: 8,
-      line: "More of the honorary dwarves, now with matching hats.",
-      announce: true,
-      units: [
-        { role: "FIGHTER", at: { x: 14, y: 9 } },
-        { role: "FIGHTER", at: { x: 15, y: 9 } },
-        { role: "MARKSMAN", at: { x: 15, y: 10 } },
-        { role: "RAIDER", at: { x: 14, y: 10 } },
-        { role: "GUARD", at: { x: 15, y: 8 } },
-      ],
-    },
-    {
-      seat: 1,
-      round: 10,
       line: "A Steam Tank rolls out of the Gate. It has not read the minutes either.",
       announce: true,
-      units: [
-        { role: "JUGGERNAUT", at: { x: 9, y: 5 } },
-        { role: "SWORDSMAN", at: { x: 8, y: 5 } },
-        { role: "FIGHTER", at: { x: 9, y: 6 } },
-        { role: "FIGHTER", at: { x: 8, y: 6 } },
-      ],
-    },
-    {
-      seat: 2,
-      round: 12,
-      line: "The last mob: every goblin who ever refused gold, and one who took it.",
-      announce: true,
-      units: [
-        { role: "FIGHTER", at: { x: 14, y: 9 } },
-        { role: "FIGHTER", at: { x: 15, y: 9 } },
-        { role: "MARKSMAN", at: { x: 15, y: 10 } },
-        { role: "RAIDER", at: { x: 14, y: 10 } },
-        { role: "GUARD", at: { x: 15, y: 8 } },
-      ],
+      units: [{ role: "JUGGERNAUT", at: { x: 9, y: 5 } }],
     },
   ],
   landmarks: [

@@ -7104,6 +7104,147 @@ and CU4 may now be unwinnable by a first-time player, and CU1 may have no
 room to build a single Imp before the patrol arrives. Correct by playing,
 not by guessing.
 
+### 23.5 Retune 4: toward the middle, strong enemy starts (`pulp_wars-hmyk.33`)
+
+The user, 2026-10-23, about the third retunes: "the enemies are too strong
+and the time limits are too harsh". Section 23.4 had not been played; this
+pass played it (the autopilot lost all six by round 11) and eased it toward
+the middle, keeping a real fight. It keeps the method of sections 19.5 to
+22.5: the difficulty comes from strong, aggressive enemy starts that
+outnumber the Lodge, not from the clock. Conquest clocks are lax (about one
+and a half times a good win), the escort and the kill keep a meaningful
+clock, and the hold keeps its twelve rounds. Waves only fine-tune: retune
+3's are cut but for CU3's War Raft and CU4's Steam Tank (the story) and one
+Ranger column in CU6. Some economy is back: every start has technology, at
+least 5 Coins, a town of level 2 or more, its Favour set and neutral
+villages within reach. Mission 1 is slightly easier than the rest. From
+mission 2 on the autopilot (section 15) loses, and the first thoughtful
+attempt on each definition was lost or won narrowly; where it was won
+comfortably the enemy was strengthened, and after three losses the enemy
+start was eased, never the clock.
+
+The earlier campaigns' lessons held here too. Weak extra units only feed
+the Lodge's daemons: a Horror one-shots a Fighter or a Raider and earns
+Favour for it, so CU1's and CU2's extras became a Marksman, a Guard on
+Hobb's road and Wights (who rise again on their graves), and CU4's extra
+goblins became Bomb Chuckers. The enemy units that stand up to the Cult
+are the ones that reach its 7 HP casters (Knights' Overrun, Donut Racers,
+Sleds, Vampires and Ghouls) and the Steam Tank, whose plates cap every hit
+at 4.
+
+This section supersedes section 23.4's numbers. CU1, CU3 and CU5 are now
+revision 4 and CU2, CU4 and CU6 revision 3, all re-pinned in both pin
+tables. Every mission's enemies outnumber the Lodge
+(`tests/unit/campaign-cult-v7.test.ts`; the Redcaps of CU5 are hired help
+and do not count): CU1 9 to 3, CU2 13 to 5, CU3 12 to 7, CU4 23 to 7, CU5
+11 to 8 and CU6 27 to 18.
+
+| Mission | Your start now                                                                                                                                                                                                                      | Enemies now                                                                                                                                                                                                                                                                                                                                                                                                         | Clock and stars                                         | Waves                                                      |
+| ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- | ---------------------------------------------------------- |
+| CU1     | Greyhood level 2, Pettigrew, Mallory and an Initiate, Gathering, Leadership and Hunting (new), 5 Coins (were 3), Favour 2, two of the four villages by Greyhood back and seen                                                       | the patrol nine (kept): Hobb and a Guard escort keep the south road, seven (one of retune 3's four extra cut, a Marksman for a Fighter) march on Greyhood from round 3; 3 Coins (were 4)                                                                                                                                                                                                                            | kill by 12 (was 8); by 8 (was 6), Pettigrew lives       | none (round 5 cut)                                         |
+| CU2     | Greyhood level 2, Pettigrew, a second Summoner, two Initiates and a Hexer (five, were four), Hunting and Drill as well (five technologies), 5 Coins (were 3), Favour 5 (was 4), the two villages by Greyhood back                   | the dead thirteen (were twelve): two of retune 3's Skeletons by Cinderfield are Wights and a third Wight holds Barrow Camp; 3 Coins (were 5); all hold to round 3, then six stay and the rest `RUSH`                                                                                                                                                                                                                | capture by 20 (was 15); by 15 (was 12), no city lost    | none (rounds 4, 8 and 12 cut)                              |
+| CU3     | the original's seven (the Galleon, two Krakens (one new), the Gondola, an Initiate in each town, Brother Ames at the Cove), nine technologies (Familiars, Raiding and Tentacles back), 6 Coins (were 4), Favour 4 (was 2)           | the tribes eight (were twelve: the original's seven and one Plesiosaur), 4 Coins (were 6), their boats hunt the lane all game (the original's E7; retune 3's `ASSAULT` on the Cove sank the Galleon by round 6); the Martians the original four (were seven), 3 Coins (were 5), `RUSH` from round 4                                                                                                                 | escort by 12 (was 13); by 10, no city lost              | the War Raft in round 4 (the story); rounds 3, 6 and 9 cut |
+| CU4     | the Seal-works level 2 and Hood Hollow level 1 (back), seven units (were five: a second Idol Bearer and the camp's Initiate), seven technologies (Mountaineering back), 6 Coins (were 3), Favour 8 (was 6)                          | the dwarves twelve (were fifteen), 4 Coins (were 5): two keep the Gate and the rest storm the Seal-works from round 4 (was 2); the goblins eleven (kept, two of retune 3's extras now Chuckers), 2 Coins (were 4), `ASSAULT` on the Seal-works from round 4 (was a `RUSH` from round 2)                                                                                                                             | hold 12 (kept); no city lost, Pettigrew lives           | the Steam Tank in round 8 (the story); the other four cut  |
+| CU5     | Hood Hollow level 2, Pettigrew, Vole, two Idol Bearers, two Initiates and two Hexers (eight, were four), ten technologies (Masses and Mountaineering as the original), 6 Coins (were 3), Favour 16 (was 8), the slope seen          | the Crown's guard the original seven at Frostmere alone (were thirteen: Whitecairn, beside the summit, is gone), 0 Coins (were 5), no Familiars' Scouting (Sleds only from Survey); Rime keeps her tile and the rest sally from round 8 (was 3); the sweets the original four (were eight), 0 Coins (were 4), storming from round 7 (was 2), and the two villages beside Toffee Post gone; the Redcaps (hired) five | kill by 18 (was 16); by 14 (was 13), Vole lives         | none (rounds 5, 6, 9, 11 and 13 cut)                       |
+| CU6     | Hood Hollow level 3 walled and the Seal-works level 2 (was 1), the original's eighteen (were ten), eleven technologies (Harvest Rites, Familiars, Engineering and Masses back), 8 Coins (were 4), Favour 10 (was 6), the north seen | the dwarves the original twelve (were eighteen), 0 Coins (were 6), no Metallurgy (no Steam Tanks but the Gate's two); all hold to round 5, then nine hold and three storm the Seal-works; the Rangers the original eight (were fourteen), 2 Coins (were 6), `RUSH` from round 5 (was 3); the dead the original seven (were twelve), 2 Coins (were 6), storming from round 7 (was 4)                                 | capture by 18 (was 16); by 13 (was 12), Pettigrew lives | one Ranger column in round 8; the other eight cut          |
+
+**Hand play** through `play-text`, authorised for this pass. The
+baseline, retune 3 under the autopilot: CU1 lost in round 5, CU2 in round
+4, CU3 in round 5 (the escort lost), CU4 in round 7, CU5 in round 11 and
+CU6 in round 8.
+
+| Mission | Autopilot (final)                 | Thoughtful attempts on the final definition                                                                                                                                                                                                   | Tried and dropped                                                                                                                                                                                                                                                                                                                                                       |
+| ------- | --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| CU1     | defeat, round 10 (out of time)    | win, round 7 of 12, 3 stars (played under the then clock of 10; the first attempt on this definition)                                                                                                                                         | eight Rangers and 2 Coins, then a Marksman for a Fighter: two wins in round 7 of 10, 3 stars; without Hunting: the same timeline (dropped as a repeat); an attempt abandoned in round 5 after a tool slip                                                                                                                                                               |
+| CU2     | defeat, round 5                   | a loss (abandoned in round 11: two Horrors loose, the Hexer and three Initiates dead, seven Zombies round Barrow Camp level 4), then a win in round 14 of 20, 3 stars, Pettigrew's fellow Summoner, an Initiate, five Horrors and an Imp lost | twelve with two Wights: a comfortable 3-star win in round 12; with a Necromancer and two Liches (fifteen): two losses (rounds 6 and 16) and a void attempt (a Lich in range of Greyhood); fourteen with one Lich: a loss in round 9                                                                                                                                     |
+| CU3     | defeat, round 5 (the escort lost) | win, round 9 of 13, 2 stars (the Cove fell to a Saucer in round 8), both Krakens, the Gondola and the Cove's two lost, the Galleon at 18 of 25 (the first attempt; the clock was then set to 12)                                              | ten and six with retune 3's `ASSAULT` and the War Raft on the board: a loss (round 6); eight and five with the War Raft a wave: a loss (round 6); the original's fleets: a comfortable 3-star win in round 9 (the Galleon never hit)                                                                                                                                    |
+| CU4     | defeat, round 7                   | win, held 12, 2 stars, Pettigrew killed by a Brass Titan in the last enemy turn (the first attempt on this definition)                                                                                                                        | the dwarves with 2 Coins and the goblins nine and rushing: a comfortable 3-star hold; with the goblins eleven and an `ASSAULT`: a tighter 3-star hold                                                                                                                                                                                                                   |
+| CU5     | defeat, round 7                   | win, round 14 of 18, 2 stars (Vole killed in round 11), after eleven losses on earlier definitions                                                                                                                                            | retune 3 eased step by step: eleven losses (abandoned in rounds 5 to 12), Vole killed every time by the sweets' Donut Racers and Gunners or the guard's Sleds, Yetis and freezes (any hit fizzles a star), the guard's camp beside the summit (Whitecairn) feeding the ridge, and the sweets grown to four towns and sixteen units from the villages beside Toffee Post |
+| CU6     | defeat, round 8                   | win, round 12 of 18, 2 stars (Pettigrew killed in round 10), the Herald at 32 of 60, after five losses on earlier definitions                                                                                                                 | retune 3 eased step by step: five losses and a void attempt (rounds 10 to 12): the Rangers' Knights (Overrun) and the dead's riders killed the rear channellers and Pettigrew and let the Herald loose, and retrained Steam Tanks walled the Gate                                                                                                                       |
+
+What decided them:
+
+- **CU1.** Mission 1 is the gentlest. Hunts, a Sacrifice and an Offering
+  bought a Horror in round 2 and another by round 4; Horrors one-shot the
+  patrol's Fighters and Raiders and earned 2 to 4 Favour a kill;
+  Pettigrew took the village by Greyhood; a Horror walked round Hobb's
+  escort and killed him in round 7. The opener's clock is lax for a
+  first-time player: 12, and the star 8.
+- **CU2.** The dead sit on their field defenses (a fortified Zombie has
+  Defense 4, the walled centre's 6) and Barrow Camp grows to level 5 (an
+  Abomination) if left alone, so the strike must be early. Wights return
+  on their own graves unless held, and a Lich in the fog splashes
+  clustered channellers; with no Lich and a Wight at the camp, Horrors
+  took the camp in round 8, a Hexer's Ribbit (Defense 0.5) let a Horror
+  kill the walled centre's Zombie, and Cinderfield fell in round 14.
+- **CU3.** The Galleon (25 HP) sinks in one round to rams and torpedoes if
+  it sails into a fleet, so the fleets must be thinned first: the Galleon
+  shot a boat a turn, the Krakens torpedoed Plesiosaurs (each kill makes a
+  Plesiosaur Big), and a Tentacle at the Cove grabbed the War Raft. With
+  one more Plesiosaur both Krakens died and a Saucer beamed onto the empty
+  Cove; the Galleon arrived at 18 of 25.
+- **CU4.** Gibbering Masses on the doorstep need no strand and strike back
+  with their Defense, and enemies beside an Idol Bearer may strike only
+  the Bearer: a ring of Masses and Bearers held every attempt. With the
+  dwarves' Coins the Deep Gate reached level 5 by round 6 (a Brass Titan)
+  and the ring opened in round 10; a Titan's Siege Hammer killed
+  Pettigrew on the walled centre in the last enemy turn.
+- **CU5.** Vole (7 HP, Defense 0.5) has to stand still within four of the
+  Crown for a turn, and any hit fizzles the star. In eleven losses
+  something always reached her: a Racer's Charge round the forest, a Sled,
+  a Yeti's Rockfall from two tiles, a Gunner's shot halved by the Idol
+  Bearer. The win was the original's line: Horrors first (the Explorer
+  monument and Offerings for Favour), a Horror took the village under the
+  slope, Gibbering Masses on each doorstep, the Redcaps and Horrors ground
+  the guard down, and with Vole dead a Horror crossed the peaks from 4,4
+  and killed Rime in round 14.
+- **CU6.** The Great Summoning is in reach in round 1 (the Muster and
+  Explorer monuments and two Offerings: 22 Favour), and the Herald walks
+  only as fast as its ring of channellers (move 1; a hurt channeller drops
+  its strand). Star-falls on the Gate's ring, which stays put, decide it:
+  four (15, 18, 9 and 12, from a Stargazer four tiles off) killed eight
+  Hammerers, two Engineers and the Brass Titan (it steps off the centre,
+  so the star must cover the tiles round it). Steam Tanks are plated (4 a
+  hit), healed by Engineers and on the walled centre, and with Metallurgy
+  the dwarves retrained them onto the centre faster than the Herald could
+  break them; without it the Herald stood on the emptied centre in round
+  11 and took the Gate in round 12, while the Rangers' Knights killed the
+  rear (Pettigrew, a Summoner, three Idol Bearers).
+
+Deviations from the brief:
+
+- **CU5 and CU6 were won on definitions eased after eleven and five
+  losses**, so their first attempts on the final definitions were played
+  with the plan known; both were 2-star wins, CU5's with Vole dead and
+  CU6's with Pettigrew dead, which is narrow but a win. CU5 lost a star to
+  Vole in every attempt: the Stargazer star is hard for anyone.
+- **CU1's and CU3's clocks were set after their winning attempts** (from
+  10 to 12 in CU1, the gentle opener, every win in round 7; from 13 to 12
+  in CU3, both wins in round 9): the wins keep their stars under the final
+  clocks.
+- **CU2's comfortable win was on twelve dead**; the final thirteen (a
+  Wight at the camp) was lost once and then won in round 14.
+- **Attempts voided by my own slips**: CU1's first (a rejected command
+  stopped a batch, no channel), CU2's second (a definition bug: a Lich in
+  range of Greyhood) and CU6's third (the Herald's id differed from the
+  previous attempt). CU5's eighth began with a channel given to the wrong
+  unit and was lost on the climb anyway; it counts as a loss.
+- **Waves kept**: CU3's War Raft and CU4's Steam Tank are the story, and
+  CU6 keeps one Ranger column of the original's two.
+
+**Follow-ups.** A reward unit placed on a city centre (Scouts' Familiar,
+Militia, a Thing in the Cellar) pushes the cultist standing there off it,
+which breaks its strand and can let a daemon loose; that is a trap worth a
+warning in the UI. A Stargazer's star fizzles on any hit to her, and the AI
+reaches a 7 HP, Defense 0.5 unit almost every time; CU5's star may want a
+look. Survey's free Sled still comes to an Ice Folk seat with Scouting
+forbidden. An Undead town that grows unchecked gives an Abomination at
+level 5, which snowballs CU2 when the dead hold their fields. Steam Tanks
+(plated at 4) on a walled, healing centre are a near-wall for the Cult,
+whose damage is many small hits; CU6 now forbids the dwarves Metallurgy.
+The Redcaps' Bomb Chucker explodes when it dies and hurts the Lodge's
+channellers beside it (CU5).
+
 ## 24. The prologue retired (`pulp_wars-hmyk.22`)
 
 **Request (user, 2026-10-21):** "drop the original campaign we designed.

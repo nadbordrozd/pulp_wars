@@ -198,18 +198,18 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
   "ICE_FOLK_6@4:ICE_FOLK":
     "f54d2eb8ac848aa003940ea82329cfbdd54352aaa22e75353a91c9fb08a1a557",
   // The Cult campaign, "The Long Night" (`pulp_wars-hmyk.12`).
-  "CULT_1@3:CULT":
-    "1103c4202b53bbc78175c3ddffd090ba4cb0bb6ae0533f6c566c94411580669f",
-  "CULT_2@2:CULT":
-    "5786fd93e0b400dd077a5f44803f670beef9ded9b445309f249384c453feb9b7",
-  "CULT_3@3:CULT":
-    "aad9d7291601ae8faa01bc491b269b4cefd6ae0ea48ff76ac7cebebe13392f88",
-  "CULT_4@2:CULT":
-    "e2574563b64640fed895b7ce193de325c3c9bab7ddf217cf5a11f3dce251abca",
-  "CULT_5@3:CULT":
-    "098b955436006f6425ebc8c1b076c0eb07daf8f3dd50e92c6db2eb7c16ea1ea2",
-  "CULT_6@2:CULT":
-    "15dd0d01a97ed5aeaa83735861ef7a73e4f55272de0c94af21520ae7ef07f686",
+  "CULT_1@4:CULT":
+    "520e53094ca20029c5929a970ecd963eff74be1554c427b0491d725553e4dc72",
+  "CULT_2@3:CULT":
+    "8432a9f5755352b31df1aa0ce7eaba5a2ecfc3d4e08cfd586ddc42b478d04b57",
+  "CULT_3@4:CULT":
+    "6867c5e474f3af90d37d54e7166bcdd3728512072e4014960c6825bf81ee0e0d",
+  "CULT_4@3:CULT":
+    "6d1e600c97de82e5e5efc73a89c221f8628a08aca4a965229a4aa66ec7802ae8",
+  "CULT_5@4:CULT":
+    "357a7f34194eefbc659dda611e5f2e0100733b3c483bf03973adb380156a23c7",
+  "CULT_6@3:CULT":
+    "590aceb5bf3689a138078614af3f206dca8b4094f3cc8c349be6e51dbc2e604e",
   // The siege fixture of the Normal AI (`pulp_wars-68k.6`).
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 2.
   "TEST_NECK@2:ORIGINAL":
@@ -558,18 +558,18 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
   "ICE_FOLK_6@4:ICE_FOLK":
     "dc67526d57862f7bc90d9d25b23bd2fd7f46b259a8132da2f9b712af7182788c",
   // The Cult campaign, "The Long Night" (`pulp_wars-hmyk.12`).
-  "CULT_1@3:CULT":
-    "64599fe3519752b2b10ff5ff6a3ddf8ed92b27c455ad07081f277b0d71eea0a6",
-  "CULT_2@2:CULT":
-    "ebe1b0214b6db041d7745217c52b4449e567adb78923792db421a98db94b1f78",
-  "CULT_3@3:CULT":
-    "90eaf6b0cdbecccf76f8308bdbe97426ad96f7f02dfe5556d481bc6303a9b31e",
-  "CULT_4@2:CULT":
-    "782cef3a56118ffc16a0e91e80b060215c9ac769456b3eeb9403ead09879f3e1",
-  "CULT_5@3:CULT":
-    "ee3bdb884255fc993f2a3708cfffc68d4e52082082f77a9570bd7dfb0327777a",
-  "CULT_6@2:CULT":
-    "b287e5cd73f28852a33e2c5f873df47665d0ed06e42b2915e17f6eb665955bf7",
+  "CULT_1@4:CULT":
+    "d3b84ca2491f2f7a450a12683b961667837cc6ee0ecb2d1fa4e81083b5da803c",
+  "CULT_2@3:CULT":
+    "4629b586524bf0bd5925f3dda5e82a21e985e0dfe79a91587177cfaf4cbd4a02",
+  "CULT_3@4:CULT":
+    "996459f2537738c9a96b77c0d92051c0d2ed91e97272b3f4ffd3c6f82758eedb",
+  "CULT_4@3:CULT":
+    "7d2c7d04314de4a518d5edbfd7e5783f948a4dfa580e0b7b8938b731bdd8e2a4",
+  "CULT_5@4:CULT":
+    "eddbf53f42af24ec0f4c24b65b0114dd386b002f5f6b3c4696f4af794dbfc23f",
+  "CULT_6@3:CULT":
+    "5f59bed58561eba8bdce48f3c4275a5e140c025834a60feffe590481ca507f0a",
 
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 2.
   "TEST_NECK@2:ORIGINAL":

@@ -39,12 +39,22 @@ import type { MissionDefinitionV7 } from "./types";
  * are seen. The patrol has nine units and 4 Coins; Hobb keeps the road and
  * the rest march on Greyhood from round 3 (was 4), and a second patrol
  * comes up in round 5. The clock is 8 (was 10).
+ *
+ * The fourth retune (`pulp_wars-hmyk.33`, CAMPAIGN.md section 23.5,
+ * hand-played): eased toward the middle. Pettigrew, Mallory and an
+ * Initiate with Hunting as well, 5 Coins and Favour 2; two villages by
+ * Greyhood are back and seen. The patrol is Hobb, his escort and seven
+ * more (one of retune 3's four extra cut, a Marksman among them) with 3
+ * Coins, marching from round 3; the second patrol is cut. The clock is 12
+ * (star 8): the opener's clock is lax.
  */
 export const CULT_1_V7: MissionDefinitionV7 = {
   id: "CULT_1",
   // Revision 2 (`pulp_wars-hmyk.17`): each seat explores its units' sight.
   // Revision 3 (`pulp_wars-hmyk.21`, the third retune): a skirmish start.
-  revision: 3,
+  // Revision 4 (`pulp_wars-hmyk.33`, the fourth retune): eased toward the
+  // middle.
+  revision: 4,
   seed: 20261901,
   // <map>
   size: 11,
@@ -53,10 +63,9 @@ export const CULT_1_V7: MissionDefinitionV7 = {
     size: 11,
     seats: 2,
     seed: 3,
-    // Retune 3: the four villages by Greyhood are gone.
+    // Retune 3: the four villages by Greyhood are gone (retune 4: two of
+    // them are back).
     edits: [
-      { kind: "VILLAGE", at: { x: 2, y: 1 }, present: false },
-      { kind: "VILLAGE", at: { x: 9, y: 2 }, present: false },
       { kind: "VILLAGE", at: { x: 3, y: 5 }, present: false },
       { kind: "VILLAGE", at: { x: 6, y: 5 }, present: false },
     ],
@@ -102,6 +111,8 @@ export const CULT_1_V7: MissionDefinitionV7 = {
     "HHHHHHHHPPP",
   ],
   villages: [
+    { x: 2, y: 1 },
+    { x: 9, y: 2 },
     { x: 9, y: 5 },
     { x: 3, y: 8 },
   ],
@@ -114,12 +125,13 @@ export const CULT_1_V7: MissionDefinitionV7 = {
   seats: [
     {
       faction: "CULT",
-      coins: 3,
+      coins: 5,
       // A little Favour: an Imp. A Horror waits on a Sacrifice, or on the
       // Summoner's trickle while its strand holds.
       favour: 2,
-      // Retune 3: Leadership (the Summoner) and nothing more.
-      technologies: ["GATHERING", "ADMINISTRATION"],
+      // Leadership (the Summoner) and Hunting (retune 4; retune 3 Leadership
+      // only).
+      technologies: ["GATHERING", "ADMINISTRATION", "HUNTING"],
       cities: [
         {
           name: "Greyhood",
@@ -140,6 +152,7 @@ export const CULT_1_V7: MissionDefinitionV7 = {
       reveal: {
         radius: 2,
         rects: [
+          { x0: 2, y0: 1, x1: 9, y1: 2 },
           { x0: 6, y0: 8, x1: 6, y1: 8 },
           { x0: 8, y0: 9, x1: 10, y1: 10 },
         ],
@@ -148,7 +161,7 @@ export const CULT_1_V7: MissionDefinitionV7 = {
     {
       // The Ranger patrol.
       faction: "ORIGINAL",
-      coins: 4,
+      coins: 3,
       technologies: [],
       cities: [
         {
@@ -165,11 +178,12 @@ export const CULT_1_V7: MissionDefinitionV7 = {
         { role: "FIGHTER", at: { x: 7, y: 7 } },
         // Sergeant Hobb, riding for Northwatch.
         { role: "RAIDER", at: { x: 10, y: 10 }, tag: "HOBB" },
-        // Retune 3: four more Rangers.
+        // His escort on the road.
+        { role: "GUARD", at: { x: 9, y: 10 } },
+        // Three of retune 3's four extra Rangers.
         { role: "FIGHTER", at: { x: 5, y: 8 } },
-        { role: "FIGHTER", at: { x: 8, y: 8 } },
         { role: "GUARD", at: { x: 5, y: 7 } },
-        { role: "FIGHTER", at: { x: 7, y: 9 } },
+        { role: "MARKSMAN", at: { x: 7, y: 9 } },
       ],
       reveal: { radius: 2, rects: [{ x0: 3, y0: 1, x1: 8, y1: 4 }] },
       // Step 1 keeps to the lesson: a patrol of Fighters and Guards.
@@ -198,30 +212,15 @@ export const CULT_1_V7: MissionDefinitionV7 = {
         {
           kind: "GUARD",
           zone: [{ x0: 8, y0: 9, x1: 10, y1: 10 }],
-          garrison: 1,
+          garrison: 2,
           untilRound: 3,
         },
         {
           kind: "GUARD",
           zone: [{ x0: 8, y0: 9, x1: 10, y1: 10 }],
-          garrison: 1,
+          garrison: 2,
           others: { kind: "ASSAULT", target: { x: 5, y: 2 } },
         },
-      ],
-    },
-  ],
-  // Retune 3: a second patrol, announced, comes up the marsh road.
-  reinforcements: [
-    {
-      seat: 1,
-      round: 5,
-      line: "A second patrol from Northwatch, with orders and a very long list.",
-      announce: true,
-      units: [
-        { role: "FIGHTER", at: { x: 9, y: 7 } },
-        { role: "FIGHTER", at: { x: 8, y: 7 } },
-        { role: "GUARD", at: { x: 9, y: 8 } },
-        { role: "RAIDER", at: { x: 10, y: 8 } },
       ],
     },
   ],
@@ -237,14 +236,14 @@ export const CULT_1_V7: MissionDefinitionV7 = {
     "SEAMANSHIP",
     "SUBMERSIBLES",
   ],
-  // Hobb, before the eighth day (retune 3). The stars: by round 6, and
-  // Pettigrew lives.
+  // Hobb, before the thirteenth day (retune 4: 12; retune 3 8, was 10).
+  // The stars: by round 8, and Pettigrew lives.
   objective: {
     kind: "KILL",
     units: ["HOBB"],
-    byRound: 8,
+    byRound: 12,
     bonus: [
-      { kind: "WITHIN_ROUNDS", rounds: 6 },
+      { kind: "WITHIN_ROUNDS", rounds: 8 },
       { kind: "UNIT_ALIVE", unit: "PETTIGREW" },
     ],
   },

@@ -45,13 +45,25 @@ import type { MissionDefinitionV7 } from "./types";
  * twelve units, the Martians seven and 5 Coins; from round 3 the tribes'
  * boats sail on the Cove and the Skimmers rush, and three announced waves
  * of ships arrive in rounds 3, 6 and 9. The clock is 13 (was 16).
+ *
+ * The fourth retune (`pulp_wars-hmyk.33`, CAMPAIGN.md section 23.5,
+ * hand-played): eased toward the middle. The original's seven (the
+ * Galleon, two Krakens, the Gondola, an Initiate at each town and Brother
+ * Ames at the Cove), nine technologies (Familiars, Raiding and Tentacles
+ * back), 6 Coins and Favour 4. The tribes have eight boats and warriors
+ * (the original's seven and a Plesiosaur) and 4 Coins and hunt the lane
+ * all game (`GUARD` with ships, the original's E7); the Martians the
+ * original four and 3 Coins, rushing from round 4; one wave, the story's
+ * War Raft in round 4. The clock is 12 (star 10).
  */
 export const CULT_3_V7: MissionDefinitionV7 = {
   id: "CULT_3",
   // Revision 2 (`pulp_wars-hmyk.17`): each seat explores its units' sight.
   // Revision 3 (`pulp_wars-hmyk.21`, the third retune): a thin start in a
   // sea that hunts.
-  revision: 3,
+  // Revision 4 (`pulp_wars-hmyk.33`, the fourth retune): eased toward the
+  // middle.
+  revision: 4,
   seed: 20261903,
   // <map>
   size: 16,
@@ -146,14 +158,17 @@ export const CULT_3_V7: MissionDefinitionV7 = {
   seats: [
     {
       faction: "CULT",
-      coins: 4,
-      favour: 2,
+      coins: 6,
+      favour: 4,
       // Black Gondolas, Navigation (the deep water), Offerings to the Deep
       // and the Kraken; Leadership and Tentacles for the brethren at the
       // Cove (a Summoner's Tentacle rises on water too).
       technologies: [
         "GATHERING",
         "ADMINISTRATION",
+        "SCOUTING",
+        "RAIDING",
+        "CHIVALRY",
         "SHORECRAFT",
         "NAVIGATION",
         "SEAMANSHIP",
@@ -181,6 +196,11 @@ export const CULT_3_V7: MissionDefinitionV7 = {
         { role: "BATTLESHIP", at: { x: 12, y: 6 }, tag: "GALLEON" },
         // A Kraken and a Black Gondola sail with her.
         { role: "SUBMARINE", at: { x: 13, y: 7 } },
+        // Retune 4: a second Kraken.
+        { role: "SUBMARINE", at: { x: 12, y: 7 } },
+        // Retune 4: the Gondola and Brother Ames at the Cove are back.
+        { role: "PATROL_BOAT", at: { x: 11, y: 7 } },
+        { role: "CAPTAIN", at: { x: 1, y: 5 }, home: 1 },
         { role: "FIGHTER", at: { x: 0, y: 5 }, home: 1 },
       ],
       // The two towns and the Galleon's first stretch of the lane (retune
@@ -190,7 +210,7 @@ export const CULT_3_V7: MissionDefinitionV7 = {
     {
       // The island's tribes, come after the egg.
       faction: "DINOSAUR",
-      coins: 6,
+      coins: 4,
       technologies: ["GATHERING", "HUNTING", "SHORECRAFT", "NAVIGATION"],
       // One War Raft, and it comes late; the Plesiosaurs they have are all
       // they get, and no tribe boards the Galleon (hand play: a Dugout's
@@ -218,35 +238,27 @@ export const CULT_3_V7: MissionDefinitionV7 = {
         { role: "SUBMARINE", at: { x: 7, y: 8 } },
         { role: "SUBMARINE", at: { x: 3, y: 8 } },
         { role: "SUBMARINE", at: { x: 10, y: 9 } },
-        // Retune 3: three more boats, a Fighter and a Guard in the towns.
-        { role: "PATROL_BOAT", at: { x: 8, y: 9 } },
-        { role: "PATROL_BOAT", at: { x: 12, y: 8 } },
+        // Retune 4: one of retune 3's extra boats, a Plesiosaur.
         { role: "SUBMARINE", at: { x: 6, y: 9 } },
-        { role: "FIGHTER", at: { x: 11, y: 12 } },
-        { role: "GUARD", at: { x: 9, y: 12 }, home: 1 },
       ],
       reveal: { radius: 2, rects: [{ x0: 0, y0: 5, x1: 15, y1: 10 }] },
-      // The tribes' boats hunt the lane (E7); a warrior keeps each town.
-      // Retune 3: from round 3 the whole fleet sails on Lamplight Cove, the
-      // Galleon's harbour.
-      directive: [
-        {
-          kind: "GUARD",
-          zone: [
-            { x0: 0, y0: 6, x1: 15, y1: 9 },
-            { x0: 12, y0: 12, x1: 12, y1: 12 },
-          ],
-          garrison: 1,
-          ships: true,
-          untilRound: 3,
-        },
-        { kind: "ASSAULT", target: { x: 1, y: 5 }, fromRound: 3 },
-      ],
+      // The tribes' boats hunt the lane (E7); a warrior keeps each town
+      // (retune 4: all game; retune 3 sailed the whole fleet on Lamplight
+      // Cove from round 3, and hand play lost the Galleon by round 6).
+      directive: {
+        kind: "GUARD",
+        zone: [
+          { x0: 0, y0: 6, x1: 15, y1: 9 },
+          { x0: 12, y0: 12, x1: 12, y1: 12 },
+        ],
+        garrison: 1,
+        ships: true,
+      },
     },
     {
       // The Martians' Skimmers out of Ray Hollow.
       faction: "MARTIAN",
-      coins: 5,
+      coins: 3,
       technologies: ["SHORECRAFT", "NAVIGATION"],
       cities: [
         {
@@ -261,51 +273,21 @@ export const CULT_3_V7: MissionDefinitionV7 = {
         { role: "PATROL_BOAT", at: { x: 5, y: 9 } },
         { role: "PATROL_BOAT", at: { x: 7, y: 10 } },
         { role: "PATROL_BOAT", at: { x: 3, y: 10 } },
-        // Retune 3: three more Skimmers.
-        { role: "PATROL_BOAT", at: { x: 6, y: 10 } },
-        { role: "PATROL_BOAT", at: { x: 9, y: 10 } },
-        { role: "SUBMARINE", at: { x: 2, y: 10 } },
       ],
       reveal: { radius: 2, rects: [{ x0: 0, y0: 5, x1: 15, y1: 10 }] },
-      // Retune 3: the Skimmers rush the lane from round 3.
+      // The Skimmers rush the lane from round 4 (retune 3: from round 3).
       directive: [{ kind: "NORMAL", untilRound: 3 }, { kind: "RUSH" }],
     },
   ],
-  // The tribes' War Raft comes round the island to the Cove's mouth
-  // (retune 3: in round 3, with two more waves of ships in rounds 6 and 9).
+  // The tribes' War Raft comes round the island to the Cove's mouth in
+  // round 4 (the story's wave).
   reinforcements: [
     {
       seat: 1,
-      round: 3,
+      round: 4,
       line: "The tribes' War Raft rounds the island, drums beating, egg-hunting.",
       announce: true,
-      units: [
-        { role: "BATTLESHIP", at: { x: 4, y: 9 } },
-        { role: "PATROL_BOAT", at: { x: 5, y: 9 } },
-      ],
-    },
-    {
-      seat: 2,
-      round: 6,
-      line: "Martian Skimmers boil out of Ray Hollow. They have seen the egg and they want it.",
-      announce: true,
-      units: [
-        { role: "PATROL_BOAT", at: { x: 5, y: 9 } },
-        { role: "PATROL_BOAT", at: { x: 7, y: 10 } },
-        { role: "SUBMARINE", at: { x: 6, y: 10 } },
-      ],
-    },
-    {
-      seat: 1,
-      round: 9,
-      line: "Every canoe on the island, lashed together and out for blood.",
-      announce: true,
-      units: [
-        { role: "SUBMARINE", at: { x: 7, y: 8 } },
-        { role: "SUBMARINE", at: { x: 5, y: 8 } },
-        { role: "PATROL_BOAT", at: { x: 10, y: 8 } },
-        { role: "PATROL_BOAT", at: { x: 3, y: 8 } },
-      ],
+      units: [{ role: "BATTLESHIP", at: { x: 4, y: 9 } }],
     },
   ],
   landmarks: [
@@ -313,14 +295,14 @@ export const CULT_3_V7: MissionDefinitionV7 = {
     { tag: "REEDMOUTH", at: { x: 13, y: 4 } },
   ],
   forbiddenTechnologies: [],
-  // The Galleon beside Lamplight Cove by round 13. The stars: by round
-  // 10, and no city lost.
+  // The Galleon beside Lamplight Cove by round 12 (retune 4; retune 3 13,
+  // was 16). The stars: by round 10, and no city lost.
   objective: {
     kind: "ESCORT",
     unit: "GALLEON",
     to: "LAMPLIGHT_COVE",
     within: 1,
-    byRound: 13,
+    byRound: 12,
     bonus: [{ kind: "WITHIN_ROUNDS", rounds: 10 }, { kind: "KEEP_CITIES" }],
   },
 };
