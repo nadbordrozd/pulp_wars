@@ -2294,26 +2294,22 @@ function describeCommandV7(
                 SURVEY_RAIDERS_V7[view.viewer.faction] === 1
               ? `Scouts: ${scoutsRewardTextV7(effectiveRoleRuleV7("RAIDER", view.viewer.faction).label)} (${effectiveRoleRuleV7("RAIDER", view.viewer.faction).label}; it fills a unit slot of this city, and may stand above the unit limit)`
               : (REWARD_TEXT_V7[command.reward] ?? command.reward);
-      // Siege rules (`pulp_wars-0pgd`, 7r80): who makes room for the unit.
+      // Reward placement (`pulp_wars-spue`, 7r111): where the unit appears
+      // when the center is taken (no unit there is moved or harmed).
       const arrival = previewRewardArrivalV7(
         view,
         command.cityId,
         command.reward,
       );
+      const center = view.cities.find((city) => city.id === command.cityId)?.at;
       const room =
-        arrival === null
+        arrival === null || center === undefined
           ? ""
-          : arrival.displacedUnitId === null
-            ? sameV7(
-                arrival.at,
-                view.cities.find((city) => city.id === command.cityId)?.at ??
-                  arrival.at,
-              )
+          : arrival.at === null
+            ? " | the center is taken and no tile near the city is free: the new unit waits and appears at the start of a later turn when one is"
+            : sameV7(arrival.at, center)
               ? ""
-              : ` | the unit on the center cannot be moved: the new unit appears beside it at ${xyV7(arrival.at)}`
-            : arrival.dies
-              ? ` | it takes the center: ${context.memory.tag(arrival.displacedUnitId)} standing there has no tile to step to and DIES${arrival.exact ? "" : " (unless its owner's Engineering lets it onto a Mountain)"}`
-              : ` | it takes the center: ${context.memory.tag(arrival.displacedUnitId)} standing there steps to ${arrival.displaceTo === null ? "?" : xyV7(arrival.displaceTo)}${arrival.exact ? "" : " (or a Mountain, with its owner's Engineering)"}`;
+              : ` | the center is taken: the new unit appears beside the city at ${xyV7(arrival.at)}`;
       return `reward for city ${cityTagV7(view, command.cityId)} reaching level ${command.reachedLevel}: ${special}${room}`;
     }
     case "RESEARCH": {

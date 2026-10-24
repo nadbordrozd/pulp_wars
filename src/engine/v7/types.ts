@@ -5,7 +5,7 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r110" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r111" as const;
 /**
  * Every earlier Ruleset 7 identity, oldest first. Readers report these as
  * incompatible (never invalid). An identity bump must append the outgoing
@@ -121,8 +121,9 @@ export const PRIOR_RULESET_7_IDS = Object.freeze([
   "pulp-wars-poc-7r107",
   "pulp-wars-poc-7r108",
   "pulp-wars-poc-7r109",
+  "pulp-wars-poc-7r110",
 ] as const);
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r110.current" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r111.current" as const;
 /**
  * The map generator a setup names (docs/product/RULESET_7_MAP_SCALE.md
  * section 8.8): `V4` is the many-seats generator of `pulp_wars-ykw.3`
@@ -1325,6 +1326,22 @@ export interface CityStateV7 {
    * level is never lost by it. Read it with {@link cityOfferedPopulationV7}.
    */
   readonly offeredPopulation?: number;
+  /**
+   * Reward placement (`pulp_wars-spue`, `pulp-wars-poc-7r111`;
+   * RULESET_7_CURRENT.md section 4.6): the reward units the city granted
+   * that found no tile to appear on (`rewardArrivalV7`), in the order they
+   * were granted (by `reachedLevel`). Each appears for the city's owner at
+   * that owner's next Start Turn with a free tile, by the same placement
+   * rule. A capture drops them. Present only when not empty, so a state
+   * without a held unit is unchanged.
+   */
+  readonly heldRewardUnits?: readonly HeldRewardUnitV7[];
+}
+
+/** A reward unit waiting for a free tile (section 4.6). */
+export interface HeldRewardUnitV7 {
+  readonly reachedLevel: number;
+  readonly role: UnitRoleIdV7;
 }
 
 /** The Cultists (section 5.3): what the city gave up in Offerings (0 or more). */

@@ -67,7 +67,7 @@ const READY: UnitStateV7["activation"] = {
 
 describe("Ruleset 7 revision 7 networks and fortifications", () => {
   it("freezes the revision identity and removes the retired systems", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r110");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r111");
     expect(setupV7().mapGenerationRevision).toBe("REGIONAL_BIOMES_NAVAL_V4");
     expect(TECHNOLOGY_IDS_V7).toContain("ENGINEERING");
     expect(TECHNOLOGY_IDS_V7).not.toContain("GRAND_WORKS");
@@ -1592,21 +1592,41 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
       reward: "JUGGERNAUT",
     });
     if (!chosen.accepted) throw new Error(chosen.error.code);
-    expect(chosen.events).toContainEqual(
-      expect.objectContaining({ kind: "UNIT_SPAWN_DISPLACED", to: null }),
-    );
+    // Reward placement (`pulp_wars-spue`, 7r111): nobody on the center or
+    // the territory is removed; the giant appears outside the full
+    // territory within two tiles of the center, or waits on the city.
     expect(
-      chosen.state.units.find(
-        (unit) =>
-          unit.role === "JUGGERNAUT" &&
-          same(
-            unit.at,
-            required(
-              chosen.state.cities.find((city) => city.id === fixture.cityId),
-            ).at,
-          ),
+      chosen.events.some(
+        (event) =>
+          event.kind === "UNIT_SPAWN_DISPLACED" || event.kind === "UNIT_DIED",
       ),
-    ).toBeDefined();
+    ).toBe(false);
+    for (const before of five.state.units)
+      expect(chosen.state.units.find((item) => item.id === before.id)).toEqual(
+        before,
+      );
+    const city = required(
+      chosen.state.cities.find((item) => item.id === fixture.cityId),
+    );
+    const giant = chosen.state.units.find(
+      (item) => item.role === "JUGGERNAUT" && item.homeCityId === city.id,
+    );
+    if (giant === undefined)
+      expect(city.heldRewardUnits).toEqual([
+        { reachedLevel: 6, role: "JUGGERNAUT" },
+      ]);
+    else {
+      expect(
+        Math.max(
+          Math.abs(giant.at.x - city.at.x),
+          Math.abs(giant.at.y - city.at.y),
+        ),
+      ).toBeLessThanOrEqual(2);
+      expect(
+        chosen.state.board.tiles.find((tile) => same(tile.at, giant.at))
+          ?.territoryCityId,
+      ).not.toBe(city.id);
+    }
   });
 
   it("repairs lost live population without repeating earned rewards", () => {

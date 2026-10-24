@@ -75,6 +75,7 @@ import {
   type FrozenStatusV7,
   type CityRewardRecordV7,
   type CityStateV7,
+  type HeldRewardUnitV7,
   type CandyStatusEntryV7,
   type CoolingStatusV7,
   type CoordV7,
@@ -853,6 +854,12 @@ function parseCity(input: unknown): CityStateV7 | null {
     typeof input === "object" &&
     input !== null &&
     Object.hasOwn(input, "offeredPopulation");
+  // Reward placement (`pulp_wars-spue`, 7r111, RULESET_7_CURRENT.md section
+  // 4.6): `heldRewardUnits` is present only when not empty.
+  const held =
+    typeof input === "object" &&
+    input !== null &&
+    Object.hasOwn(input, "heldRewardUnits");
   if (
     !hasExactKeysV7(input, [
       "at",
@@ -869,6 +876,7 @@ function parseCity(input: unknown): CityStateV7 | null {
       "rewards",
       ...(razed ? ["wallsRazed"] : []),
       ...(offered ? ["offeredPopulation"] : []),
+      ...(held ? ["heldRewardUnits"] : []),
     ]) ||
     (razed && input.wallsRazed !== true) ||
     (offered &&
@@ -892,7 +900,12 @@ function parseCity(input: unknown): CityStateV7 | null {
   const rewards = parseRewards(input.rewards);
   const spent = growthSpent(input.level);
   const offeredPopulation = offered ? (input.offeredPopulation as number) : 0;
+  const heldRewardUnits =
+    held && rewards !== null
+      ? parseHeldRewardUnits(input.heldRewardUnits, rewards)
+      : null;
   if (
+    (held && heldRewardUnits === null) ||
     id === null ||
     owner === null ||
     at === null ||
@@ -922,7 +935,49 @@ function parseCity(input: unknown): CityStateV7 | null {
     rewards,
     ...(razed ? { wallsRazed: true as const } : {}),
     ...(offered ? { offeredPopulation } : {}),
+    ...(heldRewardUnits !== null ? { heldRewardUnits } : {}),
   };
+}
+
+/**
+ * Reward placement (section 4.6): a city's held reward units, not empty,
+ * by `reachedLevel`; each is the unit of a reward the city took at that
+ * level (the Militia's `FIGHTER`, at most two; the Scouts' `RAIDER`; the
+ * giant's `JUGGERNAUT`).
+ */
+function parseHeldRewardUnits(
+  input: unknown,
+  rewards: readonly CityRewardRecordV7[],
+): readonly HeldRewardUnitV7[] | null {
+  if (!isDenseArrayV7(input) || input.length === 0) return null;
+  const values: HeldRewardUnitV7[] = [];
+  for (const candidate of input) {
+    if (
+      !hasExactKeysV7(candidate, ["reachedLevel", "role"]) ||
+      !isPositiveSafeIntegerV7(candidate.reachedLevel)
+    )
+      return null;
+    const level = candidate.reachedLevel;
+    const reward = rewards.find((record) => record.reachedLevel === level);
+    const role =
+      reward?.reward === "MILITIA"
+        ? "FIGHTER"
+        : reward?.reward === "SURVEY"
+          ? "RAIDER"
+          : reward?.reward === "JUGGERNAUT"
+            ? "JUGGERNAUT"
+            : null;
+    const earlier = values.filter((item) => item.reachedLevel === level).length;
+    if (
+      role === null ||
+      candidate.role !== role ||
+      (values.at(-1)?.reachedLevel ?? 0) > level ||
+      earlier >= (role === "FIGHTER" ? 2 : 1)
+    )
+      return null;
+    values.push({ reachedLevel: level, role });
+  }
+  return values;
 }
 
 function parseRewards(input: unknown): readonly CityRewardRecordV7[] | null {

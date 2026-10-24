@@ -456,11 +456,7 @@ import {
   type UnitStateV7,
 } from "./types";
 import { publicUnitStatsV7, type PublicUnitStatsV7 } from "./unit-stats";
-import {
-  rewardArrivalV7,
-  rewardUnitRoleV7,
-  type RewardArrivalV7,
-} from "./reward-arrival";
+import { rewardArrivalV7, rewardUnitRoleV7 } from "./reward-arrival";
 import {
   allOwnedUnitsV7,
   barricadeAtV7,
@@ -7317,24 +7313,20 @@ export function previewGateV7(
 }
 
 /**
- * Siege rules (`pulp_wars-0pgd`, `pulp-wars-poc-7r80`; RULESET_7_CURRENT.md
- * section 4.6): the public preview of the unit a city reward grants: its
- * role, where it appears (`at`: the center, or a tile beside an occupant
- * that nothing moves), the unit that leaves the center for it
- * (`displacedUnitId`), where that unit steps to (`displaceTo`), and whether
- * it dies for want of a tile (`dies`). `exact` is false only when the
- * occupant is another seat's and its private Engineering could change the
- * answer (a Mountain beside the center); the preview then assumes none.
+ * Reward placement (`pulp_wars-spue`, `pulp_wars-rzqf`,
+ * `pulp-wars-poc-7r111`; RULESET_7_CURRENT.md section 4.6): the public
+ * preview of the unit a city reward grants: its role and where it appears
+ * (`at`: the center when no unit stands on it, else the nearest free tile
+ * of the city's territory, then within two tiles of the center; null when
+ * there is no such tile and the unit is held until one is free). A reward
+ * never moves or harms the unit on the center. For a Militia of two units
+ * it is the first unit's tile.
  */
 export interface RewardArrivalPreviewV7 {
   readonly cityId: CityId;
   readonly reward: RewardIdV7;
   readonly role: UnitRoleIdV7;
-  readonly at: CoordV7;
-  readonly displacedUnitId: UnitId | null;
-  readonly displaceTo: CoordV7 | null;
-  readonly dies: boolean;
-  readonly exact: boolean;
+  readonly at: CoordV7 | null;
 }
 
 /**
@@ -7353,123 +7345,49 @@ export function previewRewardArrivalV7(
   );
   const role = rewardUnitRoleV7(reward, viewer.faction);
   if (city === undefined || role === null) return null;
-  const occupant = view.units.find(
-    (unit) => unit.hp > 0 && same(unit.at, city.at),
-  );
-  const around: CoordV7[] = [];
-  for (let y = city.at.y - 1; y <= city.at.y + 1; y += 1)
-    for (let x = city.at.x - 1; x <= city.at.x + 1; x += 1) {
-      const at = { x, y };
-      if (!same(at, city.at) && tileAtView(view, at) !== undefined)
-        around.push(at);
-    }
-  // The reward displacement predicate (`rewardCellLegalV7`) on the view.
-  const mayStand = (
-    at: CoordV7,
-    ownerId: PlayerId,
-    terrain: {
-      readonly movementMode: MovementModeV7;
-      readonly mountainBorn: boolean;
-      readonly engineering: boolean;
-      readonly navigation: boolean;
-      readonly avoidsForeignSites: boolean;
-    },
-  ): boolean => {
+  const mechanics = seatRoleMechanicsV7(view, viewer.id, role);
+  // The reward cell predicate (`rewardCellLegalV7`) on the view.
+  const mayStand = (at: CoordV7): boolean => {
     const tile = tileAtView(view, at);
-    if (tile?.explored !== true || tile.biome === null) return false;
+    if (tile?.explored !== true || tile.biome === null || tile.site !== null)
+      return false;
     if (view.treasureChests.some((chest) => same(chest, at))) return false;
     if (
       !canEnterTerrainV7({
         terrain: tile.terrain,
-        movementMode: terrain.movementMode,
+        movementMode: mechanics.movementMode,
         afloat: false,
-        engineering: terrain.engineering,
-        navigation: terrain.navigation,
-        mountainBorn: terrain.mountainBorn,
+        engineering: viewer.researchedTechs.includes("ENGINEERING"),
+        navigation: viewer.researchedTechs.includes("NAVIGATION"),
+        mountainBorn: mechanics.mountainBorn,
         ice: false,
       })
     )
       return false;
     if (
-      terrain.avoidsForeignSites &&
-      !flyerMayStandOnSiteV7(
-        tile.site,
-        view.cities.find((candidate) => same(candidate.at, at))?.ownerId ??
-          null,
-        ownerId,
-      )
-    )
-      return false;
-    if (
       tile.territoryOwnerId !== null &&
-      tile.territoryOwnerId !== ownerId &&
-      publicAllied(view, ownerId, tile.territoryOwnerId)
+      tile.territoryOwnerId !== viewer.id &&
+      publicAllied(view, viewer.id, tile.territoryOwnerId)
     )
       return false;
     return !tileOccupiedV7(view, at);
   };
-  const spawnedMechanics = seatRoleMechanicsV7(view, viewer.id, role);
-  const spawnedMayStand = (at: CoordV7): boolean =>
-    mayStand(at, viewer.id, {
-      movementMode: spawnedMechanics.movementMode,
-      mountainBorn: spawnedMechanics.mountainBorn,
-      engineering: viewer.researchedTechs.includes("ENGINEERING"),
-      navigation: viewer.researchedTechs.includes("NAVIGATION"),
-      avoidsForeignSites: false,
-    });
-  const own = occupant?.ownerId === viewer.id;
-  const arrivalWith = (engineering: boolean): RewardArrivalV7 =>
-    rewardArrivalV7({
-      center: city.at,
-      around,
-      occupant:
-        occupant === undefined
-          ? null
-          : {
-              id: occupant.id,
-              immovable:
-                occupant.form === "EGG" || unitIsImmovableV7(view, occupant),
-            },
-      occupantMayStand: (at) =>
-        occupant !== undefined &&
-        mayStand(at, occupant.ownerId, {
-          movementMode: unitMovementModeV7(view, occupant),
-          mountainBorn: unitIsMountainBornV7(view, occupant),
-          engineering,
-          navigation: own && viewer.researchedTechs.includes("NAVIGATION"),
-          avoidsForeignSites: unitAvoidsForeignSitesV7(view, occupant),
-        }),
-      preferred: (at) => {
-        const tile = tileAtView(view, at);
-        return (
-          own && tile?.explored === true && tile.territoryOwnerId === viewer.id
-        );
-      },
-      spawnedMayStand,
-      cityTerritory: (at) => {
-        const tile = tileAtView(view, at);
-        return tile?.explored === true && tile.territoryCityId === city.id;
-      },
-    });
-  const arrival = arrivalWith(
-    own && viewer.researchedTechs.includes("ENGINEERING"),
-  );
-  const other = own || occupant === undefined ? arrival : arrivalWith(true);
   return {
     cityId,
     reward,
     role,
-    at: arrival.at,
-    displacedUnitId: arrival.displacedUnitId,
-    displaceTo: arrival.displaceTo,
-    dies: arrival.dies,
-    exact:
-      arrival.dies === other.dies &&
-      same(arrival.at, other.at) &&
-      (arrival.displaceTo === null) === (other.displaceTo === null) &&
-      (arrival.displaceTo === null ||
-        other.displaceTo === null ||
-        same(arrival.displaceTo, other.displaceTo)),
+    at: rewardArrivalV7({
+      center: city.at,
+      centerFree: !view.units.some(
+        (unit) => unit.hp > 0 && same(unit.at, city.at),
+      ),
+      tiles: view.board.tiles.map((tile) => tile.at),
+      mayStand,
+      cityTerritory: (at) => {
+        const tile = tileAtView(view, at);
+        return tile?.explored === true && tile.territoryCityId === city.id;
+      },
+    }),
   };
 }
 

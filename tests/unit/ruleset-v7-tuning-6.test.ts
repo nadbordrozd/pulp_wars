@@ -67,7 +67,7 @@ import {
 } from "../fixtures/v7-revision20";
 
 /**
- * Tuning 6 (`pulp_wars-w49.6`, identity `pulp-wars-poc-7r110`;
+ * Tuning 6 (`pulp_wars-w49.6`, identity `pulp-wars-poc-7r111`;
  * docs/product/RULESET_7_TUNING_HUMAN.md section 13): the Normal AI breaks
  * a line with numbers, expands and grows, researches toward its army and
  * buys its dear units, and keeps its discipline; research costs 1 Coin more
@@ -176,13 +176,13 @@ describe("tuning 6 identity and the research price", () => {
   // and the Undead pass 7r51, so 7r49 is the prior identity before the
   // last.
   it("was 7r49 after 7r48, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r110");
-    expect(PRIOR_RULESET_7_IDS.slice(-62, -60)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r111");
+    expect(PRIOR_RULESET_7_IDS.slice(-63, -61)).toEqual([
       "pulp-wars-poc-7r48",
       "pulp-wars-poc-7r49",
     ]);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r110.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-62, -60)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r111.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-63, -61)).toEqual([
       "pulpWars.save.v7r48.current",
       "pulpWars.save.v7r49.current",
     ]);
@@ -1858,37 +1858,32 @@ describe("an unseen attacker's damage reaches the victim's owner", () => {
   });
 });
 
-// Siege rules (`pulp_wars-0pgd`, 7r80) reversed tuning 6 here: the reward
-// unit takes the center and the garrison steps aside (the cases are in
-// tests/unit/ruleset-v7-siege-rules.test.ts).
-describe("a reward unit takes its center from the garrison", () => {
-  it("moves the garrison to a free tile of the city next to the center", () => {
+// Reward placement (`pulp_wars-spue`, 7r111) restored tuning 6 here: the
+// garrison keeps the center and the reward unit appears beside it (siege
+// rules, 7r80 to 7r110, gave the reward unit the center; the cases are in
+// tests/unit/ruleset-v7-reward-placement.test.ts).
+describe("a reward unit leaves the garrison on its center", () => {
+  it("puts the reward unit on a free tile of the city next to the center", () => {
     const fixture = rewardStateV7("MILITIA", "ORIGINAL", [
       { role: "GUARD", at: at(8, 8) },
     ]);
     const own = seatIdV7(fixture.state, 0);
     const guard = unitAtV7(fixture.state, at(8, 8));
     const result = applyOkV7(fixture.state, own, fixture.command);
-    // The Guard stands on the first tile of the city's territory next to
-    // the center.
-    expect(unitAtV7(result.state, at(7, 7)).id).toBe(guard.id);
+    expect(unitAtV7(result.state, at(8, 8))).toEqual(guard);
     const granted = result.events.find(
       (event) => event.kind === "UNIT_REWARD_GRANTED",
     );
     if (granted?.kind !== "UNIT_REWARD_GRANTED") throw new Error("no unit");
+    // The Fighter stands on the first tile of the city's territory next to
+    // the center.
     const fighter = result.state.units.find(
       (unit) => unit.id === granted.unitId,
     );
-    expect(fighter).toMatchObject({ role: "FIGHTER", at: at(8, 8) });
-    expect(result.events).toContainEqual({
-      kind: "UNIT_SPAWN_DISPLACED",
-      playerId: own,
-      cityId: fixture.command.cityId,
-      spawnedUnitId: granted.unitId,
-      displacedUnitId: guard.id,
-      from: at(8, 8),
-      to: at(7, 7),
-    });
+    expect(fighter).toMatchObject({ role: "FIGHTER", at: at(7, 7) });
+    expect(
+      result.events.some((event) => event.kind === "UNIT_SPAWN_DISPLACED"),
+    ).toBe(false);
     expect(parseGameStateV7(JSON.parse(JSON.stringify(result.state)))).toEqual(
       result.state,
     );
@@ -1904,7 +1899,7 @@ describe("a reward unit takes its center from the garrison", () => {
     expect(unitAtV7(result.state, at(8, 8)).role).toBe("FIGHTER");
   });
 
-  it("kills the garrison when no tile next to the center is free", () => {
+  it("never kills the garrison when no tile next to the center is free", () => {
     const ring = [
       at(7, 7),
       at(8, 7),
@@ -1933,18 +1928,21 @@ describe("a reward unit takes its center from the garrison", () => {
       ],
     });
     const result = applyOkV7(crowded, seatIdV7(crowded, 0), fixture.command);
-    expect(result.events).toContainEqual(
-      expect.objectContaining({
-        kind: "UNIT_SPAWN_DISPLACED",
-        displacedUnitId: guard.id,
-        to: null,
-      }),
+    expect(unitAtV7(result.state, at(8, 8))).toEqual(guard);
+    expect(
+      result.events.some(
+        (event) =>
+          event.kind === "UNIT_SPAWN_DISPLACED" || event.kind === "UNIT_DIED",
+      ),
+    ).toBe(false);
+    // The Fighter appears two tiles out: the first such tile in (y, x).
+    const granted = result.events.find(
+      (event) => event.kind === "UNIT_REWARD_GRANTED",
     );
-    expect(result.events).toContainEqual({
-      kind: "UNIT_DIED",
-      unitId: guard.id,
-      cause: "DISPLACED",
-    });
+    if (granted?.kind !== "UNIT_REWARD_GRANTED") throw new Error("no unit");
+    expect(
+      result.state.units.find((unit) => unit.id === granted.unitId)?.at,
+    ).toEqual(at(6, 6));
   });
 });
 

@@ -122,7 +122,7 @@ import {
   walledV7,
 } from "../fixtures/v7-revision20";
 
-// The Dinosaur pass (`pulp_wars-w49.15`, `pulp-wars-poc-7r110`,
+// The Dinosaur pass (`pulp_wars-w49.15`, `pulp-wars-poc-7r111`,
 // docs/product/RULESET_7_TUNING_DINOSAUR.md): Scouts for a Dinosaur city (a
 // free Raptor); a Triceratops's run-up counts one tile, two with
 // Wallbreaker; the Caveman's Pack Hunt; a Dinosaur Market hires a dinosaur
@@ -207,15 +207,15 @@ describe("the Dinosaur pass: identity", () => {
   // The economy rejig (tests/unit/ruleset-v7-economy-rejig.test.ts) took
   // 7r54, so 7r53 is the last prior identity.
   it("was 7r53 after 7r52, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r110");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r110.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r111");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r111.current");
     // The ninth unit (`pulp_wars-w49.17`) took 7r55, so 7r54 is prior too.
-    expect(PRIOR_RULESET_7_IDS.slice(-58, -55)).toEqual([
+    expect(PRIOR_RULESET_7_IDS.slice(-59, -56)).toEqual([
       "pulp-wars-poc-7r52",
       "pulp-wars-poc-7r53",
       "pulp-wars-poc-7r54",
     ]);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-58, -55)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-59, -56)).toEqual([
       "pulpWars.save.v7r52.current",
       "pulpWars.save.v7r53.current",
       "pulpWars.save.v7r54.current",
@@ -355,8 +355,9 @@ describe("the Dinosaur pass: Scouts", () => {
     expect(
       chosen.events.find((event) => event.kind === "UNIT_REWARD_GRANTED"),
     ).toMatchObject({ role: "RAIDER", reachedLevel: 3 });
-    // Without Scouting; no Egg: a hatched Raptor on the center (the
-    // garrison steps aside: siege rules, 7r80), homed to the city.
+    // Without Scouting; no Egg: a hatched Raptor beside the garrison on
+    // the center (reward placement, `pulp_wars-spue`, 7r111), homed to the
+    // city.
     const raptor = chosen.state.units.find(
       (unit) => unit.ownerId === actor && unit.role === "RAIDER",
     );
@@ -367,7 +368,7 @@ describe("the Dinosaur pass: Scouts", () => {
       maxHp: 12,
       homeCityId: capital.id,
     });
-    expect(gap(raptor.at, capital.at)).toBe(0);
+    expect(gap(raptor.at, capital.at)).toBe(1);
     expect(chosen.state.eggs).toEqual([]);
     expect(effectiveRoleRuleV7("RAIDER", "DINOSAUR").label).toBe("Raptor");
     expect(scoutsRewardTextV7("Raptor")).toBe(

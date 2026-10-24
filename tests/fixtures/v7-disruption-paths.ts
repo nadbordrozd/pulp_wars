@@ -282,7 +282,7 @@ export const UNPROVEN_DISRUPTION_PATHS_V7: Readonly<
     "a Saucer beams only its own seat's units, and no Martian seat has a cultist",
   GOBLIN_TOSSED: "a Troll throws only a Goblin of its own seat",
   UNIT_SPAWN_DISPLACED:
-    "a reward unit takes its center and the unit there steps aside (siege rules, 7r80); the proof with a channelling besieger is in tests/unit/ruleset-v7-siege-rules.test.ts, and the shove is a plain change of tile",
+    "no longer emitted: since reward placement (`pulp_wars-spue`, 7r111) a reward unit appears beside an occupied center and moves nobody (tests/unit/ruleset-v7-reward-placement.test.ts keeps a channeller's strand); the kind stays for older event logs, where the shove was a plain change of tile",
   GATE_DISPLACED:
     "needs a Dimensional Gate pair (a generated curiosity board); the shove is a plain change of tile",
   CRUMBS_EATEN:

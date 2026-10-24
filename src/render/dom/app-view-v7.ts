@@ -11911,16 +11911,17 @@ export class Ruleset7DomAppView {
         text(this.#document, "strong", name),
         text(this.#document, "span", detail, "v7-reward-detail"),
       );
-      // Siege rules (`pulp_wars-0pgd`, 7r80): who makes room for the unit.
+      // Reward placement (`pulp_wars-spue`, 7r111): where the unit appears
+      // when the center is taken.
       const arrival = rewardArrivalNoteV7(view, choice.cityId, reward);
       if (arrival !== null) {
         const note = text(
           this.#document,
           "span",
           arrival.text,
-          `v7-reward-arrival${arrival.warning ? " is-warning" : ""}`,
+          "v7-reward-arrival",
         );
-        note.dataset.rewardArrival = arrival.warning ? "loss" : "move";
+        note.dataset.rewardArrival = arrival.placement.toLowerCase();
         action.append(note);
       }
       action.setAttribute(
@@ -19219,7 +19220,7 @@ function setupFrom(draft: DraftV7, gameKind: GameKindV7): MatchSetupV7 | null {
   const aiHeadStartCoins =
     draft.mapType === "SHOWCASE" ? 0 : draft.aiHeadStartCoins;
   return {
-    rulesetId: "pulp-wars-poc-7r110",
+    rulesetId: "pulp-wars-poc-7r111",
     seed,
     width,
     height: width,

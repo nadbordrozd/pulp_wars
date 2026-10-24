@@ -372,7 +372,19 @@ describe("Ruleset 7 siege rules in the interface", () => {
     app.destroy();
   });
 
-  it("says on the reward who steps aside, and warns when an own unit would die", () => {
+  it("says on the reward where its unit appears when the center is taken", () => {
+    // Reward placement (`pulp_wars-spue`, 7r111): nothing on the center is
+    // moved or harmed, so the card only says where the new unit goes.
+    const free = rewardStateV7("MILITIA", "ORIGINAL");
+    const zeroth = open(free.state);
+    expect(
+      document.querySelector(
+        '[data-action="reward-militia"] .v7-reward-arrival',
+      ),
+    ).toBeNull();
+    zeroth.app.destroy();
+
+    document.body.innerHTML = '<div id="app"></div>';
     const roomy = rewardStateV7("MILITIA", "ORIGINAL", [
       { role: "GUARD", at: CENTER },
     ]);
@@ -381,10 +393,11 @@ describe("Ruleset 7 siege rules in the interface", () => {
     const note = required<HTMLElement>(
       '[data-action="reward-militia"] .v7-reward-arrival',
     );
-    expect(note.textContent).toBe("Your Guard steps aside");
-    expect(note.dataset.rewardArrival).toBe("move");
+    expect(note.textContent).toBe("Appears beside the city");
+    expect(note.dataset.rewardArrival).toBe("beside");
+    expect(note.classList.contains("is-warning")).toBe(false);
     expect(militia.getAttribute("aria-label")).toMatch(
-      /\. Your Guard steps aside$/,
+      /\. Appears beside the city$/,
     );
     expect(
       document.querySelector(
@@ -403,47 +416,44 @@ describe("Ruleset 7 siege rules in the interface", () => {
     const second = open(besieged.state);
     expect(
       required('[data-action="reward-militia"] .v7-reward-arrival').textContent,
-    ).toBe("The enemy Fighter steps aside");
+    ).toBe("Appears beside the city");
     second.app.destroy();
 
     document.body.innerHTML = '<div id="app"></div>';
-    // Eight own Guards around the garrison: it has nowhere to go.
-    const ring = [
-      [7, 7],
-      [8, 7],
-      [9, 7],
-      [7, 8],
-      [9, 8],
-      [7, 9],
-      [8, 9],
-      [9, 9],
-    ] as const;
+    // Own Guards on every tile within two of the center: no room at all.
     const garrison = roomy.state.units.find(
       (unit) => unit.at.x === CENTER.x && unit.at.y === CENTER.y,
     );
     if (garrison === undefined) throw new Error("No garrison");
+    const around: { readonly x: number; readonly y: number }[] = [];
+    for (let y = CENTER.y - 2; y <= CENTER.y + 2; y += 1)
+      for (let x = CENTER.x - 2; x <= CENTER.x + 2; x += 1)
+        if (
+          (x !== CENTER.x || y !== CENTER.y) &&
+          !roomy.state.units.some((unit) => unit.at.x === x && unit.at.y === y)
+        )
+          around.push({ x, y });
     const crowded: GameStateV7 = {
       ...roomy.state,
-      nextEntityId: roomy.state.nextEntityId + ring.length,
+      nextEntityId: roomy.state.nextEntityId + around.length,
       units: [
         ...roomy.state.units,
-        ...ring.map(([x, y], index) => ({
+        ...around.map((at, index) => ({
           ...garrison,
           id: (roomy.state.nextEntityId + index) as never,
           homeCityId: null,
-          at: { x, y },
+          at,
         })),
       ],
     };
     const third = open(crowded);
-    const loss = required<HTMLElement>(
+    const held = required<HTMLElement>(
       '[data-action="reward-militia"] .v7-reward-arrival',
     );
-    expect(loss.textContent).toBe(
-      "Your Guard has no room to step aside and dies",
+    expect(held.textContent).toBe(
+      "No room near the city: arrives when a tile is free",
     );
-    expect(loss.dataset.rewardArrival).toBe("loss");
-    expect(loss.classList.contains("is-warning")).toBe(true);
+    expect(held.dataset.rewardArrival).toBe("held");
     third.app.destroy();
   });
 });

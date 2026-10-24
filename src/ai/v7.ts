@@ -112,7 +112,6 @@ import {
   queryCombatPreviewV7,
   previewSeizeV7,
   queryPublicEconomicPotentialsV7,
-  previewRewardArrivalV7,
   queryPublicPlannedImprovementV7,
   queryPublicRedevelopmentChangesImprovementV7,
   queryTechnologyTreeV7,
@@ -26573,51 +26572,6 @@ function nextNavalTechnologyV7(
   return null;
 }
 
-/**
- * Siege rules (`pulp_wars-0pgd`, 7r80): a reward unit takes its city's
- * center and the unit standing there steps aside or dies
- * (`previewRewardArrivalV7`). Given the rewards on offer for the city and
- * the one the ladder policy would take (`plain`):
- *
- * - a reward unit that moves or kills **a besieger** (a hostile unit) is
- *   taken whenever one is offered (it lifts the siege; the first offered
- *   that does);
- * - a reward unit that would **kill the seat's own garrison** or an ally's
- *   unit (no tile to step to) is not taken when another reward is offered
- *   that does not.
- *
- * Otherwise `plain`.
- */
-export function rewardWithArrivalV7(
-  view: PlayerViewV7,
-  cityId: CityId,
-  offered: readonly (typeof REWARD_IDS_V7)[number][],
-  plain: (typeof REWARD_IDS_V7)[number],
-): (typeof REWARD_IDS_V7)[number] {
-  const arrivals = offered.map(
-    (reward) => [reward, previewRewardArrivalV7(view, cityId, reward)] as const,
-  );
-  const ownerOf = (unitId: UnitId | null): PlayerId | null =>
-    unitId === null
-      ? null
-      : (view.units.find((unit) => unit.id === unitId)?.ownerId ?? null);
-  const friendly = (owner: PlayerId): boolean =>
-    owner === view.viewer.id ||
-    cooperativeAlliesV7(view.setup, view.humanPlayerId, owner, view.viewer.id);
-  const lifts = arrivals.find(([, arrival]) => {
-    const owner = ownerOf(arrival?.displacedUnitId ?? null);
-    return owner !== null && !friendly(owner);
-  });
-  if (lifts !== undefined) return lifts[0];
-  const killsOwn = (reward: (typeof REWARD_IDS_V7)[number]): boolean => {
-    const arrival = arrivals.find(([item]) => item === reward)?.[1] ?? null;
-    const owner = ownerOf(arrival?.displacedUnitId ?? null);
-    return arrival?.dies === true && owner !== null && friendly(owner);
-  };
-  if (!killsOwn(plain)) return plain;
-  return offered.find((reward) => !killsOwn(reward)) ?? plain;
-}
-
 function preferredReward(
   context: PolicyContextV7,
   command: Extract<CommandV7, { kind: "CHOOSE_CITY_REWARD" }>,
@@ -26630,12 +26584,11 @@ function preferredReward(
         item.reachedLevel === command.reachedLevel,
     )
     .map((item) => item.reward);
-  return rewardWithArrivalV7(
-    context.view,
-    command.cityId,
-    offered,
-    ladderRewardV7(context, command, offered),
-  );
+  // Reward placement (`pulp_wars-spue`, 7r111): a reward unit never moves
+  // or harms the unit on the center, so where it appears does not change
+  // the choice (siege rules, 7r80 to 7r110, took a reward unit to shove a
+  // besieger off and refused one that would kill the garrison).
+  return ladderRewardV7(context, command, offered);
 }
 
 /** The ladder policy of {@link preferredReward}, before the arrival rule. */

@@ -4972,11 +4972,6 @@ html:has(.v7-match-shell) body {
   font-size: var(--pw-fs-sm);
 }
 
-.v7-reward-arrival.is-warning {
-  color: var(--pw-red);
-  font-weight: var(--pw-fw-bold);
-}
-
 .v7-results {
   justify-items: center;
   text-align: center;

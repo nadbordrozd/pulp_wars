@@ -456,7 +456,10 @@ describe("ruleset-7 revision-13 Graves: exclusions", () => {
     expect(result.state.graves).toEqual([]);
   });
 
-  it("never leaves a Grave for reward displacement removal", () => {
+  // Reward placement (`pulp_wars-spue`, 7r111): a reward unit removes
+  // nobody (siege rules, 7r80 to 7r110, killed an occupant with no tile,
+  // cause `DISPLACED`, and left no Grave either).
+  it("never leaves a Grave when a reward unit arrives at a crowded center", () => {
     const neighbors = neighborsOf(HUMAN_CAPITAL);
     const state = arena(
       ["UNDEAD", "ORIGINAL"],
@@ -478,26 +481,9 @@ describe("ruleset-7 revision-13 Graves: exclusions", () => {
       reachedLevel: 2,
       reward: "MILITIA",
     });
-    expect(result.events).toContainEqual(
-      expect.objectContaining({
-        kind: "UNIT_SPAWN_DISPLACED",
-        displacedUnitId: occupant.id,
-        to: null,
-      }),
-    );
-    expect(result.state.units.some((unit) => unit.id === occupant.id)).toBe(
-      false,
-    );
-    // Siege rules (`pulp_wars-0pgd`, 7r80): the removal is a death with
-    // its own cause, and still leaves nothing.
-    expect(result.events).toContainEqual({
-      kind: "UNIT_DIED",
-      unitId: occupant.id,
-      cause: "DISPLACED",
-    });
-    expect(result.events.map((event) => event.kind)).not.toContain(
-      "GRAVE_CREATED",
-    );
+    expect(unitAt(result.state, HUMAN_CAPITAL)).toEqual(occupant);
+    for (const kind of ["UNIT_SPAWN_DISPLACED", "UNIT_DIED", "GRAVE_CREATED"])
+      expect(result.events.map((event) => event.kind)).not.toContain(kind);
     expect(result.state.graves).toEqual([]);
   });
 

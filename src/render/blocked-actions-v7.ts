@@ -1,7 +1,6 @@
 import {
   previewRewardArrivalV7,
   queryPlayerCommandsV7,
-  unitRoleRuleV7,
   type CityId,
   type CommandV7,
   type PlayerViewV7,
@@ -270,34 +269,30 @@ export const ENEMY_ON_TILE_TOOLTIP_V7 =
 export const BESIEGED_TOOLTIP_V7 =
   "An enemy unit stands on the center: no income and no new units. The city can still build";
 
+/** Reward placement (`pulp_wars-spue`, 7r111): the reward card's line. */
+export const REWARD_ARRIVAL_BESIDE_V7 = "Appears beside the city";
+export const REWARD_ARRIVAL_HELD_V7 =
+  "No room near the city: arrives when a tile is free";
+
 /**
- * Siege rules (`pulp_wars-0pgd`, 7r80): what a reward unit does to the unit
- * on its city's center, in a few words for the reward choice, from the
+ * Reward placement (`pulp_wars-spue`, `pulp_wars-rzqf`, 7r111): where a
+ * reward unit appears, in a few words for the reward choice, from the
  * engine's public preview (`previewRewardArrivalV7`); null when the reward
- * grants no unit or nothing stands on the center. `warning` marks the loss
- * of one of the viewer's own units.
+ * grants no unit or the unit appears on the free center. A reward never
+ * moves or harms the unit on the center, so there is no loss to warn of.
  */
 export function rewardArrivalNoteV7(
   view: PlayerViewV7,
   cityId: CityId,
   reward: RewardIdV7,
-): { readonly text: string; readonly warning: boolean } | null {
+): { readonly text: string; readonly placement: "BESIDE" | "HELD" } | null {
   const arrival = previewRewardArrivalV7(view, cityId, reward);
   if (arrival === null) return null;
-  if (arrival.displacedUnitId === null) {
-    const city = view.cities.find((candidate) => candidate.id === cityId);
-    return city === undefined ||
-      (arrival.at.x === city.at.x && arrival.at.y === city.at.y)
-      ? null
-      : { text: "Appears beside the center", warning: false };
-  }
-  const unit = view.units.find(
-    (candidate) => candidate.id === arrival.displacedUnitId,
-  );
-  if (unit === undefined) return null;
-  const own = unit.ownerId === view.viewer.id;
-  const name = `${own ? "Your" : "The enemy"} ${unitRoleRuleV7(view, unit).label}`;
-  return arrival.dies
-    ? { text: `${name} has no room to step aside and dies`, warning: own }
-    : { text: `${name} steps aside`, warning: false };
+  if (arrival.at === null)
+    return { text: REWARD_ARRIVAL_HELD_V7, placement: "HELD" };
+  const city = view.cities.find((candidate) => candidate.id === cityId);
+  return city === undefined ||
+    (arrival.at.x === city.at.x && arrival.at.y === city.at.y)
+    ? null
+    : { text: REWARD_ARRIVAL_BESIDE_V7, placement: "BESIDE" };
 }

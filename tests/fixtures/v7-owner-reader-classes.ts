@@ -156,9 +156,9 @@ export const OWNER_READER_CLASSES_V7: Readonly<
   "src/engine/v7/reducer.ts::resolveAttackExchangeV7": "NEUTRAL_AWARE",
   "src/engine/v7/reducer.ts::resolveTreasure": "PLAYER_ONLY",
   "src/engine/v7/reducer.ts::revealRadius": "PLAYER_ONLY",
-  // Siege rules (`pulp_wars-0pgd`, 7r80): the technologies of the owner of
-  // a unit put beside a center. A neutral unit on a center (an Unbound
-  // daemon) has no record, which reads as no technology: the right answer.
+  // Reward placement (`pulp_wars-spue`, 7r111): the technologies of the
+  // owner of a reward unit put beside a center (always a seat; a neutral
+  // record would read as no technology).
   "src/engine/v7/reducer.ts::rewardCellLegalV7": "NEUTRAL_SAFE",
   // Mission objectives (`pulp_wars-v642.1`): the seat a wave of
   // reinforcements belongs to, a seat of the mission's definition.
@@ -168,6 +168,9 @@ export const OWNER_READER_CLASSES_V7: Readonly<
   // The reward unit of the viewer's own seat.
   "src/engine/v7/query.ts::previewRewardArrivalV7": "PLAYER_ONLY",
   "src/engine/v7/reducer.ts::settleCityRewardsV7": "PLAYER_ONLY",
+  // Reward placement (`pulp_wars-spue`, 7r111): the incoming seat's held
+  // reward units.
+  "src/engine/v7/reducer.ts::resolveStartTurnHeldRewardsV7": "PLAYER_ONLY",
   "src/engine/v7/reducer.ts::treasureKnightPlacement": "PLAYER_ONLY",
   "src/engine/v7/reducer.ts::unitSightRadius": "PLAYER_ONLY",
   "src/engine/v7/reducer.ts::validateTileContext": "PLAYER_ONLY",

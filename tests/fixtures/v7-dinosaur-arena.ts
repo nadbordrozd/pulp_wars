@@ -196,7 +196,7 @@ export function withTileV7(
 /**
  * A seat-0 capital of `faction` ready to choose `reward` (level 2 for
  * Militia since the reward ladder rework, `pulp_wars-zypi`: level 3
- * before; level 6 for the Juggernaut reward since the economy rejig,
+ * before; level 3 for Scouts, with a level-2 Stockpile taken; level 6 for the Juggernaut reward since the economy rejig,
  * `pulp_wars-w49.16`, 7r54, which every level from 5 offers again since
  * `pulp_wars-zypi`), grown through Farms, with every technology. The
  * Juggernaut capital's reward history is of the ladder before
@@ -210,7 +210,7 @@ export function withTileV7(
  * `opponent` sets seat 1's faction and pieces (by default one Human Fighter).
  */
 export function rewardStateV7(
-  reward: "MILITIA" | "JUGGERNAUT",
+  reward: "MILITIA" | "SURVEY" | "JUGGERNAUT",
   faction: FactionIdV7,
   own: readonly {
     readonly role: UnitStateV7["role"];
@@ -235,9 +235,10 @@ export function rewardStateV7(
     ...own.map((piece) => ({ seat: 0, ...piece })),
   ]);
   const city = cityOfV7(base, 0);
-  const reachedLevel = reward === "MILITIA" ? 2 : 6;
-  const addedPopulation = reward === "MILITIA" ? 2 : 14;
-  const addedPermanent = reward === "MILITIA" ? 0 : 6;
+  const reachedLevel = reward === "MILITIA" ? 2 : reward === "SURVEY" ? 3 : 6;
+  const addedPopulation =
+    reward === "MILITIA" ? 2 : reward === "SURVEY" ? 6 : 14;
+  const addedPermanent = reward === "JUGGERNAUT" ? 6 : 0;
   const growthTiles = base.board.tiles
     .filter(
       (tile) =>
@@ -273,12 +274,14 @@ export function rewardStateV7(
             rewards:
               reward === "MILITIA"
                 ? []
-                : [
-                    { reachedLevel: 2, reward: "SURVEY" as const },
-                    { reachedLevel: 3, reward: "WALLS" as const },
-                    { reachedLevel: 4, reward: "TREASURY_6" as const },
-                    { reachedLevel: 5, reward: "TREASURY" as const },
-                  ],
+                : reward === "SURVEY"
+                  ? [{ reachedLevel: 2, reward: "STOCKPILE" as const }]
+                  : [
+                      { reachedLevel: 2, reward: "SURVEY" as const },
+                      { reachedLevel: 3, reward: "WALLS" as const },
+                      { reachedLevel: 4, reward: "TREASURY_6" as const },
+                      { reachedLevel: 5, reward: "TREASURY" as const },
+                    ],
           }
         : candidate,
     ),
@@ -328,7 +331,9 @@ export function rewardStateV7(
         candidates:
           reward === "MILITIA"
             ? (["STOCKPILE", "MILITIA"] as const)
-            : (["JUGGERNAUT", "TREASURY"] as const),
+            : reward === "SURVEY"
+              ? (["SURVEY", "WALLS"] as const)
+              : (["JUGGERNAUT", "TREASURY"] as const),
       },
     ],
   });

@@ -212,7 +212,6 @@ import { grownUnitV7 } from "./growth";
 import { recordInfectionV7 } from "./infect";
 import {
   prunedNinthUnitV7,
-  unitIsImmovableV7,
   wightRisingRuleV7,
   withNinthUnitTurnEndedV7,
   withSortedUnitIdV7,
@@ -429,6 +428,7 @@ import {
   isNeutralOwnerV7,
   type AchievementIdV7,
   type CityStateV7,
+  type HeldRewardUnitV7,
   type CoordV7,
   type CuriosityV7,
   type GameStateV7,
@@ -4121,7 +4121,10 @@ function applyTrain(
       captureEligible: false,
       activation: exhaustedActivation(),
     };
-    const spawn = resolveCityCenterSpawnV7(state, actor, city, trained);
+    // The center is empty (`CITY_SPAWN_OCCUPIED` above), so the unit is
+    // always placed there.
+    const spawn = placeCitySpawnV7(state, city, trained);
+    if (spawn.placed === null) throw new RangeError("INVALID_STATE");
     const staged = {
       ...state,
       nextEntityId: allocation.nextEntityId,
@@ -4133,7 +4136,6 @@ function applyTrain(
           : candidate,
       ),
       units: spawn.units,
-      burrowed: spawn.burrowed,
       // The Martian revision: a trained unit starts with its full Shield.
       shields: withFullShieldsV7(state, state.shields, [trained]),
     };
@@ -5673,7 +5675,6 @@ function applyReward(
     const board = state.board;
     let cities: readonly CityStateV7[] = state.cities;
     let units = state.units;
-    let burrowed = state.burrowed;
     let shields = state.shields;
     let contributions = state.populationContributions;
     const choices: readonly PendingChoiceV7[] = state.pendingChoices.slice(1);
@@ -5752,95 +5753,71 @@ function applyReward(
     // so is the Economic Miracle (`pulp_wars-zypi`;
     // `cityEconomicMiracleIncomeV7` reads it at every income).
     if (unitRole !== null) {
-      const allocation = allocateUnitId(nextEntityId);
-      nextEntityId = allocation.nextEntityId;
       // Revision 13: MILITIA and JUGGERNAUT grant the owner's faction unit.
       const rule = effectiveRoleRuleV7(
         unitRole,
         requirePlayer(state, actor).faction,
       );
-      const created: UnitStateV7 = {
-        id: allocation.id,
-        ownerId: actor,
-        homeCityId: city.id,
-        role: unitRole,
-        form: "LAND",
-        at: city.at,
-        hp: rule.maxHp,
-        maxHp: rule.maxHp,
-        kills: 0,
-        veteran: false,
-        captureEligible: false,
-        activation: exhaustedActivation(),
-      };
-      const spawn = resolveCityCenterSpawnV7(
-        { ...state, players, cities, units },
-        actor,
-        city,
-        created,
-      );
-      players = spawn.players;
-      units = spawn.units;
-      burrowed = spawn.burrowed;
-      // The Martian revision: a reward unit arrives at its full Shield.
-      shields = withFullShieldsV7(state, shields, [created]);
-      events.push({
-        kind: "UNIT_REWARD_GRANTED",
-        playerId: actor,
-        cityId: city.id,
-        reachedLevel: command.reachedLevel,
-        unitId: created.id,
-        role: unitRole,
-      });
-      events.push(...spawn.events);
-      // Revision 17 section 8.9: a Goblin Militia is two Goblins. The second
-      // appears on the first adjacent cell in (y, x) order that the ordinary
-      // reward displacement rule allows, or is not created.
+      // Revision 17 section 8.9: a Goblin Militia is two Goblins (a Cult
+      // Militia two Initiates). Reward placement (`pulp_wars-spue`, 7r111):
+      // each unit appears by the placement rule in turn (the center when
+      // it is free, else the nearest free tile), and a unit with no tile
+      // is held on the city (`heldRewardUnits`), never lost.
       const militiaSize =
         command.reward === "MILITIA"
           ? MILITIA_FIGHTERS_V7[requirePlayer(state, actor).faction]
           : 1;
-      const secondAt =
-        militiaSize === 2
-          ? rewardDisplacementCellV7(
-              { ...state, players, cities, units },
-              created,
-              city.at,
-            )
-          : null;
-      if (secondAt !== null) {
-        const second = allocateUnitId(nextEntityId);
-        nextEntityId = second.nextEntityId;
-        const companion: UnitStateV7 = {
-          ...created,
-          id: second.id,
-          at: secondAt,
-        };
-        units = [...units, companion];
-        shields = withFullShieldsV7(state, shields, [companion]);
-        events.push({
-          kind: "UNIT_REWARD_GRANTED",
-          playerId: actor,
-          cityId: city.id,
-          reachedLevel: command.reachedLevel,
-          unitId: companion.id,
-          role: unitRole,
-        });
-        const sightState = { ...state, players, units } as GameStateV7;
-        const reveal = revealRadius(
-          sightState,
-          actor,
-          companion.at,
-          unitSightRadiusAtV7(sightState, companion),
+      const held: HeldRewardUnitV7[] = [];
+      for (let index = 0; index < militiaSize; index += 1) {
+        const allocation = allocateUnitId(nextEntityId);
+        const spawn = placeCitySpawnV7(
+          { ...state, players, cities, units },
+          city,
+          {
+            id: allocation.id,
+            ownerId: actor,
+            homeCityId: city.id,
+            role: unitRole,
+            form: "LAND",
+            at: city.at,
+            hp: rule.maxHp,
+            maxHp: rule.maxHp,
+            kills: 0,
+            veteran: false,
+            captureEligible: false,
+            activation: exhaustedActivation(),
+          },
         );
-        players = setExplored(players, actor, reveal.explored);
-        if (reveal.revealed.length > 0)
-          events.push({
-            kind: "TILES_REVEALED",
+        if (spawn.placed === null) {
+          held.push({ reachedLevel: command.reachedLevel, role: unitRole });
+          continue;
+        }
+        nextEntityId = allocation.nextEntityId;
+        players = spawn.players;
+        units = spawn.units;
+        // The Martian revision: a reward unit arrives at its full Shield.
+        shields = withFullShieldsV7(state, shields, [spawn.placed]);
+        events.push(
+          {
+            kind: "UNIT_REWARD_GRANTED",
             playerId: actor,
-            tiles: reveal.revealed,
-          });
+            cityId: city.id,
+            reachedLevel: command.reachedLevel,
+            unitId: spawn.placed.id,
+            role: unitRole,
+          },
+          ...spawn.events,
+        );
       }
+      if (held.length > 0)
+        cities = cities.map((item) =>
+          item.id === city.id
+            ? withHeldRewardUnitsV7(item, [
+                ...(item.heldRewardUnits ?? []),
+                ...held,
+              ])
+            : item,
+        );
     }
     const settlement = settleCityRewardsV7(
       {
@@ -5850,7 +5827,6 @@ function applyReward(
         board,
         cities,
         units,
-        burrowed,
         shields,
         populationContributions: contributions,
         pendingChoices: choices,
@@ -8577,11 +8553,12 @@ function applyCapture(
         ),
       };
     } else {
-      captured = {
-        ...hostile,
-        ownerId: actor,
-        cityActionAvailable: false,
-      };
+      // Reward placement (`pulp_wars-spue`, 7r111): the former owner's
+      // held reward units are lost with the city.
+      captured = withHeldRewardUnitsV7(
+        { ...hostile, ownerId: actor, cityActionAvailable: false },
+        [],
+      );
       cities = state.cities.map((item) =>
         item.id === captured.id ? captured : item,
       );
@@ -9136,7 +9113,10 @@ function applyEndTurn(
     );
     const turnStarted = started.events[0];
     if (turnStarted === undefined) throw new RangeError("INVALID_STATE");
-    const settlement = settleCityRewardsV7(started.state, nextPlayer.id);
+    // Reward placement (`pulp_wars-spue`, 7r111): the held reward units
+    // appear, after the economy and before the reward settlement.
+    const arrived = resolveStartTurnHeldRewardsV7(started.state, nextPlayer.id);
+    const settlement = settleCityRewardsV7(arrived.state, nextPlayer.id);
     const achievements = evaluateAchievementsV7(
       settlement.state,
       nextPlayer.id,
@@ -9151,6 +9131,7 @@ function applyEndTurn(
         ...(neutral?.events ?? []),
         turnStarted,
         ...started.events.slice(1),
+        ...arrived.events,
         ...settlement.events,
         ...achievements.events,
       ],
@@ -10625,13 +10606,12 @@ function settleCityRewardsV7(
 }
 
 /**
- * The reward displacement predicate: whether `unit` may be put on the cell
- * `at` beside a city center: it is land, enterable by `unit` (the shared
- * `canEnterTerrainV7`: a Mountain needs its owner's Engineering unless it
- * strides or flies), has no treasure chest and no unit, mound, or
- * Barricade, and is not an ally's territory. The Martian revision: a flyer
- * is never put on a settlement center it cannot stand on. A neutral unit
- * (an Unbound daemon on a center) has no technology.
+ * Reward placement (`pulp_wars-spue`, `pulp-wars-poc-7r111`): whether the
+ * reward unit `unit` may appear on the cell `at` beside its city's center:
+ * it is land, enterable by `unit` (the shared `canEnterTerrainV7`: a
+ * Mountain needs its owner's Engineering unless it strides or flies), has
+ * no settlement (no village, city, or capital), no treasure chest and no
+ * unit, mound, or Barricade, and is not an ally's territory.
  */
 function rewardCellLegalV7(
   state: GameStateV7,
@@ -10643,7 +10623,8 @@ function rewardCellLegalV7(
     state.players.find((player) => player.id === ownerId)?.researchedTechs ??
     [];
   const tile = tileAtV7(state.board, at);
-  if (tile === undefined || tile.biome === null) return false;
+  if (tile === undefined || tile.biome === null || tile.site !== null)
+    return false;
   if (state.treasureChests.some((chest) => same(chest, at))) return false;
   if (
     !canEnterTerrainV7({
@@ -10653,18 +10634,9 @@ function rewardCellLegalV7(
       engineering: techs.includes("ENGINEERING"),
       navigation: techs.includes("NAVIGATION"),
       mountainBorn: unitIsMountainBornV7(state, unit),
-      // A displacement tile is land (its biome is not null).
+      // A reward cell is land (its biome is not null).
       ice: false,
     })
-  )
-    return false;
-  if (
-    unitAvoidsForeignSitesV7(state, unit) &&
-    !flyerMayStandOnSiteV7(
-      tile.site,
-      state.cities.find((city) => same(city.at, at))?.ownerId ?? null,
-      ownerId,
-    )
   )
     return false;
   const territoryOwner = state.cities.find(
@@ -10681,137 +10653,160 @@ function rewardCellLegalV7(
 }
 
 /**
- * The first cell adjacent to `center` in (y, x) order that `unit` may be put
- * on (`rewardCellLegalV7`): where the second Goblin or Initiate of a Militia
- * appears.
+ * Reward placement (`pulp_wars-spue`, `pulp_wars-rzqf`,
+ * `pulp-wars-poc-7r111`; RULESET_7_CURRENT.md section 4.6): the unit
+ * `spawned` (a trained unit or a reward unit of `city`) appears on the
+ * city's center when no unit stands there, or else on the nearest free
+ * tile of the city's territory, then within two tiles of the center
+ * (`rewardArrivalV7`). **No unit already on the board is moved or
+ * harmed.** With no tile nothing is placed (`placed` null; the caller
+ * holds a reward unit on the city). A trained unit always has the empty
+ * center (`CITY_SPAWN_OCCUPIED`).
  */
-function rewardDisplacementCellV7(
+function placeCitySpawnV7(
   state: GameStateV7,
-  unit: Pick<UnitStateV7, "id" | "ownerId" | "role">,
-  center: CoordV7,
-): CoordV7 | null {
-  return (
-    adjacentCoords(state, center).find((at) =>
-      rewardCellLegalV7(state, unit, at),
-    ) ?? null
-  );
-}
-
-/**
- * Siege rules (`pulp_wars-0pgd`, `pulp-wars-poc-7r80`; RULESET_7_CURRENT.md
- * section 4.6): a reward unit appears on its city's center. The unit
- * standing there (the garrison or a besieger) steps to a tile next to the
- * center, or dies when it has none (`rewardArrivalV7`; `UNIT_SPAWN_DISPLACED`
- * and, for a death, `UNIT_DIED` cause `DISPLACED`: no credit, Plunder,
- * Grave, Crumbs, or blast). Tuning 6 (`7r49` to `7r79`) kept the
- * garrison on the center and put the reward unit beside it.
- */
-function resolveCityCenterSpawnV7(
-  state: GameStateV7,
-  actor: PlayerId,
   city: CityStateV7,
   spawned: UnitStateV7,
 ): {
+  readonly placed: UnitStateV7 | null;
   readonly players: readonly PlayerStateV7[];
   readonly units: readonly UnitStateV7[];
-  readonly burrowed: GameStateV7["burrowed"];
   readonly events: readonly DomainEventV7[];
 } {
-  const occupant = state.units.find(
-    (unit) => unit.hp > 0 && same(unit.at, city.at),
-  );
-  const arrival = rewardArrivalV7({
+  const at = rewardArrivalV7({
     center: city.at,
-    around: adjacentCoords(state, city.at),
-    occupant:
-      occupant === undefined
-        ? null
-        : {
-            id: occupant.id,
-            immovable:
-              occupant.form === "EGG" || unitIsImmovableV7(state, occupant),
-          },
-    occupantMayStand: (at) =>
-      occupant !== undefined && rewardCellLegalV7(state, occupant, at),
-    preferred: (at) =>
-      occupant !== undefined &&
-      occupant.ownerId === city.ownerId &&
-      state.cities.find(
-        (candidate) =>
-          candidate.id === tileAtV7(state.board, at)?.territoryCityId,
-      )?.ownerId === occupant.ownerId,
-    spawnedMayStand: (at) => rewardCellLegalV7(state, spawned, at),
-    cityTerritory: (at) =>
-      tileAtV7(state.board, at)?.territoryCityId === city.id,
+    centerFree: !state.units.some(
+      (unit) => unit.hp > 0 && same(unit.at, city.at),
+    ),
+    tiles: state.board.tiles.map((tile) => tile.at),
+    mayStand: (where) => rewardCellLegalV7(state, spawned, where),
+    cityTerritory: (where) =>
+      tileAtV7(state.board, where)?.territoryCityId === city.id,
   });
-  spawned = { ...spawned, at: arrival.at };
-  const displaces = occupant !== undefined && arrival.displacedUnitId !== null;
-  const destination = arrival.displaceTo;
-  const displaced =
-    !displaces || destination === null
-      ? null
-      : { ...occupant, at: destination, captureEligible: false };
-  let units = state.units
-    .filter(
-      (unit) => !displaces || unit.id !== occupant.id || displaced !== null,
-    )
-    .map((unit) => (unit.id === displaced?.id ? displaced : unit));
-  units = [...units, spawned];
-  let players = state.players;
-  const events: DomainEventV7[] = [];
-  if (displaces)
-    events.push({
-      kind: "UNIT_SPAWN_DISPLACED",
-      playerId: actor,
-      cityId: city.id,
-      spawnedUnitId: spawned.id,
-      displacedUnitId: occupant.id,
-      from: city.at,
-      to: destination,
-    });
-  // The Mind Control revision section 4.2: a Brain removed by displacement
-  // releases its controlled unit.
-  let burrowed = state.burrowed;
-  if (displaces && displaced === null) {
-    events.push({ kind: "UNIT_DIED", unitId: occupant.id, cause: "DISPLACED" });
-    const release = releaseControlledV7(
-      units,
-      burrowed,
-      state.mindControlled,
-      state.players,
-      events,
-      null,
-      state.board,
-    );
-    units = [...release.units];
-    burrowed = release.burrowed;
-  }
-  const revealedByPlayer = new Map<PlayerId, CoordV7[]>();
-  for (const unit of [spawned, ...(displaced === null ? [] : [displaced])]) {
-    const visibleState = { ...state, players, units } as GameStateV7;
-    const reveal = revealRadius(
-      visibleState,
-      unit.ownerId,
-      unit.at,
-      unitSightRadiusAtV7(visibleState, unit),
-    );
-    players = setExplored(players, unit.ownerId, reveal.explored);
-    if (reveal.revealed.length > 0)
-      revealedByPlayer.set(unit.ownerId, [
-        ...(revealedByPlayer.get(unit.ownerId) ?? []),
-        ...reveal.revealed,
-      ]);
-  }
-  for (const [playerId, revealed] of [...revealedByPlayer].sort(
-    ([left], [right]) => left - right,
-  ))
-    events.push({
-      kind: "TILES_REVEALED",
-      playerId,
-      tiles: uniqueCoords(revealed),
-    });
-  return { players, units, burrowed, events };
+  if (at === null)
+    return {
+      placed: null,
+      players: state.players,
+      units: state.units,
+      events: [],
+    };
+  const placed = { ...spawned, at };
+  const units = [...state.units, placed];
+  const visibleState = { ...state, units } as GameStateV7;
+  const reveal = revealRadius(
+    visibleState,
+    placed.ownerId,
+    placed.at,
+    unitSightRadiusAtV7(visibleState, placed),
+  );
+  return {
+    placed,
+    players: setExplored(state.players, placed.ownerId, reveal.explored),
+    units,
+    events:
+      reveal.revealed.length > 0
+        ? [
+            {
+              kind: "TILES_REVEALED",
+              playerId: placed.ownerId,
+              tiles: uniqueCoords(reveal.revealed),
+            },
+          ]
+        : [],
+  };
 }
+
+/**
+ * Reward placement (section 4.6): the held reward units of the incoming
+ * player's cities (`CityStateV7.heldRewardUnits`) appear at its Start
+ * Turn, by city ID and then in the order they were held, each by the
+ * placement rule (`placeCitySpawnV7`), full-HP, at full Shield, homed to
+ * the city, and exhausted like any new unit; one that still finds no tile
+ * stays held. Each that appears emits `UNIT_REWARD_GRANTED`.
+ */
+function resolveStartTurnHeldRewardsV7(
+  state: GameStateV7,
+  playerId: PlayerId,
+): { readonly state: GameStateV7; readonly events: readonly DomainEventV7[] } {
+  if (
+    !state.cities.some(
+      (city) => city.ownerId === playerId && city.heldRewardUnits !== undefined,
+    )
+  )
+    return { state, events: [] };
+  const player = requirePlayer(state, playerId);
+  let current = state;
+  const events: DomainEventV7[] = [];
+  for (const city of state.cities) {
+    if (city.ownerId !== playerId || city.heldRewardUnits === undefined)
+      continue;
+    const still: HeldRewardUnitV7[] = [];
+    for (const held of city.heldRewardUnits) {
+      const allocation = allocateUnitId(current.nextEntityId);
+      const rule = effectiveRoleRuleV7(held.role, player.faction);
+      const spawn = placeCitySpawnV7(current, city, {
+        id: allocation.id,
+        ownerId: playerId,
+        homeCityId: city.id,
+        role: held.role,
+        form: "LAND",
+        at: city.at,
+        hp: rule.maxHp,
+        maxHp: rule.maxHp,
+        kills: 0,
+        veteran: false,
+        captureEligible: false,
+        activation: exhaustedActivation(),
+      });
+      if (spawn.placed === null) {
+        still.push(held);
+        continue;
+      }
+      current = {
+        ...current,
+        nextEntityId: allocation.nextEntityId,
+        players: spawn.players,
+        units: spawn.units,
+        shields: withFullShieldsV7(current, current.shields, [spawn.placed]),
+      };
+      events.push(
+        {
+          kind: "UNIT_REWARD_GRANTED",
+          playerId,
+          cityId: city.id,
+          reachedLevel: held.reachedLevel,
+          unitId: spawn.placed.id,
+          role: held.role,
+        },
+        ...spawn.events,
+      );
+    }
+    current = {
+      ...current,
+      cities: current.cities.map((candidate) =>
+        candidate.id === city.id
+          ? withHeldRewardUnitsV7(candidate, still)
+          : candidate,
+      ),
+    };
+  }
+  return { state: current, events };
+}
+
+/** `city` with `held` as its held reward units (the key absent when none). */
+function withHeldRewardUnitsV7(
+  city: CityStateV7,
+  held: readonly HeldRewardUnitV7[],
+): CityStateV7 {
+  if (held.length > 0) return { ...city, heldRewardUnits: held };
+  if (city.heldRewardUnits === undefined) return city;
+  const rest: { -readonly [K in keyof CityStateV7]?: CityStateV7[K] } = {
+    ...city,
+  };
+  delete rest.heldRewardUnits;
+  return rest as CityStateV7;
+}
+
 function evaluateAchievementsV7(
   state: GameStateV7,
   playerId: PlayerId,

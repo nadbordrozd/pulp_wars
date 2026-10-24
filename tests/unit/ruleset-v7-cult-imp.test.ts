@@ -134,13 +134,13 @@ describe("the Imp: the identity (7r90)", () => {
   // the warden of `pulp_wars-mch9.32` and `pulp_wars-mch9.33` (7r89); the
   // Gibbering Mass (`pulp_wars-mch9.37`) took 7r91 after it.
   it("was 7r90 after 7r89, both save keys obsolete now, a 7r89 state refused", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r110");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r110.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-21, -19)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r111");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r111.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-22, -20)).toEqual([
       "pulp-wars-poc-7r89",
       "pulp-wars-poc-7r90",
     ]);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-21, -19)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-22, -20)).toEqual([
       "pulpWars.save.v7r89.current",
       "pulpWars.save.v7r90.current",
     ]);

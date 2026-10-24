@@ -402,14 +402,9 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/ai/v7.ts::plunderResearchValueV7": "BOARD",
     "src/ai/v7.ts::policyLookupWorkV7": "BOARD",
     "src/ai/v7.ts::ladderRewardV7": "BOARD",
-    // Siege rules (`pulp_wars-0pgd`, 7r80): the owner of the unit a reward
-    // unit would move off a center or kill. Only a unit on the board
-    // stands on a center (a mound never does).
-    "src/ai/v7.ts::rewardWithArrivalV7": "BOARD",
     "src/engine/v7/economy.ts::isTileEnemyOccupiedV7": "BOARD",
     "src/engine/v7/query.ts::previewRewardArrivalV7": "BOARD",
     "src/engine/v7/query.ts::publicTileEnemyOccupiedV7": "BOARD",
-    "src/render/blocked-actions-v7.ts::rewardArrivalNoteV7": "BOARD",
     // `pulp_wars-zypi`: a seat short of units takes a level-2 Militia; it
     // counts the units the view shows (burrowed units are not in it).
     "src/ai/v7.ts::rewardSeatShortOfUnitsV7": "BOARD",
@@ -711,7 +706,10 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/engine/v7/reducer.ts::resolveAttackExchangeV7": "BOARD",
     "src/engine/v7/reducer.ts::resolveNeutralTurnV7": "BOARD",
     "src/engine/v7/reducer.ts::resetTurnUnits": "BOARD",
-    "src/engine/v7/reducer.ts::resolveCityCenterSpawnV7": "BOARD",
+    // Reward placement (`pulp_wars-spue`, 7r111): whether a unit stands on
+    // the center (a mound never does), and the units a new one joins.
+    "src/engine/v7/reducer.ts::placeCitySpawnV7": "BOARD",
+    "src/engine/v7/reducer.ts::resolveStartTurnHeldRewardsV7": "BOARD",
     // `pulp_wars-5ti.3`: the death-blast chain of a Start Turn step (the
     // Plague and the ice crush share it) reads who stands on the board.
     "src/engine/v7/reducer.ts::withDeathBlastChainV7": "BOARD",
